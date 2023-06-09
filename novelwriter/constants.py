@@ -25,7 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from PyQt5.QtCore import QCoreApplication, QT_TRANSLATE_NOOP
 
-from novelwriter.enum import nwItemClass, nwItemLayout, nwOutline
+from novelwriter.enum import nwBuildFmt, nwItemClass, nwItemLayout, nwOutline
 
 
 def trConst(tString):
@@ -75,16 +75,22 @@ class nwHeaders:
 
 class nwFiles:
 
+    # Config Files
     CONF_FILE   = "novelwriter.conf"
+    RECENT_FILE = "recentProjects.json"
+
+    # Project Root Files
     PROJ_FILE   = "nwProject.nwx"
-    PROJ_DICT   = "wordlist.txt"
+    PROJ_BACKUP = "nwProject.bak"
     PROJ_LOCK   = "nwProject.lock"
     TOC_TXT     = "ToC.txt"
-    SESS_STATS  = "sessionStats.log"
+
+    # Project Meta Files
+    BUILDS_FILE = "builds.json"
     INDEX_FILE  = "tagsIndex.json"
     OPTS_FILE   = "guiOptions.json"
-    RECENT_FILE = "recentProjects.json"
-    BUILD_CACHE = "prevBuild.json"
+    PROJ_DICT   = "wordlist.txt"
+    SESS_STATS  = "sessionStats.log"
 
 # END Class nwFiles
 
@@ -199,8 +205,43 @@ class nwLabels:
         nwOutline.CUSTOM: KEY_NAME[nwKeyWords.CUSTOM_KEY],
         nwOutline.SYNOP:  QT_TRANSLATE_NOOP("Constant", "Synopsis"),
     }
+    BUILD_FMT = {
+        nwBuildFmt.ODT:    QT_TRANSLATE_NOOP("Constant", "Open Document (.odt)"),
+        nwBuildFmt.FODT:   QT_TRANSLATE_NOOP("Constant", "Flat Open Document (.fodt)"),
+        nwBuildFmt.HTML:   QT_TRANSLATE_NOOP("Constant", "novelWriter HTML (.html)"),
+        nwBuildFmt.NWD:    QT_TRANSLATE_NOOP("Constant", "novelWriter Markup (.txt)"),
+        nwBuildFmt.STD_MD: QT_TRANSLATE_NOOP("Constant", "Standard Markdown (.md)"),
+        nwBuildFmt.EXT_MD: QT_TRANSLATE_NOOP("Constant", "Extended Markdown (.md)"),
+        nwBuildFmt.J_HTML: QT_TRANSLATE_NOOP("Constant", "JSON + novelWriter HTML (.json)"),
+        nwBuildFmt.J_NWD:  QT_TRANSLATE_NOOP("Constant", "JSON + novelWriter Markup (.json)"),
+    }
+    BUILD_EXT = {
+        nwBuildFmt.ODT:    ".odt",
+        nwBuildFmt.FODT:   ".fodt",
+        nwBuildFmt.HTML:   ".html",
+        nwBuildFmt.NWD:    ".txt",
+        nwBuildFmt.STD_MD: ".md",
+        nwBuildFmt.EXT_MD: ".md",
+        nwBuildFmt.J_HTML: ".json",
+        nwBuildFmt.J_NWD:  ".json",
+    }
 
 # END Class nwLabels
+
+
+class nwHeadFmt:
+
+    TITLE   = "{Title}"
+    CH_NUM  = "{Chapter}"
+    CH_WORD = "{Chapter:Word}"
+    CH_ROMU = "{Chapter:URoman}"
+    CH_ROML = "{Chapter:LRoman}"
+    SC_NUM  = "{Scene}"
+    SC_ABS  = "{Scene:Abs}"
+
+    ALL = [TITLE, CH_NUM, CH_WORD, CH_ROMU, CH_ROML, SC_NUM, SC_ABS]
+
+# END Class nwHeadFmt
 
 
 class nwQuotes:

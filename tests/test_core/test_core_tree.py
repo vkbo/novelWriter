@@ -24,7 +24,7 @@ import random
 
 from pathlib import Path
 
-from mock import causeOSError
+from mocked import causeOSError
 from tools import readFile
 
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout

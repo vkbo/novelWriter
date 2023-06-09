@@ -40,7 +40,8 @@ class GuiItemDetails(QWidget):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiItemDetails ...")
+        logger.debug("Create: GuiItemDetails")
+
         self.mainGui    = mainGui
         self.theProject = mainGui.theProject
         self.mainTheme  = mainGui.mainTheme
@@ -182,7 +183,7 @@ class GuiItemDetails(QWidget):
         self.mainBox.setColumnMinimumWidth(1, flagWidth)
         self.mainBox.setColumnMinimumWidth(4, countWidth)
 
-        logger.debug("GuiItemDetails initialisation complete")
+        logger.debug("Ready: GuiItemDetails")
 
         return
 

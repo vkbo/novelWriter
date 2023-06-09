@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG
 from novelwriter.common import readTextFile
-from novelwriter.custom import QSwitch
+from novelwriter.extensions.switch import NSwitch
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ class GuiLipsum(QDialog):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiLipsum ...")
+        logger.debug("Create: GuiLipsum")
         self.setObjectName("GuiLipsum")
 
         self.mainGui   = mainGui
@@ -77,7 +77,7 @@ class GuiLipsum(QDialog):
         self.paraCount.setValue(5)
 
         self.randLabel = QLabel(self.tr("Randomise order"))
-        self.randSwitch = QSwitch()
+        self.randSwitch = NSwitch()
 
         self.formBox = QGridLayout()
         self.formBox.addWidget(self.headLabel, 0, 0, 1, 2, Qt.AlignLeft)
@@ -107,8 +107,12 @@ class GuiLipsum(QDialog):
         self.outerBox.setSpacing(CONFIG.pxInt(16))
         self.setLayout(self.outerBox)
 
-        logger.debug("GuiLipsum initialisation complete")
+        logger.debug("Ready: GuiLipsum")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiLipsum")
         return
 
     ##

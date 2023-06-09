@@ -25,7 +25,7 @@ import pytest
 from shutil import copyfile
 from zipfile import ZipFile
 
-from mock import causeOSError
+from mocked import causeOSError
 from tools import C, buildTestProject, cmpFiles, XML_IGNORE
 
 from novelwriter import CONFIG

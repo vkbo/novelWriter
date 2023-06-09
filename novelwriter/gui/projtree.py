@@ -215,7 +215,7 @@ class GuiProjectToolBar(QWidget):
     def __init__(self, projView):
         super().__init__(parent=projView)
 
-        logger.debug("Initialising GuiProjectToolBar ...")
+        logger.debug("Create: GuiProjectToolBar")
 
         self.projView   = projView
         self.projTree   = projView.projTree
@@ -328,7 +328,7 @@ class GuiProjectToolBar(QWidget):
         self.setLayout(self.outerBox)
         self.updateTheme()
 
-        logger.debug("GuiProjectToolBar initialisation complete")
+        logger.debug("Ready: GuiProjectToolBar")
 
         return
 
@@ -449,13 +449,13 @@ class GuiProjectTree(QTreeWidget):
     C_ACTIVE = 2
     C_STATUS = 3
 
-    D_HANDLE = Qt.UserRole
-    D_WORDS  = Qt.UserRole + 1
+    D_HANDLE = Qt.ItemDataRole.UserRole
+    D_WORDS  = Qt.ItemDataRole.UserRole + 1
 
     def __init__(self, projView):
         super().__init__(parent=projView)
 
-        logger.debug("Initialising GuiProjectTree ...")
+        logger.debug("Create: GuiProjectTree")
 
         self.projView   = projView
         self.mainGui    = projView.mainGui
@@ -522,7 +522,7 @@ class GuiProjectTree(QTreeWidget):
         # Set custom settings
         self.initSettings()
 
-        logger.debug("GuiProjectTree initialisation complete")
+        logger.debug("Ready: GuiProjectTree")
 
         return
 
@@ -1423,7 +1423,7 @@ class GuiProjectTree(QTreeWidget):
             self.theProject.tree.updateItemData(mHandle)
 
             # Update the index
-            if nwItemS.isInactive():
+            if nwItemS.isInactiveClass():
                 self.theProject.index.deleteHandle(mHandle)
             else:
                 self.theProject.index.reIndexHandle(mHandle)

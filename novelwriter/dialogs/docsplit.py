@@ -33,21 +33,22 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG
-from novelwriter.custom import QHelpLabel, QSwitch
+from novelwriter.extensions.switch import NSwitch
+from novelwriter.extensions.configlayout import NHelpLabel
 
 logger = logging.getLogger(__name__)
 
 
 class GuiDocSplit(QDialog):
 
-    LINE_ROLE = Qt.UserRole
-    LEVEL_ROLE = Qt.UserRole + 1
-    LABEL_ROLE = Qt.UserRole + 2
+    LINE_ROLE  = Qt.ItemDataRole.UserRole
+    LEVEL_ROLE = Qt.ItemDataRole.UserRole + 1
+    LABEL_ROLE = Qt.ItemDataRole.UserRole + 2
 
     def __init__(self, mainGui, sHandle):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiDocSplit ...")
+        logger.debug("Create: GuiDocSplit")
         self.setObjectName("GuiDocSplit")
 
         self.mainGui    = mainGui
@@ -60,7 +61,7 @@ class GuiDocSplit(QDialog):
         self.setWindowTitle(self.tr("Split Document"))
 
         self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Document Headers")))
-        self.helpLabel = QHelpLabel(
+        self.helpLabel = NHelpLabel(
             self.tr("Select the maximum level to split into files."),
             self.mainGui.mainTheme.helpText
         )
@@ -94,15 +95,15 @@ class GuiDocSplit(QDialog):
 
         # Split Options
         self.folderLabel = QLabel(self.tr("Split into a new folder"))
-        self.folderSwitch = QSwitch(width=2*iPx, height=iPx)
+        self.folderSwitch = NSwitch(width=2*iPx, height=iPx)
         self.folderSwitch.setChecked(intoFolder)
 
         self.hierarchyLabel = QLabel(self.tr("Create document hierarchy"))
-        self.hierarchySwitch = QSwitch(width=2*iPx, height=iPx)
+        self.hierarchySwitch = NSwitch(width=2*iPx, height=iPx)
         self.hierarchySwitch.setChecked(docHierarchy)
 
         self.trashLabel = QLabel(self.tr("Move split document to Trash"))
-        self.trashSwitch = QSwitch(width=2*iPx, height=iPx)
+        self.trashSwitch = NSwitch(width=2*iPx, height=iPx)
 
         self.optBox = QGridLayout()
         self.optBox.addWidget(self.folderLabel,  0, 0)
@@ -137,8 +138,12 @@ class GuiDocSplit(QDialog):
         # Load Content
         self._loadContent(sHandle)
 
-        logger.debug("GuiDocSplit initialisation complete")
+        logger.debug("Ready: GuiDocSplit")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiDocSplit")
         return
 
     def getData(self):

@@ -49,7 +49,8 @@ class GuiMainMenu(QMenuBar):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiMainMenu ...")
+        logger.debug("Create: GuiMainMenu")
+
         self.mainGui    = mainGui
         self.theProject = mainGui.theProject
 
@@ -69,7 +70,7 @@ class GuiMainMenu(QMenuBar):
         self._docInsert     = self.mainGui.docEditor.insertText
         self._insertKeyWord = self.mainGui.docEditor.insertKeyWord
 
-        logger.debug("GuiMainMenu initialisation complete")
+        logger.debug("Ready: GuiMainMenu")
 
         return
 
@@ -814,7 +815,7 @@ class GuiMainMenu(QMenuBar):
         # Tools > Separator
         self.toolsMenu.addSeparator()
 
-        # Tools > Rebuild Indices
+        # Tools > Rebuild Index
         self.aRebuildIndex = QAction(self.tr("Rebuild Index"), self)
         self.aRebuildIndex.setShortcut("F9")
         self.aRebuildIndex.triggered.connect(lambda: self.mainGui.rebuildIndex())
@@ -823,24 +824,24 @@ class GuiMainMenu(QMenuBar):
         # Tools > Separator
         self.toolsMenu.addSeparator()
 
-        # Tools > Backup
+        # Tools > Backup Project
         self.aBackupProject = QAction(self.tr("Backup Project"), self)
         self.aBackupProject.triggered.connect(lambda: self.theProject.backupProject(True))
         self.toolsMenu.addAction(self.aBackupProject)
 
-        # Tools > Export Project
-        self.aBuildProject = QAction(self.tr("Build Novel Project"), self)
-        self.aBuildProject.setShortcut("F5")
-        self.aBuildProject.triggered.connect(lambda: self.mainGui.showBuildProjectDialog())
-        self.toolsMenu.addAction(self.aBuildProject)
+        # Tools > Build Manuscript
+        self.aBuildManuscript = QAction(self.tr("Build Manuscript"), self)
+        self.aBuildManuscript.setShortcut("F5")
+        self.aBuildManuscript.triggered.connect(self.mainGui.showBuildManuscriptDialog)
+        self.toolsMenu.addAction(self.aBuildManuscript)
 
-        # Tools > Writing Stats
+        # Tools > Writing Statistics
         self.aWritingStats = QAction(self.tr("Writing Statistics"), self)
         self.aWritingStats.setShortcut("F6")
         self.aWritingStats.triggered.connect(lambda: self.mainGui.showWritingStatsDialog())
         self.toolsMenu.addAction(self.aWritingStats)
 
-        # Tools > Settings
+        # Tools > Preferences
         self.aPreferences = QAction(self.tr("Preferences"), self)
         self.aPreferences.setShortcut("Ctrl+,")
         self.aPreferences.setMenuRole(QAction.PreferencesRole)

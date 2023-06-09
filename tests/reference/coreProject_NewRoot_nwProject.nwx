@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0.7" hexVersion="0x020007f0" fileVersion="1.5" timeStamp="2023-05-29 17:13:44">
+<novelWriterXML appVersion="2.0.7" hexVersion="0x020007f0" fileVersion="1.5" fileRevision="1" timeStamp="2023-06-03 18:18:23">
   <project id="d0f3fe10-c6e6-4310-8bfd-181eb4224eed" saveCount="1" autoCount="1" editTime="0">
     <name>New Project</name>
     <title>New Novel</title>
@@ -16,13 +16,6 @@
       <entry key="outline">None</entry>
     </lastHandle>
     <autoReplace />
-    <titleFormat>
-      <entry key="title">%title%</entry>
-      <entry key="chapter">%title%</entry>
-      <entry key="unnumbered">%title%</entry>
-      <entry key="scene">* * *</entry>
-      <entry key="section" />
-    </titleFormat>
     <status>
       <entry key="s000000" count="6" red="100" green="100" blue="100">New</entry>
       <entry key="s000001" count="0" red="200" green="50" blue="0">Note</entry>

@@ -171,3 +171,17 @@ class nwOutline(Enum):
     SYNOP  = 16
 
 # END Enum nwOutline
+
+
+class nwBuildFmt(Enum):
+
+    ODT    = 0
+    FODT   = 1
+    HTML   = 2
+    NWD    = 3
+    STD_MD = 4
+    EXT_MD = 5
+    J_HTML = 6
+    J_NWD  = 7
+
+# END Enum nwBuildFormat

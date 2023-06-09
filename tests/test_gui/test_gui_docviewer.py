@@ -21,7 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 
-from mock import causeException
+from mocked import causeException
 
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QTextCursor
@@ -33,11 +33,11 @@ from novelwriter.core.tohtml import ToHtml
 
 
 @pytest.mark.gui
-def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
+def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     """Test the document viewer.
     """
     # Open project
-    assert nwGUI.openProject(nwLipsum)
+    assert nwGUI.openProject(prjLipsum)
 
     # Rebuild the index
     nwGUI.mainMenu.aRebuildIndex.activate(QAction.Trigger)

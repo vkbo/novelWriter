@@ -78,7 +78,7 @@ class GuiDocEditor(QTextEdit):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiDocEditor ...")
+        logger.debug("Create: GuiDocEditor")
 
         # Class Variables
         self.mainGui    = mainGui
@@ -183,7 +183,7 @@ class GuiDocEditor(QTextEdit):
         self.updateSyntaxColours()
         self.initEditor()
 
-        logger.debug("GuiDocEditor initialisation complete")
+        logger.debug("Ready: GuiDocEditor")
 
         return
 
@@ -276,31 +276,16 @@ class GuiDocEditor(QTextEdit):
         self.setDictionaries()
 
         # Set font
-        theFont = QFont()
-        qDoc = self.document()
-        if CONFIG.textFont is None:
-            # If none is defined, set a default font
-            theFont = QFont()
-            if CONFIG.osWindows and "Arial" in self.mainTheme.guiFontDB.families():
-                theFont.setFamily("Arial")
-                theFont.setPointSize(12)
-            elif CONFIG.osDarwin and "Courier" in self.mainTheme.guiFontDB.families():
-                theFont.setFamily("Courier")
-                theFont.setPointSize(12)
-            else:
-                theFont = qDoc.defaultFont()
-
-            CONFIG.textFont = theFont.family()
-            CONFIG.textSize = theFont.pointSize()
-
-        theFont.setFamily(CONFIG.textFont)
-        theFont.setPointSize(CONFIG.textSize)
-        self.setFont(theFont)
+        textFont = QFont()
+        textFont.setFamily(CONFIG.textFont)
+        textFont.setPointSize(CONFIG.textSize)
+        self.setFont(textFont)
 
         # Set default text margins
         # Due to cursor visibility, a part of the margin must be
         # allocated to the document itself. See issue #1112.
         cW = self.cursorWidth()
+        qDoc = self.document()
         qDoc.setDocumentMargin(cW)
         self._vpMargin = max(CONFIG.getTextMargin() - cW, 0)
         self.setViewportMargins(self._vpMargin, self._vpMargin, self._vpMargin, self._vpMargin)
@@ -2242,7 +2227,7 @@ class GuiDocEditSearch(QFrame):
     def __init__(self, docEditor):
         super().__init__(parent=docEditor)
 
-        logger.debug("Initialising GuiDocEditSearch ...")
+        logger.debug("Create: GuiDocEditSearch")
 
         self.docEditor  = docEditor
         self.mainGui    = docEditor.mainGui
@@ -2386,7 +2371,7 @@ class GuiDocEditSearch(QFrame):
 
         self.updateTheme()
 
-        logger.debug("GuiDocEditSearch initialisation complete")
+        logger.debug("Ready: GuiDocEditSearch")
 
         return
 
@@ -2657,7 +2642,7 @@ class GuiDocEditHeader(QWidget):
     def __init__(self, docEditor):
         super().__init__(parent=docEditor)
 
-        logger.debug("Initialising GuiDocEditHeader ...")
+        logger.debug("Create: GuiDocEditHeader")
 
         self.docEditor  = docEditor
         self.mainGui    = docEditor.mainGui
@@ -2742,7 +2727,7 @@ class GuiDocEditHeader(QWidget):
 
         self.updateTheme()
 
-        logger.debug("GuiDocEditHeader initialisation complete")
+        logger.debug("Ready: GuiDocEditHeader")
 
         return
 
@@ -2892,7 +2877,7 @@ class GuiDocEditFooter(QWidget):
     def __init__(self, docEditor):
         super().__init__(parent=docEditor)
 
-        logger.debug("Initialising GuiDocEditFooter ...")
+        logger.debug("Create: GuiDocEditFooter")
 
         self.docEditor  = docEditor
         self.mainGui    = docEditor.mainGui
@@ -2986,7 +2971,7 @@ class GuiDocEditFooter(QWidget):
         self.updateLineCount()
         self.updateCounts()
 
-        logger.debug("GuiDocEditFooter initialisation complete")
+        logger.debug("Ready: GuiDocEditFooter")
 
         return
 

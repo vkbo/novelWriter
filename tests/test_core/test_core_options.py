@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import json
 import pytest
 
-from mock import causeOSError
+from mocked import causeOSError
 
 from novelwriter.constants import nwFiles
 from novelwriter.core.options import OptionState
@@ -32,8 +32,7 @@ from novelwriter.gui.noveltree import NovelTreeColumn
 
 @pytest.mark.core
 def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
-    """Test loading and saving from the OptionState class.
-    """
+    """Test loading and saving from the OptionState class."""
     theProject = NWProject(mockGUI)
     theOpts = OptionState(theProject)
 
@@ -43,13 +42,12 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
     # Write a test file
     optFile = metaDir / nwFiles.OPTS_FILE
     optFile.write_text(json.dumps({
-        "GuiBuildNovel": {
-            "winWidth": 1000,
-            "winHeight": 700,
-            "addNovel": True,
-            "addNotes": False,
-            "textFont": "Cantarell",
-            "mockItem": None,
+        "GuiProjectSettings": {
+            "winWidth": 570,
+            "winHeight": 375,
+            "replaceColW": 130,
+            "statusColW": 130,
+            "importColW": 130
         },
         "MockGroup": {
             "mockItem": None,
@@ -76,12 +74,12 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
 
     # Check that unwanted items have been removed
     assert theOpts._theState == {
-        "GuiBuildNovel": {
-            "winWidth": 1000,
-            "winHeight": 700,
-            "addNovel": True,
-            "addNotes": False,
-            "textFont": "Cantarell",
+        "GuiProjectSettings": {
+            "winWidth": 570,
+            "winHeight": 375,
+            "replaceColW": 130,
+            "statusColW": 130,
+            "importColW": 130
         },
     }
 
@@ -91,12 +89,12 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
     # Load again to check we get the values back
     assert theOpts.loadSettings()
     assert theOpts._theState == {
-        "GuiBuildNovel": {
-            "winWidth": 1000,
-            "winHeight": 700,
-            "addNovel": True,
-            "addNotes": False,
-            "textFont": "Cantarell",
+        "GuiProjectSettings": {
+            "winWidth": 570,
+            "winHeight": 375,
+            "replaceColW": 130,
+            "statusColW": 130,
+            "importColW": 130
         },
     }
 
@@ -105,8 +103,7 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
 
 @pytest.mark.core
 def testCoreOptions_SetGet(mockGUI):
-    """Test setting and getting values from the OptionState class.
-    """
+    """Test setting and getting values from the OptionState class."""
     theProject = NWProject(mockGUI)
     theOpts = OptionState(theProject)
 
@@ -114,36 +111,33 @@ def testCoreOptions_SetGet(mockGUI):
 
     # Set invalid values
     assert theOpts.setValue("MockGroup", "mockItem", None) is False
-    assert theOpts.setValue("GuiBuildNovel", "mockItem", None) is False
+    assert theOpts.setValue("GuiProjectSettings", "mockItem", None) is False
 
     # Set valid value
-    assert theOpts.setValue("GuiBuildNovel", "winWidth", 100)
+    assert theOpts.setValue("GuiProjectSettings", "winWidth", 100) is True
 
     # Set some values of different types
-    assert theOpts.setValue("GuiBuildNovel", "winWidth", 100)
-    assert theOpts.setValue("GuiBuildNovel", "winHeight", 12.34)
-    assert theOpts.setValue("GuiBuildNovel", "addNovel", True)
-    assert theOpts.setValue("GuiBuildNovel", "textFont", "Cantarell")
-    assert theOpts.setValue("GuiNovelView", "lastCol", nwColHidden)
+    assert theOpts.setValue("GuiProjectDetails", "winWidth", 100) is True
+    assert theOpts.setValue("GuiProjectDetails", "winHeight", 12.34) is True
+    assert theOpts.setValue("GuiProjectDetails", "clearDouble", True) is True
+    assert theOpts.setValue("GuiNovelView", "lastCol", nwColHidden) is True
 
     # Generic get, doesn't check type
-    assert theOpts.getValue("GuiBuildNovel", "winWidth", None) == 100
-    assert theOpts.getValue("GuiBuildNovel", "winHeight", None) == 12.34
-    assert theOpts.getValue("GuiBuildNovel", "addNovel", None) is True
-    assert theOpts.getValue("GuiBuildNovel", "textFont", None) == "Cantarell"
-    assert theOpts.getValue("GuiBuildNovel", "mockItem", None) is None
+    assert theOpts.getValue("GuiProjectDetails", "winWidth", None) == 100
+    assert theOpts.getValue("GuiProjectDetails", "winHeight", None) == 12.34
+    assert theOpts.getValue("GuiProjectDetails", "clearDouble", None) is True
+    assert theOpts.getValue("GuiProjectDetails", "mockItem", None) is None
 
     # Get type-specific
-    assert theOpts.getString("GuiBuildNovel", "winWidth", None) is None
-    assert theOpts.getString("GuiBuildNovel", "mockItem", None) is None
-    assert theOpts.getInt("GuiBuildNovel", "winWidth", None) == 100
-    assert theOpts.getInt("GuiBuildNovel", "textFont", None) is None
-    assert theOpts.getInt("GuiBuildNovel", "mockItem", None) is None
-    assert theOpts.getFloat("GuiBuildNovel", "winWidth", None) == 100.0
-    assert theOpts.getFloat("GuiBuildNovel", "textFont", None) is None
-    assert theOpts.getFloat("GuiBuildNovel", "mockItem", None) is None
-    assert theOpts.getBool("GuiBuildNovel", "addNovel", None) is True
-    assert theOpts.getBool("GuiBuildNovel", "mockItem", None) is None
+    assert theOpts.getString("GuiProjectDetails", "winWidth", None) is None
+    assert theOpts.getString("GuiProjectDetails", "mockItem", None) is None
+    assert theOpts.getInt("GuiProjectDetails", "winWidth", None) == 100
+    assert theOpts.getInt("GuiProjectDetails", "textFont", None) is None
+    assert theOpts.getInt("GuiProjectDetails", "mockItem", None) is None
+    assert theOpts.getFloat("GuiProjectDetails", "winWidth", None) == 100.0
+    assert theOpts.getFloat("GuiProjectDetails", "mockItem", None) is None
+    assert theOpts.getBool("GuiProjectDetails", "clearDouble", None) is True
+    assert theOpts.getBool("GuiProjectDetails", "mockItem", None) is None
     assert theOpts.getEnum("GuiNovelView", "lastCol", NovelTreeColumn, None) == nwColHidden
 
     # Get from non-existent  groups

@@ -1,0 +1,532 @@
+"""
+novelWriter – Build Settings
+============================
+
+File History:
+Created: 2023-02-14 [2.1b1] BuildSettings
+Created: 2023-05-22 [2.1b1] BuildCollection
+
+This file is a part of novelWriter
+Copyright 2018–2023, Veronica Berglyd Olsen
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+"""
+from __future__ import annotations
+
+import json
+import uuid
+import logging
+
+from enum import Enum
+from typing import Iterable
+from pathlib import Path
+
+from PyQt5.QtCore import QT_TRANSLATE_NOOP
+
+from novelwriter import CONFIG
+from novelwriter.enum import nwBuildFmt
+from novelwriter.error import logException
+from novelwriter.common import checkUuid, isHandle, jsonEncode
+from novelwriter.constants import nwFiles, nwHeadFmt
+from novelwriter.core.item import NWItem
+from novelwriter.core.project import NWProject
+
+logger = logging.getLogger(__name__)
+
+# The Settings Template
+# =====================
+# Each entry contains a tuple on the form:
+# (type, default, [min value, max value])
+
+SETTINGS_TEMPLATE = {
+    "filter.includeNovel":    (bool, True),
+    "filter.includeNotes":    (bool, False),
+    "filter.includeInactive": (bool, False),
+    "headings.fmtTitle":      (str, nwHeadFmt.TITLE),
+    "headings.fmtChapter":    (str, nwHeadFmt.TITLE),
+    "headings.fmtUnnumbered": (str, nwHeadFmt.TITLE),
+    "headings.fmtScene":      (str, "* * *"),
+    "headings.fmtSection":    (str, ""),
+    "headings.hideScene":     (bool, False),
+    "headings.hideSection":   (bool, True),
+    "text.includeSynopsis":   (bool, False),
+    "text.includeComments":   (bool, False),
+    "text.includeKeywords":   (bool, False),
+    "text.includeBodyText":   (bool, True),
+    "text.addNoteHeadings":   (bool, True),
+    "format.buildLang":       (str, "en_GB"),
+    "format.textFont":        (str, CONFIG.textFont),
+    "format.textSize":        (int, 12),
+    "format.lineHeight":      (float, 1.15, 0.75, 3.0),
+    "format.justifyText":     (bool, False),
+    "format.stripUnicode":    (bool, False),
+    "format.replaceTabs":     (bool, False),
+    "odt.addColours":         (bool, True),
+    "html.addStyles":         (bool, True),
+}
+
+SETTINGS_LABELS = {
+    "filter":                 QT_TRANSLATE_NOOP("Builds", "Document Types"),
+    "filter.includeNovel":    QT_TRANSLATE_NOOP("Builds", "Novel Documents"),
+    "filter.includeNotes":    QT_TRANSLATE_NOOP("Builds", "Project Notes"),
+    "filter.includeInactive": QT_TRANSLATE_NOOP("Builds", "Inactive Documents"),
+
+    "headings":               QT_TRANSLATE_NOOP("Builds", "Headings"),
+    "headings.fmtTitle":      QT_TRANSLATE_NOOP("Builds", "Title Headings"),
+    "headings.fmtChapter":    QT_TRANSLATE_NOOP("Builds", "Chapter Headings"),
+    "headings.fmtUnnumbered": QT_TRANSLATE_NOOP("Builds", "Unnumbered Headings"),
+    "headings.fmtScene":      QT_TRANSLATE_NOOP("Builds", "Scene Headings"),
+    "headings.fmtSection":    QT_TRANSLATE_NOOP("Builds", "Section Headings"),
+    "headings.hideScene":     QT_TRANSLATE_NOOP("Builds", "Hide Scene Headings"),
+    "headings.hideSection":   QT_TRANSLATE_NOOP("Builds", "Hide Section Headings"),
+
+    "text.grpContent":        QT_TRANSLATE_NOOP("Builds", "Text Content"),
+    "text.includeSynopsis":   QT_TRANSLATE_NOOP("Builds", "Include Synopsis"),
+    "text.includeComments":   QT_TRANSLATE_NOOP("Builds", "Include Comments"),
+    "text.includeKeywords":   QT_TRANSLATE_NOOP("Builds", "Include Keywords"),
+    "text.includeBodyText":   QT_TRANSLATE_NOOP("Builds", "Include Body Text"),
+    "text.grpInsert":         QT_TRANSLATE_NOOP("Builds", "Insert Content"),
+    "text.addNoteHeadings":   QT_TRANSLATE_NOOP("Builds", "Add Titles for Notes"),
+
+    "format.grpFormat":       QT_TRANSLATE_NOOP("Builds", "Text Format"),
+    "format.buildLang":       QT_TRANSLATE_NOOP("Builds", "Document Language"),
+    "format.textFont":        QT_TRANSLATE_NOOP("Builds", "Font Family"),
+    "format.textSize":        QT_TRANSLATE_NOOP("Builds", "Font Size"),
+    "format.lineHeight":      QT_TRANSLATE_NOOP("Builds", "Line Height"),
+    "format.grpOptions":      QT_TRANSLATE_NOOP("Builds", "Text Options"),
+    "format.justifyText":     QT_TRANSLATE_NOOP("Builds", "Justify Text Margins"),
+    "format.stripUnicode":    QT_TRANSLATE_NOOP("Builds", "Replace Unicode Characters"),
+    "format.replaceTabs":     QT_TRANSLATE_NOOP("Builds", "Replace Tabs with Spaces"),
+
+    "odt":                    QT_TRANSLATE_NOOP("Builds", "Open Document"),
+    "odt.addColours":         QT_TRANSLATE_NOOP("Builds", "Add Highlight Colours"),
+
+    "html":                   QT_TRANSLATE_NOOP("Builds", "HTML"),
+    "html.addStyles":         QT_TRANSLATE_NOOP("Builds", "Add CSS Styles"),
+}
+
+
+class FilterMode(Enum):
+    """The decision reason for an item in a filtered project."""
+
+    UNKNOWN  = 0
+    FILTERED = 1
+    INCLUDED = 2
+    EXCLUDED = 3
+    SKIPPED  = 4
+    ROOT     = 5
+
+# END Enum FilterMode
+
+
+class BuildSettings:
+    """Core: Build Settings Class
+
+    This class manages the build settings for a Manuscript build job.
+    The settings can be packed/unpacked to/from a dictionary for JSON.
+    """
+
+    def __init__(self):
+        self._name = ""
+        self._uuid = str(uuid.uuid4())
+        self._path = Path.home()
+        self._build = ""
+        self._format = nwBuildFmt.ODT
+        self._skipRoot = set()
+        self._excluded = set()
+        self._included = set()
+        self._settings = {k: v[1] for k, v in SETTINGS_TEMPLATE.items()}
+        self._changed = False
+        return
+
+    ##
+    #  Properties
+    ##
+
+    @property
+    def name(self) -> str:
+        """The build name."""
+        return self._name
+
+    @property
+    def buildID(self) -> str:
+        """The build ID as an UUID."""
+        return self._uuid
+
+    @property
+    def lastPath(self) -> Path:
+        """The last used build path."""
+        if self._path.is_dir():
+            return self._path
+        return Path.home()
+
+    @property
+    def lastBuildName(self) -> str:
+        """The last used build name."""
+        return self._build
+
+    @property
+    def lastFormat(self) -> nwBuildFmt:
+        """The last used build format."""
+        return self._format
+
+    @property
+    def changed(self) -> bool:
+        """The changed status of the build."""
+        return self._changed
+
+    ##
+    #  Getters
+    ##
+
+    @staticmethod
+    def getLabel(key: str) -> str:
+        """Extract the GUI label for a specific setting."""
+        return SETTINGS_LABELS.get(key, "ERROR")
+
+    def getStr(self, key: str) -> str:
+        """Type safe value access for strings."""
+        value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
+        return str(value)
+
+    def getBool(self, key: str) -> bool:
+        """Type safe value access for bools."""
+        value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
+        return bool(value)
+
+    def getInt(self, key: str) -> int:
+        """Type safe value access for integers."""
+        value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
+        if isinstance(value, int):
+            return value
+        return 0
+
+    def getFloat(self, key: str) -> float:
+        """Type safe value access for floats."""
+        value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
+        if isinstance(value, float):
+            return value
+        return 0.0
+
+    ##
+    #  Setters
+    ##
+
+    def setName(self, name: str):
+        """Set the build setting display name."""
+        self._name = str(name)
+        return
+
+    def setBuildID(self, value: str | uuid.UUID):
+        """Set a UUID build ID."""
+        value = checkUuid(value, "")
+        if not value:
+            self._uuid = str(uuid.uuid4())
+        elif value != self._uuid:
+            self._uuid = value
+        return
+
+    def setLastPath(self, path: Path | str | None):
+        """Set the last used build path."""
+        if isinstance(path, str):
+            path = Path(path)
+        if isinstance(path, Path) and path.is_dir():
+            self._path = path
+        else:
+            self._path = Path.home()
+        self._changed = True
+        return
+
+    def setLastBuildName(self, name: str):
+        """Set the last used build name."""
+        self._build = str(name).strip()
+        self._changed = True
+        return
+
+    def setLastFormat(self, value: nwBuildFmt):
+        """Set the last used build format."""
+        if isinstance(value, nwBuildFmt):
+            self._format = value
+            self._changed = True
+        return
+
+    def setFiltered(self, tHandle: str):
+        """Set an item as filtered."""
+        self._excluded.discard(tHandle)
+        self._included.discard(tHandle)
+        self._changed = True
+        return
+
+    def setIncluded(self, tHandle: str):
+        """Set an item as explicitly included."""
+        self._excluded.discard(tHandle)
+        self._included.add(tHandle)
+        self._changed = True
+        return
+
+    def setExcluded(self, tHandle: str):
+        """Set an item as explicitly excluded."""
+        self._excluded.add(tHandle)
+        self._included.discard(tHandle)
+        self._changed = True
+        return
+
+    def setSkipRoot(self, tHandle: str, state: bool):
+        """Set a specific root folder as skipped or not."""
+        if state is True:
+            self._skipRoot.discard(tHandle)
+            self._changed = True
+        elif state is False:
+            self._skipRoot.add(tHandle)
+            self._changed = True
+        return
+
+    def setValue(self, key: str, value: str | int | bool | float) -> bool:
+        """Set a specific value for a build setting."""
+        if key not in SETTINGS_TEMPLATE:
+            return False
+        definition = SETTINGS_TEMPLATE[key]
+        if not isinstance(value, definition[0]):
+            return False
+        if len(definition) == 4:
+            value = min(max(value, definition[2]), definition[3])
+        self._changed = value != self._settings[key]
+        self._settings[key] = value
+        logger.debug(f"Build Setting '{key}' set to: {value}")
+        return True
+
+    ##
+    #  Methods
+    ##
+
+    def isRootAllowed(self, tHandle: str) -> bool:
+        """Check if a root handle is allowed in the build."""
+        return tHandle not in self._skipRoot
+
+    def buildItemFilter(
+        self, project: NWProject, withRoots: bool = False
+    ) -> dict[str, tuple[bool, FilterMode]]:
+        """Return a dictionary of item handles with filter decissions
+        applied.
+        """
+        result: dict[str, tuple[bool, FilterMode]] = {}
+        if not isinstance(project, NWProject):
+            return result
+
+        incNovel = bool(self.getBool("filter.includeNovel"))
+        incNotes = bool(self.getBool("filter.includeNotes"))
+        incInactive = bool(self.getBool("filter.includeInactive"))
+
+        for item in project.tree:
+            tHandle = item.itemHandle
+            if not tHandle:
+                continue
+            if not isinstance(item, NWItem):
+                result[tHandle] = (False, FilterMode.UNKNOWN)
+                continue
+            if item.isInactiveClass() or (item.itemRoot in self._skipRoot):
+                result[tHandle] = (False, FilterMode.SKIPPED)
+                continue
+            if withRoots and item.isRootType():
+                result[tHandle] = (True, FilterMode.ROOT)
+                continue
+            if not item.isFileType():
+                result[tHandle] = (False, FilterMode.SKIPPED)
+                continue
+            if tHandle in self._included:
+                result[tHandle] = (True, FilterMode.INCLUDED)
+                continue
+            if tHandle in self._excluded:
+                result[tHandle] = (False, FilterMode.EXCLUDED)
+                continue
+
+            isNote = item.isNoteLayout()
+            isNovel = item.isDocumentLayout()
+            isActive = item.isActive
+
+            byActive = isActive or (not isActive and incInactive)
+            byLayout = (isNote and incNotes) or (isNovel and incNovel)
+
+            isAllowed = byActive and byLayout
+
+            result[tHandle] = (isAllowed, FilterMode.FILTERED)
+
+        return result
+
+    def resetChangedState(self):
+        """Reset the changed status of the settings object. This must be
+        called when the changes have been safely saved or passed on.
+        """
+        self._changed = False
+        return
+
+    def pack(self) -> dict:
+        """Pack all content into a JSON compatible dictionary."""
+        logger.debug("Collecting build setting for '%s'", self._name)
+        return {
+            "name": self._name,
+            "uuid": self._uuid,
+            "path": str(self._path),
+            "build": self._build,
+            "format": self._format.name,
+            "settings": self._settings.copy(),
+            "content": {
+                "included": list(self._included),
+                "excluded": list(self._excluded),
+                "skipRoot": list(self._skipRoot),
+            }
+        }
+
+    def unpack(self, data: dict):
+        """Unpack a dictionary and populate the class."""
+        settings = data.get("settings", {})
+        content  = data.get("content", {})
+        included = content.get("included", [])
+        excluded = content.get("excluded", [])
+        skipRoot = content.get("skipRoot", [])
+
+        self.setName(data.get("name", ""))
+        self.setBuildID(data.get("uuid", ""))
+        self.setLastPath(data.get("path", None))
+        self.setLastBuildName(data.get("build", ""))
+
+        buildFmt = str(data.get("build", ""))
+        if buildFmt in nwBuildFmt.__members__:
+            self.setLastFormat(nwBuildFmt[buildFmt])
+
+        if isinstance(included, list):
+            self._included = set([h for h in included if isHandle(h)])
+        if isinstance(excluded, list):
+            self._excluded = set([h for h in excluded if isHandle(h)])
+        if isinstance(skipRoot, list):
+            self._skipRoot = set([h for h in skipRoot if isHandle(h)])
+
+        self._settings = {k: v[1] for k, v in SETTINGS_TEMPLATE.items()}
+        if isinstance(settings, dict):
+            for key, value in settings.items():
+                self.setValue(key, value)
+
+        self._changed = False
+
+        return
+
+# END Class BuildSettings
+
+
+class BuildCollection:
+    """Core: Build Collection Class
+
+    This object holds all the build setting objects defined by the given
+    project. The build settings are saved as a single JSON file in the
+    project folder.
+    """
+
+    def __init__(self, project: NWProject):
+        self._project = project
+        self._builds = {}
+        self._loadCollection()
+        return
+
+    def __len__(self):
+        """Return the number of builds."""
+        return len(self._builds)
+
+    ##
+    #  Methods
+    ##
+
+    def getBuild(self, buildID: str) -> BuildSettings | None:
+        """Get a specific build settings object."""
+        if buildID not in self._builds:
+            return None
+        build = BuildSettings()
+        build.unpack(self._builds[buildID])
+        return build
+
+    def setBuild(self, build: BuildSettings) -> bool:
+        """Set build settings data in the collection."""
+        if not isinstance(build, BuildSettings):
+            return False
+        buildID = build.buildID
+        self._builds[buildID] = build.pack()
+        self._saveCollection()
+        return True
+
+    def removeBuild(self, buildID: str):
+        """Remove the a build from the collection."""
+        self._builds.pop(buildID, None)
+        self._saveCollection()
+        return
+
+    def builds(self) -> Iterable[tuple[str, str]]:
+        """Iterate over all avaiable builds."""
+        for buildID in self._builds:
+            yield buildID, self._builds[buildID].get("name", "")
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _loadCollection(self) -> bool:
+        """Load build collections file."""
+        buildsFile = self._project.storage.getMetaFile(nwFiles.BUILDS_FILE)
+        if not isinstance(buildsFile, Path):
+            return False
+
+        data = {}
+        if buildsFile.exists():
+            logger.debug("Loading builds file")
+            try:
+                with open(buildsFile, mode="r", encoding="utf-8") as inFile:
+                    data = json.load(inFile)
+            except Exception:
+                logger.error("Failed to load builds file")
+                logException()
+                return False
+
+        if not isinstance(data, dict):
+            logger.error("Builds file is not a JSON object")
+            return False
+
+        builds = data.get("novelWriter.builds", None)
+        if not isinstance(builds, dict):
+            logger.error("No novelWriter.builds in the builds file")
+            return False
+
+        for key, entry in builds.items():
+            if isinstance(entry, dict):
+                self._builds[key] = entry
+
+        return True
+
+    def _saveCollection(self) -> bool:
+        """Save build collections file."""
+        buildsFile = self._project.storage.getMetaFile(nwFiles.BUILDS_FILE)
+        if not isinstance(buildsFile, Path):
+            return False
+
+        logger.debug("Saving builds file")
+        try:
+            data = {"novelWriter.builds": self._builds}
+            with open(buildsFile, mode="w+", encoding="utf-8") as outFile:
+                outFile.write(jsonEncode(data, nmax=4))
+        except Exception:
+            logger.error("Failed to save builds file")
+            logException()
+            return False
+
+        return True
+
+# END Class BuildCollection

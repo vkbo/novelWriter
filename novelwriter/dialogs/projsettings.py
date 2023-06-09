@@ -35,12 +35,14 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG
 from novelwriter.enum import nwAlert
 from novelwriter.common import simplified
-from novelwriter.custom import QSwitch, PagedDialog, QConfigLayout
+from novelwriter.extensions.switch import NSwitch
+from novelwriter.extensions.pageddialog import NPagedDialog
+from novelwriter.extensions.configlayout import NConfigLayout
 
 logger = logging.getLogger(__name__)
 
 
-class GuiProjectSettings(PagedDialog):
+class GuiProjectSettings(NPagedDialog):
 
     TAB_MAIN    = 0
     TAB_STATUS  = 1
@@ -50,7 +52,7 @@ class GuiProjectSettings(PagedDialog):
     def __init__(self, mainGui, focusTab=TAB_MAIN):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiProjectSettings ...")
+        logger.debug("Create: GuiProjectSettings")
         self.setObjectName("GuiProjectSettings")
 
         self.mainGui    = mainGui
@@ -91,8 +93,12 @@ class GuiProjectSettings(PagedDialog):
         # Focus Tab
         self._focusTab(focusTab)
 
-        logger.debug("GuiProjectSettings initialisation complete")
+        logger.debug("Ready: GuiProjectSettings")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiProjectSettings")
         return
 
     @property
@@ -194,7 +200,7 @@ class GuiProjectEditMain(QWidget):
         self.theProject = projGui.theProject
 
         # The Form
-        self.mainForm = QConfigLayout()
+        self.mainForm = NConfigLayout()
         self.mainForm.setHelpTextStyle(self.mainGui.mainTheme.helpText)
         self.setLayout(self.mainForm)
 
@@ -253,7 +259,7 @@ class GuiProjectEditMain(QWidget):
         if spellIdx != -1:
             self.spellLang.setCurrentIndex(spellIdx)
 
-        self.doBackup = QSwitch(self)
+        self.doBackup = NSwitch(self)
         self.doBackup.setChecked(not self.theProject.data.doBackup)
         self.mainForm.addRow(
             self.tr("No backup on close"),
@@ -271,9 +277,9 @@ class GuiProjectEditStatus(QWidget):
     COL_LABEL = 0
     COL_USAGE = 1
 
-    KEY_ROLE = Qt.UserRole
-    COL_ROLE = Qt.UserRole + 1
-    NUM_ROLE = Qt.UserRole + 2
+    KEY_ROLE = Qt.ItemDataRole.UserRole
+    COL_ROLE = Qt.ItemDataRole.UserRole + 1
+    NUM_ROLE = Qt.ItemDataRole.UserRole + 2
 
     def __init__(self, projGui, isStatus):
         super().__init__(parent=projGui)

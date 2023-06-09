@@ -1,7 +1,6 @@
 """
 novelWriter – HTML Text Converter
 =================================
-Extends the Tokenizer class to generate HTML output
 
 File History:
 Created: 2019-05-07 [0.0.1]
@@ -22,24 +21,36 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
+import json
 import logging
 
+from time import time
+from pathlib import Path
+
 from novelwriter import CONFIG
+from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwKeyWords, nwLabels, nwHtmlUnicode
+from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import Tokenizer, stripEscape
 
 logger = logging.getLogger(__name__)
 
 
 class ToHtml(Tokenizer):
+    """Core: HTML Document Writer
+
+    Extend the Tokenizer class to writer HTML output. This class is
+    also used by the Document Viewer, and Manuscript Build Preview.
+    """
 
     M_PREVIEW = 0  # Tweak output for the DocViewer
     M_EXPORT  = 1  # Tweak output for saving to HTML or printing
     M_EBOOK   = 2  # Tweak output for converting to epub
 
-    def __init__(self, theProject):
-        super().__init__(theProject)
+    def __init__(self, project: NWProject):
+        super().__init__(project)
 
         self._genMode = self.M_EXPORT
         self._cssStyles = True
@@ -63,7 +74,7 @@ class ToHtml(Tokenizer):
     #  Setters
     ##
 
-    def setPreview(self, doComments, doSynopsis):
+    def setPreview(self, doComments: bool, doSynopsis: bool):
         """If we're using this class to generate markdown preview, we
         need to make a few changes to formatting, which is managed by
         these flags.
@@ -74,14 +85,14 @@ class ToHtml(Tokenizer):
         self._doSynopsis = doSynopsis
         return
 
-    def setStyles(self, cssStyles):
-        """Enable/disable CSS styling. Some elements may still have
+    def setStyles(self, cssStyles: bool):
+        """Enable or disable CSS styling. Some elements may still have
         class tags.
         """
         self._cssStyles = cssStyles
         return
 
-    def setReplaceUnicode(self, doReplace):
+    def setReplaceUnicode(self, doReplace: bool):
         """Set the translation map to either minimal or full unicode for
         html entities replacement.
         """
@@ -92,16 +103,14 @@ class ToHtml(Tokenizer):
         if doReplace:
             # Extend to all relevant Unicode characters
             self._trMap.update(str.maketrans(nwHtmlUnicode.U_TO_H))
-
         return
 
     ##
     #  Class Methods
     ##
 
-    def getFullResultSize(self):
-        """Return the size of the full HTML result.
-        """
+    def getFullResultSize(self) -> int:
+        """Return the size of the full HTML result."""
         return sum([len(x) for x in self._fullHTML])
 
     def doPreProcessing(self):
@@ -109,12 +118,12 @@ class ToHtml(Tokenizer):
         characters into their respective HTML entities.
         """
         super().doPreProcessing()
-        self._theText = self._theText.translate(self._trMap)
+        self._text = self._text.translate(self._trMap)
         return
 
     def doConvert(self):
         """Convert the list of text tokens into a HTML document saved
-        to theResult.
+        to _result.
         """
         if self._genMode == self.M_PREVIEW:
             htmlTags = {  # HTML4 + CSS2 (for Qt)
@@ -149,13 +158,13 @@ class ToHtml(Tokenizer):
             h3 = "h3"
             h4 = "h4"
 
-        self._theResult = ""
+        self._result = ""
 
         thisPar = []
         parStyle = None
         tmpResult = []
 
-        for tType, tLine, tText, tFormat, tStyle in self._theTokens:
+        for tType, tLine, tText, tFormat, tStyle in self._tokens:
 
             # Replace < and > with HTML entities
             if tFormat:
@@ -282,51 +291,64 @@ class ToHtml(Tokenizer):
                 tTemp = f"<p{hStyle}>{self._formatKeywords(tText)}</p>\n"
                 tmpResult.append(tTemp)
 
-        self._theResult = "".join(tmpResult)
+        self._result = "".join(tmpResult)
         tmpResult = []
 
         if self._genMode != self.M_PREVIEW:
-            self._fullHTML.append(self._theResult)
+            self._fullHTML.append(self._result)
 
         return
 
-    def saveHTML5(self, savePath):
-        """Save the data to an .html file.
-        """
-        with open(savePath, mode="w", encoding="utf-8") as outFile:
-            theStyle = self.getStyleSheet()
-            theStyle.append("article {width: 800px; margin: 40px auto;}")
-            bodyText = "".join(self._fullHTML)
-            bodyText = bodyText.replace("\t", "&#09;").rstrip()
-
-            theHtml = (
+    def saveHtml5(self, path: str | Path):
+        """Save the data to an HTML file."""
+        with open(path, mode="w", encoding="utf-8") as fObj:
+            fObj.write((
                 "<!DOCTYPE html>\n"
                 "<html>\n"
                 "<head>\n"
                 "<meta charset='utf-8'>\n"
-                "<title>{projTitle:s}</title>\n"
+                "<title>{title:s}</title>\n"
                 "</head>\n"
                 "<style>\n"
-                "{htmlStyle:s}\n"
+                "{style:s}\n"
                 "</style>\n"
                 "<body>\n"
                 "<article>\n"
-                "{bodyText:s}\n"
+                "{body:s}\n"
                 "</article>\n"
                 "</body>\n"
                 "</html>\n"
             ).format(
-                projTitle=self.theProject.data.name,
-                htmlStyle="\n".join(theStyle),
-                bodyText=bodyText,
-            )
-            outFile.write(theHtml)
-
+                title=self._project.data.name,
+                style="\n".join(self.getStyleSheet()),
+                body=("".join(self._fullHTML)).replace("\t", "&#09;").rstrip(),
+            ))
+        logger.info("Wrote file: %s", path)
         return
 
-    def replaceTabs(self, nSpaces=8, spaceChar="&nbsp;"):
-        """Replace tabs with spaces in the html.
-        """
+    def saveHtmlJson(self, path: str | Path):
+        """Save the data to a JSON file."""
+        timeStamp = time()
+        data = {
+            "meta": {
+                "projectName": self._project.data.name,
+                "novelTitle": self._project.data.title,
+                "novelAuthor": self._project.data.author,
+                "buildTime": int(timeStamp),
+                "buildTimeStr": formatTimeStamp(timeStamp),
+            },
+            "text": {
+                "css": self.getStyleSheet(),
+                "html": [page.rstrip("\n").split("\n") for page in self.fullHTML],
+            }
+        }
+        with open(path, mode="w", encoding="utf-8") as fObj:
+            json.dump(data, fObj, indent=2)
+        logger.info("Wrote file: %s", path)
+        return
+
+    def replaceTabs(self, nSpaces: int = 8, spaceChar: str = "&nbsp;"):
+        """Replace tabs with spaces in the html."""
         htmlText = []
         tabSpace = spaceChar*nSpaces
         for aLine in self._fullHTML:
@@ -335,20 +357,19 @@ class ToHtml(Tokenizer):
         self._fullHTML = htmlText
         return
 
-    def getStyleSheet(self):
-        """Generate a stylesheet appropriate for the current settings.
-        """
-        theStyles = []
+    def getStyleSheet(self) -> list:
+        """Generate a stylesheet for the current settings."""
+        styles = []
         if not self._cssStyles:
-            return theStyles
+            return styles
 
         mScale = self._lineHeight/1.15
         textAlign = "justify" if self._doJustify else "left"
 
-        theStyles.append("body {{font-family: '{0:s}'; font-size: {1:d}pt;}}".format(
+        styles.append("body {{font-family: '{0:s}'; font-size: {1:d}pt;}}".format(
             self._textFont, self._textSize
         ))
-        theStyles.append((
+        styles.append((
             "p {{"
             "text-align: {0}; line-height: {1:d}%; "
             "margin-top: {2:.2f}em; margin-bottom: {3:.2f}em;"
@@ -359,7 +380,7 @@ class ToHtml(Tokenizer):
             mScale * self._marginText[0],
             mScale * self._marginText[1],
         ))
-        theStyles.append((
+        styles.append((
             "h1 {{"
             "color: rgb(66, 113, 174); "
             "page-break-after: avoid; "
@@ -369,7 +390,7 @@ class ToHtml(Tokenizer):
         ).format(
             mScale * self._marginHead1[0], mScale * self._marginHead1[1]
         ))
-        theStyles.append((
+        styles.append((
             "h2 {{"
             "color: rgb(66, 113, 174); "
             "page-break-after: avoid; "
@@ -379,7 +400,7 @@ class ToHtml(Tokenizer):
         ).format(
             mScale * self._marginHead2[0], mScale * self._marginHead2[1]
         ))
-        theStyles.append((
+        styles.append((
             "h3 {{"
             "color: rgb(50, 50, 50); "
             "page-break-after: avoid; "
@@ -389,7 +410,7 @@ class ToHtml(Tokenizer):
         ).format(
             mScale * self._marginHead3[0], mScale * self._marginHead3[1]
         ))
-        theStyles.append((
+        styles.append((
             "h4 {{"
             "color: rgb(50, 50, 50); "
             "page-break-after: avoid; "
@@ -399,7 +420,7 @@ class ToHtml(Tokenizer):
         ).format(
             mScale * self._marginHead4[0], mScale * self._marginHead4[1]
         ))
-        theStyles.append((
+        styles.append((
             ".title {{"
             "font-size: 2.5em; "
             "margin-top: {0:.2f}em; "
@@ -408,7 +429,7 @@ class ToHtml(Tokenizer):
         ).format(
             mScale * self._marginTitle[0], mScale * self._marginTitle[1]
         ))
-        theStyles.append((
+        styles.append((
             ".sep, .skip {{"
             "text-align: center; "
             "margin-top: {0:.2f}em; "
@@ -418,61 +439,58 @@ class ToHtml(Tokenizer):
             mScale, mScale
         ))
 
-        theStyles.append("a {color: rgb(66, 113, 174);}")
-        theStyles.append(".tags {color: rgb(245, 135, 31); font-weight: bold;}")
-        theStyles.append(".break {text-align: left;}")
-        theStyles.append(".synopsis {font-style: italic;}")
-        theStyles.append(".comment {font-style: italic; color: rgb(100, 100, 100);}")
+        styles.append("a {color: rgb(66, 113, 174);}")
+        styles.append(".tags {color: rgb(245, 135, 31); font-weight: bold;}")
+        styles.append(".break {text-align: left;}")
+        styles.append(".synopsis {font-style: italic;}")
+        styles.append(".comment {font-style: italic; color: rgb(100, 100, 100);}")
 
-        return theStyles
+        return styles
 
     ##
     #  Internal Functions
     ##
 
-    def _formatSynopsis(self, tText):
-        """Apply HTML formatting to synopsis.
-        """
+    def _formatSynopsis(self, text: str) -> str:
+        """Apply HTML formatting to synopsis."""
         if self._genMode == self.M_PREVIEW:
             sSynop = self._trSynopsis
-            return f"<p class='comment'><span class='synopsis'>{sSynop}:</span> {tText}</p>\n"
+            return f"<p class='comment'><span class='synopsis'>{sSynop}:</span> {text}</p>\n"
         else:
             sSynop = self._localLookup("Synopsis")
-            return f"<p class='synopsis'><strong>{sSynop}:</strong> {tText}</p>\n"
+            return f"<p class='synopsis'><strong>{sSynop}:</strong> {text}</p>\n"
 
-    def _formatComments(self, tText):
-        """Apply HTML formatting to comments.
-        """
+    def _formatComments(self, text: str) -> str:
+        """Apply HTML formatting to comments."""
         if self._genMode == self.M_PREVIEW:
-            return f"<p class='comment'>{tText}</p>\n"
+            return f"<p class='comment'>{text}</p>\n"
         else:
             sComm = self._localLookup("Comment")
-            return f"<p class='comment'><strong>{sComm}:</strong> {tText}</p>\n"
+            return f"<p class='comment'><strong>{sComm}:</strong> {text}</p>\n"
 
-    def _formatKeywords(self, tText):
-        """Apply HTML formatting to keywords.
-        """
-        isValid, theBits, _ = self.theProject.index.scanThis("@"+tText)
-        if not isValid or not theBits:
+    def _formatKeywords(self, text: str) -> str:
+        """Apply HTML formatting to keywords."""
+        valid, bits, _ = self._project.index.scanThis("@"+text)
+        if not valid or not bits:
             return ""
 
-        retText = ""
-        refTags = []
-        if theBits[0] in nwLabels.KEY_NAME:
-            retText += f"<span class='tags'>{nwLabels.KEY_NAME[theBits[0]]}:</span> "
-            if len(theBits) > 1:
-                if theBits[0] == nwKeyWords.TAG_KEY:
-                    retText += f"<a name='tag_{theBits[1]}'>{theBits[1]}</a>"
+        result = ""
+        tags = []
+        if bits[0] in nwLabels.KEY_NAME:
+            result += f"<span class='tags'>{nwLabels.KEY_NAME[bits[0]]}:</span> "
+            if len(bits) > 1:
+                if bits[0] == nwKeyWords.TAG_KEY:
+                    result += f"<a name='tag_{bits[1]}'>{bits[1]}</a>"
                 else:
                     if self._genMode == self.M_PREVIEW:
-                        for tTag in theBits[1:]:
-                            refTags.append(f"<a href='#{theBits[0][1:]}={tTag}'>{tTag}</a>")
-                        retText += ", ".join(refTags)
+                        for tTag in bits[1:]:
+                            tags.append(f"<a href='#{bits[0][1:]}={tTag}'>{tTag}</a>")
+                        result += ", ".join(tags)
                     else:
-                        for tTag in theBits[1:]:
-                            refTags.append(f"<a href='#tag_{tTag}'>{tTag}</a>")
-                        retText += ", ".join(refTags)
+                        for tTag in bits[1:]:
+                            tags.append(f"<a href='#tag_{tTag}'>{tTag}</a>")
+                        result += ", ".join(tags)
 
-        return retText
+        return result
 
 # END Class ToHtml

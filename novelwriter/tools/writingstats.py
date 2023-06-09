@@ -40,8 +40,8 @@ from novelwriter import CONFIG
 from novelwriter.enum import nwAlert
 from novelwriter.error import formatException
 from novelwriter.common import formatTime, checkInt, checkIntTuple, minmax
-from novelwriter.custom import QSwitch
 from novelwriter.constants import nwConst, nwFiles
+from novelwriter.extensions.switch import NSwitch
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ class GuiWritingStats(QDialog):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiWritingStats ...")
+        logger.debug("Create: GuiWritingStats")
         self.setObjectName("GuiWritingStats")
 
         self.mainGui    = mainGui
@@ -189,37 +189,37 @@ class GuiWritingStats(QDialog):
         self.filterForm = QGridLayout(self)
         self.filterBox.setLayout(self.filterForm)
 
-        self.incNovel = QSwitch(width=2*sPx, height=sPx)
+        self.incNovel = NSwitch(width=2*sPx, height=sPx)
         self.incNovel.setChecked(
             pOptions.getBool("GuiWritingStats", "incNovel", True)
         )
         self.incNovel.clicked.connect(self._updateListBox)
 
-        self.incNotes = QSwitch(width=2*sPx, height=sPx)
+        self.incNotes = NSwitch(width=2*sPx, height=sPx)
         self.incNotes.setChecked(
             pOptions.getBool("GuiWritingStats", "incNotes", True)
         )
         self.incNotes.clicked.connect(self._updateListBox)
 
-        self.hideZeros = QSwitch(width=2*sPx, height=sPx)
+        self.hideZeros = NSwitch(width=2*sPx, height=sPx)
         self.hideZeros.setChecked(
             pOptions.getBool("GuiWritingStats", "hideZeros", True)
         )
         self.hideZeros.clicked.connect(self._updateListBox)
 
-        self.hideNegative = QSwitch(width=2*sPx, height=sPx)
+        self.hideNegative = NSwitch(width=2*sPx, height=sPx)
         self.hideNegative.setChecked(
             pOptions.getBool("GuiWritingStats", "hideNegative", False)
         )
         self.hideNegative.clicked.connect(self._updateListBox)
 
-        self.groupByDay = QSwitch(width=2*sPx, height=sPx)
+        self.groupByDay = NSwitch(width=2*sPx, height=sPx)
         self.groupByDay.setChecked(
             pOptions.getBool("GuiWritingStats", "groupByDay", False)
         )
         self.groupByDay.clicked.connect(self._updateListBox)
 
-        self.showIdleTime = QSwitch(width=2*sPx, height=sPx)
+        self.showIdleTime = NSwitch(width=2*sPx, height=sPx)
         self.showIdleTime.setChecked(
             pOptions.getBool("GuiWritingStats", "showIdleTime", False)
         )
@@ -286,8 +286,12 @@ class GuiWritingStats(QDialog):
 
         self.setLayout(self.outerBox)
 
-        logger.debug("GuiWritingStats initialisation complete")
+        logger.debug("Ready: GuiWritingStats")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiWritingStats")
         return
 
     def populateGUI(self):

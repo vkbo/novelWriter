@@ -1,6 +1,6 @@
 """
 novelWriter – GUI Main Window SideBar
-===========================================
+=====================================
 GUI class for the main window side bar
 
 File History:
@@ -43,7 +43,7 @@ class GuiSideBar(QToolBar):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiSideBar ...")
+        logger.debug("Create: GuiSideBar")
 
         self.mainGui   = mainGui
         self.mainTheme = mainGui.mainTheme
@@ -82,8 +82,8 @@ class GuiSideBar(QToolBar):
 
         self.aBuild = QAction(self.tr("Build"), self)
         self.aBuild.setFont(lblFont)
-        self.aBuild.setToolTip(self.tr("Build Novel Project"))
-        self.aBuild.triggered.connect(lambda: self.mainGui.showBuildProjectDialog())
+        self.aBuild.setToolTip(self.tr("Build Manuscript"))
+        self.aBuild.triggered.connect(lambda: self.mainGui.showBuildManuscriptDialog())
 
         self.aDetails = QAction(self.tr("Details"), self)
         self.aDetails.setFont(lblFont)
@@ -122,7 +122,7 @@ class GuiSideBar(QToolBar):
 
         self.updateTheme()
 
-        logger.debug("GuiSideBar initialisation complete")
+        logger.debug("Ready: GuiSideBar")
 
         return
 

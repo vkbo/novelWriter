@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG
 from novelwriter.common import makeFileNameSafe
-from novelwriter.custom import QSwitch
+from novelwriter.extensions.switch import NSwitch
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ class GuiProjectWizard(QWizard):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiProjectWizard ...")
+        logger.debug("Create: GuiProjectWizard")
         self.setObjectName("GuiProjectWizard")
 
         self.mainGui   = mainGui
@@ -76,8 +76,12 @@ class GuiProjectWizard(QWizard):
 
         self.setOption(QWizard.NoBackButtonOnStartPage, True)
 
-        logger.debug("GuiProjectWizard initialisation complete")
+        logger.debug("Ready: GuiProjectWizard")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiProjectWizard")
         return
 
 # END Class GuiProjectWizard
@@ -323,19 +327,19 @@ class ProjWizardCustomPage(QWizardPage):
         fS = CONFIG.pxInt(4)
 
         # Root Folders
-        self.addPlot = QSwitch()
+        self.addPlot = NSwitch()
         self.addPlot.setChecked(True)
         self.addPlot.clicked.connect(self._syncSwitches)
 
-        self.addChar = QSwitch()
+        self.addChar = NSwitch()
         self.addChar.setChecked(True)
         self.addChar.clicked.connect(self._syncSwitches)
 
-        self.addWorld = QSwitch()
+        self.addWorld = NSwitch()
         self.addWorld.setChecked(False)
         self.addWorld.clicked.connect(self._syncSwitches)
 
-        self.addNotes = QSwitch()
+        self.addNotes = NSwitch()
         self.addNotes.setChecked(False)
 
         # Generate Content

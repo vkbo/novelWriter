@@ -19,7 +19,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import time
 import pytest
 
@@ -152,10 +151,10 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, projPath):
 
 
 @pytest.mark.gui
-def testGuiOutline_Content(qtbot, nwGUI, nwLipsum):
+def testGuiOutline_Content(qtbot, nwGUI, prjLipsum):
     """Test the outline view.
     """
-    assert nwGUI.openProject(nwLipsum)
+    assert nwGUI.openProject(prjLipsum)
 
     nwGUI.rebuildIndex()
     nwGUI._changeView(nwView.OUTLINE)
@@ -192,7 +191,7 @@ def testGuiOutline_Content(qtbot, nwGUI, nwLipsum):
     for dTitle, hLevel in docList:
         aHandle = nwGUI.theProject.newFile(dTitle, newHandle)
         hHash = "#"*hLevel
-        writeFile(os.path.join(nwLipsum, "content", f"{aHandle}.nwd"), f"{hHash} {dTitle}\n\n")
+        writeFile(prjLipsum / "content" / f"{aHandle}.nwd", f"{hHash} {dTitle}\n\n")
         nwGUI.projView.projTree.revealNewTreeItem(aHandle)
 
     nwGUI.rebuildIndex()

@@ -107,7 +107,6 @@ class GuiTheme:
         # ===========
 
         # Init GUI Font
-        self.guiFontDB = QFontDatabase()
         self._setGuiFont()
 
         # Load Themes
@@ -366,13 +365,14 @@ class GuiTheme:
         """Update the GUI's font style from settings.
         """
         theFont = QFont()
-        if CONFIG.guiFont not in self.guiFontDB.families():
-            if CONFIG.osWindows and "Arial" in self.guiFontDB.families():
+        fontDB = QFontDatabase()
+        if CONFIG.guiFont not in fontDB.families():
+            if CONFIG.osWindows and "Arial" in fontDB.families():
                 # On Windows we default to Arial if possible
                 theFont.setFamily("Arial")
                 theFont.setPointSize(10)
             else:
-                theFont = self.guiFontDB.systemFont(QFontDatabase.GeneralFont)
+                theFont = fontDB.systemFont(QFontDatabase.GeneralFont)
             CONFIG.guiFont = theFont.family()
             CONFIG.guiFontSize = theFont.pointSize()
         else:
@@ -443,19 +443,20 @@ class GuiIcons:
     """
 
     ICON_KEYS = {
-        # Project and GUI icons
-        "novelwriter", "cls_archive", "cls_character", "cls_custom", "cls_entity", "cls_none",
-        "cls_novel", "cls_object", "cls_plot", "cls_timeline", "cls_trash", "cls_world",
-        "proj_chapter", "proj_details", "proj_document", "proj_folder", "proj_note", "proj_nwx",
-        "proj_section", "proj_scene", "proj_stats", "proj_title", "search_cancel", "search_case",
-        "search_loop", "search_preserve", "search_project", "search_regex", "search_word",
-        "status_idle", "status_lang", "status_lines", "status_stats", "status_time", "view_build",
-        "view_editor", "view_novel", "view_outline",
+        # Project and GUI Icons
+        "novelwriter", "build_excluded", "build_filtered", "build_included", "cls_archive",
+        "cls_character", "cls_custom", "cls_entity", "cls_none", "cls_novel", "cls_object",
+        "cls_plot", "cls_timeline", "cls_trash", "cls_world", "proj_chapter", "proj_details",
+        "proj_document", "proj_folder", "proj_note", "proj_nwx", "proj_section", "proj_scene",
+        "proj_stats", "proj_title", "search_cancel", "search_case", "search_loop",
+        "search_preserve", "search_project", "search_regex", "search_word", "status_idle",
+        "status_lang", "status_lines", "status_stats", "status_time", "view_build", "view_editor",
+        "view_novel", "view_outline",
 
         # General Button Icons
-        "add", "backward", "bookmark", "checked", "close", "cross", "down", "edit", "forward",
-        "maximise", "menu", "minimise", "noncheckable", "reference", "refresh", "remove",
-        "search_replace", "search", "settings", "unchecked", "up",
+        "add", "backward", "bookmark", "browse", "checked", "close", "cross", "down", "edit",
+        "export", "forward", "maximise", "menu", "minimise", "noncheckable", "reference",
+        "refresh", "remove", "revert", "search_replace", "search", "settings", "unchecked", "up",
 
         # Switches
         "sticky-on", "sticky-off",

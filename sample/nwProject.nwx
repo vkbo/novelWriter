@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0.7" hexVersion="0x020007f0" fileVersion="1.5" timeStamp="2023-05-29 21:29:35">
-  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="1505" autoCount="237" editTime="74902">
+<novelWriterXML appVersion="2.0.7" hexVersion="0x020007f0" fileVersion="1.5" fileRevision="1" timeStamp="2023-06-03 18:18:20">
+  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="1509" autoCount="237" editTime="75095">
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>
@@ -20,13 +20,6 @@
       <entry key="B">E</entry>
       <entry key="C">D</entry>
     </autoReplace>
-    <titleFormat>
-      <entry key="title">%title%</entry>
-      <entry key="chapter">Chapter %chw%: %title%</entry>
-      <entry key="unnumbered">%title%</entry>
-      <entry key="scene">Scene %ch%.%sc%: %title%</entry>
-      <entry key="section" />
-    </titleFormat>
     <status>
       <entry key="sf12341" count="4" red="100" green="100" blue="100">New</entry>
       <entry key="sf24ce6" count="2" red="200" green="50" blue="0">Notes</entry>
@@ -65,7 +58,7 @@
       <name status="sf24ce6" import="ia857f0" active="yes">Chapter One</name>
     </item>
     <item handle="636b6aa9b697b" parent="6a2d6d5f4f401" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="2687" wordCount="479" paraCount="14" cursorPos="1369" />
+      <meta expanded="no" heading="H3" charCount="2687" wordCount="479" paraCount="14" cursorPos="748" />
       <name status="s90e6c9" import="ia857f0" active="yes">Making a Scene</name>
     </item>
     <item handle="bc0cbd2a407f3" parent="6a2d6d5f4f401" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">

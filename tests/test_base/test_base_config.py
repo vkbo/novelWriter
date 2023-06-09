@@ -25,7 +25,7 @@ import pytest
 from shutil import copyfile
 from pathlib import Path
 
-from mock import causeOSError, MockApp
+from mocked import causeOSError, MockApp
 from tools import cmpFiles, writeFile
 
 from novelwriter import CONFIG

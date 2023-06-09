@@ -25,7 +25,7 @@ import shutil
 
 from pathlib import Path
 
-from mock import MockGuiMain
+from mocked import MockGuiMain
 from tools import cleanProject
 
 from PyQt5.QtWidgets import QMessageBox
@@ -49,6 +49,7 @@ def resetConfigVars():
     """
     CONFIG.setLastPath(_TMP_ROOT)
     CONFIG.setBackupPath(_TMP_ROOT)
+    CONFIG.setTextFont(None)
     CONFIG._homePath = _TMP_ROOT
     CONFIG.guiLocale = "en_GB"
     return
@@ -198,27 +199,6 @@ def mockRnd(monkeypatch):
 ##
 #  Temp Project Folders
 ##
-
-@pytest.fixture(scope="function")
-def nwLipsum():
-    """A medium sized novelWriter example project with a lot of Lorem
-    Ipsum text.
-    """
-    srcDir = _TST_ROOT / "lipsum"
-    dstDir = _TMP_ROOT / "lipsum"
-    if dstDir.exists():
-        shutil.rmtree(dstDir)
-
-    shutil.copytree(srcDir, dstDir)
-    cleanProject(dstDir)
-
-    yield str(dstDir)
-
-    if dstDir.exists():
-        shutil.rmtree(dstDir)
-
-    return
-
 
 @pytest.fixture(scope="function")
 def prjLipsum():

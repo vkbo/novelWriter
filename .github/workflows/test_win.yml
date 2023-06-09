@@ -21,11 +21,9 @@ jobs:
           architecture: x64
       - name: Checkout Source
         uses: actions/checkout@v3
-      - name: Install Dependencies
+      - name: Install Dependencies (pip)
         run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
+          pip install -U -r requirements.txt -r requirements-dev.txt
       - name: Run Tests
         run: |
           pytest -v --cov=novelwriter --timeout=60

@@ -1,10 +1,9 @@
 """
 novelWriter – GUI Main Window
 =============================
-The main application window
 
 File History:
-Created: 2018-09-22 [0.0.1]
+Created: 2018-09-22 [0.0.1] GuiMain
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
@@ -56,8 +55,8 @@ from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projdetails import GuiProjectDetails
 from novelwriter.dialogs.projsettings import GuiProjectSettings
-from novelwriter.tools.build import GuiBuildNovel
 from novelwriter.tools.lipsum import GuiLipsum
+from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.projwizard import GuiProjectWizard
 from novelwriter.tools.writingstats import GuiWritingStats
 from novelwriter.core.project import NWProject
@@ -73,11 +72,29 @@ logger = logging.getLogger(__name__)
 
 
 class GuiMain(QMainWindow):
+    """Main GUI Window
+
+    The Main GUI window class. It is the entry point of the
+    application, and holds all runtime objects aside from the main
+    Config instance, which is created before the Main GUI.
+
+    The Main GUI is split up into GUI components, assembled in the init
+    function. Also, the project instance and theme instance are created
+    here. These should be passed around to all other objects who need
+    them and new instances of them should generally not be created.
+
+      * All other GUI classes that depend on any components from the
+        main GUI should be passed a reference to the instance of this
+        class.
+      * All non-GUI classes can be passed a reference to the NWProject
+        instance if the Main GUI is not needed (which it generally
+        shouldn't need).
+    """
 
     def __init__(self):
         super().__init__()
 
-        logger.debug("Initialising GUI ...")
+        logger.debug("Create: GUI")
         self.setObjectName("GuiMain")
         self.threadPool = QThreadPool()
 
@@ -301,7 +318,7 @@ class GuiMain(QMainWindow):
         if CONFIG.isFullScreen:
             self.toggleFullScreenMode()
 
-        logger.debug("GUI initialisation complete")
+        logger.debug("Ready: GUI")
 
         if __hexversion__[-2] == "a" and logger.getEffectiveLevel() > logging.DEBUG:
             self.makeAlert(self.tr(
@@ -992,23 +1009,25 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def showBuildProjectDialog(self):
-        """Open the build project dialog.
+    @pyqtSlot()
+    def showBuildManuscriptDialog(self):
+        """Open the build manuscript dialog.
         """
         if not self.hasProject:
             logger.error("No project open")
             return False
 
-        dlgBuild = getGuiItem("GuiBuildNovel")
+        dlgBuild = getGuiItem("GuiManuscript")
         if dlgBuild is None:
-            dlgBuild = GuiBuildNovel(self)
-        assert isinstance(dlgBuild, GuiBuildNovel)
+            dlgBuild = GuiManuscript(self)
+        assert isinstance(dlgBuild, GuiManuscript)
 
         dlgBuild.setModal(False)
         dlgBuild.show()
         dlgBuild.raise_()
         qApp.processEvents()
-        dlgBuild.viewCachedDoc()
+
+        dlgBuild.loadContent()
 
         return True
 

@@ -30,9 +30,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Install Dependencies (pip)
         run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
+          pip install -U -r requirements.txt -r requirements-dev.txt
       - name: Run Build Commands
         run: python setup.py qtlrelease sample
       - name: Run Tests

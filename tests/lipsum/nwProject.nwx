@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0.7" hexVersion="0x020007f0" fileVersion="1.5" timeStamp="2023-05-29 17:10:19">
-  <project id="5ac0df12-8b8b-476b-9905-21d33685687c" saveCount="40" autoCount="24" editTime="1905">
+<novelWriterXML appVersion="2.0.7" hexVersion="0x020007f0" fileVersion="1.5" fileRevision="1" timeStamp="2023-06-03 18:18:14">
+  <project id="5ac0df12-8b8b-476b-9905-21d33685687c" saveCount="42" autoCount="24" editTime="1913">
     <name>Lorem Ipsum</name>
     <title>Lorem Ipsum</title>
     <author>lipsum.com</author>
@@ -19,13 +19,6 @@
       <entry key="Rep1">Replace Text 1</entry>
       <entry key="Rep2">Replace Text 2</entry>
     </autoReplace>
-    <titleFormat>
-      <entry key="title">%title%</entry>
-      <entry key="chapter">Chapter %ch%: %title%</entry>
-      <entry key="unnumbered">%title%</entry>
-      <entry key="scene">* * *</entry>
-      <entry key="section" />
-    </titleFormat>
     <status>
       <entry key="sbaa94f" count="3" red="100" green="100" blue="100">New</entry>
       <entry key="s27bf7c" count="0" red="200" green="50" blue="0">Note</entry>
@@ -45,7 +38,7 @@
       <name status="sbaa94f" import="i613591">Novel</name>
     </item>
     <item handle="7a992350f3eb6" parent="b3643d0f92e32" root="b3643d0f92e32" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H1" charCount="230" wordCount="40" paraCount="3" cursorPos="148" />
+      <meta expanded="no" heading="H1" charCount="230" wordCount="40" paraCount="3" cursorPos="14" />
       <name status="sedd043" import="i613591" active="yes">Lorem Ipsum</name>
     </item>
     <item handle="8c58a65414c23" parent="b3643d0f92e32" root="b3643d0f92e32" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">

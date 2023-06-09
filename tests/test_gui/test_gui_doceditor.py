@@ -21,7 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 
-from mock import causeOSError
+from mocked import causeOSError
 from tools import C, buildTestProject
 
 from PyQt5.QtCore import Qt
@@ -56,7 +56,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.docEditor._typPadChar == nwUnicode.U_NBSP
 
     # Check that editor handles settings
-    CONFIG.textFont = None
+    CONFIG.textFont = ""
     CONFIG.doJustify = True
     CONFIG.showTabsNSpaces = True
     CONFIG.showLineEndings = True
@@ -1203,12 +1203,12 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
 
 
 @pytest.mark.gui
-def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
+def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     """Test the document editor search functionality.
     """
     monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
 
-    assert nwGUI.openProject(nwLipsum) is True
+    assert nwGUI.openProject(prjLipsum) is True
     assert nwGUI.openDocument("4c4f28287af27") is True
     origText = nwGUI.docEditor.getText()
 

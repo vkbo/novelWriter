@@ -24,7 +24,7 @@ import pytest
 from pathlib import Path
 from configparser import ConfigParser
 
-from mock import causeOSError
+from mocked import causeOSError
 from tools import writeFile
 
 from PyQt5.QtGui import QIcon, QPalette, QPixmap

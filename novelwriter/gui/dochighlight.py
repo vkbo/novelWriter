@@ -49,7 +49,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     def __init__(self, theDoc, mainGui, spEnchant):
         super().__init__(theDoc)
 
-        logger.debug("Initialising GuiDocHighlighter ...")
+        logger.debug("Create: GuiDocHighlighter")
+
         self.theDoc     = theDoc
         self.spEnchant  = spEnchant
         self.mainGui    = mainGui
@@ -76,7 +77,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         self.initHighlighter()
 
-        logger.debug("GuiDocHighlighter initialisation complete")
+        logger.debug("Ready: GuiDocHighlighter")
 
         return
 

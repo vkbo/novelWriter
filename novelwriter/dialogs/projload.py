@@ -53,10 +53,12 @@ class GuiProjectLoad(QDialog):
     C_COUNT = 1
     C_TIME  = 2
 
+    D_PATH = Qt.ItemDataRole.UserRole
+
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiProjectLoad ...")
+        logger.debug("Create: GuiProjectLoad")
         self.setObjectName("GuiProjectLoad")
 
         self.mainGui   = mainGui
@@ -145,8 +147,12 @@ class GuiProjectLoad(QDialog):
         keyDelete.setKey(QKeySequence(Qt.Key_Delete))
         keyDelete.activated.connect(self._doDeleteRecent)
 
-        logger.debug("GuiProjectLoad initialisation complete")
+        logger.debug("Ready: GuiProjectLoad")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiProjectLoad")
         return
 
     ##
@@ -163,7 +169,7 @@ class GuiProjectLoad(QDialog):
 
         selItems = self.listBox.selectedItems()
         if selItems:
-            self.openPath = selItems[0].data(self.C_NAME, Qt.UserRole)
+            self.openPath = selItems[0].data(self.C_NAME, self.D_PATH)
             self.openState = self.OPEN_STATE
             self.accept()
 
@@ -174,7 +180,7 @@ class GuiProjectLoad(QDialog):
         """
         selList = self.listBox.selectedItems()
         if selList:
-            self.selPath.setText(selList[0].data(self.C_NAME, Qt.UserRole))
+            self.selPath.setText(selList[0].data(self.C_NAME, self.D_PATH))
         return
 
     def _doBrowse(self):
@@ -228,7 +234,7 @@ class GuiProjectLoad(QDialog):
             )
             if msgYes:
                 CONFIG.recentProjects.remove(
-                    selList[0].data(self.C_NAME, Qt.UserRole)
+                    selList[0].data(self.C_NAME, self.D_PATH)
                 )
                 self._populateList()
 
@@ -270,12 +276,12 @@ class GuiProjectLoad(QDialog):
             newItem = QTreeWidgetItem([""]*4)
             newItem.setIcon(self.C_NAME, nwxIcon)
             newItem.setText(self.C_NAME, title)
-            newItem.setData(self.C_NAME, Qt.UserRole, path)
+            newItem.setData(self.C_NAME, self.D_PATH, path)
             newItem.setText(self.C_COUNT, formatInt(words))
             newItem.setText(self.C_TIME, datetime.fromtimestamp(time).strftime("%x %X"))
-            newItem.setTextAlignment(self.C_NAME,  Qt.AlignLeft  | Qt.AlignVCenter)
+            newItem.setTextAlignment(self.C_NAME, Qt.AlignLeft | Qt.AlignVCenter)
             newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight | Qt.AlignVCenter)
-            newItem.setTextAlignment(self.C_TIME,  Qt.AlignRight | Qt.AlignVCenter)
+            newItem.setTextAlignment(self.C_TIME, Qt.AlignRight | Qt.AlignVCenter)
             newItem.setFont(self.C_TIME, self.mainTheme.guiFontFixed)
             self.listBox.addTopLevelItem(newItem)
 

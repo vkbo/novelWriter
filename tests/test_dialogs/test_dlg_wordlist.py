@@ -25,7 +25,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QAction
 
 from tools import buildTestProject, writeFile, readFile, getGuiItem
-from mock import causeOSError
+from mocked import causeOSError
 
 from novelwriter.constants import nwFiles
 from novelwriter.dialogs.wordlist import GuiWordList

@@ -26,7 +26,7 @@ from shutil import copyfile
 from pathlib import Path
 from zipfile import ZipFile
 
-from mock import causeOSError
+from mocked import causeOSError
 from tools import C, cmpFiles, writeFile, buildTestProject, XML_IGNORE
 
 from novelwriter import CONFIG

@@ -1,7 +1,6 @@
 """
 novelWriter – Init File
 =======================
-Application initialisation
 
 File History:
 Created: 2018-09-22 [0.0.1]
@@ -241,8 +240,11 @@ def main(sysArgs=None):
         # Connect the exception handler before making the main GUI
         sys.excepthook = exceptionHandler
 
-        # Launch main GUI
+        # Run Config steps that require the QApplication
         CONFIG.initLocalisation(nwApp)
+        CONFIG.setTextFont(CONFIG.textFont, CONFIG.textSize)  # Makes sure these are valid
+
+        # Launch main GUI
         nwGUI = GuiMain()
         nwGUI.postLaunchTasks(cmdOpen)
 

@@ -1,7 +1,6 @@
 """
 novelWriter – Markdown Text Converter
 =====================================
-Extends the Tokenizer class to generate Makrdown output
 
 File History:
 Created: 2021-02-06 [1.2b1]
@@ -22,22 +21,32 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 
+from pathlib import Path
+
 from novelwriter.constants import nwLabels
+from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import Tokenizer
 
 logger = logging.getLogger(__name__)
 
 
 class ToMarkdown(Tokenizer):
+    """Core: Markdown Document Writer
+
+    Extend the Tokenizer class to writer Markdown output. It supports
+    both Standard Markdown and GitHub Flavour Markdown (Extended). The
+    class also supports concatenating novelWriter markup files.
+    """
 
     M_STD = 0  # Standard Markdown
     M_GH  = 1  # GitHub Markdown
 
-    def __init__(self, theProject):
-        super().__init__(theProject)
+    def __init__(self, project: NWProject):
+        super().__init__(project)
 
         self._genMode = self.M_STD
         self._fullMD = []
@@ -49,7 +58,8 @@ class ToMarkdown(Tokenizer):
     ##
 
     @property
-    def fullMD(self):
+    def fullMD(self) -> list:
+        """Return the markdown as a list."""
         return self._fullMD
 
     ##
@@ -68,9 +78,8 @@ class ToMarkdown(Tokenizer):
     #  Class Methods
     ##
 
-    def getFullResultSize(self):
-        """Return the size of the full Markdown result.
-        """
+    def getFullResultSize(self) -> int:
+        """Return the size of the full Markdown result."""
         return sum([len(x) for x in self._fullMD])
 
     def doConvert(self):
@@ -98,12 +107,12 @@ class ToMarkdown(Tokenizer):
                 self.FMT_D_E: "~~",
             }
 
-        self._theResult = ""
+        self._result = ""
 
         thisPar = []
         tmpResult = []
 
-        for tType, _, tText, tFormat, tStyle in self._theTokens:
+        for tType, _, tText, tFormat, tStyle in self._tokens:
 
             # Process Text Type
             if tType == self.T_EMPTY:
@@ -159,56 +168,44 @@ class ToMarkdown(Tokenizer):
             elif tType == self.T_KEYWORD and self._doKeywords:
                 tmpResult.append(self._formatKeywords(tText, tStyle))
 
-        self._theResult = "".join(tmpResult)
+        self._result = "".join(tmpResult)
         tmpResult = []
 
-        self._fullMD.append(self._theResult)
+        self._fullMD.append(self._result)
 
         return
 
-    def saveMarkdown(self, savePath):
-        """Save the data to a plain text file.
-        """
-        with open(savePath, mode="w", encoding="utf-8") as outFile:
-            theText = "".join(self._fullMD)
-            outFile.write(theText)
-
+    def saveMarkdown(self, path: str | Path):
+        """Save the data to a plain text file."""
+        with open(path, mode="w", encoding="utf-8") as outFile:
+            outFile.write("".join(self._fullMD))
+        logger.info("Wrote file: %s", path)
         return
 
-    def replaceTabs(self, nSpaces=8, spaceChar=" "):
-        """Replace tabs with spaces.
-        """
-        fullMD = []
-        eightSpace = spaceChar*nSpaces
-        for aPage in self._fullMD:
-            fullMD.append(aPage.replace("\t", eightSpace))
-
-        self._fullMD = fullMD
+    def replaceTabs(self, nSpaces: int = 8, spaceChar: str = " "):
+        """Replace tabs with spaces."""
+        spaces = spaceChar*nSpaces
+        self._fullMD = [p.replace("\t", spaces) for p in self._fullMD]
         return
 
     ##
     #  Internal Functions
     ##
 
-    def _formatKeywords(self, tText, tStyle):
-        """Apply Markdown formatting to keywords.
-        """
-        isValid, theBits, _ = self.theProject.index.scanThis("@"+tText)
-        if not isValid or not theBits:
+    def _formatKeywords(self, text: str, style: int) -> str:
+        """Apply Markdown formatting to keywords."""
+        valid, bits, _ = self._project.index.scanThis("@"+text)
+        if not valid or not bits:
             return ""
 
-        retText = ""
-        if theBits[0] in nwLabels.KEY_NAME:
-            retText += f"**{nwLabels.KEY_NAME[theBits[0]]}:** "
+        result = ""
+        if bits[0] in nwLabels.KEY_NAME:
+            result += f"**{nwLabels.KEY_NAME[bits[0]]}:** "
+            if len(bits) > 1:
+                result += ", ".join(bits[1:])
 
-            if len(theBits) > 1:
-                retText += ", ".join(theBits[1:])
+        result += "  \n" if style & self.A_Z_BTMMRG else "\n\n"
 
-        if tStyle & self.A_Z_BTMMRG:
-            retText += "  \n"
-        else:
-            retText += "\n\n"
-
-        return retText
+        return result
 
 # END Class ToMarkdown

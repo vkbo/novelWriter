@@ -44,7 +44,7 @@ class GuiMainStatus(QStatusBar):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiMainStatus ...")
+        logger.debug("Create: GuiMainStatus")
 
         self.mainGui   = mainGui
         self.mainTheme = mainGui.mainTheme
@@ -108,7 +108,7 @@ class GuiMainStatus(QStatusBar):
         # Other Settings
         self.setSizeGripEnabled(True)
 
-        logger.debug("GuiMainStatus initialisation complete")
+        logger.debug("Ready: GuiMainStatus")
 
         self.updateTheme()
         self.clearStatus()

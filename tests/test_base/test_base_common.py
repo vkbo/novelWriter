@@ -25,24 +25,23 @@ import hashlib
 
 from pathlib import Path
 
-from mock import causeOSError
 from tools import writeFile
+from mocked import causeOSError
 
 from novelwriter.guimain import GuiMain
 from novelwriter.common import (
-    checkStringNone, checkString, checkInt, checkFloat, checkBool, checkHandle,
-    checkUuid, checkPath, isHandle, isTitleTag, isItemClass, isItemType,
-    isItemLayout, hexToInt, minmax, checkIntTuple, formatInt, formatTimeStamp,
-    formatTime, simplified, yesNo, transferCase, fuzzyTime, numberToRoman,
-    jsonEncode, readTextFile, makeFileNameSafe, sha256sum, getGuiItem,
-    NWConfigParser
+    checkBool, checkFloat, checkHandle, checkInt, checkIntTuple, checkPath,
+    checkString, checkStringNone, checkUuid, formatInt, formatTime,
+    formatTimeStamp, fuzzyTime, getGuiItem, hexToInt, isHandle, isItemClass,
+    isItemLayout, isItemType, isTitleTag, jsonEncode, makeFileNameSafe, minmax,
+    numberToRoman, NWConfigParser, readTextFile, sha256sum, simplified,
+    transferCase, yesNo
 )
 
 
 @pytest.mark.base
 def testBaseCommon_CheckStringNone():
-    """Test the checkStringNone function.
-    """
+    """Test the checkStringNone function."""
     assert checkStringNone("Stuff", "NotNone") == "Stuff"
     assert checkStringNone("None", "NotNone") is None
     assert checkStringNone(None, "NotNone") is None
@@ -151,8 +150,7 @@ def testBaseCommon_CheckBool():
 
 @pytest.mark.base
 def testBaseCommon_CheckHandle():
-    """Test the checkHandle function.
-    """
+    """Test the checkHandle function."""
     assert checkHandle("None", 1, True) is None
     assert checkHandle("None", 1, False) == 1
     assert checkHandle(None, 1, True) is None
@@ -165,8 +163,7 @@ def testBaseCommon_CheckHandle():
 
 @pytest.mark.base
 def testBaseCommon_CheckUuid():
-    """Test the checkUuid function.
-    """
+    """Test the checkUuid function."""
     testUuid = "e2be99af-f9bf-4403-857a-c3d1ac25abea"
     assert checkUuid("", None) is None
     assert checkUuid("e2be99af-f9bf-4403-857a-c3d1ac25abe", None) is None
@@ -179,8 +176,7 @@ def testBaseCommon_CheckUuid():
 
 @pytest.mark.base
 def testBaseCommon_CheckPath():
-    """Test the checkPath function.
-    """
+    """Test the checkPath function."""
     assert checkPath(Path("test"), None) == Path("test")
     assert checkPath("test", None) == Path("test")
     assert checkPath(None, None) is None
@@ -192,8 +188,7 @@ def testBaseCommon_CheckPath():
 
 @pytest.mark.base
 def testBaseCommon_IsHandle():
-    """Test the isHandle function.
-    """
+    """Test the isHandle function."""
     assert isHandle("47666c91c7ccf") is True
     assert isHandle("47666C91C7CCF") is False
     assert isHandle("h7666c91c7ccf") is False
@@ -206,8 +201,7 @@ def testBaseCommon_IsHandle():
 
 @pytest.mark.base
 def testBaseCommon_IsTitleTag():
-    """Test the isItemClass function.
-    """
+    """Test the isItemClass function."""
     assert isTitleTag("T1234") is True
 
     assert isTitleTag("t1234") is False
@@ -224,8 +218,7 @@ def testBaseCommon_IsTitleTag():
 
 @pytest.mark.base
 def testBaseCommon_IsItemClass():
-    """Test the isItemClass function.
-    """
+    """Test the isItemClass function."""
     assert isItemClass("NO_CLASS") is True
     assert isItemClass("NOVEL") is True
     assert isItemClass("PLOT") is True
@@ -248,8 +241,7 @@ def testBaseCommon_IsItemClass():
 
 @pytest.mark.base
 def testBaseCommon_IsItemType():
-    """Test the isItemType function.
-    """
+    """Test the isItemType function."""
     assert isItemType("NO_TYPE") is True
     assert isItemType("ROOT") is True
     assert isItemType("FOLDER") is True
@@ -268,8 +260,7 @@ def testBaseCommon_IsItemType():
 
 @pytest.mark.base
 def testBaseCommon_IsItemLayout():
-    """Test the isItemLayout function.
-    """
+    """Test the isItemLayout function."""
     assert isItemLayout("NO_LAYOUT") is True
     assert isItemLayout("DOCUMENT") is True
     assert isItemLayout("NOTE") is True
@@ -293,8 +284,7 @@ def testBaseCommon_IsItemLayout():
 
 @pytest.mark.base
 def testBaseCommon_HexToInt():
-    """Test the hexToInt function.
-    """
+    """Test the hexToInt function."""
     assert hexToInt(1) == 0
     assert hexToInt("1") == 1
     assert hexToInt("0xff") == 255
@@ -307,8 +297,7 @@ def testBaseCommon_HexToInt():
 
 @pytest.mark.base
 def testBaseCommon_MinMax():
-    """Test the minmax function.
-    """
+    """Test the minmax function."""
     for i in range(-5, 15):
         assert 0 <= minmax(i, 0, 10) <= 10
 
@@ -317,8 +306,7 @@ def testBaseCommon_MinMax():
 
 @pytest.mark.base
 def testBaseCommon_CheckIntTuple():
-    """Test the checkIntTuple function.
-    """
+    """Test the checkIntTuple function."""
     assert checkIntTuple(0, (0, 1, 2), 3) == 0
     assert checkIntTuple(5, (0, 1, 2), 3) == 3
 
@@ -327,8 +315,7 @@ def testBaseCommon_CheckIntTuple():
 
 @pytest.mark.base
 def testBaseCommon_FormatTimeStamp():
-    """Test the formatTimeStamp function.
-    """
+    """Test the formatTimeStamp function."""
     tTime = time.mktime(time.gmtime(0))
     assert formatTimeStamp(tTime, False) == "1970-01-01 00:00:00"
     assert formatTimeStamp(tTime, True) == "1970-01-01 00.00.00"
@@ -338,8 +325,7 @@ def testBaseCommon_FormatTimeStamp():
 
 @pytest.mark.base
 def testBaseCommon_FormatTime():
-    """Test the formatTime function.
-    """
+    """Test the formatTime function."""
     assert formatTime("1") == "ERROR"
     assert formatTime(1.0) == "ERROR"
     assert formatTime(1) == "00:00:01"
@@ -361,8 +347,7 @@ def testBaseCommon_FormatTime():
 
 @pytest.mark.base
 def testBaseCommon_Simplified():
-    """Test the simplified function.
-    """
+    """Test the simplified function."""
     assert simplified("Hello World") == "Hello World"
     assert simplified("  Hello    World   ") == "Hello World"
     assert simplified("\tHello\n\r\tWorld") == "Hello World"
@@ -372,8 +357,7 @@ def testBaseCommon_Simplified():
 
 @pytest.mark.base
 def testBaseCommon_YesNo():
-    """Test the yesNo function.
-    """
+    """Test the yesNo function."""
     # Bool
     assert yesNo(True) == "yes"
     assert yesNo(False) == "no"
@@ -400,8 +384,7 @@ def testBaseCommon_YesNo():
 
 @pytest.mark.base
 def testBaseCommon_FormatInt():
-    """Test the formatInt function.
-    """
+    """Test the formatInt function."""
     # Normal Cases
     assert formatInt(1) == "1"
     assert formatInt(12) == "12"
@@ -424,8 +407,7 @@ def testBaseCommon_FormatInt():
 
 @pytest.mark.base
 def testBaseCommon_TransferCase():
-    """Test the transferCase function.
-    """
+    """Test the transferCase function."""
     assert transferCase(1, "TaRgEt") == "TaRgEt"
     assert transferCase("source", 1) == 1
     assert transferCase("", "TaRgEt") == "TaRgEt"
@@ -439,8 +421,7 @@ def testBaseCommon_TransferCase():
 
 @pytest.mark.base
 def testBaseCommon_FuzzyTime():
-    """Test the fuzzyTime function.
-    """
+    """Test the fuzzyTime function."""
     assert fuzzyTime(-1) == "in the future"
     assert fuzzyTime(0) == "just now"
     assert fuzzyTime(29) == "just now"
@@ -475,8 +456,7 @@ def testBaseCommon_FuzzyTime():
 
 @pytest.mark.core
 def testBaseCommon_RomanNumbers():
-    """Test conversion of integers to Roman numbers.
-    """
+    """Test conversion of integers to Roman numbers."""
     assert numberToRoman(None, False) == "NAN"
     assert numberToRoman(0, False) == "OOR"
     assert numberToRoman(1, False) == "I"
@@ -503,8 +483,7 @@ def testBaseCommon_RomanNumbers():
 
 @pytest.mark.base
 def testBaseCommon_JsonEncode():
-    """Test the jsonEncode function.
-    """
+    """Test the jsonEncode function."""
     # Wrong type
     assert jsonEncode(None) == "[]"
 
@@ -587,8 +566,7 @@ def testBaseCommon_JsonEncode():
 
 @pytest.mark.base
 def testBaseCommon_ReadTextFile(monkeypatch, fncPath, ipsumText):
-    """Test the readTextFile function.
-    """
+    """Test the readTextFile function."""
     testText = "\n\n".join(ipsumText) + "\n"
     testFile = fncPath / "ipsum.txt"
     writeFile(testFile, testText)
@@ -605,20 +583,20 @@ def testBaseCommon_ReadTextFile(monkeypatch, fncPath, ipsumText):
 
 @pytest.mark.base
 def testBaseCommon_MakeFileNameSafe():
-    """Test the makeFileNameSafe function.
-    """
+    """Test the makeFileNameSafe function."""
     assert makeFileNameSafe(" aaaa ") == "aaaa"
     assert makeFileNameSafe("aaaa,bbbb") == "aaaabbbb"
     assert makeFileNameSafe("aaaa\tbbbb") == "aaaabbbb"
     assert makeFileNameSafe("aaaa bbbb") == "aaaa bbbb"
+    assert makeFileNameSafe("æøå") == "æøå"
+    assert makeFileNameSafe("Stuff œﬁ2⁵") == "Stuff œfi25"
 
 # END Test testBaseCommon_MakeFileNameSafe
 
 
 @pytest.mark.base
 def testBaseCommon_Sha256Sum(monkeypatch, fncPath, ipsumText):
-    """Test the sha256sum function.
-    """
+    """Test the sha256sum function."""
     longText = 50*(" ".join(ipsumText) + " ")
     shortText = "This is a short file"
     noneText = ""
@@ -657,8 +635,7 @@ def testBaseCommon_Sha256Sum(monkeypatch, fncPath, ipsumText):
 
 @pytest.mark.base
 def testBaseCommon_GetGuiItem(nwGUI):
-    """Check the GUI item function.
-    """
+    """Check the GUI item function."""
     assert getGuiItem("gibberish") is None
     assert isinstance(getGuiItem("GuiMain"), GuiMain)
 
@@ -667,8 +644,7 @@ def testBaseCommon_GetGuiItem(nwGUI):
 
 @pytest.mark.base
 def testBaseCommon_NWConfigParser(fncPath):
-    """Test the NWConfigParser subclass.
-    """
+    """Test the NWConfigParser subclass."""
     tstConf = fncPath / "test.cfg"
     writeFile(tstConf, (
         "[main]\n"

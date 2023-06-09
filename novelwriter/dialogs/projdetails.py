@@ -35,19 +35,20 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG
 from novelwriter.common import formatTime, numberToRoman
-from novelwriter.custom import PagedDialog, QSwitch
 from novelwriter.constants import nwUnicode
 from novelwriter.gui.components import NovelSelector
+from novelwriter.extensions.switch import NSwitch
+from novelwriter.extensions.pageddialog import NPagedDialog
 
 logger = logging.getLogger(__name__)
 
 
-class GuiProjectDetails(PagedDialog):
+class GuiProjectDetails(NPagedDialog):
 
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiProjectDetails ...")
+        logger.debug("Create: GuiProjectDetails")
         self.setObjectName("GuiProjectDetails")
 
         self.mainGui    = mainGui
@@ -77,8 +78,12 @@ class GuiProjectDetails(PagedDialog):
         self.buttonBox.rejected.connect(self._doClose)
         self.addControls(self.buttonBox)
 
-        logger.debug("GuiProjectDetails initialisation complete")
+        logger.debug("Ready: GuiProjectDetails")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiProjectDetails")
         return
 
     def updateValues(self):
@@ -383,7 +388,7 @@ class GuiProjectDetailsContents(QWidget):
         self.dblLabel = QLabel(self.tr("Clear double pages"))
         self.dblLabel.setToolTip(dblHelp)
 
-        self.dblValue = QSwitch(self, 2*iPx, iPx)
+        self.dblValue = NSwitch(self, 2*iPx, iPx)
         self.dblValue.setChecked(clearDouble)
         self.dblValue.setToolTip(dblHelp)
         self.dblValue.clicked.connect(self._populateTree)

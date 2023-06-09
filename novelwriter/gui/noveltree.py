@@ -196,7 +196,7 @@ class GuiNovelToolBar(QWidget):
     def __init__(self, novelView):
         super().__init__(parent=novelView)
 
-        logger.debug("Initialising GuiNovelToolBar ...")
+        logger.debug("Create: GuiNovelToolBar")
 
         self.novelView  = novelView
         self.mainGui    = novelView.mainGui
@@ -264,7 +264,7 @@ class GuiNovelToolBar(QWidget):
 
         self.updateTheme()
 
-        logger.debug("GuiNovelToolBar initialisation complete")
+        logger.debug("Ready: GuiNovelToolBar")
 
         return
 
@@ -383,19 +383,21 @@ class GuiNovelToolBar(QWidget):
 
 class GuiNovelTree(QTreeWidget):
 
+    C_DATA  = 0
     C_TITLE = 0
     C_WORDS = 1
     C_EXTRA = 2
     C_MORE  = 3
 
-    D_HANDLE = Qt.UserRole
-    D_TITLE  = Qt.UserRole + 1
-    D_KEY    = Qt.UserRole + 2
+    D_HANDLE = Qt.ItemDataRole.UserRole
+    D_TITLE  = Qt.ItemDataRole.UserRole + 1
+    D_KEY    = Qt.ItemDataRole.UserRole + 2
+    D_EXTRA  = Qt.ItemDataRole.UserRole + 3
 
     def __init__(self, novelView):
         super().__init__(parent=novelView)
 
-        logger.debug("Initialising GuiNovelTree ...")
+        logger.debug("Create: GuiNovelTree")
 
         self.novelView  = novelView
         self.mainGui    = novelView.mainGui
@@ -460,7 +462,7 @@ class GuiNovelTree(QTreeWidget):
         self.initSettings()
         self.updateTheme()
 
-        logger.debug("GuiNovelTree initialisation complete")
+        logger.debug("Ready: GuiNovelTree")
 
         return
 
@@ -527,7 +529,7 @@ class GuiNovelTree(QTreeWidget):
         selItem = self.selectedItems()
         titleKey = None
         if selItem:
-            titleKey = selItem[0].data(self.C_TITLE, self.D_KEY)
+            titleKey = selItem[0].data(self.C_DATA, self.D_KEY)
 
         self._populateTree(rootHandle)
         self.theProject.data.setLastHandle(rootHandle, "novelTree")
@@ -564,8 +566,8 @@ class GuiNovelTree(QTreeWidget):
         selList = self.selectedItems()
         trItem = selList[0] if selList else self.currentItem()
         if isinstance(trItem, QTreeWidgetItem):
-            tHandle = trItem.data(self.C_TITLE, self.D_HANDLE)
-            sTitle = trItem.data(self.C_TITLE, self.D_TITLE)
+            tHandle = trItem.data(self.C_DATA, self.D_HANDLE)
+            sTitle = trItem.data(self.C_DATA, self.D_TITLE)
             return tHandle, sTitle
         return None, None
 
@@ -596,7 +598,7 @@ class GuiNovelTree(QTreeWidget):
         for i in range(self.topLevelItemCount()):
             tItem = self.topLevelItem(i)
             if tItem is not None:
-                if tItem.data(self.C_TITLE, self.D_HANDLE) == tHandle:
+                if tItem.data(self.C_DATA, self.D_HANDLE) == tHandle:
                     tItem.setBackground(self.C_TITLE, self.palette().alternateBase())
                     tItem.setBackground(self.C_WORDS, self.palette().alternateBase())
                     tItem.setBackground(self.C_EXTRA, self.palette().alternateBase())
@@ -659,7 +661,7 @@ class GuiNovelTree(QTreeWidget):
             for i in range(self.topLevelItemCount()):
                 trItem = self.topLevelItem(i)
                 if isinstance(trItem, QTreeWidgetItem):
-                    lastText = trItem.data(self.C_EXTRA, Qt.UserRole)
+                    lastText = trItem.data(self.C_DATA, self.D_EXTRA)
                     trItem.setText(self.C_EXTRA, fMetric.elidedText(lastText, Qt.ElideRight, eliW))
         return
 
@@ -672,8 +674,8 @@ class GuiNovelTree(QTreeWidget):
         """The user clicked on an item in the tree.
         """
         if mIndex.column() == self.C_MORE:
-            tHandle = mIndex.siblingAtColumn(self.C_TITLE).data(self.D_HANDLE)
-            sTitle = mIndex.siblingAtColumn(self.C_TITLE).data(self.D_TITLE)
+            tHandle = mIndex.siblingAtColumn(self.C_DATA).data(self.D_HANDLE)
+            sTitle = mIndex.siblingAtColumn(self.C_DATA).data(self.D_TITLE)
             tipPos = self.mapToGlobal(self.visualRect(mIndex).topRight())
             self._popMetaBox(tipPos, tHandle, sTitle)
         return
@@ -715,9 +717,9 @@ class GuiNovelTree(QTreeWidget):
                 continue
 
             newItem = QTreeWidgetItem()
-            newItem.setData(self.C_TITLE, self.D_HANDLE, tHandle)
-            newItem.setData(self.C_TITLE, self.D_TITLE, sTitle)
-            newItem.setData(self.C_TITLE, self.D_KEY, tKey)
+            newItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
+            newItem.setData(self.C_DATA, self.D_TITLE, sTitle)
+            newItem.setData(self.C_DATA, self.D_KEY, tKey)
             newItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
 
             self._updateTreeItemValues(newItem, novIdx, tHandle, sTitle)
@@ -748,7 +750,7 @@ class GuiNovelTree(QTreeWidget):
         lastText, toolTip = self._getLastColumnText(tHandle, sTitle)
         elideText = self.fontMetrics().elidedText(lastText, Qt.ElideRight, mW)
         trItem.setText(self.C_EXTRA, elideText)
-        trItem.setData(self.C_EXTRA, Qt.UserRole, lastText)
+        trItem.setData(self.C_DATA, self.D_EXTRA, lastText)
         trItem.setToolTip(self.C_EXTRA, toolTip)
 
         return

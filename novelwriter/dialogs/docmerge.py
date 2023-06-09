@@ -33,17 +33,20 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG
-from novelwriter.custom import QHelpLabel, QSwitch
+from novelwriter.extensions.switch import NSwitch
+from novelwriter.extensions.configlayout import NHelpLabel
 
 logger = logging.getLogger(__name__)
 
 
 class GuiDocMerge(QDialog):
 
+    D_HANDLE = Qt.ItemDataRole.UserRole
+
     def __init__(self, mainGui, sHandle, itemList):
         super().__init__(parent=mainGui)
 
-        logger.debug("Initialising GuiDocMerge ...")
+        logger.debug("Create: GuiDocMerge")
         self.setObjectName("GuiDocMerge")
 
         self.mainGui    = mainGui
@@ -55,7 +58,7 @@ class GuiDocMerge(QDialog):
         self.setWindowTitle(self.tr("Merge Documents"))
 
         self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Documents to Merge")))
-        self.helpLabel = QHelpLabel(self.tr(
+        self.helpLabel = NHelpLabel(self.tr(
             "Drag and drop items to change the order, or uncheck to exclude."
         ), self.mainTheme.helpText)
 
@@ -74,7 +77,7 @@ class GuiDocMerge(QDialog):
 
         # Merge Options
         self.trashLabel = QLabel(self.tr("Move merged items to Trash"))
-        self.trashSwitch = QSwitch(width=2*iPx, height=iPx)
+        self.trashSwitch = NSwitch(width=2*iPx, height=iPx)
 
         self.optBox = QGridLayout()
         self.optBox.addWidget(self.trashLabel,  0, 0)
@@ -106,8 +109,12 @@ class GuiDocMerge(QDialog):
         # Load Content
         self._loadContent(sHandle, itemList)
 
-        logger.debug("GuiDocMerge initialisation complete")
+        logger.debug("Ready: GuiDocMerge")
 
+        return
+
+    def __del__(self):
+        logger.debug("Delete: GuiDocMerge")
         return
 
     def getData(self):
@@ -117,7 +124,7 @@ class GuiDocMerge(QDialog):
         for i in range(self.listBox.count()):
             item = self.listBox.item(i)
             if item is not None and item.checkState() == Qt.Checked:
-                finalItems.append(item.data(Qt.UserRole))
+                finalItems.append(item.data(self.D_HANDLE))
 
         self._data["moveToTrash"] = self.trashSwitch.isChecked()
         self._data["finalItems"] = finalItems
@@ -161,7 +168,7 @@ class GuiDocMerge(QDialog):
             newItem = QListWidgetItem()
             newItem.setIcon(itemIcon)
             newItem.setText(nwItem.itemName)
-            newItem.setData(Qt.UserRole, tHandle)
+            newItem.setData(self.D_HANDLE, tHandle)
             newItem.setCheckState(Qt.Checked)
 
             self.listBox.addItem(newItem)

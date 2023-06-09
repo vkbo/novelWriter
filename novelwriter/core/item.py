@@ -294,7 +294,7 @@ class NWItem:
         """
         return self._class in (nwItemClass.NOVEL, nwItemClass.ARCHIVE, nwItemClass.TRASH)
 
-    def isInactive(self):
+    def isInactiveClass(self):
         """Returns true if the item is in an inactive class.
         """
         return self._class in (nwItemClass.NO_CLASS, nwItemClass.ARCHIVE, nwItemClass.TRASH)

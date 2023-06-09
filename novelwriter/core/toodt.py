@@ -1,10 +1,12 @@
 """
 novelWriter – ODT Text Converter
 ================================
-Extends the Tokenizer class to generate ODT and FODT files
 
 File History:
-Created: 2021-01-26 [1.2b1]
+Created: 2021-01-26 [1.2b1] ToOdt
+Created: 2021-01-27 [1.2b1] ODTParagraphStyle
+Created: 2021-01-27 [1.2b1] ODTTextStyle
+Created: 2021-08-14 [1.5b1] XMLParagraph
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
@@ -22,8 +24,10 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
+from pathlib import Path
 import xml.etree.ElementTree as ET
 
 from hashlib import sha256
@@ -33,6 +37,7 @@ from datetime import datetime
 from novelwriter import __version__
 from novelwriter.common import xmlIndent
 from novelwriter.constants import nwKeyWords, nwLabels
+from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import Tokenizer, stripEscape
 
 logger = logging.getLogger(__name__)
@@ -52,9 +57,8 @@ for ns, uri in XML_NS.items():
     ET.register_namespace(ns, uri)
 
 
-def _mkTag(ns, tag):
-    """Assemble namespace and tag name.
-    """
+def _mkTag(ns: str, tag: str) -> str:
+    """Assemble namespace and tag name."""
     uri = XML_NS.get(ns, "")
     if uri:
         return f"{{{uri}}}{tag}"
@@ -86,9 +90,16 @@ M_DEL = ~X_DEL
 
 
 class ToOdt(Tokenizer):
+    """Core: Open Document Writer
 
-    def __init__(self, theProject, isFlat):
-        super().__init__(theProject)
+    Extend the Tokenizer class to writer Open Document files. The output
+    should conform to the 1.3 Extended standard.
+
+    Test with: https://odfvalidator.org/
+    """
+
+    def __init__(self, project: NWProject, isFlat: bool):
+        super().__init__(project)
 
         self._isFlat = isFlat  # Flat: .fodt, otherwise .odt
 
@@ -175,36 +186,26 @@ class ToOdt(Tokenizer):
     #  Setters
     ##
 
-    def setLanguage(self, theLang):
-        """Set language for the document.
-        """
-        if theLang is None:
-            return False
+    def setLanguage(self, language: str):
+        """Set language for the document."""
+        if language:
+            langBits = language.split("_")
+            self._dLanguage = langBits[0]
+            if len(langBits) > 1:
+                self._dCountry = langBits[1]
+        return
 
-        langBits = theLang.split("_")
-        self._dLanguage = langBits[0]
-        if len(langBits) > 1:
-            self._dCountry = langBits[1]
-
-        return True
-
-    def setColourHeaders(self, doColour):
-        """Enable/disable coloured headings and comments.
-        """
-        self._colourHead = doColour
+    def setColourHeaders(self, state: bool):
+        """Enable/disable coloured headings and comments."""
+        self._colourHead = state
         return
 
     ##
     #  Class Methods
     ##
 
-    def getErrors(self):
-        """Return the list of errors."""
-        return self._errData
-
     def initDocument(self):
-        """Initialises a new open document XML tree.
-        """
+        """Initialises a new open document XML tree."""
         # Initialise Variables
         # ====================
 
@@ -260,8 +261,8 @@ class ToOdt(Tokenizer):
         # ===============
 
         if self._headerText == "":
-            theTitle = self.theProject.data.title or self.theProject.data.name
-            theAuth = self.theProject.data.author
+            theTitle = self._project.data.title or self._project.data.name
+            theAuth = self._project.data.author
             self._headerText = f"{theTitle} / {theAuth} /"
 
         # Create Roots
@@ -337,26 +338,26 @@ class ToOdt(Tokenizer):
         xMeta.text = f"novelWriter/{__version__}"
 
         xMeta = ET.SubElement(self._xMeta, _mkTag("meta", "initial-creator"))
-        xMeta.text = self.theProject.data.author
+        xMeta.text = self._project.data.author
 
         xMeta = ET.SubElement(self._xMeta, _mkTag("meta", "editing-cycles"))
-        xMeta.text = str(self.theProject.data.saveCount)
+        xMeta.text = str(self._project.data.saveCount)
 
         # Format is: PnYnMnDTnHnMnS
         # https://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#duration
-        eT = self.theProject.data.editTime
+        eT = self._project.data.editTime
         xMeta = ET.SubElement(self._xMeta, _mkTag("meta", "editing-duration"))
         xMeta.text = f"P{eT//86400:d}DT{eT%86400//3600:d}H{eT%3600//60:d}M{eT%60:d}S"
 
         # Dublin Core Meta Data
         xMeta = ET.SubElement(self._xMeta, _mkTag("dc", "title"))
-        xMeta.text = self.theProject.data.title or self.theProject.data.name
+        xMeta.text = self._project.data.title or self._project.data.name
 
         xMeta = ET.SubElement(self._xMeta, _mkTag("dc", "date"))
         xMeta.text = timeStamp
 
         xMeta = ET.SubElement(self._xMeta, _mkTag("dc", "creator"))
-        xMeta.text = self.theProject.data.author
+        xMeta.text = self._project.data.author
 
         self._pageStyles()
         self._defaultStyles()
@@ -366,9 +367,8 @@ class ToOdt(Tokenizer):
         return
 
     def doConvert(self):
-        """Convert the list of text tokens into XML elements.
-        """
-        self._theResult = ""  # Not used, but cleared just in case
+        """Convert the list of text tokens into XML elements."""
+        self._result = ""  # Not used, but cleared just in case
 
         odtTags = {
             self.FMT_B_B: "_B",  # Bold open format
@@ -382,7 +382,7 @@ class ToOdt(Tokenizer):
         thisPar = []
         thisFmt = []
         parStyle = None
-        for tType, _, tText, tFormat, tStyle in self._theTokens:
+        for tType, _, tText, tFormat, tStyle in self._tokens:
 
             # Styles
             oStyle = ODTParagraphStyle()
@@ -418,12 +418,12 @@ class ToOdt(Tokenizer):
                     if self._doJustify:
                         parStyle.setTextAlign("left")
 
-                if len(thisPar) > 0:
+                if len(thisPar) > 0 and parStyle is not None:
                     tTemp = "\n".join(thisPar)
                     fTemp = " ".join(thisFmt)
                     tTxt = tTemp.rstrip()
                     tFmt = fTemp[:len(tTxt)]
-                    self._addTextPar("Text_20_body", parStyle, tTxt, theFmt=tFmt)
+                    self._addTextPar("Text_20_body", parStyle, tTxt, tFmt=tFmt)
 
                 thisPar = []
                 thisFmt = []
@@ -474,41 +474,38 @@ class ToOdt(Tokenizer):
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 tTemp, fTemp = self._formatSynopsis(tText)
-                self._addTextPar("Text_20_Meta", oStyle, tTemp, theFmt=fTemp)
+                self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=fTemp)
 
             elif tType == self.T_COMMENT and self._doComments:
                 tTemp, fTemp = self._formatComments(tText)
-                self._addTextPar("Text_20_Meta", oStyle, tTemp, theFmt=fTemp)
+                self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=fTemp)
 
             elif tType == self.T_KEYWORD and self._doKeywords:
                 tTemp, fTemp = self._formatKeywords(tText)
-                self._addTextPar("Text_20_Meta", oStyle, tTemp, theFmt=fTemp)
+                self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=fTemp)
 
         return
 
     def closeDocument(self):
-        """Return the serialised XML document
-        """
+        """Return the serialised XML document"""
         # Build the auto-generated styles
         for styleName, styleObj in self._autoPara.values():
             styleObj.packXML(self._xAuto, styleName)
         for styleName, styleObj in self._autoText.values():
             styleObj.packXML(self._xAuto, styleName)
-
         return
 
-    def saveFlatXML(self, savePath):
-        """Save the data to an .fodt file.
-        """
-        with open(savePath, mode="wb") as outFile:
+    def saveFlatXML(self, path: str | Path):
+        """Save the data to an .fodt file."""
+        with open(path, mode="wb") as fObj:
             xml = ET.ElementTree(self._dFlat)
             xmlIndent(xml)
-            xml.write(outFile, encoding="utf-8", xml_declaration=True)
+            xml.write(fObj, encoding="utf-8", xml_declaration=True)
+        logger.info("Wrote file: %s", path)
         return
 
-    def saveOpenDocText(self, savePath):
-        """Save the data to an .odt file.
-        """
+    def saveOpenDocText(self, path: str | Path):
+        """Save the data to an .odt file."""
         mMani = _mkTag("manifest", "manifest")
         mVers = _mkTag("manifest", "version")
         mPath = _mkTag("manifest", "full-path")
@@ -531,7 +528,7 @@ class ToOdt(Tokenizer):
                 xml = ET.ElementTree(xObj)
                 xml.write(fObj, encoding="utf-8", xml_declaration=True)
 
-        with ZipFile(savePath, mode="w") as outZip:
+        with ZipFile(path, mode="w") as outZip:
             outZip.writestr("mimetype", X_MIME)
             putInZip("META-INF/manifest.xml", xMani, outZip)
             putInZip("settings.xml", xSett, outZip)
@@ -539,55 +536,56 @@ class ToOdt(Tokenizer):
             putInZip("meta.xml", self._dMeta, outZip)
             putInZip("styles.xml", self._dStyl, outZip)
 
+        logger.info("Wrote file: %s", path)
+
         return
 
     ##
     #  Internal Functions
     ##
 
-    def _formatSynopsis(self, tText):
-        """Apply formatting to synopsis lines.
-        """
+    def _formatSynopsis(self, text: str) -> tuple[str, str]:
+        """Apply formatting to synopsis lines."""
         sSynop = self._localLookup("Synopsis")
-        rTxt = "**{0}:** {1}".format(sSynop, tText)
-        rFmt = "_B{0} b_ {1}".format(" "*len(sSynop), " "*len(tText))
+        rTxt = "**{0}:** {1}".format(sSynop, text)
+        rFmt = "_B{0} b_ {1}".format(" "*len(sSynop), " "*len(text))
         return rTxt, rFmt
 
-    def _formatComments(self, tText):
-        """Apply formatting to comments.
-        """
+    def _formatComments(self, text: str) -> tuple[str, str]:
+        """Apply formatting to comments."""
         sComm = self._localLookup("Comment")
-        rTxt = "**{0}:** {1}".format(sComm, tText)
-        rFmt = "_B{0} b_ {1}".format(" "*len(sComm), " "*len(tText))
+        rTxt = "**{0}:** {1}".format(sComm, text)
+        rFmt = "_B{0} b_ {1}".format(" "*len(sComm), " "*len(text))
         return rTxt, rFmt
 
-    def _formatKeywords(self, tText):
-        """Apply formatting to keywords.
-        """
-        isValid, theBits, _ = self.theProject.index.scanThis("@"+tText)
-        if not isValid or not theBits:
-            return ""
+    def _formatKeywords(self, text: str) -> tuple[str, str]:
+        """Apply formatting to keywords."""
+        valid, bits, _ = self._project.index.scanThis("@"+text)
+        if not valid or not bits:
+            return "", ""
 
         rTxt = ""
         rFmt = ""
-        if theBits[0] in nwLabels.KEY_NAME:
-            tText = nwLabels.KEY_NAME[theBits[0]]
-            rTxt += "**{0}:** ".format(tText)
-            rFmt += "_B{0} b_ ".format(" "*len(tText))
-            if len(theBits) > 1:
-                if theBits[0] == nwKeyWords.TAG_KEY:
-                    rTxt += theBits[1]
-                    rFmt += " "*len(theBits[1])
+        if bits[0] in nwLabels.KEY_NAME:
+            text = nwLabels.KEY_NAME[bits[0]]
+            rTxt += "**{0}:** ".format(text)
+            rFmt += "_B{0} b_ ".format(" "*len(text))
+            if len(bits) > 1:
+                if bits[0] == nwKeyWords.TAG_KEY:
+                    rTxt += bits[1]
+                    rFmt += " "*len(bits[1])
                 else:
-                    tTags = ", ".join(theBits[1:])
+                    tTags = ", ".join(bits[1:])
                     rTxt += tTags
                     rFmt += (" "*len(tTags))
 
         return rTxt, rFmt
 
-    def _addTextPar(self, styleName, oStyle, theText, theFmt="", isHead=False, oLevel=None):
-        """Add a text paragraph to the text XML element.
-        """
+    def _addTextPar(
+        self, styleName: str, oStyle: ODTParagraphStyle, tText: str, tFmt: str = "",
+        isHead: bool = False, oLevel: str | None = None
+    ):
+        """Add a text paragraph to the text XML element."""
         tAttr = {}
         tAttr[_mkTag("text", "style-name")] = self._paraStyle(styleName, oStyle)
         if oLevel is not None:
@@ -600,16 +598,16 @@ class ToOdt(Tokenizer):
         # xmlIndent will add a line break if the first subelement is a span.
         xElem.text = ""
 
-        if not theText:
+        if not tText:
             return
 
         ##
         #  Process Formatting
         ##
 
-        if len(theText) != len(theFmt):
+        if len(tText) != len(tFmt):
             # Generate an empty format if there isn't any or it doesn't match
-            theFmt = " "*len(theText)
+            tFmt = " "*len(tText)
 
         # The formatting loop
         tTemp = ""
@@ -619,23 +617,23 @@ class ToOdt(Tokenizer):
 
         parProc = XMLParagraph(xElem)
 
-        for i, c in enumerate(theText):
+        for i, c in enumerate(tText):
 
-            if theFmt[i] == " ":
+            if tFmt[i] == " ":
                 tTemp += c
-            elif theFmt[i] == "_":
+            elif tFmt[i] == "_":
                 continue
-            elif theFmt[i] == "B":
+            elif tFmt[i] == "B":
                 xFmt |= X_BLD
-            elif theFmt[i] == "b":
+            elif tFmt[i] == "b":
                 xFmt &= M_BLD
-            elif theFmt[i] == "I":
+            elif tFmt[i] == "I":
                 xFmt |= X_ITA
-            elif theFmt[i] == "i":
+            elif tFmt[i] == "i":
                 xFmt &= M_ITA
-            elif theFmt[i] == "S":
+            elif tFmt[i] == "S":
                 xFmt |= X_DEL
-            elif theFmt[i] == "s":
+            elif tFmt[i] == "s":
                 xFmt &= M_DEL
             else:
                 pErr += 1
@@ -666,9 +664,8 @@ class ToOdt(Tokenizer):
 
         return
 
-    def _paraStyle(self, parName, oStyle):
-        """Return a name for a style object.
-        """
+    def _paraStyle(self, parName: str, oStyle: ODTParagraphStyle) -> str:
+        """Return a name for a style object."""
         refStyle = self._mainPara.get(parName, None)
         if refStyle is None:
             logger.error("Unknown paragraph style '%s'", parName)
@@ -687,29 +684,27 @@ class ToOdt(Tokenizer):
 
         return newName
 
-    def _textStyle(self, tFmt):
-        """Return a text style for a given style code.
-        """
-        if tFmt in self._autoText:
-            return self._autoText[tFmt][0]
+    def _textStyle(self, hFmt: int) -> str:
+        """Return a text style for a given style code."""
+        if hFmt in self._autoText:
+            return self._autoText[hFmt][0]
 
         newName = "T%d" % (len(self._autoText) + 1)
         newStyle = ODTTextStyle()
-        if tFmt & X_BLD:
+        if hFmt & X_BLD:
             newStyle.setFontWeight("bold")
-        if tFmt & X_ITA:
+        if hFmt & X_ITA:
             newStyle.setFontStyle("italic")
-        if tFmt & X_DEL:
+        if hFmt & X_DEL:
             newStyle.setStrikeStyle("solid")
             newStyle.setStrikeType("single")
 
-        self._autoText[tFmt] = (newName, newStyle)
+        self._autoText[hFmt] = (newName, newStyle)
 
         return newName
 
-    def _emToCm(self, emVal):
-        """Converts an em value to centimetres.
-        """
+    def _emToCm(self, emVal: float) -> str:
+        """Converts an em value to centimetres."""
         return f"{emVal*2.54/72*self._textSize:.3f}cm"
 
     ##
@@ -717,110 +712,107 @@ class ToOdt(Tokenizer):
     ##
 
     def _pageStyles(self):
-        """Set the default page style.
-        """
-        theAttr = {}
-        theAttr[_mkTag("style", "name")] = "PM1"
+        """Set the default page style."""
+        tAttr = {}
+        tAttr[_mkTag("style", "name")] = "PM1"
         if self._isFlat:
-            xPage = ET.SubElement(self._xAuto, _mkTag("style", "page-layout"), attrib=theAttr)
+            xPage = ET.SubElement(self._xAuto, _mkTag("style", "page-layout"), attrib=tAttr)
         else:
-            xPage = ET.SubElement(self._xAut2, _mkTag("style", "page-layout"), attrib=theAttr)
+            xPage = ET.SubElement(self._xAut2, _mkTag("style", "page-layout"), attrib=tAttr)
 
-        theAttr = {}
-        theAttr[_mkTag("fo", "margin-top")]    = self._mDocTop
-        theAttr[_mkTag("fo", "margin-bottom")] = self._mDocBtm
-        theAttr[_mkTag("fo", "margin-left")]   = self._mDocLeft
-        theAttr[_mkTag("fo", "margin-right")]  = self._mDocRight
-        ET.SubElement(xPage, _mkTag("style", "page-layout-properties"), attrib=theAttr)
+        tAttr = {}
+        tAttr[_mkTag("fo", "margin-top")]    = self._mDocTop
+        tAttr[_mkTag("fo", "margin-bottom")] = self._mDocBtm
+        tAttr[_mkTag("fo", "margin-left")]   = self._mDocLeft
+        tAttr[_mkTag("fo", "margin-right")]  = self._mDocRight
+        ET.SubElement(xPage, _mkTag("style", "page-layout-properties"), attrib=tAttr)
 
         xHead = ET.SubElement(xPage, _mkTag("style", "header-style"))
 
-        theAttr = {}
-        theAttr[_mkTag("fo", "min-height")]    = "0.600cm"
-        theAttr[_mkTag("fo", "margin-left")]   = "0.000cm"
-        theAttr[_mkTag("fo", "margin-right")]  = "0.000cm"
-        theAttr[_mkTag("fo", "margin-bottom")] = "0.500cm"
-        ET.SubElement(xHead, _mkTag("style", "header-footer-properties"), attrib=theAttr)
+        tAttr = {}
+        tAttr[_mkTag("fo", "min-height")]    = "0.600cm"
+        tAttr[_mkTag("fo", "margin-left")]   = "0.000cm"
+        tAttr[_mkTag("fo", "margin-right")]  = "0.000cm"
+        tAttr[_mkTag("fo", "margin-bottom")] = "0.500cm"
+        ET.SubElement(xHead, _mkTag("style", "header-footer-properties"), attrib=tAttr)
 
         return
 
     def _defaultStyles(self):
-        """Set the default styles.
-        """
+        """Set the default styles."""
         # Add Paragraph Family Style
         # ==========================
 
-        theAttr = {}
-        theAttr[_mkTag("style", "family")] = "paragraph"
-        xStyl = ET.SubElement(self._xStyl, _mkTag("style", "default-style"), attrib=theAttr)
+        tAttr = {}
+        tAttr[_mkTag("style", "family")] = "paragraph"
+        xStyl = ET.SubElement(self._xStyl, _mkTag("style", "default-style"), attrib=tAttr)
 
-        theAttr = {}
-        theAttr[_mkTag("style", "line-break")]        = "strict"
-        theAttr[_mkTag("style", "tab-stop-distance")] = "1.251cm"
-        theAttr[_mkTag("style", "writing-mode")]      = "page"
-        ET.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=theAttr)
+        tAttr = {}
+        tAttr[_mkTag("style", "line-break")]        = "strict"
+        tAttr[_mkTag("style", "tab-stop-distance")] = "1.251cm"
+        tAttr[_mkTag("style", "writing-mode")]      = "page"
+        ET.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=tAttr)
 
-        theAttr = {}
-        theAttr[_mkTag("style", "font-name")]   = self._textFont
-        theAttr[_mkTag("fo",    "font-family")] = self._fontFamily
-        theAttr[_mkTag("fo",    "font-size")]   = self._fSizeText
-        theAttr[_mkTag("fo",    "language")]    = self._dLanguage
-        theAttr[_mkTag("fo",    "country")]     = self._dCountry
-        ET.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
+        tAttr = {}
+        tAttr[_mkTag("style", "font-name")]   = self._textFont
+        tAttr[_mkTag("fo",    "font-family")] = self._fontFamily
+        tAttr[_mkTag("fo",    "font-size")]   = self._fSizeText
+        tAttr[_mkTag("fo",    "language")]    = self._dLanguage
+        tAttr[_mkTag("fo",    "country")]     = self._dCountry
+        ET.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=tAttr)
 
         # Add Standard Paragraph Style
         # ============================
 
-        theAttr = {}
-        theAttr[_mkTag("style", "name")]   = "Standard"
-        theAttr[_mkTag("style", "family")] = "paragraph"
-        theAttr[_mkTag("style", "class")]  = "text"
-        xStyl = ET.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
+        tAttr = {}
+        tAttr[_mkTag("style", "name")]   = "Standard"
+        tAttr[_mkTag("style", "family")] = "paragraph"
+        tAttr[_mkTag("style", "class")]  = "text"
+        xStyl = ET.SubElement(self._xStyl, _mkTag("style", "style"), attrib=tAttr)
 
-        theAttr = {}
-        theAttr[_mkTag("style", "font-name")]   = self._textFont
-        theAttr[_mkTag("fo",    "font-family")] = self._fontFamily
-        theAttr[_mkTag("fo",    "font-size")]   = self._fSizeText
-        ET.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
+        tAttr = {}
+        tAttr[_mkTag("style", "font-name")]   = self._textFont
+        tAttr[_mkTag("fo",    "font-family")] = self._fontFamily
+        tAttr[_mkTag("fo",    "font-size")]   = self._fSizeText
+        ET.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=tAttr)
 
         # Add Default Heading Style
         # =========================
 
-        theAttr = {}
-        theAttr[_mkTag("style", "name")]              = "Heading"
-        theAttr[_mkTag("style", "family")]            = "paragraph"
-        theAttr[_mkTag("style", "parent-style-name")] = "Standard"
-        theAttr[_mkTag("style", "next-style-name")]   = "Text_20_body"
-        theAttr[_mkTag("style", "class")]             = "text"
-        xStyl = ET.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
+        tAttr = {}
+        tAttr[_mkTag("style", "name")]              = "Heading"
+        tAttr[_mkTag("style", "family")]            = "paragraph"
+        tAttr[_mkTag("style", "parent-style-name")] = "Standard"
+        tAttr[_mkTag("style", "next-style-name")]   = "Text_20_body"
+        tAttr[_mkTag("style", "class")]             = "text"
+        xStyl = ET.SubElement(self._xStyl, _mkTag("style", "style"), attrib=tAttr)
 
-        theAttr = {}
-        theAttr[_mkTag("fo", "margin-top")]     = self._mTopHead
-        theAttr[_mkTag("fo", "margin-bottom")]  = self._mBotHead
-        theAttr[_mkTag("fo", "keep-with-next")] = "always"
-        ET.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=theAttr)
+        tAttr = {}
+        tAttr[_mkTag("fo", "margin-top")]     = self._mTopHead
+        tAttr[_mkTag("fo", "margin-bottom")]  = self._mBotHead
+        tAttr[_mkTag("fo", "keep-with-next")] = "always"
+        ET.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=tAttr)
 
-        theAttr = {}
-        theAttr[_mkTag("style", "font-name")]   = self._textFont
-        theAttr[_mkTag("fo",    "font-family")] = self._fontFamily
-        theAttr[_mkTag("fo",    "font-size")]   = self._fSizeHead
-        ET.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=theAttr)
+        tAttr = {}
+        tAttr[_mkTag("style", "font-name")]   = self._textFont
+        tAttr[_mkTag("fo",    "font-family")] = self._fontFamily
+        tAttr[_mkTag("fo",    "font-size")]   = self._fSizeHead
+        ET.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=tAttr)
 
         # Add Header and Footer Styles
         # ============================
-        theAttr = {}
-        theAttr[_mkTag("style", "name")]              = "Header_20_and_20_Footer"
-        theAttr[_mkTag("style", "display-name")]      = "Header and Footer"
-        theAttr[_mkTag("style", "family")]            = "paragraph"
-        theAttr[_mkTag("style", "parent-style-name")] = "Standard"
-        theAttr[_mkTag("style", "class")]             = "extra"
-        ET.SubElement(self._xStyl, _mkTag("style", "style"), attrib=theAttr)
+        tAttr = {}
+        tAttr[_mkTag("style", "name")]              = "Header_20_and_20_Footer"
+        tAttr[_mkTag("style", "display-name")]      = "Header and Footer"
+        tAttr[_mkTag("style", "family")]            = "paragraph"
+        tAttr[_mkTag("style", "parent-style-name")] = "Standard"
+        tAttr[_mkTag("style", "class")]             = "extra"
+        ET.SubElement(self._xStyl, _mkTag("style", "style"), attrib=tAttr)
 
         return
 
     def _useableStyles(self):
-        """Set the usable styles.
-        """
+        """Set the usable styles."""
         # Add Text Body Style
         # ===================
 
@@ -974,12 +966,11 @@ class ToOdt(Tokenizer):
         return
 
     def _writeHeader(self):
-        """Write the header elements.
-        """
-        theAttr = {}
-        theAttr[_mkTag("style", "name")]             = "Standard"
-        theAttr[_mkTag("style", "page-layout-name")] = "PM1"
-        xPage = ET.SubElement(self._xMast, _mkTag("style", "master-page"), attrib=theAttr)
+        """Write the header elements."""
+        tAttr = {}
+        tAttr[_mkTag("style", "name")]             = "Standard"
+        tAttr[_mkTag("style", "page-layout-name")] = "PM1"
+        xPage = ET.SubElement(self._xMast, _mkTag("style", "master-page"), attrib=tAttr)
 
         # Standard Page Header
         xHead = ET.SubElement(xPage, _mkTag("style", "header"))
@@ -1059,28 +1050,28 @@ class ODTParagraphStyle:
     #  Attribute Setters
     ##
 
-    def setDisplayName(self, theValue):
-        self._mAttr["display-name"][1] = str(theValue)
+    def setDisplayName(self, value: str | None):
+        self._mAttr["display-name"][1] = value
         return
 
-    def setParentStyleName(self, theValue):
-        self._mAttr["parent-style-name"][1] = str(theValue)
+    def setParentStyleName(self, value: str | None):
+        self._mAttr["parent-style-name"][1] = value
         return
 
-    def setNextStyleName(self, theValue):
-        self._mAttr["next-style-name"][1] = str(theValue)
+    def setNextStyleName(self, value: str | None):
+        self._mAttr["next-style-name"][1] = value
         return
 
-    def setOutlineLevel(self, theValue):
-        if theValue in self.VALID_LEVEL:
-            self._mAttr["default-outline-level"][1] = str(theValue)
+    def setOutlineLevel(self, value: str | None):
+        if value in self.VALID_LEVEL:
+            self._mAttr["default-outline-level"][1] = value
         else:
             self._mAttr["default-outline-level"][1] = None
         return
 
-    def setClass(self, theValue):
-        if theValue in self.VALID_CLASS:
-            self._mAttr["class"][1] = str(theValue)
+    def setClass(self, value: str | None):
+        if value in self.VALID_CLASS:
+            self._mAttr["class"][1] = value
         else:
             self._mAttr["class"][1] = None
         return
@@ -1089,43 +1080,43 @@ class ODTParagraphStyle:
     #  Paragraph Setters
     ##
 
-    def setMarginTop(self, theValue):
-        self._pAttr["margin-top"][1] = str(theValue)
+    def setMarginTop(self, value: str | None):
+        self._pAttr["margin-top"][1] = value
         return
 
-    def setMarginBottom(self, theValue):
-        self._pAttr["margin-bottom"][1] = str(theValue)
+    def setMarginBottom(self, value: str | None):
+        self._pAttr["margin-bottom"][1] = value
         return
 
-    def setMarginLeft(self, theValue):
-        self._pAttr["margin-left"][1] = str(theValue)
+    def setMarginLeft(self, value: str | None):
+        self._pAttr["margin-left"][1] = value
         return
 
-    def setMarginRight(self, theValue):
-        self._pAttr["margin-right"][1] = str(theValue)
+    def setMarginRight(self, value: str | None):
+        self._pAttr["margin-right"][1] = value
         return
 
-    def setLineHeight(self, theValue):
-        self._pAttr["line-height"][1] = str(theValue)
+    def setLineHeight(self, value: str | None):
+        self._pAttr["line-height"][1] = value
         return
 
-    def setTextAlign(self, theValue):
-        if theValue in self.VALID_ALIGN:
-            self._pAttr["text-align"][1] = str(theValue)
+    def setTextAlign(self, value: str | None):
+        if value in self.VALID_ALIGN:
+            self._pAttr["text-align"][1] = value
         else:
             self._pAttr["text-align"][1] = None
         return
 
-    def setBreakBefore(self, theValue):
-        if theValue in self.VALID_BREAK:
-            self._pAttr["break-before"][1] = str(theValue)
+    def setBreakBefore(self, value: str | None):
+        if value in self.VALID_BREAK:
+            self._pAttr["break-before"][1] = value
         else:
             self._pAttr["break-before"][1] = None
         return
 
-    def setBreakAfter(self, theValue):
-        if theValue in self.VALID_BREAK:
-            self._pAttr["break-after"][1] = str(theValue)
+    def setBreakAfter(self, value: str | None):
+        if value in self.VALID_BREAK:
+            self._pAttr["break-after"][1] = value
         else:
             self._pAttr["break-after"][1] = None
         return
@@ -1134,38 +1125,38 @@ class ODTParagraphStyle:
     #  Text Setters
     ##
 
-    def setFontName(self, theValue):
-        self._tAttr["font-name"][1] = str(theValue)
+    def setFontName(self, value: str | None):
+        self._tAttr["font-name"][1] = value
         return
 
-    def setFontFamily(self, theValue):
-        self._tAttr["font-family"][1] = str(theValue)
+    def setFontFamily(self, value: str | None):
+        self._tAttr["font-family"][1] = value
         return
 
-    def setFontSize(self, theValue):
-        self._tAttr["font-size"][1] = str(theValue)
+    def setFontSize(self, value: str | None):
+        self._tAttr["font-size"][1] = value
         return
 
-    def setFontWeight(self, theValue):
-        if theValue in self.VALID_WEIGHT:
-            self._tAttr["font-weight"][1] = str(theValue)
+    def setFontWeight(self, value: str | None):
+        if value in self.VALID_WEIGHT:
+            self._tAttr["font-weight"][1] = value
         else:
             self._tAttr["font-weight"][1] = None
         return
 
-    def setColor(self, theValue):
-        self._tAttr["color"][1] = str(theValue)
+    def setColor(self, value: str | None):
+        self._tAttr["color"][1] = value
         return
 
-    def setOpacity(self, theValue):
-        self._tAttr["opacity"][1] = str(theValue)
+    def setOpacity(self, value: str | None):
+        self._tAttr["opacity"][1] = value
         return
 
     ##
     #  Methods
     ##
 
-    def checkNew(self, refStyle):
+    def checkNew(self, refStyle: ODTParagraphStyle):
         """Check if there are new settings in refStyle that differ from
         those in the current object.
         """
@@ -1180,9 +1171,8 @@ class ODTParagraphStyle:
                 return True
         return False
 
-    def getID(self):
-        """Generate a unique ID from the settings.
-        """
+    def getID(self) -> str:
+        """Generate a unique ID from the settings."""
         theString = (
             f"Paragraph:Main:{str(self._mAttr)}:"
             f"Paragraph:Para:{str(self._pAttr)}:"
@@ -1190,11 +1180,10 @@ class ODTParagraphStyle:
         )
         return sha256(theString.encode()).hexdigest()
 
-    def packXML(self, xParent, xName):
-        """Pack the content into an xml element.
-        """
+    def packXML(self, xParent: ET.Element, name: str):
+        """Pack the content into an xml element."""
         theAttr = {}
-        theAttr[_mkTag("style", "name")] = xName
+        theAttr[_mkTag("style", "name")] = name
         theAttr[_mkTag("style", "family")] = "paragraph"
         for aName, (aNm, aVal) in self._mAttr.items():
             if aVal is not None:
@@ -1249,30 +1238,30 @@ class ODTTextStyle:
     #  Setters
     ##
 
-    def setFontWeight(self, theValue):
-        if theValue in self.VALID_WEIGHT:
-            self._tAttr["font-weight"][1] = str(theValue)
+    def setFontWeight(self, value: str | None):
+        if value in self.VALID_WEIGHT:
+            self._tAttr["font-weight"][1] = value
         else:
             self._tAttr["font-weight"][1] = None
         return
 
-    def setFontStyle(self, theValue):
-        if theValue in self.VALID_STYLE:
-            self._tAttr["font-style"][1] = str(theValue)
+    def setFontStyle(self, value: str | None):
+        if value in self.VALID_STYLE:
+            self._tAttr["font-style"][1] = value
         else:
             self._tAttr["font-style"][1] = None
         return
 
-    def setStrikeStyle(self, theValue):
-        if theValue in self.VALID_LSTYLE:
-            self._tAttr["text-line-through-style"][1] = str(theValue)
+    def setStrikeStyle(self, value: str | None):
+        if value in self.VALID_LSTYLE:
+            self._tAttr["text-line-through-style"][1] = value
         else:
             self._tAttr["text-line-through-style"][1] = None
         return
 
-    def setStrikeType(self, theValue):
-        if theValue in self.VALID_LTYPE:
-            self._tAttr["text-line-through-type"][1] = str(theValue)
+    def setStrikeType(self, value: str | None):
+        if value in self.VALID_LTYPE:
+            self._tAttr["text-line-through-type"][1] = value
         else:
             self._tAttr["text-line-through-type"][1] = None
         return
@@ -1281,11 +1270,10 @@ class ODTTextStyle:
     #  Methods
     ##
 
-    def packXML(self, xParent, xName):
-        """Pack the content into an xml element.
-        """
+    def packXML(self, xParent: ET.Element, name: str):
+        """Pack the content into an xml element."""
         theAttr = {}
-        theAttr[_mkTag("style", "name")] = xName
+        theAttr[_mkTag("style", "name")] = name
         theAttr[_mkTag("style", "family")] = "text"
         xEntry = ET.SubElement(xParent, _mkTag("style", "style"), attrib=theAttr)
 
@@ -1332,7 +1320,7 @@ class XMLParagraph:
     object and attribute is written to,
     """
 
-    def __init__(self, xRoot):
+    def __init__(self, xRoot: ET.Element):
 
         self._xRoot = xRoot
         self._xTail = ET.Element("")
@@ -1345,17 +1333,17 @@ class XMLParagraph:
 
         return
 
-    def appendText(self, text):
+    def appendText(self, tText: str):
         """Append text to the XML element. We do this one character at
         the time in order to be able to process line breaks, tabs and
-        spaces separately. Multiple spaces above one are concatenated
-        into a single tag, and must therefore be processed separately.
+        spaces separately. Multiple spaces are concatenated into a
+        single tag, and must therefore be processed separately.
         """
-        text = stripEscape(text)
+        tText = stripEscape(tText)
         nSpaces = 0
-        self._rawTxt += text
+        self._rawTxt += tText
 
-        for c in text:
+        for c in tText:
             if c == " ":
                 nSpaces += 1
                 continue
@@ -1392,43 +1380,42 @@ class XMLParagraph:
 
             else:
                 if self._nState == X_ROOT_TEXT:
-                    self._xRoot.text += c
+                    self._xRoot.text = (self._xRoot.text or "") + c
                     self._chrPos += 1
                 elif self._nState == X_ROOT_TAIL:
-                    self._xTail.tail += c
+                    self._xTail.tail = (self._xTail.tail or "") + c
                     self._chrPos += 1
                 elif self._nState == X_SPAN_TEXT:
-                    self._xTail.text += c
+                    self._xTail.text = (self._xTail.text or "") + c
                     self._chrPos += 1
                 elif self._nState == X_SPAN_SING:
-                    self._xSing.tail += c
+                    self._xSing.tail = (self._xSing.tail or "") + c
                     self._chrPos += 1
 
         if nSpaces > 0:
+            # Handle trailing spaces
             self._processSpaces(nSpaces)
 
         return
 
-    def appendSpan(self, tText, tFmt):
+    def appendSpan(self, tText: str, tFmt: str):
         """Append a text span to the XML element. The span is always
         closed since we do not allow nested spans (like Libre Office).
         Therefore we return to the root element level when we're done
         processing the text of the span.
         """
-        self._xTail = ET.SubElement(self._xRoot, TAG_SPAN, attrib={
-            TAG_STNM: tFmt
-        })
+        self._xTail = ET.SubElement(self._xRoot, TAG_SPAN, attrib={TAG_STNM: tFmt})
         self._xTail.text = ""  # Defaults to None
         self._xTail.tail = ""  # Defaults to None
         self._nState = X_SPAN_TEXT
         self.appendText(tText)
         self._nState = X_ROOT_TAIL
-
         return
 
     def checkError(self):
         """Check that the number of characters written matches the
-        number of characters received."""
+        number of characters received.
+        """
         errMsg = ""
         nMissed = len(self._rawTxt) - self._chrPos
         if nMissed != 0:
@@ -1439,7 +1426,7 @@ class XMLParagraph:
     #  Internal Functions
     ##
 
-    def _processSpaces(self, nSpaces):
+    def _processSpaces(self, nSpaces: int):
         """Add spaces to paragraph. The first space is always written
         as-is (unless it's the first character of the paragraph). The
         second space uses the dedicated tag for spaces, and from the
@@ -1451,16 +1438,16 @@ class XMLParagraph:
         if nSpaces > 0:
             if self._chrPos > 0:
                 if self._nState == X_ROOT_TEXT:
-                    self._xRoot.text += " "
+                    self._xRoot.text = (self._xRoot.text or "") + " "
                     self._chrPos += 1
                 elif self._nState == X_ROOT_TAIL:
-                    self._xTail.tail += " "
+                    self._xTail.tail = (self._xTail.tail or "") + " "
                     self._chrPos += 1
                 elif self._nState == X_SPAN_TEXT:
-                    self._xTail.text += " "
+                    self._xTail.text = (self._xTail.text or "") + " "
                     self._chrPos += 1
                 elif self._nState == X_SPAN_SING:
-                    self._xSing.tail += " "
+                    self._xSing.tail = (self._xSing.tail or "") + " "
                     self._chrPos += 1
             else:
                 nSpaces += 1

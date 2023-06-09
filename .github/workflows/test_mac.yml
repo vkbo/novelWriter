@@ -19,17 +19,14 @@ jobs:
         with:
           python-version: "3.10"
           architecture: x64
-      - name: Install Packages
+      - name: Install Packages (brew)
         run: |
           brew install enchant
       - name: Checkout Source
         uses: actions/checkout@v3
-      - name: Install Dependencies
+      - name: Install Dependencies (pip)
         run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
-          pip install pyobjc
+          pip install -U pyobjc -r requirements.txt -r requirements-dev.txt
       - name: Run Tests
         run: |
           export QT_QPA_PLATFORM=offscreen
