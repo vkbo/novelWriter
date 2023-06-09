@@ -34,7 +34,7 @@ from novelwriter.gui.doceditor import GuiDocEditor
 
 
 @pytest.mark.gui
-def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, nwLipsum):
+def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     """Test the main menu Edit and Format entries.
     """
     monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
@@ -42,7 +42,7 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, nwLipsum):
     # Test Document Action with No Project
     assert nwGUI.docEditor.docAction(nwDocAction.COPY) is False
 
-    assert nwGUI.openProject(nwLipsum) is True
+    assert nwGUI.openProject(prjLipsum) is True
 
     # Split By Chapter
     assert nwGUI.openDocument("4c4f28287af27") is True
@@ -342,10 +342,10 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, nwLipsum):
 
 
 @pytest.mark.gui
-def testGuiMenu_ContextMenus(qtbot, nwGUI, nwLipsum):
+def testGuiMenu_ContextMenus(qtbot, nwGUI, prjLipsum):
     """Test the context menus.
     """
-    assert nwGUI.openProject(nwLipsum)
+    assert nwGUI.openProject(prjLipsum)
     assert nwGUI.openDocument("4c4f28287af27")
 
     # Editor Context Menu

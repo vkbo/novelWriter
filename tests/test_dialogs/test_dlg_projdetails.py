@@ -29,11 +29,11 @@ from novelwriter.dialogs.projdetails import GuiProjectDetails
 
 
 @pytest.mark.gui
-def testDlgProjDetails_Dialog(qtbot, nwGUI, nwLipsum):
+def testDlgProjDetails_Dialog(qtbot, nwGUI, prjLipsum):
     """Test the project details dialog.
     """
     # Create a project to work on
-    assert nwGUI.openProject(nwLipsum)
+    assert nwGUI.openProject(prjLipsum)
     assert nwGUI.rebuildIndex(beQuiet=True)
     qtbot.wait(100)
 
@@ -56,7 +56,7 @@ def testDlgProjDetails_Dialog(qtbot, nwGUI, nwLipsum):
     assert projDet.tabMain.sceneCountVal.text() == f"{5:n}"
     assert projDet.tabMain.revCountVal.text() == f"{nwGUI.theProject.data.saveCount:n}"
 
-    assert projDet.tabMain.projPathVal.text() == nwLipsum
+    assert projDet.tabMain.projPathVal.text() == str(prjLipsum)
 
     # Contents Page
     # =============

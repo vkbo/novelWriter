@@ -33,7 +33,6 @@ __pycache__
 /novelwriter/assets/sample.zip
 /sample/cache
 /sample/meta
-/sample/versions
 *.bak
 *.lock
 ToC.txt
@@ -44,9 +43,6 @@ ToC.txt
 /tests/temp
 /tests/lipsum/cache
 /tests/lipsum/meta
-/tests/minimal/cache
-/tests/minimal/meta
-/tests/oldproj/cache
 /.pytest_cache
 /pytestdebug.log
 

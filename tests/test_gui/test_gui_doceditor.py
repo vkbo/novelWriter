@@ -1203,12 +1203,12 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
 
 
 @pytest.mark.gui
-def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, nwLipsum):
+def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     """Test the document editor search functionality.
     """
     monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
 
-    assert nwGUI.openProject(nwLipsum) is True
+    assert nwGUI.openProject(prjLipsum) is True
     assert nwGUI.openDocument("4c4f28287af27") is True
     origText = nwGUI.docEditor.getText()
 

@@ -33,11 +33,11 @@ from novelwriter.core.tohtml import ToHtml
 
 
 @pytest.mark.gui
-def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, nwLipsum):
+def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     """Test the document viewer.
     """
     # Open project
-    assert nwGUI.openProject(nwLipsum)
+    assert nwGUI.openProject(prjLipsum)
 
     # Rebuild the index
     nwGUI.mainMenu.aRebuildIndex.activate(QAction.Trigger)

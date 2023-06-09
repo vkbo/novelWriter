@@ -201,27 +201,6 @@ def mockRnd(monkeypatch):
 ##
 
 @pytest.fixture(scope="function")
-def nwLipsum():
-    """A medium sized novelWriter example project with a lot of Lorem
-    Ipsum text.
-    """
-    srcDir = _TST_ROOT / "lipsum"
-    dstDir = _TMP_ROOT / "lipsum"
-    if dstDir.exists():
-        shutil.rmtree(dstDir)
-
-    shutil.copytree(srcDir, dstDir)
-    cleanProject(dstDir)
-
-    yield str(dstDir)
-
-    if dstDir.exists():
-        shutil.rmtree(dstDir)
-
-    return
-
-
-@pytest.fixture(scope="function")
 def prjLipsum():
     """A medium sized novelWriter example project with a lot of Lorem
     Ipsum text.
