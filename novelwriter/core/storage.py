@@ -325,7 +325,7 @@ class NWStorage:
                 self._legacyDataFolder(path, child)
 
         # Check for no longer used files, and delete them
-        self._deleteDeprecatedFiles(path)
+        self._deprecatedFiles(path)
 
         return True
 
@@ -372,9 +372,10 @@ class NWStorage:
 
         return
 
-    def _deleteDeprecatedFiles(self, path: Path):
-        """Delete files that are no longer used by novelWriter."""
+    def _deprecatedFiles(self, path: Path):
+        """Handle files that are no longer used by novelWriter."""
         remove = [
+            path / "meta" / "tagsIndex.json",          # Renamed in 2.1 Beta 1
             path / "meta" / "mainOptions.json",        # Replaced in 0.5
             path / "meta" / "exportOptions.json",      # Replaced in 0.5
             path / "meta" / "outlineOptions.json",     # Replaced in 0.5
@@ -395,6 +396,17 @@ class NWStorage:
                     logger.info("Deleted: %s", item)
                 except Exception as exc:
                     logger.warning("Failed to delete: %s", item, exc_info=exc)
+
+        # Renamed in 2.1 Beta 1, but this file we want to keep
+        oldOpt = path / "meta" / "guiOptions.json"
+        newOpt = path / "meta" / nwFiles.OPTS_FILE
+        if oldOpt.is_file():
+            try:
+                oldOpt.rename(newOpt)
+                logger.info("Renamed: %s > %s", oldOpt, newOpt)
+            except Exception as exc:
+                logger.warning("Failed to rename: %s", oldOpt, exc_info=exc)
+
         return
 
 # END Class NWStorage

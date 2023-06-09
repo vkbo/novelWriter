@@ -286,11 +286,11 @@ def testCoreStorage_PrepareStorage(monkeypatch, fncPath):
 
     with monkeypatch.context() as mp:
         mp.setattr("pathlib.Path.unlink", causeOSError)
-        storage._deleteDeprecatedFiles(fncPath)
+        storage._deprecatedFiles(fncPath)
         for depFile in remove:
             assert depFile.exists()
 
-    storage._deleteDeprecatedFiles(fncPath)
+    storage._deprecatedFiles(fncPath)
     for depFile in remove:
         assert not depFile.exists()
 
