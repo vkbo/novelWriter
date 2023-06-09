@@ -32,7 +32,7 @@ from typing import TYPE_CHECKING, Any
 from pathlib import Path
 
 from novelwriter.error import logException
-from novelwriter.common import checkBool, checkFloat, checkInt, checkString
+from novelwriter.common import checkBool, checkFloat, checkInt, checkString, jsonEncode
 from novelwriter.constants import nwFiles
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -47,7 +47,7 @@ VALID_MAP = {
         "hideZeros", "hideNegative", "groupByDay", "showIdleTime", "histMax",
     },
     "GuiDocSplit": {"spLevel", "intoFolder", "docHierarchy"},
-    "GuiOutline": {"headerOrder", "columnWidth", "columnHidden"},
+    "GuiOutline": {"columnState"},
     "GuiProjectSettings": {
         "winWidth", "winHeight", "replaceColW", "statusColW", "importColW",
     },
@@ -122,8 +122,8 @@ class OptionState:
 
         logger.debug("Saving GUI options file")
         try:
-            with open(stateFile, mode="w+", encoding="utf-8") as outFile:
-                json.dump(self._theState, outFile, indent=2)
+            with open(stateFile, mode="w+", encoding="utf-8") as fObj:
+                fObj.write(jsonEncode(self._theState, nmax=3))
         except Exception:
             logger.error("Failed to save GUI options file")
             logException()

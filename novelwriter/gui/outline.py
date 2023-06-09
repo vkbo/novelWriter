@@ -576,47 +576,36 @@ class GuiOutlineTree(QTreeWidget):
         """Load the state of the main tree header, that is, column order
         and column width.
         """
-        pOptions = self.theProject.options
-
         # Load whatever we saved last time, regardless of wether it
         # contains the correct names or number of columns. The names
         # must be valid though.
-        tempOrder = pOptions.getValue("GuiOutline", "headerOrder", [])
-        treeOrder = []
-        for hName in tempOrder:
-            try:
-                treeOrder.append(nwOutline[hName])
-            except Exception:
-                logger.warning("Ignored unknown outline column '%s'", str(hName))
+        colState = self.theProject.options.getValue("GuiOutline", "columnState", {})
+
+        tmpOrder = []
+        tmpHidden = {}
+        tmpWidth = {}
+        for name, (hidden, width) in colState.items():
+            if name not in nwOutline.__members__:
+                logger.warning("Ignored unknown outline column '%s'", str(name))
+                continue
+            tmpOrder.append(nwOutline[name])
+            tmpHidden[nwOutline[name]] = hidden
+            tmpWidth[nwOutline[name]] = CONFIG.pxInt(width)
 
         # Add columns that was not in the file to the treeOrder array.
         for hItem in nwOutline:
-            if hItem not in treeOrder:
-                treeOrder.append(hItem)
+            if hItem not in tmpOrder:
+                tmpOrder.append(hItem)
 
         # Check that we now have a complete list, and only if so, save
         # the order loaded from file. Otherwise, we keep the default.
-        if len(treeOrder) == self._treeNCols:
-            self._treeOrder = treeOrder
+        if len(tmpOrder) == self._treeNCols:
+            self._treeOrder = tmpOrder
+            self._colHidden.update(tmpHidden)
+            self._colWidth.update(tmpWidth)
         else:
             logger.error("Failed to extract outline column order from previous session")
-            logger.error("Column count doesn't match %d != %d", len(treeOrder), self._treeNCols)
-
-        # We load whatever column widths and hidden states we find in
-        # the file, and leave the rest in their default state.
-        tmpWidth = pOptions.getValue("GuiOutline", "columnWidth", {})
-        for hName in tmpWidth:
-            try:
-                self._colWidth[nwOutline[hName]] = CONFIG.pxInt(tmpWidth[hName])
-            except Exception:
-                logger.warning("Ignored unknown outline column '%s'", str(hName))
-
-        tmpHidden = pOptions.getValue("GuiOutline", "columnHidden", {})
-        for hName in tmpHidden:
-            try:
-                self._colHidden[nwOutline[hName]] = tmpHidden[hName]
-            except Exception:
-                logger.warning("Ignored unknown outline column '%s'", str(hName))
+            logger.error("Column count doesn't match %d != %d", len(tmpOrder), self._treeNCols)
 
         self.hiddenStateChanged.emit()
 
@@ -632,30 +621,19 @@ class GuiOutlineTree(QTreeWidget):
         if self._lastBuild == 0:
             return
 
-        treeOrder = []
-        colWidth = {}
-        colHidden = {}
-
-        for hItem in nwOutline:
-            colWidth[hItem.name] = CONFIG.rpxInt(self._colWidth[hItem])
-            colHidden[hItem.name] = self._colHidden[hItem]
-
+        colState = {}
         for iCol in range(self.columnCount()):
-            hName = self._treeOrder[iCol].name
-            treeOrder.append(hName)
-
+            hItem = self._treeOrder[iCol]
             iLog = self.treeHead.logicalIndex(iCol)
-            logWidth = CONFIG.rpxInt(self.columnWidth(iLog))
             logHidden = self.isColumnHidden(iLog)
-
-            colHidden[hName] = logHidden
-            if not logHidden and logWidth > 0:
-                colWidth[hName] = logWidth
+            orgWidth = CONFIG.rpxInt(self._colWidth[hItem])
+            logWidth = CONFIG.rpxInt(self.columnWidth(iLog))
+            colState[hItem.name] = [
+                logHidden, orgWidth if logHidden and logWidth == 0 else logWidth
+            ]
 
         pOptions = self.theProject.options
-        pOptions.setValue("GuiOutline", "headerOrder",  treeOrder)
-        pOptions.setValue("GuiOutline", "columnWidth",  colWidth)
-        pOptions.setValue("GuiOutline", "columnHidden", colHidden)
+        pOptions.setValue("GuiOutline", "columnState", colState)
         pOptions.saveSettings()
 
         return
