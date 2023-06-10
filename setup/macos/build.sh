@@ -12,8 +12,6 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 SRC_DIR="$SCRIPT_DIR/../.."
 RLS_DIR="$SRC_DIR/dist_macos"
 
-echo "Script Dir: $SCRIPT_DIR"
-
 cleanup () {
     if [ -d "$BUILD_DIR" ]; then
         rm -rf "$BUILD_DIR"
@@ -21,12 +19,13 @@ cleanup () {
 }
 trap cleanup EXIT
 
-echo "Building in: $BUILD_DIR"
-
-OLD_CWD="$(pwd)"
-VERSION="$(awk '/^__version__/{print substr($NF,2,length($NF)-2)}' $SRC_DIR/novelwriter/__init__.py)"
+echo "Script Dir: $SCRIPT_DIR"
+echo "Build Dir: $BUILD_DIR"
 
 pushd "$SRC_DIR" || exit 1
+
+VERSION="$(python3 setup.py version)"
+echo "novelWriter Version: $VERSION"
 
 # --- Prepare Files ----------------------------------------------------------------------------- #
 
@@ -68,23 +67,21 @@ pushd "$BUILD_DIR"/ || exit 1
 
 # --- Create Miniconda Env ---------------------------------------------------------------------- #
 
-# install Miniconda, a self-contained Python distribution
 echo "Downloading Miniconda ..."
 curl -LO https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
 bash Miniconda3-latest-MacOSX-x86_64.sh -b -p ~/miniconda -f
 rm Miniconda3-latest-MacOSX-x86_64.sh 
 export PATH="$HOME/miniconda/bin:$PATH"
 
-echo "Creating conda env ..."
-# create conda env
+echo "Creating Conda env ..."
 conda create -n novelWriter -c conda-forge python=3.10 --yes
 source activate novelWriter
 
-echo "installing dictionaries ..."
+echo "Installing dictionaries ..."
 conda install -c conda-forge enchant hunspell-en --yes
 
 # Install dependencies
-echo "installing python dependencies ..."
+echo "Installing Python dependencies ..."
 pip install -r "$SRC_DIR/requirements.txt"
 
 # Leave conda env
@@ -92,8 +89,9 @@ conda deactivate
 
 # --- Build App --------------------------------------------------------------------------------- #
 
-echo "Building app bundle ..."
-# create .app Framework
+echo "Building App bundle ..."
+
+# Create .app Framework
 mkdir -p novelWriter.app/Contents/
 mkdir novelWriter.app/Contents/MacOS novelWriter.app/Contents/Resources novelWriter.app/Contents/Resources/novelWriter
 cp $SRC_DIR/setup/macos/Info.plist novelWriter.app/Contents/Info.plist
@@ -130,13 +128,11 @@ chmod a+x novelWriter.app/Contents/MacOS/novelWriter
 # echo "Signing bundle ..."
 # sudo codesign --sign - --deep --force --entitlements "$SCRIPT_DIR/../macos/App.entitlements" --options runtime "novelWriter.app/Contents/MacOS/novelWriter"
 
-# Remove bloat
-pushd novelWriter.app/Contents/Resources || exit 1
-
 # --- Cleanup ----------------------------------------------------------------------------------- #
 
 echo "Cleaning unused files from bundle ..."
-# cleanup commands HERE
+
+pushd novelWriter.app/Contents/Resources || exit 1
 find . -type d -iname '__pycache__' -print0 | xargs -0 rm -r
 
 rm -rf pkgs
@@ -146,7 +142,7 @@ rm -rf share/{gtk-,}doc
 # Remove the files from the 3.1 symlink
 rm -rf lib/python3.1
 
-# remove web engine
+# Remove web engine
 rm lib/python3.*/site-packages/PyQt5/QtWebEngine* || true
 rm -r lib/python3.*/site-packages/PyQt5/Qt/translations/qtwebengine* || true
 rm lib/python3.*/site-packages/PyQt5/Qt/resources/qtwebengine* || true
@@ -158,16 +154,7 @@ rm lib/python3.*/site-packages/PyQt5/Qt/lib/libQt5WebEngine* || true
 popd || exit 1
 popd || exit 1
 
-# --- Create App Bundle-------------------------------------------------------------------------- #
-
-echo "Packageing App ..."
 mkdir -p $RLS_DIR
-
-pushd $BUILD_DIR || exit 1
-zip -qr novelWriter.app.zip  novelWriter.app
-popd || exit 1
-
-mv -v $BUILD_DIR/novelWriter.app.zip $RLS_DIR/novelWriter-"${VERSION}"-macos.app.zip
 
 # --- Create DMG -------------------------------------------------------------------------------- #
 
@@ -175,8 +162,11 @@ mv -v $BUILD_DIR/novelWriter.app.zip $RLS_DIR/novelWriter-"${VERSION}"-macos.app
 echo "Packageing DMG ..."
 brew install create-dmg
 
-# "--skip-jenkins" is a temporary workaround for https://github.com/create-dmg/create-dmg/issues/72
 create-dmg --volname "novelWriter $VERSION" --volicon $SRC_DIR/setup/macos/novelwriter.icns \
     --window-pos 200 120 --window-size 800 400 --icon-size 100 \
     --icon novelWriter.app 200 190 --hide-extension novelWriter.app \
-    --app-drop-link 600 185 $RLS_DIR/novelWriter-"${VERSION}"-macos.dmg "$BUILD_DIR"/
+    --app-drop-link 600 185 $RLS_DIR/novelWriter-"${VERSION}".dmg "$BUILD_DIR"/
+
+pushd $RLS_DIR || exit 1
+shasum -a 256 novelWriter-"${VERSION}".dmg | tee novelWriter-"${VERSION}".dmg.sha256
+popd || exit 1

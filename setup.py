@@ -73,12 +73,10 @@ def extractVersion(beQuiet=False):
     return numVers, hexVers, relDate
 
 
-def compactVersion(numVers):
-    """Make the version number more compact."""
-    numVers = numVers.replace("-alpha", "a")
-    numVers = numVers.replace("-beta", "b")
-    numVers = numVers.replace("-rc", "rc")
-    return numVers
+def compactVersion(version):
+    """Make the version number more compact.
+    """
+    return version.replace("-alpha", "a").replace("-beta", "b").replace("-rc", "rc")
 
 
 def sysCall(callArgs, cwd=None):
@@ -95,20 +93,21 @@ def sysCall(callArgs, cwd=None):
 def readFile(fileName):
     """Read an entire file and return as a string.
     """
-    with open(fileName, mode="r") as inFile:
+    with open(fileName, mode="r", encoding="utf-8") as inFile:
         return inFile.read()
 
 
 def writeFile(fileName, writeText):
     """Write string to file.
     """
-    with open(fileName, mode="w+") as outFile:
+    with open(fileName, mode="w+", encoding="utf-8") as outFile:
         outFile.write(writeText)
 
 
 def toUpload(srcPath, dstName=None):
     """Copy a file produced by one of the build functions to the uplaod
-    directory. The file can optionally be given a new name."""
+    directory. The file can optionally be given a new name.
+    """
     uplDir = "dist_upload"
     if not os.path.isdir(uplDir):
         os.mkdir(uplDir)
@@ -127,7 +126,7 @@ def makeCheckSum(sumFile, cwd=None):
         else:
             shaFile = os.path.join(cwd, sumFile+".sha256")
         with open(shaFile, mode="w") as fOut:
-            subprocess.call(["sha256sum", sumFile], stdout=fOut, cwd=cwd)
+            subprocess.call(["shasum", "-a", "256", sumFile], stdout=fOut, cwd=cwd)
         print("SHA256 Sum: %s" % shaFile)
     except Exception as exc:
         print("Could not generate sha256 file")
@@ -331,6 +330,12 @@ def buildQtI18nTS(sysArgs):
     print("Building Qt Translation Files")
     print("=============================")
 
+    try:
+        from PyQt6.lupdate import lupdate
+    except ImportError:
+        print("ERROR: This command requires lupdate from PyQt6")
+        sys.exit(1)
+
     print("")
     print("Scanning Source Tree:")
     print("")
@@ -386,10 +391,7 @@ def buildQtI18nTS(sysArgs):
     print("Updating Language Files:")
     print("")
 
-    # Using the pylupdate tool from PyQt6 instead as it supports TS file
-    # format 2.1. This can perhaps be changed back to the installed tool
-    # at a later time.
-    from i18n.pylupdate6 import lupdate
+    # Using the pylupdate tool from PyQt6 as it supports TS file format 2.1.
     lupdate(srcList, tsList, no_obsolete=True, no_summary=False)
 
     print("")
@@ -402,7 +404,7 @@ def buildQtI18nTS(sysArgs):
 ##
 
 def genMacOSPlist():
-    """Set necessary values for .plist file.
+    """Set necessary values for .plist file for MacOS build.
     """
     numVers, _, _ = extractVersion()
     pkgVers = compactVersion(numVers)
@@ -936,11 +938,10 @@ def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
 ##
 
 def makeAppImage(sysArgs):
-    """Build an Appimage.
+    """Build an AppImage.
     """
     import glob
     import argparse
-    import platform
 
     try:
         import python_appimage  # noqa F401
@@ -964,15 +965,15 @@ def makeAppImage(sysArgs):
     parser.add_argument(
         "--linux-tag",
         nargs="?",
-        default=f"manylinux2010_{platform.machine()}",
+        default="manylinux_2_28_x86_64",
         help=(
-            "linux compatibility tag (e.g. manylinux1_x86_64) \n"
+            "Linux compatibility tag (e.g. manylinux_2_28_x86_64)\n"
             "see https://python-appimage.readthedocs.io/en/latest/#available-python-appimages \n"
             "and https://github.com/pypa/manylinux for a list of valid tags"
         ),
     )
     parser.add_argument(
-        "--python-version", nargs="?", default="3.10", help="python version (e.g. 3.10)"
+        "--python-version", nargs="?", default="3.11", help="Python version (e.g. 3.11)"
     )
 
     args, unparsedArgs = parser.parse_known_args(sysArgs)
@@ -1016,9 +1017,8 @@ def makeAppImage(sysArgs):
 
     os.mkdir(imageDir)
 
-    # Remove old Appimages
+    # Remove old AppImages
     outFiles = glob.glob(f"{bldDir}/*.AppImage")
-
     if outFiles:
         print("Removing old AppImages")
         print("")
@@ -1108,17 +1108,17 @@ def makeAppImage(sysArgs):
     print("Wrote:  requirements.txt")
 
     shutil.copyfile("setup/data/novelwriter.desktop", f"{imageDir}/novelwriter.desktop")
-    print("Copied: setup/data/novelwriter.desktop")
+    print("Copied: novelwriter.desktop")
 
     shutil.copyfile("setup/icons/novelwriter.svg", f"{imageDir}/novelwriter.svg")
-    print("Copied: setup/icons/novelwriter.svg")
+    print("Copied: novelwriter.svg")
 
     shutil.copyfile(
         "setup/data/hicolor/256x256/apps/novelwriter.png", f"{imageDir}/novelwriter.png"
     )
-    print("Copied: setup/data/hicolor/256x256/apps/novelwriter.png")
+    print("Copied: novelwriter.png")
 
-    # Build Appimage
+    # Build AppImage
     # ==============
 
     try:
@@ -1131,13 +1131,17 @@ def makeAppImage(sysArgs):
         print("")
         print(str(exc))
         print("")
-        print("Dependencies:")
-        print(" * pip install python-appimage")
-        print("")
         sys.exit(1)
 
+    linuxLabel = ""
+    if not linuxTag.startswith("manylinux_2_28"):
+        linuxLabel = "-oldlinux"
+        if not linuxTag.endswith("x86_64"):
+            # manylinux_2_28 only comes in 64 bit, so this one only applies to older images
+            linuxLabel += "-32bit"
+
     bldFile = glob.glob(f"{bldDir}/*.AppImage")[0]
-    outFile = f"{bldDir}/novelWriter-{pkgVers}-py{pythonVer}-{linuxTag}.AppImage"
+    outFile = f"{bldDir}/novelWriter-{pkgVers}{linuxLabel}.AppImage"
     os.rename(bldFile, outFile)
     shaFile = makeCheckSum(os.path.basename(outFile), cwd=bldDir)
 
@@ -1368,11 +1372,8 @@ def makeWindowsEmbedded(sysArgs):
         print(str(exc))
         sys.exit(1)
 
-    issName = os.path.join("dist", f"novelwriter-{packVersion}-win10-amd64-setup.exe")
-    newName = os.path.join("dist", f"novelwriter-{packVersion}-py{pyVers}-win10-amd64-setup.exe")
-    os.replace(issName, newName)
-
-    print(f"Installer: {newName}")
+    print("")
+    print("Done")
     print("")
 
     return
@@ -1904,13 +1905,11 @@ if __name__ == "__main__":
         "    build-win-exe  Build a setup.exe file with Python embedded for Windows.",
         "                   The package must be built from a minimal windows zip file.",
         "    build-appimage Build an AppImage. Argument --linux-tag defaults to",
-        "                   manylinux1_x86_64 / i386, and --python-version to 3.10.",
+        "                   manylinux_2_28_x86_64, and --python-version to 3.11.",
         "",
         "System Install:",
         "",
-        "    install        Installs novelWriter to the system's Python install",
-        "                   location. Run as root or with sudo for system-wide install,",
-        "                   or as user for single user install.",
+        "    install        Deprecated. Use pip or build.",
         "    xdg-install    Install launcher and icons for freedesktop systems. Run as",
         "                   root or with sudo for system-wide install, or as user for",
         "                   single user install.",
@@ -2063,6 +2062,14 @@ if __name__ == "__main__":
 
     # Run the standard setup
     import setuptools  # noqa: F401
+    import warnings  # noqa: F401
+    warnings.warn(
+        "The setuptools section of setup.py is deprecated and will be removed "
+        "in a future release and the setup.py file will be renamed to avoid "
+        "conflicts with build tools. Please don't use the 'setup.py install' "
+        "command, and instead use the pip and build commands.",
+        DeprecationWarning
+    )
     setuptools.setup()
 
 # END Main

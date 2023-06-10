@@ -17,6 +17,22 @@ to build the various components like the translation files and documentation.
    now deprecated, but many systems still have both Python 2 and 3. For such systems, the command
    ``python3`` may be needed instead. Likewise, ``pip`` may need to be replaced with ``pip3``.
 
+Most of the custom commands for building packages of novelWriter, or building assets, are contained
+in the ``setup.py`` script in the root of the source code. You can list the available commands by
+running:
+
+.. code-block:: bash
+
+   python setup.py help
+
+.. warning::
+
+   Calling ``setup.py install`` has been deprecated for a while, and this approach is no longer
+   actively supported in novelWriter either.
+
+   In a future version, the packaging and asset build tools part of the current ``setup.py`` file
+   will be moved to another script and the ``setup.py`` file removed entirely.
+
 
 .. _a_source_depend:
 
@@ -58,37 +74,35 @@ source, dependencies can still be installed from PyPi with:
 
 .. _a_source_install:
 
-Install from Source
-===================
+Build and Install from Source
+=============================
 
-You can download the latest version of novelWriter from the source repository on GitHub_ and run
-the setup manually. It is equivalent to what the ``pip install`` command does, and it installs
-novelWriter to the default location for Python packages.
-
-This step requires that you have ``setuptools`` installed on your system. If you don't have it
-installed, it can usually be installed from your distro's repository. For Debian and Ubuntu this is
-achieved with:
+If you want to install novelWriter directly from the source available on GitHub_, you must first
+build the package using the Python Packaging Authority's build tool. It can be installed with:
 
 .. code-block:: bash
 
-   sudo apt install python3-setuptools
+   pip install --upgrade build
 
-The package is also available from PyPi:
-
-.. code-block:: bash
-
-   pip install --user setuptools
-
-With ``setuptools`` in place, novelWriter can be installed to the user space with:
+On Debian-based systems the tool can also be installed with:
 
 .. code-block:: bash
 
-   python setup.py install --user
+   sudo apt install python3-build
 
-.. tip::
+With the tool installed, run the following command from the root of the novelWriter source code:
 
-   The main setup script has a number of options that may be useful to you. You can list them by
-   running ``python setup.py help``.
+.. code-block:: bash
+
+   python -m build
+
+This should generate two files in the ``dist/`` folder at your current location. One with file
+extension ``.tar.gz`` and one with extension ``.whl``. The latter is the package you want to
+install, here with example version number 2.0.7, but your may be different:
+
+.. code-block:: bash
+
+   pip install --user dist/novelWriter-2.0.7-py3-none-any.whl
 
 
 .. _a_source_i18n:

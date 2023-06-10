@@ -872,14 +872,9 @@ class GuiMainMenu(QMenuBar):
         self.helpMenu.addSeparator()
 
         # Help > User Manual (Online)
-        if novelwriter.__version__[-2] == "f":
-            docUrl = f"{novelwriter.__docurl__}/en/stable/"
-        else:
-            docUrl = f"{novelwriter.__docurl__}/en/latest/"
-
         self.aHelpDocs = QAction(self.tr("User Manual (Online)"), self)
         self.aHelpDocs.setShortcut("F1")
-        self.aHelpDocs.triggered.connect(lambda: self._openWebsite(docUrl))
+        self.aHelpDocs.triggered.connect(lambda: self._openWebsite(novelwriter.__docurl__))
         self.helpMenu.addAction(self.aHelpDocs)
 
         # Help > User Manual (PDF)
