@@ -109,7 +109,7 @@ background, depending on the selected theme.
 Text Emphasis
 =============
 
-A minimal set of text emphasis styles are supported.
+A minimal set of text emphasis styles are supported for text paragraphs.
 
 ``_text_``
    The text is rendered as emphasised text (italicised).
@@ -120,7 +120,7 @@ A minimal set of text emphasis styles are supported.
 ``~~text~~``
    Strikethrough text.
 
-In markdown guides it is often recommended to differentiate between strong importance and emphasis
+In Markdown guides it is often recommended to differentiate between strong importance and emphasis
 by using ``**`` for strong and ``_`` for emphasis, although Markdown generally also supports ``__``
 for strong and ``*`` for emphasis. However, since the differentiation makes the highlighting and
 conversion significantly simpler and faster, in novelWriter this is a rule, not just a
@@ -132,11 +132,20 @@ In addition, the following rules apply:
    itself. That is, ``**text**`` is valid, ``**text **`` is not.
 2. More generally, the delimiters must be on the outer edge of words. That is, ``some **text in
    bold** here`` is valid, ``some** text in bold** here`` is not.
-3. If using both ``**`` and ``_`` to wrap the same text, the underscore must be the inner wrapper.
-   This is due to the underscore also being a valid word character, so if they are on the outside,
-   they violate rule 2.
+3. If using both ``**`` and ``_`` to wrap the same text, the underscore must be the *inner*
+   wrapper. This is due to the underscore also being a valid word character, so if they are on the
+   outside, they violate rule 2.
 4. Text emphasis does not span past line breaks. If you need to add emphasis to multiple lines or
    paragraphs, you must apply it to each of them in turn.
+5. Text emphasis can only be used in plain paragraphs. Comments, titles, and meta data tags don't
+   allow for formatting, and any formatting markup will be renderred as-is.
+
+.. tip::
+
+   novelWriter supports standard escape syntax for the emphasis markup characters in case the
+   editor misunderstands your intended usage of them. That is, ``\*``, ``\_`` and ``\~`` will
+   generate a plain ``*``, ``_`` and ``~``, respectively, without interpreting them as part of the
+   markup.
 
 
 .. _a_fmt_comm:

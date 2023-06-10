@@ -148,12 +148,12 @@ the ``assets`` folder of the source. This file can be built from setup script by
 Building the Documentation
 ==========================
 
-A local copy of this documentation can be generated as HTML. This requires the following Python
+A local copy of this documentation can be generated as HTML. This requires installing some Python
 packages from PyPi:
 
 .. code-block:: bash
 
-   pip install furo sphinx
+   pip install -r docs/source/requirements.txt
 
 The documentation can then be built from the root folder in the source code by running:
 
