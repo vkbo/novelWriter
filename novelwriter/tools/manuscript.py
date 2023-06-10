@@ -177,6 +177,8 @@ class GuiManuscript(QDialog):
         self.mainSplit = QSplitter()
         self.mainSplit.addWidget(self.optsWidget)
         self.mainSplit.addWidget(self.docPreview)
+        self.mainSplit.setCollapsible(0, False)
+        self.mainSplit.setCollapsible(1, False)
         self.mainSplit.setStretchFactor(0, 0)
         self.mainSplit.setStretchFactor(1, 1)
         self.mainSplit.setSizes([

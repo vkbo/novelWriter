@@ -371,8 +371,6 @@ class _FilterTab(QWidget):
         # ============
 
         pOptions = self.theProject.options
-        wTree = CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "treeWidth", 0))
-        fTree = CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "filterWidth", 0))
 
         self.selectionBox = QVBoxLayout()
         self.selectionBox.addWidget(self.optTree)
@@ -387,8 +385,12 @@ class _FilterTab(QWidget):
         self.mainSplit.addWidget(self.filterOpt)
         self.mainSplit.setCollapsible(0, False)
         self.mainSplit.setCollapsible(1, False)
-        if wTree > 0:
-            self.mainSplit.setSizes([wTree, fTree])
+        self.mainSplit.setStretchFactor(0, 0)
+        self.mainSplit.setStretchFactor(1, 1)
+        self.mainSplit.setSizes([
+            CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "treeWidth", 1)),
+            CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "filterWidth", 1))
+        ])
 
         self.outerBox = QHBoxLayout()
         self.outerBox.addWidget(self.mainSplit)
