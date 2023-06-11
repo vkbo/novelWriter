@@ -91,6 +91,7 @@ class nwFiles:
     OPTS_FILE   = "options.json"
     PROJ_DICT   = "wordlist.txt"
     SESS_STATS  = "sessionStats.log"
+    SESS_FILE   = "sessions.jsonl"
 
 # END Class nwFiles
 

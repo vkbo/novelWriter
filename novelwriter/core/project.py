@@ -22,6 +22,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import json
 import logging
@@ -33,9 +34,10 @@ from functools import partial
 from PyQt5.QtCore import QCoreApplication, QObject, pyqtSignal
 
 from novelwriter import CONFIG, __version__, __hexversion__
+from novelwriter.core.sessions import NWSessionLog
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from novelwriter.error import logException
-from novelwriter.constants import trConst, nwFiles, nwLabels
+from novelwriter.constants import trConst, nwLabels
 from novelwriter.core.tree import NWTree
 from novelwriter.core.item import NWItem
 from novelwriter.core.index import NWIndex
@@ -66,12 +68,12 @@ class NWProject(QObject):
         self._data    = NWProjectData(self)  # The project settings
         self._tree    = NWTree(self)         # The project tree
         self._index   = NWIndex(self)        # The projecty index
+        self._session = NWSessionLog(self)   # The session record
 
         # Data Cache
         self._langData = {}  # Localisation data
 
         # Project Status
-        self._projOpened  = 0      # The time stamp of when the project file was opened
         self._projChanged = False  # The project has unsaved changes
         self._lockedBy    = None   # Data on which computer has the project open
         self._projFiles   = []     # A list of all files in the content folder on load
@@ -109,8 +111,12 @@ class NWProject(QObject):
         return self._index
 
     @property
+    def session(self) -> NWSessionLog:
+        return self._session
+
+    @property
     def projOpened(self):
-        return self._projOpened
+        return self._session.start
 
     @property
     def projChanged(self):
@@ -228,7 +234,6 @@ class NWProject(QObject):
         default values.
         """
         # Project Status
-        self._projOpened  = 0
         self._projChanged = False
 
         # Project Tree
@@ -236,6 +241,7 @@ class NWProject(QObject):
         self._tree.clear()
         self._index.clearIndex()
         self._data = NWProjectData(self)
+        self._session = NWSessionLog(self)
 
         # Project Settings
         self._projFiles = []
@@ -370,8 +376,7 @@ class NWProject(QObject):
             self._index.rebuildIndex()
 
         self.updateWordCounts()
-        self._projOpened = time()
-
+        self._session.startSession()
         self._storage.writeLockFile()
         self.setProjectChanged(False)
         self.mainGui.setStatus(self.tr("Opened Project: {0}").format(self._data.name))
@@ -407,7 +412,7 @@ class NWProject(QObject):
             return False
 
         saveTime = time()
-        editTime = int(self._data.editTime + saveTime - self._projOpened)
+        editTime = self._data.editTime + max(round(saveTime - self._session.start), 0)
         content = self._tree.pack()
         if not xmlWriter.write(self._data, content, saveTime, editTime):
             self.mainGui.makeAlert(self.tr(
@@ -437,7 +442,7 @@ class NWProject(QObject):
         logger.info("Closing project")
         self._options.saveSettings()
         self._tree.writeToCFile()
-        self._appendSessionStats(idleTime)
+        self._session.appendSession(idleTime)
         self._storage.clearLockFile()
         self._storage.closeSession()
         self.clearProject()
@@ -560,18 +565,17 @@ class NWProject(QObject):
     #  Getters
     ##
 
-    def getLockStatus(self):
-        """Return the project lock information for the project.
-        """
+    def getLockStatus(self) -> list | None:
+        """Return the project lock information for the project."""
         if isinstance(self._lockedBy, list) and len(self._lockedBy) == 4:
             return self._lockedBy
         return None
 
-    def getCurrentEditTime(self):
+    def getCurrentEditTime(self) -> int:
         """Get the total project edit time, including the time spent in
         the current session.
         """
-        return round(self._data.editTime + time() - self._projOpened)
+        return self._data.editTime + round(time() - self._session.start)
 
     def getProjectItems(self):
         """This function ensures that the item tree loaded is sent to
@@ -795,51 +799,6 @@ class NWProject(QObject):
                 "One or more orphaned files could not be added back into the project. "
                 "Make sure at least a Novel root folder exists."
             ), nwAlert.WARN)
-
-        return True
-
-    def _appendSessionStats(self, idleTime):
-        """Append session statistics to the sessions log file.
-        """
-        sessionFile = self._storage.getMetaFile(nwFiles.SESS_STATS)
-        if not isinstance(sessionFile, Path):
-            return False
-
-        nowTime = time()
-        iNovel, iNotes = self._data.initCounts
-        cNovel, cNotes = self._data.currCounts
-        iTotal = iNovel + iNotes
-        sessDiff = cNovel + cNotes - iTotal
-        sessTime = nowTime - self._projOpened
-
-        logger.info("The session lasted %d sec and added %d words", int(sessTime), sessDiff)
-        if sessTime < 300 and sessDiff == 0:
-            logger.info("Session too short, skipping log entry")
-            return False
-
-        try:
-            isFile = sessionFile.exists()  # We must save the state before we open
-            with open(sessionFile, mode="a+", encoding="utf-8") as outFile:
-                if not isFile:
-                    # It's a new file, so add a header
-                    if iTotal > 0:
-                        outFile.write("# Offset %d\n" % iTotal)
-                    outFile.write("# %-17s  %-19s  %8s  %8s  %8s\n" % (
-                        "Start Time", "End Time", "Novel", "Notes", "Idle"
-                    ))
-
-                outFile.write("%-19s  %-19s  %8d  %8d  %8d\n" % (
-                    formatTimeStamp(self._projOpened),
-                    formatTimeStamp(nowTime),
-                    cNovel,
-                    cNotes,
-                    int(idleTime),
-                ))
-
-        except Exception:
-            logger.error("Failed to write session stats file")
-            logException()
-            return False
 
         return True
 

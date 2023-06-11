@@ -487,7 +487,7 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
 
     # Edit Time
     theProject.data.setEditTime(1234)
-    theProject._projOpened = 1600000000
+    theProject._session._start = 1600000000
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.project.time", lambda: 1600005600)
         assert theProject.getCurrentEditTime() == 6834
@@ -585,32 +585,32 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     # No path for writing
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
-        assert theProject._appendSessionStats(idleTime=0) is False
+        assert theProject.session.appendSession(idleTime=0) is False
 
     # Block open
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
-        assert theProject._appendSessionStats(idleTime=0) is False
+        assert theProject.session.appendSession(idleTime=0) is False
 
     # Session too short
-    theProject._projOpened = time()
+    theProject._session._start = time()
     theProject.data.setInitCounts(50, 50)
     theProject.data.setCurrCounts(50, 50)
-    assert theProject._appendSessionStats(idleTime=0) is False
+    assert theProject.session.appendSession(idleTime=0) is False
 
     # Write entry
-    statsFile = theProject.storage.getMetaFile(nwFiles.SESS_STATS)
+    statsFile = theProject.storage.getMetaFile(nwFiles.SESS_FILE)
     assert isinstance(statsFile, Path)
     if statsFile.exists():
         statsFile.unlink()
 
-    theProject._projOpened = 1600002000
+    theProject._session._start = 1600002000
     theProject.data._initCounts = [50, 50]
     theProject.data._currCounts = [200, 100]
 
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.project.time", lambda: 1600005600)
-        assert theProject._appendSessionStats(idleTime=99)
+        assert theProject.session.appendSession(idleTime=99)
 
     assert statsFile.read_text(encoding="utf-8") == (
         "# Offset 100\n"

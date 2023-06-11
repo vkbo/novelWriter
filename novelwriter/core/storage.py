@@ -254,7 +254,7 @@ class NWStorage:
             (baseMeta / nwFiles.INDEX_FILE,  f"meta/{nwFiles.INDEX_FILE}"),
             (baseMeta / nwFiles.OPTS_FILE,   f"meta/{nwFiles.OPTS_FILE}"),
             (baseMeta / nwFiles.PROJ_DICT,   f"meta/{nwFiles.PROJ_DICT}"),
-            (baseMeta / nwFiles.SESS_STATS,  f"meta/{nwFiles.SESS_STATS}"),
+            (baseMeta / nwFiles.SESS_FILE,   f"meta/{nwFiles.SESS_FILE}"),
         ]
         for contItem in baseCont.iterdir():
             name = contItem.name
@@ -374,6 +374,10 @@ class NWStorage:
 
     def _deprecatedFiles(self, path: Path):
         """Handle files that are no longer used by novelWriter."""
+        sessLog = path / "meta" / "sessionStats.log"
+        if sessLog.is_file():
+            self._convertOldLogFile(sessLog, path / "meta" / nwFiles.SESS_FILE)
+
         remove = [
             path / "meta" / "tagsIndex.json",          # Renamed in 2.1 Beta 1
             path / "meta" / "mainOptions.json",        # Replaced in 0.5
@@ -408,5 +412,46 @@ class NWStorage:
                 logger.warning("Failed to rename: %s", oldOpt, exc_info=exc)
 
         return
+
+    def _convertOldLogFile(self, sessLog: Path, sessJson: Path) -> bool:
+        """Convert the old text log file format to the new JSON Lines
+        format.
+        """
+        if sessJson.exists() or not sessLog.exists():
+            # If the new file already exists, we won't overwrite it
+            return True
+
+        try:
+            data = []
+            offset = 0
+            session = self._project.session
+            with open(sessLog, mode="r", encoding="utf-8") as fObj:
+                for record in fObj:
+                    bits = record.split()
+                    nBits = len(bits)
+                    if record.startswith("# Offset") and nBits == 3:
+                        offset = int(bits[2])
+                    elif not record.startswith("#") and nBits > 5:
+                        data.append(session.createRecord(
+                            start=f"{bits[0]} {bits[1]}",
+                            end=f"{bits[2]} {bits[3]}",
+                            novel=int(bits[4]),
+                            notes=int(bits[5]),
+                            idle=int(bits[6]) if nBits > 6 else -1,
+                        ))
+
+            with open(sessJson, mode="a+", encoding="utf-8") as fObj:
+                fObj.write(session.createInitial(offset))
+                fObj.write("".join(data))
+
+            # If we're here, we remove the old file
+            sessLog.unlink()
+
+        except Exception:
+            logger.error("Failed to convert old stats file")
+            logException()
+            return False
+
+        return True
 
 # END Class NWStorage

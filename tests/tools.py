@@ -19,7 +19,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import time
 import shutil
 
 from pathlib import Path
@@ -201,7 +200,7 @@ def buildTestProject(theObject, projPath):
     aDoc.writeDocument("### %s\n\n" % theProject.tr("New Scene"))
     theProject.index.reIndexHandle(xHandle[8])
 
-    theProject._projOpened = time.time()
+    theProject.session.startSession()
     theProject.setProjectChanged(True)
     theProject.saveProject(autoSave=True)
 
