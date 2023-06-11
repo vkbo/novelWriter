@@ -95,7 +95,8 @@ class NWErrorMessage(QDialog):
             "+++ Divide by Cucumber Error +++",
             "+++ Whoops! Here Comes The Cheese! +++",
             "+++ Please Reinstall Universe and Reboot +++",
-        ][random.randint(0, 3)])
+            "+++ Error At Address 14, Treacle Mine Road +++",
+        ][random.randint(0, 4)])
 
         self.setLayout(self.mainBox)
 
