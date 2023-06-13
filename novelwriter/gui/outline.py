@@ -601,15 +601,9 @@ class GuiOutlineTree(QTreeWidget):
             if hItem not in tmpOrder:
                 tmpOrder.append(hItem)
 
-        # Check that we now have a complete list, and only if so, save
-        # the order loaded from file. Otherwise, we keep the default.
-        if len(tmpOrder) == self._treeNCols:
-            self._treeOrder = tmpOrder
-            self._colHidden.update(tmpHidden)
-            self._colWidth.update(tmpWidth)
-        else:
-            logger.error("Failed to extract outline column order from previous session")
-            logger.error("Column count doesn't match %d != %d", len(tmpOrder), self._treeNCols)
+        self._treeOrder = tmpOrder
+        self._colHidden.update(tmpHidden)
+        self._colWidth.update(tmpWidth)
 
         self.hiddenStateChanged.emit()
 

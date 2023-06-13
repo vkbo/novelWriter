@@ -33,8 +33,7 @@ from novelwriter.enum import nwItemClass, nwOutline, nwView
 
 @pytest.mark.gui
 def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, projPath):
-    """Test the outline view.
-    """
+    """Test the outline view."""
     # Create a project
     buildTestProject(nwGUI, projPath)
 
@@ -83,52 +82,61 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, projPath):
     # Save header state not allowed
     outlineTree._lastBuild = 0
     outlineTree._saveHeaderState()
-    assert pOptions.getValue("GuiOutline", "headerOrder", []) == []
+    assert pOptions.getValue("GuiOutline", "columnState", {}) == {}
 
     # Allow saving header state
     outlineTree._lastBuild = time.time()
     outlineTree._saveHeaderState()
-    assert pOptions.getValue("GuiOutline", "headerOrder", []) == colNames
+    assert list(pOptions.getValue("GuiOutline", "columnState", {}).keys()) == colNames
     assert outlineTree._treeOrder == colItems
     assert outlineTree._colWidth == colWidth
     assert outlineTree._colHidden == colHidden
 
     # Get default values
-    optItems = pOptions.getValue("GuiOutline", "headerOrder", [])
-    optWidth = pOptions.getValue("GuiOutline", "columnWidth", {})
-    optHidden = pOptions.getValue("GuiOutline", "columnHidden", {})
+    columnState = pOptions.getValue("GuiOutline", "columnState", {})
 
     # Add invalid column name
-    pOptions.setValue("GuiOutline", "headerOrder", optItems + ["blabla"])
-    outlineTree._loadHeaderState()
-    assert outlineTree._treeOrder == colItems
-    assert outlineTree._colHidden == colHidden
-
-    # Add duplicate column name
-    pOptions.setValue("GuiOutline", "headerOrder", optItems + [optItems[-1]])
-    outlineTree._loadHeaderState()
-    assert outlineTree._treeOrder == colItems
-    assert outlineTree._colHidden == colHidden
-
-    # Invalid column width data
-    pOptions.setValue("GuiOutline", "headerOrder", optItems)
-    pOptions.setValue("GuiOutline", "columnWidth", {"blabla": None})
+    newState = columnState.copy()
+    newState.update({"blabla": (False, 42)})
+    pOptions.setValue("GuiOutline", "columnState", newState)
     outlineTree._loadHeaderState()
     assert outlineTree._treeOrder == colItems
     assert outlineTree._colHidden == colHidden
 
     # Invalid column width data
-    pOptions.setValue("GuiOutline", "headerOrder", optItems)
-    pOptions.setValue("GuiOutline", "columnWidth", optWidth)
-    pOptions.setValue("GuiOutline", "columnHidden", {"bloabla": None})
+    newState = columnState.copy()
+    newState.update({"TITLE": (False, None)})
+    pOptions.setValue("GuiOutline", "columnState", newState)
     outlineTree._loadHeaderState()
     assert outlineTree._treeOrder == colItems
     assert outlineTree._colHidden == colHidden
+
+    # Invalid column state data
+    newState = columnState.copy()
+    newState.update({"TITLE": None})
+    pOptions.setValue("GuiOutline", "columnState", newState)
+    outlineTree._loadHeaderState()
+    assert outlineTree._treeOrder == colItems
+    assert outlineTree._colHidden == colHidden
+
+    # Drop a few columns
+    newState = columnState.copy()
+    del newState[nwOutline.CHAR.name]
+    del newState[nwOutline.WORLD.name]
+    del newState[nwOutline.LINE.name]
+    pOptions.setValue("GuiOutline", "columnState", newState)
+    outlineTree._loadHeaderState()
+    assert len(outlineTree._treeOrder) == len(colItems)
+    assert len(outlineTree._colHidden) == len(colHidden)
+    assert nwOutline.CHAR in outlineTree._treeOrder
+    assert nwOutline.CHAR in outlineTree._colHidden
+    assert nwOutline.WORLD in outlineTree._treeOrder
+    assert nwOutline.WORLD in outlineTree._colHidden
+    assert nwOutline.LINE in outlineTree._treeOrder
+    assert nwOutline.LINE in outlineTree._colHidden
 
     # Valid settings
-    pOptions.setValue("GuiOutline", "headerOrder", optItems)
-    pOptions.setValue("GuiOutline", "columnWidth", optWidth)
-    pOptions.setValue("GuiOutline", "columnHidden", optHidden)
+    pOptions.setValue("GuiOutline", "columnState", columnState)
     outlineTree._loadHeaderState()
     assert outlineTree._treeOrder == colItems
     assert outlineTree._colHidden == colHidden
@@ -143,7 +151,9 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, projPath):
 
     # Now no columns should be hidden
     outlineTree._saveHeaderState()
-    assert not any(pOptions.getValue("GuiOutline", "columnHidden", None).values())
+    hiddenStates = [v[0] for v in pOptions.getValue("GuiOutline", "columnState", {}).values()]
+    assert len(hiddenStates) == len(columnState)
+    assert not any(hiddenStates)
 
     # qtbot.stop()
 
@@ -152,8 +162,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, projPath):
 
 @pytest.mark.gui
 def testGuiOutline_Content(qtbot, nwGUI, prjLipsum):
-    """Test the outline view.
-    """
+    """Test the outline view."""
     assert nwGUI.openProject(prjLipsum)
 
     nwGUI.rebuildIndex()
