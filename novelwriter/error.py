@@ -27,6 +27,7 @@ import sys
 import random
 import logging
 
+from PyQt5.QtGui import QFont, QFontDatabase
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     qApp, QDialog, QGridLayout, QStyle, QPlainTextEdit, QLabel,
@@ -74,7 +75,12 @@ class NWErrorMessage(QDialog):
         self.msgHead.setOpenExternalLinks(True)
         self.msgHead.setWordWrap(True)
 
+        font = QFont()
+        font.setPointSize(round(0.9*self.font().pointSize()))
+        font.setFamily(QFontDatabase.systemFont(QFontDatabase.FixedFont).family())
+
         self.msgBody = QPlainTextEdit()
+        self.msgBody.setFont(font)
         self.msgBody.setReadOnly(True)
 
         self.btnBox = QDialogButtonBox(QDialogButtonBox.Close)
@@ -119,7 +125,7 @@ class NWErrorMessage(QDialog):
         self.msgHead.setText(
             "<p>An unhandled error has been encountered.</p>"
             "<p>Please report this error by submitting an issue report on "
-            "GitHub, providing a description and including the error "
+            "GitHub, providing a description, and including the error "
             "message and traceback shown below.</p>"
             f"<p>URL: <a href='{nwConst.URL_REPORT}'>{nwConst.URL_REPORT}</a></p>"
         )
