@@ -297,7 +297,7 @@ class GuiWritingStats(QDialog):
 
         return
 
-    def __del__(self):
+    def __del__(self):  # pragma: no cover
         logger.debug("Delete: GuiWritingStats")
         return
 

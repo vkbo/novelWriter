@@ -24,9 +24,9 @@ import pytest
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QAction
 
-from tools import buildTestProject, writeFile, readFile, getGuiItem
-from mocked import causeOSError
+from tools import buildTestProject, getGuiItem
 
+from novelwriter.core.spellcheck import UserDictionary
 from novelwriter.dialogs.wordlist import GuiWordList
 
 
@@ -42,7 +42,6 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, projPath):
 
     # Open project
     nwGUI.openProject(projPath)
-    dictFile = projPath / "meta" / "wordlist.txt"
 
     # Load the dialog
     nwGUI.mainMenu.aEditWordList.activate(QAction.Trigger)
@@ -56,15 +55,15 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, projPath):
     assert wList.listBox.count() == 0
 
     # Add words
-    writeFile(dictFile, (
-        "word_a\n"
-        "word_c\n"
-        "word_g\n"
-        "      \n"  # Should be ignored
-        "word_f\n"
-        "word_b\n"
-    ))
-    assert wList._loadWordList()
+    userDict = UserDictionary(nwGUI.theProject)
+    userDict.add("word_a")
+    userDict.add("word_c")
+    userDict.add("word_g")
+    userDict.add("word_f")
+    userDict.add("word_b")
+    userDict.save()
+
+    wList._loadWordList()
 
     # Check that the content was loaded
     assert wList.listBox.item(0).text() == "word_a"
@@ -72,18 +71,22 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, projPath):
     assert wList.listBox.item(2).text() == "word_c"
     assert wList.listBox.item(3).text() == "word_f"
     assert wList.listBox.item(4).text() == "word_g"
+    assert wList.listBox.count() == 5
 
-    # Add a blank word
+    # Add a blank word, which is ignored
     wList.newEntry.setText("   ")
-    assert not wList._doAdd()
+    wList._doAdd()
+    assert wList.listBox.count() == 5
 
-    # Add an existing word
+    # Add an existing word, which is ignored
     wList.newEntry.setText("word_c")
-    assert not wList._doAdd()
+    wList._doAdd()
+    assert wList.listBox.count() == 5
 
     # Add a new word
     wList.newEntry.setText("word_d")
-    assert wList._doAdd()
+    wList._doAdd()
+    assert wList.listBox.count() == 6
 
     # Check that the content now
     assert wList.listBox.item(0).text() == "word_a"
@@ -95,7 +98,7 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, projPath):
 
     # Delete a word
     wList.newEntry.setText("delete_me")
-    assert wList._doAdd()
+    wList._doAdd()
     assert wList.listBox.item(0).text() == "delete_me"
 
     delItem = wList.listBox.findItems("delete_me", Qt.MatchExactly)[0]
@@ -107,18 +110,14 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, projPath):
 
     # Save files
     assert wList._doSave()
-    assert readFile(dictFile) == (
-        "word_a\n"
-        "word_b\n"
-        "word_c\n"
-        "word_d\n"
-        "word_f\n"
-        "word_g\n"
-    )
-
-    # Save again and make it fail
-    monkeypatch.setattr("builtins.open", causeOSError)
-    assert not wList._doSave()
+    userDict.load()
+    assert len(list(userDict)) == 6
+    assert "word_a" in userDict
+    assert "word_b" in userDict
+    assert "word_c" in userDict
+    assert "word_d" in userDict
+    assert "word_f" in userDict
+    assert "word_g" in userDict
 
     # qtbot.stop()
     wList._doClose()

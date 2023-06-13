@@ -114,7 +114,7 @@ class GuiWordList(QDialog):
 
         return
 
-    def __del__(self):
+    def __del__(self):  # pragma: no cover
         logger.debug("Delete: GuiWordList")
         return
 
@@ -122,25 +122,25 @@ class GuiWordList(QDialog):
     #  Slots
     ##
 
-    def _doAdd(self) -> bool:
+    def _doAdd(self):
         """Add a new word to the word list."""
         word = self.newEntry.text().strip()
         if word == "":
             self.mainGui.makeAlert(self.tr(
                 "Cannot add a blank word."
             ), nwAlert.ERROR)
-            return False
+            return
 
         if self.listBox.findItems(word, Qt.MatchExactly):
             self.mainGui.makeAlert(self.tr(
                 "The word '{0}' is already in the word list."
             ).format(word), nwAlert.ERROR)
-            return False
+            return
 
         self.listBox.addItem(word)
         self.newEntry.setText("")
 
-        return True
+        return
 
     def _doDelete(self):
         """Delete the selected item."""

@@ -167,8 +167,7 @@ class GuiBuildSettings(QDialog):
 
         return
 
-    def __del__(self):
-        """For debug use only."""
+    def __del__(self):  # pragma: no cover
         logger.debug("Delete: GuiBuildSettings")
 
     def loadContent(self):

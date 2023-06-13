@@ -82,7 +82,7 @@ class GuiProjectDetails(NPagedDialog):
 
         return
 
-    def __del__(self):
+    def __del__(self):  # pragma: no cover
         logger.debug("Delete: GuiProjectDetails")
         return
 
