@@ -21,9 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 
-from time import time
 from shutil import copyfile
-from pathlib import Path
 from zipfile import ZipFile
 
 from mocked import causeOSError
@@ -31,8 +29,6 @@ from tools import C, cmpFiles, writeFile, buildTestProject, XML_IGNORE
 
 from novelwriter import CONFIG
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
-from novelwriter.common import formatTimeStamp
-from novelwriter.constants import nwFiles
 from novelwriter.core.tree import NWTree
 from novelwriter.core.index import NWIndex
 from novelwriter.core.project import NWProject
@@ -468,8 +464,7 @@ def testCoreProject_StatusImport(mockGUI, fncPath, mockRnd):
 
 @pytest.mark.core
 def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
-    """Test other project class methods and functions.
-    """
+    """Test other project class methods and functions."""
     theProject = NWProject(mockGUI)
     buildTestProject(theProject, fncPath)
 
@@ -577,46 +572,6 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     assert theProject.tree.handles() == newOrder
     assert theProject.setTreeOrder(oldOrder)
     assert theProject.tree.handles() == oldOrder
-
-    # Session stats
-    theProject.data.setInitCounts(50, 50)
-    theProject.data.setCurrCounts(100, 100)
-
-    # No path for writing
-    with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
-        assert theProject.session.appendSession(idleTime=0) is False
-
-    # Block open
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        assert theProject.session.appendSession(idleTime=0) is False
-
-    # Session too short
-    theProject._session._start = time()
-    theProject.data.setInitCounts(50, 50)
-    theProject.data.setCurrCounts(50, 50)
-    assert theProject.session.appendSession(idleTime=0) is False
-
-    # Write entry
-    statsFile = theProject.storage.getMetaFile(nwFiles.SESS_FILE)
-    assert isinstance(statsFile, Path)
-    if statsFile.exists():
-        statsFile.unlink()
-
-    theProject._session._start = 1600002000
-    theProject.data._initCounts = [50, 50]
-    theProject.data._currCounts = [200, 100]
-
-    with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.project.time", lambda: 1600005600)
-        assert theProject.session.appendSession(idleTime=99)
-
-    assert statsFile.read_text(encoding="utf-8") == (
-        "# Offset 100\n"
-        "# Start Time         End Time                Novel     Notes      Idle\n"
-        "%s  %s       200       100        99\n"
-    ) % (formatTimeStamp(1600002000), formatTimeStamp(1600005600))
 
 # END Test testCoreProject_Methods
 
