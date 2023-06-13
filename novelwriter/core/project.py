@@ -34,7 +34,6 @@ from functools import partial
 from PyQt5.QtCore import QCoreApplication, QObject, pyqtSignal
 
 from novelwriter import CONFIG, __version__, __hexversion__
-from novelwriter.core.sessions import NWSessionLog
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from novelwriter.error import logException
 from novelwriter.constants import trConst, nwLabels
@@ -43,6 +42,7 @@ from novelwriter.core.item import NWItem
 from novelwriter.core.index import NWIndex
 from novelwriter.core.options import OptionState
 from novelwriter.core.storage import NWStorage
+from novelwriter.core.sessions import NWSessionLog
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.core.projectdata import NWProjectData
 from novelwriter.common import (

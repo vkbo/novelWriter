@@ -89,7 +89,6 @@ class nwFiles:
     BUILDS_FILE = "builds.json"
     INDEX_FILE  = "index.json"
     OPTS_FILE   = "options.json"
-    PROJ_DICT   = "wordlist.txt"
     DICT_FILE   = "userdict.json"
     SESS_FILE   = "sessions.jsonl"
 

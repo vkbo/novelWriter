@@ -517,7 +517,7 @@ class NWIndex:
         """Count the number of words in the novel project."""
         wCount = 0
         for _, _, hItem in self._itemIndex.iterNovelStructure(skipExcl=skipExcl):
-            wCount += hItem.wordCount if isinstance(hItem, IndexHeading) else 0
+            wCount += hItem.wordCount
         return wCount
 
     def getNovelTitleCounts(self, skipExcl: bool = True) -> list[int]:

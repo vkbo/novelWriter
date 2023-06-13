@@ -45,9 +45,9 @@ from novelwriter import CONFIG
 from novelwriter.enum import (
     nwDocMode, nwItemClass, nwItemLayout, nwItemType, nwOutline
 )
+from novelwriter.error import logException
 from novelwriter.common import checkInt
 from novelwriter.constants import nwHeaders, trConst, nwKeyWords, nwLabels
-from novelwriter.error import logException
 from novelwriter.gui.components import NovelSelector
 
 

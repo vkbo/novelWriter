@@ -34,7 +34,7 @@ from novelwriter.error import logException
 from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwFiles
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
@@ -112,15 +112,14 @@ class NWSessionLog:
     def iterRecords(self) -> Iterator[dict]:
         """Iterate through all records in the log."""
         sessFile = self._project.storage.getMetaFile(nwFiles.SESS_FILE)
-        if not isinstance(sessFile, Path):
-            return
-        try:
-            with open(sessFile, mode="r", encoding="utf-8") as fObj:
-                for line in fObj:
-                    yield json.loads(line)
-        except Exception:
-            logger.error("Failed to process session stats file")
-            logException()
+        if isinstance(sessFile, Path):
+            try:
+                with open(sessFile, mode="r", encoding="utf-8") as fObj:
+                    for line in fObj:
+                        yield json.loads(line)
+            except Exception:
+                logger.error("Failed to process session stats file")
+                logException()
         return
 
     def createInitial(self, total: int) -> str:
