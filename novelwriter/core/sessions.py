@@ -27,7 +27,7 @@ import json
 import logging
 
 from time import time
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterator
 from pathlib import Path
 
 from novelwriter.error import logException
@@ -108,6 +108,20 @@ class NWSessionLog:
             return False
 
         return True
+
+    def iterRecords(self) -> Iterator[dict]:
+        """Iterate through all records in the log."""
+        sessFile = self._project.storage.getMetaFile(nwFiles.SESS_FILE)
+        if not isinstance(sessFile, Path):
+            return
+        try:
+            with open(sessFile, mode="r", encoding="utf-8") as fObj:
+                for line in fObj:
+                    yield json.loads(line)
+        except Exception:
+            logger.error("Failed to process session stats file")
+            logException()
+        return
 
     def createInitial(self, total: int) -> str:
         """Low level function to create the initial log file record."""

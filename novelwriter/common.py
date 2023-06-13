@@ -104,8 +104,7 @@ def checkBool(value: Any, default: bool) -> bool:
 
 
 def checkHandle(value, default, allowNone=False):
-    """Check if a value is a handle.
-    """
+    """Check if a value is a handle."""
     if allowNone and (value is None or value == "None"):
         return None
     if isHandle(value):

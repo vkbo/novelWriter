@@ -1,7 +1,6 @@
 """
 novelWriter – GUI Writing Statistics
 ====================================
-GUI class for the session statistics dialog
 
 File History:
 Created: 2019-10-20 [0.3]
@@ -22,12 +21,13 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import json
 import logging
 
-from pathlib import Path
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from PyQt5.QtGui import QPixmap, QCursor
 from PyQt5.QtCore import Qt
@@ -40,13 +40,20 @@ from novelwriter import CONFIG
 from novelwriter.enum import nwAlert
 from novelwriter.error import formatException
 from novelwriter.common import formatTime, checkInt, checkIntTuple, minmax
-from novelwriter.constants import nwConst, nwFiles
+from novelwriter.constants import nwConst
 from novelwriter.extensions.switch import NSwitch
+
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
 
 class GuiWritingStats(QDialog):
+    """GUI Tools: Writing Statistics
+
+    Displays data from the NWSessionLog object.
+    """
 
     C_TIME   = 0
     C_LENGTH = 1
@@ -57,7 +64,7 @@ class GuiWritingStats(QDialog):
     FMT_JSON = 0
     FMT_CSV  = 1
 
-    def __init__(self, mainGui):
+    def __init__(self, mainGui: GuiMain):
         super().__init__(parent=mainGui)
 
         logger.debug("Create: GuiWritingStats")
@@ -295,8 +302,7 @@ class GuiWritingStats(QDialog):
         return
 
     def populateGUI(self):
-        """Populate list box with data from the log file.
-        """
+        """Populate list box with data from the log file."""
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         self._loadLogFile()
         self._updateListBox()
@@ -308,8 +314,7 @@ class GuiWritingStats(QDialog):
     ##
 
     def _doClose(self):
-        """Save the state of the window, clear cache, end close.
-        """
+        """Save the state of the window, clear cache, end close."""
         self.logData = []
 
         winWidth     = CONFIG.rpxInt(self.width())
@@ -350,8 +355,7 @@ class GuiWritingStats(QDialog):
         return
 
     def _saveData(self, dataFmt):
-        """Save the content of the list box to a file.
-        """
+        """Save the content of the list box to a file."""
         fileExt = ""
         textFmt = ""
 
@@ -424,8 +428,7 @@ class GuiWritingStats(QDialog):
     ##
 
     def _loadLogFile(self):
-        """Load the content of the log file into a buffer.
-        """
+        """Load the content of the log file into a buffer."""
         logger.debug("Loading session log file")
 
         self.logData = []
@@ -436,50 +439,30 @@ class GuiWritingStats(QDialog):
         ttTime = 0
         ttIdle = 0
 
-        logFile = self.theProject.storage.getMetaFile(nwFiles.SESS_STATS)
-        if not isinstance(logFile, Path) or not logFile.exists():
-            logger.info("This project has no writing stats logfile")
-            return False
+        for record in self.theProject.session.iterRecords():
+            rType = record.get("type")
+            if rType == "initial":
+                self.wordOffset = checkInt(record.get("offset"), 0)
+                logger.debug("Initial word count when log was started is %d" % self.wordOffset)
+            elif rType == "record":
+                try:
+                    dStart = datetime.fromisoformat(str(record.get("start")))
+                    dEnd   = datetime.fromisoformat(str(record.get("end")))
+                except Exception:
+                    logger.error("Invalid session log record")
+                    continue
+                wcNovel = checkInt(record.get("novel"), 0)
+                wcNotes = checkInt(record.get("notes"), 0)
+                sIdle = checkInt(record.get("idle"), 0)
 
-        try:
-            with open(logFile, mode="r", encoding="utf-8") as inFile:
-                for inLine in inFile:
-                    if inLine.startswith("#"):
-                        if inLine.startswith("# Offset"):
-                            self.wordOffset = checkInt(inLine[9:].strip(), 0)
-                            logger.debug(
-                                "Initial word count when log was started is %d" % self.wordOffset
-                            )
-                        continue
+                tDiff = dEnd - dStart
+                sDiff = tDiff.total_seconds()
+                ttTime += sDiff
+                ttIdle += sIdle
+                ttNovel = wcNovel
+                ttNotes = wcNotes
 
-                    inData = inLine.split()
-                    if len(inData) < 6:
-                        continue
-
-                    dStart = datetime.fromisoformat(" ".join(inData[0:2]))
-                    dEnd   = datetime.fromisoformat(" ".join(inData[2:4]))
-
-                    sIdle = 0
-                    if len(inData) > 6:
-                        sIdle = checkInt(inData[6], 0)
-
-                    tDiff = dEnd - dStart
-                    sDiff = tDiff.total_seconds()
-                    ttTime += sDiff
-                    ttIdle += sIdle
-
-                    wcNovel = int(inData[4])
-                    wcNotes = int(inData[5])
-                    ttNovel = wcNovel
-                    ttNotes = wcNotes
-
-                    self.logData.append((dStart, sDiff, wcNovel, wcNotes, sIdle))
-
-        except Exception as exc:
-            self.mainGui.makeAlert(self.tr(
-                "Failed to read session log file."
-            ), nwAlert.ERROR, exception=exc)
-            return False
+                self.logData.append((dStart, sDiff, wcNovel, wcNotes, sIdle))
 
         ttWords = ttNovel + ttNotes
         self.labelTotal.setText(formatTime(round(ttTime)))
@@ -495,8 +478,7 @@ class GuiWritingStats(QDialog):
     ##
 
     def _updateListBox(self):
-        """Load/reload the content of the list box.
-        """
+        """Load/reload the content of the list box."""
         self.listBox.clear()
         self.timeFilter = 0.0
 
