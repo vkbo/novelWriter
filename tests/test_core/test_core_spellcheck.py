@@ -37,18 +37,18 @@ def testCoreSpell_FakeEnchant(monkeypatch):
         mp.setitem(sys.modules, "enchant", None)
         spChk = NWSpellEnchant()
         spChk.setLanguage("en_US", "")
-        assert isinstance(spChk._theDict, FakeEnchant)
+        assert isinstance(spChk._dictObj, FakeEnchant)
 
     # Request a non-existent dictionary
     spChk = NWSpellEnchant()
     spChk.setLanguage("whatchamajig", "")
-    assert isinstance(spChk._theDict, FakeEnchant)
+    assert isinstance(spChk._dictObj, FakeEnchant)
 
     # Request an emety language string
     # See issue https://github.com/vkbo/novelWriter/issues/1096
     spChk = NWSpellEnchant()
     spChk.setLanguage("", "")
-    assert isinstance(spChk._theDict, FakeEnchant)
+    assert isinstance(spChk._dictObj, FakeEnchant)
 
     # FakeEnchant should handle requests
     fkChk = FakeEnchant()
@@ -96,7 +96,7 @@ def testCoreSpell_Enchant(monkeypatch, fncPath):
 
     assert spChk._readProjectDictionary(None) is False
     assert spChk._readProjectDictionary(wList) is True
-    assert spChk._projectDict == wList
+    assert spChk._userDictPath == wList
 
     # Cannot write to file
     with monkeypatch.context() as mp:

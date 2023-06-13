@@ -1,7 +1,6 @@
 """
 novelWriter – GUI User Wordlist
 ===============================
-Class holding the user's wordlist dialog
 
 File History:
 Created: 2021-02-12 [1.2rc1]
@@ -22,28 +21,31 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QDialog, QDialogButtonBox, QVBoxLayout, QHBoxLayout, QListWidget,
-    QAbstractItemView, QPushButton, QLineEdit, QLabel
+    QAbstractItemView, QDialog, QDialogButtonBox, QHBoxLayout, QLabel,
+    QLineEdit, QListWidget, QListWidgetItem, QPushButton, QVBoxLayout
 )
 
 from novelwriter import CONFIG
 from novelwriter.enum import nwAlert
-from novelwriter.error import logException
-from novelwriter.constants import nwFiles
+from novelwriter.core.spellcheck import UserDictionary
+
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
 
 class GuiWordList(QDialog):
 
-    def __init__(self, mainGui):
+    def __init__(self, mainGui: GuiMain):
         super().__init__(parent=mainGui)
 
         logger.debug("Create: GuiWordList")
@@ -120,67 +122,49 @@ class GuiWordList(QDialog):
     #  Slots
     ##
 
-    def _doAdd(self):
-        """Add a new word to the word list.
-        """
-        newWord = self.newEntry.text().strip()
-        if newWord == "":
+    def _doAdd(self) -> bool:
+        """Add a new word to the word list."""
+        word = self.newEntry.text().strip()
+        if word == "":
             self.mainGui.makeAlert(self.tr(
                 "Cannot add a blank word."
             ), nwAlert.ERROR)
             return False
 
-        if self.listBox.findItems(newWord, Qt.MatchExactly):
+        if self.listBox.findItems(word, Qt.MatchExactly):
             self.mainGui.makeAlert(self.tr(
                 "The word '{0}' is already in the word list."
-            ).format(newWord), nwAlert.ERROR)
+            ).format(word), nwAlert.ERROR)
             return False
 
-        self.listBox.addItem(newWord)
+        self.listBox.addItem(word)
         self.newEntry.setText("")
 
         return True
 
     def _doDelete(self):
-        """Delete the selected item.
-        """
+        """Delete the selected item."""
         selItem = self.listBox.selectedItems()
         if selItem:
             self.listBox.takeItem(self.listBox.row(selItem[0]))
         return
 
     def _doSave(self):
-        """Save the new word list and close.
-        """
+        """Save the new word list and close."""
         self._saveGuiSettings()
-
-        dctFile = self.theProject.storage.getMetaFile(nwFiles.PROJ_DICT)
-        if not isinstance(dctFile, Path):
-            return False
-
-        tmpFile = dctFile.with_suffix(".tmp")
-        try:
-            with open(tmpFile, mode="w", encoding="utf-8") as outFile:
-                for i in range(self.listBox.count()):
-                    item = self.listBox.item(i)
-                    if item is not None:
-                        outFile.write(item.text() + "\n")
-
-            tmpFile.replace(dctFile)
-
-        except Exception:
-            logger.error("Could not save new word list")
-            logException()
-            self.reject()
-            return False
-
+        userDict = UserDictionary(self.theProject)
+        for i in range(self.listBox.count()):
+            item = self.listBox.item(i)
+            if isinstance(item, QListWidgetItem):
+                word = item.text().strip()
+                if word:
+                    userDict.add(word)
+        userDict.save()
         self.accept()
-
         return True
 
     def _doClose(self):
-        """Close without saving the word list.
-        """
+        """Close without saving the word list."""
         self._saveGuiSettings()
         self.reject()
         return
@@ -190,29 +174,17 @@ class GuiWordList(QDialog):
     ##
 
     def _loadWordList(self):
-        """Load the project's word list, if it exists.
-        """
-        wordList = self.theProject.storage.getMetaFile(nwFiles.PROJ_DICT)
-        if not isinstance(wordList, Path):
-            return False
-
+        """Load the project's word list, if it exists."""
+        userDict = UserDictionary(self.theProject)
+        userDict.load()
         self.listBox.clear()
-        if not wordList.exists():
-            logger.debug("No project dictionary file found")
-            return False
-
-        with open(wordList, mode="r", encoding="utf-8") as inFile:
-            for inLine in inFile:
-                theWord = inLine.strip()
-                if len(theWord) == 0:
-                    continue
-                self.listBox.addItem(theWord)
-
-        return True
+        for word in userDict:
+            if word:
+                self.listBox.addItem(word)
+        return
 
     def _saveGuiSettings(self):
-        """Save GUI settings.
-        """
+        """Save GUI settings."""
         winWidth  = CONFIG.rpxInt(self.width())
         winHeight = CONFIG.rpxInt(self.height())
 

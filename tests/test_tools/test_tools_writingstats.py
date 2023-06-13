@@ -28,7 +28,6 @@ from tools import getGuiItem, writeFile, buildTestProject
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QFileDialog
 
-from novelwriter.constants import nwFiles
 from novelwriter.tools.writingstats import GuiWritingStats
 
 
@@ -40,7 +39,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     buildTestProject(nwGUI, projPath)
     qtbot.wait(100)
     assert nwGUI.saveProject()
-    sessFile = projPath / "meta" / nwFiles.SESS_STATS
+    sessFile = projPath / "meta" / "sessionStats.log"
 
     # Open the Writing Stats dialog
     nwGUI.mainMenu.aWritingStats.activate(QAction.Trigger)

@@ -36,6 +36,7 @@ from novelwriter.common import minmax
 from novelwriter.constants import nwFiles
 from novelwriter.core.document import NWDocument
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
+from novelwriter.core.spellcheck import UserDictionary
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.project import NWProject
@@ -253,7 +254,7 @@ class NWStorage:
             (baseMeta / nwFiles.BUILDS_FILE, f"meta/{nwFiles.BUILDS_FILE}"),
             (baseMeta / nwFiles.INDEX_FILE,  f"meta/{nwFiles.INDEX_FILE}"),
             (baseMeta / nwFiles.OPTS_FILE,   f"meta/{nwFiles.OPTS_FILE}"),
-            (baseMeta / nwFiles.PROJ_DICT,   f"meta/{nwFiles.PROJ_DICT}"),
+            (baseMeta / nwFiles.DICT_FILE,   f"meta/{nwFiles.DICT_FILE}"),
             (baseMeta / nwFiles.SESS_FILE,   f"meta/{nwFiles.SESS_FILE}"),
         ]
         for contItem in baseCont.iterdir():
@@ -378,6 +379,10 @@ class NWStorage:
         if sessLog.is_file():
             self._convertOldLogFile(sessLog, path / "meta" / nwFiles.SESS_FILE)
 
+        wordList = path / "meta" / "wordlist.txt"
+        if wordList.is_file():
+            self._convertOldWordList(wordList)
+
         remove = [
             path / "meta" / "tagsIndex.json",          # Renamed in 2.1 Beta 1
             path / "meta" / "mainOptions.json",        # Replaced in 0.5
@@ -412,6 +417,31 @@ class NWStorage:
                 logger.warning("Failed to rename: %s", oldOpt, exc_info=exc)
 
         return
+
+    def _convertOldWordList(self, wordList: Path) -> bool:
+        """Convert the old word list plain text file to new format."""
+        if not wordList.exists():
+            # Nothing to convert
+            return True
+
+        userDict = UserDictionary(self._project)
+        try:
+            with open(wordList, mode="r", encoding="utf-8") as fObj:
+                for line in fObj:
+                    word = line.strip()
+                    if word:
+                        userDict.add(word)
+
+            # Dave dictionary and clean up old file
+            userDict.save()
+            wordList.unlink()
+
+        except Exception:
+            logger.error("Failed to convert old word list file")
+            logException()
+            return False
+
+        return True
 
     def _convertOldLogFile(self, sessLog: Path, sessJson: Path) -> bool:
         """Convert the old text log file format to the new JSON Lines

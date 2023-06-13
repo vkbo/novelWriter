@@ -27,7 +27,6 @@ from PyQt5.QtWidgets import QDialog, QAction
 from tools import buildTestProject, writeFile, readFile, getGuiItem
 from mocked import causeOSError
 
-from novelwriter.constants import nwFiles
 from novelwriter.dialogs.wordlist import GuiWordList
 
 
@@ -43,7 +42,7 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, projPath):
 
     # Open project
     nwGUI.openProject(projPath)
-    dictFile = projPath / "meta" / nwFiles.PROJ_DICT
+    dictFile = projPath / "meta" / "wordlist.txt"
 
     # Load the dialog
     nwGUI.mainMenu.aEditWordList.activate(QAction.Trigger)
