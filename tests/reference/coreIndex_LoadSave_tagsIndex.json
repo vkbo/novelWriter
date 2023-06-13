@@ -1,10 +1,10 @@
 {
-  "tagsIndex": {
+  "novelWriter.tagsIndex": {
     "Bod": {"handle": "4c4f28287af27", "heading": "T0001", "class": "CHARACTER"},
     "Main": {"handle": "2426c6f0ca922", "heading": "T0001", "class": "PLOT"},
     "Europe": {"handle": "04468803b92e1", "heading": "T0001", "class": "WORLD"}
   },
-  "itemIndex": {
+  "novelWriter.itemIndex": {
     "7a992350f3eb6": {
       "headings": {
         "T0001": {"level": "H1", "title": "Lorem Ipsum", "line": 1, "tag": "", "cCount": 230, "wCount": 40, "pCount": 3, "synopsis": ""}

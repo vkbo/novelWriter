@@ -125,7 +125,7 @@ def testCoreIndex_LoadSave(monkeypatch, prjLipsum, mockGUI, tstPaths):
     assert theIndex.indexBroken is True
 
     # Write an index file that passes loading, but is still empty
-    writeFile(projFile, '{"tagsIndex": {}, "itemIndex": {}}')
+    writeFile(projFile, '{"novelWriter.tagsIndex": {}, "novelWriter.itemIndex": {}}')
     assert theIndex.loadIndex() is True
     assert theIndex.indexBroken is False
 
@@ -1071,13 +1071,13 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     assert nStruct[3][0] == uHandle
 
     # Novel structure with root handle set
-    nStruct = list(itemIndex.iterNovelStructure(rootHandle=C.hNovelRoot))
+    nStruct = list(itemIndex.iterNovelStructure(rHandle=C.hNovelRoot))
     assert len(nStruct) == 3
     assert nStruct[0][0] == nHandle
     assert nStruct[1][0] == cHandle
     assert nStruct[2][0] == sHandle
 
-    nStruct = list(itemIndex.iterNovelStructure(rootHandle=mHandle))
+    nStruct = list(itemIndex.iterNovelStructure(rHandle=mHandle))
     assert len(nStruct) == 1
     assert nStruct[0][0] == uHandle
 
