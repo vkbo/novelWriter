@@ -47,6 +47,7 @@ from novelwriter.enum import (
 )
 from novelwriter.common import checkInt
 from novelwriter.constants import nwHeaders, trConst, nwKeyWords, nwLabels
+from novelwriter.error import logException
 from novelwriter.gui.components import NovelSelector
 
 
@@ -577,20 +578,23 @@ class GuiOutlineTree(QTreeWidget):
         and column width.
         """
         # Load whatever we saved last time, regardless of wether it
-        # contains the correct names or number of columns. The names
-        # must be valid though.
+        # contains the correct names or number of columns.
         colState = self.theProject.options.getValue("GuiOutline", "columnState", {})
 
         tmpOrder = []
         tmpHidden = {}
         tmpWidth = {}
-        for name, (hidden, width) in colState.items():
-            if name not in nwOutline.__members__:
-                logger.warning("Ignored unknown outline column '%s'", str(name))
-                continue
-            tmpOrder.append(nwOutline[name])
-            tmpHidden[nwOutline[name]] = hidden
-            tmpWidth[nwOutline[name]] = CONFIG.pxInt(width)
+        try:
+            for name, (hidden, width) in colState.items():
+                if name not in nwOutline.__members__:
+                    logger.warning("Ignored unknown outline column '%s'", str(name))
+                    continue
+                tmpOrder.append(nwOutline[name])
+                tmpHidden[nwOutline[name]] = hidden
+                tmpWidth[nwOutline[name]] = CONFIG.pxInt(width)
+        except Exception:
+            logger.error("Invalid column state")
+            logException()
 
         # Add columns that was not in the file to the treeOrder array.
         for hItem in nwOutline:

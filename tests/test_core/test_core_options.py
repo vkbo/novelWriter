@@ -73,7 +73,7 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
     assert theOpts.loadSettings()
 
     # Check that unwanted items have been removed
-    assert theOpts._theState == {
+    assert theOpts._state == {
         "GuiProjectSettings": {
             "winWidth": 570,
             "winHeight": 375,
@@ -88,7 +88,7 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
 
     # Load again to check we get the values back
     assert theOpts.loadSettings()
-    assert theOpts._theState == {
+    assert theOpts._state == {
         "GuiProjectSettings": {
             "winWidth": 570,
             "winHeight": 375,
