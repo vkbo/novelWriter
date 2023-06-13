@@ -471,7 +471,7 @@ class GuiWritingStats(QDialog):
         self.notesWords.setText(f"{ttNotes:n}")
         self.totalWords.setText(f"{ttWords:n}")
 
-        return True
+        return
 
     ##
     #  Slots

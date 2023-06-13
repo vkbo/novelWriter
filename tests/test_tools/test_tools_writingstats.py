@@ -20,14 +20,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import json
+from pathlib import Path
 import pytest
 
+from tools import getGuiItem, buildTestProject
 from mocked import causeOSError
-from tools import getGuiItem, writeFile, buildTestProject
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QFileDialog
 
+from novelwriter.constants import nwFiles
 from novelwriter.tools.writingstats import GuiWritingStats
 
 
@@ -37,9 +39,11 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     """
     # Create a project to work on
     buildTestProject(nwGUI, projPath)
+    project = nwGUI.theProject
+
     qtbot.wait(100)
     assert nwGUI.saveProject()
-    sessFile = projPath / "meta" / "sessionStats.log"
+    sessFile: Path = projPath / "meta" / nwFiles.SESS_FILE
 
     # Open the Writing Stats dialog
     nwGUI.mainMenu.aWritingStats.activate(QAction.Trigger)
@@ -53,52 +57,38 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
     # No initial logfile
     assert not sessFile.is_file()
-    assert not sessLog._loadLogFile()
+    assert list(project.session.iterRecords()) == []
 
     # Make a test log file
-    writeFile(sessFile, (
-        "# Offset 123\n"
-        "# Start Time         End Time                Novel     Notes      Idle\n"
-        "2020-01-01 21:00:00  2020-01-01 21:00:05         6         0\n"
-        "2020-01-03 21:00:00  2020-01-03 21:00:15       125         0\n"
-        "2020-01-03 21:30:00  2020-01-03 21:30:15       125         5\n"
-        "2020-01-06 21:00:00  2020-01-06 21:00:10       125         5\n"
-    ))
-    assert sessFile.is_file()
-    assert sessLog._loadLogFile()
+    data = [
+        project.session.createInitial(123),
+        project.session.createRecord("2020-01-01 21:00:00", "2020-01-01 21:00:05", 6, 0, 0),
+        project.session.createRecord("2020-01-03 21:00:00", "2020-01-03 21:00:15", 125, 0, 0),
+        project.session.createRecord("2020-01-03 21:30:00", "2020-01-03 21:30:15", 125, 5, 0),
+        project.session.createRecord("2020-01-06 21:00:00", "2020-01-06 21:00:10", 125, 5, 0),
+    ]
+    sessFile.write_text("".join(data), encoding="utf-8")
+    sessLog._loadLogFile()
     assert sessLog.wordOffset == 123
     assert len(sessLog.logData) == 4
-
-    # Make sure a faulty file can still be read
-    writeFile(sessFile, (
-        "# Offset abc123\n"
-        "# Start Time         End Time                Novel     Notes      Idle\n"
-        "2020-01-01 21:00:00  2020-01-01 21:00:05         6         0        50\n"
-        "2020-01-03 21:00:00  2020-01-03 21:00:15       125         0\n"
-        "2020-01-03 21:30:00  2020-01-03 21:30:15       125         5\n"
-        "2020-01-06 21:00:00  2020-01-06 21:00:10       125\n"
-    ))
-    assert sessLog._loadLogFile()
-    assert sessLog.wordOffset == 0
-    assert len(sessLog.logData) == 3
 
     # Test Exporting
     # ==============
 
-    writeFile(sessFile, (
-        "# Offset 1075\n"
-        "# Start Time         End Time                Novel     Notes      Idle\n"
-        "2021-01-31 19:00:00  2021-01-31 19:30:00       700       375         0\n"
-        "2021-02-01 19:00:00  2021-02-01 19:30:00       700       375        10\n"
-        "2021-02-01 20:00:00  2021-02-01 20:30:00       600       275        20\n"
-        "2021-02-02 19:00:00  2021-02-02 19:30:00       750       425        30\n"
-        "2021-02-02 20:00:00  2021-02-02 20:30:00       690       365        40\n"
-        "2021-02-03 19:00:00  2021-02-03 19:30:00       680       355        50\n"
-        "2021-02-04 19:00:00  2021-02-04 19:30:00       700       375        60\n"
-        "2021-02-05 19:00:00  2021-02-05 19:30:00       500       175        70\n"
-        "2021-02-06 19:00:00  2021-02-06 19:30:00       600       275        80\n"
-        "2021-02-07 19:00:00  2021-02-07 19:30:00       600       275        90\n"
-    ))
+    data = [
+        project.session.createInitial(1075),
+        project.session.createRecord("2021-01-31 19:00:00", "2021-01-31 19:30:00", 700, 375, 0),
+        project.session.createRecord("2021-02-01 19:00:00", "2021-02-01 19:30:00", 700, 375, 10),
+        project.session.createRecord("2021-02-01 20:00:00", "2021-02-01 20:30:00", 600, 275, 20),
+        project.session.createRecord("2021-02-02 19:00:00", "2021-02-02 19:30:00", 750, 425, 30),
+        project.session.createRecord("2021-02-02 20:00:00", "2021-02-02 20:30:00", 690, 365, 40),
+        project.session.createRecord("2021-02-03 19:00:00", "2021-02-03 19:30:00", 680, 355, 50),
+        project.session.createRecord("2021-02-04 19:00:00", "2021-02-04 19:30:00", 700, 375, 60),
+        project.session.createRecord("2021-02-05 19:00:00", "2021-02-05 19:30:00", 500, 175, 70),
+        project.session.createRecord("2021-02-06 19:00:00", "2021-02-06 19:30:00", 600, 275, 80),
+        project.session.createRecord("2021-02-07 19:00:00", "2021-02-07 19:30:00", 600, 275, 90),
+    ]
+    sessFile.write_text("".join(data), encoding="utf-8")
     sessLog.populateGUI()
 
     # Make the saving fail
