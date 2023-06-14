@@ -112,7 +112,7 @@ class NWSessionLog:
     def iterRecords(self) -> Iterator[dict]:
         """Iterate through all records in the log."""
         sessFile = self._project.storage.getMetaFile(nwFiles.SESS_FILE)
-        if isinstance(sessFile, Path):
+        if isinstance(sessFile, Path) and sessFile.is_file():
             try:
                 with open(sessFile, mode="r", encoding="utf-8") as fObj:
                     for line in fObj:
