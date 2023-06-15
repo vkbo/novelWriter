@@ -451,9 +451,9 @@ class GuiWritingStats(QDialog):
                 except Exception:
                     logger.error("Invalid session log record")
                     continue
-                wcNovel = checkInt(record.get("novel"), 0)
-                wcNotes = checkInt(record.get("notes"), 0)
-                sIdle = checkInt(record.get("idle"), 0)
+                wcNovel = max(checkInt(record.get("novel"), 0), 0)
+                wcNotes = max(checkInt(record.get("notes"), 0), 0)
+                sIdle = max(checkInt(record.get("idle"), 0), 0)
 
                 tDiff = dEnd - dStart
                 sDiff = tDiff.total_seconds()

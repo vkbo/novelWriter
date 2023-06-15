@@ -480,7 +480,7 @@ class _LegacyStorage:
                             end=f"{bits[2]} {bits[3]}",
                             novel=int(bits[4]),
                             notes=int(bits[5]),
-                            idle=int(bits[6]) if nBits > 6 else -1,
+                            idle=int(bits[6]) if nBits > 6 else 0,
                         ))
 
             with open(sessJson, mode="a+", encoding="utf-8") as fObj:
