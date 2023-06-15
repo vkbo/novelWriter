@@ -95,7 +95,7 @@ class NWErrorMessage(QDialog):
         self.mainBox.setSpacing(16)
 
         # Pick a random window title from a set of error messages by
-        # Hex, the computer, from Discworld
+        # Hex the computer, Unseen University, Ankh-Morpork, Discworld
         self.setWindowTitle([
             "+++ Out of Cheese Error +++",
             "+++ Divide by Cucumber Error +++",

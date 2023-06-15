@@ -23,6 +23,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import json
 import logging
 
 from time import time
@@ -88,13 +89,11 @@ class NWStorage:
         """Return the path used for project content. The folder must
         already exist, otherwise this property is None.
         """
-        if self._runtimePath is not None:
+        if isinstance(self._runtimePath, Path):
             contentPath = self._runtimePath / "content"
             if contentPath.is_dir():
                 return contentPath
-            else:
-                logger.error("Path not found: %s", contentPath)
-                return None
+        logger.error("Content path cannot be resolved")
         return None
 
     ##
@@ -143,7 +142,6 @@ class NWStorage:
         if self._openMode == self.MODE_INPLACE:
             # Nothing to do, so we just return
             return True
-
         return True
 
     def closeSession(self):
@@ -158,28 +156,26 @@ class NWStorage:
 
     def getXmlReader(self) -> ProjectXMLReader | None:
         """Return a properly configured ProjectXMLReader instance."""
-        if self._runtimePath is None:
-            return None
-        projFile = self._runtimePath / nwFiles.PROJ_FILE
-        xmlReader = ProjectXMLReader(projFile)
-        return xmlReader
+        if isinstance(self._runtimePath, Path):
+            projFile = self._runtimePath / nwFiles.PROJ_FILE
+            return ProjectXMLReader(projFile)
+        return None
 
     def getXmlWriter(self) -> ProjectXMLWriter | None:
         """Return a properly configured ProjectXMLWriter instance."""
-        if self._runtimePath is None:
-            return None
-        xmlWriter = ProjectXMLWriter(self._runtimePath)
-        return xmlWriter
+        if isinstance(self._runtimePath, Path):
+            return ProjectXMLWriter(self._runtimePath)
+        return None
 
     def getDocument(self, tHandle: str | None) -> NWDocument:
         """Return a document wrapper object."""
-        if self._runtimePath is not None:
+        if isinstance(self._runtimePath, Path):
             return NWDocument(self._project, tHandle)
         return NWDocument(self._project, None)
 
     def getMetaFile(self, fileName: str) -> Path | None:
         """Return the path to a file in the project meta folder."""
-        if self._runtimePath is not None:
+        if isinstance(self._runtimePath, Path):
             return self._runtimePath / "meta" / fileName
         return None
 
@@ -320,13 +316,15 @@ class NWStorage:
             # need for the remaning checks.
             return True
 
+        legacy = _LegacyStorage(self._project)
+
         # Check for legacy data folders
         for child in path.iterdir():
             if child.is_dir() and child.name.startswith("data_"):
-                self._legacyDataFolder(path, child)
+                legacy.legacyDataFolder(path, child)
 
         # Check for no longer used files, and delete them
-        self._deprecatedFiles(path)
+        legacy.deprecatedFiles(path)
 
         return True
 
@@ -334,7 +332,21 @@ class NWStorage:
     #  Legacy Project Data Handlers
     ##
 
-    def _legacyDataFolder(self, path: Path, child: Path):
+# END Class NWStorage
+
+
+class _LegacyStorage:
+    """Core: Legacy Storage Converter Utils
+
+    A class with various functions to convert old file formats and
+    file/folder layout to the current project format.
+    """
+
+    def __init__(self, project: NWProject):
+        self._project = project
+        return
+
+    def legacyDataFolder(self, path: Path, child: Path):
         """Handle the content of a legacy data folder from a version 1.0
         project.
         """
@@ -373,15 +385,20 @@ class NWStorage:
 
         return
 
-    def _deprecatedFiles(self, path: Path):
+    def deprecatedFiles(self, path: Path):
         """Handle files that are no longer used by novelWriter."""
-        sessLog = path / "meta" / "sessionStats.log"
-        if sessLog.is_file():
-            self._convertOldLogFile(sessLog, path / "meta" / nwFiles.SESS_FILE)
-
-        wordList = path / "meta" / "wordlist.txt"
-        if wordList.is_file():
-            self._convertOldWordList(wordList)
+        self._convertOldWordList(  # Changed in 2.1 Beta 1
+            path / "meta" / "wordlist.txt",
+            path / "meta" / nwFiles.DICT_FILE
+        )
+        self._convertOldLogFile(  # Changed in 2.1 Beta 1
+            path / "meta" / "sessionStats.log",
+            path / "meta" / nwFiles.SESS_FILE
+        )
+        self._convertOldOptionsFile(  # Changed in 2.1 Beta 1
+            path / "meta" / "guiOptions.json",
+            path / "meta" / nwFiles.OPTS_FILE
+        )
 
         remove = [
             path / "meta" / "tagsIndex.json",          # Renamed in 2.1 Beta 1
@@ -406,55 +423,51 @@ class NWStorage:
                 except Exception as exc:
                     logger.warning("Failed to delete: %s", item, exc_info=exc)
 
-        # Renamed in 2.1 Beta 1, but this file we want to keep
-        oldOpt = path / "meta" / "guiOptions.json"
-        newOpt = path / "meta" / nwFiles.OPTS_FILE
-        if oldOpt.is_file():
-            try:
-                oldOpt.rename(newOpt)
-                logger.info("Renamed: %s > %s", oldOpt, newOpt)
-            except Exception as exc:
-                logger.warning("Failed to rename: %s", oldOpt, exc_info=exc)
-
         return
 
-    def _convertOldWordList(self, wordList: Path) -> bool:
+    ##
+    #  Internal Functions
+    ##
+
+    def _convertOldWordList(self, wordList: Path, wordJson: Path):
         """Convert the old word list plain text file to new format."""
-        if not wordList.exists():
-            # Nothing to convert
-            return True
+        if wordJson.exists() or not wordList.exists():
+            # If the new file already exists, we won't overwrite it
+            return
 
         userDict = UserDictionary(self._project)
         try:
+            logger.info("Converting: %s", wordList)
             with open(wordList, mode="r", encoding="utf-8") as fObj:
                 for line in fObj:
                     word = line.strip()
                     if word:
                         userDict.add(word)
 
-            # Dave dictionary and clean up old file
+            # Save dictionary and clean up old file
             userDict.save()
+            assert wordJson.exists()
             wordList.unlink()
 
         except Exception:
             logger.error("Failed to convert old word list file")
             logException()
-            return False
 
-        return True
+        return
 
-    def _convertOldLogFile(self, sessLog: Path, sessJson: Path) -> bool:
+    def _convertOldLogFile(self, sessLog: Path, sessJson: Path):
         """Convert the old text log file format to the new JSON Lines
         format.
         """
         if sessJson.exists() or not sessLog.exists():
             # If the new file already exists, we won't overwrite it
-            return True
+            return
 
         try:
             data = []
             offset = 0
             session = self._project.session
+            logger.info("Converting: %s", sessLog)
             with open(sessLog, mode="r", encoding="utf-8") as fObj:
                 for record in fObj:
                     bits = record.split()
@@ -480,8 +493,40 @@ class NWStorage:
         except Exception:
             logger.error("Failed to convert old stats file")
             logException()
-            return False
 
-        return True
+        return
 
-# END Class NWStorage
+    def _convertOldOptionsFile(self, optsOld: Path, optsNew: Path):
+        """Convert the old options state file format to the format."""
+        if optsNew.exists() or not optsOld.exists():
+            # If the new file already exists, we won't overwrite it
+            return
+
+        try:
+            data = {}
+            logger.info("Converting: %s", optsOld)
+            with open(optsOld, mode="r", encoding="utf-8") as fObj:
+                data = json.load(fObj)
+
+                # Convert Outline Values
+                state = {}
+                outline = data.get("GuiOutline", {})
+                hidden = outline.get("columnHidden", {})
+                width = outline.get("columnWidth", {})
+                for key in outline.get("headerOrder", []):
+                    state[key] = [hidden.get(key, False), width.get(key, 100)]
+                data["columnState"] = state
+
+            with open(optsNew, mode="w", encoding="utf-8") as fObj:
+                json.dump({"novelWriter.guiOptions": data}, fObj, indent=2)
+
+            # If we're here, we remove the old file
+            optsOld.unlink()
+
+        except Exception:
+            logger.error("Failed to convert old options file")
+            logException()
+
+        return
+
+# END Class _LegacyStorage
