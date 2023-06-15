@@ -507,21 +507,24 @@ class _LegacyStorage:
             logger.info("Converting: %s", optsOld)
             with open(optsOld, mode="r", encoding="utf-8") as fObj:
                 data = json.load(fObj)
-
-                # Convert Outline Values
-                state = {}
-                outline = data.get("GuiOutline", {})
-                hidden = outline.get("columnHidden", {})
-                width = outline.get("columnWidth", {})
-                for key in outline.get("headerOrder", []):
-                    state[key] = [hidden.get(key, False), width.get(key, 100)]
-                data["columnState"] = state
+                if "GuiOutline" in data:
+                    # Convert Outline Values
+                    state = {}
+                    outline = data.get("GuiOutline", {})
+                    hidden = outline.get("columnHidden", {})
+                    width = outline.get("columnWidth", {})
+                    for key in outline.get("headerOrder", []):
+                        state[key] = [hidden.get(key, False), width.get(key, 100)]
+                    data["GuiOutline"]["columnState"] = state
 
             with open(optsNew, mode="w", encoding="utf-8") as fObj:
                 json.dump({"novelWriter.guiOptions": data}, fObj, indent=2)
 
-            # If we're here, we remove the old file
+            # If we're here, we remove the old file, and then we reload
+            # the converted file and save it again
             optsOld.unlink()
+            self._project.options.loadSettings()
+            self._project.options.saveSettings()
 
         except Exception:
             logger.error("Failed to convert old options file")

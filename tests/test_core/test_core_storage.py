@@ -466,7 +466,7 @@ def testCoreStorage_OldFormatConvert(monkeypatch, mockGUI, fncPath):
     assert data["novelWriter.guiOptions"]["GuiProjectSettings"] == {
         "winWidth": 570, "winHeight": 375
     }
-    assert data["novelWriter.guiOptions"]["columnState"] == {
+    assert data["novelWriter.guiOptions"]["GuiOutline"]["columnState"] == {
         "TITLE": [False, 325],
         "LEVEL": [True, 40],
         "LABEL": [False, 267],
