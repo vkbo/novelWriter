@@ -196,6 +196,8 @@ class GuiManuscriptBuild(QDialog):
         self.mainSplit.setHandleWidth(sp16)
         self.mainSplit.setCollapsible(0, False)
         self.mainSplit.setCollapsible(1, False)
+        self.mainSplit.setStretchFactor(0, 0)
+        self.mainSplit.setStretchFactor(1, 1)
         self.mainSplit.setSizes([
             CONFIG.pxInt(pOptions.getInt("GuiManuscriptBuild", "fmtWidth", wWin//2)),
             CONFIG.pxInt(pOptions.getInt("GuiManuscriptBuild", "sumWidth", wWin//2)),
@@ -233,8 +235,7 @@ class GuiManuscriptBuild(QDialog):
 
         return
 
-    def __del__(self):
-        """For debug use only."""
+    def __del__(self):  # pragma: no cover
         logger.debug("Delete: GuiManuscriptBuild")
         return
 

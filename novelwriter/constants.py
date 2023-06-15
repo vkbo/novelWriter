@@ -87,10 +87,10 @@ class nwFiles:
 
     # Project Meta Files
     BUILDS_FILE = "builds.json"
-    INDEX_FILE  = "tagsIndex.json"
-    OPTS_FILE   = "guiOptions.json"
-    PROJ_DICT   = "wordlist.txt"
-    SESS_STATS  = "sessionStats.log"
+    INDEX_FILE  = "index.json"
+    OPTS_FILE   = "options.json"
+    DICT_FILE   = "userdict.json"
+    SESS_FILE   = "sessions.jsonl"
 
 # END Class nwFiles
 

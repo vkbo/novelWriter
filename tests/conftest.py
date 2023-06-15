@@ -61,8 +61,7 @@ def resetConfigVars():
 
 @pytest.fixture(scope="session", autouse=True)
 def sessionFixture():
-    """A session wide fixture to set up the test environment.
-    """
+    """A session wide fixture to set up the test environment."""
     if _TMP_ROOT.exists():
         shutil.rmtree(_TMP_ROOT)
     _TMP_ROOT.mkdir()
@@ -111,8 +110,7 @@ def tstPaths():
 
 @pytest.fixture(scope="function")
 def fncPath():
-    """A temporary folder for a single test function.
-    """
+    """A temporary folder for a single test function."""
     fncPath = _TMP_ROOT / "function"
     if fncPath.is_dir():
         shutil.rmtree(fncPath)
@@ -139,16 +137,14 @@ def projPath(fncPath):
 
 @pytest.fixture(scope="function")
 def mockGUI():
-    """Create a mock instance of novelWriter's main GUI class.
-    """
+    """Create a mock instance of novelWriter's main GUI class."""
     theGui = MockGuiMain()
     return theGui
 
 
 @pytest.fixture(scope="function")
 def nwGUI(qtbot, monkeypatch, functionFixture):
-    """Create an instance of the novelWriter GUI.
-    """
+    """Create an instance of the novelWriter GUI."""
     monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Ok)
     monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Ok)
     monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Ok)

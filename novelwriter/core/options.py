@@ -32,7 +32,7 @@ from typing import TYPE_CHECKING, Any
 from pathlib import Path
 
 from novelwriter.error import logException
-from novelwriter.common import checkBool, checkFloat, checkInt, checkString
+from novelwriter.common import checkBool, checkFloat, checkInt, checkString, jsonEncode
 from novelwriter.constants import nwFiles
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -47,7 +47,7 @@ VALID_MAP = {
         "hideZeros", "hideNegative", "groupByDay", "showIdleTime", "histMax",
     },
     "GuiDocSplit": {"spLevel", "intoFolder", "docHierarchy"},
-    "GuiOutline": {"headerOrder", "columnWidth", "columnHidden"},
+    "GuiOutline": {"columnState"},
     "GuiProjectSettings": {
         "winWidth", "winHeight", "replaceColW", "statusColW", "importColW",
     },
@@ -79,7 +79,7 @@ class OptionState:
 
     def __init__(self, project: NWProject):
         self._project = project
-        self._theState = {}
+        self._state = {}
         return
 
     ##
@@ -93,24 +93,25 @@ class OptionState:
         if not isinstance(stateFile, Path):
             return False
 
-        theState = {}
+        data = {}
         if stateFile.exists():
             logger.debug("Loading GUI options file")
             try:
                 with open(stateFile, mode="r", encoding="utf-8") as inFile:
-                    theState = json.load(inFile)
+                    data = json.load(inFile)
             except Exception:
                 logger.error("Failed to load GUI options file")
                 logException()
                 return False
 
         # Filter out unused variables
-        for aGroup in theState:
+        state = data.get("novelWriter.guiOptions", {})
+        for aGroup in state:
             if aGroup in VALID_MAP:
-                self._theState[aGroup] = {}
-                for anOpt in theState[aGroup]:
+                self._state[aGroup] = {}
+                for anOpt in state[aGroup]:
                     if anOpt in VALID_MAP[aGroup]:
-                        self._theState[aGroup][anOpt] = theState[aGroup][anOpt]
+                        self._state[aGroup][anOpt] = state[aGroup][anOpt]
 
         return True
 
@@ -122,8 +123,9 @@ class OptionState:
 
         logger.debug("Saving GUI options file")
         try:
-            with open(stateFile, mode="w+", encoding="utf-8") as outFile:
-                json.dump(self._theState, outFile, indent=2)
+            with open(stateFile, mode="w+", encoding="utf-8") as fObj:
+                data = {"novelWriter.guiOptions": self._state}
+                fObj.write(jsonEncode(data, nmax=4))
         except Exception:
             logger.error("Failed to save GUI options file")
             logException()
@@ -145,13 +147,13 @@ class OptionState:
             logger.error("Unknown option name '%s'", name)
             return False
 
-        if group not in self._theState:
-            self._theState[group] = {}
+        if group not in self._state:
+            self._state[group] = {}
 
         if isinstance(value, Enum):
-            self._theState[group][name] = value.name
+            self._state[group][name] = value.name
         else:
-            self._theState[group][name] = value
+            self._state[group][name] = value
 
         return True
 
@@ -163,40 +165,40 @@ class OptionState:
         """Return an arbitrary type value, if it exists. Otherwise,
         return the default value.
         """
-        if group in self._theState:
-            return self._theState[group].get(name, default)
+        if group in self._state:
+            return self._state[group].get(name, default)
         return default
 
     def getString(self, group: str, name: str, default: str) -> str:
         """Return the value as a string, if it exists. Otherwise, return
         the default value.
         """
-        if group in self._theState:
-            return checkString(self._theState[group].get(name, default), default)
+        if group in self._state:
+            return checkString(self._state[group].get(name, default), default)
         return default
 
     def getInt(self, group: str, name: str, default: int) -> int:
         """Return the value as an int, if it exists. Otherwise, return
         the default value.
         """
-        if group in self._theState:
-            return checkInt(self._theState[group].get(name, default), default)
+        if group in self._state:
+            return checkInt(self._state[group].get(name, default), default)
         return default
 
     def getFloat(self, group: str, name: str, default: float) -> float:
         """Return the value as a float, if it exists. Otherwise, return
         the default value.
         """
-        if group in self._theState:
-            return checkFloat(self._theState[group].get(name, default), default)
+        if group in self._state:
+            return checkFloat(self._state[group].get(name, default), default)
         return default
 
     def getBool(self, group: str, name: str, default: bool) -> bool:
         """Return the value as a bool, if it exists. Otherwise, return
         the default value.
         """
-        if group in self._theState:
-            return checkBool(self._theState[group].get(name, default), default)
+        if group in self._state:
+            return checkBool(self._state[group].get(name, default), default)
         return default
 
     def getEnum(self, group: str, name: str, lookup: type, default: Enum) -> Enum:
@@ -204,9 +206,9 @@ class OptionState:
         default value.
         """
         if issubclass(lookup, Enum):
-            if group in self._theState:
-                if name in self._theState[group]:
-                    value = self._theState[group][name]
+            if group in self._state:
+                if name in self._state[group]:
+                    value = self._state[group][name]
                     if value in lookup.__members__:
                         return lookup[value]
         return default

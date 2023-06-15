@@ -1,7 +1,6 @@
 """
 novelWriter – Spell Check Classes
 =================================
-Wrapper classes for spell checking tools
 
 File History:
 Created: 2019-06-11 [0.1.5]
@@ -22,29 +21,37 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
+import json
 import logging
 
-from collections import namedtuple
+from typing import TYPE_CHECKING, Iterator
 from pathlib import Path
 
 from novelwriter.error import logException
+from novelwriter.constants import nwFiles
+
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 
 
 class NWSpellEnchant:
+    """Core: Enchant Spell Checking Wrapper
 
-    def __init__(self):
+    This is a rapper class for Enchant to keep the API consistent
+    between spell check tools.
+    """
 
-        self._theDict = None
-        self._projDict = set()
-        self._projectDict = None
-        self._spellLanguage = None
-        self._theBroker = None
-
+    def __init__(self, project: NWProject):
+        self._project = project
+        self._dictObj = FakeEnchant()
+        self._userDict = UserDictionary(project)
+        self._language = None
+        self._broker = None
         logger.debug("Enchant spell checking activated")
-
         return
 
     ##
@@ -52,43 +59,43 @@ class NWSpellEnchant:
     ##
 
     @property
-    def spellLanguage(self):
-        return self._spellLanguage
+    def spellLanguage(self) -> str | None:
+        return self._language
 
     ##
     #  Setters
     ##
 
-    def setLanguage(self, theLang, projectDict=None):
+    def setLanguage(self, language: str | None):
         """Load a dictionary for the language specified in the config.
         If that fails, we load a mock dictionary so that lookups don't
         crash. Note that enchant will allow loading an empty string as
         a tag, but this will fail later on. See issue #1096.
         """
-        self._theBroker = None
-        self._theDict = None
-        self._spellLanguage = None
+        self._dictObj = FakeEnchant()
+        self._broker = None
+        self._language = None
 
         try:
             import enchant
 
-            if theLang and enchant.dict_exists(theLang):
-                self._theBroker = enchant.Broker()
-                self._theDict = self._theBroker.request_dict(theLang)
-                self._spellLanguage = theLang
-                logger.debug("Enchant spell checking for language '%s' loaded", theLang)
+            if language and enchant.dict_exists(language):
+                self._broker = enchant.Broker()
+                self._dictObj = self._broker.request_dict(language)
+                self._language = language
+                logger.debug("Enchant spell checking for language '%s' loaded", language)
             else:
-                logger.warning("Enchant found no dictionary for language '%s'", theLang)
+                logger.warning("Enchant found no dictionary for language '%s'", language)
 
         except Exception:
-            logger.error("Failed to load enchant spell checking for language '%s'", theLang)
+            logger.error("Failed to load enchant spell checking for language '%s'", language)
 
-        if self._theDict is None:
-            self._theDict = FakeEnchant()
+        if self._dictObj is None:
+            self._dictObj = FakeEnchant()
         else:
-            self._readProjectDictionary(projectDict)
-            for pWord in self._projDict:
-                self._theDict.add_to_session(pWord)
+            self._userDict.load()
+            for pWord in self._userDict:
+                self._dictObj.add_to_session(pWord)
 
         return
 
@@ -96,47 +103,38 @@ class NWSpellEnchant:
     #  Methods
     ##
 
-    def checkWord(self, theWord):
-        """Wrapper function for pyenchant.
-        """
+    def checkWord(self, word: str) -> bool:
+        """Wrapper function for pyenchant."""
         try:
-            return self._theDict.check(theWord)
+            return bool(self._dictObj.check(word))
         except Exception:
             return True
 
-    def suggestWords(self, theWord):
-        """Wrapper function for pyenchant.
-        """
+    def suggestWords(self, word: str) -> list[str]:
+        """Wrapper function for pyenchant."""
         try:
-            return self._theDict.suggest(theWord)
+            return self._dictObj.suggest(word)
         except Exception:
             return []
 
-    def addWord(self, newWord):
-        """Add a word to the project dictionary.
-        """
+    def addWord(self, word: str) -> bool:
+        """Add a word to the project dictionary."""
+        word = word.strip()
+        if not word:
+            return False
         try:
-            self._theDict.add_to_session(newWord)
+            self._dictObj.add_to_session(word)
         except Exception:
             return False
 
-        if self._projectDict is not None and newWord not in self._projDict:
-            newWord = newWord.strip()
-            try:
-                with open(self._projectDict, mode="a+", encoding="utf-8") as outFile:
-                    outFile.write("%s\n" % newWord)
-                self._projDict.add(newWord)
-            except Exception:
-                logger.error("Failed to add word to project word list %s", str(self._projectDict))
-                logException()
-                return False
-            return True
+        added = self._userDict.add(word)
+        if added:
+            self._userDict.save()
 
-        return False
+        return added
 
-    def listDictionaries(self):
-        """Wrapper function for pyenchant.
-        """
+    def listDictionaries(self) -> list[tuple[str, str]]:
+        """Wrapper function for pyenchant."""
         retList = []
         try:
             import enchant
@@ -147,73 +145,98 @@ class NWSpellEnchant:
 
         return retList
 
-    def describeDict(self):
+    def describeDict(self) -> tuple[str, str]:
         """Return the tag and provider of the currently loaded
         dictionary.
         """
         try:
-            spTag = self._theDict.tag
-            spName = self._theDict.provider.name
+            tag = self._dictObj.tag
+            name = self._dictObj.provider.name  # type: ignore
         except Exception:
             logger.error("Failed to extract information about the dictionary")
             logException()
-            spTag = ""
-            spName = ""
+            tag = ""
+            name = ""
 
-        return spTag, spName
-
-    ##
-    #  Internal Functions
-    ##
-
-    def _readProjectDictionary(self, projectDict):
-        """Read the content of the project dictionary, and add it to the
-        lookup lists.
-        """
-        self._projDict = set()
-        self._projectDict = projectDict
-
-        if not isinstance(projectDict, Path):
-            return False
-
-        if not projectDict.exists():
-            return False
-
-        try:
-            logger.debug("Loading project word list")
-            with open(projectDict, mode="r", encoding="utf-8") as wordsFile:
-                for theLine in wordsFile:
-                    theLine = theLine.strip()
-                    if len(theLine) > 0 and theLine not in self._projDict:
-                        self._projDict.add(theLine)
-            logger.debug("Project word list contains %d words", len(self._projDict))
-
-        except Exception:
-            logger.error("Failed to load project word list")
-            logException()
-            return False
-
-        return True
+        return tag, name
 
 # END Class NWSpellEnchant
 
 
 class FakeEnchant:
-    """Fallback for when Enchant is selected, but not installed.
-    """
+    """Fallback for when Enchant is selected, but not installed."""
     def __init__(self):
+
+        class FakeProvider:
+            name = ""
+
         self.tag = ""
-        self.provider = namedtuple("provider", "name")
-        self.provider.name = ""
+        self.provider = FakeProvider()
+
         return
 
-    def check(self, theWord):
+    def check(self, word: str) -> bool:
         return True
 
-    def suggest(self, theWord):
+    def suggest(self, word) -> list[str]:
         return []
 
-    def add_to_session(self, theWord):
+    def add_to_session(self, word: str):
         return
 
 # END Class FakeEnchant
+
+
+class UserDictionary:
+
+    def __init__(self, project: NWProject):
+        self._project = project
+        self._words = set()
+        self._path = None
+        return
+
+    def __contains__(self, word: str) -> bool:
+        return word in self._words
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._words)
+
+    def add(self, word: str) -> bool:
+        """Add a word to the dictionary, and return True if it was
+        added, or False if it already existed.
+        """
+        if word in self._words:
+            return False
+        self._words.add(word)
+        return True
+
+    def load(self):
+        """Load the user's dictionary."""
+        self._path = self._project.storage.getMetaFile(nwFiles.DICT_FILE)
+        if not isinstance(self._path, Path):
+            return
+        try:
+            with open(self._path, mode="r", encoding="utf-8") as fObj:
+                data = json.load(fObj)
+            self._words = set(data.get("novelWriter.userDict", []))
+        except Exception:
+            logger.error("Failed to load user dictionary")
+            logException()
+        return
+
+    def save(self):
+        """Save the user's dictionary."""
+        if self._path is None:
+            self._path = self._project.storage.getMetaFile(nwFiles.DICT_FILE)
+        if not isinstance(self._path, Path):
+            return
+        try:
+            with open(self._path, mode="w", encoding="utf-8") as fObj:
+                data = {"novelWriter.userDict": list(self._words)}
+                json.dump(data, fObj, indent=2)
+        except Exception:
+            logger.error("Failed to save user dictionary")
+            logException()
+        return
+
+# END Class UserDictionary

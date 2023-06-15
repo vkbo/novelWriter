@@ -21,34 +21,119 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import sys
 import pytest
+import enchant
 
+from pathlib import Path
+
+from tools import buildTestProject
 from mocked import causeOSError
-from tools import readFile, writeFile
 
-from novelwriter.core.spellcheck import FakeEnchant, NWSpellEnchant
+from novelwriter.constants import nwFiles
+from novelwriter.core.project import NWProject
+from novelwriter.core.spellcheck import FakeEnchant, NWSpellEnchant, UserDictionary
 
 
 @pytest.mark.core
-def testCoreSpell_FakeEnchant(monkeypatch):
-    """Test the FakeEnchant spell checker fallback.
-    """
+def testCoreSpell_UserDictionary(monkeypatch, mockGUI, fncPath):
+    """Test the UserDictionary class."""
+    project = NWProject(mockGUI)
+    buildTestProject(project, fncPath)
+
+    # Check that there is no file before we start
+    dictFile = project.storage.getMetaFile(nwFiles.DICT_FILE)
+    assert isinstance(dictFile, Path)
+    assert not dictFile.exists()
+
+    # Add a couple of words
+    userDict = UserDictionary(project)
+    assert userDict.add("foo") is True
+    assert userDict.add("bar") is True
+    assert userDict.add("bar") is False  # No duplicates
+
+    # Check that we have them
+    assert "foo" in userDict
+    assert "bar" in userDict
+
+    # Check the iterator
+    assert sorted(userDict) == ["bar", "foo"]
+
+    # Save the file, but fail
+    assert userDict._path is None
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        userDict.save()
+
+    # There should be no file, but the file path should now be cached
+    assert userDict._path == dictFile
+    assert not dictFile.exists()
+
+    # Break the path check
+    userDict._path = None
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
+        userDict.save()
+
+    # There should still be no file
+    assert not dictFile.exists()
+
+    # Save proper
+    userDict.save()
+    assert dictFile.exists()
+
+    # Clear the dictionary
+    userDict._words = set()
+    assert sorted(userDict) == []
+
+    # Load the file, but fail
+    userDict._path = None
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        userDict.load()
+
+    # Path is now set, but no words
+    assert userDict._path == dictFile
+    assert sorted(userDict) == []
+
+    # Break the path check
+    userDict._path = None
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
+        userDict.load()
+
+    # Path is now None, and no words
+    assert userDict._path is None
+    assert sorted(userDict) == []
+
+    # Load the words again, properly
+    userDict.load()
+    assert sorted(userDict) == ["bar", "foo"]
+
+# END Test testCoreSpell_UserDictionary
+
+
+@pytest.mark.core
+def testCoreSpell_FakeEnchant(monkeypatch, mockGUI, fncPath):
+    """Test the FakeEnchant spell checker fallback."""
+    project = NWProject(mockGUI)
+    buildTestProject(project, fncPath)
+
     # Make package import fail
     with monkeypatch.context() as mp:
         mp.setitem(sys.modules, "enchant", None)
-        spChk = NWSpellEnchant()
-        spChk.setLanguage("en_US", "")
-        assert isinstance(spChk._theDict, FakeEnchant)
+        spChk = NWSpellEnchant(project)
+        spChk.setLanguage("en_US")
+        assert isinstance(spChk._dictObj, FakeEnchant)
 
     # Request a non-existent dictionary
-    spChk = NWSpellEnchant()
-    spChk.setLanguage("whatchamajig", "")
-    assert isinstance(spChk._theDict, FakeEnchant)
+    spChk = NWSpellEnchant(project)
+    spChk.setLanguage("whatchamajig")
+    assert isinstance(spChk._dictObj, FakeEnchant)
 
-    # Request an emety language string
+    # Request an empty language string
     # See issue https://github.com/vkbo/novelWriter/issues/1096
-    spChk = NWSpellEnchant()
-    spChk.setLanguage("", "")
-    assert isinstance(spChk._theDict, FakeEnchant)
+    spChk = NWSpellEnchant(project)
+    spChk.setLanguage("")
+    assert isinstance(spChk._dictObj, FakeEnchant)
 
     # FakeEnchant should handle requests
     fkChk = FakeEnchant()
@@ -62,103 +147,53 @@ def testCoreSpell_FakeEnchant(monkeypatch):
 
 
 @pytest.mark.core
-def testCoreSpell_Enchant(monkeypatch, fncPath):
-    """Test the pyenchant spell checker.
-    """
-    wList = fncPath / "wordlist.txt"
-    writeFile(wList, "a_word\nb_word\nc_word\n")
+def testCoreSpell_Enchant(monkeypatch, mockGUI, fncPath):
+    """Test the pyenchant spell checker."""
+    project = NWProject(mockGUI)
+    buildTestProject(project, fncPath)
 
     # Break the enchant package, and check error handling
     with monkeypatch.context() as mp:
         mp.setitem(sys.modules, "enchant", None)
-        spChk = NWSpellEnchant()
+        spChk = NWSpellEnchant(project)
+        assert spChk.spellLanguage is None
         assert spChk.listDictionaries() == []
         assert spChk.describeDict() == ("", "")
 
-    # Set the dict to None, and check dictionary call error handling
-    spChk = NWSpellEnchant()
-    spChk.theDict = None
+        spChk.setLanguage("en_US")
+        assert spChk.spellLanguage is None
+
+        # Check that the FakeEnchant class is actually handling this
+        assert isinstance(spChk._dictObj, FakeEnchant)
+        assert spChk.checkWord("word") is True
+        assert spChk.suggestWords("word") == []
+        assert spChk.addWord("word") is True
+
+    # Set the dict to None, and check enchant error handling
+    spChk = NWSpellEnchant(project)
+    spChk._dictObj = None  # type: ignore
     assert spChk.checkWord("word") is True
     assert spChk.suggestWords("word") == []
     assert spChk.addWord("word") is False
+    assert spChk.addWord("\n\t ") is False
+    assert spChk.describeDict() == ("", "")
 
     # Load the proper enchant package (twice)
-    spChk = NWSpellEnchant()
-    spChk.setLanguage("en_US", wList)
-    spChk.setLanguage("en_US", wList)
+    spChk = NWSpellEnchant(project)
+    spChk.setLanguage("en_US")
+    spChk.setLanguage("en_US")
+    assert isinstance(spChk._dictObj, enchant.Dict)
     assert spChk.spellLanguage == "en_US"
+    assert spChk.listDictionaries() != []
+    assert spChk.describeDict() != ("", "")
 
-    # Add a word to the user's dictionary
-    assert spChk._readProjectDictionary("stuff") is False
+    # Set to non-existent language
+    spChk.setLanguage("foo_bar")
+
+    # Block the broker from figuring out the language
     with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        assert spChk._readProjectDictionary(wList) is False
-
-    assert spChk._readProjectDictionary(None) is False
-    assert spChk._readProjectDictionary(wList) is True
-    assert spChk._projectDict == wList
-
-    # Cannot write to file
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        assert spChk.addWord("d_word") is False
-
-    assert readFile(wList) == "a_word\nb_word\nc_word\n"
-    assert spChk.addWord("d_word") is True
-    assert readFile(wList) == "a_word\nb_word\nc_word\nd_word\n"
-    assert spChk.addWord("d_word") is False
-
-    # Check words
-    assert spChk.checkWord("a_word") is True
-    assert spChk.checkWord("b_word") is True
-    assert spChk.checkWord("c_word") is True
-    assert spChk.checkWord("d_word") is True
-    assert spChk.checkWord("e_word") is False
-
-    spChk.addWord("d_word")
-    assert spChk.checkWord("d_word") is True
-
-    wSuggest = spChk.suggestWords("wrod")
-    assert len(wSuggest) > 0
-    assert "word" in wSuggest
-
-    dList = spChk.listDictionaries()
-    assert len(dList) > 0
-
-    aTag, aName = spChk.describeDict()
-    assert aTag == "en_US"
-    assert aName != ""
+        mp.setattr("enchant.Broker.request_dict", lambda *a: None)
+        spChk.setLanguage("en_US")
+        assert isinstance(spChk._dictObj, FakeEnchant)
 
 # END Test testCoreSpell_Enchant
-
-
-@pytest.mark.core
-def testCoreSpell_SessionWords(fncPath):
-    """Test the handling of the custom word list in the spell checker.
-    New project sessions should not inherit the project word list from
-    other sessions, so this test checks that they don't bleed through.
-    """
-    wList1 = fncPath / "wordlist1.txt"
-    wList2 = fncPath / "wordlist2.txt"
-    writeFile(wList1, "a_word\nb_word\nc_word\n")
-    writeFile(wList2, "d_word\ne_word\nf_word\n")
-
-    spChk = NWSpellEnchant()
-
-    spChk.setLanguage("en_US", wList1)
-    assert spChk.checkWord("a_word") is True
-    assert spChk.checkWord("b_word") is True
-    assert spChk.checkWord("c_word") is True
-    assert spChk.checkWord("d_word") is False
-    assert spChk.checkWord("e_word") is False
-    assert spChk.checkWord("f_word") is False
-
-    spChk.setLanguage("en_US", wList2)
-    assert spChk.checkWord("a_word") is False
-    assert spChk.checkWord("b_word") is False
-    assert spChk.checkWord("c_word") is False
-    assert spChk.checkWord("d_word") is True
-    assert spChk.checkWord("e_word") is True
-    assert spChk.checkWord("f_word") is True
-
-# END Test testCoreSpell_SessionWords

@@ -1,7 +1,6 @@
 """
 novelWriter – Project Document Tools
 ====================================
-A collection of tools to create and manipulate documents
 
 File History:
 Created: 2022-10-02 [2.0rc1] DocMerger
@@ -28,7 +27,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import shutil
 import logging
 
-from time import time
 from functools import partial
 
 from PyQt5.QtCore import QCoreApplication
@@ -319,7 +317,7 @@ class ProjectBuilder:
         project.data.setTitle(projTitle)
         project.data.setAuthor(projAuthor)
         project.setDefaultStatusImport()
-        project._projOpened = int(time())
+        project.session.startSession()
 
         # Add Root Folders
         hNovelRoot = project.newRoot(nwItemClass.NOVEL)

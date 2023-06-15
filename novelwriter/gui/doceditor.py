@@ -52,7 +52,7 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG
 from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwDocMode, nwItemClass
 from novelwriter.common import minmax, transferCase
-from novelwriter.constants import nwConst, nwFiles, nwKeyWords, nwUnicode
+from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
 from novelwriter.core.index import countWords
 from novelwriter.core.spellcheck import NWSpellEnchant
 from novelwriter.gui.dochighlight import GuiDocHighlighter
@@ -131,7 +131,7 @@ class GuiDocEditor(QTextEdit):
         self.docSearch = GuiDocEditSearch(self)
 
         # Syntax
-        self.spEnchant = NWSpellEnchant()
+        self.spEnchant = NWSpellEnchant(self.theProject)
         self.highLight = GuiDocHighlighter(qDoc, self.mainGui, self.spEnchant)
 
         # Context Menu
@@ -611,9 +611,9 @@ class GuiDocEditor(QTextEdit):
 
     def getText(self):
         """Get the text content of the current document. This method uses
-        QTextDocument->toRawText instead of toPlainText(). The former preserves
+        QTextDocument->toRawText instead of toPlainText. The former preserves
         non-breaking spaces, the latter does not. We still want to get rid of
-        page and line separators though.
+        paragraph and line separators though.
         See: https://doc.qt.io/qt-5/qtextdocument.html#toPlainText
         """
         theText = self.document().toRawText()
@@ -703,8 +703,7 @@ class GuiDocEditor(QTextEdit):
         else:
             theLang = self.theProject.data.spellLang
 
-        projDict = self.theProject.storage.getMetaFile(nwFiles.PROJ_DICT)
-        self.spEnchant.setLanguage(theLang, projDict)
+        self.spEnchant.setLanguage(theLang)
         _, theProvider = self.spEnchant.describeDict()
 
         self.spellDictionaryChanged.emit(str(theLang), str(theProvider))

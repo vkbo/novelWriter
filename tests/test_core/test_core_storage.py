@@ -19,8 +19,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from zipfile import ZipFile
+import json
 import pytest
+
+from pathlib import Path
+from zipfile import ZipFile
 
 from tools import C, buildTestProject, writeFile
 from mocked import causeOSError
@@ -28,13 +31,12 @@ from mocked import causeOSError
 from novelwriter import CONFIG
 from novelwriter.constants import nwFiles
 from novelwriter.core.project import NWProject
-from novelwriter.core.storage import NWStorage
+from novelwriter.core.storage import NWStorage, _LegacyStorage
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
 
 
 class MockProject:
     """Test class for projects."""
-
     pass
 
 
@@ -112,7 +114,7 @@ def testCoreStorage_LockFile(monkeypatch, fncPath):
     """Test the project lock file."""
     monkeypatch.setattr("novelwriter.core.storage.time", lambda: 1000.0)
 
-    storage = NWStorage(MockProject())
+    storage = NWStorage(MockProject())  # type: ignore
     assert storage.isOpen() is False
 
     # Project not open, so cannot read/write lock file
@@ -170,9 +172,45 @@ def testCoreStorage_LockFile(monkeypatch, fncPath):
 
 
 @pytest.mark.core
+def testCoreStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
+    """Test making a zip archive of a project."""
+    zipFile = tstPaths.tmpDir / "project.zip"
+
+    theProject = NWProject(mockGUI)
+    storage = theProject.storage
+    assert storage.zipIt(zipFile) is False
+
+    # Make a project
+    mockRnd.reset()
+    buildTestProject(theProject, fncPath)
+
+    # Fail to create archive
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.storage.ZipFile.write", causeOSError)
+        assert storage.zipIt(zipFile) is False
+
+    # Create archive
+    assert storage.zipIt(zipFile) is True
+
+    # Check content
+    with ZipFile(zipFile, mode="r") as archive:
+        names = archive.namelist()
+        assert nwFiles.PROJ_FILE in names
+        assert f"meta/{nwFiles.OPTS_FILE}" in names
+        assert f"meta/{nwFiles.INDEX_FILE}" in names
+        assert f"content/{C.hTitlePage}.nwd" in names
+        assert f"content/{C.hChapterDoc}.nwd" in names
+        assert f"content/{C.hSceneDoc}.nwd" in names
+
+    theProject.closeProject()
+
+# END Test testCoreStorage_ZipIt
+
+
+@pytest.mark.core
 def testCoreStorage_PrepareStorage(monkeypatch, fncPath):
     """Test the project path preparation functions."""
-    storage = NWStorage(MockProject())
+    storage = NWStorage(MockProject())  # type: ignore
     assert storage.isOpen() is False
 
     # No path set
@@ -208,9 +246,18 @@ def testCoreStorage_PrepareStorage(monkeypatch, fncPath):
     storage._runtimePath = fncPath
     assert storage._prepareStorage(checkLegacy=False, newProject=True) is False
 
-    # Legacy Data Folder
-    # ==================
+# END Test testCoreStorage_PrepareStorage
+
+
+@pytest.mark.core
+def testCoreStorage_LegacyDataFolder(monkeypatch, fncPath):
+    """Test project file format 1.0 folder structure conversion."""
+    project = MockProject()
+    storage = NWStorage(project)  # type: ignore
+    assert storage.isOpen() is False
     storage._runtimePath = fncPath
+    assert storage._prepareStorage() is True
+    legacy = _LegacyStorage(project)  # type: ignore
 
     data = []
     files = []
@@ -235,7 +282,7 @@ def testCoreStorage_PrepareStorage(monkeypatch, fncPath):
 
     # Process folders
     for i in range(9):
-        storage._legacyDataFolder(fncPath, data[i])
+        legacy.legacyDataFolder(fncPath, data[i])
 
     # Files form 0 to 8 should now be in content
     for c in "012345678":
@@ -250,14 +297,14 @@ def testCoreStorage_PrepareStorage(monkeypatch, fncPath):
     assert data[8].exists()
 
     # So does folder X, which is invalid
-    storage._legacyDataFolder(fncPath, data[16])
+    legacy.legacyDataFolder(fncPath, data[16])
     assert data[16].exists()
 
     # Fail cleanup of folder 9
     with monkeypatch.context() as mp:
         mp.setattr("pathlib.Path.rename", causeOSError)
         mp.setattr("pathlib.Path.unlink", causeOSError)
-        storage._legacyDataFolder(fncPath, data[9])
+        legacy.legacyDataFolder(fncPath, data[9])
         assert data[9].exists()
         assert not (fncPath / "content" / "9000000000009.nwd").exists()
 
@@ -266,10 +313,24 @@ def testCoreStorage_PrepareStorage(monkeypatch, fncPath):
     for c in "0123456789abcdef":
         assert (fncPath / "content" / f"{c}00000000000{c}.nwd").exists()
 
-    # Deprecated Files
-    # ================
+# END Test testCoreStorage_LegacyDataFolder
+
+
+@pytest.mark.core
+def testCoreStorage_DeprecatedFiles(monkeypatch, fncPath):
+    """Test cleanup of deprecated files."""
+    project = MockProject()
+    storage = NWStorage(project)  # type: ignore
+    assert storage.isOpen() is False
+    storage._runtimePath = fncPath
+    assert storage._prepareStorage() is True
+    legacy = _LegacyStorage(project)  # type: ignore
+
+    # Files/Folders to be Deleted or Renamed
+    # ======================================
 
     remove = [
+        fncPath / "meta" / "tagsIndex.json",
         fncPath / "meta" / "mainOptions.json",
         fncPath / "meta" / "exportOptions.json",
         fncPath / "meta" / "outlineOptions.json",
@@ -286,48 +347,130 @@ def testCoreStorage_PrepareStorage(monkeypatch, fncPath):
 
     with monkeypatch.context() as mp:
         mp.setattr("pathlib.Path.unlink", causeOSError)
-        storage._deleteDeprecatedFiles(fncPath)
+        legacy.deprecatedFiles(fncPath)
         for depFile in remove:
             assert depFile.exists()
 
-    storage._deleteDeprecatedFiles(fncPath)
+    legacy.deprecatedFiles(fncPath)
     for depFile in remove:
         assert not depFile.exists()
 
-# END Test testCoreStorage_PrepareStorage
+# END Test testCoreStorage_DeprecatedFiles
 
 
 @pytest.mark.core
-def testCoreStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
-    """Test making a zip archive of a project."""
-    zipFile = tstPaths.tmpDir / "project.zip"
+def testCoreStorage_OldFormatConvert(monkeypatch, mockGUI, fncPath):
+    """Test cleanup of deprecated files that needs to be converted."""
+    project = NWProject(mockGUI)
+    buildTestProject(project, fncPath)
+    legacy = _LegacyStorage(project)
 
-    theProject = NWProject(mockGUI)
-    storage = theProject.storage
-    assert storage.zipIt(zipFile) is False
+    # The build project functions saves the project, so we must delete
+    # the old gui options file
+    (fncPath / "meta" / nwFiles.OPTS_FILE).unlink()
 
-    # Make a project
-    mockRnd.reset()
-    buildTestProject(theProject, fncPath)
+    # Word List
+    wordListOld: Path = fncPath / "meta" / "wordlist.txt"
+    wordListNew: Path = fncPath / "meta" / nwFiles.DICT_FILE
 
-    # Fail to create archive
+    wordListOld.write_text((
+        "word_a\n"
+        "word_b\n"
+        "word_c\n"
+    ), encoding="utf-8")
+
+    assert wordListOld.exists() is True
+    assert wordListNew.exists() is False
+
+    # Log File
+    sessLogOld: Path = fncPath / "meta" / "sessionStats.log"
+    sessLogNew: Path = fncPath / "meta" / nwFiles.SESS_FILE
+
+    sessLogOld.write_text((
+        "# Offset 150\n"
+        "# Start Time         End Time                Novel     Notes    Idle\n"
+        "2021-02-02 02:02:02  2021-02-02 03:03:03       200      200       10\n"
+        "2021-03-03 03:03:03  2021-03-03 04:04:04       300      300       20\n"
+    ), encoding="utf-8")
+
+    assert sessLogOld.exists() is True
+    assert sessLogNew.exists() is False
+
+    # Options File
+    optionsOld: Path = fncPath / "meta" / "guiOptions.json"
+    optionsNew: Path = fncPath / "meta" / nwFiles.OPTS_FILE
+
+    optionsOld.write_text(json.dumps({
+        "GuiProjectSettings": {
+            "winWidth": 570,
+            "winHeight": 375,
+        },
+        "GuiOutline": {
+            "headerOrder": ["TITLE", "LEVEL", "LABEL", "LINE"],
+            "columnWidth": {"TITLE": 325, "LEVEL": 40, "LABEL": 267, "LINE": 40},
+            "columnHidden": {"TITLE": False, "LEVEL": True, "LABEL": False, "LINE": True},
+        },
+    }, indent=2), encoding="utf-8")
+
+    assert optionsOld.exists() is True
+    assert optionsNew.exists() is False
+
+    # Check Failure
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.ZipFile.write", causeOSError)
-        assert storage.zipIt(zipFile) is False
+        mp.setattr("builtins.open", causeOSError)
+        legacy.deprecatedFiles(fncPath)
+        assert wordListOld.exists() is True
+        assert wordListNew.exists() is False
+        assert sessLogOld.exists() is True
+        assert sessLogNew.exists() is False
+        assert optionsOld.exists() is True
+        assert optionsNew.exists() is False
 
-    # Create archive
-    assert storage.zipIt(zipFile) is True
+    # Check Success
+    legacy.deprecatedFiles(fncPath)
+    assert wordListOld.exists() is False
+    assert wordListNew.exists() is True
+    assert sessLogOld.exists() is False
+    assert sessLogNew.exists() is True
+    assert optionsOld.exists() is False
+    assert optionsNew.exists() is True
 
-    # Check content
-    with ZipFile(zipFile, mode="r") as archive:
-        names = archive.namelist()
-        assert nwFiles.PROJ_FILE in names
-        assert f"meta/{nwFiles.OPTS_FILE}" in names
-        assert f"meta/{nwFiles.INDEX_FILE}" in names
-        assert f"content/{C.hTitlePage}.nwd" in names
-        assert f"content/{C.hChapterDoc}.nwd" in names
-        assert f"content/{C.hSceneDoc}.nwd" in names
+    # Check Word List
+    data = json.loads(wordListNew.read_text(encoding="utf-8"))
+    assert "word_a" in data["novelWriter.userDict"]
+    assert "word_b" in data["novelWriter.userDict"]
+    assert "word_c" in data["novelWriter.userDict"]
 
-    theProject.closeProject()
+    # Check Session Log
+    data = list(project.session.iterRecords())
+    assert data[0] == {"type": "initial", "offset": 150}
+    assert data[1] == {
+        "type": "record",
+        "start": "2021-02-02 02:02:02",
+        "end": "2021-02-02 03:03:03",
+        "novel": 200,
+        "notes": 200,
+        "idle": 10,
+    }
+    assert data[2] == {
+        "type": "record",
+        "start": "2021-03-03 03:03:03",
+        "end": "2021-03-03 04:04:04",
+        "novel": 300,
+        "notes": 300,
+        "idle": 20,
+    }
 
-# END Test testCoreStorage_ZipIt
+    # Check Options File
+    data = json.loads(optionsNew.read_text(encoding="utf-8"))
+    assert data["novelWriter.guiOptions"]["GuiProjectSettings"] == {
+        "winWidth": 570, "winHeight": 375
+    }
+    assert data["novelWriter.guiOptions"]["columnState"] == {
+        "TITLE": [False, 325],
+        "LEVEL": [True, 40],
+        "LABEL": [False, 267],
+        "LINE": [True, 40]
+    }
+
+# END Test testCoreStorage_OldFormatConvert

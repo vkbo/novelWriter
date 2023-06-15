@@ -42,15 +42,17 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
     # Write a test file
     optFile = metaDir / nwFiles.OPTS_FILE
     optFile.write_text(json.dumps({
-        "GuiProjectSettings": {
-            "winWidth": 570,
-            "winHeight": 375,
-            "replaceColW": 130,
-            "statusColW": 130,
-            "importColW": 130
-        },
-        "MockGroup": {
-            "mockItem": None,
+        "novelWriter.guiOptions": {
+            "GuiProjectSettings": {
+                "winWidth": 570,
+                "winHeight": 375,
+                "replaceColW": 130,
+                "statusColW": 130,
+                "importColW": 130
+            },
+            "MockGroup": {
+                "mockItem": None,
+            },
         },
     }), encoding="utf-8")
 
@@ -73,7 +75,7 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
     assert theOpts.loadSettings()
 
     # Check that unwanted items have been removed
-    assert theOpts._theState == {
+    assert theOpts._state == {
         "GuiProjectSettings": {
             "winWidth": 570,
             "winHeight": 375,
@@ -88,7 +90,7 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
 
     # Load again to check we get the values back
     assert theOpts.loadSettings()
-    assert theOpts._theState == {
+    assert theOpts._state == {
         "GuiProjectSettings": {
             "winWidth": 570,
             "winHeight": 375,
