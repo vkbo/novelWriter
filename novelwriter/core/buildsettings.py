@@ -39,7 +39,6 @@ from novelwriter.enum import nwBuildFmt
 from novelwriter.error import logException
 from novelwriter.common import checkUuid, isHandle, jsonEncode
 from novelwriter.constants import nwFiles, nwHeadFmt
-from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
@@ -208,15 +207,15 @@ class BuildSettings:
     def getInt(self, key: str) -> int:
         """Type safe value access for integers."""
         value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
-        if isinstance(value, int):
-            return value
+        if isinstance(value, (int, float)):
+            return int(value)
         return 0
 
     def getFloat(self, key: str) -> float:
         """Type safe value access for floats."""
         value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
-        if isinstance(value, float):
-            return value
+        if isinstance(value, (int, float)):
+            return float(value)
         return 0.0
 
     ##
@@ -282,8 +281,8 @@ class BuildSettings:
         self._changed = True
         return
 
-    def setSkipRoot(self, tHandle: str, state: bool):
-        """Set a specific root folder as skipped or not."""
+    def setAllowRoot(self, tHandle: str, state: bool):
+        """Set a specific root folder as allowed or not."""
         if state is True:
             self._skipRoot.discard(tHandle)
             self._changed = True
@@ -299,7 +298,7 @@ class BuildSettings:
         definition = SETTINGS_TEMPLATE[key]
         if not isinstance(value, definition[0]):
             return False
-        if len(definition) == 4:
+        if len(definition) == 4 and isinstance(value, (int, float)):
             value = min(max(value, definition[2]), definition[3])
         self._changed = value != self._settings[key]
         self._settings[key] = value
@@ -330,10 +329,7 @@ class BuildSettings:
 
         for item in project.tree:
             tHandle = item.itemHandle
-            if not tHandle:
-                continue
-            if not isinstance(item, NWItem):
-                result[tHandle] = (False, FilterMode.UNKNOWN)
+            if tHandle is None:
                 continue
             if item.isInactiveClass() or (item.itemRoot in self._skipRoot):
                 result[tHandle] = (False, FilterMode.SKIPPED)
@@ -401,7 +397,7 @@ class BuildSettings:
         self.setLastPath(data.get("path", None))
         self.setLastBuildName(data.get("build", ""))
 
-        buildFmt = str(data.get("build", ""))
+        buildFmt = str(data.get("format", ""))
         if buildFmt in nwBuildFmt.__members__:
             self.setLastFormat(nwBuildFmt[buildFmt])
 

@@ -423,7 +423,7 @@ class _FilterTab(QWidget):
             self._build.setValue(key[4:], state)
             self._setTreeItemMode()
         elif key.startswith("root:"):
-            self._build.setSkipRoot(key[5:], state)
+            self._build.setAllowRoot(key[5:], state)
             self._populateTree()
         return
 
@@ -512,14 +512,14 @@ class _FilterTab(QWidget):
 
         # Root Classes
         self.filterOpt.addLabel(self.tr("Root Folders"))
-        for tHandle, nwItem in self.theProject.tree.iterRoots(None):
+        for nwItem in self.theProject.getProjectItems():
             if not nwItem.isInactiveClass():
                 itemIcon = self.mainTheme.getItemIcon(
                     nwItem.itemType, nwItem.itemClass, nwItem.itemLayout
                 )
                 self.filterOpt.addItem(
-                    itemIcon, nwItem.itemName, f"root:{tHandle}",
-                    default=self._build.isRootAllowed(tHandle)
+                    itemIcon, nwItem.itemName, f"root:{nwItem.itemHandle}",
+                    default=self._build.isRootAllowed(nwItem.itemHandle)
                 )
 
         return
