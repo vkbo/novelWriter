@@ -450,14 +450,13 @@ class BuildCollection:
         build.unpack(self._builds[buildID])
         return build
 
-    def setBuild(self, build: BuildSettings) -> bool:
+    def setBuild(self, build: BuildSettings):
         """Set build settings data in the collection."""
-        if not isinstance(build, BuildSettings):
-            return False
-        buildID = build.buildID
-        self._builds[buildID] = build.pack()
-        self._saveCollection()
-        return True
+        if isinstance(build, BuildSettings):
+            buildID = build.buildID
+            self._builds[buildID] = build.pack()
+            self._saveCollection()
+        return
 
     def removeBuild(self, buildID: str):
         """Remove the a build from the collection."""

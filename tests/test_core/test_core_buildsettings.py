@@ -19,17 +19,21 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import json
+import shutil
 import uuid
 import pytest
 
 from pathlib import Path
+from novelwriter.constants import nwFiles
 from novelwriter.core.item import NWItem
+from tests.mocked import causeOSError
 
 from tools import C, buildTestProject
 
 from novelwriter.enum import nwBuildFmt, nwItemClass
 from novelwriter.core.project import NWProject
-from novelwriter.core.buildsettings import BuildSettings, FilterMode
+from novelwriter.core.buildsettings import BuildCollection, BuildSettings, FilterMode
 
 
 def isUUID(value):
@@ -361,3 +365,101 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
     assert build.buildItemFilter(None) == {}  # type: ignore
 
 # END Test testCoreBuildSettings_Filters
+
+
+@pytest.mark.core
+def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRnd):
+    """Test the collections class for builds."""
+    project = NWProject(mockGUI)
+    buildTestProject(project, fncPath)
+    buildsFile = project.storage.getMetaFile(nwFiles.BUILDS_FILE)
+    assert isinstance(buildsFile, Path)
+
+    # No initial builds in a fresh project
+    builds = BuildCollection(project)
+    assert len(builds) == 0
+    assert not buildsFile.exists()
+
+    # Greate a default build
+    buildOne = BuildSettings()
+    buildOne.setName("Build One")
+    buildIDOne = buildOne.buildID
+
+    # Check that invalid type is ahndled
+    builds.setBuild(None)  # type: ignore
+    assert len(builds) == 0
+    assert not buildsFile.exists()
+    assert builds.getBuild(buildIDOne) is None
+
+    # Add the build
+    builds.setBuild(buildOne)
+    assert len(builds) == 1
+    assert buildsFile.exists()
+    assert builds.getBuild(buildIDOne).buildID == buildIDOne
+
+    # Create another build
+    buildTwo = BuildSettings()
+    buildTwo.setName("Build Two")
+    buildIDTwo = buildTwo.buildID
+
+    # Check that we can extract infor about the builds
+    builds.setBuild(buildTwo)
+    assert len(builds) == 2
+    assert buildsFile.exists()
+    assert builds.getBuild(buildIDTwo).buildID == buildIDTwo
+    assert list(builds.builds()) == [
+        (buildIDOne, "Build One"),
+        (buildIDTwo, "Build Two"),
+    ]
+
+    # Check the file content
+    data = json.loads(buildsFile.read_text(encoding="utf-8"))
+    assert list(data["novelWriter.builds"].keys()) == [buildIDOne, buildIDTwo]
+
+    # Remove a build
+    builds.removeBuild(buildIDOne)
+    assert builds.getBuild(buildIDOne) is None
+    assert list(builds.builds()) == [
+        (buildIDTwo, "Build Two"),
+    ]
+
+    # Check the file content
+    data = json.loads(buildsFile.read_text(encoding="utf-8"))
+    assert list(data["novelWriter.builds"].keys()) == [buildIDTwo]
+    builds.setBuild(buildOne)
+    assert list(builds.builds()) == [
+        (buildIDTwo, "Build Two"),
+        (buildIDOne, "Build One"),
+    ]
+
+    # Check errors: No valid path
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
+        assert builds._loadCollection() is False
+        assert builds._saveCollection() is False
+
+    # Check errors: I/O error
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert builds._loadCollection() is False
+        assert builds._saveCollection() is False
+
+    # Check errors: Can't parse json file
+    shutil.copy(buildsFile, buildsFile.with_suffix(".bak"))
+    buildsFile.write_text("foobar")
+    assert builds._loadCollection() is False
+
+    # Check errors: Valid jason file, but list instead of object
+    buildsFile.write_text("[]")
+    assert builds._loadCollection() is False
+    buildsFile.unlink()
+    shutil.copy(buildsFile.with_suffix(".bak"), buildsFile)
+
+    # Load builds file into new object
+    another = BuildCollection(project)
+    assert list(another.builds()) == [
+        (buildIDTwo, "Build Two"),
+        (buildIDOne, "Build One"),
+    ]
+
+# END Test testCoreBuildSettings_Collection
