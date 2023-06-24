@@ -33,6 +33,7 @@ from PyQt5.QtGui import QFont, QFontInfo
 from novelwriter import CONFIG
 from novelwriter.enum import nwBuildFmt
 from novelwriter.error import formatException, logException
+from novelwriter.core.item import NWItem
 from novelwriter.core.tomd import ToMarkdown
 from novelwriter.core.toodt import ToOdt
 from novelwriter.core.tohtml import ToHtml
@@ -96,14 +97,12 @@ class NWBuildDocument:
 
     def queueAll(self):
         """Queue all document as defined by the build settings."""
+        self._queue = []
         filtered = self._build.buildItemFilter(self._project)
-        noteTitles = self._build.getBool("text.addNoteHeadings")
         for item in self._project.tree:
             if not item.itemHandle:
                 continue
             if filtered.get(item.itemHandle, False):
-                self._queue.append(item.itemHandle)
-            elif item.isRootType() and noteTitles:
                 self._queue.append(item.itemHandle)
         return
 
@@ -155,15 +154,15 @@ class NWBuildDocument:
         makeObj = ToHtml(self._project)
         filtered = self._setupBuild(makeObj)
 
-        if self._build.getBool("format.replaceTabs"):
-            makeObj.replaceTabs()
-
         for i, tHandle in enumerate(self._queue):
             self._error = None
             if filtered.get(tHandle, (False, 0))[0]:
                 yield i, self._doBuild(makeObj, tHandle)
             else:
                 yield i, False
+
+        if self._build.getBool("format.replaceTabs"):
+            makeObj.replaceTabs()
 
         self._error = None
         self._cache = makeObj
@@ -217,8 +216,6 @@ class NWBuildDocument:
         filtered = self._setupBuild(makeObj)
 
         makeObj.setKeepMarkdown(True)
-        if self._build.getBool("format.replaceTabs"):
-            makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
 
         for i, tHandle in enumerate(self._queue):
             self._error = None
@@ -226,6 +223,9 @@ class NWBuildDocument:
                 yield i, self._doBuild(makeObj, tHandle, convert=False)
             else:
                 yield i, False
+
+        if self._build.getBool("format.replaceTabs"):
+            makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
 
         self._error = None
         self._cache = makeObj
@@ -299,30 +299,26 @@ class NWBuildDocument:
     def _doBuild(self, bldObj: Tokenizer, tHandle: str, convert: bool = True) -> bool:
         """Build a single document and add it to the build object."""
         tItem = self._project.tree[tHandle]
-        if tItem is None:
-            self._error = f"Build: Unknown item '{tHandle}'"
-            logger.error(self._error)
-            return False
+        if isinstance(tItem, NWItem):
+            try:
+                if tItem.isRootType() and not tItem.isNovelLike():
+                    bldObj.addRootHeading(tHandle)
+                    if convert:
+                        bldObj.doConvert()
+                elif tItem.isFileType():
+                    bldObj.setText(tHandle)
+                    bldObj.doPreProcessing()
+                    bldObj.tokenizeText()
+                    bldObj.doHeaders()
+                    if convert:
+                        bldObj.doConvert()
+                else:
+                    logger.info(f"Build: Skipping '{tHandle}'")
 
-        try:
-            if tItem.isRootType() and not tItem.isNovelLike():
-                bldObj.addRootHeading(tItem.itemHandle)
-                if convert:
-                    bldObj.doConvert()
-            elif tItem.isFileType():
-                bldObj.setText(tHandle)
-                bldObj.doPreProcessing()
-                bldObj.tokenizeText()
-                bldObj.doHeaders()
-                if convert:
-                    bldObj.doConvert()
-            else:
-                logger.info(f"Build: Skipping '{tHandle}'")
-
-        except Exception:
-            self._error = f"Build: Failed to build '{tHandle}'"
-            logger.error(self._error)
-            return False
+            except Exception:
+                self._error = f"Build: Failed to build '{tHandle}'"
+                logger.error(self._error)
+                return False
 
         return True
 

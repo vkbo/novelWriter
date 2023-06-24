@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import shutil
 
@@ -56,7 +57,11 @@ class C:
 # END Class C
 
 
-def cmpFiles(fileOne, fileTwo, ignoreLines=None, ignoreStart=None):
+def cmpFiles(
+    fileOne: str | Path, fileTwo: str | Path,
+    ignoreLines: list | None = None,
+    ignoreStart: tuple | None = None
+) -> bool:
     """Compare two files, but optionally ignore lines given by a list.
     """
     if ignoreLines is None:

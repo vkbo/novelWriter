@@ -186,6 +186,8 @@ class ToMarkdown(Tokenizer):
         """Replace tabs with spaces."""
         spaces = spaceChar*nSpaces
         self._fullMD = [p.replace("\t", spaces) for p in self._fullMD]
+        if self._keepMarkdown:
+            self._allMarkdown = [p.replace("\t", spaces) for p in self._allMarkdown]
         return
 
     ##
