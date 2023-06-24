@@ -327,6 +327,13 @@ class BuildSettings:
         incNotes = bool(self.getBool("filter.includeNotes"))
         incInactive = bool(self.getBool("filter.includeInactive"))
 
+        postponed = []
+
+        def allowRoot(rHandle):
+            if rHandle in postponed and rHandle in result and rHandle is not None:
+                result[rHandle] = (True, FilterMode.ROOT)
+                postponed.remove(rHandle)
+
         for item in project.tree:
             tHandle = item.itemHandle
             if tHandle is None:
@@ -335,13 +342,15 @@ class BuildSettings:
                 result[tHandle] = (False, FilterMode.SKIPPED)
                 continue
             if withRoots and item.isRootType():
-                result[tHandle] = (True, FilterMode.ROOT)
+                result[tHandle] = (False, FilterMode.SKIPPED)
+                postponed.append(tHandle)
                 continue
             if not item.isFileType():
                 result[tHandle] = (False, FilterMode.SKIPPED)
                 continue
             if tHandle in self._included:
                 result[tHandle] = (True, FilterMode.INCLUDED)
+                allowRoot(item.itemRoot)
                 continue
             if tHandle in self._excluded:
                 result[tHandle] = (False, FilterMode.EXCLUDED)
@@ -357,6 +366,8 @@ class BuildSettings:
             isAllowed = byActive and byLayout
 
             result[tHandle] = (isAllowed, FilterMode.FILTERED)
+            if isAllowed:
+                allowRoot(item.itemRoot)
 
         return result
 

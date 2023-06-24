@@ -20,18 +20,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import json
-import shutil
 import uuid
 import pytest
+import shutil
 
 from pathlib import Path
-from novelwriter.constants import nwFiles
-from novelwriter.core.item import NWItem
-from tests.mocked import causeOSError
 
 from tools import C, buildTestProject
+from mocked import causeOSError
 
 from novelwriter.enum import nwBuildFmt, nwItemClass
+from novelwriter.constants import nwFiles
+from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings, FilterMode
 
@@ -227,6 +227,7 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
 
     # Add some more items
     hArchRoot = project.newRoot(nwItemClass.ARCHIVE, "Archive")
+    hPlotDoc  = project.newFile("Main Plot", C.hPlotRoot)
     hCharDoc  = project.newFile("Jane Doe", C.hCharRoot)
     initLen = len(project.tree)
 
@@ -246,6 +247,7 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
         C.hChapterDoc: (True,  FilterMode.FILTERED),
         C.hSceneDoc:   (True,  FilterMode.FILTERED),
         hArchRoot:     (False, FilterMode.SKIPPED),
+        hPlotDoc:      (False, FilterMode.FILTERED),
         hCharDoc:      (False, FilterMode.FILTERED),
     }
 
@@ -255,12 +257,13 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
         C.hNovelRoot:  (True,  FilterMode.ROOT),
         C.hPlotRoot:   (True,  FilterMode.ROOT),
         C.hCharRoot:   (True,  FilterMode.ROOT),
-        C.hWorldRoot:  (True,  FilterMode.ROOT),
+        C.hWorldRoot:  (False, FilterMode.SKIPPED),  # World folder is empty
         C.hTitlePage:  (True,  FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
         C.hChapterDoc: (True,  FilterMode.FILTERED),
         C.hSceneDoc:   (True,  FilterMode.FILTERED),
         hArchRoot:     (False, FilterMode.SKIPPED),
+        hPlotDoc:      (True,  FilterMode.FILTERED),
         hCharDoc:      (True,  FilterMode.FILTERED),
     }
 
@@ -276,12 +279,13 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
         C.hNovelRoot:  (True,  FilterMode.ROOT),
         C.hPlotRoot:   (False, FilterMode.SKIPPED),
         C.hCharRoot:   (False, FilterMode.SKIPPED),
-        C.hWorldRoot:  (True,  FilterMode.ROOT),
+        C.hWorldRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (True,  FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
         C.hChapterDoc: (True,  FilterMode.FILTERED),
         C.hSceneDoc:   (True,  FilterMode.FILTERED),
         hArchRoot:     (False, FilterMode.SKIPPED),
+        hPlotDoc:      (False, FilterMode.SKIPPED),  # Now also skipped since in plot
         hCharDoc:      (False, FilterMode.SKIPPED),  # Now also skipped since in char
     }
 
@@ -298,13 +302,14 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
     assert build.buildItemFilter(project, withRoots=True) == {
         C.hNovelRoot:  (True,  FilterMode.ROOT),
         C.hPlotRoot:   (False, FilterMode.SKIPPED),
-        C.hCharRoot:   (True,  FilterMode.ROOT),
-        C.hWorldRoot:  (True,  FilterMode.ROOT),
+        C.hCharRoot:   (False, FilterMode.SKIPPED),  # Is skipped anyway since doc is skipped
+        C.hWorldRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (True,  FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
         C.hChapterDoc: (True,  FilterMode.FILTERED),
         C.hSceneDoc:   (False, FilterMode.EXCLUDED),
         hArchRoot:     (False, FilterMode.SKIPPED),
+        hPlotDoc:      (False, FilterMode.SKIPPED),
         hCharDoc:      (False, FilterMode.EXCLUDED),
     }
 
@@ -322,12 +327,13 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
         C.hNovelRoot:  (True,  FilterMode.ROOT),
         C.hPlotRoot:   (False, FilterMode.SKIPPED),
         C.hCharRoot:   (True,  FilterMode.ROOT),
-        C.hWorldRoot:  (True,  FilterMode.ROOT),
+        C.hWorldRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (True,  FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
         C.hChapterDoc: (True,  FilterMode.FILTERED),
         C.hSceneDoc:   (False, FilterMode.EXCLUDED),
         hArchRoot:     (False, FilterMode.SKIPPED),
+        hPlotDoc:      (False, FilterMode.SKIPPED),
         hCharDoc:      (True,  FilterMode.INCLUDED),
     }
 
@@ -344,13 +350,14 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
     assert build.buildItemFilter(project, withRoots=True) == {
         C.hNovelRoot:  (True,  FilterMode.ROOT),
         C.hPlotRoot:   (False, FilterMode.SKIPPED),
-        C.hCharRoot:   (True,  FilterMode.ROOT),
-        C.hWorldRoot:  (True,  FilterMode.ROOT),
+        C.hCharRoot:   (False, FilterMode.SKIPPED),
+        C.hWorldRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (True,  FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
         C.hChapterDoc: (True,  FilterMode.FILTERED),
         C.hSceneDoc:   (True,  FilterMode.FILTERED),
         hArchRoot:     (False, FilterMode.SKIPPED),
+        hPlotDoc:      (False, FilterMode.SKIPPED),
         hCharDoc:      (False, FilterMode.FILTERED),
     }
 
@@ -395,7 +402,7 @@ def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRn
     builds.setBuild(buildOne)
     assert len(builds) == 1
     assert buildsFile.exists()
-    assert builds.getBuild(buildIDOne).buildID == buildIDOne
+    assert builds.getBuild(buildIDOne).buildID == buildIDOne  # type: ignore
 
     # Create another build
     buildTwo = BuildSettings()
@@ -406,7 +413,7 @@ def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRn
     builds.setBuild(buildTwo)
     assert len(builds) == 2
     assert buildsFile.exists()
-    assert builds.getBuild(buildIDTwo).buildID == buildIDTwo
+    assert builds.getBuild(buildIDTwo).buildID == buildIDTwo  # type: ignore
     assert list(builds.builds()) == [
         (buildIDOne, "Build One"),
         (buildIDTwo, "Build Two"),
