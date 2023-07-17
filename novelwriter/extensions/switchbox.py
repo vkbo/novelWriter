@@ -45,11 +45,15 @@ class NSwitchBox(QScrollArea):
         self._hSwitch = baseSize
         self._wSwitch = 2*self._hSwitch
         self._sIcon = baseSize
+        self._widgets = []
         self.clear()
         return
 
     def clear(self):
         """Rebuild the content of the core widget."""
+        self._index = 0
+        self._widgets = []
+
         self._content = QGridLayout()
         self._content.setColumnStretch(1, 1)
 
@@ -69,6 +73,7 @@ class NSwitchBox(QScrollArea):
         font.setBold(True)
         label.setFont(font)
         self._content.addWidget(label, self._index, 0, 1, 3, Qt.AlignLeft)
+        self._widgets.append(label)
         self._bumpIndex()
         return
 
@@ -87,16 +92,17 @@ class NSwitchBox(QScrollArea):
         switch.toggled.connect(lambda state: self._emitSwitchSignal(identifier, state))
         self._content.addWidget(switch, self._index, 2, Qt.AlignRight)
 
+        self._widgets.append(switch)
         self._bumpIndex()
 
         return
 
     def addSeparator(self):
-        """Add a blank entry in the content box.
-        """
+        """Add a blank entry in the content box."""
         spacer = QWidget()
         spacer.setFixedHeight(int(0.5*self._sIcon))
         self._content.addWidget(spacer, self._index, 0, 1, 3, Qt.AlignLeft)
+        self._widgets.append(spacer)
         self._bumpIndex()
         return
 

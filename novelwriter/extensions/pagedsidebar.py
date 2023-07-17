@@ -59,8 +59,7 @@ class NPagedSideBar(QToolBar):
         return
 
     def setLabelColor(self, color):
-        """Set the text color for the labels.
-        """
+        """Set the text color for the labels."""
         if isinstance(color, list):
             self._labelCol = QColor(*color)
         elif isinstance(color, QColor):
@@ -68,8 +67,7 @@ class NPagedSideBar(QToolBar):
         return
 
     def addSeparator(self):
-        """Add a spacer widget.
-        """
+        """Add a spacer widget."""
         spacer = QWidget(self)
         spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         spacer.setFixedHeight(self._spacerHeight)
@@ -77,16 +75,14 @@ class NPagedSideBar(QToolBar):
         return
 
     def addLabel(self, text):
-        """Add a new label to the toolbar.
-        """
+        """Add a new label to the toolbar."""
         label = NPagedToolLabel(self, self._labelCol)
         label.setText(text)
         self.insertWidget(self._stretchAction, label)
         return
 
     def addButton(self, text, buttonId=-1):
-        """Add a new button to the toolbar.
-        """
+        """Add a new button to the toolbar."""
         button = NPagedToolButton(self)
         button.setText(text)
 
@@ -99,8 +95,7 @@ class NPagedSideBar(QToolBar):
         return action
 
     def setSelected(self, buttonId):
-        """Set the selected button.
-        """
+        """Set the selected button."""
         self._group.button(buttonId).setChecked(True)
         return
 
@@ -110,8 +105,7 @@ class NPagedSideBar(QToolBar):
 
     @pyqtSlot("QAbstractButton*")
     def _buttonClicked(self, button):
-        """A button was clicked in the group, emit its id.
-        """
+        """A button was clicked in the group, emit its id."""
         buttonId = self._group.id(button)
         if buttonId != -1:
             self.buttonClicked.emit(buttonId)
@@ -155,7 +149,7 @@ class NPagedToolButton(QToolButton):
         height = self.height()
         palette = self.palette()
 
-        if opt.state & QStyle.State_MouseOver:
+        if opt.state & QStyle.State_MouseOver == QStyle.State_MouseOver:
             backCol = palette.alternateBase()
             paint.setBrush(backCol)
             paint.setOpacity(0.5)
