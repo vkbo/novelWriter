@@ -133,7 +133,7 @@ def testManuscriptBuild_Main(
         assert manus._runBuild() is False
 
     # Finish
-    # manus._dialogButtonClicked(manus.dlgButtons.button(QDialogButtonBox.Close))
-    qtbot.stop()
+    manus._dialogButtonClicked(manus.dlgButtons.button(QDialogButtonBox.Close))
+    # qtbot.stop()
 
 # END Test testManuscriptBuild_Main
