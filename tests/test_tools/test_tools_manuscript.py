@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import sys
 import pytest
 
 from pathlib import Path
@@ -221,8 +222,28 @@ def testManuscript_Features(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath:
         else:
             assert False
 
-    # Print Preview
-    # =============
+    # Finish
+    manus.close()
+    # qtbot.stop()
+
+# END Test testManuscript_Features
+
+
+@pytest.mark.gui
+@pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Not running on Darwin")
+def testManuscript_Print(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath: Path):
+    """Test the print feature of the GuiManuscript dialog."""
+    buildTestProject(nwGUI, projPath)
+    nwGUI.openProject(projPath)
+
+    manus = GuiManuscript(nwGUI)
+    manus.show()
+    manus.loadContent()
+
+    manus.buildList.setCurrentRow(0)
+    with qtbot.waitSignal(manus.docPreview.document().contentsChanged):
+        manus.btnPreview.click()
+    assert manus.docPreview.toPlainText().strip() != ""
 
     with monkeypatch.context() as mp:
         mp.setattr(QPrintPreviewDialog, "exec_", lambda *a: None)
@@ -239,4 +260,4 @@ def testManuscript_Features(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath:
     manus.close()
     # qtbot.stop()
 
-# END Test testManuscript_Features
+# END Test testManuscript_Print
