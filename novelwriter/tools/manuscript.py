@@ -32,11 +32,11 @@ from datetime import datetime
 
 from PyQt5.QtGui import QColor, QCursor, QFont, QPalette, QResizeEvent
 from PyQt5.QtCore import QSize, QTimer, Qt, pyqtSlot
-from PyQt5.QtPrintSupport import QPrintPreviewDialog, QPrinter
 from PyQt5.QtWidgets import (
     QDialog, QGridLayout, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton,
     QSplitter, QTextBrowser, QToolButton, QVBoxLayout, QWidget, qApp
 )
+from PyQt5.QtPrintSupport import QPrintPreviewDialog, QPrinter
 
 from novelwriter import CONFIG
 from novelwriter.error import logException
@@ -300,7 +300,6 @@ class GuiManuscript(QDialog):
         for step, _ in docBuild.iterBuildHTML(None):
             self.docPreview.buildStep(step + 1)
             qApp.processEvents()
-            qApp.thread().msleep(5)
 
         buildObj = docBuild.lastBuild
         assert isinstance(buildObj, ToHtml)
@@ -528,10 +527,11 @@ class _PreviewWidget(QTextBrowser):
 
     def setTextFont(self, family: str, size: int):
         """Set the text font properties."""
-        font = QFont()
-        font.setFamily(family)
-        font.setPointSize(size)
-        self.setFont(font)
+        if family:
+            font = QFont()
+            font.setFamily(family)
+            font.setPointSize(size)
+            self.setFont(font)
         return
 
     ##
@@ -617,6 +617,7 @@ class _PreviewWidget(QTextBrowser):
         self.document().print(printer)
         qApp.restoreOverrideCursor()
         return
+
     ##
     #  Private Slots
     ##

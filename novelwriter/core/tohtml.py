@@ -339,7 +339,7 @@ class ToHtml(Tokenizer):
             },
             "text": {
                 "css": self.getStyleSheet(),
-                "html": [page.rstrip("\n").split("\n") for page in self.fullHTML],
+                "html": [t.replace("\t", "&#09;").rstrip().split("\n") for t in self.fullHTML],
             }
         }
         with open(path, mode="w", encoding="utf-8") as fObj:

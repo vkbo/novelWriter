@@ -118,8 +118,8 @@ class GuiBuildSettings(QDialog):
         # Create Tabs
         self.optTabSelect = _FilterTab(self, self._build)
         self.optTabHeadings = _HeadingsTab(self, self._build)
-        self.optTabFormat = _FormatTab(self, self._build)
         self.optTabContent = _ContentTab(self, self._build)
+        self.optTabFormat = _FormatTab(self, self._build)
         self.optTabOutput = _OutputTab(self, self._build)
 
         # Add Tabs
@@ -408,9 +408,8 @@ class _FilterTab(QWidget):
     def mainSplitSizes(self) -> tuple[int, int]:
         """Extract the sizes of the main splitter."""
         sizes = self.mainSplit.sizes()
-        if len(sizes) < 2:
-            return 0, 0
-        return CONFIG.rpxInt(sizes[0]), CONFIG.rpxInt(sizes[1])
+        m, n = (sizes[0], sizes[1]) if len(sizes) >= 2 else (0, 0)
+        return CONFIG.rpxInt(m), CONFIG.rpxInt(n)
 
     ##
     #  Slots
@@ -423,7 +422,7 @@ class _FilterTab(QWidget):
             self._build.setValue(key[4:], state)
             self._setTreeItemMode()
         elif key.startswith("root:"):
-            self._build.setSkipRoot(key[5:], state)
+            self._build.setAllowRoot(key[5:], state)
             self._populateTree()
         return
 
@@ -436,7 +435,7 @@ class _FilterTab(QWidget):
         logger.debug("Building project tree")
         self._treeMap = {}
         self.optTree.clear()
-        for nwItem in self.theProject.tree:
+        for nwItem in self.theProject.getProjectItems():
 
             tHandle = nwItem.itemHandle
             pHandle = nwItem.itemParent
@@ -527,18 +526,16 @@ class _FilterTab(QWidget):
     def _setSelectedMode(self, mode: int):
         """Set the mode for the selected items."""
         for item in self.optTree.selectedItems():
-            if not isinstance(item, QTreeWidgetItem):
-                continue
-
-            tHandle = item.data(self.C_DATA, self.D_HANDLE)
-            isFile = item.data(self.C_DATA, self.D_FILE)
-            if isFile:
-                if mode == self.F_FILTERED:
-                    self._build.setFiltered(tHandle)
-                elif mode == self.F_INCLUDED:
-                    self._build.setIncluded(tHandle)
-                elif mode == self.F_EXCLUDED:
-                    self._build.setExcluded(tHandle)
+            if isinstance(item, QTreeWidgetItem):
+                tHandle = item.data(self.C_DATA, self.D_HANDLE)
+                isFile = item.data(self.C_DATA, self.D_FILE)
+                if isFile:
+                    if mode == self.F_FILTERED:
+                        self._build.setFiltered(tHandle)
+                    elif mode == self.F_INCLUDED:
+                        self._build.setIncluded(tHandle)
+                    elif mode == self.F_EXCLUDED:
+                        self._build.setExcluded(tHandle)
 
         self._setTreeItemMode()
 
@@ -592,7 +589,7 @@ class _HeadingsTab(QWidget):
         # Title Heading
         self.lblTitle = QLabel(self._build.getLabel("headings.fmtTitle"))
         self.fmtTitle = QLineEdit("")
-        self.fmtTitle.setEnabled(False)
+        self.fmtTitle.setReadOnly(True)
         self.btnTitle = QToolButton()
         self.btnTitle.setIcon(self.mainTheme.getIcon("edit"))
         self.btnTitle.clicked.connect(lambda: self._editHeading(self.EDIT_TITLE))
@@ -608,7 +605,7 @@ class _HeadingsTab(QWidget):
         # Chapter Heading
         self.lblChapter = QLabel(self._build.getLabel("headings.fmtChapter"))
         self.fmtChapter = QLineEdit("")
-        self.fmtChapter.setEnabled(False)
+        self.fmtChapter.setReadOnly(True)
         self.btnChapter = QToolButton()
         self.btnChapter.setIcon(self.mainTheme.getIcon("edit"))
         self.btnChapter.clicked.connect(lambda: self._editHeading(self.EDIT_CHAPTER))
@@ -624,7 +621,7 @@ class _HeadingsTab(QWidget):
         # Unnumbered Chapter Heading
         self.lblUnnumbered = QLabel(self._build.getLabel("headings.fmtUnnumbered"))
         self.fmtUnnumbered = QLineEdit("")
-        self.fmtUnnumbered.setEnabled(False)
+        self.fmtUnnumbered.setReadOnly(True)
         self.btnUnnumbered = QToolButton()
         self.btnUnnumbered.setIcon(self.mainTheme.getIcon("edit"))
         self.btnUnnumbered.clicked.connect(lambda: self._editHeading(self.EDIT_UNNUM))
@@ -641,7 +638,7 @@ class _HeadingsTab(QWidget):
         sceneHideTip = self._build.getLabel("headings.hideScene")
         self.lblScene = QLabel(self._build.getLabel("headings.fmtScene"))
         self.fmtScene = QLineEdit("")
-        self.fmtScene.setEnabled(False)
+        self.fmtScene.setReadOnly(True)
         self.btnScene = QToolButton()
         self.btnScene.setIcon(self.mainTheme.getIcon("edit"))
         self.btnScene.clicked.connect(lambda: self._editHeading(self.EDIT_SCENE))
@@ -668,7 +665,7 @@ class _HeadingsTab(QWidget):
         sectionHideTip = self._build.getLabel("headings.hideSection")
         self.lblSection = QLabel(self._build.getLabel("headings.fmtSection"))
         self.fmtSection = QLineEdit("")
-        self.fmtSection.setEnabled(False)
+        self.fmtSection.setReadOnly(True)
         self.btnSection = QToolButton()
         self.btnSection.setIcon(self.mainTheme.getIcon("edit"))
         self.btnSection.clicked.connect(lambda: self._editHeading(self.EDIT_SECTION))
@@ -814,7 +811,7 @@ class _HeadingsTab(QWidget):
     def _saveFormat(self):
         """Save the format from the edit text box."""
         heading = self._editing
-        text = self.editTextBox.toPlainText().replace("\n", "//")
+        text = self.editTextBox.toPlainText().strip().replace("\n", "//")
         if heading == self.EDIT_TITLE:
             self.fmtTitle.setText(text)
             self._build.setValue("headings.fmtTitle", text)

@@ -39,7 +39,6 @@ from novelwriter.enum import nwBuildFmt
 from novelwriter.error import logException
 from novelwriter.common import checkUuid, isHandle, jsonEncode
 from novelwriter.constants import nwFiles, nwHeadFmt
-from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
@@ -208,15 +207,15 @@ class BuildSettings:
     def getInt(self, key: str) -> int:
         """Type safe value access for integers."""
         value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
-        if isinstance(value, int):
-            return value
+        if isinstance(value, (int, float)):
+            return int(value)
         return 0
 
     def getFloat(self, key: str) -> float:
         """Type safe value access for floats."""
         value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
-        if isinstance(value, float):
-            return value
+        if isinstance(value, (int, float)):
+            return float(value)
         return 0.0
 
     ##
@@ -282,8 +281,8 @@ class BuildSettings:
         self._changed = True
         return
 
-    def setSkipRoot(self, tHandle: str, state: bool):
-        """Set a specific root folder as skipped or not."""
+    def setAllowRoot(self, tHandle: str, state: bool):
+        """Set a specific root folder as allowed or not."""
         if state is True:
             self._skipRoot.discard(tHandle)
             self._changed = True
@@ -299,7 +298,7 @@ class BuildSettings:
         definition = SETTINGS_TEMPLATE[key]
         if not isinstance(value, definition[0]):
             return False
-        if len(definition) == 4:
+        if len(definition) == 4 and isinstance(value, (int, float)):
             value = min(max(value, definition[2]), definition[3])
         self._changed = value != self._settings[key]
         self._settings[key] = value
@@ -328,24 +327,30 @@ class BuildSettings:
         incNotes = bool(self.getBool("filter.includeNotes"))
         incInactive = bool(self.getBool("filter.includeInactive"))
 
+        postponed = []
+
+        def allowRoot(rHandle):
+            if rHandle in postponed and rHandle in result and rHandle is not None:
+                result[rHandle] = (True, FilterMode.ROOT)
+                postponed.remove(rHandle)
+
         for item in project.tree:
             tHandle = item.itemHandle
-            if not tHandle:
-                continue
-            if not isinstance(item, NWItem):
-                result[tHandle] = (False, FilterMode.UNKNOWN)
+            if tHandle is None:
                 continue
             if item.isInactiveClass() or (item.itemRoot in self._skipRoot):
                 result[tHandle] = (False, FilterMode.SKIPPED)
                 continue
             if withRoots and item.isRootType():
-                result[tHandle] = (True, FilterMode.ROOT)
+                result[tHandle] = (False, FilterMode.SKIPPED)
+                postponed.append(tHandle)
                 continue
             if not item.isFileType():
                 result[tHandle] = (False, FilterMode.SKIPPED)
                 continue
             if tHandle in self._included:
                 result[tHandle] = (True, FilterMode.INCLUDED)
+                allowRoot(item.itemRoot)
                 continue
             if tHandle in self._excluded:
                 result[tHandle] = (False, FilterMode.EXCLUDED)
@@ -361,6 +366,8 @@ class BuildSettings:
             isAllowed = byActive and byLayout
 
             result[tHandle] = (isAllowed, FilterMode.FILTERED)
+            if isAllowed:
+                allowRoot(item.itemRoot)
 
         return result
 
@@ -401,7 +408,7 @@ class BuildSettings:
         self.setLastPath(data.get("path", None))
         self.setLastBuildName(data.get("build", ""))
 
-        buildFmt = str(data.get("build", ""))
+        buildFmt = str(data.get("format", ""))
         if buildFmt in nwBuildFmt.__members__:
             self.setLastFormat(nwBuildFmt[buildFmt])
 
@@ -454,14 +461,13 @@ class BuildCollection:
         build.unpack(self._builds[buildID])
         return build
 
-    def setBuild(self, build: BuildSettings) -> bool:
+    def setBuild(self, build: BuildSettings):
         """Set build settings data in the collection."""
-        if not isinstance(build, BuildSettings):
-            return False
-        buildID = build.buildID
-        self._builds[buildID] = build.pack()
-        self._saveCollection()
-        return True
+        if isinstance(build, BuildSettings):
+            buildID = build.buildID
+            self._builds[buildID] = build.pack()
+            self._saveCollection()
+        return
 
     def removeBuild(self, buildID: str):
         """Remove the a build from the collection."""

@@ -229,7 +229,7 @@ class GuiManuscriptBuild(QDialog):
         self.btnReset.clicked.connect(self._doResetBuildName)
         self.btnBrowse.clicked.connect(self._doSelectPath)
         self.dlgButtons.clicked.connect(self._dialogButtonClicked)
-        self.listFormats.itemSelectionChanged.connect(self._formatSelectionChanged)
+        self.listFormats.itemSelectionChanged.connect(self._resetProgress)
 
         logger.debug("Ready: GuiManuscriptBuild")
 
@@ -255,12 +255,6 @@ class GuiManuscriptBuild(QDialog):
     ##
     #  Private Slots
     ##
-
-    @pyqtSlot(str, bool)
-    def _applyBuildOptions(self, key: str, state: bool):
-        """Set the build options for the build."""
-        self._build.setValue(key, state)
-        return
 
     @pyqtSlot("QAbstractButton*")
     def _dialogButtonClicked(self, button: QAbstractButton):
@@ -290,14 +284,6 @@ class GuiManuscriptBuild(QDialog):
         bName = f"{self.theProject.data.name} - {self._build.name}"
         self.buildName.setText(bName)
         self._build.setLastBuildName(bName)
-        return
-
-    @pyqtSlot()
-    def _formatSelectionChanged(self):
-        """The user selected a different format, so we reset the
-        progress bar.
-        """
-        self.buildProgress.setValue(0)
         return
 
     @pyqtSlot()

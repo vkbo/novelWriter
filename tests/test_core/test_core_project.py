@@ -704,9 +704,9 @@ def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tstPaths):
     assert theProject.backupProject(doNotify=True) is True
 
     theFiles = list((tstPaths.tmpDir / "Test Minimal").iterdir())
-    assert len(theFiles) == 1
+    assert len(theFiles) in (1, 2)  # Sometimes 2 due to clock tick
 
-    theZip = theFiles[0].name
+    theZip = theFiles[-1].name
     assert theZip[:12] == "Backup from "
     assert theZip[-4:] == ".zip"
 

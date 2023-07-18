@@ -19,16 +19,23 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import json
 import pytest
 
 from shutil import copyfile
+from pathlib import Path
 
+from tools import C, ODT_IGNORE, buildTestProject, cmpFiles
 from mocked import causeException, causeOSError
-from novelwriter.core.buildsettings import BuildSettings
-from tools import ODT_IGNORE, cmpFiles
 
+from novelwriter.enum import nwBuildFmt
+from novelwriter.core.item import NWItem
+from novelwriter.core.tomd import ToMarkdown
+from novelwriter.core.toodt import ToOdt
+from novelwriter.core.tohtml import ToHtml
 from novelwriter.core.project import NWProject
 from novelwriter.core.docbuild import NWBuildDocument
+from novelwriter.core.buildsettings import BuildSettings
 
 BUILD_CONF = {
     "name": "Test Build",
@@ -55,7 +62,7 @@ BUILD_CONF = {
         "format.lineHeight": 1.5,
         "format.justifyText": True,
         "format.stripUnicode": False,
-        "format.replaceTabs": False,
+        "format.replaceTabs": True,
         "odt.addColours": True,
         "html.addStyles": True,
     },
@@ -69,8 +76,7 @@ BUILD_CONF = {
 
 @pytest.mark.core
 def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
-    """Test builing an open document manuscript.
-    """
+    """Test builing an open document manuscript."""
     project = NWProject(mockGUI)
     project.openProject(prjLipsum)
 
@@ -174,8 +180,7 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
 
 @pytest.mark.core
 def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
-    """Test builing an HTML manuscript.
-    """
+    """Test builing an HTML manuscript."""
     project = NWProject(mockGUI)
     project.openProject(prjLipsum)
 
@@ -207,6 +212,26 @@ def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     copyfile(docFile, tstFile)
     assert cmpFiles(tstFile, cmpFile)
 
+    # Check HTML5 JSON Build
+    # ======================
+
+    docFile = fncPath / "Lorem Ipsum.json"
+    tstFile = tstPaths.outDir / "mBuildDocBuild_HTML5_Lorem_Ipsum.json"
+    cmpFile = tstPaths.refDir / "mBuildDocBuild_HTML5_Lorem_Ipsum.json"
+
+    count = 0
+    error = []
+    for _, success in docBuild.iterBuildHTML(docFile, asJson=True):
+        count += 1 if success else 0
+        if docBuild.error:
+            error.append(docBuild.error)
+
+    assert count == 19
+    assert error == []
+
+    copyfile(docFile, tstFile)
+    assert cmpFiles(tstFile, cmpFile, ignoreLines=[6, 7])
+
     # Check Error Handling
     # ====================
 
@@ -225,8 +250,7 @@ def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
 
 @pytest.mark.core
 def testCoreDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
-    """Test builing an Markdown manuscript.
-    """
+    """Test builing an Markdown manuscript."""
     project = NWProject(mockGUI)
     project.openProject(prjLipsum)
 
@@ -292,3 +316,286 @@ def testCoreDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths
         assert not docFile.is_file()
 
 # END Test testCoreDocBuild_Markdown
+
+
+@pytest.mark.core
+def testCoreDocBuild_NWD(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
+    """Test builing a NWD manuscript."""
+    project = NWProject(mockGUI)
+    project.openProject(prjLipsum)
+
+    build = BuildSettings()
+    build.unpack(BUILD_CONF)
+
+    docBuild = NWBuildDocument(project, build)
+    docBuild.queueAll()
+
+    assert len(docBuild) == 21
+
+    # Check NWD Build
+    # ===============
+
+    docFile = fncPath / "Lorem Ipsum.txt"
+    tstFile = tstPaths.outDir / "mBuildDocBuild_NWD_Lorem_Ipsum.txt"
+    cmpFile = tstPaths.refDir / "mBuildDocBuild_NWD_Lorem_Ipsum.txt"
+
+    count = 0
+    error = []
+    for _, success in docBuild.iterBuildNWD(docFile, asJson=False):
+        count += 1 if success else 0
+        if docBuild.error:
+            error.append(docBuild.error)
+
+    assert count == 19
+    assert error == []
+
+    copyfile(docFile, tstFile)
+    assert cmpFiles(tstFile, cmpFile)
+
+    # Check NWD JSON Build
+    # ====================
+
+    docFile = fncPath / "Lorem Ipsum.json"
+    tstFile = tstPaths.outDir / "mBuildDocBuild_NWD_Lorem_Ipsum.json"
+    cmpFile = tstPaths.refDir / "mBuildDocBuild_NWD_Lorem_Ipsum.json"
+
+    count = 0
+    error = []
+    for _, success in docBuild.iterBuildNWD(docFile, asJson=True):
+        count += 1 if success else 0
+        if docBuild.error:
+            error.append(docBuild.error)
+
+    assert count == 19
+    assert error == []
+
+    copyfile(docFile, tstFile)
+    assert cmpFiles(tstFile, cmpFile, ignoreLines=[6, 7])
+
+    # Check Error Handling
+    # ====================
+
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+
+        docFile = fncPath / "Lorem Ipsum Err.md"
+        for _ in docBuild.iterBuildNWD(docFile):
+            pass
+
+        assert docBuild.error == "OSError: Mock OSError"
+        assert not docFile.is_file()
+
+# END Test testCoreDocBuild_NWD
+
+
+@pytest.mark.core
+def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
+    """Test custom builds and some error handling."""
+    project = NWProject(mockGUI)
+    buildTestProject(project, fncPath)
+
+    build = BuildSettings()
+    build.unpack(BUILD_CONF)
+
+    docBuild = NWBuildDocument(project, build)
+    docBuild.queueAll()
+    assert len(docBuild) == 8
+
+    # Build a simple text doc
+    count = 0
+    error = []
+    docFile = fncPath / "Minimal.txt"
+    for _, success in docBuild.iterBuildNWD(docFile, asJson=False):
+        count += 1 if success else 0
+        if docBuild.error:
+            error.append(docBuild.error)
+
+    assert count == 4
+    assert error == []
+    assert docFile.read_text(encoding="utf-8") == (
+        "#! New Novel\n\n"
+        "By Jane Doe\n\n"
+        "## New Chapter\n\n\n"
+        "### New Scene\n\n\n"
+    )
+    docFile.unlink()
+
+    # Add an invalid item to the project
+    bHandle = "0123456789abc"
+    nHandle = "0123456789def"
+    project.tree._treeOrder.append(bHandle)
+    project.tree._projTree[bHandle] = NWItem(project)  # Handle should be None
+    project.tree._treeOrder.append(nHandle)
+    project.tree._projTree[nHandle] = None
+
+    docBuild.queueAll()
+    assert len(docBuild) == 8
+
+    docBuild.addDocument(bHandle)
+    docBuild.addDocument(nHandle)
+    assert len(docBuild) == 10
+
+    # Build the doc again with broken items
+    count = 0
+    error = []
+    docFile = fncPath / "Minimal.txt"
+    for _, success in docBuild.iterBuildNWD(docFile, asJson=False):
+        count += 1 if success else 0
+        if docBuild.error:
+            error.append(docBuild.error)
+
+    assert count == 4
+    assert error == []
+    assert docFile.read_text(encoding="utf-8") == (
+        "#! New Novel\n\n"
+        "By Jane Doe\n\n"
+        "## New Chapter\n\n\n"
+        "### New Scene\n\n\n"
+    )
+    docFile.unlink()
+
+# END Test testCoreDocBuild_Custom
+
+
+@pytest.mark.core
+def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
+    """Test iter build wrapper."""
+    project = NWProject(mockGUI)
+    buildTestProject(project, fncPath)
+    build = BuildSettings()
+    build.unpack(BUILD_CONF)
+
+    # Add some more items
+    hPlotDoc = project.newFile("Main Plot", C.hPlotRoot)
+    hCharDoc = project.newFile("Jane Doe", C.hCharRoot)
+    project.storage.getDocument(hPlotDoc).writeDocument("# Main Plot\n**Text**")
+    project.storage.getDocument(hCharDoc).writeDocument("# Jane Doe\n~~Text~~")
+
+    # Fix project order as this has never been opened in a GUI
+    project.tree.setOrder([
+        C.hNovelRoot, C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
+        C.hPlotRoot, hPlotDoc, C.hCharRoot, hCharDoc, C.hWorldRoot
+    ])
+
+    docBuild = NWBuildDocument(project, build)
+    docBuild.queueAll()
+    assert len(docBuild) == 10
+
+    # ODT Format
+    docFile = fncPath / "Minimal.odt"
+    assert list(docBuild.iterBuild(docFile, nwBuildFmt.ODT)) == [
+        (0, True), (1, True), (2, False), (3, True), (4, True),
+        (5, True), (6, True), (7, True), (8, True), (9, False),
+    ]
+    assert isinstance(docBuild.lastBuild, ToOdt)
+    assert docFile.is_file()
+    docFile.unlink()
+
+    # FODT Format
+    docFile = fncPath / "Minimal.fodt"
+    assert list(docBuild.iterBuild(docFile, nwBuildFmt.FODT)) == [
+        (0, True), (1, True), (2, False), (3, True), (4, True),
+        (5, True), (6, True), (7, True), (8, True), (9, False),
+    ]
+    assert isinstance(docBuild.lastBuild, ToOdt)
+    assert docFile.read_text(encoding="utf-8").startswith("<?xml")
+    docFile.unlink()
+
+    # HTML Format
+    docFile = fncPath / "Minimal.html"
+    assert list(docBuild.iterBuild(docFile, nwBuildFmt.HTML)) == [
+        (0, True), (1, True), (2, False), (3, True), (4, True),
+        (5, True), (6, True), (7, True), (8, True), (9, False),
+    ]
+    assert isinstance(docBuild.lastBuild, ToHtml)
+    assert docFile.read_text(encoding="utf-8").startswith("<!DOCTYPE html>")
+    docFile.unlink()
+
+    # JSON HTML Format
+    docFile = fncPath / "Minimal.json"
+    assert list(docBuild.iterBuild(docFile, nwBuildFmt.J_HTML)) == [
+        (0, True), (1, True), (2, False), (3, True), (4, True),
+        (5, True), (6, True), (7, True), (8, True), (9, False),
+    ]
+    assert isinstance(docBuild.lastBuild, ToHtml)
+    data = json.loads(docFile.read_text(encoding="utf-8"))
+    assert "meta" in data
+    assert "text" in data
+    docFile.unlink()
+
+    # Standard Markdown Format
+    docFile = fncPath / "Minimal.md"
+    assert list(docBuild.iterBuild(docFile, nwBuildFmt.STD_MD)) == [
+        (0, True), (1, True), (2, False), (3, True), (4, True),
+        (5, True), (6, True), (7, True), (8, True), (9, False),
+    ]
+    assert isinstance(docBuild.lastBuild, ToMarkdown)
+    assert docFile.read_text(encoding="utf-8") == (
+        "# New Novel\n\n"
+        "By Jane Doe\n\n"
+        "## Chapter: New Chapter\n\n"
+        "### Scene: New Scene\n\n"
+        "# Notes: Plot\n\n"
+        "# Main Plot\n\n"
+        "**Text**\n\n"
+        "# Notes: Characters\n\n"
+        "# Jane Doe\n\n"
+        "Text\n\n"  # Standard converts strikethrough to ordinary text
+    )
+    docFile.unlink()
+
+    # Extended Markdown Format
+    docFile = fncPath / "Minimal.md"
+    assert list(docBuild.iterBuild(docFile, nwBuildFmt.EXT_MD)) == [
+        (0, True), (1, True), (2, False), (3, True), (4, True),
+        (5, True), (6, True), (7, True), (8, True), (9, False),
+    ]
+    assert isinstance(docBuild.lastBuild, ToMarkdown)
+    assert docFile.read_text(encoding="utf-8") == (
+        "# New Novel\n\n"
+        "By Jane Doe\n\n"
+        "## Chapter: New Chapter\n\n"
+        "### Scene: New Scene\n\n"
+        "# Notes: Plot\n\n"
+        "# Main Plot\n\n"
+        "**Text**\n\n"
+        "# Notes: Characters\n\n"
+        "# Jane Doe\n\n"
+        "~~Text~~\n\n"  # Extended allows this syntax
+    )
+    docFile.unlink()
+
+    # NWD Format
+    docFile = fncPath / "Minimal.txt"
+    assert list(docBuild.iterBuild(docFile, nwBuildFmt.NWD)) == [
+        (0, True), (1, True), (2, False), (3, True), (4, True),
+        (5, True), (6, True), (7, True), (8, True), (9, False),
+    ]
+    assert isinstance(docBuild.lastBuild, ToMarkdown)
+    assert docFile.read_text(encoding="utf-8") == (
+        "#! New Novel\n\n"
+        "By Jane Doe\n\n"
+        "## New Chapter\n\n\n"
+        "### New Scene\n\n\n"
+        "# Notes: Plot\n\n"
+        "# Main Plot\n"
+        "**Text**\n\n"
+        "# Notes: Characters\n\n"
+        "# Jane Doe\n"
+        "~~Text~~\n\n"
+    )
+    docFile.unlink()
+
+    # JSON NWD Format
+    docFile = fncPath / "Minimal.json"
+    assert list(docBuild.iterBuild(docFile, nwBuildFmt.J_NWD)) == [
+        (0, True), (1, True), (2, False), (3, True), (4, True),
+        (5, True), (6, True), (7, True), (8, True), (9, False),
+    ]
+    assert isinstance(docBuild.lastBuild, ToMarkdown)
+    data = json.loads(docFile.read_text(encoding="utf-8"))
+    assert "meta" in data
+    assert "text" in data
+    docFile.unlink()
+
+# END Test testCoreDocBuild_IterBuild

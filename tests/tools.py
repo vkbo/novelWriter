@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import shutil
 
@@ -56,7 +57,11 @@ class C:
 # END Class C
 
 
-def cmpFiles(fileOne, fileTwo, ignoreLines=None, ignoreStart=None):
+def cmpFiles(
+    fileOne: str | Path, fileTwo: str | Path,
+    ignoreLines: list | None = None,
+    ignoreStart: tuple | None = None
+) -> bool:
     """Compare two files, but optionally ignore lines given by a list.
     """
     if ignoreLines is None:
@@ -107,32 +112,28 @@ def cmpFiles(fileOne, fileTwo, ignoreLines=None, ignoreStart=None):
     return not diffFound
 
 
-def getGuiItem(theName):
-    """Returns a QtWidget based on its objectName.
-    """
+def getGuiItem(name: str):
+    """Returns a QtWidget based on its objectName."""
     for qWidget in qApp.topLevelWidgets():
-        if qWidget.objectName() == theName:
+        if qWidget.objectName() == name:
             return qWidget
     return None
 
 
-def readFile(fileName):
-    """Returns the content of a file as a string.
-    """
+def readFile(fileName: str | Path):
+    """Returns the content of a file as a string."""
     with open(fileName, mode="r", encoding="utf-8") as inFile:
         return inFile.read()
 
 
-def writeFile(fileName, fileData):
-    """Write the contents of a string to a file.
-    """
+def writeFile(fileName: str | Path, fileData: str):
+    """Write the contents of a string to a file."""
     with open(fileName, mode="w", encoding="utf-8") as outFile:
         outFile.write(fileData)
 
 
-def cleanProject(path):
-    """Delete all generated files in a project.
-    """
+def cleanProject(path: str | Path):
+    """Delete all generated files in a project."""
     path = Path(path)
     cacheDir = path / "cache"
     if cacheDir.is_dir():
