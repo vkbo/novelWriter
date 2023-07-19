@@ -33,6 +33,7 @@ from PyQt5.QtGui import QFont, QFontInfo
 from novelwriter import CONFIG
 from novelwriter.enum import nwBuildFmt
 from novelwriter.error import formatException, logException
+from novelwriter.constants import nwLabels
 from novelwriter.core.item import NWItem
 from novelwriter.core.tomd import ToMarkdown
 from novelwriter.core.toodt import ToOdt
@@ -289,6 +290,17 @@ class NWBuildDocument:
         if isinstance(bldObj, ToOdt):
             bldObj.setColourHeaders(self._build.getBool("odt.addColours"))
             bldObj.setLanguage(buildLang)
+
+            scale = nwLabels.UNIT_SCALE.get(self._build.getStr("format.pageUnit"), 1.0)
+            pW, pH = nwLabels.PAPER_SIZE.get(self._build.getStr("format.pageSize"), (-1.0, -1.0))
+            bldObj.setPageLayout(
+                pW if pW > 0.0 else scale*self._build.getFloat("format.pageWidth"),
+                pH if pH > 0.0 else scale*self._build.getFloat("format.pageHeight"),
+                scale*self._build.getFloat("format.topMargin"),
+                scale*self._build.getFloat("format.bottomMargin"),
+                scale*self._build.getFloat("format.leftMargin"),
+                scale*self._build.getFloat("format.rightMargin"),
+            )
 
         filtered = self._build.buildItemFilter(
             self._project, withRoots=self._build.getBool("text.addNoteHeadings")

@@ -40,7 +40,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG
-from novelwriter.constants import nwHeadFmt
+from novelwriter.constants import nwHeadFmt, nwLabels, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
@@ -644,7 +644,7 @@ class _HeadingsTab(QWidget):
         self.btnScene.clicked.connect(lambda: self._editHeading(self.EDIT_SCENE))
         self.hdeScene = QLabel(self.tr("Hide"))
         self.hdeScene.setToolTip(sceneHideTip)
-        self.swtScene = NSwitch(width=2*iPx, height=iPx)
+        self.swtScene = NSwitch(self, width=2*iPx, height=iPx)
         self.swtScene.setToolTip(sceneHideTip)
 
         wrapScene = QHBoxLayout()
@@ -671,7 +671,7 @@ class _HeadingsTab(QWidget):
         self.btnSection.clicked.connect(lambda: self._editHeading(self.EDIT_SECTION))
         self.hdeSection = QLabel(self.tr("Hide"))
         self.hdeSection.setToolTip(sectionHideTip)
-        self.swtSection = NSwitch(width=2*iPx, height=iPx)
+        self.swtSection = NSwitch(self, width=2*iPx, height=iPx)
         self.swtSection.setToolTip(sectionHideTip)
 
         wrapSection = QHBoxLayout()
@@ -882,10 +882,10 @@ class _ContentTab(QWidget):
         self.formLeft = NSimpleLayout()
         self.formLeft.addGroupLabel(self._build.getLabel("text.grpContent"))
 
-        self.incSynopsis = NSwitch(width=2*iPx, height=iPx)
-        self.incComments = NSwitch(width=2*iPx, height=iPx)
-        self.incKeywords = NSwitch(width=2*iPx, height=iPx)
-        self.incBodyText = NSwitch(width=2*iPx, height=iPx)
+        self.incSynopsis = NSwitch(self, width=2*iPx, height=iPx)
+        self.incComments = NSwitch(self, width=2*iPx, height=iPx)
+        self.incKeywords = NSwitch(self, width=2*iPx, height=iPx)
+        self.incBodyText = NSwitch(self, width=2*iPx, height=iPx)
 
         self.formLeft.addRow(self._build.getLabel("text.includeSynopsis"), self.incSynopsis)
         self.formLeft.addRow(self._build.getLabel("text.includeComments"), self.incComments)
@@ -898,7 +898,7 @@ class _ContentTab(QWidget):
         self.formRight = NSimpleLayout()
         self.formRight.addGroupLabel(self._build.getLabel("text.grpInsert"))
 
-        self.addNoteHead = NSwitch(width=2*iPx, height=iPx)
+        self.addNoteHead = NSwitch(self, width=2*iPx, height=iPx)
 
         self.formRight.addRow(self._build.getLabel("text.addNoteHeadings"), self.addNoteHead)
 
@@ -945,33 +945,34 @@ class _FormatTab(QWidget):
         self.mainTheme  = buildMain.mainGui.mainTheme
 
         self._build = build
+        self._unitScale = 1.0
 
         iPx = self.mainTheme.baseIconSize
+        spW = 6*self.mainTheme.textNWidth
+        dbW = 8*self.mainTheme.textNWidth
 
-        # Form
-        # ====
+        # Text Format Form
+        # ================
 
-        self.mainForm = NConfigLayout()
-        self.mainForm.addGroupLabel(self._build.getLabel("format.grpFormat"))
+        self.formFormat = NConfigLayout()
+        self.formFormat.addGroupLabel(self._build.getLabel("format.grpFormat"))
 
         # Build Language
         self.buildLang = QComboBox()
-        self.buildLang.setMinimumWidth(CONFIG.pxInt(250))
         langauges = CONFIG.listLanguages(CONFIG.LANG_PROJ)
         self.buildLang.addItem("[%s]" % self.tr("Not Set"), "None")
         for langID, langName in langauges:
             self.buildLang.addItem(langName, langID)
 
-        self.mainForm.addRow(self._build.getLabel("format.buildLang"), self.buildLang)
+        self.formFormat.addRow(self._build.getLabel("format.buildLang"), self.buildLang)
 
         # Font Family
         self.textFont = QLineEdit()
         self.textFont.setReadOnly(True)
-        self.textFont.setMinimumWidth(CONFIG.pxInt(200))
         self.btnTextFont = QPushButton("...")
         self.btnTextFont.setMaximumWidth(int(2.5*self.mainTheme.getTextWidth("...")))
         self.btnTextFont.clicked.connect(self._selectFont)
-        self.mainForm.addRow(
+        self.formFormat.addRow(
             self._build.getLabel("format.textFont"), self.textFont, button=self.btnTextFont
         )
 
@@ -980,39 +981,104 @@ class _FormatTab(QWidget):
         self.textSize.setMinimum(8)
         self.textSize.setMaximum(60)
         self.textSize.setSingleStep(1)
-        self.textSize.setMinimumWidth(CONFIG.pxInt(60))
-        self.mainForm.addRow(
+        self.textSize.setMinimumWidth(spW)
+        self.formFormat.addRow(
             self._build.getLabel("format.textSize"), self.textSize, unit="pt"
         )
 
         # Line Height
         self.lineHeight = QDoubleSpinBox(self)
-        self.lineHeight.setFixedWidth(6*self.mainTheme.textNWidth)
+        self.lineHeight.setFixedWidth(spW)
         self.lineHeight.setMinimum(0.75)
         self.lineHeight.setMaximum(3.0)
         self.lineHeight.setSingleStep(0.05)
         self.lineHeight.setDecimals(2)
-        self.lineHeight.setMinimumWidth(CONFIG.pxInt(60))
-        self.mainForm.addRow(
+        self.formFormat.addRow(
             self._build.getLabel("format.lineHeight"), self.lineHeight, unit="em"
         )
 
-        # Switches
-        self.mainForm.addGroupLabel(self._build.getLabel("format.grpOptions"))
-        self.mainForm.setContentsMargins(0, 0, 0, 0)
+        # Text Options Form
+        # =================
 
-        self.justifyText = NSwitch(width=2*iPx, height=iPx)
-        self.stripUnicode = NSwitch(width=2*iPx, height=iPx)
-        self.replaceTabs = NSwitch(width=2*iPx, height=iPx)
+        self.formOptions = NSimpleLayout()
+        self.formOptions.addGroupLabel(self._build.getLabel("format.grpOptions"))
+        self.formOptions.setContentsMargins(0, 0, 0, 0)
 
-        self.mainForm.addRow(self._build.getLabel("format.justifyText"), self.justifyText)
-        self.mainForm.addRow(self._build.getLabel("format.stripUnicode"), self.stripUnicode)
-        self.mainForm.addRow(self._build.getLabel("format.replaceTabs"), self.replaceTabs)
+        self.justifyText = NSwitch(self, width=2*iPx, height=iPx)
+        self.stripUnicode = NSwitch(self, width=2*iPx, height=iPx)
+        self.replaceTabs = NSwitch(self, width=2*iPx, height=iPx)
+
+        self.formOptions.addRow(self._build.getLabel("format.justifyText"), self.justifyText)
+        self.formOptions.addRow(self._build.getLabel("format.stripUnicode"), self.stripUnicode)
+        self.formOptions.addRow(self._build.getLabel("format.replaceTabs"), self.replaceTabs)
+
+        # Page Layout Form
+        # ================
+
+        self.formLayout = NSimpleLayout()
+        self.formLayout.addGroupLabel(self._build.getLabel("format.grpPage"))
+        self.formLayout.setContentsMargins(0, 0, 0, 0)
+
+        self.pageUnit = QComboBox(self)
+        for key, name in nwLabels.UNIT_NAME.items():
+            self.pageUnit.addItem(trConst(name), key)
+
+        self.pageSize = QComboBox(self)
+        for key, name in nwLabels.PAPER_NAME.items():
+            self.pageSize.addItem(trConst(name), key)
+
+        self.pageWidth = QDoubleSpinBox(self)
+        self.pageWidth.setFixedWidth(dbW)
+        self.pageWidth.setMaximum(500.0)
+
+        self.pageHeight = QDoubleSpinBox(self)
+        self.pageHeight.setFixedWidth(dbW)
+        self.pageHeight.setMaximum(500.0)
+
+        self.topMargin = QDoubleSpinBox(self)
+        self.topMargin.setFixedWidth(dbW)
+
+        self.bottomMargin = QDoubleSpinBox(self)
+        self.bottomMargin.setFixedWidth(dbW)
+
+        self.leftMargin = QDoubleSpinBox(self)
+        self.leftMargin.setFixedWidth(dbW)
+
+        self.rightMargin = QDoubleSpinBox(self)
+        self.rightMargin.setFixedWidth(dbW)
+
+        self.formLayout.addRow(self._build.getLabel("format.pageUnit"), self.pageUnit)
+        self.formLayout.addRow(self._build.getLabel("format.pageSize"), self.pageSize)
+        self.formLayout.addRow(self._build.getLabel("format.pageWidth"), self.pageWidth)
+        self.formLayout.addRow(self._build.getLabel("format.pageHeight"), self.pageHeight)
+        self.formLayout.addRow(self._build.getLabel("format.topMargin"), self.topMargin)
+        self.formLayout.addRow(self._build.getLabel("format.bottomMargin"), self.bottomMargin)
+        self.formLayout.addRow(self._build.getLabel("format.leftMargin"), self.leftMargin)
+        self.formLayout.addRow(self._build.getLabel("format.rightMargin"), self.rightMargin)
 
         # Assemble GUI
         # ============
 
-        self.setLayout(self.mainForm)
+        self.formLeft = QVBoxLayout()
+        self.formLeft.addLayout(self.formFormat)
+        self.formLeft.addLayout(self.formOptions)
+        self.formLeft.addStretch(1)
+        self.formLeft.setContentsMargins(0, 0, 0, 0)
+        self.formLeft.setSpacing(CONFIG.pxInt(8))
+
+        self.formRight = QVBoxLayout()
+        self.formRight.addLayout(self.formLayout)
+        self.formRight.addStretch(1)
+        self.formRight.setContentsMargins(0, 0, 0, 0)
+        self.formRight.setSpacing(CONFIG.pxInt(8))
+
+        self.outerBox = QHBoxLayout()
+        self.outerBox.addLayout(self.formLeft, 1)
+        self.outerBox.addLayout(self.formRight, 1)
+        self.outerBox.setContentsMargins(0, 0, 0, 0)
+        self.outerBox.setSpacing(CONFIG.pxInt(16))
+
+        self.setLayout(self.outerBox)
 
         return
 
@@ -1034,6 +1100,29 @@ class _FormatTab(QWidget):
         self.stripUnicode.setChecked(self._build.getBool("format.stripUnicode"))
         self.replaceTabs.setChecked(self._build.getBool("format.replaceTabs"))
 
+        pageUnit = self._build.getStr("format.pageUnit")
+        index = self.pageUnit.findData(pageUnit)
+        if index >= 0:
+            self.pageUnit.setCurrentIndex(index)
+            self._unitScale = nwLabels.UNIT_SCALE.get(pageUnit, 1.0)
+            self._changeUnit(index)
+
+        self.pageWidth.setValue(self._build.getFloat("format.pageWidth"))
+        self.pageHeight.setValue(self._build.getFloat("format.pageHeight"))
+        self.topMargin.setValue(self._build.getFloat("format.topMargin"))
+        self.bottomMargin.setValue(self._build.getFloat("format.bottomMargin"))
+        self.leftMargin.setValue(self._build.getFloat("format.leftMargin"))
+        self.rightMargin.setValue(self._build.getFloat("format.rightMargin"))
+
+        pageSize = self._build.getStr("format.pageSize")
+        index = self.pageSize.findData(pageSize)
+        if index >= 0:
+            self.pageSize.setCurrentIndex(index)
+            self._changePageSize(index)
+
+        self.pageUnit.currentIndexChanged.connect(self._changeUnit)
+        self.pageSize.currentIndexChanged.connect(self._changePageSize)
+
         return
 
     def saveContent(self):
@@ -1042,9 +1131,19 @@ class _FormatTab(QWidget):
         self._build.setValue("format.textFont", self.textFont.text())
         self._build.setValue("format.textSize", self.textSize.value())
         self._build.setValue("format.lineHeight", self.lineHeight.value())
+
         self._build.setValue("format.justifyText", self.justifyText.isChecked())
         self._build.setValue("format.stripUnicode", self.stripUnicode.isChecked())
         self._build.setValue("format.replaceTabs", self.replaceTabs.isChecked())
+
+        self._build.setValue("format.pageUnit", str(self.pageUnit.currentData()))
+        self._build.setValue("format.pageSize", str(self.pageSize.currentData()))
+        self._build.setValue("format.pageWidth", self.pageWidth.value())
+        self._build.setValue("format.pageHeight", self.pageHeight.value())
+        self._build.setValue("format.topMargin", self.topMargin.value())
+        self._build.setValue("format.bottomMargin", self.bottomMargin.value())
+        self._build.setValue("format.leftMargin", self.leftMargin.value())
+        self._build.setValue("format.rightMargin", self.rightMargin.value())
         return
 
     ##
@@ -1061,6 +1160,75 @@ class _FormatTab(QWidget):
         if theStatus:
             self.textFont.setText(theFont.family())
             self.textSize.setValue(theFont.pointSize())
+        return
+
+    @pyqtSlot(int)
+    def _changeUnit(self, index: int):
+        """The current unit change, so recalculate sizes."""
+        newUnit = self.pageUnit.itemData(index)
+        newScale = nwLabels.UNIT_SCALE.get(newUnit, 1.0)
+        reScale = self._unitScale/newScale
+
+        pageWidth = self.pageWidth.value() * reScale
+        pageHeight = self.pageHeight.value() * reScale
+        topMargin = self.topMargin.value() * reScale
+        bottomMargin = self.bottomMargin.value() * reScale
+        leftMargin = self.leftMargin.value() * reScale
+        rightMargin = self.rightMargin.value() * reScale
+
+        isMM = newUnit == "mm"
+        nDec = 1 if isMM else 2
+        nStep = 1.0 if isMM else 0.1
+        pMax = 500.0 if isMM else 50.0
+        mMax = 150.0 if isMM else 15.0
+
+        self.pageWidth.setDecimals(nDec)
+        self.pageWidth.setSingleStep(nStep)
+        self.pageWidth.setMaximum(pMax)
+        self.pageWidth.setValue(pageWidth)
+
+        self.pageHeight.setDecimals(nDec)
+        self.pageHeight.setSingleStep(nStep)
+        self.pageHeight.setMaximum(pMax)
+        self.pageHeight.setValue(pageHeight)
+
+        self.topMargin.setDecimals(nDec)
+        self.topMargin.setSingleStep(nStep)
+        self.topMargin.setMaximum(mMax)
+        self.topMargin.setValue(topMargin)
+
+        self.bottomMargin.setDecimals(nDec)
+        self.bottomMargin.setSingleStep(nStep)
+        self.bottomMargin.setMaximum(mMax)
+        self.bottomMargin.setValue(bottomMargin)
+
+        self.leftMargin.setDecimals(nDec)
+        self.leftMargin.setSingleStep(nStep)
+        self.leftMargin.setMaximum(mMax)
+        self.leftMargin.setValue(leftMargin)
+
+        self.rightMargin.setDecimals(nDec)
+        self.rightMargin.setSingleStep(nStep)
+        self.rightMargin.setMaximum(mMax)
+        self.rightMargin.setValue(rightMargin)
+
+        self._unitScale = newScale
+
+        return
+
+    @pyqtSlot(int)
+    def _changePageSize(self, index: int):
+        """The page size has changed."""
+        self.pageWidth.setEnabled(True)
+        self.pageHeight.setEnabled(True)
+
+        w, h = nwLabels.PAPER_SIZE[self.pageSize.itemData(index)] if index >= 0 else (-1.0, -1.0)
+        if w > 0.0 and h > 0.0:
+            self.pageWidth.setEnabled(False)
+            self.pageHeight.setEnabled(False)
+            self.pageWidth.setValue(w/self._unitScale)
+            self.pageHeight.setValue(h/self._unitScale)
+
         return
 
 # END Class _FormatTab
@@ -1084,7 +1252,7 @@ class _OutputTab(QWidget):
         self.formLeft = NSimpleLayout()
         self.formLeft.addGroupLabel(self._build.getLabel("odt"))
 
-        self.odtAddColours = NSwitch(width=2*iPx, height=iPx)
+        self.odtAddColours = NSwitch(self, width=2*iPx, height=iPx)
 
         self.formLeft.addRow(self._build.getLabel("odt.addColours"), self.odtAddColours)
 
@@ -1094,7 +1262,7 @@ class _OutputTab(QWidget):
         self.formRight = NSimpleLayout()
         self.formRight.addGroupLabel(self._build.getLabel("html"))
 
-        self.htmlAddStyles = NSwitch(width=2*iPx, height=iPx)
+        self.htmlAddStyles = NSwitch(self, width=2*iPx, height=iPx)
 
         self.formRight.addRow(self._build.getLabel("html.addStyles"), self.htmlAddStyles)
 

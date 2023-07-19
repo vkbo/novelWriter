@@ -22,16 +22,16 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 from PyQt5.QtCore import QCoreApplication, QT_TRANSLATE_NOOP
 
 from novelwriter.enum import nwBuildFmt, nwItemClass, nwItemLayout, nwOutline
 
 
-def trConst(tString):
-    """Wrapper function for locally translating constants.
-    """
-    return QCoreApplication.translate("Constant", tString)
+def trConst(text: str) -> str:
+    """Wrapper function for locally translating constants."""
+    return QCoreApplication.translate("Constant", text)
 
 
 class nwConst:
@@ -224,6 +224,32 @@ class nwLabels:
         nwBuildFmt.EXT_MD: ".md",
         nwBuildFmt.J_HTML: ".json",
         nwBuildFmt.J_NWD:  ".json",
+    }
+    UNIT_NAME = {
+        "mm": QT_TRANSLATE_NOOP("Constant", "Millimetres"),
+        "cm": QT_TRANSLATE_NOOP("Constant", "Centimetres"),
+        "in": QT_TRANSLATE_NOOP("Constant", "Inches"),
+    }
+    UNIT_SCALE = {
+        "mm": 1.0,
+        "cm": 10.0,
+        "in": 25.4,
+    }
+    PAPER_NAME = {
+        "A4":     QT_TRANSLATE_NOOP("Constant", "A4"),
+        "A5":     QT_TRANSLATE_NOOP("Constant", "A5"),
+        "A6":     QT_TRANSLATE_NOOP("Constant", "A6"),
+        "Legal":  QT_TRANSLATE_NOOP("Constant", "US Legal"),
+        "Letter": QT_TRANSLATE_NOOP("Constant", "US Letter"),
+        "Custom": QT_TRANSLATE_NOOP("Constant", "Custom"),
+    }
+    PAPER_SIZE = {
+        "A4":     (210.0, 297.0),
+        "A5":     (148.0, 210.0),
+        "A6":     (105.0, 148.0),
+        "Legal":  (215.9, 355.6),
+        "Letter": (215.9, 279.4),
+        "Custom": (-1.0, -1.0),
     }
 
 # END Class nwLabels

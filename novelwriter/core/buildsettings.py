@@ -71,6 +71,14 @@ SETTINGS_TEMPLATE = {
     "format.justifyText":     (bool, False),
     "format.stripUnicode":    (bool, False),
     "format.replaceTabs":     (bool, False),
+    "format.pageUnit":        (str, "cm"),
+    "format.pageSize":        (str, "A4"),
+    "format.pageWidth":       (float, 21.0),
+    "format.pageHeight":      (float, 29.7),
+    "format.topMargin":       (float, 2.0),
+    "format.bottomMargin":    (float, 2.0),
+    "format.leftMargin":      (float, 2.0),
+    "format.rightMargin":     (float, 2.0),
     "odt.addColours":         (bool, True),
     "html.addStyles":         (bool, True),
 }
@@ -99,7 +107,7 @@ SETTINGS_LABELS = {
     "text.addNoteHeadings":   QT_TRANSLATE_NOOP("Builds", "Add Titles for Notes"),
 
     "format.grpFormat":       QT_TRANSLATE_NOOP("Builds", "Text Format"),
-    "format.buildLang":       QT_TRANSLATE_NOOP("Builds", "Document Language"),
+    "format.buildLang":       QT_TRANSLATE_NOOP("Builds", "Language"),
     "format.textFont":        QT_TRANSLATE_NOOP("Builds", "Font Family"),
     "format.textSize":        QT_TRANSLATE_NOOP("Builds", "Font Size"),
     "format.lineHeight":      QT_TRANSLATE_NOOP("Builds", "Line Height"),
@@ -107,6 +115,15 @@ SETTINGS_LABELS = {
     "format.justifyText":     QT_TRANSLATE_NOOP("Builds", "Justify Text Margins"),
     "format.stripUnicode":    QT_TRANSLATE_NOOP("Builds", "Replace Unicode Characters"),
     "format.replaceTabs":     QT_TRANSLATE_NOOP("Builds", "Replace Tabs with Spaces"),
+    "format.grpPage":         QT_TRANSLATE_NOOP("Builds", "Page Layout"),
+    "format.pageUnit":        QT_TRANSLATE_NOOP("Builds", "Unit"),
+    "format.pageSize":        QT_TRANSLATE_NOOP("Builds", "Page Size"),
+    "format.pageWidth":       QT_TRANSLATE_NOOP("Builds", "Page Width"),
+    "format.pageHeight":      QT_TRANSLATE_NOOP("Builds", "Page Height"),
+    "format.topMargin":       QT_TRANSLATE_NOOP("Builds", "Top Margin"),
+    "format.bottomMargin":    QT_TRANSLATE_NOOP("Builds", "Bottom Margin"),
+    "format.leftMargin":      QT_TRANSLATE_NOOP("Builds", "Left Margin"),
+    "format.rightMargin":     QT_TRANSLATE_NOOP("Builds", "Right Margin"),
 
     "odt":                    QT_TRANSLATE_NOOP("Builds", "Open Document"),
     "odt.addColours":         QT_TRANSLATE_NOOP("Builds", "Add Highlight Colours"),
@@ -160,7 +177,7 @@ class BuildSettings:
 
     @property
     def buildID(self) -> str:
-        """The build ID as an UUID."""
+        """The build ID as a UUID."""
         return self._uuid
 
     @property
@@ -196,24 +213,24 @@ class BuildSettings:
 
     def getStr(self, key: str) -> str:
         """Type safe value access for strings."""
-        value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
+        value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None))[1])
         return str(value)
 
     def getBool(self, key: str) -> bool:
         """Type safe value access for bools."""
-        value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
+        value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None))[1])
         return bool(value)
 
     def getInt(self, key: str) -> int:
         """Type safe value access for integers."""
-        value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
+        value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None))[1])
         if isinstance(value, (int, float)):
             return int(value)
         return 0
 
     def getFloat(self, key: str) -> float:
         """Type safe value access for floats."""
-        value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None)[1]))
+        value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None))[1])
         if isinstance(value, (int, float)):
             return float(value)
         return 0.0

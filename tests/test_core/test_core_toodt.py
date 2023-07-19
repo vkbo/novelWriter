@@ -129,8 +129,8 @@ def testCoreToOdt_TextFormatting(mockGUI):
     assert theDoc._paraStyle("Text_20_body", oStyle) == "P1"
 
     assert list(theDoc._mainPara.keys()) == [
-        "Text_20_body", "Text_20_Meta", "Title", "Heading_20_1",
-        "Heading_20_2", "Heading_20_3", "Heading_20_4", "Header"
+        "Text_20_body", "Text_20_Meta", "Title", "Separator",
+        "Heading_20_1", "Heading_20_2", "Heading_20_3", "Heading_20_4", "Header",
     ]
 
     theKey = "071d6b2e4764749f8c78d3c1ab9099fa04c07d2d53fd3de61eb1bdf1cb4845c3"
@@ -145,9 +145,9 @@ def testCoreToOdt_TextFormatting(mockGUI):
     theDoc.initDocument()
     theDoc._addTextPar("Standard", oStyle, "")
     assert xmlToText(theDoc._xText) == (
-        "<office:text>"
-        "<text:p text:style-name=\"Standard\" />"
-        "</office:text>"
+        '<office:text>'
+        '<text:p text:style-name="Standard" />'
+        '</office:text>'
     )
 
     # No Format
@@ -155,9 +155,9 @@ def testCoreToOdt_TextFormatting(mockGUI):
     theDoc._addTextPar("Standard", oStyle, "Hello World")
     assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
-        "<office:text>"
-        "<text:p text:style-name=\"Standard\">Hello World</text:p>"
-        "</office:text>"
+        '<office:text>'
+        '<text:p text:style-name="Standard">Hello World</text:p>'
+        '</office:text>'
     )
 
     # Heading Level None
@@ -165,9 +165,9 @@ def testCoreToOdt_TextFormatting(mockGUI):
     theDoc._addTextPar("Standard", oStyle, "Hello World", isHead=True)
     assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
-        "<office:text>"
-        "<text:h text:style-name=\"Standard\">Hello World</text:h>"
-        "</office:text>"
+        '<office:text>'
+        '<text:h text:style-name="Standard">Hello World</text:h>'
+        '</office:text>'
     )
 
     # Heading Level 1
@@ -175,9 +175,9 @@ def testCoreToOdt_TextFormatting(mockGUI):
     theDoc._addTextPar("Standard", oStyle, "Hello World", isHead=True, oLevel="1")
     assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
-        "<office:text>"
-        "<text:h text:style-name=\"Standard\" text:outline-level=\"1\">Hello World</text:h>"
-        "</office:text>"
+        '<office:text>'
+        '<text:h text:style-name="Standard" text:outline-level="1">Hello World</text:h>'
+        '</office:text>'
     )
 
     # Formatted Text
@@ -187,11 +187,11 @@ def testCoreToOdt_TextFormatting(mockGUI):
     theDoc._addTextPar("Standard", oStyle, theTxt, tFmt=theFmt)
     assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
-        "<office:text>"
-        "<text:p text:style-name=\"Standard\">A <text:span text:style-name=\"T1\">few</text:span> "
-        "<text:span text:style-name=\"T2\">words</text:span> from <text:span text:style-name=\"T3"
-        "\">our</text:span> sponsor</text:p>"
-        "</office:text>"
+        '<office:text>'
+        '<text:p text:style-name="Standard">A <text:span text:style-name="T1">few</text:span> '
+        '<text:span text:style-name="T2">words</text:span> from <text:span text:style-name="T3">'
+        'our</text:span> sponsor</text:p>'
+        '</office:text>'
     )
 
     # Incorrectly Formatted Text
@@ -201,11 +201,11 @@ def testCoreToOdt_TextFormatting(mockGUI):
     theDoc._addTextPar("Standard", oStyle, theTxt, tFmt=theFmt)
     assert theDoc.errData == ["Unknown format tag encountered"]
     assert xmlToText(theDoc._xText) == (
-        "<office:text>"
-        "<text:p text:style-name=\"Standard\">"
-        "A few <text:span text:style-name=\"T2\">words</text:span>"
-        "</text:p>"
-        "</office:text>"
+        '<office:text>'
+        '<text:p text:style-name="Standard">'
+        'A few <text:span text:style-name="T2">words</text:span>'
+        '</text:p>'
+        '</office:text>'
     )
 
     # Formatted Text
@@ -215,9 +215,9 @@ def testCoreToOdt_TextFormatting(mockGUI):
     theDoc._addTextPar("Standard", oStyle, theTxt, tFmt=theFmt)
     assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
-        "<office:text>"
-        "<text:p text:style-name=\"Standard\">Hello<text:line-break /><text:tab />World</text:p>"
-        "</office:text>"
+        '<office:text>'
+        '<text:p text:style-name="Standard">Hello<text:line-break /><text:tab />World</text:p>'
+        '</office:text>'
     )
 
     # Test for issue #1412
@@ -230,10 +230,10 @@ def testCoreToOdt_TextFormatting(mockGUI):
     theDoc._addTextPar("Standard", oStyle, theTxt, tFmt=theFmt)
     assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
-        "<office:text>"
-        "<text:p text:style-name=\"Standard\">Test text **<text:span text:style-name=\"T2\">"
-        "bold</text:span>** and more.</text:p>"
-        "</office:text>"
+        '<office:text>'
+        '<text:p text:style-name="Standard">Test text **<text:span text:style-name="T2">'
+        'bold</text:span>** and more.</text:p>'
+        '</office:text>'
     )
 
 # END Test testCoreToOdt_TextFormatting
@@ -454,9 +454,9 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:p text:style-name="P3">* * *</text:p>'
+        '<text:p text:style-name="Separator">* * *</text:p>'
         '<text:p text:style-name="Text_20_body">Text</text:p>'
-        '<text:p text:style-name="P3">* * *</text:p>'
+        '<text:p text:style-name="Separator">* * *</text:p>'
         '<text:p text:style-name="Text_20_body">Text</text:p>'
         '</office:text>'
     )
@@ -472,9 +472,9 @@ def testCoreToOdt_Convert(mockGUI):
     assert theDoc.errData == []
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Text_20_body" />'
+        '<text:p text:style-name="Separator" />'
         '<text:p text:style-name="Text_20_body">Text</text:p>'
-        '<text:p text:style-name="Text_20_body" />'
+        '<text:p text:style-name="Separator" />'
         '<text:p text:style-name="Text_20_body">Text</text:p>'
         '</office:text>'
     )
@@ -500,24 +500,24 @@ def testCoreToOdt_Convert(mockGUI):
     assert xmlToText(theDoc._xText) == (
         '<office:text>'
         '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
-        '<text:p text:style-name="P4"><text:span text:style-name="T4">'
+        '<text:p text:style-name="P3"><text:span text:style-name="T4">'
         'Point of View:</text:span> Jane</text:p>'
-        '<text:p text:style-name="P5"><text:span text:style-name="T4">'
+        '<text:p text:style-name="P4"><text:span text:style-name="T4">'
         'Characters:</text:span> John</text:p>'
         '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T4">'
         'Plot:</text:span> Main</text:p>'
-        '<text:p text:style-name="P6">Right align</text:p>'
+        '<text:p text:style-name="P5">Right align</text:p>'
         '<text:p text:style-name="Text_20_body">Left Align</text:p>'
-        '<text:p text:style-name="P3">Centered</text:p>'
+        '<text:p text:style-name="P6">Centered</text:p>'
         '<text:p text:style-name="P7">Left indent</text:p>'
         '<text:p text:style-name="P8">Right indent</text:p>'
         '</office:text>'
     )
+    assert getStyle("P3")._pAttr["margin-bottom"] == ["fo", "0.000cm"]
     assert getStyle("P4")._pAttr["margin-bottom"] == ["fo", "0.000cm"]
-    assert getStyle("P5")._pAttr["margin-bottom"] == ["fo", "0.000cm"]
-    assert getStyle("P5")._pAttr["margin-top"] == ["fo", "0.000cm"]
-    assert getStyle("P6")._pAttr["text-align"] == ["fo", "right"]
-    assert getStyle("P3")._pAttr["text-align"] == ["fo", "center"]
+    assert getStyle("P4")._pAttr["margin-top"] == ["fo", "0.000cm"]
+    assert getStyle("P5")._pAttr["text-align"] == ["fo", "right"]
+    assert getStyle("P6")._pAttr["text-align"] == ["fo", "center"]
     assert getStyle("P7")._pAttr["margin-left"] == ["fo", "1.693cm"]
     assert getStyle("P8")._pAttr["margin-right"] == ["fo", "1.693cm"]
 

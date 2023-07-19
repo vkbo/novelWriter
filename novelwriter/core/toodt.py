@@ -147,7 +147,7 @@ class ToOdt(Tokenizer):
         self._dLanguage    = "en"
         self._dCountry     = "GB"
 
-        # Text Margings in Units of em
+        # Text Margings
         self._mTopTitle = "0.423cm"
         self._mTopHead1 = "0.423cm"
         self._mTopHead2 = "0.353cm"
@@ -166,11 +166,13 @@ class ToOdt(Tokenizer):
         self._mBotText  = "0.247cm"
         self._mBotMeta  = "0.106cm"
 
-        # Document Margins
-        self._mDocTop   = "2.000cm"
-        self._mDocBtm   = "2.000cm"
-        self._mDocLeft  = "2.000cm"
-        self._mDocRight = "2.000cm"
+        # Document Size and Margins
+        self._mDocWidth  = "21.0cm"
+        self._mDocHeight = "29.7cm"
+        self._mDocTop    = "2.000cm"
+        self._mDocBtm    = "2.000cm"
+        self._mDocLeft   = "2.000cm"
+        self._mDocRight  = "2.000cm"
 
         # Colour
         self._colHead12 = None
@@ -198,6 +200,19 @@ class ToOdt(Tokenizer):
     def setColourHeaders(self, state: bool):
         """Enable/disable coloured headings and comments."""
         self._colourHead = state
+        return
+
+    def setPageLayout(
+        self, width: int | float, height: int | float,
+        top: int | float, bottom: int | float, left: int | float, right: int | float
+    ):
+        """Set the document page size and margins in millimetres."""
+        self._mDocWidth  = f"{width/10.0:.3f}cm"
+        self._mDocHeight = f"{height/10.0:.3f}cm"
+        self._mDocTop    = f"{top/10.0:.3f}cm"
+        self._mDocBtm    = f"{bottom/10.0:.3f}cm"
+        self._mDocLeft   = f"{left/10.0:.3f}cm"
+        self._mDocRight  = f"{right/10.0:.3f}cm"
         return
 
     ##
@@ -454,10 +469,10 @@ class ToOdt(Tokenizer):
                 self._addTextPar("Heading_20_4", oStyle, tHead, isHead=True, oLevel="4")
 
             elif tType == self.T_SEP:
-                self._addTextPar("Text_20_body", oStyle, tText)
+                self._addTextPar("Separator", oStyle, tText)
 
             elif tType == self.T_SKIP:
-                self._addTextPar("Text_20_body", oStyle, "")
+                self._addTextPar("Separator", oStyle, "")
 
             elif tType == self.T_TEXT:
                 if parStyle is None:
@@ -721,10 +736,13 @@ class ToOdt(Tokenizer):
             xPage = ET.SubElement(self._xAut2, _mkTag("style", "page-layout"), attrib=tAttr)
 
         tAttr = {}
+        tAttr[_mkTag("fo", "page-width")]    = self._mDocWidth
+        tAttr[_mkTag("fo", "page-height")]   = self._mDocHeight
         tAttr[_mkTag("fo", "margin-top")]    = self._mDocTop
         tAttr[_mkTag("fo", "margin-bottom")] = self._mDocBtm
         tAttr[_mkTag("fo", "margin-left")]   = self._mDocLeft
         tAttr[_mkTag("fo", "margin-right")]  = self._mDocRight
+        tAttr[_mkTag("fo", "print-orientation")] = "portrait"
         ET.SubElement(xPage, _mkTag("style", "page-layout-properties"), attrib=tAttr)
 
         xHead = ET.SubElement(xPage, _mkTag("style", "header-style"))
@@ -868,6 +886,25 @@ class ToOdt(Tokenizer):
         oStyle.packXML(self._xStyl, "Title")
 
         self._mainPara["Title"] = oStyle
+
+        # Add Separator Style
+        # ===================
+
+        oStyle = ODTParagraphStyle()
+        oStyle.setDisplayName("Separator")
+        oStyle.setParentStyleName("Standard")
+        oStyle.setNextStyleName("Text_20_body")
+        oStyle.setClass("text")
+        oStyle.setTextAlign("center")
+        oStyle.setMarginTop(self._mTopText)
+        oStyle.setMarginBottom(self._mBotText)
+        oStyle.setLineHeight(self._fLineHeight)
+        oStyle.setFontName(self._textFont)
+        oStyle.setFontFamily(self._fontFamily)
+        oStyle.setFontSize(self._fSizeText)
+        oStyle.packXML(self._xStyl, "Separator")
+
+        self._mainPara["Separator"] = oStyle
 
         # Add Heading 1 Style
         # ===================
