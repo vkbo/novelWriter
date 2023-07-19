@@ -23,10 +23,12 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 
 from math import ceil
+from pathlib import Path
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import qApp
@@ -72,6 +74,7 @@ class GuiTheme:
         self.statUnsaved = [200, 15, 39]
         self.statSaved   = [2, 133, 37]
         self.helpText    = [0, 0, 0]
+        self.winBright   = [0, 0, 0]
 
         # Loaded Syntax Settings
         # ======================
@@ -111,10 +114,10 @@ class GuiTheme:
 
         # Load Themes
         self._guiPalette  = QPalette()
-        self._themeList   = []
-        self._syntaxList  = []
-        self._availThemes = {}
-        self._availSyntax = {}
+        self._themeList: list[tuple[str, str]] = []
+        self._syntaxList: list[tuple[str, str]] = []
+        self._availThemes: dict[str, Path] = {}
+        self._availSyntax: dict[str, Path] = {}
 
         self._listConf(self._availSyntax, CONFIG.assetPath("syntax"))
         self._listConf(self._availThemes, CONFIG.assetPath("themes"))
@@ -166,22 +169,22 @@ class GuiTheme:
     #  Methods
     ##
 
-    def getTextWidth(self, theText, theFont=None):
-        """Returns the width needed to contain a given piece of text.
+    def getTextWidth(self, text: str, font: QFont | None = None) -> int:
+        """Returns the width needed to contain a given piece of text in
+        pixels.
         """
-        if isinstance(theFont, QFont):
-            qMetrics = QFontMetrics(theFont)
+        if isinstance(font, QFont):
+            qMetrics = QFontMetrics(font)
         else:
             qMetrics = QFontMetrics(self.guiFont)
-        return int(ceil(qMetrics.boundingRect(theText).width()))
+        return int(ceil(qMetrics.boundingRect(text).width()))
 
     ##
     #  Theme Methods
     ##
 
     def loadTheme(self):
-        """Load the currently specified GUI theme.
-        """
+        """Load the currently specified GUI theme."""
         guiTheme = CONFIG.guiTheme
         if guiTheme not in self._availThemes:
             logger.error("Could not find GUI theme '%s'", guiTheme)
@@ -195,70 +198,72 @@ class GuiTheme:
 
         # Config File
         logger.info("Loading GUI theme '%s'", guiTheme)
-        confParser = NWConfigParser()
+        parser = NWConfigParser()
         try:
             with open(themeFile, mode="r", encoding="utf-8") as inFile:
-                confParser.read_file(inFile)
+                parser.read_file(inFile)
         except Exception:
             logger.error("Could not load theme settings from: %s", themeFile)
             logException()
             return False
 
         # Main
-        cnfSec = "Main"
-        if confParser.has_section(cnfSec):
-            self.themeName        = confParser.rdStr(cnfSec, "name", "")
-            self.themeDescription = confParser.rdStr(cnfSec, "description", "N/A")
-            self.themeAuthor      = confParser.rdStr(cnfSec, "author", "N/A")
-            self.themeCredit      = confParser.rdStr(cnfSec, "credit", "N/A")
-            self.themeUrl         = confParser.rdStr(cnfSec, "url", "")
-            self.themeLicense     = confParser.rdStr(cnfSec, "license", "N/A")
-            self.themeLicenseUrl  = confParser.rdStr(cnfSec, "licenseurl", "")
-            self.themeIcons       = confParser.rdStr(cnfSec, "icontheme", "")
+        sec = "Main"
+        if parser.has_section(sec):
+            self.themeName        = parser.rdStr(sec, "name", "")
+            self.themeDescription = parser.rdStr(sec, "description", "N/A")
+            self.themeAuthor      = parser.rdStr(sec, "author", "N/A")
+            self.themeCredit      = parser.rdStr(sec, "credit", "N/A")
+            self.themeUrl         = parser.rdStr(sec, "url", "")
+            self.themeLicense     = parser.rdStr(sec, "license", "N/A")
+            self.themeLicenseUrl  = parser.rdStr(sec, "licenseurl", "")
+            self.themeIcons       = parser.rdStr(sec, "icontheme", "")
 
         # Palette
-        cnfSec = "Palette"
-        if confParser.has_section(cnfSec):
-            self._setPalette(confParser, cnfSec, "window",          QPalette.Window)
-            self._setPalette(confParser, cnfSec, "windowtext",      QPalette.WindowText)
-            self._setPalette(confParser, cnfSec, "base",            QPalette.Base)
-            self._setPalette(confParser, cnfSec, "alternatebase",   QPalette.AlternateBase)
-            self._setPalette(confParser, cnfSec, "text",            QPalette.Text)
-            self._setPalette(confParser, cnfSec, "tooltipbase",     QPalette.ToolTipBase)
-            self._setPalette(confParser, cnfSec, "tooltiptext",     QPalette.ToolTipText)
-            self._setPalette(confParser, cnfSec, "button",          QPalette.Button)
-            self._setPalette(confParser, cnfSec, "buttontext",      QPalette.ButtonText)
-            self._setPalette(confParser, cnfSec, "brighttext",      QPalette.BrightText)
-            self._setPalette(confParser, cnfSec, "highlight",       QPalette.Highlight)
-            self._setPalette(confParser, cnfSec, "highlightedtext", QPalette.HighlightedText)
-            self._setPalette(confParser, cnfSec, "link",            QPalette.Link)
-            self._setPalette(confParser, cnfSec, "linkvisited",     QPalette.LinkVisited)
+        sec = "Palette"
+        if parser.has_section(sec):
+            self._setPalette(parser, sec, "window",          QPalette.ColorRole.Window)
+            self._setPalette(parser, sec, "windowtext",      QPalette.ColorRole.WindowText)
+            self._setPalette(parser, sec, "base",            QPalette.ColorRole.Base)
+            self._setPalette(parser, sec, "alternatebase",   QPalette.ColorRole.AlternateBase)
+            self._setPalette(parser, sec, "text",            QPalette.ColorRole.Text)
+            self._setPalette(parser, sec, "tooltipbase",     QPalette.ColorRole.ToolTipBase)
+            self._setPalette(parser, sec, "tooltiptext",     QPalette.ColorRole.ToolTipText)
+            self._setPalette(parser, sec, "button",          QPalette.ColorRole.Button)
+            self._setPalette(parser, sec, "buttontext",      QPalette.ColorRole.ButtonText)
+            self._setPalette(parser, sec, "brighttext",      QPalette.ColorRole.BrightText)
+            self._setPalette(parser, sec, "highlight",       QPalette.ColorRole.Highlight)
+            self._setPalette(parser, sec, "highlightedtext", QPalette.ColorRole.HighlightedText)
+            self._setPalette(parser, sec, "link",            QPalette.ColorRole.Link)
+            self._setPalette(parser, sec, "linkvisited",     QPalette.ColorRole.LinkVisited)
         else:
             self._guiPalette = qApp.style().standardPalette()
 
         # GUI
-        cnfSec = "GUI"
-        if confParser.has_section(cnfSec):
-            self.statNone    = self._parseColour(confParser, cnfSec, "statusnone")
-            self.statUnsaved = self._parseColour(confParser, cnfSec, "statusunsaved")
-            self.statSaved   = self._parseColour(confParser, cnfSec, "statussaved")
-
-        # Icons
-        self.iconCache.loadTheme(self.themeIcons or "typicons_light")
+        sec = "GUI"
+        if parser.has_section(sec):
+            self.helpText    = self._parseColour(parser, sec, "helptext")
+            self.statNone    = self._parseColour(parser, sec, "statusnone")
+            self.statUnsaved = self._parseColour(parser, sec, "statusunsaved")
+            self.statSaved   = self._parseColour(parser, sec, "statussaved")
 
         # Update Dependant Colours
         backCol = self._guiPalette.window().color()
         textCol = self._guiPalette.windowText().color()
 
-        backLCol = backCol.lightnessF()
-        textLCol = textCol.lightnessF()
+        backLNess = backCol.lightnessF()
+        textLNess = textCol.lightnessF()
 
-        if backLCol > textLCol:
-            helpLCol = textLCol + 0.65*(backLCol - textLCol)
-        else:
-            helpLCol = backLCol + 0.65*(textLCol - backLCol)
+        if self.helpText == [0, 0, 0]:
+            if backLNess > textLNess:
+                helpLCol = textLNess + 0.35*(backLNess - textLNess)
+            else:
+                helpLCol = backLNess + 0.65*(textLNess - backLNess)
+            self.helpText = [int(255*helpLCol)]*3
 
-        self.helpText = [int(255*helpLCol)]*3
+        # Icons
+        defaultIcons = "typicons_light" if backLNess >= 0.5 else "typicons_dark"
+        self.iconCache.loadTheme(self.themeIcons or defaultIcons)
 
         # Apply Styles
         qApp.setPalette(self._guiPalette)
@@ -266,8 +271,7 @@ class GuiTheme:
         return True
 
     def loadSyntax(self):
-        """Load the currently specified syntax highlighter theme.
-        """
+        """Load the currently specified syntax highlighter theme."""
         guiSyntax = CONFIG.guiSyntax
         if guiSyntax not in self._availSyntax:
             logger.error("Could not find syntax theme '%s'", guiSyntax)
@@ -323,9 +327,8 @@ class GuiTheme:
 
         return True
 
-    def listThemes(self):
-        """Scan the GUI themes folder and list all themes.
-        """
+    def listThemes(self) -> list[tuple[str, str]]:
+        """Scan the GUI themes folder and list all themes."""
         if self._themeList:
             return self._themeList
 
@@ -340,9 +343,8 @@ class GuiTheme:
 
         return self._themeList
 
-    def listSyntax(self):
-        """Scan the syntax themes folder and list all themes.
-        """
+    def listSyntax(self) -> list[tuple[str, str]]:
+        """Scan the syntax themes folder and list all themes."""
         if self._syntaxList:
             return self._syntaxList
 
@@ -362,8 +364,7 @@ class GuiTheme:
     ##
 
     def _setGuiFont(self):
-        """Update the GUI's font style from settings.
-        """
+        """Update the GUI's font style from settings."""
         theFont = QFont()
         fontDB = QFontDatabase()
         if CONFIG.guiFont not in fontDB.families():
@@ -383,9 +384,8 @@ class GuiTheme:
 
         return
 
-    def _listConf(self, targetDict, checkDir):
-        """Scan for theme config files and populate the dictionary.
-        """
+    def _listConf(self, targetDict: dict, checkDir: Path) -> bool:
+        """Scan for theme config files and populate the dictionary."""
         if not checkDir.is_dir():
             return False
 
@@ -395,29 +395,31 @@ class GuiTheme:
 
         return True
 
-    def _parseColour(self, confParser, cnfSec, cnfName):
-        """Parse a colour value from a config string.
-        """
-        if confParser.has_option(cnfSec, cnfName):
-            values = confParser.get(cnfSec, cnfName).split(",")
+    def _parseColour(
+        self, parser: NWConfigParser, section: str, name: str
+    ) -> list[int]:
+        """Parse a colour value from a config string."""
+        if parser.has_option(section, name):
+            values = parser.get(section, name).split(",")
             result = []
             try:
                 result.append(minmax(int(values[0]), 0, 255))
                 result.append(minmax(int(values[1]), 0, 255))
                 result.append(minmax(int(values[2]), 0, 255))
             except Exception:
-                logger.error("Could not load theme colours for '%s' from config file", cnfName)
+                logger.error("Could not load theme colours for '%s' from config file", name)
                 result = [0, 0, 0]
         else:
-            logger.warning("Could not find theme colours for '%s' in config file", cnfName)
+            logger.warning("Could not find theme colours for '%s' in config file", name)
             result = [0, 0, 0]
         return result
 
-    def _setPalette(self, confParser, cnfSec, cnfName, paletteVal):
-        """Set a palette colour value from a config string.
-        """
+    def _setPalette(
+        self, parser: NWConfigParser, section: str, name: str, value: QPalette.ColorRole
+    ):
+        """Set a palette colour value from a config string."""
         self._guiPalette.setColor(
-            paletteVal, QColor(*self._parseColour(confParser, cnfSec, cnfName))
+            value, QColor(*self._parseColour(parser, section, name))
         )
         return
 
