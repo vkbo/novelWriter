@@ -74,7 +74,6 @@ class GuiTheme:
         self.statUnsaved = [200, 15, 39]
         self.statSaved   = [2, 133, 37]
         self.helpText    = [0, 0, 0]
-        self.winBright   = [0, 0, 0]
 
         # Loaded Syntax Settings
         # ======================
