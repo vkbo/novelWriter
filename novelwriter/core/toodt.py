@@ -454,10 +454,10 @@ class ToOdt(Tokenizer):
                 self._addTextPar("Heading_20_4", oStyle, tHead, isHead=True, oLevel="4")
 
             elif tType == self.T_SEP:
-                self._addTextPar("Text_20_body", oStyle, tText)
+                self._addTextPar("Separator", oStyle, tText)
 
             elif tType == self.T_SKIP:
-                self._addTextPar("Text_20_body", oStyle, "")
+                self._addTextPar("Separator", oStyle, "")
 
             elif tType == self.T_TEXT:
                 if parStyle is None:
@@ -868,6 +868,25 @@ class ToOdt(Tokenizer):
         oStyle.packXML(self._xStyl, "Title")
 
         self._mainPara["Title"] = oStyle
+
+        # Add Separator Style
+        # ===================
+
+        oStyle = ODTParagraphStyle()
+        oStyle.setDisplayName("Separator")
+        oStyle.setParentStyleName("Standard")
+        oStyle.setNextStyleName("Text_20_body")
+        oStyle.setClass("text")
+        oStyle.setTextAlign("center")
+        oStyle.setMarginTop(self._mTopText)
+        oStyle.setMarginBottom(self._mBotText)
+        oStyle.setLineHeight(self._fLineHeight)
+        oStyle.setFontName(self._textFont)
+        oStyle.setFontFamily(self._fontFamily)
+        oStyle.setFontSize(self._fSizeText)
+        oStyle.packXML(self._xStyl, "Separator")
+
+        self._mainPara["Separator"] = oStyle
 
         # Add Heading 1 Style
         # ===================
