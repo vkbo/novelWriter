@@ -519,9 +519,19 @@ def testBuildSettings_Format(monkeypatch, qtbot: QtBot, nwGUI: GuiMain):
     build.setValue("format.textFont", "")  # Will fall back to config value
     build.setValue("format.textSize", 12)
     build.setValue("format.lineHeight", 1.2)
+
     build.setValue("format.justifyText", False)
     build.setValue("format.stripUnicode", False)
     build.setValue("format.replaceTabs", False)
+
+    build.setValue("format.pageUnit", "mm")
+    build.setValue("format.pageSize", "Custom")
+    build.setValue("format.pageWidth", 180.0)
+    build.setValue("format.pageHeight", 250.0)
+    build.setValue("format.topMargin", 25.0)
+    build.setValue("format.bottomMargin", 25.0)
+    build.setValue("format.leftMargin", 15.0)
+    build.setValue("format.rightMargin", 15.0)
 
     # Create the dialog and populate it
     bSettings = GuiBuildSettings(nwGUI, nwGUI, build)
@@ -537,18 +547,32 @@ def testBuildSettings_Format(monkeypatch, qtbot: QtBot, nwGUI: GuiMain):
     assert fmtTab.textFont.text() == textFont
     assert fmtTab.textSize.value() == 12
     assert fmtTab.lineHeight.value() == 1.2
+
     assert fmtTab.justifyText.isChecked() is False
     assert fmtTab.stripUnicode.isChecked() is False
     assert fmtTab.replaceTabs.isChecked() is False
+
+    assert fmtTab.pageUnit.currentData() == "mm"
+    assert fmtTab.pageSize.currentData() == "Custom"
+    assert fmtTab.pageWidth.value() == 180.0
+    assert fmtTab.pageHeight.value() == 250.0
+    assert fmtTab.topMargin.value() == 25.0
+    assert fmtTab.bottomMargin.value() == 25.0
+    assert fmtTab.leftMargin.value() == 15.0
+    assert fmtTab.rightMargin.value() == 15.0
 
     # Change values
     fmtTab.buildLang.setCurrentIndex(fmtTab.buildLang.findData("en_GB"))
     fmtTab.textFont.setText("Arial")
     fmtTab.textSize.setValue(11)
     fmtTab.lineHeight.setValue(1.15)
+
     fmtTab.justifyText.setChecked(True)
     fmtTab.stripUnicode.setChecked(True)
     fmtTab.replaceTabs.setChecked(True)
+
+    fmtTab.pageUnit.setCurrentIndex(fmtTab.pageUnit.findData("cm"))
+    fmtTab.pageSize.setCurrentIndex(fmtTab.pageSize.findData("A4"))
 
     # Save values
     fmtTab.saveContent()
@@ -557,9 +581,19 @@ def testBuildSettings_Format(monkeypatch, qtbot: QtBot, nwGUI: GuiMain):
     assert build.getStr("format.textFont") == "Arial"
     assert build.getInt("format.textSize") == 11
     assert build.getFloat("format.lineHeight") == 1.15
+
     assert build.getBool("format.justifyText") is True
     assert build.getBool("format.stripUnicode") is True
     assert build.getBool("format.replaceTabs") is True
+
+    assert fmtTab.pageUnit.currentData() == "cm"
+    assert fmtTab.pageSize.currentData() == "A4"
+    assert fmtTab.pageWidth.value() == 21.0
+    assert fmtTab.pageHeight.value() == 29.7
+    assert fmtTab.topMargin.value() == 2.5
+    assert fmtTab.bottomMargin.value() == 2.5
+    assert fmtTab.leftMargin.value() == 1.5
+    assert fmtTab.rightMargin.value() == 1.5
 
     # Check that the font dialog doesn't fail
     with monkeypatch.context() as mp:
