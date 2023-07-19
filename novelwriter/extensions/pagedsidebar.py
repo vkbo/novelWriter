@@ -135,7 +135,7 @@ class NPagedToolButton(QToolButton):
 
     def paintEvent(self, event):
         """Overload the paint event to draw a simple, left aligned text
-        label, with a highlight when selected and alternative base
+        label, with a highlight when selected and a transparent base
         colour when hovered.
         """
         opt = QStyleOptionToolButton()
@@ -150,9 +150,9 @@ class NPagedToolButton(QToolButton):
         palette = self.palette()
 
         if opt.state & QStyle.State_MouseOver == QStyle.State_MouseOver:
-            backCol = palette.alternateBase()
+            backCol = palette.base()
             paint.setBrush(backCol)
-            paint.setOpacity(0.5)
+            paint.setOpacity(0.75)
             paint.drawRoundedRect(0, 0, width, height, self._cR, self._cR)
 
         if self.isChecked():

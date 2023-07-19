@@ -122,8 +122,7 @@ def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
 
 @pytest.mark.gui
 def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI):
-    """Test the theme part of the class.
-    """
+    """Test the theme part of the class."""
     mainTheme: GuiTheme = nwGUI.mainTheme
 
     # List Themes
@@ -137,7 +136,8 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI):
     # Load the theme info
     themesList = mainTheme.listThemes()
     assert themesList[0] == ("default_dark", "Default Dark Theme")
-    assert themesList[1] == ("default", "Default Theme")
+    assert themesList[1] == ("default_light", "Default Light Theme")
+    assert themesList[2] == ("default", "Qt Default Theme")
 
     # A second call should returned the cached list
     assert mainTheme.listThemes() == mainTheme._themeList
@@ -169,6 +169,18 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI):
     wCol = QApplication.style().standardPalette().color(QPalette.Window).getRgb()
     assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == wCol
 
+    # Load Default Light Theme
+    # ========================
+
+    CONFIG.guiTheme = "default_light"
+    assert mainTheme.loadTheme() is True
+
+    # Check a few values
+    assert mainTheme._guiPalette.color(QPalette.Window).getRgb()        == (239, 239, 239, 255)
+    assert mainTheme._guiPalette.color(QPalette.WindowText).getRgb()    == (0, 0, 0, 255)
+    assert mainTheme._guiPalette.color(QPalette.Base).getRgb()          == (255, 255, 255, 255)
+    assert mainTheme._guiPalette.color(QPalette.AlternateBase).getRgb() == (239, 239, 239, 255)
+
     # Load Default Dark Theme
     # =======================
 
@@ -177,7 +189,7 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI):
 
     # Check a few values
     assert mainTheme._guiPalette.color(QPalette.Window).getRgb()        == (54, 54, 54, 255)
-    assert mainTheme._guiPalette.color(QPalette.WindowText).getRgb()    == (174, 174, 174, 255)
+    assert mainTheme._guiPalette.color(QPalette.WindowText).getRgb()    == (204, 204, 204, 255)
     assert mainTheme._guiPalette.color(QPalette.Base).getRgb()          == (62, 62, 62, 255)
     assert mainTheme._guiPalette.color(QPalette.AlternateBase).getRgb() == (78, 78, 78, 255)
 
