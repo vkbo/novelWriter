@@ -354,8 +354,8 @@ class Config:
             logger.warning("Unknown font '%s'", family)
             if self.osWindows and "Arial" in fontFam:
                 self.textFont = "Arial"
-            elif self.osDarwin and "Courier" in fontFam:
-                self.textFont = "Courier"
+            elif self.osDarwin and "Helvetica" in fontFam:
+                self.textFont = "Helvetica"
             else:
                 self.textFont = fontDB.systemFont(QFontDatabase.GeneralFont).family()
         else:
