@@ -41,7 +41,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwHeadFmt, nwLabels, trConst
-from novelwriter.core.buildsettings import PAGE_SIZES, BuildSettings, FilterMode
+from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.extensions.configlayout import NConfigLayout, NSimpleLayout
@@ -1024,8 +1024,8 @@ class _FormatTab(QWidget):
             self.pageUnit.addItem(trConst(name), key)
 
         self.pageSize = QComboBox(self)
-        for key, size in PAGE_SIZES.items():
-            self.pageSize.addItem(key, size)
+        for key, name in nwLabels.PAPER_NAME.items():
+            self.pageSize.addItem(trConst(name), key)
 
         self.pageWidth = QDoubleSpinBox(self)
         self.pageWidth.setFixedWidth(dbW)
@@ -1115,7 +1115,7 @@ class _FormatTab(QWidget):
         self.rightMargin.setValue(self._build.getFloat("format.rightMargin"))
 
         pageSize = self._build.getStr("format.pageSize")
-        index = self.pageSize.findText(pageSize)
+        index = self.pageSize.findData(pageSize)
         if index >= 0:
             self.pageSize.setCurrentIndex(index)
             self._changePageSize(index)
@@ -1131,11 +1131,13 @@ class _FormatTab(QWidget):
         self._build.setValue("format.textFont", self.textFont.text())
         self._build.setValue("format.textSize", self.textSize.value())
         self._build.setValue("format.lineHeight", self.lineHeight.value())
+
         self._build.setValue("format.justifyText", self.justifyText.isChecked())
         self._build.setValue("format.stripUnicode", self.stripUnicode.isChecked())
         self._build.setValue("format.replaceTabs", self.replaceTabs.isChecked())
+
         self._build.setValue("format.pageUnit", str(self.pageUnit.currentData()))
-        self._build.setValue("format.pageSize", str(self.pageSize.currentText()))
+        self._build.setValue("format.pageSize", str(self.pageSize.currentData()))
         self._build.setValue("format.pageWidth", self.pageWidth.value())
         self._build.setValue("format.pageHeight", self.pageHeight.value())
         self._build.setValue("format.topMargin", self.topMargin.value())
@@ -1220,12 +1222,12 @@ class _FormatTab(QWidget):
         self.pageWidth.setEnabled(True)
         self.pageHeight.setEnabled(True)
 
-        width, height = self.pageSize.itemData(index) if index >= 0 else (-1.0, -1.0)
-        if width > 0.0 and height > 0.0:
+        w, h = nwLabels.PAPER_SIZE[self.pageSize.itemData(index)] if index >= 0 else (-1.0, -1.0)
+        if w > 0.0 and h > 0.0:
             self.pageWidth.setEnabled(False)
             self.pageHeight.setEnabled(False)
-            self.pageWidth.setValue(width/self._unitScale)
-            self.pageHeight.setValue(height/self._unitScale)
+            self.pageWidth.setValue(w/self._unitScale)
+            self.pageHeight.setValue(h/self._unitScale)
 
         return
 

@@ -235,6 +235,22 @@ class nwLabels:
         "cm": 10.0,
         "in": 25.4,
     }
+    PAPER_NAME = {
+        "A4":     QT_TRANSLATE_NOOP("Constant", "A4"),
+        "A5":     QT_TRANSLATE_NOOP("Constant", "A5"),
+        "A6":     QT_TRANSLATE_NOOP("Constant", "A6"),
+        "Legal":  QT_TRANSLATE_NOOP("Constant", "US Legal"),
+        "Letter": QT_TRANSLATE_NOOP("Constant", "US Letter"),
+        "Custom": QT_TRANSLATE_NOOP("Constant", "Custom"),
+    }
+    PAPER_SIZE = {
+        "A4":     (210.0, 297.0),
+        "A5":     (148.0, 210.0),
+        "A6":     (105.0, 148.0),
+        "Legal":  (215.9, 355.6),
+        "Letter": (215.9, 279.4),
+        "Custom": (-1.0, -1.0),
+    }
 
 # END Class nwLabels
 

@@ -132,15 +132,6 @@ SETTINGS_LABELS = {
     "html.addStyles":         QT_TRANSLATE_NOOP("Builds", "Add CSS Styles"),
 }
 
-PAGE_SIZES = {
-    "A4":     (210.0, 297.0),
-    "A5":     (148.0, 210.0),
-    "A6":     (105.0, 148.0),
-    "Legal":  (215.9, 355.6),
-    "Letter": (215.9, 279.4),
-    "Custom": (-1.0, -1.0),
-}
-
 
 class FilterMode(Enum):
     """The decision reason for an item in a filtered project."""
