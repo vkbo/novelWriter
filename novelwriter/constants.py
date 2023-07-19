@@ -22,16 +22,16 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 from PyQt5.QtCore import QCoreApplication, QT_TRANSLATE_NOOP
 
 from novelwriter.enum import nwBuildFmt, nwItemClass, nwItemLayout, nwOutline
 
 
-def trConst(tString):
-    """Wrapper function for locally translating constants.
-    """
-    return QCoreApplication.translate("Constant", tString)
+def trConst(text: str) -> str:
+    """Wrapper function for locally translating constants."""
+    return QCoreApplication.translate("Constant", text)
 
 
 class nwConst:
@@ -224,6 +224,16 @@ class nwLabels:
         nwBuildFmt.EXT_MD: ".md",
         nwBuildFmt.J_HTML: ".json",
         nwBuildFmt.J_NWD:  ".json",
+    }
+    UNIT_NAME = {
+        "mm": QT_TRANSLATE_NOOP("Constant", "Millimetres"),
+        "cm": QT_TRANSLATE_NOOP("Constant", "Centimetres"),
+        "in": QT_TRANSLATE_NOOP("Constant", "Inches"),
+    }
+    UNIT_SCALE = {
+        "mm": 1.0,
+        "cm": 10.0,
+        "in": 25.4,
     }
 
 # END Class nwLabels
