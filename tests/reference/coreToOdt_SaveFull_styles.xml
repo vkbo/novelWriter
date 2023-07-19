@@ -54,7 +54,7 @@
   </office:styles>
   <office:automatic-styles>
     <style:page-layout style:name="PM1">
-      <style:page-layout-properties fo:margin-top="2.000cm" fo:margin-bottom="2.000cm" fo:margin-left="2.000cm" fo:margin-right="2.000cm" />
+      <style:page-layout-properties fo:page-width="21.0cm" fo:page-height="29.7cm" fo:margin-top="2.000cm" fo:margin-bottom="2.000cm" fo:margin-left="2.000cm" fo:margin-right="2.000cm" fo:print-orientation="portrait" />
       <style:header-style>
         <style:header-footer-properties fo:min-height="0.600cm" fo:margin-left="0.000cm" fo:margin-right="0.000cm" fo:margin-bottom="0.500cm" />
       </style:header-style>
