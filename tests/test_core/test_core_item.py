@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import copy
 import pytest
 
 from PyQt5.QtGui import QIcon
@@ -32,8 +33,7 @@ from novelwriter.core.project import NWProject
 
 @pytest.mark.core
 def testCoreItem_Setters(mockGUI, mockRnd, fncPath):
-    """Test all the simple setters for the NWItem class.
-    """
+    """Test all the simple setters for the NWItem class."""
     theProject = NWProject(mockGUI)
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
@@ -193,8 +193,7 @@ def testCoreItem_Setters(mockGUI, mockRnd, fncPath):
 
 @pytest.mark.core
 def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
-    """Test the simple methods of the NWItem class.
-    """
+    """Test the simple methods of the NWItem class."""
     theProject = NWProject(mockGUI)
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
@@ -278,9 +277,75 @@ def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
     # Truthiness
     # ==========
 
-    assert bool(theItem) is True
-    theItem.setHandle(None)
-    assert bool(theItem) is False
+    bItem = NWItem(theProject)
+
+    # An item with a handle is valid
+    bItem.setHandle(theProject.tree._makeHandle())
+    assert bool(bItem) is True
+    assert bItem
+
+    # An item without a handle is invalid
+    bItem.setHandle(None)
+    assert bool(bItem) is False
+    assert not bItem
+
+    # Copy an Item
+    # ============
+
+    scData = {
+        "name": "New Scene",
+        "itemAttr": {
+            "handle": "000000000000f",
+            "parent": "000000000000d",
+            "root": "0000000000008",
+            "order": "0",
+            "type": "FILE",
+            "class": "NOVEL",
+            "layout": "DOCUMENT"
+        },
+        "metaAttr": {
+            "expanded": "no",
+            "heading": "H3",
+            "charCount": "9",
+            "wordCount": "2",
+            "paraCount": "0",
+            "cursorPos": "0"
+        },
+        "nameAttr": {
+            "status": "s000000",
+            "import": "i000004",
+            "active": "yes"
+        }
+    }
+
+    scItem = theProject.tree[C.hSceneDoc]
+    cpItem = copy.copy(scItem)
+
+    # We should have two instances of NWItem
+    assert isinstance(scItem, NWItem)
+    assert isinstance(cpItem, NWItem)
+    assert scItem is not cpItem
+
+    # They should both point to the same project instance
+    assert scItem._project is cpItem._project
+
+    # They should contain the same data
+    assert scItem.pack() == scData
+    assert cpItem.pack() == scData
+
+    # Create a new handle for the copy
+    cpHandle = theProject.tree._makeHandle()
+    cpData = copy.deepcopy(scData)
+    cpData["itemAttr"]["handle"] = cpHandle
+
+    # Check that it is indeed changed
+    cpItem.setHandle(cpHandle)
+    assert cpItem.pack() != scData
+    assert cpItem.pack() == cpData
+
+    # Delete the original, and check that the copy remains
+    del scItem
+    assert cpItem.pack() == cpData
 
 # END Test testCoreItem_Methods
 

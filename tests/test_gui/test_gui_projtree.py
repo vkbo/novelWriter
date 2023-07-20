@@ -37,8 +37,7 @@ from novelwriter.dialogs.editlabel import GuiEditLabel
 
 @pytest.mark.gui
 def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRnd):
-    """Test adding and removing items from the project tree.
-    """
+    """Test adding and removing items from the project tree."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     projView = nwGUI.projView
@@ -158,6 +157,9 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
     # Add an item that cannot be displayed in the tree
     nHandle = theProject.newFile("Test", None)
     assert projView.projTree.revealNewTreeItem(nHandle) is False
+
+    # Adding an invalid item directly to the tree should also fail
+    assert projView.projTree._addTreeItem(None) is None
 
     # Clean up
     # qtbot.stop()

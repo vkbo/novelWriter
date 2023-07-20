@@ -658,11 +658,12 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def revealNewTreeItem(self, tHandle, nHandle=None, wordCount=False):
-        """Reveal a newly added project item in the project tree.
-        """
+    def revealNewTreeItem(
+        self, tHandle: str, nHandle: str | None = None, wordCount: bool = False
+    ) -> bool:
+        """Reveal a newly added project item in the project tree."""
         nwItem = self.theProject.tree[tHandle]
-        if nwItem is None:
+        if not nwItem:
             return False
 
         trItem = self._addTreeItem(nwItem, nHandle)
@@ -683,9 +684,8 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def moveTreeItem(self, nStep):
-        """Move an item up or down in the tree.
-        """
+    def moveTreeItem(self, nStep: int) -> bool:
+        """Move an item up or down in the tree."""
         tHandle = self.getSelectedHandle()
         trItem = self._getTreeItem(tHandle)
         if trItem is None:
@@ -723,9 +723,8 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def renameTreeItem(self, tHandle):
-        """Open a dialog to edit the label of an item.
-        """
+    def renameTreeItem(self, tHandle: str) -> bool:
+        """Open a dialog to edit the label of an item."""
         tItem = self.theProject.tree[tHandle]
         if tItem is None:
             return False
@@ -738,7 +737,7 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def saveTreeOrder(self):
+    def saveTreeOrder(self) -> None:
         """Build a list of the items in the project tree and send them
         to the project class. This syncs up the two versions of the
         project structure, and must be called before any code that
@@ -746,12 +745,14 @@ class GuiProjectTree(QTreeWidget):
         """
         theList = []
         for i in range(self.topLevelItemCount()):
-            theList = self._scanChildren(theList, self.topLevelItem(i), i)
+            item = self.topLevelItem(i)
+            if isinstance(item, QTreeWidgetItem):
+                theList = self._scanChildren(theList, item, i)
         logger.debug("Saving project tree item order")
         self.theProject.setTreeOrder(theList)
-        return True
+        return
 
-    def getTreeFromHandle(self, tHandle):
+    def getTreeFromHandle(self, tHandle: str) -> list[str]:
         """Recursively return all the child items starting from a given
         item handle.
         """
@@ -761,7 +762,7 @@ class GuiProjectTree(QTreeWidget):
             theList = self._scanChildren(theList, theItem, 0)
         return theList
 
-    def requestDeleteItem(self, tHandle=None):
+    def requestDeleteItem(self, tHandle: str | None = None) -> bool:
         """Request an item deleted from the project tree. This function
         can be called on any item, and will check whether to attempt a
         permanent deletion or moving the item to Trash.
@@ -998,7 +999,7 @@ class GuiProjectTree(QTreeWidget):
 
         return
 
-    def propagateCount(self, tHandle, newCount, countChildren=False):
+    def propagateCount(self, tHandle: str, newCount: int, countChildren: bool = False) -> None:
         """Recursive function setting the word count for a given item,
         and propagating that count upwards in the tree until reaching a
         root item. This function is more efficient than recalculating
@@ -1037,7 +1038,7 @@ class GuiProjectTree(QTreeWidget):
 
         return
 
-    def buildTree(self):
+    def buildTree(self) -> None:
         """Build the entire project tree from scratch. This depends on
         the save project item iterator in the project class which will
         always make sure items with a parent have had their parent item
@@ -1052,11 +1053,10 @@ class GuiProjectTree(QTreeWidget):
             self._addTreeItem(nwItem)
 
         logger.debug("%d item(s) added to the project tree", iCount)
-        return True
+        return
 
     def undoLastMove(self):
-        """Attempt to undo the last action.
-        """
+        """Attempt to undo the last action."""
         srcItem = self._lastMove.get("item", None)
         dstItem = self._lastMove.get("parent", None)
         dstIndex = self._lastMove.get("index", None)
@@ -1719,10 +1719,17 @@ class GuiProjectTree(QTreeWidget):
 
         return itemList
 
-    def _addTreeItem(self, nwItem, nHandle=None):
+    def _addTreeItem(
+        self, nwItem: NWItem | None, nHandle: str | None = None
+    ) -> QTreeWidgetItem | None:
         """Create a QTreeWidgetItem from an NWItem and add it to the
-        project tree.
+        project tree. Returns the widget if the item is valid, otherwise
+        a None is returned.
         """
+        if not nwItem:
+            logger.error("Invalid item cannot be added to project tree")
+            return None
+
         tHandle = nwItem.itemHandle
         pHandle = nwItem.itemParent
         newItem = QTreeWidgetItem()
@@ -1740,35 +1747,26 @@ class GuiProjectTree(QTreeWidget):
         newItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
         newItem.setData(self.C_DATA, self.D_WORDS, 0)
 
-        self._treeMap[tHandle] = newItem
-        if pHandle is None:
-            if nwItem.isRootType():
-                newItem.setFlags(newItem.flags() ^ Qt.ItemIsDragEnabled)
-                self.addTopLevelItem(newItem)
-            else:
-                self.mainGui.makeAlert(self.tr(
-                    "There is nowhere to add item with name '{0}'."
-                ).format(nwItem.itemName), nwAlert.ERROR)
-                del self._treeMap[tHandle]
-                return None
-
-        elif pHandle in self._treeMap:
-            byIndex = -1
-            if nHandle is not None and nHandle in self._treeMap:
-                byIndex = self._treeMap[pHandle].indexOfChild(self._treeMap[nHandle])
-            if byIndex >= 0:
-                self._treeMap[pHandle].insertChild(byIndex + 1, newItem)
-            else:
-                self._treeMap[pHandle].addChild(newItem)
-            self.propagateCount(tHandle, nwItem.wordCount, countChildren=True)
-
+        if pHandle is None and nwItem.isRootType():
+            pItem = self.invisibleRootItem()
+        elif pHandle and pHandle in self._treeMap:
+            pItem = self._treeMap[pHandle]
         else:
             self.mainGui.makeAlert(self.tr(
                 "There is nowhere to add item with name '{0}'."
             ).format(nwItem.itemName), nwAlert.ERROR)
-            del self._treeMap[tHandle]
             return None
 
+        byIndex = -1
+        if nHandle is not None and nHandle in self._treeMap:
+            byIndex = pItem.indexOfChild(self._treeMap[nHandle])
+        if byIndex >= 0:
+            pItem.insertChild(byIndex + 1, newItem)
+        else:
+            pItem.addChild(newItem)
+
+        self._treeMap[tHandle] = newItem
+        self.propagateCount(tHandle, nwItem.wordCount, countChildren=True)
         self.setTreeItemValues(tHandle)
         newItem.setExpanded(nwItem.isExpanded)
 
@@ -1808,7 +1806,7 @@ class GuiProjectTree(QTreeWidget):
             return
 
         tItem = self.theProject.tree[tHandle]
-        if tItem.isRootType():
+        if tItem and tItem.isRootType():
             self.projView.rootFolderChanged.emit(tHandle)
 
         self.projView.treeItemChanged.emit(tHandle)

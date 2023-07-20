@@ -81,6 +81,7 @@ class NWItem:
         return f"<NWItem handle={self._handle}, parent={self._parent}, name='{self._name}'>"
 
     def __bool__(self) -> bool:
+        """Evaluate to False if itemHandle is not set."""
         return self._handle is not None
 
     def __copy__(self) -> NWItem:
