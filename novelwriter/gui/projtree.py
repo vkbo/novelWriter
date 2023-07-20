@@ -1687,14 +1687,13 @@ class GuiProjectTree(QTreeWidget):
         docDup = DocDuplicator(self.theProject)
         dupCount = 0
         for dHandle, nHandle in docDup.duplicate(itemTree):
-            print(dHandle, nHandle)
             self.theProject.index.reIndexHandle(dHandle)
             self.revealNewTreeItem(dHandle, nHandle=nHandle, wordCount=True)
             self._alertTreeChange(dHandle, flush=False)
             dupCount += 1
 
         if dupCount != nItems:
-            self.mainGui.makeAlert(self.tr("Could not duplicate all items."), nwAlert.ERROR)
+            self.mainGui.makeAlert(self.tr("Could not duplicate all items."), nwAlert.WARN)
 
         self.saveTreeOrder()
 

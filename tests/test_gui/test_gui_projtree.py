@@ -19,9 +19,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+from pathlib import Path
 import pytest
 
 from mocked import causeOSError
+from novelwriter.guimain import GuiMain
 from tools import C, buildTestProject
 
 from PyQt5.QtCore import Qt
@@ -170,8 +172,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
 
 @pytest.mark.gui
 def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
-    """Test adding and removing items from the project tree.
-    """
+    """Test adding and removing items from the project tree."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     projView = nwGUI.projView
@@ -280,8 +281,7 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
 @pytest.mark.gui
 def testGuiProjTree_RequestDeleteItem(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRnd):
-    """Test external requests for removing items from project tree.
-    """
+    """Test external requests for removing items from project tree."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     projView = nwGUI.projView
@@ -363,8 +363,7 @@ def testGuiProjTree_RequestDeleteItem(qtbot, caplog, monkeypatch, nwGUI, projPat
 
 @pytest.mark.gui
 def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRnd):
-    """Test moving items to Trash.
-    """
+    """Test moving items to Trash."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     theProject = nwGUI.theProject
@@ -416,8 +415,7 @@ def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, projPath,
 
 @pytest.mark.gui
 def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRnd):
-    """Test permanently deleting items.
-    """
+    """Test permanently deleting items."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     theProject = nwGUI.theProject
@@ -468,8 +466,7 @@ def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, pro
 
 @pytest.mark.gui
 def testGuiProjTree_EmptyTrash(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRnd):
-    """Test emptying Trash.
-    """
+    """Test emptying Trash."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     theProject = nwGUI.theProject
@@ -639,8 +636,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
 @pytest.mark.gui
 def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd, ipsumText):
-    """Test the merge document function.
-    """
+    """Test the merge document function."""
     mergeData = {}
 
     monkeypatch.setattr(GuiDocMerge, "__init__", lambda *a: None)
@@ -741,8 +737,7 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd,
 
 @pytest.mark.gui
 def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRnd, ipsumText):
-    """Test the split document function.
-    """
+    """Test the split document function."""
     splitData = {}
     splitText = []
 
@@ -848,6 +843,63 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRnd, 
     # qtbot.stop()
 
 # END Test testGuiProjTree_SplitDocument
+
+
+@pytest.mark.gui
+def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd):
+    """Test the duplicate items function."""
+    # Create a project
+    buildTestProject(nwGUI, projPath)
+    assert len(nwGUI.theProject.tree) == 8
+
+    projTree = nwGUI.projView.projTree
+    projTree._getTreeItem(C.hNovelRoot).setExpanded(True)  # type: ignore
+    projTree._getTreeItem(C.hChapterDir).setExpanded(True)  # type: ignore
+
+    # Nothing to do
+    assert projTree._duplicateFromHandle(C.hInvalid) is False
+    assert len(nwGUI.theProject.tree) == 8
+
+    # Duplicate title page, but select no
+    with monkeypatch.context() as mp:
+        mp.setattr(QMessageBox, "question", lambda *a: QMessageBox.No)
+        assert projTree._duplicateFromHandle(C.hTitlePage) is False
+        assert len(nwGUI.theProject.tree) == 8
+
+    # Duplicate title page
+    assert projTree._duplicateFromHandle(C.hTitlePage) is True
+    assert len(nwGUI.theProject.tree) == 9
+
+    # Duplicate folder
+    assert projTree._duplicateFromHandle(C.hChapterDir) is True
+    assert len(nwGUI.theProject.tree) == 12
+
+    # Duplicate novel root
+    assert projTree._duplicateFromHandle(C.hNovelRoot) is True
+    assert len(nwGUI.theProject.tree) == 21
+
+    # Check tree order that all items are next to eachother
+    assert nwGUI.theProject.tree._treeOrder == [
+        C.hNovelRoot, C.hTitlePage, "0000000000010", C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
+        "0000000000011", "0000000000012", "0000000000013", "0000000000014", "0000000000015",
+        "0000000000016", "0000000000017", "0000000000018", "0000000000019", "000000000001a",
+        "000000000001b", "000000000001c", C.hPlotRoot, C.hCharRoot, C.hWorldRoot,
+    ]
+
+    # Make the duplicator stop early
+    content = nwGUI.theProject.storage.contentPath
+    assert isinstance(content, Path)
+    (content / "000000000001e.nwd").touch()
+    assert (content / "000000000001e.nwd").exists()
+
+    # Should only create the folder, and skip the two files because the
+    # next handle is already a file
+    assert projTree._duplicateFromHandle(C.hChapterDir) is True
+    assert len(nwGUI.theProject.tree) == 22
+
+    # qtbot.stop()
+
+# END Test testGuiProjTree_Duplicate
 
 
 @pytest.mark.gui
