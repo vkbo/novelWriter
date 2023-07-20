@@ -22,23 +22,29 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 
+from typing import TYPE_CHECKING
 from pathlib import Path
+from novelwriter.core.item import NWItem
 
 from novelwriter.enum import nwItemLayout, nwItemClass
 from novelwriter.error import formatException
 from novelwriter.common import isHandle, sha256sum
+
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 
 
 class NWDocument:
 
-    def __init__(self, theProject, theHandle):
+    def __init__(self, project: NWProject, tHandle: str) -> None:
 
-        self.theProject = theProject
+        self._project = project
 
         # Internal Variables
         self._theItem   = None  # The currently open item
@@ -49,25 +55,37 @@ class NWDocument:
         self._prevHash  = None  # Previous sha256sum of the document file
         self._currHash  = None  # Latest sha256sum of the document file
 
-        if isHandle(theHandle):
-            self._docHandle = theHandle
+        if isHandle(tHandle):
+            self._docHandle = tHandle
 
         if self._docHandle is not None:
-            self._theItem = self.theProject.tree[theHandle]
+            self._theItem = self._project.tree[tHandle]
 
         return
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<NWDocument handle={self._docHandle}>"
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return self._docHandle is not None and bool(self._theItem)
 
     ##
     #  Class Methods
     ##
 
-    def readDocument(self, isOrphan=False):
+    def fileExists(self) -> bool:
+        """Check if the document file exists."""
+        if self._docHandle is None:
+            return False
+
+        contentPath = self._project.storage.contentPath
+        if not isinstance(contentPath, Path):
+            logger.error("No content path set")
+            return False
+
+        return (contentPath / f"{self._docHandle}.nwd").is_file()
+
+    def readDocument(self, isOrphan: bool = False) -> str | None:
         """Read the document specified by the handle set in the
         contructor, capturing potential file system errors and parse
         meta data. If the document doesn't exist on disk, return an
@@ -82,12 +100,12 @@ class NWDocument:
             logger.error("Unknown novelWriter document")
             return None
 
-        contentPath = self.theProject.storage.contentPath
+        contentPath = self._project.storage.contentPath
         if not isinstance(contentPath, Path):
             logger.error("No content path set")
             return None
 
-        docFile = self._docHandle+".nwd"
+        docFile = f"{self._docHandle}.nwd"
         logger.debug("Opening document: %s", docFile)
 
         docPath = contentPath / docFile
@@ -125,7 +143,7 @@ class NWDocument:
 
         return theText
 
-    def writeDocument(self, docText, forceWrite=False):
+    def writeDocument(self, docText: str, forceWrite: bool = False) -> bool:
         """Write the document specified by the handle attribute. Handle
         any IO errors in the process  Returns True if successful, False
         if not.
@@ -135,12 +153,12 @@ class NWDocument:
             logger.error("No document handle set")
             return False
 
-        contentPath = self.theProject.storage.contentPath
+        contentPath = self._project.storage.contentPath
         if not isinstance(contentPath, Path):
             logger.error("No content path set")
             return False
 
-        docFile = self._docHandle+".nwd"
+        docFile = f"{self._docHandle}.nwd"
         logger.debug("Saving document: %s", docFile)
 
         docPath = contentPath / docFile
@@ -183,7 +201,7 @@ class NWDocument:
 
         return True
 
-    def deleteDocument(self):
+    def deleteDocument(self) -> bool:
         """Permanently delete a document source file and related files
         from the project data folder.
         """
@@ -192,7 +210,7 @@ class NWDocument:
             logger.error("No document handle set")
             return False
 
-        contentPath = self.theProject.storage.contentPath
+        contentPath = self._project.storage.contentPath
         if not isinstance(contentPath, Path):
             logger.error("No content path set")
             return False
@@ -217,17 +235,15 @@ class NWDocument:
     #  Getters
     ##
 
-    def getFileLocation(self):
-        """Return the file location of the current document.
-        """
+    def getFileLocation(self) -> str:
+        """Return the file location of the current document."""
         return str(self._fileLoc)
 
-    def getCurrentItem(self):
-        """Return a pointer to the currently open NWItem.
-        """
+    def getCurrentItem(self) -> NWItem | None:
+        """Return a pointer to the currently open NWItem."""
         return self._theItem
 
-    def getMeta(self):
+    def getMeta(self) -> tuple[str, str | None, str | None, str | None]:
         """Parse the document meta tag and return the name, parent,
         class and layout meta values.
         """
@@ -238,16 +254,15 @@ class NWDocument:
 
         return theName, theParent, theClass, theLayout
 
-    def getError(self):
-        """Return the last recorded exception.
-        """
+    def getError(self) -> str:
+        """Return the last recorded exception."""
         return self._docError
 
     ##
     #  Internal Functions
     ##
 
-    def _parseMeta(self, metaLine):
+    def _parseMeta(self, metaLine: str) -> None:
         """Parse a line from the document starting with the characters
         %%~ that may contain meta data.
         """
