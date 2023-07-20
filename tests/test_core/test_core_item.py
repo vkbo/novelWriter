@@ -262,18 +262,10 @@ def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
     assert stT == "Note"
     assert isinstance(stI, QIcon)
 
-    theItem.setImportStatus(C.sDraft)
-    stT, stI = theItem.getImportStatus()
-    assert stT == "Draft"
-
     theItem.setClass("CHARACTER")
     stT, stI = theItem.getImportStatus()
     assert stT == "Minor"
     assert isinstance(stI, QIcon)
-
-    theItem.setImportStatus(C.iMajor)
-    stT, stI = theItem.getImportStatus()
-    assert stT == "Major"
 
     # Representation
     # ==============

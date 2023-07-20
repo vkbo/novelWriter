@@ -22,17 +22,22 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import random
 import logging
 
+from typing import TYPE_CHECKING, Any, Iterator
 from pathlib import Path
 
-from novelwriter.enum import nwItemClass, nwItemLayout
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
 from novelwriter.common import checkHandle
 from novelwriter.constants import nwFiles
 from novelwriter.core.item import NWItem
+
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 
@@ -41,15 +46,16 @@ class NWTree:
 
     MAX_DEPTH = 1000  # Cap of tree traversing for loops
 
-    def __init__(self, theProject):
+    def __init__(self, project: NWProject) -> None:
 
-        self.theProject = theProject
+        self._project = project
 
-        self._projTree    = {}     # Holds all the items of the project
-        self._treeOrder   = []     # The order of the tree items on the tree view
-        self._treeRoots   = {}     # The root items of the tree
-        self._trashRoot   = None   # The handle of the trash root folder
-        self._archRoot    = None   # The handle of the archive root folder
+        self._projTree: dict[str, NWItem] = {}   # Holds all the items of the project
+        self._treeOrder: list[str] = []          # The order of the tree items on the tree view
+        self._treeRoots: dict[str, NWItem] = {}  # The root items of the tree
+
+        self._trashRoot = None     # The handle of the trash root folder
+        self._archRoot = None      # The handle of the archive root folder
         self._treeChanged = False  # True if tree structure has changed
 
         return
@@ -58,9 +64,8 @@ class NWTree:
     #  Class Methods
     ##
 
-    def clear(self):
-        """Clear the item tree entirely.
-        """
+    def clear(self) -> None:
+        """Clear the item tree entirely."""
         self._projTree    = {}
         self._treeOrder   = []
         self._treeRoots   = {}
@@ -69,14 +74,12 @@ class NWTree:
         self._treeChanged = False
         return
 
-    def handles(self):
-        """Returns a copy of the list of all the active handles.
-        """
+    def handles(self) -> list[str]:
+        """Returns a copy of the list of all the active handles."""
         return self._treeOrder.copy()
 
-    def append(self, tHandle, pHandle, nwItem):
-        """Add a new item to the end of the tree.
-        """
+    def append(self, tHandle: str | None, pHandle: str | None, nwItem: NWItem) -> bool:
+        """Add a new item to the end of the tree."""
         tHandle = checkHandle(tHandle, None, True)
         pHandle = checkHandle(pHandle, None, True)
         if tHandle is None:
@@ -111,9 +114,9 @@ class NWTree:
 
         return True
 
-    def pack(self):
-        """Pack the content of the tree into the provided XML object. In
-        the order defined by the _treeOrder list.
+    def pack(self) -> list[dict[str, dict[str, str]]]:
+        """Pack the content of the tree into a list of doctionaries of
+        items. In the order defined by the _treeOrder list.
         """
         tree = []
         for tHandle in self._treeOrder:
@@ -122,25 +125,24 @@ class NWTree:
                 tree.append(tItem.pack())
         return tree
 
-    def unpack(self, data):
+    def unpack(self, data: list[dict[str, dict[str, Any]]]) -> None:
         """Iterate through all items of a list and add them to the
         project tree.
         """
         self.clear()
         for item in data:
-            nwItem = NWItem(self.theProject)
+            nwItem = NWItem(self._project)
             if nwItem.unpack(item):
                 self.append(nwItem.itemHandle, nwItem.itemParent, nwItem)
                 nwItem.saveInitialCount()
+        return
 
-        return True
-
-    def writeToCFile(self):
+    def writeToCFile(self) -> bool:
         """Write the convenience table of contents file in the root of
         the project directory.
         """
-        runtimePath = self.theProject.storage.runtimePath
-        contentPath = self.theProject.storage.contentPath
+        runtimePath = self._project.storage.runtimePath
+        contentPath = self._project.storage.contentPath
         if not (isinstance(contentPath, Path) and isinstance(runtimePath, Path)):
             return False
 
@@ -184,9 +186,8 @@ class NWTree:
 
         return True
 
-    def sumWords(self):
-        """Loop over all entries and add up the word counts.
-        """
+    def sumWords(self) -> tuple[int, int]:
+        """Loop over all entries and add up the word counts."""
         noteWords = 0
         novelWords = 0
         for tHandle in self._treeOrder:
@@ -205,7 +206,7 @@ class NWTree:
     #  Tree Item Methods
     ##
 
-    def updateItemData(self, tHandle):
+    def updateItemData(self, tHandle: str) -> bool:
         """Update the root item handle of a given item. Returns True if
         a root was found and data updated, otherwise False.
         """
@@ -226,15 +227,14 @@ class NWTree:
         else:
             raise RecursionError("Critical internal error")
 
-    def checkType(self, tHandle, itemType):
-        """Return true of item exists and is of the specified item type.
-        """
+    def checkType(self, tHandle: str, itemType: nwItemType) -> bool:
+        """Check if item exists and is of the specified item type."""
         tItem = self.__getitem__(tHandle)
         if not tItem:
             return False
         return tItem.itemType == itemType
 
-    def getItemPath(self, tHandle):
+    def getItemPath(self, tHandle: str) -> list[str]:
         """Iterate upwards in the tree until we find the item with
         parent None, the root item, and return the list of handles.
         We do this with a for loop with a maximum depth to make
@@ -263,17 +263,15 @@ class NWTree:
     #  Tree Root Methods
     ##
 
-    def rootClasses(self):
-        """Return a set of all root classes in use by the project.
-        """
+    def rootClasses(self) -> set[nwItemClass]:
+        """Return a set of all root classes in use by the project."""
         rootClasses = set()
         for nwItem in self._treeRoots.values():
             rootClasses.add(nwItem.itemClass)
         return rootClasses
 
-    def iterRoots(self, itemClass):
-        """Iterate over all root items of a given class in order.
-        """
+    def iterRoots(self, itemClass: nwItemClass | None) -> Iterator[tuple[str, NWItem]]:
+        """Iterate over all root items of a given class in order."""
         for tHandle in self._treeOrder:
             nwItem = self.__getitem__(tHandle)
             if isinstance(nwItem, NWItem) and nwItem.isRootType():
@@ -281,14 +279,8 @@ class NWTree:
                     yield tHandle, nwItem
         return
 
-    def isRoot(self, tHandle):
-        """Check if a handle is a root item.
-        """
-        return tHandle in self._treeRoots
-
-    def isTrash(self, tHandle):
-        """Check if an item is in or is the trash folder.
-        """
+    def isTrash(self, tHandle: str) -> bool:
+        """Check if an item is in or is the trash folder."""
         tItem = self.__getitem__(tHandle)
         if tItem is None:
             return True
@@ -303,7 +295,7 @@ class NWTree:
                 return True
         return False
 
-    def trashRoot(self):
+    def trashRoot(self) -> str | None:
         """Returns the handle of the trash folder, or None if there
         isn't one.
         """
@@ -311,14 +303,13 @@ class NWTree:
             return self._trashRoot
         return None
 
-    def findRoot(self, theClass):
-        """Find the first root item for a given class.
-        """
+    def findRoot(self, itemClass: nwItemClass) -> str | None:
+        """Find the first root item for a given class."""
         for aRoot in self._treeRoots:
             tItem = self.__getitem__(aRoot)
             if tItem is None:
                 continue
-            if theClass == tItem.itemClass:
+            if itemClass == tItem.itemClass:
                 return tItem.itemHandle
         return None
 
@@ -326,9 +317,8 @@ class NWTree:
     #  Setters
     ##
 
-    def setOrder(self, newOrder):
-        """Reorders the tree based on a list of items.
-        """
+    def setOrder(self, newOrder: list[str]) -> None:
+        """Reorders the tree based on a list of items."""
         tmpOrder = [tHandle for tHandle in newOrder if tHandle in self._projTree]
         if not (len(tmpOrder) == len(newOrder) == len(self._treeOrder)):
             # Something is wrong, so let's debug it
@@ -346,37 +336,19 @@ class NWTree:
 
         return
 
-    def setFileItemLayout(self, tHandle, itemLayout):
-        """Set the nwItemLayout for a specific file.
-        """
-        tItem = self.__getitem__(tHandle)
-        if tItem is None:
-            return False
-        if not tItem.isFileType():
-            logger.error("Item '%s' is not a file", tHandle)
-            return False
-        if not isinstance(itemLayout, nwItemLayout):
-            return False
-
-        tItem.setLayout(itemLayout)
-
-        return True
-
     ##
     #  Special Methods
     ##
 
-    def __len__(self):
-        """The number of items in the project.
-        """
+    def __len__(self) -> int:
+        """The number of items in the project."""
         return len(self._treeOrder)
 
-    def __bool__(self):
-        """True if there are any items in the project.
-        """
+    def __bool__(self) -> bool:
+        """True if there are any items in the project."""
         return bool(self._treeOrder)
 
-    def __getitem__(self, tHandle):
+    def __getitem__(self, tHandle: str) -> NWItem | None:
         """Return a project item based on its handle. Returns None if
         the handle doesn't exist in the project.
         """
@@ -385,9 +357,8 @@ class NWTree:
         logger.error("No tree item with handle '%s'", str(tHandle))
         return None
 
-    def __delitem__(self, tHandle):
-        """Remove an item from the internal lists and dictionaries.
-        """
+    def __delitem__(self, tHandle: str) -> None:
+        """Remove an item from the internal lists and dictionaries."""
         if tHandle in self._treeOrder and tHandle in self._projTree:
             self._treeOrder.remove(tHandle)
             del self._projTree[tHandle]
@@ -406,14 +377,12 @@ class NWTree:
 
         return
 
-    def __contains__(self, tHandle):
-        """Checks if a handle exists in the tree.
-        """
+    def __contains__(self, tHandle: str) -> bool:
+        """Checks if a handle exists in the tree."""
         return tHandle in self._treeOrder
 
-    def __iter__(self):
-        """Iterate through project items.
-        """
+    def __iter__(self) -> Iterator[NWItem]:
+        """Iterate through project items."""
         for tHandle in self._treeOrder:
             tItem = self._projTree.get(tHandle)
             if isinstance(tItem, NWItem):
@@ -424,16 +393,16 @@ class NWTree:
     #  Internal Functions
     ##
 
-    def _setTreeChanged(self, theState):
+    def _setTreeChanged(self, state: bool) -> None:
         """Set the changed flag to theState, and if being set to True,
         propagate that state change to the parent NWProject class.
         """
-        self._treeChanged = theState
-        if theState:
-            self.theProject.setProjectChanged(True)
+        self._treeChanged = state
+        if state:
+            self._project.setProjectChanged(True)
         return
 
-    def _makeHandle(self):
+    def _makeHandle(self) -> str:
         """Generate a unique item handle. In the event that the key
         already exists, generate a new one.
         """
