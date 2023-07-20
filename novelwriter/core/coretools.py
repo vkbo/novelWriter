@@ -23,10 +23,12 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import shutil
 import logging
 
+from typing import TYPE_CHECKING, Iterable
 from functools import partial
 
 from PyQt5.QtCore import QCoreApplication
@@ -35,7 +37,11 @@ from novelwriter import CONFIG
 from novelwriter.enum import nwAlert
 from novelwriter.common import minmax, simplified
 from novelwriter.constants import nwItemClass
+from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
+
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
@@ -46,26 +52,22 @@ class DocMerger:
     GuiDocMerge dialog.
     """
 
-    def __init__(self, theProject):
-
-        self.theProject = theProject
-
+    def __init__(self, project: NWProject) -> None:
+        self._project = project
         self._error = ""
         self._targetDoc = None
         self._targetText = []
-
         return
 
     ##
     #  Methods
     ##
 
-    def getError(self):
-        """Return any collected errors.
-        """
+    def getError(self) -> str:
+        """Return any collected errors."""
         return self._error
 
-    def setTargetDoc(self, tHandle):
+    def setTargetDoc(self, tHandle: str) -> None:
         """Set the target document for the merging. Calling this
         function resets the class.
         """
@@ -73,33 +75,33 @@ class DocMerger:
         self._targetText = []
         return
 
-    def newTargetDoc(self, srcHandle, docLabel):
-        """Create a barnd new target document based on a source handle
+    def newTargetDoc(self, srcHandle: str, docLabel: str) -> str | None:
+        """Create a brand new target document based on a source handle
         and a new doc label. Calling this function resets the class.
         """
-        srcItem = self.theProject.tree[srcHandle]
+        srcItem = self._project.tree[srcHandle]
         if srcItem is None:
             return None
 
-        newHandle = self.theProject.newFile(docLabel, srcItem.itemParent)
-        newItem = self.theProject.tree[newHandle]
-        newItem.setLayout(srcItem.itemLayout)
-        newItem.setStatus(srcItem.itemStatus)
-        newItem.setImport(srcItem.itemImport)
+        newHandle = self._project.newFile(docLabel, srcItem.itemParent)
+        newItem = self._project.tree[newHandle]
+        if isinstance(newItem, NWItem):
+            newItem.setLayout(srcItem.itemLayout)
+            newItem.setStatus(srcItem.itemStatus)
+            newItem.setImport(srcItem.itemImport)
 
         self._targetDoc = newHandle
         self._targetText = []
 
         return newHandle
 
-    def appendText(self, srcHandle, addComment, cmtPrefix):
-        """Append text from an existing document to the text buffer.
-        """
-        srcItem = self.theProject.tree[srcHandle]
+    def appendText(self, srcHandle: str, addComment: bool, cmtPrefix: str) -> bool:
+        """Append text from an existing document to the text buffer."""
+        srcItem = self._project.tree[srcHandle]
         if srcItem is None:
             return False
 
-        inDoc = self.theProject.storage.getDocument(srcHandle)
+        inDoc = self._project.storage.getDocument(srcHandle)
         docText = (inDoc.readDocument() or "").rstrip("\n")
 
         if addComment:
@@ -112,14 +114,14 @@ class DocMerger:
 
         return True
 
-    def writeTargetDoc(self):
+    def writeTargetDoc(self) -> bool:
         """Write the accumulated text into the designated target
         document, appending any existing text.
         """
         if self._targetDoc is None:
             return False
 
-        outDoc = self.theProject.storage.getDocument(self._targetDoc)
+        outDoc = self._project.storage.getDocument(self._targetDoc)
         docText = (outDoc.readDocument() or "").rstrip("\n")
         if docText:
             self._targetText.insert(0, docText)
@@ -139,9 +141,9 @@ class DocSplitter:
     GuiDocSplit dialog.
     """
 
-    def __init__(self, theProject, sHandle):
+    def __init__(self, project: NWProject, sHandle: str) -> None:
 
-        self.theProject = theProject
+        self._project = project
 
         self._error = ""
         self._parHandle = None
@@ -151,7 +153,7 @@ class DocSplitter:
         self._inFolder = False
         self._rawData = []
 
-        srcItem = self.theProject.tree[sHandle]
+        srcItem = self._project.tree[sHandle]
         if srcItem is not None and srcItem.isFileType():
             self._srcHandle = sHandle
             self._srcItem = srcItem
@@ -162,12 +164,11 @@ class DocSplitter:
     #  Methods
     ##
 
-    def getError(self):
-        """Return any collected errors.
-        """
+    def getError(self) -> str:
+        """Return any collected errors."""
         return self._error
 
-    def setParentItem(self, pHandle):
+    def setParentItem(self, pHandle: str) -> None:
         """Set the item that will be the top level parent item for the
         new documents.
         """
@@ -175,25 +176,27 @@ class DocSplitter:
         self._inFolder = False
         return
 
-    def newParentFolder(self, pHandle, folderLabel):
+    def newParentFolder(self, pHandle: str, folderLabel: str) -> str | None:
         """Create a new folder that will be the top level parent item
         for the new documents.
         """
         if self._srcItem is None:
             return None
 
-        newHandle = self.theProject.newFolder(folderLabel, pHandle)
-        newItem = self.theProject.tree[newHandle]
-        newItem.setStatus(self._srcItem.itemStatus)
-        newItem.setImport(self._srcItem.itemImport)
+        newHandle = self._project.newFolder(folderLabel, pHandle)
+        newItem = self._project.tree[newHandle]
+        if isinstance(newItem, NWItem):
+            newItem.setStatus(self._srcItem.itemStatus)
+            newItem.setImport(self._srcItem.itemImport)
 
         self._parHandle = newHandle
         self._inFolder = True
 
         return newHandle
 
-    def splitDocument(self, splitData, splitText):
-        """Loop through the split data record and perform the split job.
+    def splitDocument(self, splitData: list, splitText: list[str]) -> None:
+        """Loop through the split data record and perform the split job
+        on a list of text lines.
         """
         self._rawData = []
         buffer = splitText.copy()
@@ -201,10 +204,9 @@ class DocSplitter:
             chunk = buffer[lineNo:]
             buffer = buffer[:lineNo]
             self._rawData.insert(0, (chunk, hLevel, hLabel))
+        return
 
-        return True
-
-    def writeDocuments(self, docHierarchy):
+    def writeDocuments(self, docHierarchy: bool) -> Iterable[tuple[bool, str | None, str | None]]:
         """An iterator that will write each document in the buffer, and
         return its new handle, parent handle, and sibling handle.
         """
@@ -237,14 +239,15 @@ class DocSplitter:
                 elif hLevel > pLevel:
                     nHandle = pHandle
 
-            dHandle = self.theProject.newFile(docLabel, pHandle)
+            dHandle = self._project.newFile(docLabel, pHandle)
             hHandle[hLevel] = dHandle
 
-            newItem = self.theProject.tree[dHandle]
-            newItem.setStatus(self._srcItem.itemStatus)
-            newItem.setImport(self._srcItem.itemImport)
+            newItem = self._project.tree[dHandle]
+            if isinstance(newItem, NWItem):
+                newItem.setStatus(self._srcItem.itemStatus)
+                newItem.setImport(self._srcItem.itemImport)
 
-            outDoc = self.theProject.storage.getDocument(dHandle)
+            outDoc = self._project.storage.getDocument(dHandle)
             status = outDoc.writeDocument("\n".join(docText))
             if not status:
                 self._error = outDoc.getError()
@@ -260,12 +263,56 @@ class DocSplitter:
 # END Class DocSplitter
 
 
+class DocDuplicator:
+    """A class that will duplicate all documents and folders starting
+    from a given handle.
+    """
+
+    def __init__(self, project: NWProject) -> None:
+        self._project = project
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def duplicate(self, items: list[str]) -> Iterable[tuple[str, str | None]]:
+        """Run through a list of items, duplicate them, and copy the
+        text content if they are documents.
+        """
+        if not items:
+            return
+
+        nHandle = items[0]
+        hMap: dict[str, str | None] = {t: None for t in items}
+        for tHandle in items:
+            newItem = self._project.tree.duplicate(tHandle)
+            if newItem is None or newItem.itemHandle is None:
+                return
+            hMap[tHandle] = newItem.itemHandle
+            if newItem.itemParent in hMap:
+                newItem.setParent(hMap[newItem.itemParent])
+                self._project.tree.updateItemData(newItem.itemHandle)
+            if newItem.isFileType():
+                oldDoc = self._project.storage.getDocument(tHandle)
+                newDoc = self._project.storage.getDocument(newItem.itemHandle)
+                if newDoc.fileExists():
+                    return
+                newDoc.writeDocument(oldDoc.readDocument() or "")
+            yield newItem.itemHandle, nHandle
+            nHandle = None
+
+        return
+
+# END Class DocDuplicator
+
+
 class ProjectBuilder:
     """A class to build a new project from a set of user-defined
     parameter provided by the New Projecty Wizard.
     """
 
-    def __init__(self, mainGui):
+    def __init__(self, mainGui: GuiMain) -> None:
         self.mainGui = mainGui
         self.tr = partial(QCoreApplication.translate, "NWProject")
         return
@@ -274,7 +321,7 @@ class ProjectBuilder:
     #  Methods
     ##
 
-    def buildProject(self, data):
+    def buildProject(self, data: dict) -> bool:
         """Build a project from a data dictionary of specifications
         provided by the wizard.
         """
@@ -416,7 +463,7 @@ class ProjectBuilder:
     #  Internal Functions
     ##
 
-    def _extractSampleProject(self, data):
+    def _extractSampleProject(self, data: dict) -> bool:
         """Make a copy of the sample project by extracting the
         sample.zip file to the new path.
         """

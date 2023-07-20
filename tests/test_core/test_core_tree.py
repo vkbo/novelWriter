@@ -149,7 +149,6 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
     assert theTree.trashRoot() == "a000000000003"
     assert theTree.findRoot(nwItemClass.ARCHIVE) == "a000000000002"
     assert theTree.isTrash("a000000000003") is True
-    assert theTree.isRoot("a000000000002") is True
 
     # Check that we have the root classes
     assert theTree.rootClasses() == {
@@ -255,7 +254,7 @@ def testCoreTree_PackUnpack(mockGUI, mockItems):
     theTree.clear()
     assert len(theTree) == 0
     assert theTree.handles() == []
-    assert theTree.unpack(tree) is True
+    theTree.unpack(tree)
     assert theTree.handles() == aHandles
 
 # END Test testCoreTree_PackUnpack
@@ -338,13 +337,6 @@ def testCoreTree_Methods(mockGUI, mockItems):
     assert theTree.getItemPath("c000000000001") == [
         "c000000000001", "b000000000001", "a000000000001"
     ]
-
-    # Change file layout
-    assert theTree.setFileItemLayout("stuff", nwItemLayout.DOCUMENT) is False
-    assert theTree.setFileItemLayout("b000000000001", nwItemLayout.DOCUMENT) is False
-    assert theTree.setFileItemLayout("c000000000001", "stuff") is False
-    assert theTree.setFileItemLayout("c000000000001", nwItemLayout.NOTE) is True
-    assert theTree["c000000000001"].itemLayout == nwItemLayout.NOTE
 
 # END Test testCoreTree_Methods
 

@@ -31,8 +31,7 @@ from novelwriter.core.document import NWDocument
 
 @pytest.mark.core
 def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
-    """Test loading and saving a document with the NWDocument class.
-    """
+    """Test loading and saving a document with the NWDocument class."""
     theProject = NWProject(mockGUI)
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
@@ -44,27 +43,32 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
     theDoc = NWDocument(theProject, "stuff")
     assert bool(theDoc) is False
     assert theDoc.readDocument() is None
+    assert theDoc.fileExists() is False
 
     # Non-existent handle
     theDoc = NWDocument(theProject, C.hInvalid)
     assert theDoc.readDocument() is None
     assert theDoc._currHash is None
+    assert theDoc.fileExists() is False
 
     # No content path
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.storage.NWStorage.contentPath", property(lambda *a: None))
         theDoc = NWDocument(theProject, C.hSceneDoc)
         assert theDoc.readDocument() is None
+        assert theDoc.fileExists() is False
 
     # Cause open() to fail while loading
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
         theDoc = NWDocument(theProject, C.hSceneDoc)
+        assert theDoc.fileExists() is True
         assert theDoc.readDocument() is None
         assert theDoc.getError() == "OSError: Mock OSError"
 
     # Load the text
     theDoc = NWDocument(theProject, C.hSceneDoc)
+    assert theDoc.fileExists() is True
     assert theDoc.readDocument() == "### New Scene\n\n"
 
     # Try to open a new (non-existent) file
