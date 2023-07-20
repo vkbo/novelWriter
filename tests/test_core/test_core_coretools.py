@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+from pathlib import Path
 import uuid
 import pytest
 
@@ -31,13 +32,12 @@ from tools import C, buildTestProject, cmpFiles, XML_IGNORE
 from novelwriter import CONFIG
 from novelwriter.constants import nwItemClass
 from novelwriter.core.project import NWProject
-from novelwriter.core.coretools import DocMerger, DocSplitter, ProjectBuilder
+from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSplitter, ProjectBuilder
 
 
 @pytest.mark.core
 def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ipsumText):
-    """Test the DocMerger utility.
-    """
+    """Test the DocMerger utility."""
     theProject = NWProject(mockGUI)
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
@@ -125,8 +125,7 @@ def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ip
 
 @pytest.mark.core
 def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
-    """Test the DocSplitter utility.
-    """
+    """Test the DocSplitter utility."""
     theProject = NWProject(mockGUI)
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
@@ -261,6 +260,143 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText)
     theProject.saveProject()
 
 # END Test testCoreTools_DocSplitter
+
+
+@pytest.mark.core
+def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
+    """Test the DocDuplicator utility."""
+    theProject = NWProject(mockGUI)
+    mockRnd.reset()
+    buildTestProject(theProject, fncPath)
+
+    dup = DocDuplicator(theProject)
+
+    ttText = "#! New Novel\n\n>> By Jane Doe <<\n"
+    chText = "## New Chapter\n\n"
+    scText = "### New Scene\n\n"
+
+    # Check document content
+    assert theProject.storage.getDocument(C.hTitlePage).readDocument() == ttText
+    assert theProject.storage.getDocument(C.hChapterDoc).readDocument() == chText
+    assert theProject.storage.getDocument(C.hSceneDoc).readDocument() == scText
+
+    # Nothing to do
+    assert list(dup.duplicate([])) == []
+
+    # Single Document
+    # ===============
+
+    # A new copy is created
+    assert list(dup.duplicate([C.hSceneDoc])) == [
+        ("0000000000010", C.hSceneDoc),  # The Scene
+    ]
+    assert theProject.tree._treeOrder == [
+        C.hNovelRoot, C.hPlotRoot, C.hCharRoot, C.hWorldRoot,
+        C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
+        "0000000000010",
+    ]
+
+    # With the same content
+    assert theProject.storage.getDocument("0000000000010").readDocument() == scText
+
+    # They should have the same parent
+    assert theProject.tree["0000000000010"].itemParent == C.hChapterDir  # type: ignore
+
+    # Folder w/Two Files
+    # ==================
+
+    # The folder is copied, with two docs
+    assert list(dup.duplicate([C.hChapterDir, C.hChapterDoc, C.hSceneDoc])) == [
+        ("0000000000011", C.hChapterDir),  # The Folder
+        ("0000000000012", None),           # The Chapter
+        ("0000000000013", None),           # The Scene
+    ]
+    assert theProject.tree._treeOrder == [
+        C.hNovelRoot, C.hPlotRoot, C.hCharRoot, C.hWorldRoot,
+        C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
+        "0000000000010",
+        "0000000000011", "0000000000012", "0000000000013",
+    ]
+
+    # With the same content
+    assert theProject.storage.getDocument("0000000000012").readDocument() == chText
+    assert theProject.storage.getDocument("0000000000013").readDocument() == scText
+
+    # The chapter dirs should have the same parent
+    assert theProject.tree["0000000000011"].itemParent == C.hNovelRoot  # type: ignore
+
+    # The new files should have the new folder as parent
+    assert theProject.tree["0000000000012"].itemParent == "0000000000011"  # type: ignore
+    assert theProject.tree["0000000000013"].itemParent == "0000000000011"  # type: ignore
+
+    # Full Root Folder
+    # ================
+
+    # The root is copied, with three docs and a folder
+    assert list(dup.duplicate(
+        [C.hNovelRoot, C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc]
+    )) == [
+        ("0000000000014", C.hNovelRoot),  # The Root
+        ("0000000000015", None),          # The Title Page
+        ("0000000000016", None),          # The Folder
+        ("0000000000017", None),          # The Chapter
+        ("0000000000018", None),          # The Scene
+    ]
+    assert theProject.tree._treeOrder == [
+        C.hNovelRoot, C.hPlotRoot, C.hCharRoot, C.hWorldRoot,
+        C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
+        "0000000000010",
+        "0000000000011", "0000000000012", "0000000000013",
+        "0000000000014", "0000000000015", "0000000000016", "0000000000017", "0000000000018",
+    ]
+
+    # With the same content
+    assert theProject.storage.getDocument("0000000000015").readDocument() == ttText
+    assert theProject.storage.getDocument("0000000000017").readDocument() == chText
+    assert theProject.storage.getDocument("0000000000018").readDocument() == scText
+
+    # The root folder should have no parent
+    assert theProject.tree["0000000000014"].itemParent is None  # type: ignore
+
+    # The folder and files should have the new root
+    assert theProject.tree["0000000000015"].itemRoot == "0000000000014"  # type: ignore
+    assert theProject.tree["0000000000016"].itemRoot == "0000000000014"  # type: ignore
+    assert theProject.tree["0000000000017"].itemRoot == "0000000000014"  # type: ignore
+    assert theProject.tree["0000000000018"].itemRoot == "0000000000014"  # type: ignore
+
+    # And they should have new parents
+    assert theProject.tree["0000000000015"].itemParent == "0000000000014"  # type: ignore
+    assert theProject.tree["0000000000016"].itemParent == "0000000000014"  # type: ignore
+    assert theProject.tree["0000000000017"].itemParent == "0000000000016"  # type: ignore
+    assert theProject.tree["0000000000018"].itemParent == "0000000000016"  # type: ignore
+
+    # Exceptions
+    # ==========
+
+    # Handle invalid items
+    assert list(dup.duplicate([C.hInvalid])) == []
+
+    # Also stop early if invalid items are encountered
+    assert list(dup.duplicate([C.hInvalid, C.hSceneDoc])) == []
+
+    # Don't overwrite existing files
+    content = theProject.storage.contentPath
+    assert isinstance(content, Path)
+    (content / "0000000000019.nwd").touch()
+    assert (content / "0000000000019.nwd").exists()
+    assert list(dup.duplicate([C.hChapterDoc, C.hSceneDoc])) == []
+
+    # Save and Close
+    theProject.saveProject()
+
+    projFile = fncPath / "nwProject.nwx"
+    testFile = tstPaths.outDir / "coreTools_DocDuplicator_nwProject.nwx"
+    compFile = tstPaths.refDir / "coreTools_DocDuplicator_nwProject.nwx"
+
+    copyfile(projFile, testFile)
+    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
+
+# END Test testCoreTools_DocDuplicator
 
 
 @pytest.mark.core

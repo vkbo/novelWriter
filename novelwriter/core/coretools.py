@@ -292,6 +292,7 @@ class DocDuplicator:
             hMap[tHandle] = newItem.itemHandle
             if newItem.itemParent in hMap:
                 newItem.setParent(hMap[newItem.itemParent])
+                self._project.tree.updateItemData(newItem.itemHandle)
             if newItem.isFileType():
                 oldDoc = self._project.storage.getDocument(tHandle)
                 newDoc = self._project.storage.getDocument(newItem.itemHandle)
