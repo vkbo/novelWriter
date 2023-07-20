@@ -24,11 +24,13 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 
 from enum import Enum
 from time import time
+from typing import TYPE_CHECKING
 
 from PyQt5.QtGui import QPalette
 from PyQt5.QtCore import Qt, QSize, pyqtSignal, pyqtSlot
@@ -42,11 +44,14 @@ from novelwriter import CONFIG
 from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert, nwWidget
 from novelwriter.constants import nwHeaders, nwUnicode, trConst, nwLabels
 from novelwriter.core.item import NWItem
-from novelwriter.core.coretools import DocMerger, DocSplitter
+from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSplitter
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.projsettings import GuiProjectSettings
+
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +74,7 @@ class GuiProjectView(QWidget):
     # Requests for the main GUI
     projectSettingsRequest = pyqtSignal(int)
 
-    def __init__(self, mainGui):
+    def __init__(self, mainGui: GuiMain):
         super().__init__(parent=mainGui)
 
         self.mainGui = mainGui
@@ -452,7 +457,7 @@ class GuiProjectTree(QTreeWidget):
     D_HANDLE = Qt.ItemDataRole.UserRole
     D_WORDS  = Qt.ItemDataRole.UserRole + 1
 
-    def __init__(self, projView):
+    def __init__(self, projView: GuiProjectView):
         super().__init__(parent=projView)
 
         logger.debug("Create: GuiProjectTree")
@@ -1308,8 +1313,8 @@ class GuiProjectTree(QTreeWidget):
                 aSplit1 = mTrans.addAction(self.tr("Split Document by Headers"))
                 aSplit1.triggered.connect(lambda: self._splitDocument(tHandle))
 
-        # Expand/Collapse/Delete
-        # ======================
+        # Expand/Collapse/Delete/Duplicate
+        # ================================
 
         ctxMenu.addSeparator()
 
@@ -1318,6 +1323,11 @@ class GuiProjectTree(QTreeWidget):
             aExpand.triggered.connect(lambda: self.setExpandedFromHandle(tHandle, True))
             aCollapse = ctxMenu.addAction(self.tr("Collapse All"))
             aCollapse.triggered.connect(lambda: self.setExpandedFromHandle(tHandle, False))
+            aDuplicate = ctxMenu.addAction(self.tr("Duplicate from Here"))
+            aDuplicate.triggered.connect(lambda: self._duplicateFromHandle(tHandle))
+        elif isFile:
+            aDuplicate = ctxMenu.addAction(self.tr("Duplicate Document"))
+            aDuplicate.triggered.connect(lambda: self._duplicateFromHandle(tHandle))
 
         if tItem.itemClass == nwItemClass.TRASH or isRoot or (isFolder and not hasChild):
             aDelete = ctxMenu.addAction(self.tr("Delete Permanently"))
@@ -1532,8 +1542,7 @@ class GuiProjectTree(QTreeWidget):
         return
 
     def _mergeDocuments(self, tHandle, newFile):
-        """Merge an item's child documents into a single document.
-        """
+        """Merge an item's child documents into a single document."""
         logger.info("Request to merge items under handle '%s'", tHandle)
         itemList = self.getTreeFromHandle(tHandle)
 
@@ -1608,8 +1617,7 @@ class GuiProjectTree(QTreeWidget):
         return True
 
     def _splitDocument(self, tHandle):
-        """Split a document into multiple documents.
-        """
+        """Split a document into multiple documents."""
         logger.info("Request to split items with handle '%s'", tHandle)
 
         tItem = self.theProject.tree[tHandle]
@@ -1660,7 +1668,39 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def _scanChildren(self, theList, tItem, tIndex):
+    def _duplicateFromHandle(self, tHandle: str) -> bool:
+        """Duplicate the item hierarchy from a given item."""
+        itemTree = self.getTreeFromHandle(tHandle)
+        nItems = len(itemTree)
+        if nItems == 0:
+            return False
+        elif nItems == 1:
+            qTitle = self.tr("Duplicate Document")
+            qText = self.tr("Do you want to duplicate this document?")
+        else:
+            qTitle = self.tr("Duplicate from Here")
+            qText = self.tr("Do you want to duplicate this item and all child items?")
+
+        if not self.mainGui.askQuestion(qTitle, qText):
+            return False
+
+        docDup = DocDuplicator(self.theProject)
+        dupCount = 0
+        for dHandle, nHandle in docDup.duplicate(itemTree):
+            print(dHandle, nHandle)
+            self.theProject.index.reIndexHandle(dHandle)
+            self.revealNewTreeItem(dHandle, nHandle=nHandle, wordCount=True)
+            self._alertTreeChange(dHandle, flush=False)
+            dupCount += 1
+
+        if dupCount != nItems:
+            self.mainGui.makeAlert(self.tr("Could not duplicate all items."), nwAlert.ERROR)
+
+        self.saveTreeOrder()
+
+        return True
+
+    def _scanChildren(self, itemList: list, tItem: QTreeWidgetItem, tIndex: int):
         """This is a recursive function returning all items in a tree
         starting at a given QTreeWidgetItem.
         """
@@ -1673,11 +1713,11 @@ class GuiProjectTree(QTreeWidget):
             nwItem.setExpanded(tItem.isExpanded() and cCount > 0)
             nwItem.setOrder(tIndex)
 
-        theList.append(tHandle)
+        itemList.append(tHandle)
         for i in range(cCount):
-            self._scanChildren(theList, tItem.child(i), i)
+            self._scanChildren(itemList, tItem.child(i), i)
 
-        return theList
+        return itemList
 
     def _addTreeItem(self, nwItem, nHandle=None):
         """Create a QTreeWidgetItem from an NWItem and add it to the
