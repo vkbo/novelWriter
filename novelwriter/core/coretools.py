@@ -40,7 +40,7 @@ from novelwriter.constants import nwItemClass
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
@@ -76,7 +76,7 @@ class DocMerger:
         return
 
     def newTargetDoc(self, srcHandle: str, docLabel: str) -> str | None:
-        """Create a barnd new target document based on a source handle
+        """Create a brand new target document based on a source handle
         and a new doc label. Calling this function resets the class.
         """
         srcItem = self._project.tree[srcHandle]
@@ -261,6 +261,49 @@ class DocSplitter:
         return
 
 # END Class DocSplitter
+
+
+class DocDuplicator:
+    """A class that will duplicate all documents and folders starting
+    from a given handle.
+    """
+
+    def __init__(self, project: NWProject) -> None:
+        self._project = project
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def duplicate(self, items: list[str]) -> Iterable[tuple[str, str | None]]:
+        """Run through a list of items, duplicate them, and copy the
+        text content if they are documents.
+        """
+        if not items:
+            return
+
+        nHandle = items[0]
+        hMap: dict[str, str | None] = {t: None for t in items}
+        for tHandle in items:
+            newItem = self._project.tree.duplicate(tHandle)
+            if newItem is None or newItem.itemHandle is None:
+                return
+            hMap[tHandle] = newItem.itemHandle
+            if newItem.itemParent in hMap:
+                newItem.setParent(hMap[newItem.itemParent])
+            if newItem.isFileType():
+                oldDoc = self._project.storage.getDocument(tHandle)
+                newDoc = self._project.storage.getDocument(newItem.itemHandle)
+                if newDoc.fileExists():
+                    return
+                newDoc.writeDocument(oldDoc.readDocument() or "")
+            yield newItem.itemHandle, nHandle
+            nHandle = None
+
+        return
+
+# END Class DocDuplicator
 
 
 class ProjectBuilder:

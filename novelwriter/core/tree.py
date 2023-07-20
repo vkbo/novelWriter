@@ -24,10 +24,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import copy
 import random
 import logging
 
-from typing import TYPE_CHECKING, Any, Iterator
+from typing import TYPE_CHECKING, Iterator
 from pathlib import Path
 
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
@@ -114,7 +115,17 @@ class NWTree:
 
         return True
 
-    def pack(self) -> list[dict[str, dict[str, str]]]:
+    def duplicate(self, sHandle: str) -> NWItem | None:
+        """Duplicate an item and set a new handle."""
+        sItem = self.__getitem__(sHandle)
+        if isinstance(sItem, NWItem):
+            nItem = copy.copy(sItem)
+            if self.append(None, sItem.itemParent, nItem):
+                logger.info("Duplicated item '%s' -> '%s'", sHandle, nItem.itemHandle)
+                return nItem
+        return None
+
+    def pack(self) -> list[dict]:
         """Pack the content of the tree into a list of doctionaries of
         items. In the order defined by the _treeOrder list.
         """
@@ -125,7 +136,7 @@ class NWTree:
                 tree.append(tItem.pack())
         return tree
 
-    def unpack(self, data: list[dict[str, dict[str, Any]]]) -> None:
+    def unpack(self, data: list[dict]) -> None:
         """Iterate through all items of a list and add them to the
         project tree.
         """
@@ -348,11 +359,11 @@ class NWTree:
         """True if there are any items in the project."""
         return bool(self._treeOrder)
 
-    def __getitem__(self, tHandle: str) -> NWItem | None:
+    def __getitem__(self, tHandle: str | None) -> NWItem | None:
         """Return a project item based on its handle. Returns None if
         the handle doesn't exist in the project.
         """
-        if tHandle in self._projTree:
+        if tHandle and tHandle in self._projTree:
             return self._projTree[tHandle]
         logger.error("No tree item with handle '%s'", str(tHandle))
         return None

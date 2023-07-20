@@ -83,6 +83,29 @@ class NWItem:
     def __bool__(self) -> bool:
         return self._handle is not None
 
+    def __copy__(self) -> NWItem:
+        """Make a shallow copy of the current item."""
+        item = NWItem(self._project)
+        item._name      = self._name
+        item._handle    = self._handle
+        item._parent    = self._parent
+        item._root      = self._root
+        item._order     = self._order
+        item._type      = self._type
+        item._class     = self._class
+        item._layout    = self._layout
+        item._status    = self._status
+        item._import    = self._import
+        item._active    = self._active
+        item._expanded  = self._expanded
+        item._heading   = self._heading
+        item._charCount = self._charCount
+        item._wordCount = self._wordCount
+        item._paraCount = self._paraCount
+        item._cursorPos = self._cursorPos
+        item._initCount = self._initCount
+        return item
+
     ##
     #  Properties
     ##
@@ -163,7 +186,7 @@ class NWItem:
     #  Pack/Unpack Data
     ##
 
-    def pack(self) -> dict[str, dict[str, str]]:
+    def pack(self) -> dict:
         """Pack all the data in the class instance into a dictionary."""
         item: dict[str, str] = {}
         meta: dict[str, str] = {}
@@ -197,7 +220,7 @@ class NWItem:
 
         return data
 
-    def unpack(self, data: dict[str, dict[str, Any]]) -> bool:
+    def unpack(self, data: dict) -> bool:
         """Set the values from a data dictionary."""
         item = data.get("itemAttr", {})
         meta = data.get("metaAttr", {})
