@@ -19,11 +19,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from pathlib import Path
 import uuid
 import pytest
 
 from shutil import copyfile
+from pathlib import Path
 from zipfile import ZipFile
 
 from mocked import causeOSError

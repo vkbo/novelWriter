@@ -22,15 +22,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from pathlib import Path
 import pytest
 
-from mocked import causeOSError
-from novelwriter.guimain import GuiMain
 from tools import C, buildTestProject
+from mocked import causeOSError
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QMenu, QTreeWidgetItem, QDialog
 
 from novelwriter import CONFIG
 from novelwriter.enum import nwItemLayout, nwItemType, nwItemClass
+from novelwriter.guimain import GuiMain
 from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
