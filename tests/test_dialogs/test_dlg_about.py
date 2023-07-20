@@ -32,8 +32,7 @@ from novelwriter.dialogs.about import GuiAbout
 
 @pytest.mark.gui
 def testDlgAbout_NWDialog(qtbot, monkeypatch, nwGUI):
-    """Test the novelWriter about dialogs.
-    """
+    """Test the novelWriter about dialogs."""
     # NW About
     nwGUI.mainTheme.themeName = "A Theme"
     nwGUI.mainTheme.themeAuthor = "An Author"
@@ -72,12 +71,11 @@ def testDlgAbout_NWDialog(qtbot, monkeypatch, nwGUI):
 
 @pytest.mark.gui
 def testDlgAbout_QtDialog(monkeypatch, nwGUI):
-    """Test the Qt about dialogs.
-    """
+    """Test the Qt about dialogs."""
     monkeypatch.setattr(QMessageBox, "aboutQt", lambda *a, **k: None)
 
     # Open About
-    # All it can do is check aigainst a crash
+    # All it can do is check against a crash
     assert nwGUI.showAboutQtDialog() is True
     nwGUI.mainMenu.aAboutQt.activate(QAction.Trigger)
 

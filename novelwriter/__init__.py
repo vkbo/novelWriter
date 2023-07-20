@@ -39,7 +39,7 @@ from novelwriter.config import Config
 #  - Digit 1,2 : Major Version (01-ff)
 #  - Digit 3,4 : Minor Version (01-ff)
 #  - Digit 5,6 : Patch Version (01-ff)
-#  - Digit 7   : Release Type (a: aplha, b: beta, c: candidate, f: final)
+#  - Digit 7   : Release Type (a: alpha, b: beta, c: candidate, f: final)
 #  - Digit 8   : Release Number (0-f)
 #
 #  Example    : Full        Short   Description

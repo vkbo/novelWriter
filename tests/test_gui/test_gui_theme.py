@@ -349,7 +349,7 @@ def testGuiTheme_Icons(qtbot, caplog, monkeypatch, nwGUI, tstPaths):
     assert isinstance(qIcon, QIcon)
     assert qIcon.isNull() is True
 
-    # Load an icon, it is likelyu already cached
+    # Load an icon, it is likely already cached
     qIcon = iconCache.getIcon("add")
     assert isinstance(qIcon, QIcon)
     assert qIcon.isNull() is False

@@ -109,7 +109,7 @@ class Config:
         # Size Settings
         self._mainWinSize  = [1200, 650]     # Last size of the main GUI window
         self._prefsWinSize = [700, 615]      # Last size of the Preferences dialog
-        self._projLoadCols = [280, 60, 160]  # Last columns withs of the Project Load dialog
+        self._projLoadCols = [280, 60, 160]  # Last columns widths of the Project Load dialog
         self._mainPanePos  = [300, 800]      # Last position of the main window splitter
         self._viewPanePos  = [500, 150]      # Last position of the document viewer splitter
         self._outlnPanePos = [500, 150]      # Last position of the outline panel splitter
@@ -135,7 +135,7 @@ class Config:
         self.autoSelect      = True   # Auto-select word when applying format with no selection
 
         self.doJustify       = False  # Justify text
-        self.showTabsNSpaces = False  # Show tabs and spaces in edior
+        self.showTabsNSpaces = False  # Show tabs and spaces in editor
         self.showLineEndings = False  # Show line endings in editor
         self.showMultiSpaces = True   # Highlight multiple spaces in the text
 
@@ -781,7 +781,7 @@ class Config:
         return checkVal
 
     def _checkOptionalPackages(self):
-        """Cheks if we have the optional packages used by some features.
+        """Check if we have the optional packages used by some features.
         """
         try:
             import enchant  # noqa: F401

@@ -34,8 +34,7 @@ from novelwriter.core.tohtml import ToHtml
 
 @pytest.mark.gui
 def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
-    """Test the document viewer.
-    """
+    """Test the document viewer."""
     # Open project
     assert nwGUI.openProject(prjLipsum)
 
@@ -135,7 +134,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     nwGUI.docViewer.updateDocInfo("4c4f28287af27")
     assert nwGUI.docViewer.docHeader.theTitle.text() == "Characters  ›  Test Title"
 
-    # Ttile without full path
+    # Title without full path
     CONFIG.showFullPath = False
     nwGUI.docViewer.updateDocInfo("4c4f28287af27")
     assert nwGUI.docViewer.docHeader.theTitle.text() == "Test Title"

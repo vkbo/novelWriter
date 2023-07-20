@@ -387,12 +387,12 @@ def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRn
     assert len(builds) == 0
     assert not buildsFile.exists()
 
-    # Greate a default build
+    # Create a default build
     buildOne = BuildSettings()
     buildOne.setName("Build One")
     buildIDOne = buildOne.buildID
 
-    # Check that invalid type is ahndled
+    # Check that invalid type is handled
     builds.setBuild(None)  # type: ignore
     assert len(builds) == 0
     assert not buildsFile.exists()

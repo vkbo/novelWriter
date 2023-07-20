@@ -38,8 +38,7 @@ from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLR
 
 @pytest.mark.core
 def testCoreProject_NewRoot(fncPath, tstPaths, mockGUI, mockRnd):
-    """Check that new root folders can be added to the project.
-    """
+    """Check that new root folders can be added to the project."""
     projFile = fncPath / "nwProject.nwx"
     testFile = tstPaths.outDir / "coreProject_NewRoot_nwProject.nwx"
     compFile = tstPaths.refDir / "coreProject_NewRoot_nwProject.nwx"
@@ -89,8 +88,7 @@ def testCoreProject_NewRoot(fncPath, tstPaths, mockGUI, mockRnd):
 
 @pytest.mark.core
 def testCoreProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
-    """Check that new files can be added to the project.
-    """
+    """Check that new files can be added to the project."""
     projFile = fncPath / "nwProject.nwx"
     testFile = tstPaths.outDir / "coreProject_NewFileFolder_nwProject.nwx"
     compFile = tstPaths.refDir / "coreProject_NewFileFolder_nwProject.nwx"
@@ -163,8 +161,7 @@ def testCoreProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockR
 
 @pytest.mark.core
 def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
-    """Test opening a project.
-    """
+    """Test opening a project."""
     theProject = NWProject(mockGUI)
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
@@ -259,8 +256,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
 
 @pytest.mark.core
 def testCoreProject_Save(monkeypatch, mockGUI, mockRnd, fncPath):
-    """Test saving a project.
-    """
+    """Test saving a project."""
     theProject = NWProject(mockGUI)
 
     # Nothing to save
@@ -289,8 +285,7 @@ def testCoreProject_Save(monkeypatch, mockGUI, mockRnd, fncPath):
 
 @pytest.mark.core
 def testCoreProject_AccessItems(mockGUI, fncPath, mockRnd):
-    """Test helper functions for the project folder.
-    """
+    """Test helper functions for the project folder."""
     theProject = NWProject(mockGUI)
     buildTestProject(theProject, fncPath)
 
@@ -354,8 +349,7 @@ def testCoreProject_AccessItems(mockGUI, fncPath, mockRnd):
 
 @pytest.mark.core
 def testCoreProject_StatusImport(mockGUI, fncPath, mockRnd):
-    """Test the status and importance flag handling.
-    """
+    """Test the status and importance flag handling."""
     theProject = NWProject(mockGUI)
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
@@ -506,7 +500,7 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     assert theProject.data.spellLang is None
     theProject.data.setSpellLang(None)
     assert theProject.data.spellLang is None
-    theProject.data.setSpellLang("None")  # Should be interpreded as None
+    theProject.data.setSpellLang("None")  # Should be interpreted as None
     assert theProject.data.spellLang is None
     theProject.data.setSpellLang("en_GB")
     assert theProject.data.spellLang == "en_GB"
@@ -589,7 +583,7 @@ def testCoreProject_OrphanedFiles(mockGUI, prjLipsum):
     assert theProject.tree["636b6aa9b697b"] is None
 
     # Add a file with non-existent parent
-    # This file will be renoved from the project on open
+    # This file will be removed from the project on open
     oHandle = theProject.newFile("Oops", "b3643d0f92e32")
     theProject.tree[oHandle].setParent("1234567890abc")
 
@@ -663,7 +657,7 @@ def testCoreProject_OrphanedFiles(mockGUI, prjLipsum):
 def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tstPaths):
     """Test the automated backup feature of the project class. The test
     creates a backup of the Minimal test project, and then unzips the
-    backupd file and checks that the project XML file is identical to
+    backup file and checks that the project XML file is identical to
     the original file.
     """
     theProject = NWProject(mockGUI)

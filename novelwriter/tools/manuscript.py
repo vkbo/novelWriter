@@ -232,7 +232,7 @@ class GuiManuscript(QDialog):
     def closeEvent(self, event):
         """Capture the user closing the window so we can save GUI
         settings. We also check that we don't have a build settings
-        diralog open.
+        dialog open.
         """
         self._saveSettings()
         for obj in self.children():
@@ -430,7 +430,7 @@ class GuiManuscript(QDialog):
         bItem = self._buildMap.get(build.buildID, None)
         if isinstance(bItem, QListWidgetItem):
             bItem.setText(build.name)
-        else:  # Propbably a new item
+        else:  # Probably a new item
             self._updateBuildsList()
         return
 

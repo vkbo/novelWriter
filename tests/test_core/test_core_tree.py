@@ -36,8 +36,7 @@ from novelwriter.core.project import NWProject
 
 @pytest.fixture(scope="function")
 def mockItems(mockGUI, mockRnd):
-    """Create a list of mock items.
-    """
+    """Create a list of mock items."""
     theProject = NWProject(mockGUI)
 
     itemA = NWItem(theProject)
@@ -113,8 +112,7 @@ def mockItems(mockGUI, mockRnd):
 
 @pytest.mark.core
 def testCoreTree_BuildTree(mockGUI, mockItems):
-    """Test building a project tree from a list of items.
-    """
+    """Test building a project tree from a list of items."""
     theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
 
@@ -232,8 +230,7 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
 
 @pytest.mark.core
 def testCoreTree_PackUnpack(mockGUI, mockItems):
-    """Test packing and unpacking data.
-    """
+    """Test packing and unpacking data."""
     theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
 
@@ -262,8 +259,7 @@ def testCoreTree_PackUnpack(mockGUI, mockItems):
 
 @pytest.mark.core
 def testCoreTree_Methods(mockGUI, mockItems):
-    """Test various class methods.
-    """
+    """Test various class methods."""
     theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
 
@@ -343,8 +339,7 @@ def testCoreTree_Methods(mockGUI, mockItems):
 
 @pytest.mark.core
 def testCoreTree_MakeHandles(mockGUI):
-    """Test generating item handles.
-    """
+    """Test generating item handles."""
     random.seed(42)
     theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
@@ -373,8 +368,7 @@ def testCoreTree_MakeHandles(mockGUI):
 
 @pytest.mark.core
 def testCoreTree_Stats(mockGUI, mockItems):
-    """Test project stats methods.
-    """
+    """Test project stats methods."""
     theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
 
@@ -394,8 +388,7 @@ def testCoreTree_Stats(mockGUI, mockItems):
 
 @pytest.mark.core
 def testCoreTree_Reorder(caplog, mockGUI, mockItems):
-    """Test changing tree order.
-    """
+    """Test changing tree order."""
     theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
 
@@ -430,8 +423,7 @@ def testCoreTree_Reorder(caplog, mockGUI, mockItems):
 
 @pytest.mark.core
 def testCoreTree_ToCFile(monkeypatch, tstPaths, mockGUI, mockItems):
-    """Test writing the ToC.txt file.
-    """
+    """Test writing the ToC.txt file."""
     theProject = NWProject(mockGUI)
     theTree = NWTree(theProject)
 

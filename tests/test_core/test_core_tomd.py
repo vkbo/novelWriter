@@ -29,7 +29,8 @@ from novelwriter.core.project import NWProject
 
 @pytest.mark.core
 def testCoreToMarkdown_ConvertFormat(mockGUI):
-    """Test the tokenizer and converter chain using the ToMarkdown class.
+    """Test the tokenizer and converter chain using the ToMarkdown
+    class.
     """
     theProject = NWProject(mockGUI)
     theMD = ToMarkdown(theProject)
@@ -157,8 +158,7 @@ def testCoreToMarkdown_ConvertFormat(mockGUI):
 
 @pytest.mark.core
 def testCoreToMarkdown_ConvertDirect(mockGUI):
-    """Test the converter directly using the ToMarkdown class.
-    """
+    """Test the converter directly using the ToMarkdown class."""
     theProject = NWProject(mockGUI)
     theMD = ToMarkdown(theProject)
 
@@ -208,8 +208,7 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
 
 @pytest.mark.core
 def testCoreToMarkdown_Complex(mockGUI, fncPath):
-    """Test the save method of the ToMarkdown class.
-    """
+    """Test the save method of the ToMarkdown class."""
     theProject = NWProject(mockGUI)
     theMD = ToMarkdown(theProject)
     theMD._isNovel = True
@@ -261,8 +260,7 @@ def testCoreToMarkdown_Complex(mockGUI, fncPath):
 
 @pytest.mark.core
 def testCoreToMarkdown_Format(mockGUI):
-    """Test all the formatters for the ToMarkdown class.
-    """
+    """Test all the formatters for the ToMarkdown class."""
     theProject = NWProject(mockGUI)
     theMD = ToMarkdown(theProject)
 

@@ -252,7 +252,7 @@ class NWProjectData:
         return
 
     def setEditTime(self, value: Any):
-        """Set tyje edit time from last session."""
+        """Set the edit time from last session."""
         self._editTime = checkInt(value, 0)
         self.theProject.setProjectChanged(True)
         return

@@ -417,7 +417,7 @@ class GuiDocEditor(QTextEdit):
         self.setDocumentChanged(False)
         qApp.restoreOverrideCursor()
 
-        # This is a hack to fix invisble cursor on an empty document
+        # This is a hack to fix invisible cursor on an empty document
         if self.document().characterCount() <= 1:
             self.setPlainText("\n")
             self.setPlainText("")
@@ -1001,7 +1001,7 @@ class GuiDocEditor(QTextEdit):
         We need to intercept a few key sequences:
           * The return and enter keys redirect here even if the search
             box has focus. Since we need these keys to continue search,
-            we block any further interaction here while ithas focus.
+            we block any further interaction here while it has focus.
           * The undo/redo/select all sequences bypass the docAction
             pathway from the menu, so we redirect them back from here.
           * We also handle automatic scrolling here.

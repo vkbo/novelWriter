@@ -35,8 +35,7 @@ from novelwriter.constants import nwFiles
 
 @pytest.mark.base
 def testBaseConfig_Constructor(monkeypatch):
-    """Test config contructor.
-    """
+    """Test config constructor."""
     # Linux
     with monkeypatch.context() as mp:
         mp.setattr("sys.platform", "linux")
@@ -93,8 +92,7 @@ def testBaseConfig_Constructor(monkeypatch):
 
 @pytest.mark.base
 def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
-    """Test config intialisation.
-    """
+    """Test config initialisation."""
     tstConf = Config()
 
     confFile = fncPath / nwFiles.CONF_FILE
@@ -159,8 +157,7 @@ def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
 
 @pytest.mark.base
 def testBaseConfig_Localisation(fncPath, tstPaths):
-    """Test localisation.
-    """
+    """Test localisation."""
     tstConf = Config()
     tstConf.initConfig(confPath=fncPath, dataPath=fncPath)
 
@@ -198,8 +195,7 @@ def testBaseConfig_Localisation(fncPath, tstPaths):
 
 @pytest.mark.base
 def testBaseConfig_Methods(fncPath):
-    """Check class methods.
-    """
+    """Check class methods."""
     tstConf = Config()
     tstConf.initConfig(confPath=fncPath, dataPath=fncPath)
 

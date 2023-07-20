@@ -67,7 +67,7 @@ class NWProject(QObject):
         self._storage = NWStorage(self)      # The project storage handler
         self._data    = NWProjectData(self)  # The project settings
         self._tree    = NWTree(self)         # The project tree
-        self._index   = NWIndex(self)        # The projecty index
+        self._index   = NWIndex(self)        # The project index
         self._session = NWSessionLog(self)   # The session record
 
         # Data Cache

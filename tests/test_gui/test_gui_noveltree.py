@@ -97,7 +97,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert novelTree.selectedItems()[0] == topItem
     assert novelView.getSelectedHandle() == (C.hTitlePage, "T0001")
 
-    # Refresh using the slot for the butoom
+    # Refresh using the slot for the button
     novelBar._refreshNovelTree()
     assert novelTree.topLevelItem(0).isSelected()
 

@@ -39,8 +39,7 @@ KEY_DELAY = 1
 
 @pytest.mark.gui
 def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
-    """Test initialising the editor.
-    """
+    """Test initialising the editor."""
     # Open project
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc)
@@ -82,8 +81,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
 @pytest.mark.gui
 def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumText, mockRnd):
-    """Test loading text into the editor.
-    """
+    """Test loading text into the editor."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
@@ -137,8 +135,7 @@ def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumTex
 
 @pytest.mark.gui
 def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumText, mockRnd):
-    """Test saving text from the editor.
-    """
+    """Test saving text from the editor."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
@@ -154,7 +151,7 @@ def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumTex
     assert nwGUI.docEditor.saveText() is False
     nwGUI.docEditor._nwItem = nwItem
 
-    # Unkown handle
+    # Unknown handle
     nwGUI.docEditor._docHandle = "0123456789abcdef"
     assert nwGUI.docEditor.saveText() is False
     nwGUI.docEditor._docHandle = C.hSceneDoc
@@ -181,8 +178,7 @@ def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumTex
 
 @pytest.mark.gui
 def testGuiEditor_MetaData(qtbot, nwGUI, projPath, mockRnd):
-    """Test extracting various meta data and other values.
-    """
+    """Test extracting various meta data and other values."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
@@ -461,8 +457,7 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
 @pytest.mark.gui
 def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
-    """Test the document insert functions.
-    """
+    """Test the document insert functions."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
@@ -544,8 +539,7 @@ def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd
 
 @pytest.mark.gui
 def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
-    """Test the text manipulation functions.
-    """
+    """Test the text manipulation functions."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
@@ -751,8 +745,7 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
 
 @pytest.mark.gui
 def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
-    """Test the block formatting function.
-    """
+    """Test the block formatting function."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
@@ -1064,8 +1057,7 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, projPath, ipsumText
 
 @pytest.mark.gui
 def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
-    """Test the document editor tags functionality.
-    """
+    """Test the document editor tags functionality."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
@@ -1123,8 +1115,7 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
 @pytest.mark.gui
 def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
-    """Test saving text from the editor.
-    """
+    """Test saving text from the editor."""
     class MockThreadPool:
 
         def __init__(self):
@@ -1204,8 +1195,7 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
 
 @pytest.mark.gui
 def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
-    """Test the document editor search functionality.
-    """
+    """Test the document editor search functionality."""
     monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
 
     assert nwGUI.openProject(prjLipsum) is True
@@ -1413,8 +1403,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
 
 @pytest.mark.gui
 def testGuiEditor_StaticMethods():
-    """Test the document editor's static methods.
-    """
+    """Test the document editor's static methods."""
     # Check the method that decides if it is allowed to insert a space
     # before a colon using the French, Spanish, etc language feature
     assert GuiDocEditor._allowSpaceBeforeColon("", "") is True

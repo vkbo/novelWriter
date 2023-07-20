@@ -432,7 +432,7 @@ class GuiProjectToolBar(QWidget):
 
     @pyqtSlot(str)
     def _treeSelectionChanged(self, tHandle):
-        """Toggle the visibility of the new item enties for novel
+        """Toggle the visibility of the new item entries for novel
         documents. They should only be visible if novel documents can
         actually be added.
         """

@@ -94,6 +94,7 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Block Formats
     # =============
+    # cSpell:ignore Pellentesque erat nulla posuere commodo
     assert nwGUI.docEditor.setCursorPosition(42)
 
     # Header 1

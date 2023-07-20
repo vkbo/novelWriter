@@ -87,7 +87,7 @@ class NWDocument:
 
     def readDocument(self, isOrphan: bool = False) -> str | None:
         """Read the document specified by the handle set in the
-        contructor, capturing potential file system errors and parse
+        constructor, capturing potential file system errors and parse
         meta data. If the document doesn't exist on disk, return an
         empty string. If something went wrong, return None.
         """

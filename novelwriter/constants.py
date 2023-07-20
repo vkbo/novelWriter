@@ -42,8 +42,8 @@ class nwConst:
     FMT_DSTAMP = "%Y-%m-%d"           # Date only format
 
     # Various Hard Limits
-    MAX_DOCSIZE   = 5000000   # Maxium size of a single document
-    MAX_BUILDSIZE = 10000000  # Maxium size of a project build
+    MAX_DOCSIZE   = 5000000   # Maximum size of a single document
+    MAX_BUILDSIZE = 10000000  # Maximum size of a project build
 
     # URLs
     URL_WEB     = "https://novelwriter.io"
@@ -358,7 +358,7 @@ class nwUnicode:
     U_PERMIL = "\u2030"  # Per mille sign
     U_DEGREE = "\u00b0"  # Degree symbol
     U_MINUS  = "\u2212"  # Minus sign
-    U_TIMES  = "\u00d7"  # Multiplaction sign
+    U_TIMES  = "\u00d7"  # Multiplication sign
     U_DIVIDE = "\u00f7"  # Division sign
 
     # Arrows

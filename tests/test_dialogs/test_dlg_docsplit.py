@@ -29,8 +29,7 @@ from novelwriter.dialogs.editlabel import GuiEditLabel
 
 @pytest.mark.gui
 def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
-    """Test the split document tool.
-    """
+    """Test the split document tool."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     # Create a new project
@@ -64,7 +63,7 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwSplit.show()
     qtbot.addWidget(nwSplit)
 
-    # By default, only up to level three headinsg should be listed
+    # By default, only up to level three headings should be listed
     assert nwSplit.splitLevel.currentData() == 3
     assert nwSplit.listBox.count() == 11
 

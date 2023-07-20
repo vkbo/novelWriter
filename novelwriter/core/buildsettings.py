@@ -493,7 +493,7 @@ class BuildCollection:
         return
 
     def builds(self) -> Iterable[tuple[str, str]]:
-        """Iterate over all avaiable builds."""
+        """Iterate over all available builds."""
         for buildID in self._builds:
             yield buildID, self._builds[buildID].get("name", "")
         return

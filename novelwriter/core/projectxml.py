@@ -97,12 +97,12 @@ class ProjectXMLReader:
 
     1.4 Introduces a more compact format for storing items. All settings
         aside from name are now attributes. This format also changes the
-        way satus and importance labels are stored. This format was only
+        way status and importance labels are stored. This format was only
         a part of version 2.0 RC 1
 
     1.5 The actual format released for 2.0. It moves last used handles
         and title formats into a key/value format similar to auto-
-        replace, status and imporetance. It adds the heading value to
+        replace, status and importance. It adds the heading value to
         the content item meta entry. It also moves meta data related to
         the project or the content into their respective section nodes
         as attributes. The id attribute was also added to the project.
@@ -452,7 +452,7 @@ class ProjectXMLReader:
 
     def _parseDictKeyText(self, xItem: ET.Element) -> dict:
         """Parse a dictionary stored with key as an attribute and the
-        value as the text porperty.
+        value as the text property.
         """
         result = {}
         for xEntry in xItem:
@@ -462,7 +462,7 @@ class ProjectXMLReader:
 
     def _parseDictTagText(self, xItem):
         """Parse a dictionary stored with key as the tag and the value
-        as the text porperty.
+        as the text property.
         """
         return {xNode.tag: checkString(xNode.text, "") for xNode in xItem}
 

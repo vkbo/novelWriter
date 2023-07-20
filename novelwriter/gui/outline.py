@@ -281,7 +281,7 @@ class GuiOutlineToolBar(QToolBar):
         return
 
     def populateNovelList(self):
-        """Relaod the content of the novel list.
+        """Reload the content of the novel list.
         """
         self.novelValue.updateList(includeAll=True)
         return

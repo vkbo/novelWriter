@@ -83,7 +83,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
     def initHighlighter(self):
         """Initialise the syntax highlighter, setting all the colour
-        rules and building the regexes.
+        rules and building the RegExes.
         """
         logger.debug("Setting up highlighting rules")
 
@@ -255,7 +255,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     ##
 
     def rehighlightByType(self, theType):
-        """Loop through all blocks and rehighlight those of a given
+        """Loop through all blocks and re-highlight those of a given
         content type.
         """
         qDoc = self.document()

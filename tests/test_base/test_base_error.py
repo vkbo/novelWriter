@@ -67,7 +67,7 @@ def testBaseError_Dialog(qtbot, monkeypatch, nwGUI):
 def testBaseError_Handler(qtbot, monkeypatch, nwGUI):
     """Test the error handler. This test doesn'thave any asserts, but it
     checks that the error handler handles potential exceptions. The test
-    will fail if excpetions are not handled.
+    will fail if exceptions are not handled.
     """
     # Normal shutdown
     with monkeypatch.context() as mp:

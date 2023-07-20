@@ -454,7 +454,7 @@ def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, pro
     assert C.hTitlePage not in theProject.tree
     assert nwGUI.docEditor.docHandle() is None
 
-    # Deleting folder + files recursiely is ok
+    # Deleting folder + files recursively is ok
     assert projTree.permanentlyDeleteItem(C.hChapterDir) is True
     assert C.hChapterDir not in theProject.tree
     assert C.hChapterDoc not in theProject.tree
@@ -509,7 +509,7 @@ def testGuiProjTree_EmptyTrash(qtbot, caplog, monkeypatch, nwGUI, projPath, mock
     assert C.hChapterDoc not in theProject.tree
     assert C.hSceneDoc not in theProject.tree
 
-    # Running Emtpy Trash again is cancelled due to empty folder
+    # Running Empty Trash again is cancelled due to empty folder
     assert projTree.emptyTrash() is False
 
     nwGUI.closeProject()
@@ -557,7 +557,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # No item under menu
     assert projTree._openContextMenu(projTree.viewport().rect().bottomRight()) is False
 
-    # Generate the possible menu combinarions
+    # Generate the possible menu combinations
     assert projTree._openContextMenu(itemPos(hTrashRoot)) is True
     assert projTree._openContextMenu(itemPos(C.hNovelRoot)) is True
     assert projTree._openContextMenu(itemPos(hNovelNote)) is True
@@ -936,7 +936,7 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Send invalid handle
     assert projTree.revealNewTreeItem(C.hInvalid) is False
 
-    # Try to add an oprhaned file to the tree
+    # Try to add an orphaned file to the tree
     nHandle = nwGUI.theProject.newFile("Test", C.hNovelRoot)
     nwGUI.theProject.tree[nHandle].setParent(None)
     assert projTree.revealNewTreeItem(nHandle) is False

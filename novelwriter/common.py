@@ -257,7 +257,7 @@ def formatTime(t: int) -> str:
 
 def simplified(text: str) -> str:
     """Take a string and strip leading and trailing whitespaces, and
-    replace all occurences of (multiple) whitespaces with a 0x20 space.
+    replace all occurrences of (multiple) whitespaces with a 0x20 space.
     """
     return " ".join(str(text).strip().split())
 

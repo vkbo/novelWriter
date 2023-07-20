@@ -126,7 +126,7 @@ class NWTree:
         return None
 
     def pack(self) -> list[dict]:
-        """Pack the content of the tree into a list of doctionaries of
+        """Pack the content of the tree into a list of dictionaries of
         items. In the order defined by the _treeOrder list.
         """
         tree = []

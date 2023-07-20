@@ -309,7 +309,7 @@ class DocDuplicator:
 
 class ProjectBuilder:
     """A class to build a new project from a set of user-defined
-    parameter provided by the New Projecty Wizard.
+    parameter provided by the New Project Wizard.
     """
 
     def __init__(self, mainGui: GuiMain) -> None:

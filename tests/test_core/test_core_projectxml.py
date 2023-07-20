@@ -89,7 +89,7 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
     assert xmlReader.read(data, content) is False
     assert xmlReader.state == XMLReadState.UNKNOWN_VERSION
 
-    # Check parsing of unkown sections
+    # Check parsing of unknown sections
     writeFile(xmlFile, (
         "<novelWriterXML fileVersion='1.5'>"
         "  <project>"
@@ -243,8 +243,7 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
 
 @pytest.mark.core
 def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockRnd):
-    """Test reading the version 1.0 XML file format.
-    """
+    """Test reading the version 1.0 XML file format."""
     refFile = tstPaths.filesDir / "nwProject-1.0.nwx"
     xmlFile = fncPath / "nwProject-1.0.nwx"
     outFile = fncPath / "nwProject.nwx"

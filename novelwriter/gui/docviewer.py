@@ -456,7 +456,7 @@ class GuiDocViewer(QTextBrowser):
         theCursor.select(selMode)
 
         if selMode == QTextCursor.BlockUnderCursor:
-            # This selection mode also selects the preceding oaragraph
+            # This selection mode also selects the preceding paragraph
             # separator, which we want to avoid.
             posS = theCursor.selectionStart()
             posE = theCursor.selectionEnd()

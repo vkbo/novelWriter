@@ -66,7 +66,7 @@ class NWSessionLog:
     ##
 
     def startSession(self):
-        """Start the writng session."""
+        """Start the writing session."""
         self._start = time()
         return
 

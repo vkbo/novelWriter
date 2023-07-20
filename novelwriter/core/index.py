@@ -730,7 +730,7 @@ class TagsIndex:
 class ItemIndex:
     """Core: Item Index Wrapper Class
 
-    A wrapper object holding the indexed items. This is a warapper
+    A wrapper object holding the indexed items. This is a wrapper
     class around a single storage dictionary with a set of utility
     functions for setting and accessing the index data. Each indexed
     item is stored in an IndexItem object, which again holds an

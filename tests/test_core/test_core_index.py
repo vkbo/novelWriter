@@ -35,7 +35,7 @@ from novelwriter.core.project import NWProject
 
 @pytest.mark.core
 def testCoreIndex_LoadSave(monkeypatch, prjLipsum, mockGUI, tstPaths):
-    """Test core functionality of scaning, saving, loading and checking
+    """Test core functionality of scanning, saving, loading and checking
     the index cache file.
     """
     projFile = prjLipsum / "meta" / nwFiles.INDEX_FILE
@@ -154,8 +154,7 @@ def testCoreIndex_LoadSave(monkeypatch, prjLipsum, mockGUI, tstPaths):
 
 @pytest.mark.core
 def testCoreIndex_ScanThis(mockGUI):
-    """Test the tag scanner function scanThis.
-    """
+    """Test the tag scanner function scanThis."""
     theProject = NWProject(mockGUI)
     theIndex = theProject.index
 
@@ -281,8 +280,7 @@ def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
 
 @pytest.mark.core
 def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
-    """Check the index text scanner.
-    """
+    """Check the index text scanner."""
     theProject = NWProject(mockGUI)
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
@@ -503,8 +501,7 @@ def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
 
 @pytest.mark.core
 def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
-    """Check the index data extraction functions.
-    """
+    """Check the index data extraction functions."""
     theProject = NWProject(mockGUI)
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
@@ -591,7 +588,7 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     # getReferences
     # =============
 
-    # Look up an ivalid handle
+    # Look up an invalid handle
     theRefs = theIndex.getReferences("Not a handle")
     assert theRefs["@pov"] == []
     assert theRefs["@char"] == []
@@ -784,8 +781,7 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
 
 @pytest.mark.core
 def testCoreIndex_TagsIndex():
-    """Check the TagsIndex class.
-    """
+    """Check the TagsIndex class."""
     tagsIndex = TagsIndex()
     assert tagsIndex._tags == {}
 
@@ -847,7 +843,7 @@ def testCoreIndex_TagsIndex():
     # Pack Data
     assert tagsIndex.packData() == content
 
-    # Delete the second key and a nomn-existant key
+    # Delete the second key and a non-existant key
     del tagsIndex["Tag2"]
     del tagsIndex["Tag4"]
     assert "Tag1" in tagsIndex
@@ -944,8 +940,7 @@ def testCoreIndex_TagsIndex():
 
 @pytest.mark.core
 def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
-    """Check the ItemIndex class.
-    """
+    """Check the ItemIndex class."""
     theProject = NWProject(mockGUI)
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
@@ -981,7 +976,7 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     # Add a heading to an invalid item
     assert itemIndex.addItemHeading(C.hInvalid, 1, "H1", "Stuff") == "T0000"
 
-    # Set the remainig data values
+    # Set the remaining data values
     itemIndex.setHeadingCounts(cHandle, "T0001", 60, 10, 2)
     itemIndex.setHeadingSynopsis(cHandle, "T0001", "In the beginning ...")
     itemIndex.setHeadingTag(cHandle, "T0001", "One")
@@ -1183,8 +1178,7 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
 
 @pytest.mark.core
 def testCoreIndex_CountWords():
-    """Test the word counter and the exclusion filers.
-    """
+    """Test the word counter and the exclusion filers."""
     # Non-Text
     assert countWords(None) == (0, 0, 0)
     assert countWords(1234) == (0, 0, 0)

@@ -122,7 +122,7 @@ class NSwitchBox(QScrollArea):
 
     def _bumpIndex(self):
         """Increase the index counter and make sure only the last
-        columns is stretcing.
+        columns is stretching.
         """
         self._content.setRowStretch(self._index, 0)
         self._content.setRowStretch(self._index + 1, 1)

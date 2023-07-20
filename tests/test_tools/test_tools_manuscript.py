@@ -151,7 +151,7 @@ def testManuscript_Builds(qtbot: QtBot, nwGUI: GuiMain, projPath: Path):
 
 @pytest.mark.gui
 def testManuscript_Features(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath: Path):
-    """Test other featurs of the GuiManuscript dialog."""
+    """Test other features of the GuiManuscript dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
 

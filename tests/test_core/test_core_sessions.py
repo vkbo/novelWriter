@@ -41,7 +41,7 @@ def testCoreSessions_Main(monkeypatch, mockGUI, fncPath):
     logFile = project.storage.getMetaFile(nwFiles.SESS_FILE)
     assert isinstance(logFile, Path)
 
-    # Set some moch word counts
+    # Set some mock word counts
     project.data.setInitCounts(50, 60)
     project.data.setCurrCounts(160, 150)
 

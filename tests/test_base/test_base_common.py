@@ -133,7 +133,7 @@ def testBaseCommon_CheckBool():
     assert checkBool(0, True) is False
     assert checkBool(1, False) is True
 
-    # Inalid Integers
+    # Invalid Integers
     assert checkBool(2, True) is True
     assert checkBool(2, False) is False
 

@@ -147,7 +147,7 @@ class ToOdt(Tokenizer):
         self._dLanguage    = "en"
         self._dCountry     = "GB"
 
-        # Text Margings
+        # Text Margins
         self._mTopTitle = "0.423cm"
         self._mTopHead1 = "0.423cm"
         self._mTopHead2 = "0.353cm"

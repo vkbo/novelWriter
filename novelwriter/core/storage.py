@@ -110,7 +110,7 @@ class NWStorage:
         """
         inPath = Path(path).resolve()
         if inPath.is_file():
-            # The path should not point to an exisitng file,
+            # The path should not point to an existing file,
             # but it can point to a folder containing files
             inPath = inPath.parent
 
@@ -313,7 +313,7 @@ class NWStorage:
         if not checkLegacy:
             # The legacy content check is only needed for project folder
             # storage, so if it is not expected to be that, there's no
-            # need for the remaning checks.
+            # need for the remaining checks.
             return True
 
         legacy = _LegacyStorage(self._project)
