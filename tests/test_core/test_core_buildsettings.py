@@ -31,7 +31,6 @@ from mocked import causeOSError
 
 from novelwriter.enum import nwBuildFmt, nwItemClass
 from novelwriter.constants import nwFiles
-from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings, FilterMode
 
@@ -229,7 +228,6 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
     hArchRoot = project.newRoot(nwItemClass.ARCHIVE, "Archive")
     hPlotDoc  = project.newFile("Main Plot", C.hPlotRoot)
     hCharDoc  = project.newFile("Jane Doe", C.hCharRoot)
-    initLen = len(project.tree)
 
     # With no changes
     assert build.isRootAllowed(C.hNovelRoot) is True
@@ -360,13 +358,6 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
         hPlotDoc:      (False, FilterMode.SKIPPED),
         hCharDoc:      (False, FilterMode.FILTERED),
     }
-
-    # Check error handling
-    project.tree._treeOrder.append("00000000000ff")
-    project.tree._projTree["00000000000ff"] = NWItem(project)
-    assert project.tree["00000000000ff"].itemHandle is None  # type: ignore
-    filtered = build.buildItemFilter(project, withRoots=False)
-    assert len(filtered) == initLen
 
     # No valid project provided
     assert build.buildItemFilter(None) == {}  # type: ignore

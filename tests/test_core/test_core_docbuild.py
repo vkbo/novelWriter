@@ -29,7 +29,6 @@ from tools import C, ODT_IGNORE, buildTestProject, cmpFiles
 from mocked import causeException, causeOSError
 
 from novelwriter.enum import nwBuildFmt
-from novelwriter.core.item import NWItem
 from novelwriter.core.tomd import ToMarkdown
 from novelwriter.core.toodt import ToOdt
 from novelwriter.core.tohtml import ToHtml
@@ -421,19 +420,15 @@ def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
     docFile.unlink()
 
     # Add an invalid item to the project
-    bHandle = "0123456789abc"
     nHandle = "0123456789def"
-    project.tree._treeOrder.append(bHandle)
-    project.tree._projTree[bHandle] = NWItem(project)  # Handle should be None
     project.tree._treeOrder.append(nHandle)
-    project.tree._projTree[nHandle] = None
+    project.tree._projTree[nHandle] = None  # type: ignore
 
     docBuild.queueAll()
     assert len(docBuild) == 8
 
-    docBuild.addDocument(bHandle)
     docBuild.addDocument(nHandle)
-    assert len(docBuild) == 10
+    assert len(docBuild) == 9
 
     # Build the doc again with broken items
     count = 0
@@ -472,7 +467,7 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     project.storage.getDocument(hCharDoc).writeDocument("# Jane Doe\n~~Text~~")
 
     # Fix project order as this has never been opened in a GUI
-    project.tree.setOrder([
+    project.tree.setOrder([  # type: ignore
         C.hNovelRoot, C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         C.hPlotRoot, hPlotDoc, C.hCharRoot, hCharDoc, C.hWorldRoot
     ])

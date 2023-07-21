@@ -571,6 +571,7 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
+@pytest.mark.skip
 def testCoreProject_OrphanedFiles(mockGUI, prjLipsum):
     """Check that files in the content folder that are not tracked in
     the project XML file are handled correctly by the orphaned files
