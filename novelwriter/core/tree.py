@@ -195,21 +195,24 @@ class NWTree:
         the project returns. The functions requires a prefix string to
         mark recovered files.
         """
+        storage = self._project.storage
+        files = set(storage.scanContent())
         for tHandle in self._treeOrder:
             if self.updateItemData(tHandle):
                 logger.debug("Checking item '%s' ... OK", tHandle)
+                files.discard(tHandle)  # Remove it from the record
             else:
                 logger.error("Checking item '%s' ... ERROR", tHandle)
                 self.__delitem__(tHandle)  # The file will be re-added as orphaned
 
-        orphans = 0
-        recovered = 0
-        storage = self._project.storage
-        for cHandle in storage.scanContent():
-            if cHandle in self._treeOrder:
-                continue
+        orphans = len(files)
+        if orphans == 0:
+            logger.info("Checked project files: OK")
+            return 0, 0
 
-            orphans += 1
+        logger.warning("Found %d file(s) not tracked in project", orphans)
+        recovered = 0
+        for cHandle in files:
             aDoc = storage.getDocument(cHandle)
             aDoc.readDocument(isOrphan=True)
             oName, oParent, oClass, oLayout = aDoc.getMeta()
