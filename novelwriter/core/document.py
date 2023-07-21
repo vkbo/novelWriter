@@ -243,7 +243,7 @@ class NWDocument:
         """Return a pointer to the currently open NWItem."""
         return self._theItem
 
-    def getMeta(self) -> tuple[str, str | None, str | None, str | None]:
+    def getMeta(self) -> tuple[str, str | None, nwItemClass | None, nwItemLayout | None]:
         """Parse the document meta tag and return the name, parent,
         class and layout meta values.
         """

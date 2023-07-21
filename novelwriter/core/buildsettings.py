@@ -353,8 +353,6 @@ class BuildSettings:
 
         for item in project.tree:
             tHandle = item.itemHandle
-            if tHandle is None:
-                continue
             if item.isInactiveClass() or (item.itemRoot in self._skipRoot):
                 result[tHandle] = (False, FilterMode.SKIPPED)
                 continue

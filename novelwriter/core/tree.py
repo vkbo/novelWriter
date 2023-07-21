@@ -1,7 +1,6 @@
 """
 novelWriter – Project Tree Class
 ================================
-Data class for the project's tree of project items
 
 File History:
 Created: 2020-05-07 [0.4.5]
@@ -24,16 +23,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import copy
 import random
 import logging
 
-from typing import TYPE_CHECKING, Iterator
+from typing import TYPE_CHECKING, Iterator, overload
 from pathlib import Path
 
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
-from novelwriter.common import checkHandle
+from novelwriter.common import isHandle
 from novelwriter.constants import nwFiles
 from novelwriter.core.item import NWItem
 
@@ -44,6 +42,22 @@ logger = logging.getLogger(__name__)
 
 
 class NWTree:
+    """Core: Project Tree Data Class
+
+    Only one instance of this class should exist in the project class.
+    This class holds all the project items of the project as instances
+    of NWItem.
+
+    For historical reasons, the order of the items is saved in a
+    separate list from the items themselves, which are stored in a
+    dictionary. This is somewhat redundant with the newer versions of
+    Python, but is still practical as it's easier to update the item
+    order as a list.
+
+    Each item has a handle, which is a random hex string of length 13.
+    The handle is the name of the item everywhere in novelWriter, and is
+    also used for file names.
+    """
 
     MAX_DEPTH = 1000  # Cap of tree traversing for loops
 
@@ -52,7 +66,7 @@ class NWTree:
         self._project = project
 
         self._projTree: dict[str, NWItem] = {}   # Holds all the items of the project
-        self._treeOrder: list[str] = []          # The order of the tree items on the tree view
+        self._treeOrder: list[str] = []          # The order of the tree items in the tree view
         self._treeRoots: dict[str, NWItem] = {}  # The root items of the tree
 
         self._trashRoot = None     # The handle of the trash root folder
@@ -79,21 +93,50 @@ class NWTree:
         """Returns a copy of the list of all the active handles."""
         return self._treeOrder.copy()
 
-    def append(self, tHandle: str | None, pHandle: str | None, nwItem: NWItem) -> bool:
-        """Add a new item to the end of the tree."""
-        tHandle = checkHandle(tHandle, None, True)
-        pHandle = checkHandle(pHandle, None, True)
-        if tHandle is None:
+    @overload
+    def create(self, label: str, parent: None, itemType: nwItemType,
+               itemClass: nwItemClass = nwItemClass.NO_CLASS,
+               itemLayout: nwItemLayout = nwItemLayout.NO_LAYOUT) -> str:
+        ...
+
+    @overload
+    def create(self, label: str, parent: str | None, itemType: nwItemType,
+               itemClass: nwItemClass = nwItemClass.NO_CLASS,
+               itemLayout: nwItemLayout = nwItemLayout.NO_LAYOUT) -> str | None:
+        ...
+
+    def create(self, label, parent, itemType,
+               itemClass=nwItemClass.NO_CLASS, itemLayout=nwItemLayout.NO_LAYOUT):
+        """Create a new item in the project tree, and return its handle.
+        If the item cannot be added to the project, None is returned.
+        """
+        if parent is None or parent in self._treeOrder:
             tHandle = self._makeHandle()
+            newItem = NWItem(self._project, tHandle)
+            newItem.setName(label)
+            newItem.setParent(parent)
+            newItem.setType(itemType)
+            newItem.setClass(itemClass)
+            newItem.setLayout(itemLayout)
+            self.append(newItem)
+            self.updateItemData(tHandle)
+            return tHandle
+        return None
+
+    def append(self, nwItem: NWItem) -> bool:
+        """Add a new item to the end of the tree."""
+        tHandle = nwItem.itemHandle
+        pHandle = nwItem.itemParent
+
+        if not isHandle(tHandle):
+            logger.warning("Invalid item handle '%s' detected, skipping", tHandle)
+            return False
 
         if tHandle in self._projTree:
             logger.warning("Duplicate handle '%s' detected, skipping", tHandle)
             return False
 
         logger.debug("Adding item '%s' with parent '%s'", str(tHandle), str(pHandle))
-
-        nwItem.setHandle(tHandle)
-        nwItem.setParent(pHandle)
 
         if nwItem.isRootType():
             logger.debug("Item '%s' is a root item", str(tHandle))
@@ -119,8 +162,8 @@ class NWTree:
         """Duplicate an item and set a new handle."""
         sItem = self.__getitem__(sHandle)
         if isinstance(sItem, NWItem):
-            nItem = copy.copy(sItem)
-            if self.append(None, sItem.itemParent, nItem):
+            nItem = NWItem.duplicate(sItem, self._makeHandle())
+            if self.append(nItem):
                 logger.info("Duplicated item '%s' -> '%s'", sHandle, nItem.itemHandle)
                 return nItem
         return None
@@ -142,9 +185,9 @@ class NWTree:
         """
         self.clear()
         for item in data:
-            nwItem = NWItem(self._project)
+            nwItem = NWItem(self._project, "NOTSET")  # Handle is set by unpack()
             if nwItem.unpack(item):
-                self.append(nwItem.itemHandle, nwItem.itemParent, nwItem)
+                self.append(nwItem)
                 nwItem.saveInitialCount()
         return
 
@@ -314,7 +357,7 @@ class NWTree:
             return self._trashRoot
         return None
 
-    def findRoot(self, itemClass: nwItemClass) -> str | None:
+    def findRoot(self, itemClass: nwItemClass | None) -> str | None:
         """Find the first root item for a given class."""
         for aRoot in self._treeRoots:
             tItem = self.__getitem__(aRoot)

@@ -38,7 +38,6 @@ from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
 from novelwriter.error import logException
 from novelwriter.constants import trConst, nwLabels
 from novelwriter.core.tree import NWTree
-from novelwriter.core.item import NWItem
 from novelwriter.core.index import NWIndex
 from novelwriter.core.options import OptionState
 from novelwriter.core.storage import NWStorage
@@ -130,42 +129,20 @@ class NWProject(QObject):
     #  Item Methods
     ##
 
-    def newRoot(self, itemClass, label=None):
-        """Add a new root item. If label is None, use the class label.
+    def newRoot(self, itemClass: nwItemClass, label: str | None = None) -> str:
+        """Add a new root folder to the project. If label is not set,
+        use the class label.
         """
-        if label is None:
-            label = trConst(nwLabels.CLASS_NAME[itemClass])
-        newItem = NWItem(self)
-        newItem.setName(label)
-        newItem.setType(nwItemType.ROOT)
-        newItem.setClass(itemClass)
-        self._tree.append(None, None, newItem)
-        self._tree.updateItemData(newItem.itemHandle)
-        return newItem.itemHandle
+        label = label or trConst(nwLabels.CLASS_NAME[itemClass])
+        return self._tree.create(label, None, nwItemType.ROOT, itemClass)
 
-    def newFolder(self, label, pHandle):
-        """Add a new folder with a given label and parent item.
-        """
-        if pHandle not in self._tree:
-            return None
-        newItem = NWItem(self)
-        newItem.setName(label)
-        newItem.setType(nwItemType.FOLDER)
-        self._tree.append(None, pHandle, newItem)
-        self._tree.updateItemData(newItem.itemHandle)
-        return newItem.itemHandle
+    def newFolder(self, label: str, parent: str) -> str | None:
+        """Add a new folder with a given label and parent item."""
+        return self._tree.create(label, parent, nwItemType.FOLDER)
 
-    def newFile(self, label, pHandle):
-        """Add a new file with a given label and parent item.
-        """
-        if pHandle not in self._tree:
-            return None
-        newItem = NWItem(self)
-        newItem.setName(label)
-        newItem.setType(nwItemType.FILE)
-        self._tree.append(None, pHandle, newItem)
-        self._tree.updateItemData(newItem.itemHandle)
-        return newItem.itemHandle
+    def newFile(self, label: str, parent: str) -> str | None:
+        """Add a new file with a given label and parent item."""
+        return self._tree.create(label, parent, nwItemType.FILE)
 
     def writeNewFile(self, tHandle, hLevel, isDocument, addText=""):
         """Write content to a new document after it is created. This
@@ -211,18 +188,11 @@ class NWProject(QObject):
         return True
 
     def trashFolder(self):
-        """Add the special trash root folder to the project.
-        """
+        """Add the special trash root folder to the project."""
         trashHandle = self._tree.trashRoot()
         if trashHandle is None:
-            newItem = NWItem(self)
-            newItem.setName(trConst(nwLabels.CLASS_NAME[nwItemClass.TRASH]))
-            newItem.setType(nwItemType.ROOT)
-            newItem.setClass(nwItemClass.TRASH)
-            self._tree.append(None, None, newItem)
-            self._tree.updateItemData(newItem.itemHandle)
-            return newItem.itemHandle
-
+            label = trConst(nwLabels.CLASS_NAME[nwItemClass.TRASH])
+            return self._tree.create(label, None, nwItemType.ROOT, nwItemClass.TRASH)
         return trashHandle
 
     ##
@@ -769,11 +739,8 @@ class NWProject(QObject):
                 oName = self.tr("Recovered File {0}").format(nOrph)
 
             # Recover file meta data
-            if oClass is None:
-                oClass = nwItemClass.NOVEL
-
-            if oLayout is None:
-                oLayout = nwItemLayout.NOTE
+            oClass = oClass or nwItemClass.NOVEL
+            oLayout = oLayout or nwItemLayout.NOTE
 
             if oParent is None or oParent not in self._tree:
                 oParent = self._tree.findRoot(oClass)
@@ -785,13 +752,9 @@ class NWProject(QObject):
                 noWhere = True
                 continue
 
-            orphItem = NWItem(self)
-            orphItem.setName(oName)
-            orphItem.setType(nwItemType.FILE)
-            orphItem.setClass(oClass)
-            orphItem.setLayout(oLayout)
-            self._tree.append(oHandle, oParent, orphItem)
-            self._tree.updateItemData(orphItem.itemHandle)
+            nHandle = self._tree.create(oName, oParent, nwItemType.FILE, oClass, oLayout)
+            if nHandle is not None:
+                (contentPath / f"{oHandle}.nwd").rename(contentPath / f"{nHandle}.nwd")
 
         if noWhere:
             self.mainGui.makeAlert(self.tr(

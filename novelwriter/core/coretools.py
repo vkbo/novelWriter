@@ -287,7 +287,7 @@ class DocDuplicator:
         hMap: dict[str, str | None] = {t: None for t in items}
         for tHandle in items:
             newItem = self._project.tree.duplicate(tHandle)
-            if newItem is None or newItem.itemHandle is None:
+            if newItem is None:
                 return
             hMap[tHandle] = newItem.itemHandle
             if newItem.itemParent in hMap:

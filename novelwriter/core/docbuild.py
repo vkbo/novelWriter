@@ -101,8 +101,6 @@ class NWBuildDocument:
         self._queue = []
         filtered = self._build.buildItemFilter(self._project)
         for item in self._project.tree:
-            if not item.itemHandle:
-                continue
             if filtered.get(item.itemHandle, False):
                 self._queue.append(item.itemHandle)
         return
