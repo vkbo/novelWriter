@@ -45,7 +45,7 @@ from novelwriter.core.sessions import NWSessionLog
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.core.projectdata import NWProjectData
 from novelwriter.common import (
-    checkStringNone, formatTimeStamp, hexToInt, isHandle, makeFileNameSafe, minmax
+    checkStringNone, formatTimeStamp, hexToInt, makeFileNameSafe, minmax
 )
 
 logger = logging.getLogger(__name__)
@@ -75,7 +75,6 @@ class NWProject(QObject):
         # Project Status
         self._projChanged = False  # The project has unsaved changes
         self._lockedBy    = None   # Data on which computer has the project open
-        self._projFiles   = []     # A list of all files in the content folder on load
 
         # Internal Mapping
         self.tr = partial(QCoreApplication.translate, "NWProject")
@@ -120,10 +119,6 @@ class NWProject(QObject):
     @property
     def projChanged(self):
         return self._projChanged
-
-    @property
-    def projFiles(self):
-        return self._projFiles
 
     ##
     #  Item Methods
@@ -212,9 +207,6 @@ class NWProject(QObject):
         self._index.clearIndex()
         self._data = NWProjectData(self)
         self._session = NWSessionLog(self)
-
-        # Project Settings
-        self._projFiles = []
 
         return
 
@@ -330,15 +322,13 @@ class NWProject(QObject):
         )
 
         # Check the project tree consistency
-        for tItem in self._tree:
-            if tItem:
-                tHandle = tItem.itemHandle
-                logger.debug("Checking item '%s'", tHandle)
-                if not self._tree.updateItemData(tHandle):
-                    logger.error("There was a problem the item, and it has been removed")
-                    del self._tree[tHandle]  # The file will be re-added as orphaned
+        # This also handles any orphaned files found
+        orphans, recovered = self._tree.checkConsistency(self.tr("Recovered"))
+        if orphans > 0:
+            self.mainGui.makeAlert(self.tr(
+                "Found {0} orphaned file(s) in the project. {1} file(s) were recovered."
+            ).format(orphans, recovered), nwAlert.WARN)
 
-        self._scanProjectFolder()
         self._index.loadIndex()
         if xmlReader.state == XMLReadState.WAS_LEGACY:
             # Often, the index needs to be rebuilt when updating format
@@ -646,9 +636,8 @@ class NWProject(QObject):
 
         return True
 
-    def _loadProjectLocalisation(self):
-        """Load the language data for the current project language.
-        """
+    def _loadProjectLocalisation(self) -> bool:
+        """Load the language data for the current project language."""
         if self._data.language is None or CONFIG._nwLangPath is None:
             self._langData = {}
             return False
@@ -661,106 +650,10 @@ class NWProject(QObject):
             with open(langFile, mode="r", encoding="utf-8") as inFile:
                 self._langData = json.load(inFile)
             logger.debug("Loaded project language file: %s", langFile.name)
-
         except Exception:
             logger.error("Failed to project language file")
             logException()
             return False
-
-        return True
-
-    def _scanProjectFolder(self):
-        """Scan the project folder and check that the files in it are
-        also in the project XML file. If they aren't, import them as
-        orphaned files so the user can either delete them, or put them
-        back into the project tree.
-        """
-        contentPath = self._storage.contentPath
-        if not isinstance(contentPath, Path):
-            return False
-
-        # Then check the files in the data folder
-        logger.debug("Checking files in project content folder")
-        orphanFiles = []
-        self._projFiles = []
-
-        for item in contentPath.iterdir():
-            itemName = item.name
-            if not itemName.endswith(".nwd"):
-                logger.warning("Skipping file: %s", itemName)
-                continue
-            if len(itemName) != 17:
-                logger.warning("Skipping file: %s", itemName)
-                continue
-
-            fHandle = itemName[:13]
-            if not isHandle(fHandle):
-                logger.warning("Skipping file: %s", itemName)
-                continue
-
-            if fHandle in self._tree:
-                self._projFiles.append(fHandle)
-                logger.debug("Checking file %s, handle '%s': OK", itemName, fHandle)
-            else:
-                logger.warning("Checking file %s, handle '%s': Orphaned", itemName, fHandle)
-                orphanFiles.append(fHandle)
-
-        # Report status
-        if len(orphanFiles) > 0:
-            self.mainGui.makeAlert(self.tr(
-                "Found {0} orphaned file(s) in project folder."
-            ).format(len(orphanFiles)), nwAlert.WARN)
-        else:
-            logger.debug("File check OK")
-            return
-
-        # Handle orphans
-        nOrph = 0
-        noWhere = False
-        oPrefix = self.tr("Recovered")
-        for oHandle in orphanFiles:
-
-            # Look for meta data
-            oName = ""
-            oParent = None
-            oClass = None
-            oLayout = None
-
-            aDoc = self._storage.getDocument(oHandle)
-            if aDoc.readDocument(isOrphan=True) is not None:
-                oName, oParent, oClass, oLayout = aDoc.getMeta()
-
-            if oName:
-                oName = self.tr("[{0}] {1}").format(
-                    oPrefix, oName.replace("[%s]" % oPrefix, "").strip()
-                )
-            else:
-                nOrph += 1
-                oName = self.tr("Recovered File {0}").format(nOrph)
-
-            # Recover file meta data
-            oClass = oClass or nwItemClass.NOVEL
-            oLayout = oLayout or nwItemLayout.NOTE
-
-            if oParent is None or oParent not in self._tree:
-                oParent = self._tree.findRoot(oClass)
-                if oParent is None:
-                    oParent = self._tree.findRoot(nwItemClass.NOVEL)
-
-            # If the file still has no parent item, skip it
-            if oParent is None:
-                noWhere = True
-                continue
-
-            nHandle = self._tree.create(oName, oParent, nwItemType.FILE, oClass, oLayout)
-            if nHandle is not None:
-                (contentPath / f"{oHandle}.nwd").rename(contentPath / f"{nHandle}.nwd")
-
-        if noWhere:
-            self.mainGui.makeAlert(self.tr(
-                "One or more orphaned files could not be added back into the project. "
-                "Make sure at least a Novel root folder exists."
-            ), nwAlert.WARN)
 
         return True
 

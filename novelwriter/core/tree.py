@@ -95,18 +95,15 @@ class NWTree:
 
     @overload
     def create(self, label: str, parent: None, itemType: nwItemType,
-               itemClass: nwItemClass = nwItemClass.NO_CLASS,
-               itemLayout: nwItemLayout = nwItemLayout.NO_LAYOUT) -> str:
+               itemClass: nwItemClass = nwItemClass.NO_CLASS) -> str:
         ...
 
     @overload
     def create(self, label: str, parent: str | None, itemType: nwItemType,
-               itemClass: nwItemClass = nwItemClass.NO_CLASS,
-               itemLayout: nwItemLayout = nwItemLayout.NO_LAYOUT) -> str | None:
+               itemClass: nwItemClass = nwItemClass.NO_CLASS) -> str | None:
         ...
 
-    def create(self, label, parent, itemType,
-               itemClass=nwItemClass.NO_CLASS, itemLayout=nwItemLayout.NO_LAYOUT):
+    def create(self, label, parent, itemType, itemClass=nwItemClass.NO_CLASS):
         """Create a new item in the project tree, and return its handle.
         If the item cannot be added to the project, None is returned.
         """
@@ -117,7 +114,6 @@ class NWTree:
             newItem.setParent(parent)
             newItem.setType(itemType)
             newItem.setClass(itemClass)
-            newItem.setLayout(itemLayout)
             self.append(newItem)
             self.updateItemData(tHandle)
             return tHandle
@@ -185,11 +181,63 @@ class NWTree:
         """
         self.clear()
         for item in data:
-            nwItem = NWItem(self._project, "NOTSET")  # Handle is set by unpack()
+            nwItem = NWItem(self._project, "")  # Handle is set by unpack()
             if nwItem.unpack(item):
                 self.append(nwItem)
                 nwItem.saveInitialCount()
         return
+
+    def checkConsistency(self, prefix: str) -> tuple[int, int]:
+        """Check the project tree consistency. Also check the content
+        folder and add back files that were discovered but were not
+        included in the tree. This function should only be called after
+        the project file has been processed, but before the loading of
+        the project returns. The functions requires a prefix string to
+        mark recovered files.
+        """
+        for tHandle in self._treeOrder:
+            if self.updateItemData(tHandle):
+                logger.debug("Checking item '%s' ... OK", tHandle)
+            else:
+                logger.error("Checking item '%s' ... ERROR", tHandle)
+                self.__delitem__(tHandle)  # The file will be re-added as orphaned
+
+        orphans = 0
+        recovered = 0
+        storage = self._project.storage
+        for cHandle in storage.scanContent():
+            if cHandle in self._treeOrder:
+                continue
+
+            orphans += 1
+            aDoc = storage.getDocument(cHandle)
+            aDoc.readDocument(isOrphan=True)
+            oName, oParent, oClass, oLayout = aDoc.getMeta()
+
+            oName = oName or cHandle
+            oParent = oParent if oParent in self._treeOrder else None
+            oClass = oClass or nwItemClass.NOVEL
+            oLayout = oLayout or nwItemLayout.NOTE
+
+            # If the parent doesn't exists, find a new home
+            if oParent is None:  # Add it to the first available class root
+                oParent = self.findRoot(oClass)
+            if oParent is None:  # Otherwise, add to the Novel root
+                oParent = self.findRoot(nwItemClass.NOVEL)
+            if oParent is None:  # If not, give up
+                continue
+
+            # Create a new item
+            newItem = NWItem(self._project, cHandle)
+            newItem.setName(f"[{prefix}] {oName}")
+            newItem.setParent(oParent)
+            newItem.setType(nwItemType.FILE)
+            newItem.setClass(oClass)
+            newItem.setLayout(oLayout)
+            if self.append(newItem):
+                recovered += 1
+
+        return orphans, recovered
 
     def writeToCFile(self) -> bool:
         """Write the convenience table of contents file in the root of

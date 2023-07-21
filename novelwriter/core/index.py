@@ -76,7 +76,7 @@ class NWIndex:
     a rebuild of the index data.
     """
 
-    def __init__(self, project):
+    def __init__(self, project: NWProject):
 
         self._project = project
 
@@ -197,7 +197,7 @@ class NWIndex:
         logger.debug("Checking index")
 
         # Check that all files are indexed
-        for fHandle in self._project.projFiles:
+        for fHandle in self._project.storage.scanContent():
             if fHandle not in self._itemIndex:
                 logger.warning("Item '%s' is not in the index", fHandle)
                 self.reIndexHandle(fHandle)

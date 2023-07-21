@@ -1,7 +1,6 @@
 """
 novelWriter – Project Document
 ==============================
-Data class for a single novelWriter document
 
 File History:
 Created: 2018-09-29 [0.0.1]
@@ -41,8 +40,15 @@ logger = logging.getLogger(__name__)
 
 
 class NWDocument:
+    """Core: Document Class
 
-    def __init__(self, project: NWProject, tHandle: str) -> None:
+    A Class wrapping a single novelWriter document file. It represents
+    a project item of nwItemType FILE. The file is not guaranteed to
+    exist, even if the item does. In the case it doesn't exist, reading
+    it returns a None rather than an empty or non-empty string.
+    """
+
+    def __init__(self, project: NWProject, tHandle: str | None) -> None:
 
         self._project = project
 

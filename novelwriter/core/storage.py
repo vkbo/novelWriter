@@ -33,7 +33,7 @@ from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile
 
 from novelwriter import CONFIG
 from novelwriter.error import logException
-from novelwriter.common import minmax
+from novelwriter.common import isHandle, minmax
 from novelwriter.constants import nwFiles
 from novelwriter.core.document import NWDocument
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
@@ -178,6 +178,16 @@ class NWStorage:
         if isinstance(self._runtimePath, Path):
             return self._runtimePath / "meta" / fileName
         return None
+
+    def scanContent(self) -> list[str]:
+        """Scan the content folder and return the handle of all files
+        found in it. Files that do not match the pattern are ignored.
+        """
+        contentPath = self.contentPath
+        return [
+            item.stem for item in contentPath.iterdir()
+            if item.suffix == ".nwd" and isHandle(item.stem)
+        ] if contentPath else []
 
     def readLockFile(self) -> list:
         """Read the project lock file."""
