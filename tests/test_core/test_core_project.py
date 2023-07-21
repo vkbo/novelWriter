@@ -58,7 +58,7 @@ def testCoreProject_NewRoot(fncPath, tstPaths, mockGUI, mockRnd):
 
     assert theProject.projChanged is True
     assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
+    theProject.closeProject()
 
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
@@ -154,7 +154,7 @@ def testCoreProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockR
     assert "0000000000011" not in theProject.tree
     assert "0000000000012" not in theProject.tree
 
-    assert theProject.closeProject() is True
+    theProject.closeProject()
 
 # END Test testCoreProject_NewFileFolder
 
@@ -182,12 +182,12 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
         caplog.clear()
         assert theProject.openProject(fncPath) is True
         assert "Failed to check lock file" in caplog.text
-        assert theProject.closeProject()
+        theProject.closeProject()
 
     # Force open with lockfile
     assert theProject._storage.writeLockFile()
     assert theProject.openProject(fncPath, overrideLock=True) is True
-    assert theProject.closeProject()
+    theProject.closeProject()
     assert theProject.getLockStatus() is None
 
     # Fail getting xml reader
@@ -237,7 +237,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
         mp.setattr("novelwriter.core.tree.NWTree.updateItemData", lambda *a: False)
         assert theProject.openProject(fncPath) is True
 
-    assert theProject.closeProject()
+    theProject.closeProject()
 
     # Trigger an index rebuild
     with monkeypatch.context() as mp:
@@ -249,7 +249,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
         assert "The file format of your project is about to be" in mockGUI.lastQuestion[1]
         assert theProject.index._indexBroken is False
 
-    assert theProject.closeProject()
+    theProject.closeProject()
 
 # END Test testCoreProject_Open
 
@@ -278,7 +278,7 @@ def testCoreProject_Save(monkeypatch, mockGUI, mockRnd, fncPath):
     # Save with and without autosave
     assert theProject.saveProject(autoSave=False) is True
     assert theProject.saveProject(autoSave=True) is True
-    assert theProject.closeProject()
+    theProject.closeProject()
 
 # END Test testCoreProject_Save
 
@@ -316,7 +316,7 @@ def testCoreProject_AccessItems(mockGUI, fncPath, mockRnd):
         C.hWorldRoot,
     ]
     assert theProject.tree.handles() == oldOrder
-    assert theProject.setTreeOrder(newOrder)
+    theProject.setTreeOrder(newOrder)
     assert theProject.tree.handles() == newOrder
 
     # Add a non-existing item
@@ -451,7 +451,7 @@ def testCoreProject_StatusImport(mockGUI, fncPath, mockRnd):
     assert len(theProject.data.itemStatus) == 0
     assert len(theProject.data.itemImport) == 0
     assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
+    theProject.closeProject()
 
 # END Test testCoreProject_StatusImport
 
@@ -509,9 +509,9 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     # Project Language
     theProject.setProjectChanged(False)
     theProject.data.setLanguage("en")
-    assert theProject.setProjectLang(None) is True
+    theProject.setProjectLang(None)
     assert theProject.data.language is None
-    assert theProject.setProjectLang("en_GB") is True
+    theProject.setProjectLang("en_GB")
     assert theProject.data.language == "en_GB"
 
     # Language Lookup
@@ -562,9 +562,9 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
         "000000000000e", "000000000000f",
     ]
     assert theProject.tree.handles() == oldOrder
-    assert theProject.setTreeOrder(newOrder)
+    theProject.setTreeOrder(newOrder)
     assert theProject.tree.handles() == newOrder
-    assert theProject.setTreeOrder(oldOrder)
+    theProject.setTreeOrder(oldOrder)
     assert theProject.tree.handles() == oldOrder
 
 # END Test testCoreProject_Methods
@@ -590,7 +590,7 @@ def testCoreProject_OrphanedFiles(mockGUI, prjLipsum):
 
     # Save and close
     assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
+    theProject.closeProject()
 
     # First Item with Meta Data
     orphPath = prjLipsum / "content" / "636b6aa9b697b.nwd"
@@ -645,7 +645,7 @@ def testCoreProject_OrphanedFiles(mockGUI, prjLipsum):
     assert oItem.itemLayout == nwItemLayout.NOTE
 
     assert theProject.saveProject(prjLipsum)
-    assert theProject.closeProject()
+    theProject.closeProject()
 
     # Finally, check that the orphaned files function returns
     # if no project is open and no path is set

@@ -28,6 +28,7 @@ import json
 import logging
 
 from time import time
+from typing import TYPE_CHECKING, Iterator
 from pathlib import Path
 from functools import partial
 
@@ -48,6 +49,11 @@ from novelwriter.common import (
     checkStringNone, formatTimeStamp, hexToInt, makeFileNameSafe, minmax
 )
 
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.guimain import GuiMain
+    from novelwriter.core.item import NWItem
+    from novelwriter.core.status import NWStatus
+
 logger = logging.getLogger(__name__)
 
 
@@ -55,7 +61,7 @@ class NWProject(QObject):
 
     projectStatusChanged = pyqtSignal(bool)
 
-    def __init__(self, mainGui):
+    def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
 
         # Internal
@@ -69,18 +75,13 @@ class NWProject(QObject):
         self._index   = NWIndex(self)        # The project index
         self._session = NWSessionLog(self)   # The session record
 
-        # Data Cache
-        self._langData = {}  # Localisation data
-
         # Project Status
+        self._langData    = {}     # Localisation data
         self._projChanged = False  # The project has unsaved changes
         self._lockedBy    = None   # Data on which computer has the project open
 
         # Internal Mapping
         self.tr = partial(QCoreApplication.translate, "NWProject")
-
-        # Set Defaults
-        self.clearProject()
 
         return
 
@@ -89,23 +90,23 @@ class NWProject(QObject):
     ##
 
     @property
-    def options(self):
+    def options(self) -> OptionState:
         return self._options
 
     @property
-    def storage(self):
+    def storage(self) -> NWStorage:
         return self._storage
 
     @property
-    def data(self):
+    def data(self) -> NWProjectData:
         return self._data
 
     @property
-    def tree(self):
+    def tree(self) -> NWTree:
         return self._tree
 
     @property
-    def index(self):
+    def index(self) -> NWIndex:
         return self._index
 
     @property
@@ -113,11 +114,11 @@ class NWProject(QObject):
         return self._session
 
     @property
-    def projOpened(self):
+    def projOpened(self) -> float:
         return self._session.start
 
     @property
-    def projChanged(self):
+    def projChanged(self) -> bool:
         return self._projChanged
 
     ##
@@ -139,7 +140,7 @@ class NWProject(QObject):
         """Add a new file with a given label and parent item."""
         return self._tree.create(label, parent, nwItemType.FILE)
 
-    def writeNewFile(self, tHandle, hLevel, isDocument, addText=""):
+    def writeNewFile(self, tHandle: str, hLevel: int, isDocument: bool, addText: str = "") -> bool:
         """Write content to a new document after it is created. This
         will not run if the file exists and is not empty.
         """
@@ -165,7 +166,7 @@ class NWProject(QObject):
 
         return True
 
-    def removeItem(self, tHandle):
+    def removeItem(self, tHandle: str) -> bool:
         """Remove an item from the project. This will delete both the
         project entry and a document file if it exists.
         """
@@ -182,7 +183,7 @@ class NWProject(QObject):
 
         return True
 
-    def trashFolder(self):
+    def trashFolder(self) -> str:
         """Add the special trash root folder to the project."""
         trashHandle = self._tree.trashRoot()
         if trashHandle is None:
@@ -194,23 +195,28 @@ class NWProject(QObject):
     #  Project Methods
     ##
 
-    def clearProject(self):
+    def clearProject(self) -> None:
         """Clear the data for the current project, and set them to
         default values.
-        """
-        # Project Status
-        self._projChanged = False
 
-        # Project Tree
+        Note: Don't clear the lockedBy data here as it is needed after
+        this function is called.
+        """
+        # Core Elements
+        self._options = OptionState(self)
         self._storage.clear()
+        self._data = NWProjectData(self)
         self._tree.clear()
         self._index.clearIndex()
-        self._data = NWProjectData(self)
         self._session = NWSessionLog(self)
+
+        # Project Status
+        self._langData = {}
+        self._projChanged = False
 
         return
 
-    def openProject(self, projPath, overrideLock=False):
+    def openProject(self, projPath: str | Path, overrideLock: bool = False) -> bool:
         """Open the project file provided. If it doesn't exist, assume
         it is a folder and look for the file within it. If successful,
         parse the XML of the file and populate the project variables and
@@ -342,7 +348,7 @@ class NWProject(QObject):
 
         return True
 
-    def saveProject(self, autoSave=False):
+    def saveProject(self, autoSave: bool = False) -> bool:
         """Save the project main XML file. The saving command itself
         uses a temporary filename, and the file is replaced afterwards
         to make sure if the save fails, we're not left with a truncated
@@ -395,9 +401,8 @@ class NWProject(QObject):
 
         return True
 
-    def closeProject(self, idleTime=0.0):
-        """Close the current project and clear all meta data.
-        """
+    def closeProject(self, idleTime: float = 0.0) -> None:
+        """Close the current project and clear all meta data."""
         logger.info("Closing project")
         self._options.saveSettings()
         self._tree.writeToCFile()
@@ -406,11 +411,10 @@ class NWProject(QObject):
         self._storage.closeSession()
         self.clearProject()
         self._lockedBy = None
-        return True
+        return
 
-    def backupProject(self, doNotify):
-        """Create a zip file of the entire project.
-        """
+    def backupProject(self, doNotify: bool) -> bool:
+        """Create a zip file of the entire project."""
         if not self._storage.isOpen():
             logger.error("No project open")
             return False
@@ -467,9 +471,8 @@ class NWProject(QObject):
     #  Setters
     ##
 
-    def setDefaultStatusImport(self):
-        """Set the default status and importance values.
-        """
+    def setDefaultStatusImport(self) -> None:
+        """Set the default status and importance values."""
         self._data.itemStatus.write(None, self.tr("New"),      (100, 100, 100))
         self._data.itemStatus.write(None, self.tr("Note"),     (200, 50,  0))
         self._data.itemStatus.write(None, self.tr("Draft"),    (200, 150, 0))
@@ -480,43 +483,40 @@ class NWProject(QObject):
         self._data.itemImport.write(None, self.tr("Main"),     (50,  200, 0))
         return
 
-    def setProjectLang(self, theLang):
-        """Set the project-specific language.
-        """
-        theLang = checkStringNone(theLang, None)
-        if self._data.language != theLang:
-            self._data.setLanguage(theLang)
+    def setProjectLang(self, language: str | None) -> None:
+        """Set the project-specific language."""
+        language = checkStringNone(language, None)
+        if self._data.language != language:
+            self._data.setLanguage(language)
             self._loadProjectLocalisation()
             self.setProjectChanged(True)
-        return True
+        return
 
-    def setTreeOrder(self, newOrder):
+    def setTreeOrder(self, order: list[str]) -> None:
         """A list representing the linear/flattened order of project
         items in the GUI project tree. The user can rearrange the order
         by drag-and-drop. Forwarded to the NWTree class.
         """
-        if len(self._tree) != len(newOrder):
+        if len(self._tree) != len(order):
             logger.warning("Sizes of new and old tree order do not match")
-        self._tree.setOrder(newOrder)
+        self._tree.setOrder(order)
         self.setProjectChanged(True)
-        return True
+        return
 
-    def setStatusColours(self, newCols, delCols):
-        """Update the list of novel file status flags.
-        """
-        return self._setStatusImport(newCols, delCols, self._data.itemStatus)
+    def setStatusColours(self, new: list[dict], deleted: list[str]) -> bool:
+        """Update the list of novel file status flags."""
+        return self._setStatusImport(new, deleted, self._data.itemStatus)
 
-    def setImportColours(self, newCols, delCols):
-        """Update the list of note file importance flags.
-        """
-        return self._setStatusImport(newCols, delCols, self._data.itemImport)
+    def setImportColours(self, new: list[dict], deleted: list[str]) -> bool:
+        """Update the list of note file importance flags."""
+        return self._setStatusImport(new, deleted, self._data.itemImport)
 
-    def setProjectChanged(self, value):
+    def setProjectChanged(self, status: bool) -> bool:
         """Toggle the project changed flag, and propagate the
         information to the GUI statusbar.
         """
-        if isinstance(value, bool):
-            self._projChanged = value
+        if isinstance(status, bool):
+            self._projChanged = status
             self.projectStatusChanged.emit(self._projChanged)
         return self._projChanged
 
@@ -536,7 +536,7 @@ class NWProject(QObject):
         """
         return self._data.editTime + round(time() - self._session.start)
 
-    def getProjectItems(self):
+    def getProjectItems(self) -> Iterator[NWItem]:
         """This function ensures that the item tree loaded is sent to
         the GUI tree view in such a way that the tree can be built. That
         is, the parent item must be sent before its child. In principle,
@@ -577,19 +577,19 @@ class NWProject(QObject):
                 logger.error("Item '%s' has no parent in current tree", tHandle)
                 tItem.setParent(None)
                 yield tItem
+        return
 
     ##
     #  Class Methods
     ##
 
-    def updateWordCounts(self):
-        """Update the total word count values.
-        """
+    def updateWordCounts(self) -> None:
+        """Update the total word count values."""
         novel, notes = self._tree.sumWords()
         self._data.setCurrCounts(novel=novel, notes=notes)
         return
 
-    def countStatus(self):
+    def countStatus(self) -> None:
         """Count how many times the various status flags are used in the
         project tree. The counts themselves are kept in the NWStatus
         objects. This is essentially a refresh.
@@ -603,18 +603,18 @@ class NWProject(QObject):
                 self._data.itemImport.increment(nwItem.itemImport)
         return
 
-    def localLookup(self, theWord):
-        """Look up a word in the translation map for the project and
-        return it. The variable is cast to a string before lookup. If
-        the word does not exist, it returns itself.
+    def localLookup(self, word: str | int) -> str:
+        """Look up a word or number in the translation map for the
+        project and return it. The variable is cast to a string before
+        lookup. If the word does not exist, it returns itself.
         """
-        return self._langData.get(str(theWord), str(theWord))
+        return self._langData.get(str(word), str(word))
 
     ##
     #  Internal Functions
     ##
 
-    def _setStatusImport(self, new, delete, target):
+    def _setStatusImport(self, new: list[dict], delete: list[str], target: NWStatus) -> bool:
         """Update the list of novel file status or importance flags, and
         delete those that have been requested deleted.
         """
