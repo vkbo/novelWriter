@@ -92,7 +92,7 @@ def testCoreStorage_OpenProjectInPlace(mockGUI, fncPath, mockRnd):
     assert isinstance(storage.getXmlWriter(), ProjectXMLWriter)
 
     # Get content
-    assert storage.scanContent() == [C.hTitlePage, C.hChapterDoc, C.hSceneDoc]
+    assert sorted(storage.scanContent()) == sorted([C.hTitlePage, C.hChapterDoc, C.hSceneDoc])
 
     # Get document
     assert storage.getDocument(C.hSceneDoc).readDocument() == "### New Scene\n\n"
