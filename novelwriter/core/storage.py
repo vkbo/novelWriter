@@ -67,6 +67,7 @@ class NWStorage:
         """Reset internal variables."""
         self._storagePath = None
         self._runtimePath = None
+        self._lockFilePath = None
         self._openMode = self.MODE_INACTIVE
         return
 
@@ -146,7 +147,7 @@ class NWStorage:
 
     def closeSession(self):
         """Run tasks related to closing the session."""
-        # Clear lockfile
+        self.clearLockFile()
         self.clear()
         return
 
@@ -189,7 +190,7 @@ class NWStorage:
             if item.suffix == ".nwd" and isHandle(item.stem)
         ] if contentPath else []
 
-    def readLockFile(self) -> list:
+    def readLockFile(self) -> list[str]:
         """Read the project lock file."""
         if self._lockFilePath is None:
             return ["ERROR"]
@@ -198,7 +199,7 @@ class NWStorage:
             return []
 
         try:
-            lines = self._lockFilePath.read_text(encoding="utf-8").split(";")
+            lines = self._lockFilePath.read_text(encoding="utf-8").strip().split(";")
         except Exception:
             logger.error("Failed to read project lockfile")
             logException()

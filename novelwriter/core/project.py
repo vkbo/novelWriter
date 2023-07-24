@@ -407,7 +407,6 @@ class NWProject(QObject):
         self._options.saveSettings()
         self._tree.writeToCFile()
         self._session.appendSession(idleTime)
-        self._storage.clearLockFile()
         self._storage.closeSession()
         self.clearProject()
         self._lockedBy = None

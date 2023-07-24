@@ -29,6 +29,7 @@ from tools import C, cmpFiles, writeFile, buildTestProject, XML_IGNORE
 
 from novelwriter import CONFIG
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
+from novelwriter.constants import nwFiles
 from novelwriter.core.tree import NWTree
 from novelwriter.core.index import NWIndex
 from novelwriter.core.project import NWProject
@@ -172,7 +173,8 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
         assert theProject.openProject(fncPath) is False
 
     # Fail on lock file
-    assert theProject._storage.writeLockFile()
+    theProject.storage._lockFilePath = fncPath / nwFiles.PROJ_LOCK
+    assert theProject.storage.writeLockFile() is True
     assert theProject.openProject(fncPath) is False
     assert isinstance(theProject.getLockStatus(), list)
 
@@ -185,7 +187,8 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
         theProject.closeProject()
 
     # Force open with lockfile
-    assert theProject._storage.writeLockFile()
+    theProject.storage._lockFilePath = fncPath / nwFiles.PROJ_LOCK
+    assert theProject.storage.writeLockFile() is True
     assert theProject.openProject(fncPath, overrideLock=True) is True
     theProject.closeProject()
     assert theProject.getLockStatus() is None
