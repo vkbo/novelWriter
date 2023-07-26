@@ -25,10 +25,11 @@ from shutil import copyfile
 from zipfile import ZipFile
 
 from mocked import causeOSError
-from tools import C, cmpFiles, writeFile, buildTestProject, XML_IGNORE
+from tools import C, cmpFiles, buildTestProject, XML_IGNORE
 
 from novelwriter import CONFIG
-from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
+from novelwriter.enum import nwItemClass
+from novelwriter.constants import nwFiles
 from novelwriter.core.tree import NWTree
 from novelwriter.core.index import NWIndex
 from novelwriter.core.project import NWProject
@@ -58,7 +59,7 @@ def testCoreProject_NewRoot(fncPath, tstPaths, mockGUI, mockRnd):
 
     assert theProject.projChanged is True
     assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
+    theProject.closeProject()
 
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
@@ -154,7 +155,7 @@ def testCoreProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockR
     assert "0000000000011" not in theProject.tree
     assert "0000000000012" not in theProject.tree
 
-    assert theProject.closeProject() is True
+    theProject.closeProject()
 
 # END Test testCoreProject_NewFileFolder
 
@@ -172,7 +173,8 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
         assert theProject.openProject(fncPath) is False
 
     # Fail on lock file
-    assert theProject._storage.writeLockFile()
+    theProject.storage._lockFilePath = fncPath / nwFiles.PROJ_LOCK
+    assert theProject.storage.writeLockFile() is True
     assert theProject.openProject(fncPath) is False
     assert isinstance(theProject.getLockStatus(), list)
 
@@ -182,12 +184,13 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
         caplog.clear()
         assert theProject.openProject(fncPath) is True
         assert "Failed to check lock file" in caplog.text
-        assert theProject.closeProject()
+        theProject.closeProject()
 
     # Force open with lockfile
-    assert theProject._storage.writeLockFile()
+    theProject.storage._lockFilePath = fncPath / nwFiles.PROJ_LOCK
+    assert theProject.storage.writeLockFile() is True
     assert theProject.openProject(fncPath, overrideLock=True) is True
-    assert theProject.closeProject()
+    theProject.closeProject()
     assert theProject.getLockStatus() is None
 
     # Fail getting xml reader
@@ -237,7 +240,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
         mp.setattr("novelwriter.core.tree.NWTree.updateItemData", lambda *a: False)
         assert theProject.openProject(fncPath) is True
 
-    assert theProject.closeProject()
+    theProject.closeProject()
 
     # Trigger an index rebuild
     with monkeypatch.context() as mp:
@@ -249,7 +252,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
         assert "The file format of your project is about to be" in mockGUI.lastQuestion[1]
         assert theProject.index._indexBroken is False
 
-    assert theProject.closeProject()
+    theProject.closeProject()
 
 # END Test testCoreProject_Open
 
@@ -278,7 +281,7 @@ def testCoreProject_Save(monkeypatch, mockGUI, mockRnd, fncPath):
     # Save with and without autosave
     assert theProject.saveProject(autoSave=False) is True
     assert theProject.saveProject(autoSave=True) is True
-    assert theProject.closeProject()
+    theProject.closeProject()
 
 # END Test testCoreProject_Save
 
@@ -316,7 +319,7 @@ def testCoreProject_AccessItems(mockGUI, fncPath, mockRnd):
         C.hWorldRoot,
     ]
     assert theProject.tree.handles() == oldOrder
-    assert theProject.setTreeOrder(newOrder)
+    theProject.setTreeOrder(newOrder)
     assert theProject.tree.handles() == newOrder
 
     # Add a non-existing item
@@ -451,7 +454,7 @@ def testCoreProject_StatusImport(mockGUI, fncPath, mockRnd):
     assert len(theProject.data.itemStatus) == 0
     assert len(theProject.data.itemImport) == 0
     assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
+    theProject.closeProject()
 
 # END Test testCoreProject_StatusImport
 
@@ -509,9 +512,9 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     # Project Language
     theProject.setProjectChanged(False)
     theProject.data.setLanguage("en")
-    assert theProject.setProjectLang(None) is True
+    theProject.setProjectLang(None)
     assert theProject.data.language is None
-    assert theProject.setProjectLang("en_GB") is True
+    theProject.setProjectLang("en_GB")
     assert theProject.data.language == "en_GB"
 
     # Language Lookup
@@ -562,95 +565,12 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
         "000000000000e", "000000000000f",
     ]
     assert theProject.tree.handles() == oldOrder
-    assert theProject.setTreeOrder(newOrder)
+    theProject.setTreeOrder(newOrder)
     assert theProject.tree.handles() == newOrder
-    assert theProject.setTreeOrder(oldOrder)
+    theProject.setTreeOrder(oldOrder)
     assert theProject.tree.handles() == oldOrder
 
 # END Test testCoreProject_Methods
-
-
-@pytest.mark.core
-def testCoreProject_OrphanedFiles(mockGUI, prjLipsum):
-    """Check that files in the content folder that are not tracked in
-    the project XML file are handled correctly by the orphaned files
-    function. It should also restore as much meta data as possible from
-    the meta line at the top of the document file.
-    """
-    theProject = NWProject(mockGUI)
-
-    assert theProject.openProject(prjLipsum) is True
-    assert theProject.tree["636b6aa9b697b"] is None
-
-    # Add a file with non-existent parent
-    # This file will be removed from the project on open
-    oHandle = theProject.newFile("Oops", "b3643d0f92e32")
-    theProject.tree[oHandle].setParent("1234567890abc")
-
-    # Save and close
-    assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
-
-    # First Item with Meta Data
-    orphPath = prjLipsum / "content" / "636b6aa9b697b.nwd"
-    writeFile(orphPath, (
-        "%%~name:[Recovered] Mars\n"
-        "%%~path:5eaea4e8cdee8/636b6aa9b697b\n"
-        "%%~kind:WORLD/NOTE\n"
-        "%%~invalid\n"
-        "\n"
-    ))
-
-    # Second Item without Meta Data
-    orphPath = prjLipsum / "content" / "736b6aa9b697b.nwd"
-    writeFile(orphPath, "\n")
-
-    # Invalid File Name
-    tstPath = prjLipsum / "content" / "636b6aa9b697b.txt"
-    writeFile(tstPath, "\n")
-
-    # Invalid File Name
-    tstPath = prjLipsum / "content" / "636b6aa9b697bb.nwd"
-    writeFile(tstPath, "\n")
-
-    # Invalid File Name
-    tstPath = prjLipsum / "content" / "abcdefghijklm.nwd"
-    writeFile(tstPath, "\n")
-
-    assert theProject.openProject(prjLipsum)
-    assert theProject.storage.storagePath is not None
-    assert theProject.storage.runtimePath is not None
-    assert theProject.tree["636b6aa9b697bb"] is None
-    assert theProject.tree["abcdefghijklm"] is None
-
-    # First Item with Meta Data
-    oItem = theProject.tree["636b6aa9b697b"]
-    assert oItem is not None
-    assert oItem.itemName == "[Recovered] Mars"
-    assert oItem.itemHandle == "636b6aa9b697b"
-    assert oItem.itemParent == "60bdf227455cc"
-    assert oItem.itemClass == nwItemClass.WORLD
-    assert oItem.itemType == nwItemType.FILE
-    assert oItem.itemLayout == nwItemLayout.NOTE
-
-    # Second Item without Meta Data
-    oItem = theProject.tree["736b6aa9b697b"]
-    assert oItem is not None
-    assert oItem.itemName == "Recovered File 1"
-    assert oItem.itemHandle == "736b6aa9b697b"
-    assert oItem.itemParent == "b3643d0f92e32"
-    assert oItem.itemClass == nwItemClass.NOVEL
-    assert oItem.itemType == nwItemType.FILE
-    assert oItem.itemLayout == nwItemLayout.NOTE
-
-    assert theProject.saveProject(prjLipsum)
-    assert theProject.closeProject()
-
-    # Finally, check that the orphaned files function returns
-    # if no project is open and no path is set
-    assert not theProject._scanProjectFolder()
-
-# END Test testCoreProject_OrphanedFiles
 
 
 @pytest.mark.core

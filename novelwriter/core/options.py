@@ -77,7 +77,7 @@ class OptionState:
     the Config instead.
     """
 
-    def __init__(self, project: NWProject):
+    def __init__(self, project: NWProject) -> None:
         self._project = project
         self._state = {}
         return
@@ -87,8 +87,7 @@ class OptionState:
     ##
 
     def loadSettings(self) -> bool:
-        """Load the options dictionary from the project settings file.
-        """
+        """Load the options dictionary from the project."""
         stateFile = self._project.storage.getMetaFile(nwFiles.OPTS_FILE)
         if not isinstance(stateFile, Path):
             return False
@@ -116,7 +115,7 @@ class OptionState:
         return True
 
     def saveSettings(self) -> bool:
-        """Save the options dictionary to the project settings file."""
+        """Save the options dictionary to the project."""
         stateFile = self._project.storage.getMetaFile(nwFiles.OPTS_FILE)
         if not isinstance(stateFile, Path):
             return False

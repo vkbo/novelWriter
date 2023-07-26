@@ -63,6 +63,7 @@ def testCoreStorage_OpenProjectInPlace(mockGUI, fncPath, mockRnd):
     assert storage.getXmlWriter() is None
     assert bool(storage.getDocument(C.hSceneDoc)) is False
     assert storage.getMetaFile("file") is None
+    assert storage.scanContent() == []
 
     # Open project as a new project should fail
     assert storage.openProjectInPlace(fncPath, newProject=True) is False
@@ -90,6 +91,9 @@ def testCoreStorage_OpenProjectInPlace(mockGUI, fncPath, mockRnd):
     assert isinstance(storage.getXmlReader(), ProjectXMLReader)
     assert isinstance(storage.getXmlWriter(), ProjectXMLWriter)
 
+    # Get content
+    assert sorted(storage.scanContent()) == [C.hTitlePage, C.hChapterDoc, C.hSceneDoc]
+
     # Get document
     assert storage.getDocument(C.hSceneDoc).readDocument() == "### New Scene\n\n"
 
@@ -97,7 +101,7 @@ def testCoreStorage_OpenProjectInPlace(mockGUI, fncPath, mockRnd):
     assert storage.getMetaFile("stuff") == fncPath / "meta" / "stuff"
 
     # Clean up
-    assert theProject.closeProject() is True
+    theProject.closeProject()
 
     # Check closed project return values (again)
     assert storage.isOpen() is False

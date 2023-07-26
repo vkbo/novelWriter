@@ -147,7 +147,7 @@ def testCoreIndex_LoadSave(monkeypatch, prjLipsum, mockGUI, tstPaths):
     assert "7a992350f3eb6" in theIndex._itemIndex
 
     # Finalise
-    assert theProject.closeProject() is True
+    theProject.closeProject()
 
 # END Test testCoreIndex_LoadSave
 
@@ -195,7 +195,7 @@ def testCoreIndex_ScanThis(mockGUI):
     assert theBits == ["@tag", "this", "and this"]
     assert thePos  == [0, 6, 12]
 
-    assert theProject.closeProject() is True
+    theProject.closeProject()
 
 # END Test testCoreIndex_ScanThis
 
@@ -273,7 +273,7 @@ def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
     assert theIndex.checkThese(["@who", "Jane", "John"], cItem) == [False, False, False]
     assert theIndex.checkThese(["@pov", "Jane", "John"], nItem) == [True, True, False]
 
-    assert theProject.closeProject() is True
+    theProject.closeProject()
 
 # END Test testCoreIndex_CheckThese
 
@@ -494,7 +494,7 @@ def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
     assert theIndex._itemIndex[pHandle]["T0000"].paraCount == 1
     assert theIndex._itemIndex[pHandle]["T0000"].synopsis == ""
 
-    assert theProject.closeProject() is True
+    theProject.closeProject()
 
 # END Test testCoreIndex_ScanText
 
@@ -774,7 +774,7 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
 
     assert theIndex.saveIndex() is True
     assert theProject.saveProject() is True
-    assert theProject.closeProject() is True
+    theProject.closeProject()
 
 # END Test testCoreIndex_ExtractData
 

@@ -37,7 +37,8 @@ def testCoreItem_Setters(mockGUI, mockRnd, fncPath):
     theProject = NWProject(mockGUI)
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
-    theItem = NWItem(theProject)
+    theItem = NWItem(theProject, "0000000000000")
+    assert theItem.itemHandle == "0000000000000"
 
     statusKeys = ["s000000", "s000001", "s000002", "s000003"]
     importKeys = ["i000004", "i000005", "i000006", "i000007"]
@@ -51,16 +52,6 @@ def testCoreItem_Setters(mockGUI, mockRnd, fncPath):
     assert theItem.itemName == "A Name"
     theItem.setName(123)
     assert theItem.itemName == ""
-
-    # Handle
-    theItem.setHandle(123)
-    assert theItem.itemHandle is None
-    theItem.setHandle("0123456789abcdef")
-    assert theItem.itemHandle is None
-    theItem.setHandle("0123456789abg")
-    assert theItem.itemHandle is None
-    theItem.setHandle("0123456789abc")
-    assert theItem.itemHandle == "0123456789abc"
 
     # Parent
     theItem.setParent(None)
@@ -197,7 +188,7 @@ def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
     theProject = NWProject(mockGUI)
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
-    theItem = NWItem(theProject)
+    theItem = NWItem(theProject, "0000000000000")
 
     # Describe Me
     # ===========
@@ -270,24 +261,15 @@ def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
     # ==============
 
     theItem.setName("New Item")
-    theItem.setHandle("1234567890abc")
-    theItem.setParent("4567890abcdef")
-    assert repr(theItem) == "<NWItem handle=1234567890abc, parent=4567890abcdef, name='New Item'>"
+    theItem.setParent("1111111111111")
+    assert repr(theItem) == "<NWItem handle=0000000000000, parent=1111111111111, name='New Item'>"
 
     # Truthiness
     # ==========
 
-    bItem = NWItem(theProject)
-
-    # An item with a handle is valid
-    bItem.setHandle(theProject.tree._makeHandle())
-    assert bool(bItem) is True
-    assert bItem
-
-    # An item without a handle is invalid
-    bItem.setHandle(None)
-    assert bool(bItem) is False
-    assert not bItem
+    # Is True if the handle evaluates to True
+    assert bool(NWItem(theProject, "0000000000000")) is True
+    assert bool(NWItem(theProject, "")) is False
 
     # Copy an Item
     # ============
@@ -318,29 +300,25 @@ def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
         }
     }
 
+    # Get the scene item
     scItem = theProject.tree[C.hSceneDoc]
-    cpItem = copy.copy(scItem)
-
-    # We should have two instances of NWItem
     assert isinstance(scItem, NWItem)
+
+    # Duplicate and update the expected content with a new handle
+    cpHandle = theProject.tree._makeHandle()
+    cpData = copy.deepcopy(scData)
+    cpData["itemAttr"]["handle"] = cpHandle
+
+    # Duplicate the scene item
+    cpItem = NWItem.duplicate(scItem, cpHandle)
     assert isinstance(cpItem, NWItem)
     assert scItem is not cpItem
 
     # They should both point to the same project instance
     assert scItem._project is cpItem._project
 
-    # They should contain the same data
+    # They should contain the same data, except for the handle
     assert scItem.pack() == scData
-    assert cpItem.pack() == scData
-
-    # Create a new handle for the copy
-    cpHandle = theProject.tree._makeHandle()
-    cpData = copy.deepcopy(scData)
-    cpData["itemAttr"]["handle"] = cpHandle
-
-    # Check that it is indeed changed
-    cpItem.setHandle(cpHandle)
-    assert cpItem.pack() != scData
     assert cpItem.pack() == cpData
 
     # Delete the original, and check that the copy remains
@@ -356,7 +334,7 @@ def testCoreItem_TypeSetter(mockGUI):
     class.
     """
     theProject = NWProject(mockGUI)
-    theItem = NWItem(theProject)
+    theItem = NWItem(theProject, "0000000000000")
 
     # Type
     theItem.setType(None)
@@ -385,7 +363,7 @@ def testCoreItem_ClassSetter(mockGUI):
     class.
     """
     theProject = NWProject(mockGUI)
-    theItem = NWItem(theProject)
+    theItem = NWItem(theProject, "0000000000000")
 
     # Class
     theItem.setClass(None)
@@ -472,7 +450,7 @@ def testCoreItem_LayoutSetter(mockGUI):
     class.
     """
     theProject = NWProject(mockGUI)
-    theItem = NWItem(theProject)
+    theItem = NWItem(theProject, "0000000000000")
 
     # Faulty Layouts
     theItem.setLayout(None)
@@ -500,7 +478,7 @@ def testCoreItem_ClassDefaults(mockGUI):
     """Test the setter for the default values.
     """
     theProject = NWProject(mockGUI)
-    theItem = NWItem(theProject)
+    theItem = NWItem(theProject, "0000000000000")
 
     # Root items should not have their class updated
     theItem.setParent(None)
@@ -553,18 +531,17 @@ def testCoreItem_ClassDefaults(mockGUI):
 
 @pytest.mark.core
 def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
-    """Test packing and unpacking entries for the NWItem class.
-    """
+    """Test packing and unpacking entries for the NWItem class."""
     theProject = NWProject(mockGUI)
     theProject.data.itemStatus.write(None, "New", (100, 100, 100))
     theProject.data.itemImport.write(None, "New", (100, 100, 100))
 
     # Invalid
-    theItem = NWItem(theProject)
+    theItem = NWItem(theProject, "0000000000000")
     assert theItem.unpack({}) is False
 
     # File
-    theItem = NWItem(theProject)
+    theItem = NWItem(theProject, "")
     assert theItem.unpack({
         "name": "A File",
         "itemAttr": {
@@ -636,7 +613,7 @@ def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
     }
 
     # Folder
-    theItem = NWItem(theProject)
+    theItem = NWItem(theProject, "")
     assert theItem.unpack({
         "name": "A Folder",
         "itemAttr": {
@@ -701,7 +678,7 @@ def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
     }
 
     # Root
-    theItem = NWItem(theProject)
+    theItem = NWItem(theProject, "")
     assert theItem.unpack({
         "name": "A Novel",
         "itemAttr": {

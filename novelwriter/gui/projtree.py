@@ -1046,13 +1046,12 @@ class GuiProjectTree(QTreeWidget):
         """
         logger.debug("Building the project tree ...")
         self.clearTree()
-
-        iCount = 0
+        count = 0
         for nwItem in self.theProject.getProjectItems():
-            iCount += 1
+            count += 1
             self._addTreeItem(nwItem)
-
-        logger.debug("%d item(s) added to the project tree", iCount)
+        if count > 0:
+            logger.info("%d item(s) added to the project tree", count)
         return
 
     def undoLastMove(self):

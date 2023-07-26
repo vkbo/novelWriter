@@ -1,7 +1,6 @@
 """
 novelWriter – Project Item Class
 ================================
-Data class for a project tree item
 
 File History:
 Created: 2018-10-27 [0.0.1]
@@ -43,6 +42,13 @@ logger = logging.getLogger(__name__)
 
 
 class NWItem:
+    """Core: Item Data Class
+
+    This class holds all the project information about a project item.
+    Each item must be associated with a project and have a valid handle.
+    Only the NWTree class should create instances of this class, and
+    must ensure that the handle is valid for all items in the tree.
+    """
 
     __slots__ = (
         "_project", "_name", "_handle", "_parent", "_root", "_order",
@@ -51,11 +57,11 @@ class NWItem:
         "_paraCount", "_cursorPos", "_initCount",
     )
 
-    def __init__(self, project: NWProject) -> None:
+    def __init__(self, project: NWProject, handle: str) -> None:
 
         self._project  = project
         self._name     = ""
-        self._handle   = None
+        self._handle   = handle
         self._parent   = None
         self._root     = None
         self._order    = 0
@@ -81,31 +87,12 @@ class NWItem:
         return f"<NWItem handle={self._handle}, parent={self._parent}, name='{self._name}'>"
 
     def __bool__(self) -> bool:
-        """Evaluate to False if itemHandle is not set."""
-        return self._handle is not None
-
-    def __copy__(self) -> NWItem:
-        """Make a shallow copy of the current item."""
-        item = NWItem(self._project)
-        item._name      = self._name
-        item._handle    = self._handle
-        item._parent    = self._parent
-        item._root      = self._root
-        item._order     = self._order
-        item._type      = self._type
-        item._class     = self._class
-        item._layout    = self._layout
-        item._status    = self._status
-        item._import    = self._import
-        item._active    = self._active
-        item._expanded  = self._expanded
-        item._heading   = self._heading
-        item._charCount = self._charCount
-        item._wordCount = self._wordCount
-        item._paraCount = self._paraCount
-        item._cursorPos = self._cursorPos
-        item._initCount = self._initCount
-        return item
+        """The truthiness of the class. The handle used to be initiated
+        to None, but this is no longer the case. It should always
+        evaluate to True since 2.1-beta1, although unpack and the NWTree
+        class can leave it as an empty string.
+        """
+        return bool(self._handle)
 
     ##
     #  Properties
@@ -116,7 +103,7 @@ class NWItem:
         return self._name
 
     @property
-    def itemHandle(self) -> str | None:
+    def itemHandle(self) -> str:
         return self._handle
 
     @property
@@ -184,7 +171,7 @@ class NWItem:
         return self._cursorPos
 
     ##
-    #  Pack/Unpack Data
+    #  Pack/Unpack/Duplicate Data
     ##
 
     def pack(self) -> dict:
@@ -227,8 +214,9 @@ class NWItem:
         meta = data.get("metaAttr", {})
         name = data.get("nameAttr", {})
 
-        if "handle" in item:
-            self.setHandle(item["handle"])
+        handle = item.get("handle", "")
+        if isHandle(handle):
+            self._handle = handle
         else:
             logger.error("Item does not have a handle")
             return False
@@ -268,6 +256,29 @@ class NWItem:
             self._cursorPos = 0
 
         return True
+
+    @classmethod
+    def duplicate(cls, source: NWItem, handle: str) -> NWItem:
+        """Make a copy of an item."""
+        cls = NWItem(source._project, handle)
+        cls._name      = source._name
+        cls._parent    = source._parent
+        cls._root      = source._root
+        cls._order     = source._order
+        cls._type      = source._type
+        cls._class     = source._class
+        cls._layout    = source._layout
+        cls._status    = source._status
+        cls._import    = source._import
+        cls._active    = source._active
+        cls._expanded  = source._expanded
+        cls._heading   = source._heading
+        cls._charCount = source._charCount
+        cls._wordCount = source._wordCount
+        cls._paraCount = source._paraCount
+        cls._cursorPos = source._cursorPos
+        cls._initCount = source._initCount
+        return cls
 
     ##
     #  Lookup Methods
@@ -385,14 +396,6 @@ class NWItem:
             self._name = simplified(name)
         else:
             self._name = ""
-        return
-
-    def setHandle(self, handle: Any) -> None:
-        """Set the item handle, and ensure it is valid."""
-        if isHandle(handle):
-            self._handle = handle
-        else:
-            self._handle = None
         return
 
     def setParent(self, handle: Any) -> None:
