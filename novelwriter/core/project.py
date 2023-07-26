@@ -446,9 +446,8 @@ class NWProject(QObject):
             ), nwAlert.ERROR, exception=exc)
             return False
 
-        archName = baseDir / self.tr(
-            "Backup from {0}"
-        ).format(formatTimeStamp(time(), fileSafe=True) + ".zip")
+        timeStamp = formatTimeStamp(time(), fileSafe=True)
+        archName = baseDir / f"{cleanName} {timeStamp}.zip"
         if self._storage.zipIt(archName, compression=2):
             if doNotify:
                 self.mainGui.makeAlert(self.tr(
