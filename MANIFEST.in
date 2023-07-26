@@ -2,6 +2,5 @@ include pkgutils.py
 include LICENSE.md
 include CREDITS.md
 include CHANGELOG.md
-recursive-include setup *
 recursive-include novelwriter/assets *
-recursive-include sample *.nwx *.nwd
+recursive-include setup *
