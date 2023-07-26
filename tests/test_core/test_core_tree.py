@@ -18,12 +18,14 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import pytest
 import random
 
 from pathlib import Path
 
+from tools import C, buildTestProject
 from mocked import causeOSError
 
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
@@ -212,6 +214,14 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
     assert theTree.append(itemU) is False
     assert len(theTree) == len(mockItems) + 1
 
+    # Create a new root, but with a parent set anyway (the parent should be ignored)
+    zHandle = theTree.create("Custom", "a000000000001", nwItemType.ROOT, nwItemClass.CUSTOM)
+    assert isinstance(zHandle, str)
+    itemZ = theTree[zHandle]
+    assert isinstance(itemZ, NWItem)
+    assert itemZ.itemParent is None
+    del theTree[zHandle]
+
     # Duplicate Items
     # ===============
 
@@ -224,7 +234,7 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
     assert len(theTree) == len(mockItems) + 2
 
     dHandle = itemV.itemHandle
-    assert dHandle == "0000000000001"
+    assert dHandle == "0000000000002"
 
     # Delete Items
     # ============
@@ -283,6 +293,73 @@ def testCoreTree_PackUnpack(mockGUI, mockItems):
     assert theTree.handles() == aHandles
 
 # END Test testCoreTree_PackUnpack
+
+
+@pytest.mark.core
+def testCoreTree_CheckConsistency(caplog: pytest.LogCaptureFixture, mockGUI, fncPath, mockRnd):
+    """Check the project consistency."""
+    theProject = NWProject(mockGUI)
+    buildTestProject(theProject, fncPath)
+
+    # By default, all is well
+    caplog.clear()
+    assert theProject.tree.checkConsistency("Recovered") == (0, 0)
+    assert all(m.endswith("OK") for m in caplog.messages)
+
+    # Give the scene file an unknown parent
+    caplog.clear()
+    theProject.tree[C.hSceneDoc].setParent(C.hInvalid)  # type: ignore
+    assert theProject.tree.checkConsistency("Recovered") == (1, 1)
+    assert f"'{C.hSceneDoc}' ... ERROR" in caplog.text
+
+    # The scene file should have been added back to its home
+    itemS = theProject.tree[C.hSceneDoc]
+    assert isinstance(itemS, NWItem)
+    assert itemS.itemParent == C.hChapterDir
+
+    # Create a new file with no meta data, and let the function handle it as orphaned
+    xHandle = "0123456789abc"
+    contentPath = theProject.storage.contentPath
+    assert isinstance(contentPath, Path)
+    assert contentPath == fncPath / "content"
+    (contentPath / f"{xHandle}.nwd").write_text("### Stuff", encoding="utf-8")
+
+    assert theProject.tree.checkConsistency("Recovered") == (1, 1)
+    assert xHandle in theProject.tree
+    itemX = theProject.tree[xHandle]
+    assert isinstance(itemX, NWItem)
+
+    # It should by default be added as a Novel file
+    assert itemX.itemParent == C.hNovelRoot
+    assert itemX.itemRoot == C.hNovelRoot
+    assert itemX.itemClass == nwItemClass.NOVEL
+    assert itemX.itemName == "[Recovered] 0123456789abc"
+
+    # Set an unknown class in the orphaned item
+    itemX.setClass(nwItemClass.OBJECT)
+    itemX.setName("Stuff")
+    itemX.setParent(C.hInvalid)
+    theProject.storage.getDocument(xHandle).writeDocument("### Stuff")  # This adds meta data
+
+    # Remove the item in the project, and re-run the consistency check
+    del theProject.tree[xHandle]
+    assert theProject.tree.checkConsistency("Recovered") == (1, 1)
+    assert xHandle in theProject.tree
+    itemX = theProject.tree[xHandle]
+    assert isinstance(itemX, NWItem)
+
+    # It should again be added as a Novel file
+    assert itemX.itemParent == C.hNovelRoot
+    assert itemX.itemRoot == C.hNovelRoot
+    assert itemX.itemClass == nwItemClass.NOVEL
+    assert itemX.itemName == "[Recovered] Stuff"
+
+    # If the tree is empty, there is nowhere to add any of the 4 files
+    theProject.tree.clear()
+    assert theProject.tree.checkConsistency("Recovered") == (4, 0)
+    assert len(theProject.tree) == 0
+
+# END Test testCoreTree_CheckConsistency
 
 
 @pytest.mark.core

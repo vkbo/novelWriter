@@ -25,10 +25,10 @@ from shutil import copyfile
 from zipfile import ZipFile
 
 from mocked import causeOSError
-from tools import C, cmpFiles, writeFile, buildTestProject, XML_IGNORE
+from tools import C, cmpFiles, buildTestProject, XML_IGNORE
 
 from novelwriter import CONFIG
-from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
+from novelwriter.enum import nwItemClass
 from novelwriter.constants import nwFiles
 from novelwriter.core.tree import NWTree
 from novelwriter.core.index import NWIndex
@@ -571,90 +571,6 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     assert theProject.tree.handles() == oldOrder
 
 # END Test testCoreProject_Methods
-
-
-@pytest.mark.core
-@pytest.mark.skip
-def testCoreProject_OrphanedFiles(mockGUI, prjLipsum):
-    """Check that files in the content folder that are not tracked in
-    the project XML file are handled correctly by the orphaned files
-    function. It should also restore as much meta data as possible from
-    the meta line at the top of the document file.
-    """
-    theProject = NWProject(mockGUI)
-
-    assert theProject.openProject(prjLipsum) is True
-    assert theProject.tree["636b6aa9b697b"] is None
-
-    # Add a file with non-existent parent
-    # This file will be removed from the project on open
-    oHandle = theProject.newFile("Oops", "b3643d0f92e32")
-    theProject.tree[oHandle].setParent("1234567890abc")
-
-    # Save and close
-    assert theProject.saveProject() is True
-    theProject.closeProject()
-
-    # First Item with Meta Data
-    orphPath = prjLipsum / "content" / "636b6aa9b697b.nwd"
-    writeFile(orphPath, (
-        "%%~name:[Recovered] Mars\n"
-        "%%~path:5eaea4e8cdee8/636b6aa9b697b\n"
-        "%%~kind:WORLD/NOTE\n"
-        "%%~invalid\n"
-        "\n"
-    ))
-
-    # Second Item without Meta Data
-    orphPath = prjLipsum / "content" / "736b6aa9b697b.nwd"
-    writeFile(orphPath, "\n")
-
-    # Invalid File Name
-    tstPath = prjLipsum / "content" / "636b6aa9b697b.txt"
-    writeFile(tstPath, "\n")
-
-    # Invalid File Name
-    tstPath = prjLipsum / "content" / "636b6aa9b697bb.nwd"
-    writeFile(tstPath, "\n")
-
-    # Invalid File Name
-    tstPath = prjLipsum / "content" / "abcdefghijklm.nwd"
-    writeFile(tstPath, "\n")
-
-    assert theProject.openProject(prjLipsum)
-    assert theProject.storage.storagePath is not None
-    assert theProject.storage.runtimePath is not None
-    assert theProject.tree["636b6aa9b697bb"] is None
-    assert theProject.tree["abcdefghijklm"] is None
-
-    # First Item with Meta Data
-    oItem = theProject.tree["636b6aa9b697b"]
-    assert oItem is not None
-    assert oItem.itemName == "[Recovered] Mars"
-    assert oItem.itemHandle == "636b6aa9b697b"
-    assert oItem.itemParent == "60bdf227455cc"
-    assert oItem.itemClass == nwItemClass.WORLD
-    assert oItem.itemType == nwItemType.FILE
-    assert oItem.itemLayout == nwItemLayout.NOTE
-
-    # Second Item without Meta Data
-    oItem = theProject.tree["736b6aa9b697b"]
-    assert oItem is not None
-    assert oItem.itemName == "Recovered File 1"
-    assert oItem.itemHandle == "736b6aa9b697b"
-    assert oItem.itemParent == "b3643d0f92e32"
-    assert oItem.itemClass == nwItemClass.NOVEL
-    assert oItem.itemType == nwItemType.FILE
-    assert oItem.itemLayout == nwItemLayout.NOTE
-
-    assert theProject.saveProject(prjLipsum)
-    theProject.closeProject()
-
-    # Finally, check that the orphaned files function returns
-    # if no project is open and no path is set
-    assert not theProject._scanProjectFolder()
-
-# END Test testCoreProject_OrphanedFiles
 
 
 @pytest.mark.core

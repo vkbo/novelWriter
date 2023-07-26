@@ -140,6 +140,7 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
     assert xmlReader.state == XMLReadState.PARSED_OK
     assert xmlReader.xmlRoot == "novelWriterXML"
     assert xmlReader.xmlVersion == 0x0105
+    assert xmlReader.xmlRevision == 1
     assert xmlReader.appVersion == "2.0-rc1"
     assert xmlReader.hexVersion == 0x020000c1
 

@@ -26,7 +26,7 @@ from __future__ import annotations
 import random
 import logging
 
-from typing import TYPE_CHECKING, Iterator, overload
+from typing import TYPE_CHECKING, Iterator, Literal, overload
 from pathlib import Path
 
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
@@ -94,19 +94,21 @@ class NWTree:
         return self._treeOrder.copy()
 
     @overload
-    def create(self, label: str, parent: None, itemType: nwItemType,
-               itemClass: nwItemClass = nwItemClass.NO_CLASS) -> str:
-        ...
+    def create(self, label: str, parent: None, itemType: Literal[nwItemType.ROOT],
+               itemClass: nwItemClass) -> str:  # pragma: no cover
+        pass
 
     @overload
     def create(self, label: str, parent: str | None, itemType: nwItemType,
-               itemClass: nwItemClass = nwItemClass.NO_CLASS) -> str | None:
-        ...
+               itemClass: nwItemClass = nwItemClass.NO_CLASS) -> str | None:  # pragma: no cover
+        pass
 
     def create(self, label, parent, itemType, itemClass=nwItemClass.NO_CLASS):
         """Create a new item in the project tree, and return its handle.
-        If the item cannot be added to the project, None is returned.
+        If the item cannot be added to the project because of an invalid
+        parent, None is returned. For root elements, this cannot occur.
         """
+        parent = None if itemType == nwItemType.ROOT else parent
         if parent is None or parent in self._treeOrder:
             tHandle = self._makeHandle()
             newItem = NWItem(self._project, tHandle)
@@ -238,6 +240,7 @@ class NWTree:
             newItem.setClass(oClass)
             newItem.setLayout(oLayout)
             if self.append(newItem):
+                self.updateItemData(cHandle)
                 recovered += 1
 
         return orphans, recovered
