@@ -617,10 +617,10 @@ def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tstPaths):
     # Test correct settings
     assert theProject.backupProject(doNotify=True) is True
 
-    theFiles = list((tstPaths.tmpDir / "Test Minimal").iterdir())
+    theFiles = sorted((tstPaths.tmpDir / "Test Minimal").iterdir())
     assert len(theFiles) in (1, 2)  # Sometimes 2 due to clock tick
 
-    theZip = theFiles[-1]
+    theZip = theFiles[0]
     assert theZip.name.startswith("Test Minimal")
     assert theZip.suffix == ".zip"
 
