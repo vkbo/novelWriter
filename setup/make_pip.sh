@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-if [ ! -f setup.py ]; then
+if [ ! -f pkgutils.py ]; then
     echo "Must be called from the root folder of the source"
     exit 1
 fi
@@ -10,7 +10,7 @@ echo ""
 echo " Building Packages"
 echo "================================================================================"
 echo ""
-python3 setup.py qtlrelease manual sample
+python3 pkgutils.py qtlrelease manual sample
 python3 -m build
 mkdir -pv dist_upload
 cp -v dist/novelWriter-*.whl dist_upload/

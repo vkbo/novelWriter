@@ -24,13 +24,13 @@ echo "Build Dir: $BUILD_DIR"
 
 pushd "$SRC_DIR" || exit 1
 
-VERSION="$(python3 setup.py version)"
+VERSION="$(python3 pkgutils.py version)"
 echo "novelWriter Version: $VERSION"
 
 # --- Prepare Files ----------------------------------------------------------------------------- #
 
 echo "Generating Info.plist"
-python3 setup.py gen-plist
+python3 pkgutils.py gen-plist
 if [ -f $SRC_DIR/setup/macos/Info.plist ]; then
     echo "Found: setup/macos/Info.plist"
 else

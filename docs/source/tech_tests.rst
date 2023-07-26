@@ -15,7 +15,7 @@ The dependencies for running the tests can be installed with:
 
 .. code-block:: bash
 
-   pip install -r requirements-dev.txt
+   pip install -r tests/requirements.txt
 
 This will install a couple of extra packages for coverage and test management. The minimum
 requirement is ``pytest`` and ``pytest-qt``.

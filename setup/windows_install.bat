@@ -7,12 +7,12 @@ python --version 2>NUL
 if errorlevel 1 goto errorNoPython
 echo Python found. OK.
 
-if exist setup.py (
-    echo setup.py found. OK.
+if exist pkgutils.py (
+    echo pkgutils.py found. OK.
 ) else (
     cd ..
-    if exist setup.py (
-        echo setup.py found. OK.
+    if exist pkgutils.py (
+        echo pkgutils.py found. OK.
     ) else (
         goto errorNoSetup
     )
@@ -23,7 +23,7 @@ echo.
 pip install --user pywin32 -r requirements.txt
 
 :: Create the desktop and start menu icons
-python setup.py win-install
+python pkgutils.py win-install
 
 pause
 goto:eof
@@ -41,9 +41,9 @@ goto:eof
 
 :errorNoSetup
 echo.
-echo ERROR^: Could not find the setup.py script.
+echo ERROR^: Could not find the pkgutils.py script.
 echo.
-echo Make sure you run setup.py from the novelWriter root folder.
+echo Make sure you run pkgutils.py from the novelWriter root folder.
 echo.
 
 pause

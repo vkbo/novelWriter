@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-novelWriter – Main Setup Script
-===============================
-The main setup and install script for all operating systems
+novelWriter – Packaging Utils
+=============================
 
 File History:
 Created: 2019-05-16 [0.5.1]
+Renamed: 2023-07-26 [2.1b1]
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
@@ -74,14 +74,12 @@ def extractVersion(beQuiet=False):
 
 
 def compactVersion(version):
-    """Make the version number more compact.
-    """
+    """Make the version number more compact."""
     return version.replace("-alpha", "a").replace("-beta", "b").replace("-rc", "rc")
 
 
 def sysCall(callArgs, cwd=None):
-    """Wrapper function for system calls.
-    """
+    """Wrapper function for system calls."""
     sysP = subprocess.Popen(
         callArgs, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
         shell=True, cwd=cwd
@@ -91,21 +89,19 @@ def sysCall(callArgs, cwd=None):
 
 
 def readFile(fileName):
-    """Read an entire file and return as a string.
-    """
+    """Read an entire file and return as a string."""
     with open(fileName, mode="r", encoding="utf-8") as inFile:
         return inFile.read()
 
 
 def writeFile(fileName, writeText):
-    """Write string to file.
-    """
+    """Write string to file."""
     with open(fileName, mode="w+", encoding="utf-8") as outFile:
         outFile.write(writeText)
 
 
 def toUpload(srcPath, dstName=None):
-    """Copy a file produced by one of the build functions to the uplaod
+    """Copy a file produced by one of the build functions to the upload
     directory. The file can optionally be given a new name.
     """
     uplDir = "dist_upload"
@@ -118,8 +114,7 @@ def toUpload(srcPath, dstName=None):
 
 
 def makeCheckSum(sumFile, cwd=None):
-    """Create a SHA256 checkcusm file.
-    """
+    """Create a SHA256 checksum file."""
     try:
         if cwd is None:
             shaFile = sumFile+".sha256"
@@ -178,8 +173,7 @@ def installPackages(hostOS):
 ##
 
 def cleanBuildDirs():
-    """Recursively delete the 'build' and 'dist' folders.
-    """
+    """Recursively delete the 'build' and 'dist' folders."""
     print("")
     print("Cleaning up build environment ...")
     print("")
@@ -207,7 +201,7 @@ def cleanBuildDirs():
 
 
 # =============================================================================================== #
-#  Additional Buiilds
+#  Additional Builds
 # =============================================================================================== #
 
 ##
@@ -215,8 +209,7 @@ def cleanBuildDirs():
 ##
 
 def buildPdfManual():
-    """This function will build the documentation as manual.pdf.
-    """
+    """This function will build the documentation as manual.pdf."""
     print("")
     print("Building PDF Manual")
     print("===================")
@@ -270,8 +263,7 @@ def buildPdfManual():
 ##
 
 def buildQtI18n():
-    """Build the lang.qm files for Qt Linguist.
-    """
+    """Build the lang.qm files for Qt Linguist."""
     print("")
     print("Building Qt Localisation Files")
     print("==============================")
@@ -324,8 +316,7 @@ def buildQtI18n():
 ##
 
 def buildQtI18nTS(sysArgs):
-    """Build the lang.ts files for Qt Linguist.
-    """
+    """Build the lang.ts files for Qt Linguist."""
     print("")
     print("Building Qt Translation Files")
     print("=============================")
@@ -404,8 +395,7 @@ def buildQtI18nTS(sysArgs):
 ##
 
 def genMacOSPlist():
-    """Set necessary values for .plist file for MacOS build.
-    """
+    """Set necessary values for .plist file for MacOS build."""
     numVers, _, _ = extractVersion()
     pkgVers = compactVersion(numVers)
     outDir = "setup/macos"
@@ -471,8 +461,7 @@ def buildSampleZip():
 
 
 def cleanBuiltAssets():
-    """Remove assets built by this script.
-    """
+    """Remove assets built by this script."""
     print("")
     print("Removing Built Assets")
     print("=====================")
@@ -536,8 +525,7 @@ def checkAssetsExist():
 ##
 
 def importI18nUpdates(sysArgs):
-    """Import new translation files from a zip file.
-    """
+    """Import new translation files from a zip file."""
     print("")
     print("Import Updated Translations")
     print("===========================")
@@ -577,8 +565,7 @@ def importI18nUpdates(sysArgs):
 ##
 
 def makeMinimalPackage(targetOS):
-    """Pack the core source file in a single zip file.
-    """
+    """Pack the core source file in a single zip file."""
     from zipfile import ZipFile, ZIP_DEFLATED
 
     print("")
@@ -626,7 +613,7 @@ def makeMinimalPackage(targetOS):
         "CREDITS.md",
         "CHANGELOG.md",
         "requirements.txt",
-        "setup.py",
+        "pkgutils.py",
         "setup.cfg",
         "pyproject.toml",
     ]
@@ -694,12 +681,12 @@ def makeMinimalPackage(targetOS):
 ##
 
 def makeDebianPackage(signKey=None, sourceBuild=False, distName="unstable", buildName=""):
-    """Build a Debian package.
-    """
+    """Build a Debian package."""
     print("")
     print("Build Debian Package")
     print("====================")
-    print("On Debian/Ubuntu install: dh-python python3-all debhelper devscripts")
+    print("On Debian/Ubuntu install: dh-python python3-all debhelper devscripts ")
+    print("                          pybuild-plugin-pyproject")
     print("")
 
     # Version Info
@@ -868,8 +855,7 @@ def makeDebianPackage(signKey=None, sourceBuild=False, distName="unstable", buil
 ##
 
 def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
-    """Wrapper for building debian packages for launchpad.
-    """
+    """Wrapper for building Debian packages for Launchpad."""
     print("")
     print("Launchpad Packages")
     print("==================")
@@ -885,8 +871,8 @@ def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
     distLoop = [
         ("20.04", "focal"),
         ("22.04", "jammy"),
-        ("22.10", "kinetic"),
         ("23.04", "lunar"),
+        ("23.10", "mantic"),
     ]
 
     tStamp = datetime.datetime.now().strftime("%Y%m%d~%H%M%S")
@@ -938,8 +924,7 @@ def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
 ##
 
 def makeAppImage(sysArgs):
-    """Build an AppImage.
-    """
+    """Build an AppImage."""
     import glob
     import argparse
 
@@ -1388,8 +1373,7 @@ def makeWindowsEmbedded(sysArgs):
 ##
 
 def xdgInstall():
-    """Will attempt to install icons and make a launcher.
-    """
+    """Will attempt to install icons and make a launcher."""
     print("")
     print("XDG Install")
     print("===========")
@@ -1525,8 +1509,7 @@ def xdgInstall():
 ##
 
 def xdgUninstall():
-    """Will attempt to uninstall icons and make a launcher.
-    """
+    """Will attempt to uninstall icons and the launcher."""
     print("")
     print("XDG Uninstall")
     print("=============")
@@ -1596,15 +1579,14 @@ def xdgUninstall():
 ##
 
 def winInstall():
-    """Will attempt to install icons and make a launcher for Windows.
-    """
+    """Will attempt to install icons and make a launcher for Windows."""
     import winreg
     try:
         import win32com.client
     except ImportError:
         print(
             "ERROR: Package 'pywin32' is missing on this system.\n"
-            "       Please run 'setup.py pip' to automatically install\n"
+            "       Please run 'pkgutils.py pip' to automatically install\n"
             "       dependecies, or run 'pip install --user pywin32'."
         )
         sys.exit(1)
@@ -1724,8 +1706,7 @@ def winInstall():
 ##
 
 def winUninstall():
-    """Will attempt to uninstall icons previously installed.
-    """
+    """Will attempt to uninstall icons previously installed."""
     import winreg
     try:
         import win32com.client
@@ -1812,8 +1793,7 @@ def winUninstall():
 # =============================================================================================== #
 
 if __name__ == "__main__":
-    """Parse command line options and run the commands.
-    """
+    """Parse command line options and run the commands."""
     # Detect OS
     if sys.platform.startswith("linux"):
         hostOS = OS_LINUX
@@ -2052,24 +2032,5 @@ if __name__ == "__main__":
         else:
             print("ERROR: Command 'win-uninstall' can only be used on Windows")
             sys.exit(1)
-
-    # Actions
-    # =======
-
-    if len(sys.argv) <= 1:
-        # Nothing more to do
-        sys.exit(0)
-
-    # Run the standard setup
-    import setuptools  # noqa: F401
-    import warnings  # noqa: F401
-    warnings.warn(
-        "The setuptools section of setup.py is deprecated and will be removed "
-        "in a future release and the setup.py file will be renamed to avoid "
-        "conflicts with build tools. Please don't use the 'setup.py install' "
-        "command, and instead use the pip and build commands.",
-        DeprecationWarning
-    )
-    setuptools.setup()
 
 # END Main
