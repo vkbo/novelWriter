@@ -28,11 +28,6 @@ Copyright: Riverbank Computing
 Website: <https://www.riverbankcomputing.com/software/pyqt/>
 License: GPL v3 <https://www.gnu.org/licenses/gpl-3.0.html>
 
-lxml
-Copyright: Infrae
-Website: <https://lxml.de/>
-License: BSD
-
 Enchant
 Copyright: Dom Lachowicz
 Website: <https://abiword.github.io/enchant/>
