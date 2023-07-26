@@ -685,7 +685,8 @@ def makeDebianPackage(signKey=None, sourceBuild=False, distName="unstable", buil
     print("")
     print("Build Debian Package")
     print("====================")
-    print("On Debian/Ubuntu install: dh-python python3-all debhelper devscripts")
+    print("On Debian/Ubuntu install: dh-python python3-all debhelper devscripts ")
+    print("                          pybuild-plugin-pyproject")
     print("")
 
     # Version Info
@@ -776,11 +777,11 @@ def makeDebianPackage(signKey=None, sourceBuild=False, distName="unstable", buil
     ))
     print("Wrote:  MANIFEST.in")
 
-    writeFile(f"{outDir}/pkgutils.py", (
+    writeFile(f"{outDir}/setup.py", (
         "import setuptools\n"
         "setuptools.setup()\n"
     ))
-    print("Wrote:  pkgutils.py")
+    print("Wrote:  setup.py")
 
     setupCfg = readFile("setup.cfg").replace(
         "file: setup/description_pypi.md", "file: data/description_short.txt"
@@ -870,8 +871,8 @@ def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
     distLoop = [
         ("20.04", "focal"),
         ("22.04", "jammy"),
-        ("22.10", "kinetic"),
         ("23.04", "lunar"),
+        ("23.10", "mantic"),
     ]
 
     tStamp = datetime.datetime.now().strftime("%Y%m%d~%H%M%S")
@@ -1062,11 +1063,11 @@ def makeAppImage(sysArgs):
     ))
     print("Wrote:  MANIFEST.in")
 
-    writeFile(f"{outDir}/pkgutils.py", (
+    writeFile(f"{outDir}/setup.py", (
         "import setuptools\n"
         "setuptools.setup()\n"
     ))
-    print("Wrote:  pkgutils.py")
+    print("Wrote:  setup.py")
 
     setupCfg = readFile("setup.cfg").replace(
         "file: setup/description_pypi.md", "file: data/description_short.txt"
