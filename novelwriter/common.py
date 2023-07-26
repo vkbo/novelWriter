@@ -209,8 +209,7 @@ def checkIntTuple(value: int, valid: tuple | list | set, default: int) -> int:
 # =============================================================================================== #
 
 def formatInt(value: int) -> str:
-    """Formats an integer with k, M, G etc.
-    """
+    """Formats an integer with k, M, G etc."""
     if not isinstance(value, int):
         return "ERR"
 
