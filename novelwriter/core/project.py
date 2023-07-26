@@ -46,7 +46,7 @@ from novelwriter.core.sessions import NWSessionLog
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.core.projectdata import NWProjectData
 from novelwriter.common import (
-    checkStringNone, formatTimeStamp, hexToInt, makeFileNameSafe, minmax
+    checkStringNone, formatInt, formatTimeStamp, hexToInt, makeFileNameSafe, minmax
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -449,10 +449,11 @@ class NWProject(QObject):
         timeStamp = formatTimeStamp(time(), fileSafe=True)
         archName = baseDir / f"{cleanName} {timeStamp}.zip"
         if self._storage.zipIt(archName, compression=2):
+            size = archName.stat().st_size
             if doNotify:
                 self.mainGui.makeAlert(self.tr(
-                    "Backup archive file written to: {0}"
-                ).format(str(archName), nwAlert.INFO))
+                    "Backup archive file written to: {0} [{1}B]"
+                ).format(str(archName), formatInt(size)), nwAlert.INFO)
         else:
             self.mainGui.makeAlert(self.tr(
                 "Could not write backup archive."
