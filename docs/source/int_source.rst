@@ -18,20 +18,17 @@ to build the various components like the translation files and documentation.
    ``python3`` may be needed instead. Likewise, ``pip`` may need to be replaced with ``pip3``.
 
 Most of the custom commands for building packages of novelWriter, or building assets, are contained
-in the ``setup.py`` script in the root of the source code. You can list the available commands by
-running:
+in the ``pkgutils.py`` script in the root of the source code. You can list the available commands
+by running:
 
 .. code-block:: bash
 
-   python setup.py help
+   python pkgutils.py help
 
 .. warning::
 
    Calling ``setup.py install`` has been deprecated for a while, and this approach is no longer
    actively supported in novelWriter either.
-
-   In a future version, the packaging and asset build tools part of the current ``setup.py`` file
-   will be moved to another script and the ``setup.py`` file removed entirely.
 
 
 .. _a_source_depend:
@@ -116,7 +113,7 @@ You can build the ``.qm`` files with:
 
 .. code-block:: bash
 
-   python setup.py qtlrelease
+   python pkgutils.py qtlrelease
 
 This requires that the Qt Linguist tool is installed on your system. On Ubuntu and Debian, the
 needed package is called ``qttools5-dev-tools``.
@@ -137,7 +134,7 @@ the ``assets`` folder of the source. This file can be built from setup script by
 
 .. code-block:: bash
 
-   python setup.py sample
+   python pkgutils.py sample
 
 
 .. _a_source_docs:
@@ -165,7 +162,7 @@ You can also build a PDF manual from the documentation using the setup script:
 
 .. code-block:: bash
 
-   python setup.py manual
+   python pkgutils.py manual
 
 This will build the documentation as a PDF using LaTeX. The file will then be copied into the
 assets folder and made available in the :guilabel:`Help` menu in novelWriter. The Sphinx build

@@ -24,7 +24,7 @@ jobs:
         run: pip install -r docs/source/requirements.txt
 
       - name: Build Assets
-        run: python setup.py qtlrelease sample manual
+        run: python pkgutils.py qtlrelease sample manual
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
@@ -64,7 +64,7 @@ jobs:
           path: novelwriter/assets
 
       - name: Build AppImage
-        run: python setup.py build-appimage --linux-tag ${{ matrix.linux-tag }} --python-version ${{ matrix.python-version }}
+        run: python pkgutils.py build-appimage --linux-tag ${{ matrix.linux-tag }} --python-version ${{ matrix.python-version }}
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3

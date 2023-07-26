@@ -1,4 +1,4 @@
-include setup.py
+include pkgutils.py
 include LICENSE.md
 include CREDITS.md
 include CHANGELOG.md
