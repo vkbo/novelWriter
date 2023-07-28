@@ -263,7 +263,7 @@ class GuiItemDetails(QWidget):
         # Status
         # ======
 
-        theStatus, theIcon = nwItem.getImportStatus()
+        theStatus, theIcon = nwItem.getImportStatus(incIcon=True)
         self.statusIcon.setPixmap(theIcon.pixmap(iPx, iPx))
         self.statusData.setText(theStatus)
 
