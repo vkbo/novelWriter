@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import logging
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal, overload
 
 from PyQt5.QtGui import QIcon
 
@@ -308,7 +308,15 @@ class NWItem:
 
         return trConst(nwLabels.ITEM_DESCRIPTION.get(descKey, ""))
 
-    def getImportStatus(self, incIcon: bool = True) -> tuple[str, QIcon | None]:
+    @overload  # pragma: no cover
+    def getImportStatus(self, incIcon: Literal[True] = True) -> tuple[str, QIcon]:
+        pass
+
+    @overload  # pragma: no cover
+    def getImportStatus(self, incIcon: Literal[False]) -> tuple[str, None]:
+        pass
+
+    def getImportStatus(self, incIcon=True):
         """Return the relevant importance or status label and icon for
         the current item based on its class.
         """

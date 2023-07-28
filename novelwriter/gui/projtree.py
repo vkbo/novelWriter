@@ -457,7 +457,7 @@ class GuiProjectTree(QTreeWidget):
     D_HANDLE = Qt.ItemDataRole.UserRole
     D_WORDS  = Qt.ItemDataRole.UserRole + 1
 
-    def __init__(self, projView: GuiProjectView):
+    def __init__(self, projView: GuiProjectView) -> None:
         super().__init__(parent=projView)
 
         logger.debug("Create: GuiProjectTree")
@@ -531,36 +531,33 @@ class GuiProjectTree(QTreeWidget):
 
         return
 
-    def initSettings(self):
-        """Set or update tree widget settings.
-        """
+    def initSettings(self) -> None:
+        """Set or update tree widget settings."""
         # Scroll bars
         if CONFIG.hideVScroll:
             self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         else:
             self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-
         if CONFIG.hideHScroll:
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         else:
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-
         return
 
     ##
     #  Class Methods
     ##
 
-    def clearTree(self):
-        """Clear the GUI content and the related map.
-        """
+    def clearTree(self) -> None:
+        """Clear the GUI content and the related map."""
         self.clear()
         self._treeMap = {}
         self._lastMove = {}
         self._timeChanged = 0
         return
 
-    def newTreeItem(self, itemType, itemClass=None, hLevel=1, isNote=False):
+    def newTreeItem(self, itemType: nwItemType, itemClass: nwItemClass | None = None,
+                    hLevel: int = 1, isNote: bool = False) -> bool:
         """Add new item to the tree, with a given itemType (and
         itemClass if Root), and attach it to the selected handle. Also
         make sure the item is added in a place it can be added, and that
@@ -576,18 +573,21 @@ class GuiProjectTree(QTreeWidget):
         if itemType == nwItemType.ROOT and isinstance(itemClass, nwItemClass):
 
             tHandle = self.theProject.newRoot(itemClass)
+            sHandle = self.getSelectedHandle()
+            pItem = self.theProject.tree[sHandle] if sHandle else None
+            nHandle = pItem.itemRoot if pItem else None
 
         elif itemType in (nwItemType.FILE, nwItemType.FOLDER):
 
             sHandle = self.getSelectedHandle()
-            if sHandle is None or sHandle not in self.theProject.tree:
+            pItem = self.theProject.tree[sHandle] if sHandle else None
+            if sHandle is None or pItem is None:
                 self.mainGui.makeAlert(self.tr(
                     "Did not find anywhere to add the file or folder!"
                 ), nwAlert.ERROR)
                 return False
 
-            # Collect some information about the selected item that
-            pItem = self.theProject.tree[sHandle]
+            # Collect some information about the selected item
             qItem = self._getTreeItem(sHandle)
             sLevel = nwHeaders.H_LEVEL.get(pItem.mainHeading, 0)
             sIsParent = False if qItem is None else qItem.childCount() > 0
@@ -658,9 +658,8 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def revealNewTreeItem(
-        self, tHandle: str, nHandle: str | None = None, wordCount: bool = False
-    ) -> bool:
+    def revealNewTreeItem(self, tHandle: str, nHandle: str | None = None,
+                          wordCount: bool = False) -> bool:
         """Reveal a newly added project item in the project tree."""
         nwItem = self.theProject.tree[tHandle]
         if not nwItem:
@@ -971,7 +970,7 @@ class GuiProjectTree(QTreeWidget):
         if trItem is None or nwItem is None:
             return
 
-        itemStatus, statusIcon = nwItem.getImportStatus()
+        itemStatus, statusIcon = nwItem.getImportStatus(incIcon=True)
         hLevel = nwItem.mainHeading
         itemIcon = self.mainTheme.getItemIcon(
             nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
@@ -1452,10 +1451,9 @@ class GuiProjectTree(QTreeWidget):
             return 0
         return int(tItem.data(self.C_DATA, self.D_WORDS))
 
-    def _getTreeItem(self, tHandle):
-        """Return the QTreeWidgetItem of a given item handle.
-        """
-        return self._treeMap.get(tHandle, None)
+    def _getTreeItem(self, tHandle: str | None) -> QTreeWidgetItem | None:
+        """Return the QTreeWidgetItem of a given item handle."""
+        return self._treeMap.get(tHandle, None) if tHandle else None
 
     def _toggleItemActive(self, tHandle):
         """Toggle the active status of an item.
@@ -1698,7 +1696,7 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def _scanChildren(self, itemList: list, tItem: QTreeWidgetItem, tIndex: int):
+    def _scanChildren(self, itemList: list, tItem: QTreeWidgetItem, tIndex: int) -> list[str]:
         """This is a recursive function returning all items in a tree
         starting at a given QTreeWidgetItem.
         """

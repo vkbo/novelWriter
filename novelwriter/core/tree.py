@@ -93,14 +93,14 @@ class NWTree:
         """Returns a copy of the list of all the active handles."""
         return self._treeOrder.copy()
 
-    @overload
+    @overload  # pragma: no cover
     def create(self, label: str, parent: None, itemType: Literal[nwItemType.ROOT],
-               itemClass: nwItemClass) -> str:  # pragma: no cover
+               itemClass: nwItemClass) -> str:
         pass
 
-    @overload
+    @overload  # pragma: no cover
     def create(self, label: str, parent: str | None, itemType: nwItemType,
-               itemClass: nwItemClass = nwItemClass.NO_CLASS) -> str | None:  # pragma: no cover
+               itemClass: nwItemClass = nwItemClass.NO_CLASS) -> str | None:
         pass
 
     def create(self, label, parent, itemType, itemClass=nwItemClass.NO_CLASS):

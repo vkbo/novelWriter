@@ -3034,7 +3034,7 @@ class GuiDocEditFooter(QWidget):
             sIcon = QPixmap()
             sText = ""
         else:
-            theStatus, theIcon = self._theItem.getImportStatus()
+            theStatus, theIcon = self._theItem.getImportStatus(incIcon=True)
             sIcon = theIcon.pixmap(self.sPx, self.sPx)
             sText = f"{theStatus} / {self._theItem.describeMe()}"
 
