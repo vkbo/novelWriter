@@ -779,7 +779,7 @@ class GuiProjectTree(QTreeWidget):
 
         return status
 
-    def emptyTrash(self):
+    def emptyTrash(self) -> bool:
         """Permanently delete all documents in the Trash folder. This
         function only asks for confirmation once, and calls the regular
         deleteItem function for each document in the Trash folder.
@@ -827,7 +827,7 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def moveItemToTrash(self, tHandle, askFirst=True, flush=True):
+    def moveItemToTrash(self, tHandle: str, askFirst: bool = True, flush: bool = True) -> bool:
         """Move an item to Trash. Root folders cannot be moved to Trash,
         so such a request is cancelled.
         """
@@ -878,7 +878,8 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def permanentlyDeleteItem(self, tHandle, askFirst=True, flush=True):
+    def permanentlyDeleteItem(self, tHandle: str,
+                              askFirst: bool = True, flush: bool = True) -> bool:
         """Permanently delete a tree item from the project and the map.
         Root items are handled a little different than other items.
         """
@@ -942,7 +943,7 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def setTreeItemValues(self, tHandle):
+    def setTreeItemValues(self, tHandle: str) -> None:
         """Set the name and flag values for a tree item from a handle in
         the project tree. Does not trigger a tree change as the data is
         already coming from the project tree.
@@ -1035,7 +1036,7 @@ class GuiProjectTree(QTreeWidget):
             logger.info("%d item(s) added to the project tree", count)
         return
 
-    def undoLastMove(self):
+    def undoLastMove(self) -> bool:
         """Attempt to undo the last action."""
         srcItem = self._lastMove.get("item", None)
         dstItem = self._lastMove.get("parent", None)
@@ -1075,19 +1076,17 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def getSelectedHandle(self):
+    def getSelectedHandle(self) -> str | None:
         """Get the currently selected handle. If multiple items are
         selected, return the first.
         """
         selItem = self.selectedItems()
         if selItem:
             return selItem[0].data(self.C_DATA, self.D_HANDLE)
-
         return None
 
-    def setSelectedHandle(self, tHandle, doScroll=False):
-        """Set a specific handle as the selected item.
-        """
+    def setSelectedHandle(self, tHandle: str | None, doScroll: bool = False) -> bool:
+        """Set a specific handle as the selected item."""
         tItem = self._getTreeItem(tHandle)
         if tItem is None:
             return False
@@ -1101,7 +1100,7 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def setExpandedFromHandle(self, tHandle, isExpanded):
+    def setExpandedFromHandle(self, tHandle: str | None, isExpanded: bool) -> None:
         """Iterate through items below tHandle and change expanded
         status for all child items. If tHandle is None, it affects the
         entire tree.
@@ -1110,7 +1109,7 @@ class GuiProjectTree(QTreeWidget):
         self._recursiveSetExpanded(trItem, isExpanded)
         return
 
-    def openContextOnSelected(self):
+    def openContextOnSelected(self) -> bool:
         """Open the context menu on the current selected item."""
         selItem = self.selectedItems()
         if selItem:
