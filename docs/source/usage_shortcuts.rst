@@ -92,6 +92,10 @@ The main shorcuts are as follows:
    ":kbd:`Shift`:kbd:`F1`",              "Open the local user manual (PDF) if it is available."
    ":kbd:`Shift`:kbd:`F3`",              "Find previous occurrence of search word in current document."
    ":kbd:`Shift`:kbd:`F6`",              "Open the :guilabel:`Project Details` dialog."
+   ":kbd:`Shift`:kbd:`Up`",              "Go to the previous item at same level in the project tree."
+   ":kbd:`Shift`:kbd:`Down`",            "Go to the next item at same level in the project tree."
+   ":kbd:`Shift`:kbd:`Left`",            "Go to the parent item in the project tree."
+   ":kbd:`Shift`:kbd:`Right`",           "Go to the first child item in the project tree."
 
 .. note::
    On macOS, replace :kbd:`Ctrl` with :kbd:`Cmd`.
