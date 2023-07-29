@@ -108,22 +108,22 @@ class GuiProjectView(QWidget):
         self.keyMoveDn.activated.connect(lambda: self.projTree.moveTreeItem(1))
 
         self.keyGoPrev = QShortcut(self.projTree)
-        self.keyGoPrev.setKey("Shift+Up")
+        self.keyGoPrev.setKey("Alt+Up")
         self.keyGoPrev.setContext(Qt.WidgetShortcut)
         self.keyGoPrev.activated.connect(lambda: self.projTree.moveToNextItem(-1))
 
         self.keyGoNext = QShortcut(self.projTree)
-        self.keyGoNext.setKey("Shift+Down")
+        self.keyGoNext.setKey("Alt+Down")
         self.keyGoNext.setContext(Qt.WidgetShortcut)
         self.keyGoNext.activated.connect(lambda: self.projTree.moveToNextItem(1))
 
         self.keyGoUp = QShortcut(self.projTree)
-        self.keyGoUp.setKey("Shift+Left")
+        self.keyGoUp.setKey("Alt+Left")
         self.keyGoUp.setContext(Qt.WidgetShortcut)
         self.keyGoUp.activated.connect(lambda: self.projTree.moveToLevel(-1))
 
         self.keyGoDown = QShortcut(self.projTree)
-        self.keyGoDown.setKey("Shift+Right")
+        self.keyGoDown.setKey("Alt+Right")
         self.keyGoDown.setContext(Qt.WidgetShortcut)
         self.keyGoDown.activated.connect(lambda: self.projTree.moveToLevel(1))
 
