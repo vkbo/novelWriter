@@ -18,6 +18,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import pytest
 
@@ -32,7 +33,7 @@ from PyQt5.QtWidgets import QMessageBox, QMenu, QTreeWidgetItem, QDialog
 from novelwriter import CONFIG
 from novelwriter.enum import nwItemLayout, nwItemType, nwItemClass
 from novelwriter.guimain import GuiMain
-from novelwriter.gui.projtree import GuiProjectTree
+from novelwriter.gui.projtree import GuiProjectTree, GuiProjectView
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
@@ -427,35 +428,35 @@ def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, pro
 
     # Invalid item
     caplog.clear()
-    assert projTree.permanentlyDeleteItem(C.hInvalid) is False
+    assert projTree.permDeleteItem(C.hInvalid) is False
     assert "Could not find tree item for deletion" in caplog.text
 
     # Not deleting root item in use
     caplog.clear()
-    assert projTree.permanentlyDeleteItem(C.hNovelRoot) is False
+    assert projTree.permDeleteItem(C.hNovelRoot) is False
     assert "Root folders can only be deleted when they are empty" in caplog.text
     assert C.hNovelRoot in theProject.tree
 
     # Deleting unused root item is allowed
     caplog.clear()
-    assert projTree.permanentlyDeleteItem(C.hPlotRoot) is True
+    assert projTree.permDeleteItem(C.hPlotRoot) is True
     assert C.hPlotRoot not in theProject.tree
 
     # User cancels action
     with monkeypatch.context() as mp:
         mp.setattr(QMessageBox, "question", lambda *a: QMessageBox.No)
-        assert projTree.permanentlyDeleteItem(C.hTitlePage) is False
+        assert projTree.permDeleteItem(C.hTitlePage) is False
         assert C.hTitlePage in theProject.tree
 
     # Deleting file is OK, and if it is open, it should close
     assert nwGUI.openDocument(C.hTitlePage) is True
     assert nwGUI.docEditor.docHandle() == C.hTitlePage
-    assert projTree.permanentlyDeleteItem(C.hTitlePage) is True
+    assert projTree.permDeleteItem(C.hTitlePage) is True
     assert C.hTitlePage not in theProject.tree
     assert nwGUI.docEditor.docHandle() is None
 
     # Deleting folder + files recursively is ok
-    assert projTree.permanentlyDeleteItem(C.hChapterDir) is True
+    assert projTree.permDeleteItem(C.hChapterDir) is True
     assert C.hChapterDir not in theProject.tree
     assert C.hChapterDoc not in theProject.tree
     assert C.hSceneDoc not in theProject.tree
@@ -904,15 +905,15 @@ def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mock
 
 
 @pytest.mark.gui
-def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd):
     """Test various parts of the project tree class not covered by
     other tests.
     """
     # Create a project
     buildTestProject(nwGUI, projPath)
 
-    projView = nwGUI.projView
-    projTree = nwGUI.projView.projTree
+    projView: GuiProjectView = nwGUI.projView
+    projTree: GuiProjectTree = nwGUI.projView.projTree
 
     # Method: initSettings
     # ====================
@@ -938,12 +939,12 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Try to add an orphaned file to the tree
     nHandle = nwGUI.theProject.newFile("Test", C.hNovelRoot)
-    nwGUI.theProject.tree[nHandle].setParent(None)
+    nwGUI.theProject.tree[nHandle].setParent(None)  # type: ignore
     assert projTree.revealNewTreeItem(nHandle) is False
 
     # Try to add an item with unknown parent to the tree
     nHandle = nwGUI.theProject.newFile("Test", C.hNovelRoot)
-    nwGUI.theProject.tree[nHandle].setParent(C.hInvalid)
+    nwGUI.theProject.tree[nHandle].setParent(C.hInvalid)  # type: ignore
     assert projTree.revealNewTreeItem(nHandle) is False
 
     # Method: undoLastMove
@@ -971,7 +972,7 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert nwGUI.docEditor.docHandle() is None
 
     # When the item cannot be found
-    projTree._getTreeItem(C.hTitlePage).setSelected(True)
+    projTree._getTreeItem(C.hTitlePage).setSelected(True)  # type: ignore
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.tree.NWTree.__getitem__", lambda *a: None)
         projTree._treeDoubleClick(QTreeWidgetItem(), 0)
@@ -980,14 +981,67 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Successfully open a file
     projTree._treeDoubleClick(projTree._getTreeItem(C.hTitlePage), 0)
     assert nwGUI.docEditor.docHandle() == C.hTitlePage
-    projTree._getTreeItem(C.hTitlePage).setSelected(False)
+    projTree._getTreeItem(C.hTitlePage).setSelected(False)  # type: ignore
 
     # A non-file item should be expanded instead
-    projTree._getTreeItem(C.hNovelRoot).setExpanded(False)
-    projTree._getTreeItem(C.hNovelRoot).setSelected(True)
+    projTree._getTreeItem(C.hNovelRoot).setExpanded(False)  # type: ignore
+    projTree._getTreeItem(C.hNovelRoot).setSelected(True)  # type: ignore
     projTree._treeDoubleClick(projTree._getTreeItem(C.hNovelRoot), 1)
     assert nwGUI.docEditor.docHandle() == C.hTitlePage
-    assert projTree._getTreeItem(C.hNovelRoot).isExpanded() is True
+    assert projTree._getTreeItem(C.hNovelRoot).isExpanded() is True  # type: ignore
+
+    # Navigate the Tree
+    # =================
+
+    # Expand handles
+    projTree.setExpandedFromHandle(C.hNovelRoot, True)
+    projTree.setSelectedHandle(C.hSceneDoc)
+    assert projTree.getSelectedHandle() == C.hSceneDoc
+
+    # Move between documents in that folder
+    projTree.moveToNextItem(-1)
+    assert projTree.getSelectedHandle() == C.hChapterDoc
+    projTree.moveToNextItem(-1)  # Can't move further up
+    assert projTree.getSelectedHandle() == C.hChapterDoc
+    projTree.moveToNextItem(1)
+    assert projTree.getSelectedHandle() == C.hSceneDoc
+    projTree.moveToNextItem(1)  # Can't move further down
+    assert projTree.getSelectedHandle() == C.hSceneDoc
+
+    # Move up/down the parent/child hierarchy
+    projTree.moveToLevel(-1)
+    assert projTree.getSelectedHandle() == C.hChapterDir
+    projTree.moveToLevel(-1)
+    assert projTree.getSelectedHandle() == C.hNovelRoot
+    projTree.moveToLevel(-1)  # Can't move further up
+    assert projTree.getSelectedHandle() == C.hNovelRoot
+    projTree.moveToLevel(1)
+    assert projTree.getSelectedHandle() == C.hTitlePage
+    projTree.moveToLevel(1)  # Can't move further down
+    assert projTree.getSelectedHandle() == C.hTitlePage
+
+    # Move between roots
+    projTree.setSelectedHandle(C.hNovelRoot)
+    projTree.moveToNextItem(1)
+    assert projTree.getSelectedHandle() == C.hPlotRoot
+    projTree.moveToNextItem(1)
+    assert projTree.getSelectedHandle() == C.hCharRoot
+    projTree.moveToNextItem(1)
+    assert projTree.getSelectedHandle() == C.hWorldRoot
+    projTree.moveToNextItem(1)  # Can't move further down
+    assert projTree.getSelectedHandle() == C.hWorldRoot
+
+    # When nothing is selected, nothing happens
+    projTree.clearSelection()
+    assert projTree.getSelectedHandle() is None
+    projTree.moveToNextItem(-1)
+    assert projTree.getSelectedHandle() is None
+    projTree.moveToNextItem(1)
+    assert projTree.getSelectedHandle() is None
+    projTree.moveToLevel(-1)
+    assert projTree.getSelectedHandle() is None
+    projTree.moveToLevel(1)
+    assert projTree.getSelectedHandle() is None
 
     # qtbot.stop()
 

@@ -76,7 +76,7 @@ class NWIndex:
     a rebuild of the index data.
     """
 
-    def __init__(self, project: NWProject):
+    def __init__(self, project: NWProject) -> None:
 
         self._project = project
 
@@ -91,7 +91,7 @@ class NWIndex:
 
         return
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<NWIndex project='{self._project.data.name}'>"
 
     ##
@@ -99,14 +99,14 @@ class NWIndex:
     ##
 
     @property
-    def indexBroken(self):
+    def indexBroken(self) -> bool:
         return self._indexBroken
 
     ##
     #  Public Methods
     ##
 
-    def clearIndex(self):
+    def clearIndex(self) -> None:
         """Clear the index dictionaries and time stamps."""
         self._tagsIndex.clear()
         self._itemIndex.clear()
@@ -114,7 +114,7 @@ class NWIndex:
         self._rootChange = {}
         return
 
-    def rebuildIndex(self):
+    def rebuildIndex(self) -> None:
         """Rebuild the entire index from scratch."""
         self.clearIndex()
         for nwItem in self._project.tree:
@@ -125,22 +125,20 @@ class NWIndex:
         self._indexBroken = False
         return
 
-    def deleteHandle(self, tHandle: str):
+    def deleteHandle(self, tHandle: str) -> None:
         """Delete all entries of a given document handle."""
         logger.debug("Removing item '%s' from the index", tHandle)
         for tTag in self._itemIndex.allItemTags(tHandle):
             del self._tagsIndex[tTag]
-
         del self._itemIndex[tHandle]
-
         return
 
-    def reIndexHandle(self, tHandle: str) -> bool:
+    def reIndexHandle(self, tHandle: str | None) -> bool:
         """Put a file back into the index. This is used when files are
         moved from the archive or trash folders back into the active
         project.
         """
-        if not self._project.tree.checkType(tHandle, nwItemType.FILE):
+        if tHandle is None or not self._project.tree.checkType(tHandle, nwItemType.FILE):
             return False
 
         logger.debug("Re-indexing item '%s'", tHandle)
@@ -163,9 +161,8 @@ class NWIndex:
     #  Load and Save Index to/from File
     ##
 
-    def loadIndex(self):
-        """Load index from last session from the project meta folder.
-        """
+    def loadIndex(self) -> bool:
+        """Load index from last session from the project meta folder."""
         indexFile = self._project.storage.getMetaFile(nwFiles.INDEX_FILE)
         if not isinstance(indexFile, Path):
             return False
@@ -292,7 +289,7 @@ class NWIndex:
     #  Internal Indexer Helpers
     ##
 
-    def _scanActive(self, tHandle: str, nwItem: NWItem, text: str, tags: dict):
+    def _scanActive(self, tHandle: str, nwItem: NWItem, text: str, tags: dict) -> None:
         """Scan an active document for meta data."""
         nTitle = 0           # Line Number of the previous title
         cTitle = TT_NONE     # Tag of the current title
@@ -355,7 +352,7 @@ class NWIndex:
 
         return
 
-    def _scanInactive(self, nwItem: NWItem, text: str):
+    def _scanInactive(self, nwItem: NWItem, text: str) -> None:
         """Scan an inactive document for meta data."""
         for aLine in text.splitlines():
             if aLine.startswith("#"):
@@ -387,9 +384,8 @@ class NWIndex:
         self._itemIndex.setHeadingCounts(tHandle, sTitle, cC, wC, pC)
         return
 
-    def _indexKeyword(
-        self, tHandle: str, line: str, sTitle: str, itemClass: nwItemClass, tags: dict
-    ):
+    def _indexKeyword(self, tHandle: str, line: str, sTitle: str,
+                      itemClass: nwItemClass, tags: dict) -> None:
         """Validate and save the information about a reference to a tag
         in another file, or the setting of a tag in the file. A record
         of active tags is updated so that no longer used tags can be
