@@ -41,7 +41,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG
-from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert, nwWidget
+from novelwriter.common import minmax
 from novelwriter.constants import nwHeaders, nwUnicode, trConst, nwLabels
 from novelwriter.core.item import NWItem
 from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSplitter
@@ -49,6 +49,9 @@ from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.projsettings import GuiProjectSettings
+from novelwriter.enum import (
+    nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwAlert, nwWidget
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -103,6 +106,26 @@ class GuiProjectView(QWidget):
         self.keyMoveDn.setKey("Ctrl+Down")
         self.keyMoveDn.setContext(Qt.WidgetShortcut)
         self.keyMoveDn.activated.connect(lambda: self.projTree.moveTreeItem(1))
+
+        self.keyGoPrev = QShortcut(self.projTree)
+        self.keyGoPrev.setKey("Shift+Up")
+        self.keyGoPrev.setContext(Qt.WidgetShortcut)
+        self.keyGoPrev.activated.connect(lambda: self.projTree.moveToNextItem(-1))
+
+        self.keyGoNext = QShortcut(self.projTree)
+        self.keyGoNext.setKey("Shift+Down")
+        self.keyGoNext.setContext(Qt.WidgetShortcut)
+        self.keyGoNext.activated.connect(lambda: self.projTree.moveToNextItem(1))
+
+        self.keyGoUp = QShortcut(self.projTree)
+        self.keyGoUp.setKey("Shift+Left")
+        self.keyGoUp.setContext(Qt.WidgetShortcut)
+        self.keyGoUp.activated.connect(lambda: self.projTree.moveToLevel(-1))
+
+        self.keyGoDown = QShortcut(self.projTree)
+        self.keyGoDown.setKey("Shift+Right")
+        self.keyGoDown.setContext(Qt.WidgetShortcut)
+        self.keyGoDown.activated.connect(lambda: self.projTree.moveToLevel(1))
 
         self.keyUndoMv = QShortcut(self.projTree)
         self.keyUndoMv.setKey("Ctrl+Shift+Z")
@@ -665,21 +688,21 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def moveTreeItem(self, nStep: int) -> bool:
+    def moveTreeItem(self, step: int) -> bool:
         """Move an item up or down in the tree."""
         tHandle = self.getSelectedHandle()
-        trItem = self._getTreeItem(tHandle)
-        if trItem is None:
+        tItem = self._getTreeItem(tHandle)
+        if tItem is None:
             logger.debug("No item selected")
             return False
 
-        pItem = trItem.parent()
-        isExp = trItem.isExpanded()
+        pItem = tItem.parent()
+        isExp = tItem.isExpanded()
         if pItem is None:
-            tIndex = self.indexOfTopLevelItem(trItem)
+            tIndex = self.indexOfTopLevelItem(tItem)
             nChild = self.topLevelItemCount()
 
-            nIndex = tIndex + nStep
+            nIndex = tIndex + step
             if nIndex < 0 or nIndex >= nChild:
                 return False
 
@@ -687,10 +710,10 @@ class GuiProjectTree(QTreeWidget):
             self.insertTopLevelItem(nIndex, cItem)
 
         else:
-            tIndex = pItem.indexOfChild(trItem)
+            tIndex = pItem.indexOfChild(tItem)
             nChild = pItem.childCount()
 
-            nIndex = tIndex + nStep
+            nIndex = tIndex + step
             if nIndex < 0 or nIndex >= nChild:
                 return False
 
@@ -699,10 +722,31 @@ class GuiProjectTree(QTreeWidget):
             self._recordLastMove(cItem, pItem, tIndex)
 
         self._alertTreeChange(tHandle, flush=True)
-        self.setCurrentItem(trItem)
-        trItem.setExpanded(isExp)
+        self.setCurrentItem(tItem)
+        tItem.setExpanded(isExp)
 
         return True
+
+    def moveToNextItem(self, step: int) -> None:
+        """Move to the next item of the same tree level."""
+        tHandle = self.getSelectedHandle()
+        tItem = self._getTreeItem(tHandle) if tHandle else None
+        if tItem:
+            pItem = tItem.parent() or self.invisibleRootItem()
+            next = minmax(pItem.indexOfChild(tItem) + step, 0, pItem.childCount() - 1)
+            self.setCurrentItem(pItem.child(next))
+        return
+
+    def moveToLevel(self, step: int) -> None:
+        """Move to the next item in the parent/child chain."""
+        tHandle = self.getSelectedHandle()
+        tItem = self._getTreeItem(tHandle) if tHandle else None
+        if tItem:
+            if step < 0 and tItem.parent():
+                self.setCurrentItem(tItem.parent())
+            elif step > 0 and tItem.childCount() > 0:
+                self.setCurrentItem(tItem.child(0))
+        return
 
     def renameTreeItem(self, tHandle: str) -> bool:
         """Open a dialog to edit the label of an item."""
@@ -773,7 +817,7 @@ class GuiProjectTree(QTreeWidget):
             return False
 
         if self.theProject.tree.isTrash(tHandle) or nwItem.isRootType():
-            status = self.permanentlyDeleteItem(tHandle)
+            status = self.permDeleteItem(tHandle)
         else:
             status = self.moveItemToTrash(tHandle)
 
@@ -820,7 +864,7 @@ class GuiProjectTree(QTreeWidget):
         for tHandle in reversed(self.getTreeFromHandle(trashHandle)):
             if tHandle == trashHandle:
                 continue
-            self.permanentlyDeleteItem(tHandle, askFirst=False, flush=False)
+            self.permDeleteItem(tHandle, askFirst=False, flush=False)
 
         if nTrash > 0:
             self._alertTreeChange(trashHandle, flush=True)
@@ -878,8 +922,7 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def permanentlyDeleteItem(self, tHandle: str,
-                              askFirst: bool = True, flush: bool = True) -> bool:
+    def permDeleteItem(self, tHandle: str, askFirst: bool = True, flush: bool = True) -> bool:
         """Permanently delete a tree item from the project and the map.
         Root items are handled a little different than other items.
         """
@@ -1307,7 +1350,7 @@ class GuiProjectTree(QTreeWidget):
 
         if tItem.itemClass == nwItemClass.TRASH or isRoot or (isFolder and not hasChild):
             aDelete = ctxMenu.addAction(self.tr("Delete Permanently"))
-            aDelete.triggered.connect(lambda: self.permanentlyDeleteItem(tHandle))
+            aDelete.triggered.connect(lambda: self.permDeleteItem(tHandle))
         else:
             aMoveTrash = ctxMenu.addAction(self.tr("Move to Trash"))
             aMoveTrash.triggered.connect(lambda: self.moveItemToTrash(tHandle))
