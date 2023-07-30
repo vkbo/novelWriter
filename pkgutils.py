@@ -50,8 +50,8 @@ def extractVersion(beQuiet=False):
         theBits = theString.partition("=")
         return theBits[2].strip().strip('"')
 
-    numVers = "Unknown"
-    hexVers = "Unknown"
+    numVers = "0"
+    hexVers = "0x0"
     relDate = "Unknown"
     initFile = os.path.join("novelwriter", "__init__.py")
     try:
@@ -396,17 +396,15 @@ def buildQtI18nTS(sysArgs):
 
 def genMacOSPlist():
     """Set necessary values for .plist file for MacOS build."""
-    numVers, _, _ = extractVersion()
-    pkgVers = compactVersion(numVers)
     outDir = "setup/macos"
-
+    numVers = extractVersion()[0].partition("-")[0]
     copyrightYear = datetime.datetime.now().year
 
     # These keys are no longer used but are present for compatability
-    pkgVersMaj, pkgVersMin = pkgVers.split(".")[:2]
+    pkgVersMaj, pkgVersMin = numVers.split(".")[:2]
 
     plistXML = readFile(f"{outDir}/Info.plist.template").format(
-        macosBundleSVers=pkgVers,
+        macosBundleSVers=numVers,
         macosBundleVers=numVers,
         macosBundleVersMajor=pkgVersMaj,
         macosBundleVersMinor=pkgVersMin,
