@@ -65,6 +65,7 @@ class GuiManuscriptBuild(QDialog):
         logger.debug("Create: GuiManuscriptBuild")
         self.setObjectName("GuiManuscriptBuild")
 
+        self.guiParent  = parent
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
@@ -249,6 +250,7 @@ class GuiManuscriptBuild(QDialog):
         """
         self._saveSettings()
         event.accept()
+        self.guiParent.raise_()  # Issue #1494
         self.deleteLater()
         return
 
@@ -276,6 +278,8 @@ class GuiManuscriptBuild(QDialog):
         )
         if savePath:
             self.buildPath.setText(savePath)
+        self.guiParent.raise_()  # Issue #1494
+        self.raise_()  # Issue #1494
         return
 
     @pyqtSlot()

@@ -209,10 +209,8 @@ class GuiBuildSettings(QDialog):
         elif role == QDialogButtonBox.AcceptRole:
             self._emitBuildData()
             self.close()
-            self.guiParent.raise_()  # Issue #1494
         elif role == QDialogButtonBox.RejectRole:
             self.close()
-            self.guiParent.raise_()  # Issue #1494
         return
 
     ##
@@ -227,6 +225,7 @@ class GuiBuildSettings(QDialog):
         self._askToSaveBuild()
         self._saveSettings()
         event.accept()
+        self.guiParent.raise_()  # Issue #1494
         self.deleteLater()
         return
 
