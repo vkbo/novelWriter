@@ -14,9 +14,9 @@ final release.
 
 **Usability**
 
-* When the main window is resized, the change in size is only applied to the editor and viewer. To
-  resize the project tree area, the slider needs to be moved. PR #1388.
-* The default text font on MacOS is now Helvetica. Issue #1463. PR #1479.
+* When the main window is resized, the change in size is only assigned to the editor and viewer. To
+  resize the project tree area, its slider needs to be moved. PR #1388.
+* The default text font on MacOS is now Helvetica instead of Courier. Issue #1463. PR #1479.
 * Backup files now contain the project name again. Issue #1476. PR #1484.
 * The backup success dialog now displays the file size of the backup file. Issue #1453. PR #1484.
 * New root folders in the Project Tree now appear next to the root folder of the item selected when
@@ -28,41 +28,42 @@ final release.
 * A new Manuscript Build Tool has been added. The new tool allows for detailed handling of which
   documents are included in a build, as well as a much better tool for formatting headers. It also
   allows for saving multiple build presets. PRs #1389 and #1466. Issues #971, #1315 and #1448.
-* ODT builds now have an accessible style for scene separators, and it is also possible to define
-  page size and margins from the new build tool. Issue #622. PR #1477.
-* A proper light theme has been added. The default theme will usually default to light colours, but
-  in Qt6 it will not, so creating a proper light theme is needed. It also allows for some tweaking
-  of the colours. The contrast of the dark theme has been improved a bit as well, and default icon
-  theme is now selected based on the lightness of the background if a theme is not specified in the
-  theme definition file. Issues #1472 and #1473. PR #1475.
+* Exported ODT documents now have an accessible style for scene separators. It is also possible to
+  define page size and margin sizes from the new build tool. Issue #622. PR #1477.
+* A proper light colour theme has been added. The default theme will usually default to light
+  colours, but in Qt6 it will not depending on host OS settings, so creating a proper light theme
+  is needed. This also allows for some tweaking of the colours. The contrast of the dark theme has
+  been improved a bit as well, and a default icon theme is now selected based on the lightness of
+  the background if an icon theme is not specified in the theme definition file.
+  Issues #1472 and #1473. PR #1475.
 * Documents, folders and root folders can now be duplicated from the Project Tree, including all
   child elements. The duplicated content is stored next to the source items, and can then be moved
   to wherever the user wants a copy. Issue #1469. PR #1480.
 * A set of new keyboard shortcuts have been added to make some types of navigation in the Project
-  Tree easier. Alt+Up and Alt+Down will move between sibling items in the tree, skipping child
-  items. Alt+Left will move to the parent of the selected item without triggering the collapse of
-  the node like the Left key does. Alt+Right does the reverse, and both expands the node and moves
-  to the first child in one click. Issue #1348. PRs #1488 and #1489.
+  Tree easier. `Alt+Up` and `Alt+Down` will move between sibling items in the tree, skipping child
+  items. `Alt+Left` will move to the parent of the selected item without triggering the collapse of
+  the node like the `Left` key does. `Alt+Right` does the reverse, and both expands the node and
+  moves to the first child in one click. Issue #1348. PRs #1488 and #1489.
 
 **Packaging and Installation**
 
 * Support for Python 3.7 is no longer maintained, but has not officially been dropped. It is
   expected to be dropped for the final release of 2.1. PR #1452.
-* The lxml package has been removed from the source code, dropping it as a dependency of
-  novelWriter. The standard Python xml library is used instead. The standard library is somewhat
+* The `lxml` package has been removed from the source code, dropping it as a dependency of
+  novelWriter. The standard Python `xml` library is used instead. The standard library is somewhat
   limited, which is why it wasn't originally used, but when dropping support for Python 3.7, it is
-  now a better alternative. Issue #1257. PR #1452.
-* The setup.py file has been removed. The custom packaging utilities in the old setup.py file are
-  now available in pkgutils.py instead. Issues #1437 and #1438. PR #1483.
+  now good alternative. Issue #1257. PR #1452.
+* The `setup.py` file has been removed. The custom packaging utilities in the old `setup.py` file
+  are now available in `pkgutils.py` instead. Issues #1437 and #1438. PR #1483.
 
 **Code Improvements**
 
 * All imports of modules are now direct imports instead of going via init files. All subfolder init
   files have been reduced to empty files. PR #1262.
-* The mocking of the main config file in the test suite has been rewritten to be easier to deal
-  with when writing tests. The new approach also removes the need to access the config instance via
+* The mocking of the main config object in the test suite has been rewritten to be easier to deal
+  with when writing tests. The new approach also removes the need to access the config object via
   an attribute in many classes, and is now instead accessed directly. This should give a tiny
-  performance boost. PR #1447.
+  performance boost as a bonus. PR #1447.
 * The building of manuscript documents from novelWriter source text is now handled by a core
   builder class, thus separating it from any GUI module. Previously, this was baked into the build
   tool. PR #1316.
@@ -70,9 +71,11 @@ final release.
 * The file names for the project meta data files have been simplified and references to legacy
   formats removed. The wordlist has been converted to a JSON file, and the session log to a JSON
   Lines file. All old files are renamed or converted on the fly when opening the project. PR #1464.
-* The project item and tree classes have been modified to improve how items, and in particular,
-  orphaned items are handled. These are mostly internal changes that simplifies how items are
-  accessed in the source code. Issue #1481. PR #1482.
+* The core project item and tree classes have been modified to improve how items, and in
+  particular, orphaned items are handled. These are mostly internal changes that simplifies how
+  items are accessed in the source code. Issue #1481. PR #1482.
+* Many of the above PRs adds type annotations to classes and functions in the source code. These
+  will be added gradually to the entire source code going forward.
 
 ----
 
