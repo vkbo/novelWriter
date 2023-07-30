@@ -301,9 +301,6 @@ class GuiMain(QMainWindow):
         # Forward Functions
         self.setStatus = self.mainStatus.setStatus
 
-        # Force a show of the GUI
-        self.show()
-
         # Check that config loaded fine
         self.reportConfErr()
 

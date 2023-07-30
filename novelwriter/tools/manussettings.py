@@ -75,6 +75,7 @@ class GuiBuildSettings(QDialog):
         logger.debug("Create: GuiBuildSettings")
         self.setObjectName("GuiBuildSettings")
 
+        self.guiParent  = parent
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
@@ -208,8 +209,10 @@ class GuiBuildSettings(QDialog):
         elif role == QDialogButtonBox.AcceptRole:
             self._emitBuildData()
             self.close()
+            self.guiParent.raise_()  # Issue #1494
         elif role == QDialogButtonBox.RejectRole:
             self.close()
+            self.guiParent.raise_()  # Issue #1494
         return
 
     ##
@@ -941,6 +944,7 @@ class _FormatTab(QWidget):
     def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
         super().__init__(parent=buildMain)
 
+        self.buildMain  = buildMain
         self.mainGui    = buildMain.mainGui
         self.mainTheme  = buildMain.mainGui.mainTheme
 
@@ -1160,6 +1164,8 @@ class _FormatTab(QWidget):
         if theStatus:
             self.textFont.setText(theFont.family())
             self.textSize.setValue(theFont.pointSize())
+        self.buildMain.guiParent.raise_()  # Issue #1494
+        self.buildMain.raise_()  # Issue #1494
         return
 
     @pyqtSlot(int)
