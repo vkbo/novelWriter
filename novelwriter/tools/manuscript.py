@@ -69,6 +69,8 @@ class GuiManuscript(QDialog):
 
         logger.debug("Create: GuiManuscript")
         self.setObjectName("GuiManuscript")
+        if CONFIG.osDarwin:
+            self.setWindowFlag(Qt.WindowType.Tool)
 
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme

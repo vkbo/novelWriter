@@ -74,6 +74,8 @@ class GuiBuildSettings(QDialog):
 
         logger.debug("Create: GuiBuildSettings")
         self.setObjectName("GuiBuildSettings")
+        if CONFIG.osDarwin:
+            self.setWindowFlag(Qt.WindowType.Tool)
 
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme
@@ -941,6 +943,7 @@ class _FormatTab(QWidget):
     def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
         super().__init__(parent=buildMain)
 
+        self.buildMain  = buildMain
         self.mainGui    = buildMain.mainGui
         self.mainTheme  = buildMain.mainGui.mainTheme
 

@@ -189,7 +189,7 @@ def main(sysArgs=None):
         errDlg = QErrorMessage()
         errDlg.resize(500, 300)
         errDlg.showMessage((
-            "<h3>A critical error has been encountered</h3>"
+            "<h3>A critical error was encountered</h3>"
             "<p>novelWriter cannot start due to the following issues:<p>"
             "<p>&nbsp;-&nbsp;%s</p>"
             "<p>Shutting down ...</p>"

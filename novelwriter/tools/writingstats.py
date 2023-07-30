@@ -69,6 +69,8 @@ class GuiWritingStats(QDialog):
 
         logger.debug("Create: GuiWritingStats")
         self.setObjectName("GuiWritingStats")
+        if CONFIG.osDarwin:
+            self.setWindowFlag(Qt.WindowType.Tool)
 
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme

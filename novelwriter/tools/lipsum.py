@@ -46,6 +46,8 @@ class GuiLipsum(QDialog):
 
         logger.debug("Create: GuiLipsum")
         self.setObjectName("GuiLipsum")
+        if CONFIG.osDarwin:
+            self.setWindowFlag(Qt.WindowType.Tool)
 
         self.mainGui   = mainGui
         self.mainTheme = mainGui.mainTheme

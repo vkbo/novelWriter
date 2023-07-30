@@ -21,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import sys
 import logging
@@ -300,9 +301,6 @@ class GuiMain(QMainWindow):
 
         # Forward Functions
         self.setStatus = self.mainStatus.setStatus
-
-        # Force a show of the GUI
-        self.show()
 
         # Check that config loaded fine
         self.reportConfErr()
@@ -1002,7 +1000,7 @@ class GuiMain(QMainWindow):
             dlgDetails = GuiProjectDetails(self)
         assert isinstance(dlgDetails, GuiProjectDetails)
 
-        dlgDetails.setModal(False)
+        dlgDetails.setModal(True)
         dlgDetails.show()
         dlgDetails.raise_()
         dlgDetails.updateValues()
