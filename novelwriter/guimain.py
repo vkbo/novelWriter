@@ -1000,7 +1000,7 @@ class GuiMain(QMainWindow):
             dlgDetails = GuiProjectDetails(self)
         assert isinstance(dlgDetails, GuiProjectDetails)
 
-        dlgDetails.setModal(False)
+        dlgDetails.setModal(True)
         dlgDetails.show()
         dlgDetails.raise_()
         dlgDetails.updateValues()
