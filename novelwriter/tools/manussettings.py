@@ -74,6 +74,8 @@ class GuiBuildSettings(QDialog):
 
         logger.debug("Create: GuiBuildSettings")
         self.setObjectName("GuiBuildSettings")
+        if CONFIG.osDarwin:
+            self.setWindowFlag(Qt.WindowType.Tool)
 
         self.guiParent  = parent
         self.mainGui    = mainGui
@@ -225,7 +227,6 @@ class GuiBuildSettings(QDialog):
         self._askToSaveBuild()
         self._saveSettings()
         event.accept()
-        self.mainGui.restackGUI()
         self.deleteLater()
         return
 
@@ -1163,7 +1164,6 @@ class _FormatTab(QWidget):
         if theStatus:
             self.textFont.setText(theFont.family())
             self.textSize.setValue(theFont.pointSize())
-        self.mainGui.restackGUI()
         return
 
     @pyqtSlot(int)
