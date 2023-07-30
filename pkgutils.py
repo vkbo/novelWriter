@@ -1857,7 +1857,7 @@ if __name__ == "__main__":
         "",
         "    help           Print the help message.",
         "    pip            Install all package dependencies for novelWriter using pip.",
-        "    version        Print the novelWriter version.",
+        "    version        Print the novelWriter version. Add -c for short version.",
         "    build-clean    Will attempt to delete 'build' and 'dist' folders.",
         "",
         "Additional Builds:",
@@ -1914,7 +1914,11 @@ if __name__ == "__main__":
     if "version" in sys.argv:
         sys.argv.remove("version")
         numVers, _, _ = extractVersion(beQuiet=True)
-        print(numVers, end=None)
+        if "-c" in sys.argv:
+            sys.argv.remove("-c")
+            print(compactVersion(numVers), end=None)
+        else:
+            print(numVers, end=None)
         sys.exit(0)
 
     if "pip" in sys.argv:

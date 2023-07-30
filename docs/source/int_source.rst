@@ -4,7 +4,6 @@
 Running from Source
 *******************
 
-.. _main website: https://novelwriter.io
 .. _GitHub: https://github.com/vkbo/novelWriter/releases
 .. _PyPi: https://pypi.org/project/novelWriter/
 .. _Sphinx Docs: https://www.sphinx-doc.org/
@@ -24,11 +23,6 @@ by running:
 .. code-block:: bash
 
    python pkgutils.py help
-
-.. warning::
-
-   Calling ``setup.py install`` has been deprecated for a while, and this approach is no longer
-   actively supported in novelWriter either.
 
 
 .. _a_source_depend:
@@ -92,7 +86,7 @@ With the tool installed, run the following command from the root of the novelWri
 
 This should generate two files in the ``dist/`` folder at your current location. One with file
 extension ``.tar.gz`` and one with extension ``.whl``. The latter is the package you want to
-install, here with example version number 2.0.7, but your may be different:
+install, here with example version number 2.0.7, but yours may be different:
 
 .. code-block:: bash
 
