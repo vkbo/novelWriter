@@ -60,7 +60,7 @@ __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
 __version__    = "2.1-beta1"
 __hexversion__ = "0x020100b1"
-__date__       = "2023-06-19"
+__date__       = "2023-07-30"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
 

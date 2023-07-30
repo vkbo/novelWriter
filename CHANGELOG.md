@@ -1,5 +1,81 @@
 # novelWriter Changelog
 
+## Version 2.1 Beta 1 [2023-07-30]
+
+### Release Notes
+
+This is a beta release of the next release version, and is intended for testing purposes. Please be
+careful when using this version on live writing projects, and make sure you take frequent backups.
+
+Please check the changelog for an overview of changes. The full release notes will be added to the
+final release.
+
+### Detailed Changelog
+
+**Usability**
+
+* When the main window is resized, the change in size is only applied to the editor and viewer. To
+  resize the project tree area, the slider needs to be moved. PR #1388.
+* The default text font on MacOS is now Helvetica. Issue #1463. PR #1479.
+* Backup files now contain the project name again. Issue #1476. PR #1484.
+* The backup success dialog now displays the file size of the backup file. Issue #1453. PR #1484.
+* New root folders in the Project Tree now appear next to the root folder of the item selected when
+  the request to make the root folder was made. Previously, it would appear at the bottom of the
+  Project Tree. Issue #1259. PR #1487.
+
+**Features**
+
+* A new Manuscript Build Tool has been added. The new tool allows for detailed handling of which
+  documents are included in a build, as well as a much better tool for formatting headers. It also
+  allows for saving multiple build presets. PRs #1389 and #1466. Issues #971, #1315 and #1448.
+* ODT builds now have an accessible style for scene separators, and it is also possible to define
+  page size and margins from the new build tool. Issue #622. PR #1477.
+* A proper light theme has been added. The default theme will usually default to light colours, but
+  in Qt6 it will not, so creating a proper light theme is needed. It also allows for some tweaking
+  of the colours. The contrast of the dark theme has been improved a bit as well, and default icon
+  theme is now selected based on the lightness of the background if a theme is not specified in the
+  theme definition file. Issues #1472 and #1473. PR #1475.
+* Documents, folders and root folders can now be duplicated from the Project Tree, including all
+  child elements. The duplicated content is stored next to the source items, and can then be moved
+  to wherever the user wants a copy. Issue #1469. PR #1480.
+* A set of new keyboard shortcuts have been added to make some types of navigation in the Project
+  Tree easier. Alt+Up and Alt+Down will move between sibling items in the tree, skipping child
+  items. Alt+Left will move to the parent of the selected item without triggering the collapse of
+  the node like the Left key does. Alt+Right does the reverse, and both expands the node and moves
+  to the first child in one click. Issue #1348. PRs #1488 and #1489.
+
+**Packaging and Installation**
+
+* Support for Python 3.7 is no longer maintained, but has not officially been dropped. It is
+  expected to be dropped for the final release of 2.1. PR #1452.
+* The lxml package has been removed from the source code, dropping it as a dependency of
+  novelWriter. The standard Python xml library is used instead. The standard library is somewhat
+  limited, which is why it wasn't originally used, but when dropping support for Python 3.7, it is
+  now a better alternative. Issue #1257. PR #1452.
+* The setup.py file has been removed. The custom packaging utilities in the old setup.py file are
+  now available in pkgutils.py instead. Issues #1437 and #1438. PR #1483.
+
+**Code Improvements**
+
+* All imports of modules are now direct imports instead of going via init files. All subfolder init
+  files have been reduced to empty files. PR #1262.
+* The mocking of the main config file in the test suite has been rewritten to be easier to deal
+  with when writing tests. The new approach also removes the need to access the config instance via
+  an attribute in many classes, and is now instead accessed directly. This should give a tiny
+  performance boost. PR #1447.
+* The building of manuscript documents from novelWriter source text is now handled by a core
+  builder class, thus separating it from any GUI module. Previously, this was baked into the build
+  tool. PR #1316.
+* SVG icons have been optimised in terms of storage size and object complexity. PR #1456.
+* The file names for the project meta data files have been simplified and references to legacy
+  formats removed. The wordlist has been converted to a JSON file, and the session log to a JSON
+  Lines file. All old files are renamed or converted on the fly when opening the project. PR #1464.
+* The project item and tree classes have been modified to improve how items, and in particular,
+  orphaned items are handled. These are mostly internal changes that simplifies how items are
+  accessed in the source code. Issue #1481. PR #1482.
+
+----
+
 ## Version 2.0.7 [2023-04-16]
 
 ### Release Notes
@@ -208,7 +284,7 @@ dialog box, replacing the Credits section on the main About tab.
 * Update Chinese translation. PR #1298.
 * Update Norwegian, US English, German and Spanish translations. PR #1311.
 
-**Other CHanges**
+**Other Changes**
 
 * An icon theme can now be loaded from the user's data folder alongside a custom user theme.
   Issue #1297. PR #1299.
