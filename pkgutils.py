@@ -403,7 +403,7 @@ def genMacOSPlist():
     copyrightYear = datetime.datetime.now().year
 
     # These keys are no longer used but are present for compatability
-    pkgVersMaj, pkgVersMin, _ = pkgVers.split(".")
+    pkgVersMaj, pkgVersMin = pkgVers.split(".")[:2]
 
     plistXML = readFile(f"{outDir}/Info.plist.template").format(
         macosBundleSVers=pkgVers,
