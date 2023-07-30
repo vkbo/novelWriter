@@ -65,7 +65,6 @@ class GuiManuscriptBuild(QDialog):
         logger.debug("Create: GuiManuscriptBuild")
         self.setObjectName("GuiManuscriptBuild")
 
-        self.guiParent  = parent
         self.mainGui    = mainGui
         self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
