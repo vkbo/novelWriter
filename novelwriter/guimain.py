@@ -21,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import sys
 import logging
@@ -31,7 +32,7 @@ from pathlib import Path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt, QTimer, QThreadPool, pyqtSlot
-from PyQt5.QtGui import QCursor, QIcon, QKeySequence
+from PyQt5.QtGui import QCursor, QIcon, QKeySequence, QWindow
 from PyQt5.QtWidgets import (
     qApp, QDialog, QFileDialog, QMainWindow, QMessageBox, QShortcut, QSplitter,
     QStackedWidget, QVBoxLayout, QWidget
@@ -348,6 +349,27 @@ class GuiMain(QMainWindow):
         self._updateWindowTitle()
 
         return True
+
+    def restackGUI(self):
+        """Reorder the visibility of windows."""
+        subOne: list[QWindow] = []
+        subTwo: list[QWindow] = []
+        for window in qApp.allWindows():
+            name = window.objectName()
+            if name == "GuiManuscriptWindow":
+                subOne.append(window)
+            elif name == "GuiBuildSettingsWindow":
+                subTwo.append(window)
+            elif name == "GuiManuscriptBuildWindow":
+                subTwo.append(window)
+        self.raise_()
+        for window in subOne:
+            if window.isExposed():
+                window.raise_()
+        for window in subTwo:
+            if window.isExposed():
+                window.raise_()
+        return
 
     def initMain(self):
         """Initialise elements that depend on user settings.

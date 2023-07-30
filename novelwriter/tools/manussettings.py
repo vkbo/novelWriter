@@ -225,7 +225,7 @@ class GuiBuildSettings(QDialog):
         self._askToSaveBuild()
         self._saveSettings()
         event.accept()
-        self.guiParent.raise_()  # Issue #1494
+        self.mainGui.restackGUI()
         self.deleteLater()
         return
 
@@ -1163,8 +1163,7 @@ class _FormatTab(QWidget):
         if theStatus:
             self.textFont.setText(theFont.family())
             self.textSize.setValue(theFont.pointSize())
-        self.buildMain.guiParent.raise_()  # Issue #1494
-        self.buildMain.raise_()  # Issue #1494
+        self.mainGui.restackGUI()
         return
 
     @pyqtSlot(int)

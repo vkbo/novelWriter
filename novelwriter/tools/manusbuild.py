@@ -250,7 +250,7 @@ class GuiManuscriptBuild(QDialog):
         """
         self._saveSettings()
         event.accept()
-        self.guiParent.raise_()  # Issue #1494
+        self.mainGui.restackGUI()
         self.deleteLater()
         return
 
@@ -278,8 +278,7 @@ class GuiManuscriptBuild(QDialog):
         )
         if savePath:
             self.buildPath.setText(savePath)
-        self.guiParent.raise_()  # Issue #1494
-        self.raise_()  # Issue #1494
+        self.mainGui.restackGUI()
         return
 
     @pyqtSlot()
