@@ -1054,10 +1054,12 @@ class _FormatTab(QWidget):
         self.pageWidth = QDoubleSpinBox(self)
         self.pageWidth.setFixedWidth(dbW)
         self.pageWidth.setMaximum(500.0)
+        self.pageWidth.valueChanged.connect(self._pageSizeValueChanged)
 
         self.pageHeight = QDoubleSpinBox(self)
         self.pageHeight.setFixedWidth(dbW)
         self.pageHeight.setMaximum(500.0)
+        self.pageHeight.valueChanged.connect(self._pageSizeValueChanged)
 
         self.topMargin = QDoubleSpinBox(self)
         self.topMargin.setFixedWidth(dbW)
@@ -1206,15 +1208,19 @@ class _FormatTab(QWidget):
         pMax = 500.0 if isMM else 50.0
         mMax = 150.0 if isMM else 15.0
 
+        self.pageWidth.blockSignals(True)
         self.pageWidth.setDecimals(nDec)
         self.pageWidth.setSingleStep(nStep)
         self.pageWidth.setMaximum(pMax)
         self.pageWidth.setValue(pageWidth)
+        self.pageWidth.blockSignals(False)
 
+        self.pageHeight.blockSignals(True)
         self.pageHeight.setDecimals(nDec)
         self.pageHeight.setSingleStep(nStep)
         self.pageHeight.setMaximum(pMax)
         self.pageHeight.setValue(pageHeight)
+        self.pageHeight.blockSignals(False)
 
         self.topMargin.setDecimals(nDec)
         self.topMargin.setSingleStep(nStep)
@@ -1237,22 +1243,31 @@ class _FormatTab(QWidget):
         self.rightMargin.setValue(rightMargin)
 
         self._unitScale = newScale
+        self._changePageSize(self.pageSize.currentIndex())
 
         return
 
     @pyqtSlot(int)
     def _changePageSize(self, index: int) -> None:
         """The page size has changed."""
-        self.pageWidth.setEnabled(True)
-        self.pageHeight.setEnabled(True)
-
         w, h = nwLabels.PAPER_SIZE[self.pageSize.itemData(index)] if index >= 0 else (-1.0, -1.0)
         if w > 0.0 and h > 0.0:
-            self.pageWidth.setEnabled(False)
-            self.pageHeight.setEnabled(False)
+            self.pageWidth.blockSignals(True)
             self.pageWidth.setValue(w/self._unitScale)
+            self.pageWidth.blockSignals(False)
+            self.pageHeight.blockSignals(True)
             self.pageHeight.setValue(h/self._unitScale)
+            self.pageHeight.blockSignals(False)
+        return
 
+    @pyqtSlot()
+    def _pageSizeValueChanged(self):
+        """The user has changed the page size spin boxes, so we flip
+        the page size box to Custom.
+        """
+        index = self.pageSize.findData("Custom")
+        if index >= 0:
+            self.pageSize.setCurrentIndex(index)
         return
 
 # END Class _FormatTab
