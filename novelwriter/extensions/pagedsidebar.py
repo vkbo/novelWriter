@@ -25,8 +25,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtGui import QColor, QPaintEvent, QPainter
-from PyQt5.QtCore import QRectF, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QColor, QPaintEvent, QPainter, QPolygon
+from PyQt5.QtCore import QPoint, QRectF, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractButton, QAction, QButtonGroup, QLabel, QSizePolicy, QStyle,
     QStyleOptionToolButton, QToolBar, QToolButton, QWidget
@@ -121,7 +121,7 @@ class NPagedSideBar(QToolBar):
 
 class _NPagedToolButton(QToolButton):
 
-    __slots__ = ("_bH", "_tM", "_lM", "_cR")
+    __slots__ = ("_bH", "_tM", "_lM", "_cR", "_aH")
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -131,9 +131,10 @@ class _NPagedToolButton(QToolButton):
 
         fH = self.fontMetrics().height()
         self._bH = round(fH * 1.7)
-        self._tM = (self._bH - fH) // 2
-        self._lM = self.style().pixelMetric(QStyle.PM_ButtonMargin)
-        self._cR = self._lM // 2
+        self._tM = (self._bH - fH)//2
+        self._lM = 3*self.style().pixelMetric(QStyle.PM_ButtonMargin)//2
+        self._cR = self._lM//2
+        self._aH = 2*fH//7
         self.setFixedHeight(self._bH)
 
         return
@@ -149,6 +150,7 @@ class _NPagedToolButton(QToolButton):
         paint = QPainter(self)
         paint.setRenderHint(QPainter.Antialiasing, True)
         paint.setPen(Qt.NoPen)
+        paint.setBrush(Qt.NoBrush)
 
         width = self.width()
         height = self.height()
@@ -169,12 +171,22 @@ class _NPagedToolButton(QToolButton):
         else:
             textCol = palette.text().color()
 
-        tW = width - 3*self._lM
+        tW = width - 2*self._lM
         tH = height - 2*self._tM
 
         paint.setPen(textCol)
         paint.setOpacity(1.0)
-        paint.drawText(QRectF(2*self._lM, self._tM, tW, tH), Qt.AlignLeft, self.text())
+        paint.drawText(QRectF(self._lM, self._tM, tW, tH), Qt.AlignLeft, self.text())
+
+        tC = self.height()//2
+        tW = self.width() - self._aH - self._lM
+        if self.isChecked():
+            paint.setBrush(textCol)
+        paint.drawPolygon(QPolygon([
+            QPoint(tW, tC - self._aH),
+            QPoint(tW + self._aH, tC),
+            QPoint(tW, tC + self._aH),
+        ]))
 
         return
 
@@ -192,8 +204,8 @@ class _NPagedToolLabel(QLabel):
 
         fH = self.fontMetrics().height()
         self._bH = round(fH * 1.7)
-        self._tM = (self._bH - fH) // 2
-        self._lM = self.style().pixelMetric(QStyle.PM_ButtonMargin)
+        self._tM = (self._bH - fH)//2
+        self._lM = self.style().pixelMetric(QStyle.PM_ButtonMargin)//2
         self.setFixedHeight(self._bH)
 
         self._textCol = textColor or self.palette().text().color()
