@@ -27,7 +27,7 @@ import logging
 
 from pathlib import Path
 
-from novelwriter.constants import nwLabels
+from novelwriter.constants import nwHeadFmt, nwLabels
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import Tokenizer
 
@@ -122,27 +122,27 @@ class ToMarkdown(Tokenizer):
                 thisPar = []
 
             elif tType == self.T_TITLE:
-                tHead = tText.replace(r"\\", "\n")
+                tHead = tText.replace(nwHeadFmt.BR, "\n")
                 tmpResult.append(f"# {tHead}\n\n")
 
             elif tType == self.T_UNNUM:
-                tHead = tText.replace(r"\\", "\n")
+                tHead = tText.replace(nwHeadFmt.BR, "\n")
                 tmpResult.append(f"## {tHead}\n\n")
 
             elif tType == self.T_HEAD1:
-                tHead = tText.replace(r"\\", "\n")
+                tHead = tText.replace(nwHeadFmt.BR, "\n")
                 tmpResult.append(f"# {tHead}\n\n")
 
             elif tType == self.T_HEAD2:
-                tHead = tText.replace(r"\\", "\n")
+                tHead = tText.replace(nwHeadFmt.BR, "\n")
                 tmpResult.append(f"## {tHead}\n\n")
 
             elif tType == self.T_HEAD3:
-                tHead = tText.replace(r"\\", "\n")
+                tHead = tText.replace(nwHeadFmt.BR, "\n")
                 tmpResult.append(f"### {tHead}\n\n")
 
             elif tType == self.T_HEAD4:
-                tHead = tText.replace(r"\\", "\n")
+                tHead = tText.replace(nwHeadFmt.BR, "\n")
                 tmpResult.append(f"#### {tHead}\n\n")
 
             elif tType == self.T_SEP:

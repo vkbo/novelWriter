@@ -429,7 +429,9 @@ def testBuildSettings_Headings(qtbot: QtBot, nwGUI: GuiMain):
     headTab.btnChapter.click()
     headTab.editTextBox.setPlainText(f"Chapter {nwHeadFmt.CH_NUM}\n{nwHeadFmt.TITLE}\n")
     headTab.btnApply.click()
-    assert build.getStr("headings.fmtChapter") == f"Chapter {nwHeadFmt.CH_NUM}//{nwHeadFmt.TITLE}"
+    assert build.getStr("headings.fmtChapter") == (
+        f"Chapter {nwHeadFmt.CH_NUM}{nwHeadFmt.BR}{nwHeadFmt.TITLE}"
+    )
 
     # Set all to plain title
     headTab.btnTitle.click()

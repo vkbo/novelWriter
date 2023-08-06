@@ -822,7 +822,7 @@ class _HeadingsTab(QWidget):
             text = ""
             label = self.tr("None")
 
-        self.editTextBox.setPlainText(text.replace("//", "\n"))
+        self.editTextBox.setPlainText(text.replace(nwHeadFmt.BR, "\n"))
         self.lblEditForm.setText(self.tr("Editing: {0}").format(label))
 
         return
@@ -834,7 +834,7 @@ class _HeadingsTab(QWidget):
     def _saveFormat(self) -> None:
         """Save the format from the edit text box."""
         heading = self._editing
-        text = self.editTextBox.toPlainText().strip().replace("\n", "//")
+        text = self.editTextBox.toPlainText().strip().replace("\n", nwHeadFmt.BR)
         if heading == self.EDIT_TITLE:
             self.fmtTitle.setText(text)
             self._build.setValue("headings.fmtTitle", text)

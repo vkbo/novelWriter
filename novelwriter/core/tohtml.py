@@ -31,7 +31,7 @@ from pathlib import Path
 
 from novelwriter import CONFIG
 from novelwriter.common import formatTimeStamp
-from novelwriter.constants import nwKeyWords, nwLabels, nwHtmlUnicode
+from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwHtmlUnicode
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import Tokenizer, stripEscape
 
@@ -244,27 +244,27 @@ class ToHtml(Tokenizer):
                 parStyle = None
 
             elif tType == self.T_TITLE:
-                tHead = tText.replace(r"\\", "<br/>")
+                tHead = tText.replace(nwHeadFmt.BR, "<br/>")
                 tmpResult.append(f"<h1 class='title'{hStyle}>{aNm}{tHead}</h1>\n")
 
             elif tType == self.T_UNNUM:
-                tHead = tText.replace(r"\\", "<br/>")
+                tHead = tText.replace(nwHeadFmt.BR, "<br/>")
                 tmpResult.append(f"<{h2}{hStyle}>{aNm}{tHead}</{h2}>\n")
 
             elif tType == self.T_HEAD1:
-                tHead = tText.replace(r"\\", "<br/>")
+                tHead = tText.replace(nwHeadFmt.BR, "<br/>")
                 tmpResult.append(f"<{h1}{h1Cl}{hStyle}>{aNm}{tHead}</{h1}>\n")
 
             elif tType == self.T_HEAD2:
-                tHead = tText.replace(r"\\", "<br/>")
+                tHead = tText.replace(nwHeadFmt.BR, "<br/>")
                 tmpResult.append(f"<{h2}{hStyle}>{aNm}{tHead}</{h2}>\n")
 
             elif tType == self.T_HEAD3:
-                tHead = tText.replace(r"\\", "<br/>")
+                tHead = tText.replace(nwHeadFmt.BR, "<br/>")
                 tmpResult.append(f"<{h3}{hStyle}>{aNm}{tHead}</{h3}>\n")
 
             elif tType == self.T_HEAD4:
-                tHead = tText.replace(r"\\", "<br/>")
+                tHead = tText.replace(nwHeadFmt.BR, "<br/>")
                 tmpResult.append(f"<{h4}{hStyle}>{aNm}{tHead}</{h4}>\n")
 
             elif tType == self.T_SEP:
