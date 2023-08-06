@@ -26,13 +26,12 @@ from __future__ import annotations
 import sys
 import logging
 
-from enum import Enum
 from time import time
 from pathlib import Path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt, QTimer, QThreadPool, pyqtSlot
-from PyQt5.QtGui import QCursor, QIcon, QKeySequence
+from PyQt5.QtGui import QCloseEvent, QCursor, QIcon, QKeySequence
 from PyQt5.QtWidgets import (
     qApp, QDialog, QFileDialog, QMainWindow, QMessageBox, QShortcut, QSplitter,
     QStackedWidget, QVBoxLayout, QWidget
@@ -64,7 +63,7 @@ from novelwriter.core.project import NWProject
 from novelwriter.core.coretools import ProjectBuilder
 
 from novelwriter.enum import (
-    nwDocMode, nwItemType, nwItemClass, nwAlert, nwWidget, nwView
+    nwDocAction, nwDocMode, nwItemType, nwItemClass, nwAlert, nwWidget, nwView
 )
 from novelwriter.common import getGuiItem, hexToInt
 from novelwriter.constants import nwFiles
@@ -92,7 +91,7 @@ class GuiMain(QMainWindow):
         shouldn't need).
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         logger.debug("Create: GUI")
@@ -328,9 +327,8 @@ class GuiMain(QMainWindow):
 
         return
 
-    def clearGUI(self):
-        """Wrapper function to clear all sub-elements of the main GUI.
-        """
+    def clearGUI(self) -> None:
+        """Clear all sub-elements of the main GUI."""
         # Project Area
         self.projView.clearProject()
         self.novelView.clearProject()
@@ -346,16 +344,15 @@ class GuiMain(QMainWindow):
         self.mainStatus.clearStatus()
         self._updateWindowTitle()
 
-        return True
+        return
 
-    def initMain(self):
-        """Initialise elements that depend on user settings.
-        """
+    def initMain(self) -> None:
+        """Initialise elements that depend on user settings."""
         self.asProjTimer.setInterval(int(CONFIG.autoSaveProj*1000))
         self.asDocTimer.setInterval(int(CONFIG.autoSaveDoc*1000))
-        return True
+        return
 
-    def postLaunchTasks(self, cmdOpen):
+    def postLaunchTasks(self, cmdOpen: str | None) -> None:
         """This function is called after the main window is created to
         determine what to open or show after initialisation.
         """
@@ -377,9 +374,8 @@ class GuiMain(QMainWindow):
     #  Project Actions
     ##
 
-    def newProject(self, projData=None):
-        """Create a new project via the new project wizard.
-        """
+    def newProject(self, projData: dict | None = None) -> bool:
+        """Create a new project via the new project wizard."""
         if self.hasProject:
             if not self.closeProject():
                 self.makeAlert(self.tr(
@@ -414,7 +410,7 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def closeProject(self, isYes=False):
+    def closeProject(self, isYes: bool = False) -> bool:
         """Close the project if one is open. isYes is passed on from the
         close application event so the user doesn't get prompted twice
         to confirm.
@@ -468,9 +464,8 @@ class GuiMain(QMainWindow):
 
         return saveOK
 
-    def openProject(self, projFile):
-        """Open a project from a projFile path.
-        """
+    def openProject(self, projFile: str | Path | None) -> bool:
+        """Open a project from a projFile path."""
         if projFile is None:
             return False
 
@@ -579,25 +574,21 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def saveProject(self, autoSave=False):
-        """Save the current project.
-        """
+    def saveProject(self, autoSave: bool = False) -> bool:
+        """Save the current project."""
         if not self.hasProject:
             logger.error("No project open")
             return False
-
         self.projView.saveProjectTasks()
         self.theProject.saveProject(autoSave=autoSave)
-
         return True
 
     ##
     #  Document Actions
     ##
 
-    def closeDocument(self, beforeOpen=False):
-        """Close the document and clear the editor and title field.
-        """
+    def closeDocument(self, beforeOpen: bool = False) -> bool:
+        """Close the document and clear the editor and title field."""
         if not self.hasProject:
             logger.error("No project open")
             return False
@@ -615,14 +606,14 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def openDocument(self, tHandle, tLine=None, changeFocus=True, doScroll=False):
-        """Open a specific document, optionally at a given line.
-        """
+    def openDocument(self, tHandle: str | None, tLine: int | None = None,
+                     changeFocus: bool = True, doScroll: bool = False) -> bool:
+        """Open a specific document, optionally at a given line."""
         if not self.hasProject:
             logger.error("No project open")
             return False
 
-        if not self.theProject.tree.checkType(tHandle, nwItemType.FILE):
+        if not tHandle or not self.theProject.tree.checkType(tHandle, nwItemType.FILE):
             logger.debug("Requested item '%s' is not a document", tHandle)
             return False
 
@@ -646,7 +637,7 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def openNextDocument(self, tHandle, wrapAround=False):
+    def openNextDocument(self, tHandle: str, wrapAround: bool = False) -> bool:
         """Opens the next document in the project tree, following the
         document with the given handle. Stops when reaching the end.
         """
@@ -677,20 +668,16 @@ class GuiMain(QMainWindow):
 
         return False
 
-    def saveDocument(self):
-        """Save the current documents.
-        """
+    def saveDocument(self) -> bool:
+        """Save the current documents."""
         if not self.hasProject:
             logger.error("No project open")
             return False
-
         self.docEditor.saveText()
-
         return True
 
-    def viewDocument(self, tHandle=None, sTitle=None):
-        """Load a document for viewing in the view panel.
-        """
+    def viewDocument(self, tHandle: str | None = None, sTitle: str | None = None) -> bool:
+        """Load a document for viewing in the view panel."""
         if not self.hasProject:
             logger.error("No project open")
             return False
@@ -732,7 +719,7 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def importDocument(self):
+    def importDocument(self) -> bool:
         """Import the text contained in an out-of-project text file, and
         insert the text into the currently open document.
         """
@@ -788,16 +775,16 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def passDocumentAction(self, theAction):
+    def passDocumentAction(self, action: nwDocAction) -> None:
         """Pass on document action to the document viewer if it has
         focus, or pass it to the document editor if it or any of
         its child widgets have focus. If neither has focus, ignore the
         action.
         """
         if self.docViewer.hasFocus():
-            self.docViewer.docAction(theAction)
+            self.docViewer.docAction(action)
         elif self.docEditor.hasFocus():
-            self.docEditor.docAction(theAction)
+            self.docEditor.docAction(action)
         else:
             logger.debug("Action cancelled as neither editor nor viewer has focus")
         return
@@ -806,7 +793,7 @@ class GuiMain(QMainWindow):
     #  Tree Item Actions
     ##
 
-    def openSelectedItem(self):
+    def openSelectedItem(self) -> bool:
         """Open the selected item from the tree that is currently
         active. It is not checked that the item is actually a document.
         That should be handled by the openDocument function.
@@ -838,9 +825,8 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def editItemLabel(self, tHandle=None):
-        """Open the edit item dialog.
-        """
+    def editItemLabel(self, tHandle: str | None = None) -> bool:
+        """Open the edit item dialog."""
         if not self.hasProject:
             logger.error("No project open")
             return False
@@ -851,15 +837,13 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def rebuildTrees(self):
-        """Rebuild the project tree.
-        """
+    def rebuildTrees(self) -> None:
+        """Rebuild the project tree."""
         self.projView.populateTree()
         return
 
-    def rebuildIndex(self, beQuiet=False):
-        """Rebuild the entire index.
-        """
+    def rebuildIndex(self, beQuiet: bool = False) -> bool:
+        """Rebuild the entire index."""
         if not self.hasProject:
             logger.error("No project open")
             return False
@@ -892,7 +876,7 @@ class GuiMain(QMainWindow):
     #  Main Dialogs
     ##
 
-    def showProjectLoadDialog(self):
+    def showProjectLoadDialog(self) -> None:
         """Open the projects dialog for selecting either existing
         projects from a cache of recently opened projects, or provide a
         browse button for projects not yet cached. Selecting to create a
@@ -907,11 +891,10 @@ class GuiMain(QMainWindow):
             elif dlgProj.openState == GuiProjectLoad.NEW_STATE:
                 self.newProject()
 
-        return True
+        return
 
-    def showNewProjectDialog(self):
-        """Open the wizard and assemble a project options dict.
-        """
+    def showNewProjectDialog(self) -> dict | None:
+        """Open the wizard and assemble a project options dict."""
         newProj = GuiProjectWizard(self)
         newProj.exec_()
 
@@ -920,9 +903,8 @@ class GuiMain(QMainWindow):
 
         return None
 
-    def showPreferencesDialog(self):
-        """Open the preferences dialog.
-        """
+    def showPreferencesDialog(self) -> None:
+        """Open the preferences dialog."""
         dlgConf = GuiPreferences(self)
         dlgConf.exec_()
 
@@ -967,9 +949,8 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot(int)
-    def showProjectSettingsDialog(self, focusTab=GuiProjectSettings.TAB_MAIN):
-        """Open the project settings dialog.
-        """
+    def showProjectSettingsDialog(self, focusTab: int = GuiProjectSettings.TAB_MAIN) -> bool:
+        """Open the project settings dialog."""
         if not self.hasProject:
             logger.error("No project open")
             return False
@@ -986,9 +967,8 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def showProjectDetailsDialog(self):
-        """Open the project details dialog.
-        """
+    def showProjectDetailsDialog(self) -> bool:
+        """Open the project details dialog."""
         if not self.hasProject:
             logger.error("No project open")
             return False
@@ -1006,9 +986,8 @@ class GuiMain(QMainWindow):
         return True
 
     @pyqtSlot()
-    def showBuildManuscriptDialog(self):
-        """Open the build manuscript dialog.
-        """
+    def showBuildManuscriptDialog(self) -> bool:
+        """Open the build manuscript dialog."""
         if not self.hasProject:
             logger.error("No project open")
             return False
@@ -1027,9 +1006,8 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def showLoremIpsumDialog(self):
-        """Open the insert lorem ipsum text dialog.
-        """
+    def showLoremIpsumDialog(self) -> bool:
+        """Open the insert lorem ipsum text dialog."""
         if not self.hasProject:
             logger.error("No project open")
             return False
@@ -1046,9 +1024,8 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def showProjectWordListDialog(self):
-        """Open the project word list dialog.
-        """
+    def showProjectWordListDialog(self) -> bool:
+        """Open the project word list dialog."""
         if not self.hasProject:
             logger.error("No project open")
             return False
@@ -1062,9 +1039,8 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def showWritingStatsDialog(self):
-        """Open the session stats dialog.
-        """
+    def showWritingStatsDialog(self) -> bool:
+        """Open the session stats dialog."""
         if not self.hasProject:
             logger.error("No project open")
             return False
@@ -1082,9 +1058,8 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def showAboutNWDialog(self, showNotes=False):
-        """Show the about dialog for novelWriter.
-        """
+    def showAboutNWDialog(self, showNotes: bool = False) -> bool:
+        """Show the about dialog for novelWriter."""
         dlgAbout = getGuiItem("GuiAbout")
         if dlgAbout is None:
             dlgAbout = GuiAbout(self)
@@ -1101,16 +1076,14 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def showAboutQtDialog(self):
-        """Show the about dialog for Qt.
-        """
+    def showAboutQtDialog(self) -> None:
+        """Show the about dialog for Qt."""
         msgBox = QMessageBox()
         msgBox.aboutQt(self, "About Qt")
-        return True
+        return
 
-    def showUpdatesDialog(self):
-        """Show the check for updates dialog.
-        """
+    def showUpdatesDialog(self) -> None:
+        """Show the check for updates dialog."""
         dlgUpdate = getGuiItem("GuiUpdates")
         if dlgUpdate is None:
             dlgUpdate = GuiUpdates(self)
@@ -1124,7 +1097,8 @@ class GuiMain(QMainWindow):
 
         return
 
-    def makeAlert(self, message, level=nwAlert.INFO, exception=None):
+    def makeAlert(self, message: list[str] | str, level: nwAlert = nwAlert.INFO,
+                  exception: Exception | None = None) -> None:
         """Alert both the user and the logger at the same time. The
         message can be either a string or a list of strings.
         """
@@ -1165,14 +1139,13 @@ class GuiMain(QMainWindow):
 
         return
 
-    def askQuestion(self, title, question):
-        """Ask the user a Yes/No question.
-        """
+    def askQuestion(self, title: str, question: str) -> bool:
+        """Ask the user a Yes/No question, and return the answer."""
         msgBox = QMessageBox()
         msgRes = msgBox.question(self, title, question, QMessageBox.Yes | QMessageBox.No)
         return msgRes == QMessageBox.Yes
 
-    def reportConfErr(self):
+    def reportConfErr(self) -> bool:
         """Checks if the Config module has any errors to report, and let
         the user know if this is the case. The Config module caches
         errors since it is initialised before the GUI itself.
@@ -1222,9 +1195,8 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def switchFocus(self, paneNo):
-        """Switch focus between main GUI views.
-        """
+    def switchFocus(self, paneNo: nwWidget) -> None:
+        """Switch focus between main GUI views."""
         if paneNo == nwWidget.TREE:
             tabIdx = self.projStack.currentIndex()
             if tabIdx == self.idxProjView:
@@ -1242,16 +1214,14 @@ class GuiMain(QMainWindow):
             self.outlineView.setTreeFocus()
         return
 
-    def closeDocEditor(self):
-        """Close the document edit panel. This does not hide the editor.
-        """
+    def closeDocEditor(self) -> None:
+        """Close the document editor. This does not hide the editor."""
         self.closeDocument()
         self.theProject.data.setLastHandle(None, "editor")
         return
 
-    def closeDocViewer(self, byUser=True):
-        """Close the document view panel.
-        """
+    def closeDocViewer(self, byUser: bool = True) -> bool:
+        """Close the document view panel."""
         self.docViewer.clearViewer()
         if byUser:
             # Only reset the last handle if the user called this
@@ -1264,8 +1234,9 @@ class GuiMain(QMainWindow):
 
         return not self.splitView.isVisible()
 
-    def toggleFocusMode(self):
-        """Main GUI Focus Mode hides tree, view, statusbar and menu.
+    def toggleFocusMode(self) -> bool:
+        """Handle toggle focus mode. The Main GUI Focus Mode hides tree,
+        view, statusbar and menu.
         """
         if self.docEditor.docHandle() is None:
             logger.error("No document open, so not activating Focus Mode")
@@ -1304,7 +1275,7 @@ class GuiMain(QMainWindow):
     #  Internal Functions
     ##
 
-    def _connectMenuActions(self):
+    def _connectMenuActions(self) -> None:
         """Connect to the main window all menu actions that need to be
         available also when the main menu is hidden.
         """
@@ -1394,40 +1365,17 @@ class GuiMain(QMainWindow):
         if isinstance(CONFIG.pdfDocs, Path):
             self.addAction(self.mainMenu.aPdfDocs)
 
-        return True
+        return
 
-    def _updateWindowTitle(self, projName=None):
-        """Set the window title and add the project's name.
-        """
+    def _updateWindowTitle(self, projName: str | None = None) -> None:
+        """Set the window title and add the project's name."""
         winTitle = CONFIG.appName
         if projName is not None:
             winTitle += " - %s" % projName
         self.setWindowTitle(winTitle)
-        return True
-
-    def _autoSaveProject(self):
-        """Triggered by the autosave project timer to save the project.
-        """
-        doSave  = self.hasProject
-        doSave &= self.theProject.projChanged
-        doSave &= self.theProject.storage.isOpen()
-
-        if doSave:
-            logger.debug("Autosaving project")
-            self.saveProject(autoSave=True)
-
         return
 
-    def _autoSaveDocument(self):
-        """Triggered by the autosave document timer to save the
-        document.
-        """
-        if self.hasProject and self.docEditor.docChanged():
-            logger.debug("Autosaving document")
-            self.saveDocument()
-        return
-
-    def _assembleProjectWizardData(self, newProj):
+    def _assembleProjectWizardData(self, newProj: GuiProjectWizard) -> dict:
         """Extract the user choices from the New Project Wizard and
         store them in a dictionary.
         """
@@ -1459,72 +1407,68 @@ class GuiMain(QMainWindow):
 
         return projData
 
-    def _getTagSource(self, tTag):
-        """A wrapper function for the index lookup of a tag that will
-        display an alert if the tag cannot be found.
+    def _getTagSource(self, tag: str) -> tuple[str | None, str | None]:
+        """Handle the index lookup of a tag and display an alert if the
+        tag cannot be found.
         """
-        tHandle, sTitle = self.theProject.index.getTagSource(tTag)
+        tHandle, sTitle = self.theProject.index.getTagSource(tag)
         if tHandle is None:
             self.makeAlert(self.tr(
                 "Could not find the reference for tag '{0}'. It either doesn't "
                 "exist, or the index is out of date. The index can be updated "
                 "from the Tools menu, or by pressing {1}."
             ).format(
-                tTag, "F9"
+                tag, "F9"
             ), nwAlert.ERROR)
             return None, None
-
         return tHandle, sTitle
 
     ##
     #  Events
     ##
 
-    def closeEvent(self, theEvent):
+    def closeEvent(self, event: QCloseEvent):
         """Capture the closing event of the GUI and call the close
         function to handle all the close process steps.
         """
         if self.closeMain():
-            theEvent.accept()
+            event.accept()
         else:
-            theEvent.ignore()
+            event.ignore()
         return
 
     ##
     #  Private Slots
     ##
 
-    @pyqtSlot(str, Enum)
-    def _followTag(self, tTag, tMode):
-        """Follow a tag after user interaction with a link.
-        """
-        tHandle, sTitle = self._getTagSource(tTag)
+    @pyqtSlot(str, nwDocMode)
+    def _followTag(self, tag: str, mode: nwDocMode) -> None:
+        """Follow a tag after user interaction with a link."""
+        tHandle, sTitle = self._getTagSource(tag)
         if tHandle is not None:
-            if tMode == nwDocMode.EDIT:
+            if mode == nwDocMode.EDIT:
                 self.openDocument(tHandle)
-            elif tMode == nwDocMode.VIEW:
+            elif mode == nwDocMode.VIEW:
                 self.viewDocument(tHandle=tHandle, sTitle=sTitle)
         return
 
-    @pyqtSlot(str, Enum, str, bool)
-    def _openDocument(self, tHandle, tMode, sTitle, setFocus):
-        """Handle an open document request from one of the tree views.
-        """
+    @pyqtSlot(str, nwDocMode, str, bool)
+    def _openDocument(self, tHandle: str, mode: nwDocMode, sTitle: str, setFocus: bool) -> None:
+        """Handle an open document request."""
         if tHandle is not None:
-            if tMode == nwDocMode.EDIT:
+            if mode == nwDocMode.EDIT:
                 tLine = None
                 hItem = self.theProject.index.getItemHeader(tHandle, sTitle)
                 if hItem is not None:
                     tLine = hItem.line
                 self.openDocument(tHandle, tLine=tLine, changeFocus=setFocus)
-            elif tMode == nwDocMode.VIEW:
+            elif mode == nwDocMode.VIEW:
                 self.viewDocument(tHandle=tHandle, sTitle=sTitle)
         return
 
     @pyqtSlot(nwView)
-    def _changeView(self, view):
-        """Handle the requested change of view from the GuiViewBar.
-        """
+    def _changeView(self, view: nwView) -> None:
+        """Handle the requested change of view from the GuiViewBar."""
         if view == nwView.EDITOR:
             # Only change the main stack, but not the project stack
             self.mainStack.setCurrentWidget(self.splitMain)
@@ -1543,9 +1487,8 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot()
-    def _timeTick(self):
-        """Triggered on every tick of the main timer.
-        """
+    def _timeTick(self) -> None:
+        """Process time tick of the main timer."""
         if not self.hasProject:
             return
 
@@ -1565,9 +1508,27 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot()
-    def _updateStatusWordCount(self):
-        """Update the word count on the status bar.
-        """
+    def _autoSaveProject(self) -> None:
+        """Autosave of the project. This is a timer-activated slot."""
+        doSave  = self.hasProject
+        doSave &= self.theProject.projChanged
+        doSave &= self.theProject.storage.isOpen()
+        if doSave:
+            logger.debug("Autosaving project")
+            self.saveProject(autoSave=True)
+        return
+
+    @pyqtSlot()
+    def _autoSaveDocument(self) -> None:
+        """Autosave of the document. This is a timer-activated slot."""
+        if self.hasProject and self.docEditor.docChanged():
+            logger.debug("Autosaving document")
+            self.saveDocument()
+        return
+
+    @pyqtSlot()
+    def _updateStatusWordCount(self) -> None:
+        """Update the word count on the status bar."""
         if not self.hasProject:
             self.mainStatus.setProjectStats(0, 0)
 
@@ -1584,7 +1545,7 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot()
-    def _keyPressReturn(self):
+    def _keyPressReturn(self) -> None:
         """Forward the return/enter keypress to the function that opens
         the currently selected item.
         """
@@ -1592,10 +1553,8 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot()
-    def _keyPressEscape(self):
-        """When the escape key is pressed somewhere in the main window,
-        do the following, in order:
-        """
+    def _keyPressEscape(self) -> None:
+        """Process escape keypress in the main window."""
         if self.docEditor.docSearch.isVisible():
             self.docEditor.closeSearch()
         elif self.isFocusMode:
@@ -1603,22 +1562,20 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot(int)
-    def _mainStackChanged(self, stIndex):
-        """Activated when the main window tab is changed.
-        """
-        if stIndex == self.idxOutlineView:
+    def _mainStackChanged(self, index: int) -> None:
+        """Process main window tab change."""
+        if index == self.idxOutlineView:
             if self.hasProject:
                 self.outlineView.refreshTree()
         return
 
     @pyqtSlot(int)
-    def _projStackChanged(self, stIndex):
-        """Activated when the project view tab is changed.
-        """
+    def _projStackChanged(self, index: int) -> None:
+        """Process project view tab change."""
         sHandle = None
-        if stIndex == self.idxProjView:
+        if index == self.idxProjView:
             sHandle = self.projView.getSelectedHandle()
-        elif stIndex == self.idxNovelView:
+        elif index == self.idxNovelView:
             sHandle, _ = self.novelView.getSelectedHandle()
         self.itemDetails.updateViewBox(sHandle)
         return
