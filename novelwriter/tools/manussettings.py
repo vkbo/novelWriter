@@ -344,11 +344,6 @@ class _FilterTab(QWidget):
         # Filters
         # =======
 
-        self.resetButton = QToolButton(self)
-        self.resetButton.setToolTip(self.tr("Reset to default"))
-        self.resetButton.setIcon(self.mainTheme.getIcon("revert"))
-        self.resetButton.clicked.connect(lambda: self._setSelectedMode(self.F_FILTERED))
-
         self.includedButton = QToolButton(self)
         self.includedButton.setToolTip(self.tr("Always included"))
         self.includedButton.setIcon(self._statusFlags[self.F_INCLUDED])
@@ -359,12 +354,18 @@ class _FilterTab(QWidget):
         self.excludedButton.setIcon(self._statusFlags[self.F_EXCLUDED])
         self.excludedButton.clicked.connect(lambda: self._setSelectedMode(self.F_EXCLUDED))
 
+        self.resetButton = QToolButton(self)
+        self.resetButton.setToolTip(self.tr("Reset to default"))
+        self.resetButton.setIcon(self.mainTheme.getIcon("revert"))
+        self.resetButton.clicked.connect(lambda: self._setSelectedMode(self.F_FILTERED))
+
         self.modeBox = QHBoxLayout()
         self.modeBox.addWidget(QLabel(self.tr("Mark selection as")))
         self.modeBox.addStretch(1)
-        self.modeBox.addWidget(self.resetButton)
         self.modeBox.addWidget(self.includedButton)
         self.modeBox.addWidget(self.excludedButton)
+        self.modeBox.addWidget(self.resetButton)
+        self.modeBox.setSpacing(CONFIG.pxInt(4))
 
         # Filer Options
         self.filterOpt = NSwitchBox(self, iPx)
