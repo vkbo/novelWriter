@@ -330,15 +330,13 @@ class GuiManuscript(QDialog):
     def _buildManuscript(self):
         """Open the build dialog and build the manuscript."""
         build = self._getSelectedBuild()
-        if build is None:
-            return
+        if isinstance(build, BuildSettings):
+            dlgBuild = GuiManuscriptBuild(self, self.mainGui, build)
+            dlgBuild.exec_()
 
-        dlgBuild = GuiManuscriptBuild(self, self.mainGui, build)
-        dlgBuild.exec_()
-
-        # After the build is done, save build settings changes
-        if build.changed:
-            self._builds.setBuild(build)
+            # After the build is done, save build settings changes
+            if build.changed:
+                self._builds.setBuild(build)
 
         return
 
@@ -376,10 +374,13 @@ class GuiManuscript(QDialog):
         return
 
     def _getSelectedBuild(self) -> BuildSettings | None:
-        """Get the currently selected build."""
-        bItems = self.buildList.selectedItems()
-        if bItems:
-            build = self._builds.getBuild(bItems[0].data(self.D_KEY))
+        """Get the currently selected build. If none are selected,
+        automatically select the first one.
+        """
+        items = self.buildList.selectedItems()
+        item = items[0] if items else self.buildList.item(0)
+        if item:
+            build = self._builds.getBuild(item.data(self.D_KEY))
             if isinstance(build, BuildSettings):
                 return build
         return None
@@ -634,7 +635,7 @@ class _PreviewWidget(QTextBrowser):
             )
         else:
             strBuildTime = self.tr("Unknown")
-        text = "{0} {1}".format(self.tr("Built"), strBuildTime)
+        text = "{0}: {1}".format(self.tr("Built"), strBuildTime)
         if self._buildName:
             text = "<b>{0}</b><br>{1}".format(self._buildName, text)
         self.ageLabel.setText(text)
