@@ -1,7 +1,6 @@
 """
 novelWriter – Custom Widget: Paged SideBar
 ==========================================
-A custom widget for making a sidebar for flipping through pages
 
 File History:
 Created: 2023-02-21 [2.1b1] NPagedSideBar
@@ -24,20 +23,26 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
-from PyQt5.QtGui import QColor, QPainter
+from PyQt5.QtGui import QColor, QPaintEvent, QPainter
 from PyQt5.QtCore import QRectF, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QButtonGroup, QLabel, QSizePolicy, QStyle, QStyleOptionToolButton, QToolBar,
-    QToolButton, QWidget
+    QAbstractButton, QAction, QButtonGroup, QLabel, QSizePolicy, QStyle,
+    QStyleOptionToolButton, QToolBar, QToolButton, QWidget
 )
 
 
 class NPagedSideBar(QToolBar):
+    """Extensions: Paged Side Bar
+
+    A side bar widget that holds buttons that mimic tabs. It is designed
+    to be used in combination with a QStackedWidget for options panels.
+    """
 
     buttonClicked = pyqtSignal(int)
 
-    def __init__(self, parent):
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
         self._buttons = []
@@ -58,7 +63,7 @@ class NPagedSideBar(QToolBar):
 
         return
 
-    def setLabelColor(self, color):
+    def setLabelColor(self, color: list | QColor) -> None:
         """Set the text color for the labels."""
         if isinstance(color, list):
             self._labelCol = QColor(*color)
@@ -66,7 +71,7 @@ class NPagedSideBar(QToolBar):
             self._labelCol = color
         return
 
-    def addSeparator(self):
+    def addSeparator(self) -> None:
         """Add a spacer widget."""
         spacer = QWidget(self)
         spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -74,16 +79,16 @@ class NPagedSideBar(QToolBar):
         self.insertWidget(self._stretchAction, spacer)
         return
 
-    def addLabel(self, text):
+    def addLabel(self, text: str) -> None:
         """Add a new label to the toolbar."""
-        label = NPagedToolLabel(self, self._labelCol)
+        label = _NPagedToolLabel(self, self._labelCol)
         label.setText(text)
         self.insertWidget(self._stretchAction, label)
         return
 
-    def addButton(self, text, buttonId=-1):
+    def addButton(self, text: str, buttonId: int = -1) -> QAction:
         """Add a new button to the toolbar."""
-        button = NPagedToolButton(self)
+        button = _NPagedToolButton(self)
         button.setText(text)
 
         action = self.insertWidget(self._stretchAction, button)
@@ -94,7 +99,7 @@ class NPagedSideBar(QToolBar):
 
         return action
 
-    def setSelected(self, buttonId):
+    def setSelected(self, buttonId: int) -> None:
         """Set the selected button."""
         self._group.button(buttonId).setChecked(True)
         return
@@ -104,7 +109,7 @@ class NPagedSideBar(QToolBar):
     ##
 
     @pyqtSlot("QAbstractButton*")
-    def _buttonClicked(self, button):
+    def _buttonClicked(self, button: QAbstractButton) -> None:
         """A button was clicked in the group, emit its id."""
         buttonId = self._group.id(button)
         if buttonId != -1:
@@ -114,11 +119,11 @@ class NPagedSideBar(QToolBar):
 # END Class NPagedSideBar
 
 
-class NPagedToolButton(QToolButton):
+class _NPagedToolButton(QToolButton):
 
     __slots__ = ("_bH", "_tM", "_lM", "_cR")
 
-    def __init__(self, parent):
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -133,7 +138,7 @@ class NPagedToolButton(QToolButton):
 
         return
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: QPaintEvent) -> None:
         """Overload the paint event to draw a simple, left aligned text
         label, with a highlight when selected and a transparent base
         colour when hovered.
@@ -164,23 +169,23 @@ class NPagedToolButton(QToolButton):
         else:
             textCol = palette.text().color()
 
-        tW = width - 2*self._lM
+        tW = width - 3*self._lM
         tH = height - 2*self._tM
 
         paint.setPen(textCol)
         paint.setOpacity(1.0)
-        paint.drawText(QRectF(self._lM, self._tM, tW, tH), Qt.AlignLeft, self.text())
+        paint.drawText(QRectF(2*self._lM, self._tM, tW, tH), Qt.AlignLeft, self.text())
 
         return
 
-# END Class NPagedToolButton
+# END Class _NPagedToolButton
 
 
-class NPagedToolLabel(QLabel):
+class _NPagedToolLabel(QLabel):
 
     __slots__ = ("_bH", "_tM", "_lM", "_textCol")
 
-    def __init__(self, parent, textColor=None):
+    def __init__(self, parent: QWidget, textColor: QColor | None = None) -> None:
         super().__init__(parent=parent)
 
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -195,7 +200,7 @@ class NPagedToolLabel(QLabel):
 
         return
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: QPaintEvent) -> None:
         """Overload the paint event to draw a simple, left aligned text
         label that matches the button style.
         """
@@ -215,4 +220,4 @@ class NPagedToolLabel(QLabel):
 
         return
 
-# END Class NPagedToolLabel
+# END Class _NPagedToolLabel
