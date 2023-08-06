@@ -106,7 +106,7 @@ class GuiBuildSettings(QDialog):
         self.optSideBar.setLabelColor(self.mainTheme.helpText)
 
         self.optSideBar.addLabel(self.tr("Options"))
-        self.optSideBar.addButton(self.tr("Filters"), self.OPT_FILTERS)
+        self.optSideBar.addButton(self.tr("Selection"), self.OPT_FILTERS)
         self.optSideBar.addButton(self.tr("Headings"), self.OPT_HEADINGS)
         self.optSideBar.addButton(self.tr("Content"), self.OPT_CONTENT)
         self.optSideBar.addButton(self.tr("Format"), self.OPT_FORMAT)
@@ -301,15 +301,18 @@ class _FilterTab(QWidget):
         self.mainTheme  = buildMain.mainGui.mainTheme
         self.theProject = buildMain.mainGui.theProject
 
-        self._treeMap = {}
+        self._treeMap: dict[str, QTreeWidgetItem] = {}
         self._build = build
 
-        self._statusFlags = {
-            self.F_NONE:     ("", QIcon()),
-            self.F_FILTERED: (self.tr("Filtered"), self.mainTheme.getIcon("build_filtered")),
-            self.F_INCLUDED: (self.tr("Included"), self.mainTheme.getIcon("build_included")),
-            self.F_EXCLUDED: (self.tr("Excluded"), self.mainTheme.getIcon("build_excluded")),
+        self._statusFlags: dict[int, QIcon] = {
+            self.F_NONE:     QIcon(),
+            self.F_FILTERED: self.mainTheme.getIcon("build_filtered"),
+            self.F_INCLUDED: self.mainTheme.getIcon("build_included"),
+            self.F_EXCLUDED: self.mainTheme.getIcon("build_excluded"),
         }
+
+        self._trIncluded = self.tr("Included in manuscript")
+        self._trExcluded = self.tr("Excluded from manuscript")
 
         # Project Tree
         # ============
@@ -341,25 +344,25 @@ class _FilterTab(QWidget):
         # Filters
         # =======
 
-        self.filteredButton = QToolButton(self)
-        self.filteredButton.setToolTip(self._statusFlags[self.F_FILTERED][0])
-        self.filteredButton.setIcon(self._statusFlags[self.F_FILTERED][1])
-        self.filteredButton.clicked.connect(lambda: self._setSelectedMode(self.F_FILTERED))
+        self.resetButton = QToolButton(self)
+        self.resetButton.setToolTip(self.tr("Reset to default"))
+        self.resetButton.setIcon(self.mainTheme.getIcon("revert"))
+        self.resetButton.clicked.connect(lambda: self._setSelectedMode(self.F_FILTERED))
 
         self.includedButton = QToolButton(self)
-        self.includedButton.setToolTip(self._statusFlags[self.F_INCLUDED][0])
-        self.includedButton.setIcon(self._statusFlags[self.F_INCLUDED][1])
+        self.includedButton.setToolTip(self.tr("Always included"))
+        self.includedButton.setIcon(self._statusFlags[self.F_INCLUDED])
         self.includedButton.clicked.connect(lambda: self._setSelectedMode(self.F_INCLUDED))
 
         self.excludedButton = QToolButton(self)
-        self.excludedButton.setToolTip(self._statusFlags[self.F_EXCLUDED][0])
-        self.excludedButton.setIcon(self._statusFlags[self.F_EXCLUDED][1])
+        self.excludedButton.setToolTip(self.tr("Always excluded"))
+        self.excludedButton.setIcon(self._statusFlags[self.F_EXCLUDED])
         self.excludedButton.clicked.connect(lambda: self._setSelectedMode(self.F_EXCLUDED))
 
         self.modeBox = QHBoxLayout()
         self.modeBox.addWidget(QLabel(self.tr("Mark selection as")))
         self.modeBox.addStretch(1)
-        self.modeBox.addWidget(self.filteredButton)
+        self.modeBox.addWidget(self.resetButton)
         self.modeBox.addWidget(self.includedButton)
         self.modeBox.addWidget(self.excludedButton)
 
@@ -549,13 +552,16 @@ class _FilterTab(QWidget):
         for tHandle, item in self._treeMap.items():
             allow, mode = filtered.get(tHandle, (False, FilterMode.UNKNOWN))
             if mode == FilterMode.INCLUDED:
-                item.setIcon(self.C_STATUS, self._statusFlags[self.F_INCLUDED][1])
+                item.setIcon(self.C_STATUS, self._statusFlags[self.F_INCLUDED])
+                item.setToolTip(self.C_STATUS, self._trIncluded)
             elif mode == FilterMode.EXCLUDED:
-                item.setIcon(self.C_STATUS, self._statusFlags[self.F_EXCLUDED][1])
+                item.setIcon(self.C_STATUS, self._statusFlags[self.F_EXCLUDED])
+                item.setToolTip(self.C_STATUS, self._trExcluded)
             elif mode == FilterMode.FILTERED and allow:
-                item.setIcon(self.C_STATUS, self._statusFlags[self.F_FILTERED][1])
+                item.setIcon(self.C_STATUS, self._statusFlags[self.F_FILTERED])
+                item.setToolTip(self.C_STATUS, self._trIncluded)
             else:
-                item.setIcon(self.C_STATUS, self._statusFlags[self.F_NONE][1])
+                item.setIcon(self.C_STATUS, self._statusFlags[self.F_NONE])
         return
 
 # END Class _FilterTab

@@ -266,7 +266,7 @@ def testBuildSettings_Filter(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockR
     filterTab._treeMap[C.hSceneDoc].setSelected(True)
     filterTab._treeMap[hPlotDoc].setSelected(True)
     filterTab._treeMap[hCharDoc].setSelected(True)
-    filterTab.filteredButton.click()
+    filterTab.resetButton.click()
     assert build.buildItemFilter(nwGUI.theProject) == {
         C.hNovelRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (True,  FilterMode.FILTERED),
