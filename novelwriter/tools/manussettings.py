@@ -69,7 +69,7 @@ class GuiBuildSettings(QDialog):
 
     newSettingsReady = pyqtSignal(BuildSettings)
 
-    def __init__(self, parent: QWidget, mainGui: GuiMain, build: BuildSettings):
+    def __init__(self, parent: QWidget, mainGui: GuiMain, build: BuildSettings) -> None:
         super().__init__(parent=parent)
 
         logger.debug("Create: GuiBuildSettings")
@@ -169,10 +169,10 @@ class GuiBuildSettings(QDialog):
 
         return
 
-    def __del__(self):  # pragma: no cover
+    def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiBuildSettings")
 
-    def loadContent(self):
+    def loadContent(self) -> None:
         """Populate the child widgets."""
         self.editBuildName.setText(self._build.name)
         self.optTabSelect.loadContent()
@@ -187,7 +187,7 @@ class GuiBuildSettings(QDialog):
     ##
 
     @pyqtSlot(int)
-    def _stackPageSelected(self, pageId: int):
+    def _stackPageSelected(self, pageId: int) -> None:
         """Process a user request to switch page."""
         if pageId == self.OPT_FILTERS:
             self.toolStack.setCurrentWidget(self.optTabSelect)
@@ -202,7 +202,7 @@ class GuiBuildSettings(QDialog):
         return
 
     @pyqtSlot("QAbstractButton*")
-    def _dialogButtonClicked(self, button: QAbstractButton):
+    def _dialogButtonClicked(self, button: QAbstractButton) -> None:
         """Handle button clicks from the dialog button box."""
         role = self.dlgButtons.buttonRole(button)
         if role == QDialogButtonBox.ApplyRole:
@@ -218,7 +218,7 @@ class GuiBuildSettings(QDialog):
     #  Events
     ##
 
-    def closeEvent(self, event: QEvent):
+    def closeEvent(self, event: QEvent) -> None:
         """Capture the user closing the window so we can save
         settings.
         """
@@ -233,7 +233,7 @@ class GuiBuildSettings(QDialog):
     #  Internal Functions
     ##
 
-    def _askToSaveBuild(self):
+    def _askToSaveBuild(self) -> None:
         """Check if there are unsaved changes, and if there are, ask if
         it's ok to reject them.
         """
@@ -247,7 +247,7 @@ class GuiBuildSettings(QDialog):
             self._build.resetChangedState()
         return
 
-    def _saveSettings(self):
+    def _saveSettings(self) -> None:
         """Save the various user settings."""
         logger.debug("Saving GuiBuildSettings settings")
 
@@ -265,7 +265,7 @@ class GuiBuildSettings(QDialog):
 
         return
 
-    def _emitBuildData(self):
+    def _emitBuildData(self) -> None:
         """Assemble the build data and emit the signal."""
         self._build.setName(self.editBuildName.text())
         self.optTabHeadings.saveContent()
@@ -294,7 +294,7 @@ class _FilterTab(QWidget):
     F_INCLUDED = 2
     F_EXCLUDED = 3
 
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
+    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
         super().__init__(parent=buildMain)
 
         self.mainGui    = buildMain.mainGui
@@ -401,7 +401,7 @@ class _FilterTab(QWidget):
 
         return
 
-    def loadContent(self):
+    def loadContent(self) -> None:
         """Populate the widgets."""
         self._populateTree()
         self._populateFilters()
@@ -418,7 +418,7 @@ class _FilterTab(QWidget):
     ##
 
     @pyqtSlot(str, bool)
-    def _applyFilterSwitch(self, key: str, state: bool):
+    def _applyFilterSwitch(self, key: str, state: bool) -> None:
         """Apply filter switch and update the settings."""
         if key.startswith("doc:"):
             self._build.setValue(key[4:], state)
@@ -432,7 +432,7 @@ class _FilterTab(QWidget):
     #  Internal Functions
     ##
 
-    def _populateTree(self):
+    def _populateTree(self) -> None:
         """Build the tree of project items."""
         logger.debug("Building project tree")
         self._treeMap = {}
@@ -486,7 +486,7 @@ class _FilterTab(QWidget):
 
         return
 
-    def _populateFilters(self):
+    def _populateFilters(self) -> None:
         """Populate the filter options switches."""
         self.filterOpt.clear()
         self.filterOpt.addLabel(self._build.getLabel("filter"))
@@ -512,7 +512,7 @@ class _FilterTab(QWidget):
         self.filterOpt.addSeparator()
 
         # Root Classes
-        self.filterOpt.addLabel(self.tr("Root Folders"))
+        self.filterOpt.addLabel(self.tr("Select Root Folders"))
         for tHandle, nwItem in self.theProject.tree.iterRoots(None):
             if not nwItem.isInactiveClass():
                 itemIcon = self.mainTheme.getItemIcon(
@@ -525,7 +525,7 @@ class _FilterTab(QWidget):
 
         return
 
-    def _setSelectedMode(self, mode: int):
+    def _setSelectedMode(self, mode: int) -> None:
         """Set the mode for the selected items."""
         for item in self.optTree.selectedItems():
             if isinstance(item, QTreeWidgetItem):
@@ -543,7 +543,7 @@ class _FilterTab(QWidget):
 
         return
 
-    def _setTreeItemMode(self):
+    def _setTreeItemMode(self) -> None:
         """Update the filtered mode icon on all items."""
         filtered = self._build.buildItemFilter(self.theProject)
         for tHandle, item in self._treeMap.items():
@@ -569,7 +569,7 @@ class _HeadingsTab(QWidget):
     EDIT_SCENE   = 4
     EDIT_SECTION = 5
 
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
+    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
         super().__init__(parent=buildMain)
 
         self.mainGui    = buildMain.mainGui
@@ -747,7 +747,7 @@ class _HeadingsTab(QWidget):
 
         return
 
-    def loadContent(self):
+    def loadContent(self) -> None:
         """Populate the widgets."""
         self.fmtTitle.setText(self._build.getStr("headings.fmtTitle"))
         self.fmtChapter.setText(self._build.getStr("headings.fmtChapter"))
@@ -758,7 +758,7 @@ class _HeadingsTab(QWidget):
         self.swtSection.setChecked(self._build.getBool("headings.hideSection"))
         return
 
-    def saveContent(self):
+    def saveContent(self) -> None:
         """Save choices back into build object."""
         self._build.setValue("headings.hideScene", self.swtScene.isChecked())
         self._build.setValue("headings.hideSection", self.swtSection.isChecked())
@@ -768,7 +768,7 @@ class _HeadingsTab(QWidget):
     #  Internal Functions
     ##
 
-    def _insertIntoForm(self, text: str):
+    def _insertIntoForm(self, text: str) -> None:
         """Insert formatting text from the dropdown menu."""
         if self._editing > 0:
             cursor = self.editTextBox.textCursor()
@@ -776,7 +776,7 @@ class _HeadingsTab(QWidget):
             self.editTextBox.setFocus()
         return
 
-    def _editHeading(self, heading: int):
+    def _editHeading(self, heading: int) -> None:
         """Populate the form with a specific heading format."""
         self._editing = heading
         self.editTextBox.setEnabled(True)
@@ -810,7 +810,7 @@ class _HeadingsTab(QWidget):
     #  Private Slots
     ##
 
-    def _saveFormat(self):
+    def _saveFormat(self) -> None:
         """Save the format from the edit text box."""
         heading = self._editing
         text = self.editTextBox.toPlainText().strip().replace("\n", "//")
@@ -842,7 +842,7 @@ class _HeadingsTab(QWidget):
 
 class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
 
-    def __init__(self, document: QTextDocument, mainTheme: GuiTheme):
+    def __init__(self, document: QTextDocument, mainTheme: GuiTheme) -> None:
         super().__init__(document)
         self._fmtSymbol = QTextCharFormat()
         self._fmtSymbol.setForeground(QColor(*mainTheme.colHead))
@@ -850,7 +850,7 @@ class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
         self._fmtFormat.setForeground(QColor(*mainTheme.colEmph))
         return
 
-    def highlightBlock(self, text: str):
+    def highlightBlock(self, text: str) -> None:
         """Add syntax highlighting to the text block."""
         for heading in nwHeadFmt.ALL:
             pos = text.find(heading)
@@ -868,7 +868,7 @@ class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
 
 class _ContentTab(QWidget):
 
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
+    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
         super().__init__(parent=buildMain)
 
         self.mainGui    = buildMain.mainGui
@@ -917,7 +917,7 @@ class _ContentTab(QWidget):
 
         return
 
-    def loadContent(self):
+    def loadContent(self) -> None:
         """Populate the widgets."""
         self.incSynopsis.setChecked(self._build.getBool("text.includeSynopsis"))
         self.incComments.setChecked(self._build.getBool("text.includeComments"))
@@ -926,7 +926,7 @@ class _ContentTab(QWidget):
         self.addNoteHead.setChecked(self._build.getBool("text.addNoteHeadings"))
         return
 
-    def saveContent(self):
+    def saveContent(self) -> None:
         """Save choices back into build object."""
         self._build.setValue("text.includeSynopsis", self.incSynopsis.isChecked())
         self._build.setValue("text.includeComments", self.incComments.isChecked())
@@ -940,7 +940,7 @@ class _ContentTab(QWidget):
 
 class _FormatTab(QWidget):
 
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
+    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
         super().__init__(parent=buildMain)
 
         self.buildMain  = buildMain
@@ -1085,7 +1085,7 @@ class _FormatTab(QWidget):
 
         return
 
-    def loadContent(self):
+    def loadContent(self) -> None:
         """Populate the widgets."""
         langIdx = self.buildLang.findData(self._build.getStr("format.buildLang"))
         if langIdx != -1:
@@ -1128,7 +1128,7 @@ class _FormatTab(QWidget):
 
         return
 
-    def saveContent(self):
+    def saveContent(self) -> None:
         """Save choices back into build object."""
         self._build.setValue("format.buildLang", str(self.buildLang.currentData()))
         self._build.setValue("format.textFont", self.textFont.text())
@@ -1154,7 +1154,7 @@ class _FormatTab(QWidget):
     ##
 
     @pyqtSlot()
-    def _selectFont(self):
+    def _selectFont(self) -> None:
         """Open the QFontDialog and set a font for the font style."""
         currFont = QFont()
         currFont.setFamily(self.textFont.text())
@@ -1166,7 +1166,7 @@ class _FormatTab(QWidget):
         return
 
     @pyqtSlot(int)
-    def _changeUnit(self, index: int):
+    def _changeUnit(self, index: int) -> None:
         """The current unit change, so recalculate sizes."""
         newUnit = self.pageUnit.itemData(index)
         newScale = nwLabels.UNIT_SCALE.get(newUnit, 1.0)
@@ -1220,7 +1220,7 @@ class _FormatTab(QWidget):
         return
 
     @pyqtSlot(int)
-    def _changePageSize(self, index: int):
+    def _changePageSize(self, index: int) -> None:
         """The page size has changed."""
         self.pageWidth.setEnabled(True)
         self.pageHeight.setEnabled(True)
@@ -1239,7 +1239,7 @@ class _FormatTab(QWidget):
 
 class _OutputTab(QWidget):
 
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings):
+    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
         super().__init__(parent=buildMain)
 
         self.mainGui    = buildMain.mainGui
@@ -1282,13 +1282,13 @@ class _OutputTab(QWidget):
 
         return
 
-    def loadContent(self):
+    def loadContent(self) -> None:
         """Populate the widgets."""
         self.odtAddColours.setChecked(self._build.getBool("odt.addColours"))
         self.htmlAddStyles.setChecked(self._build.getBool("html.addStyles"))
         return
 
-    def saveContent(self):
+    def saveContent(self) -> None:
         """Save choices back into build object."""
         self._build.setValue("odt.addColours", self.odtAddColours.isChecked())
         self._build.setValue("html.addStyles", self.htmlAddStyles.isChecked())
