@@ -175,10 +175,9 @@ class Config:
         self.spellLanguage = "en"
 
         # State
-        self.isFullScreen = False  # Last fullscreen state
-        self.showRefPanel = True   # The reference panel for the viewer is visible
-        self.viewComments = True   # Comments are shown in the viewer
-        self.viewSynopsis = True   # Synopsis is shown in the viewer
+        self.showRefPanel = True  # The reference panel for the viewer is visible
+        self.viewComments = True  # Comments are shown in the viewer
+        self.viewSynopsis = True  # Synopsis is shown in the viewer
 
         # Search Bar Switches
         self.searchCase     = False
@@ -603,7 +602,6 @@ class Config:
 
         # State
         cnfSec = "State"
-        self.isFullScreen   = theConf.rdBool(cnfSec, "fullscreen", self.isFullScreen)
         self.showRefPanel   = theConf.rdBool(cnfSec, "showrefpanel", self.showRefPanel)
         self.viewComments   = theConf.rdBool(cnfSec, "viewcomments", self.viewComments)
         self.viewSynopsis   = theConf.rdBool(cnfSec, "viewsynopsis", self.viewSynopsis)
@@ -732,7 +730,6 @@ class Config:
         }
 
         theConf["State"] = {
-            "fullscreen":      str(self.isFullScreen),
             "showrefpanel":    str(self.showRefPanel),
             "viewcomments":    str(self.viewComments),
             "viewsynopsis":    str(self.viewSynopsis),

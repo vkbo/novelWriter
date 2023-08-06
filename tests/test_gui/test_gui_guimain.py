@@ -590,11 +590,11 @@ def testGuiMain_FocusFullMode(qtbot, nwGUI, projPath, mockRnd):
     # Full Screen Mode
     # ================
 
-    assert CONFIG.isFullScreen is False
+    assert nwGUI.windowState() & Qt.WindowFullScreen != Qt.WindowFullScreen
     nwGUI.toggleFullScreenMode()
-    assert CONFIG.isFullScreen is True
+    assert nwGUI.windowState() & Qt.WindowFullScreen == Qt.WindowFullScreen
     nwGUI.toggleFullScreenMode()
-    assert CONFIG.isFullScreen is False
+    assert nwGUI.windowState() & Qt.WindowFullScreen != Qt.WindowFullScreen
 
     # qtbot.stop()
 
