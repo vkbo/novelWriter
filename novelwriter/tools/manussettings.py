@@ -69,8 +69,8 @@ class GuiBuildSettings(QDialog):
 
     newSettingsReady = pyqtSignal(BuildSettings)
 
-    def __init__(self, parent: QWidget, mainGui: GuiMain, build: BuildSettings) -> None:
-        super().__init__(parent=parent)
+    def __init__(self, mainGui: GuiMain, build: BuildSettings) -> None:
+        super().__init__(parent=mainGui)
 
         logger.debug("Create: GuiBuildSettings")
         self.setObjectName("GuiBuildSettings")
@@ -171,6 +171,7 @@ class GuiBuildSettings(QDialog):
 
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiBuildSettings")
+        return
 
     def loadContent(self) -> None:
         """Populate the child widgets."""
@@ -181,6 +182,15 @@ class GuiBuildSettings(QDialog):
         self.optTabFormat.loadContent()
         self.optTabOutput.loadContent()
         return
+
+    ##
+    #  Properties
+    ##
+
+    @property
+    def buildID(self) -> str:
+        """The build ID of the build of the dialog."""
+        return self._build.buildID
 
     ##
     #  Private Slots

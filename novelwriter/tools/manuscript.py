@@ -30,7 +30,7 @@ from time import time
 from typing import TYPE_CHECKING
 from datetime import datetime
 
-from PyQt5.QtGui import QColor, QCursor, QFont, QPalette, QResizeEvent
+from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
 from PyQt5.QtCore import QSize, QTimer, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog, QGridLayout, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton,
@@ -231,13 +231,13 @@ class GuiManuscript(QDialog):
     #  Events
     ##
 
-    def closeEvent(self, event):
+    def closeEvent(self, event: QCloseEvent):
         """Capture the user closing the window so we can save GUI
         settings. We also check that we don't have a build settings
         dialog open.
         """
         self._saveSettings()
-        for obj in self.children():
+        for obj in self.mainGui.children():
             # Make sure we don't have any settings windows open
             if isinstance(obj, GuiBuildSettings) and obj.isVisible():
                 obj.close()
@@ -407,13 +407,23 @@ class GuiManuscript(QDialog):
 
     def _openSettingsDialog(self, build: BuildSettings):
         """Open the build settings dialog."""
-        dlgSettings = GuiBuildSettings(self, self.mainGui, build)
+        for obj in self.mainGui.children():
+            # Don't open a second dialog if one exists
+            if isinstance(obj, GuiBuildSettings):
+                if obj.buildID == build.buildID:
+                    logger.debug("Found instance of GuiBuildSettings")
+                    obj.show()
+                    obj.raise_()
+                    return
+
+        dlgSettings = GuiBuildSettings(self.mainGui, build)
         dlgSettings.setModal(False)
         dlgSettings.show()
         dlgSettings.raise_()
         qApp.processEvents()
         dlgSettings.loadContent()
         dlgSettings.newSettingsReady.connect(self._processNewSettings)
+
         return
 
     def _updateBuildsList(self):

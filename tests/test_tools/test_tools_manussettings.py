@@ -47,7 +47,7 @@ def testBuildSettings_Init(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockRnd
     build = BuildSettings()
 
     # Create the dialog and populate it
-    bSettings = GuiBuildSettings(nwGUI, nwGUI, build)
+    bSettings = GuiBuildSettings(nwGUI, build)
     bSettings.show()
     bSettings.loadContent()
 
@@ -135,7 +135,7 @@ def testBuildSettings_Filter(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockR
     nwGUI.theProject.tree[hPlotDoc].setActive(False)  # type: ignore
 
     # Create the dialog and populate it
-    bSettings = GuiBuildSettings(nwGUI, nwGUI, build)
+    bSettings = GuiBuildSettings(nwGUI, build)
     bSettings.show()
     bSettings.loadContent()
 
@@ -337,7 +337,7 @@ def testBuildSettings_Headings(qtbot: QtBot, nwGUI: GuiMain):
     build.setValue("headings.hideSection", False)
 
     # Create the dialog and populate it
-    bSettings = GuiBuildSettings(nwGUI, nwGUI, build)
+    bSettings = GuiBuildSettings(nwGUI, build)
     bSettings.show()
     bSettings.loadContent()
 
@@ -486,7 +486,7 @@ def testBuildSettings_Content(qtbot: QtBot, nwGUI: GuiMain):
     build.setValue("text.addNoteHeadings", False)
 
     # Create the dialog and populate it
-    bSettings = GuiBuildSettings(nwGUI, nwGUI, build)
+    bSettings = GuiBuildSettings(nwGUI, build)
     bSettings.show()
     bSettings.loadContent()
 
@@ -553,7 +553,7 @@ def testBuildSettings_Format(monkeypatch, qtbot: QtBot, nwGUI: GuiMain):
     build.setValue("format.rightMargin", 15.0)
 
     # Create the dialog and populate it
-    bSettings = GuiBuildSettings(nwGUI, nwGUI, build)
+    bSettings = GuiBuildSettings(nwGUI, build)
     bSettings.show()
     bSettings.loadContent()
 
@@ -641,7 +641,7 @@ def testBuildSettings_Output(qtbot: QtBot, nwGUI: GuiMain):
     build.setValue("html.addStyles", False)
 
     # Create the dialog and populate it
-    bSettings = GuiBuildSettings(nwGUI, nwGUI, build)
+    bSettings = GuiBuildSettings(nwGUI, build)
     bSettings.show()
     bSettings.loadContent()
 
