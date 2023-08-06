@@ -1202,6 +1202,7 @@ class GuiProjectTree(QTreeWidget):
         open a context menu in-place.
         """
         tItem = None
+        tHandle = None
         hasChild = False
         selItem = self.itemAt(clickPos)
         if isinstance(selItem, QTreeWidgetItem):
@@ -1209,7 +1210,7 @@ class GuiProjectTree(QTreeWidget):
             tItem = self.theProject.tree[tHandle]
             hasChild = selItem.childCount() > 0
 
-        if tItem is None:
+        if tItem is None or tHandle is None:
             logger.debug("No item found")
             return False
 
