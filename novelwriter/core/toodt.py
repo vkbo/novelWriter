@@ -36,7 +36,7 @@ from datetime import datetime
 
 from novelwriter import __version__
 from novelwriter.common import xmlIndent
-from novelwriter.constants import nwKeyWords, nwLabels
+from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import Tokenizer, stripEscape
 
@@ -445,27 +445,27 @@ class ToOdt(Tokenizer):
                 parStyle = None
 
             elif tType == self.T_TITLE:
-                tHead = tText.replace(r"\\", "\n")
+                tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._addTextPar("Title", oStyle, tHead, isHead=False)  # Title must be text:p
 
             elif tType == self.T_UNNUM:
-                tHead = tText.replace(r"\\", "\n")
+                tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._addTextPar("Heading_20_2", oStyle, tHead, isHead=True, oLevel="2")
 
             elif tType == self.T_HEAD1:
-                tHead = tText.replace(r"\\", "\n")
+                tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._addTextPar("Heading_20_1", oStyle, tHead, isHead=True, oLevel="1")
 
             elif tType == self.T_HEAD2:
-                tHead = tText.replace(r"\\", "\n")
+                tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._addTextPar("Heading_20_2", oStyle, tHead, isHead=True, oLevel="2")
 
             elif tType == self.T_HEAD3:
-                tHead = tText.replace(r"\\", "\n")
+                tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._addTextPar("Heading_20_3", oStyle, tHead, isHead=True, oLevel="3")
 
             elif tType == self.T_HEAD4:
-                tHead = tText.replace(r"\\", "\n")
+                tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._addTextPar("Heading_20_4", oStyle, tHead, isHead=True, oLevel="4")
 
             elif tType == self.T_SEP:

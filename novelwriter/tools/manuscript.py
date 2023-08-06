@@ -30,7 +30,7 @@ from time import time
 from typing import TYPE_CHECKING
 from datetime import datetime
 
-from PyQt5.QtGui import QColor, QCursor, QFont, QPalette, QResizeEvent
+from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
 from PyQt5.QtCore import QSize, QTimer, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog, QGridLayout, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton,
@@ -231,13 +231,13 @@ class GuiManuscript(QDialog):
     #  Events
     ##
 
-    def closeEvent(self, event):
+    def closeEvent(self, event: QCloseEvent):
         """Capture the user closing the window so we can save GUI
         settings. We also check that we don't have a build settings
         dialog open.
         """
         self._saveSettings()
-        for obj in self.children():
+        for obj in self.mainGui.children():
             # Make sure we don't have any settings windows open
             if isinstance(obj, GuiBuildSettings) and obj.isVisible():
                 obj.close()
@@ -330,15 +330,13 @@ class GuiManuscript(QDialog):
     def _buildManuscript(self):
         """Open the build dialog and build the manuscript."""
         build = self._getSelectedBuild()
-        if build is None:
-            return
+        if isinstance(build, BuildSettings):
+            dlgBuild = GuiManuscriptBuild(self, self.mainGui, build)
+            dlgBuild.exec_()
 
-        dlgBuild = GuiManuscriptBuild(self, self.mainGui, build)
-        dlgBuild.exec_()
-
-        # After the build is done, save build settings changes
-        if build.changed:
-            self._builds.setBuild(build)
+            # After the build is done, save build settings changes
+            if build.changed:
+                self._builds.setBuild(build)
 
         return
 
@@ -376,10 +374,13 @@ class GuiManuscript(QDialog):
         return
 
     def _getSelectedBuild(self) -> BuildSettings | None:
-        """Get the currently selected build."""
-        bItems = self.buildList.selectedItems()
-        if bItems:
-            build = self._builds.getBuild(bItems[0].data(self.D_KEY))
+        """Get the currently selected build. If none are selected,
+        automatically select the first one.
+        """
+        items = self.buildList.selectedItems()
+        item = items[0] if items else self.buildList.item(0)
+        if item:
+            build = self._builds.getBuild(item.data(self.D_KEY))
             if isinstance(build, BuildSettings):
                 return build
         return None
@@ -406,13 +407,23 @@ class GuiManuscript(QDialog):
 
     def _openSettingsDialog(self, build: BuildSettings):
         """Open the build settings dialog."""
-        dlgSettings = GuiBuildSettings(self, self.mainGui, build)
+        for obj in self.mainGui.children():
+            # Don't open a second dialog if one exists
+            if isinstance(obj, GuiBuildSettings):
+                if obj.buildID == build.buildID:
+                    logger.debug("Found instance of GuiBuildSettings")
+                    obj.show()
+                    obj.raise_()
+                    return
+
+        dlgSettings = GuiBuildSettings(self.mainGui, build)
         dlgSettings.setModal(False)
         dlgSettings.show()
         dlgSettings.raise_()
         qApp.processEvents()
         dlgSettings.loadContent()
         dlgSettings.newSettingsReady.connect(self._processNewSettings)
+
         return
 
     def _updateBuildsList(self):
@@ -634,7 +645,7 @@ class _PreviewWidget(QTextBrowser):
             )
         else:
             strBuildTime = self.tr("Unknown")
-        text = "{0} {1}".format(self.tr("Built"), strBuildTime)
+        text = "{0}: {1}".format(self.tr("Built"), strBuildTime)
         if self._buildName:
             text = "<b>{0}</b><br>{1}".format(self._buildName, text)
         self.ageLabel.setText(text)

@@ -257,6 +257,7 @@ class nwLabels:
 
 class nwHeadFmt:
 
+    BR      = "{BR}"
     TITLE   = "{Title}"
     CH_NUM  = "{Chapter}"
     CH_WORD = "{Chapter:Word}"

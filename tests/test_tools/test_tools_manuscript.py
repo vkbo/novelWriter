@@ -168,11 +168,12 @@ def testManuscript_Features(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath:
     # ========
 
     # No build selected
-    manus.buildList.clearSelection()
+    manus.buildList.clear()
     manus.btnPreview.click()
     qtbot.wait(200)  # Should be enough to run the build
     assert manus.docPreview.toPlainText().strip() == ""
     assert cacheFile.exists() is False
+    manus._updateBuildsList()
 
     # Preview the first, but fail to save cache
     manus.buildList.setCurrentRow(0)
@@ -207,12 +208,6 @@ def testManuscript_Features(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath:
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.tools.manusbuild.GuiManuscriptBuild.exec_", lambda *a: None)
 
-        # With no selection, no dialog should be created
-        manus.btnBuild.click()
-        for obj in manus.children():
-            assert not isinstance(obj, GuiManuscriptBuild)
-
-        # With a selection, there should be one
         manus.buildList.setCurrentRow(0)
         manus.btnBuild.click()
         for obj in manus.children():
