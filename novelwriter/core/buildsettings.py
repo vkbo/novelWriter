@@ -125,10 +125,10 @@ SETTINGS_LABELS = {
     "format.leftMargin":      QT_TRANSLATE_NOOP("Builds", "Left Margin"),
     "format.rightMargin":     QT_TRANSLATE_NOOP("Builds", "Right Margin"),
 
-    "odt":                    QT_TRANSLATE_NOOP("Builds", "Open Document"),
+    "odt":                    QT_TRANSLATE_NOOP("Builds", "Open Document (.odt)"),
     "odt.addColours":         QT_TRANSLATE_NOOP("Builds", "Add Highlight Colours"),
 
-    "html":                   QT_TRANSLATE_NOOP("Builds", "HTML"),
+    "html":                   QT_TRANSLATE_NOOP("Builds", "HTML (.html)"),
     "html.addStyles":         QT_TRANSLATE_NOOP("Builds", "Add CSS Styles"),
 }
 
