@@ -313,8 +313,6 @@ class GuiMain(QMainWindow):
 
         # Handle Windows Mode
         self.showNormal()
-        if CONFIG.isFullScreen:
-            self.toggleFullScreenMode()
 
         logger.debug("Ready: GUI")
 
@@ -1188,9 +1186,8 @@ class GuiMain(QMainWindow):
     #  Main Window Actions
     ##
 
-    def closeMain(self):
-        """Save everything, and close novelWriter.
-        """
+    def closeMain(self) -> bool:
+        """Save everything, and close novelWriter."""
         if self.hasProject:
             msgYes = self.askQuestion(
                 self.tr("Exit"),
@@ -1211,7 +1208,8 @@ class GuiMain(QMainWindow):
                 CONFIG.setViewPanePos(self.splitView.sizes())
 
         CONFIG.showRefPanel = self.viewMeta.isVisible()
-        if not CONFIG.isFullScreen:
+        if self.windowState() & Qt.WindowFullScreen != Qt.WindowFullScreen:
+            # Ignore window size if in full screen mode
             CONFIG.setMainWinSize(self.width(), self.height())
 
         if self.hasProject:
@@ -1297,23 +1295,9 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def toggleFullScreenMode(self):
-        """Main GUI full screen mode. The mode is tracked by the flag
-        in config. This only tracks whether the window has been
-        maximised using the internal commands, and may not be correct
-        if the user uses the system window manager. Currently, Qt
-        doesn't have access to the exact state of the window.
-        """
+    def toggleFullScreenMode(self) -> None:
+        """Toggle full screen mode"""
         self.setWindowState(self.windowState() ^ Qt.WindowFullScreen)
-
-        winState = self.windowState() & Qt.WindowFullScreen == Qt.WindowFullScreen
-        if winState:
-            logger.debug("Activated full screen mode")
-        else:
-            logger.debug("Deactivated full screen mode")
-
-        CONFIG.isFullScreen = winState
-
         return
 
     ##
