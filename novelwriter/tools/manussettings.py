@@ -530,7 +530,11 @@ class _FilterTab(QWidget):
 
     def _setSelectedMode(self, mode: int) -> None:
         """Set the mode for the selected items."""
-        for item in self.optTree.selectedItems():
+        items = self.optTree.selectedItems()
+        if len(items) == 1 and isinstance(items[0], QTreeWidgetItem):
+            items = self._scanChildren(items[0], [])
+
+        for item in items:
             if isinstance(item, QTreeWidgetItem):
                 tHandle = item.data(self.C_DATA, self.D_HANDLE)
                 isFile = item.data(self.C_DATA, self.D_FILE)
@@ -563,6 +567,16 @@ class _FilterTab(QWidget):
             else:
                 item.setIcon(self.C_STATUS, self._statusFlags[self.F_NONE])
         return
+
+    def _scanChildren(self, item: QTreeWidgetItem | None, items: list) -> list[QTreeWidgetItem]:
+        """This is a recursive function returning all items in a tree
+        starting at a given QTreeWidgetItem.
+        """
+        if isinstance(item, QTreeWidgetItem):
+            items.append(item)
+            for i in range(item.childCount()):
+                self._scanChildren(item.child(i), items)
+        return items
 
 # END Class _FilterTab
 
