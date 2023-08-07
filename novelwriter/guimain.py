@@ -137,6 +137,7 @@ class GuiMain(QMainWindow):
         # =============
 
         # Sizes
+        iPx = self.mainTheme.fontPixelSize
         mPx = CONFIG.pxInt(4)
         hWd = CONFIG.pxInt(4)
 
@@ -305,6 +306,15 @@ class GuiMain(QMainWindow):
         # Forward Functions
         self.setStatus = self.mainStatus.setStatus
 
+        # Cache Alert Pixmaps
+        pxSize = (2*iPx, 2*iPx)
+        self.alertPix: dict[nwAlert, QPixmap] = {
+            nwAlert.INFO:  self.mainTheme.getPixmap("alert_info", pxSize),
+            nwAlert.WARN:  self.mainTheme.getPixmap("alert_warn", pxSize),
+            nwAlert.ERROR: self.mainTheme.getPixmap("alert_error", pxSize),
+            nwAlert.ASK:   self.mainTheme.getPixmap("alert_question", pxSize),
+        }
+
         # Check that config loaded fine
         self.reportConfErr()
 
@@ -316,16 +326,6 @@ class GuiMain(QMainWindow):
 
         # Handle Windows Mode
         self.showNormal()
-
-        # Cache Icons
-
-        aPx = CONFIG.pxInt(48)
-        self.alertPix: dict[nwAlert, QPixmap] = {
-            nwAlert.INFO:  self.mainTheme.getPixmap("alert_info", (aPx, aPx)),
-            nwAlert.WARN:  self.mainTheme.getPixmap("alert_warn", (aPx, aPx)),
-            nwAlert.ERROR: self.mainTheme.getPixmap("alert_error", (aPx, aPx)),
-            nwAlert.ASK:   self.mainTheme.getPixmap("alert_question", (aPx, aPx)),
-        }
 
         logger.debug("Ready: GUI")
 
@@ -1109,7 +1109,7 @@ class GuiMain(QMainWindow):
         msgBox.setText(text)
         msgBox.setInformativeText(info)
         msgBox.setDetailedText(details)
-        msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        msgBox.setStandardButtons(QMessageBox.Ok)
         msgBox.setIconPixmap(self.alertPix[level])
         msgBox.adjustSize()
         msgBox.exec_()
