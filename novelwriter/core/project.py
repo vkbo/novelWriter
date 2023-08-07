@@ -173,9 +173,10 @@ class NWProject(QObject):
         if self._tree.checkType(tHandle, nwItemType.FILE):
             delDoc = self._storage.getDocument(tHandle)
             if not delDoc.deleteDocument():
-                self.mainGui.makeAlert([
-                    self.tr("Could not delete document file."), delDoc.getError()
-                ], nwAlert.ERROR)
+                self.mainGui.makeAlert(
+                    self.tr("Could not delete document file."),
+                    info=delDoc.getError(), level=nwAlert.ERROR
+                )
                 return False
 
         self._index.deleteHandle(tHandle)
@@ -227,7 +228,7 @@ class NWProject(QObject):
         if not self._storage.openProjectInPlace(projPath):
             self.mainGui.makeAlert(self.tr(
                 "Could not open project with path: {0}"
-            ).format(projPath), nwAlert.ERROR)
+            ).format(projPath), level=nwAlert.ERROR)
             return False
 
         # Project Lock
@@ -266,17 +267,17 @@ class NWProject(QObject):
             if xmlReader.state == XMLReadState.NOT_NWX_FILE:
                 self.mainGui.makeAlert(self.tr(
                     "Project file does not appear to be a novelWriterXML file."
-                ), nwAlert.ERROR)
+                ), level=nwAlert.ERROR)
             elif xmlReader.state == XMLReadState.UNKNOWN_VERSION:
                 self.mainGui.makeAlert(self.tr(
                     "Unknown or unsupported novelWriter project file format. "
                     "The project cannot be opened by this version of novelWriter. "
                     "The file was saved with novelWriter version {0}."
-                ).format(appVersion), nwAlert.ERROR)
+                ).format(appVersion), level=nwAlert.ERROR)
             else:
                 self.mainGui.makeAlert(self.tr(
                     "Failed to parse project xml."
-                ), nwAlert.ERROR)
+                ), level=nwAlert.ERROR)
 
             self.clearProject()
             return False
@@ -285,14 +286,11 @@ class NWProject(QObject):
         # ====================
 
         if xmlReader.state == XMLReadState.WAS_LEGACY:
-            msgYes = self.mainGui.askQuestion(
-                self.tr("File Version"),
-                self.tr(
-                    "The file format of your project is about to be updated. "
-                    "If you proceed, older versions of novelWriter will no "
-                    "longer be able to open this project. Continue?"
-                )
-            )
+            msgYes = self.mainGui.askQuestion(self.tr(
+                "The file format of your project is about to be updated. "
+                "If you proceed, older versions of novelWriter will no "
+                "longer be able to open this project. Continue?"
+            ))
             if not msgYes:
                 self.clearProject()
                 return False
@@ -301,16 +299,13 @@ class NWProject(QObject):
         # =========================
 
         if xmlReader.hexVersion > hexToInt(__hexversion__):
-            msgYes = self.mainGui.askQuestion(
-                self.tr("Version Conflict"),
-                self.tr(
-                    "This project was saved by a newer version of "
-                    "novelWriter, version {0}. This is version {1}. If you "
-                    "continue to open the project, some attributes and "
-                    "settings may not be preserved, but the overall project "
-                    "should be fine. Continue opening the project?"
-                ).format(appVersion, __version__)
-            )
+            msgYes = self.mainGui.askQuestion(self.tr(
+                "This project was saved by a newer version of "
+                "novelWriter, version {0}. This is version {1}. If you "
+                "continue to open the project, some attributes and "
+                "settings may not be preserved, but the overall project "
+                "should be fine. Continue opening the project?"
+            ).format(appVersion, __version__))
             if not msgYes:
                 self.clearProject()
                 return False
@@ -333,7 +328,7 @@ class NWProject(QObject):
         if orphans > 0:
             self.mainGui.makeAlert(self.tr(
                 "Found {0} orphaned file(s) in the project. {1} file(s) were recovered."
-            ).format(orphans, recovered), nwAlert.WARN)
+            ).format(orphans, recovered), level=nwAlert.WARN)
 
         self._index.loadIndex()
         if xmlReader.state == XMLReadState.WAS_LEGACY:
@@ -357,7 +352,7 @@ class NWProject(QObject):
         if not self._storage.isOpen():
             self.mainGui.makeAlert(self.tr(
                 "There is no project open."
-            ), nwAlert.ERROR)
+            ), level=nwAlert.ERROR)
             return False
 
         saveTime = time()
@@ -382,7 +377,7 @@ class NWProject(QObject):
         if not xmlWriter.write(self._data, content, saveTime, editTime):
             self.mainGui.makeAlert(self.tr(
                 "Failed to save project."
-            ), nwAlert.ERROR, exception=xmlWriter.error)
+            ), level=nwAlert.ERROR, exception=xmlWriter.error)
             return False
 
         # Save other project data
@@ -426,14 +421,14 @@ class NWProject(QObject):
             self.mainGui.makeAlert(self.tr(
                 "Cannot backup project because no valid backup path is set. "
                 "Please set a valid backup location in Preferences."
-            ), nwAlert.ERROR)
+            ), level=nwAlert.ERROR)
             return False
 
         if not self._data.name:
             self.mainGui.makeAlert(self.tr(
                 "Cannot backup project because no project name is set. "
                 "Please set a Project Name in Project Settings."
-            ), nwAlert.ERROR)
+            ), level=nwAlert.ERROR)
             return False
 
         cleanName = makeFileNameSafe(self._data.name)
@@ -443,7 +438,7 @@ class NWProject(QObject):
         except Exception as exc:
             self.mainGui.makeAlert(self.tr(
                 "Could not create backup folder."
-            ), nwAlert.ERROR, exception=exc)
+            ), level=nwAlert.ERROR, exception=exc)
             return False
 
         timeStamp = formatTimeStamp(time(), fileSafe=True)
@@ -453,11 +448,11 @@ class NWProject(QObject):
             if doNotify:
                 self.mainGui.makeAlert(self.tr(
                     "Backup archive file written to: {0} [{1}B]"
-                ).format(str(archName), formatInt(size)), nwAlert.INFO)
+                ).format(str(archName), formatInt(size)))
         else:
             self.mainGui.makeAlert(self.tr(
                 "Could not write backup archive."
-            ), nwAlert.ERROR)
+            ), level=nwAlert.ERROR)
             return False
 
         self.mainGui.setStatus(self.tr(

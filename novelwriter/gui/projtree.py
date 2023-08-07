@@ -589,7 +589,7 @@ class GuiProjectTree(QTreeWidget):
             if sHandle is None or pItem is None:
                 self.mainGui.makeAlert(self.tr(
                     "Did not find anywhere to add the file or folder!"
-                ), nwAlert.ERROR)
+                ), level=nwAlert.ERROR)
                 return False
 
             # Collect some information about the selected item
@@ -600,7 +600,7 @@ class GuiProjectTree(QTreeWidget):
             if self.theProject.tree.isTrash(sHandle):
                 self.mainGui.makeAlert(self.tr(
                     "Cannot add new files or folders to the Trash folder."
-                ), nwAlert.ERROR)
+                ), level=nwAlert.ERROR)
                 return False
 
             # Set default label and determine if new item is to be added
@@ -838,7 +838,7 @@ class GuiProjectTree(QTreeWidget):
         if trashHandle is None:
             self.mainGui.makeAlert(self.tr(
                 "There is currently no Trash folder in this project."
-            ), nwAlert.INFO)
+            ))
             return False
 
         theTrash = self.getTreeFromHandle(trashHandle)
@@ -849,11 +849,10 @@ class GuiProjectTree(QTreeWidget):
         if nTrash == 0:
             self.mainGui.makeAlert(self.tr(
                 "The Trash folder is already empty."
-            ), nwAlert.INFO)
+            ))
             return False
 
         msgYes = self.mainGui.askQuestion(
-            self.tr("Empty Trash"),
             self.tr("Permanently delete {0} file(s) from Trash?").format(nTrash)
         )
         if not msgYes:
@@ -900,7 +899,6 @@ class GuiProjectTree(QTreeWidget):
 
         if askFirst:
             msgYes = self.mainGui.askQuestion(
-                self.tr("Delete"),
                 self.tr("Move '{0}' to Trash?").format(nwItemS.itemName),
             )
             if not msgYes:
@@ -937,7 +935,7 @@ class GuiProjectTree(QTreeWidget):
             if trItemS.childCount() > 0:
                 self.mainGui.makeAlert(self.tr(
                     "Root folders can only be deleted when they are empty."
-                ), nwAlert.ERROR)
+                ), level=nwAlert.ERROR)
                 return False
 
             logger.debug("Permanently deleting root folder '%s'", tHandle)
@@ -956,7 +954,6 @@ class GuiProjectTree(QTreeWidget):
         else:
             if askFirst:
                 msgYes = self.mainGui.askQuestion(
-                    self.tr("Delete"),
                     self.tr("Permanently delete '{0}'?").format(nwItemS.itemName)
                 )
                 if not msgYes:
@@ -1525,13 +1522,10 @@ class GuiProjectTree(QTreeWidget):
         """Convert a folder to a note or document."""
         tItem = self.theProject.tree[tHandle]
         if tItem is not None and tItem.isFolderType():
-            msgYes = self.mainGui.askQuestion(
-                self.tr("Convert Folder"),
-                self.tr(
-                    "Do you want to convert the folder to a {0}? "
-                    "This action cannot be reversed."
-                ).format(trConst(nwLabels.LAYOUT_NAME[itemLayout]))
-            )
+            msgYes = self.mainGui.askQuestion(self.tr(
+                "Do you want to convert the folder to a {0}? "
+                "This action cannot be reversed."
+            ).format(trConst(nwLabels.LAYOUT_NAME[itemLayout])))
             if msgYes and itemLayout == nwItemLayout.DOCUMENT and tItem.documentAllowed():
                 tItem.setType(nwItemType.FILE)
                 tItem.setLayout(nwItemLayout.DOCUMENT)
@@ -1570,9 +1564,7 @@ class GuiProjectTree(QTreeWidget):
             mrgData = dlgMerge.getData()
             mrgList = mrgData.get("finalItems", [])
             if not mrgList:
-                self.mainGui.makeAlert([
-                    self.tr("No documents selected for merging.")
-                ], nwAlert.INFO)
+                self.mainGui.makeAlert(self.tr("No documents selected for merging."))
                 return False
 
             # Save the open document first, in case it's part of merge
@@ -1595,9 +1587,10 @@ class GuiProjectTree(QTreeWidget):
                 docMerger.appendText(sHandle, True, mLabel)
 
             if not docMerger.writeTargetDoc():
-                self.mainGui.makeAlert([
-                    self.tr("Could not write document content."), docMerger.getError()
-                ], nwAlert.ERROR)
+                self.mainGui.makeAlert(
+                    self.tr("Could not write document content."),
+                    info=docMerger.getError(), level=nwAlert.ERROR
+                )
                 return False
 
             self.theProject.index.reIndexHandle(mHandle)
@@ -1658,9 +1651,10 @@ class GuiProjectTree(QTreeWidget):
                 self.revealNewTreeItem(dHandle, nHandle=nHandle, wordCount=True)
                 self._alertTreeChange(dHandle, flush=False)
                 if not writeOk:
-                    self.mainGui.makeAlert([
-                        self.tr("Could not write document content."), docSplit.getError()
-                    ], nwAlert.ERROR)
+                    self.mainGui.makeAlert(
+                        self.tr("Could not write document content."),
+                        info=docSplit.getError(), level=nwAlert.ERROR
+                    )
 
             if splitData.get("moveToTrash", False):
                 self.moveItemToTrash(tHandle, askFirst=False, flush=True)
@@ -1680,13 +1674,11 @@ class GuiProjectTree(QTreeWidget):
         if nItems == 0:
             return False
         elif nItems == 1:
-            qTitle = self.tr("Duplicate Document")
-            qText = self.tr("Do you want to duplicate this document?")
+            question = self.tr("Do you want to duplicate this document?")
         else:
-            qTitle = self.tr("Duplicate from Here")
-            qText = self.tr("Do you want to duplicate this item and all child items?")
+            question = self.tr("Do you want to duplicate this item and all child items?")
 
-        if not self.mainGui.askQuestion(qTitle, qText):
+        if not self.mainGui.askQuestion(question):
             return False
 
         docDup = DocDuplicator(self.theProject)
@@ -1698,7 +1690,7 @@ class GuiProjectTree(QTreeWidget):
             dupCount += 1
 
         if dupCount != nItems:
-            self.mainGui.makeAlert(self.tr("Could not duplicate all items."), nwAlert.WARN)
+            self.mainGui.makeAlert(self.tr("Could not duplicate all items."), level=nwAlert.WARN)
 
         self.saveTreeOrder()
 
@@ -1757,7 +1749,7 @@ class GuiProjectTree(QTreeWidget):
         else:
             self.mainGui.makeAlert(self.tr(
                 "There is nowhere to add item with name '{0}'."
-            ).format(nwItem.itemName), nwAlert.ERROR)
+            ).format(nwItem.itemName), level=nwAlert.ERROR)
             return None
 
         byIndex = -1

@@ -310,7 +310,7 @@ class GuiManuscriptBuild(QDialog):
         self.buildProgress.setValue(0)
         bPath = Path(self.buildPath.text())
         if not bPath.is_dir():
-            self.mainGui.makeAlert(self.tr("Output folder does not exist."), nwAlert.ERROR)
+            self.mainGui.makeAlert(self.tr("Output folder does not exist."), level=nwAlert.ERROR)
             return False
 
         bExt = nwLabels.BUILD_EXT[bFormat]
@@ -318,7 +318,6 @@ class GuiManuscriptBuild(QDialog):
 
         if buildPath.exists():
             if not self.mainGui.askQuestion(
-                self.tr("File Exists"),
                 self.tr("The file already exists. Do you want to overwrite it?")
             ):
                 return False

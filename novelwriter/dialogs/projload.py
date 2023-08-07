@@ -225,13 +225,10 @@ class GuiProjectLoad(QDialog):
         selList = self.listBox.selectedItems()
         if selList:
             projName = selList[0].text(self.C_NAME)
-            msgYes = self.mainGui.askQuestion(
-                self.tr("Remove Entry"),
-                self.tr(
-                    "Remove '{0}' from the recent projects list? "
-                    "The project files will not be deleted."
-                ).format(projName)
-            )
+            msgYes = self.mainGui.askQuestion(self.tr(
+                "Remove '{0}' from the recent projects list? "
+                "The project files will not be deleted."
+            ).format(projName))
             if msgYes:
                 CONFIG.recentProjects.remove(
                     selList[0].data(self.C_NAME, self.D_PATH)

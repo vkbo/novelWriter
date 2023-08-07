@@ -224,7 +224,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.WAS_LEGACY))
         mockGUI.askResponse = False
         assert theProject.openProject(fncPath) is False
-        assert "The file format of your project is about to be" in mockGUI.lastQuestion[1]
+        assert "The file format of your project is about to be" in mockGUI.lastQuestion
         mockGUI.askResponse = True
 
     # Won't open project from newer version
@@ -232,7 +232,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
         mp.setattr(ProjectXMLReader, "hexVersion", property(lambda *a: 0x99999999))
         mockGUI.askResponse = False
         assert theProject.openProject(fncPath) is False
-        assert "This project was saved by a newer version" in mockGUI.lastQuestion[1]
+        assert "This project was saved by a newer version" in mockGUI.lastQuestion
         mockGUI.askResponse = True
 
     # Fail checking items should still pass
@@ -249,7 +249,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
         mockGUI.askResponse = True
         theProject.index._indexBroken = True
         assert theProject.openProject(fncPath) is True
-        assert "The file format of your project is about to be" in mockGUI.lastQuestion[1]
+        assert "The file format of your project is about to be" in mockGUI.lastQuestion
         assert theProject.index._indexBroken is False
 
     theProject.closeProject()

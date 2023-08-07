@@ -145,10 +145,8 @@ def mockGUI():
 @pytest.fixture(scope="function")
 def nwGUI(qtbot, monkeypatch, functionFixture):
     """Create an instance of the novelWriter GUI."""
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Ok)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Ok)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Ok)
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "exec_", lambda *a: None)
+    monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.Yes)
 
     nwGUI = main(["--testmode", f"--config={_TMP_CONF}", f"--data={_TMP_CONF}"])
     qtbot.addWidget(nwGUI)

@@ -114,7 +114,7 @@ def testGuiMain_NewProject(monkeypatch, nwGUI, projPath):
     # Close project
     with monkeypatch.context() as mp:
         nwGUI.hasProject = True
-        mp.setattr(QMessageBox, "question", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         assert nwGUI.newProject(projData={"projPath": projPath}) is False
 
     # No project path

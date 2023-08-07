@@ -248,11 +248,7 @@ class GuiBuildSettings(QDialog):
         it's ok to reject them.
         """
         if self._build.changed:
-            doSave = self.mainGui.askQuestion(
-                self.tr("Build Settings"),
-                self.tr("Do you want to save your changes?")
-            )
-            if doSave:
+            if self.mainGui.askQuestion(self.tr("Do you want to save your changes?")):
                 self._emitBuildData()
             self._build.resetChangedState()
         return

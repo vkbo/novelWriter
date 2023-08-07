@@ -39,22 +39,22 @@ class MockGuiMain(QObject):
         # Test Variables
         self.askResponse = True
         self.lastAlert = ""
-        self.lastQuestion = ("", "")
+        self.lastQuestion = ""
 
         return
 
     def postLaunchTasks(self, cmdOpen):
         return
 
-    def makeAlert(self, message, level=0, exception=None):
-        assert isinstance(message, str) or isinstance(message, list)
-        print("%s: %s" % (str(level), message))
-        self.lastAlert = str(message)
+    def makeAlert(self, text, info="", detals="", level=0, exception=None):
+        assert isinstance(text, str)
+        print("%s: %s" % (str(level), text))
+        self.lastAlert = str(text)
         return
 
-    def askQuestion(self, title, qustion):
-        print("Question: %s" % qustion)
-        self.lastQuestion = (title, qustion)
+    def askQuestion(self, text, info="", details="", level=3):
+        print("Question: %s" % text)
+        self.lastQuestion = text
         return self.askResponse
 
     def setStatus(self, theMessage):

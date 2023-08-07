@@ -129,7 +129,7 @@ def testManuscriptBuild_Main(
     manus.buildPath.setText(str(fncPath))
     manus.buildName.setText("TestBuild")
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "question", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         assert manus._runBuild() is False
 
     # Finish

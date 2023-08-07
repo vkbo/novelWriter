@@ -270,11 +270,7 @@ class GuiManuscript(QDialog):
         """Delete the currently selected build settings entry."""
         build = self._getSelectedBuild()
         if build is not None:
-            proceed = self.mainGui.askQuestion(
-                self.tr("Delete Build"),
-                self.tr("Delete build '{0}'?".format(build.name))
-            )
-            if proceed:
+            if self.mainGui.askQuestion(self.tr("Delete build '{0}'?".format(build.name))):
                 self._builds.removeBuild(build.buildID)
                 self._updateBuildsList()
         return

@@ -415,13 +415,15 @@ class GuiWritingStats(QDialog):
 
         # Report to user
         if wSuccess:
-            self.mainGui.makeAlert([
-                self.tr("{0} file successfully written to:").format(textFmt), savePath
-            ], nwAlert.INFO)
+            self.mainGui.makeAlert(
+                self.tr("{0} file successfully written to:").format(textFmt),
+                info=savePath
+            )
         else:
-            self.mainGui.makeAlert([
-                self.tr("Failed to write {0} file.").format(textFmt), errMsg
-            ], nwAlert.ERROR)
+            self.mainGui.makeAlert(
+                self.tr("Failed to write {0} file.").format(textFmt),
+                info=errMsg, level=nwAlert.ERROR
+            )
 
         return wSuccess
 
