@@ -1,7 +1,6 @@
 """
 novelWriter – Exception Handling
 ================================
-Error handling function and error dialog
 
 File History:
 Created: 2020-08-02 [0.10.2]
@@ -22,17 +21,23 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import sys
 import random
 import logging
 
+from typing import TYPE_CHECKING
+
 from PyQt5.QtGui import QFont, QFontDatabase
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    qApp, QDialog, QGridLayout, QStyle, QPlainTextEdit, QLabel,
+    QWidget, qApp, QDialog, QGridLayout, QStyle, QPlainTextEdit, QLabel,
     QDialogButtonBox
 )
+
+if TYPE_CHECKING:  # pragma: no cover
+    from types import TracebackType
 
 logger = logging.getLogger(__name__)
 
@@ -41,15 +46,15 @@ logger = logging.getLogger(__name__)
 #  Utility Functions
 # =============================================================================================== #
 
-def logException():
-    """Log the content of an exception message.
-    """
+def logException() -> None:
+    """Log the content of an exception message."""
     exType, exValue, _ = sys.exc_info()
     if exType is not None:
         logger.error("%s: %s", exType.__name__, str(exValue))
+    return
 
 
-def formatException(exc):
+def formatException(exc) -> str:
     """Format an exception as a string the same way the default
     exception handler does.
     """
@@ -62,7 +67,7 @@ def formatException(exc):
 
 class NWErrorMessage(QDialog):
 
-    def __init__(self, parent):
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
         self.setObjectName("NWErrorMessage")
 
@@ -113,7 +118,7 @@ class NWErrorMessage(QDialog):
 
         return
 
-    def setMessage(self, exType, exValue, exTrace):
+    def setMessage(self, exType: type, exValue: BaseException, exTrace: TracebackType) -> None:
         """Generate a message and append session data, error info and
         error traceback.
         """
@@ -142,7 +147,7 @@ class NWErrorMessage(QDialog):
             enchantVersion = "Unknown"
 
         try:
-            exTrace = "\n".join(format_tb(exTrace))
+            txtTrace = "\n".join(format_tb(exTrace))
             self.msgBody.setPlainText((
                 "Environment:\n"
                 f"novelWriter Version: {__version__}\n"
@@ -151,7 +156,7 @@ class NWErrorMessage(QDialog):
                 f"Qt: {QT_VERSION_STR}, PyQt: {PYQT_VERSION_STR}\n"
                 f"enchant: {enchantVersion}\n\n"
                 f"{exType.__name__}:\n{str(exValue)}\n\n"
-                f"Traceback:\n{exTrace}\n"
+                f"Traceback:\n{txtTrace}\n"
             ))
         except Exception:
             self.msgBody.setPlainText("Failed to generate error report ...")
@@ -162,18 +167,17 @@ class NWErrorMessage(QDialog):
     #  Slots
     ##
 
-    def _doClose(self):
-        """Close the dialog.
-        """
+    @pyqtSlot()
+    def _doClose(self) -> None:
+        """Close the dialog."""
         self.close()
         return
 
 # END Class NWErrorMessage
 
 
-def exceptionHandler(exType, exValue, exTrace):
-    """Function to catch unhandled global exceptions.
-    """
+def exceptionHandler(exType: type, exValue: BaseException, exTrace: TracebackType) -> None:
+    """Function to catch unhandled global exceptions."""
     from traceback import print_tb
     from PyQt5.QtWidgets import qApp
 

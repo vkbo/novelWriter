@@ -798,7 +798,7 @@ class Config:
 # END Class Config
 
 
-class Global:
+class NWApp:
     """Singleton: Global Pointers
 
     This class holds pointers to the core singletons:
@@ -852,7 +852,7 @@ class Global:
             self._project = project
         return
 
-# END Class Global
+# END Class NWApp
 
 
 class RecentProjects:

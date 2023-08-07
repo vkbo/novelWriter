@@ -167,6 +167,7 @@ class nwLabels:
         nwAlert.INFO:  QT_TRANSLATE_NOOP("Constant", "Information"),
         nwAlert.WARN:  QT_TRANSLATE_NOOP("Constant", "Warning"),
         nwAlert.ERROR: QT_TRANSLATE_NOOP("Constant", "Error"),
+        nwAlert.ASK:   QT_TRANSLATE_NOOP("Constant", "Question"),
     }
     ITEM_DESCRIPTION = {
         "none":     QT_TRANSLATE_NOOP("Constant", "None"),
