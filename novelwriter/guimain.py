@@ -37,7 +37,8 @@ from PyQt5.QtWidgets import (
     QStackedWidget, QVBoxLayout, QWidget
 )
 
-from novelwriter import CONFIG, __hexversion__
+from novelwriter import CONFIG, GLOBAL, __hexversion__
+from novelwriter.alert import askQuestion, makeAlert
 from novelwriter.gui.theme import GuiTheme
 from novelwriter.gui.sidebar import GuiSideBar
 from novelwriter.gui.outline import GuiOutlineView
@@ -112,9 +113,13 @@ class GuiMain(QMainWindow):
         # Core Classes
         # ============
 
-        # Core Classes and Settings
-        self.mainTheme   = GuiTheme()
-        self.theProject  = NWProject(self)
+        # Core Classes
+        self.mainTheme  = GuiTheme()
+        self.theProject = NWProject(self)
+        GLOBAL.setTheme(self.mainTheme)
+        GLOBAL.setProject(self.theProject)
+
+        # Core Settings
         self.hasProject  = False
         self.isFocusMode = False
         self.idleRefTime = time()
@@ -1102,48 +1107,12 @@ class GuiMain(QMainWindow):
         """Alert both the user and the logger at the same time. The
         message can be either a string or a list of strings.
         """
-        if isinstance(message, list):
-            message = list(filter(None, message))  # Strip empty strings
-            popMsg = "<br>".join(message)
-            logMsg = " ".join(message)
-        else:
-            popMsg = str(message)
-            logMsg = str(message)
-
-        kw = {}
-        if exception is not None:
-            kw["exc_info"] = exception
-            popMsg = f"{popMsg}<br>{type(exception).__name__}: {str(exception)}"
-
-        # Write to Log
-        if level == nwAlert.INFO:
-            logger.info(logMsg, **kw)
-        elif level == nwAlert.WARN:
-            logger.warning(logMsg, **kw)
-        elif level == nwAlert.ERROR:
-            logger.error(logMsg, **kw)
-        elif level == nwAlert.BUG:
-            logger.error(logMsg, **kw)
-
-        # Popup
-        msgBox = QMessageBox()
-        if level == nwAlert.INFO:
-            msgBox.information(self, self.tr("Information"), popMsg)
-        elif level == nwAlert.WARN:
-            msgBox.warning(self, self.tr("Warning"), popMsg)
-        elif level == nwAlert.ERROR:
-            msgBox.critical(self, self.tr("Error"), popMsg)
-        elif level == nwAlert.BUG:
-            popMsg += "<br>%s" % self.tr("This is a bug!")
-            msgBox.critical(self, self.tr("Internal Error"), popMsg)
-
+        makeAlert(message, level, exception)
         return
 
     def askQuestion(self, title: str, question: str) -> bool:
         """Ask the user a Yes/No question, and return the answer."""
-        msgBox = QMessageBox()
-        msgRes = msgBox.question(self, title, question, QMessageBox.Yes | QMessageBox.No)
-        return msgRes == QMessageBox.Yes
+        return askQuestion(title, question)
 
     def reportConfErr(self) -> bool:
         """Checks if the Config module has any errors to report, and let

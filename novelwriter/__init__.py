@@ -21,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import sys
 import getopt
@@ -29,7 +30,7 @@ import logging
 from PyQt5.QtWidgets import QApplication, QErrorMessage
 
 from novelwriter.error import exceptionHandler, logException
-from novelwriter.config import Config
+from novelwriter.config import Config, Global
 
 ##
 #  Version Scheme
@@ -71,13 +72,13 @@ logger = logging.getLogger(__name__)
 #  Main Program
 ##
 
-# Load the main config as a global object
+# Create the global singleton instances
 CONFIG = Config()
+GLOBAL = Global()
 
 
-def main(sysArgs=None):
-    """Parse command line, set up logging, and launch main GUI.
-    """
+def main(sysArgs: list | None = None):
+    """Parse command line, set up logging, and launch main GUI."""
     if sysArgs is None:
         sysArgs = sys.argv[1:]
 
@@ -227,6 +228,7 @@ def main(sysArgs=None):
     from novelwriter.guimain import GuiMain
     if testMode:
         nwGUI = GuiMain()
+        GLOBAL.setGUI(nwGUI)
         return nwGUI
 
     else:
@@ -246,6 +248,7 @@ def main(sysArgs=None):
 
         # Launch main GUI
         nwGUI = GuiMain()
+        GLOBAL.setGUI(nwGUI)
         nwGUI.postLaunchTasks(cmdOpen)
 
         sys.exit(nwApp.exec_())

@@ -1,7 +1,6 @@
 """
 novelWriter – Constants
 =======================
-Constants and maps for translating flags and enums to text
 
 File History:
 Created: 2019-04-28 [0.0.1]
@@ -24,9 +23,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+
 from PyQt5.QtCore import QCoreApplication, QT_TRANSLATE_NOOP
 
-from novelwriter.enum import nwBuildFmt, nwItemClass, nwItemLayout, nwOutline
+from novelwriter.enum import nwAlert, nwBuildFmt, nwItemClass, nwItemLayout, nwOutline
 
 
 def trConst(text: str) -> str:
@@ -162,6 +162,11 @@ class nwLabels:
         nwItemLayout.NO_LAYOUT: QT_TRANSLATE_NOOP("Constant", "None"),
         nwItemLayout.DOCUMENT:  QT_TRANSLATE_NOOP("Constant", "Novel Document"),
         nwItemLayout.NOTE:      QT_TRANSLATE_NOOP("Constant", "Project Note"),
+    }
+    ALERT_NAME = {
+        nwAlert.INFO:  QT_TRANSLATE_NOOP("Constant", "Information"),
+        nwAlert.WARN:  QT_TRANSLATE_NOOP("Constant", "Warning"),
+        nwAlert.ERROR: QT_TRANSLATE_NOOP("Constant", "Error"),
     }
     ITEM_DESCRIPTION = {
         "none":     QT_TRANSLATE_NOOP("Constant", "None"),
