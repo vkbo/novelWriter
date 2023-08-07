@@ -29,7 +29,6 @@ import json
 import logging
 
 from time import time
-from typing import TYPE_CHECKING
 from pathlib import Path
 
 from PyQt5.QtGui import QFontDatabase
@@ -41,11 +40,6 @@ from PyQt5.QtCore import (
 from novelwriter.error import logException, formatException
 from novelwriter.common import checkPath, formatTimeStamp, NWConfigParser
 from novelwriter.constants import nwFiles, nwUnicode
-
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
-    from novelwriter.gui.theme import GuiTheme
-    from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 
@@ -796,63 +790,6 @@ class Config:
         return
 
 # END Class Config
-
-
-class NWApp:
-    """Singleton: Global Pointers
-
-    This class holds pointers to the core singletons:
-     * The GuiMain instance
-     * The GuiTheme instance
-     * The NWProject instance
-    """
-
-    def __init__(self) -> None:
-        self._gui: GuiMain | None = None
-        self._theme: GuiTheme | None = None
-        self._project: NWProject | None = None
-        return
-
-    @property
-    def gui(self) -> GuiMain:
-        """The main gui instance."""
-        if self._gui is None:
-            raise Exception("GLOBAL not fully initialised")
-        return self._gui
-
-    @property
-    def theme(self) -> GuiTheme:
-        """The main gui theme instance."""
-        if self._theme is None:
-            raise Exception("GLOBAL not fully initialised")
-        return self._theme
-
-    @property
-    def project(self) -> NWProject:
-        """The main project instance."""
-        if self._project is None:
-            raise Exception("GLOBAL not fully initialised")
-        return self._project
-
-    def setGUI(self, gui: GuiMain) -> None:
-        """Set the GUI instance. Can only be set once."""
-        if self._gui is None:
-            self._gui = gui
-        return
-
-    def setTheme(self, theme: GuiTheme) -> None:
-        """Set the theme instance. Can only be set once."""
-        if self._theme is None:
-            self._theme = theme
-        return
-
-    def setProject(self, project: NWProject) -> None:
-        """Set the project instance. Can only be set once."""
-        if self._project is None:
-            self._project = project
-        return
-
-# END Class NWApp
 
 
 class RecentProjects:

@@ -30,7 +30,7 @@ import logging
 from PyQt5.QtWidgets import QApplication, QErrorMessage
 
 from novelwriter.error import exceptionHandler, logException
-from novelwriter.config import Config, NWApp
+from novelwriter.config import Config
 
 ##
 #  Version Scheme
@@ -74,7 +74,6 @@ logger = logging.getLogger(__name__)
 
 # Create the global singleton instances
 CONFIG = Config()
-APP = NWApp()
 
 
 def main(sysArgs: list | None = None):
@@ -228,7 +227,6 @@ def main(sysArgs: list | None = None):
     from novelwriter.guimain import GuiMain
     if testMode:
         nwGUI = GuiMain()
-        APP.setGUI(nwGUI)
         return nwGUI
 
     else:
@@ -248,7 +246,6 @@ def main(sysArgs: list | None = None):
 
         # Launch main GUI
         nwGUI = GuiMain()
-        APP.setGUI(nwGUI)
         nwGUI.postLaunchTasks(cmdOpen)
 
         sys.exit(nwApp.exec_())

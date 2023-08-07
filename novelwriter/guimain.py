@@ -37,7 +37,7 @@ from PyQt5.QtWidgets import (
     QStackedWidget, QVBoxLayout, QWidget
 )
 
-from novelwriter import CONFIG, APP, __hexversion__
+from novelwriter import CONFIG, __hexversion__
 from novelwriter.gui.theme import GuiTheme
 from novelwriter.gui.sidebar import GuiSideBar
 from novelwriter.gui.outline import GuiOutlineView
@@ -115,8 +115,6 @@ class GuiMain(QMainWindow):
         # Core Classes
         self.mainTheme  = GuiTheme()
         self.theProject = NWProject(self)
-        APP.setTheme(self.mainTheme)
-        APP.setProject(self.theProject)
 
         # Core Settings
         self.hasProject  = False
