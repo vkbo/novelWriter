@@ -445,14 +445,15 @@ class GuiIcons:
 
     ICON_KEYS = {
         # Project and GUI Icons
-        "novelwriter", "build_excluded", "build_filtered", "build_included", "cls_archive",
-        "cls_character", "cls_custom", "cls_entity", "cls_none", "cls_novel", "cls_object",
-        "cls_plot", "cls_timeline", "cls_trash", "cls_world", "proj_chapter", "proj_details",
-        "proj_document", "proj_folder", "proj_note", "proj_nwx", "proj_section", "proj_scene",
-        "proj_stats", "proj_title", "search_cancel", "search_case", "search_loop",
-        "search_preserve", "search_project", "search_regex", "search_word", "status_idle",
-        "status_lang", "status_lines", "status_stats", "status_time", "view_build", "view_editor",
-        "view_novel", "view_outline",
+        "novelwriter", "alert_error", "alert_info", "alert_question", "alert_warn",
+        "build_excluded", "build_filtered", "build_included", "cls_archive", "cls_character",
+        "cls_custom", "cls_entity", "cls_none", "cls_novel", "cls_object", "cls_plot",
+        "cls_timeline", "cls_trash", "cls_world", "proj_chapter", "proj_details", "proj_document",
+        "proj_folder", "proj_note", "proj_nwx", "proj_section", "proj_scene", "proj_stats",
+        "proj_title", "search_cancel", "search_case", "search_loop", "search_preserve",
+        "search_project", "search_regex", "search_word", "status_idle", "status_lang",
+        "status_lines", "status_stats", "status_time", "view_build", "view_editor", "view_novel",
+        "view_outline",
 
         # General Button Icons
         "add", "backward", "bookmark", "browse", "checked", "close", "cross", "down", "edit",
