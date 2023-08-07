@@ -72,7 +72,7 @@ logger = logging.getLogger(__name__)
 #  Main Program
 ##
 
-# Create the global singleton instances
+# Global config singleton
 CONFIG = Config()
 
 
