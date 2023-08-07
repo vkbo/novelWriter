@@ -23,7 +23,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-
 from PyQt5.QtCore import QCoreApplication, QT_TRANSLATE_NOOP
 
 from novelwriter.enum import nwAlert, nwBuildFmt, nwItemClass, nwItemLayout, nwOutline
