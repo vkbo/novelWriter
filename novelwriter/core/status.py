@@ -127,7 +127,7 @@ class NWStatus:
             return self._default
         return ""
 
-    def name(self, key: str) -> str:
+    def name(self, key: str | None) -> str:
         """Return the name associated with a given key."""
         if key in self._store:
             return self._store[key]["name"]
@@ -135,16 +135,15 @@ class NWStatus:
             return self._store[self._default]["name"]
         return ""
 
-    def cols(self, key: str) -> tuple[int, int, int]:
-        """Return the colours associated with a given key.
-        """
+    def cols(self, key: str | None) -> tuple[int, int, int]:
+        """Return the colours associated with a given key."""
         if key in self._store:
             return self._store[key]["cols"]
         elif self._default is not None:
             return self._store[self._default]["cols"]
         return 100, 100, 100
 
-    def count(self, key: str) -> int:
+    def count(self, key: str | None) -> int:
         """Return the count associated with a given key."""
         if key in self._store:
             return self._store[key]["count"]
@@ -152,7 +151,7 @@ class NWStatus:
             return self._store[self._default]["count"]
         return 0
 
-    def icon(self, key: str) -> QIcon:
+    def icon(self, key: str | None) -> QIcon:
         """Return the icon associated with a given key."""
         if key in self._store:
             return self._store[key]["icon"]
