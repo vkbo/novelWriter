@@ -30,7 +30,7 @@ import logging
 import unicodedata
 import xml.etree.ElementTree as ET
 
-from typing import Any, Literal, TypeGuard
+from typing import Any, Literal
 from pathlib import Path
 from datetime import datetime
 from configparser import ConfigParser
@@ -134,7 +134,7 @@ def checkPath(value: Any, default: Path) -> Path:
 #  Validator Functions
 # =============================================================================================== #
 
-def isHandle(value: Any) -> TypeGuard[str]:
+def isHandle(value: Any) -> bool:
     """Check if a string is a valid novelWriter handle.
     Note: This is case sensitive. Must be lower case!
     """
@@ -148,7 +148,7 @@ def isHandle(value: Any) -> TypeGuard[str]:
     return True
 
 
-def isTitleTag(value: Any) -> TypeGuard[str]:
+def isTitleTag(value: Any) -> bool:
     """Check if a string is a valid title tag string."""
     if not isinstance(value, str):
         return False
