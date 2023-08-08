@@ -121,8 +121,7 @@ def checkUuid(value: Any, default: str) -> str:
 
 
 def checkPath(value: Any, default: Path) -> Path:
-    """Check if a value is a valid path. Non-empty strings are accepted.
-    """
+    """Check if a value is a valid path."""
     if isinstance(value, Path):
         return value
     elif isinstance(value, str):

@@ -590,10 +590,6 @@ def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tstPaths):
     # Invalid Settings
     # ================
 
-    # Invalid path
-    CONFIG._backupPath = None
-    assert theProject.backupProject(doNotify=False) is False
-
     # Missing project name
     CONFIG._backupPath = tstPaths.tmpDir
     theProject.data.setName("")

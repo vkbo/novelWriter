@@ -94,8 +94,8 @@ class Config:
         # User Settings
         # =============
 
-        self._theme = None
-        self._recent = RecentProjects(self)
+        self._themeObj = None
+        self._recentObj = RecentProjects(self)
 
         # General GUI Settings
         self.guiLocale   = self._qLocale.name()
@@ -107,7 +107,6 @@ class Config:
         self.hideVScroll = False            # Hide vertical scroll bars on main widgets
         self.hideHScroll = False            # Hide horizontal scroll bars on main widgets
         self.lastNotes   = "0x0"            # The latest release notes that have been shown
-        self._lastPath   = self._homePath   # The user's last used path
 
         # Size Settings
         self._mainWinSize  = [1200, 650]     # Last size of the main GUI window
@@ -121,7 +120,6 @@ class Config:
         self.autoSaveProj    = 60     # Interval for auto-saving project, in seconds
         self.autoSaveDoc     = 30     # Interval for auto-saving document, in seconds
         self.emphLabels      = True   # Add emphasis to H1 and H2 item labels
-        self._backupPath     = None   # Backup path to use, can be none
         self.backupOnClose   = False  # Flag for running automatic backups
         self.askBeforeBackup = True   # Flag for asking before running automatic backup
 
@@ -173,6 +171,10 @@ class Config:
         self.fmtPadBefore    = ""
         self.fmtPadAfter     = ""
         self.fmtPadThin      = False
+
+        # User Paths
+        self._lastPath   = self._homePath  # The user's last used path
+        self._backupPath = self._homePath  # Backup path to use, can be none
 
         # Spell Checking Settings
         self.spellLanguage = "en"
@@ -238,13 +240,13 @@ class Config:
 
     @property
     def recentProjects(self):
-        return self._recent
+        return self._recentObj
 
     @property
     def theme(self) -> GuiTheme:
-        if self._theme is None:
+        if self._themeObj is None:
             raise Exception("Cannot access GUI theme before it is initialised")
-        return self._theme
+        return self._themeObj
 
     @property
     def mainWinSize(self):
@@ -295,7 +297,7 @@ class Config:
 
     def setThemeInstance(self, theme: GuiTheme) -> None:
         """Set the applications theme instance."""
-        self._theme = theme
+        self._themeObj = theme
         return
 
     def setMainWinSize(self, newWidth, newHeight):
@@ -351,9 +353,9 @@ class Config:
                 logger.debug("Last path updated: %s" % self._lastPath)
         return
 
-    def setBackupPath(self, backupPath: Path | None):
+    def setBackupPath(self, backupPath: Path | str):
         """Set the current backup path."""
-        self._backupPath = checkPath(backupPath, None)
+        self._backupPath = checkPath(backupPath, self._homePath)
         return
 
     def setTextFont(self, family: str | None, pointSize: int = 12):
@@ -411,12 +413,12 @@ class Config:
                 return self._lastPath
         return self._homePath
 
-    def backupPath(self) -> Path | None:
+    def backupPath(self) -> Path:
         """Return the backup path."""
         if isinstance(self._backupPath, Path):
             if self._backupPath.is_dir():
                 return self._backupPath
-        return None
+        return self._homePath
 
     def errorText(self) -> str:
         """Compile and return error messages from the initialisation of
@@ -495,7 +497,7 @@ class Config:
         else:
             self.saveConfig()
 
-        self._recent.loadCache()
+        self._recentObj.loadCache()
         self._checkOptionalPackages()
 
         logger.debug("Config initialisation complete")
@@ -647,9 +649,6 @@ class Config:
         # Check Values
         # ============
 
-        # Check Certain Values for None
-        self.spellLanguage = self._checkNone(self.spellLanguage)
-
         # If we're using straight quotes, disable auto-replace
         if self.fmtSQuoteOpen == self.fmtSQuoteClose == "'" and self.doReplaceSQuote:
             logger.info("Using straight single quotes, so disabling auto-replace")
@@ -697,7 +696,7 @@ class Config:
             "autosaveproject": str(self.autoSaveProj),
             "autosavedoc":     str(self.autoSaveDoc),
             "emphlabels":      str(self.emphLabels),
-            "backuppath":      str(self._backupPath or ""),
+            "backuppath":      str(self._backupPath),
             "backuponclose":   str(self.backupOnClose),
             "askbeforebackup": str(self.askBeforeBackup),
         }

@@ -111,7 +111,7 @@ def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
 
     # Check that we have a default file
     copyfile(confFile, testFile)
-    ignore = ("timestamp", "lastnotes", "localisation", "lastpath")
+    ignore = ("timestamp", "lastnotes", "localisation", "lastpath", "backuppath")
     assert cmpFiles(testFile, compFile, ignoreStart=ignore)
     tstConf.errorText()  # This clears the error cache
 
