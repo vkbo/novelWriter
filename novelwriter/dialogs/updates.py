@@ -49,9 +49,6 @@ class GuiUpdates(QDialog):
 
         logger.debug("Create: GuiUpdates")
         self.setObjectName("GuiUpdates")
-
-        self.mainGui = mainGui
-
         self.setWindowTitle(self.tr("Check for Updates"))
 
         nPx = CONFIG.pxInt(96)
@@ -61,7 +58,7 @@ class GuiUpdates(QDialog):
 
         # Left Box
         self.nwIcon = QLabel()
-        self.nwIcon.setPixmap(self.mainGui.mainTheme.getPixmap("novelwriter", (nPx, nPx)))
+        self.nwIcon.setPixmap(CONFIG.theme.getPixmap("novelwriter", (nPx, nPx)))
 
         self.leftBox = QVBoxLayout()
         self.leftBox.addWidget(self.nwIcon)

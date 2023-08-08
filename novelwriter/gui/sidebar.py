@@ -45,15 +45,14 @@ class GuiSideBar(QToolBar):
 
         logger.debug("Create: GuiSideBar")
 
-        self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
+        self.mainGui = mainGui
 
         # Style
         iPx = CONFIG.pxInt(22)
         mPx = CONFIG.pxInt(60)
 
-        lblFont = self.mainTheme.guiFont
-        lblFont.setPointSizeF(0.65*self.mainTheme.fontPointSize)
+        lblFont = CONFIG.theme.guiFont
+        lblFont.setPointSizeF(0.65*CONFIG.theme.fontPointSize)
 
         self.setMovable(False)
         self.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
@@ -131,13 +130,13 @@ class GuiSideBar(QToolBar):
         """
         self.setStyleSheet("QToolBar {border: 0px;}")
 
-        self.aProject.setIcon(self.mainTheme.getIcon("view_editor"))
-        self.aNovel.setIcon(self.mainTheme.getIcon("view_novel"))
-        self.aOutline.setIcon(self.mainTheme.getIcon("view_outline"))
-        self.aBuild.setIcon(self.mainTheme.getIcon("view_build"))
-        self.aDetails.setIcon(self.mainTheme.getIcon("proj_details"))
-        self.aStats.setIcon(self.mainTheme.getIcon("proj_stats"))
-        self.tbSettings.setIcon(self.mainTheme.getIcon("settings"))
+        self.aProject.setIcon(CONFIG.theme.getIcon("view_editor"))
+        self.aNovel.setIcon(CONFIG.theme.getIcon("view_novel"))
+        self.aOutline.setIcon(CONFIG.theme.getIcon("view_outline"))
+        self.aBuild.setIcon(CONFIG.theme.getIcon("view_build"))
+        self.aDetails.setIcon(CONFIG.theme.getIcon("proj_details"))
+        self.aStats.setIcon(CONFIG.theme.getIcon("proj_stats"))
+        self.tbSettings.setIcon(CONFIG.theme.getIcon("settings"))
 
         return
 

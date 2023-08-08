@@ -62,13 +62,12 @@ class GuiProjectLoad(QDialog):
         self.setObjectName("GuiProjectLoad")
 
         self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
         self.openState = self.NONE_STATE
         self.openPath  = None
 
         sPx = CONFIG.pxInt(16)
         nPx = CONFIG.pxInt(96)
-        iPx = self.mainTheme.baseIconSize
+        iPx = CONFIG.theme.baseIconSize
 
         self.outerBox = QVBoxLayout()
         self.innerBox = QHBoxLayout()
@@ -80,7 +79,7 @@ class GuiProjectLoad(QDialog):
         self.setMinimumHeight(CONFIG.pxInt(400))
 
         self.nwIcon = QLabel()
-        self.nwIcon.setPixmap(self.mainGui.mainTheme.getPixmap("novelwriter", (nPx, nPx)))
+        self.nwIcon.setPixmap(CONFIG.theme.getPixmap("novelwriter", (nPx, nPx)))
         self.innerBox.addWidget(self.nwIcon, 0, Qt.AlignTop)
 
         self.projectForm = QGridLayout()
@@ -110,7 +109,7 @@ class GuiProjectLoad(QDialog):
         self.selPath.setReadOnly(True)
 
         self.browseButton = QPushButton("...")
-        self.browseButton.setMaximumWidth(int(2.5*self.mainTheme.getTextWidth("...")))
+        self.browseButton.setMaximumWidth(int(2.5*CONFIG.theme.getTextWidth("...")))
         self.browseButton.clicked.connect(self._doBrowse)
 
         self.projectForm.addWidget(self.lblRecent,    0, 0, 1, 3)
@@ -268,7 +267,7 @@ class GuiProjectLoad(QDialog):
         self.listBox.clear()
         dataList = CONFIG.recentProjects.listEntries()
         sortList = sorted(dataList, key=lambda x: x[3], reverse=True)
-        nwxIcon = self.mainGui.mainTheme.getIcon("proj_nwx")
+        nwxIcon = CONFIG.theme.getIcon("proj_nwx")
         for path, title, words, time in sortList:
             newItem = QTreeWidgetItem([""]*4)
             newItem.setIcon(self.C_NAME, nwxIcon)
@@ -279,7 +278,7 @@ class GuiProjectLoad(QDialog):
             newItem.setTextAlignment(self.C_NAME, Qt.AlignLeft | Qt.AlignVCenter)
             newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight | Qt.AlignVCenter)
             newItem.setTextAlignment(self.C_TIME, Qt.AlignRight | Qt.AlignVCenter)
-            newItem.setFont(self.C_TIME, self.mainTheme.guiFontFixed)
+            newItem.setFont(self.C_TIME, CONFIG.theme.guiFontFixed)
             self.listBox.addTopLevelItem(newItem)
 
         if self.listBox.topLevelItemCount() > 0:

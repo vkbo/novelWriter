@@ -73,7 +73,6 @@ class GuiWritingStats(QDialog):
             self.setWindowFlag(Qt.WindowType.Tool)
 
         self.mainGui    = mainGui
-        self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
         self.logData    = []
@@ -134,7 +133,7 @@ class GuiWritingStats(QDialog):
         self.listBox.setSortingEnabled(True)
 
         # Word Bar
-        self.barHeight = int(round(0.5*self.mainTheme.fontPixelSize))
+        self.barHeight = int(round(0.5*CONFIG.theme.fontPixelSize))
         self.barWidth = CONFIG.pxInt(200)
         self.barImage = QPixmap(self.barHeight, self.barHeight)
         self.barImage.fill(self.palette().highlight().color())
@@ -145,27 +144,27 @@ class GuiWritingStats(QDialog):
         self.infoBox.setLayout(self.infoForm)
 
         self.labelTotal = QLabel(formatTime(0))
-        self.labelTotal.setFont(self.mainTheme.guiFontFixed)
+        self.labelTotal.setFont(CONFIG.theme.guiFontFixed)
         self.labelTotal.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.labelIdleT = QLabel(formatTime(0))
-        self.labelIdleT.setFont(self.mainTheme.guiFontFixed)
+        self.labelIdleT.setFont(CONFIG.theme.guiFontFixed)
         self.labelIdleT.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.labelFilter = QLabel(formatTime(0))
-        self.labelFilter.setFont(self.mainTheme.guiFontFixed)
+        self.labelFilter.setFont(CONFIG.theme.guiFontFixed)
         self.labelFilter.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.novelWords = QLabel("0")
-        self.novelWords.setFont(self.mainTheme.guiFontFixed)
+        self.novelWords.setFont(CONFIG.theme.guiFontFixed)
         self.novelWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.notesWords = QLabel("0")
-        self.notesWords.setFont(self.mainTheme.guiFontFixed)
+        self.notesWords.setFont(CONFIG.theme.guiFontFixed)
         self.notesWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.totalWords = QLabel("0")
-        self.totalWords.setFont(self.mainTheme.guiFontFixed)
+        self.totalWords.setFont(CONFIG.theme.guiFontFixed)
         self.totalWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         lblTTime   = QLabel(self.tr("Total Time:"))
@@ -192,7 +191,7 @@ class GuiWritingStats(QDialog):
         self.infoForm.setRowStretch(6, 1)
 
         # Filter Options
-        sPx = self.mainTheme.baseIconSize
+        sPx = CONFIG.theme.baseIconSize
 
         self.filterBox = QGroupBox(self.tr("Filters"), self)
         self.filterForm = QGridLayout(self)
@@ -589,13 +588,13 @@ class GuiWritingStats(QDialog):
             newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
             newItem.setTextAlignment(self.C_BAR, Qt.AlignLeft | Qt.AlignVCenter)
 
-            newItem.setFont(self.C_TIME, self.mainTheme.guiFontFixed)
-            newItem.setFont(self.C_LENGTH, self.mainTheme.guiFontFixed)
-            newItem.setFont(self.C_COUNT, self.mainTheme.guiFontFixed)
+            newItem.setFont(self.C_TIME, CONFIG.theme.guiFontFixed)
+            newItem.setFont(self.C_LENGTH, CONFIG.theme.guiFontFixed)
+            newItem.setFont(self.C_COUNT, CONFIG.theme.guiFontFixed)
             if showIdleTime:
-                newItem.setFont(self.C_IDLE, self.mainTheme.guiFontFixed)
+                newItem.setFont(self.C_IDLE, CONFIG.theme.guiFontFixed)
             else:
-                newItem.setFont(self.C_IDLE, self.mainTheme.guiFont)
+                newItem.setFont(self.C_IDLE, CONFIG.theme.guiFont)
 
             self.listBox.addTopLevelItem(newItem)
             self.timeFilter += sDiff

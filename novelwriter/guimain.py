@@ -113,7 +113,7 @@ class GuiMain(QMainWindow):
         # ============
 
         # Core Classes
-        self.mainTheme  = GuiTheme()
+        CONFIG.setThemeInstance(GuiTheme())
         self.theProject = NWProject(self)
 
         # Core Settings
@@ -135,7 +135,7 @@ class GuiMain(QMainWindow):
         # =============
 
         # Sizes
-        iPx = self.mainTheme.fontPixelSize
+        iPx = CONFIG.theme.fontPixelSize
         mPx = CONFIG.pxInt(4)
         hWd = CONFIG.pxInt(4)
 
@@ -307,10 +307,10 @@ class GuiMain(QMainWindow):
         # Cache Alert Pixmaps
         pxSize = (2*iPx, 2*iPx)
         self.alertPix: dict[nwAlert, QPixmap] = {
-            nwAlert.INFO:  self.mainTheme.getPixmap("alert_info", pxSize),
-            nwAlert.WARN:  self.mainTheme.getPixmap("alert_warn", pxSize),
-            nwAlert.ERROR: self.mainTheme.getPixmap("alert_error", pxSize),
-            nwAlert.ASK:   self.mainTheme.getPixmap("alert_question", pxSize),
+            nwAlert.INFO:  CONFIG.theme.getPixmap("alert_info", pxSize),
+            nwAlert.WARN:  CONFIG.theme.getPixmap("alert_warn", pxSize),
+            nwAlert.ERROR: CONFIG.theme.getPixmap("alert_error", pxSize),
+            nwAlert.ASK:   CONFIG.theme.getPixmap("alert_question", pxSize),
         }
 
         # Check that config loaded fine
@@ -912,7 +912,7 @@ class GuiMain(QMainWindow):
             if dlgConf.updateTheme:
                 # We are doing this manually instead of connecting to
                 # qApp.paletteChanged since the processing order matters
-                self.mainTheme.loadTheme()
+                CONFIG.theme.loadTheme()
                 self.docEditor.updateTheme()
                 self.docViewer.updateTheme()
                 self.viewsBar.updateTheme()
@@ -923,7 +923,7 @@ class GuiMain(QMainWindow):
                 self.mainStatus.updateTheme()
 
             if dlgConf.updateSyntax:
-                self.mainTheme.loadSyntax()
+                CONFIG.theme.loadSyntax()
                 self.docEditor.updateSyntaxColours()
 
             self.docEditor.initEditor()

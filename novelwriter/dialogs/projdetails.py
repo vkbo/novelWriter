@@ -149,10 +149,9 @@ class GuiProjectDetailsMain(QWidget):
 
         self.theProject = theProject
         self.mainGui    = mainGui
-        self.mainTheme  = mainGui.mainTheme
 
-        fPx = self.mainTheme.fontPixelSize
-        fPt = self.mainTheme.fontPointSize
+        fPx = CONFIG.theme.fontPixelSize
+        fPt = CONFIG.theme.fontPointSize
         vPx = CONFIG.pxInt(4)
         hPx = CONFIG.pxInt(12)
 
@@ -282,13 +281,12 @@ class GuiProjectDetailsContents(QWidget):
 
         self.theProject = theProject
         self.mainGui    = mainGui
-        self.mainTheme  = mainGui.mainTheme
 
         # Internal
         self._theToC = []
         self._currentRoot = None
 
-        iPx = self.mainTheme.baseIconSize
+        iPx = CONFIG.theme.baseIconSize
         hPx = CONFIG.pxInt(12)
         vPx = CONFIG.pxInt(4)
         pOptions = self.theProject.options
@@ -500,7 +498,7 @@ class GuiProjectDetailsContents(QWidget):
                 progPage = f"{cPage:n}"
                 progText = f"{pgProg:.1f}{nwUnicode.U_THSP}%"
 
-            hDec = self.mainTheme.getHeaderDecoration(tLevel)
+            hDec = CONFIG.theme.getHeaderDecoration(tLevel)
             if tTitle.strip() == "":
                 tTitle = self.tr("Untitled")
 

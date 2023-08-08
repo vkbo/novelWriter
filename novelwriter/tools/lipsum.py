@@ -49,8 +49,7 @@ class GuiLipsum(QDialog):
         if CONFIG.osDarwin:
             self.setWindowFlag(Qt.WindowType.Tool)
 
-        self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
+        self.mainGui = mainGui
 
         self.setWindowTitle(self.tr("Insert Placeholder Text"))
 
@@ -61,7 +60,7 @@ class GuiLipsum(QDialog):
         nPx = CONFIG.pxInt(64)
         vSp = CONFIG.pxInt(4)
         self.docIcon = QLabel()
-        self.docIcon.setPixmap(self.mainTheme.getPixmap("proj_document", (nPx, nPx)))
+        self.docIcon.setPixmap(CONFIG.theme.getPixmap("proj_document", (nPx, nPx)))
 
         self.leftBox = QVBoxLayout()
         self.leftBox.setSpacing(vSp)

@@ -30,6 +30,7 @@ from PyQt5.QtGui import QPainter
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QAbstractButton, QComboBox
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwItemClass
 from novelwriter.constants import nwLabels
 
@@ -45,7 +46,6 @@ class NovelSelector(QComboBox):
 
         self._mainGui = mainGui
         self._project = project
-        self._theme = mainGui.mainTheme
         self._blockSignal = False
         self._firstHandle = None
 
@@ -89,7 +89,7 @@ class NovelSelector(QComboBox):
         self._firstHandle = None
         self.clear()
 
-        icon = self._theme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
+        icon = CONFIG.theme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
         handle = self.currentData()
         for tHandle, nwItem in self._project.tree.iterRoots(nwItemClass.NOVEL):
             if prefix:

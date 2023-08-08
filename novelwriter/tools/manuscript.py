@@ -73,7 +73,6 @@ class GuiManuscript(QDialog):
             self.setWindowFlag(Qt.WindowType.Tool)
 
         self.mainGui    = mainGui
-        self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
         self._builds = BuildCollection(self.theProject)
@@ -83,7 +82,7 @@ class GuiManuscript(QDialog):
         self.setMinimumWidth(CONFIG.pxInt(600))
         self.setMinimumHeight(CONFIG.pxInt(500))
 
-        iPx = self.mainTheme.baseIconSize
+        iPx = CONFIG.theme.baseIconSize
         wWin = CONFIG.pxInt(900)
         hWin = CONFIG.pxInt(600)
 
@@ -107,21 +106,21 @@ class GuiManuscript(QDialog):
         ).format(CONFIG.pxInt(2), fadeCol.red(), fadeCol.green(), fadeCol.blue())
 
         self.tbAdd = QToolButton(self)
-        self.tbAdd.setIcon(self.mainTheme.getIcon("add"))
+        self.tbAdd.setIcon(CONFIG.theme.getIcon("add"))
         self.tbAdd.setIconSize(QSize(iPx, iPx))
         self.tbAdd.setToolTip(self.tr("Add New Build"))
         self.tbAdd.setStyleSheet(buttonStyle)
         self.tbAdd.clicked.connect(self._createNewBuild)
 
         self.tbDel = QToolButton(self)
-        self.tbDel.setIcon(self.mainTheme.getIcon("remove"))
+        self.tbDel.setIcon(CONFIG.theme.getIcon("remove"))
         self.tbDel.setIconSize(QSize(iPx, iPx))
         self.tbDel.setToolTip(self.tr("Delete Selected Build"))
         self.tbDel.setStyleSheet(buttonStyle)
         self.tbDel.clicked.connect(self._deleteSelectedBuild)
 
         self.tbEdit = QToolButton(self)
-        self.tbEdit.setIcon(self.mainTheme.getIcon("edit"))
+        self.tbEdit.setIcon(CONFIG.theme.getIcon("edit"))
         self.tbEdit.setIconSize(QSize(iPx, iPx))
         self.tbEdit.setToolTip(self.tr("Edit Selected Build"))
         self.tbEdit.setStyleSheet(buttonStyle)
@@ -428,7 +427,7 @@ class GuiManuscript(QDialog):
         for key, name in self._builds.builds():
             bItem = QListWidgetItem()
             bItem.setText(name)
-            bItem.setIcon(self.mainTheme.getIcon("export"))
+            bItem.setIcon(CONFIG.theme.getIcon("export"))
             bItem.setData(self.D_KEY, key)
             self.buildList.addItem(bItem)
             self._buildMap[key] = bItem
@@ -452,7 +451,6 @@ class _PreviewWidget(QTextBrowser):
         super().__init__(parent=mainGui)
 
         self.mainGui    = mainGui
-        self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
         self._docTime = 0
@@ -464,7 +462,7 @@ class _PreviewWidget(QTextBrowser):
         dPalette.setColor(QPalette.Text, QColor(0, 0, 0))
         self.setPalette(dPalette)
 
-        self.setMinimumWidth(40*self.mainGui.mainTheme.textNWidth)
+        self.setMinimumWidth(40*CONFIG.theme.textNWidth)
         self.setTextFont(CONFIG.textFont, CONFIG.textSize)
         self.setTabStopDistance(CONFIG.getTabWidth())
         self.setOpenExternalLinks(False)
@@ -482,7 +480,7 @@ class _PreviewWidget(QTextBrowser):
         aPalette.setColor(QPalette.Foreground, aPalette.toolTipText().color())
 
         aFont = self.font()
-        aFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
+        aFont.setPointSizeF(0.9*CONFIG.theme.fontPointSize)
 
         self.ageLabel = QLabel("", self)
         self.ageLabel.setIndent(0)
@@ -490,7 +488,7 @@ class _PreviewWidget(QTextBrowser):
         self.ageLabel.setPalette(aPalette)
         self.ageLabel.setAutoFillBackground(True)
         self.ageLabel.setAlignment(Qt.AlignCenter)
-        self.ageLabel.setFixedHeight(int(2.1*self.mainTheme.fontPixelSize))
+        self.ageLabel.setFixedHeight(int(2.1*CONFIG.theme.fontPixelSize))
 
         # Progress
         self.buildProgress = NProgressCircle(self, CONFIG.pxInt(160), CONFIG.pxInt(16))

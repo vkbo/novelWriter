@@ -66,7 +66,6 @@ class GuiManuscriptBuild(QDialog):
         self.setObjectName("GuiManuscriptBuild")
 
         self.mainGui    = mainGui
-        self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
         self._parent = parent
@@ -76,7 +75,7 @@ class GuiManuscriptBuild(QDialog):
         self.setMinimumWidth(CONFIG.pxInt(500))
         self.setMinimumHeight(CONFIG.pxInt(300))
 
-        iPx = self.mainTheme.baseIconSize
+        iPx = CONFIG.theme.baseIconSize
         sp4 = CONFIG.pxInt(4)
         sp8 = CONFIG.pxInt(8)
         sp16 = CONFIG.pxInt(16)
@@ -148,7 +147,7 @@ class GuiManuscriptBuild(QDialog):
         # Build Path
         self.lblPath = QLabel(self.tr("Path"))
         self.buildPath = QLineEdit(self)
-        self.btnBrowse = QPushButton(self.mainTheme.getIcon("browse"), "")
+        self.btnBrowse = QPushButton(CONFIG.theme.getIcon("browse"), "")
 
         self.pathBox = QHBoxLayout()
         self.pathBox.addWidget(self.buildPath)
@@ -158,7 +157,7 @@ class GuiManuscriptBuild(QDialog):
         # Build Name
         self.lblName = QLabel(self.tr("File Name"))
         self.buildName = QLineEdit(self)
-        self.btnReset = QPushButton(self.mainTheme.getIcon("revert"), "")
+        self.btnReset = QPushButton(CONFIG.theme.getIcon("revert"), "")
         self.btnReset.setToolTip(self.tr("Reset file name to default"))
 
         self.nameBox = QHBoxLayout()
@@ -183,7 +182,7 @@ class GuiManuscriptBuild(QDialog):
         self.buildBox.setVerticalSpacing(sp4)
 
         # Dialog Buttons
-        self.btnBuild = QPushButton(self.mainTheme.getIcon("export"), self.tr("&Build"))
+        self.btnBuild = QPushButton(CONFIG.theme.getIcon("export"), self.tr("&Build"))
         self.dlgButtons = QDialogButtonBox(QDialogButtonBox.Close)
         self.dlgButtons.addButton(self.btnBuild, QDialogButtonBox.ActionRole)
 
@@ -382,7 +381,7 @@ class GuiManuscriptBuild(QDialog):
                     if isinstance(rItem, NWItem):
                         rootMap[rHandle] = rItem.itemName
 
-                itemIcon = self.mainTheme.getItemIcon(
+                itemIcon = CONFIG.theme.getItemIcon(
                     nwItem.itemType, nwItem.itemClass,
                     nwItem.itemLayout, nwItem.mainHeading
                 )

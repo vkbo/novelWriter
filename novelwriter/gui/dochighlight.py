@@ -54,7 +54,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self.theDoc     = theDoc
         self.spEnchant  = spEnchant
         self.mainGui    = mainGui
-        self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
         self.theHandle  = None
         self.spellCheck = False
@@ -87,24 +86,24 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         """
         logger.debug("Setting up highlighting rules")
 
-        self.colHead   = QColor(*self.mainTheme.colHead)
-        self.colHeadH  = QColor(*self.mainTheme.colHeadH)
-        self.colDialN  = QColor(*self.mainTheme.colDialN)
-        self.colDialD  = QColor(*self.mainTheme.colDialD)
-        self.colDialS  = QColor(*self.mainTheme.colDialS)
-        self.colHidden = QColor(*self.mainTheme.colHidden)
-        self.colKey    = QColor(*self.mainTheme.colKey)
-        self.colVal    = QColor(*self.mainTheme.colVal)
-        self.colSpell  = QColor(*self.mainTheme.colSpell)
-        self.colError  = QColor(*self.mainTheme.colError)
-        self.colRepTag = QColor(*self.mainTheme.colRepTag)
-        self.colMod    = QColor(*self.mainTheme.colMod)
-        self.colBreak  = QColor(*self.mainTheme.colEmph)
+        self.colHead   = QColor(*CONFIG.theme.colHead)
+        self.colHeadH  = QColor(*CONFIG.theme.colHeadH)
+        self.colDialN  = QColor(*CONFIG.theme.colDialN)
+        self.colDialD  = QColor(*CONFIG.theme.colDialD)
+        self.colDialS  = QColor(*CONFIG.theme.colDialS)
+        self.colHidden = QColor(*CONFIG.theme.colHidden)
+        self.colKey    = QColor(*CONFIG.theme.colKey)
+        self.colVal    = QColor(*CONFIG.theme.colVal)
+        self.colSpell  = QColor(*CONFIG.theme.colSpell)
+        self.colError  = QColor(*CONFIG.theme.colError)
+        self.colRepTag = QColor(*CONFIG.theme.colRepTag)
+        self.colMod    = QColor(*CONFIG.theme.colMod)
+        self.colBreak  = QColor(*CONFIG.theme.colEmph)
         self.colBreak.setAlpha(64)
 
         self.colEmph = None
         if CONFIG.highlightEmph:
-            self.colEmph = QColor(*self.mainTheme.colEmph)
+            self.colEmph = QColor(*CONFIG.theme.colEmph)
 
         self.hStyles = {
             "header1":   self._makeFormat(self.colHead, "bold", 1.8),

@@ -28,6 +28,7 @@ import json
 import logging
 
 from time import time
+from typing import TYPE_CHECKING
 from pathlib import Path
 
 from PyQt5.QtGui import QFontDatabase
@@ -39,6 +40,9 @@ from PyQt5.QtCore import (
 from novelwriter.error import logException, formatException
 from novelwriter.common import checkPath, formatTimeStamp, NWConfigParser
 from novelwriter.constants import nwFiles, nwUnicode
+
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.gui.theme import GuiTheme
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +94,8 @@ class Config:
         # User Settings
         # =============
 
-        self._recentProj = RecentProjects(self)
+        self._theme = None
+        self._recent = RecentProjects(self)
 
         # General GUI Settings
         self.guiLocale   = self._qLocale.name()
@@ -233,7 +238,13 @@ class Config:
 
     @property
     def recentProjects(self):
-        return self._recentProj
+        return self._recent
+
+    @property
+    def theme(self) -> GuiTheme:
+        if self._theme is None:
+            raise Exception("Cannot access GUI theme before it is initialised")
+        return self._theme
 
     @property
     def mainWinSize(self):
@@ -281,6 +292,11 @@ class Config:
     ##
     #  Setters
     ##
+
+    def setThemeInstance(self, theme: GuiTheme) -> None:
+        """Set the applications theme instance."""
+        self._theme = theme
+        return
 
     def setMainWinSize(self, newWidth, newHeight):
         """Set the size of the main window, but only if the change is
@@ -479,7 +495,7 @@ class Config:
         else:
             self.saveConfig()
 
-        self._recentProj.loadCache()
+        self._recent.loadCache()
         self._checkOptionalPackages()
 
         logger.debug("Config initialisation complete")

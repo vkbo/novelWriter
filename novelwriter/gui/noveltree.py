@@ -201,9 +201,8 @@ class GuiNovelToolBar(QWidget):
         self.novelView  = novelView
         self.mainGui    = novelView.mainGui
         self.theProject = novelView.mainGui.theProject
-        self.mainTheme  = novelView.mainGui.mainTheme
 
-        iPx = self.mainTheme.baseIconSize
+        iPx = CONFIG.theme.baseIconSize
         mPx = CONFIG.pxInt(2)
 
         self.setContentsMargins(0, 0, 0, 0)
@@ -276,9 +275,9 @@ class GuiNovelToolBar(QWidget):
         """Update theme elements.
         """
         # Icons
-        self.tbNovel.setIcon(self.mainTheme.getIcon("cls_novel"))
-        self.tbRefresh.setIcon(self.mainTheme.getIcon("refresh"))
-        self.tbMore.setIcon(self.mainTheme.getIcon("menu"))
+        self.tbNovel.setIcon(CONFIG.theme.getIcon("cls_novel"))
+        self.tbRefresh.setIcon(CONFIG.theme.getIcon("refresh"))
+        self.tbMore.setIcon(CONFIG.theme.getIcon("menu"))
 
         qPalette = self.palette()
         qPalette.setBrush(QPalette.Window, qPalette.base())
@@ -401,7 +400,6 @@ class GuiNovelTree(QTreeWidget):
 
         self.novelView  = novelView
         self.mainGui    = novelView.mainGui
-        self.mainTheme  = novelView.mainGui.mainTheme
         self.theProject = novelView.mainGui.theProject
 
         # Internal Variables
@@ -419,7 +417,7 @@ class GuiNovelTree(QTreeWidget):
         # Build GUI
         # =========
 
-        iPx = self.mainTheme.baseIconSize
+        iPx = CONFIG.theme.baseIconSize
         cMg = CONFIG.pxInt(6)
 
         self.setIconSize(QSize(iPx, iPx))
@@ -485,8 +483,8 @@ class GuiNovelTree(QTreeWidget):
     def updateTheme(self):
         """Update theme elements.
         """
-        iPx = self.mainTheme.baseIconSize
-        self._pMore = self.mainTheme.loadDecoration("deco_doc_more", pxH=iPx)
+        iPx = CONFIG.theme.baseIconSize
+        self._pMore = CONFIG.theme.loadDecoration("deco_doc_more", pxH=iPx)
         return
 
     ##
@@ -737,7 +735,7 @@ class GuiNovelTree(QTreeWidget):
         """Set the tree item values from the index entry.
         """
         iLevel = nwHeaders.H_LEVEL.get(idxItem.level, 0)
-        hDec = self.mainTheme.getHeaderDecoration(iLevel)
+        hDec = CONFIG.theme.getHeaderDecoration(iLevel)
 
         trItem.setData(self.C_TITLE, Qt.DecorationRole, hDec)
         trItem.setText(self.C_TITLE, idxItem.title)

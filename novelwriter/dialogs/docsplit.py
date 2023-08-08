@@ -52,7 +52,6 @@ class GuiDocSplit(QDialog):
         self.setObjectName("GuiDocSplit")
 
         self.mainGui    = mainGui
-        self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
         self._data = {}
@@ -63,11 +62,11 @@ class GuiDocSplit(QDialog):
         self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Document Headers")))
         self.helpLabel = NHelpLabel(
             self.tr("Select the maximum level to split into files."),
-            self.mainGui.mainTheme.helpText
+            CONFIG.theme.helpText
         )
 
         # Values
-        iPx = self.mainTheme.baseIconSize
+        iPx = CONFIG.theme.baseIconSize
         hSp = CONFIG.pxInt(12)
         vSp = CONFIG.pxInt(8)
         bSp = CONFIG.pxInt(12)

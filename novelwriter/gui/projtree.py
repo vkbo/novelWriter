@@ -237,9 +237,8 @@ class GuiProjectToolBar(QWidget):
         self.projTree   = projView.projTree
         self.mainGui    = projView.mainGui
         self.theProject = projView.mainGui.theProject
-        self.mainTheme  = projView.mainGui.mainTheme
 
-        iPx = self.mainTheme.baseIconSize
+        iPx = CONFIG.theme.baseIconSize
         mPx = CONFIG.pxInt(2)
 
         self.setContentsMargins(0, 0, 0, 0)
@@ -370,16 +369,16 @@ class GuiProjectToolBar(QWidget):
         self.tbAdd.setStyleSheet(buttonStyle)
         self.tbMore.setStyleSheet(buttonStyle)
 
-        self.tbQuick.setIcon(self.mainTheme.getIcon("bookmark"))
-        self.tbMoveU.setIcon(self.mainTheme.getIcon("up"))
-        self.tbMoveD.setIcon(self.mainTheme.getIcon("down"))
-        self.aAddEmpty.setIcon(self.mainTheme.getIcon("proj_document"))
-        self.aAddChap.setIcon(self.mainTheme.getIcon("proj_chapter"))
-        self.aAddScene.setIcon(self.mainTheme.getIcon("proj_scene"))
-        self.aAddNote.setIcon(self.mainTheme.getIcon("proj_note"))
-        self.aAddFolder.setIcon(self.mainTheme.getIcon("proj_folder"))
-        self.tbAdd.setIcon(self.mainTheme.getIcon("add"))
-        self.tbMore.setIcon(self.mainTheme.getIcon("menu"))
+        self.tbQuick.setIcon(CONFIG.theme.getIcon("bookmark"))
+        self.tbMoveU.setIcon(CONFIG.theme.getIcon("up"))
+        self.tbMoveD.setIcon(CONFIG.theme.getIcon("down"))
+        self.aAddEmpty.setIcon(CONFIG.theme.getIcon("proj_document"))
+        self.aAddChap.setIcon(CONFIG.theme.getIcon("proj_chapter"))
+        self.aAddScene.setIcon(CONFIG.theme.getIcon("proj_scene"))
+        self.aAddNote.setIcon(CONFIG.theme.getIcon("proj_note"))
+        self.aAddFolder.setIcon(CONFIG.theme.getIcon("proj_folder"))
+        self.tbAdd.setIcon(CONFIG.theme.getIcon("add"))
+        self.tbMore.setIcon(CONFIG.theme.getIcon("menu"))
 
         self.buildQuickLinkMenu()
         self._buildRootMenu()
@@ -398,7 +397,7 @@ class GuiProjectToolBar(QWidget):
         for n, (tHandle, nwItem) in enumerate(self.theProject.tree.iterRoots(None)):
             aRoot = self.mQuick.addAction(nwItem.itemName)
             aRoot.setData(tHandle)
-            aRoot.setIcon(self.mainTheme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass]))
+            aRoot.setIcon(CONFIG.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass]))
             aRoot.triggered.connect(
                 lambda n, tHandle=tHandle: self.projView.setSelectedHandle(tHandle, doScroll=True)
             )
@@ -412,7 +411,7 @@ class GuiProjectToolBar(QWidget):
         """Build the rood folder menu."""
         def addClass(itemClass):
             aNew = self.mAddRoot.addAction(trConst(nwLabels.CLASS_NAME[itemClass]))
-            aNew.setIcon(self.mainTheme.getIcon(nwLabels.CLASS_ICON[itemClass]))
+            aNew.setIcon(CONFIG.theme.getIcon(nwLabels.CLASS_ICON[itemClass]))
             aNew.triggered.connect(lambda: self.projTree.newTreeItem(nwItemType.ROOT, itemClass))
             self.mAddRoot.addAction(aNew)
             return
@@ -469,7 +468,6 @@ class GuiProjectTree(QTreeWidget):
 
         self.projView   = projView
         self.mainGui    = projView.mainGui
-        self.mainTheme  = projView.mainGui.mainTheme
         self.theProject = projView.mainGui.theProject
 
         # Internal Variables
@@ -485,7 +483,7 @@ class GuiProjectTree(QTreeWidget):
         self.customContextMenuRequested.connect(self._openContextMenu)
 
         # Tree Settings
-        iPx = self.mainTheme.baseIconSize
+        iPx = CONFIG.theme.baseIconSize
         cMg = CONFIG.pxInt(6)
 
         self.setIconSize(QSize(iPx, iPx))
@@ -995,7 +993,7 @@ class GuiProjectTree(QTreeWidget):
 
         itemStatus, statusIcon = nwItem.getImportStatus(incIcon=True)
         hLevel = nwItem.mainHeading
-        itemIcon = self.mainTheme.getItemIcon(
+        itemIcon = CONFIG.theme.getItemIcon(
             nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
         )
 
@@ -1011,7 +1009,7 @@ class GuiProjectTree(QTreeWidget):
         else:
             iconName = "noncheckable"
 
-        trItem.setIcon(self.C_ACTIVE, self.mainTheme.getIcon(iconName))
+        trItem.setIcon(self.C_ACTIVE, CONFIG.theme.getIcon(iconName))
 
         if CONFIG.emphLabels and nwItem.isDocumentLayout():
             trFont = trItem.font(self.C_NAME)

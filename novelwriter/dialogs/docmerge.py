@@ -50,7 +50,6 @@ class GuiDocMerge(QDialog):
         self.setObjectName("GuiDocMerge")
 
         self.mainGui    = mainGui
-        self.mainTheme  = mainGui.mainTheme
         self.theProject = mainGui.theProject
 
         self._data = {}
@@ -60,9 +59,9 @@ class GuiDocMerge(QDialog):
         self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Documents to Merge")))
         self.helpLabel = NHelpLabel(self.tr(
             "Drag and drop items to change the order, or uncheck to exclude."
-        ), self.mainTheme.helpText)
+        ), CONFIG.theme.helpText)
 
-        iPx = self.mainTheme.baseIconSize
+        iPx = CONFIG.theme.baseIconSize
         hSp = CONFIG.pxInt(12)
         vSp = CONFIG.pxInt(8)
         bSp = CONFIG.pxInt(12)
@@ -161,7 +160,7 @@ class GuiDocMerge(QDialog):
             if nwItem is None or not nwItem.isFileType():
                 continue
 
-            itemIcon = self.mainTheme.getItemIcon(
+            itemIcon = CONFIG.theme.getItemIcon(
                 nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, nwItem.mainHeading
             )
 

@@ -206,7 +206,7 @@ class GuiProjectEditMain(QWidget):
 
         # The Form
         self.mainForm = NConfigLayout()
-        self.mainForm.setHelpTextStyle(self.mainGui.mainTheme.helpText)
+        self.mainForm.setHelpTextStyle(CONFIG.theme.helpText)
         self.setLayout(self.mainForm)
 
         self.mainForm.addGroupLabel(self.tr("Project Settings"))
@@ -291,7 +291,6 @@ class GuiProjectEditStatus(QWidget):
 
         self.mainGui    = projGui.mainGui
         self.theProject = projGui.theProject
-        self.mainTheme  = projGui.mainGui.mainTheme
 
         if isStatus:
             self.theStatus = self.theProject.data.itemStatus
@@ -310,7 +309,7 @@ class GuiProjectEditStatus(QWidget):
         self.colChanged = False
         self.selColour = QColor(100, 100, 100)
 
-        self.iPx = self.mainTheme.baseIconSize
+        self.iPx = CONFIG.theme.baseIconSize
 
         # The List
         # ========
@@ -329,16 +328,16 @@ class GuiProjectEditStatus(QWidget):
         # List Controls
         # =============
 
-        self.addButton = QPushButton(self.mainTheme.getIcon("add"), "")
+        self.addButton = QPushButton(CONFIG.theme.getIcon("add"), "")
         self.addButton.clicked.connect(self._newItem)
 
-        self.delButton = QPushButton(self.mainTheme.getIcon("remove"), "")
+        self.delButton = QPushButton(CONFIG.theme.getIcon("remove"), "")
         self.delButton.clicked.connect(self._delItem)
 
-        self.upButton = QPushButton(self.mainTheme.getIcon("up"), "")
+        self.upButton = QPushButton(CONFIG.theme.getIcon("up"), "")
         self.upButton.clicked.connect(lambda: self._moveItem(-1))
 
-        self.dnButton = QPushButton(self.mainTheme.getIcon("down"), "")
+        self.dnButton = QPushButton(CONFIG.theme.getIcon("down"), "")
         self.dnButton.clicked.connect(lambda: self._moveItem(1))
 
         # Edit Form
@@ -578,7 +577,6 @@ class GuiProjectEditReplace(QWidget):
         super().__init__(parent=projGui)
 
         self.mainGui    = projGui.mainGui
-        self.mainTheme  = projGui.mainGui.mainTheme
         self.theProject = projGui.theProject
         self.arChanged  = False
 
@@ -609,10 +607,10 @@ class GuiProjectEditReplace(QWidget):
         # List Controls
         # =============
 
-        self.addButton = QPushButton(self.mainTheme.getIcon("add"), "")
+        self.addButton = QPushButton(CONFIG.theme.getIcon("add"), "")
         self.addButton.clicked.connect(self._addEntry)
 
-        self.delButton = QPushButton(self.mainTheme.getIcon("remove"), "")
+        self.delButton = QPushButton(CONFIG.theme.getIcon("remove"), "")
         self.delButton.clicked.connect(self._delEntry)
 
         # Edit Form

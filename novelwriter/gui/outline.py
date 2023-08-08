@@ -217,7 +217,6 @@ class GuiOutlineToolBar(QToolBar):
 
         self.mainGui    = theOutline.mainGui
         self.theProject = theOutline.mainGui.theProject
-        self.mainTheme  = theOutline.mainGui.mainTheme
 
         iPx = CONFIG.pxInt(22)
         mPx = CONFIG.pxInt(12)
@@ -275,8 +274,8 @@ class GuiOutlineToolBar(QToolBar):
         self.setStyleSheet("QToolBar {border: 0px;}")
 
         self.novelValue.updateList(includeAll=True)
-        self.aRefresh.setIcon(self.mainTheme.getIcon("refresh"))
-        self.tbColumns.setIcon(self.mainTheme.getIcon("menu"))
+        self.aRefresh.setIcon(CONFIG.theme.getIcon("refresh"))
+        self.tbColumns.setIcon(CONFIG.theme.getIcon("menu"))
 
         return
 
@@ -375,7 +374,6 @@ class GuiOutlineTree(QTreeWidget):
         self.outlineView = outlineView
         self.mainGui     = outlineView.mainGui
         self.theProject  = outlineView.mainGui.theProject
-        self.mainTheme   = outlineView.mainGui.mainTheme
 
         self.setUniformRowHeights(True)
         self.setFrameStyle(QFrame.NoFrame)
@@ -386,7 +384,7 @@ class GuiOutlineTree(QTreeWidget):
         self.itemDoubleClicked.connect(self._treeDoubleClick)
         self.itemSelectionChanged.connect(self._itemSelected)
 
-        iPx = self.mainTheme.baseIconSize
+        iPx = CONFIG.theme.baseIconSize
         self.setIconSize(QSize(iPx, iPx))
         self.setIndentation(0)
 
@@ -403,11 +401,11 @@ class GuiOutlineTree(QTreeWidget):
 
         self._hFonts = [self.font(), fH1, fH2, self.font(), self.font()]
         self._dIcon = {
-            "H0": self.mainTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H0"),
-            "H1": self.mainTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H1"),
-            "H2": self.mainTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H2"),
-            "H3": self.mainTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H3"),
-            "H4": self.mainTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H4"),
+            "H0": CONFIG.theme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H0"),
+            "H1": CONFIG.theme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H1"),
+            "H2": CONFIG.theme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H2"),
+            "H3": CONFIG.theme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H3"),
+            "H4": CONFIG.theme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H4"),
         }
 
         # Internals
@@ -675,7 +673,7 @@ class GuiOutlineTree(QTreeWidget):
 
             trItem = QTreeWidgetItem()
             nwItem = self.theProject.tree[tHandle]
-            hDec = self.mainTheme.getHeaderDecoration(iLevel)
+            hDec = CONFIG.theme.getHeaderDecoration(iLevel)
 
             trItem.setData(self._colIdx[nwOutline.TITLE], Qt.DecorationRole, hDec)
             trItem.setText(self._colIdx[nwOutline.TITLE], novIdx.title)
@@ -777,12 +775,11 @@ class GuiOutlineDetails(QScrollArea):
         self.theOutline = theOutline
         self.mainGui    = theOutline.mainGui
         self.theProject = theOutline.mainGui.theProject
-        self.mainTheme  = theOutline.mainGui.mainTheme
 
         # Sizes
-        minTitle = 30*self.mainTheme.textNWidth
-        maxTitle = 40*self.mainTheme.textNWidth
-        wCount = self.mainTheme.getTextWidth("999,999")
+        minTitle = 30*CONFIG.theme.textNWidth
+        maxTitle = 40*CONFIG.theme.textNWidth
+        wCount = CONFIG.theme.getTextWidth("999,999")
         hSpace = int(CONFIG.pxInt(10))
         vSpace = int(CONFIG.pxInt(4))
 

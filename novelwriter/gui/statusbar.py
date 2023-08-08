@@ -47,15 +47,14 @@ class GuiMainStatus(QStatusBar):
         logger.debug("Create: GuiMainStatus")
 
         self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
         self.refTime   = None
         self.userIdle  = False
 
-        colNone = QColor(*self.mainTheme.statNone)
-        colSaved = QColor(*self.mainTheme.statSaved)
-        colUnsaved = QColor(*self.mainTheme.statUnsaved)
+        colNone = QColor(*CONFIG.theme.statNone)
+        colSaved = QColor(*CONFIG.theme.statSaved)
+        colUnsaved = QColor(*CONFIG.theme.statUnsaved)
 
-        iPx = self.mainTheme.baseIconSize
+        iPx = CONFIG.theme.baseIconSize
 
         # Permanent Widgets
         # =================
@@ -99,7 +98,7 @@ class GuiMainStatus(QStatusBar):
         self.timeIcon = QLabel()
         self.timeText = QLabel("")
         self.timeText.setToolTip(self.tr("Session Time"))
-        self.timeText.setMinimumWidth(self.mainTheme.getTextWidth("00:00:00:"))
+        self.timeText.setMinimumWidth(CONFIG.theme.getTextWidth("00:00:00:"))
         self.timeIcon.setContentsMargins(0, 0, 0, 0)
         self.timeText.setContentsMargins(0, 0, 0, 0)
         self.addPermanentWidget(self.timeIcon)
@@ -129,13 +128,13 @@ class GuiMainStatus(QStatusBar):
     def updateTheme(self):
         """Update theme elements.
         """
-        iPx = self.mainTheme.baseIconSize
+        iPx = CONFIG.theme.baseIconSize
 
-        self.langIcon.setPixmap(self.mainTheme.getPixmap("status_lang", (iPx, iPx)))
-        self.statsIcon.setPixmap(self.mainTheme.getPixmap("status_stats", (iPx, iPx)))
+        self.langIcon.setPixmap(CONFIG.theme.getPixmap("status_lang", (iPx, iPx)))
+        self.statsIcon.setPixmap(CONFIG.theme.getPixmap("status_stats", (iPx, iPx)))
 
-        self.timePixmap = self.mainTheme.getPixmap("status_time", (iPx, iPx))
-        self.idlePixmap = self.mainTheme.getPixmap("status_idle", (iPx, iPx))
+        self.timePixmap = CONFIG.theme.getPixmap("status_time", (iPx, iPx))
+        self.idlePixmap = CONFIG.theme.getPixmap("status_idle", (iPx, iPx))
 
         self.timeIcon.setPixmap(self.timePixmap)
 

@@ -1,7 +1,6 @@
 """
 novelWriter – GUI About Box
 ===========================
-The about novelWriter dialog box
 
 File History:
 Created: 2020-05-21 [0.5.2]
@@ -22,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 import novelwriter
@@ -31,8 +31,8 @@ from datetime import datetime
 from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    qApp, QDialog, QHBoxLayout, QVBoxLayout, QDialogButtonBox, QTabWidget,
-    QTextBrowser, QLabel
+    qApp, QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QTabWidget,
+    QTextBrowser, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG
@@ -44,14 +44,11 @@ logger = logging.getLogger(__name__)
 
 class GuiAbout(QDialog):
 
-    def __init__(self, mainGui):
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: QWidget):
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiAbout")
         self.setObjectName("GuiAbout")
-
-        self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
 
         self.outerBox = QVBoxLayout()
         self.innerBox = QHBoxLayout()
@@ -63,7 +60,7 @@ class GuiAbout(QDialog):
 
         nPx = CONFIG.pxInt(96)
         self.nwIcon = QLabel()
-        self.nwIcon.setPixmap(self.mainGui.mainTheme.getPixmap("novelwriter", (nPx, nPx)))
+        self.nwIcon.setPixmap(CONFIG.theme.getPixmap("novelwriter", (nPx, nPx)))
         self.lblName = QLabel("<b>novelWriter</b>")
         self.lblVers = QLabel(f"v{novelwriter.__version__}")
         self.lblDate = QLabel(datetime.strptime(novelwriter.__date__, "%Y-%m-%d").strftime("%x"))
@@ -231,12 +228,12 @@ class GuiAbout(QDialog):
             "  color: rgb({kColR},{kColG},{kColB});"
             "}}\n"
         ).format(
-            hColR=self.mainGui.mainTheme.colHead[0],
-            hColG=self.mainGui.mainTheme.colHead[1],
-            hColB=self.mainGui.mainTheme.colHead[2],
-            kColR=self.mainTheme.colKey[0],
-            kColG=self.mainTheme.colKey[1],
-            kColB=self.mainTheme.colKey[2],
+            hColR=CONFIG.theme.colHead[0],
+            hColG=CONFIG.theme.colHead[1],
+            hColB=CONFIG.theme.colHead[2],
+            kColR=CONFIG.theme.colKey[0],
+            kColG=CONFIG.theme.colKey[1],
+            kColB=CONFIG.theme.colKey[2],
         )
         self.pageAbout.document().setDefaultStyleSheet(styleSheet)
         self.pageNotes.document().setDefaultStyleSheet(styleSheet)
