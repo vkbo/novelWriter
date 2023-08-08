@@ -68,6 +68,7 @@ class Config:
         self._confPath = confRoot.absolute() / self.appHandle  # The user config location
         self._dataPath = dataRoot.absolute() / self.appHandle  # The user data location
         self._homePath = Path.home().absolute()  # The user's home directory
+        self._backPath = self._homePath / "Backups"
 
         self._appPath = Path(__file__).parent.absolute()
         self._appRoot = self._appPath.parent
@@ -174,7 +175,7 @@ class Config:
 
         # User Paths
         self._lastPath   = self._homePath  # The user's last used path
-        self._backupPath = self._homePath  # Backup path to use, can be none
+        self._backupPath = self._backPath  # Backup path to use, can be none
 
         # Spell Checking Settings
         self.spellLanguage = "en"
@@ -355,7 +356,7 @@ class Config:
 
     def setBackupPath(self, backupPath: Path | str):
         """Set the current backup path."""
-        self._backupPath = checkPath(backupPath, self._homePath)
+        self._backupPath = checkPath(backupPath, self._backPath)
         return
 
     def setTextFont(self, family: str | None, pointSize: int = 12):
@@ -418,7 +419,7 @@ class Config:
         if isinstance(self._backupPath, Path):
             if self._backupPath.is_dir():
                 return self._backupPath
-        return self._homePath
+        return self._backPath
 
     def errorText(self) -> str:
         """Compile and return error messages from the initialisation of

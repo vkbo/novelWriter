@@ -427,7 +427,7 @@ class NWProject(QObject):
         backupPath = CONFIG.backupPath()
         baseDir = backupPath / cleanName
         try:
-            baseDir.mkdir(exist_ok=True)
+            baseDir.mkdir(exist_ok=True, parents=True)
         except Exception as exc:
             self.mainGui.makeAlert(self.tr(
                 "Could not create backup folder."
