@@ -49,8 +49,7 @@ class GuiDocMerge(QDialog):
         logger.debug("Create: GuiDocMerge")
         self.setObjectName("GuiDocMerge")
 
-        self.mainGui    = mainGui
-        self.theProject = mainGui.theProject
+        self.mainGui = mainGui
 
         self._data = {}
 
@@ -156,7 +155,7 @@ class GuiDocMerge(QDialog):
 
         self.listBox.clear()
         for tHandle in itemList:
-            nwItem = self.theProject.tree[tHandle]
+            nwItem = self.mainGui.project.tree[tHandle]
             if nwItem is None or not nwItem.isFileType():
                 continue
 

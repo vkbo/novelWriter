@@ -50,16 +50,14 @@ class GuiWordList(QDialog):
 
         logger.debug("Create: GuiWordList")
         self.setObjectName("GuiWordList")
-
-        self.mainGui    = mainGui
-        self.theProject = mainGui.theProject
-
         self.setWindowTitle(self.tr("Project Word List"))
+
+        self.mainGui = mainGui
 
         mS = CONFIG.pxInt(250)
         wW = CONFIG.pxInt(320)
         wH = CONFIG.pxInt(340)
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
 
         self.setMinimumWidth(mS)
         self.setMinimumHeight(mS)
@@ -151,7 +149,7 @@ class GuiWordList(QDialog):
     def _doSave(self):
         """Save the new word list and close."""
         self._saveGuiSettings()
-        userDict = UserDictionary(self.theProject)
+        userDict = UserDictionary(self.mainGui.project)
         for i in range(self.listBox.count()):
             item = self.listBox.item(i)
             if isinstance(item, QListWidgetItem):
@@ -174,7 +172,7 @@ class GuiWordList(QDialog):
 
     def _loadWordList(self):
         """Load the project's word list, if it exists."""
-        userDict = UserDictionary(self.theProject)
+        userDict = UserDictionary(self.mainGui.project)
         userDict.load()
         self.listBox.clear()
         for word in userDict:
@@ -187,7 +185,7 @@ class GuiWordList(QDialog):
         winWidth  = CONFIG.rpxInt(self.width())
         winHeight = CONFIG.rpxInt(self.height())
 
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
         pOptions.setValue("GuiWordList", "winWidth",  winWidth)
         pOptions.setValue("GuiWordList", "winHeight", winHeight)
 

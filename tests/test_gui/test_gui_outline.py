@@ -71,7 +71,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, projPath):
 
     # Option State
     # ============
-    pOptions = nwGUI.theProject.options
+    pOptions = nwGUI.project.options
     colNames = [h.name for h in nwOutline]
     colItems = [h for h in nwOutline]
     colWidth = {h: outlineTree.DEF_WIDTH[h] for h in nwOutline}
@@ -181,7 +181,7 @@ def testGuiOutline_Content(qtbot, nwGUI, prjLipsum):
     assert outlineBar.novelValue.itemData(2) == ""    # All novels
 
     # Add a second novel folder
-    newHandle = nwGUI.theProject.newRoot(nwItemClass.NOVEL)
+    newHandle = nwGUI.project.newRoot(nwItemClass.NOVEL)
     nwGUI.projView.projTree.revealNewTreeItem(newHandle)
 
     # Check new values in dropdown list
@@ -198,7 +198,7 @@ def testGuiOutline_Content(qtbot, nwGUI, prjLipsum):
         ("Section 4", 4),
     ]
     for dTitle, hLevel in docList:
-        aHandle = nwGUI.theProject.newFile(dTitle, newHandle)
+        aHandle = nwGUI.project.newFile(dTitle, newHandle)
         hHash = "#"*hLevel
         writeFile(prjLipsum / "content" / f"{aHandle}.nwd", f"{hHash} {dTitle}\n\n")
         nwGUI.projView.projTree.revealNewTreeItem(aHandle)

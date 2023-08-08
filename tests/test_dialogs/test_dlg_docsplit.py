@@ -35,7 +35,7 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Create a new project
     buildTestProject(nwGUI, projPath)
 
-    theProject = nwGUI.theProject
+    theProject = nwGUI.project
     projTree = nwGUI.projView.projTree
 
     docText = (

@@ -163,10 +163,10 @@ def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumTex
         assert "Could not save document." in caplog.text
 
     # Change header level
-    assert nwGUI.theProject.tree[C.hSceneDoc].itemLayout == nwItemLayout.DOCUMENT
+    assert nwGUI.project.tree[C.hSceneDoc].itemLayout == nwItemLayout.DOCUMENT
     nwGUI.docEditor.replaceText(longText[1:])
     assert nwGUI.docEditor.saveText() is True
-    assert nwGUI.theProject.tree[C.hSceneDoc].itemLayout == nwItemLayout.DOCUMENT
+    assert nwGUI.project.tree[C.hSceneDoc].itemLayout == nwItemLayout.DOCUMENT
 
     # Regular save
     assert nwGUI.docEditor.saveText() is True
@@ -203,9 +203,9 @@ def testGuiEditor_MetaData(qtbot, nwGUI, projPath, mockRnd):
     assert nwGUI.docEditor.setCursorPosition(None) is False
     assert nwGUI.docEditor.setCursorPosition(10) is True
     assert nwGUI.docEditor.getCursorPosition() == 10
-    assert nwGUI.theProject.tree[C.hSceneDoc].cursorPos != 10
+    assert nwGUI.project.tree[C.hSceneDoc].cursorPos != 10
     nwGUI.docEditor.saveCursorPosition()
-    assert nwGUI.theProject.tree[C.hSceneDoc].cursorPos == 10
+    assert nwGUI.project.tree[C.hSceneDoc].cursorPos == 10
 
     assert nwGUI.docEditor.setCursorLine(None) is False
     assert nwGUI.docEditor.setCursorLine(3) is True
@@ -1067,7 +1067,7 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # Create Character
     theText = "### Jane Doe\n\n@tag: Jane\n\n" + ipsumText[1] + "\n\n"
-    cHandle = nwGUI.theProject.newFile("Jane Doe", C.hCharRoot)
+    cHandle = nwGUI.project.newFile("Jane Doe", C.hCharRoot)
     assert nwGUI.openDocument(cHandle) is True
     assert nwGUI.docEditor.replaceText(theText) is True
     assert nwGUI.saveDocument() is True
@@ -1145,8 +1145,8 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
     assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
     # Open a document and populate it
-    nwGUI.theProject.tree[C.hSceneDoc]._initCount = 0  # Clear item's count
-    nwGUI.theProject.tree[C.hSceneDoc]._wordCount = 0  # Clear item's count
+    nwGUI.project.tree[C.hSceneDoc]._initCount = 0  # Clear item's count
+    nwGUI.project.tree[C.hSceneDoc]._wordCount = 0  # Clear item's count
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
     theText = "\n\n".join(ipsumText)
@@ -1170,9 +1170,9 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
 
     nwGUI.docEditor.wCounterDoc.run()
     # nwGUI.docEditor._updateDocCounts(cC, wC, pC)
-    assert nwGUI.theProject.tree[C.hSceneDoc]._charCount == cC
-    assert nwGUI.theProject.tree[C.hSceneDoc]._wordCount == wC
-    assert nwGUI.theProject.tree[C.hSceneDoc]._paraCount == pC
+    assert nwGUI.project.tree[C.hSceneDoc]._charCount == cC
+    assert nwGUI.project.tree[C.hSceneDoc]._wordCount == wC
+    assert nwGUI.project.tree[C.hSceneDoc]._paraCount == pC
     assert nwGUI.docEditor.docFooter.wordsText.text() == f"Words: {wC} (+{wC})"
 
     # Select all text

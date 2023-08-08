@@ -60,15 +60,13 @@ class GuiProjectSettings(NPagedDialog):
         logger.debug("Create: GuiProjectSettings")
         self.setObjectName("GuiProjectSettings")
 
-        self.mainGui    = mainGui
-        self.theProject = mainGui.theProject
-
-        self.theProject.countStatus()
+        self.mainGui = mainGui
+        self.mainGui.project.countStatus()
         self.setWindowTitle(self.tr("Project Settings"))
 
         wW = CONFIG.pxInt(570)
         wH = CONFIG.pxInt(375)
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
 
         self.setMinimumWidth(wW)
         self.setMinimumHeight(wH)
@@ -117,34 +115,35 @@ class GuiProjectSettings(NPagedDialog):
     def _doSave(self):
         """Save settings and close dialog.
         """
+        project = self.mainGui.project
         projName   = self.tabMain.editName.text()
         bookTitle  = self.tabMain.editTitle.text()
         bookAuthor = self.tabMain.editAuthor.text()
         spellLang  = self.tabMain.spellLang.currentData()
         doBackup   = not self.tabMain.doBackup.isChecked()
 
-        self.theProject.data.setName(projName)
-        self.theProject.data.setTitle(bookTitle)
-        self.theProject.data.setAuthor(bookAuthor)
-        self.theProject.data.setDoBackup(doBackup)
+        project.data.setName(projName)
+        project.data.setTitle(bookTitle)
+        project.data.setAuthor(bookAuthor)
+        project.data.setDoBackup(doBackup)
 
         # Remember this as updating spell dictionary can be expensive
-        self._spellChanged = self.theProject.data.setSpellLang(spellLang)
+        self._spellChanged = project.data.setSpellLang(spellLang)
 
         if self.tabStatus.colChanged:
             newList, delList = self.tabStatus.getNewList()
-            self.theProject.setStatusColours(newList, delList)
+            project.setStatusColours(newList, delList)
 
         if self.tabImport.colChanged:
             newList, delList = self.tabImport.getNewList()
-            self.theProject.setImportColours(newList, delList)
+            project.setImportColours(newList, delList)
 
         if self.tabStatus.colChanged or self.tabImport.colChanged:
             self.mainGui.rebuildTrees()
 
         if self.tabReplace.arChanged:
             newList = self.tabReplace.getNewList()
-            self.theProject.data.setAutoReplace(newList)
+            project.data.setAutoReplace(newList)
 
         self._saveGuiSettings()
         self.accept()
@@ -184,7 +183,7 @@ class GuiProjectSettings(NPagedDialog):
         statusColW  = CONFIG.rpxInt(self.tabStatus.listBox.columnWidth(0))
         importColW  = CONFIG.rpxInt(self.tabImport.listBox.columnWidth(0))
 
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
         pOptions.setValue("GuiProjectSettings", "winWidth",    winWidth)
         pOptions.setValue("GuiProjectSettings", "winHeight",   winHeight)
         pOptions.setValue("GuiProjectSettings", "replaceColW", replaceColW)
@@ -201,8 +200,7 @@ class GuiProjectEditMain(QWidget):
     def __init__(self, projGui):
         super().__init__(parent=projGui)
 
-        self.mainGui    = projGui.mainGui
-        self.theProject = projGui.theProject
+        self.mainGui = projGui.mainGui
 
         # The Form
         self.mainForm = NConfigLayout()
@@ -212,11 +210,12 @@ class GuiProjectEditMain(QWidget):
         self.mainForm.addGroupLabel(self.tr("Project Settings"))
 
         xW = CONFIG.pxInt(250)
+        pData = self.mainGui.project.data
 
         self.editName = QLineEdit()
         self.editName.setMaxLength(200)
         self.editName.setMaximumWidth(xW)
-        self.editName.setText(self.theProject.data.name)
+        self.editName.setText(pData.name)
         self.mainForm.addRow(
             self.tr("Project name"),
             self.editName,
@@ -226,7 +225,7 @@ class GuiProjectEditMain(QWidget):
         self.editTitle = QLineEdit()
         self.editTitle.setMaxLength(200)
         self.editTitle.setMaximumWidth(xW)
-        self.editTitle.setText(self.theProject.data.title)
+        self.editTitle.setText(pData.title)
         self.mainForm.addRow(
             self.tr("Novel title"),
             self.editTitle,
@@ -236,7 +235,7 @@ class GuiProjectEditMain(QWidget):
         self.editAuthor = QLineEdit()
         self.editAuthor.setMaxLength(200)
         self.editAuthor.setMaximumWidth(xW)
-        self.editAuthor.setText(self.theProject.data.author)
+        self.editAuthor.setText(pData.author)
         self.mainForm.addRow(
             self.tr("Author(s)"),
             self.editAuthor,
@@ -259,13 +258,13 @@ class GuiProjectEditMain(QWidget):
         )
 
         spellIdx = 0
-        if self.theProject.data.spellLang is not None:
-            spellIdx = self.spellLang.findData(self.theProject.data.spellLang)
+        if pData.spellLang is not None:
+            spellIdx = self.spellLang.findData(pData.spellLang)
         if spellIdx != -1:
             self.spellLang.setCurrentIndex(spellIdx)
 
         self.doBackup = NSwitch(self)
-        self.doBackup.setChecked(not self.theProject.data.doBackup)
+        self.doBackup.setChecked(not pData.doBackup)
         self.mainForm.addRow(
             self.tr("No backup on close"),
             self.doBackup,
@@ -289,20 +288,19 @@ class GuiProjectEditStatus(QWidget):
     def __init__(self, projGui, isStatus):
         super().__init__(parent=projGui)
 
-        self.mainGui    = projGui.mainGui
-        self.theProject = projGui.theProject
+        self.mainGui = projGui.mainGui
 
         if isStatus:
-            self.theStatus = self.theProject.data.itemStatus
+            self.theStatus = self.mainGui.project.data.itemStatus
             pageLabel = self.tr("Novel File Status Levels")
             colSetting = "statusColW"
         else:
-            self.theStatus = self.theProject.data.itemImport
+            self.theStatus = self.mainGui.project.data.itemImport
             pageLabel = self.tr("Note File Importance Levels")
             colSetting = "importColW"
 
         wCol0 = CONFIG.pxInt(
-            self.theProject.options.getInt("GuiProjectSettings", colSetting, 130)
+            self.mainGui.project.options.getInt("GuiProjectSettings", colSetting, 130)
         )
 
         self.colDeleted = []
@@ -576,12 +574,11 @@ class GuiProjectEditReplace(QWidget):
     def __init__(self, projGui):
         super().__init__(parent=projGui)
 
-        self.mainGui    = projGui.mainGui
-        self.theProject = projGui.theProject
-        self.arChanged  = False
+        self.mainGui   = projGui.mainGui
+        self.arChanged = False
 
         wCol0 = CONFIG.pxInt(
-            self.theProject.options.getInt("GuiProjectSettings", "replaceColW", 130)
+            self.mainGui.project.options.getInt("GuiProjectSettings", "replaceColW", 130)
         )
         pageLabel = self.tr("Text Replace List for Preview and Export")
 
@@ -597,7 +594,7 @@ class GuiProjectEditReplace(QWidget):
         self.listBox.setColumnWidth(self.COL_KEY, wCol0)
         self.listBox.setIndentation(0)
 
-        for aKey, aVal in self.theProject.data.autoReplace.items():
+        for aKey, aVal in self.mainGui.project.data.autoReplace.items():
             newItem = QTreeWidgetItem(["<%s>" % aKey, aVal])
             self.listBox.addTopLevelItem(newItem)
 

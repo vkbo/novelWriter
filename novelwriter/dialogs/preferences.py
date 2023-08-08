@@ -49,8 +49,7 @@ class GuiPreferences(NPagedDialog):
         logger.debug("Create: GuiPreferences")
         self.setObjectName("GuiPreferences")
 
-        self.mainGui    = mainGui
-        self.theProject = mainGui.theProject
+        self.mainGui = mainGui
 
         self.setWindowTitle(self.tr("Preferences"))
 

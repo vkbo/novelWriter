@@ -72,10 +72,9 @@ class GuiManuscript(QDialog):
         if CONFIG.osDarwin:
             self.setWindowFlag(Qt.WindowType.Tool)
 
-        self.mainGui    = mainGui
-        self.theProject = mainGui.theProject
+        self.mainGui = mainGui
 
-        self._builds = BuildCollection(self.theProject)
+        self._builds = BuildCollection(self.mainGui.project)
         self._buildMap: dict[str, QListWidgetItem] = {}
 
         self.setWindowTitle(self.tr("Build Manuscript"))
@@ -86,7 +85,7 @@ class GuiManuscript(QDialog):
         wWin = CONFIG.pxInt(900)
         hWin = CONFIG.pxInt(600)
 
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
         self.resize(
             CONFIG.pxInt(pOptions.getInt("GuiManuscript", "winWidth", wWin)),
             CONFIG.pxInt(pOptions.getInt("GuiManuscript", "winHeight", hWin))
@@ -211,7 +210,7 @@ class GuiManuscript(QDialog):
         self._updateBuildsList()
 
         logger.debug("Loading build cache")
-        cache = CONFIG.dataPath("cache") / f"build_{self.theProject.data.uuid}.json"
+        cache = CONFIG.dataPath("cache") / f"build_{self.mainGui.project.data.uuid}.json"
         if cache.is_file():
             try:
                 with open(cache, mode="r", encoding="utf-8") as fObj:
@@ -290,7 +289,7 @@ class GuiManuscript(QDialog):
         if build is None:
             return
 
-        docBuild = NWBuildDocument(self.theProject, build)
+        docBuild = NWBuildDocument(self.mainGui.project, build)
         docBuild.queueAll()
 
         self.docPreview.beginNewBuild(len(docBuild))
@@ -310,7 +309,7 @@ class GuiManuscript(QDialog):
         self._updatePreview(result, build)
 
         logger.debug("Saving build cache")
-        cache = CONFIG.dataPath("cache") / f"build_{self.theProject.data.uuid}.json"
+        cache = CONFIG.dataPath("cache") / f"build_{self.mainGui.project.data.uuid}.json"
         try:
             with open(cache, mode="w+", encoding="utf-8") as outFile:
                 outFile.write(json.dumps(result, indent=2))
@@ -391,7 +390,7 @@ class GuiManuscript(QDialog):
         optsWidth = CONFIG.rpxInt(mainSplit[0])
         viewWidth = CONFIG.rpxInt(mainSplit[1])
 
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
         pOptions.setValue("GuiManuscript", "winWidth", winWidth)
         pOptions.setValue("GuiManuscript", "winHeight", winHeight)
         pOptions.setValue("GuiManuscript", "optsWidth", optsWidth)
@@ -450,8 +449,7 @@ class _PreviewWidget(QTextBrowser):
     def __init__(self, mainGui: GuiMain):
         super().__init__(parent=mainGui)
 
-        self.mainGui    = mainGui
-        self.theProject = mainGui.theProject
+        self.mainGui = mainGui
 
         self._docTime = 0
         self._buildName = ""
@@ -524,12 +522,12 @@ class _PreviewWidget(QTextBrowser):
 
     def setJustify(self, state: bool):
         """Enable/disable the justify text option."""
-        options = self.document().defaultTextOption()
+        pOptions = self.document().defaultTextOption()
         if state:
-            options.setAlignment(Qt.AlignJustify)
+            pOptions.setAlignment(Qt.AlignJustify)
         else:
-            options.setAlignment(Qt.AlignAbsolute)
-        self.document().setDefaultTextOption(options)
+            pOptions.setAlignment(Qt.AlignAbsolute)
+        self.document().setDefaultTextOption(pOptions)
         return
 
     def setTextFont(self, family: str, size: int):

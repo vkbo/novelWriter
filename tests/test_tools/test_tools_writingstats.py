@@ -39,7 +39,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     """
     # Create a project to work on
     buildTestProject(nwGUI, projPath)
-    project = nwGUI.theProject
+    project = nwGUI.project
 
     qtbot.wait(100)
     assert nwGUI.saveProject()

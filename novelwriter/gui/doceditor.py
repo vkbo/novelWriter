@@ -84,8 +84,7 @@ class GuiDocEditor(QTextEdit):
         logger.debug("Create: GuiDocEditor")
 
         # Class Variables
-        self.mainGui    = mainGui
-        self.theProject = mainGui.theProject
+        self.mainGui = mainGui
 
         self._nwDocument = None
         self._nwItem     = None
@@ -133,7 +132,7 @@ class GuiDocEditor(QTextEdit):
         self.docSearch = GuiDocEditSearch(self)
 
         # Syntax
-        self.spEnchant = NWSpellEnchant(self.theProject)
+        self.spEnchant = NWSpellEnchant(self.mainGui.project)
         self.highLight = GuiDocHighlighter(qDoc, self.mainGui, self.spEnchant)
 
         # Context Menu
@@ -341,7 +340,7 @@ class GuiDocEditor(QTextEdit):
         document is new (empty string), we set up the editor for editing
         the file.
         """
-        self._nwDocument = self.theProject.storage.getDocument(tHandle)
+        self._nwDocument = self.mainGui.project.storage.getDocument(tHandle)
         self._nwItem = self._nwDocument.getCurrentItem()
 
         theDoc = self._nwDocument.readDocument()
@@ -517,10 +516,10 @@ class GuiDocEditor(QTextEdit):
         self.setDocumentChanged(False)
 
         oldHeader = self._nwItem.mainHeading
-        oldCount = self.theProject.index.getHandleHeaderCount(tHandle)
-        self.theProject.index.scanText(tHandle, docText)
+        oldCount = self.mainGui.project.index.getHandleHeaderCount(tHandle)
+        self.mainGui.project.index.scanText(tHandle, docText)
         newHeader = self._nwItem.mainHeading
-        newCount = self.theProject.index.getHandleHeaderCount(tHandle)
+        newCount = self.mainGui.project.index.getHandleHeaderCount(tHandle)
 
         if self._nwItem.itemClass == nwItemClass.NOVEL:
             if oldCount == newCount:
@@ -699,10 +698,10 @@ class GuiDocEditor(QTextEdit):
         """Set the spell checker dictionary language, and emit the
         dictionary changed signal.
         """
-        if self.theProject.data.spellLang is None:
+        if self.mainGui.project.data.spellLang is None:
             theLang = CONFIG.spellLanguage
         else:
-            theLang = self.theProject.data.spellLang
+            theLang = self.mainGui.project.data.spellLang
 
         self.spEnchant.setLanguage(theLang)
         _, theProvider = self.spEnchant.describeDict()
@@ -735,7 +734,7 @@ class GuiDocEditor(QTextEdit):
 
         self._spellCheck = theMode
         self.mainGui.mainMenu.setSpellCheck(theMode)
-        self.theProject.data.setSpellCheck(theMode)
+        self.mainGui.project.data.setSpellCheck(theMode)
         self.highLight.setSpellCheck(theMode)
         if not self._bigDoc or theMode is False:
             # We don't run the spell checker automatically on big docs
@@ -1917,7 +1916,7 @@ class GuiDocEditor(QTextEdit):
 
         if theText.startswith("@"):
 
-            isGood, tBits, tPos = self.theProject.index.scanThis(theText)
+            isGood, tBits, tPos = self.mainGui.project.index.scanThis(theText)
             if not isGood:
                 return False
 
@@ -2222,9 +2221,8 @@ class GuiDocEditSearch(QFrame):
 
         logger.debug("Create: GuiDocEditSearch")
 
-        self.docEditor  = docEditor
-        self.mainGui    = docEditor.mainGui
-        self.theProject = docEditor.theProject
+        self.docEditor = docEditor
+        self.mainGui   = docEditor.mainGui
 
         self.repVisible  = False
         self.isCaseSense = CONFIG.searchCase
@@ -2636,9 +2634,8 @@ class GuiDocEditHeader(QWidget):
 
         logger.debug("Create: GuiDocEditHeader")
 
-        self.docEditor  = docEditor
-        self.mainGui    = docEditor.mainGui
-        self.theProject = docEditor.theProject
+        self.docEditor = docEditor
+        self.mainGui   = docEditor.mainGui
 
         self._docHandle = None
 
@@ -2775,17 +2772,18 @@ class GuiDocEditHeader(QWidget):
             self.minmaxButton.setVisible(False)
             return True
 
+        pTree = self.mainGui.project.tree
         if CONFIG.showFullPath:
             tTitle = []
-            tTree = self.theProject.tree.getItemPath(tHandle)
+            tTree = pTree.getItemPath(tHandle)
             for aHandle in reversed(tTree):
-                nwItem = self.theProject.tree[aHandle]
+                nwItem = pTree[aHandle]
                 if nwItem is not None:
                     tTitle.append(nwItem.itemName)
             sSep = "  %s  " % nwUnicode.U_RSAQUO
             self.theTitle.setText(sSep.join(tTitle))
         else:
-            nwItem = self.theProject.tree[tHandle]
+            nwItem = pTree[tHandle]
             if nwItem is None:
                 return False
             self.theTitle.setText(nwItem.itemName)
@@ -2870,9 +2868,8 @@ class GuiDocEditFooter(QWidget):
 
         logger.debug("Create: GuiDocEditFooter")
 
-        self.docEditor  = docEditor
-        self.mainGui    = docEditor.mainGui
-        self.theProject = docEditor.theProject
+        self.docEditor = docEditor
+        self.mainGui   = docEditor.mainGui
 
         self._theItem   = None
         self._docHandle = None
@@ -3003,7 +3000,7 @@ class GuiDocEditFooter(QWidget):
             logger.debug("No handle set, so clearing the editor footer")
             self._theItem = None
         else:
-            self._theItem = self.theProject.tree[self._docHandle]
+            self._theItem = self.mainGui.project.tree[self._docHandle]
 
         self.setHasSelection(False)
         self.updateInfo()

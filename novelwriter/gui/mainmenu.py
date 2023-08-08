@@ -51,8 +51,7 @@ class GuiMainMenu(QMenuBar):
 
         logger.debug("Create: GuiMainMenu")
 
-        self.mainGui    = mainGui
-        self.theProject = mainGui.theProject
+        self.mainGui = mainGui
 
         # Build Menu
         self._buildProjectMenu()
@@ -380,10 +379,10 @@ class GuiMainMenu(QMenuBar):
         """Assemble the Insert menu.
         """
         # Insert
-        self.insertMenu = self.addMenu(self.tr("&Insert"))
+        self.insMenu = self.addMenu(self.tr("&Insert"))
 
         # Insert > Dashes and Dots
-        self.mInsDashes = self.insertMenu.addMenu(self.tr("Dashes"))
+        self.mInsDashes = self.insMenu.addMenu(self.tr("Dashes"))
 
         # Insert > Short Dash
         self.aInsENDash = QAction(self.tr("Short Dash"), self)
@@ -410,7 +409,7 @@ class GuiMainMenu(QMenuBar):
         self.mInsDashes.addAction(self.aInsFigDash)
 
         # Insert > Quote Marks
-        self.mInsQuotes = self.insertMenu.addMenu(self.tr("Quote Marks"))
+        self.mInsQuotes = self.insMenu.addMenu(self.tr("Quote Marks"))
 
         # Insert > Left Single Quote
         self.aInsQuoteLS = QAction(self.tr("Left Single Quote"), self)
@@ -443,7 +442,7 @@ class GuiMainMenu(QMenuBar):
         self.mInsQuotes.addAction(self.aInsMSApos)
 
         # Insert > Symbols
-        self.mInsPunct = self.insertMenu.addMenu(self.tr("General Punctuation"))
+        self.mInsPunct = self.insMenu.addMenu(self.tr("General Punctuation"))
 
         # Insert > Ellipsis
         self.aInsEllipsis = QAction(self.tr("Ellipsis"), self)
@@ -464,7 +463,7 @@ class GuiMainMenu(QMenuBar):
         self.mInsPunct.addAction(self.aInsDPrime)
 
         # Insert > White Spaces
-        self.mInsSpace = self.insertMenu.addMenu(self.tr("White Spaces"))
+        self.mInsSpace = self.insMenu.addMenu(self.tr("White Spaces"))
 
         # Insert > Non-Breaking Space
         self.aInsNBSpace = QAction(self.tr("Non-Breaking Space"), self)
@@ -485,7 +484,7 @@ class GuiMainMenu(QMenuBar):
         self.mInsSpace.addAction(self.aInsThinNBSpace)
 
         # Insert > Symbols
-        self.mInsSymbol = self.insertMenu.addMenu(self.tr("Other Symbols"))
+        self.mInsSymbol = self.insMenu.addMenu(self.tr("Other Symbols"))
 
         # Insert > List Bullet
         self.aInsBullet = QAction(self.tr("List Bullet"), self)
@@ -536,7 +535,7 @@ class GuiMainMenu(QMenuBar):
         self.mInsSymbol.addAction(self.aInsDivide)
 
         # Insert > Tags and References
-        self.mInsKeywords = self.insertMenu.addMenu(self.tr("Tags and References"))
+        self.mInsKeywords = self.insMenu.addMenu(self.tr("Tags and References"))
         self.mInsKWItems = {}
         self.mInsKWItems[nwKeyWords.TAG_KEY]    = (QAction(self.mInsKeywords), "Ctrl+K, G")
         self.mInsKWItems[nwKeyWords.POV_KEY]    = (QAction(self.mInsKeywords), "Ctrl+K, V")
@@ -557,7 +556,7 @@ class GuiMainMenu(QMenuBar):
             self.mInsKeywords.addAction(self.mInsKWItems[keyWord][0])
 
         # Insert > Special Comments
-        self.mInsComments = self.insertMenu.addMenu(self.tr("Special Comments"))
+        self.mInsComments = self.insMenu.addMenu(self.tr("Special Comments"))
 
         # Insert > Synopsis Comment
         self.aInsSynopsis = QAction(self.tr("Synopsis Comment"), self)
@@ -566,7 +565,7 @@ class GuiMainMenu(QMenuBar):
         self.mInsComments.addAction(self.aInsSynopsis)
 
         # Insert > Symbols
-        self.mInsBreaks = self.insertMenu.addMenu(self.tr("Page Break and Space"))
+        self.mInsBreaks = self.insMenu.addMenu(self.tr("Page Break and Space"))
 
         # Insert > New Page
         self.aInsNewPage = QAction(self.tr("Page Break"), self)
@@ -586,7 +585,7 @@ class GuiMainMenu(QMenuBar):
         # Insert > Placeholder Text
         self.aLipsumText = QAction(self.tr("Placeholder Text"), self)
         self.aLipsumText.triggered.connect(lambda: self.mainGui.showLoremIpsumDialog())
-        self.insertMenu.addAction(self.aLipsumText)
+        self.insMenu.addAction(self.aLipsumText)
 
         return
 
@@ -796,7 +795,7 @@ class GuiMainMenu(QMenuBar):
         # Tools > Check Spelling
         self.aSpellCheck = QAction(self.tr("Check Spelling"), self)
         self.aSpellCheck.setCheckable(True)
-        self.aSpellCheck.setChecked(self.theProject.data.spellCheck)
+        self.aSpellCheck.setChecked(self.mainGui.project.data.spellCheck)
         self.aSpellCheck.triggered.connect(self._toggleSpellCheck)  # triggered, not toggled!
         self.aSpellCheck.setShortcut("Ctrl+F7")
         self.toolsMenu.addAction(self.aSpellCheck)
@@ -826,7 +825,7 @@ class GuiMainMenu(QMenuBar):
 
         # Tools > Backup Project
         self.aBackupProject = QAction(self.tr("Backup Project"), self)
-        self.aBackupProject.triggered.connect(lambda: self.theProject.backupProject(True))
+        self.aBackupProject.triggered.connect(lambda: self.mainGui.project.backupProject(True))
         self.toolsMenu.addAction(self.aBackupProject)
 
         # Tools > Build Manuscript

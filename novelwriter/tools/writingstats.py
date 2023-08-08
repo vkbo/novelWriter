@@ -72,15 +72,14 @@ class GuiWritingStats(QDialog):
         if CONFIG.osDarwin:
             self.setWindowFlag(Qt.WindowType.Tool)
 
-        self.mainGui    = mainGui
-        self.theProject = mainGui.theProject
+        self.mainGui = mainGui
 
         self.logData    = []
         self.filterData = []
         self.timeFilter = 0.0
         self.wordOffset = 0
 
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
 
         self.setWindowTitle(self.tr("Writing Statistics"))
         self.setMinimumWidth(CONFIG.pxInt(420))
@@ -334,7 +333,7 @@ class GuiWritingStats(QDialog):
         showIdleTime = self.showIdleTime.isChecked()
         histMax      = self.histMax.value()
 
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
         pOptions.setValue("GuiWritingStats", "winWidth",     winWidth)
         pOptions.setValue("GuiWritingStats", "winHeight",    winHeight)
         pOptions.setValue("GuiWritingStats", "widthCol0",    widthCol0)
@@ -442,7 +441,7 @@ class GuiWritingStats(QDialog):
         ttTime = 0
         ttIdle = 0
 
-        for record in self.theProject.session.iterRecords():
+        for record in self.mainGui.project.session.iterRecords():
             rType = record.get("type")
             if rType == "initial":
                 self.wordOffset = checkInt(record.get("offset"), 0)

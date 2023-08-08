@@ -76,8 +76,7 @@ class GuiBuildSettings(QDialog):
         if CONFIG.osDarwin:
             self.setWindowFlag(Qt.WindowType.Tool)
 
-        self.mainGui    = mainGui
-        self.theProject = mainGui.theProject
+        self.mainGui = mainGui
 
         self._build = build
 
@@ -89,7 +88,7 @@ class GuiBuildSettings(QDialog):
         wWin = CONFIG.pxInt(750)
         hWin = CONFIG.pxInt(550)
 
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
         self.resize(
             CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "winWidth", wWin)),
             CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "winHeight", hWin))
@@ -263,7 +262,7 @@ class GuiBuildSettings(QDialog):
 
         treeWidth, filterWidth = self.optTabSelect.mainSplitSizes()
 
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
         pOptions.setValue("GuiBuildSettings", "winWidth", winWidth)
         pOptions.setValue("GuiBuildSettings", "winHeight", winHeight)
         pOptions.setValue("GuiBuildSettings", "treeWidth", treeWidth)
@@ -304,8 +303,7 @@ class _FilterTab(QWidget):
     def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
         super().__init__(parent=buildMain)
 
-        self.mainGui    = buildMain.mainGui
-        self.theProject = buildMain.mainGui.theProject
+        self.mainGui = buildMain.mainGui
 
         self._treeMap: dict[str, QTreeWidgetItem] = {}
         self._build = build
@@ -381,7 +379,7 @@ class _FilterTab(QWidget):
         # Assemble GUI
         # ============
 
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
 
         self.selectionBox = QVBoxLayout()
         self.selectionBox.addWidget(self.optTree)
@@ -447,7 +445,7 @@ class _FilterTab(QWidget):
         logger.debug("Building project tree")
         self._treeMap = {}
         self.optTree.clear()
-        for nwItem in self.theProject.getProjectItems():
+        for nwItem in self.mainGui.project.getProjectItems():
 
             tHandle = nwItem.itemHandle
             pHandle = nwItem.itemParent
@@ -523,7 +521,7 @@ class _FilterTab(QWidget):
 
         # Root Classes
         self.filterOpt.addLabel(self.tr("Select Root Folders"))
-        for tHandle, nwItem in self.theProject.tree.iterRoots(None):
+        for tHandle, nwItem in self.mainGui.project.tree.iterRoots(None):
             if not nwItem.isInactiveClass():
                 itemIcon = CONFIG.theme.getItemIcon(
                     nwItem.itemType, nwItem.itemClass, nwItem.itemLayout
@@ -559,7 +557,7 @@ class _FilterTab(QWidget):
 
     def _setTreeItemMode(self) -> None:
         """Update the filtered mode icon on all items."""
-        filtered = self._build.buildItemFilter(self.theProject)
+        filtered = self._build.buildItemFilter(self.mainGui.project)
         for tHandle, item in self._treeMap.items():
             allow, mode = filtered.get(tHandle, (False, FilterMode.UNKNOWN))
             if mode == FilterMode.INCLUDED:
@@ -599,8 +597,7 @@ class _HeadingsTab(QWidget):
     def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
         super().__init__(parent=buildMain)
 
-        self.mainGui    = buildMain.mainGui
-        self.theProject = buildMain.mainGui.theProject
+        self.mainGui = buildMain.mainGui
 
         self._build = build
         self._editing = 0

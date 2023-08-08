@@ -114,7 +114,7 @@ class GuiMain(QMainWindow):
 
         # Core Classes
         CONFIG.setThemeInstance(GuiTheme())
-        self.theProject = NWProject(self)
+        self._project = NWProject(self)
 
         # Core Settings
         self.hasProject  = False
@@ -238,7 +238,7 @@ class GuiMain(QMainWindow):
         # Connect Signals
         # ===============
 
-        self.theProject.projectStatusChanged.connect(self.mainStatus.doUpdateProjectStatus)
+        self._project.projectStatusChanged.connect(self.mainStatus.doUpdateProjectStatus)
 
         self.viewsBar.viewChangeRequested.connect(self._changeView)
 
@@ -383,6 +383,15 @@ class GuiMain(QMainWindow):
         return
 
     ##
+    #  Properties
+    ##
+
+    @property
+    def project(self) -> NWProject:
+        """The project instance."""
+        return self._project
+
+    ##
     #  Project Actions
     ##
 
@@ -444,7 +453,7 @@ class GuiMain(QMainWindow):
 
         saveOK = self.saveProject()
         doBackup = False
-        if self.theProject.data.doBackup and CONFIG.backupOnClose:
+        if self._project.data.doBackup and CONFIG.backupOnClose:
             doBackup = True
             if CONFIG.askBeforeBackup:
                 msgYes = self.askQuestion(self.tr("Backup the current project?"))
@@ -452,7 +461,7 @@ class GuiMain(QMainWindow):
                     doBackup = False
 
         if doBackup:
-            self.theProject.backupProject(False)
+            self._project.backupProject(False)
 
         if saveOK:
             self.closeDocument()
@@ -460,7 +469,7 @@ class GuiMain(QMainWindow):
             self.outlineView.closeProjectTasks()
             self.novelView.closeProjectTasks()
 
-            self.theProject.closeProject(self.idleTime)
+            self._project.closeProject(self.idleTime)
             self.idleRefTime = time()
             self.idleTime = 0.0
 
@@ -484,9 +493,9 @@ class GuiMain(QMainWindow):
         self._changeView(nwView.PROJECT)
 
         # Try to open the project
-        if not self.theProject.openProject(projFile):
+        if not self._project.openProject(projFile):
             # The project open failed.
-            lockStatus = self.theProject.getLockStatus()
+            lockStatus = self._project.getLockStatus()
             if lockStatus is None:
                 # The project is not locked, so failed for some other
                 # reason handled by the project class.
@@ -516,7 +525,7 @@ class GuiMain(QMainWindow):
                 lockDetails = ""
 
             if self.askQuestion(lockText, info=lockInfo, details=lockDetails, level=nwAlert.WARN):
-                if not self.theProject.openProject(projFile, overrideLock=True):
+                if not self._project.openProject(projFile, overrideLock=True):
                     return False
             else:
                 return False
@@ -527,11 +536,11 @@ class GuiMain(QMainWindow):
         self.idleTime = 0.0
 
         # Update GUI
-        self._updateWindowTitle(self.theProject.data.name)
+        self._updateWindowTitle(self._project.data.name)
         self.rebuildTrees()
         self.docEditor.setDictionaries()
-        self.docEditor.toggleSpellCheck(self.theProject.data.spellCheck)
-        self.mainStatus.setRefTime(self.theProject.projOpened)
+        self.docEditor.toggleSpellCheck(self._project.data.spellCheck)
+        self.mainStatus.setRefTime(self._project.projOpened)
         self.projView.openProjectTasks()
         self.novelView.openProjectTasks()
         self.outlineView.openProjectTasks()
@@ -539,9 +548,9 @@ class GuiMain(QMainWindow):
 
         # Restore previously open documents, if any
         # If none was recorded, open the first document found
-        lastEdited = self.theProject.data.getLastHandle("editor")
+        lastEdited = self._project.data.getLastHandle("editor")
         if lastEdited is None:
-            for nwItem in self.theProject.tree:
+            for nwItem in self._project.tree:
                 if nwItem and nwItem.isFileType():
                     lastEdited = nwItem.itemHandle
                     break
@@ -549,19 +558,19 @@ class GuiMain(QMainWindow):
         if lastEdited is not None:
             self.openDocument(lastEdited, doScroll=True)
 
-        lastViewed = self.theProject.data.getLastHandle("viewer")
+        lastViewed = self._project.data.getLastHandle("viewer")
         if lastViewed is not None:
             self.viewDocument(lastViewed)
 
         # Check if we need to rebuild the index
-        if self.theProject.index.indexBroken:
+        if self._project.index.indexBroken:
             self.makeAlert(self.tr("The project index is outdated or broken. Rebuilding index."))
             self.rebuildIndex()
 
         # Make sure the changed status is set to false on things opened
         qApp.processEvents()
         self.docEditor.setDocumentChanged(False)
-        self.theProject.setProjectChanged(False)
+        self._project.setProjectChanged(False)
 
         logger.debug("Project load complete")
 
@@ -573,7 +582,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
         self.projView.saveProjectTasks()
-        self.theProject.saveProject(autoSave=autoSave)
+        self._project.saveProject(autoSave=autoSave)
         return True
 
     ##
@@ -606,7 +615,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        if not tHandle or not self.theProject.tree.checkType(tHandle, nwItemType.FILE):
+        if not tHandle or not self._project.tree.checkType(tHandle, nwItemType.FILE):
             logger.debug("Requested item '%s' is not a document", tHandle)
             return False
 
@@ -620,7 +629,7 @@ class GuiMain(QMainWindow):
 
         self.closeDocument(beforeOpen=True)
         if self.docEditor.loadText(tHandle, tLine):
-            self.theProject.data.setLastHandle(tHandle, "editor")
+            self._project.data.setLastHandle(tHandle, "editor")
             self.projView.setSelectedHandle(tHandle, doScroll=doScroll)
             self.novelView.setActiveHandle(tHandle)
             if changeFocus:
@@ -641,7 +650,7 @@ class GuiMain(QMainWindow):
         nHandle = None   # The next handle after tHandle
         fHandle = None   # The first file handle we encounter
         foundIt = False  # We've found tHandle, pick the next we see
-        for tItem in self.theProject.tree:
+        for tItem in self._project.tree:
             if not tItem.isFileType():
                 continue
             if fHandle is None:
@@ -687,7 +696,7 @@ class GuiMain(QMainWindow):
                 tHandle = self.projView.getSelectedHandle()
 
             if tHandle is None:
-                tHandle = self.theProject.data.getLastHandle("viewer")
+                tHandle = self._project.data.getLastHandle("viewer")
 
             if tHandle is None:
                 logger.debug("No document to view, giving up")
@@ -806,7 +815,7 @@ class GuiMain(QMainWindow):
             return False
 
         if tHandle is not None and sTitle is not None:
-            hItem = self.theProject.index.getItemHeader(tHandle, sTitle)
+            hItem = self._project.index.getItemHeader(tHandle, sTitle)
             if hItem is not None:
                 tLine = hItem.line
 
@@ -843,7 +852,7 @@ class GuiMain(QMainWindow):
         tStart = time()
 
         self.projView.saveProjectTasks()
-        self.theProject.index.rebuildIndex()
+        self._project.index.rebuildIndex()
         self.projView.populateTree()
         self.novelView.refreshTree()
 
@@ -951,7 +960,7 @@ class GuiMain(QMainWindow):
             if dlgProj.spellChanged:
                 self.docEditor.setDictionaries()
             self.itemDetails.refreshDetails()
-            self._updateWindowTitle(self.theProject.data.name)
+            self._updateWindowTitle(self._project.data.name)
 
         return True
 
@@ -1197,7 +1206,7 @@ class GuiMain(QMainWindow):
     def closeDocEditor(self) -> None:
         """Close the document editor. This does not hide the editor."""
         self.closeDocument()
-        self.theProject.data.setLastHandle(None, "editor")
+        self._project.data.setLastHandle(None, "editor")
         return
 
     def closeDocViewer(self, byUser: bool = True) -> bool:
@@ -1205,7 +1214,7 @@ class GuiMain(QMainWindow):
         self.docViewer.clearViewer()
         if byUser:
             # Only reset the last handle if the user called this
-            self.theProject.data.setLastHandle(None, "viewer")
+            self._project.data.setLastHandle(None, "viewer")
 
         # Hide the panel
         bPos = self.splitMain.sizes()
@@ -1391,7 +1400,7 @@ class GuiMain(QMainWindow):
         """Handle the index lookup of a tag and display an alert if the
         tag cannot be found.
         """
-        tHandle, sTitle = self.theProject.index.getTagSource(tag)
+        tHandle, sTitle = self._project.index.getTagSource(tag)
         if tHandle is None:
             self.makeAlert(self.tr(
                 "Could not find the reference for tag '{0}'. It either doesn't "
@@ -1438,7 +1447,7 @@ class GuiMain(QMainWindow):
         if tHandle is not None:
             if mode == nwDocMode.EDIT:
                 tLine = None
-                hItem = self.theProject.index.getItemHeader(tHandle, sTitle)
+                hItem = self._project.index.getItemHeader(tHandle, sTitle)
                 if hItem is not None:
                     tLine = hItem.line
                 self.openDocument(tHandle, tLine=tLine, changeFocus=setFocus)
@@ -1491,8 +1500,8 @@ class GuiMain(QMainWindow):
     def _autoSaveProject(self) -> None:
         """Autosave of the project. This is a timer-activated slot."""
         doSave  = self.hasProject
-        doSave &= self.theProject.projChanged
-        doSave &= self.theProject.storage.isOpen()
+        doSave &= self._project.projChanged
+        doSave &= self._project.storage.isOpen()
         if doSave:
             logger.debug("Autosaving project")
             self.saveProject(autoSave=True)
@@ -1512,14 +1521,14 @@ class GuiMain(QMainWindow):
         if not self.hasProject:
             self.mainStatus.setProjectStats(0, 0)
 
-        self.theProject.updateWordCounts()
+        self._project.updateWordCounts()
         if CONFIG.incNotesWCount:
-            iTotal = sum(self.theProject.data.initCounts)
-            cTotal = sum(self.theProject.data.currCounts)
+            iTotal = sum(self._project.data.initCounts)
+            cTotal = sum(self._project.data.currCounts)
             self.mainStatus.setProjectStats(cTotal, cTotal - iTotal)
         else:
-            iNovel, _ = self.theProject.data.initCounts
-            cNovel, _ = self.theProject.data.currCounts
+            iNovel, _ = self._project.data.initCounts
+            cNovel, _ = self._project.data.currCounts
             self.mainStatus.setProjectStats(cNovel, cNovel - iNovel)
 
         return

@@ -202,14 +202,14 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert nwGUI.saveProject()
     assert nwGUI.closeProject()
 
-    assert len(nwGUI.theProject.tree) == 0
-    assert len(nwGUI.theProject.tree._treeOrder) == 0
-    assert len(nwGUI.theProject.tree._treeRoots) == 0
-    assert nwGUI.theProject.tree.trashRoot() is None
-    assert nwGUI.theProject.data.name == ""
-    assert nwGUI.theProject.data.title == ""
-    assert nwGUI.theProject.data.author == ""
-    assert nwGUI.theProject.data.spellCheck is False
+    assert len(nwGUI.project.tree) == 0
+    assert len(nwGUI.project.tree._treeOrder) == 0
+    assert len(nwGUI.project.tree._treeRoots) == 0
+    assert nwGUI.project.tree.trashRoot() is None
+    assert nwGUI.project.data.name == ""
+    assert nwGUI.project.data.title == ""
+    assert nwGUI.project.data.author == ""
+    assert nwGUI.project.data.spellCheck is False
 
     # Check the files
     projFile = projPath / "nwProject.nwx"
@@ -222,14 +222,14 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert nwGUI.openProject(projPath)
 
     # Check that we loaded the data
-    assert len(nwGUI.theProject.tree) == 8
-    assert len(nwGUI.theProject.tree._treeOrder) == 8
-    assert len(nwGUI.theProject.tree._treeRoots) == 4
-    assert nwGUI.theProject.tree.trashRoot() is None
-    assert nwGUI.theProject.data.name == "New Project"
-    assert nwGUI.theProject.data.title == "New Novel"
-    assert nwGUI.theProject.data.author == "Jane Doe"
-    assert nwGUI.theProject.data.spellCheck is False
+    assert len(nwGUI.project.tree) == 8
+    assert len(nwGUI.project.tree._treeOrder) == 8
+    assert len(nwGUI.project.tree._treeRoots) == 4
+    assert nwGUI.project.tree.trashRoot() is None
+    assert nwGUI.project.data.name == "New Project"
+    assert nwGUI.project.data.title == "New Novel"
+    assert nwGUI.project.data.author == "Jane Doe"
+    assert nwGUI.project.data.spellCheck is False
 
     # Check that tree items have been created
     assert nwGUI.projView.projTree._getTreeItem(C.hNovelRoot) is not None

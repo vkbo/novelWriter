@@ -43,9 +43,9 @@ class NWProjectData:
     the list of project items.
     """
 
-    def __init__(self, theProject):
+    def __init__(self, project):
 
-        self.theProject = theProject
+        self._project = project
 
         # Project Meta
         self._uuid = ""
@@ -187,13 +187,13 @@ class NWProjectData:
     def incSaveCount(self):
         """Increment the save count by one."""
         self._saveCount += 1
-        self.theProject.setProjectChanged(True)
+        self._project.setProjectChanged(True)
         return
 
     def incAutoCount(self):
         """Increment the auto save count by one."""
         self._autoCount += 1
-        self.theProject.setProjectChanged(True)
+        self._project.setProjectChanged(True)
         return
 
     ##
@@ -215,74 +215,74 @@ class NWProjectData:
             self._uuid = str(uuid.uuid4())
         elif value != self._uuid:
             self._uuid = value
-            self.theProject.setProjectChanged(True)
+            self._project.setProjectChanged(True)
         return
 
     def setName(self, value: str | None):
         """Set a new project name."""
         if value != self._name:
             self._name = simplified(str(value or ""))
-            self.theProject.setProjectChanged(True)
+            self._project.setProjectChanged(True)
         return
 
     def setTitle(self, value: str | None):
         """Set a new novel title."""
         if value != self._title:
             self._title = simplified(str(value or ""))
-            self.theProject.setProjectChanged(True)
+            self._project.setProjectChanged(True)
         return
 
     def setAuthor(self, value: str | None):
         """Set the author value."""
         if value != self._title:
             self._author = simplified(str(value or ""))
-            self.theProject.setProjectChanged(True)
+            self._project.setProjectChanged(True)
         return
 
     def setSaveCount(self, value: Any):
         """Set the save count from last session."""
         self._saveCount = checkInt(value, 0)
-        self.theProject.setProjectChanged(True)
+        self._project.setProjectChanged(True)
         return
 
     def setAutoCount(self, value: Any):
         """Set the auto save count from last session."""
         self._autoCount = checkInt(value, 0)
-        self.theProject.setProjectChanged(True)
+        self._project.setProjectChanged(True)
         return
 
     def setEditTime(self, value: Any):
         """Set the edit time from last session."""
         self._editTime = checkInt(value, 0)
-        self.theProject.setProjectChanged(True)
+        self._project.setProjectChanged(True)
         return
 
     def setDoBackup(self, value: Any):
         """Set the do write backup flag."""
         if value != self._doBackup:
             self._doBackup = checkBool(value, False)
-            self.theProject.setProjectChanged(True)
+            self._project.setProjectChanged(True)
         return
 
     def setLanguage(self, value: str | None):
         """Set the project language."""
         if value != self._language:
             self._language = checkStringNone(value, None)
-            self.theProject.setProjectChanged(True)
+            self._project.setProjectChanged(True)
         return
 
     def setSpellCheck(self, value: Any):
         """Set the spell check flag."""
         if value != self._spellCheck:
             self._spellCheck = checkBool(value, False)
-            self.theProject.setProjectChanged(True)
+            self._project.setProjectChanged(True)
         return
 
     def setSpellLang(self, value: str | None):
         """Set the spell check language."""
         if value != self._spellLang:
             self._spellLang = checkStringNone(value, None)
-            self.theProject.setProjectChanged(True)
+            self._project.setProjectChanged(True)
         return
 
     def setLastHandle(self, value: str | None, component: str):
@@ -291,7 +291,7 @@ class NWProjectData:
         """
         if isinstance(component, str):
             self._lastHandle[component] = checkStringNone(value, None)
-            self.theProject.setProjectChanged(True)
+            self._project.setProjectChanged(True)
         return
 
     def setLastHandles(self, value: dict):
@@ -302,7 +302,7 @@ class NWProjectData:
             for key, entry in value.items():
                 if key in self._lastHandle:
                     self._lastHandle[key] = str(entry) if isHandle(entry) else None
-            self.theProject.setProjectChanged(True)
+            self._project.setProjectChanged(True)
         return
 
     def setInitCounts(self, novel: Any = None, notes: Any = None):
@@ -330,7 +330,7 @@ class NWProjectData:
             for key, entry in value.items():
                 if isinstance(entry, str):
                     self._autoReplace[key] = simplified(entry)
-            self.theProject.setProjectChanged(True)
+            self._project.setProjectChanged(True)
         return
 
 # END Class NWProjectData

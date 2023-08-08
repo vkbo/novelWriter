@@ -51,8 +51,7 @@ class GuiDocSplit(QDialog):
         logger.debug("Create: GuiDocSplit")
         self.setObjectName("GuiDocSplit")
 
-        self.mainGui    = mainGui
-        self.theProject = mainGui.theProject
+        self.mainGui = mainGui
 
         self._data = {}
         self._text = []
@@ -71,7 +70,7 @@ class GuiDocSplit(QDialog):
         vSp = CONFIG.pxInt(8)
         bSp = CONFIG.pxInt(12)
 
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
         spLevel = pOptions.getInt("GuiDocSplit", "spLevel", 3)
         intoFolder = pOptions.getBool("GuiDocSplit", "intoFolder", True)
         docHierarchy = pOptions.getBool("GuiDocSplit", "docHierarchy", True)
@@ -170,7 +169,7 @@ class GuiDocSplit(QDialog):
         self._data["docHierarchy"] = docHierarchy
         self._data["moveToTrash"] = moveToTrash
 
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
         pOptions.setValue("GuiDocSplit", "spLevel", spLevel)
         pOptions.setValue("GuiDocSplit", "intoFolder", intoFolder)
         pOptions.setValue("GuiDocSplit", "docHierarchy", docHierarchy)
@@ -200,13 +199,13 @@ class GuiDocSplit(QDialog):
 
         self.listBox.clear()
 
-        nwItem = self.theProject.tree[sHandle]
+        nwItem = self.mainGui.project.tree[sHandle]
         if nwItem is None or not nwItem.isFileType():
             return
 
         spLevel = self.splitLevel.currentData()
         if not self._text:
-            inDoc = self.theProject.storage.getDocument(sHandle)
+            inDoc = self.mainGui.project.storage.getDocument(sHandle)
             self._text = (inDoc.readDocument() or "").splitlines()
 
         for lineNo, aLine in enumerate(self._text):

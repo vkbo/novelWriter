@@ -128,11 +128,11 @@ def testBuildSettings_Filter(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockR
         "worldRoot": 9,
     }
 
-    hPlotDoc = nwGUI.theProject.newFile("Main Plot", C.hPlotRoot)
-    hCharDoc = nwGUI.theProject.newFile("Jane Doe", C.hCharRoot)
+    hPlotDoc = nwGUI.project.newFile("Main Plot", C.hPlotRoot)
+    hCharDoc = nwGUI.project.newFile("Jane Doe", C.hCharRoot)
     nwGUI.projView.projTree.revealNewTreeItem(hPlotDoc)
     nwGUI.projView.projTree.revealNewTreeItem(hCharDoc)
-    nwGUI.theProject.tree[hPlotDoc].setActive(False)  # type: ignore
+    nwGUI.project.tree[hPlotDoc].setActive(False)  # type: ignore
 
     # Create the dialog and populate it
     bSettings = GuiBuildSettings(nwGUI, build)
@@ -167,7 +167,7 @@ def testBuildSettings_Filter(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockR
 
     # Switch off novel docs
     filterTab.filterOpt._widgets[switchMap["incNovel"]].setChecked(False)
-    assert build.buildItemFilter(nwGUI.theProject) == {
+    assert build.buildItemFilter(nwGUI.project) == {
         C.hNovelRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (False, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
@@ -182,7 +182,7 @@ def testBuildSettings_Filter(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockR
 
     # Switch on note docs
     filterTab.filterOpt._widgets[switchMap["incNotes"]].setChecked(True)
-    assert build.buildItemFilter(nwGUI.theProject) == {
+    assert build.buildItemFilter(nwGUI.project) == {
         C.hNovelRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (False, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
@@ -197,7 +197,7 @@ def testBuildSettings_Filter(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockR
 
     # Switch on inactive docs
     filterTab.filterOpt._widgets[switchMap["incInactive"]].setChecked(True)
-    assert build.buildItemFilter(nwGUI.theProject) == {
+    assert build.buildItemFilter(nwGUI.project) == {
         C.hNovelRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (False, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
@@ -214,7 +214,7 @@ def testBuildSettings_Filter(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockR
     filterTab._treeMap[C.hChapterDoc].setSelected(True)
     filterTab._treeMap[C.hSceneDoc].setSelected(True)
     filterTab.includedButton.click()
-    assert build.buildItemFilter(nwGUI.theProject) == {
+    assert build.buildItemFilter(nwGUI.project) == {
         C.hNovelRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (False, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
@@ -232,7 +232,7 @@ def testBuildSettings_Filter(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockR
     filterTab._treeMap[hPlotDoc].setSelected(True)  # type: ignore
     filterTab._treeMap[hCharDoc].setSelected(True)  # type: ignore
     filterTab.excludedButton.click()
-    assert build.buildItemFilter(nwGUI.theProject) == {
+    assert build.buildItemFilter(nwGUI.project) == {
         C.hNovelRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (False, FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
@@ -247,7 +247,7 @@ def testBuildSettings_Filter(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockR
 
     # Switch on novel docs
     filterTab.filterOpt._widgets[switchMap["incNovel"]].setChecked(True)
-    assert build.buildItemFilter(nwGUI.theProject) == {
+    assert build.buildItemFilter(nwGUI.project) == {
         C.hNovelRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (True,  FilterMode.FILTERED),  # Now enabled
         C.hChapterDir: (False, FilterMode.SKIPPED),
@@ -264,7 +264,7 @@ def testBuildSettings_Filter(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockR
     filterTab.optTree.clearSelection()
     filterTab._treeMap[C.hNovelRoot].setSelected(True)
     filterTab.resetButton.click()
-    assert build.buildItemFilter(nwGUI.theProject) == {
+    assert build.buildItemFilter(nwGUI.project) == {
         C.hNovelRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (True,  FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
@@ -284,7 +284,7 @@ def testBuildSettings_Filter(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockR
     filterTab._treeMap[hPlotDoc].setSelected(True)  # type: ignore
     filterTab._treeMap[hCharDoc].setSelected(True)  # type: ignore
     filterTab.resetButton.click()
-    assert build.buildItemFilter(nwGUI.theProject) == {
+    assert build.buildItemFilter(nwGUI.project) == {
         C.hNovelRoot:  (False, FilterMode.SKIPPED),
         C.hTitlePage:  (True,  FilterMode.FILTERED),
         C.hChapterDir: (False, FilterMode.SKIPPED),
@@ -302,8 +302,8 @@ def testBuildSettings_Filter(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockR
         C.hNovelRoot, C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         C.hPlotRoot, hPlotDoc, C.hCharRoot, hCharDoc,
     ]
-    nwGUI.theProject.tree[hCharDoc].setRoot(None)  # type: ignore
-    nwGUI.theProject.tree[hPlotDoc].setParent(None)  # type: ignore
+    nwGUI.project.tree[hCharDoc].setRoot(None)  # type: ignore
+    nwGUI.project.tree[hPlotDoc].setParent(None)  # type: ignore
     filterTab._populateTree()
     assert list(filterTab._treeMap.keys()) == [
         C.hNovelRoot, C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,

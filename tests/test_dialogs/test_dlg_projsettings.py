@@ -51,7 +51,7 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
 
     # Pretend we have a project
     nwGUI.hasProject = True
-    nwGUI.theProject.data.setSpellLang("en")
+    nwGUI.project.data.setSpellLang("en")
 
     # Get the dialog object
     nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
@@ -95,7 +95,7 @@ def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockR
     CONFIG.setBackupPath(fncPath)
 
     # Set some values
-    theProject = nwGUI.theProject
+    theProject = nwGUI.project
     theProject.data.setSpellLang("en")
     theProject.data.setAuthor("Jane Smith")
     theProject.data.setAutoReplace({"A": "B", "C": "D"})
@@ -160,7 +160,7 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncPath, projPat
     CONFIG.setBackupPath(fncPath)
 
     # Set some values
-    theProject = nwGUI.theProject
+    theProject = nwGUI.project
     theProject.tree[C.hTitlePage].setStatus(C.sFinished)
     theProject.tree[C.hChapterDoc].setStatus(C.sDraft)
     theProject.tree[C.hSceneDoc].setStatus(C.sDraft)
@@ -361,7 +361,7 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncPath, projPath, mo
     CONFIG.setBackupPath(fncPath)
 
     # Set some values
-    theProject = nwGUI.theProject
+    theProject = nwGUI.project
     theProject.data.setAutoReplace({
         "A": "B", "C": "D"
     })

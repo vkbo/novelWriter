@@ -31,8 +31,9 @@ class MockGuiMain(QObject):
     def __init__(self):
         super().__init__()
 
+        self._project = None
+
         self.hasProject = True
-        self.theProject = None
         self.mainStatus = MockStatusBar()
         self.projPath = ""
 
@@ -42,6 +43,10 @@ class MockGuiMain(QObject):
         self.lastQuestion = ""
 
         return
+
+    @property
+    def project(self):
+        return self._project
 
     def postLaunchTasks(self, cmdOpen):
         return

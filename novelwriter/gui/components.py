@@ -41,11 +41,10 @@ class NovelSelector(QComboBox):
 
     novelSelectionChanged = pyqtSignal(str)
 
-    def __init__(self, parent, project, mainGui):
+    def __init__(self, parent, mainGui):
         super().__init__(parent=parent)
 
         self._mainGui = mainGui
-        self._project = project
         self._blockSignal = False
         self._firstHandle = None
 
@@ -91,7 +90,7 @@ class NovelSelector(QComboBox):
 
         icon = CONFIG.theme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
         handle = self.currentData()
-        for tHandle, nwItem in self._project.tree.iterRoots(nwItemClass.NOVEL):
+        for tHandle, nwItem in self._mainGui.project.tree.iterRoots(nwItemClass.NOVEL):
             if prefix:
                 name = prefix.format(nwItem.itemName)
                 self.addItem(name, tHandle)

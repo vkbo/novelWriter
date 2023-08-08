@@ -33,8 +33,8 @@ def testGuiStatusBar_Main(qtbot, nwGUI, projPath, mockRnd):
     """Test the the various features of the status bar.
     """
     buildTestProject(nwGUI, projPath)
-    cHandle = nwGUI.theProject.newFile("A Note", C.hCharRoot)
-    newDoc = nwGUI.theProject.storage.getDocument(cHandle)
+    cHandle = nwGUI.project.newFile("A Note", C.hCharRoot)
+    newDoc = nwGUI.project.storage.getDocument(cHandle)
     newDoc.writeDocument("# A Note\n\n")
     nwGUI.projView.projTree.revealNewTreeItem(cHandle)
     nwGUI.rebuildIndex(beQuiet=True)

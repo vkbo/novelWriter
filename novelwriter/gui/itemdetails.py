@@ -42,8 +42,7 @@ class GuiItemDetails(QWidget):
 
         logger.debug("Create: GuiItemDetails")
 
-        self.mainGui    = mainGui
-        self.theProject = mainGui.theProject
+        self.mainGui = mainGui
 
         # Internal Variables
         self._itemHandle  = None
@@ -234,7 +233,7 @@ class GuiItemDetails(QWidget):
             self.clearDetails()
             return
 
-        nwItem = self.theProject.tree[tHandle]
+        nwItem = self.mainGui.project.tree[tHandle]
         if nwItem is None:
             self.clearDetails()
             return

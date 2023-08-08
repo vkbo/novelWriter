@@ -59,8 +59,7 @@ class GuiDocViewer(QTextBrowser):
         logger.debug("Create: GuiDocViewer")
 
         # Class Variables
-        self.mainGui    = mainGui
-        self.theProject = mainGui.theProject
+        self.mainGui = mainGui
 
         # Internal Variables
         self._docHandle = None
@@ -163,7 +162,7 @@ class GuiDocViewer(QTextBrowser):
     def loadText(self, tHandle, updateHistory=True):
         """Load text into the viewer from an item handle.
         """
-        if not self.theProject.tree.checkType(tHandle, nwItemType.FILE):
+        if not self.mainGui.project.tree.checkType(tHandle, nwItemType.FILE):
             logger.warning("Item not found")
             return False
 
@@ -171,7 +170,7 @@ class GuiDocViewer(QTextBrowser):
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
 
         sPos = self.verticalScrollBar().value()
-        aDoc = ToHtml(self.theProject)
+        aDoc = ToHtml(self.mainGui.project)
         aDoc.setPreview(CONFIG.viewComments, CONFIG.viewSynopsis)
         aDoc.setLinkHeaders(True)
 
@@ -211,7 +210,7 @@ class GuiDocViewer(QTextBrowser):
             self.verticalScrollBar().setValue(sPos)
 
         self._docHandle = tHandle
-        self.theProject._data.setLastHandle(tHandle, "viewer")
+        self.mainGui.project.data.setLastHandle(tHandle, "viewer")
         self.docHeader.setTitleFromHandle(self._docHandle)
         self.updateDocMargins()
 
@@ -680,9 +679,8 @@ class GuiDocViewHeader(QWidget):
 
         logger.debug("Create: GuiDocViewHeader")
 
-        self.docViewer  = docViewer
-        self.mainGui    = docViewer.mainGui
-        self.theProject = docViewer.theProject
+        self.docViewer = docViewer
+        self.mainGui   = docViewer.mainGui
 
         # Internal Variables
         self._docHandle = None
@@ -821,17 +819,18 @@ class GuiDocViewHeader(QWidget):
             self.refreshButton.setVisible(False)
             return True
 
+        pTree = self.mainGui.project.tree
         if CONFIG.showFullPath:
             tTitle = []
-            tTree = self.theProject.tree.getItemPath(tHandle)
+            tTree = pTree.getItemPath(tHandle)
             for aHandle in reversed(tTree):
-                nwItem = self.theProject.tree[aHandle]
+                nwItem = pTree[aHandle]
                 if nwItem is not None:
                     tTitle.append(nwItem.itemName)
             sSep = "  %s  " % nwUnicode.U_RSAQUO
             self.theTitle.setText(sSep.join(tTitle))
         else:
-            nwItem = self.theProject.tree[tHandle]
+            nwItem = pTree[tHandle]
             if nwItem is None:
                 return False
             self.theTitle.setText(nwItem.itemName)
@@ -1138,8 +1137,7 @@ class GuiDocViewDetails(QScrollArea):
 
         logger.debug("Create: GuiDocViewDetails")
 
-        self.mainGui    = mainGui
-        self.theProject = mainGui.theProject
+        self.mainGui = mainGui
 
         self.refList = QLabel("")
         self.refList.setWordWrap(True)
@@ -1174,10 +1172,10 @@ class GuiDocViewDetails(QScrollArea):
         if self.mainGui.docViewer.stickyRef:
             return
 
-        theRefs = self.theProject.index.getBackReferenceList(tHandle)
+        theRefs = self.mainGui.project.index.getBackReferenceList(tHandle)
         theList = []
         for tHandle in theRefs:
-            tItem = self.theProject.tree[tHandle]
+            tItem = self.mainGui.project.tree[tHandle]
             if tItem is not None:
                 theList.append("<a href='%s#%s' %s>%s</a>" % (
                     tHandle, theRefs[tHandle], self.linkStyle, tItem.itemName
