@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import qApp, QStatusBar, QLabel
 
 from novelwriter import CONFIG
 from novelwriter.common import formatTime
-from novelwriter.gui.components import StatusLED
+from novelwriter.extensions.statusled import StatusLED
 
 logger = logging.getLogger(__name__)
 

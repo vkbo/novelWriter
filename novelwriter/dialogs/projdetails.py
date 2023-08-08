@@ -36,9 +36,9 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG
 from novelwriter.common import formatTime, numberToRoman
 from novelwriter.constants import nwUnicode
-from novelwriter.gui.components import NovelSelector
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.pageddialog import NPagedDialog
+from novelwriter.extensions.novelselector import NovelSelector
 
 logger = logging.getLogger(__name__)
 

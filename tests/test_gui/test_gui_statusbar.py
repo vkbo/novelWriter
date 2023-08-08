@@ -25,7 +25,7 @@ import pytest
 from tools import C, buildTestProject
 
 from novelwriter import CONFIG
-from novelwriter.gui.statusbar import StatusLED
+from novelwriter.extensions.statusled import StatusLED
 
 
 @pytest.mark.gui

@@ -1,10 +1,9 @@
 """
-novelWriter – GUI Components Module
-===================================
+novelWriter – Custom Widget: Novel Selector
+===========================================
 
 File History:
-Created: 2020-05-17 [0.5.1] StatusLED
-Created: 2022-11-17 [2.0]   NovelSelector
+Created: 2022-11-17 [2.0]
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
@@ -26,13 +25,17 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtGui import QPainter
+from typing import TYPE_CHECKING
+
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QAbstractButton, QComboBox
+from PyQt5.QtWidgets import QComboBox, QWidget
 
 from novelwriter import CONFIG
 from novelwriter.enum import nwItemClass
 from novelwriter.constants import nwLabels
+
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
@@ -41,15 +44,12 @@ class NovelSelector(QComboBox):
 
     novelSelectionChanged = pyqtSignal(str)
 
-    def __init__(self, parent, mainGui):
+    def __init__(self, parent: QWidget, mainGui: GuiMain) -> None:
         super().__init__(parent=parent)
-
         self._mainGui = mainGui
         self._blockSignal = False
         self._firstHandle = None
-
         self.currentIndexChanged.connect(self._indexChanged)
-
         return
 
     ##
@@ -57,20 +57,19 @@ class NovelSelector(QComboBox):
     ##
 
     @property
-    def handle(self):
+    def handle(self) -> str:
         return self.currentData()
 
     @property
-    def firstHandle(self):
+    def firstHandle(self) -> str | None:
         return self._firstHandle
 
     ##
     #  Methods
     ##
 
-    def setHandle(self, tHandle, blockSignal=True):
-        """Set the currently selected handle.
-        """
+    def setHandle(self, tHandle: str, blockSignal: bool = True) -> None:
+        """Set the currently selected handle."""
         self._blockSignal = blockSignal
         if tHandle is None:
             index = self.count() - 1
@@ -81,9 +80,8 @@ class NovelSelector(QComboBox):
         self._blockSignal = False
         return
 
-    def updateList(self, includeAll=False, prefix=None):
-        """Rebuild the list of novel items.
-        """
+    def updateList(self, includeAll: bool = False, prefix: str | None = None) -> None:
+        """Rebuild the list of novel items."""
         self._blockSignal = True
         self._firstHandle = None
         self.clear()
@@ -115,67 +113,10 @@ class NovelSelector(QComboBox):
     ##
 
     @pyqtSlot(int)
-    def _indexChanged(self, index):
-        """Re-emit the change of selected novel signal, unless blocked.
-        """
+    def _indexChanged(self, index: int) -> None:
+        """Re-emit the change of selection signal, unless blocked."""
         if not self._blockSignal:
             self.novelSelectionChanged.emit(self.currentData())
         return
 
 # END Class NovelSelector
-
-
-class StatusLED(QAbstractButton):
-
-    S_NONE = 0
-    S_BAD  = 1
-    S_GOOD = 2
-
-    def __init__(self, colNone, colGood, colBad, sW, sH, parent=None):
-        super().__init__(parent=parent)
-
-        self._colNone = colNone
-        self._colGood = colGood
-        self._colBad = colBad
-        self._theCol = colNone
-
-        self.setFixedWidth(sW)
-        self.setFixedHeight(sH)
-
-        return
-
-    ##
-    #  Setters
-    ##
-
-    def setState(self, theState):
-        """Set the colour state.
-        """
-        if theState == self.S_GOOD:
-            self._theCol = self._colGood
-        elif theState == self.S_BAD:
-            self._theCol = self._colBad
-        else:
-            self._theCol = self._colNone
-
-        self.update()
-
-        return
-
-    ##
-    #  Events
-    ##
-
-    def paintEvent(self, _):
-        """Drawing the LED.
-        """
-        qPalette = self.palette()
-        qPaint = QPainter(self)
-        qPaint.setRenderHint(QPainter.Antialiasing, True)
-        qPaint.setPen(qPalette.dark().color())
-        qPaint.setBrush(self._theCol)
-        qPaint.setOpacity(1.0)
-        qPaint.drawEllipse(1, 1, self.width() - 2, self.height() - 2)
-        return
-
-# END Class StatusLED

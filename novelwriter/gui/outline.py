@@ -48,7 +48,7 @@ from novelwriter.enum import (
 from novelwriter.error import logException
 from novelwriter.common import checkInt
 from novelwriter.constants import nwHeaders, trConst, nwKeyWords, nwLabels
-from novelwriter.gui.components import NovelSelector
+from novelwriter.extensions.novelselector import NovelSelector
 
 
 logger = logging.getLogger(__name__)

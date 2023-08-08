@@ -42,7 +42,7 @@ from novelwriter import CONFIG
 from novelwriter.enum import nwDocMode, nwItemClass, nwOutline
 from novelwriter.common import minmax
 from novelwriter.constants import nwHeaders, nwKeyWords, nwLabels, trConst
-from novelwriter.gui.components import NovelSelector
+from novelwriter.extensions.novelselector import NovelSelector
 
 logger = logging.getLogger(__name__)
 
