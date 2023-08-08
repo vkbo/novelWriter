@@ -397,7 +397,7 @@ def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, projPath,
 
     # User cancels action
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "question", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         assert projTree.moveItemToTrash(C.hTitlePage) is False
         assert theProject.tree.isTrash(C.hTitlePage) is False
 
@@ -444,7 +444,7 @@ def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, pro
 
     # User cancels action
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "question", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         assert projTree.permDeleteItem(C.hTitlePage) is False
         assert C.hTitlePage in theProject.tree
 
@@ -496,7 +496,7 @@ def testGuiProjTree_EmptyTrash(qtbot, caplog, monkeypatch, nwGUI, projPath, mock
 
     # User cancels
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "question", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         assert projTree.emptyTrash() is False
         assert C.hTitlePage in theProject.tree
         assert C.hChapterDir in theProject.tree
@@ -617,7 +617,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Click no on the dialog
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "question", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         projTree._covertFolderToFile(hNewFolderOne, nwItemLayout.DOCUMENT)
         assert nwGUI.theProject.tree[hNewFolderOne].isFolderType()
 
@@ -864,7 +864,7 @@ def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mock
 
     # Duplicate title page, but select no
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "question", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         assert projTree._duplicateFromHandle(C.hTitlePage) is False
         assert len(nwGUI.theProject.tree) == 8
 

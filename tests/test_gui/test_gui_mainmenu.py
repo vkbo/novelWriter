@@ -642,7 +642,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
 
     # The document isn't empty, so the message box should pop
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "question", lambda *a, **k: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a, **k: QMessageBox.No)
         assert not nwGUI.importDocument()
         assert nwGUI.docEditor.getText() == "Bar"
 
@@ -655,16 +655,16 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
 
     theMessage = ""
 
-    def recordMsg(*args):
+    def recordMsg(*args, **kwargs):
         nonlocal theMessage
-        theMessage = args[3]
+        theMessage = "%s|%s" % (args[0], kwargs["info"])
         return None
 
     assert not theMessage
-    monkeypatch.setattr(QMessageBox, "information", recordMsg)
+    monkeypatch.setattr(nwGUI, "makeAlert", recordMsg)
     nwGUI.mainMenu.aFileDetails.activate(QAction.Trigger)
 
-    theBits = theMessage.split("<br>")
+    theBits = theMessage.split("|")
     assert len(theBits) == 2
     assert theBits[0] == "The currently open file is saved in:"
     assert theBits[1] == str(projPath / "content" / "000000000000f.nwd")

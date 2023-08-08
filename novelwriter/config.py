@@ -1,10 +1,9 @@
 """
 novelWriter – Config Class
 ==========================
-Class holding the user preferences and handling the config file
 
 File History:
-Created: 2018-09-22 [0.0.1]
+Created: 2018-09-22 [0.0.1] Config
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
@@ -22,7 +21,6 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
-
 from __future__ import annotations
 
 import sys

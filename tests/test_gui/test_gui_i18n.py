@@ -34,12 +34,9 @@ LANG_DATA = CONFIG.listLanguages(CONFIG.LANG_NW)
 @pytest.mark.skipif(not LANG_DATA, reason="No i18n Data")
 @pytest.mark.parametrize("language", [a for a, b in LANG_DATA])
 def testI18n_Localisation(qtbot, monkeypatch, language, fncPath):
-    """test loading the gui with a specific language.
-    """
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a: QMessageBox.Ok)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a: QMessageBox.Ok)
-    monkeypatch.setattr(QMessageBox, "information", lambda *a: QMessageBox.Ok)
-    monkeypatch.setattr(QMessageBox, "question", lambda *a: QMessageBox.Yes)
+    """Test loading the gui with a specific language."""
+    monkeypatch.setattr(QMessageBox, "exec_", lambda *a: None)
+    monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.Yes)
 
     # Set the test langauge
     CONFIG.guiLocale = language

@@ -1,7 +1,6 @@
 """
 novelWriter – GUI Document Editor
 =================================
-GUI classes for the main document editor
 
 File History:
 Created:   2018-09-29 [0.0.1] GuiDocEditor
@@ -28,12 +27,14 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import bisect
 import logging
 
 from enum import Enum
 from time import time
+from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import (
     Qt, QSize, QTimer, pyqtSlot, pyqtSignal, QRegExp, QRegularExpression,
@@ -44,9 +45,8 @@ from PyQt5.QtGui import (
     QPalette, QTextDocument, QCursor, QPixmap
 )
 from PyQt5.QtWidgets import (
-    qApp, QTextEdit, QAction, QMenu, QShortcut, QMessageBox, QWidget, QLabel,
-    QToolBar, QToolButton, QHBoxLayout, QGridLayout, QLineEdit, QPushButton,
-    QFrame
+    QAction, qApp, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
+    QPushButton, QShortcut, QTextEdit, QToolBar, QToolButton, QWidget
 )
 
 from novelwriter import CONFIG
@@ -56,6 +56,9 @@ from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
 from novelwriter.core.index import countWords
 from novelwriter.core.spellcheck import NWSpellEnchant
 from novelwriter.gui.dochighlight import GuiDocHighlighter
+
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +78,7 @@ class GuiDocEditor(QTextEdit):
     novelStructureChanged = pyqtSignal()
     novelItemMetaChanged = pyqtSignal(str)
 
-    def __init__(self, mainGui):
+    def __init__(self, mainGui: GuiMain):
         super().__init__(parent=mainGui)
 
         logger.debug("Create: GuiDocEditor")
@@ -357,7 +360,7 @@ class GuiDocEditor(QTextEdit):
             ).format(
                 f"{docSize/1.0e6:.2f}",
                 f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
-            ), nwAlert.ERROR)
+            ), level=nwAlert.ERROR)
             self.clearEditor()
             return False
 
@@ -457,7 +460,7 @@ class GuiDocEditor(QTextEdit):
             ).format(
                 f"{docSize/1.0e6:.2f}",
                 f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
-            ), nwAlert.ERROR)
+            ), level=nwAlert.ERROR)
             return False
 
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
@@ -496,20 +499,19 @@ class GuiDocEditor(QTextEdit):
         if not self._nwDocument.writeDocument(docText):
             saveOk = False
             if self._nwDocument._currHash != self._nwDocument._prevHash:
-                msgYes = self.mainGui.askQuestion(
-                    self.tr("File Changed on Disk"),
-                    self.tr(
-                        "This document has been changed outside of novelWriter "
-                        "while it was open. Overwrite the file on disk?"
-                    )
-                )
+                msgYes = self.mainGui.askQuestion(self.tr(
+                    "This document has been changed outside of novelWriter "
+                    "while it was open. Overwrite the file on disk?"
+                ))
                 if msgYes:
                     saveOk = self._nwDocument.writeDocument(docText, forceWrite=True)
 
             if not saveOk:
-                self.mainGui.makeAlert([
-                    self.tr("Could not save document."), self._nwDocument.getError()
-                ], nwAlert.ERROR)
+                self.mainGui.makeAlert(
+                    self.tr("Could not save document."),
+                    info=self._nwDocument.getError(),
+                    level=nwAlert.ERROR
+                )
 
             return False
 
@@ -726,7 +728,7 @@ class GuiDocEditor(QTextEdit):
                 self.mainGui.makeAlert(self.tr(
                     "Spell checking requires the package PyEnchant. "
                     "It does not appear to be installed."
-                ), nwAlert.INFO)
+                ))
             theMode = False
 
         if self.spEnchant.spellLanguage is None:
@@ -868,17 +870,10 @@ class GuiDocEditor(QTextEdit):
         if self._nwDocument is None:
             logger.error("No document open")
             return False
-
-        msgBox = QMessageBox()
-        msgBox.information(
-            self,
-            self.tr("File Location"),
-            "%s<br>%s" % (
-                self.tr("The currently open file is saved in:"),
-                self._nwDocument.getFileLocation()
-            ),
+        self.mainGui.makeAlert(
+            self.tr("The currently open file is saved in:"),
+            info=self._nwDocument.getFileLocation()
         )
-
         return
 
     def insertText(self, theInsert):
@@ -1116,7 +1111,7 @@ class GuiDocEditor(QTextEdit):
                 "The maximum size of a single novelWriter document is {0} MB."
             ).format(
                 f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
-            ), nwAlert.ERROR)
+            ), level=nwAlert.ERROR)
             self.undo()
             return
 
@@ -1675,7 +1670,7 @@ class GuiDocEditor(QTextEdit):
         if not theCursor.hasSelection():
             self.mainGui.makeAlert(self.tr(
                 "Please select some text before calling replace quotes."
-            ), nwAlert.ERROR)
+            ), level=nwAlert.ERROR)
             return False
 
         posS = theCursor.selectionStart()

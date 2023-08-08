@@ -1,7 +1,6 @@
 """
 novelWriter – GUI Project Settings
 ==================================
-GUI classes for the project settings dialog
 
 File History:
 Created: 2018-09-29 [0.0.1]
@@ -22,8 +21,11 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
+
+from typing import TYPE_CHECKING
 
 from PyQt5.QtGui import QIcon, QPixmap, QColor
 from PyQt5.QtCore import Qt, QLocale, pyqtSlot
@@ -39,6 +41,9 @@ from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.pageddialog import NPagedDialog
 from novelwriter.extensions.configlayout import NConfigLayout
 
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.guimain import GuiMain
+
 logger = logging.getLogger(__name__)
 
 
@@ -49,7 +54,7 @@ class GuiProjectSettings(NPagedDialog):
     TAB_IMPORT  = 2
     TAB_REPLACE = 3
 
-    def __init__(self, mainGui, focusTab=TAB_MAIN):
+    def __init__(self, mainGui: GuiMain, focusTab: int = TAB_MAIN) -> None:
         super().__init__(parent=mainGui)
 
         logger.debug("Create: GuiProjectSettings")
@@ -441,7 +446,7 @@ class GuiProjectEditStatus(QWidget):
             if selItem.data(self.COL_LABEL, self.NUM_ROLE) > 0:
                 self.mainGui.makeAlert(self.tr(
                     "Cannot delete a status item that is in use."
-                ), nwAlert.ERROR)
+                ), level=nwAlert.ERROR)
             else:
                 self.listBox.takeTopLevelItem(iRow)
                 self.colDeleted.append(selItem.data(self.COL_LABEL, self.KEY_ROLE))

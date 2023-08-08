@@ -125,7 +125,7 @@ class nwAlert(Enum):
     INFO  = 0
     WARN  = 1
     ERROR = 2
-    BUG   = 3
+    ASK   = 3
 
 # END Enum nwAlert
 

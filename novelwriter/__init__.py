@@ -21,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import sys
 import getopt
@@ -71,13 +72,12 @@ logger = logging.getLogger(__name__)
 #  Main Program
 ##
 
-# Load the main config as a global object
+# Global config singleton
 CONFIG = Config()
 
 
-def main(sysArgs=None):
-    """Parse command line, set up logging, and launch main GUI.
-    """
+def main(sysArgs: list | None = None):
+    """Parse command line, set up logging, and launch main GUI."""
     if sysArgs is None:
         sysArgs = sys.argv[1:]
 

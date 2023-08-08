@@ -244,15 +244,14 @@ class GuiBuildSettings(QDialog):
     ##
 
     def _askToSaveBuild(self) -> None:
-        """Check if there are unsaved changes, and if there are, ask if
-        it's ok to reject them.
+        """Check if there are unsaved changes, and if there are, ask
+        whether the user wants to save them.
         """
         if self._build.changed:
-            doSave = self.mainGui.askQuestion(
-                self.tr("Build Settings"),
-                self.tr("Do you want to save your changes?")
-            )
-            if doSave:
+            response = self.mainGui.askQuestion(self.tr(
+                "Do you want to save your changes to '{0}'?".format(self._build.name)
+            ))
+            if response:
                 self._emitBuildData()
             self._build.resetChangedState()
         return

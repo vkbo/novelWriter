@@ -479,7 +479,7 @@ class ProjectBuilder:
             except Exception as exc:
                 self.mainGui.makeAlert(self.tr(
                     "Failed to create a new example project."
-                ), nwAlert.ERROR, exception=exc)
+                ), level=nwAlert.ERROR, exception=exc)
                 return False
 
         else:
@@ -487,7 +487,7 @@ class ProjectBuilder:
                 "Failed to create a new example project. "
                 "Could not find the necessary files. "
                 "They seem to be missing from this installation."
-            ), nwAlert.ERROR)
+            ), level=nwAlert.ERROR)
             return False
 
         return True

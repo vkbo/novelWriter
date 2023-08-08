@@ -31,7 +31,7 @@ from pathlib import Path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt, QTimer, QThreadPool, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QCursor, QIcon, QKeySequence
+from PyQt5.QtGui import QCloseEvent, QCursor, QIcon, QKeySequence, QPixmap
 from PyQt5.QtWidgets import (
     qApp, QDialog, QFileDialog, QMainWindow, QMessageBox, QShortcut, QSplitter,
     QStackedWidget, QVBoxLayout, QWidget
@@ -66,7 +66,7 @@ from novelwriter.enum import (
     nwDocAction, nwDocMode, nwItemType, nwItemClass, nwAlert, nwWidget, nwView
 )
 from novelwriter.common import getGuiItem, hexToInt
-from novelwriter.constants import nwFiles
+from novelwriter.constants import nwFiles, nwLabels, trConst
 
 logger = logging.getLogger(__name__)
 
@@ -112,9 +112,11 @@ class GuiMain(QMainWindow):
         # Core Classes
         # ============
 
-        # Core Classes and Settings
-        self.mainTheme   = GuiTheme()
-        self.theProject  = NWProject(self)
+        # Core Classes
+        self.mainTheme  = GuiTheme()
+        self.theProject = NWProject(self)
+
+        # Core Settings
         self.hasProject  = False
         self.isFocusMode = False
         self.idleRefTime = time()
@@ -133,6 +135,7 @@ class GuiMain(QMainWindow):
         # =============
 
         # Sizes
+        iPx = self.mainTheme.fontPixelSize
         mPx = CONFIG.pxInt(4)
         hWd = CONFIG.pxInt(4)
 
@@ -301,6 +304,15 @@ class GuiMain(QMainWindow):
         # Forward Functions
         self.setStatus = self.mainStatus.setStatus
 
+        # Cache Alert Pixmaps
+        pxSize = (2*iPx, 2*iPx)
+        self.alertPix: dict[nwAlert, QPixmap] = {
+            nwAlert.INFO:  self.mainTheme.getPixmap("alert_info", pxSize),
+            nwAlert.WARN:  self.mainTheme.getPixmap("alert_warn", pxSize),
+            nwAlert.ERROR: self.mainTheme.getPixmap("alert_error", pxSize),
+            nwAlert.ASK:   self.mainTheme.getPixmap("alert_question", pxSize),
+        }
+
         # Check that config loaded fine
         self.reportConfErr()
 
@@ -320,7 +332,7 @@ class GuiMain(QMainWindow):
                 "You are running an untested development version of novelWriter. "
                 "Please be careful when working on a live project "
                 "and make sure you take regular backups."
-            ), nwAlert.WARN)
+            ), level=nwAlert.WARN)
 
         logger.info("novelWriter is ready ...")
         self.setStatus(self.tr("novelWriter is ready ..."))
@@ -380,7 +392,7 @@ class GuiMain(QMainWindow):
             if not self.closeProject():
                 self.makeAlert(self.tr(
                     "Cannot create a new project when another project is open."
-                ), nwAlert.ERROR)
+                ), level=nwAlert.ERROR)
                 return False
 
         if projData is None:
@@ -398,7 +410,7 @@ class GuiMain(QMainWindow):
             self.makeAlert(self.tr(
                 "A project already exists in that location. "
                 "Please choose another folder."
-            ), nwAlert.ERROR)
+            ), level=nwAlert.ERROR)
             return False
 
         logger.info("Creating new project")
@@ -420,13 +432,10 @@ class GuiMain(QMainWindow):
             return True
 
         if not isYes:
-            msgYes = self.askQuestion(
-                self.tr("Close Project"),
-                "%s<br>%s" % (
-                    self.tr("Close the current project?"),
-                    self.tr("Changes are saved automatically.")
-                )
-            )
+            msgYes = self.askQuestion("%s<br>%s" % (
+                self.tr("Close the current project?"),
+                self.tr("Changes are saved automatically.")
+            ))
             if not msgYes:
                 return False
 
@@ -438,10 +447,7 @@ class GuiMain(QMainWindow):
         if self.theProject.data.doBackup and CONFIG.backupOnClose:
             doBackup = True
             if CONFIG.askBeforeBackup:
-                msgYes = self.askQuestion(
-                    self.tr("Backup Project"),
-                    self.tr("Backup the current project?")
-                )
+                msgYes = self.askQuestion(self.tr("Backup the current project?"))
                 if not msgYes:
                     doBackup = False
 
@@ -480,19 +486,28 @@ class GuiMain(QMainWindow):
         # Try to open the project
         if not self.theProject.openProject(projFile):
             # The project open failed.
-
             lockStatus = self.theProject.getLockStatus()
             if lockStatus is None:
                 # The project is not locked, so failed for some other
                 # reason handled by the project class.
                 return False
 
+            lockText = self.tr(
+                "The project is already open by another instance of "
+                "novelWriter, and is therefore locked. Override lock "
+                "and continue anyway?"
+            )
+            lockInfo = self.tr(
+                "Note: If the program or the computer previously "
+                "crashed, the lock can safely be overridden. However, "
+                "overriding it is not recommended if the project is "
+                "open in another instance of novelWriter. Doing so "
+                "may corrupt the project."
+            )
             try:
-                lockDetails = (
-                    "<br>%s" % self.tr(
-                        "The project was locked by the computer "
-                        "'{0}' ({1} {2}), last active on {3}."
-                    )
+                lockDetails = self.tr(
+                    "The project was locked by the computer "
+                    "'{0}' ({1} {2}), last active on {3}."
                 ).format(
                     lockStatus[0], lockStatus[1], lockStatus[2],
                     datetime.fromtimestamp(int(lockStatus[3])).strftime("%x %X")
@@ -500,27 +515,7 @@ class GuiMain(QMainWindow):
             except Exception:
                 lockDetails = ""
 
-            msgBox = QMessageBox()
-            msgRes = msgBox.warning(
-                self, self.tr("Project Locked"),
-                "%s<br><br>%s<br>%s" % (
-                    self.tr(
-                        "The project is already open by another instance of "
-                        "novelWriter, and is therefore locked. Override lock "
-                        "and continue anyway?"
-                    ),
-                    self.tr(
-                        "Note: If the program or the computer previously "
-                        "crashed, the lock can safely be overridden. However, "
-                        "overriding it is not recommended if the project is "
-                        "open in another instance of novelWriter. Doing so "
-                        "may corrupt the project."
-                    ),
-                    lockDetails
-                ),
-                QMessageBox.Yes | QMessageBox.No, QMessageBox.No
-            )
-            if msgRes == QMessageBox.Yes:
+            if self.askQuestion(lockText, info=lockInfo, details=lockDetails, level=nwAlert.WARN):
                 if not self.theProject.openProject(projFile, overrideLock=True):
                     return False
             else:
@@ -560,9 +555,7 @@ class GuiMain(QMainWindow):
 
         # Check if we need to rebuild the index
         if self.theProject.index.indexBroken:
-            self.makeAlert(self.tr(
-                "The project index is outdated or broken. Rebuilding index."
-            ), nwAlert.INFO)
+            self.makeAlert(self.tr("The project index is outdated or broken. Rebuilding index."))
             self.rebuildIndex()
 
         # Make sure the changed status is set to false on things opened
@@ -751,23 +744,20 @@ class GuiMain(QMainWindow):
         except Exception as exc:
             self.makeAlert(self.tr(
                 "Could not read file. The file must be an existing text file."
-            ), nwAlert.ERROR, exception=exc)
+            ), level=nwAlert.ERROR, exception=exc)
             return False
 
         if self.docEditor.docHandle() is None:
             self.makeAlert(self.tr(
                 "Please open a document to import the text file into."
-            ), nwAlert.ERROR)
+            ), level=nwAlert.ERROR)
             return False
 
         if not self.docEditor.isEmpty():
-            msgYes = self.askQuestion(
-                self.tr("Import Document"),
-                self.tr(
-                    "Importing the file will overwrite the current content of "
-                    "the document. Do you want to proceed?"
-                )
-            )
+            msgYes = self.askQuestion(self.tr(
+                "Importing the file will overwrite the current content of "
+                "the document. Do you want to proceed?"
+            ))
             if not msgYes:
                 return False
 
@@ -866,9 +856,7 @@ class GuiMain(QMainWindow):
         qApp.restoreOverrideCursor()
 
         if not beQuiet:
-            self.makeAlert(self.tr(
-                "The project index has been successfully rebuilt."
-            ), nwAlert.INFO)
+            self.makeAlert(self.tr("The project index has been successfully rebuilt."))
 
         return True
 
@@ -916,7 +904,7 @@ class GuiMain(QMainWindow):
             if dlgConf.needsRestart:
                 self.makeAlert(self.tr(
                     "Some changes will not be applied until novelWriter has been restarted."
-                ), nwAlert.INFO)
+                ))
 
             if dlgConf.refreshTree:
                 self.projView.populateTree()
@@ -1097,53 +1085,48 @@ class GuiMain(QMainWindow):
 
         return
 
-    def makeAlert(self, message: list[str] | str, level: nwAlert = nwAlert.INFO,
-                  exception: Exception | None = None) -> None:
+    def makeAlert(self, text: str, info: str = "", details: str = "",
+                  level: nwAlert = nwAlert.INFO, exception: Exception | None = None) -> None:
         """Alert both the user and the logger at the same time. The
         message can be either a string or a list of strings.
         """
-        if isinstance(message, list):
-            message = list(filter(None, message))  # Strip empty strings
-            popMsg = "<br>".join(message)
-            logMsg = " ".join(message)
-        else:
-            popMsg = str(message)
-            logMsg = str(message)
+        logText = " ".join(filter(None, [text, info, details]))
+        if level == nwAlert.INFO:
+            logger.info(logText, stacklevel=2)
+        elif level == nwAlert.WARN:
+            logger.warning(logText, stacklevel=2)
+        elif level == nwAlert.ERROR:
+            logger.error(logText, stacklevel=2, exc_info=exception)
 
-        kw = {}
         if exception is not None:
-            kw["exc_info"] = exception
-            popMsg = f"{popMsg}<br>{type(exception).__name__}: {str(exception)}"
+            excText = f"{type(exception).__name__}: {str(exception)}"
+            info = f"{info}<br>{excText}" if info else excText
 
-        # Write to Log
-        if level == nwAlert.INFO:
-            logger.info(logMsg, **kw)
-        elif level == nwAlert.WARN:
-            logger.warning(logMsg, **kw)
-        elif level == nwAlert.ERROR:
-            logger.error(logMsg, **kw)
-        elif level == nwAlert.BUG:
-            logger.error(logMsg, **kw)
-
-        # Popup
-        msgBox = QMessageBox()
-        if level == nwAlert.INFO:
-            msgBox.information(self, self.tr("Information"), popMsg)
-        elif level == nwAlert.WARN:
-            msgBox.warning(self, self.tr("Warning"), popMsg)
-        elif level == nwAlert.ERROR:
-            msgBox.critical(self, self.tr("Error"), popMsg)
-        elif level == nwAlert.BUG:
-            popMsg += "<br>%s" % self.tr("This is a bug!")
-            msgBox.critical(self, self.tr("Internal Error"), popMsg)
+        msgBox = QMessageBox(self)
+        msgBox.setWindowTitle(trConst(nwLabels.ALERT_NAME[level]))
+        msgBox.setText(text)
+        msgBox.setInformativeText(info)
+        msgBox.setDetailedText(details)
+        msgBox.setStandardButtons(QMessageBox.Ok)
+        msgBox.setIconPixmap(self.alertPix[level])
+        msgBox.adjustSize()
+        msgBox.exec_()
 
         return
 
-    def askQuestion(self, title: str, question: str) -> bool:
+    def askQuestion(self, text: str, info: str = "", details: str = "",
+                    level: nwAlert = nwAlert.ASK) -> bool:
         """Ask the user a Yes/No question, and return the answer."""
-        msgBox = QMessageBox()
-        msgRes = msgBox.question(self, title, question, QMessageBox.Yes | QMessageBox.No)
-        return msgRes == QMessageBox.Yes
+        msgBox = QMessageBox(self)
+        msgBox.setWindowTitle(trConst(nwLabels.ALERT_NAME[level]))
+        msgBox.setText(text)
+        msgBox.setInformativeText(info)
+        msgBox.setDetailedText(details)
+        msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        msgBox.setIconPixmap(self.alertPix[level])
+        msgBox.adjustSize()
+        msgBox.exec_()
+        return msgBox.result() == QMessageBox.Yes
 
     def reportConfErr(self) -> bool:
         """Checks if the Config module has any errors to report, and let
@@ -1151,7 +1134,7 @@ class GuiMain(QMainWindow):
         errors since it is initialised before the GUI itself.
         """
         if CONFIG.hasError:
-            self.makeAlert(CONFIG.errorText(), nwAlert.ERROR)
+            self.makeAlert(CONFIG.errorText(), level=nwAlert.ERROR)
             return True
         return False
 
@@ -1162,13 +1145,10 @@ class GuiMain(QMainWindow):
     def closeMain(self) -> bool:
         """Save everything, and close novelWriter."""
         if self.hasProject:
-            msgYes = self.askQuestion(
-                self.tr("Exit"),
-                "%s<br>%s" % (
-                    self.tr("Do you want to exit novelWriter?"),
-                    self.tr("Changes are saved automatically.")
-                )
-            )
+            msgYes = self.askQuestion("%s<br>%s" % (
+                self.tr("Do you want to exit novelWriter?"),
+                self.tr("Changes are saved automatically.")
+            ))
             if not msgYes:
                 return False
 
@@ -1419,7 +1399,7 @@ class GuiMain(QMainWindow):
                 "from the Tools menu, or by pressing {1}."
             ).format(
                 tag, "F9"
-            ), nwAlert.ERROR)
+            ), level=nwAlert.ERROR)
             return None, None
         return tHandle, sTitle
 
