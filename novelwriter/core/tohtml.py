@@ -49,12 +49,12 @@ class ToHtml(Tokenizer):
     M_EXPORT  = 1  # Tweak output for saving to HTML or printing
     M_EBOOK   = 2  # Tweak output for converting to epub
 
-    def __init__(self, project: NWProject):
+    def __init__(self, project: NWProject) -> None:
         super().__init__(project)
 
         self._genMode = self.M_EXPORT
         self._cssStyles = True
-        self._fullHTML = []
+        self._fullHTML: list[str] = []
 
         # Internals
         self._trMap = {}
@@ -67,14 +67,14 @@ class ToHtml(Tokenizer):
     ##
 
     @property
-    def fullHTML(self):
+    def fullHTML(self) -> list[str]:
         return self._fullHTML
 
     ##
     #  Setters
     ##
 
-    def setPreview(self, doComments: bool, doSynopsis: bool):
+    def setPreview(self, doComments: bool, doSynopsis: bool) -> None:
         """If we're using this class to generate markdown preview, we
         need to make a few changes to formatting, which is managed by
         these flags.
@@ -85,14 +85,14 @@ class ToHtml(Tokenizer):
         self._doSynopsis = doSynopsis
         return
 
-    def setStyles(self, cssStyles: bool):
+    def setStyles(self, cssStyles: bool) -> None:
         """Enable or disable CSS styling. Some elements may still have
         class tags.
         """
         self._cssStyles = cssStyles
         return
 
-    def setReplaceUnicode(self, doReplace: bool):
+    def setReplaceUnicode(self, doReplace: bool) -> None:
         """Set the translation map to either minimal or full unicode for
         html entities replacement.
         """
@@ -113,7 +113,7 @@ class ToHtml(Tokenizer):
         """Return the size of the full HTML result."""
         return sum([len(x) for x in self._fullHTML])
 
-    def doPreProcessing(self):
+    def doPreProcessing(self) -> None:
         """Extend the auto-replace to also properly encode some unicode
         characters into their respective HTML entities.
         """
@@ -121,7 +121,7 @@ class ToHtml(Tokenizer):
         self._text = self._text.translate(self._trMap)
         return
 
-    def doConvert(self):
+    def doConvert(self) -> None:
         """Convert the list of text tokens into a HTML document saved
         to _result.
         """
@@ -299,7 +299,7 @@ class ToHtml(Tokenizer):
 
         return
 
-    def saveHtml5(self, path: str | Path):
+    def saveHtml5(self, path: str | Path) -> None:
         """Save the data to an HTML file."""
         with open(path, mode="w", encoding="utf-8") as fObj:
             fObj.write((
@@ -326,7 +326,7 @@ class ToHtml(Tokenizer):
         logger.info("Wrote file: %s", path)
         return
 
-    def saveHtmlJson(self, path: str | Path):
+    def saveHtmlJson(self, path: str | Path) -> None:
         """Save the data to a JSON file."""
         timeStamp = time()
         data = {
@@ -347,7 +347,7 @@ class ToHtml(Tokenizer):
         logger.info("Wrote file: %s", path)
         return
 
-    def replaceTabs(self, nSpaces: int = 8, spaceChar: str = "&nbsp;"):
+    def replaceTabs(self, nSpaces: int = 8, spaceChar: str = "&nbsp;") -> None:
         """Replace tabs with spaces in the html."""
         htmlText = []
         tabSpace = spaceChar*nSpaces
@@ -357,7 +357,7 @@ class ToHtml(Tokenizer):
         self._fullHTML = htmlText
         return
 
-    def getStyleSheet(self) -> list:
+    def getStyleSheet(self) -> list[str]:
         """Generate a stylesheet for the current settings."""
         styles = []
         if not self._cssStyles:

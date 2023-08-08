@@ -30,7 +30,7 @@ import logging
 import unicodedata
 import xml.etree.ElementTree as ET
 
-from typing import Any, Literal
+from typing import Any, Literal, TypeGuard
 from pathlib import Path
 from datetime import datetime
 from configparser import ConfigParser
@@ -134,7 +134,7 @@ def checkPath(value: Any, default: Path) -> Path:
 #  Validator Functions
 # =============================================================================================== #
 
-def isHandle(value: Any) -> bool:
+def isHandle(value: Any) -> TypeGuard[str]:
     """Check if a string is a valid novelWriter handle.
     Note: This is case sensitive. Must be lower case!
     """
@@ -148,7 +148,7 @@ def isHandle(value: Any) -> bool:
     return True
 
 
-def isTitleTag(value: Any) -> bool:
+def isTitleTag(value: Any) -> TypeGuard[str]:
     """Check if a string is a valid title tag string."""
     if not isinstance(value, str):
         return False
@@ -288,8 +288,7 @@ def transferCase(source: str, target: str) -> str:
 
 
 def fuzzyTime(seconds: int) -> str:
-    """Converts a time difference in seconds into a fuzzy time string.
-    """
+    """Convert a time difference in seconds into a fuzzy time string."""
     if seconds < 0:
         return QCoreApplication.translate(
             "Common", "in the future"
@@ -349,8 +348,7 @@ def fuzzyTime(seconds: int) -> str:
 
 
 def numberToRoman(value: int, toLower: bool = False) -> str:
-    """Convert an integer to a Roman number.
-    """
+    """Convert an integer to a Roman number."""
     if not isinstance(value, int):
         return "NAN"
     if value < 1 or value > 4999:
@@ -423,12 +421,14 @@ def jsonEncode(data: dict | list | tuple, n: int = 0, nmax: int = 0) -> str:
     return "".join(buffer)
 
 
-def xmlIndent(tree: ET.Element | ET.ElementTree):
+def xmlIndent(tree: ET.Element | ET.ElementTree) -> None:
     """A modified version of the XML indent function in the standard
     library. It behaves more closely to how the one from lxml does.
     """
     if isinstance(tree, ET.ElementTree):
         tree = tree.getroot()
+    if not isinstance(tree, ET.Element):
+        return
 
     indentations = ["\n"]
 

@@ -45,7 +45,7 @@ class NWSpellEnchant:
     between spell check tools.
     """
 
-    def __init__(self, project: NWProject):
+    def __init__(self, project: NWProject) -> None:
         self._project = project
         self._dictObj = FakeEnchant()
         self._userDict = UserDictionary(project)
@@ -165,7 +165,7 @@ class NWSpellEnchant:
 
 class FakeEnchant:
     """Fallback for when Enchant is selected, but not installed."""
-    def __init__(self):
+    def __init__(self) -> None:
 
         class FakeProvider:
             name = ""
@@ -189,7 +189,7 @@ class FakeEnchant:
 
 class UserDictionary:
 
-    def __init__(self, project: NWProject):
+    def __init__(self, project: NWProject) -> None:
         self._project = project
         self._words = set()
         self._path = None
@@ -210,7 +210,7 @@ class UserDictionary:
         self._words.add(word)
         return True
 
-    def load(self):
+    def load(self) -> None:
         """Load the user's dictionary."""
         self._path = self._project.storage.getMetaFile(nwFiles.DICT_FILE)
         if not isinstance(self._path, Path):
@@ -224,7 +224,7 @@ class UserDictionary:
             logException()
         return
 
-    def save(self):
+    def save(self) -> None:
         """Save the user's dictionary."""
         if self._path is None:
             self._path = self._project.storage.getMetaFile(nwFiles.DICT_FILE)

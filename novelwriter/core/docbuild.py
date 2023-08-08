@@ -54,7 +54,7 @@ class NWBuildDocument:
 
     __slots__ = ("_project", "_build", "_queue", "_error", "_cache")
 
-    def __init__(self, project: NWProject, build: BuildSettings):
+    def __init__(self, project: NWProject, build: BuildSettings) -> None:
         self._project = project
         self._build = build
         self._queue = []
@@ -91,12 +91,12 @@ class NWBuildDocument:
     #  Methods
     ##
 
-    def addDocument(self, tHandle: str):
+    def addDocument(self, tHandle: str) -> None:
         """Add a document to the build queue manually."""
         self._queue.append(tHandle)
         return
 
-    def queueAll(self):
+    def queueAll(self) -> None:
         """Queue all document as defined by the build settings."""
         self._queue = []
         filtered = self._build.buildItemFilter(self._project)

@@ -344,7 +344,7 @@ def testCoreStatus_PackUnpack(mockRnd):
 
     # Unpack
     theStatus = NWStatus(NWStatus.STATUS)
-    assert theStatus.unpack({
+    theStatus.unpack({
         statusKeys[0]: {"label": "New0", "colour": (100, 100, 100), "count": countTo[0]},
         statusKeys[1]: {"label": "New1", "colour": (150, 150, 150), "count": countTo[1]},
         statusKeys[2]: {"label": "New2", "colour": (200, 200, 200), "count": countTo[2]},
