@@ -1,7 +1,6 @@
 """
 novelWriter – GUI Project Details
 =================================
-Class holding the project details dialog
 
 File History:
 Created: 2021-01-03 [1.1rc1]
@@ -22,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import math
 import logging

@@ -1,7 +1,6 @@
 """
 novelWriter – Theme and Icons Classes
 =====================================
-Classes managing and caching themes and icons
 
 File History:
 Created: 2019-05-18 [0.1.3] GuiTheme

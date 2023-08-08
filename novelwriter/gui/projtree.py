@@ -1,7 +1,6 @@
 """
 novelWriter – GUI Project Tree
 ==============================
-GUI classes for the main window project tree
 
 File History:
 Created: 2018-09-29 [0.0.1]  GuiProjectTree

@@ -1,7 +1,6 @@
 """
 novelWriter – Custom Widget: Config Layout
 ==========================================
-A custom grid layout for config pages
 
 File History:
 Created: 2020-05-03 [0.4.5]

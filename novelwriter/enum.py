@@ -1,7 +1,6 @@
 """
 novelWriter – Enums
 ===================
-Global enum values
 
 File History:
 Created: 2018-11-02 [0.0.1]

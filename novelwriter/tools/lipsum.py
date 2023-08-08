@@ -1,7 +1,6 @@
 """
 novelWriter – Lorem Ipsum Tool
 ==============================
-Simple tool for inserting placeholder text in a document
 
 File History:
 Created: 2022-04-02 [2.0rc1]
@@ -22,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import random
 import logging

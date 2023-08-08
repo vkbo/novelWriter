@@ -1,7 +1,6 @@
 """
 novelWriter – GUI Open Project
 ==============================
-GUI class for the load/browse/new project dialog
 
 File History:
 Created: 2020-02-26 [0.4.5]
@@ -22,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 

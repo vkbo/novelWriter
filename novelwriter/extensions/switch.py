@@ -1,7 +1,6 @@
 """
 novelWriter – Custom Widget: Switch
 ===================================
-A custom switch widget
 
 File History:
 Created: 2020-05-03 [0.4.5]
@@ -22,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 from PyQt5.QtGui import QPainter
 from PyQt5.QtCore import Qt, QRectF, QPropertyAnimation, pyqtProperty

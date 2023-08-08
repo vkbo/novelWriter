@@ -1,7 +1,6 @@
 """
 novelWriter – GUI Document Viewer
 =================================
-GUI classes for the main document viewer
 
 File History:
 Created: 2019-05-10 [0.0.1] GuiDocViewer
@@ -26,6 +25,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 

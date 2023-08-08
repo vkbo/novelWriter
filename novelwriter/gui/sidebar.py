@@ -1,7 +1,6 @@
 """
 novelWriter – GUI Main Window SideBar
 =====================================
-GUI class for the main window side bar
 
 File History:
 Created: 2022-05-10 [2.0rc1]
@@ -22,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 

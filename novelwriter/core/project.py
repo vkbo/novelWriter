@@ -1,7 +1,6 @@
 """
 novelWriter – Project Wrapper
 =============================
-The parent class for a novelWriter project
 
 File History:
 Created: 2018-09-29 [0.0.1]

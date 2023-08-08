@@ -1,7 +1,6 @@
 """
 novelWriter – GUI Project Outline
 =================================
-GUI class for the project outline view
 
 File History:
 Created: 2022-05-15 [2.0rc1] GuiOutlineView
@@ -26,6 +25,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 

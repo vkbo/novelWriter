@@ -1,7 +1,6 @@
 """
 novelWriter – GUI Novel Tree
 ============================
-GUI class for the main window novel tree
 
 File History:
 Created: 2020-12-20 [1.1rc1] GuiNovelTree
@@ -24,6 +23,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 

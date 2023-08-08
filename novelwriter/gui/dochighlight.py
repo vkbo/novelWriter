@@ -1,7 +1,6 @@
 """
 novelWriter – GUI Syntax Highlighter
 ====================================
-Class for the main document editor syntax highlighter
 
 File History:
 Created: 2019-04-06 [0.0.1]
@@ -22,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 

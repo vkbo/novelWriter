@@ -1,7 +1,6 @@
 """
 novelWriter – Project Item Status Class
 =======================================
-Data class for the status/importance settings of a project item
 
 File History:
 Created:   2019-05-19 [0.1.3]
@@ -23,6 +22,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import random
 import logging

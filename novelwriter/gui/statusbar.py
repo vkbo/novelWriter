@@ -1,7 +1,6 @@
 """
 novelWriter – GUI Main Window Status Bar
 ========================================
-GUI class for the main window status bar
 
 File History:
 Created: 2019-04-20 [0.0.1] GuiMainStatus
@@ -23,6 +22,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 
