@@ -42,7 +42,7 @@ class NProgressCircle(QProgressBar):
         "_cPen", "_bPen", "_tColor"
     )
 
-    def __init__(self, parent: QWidget, size: int, point: int):
+    def __init__(self, parent: QWidget, size: int, point: int) -> None:
         super().__init__(parent=parent)
         self._text = None
         self._point = point
@@ -60,10 +60,8 @@ class NProgressCircle(QProgressBar):
         self.setFixedHeight(size)
         return
 
-    def setColours(
-        self, back: QColor | None = None, track: QColor | None = None,
-        bar: QColor | None = None, text: QColor | None = None
-    ):
+    def setColours(self, back: QColor | None = None, track: QColor | None = None,
+                   bar: QColor | None = None, text: QColor | None = None) -> None:
         """Set the colours of the widget."""
         if isinstance(back, QColor):
             self._dPen = QPen(back)
@@ -76,13 +74,13 @@ class NProgressCircle(QProgressBar):
             self._tColor = text
         return
 
-    def setCentreText(self, text: str | None):
+    def setCentreText(self, text: str | None) -> None:
         """Replace the progress text with a custom string."""
         self._text = text
         self.setValue(self.value())  # Triggers a redraw
         return
 
-    def paintEvent(self, event: QPaintEvent):
+    def paintEvent(self, event: QPaintEvent) -> None:
         """Custom painter for the progress bar."""
         progress = 100.0*self.value()/self.maximum()
         angle = ceil(16*3.6*progress)

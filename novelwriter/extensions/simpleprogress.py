@@ -35,11 +35,11 @@ class NProgressSimple(QProgressBar):
     A custom widget that paints a plain bar with no other styling.
     """
 
-    def __init__(self, parent: QWidget):
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
         return
 
-    def paintEvent(self, event: QPaintEvent):
+    def paintEvent(self, event: QPaintEvent) -> None:
         """Custom painter for the progress bar."""
         if self.value() == 0:
             return

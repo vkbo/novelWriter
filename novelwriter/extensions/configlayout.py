@@ -37,7 +37,7 @@ FONT_SCALE = 0.9
 
 class NConfigLayout(QGridLayout):
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self._nextRow = 0
@@ -56,7 +56,8 @@ class NConfigLayout(QGridLayout):
     #  Getters and Setters
     ##
 
-    def setHelpTextStyle(self, color: QColor | list | tuple, fontScale: float = FONT_SCALE):
+    def setHelpTextStyle(self, color: QColor | list | tuple,
+                         fontScale: float = FONT_SCALE) -> None:
         """Set the text color for the help text."""
         if isinstance(color, QColor):
             self._helpCol = color
@@ -65,7 +66,7 @@ class NConfigLayout(QGridLayout):
         self._fontScale = fontScale
         return
 
-    def setHelpText(self, row: int, text: str):
+    def setHelpText(self, row: int, text: str) -> None:
         """Set the text for the help label."""
         if row in self._itemMap:
             qHelp = self._itemMap[row][1]
@@ -73,7 +74,7 @@ class NConfigLayout(QGridLayout):
                 qHelp.setText(text)
         return
 
-    def setLabelText(self, row: int, text: str):
+    def setLabelText(self, row: int, text: str) -> None:
         """Set the text for the main label."""
         if row in self._itemMap:
             self._itemMap[row](0).setText(text)
@@ -83,7 +84,7 @@ class NConfigLayout(QGridLayout):
     #  Class Methods
     ##
 
-    def addGroupLabel(self, label: str):
+    def addGroupLabel(self, label: str) -> None:
         """Add a text label to separate groups of settings."""
         hM = CONFIG.pxInt(4)
         qLabel = QLabel("<b>%s</b>" % label)
@@ -94,10 +95,8 @@ class NConfigLayout(QGridLayout):
         self._nextRow += 1
         return
 
-    def addRow(
-        self, label: str, widget: QWidget, helpText: str | None = None,
-        unit: str | None = None, button: QWidget | None = None
-    ) -> int:
+    def addRow(self, label: str, widget: QWidget, helpText: str | None = None,
+               unit: str | None = None, button: QWidget | None = None) -> int:
         """Add a label and a widget as a new row of the grid."""
         wSp = CONFIG.pxInt(8)
         qLabel = QLabel(label)
@@ -155,7 +154,7 @@ class NSimpleLayout(QGridLayout):
     column layout.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._nextRow = 0
 
@@ -170,7 +169,7 @@ class NSimpleLayout(QGridLayout):
     #  Methods
     ##
 
-    def addGroupLabel(self, label: str):
+    def addGroupLabel(self, label: str) -> None:
         """Add a text label to separate groups of settings."""
         hM = CONFIG.pxInt(4)
         qLabel = QLabel("<b>%s</b>" % label)
@@ -181,7 +180,7 @@ class NSimpleLayout(QGridLayout):
         self._nextRow += 1
         return
 
-    def addRow(self, label: str, widget: QWidget):
+    def addRow(self, label: str, widget: QWidget) -> None:
         """Add a label and a widget as a new row of the grid."""
         wSp = CONFIG.pxInt(8)
         qLabel = QLabel(label)
@@ -208,7 +207,8 @@ class NSimpleLayout(QGridLayout):
 
 class NHelpLabel(QLabel):
 
-    def __init__(self, text: str, color: QColor | list | tuple, fontSize: float = FONT_SCALE):
+    def __init__(self, text: str, color: QColor | list | tuple,
+                 fontSize: float = FONT_SCALE) -> None:
         super().__init__(text)
 
         if isinstance(color, QColor):

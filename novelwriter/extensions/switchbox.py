@@ -23,8 +23,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QGridLayout, QLabel, QScrollArea, QSizePolicy, QWidget
 
 from novelwriter.extensions.switch import NSwitch
@@ -39,7 +39,7 @@ class NSwitchBox(QScrollArea):
 
     switchToggled = pyqtSignal(str, bool)
 
-    def __init__(self, parent: QWidget, baseSize: int):
+    def __init__(self, parent: QWidget, baseSize: int) -> None:
         super().__init__(parent=parent)
         self._index = 0
         self._hSwitch = baseSize
@@ -49,7 +49,7 @@ class NSwitchBox(QScrollArea):
         self.clear()
         return
 
-    def clear(self):
+    def clear(self) -> None:
         """Rebuild the content of the core widget."""
         self._index = 0
         self._widgets = []
@@ -66,7 +66,7 @@ class NSwitchBox(QScrollArea):
 
         return
 
-    def addLabel(self, text: str):
+    def addLabel(self, text: str) -> None:
         """Add a header label to the content box."""
         label = QLabel(text)
         font = label.font()
@@ -77,7 +77,7 @@ class NSwitchBox(QScrollArea):
         self._bumpIndex()
         return
 
-    def addItem(self, qIcon: QIcon, text: str, identifier: str, default: bool = False):
+    def addItem(self, qIcon: QIcon, text: str, identifier: str, default: bool = False) -> None:
         """Add an item to the content box."""
         icon = QLabel("")
         icon.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
@@ -97,7 +97,7 @@ class NSwitchBox(QScrollArea):
 
         return
 
-    def addSeparator(self):
+    def addSeparator(self) -> None:
         """Add a blank entry in the content box."""
         spacer = QWidget()
         spacer.setFixedHeight(int(0.5*self._sIcon))
@@ -106,7 +106,7 @@ class NSwitchBox(QScrollArea):
         self._bumpIndex()
         return
 
-    def setInnerContentsMargins(self, left: int, top: int, right: int, bottom: int):
+    def setInnerContentsMargins(self, left: int, top: int, right: int, bottom: int) -> None:
         """Set the contents margins of the inner layout."""
         self._content.setContentsMargins(left, top, right, bottom)
         return
@@ -115,12 +115,12 @@ class NSwitchBox(QScrollArea):
     #  Internal Functions
     ##
 
-    def _emitSwitchSignal(self, identifier: str, state: bool):
+    def _emitSwitchSignal(self, identifier: str, state: bool) -> None:
         """Emit a signal for a switch toggle."""
         self.switchToggled.emit(identifier, state)
         return
 
-    def _bumpIndex(self):
+    def _bumpIndex(self) -> None:
         """Increase the index counter and make sure only the last
         columns is stretching.
         """

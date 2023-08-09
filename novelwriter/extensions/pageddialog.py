@@ -23,10 +23,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtCore import QRect, QPoint
+from PyQt5.QtGui import QPaintEvent
+from PyQt5.QtCore import QRect, QPoint, QSize
 from PyQt5.QtWidgets import (
     QDialog, QHBoxLayout, QStyle, QStyleOptionTab, QStylePainter, QTabBar,
-    QTabWidget, QVBoxLayout
+    QTabWidget, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG
@@ -34,7 +35,7 @@ from novelwriter import CONFIG
 
 class NPagedDialog(QDialog):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
         self._tabBar = NVerticalTabBar(self)
@@ -67,21 +68,18 @@ class NPagedDialog(QDialog):
 
         return
 
-    def addTab(self, widget, label):
-        """Forward the adding of tabs to the QTabWidget.
-        """
+    def addTab(self, widget: QWidget, label: str) -> None:
+        """Forward the adding of tabs to the QTabWidget."""
         self._tabBox.addTab(widget, label)
         return
 
-    def addControls(self, buttonBar):
-        """Add a button bar to the dialog.
-        """
+    def addControls(self, buttonBar: QWidget) -> None:
+        """Add a button bar to the dialog."""
         self._buttonBox.addWidget(buttonBar)
         return
 
-    def setCurrentWidget(self, widget):
-        """Forward the changing of tab to the QTabWidget.
-        """
+    def setCurrentWidget(self, widget: QWidget) -> None:
+        """Forward the changing of tab to the QTabWidget."""
         self._tabBox.setCurrentWidget(widget)
         return
 
@@ -90,20 +88,19 @@ class NPagedDialog(QDialog):
 
 class NVerticalTabBar(QTabBar):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
         self._mW = CONFIG.pxInt(150)
         return
 
-    def tabSizeHint(self, index):
-        """Return a transposed size hint for the rotated bar.
-        """
+    def tabSizeHint(self, index: int) -> QSize:
+        """Return a transposed size hint for the rotated bar."""
         tSize = super().tabSizeHint(index)
         tSize.transpose()
         tSize.setWidth(min(tSize.width(), self._mW))
         return tSize
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: QPaintEvent) -> None:
         """Custom implementation of the label painter that rotates the
         label 90 degrees.
         """

@@ -100,8 +100,9 @@ class GuiProjectLoad(QDialog):
         self.listBox.setIconSize(QSize(iPx, iPx))
 
         treeHead = self.listBox.headerItem()
-        treeHead.setTextAlignment(self.C_COUNT, Qt.AlignRight)
-        treeHead.setTextAlignment(self.C_TIME, Qt.AlignRight)
+        if treeHead:
+            treeHead.setTextAlignment(self.C_COUNT, Qt.AlignRight)
+            treeHead.setTextAlignment(self.C_TIME, Qt.AlignRight)
 
         self.lblRecent = QLabel("<b>%s</b>" % self.tr("Recently Opened Projects"))
         self.lblPath = QLabel("<b>%s</b>" % self.tr("Path"))
@@ -281,8 +282,7 @@ class GuiProjectLoad(QDialog):
             newItem.setFont(self.C_TIME, CONFIG.theme.guiFontFixed)
             self.listBox.addTopLevelItem(newItem)
 
-        if self.listBox.topLevelItemCount() > 0:
-            self.listBox.topLevelItem(0).setSelected(True)
+        self.listBox.setCurrentItem(self.listBox.topLevelItem(0))
 
         projColWidth = CONFIG.projLoadColWidths
         if len(projColWidth) == 3:

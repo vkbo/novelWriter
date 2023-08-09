@@ -366,14 +366,6 @@ def testBaseConfig_Internal(monkeypatch, fncPath):
     # Function _packList
     assert tstConf._packList(["A", 1, 2.0, None, False]) == "A, 1, 2.0, None, False"
 
-    # Function _checkNone
-    assert tstConf._checkNone(None) is None
-    assert tstConf._checkNone("None") is None
-    assert tstConf._checkNone("none") is None
-    assert tstConf._checkNone("NONE") is None
-    assert tstConf._checkNone("NoNe") is None
-    assert tstConf._checkNone(123456) == 123456
-
     # Function _checkOptionalPackages
     # (Assumes enchant package exists and is importable)
     tstConf._checkOptionalPackages()
