@@ -3,7 +3,8 @@ novelWriter – Config Class
 ==========================
 
 File History:
-Created: 2018-09-22 [0.0.1] Config
+Created: 2018-09-22 [0.0.1]  Config
+Created: 2022-11-09 [2.0rc2] RecentProjects
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
@@ -28,7 +29,6 @@ import json
 import logging
 
 from time import time
-from typing import TYPE_CHECKING
 from pathlib import Path
 
 from PyQt5.QtGui import QFontDatabase
@@ -41,9 +41,6 @@ from PyQt5.QtWidgets import QApplication
 from novelwriter.error import formatException, logException
 from novelwriter.common import NWConfigParser, checkInt, checkPath, formatTimeStamp
 from novelwriter.constants import nwFiles, nwUnicode
-
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.gui.theme import GuiTheme
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +93,6 @@ class Config:
         # User Settings
         # =============
 
-        self._themeObj = None
         self._recentObj = RecentProjects(self)
 
         # General GUI Settings
@@ -245,12 +241,6 @@ class Config:
         return self._recentObj
 
     @property
-    def theme(self) -> GuiTheme:
-        if self._themeObj is None:
-            raise Exception("Cannot access GUI theme before it is initialised")
-        return self._themeObj
-
-    @property
     def mainWinSize(self) -> list[int]:
         return [int(x*self.guiScale) for x in self._mainWinSize]
 
@@ -296,11 +286,6 @@ class Config:
     ##
     #  Setters
     ##
-
-    def setThemeInstance(self, theme: GuiTheme) -> None:
-        """Set the applications theme instance."""
-        self._themeObj = theme
-        return
 
     def setMainWinSize(self, width: int, height: int) -> None:
         """Set the size of the main window, but only if the change is
@@ -499,7 +484,7 @@ class Config:
         self._recentObj.loadCache()
         self._checkOptionalPackages()
 
-        logger.debug("Config initialisation complete")
+        logger.debug("Config instance initialised")
 
         return
 

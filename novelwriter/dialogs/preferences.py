@@ -32,7 +32,7 @@ from PyQt5.QtWidgets import (
     QLineEdit, QFileDialog, QFontDialog, QDoubleSpinBox
 )
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.pageddialog import NPagedDialog
@@ -163,7 +163,7 @@ class GuiPreferencesGeneral(QWidget):
 
         # The Form
         self.mainForm = NConfigLayout()
-        self.mainForm.setHelpTextStyle(CONFIG.theme.helpText)
+        self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
         self.setLayout(self.mainForm)
 
         # Look and Feel
@@ -190,7 +190,7 @@ class GuiPreferencesGeneral(QWidget):
         # Select Theme
         self.guiTheme = QComboBox()
         self.guiTheme.setMinimumWidth(minWidth)
-        self.theThemes = CONFIG.theme.listThemes()
+        self.theThemes = SHARED.theme.listThemes()
         for themeDir, themeName in self.theThemes:
             self.guiTheme.addItem(themeName, themeDir)
         themeIdx = self.guiTheme.findData(CONFIG.guiTheme)
@@ -206,7 +206,7 @@ class GuiPreferencesGeneral(QWidget):
         # Editor Theme
         self.guiSyntax = QComboBox()
         self.guiSyntax.setMinimumWidth(CONFIG.pxInt(200))
-        self.theSyntaxes = CONFIG.theme.listSyntax()
+        self.theSyntaxes = SHARED.theme.listSyntax()
         for syntaxFile, syntaxName in self.theSyntaxes:
             self.guiSyntax.addItem(syntaxName, syntaxFile)
         syntaxIdx = self.guiSyntax.findData(CONFIG.guiSyntax)
@@ -225,7 +225,7 @@ class GuiPreferencesGeneral(QWidget):
         self.guiFont.setFixedWidth(CONFIG.pxInt(162))
         self.guiFont.setText(CONFIG.guiFont)
         self.fontButton = QPushButton("...")
-        self.fontButton.setMaximumWidth(int(2.5*CONFIG.theme.getTextWidth("...")))
+        self.fontButton.setMaximumWidth(int(2.5*SHARED.theme.getTextWidth("...")))
         self.fontButton.clicked.connect(self._selectFont)
         self.mainForm.addRow(
             self.tr("Font family"),
@@ -341,7 +341,7 @@ class GuiPreferencesProjects(QWidget):
 
         # The Form
         self.mainForm = NConfigLayout()
-        self.mainForm.setHelpTextStyle(CONFIG.theme.helpText)
+        self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
         self.setLayout(self.mainForm)
 
         # Automatic Save
@@ -493,7 +493,7 @@ class GuiPreferencesDocuments(QWidget):
 
         # The Form
         self.mainForm = NConfigLayout()
-        self.mainForm.setHelpTextStyle(CONFIG.theme.helpText)
+        self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
         self.setLayout(self.mainForm)
 
         # Text Style
@@ -506,7 +506,7 @@ class GuiPreferencesDocuments(QWidget):
         self.textFont.setFixedWidth(CONFIG.pxInt(162))
         self.textFont.setText(CONFIG.textFont)
         self.fontButton = QPushButton("...")
-        self.fontButton.setMaximumWidth(int(2.5*CONFIG.theme.getTextWidth("...")))
+        self.fontButton.setMaximumWidth(int(2.5*SHARED.theme.getTextWidth("...")))
         self.fontButton.clicked.connect(self._selectFont)
         self.mainForm.addRow(
             self.tr("Font family"),
@@ -649,7 +649,7 @@ class GuiPreferencesEditor(QWidget):
 
         # The Form
         self.mainForm = NConfigLayout()
-        self.mainForm.setHelpTextStyle(CONFIG.theme.helpText)
+        self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
         self.setLayout(self.mainForm)
 
         mW = CONFIG.pxInt(250)
@@ -819,7 +819,7 @@ class GuiPreferencesSyntax(QWidget):
 
         # The Form
         self.mainForm = NConfigLayout()
-        self.mainForm.setHelpTextStyle(CONFIG.theme.helpText)
+        self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
         self.setLayout(self.mainForm)
 
         # Quotes & Dialogue
@@ -921,7 +921,7 @@ class GuiPreferencesAutomation(QWidget):
 
         # The Form
         self.mainForm = NConfigLayout()
-        self.mainForm.setHelpTextStyle(CONFIG.theme.helpText)
+        self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
         self.setLayout(self.mainForm)
 
         # Automatic Features
@@ -1072,7 +1072,7 @@ class GuiPreferencesQuotes(QWidget):
 
         # The Form
         self.mainForm = NConfigLayout()
-        self.mainForm.setHelpTextStyle(CONFIG.theme.helpText)
+        self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
         self.setLayout(self.mainForm)
 
         # Quotation Style
@@ -1080,7 +1080,7 @@ class GuiPreferencesQuotes(QWidget):
         self.mainForm.addGroupLabel(self.tr("Quotation Style"))
 
         qWidth = CONFIG.pxInt(40)
-        bWidth = int(2.5*CONFIG.theme.getTextWidth("..."))
+        bWidth = int(2.5*SHARED.theme.getTextWidth("..."))
         self.quoteSym = {}
 
         # Single Quote Style

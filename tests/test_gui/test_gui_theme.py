@@ -30,7 +30,7 @@ from tools import writeFile
 from PyQt5.QtGui import QIcon, QPalette, QPixmap
 from PyQt5.QtWidgets import QApplication
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.constants import nwLabels
 
@@ -38,7 +38,7 @@ from novelwriter.constants import nwLabels
 @pytest.mark.gui
 def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
     """Test the theme class init."""
-    mainTheme = CONFIG.theme
+    mainTheme = SHARED.theme
 
     # Methods
     # =======
@@ -121,7 +121,7 @@ def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
 @pytest.mark.gui
 def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI):
     """Test the theme part of the class."""
-    mainTheme = CONFIG.theme
+    mainTheme = SHARED.theme
 
     # List Themes
     # ===========
@@ -199,7 +199,7 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI):
 @pytest.mark.gui
 def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI):
     """Test the syntax part of the class."""
-    mainTheme = CONFIG.theme
+    mainTheme = SHARED.theme
 
     # List Themes
     # ===========
@@ -264,7 +264,7 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI):
 @pytest.mark.gui
 def testGuiTheme_Icons(qtbot, caplog, monkeypatch, nwGUI, tstPaths):
     """Test the icon cache class."""
-    iconCache = CONFIG.theme.iconCache
+    iconCache = SHARED.theme.iconCache
 
     # Load Theme
     # ==========

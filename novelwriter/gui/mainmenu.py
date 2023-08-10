@@ -33,7 +33,7 @@ from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction, nwDocInsert, nwWidget
 from novelwriter.constants import nwConst, trConst, nwKeyWords, nwLabels, nwUnicode
 
@@ -795,7 +795,7 @@ class GuiMainMenu(QMenuBar):
         # Tools > Check Spelling
         self.aSpellCheck = QAction(self.tr("Check Spelling"), self)
         self.aSpellCheck.setCheckable(True)
-        self.aSpellCheck.setChecked(self.mainGui.project.data.spellCheck)
+        self.aSpellCheck.setChecked(SHARED.project.data.spellCheck)
         self.aSpellCheck.triggered.connect(self._toggleSpellCheck)  # triggered, not toggled!
         self.aSpellCheck.setShortcut("Ctrl+F7")
         self.toolsMenu.addAction(self.aSpellCheck)
@@ -825,7 +825,7 @@ class GuiMainMenu(QMenuBar):
 
         # Tools > Backup Project
         self.aBackupProject = QAction(self.tr("Backup Project"), self)
-        self.aBackupProject.triggered.connect(lambda: self.mainGui.project.backupProject(True))
+        self.aBackupProject.triggered.connect(lambda: SHARED.project.backupProject(True))
         self.toolsMenu.addAction(self.aBackupProject)
 
         # Tools > Build Manuscript

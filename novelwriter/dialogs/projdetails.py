@@ -33,7 +33,7 @@ from PyQt5.QtWidgets import (
     QLineEdit, QSpinBox, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatTime, numberToRoman
 from novelwriter.constants import nwUnicode
 from novelwriter.extensions.switch import NSwitch
@@ -45,19 +45,17 @@ logger = logging.getLogger(__name__)
 
 class GuiProjectDetails(NPagedDialog):
 
-    def __init__(self, mainGui):
-        super().__init__(parent=mainGui)
+    def __init__(self, parent):
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiProjectDetails")
         self.setObjectName("GuiProjectDetails")
-
-        self.mainGui = mainGui
 
         self.setWindowTitle(self.tr("Project Details"))
 
         wW = CONFIG.pxInt(600)
         wH = CONFIG.pxInt(400)
-        pOptions = self.mainGui.project.options
+        pOptions = SHARED.project.options
 
         self.setMinimumWidth(wW)
         self.setMinimumHeight(wH)
@@ -66,8 +64,8 @@ class GuiProjectDetails(NPagedDialog):
             CONFIG.pxInt(pOptions.getInt("GuiProjectDetails", "winHeight", wH))
         )
 
-        self.tabMain = GuiProjectDetailsMain(self.mainGui)
-        self.tabContents = GuiProjectDetailsContents(self.mainGui)
+        self.tabMain = GuiProjectDetailsMain(self)
+        self.tabContents = GuiProjectDetailsContents(self)
 
         self.addTab(self.tabMain, self.tr("Overview"))
         self.addTab(self.tabContents, self.tr("Contents"))
@@ -124,7 +122,7 @@ class GuiProjectDetails(NPagedDialog):
         countFrom    = self.tabContents.poValue.value()
         clearDouble  = self.tabContents.dblValue.isChecked()
 
-        pOptions = self.mainGui.project.options
+        pOptions = SHARED.project.options
         pOptions.setValue("GuiProjectDetails", "winWidth",     winWidth)
         pOptions.setValue("GuiProjectDetails", "winHeight",    winHeight)
         pOptions.setValue("GuiProjectDetails", "widthCol0",    widthCol0)
@@ -143,13 +141,11 @@ class GuiProjectDetails(NPagedDialog):
 
 class GuiProjectDetailsMain(QWidget):
 
-    def __init__(self, mainGui):
-        super().__init__(parent=mainGui)
+    def __init__(self, parent):
+        super().__init__(parent=parent)
 
-        self.mainGui = mainGui
-
-        fPx = CONFIG.theme.fontPixelSize
-        fPt = CONFIG.theme.fontPointSize
+        fPx = SHARED.theme.fontPixelSize
+        fPt = SHARED.theme.fontPointSize
         vPx = CONFIG.pxInt(4)
         hPx = CONFIG.pxInt(12)
 
@@ -244,7 +240,7 @@ class GuiProjectDetailsMain(QWidget):
     def updateValues(self):
         """Set all the values.
         """
-        project = self.mainGui.project
+        project = SHARED.project
         pIndex = project.index
         hCounts = pIndex.getNovelTitleCounts()
         nwCount = pIndex.getNovelWordCount()
@@ -275,26 +271,24 @@ class GuiProjectDetailsContents(QWidget):
     C_PAGE  = 3
     C_PROG  = 4
 
-    def __init__(self, mainGui):
-        super().__init__(parent=mainGui)
-
-        self.mainGui = mainGui
+    def __init__(self, parent):
+        super().__init__(parent=parent)
 
         # Internal
         self._theToC = []
         self._currentRoot = None
 
-        iPx = CONFIG.theme.baseIconSize
+        iPx = SHARED.theme.baseIconSize
         hPx = CONFIG.pxInt(12)
         vPx = CONFIG.pxInt(4)
-        pOptions = self.mainGui.project.options
+        pOptions = SHARED.project.options
 
         # Header
         # ======
 
         self.tocLabel = QLabel("<b>%s</b>" % self.tr("Table of Contents"))
 
-        self.novelValue = NovelSelector(self, self.mainGui)
+        self.novelValue = NovelSelector(self)
         self.novelValue.setMinimumWidth(CONFIG.pxInt(200))
         self.novelValue.novelSelectionChanged.connect(self._novelValueChanged)
 
@@ -320,10 +314,11 @@ class GuiProjectDetailsContents(QWidget):
         ])
 
         treeHeadItem = self.tocTree.headerItem()
-        treeHeadItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
-        treeHeadItem.setTextAlignment(self.C_PAGES, Qt.AlignRight)
-        treeHeadItem.setTextAlignment(self.C_PAGE,  Qt.AlignRight)
-        treeHeadItem.setTextAlignment(self.C_PROG,  Qt.AlignRight)
+        if treeHeadItem:
+            treeHeadItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
+            treeHeadItem.setTextAlignment(self.C_PAGES, Qt.AlignRight)
+            treeHeadItem.setTextAlignment(self.C_PAGE,  Qt.AlignRight)
+            treeHeadItem.setTextAlignment(self.C_PROG,  Qt.AlignRight)
 
         treeHeader = self.tocTree.header()
         treeHeader.setStretchLastSection(True)
@@ -347,7 +342,7 @@ class GuiProjectDetailsContents(QWidget):
 
         wordsPerPage = pOptions.getInt("GuiProjectDetails", "wordsPerPage", 350)
         countFrom    = pOptions.getInt("GuiProjectDetails", "countFrom", 1)
-        clearDouble  = pOptions.getInt("GuiProjectDetails", "clearDouble", True)
+        clearDouble  = pOptions.getBool("GuiProjectDetails", "clearDouble", True)
 
         wordsHelp = (
             self.tr("Typical word count for a 5 by 8 inch book page with 11 pt font is 350.")
@@ -443,7 +438,7 @@ class GuiProjectDetailsContents(QWidget):
         """Extract the information from the project index.
         """
         logger.debug("Populating ToC from handle '%s'", rootHandle)
-        self._theToC = self.mainGui.project.index.getTableOfContents(rootHandle, 2)
+        self._theToC = SHARED.project.index.getTableOfContents(rootHandle, 2)
         self._theToC.append(("", 0, self.tr("END"), 0))
         return
 
@@ -496,7 +491,7 @@ class GuiProjectDetailsContents(QWidget):
                 progPage = f"{cPage:n}"
                 progText = f"{pgProg:.1f}{nwUnicode.U_THSP}%"
 
-            hDec = CONFIG.theme.getHeaderDecoration(tLevel)
+            hDec = SHARED.theme.getHeaderDecoration(tLevel)
             if tTitle.strip() == "":
                 tTitle = self.tr("Untitled")
 

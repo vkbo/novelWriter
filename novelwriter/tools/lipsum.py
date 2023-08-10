@@ -32,7 +32,7 @@ from PyQt5.QtWidgets import (
     QSpinBox
 )
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.common import readTextFile
 from novelwriter.extensions.switch import NSwitch
 
@@ -60,7 +60,7 @@ class GuiLipsum(QDialog):
         nPx = CONFIG.pxInt(64)
         vSp = CONFIG.pxInt(4)
         self.docIcon = QLabel()
-        self.docIcon.setPixmap(CONFIG.theme.getPixmap("proj_document", (nPx, nPx)))
+        self.docIcon.setPixmap(SHARED.theme.getPixmap("proj_document", (nPx, nPx)))
 
         self.leftBox = QVBoxLayout()
         self.leftBox.setSpacing(vSp)

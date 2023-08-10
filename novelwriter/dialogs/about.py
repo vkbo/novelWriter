@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
     QTextBrowser, QVBoxLayout, QWidget
 )
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.common import readTextFile
 from novelwriter.constants import nwConst
 
@@ -60,7 +60,7 @@ class GuiAbout(QDialog):
 
         nPx = CONFIG.pxInt(96)
         self.nwIcon = QLabel()
-        self.nwIcon.setPixmap(CONFIG.theme.getPixmap("novelwriter", (nPx, nPx)))
+        self.nwIcon.setPixmap(SHARED.theme.getPixmap("novelwriter", (nPx, nPx)))
         self.lblName = QLabel("<b>novelWriter</b>")
         self.lblVers = QLabel(f"v{novelwriter.__version__}")
         self.lblDate = QLabel(datetime.strptime(novelwriter.__date__, "%Y-%m-%d").strftime("%x"))
@@ -228,12 +228,12 @@ class GuiAbout(QDialog):
             "  color: rgb({kColR},{kColG},{kColB});"
             "}}\n"
         ).format(
-            hColR=CONFIG.theme.colHead[0],
-            hColG=CONFIG.theme.colHead[1],
-            hColB=CONFIG.theme.colHead[2],
-            kColR=CONFIG.theme.colKey[0],
-            kColG=CONFIG.theme.colKey[1],
-            kColB=CONFIG.theme.colKey[2],
+            hColR=SHARED.theme.colHead[0],
+            hColG=SHARED.theme.colHead[1],
+            hColB=SHARED.theme.colHead[2],
+            kColR=SHARED.theme.colKey[0],
+            kColG=SHARED.theme.colKey[1],
+            kColB=SHARED.theme.colKey[2],
         )
         self.pageAbout.document().setDefaultStyleSheet(styleSheet)
         self.pageNotes.document().setDefaultStyleSheet(styleSheet)

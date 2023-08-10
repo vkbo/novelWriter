@@ -49,7 +49,7 @@ from PyQt5.QtWidgets import (
     QPushButton, QShortcut, QTextEdit, QToolBar, QToolButton, QWidget
 )
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwDocMode, nwItemClass
 from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
@@ -132,8 +132,8 @@ class GuiDocEditor(QTextEdit):
         self.docSearch = GuiDocEditSearch(self)
 
         # Syntax
-        self.spEnchant = NWSpellEnchant(self.mainGui.project)
-        self.highLight = GuiDocHighlighter(qDoc, self.mainGui, self.spEnchant)
+        self.spEnchant = NWSpellEnchant(SHARED.project)
+        self.highLight = GuiDocHighlighter(qDoc, self.spEnchant)
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -227,14 +227,14 @@ class GuiDocEditor(QTextEdit):
         """Update the syntax highlighting theme.
         """
         mainPalette = self.palette()
-        mainPalette.setColor(QPalette.Window, QColor(*CONFIG.theme.colBack))
-        mainPalette.setColor(QPalette.Base, QColor(*CONFIG.theme.colBack))
-        mainPalette.setColor(QPalette.Text, QColor(*CONFIG.theme.colText))
+        mainPalette.setColor(QPalette.Window, QColor(*SHARED.theme.colBack))
+        mainPalette.setColor(QPalette.Base, QColor(*SHARED.theme.colBack))
+        mainPalette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
         self.setPalette(mainPalette)
 
         docPalette = self.viewport().palette()
-        docPalette.setColor(QPalette.Base, QColor(*CONFIG.theme.colBack))
-        docPalette.setColor(QPalette.Text, QColor(*CONFIG.theme.colText))
+        docPalette.setColor(QPalette.Base, QColor(*SHARED.theme.colBack))
+        docPalette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
         self.viewport().setPalette(docPalette)
 
         self.docHeader.matchColours()
@@ -340,7 +340,7 @@ class GuiDocEditor(QTextEdit):
         document is new (empty string), we set up the editor for editing
         the file.
         """
-        self._nwDocument = self.mainGui.project.storage.getDocument(tHandle)
+        self._nwDocument = SHARED.project.storage.getDocument(tHandle)
         self._nwItem = self._nwDocument.getCurrentItem()
 
         theDoc = self._nwDocument.readDocument()
@@ -516,10 +516,10 @@ class GuiDocEditor(QTextEdit):
         self.setDocumentChanged(False)
 
         oldHeader = self._nwItem.mainHeading
-        oldCount = self.mainGui.project.index.getHandleHeaderCount(tHandle)
-        self.mainGui.project.index.scanText(tHandle, docText)
+        oldCount = SHARED.project.index.getHandleHeaderCount(tHandle)
+        SHARED.project.index.scanText(tHandle, docText)
         newHeader = self._nwItem.mainHeading
-        newCount = self.mainGui.project.index.getHandleHeaderCount(tHandle)
+        newCount = SHARED.project.index.getHandleHeaderCount(tHandle)
 
         if self._nwItem.itemClass == nwItemClass.NOVEL:
             if oldCount == newCount:
@@ -698,10 +698,10 @@ class GuiDocEditor(QTextEdit):
         """Set the spell checker dictionary language, and emit the
         dictionary changed signal.
         """
-        if self.mainGui.project.data.spellLang is None:
+        if SHARED.project.data.spellLang is None:
             theLang = CONFIG.spellLanguage
         else:
-            theLang = self.mainGui.project.data.spellLang
+            theLang = SHARED.project.data.spellLang
 
         self.spEnchant.setLanguage(theLang)
         _, theProvider = self.spEnchant.describeDict()
@@ -734,7 +734,7 @@ class GuiDocEditor(QTextEdit):
 
         self._spellCheck = theMode
         self.mainGui.mainMenu.setSpellCheck(theMode)
-        self.mainGui.project.data.setSpellCheck(theMode)
+        SHARED.project.data.setSpellCheck(theMode)
         self.highLight.setSpellCheck(theMode)
         if not self._bigDoc or theMode is False:
             # We don't run the spell checker automatically on big docs
@@ -1916,7 +1916,7 @@ class GuiDocEditor(QTextEdit):
 
         if theText.startswith("@"):
 
-            isGood, tBits, tPos = self.mainGui.project.index.scanThis(theText)
+            isGood, tBits, tPos = SHARED.project.index.scanThis(theText)
             if not isGood:
                 return False
 
@@ -2233,9 +2233,9 @@ class GuiDocEditSearch(QFrame):
         self.doMatchCap  = CONFIG.searchMatchCap
 
         mPx = CONFIG.pxInt(6)
-        tPx = int(0.8*CONFIG.theme.fontPixelSize)
-        self.boxFont = CONFIG.theme.guiFont
-        self.boxFont.setPointSizeF(0.9*CONFIG.theme.fontPointSize)
+        tPx = int(0.8*SHARED.theme.fontPixelSize)
+        self.boxFont = SHARED.theme.guiFont
+        self.boxFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
@@ -2268,7 +2268,7 @@ class GuiDocEditSearch(QFrame):
 
         self.resultLabel = QLabel("?/?")
         self.resultLabel.setFont(self.boxFont)
-        self.resultLabel.setMinimumWidth(CONFIG.theme.getTextWidth("?/?", self.boxFont))
+        self.resultLabel.setMinimumWidth(SHARED.theme.getTextWidth("?/?", self.boxFont))
 
         self.toggleCase = QAction(self.tr("Case Sensitive"), self)
         self.toggleCase.setCheckable(True)
@@ -2374,15 +2374,15 @@ class GuiDocEditSearch(QFrame):
         self.replaceBox.setPalette(qPalette)
 
         # Set icons
-        self.toggleCase.setIcon(CONFIG.theme.getIcon("search_case"))
-        self.toggleWord.setIcon(CONFIG.theme.getIcon("search_word"))
-        self.toggleRegEx.setIcon(CONFIG.theme.getIcon("search_regex"))
-        self.toggleLoop.setIcon(CONFIG.theme.getIcon("search_loop"))
-        self.toggleProject.setIcon(CONFIG.theme.getIcon("search_project"))
-        self.toggleMatchCap.setIcon(CONFIG.theme.getIcon("search_preserve"))
-        self.cancelSearch.setIcon(CONFIG.theme.getIcon("search_cancel"))
-        self.searchButton.setIcon(CONFIG.theme.getIcon("search"))
-        self.replaceButton.setIcon(CONFIG.theme.getIcon("search_replace"))
+        self.toggleCase.setIcon(SHARED.theme.getIcon("search_case"))
+        self.toggleWord.setIcon(SHARED.theme.getIcon("search_word"))
+        self.toggleRegEx.setIcon(SHARED.theme.getIcon("search_regex"))
+        self.toggleLoop.setIcon(SHARED.theme.getIcon("search_loop"))
+        self.toggleProject.setIcon(SHARED.theme.getIcon("search_project"))
+        self.toggleMatchCap.setIcon(SHARED.theme.getIcon("search_preserve"))
+        self.cancelSearch.setIcon(SHARED.theme.getIcon("search_cancel"))
+        self.searchButton.setIcon(SHARED.theme.getIcon("search"))
+        self.replaceButton.setIcon(SHARED.theme.getIcon("search_replace"))
 
         # Set stylesheets
         self.searchOpt.setStyleSheet("QToolBar {padding: 0;}")
@@ -2474,7 +2474,7 @@ class GuiDocEditSearch(QFrame):
         """
         currRes = "?" if currRes is None else currRes
         resCount = "?" if resCount is None else "1000+" if resCount > 1000 else resCount
-        minWidth = CONFIG.theme.getTextWidth(f"{resCount}//{resCount}", self.boxFont)
+        minWidth = SHARED.theme.getTextWidth(f"{resCount}//{resCount}", self.boxFont)
         self.resultLabel.setText(f"{currRes}/{resCount}")
         self.resultLabel.setMinimumWidth(minWidth)
         self.adjustSize()
@@ -2639,7 +2639,7 @@ class GuiDocEditHeader(QWidget):
 
         self._docHandle = None
 
-        fPx = int(0.9*CONFIG.theme.fontPixelSize)
+        fPx = int(0.9*SHARED.theme.fontPixelSize)
         hSp = CONFIG.pxInt(6)
 
         # Main Widget Settings
@@ -2656,7 +2656,7 @@ class GuiDocEditHeader(QWidget):
         self.theTitle.setFixedHeight(fPx)
 
         lblFont = self.theTitle.font()
-        lblFont.setPointSizeF(0.9*CONFIG.theme.fontPointSize)
+        lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
         self.theTitle.setFont(lblFont)
 
         # Buttons
@@ -2726,15 +2726,15 @@ class GuiDocEditHeader(QWidget):
     def updateTheme(self):
         """Update theme elements.
         """
-        self.editButton.setIcon(CONFIG.theme.getIcon("edit"))
-        self.searchButton.setIcon(CONFIG.theme.getIcon("search"))
-        self.minmaxButton.setIcon(CONFIG.theme.getIcon("maximise"))
-        self.closeButton.setIcon(CONFIG.theme.getIcon("close"))
+        self.editButton.setIcon(SHARED.theme.getIcon("edit"))
+        self.searchButton.setIcon(SHARED.theme.getIcon("search"))
+        self.minmaxButton.setIcon(SHARED.theme.getIcon("maximise"))
+        self.closeButton.setIcon(SHARED.theme.getIcon("close"))
 
         buttonStyle = (
             "QToolButton {{border: none; background: transparent;}} "
             "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(*CONFIG.theme.colText)
+        ).format(*SHARED.theme.colText)
 
         self.editButton.setStyleSheet(buttonStyle)
         self.searchButton.setStyleSheet(buttonStyle)
@@ -2750,9 +2750,9 @@ class GuiDocEditHeader(QWidget):
         theme rather than the main GUI.
         """
         thePalette = QPalette()
-        thePalette.setColor(QPalette.Window, QColor(*CONFIG.theme.colBack))
-        thePalette.setColor(QPalette.WindowText, QColor(*CONFIG.theme.colText))
-        thePalette.setColor(QPalette.Text, QColor(*CONFIG.theme.colText))
+        thePalette.setColor(QPalette.Window, QColor(*SHARED.theme.colBack))
+        thePalette.setColor(QPalette.WindowText, QColor(*SHARED.theme.colText))
+        thePalette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
 
         self.setPalette(thePalette)
         self.theTitle.setPalette(thePalette)
@@ -2772,7 +2772,7 @@ class GuiDocEditHeader(QWidget):
             self.minmaxButton.setVisible(False)
             return True
 
-        pTree = self.mainGui.project.tree
+        pTree = SHARED.project.tree
         if CONFIG.showFullPath:
             tTitle = []
             tTree = pTree.getItemPath(tHandle)
@@ -2801,9 +2801,9 @@ class GuiDocEditHeader(QWidget):
         toggleFocusMode function and should not be activated directly.
         """
         if self.mainGui.isFocusMode:
-            self.minmaxButton.setIcon(CONFIG.theme.getIcon("minimise"))
+            self.minmaxButton.setIcon(SHARED.theme.getIcon("minimise"))
         else:
-            self.minmaxButton.setIcon(CONFIG.theme.getIcon("maximise"))
+            self.minmaxButton.setIcon(SHARED.theme.getIcon("maximise"))
         return
 
     ##
@@ -2876,13 +2876,13 @@ class GuiDocEditFooter(QWidget):
 
         self._docSelection = False
 
-        self.sPx = int(round(0.9*CONFIG.theme.baseIconSize))
-        fPx = int(0.9*CONFIG.theme.fontPixelSize)
+        self.sPx = int(round(0.9*SHARED.theme.baseIconSize))
+        fPx = int(0.9*SHARED.theme.fontPixelSize)
         bSp = CONFIG.pxInt(4)
         hSp = CONFIG.pxInt(6)
 
         lblFont = self.font()
-        lblFont.setPointSizeF(0.9*CONFIG.theme.fontPointSize)
+        lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
 
         # Main Widget Settings
         self.setContentsMargins(0, 0, 0, 0)
@@ -2969,8 +2969,8 @@ class GuiDocEditFooter(QWidget):
     def updateTheme(self):
         """Update theme elements.
         """
-        self.linesIcon.setPixmap(CONFIG.theme.getPixmap("status_lines", (self.sPx, self.sPx)))
-        self.wordsIcon.setPixmap(CONFIG.theme.getPixmap("status_stats", (self.sPx, self.sPx)))
+        self.linesIcon.setPixmap(SHARED.theme.getPixmap("status_lines", (self.sPx, self.sPx)))
+        self.wordsIcon.setPixmap(SHARED.theme.getPixmap("status_stats", (self.sPx, self.sPx)))
 
         self.matchColours()
 
@@ -2981,9 +2981,9 @@ class GuiDocEditFooter(QWidget):
         theme rather than the main GUI.
         """
         thePalette = QPalette()
-        thePalette.setColor(QPalette.Window, QColor(*CONFIG.theme.colBack))
-        thePalette.setColor(QPalette.WindowText, QColor(*CONFIG.theme.colText))
-        thePalette.setColor(QPalette.Text, QColor(*CONFIG.theme.colText))
+        thePalette.setColor(QPalette.Window, QColor(*SHARED.theme.colBack))
+        thePalette.setColor(QPalette.WindowText, QColor(*SHARED.theme.colText))
+        thePalette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
 
         self.setPalette(thePalette)
         self.statusText.setPalette(thePalette)
@@ -3000,7 +3000,7 @@ class GuiDocEditFooter(QWidget):
             logger.debug("No handle set, so clearing the editor footer")
             self._theItem = None
         else:
-            self._theItem = self.mainGui.project.tree[self._docHandle]
+            self._theItem = SHARED.project.tree[self._docHandle]
 
         self.setHasSelection(False)
         self.updateInfo()

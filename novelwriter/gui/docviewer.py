@@ -40,7 +40,7 @@ from PyQt5.QtWidgets import (
     QAction, QMenu, QFrame
 )
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemType, nwDocAction, nwDocMode
 from novelwriter.error import logException
 from novelwriter.constants import nwUnicode
@@ -119,14 +119,14 @@ class GuiDocViewer(QTextBrowser):
 
         # Set the widget colours to match syntax theme
         mainPalette = self.palette()
-        mainPalette.setColor(QPalette.Window, QColor(*CONFIG.theme.colBack))
-        mainPalette.setColor(QPalette.Base, QColor(*CONFIG.theme.colBack))
-        mainPalette.setColor(QPalette.Text, QColor(*CONFIG.theme.colText))
+        mainPalette.setColor(QPalette.Window, QColor(*SHARED.theme.colBack))
+        mainPalette.setColor(QPalette.Base, QColor(*SHARED.theme.colBack))
+        mainPalette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
         self.setPalette(mainPalette)
 
         docPalette = self.viewport().palette()
-        docPalette.setColor(QPalette.Base, QColor(*CONFIG.theme.colBack))
-        docPalette.setColor(QPalette.Text, QColor(*CONFIG.theme.colText))
+        docPalette.setColor(QPalette.Base, QColor(*SHARED.theme.colBack))
+        docPalette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
         self.viewport().setPalette(docPalette)
 
         self.docHeader.matchColours()
@@ -162,7 +162,7 @@ class GuiDocViewer(QTextBrowser):
     def loadText(self, tHandle, updateHistory=True):
         """Load text into the viewer from an item handle.
         """
-        if not self.mainGui.project.tree.checkType(tHandle, nwItemType.FILE):
+        if not SHARED.project.tree.checkType(tHandle, nwItemType.FILE):
             logger.warning("Item not found")
             return False
 
@@ -170,7 +170,7 @@ class GuiDocViewer(QTextBrowser):
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
 
         sPos = self.verticalScrollBar().value()
-        aDoc = ToHtml(self.mainGui.project)
+        aDoc = ToHtml(SHARED.project)
         aDoc.setPreview(CONFIG.viewComments, CONFIG.viewSynopsis)
         aDoc.setLinkHeaders(True)
 
@@ -210,7 +210,7 @@ class GuiDocViewer(QTextBrowser):
             self.verticalScrollBar().setValue(sPos)
 
         self._docHandle = tHandle
-        self.mainGui.project.data.setLastHandle(tHandle, "viewer")
+        SHARED.project.data.setLastHandle(tHandle, "viewer")
         self.docHeader.setTitleFromHandle(self._docHandle)
         self.updateDocMargins()
 
@@ -506,27 +506,27 @@ class GuiDocViewer(QTextBrowser):
             "  text-align: center;"
             "}}\n"
         ).format(
-            tColR=CONFIG.theme.colText[0],
-            tColG=CONFIG.theme.colText[1],
-            tColB=CONFIG.theme.colText[2],
-            hColR=CONFIG.theme.colHead[0],
-            hColG=CONFIG.theme.colHead[1],
-            hColB=CONFIG.theme.colHead[2],
-            aColR=CONFIG.theme.colVal[0],
-            aColG=CONFIG.theme.colVal[1],
-            aColB=CONFIG.theme.colVal[2],
-            eColR=CONFIG.theme.colEmph[0],
-            eColG=CONFIG.theme.colEmph[1],
-            eColB=CONFIG.theme.colEmph[2],
-            kColR=CONFIG.theme.colKey[0],
-            kColG=CONFIG.theme.colKey[1],
-            kColB=CONFIG.theme.colKey[2],
-            cColR=CONFIG.theme.colHidden[0],
-            cColG=CONFIG.theme.colHidden[1],
-            cColB=CONFIG.theme.colHidden[2],
-            mColR=CONFIG.theme.colMod[0],
-            mColG=CONFIG.theme.colMod[1],
-            mColB=CONFIG.theme.colMod[2],
+            tColR=SHARED.theme.colText[0],
+            tColG=SHARED.theme.colText[1],
+            tColB=SHARED.theme.colText[2],
+            hColR=SHARED.theme.colHead[0],
+            hColG=SHARED.theme.colHead[1],
+            hColB=SHARED.theme.colHead[2],
+            aColR=SHARED.theme.colVal[0],
+            aColG=SHARED.theme.colVal[1],
+            aColB=SHARED.theme.colVal[2],
+            eColR=SHARED.theme.colEmph[0],
+            eColG=SHARED.theme.colEmph[1],
+            eColB=SHARED.theme.colEmph[2],
+            kColR=SHARED.theme.colKey[0],
+            kColG=SHARED.theme.colKey[1],
+            kColB=SHARED.theme.colKey[2],
+            cColR=SHARED.theme.colHidden[0],
+            cColG=SHARED.theme.colHidden[1],
+            cColB=SHARED.theme.colHidden[2],
+            mColR=SHARED.theme.colMod[0],
+            mColG=SHARED.theme.colMod[1],
+            mColB=SHARED.theme.colMod[2],
         )
         self.document().setDefaultStyleSheet(styleSheet)
 
@@ -685,7 +685,7 @@ class GuiDocViewHeader(QWidget):
         # Internal Variables
         self._docHandle = None
 
-        fPx = int(0.9*CONFIG.theme.fontPixelSize)
+        fPx = int(0.9*SHARED.theme.fontPixelSize)
         hSp = CONFIG.pxInt(6)
 
         # Main Widget Settings
@@ -702,7 +702,7 @@ class GuiDocViewHeader(QWidget):
         self.theTitle.setFixedHeight(fPx)
 
         lblFont = self.theTitle.font()
-        lblFont.setPointSizeF(0.9*CONFIG.theme.fontPointSize)
+        lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
         self.theTitle.setFont(lblFont)
 
         # Buttons
@@ -773,15 +773,15 @@ class GuiDocViewHeader(QWidget):
     def updateTheme(self):
         """Update theme elements.
         """
-        self.backButton.setIcon(CONFIG.theme.getIcon("backward"))
-        self.forwardButton.setIcon(CONFIG.theme.getIcon("forward"))
-        self.refreshButton.setIcon(CONFIG.theme.getIcon("refresh"))
-        self.closeButton.setIcon(CONFIG.theme.getIcon("close"))
+        self.backButton.setIcon(SHARED.theme.getIcon("backward"))
+        self.forwardButton.setIcon(SHARED.theme.getIcon("forward"))
+        self.refreshButton.setIcon(SHARED.theme.getIcon("refresh"))
+        self.closeButton.setIcon(SHARED.theme.getIcon("close"))
 
         buttonStyle = (
             "QToolButton {{border: none; background: transparent;}} "
             "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(*CONFIG.theme.colText)
+        ).format(*SHARED.theme.colText)
 
         self.backButton.setStyleSheet(buttonStyle)
         self.forwardButton.setStyleSheet(buttonStyle)
@@ -797,9 +797,9 @@ class GuiDocViewHeader(QWidget):
         theme rather than the main GUI.
         """
         thePalette = QPalette()
-        thePalette.setColor(QPalette.Window, QColor(*CONFIG.theme.colBack))
-        thePalette.setColor(QPalette.WindowText, QColor(*CONFIG.theme.colText))
-        thePalette.setColor(QPalette.Text, QColor(*CONFIG.theme.colText))
+        thePalette.setColor(QPalette.Window, QColor(*SHARED.theme.colBack))
+        thePalette.setColor(QPalette.WindowText, QColor(*SHARED.theme.colText))
+        thePalette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
 
         self.setPalette(thePalette)
         self.theTitle.setPalette(thePalette)
@@ -819,7 +819,7 @@ class GuiDocViewHeader(QWidget):
             self.refreshButton.setVisible(False)
             return True
 
-        pTree = self.mainGui.project.tree
+        pTree = SHARED.project.tree
         if CONFIG.showFullPath:
             tTitle = []
             tTree = pTree.getItemPath(tHandle)
@@ -902,7 +902,7 @@ class GuiDocViewFooter(QWidget):
         # Internal Variables
         self._docHandle = None
 
-        fPx = int(0.9*CONFIG.theme.fontPixelSize)
+        fPx = int(0.9*SHARED.theme.fontPixelSize)
         bSp = CONFIG.pxInt(2)
         hSp = CONFIG.pxInt(8)
 
@@ -987,7 +987,7 @@ class GuiDocViewFooter(QWidget):
         self.lblSynopsis.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
         lblFont = self.font()
-        lblFont.setPointSizeF(0.9*CONFIG.theme.fontPointSize)
+        lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
         self.lblRefs.setFont(lblFont)
         self.lblSticky.setFont(lblFont)
         self.lblComments.setFont(lblFont)
@@ -1032,21 +1032,21 @@ class GuiDocViewFooter(QWidget):
         """
         # Icons
 
-        fPx = int(0.9*CONFIG.theme.fontPixelSize)
+        fPx = int(0.9*SHARED.theme.fontPixelSize)
 
-        stickyOn  = CONFIG.theme.getPixmap("sticky-on", (fPx, fPx))
-        stickyOff = CONFIG.theme.getPixmap("sticky-off", (fPx, fPx))
+        stickyOn  = SHARED.theme.getPixmap("sticky-on", (fPx, fPx))
+        stickyOff = SHARED.theme.getPixmap("sticky-off", (fPx, fPx))
         stickyIcon = QIcon()
         stickyIcon.addPixmap(stickyOn, QIcon.Normal, QIcon.On)
         stickyIcon.addPixmap(stickyOff, QIcon.Normal, QIcon.Off)
 
-        bulletOn  = CONFIG.theme.getPixmap("bullet-on", (fPx, fPx))
-        bulletOff = CONFIG.theme.getPixmap("bullet-off", (fPx, fPx))
+        bulletOn  = SHARED.theme.getPixmap("bullet-on", (fPx, fPx))
+        bulletOff = SHARED.theme.getPixmap("bullet-off", (fPx, fPx))
         bulletIcon = QIcon()
         bulletIcon.addPixmap(bulletOn, QIcon.Normal, QIcon.On)
         bulletIcon.addPixmap(bulletOff, QIcon.Normal, QIcon.Off)
 
-        self.showHide.setIcon(CONFIG.theme.getIcon("reference"))
+        self.showHide.setIcon(SHARED.theme.getIcon("reference"))
         self.stickyRefs.setIcon(stickyIcon)
         self.showComments.setIcon(bulletIcon)
         self.showSynopsis.setIcon(bulletIcon)
@@ -1056,7 +1056,7 @@ class GuiDocViewFooter(QWidget):
         buttonStyle = (
             "QToolButton {{border: none; background: transparent;}} "
             "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(*CONFIG.theme.colText)
+        ).format(*SHARED.theme.colText)
 
         self.showHide.setStyleSheet(buttonStyle)
         self.stickyRefs.setStyleSheet(buttonStyle)
@@ -1072,9 +1072,9 @@ class GuiDocViewFooter(QWidget):
         theme rather than the main GUI.
         """
         thePalette = QPalette()
-        thePalette.setColor(QPalette.Window, QColor(*CONFIG.theme.colBack))
-        thePalette.setColor(QPalette.WindowText, QColor(*CONFIG.theme.colText))
-        thePalette.setColor(QPalette.Text, QColor(*CONFIG.theme.colText))
+        thePalette.setColor(QPalette.Window, QColor(*SHARED.theme.colBack))
+        thePalette.setColor(QPalette.WindowText, QColor(*SHARED.theme.colText))
+        thePalette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
 
         self.setPalette(thePalette)
         self.lblRefs.setPalette(thePalette)
@@ -1145,7 +1145,7 @@ class GuiDocViewDetails(QScrollArea):
         self.refList.setScaledContents(True)
         self.refList.linkActivated.connect(self._linkClicked)
 
-        self.linkStyle = "style='color: rgb({0},{1},{2})'".format(*CONFIG.theme.colLink)
+        self.linkStyle = "style='color: rgb({0},{1},{2})'".format(*SHARED.theme.colLink)
 
         # Assemble
         self.outerWidget = QWidget()
@@ -1172,10 +1172,10 @@ class GuiDocViewDetails(QScrollArea):
         if self.mainGui.docViewer.stickyRef:
             return
 
-        theRefs = self.mainGui.project.index.getBackReferenceList(tHandle)
+        theRefs = SHARED.project.index.getBackReferenceList(tHandle)
         theList = []
         for tHandle in theRefs:
-            tItem = self.mainGui.project.tree[tHandle]
+            tItem = SHARED.project.tree[tHandle]
             if tItem is not None:
                 theList.append("<a href='%s#%s' %s>%s</a>" % (
                     tHandle, theRefs[tHandle], self.linkStyle, tItem.itemName

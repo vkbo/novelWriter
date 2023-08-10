@@ -38,7 +38,7 @@ from PyQt5.QtWidgets import (
     QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocMode, nwItemClass, nwOutline
 from novelwriter.common import minmax
 from novelwriter.constants import nwHeaders, nwKeyWords, nwLabels, trConst
@@ -117,16 +117,16 @@ class GuiNovelView(QWidget):
     def openProjectTasks(self):
         """Run open project tasks.
         """
-        lastNovel = self.mainGui.project.data.getLastHandle("novelTree")
-        if lastNovel not in self.mainGui.project.tree:
-            lastNovel = self.mainGui.project.tree.findRoot(nwItemClass.NOVEL)
+        lastNovel = SHARED.project.data.getLastHandle("novelTree")
+        if lastNovel not in SHARED.project.tree:
+            lastNovel = SHARED.project.tree.findRoot(nwItemClass.NOVEL)
 
         logger.debug("Setting novel tree to root item '%s'", lastNovel)
 
-        lastCol = self.mainGui.project.options.getEnum(
+        lastCol = SHARED.project.options.getEnum(
             "GuiNovelView", "lastCol", NovelTreeColumn, NovelTreeColumn.HIDDEN
         )
-        lastColSize = self.mainGui.project.options.getInt(
+        lastColSize = SHARED.project.options.getInt(
             "GuiNovelView", "lastColSize", 25
         )
 
@@ -146,7 +146,7 @@ class GuiNovelView(QWidget):
         """
         lastColType = self.novelTree.lastColType
         lastColSize = self.novelTree.lastColSize
-        pOptions = self.mainGui.project.options
+        pOptions = SHARED.project.options
         pOptions.setValue("GuiNovelView", "lastCol", lastColType)
         pOptions.setValue("GuiNovelView", "lastColSize", lastColSize)
         return
@@ -170,7 +170,7 @@ class GuiNovelView(QWidget):
     def refreshTree(self):
         """Refresh the current tree.
         """
-        self.novelTree.refreshTree(rootHandle=self.mainGui.project.data.getLastHandle("novelTree"))
+        self.novelTree.refreshTree(rootHandle=SHARED.project.data.getLastHandle("novelTree"))
         return
 
     @pyqtSlot(str)
@@ -201,7 +201,7 @@ class GuiNovelToolBar(QWidget):
         self.novelView = novelView
         self.mainGui   = novelView.mainGui
 
-        iPx = CONFIG.theme.baseIconSize
+        iPx = SHARED.theme.baseIconSize
         mPx = CONFIG.pxInt(2)
 
         self.setContentsMargins(0, 0, 0, 0)
@@ -211,7 +211,7 @@ class GuiNovelToolBar(QWidget):
         selFont = self.font()
         selFont.setWeight(QFont.Bold)
         self.novelPrefix = self.tr("Outline of {0}")
-        self.novelValue = NovelSelector(self, self.mainGui)
+        self.novelValue = NovelSelector(self)
         self.novelValue.setFont(selFont)
         self.novelValue.setMinimumWidth(CONFIG.pxInt(150))
         self.novelValue.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -274,9 +274,9 @@ class GuiNovelToolBar(QWidget):
         """Update theme elements.
         """
         # Icons
-        self.tbNovel.setIcon(CONFIG.theme.getIcon("cls_novel"))
-        self.tbRefresh.setIcon(CONFIG.theme.getIcon("refresh"))
-        self.tbMore.setIcon(CONFIG.theme.getIcon("menu"))
+        self.tbNovel.setIcon(SHARED.theme.getIcon("cls_novel"))
+        self.tbRefresh.setIcon(SHARED.theme.getIcon("refresh"))
+        self.tbMore.setIcon(SHARED.theme.getIcon("menu"))
 
         qPalette = self.palette()
         qPalette.setBrush(QPalette.Window, qPalette.base())
@@ -345,7 +345,7 @@ class GuiNovelToolBar(QWidget):
     def _refreshNovelTree(self):
         """Rebuild the current tree.
         """
-        rootHandle = self.mainGui.project.data.getLastHandle("novelTree")
+        rootHandle = SHARED.project.data.getLastHandle("novelTree")
         self.novelView.novelTree.refreshTree(rootHandle=rootHandle, overRide=True)
         return
 
@@ -415,7 +415,7 @@ class GuiNovelTree(QTreeWidget):
         # Build GUI
         # =========
 
-        iPx = CONFIG.theme.baseIconSize
+        iPx = SHARED.theme.baseIconSize
         cMg = CONFIG.pxInt(6)
 
         self.setIconSize(QSize(iPx, iPx))
@@ -481,8 +481,8 @@ class GuiNovelTree(QTreeWidget):
     def updateTheme(self):
         """Update theme elements.
         """
-        iPx = CONFIG.theme.baseIconSize
-        self._pMore = CONFIG.theme.loadDecoration("deco_doc_more", pxH=iPx)
+        iPx = SHARED.theme.baseIconSize
+        self._pMore = SHARED.theme.loadDecoration("deco_doc_more", pxH=iPx)
         return
 
     ##
@@ -514,10 +514,10 @@ class GuiNovelTree(QTreeWidget):
         """
         logger.debug("Requesting refresh of the novel tree")
         if rootHandle is None:
-            rootHandle = self.mainGui.project.tree.findRoot(nwItemClass.NOVEL)
+            rootHandle = SHARED.project.tree.findRoot(nwItemClass.NOVEL)
 
         treeChanged = self.mainGui.projView.changedSince(self._lastBuild)
-        indexChanged = self.mainGui.project.index.rootChangedSince(rootHandle, self._lastBuild)
+        indexChanged = SHARED.project.index.rootChangedSince(rootHandle, self._lastBuild)
         if not (treeChanged or indexChanged or overRide):
             logger.debug("No changes have been made to the novel index")
             return
@@ -528,7 +528,7 @@ class GuiNovelTree(QTreeWidget):
             titleKey = selItem[0].data(self.C_DATA, self.D_KEY)
 
         self._populateTree(rootHandle)
-        self.mainGui.project.data.setLastHandle(rootHandle, "novelTree")
+        SHARED.project.data.setLastHandle(rootHandle, "novelTree")
 
         if titleKey is not None and titleKey in self._treeMap:
             self._treeMap[titleKey].setSelected(True)
@@ -538,7 +538,7 @@ class GuiNovelTree(QTreeWidget):
     def refreshHandle(self, tHandle):
         """Refresh the data for a given handle.
         """
-        idxData = self.mainGui.project.index.getItemData(tHandle)
+        idxData = SHARED.project.index.getItemData(tHandle)
         if idxData is None:
             return
 
@@ -575,7 +575,7 @@ class GuiNovelTree(QTreeWidget):
             self._lastCol = colType
             self.setColumnHidden(self.C_EXTRA, colType == NovelTreeColumn.HIDDEN)
             if doRefresh:
-                lastNovel = self.mainGui.project.data.getLastHandle("novelTree")
+                lastNovel = SHARED.project.data.getLastHandle("novelTree")
                 self.refreshTree(rootHandle=lastNovel, overRide=True)
         return
 
@@ -707,7 +707,7 @@ class GuiNovelTree(QTreeWidget):
         tStart = time()
         logger.debug("Building novel tree for root item '%s'", rootHandle)
 
-        novStruct = self.mainGui.project.index.novelStructure(rootHandle=rootHandle, skipExcl=True)
+        novStruct = SHARED.project.index.novelStructure(rootHandle=rootHandle, skipExcl=True)
         for tKey, tHandle, sTitle, novIdx in novStruct:
             if novIdx.level == "H0":
                 continue
@@ -733,7 +733,7 @@ class GuiNovelTree(QTreeWidget):
         """Set the tree item values from the index entry.
         """
         iLevel = nwHeaders.H_LEVEL.get(idxItem.level, 0)
-        hDec = CONFIG.theme.getHeaderDecoration(iLevel)
+        hDec = SHARED.theme.getHeaderDecoration(iLevel)
 
         trItem.setData(self.C_TITLE, Qt.DecorationRole, hDec)
         trItem.setText(self.C_TITLE, idxItem.title)
@@ -759,7 +759,7 @@ class GuiNovelTree(QTreeWidget):
 
         refData = []
         refName = ""
-        theRefs = self.mainGui.project.index.getReferences(tHandle, sTitle)
+        theRefs = SHARED.project.index.getReferences(tHandle, sTitle)
         if self._lastCol == NovelTreeColumn.POV:
             refData = theRefs[nwKeyWords.POV_KEY]
             refName = self._povLabel
@@ -783,7 +783,7 @@ class GuiNovelTree(QTreeWidget):
         """
         logger.debug("Generating meta data tooltip for '%s:%s'", tHandle, sTitle)
 
-        pIndex = self.mainGui.project.index
+        pIndex = SHARED.project.index
         novIdx = pIndex.getItemHeader(tHandle, sTitle)
         refTags = pIndex.getReferences(tHandle, sTitle)
 

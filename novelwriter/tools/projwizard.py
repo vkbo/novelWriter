@@ -32,7 +32,7 @@ from PyQt5.QtWidgets import (
     QPushButton, QRadioButton, QSpinBox, QVBoxLayout, QWizard, QWizardPage
 )
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.common import makeFileNameSafe
 from novelwriter.extensions.switch import NSwitch
 
@@ -55,7 +55,7 @@ class GuiProjectWizard(QWizard):
 
         self.mainGui = mainGui
 
-        self.sideImage = CONFIG.theme.loadDecoration(
+        self.sideImage = SHARED.theme.loadDecoration(
             "wiz-back", None, CONFIG.pxInt(370)
         )
         self.setWizardStyle(QWizard.ModernStyle)
@@ -104,7 +104,7 @@ class ProjWizardIntroPage(QWizardPage):
             "Peter Mitterhofer", "CC BY-SA 4.0"
         ))
         lblFont = self.imgCredit.font()
-        lblFont.setPointSizeF(0.6*CONFIG.theme.fontPointSize)
+        lblFont.setPointSizeF(0.6*SHARED.theme.fontPointSize)
         self.imgCredit.setFont(lblFont)
 
         xW = CONFIG.pxInt(300)
@@ -172,7 +172,7 @@ class ProjWizardFolderPage(QWizardPage):
         self.projPath.setPlaceholderText(self.tr("Required"))
 
         self.browseButton = QPushButton("...")
-        self.browseButton.setMaximumWidth(int(2.5*CONFIG.theme.getTextWidth("...")))
+        self.browseButton.setMaximumWidth(int(2.5*SHARED.theme.getTextWidth("...")))
         self.browseButton.clicked.connect(self._doBrowse)
 
         self.errLabel = QLabel("")

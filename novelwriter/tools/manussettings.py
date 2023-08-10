@@ -39,7 +39,7 @@ from PyQt5.QtWidgets import (
     QWidget
 )
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwHeadFmt, nwLabels, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.switch import NSwitch
@@ -88,7 +88,7 @@ class GuiBuildSettings(QDialog):
         wWin = CONFIG.pxInt(750)
         hWin = CONFIG.pxInt(550)
 
-        pOptions = self.mainGui.project.options
+        pOptions = SHARED.project.options
         self.resize(
             CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "winWidth", wWin)),
             CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "winHeight", hWin))
@@ -100,7 +100,7 @@ class GuiBuildSettings(QDialog):
         self.optSideBar = NPagedSideBar(self)
         self.optSideBar.setMinimumWidth(mPx)
         self.optSideBar.setMaximumWidth(mPx)
-        self.optSideBar.setLabelColor(CONFIG.theme.helpText)
+        self.optSideBar.setLabelColor(SHARED.theme.helpText)
 
         self.optSideBar.addLabel(self.tr("Options"))
         self.optSideBar.addButton(self.tr("Selection"), self.OPT_FILTERS)
@@ -262,7 +262,7 @@ class GuiBuildSettings(QDialog):
 
         treeWidth, filterWidth = self.optTabSelect.mainSplitSizes()
 
-        pOptions = self.mainGui.project.options
+        pOptions = SHARED.project.options
         pOptions.setValue("GuiBuildSettings", "winWidth", winWidth)
         pOptions.setValue("GuiBuildSettings", "winHeight", winHeight)
         pOptions.setValue("GuiBuildSettings", "treeWidth", treeWidth)
@@ -303,16 +303,14 @@ class _FilterTab(QWidget):
     def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
         super().__init__(parent=buildMain)
 
-        self.mainGui = buildMain.mainGui
-
         self._treeMap: dict[str, QTreeWidgetItem] = {}
         self._build = build
 
         self._statusFlags: dict[int, QIcon] = {
             self.F_NONE:     QIcon(),
-            self.F_FILTERED: CONFIG.theme.getIcon("build_filtered"),
-            self.F_INCLUDED: CONFIG.theme.getIcon("build_included"),
-            self.F_EXCLUDED: CONFIG.theme.getIcon("build_excluded"),
+            self.F_FILTERED: SHARED.theme.getIcon("build_filtered"),
+            self.F_INCLUDED: SHARED.theme.getIcon("build_included"),
+            self.F_EXCLUDED: SHARED.theme.getIcon("build_excluded"),
         }
 
         self._trIncluded = self.tr("Included in manuscript")
@@ -322,7 +320,7 @@ class _FilterTab(QWidget):
         # ============
 
         # Tree Settings
-        iPx = CONFIG.theme.baseIconSize
+        iPx = SHARED.theme.baseIconSize
         cMg = CONFIG.pxInt(6)
 
         # Tree Widget
@@ -360,7 +358,7 @@ class _FilterTab(QWidget):
 
         self.resetButton = QToolButton(self)
         self.resetButton.setToolTip(self.tr("Reset to default"))
-        self.resetButton.setIcon(CONFIG.theme.getIcon("revert"))
+        self.resetButton.setIcon(SHARED.theme.getIcon("revert"))
         self.resetButton.clicked.connect(lambda: self._setSelectedMode(self.F_FILTERED))
 
         self.modeBox = QHBoxLayout()
@@ -379,7 +377,7 @@ class _FilterTab(QWidget):
         # Assemble GUI
         # ============
 
-        pOptions = self.mainGui.project.options
+        pOptions = SHARED.project.options
 
         self.selectionBox = QVBoxLayout()
         self.selectionBox.addWidget(self.optTree)
@@ -445,7 +443,7 @@ class _FilterTab(QWidget):
         logger.debug("Building project tree")
         self._treeMap = {}
         self.optTree.clear()
-        for nwItem in self.mainGui.project.getProjectItems():
+        for nwItem in SHARED.project.getProjectItems():
 
             tHandle = nwItem.itemHandle
             pHandle = nwItem.itemParent
@@ -461,7 +459,7 @@ class _FilterTab(QWidget):
                 continue
 
             hLevel = nwItem.mainHeading
-            itemIcon = CONFIG.theme.getItemIcon(
+            itemIcon = SHARED.theme.getItemIcon(
                 nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
             )
 
@@ -475,7 +473,7 @@ class _FilterTab(QWidget):
             trItem.setText(self.C_NAME, nwItem.itemName)
             trItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
             trItem.setData(self.C_DATA, self.D_FILE, isFile)
-            trItem.setIcon(self.C_ACTIVE, CONFIG.theme.getIcon(iconName))
+            trItem.setIcon(self.C_ACTIVE, SHARED.theme.getIcon(iconName))
 
             trItem.setTextAlignment(self.C_NAME, Qt.AlignLeft)
 
@@ -499,19 +497,19 @@ class _FilterTab(QWidget):
         self.filterOpt.clear()
         self.filterOpt.addLabel(self._build.getLabel("filter"))
         self.filterOpt.addItem(
-            CONFIG.theme.getIcon("proj_scene"),
+            SHARED.theme.getIcon("proj_scene"),
             self._build.getLabel("filter.includeNovel"),
             "doc:filter.includeNovel",
             default=self._build.getBool("filter.includeNovel")
         )
         self.filterOpt.addItem(
-            CONFIG.theme.getIcon("proj_note"),
+            SHARED.theme.getIcon("proj_note"),
             self._build.getLabel("filter.includeNotes"),
             "doc:filter.includeNotes",
             default=self._build.getBool("filter.includeNotes")
         )
         self.filterOpt.addItem(
-            CONFIG.theme.getIcon("unchecked"),
+            SHARED.theme.getIcon("unchecked"),
             self._build.getLabel("filter.includeInactive"),
             "doc:filter.includeInactive",
             default=self._build.getBool("filter.includeInactive")
@@ -521,9 +519,9 @@ class _FilterTab(QWidget):
 
         # Root Classes
         self.filterOpt.addLabel(self.tr("Select Root Folders"))
-        for tHandle, nwItem in self.mainGui.project.tree.iterRoots(None):
+        for tHandle, nwItem in SHARED.project.tree.iterRoots(None):
             if not nwItem.isInactiveClass():
-                itemIcon = CONFIG.theme.getItemIcon(
+                itemIcon = SHARED.theme.getItemIcon(
                     nwItem.itemType, nwItem.itemClass, nwItem.itemLayout
                 )
                 self.filterOpt.addItem(
@@ -557,7 +555,7 @@ class _FilterTab(QWidget):
 
     def _setTreeItemMode(self) -> None:
         """Update the filtered mode icon on all items."""
-        filtered = self._build.buildItemFilter(self.mainGui.project)
+        filtered = self._build.buildItemFilter(SHARED.project)
         for tHandle, item in self._treeMap.items():
             allow, mode = filtered.get(tHandle, (False, FilterMode.UNKNOWN))
             if mode == FilterMode.INCLUDED:
@@ -597,12 +595,10 @@ class _HeadingsTab(QWidget):
     def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
         super().__init__(parent=buildMain)
 
-        self.mainGui = buildMain.mainGui
-
         self._build = build
         self._editing = 0
 
-        iPx = CONFIG.theme.baseIconSize
+        iPx = SHARED.theme.baseIconSize
         vSp = CONFIG.pxInt(12)
         bSp = CONFIG.pxInt(6)
 
@@ -616,7 +612,7 @@ class _HeadingsTab(QWidget):
         self.fmtTitle = QLineEdit("")
         self.fmtTitle.setReadOnly(True)
         self.btnTitle = QToolButton()
-        self.btnTitle.setIcon(CONFIG.theme.getIcon("edit"))
+        self.btnTitle.setIcon(SHARED.theme.getIcon("edit"))
         self.btnTitle.clicked.connect(lambda: self._editHeading(self.EDIT_TITLE))
 
         wrapTitle = QHBoxLayout()
@@ -632,7 +628,7 @@ class _HeadingsTab(QWidget):
         self.fmtChapter = QLineEdit("")
         self.fmtChapter.setReadOnly(True)
         self.btnChapter = QToolButton()
-        self.btnChapter.setIcon(CONFIG.theme.getIcon("edit"))
+        self.btnChapter.setIcon(SHARED.theme.getIcon("edit"))
         self.btnChapter.clicked.connect(lambda: self._editHeading(self.EDIT_CHAPTER))
 
         wrapChapter = QHBoxLayout()
@@ -648,7 +644,7 @@ class _HeadingsTab(QWidget):
         self.fmtUnnumbered = QLineEdit("")
         self.fmtUnnumbered.setReadOnly(True)
         self.btnUnnumbered = QToolButton()
-        self.btnUnnumbered.setIcon(CONFIG.theme.getIcon("edit"))
+        self.btnUnnumbered.setIcon(SHARED.theme.getIcon("edit"))
         self.btnUnnumbered.clicked.connect(lambda: self._editHeading(self.EDIT_UNNUM))
 
         wrapUnnumbered = QHBoxLayout()
@@ -665,7 +661,7 @@ class _HeadingsTab(QWidget):
         self.fmtScene = QLineEdit("")
         self.fmtScene.setReadOnly(True)
         self.btnScene = QToolButton()
-        self.btnScene.setIcon(CONFIG.theme.getIcon("edit"))
+        self.btnScene.setIcon(SHARED.theme.getIcon("edit"))
         self.btnScene.clicked.connect(lambda: self._editHeading(self.EDIT_SCENE))
         self.hdeScene = QLabel(self.tr("Hide"))
         self.hdeScene.setToolTip(sceneHideTip)
@@ -692,7 +688,7 @@ class _HeadingsTab(QWidget):
         self.fmtSection = QLineEdit("")
         self.fmtSection.setReadOnly(True)
         self.btnSection = QToolButton()
-        self.btnSection.setIcon(CONFIG.theme.getIcon("edit"))
+        self.btnSection.setIcon(SHARED.theme.getIcon("edit"))
         self.btnSection.clicked.connect(lambda: self._editHeading(self.EDIT_SECTION))
         self.hdeSection = QLabel(self.tr("Hide"))
         self.hdeSection.setToolTip(sectionHideTip)
@@ -868,9 +864,9 @@ class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
     def __init__(self, document: QTextDocument) -> None:
         super().__init__(document)
         self._fmtSymbol = QTextCharFormat()
-        self._fmtSymbol.setForeground(QColor(*CONFIG.theme.colHead))
+        self._fmtSymbol.setForeground(QColor(*SHARED.theme.colHead))
         self._fmtFormat = QTextCharFormat()
-        self._fmtFormat.setForeground(QColor(*CONFIG.theme.colEmph))
+        self._fmtFormat.setForeground(QColor(*SHARED.theme.colEmph))
         return
 
     def highlightBlock(self, text: str) -> None:
@@ -896,7 +892,7 @@ class _ContentTab(QWidget):
 
         self._build = build
 
-        iPx = CONFIG.theme.baseIconSize
+        iPx = SHARED.theme.baseIconSize
 
         # Left Form
         # =========
@@ -964,14 +960,13 @@ class _FormatTab(QWidget):
         super().__init__(parent=buildMain)
 
         self.buildMain = buildMain
-        self.mainGui   = buildMain.mainGui
 
         self._build = build
         self._unitScale = 1.0
 
-        iPx = CONFIG.theme.baseIconSize
-        spW = 6*CONFIG.theme.textNWidth
-        dbW = 8*CONFIG.theme.textNWidth
+        iPx = SHARED.theme.baseIconSize
+        spW = 6*SHARED.theme.textNWidth
+        dbW = 8*SHARED.theme.textNWidth
 
         # Text Format Form
         # ================
@@ -992,7 +987,7 @@ class _FormatTab(QWidget):
         self.textFont = QLineEdit()
         self.textFont.setReadOnly(True)
         self.btnTextFont = QPushButton("...")
-        self.btnTextFont.setMaximumWidth(int(2.5*CONFIG.theme.getTextWidth("...")))
+        self.btnTextFont.setMaximumWidth(int(2.5*SHARED.theme.getTextWidth("...")))
         self.btnTextFont.clicked.connect(self._selectFont)
         self.formFormat.addRow(
             self._build.getLabel("format.textFont"), self.textFont, button=self.btnTextFont
@@ -1278,7 +1273,7 @@ class _OutputTab(QWidget):
 
         self._build = build
 
-        iPx = CONFIG.theme.baseIconSize
+        iPx = SHARED.theme.baseIconSize
 
         # Left Form
         # =========

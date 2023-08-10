@@ -38,7 +38,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtPrintSupport import QPrintPreviewDialog, QPrinter
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.error import logException
 from novelwriter.common import checkInt, fuzzyTime
 from novelwriter.core.tohtml import ToHtml
@@ -74,18 +74,18 @@ class GuiManuscript(QDialog):
 
         self.mainGui = mainGui
 
-        self._builds = BuildCollection(self.mainGui.project)
+        self._builds = BuildCollection(SHARED.project)
         self._buildMap: dict[str, QListWidgetItem] = {}
 
         self.setWindowTitle(self.tr("Build Manuscript"))
         self.setMinimumWidth(CONFIG.pxInt(600))
         self.setMinimumHeight(CONFIG.pxInt(500))
 
-        iPx = CONFIG.theme.baseIconSize
+        iPx = SHARED.theme.baseIconSize
         wWin = CONFIG.pxInt(900)
         hWin = CONFIG.pxInt(600)
 
-        pOptions = self.mainGui.project.options
+        pOptions = SHARED.project.options
         self.resize(
             CONFIG.pxInt(pOptions.getInt("GuiManuscript", "winWidth", wWin)),
             CONFIG.pxInt(pOptions.getInt("GuiManuscript", "winHeight", hWin))
@@ -105,21 +105,21 @@ class GuiManuscript(QDialog):
         ).format(CONFIG.pxInt(2), fadeCol.red(), fadeCol.green(), fadeCol.blue())
 
         self.tbAdd = QToolButton(self)
-        self.tbAdd.setIcon(CONFIG.theme.getIcon("add"))
+        self.tbAdd.setIcon(SHARED.theme.getIcon("add"))
         self.tbAdd.setIconSize(QSize(iPx, iPx))
         self.tbAdd.setToolTip(self.tr("Add New Build"))
         self.tbAdd.setStyleSheet(buttonStyle)
         self.tbAdd.clicked.connect(self._createNewBuild)
 
         self.tbDel = QToolButton(self)
-        self.tbDel.setIcon(CONFIG.theme.getIcon("remove"))
+        self.tbDel.setIcon(SHARED.theme.getIcon("remove"))
         self.tbDel.setIconSize(QSize(iPx, iPx))
         self.tbDel.setToolTip(self.tr("Delete Selected Build"))
         self.tbDel.setStyleSheet(buttonStyle)
         self.tbDel.clicked.connect(self._deleteSelectedBuild)
 
         self.tbEdit = QToolButton(self)
-        self.tbEdit.setIcon(CONFIG.theme.getIcon("edit"))
+        self.tbEdit.setIcon(SHARED.theme.getIcon("edit"))
         self.tbEdit.setIconSize(QSize(iPx, iPx))
         self.tbEdit.setToolTip(self.tr("Edit Selected Build"))
         self.tbEdit.setStyleSheet(buttonStyle)
@@ -163,7 +163,7 @@ class GuiManuscript(QDialog):
         # Assemble GUI
         # ============
 
-        self.docPreview = _PreviewWidget(self.mainGui)
+        self.docPreview = _PreviewWidget(self)
 
         self.controlBox = QVBoxLayout()
         self.controlBox.addLayout(self.listToolBox, 0)
@@ -210,7 +210,7 @@ class GuiManuscript(QDialog):
         self._updateBuildsList()
 
         logger.debug("Loading build cache")
-        cache = CONFIG.dataPath("cache") / f"build_{self.mainGui.project.data.uuid}.json"
+        cache = CONFIG.dataPath("cache") / f"build_{SHARED.project.data.uuid}.json"
         if cache.is_file():
             try:
                 with open(cache, mode="r", encoding="utf-8") as fObj:
@@ -289,7 +289,7 @@ class GuiManuscript(QDialog):
         if build is None:
             return
 
-        docBuild = NWBuildDocument(self.mainGui.project, build)
+        docBuild = NWBuildDocument(SHARED.project, build)
         docBuild.queueAll()
 
         self.docPreview.beginNewBuild(len(docBuild))
@@ -309,7 +309,7 @@ class GuiManuscript(QDialog):
         self._updatePreview(result, build)
 
         logger.debug("Saving build cache")
-        cache = CONFIG.dataPath("cache") / f"build_{self.mainGui.project.data.uuid}.json"
+        cache = CONFIG.dataPath("cache") / f"build_{SHARED.project.data.uuid}.json"
         try:
             with open(cache, mode="w+", encoding="utf-8") as outFile:
                 outFile.write(json.dumps(result, indent=2))
@@ -390,7 +390,7 @@ class GuiManuscript(QDialog):
         optsWidth = CONFIG.rpxInt(mainSplit[0])
         viewWidth = CONFIG.rpxInt(mainSplit[1])
 
-        pOptions = self.mainGui.project.options
+        pOptions = SHARED.project.options
         pOptions.setValue("GuiManuscript", "winWidth", winWidth)
         pOptions.setValue("GuiManuscript", "winHeight", winHeight)
         pOptions.setValue("GuiManuscript", "optsWidth", optsWidth)
@@ -426,7 +426,7 @@ class GuiManuscript(QDialog):
         for key, name in self._builds.builds():
             bItem = QListWidgetItem()
             bItem.setText(name)
-            bItem.setIcon(CONFIG.theme.getIcon("export"))
+            bItem.setIcon(SHARED.theme.getIcon("export"))
             bItem.setData(self.D_KEY, key)
             self.buildList.addItem(bItem)
             self._buildMap[key] = bItem
@@ -446,10 +446,8 @@ class GuiManuscript(QDialog):
 
 class _PreviewWidget(QTextBrowser):
 
-    def __init__(self, mainGui: GuiMain):
-        super().__init__(parent=mainGui)
-
-        self.mainGui = mainGui
+    def __init__(self, parent: QWidget):
+        super().__init__(parent=parent)
 
         self._docTime = 0
         self._buildName = ""
@@ -460,7 +458,7 @@ class _PreviewWidget(QTextBrowser):
         dPalette.setColor(QPalette.Text, QColor(0, 0, 0))
         self.setPalette(dPalette)
 
-        self.setMinimumWidth(40*CONFIG.theme.textNWidth)
+        self.setMinimumWidth(40*SHARED.theme.textNWidth)
         self.setTextFont(CONFIG.textFont, CONFIG.textSize)
         self.setTabStopDistance(CONFIG.getTabWidth())
         self.setOpenExternalLinks(False)
@@ -478,7 +476,7 @@ class _PreviewWidget(QTextBrowser):
         aPalette.setColor(QPalette.Foreground, aPalette.toolTipText().color())
 
         aFont = self.font()
-        aFont.setPointSizeF(0.9*CONFIG.theme.fontPointSize)
+        aFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
 
         self.ageLabel = QLabel("", self)
         self.ageLabel.setIndent(0)
@@ -486,7 +484,7 @@ class _PreviewWidget(QTextBrowser):
         self.ageLabel.setPalette(aPalette)
         self.ageLabel.setAutoFillBackground(True)
         self.ageLabel.setAlignment(Qt.AlignCenter)
-        self.ageLabel.setFixedHeight(int(2.1*CONFIG.theme.fontPixelSize))
+        self.ageLabel.setFixedHeight(int(2.1*SHARED.theme.fontPixelSize))
 
         # Progress
         self.buildProgress = NProgressCircle(self, CONFIG.pxInt(160), CONFIG.pxInt(16))

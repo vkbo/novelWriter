@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
     qApp, QDialog, QHBoxLayout, QVBoxLayout, QDialogButtonBox, QLabel
 )
 
-from novelwriter import CONFIG, __version__, __date__
+from novelwriter import CONFIG, SHARED, __version__, __date__
 from novelwriter.common import logException
 from novelwriter.constants import nwConst
 
@@ -58,7 +58,7 @@ class GuiUpdates(QDialog):
 
         # Left Box
         self.nwIcon = QLabel()
-        self.nwIcon.setPixmap(CONFIG.theme.getPixmap("novelwriter", (nPx, nPx)))
+        self.nwIcon.setPixmap(SHARED.theme.getPixmap("novelwriter", (nPx, nPx)))
 
         self.leftBox = QVBoxLayout()
         self.leftBox.addWidget(self.nwIcon)

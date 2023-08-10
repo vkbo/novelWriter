@@ -29,10 +29,10 @@ import logging
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QDialogButtonBox, QGridLayout, QLabel,
-    QListWidget, QListWidgetItem, QVBoxLayout,
+    QListWidget, QListWidgetItem, QVBoxLayout, QWidget
 )
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.configlayout import NHelpLabel
 
@@ -43,24 +43,21 @@ class GuiDocMerge(QDialog):
 
     D_HANDLE = Qt.ItemDataRole.UserRole
 
-    def __init__(self, mainGui, sHandle, itemList):
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: QWidget, sHandle: str, itemList: list[str]) -> None:
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiDocMerge")
         self.setObjectName("GuiDocMerge")
-
-        self.mainGui = mainGui
+        self.setWindowTitle(self.tr("Merge Documents"))
 
         self._data = {}
-
-        self.setWindowTitle(self.tr("Merge Documents"))
 
         self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Documents to Merge")))
         self.helpLabel = NHelpLabel(self.tr(
             "Drag and drop items to change the order, or uncheck to exclude."
-        ), CONFIG.theme.helpText)
+        ), SHARED.theme.helpText)
 
-        iPx = CONFIG.theme.baseIconSize
+        iPx = SHARED.theme.baseIconSize
         hSp = CONFIG.pxInt(12)
         vSp = CONFIG.pxInt(8)
         bSp = CONFIG.pxInt(12)
@@ -155,11 +152,11 @@ class GuiDocMerge(QDialog):
 
         self.listBox.clear()
         for tHandle in itemList:
-            nwItem = self.mainGui.project.tree[tHandle]
+            nwItem = SHARED.project.tree[tHandle]
             if nwItem is None or not nwItem.isFileType():
                 continue
 
-            itemIcon = CONFIG.theme.getItemIcon(
+            itemIcon = SHARED.theme.getItemIcon(
                 nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, nwItem.mainHeading
             )
 

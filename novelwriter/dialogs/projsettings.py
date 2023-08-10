@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
     QPushButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwAlert
 from novelwriter.common import simplified
 from novelwriter.extensions.switch import NSwitch
@@ -61,12 +61,12 @@ class GuiProjectSettings(NPagedDialog):
         self.setObjectName("GuiProjectSettings")
 
         self.mainGui = mainGui
-        self.mainGui.project.countStatus()
+        SHARED.project.countStatus()
         self.setWindowTitle(self.tr("Project Settings"))
 
         wW = CONFIG.pxInt(570)
         wH = CONFIG.pxInt(375)
-        pOptions = self.mainGui.project.options
+        pOptions = SHARED.project.options
 
         self.setMinimumWidth(wW)
         self.setMinimumHeight(wH)
@@ -115,7 +115,7 @@ class GuiProjectSettings(NPagedDialog):
     def _doSave(self):
         """Save settings and close dialog.
         """
-        project = self.mainGui.project
+        project = SHARED.project
         projName   = self.tabMain.editName.text()
         bookTitle  = self.tabMain.editTitle.text()
         bookAuthor = self.tabMain.editAuthor.text()
@@ -183,7 +183,7 @@ class GuiProjectSettings(NPagedDialog):
         statusColW  = CONFIG.rpxInt(self.tabStatus.listBox.columnWidth(0))
         importColW  = CONFIG.rpxInt(self.tabImport.listBox.columnWidth(0))
 
-        pOptions = self.mainGui.project.options
+        pOptions = SHARED.project.options
         pOptions.setValue("GuiProjectSettings", "winWidth",    winWidth)
         pOptions.setValue("GuiProjectSettings", "winHeight",   winHeight)
         pOptions.setValue("GuiProjectSettings", "replaceColW", replaceColW)
@@ -204,13 +204,13 @@ class GuiProjectEditMain(QWidget):
 
         # The Form
         self.mainForm = NConfigLayout()
-        self.mainForm.setHelpTextStyle(CONFIG.theme.helpText)
+        self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
         self.setLayout(self.mainForm)
 
         self.mainForm.addGroupLabel(self.tr("Project Settings"))
 
         xW = CONFIG.pxInt(250)
-        pData = self.mainGui.project.data
+        pData = SHARED.project.data
 
         self.editName = QLineEdit()
         self.editName.setMaxLength(200)
@@ -291,23 +291,23 @@ class GuiProjectEditStatus(QWidget):
         self.mainGui = projGui.mainGui
 
         if isStatus:
-            self.theStatus = self.mainGui.project.data.itemStatus
+            self.theStatus = SHARED.project.data.itemStatus
             pageLabel = self.tr("Novel File Status Levels")
             colSetting = "statusColW"
         else:
-            self.theStatus = self.mainGui.project.data.itemImport
+            self.theStatus = SHARED.project.data.itemImport
             pageLabel = self.tr("Note File Importance Levels")
             colSetting = "importColW"
 
         wCol0 = CONFIG.pxInt(
-            self.mainGui.project.options.getInt("GuiProjectSettings", colSetting, 130)
+            SHARED.project.options.getInt("GuiProjectSettings", colSetting, 130)
         )
 
         self.colDeleted = []
         self.colChanged = False
         self.selColour = QColor(100, 100, 100)
 
-        self.iPx = CONFIG.theme.baseIconSize
+        self.iPx = SHARED.theme.baseIconSize
 
         # The List
         # ========
@@ -326,16 +326,16 @@ class GuiProjectEditStatus(QWidget):
         # List Controls
         # =============
 
-        self.addButton = QPushButton(CONFIG.theme.getIcon("add"), "")
+        self.addButton = QPushButton(SHARED.theme.getIcon("add"), "")
         self.addButton.clicked.connect(self._newItem)
 
-        self.delButton = QPushButton(CONFIG.theme.getIcon("remove"), "")
+        self.delButton = QPushButton(SHARED.theme.getIcon("remove"), "")
         self.delButton.clicked.connect(self._delItem)
 
-        self.upButton = QPushButton(CONFIG.theme.getIcon("up"), "")
+        self.upButton = QPushButton(SHARED.theme.getIcon("up"), "")
         self.upButton.clicked.connect(lambda: self._moveItem(-1))
 
-        self.dnButton = QPushButton(CONFIG.theme.getIcon("down"), "")
+        self.dnButton = QPushButton(SHARED.theme.getIcon("down"), "")
         self.dnButton.clicked.connect(lambda: self._moveItem(1))
 
         # Edit Form
@@ -578,7 +578,7 @@ class GuiProjectEditReplace(QWidget):
         self.arChanged = False
 
         wCol0 = CONFIG.pxInt(
-            self.mainGui.project.options.getInt("GuiProjectSettings", "replaceColW", 130)
+            SHARED.project.options.getInt("GuiProjectSettings", "replaceColW", 130)
         )
         pageLabel = self.tr("Text Replace List for Preview and Export")
 
@@ -594,7 +594,7 @@ class GuiProjectEditReplace(QWidget):
         self.listBox.setColumnWidth(self.COL_KEY, wCol0)
         self.listBox.setIndentation(0)
 
-        for aKey, aVal in self.mainGui.project.data.autoReplace.items():
+        for aKey, aVal in SHARED.project.data.autoReplace.items():
             newItem = QTreeWidgetItem(["<%s>" % aKey, aVal])
             self.listBox.addTopLevelItem(newItem)
 
@@ -604,10 +604,10 @@ class GuiProjectEditReplace(QWidget):
         # List Controls
         # =============
 
-        self.addButton = QPushButton(CONFIG.theme.getIcon("add"), "")
+        self.addButton = QPushButton(SHARED.theme.getIcon("add"), "")
         self.addButton.clicked.connect(self._addEntry)
 
-        self.delButton = QPushButton(CONFIG.theme.getIcon("remove"), "")
+        self.delButton = QPushButton(SHARED.theme.getIcon("remove"), "")
         self.delButton.clicked.connect(self._delEntry)
 
         # Edit Form

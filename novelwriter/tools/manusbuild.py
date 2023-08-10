@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
     QPushButton, QSplitter, QVBoxLayout, QWidget
 )
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwAlert, nwBuildFmt
 from novelwriter.common import makeFileNameSafe
 from novelwriter.constants import nwLabels
@@ -74,14 +74,14 @@ class GuiManuscriptBuild(QDialog):
         self.setMinimumWidth(CONFIG.pxInt(500))
         self.setMinimumHeight(CONFIG.pxInt(300))
 
-        iPx = CONFIG.theme.baseIconSize
+        iPx = SHARED.theme.baseIconSize
         sp4 = CONFIG.pxInt(4)
         sp8 = CONFIG.pxInt(8)
         sp16 = CONFIG.pxInt(16)
         wWin = CONFIG.pxInt(620)
         hWin = CONFIG.pxInt(360)
 
-        pOptions = self.mainGui.project.options
+        pOptions = SHARED.project.options
         self.resize(
             CONFIG.pxInt(pOptions.getInt("GuiManuscriptBuild", "winWidth", wWin)),
             CONFIG.pxInt(pOptions.getInt("GuiManuscriptBuild", "winHeight", hWin))
@@ -146,7 +146,7 @@ class GuiManuscriptBuild(QDialog):
         # Build Path
         self.lblPath = QLabel(self.tr("Path"))
         self.buildPath = QLineEdit(self)
-        self.btnBrowse = QPushButton(CONFIG.theme.getIcon("browse"), "")
+        self.btnBrowse = QPushButton(SHARED.theme.getIcon("browse"), "")
 
         self.pathBox = QHBoxLayout()
         self.pathBox.addWidget(self.buildPath)
@@ -156,7 +156,7 @@ class GuiManuscriptBuild(QDialog):
         # Build Name
         self.lblName = QLabel(self.tr("File Name"))
         self.buildName = QLineEdit(self)
-        self.btnReset = QPushButton(CONFIG.theme.getIcon("revert"), "")
+        self.btnReset = QPushButton(SHARED.theme.getIcon("revert"), "")
         self.btnReset.setToolTip(self.tr("Reset file name to default"))
 
         self.nameBox = QHBoxLayout()
@@ -181,7 +181,7 @@ class GuiManuscriptBuild(QDialog):
         self.buildBox.setVerticalSpacing(sp4)
 
         # Dialog Buttons
-        self.btnBuild = QPushButton(CONFIG.theme.getIcon("export"), self.tr("&Build"))
+        self.btnBuild = QPushButton(SHARED.theme.getIcon("export"), self.tr("&Build"))
         self.dlgButtons = QDialogButtonBox(QDialogButtonBox.Close)
         self.dlgButtons.addButton(self.btnBuild, QDialogButtonBox.ActionRole)
 
@@ -279,7 +279,7 @@ class GuiManuscriptBuild(QDialog):
     @pyqtSlot()
     def _doResetBuildName(self):
         """Generate a default build name."""
-        bName = f"{self.mainGui.project.data.name} - {self._build.name}"
+        bName = f"{SHARED.project.data.name} - {self._build.name}"
         self.buildName.setText(bName)
         self._build.setLastBuildName(bName)
         return
@@ -320,7 +320,7 @@ class GuiManuscriptBuild(QDialog):
             ):
                 return False
 
-        docBuild = NWBuildDocument(self.mainGui.project, self._build)
+        docBuild = NWBuildDocument(SHARED.project, self._build)
         docBuild.queueAll()
 
         self.buildProgress.setMaximum(len(docBuild))
@@ -353,7 +353,7 @@ class GuiManuscriptBuild(QDialog):
         fmtWidth = CONFIG.rpxInt(mainSplit[0])
         sumWidth = CONFIG.rpxInt(mainSplit[1])
 
-        pOptions = self.mainGui.project.options
+        pOptions = SHARED.project.options
         pOptions.setValue("GuiManuscriptBuild", "winWidth", winWidth)
         pOptions.setValue("GuiManuscriptBuild", "winHeight", winHeight)
         pOptions.setValue("GuiManuscriptBuild", "fmtWidth", fmtWidth)
@@ -365,9 +365,9 @@ class GuiManuscriptBuild(QDialog):
     def _populateContentList(self):
         """Build the content list."""
         rootMap = {}
-        filtered = self._build.buildItemFilter(self.mainGui.project)
+        filtered = self._build.buildItemFilter(SHARED.project)
         self.listContent.clear()
-        for nwItem in self.mainGui.project.tree:
+        for nwItem in SHARED.project.tree:
             tHandle = nwItem.itemHandle
             rHandle = nwItem.itemRoot
 
@@ -376,11 +376,11 @@ class GuiManuscriptBuild(QDialog):
 
             if filtered.get(tHandle, (False, 0))[0]:
                 if rHandle not in rootMap:
-                    rItem = self.mainGui.project.tree[rHandle]
+                    rItem = SHARED.project.tree[rHandle]
                     if isinstance(rItem, NWItem):
                         rootMap[rHandle] = rItem.itemName
 
-                itemIcon = CONFIG.theme.getItemIcon(
+                itemIcon = SHARED.theme.getItemIcon(
                     nwItem.itemType, nwItem.itemClass,
                     nwItem.itemLayout, nwItem.mainHeading
                 )

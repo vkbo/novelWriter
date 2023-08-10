@@ -32,7 +32,7 @@ from PyQt5.QtCore import pyqtSlot, QLocale
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import qApp, QStatusBar, QLabel
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatTime
 from novelwriter.extensions.statusled import StatusLED
 
@@ -50,11 +50,11 @@ class GuiMainStatus(QStatusBar):
         self.refTime   = None
         self.userIdle  = False
 
-        colNone = QColor(*CONFIG.theme.statNone)
-        colSaved = QColor(*CONFIG.theme.statSaved)
-        colUnsaved = QColor(*CONFIG.theme.statUnsaved)
+        colNone = QColor(*SHARED.theme.statNone)
+        colSaved = QColor(*SHARED.theme.statSaved)
+        colUnsaved = QColor(*SHARED.theme.statUnsaved)
 
-        iPx = CONFIG.theme.baseIconSize
+        iPx = SHARED.theme.baseIconSize
 
         # Permanent Widgets
         # =================
@@ -98,7 +98,7 @@ class GuiMainStatus(QStatusBar):
         self.timeIcon = QLabel()
         self.timeText = QLabel("")
         self.timeText.setToolTip(self.tr("Session Time"))
-        self.timeText.setMinimumWidth(CONFIG.theme.getTextWidth("00:00:00:"))
+        self.timeText.setMinimumWidth(SHARED.theme.getTextWidth("00:00:00:"))
         self.timeIcon.setContentsMargins(0, 0, 0, 0)
         self.timeText.setContentsMargins(0, 0, 0, 0)
         self.addPermanentWidget(self.timeIcon)
@@ -128,13 +128,13 @@ class GuiMainStatus(QStatusBar):
     def updateTheme(self):
         """Update theme elements.
         """
-        iPx = CONFIG.theme.baseIconSize
+        iPx = SHARED.theme.baseIconSize
 
-        self.langIcon.setPixmap(CONFIG.theme.getPixmap("status_lang", (iPx, iPx)))
-        self.statsIcon.setPixmap(CONFIG.theme.getPixmap("status_stats", (iPx, iPx)))
+        self.langIcon.setPixmap(SHARED.theme.getPixmap("status_lang", (iPx, iPx)))
+        self.statsIcon.setPixmap(SHARED.theme.getPixmap("status_stats", (iPx, iPx)))
 
-        self.timePixmap = CONFIG.theme.getPixmap("status_time", (iPx, iPx))
-        self.idlePixmap = CONFIG.theme.getPixmap("status_idle", (iPx, iPx))
+        self.timePixmap = SHARED.theme.getPixmap("status_time", (iPx, iPx))
+        self.idlePixmap = SHARED.theme.getPixmap("status_idle", (iPx, iPx))
 
         self.timeIcon.setPixmap(self.timePixmap)
 

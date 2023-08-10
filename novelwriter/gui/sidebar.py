@@ -30,7 +30,7 @@ from PyQt5.QtWidgets import (
     QToolBar, QWidget, QSizePolicy, QAction, QMenu, QToolButton
 )
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwView
 
 logger = logging.getLogger(__name__)
@@ -51,8 +51,8 @@ class GuiSideBar(QToolBar):
         iPx = CONFIG.pxInt(22)
         mPx = CONFIG.pxInt(60)
 
-        lblFont = CONFIG.theme.guiFont
-        lblFont.setPointSizeF(0.65*CONFIG.theme.fontPointSize)
+        lblFont = SHARED.theme.guiFont
+        lblFont.setPointSizeF(0.65*SHARED.theme.fontPointSize)
 
         self.setMovable(False)
         self.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
@@ -130,13 +130,13 @@ class GuiSideBar(QToolBar):
         """
         self.setStyleSheet("QToolBar {border: 0px;}")
 
-        self.aProject.setIcon(CONFIG.theme.getIcon("view_editor"))
-        self.aNovel.setIcon(CONFIG.theme.getIcon("view_novel"))
-        self.aOutline.setIcon(CONFIG.theme.getIcon("view_outline"))
-        self.aBuild.setIcon(CONFIG.theme.getIcon("view_build"))
-        self.aDetails.setIcon(CONFIG.theme.getIcon("proj_details"))
-        self.aStats.setIcon(CONFIG.theme.getIcon("proj_stats"))
-        self.tbSettings.setIcon(CONFIG.theme.getIcon("settings"))
+        self.aProject.setIcon(SHARED.theme.getIcon("view_editor"))
+        self.aNovel.setIcon(SHARED.theme.getIcon("view_novel"))
+        self.aOutline.setIcon(SHARED.theme.getIcon("view_outline"))
+        self.aBuild.setIcon(SHARED.theme.getIcon("view_build"))
+        self.aDetails.setIcon(SHARED.theme.getIcon("proj_details"))
+        self.aStats.setIcon(SHARED.theme.getIcon("proj_stats"))
+        self.tbSettings.setIcon(SHARED.theme.getIcon("settings"))
 
         return
 
