@@ -31,6 +31,7 @@ from PyQt5.QtWidgets import QApplication, QErrorMessage
 
 from novelwriter.error import exceptionHandler, logException
 from novelwriter.config import Config
+from novelwriter.shared import SharedData
 
 ##
 #  Version Scheme
@@ -74,6 +75,7 @@ logger = logging.getLogger(__name__)
 
 # Global config singleton
 CONFIG = Config()
+SHARED = SharedData()
 
 
 def main(sysArgs: list | None = None):
