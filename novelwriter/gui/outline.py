@@ -1,7 +1,6 @@
 """
 novelWriter – GUI Project Outline
 =================================
-GUI class for the project outline view
 
 File History:
 Created: 2022-05-15 [2.0rc1] GuiOutlineView
@@ -26,6 +25,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 
@@ -48,7 +48,7 @@ from novelwriter.enum import (
 from novelwriter.error import logException
 from novelwriter.common import checkInt
 from novelwriter.constants import nwHeaders, trConst, nwKeyWords, nwLabels
-from novelwriter.gui.components import NovelSelector
+from novelwriter.extensions.novelselector import NovelSelector
 
 
 logger = logging.getLogger(__name__)
@@ -62,8 +62,7 @@ class GuiOutlineView(QWidget):
     def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        self.mainGui    = mainGui
-        self.theProject = mainGui.theProject
+        self.mainGui = mainGui
 
         # Build GUI
         self.outlineTree = GuiOutlineTree(self)
@@ -118,7 +117,7 @@ class GuiOutlineView(QWidget):
     def refreshTree(self):
         """Refresh the current tree.
         """
-        self.outlineTree.refreshTree(rootHandle=self.theProject.data.getLastHandle("outline"))
+        self.outlineTree.refreshTree(rootHandle=self.mainGui.project.data.getLastHandle("outline"))
         return
 
     def clearProject(self):
@@ -131,9 +130,9 @@ class GuiOutlineView(QWidget):
     def openProjectTasks(self):
         """Run open project tasks.
         """
-        lastOutline = self.theProject.data.getLastHandle("outline")
-        if not (lastOutline in self.theProject.tree or lastOutline is None):
-            lastOutline = self.theProject.tree.findRoot(nwItemClass.NOVEL)
+        lastOutline = self.mainGui.project.data.getLastHandle("outline")
+        if not (lastOutline in self.mainGui.project.tree or lastOutline is None):
+            lastOutline = self.mainGui.project.tree.findRoot(nwItemClass.NOVEL)
 
         logger.debug("Setting outline tree to root item '%s'", lastOutline)
 
@@ -215,9 +214,7 @@ class GuiOutlineToolBar(QToolBar):
 
         logger.debug("Create: GuiOutlineToolBar")
 
-        self.mainGui    = theOutline.mainGui
-        self.theProject = theOutline.mainGui.theProject
-        self.mainTheme  = theOutline.mainGui.mainTheme
+        self.mainGui = theOutline.mainGui
 
         iPx = CONFIG.pxInt(22)
         mPx = CONFIG.pxInt(12)
@@ -233,7 +230,7 @@ class GuiOutlineToolBar(QToolBar):
         self.novelLabel = QLabel(self.tr("Outline of"))
         self.novelLabel.setContentsMargins(0, 0, mPx, 0)
 
-        self.novelValue = NovelSelector(self, self.theProject, self.mainGui)
+        self.novelValue = NovelSelector(self, self.mainGui)
         self.novelValue.setMinimumWidth(CONFIG.pxInt(200))
         self.novelValue.novelSelectionChanged.connect(self._novelValueChanged)
 
@@ -275,8 +272,8 @@ class GuiOutlineToolBar(QToolBar):
         self.setStyleSheet("QToolBar {border: 0px;}")
 
         self.novelValue.updateList(includeAll=True)
-        self.aRefresh.setIcon(self.mainTheme.getIcon("refresh"))
-        self.tbColumns.setIcon(self.mainTheme.getIcon("menu"))
+        self.aRefresh.setIcon(CONFIG.theme.getIcon("refresh"))
+        self.tbColumns.setIcon(CONFIG.theme.getIcon("menu"))
 
         return
 
@@ -374,8 +371,6 @@ class GuiOutlineTree(QTreeWidget):
 
         self.outlineView = outlineView
         self.mainGui     = outlineView.mainGui
-        self.theProject  = outlineView.mainGui.theProject
-        self.mainTheme   = outlineView.mainGui.mainTheme
 
         self.setUniformRowHeights(True)
         self.setFrameStyle(QFrame.NoFrame)
@@ -386,7 +381,7 @@ class GuiOutlineTree(QTreeWidget):
         self.itemDoubleClicked.connect(self._treeDoubleClick)
         self.itemSelectionChanged.connect(self._itemSelected)
 
-        iPx = self.mainTheme.baseIconSize
+        iPx = CONFIG.theme.baseIconSize
         self.setIconSize(QSize(iPx, iPx))
         self.setIndentation(0)
 
@@ -403,11 +398,11 @@ class GuiOutlineTree(QTreeWidget):
 
         self._hFonts = [self.font(), fH1, fH2, self.font(), self.font()]
         self._dIcon = {
-            "H0": self.mainTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H0"),
-            "H1": self.mainTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H1"),
-            "H2": self.mainTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H2"),
-            "H3": self.mainTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H3"),
-            "H4": self.mainTheme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H4"),
+            "H0": CONFIG.theme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H0"),
+            "H1": CONFIG.theme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H1"),
+            "H2": CONFIG.theme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H2"),
+            "H3": CONFIG.theme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H3"),
+            "H4": CONFIG.theme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H4"),
         }
 
         # Internals
@@ -493,13 +488,13 @@ class GuiOutlineTree(QTreeWidget):
 
         # If the novel index or novel tree has changed since the tree
         # was last built, we rebuild the tree from the updated index.
-        indexChanged = self.theProject.index.rootChangedSince(rootHandle, self._lastBuild)
+        indexChanged = self.mainGui.project.index.rootChangedSince(rootHandle, self._lastBuild)
         if not (novelChanged or indexChanged or overRide):
             logger.debug("No changes have been made to the novel index")
             return
 
         self._populateTree(rootHandle)
-        self.theProject.data.setLastHandle(rootHandle or None, "outline")
+        self.mainGui.project.data.setLastHandle(rootHandle or None, "outline")
 
         return
 
@@ -579,7 +574,7 @@ class GuiOutlineTree(QTreeWidget):
         """
         # Load whatever we saved last time, regardless of wether it
         # contains the correct names or number of columns.
-        colState = self.theProject.options.getValue("GuiOutline", "columnState", {})
+        colState = self.mainGui.project.options.getValue("GuiOutline", "columnState", {})
 
         tmpOrder = []
         tmpHidden = {}
@@ -630,7 +625,7 @@ class GuiOutlineTree(QTreeWidget):
                 logHidden, orgWidth if logHidden and logWidth == 0 else logWidth
             ]
 
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
         pOptions.setValue("GuiOutline", "columnState", colState)
         pOptions.saveSettings()
 
@@ -666,7 +661,7 @@ class GuiOutlineTree(QTreeWidget):
                 headItem.setTextAlignment(self._colIdx[nwOutline.WCOUNT], Qt.AlignRight)
                 headItem.setTextAlignment(self._colIdx[nwOutline.PCOUNT], Qt.AlignRight)
 
-        novStruct = self.theProject.index.novelStructure(rootHandle=rootHandle, skipExcl=True)
+        novStruct = self.mainGui.project.index.novelStructure(rootHandle=rootHandle, skipExcl=True)
         for _, tHandle, sTitle, novIdx in novStruct:
 
             iLevel = nwHeaders.H_LEVEL.get(novIdx.level, 0)
@@ -674,8 +669,8 @@ class GuiOutlineTree(QTreeWidget):
                 continue
 
             trItem = QTreeWidgetItem()
-            nwItem = self.theProject.tree[tHandle]
-            hDec = self.mainTheme.getHeaderDecoration(iLevel)
+            nwItem = self.mainGui.project.tree[tHandle]
+            hDec = CONFIG.theme.getHeaderDecoration(iLevel)
 
             trItem.setData(self._colIdx[nwOutline.TITLE], Qt.DecorationRole, hDec)
             trItem.setText(self._colIdx[nwOutline.TITLE], novIdx.title)
@@ -694,7 +689,7 @@ class GuiOutlineTree(QTreeWidget):
             trItem.setTextAlignment(self._colIdx[nwOutline.WCOUNT], Qt.AlignRight)
             trItem.setTextAlignment(self._colIdx[nwOutline.PCOUNT], Qt.AlignRight)
 
-            refs = self.theProject.index.getReferences(tHandle, sTitle)
+            refs = self.mainGui.project.index.getReferences(tHandle, sTitle)
             trItem.setText(self._colIdx[nwOutline.POV],    ", ".join(refs[nwKeyWords.POV_KEY]))
             trItem.setText(self._colIdx[nwOutline.FOCUS],  ", ".join(refs[nwKeyWords.FOCUS_KEY]))
             trItem.setText(self._colIdx[nwOutline.CHAR],   ", ".join(refs[nwKeyWords.CHAR_KEY]))
@@ -776,13 +771,11 @@ class GuiOutlineDetails(QScrollArea):
 
         self.theOutline = theOutline
         self.mainGui    = theOutline.mainGui
-        self.theProject = theOutline.mainGui.theProject
-        self.mainTheme  = theOutline.mainGui.mainTheme
 
         # Sizes
-        minTitle = 30*self.mainTheme.textNWidth
-        maxTitle = 40*self.mainTheme.textNWidth
-        wCount = self.mainTheme.getTextWidth("999,999")
+        minTitle = 30*CONFIG.theme.textNWidth
+        maxTitle = 40*CONFIG.theme.textNWidth
+        wCount = CONFIG.theme.getTextWidth("999,999")
         hSpace = int(CONFIG.pxInt(10))
         vSpace = int(CONFIG.pxInt(4))
 
@@ -1012,8 +1005,8 @@ class GuiOutlineDetails(QScrollArea):
         """Update the content of the tree with the given handle and line
         number pointing to a header.
         """
-        pIndex = self.theProject.index
-        nwItem = self.theProject.tree[tHandle]
+        pIndex = self.mainGui.project.index
+        nwItem = self.mainGui.project.tree[tHandle]
         novIdx = pIndex.getItemHeader(tHandle, sTitle)
         theRefs = pIndex.getReferences(tHandle, sTitle)
         if nwItem is None or novIdx is None:
@@ -1056,7 +1049,7 @@ class GuiOutlineDetails(QScrollArea):
     def updateClasses(self):
         """Update the visibility status of class details.
         """
-        usedClasses = self.theProject.tree.rootClasses()
+        usedClasses = self.mainGui.project.tree.rootClasses()
 
         pltVisible = nwItemClass.PLOT in usedClasses
         timVisible = nwItemClass.TIMELINE in usedClasses

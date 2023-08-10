@@ -153,7 +153,7 @@ class BuildSettings:
     The settings can be packed/unpacked to/from a dictionary for JSON.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._name = ""
         self._uuid = str(uuid.uuid4())
         self._path = Path.home()
@@ -239,12 +239,12 @@ class BuildSettings:
     #  Setters
     ##
 
-    def setName(self, name: str):
+    def setName(self, name: str) -> None:
         """Set the build setting display name."""
         self._name = str(name)
         return
 
-    def setBuildID(self, value: str | uuid.UUID):
+    def setBuildID(self, value: str | uuid.UUID) -> None:
         """Set a UUID build ID."""
         value = checkUuid(value, "")
         if not value:
@@ -253,7 +253,7 @@ class BuildSettings:
             self._uuid = value
         return
 
-    def setLastPath(self, path: Path | str | None):
+    def setLastPath(self, path: Path | str | None) -> None:
         """Set the last used build path."""
         if isinstance(path, str):
             path = Path(path)
@@ -264,41 +264,41 @@ class BuildSettings:
         self._changed = True
         return
 
-    def setLastBuildName(self, name: str):
+    def setLastBuildName(self, name: str) -> None:
         """Set the last used build name."""
         self._build = str(name).strip()
         self._changed = True
         return
 
-    def setLastFormat(self, value: nwBuildFmt):
+    def setLastFormat(self, value: nwBuildFmt) -> None:
         """Set the last used build format."""
         if isinstance(value, nwBuildFmt):
             self._format = value
             self._changed = True
         return
 
-    def setFiltered(self, tHandle: str):
+    def setFiltered(self, tHandle: str) -> None:
         """Set an item as filtered."""
         self._excluded.discard(tHandle)
         self._included.discard(tHandle)
         self._changed = True
         return
 
-    def setIncluded(self, tHandle: str):
+    def setIncluded(self, tHandle: str) -> None:
         """Set an item as explicitly included."""
         self._excluded.discard(tHandle)
         self._included.add(tHandle)
         self._changed = True
         return
 
-    def setExcluded(self, tHandle: str):
+    def setExcluded(self, tHandle: str) -> None:
         """Set an item as explicitly excluded."""
         self._excluded.add(tHandle)
         self._included.discard(tHandle)
         self._changed = True
         return
 
-    def setAllowRoot(self, tHandle: str, state: bool):
+    def setAllowRoot(self, tHandle: str, state: bool) -> None:
         """Set a specific root folder as allowed or not."""
         if state is True:
             self._skipRoot.discard(tHandle)
@@ -386,7 +386,7 @@ class BuildSettings:
 
         return result
 
-    def resetChangedState(self):
+    def resetChangedState(self) -> None:
         """Reset the changed status of the settings object. This must be
         called when the changes have been safely saved or passed on.
         """
@@ -410,7 +410,7 @@ class BuildSettings:
             }
         }
 
-    def unpack(self, data: dict):
+    def unpack(self, data: dict) -> None:
         """Unpack a dictionary and populate the class."""
         settings = data.get("settings", {})
         content  = data.get("content", {})
@@ -454,13 +454,13 @@ class BuildCollection:
     project folder.
     """
 
-    def __init__(self, project: NWProject):
+    def __init__(self, project: NWProject) -> None:
         self._project = project
         self._builds = {}
         self._loadCollection()
         return
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Return the number of builds."""
         return len(self._builds)
 
@@ -476,7 +476,7 @@ class BuildCollection:
         build.unpack(self._builds[buildID])
         return build
 
-    def setBuild(self, build: BuildSettings):
+    def setBuild(self, build: BuildSettings) -> None:
         """Set build settings data in the collection."""
         if isinstance(build, BuildSettings):
             buildID = build.buildID
@@ -484,7 +484,7 @@ class BuildCollection:
             self._saveCollection()
         return
 
-    def removeBuild(self, buildID: str):
+    def removeBuild(self, buildID: str) -> None:
         """Remove the a build from the collection."""
         self._builds.pop(buildID, None)
         self._saveCollection()

@@ -1,7 +1,6 @@
 """
 novelWriter – Project Item Status Class
 =======================================
-Data class for the status/importance settings of a project item
 
 File History:
 Created:   2019-05-19 [0.1.3]
@@ -23,15 +22,21 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import random
 import logging
+
+from typing import TYPE_CHECKING, ItemsView, Iterator, KeysView, Literal, ValuesView
 
 from PyQt5.QtGui import QIcon, QPainter, QPainterPath, QPixmap, QColor
 from PyQt5.QtCore import QRectF, Qt
 
 from novelwriter import CONFIG
 from novelwriter.common import minmax, simplified
+
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import TypeGuard  # Requires Python 3.10
 
 logger = logging.getLogger(__name__)
 
@@ -41,9 +46,9 @@ class NWStatus:
     STATUS = 1
     IMPORT = 2
 
-    def __init__(self, type):
+    def __init__(self, kind: Literal[1, 2]) -> None:
 
-        self._type = type
+        self._type = kind
         self._store = {}
         self._default = None
 
@@ -66,7 +71,7 @@ class NWStatus:
 
         return
 
-    def write(self, key, name, col, count=None):
+    def write(self, key: str | None, name: str, col: tuple, count: int | None = None) -> str:
         """Add or update a status entry. If the key is invalid, a new
         key is generated.
         """
@@ -96,10 +101,8 @@ class NWStatus:
 
         return key
 
-    def remove(self, key):
-        """Remove an entry in the list, but not if the count is larger
-        than 0.
-        """
+    def remove(self, key: str) -> bool:
+        """Remove an entry in the list, except if the count > 0."""
         if key not in self._store:
             return False
         if self._store[key]["count"] > 0:
@@ -116,59 +119,48 @@ class NWStatus:
 
         return True
 
-    def check(self, value):
-        """Check the key against the stored status names.
-        """
+    def check(self, value: str) -> str:
+        """Check the key against the stored status names."""
         if self._isKey(value) and value in self._store:
             return value
         elif self._default is not None:
             return self._default
-        else:
-            return ""
+        return ""
 
-    def name(self, key):
-        """Return the name associated with a given key.
-        """
+    def name(self, key: str | None) -> str:
+        """Return the name associated with a given key."""
         if key in self._store:
             return self._store[key]["name"]
         elif self._default is not None:
             return self._store[self._default]["name"]
-        else:
-            return ""
+        return ""
 
-    def cols(self, key):
-        """Return the colours associated with a given key.
-        """
+    def cols(self, key: str | None) -> tuple[int, int, int]:
+        """Return the colours associated with a given key."""
         if key in self._store:
             return self._store[key]["cols"]
         elif self._default is not None:
             return self._store[self._default]["cols"]
-        else:
-            return (100, 100, 100)
+        return 100, 100, 100
 
-    def count(self, key):
-        """Return the count associated with a given key.
-        """
+    def count(self, key: str | None) -> int:
+        """Return the count associated with a given key."""
         if key in self._store:
             return self._store[key]["count"]
         elif self._default is not None:
             return self._store[self._default]["count"]
-        else:
-            return 0
+        return 0
 
-    def icon(self, key):
-        """Return the icon associated with a given key.
-        """
+    def icon(self, key: str | None) -> QIcon:
+        """Return the icon associated with a given key."""
         if key in self._store:
             return self._store[key]["icon"]
         elif self._default is not None:
             return self._store[self._default]["icon"]
-        else:
-            return self._defaultIcon
+        return self._defaultIcon
 
-    def reorder(self, order):
-        """Reorder the items according to list.
-        """
+    def reorder(self, order: list[str]) -> bool:
+        """Reorder the items according to list."""
         if len(order) != len(self._store):
             logger.error("Length mismatch between new and old order")
             return False
@@ -188,23 +180,20 @@ class NWStatus:
 
         return True
 
-    def resetCounts(self):
-        """Clear the counts of references to the status entries.
-        """
+    def resetCounts(self) -> None:
+        """Clear the counts of references to the status entries."""
         for key in self._store:
             self._store[key]["count"] = 0
         return
 
-    def increment(self, key):
-        """Increment the counter for a given entry.
-        """
+    def increment(self, key: str) -> None:
+        """Increment the counter for a given entry."""
         if key in self._store:
             self._store[key]["count"] += 1
         return
 
-    def pack(self):
-        """Pack the status entries into a dictionary.
-        """
+    def pack(self) -> Iterator[tuple[str, dict]]:
+        """Pack the status entries into a dictionary."""
         for key, data in self._store.items():
             yield (data["name"], {
                 "key":   key,
@@ -215,25 +204,22 @@ class NWStatus:
             })
         return
 
-    def unpack(self, data):
-        """Unpack a data dictionary and set the class values.
-        """
+    def unpack(self, data: dict) -> None:
+        """Unpack a data dictionary and set the class values."""
         self._store = {}
         self._default = None
-
         for key, entry in data.items():
             label = entry.get("label", "")
             colour = entry.get("colour", (100, 100, 100))
             count = entry.get("count", 0)
             self.write(key, label, colour, count)
-
-        return True
+        return
 
     ##
     #  Internal Functions
     ##
 
-    def _newKey(self):
+    def _newKey(self) -> str:
         """Generate a new key for a status flag. This method is
         recursive, but should only fail if there is an issue with the
         random number generator or the user has added a lot of status
@@ -245,9 +231,8 @@ class NWStatus:
             key = self._newKey()
         return key
 
-    def _isKey(self, value):
-        """Check if a value is a key or not.
-        """
+    def _isKey(self, value: str | None) -> TypeGuard[str]:
+        """Check if a value is a key or not."""
         if not isinstance(value, str):
             return False
         if len(value) != 7:
@@ -259,9 +244,8 @@ class NWStatus:
                 return False
         return True
 
-    def _createIcon(self, red, green, blue):
-        """Generate an icon for a status label.
-        """
+    def _createIcon(self, red: int, green: int, blue: int) -> QIcon:
+        """Generate an icon for a status label."""
         pixmap = QPixmap(self._iPX, self._iPX)
         pixmap.fill(Qt.transparent)
 
@@ -276,22 +260,22 @@ class NWStatus:
     #  Iterator Bits
     ##
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._store)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> dict:
         return self._store[key]
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[dict]:
         return iter(self._store)
 
-    def keys(self):
+    def keys(self) -> KeysView[str]:
         return self._store.keys()
 
-    def items(self):
+    def items(self) -> ItemsView[str, dict]:
         return self._store.items()
 
-    def values(self):
+    def values(self) -> ValuesView[dict]:
         return self._store.values()
 
 # END Class NWStatus

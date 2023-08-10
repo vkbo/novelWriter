@@ -154,59 +154,59 @@ def cleanProject(path: str | Path):
     return
 
 
-def buildTestProject(theObject, projPath):
-    """Build a standard test project in projPath using theProject
+def buildTestProject(obj, projPath):
+    """Build a standard test project in projPath using the project
     object as the parent.
     """
     from novelwriter.enum import nwItemClass
     from novelwriter.core.project import NWProject
 
-    if isinstance(theObject, NWProject):
-        theGUI = None
-        theProject = theObject
+    if isinstance(obj, NWProject):
+        nwGUI = None
+        project = obj
     else:
-        theGUI = theObject
-        theProject = theObject.theProject
+        nwGUI = obj
+        project = obj.project
 
-    theProject.clearProject()
-    theProject.storage.openProjectInPlace(projPath)
-    theProject.setDefaultStatusImport()
+    project.clearProject()
+    project.storage.openProjectInPlace(projPath)
+    project.setDefaultStatusImport()
 
-    theProject.data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")
-    theProject.data.setName("New Project")
-    theProject.data.setTitle("New Novel")
-    theProject.data.setAuthor("Jane Doe")
+    project.data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")
+    project.data.setName("New Project")
+    project.data.setTitle("New Novel")
+    project.data.setAuthor("Jane Doe")
 
     # Creating a minimal project with a few root folders and a
     # single chapter folder with a single file.
     xHandle = {}
-    xHandle[1] = theProject.newRoot(nwItemClass.NOVEL, "Novel")
-    xHandle[2] = theProject.newRoot(nwItemClass.PLOT, "Plot")
-    xHandle[3] = theProject.newRoot(nwItemClass.CHARACTER, "Characters")
-    xHandle[4] = theProject.newRoot(nwItemClass.WORLD, "World")
-    xHandle[5] = theProject.newFile("Title Page", xHandle[1])
-    xHandle[6] = theProject.newFolder("New Chapter", xHandle[1])
-    xHandle[7] = theProject.newFile("New Chapter", xHandle[6])
-    xHandle[8] = theProject.newFile("New Scene", xHandle[6])
+    xHandle[1] = project.newRoot(nwItemClass.NOVEL, "Novel")
+    xHandle[2] = project.newRoot(nwItemClass.PLOT, "Plot")
+    xHandle[3] = project.newRoot(nwItemClass.CHARACTER, "Characters")
+    xHandle[4] = project.newRoot(nwItemClass.WORLD, "World")
+    xHandle[5] = project.newFile("Title Page", xHandle[1])
+    xHandle[6] = project.newFolder("New Chapter", xHandle[1])
+    xHandle[7] = project.newFile("New Chapter", xHandle[6])
+    xHandle[8] = project.newFile("New Scene", xHandle[6])
 
-    aDoc = theProject.storage.getDocument(xHandle[5])
+    aDoc = project.storage.getDocument(xHandle[5])
     aDoc.writeDocument("#! New Novel\n\n>> By Jane Doe <<\n")
-    theProject.index.reIndexHandle(xHandle[5])
+    project.index.reIndexHandle(xHandle[5])
 
-    aDoc = theProject.storage.getDocument(xHandle[7])
-    aDoc.writeDocument("## %s\n\n" % theProject.tr("New Chapter"))
-    theProject.index.reIndexHandle(xHandle[7])
+    aDoc = project.storage.getDocument(xHandle[7])
+    aDoc.writeDocument("## %s\n\n" % project.tr("New Chapter"))
+    project.index.reIndexHandle(xHandle[7])
 
-    aDoc = theProject.storage.getDocument(xHandle[8])
-    aDoc.writeDocument("### %s\n\n" % theProject.tr("New Scene"))
-    theProject.index.reIndexHandle(xHandle[8])
+    aDoc = project.storage.getDocument(xHandle[8])
+    aDoc.writeDocument("### %s\n\n" % project.tr("New Scene"))
+    project.index.reIndexHandle(xHandle[8])
 
-    theProject.session.startSession()
-    theProject.setProjectChanged(True)
-    theProject.saveProject(autoSave=True)
+    project.session.startSession()
+    project.setProjectChanged(True)
+    project.saveProject(autoSave=True)
 
-    if theGUI is not None:
-        theGUI.hasProject = True
-        theGUI.rebuildTrees()
+    if nwGUI is not None:
+        nwGUI.hasProject = True
+        nwGUI.rebuildTrees()
 
     return

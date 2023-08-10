@@ -1,7 +1,6 @@
 """
 novelWriter – GUI Project Details
 =================================
-Class holding the project details dialog
 
 File History:
 Created: 2021-01-03 [1.1rc1]
@@ -22,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import math
 import logging
@@ -36,9 +36,9 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG
 from novelwriter.common import formatTime, numberToRoman
 from novelwriter.constants import nwUnicode
-from novelwriter.gui.components import NovelSelector
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.pageddialog import NPagedDialog
+from novelwriter.extensions.novelselector import NovelSelector
 
 logger = logging.getLogger(__name__)
 
@@ -51,14 +51,13 @@ class GuiProjectDetails(NPagedDialog):
         logger.debug("Create: GuiProjectDetails")
         self.setObjectName("GuiProjectDetails")
 
-        self.mainGui    = mainGui
-        self.theProject = mainGui.theProject
+        self.mainGui = mainGui
 
         self.setWindowTitle(self.tr("Project Details"))
 
         wW = CONFIG.pxInt(600)
         wH = CONFIG.pxInt(400)
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
 
         self.setMinimumWidth(wW)
         self.setMinimumHeight(wH)
@@ -67,8 +66,8 @@ class GuiProjectDetails(NPagedDialog):
             CONFIG.pxInt(pOptions.getInt("GuiProjectDetails", "winHeight", wH))
         )
 
-        self.tabMain = GuiProjectDetailsMain(self.mainGui, self.theProject)
-        self.tabContents = GuiProjectDetailsContents(self.mainGui, self.theProject)
+        self.tabMain = GuiProjectDetailsMain(self.mainGui)
+        self.tabContents = GuiProjectDetailsContents(self.mainGui)
 
         self.addTab(self.tabMain, self.tr("Overview"))
         self.addTab(self.tabContents, self.tr("Contents"))
@@ -125,7 +124,7 @@ class GuiProjectDetails(NPagedDialog):
         countFrom    = self.tabContents.poValue.value()
         clearDouble  = self.tabContents.dblValue.isChecked()
 
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
         pOptions.setValue("GuiProjectDetails", "winWidth",     winWidth)
         pOptions.setValue("GuiProjectDetails", "winHeight",    winHeight)
         pOptions.setValue("GuiProjectDetails", "widthCol0",    widthCol0)
@@ -144,15 +143,13 @@ class GuiProjectDetails(NPagedDialog):
 
 class GuiProjectDetailsMain(QWidget):
 
-    def __init__(self, mainGui, theProject):
+    def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        self.theProject = theProject
-        self.mainGui    = mainGui
-        self.mainTheme  = mainGui.mainTheme
+        self.mainGui = mainGui
 
-        fPx = self.mainTheme.fontPixelSize
-        fPt = self.mainTheme.fontPointSize
+        fPx = CONFIG.theme.fontPixelSize
+        fPt = CONFIG.theme.fontPointSize
         vPx = CONFIG.pxInt(4)
         hPx = CONFIG.pxInt(12)
 
@@ -247,22 +244,23 @@ class GuiProjectDetailsMain(QWidget):
     def updateValues(self):
         """Set all the values.
         """
-        pIndex = self.theProject.index
+        project = self.mainGui.project
+        pIndex = project.index
         hCounts = pIndex.getNovelTitleCounts()
         nwCount = pIndex.getNovelWordCount()
-        edTime = self.theProject.getCurrentEditTime()
+        edTime = project.getCurrentEditTime()
 
-        self.bookTitle.setText(self.theProject.data.title or self.theProject.data.name)
-        self.projName.setText(self.tr("Project: {0}").format(self.theProject.data.name))
-        self.bookAuthors.setText(self.tr("By {0}").format(self.theProject.data.author))
+        self.bookTitle.setText(project.data.title or project.data.name)
+        self.projName.setText(self.tr("Project: {0}").format(project.data.name))
+        self.bookAuthors.setText(self.tr("By {0}").format(project.data.author))
 
         self.wordCountVal.setText(f"{nwCount:n}")
         self.chapCountVal.setText(f"{hCounts[2]:n}")
         self.sceneCountVal.setText(f"{hCounts[3]:n}")
-        self.revCountVal.setText(f"{self.theProject.data.saveCount:n}")
+        self.revCountVal.setText(f"{project.data.saveCount:n}")
         self.editTimeVal.setText(formatTime(edTime))
 
-        self.projPathVal.setText(str(self.theProject.storage.storagePath))
+        self.projPathVal.setText(str(project.storage.storagePath))
 
         return
 
@@ -277,28 +275,26 @@ class GuiProjectDetailsContents(QWidget):
     C_PAGE  = 3
     C_PROG  = 4
 
-    def __init__(self, mainGui, theProject):
+    def __init__(self, mainGui):
         super().__init__(parent=mainGui)
 
-        self.theProject = theProject
-        self.mainGui    = mainGui
-        self.mainTheme  = mainGui.mainTheme
+        self.mainGui = mainGui
 
         # Internal
         self._theToC = []
         self._currentRoot = None
 
-        iPx = self.mainTheme.baseIconSize
+        iPx = CONFIG.theme.baseIconSize
         hPx = CONFIG.pxInt(12)
         vPx = CONFIG.pxInt(4)
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
 
         # Header
         # ======
 
         self.tocLabel = QLabel("<b>%s</b>" % self.tr("Table of Contents"))
 
-        self.novelValue = NovelSelector(self, self.theProject, self.mainGui)
+        self.novelValue = NovelSelector(self, self.mainGui)
         self.novelValue.setMinimumWidth(CONFIG.pxInt(200))
         self.novelValue.novelSelectionChanged.connect(self._novelValueChanged)
 
@@ -447,7 +443,7 @@ class GuiProjectDetailsContents(QWidget):
         """Extract the information from the project index.
         """
         logger.debug("Populating ToC from handle '%s'", rootHandle)
-        self._theToC = self.theProject.index.getTableOfContents(rootHandle, 2)
+        self._theToC = self.mainGui.project.index.getTableOfContents(rootHandle, 2)
         self._theToC.append(("", 0, self.tr("END"), 0))
         return
 
@@ -500,7 +496,7 @@ class GuiProjectDetailsContents(QWidget):
                 progPage = f"{cPage:n}"
                 progText = f"{pgProg:.1f}{nwUnicode.U_THSP}%"
 
-            hDec = self.mainTheme.getHeaderDecoration(tLevel)
+            hDec = CONFIG.theme.getHeaderDecoration(tLevel)
             if tTitle.strip() == "":
                 tTitle = self.tr("Untitled")
 

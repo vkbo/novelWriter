@@ -72,22 +72,20 @@ class GuiManuscript(QDialog):
         if CONFIG.osDarwin:
             self.setWindowFlag(Qt.WindowType.Tool)
 
-        self.mainGui    = mainGui
-        self.mainTheme  = mainGui.mainTheme
-        self.theProject = mainGui.theProject
+        self.mainGui = mainGui
 
-        self._builds = BuildCollection(self.theProject)
+        self._builds = BuildCollection(self.mainGui.project)
         self._buildMap: dict[str, QListWidgetItem] = {}
 
         self.setWindowTitle(self.tr("Build Manuscript"))
         self.setMinimumWidth(CONFIG.pxInt(600))
         self.setMinimumHeight(CONFIG.pxInt(500))
 
-        iPx = self.mainTheme.baseIconSize
+        iPx = CONFIG.theme.baseIconSize
         wWin = CONFIG.pxInt(900)
         hWin = CONFIG.pxInt(600)
 
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
         self.resize(
             CONFIG.pxInt(pOptions.getInt("GuiManuscript", "winWidth", wWin)),
             CONFIG.pxInt(pOptions.getInt("GuiManuscript", "winHeight", hWin))
@@ -107,21 +105,21 @@ class GuiManuscript(QDialog):
         ).format(CONFIG.pxInt(2), fadeCol.red(), fadeCol.green(), fadeCol.blue())
 
         self.tbAdd = QToolButton(self)
-        self.tbAdd.setIcon(self.mainTheme.getIcon("add"))
+        self.tbAdd.setIcon(CONFIG.theme.getIcon("add"))
         self.tbAdd.setIconSize(QSize(iPx, iPx))
         self.tbAdd.setToolTip(self.tr("Add New Build"))
         self.tbAdd.setStyleSheet(buttonStyle)
         self.tbAdd.clicked.connect(self._createNewBuild)
 
         self.tbDel = QToolButton(self)
-        self.tbDel.setIcon(self.mainTheme.getIcon("remove"))
+        self.tbDel.setIcon(CONFIG.theme.getIcon("remove"))
         self.tbDel.setIconSize(QSize(iPx, iPx))
         self.tbDel.setToolTip(self.tr("Delete Selected Build"))
         self.tbDel.setStyleSheet(buttonStyle)
         self.tbDel.clicked.connect(self._deleteSelectedBuild)
 
         self.tbEdit = QToolButton(self)
-        self.tbEdit.setIcon(self.mainTheme.getIcon("edit"))
+        self.tbEdit.setIcon(CONFIG.theme.getIcon("edit"))
         self.tbEdit.setIconSize(QSize(iPx, iPx))
         self.tbEdit.setToolTip(self.tr("Edit Selected Build"))
         self.tbEdit.setStyleSheet(buttonStyle)
@@ -212,7 +210,7 @@ class GuiManuscript(QDialog):
         self._updateBuildsList()
 
         logger.debug("Loading build cache")
-        cache = CONFIG.dataPath("cache") / f"build_{self.theProject.data.uuid}.json"
+        cache = CONFIG.dataPath("cache") / f"build_{self.mainGui.project.data.uuid}.json"
         if cache.is_file():
             try:
                 with open(cache, mode="r", encoding="utf-8") as fObj:
@@ -291,7 +289,7 @@ class GuiManuscript(QDialog):
         if build is None:
             return
 
-        docBuild = NWBuildDocument(self.theProject, build)
+        docBuild = NWBuildDocument(self.mainGui.project, build)
         docBuild.queueAll()
 
         self.docPreview.beginNewBuild(len(docBuild))
@@ -311,7 +309,7 @@ class GuiManuscript(QDialog):
         self._updatePreview(result, build)
 
         logger.debug("Saving build cache")
-        cache = CONFIG.dataPath("cache") / f"build_{self.theProject.data.uuid}.json"
+        cache = CONFIG.dataPath("cache") / f"build_{self.mainGui.project.data.uuid}.json"
         try:
             with open(cache, mode="w+", encoding="utf-8") as outFile:
                 outFile.write(json.dumps(result, indent=2))
@@ -392,7 +390,7 @@ class GuiManuscript(QDialog):
         optsWidth = CONFIG.rpxInt(mainSplit[0])
         viewWidth = CONFIG.rpxInt(mainSplit[1])
 
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
         pOptions.setValue("GuiManuscript", "winWidth", winWidth)
         pOptions.setValue("GuiManuscript", "winHeight", winHeight)
         pOptions.setValue("GuiManuscript", "optsWidth", optsWidth)
@@ -428,7 +426,7 @@ class GuiManuscript(QDialog):
         for key, name in self._builds.builds():
             bItem = QListWidgetItem()
             bItem.setText(name)
-            bItem.setIcon(self.mainTheme.getIcon("export"))
+            bItem.setIcon(CONFIG.theme.getIcon("export"))
             bItem.setData(self.D_KEY, key)
             self.buildList.addItem(bItem)
             self._buildMap[key] = bItem
@@ -451,9 +449,7 @@ class _PreviewWidget(QTextBrowser):
     def __init__(self, mainGui: GuiMain):
         super().__init__(parent=mainGui)
 
-        self.mainGui    = mainGui
-        self.mainTheme  = mainGui.mainTheme
-        self.theProject = mainGui.theProject
+        self.mainGui = mainGui
 
         self._docTime = 0
         self._buildName = ""
@@ -464,7 +460,7 @@ class _PreviewWidget(QTextBrowser):
         dPalette.setColor(QPalette.Text, QColor(0, 0, 0))
         self.setPalette(dPalette)
 
-        self.setMinimumWidth(40*self.mainGui.mainTheme.textNWidth)
+        self.setMinimumWidth(40*CONFIG.theme.textNWidth)
         self.setTextFont(CONFIG.textFont, CONFIG.textSize)
         self.setTabStopDistance(CONFIG.getTabWidth())
         self.setOpenExternalLinks(False)
@@ -482,7 +478,7 @@ class _PreviewWidget(QTextBrowser):
         aPalette.setColor(QPalette.Foreground, aPalette.toolTipText().color())
 
         aFont = self.font()
-        aFont.setPointSizeF(0.9*self.mainTheme.fontPointSize)
+        aFont.setPointSizeF(0.9*CONFIG.theme.fontPointSize)
 
         self.ageLabel = QLabel("", self)
         self.ageLabel.setIndent(0)
@@ -490,7 +486,7 @@ class _PreviewWidget(QTextBrowser):
         self.ageLabel.setPalette(aPalette)
         self.ageLabel.setAutoFillBackground(True)
         self.ageLabel.setAlignment(Qt.AlignCenter)
-        self.ageLabel.setFixedHeight(int(2.1*self.mainTheme.fontPixelSize))
+        self.ageLabel.setFixedHeight(int(2.1*CONFIG.theme.fontPixelSize))
 
         # Progress
         self.buildProgress = NProgressCircle(self, CONFIG.pxInt(160), CONFIG.pxInt(16))
@@ -526,12 +522,12 @@ class _PreviewWidget(QTextBrowser):
 
     def setJustify(self, state: bool):
         """Enable/disable the justify text option."""
-        options = self.document().defaultTextOption()
+        pOptions = self.document().defaultTextOption()
         if state:
-            options.setAlignment(Qt.AlignJustify)
+            pOptions.setAlignment(Qt.AlignJustify)
         else:
-            options.setAlignment(Qt.AlignAbsolute)
-        self.document().setDefaultTextOption(options)
+            pOptions.setAlignment(Qt.AlignAbsolute)
+        self.document().setDefaultTextOption(pOptions)
         return
 
     def setTextFont(self, family: str, size: int):

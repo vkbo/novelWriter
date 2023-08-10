@@ -44,7 +44,7 @@ from novelwriter.core.project import NWProject
 logger = logging.getLogger(__name__)
 
 
-def stripEscape(text):
+def stripEscape(text) -> str:
     """Helper function to strip escaped Markdown characters from
     paragraph text.
     """
@@ -100,7 +100,7 @@ class Tokenizer(ABC):
     A_IND_L    = 0x0100  # Left indentation
     A_IND_R    = 0x0200  # Right indentation
 
-    def __init__(self, project: NWProject):
+    def __init__(self, project: NWProject) -> None:
 
         self._project = project
 
@@ -191,116 +191,116 @@ class Tokenizer(ABC):
     #  Setters
     ##
 
-    def setTitleFormat(self, hFormat: str):
+    def setTitleFormat(self, hFormat: str) -> None:
         """Set the title format pattern."""
         self._fmtTitle = hFormat.strip()
         return
 
-    def setChapterFormat(self, hFormat: str):
+    def setChapterFormat(self, hFormat: str) -> None:
         """Set the chapert format pattern."""
         self._fmtChapter = hFormat.strip()
         return
 
-    def setUnNumberedFormat(self, hFormat: str):
+    def setUnNumberedFormat(self, hFormat: str) -> None:
         """Set the unnumbered format pattern."""
         self._fmtUnNum = hFormat.strip()
         return
 
-    def setSceneFormat(self, hFormat: str, hide: bool):
+    def setSceneFormat(self, hFormat: str, hide: bool) -> None:
         """Set the scene format pattern and hidden status."""
         self._fmtScene = hFormat.strip()
         self._hideScene = hide
         return
 
-    def setSectionFormat(self, hFormat: str, hide: bool):
+    def setSectionFormat(self, hFormat: str, hide: bool) -> None:
         """Set the section format pattern and hidden status."""
         self._fmtSection = hFormat.strip()
         self._hideSection = hide
         return
 
-    def setFont(self, family: str, size: int, isFixed: bool = False):
+    def setFont(self, family: str, size: int, isFixed: bool = False) -> None:
         """Set the build font."""
         self._textFont = family
         self._textSize = round(int(size))
         self._textFixed = isFixed
         return
 
-    def setLineHeight(self, height: float):
+    def setLineHeight(self, height: float) -> None:
         """Set the line height between 0.5 and 5.0."""
         self._lineHeight = min(max(float(height), 0.5), 5.0)
         return
 
-    def setBlockIndent(self, indent: float):
+    def setBlockIndent(self, indent: float) -> None:
         """Set the block indent between 0.0 and 10.0."""
         self._blockIndent = min(max(float(indent), 0.0), 10.0)
         return
 
-    def setJustify(self, state: bool):
+    def setJustify(self, state: bool) -> None:
         """Enable or disable text justification."""
         self._doJustify = state
         return
 
-    def setTitleMargins(self, upper: float, lower: float):
+    def setTitleMargins(self, upper: float, lower: float) -> None:
         """Set the upper and lower title margin."""
         self._marginTitle = (float(upper), float(lower))
         return
 
-    def setHead1Margins(self, upper: float, lower: float):
+    def setHead1Margins(self, upper: float, lower: float) -> None:
         """Set the upper and lower header 1 margin."""
         self._marginHead1 = (float(upper), float(lower))
         return
 
-    def setHead2Margins(self, upper: float, lower: float):
+    def setHead2Margins(self, upper: float, lower: float) -> None:
         """Set the upper and lower header 2 margin."""
         self._marginHead2 = (float(upper), float(lower))
         return
 
-    def setHead3Margins(self, upper: float, lower: float):
+    def setHead3Margins(self, upper: float, lower: float) -> None:
         """Set the upper and lower header 3 margin."""
         self._marginHead3 = (float(upper), float(lower))
         return
 
-    def setHead4Margins(self, upper: float, lower: float):
+    def setHead4Margins(self, upper: float, lower: float) -> None:
         """Set the upper and lower header 4 margin."""
         self._marginHead4 = (float(upper), float(lower))
         return
 
-    def setTextMargins(self, upper: float, lower: float):
+    def setTextMargins(self, upper: float, lower: float) -> None:
         """Set the upper and lower text margin."""
         self._marginText = (float(upper), float(lower))
         return
 
-    def setMetaMargins(self, upper: float, lower: float):
+    def setMetaMargins(self, upper: float, lower: float) -> None:
         """Set the upper and lower meta text margin."""
         self._marginMeta = (float(upper), float(lower))
         return
 
-    def setLinkHeaders(self, state: bool):
+    def setLinkHeaders(self, state: bool) -> None:
         """Enable or disable adding an anchor before headers."""
         self._linkHeaders = state
         return
 
-    def setBodyText(self, state: bool):
+    def setBodyText(self, state: bool) -> None:
         """Include body text in build."""
         self._doBodyText = state
         return
 
-    def setSynopsis(self, state: bool):
+    def setSynopsis(self, state: bool) -> None:
         """Include synopsis comments in build."""
         self._doSynopsis = state
         return
 
-    def setComments(self, state: bool):
+    def setComments(self, state: bool) -> None:
         """Include comments in build."""
         self._doComments = state
         return
 
-    def setKeywords(self, state: bool):
+    def setKeywords(self, state: bool) -> None:
         """Include keywords in build."""
         self._doKeywords = state
         return
 
-    def setKeepMarkdown(self, state: bool):
+    def setKeepMarkdown(self, state: bool) -> None:
         """Keep original markdown during build."""
         self._keepMarkdown = state
         return
@@ -310,7 +310,7 @@ class Tokenizer(ABC):
     ##
 
     @abstractmethod
-    def doConvert(self):
+    def doConvert(self) -> None:
         raise NotImplementedError
 
     def addRootHeading(self, tHandle: str) -> bool:
@@ -365,7 +365,7 @@ class Tokenizer(ABC):
 
         return True
 
-    def doPreProcessing(self):
+    def doPreProcessing(self) -> None:
         """Run trough the various replace dictionaries."""
         # Process the user's auto-replace dictionary
         autoReplace = self._project.data.autoReplace
@@ -382,7 +382,7 @@ class Tokenizer(ABC):
 
         return
 
-    def tokenizeText(self):
+    def tokenizeText(self) -> None:
         """Scan the text for either lines starting with specific
         characters that indicate headers, comments, commands etc, or
         just contain plain text. In the case of plain text, apply the
@@ -742,14 +742,14 @@ class Tokenizer(ABC):
 
         return True
 
-    def saveRawMarkdown(self, path: str | Path):
+    def saveRawMarkdown(self, path: str | Path) -> None:
         """Save the raw text to a plain text file."""
         with open(path, mode="w", encoding="utf-8") as outFile:
             for nwdPage in self._allMarkdown:
                 outFile.write(nwdPage)
         return
 
-    def saveRawMarkdownJSON(self, path: str | Path):
+    def saveRawMarkdownJSON(self, path: str | Path) -> None:
         """Save the raw text to a JSON file."""
         timeStamp = time()
         data = {
@@ -773,30 +773,30 @@ class Tokenizer(ABC):
 
 class HeadingFormatter:
 
-    def __init__(self, project: NWProject):
+    def __init__(self, project: NWProject) -> None:
         self._project = project
         self._chCount = 0
         self._scChCount = 0
         self._scAbsCount = 0
         return
 
-    def incChapter(self):
+    def incChapter(self) -> None:
         """Increment the chapter counter."""
         self._chCount += 1
         return
 
-    def incScene(self):
+    def incScene(self) -> None:
         """Increment the scene counters."""
         self._scChCount += 1
         self._scAbsCount += 1
         return
 
-    def resetScene(self):
+    def resetScene(self) -> None:
         """Reset the chapter scene counter."""
         self._scChCount = 0
         return
 
-    def apply(self, hFormat: str, text: str):
+    def apply(self, hFormat: str, text: str) -> str:
         """Apply formatting to a specific heading."""
         hFormat = hFormat.replace(nwHeadFmt.TITLE, text)
         hFormat = hFormat.replace(nwHeadFmt.CH_NUM, str(self._chCount))

@@ -1,7 +1,6 @@
 """
 novelWriter – GUI Open Project
 ==============================
-GUI class for the load/browse/new project dialog
 
 File History:
 Created: 2020-02-26 [0.4.5]
@@ -22,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 
@@ -62,13 +62,12 @@ class GuiProjectLoad(QDialog):
         self.setObjectName("GuiProjectLoad")
 
         self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
         self.openState = self.NONE_STATE
         self.openPath  = None
 
         sPx = CONFIG.pxInt(16)
         nPx = CONFIG.pxInt(96)
-        iPx = self.mainTheme.baseIconSize
+        iPx = CONFIG.theme.baseIconSize
 
         self.outerBox = QVBoxLayout()
         self.innerBox = QHBoxLayout()
@@ -80,7 +79,7 @@ class GuiProjectLoad(QDialog):
         self.setMinimumHeight(CONFIG.pxInt(400))
 
         self.nwIcon = QLabel()
-        self.nwIcon.setPixmap(self.mainGui.mainTheme.getPixmap("novelwriter", (nPx, nPx)))
+        self.nwIcon.setPixmap(CONFIG.theme.getPixmap("novelwriter", (nPx, nPx)))
         self.innerBox.addWidget(self.nwIcon, 0, Qt.AlignTop)
 
         self.projectForm = QGridLayout()
@@ -101,8 +100,9 @@ class GuiProjectLoad(QDialog):
         self.listBox.setIconSize(QSize(iPx, iPx))
 
         treeHead = self.listBox.headerItem()
-        treeHead.setTextAlignment(self.C_COUNT, Qt.AlignRight)
-        treeHead.setTextAlignment(self.C_TIME, Qt.AlignRight)
+        if treeHead:
+            treeHead.setTextAlignment(self.C_COUNT, Qt.AlignRight)
+            treeHead.setTextAlignment(self.C_TIME, Qt.AlignRight)
 
         self.lblRecent = QLabel("<b>%s</b>" % self.tr("Recently Opened Projects"))
         self.lblPath = QLabel("<b>%s</b>" % self.tr("Path"))
@@ -110,7 +110,7 @@ class GuiProjectLoad(QDialog):
         self.selPath.setReadOnly(True)
 
         self.browseButton = QPushButton("...")
-        self.browseButton.setMaximumWidth(int(2.5*self.mainTheme.getTextWidth("...")))
+        self.browseButton.setMaximumWidth(int(2.5*CONFIG.theme.getTextWidth("...")))
         self.browseButton.clicked.connect(self._doBrowse)
 
         self.projectForm.addWidget(self.lblRecent,    0, 0, 1, 3)
@@ -268,7 +268,7 @@ class GuiProjectLoad(QDialog):
         self.listBox.clear()
         dataList = CONFIG.recentProjects.listEntries()
         sortList = sorted(dataList, key=lambda x: x[3], reverse=True)
-        nwxIcon = self.mainGui.mainTheme.getIcon("proj_nwx")
+        nwxIcon = CONFIG.theme.getIcon("proj_nwx")
         for path, title, words, time in sortList:
             newItem = QTreeWidgetItem([""]*4)
             newItem.setIcon(self.C_NAME, nwxIcon)
@@ -279,11 +279,10 @@ class GuiProjectLoad(QDialog):
             newItem.setTextAlignment(self.C_NAME, Qt.AlignLeft | Qt.AlignVCenter)
             newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight | Qt.AlignVCenter)
             newItem.setTextAlignment(self.C_TIME, Qt.AlignRight | Qt.AlignVCenter)
-            newItem.setFont(self.C_TIME, self.mainTheme.guiFontFixed)
+            newItem.setFont(self.C_TIME, CONFIG.theme.guiFontFixed)
             self.listBox.addTopLevelItem(newItem)
 
-        if self.listBox.topLevelItemCount() > 0:
-            self.listBox.topLevelItem(0).setSelected(True)
+        self.listBox.setCurrentItem(self.listBox.topLevelItem(0))
 
         projColWidth = CONFIG.projLoadColWidths
         if len(projColWidth) == 3:

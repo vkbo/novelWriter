@@ -80,7 +80,7 @@ class DocMerger:
         and a new doc label. Calling this function resets the class.
         """
         srcItem = self._project.tree[srcHandle]
-        if srcItem is None:
+        if srcItem is None or srcItem.itemParent is None:
             return None
 
         newHandle = self._project.newFile(docLabel, srcItem.itemParent)
@@ -210,7 +210,7 @@ class DocSplitter:
         """An iterator that will write each document in the buffer, and
         return its new handle, parent handle, and sibling handle.
         """
-        if self._srcHandle is None or self._srcItem is None:
+        if self._srcHandle is None or self._srcItem is None or self._parHandle is None:
             return
 
         pHandle = self._parHandle
@@ -385,9 +385,10 @@ class ProjectBuilder:
             aDoc = project.storage.getDocument(hChapter)
             aDoc.writeDocument(f"## {lblNewChapter}\n\n")
 
-            hScene = project.newFile(lblNewScene, hChapter)
-            aDoc = project.storage.getDocument(hScene)
-            aDoc.writeDocument(f"### {lblNewScene}\n\n")
+            if hChapter:
+                hScene = project.newFile(lblNewScene, hChapter)
+                aDoc = project.storage.getDocument(hScene)
+                aDoc.writeDocument(f"### {lblNewScene}\n\n")
 
             project.newRoot(nwItemClass.PLOT)
             project.newRoot(nwItemClass.CHARACTER)
@@ -418,7 +419,7 @@ class ProjectBuilder:
                     aDoc.writeDocument(f"## {chTitle}\n\n% Synopsis: {chSynop}\n\n")
 
                     # Create chapter scenes
-                    if numScenes > 0:
+                    if numScenes > 0 and cHandle:
                         for sc in range(numScenes):
                             scTitle = self.tr("Scene {0}").format(f"{ch+1:d}.{sc+1:d}")
                             sHandle = project.newFile(scTitle, cHandle)

@@ -55,7 +55,7 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, projPath):
     assert wList.listBox.count() == 0
 
     # Add words
-    userDict = UserDictionary(nwGUI.theProject)
+    userDict = UserDictionary(nwGUI.project)
     userDict.add("word_a")
     userDict.add("word_c")
     userDict.add("word_g")

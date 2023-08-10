@@ -1,7 +1,6 @@
 """
 novelWriter – GUI New Project Wizard
 ====================================
-GUI classes for the new project wizard dialog
 
 File History:
 Created: 2020-07-11 [0.10.1]
@@ -22,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import os
 import logging
@@ -53,10 +53,9 @@ class GuiProjectWizard(QWizard):
         logger.debug("Create: GuiProjectWizard")
         self.setObjectName("GuiProjectWizard")
 
-        self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
+        self.mainGui = mainGui
 
-        self.sideImage = self.mainTheme.loadDecoration(
+        self.sideImage = CONFIG.theme.loadDecoration(
             "wiz-back", None, CONFIG.pxInt(370)
         )
         self.setWizardStyle(QWizard.ModernStyle)
@@ -92,9 +91,6 @@ class ProjWizardIntroPage(QWizardPage):
     def __init__(self, theWizard):
         super().__init__()
 
-        self.theWizard = theWizard
-        self.mainTheme = theWizard.mainTheme
-
         self.setTitle(self.tr("Create New Project"))
         self.theText = QLabel(self.tr(
             "Provide at least a project name. The project name should not "
@@ -108,7 +104,7 @@ class ProjWizardIntroPage(QWizardPage):
             "Peter Mitterhofer", "CC BY-SA 4.0"
         ))
         lblFont = self.imgCredit.font()
-        lblFont.setPointSizeF(0.6*self.mainTheme.fontPointSize)
+        lblFont.setPointSizeF(0.6*CONFIG.theme.fontPointSize)
         self.imgCredit.setFont(lblFont)
 
         xW = CONFIG.pxInt(300)
@@ -160,9 +156,6 @@ class ProjWizardFolderPage(QWizardPage):
     def __init__(self, theWizard):
         super().__init__()
 
-        self.theWizard = theWizard
-        self.mainTheme = theWizard.mainTheme
-
         self.setTitle(self.tr("Select Project Folder"))
         self.theText = QLabel(self.tr(
             "Select a location to store the project. A new project folder "
@@ -179,7 +172,7 @@ class ProjWizardFolderPage(QWizardPage):
         self.projPath.setPlaceholderText(self.tr("Required"))
 
         self.browseButton = QPushButton("...")
-        self.browseButton.setMaximumWidth(int(2.5*self.mainTheme.getTextWidth("...")))
+        self.browseButton.setMaximumWidth(int(2.5*CONFIG.theme.getTextWidth("...")))
         self.browseButton.clicked.connect(self._doBrowse)
 
         self.errLabel = QLabel("")
@@ -257,8 +250,6 @@ class ProjWizardPopulatePage(QWizardPage):
     def __init__(self, theWizard):
         super().__init__()
 
-        self.theWizard = theWizard
-
         self.setTitle(self.tr("Populate Project"))
         self.theText = QLabel(self.tr(
             "Choose how to pre-fill the project. Either with a minimal set of "
@@ -311,8 +302,6 @@ class ProjWizardCustomPage(QWizardPage):
 
     def __init__(self, theWizard):
         super().__init__()
-
-        self.theWizard = theWizard
 
         self.setTitle(self.tr("Custom Project Options"))
         self.theText = QLabel(self.tr(
@@ -411,8 +400,6 @@ class ProjWizardFinalPage(QWizardPage):
 
     def __init__(self, theWizard):
         super().__init__()
-
-        self.theWizard = theWizard
 
         self.setTitle(self.tr("Summary"))
         self.theText = QLabel("")

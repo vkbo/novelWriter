@@ -1,7 +1,6 @@
 """
 novelWriter – GUI Item Details Panel
 ====================================
-GUI class for the project tree item details panel
 
 File History:
 Created: 2019-04-24 [0.0.1]
@@ -22,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 
@@ -42,9 +42,7 @@ class GuiItemDetails(QWidget):
 
         logger.debug("Create: GuiItemDetails")
 
-        self.mainGui    = mainGui
-        self.theProject = mainGui.theProject
-        self.mainTheme  = mainGui.mainTheme
+        self.mainGui = mainGui
 
         # Internal Variables
         self._itemHandle  = None
@@ -53,7 +51,7 @@ class GuiItemDetails(QWidget):
         hSp = CONFIG.pxInt(6)
         vSp = CONFIG.pxInt(1)
         mPx = CONFIG.pxInt(6)
-        fPt = self.mainTheme.fontPointSize
+        fPt = CONFIG.theme.fontPointSize
 
         fntLabel = QFont()
         fntLabel.setBold(True)
@@ -178,8 +176,8 @@ class GuiItemDetails(QWidget):
         self.updateTheme()
 
         # Make sure the columns for flags and counts don't resize too often
-        flagWidth  = self.mainTheme.getTextWidth("Mm", fntValue)
-        countWidth = self.mainTheme.getTextWidth("99,999", fntValue)
+        flagWidth  = CONFIG.theme.getTextWidth("Mm", fntValue)
+        countWidth = CONFIG.theme.getTextWidth("99,999", fntValue)
         self.mainBox.setColumnMinimumWidth(1, flagWidth)
         self.mainBox.setColumnMinimumWidth(4, countWidth)
 
@@ -235,13 +233,13 @@ class GuiItemDetails(QWidget):
             self.clearDetails()
             return
 
-        nwItem = self.theProject.tree[tHandle]
+        nwItem = self.mainGui.project.tree[tHandle]
         if nwItem is None:
             self.clearDetails()
             return
 
         self._itemHandle = tHandle
-        iPx = int(round(0.8*self.mainTheme.baseIconSize))
+        iPx = int(round(0.8*CONFIG.theme.baseIconSize))
 
         # Label
         # =====
@@ -252,11 +250,11 @@ class GuiItemDetails(QWidget):
 
         if nwItem.isFileType():
             if nwItem.isActive:
-                self.labelIcon.setPixmap(self.mainTheme.getPixmap("checked", (iPx, iPx)))
+                self.labelIcon.setPixmap(CONFIG.theme.getPixmap("checked", (iPx, iPx)))
             else:
-                self.labelIcon.setPixmap(self.mainTheme.getPixmap("unchecked", (iPx, iPx)))
+                self.labelIcon.setPixmap(CONFIG.theme.getPixmap("unchecked", (iPx, iPx)))
         else:
-            self.labelIcon.setPixmap(self.mainTheme.getPixmap("noncheckable", (iPx, iPx)))
+            self.labelIcon.setPixmap(CONFIG.theme.getPixmap("noncheckable", (iPx, iPx)))
 
         self.labelData.setText(theLabel)
 
@@ -270,14 +268,14 @@ class GuiItemDetails(QWidget):
         # Class
         # =====
 
-        classIcon = self.mainTheme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass])
+        classIcon = CONFIG.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass])
         self.classIcon.setPixmap(classIcon.pixmap(iPx, iPx))
         self.classData.setText(trConst(nwLabels.CLASS_NAME[nwItem.itemClass]))
 
         # Layout
         # ======
 
-        usageIcon = self.mainTheme.getItemIcon(
+        usageIcon = CONFIG.theme.getItemIcon(
             nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, nwItem.mainHeading
         )
         self.usageIcon.setPixmap(usageIcon.pixmap(iPx, iPx))

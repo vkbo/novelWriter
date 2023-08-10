@@ -55,7 +55,7 @@ class NWStorage:
     MODE_INPLACE  = 1
     MODE_ARCHIVE  = 2
 
-    def __init__(self, project: NWProject):
+    def __init__(self, project: NWProject) -> None:
         self._project = project
         self._storagePath = None
         self._runtimePath = None
@@ -63,7 +63,7 @@ class NWStorage:
         self._openMode = self.MODE_INACTIVE
         return
 
-    def clear(self):
+    def clear(self) -> None:
         """Reset internal variables."""
         self._storagePath = None
         self._runtimePath = None
@@ -145,7 +145,7 @@ class NWStorage:
             return True
         return True
 
-    def closeSession(self):
+    def closeSession(self) -> None:
         """Run tasks related to closing the session."""
         self.clearLockFile()
         self.clear()
@@ -353,11 +353,11 @@ class _LegacyStorage:
     file/folder layout to the current project format.
     """
 
-    def __init__(self, project: NWProject):
+    def __init__(self, project: NWProject) -> None:
         self._project = project
         return
 
-    def legacyDataFolder(self, path: Path, child: Path):
+    def legacyDataFolder(self, path: Path, child: Path) -> None:
         """Handle the content of a legacy data folder from a version 1.0
         project.
         """
@@ -396,7 +396,7 @@ class _LegacyStorage:
 
         return
 
-    def deprecatedFiles(self, path: Path):
+    def deprecatedFiles(self, path: Path) -> None:
         """Handle files that are no longer used by novelWriter."""
         self._convertOldWordList(  # Changed in 2.1 Beta 1
             path / "meta" / "wordlist.txt",
@@ -440,7 +440,7 @@ class _LegacyStorage:
     #  Internal Functions
     ##
 
-    def _convertOldWordList(self, wordList: Path, wordJson: Path):
+    def _convertOldWordList(self, wordList: Path, wordJson: Path) -> None:
         """Convert the old word list plain text file to new format."""
         if wordJson.exists() or not wordList.exists():
             # If the new file already exists, we won't overwrite it
@@ -466,7 +466,7 @@ class _LegacyStorage:
 
         return
 
-    def _convertOldLogFile(self, sessLog: Path, sessJson: Path):
+    def _convertOldLogFile(self, sessLog: Path, sessJson: Path) -> None:
         """Convert the old text log file format to the new JSON Lines
         format.
         """
@@ -507,7 +507,7 @@ class _LegacyStorage:
 
         return
 
-    def _convertOldOptionsFile(self, optsOld: Path, optsNew: Path):
+    def _convertOldOptionsFile(self, optsOld: Path, optsNew: Path) -> None:
         """Convert the old options state file format to the format."""
         if optsNew.exists() or not optsOld.exists():
             # If the new file already exists, we won't overwrite it

@@ -28,17 +28,22 @@ import json
 import logging
 
 from time import time
+from typing import TYPE_CHECKING
 from pathlib import Path
 
 from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtCore import (
-    QT_VERSION, QT_VERSION_STR, PYQT_VERSION, PYQT_VERSION_STR, QStandardPaths,
-    QSysInfo, QLocale, QLibraryInfo, QTranslator
+    PYQT_VERSION, PYQT_VERSION_STR, QT_VERSION, QT_VERSION_STR, QLibraryInfo,
+    QLocale, QStandardPaths, QSysInfo, QTranslator
 )
+from PyQt5.QtWidgets import QApplication
 
-from novelwriter.error import logException, formatException
-from novelwriter.common import checkPath, formatTimeStamp, NWConfigParser
+from novelwriter.error import formatException, logException
+from novelwriter.common import NWConfigParser, checkInt, checkPath, formatTimeStamp
 from novelwriter.constants import nwFiles, nwUnicode
+
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.gui.theme import GuiTheme
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +53,7 @@ class Config:
     LANG_NW   = 1
     LANG_PROJ = 2
 
-    def __init__(self):
+    def __init__(self) -> None:
 
         # Initialisation
         # ==============
@@ -64,6 +69,7 @@ class Config:
         self._confPath = confRoot.absolute() / self.appHandle  # The user config location
         self._dataPath = dataRoot.absolute() / self.appHandle  # The user data location
         self._homePath = Path.home().absolute()  # The user's home directory
+        self._backPath = self._homePath / "Backups"
 
         self._appPath = Path(__file__).parent.absolute()
         self._appRoot = self._appPath.parent
@@ -90,7 +96,8 @@ class Config:
         # User Settings
         # =============
 
-        self._recentProj = RecentProjects(self)
+        self._themeObj = None
+        self._recentObj = RecentProjects(self)
 
         # General GUI Settings
         self.guiLocale   = self._qLocale.name()
@@ -102,7 +109,6 @@ class Config:
         self.hideVScroll = False            # Hide vertical scroll bars on main widgets
         self.hideHScroll = False            # Hide horizontal scroll bars on main widgets
         self.lastNotes   = "0x0"            # The latest release notes that have been shown
-        self._lastPath   = self._homePath   # The user's last used path
 
         # Size Settings
         self._mainWinSize  = [1200, 650]     # Last size of the main GUI window
@@ -116,7 +122,6 @@ class Config:
         self.autoSaveProj    = 60     # Interval for auto-saving project, in seconds
         self.autoSaveDoc     = 30     # Interval for auto-saving document, in seconds
         self.emphLabels      = True   # Add emphasis to H1 and H2 item labels
-        self._backupPath     = None   # Backup path to use, can be none
         self.backupOnClose   = False  # Flag for running automatic backups
         self.askBeforeBackup = True   # Flag for asking before running automatic backup
 
@@ -168,6 +173,10 @@ class Config:
         self.fmtPadBefore    = ""
         self.fmtPadAfter     = ""
         self.fmtPadThin      = False
+
+        # User Paths
+        self._lastPath   = self._homePath  # The user's last used path
+        self._backupPath = self._backPath  # Backup path to use, can be none
 
         # Spell Checking Settings
         self.spellLanguage = "en"
@@ -228,53 +237,59 @@ class Config:
     ##
 
     @property
-    def hasError(self):
+    def hasError(self) -> bool:
         return self._hasError
 
     @property
-    def recentProjects(self):
-        return self._recentProj
+    def recentProjects(self) -> RecentProjects:
+        return self._recentObj
 
     @property
-    def mainWinSize(self):
+    def theme(self) -> GuiTheme:
+        if self._themeObj is None:
+            raise Exception("Cannot access GUI theme before it is initialised")
+        return self._themeObj
+
+    @property
+    def mainWinSize(self) -> list[int]:
         return [int(x*self.guiScale) for x in self._mainWinSize]
 
     @property
-    def preferencesWinSize(self):
+    def preferencesWinSize(self) -> list[int]:
         return [int(x*self.guiScale) for x in self._prefsWinSize]
 
     @property
-    def projLoadColWidths(self):
+    def projLoadColWidths(self) -> list[int]:
         return [int(x*self.guiScale) for x in self._projLoadCols]
 
     @property
-    def mainPanePos(self):
+    def mainPanePos(self) -> list[int]:
         return [int(x*self.guiScale) for x in self._mainPanePos]
 
     @property
-    def viewPanePos(self):
+    def viewPanePos(self) -> list[int]:
         return [int(x*self.guiScale) for x in self._viewPanePos]
 
     @property
-    def outlinePanePos(self):
+    def outlinePanePos(self) -> list[int]:
         return [int(x*self.guiScale) for x in self._outlnPanePos]
 
     ##
     #  Getters
     ##
 
-    def getTextWidth(self, focusMode=False):
+    def getTextWidth(self, focusMode: bool = False) -> int:
         """Get the text with for the correct editor mode."""
         if focusMode:
             return self.pxInt(max(self.focusWidth, 200))
         else:
             return self.pxInt(max(self.textWidth, 200))
 
-    def getTextMargin(self):
+    def getTextMargin(self) -> int:
         """Get the scaled text margin."""
         return self.pxInt(max(self.textMargin, 0))
 
-    def getTabWidth(self):
+    def getTabWidth(self) -> int:
         """Get the scaled tab width."""
         return self.pxInt(max(self.tabWidth, 0))
 
@@ -282,65 +297,70 @@ class Config:
     #  Setters
     ##
 
-    def setMainWinSize(self, newWidth, newHeight):
+    def setThemeInstance(self, theme: GuiTheme) -> None:
+        """Set the applications theme instance."""
+        self._themeObj = theme
+        return
+
+    def setMainWinSize(self, width: int, height: int) -> None:
         """Set the size of the main window, but only if the change is
         larger than 5 pixels. The OS window manager will sometimes
         adjust it a bit, and we don't want the main window to shrink or
         grow each time the app is opened.
         """
-        newWidth = int(newWidth/self.guiScale)
-        newHeight = int(newHeight/self.guiScale)
-        if abs(self._mainWinSize[0] - newWidth) > 5:
-            self._mainWinSize[0] = newWidth
-        if abs(self._mainWinSize[1] - newHeight) > 5:
-            self._mainWinSize[1] = newHeight
+        width = int(width/self.guiScale)
+        height = int(height/self.guiScale)
+        if abs(self._mainWinSize[0] - width) > 5:
+            self._mainWinSize[0] = width
+        if abs(self._mainWinSize[1] - height) > 5:
+            self._mainWinSize[1] = height
         return
 
-    def setPreferencesWinSize(self, newWidth, newHeight):
+    def setPreferencesWinSize(self, width: int, height: int) -> None:
         """Set the size of the Preferences dialog window."""
-        self._prefsWinSize[0] = int(newWidth/self.guiScale)
-        self._prefsWinSize[1] = int(newHeight/self.guiScale)
+        self._prefsWinSize[0] = int(width/self.guiScale)
+        self._prefsWinSize[1] = int(height/self.guiScale)
         return
 
-    def setProjLoadColWidths(self, colWidths):
+    def setProjLoadColWidths(self, widths: list[int]) -> None:
         """Set the column widths of the Load Project dialog."""
-        self._projLoadCols = [int(x/self.guiScale) for x in colWidths]
+        self._projLoadCols = [int(x/self.guiScale) for x in widths]
         return
 
-    def setMainPanePos(self, panePos):
+    def setMainPanePos(self, pos: list[int]) -> None:
         """Set the position of the main GUI splitter."""
-        self._mainPanePos = [int(x/self.guiScale) for x in panePos]
+        self._mainPanePos = [int(x/self.guiScale) for x in pos]
         return
 
-    def setViewPanePos(self, panePos):
+    def setViewPanePos(self, pos: list[int]) -> None:
         """Set the position of the viewer meta data splitter."""
-        self._viewPanePos = [int(x/self.guiScale) for x in panePos]
+        self._viewPanePos = [int(x/self.guiScale) for x in pos]
         return
 
-    def setOutlinePanePos(self, panePos):
+    def setOutlinePanePos(self, pos: list[int]) -> None:
         """Set the position of the outline details splitter."""
-        self._outlnPanePos = [int(x/self.guiScale) for x in panePos]
+        self._outlnPanePos = [int(x/self.guiScale) for x in pos]
         return
 
-    def setLastPath(self, lastPath):
+    def setLastPath(self, path: str | Path) -> None:
         """Set the last used path. Only the folder is saved, so if the
         path is not a folder, the parent of the path is used instead.
         """
-        if isinstance(lastPath, (str, Path)):
-            lastPath = checkPath(lastPath, self._homePath)
-            if not lastPath.is_dir():
-                lastPath = lastPath.parent
-            if lastPath.is_dir():
-                self._lastPath = lastPath
+        if isinstance(path, (str, Path)):
+            path = checkPath(path, self._homePath)
+            if not path.is_dir():
+                path = path.parent
+            if path.is_dir():
+                self._lastPath = path
                 logger.debug("Last path updated: %s" % self._lastPath)
         return
 
-    def setBackupPath(self, backupPath: Path | None):
+    def setBackupPath(self, path: Path | str) -> None:
         """Set the current backup path."""
-        self._backupPath = checkPath(backupPath, None)
+        self._backupPath = checkPath(path, self._backPath)
         return
 
-    def setTextFont(self, family: str | None, pointSize: int = 12):
+    def setTextFont(self, family: str | None, pointSize: int = 12) -> None:
         """Set the text font if it exists. If it doesn't, or is None,
         set to default font.
         """
@@ -364,15 +384,11 @@ class Config:
     ##
 
     def pxInt(self, value: int) -> int:
-        """Used to scale fixed gui sizes by the screen scale factor.
-        This function returns an int, which is always rounded down.
-        """
+        """Scale fixed gui sizes by the screen scale factor."""
         return int(value*self.guiScale)
 
     def rpxInt(self, value: int) -> int:
-        """Used to un-scale fixed gui sizes by the screen scale factor.
-        This function returns an int, which is always rounded down.
-        """
+        """Un-scale fixed gui sizes by the screen scale factor."""
         return int(value/self.guiScale)
 
     def dataPath(self, target: str | None = None) -> Path:
@@ -395,12 +411,12 @@ class Config:
                 return self._lastPath
         return self._homePath
 
-    def backupPath(self) -> Path | None:
+    def backupPath(self) -> Path:
         """Return the backup path."""
         if isinstance(self._backupPath, Path):
             if self._backupPath.is_dir():
                 return self._backupPath
-        return None
+        return self._backPath
 
     def errorText(self) -> str:
         """Compile and return error messages from the initialisation of
@@ -442,7 +458,8 @@ class Config:
     #  Config Actions
     ##
 
-    def initConfig(self, confPath: str | Path | None = None, dataPath: str | Path | None = None):
+    def initConfig(self, confPath: str | Path | None = None,
+                   dataPath: str | Path | None = None) -> None:
         """Initialise the config class. The manual setting of confPath
         and dataPath is mainly intended for the test suite.
         """
@@ -479,16 +496,15 @@ class Config:
         else:
             self.saveConfig()
 
-        self._recentProj.loadCache()
+        self._recentObj.loadCache()
         self._checkOptionalPackages()
 
         logger.debug("Config initialisation complete")
 
         return
 
-    def initLocalisation(self, nwApp):
-        """Initialise the localisation of the GUI.
-        """
+    def initLocalisation(self, nwApp: QApplication) -> None:
+        """Initialise the localisation of the GUI."""
         self._qLocale = QLocale(self.guiLocale)
         QLocale.setDefault(self._qLocale)
         self._qtTrans = {}
@@ -509,16 +525,15 @@ class Config:
 
         return
 
-    def loadConfig(self):
-        """Load preferences from file and replace default settings.
-        """
+    def loadConfig(self) -> bool:
+        """Load preferences from file and replace default settings."""
         logger.debug("Loading config file")
 
-        theConf = NWConfigParser()
+        conf = NWConfigParser()
         cnfPath = self._confPath / nwFiles.CONF_FILE
         try:
             with open(cnfPath, mode="r", encoding="utf-8") as inFile:
-                theConf.read_file(inFile)
+                conf.read_file(inFile)
         except Exception as exc:
             logger.error("Could not load config file")
             logException()
@@ -528,98 +543,98 @@ class Config:
             return False
 
         # Main
-        cnfSec = "Main"
-        self.guiTheme    = theConf.rdStr(cnfSec, "theme", self.guiTheme)
-        self.guiSyntax   = theConf.rdStr(cnfSec, "syntax", self.guiSyntax)
-        self.guiFont     = theConf.rdStr(cnfSec, "font", self.guiFont)
-        self.guiFontSize = theConf.rdInt(cnfSec, "fontsize", self.guiFontSize)
-        self.guiLocale   = theConf.rdStr(cnfSec, "localisation", self.guiLocale)
-        self.hideVScroll = theConf.rdBool(cnfSec, "hidevscroll", self.hideVScroll)
-        self.hideHScroll = theConf.rdBool(cnfSec, "hidehscroll", self.hideHScroll)
-        self.lastNotes   = theConf.rdStr(cnfSec, "lastnotes", self.lastNotes)
-        self._lastPath   = theConf.rdPath(cnfSec, "lastpath", self._lastPath)
+        sec = "Main"
+        self.guiTheme    = conf.rdStr(sec, "theme", self.guiTheme)
+        self.guiSyntax   = conf.rdStr(sec, "syntax", self.guiSyntax)
+        self.guiFont     = conf.rdStr(sec, "font", self.guiFont)
+        self.guiFontSize = conf.rdInt(sec, "fontsize", self.guiFontSize)
+        self.guiLocale   = conf.rdStr(sec, "localisation", self.guiLocale)
+        self.hideVScroll = conf.rdBool(sec, "hidevscroll", self.hideVScroll)
+        self.hideHScroll = conf.rdBool(sec, "hidehscroll", self.hideHScroll)
+        self.lastNotes   = conf.rdStr(sec, "lastnotes", self.lastNotes)
+        self._lastPath   = conf.rdPath(sec, "lastpath", self._lastPath)
 
         # Sizes
-        cnfSec = "Sizes"
-        self._mainWinSize  = theConf.rdIntList(cnfSec, "mainwindow", self._mainWinSize)
-        self._prefsWinSize = theConf.rdIntList(cnfSec, "preferences", self._prefsWinSize)
-        self._projLoadCols = theConf.rdIntList(cnfSec, "projloadcols", self._projLoadCols)
-        self._mainPanePos  = theConf.rdIntList(cnfSec, "mainpane", self._mainPanePos)
-        self._viewPanePos  = theConf.rdIntList(cnfSec, "viewpane", self._viewPanePos)
-        self._outlnPanePos = theConf.rdIntList(cnfSec, "outlinepane", self._outlnPanePos)
+        sec = "Sizes"
+        self._mainWinSize  = conf.rdIntList(sec, "mainwindow", self._mainWinSize)
+        self._prefsWinSize = conf.rdIntList(sec, "preferences", self._prefsWinSize)
+        self._projLoadCols = conf.rdIntList(sec, "projloadcols", self._projLoadCols)
+        self._mainPanePos  = conf.rdIntList(sec, "mainpane", self._mainPanePos)
+        self._viewPanePos  = conf.rdIntList(sec, "viewpane", self._viewPanePos)
+        self._outlnPanePos = conf.rdIntList(sec, "outlinepane", self._outlnPanePos)
 
         # Project
-        cnfSec = "Project"
-        self.autoSaveProj    = theConf.rdInt(cnfSec, "autosaveproject", self.autoSaveProj)
-        self.autoSaveDoc     = theConf.rdInt(cnfSec, "autosavedoc", self.autoSaveDoc)
-        self.emphLabels      = theConf.rdBool(cnfSec, "emphlabels", self.emphLabels)
-        self._backupPath     = theConf.rdPath(cnfSec, "backuppath", self._backupPath)
-        self.backupOnClose   = theConf.rdBool(cnfSec, "backuponclose", self.backupOnClose)
-        self.askBeforeBackup = theConf.rdBool(cnfSec, "askbeforebackup", self.askBeforeBackup)
+        sec = "Project"
+        self.autoSaveProj    = conf.rdInt(sec, "autosaveproject", self.autoSaveProj)
+        self.autoSaveDoc     = conf.rdInt(sec, "autosavedoc", self.autoSaveDoc)
+        self.emphLabels      = conf.rdBool(sec, "emphlabels", self.emphLabels)
+        self._backupPath     = conf.rdPath(sec, "backuppath", self._backupPath)
+        self.backupOnClose   = conf.rdBool(sec, "backuponclose", self.backupOnClose)
+        self.askBeforeBackup = conf.rdBool(sec, "askbeforebackup", self.askBeforeBackup)
 
         # Editor
-        cnfSec = "Editor"
-        self.textFont        = theConf.rdStr(cnfSec, "textfont", self.textFont)
-        self.textSize        = theConf.rdInt(cnfSec, "textsize", self.textSize)
-        self.textWidth       = theConf.rdInt(cnfSec, "width", self.textWidth)
-        self.textMargin      = theConf.rdInt(cnfSec, "margin", self.textMargin)
-        self.tabWidth        = theConf.rdInt(cnfSec, "tabwidth", self.tabWidth)
-        self.focusWidth      = theConf.rdInt(cnfSec, "focuswidth", self.focusWidth)
-        self.hideFocusFooter = theConf.rdBool(cnfSec, "hidefocusfooter", self.hideFocusFooter)
-        self.doJustify       = theConf.rdBool(cnfSec, "justify", self.doJustify)
-        self.autoSelect      = theConf.rdBool(cnfSec, "autoselect", self.autoSelect)
-        self.doReplace       = theConf.rdBool(cnfSec, "autoreplace", self.doReplace)
-        self.doReplaceSQuote = theConf.rdBool(cnfSec, "repsquotes", self.doReplaceSQuote)
-        self.doReplaceDQuote = theConf.rdBool(cnfSec, "repdquotes", self.doReplaceDQuote)
-        self.doReplaceDash   = theConf.rdBool(cnfSec, "repdash", self.doReplaceDash)
-        self.doReplaceDots   = theConf.rdBool(cnfSec, "repdots", self.doReplaceDots)
-        self.scrollPastEnd   = theConf.rdInt(cnfSec, "scrollpastend", self.scrollPastEnd)
-        self.autoScroll      = theConf.rdBool(cnfSec, "autoscroll", self.autoScroll)
-        self.autoScrollPos   = theConf.rdInt(cnfSec, "autoscrollpos", self.autoScrollPos)
-        self.fmtSQuoteOpen   = theConf.rdStr(cnfSec, "fmtsquoteopen", self.fmtSQuoteOpen)
-        self.fmtSQuoteClose  = theConf.rdStr(cnfSec, "fmtsquoteclose", self.fmtSQuoteClose)
-        self.fmtDQuoteOpen   = theConf.rdStr(cnfSec, "fmtdquoteopen", self.fmtDQuoteOpen)
-        self.fmtDQuoteClose  = theConf.rdStr(cnfSec, "fmtdquoteclose", self.fmtDQuoteClose)
-        self.fmtPadBefore    = theConf.rdStr(cnfSec, "fmtpadbefore", self.fmtPadBefore)
-        self.fmtPadAfter     = theConf.rdStr(cnfSec, "fmtpadafter", self.fmtPadAfter)
-        self.fmtPadThin      = theConf.rdBool(cnfSec, "fmtpadthin", self.fmtPadThin)
-        self.spellLanguage   = theConf.rdStr(cnfSec, "spellcheck", self.spellLanguage)
-        self.showTabsNSpaces = theConf.rdBool(cnfSec, "showtabsnspaces", self.showTabsNSpaces)
-        self.showLineEndings = theConf.rdBool(cnfSec, "showlineendings", self.showLineEndings)
-        self.showMultiSpaces = theConf.rdBool(cnfSec, "showmultispaces", self.showMultiSpaces)
-        self.wordCountTimer  = theConf.rdFlt(cnfSec, "wordcounttimer", self.wordCountTimer)
-        self.bigDocLimit     = theConf.rdInt(cnfSec, "bigdoclimit", self.bigDocLimit)
-        self.incNotesWCount  = theConf.rdBool(cnfSec, "incnoteswcount", self.incNotesWCount)
-        self.showFullPath    = theConf.rdBool(cnfSec, "showfullpath", self.showFullPath)
-        self.highlightQuotes = theConf.rdBool(cnfSec, "highlightquotes", self.highlightQuotes)
-        self.allowOpenSQuote = theConf.rdBool(cnfSec, "allowopensquote", self.allowOpenSQuote)
-        self.allowOpenDQuote = theConf.rdBool(cnfSec, "allowopendquote", self.allowOpenDQuote)
-        self.highlightEmph   = theConf.rdBool(cnfSec, "highlightemph", self.highlightEmph)
-        self.stopWhenIdle    = theConf.rdBool(cnfSec, "stopwhenidle", self.stopWhenIdle)
-        self.userIdleTime    = theConf.rdInt(cnfSec, "useridletime", self.userIdleTime)
+        sec = "Editor"
+        self.textFont        = conf.rdStr(sec, "textfont", self.textFont)
+        self.textSize        = conf.rdInt(sec, "textsize", self.textSize)
+        self.textWidth       = conf.rdInt(sec, "width", self.textWidth)
+        self.textMargin      = conf.rdInt(sec, "margin", self.textMargin)
+        self.tabWidth        = conf.rdInt(sec, "tabwidth", self.tabWidth)
+        self.focusWidth      = conf.rdInt(sec, "focuswidth", self.focusWidth)
+        self.hideFocusFooter = conf.rdBool(sec, "hidefocusfooter", self.hideFocusFooter)
+        self.doJustify       = conf.rdBool(sec, "justify", self.doJustify)
+        self.autoSelect      = conf.rdBool(sec, "autoselect", self.autoSelect)
+        self.doReplace       = conf.rdBool(sec, "autoreplace", self.doReplace)
+        self.doReplaceSQuote = conf.rdBool(sec, "repsquotes", self.doReplaceSQuote)
+        self.doReplaceDQuote = conf.rdBool(sec, "repdquotes", self.doReplaceDQuote)
+        self.doReplaceDash   = conf.rdBool(sec, "repdash", self.doReplaceDash)
+        self.doReplaceDots   = conf.rdBool(sec, "repdots", self.doReplaceDots)
+        self.scrollPastEnd   = conf.rdInt(sec, "scrollpastend", self.scrollPastEnd)
+        self.autoScroll      = conf.rdBool(sec, "autoscroll", self.autoScroll)
+        self.autoScrollPos   = conf.rdInt(sec, "autoscrollpos", self.autoScrollPos)
+        self.fmtSQuoteOpen   = conf.rdStr(sec, "fmtsquoteopen", self.fmtSQuoteOpen)
+        self.fmtSQuoteClose  = conf.rdStr(sec, "fmtsquoteclose", self.fmtSQuoteClose)
+        self.fmtDQuoteOpen   = conf.rdStr(sec, "fmtdquoteopen", self.fmtDQuoteOpen)
+        self.fmtDQuoteClose  = conf.rdStr(sec, "fmtdquoteclose", self.fmtDQuoteClose)
+        self.fmtPadBefore    = conf.rdStr(sec, "fmtpadbefore", self.fmtPadBefore)
+        self.fmtPadAfter     = conf.rdStr(sec, "fmtpadafter", self.fmtPadAfter)
+        self.fmtPadThin      = conf.rdBool(sec, "fmtpadthin", self.fmtPadThin)
+        self.spellLanguage   = conf.rdStr(sec, "spellcheck", self.spellLanguage)
+        self.showTabsNSpaces = conf.rdBool(sec, "showtabsnspaces", self.showTabsNSpaces)
+        self.showLineEndings = conf.rdBool(sec, "showlineendings", self.showLineEndings)
+        self.showMultiSpaces = conf.rdBool(sec, "showmultispaces", self.showMultiSpaces)
+        self.wordCountTimer  = conf.rdFlt(sec, "wordcounttimer", self.wordCountTimer)
+        self.bigDocLimit     = conf.rdInt(sec, "bigdoclimit", self.bigDocLimit)
+        self.incNotesWCount  = conf.rdBool(sec, "incnoteswcount", self.incNotesWCount)
+        self.showFullPath    = conf.rdBool(sec, "showfullpath", self.showFullPath)
+        self.highlightQuotes = conf.rdBool(sec, "highlightquotes", self.highlightQuotes)
+        self.allowOpenSQuote = conf.rdBool(sec, "allowopensquote", self.allowOpenSQuote)
+        self.allowOpenDQuote = conf.rdBool(sec, "allowopendquote", self.allowOpenDQuote)
+        self.highlightEmph   = conf.rdBool(sec, "highlightemph", self.highlightEmph)
+        self.stopWhenIdle    = conf.rdBool(sec, "stopwhenidle", self.stopWhenIdle)
+        self.userIdleTime    = conf.rdInt(sec, "useridletime", self.userIdleTime)
 
         # State
-        cnfSec = "State"
-        self.showRefPanel   = theConf.rdBool(cnfSec, "showrefpanel", self.showRefPanel)
-        self.viewComments   = theConf.rdBool(cnfSec, "viewcomments", self.viewComments)
-        self.viewSynopsis   = theConf.rdBool(cnfSec, "viewsynopsis", self.viewSynopsis)
-        self.searchCase     = theConf.rdBool(cnfSec, "searchcase", self.searchCase)
-        self.searchWord     = theConf.rdBool(cnfSec, "searchword", self.searchWord)
-        self.searchRegEx    = theConf.rdBool(cnfSec, "searchregex", self.searchRegEx)
-        self.searchLoop     = theConf.rdBool(cnfSec, "searchloop", self.searchLoop)
-        self.searchNextFile = theConf.rdBool(cnfSec, "searchnextfile", self.searchNextFile)
-        self.searchMatchCap = theConf.rdBool(cnfSec, "searchmatchcap", self.searchMatchCap)
+        sec = "State"
+        self.showRefPanel   = conf.rdBool(sec, "showrefpanel", self.showRefPanel)
+        self.viewComments   = conf.rdBool(sec, "viewcomments", self.viewComments)
+        self.viewSynopsis   = conf.rdBool(sec, "viewsynopsis", self.viewSynopsis)
+        self.searchCase     = conf.rdBool(sec, "searchcase", self.searchCase)
+        self.searchWord     = conf.rdBool(sec, "searchword", self.searchWord)
+        self.searchRegEx    = conf.rdBool(sec, "searchregex", self.searchRegEx)
+        self.searchLoop     = conf.rdBool(sec, "searchloop", self.searchLoop)
+        self.searchNextFile = conf.rdBool(sec, "searchnextfile", self.searchNextFile)
+        self.searchMatchCap = conf.rdBool(sec, "searchmatchcap", self.searchMatchCap)
 
         # Deprecated Settings or Locations as of 2.0
         # ToDo: These will be loaded for a few minor releases until the users have converted them
-        self.guiFont         = theConf.rdStr("Main", "guifont", self.guiFont)
-        self.guiFontSize     = theConf.rdInt("Main", "guifontsize", self.guiFontSize)
-        self.guiLocale       = theConf.rdStr("Main", "guilang", self.guiLocale)
-        self._backupPath     = theConf.rdPath("Backup", "backuppath", self._backupPath)
-        self.backupOnClose   = theConf.rdBool("Backup", "backuponclose", self.backupOnClose)
-        self.askBeforeBackup = theConf.rdBool("Backup", "askbeforebackup", self.askBeforeBackup)
-        fmtSingleQuotes      = theConf.rdStrList(cnfSec, "fmtsinglequote", [])
-        fmtDoubleQuotes      = theConf.rdStrList(cnfSec, "fmtdoublequote", [])
+        self.guiFont         = conf.rdStr("Main", "guifont", self.guiFont)
+        self.guiFontSize     = conf.rdInt("Main", "guifontsize", self.guiFontSize)
+        self.guiLocale       = conf.rdStr("Main", "guilang", self.guiLocale)
+        self._backupPath     = conf.rdPath("Backup", "backuppath", self._backupPath)
+        self.backupOnClose   = conf.rdBool("Backup", "backuponclose", self.backupOnClose)
+        self.askBeforeBackup = conf.rdBool("Backup", "askbeforebackup", self.askBeforeBackup)
+        fmtSingleQuotes      = conf.rdStrList(sec, "fmtsinglequote", [])
+        fmtDoubleQuotes      = conf.rdStrList(sec, "fmtdoublequote", [])
 
         if isinstance(fmtSingleQuotes, list) and len(fmtSingleQuotes) == 2:
             self.fmtSQuoteOpen = fmtSingleQuotes[0]
@@ -630,9 +645,6 @@ class Config:
 
         # Check Values
         # ============
-
-        # Check Certain Values for None
-        self.spellLanguage = self._checkNone(self.spellLanguage)
 
         # If we're using straight quotes, disable auto-replace
         if self.fmtSQuoteOpen == self.fmtSQuoteClose == "'" and self.doReplaceSQuote:
@@ -645,18 +657,17 @@ class Config:
 
         return True
 
-    def saveConfig(self):
-        """Save the current preferences to file.
-        """
+    def saveConfig(self) -> bool:
+        """Save the current preferences to file."""
         logger.debug("Saving config file")
 
-        theConf = NWConfigParser()
+        conf = NWConfigParser()
 
-        theConf["Meta"] = {
+        conf["Meta"] = {
             "timestamp":    formatTimeStamp(time()),
         }
 
-        theConf["Main"] = {
+        conf["Main"] = {
             "theme":        str(self.guiTheme),
             "syntax":       str(self.guiSyntax),
             "font":         str(self.guiFont),
@@ -668,7 +679,7 @@ class Config:
             "lastpath":     str(self._lastPath),
         }
 
-        theConf["Sizes"] = {
+        conf["Sizes"] = {
             "mainwindow":   self._packList(self._mainWinSize),
             "preferences":  self._packList(self._prefsWinSize),
             "projloadcols": self._packList(self._projLoadCols),
@@ -677,16 +688,16 @@ class Config:
             "outlinepane":  self._packList(self._outlnPanePos),
         }
 
-        theConf["Project"] = {
+        conf["Project"] = {
             "autosaveproject": str(self.autoSaveProj),
             "autosavedoc":     str(self.autoSaveDoc),
             "emphlabels":      str(self.emphLabels),
-            "backuppath":      str(self._backupPath or ""),
+            "backuppath":      str(self._backupPath),
             "backuponclose":   str(self.backupOnClose),
             "askbeforebackup": str(self.askBeforeBackup),
         }
 
-        theConf["Editor"] = {
+        conf["Editor"] = {
             "textfont":        str(self.textFont),
             "textsize":        str(self.textSize),
             "width":           str(self.textWidth),
@@ -727,7 +738,7 @@ class Config:
             "useridletime":    str(self.userIdleTime),
         }
 
-        theConf["State"] = {
+        conf["State"] = {
             "showrefpanel":    str(self.showRefPanel),
             "viewcomments":    str(self.viewComments),
             "viewsynopsis":    str(self.viewSynopsis),
@@ -743,7 +754,7 @@ class Config:
         cnfPath = self._confPath / nwFiles.CONF_FILE
         try:
             with open(cnfPath, mode="w", encoding="utf-8") as outFile:
-                theConf.write(outFile)
+                conf.write(outFile)
         except Exception as exc:
             logger.error("Could not save config file")
             logException()
@@ -758,26 +769,14 @@ class Config:
     #  Internal Functions
     ##
 
-    def _packList(self, inData):
+    def _packList(self, data: list) -> str:
         """Pack a list of items into a comma-separated string for saving
         to the config file.
         """
-        return ", ".join([str(inVal) for inVal in inData])
+        return ", ".join([str(inVal) for inVal in data])
 
-    def _checkNone(self, checkVal):
-        """Return a NoneType if the value corresponds to None, otherwise
-        return the value unchanged.
-        """
-        if checkVal is None:
-            return None
-        if isinstance(checkVal, str):
-            if checkVal.lower() == "none":
-                return None
-        return checkVal
-
-    def _checkOptionalPackages(self):
-        """Check if we have the optional packages used by some features.
-        """
+    def _checkOptionalPackages(self) -> None:
+        """Check optional packages used by some features."""
         try:
             import enchant  # noqa: F401
         except ImportError:
@@ -793,14 +792,13 @@ class Config:
 
 class RecentProjects:
 
-    def __init__(self, config):
+    def __init__(self, config: Config) -> None:
         self._conf = config
         self._data = {}
         return
 
-    def loadCache(self):
-        """Load the cache file for recent projects.
-        """
+    def loadCache(self) -> bool:
+        """Load the cache file for recent projects."""
         self._data = {}
 
         cacheFile = self._conf.dataPath(nwFiles.RECENT_FILE)
@@ -823,9 +821,8 @@ class RecentProjects:
 
         return True
 
-    def saveCache(self):
-        """Save the cache dictionary of recent projects.
-        """
+    def saveCache(self) -> bool:
+        """Save the cache dictionary of recent projects."""
         cacheFile = self._conf.dataPath(nwFiles.RECENT_FILE)
         cacheTemp = cacheFile.with_suffix(".tmp")
         try:
@@ -839,27 +836,27 @@ class RecentProjects:
 
         return True
 
-    def listEntries(self):
-        """List all items in the cache.
-        """
-        return [(k, e["title"], e["words"], e["time"]) for k, e in self._data.items()]
+    def listEntries(self) -> list[tuple[str, str, int, int]]:
+        """List all items in the cache."""
+        return [
+            (str(k), str(e["title"]), checkInt(e["words"], 0), checkInt(e["time"], 0))
+            for k, e in self._data.items()
+        ]
 
-    def update(self, projPath, projTitle, wordCount, saveTime):
-        """Add or update recent cache information on a given project.
-        """
-        self._data[str(projPath)] = {
-            "title": projTitle,
-            "words": int(wordCount),
-            "time": int(saveTime),
+    def update(self, path: str | Path, title: str, words: int, saved: float | int) -> None:
+        """Add or update recent cache information on a given project."""
+        self._data[str(path)] = {
+            "title": title,
+            "words": int(words),
+            "time": int(saved),
         }
         self.saveCache()
         return
 
-    def remove(self, projPath):
-        """Try to remove a path from the recent projects cache.
-        """
-        if self._data.pop(str(projPath), None) is not None:
-            logger.debug("Removed recent: %s", projPath)
+    def remove(self, path: str | Path) -> None:
+        """Try to remove a path from the recent projects cache."""
+        if self._data.pop(str(path), None) is not None:
+            logger.debug("Removed recent: %s", path)
             self.saveCache()
         return
 

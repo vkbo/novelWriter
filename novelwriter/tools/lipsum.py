@@ -1,7 +1,6 @@
 """
 novelWriter – Lorem Ipsum Tool
 ==============================
-Simple tool for inserting placeholder text in a document
 
 File History:
 Created: 2022-04-02 [2.0rc1]
@@ -22,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import random
 import logging
@@ -49,8 +49,7 @@ class GuiLipsum(QDialog):
         if CONFIG.osDarwin:
             self.setWindowFlag(Qt.WindowType.Tool)
 
-        self.mainGui   = mainGui
-        self.mainTheme = mainGui.mainTheme
+        self.mainGui = mainGui
 
         self.setWindowTitle(self.tr("Insert Placeholder Text"))
 
@@ -61,7 +60,7 @@ class GuiLipsum(QDialog):
         nPx = CONFIG.pxInt(64)
         vSp = CONFIG.pxInt(4)
         self.docIcon = QLabel()
-        self.docIcon.setPixmap(self.mainTheme.getPixmap("proj_document", (nPx, nPx)))
+        self.docIcon.setPixmap(CONFIG.theme.getPixmap("proj_document", (nPx, nPx)))
 
         self.leftBox = QVBoxLayout()
         self.leftBox.setSpacing(vSp)

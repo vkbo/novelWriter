@@ -110,7 +110,7 @@ class ProjectXMLReader:
         Rev 1: Drops the titleFormat section of settings.
     """
 
-    def __init__(self, path):
+    def __init__(self, path: str | Path) -> None:
         self._path = Path(path)
         self._state = XMLReadState.NO_ACTION
         self._root = ""
@@ -236,7 +236,7 @@ class ProjectXMLReader:
     #  Internal Functions
     ##
 
-    def _parseProjectMeta(self, xSection: ET.Element, data: NWProjectData):
+    def _parseProjectMeta(self, xSection: ET.Element, data: NWProjectData) -> None:
         """Parse the project section of the XML file."""
         logger.debug("Parsing <project> section")
 
@@ -267,7 +267,7 @@ class ProjectXMLReader:
 
         return
 
-    def _parseProjectSettings(self, xSection: ET.Element, data: NWProjectData):
+    def _parseProjectSettings(self, xSection: ET.Element, data: NWProjectData) -> None:
         """Parse the settings section of the XML file."""
         logger.debug("Parsing <settings> section")
 
@@ -307,7 +307,9 @@ class ProjectXMLReader:
 
         return
 
-    def _parseProjectContent(self, xSection: ET.Element, data: NWProjectData, content: list):
+    def _parseProjectContent(
+        self, xSection: ET.Element, data: NWProjectData, content: list
+    ) -> None:
         """Parse the content section of the XML file."""
         logger.debug("Parsing <content> section")
 
@@ -362,7 +364,9 @@ class ProjectXMLReader:
 
         return
 
-    def _parseProjectContentLegacy(self, xSection: ET.Element, data: NWProjectData, content: list):
+    def _parseProjectContentLegacy(
+        self, xSection: ET.Element, data: NWProjectData, content: list
+    ) -> None:
         """Parse the content section of the XML file for older versions."""
         logger.debug("Parsing <content> section (legacy format)")
 
@@ -438,7 +442,7 @@ class ProjectXMLReader:
 
         return
 
-    def _parseStatusImport(self, xItem: ET.Element, sObject: NWStatus):
+    def _parseStatusImport(self, xItem: ET.Element, sObject: NWStatus) -> None:
         """Parse a status or importance entry."""
         for xEntry in xItem:
             if xEntry.tag == "entry":
@@ -447,7 +451,7 @@ class ProjectXMLReader:
                 green = checkInt(xEntry.attrib.get("green", 0), 0)
                 blue  = checkInt(xEntry.attrib.get("blue", 0), 0)
                 count = checkInt(xEntry.attrib.get("count", 0), 0)
-                sObject.write(key, xEntry.text, (red, green, blue), count)
+                sObject.write(key, xEntry.text or "", (red, green, blue), count)
         return
 
     def _parseDictKeyText(self, xItem: ET.Element) -> dict:
@@ -460,7 +464,7 @@ class ProjectXMLReader:
                 result[xEntry.attrib["key"]] = checkString(xEntry.text, "")
         return result
 
-    def _parseDictTagText(self, xItem):
+    def _parseDictTagText(self, xItem) -> dict:
         """Parse a dictionary stored with key as the tag and the value
         as the text property.
         """
@@ -476,7 +480,7 @@ class ProjectXMLWriter:
     very latest spec.
     """
 
-    def __init__(self, path):
+    def __init__(self, path: str | Path) -> None:
         self._path = Path(path)
         self._error = None
         return
@@ -585,13 +589,13 @@ class ProjectXMLWriter:
 
     def _packSingleValue(
         self, xParent: ET.Element, name: str, value: str | None, attrib: dict | None = None
-    ):
+    ) -> None:
         """Pack a single value into an XML element."""
         xItem = ET.SubElement(xParent, name, attrib=attrib or {})
         xItem.text = str(value) or ""
         return
 
-    def _packDictKeyValue(self, xParent: ET.Element, name: str, data: dict):
+    def _packDictKeyValue(self, xParent: ET.Element, name: str, data: dict) -> None:
         """Pack the entries of a dictionary into an XML element."""
         xItem = ET.SubElement(xParent, name)
         for key, value in data.items():

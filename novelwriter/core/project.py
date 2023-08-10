@@ -1,7 +1,6 @@
 """
 novelWriter – Project Wrapper
 =============================
-The parent class for a novelWriter project
 
 File History:
 Created: 2018-09-29 [0.0.1]
@@ -416,14 +415,6 @@ class NWProject(QObject):
         logger.info("Backing up project")
         self.mainGui.setStatus(self.tr("Backing up project ..."))
 
-        backupPath = CONFIG.backupPath()
-        if not isinstance(backupPath, Path):
-            self.mainGui.makeAlert(self.tr(
-                "Cannot backup project because no valid backup path is set. "
-                "Please set a valid backup location in Preferences."
-            ), level=nwAlert.ERROR)
-            return False
-
         if not self._data.name:
             self.mainGui.makeAlert(self.tr(
                 "Cannot backup project because no project name is set. "
@@ -432,9 +423,10 @@ class NWProject(QObject):
             return False
 
         cleanName = makeFileNameSafe(self._data.name)
+        backupPath = CONFIG.backupPath()
         baseDir = backupPath / cleanName
         try:
-            baseDir.mkdir(exist_ok=True)
+            baseDir.mkdir(exist_ok=True, parents=True)
         except Exception as exc:
             self.mainGui.makeAlert(self.tr(
                 "Could not create backup folder."
@@ -444,11 +436,12 @@ class NWProject(QObject):
         timeStamp = formatTimeStamp(time(), fileSafe=True)
         archName = baseDir / f"{cleanName} {timeStamp}.zip"
         if self._storage.zipIt(archName, compression=2):
-            size = archName.stat().st_size
+            size = formatInt(archName.stat().st_size)
             if doNotify:
-                self.mainGui.makeAlert(self.tr(
-                    "Backup archive file written to: {0} [{1}B]"
-                ).format(str(archName), formatInt(size)))
+                self.mainGui.makeAlert(
+                    self.tr("Created a backup of your project of size {0}B.").format(size),
+                    info=self.tr("Path: {0}").format(str(backupPath))
+                )
         else:
             self.mainGui.makeAlert(self.tr(
                 "Could not write backup archive."

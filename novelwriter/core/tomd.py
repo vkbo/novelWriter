@@ -45,12 +45,10 @@ class ToMarkdown(Tokenizer):
     M_STD = 0  # Standard Markdown
     M_GH  = 1  # GitHub Markdown
 
-    def __init__(self, project: NWProject):
+    def __init__(self, project: NWProject) -> None:
         super().__init__(project)
-
         self._genMode = self.M_STD
-        self._fullMD = []
-
+        self._fullMD: list[str] = []
         return
 
     ##
@@ -58,7 +56,7 @@ class ToMarkdown(Tokenizer):
     ##
 
     @property
-    def fullMD(self) -> list:
+    def fullMD(self) -> list[str]:
         """Return the markdown as a list."""
         return self._fullMD
 
@@ -66,11 +64,11 @@ class ToMarkdown(Tokenizer):
     #  Setters
     ##
 
-    def setStandardMarkdown(self):
+    def setStandardMarkdown(self) -> None:
         self._genMode = self.M_STD
         return
 
-    def setGitHubMarkdown(self):
+    def setGitHubMarkdown(self) -> None:
         self._genMode = self.M_GH
         return
 
@@ -82,7 +80,7 @@ class ToMarkdown(Tokenizer):
         """Return the size of the full Markdown result."""
         return sum([len(x) for x in self._fullMD])
 
-    def doConvert(self):
+    def doConvert(self) -> None:
         """Convert the list of text tokens into a HTML document saved
         to theResult.
         """
@@ -175,14 +173,14 @@ class ToMarkdown(Tokenizer):
 
         return
 
-    def saveMarkdown(self, path: str | Path):
+    def saveMarkdown(self, path: str | Path) -> None:
         """Save the data to a plain text file."""
         with open(path, mode="w", encoding="utf-8") as outFile:
             outFile.write("".join(self._fullMD))
         logger.info("Wrote file: %s", path)
         return
 
-    def replaceTabs(self, nSpaces: int = 8, spaceChar: str = " "):
+    def replaceTabs(self, nSpaces: int = 8, spaceChar: str = " ") -> None:
         """Replace tabs with spaces."""
         spaces = spaceChar*nSpaces
         self._fullMD = [p.replace("\t", spaces) for p in self._fullMD]

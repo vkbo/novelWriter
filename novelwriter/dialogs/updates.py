@@ -1,7 +1,6 @@
 """
 novelWriter – GUI Updates
 =========================
-A dialog box for checking for latest updates
 
 File History:
 Created: 2021-08-21 [1.5b1]
@@ -22,6 +21,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import json
 import logging
@@ -49,9 +49,6 @@ class GuiUpdates(QDialog):
 
         logger.debug("Create: GuiUpdates")
         self.setObjectName("GuiUpdates")
-
-        self.mainGui = mainGui
-
         self.setWindowTitle(self.tr("Check for Updates"))
 
         nPx = CONFIG.pxInt(96)
@@ -61,7 +58,7 @@ class GuiUpdates(QDialog):
 
         # Left Box
         self.nwIcon = QLabel()
-        self.nwIcon.setPixmap(self.mainGui.mainTheme.getPixmap("novelwriter", (nPx, nPx)))
+        self.nwIcon.setPixmap(CONFIG.theme.getPixmap("novelwriter", (nPx, nPx)))
 
         self.leftBox = QVBoxLayout()
         self.leftBox.addWidget(self.nwIcon)

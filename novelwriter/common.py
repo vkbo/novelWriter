@@ -121,8 +121,7 @@ def checkUuid(value: Any, default: str) -> str:
 
 
 def checkPath(value: Any, default: Path) -> Path:
-    """Check if a value is a valid path. Non-empty strings are accepted.
-    """
+    """Check if a value is a valid path."""
     if isinstance(value, Path):
         return value
     elif isinstance(value, str):
@@ -289,8 +288,7 @@ def transferCase(source: str, target: str) -> str:
 
 
 def fuzzyTime(seconds: int) -> str:
-    """Converts a time difference in seconds into a fuzzy time string.
-    """
+    """Convert a time difference in seconds into a fuzzy time string."""
     if seconds < 0:
         return QCoreApplication.translate(
             "Common", "in the future"
@@ -350,8 +348,7 @@ def fuzzyTime(seconds: int) -> str:
 
 
 def numberToRoman(value: int, toLower: bool = False) -> str:
-    """Convert an integer to a Roman number.
-    """
+    """Convert an integer to a Roman number."""
     if not isinstance(value, int):
         return "NAN"
     if value < 1 or value > 4999:
@@ -424,12 +421,14 @@ def jsonEncode(data: dict | list | tuple, n: int = 0, nmax: int = 0) -> str:
     return "".join(buffer)
 
 
-def xmlIndent(tree: ET.Element | ET.ElementTree):
+def xmlIndent(tree: ET.Element | ET.ElementTree) -> None:
     """A modified version of the XML indent function in the standard
     library. It behaves more closely to how the one from lxml does.
     """
     if isinstance(tree, ET.ElementTree):
         tree = tree.getroot()
+    if not isinstance(tree, ET.Element):
+        return
 
     indentations = ["\n"]
 

@@ -48,7 +48,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwGUI.projView.projTree._getTreeItem(C.hCharRoot).setSelected(True)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE)
 
-    contentPath = nwGUI.theProject.storage.contentPath
+    contentPath = nwGUI.project.storage.contentPath
     assert isinstance(contentPath, Path)
 
     (contentPath / "0000000000010.nwd").write_text(

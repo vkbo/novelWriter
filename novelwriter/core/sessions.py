@@ -47,7 +47,7 @@ class NWSessionLog:
     format. That is, one JSON object per line.
     """
 
-    def __init__(self, project: NWProject):
+    def __init__(self, project: NWProject) -> None:
         self._project = project
         self._start = 0.0
         return
@@ -65,7 +65,7 @@ class NWSessionLog:
     #  Methods
     ##
 
-    def startSession(self):
+    def startSession(self) -> None:
         """Start the writing session."""
         self._start = time()
         return

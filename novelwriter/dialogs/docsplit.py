@@ -1,7 +1,6 @@
 """
 novelWriter – GUI Doc Split Dialog
 ==================================
-Custom dialog class for splitting documents.
 
 File History:
 Created:   2020-02-01 [0.4.3]
@@ -23,6 +22,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 
@@ -51,9 +51,7 @@ class GuiDocSplit(QDialog):
         logger.debug("Create: GuiDocSplit")
         self.setObjectName("GuiDocSplit")
 
-        self.mainGui    = mainGui
-        self.mainTheme  = mainGui.mainTheme
-        self.theProject = mainGui.theProject
+        self.mainGui = mainGui
 
         self._data = {}
         self._text = []
@@ -63,16 +61,16 @@ class GuiDocSplit(QDialog):
         self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Document Headers")))
         self.helpLabel = NHelpLabel(
             self.tr("Select the maximum level to split into files."),
-            self.mainGui.mainTheme.helpText
+            CONFIG.theme.helpText
         )
 
         # Values
-        iPx = self.mainTheme.baseIconSize
+        iPx = CONFIG.theme.baseIconSize
         hSp = CONFIG.pxInt(12)
         vSp = CONFIG.pxInt(8)
         bSp = CONFIG.pxInt(12)
 
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
         spLevel = pOptions.getInt("GuiDocSplit", "spLevel", 3)
         intoFolder = pOptions.getBool("GuiDocSplit", "intoFolder", True)
         docHierarchy = pOptions.getBool("GuiDocSplit", "docHierarchy", True)
@@ -171,7 +169,7 @@ class GuiDocSplit(QDialog):
         self._data["docHierarchy"] = docHierarchy
         self._data["moveToTrash"] = moveToTrash
 
-        pOptions = self.theProject.options
+        pOptions = self.mainGui.project.options
         pOptions.setValue("GuiDocSplit", "spLevel", spLevel)
         pOptions.setValue("GuiDocSplit", "intoFolder", intoFolder)
         pOptions.setValue("GuiDocSplit", "docHierarchy", docHierarchy)
@@ -201,13 +199,13 @@ class GuiDocSplit(QDialog):
 
         self.listBox.clear()
 
-        nwItem = self.theProject.tree[sHandle]
+        nwItem = self.mainGui.project.tree[sHandle]
         if nwItem is None or not nwItem.isFileType():
             return
 
         spLevel = self.splitLevel.currentData()
         if not self._text:
-            inDoc = self.theProject.storage.getDocument(sHandle)
+            inDoc = self.mainGui.project.storage.getDocument(sHandle)
             self._text = (inDoc.readDocument() or "").splitlines()
 
         for lineNo, aLine in enumerate(self._text):

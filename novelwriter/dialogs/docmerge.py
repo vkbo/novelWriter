@@ -1,7 +1,6 @@
 """
 novelWriter – GUI Doc Merge Dialog
 ==================================
-Custom dialog class for merging documents.
 
 File History:
 Created:   2020-01-23 [0.4.3]
@@ -23,6 +22,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import logging
 
@@ -49,9 +49,7 @@ class GuiDocMerge(QDialog):
         logger.debug("Create: GuiDocMerge")
         self.setObjectName("GuiDocMerge")
 
-        self.mainGui    = mainGui
-        self.mainTheme  = mainGui.mainTheme
-        self.theProject = mainGui.theProject
+        self.mainGui = mainGui
 
         self._data = {}
 
@@ -60,9 +58,9 @@ class GuiDocMerge(QDialog):
         self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Documents to Merge")))
         self.helpLabel = NHelpLabel(self.tr(
             "Drag and drop items to change the order, or uncheck to exclude."
-        ), self.mainTheme.helpText)
+        ), CONFIG.theme.helpText)
 
-        iPx = self.mainTheme.baseIconSize
+        iPx = CONFIG.theme.baseIconSize
         hSp = CONFIG.pxInt(12)
         vSp = CONFIG.pxInt(8)
         bSp = CONFIG.pxInt(12)
@@ -157,11 +155,11 @@ class GuiDocMerge(QDialog):
 
         self.listBox.clear()
         for tHandle in itemList:
-            nwItem = self.theProject.tree[tHandle]
+            nwItem = self.mainGui.project.tree[tHandle]
             if nwItem is None or not nwItem.isFileType():
                 continue
 
-            itemIcon = self.mainTheme.getItemIcon(
+            itemIcon = CONFIG.theme.getItemIcon(
                 nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, nwItem.mainHeading
             )
 
