@@ -376,7 +376,7 @@ class NWProject(QObject):
         if not xmlWriter.write(self._data, content, saveTime, editTime):
             self.mainGui.makeAlert(self.tr(
                 "Failed to save project."
-            ), level=nwAlert.ERROR, exception=xmlWriter.error)
+            ), level=nwAlert.ERROR, exc=xmlWriter.error)
             return False
 
         # Save other project data
@@ -430,7 +430,7 @@ class NWProject(QObject):
         except Exception as exc:
             self.mainGui.makeAlert(self.tr(
                 "Could not create backup folder."
-            ), level=nwAlert.ERROR, exception=exc)
+            ), level=nwAlert.ERROR, exc=exc)
             return False
 
         timeStamp = formatTimeStamp(time(), fileSafe=True)

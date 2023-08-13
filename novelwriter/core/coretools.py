@@ -480,7 +480,7 @@ class ProjectBuilder:
             except Exception as exc:
                 self.mainGui.makeAlert(self.tr(
                     "Failed to create a new example project."
-                ), level=nwAlert.ERROR, exception=exc)
+                ), level=nwAlert.ERROR, exc=exc)
                 return False
 
         else:

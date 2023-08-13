@@ -51,7 +51,7 @@ class MockGuiMain(QObject):
     def postLaunchTasks(self, cmdOpen):
         return
 
-    def makeAlert(self, text, info="", detals="", level=0, exception=None):
+    def makeAlert(self, text, info="", detals="", level=0, exc=None):
         assert isinstance(text, str)
         print("%s: %s" % (str(level), text))
         self.lastAlert = str(text)

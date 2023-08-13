@@ -752,7 +752,7 @@ class GuiMain(QMainWindow):
         except Exception as exc:
             self.makeAlert(self.tr(
                 "Could not read file. The file must be an existing text file."
-            ), level=nwAlert.ERROR, exception=exc)
+            ), level=nwAlert.ERROR, exc=exc)
             return False
 
         if self.docEditor.docHandle() is None:
@@ -1094,21 +1094,19 @@ class GuiMain(QMainWindow):
         return
 
     def makeAlert(self, text: str, info: str = "", details: str = "",
-                  level: nwAlert = nwAlert.INFO, exception: Exception | None = None) -> None:
-        """Alert both the user and the logger at the same time. The
-        message can be either a string or a list of strings.
-        """
+                  level: nwAlert = nwAlert.INFO, exc: Exception | None = None) -> None:
+        """Alert both the user and the logger at the same time."""
         logText = " ".join(filter(None, [text, info, details]))
         if level == nwAlert.INFO:
             logger.info(logText, stacklevel=2)
         elif level == nwAlert.WARN:
             logger.warning(logText, stacklevel=2)
         elif level == nwAlert.ERROR:
-            logger.error(logText, stacklevel=2, exc_info=exception)
+            logger.error(logText, stacklevel=2, exc_info=exc)
 
-        if exception is not None:
-            excText = f"{type(exception).__name__}: {str(exception)}"
-            info = f"{info}<br>{excText}" if info else excText
+        if exc is not None:
+            tExc = f"{type(exc).__name__}: {str(exc)}"
+            info = f"{info}<br>{tExc}" if info else tExc
 
         msgBox = QMessageBox(self)
         msgBox.setWindowTitle(trConst(nwLabels.ALERT_NAME[level]))
