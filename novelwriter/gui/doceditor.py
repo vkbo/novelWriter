@@ -101,7 +101,7 @@ class GuiDocEditor(QTextEdit):
         self._wordCount  = 0      # Word count
         self._paraCount  = 0      # Paragraph count
         self._lastEdit   = 0      # Time stamp of last edit
-        self._lastActive = 0      # Time stamp of last activity
+        self._lastActive = 0.0    # Time stamp of last activity
         self._lastFind   = None   # Position of the last found search word
         self._bigDoc     = False  # Flag for very large document size
         self._doReplace  = False  # Switch to temporarily disable auto-replace
@@ -188,6 +188,34 @@ class GuiDocEditor(QTextEdit):
 
         return
 
+    ##
+    #  Properties
+    ##
+
+    @property
+    def docChanged(self) -> bool:
+        """Return the changed status of the document."""
+        return self._docChanged
+
+    @property
+    def docHandle(self) -> str | None:
+        """Return the handle of the currently open document."""
+        return self._docHandle
+
+    @property
+    def lastActive(self) -> float:
+        """Return the last active timestamp for the user."""
+        return self._lastActive
+
+    @property
+    def isEmpty(self) -> bool:
+        """Check if the current document is empty."""
+        return self.document().isEmpty()
+
+    ##
+    #  Methods
+    ##
+
     def clearEditor(self):
         """Clear the current document and reset all document-related
         flags and counters.
@@ -203,7 +231,7 @@ class GuiDocEditor(QTextEdit):
         self._wordCount  = 0
         self._paraCount  = 0
         self._lastEdit   = 0
-        self._lastActive = 0
+        self._lastActive = 0.0
         self._lastFind   = None
         self._bigDoc     = False
         self._doReplace  = False
@@ -579,31 +607,6 @@ class GuiDocEditor(QTextEdit):
         self.setViewportMargins(tM, uM, tM, lM)
 
         return
-
-    ##
-    #  Properties
-    ##
-
-    def docChanged(self):
-        """Return the changed status of the document in the editor.
-        """
-        return self._docChanged
-
-    def docHandle(self):
-        """Return the handle of the currently open document. Return
-        None if no document is open.
-        """
-        return self._docHandle
-
-    def lastActive(self):
-        """Return the last active timestamp for the user.
-        """
-        return self._lastActive
-
-    def isEmpty(self):
-        """Wrapper function to check if the current document is empty.
-        """
-        return self.document().isEmpty()
 
     ##
     #  Getters

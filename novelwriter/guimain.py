@@ -236,7 +236,7 @@ class GuiMain(QMainWindow):
         # Connect Signals
         # ===============
 
-        SHARED.project.projectStatusChanged.connect(self.mainStatus.doUpdateProjectStatus)
+        SHARED.projectStatusChanged.connect(self.mainStatus.doUpdateProjectStatus)
 
         self.viewsBar.viewChangeRequested.connect(self._changeView)
 
@@ -337,25 +337,6 @@ class GuiMain(QMainWindow):
 
         return
 
-    def clearGUI(self) -> None:
-        """Clear all sub-elements of the main GUI."""
-        # Project Area
-        self.projView.clearProject()
-        self.novelView.clearProject()
-        self.itemDetails.clearDetails()
-
-        # Work Area
-        self.docEditor.clearEditor()
-        self.docEditor.setDictionaries()
-        self.closeDocViewer(byUser=False)
-        self.outlineView.clearProject()
-
-        # General
-        self.mainStatus.clearStatus()
-        self._updateWindowTitle()
-
-        return
-
     def initMain(self) -> None:
         """Initialise elements that depend on user settings."""
         self.asProjTimer.setInterval(int(CONFIG.autoSaveProj*1000))
@@ -446,7 +427,7 @@ class GuiMain(QMainWindow):
             if not msgYes:
                 return False
 
-        if self.docEditor.docChanged():
+        if self.docEditor.docChanged:
             self.saveDocument()
 
         saveOK = self.saveProject()
@@ -462,14 +443,20 @@ class GuiMain(QMainWindow):
         if saveOK:
             self.closeDocument()
             self.docViewer.clearNavHistory()
+            self.closeDocViewer(byUser=False)
+
             self.outlineView.closeProjectTasks()
             self.novelView.closeProjectTasks()
+            self.projView.clearProjectView()
+            self.itemDetails.clearDetails()
+            self.mainStatus.clearStatus()
 
             SHARED.closeProject(self.idleTime)
             self.idleRefTime = time()
             self.idleTime = 0.0
 
-            self.clearGUI()
+            self.docEditor.setDictionaries()
+            self._updateWindowTitle()
             self._changeView(nwView.PROJECT)
 
         return saveOK
@@ -594,7 +581,7 @@ class GuiMain(QMainWindow):
             self.toggleFocusMode()
 
         self.docEditor.saveCursorPosition()
-        if self.docEditor.docChanged():
+        if self.docEditor.docChanged:
             self.saveDocument()
         self.docEditor.clearEditor()
         if not beforeOpen:
@@ -614,7 +601,7 @@ class GuiMain(QMainWindow):
             return False
 
         self._changeView(nwView.EDITOR)
-        cHandle = self.docEditor.docHandle()
+        cHandle = self.docEditor.docHandle
         if cHandle == tHandle:
             self.docEditor.setCursorLine(tLine)
             if changeFocus:
@@ -682,7 +669,7 @@ class GuiMain(QMainWindow):
             logger.debug("Viewing document, but no handle provided")
 
             if self.docEditor.hasFocus():
-                tHandle = self.docEditor.docHandle()
+                tHandle = self.docEditor.docHandle
 
             if tHandle is not None:
                 self.saveDocument()
@@ -750,13 +737,13 @@ class GuiMain(QMainWindow):
             ), level=nwAlert.ERROR, exc=exc)
             return False
 
-        if self.docEditor.docHandle() is None:
+        if self.docEditor.docHandle is None:
             self.makeAlert(self.tr(
                 "Please open a document to import the text file into."
             ), level=nwAlert.ERROR)
             return False
 
-        if not self.docEditor.isEmpty():
+        if not self.docEditor.isEmpty:
             msgYes = self.askQuestion(self.tr(
                 "Importing the file will overwrite the current content of "
                 "the document. Do you want to proceed?"
@@ -825,7 +812,7 @@ class GuiMain(QMainWindow):
             return False
 
         if tHandle is None and (self.docEditor.anyFocus() or self.isFocusMode):
-            tHandle = self.docEditor.docHandle()
+            tHandle = self.docEditor.docHandle
         self.projView.renameTreeItem(tHandle)
 
         return True
@@ -1219,7 +1206,7 @@ class GuiMain(QMainWindow):
         """Handle toggle focus mode. The Main GUI Focus Mode hides tree,
         view, statusbar and menu.
         """
-        if self.docEditor.docHandle() is None:
+        if self.docEditor.docHandle is None:
             logger.error("No document open, so not activating Focus Mode")
             return False
 
@@ -1242,7 +1229,7 @@ class GuiMain(QMainWindow):
 
         if self.splitView.isVisible():
             self.splitView.setVisible(False)
-        elif self.docViewer.docHandle() is not None:
+        elif self.docViewer.docHandle is not None:
             self.splitView.setVisible(True)
 
         return True
@@ -1474,7 +1461,7 @@ class GuiMain(QMainWindow):
             return
 
         currTime = time()
-        editIdle = currTime - self.docEditor.lastActive() > CONFIG.userIdleTime
+        editIdle = currTime - self.docEditor.lastActive > CONFIG.userIdleTime
         userIdle = qApp.applicationState() != Qt.ApplicationActive
 
         if editIdle or userIdle:
@@ -1502,7 +1489,7 @@ class GuiMain(QMainWindow):
     @pyqtSlot()
     def _autoSaveDocument(self) -> None:
         """Autosave of the document. This is a timer-activated slot."""
-        if SHARED.hasProject and self.docEditor.docChanged():
+        if SHARED.hasProject and self.docEditor.docChanged:
             logger.debug("Autosaving document")
             self.saveDocument()
         return

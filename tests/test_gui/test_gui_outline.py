@@ -246,7 +246,7 @@ def testGuiOutline_Content(qtbot, nwGUI, prjLipsum):
     # Click POV Link
     assert outlineData.povKeyValue.text() == "<a href='Bod'>Bod</a>"
     outlineView._tagClicked("Bod")
-    assert nwGUI.docViewer.docHandle() == "4c4f28287af27"
+    assert nwGUI.docViewer.docHandle == "4c4f28287af27"
 
     # Scene One, Section Two
     selItem = outlineTree.topLevelItem(5)
@@ -262,7 +262,7 @@ def testGuiOutline_Content(qtbot, nwGUI, prjLipsum):
     assert outlineData.itemValue.text() == "Finished"
 
     outlineTree._treeDoubleClick(selItem, 0)
-    assert nwGUI.docEditor.docHandle() == "88243afbe5ed8"
+    assert nwGUI.docEditor.docHandle == "88243afbe5ed8"
 
     # qtbot.stop()
 

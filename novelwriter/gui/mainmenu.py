@@ -349,13 +349,13 @@ class GuiMainMenu(QMenuBar):
         # View > Go Backward
         self.aViewPrev = QAction(self.tr("Navigate Backward"), self)
         self.aViewPrev.setShortcut("Alt+Left")
-        self.aViewPrev.triggered.connect(lambda: self.mainGui.docViewer.navBackward())
+        self.aViewPrev.triggered.connect(self.mainGui.docViewer.navBackward)
         self.viewMenu.addAction(self.aViewPrev)
 
         # View > Go Forward
         self.aViewNext = QAction(self.tr("Navigate Forward"), self)
         self.aViewNext.setShortcut("Alt+Right")
-        self.aViewNext.triggered.connect(lambda: self.mainGui.docViewer.navForward())
+        self.aViewNext.triggered.connect(self.mainGui.docViewer.navForward)
         self.viewMenu.addAction(self.aViewNext)
 
         # View > Separator

@@ -129,7 +129,7 @@ class NWStatus:
 
     def name(self, key: str | None) -> str:
         """Return the name associated with a given key."""
-        if key in self._store:
+        if key and key in self._store:
             return self._store[key]["name"]
         elif self._default is not None:
             return self._store[self._default]["name"]
@@ -137,7 +137,7 @@ class NWStatus:
 
     def cols(self, key: str | None) -> tuple[int, int, int]:
         """Return the colours associated with a given key."""
-        if key in self._store:
+        if key and key in self._store:
             return self._store[key]["cols"]
         elif self._default is not None:
             return self._store[self._default]["cols"]
@@ -145,7 +145,7 @@ class NWStatus:
 
     def count(self, key: str | None) -> int:
         """Return the count associated with a given key."""
-        if key in self._store:
+        if key and key in self._store:
             return self._store[key]["count"]
         elif self._default is not None:
             return self._store[self._default]["count"]
@@ -153,7 +153,7 @@ class NWStatus:
 
     def icon(self, key: str | None) -> QIcon:
         """Return the icon associated with a given key."""
-        if key in self._store:
+        if key and key in self._store:
             return self._store[key]["icon"]
         elif self._default is not None:
             return self._store[self._default]["icon"]
@@ -186,9 +186,9 @@ class NWStatus:
             self._store[key]["count"] = 0
         return
 
-    def increment(self, key: str) -> None:
+    def increment(self, key: str | None) -> None:
         """Increment the counter for a given entry."""
-        if key in self._store:
+        if key and key in self._store:
             self._store[key]["count"] += 1
         return
 

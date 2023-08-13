@@ -382,9 +382,11 @@ class NWProject(QObject):
         self._storage.runPostSaveTasks(autoSave=autoSave)
 
         # Update recent projects
-        CONFIG.recentProjects.update(
-            self._storage.storagePath, self._data.name, sum(self._data.currCounts), saveTime
-        )
+        storePath = self._storage.storagePath
+        if storePath:
+            CONFIG.recentProjects.update(
+                storePath, self._data.name, sum(self._data.currCounts), saveTime
+            )
 
         self._storage.writeLockFile()
         self.mainGui.setStatus(self.tr("Saved Project: {0}").format(self._data.name))
@@ -393,7 +395,7 @@ class NWProject(QObject):
         return True
 
     def closeProject(self, idleTime: float = 0.0) -> None:
-        """Close the current project and clear all meta data."""
+        """Close the project."""
         logger.info("Closing project")
         self._options.saveSettings()
         self._tree.writeToCFile()

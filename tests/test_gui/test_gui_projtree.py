@@ -450,10 +450,10 @@ def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, pro
 
     # Deleting file is OK, and if it is open, it should close
     assert nwGUI.openDocument(C.hTitlePage) is True
-    assert nwGUI.docEditor.docHandle() == C.hTitlePage
+    assert nwGUI.docEditor.docHandle == C.hTitlePage
     assert projTree.permDeleteItem(C.hTitlePage) is True
     assert C.hTitlePage not in theProject.tree
-    assert nwGUI.docEditor.docHandle() is None
+    assert nwGUI.docEditor.docHandle is None
 
     # Deleting folder + files recursively is ok
     assert projTree.permDeleteItem(C.hChapterDir) is True
@@ -969,25 +969,25 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd)
     # Try to open a file with nothings selected
     projTree.clearSelection()
     projTree._treeDoubleClick(QTreeWidgetItem(), 0)
-    assert nwGUI.docEditor.docHandle() is None
+    assert nwGUI.docEditor.docHandle is None
 
     # When the item cannot be found
     projTree._getTreeItem(C.hTitlePage).setSelected(True)  # type: ignore
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.tree.NWTree.__getitem__", lambda *a: None)
         projTree._treeDoubleClick(QTreeWidgetItem(), 0)
-        assert nwGUI.docEditor.docHandle() is None
+        assert nwGUI.docEditor.docHandle is None
 
     # Successfully open a file
     projTree._treeDoubleClick(projTree._getTreeItem(C.hTitlePage), 0)
-    assert nwGUI.docEditor.docHandle() == C.hTitlePage
+    assert nwGUI.docEditor.docHandle == C.hTitlePage
     projTree._getTreeItem(C.hTitlePage).setSelected(False)  # type: ignore
 
     # A non-file item should be expanded instead
     projTree._getTreeItem(C.hNovelRoot).setExpanded(False)  # type: ignore
     projTree._getTreeItem(C.hNovelRoot).setSelected(True)  # type: ignore
     projTree._treeDoubleClick(projTree._getTreeItem(C.hNovelRoot), 1)
-    assert nwGUI.docEditor.docHandle() == C.hTitlePage
+    assert nwGUI.docEditor.docHandle == C.hTitlePage
     assert projTree._getTreeItem(C.hNovelRoot).isExpanded() is True  # type: ignore
 
     # Navigate the Tree

@@ -118,26 +118,26 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Double-click item
     scItem.setSelected(True)
     assert scItem.isSelected()
-    assert nwGUI.docEditor.docHandle() is None
+    assert nwGUI.docEditor.docHandle is None
     novelTree._treeDoubleClick(scItem, 0)
-    assert nwGUI.docEditor.docHandle() == C.hSceneDoc
+    assert nwGUI.docEditor.docHandle == C.hSceneDoc
 
     # Open item with middle mouse button
     scItem.setSelected(True)
     assert scItem.isSelected()
-    assert nwGUI.docViewer.docHandle() is None
+    assert nwGUI.docViewer.docHandle is None
     qtbot.mouseClick(vPort, Qt.MiddleButton, pos=vPort.rect().center(), delay=10)
-    assert nwGUI.docViewer.docHandle() is None
+    assert nwGUI.docViewer.docHandle is None
 
     scRect = novelTree.visualItemRect(scItem)
     oldData = scItem.data(novelTree.C_TITLE, novelTree.D_HANDLE)
     scItem.setData(novelTree.C_TITLE, novelTree.D_HANDLE, None)
     qtbot.mouseClick(vPort, Qt.MiddleButton, pos=scRect.center(), delay=10)
-    assert nwGUI.docViewer.docHandle() is None
+    assert nwGUI.docViewer.docHandle is None
 
     scItem.setData(novelTree.C_TITLE, novelTree.D_HANDLE, oldData)
     qtbot.mouseClick(vPort, Qt.MiddleButton, pos=scRect.center(), delay=10)
-    assert nwGUI.docViewer.docHandle() == C.hSceneDoc
+    assert nwGUI.docViewer.docHandle == C.hSceneDoc
 
     # Last Column
     # ===========

@@ -106,7 +106,7 @@ class GuiNovelView(QWidget):
         self.novelTree.initSettings()
         return
 
-    def clearProject(self):
+    def clearNovelView(self):
         """Clear project-related GUI content.
         """
         self.novelTree.clearContent()
@@ -130,8 +130,7 @@ class GuiNovelView(QWidget):
             "GuiNovelView", "lastColSize", 25
         )
 
-        self.clearProject()
-
+        self.clearNovelView()
         self.novelBar.buildNovelRootMenu()
         self.novelBar.setLastColType(lastCol, doRefresh=False)
         self.novelBar.setCurrentRoot(lastNovel)
@@ -142,13 +141,13 @@ class GuiNovelView(QWidget):
         return
 
     def closeProjectTasks(self):
-        """Run closing project tasks.
-        """
+        """Run closing project tasks."""
         lastColType = self.novelTree.lastColType
         lastColSize = self.novelTree.lastColSize
         pOptions = SHARED.project.options
         pOptions.setValue("GuiNovelView", "lastCol", lastColType)
         pOptions.setValue("GuiNovelView", "lastColSize", lastColSize)
+        self.clearNovelView()
         return
 
     def setTreeFocus(self):

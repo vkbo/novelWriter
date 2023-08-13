@@ -153,10 +153,10 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwGUI.projStack.setCurrentIndex(0)
     with monkeypatch.context() as mp:
         mp.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
-        assert nwGUI.docEditor.docHandle() is None
+        assert nwGUI.docEditor.docHandle is None
         nwGUI.projView.projTree._getTreeItem(sHandle).setSelected(True)
         nwGUI._keyPressReturn()
-        assert nwGUI.docEditor.docHandle() == sHandle
+        assert nwGUI.docEditor.docHandle == sHandle
         assert nwGUI.closeDocument() is True
 
     # Novel Tree has focus
@@ -164,11 +164,11 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwGUI.novelView.novelTree.refreshTree(rootHandle=None, overRide=True)
     with monkeypatch.context() as mp:
         mp.setattr(GuiNovelView, "treeHasFocus", lambda *a: True)
-        assert nwGUI.docEditor.docHandle() is None
+        assert nwGUI.docEditor.docHandle is None
         selItem = nwGUI.novelView.novelTree.topLevelItem(2)
         nwGUI.novelView.novelTree.setCurrentItem(selItem)
         nwGUI._keyPressReturn()
-        assert nwGUI.docEditor.docHandle() == sHandle
+        assert nwGUI.docEditor.docHandle == sHandle
         assert nwGUI.closeDocument() is True
 
     # Project Outline has focus
@@ -176,11 +176,11 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwGUI.switchFocus(nwWidget.OUTLINE)
     with monkeypatch.context() as mp:
         mp.setattr(GuiOutlineView, "treeHasFocus", lambda *a: True)
-        assert nwGUI.docEditor.docHandle() is None
+        assert nwGUI.docEditor.docHandle is None
         selItem = nwGUI.outlineView.outlineTree.topLevelItem(2)
         nwGUI.outlineView.outlineTree.setCurrentItem(selItem)
         nwGUI._keyPressReturn()
-        assert nwGUI.docEditor.docHandle() == sHandle
+        assert nwGUI.docEditor.docHandle == sHandle
         assert nwGUI.closeDocument() is True
 
     # qtbot.stop()
@@ -506,9 +506,9 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     nwGUI.docEditor.wCounterDoc.run()
 
     # Save the document
-    assert nwGUI.docEditor.docChanged()
+    assert nwGUI.docEditor.docChanged
     assert nwGUI.saveDocument()
-    assert not nwGUI.docEditor.docChanged()
+    assert not nwGUI.docEditor.docChanged
     nwGUI.rebuildIndex()
 
     # Open and view the edited document

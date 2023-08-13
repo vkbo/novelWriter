@@ -118,7 +118,7 @@ class GuiOutlineView(QWidget):
         self.outlineTree.refreshTree(rootHandle=SHARED.project.data.getLastHandle("outline"))
         return
 
-    def clearProject(self):
+    def clearOutline(self):
         """Clear project-related GUI content.
         """
         self.outlineData.clearDetails()
@@ -134,7 +134,7 @@ class GuiOutlineView(QWidget):
 
         logger.debug("Setting outline tree to root item '%s'", lastOutline)
 
-        self.clearProject()
+        self.clearOutline()
         self.outlineBar.populateNovelList()
         self.outlineBar.setCurrentRoot(lastOutline)
         self.outlineBar.setEnabled(True)
@@ -144,6 +144,7 @@ class GuiOutlineView(QWidget):
     def closeProjectTasks(self):
         self.outlineTree.closeProjectTasks()
         self.outlineData.updateClasses()
+        self.clearOutline()
         return
 
     def splitSizes(self):

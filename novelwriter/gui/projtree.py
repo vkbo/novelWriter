@@ -165,7 +165,7 @@ class GuiProjectView(QWidget):
         self.projTree.initSettings()
         return
 
-    def clearProject(self) -> None:
+    def clearProjectView(self) -> None:
         """Clear project-related GUI content."""
         self.projBar.clearContent()
         self.projBar.setEnabled(False)
@@ -964,7 +964,7 @@ class GuiProjectTree(QTreeWidget):
             trItemP.takeChild(tIndex)
 
             for dHandle in reversed(self.getTreeFromHandle(tHandle)):
-                if self.mainGui.docEditor.docHandle() == dHandle:
+                if self.mainGui.docEditor.docHandle == dHandle:
                     self.mainGui.closeDocument()
                 SHARED.project.removeItem(dHandle)
                 self._treeMap.pop(dHandle, None)

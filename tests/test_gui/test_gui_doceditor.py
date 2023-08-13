@@ -194,10 +194,10 @@ def testGuiEditor_MetaData(qtbot, nwGUI, projPath, mockRnd):
     assert nwGUI.docEditor.getText() == "### New Scene\n\nSome\ntext.\nMore\u00a0text.\n"
 
     # Check Propertoes
-    assert nwGUI.docEditor.docChanged() is True
-    assert nwGUI.docEditor.docHandle() == C.hSceneDoc
-    assert nwGUI.docEditor.lastActive() > 0.0
-    assert nwGUI.docEditor.isEmpty() is False
+    assert nwGUI.docEditor.docChanged is True
+    assert nwGUI.docEditor.docHandle == C.hSceneDoc
+    assert nwGUI.docEditor.lastActive > 0.0
+    assert nwGUI.docEditor.isEmpty is False
 
     # Cursor Position
     assert nwGUI.docEditor.setCursorPosition(None) is False
@@ -1361,7 +1361,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Next match
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
-    assert nwGUI.docEditor.docHandle() == "2426c6f0ca922"  # Next document
+    assert nwGUI.docEditor.docHandle == "2426c6f0ca922"  # Next document
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
     assert abs(nwGUI.docEditor.getCursorPosition() - 620) < 3
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
@@ -1371,11 +1371,11 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert nwGUI.docEditor.docSearch.doNextFile is True
     assert nwGUI.docEditor.docSearch.setSearchText("abcdef")
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
-    assert nwGUI.docEditor.docHandle() != "2426c6f0ca922"
-    assert nwGUI.docEditor.docHandle() == "04468803b92e1"
+    assert nwGUI.docEditor.docHandle != "2426c6f0ca922"
+    assert nwGUI.docEditor.docHandle == "04468803b92e1"
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
-    assert nwGUI.docEditor.docHandle() != "04468803b92e1"
-    assert nwGUI.docEditor.docHandle() == "7a992350f3eb6"
+    assert nwGUI.docEditor.docHandle != "04468803b92e1"
+    assert nwGUI.docEditor.docHandle == "7a992350f3eb6"
 
     # Toggle Replace
     nwGUI.docEditor.beginReplace()

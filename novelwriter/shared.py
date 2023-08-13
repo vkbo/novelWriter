@@ -28,6 +28,8 @@ import logging
 from typing import TYPE_CHECKING
 from pathlib import Path
 
+from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
+
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
     from novelwriter.gui.theme import GuiTheme
@@ -36,9 +38,12 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-class SharedData:
+class SharedData(QObject):
+
+    projectStatusChanged = pyqtSignal(bool)
 
     def __init__(self) -> None:
+        super().__init__()
         self._gui = None
         self._theme = None
         self._project = None
@@ -122,6 +127,16 @@ class SharedData:
         return self.project.storage.clearLockFile()
 
     ##
+    #  Internal Slots
+    ##
+
+    @pyqtSlot(bool)
+    def _processProjectStatusChange(self, state: bool) -> None:
+        """Forward the project status slot."""
+        self.projectStatusChanged.emit(state)
+        return
+
+    ##
     #  Internal Functions
     ##
 
@@ -129,8 +144,10 @@ class SharedData:
         """Create a new project instance."""
         from novelwriter.core.project import NWProject
         if isinstance(self._project, NWProject):
+            self._project.projectStatusChanged.disconnect()
             self._project.deleteLater()
         self._project = NWProject(self.mainGui)
+        self._project.projectStatusChanged.connect(self._processProjectStatusChange)
         return
 
 # END Class SharedData

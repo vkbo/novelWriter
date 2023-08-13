@@ -30,10 +30,11 @@ from __future__ import annotations
 import logging
 
 from enum import Enum
+from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import Qt, QUrl, QSize, pyqtSlot, pyqtSignal
+from PyQt5.QtCore import QPoint, Qt, QUrl, QSize, pyqtSlot, pyqtSignal
 from PyQt5.QtGui import (
-    QTextOption, QFont, QPalette, QColor, QTextCursor, QIcon, QCursor
+    QMouseEvent, QResizeEvent, QTextOption, QFont, QPalette, QColor, QTextCursor, QIcon, QCursor
 )
 from PyQt5.QtWidgets import (
     qApp, QTextBrowser, QWidget, QScrollArea, QLabel, QHBoxLayout, QToolButton,
@@ -46,6 +47,9 @@ from novelwriter.error import logException
 from novelwriter.constants import nwUnicode
 from novelwriter.core.tohtml import ToHtml
 
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.guimain import GuiMain
+
 logger = logging.getLogger(__name__)
 
 
@@ -53,7 +57,7 @@ class GuiDocViewer(QTextBrowser):
 
     loadDocumentTagRequest = pyqtSignal(str, Enum)
 
-    def __init__(self, mainGui):
+    def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
 
         logger.debug("Create: GuiDocViewer")
@@ -90,25 +94,43 @@ class GuiDocViewer(QTextBrowser):
 
         return
 
-    def clearViewer(self):
-        """Clear the content of the document and reset key variables.
-        """
+    ##
+    #  Properties
+    ##
+
+    @property
+    def docHandle(self) -> str | None:
+        """Return the handle of the currently open document."""
+        return self._docHandle
+
+    @property
+    def scrollPosition(self) -> int:
+        """Return the scrollbar position."""
+        vBar = self.verticalScrollBar()
+        if vBar.isVisible():
+            return vBar.value()
+        return 0
+
+    ##
+    #  Methods
+    ##
+
+    def clearViewer(self) -> None:
+        """Clear the content of the document and reset key variables."""
         self.clear()
         self.setSearchPaths([""])
         self._docHandle = None
         self.docHeader.setTitleFromHandle(self._docHandle)
-        return True
+        return
 
-    def updateTheme(self):
-        """Update theme elements.
-        """
+    def updateTheme(self) -> None:
+        """Update theme elements."""
         self.docHeader.updateTheme()
         self.docFooter.updateTheme()
         return
 
-    def initViewer(self):
-        """Set editor settings from main config.
-        """
+    def initViewer(self) -> None:
+        """Set editor settings from main config."""
         self._makeStyleSheet()
 
         # Set Font
@@ -157,11 +179,10 @@ class GuiDocViewer(QTextBrowser):
         if self._docHandle is not None:
             self.reloadText()
 
-        return True
+        return
 
-    def loadText(self, tHandle, updateHistory=True):
-        """Load text into the viewer from an item handle.
-        """
+    def loadText(self, tHandle: str, updateHistory: bool = True) -> bool:
+        """Load text into the viewer from an item handle."""
         if not SHARED.project.tree.checkType(tHandle, nwItemType.FILE):
             logger.warning("Item not found")
             return False
@@ -224,23 +245,20 @@ class GuiDocViewer(QTextBrowser):
 
         return True
 
-    def reloadText(self):
-        """Reload the text in the current document.
-        """
-        self.loadText(self._docHandle, updateHistory=False)
+    def reloadText(self) -> None:
+        """Reload the text in the current document."""
+        if self._docHandle:
+            self.loadText(self._docHandle, updateHistory=False)
         return
 
-    def redrawText(self):
-        """Redraw the text by marking the document content as "dirty".
-        """
+    def redrawText(self) -> None:
+        """Redraw the text by marking the content as "dirty"."""
         self.document().markContentsDirty(0, self.document().characterCount())
         self.updateDocMargins()
         return
 
-    def docAction(self, theAction):
-        """Wrapper function for various document actions on the current
-        document.
-        """
+    def docAction(self, theAction: nwDocAction) -> bool:
+        """Process document actions on the current document."""
         logger.debug("Requesting action: '%s'", theAction.name)
         if self._docHandle is None:
             logger.error("No document open")
@@ -258,9 +276,8 @@ class GuiDocViewer(QTextBrowser):
             return False
         return True
 
-    def navigateTo(self, tAnchor):
-        """Go to a specific #link in the document.
-        """
+    def navigateTo(self, tAnchor: str) -> bool:
+        """Go to a specific #link in the document."""
         if not isinstance(tAnchor, str):
             return False
         if tAnchor.startswith("#"):
@@ -268,27 +285,13 @@ class GuiDocViewer(QTextBrowser):
             self.setSource(QUrl(tAnchor))
         return True
 
-    def navBackward(self):
-        """Navigate backwards in the document view history.
-        """
-        self.docHistory.backward()
-        return
-
-    def navForward(self):
-        """Navigate forwards in the document view history.
-        """
-        self.docHistory.forward()
-        return
-
-    def clearNavHistory(self):
-        """Clear the navigation history.
-        """
+    def clearNavHistory(self) -> None:
+        """Clear the navigation history."""
         self.docHistory.clear()
         return
 
-    def updateDocMargins(self):
-        """Automatically adjust the margins so the text is centred.
-        """
+    def updateDocMargins(self) -> None:
+        """Automatically adjust the margins so the text is centred."""
         wW = self.width()
         wH = self.height()
         cM = CONFIG.getTextMargin()
@@ -320,41 +323,20 @@ class GuiDocViewer(QTextBrowser):
     #  Setters
     ##
 
-    def setScrollPosition(self, thePos):
-        """Set the scrollbar position.
-        """
+    def setScrollPosition(self, pos: int) -> None:
+        """Set the scrollbar position."""
         vBar = self.verticalScrollBar()
         if vBar.isVisible():
-            vBar.setValue(thePos)
+            vBar.setValue(pos)
         return
-
-    ##
-    #  Getters
-    ##
-
-    def docHandle(self):
-        """Return the handle of the currently open document. Returns
-        None if no document is open.
-        """
-        return self._docHandle
-
-    def getScrollPosition(self):
-        """Get the scrollbar position. Returns 0 if no scrollbar.
-        """
-        vBar = self.verticalScrollBar()
-        if vBar.isVisible():
-            return vBar.value()
-        return 0
 
     ##
     #  Public Slots
     ##
 
     @pyqtSlot(str)
-    def updateDocInfo(self, tHandle):
-        """Called when an item label is changed to check if the document
-        title bar needs updating,
-        """
+    def updateDocInfo(self, tHandle: str) -> None:
+        """Update the header titlebar if needed."""
         if tHandle == self._docHandle:
             self.docHeader.setTitleFromHandle(self._docHandle)
             self.updateDocMargins()
@@ -364,11 +346,22 @@ class GuiDocViewer(QTextBrowser):
     #  Private Slots
     ##
 
+    @pyqtSlot()
+    def navBackward(self) -> None:
+        """Navigate backwards in the document view history."""
+        self.docHistory.backward()
+        return
+
+    @pyqtSlot()
+    def navForward(self) -> None:
+        """Navigate forwards in the document view history."""
+        self.docHistory.forward()
+        return
+
     @pyqtSlot("QUrl")
-    def _linkClicked(self, theURL):
-        """Process a clicked link internally in the document.
-        """
-        theLink = theURL.url()
+    def _linkClicked(self, url: QUrl) -> None:
+        """Process a clicked link internally in the document."""
+        theLink = url.url()
         logger.debug("Clicked link: '%s'", theLink)
         if len(theLink) > 0:
             theBits = theLink.split("=")
@@ -377,9 +370,8 @@ class GuiDocViewer(QTextBrowser):
         return
 
     @pyqtSlot("QPoint")
-    def _openContextMenu(self, thePos):
-        """Triggered by right click to open the context menu.
-        """
+    def _openContextMenu(self, point: QPoint) -> None:
+        """Open context menu at location."""
         userCursor = self.textCursor()
         userSelection = userCursor.hasSelection()
 
@@ -404,18 +396,18 @@ class GuiDocViewer(QTextBrowser):
 
         mnuSelWord = QAction(self.tr("Select Word"), mnuContext)
         mnuSelWord.triggered.connect(
-            lambda: self._makePosSelection(QTextCursor.WordUnderCursor, thePos)
+            lambda: self._makePosSelection(QTextCursor.WordUnderCursor, point)
         )
         mnuContext.addAction(mnuSelWord)
 
         mnuSelPara = QAction(self.tr("Select Paragraph"), mnuContext)
         mnuSelPara.triggered.connect(
-            lambda: self._makePosSelection(QTextCursor.BlockUnderCursor, thePos)
+            lambda: self._makePosSelection(QTextCursor.BlockUnderCursor, point)
         )
         mnuContext.addAction(mnuSelPara)
 
         # Open the context menu
-        mnuContext.exec_(self.viewport().mapToGlobal(thePos))
+        mnuContext.exec_(self.viewport().mapToGlobal(point))
 
         return
 
@@ -423,37 +415,33 @@ class GuiDocViewer(QTextBrowser):
     #  Events
     ##
 
-    def resizeEvent(self, theEvent):
-        """If the text editor is resized, we must make sure the document
-        has its margins adjusted according to user preferences.
-        """
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        """Update document margins when widget is resized."""
         self.updateDocMargins()
-        super().resizeEvent(theEvent)
+        super().resizeEvent(event)
         return
 
-    def mouseReleaseEvent(self, theEvent):
-        """Capture mouse click events on the document.
-        """
-        if theEvent.button() == Qt.BackButton:
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        """Capture mouse click events on the document."""
+        if event.button() == Qt.BackButton:
             self.navBackward()
-        elif theEvent.button() == Qt.ForwardButton:
+        elif event.button() == Qt.ForwardButton:
             self.navForward()
         else:
-            super().mouseReleaseEvent(theEvent)
+            super().mouseReleaseEvent(event)
         return
 
     ##
     #  Internal Functions
     ##
 
-    def _makeSelection(self, selMode):
-        """Wrapper function to select text based on a selection mode.
-        """
+    def _makeSelection(self, selType: QTextCursor.SelectionType) -> None:
+        """Handle select of text based on a selection mode."""
         theCursor = self.textCursor()
         theCursor.clearSelection()
-        theCursor.select(selMode)
+        theCursor.select(selType)
 
-        if selMode == QTextCursor.BlockUnderCursor:
+        if selType == QTextCursor.BlockUnderCursor:
             # This selection mode also selects the preceding paragraph
             # separator, which we want to avoid.
             posS = theCursor.selectionStart()
@@ -467,19 +455,18 @@ class GuiDocViewer(QTextBrowser):
 
         return
 
-    def _makePosSelection(self, selMode, thePos):
-        """Wrapper function to select text based on selection mode, but
-        first move cursor to given position.
-        """
-        theCursor = self.cursorForPosition(thePos)
+    def _makePosSelection(self, selType: QTextCursor.SelectionType, pos: QPoint) -> None:
+        """Handle text selection at a given location."""
+        theCursor = self.cursorForPosition(pos)
         self.setTextCursor(theCursor)
-        self._makeSelection(selMode)
+        self._makeSelection(selType)
         return
 
-    def _makeStyleSheet(self):
+    def _makeStyleSheet(self) -> None:
         """Generate an appropriate style sheet for the document viewer,
         based on the current syntax highlighter theme,
         """
+        pTheme = SHARED.theme
         styleSheet = (
             "body {{"
             "  color: rgb({tColR}, {tColG}, {tColB});"
@@ -506,31 +493,31 @@ class GuiDocViewer(QTextBrowser):
             "  text-align: center;"
             "}}\n"
         ).format(
-            tColR=SHARED.theme.colText[0],
-            tColG=SHARED.theme.colText[1],
-            tColB=SHARED.theme.colText[2],
-            hColR=SHARED.theme.colHead[0],
-            hColG=SHARED.theme.colHead[1],
-            hColB=SHARED.theme.colHead[2],
-            aColR=SHARED.theme.colVal[0],
-            aColG=SHARED.theme.colVal[1],
-            aColB=SHARED.theme.colVal[2],
-            eColR=SHARED.theme.colEmph[0],
-            eColG=SHARED.theme.colEmph[1],
-            eColB=SHARED.theme.colEmph[2],
-            kColR=SHARED.theme.colKey[0],
-            kColG=SHARED.theme.colKey[1],
-            kColB=SHARED.theme.colKey[2],
-            cColR=SHARED.theme.colHidden[0],
-            cColG=SHARED.theme.colHidden[1],
-            cColB=SHARED.theme.colHidden[2],
-            mColR=SHARED.theme.colMod[0],
-            mColG=SHARED.theme.colMod[1],
-            mColB=SHARED.theme.colMod[2],
+            tColR=pTheme.colText[0],
+            tColG=pTheme.colText[1],
+            tColB=pTheme.colText[2],
+            hColR=pTheme.colHead[0],
+            hColG=pTheme.colHead[1],
+            hColB=pTheme.colHead[2],
+            aColR=pTheme.colVal[0],
+            aColG=pTheme.colVal[1],
+            aColB=pTheme.colVal[2],
+            eColR=pTheme.colEmph[0],
+            eColG=pTheme.colEmph[1],
+            eColB=pTheme.colEmph[2],
+            kColR=pTheme.colKey[0],
+            kColG=pTheme.colKey[1],
+            kColB=pTheme.colKey[2],
+            cColR=pTheme.colHidden[0],
+            cColG=pTheme.colHidden[1],
+            cColB=pTheme.colHidden[2],
+            mColR=pTheme.colMod[0],
+            mColG=pTheme.colMod[1],
+            mColB=pTheme.colMod[2],
         )
         self.document().setDefaultStyleSheet(styleSheet)
 
-        return True
+        return
 
 # END Class GuiDocViewer
 
@@ -628,7 +615,7 @@ class GuiDocViewHistory:
         """Update the scrollbar position of the previous entry.
         """
         if self._prevPos >= 0 and self._prevPos < len(self._posHistory):
-            self._posHistory[self._prevPos] = self.docViewer.getScrollPosition()
+            self._posHistory[self._prevPos] = self.docViewer.scrollPosition
         return
 
     def _updateNavButtons(self):
@@ -864,7 +851,7 @@ class GuiDocViewHeader(QWidget):
     def _refreshDocument(self):
         """Reload the content of the document.
         """
-        if self.docViewer.docHandle() == self.mainGui.docEditor.docHandle():
+        if self.docViewer.docHandle == self.mainGui.docEditor.docHandle:
             self.mainGui.saveDocument()
         self.docViewer.reloadText()
         return
@@ -1102,8 +1089,8 @@ class GuiDocViewFooter(QWidget):
         """
         logger.debug("Reference sticky is %s", str(theState))
         self.docViewer.stickyRef = theState
-        if not theState and self.docViewer.docHandle() is not None:
-            self.viewMeta.refreshReferences(self.docViewer.docHandle())
+        if not theState and self.docViewer.docHandle is not None:
+            self.viewMeta.refreshReferences(self.docViewer.docHandle)
         return
 
     @pyqtSlot(bool)
