@@ -454,9 +454,7 @@ class GuiMain(QMainWindow):
         if SHARED.project.data.doBackup and CONFIG.backupOnClose:
             doBackup = True
             if CONFIG.askBeforeBackup:
-                msgYes = self.askQuestion(self.tr("Backup the current project?"))
-                if not msgYes:
-                    doBackup = False
+                doBackup = self.askQuestion(self.tr("Backup the current project?"))
 
         if doBackup:
             SHARED.project.backupProject(False)
@@ -490,9 +488,9 @@ class GuiMain(QMainWindow):
         self._changeView(nwView.PROJECT)
 
         # Try to open the project
-        if not SHARED.project.openProject(projFile):
+        if not SHARED.openProject(projFile):
             # The project open failed.
-            lockStatus = SHARED.project.getLockStatus()
+            lockStatus = SHARED.projectLock
             if lockStatus is None:
                 # The project is not locked, so failed for some other
                 # reason handled by the project class.
@@ -522,7 +520,8 @@ class GuiMain(QMainWindow):
                 lockDetails = ""
 
             if self.askQuestion(lockText, info=lockInfo, details=lockDetails, level=nwAlert.WARN):
-                if not SHARED.project.openProject(projFile, overrideLock=True):
+                SHARED.unlockProject()
+                if not SHARED.openProject(projFile):
                     return False
             else:
                 return False
@@ -578,8 +577,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
         self.projView.saveProjectTasks()
-        SHARED.project.saveProject(autoSave=autoSave)
-        return True
+        return SHARED.saveProject(autoSave=autoSave)
 
     ##
     #  Document Actions

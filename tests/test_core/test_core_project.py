@@ -176,7 +176,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     theProject.storage._lockFilePath = fncPath / nwFiles.PROJ_LOCK
     assert theProject.storage.writeLockFile() is True
     assert theProject.openProject(fncPath) is False
-    assert isinstance(theProject.getLockStatus(), list)
+    assert isinstance(theProject.lockStatus, list)
 
     # Fail to read lockfile (which still opens the project)
     with monkeypatch.context() as mp:
@@ -189,9 +189,10 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     # Force open with lockfile
     theProject.storage._lockFilePath = fncPath / nwFiles.PROJ_LOCK
     assert theProject.storage.writeLockFile() is True
-    assert theProject.openProject(fncPath, overrideLock=True) is True
+    theProject.storage.clearLockFile()
+    assert theProject.openProject(fncPath) is True
     theProject.closeProject()
-    assert theProject.getLockStatus() is None
+    assert theProject.lockStatus is None
 
     # Fail getting xml reader
     with monkeypatch.context() as mp:
@@ -331,7 +332,7 @@ def testCoreProject_AccessItems(mockGUI, fncPath, mockRnd):
     assert theProject.tree[nHandle].itemParent == "cba9876543210"
 
     retOrder = []
-    for tItem in theProject.getProjectItems():
+    for tItem in theProject.iterProjectItems():
         retOrder.append(tItem.itemHandle)
 
     assert retOrder == [
@@ -482,7 +483,7 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     theProject._session._start = 1600000000
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.project.time", lambda: 1600005600)
-        assert theProject.getCurrentEditTime() == 6834
+        assert theProject.currentEditTime == 6834
 
     # Trash folder
     # Should create on first call, and just returned on later calls

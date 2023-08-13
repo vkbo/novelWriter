@@ -237,14 +237,13 @@ class GuiProjectDetailsMain(QWidget):
 
         return
 
-    def updateValues(self):
-        """Set all the values.
-        """
+    def updateValues(self) -> None:
+        """Set all the values."""
         project = SHARED.project
         pIndex = project.index
         hCounts = pIndex.getNovelTitleCounts()
         nwCount = pIndex.getNovelWordCount()
-        edTime = project.getCurrentEditTime()
+        edTime = project.currentEditTime
 
         self.bookTitle.setText(project.data.title or project.data.name)
         self.projName.setText(self.tr("Project: {0}").format(project.data.name))

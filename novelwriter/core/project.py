@@ -129,7 +129,20 @@ class NWProject(QObject):
 
     @property
     def isValid(self) -> bool:
+        """Return True if a project is loaded."""
         return self._valid
+
+    @property
+    def lockStatus(self) -> list | None:
+        """Return the project lock information."""
+        if isinstance(self._lockedBy, list) and len(self._lockedBy) == 4:
+            return self._lockedBy
+        return None
+
+    @property
+    def currentEditTime(self) -> int:
+        """Return total edit time, including the current session."""
+        return self._data.editTime + round(time() - self._session.start)
 
     ##
     #  Item Methods
@@ -206,35 +219,12 @@ class NWProject(QObject):
     #  Project Methods
     ##
 
-    def clearProject(self) -> None:
-        """Clear the data for the current project, and set them to
-        default values.
-
-        Note: Don't clear the lockedBy data here as it is needed after
-        this function is called.
-        """
-        # Core Elements
-        self._options = OptionState(self)
-        self._storage.clear()
-        self._data = NWProjectData(self)
-        self._tree.clear()
-        self._index.clearIndex()
-        self._session = NWSessionLog(self)
-
-        # Project Status
-        self._langData = {}
-        self._changed = False
-        self._valid = False
-
-        return
-
-    def openProject(self, projPath: str | Path, overrideLock: bool = False) -> bool:
+    def openProject(self, projPath: str | Path) -> bool:
         """Open the project file provided. If it doesn't exist, assume
         it is a folder and look for the file within it. If successful,
         parse the XML of the file and populate the project variables and
         build the tree of project items.
         """
-        self.clearProject()
         logger.info("Opening project: %s", projPath)
         if not self._storage.openProjectInPlace(projPath):
             self.mainGui.makeAlert(self.tr(
@@ -245,9 +235,6 @@ class NWProject(QObject):
         # Project Lock
         # ============
 
-        if overrideLock:
-            self._storage.clearLockFile()
-
         lockStatus = self._storage.readLockFile()
         if len(lockStatus) > 0:
             if lockStatus[0] == "ERROR":
@@ -255,7 +242,6 @@ class NWProject(QObject):
             else:
                 logger.error("Project is locked, so not opening")
                 self._lockedBy = lockStatus
-                self.clearProject()
                 return False
         else:
             logger.debug("Project is not locked")
@@ -265,7 +251,6 @@ class NWProject(QObject):
 
         xmlReader = self._storage.getXmlReader()
         if not isinstance(xmlReader, ProjectXMLReader):
-            self.clearProject()
             return False
 
         self._data = NWProjectData(self)
@@ -289,8 +274,6 @@ class NWProject(QObject):
                 self.mainGui.makeAlert(self.tr(
                     "Failed to parse project xml."
                 ), level=nwAlert.ERROR)
-
-            self.clearProject()
             return False
 
         # Check Legacy Upgrade
@@ -303,7 +286,6 @@ class NWProject(QObject):
                 "longer be able to open this project. Continue?"
             ))
             if not msgYes:
-                self.clearProject()
                 return False
 
         # Check novelWriter Version
@@ -318,7 +300,6 @@ class NWProject(QObject):
                 "should be fine. Continue opening the project?"
             ).format(appVersion, __version__))
             if not msgYes:
-                self.clearProject()
                 return False
 
         # Extract Data
@@ -329,9 +310,11 @@ class NWProject(QObject):
         self._loadProjectLocalisation()
 
         # Update recent projects
-        CONFIG.recentProjects.update(
-            self._storage.storagePath, self._data.name, sum(self._data.initCounts), time()
-        )
+        storePath = self._storage.storagePath
+        if storePath:
+            CONFIG.recentProjects.update(
+                storePath, self._data.name, sum(self._data.initCounts), time()
+            )
 
         # Check the project tree consistency
         # This also handles any orphaned files found
@@ -416,7 +399,6 @@ class NWProject(QObject):
         self._tree.writeToCFile()
         self._session.appendSession(idleTime)
         self._storage.closeSession()
-        self.clearProject()
         self._lockedBy = None
         return
 
@@ -522,22 +504,10 @@ class NWProject(QObject):
         return self._changed
 
     ##
-    #  Getters
+    #  Class Methods
     ##
 
-    def getLockStatus(self) -> list | None:
-        """Return the project lock information for the project."""
-        if isinstance(self._lockedBy, list) and len(self._lockedBy) == 4:
-            return self._lockedBy
-        return None
-
-    def getCurrentEditTime(self) -> int:
-        """Get the total project edit time, including the time spent in
-        the current session.
-        """
-        return self._data.editTime + round(time() - self._session.start)
-
-    def getProjectItems(self) -> Iterator[NWItem]:
+    def iterProjectItems(self) -> Iterator[NWItem]:
         """This function ensures that the item tree loaded is sent to
         the GUI tree view in such a way that the tree can be built. That
         is, the parent item must be sent before its child. In principle,
@@ -579,10 +549,6 @@ class NWProject(QObject):
                 tItem.setParent(None)
                 yield tItem
         return
-
-    ##
-    #  Class Methods
-    ##
 
     def updateWordCounts(self) -> None:
         """Update the total word count values."""

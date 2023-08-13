@@ -1064,7 +1064,7 @@ class GuiProjectTree(QTreeWidget):
         logger.debug("Building the project tree ...")
         self.clearTree()
         count = 0
-        for nwItem in SHARED.project.getProjectItems():
+        for nwItem in SHARED.project.iterProjectItems():
             count += 1
             self._addTreeItem(nwItem)
         if count > 0:

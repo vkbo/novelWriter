@@ -104,9 +104,8 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, prjLipsum):
 
 @pytest.mark.gui
 def testGuiMain_NewProject(monkeypatch, nwGUI, projPath):
-    """Test creating a new project.
-    """
-    # No data
+    """Test creating a new project."""
+    # Open wizard, but return no data
     with monkeypatch.context() as mp:
         mp.setattr(GuiProjectWizard, "exec_", lambda *a: None)
         assert nwGUI.newProject(projData=None) is False
@@ -116,6 +115,7 @@ def testGuiMain_NewProject(monkeypatch, nwGUI, projPath):
         SHARED.project._valid = True
         mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         assert nwGUI.newProject(projData={"projPath": projPath}) is False
+        SHARED.project._valid = False
 
     # No project path
     assert nwGUI.newProject(projData={}) is False

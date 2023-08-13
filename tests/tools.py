@@ -168,7 +168,6 @@ def buildTestProject(obj, projPath):
         nwGUI = obj
         project = obj.project
 
-    project.clearProject()
     project.storage.openProjectInPlace(projPath)
     project.setDefaultStatusImport()
 

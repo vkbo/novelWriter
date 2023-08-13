@@ -443,7 +443,7 @@ class _FilterTab(QWidget):
         logger.debug("Building project tree")
         self._treeMap = {}
         self.optTree.clear()
-        for nwItem in SHARED.project.getProjectItems():
+        for nwItem in SHARED.project.iterProjectItems():
 
             tHandle = nwItem.itemHandle
             pHandle = nwItem.itemParent

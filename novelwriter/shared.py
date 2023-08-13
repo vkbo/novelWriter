@@ -42,6 +42,7 @@ class SharedData:
         self._gui = None
         self._theme = None
         self._project = None
+        self._lockedBy = None
         return
 
     @property
@@ -69,6 +70,10 @@ class SharedData:
     def hasProject(self) -> bool:
         return self.project.isValid
 
+    @property
+    def projectLock(self) -> list | None:
+        return self._lockedBy
+
     ##
     #  Methods
     ##
@@ -84,15 +89,37 @@ class SharedData:
         logger.debug("SharedData instance initialised")
         return
 
-    def openProject(self, path: str | Path) -> None:
-        return
+    def openProject(self, path: str | Path) -> bool:
+        """Open a project."""
+        if self.project.isValid:
+            logger.error("A project is already open")
+            return False
 
-    def saveProject(self):
-        return
+        self._lockedBy = None
+        status = self.project.openProject(path)
+        if status is False:
+            # We must cache the lock status before resetting the project
+            self._lockedBy = self.project.lockStatus
+            self._resetProject()
+
+        return status
+
+    def saveProject(self, autoSave: bool = False) -> bool:
+        """Save the current project."""
+        if not self.project.isValid:
+            logger.error("There is no project open")
+            return False
+        return self.project.saveProject(autoSave=autoSave)
 
     def closeProject(self, idleTime: float) -> None:
+        """Close the current project."""
         self.project.closeProject(idleTime)
+        self._resetProject()
         return
+
+    def unlockProject(self) -> bool:
+        """Remove the project lock."""
+        return self.project.storage.clearLockFile()
 
     ##
     #  Internal Functions
@@ -101,6 +128,8 @@ class SharedData:
     def _resetProject(self) -> None:
         """Create a new project instance."""
         from novelwriter.core.project import NWProject
+        if isinstance(self._project, NWProject):
+            self._project.deleteLater()
         self._project = NWProject(self.mainGui)
         return
 

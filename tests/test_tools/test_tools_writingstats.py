@@ -377,13 +377,14 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
     # IOError
     # =======
-    monkeypatch.setattr("builtins.open", causeOSError)
-    assert not sessLog._loadLogFile()
-    assert not sessLog._saveData(sessLog.FMT_CSV)
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert not sessLog._loadLogFile()
+        assert not sessLog._saveData(sessLog.FMT_CSV)
 
     # qtbot.stop()
 
     sessLog._doClose()
-    assert nwGUI.closeProject()
+    assert nwGUI.closeProject() is True
 
 # END Test testToolWritingStats_Main
