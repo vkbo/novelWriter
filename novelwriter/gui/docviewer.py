@@ -32,13 +32,14 @@ import logging
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import QPoint, Qt, QUrl, QSize, pyqtSlot, pyqtSignal
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, QPoint, QSize, Qt, QUrl
 from PyQt5.QtGui import (
-    QMouseEvent, QResizeEvent, QTextOption, QFont, QPalette, QColor, QTextCursor, QIcon, QCursor
+    QColor, QCursor, QFont, QIcon, QMouseEvent, QPalette, QResizeEvent,
+    QTextCursor, QTextOption
 )
 from PyQt5.QtWidgets import (
-    qApp, QTextBrowser, QWidget, QScrollArea, QLabel, QHBoxLayout, QToolButton,
-    QAction, QMenu, QFrame
+    QAction, qApp, QFrame, QHBoxLayout, QLabel, QMenu, QScrollArea,
+    QTextBrowser, QToolButton, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
