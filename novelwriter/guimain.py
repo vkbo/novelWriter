@@ -236,7 +236,8 @@ class GuiMain(QMainWindow):
         # Connect Signals
         # ===============
 
-        SHARED.projectStatusChanged.connect(self.mainStatus.doUpdateProjectStatus)
+        SHARED.projectStatusChanged.connect(self.mainStatus.updateProjectStatus)
+        SHARED.projectStatusMessage.connect(self.mainStatus.setStatusMessage)
 
         self.viewsBar.viewChangeRequested.connect(self._changeView)
 
@@ -255,12 +256,13 @@ class GuiMain(QMainWindow):
         self.novelView.openDocumentRequest.connect(self._openDocument)
 
         self.docEditor.spellDictionaryChanged.connect(self.mainStatus.setLanguage)
-        self.docEditor.docEditedStatusChanged.connect(self.mainStatus.doUpdateDocumentStatus)
+        self.docEditor.editedStatusChanged.connect(self.mainStatus.updateDocumentStatus)
         self.docEditor.docCountsChanged.connect(self.itemDetails.updateCounts)
         self.docEditor.docCountsChanged.connect(self.projView.updateCounts)
         self.docEditor.loadDocumentTagRequest.connect(self._followTag)
         self.docEditor.novelStructureChanged.connect(self.novelView.refreshTree)
         self.docEditor.novelItemMetaChanged.connect(self.novelView.updateNovelItemMeta)
+        self.docEditor.statusMessage.connect(self.mainStatus.setStatusMessage)
 
         self.docViewer.loadDocumentTagRequest.connect(self._followTag)
 
@@ -299,9 +301,6 @@ class GuiMain(QMainWindow):
         keyEscape.setKey(QKeySequence(Qt.Key_Escape))
         keyEscape.activated.connect(self._keyPressEscape)
 
-        # Forward Functions
-        self.setStatus = self.mainStatus.setStatus
-
         # Cache Alert Pixmaps
         pxSize = (2*iPx, 2*iPx)
         self.alertPix: dict[nwAlert, QPixmap] = {
@@ -333,7 +332,7 @@ class GuiMain(QMainWindow):
             ), level=nwAlert.WARN)
 
         logger.info("novelWriter is ready ...")
-        self.setStatus(self.tr("novelWriter is ready ..."))
+        self.mainStatus.setStatusMessage(self.tr("novelWriter is ready ..."))
 
         return
 
@@ -838,7 +837,7 @@ class GuiMain(QMainWindow):
         self.novelView.refreshTree()
 
         tEnd = time()
-        self.setStatus(
+        self.mainStatus.setStatusMessage(
             self.tr("Indexing completed in {0} ms").format(f"{(tEnd - tStart)*1000.0:.1f}")
         )
         self.docEditor.updateTagHighLighting()

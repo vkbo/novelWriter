@@ -58,7 +58,8 @@ logger = logging.getLogger(__name__)
 
 class NWProject(QObject):
 
-    projectStatusChanged = pyqtSignal(bool)
+    statusChanged = pyqtSignal(bool)
+    statusMessage = pyqtSignal(str)
 
     def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
@@ -335,7 +336,7 @@ class NWProject(QObject):
         self.setProjectChanged(False)
         self._valid = True
 
-        self.mainGui.setStatus(self.tr("Opened Project: {0}").format(self._data.name))
+        self.statusMessage.emit(self.tr("Opened Project: {0}").format(self._data.name))
 
         return True
 
@@ -389,7 +390,7 @@ class NWProject(QObject):
             )
 
         self._storage.writeLockFile()
-        self.mainGui.setStatus(self.tr("Saved Project: {0}").format(self._data.name))
+        self.statusMessage.emit(self.tr("Saved Project: {0}").format(self._data.name))
         self.setProjectChanged(False)
 
         return True
@@ -411,7 +412,7 @@ class NWProject(QObject):
             return False
 
         logger.info("Backing up project")
-        self.mainGui.setStatus(self.tr("Backing up project ..."))
+        self.statusMessage.emit(self.tr("Backing up project ..."))
 
         if not self._data.name:
             self.mainGui.makeAlert(self.tr(
@@ -446,9 +447,7 @@ class NWProject(QObject):
             ), level=nwAlert.ERROR)
             return False
 
-        self.mainGui.setStatus(self.tr(
-            "Project backed up to '{0}'"
-        ).format(str(archName)))
+        self.statusMessage.emit(self.tr("Project backed up to '{0}'").format(str(archName)))
 
         return True
 
@@ -502,7 +501,7 @@ class NWProject(QObject):
         """
         if isinstance(status, bool):
             self._changed = status
-            self.projectStatusChanged.emit(self._changed)
+            self.statusChanged.emit(self._changed)
         return self._changed
 
     ##

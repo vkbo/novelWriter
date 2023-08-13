@@ -213,7 +213,7 @@ def testGuiEditor_MetaData(qtbot, nwGUI, projPath, mockRnd):
 
     # Document Changed Signal
     nwGUI.docEditor._docChanged = False
-    with qtbot.waitSignal(nwGUI.docEditor.docEditedStatusChanged, raising=True, timeout=100):
+    with qtbot.waitSignal(nwGUI.docEditor.editedStatusChanged, raising=True, timeout=100):
         nwGUI.docEditor.setDocumentChanged(True)
     assert nwGUI.docEditor._docChanged is True
 

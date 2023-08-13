@@ -27,6 +27,7 @@ from __future__ import annotations
 import logging
 
 from time import time
+from typing import TYPE_CHECKING, Literal
 
 from PyQt5.QtCore import pyqtSlot, QLocale
 from PyQt5.QtGui import QColor
@@ -34,21 +35,24 @@ from PyQt5.QtWidgets import qApp, QStatusBar, QLabel
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatTime
+from novelwriter.constants import nwConst
 from novelwriter.extensions.statusled import StatusLED
+
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
 
 class GuiMainStatus(QStatusBar):
 
-    def __init__(self, mainGui):
+    def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
 
         logger.debug("Create: GuiMainStatus")
 
-        self.mainGui   = mainGui
-        self.refTime   = None
-        self.userIdle  = False
+        self._refTime  = -1.0
+        self._userIdle = False
 
         colNone = QColor(*SHARED.theme.statNone)
         colSaved = QColor(*SHARED.theme.statSaved)
@@ -114,80 +118,59 @@ class GuiMainStatus(QStatusBar):
 
         return
 
-    def clearStatus(self):
-        """Reset all widgets on the status bar to default values.
-        """
-        self.setRefTime(None)
+    def clearStatus(self) -> None:
+        """Reset all widgets on the status bar to default values."""
+        self.setRefTime(-1.0)
         self.setLanguage(None, "")
         self.setProjectStats(0, 0)
         self.setProjectStatus(StatusLED.S_NONE)
         self.setDocumentStatus(StatusLED.S_NONE)
         self.updateTime()
-        return True
+        return
 
-    def updateTheme(self):
-        """Update theme elements.
-        """
+    def updateTheme(self) -> None:
+        """Update theme elements."""
         iPx = SHARED.theme.baseIconSize
-
         self.langIcon.setPixmap(SHARED.theme.getPixmap("status_lang", (iPx, iPx)))
         self.statsIcon.setPixmap(SHARED.theme.getPixmap("status_stats", (iPx, iPx)))
-
         self.timePixmap = SHARED.theme.getPixmap("status_time", (iPx, iPx))
         self.idlePixmap = SHARED.theme.getPixmap("status_idle", (iPx, iPx))
-
         self.timeIcon.setPixmap(self.timePixmap)
-
         return
 
     ##
     #  Setters
     ##
 
-    def setRefTime(self, theTime):
-        """Set the reference time for the status bar clock.
-        """
-        self.refTime = theTime
+    def setRefTime(self, refTime: float) -> None:
+        """Set the reference time for the status bar clock."""
+        self._refTime = refTime
         return
 
-    def setStatus(self, theMessage, timeOut=20.0):
-        """Set the status bar message to display for 'timeOut' seconds.
-        """
-        self.showMessage(theMessage, int(timeOut*1000))
-        qApp.processEvents()
+    def setProjectStatus(self, state: Literal[0, 1, 2]) -> None:
+        """Set the project status colour icon."""
+        self.projIcon.setState(state)
         return
 
-    def setProjectStatus(self, theState):
-        """Set the project status colour icon.
-        """
-        self.projIcon.setState(theState)
+    def setDocumentStatus(self, state: Literal[0, 1, 2]) -> None:
+        """Set the document status colour icon."""
+        self.docIcon.setState(state)
         return
 
-    def setDocumentStatus(self, theState):
-        """Set the document status colour icon.
-        """
-        self.docIcon.setState(theState)
-        return
-
-    def setUserIdle(self, userIdle):
-        """Change the idle status icon.
-        """
+    def setUserIdle(self, idle: bool) -> None:
+        """Change the idle status icon."""
         if not CONFIG.stopWhenIdle:
-            userIdle = False
-
-        if self.userIdle != userIdle:
-            if userIdle:
+            idle = False
+        if self._userIdle != idle:
+            if idle:
                 self.timeIcon.setPixmap(self.idlePixmap)
             else:
                 self.timeIcon.setPixmap(self.timePixmap)
-
-            self.userIdle = userIdle
-
+            self._userIdle = idle
         return
 
-    def setProjectStats(self, pWC, sWC):
-        """Update the current project statistics.
-        """
+    def setProjectStats(self, pWC: int, sWC: int) -> None:
+        """Update the current project statistics."""
         self.statsText.setText(self.tr("Words: {0} ({1})").format(f"{pWC:n}", f"{sWC:+n}"))
         if CONFIG.incNotesWCount:
             self.statsText.setToolTip(self.tr("Project word count (session change)"))
@@ -195,53 +178,55 @@ class GuiMainStatus(QStatusBar):
             self.statsText.setToolTip(self.tr("Novel word count (session change)"))
         return
 
-    def updateTime(self, idleTime=0.0):
-        """Update the session clock.
-        """
-        if self.refTime is None:
+    def updateTime(self, idleTime: float = 0.0) -> None:
+        """Update the session clock."""
+        if self._refTime < 0.0:
             self.timeText.setText("00:00:00")
         else:
             if CONFIG.stopWhenIdle:
-                sessTime = round(time() - self.refTime - idleTime)
+                sessTime = round(time() - self._refTime - idleTime)
             else:
-                sessTime = round(time() - self.refTime)
+                sessTime = round(time() - self._refTime)
             self.timeText.setText(formatTime(sessTime))
         return
 
     ##
-    #  Slots
+    #  Public Slots
     ##
 
+    @pyqtSlot(str)
+    def setStatusMessage(self, message: str) -> None:
+        """Set the status bar message to display."""
+        self.showMessage(message, nwConst.STATUS_MSG_TIMEOUT)
+        qApp.processEvents()
+        return
+
     @pyqtSlot(str, str)
-    def setLanguage(self, theLanguage, theProvider):
-        """Set the language code for the spell checker.
-        """
-        if theLanguage == "None":
+    def setLanguage(self, language: str, provider: str) -> None:
+        """Set the language code for the spell checker."""
+        if language == "None":
             self.langText.setText(self.tr("None"))
             self.langText.setToolTip("")
         else:
-            qLocal = QLocale(theLanguage)
+            qLocal = QLocale(language)
             spLang = qLocal.nativeLanguageName().title()
             self.langText.setText(spLang)
-            if theProvider:
-                self.langText.setToolTip("%s (%s)" % (theLanguage, theProvider))
+            if provider:
+                self.langText.setToolTip("%s (%s)" % (language, provider))
             else:
-                self.langText.setToolTip(theLanguage)
-
+                self.langText.setToolTip(language)
         return
 
     @pyqtSlot(bool)
-    def doUpdateProjectStatus(self, isChanged):
-        """Slot for updating the project status.
-        """
-        self.setProjectStatus(StatusLED.S_BAD if isChanged else StatusLED.S_GOOD)
+    def updateProjectStatus(self, status: bool) -> None:
+        """Update the project status."""
+        self.setProjectStatus(StatusLED.S_BAD if status else StatusLED.S_GOOD)
         return
 
     @pyqtSlot(bool)
-    def doUpdateDocumentStatus(self, isChanged):
-        """Slot for updating the document status.
-        """
-        self.setDocumentStatus(StatusLED.S_BAD if isChanged else StatusLED.S_GOOD)
+    def updateDocumentStatus(self, status: bool) -> None:
+        """Update the document status."""
+        self.setDocumentStatus(StatusLED.S_BAD if status else StatusLED.S_GOOD)
         return
 
 # END Class GuiMainStatus

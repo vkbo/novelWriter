@@ -41,6 +41,7 @@ logger = logging.getLogger(__name__)
 class SharedData(QObject):
 
     projectStatusChanged = pyqtSignal(bool)
+    projectStatusMessage = pyqtSignal(str)
 
     def __init__(self) -> None:
         super().__init__()
@@ -131,9 +132,15 @@ class SharedData(QObject):
     ##
 
     @pyqtSlot(bool)
-    def _processProjectStatusChange(self, state: bool) -> None:
+    def _emitProjectStatusChange(self, state: bool) -> None:
         """Forward the project status slot."""
         self.projectStatusChanged.emit(state)
+        return
+
+    @pyqtSlot(str)
+    def _emitProjectStatusMeesage(self, message: str) -> None:
+        """Forward the project message slot."""
+        self.projectStatusMessage.emit(message)
         return
 
     ##
@@ -144,10 +151,12 @@ class SharedData(QObject):
         """Create a new project instance."""
         from novelwriter.core.project import NWProject
         if isinstance(self._project, NWProject):
-            self._project.projectStatusChanged.disconnect()
+            self._project.statusChanged.disconnect()
+            self._project.statusMessage.disconnect()
             self._project.deleteLater()
         self._project = NWProject(self.mainGui)
-        self._project.projectStatusChanged.connect(self._processProjectStatusChange)
+        self._project.statusChanged.connect(self._emitProjectStatusChange)
+        self._project.statusMessage.connect(self._emitProjectStatusMeesage)
         return
 
 # END Class SharedData

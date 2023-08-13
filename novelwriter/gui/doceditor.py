@@ -71,9 +71,10 @@ class GuiDocEditor(QTextEdit):
     )
 
     # Custom Signals
-    spellDictionaryChanged = pyqtSignal(str, str)
-    docEditedStatusChanged = pyqtSignal(bool)
+    statusMessage = pyqtSignal(str)
     docCountsChanged = pyqtSignal(str, int, int, int)
+    editedStatusChanged = pyqtSignal(bool)
+    spellDictionaryChanged = pyqtSignal(str, str)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
     novelStructureChanged = pyqtSignal()
     novelItemMetaChanged = pyqtSignal(str)
@@ -454,9 +455,7 @@ class GuiDocEditor(QTextEdit):
 
         # Update the status bar
         if self._nwItem is not None:
-            self.mainGui.setStatus(
-                self.tr("Opened Document: {0}").format(self._nwItem.itemName)
-            )
+            self.statusMessage.emit(self.tr("Opened Document: {0}").format(self._nwItem.itemName))
 
         return True
 
@@ -562,9 +561,7 @@ class GuiDocEditor(QTextEdit):
             self.docFooter.updateInfo()
 
         # Update the status bar
-        self.mainGui.setStatus(
-            self.tr("Saved Document: {0}").format(self._nwItem.itemName)
-        )
+        self.statusMessage.emit(self.tr("Saved Document: {0}").format(self._nwItem.itemName))
 
         return True
 
@@ -639,7 +636,7 @@ class GuiDocEditor(QTextEdit):
         document change signal.
         """
         self._docChanged = bValue
-        self.docEditedStatusChanged.emit(self._docChanged)
+        self.editedStatusChanged.emit(self._docChanged)
         return self._docChanged
 
     def setCursorPosition(self, position):
@@ -747,7 +744,7 @@ class GuiDocEditor(QTextEdit):
 
         return True
 
-    def spellCheckDocument(self):
+    def spellCheckDocument(self) -> None:
         """Rerun the highlighter to update spell checking status of the
         currently loaded text. The fastest way to do this, at least as
         of Qt 5.13, is to clear the text and put it back. This clears
@@ -763,9 +760,8 @@ class GuiDocEditor(QTextEdit):
             self.highLight.rehighlight()
         qApp.restoreOverrideCursor()
         logger.debug("Document highlighted in %.3f ms", 1000*(time() - start))
-        self.mainGui.mainStatus.setStatus(self.tr("Spell check complete"))
-
-        return True
+        self.statusMessage.emit(self.tr("Spell check complete"))
+        return
 
     ##
     #  General Class Methods

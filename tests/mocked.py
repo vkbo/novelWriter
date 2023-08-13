@@ -92,7 +92,7 @@ class MockStatusBar:
     def setStatus(self, theText):
         return
 
-    def doUpdateProjectStatus(self, theStatus):
+    def updateProjectStatus(self, theStatus):
         return
 
 # END Class MockStatusBar

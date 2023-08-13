@@ -52,6 +52,9 @@ class nwConst:
     URL_HELP    = "https://github.com/vkbo/novelWriter/discussions"
     URL_RELEASE = "https://github.com/vkbo/novelWriter/releases/latest"
 
+    # Gui Settings
+    STATUS_MSG_TIMEOUT = 15000  # milliseconds
+
 # END Class nwConst
 
 
