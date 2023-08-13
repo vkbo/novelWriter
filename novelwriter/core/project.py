@@ -75,13 +75,20 @@ class NWProject(QObject):
         self._session = NWSessionLog(self)   # The session record
 
         # Project Status
-        self._langData    = {}     # Localisation data
-        self._projChanged = False  # The project has unsaved changes
-        self._lockedBy    = None   # Data on which computer has the project open
+        self._langData = {}     # Localisation data
+        self._lockedBy = None   # Data on which computer has the project open
+        self._changed  = False  # The project has unsaved changes
+        self._valid    = False  # The project was successfully loaded
 
         # Internal Mapping
         self.tr = partial(QCoreApplication.translate, "NWProject")
 
+        logger.debug("Ready: NWProject")
+
+        return
+
+    def __del__(self):  # pragma: no cover
+        logger.debug("Delete: NWProject")
         return
 
     ##
@@ -118,7 +125,11 @@ class NWProject(QObject):
 
     @property
     def projChanged(self) -> bool:
-        return self._projChanged
+        return self._changed
+
+    @property
+    def isValid(self) -> bool:
+        return self._valid
 
     ##
     #  Item Methods
@@ -212,7 +223,8 @@ class NWProject(QObject):
 
         # Project Status
         self._langData = {}
-        self._projChanged = False
+        self._changed = False
+        self._valid = False
 
         return
 
@@ -338,6 +350,8 @@ class NWProject(QObject):
         self._session.startSession()
         self._storage.writeLockFile()
         self.setProjectChanged(False)
+        self._valid = True
+
         self.mainGui.setStatus(self.tr("Opened Project: {0}").format(self._data.name))
 
         return True
@@ -503,9 +517,9 @@ class NWProject(QObject):
         information to the GUI statusbar.
         """
         if isinstance(status, bool):
-            self._projChanged = status
-            self.projectStatusChanged.emit(self._projChanged)
-        return self._projChanged
+            self._changed = status
+            self.projectStatusChanged.emit(self._changed)
+        return self._changed
 
     ##
     #  Getters

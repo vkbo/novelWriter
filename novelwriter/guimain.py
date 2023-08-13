@@ -116,7 +116,6 @@ class GuiMain(QMainWindow):
         SHARED.initSharedData(self, GuiTheme())
 
         # Core Settings
-        self.hasProject  = False
         self.isFocusMode = False
         self.idleRefTime = time()
         self.idleTime    = 0.0
@@ -371,7 +370,7 @@ class GuiMain(QMainWindow):
             logger.info("Command line path: %s", cmdOpen)
             self.openProject(cmdOpen)
 
-        if not self.hasProject:
+        if not SHARED.hasProject:
             self.showProjectLoadDialog()
 
         # Determine whether release notes need to be shown or not
@@ -396,7 +395,7 @@ class GuiMain(QMainWindow):
 
     def newProject(self, projData: dict | None = None) -> bool:
         """Create a new project via the new project wizard."""
-        if self.hasProject:
+        if SHARED.hasProject:
             if not self.closeProject():
                 self.makeAlert(self.tr(
                     "Cannot create a new project when another project is open."
@@ -435,7 +434,7 @@ class GuiMain(QMainWindow):
         close application event so the user doesn't get prompted twice
         to confirm.
         """
-        if not self.hasProject:
+        if not SHARED.hasProject:
             # There is no project loaded, everything OK
             return True
 
@@ -468,12 +467,11 @@ class GuiMain(QMainWindow):
             self.outlineView.closeProjectTasks()
             self.novelView.closeProjectTasks()
 
-            SHARED.project.closeProject(self.idleTime)
+            SHARED.closeProject(self.idleTime)
             self.idleRefTime = time()
             self.idleTime = 0.0
 
             self.clearGUI()
-            self.hasProject = False
             self._changeView(nwView.PROJECT)
 
         return saveOK
@@ -530,7 +528,6 @@ class GuiMain(QMainWindow):
                 return False
 
         # Project is loaded
-        self.hasProject = True
         self.idleRefTime = time()
         self.idleTime = 0.0
 
@@ -577,7 +574,7 @@ class GuiMain(QMainWindow):
 
     def saveProject(self, autoSave: bool = False) -> bool:
         """Save the current project."""
-        if not self.hasProject:
+        if not SHARED.hasProject:
             logger.error("No project open")
             return False
         self.projView.saveProjectTasks()
@@ -590,7 +587,7 @@ class GuiMain(QMainWindow):
 
     def closeDocument(self, beforeOpen: bool = False) -> bool:
         """Close the document and clear the editor and title field."""
-        if not self.hasProject:
+        if not SHARED.hasProject:
             logger.error("No project open")
             return False
 
@@ -610,7 +607,7 @@ class GuiMain(QMainWindow):
     def openDocument(self, tHandle: str | None, tLine: int | None = None,
                      changeFocus: bool = True, doScroll: bool = False) -> bool:
         """Open a specific document, optionally at a given line."""
-        if not self.hasProject:
+        if not SHARED.hasProject:
             logger.error("No project open")
             return False
 
@@ -642,7 +639,7 @@ class GuiMain(QMainWindow):
         """Opens the next document in the project tree, following the
         document with the given handle. Stops when reaching the end.
         """
-        if not self.hasProject:
+        if not SHARED.hasProject:
             logger.error("No project open")
             return False
 
@@ -671,7 +668,7 @@ class GuiMain(QMainWindow):
 
     def saveDocument(self) -> bool:
         """Save the current documents."""
-        if not self.hasProject:
+        if not SHARED.hasProject:
             logger.error("No project open")
             return False
         self.docEditor.saveText()
@@ -679,7 +676,7 @@ class GuiMain(QMainWindow):
 
     def viewDocument(self, tHandle: str | None = None, sTitle: str | None = None) -> bool:
         """Load a document for viewing in the view panel."""
-        if not self.hasProject:
+        if not SHARED.hasProject:
             logger.error("No project open")
             return False
 
@@ -724,7 +721,7 @@ class GuiMain(QMainWindow):
         """Import the text contained in an out-of-project text file, and
         insert the text into the currently open document.
         """
-        if not self.hasProject:
+        if not SHARED.hasProject:
             logger.error("No project open")
             return False
 
@@ -796,7 +793,7 @@ class GuiMain(QMainWindow):
         active. It is not checked that the item is actually a document.
         That should be handled by the openDocument function.
         """
-        if not self.hasProject:
+        if not SHARED.hasProject:
             logger.error("No project open")
             return False
 
@@ -825,7 +822,7 @@ class GuiMain(QMainWindow):
 
     def editItemLabel(self, tHandle: str | None = None) -> bool:
         """Open the edit item dialog."""
-        if not self.hasProject:
+        if not SHARED.hasProject:
             logger.error("No project open")
             return False
 
@@ -842,7 +839,7 @@ class GuiMain(QMainWindow):
 
     def rebuildIndex(self, beQuiet: bool = False) -> bool:
         """Rebuild the entire index."""
-        if not self.hasProject:
+        if not SHARED.hasProject:
             logger.error("No project open")
             return False
 
@@ -947,7 +944,7 @@ class GuiMain(QMainWindow):
     @pyqtSlot(int)
     def showProjectSettingsDialog(self, focusTab: int = GuiProjectSettings.TAB_MAIN) -> bool:
         """Open the project settings dialog."""
-        if not self.hasProject:
+        if not SHARED.hasProject:
             logger.error("No project open")
             return False
 
@@ -965,7 +962,7 @@ class GuiMain(QMainWindow):
 
     def showProjectDetailsDialog(self) -> bool:
         """Open the project details dialog."""
-        if not self.hasProject:
+        if not SHARED.hasProject:
             logger.error("No project open")
             return False
 
@@ -984,7 +981,7 @@ class GuiMain(QMainWindow):
     @pyqtSlot()
     def showBuildManuscriptDialog(self) -> bool:
         """Open the build manuscript dialog."""
-        if not self.hasProject:
+        if not SHARED.hasProject:
             logger.error("No project open")
             return False
 
@@ -1004,7 +1001,7 @@ class GuiMain(QMainWindow):
 
     def showLoremIpsumDialog(self) -> bool:
         """Open the insert lorem ipsum text dialog."""
-        if not self.hasProject:
+        if not SHARED.hasProject:
             logger.error("No project open")
             return False
 
@@ -1022,7 +1019,7 @@ class GuiMain(QMainWindow):
 
     def showProjectWordListDialog(self) -> bool:
         """Open the project word list dialog."""
-        if not self.hasProject:
+        if not SHARED.hasProject:
             logger.error("No project open")
             return False
 
@@ -1037,7 +1034,7 @@ class GuiMain(QMainWindow):
 
     def showWritingStatsDialog(self) -> bool:
         """Open the session stats dialog."""
-        if not self.hasProject:
+        if not SHARED.hasProject:
             logger.error("No project open")
             return False
 
@@ -1150,7 +1147,7 @@ class GuiMain(QMainWindow):
 
     def closeMain(self) -> bool:
         """Save everything, and close novelWriter."""
-        if self.hasProject:
+        if SHARED.hasProject:
             msgYes = self.askQuestion("%s<br>%s" % (
                 self.tr("Do you want to exit novelWriter?"),
                 self.tr("Changes are saved automatically.")
@@ -1171,7 +1168,7 @@ class GuiMain(QMainWindow):
             # Ignore window size if in full screen mode
             CONFIG.setMainWinSize(self.width(), self.height())
 
-        if self.hasProject:
+        if SHARED.hasProject:
             self.closeProject(True)
 
         CONFIG.saveConfig()
@@ -1475,7 +1472,7 @@ class GuiMain(QMainWindow):
     @pyqtSlot()
     def _timeTick(self) -> None:
         """Process time tick of the main timer."""
-        if not self.hasProject:
+        if not SHARED.hasProject:
             return
 
         currTime = time()
@@ -1496,7 +1493,7 @@ class GuiMain(QMainWindow):
     @pyqtSlot()
     def _autoSaveProject(self) -> None:
         """Autosave of the project. This is a timer-activated slot."""
-        doSave  = self.hasProject
+        doSave  = SHARED.hasProject
         doSave &= SHARED.project.projChanged
         doSave &= SHARED.project.storage.isOpen()
         if doSave:
@@ -1507,7 +1504,7 @@ class GuiMain(QMainWindow):
     @pyqtSlot()
     def _autoSaveDocument(self) -> None:
         """Autosave of the document. This is a timer-activated slot."""
-        if self.hasProject and self.docEditor.docChanged():
+        if SHARED.hasProject and self.docEditor.docChanged():
             logger.debug("Autosaving document")
             self.saveDocument()
         return
@@ -1515,7 +1512,7 @@ class GuiMain(QMainWindow):
     @pyqtSlot()
     def _updateStatusWordCount(self) -> None:
         """Update the word count on the status bar."""
-        if not self.hasProject:
+        if not SHARED.hasProject:
             self.mainStatus.setProjectStats(0, 0)
 
         SHARED.project.updateWordCounts()
@@ -1551,7 +1548,7 @@ class GuiMain(QMainWindow):
     def _mainStackChanged(self, index: int) -> None:
         """Process main window tab change."""
         if index == self.idxOutlineView:
-            if self.hasProject:
+            if SHARED.hasProject:
                 self.outlineView.refreshTree()
         return
 

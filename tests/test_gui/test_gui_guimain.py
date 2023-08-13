@@ -30,7 +30,7 @@ from tools import (
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QMessageBox, QInputDialog
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemType, nwView, nwWidget
 from novelwriter.constants import nwFiles
 from novelwriter.gui.outline import GuiOutlineView
@@ -113,7 +113,7 @@ def testGuiMain_NewProject(monkeypatch, nwGUI, projPath):
 
     # Close project
     with monkeypatch.context() as mp:
-        nwGUI.hasProject = True
+        SHARED.project._valid = True
         mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         assert nwGUI.newProject(projData={"projPath": projPath}) is False
 

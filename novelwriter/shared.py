@@ -26,6 +26,7 @@ from __future__ import annotations
 import logging
 
 from typing import TYPE_CHECKING
+from pathlib import Path
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -64,6 +65,10 @@ class SharedData:
             raise Exception("UserData class not properly initialised")
         return self._project
 
+    @property
+    def hasProject(self) -> bool:
+        return self.project.isValid
+
     ##
     #  Methods
     ##
@@ -79,7 +84,14 @@ class SharedData:
         logger.debug("SharedData instance initialised")
         return
 
-    def openProject(self):
+    def openProject(self, path: str | Path) -> None:
+        return
+
+    def saveProject(self):
+        return
+
+    def closeProject(self, idleTime: float) -> None:
+        self.project.closeProject(idleTime)
         return
 
     ##

@@ -204,9 +204,9 @@ def buildTestProject(obj, projPath):
     project.session.startSession()
     project.setProjectChanged(True)
     project.saveProject(autoSave=True)
+    project._valid = True
 
     if nwGUI is not None:
-        nwGUI.hasProject = True
         nwGUI.rebuildTrees()
 
     return

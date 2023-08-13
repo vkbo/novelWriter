@@ -563,7 +563,7 @@ class GuiProjectTree(QTreeWidget):
         make sure the item is added in a place it can be added, and that
         other meta data is set correctly to ensure a valid project tree.
         """
-        if not self.mainGui.hasProject:
+        if not SHARED.hasProject:
             logger.error("No project open")
             return False
 
@@ -787,7 +787,7 @@ class GuiProjectTree(QTreeWidget):
         can be called on any item, and will check whether to attempt a
         permanent deletion or moving the item to Trash.
         """
-        if not self.mainGui.hasProject:
+        if not SHARED.hasProject:
             logger.error("No project open")
             return False
 
@@ -823,7 +823,7 @@ class GuiProjectTree(QTreeWidget):
         function only asks for confirmation once, and calls the regular
         deleteItem function for each document in the Trash folder.
         """
-        if not self.mainGui.hasProject:
+        if not SHARED.hasProject:
             logger.error("No project open")
             return False
 
