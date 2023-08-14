@@ -29,6 +29,7 @@ from typing import TYPE_CHECKING
 from pathlib import Path
 
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
+from PyQt5.QtWidgets import QMessageBox, QWidget
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -49,6 +50,7 @@ class SharedData(QObject):
         self._theme = None
         self._project = None
         self._lockedBy = None
+        self._alert = None
         return
 
     @property
@@ -74,11 +76,18 @@ class SharedData(QObject):
 
     @property
     def hasProject(self) -> bool:
+        """Return True of the project instance is populated."""
         return self.project.isValid
 
     @property
     def projectLock(self) -> list | None:
+        """Return cached lock information for the last project."""
         return self._lockedBy
+
+    @property
+    def alert(self) -> _GuiAlert | None:
+        """Return a pointer to the last alert box."""
+        return self._alert
 
     ##
     #  Methods
@@ -128,6 +137,48 @@ class SharedData(QObject):
         return self.project.storage.clearLockFile()
 
     ##
+    #  Alert Boxes
+    ##
+
+    def info(self, text: str, info: str = "", details: str = "") -> None:
+        """Open an information alert box."""
+        self._alert = _GuiAlert(self.mainGui, self.theme)
+        self._alert.setMessage(text, info, details)
+        self._alert.setAlertType(_GuiAlert.INFO, False)
+        logger.info(self._alert.logMessage, stacklevel=2)
+        self._alert.exec_()
+        return
+
+    def warn(self, text: str, info: str = "", details: str = "") -> None:
+        """Open a warning alert box."""
+        self._alert = _GuiAlert(self.mainGui, self.theme)
+        self._alert.setMessage(text, info, details)
+        self._alert.setAlertType(_GuiAlert.WARN, False)
+        logger.warning(self._alert.logMessage, stacklevel=2)
+        self._alert.exec_()
+        return
+
+    def error(self, text: str, info: str = "", details: str = "",
+              exc: Exception | None = None) -> None:
+        """Open an error alert box."""
+        self._alert = _GuiAlert(self.mainGui, self.theme)
+        self._alert.setMessage(text, info, details)
+        self._alert.setAlertType(_GuiAlert.ERROR, False)
+        if exc:
+            self._alert.setException(exc)
+        logger.error(self._alert.logMessage, stacklevel=2)
+        self._alert.exec_()
+        return
+
+    def question(self, text: str, info: str = "", details: str = "", warn: bool = False) -> bool:
+        """Open an error alert box."""
+        self._alert = _GuiAlert(self.mainGui, self.theme)
+        self._alert.setMessage(text, info, details)
+        self._alert.setAlertType(_GuiAlert.ERROR, True)
+        self._alert.exec_()
+        return self._alert.result() == QMessageBox.Yes
+
+    ##
     #  Internal Slots
     ##
 
@@ -154,9 +205,67 @@ class SharedData(QObject):
             self._project.statusChanged.disconnect()
             self._project.statusMessage.disconnect()
             self._project.deleteLater()
-        self._project = NWProject(self.mainGui)
+        self._project = NWProject(self)
         self._project.statusChanged.connect(self._emitProjectStatusChange)
         self._project.statusMessage.connect(self._emitProjectStatusMeesage)
         return
 
 # END Class SharedData
+
+
+class _GuiAlert(QMessageBox):
+
+    INFO = 0
+    WARN = 1
+    ERROR = 2
+    ASK = 3
+
+    def __init__(self, parent: QWidget, theme: GuiTheme) -> None:
+        super().__init__(parent=parent)
+        self._theme = theme
+        self._message = ""
+        return
+
+    @property
+    def logMessage(self) -> str:
+        return self._message
+
+    def setMessage(self, text: str, info: str, details: str) -> None:
+        """Set the alert box message."""
+        self._message = " ".join(filter(None, [text, info, details]))
+        self.setText(text)
+        self.setInformativeText(info)
+        self.setDetailedText(details)
+        return
+
+    def setException(self, exception: Exception) -> None:
+        """Add exception details."""
+        info = self.informativeText()
+        text = f"<b>{type(exception).__name__}</b>: {str(exception)}"
+        self.setInformativeText(f"{info}<br>{text}" if info else text)
+        return
+
+    def setAlertType(self, level: int, isYesNo: bool) -> None:
+        """Set the type of alert and whether the dialog should have
+        Yes/No buttons or just an Ok button.
+        """
+        if isYesNo:
+            self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        else:
+            self.setStandardButtons(QMessageBox.Ok)
+        pSz = 2*self._theme.baseIconSize
+        if level == self.INFO:
+            self.setIconPixmap(self._theme.getPixmap("alert_info", (pSz, pSz)))
+            self.setWindowTitle(self.tr("Information"))
+        elif level == self.WARN:
+            self.setIconPixmap(self._theme.getPixmap("alert_warn", (pSz, pSz)))
+            self.setWindowTitle(self.tr("Warning"))
+        elif level == self.ERROR:
+            self.setIconPixmap(self._theme.getPixmap("alert_error", (pSz, pSz)))
+            self.setWindowTitle(self.tr("Error"))
+        elif level == self.ASK:
+            self.setIconPixmap(self._theme.getPixmap("alert_question", (pSz, pSz)))
+            self.setWindowTitle(self.tr("Question"))
+        return
+
+# END Class _GuiAlert

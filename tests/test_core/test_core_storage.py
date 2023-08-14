@@ -43,7 +43,7 @@ class MockProject:
 @pytest.mark.core
 def testCoreStorage_OpenProjectInPlace(mockGUI, fncPath, mockRnd):
     """Test opening a project in a folder."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
     theProject.closeProject()
@@ -180,7 +180,7 @@ def testCoreStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
     """Test making a zip archive of a project."""
     zipFile = tstPaths.tmpDir / "project.zip"
 
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     storage = theProject.storage
     assert storage.zipIt(zipFile) is False
 
@@ -365,7 +365,7 @@ def testCoreStorage_DeprecatedFiles(monkeypatch, fncPath):
 @pytest.mark.core
 def testCoreStorage_OldFormatConvert(monkeypatch, mockGUI, fncPath):
     """Test cleanup of deprecated files that needs to be converted."""
-    project = NWProject(mockGUI)
+    project = NWProject()
     buildTestProject(project, fncPath)
     legacy = _LegacyStorage(project)
 

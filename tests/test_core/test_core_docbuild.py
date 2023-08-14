@@ -76,7 +76,7 @@ BUILD_CONF = {
 @pytest.mark.core
 def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     """Test building an open document manuscript."""
-    project = NWProject(mockGUI)
+    project = NWProject()
     project.openProject(prjLipsum)
 
     build = BuildSettings()
@@ -180,7 +180,7 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
 @pytest.mark.core
 def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     """Test building an HTML manuscript."""
-    project = NWProject(mockGUI)
+    project = NWProject()
     project.openProject(prjLipsum)
 
     build = BuildSettings()
@@ -250,7 +250,7 @@ def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
 @pytest.mark.core
 def testCoreDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     """Test building an Markdown manuscript."""
-    project = NWProject(mockGUI)
+    project = NWProject()
     project.openProject(prjLipsum)
 
     build = BuildSettings()
@@ -320,7 +320,7 @@ def testCoreDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths
 @pytest.mark.core
 def testCoreDocBuild_NWD(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     """Test building a NWD manuscript."""
-    project = NWProject(mockGUI)
+    project = NWProject()
     project.openProject(prjLipsum)
 
     build = BuildSettings()
@@ -390,7 +390,7 @@ def testCoreDocBuild_NWD(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
 @pytest.mark.core
 def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
     """Test custom builds and some error handling."""
-    project = NWProject(mockGUI)
+    project = NWProject()
     buildTestProject(project, fncPath)
 
     build = BuildSettings()
@@ -455,7 +455,7 @@ def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
 @pytest.mark.core
 def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     """Test iter build wrapper."""
-    project = NWProject(mockGUI)
+    project = NWProject()
     buildTestProject(project, fncPath)
     build = BuildSettings()
     build.unpack(BUILD_CONF)

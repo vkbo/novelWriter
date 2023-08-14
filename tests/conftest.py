@@ -25,14 +25,14 @@ import shutil
 
 from pathlib import Path
 
-from mocked import MockGuiMain
 from tools import cleanProject
+from mocked import MockGuiMain, MockTheme
 
 from PyQt5.QtWidgets import QMessageBox
 
 sys.path.insert(1, str(Path(__file__).parent.parent.absolute()))
 
-from novelwriter import CONFIG, main  # noqa: E402
+from novelwriter import CONFIG, SHARED, main  # noqa: E402
 
 _TST_ROOT = Path(__file__).parent
 _TMP_ROOT = _TST_ROOT / "temp"
@@ -136,10 +136,15 @@ def projPath(fncPath):
 
 
 @pytest.fixture(scope="function")
-def mockGUI():
+def mockGUI(qtbot, monkeypatch):
     """Create a mock instance of novelWriter's main GUI class."""
-    theGui = MockGuiMain()
-    return theGui
+    monkeypatch.setattr(QMessageBox, "exec_", lambda *a: None)
+    monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.Yes)
+    gui = MockGuiMain()
+    theme = MockTheme()
+    monkeypatch.setattr(SHARED, "_gui", gui)
+    monkeypatch.setattr(SHARED, "_theme", theme)
+    return gui
 
 
 @pytest.fixture(scope="function")

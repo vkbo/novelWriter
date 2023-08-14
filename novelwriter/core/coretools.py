@@ -344,7 +344,7 @@ class ProjectBuilder:
             logger.error("No project path set for the new project")
             return False
 
-        project = NWProject(self.mainGui)
+        project = NWProject()
         if not project.storage.openProjectInPlace(projPath, newProject=True):
             return False
 

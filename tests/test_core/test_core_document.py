@@ -32,7 +32,7 @@ from novelwriter.core.document import NWDocument
 @pytest.mark.core
 def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
     """Test loading and saving a document with the NWDocument class."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
 
@@ -173,7 +173,7 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
 def testCoreDocument_Methods(mockGUI, fncPath, mockRnd):
     """Test other methods of the NWDocument class.
     """
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
 

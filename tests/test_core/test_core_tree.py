@@ -39,7 +39,7 @@ from novelwriter.core.project import NWProject
 @pytest.fixture(scope="function")
 def mockItems(mockGUI, mockRnd):
     """Create a list of mock items."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
 
     itemA = NWItem(theProject, "a000000000001")
     itemA._name = "Novel"
@@ -112,7 +112,7 @@ def mockItems(mockGUI, mockRnd):
 @pytest.mark.core
 def testCoreTree_BuildTree(mockGUI, mockItems):
     """Test building a project tree from a list of items."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theTree = NWTree(theProject)
 
     # Check that tree is empty (calls NWTree.__bool__)
@@ -269,7 +269,7 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
 @pytest.mark.core
 def testCoreTree_PackUnpack(mockGUI, mockItems):
     """Test packing and unpacking data."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theTree = NWTree(theProject)
 
     aHandles = []
@@ -298,7 +298,7 @@ def testCoreTree_PackUnpack(mockGUI, mockItems):
 @pytest.mark.core
 def testCoreTree_CheckConsistency(caplog: pytest.LogCaptureFixture, mockGUI, fncPath, mockRnd):
     """Check the project consistency."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     buildTestProject(theProject, fncPath)
 
     # By default, all is well
@@ -365,7 +365,7 @@ def testCoreTree_CheckConsistency(caplog: pytest.LogCaptureFixture, mockGUI, fnc
 @pytest.mark.core
 def testCoreTree_Methods(mockGUI, mockItems):
     """Test various class methods."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theTree = NWTree(theProject)
 
     for nwItem in mockItems:
@@ -446,7 +446,7 @@ def testCoreTree_Methods(mockGUI, mockItems):
 def testCoreTree_MakeHandles(mockGUI):
     """Test generating item handles."""
     random.seed(42)
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theTree = NWTree(theProject)
 
     handles = ["1c803a3b1799d", "bdd6406671ad1", "3eb1346685257", "23b8c392456de"]
@@ -474,7 +474,7 @@ def testCoreTree_MakeHandles(mockGUI):
 @pytest.mark.core
 def testCoreTree_Stats(mockGUI, mockItems):
     """Test project stats methods."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theTree = NWTree(theProject)
 
     for nwItem in mockItems:
@@ -494,7 +494,7 @@ def testCoreTree_Stats(mockGUI, mockItems):
 @pytest.mark.core
 def testCoreTree_Reorder(caplog, mockGUI, mockItems):
     """Test changing tree order."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theTree = NWTree(theProject)
 
     aHandle = []
@@ -529,7 +529,7 @@ def testCoreTree_Reorder(caplog, mockGUI, mockItems):
 @pytest.mark.core
 def testCoreTree_ToCFile(monkeypatch, fncPath, mockGUI, mockItems):
     """Test writing the ToC.txt file."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theTree = NWTree(theProject)
 
     for nwItem in mockItems:

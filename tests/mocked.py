@@ -19,14 +19,15 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from PyQt5.QtCore import QObject
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QWidget
 
 
 # =========================================================================== #
 #  Mock GUI
 # =========================================================================== #
 
-class MockGuiMain(QObject):
+class MockGuiMain(QWidget):
 
     def __init__(self):
         super().__init__()
@@ -96,6 +97,18 @@ class MockStatusBar:
         return
 
 # END Class MockStatusBar
+
+
+class MockTheme:
+
+    def __init__(self):
+        self.baseIconSize = 10
+        return
+
+    def getPixmap(self, *a):
+        return QPixmap()
+
+# END Class MockTheme
 
 
 class MockApp:

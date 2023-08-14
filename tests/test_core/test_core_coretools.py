@@ -38,7 +38,7 @@ from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSplitter, Pr
 @pytest.mark.core
 def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ipsumText):
     """Test the DocMerger utility."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
 
@@ -126,7 +126,7 @@ def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ip
 @pytest.mark.core
 def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
     """Test the DocSplitter utility."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
 
@@ -265,7 +265,7 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText)
 @pytest.mark.core
 def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
     """Test the DocDuplicator utility."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
 
