@@ -76,8 +76,6 @@ class GuiBuildSettings(QDialog):
         if CONFIG.osDarwin:
             self.setWindowFlag(Qt.WindowType.Tool)
 
-        self.mainGui = mainGui
-
         self._build = build
 
         self.setWindowTitle(self.tr("Manuscript Build Settings"))
@@ -245,7 +243,7 @@ class GuiBuildSettings(QDialog):
         whether the user wants to save them.
         """
         if self._build.changed:
-            response = self.mainGui.askQuestion(self.tr(
+            response = SHARED.question(self.tr(
                 "Do you want to save your changes to '{0}'?".format(self._build.name)
             ))
             if response:

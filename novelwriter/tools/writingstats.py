@@ -37,7 +37,6 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwAlert
 from novelwriter.error import formatException
 from novelwriter.common import formatTime, checkInt, checkIntTuple, minmax
 from novelwriter.constants import nwConst
@@ -71,8 +70,6 @@ class GuiWritingStats(QDialog):
         self.setObjectName("GuiWritingStats")
         if CONFIG.osDarwin:
             self.setWindowFlag(Qt.WindowType.Tool)
-
-        self.mainGui = mainGui
 
         self.logData    = []
         self.filterData = []
@@ -413,14 +410,14 @@ class GuiWritingStats(QDialog):
 
         # Report to user
         if wSuccess:
-            self.mainGui.makeAlert(
+            SHARED.info(
                 self.tr("{0} file successfully written to:").format(textFmt),
                 info=savePath
             )
         else:
-            self.mainGui.makeAlert(
+            SHARED.error(
                 self.tr("Failed to write {0} file.").format(textFmt),
-                info=errMsg, level=nwAlert.ERROR
+                info=errMsg
             )
 
         return wSuccess

@@ -50,7 +50,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwAlert, nwDocAction, nwDocInsert, nwDocMode, nwItemClass
+from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemClass
 from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
 from novelwriter.core.index import countWords
@@ -380,14 +380,14 @@ class GuiDocEditor(QTextEdit):
 
         docSize = len(theDoc)
         if docSize > nwConst.MAX_DOCSIZE:
-            self.mainGui.makeAlert(self.tr(
+            SHARED.error(self.tr(
                 "The document you are trying to open is too big. "
                 "The document size is {0} MB. "
                 "The maximum size allowed is {1} MB."
             ).format(
                 f"{docSize/1.0e6:.2f}",
                 f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
-            ), level=nwAlert.ERROR)
+            ))
             self.clearEditor()
             return False
 
@@ -478,14 +478,14 @@ class GuiDocEditor(QTextEdit):
         """
         docSize = len(theText)
         if docSize > nwConst.MAX_DOCSIZE:
-            self.mainGui.makeAlert(self.tr(
+            SHARED.error(self.tr(
                 "The text you are trying to add is too big. "
                 "The text size is {0} MB. "
                 "The maximum size allowed is {1} MB."
             ).format(
                 f"{docSize/1.0e6:.2f}",
                 f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
-            ), level=nwAlert.ERROR)
+            ))
             return False
 
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
@@ -524,7 +524,7 @@ class GuiDocEditor(QTextEdit):
         if not self._nwDocument.writeDocument(docText):
             saveOk = False
             if self._nwDocument._currHash != self._nwDocument._prevHash:
-                msgYes = self.mainGui.askQuestion(self.tr(
+                msgYes = SHARED.question(self.tr(
                     "This document has been changed outside of novelWriter "
                     "while it was open. Overwrite the file on disk?"
                 ))
@@ -532,10 +532,9 @@ class GuiDocEditor(QTextEdit):
                     saveOk = self._nwDocument.writeDocument(docText, forceWrite=True)
 
             if not saveOk:
-                self.mainGui.makeAlert(
+                SHARED.error(
                     self.tr("Could not save document."),
-                    info=self._nwDocument.getError(),
-                    level=nwAlert.ERROR
+                    info=self._nwDocument.getError()
                 )
 
             return False
@@ -723,7 +722,7 @@ class GuiDocEditor(QTextEdit):
 
         if not CONFIG.hasEnchant:
             if theMode:
-                self.mainGui.makeAlert(self.tr(
+                SHARED.info(self.tr(
                     "Spell checking requires the package PyEnchant. "
                     "It does not appear to be installed."
                 ))
@@ -867,7 +866,7 @@ class GuiDocEditor(QTextEdit):
         if self._nwDocument is None:
             logger.error("No document open")
             return False
-        self.mainGui.makeAlert(
+        SHARED.info(
             self.tr("The currently open file is saved in:"),
             info=self._nwDocument.getFileLocation()
         )
@@ -1103,12 +1102,12 @@ class GuiDocEditor(QTextEdit):
         self._lastFind = None
 
         if self.document().characterCount() > nwConst.MAX_DOCSIZE:
-            self.mainGui.makeAlert(self.tr(
+            SHARED.error(self.tr(
                 "The document has grown too big and you cannot add more text to it. "
                 "The maximum size of a single novelWriter document is {0} MB."
             ).format(
                 f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
-            ), level=nwAlert.ERROR)
+            ))
             self.undo()
             return
 
@@ -1665,9 +1664,7 @@ class GuiDocEditor(QTextEdit):
         """
         theCursor = self.textCursor()
         if not theCursor.hasSelection():
-            self.mainGui.makeAlert(self.tr(
-                "Please select some text before calling replace quotes."
-            ), level=nwAlert.ERROR)
+            SHARED.error(self.tr("Please select some text before calling replace quotes."))
             return False
 
         posS = theCursor.selectionStart()

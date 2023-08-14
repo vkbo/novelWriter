@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import logging
 
-from typing import TYPE_CHECKING
 from pathlib import Path
 
 from PyQt5.QtCore import QSize, QTimer, Qt, pyqtSlot
@@ -36,16 +35,13 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwAlert, nwBuildFmt
+from novelwriter.enum import nwBuildFmt
 from novelwriter.common import makeFileNameSafe
 from novelwriter.constants import nwLabels
 from novelwriter.core.item import NWItem
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.extensions.simpleprogress import NProgressSimple
-
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
@@ -59,13 +55,11 @@ class GuiManuscriptBuild(QDialog):
 
     D_KEY = Qt.ItemDataRole.UserRole
 
-    def __init__(self, parent: QWidget, mainGui: GuiMain, build: BuildSettings):
+    def __init__(self, parent: QWidget, build: BuildSettings):
         super().__init__(parent=parent)
 
         logger.debug("Create: GuiManuscriptBuild")
         self.setObjectName("GuiManuscriptBuild")
-
-        self.mainGui = mainGui
 
         self._parent = parent
         self._build = build
@@ -308,14 +302,14 @@ class GuiManuscriptBuild(QDialog):
         self.buildProgress.setValue(0)
         bPath = Path(self.buildPath.text())
         if not bPath.is_dir():
-            self.mainGui.makeAlert(self.tr("Output folder does not exist."), level=nwAlert.ERROR)
+            SHARED.error(self.tr("Output folder does not exist."))
             return False
 
         bExt = nwLabels.BUILD_EXT[bFormat]
         buildPath = (bPath / makeFileNameSafe(bName)).with_suffix(bExt)
 
         if buildPath.exists():
-            if not self.mainGui.askQuestion(
+            if not SHARED.question(
                 self.tr("The file already exists. Do you want to overwrite it?")
             ):
                 return False

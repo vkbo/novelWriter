@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import logging
 
+from typing import TYPE_CHECKING
 from pathlib import Path
 from datetime import datetime
 
@@ -39,6 +40,9 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatInt
 from novelwriter.constants import nwFiles
+
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
@@ -55,13 +59,12 @@ class GuiProjectLoad(QDialog):
 
     D_PATH = Qt.ItemDataRole.UserRole
 
-    def __init__(self, mainGui):
+    def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
 
         logger.debug("Create: GuiProjectLoad")
         self.setObjectName("GuiProjectLoad")
 
-        self.mainGui   = mainGui
         self.openState = self.NONE_STATE
         self.openPath  = None
 
@@ -225,7 +228,7 @@ class GuiProjectLoad(QDialog):
         selList = self.listBox.selectedItems()
         if selList:
             projName = selList[0].text(self.C_NAME)
-            msgYes = self.mainGui.askQuestion(self.tr(
+            msgYes = SHARED.question(self.tr(
                 "Remove '{0}' from the recent projects list? "
                 "The project files will not be deleted."
             ).format(projName))

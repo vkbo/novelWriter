@@ -268,7 +268,7 @@ class GuiManuscript(QDialog):
         """Delete the currently selected build settings entry."""
         build = self._getSelectedBuild()
         if build is not None:
-            if self.mainGui.askQuestion(self.tr("Delete build '{0}'?".format(build.name))):
+            if SHARED.question(self.tr("Delete build '{0}'?".format(build.name))):
                 self._builds.removeBuild(build.buildID)
                 self._updateBuildsList()
         return
@@ -325,7 +325,7 @@ class GuiManuscript(QDialog):
         """Open the build dialog and build the manuscript."""
         build = self._getSelectedBuild()
         if isinstance(build, BuildSettings):
-            dlgBuild = GuiManuscriptBuild(self, self.mainGui, build)
+            dlgBuild = GuiManuscriptBuild(self, build)
             dlgBuild.exec_()
 
             # After the build is done, save build settings changes

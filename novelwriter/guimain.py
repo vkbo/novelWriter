@@ -31,7 +31,7 @@ from pathlib import Path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt, QTimer, QThreadPool, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QCursor, QIcon, QKeySequence, QPixmap
+from PyQt5.QtGui import QCloseEvent, QCursor, QIcon, QKeySequence
 from PyQt5.QtWidgets import (
     qApp, QDialog, QFileDialog, QMainWindow, QMessageBox, QShortcut, QSplitter,
     QStackedWidget, QVBoxLayout, QWidget
@@ -63,10 +63,10 @@ from novelwriter.core.project import NWProject
 from novelwriter.core.coretools import ProjectBuilder
 
 from novelwriter.enum import (
-    nwDocAction, nwDocMode, nwItemType, nwItemClass, nwAlert, nwWidget, nwView
+    nwDocAction, nwDocMode, nwItemType, nwItemClass, nwWidget, nwView
 )
 from novelwriter.common import getGuiItem, hexToInt
-from novelwriter.constants import nwFiles, nwLabels, trConst
+from novelwriter.constants import nwFiles
 
 logger = logging.getLogger(__name__)
 
@@ -133,7 +133,6 @@ class GuiMain(QMainWindow):
         # =============
 
         # Sizes
-        iPx = SHARED.theme.fontPixelSize
         mPx = CONFIG.pxInt(4)
         hWd = CONFIG.pxInt(4)
 
@@ -301,15 +300,6 @@ class GuiMain(QMainWindow):
         keyEscape.setKey(QKeySequence(Qt.Key_Escape))
         keyEscape.activated.connect(self._keyPressEscape)
 
-        # Cache Alert Pixmaps
-        pxSize = (2*iPx, 2*iPx)
-        self.alertPix: dict[nwAlert, QPixmap] = {
-            nwAlert.INFO:  SHARED.theme.getPixmap("alert_info", pxSize),
-            nwAlert.WARN:  SHARED.theme.getPixmap("alert_warn", pxSize),
-            nwAlert.ERROR: SHARED.theme.getPixmap("alert_error", pxSize),
-            nwAlert.ASK:   SHARED.theme.getPixmap("alert_question", pxSize),
-        }
-
         # Check that config loaded fine
         self.reportConfErr()
 
@@ -325,11 +315,11 @@ class GuiMain(QMainWindow):
         logger.debug("Ready: GUI")
 
         if __hexversion__[-2] == "a" and logger.getEffectiveLevel() > logging.DEBUG:
-            self.makeAlert(self.tr(
+            SHARED.warn(self.tr(
                 "You are running an untested development version of novelWriter. "
                 "Please be careful when working on a live project "
                 "and make sure you take regular backups."
-            ), level=nwAlert.WARN)
+            ))
 
         logger.info("novelWriter is ready ...")
         self.mainStatus.setStatusMessage(self.tr("novelWriter is ready ..."))
@@ -377,9 +367,9 @@ class GuiMain(QMainWindow):
         """Create a new project via the new project wizard."""
         if SHARED.hasProject:
             if not self.closeProject():
-                self.makeAlert(self.tr(
+                SHARED.error(self.tr(
                     "Cannot create a new project when another project is open."
-                ), level=nwAlert.ERROR)
+                ))
                 return False
 
         if projData is None:
@@ -394,14 +384,14 @@ class GuiMain(QMainWindow):
             return False
 
         if (Path(projPath) / nwFiles.PROJ_FILE).is_file():
-            self.makeAlert(self.tr(
+            SHARED.error(self.tr(
                 "A project already exists in that location. "
                 "Please choose another folder."
-            ), level=nwAlert.ERROR)
+            ))
             return False
 
         logger.info("Creating new project")
-        nwProject = ProjectBuilder(self)
+        nwProject = ProjectBuilder()
         if nwProject.buildProject(projData):
             self.openProject(projPath)
         else:
@@ -419,7 +409,7 @@ class GuiMain(QMainWindow):
             return True
 
         if not isYes:
-            msgYes = self.askQuestion("%s<br>%s" % (
+            msgYes = SHARED.question("%s<br>%s" % (
                 self.tr("Close the current project?"),
                 self.tr("Changes are saved automatically.")
             ))
@@ -434,7 +424,7 @@ class GuiMain(QMainWindow):
         if SHARED.project.data.doBackup and CONFIG.backupOnClose:
             doBackup = True
             if CONFIG.askBeforeBackup:
-                doBackup = self.askQuestion(self.tr("Backup the current project?"))
+                doBackup = SHARED.question(self.tr("Backup the current project?"))
 
         if doBackup:
             SHARED.project.backupProject(False)
@@ -505,9 +495,8 @@ class GuiMain(QMainWindow):
             except Exception:
                 lockDetails = ""
 
-            if self.askQuestion(lockText, info=lockInfo, details=lockDetails, level=nwAlert.WARN):
-                SHARED.unlockProject()
-                if not SHARED.openProject(projFile):
+            if SHARED.question(lockText, info=lockInfo, details=lockDetails, warn=True):
+                if not SHARED.openProject(projFile, clearLock=True):
                     return False
             else:
                 return False
@@ -545,7 +534,7 @@ class GuiMain(QMainWindow):
 
         # Check if we need to rebuild the index
         if SHARED.project.index.indexBroken:
-            self.makeAlert(self.tr("The project index is outdated or broken. Rebuilding index."))
+            SHARED.info(self.tr("The project index is outdated or broken. Rebuilding index."))
             self.rebuildIndex()
 
         # Make sure the changed status is set to false on things opened
@@ -731,19 +720,19 @@ class GuiMain(QMainWindow):
                 theText = inFile.read()
             CONFIG.setLastPath(loadFile)
         except Exception as exc:
-            self.makeAlert(self.tr(
+            SHARED.error(self.tr(
                 "Could not read file. The file must be an existing text file."
-            ), level=nwAlert.ERROR, exc=exc)
+            ), exc=exc)
             return False
 
         if self.docEditor.docHandle is None:
-            self.makeAlert(self.tr(
+            SHARED.error(self.tr(
                 "Please open a document to import the text file into."
-            ), level=nwAlert.ERROR)
+            ))
             return False
 
         if not self.docEditor.isEmpty:
-            msgYes = self.askQuestion(self.tr(
+            msgYes = SHARED.question(self.tr(
                 "Importing the file will overwrite the current content of "
                 "the document. Do you want to proceed?"
             ))
@@ -845,7 +834,7 @@ class GuiMain(QMainWindow):
         qApp.restoreOverrideCursor()
 
         if not beQuiet:
-            self.makeAlert(self.tr("The project index has been successfully rebuilt."))
+            SHARED.info(self.tr("The project index has been successfully rebuilt."))
 
         return True
 
@@ -891,7 +880,7 @@ class GuiMain(QMainWindow):
             self.saveDocument()
 
             if dlgConf.needsRestart:
-                self.makeAlert(self.tr(
+                SHARED.info(self.tr(
                     "Some changes will not be applied until novelWriter has been restarted."
                 ))
 
@@ -1074,54 +1063,13 @@ class GuiMain(QMainWindow):
 
         return
 
-    def makeAlert(self, text: str, info: str = "", details: str = "",
-                  level: nwAlert = nwAlert.INFO, exc: Exception | None = None) -> None:
-        """Alert both the user and the logger at the same time."""
-        logText = " ".join(filter(None, [text, info, details]))
-        if level == nwAlert.INFO:
-            logger.info(logText, stacklevel=2)
-        elif level == nwAlert.WARN:
-            logger.warning(logText, stacklevel=2)
-        elif level == nwAlert.ERROR:
-            logger.error(logText, stacklevel=2, exc_info=exc)
-
-        if exc is not None:
-            tExc = f"{type(exc).__name__}: {str(exc)}"
-            info = f"{info}<br>{tExc}" if info else tExc
-
-        msgBox = QMessageBox(self)
-        msgBox.setWindowTitle(trConst(nwLabels.ALERT_NAME[level]))
-        msgBox.setText(text)
-        msgBox.setInformativeText(info)
-        msgBox.setDetailedText(details)
-        msgBox.setStandardButtons(QMessageBox.Ok)
-        msgBox.setIconPixmap(self.alertPix[level])
-        msgBox.adjustSize()
-        msgBox.exec_()
-
-        return
-
-    def askQuestion(self, text: str, info: str = "", details: str = "",
-                    level: nwAlert = nwAlert.ASK) -> bool:
-        """Ask the user a Yes/No question, and return the answer."""
-        msgBox = QMessageBox(self)
-        msgBox.setWindowTitle(trConst(nwLabels.ALERT_NAME[level]))
-        msgBox.setText(text)
-        msgBox.setInformativeText(info)
-        msgBox.setDetailedText(details)
-        msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        msgBox.setIconPixmap(self.alertPix[level])
-        msgBox.adjustSize()
-        msgBox.exec_()
-        return msgBox.result() == QMessageBox.Yes
-
     def reportConfErr(self) -> bool:
         """Checks if the Config module has any errors to report, and let
         the user know if this is the case. The Config module caches
         errors since it is initialised before the GUI itself.
         """
         if CONFIG.hasError:
-            self.makeAlert(CONFIG.errorText(), level=nwAlert.ERROR)
+            SHARED.error(CONFIG.errorText())
             return True
         return False
 
@@ -1132,7 +1080,7 @@ class GuiMain(QMainWindow):
     def closeMain(self) -> bool:
         """Save everything, and close novelWriter."""
         if SHARED.hasProject:
-            msgYes = self.askQuestion("%s<br>%s" % (
+            msgYes = SHARED.question("%s<br>%s" % (
                 self.tr("Do you want to exit novelWriter?"),
                 self.tr("Changes are saved automatically.")
             ))
@@ -1380,13 +1328,13 @@ class GuiMain(QMainWindow):
         """
         tHandle, sTitle = SHARED.project.index.getTagSource(tag)
         if tHandle is None:
-            self.makeAlert(self.tr(
+            SHARED.error(self.tr(
                 "Could not find the reference for tag '{0}'. It either doesn't "
                 "exist, or the index is out of date. The index can be updated "
                 "from the Tools menu, or by pressing {1}."
             ).format(
                 tag, "F9"
-            ), level=nwAlert.ERROR)
+            ))
             return None, None
         return tHandle, sTitle
 

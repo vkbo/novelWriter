@@ -34,7 +34,6 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwAlert
 from novelwriter.core.spellcheck import UserDictionary
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -51,8 +50,6 @@ class GuiWordList(QDialog):
         logger.debug("Create: GuiWordList")
         self.setObjectName("GuiWordList")
         self.setWindowTitle(self.tr("Project Word List"))
-
-        self.mainGui = mainGui
 
         mS = CONFIG.pxInt(250)
         wW = CONFIG.pxInt(320)
@@ -123,15 +120,13 @@ class GuiWordList(QDialog):
         """Add a new word to the word list."""
         word = self.newEntry.text().strip()
         if word == "":
-            self.mainGui.makeAlert(self.tr(
-                "Cannot add a blank word."
-            ), level=nwAlert.ERROR)
+            SHARED.error(self.tr("Cannot add a blank word."))
             return
 
         if self.listBox.findItems(word, Qt.MatchExactly):
-            self.mainGui.makeAlert(self.tr(
+            SHARED.error(self.tr(
                 "The word '{0}' is already in the word list."
-            ).format(word), level=nwAlert.ERROR)
+            ).format(word))
             return
 
         self.listBox.addItem(word)

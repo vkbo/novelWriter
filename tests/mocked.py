@@ -31,30 +31,12 @@ class MockGuiMain(QWidget):
 
     def __init__(self):
         super().__init__()
-
         self.mainStatus = MockStatusBar()
         self.projPath = ""
-
-        # Test Variables
-        self.askResponse = True
-        self.lastAlert = ""
-        self.lastQuestion = ""
-
         return
 
     def postLaunchTasks(self, cmdOpen):
         return
-
-    def makeAlert(self, text, info="", detals="", level=0, exc=None):
-        assert isinstance(text, str)
-        print("%s: %s" % (str(level), text))
-        self.lastAlert = str(text)
-        return
-
-    def askQuestion(self, text, info="", details="", level=3):
-        print("Question: %s" % text)
-        self.lastQuestion = text
-        return self.askResponse
 
     def setStatus(self, theMessage):
         return
@@ -71,16 +53,6 @@ class MockGuiMain(QWidget):
 
     def close(self):
         return "close"
-
-    # Test Functions
-
-    def undo(self):
-        self.askResponse = True
-        return
-
-    def clear(self):
-        self.lastAlert = ""
-        return
 
 # END Class MockGuiMain
 

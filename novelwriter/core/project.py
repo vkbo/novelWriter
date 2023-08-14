@@ -216,7 +216,7 @@ class NWProject(QObject):
     #  Project Methods
     ##
 
-    def openProject(self, projPath: str | Path) -> bool:
+    def openProject(self, projPath: str | Path, clearLock: bool = False) -> bool:
         """Open the project file provided. If it doesn't exist, assume
         it is a folder and look for the file within it. If successful,
         parse the XML of the file and populate the project variables and
@@ -229,6 +229,9 @@ class NWProject(QObject):
 
         # Project Lock
         # ============
+
+        if clearLock:
+            self._storage.clearLockFile()
 
         lockStatus = self._storage.readLockFile()
         if len(lockStatus) > 0:

@@ -35,7 +35,6 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwAlert
 from novelwriter.common import simplified
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.pageddialog import NPagedDialog
@@ -288,8 +287,6 @@ class GuiProjectEditStatus(QWidget):
     def __init__(self, projGui, isStatus):
         super().__init__(parent=projGui)
 
-        self.mainGui = projGui.mainGui
-
         if isStatus:
             self.theStatus = SHARED.project.data.itemStatus
             pageLabel = self.tr("Novel File Status Levels")
@@ -441,9 +438,7 @@ class GuiProjectEditStatus(QWidget):
         if isinstance(selItem, QTreeWidgetItem):
             iRow = self.listBox.indexOfTopLevelItem(selItem)
             if selItem.data(self.COL_LABEL, self.NUM_ROLE) > 0:
-                self.mainGui.makeAlert(self.tr(
-                    "Cannot delete a status item that is in use."
-                ), level=nwAlert.ERROR)
+                SHARED.error(self.tr("Cannot delete a status item that is in use."))
             else:
                 self.listBox.takeTopLevelItem(iRow)
                 self.colDeleted.append(selItem.data(self.COL_LABEL, self.KEY_ROLE))
@@ -574,7 +569,6 @@ class GuiProjectEditReplace(QWidget):
     def __init__(self, projGui):
         super().__init__(parent=projGui)
 
-        self.mainGui   = projGui.mainGui
         self.arChanged = False
 
         wCol0 = CONFIG.pxInt(

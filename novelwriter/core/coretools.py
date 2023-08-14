@@ -28,20 +28,16 @@ from __future__ import annotations
 import shutil
 import logging
 
-from typing import TYPE_CHECKING, Iterable
+from typing import Iterable
 from functools import partial
 
 from PyQt5.QtCore import QCoreApplication
 
-from novelwriter import CONFIG
-from novelwriter.enum import nwAlert
+from novelwriter import CONFIG, SHARED
 from novelwriter.common import minmax, simplified
 from novelwriter.constants import nwItemClass
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
-
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
@@ -312,8 +308,7 @@ class ProjectBuilder:
     parameter provided by the New Project Wizard.
     """
 
-    def __init__(self, mainGui: GuiMain) -> None:
-        self.mainGui = mainGui
+    def __init__(self) -> None:
         self.tr = partial(QCoreApplication.translate, "NWProject")
         return
 
@@ -478,17 +473,17 @@ class ProjectBuilder:
             try:
                 shutil.unpack_archive(pkgSample, projPath)
             except Exception as exc:
-                self.mainGui.makeAlert(self.tr(
+                SHARED.error(self.tr(
                     "Failed to create a new example project."
-                ), level=nwAlert.ERROR, exc=exc)
+                ), exc=exc)
                 return False
 
         else:
-            self.mainGui.makeAlert(self.tr(
+            SHARED.error(self.tr(
                 "Failed to create a new example project. "
                 "Could not find the necessary files. "
                 "They seem to be missing from this installation."
-            ), level=nwAlert.ERROR)
+            ))
             return False
 
         return True

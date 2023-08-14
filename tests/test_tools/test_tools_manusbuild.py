@@ -45,7 +45,7 @@ def testManuscriptBuild_Main(
     build = BuildSettings()
     build.setLastPath(fncPath)
 
-    manus = GuiManuscriptBuild(nwGUI, nwGUI, build)
+    manus = GuiManuscriptBuild(nwGUI, build)
     manus.show()
 
     # Check initial values
@@ -101,7 +101,7 @@ def testManuscriptBuild_Main(
     # Error Handling
     # ==============
 
-    manus = GuiManuscriptBuild(nwGUI, nwGUI, build)
+    manus = GuiManuscriptBuild(nwGUI, build)
     manus.show()
 
     # Name, path and format should be remembered

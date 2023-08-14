@@ -410,7 +410,7 @@ def testCoreTools_NewMinimal(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
     testFile = tstPaths.outDir / "coreTools_NewMinimal_nwProject.nwx"
     compFile = tstPaths.refDir / "coreTools_NewMinimal_nwProject.nwx"
 
-    projBuild = ProjectBuilder(mockGUI)
+    projBuild = ProjectBuilder()
 
     # Setting no data should fail
     assert projBuild.buildProject({}) is False
@@ -432,7 +432,7 @@ def testCoreTools_NewMinimal(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreTools_NewCustomA(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
+def testCoreTools_NewCustomA(monkeypatch, fncPath, tstPaths, mockRnd):
     """Create a new project from a project wizard dictionary.
     Custom type with chapters and scenes.
     """
@@ -460,7 +460,7 @@ def testCoreTools_NewCustomA(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
         "numScenes": 3,
     }
 
-    projBuild = ProjectBuilder(mockGUI)
+    projBuild = ProjectBuilder()
     assert projBuild.buildProject(projData) is True
 
     copyfile(projFile, testFile)
@@ -470,7 +470,7 @@ def testCoreTools_NewCustomA(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreTools_NewCustomB(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
+def testCoreTools_NewCustomB(monkeypatch, fncPath, tstPaths,  mockRnd):
     """Create a new project from a project wizard dictionary.
     Custom type without chapters, but with scenes.
     """
@@ -498,7 +498,7 @@ def testCoreTools_NewCustomB(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
         "numScenes": 6,
     }
 
-    projBuild = ProjectBuilder(mockGUI)
+    projBuild = ProjectBuilder()
     assert projBuild.buildProject(projData) is True
 
     copyfile(projFile, testFile)
@@ -508,7 +508,7 @@ def testCoreTools_NewCustomB(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreTools_NewSample(monkeypatch, fncPath, tstPaths, mockGUI):
+def testCoreTools_NewSample(monkeypatch, fncPath, tstPaths):
     """Check that we can create a new project can be created from the
     provided sample project via a zip file.
     """
@@ -522,7 +522,7 @@ def testCoreTools_NewSample(monkeypatch, fncPath, tstPaths, mockGUI):
         "popCustom": False,
     }
 
-    projBuild = ProjectBuilder(mockGUI)
+    projBuild = ProjectBuilder()
 
     # No path set
     assert projBuild.buildProject({"popSample": True}) is False

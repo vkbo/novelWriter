@@ -104,14 +104,14 @@ class SharedData(QObject):
         logger.debug("SharedData instance initialised")
         return
 
-    def openProject(self, path: str | Path) -> bool:
+    def openProject(self, path: str | Path, clearLock: bool = False) -> bool:
         """Open a project."""
         if self.project.isValid:
             logger.error("A project is already open")
             return False
 
         self._lockedBy = None
-        status = self.project.openProject(path)
+        status = self.project.openProject(path, clearLock=clearLock)
         if status is False:
             # We must cache the lock status before resetting the project
             self._lockedBy = self.project.lockStatus
@@ -131,10 +131,6 @@ class SharedData(QObject):
         self.project.closeProject(idleTime)
         self._resetProject()
         return
-
-    def unlockProject(self) -> bool:
-        """Remove the project lock."""
-        return self.project.storage.clearLockFile()
 
     ##
     #  Alert Boxes
@@ -171,10 +167,10 @@ class SharedData(QObject):
         return
 
     def question(self, text: str, info: str = "", details: str = "", warn: bool = False) -> bool:
-        """Open an error alert box."""
+        """Open a question box."""
         self._alert = _GuiAlert(self.mainGui, self.theme)
         self._alert.setMessage(text, info, details)
-        self._alert.setAlertType(_GuiAlert.ERROR, True)
+        self._alert.setAlertType(_GuiAlert.WARN if warn else _GuiAlert.ASK, True)
         self._alert.exec_()
         return self._alert.result() == QMessageBox.Yes
 
