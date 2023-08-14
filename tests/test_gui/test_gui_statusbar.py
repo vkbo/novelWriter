@@ -24,7 +24,7 @@ import pytest
 
 from tools import C, buildTestProject
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.extensions.statusled import StatusLED
 
 
@@ -32,8 +32,8 @@ from novelwriter.extensions.statusled import StatusLED
 def testGuiStatusBar_Main(qtbot, nwGUI, projPath, mockRnd):
     """Test the the various features of the status bar."""
     buildTestProject(nwGUI, projPath)
-    cHandle = nwGUI.project.newFile("A Note", C.hCharRoot)
-    newDoc = nwGUI.project.storage.getDocument(cHandle)
+    cHandle = SHARED.project.newFile("A Note", C.hCharRoot)
+    newDoc = SHARED.project.storage.getDocument(cHandle)
     newDoc.writeDocument("# A Note\n\n")
     nwGUI.projView.projTree.revealNewTreeItem(cHandle)
     nwGUI.rebuildIndex(beQuiet=True)

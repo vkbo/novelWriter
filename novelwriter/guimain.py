@@ -59,7 +59,6 @@ from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.projwizard import GuiProjectWizard
 from novelwriter.tools.writingstats import GuiWritingStats
-from novelwriter.core.project import NWProject
 from novelwriter.core.coretools import ProjectBuilder
 
 from novelwriter.enum import (
@@ -333,9 +332,7 @@ class GuiMain(QMainWindow):
         return
 
     def postLaunchTasks(self, cmdOpen: str | None) -> None:
-        """This function is called after the main window is created to
-        determine what to open or show after initialisation.
-        """
+        """Process tasks after the main window has been created."""
         if cmdOpen:
             logger.info("Command line path: %s", cmdOpen)
             self.openProject(cmdOpen)
@@ -349,15 +346,6 @@ class GuiMain(QMainWindow):
             self.showAboutNWDialog(showNotes=True)
 
         return
-
-    ##
-    #  Properties
-    ##
-
-    @property
-    def project(self) -> NWProject:
-        """The project instance."""
-        return SHARED.project
 
     ##
     #  Project Actions

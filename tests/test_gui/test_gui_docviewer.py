@@ -27,7 +27,7 @@ from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import qApp, QAction
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction
 from novelwriter.core.tohtml import ToHtml
 
@@ -40,8 +40,8 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Rebuild the index
     nwGUI.mainMenu.aRebuildIndex.activate(QAction.Trigger)
-    assert nwGUI.project.index._tagsIndex._tags != {}
-    assert nwGUI.project.index._itemIndex._items != {}
+    assert SHARED.project.index._tagsIndex._tags != {}
+    assert SHARED.project.index._itemIndex._items != {}
 
     # Select a document in the project tree
     nwGUI.projView.setSelectedHandle("88243afbe5ed8")
@@ -128,7 +128,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     nwGUI.docViewer.reloadText()
 
     # Change document title
-    nwItem = nwGUI.project.tree["4c4f28287af27"]
+    nwItem = SHARED.project.tree["4c4f28287af27"]
     nwItem.setName("Test Title")
     assert nwItem.itemName == "Test Title"
     nwGUI.docViewer.updateDocInfo("4c4f28287af27")

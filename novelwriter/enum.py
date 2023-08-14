@@ -119,16 +119,6 @@ class nwDocInsert(Enum):
 # END Enum nwDocInsert
 
 
-class nwAlert(Enum):
-
-    INFO  = 0
-    WARN  = 1
-    ERROR = 2
-    ASK   = 3
-
-# END Enum nwAlert
-
-
 class nwView(Enum):
 
     EDITOR  = 0

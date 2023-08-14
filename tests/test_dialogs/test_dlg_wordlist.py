@@ -26,6 +26,7 @@ from PyQt5.QtWidgets import QDialog, QAction
 
 from tools import buildTestProject, getGuiItem
 
+from novelwriter import SHARED
 from novelwriter.core.spellcheck import UserDictionary
 from novelwriter.dialogs.wordlist import GuiWordList
 
@@ -55,7 +56,7 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, projPath):
     assert wList.listBox.count() == 0
 
     # Add words
-    userDict = UserDictionary(nwGUI.project)
+    userDict = UserDictionary(SHARED.project)
     userDict.add("word_a")
     userDict.add("word_c")
     userDict.add("word_g")

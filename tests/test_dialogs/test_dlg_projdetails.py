@@ -25,6 +25,7 @@ from tools import getGuiItem
 
 from PyQt5.QtWidgets import QAction
 
+from novelwriter import SHARED
 from novelwriter.dialogs.projdetails import GuiProjectDetails
 
 
@@ -54,7 +55,7 @@ def testDlgProjDetails_Dialog(qtbot, nwGUI, prjLipsum):
     assert projDet.tabMain.wordCountVal.text() == f"{3000:n}"
     assert projDet.tabMain.chapCountVal.text() == f"{3:n}"
     assert projDet.tabMain.sceneCountVal.text() == f"{5:n}"
-    assert projDet.tabMain.revCountVal.text() == f"{nwGUI.project.data.saveCount:n}"
+    assert projDet.tabMain.revCountVal.text() == f"{SHARED.project.data.saveCount:n}"
 
     assert projDet.tabMain.projPathVal.text() == str(prjLipsum)
 

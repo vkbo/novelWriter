@@ -165,8 +165,9 @@ def buildTestProject(obj, projPath):
         nwGUI = None
         project = obj
     else:
+        from novelwriter import SHARED
         nwGUI = obj
-        project = obj.project
+        project = SHARED.project
 
     project.storage.openProjectInPlace(projPath)
     project.setDefaultStatusImport()

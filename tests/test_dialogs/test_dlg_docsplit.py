@@ -23,6 +23,7 @@ import pytest
 
 from tools import C, buildTestProject
 
+from novelwriter import SHARED
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
 
@@ -35,7 +36,7 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Create a new project
     buildTestProject(nwGUI, projPath)
 
-    theProject = nwGUI.project
+    theProject = SHARED.project
     projTree = nwGUI.projView.projTree
 
     docText = (
