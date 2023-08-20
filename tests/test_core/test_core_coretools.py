@@ -290,7 +290,7 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
     assert list(dup.duplicate([C.hSceneDoc])) == [
         ("0000000000010", C.hSceneDoc),  # The Scene
     ]
-    assert theProject.tree._treeOrder == [
+    assert theProject.tree._order == [
         C.hNovelRoot, C.hPlotRoot, C.hCharRoot, C.hWorldRoot,
         C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010",
@@ -311,7 +311,7 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
         ("0000000000012", None),           # The Chapter
         ("0000000000013", None),           # The Scene
     ]
-    assert theProject.tree._treeOrder == [
+    assert theProject.tree._order == [
         C.hNovelRoot, C.hPlotRoot, C.hCharRoot, C.hWorldRoot,
         C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010",
@@ -342,7 +342,7 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
         ("0000000000017", None),          # The Chapter
         ("0000000000018", None),          # The Scene
     ]
-    assert theProject.tree._treeOrder == [
+    assert theProject.tree._order == [
         C.hNovelRoot, C.hPlotRoot, C.hCharRoot, C.hWorldRoot,
         C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010",

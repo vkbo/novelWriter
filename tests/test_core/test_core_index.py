@@ -727,7 +727,7 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     ]
 
     # Add a fake handle to the tree and check that it's ignored
-    theProject.tree._treeOrder.append("0000000000000")
+    theProject.tree._order.append("0000000000000")
     assert [(h, t) for h, t, _ in theIndex._itemIndex.iterNovelStructure(skipExcl=False)] == [
         (C.hTitlePage, "T0001"),
         (C.hChapterDoc, "T0001"),
@@ -738,7 +738,7 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
         (sHandle, "T0001"),
         (tHandle, "T0001"),
     ]
-    theProject.tree._treeOrder.remove("0000000000000")
+    theProject.tree._order.remove("0000000000000")
 
     # Extract stats
     assert theIndex.getNovelWordCount(skipExcl=False) == 43
@@ -1077,7 +1077,7 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     assert nStruct[0][0] == uHandle
 
     # Inject garbage into tree
-    theProject.tree._treeOrder.append("stuff")
+    theProject.tree._order.append("stuff")
     nStruct = list(itemIndex.iterNovelStructure())
     assert len(nStruct) == 4
     assert nStruct[0][0] == nHandle

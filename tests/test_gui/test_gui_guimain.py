@@ -203,8 +203,8 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert nwGUI.closeProject()
 
     assert len(SHARED.project.tree) == 0
-    assert len(SHARED.project.tree._treeOrder) == 0
-    assert len(SHARED.project.tree._treeRoots) == 0
+    assert len(SHARED.project.tree._order) == 0
+    assert len(SHARED.project.tree._roots) == 0
     assert SHARED.project.tree.trashRoot() is None
     assert SHARED.project.data.name == ""
     assert SHARED.project.data.title == ""
@@ -223,8 +223,8 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
 
     # Check that we loaded the data
     assert len(SHARED.project.tree) == 8
-    assert len(SHARED.project.tree._treeOrder) == 8
-    assert len(SHARED.project.tree._treeRoots) == 4
+    assert len(SHARED.project.tree._order) == 8
+    assert len(SHARED.project.tree._roots) == 4
     assert SHARED.project.tree.trashRoot() is None
     assert SHARED.project.data.name == "New Project"
     assert SHARED.project.data.title == "New Novel"

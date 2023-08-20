@@ -421,8 +421,8 @@ def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
 
     # Add an invalid item to the project
     nHandle = "0123456789def"
-    project.tree._treeOrder.append(nHandle)
-    project.tree._projTree[nHandle] = None  # type: ignore
+    project.tree._order.append(nHandle)
+    project.tree._tree[nHandle] = None  # type: ignore
 
     docBuild.queueAll()
     assert len(docBuild) == 8

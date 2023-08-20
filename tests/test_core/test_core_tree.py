@@ -127,7 +127,7 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
         assert theTree.append(nwItem) is True
         assert theTree.updateItemData(nwItem.itemHandle) is True
 
-    assert theTree._treeChanged is True
+    assert theTree._changed is True
 
     # Check that tree is not empty (calls __bool__)
     assert bool(theTree) is True
@@ -413,9 +413,9 @@ def testCoreTree_Methods(mockGUI, mockItems):
     assert roots[3][0] == "a000000000004"
 
     # Add a fake item to root and check that it can handle it
-    theTree._treeRoots["0000000000000"] = NWItem(theProject, "0000000000000")
+    theTree._roots["0000000000000"] = NWItem(theProject, "0000000000000")
     assert theTree.findRoot(nwItemClass.WORLD) is None
-    del theTree._treeRoots["0000000000000"]
+    del theTree._roots["0000000000000"]
 
     # Get item path
     assert theTree.getItemPath("stuff") == []
@@ -456,13 +456,13 @@ def testCoreTree_MakeHandles(mockGUI):
     random.seed(42)
     tHandle = theTree._makeHandle()
     assert tHandle == handles[0]
-    theTree._projTree[handles[0]] = None  # type: ignore
+    theTree._tree[handles[0]] = None  # type: ignore
 
     # Add the next in line to the project to force duplicate
-    theTree._projTree[handles[1]] = None  # type: ignore
+    theTree._tree[handles[1]] = None  # type: ignore
     tHandle = theTree._makeHandle()
     assert tHandle == handles[2]
-    theTree._projTree[handles[2]] = None  # type: ignore
+    theTree._tree[handles[2]] = None  # type: ignore
 
     # Reset the seed to force collissions, which should still end up
     # returning the next handle in the sequence
@@ -483,7 +483,7 @@ def testCoreTree_Stats(mockGUI, mockItems):
         theTree.append(nwItem)
 
     assert len(theTree) == len(mockItems)
-    theTree._treeOrder.append("stuff")
+    theTree._order.append("stuff")
 
     # Count Words
     novelWords, noteWords = theTree.sumWords()
@@ -520,7 +520,7 @@ def testCoreTree_Reorder(caplog, mockGUI, mockItems):
     assert "Handle 'stuff' in new tree order is not in old order" in caplog.text
 
     caplog.clear()
-    theTree._treeOrder.append("stuff")
+    theTree._order.append("stuff")
     theTree.setOrder(bHandle)
     assert theTree.handles() == bHandle
     assert "Handle 'stuff' in old tree order is not in new order" in caplog.text
@@ -539,7 +539,7 @@ def testCoreTree_ToCFile(monkeypatch, fncPath, mockGUI, mockItems):
         theTree.updateItemData(nwItem.itemHandle)
 
     assert len(theTree) == len(mockItems)
-    theTree._treeOrder.append("stuff")
+    theTree._order.append("stuff")
 
     def mockIsFile(fileName):
         """Return True for items that are files in novelWriter and

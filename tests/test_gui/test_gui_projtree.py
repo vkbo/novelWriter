@@ -260,19 +260,19 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # ===========
 
     projView.setSelectedHandle(C.hNovelRoot)
-    assert SHARED.project.tree._treeOrder.index(C.hNovelRoot) == 0
+    assert SHARED.project.tree._order.index(C.hNovelRoot) == 0
 
     # Move novel folder up
     assert projTree.moveTreeItem(-1) is False
-    assert SHARED.project.tree._treeOrder.index(C.hNovelRoot) == 0
+    assert SHARED.project.tree._order.index(C.hNovelRoot) == 0
 
     # Move novel folder down
     assert projTree.moveTreeItem(1) is True
-    assert SHARED.project.tree._treeOrder.index(C.hNovelRoot) == 1
+    assert SHARED.project.tree._order.index(C.hNovelRoot) == 1
 
     # Move novel folder up again
     assert projTree.moveTreeItem(-1) is True
-    assert SHARED.project.tree._treeOrder.index(C.hNovelRoot) == 0
+    assert SHARED.project.tree._order.index(C.hNovelRoot) == 0
 
     # Clean up
     # qtbot.stop()
@@ -881,7 +881,7 @@ def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mock
     assert len(SHARED.project.tree) == 21
 
     # Check tree order that all items are next to eachother
-    assert SHARED.project.tree._treeOrder == [
+    assert SHARED.project.tree._order == [
         C.hNovelRoot, C.hTitlePage, "0000000000010", C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000011", "0000000000012", "0000000000013", "0000000000014", "0000000000015",
         "0000000000016", "0000000000017", "0000000000018", "0000000000019", "000000000001a",

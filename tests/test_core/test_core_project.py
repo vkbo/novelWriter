@@ -328,7 +328,7 @@ def testCoreProject_AccessItems(mockGUI, fncPath, mockRnd):
     assert theProject.tree.handles() == newOrder
 
     # Add a non-existing item
-    theProject.tree._treeOrder.append(C.hInvalid)
+    theProject.tree._order.append(C.hInvalid)
 
     # Add an item with a non-existent parent
     nHandle = theProject.newFile("Test File", C.hChapterDir)
