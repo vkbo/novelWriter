@@ -42,6 +42,11 @@ logger = logging.getLogger(__name__)
 
 class SharedData(QObject):
 
+    __slots__ = (
+        "_gui", "_theme", "_project", "_leckedBy", "_alert",
+        "_idleTime", "_idleRefTime",
+    )
+
     projectStatusChanged = pyqtSignal(bool)
     projectStatusMessage = pyqtSignal(str)
 
@@ -149,9 +154,12 @@ class SharedData(QObject):
         the last time this function was called. Otherwise, only the
         reference time is updated.
         """
-        if userIdle:
-            self._idleTime += currTime - self._idleRefTime
-        self._idleRefTime = currTime
+        if hasattr(self, "_idleRefTime"):
+            # This method is called by a timer from C++, and the
+            # instance may not have be initialised
+            if userIdle:
+                self._idleTime += currTime - self._idleRefTime
+            self._idleRefTime = currTime
         return
 
     ##
