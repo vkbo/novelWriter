@@ -448,6 +448,7 @@ class GuiMain(QMainWindow):
         self._changeView(nwView.PROJECT)
 
         # Try to open the project
+        tStart = time()
         if not SHARED.openProject(projFile):
             # The project open failed.
             lockStatus = SHARED.projectLock
@@ -522,7 +523,7 @@ class GuiMain(QMainWindow):
         self.docEditor.setDocumentChanged(False)
         SHARED.project.setProjectChanged(False)
 
-        logger.debug("Project load complete")
+        logger.debug("Project loaded in %.3f ms", (time() - tStart)*1000)
 
         return True
 

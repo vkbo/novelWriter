@@ -160,7 +160,7 @@ class NWProject(QObject):
         """Add a new file with a given label and parent item."""
         return self._tree.create(label, parent, nwItemType.FILE)
 
-    def writeNewFile(self, tHandle: str, hLevel: int, isDocument: bool, addText: str = "") -> bool:
+    def writeNewFile(self, tHandle: str, hLevel: int, isDocument: bool, text: str = "") -> bool:
         """Write content to a new document after it is created. This
         will not run if the file exists and is not empty.
         """
@@ -175,7 +175,7 @@ class NWProject(QObject):
             return False
 
         hshText = "#"*minmax(hLevel, 1, 4)
-        newText = f"{hshText} {tItem.itemName}\n\n{addText}"
+        newText = f"{hshText} {tItem.itemName}\n\n{text}"
         if tItem.isNovelLike() and isDocument:
             tItem.setLayout(nwItemLayout.DOCUMENT)
         else:
@@ -503,7 +503,7 @@ class NWProject(QObject):
         order has been altered, or a file is orphaned, this function is
         capable of handling it.
         """
-        sentItems = []
+        sentItems = set()
         iterItems = self._tree.handles()
         n = 0
         nMax = min(len(iterItems), 10000)
@@ -515,13 +515,12 @@ class NWProject(QObject):
                 # Technically a bug
                 continue
             elif tItem.itemParent is None:
-                # Item is a root, or already been identified as an
-                # orphaned item
-                sentItems.append(tHandle)
+                # Item is a root, or already been identified as orphaned
+                sentItems.add(tHandle)
                 yield tItem
             elif tItem.itemParent in sentItems:
                 # Item's parent has been sent, so all is fine
-                sentItems.append(tHandle)
+                sentItems.add(tHandle)
                 yield tItem
             elif tItem.itemParent in iterItems:
                 # Item's parent exists, but hasn't been sent yet, so add

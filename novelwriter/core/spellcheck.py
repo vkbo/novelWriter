@@ -213,15 +213,15 @@ class UserDictionary:
     def load(self) -> None:
         """Load the user's dictionary."""
         self._path = self._project.storage.getMetaFile(nwFiles.DICT_FILE)
-        if not isinstance(self._path, Path):
-            return
-        try:
-            with open(self._path, mode="r", encoding="utf-8") as fObj:
-                data = json.load(fObj)
-            self._words = set(data.get("novelWriter.userDict", []))
-        except Exception:
-            logger.error("Failed to load user dictionary")
-            logException()
+        self._words = set()
+        if isinstance(self._path, Path) and self._path.is_file():
+            try:
+                with open(self._path, mode="r", encoding="utf-8") as fObj:
+                    data = json.load(fObj)
+                self._words = set(data.get("novelWriter.userDict", []))
+            except Exception:
+                logger.error("Failed to load user dictionary")
+                logException()
         return
 
     def save(self) -> None:
