@@ -116,8 +116,6 @@ class GuiMain(QMainWindow):
 
         # Core Settings
         self.isFocusMode = False
-        self.idleRefTime = time()
-        self.idleTime    = 0.0
 
         # Prepare Main Window
         self.resize(*CONFIG.mainWinSize)
@@ -428,9 +426,7 @@ class GuiMain(QMainWindow):
             self.itemDetails.clearDetails()
             self.mainStatus.clearStatus()
 
-            SHARED.closeProject(self.idleTime)
-            self.idleRefTime = time()
-            self.idleTime = 0.0
+            SHARED.closeProject()
 
             self.docEditor.setDictionaries()
             self._updateWindowTitle()
@@ -488,10 +484,6 @@ class GuiMain(QMainWindow):
                     return False
             else:
                 return False
-
-        # Project is loaded
-        self.idleRefTime = time()
-        self.idleTime = 0.0
 
         # Update GUI
         self._updateWindowTitle(SHARED.project.data.name)
@@ -1394,20 +1386,12 @@ class GuiMain(QMainWindow):
         """Process time tick of the main timer."""
         if not SHARED.hasProject:
             return
-
         currTime = time()
         editIdle = currTime - self.docEditor.lastActive > CONFIG.userIdleTime
         userIdle = qApp.applicationState() != Qt.ApplicationActive
-
-        if editIdle or userIdle:
-            self.idleTime += currTime - self.idleRefTime
-            self.mainStatus.setUserIdle(True)
-        else:
-            self.mainStatus.setUserIdle(False)
-
-        self.idleRefTime = currTime
-        self.mainStatus.updateTime(idleTime=self.idleTime)
-
+        self.mainStatus.setUserIdle(editIdle or userIdle)
+        SHARED.updateIdleTime(currTime, editIdle or userIdle)
+        self.mainStatus.updateTime(idleTime=SHARED.idleTime)
         return
 
     @pyqtSlot()

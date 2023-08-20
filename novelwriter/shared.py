@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import logging
 
+from time import time
 from typing import TYPE_CHECKING
 from pathlib import Path
 
@@ -51,6 +52,8 @@ class SharedData(QObject):
         self._project = None
         self._lockedBy = None
         self._alert = None
+        self._idleTime = 0.0
+        self._idleRedTime = time()
         return
 
     @property
@@ -89,6 +92,11 @@ class SharedData(QObject):
         """Return a pointer to the last alert box."""
         return self._alert
 
+    @property
+    def idleTime(self) -> float:
+        """Return the session idle time."""
+        return self._idleTime
+
     ##
     #  Methods
     ##
@@ -117,6 +125,8 @@ class SharedData(QObject):
             self._lockedBy = self.project.lockStatus
             self._resetProject()
 
+        self._resetIdleTimer()
+
         return status
 
     def saveProject(self, autoSave: bool = False) -> bool:
@@ -126,10 +136,22 @@ class SharedData(QObject):
             return False
         return self.project.saveProject(autoSave=autoSave)
 
-    def closeProject(self, idleTime: float) -> None:
+    def closeProject(self) -> None:
         """Close the current project."""
-        self.project.closeProject(idleTime)
+        self.project.closeProject(self._idleTime)
         self._resetProject()
+        self._resetIdleTimer()
+        return
+
+    def updateIdleTime(self, currTime: float, userIdle: bool) -> None:
+        """Update the idle time record. If the userIdle flag is True,
+        the user idle counter is updated with the time difference since
+        the last time this function was called. Otherwise, only the
+        reference time is updated.
+        """
+        if userIdle:
+            self._idleTime += currTime - self._idleRefTime
+        self._idleRefTime = currTime
         return
 
     ##
@@ -204,6 +226,12 @@ class SharedData(QObject):
         self._project = NWProject(self)
         self._project.statusChanged.connect(self._emitProjectStatusChange)
         self._project.statusMessage.connect(self._emitProjectStatusMeesage)
+        return
+
+    def _resetIdleTimer(self) -> None:
+        """Reset the timer data for the idle timer."""
+        self._idleRefTime = time()
+        self._idleTime = 0.0
         return
 
 # END Class SharedData

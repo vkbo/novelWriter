@@ -229,8 +229,10 @@ class NWTree:
                 oParent = self.findRoot(oClass)
             if oParent is None:  # Otherwise, add to the Novel root
                 oParent = self.findRoot(nwItemClass.NOVEL)
-            if oParent is None:  # If not, give up
-                continue
+            if oParent is None:  # If not, create a new novel folder
+                oParent = self.create(prefix, None, nwItemType.ROOT, nwItemClass.NOVEL)
+
+            assert oParent is not None  # Otherwise there's an issue with self.create()
 
             # Create a new item
             newItem = NWItem(self._project, cHandle)

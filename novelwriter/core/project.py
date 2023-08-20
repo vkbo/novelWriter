@@ -512,8 +512,7 @@ class NWProject(QObject):
             tItem = self._tree[tHandle]
             n += 1
             if tItem is None:
-                # Technically a bug since treeOrder is built from the
-                # same data as _projTree
+                # Technically a bug
                 continue
             elif tItem.itemParent is None:
                 # Item is a root, or already been identified as an

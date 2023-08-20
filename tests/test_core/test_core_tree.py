@@ -354,10 +354,12 @@ def testCoreTree_CheckConsistency(caplog: pytest.LogCaptureFixture, mockGUI, fnc
     assert itemX.itemClass == nwItemClass.NOVEL
     assert itemX.itemName == "[Recovered] Stuff"
 
-    # If the tree is empty, there is nowhere to add any of the 4 files
+    # If the tree is empty, a new root folder is created
     theProject.tree.clear()
-    assert theProject.tree.checkConsistency("Recovered") == (4, 0)
-    assert len(theProject.tree) == 0
+    assert theProject.tree.checkConsistency("Recovered") == (4, 4)
+    assert len(theProject.tree) == 5
+    nHandle = theProject.tree.findRoot(nwItemClass.NOVEL)
+    assert theProject.tree[nHandle].itemName == "Recovered"  # type: ignore
 
 # END Test testCoreTree_CheckConsistency
 
