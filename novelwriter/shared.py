@@ -43,7 +43,7 @@ logger = logging.getLogger(__name__)
 class SharedData(QObject):
 
     __slots__ = (
-        "_gui", "_theme", "_project", "_leckedBy", "_alert",
+        "_gui", "_theme", "_project", "_lockedBy", "_alert",
         "_idleTime", "_idleRefTime",
     )
 
@@ -58,28 +58,28 @@ class SharedData(QObject):
         self._lockedBy = None
         self._alert = None
         self._idleTime = 0.0
-        self._idleRedTime = time()
+        self._idleRefTime = time()
         return
 
     @property
     def mainGui(self) -> GuiMain:
         """Return the Main GUI instance."""
         if self._gui is None:
-            raise Exception("UserData class not properly initialised")
+            raise Exception("SharedData class not fully initialised")
         return self._gui
 
     @property
     def theme(self) -> GuiTheme:
         """Return the GUI Theme instance."""
         if self._theme is None:
-            raise Exception("UserData class not properly initialised")
+            raise Exception("SharedData class not fully initialised")
         return self._theme
 
     @property
     def project(self) -> NWProject:
         """Return the active NWProject instance."""
         if self._project is None:
-            raise Exception("UserData class not properly initialised")
+            raise Exception("SharedData class not fully initialised")
         return self._project
 
     @property
@@ -93,14 +93,14 @@ class SharedData(QObject):
         return self._lockedBy
 
     @property
+    def projectIdleTime(self) -> float:
+        """Return the session idle time."""
+        return self._idleTime
+
+    @property
     def alert(self) -> _GuiAlert | None:
         """Return a pointer to the last alert box."""
         return self._alert
-
-    @property
-    def idleTime(self) -> float:
-        """Return the session idle time."""
-        return self._idleTime
 
     ##
     #  Methods
@@ -154,12 +154,9 @@ class SharedData(QObject):
         the last time this function was called. Otherwise, only the
         reference time is updated.
         """
-        if hasattr(self, "_idleRefTime"):
-            # This method is called by a timer from C++, and the
-            # instance may not have be initialised
-            if userIdle:
-                self._idleTime += currTime - self._idleRefTime
-            self._idleRefTime = currTime
+        if userIdle:
+            self._idleTime += currTime - self._idleRefTime
+        self._idleRefTime = currTime
         return
 
     ##

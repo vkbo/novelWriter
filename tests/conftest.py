@@ -22,6 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import sys
 import pytest
 import shutil
+import logging
 
 from pathlib import Path
 
@@ -62,6 +63,7 @@ def resetConfigVars():
 @pytest.fixture(scope="session", autouse=True)
 def sessionFixture():
     """A session wide fixture to set up the test environment."""
+    logging.root.setLevel(logging.INFO)
     if _TMP_ROOT.exists():
         shutil.rmtree(_TMP_ROOT)
     _TMP_ROOT.mkdir()
@@ -81,6 +83,7 @@ def functionFixture(qtbot):
     CONFIG.__init__()
     CONFIG.initConfig(confPath=_TMP_CONF, dataPath=_TMP_CONF)
     resetConfigVars()
+    logging.getLogger("novelwriter").setLevel(logging.INFO)
 
     return
 

@@ -1392,7 +1392,7 @@ class GuiMain(QMainWindow):
         userIdle = qApp.applicationState() != Qt.ApplicationActive
         self.mainStatus.setUserIdle(editIdle or userIdle)
         SHARED.updateIdleTime(currTime, editIdle or userIdle)
-        self.mainStatus.updateTime(idleTime=SHARED.idleTime)
+        self.mainStatus.updateTime(idleTime=SHARED.projectIdleTime)
         return
 
     @pyqtSlot()
