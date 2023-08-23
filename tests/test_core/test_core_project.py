@@ -190,8 +190,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     # Force open with lockfile
     theProject.storage._lockFilePath = fncPath / nwFiles.PROJ_LOCK
     assert theProject.storage.writeLockFile() is True
-    theProject.storage.clearLockFile()
-    assert theProject.openProject(fncPath) is True
+    assert theProject.openProject(fncPath, clearLock=True) is True
     theProject.closeProject()
     assert theProject.lockStatus is None
 

@@ -663,17 +663,13 @@ class GuiPreferencesEditor(QWidget):
         self.spellLanguage.setMaximumWidth(mW)
 
         langAvail = self.mainGui.docEditor.spEnchant.listDictionaries()
-        if CONFIG.hasEnchant:
-            if langAvail:
-                for spTag, spProv in langAvail:
-                    qLocal = QLocale(spTag)
-                    spLang = qLocal.nativeLanguageName().title()
-                    self.spellLanguage.addItem("%s [%s]" % (spLang, spProv), spTag)
-            else:
-                self.spellLanguage.addItem(self.tr("None"), "")
-                self.spellLanguage.setEnabled(False)
+        if CONFIG.hasEnchant and langAvail:
+            for spTag, spProv in langAvail:
+                qLocal = QLocale(spTag)
+                spLang = qLocal.nativeLanguageName().title()
+                self.spellLanguage.addItem("%s [%s]" % (spLang, spProv), spTag)
         else:
-            self.spellLanguage.addItem(self.tr("Not installed"), "")
+            self.spellLanguage.addItem(self.tr("None"), "")
             self.spellLanguage.setEnabled(False)
 
         spellIdx = self.spellLanguage.findData(CONFIG.spellLanguage)
