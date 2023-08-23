@@ -165,10 +165,10 @@ def buildTestProject(obj, projPath):
         nwGUI = None
         project = obj
     else:
+        from novelwriter import SHARED
         nwGUI = obj
-        project = obj.project
+        project = SHARED.project
 
-    project.clearProject()
     project.storage.openProjectInPlace(projPath)
     project.setDefaultStatusImport()
 
@@ -204,9 +204,9 @@ def buildTestProject(obj, projPath):
     project.session.startSession()
     project.setProjectChanged(True)
     project.saveProject(autoSave=True)
+    project._valid = True
 
     if nwGUI is not None:
-        nwGUI.hasProject = True
         nwGUI.rebuildTrees()
 
     return

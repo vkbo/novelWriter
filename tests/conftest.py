@@ -22,17 +22,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import sys
 import pytest
 import shutil
+import logging
 
 from pathlib import Path
 
-from mocked import MockGuiMain
 from tools import cleanProject
+from mocked import MockGuiMain, MockTheme
 
 from PyQt5.QtWidgets import QMessageBox
 
 sys.path.insert(1, str(Path(__file__).parent.parent.absolute()))
 
-from novelwriter import CONFIG, main  # noqa: E402
+from novelwriter import CONFIG, SHARED, main  # noqa: E402
 
 _TST_ROOT = Path(__file__).parent
 _TMP_ROOT = _TST_ROOT / "temp"
@@ -62,6 +63,7 @@ def resetConfigVars():
 @pytest.fixture(scope="session", autouse=True)
 def sessionFixture():
     """A session wide fixture to set up the test environment."""
+    logging.root.setLevel(logging.INFO)
     if _TMP_ROOT.exists():
         shutil.rmtree(_TMP_ROOT)
     _TMP_ROOT.mkdir()
@@ -81,6 +83,7 @@ def functionFixture(qtbot):
     CONFIG.__init__()
     CONFIG.initConfig(confPath=_TMP_CONF, dataPath=_TMP_CONF)
     resetConfigVars()
+    logging.getLogger("novelwriter").setLevel(logging.INFO)
 
     return
 
@@ -136,10 +139,15 @@ def projPath(fncPath):
 
 
 @pytest.fixture(scope="function")
-def mockGUI():
+def mockGUI(qtbot, monkeypatch):
     """Create a mock instance of novelWriter's main GUI class."""
-    theGui = MockGuiMain()
-    return theGui
+    monkeypatch.setattr(QMessageBox, "exec_", lambda *a: None)
+    monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.Yes)
+    gui = MockGuiMain()
+    theme = MockTheme()
+    monkeypatch.setattr(SHARED, "_gui", gui)
+    monkeypatch.setattr(SHARED, "_theme", theme)
+    return gui
 
 
 @pytest.fixture(scope="function")

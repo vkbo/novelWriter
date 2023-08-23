@@ -19,48 +19,24 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-from PyQt5.QtCore import QObject
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QWidget
 
 
 # =========================================================================== #
 #  Mock GUI
 # =========================================================================== #
 
-class MockGuiMain(QObject):
+class MockGuiMain(QWidget):
 
     def __init__(self):
         super().__init__()
-
-        self._project = None
-
-        self.hasProject = True
         self.mainStatus = MockStatusBar()
         self.projPath = ""
-
-        # Test Variables
-        self.askResponse = True
-        self.lastAlert = ""
-        self.lastQuestion = ""
-
         return
-
-    @property
-    def project(self):
-        return self._project
 
     def postLaunchTasks(self, cmdOpen):
         return
-
-    def makeAlert(self, text, info="", detals="", level=0, exception=None):
-        assert isinstance(text, str)
-        print("%s: %s" % (str(level), text))
-        self.lastAlert = str(text)
-        return
-
-    def askQuestion(self, text, info="", details="", level=3):
-        print("Question: %s" % text)
-        self.lastQuestion = text
-        return self.askResponse
 
     def setStatus(self, theMessage):
         return
@@ -78,16 +54,6 @@ class MockGuiMain(QObject):
     def close(self):
         return "close"
 
-    # Test Functions
-
-    def undo(self):
-        self.askResponse = True
-        return
-
-    def clear(self):
-        self.lastAlert = ""
-        return
-
 # END Class MockGuiMain
 
 
@@ -99,10 +65,22 @@ class MockStatusBar:
     def setStatus(self, theText):
         return
 
-    def doUpdateProjectStatus(self, theStatus):
+    def updateProjectStatus(self, theStatus):
         return
 
 # END Class MockStatusBar
+
+
+class MockTheme:
+
+    def __init__(self):
+        self.baseIconSize = 10
+        return
+
+    def getPixmap(self, *a):
+        return QPixmap()
+
+# END Class MockTheme
 
 
 class MockApp:

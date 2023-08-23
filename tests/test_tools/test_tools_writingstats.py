@@ -20,8 +20,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import json
-from pathlib import Path
 import pytest
+
+from pathlib import Path
 
 from tools import getGuiItem, buildTestProject
 from mocked import causeOSError
@@ -29,6 +30,7 @@ from mocked import causeOSError
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QFileDialog
 
+from novelwriter import SHARED
 from novelwriter.constants import nwFiles
 from novelwriter.tools.writingstats import GuiWritingStats
 
@@ -39,7 +41,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     """
     # Create a project to work on
     buildTestProject(nwGUI, projPath)
-    project = nwGUI.project
+    project = SHARED.project
 
     qtbot.wait(100)
     assert nwGUI.saveProject()
@@ -377,13 +379,14 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
     # IOError
     # =======
-    monkeypatch.setattr("builtins.open", causeOSError)
-    assert not sessLog._loadLogFile()
-    assert not sessLog._saveData(sessLog.FMT_CSV)
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert not sessLog._loadLogFile()
+        assert not sessLog._saveData(sessLog.FMT_CSV)
 
     # qtbot.stop()
 
     sessLog._doClose()
-    assert nwGUI.closeProject()
+    assert nwGUI.closeProject() is True
 
 # END Test testToolWritingStats_Main

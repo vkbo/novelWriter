@@ -42,7 +42,7 @@ def testCoreIndex_LoadSave(monkeypatch, prjLipsum, mockGUI, tstPaths):
     testFile = tstPaths.outDir / "coreIndex_LoadSave_tagsIndex.json"
     compFile = tstPaths.refDir / "coreIndex_LoadSave_tagsIndex.json"
 
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     assert theProject.openProject(prjLipsum)
 
     theIndex = NWIndex(theProject)
@@ -155,7 +155,7 @@ def testCoreIndex_LoadSave(monkeypatch, prjLipsum, mockGUI, tstPaths):
 @pytest.mark.core
 def testCoreIndex_ScanThis(mockGUI):
     """Test the tag scanner function scanThis."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theIndex = theProject.index
 
     isValid, theBits, thePos = theIndex.scanThis("tag: this, and this")
@@ -204,7 +204,7 @@ def testCoreIndex_ScanThis(mockGUI):
 def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
     """Test the tag checker function checkThese.
     """
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
     theIndex = theProject.index
@@ -281,7 +281,7 @@ def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
 @pytest.mark.core
 def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
     """Check the index text scanner."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
     theIndex = theProject.index
@@ -502,7 +502,7 @@ def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
 @pytest.mark.core
 def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     """Check the index data extraction functions."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
 
@@ -727,7 +727,7 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     ]
 
     # Add a fake handle to the tree and check that it's ignored
-    theProject.tree._treeOrder.append("0000000000000")
+    theProject.tree._order.append("0000000000000")
     assert [(h, t) for h, t, _ in theIndex._itemIndex.iterNovelStructure(skipExcl=False)] == [
         (C.hTitlePage, "T0001"),
         (C.hChapterDoc, "T0001"),
@@ -738,7 +738,7 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
         (sHandle, "T0001"),
         (tHandle, "T0001"),
     ]
-    theProject.tree._treeOrder.remove("0000000000000")
+    theProject.tree._order.remove("0000000000000")
 
     # Extract stats
     assert theIndex.getNovelWordCount(skipExcl=False) == 43
@@ -941,7 +941,7 @@ def testCoreIndex_TagsIndex():
 @pytest.mark.core
 def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     """Check the ItemIndex class."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
     theProject.index.clearIndex()
@@ -1077,7 +1077,7 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     assert nStruct[0][0] == uHandle
 
     # Inject garbage into tree
-    theProject.tree._treeOrder.append("stuff")
+    theProject.tree._order.append("stuff")
     nStruct = list(itemIndex.iterNovelStructure())
     assert len(nStruct) == 4
     assert nStruct[0][0] == nHandle

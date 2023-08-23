@@ -30,7 +30,7 @@ from tools import (
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QMessageBox, QInputDialog
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemType, nwView, nwWidget
 from novelwriter.constants import nwFiles
 from novelwriter.gui.outline import GuiOutlineView
@@ -104,18 +104,18 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, prjLipsum):
 
 @pytest.mark.gui
 def testGuiMain_NewProject(monkeypatch, nwGUI, projPath):
-    """Test creating a new project.
-    """
-    # No data
+    """Test creating a new project."""
+    # Open wizard, but return no data
     with monkeypatch.context() as mp:
         mp.setattr(GuiProjectWizard, "exec_", lambda *a: None)
         assert nwGUI.newProject(projData=None) is False
 
     # Close project
     with monkeypatch.context() as mp:
-        nwGUI.hasProject = True
+        SHARED.project._valid = True
         mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         assert nwGUI.newProject(projData={"projPath": projPath}) is False
+        SHARED.project._valid = False
 
     # No project path
     assert nwGUI.newProject(projData={}) is False
@@ -153,10 +153,10 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwGUI.projStack.setCurrentIndex(0)
     with monkeypatch.context() as mp:
         mp.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
-        assert nwGUI.docEditor.docHandle() is None
+        assert nwGUI.docEditor.docHandle is None
         nwGUI.projView.projTree._getTreeItem(sHandle).setSelected(True)
         nwGUI._keyPressReturn()
-        assert nwGUI.docEditor.docHandle() == sHandle
+        assert nwGUI.docEditor.docHandle == sHandle
         assert nwGUI.closeDocument() is True
 
     # Novel Tree has focus
@@ -164,11 +164,11 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwGUI.novelView.novelTree.refreshTree(rootHandle=None, overRide=True)
     with monkeypatch.context() as mp:
         mp.setattr(GuiNovelView, "treeHasFocus", lambda *a: True)
-        assert nwGUI.docEditor.docHandle() is None
+        assert nwGUI.docEditor.docHandle is None
         selItem = nwGUI.novelView.novelTree.topLevelItem(2)
         nwGUI.novelView.novelTree.setCurrentItem(selItem)
         nwGUI._keyPressReturn()
-        assert nwGUI.docEditor.docHandle() == sHandle
+        assert nwGUI.docEditor.docHandle == sHandle
         assert nwGUI.closeDocument() is True
 
     # Project Outline has focus
@@ -176,11 +176,11 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwGUI.switchFocus(nwWidget.OUTLINE)
     with monkeypatch.context() as mp:
         mp.setattr(GuiOutlineView, "treeHasFocus", lambda *a: True)
-        assert nwGUI.docEditor.docHandle() is None
+        assert nwGUI.docEditor.docHandle is None
         selItem = nwGUI.outlineView.outlineTree.topLevelItem(2)
         nwGUI.outlineView.outlineTree.setCurrentItem(selItem)
         nwGUI._keyPressReturn()
-        assert nwGUI.docEditor.docHandle() == sHandle
+        assert nwGUI.docEditor.docHandle == sHandle
         assert nwGUI.closeDocument() is True
 
     # qtbot.stop()
@@ -202,14 +202,14 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert nwGUI.saveProject()
     assert nwGUI.closeProject()
 
-    assert len(nwGUI.project.tree) == 0
-    assert len(nwGUI.project.tree._treeOrder) == 0
-    assert len(nwGUI.project.tree._treeRoots) == 0
-    assert nwGUI.project.tree.trashRoot() is None
-    assert nwGUI.project.data.name == ""
-    assert nwGUI.project.data.title == ""
-    assert nwGUI.project.data.author == ""
-    assert nwGUI.project.data.spellCheck is False
+    assert len(SHARED.project.tree) == 0
+    assert len(SHARED.project.tree._order) == 0
+    assert len(SHARED.project.tree._roots) == 0
+    assert SHARED.project.tree.trashRoot() is None
+    assert SHARED.project.data.name == ""
+    assert SHARED.project.data.title == ""
+    assert SHARED.project.data.author == ""
+    assert SHARED.project.data.spellCheck is False
 
     # Check the files
     projFile = projPath / "nwProject.nwx"
@@ -222,14 +222,14 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert nwGUI.openProject(projPath)
 
     # Check that we loaded the data
-    assert len(nwGUI.project.tree) == 8
-    assert len(nwGUI.project.tree._treeOrder) == 8
-    assert len(nwGUI.project.tree._treeRoots) == 4
-    assert nwGUI.project.tree.trashRoot() is None
-    assert nwGUI.project.data.name == "New Project"
-    assert nwGUI.project.data.title == "New Novel"
-    assert nwGUI.project.data.author == "Jane Doe"
-    assert nwGUI.project.data.spellCheck is False
+    assert len(SHARED.project.tree) == 8
+    assert len(SHARED.project.tree._order) == 8
+    assert len(SHARED.project.tree._roots) == 4
+    assert SHARED.project.tree.trashRoot() is None
+    assert SHARED.project.data.name == "New Project"
+    assert SHARED.project.data.title == "New Novel"
+    assert SHARED.project.data.author == "Jane Doe"
+    assert SHARED.project.data.spellCheck is False
 
     # Check that tree items have been created
     assert nwGUI.projView.projTree._getTreeItem(C.hNovelRoot) is not None
@@ -506,9 +506,9 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     nwGUI.docEditor.wCounterDoc.run()
 
     # Save the document
-    assert nwGUI.docEditor.docChanged()
+    assert nwGUI.docEditor.docChanged
     assert nwGUI.saveDocument()
-    assert not nwGUI.docEditor.docChanged()
+    assert not nwGUI.docEditor.docChanged
     nwGUI.rebuildIndex()
 
     # Open and view the edited document

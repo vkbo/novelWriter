@@ -30,8 +30,7 @@ from novelwriter import CONFIG, main, logger
 
 @pytest.mark.base
 def testBaseInit_Launch(caplog, monkeypatch, fncPath):
-    """Check launching the main GUI.
-    """
+    """Check launching the main GUI."""
     monkeypatch.setattr("novelwriter.guimain.GuiMain", MockGuiMain)
 
     # TestMode Launch
@@ -80,8 +79,7 @@ def testBaseInit_Launch(caplog, monkeypatch, fncPath):
 
 @pytest.mark.base
 def testBaseInit_Options(monkeypatch, fncPath):
-    """Test command line options for logging level.
-    """
+    """Test command line options for logging level."""
     monkeypatch.setattr("novelwriter.guimain.GuiMain", MockGuiMain)
     monkeypatch.setattr(sys, "argv", [
         "novelWriter.py", "--testmode", f"--config={fncPath}", f"--data={fncPath}"
@@ -146,8 +144,7 @@ def testBaseInit_Options(monkeypatch, fncPath):
 
 @pytest.mark.base
 def testBaseInit_Imports(caplog, monkeypatch, fncPath):
-    """Check import error handling.
-    """
+    """Check import error handling."""
     monkeypatch.setattr("novelwriter.guimain.GuiMain", MockGuiMain)
     monkeypatch.setattr("PyQt5.QtWidgets.QApplication.__init__", lambda *a: None)
     monkeypatch.setattr("PyQt5.QtWidgets.QApplication.exec_", lambda *a: 0)

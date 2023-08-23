@@ -220,7 +220,7 @@ def testCoreBuildSettings_BuildValues():
 @pytest.mark.core
 def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
     """Test filters for project items."""
-    project = NWProject(mockGUI)
+    project = NWProject()
     buildTestProject(project, fncPath)
     build = BuildSettings()
 
@@ -368,7 +368,7 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
 @pytest.mark.core
 def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRnd):
     """Test the collections class for builds."""
-    project = NWProject(mockGUI)
+    project = NWProject()
     buildTestProject(project, fncPath)
     buildsFile = project.storage.getMetaFile(nwFiles.BUILDS_FILE)
     assert isinstance(buildsFile, Path)

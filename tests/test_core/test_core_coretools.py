@@ -38,7 +38,7 @@ from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSplitter, Pr
 @pytest.mark.core
 def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ipsumText):
     """Test the DocMerger utility."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
 
@@ -126,7 +126,7 @@ def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ip
 @pytest.mark.core
 def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
     """Test the DocSplitter utility."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
 
@@ -265,7 +265,7 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText)
 @pytest.mark.core
 def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
     """Test the DocDuplicator utility."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
 
@@ -290,7 +290,7 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
     assert list(dup.duplicate([C.hSceneDoc])) == [
         ("0000000000010", C.hSceneDoc),  # The Scene
     ]
-    assert theProject.tree._treeOrder == [
+    assert theProject.tree._order == [
         C.hNovelRoot, C.hPlotRoot, C.hCharRoot, C.hWorldRoot,
         C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010",
@@ -311,7 +311,7 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
         ("0000000000012", None),           # The Chapter
         ("0000000000013", None),           # The Scene
     ]
-    assert theProject.tree._treeOrder == [
+    assert theProject.tree._order == [
         C.hNovelRoot, C.hPlotRoot, C.hCharRoot, C.hWorldRoot,
         C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010",
@@ -342,7 +342,7 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
         ("0000000000017", None),          # The Chapter
         ("0000000000018", None),          # The Scene
     ]
-    assert theProject.tree._treeOrder == [
+    assert theProject.tree._order == [
         C.hNovelRoot, C.hPlotRoot, C.hCharRoot, C.hWorldRoot,
         C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010",
@@ -410,7 +410,7 @@ def testCoreTools_NewMinimal(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
     testFile = tstPaths.outDir / "coreTools_NewMinimal_nwProject.nwx"
     compFile = tstPaths.refDir / "coreTools_NewMinimal_nwProject.nwx"
 
-    projBuild = ProjectBuilder(mockGUI)
+    projBuild = ProjectBuilder()
 
     # Setting no data should fail
     assert projBuild.buildProject({}) is False
@@ -432,7 +432,7 @@ def testCoreTools_NewMinimal(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreTools_NewCustomA(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
+def testCoreTools_NewCustomA(monkeypatch, fncPath, tstPaths, mockRnd):
     """Create a new project from a project wizard dictionary.
     Custom type with chapters and scenes.
     """
@@ -460,7 +460,7 @@ def testCoreTools_NewCustomA(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
         "numScenes": 3,
     }
 
-    projBuild = ProjectBuilder(mockGUI)
+    projBuild = ProjectBuilder()
     assert projBuild.buildProject(projData) is True
 
     copyfile(projFile, testFile)
@@ -470,7 +470,7 @@ def testCoreTools_NewCustomA(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreTools_NewCustomB(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
+def testCoreTools_NewCustomB(monkeypatch, fncPath, tstPaths,  mockRnd):
     """Create a new project from a project wizard dictionary.
     Custom type without chapters, but with scenes.
     """
@@ -498,7 +498,7 @@ def testCoreTools_NewCustomB(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
         "numScenes": 6,
     }
 
-    projBuild = ProjectBuilder(mockGUI)
+    projBuild = ProjectBuilder()
     assert projBuild.buildProject(projData) is True
 
     copyfile(projFile, testFile)
@@ -508,7 +508,7 @@ def testCoreTools_NewCustomB(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
 
 
 @pytest.mark.core
-def testCoreTools_NewSample(monkeypatch, fncPath, tstPaths, mockGUI):
+def testCoreTools_NewSample(monkeypatch, fncPath, tstPaths):
     """Check that we can create a new project can be created from the
     provided sample project via a zip file.
     """
@@ -522,7 +522,7 @@ def testCoreTools_NewSample(monkeypatch, fncPath, tstPaths, mockGUI):
         "popCustom": False,
     }
 
-    projBuild = ProjectBuilder(mockGUI)
+    projBuild = ProjectBuilder()
 
     # No path set
     assert projBuild.buildProject({"popSample": True}) is False

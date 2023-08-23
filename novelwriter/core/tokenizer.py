@@ -36,7 +36,7 @@ from functools import partial
 
 from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
-from novelwriter.enum import nwItemLayout, nwItemType
+from novelwriter.enum import nwItemLayout
 from novelwriter.common import formatTimeStamp, numberToRoman, checkInt
 from novelwriter.constants import nwConst, nwHeadFmt, nwRegEx, nwUnicode
 from novelwriter.core.project import NWProject
@@ -315,10 +315,8 @@ class Tokenizer(ABC):
 
     def addRootHeading(self, tHandle: str) -> bool:
         """Add a heading at the start of a new root folder."""
-        if not self._project.tree.checkType(tHandle, nwItemType.ROOT):
-            return False
-        theItem = self._project.tree[tHandle]
-        if not theItem:
+        tItem = self._project.tree[tHandle]
+        if not tItem or not tItem.isRootType():
             return False
 
         if self._isFirst:
@@ -327,14 +325,14 @@ class Tokenizer(ABC):
         else:
             textAlign = self.A_PBB | self.A_CENTRE
 
-        locNotes = self._localLookup("Notes")
-        theTitle = f"{locNotes}: {theItem.itemName}"
+        trNotes = self._localLookup("Notes")
+        title = f"{trNotes}: {tItem.itemName}"
         self._tokens = []
         self._tokens.append((
-            self.T_TITLE, 0, theTitle, None, textAlign
+            self.T_TITLE, 0, title, None, textAlign
         ))
         if self._keepMarkdown:
-            self._allMarkdown.append(f"# {theTitle}\n\n")
+            self._allMarkdown.append(f"# {title}\n\n")
 
         return True
 

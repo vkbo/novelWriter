@@ -25,7 +25,7 @@ from __future__ import annotations
 
 from PyQt5.QtCore import QCoreApplication, QT_TRANSLATE_NOOP
 
-from novelwriter.enum import nwAlert, nwBuildFmt, nwItemClass, nwItemLayout, nwOutline
+from novelwriter.enum import nwBuildFmt, nwItemClass, nwItemLayout, nwOutline
 
 
 def trConst(text: str) -> str:
@@ -51,6 +51,9 @@ class nwConst:
     URL_REPORT  = "https://github.com/vkbo/novelWriter/issues"
     URL_HELP    = "https://github.com/vkbo/novelWriter/discussions"
     URL_RELEASE = "https://github.com/vkbo/novelWriter/releases/latest"
+
+    # Gui Settings
+    STATUS_MSG_TIMEOUT = 15000  # milliseconds
 
 # END Class nwConst
 
@@ -161,12 +164,6 @@ class nwLabels:
         nwItemLayout.NO_LAYOUT: QT_TRANSLATE_NOOP("Constant", "None"),
         nwItemLayout.DOCUMENT:  QT_TRANSLATE_NOOP("Constant", "Novel Document"),
         nwItemLayout.NOTE:      QT_TRANSLATE_NOOP("Constant", "Project Note"),
-    }
-    ALERT_NAME = {
-        nwAlert.INFO:  QT_TRANSLATE_NOOP("Constant", "Information"),
-        nwAlert.WARN:  QT_TRANSLATE_NOOP("Constant", "Warning"),
-        nwAlert.ERROR: QT_TRANSLATE_NOOP("Constant", "Error"),
-        nwAlert.ASK:   QT_TRANSLATE_NOOP("Constant", "Question"),
     }
     ITEM_DESCRIPTION = {
         "none":     QT_TRANSLATE_NOOP("Constant", "None"),

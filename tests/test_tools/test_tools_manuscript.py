@@ -32,7 +32,7 @@ from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QDialogButtonBox
 from PyQt5.QtPrintSupport import QPrintPreviewDialog
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.guimain import GuiMain
 from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.tools.manuscript import GuiManuscript
@@ -45,7 +45,7 @@ def testManuscript_Init(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath: Pat
     """Test the init/main functionality of the GuiManuscript dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
-    nwGUI.project.storage.getDocument(C.hChapterDoc).writeDocument("## A Chapter\n\n\t\tHi")
+    SHARED.project.storage.getDocument(C.hChapterDoc).writeDocument("## A Chapter\n\n\t\tHi")
     allText = "New Novel\nBy Jane Doe\nA Chapter\n\t\tHi\n* * *"
 
     manus = GuiManuscript(nwGUI)
@@ -159,7 +159,7 @@ def testManuscript_Features(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath:
     manus.show()
     manus.loadContent()
 
-    cacheFile = CONFIG.dataPath("cache") / f"build_{nwGUI.project.data.uuid}.json"
+    cacheFile = CONFIG.dataPath("cache") / f"build_{SHARED.project.data.uuid}.json"
     manus.buildList.setCurrentRow(0)
     build = manus._getSelectedBuild()
     assert isinstance(build, BuildSettings)

@@ -33,8 +33,8 @@ from functools import partial
 
 from PyQt5.QtCore import QCoreApplication, QObject, pyqtSignal
 
-from novelwriter import CONFIG, __version__, __hexversion__
-from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwAlert
+from novelwriter import CONFIG, SHARED, __version__, __hexversion__
+from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.constants import trConst, nwLabels
 from novelwriter.core.tree import NWTree
@@ -49,7 +49,6 @@ from novelwriter.common import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
     from novelwriter.core.item import NWItem
     from novelwriter.core.status import NWStatus
 
@@ -58,13 +57,11 @@ logger = logging.getLogger(__name__)
 
 class NWProject(QObject):
 
-    projectStatusChanged = pyqtSignal(bool)
+    statusChanged = pyqtSignal(bool)
+    statusMessage = pyqtSignal(str)
 
-    def __init__(self, mainGui: GuiMain) -> None:
-        super().__init__(parent=mainGui)
-
-        # Internal
-        self.mainGui = mainGui
+    def __init__(self, parent: QObject | None = None) -> None:
+        super().__init__(parent=parent)
 
         # Core Elements
         self._options = OptionState(self)    # Project-specific GUI options
@@ -75,13 +72,20 @@ class NWProject(QObject):
         self._session = NWSessionLog(self)   # The session record
 
         # Project Status
-        self._langData    = {}     # Localisation data
-        self._projChanged = False  # The project has unsaved changes
-        self._lockedBy    = None   # Data on which computer has the project open
+        self._langData = {}     # Localisation data
+        self._lockedBy = None   # Data on which computer has the project open
+        self._changed  = False  # The project has unsaved changes
+        self._valid    = False  # The project was successfully loaded
 
         # Internal Mapping
         self.tr = partial(QCoreApplication.translate, "NWProject")
 
+        logger.debug("Ready: NWProject")
+
+        return
+
+    def __del__(self):  # pragma: no cover
+        logger.debug("Delete: NWProject")
         return
 
     ##
@@ -118,7 +122,24 @@ class NWProject(QObject):
 
     @property
     def projChanged(self) -> bool:
-        return self._projChanged
+        return self._changed
+
+    @property
+    def isValid(self) -> bool:
+        """Return True if a project is loaded."""
+        return self._valid
+
+    @property
+    def lockStatus(self) -> list | None:
+        """Return the project lock information."""
+        if isinstance(self._lockedBy, list) and len(self._lockedBy) == 4:
+            return self._lockedBy
+        return None
+
+    @property
+    def currentEditTime(self) -> int:
+        """Return total edit time, including the current session."""
+        return self._data.editTime + round(time() - self._session.start)
 
     ##
     #  Item Methods
@@ -139,7 +160,7 @@ class NWProject(QObject):
         """Add a new file with a given label and parent item."""
         return self._tree.create(label, parent, nwItemType.FILE)
 
-    def writeNewFile(self, tHandle: str, hLevel: int, isDocument: bool, addText: str = "") -> bool:
+    def writeNewFile(self, tHandle: str, hLevel: int, isDocument: bool, text: str = "") -> bool:
         """Write content to a new document after it is created. This
         will not run if the file exists and is not empty.
         """
@@ -154,7 +175,7 @@ class NWProject(QObject):
             return False
 
         hshText = "#"*minmax(hLevel, 1, 4)
-        newText = f"{hshText} {tItem.itemName}\n\n{addText}"
+        newText = f"{hshText} {tItem.itemName}\n\n{text}"
         if tItem.isNovelLike() and isDocument:
             tItem.setLayout(nwItemLayout.DOCUMENT)
         else:
@@ -172,9 +193,9 @@ class NWProject(QObject):
         if self._tree.checkType(tHandle, nwItemType.FILE):
             delDoc = self._storage.getDocument(tHandle)
             if not delDoc.deleteDocument():
-                self.mainGui.makeAlert(
+                SHARED.error(
                     self.tr("Could not delete document file."),
-                    info=delDoc.getError(), level=nwAlert.ERROR
+                    info=delDoc.getError()
                 )
                 return False
 
@@ -195,45 +216,21 @@ class NWProject(QObject):
     #  Project Methods
     ##
 
-    def clearProject(self) -> None:
-        """Clear the data for the current project, and set them to
-        default values.
-
-        Note: Don't clear the lockedBy data here as it is needed after
-        this function is called.
-        """
-        # Core Elements
-        self._options = OptionState(self)
-        self._storage.clear()
-        self._data = NWProjectData(self)
-        self._tree.clear()
-        self._index.clearIndex()
-        self._session = NWSessionLog(self)
-
-        # Project Status
-        self._langData = {}
-        self._projChanged = False
-
-        return
-
-    def openProject(self, projPath: str | Path, overrideLock: bool = False) -> bool:
+    def openProject(self, projPath: str | Path, clearLock: bool = False) -> bool:
         """Open the project file provided. If it doesn't exist, assume
         it is a folder and look for the file within it. If successful,
         parse the XML of the file and populate the project variables and
         build the tree of project items.
         """
-        self.clearProject()
         logger.info("Opening project: %s", projPath)
         if not self._storage.openProjectInPlace(projPath):
-            self.mainGui.makeAlert(self.tr(
-                "Could not open project with path: {0}"
-            ).format(projPath), level=nwAlert.ERROR)
+            SHARED.error(self.tr("Could not open project with path: {0}").format(projPath))
             return False
 
         # Project Lock
         # ============
 
-        if overrideLock:
+        if clearLock:
             self._storage.clearLockFile()
 
         lockStatus = self._storage.readLockFile()
@@ -243,7 +240,6 @@ class NWProject(QObject):
             else:
                 logger.error("Project is locked, so not opening")
                 self._lockedBy = lockStatus
-                self.clearProject()
                 return False
         else:
             logger.debug("Project is not locked")
@@ -253,7 +249,6 @@ class NWProject(QObject):
 
         xmlReader = self._storage.getXmlReader()
         if not isinstance(xmlReader, ProjectXMLReader):
-            self.clearProject()
             return False
 
         self._data = NWProjectData(self)
@@ -264,49 +259,43 @@ class NWProject(QObject):
 
         if not xmlParsed:
             if xmlReader.state == XMLReadState.NOT_NWX_FILE:
-                self.mainGui.makeAlert(self.tr(
+                SHARED.error(self.tr(
                     "Project file does not appear to be a novelWriterXML file."
-                ), level=nwAlert.ERROR)
+                ))
             elif xmlReader.state == XMLReadState.UNKNOWN_VERSION:
-                self.mainGui.makeAlert(self.tr(
+                SHARED.error(self.tr(
                     "Unknown or unsupported novelWriter project file format. "
                     "The project cannot be opened by this version of novelWriter. "
                     "The file was saved with novelWriter version {0}."
-                ).format(appVersion), level=nwAlert.ERROR)
+                ).format(appVersion))
             else:
-                self.mainGui.makeAlert(self.tr(
-                    "Failed to parse project xml."
-                ), level=nwAlert.ERROR)
-
-            self.clearProject()
+                SHARED.error(self.tr("Failed to parse project xml."))
             return False
 
         # Check Legacy Upgrade
         # ====================
 
         if xmlReader.state == XMLReadState.WAS_LEGACY:
-            msgYes = self.mainGui.askQuestion(self.tr(
+            msgYes = SHARED.question(self.tr(
                 "The file format of your project is about to be updated. "
                 "If you proceed, older versions of novelWriter will no "
                 "longer be able to open this project. Continue?"
             ))
             if not msgYes:
-                self.clearProject()
                 return False
 
         # Check novelWriter Version
         # =========================
 
         if xmlReader.hexVersion > hexToInt(__hexversion__):
-            msgYes = self.mainGui.askQuestion(self.tr(
+            msgYes = SHARED.question(self.tr(
                 "This project was saved by a newer version of "
                 "novelWriter, version {0}. This is version {1}. If you "
                 "continue to open the project, some attributes and "
                 "settings may not be preserved, but the overall project "
                 "should be fine. Continue opening the project?"
-            ).format(appVersion, __version__))
+            ).format(appVersion, __version__), warn=True)
             if not msgYes:
-                self.clearProject()
                 return False
 
         # Extract Data
@@ -317,17 +306,19 @@ class NWProject(QObject):
         self._loadProjectLocalisation()
 
         # Update recent projects
-        CONFIG.recentProjects.update(
-            self._storage.storagePath, self._data.name, sum(self._data.initCounts), time()
-        )
+        storePath = self._storage.storagePath
+        if storePath:
+            CONFIG.recentProjects.update(
+                storePath, self._data.name, sum(self._data.initCounts), time()
+            )
 
         # Check the project tree consistency
         # This also handles any orphaned files found
         orphans, recovered = self._tree.checkConsistency(self.tr("Recovered"))
         if orphans > 0:
-            self.mainGui.makeAlert(self.tr(
+            SHARED.warn(self.tr(
                 "Found {0} orphaned file(s) in the project. {1} file(s) were recovered."
-            ).format(orphans, recovered), level=nwAlert.WARN)
+            ).format(orphans, recovered))
 
         self._index.loadIndex()
         if xmlReader.state == XMLReadState.WAS_LEGACY:
@@ -338,7 +329,9 @@ class NWProject(QObject):
         self._session.startSession()
         self._storage.writeLockFile()
         self.setProjectChanged(False)
-        self.mainGui.setStatus(self.tr("Opened Project: {0}").format(self._data.name))
+        self._valid = True
+
+        self.statusMessage.emit(self.tr("Opened Project: {0}").format(self._data.name))
 
         return True
 
@@ -349,9 +342,7 @@ class NWProject(QObject):
         file.
         """
         if not self._storage.isOpen():
-            self.mainGui.makeAlert(self.tr(
-                "There is no project open."
-            ), level=nwAlert.ERROR)
+            SHARED.error(self.tr("There is no project open."))
             return False
 
         saveTime = time()
@@ -374,9 +365,7 @@ class NWProject(QObject):
         editTime = self._data.editTime + max(round(saveTime - self._session.start), 0)
         content = self._tree.pack()
         if not xmlWriter.write(self._data, content, saveTime, editTime):
-            self.mainGui.makeAlert(self.tr(
-                "Failed to save project."
-            ), level=nwAlert.ERROR, exception=xmlWriter.error)
+            SHARED.error(self.tr("Failed to save project."), exc=xmlWriter.error)
             return False
 
         # Save other project data
@@ -385,24 +374,25 @@ class NWProject(QObject):
         self._storage.runPostSaveTasks(autoSave=autoSave)
 
         # Update recent projects
-        CONFIG.recentProjects.update(
-            self._storage.storagePath, self._data.name, sum(self._data.currCounts), saveTime
-        )
+        storePath = self._storage.storagePath
+        if storePath:
+            CONFIG.recentProjects.update(
+                storePath, self._data.name, sum(self._data.currCounts), saveTime
+            )
 
         self._storage.writeLockFile()
-        self.mainGui.setStatus(self.tr("Saved Project: {0}").format(self._data.name))
+        self.statusMessage.emit(self.tr("Saved Project: {0}").format(self._data.name))
         self.setProjectChanged(False)
 
         return True
 
     def closeProject(self, idleTime: float = 0.0) -> None:
-        """Close the current project and clear all meta data."""
+        """Close the project."""
         logger.info("Closing project")
         self._options.saveSettings()
         self._tree.writeToCFile()
         self._session.appendSession(idleTime)
         self._storage.closeSession()
-        self.clearProject()
         self._lockedBy = None
         return
 
@@ -413,13 +403,13 @@ class NWProject(QObject):
             return False
 
         logger.info("Backing up project")
-        self.mainGui.setStatus(self.tr("Backing up project ..."))
+        self.statusMessage.emit(self.tr("Backing up project ..."))
 
         if not self._data.name:
-            self.mainGui.makeAlert(self.tr(
+            SHARED.error(self.tr(
                 "Cannot backup project because no project name is set. "
                 "Please set a Project Name in Project Settings."
-            ), level=nwAlert.ERROR)
+            ))
             return False
 
         cleanName = makeFileNameSafe(self._data.name)
@@ -428,9 +418,7 @@ class NWProject(QObject):
         try:
             baseDir.mkdir(exist_ok=True, parents=True)
         except Exception as exc:
-            self.mainGui.makeAlert(self.tr(
-                "Could not create backup folder."
-            ), level=nwAlert.ERROR, exception=exc)
+            SHARED.error(self.tr("Could not create backup folder."), exc=exc)
             return False
 
         timeStamp = formatTimeStamp(time(), fileSafe=True)
@@ -438,19 +426,15 @@ class NWProject(QObject):
         if self._storage.zipIt(archName, compression=2):
             size = formatInt(archName.stat().st_size)
             if doNotify:
-                self.mainGui.makeAlert(
+                SHARED.info(
                     self.tr("Created a backup of your project of size {0}B.").format(size),
                     info=self.tr("Path: {0}").format(str(backupPath))
                 )
         else:
-            self.mainGui.makeAlert(self.tr(
-                "Could not write backup archive."
-            ), level=nwAlert.ERROR)
+            SHARED.error(self.tr("Could not write backup archive."))
             return False
 
-        self.mainGui.setStatus(self.tr(
-            "Project backed up to '{0}'"
-        ).format(str(archName)))
+        self.statusMessage.emit(self.tr("Project backed up to '{0}'").format(str(archName)))
 
         return True
 
@@ -503,27 +487,15 @@ class NWProject(QObject):
         information to the GUI statusbar.
         """
         if isinstance(status, bool):
-            self._projChanged = status
-            self.projectStatusChanged.emit(self._projChanged)
-        return self._projChanged
+            self._changed = status
+            self.statusChanged.emit(self._changed)
+        return self._changed
 
     ##
-    #  Getters
+    #  Class Methods
     ##
 
-    def getLockStatus(self) -> list | None:
-        """Return the project lock information for the project."""
-        if isinstance(self._lockedBy, list) and len(self._lockedBy) == 4:
-            return self._lockedBy
-        return None
-
-    def getCurrentEditTime(self) -> int:
-        """Get the total project edit time, including the time spent in
-        the current session.
-        """
-        return self._data.editTime + round(time() - self._session.start)
-
-    def getProjectItems(self) -> Iterator[NWItem]:
+    def iterProjectItems(self) -> Iterator[NWItem]:
         """This function ensures that the item tree loaded is sent to
         the GUI tree view in such a way that the tree can be built. That
         is, the parent item must be sent before its child. In principle,
@@ -531,7 +503,7 @@ class NWProject(QObject):
         order has been altered, or a file is orphaned, this function is
         capable of handling it.
         """
-        sentItems = []
+        sentItems = set()
         iterItems = self._tree.handles()
         n = 0
         nMax = min(len(iterItems), 10000)
@@ -540,17 +512,15 @@ class NWProject(QObject):
             tItem = self._tree[tHandle]
             n += 1
             if tItem is None:
-                # Technically a bug since treeOrder is built from the
-                # same data as _projTree
+                # Technically a bug
                 continue
             elif tItem.itemParent is None:
-                # Item is a root, or already been identified as an
-                # orphaned item
-                sentItems.append(tHandle)
+                # Item is a root, or already been identified as orphaned
+                sentItems.add(tHandle)
                 yield tItem
             elif tItem.itemParent in sentItems:
                 # Item's parent has been sent, so all is fine
-                sentItems.append(tHandle)
+                sentItems.add(tHandle)
                 yield tItem
             elif tItem.itemParent in iterItems:
                 # Item's parent exists, but hasn't been sent yet, so add
@@ -565,10 +535,6 @@ class NWProject(QObject):
                 tItem.setParent(None)
                 yield tItem
         return
-
-    ##
-    #  Class Methods
-    ##
 
     def updateWordCounts(self) -> None:
         """Update the total word count values."""

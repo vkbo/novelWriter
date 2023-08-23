@@ -35,7 +35,7 @@ from novelwriter.core.sessions import NWSessionLog
 @pytest.mark.core
 def testCoreSessions_Main(monkeypatch, mockGUI, fncPath):
     """Test log file handling of the NWSessionLog class."""
-    project = NWProject(mockGUI)
+    project = NWProject()
     buildTestProject(project, fncPath)
 
     logFile = project.storage.getMetaFile(nwFiles.SESS_FILE)

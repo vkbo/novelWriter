@@ -24,17 +24,16 @@ import pytest
 
 from tools import C, buildTestProject
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.extensions.statusled import StatusLED
 
 
 @pytest.mark.gui
 def testGuiStatusBar_Main(qtbot, nwGUI, projPath, mockRnd):
-    """Test the the various features of the status bar.
-    """
+    """Test the the various features of the status bar."""
     buildTestProject(nwGUI, projPath)
-    cHandle = nwGUI.project.newFile("A Note", C.hCharRoot)
-    newDoc = nwGUI.project.storage.getDocument(cHandle)
+    cHandle = SHARED.project.newFile("A Note", C.hCharRoot)
+    newDoc = SHARED.project.storage.getDocument(cHandle)
     newDoc.writeDocument("# A Note\n\n")
     nwGUI.projView.projTree.revealNewTreeItem(cHandle)
     nwGUI.rebuildIndex(beQuiet=True)
@@ -42,7 +41,7 @@ def testGuiStatusBar_Main(qtbot, nwGUI, projPath, mockRnd):
     # Reference Time
     refTime = time.time()
     nwGUI.mainStatus.setRefTime(refTime)
-    assert nwGUI.mainStatus.refTime == refTime
+    assert nwGUI.mainStatus._refTime == refTime
 
     # Project Status
     nwGUI.mainStatus.setProjectStatus(StatusLED.S_NONE)
@@ -64,18 +63,18 @@ def testGuiStatusBar_Main(qtbot, nwGUI, projPath, mockRnd):
     CONFIG.stopWhenIdle = False
     nwGUI.mainStatus.setUserIdle(True)
     nwGUI.mainStatus.updateTime()
-    assert nwGUI.mainStatus.userIdle is False
+    assert nwGUI.mainStatus._userIdle is False
     assert nwGUI.mainStatus.timeText.text() == "00:00:00"
 
     CONFIG.stopWhenIdle = True
     nwGUI.mainStatus.setUserIdle(True)
     nwGUI.mainStatus.updateTime(5)
-    assert nwGUI.mainStatus.userIdle is True
+    assert nwGUI.mainStatus._userIdle is True
     assert nwGUI.mainStatus.timeText.text() != "00:00:00"
 
     nwGUI.mainStatus.setUserIdle(False)
     nwGUI.mainStatus.updateTime(5)
-    assert nwGUI.mainStatus.userIdle is False
+    assert nwGUI.mainStatus._userIdle is False
     assert nwGUI.mainStatus.timeText.text() != "00:00:00"
 
     # Language

@@ -33,7 +33,7 @@ from novelwriter.gui.noveltree import NovelTreeColumn
 @pytest.mark.core
 def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
     """Test loading and saving from the OptionState class."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theOpts = OptionState(theProject)
 
     metaDir = fncPath / "meta"
@@ -106,7 +106,7 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
 @pytest.mark.core
 def testCoreOptions_SetGet(mockGUI):
     """Test setting and getting values from the OptionState class."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theOpts = OptionState(theProject)
 
     nwColHidden = NovelTreeColumn.HIDDEN

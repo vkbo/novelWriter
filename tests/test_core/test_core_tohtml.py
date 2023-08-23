@@ -31,7 +31,7 @@ from novelwriter.core.project import NWProject
 def testCoreToHtml_ConvertFormat(mockGUI):
     """Test the tokenizer and converter chain using the ToHtml class.
     """
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theHtml = ToHtml(theProject)
 
     # Novel Files Headers
@@ -233,7 +233,7 @@ def testCoreToHtml_ConvertFormat(mockGUI):
 def testCoreToHtml_ConvertDirect(mockGUI):
     """Test the converter directly using the ToHtml class.
     """
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theHtml = ToHtml(theProject)
 
     theHtml._isNovel = True
@@ -380,7 +380,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 def testCoreToHtml_SpecialCases(mockGUI):
     """Test some special cases that have caused errors in the past.
     """
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theHtml = ToHtml(theProject)
     theHtml._isNovel = True
 
@@ -454,7 +454,7 @@ def testCoreToHtml_SpecialCases(mockGUI):
 def testCoreToHtml_Complex(mockGUI, fncPath):
     """Test the save method of the ToHtml class.
     """
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theHtml = ToHtml(theProject)
     theHtml._isNovel = True
 
@@ -549,7 +549,7 @@ def testCoreToHtml_Complex(mockGUI, fncPath):
 def testCoreToHtml_Methods(mockGUI):
     """Test all the other methods of the ToHtml class.
     """
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theHtml = ToHtml(theProject)
     theHtml.setKeepMarkdown(True)
 
@@ -609,7 +609,7 @@ def testCoreToHtml_Methods(mockGUI):
 def testCoreToHtml_Format(mockGUI):
     """Test all the formatters for the ToHtml class.
     """
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theHtml = ToHtml(theProject)
 
     # Export Mode

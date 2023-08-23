@@ -30,7 +30,7 @@ from mocked import causeOSError
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QMenu, QTreeWidgetItem, QDialog
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemLayout, nwItemType, nwItemClass
 from novelwriter.guimain import GuiMain
 from novelwriter.gui.projtree import GuiProjectTree, GuiProjectView
@@ -46,7 +46,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
 
     projView = nwGUI.projView
     projTree = nwGUI.projView.projTree
-    theProject = nwGUI.project
+    theProject = SHARED.project
 
     # Try to add item with no project
     assert projView.projTree.newTreeItem(nwItemType.FILE) is False
@@ -260,19 +260,19 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # ===========
 
     projView.setSelectedHandle(C.hNovelRoot)
-    assert nwGUI.project.tree._treeOrder.index(C.hNovelRoot) == 0
+    assert SHARED.project.tree._order.index(C.hNovelRoot) == 0
 
     # Move novel folder up
     assert projTree.moveTreeItem(-1) is False
-    assert nwGUI.project.tree._treeOrder.index(C.hNovelRoot) == 0
+    assert SHARED.project.tree._order.index(C.hNovelRoot) == 0
 
     # Move novel folder down
     assert projTree.moveTreeItem(1) is True
-    assert nwGUI.project.tree._treeOrder.index(C.hNovelRoot) == 1
+    assert SHARED.project.tree._order.index(C.hNovelRoot) == 1
 
     # Move novel folder up again
     assert projTree.moveTreeItem(-1) is True
-    assert nwGUI.project.tree._treeOrder.index(C.hNovelRoot) == 0
+    assert SHARED.project.tree._order.index(C.hNovelRoot) == 0
 
     # Clean up
     # qtbot.stop()
@@ -348,7 +348,7 @@ def testGuiProjTree_RequestDeleteItem(qtbot, caplog, monkeypatch, nwGUI, projPat
         C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010"
     ]
-    trashHandle = nwGUI.project.tree.trashRoot()
+    trashHandle = SHARED.project.tree.trashRoot()
     assert projTree.getTreeFromHandle(trashHandle) == [
         trashHandle, "0000000000012", "0000000000011"
     ]
@@ -368,7 +368,7 @@ def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, projPath,
     """Test moving items to Trash."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
-    theProject = nwGUI.project
+    theProject = SHARED.project
     projTree = nwGUI.projView.projTree
 
     # Create a project
@@ -420,7 +420,7 @@ def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, pro
     """Test permanently deleting items."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
-    theProject = nwGUI.project
+    theProject = SHARED.project
     projTree = nwGUI.projView.projTree
 
     # Create a project
@@ -450,10 +450,10 @@ def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, pro
 
     # Deleting file is OK, and if it is open, it should close
     assert nwGUI.openDocument(C.hTitlePage) is True
-    assert nwGUI.docEditor.docHandle() == C.hTitlePage
+    assert nwGUI.docEditor.docHandle == C.hTitlePage
     assert projTree.permDeleteItem(C.hTitlePage) is True
     assert C.hTitlePage not in theProject.tree
-    assert nwGUI.docEditor.docHandle() is None
+    assert nwGUI.docEditor.docHandle is None
 
     # Deleting folder + files recursively is ok
     assert projTree.permDeleteItem(C.hChapterDir) is True
@@ -471,7 +471,7 @@ def testGuiProjTree_EmptyTrash(qtbot, caplog, monkeypatch, nwGUI, projPath, mock
     """Test emptying Trash."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
-    theProject = nwGUI.project
+    theProject = SHARED.project
     projTree = nwGUI.projView.projTree
 
     # No project open
@@ -541,16 +541,16 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     projTree.setExpandedFromHandle(None, True)
 
     projTree._addTrashRoot()
-    hTrashRoot = nwGUI.project.tree.trashRoot()
+    hTrashRoot = SHARED.project.tree.trashRoot()
 
     projTree.setSelectedHandle(C.hCharRoot)
     projTree.newTreeItem(nwItemType.FILE)
     projTree.setSelectedHandle(C.hNovelRoot)
     projTree.newTreeItem(nwItemType.FILE, isNote=True)
 
-    nwGUI.project.newFile("SubNote", hNovelNote)
+    SHARED.project.newFile("SubNote", hNovelNote)
     projTree.revealNewTreeItem(hSubNote)
-    assert nwGUI.project.tree[hSubNote].itemParent == hNovelNote
+    assert SHARED.project.tree[hSubNote].itemParent == hNovelNote
 
     def itemPos(tHandle):
         return projTree.visualItemRect(projTree._getTreeItem(tHandle)).center()
@@ -578,7 +578,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Direct Edit Functions
     # =====================
     # Trigger the dedicated functions the menu entries connect to
-    nwItem = nwGUI.project.tree[hNovelNote]
+    nwItem = SHARED.project.tree[hNovelNote]
 
     # Toggle active flag
     assert nwItem.isActive is True
@@ -619,17 +619,17 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     with monkeypatch.context() as mp:
         mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         projTree._covertFolderToFile(hNewFolderOne, nwItemLayout.DOCUMENT)
-        assert nwGUI.project.tree[hNewFolderOne].isFolderType()
+        assert SHARED.project.tree[hNewFolderOne].isFolderType()
 
     # Convert the first folder to a document
     projTree._covertFolderToFile(hNewFolderOne, nwItemLayout.DOCUMENT)
-    assert nwGUI.project.tree[hNewFolderOne].isFileType()
-    assert nwGUI.project.tree[hNewFolderOne].isDocumentLayout()
+    assert SHARED.project.tree[hNewFolderOne].isFileType()
+    assert SHARED.project.tree[hNewFolderOne].isDocumentLayout()
 
     # Convert the second folder to a note
     projTree._covertFolderToFile(hNewFolderTwo, nwItemLayout.NOTE)
-    assert nwGUI.project.tree[hNewFolderTwo].isFileType()
-    assert nwGUI.project.tree[hNewFolderTwo].isNoteLayout()
+    assert SHARED.project.tree[hNewFolderTwo].isFileType()
+    assert SHARED.project.tree[hNewFolderTwo].isNoteLayout()
 
     # qtbot.stop()
 
@@ -649,7 +649,7 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd,
     # Create a project
     buildTestProject(nwGUI, projPath)
 
-    theProject = nwGUI.project
+    theProject = SHARED.project
     projTree = nwGUI.projView.projTree
 
     mergedDoc1 = "0000000000014"
@@ -751,7 +751,7 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRnd, 
     # Create a project
     buildTestProject(nwGUI, projPath)
 
-    theProject = nwGUI.project
+    theProject = SHARED.project
     projTree = nwGUI.projView.projTree
 
     docText = (
@@ -852,7 +852,7 @@ def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mock
     """Test the duplicate items function."""
     # Create a project
     buildTestProject(nwGUI, projPath)
-    assert len(nwGUI.project.tree) == 8
+    assert len(SHARED.project.tree) == 8
 
     projTree = nwGUI.projView.projTree
     projTree._getTreeItem(C.hNovelRoot).setExpanded(True)  # type: ignore
@@ -860,28 +860,28 @@ def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mock
 
     # Nothing to do
     assert projTree._duplicateFromHandle(C.hInvalid) is False
-    assert len(nwGUI.project.tree) == 8
+    assert len(SHARED.project.tree) == 8
 
     # Duplicate title page, but select no
     with monkeypatch.context() as mp:
         mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         assert projTree._duplicateFromHandle(C.hTitlePage) is False
-        assert len(nwGUI.project.tree) == 8
+        assert len(SHARED.project.tree) == 8
 
     # Duplicate title page
     assert projTree._duplicateFromHandle(C.hTitlePage) is True
-    assert len(nwGUI.project.tree) == 9
+    assert len(SHARED.project.tree) == 9
 
     # Duplicate folder
     assert projTree._duplicateFromHandle(C.hChapterDir) is True
-    assert len(nwGUI.project.tree) == 12
+    assert len(SHARED.project.tree) == 12
 
     # Duplicate novel root
     assert projTree._duplicateFromHandle(C.hNovelRoot) is True
-    assert len(nwGUI.project.tree) == 21
+    assert len(SHARED.project.tree) == 21
 
     # Check tree order that all items are next to eachother
-    assert nwGUI.project.tree._treeOrder == [
+    assert SHARED.project.tree._order == [
         C.hNovelRoot, C.hTitlePage, "0000000000010", C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000011", "0000000000012", "0000000000013", "0000000000014", "0000000000015",
         "0000000000016", "0000000000017", "0000000000018", "0000000000019", "000000000001a",
@@ -889,7 +889,7 @@ def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mock
     ]
 
     # Make the duplicator stop early
-    content = nwGUI.project.storage.contentPath
+    content = SHARED.project.storage.contentPath
     assert isinstance(content, Path)
     (content / "000000000001e.nwd").touch()
     assert (content / "000000000001e.nwd").exists()
@@ -897,7 +897,7 @@ def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mock
     # Should only create the folder, and skip the two files because the
     # next handle is already a file
     assert projTree._duplicateFromHandle(C.hChapterDir) is True
-    assert len(nwGUI.project.tree) == 22
+    assert len(SHARED.project.tree) == 22
 
     # qtbot.stop()
 
@@ -938,13 +938,13 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd)
     assert projTree.revealNewTreeItem(C.hInvalid) is False
 
     # Try to add an orphaned file to the tree
-    nHandle = nwGUI.project.newFile("Test", C.hNovelRoot)
-    nwGUI.project.tree[nHandle].setParent(None)  # type: ignore
+    nHandle = SHARED.project.newFile("Test", C.hNovelRoot)
+    SHARED.project.tree[nHandle].setParent(None)  # type: ignore
     assert projTree.revealNewTreeItem(nHandle) is False
 
     # Try to add an item with unknown parent to the tree
-    nHandle = nwGUI.project.newFile("Test", C.hNovelRoot)
-    nwGUI.project.tree[nHandle].setParent(C.hInvalid)  # type: ignore
+    nHandle = SHARED.project.newFile("Test", C.hNovelRoot)
+    SHARED.project.tree[nHandle].setParent(C.hInvalid)  # type: ignore
     assert projTree.revealNewTreeItem(nHandle) is False
 
     # Method: undoLastMove
@@ -969,25 +969,25 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd)
     # Try to open a file with nothings selected
     projTree.clearSelection()
     projTree._treeDoubleClick(QTreeWidgetItem(), 0)
-    assert nwGUI.docEditor.docHandle() is None
+    assert nwGUI.docEditor.docHandle is None
 
     # When the item cannot be found
     projTree._getTreeItem(C.hTitlePage).setSelected(True)  # type: ignore
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.tree.NWTree.__getitem__", lambda *a: None)
         projTree._treeDoubleClick(QTreeWidgetItem(), 0)
-        assert nwGUI.docEditor.docHandle() is None
+        assert nwGUI.docEditor.docHandle is None
 
     # Successfully open a file
     projTree._treeDoubleClick(projTree._getTreeItem(C.hTitlePage), 0)
-    assert nwGUI.docEditor.docHandle() == C.hTitlePage
+    assert nwGUI.docEditor.docHandle == C.hTitlePage
     projTree._getTreeItem(C.hTitlePage).setSelected(False)  # type: ignore
 
     # A non-file item should be expanded instead
     projTree._getTreeItem(C.hNovelRoot).setExpanded(False)  # type: ignore
     projTree._getTreeItem(C.hNovelRoot).setSelected(True)  # type: ignore
     projTree._treeDoubleClick(projTree._getTreeItem(C.hNovelRoot), 1)
-    assert nwGUI.docEditor.docHandle() == C.hTitlePage
+    assert nwGUI.docEditor.docHandle == C.hTitlePage
     assert projTree._getTreeItem(C.hNovelRoot).isExpanded() is True  # type: ignore
 
     # Navigate the Tree

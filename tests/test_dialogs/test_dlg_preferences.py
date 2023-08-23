@@ -39,8 +39,7 @@ KEY_DELAY = 1
 
 @pytest.mark.gui
 def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
-    """Test the load project wizard.
-    """
+    """Test the preferences dialog."""
     monkeypatch.setattr(GuiPreferences, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiPreferences, "result", lambda *a: QDialog.Accepted)
     monkeypatch.setattr(nwGUI.docEditor.spEnchant, "listDictionaries", lambda: [("en", "none")])

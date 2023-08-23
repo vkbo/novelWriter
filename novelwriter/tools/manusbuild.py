@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import logging
 
-from typing import TYPE_CHECKING
 from pathlib import Path
 
 from PyQt5.QtCore import QSize, QTimer, Qt, pyqtSlot
@@ -35,17 +34,14 @@ from PyQt5.QtWidgets import (
     QPushButton, QSplitter, QVBoxLayout, QWidget
 )
 
-from novelwriter import CONFIG
-from novelwriter.enum import nwAlert, nwBuildFmt
+from novelwriter import CONFIG, SHARED
+from novelwriter.enum import nwBuildFmt
 from novelwriter.common import makeFileNameSafe
 from novelwriter.constants import nwLabels
 from novelwriter.core.item import NWItem
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.extensions.simpleprogress import NProgressSimple
-
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
@@ -59,13 +55,11 @@ class GuiManuscriptBuild(QDialog):
 
     D_KEY = Qt.ItemDataRole.UserRole
 
-    def __init__(self, parent: QWidget, mainGui: GuiMain, build: BuildSettings):
+    def __init__(self, parent: QWidget, build: BuildSettings):
         super().__init__(parent=parent)
 
         logger.debug("Create: GuiManuscriptBuild")
         self.setObjectName("GuiManuscriptBuild")
-
-        self.mainGui = mainGui
 
         self._parent = parent
         self._build = build
@@ -74,14 +68,14 @@ class GuiManuscriptBuild(QDialog):
         self.setMinimumWidth(CONFIG.pxInt(500))
         self.setMinimumHeight(CONFIG.pxInt(300))
 
-        iPx = CONFIG.theme.baseIconSize
+        iPx = SHARED.theme.baseIconSize
         sp4 = CONFIG.pxInt(4)
         sp8 = CONFIG.pxInt(8)
         sp16 = CONFIG.pxInt(16)
         wWin = CONFIG.pxInt(620)
         hWin = CONFIG.pxInt(360)
 
-        pOptions = self.mainGui.project.options
+        pOptions = SHARED.project.options
         self.resize(
             CONFIG.pxInt(pOptions.getInt("GuiManuscriptBuild", "winWidth", wWin)),
             CONFIG.pxInt(pOptions.getInt("GuiManuscriptBuild", "winHeight", hWin))
@@ -146,7 +140,7 @@ class GuiManuscriptBuild(QDialog):
         # Build Path
         self.lblPath = QLabel(self.tr("Path"))
         self.buildPath = QLineEdit(self)
-        self.btnBrowse = QPushButton(CONFIG.theme.getIcon("browse"), "")
+        self.btnBrowse = QPushButton(SHARED.theme.getIcon("browse"), "")
 
         self.pathBox = QHBoxLayout()
         self.pathBox.addWidget(self.buildPath)
@@ -156,7 +150,7 @@ class GuiManuscriptBuild(QDialog):
         # Build Name
         self.lblName = QLabel(self.tr("File Name"))
         self.buildName = QLineEdit(self)
-        self.btnReset = QPushButton(CONFIG.theme.getIcon("revert"), "")
+        self.btnReset = QPushButton(SHARED.theme.getIcon("revert"), "")
         self.btnReset.setToolTip(self.tr("Reset file name to default"))
 
         self.nameBox = QHBoxLayout()
@@ -181,7 +175,7 @@ class GuiManuscriptBuild(QDialog):
         self.buildBox.setVerticalSpacing(sp4)
 
         # Dialog Buttons
-        self.btnBuild = QPushButton(CONFIG.theme.getIcon("export"), self.tr("&Build"))
+        self.btnBuild = QPushButton(SHARED.theme.getIcon("export"), self.tr("&Build"))
         self.dlgButtons = QDialogButtonBox(QDialogButtonBox.Close)
         self.dlgButtons.addButton(self.btnBuild, QDialogButtonBox.ActionRole)
 
@@ -279,7 +273,7 @@ class GuiManuscriptBuild(QDialog):
     @pyqtSlot()
     def _doResetBuildName(self):
         """Generate a default build name."""
-        bName = f"{self.mainGui.project.data.name} - {self._build.name}"
+        bName = f"{SHARED.project.data.name} - {self._build.name}"
         self.buildName.setText(bName)
         self._build.setLastBuildName(bName)
         return
@@ -308,19 +302,19 @@ class GuiManuscriptBuild(QDialog):
         self.buildProgress.setValue(0)
         bPath = Path(self.buildPath.text())
         if not bPath.is_dir():
-            self.mainGui.makeAlert(self.tr("Output folder does not exist."), level=nwAlert.ERROR)
+            SHARED.error(self.tr("Output folder does not exist."))
             return False
 
         bExt = nwLabels.BUILD_EXT[bFormat]
         buildPath = (bPath / makeFileNameSafe(bName)).with_suffix(bExt)
 
         if buildPath.exists():
-            if not self.mainGui.askQuestion(
+            if not SHARED.question(
                 self.tr("The file already exists. Do you want to overwrite it?")
             ):
                 return False
 
-        docBuild = NWBuildDocument(self.mainGui.project, self._build)
+        docBuild = NWBuildDocument(SHARED.project, self._build)
         docBuild.queueAll()
 
         self.buildProgress.setMaximum(len(docBuild))
@@ -353,7 +347,7 @@ class GuiManuscriptBuild(QDialog):
         fmtWidth = CONFIG.rpxInt(mainSplit[0])
         sumWidth = CONFIG.rpxInt(mainSplit[1])
 
-        pOptions = self.mainGui.project.options
+        pOptions = SHARED.project.options
         pOptions.setValue("GuiManuscriptBuild", "winWidth", winWidth)
         pOptions.setValue("GuiManuscriptBuild", "winHeight", winHeight)
         pOptions.setValue("GuiManuscriptBuild", "fmtWidth", fmtWidth)
@@ -365,9 +359,9 @@ class GuiManuscriptBuild(QDialog):
     def _populateContentList(self):
         """Build the content list."""
         rootMap = {}
-        filtered = self._build.buildItemFilter(self.mainGui.project)
+        filtered = self._build.buildItemFilter(SHARED.project)
         self.listContent.clear()
-        for nwItem in self.mainGui.project.tree:
+        for nwItem in SHARED.project.tree:
             tHandle = nwItem.itemHandle
             rHandle = nwItem.itemRoot
 
@@ -376,11 +370,11 @@ class GuiManuscriptBuild(QDialog):
 
             if filtered.get(tHandle, (False, 0))[0]:
                 if rHandle not in rootMap:
-                    rItem = self.mainGui.project.tree[rHandle]
+                    rItem = SHARED.project.tree[rHandle]
                     if isinstance(rItem, NWItem):
                         rootMap[rHandle] = rItem.itemName
 
-                itemIcon = CONFIG.theme.getItemIcon(
+                itemIcon = SHARED.theme.getItemIcon(
                     nwItem.itemType, nwItem.itemClass,
                     nwItem.itemLayout, nwItem.mainHeading
                 )

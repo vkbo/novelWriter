@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+from PyQt5.QtWidgets import QMessageBox
 import pytest
 
 from shutil import copyfile
@@ -27,7 +28,7 @@ from zipfile import ZipFile
 from mocked import causeOSError
 from tools import C, cmpFiles, buildTestProject, XML_IGNORE
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemClass
 from novelwriter.constants import nwFiles
 from novelwriter.core.tree import NWTree
@@ -44,7 +45,7 @@ def testCoreProject_NewRoot(fncPath, tstPaths, mockGUI, mockRnd):
     testFile = tstPaths.outDir / "coreProject_NewRoot_nwProject.nwx"
     compFile = tstPaths.refDir / "coreProject_NewRoot_nwProject.nwx"
 
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
 
@@ -94,7 +95,7 @@ def testCoreProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockR
     testFile = tstPaths.outDir / "coreProject_NewFileFolder_nwProject.nwx"
     compFile = tstPaths.refDir / "coreProject_NewFileFolder_nwProject.nwx"
 
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
 
@@ -163,7 +164,7 @@ def testCoreProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockR
 @pytest.mark.core
 def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     """Test opening a project."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
 
@@ -176,7 +177,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     theProject.storage._lockFilePath = fncPath / nwFiles.PROJ_LOCK
     assert theProject.storage.writeLockFile() is True
     assert theProject.openProject(fncPath) is False
-    assert isinstance(theProject.getLockStatus(), list)
+    assert isinstance(theProject.lockStatus, list)
 
     # Fail to read lockfile (which still opens the project)
     with monkeypatch.context() as mp:
@@ -189,9 +190,9 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     # Force open with lockfile
     theProject.storage._lockFilePath = fncPath / nwFiles.PROJ_LOCK
     assert theProject.storage.writeLockFile() is True
-    assert theProject.openProject(fncPath, overrideLock=True) is True
+    assert theProject.openProject(fncPath, clearLock=True) is True
     theProject.closeProject()
-    assert theProject.getLockStatus() is None
+    assert theProject.lockStatus is None
 
     # Fail getting xml reader
     with monkeypatch.context() as mp:
@@ -203,37 +204,40 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
         mp.setattr(ProjectXMLReader, "read", lambda *a: False)
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.NOT_NWX_FILE))
         assert theProject.openProject(fncPath) is False
-        assert "Project file does not appear" in mockGUI.lastAlert
+        lastMsg = SHARED.alert.logMessage if SHARED.alert else ""
+        assert "Project file does not appear" in lastMsg
 
     # Unknown project file version
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "read", lambda *a: False)
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.UNKNOWN_VERSION))
         assert theProject.openProject(fncPath) is False
-        assert "Unknown or unsupported novelWriter project file" in mockGUI.lastAlert
+        lastMsg = SHARED.alert.logMessage if SHARED.alert else ""
+        assert "Unknown or unsupported novelWriter project file" in lastMsg
 
     # Other parse error
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "read", lambda *a: False)
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.CANNOT_PARSE))
         assert theProject.openProject(fncPath) is False
-        assert "Failed to parse project xml" in mockGUI.lastAlert
+        lastMsg = SHARED.alert.logMessage if SHARED.alert else ""
+        assert "Failed to parse project xml" in lastMsg
 
     # Won't convert legacy file
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.WAS_LEGACY))
-        mockGUI.askResponse = False
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         assert theProject.openProject(fncPath) is False
-        assert "The file format of your project is about to be" in mockGUI.lastQuestion
-        mockGUI.askResponse = True
+        lastMsg = SHARED.alert.logMessage if SHARED.alert else ""
+        assert "The file format of your project is about to be" in lastMsg
 
     # Won't open project from newer version
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "hexVersion", property(lambda *a: 0x99999999))
-        mockGUI.askResponse = False
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         assert theProject.openProject(fncPath) is False
-        assert "This project was saved by a newer version" in mockGUI.lastQuestion
-        mockGUI.askResponse = True
+        lastMsg = SHARED.alert.logMessage if SHARED.alert else ""
+        assert "This project was saved by a newer version" in lastMsg
 
     # Fail checking items should still pass
     with monkeypatch.context() as mp:
@@ -246,10 +250,10 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.WAS_LEGACY))
         mp.setattr("novelwriter.core.index.NWIndex.loadIndex", lambda *a: True)
-        mockGUI.askResponse = True
         theProject.index._indexBroken = True
         assert theProject.openProject(fncPath) is True
-        assert "The file format of your project is about to be" in mockGUI.lastQuestion
+        lastMsg = SHARED.alert.logMessage if SHARED.alert else ""
+        assert "The file format of your project is about to be" in lastMsg
         assert theProject.index._indexBroken is False
 
     theProject.closeProject()
@@ -260,7 +264,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
 @pytest.mark.core
 def testCoreProject_Save(monkeypatch, mockGUI, mockRnd, fncPath):
     """Test saving a project."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
 
     # Nothing to save
     assert theProject.saveProject() is False
@@ -289,7 +293,7 @@ def testCoreProject_Save(monkeypatch, mockGUI, mockRnd, fncPath):
 @pytest.mark.core
 def testCoreProject_AccessItems(mockGUI, fncPath, mockRnd):
     """Test helper functions for the project folder."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     buildTestProject(theProject, fncPath)
 
     # Storage Objects
@@ -323,7 +327,7 @@ def testCoreProject_AccessItems(mockGUI, fncPath, mockRnd):
     assert theProject.tree.handles() == newOrder
 
     # Add a non-existing item
-    theProject.tree._treeOrder.append(C.hInvalid)
+    theProject.tree._order.append(C.hInvalid)
 
     # Add an item with a non-existent parent
     nHandle = theProject.newFile("Test File", C.hChapterDir)
@@ -331,7 +335,7 @@ def testCoreProject_AccessItems(mockGUI, fncPath, mockRnd):
     assert theProject.tree[nHandle].itemParent == "cba9876543210"
 
     retOrder = []
-    for tItem in theProject.getProjectItems():
+    for tItem in theProject.iterProjectItems():
         retOrder.append(tItem.itemHandle)
 
     assert retOrder == [
@@ -353,7 +357,7 @@ def testCoreProject_AccessItems(mockGUI, fncPath, mockRnd):
 @pytest.mark.core
 def testCoreProject_StatusImport(mockGUI, fncPath, mockRnd):
     """Test the status and importance flag handling."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
 
@@ -462,7 +466,7 @@ def testCoreProject_StatusImport(mockGUI, fncPath, mockRnd):
 @pytest.mark.core
 def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     """Test other project class methods and functions."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     buildTestProject(theProject, fncPath)
 
     # Project Name
@@ -482,7 +486,7 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     theProject._session._start = 1600000000
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.project.time", lambda: 1600005600)
-        assert theProject.getCurrentEditTime() == 6834
+        assert theProject.currentEditTime == 6834
 
     # Trash folder
     # Should create on first call, and just returned on later calls
@@ -580,7 +584,7 @@ def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tstPaths):
     backup file and checks that the project XML file is identical to
     the original file.
     """
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
 
     # No Project
     assert theProject.backupProject(doNotify=False) is False

@@ -27,7 +27,7 @@ from tools import buildTestProject, writeFile
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QAction
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemClass, nwOutline, nwView
 
 
@@ -71,7 +71,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, projPath):
 
     # Option State
     # ============
-    pOptions = nwGUI.project.options
+    pOptions = SHARED.project.options
     colNames = [h.name for h in nwOutline]
     colItems = [h for h in nwOutline]
     colWidth = {h: outlineTree.DEF_WIDTH[h] for h in nwOutline}
@@ -181,7 +181,7 @@ def testGuiOutline_Content(qtbot, nwGUI, prjLipsum):
     assert outlineBar.novelValue.itemData(2) == ""    # All novels
 
     # Add a second novel folder
-    newHandle = nwGUI.project.newRoot(nwItemClass.NOVEL)
+    newHandle = SHARED.project.newRoot(nwItemClass.NOVEL)
     nwGUI.projView.projTree.revealNewTreeItem(newHandle)
 
     # Check new values in dropdown list
@@ -198,7 +198,7 @@ def testGuiOutline_Content(qtbot, nwGUI, prjLipsum):
         ("Section 4", 4),
     ]
     for dTitle, hLevel in docList:
-        aHandle = nwGUI.project.newFile(dTitle, newHandle)
+        aHandle = SHARED.project.newFile(dTitle, newHandle)
         hHash = "#"*hLevel
         writeFile(prjLipsum / "content" / f"{aHandle}.nwd", f"{hHash} {dTitle}\n\n")
         nwGUI.projView.projTree.revealNewTreeItem(aHandle)
@@ -246,7 +246,7 @@ def testGuiOutline_Content(qtbot, nwGUI, prjLipsum):
     # Click POV Link
     assert outlineData.povKeyValue.text() == "<a href='Bod'>Bod</a>"
     outlineView._tagClicked("Bod")
-    assert nwGUI.docViewer.docHandle() == "4c4f28287af27"
+    assert nwGUI.docViewer.docHandle == "4c4f28287af27"
 
     # Scene One, Section Two
     selItem = outlineTree.topLevelItem(5)
@@ -262,7 +262,7 @@ def testGuiOutline_Content(qtbot, nwGUI, prjLipsum):
     assert outlineData.itemValue.text() == "Finished"
 
     outlineTree._treeDoubleClick(selItem, 0)
-    assert nwGUI.docEditor.docHandle() == "88243afbe5ed8"
+    assert nwGUI.docEditor.docHandle == "88243afbe5ed8"
 
     # qtbot.stop()
 

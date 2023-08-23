@@ -512,8 +512,7 @@ def sha256sum(path: str | Path) -> str | None:
 # =============================================================================================== #
 
 def getGuiItem(objName: str) -> QWidget | None:
-    """Returns a QtWidget based on its objectName.
-    """
+    """Returns a QtWidget based on its objectName."""
     for qWidget in qApp.topLevelWidgets():
         if qWidget.objectName() == objName:
             return qWidget

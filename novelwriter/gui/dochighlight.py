@@ -32,7 +32,7 @@ from PyQt5.QtGui import (
     QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush
 )
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt
 from novelwriter.constants import nwRegEx, nwUnicode
 
@@ -46,14 +46,13 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     BLOCK_META  = 2
     BLOCK_TITLE = 4
 
-    def __init__(self, theDoc, mainGui, spEnchant):
+    def __init__(self, theDoc, spEnchant):
         super().__init__(theDoc)
 
         logger.debug("Create: GuiDocHighlighter")
 
         self.theDoc     = theDoc
         self.spEnchant  = spEnchant
-        self.mainGui    = mainGui
         self.theHandle  = None
         self.spellCheck = False
         self.spellRx    = None
@@ -85,24 +84,24 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         """
         logger.debug("Setting up highlighting rules")
 
-        self.colHead   = QColor(*CONFIG.theme.colHead)
-        self.colHeadH  = QColor(*CONFIG.theme.colHeadH)
-        self.colDialN  = QColor(*CONFIG.theme.colDialN)
-        self.colDialD  = QColor(*CONFIG.theme.colDialD)
-        self.colDialS  = QColor(*CONFIG.theme.colDialS)
-        self.colHidden = QColor(*CONFIG.theme.colHidden)
-        self.colKey    = QColor(*CONFIG.theme.colKey)
-        self.colVal    = QColor(*CONFIG.theme.colVal)
-        self.colSpell  = QColor(*CONFIG.theme.colSpell)
-        self.colError  = QColor(*CONFIG.theme.colError)
-        self.colRepTag = QColor(*CONFIG.theme.colRepTag)
-        self.colMod    = QColor(*CONFIG.theme.colMod)
-        self.colBreak  = QColor(*CONFIG.theme.colEmph)
+        self.colHead   = QColor(*SHARED.theme.colHead)
+        self.colHeadH  = QColor(*SHARED.theme.colHeadH)
+        self.colDialN  = QColor(*SHARED.theme.colDialN)
+        self.colDialD  = QColor(*SHARED.theme.colDialD)
+        self.colDialS  = QColor(*SHARED.theme.colDialS)
+        self.colHidden = QColor(*SHARED.theme.colHidden)
+        self.colKey    = QColor(*SHARED.theme.colKey)
+        self.colVal    = QColor(*SHARED.theme.colVal)
+        self.colSpell  = QColor(*SHARED.theme.colSpell)
+        self.colError  = QColor(*SHARED.theme.colError)
+        self.colRepTag = QColor(*SHARED.theme.colRepTag)
+        self.colMod    = QColor(*SHARED.theme.colMod)
+        self.colBreak  = QColor(*SHARED.theme.colEmph)
         self.colBreak.setAlpha(64)
 
         self.colEmph = None
         if CONFIG.highlightEmph:
-            self.colEmph = QColor(*CONFIG.theme.colEmph)
+            self.colEmph = QColor(*SHARED.theme.colEmph)
 
         self.hStyles = {
             "header1":   self._makeFormat(self.colHead, "bold", 1.8),
@@ -285,8 +284,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         if theText.startswith("@"):  # Keywords and commands
             self.setCurrentBlockState(self.BLOCK_META)
-            pIndex = self.mainGui.project.index
-            tItem = self.mainGui.project.tree[self.theHandle]
+            pIndex = SHARED.project.index
+            tItem = SHARED.project.tree[self.theHandle]
             isValid, theBits, thePos = pIndex.scanThis(theText)
             isGood = pIndex.checkThese(theBits, tItem)
             if isValid:

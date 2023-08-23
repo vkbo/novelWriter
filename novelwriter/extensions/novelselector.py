@@ -25,17 +25,12 @@ from __future__ import annotations
 
 import logging
 
-from typing import TYPE_CHECKING
-
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QComboBox, QWidget
 
-from novelwriter import CONFIG
+from novelwriter import SHARED
 from novelwriter.enum import nwItemClass
 from novelwriter.constants import nwLabels
-
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
@@ -44,9 +39,8 @@ class NovelSelector(QComboBox):
 
     novelSelectionChanged = pyqtSignal(str)
 
-    def __init__(self, parent: QWidget, mainGui: GuiMain) -> None:
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
-        self._mainGui = mainGui
         self._blockSignal = False
         self._firstHandle = None
         self.currentIndexChanged.connect(self._indexChanged)
@@ -86,9 +80,9 @@ class NovelSelector(QComboBox):
         self._firstHandle = None
         self.clear()
 
-        icon = CONFIG.theme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
+        icon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
         handle = self.currentData()
-        for tHandle, nwItem in self._mainGui.project.tree.iterRoots(nwItemClass.NOVEL):
+        for tHandle, nwItem in SHARED.project.tree.iterRoots(nwItemClass.NOVEL):
             if prefix:
                 name = prefix.format(nwItem.itemName)
                 self.addItem(name, tHandle)

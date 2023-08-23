@@ -25,24 +25,27 @@ from __future__ import annotations
 
 import logging
 
+from typing import TYPE_CHECKING
+
+from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.constants import trConst, nwLabels
+
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
 
 class GuiItemDetails(QWidget):
 
-    def __init__(self, mainGui):
+    def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
 
         logger.debug("Create: GuiItemDetails")
-
-        self.mainGui = mainGui
 
         # Internal Variables
         self._itemHandle  = None
@@ -51,7 +54,7 @@ class GuiItemDetails(QWidget):
         hSp = CONFIG.pxInt(6)
         vSp = CONFIG.pxInt(1)
         mPx = CONFIG.pxInt(6)
-        fPt = CONFIG.theme.fontPointSize
+        fPt = SHARED.theme.fontPointSize
 
         fntLabel = QFont()
         fntLabel.setBold(True)
@@ -176,8 +179,8 @@ class GuiItemDetails(QWidget):
         self.updateTheme()
 
         # Make sure the columns for flags and counts don't resize too often
-        flagWidth  = CONFIG.theme.getTextWidth("Mm", fntValue)
-        countWidth = CONFIG.theme.getTextWidth("99,999", fntValue)
+        flagWidth  = SHARED.theme.getTextWidth("Mm", fntValue)
+        countWidth = SHARED.theme.getTextWidth("99,999", fntValue)
         self.mainBox.setColumnMinimumWidth(1, flagWidth)
         self.mainBox.setColumnMinimumWidth(4, countWidth)
 
@@ -189,35 +192,28 @@ class GuiItemDetails(QWidget):
     #  Class Methods
     ##
 
-    def clearDetails(self):
-        """Clear all the data values.
-        """
+    def clearDetails(self) -> None:
+        """Clear all the data values."""
         self._itemHandle = None
-
-        self.labelIcon.setPixmap(QPixmap(1, 1))
-        self.statusIcon.setPixmap(QPixmap(1, 1))
-        self.classIcon.setText("")
-        self.usageIcon.setText("")
-
-        self.labelData.setText("–")
-        self.statusData.setText("–")
-        self.classData.setText("–")
-        self.usageData.setText("–")
-
-        self.cCountData.setText("–")
-        self.wCountData.setText("–")
-        self.pCountData.setText("–")
-
+        self.labelIcon.clear()
+        self.labelData.clear()
+        self.statusIcon.clear()
+        self.statusData.clear()
+        self.classIcon.clear()
+        self.classData.clear()
+        self.usageIcon.clear()
+        self.usageData.clear()
+        self.cCountData.clear()
+        self.wCountData.clear()
+        self.pCountData.clear()
         return
 
-    def refreshDetails(self):
-        """Reload the content of the details panel.
-        """
+    def refreshDetails(self) -> None:
+        """Reload the content of the details panel."""
         self.updateViewBox(self._itemHandle)
 
-    def updateTheme(self):
-        """Update theme elements.
-        """
+    def updateTheme(self) -> None:
+        """Update theme elements."""
         self.updateViewBox(self._itemHandle)
         return
 
@@ -226,20 +222,19 @@ class GuiItemDetails(QWidget):
     ##
 
     @pyqtSlot(str)
-    def updateViewBox(self, tHandle):
-        """Populate the details box from a given handle.
-        """
+    def updateViewBox(self, tHandle: str) -> None:
+        """Populate the details box from a given handle."""
         if tHandle is None:
             self.clearDetails()
             return
 
-        nwItem = self.mainGui.project.tree[tHandle]
+        nwItem = SHARED.project.tree[tHandle]
         if nwItem is None:
             self.clearDetails()
             return
 
         self._itemHandle = tHandle
-        iPx = int(round(0.8*CONFIG.theme.baseIconSize))
+        iPx = int(round(0.8*SHARED.theme.baseIconSize))
 
         # Label
         # =====
@@ -250,11 +245,11 @@ class GuiItemDetails(QWidget):
 
         if nwItem.isFileType():
             if nwItem.isActive:
-                self.labelIcon.setPixmap(CONFIG.theme.getPixmap("checked", (iPx, iPx)))
+                self.labelIcon.setPixmap(SHARED.theme.getPixmap("checked", (iPx, iPx)))
             else:
-                self.labelIcon.setPixmap(CONFIG.theme.getPixmap("unchecked", (iPx, iPx)))
+                self.labelIcon.setPixmap(SHARED.theme.getPixmap("unchecked", (iPx, iPx)))
         else:
-            self.labelIcon.setPixmap(CONFIG.theme.getPixmap("noncheckable", (iPx, iPx)))
+            self.labelIcon.setPixmap(SHARED.theme.getPixmap("noncheckable", (iPx, iPx)))
 
         self.labelData.setText(theLabel)
 
@@ -268,14 +263,14 @@ class GuiItemDetails(QWidget):
         # Class
         # =====
 
-        classIcon = CONFIG.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass])
+        classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass])
         self.classIcon.setPixmap(classIcon.pixmap(iPx, iPx))
         self.classData.setText(trConst(nwLabels.CLASS_NAME[nwItem.itemClass]))
 
         # Layout
         # ======
 
-        usageIcon = CONFIG.theme.getItemIcon(
+        usageIcon = SHARED.theme.getItemIcon(
             nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, nwItem.mainHeading
         )
         self.usageIcon.setPixmap(usageIcon.pixmap(iPx, iPx))
@@ -296,7 +291,7 @@ class GuiItemDetails(QWidget):
         return
 
     @pyqtSlot(str, int, int, int)
-    def updateCounts(self, tHandle, cC, wC, pC):
+    def updateCounts(self, tHandle: str, cC: int, wC: int, pC: int) -> None:
         """Update the counts if the handle is the same as the one we're
         already showing. Otherwise, do nothing.
         """
@@ -304,7 +299,6 @@ class GuiItemDetails(QWidget):
             self.cCountData.setText(f"{cC:n}")
             self.wCountData.setText(f"{wC:n}")
             self.pCountData.setText(f"{pC:n}")
-
         return
 
 # END Class GuiItemDetails

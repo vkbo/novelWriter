@@ -53,7 +53,7 @@ def xmlToText(xElem):
 @pytest.mark.core
 def testCoreToOdt_Init(mockGUI):
     """Test initialisation of the ODT document."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
 
     # Flat Doc
     # ========
@@ -108,7 +108,7 @@ def testCoreToOdt_Init(mockGUI):
 @pytest.mark.core
 def testCoreToOdt_TextFormatting(mockGUI):
     """Test formatting of paragraphs."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theDoc = ToOdt(theProject, isFlat=True)
 
     theDoc.initDocument()
@@ -242,7 +242,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
 @pytest.mark.core
 def testCoreToOdt_Convert(mockGUI):
     """Test the converter of the ToOdt class."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theDoc = ToOdt(theProject, isFlat=True)
 
     theDoc._isNovel = True
@@ -573,7 +573,7 @@ def testCoreToOdt_ConvertDirect(mockGUI):
     """Test the converter directly using the ToOdt class to reach some
     otherwise hard to reach conditions.
     """
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theDoc = ToOdt(theProject, isFlat=True)
 
     theDoc._isNovel = True
@@ -626,7 +626,7 @@ def testCoreToOdt_ConvertDirect(mockGUI):
 @pytest.mark.core
 def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
     """Test the document save functions."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theProject.data.setAuthor("Jane Smith")
     theProject.data.setName("Test Project")
     theProject.data.setSaveCount(1234)
@@ -668,7 +668,7 @@ def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
 @pytest.mark.core
 def testCoreToOdt_SaveFull(mockGUI, fncPath, tstPaths):
     """Test the document save functions."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theProject.data.setAuthor("Jane Smith")
     theProject.data.setName("Test Project")
     theProject.data.setSaveCount(1234)
@@ -745,7 +745,7 @@ def testCoreToOdt_SaveFull(mockGUI, fncPath, tstPaths):
 @pytest.mark.core
 def testCoreToOdt_Format(mockGUI):
     """Test the formatters for the ToOdt class."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theDoc = ToOdt(theProject, isFlat=True)
 
     assert theDoc._formatSynopsis("synopsis text") == (

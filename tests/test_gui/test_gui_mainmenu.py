@@ -27,7 +27,7 @@ from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 
 from tools import C, writeFile, buildTestProject
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction, nwDocInsert
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.gui.doceditor import GuiDocEditor
@@ -206,7 +206,7 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Clear the Text
     nwGUI.docEditor.clear()
-    assert nwGUI.docEditor.isEmpty()
+    assert nwGUI.docEditor.isEmpty
 
     # Alignment & Indent
     # ==================
@@ -403,17 +403,17 @@ def testGuiMenu_ContextMenus(qtbot, nwGUI, prjLipsum):
 
     # Navigation History
     assert nwGUI.viewDocument("04468803b92e1")
-    assert nwGUI.docViewer.docHandle() == "04468803b92e1"
+    assert nwGUI.docViewer.docHandle == "04468803b92e1"
     assert nwGUI.docViewer.docHeader.backButton.isEnabled()
     assert not nwGUI.docViewer.docHeader.forwardButton.isEnabled()
 
     qtbot.mouseClick(nwGUI.docViewer.docHeader.backButton, Qt.LeftButton)
-    assert nwGUI.docViewer.docHandle() == "4c4f28287af27"
+    assert nwGUI.docViewer.docHandle == "4c4f28287af27"
     assert not nwGUI.docViewer.docHeader.backButton.isEnabled()
     assert nwGUI.docViewer.docHeader.forwardButton.isEnabled()
 
     qtbot.mouseClick(nwGUI.docViewer.docHeader.forwardButton, Qt.LeftButton)
-    assert nwGUI.docViewer.docHandle() == "04468803b92e1"
+    assert nwGUI.docViewer.docHandle == "04468803b92e1"
     assert nwGUI.docViewer.docHeader.backButton.isEnabled()
     assert not nwGUI.docViewer.docHeader.forwardButton.isEnabled()
 
@@ -438,10 +438,10 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     nwGUI.docEditor.clear()
 
     assert nwGUI.docEditor.insertText(nwDocInsert.NO_INSERT) is False
-    assert nwGUI.docEditor.isEmpty()
+    assert nwGUI.docEditor.isEmpty
 
     assert nwGUI.docEditor.insertText(None) is False
-    assert nwGUI.docEditor.isEmpty()
+    assert nwGUI.docEditor.isEmpty
 
     # qtbot.stop()
 
@@ -653,21 +653,10 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     # Reveal File Location
     # ====================
 
-    theMessage = ""
-
-    def recordMsg(*args, **kwargs):
-        nonlocal theMessage
-        theMessage = "%s|%s" % (args[0], kwargs["info"])
-        return None
-
-    assert not theMessage
-    monkeypatch.setattr(nwGUI, "makeAlert", recordMsg)
     nwGUI.mainMenu.aFileDetails.activate(QAction.Trigger)
-
-    theBits = theMessage.split("|")
-    assert len(theBits) == 2
-    assert theBits[0] == "The currently open file is saved in:"
-    assert theBits[1] == str(projPath / "content" / "000000000000f.nwd")
+    path = str(projPath / "content" / "000000000000f.nwd")
+    logMsg = SHARED.alert.logMessage if SHARED.alert else ""
+    assert logMsg == f"The currently open file is saved in: {path}"
 
     # qtbot.stop()
 

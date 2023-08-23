@@ -34,7 +34,7 @@ from novelwriter.core.project import NWProject
 @pytest.mark.core
 def testCoreItem_Setters(mockGUI, mockRnd, fncPath):
     """Test all the simple setters for the NWItem class."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
     theItem = NWItem(theProject, "0000000000000")
@@ -185,7 +185,7 @@ def testCoreItem_Setters(mockGUI, mockRnd, fncPath):
 @pytest.mark.core
 def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
     """Test the simple methods of the NWItem class."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
     theItem = NWItem(theProject, "0000000000000")
@@ -333,7 +333,7 @@ def testCoreItem_TypeSetter(mockGUI):
     """Test the setter for all the nwItemType values for the NWItem
     class.
     """
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theItem = NWItem(theProject, "0000000000000")
 
     # Type
@@ -362,7 +362,7 @@ def testCoreItem_ClassSetter(mockGUI):
     """Test the setter for all the nwItemClass values for the NWItem
     class.
     """
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theItem = NWItem(theProject, "0000000000000")
 
     # Class
@@ -449,7 +449,7 @@ def testCoreItem_LayoutSetter(mockGUI):
     """Test the setter for all the nwItemLayout values for the NWItem
     class.
     """
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theItem = NWItem(theProject, "0000000000000")
 
     # Faulty Layouts
@@ -477,7 +477,7 @@ def testCoreItem_LayoutSetter(mockGUI):
 def testCoreItem_ClassDefaults(mockGUI):
     """Test the setter for the default values.
     """
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theItem = NWItem(theProject, "0000000000000")
 
     # Root items should not have their class updated
@@ -532,7 +532,7 @@ def testCoreItem_ClassDefaults(mockGUI):
 @pytest.mark.core
 def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
     """Test packing and unpacking entries for the NWItem class."""
-    theProject = NWProject(mockGUI)
+    theProject = NWProject()
     theProject.data.itemStatus.write(None, "New", (100, 100, 100))
     theProject.data.itemImport.write(None, "New", (100, 100, 100))
 

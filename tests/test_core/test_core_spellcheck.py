@@ -36,7 +36,7 @@ from novelwriter.core.spellcheck import FakeEnchant, NWSpellEnchant, UserDiction
 @pytest.mark.core
 def testCoreSpell_UserDictionary(monkeypatch, mockGUI, fncPath):
     """Test the UserDictionary class."""
-    project = NWProject(mockGUI)
+    project = NWProject()
     buildTestProject(project, fncPath)
 
     # Check that there is no file before we start
@@ -114,7 +114,7 @@ def testCoreSpell_UserDictionary(monkeypatch, mockGUI, fncPath):
 @pytest.mark.core
 def testCoreSpell_FakeEnchant(monkeypatch, mockGUI, fncPath):
     """Test the FakeEnchant spell checker fallback."""
-    project = NWProject(mockGUI)
+    project = NWProject()
     buildTestProject(project, fncPath)
 
     # Make package import fail
@@ -149,7 +149,7 @@ def testCoreSpell_FakeEnchant(monkeypatch, mockGUI, fncPath):
 @pytest.mark.core
 def testCoreSpell_Enchant(monkeypatch, mockGUI, fncPath):
     """Test the pyenchant spell checker."""
-    project = NWProject(mockGUI)
+    project = NWProject()
     buildTestProject(project, fncPath)
 
     # Break the enchant package, and check error handling

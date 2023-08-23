@@ -33,8 +33,7 @@ from PyQt5.QtWidgets import (
     QLineEdit, QListWidget, QListWidgetItem, QPushButton, QVBoxLayout
 )
 
-from novelwriter import CONFIG
-from novelwriter.enum import nwAlert
+from novelwriter import CONFIG, SHARED
 from novelwriter.core.spellcheck import UserDictionary
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -52,12 +51,10 @@ class GuiWordList(QDialog):
         self.setObjectName("GuiWordList")
         self.setWindowTitle(self.tr("Project Word List"))
 
-        self.mainGui = mainGui
-
         mS = CONFIG.pxInt(250)
         wW = CONFIG.pxInt(320)
         wH = CONFIG.pxInt(340)
-        pOptions = self.mainGui.project.options
+        pOptions = SHARED.project.options
 
         self.setMinimumWidth(mS)
         self.setMinimumHeight(mS)
@@ -77,10 +74,10 @@ class GuiWordList(QDialog):
 
         self.newEntry = QLineEdit()
 
-        self.addButton = QPushButton(CONFIG.theme.getIcon("add"), "")
+        self.addButton = QPushButton(SHARED.theme.getIcon("add"), "")
         self.addButton.clicked.connect(self._doAdd)
 
-        self.delButton = QPushButton(CONFIG.theme.getIcon("remove"), "")
+        self.delButton = QPushButton(SHARED.theme.getIcon("remove"), "")
         self.delButton.clicked.connect(self._doDelete)
 
         self.editBox = QHBoxLayout()
@@ -123,15 +120,13 @@ class GuiWordList(QDialog):
         """Add a new word to the word list."""
         word = self.newEntry.text().strip()
         if word == "":
-            self.mainGui.makeAlert(self.tr(
-                "Cannot add a blank word."
-            ), level=nwAlert.ERROR)
+            SHARED.error(self.tr("Cannot add a blank word."))
             return
 
         if self.listBox.findItems(word, Qt.MatchExactly):
-            self.mainGui.makeAlert(self.tr(
+            SHARED.error(self.tr(
                 "The word '{0}' is already in the word list."
-            ).format(word), level=nwAlert.ERROR)
+            ).format(word))
             return
 
         self.listBox.addItem(word)
@@ -149,7 +144,7 @@ class GuiWordList(QDialog):
     def _doSave(self):
         """Save the new word list and close."""
         self._saveGuiSettings()
-        userDict = UserDictionary(self.mainGui.project)
+        userDict = UserDictionary(SHARED.project)
         for i in range(self.listBox.count()):
             item = self.listBox.item(i)
             if isinstance(item, QListWidgetItem):
@@ -172,7 +167,7 @@ class GuiWordList(QDialog):
 
     def _loadWordList(self):
         """Load the project's word list, if it exists."""
-        userDict = UserDictionary(self.mainGui.project)
+        userDict = UserDictionary(SHARED.project)
         userDict.load()
         self.listBox.clear()
         for word in userDict:
@@ -185,7 +180,7 @@ class GuiWordList(QDialog):
         winWidth  = CONFIG.rpxInt(self.width())
         winHeight = CONFIG.rpxInt(self.height())
 
-        pOptions = self.mainGui.project.options
+        pOptions = SHARED.project.options
         pOptions.setValue("GuiWordList", "winWidth",  winWidth)
         pOptions.setValue("GuiWordList", "winHeight", winHeight)
 

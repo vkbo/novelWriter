@@ -27,7 +27,7 @@ from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QAction, QColorDialog
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemType
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.projsettings import GuiProjectSettings
@@ -50,8 +50,8 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
     assert getGuiItem("GuiProjectSettings") is None
 
     # Pretend we have a project
-    nwGUI.hasProject = True
-    nwGUI.project.data.setSpellLang("en")
+    SHARED.project._valid = True
+    SHARED.project.data.setSpellLang("en")
 
     # Get the dialog object
     nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
@@ -95,7 +95,7 @@ def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockR
     CONFIG.setBackupPath(fncPath)
 
     # Set some values
-    theProject = nwGUI.project
+    theProject = SHARED.project
     theProject.data.setSpellLang("en")
     theProject.data.setAuthor("Jane Smith")
     theProject.data.setAutoReplace({"A": "B", "C": "D"})
@@ -160,7 +160,7 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncPath, projPat
     CONFIG.setBackupPath(fncPath)
 
     # Set some values
-    theProject = nwGUI.project
+    theProject = SHARED.project
     theProject.tree[C.hTitlePage].setStatus(C.sFinished)
     theProject.tree[C.hChapterDoc].setStatus(C.sDraft)
     theProject.tree[C.hSceneDoc].setStatus(C.sDraft)
@@ -361,7 +361,7 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncPath, projPath, mo
     CONFIG.setBackupPath(fncPath)
 
     # Set some values
-    theProject = nwGUI.project
+    theProject = SHARED.project
     theProject.data.setAutoReplace({
         "A": "B", "C": "D"
     })

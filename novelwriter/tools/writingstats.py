@@ -36,8 +36,7 @@ from PyQt5.QtWidgets import (
     QLabel, QGroupBox, QMenu, QAction, QFileDialog, QSpinBox, QHBoxLayout
 )
 
-from novelwriter import CONFIG
-from novelwriter.enum import nwAlert
+from novelwriter import CONFIG, SHARED
 from novelwriter.error import formatException
 from novelwriter.common import formatTime, checkInt, checkIntTuple, minmax
 from novelwriter.constants import nwConst
@@ -72,14 +71,12 @@ class GuiWritingStats(QDialog):
         if CONFIG.osDarwin:
             self.setWindowFlag(Qt.WindowType.Tool)
 
-        self.mainGui = mainGui
-
         self.logData    = []
         self.filterData = []
         self.timeFilter = 0.0
         self.wordOffset = 0
 
-        pOptions = self.mainGui.project.options
+        pOptions = SHARED.project.options
 
         self.setWindowTitle(self.tr("Writing Statistics"))
         self.setMinimumWidth(CONFIG.pxInt(420))
@@ -132,7 +129,7 @@ class GuiWritingStats(QDialog):
         self.listBox.setSortingEnabled(True)
 
         # Word Bar
-        self.barHeight = int(round(0.5*CONFIG.theme.fontPixelSize))
+        self.barHeight = int(round(0.5*SHARED.theme.fontPixelSize))
         self.barWidth = CONFIG.pxInt(200)
         self.barImage = QPixmap(self.barHeight, self.barHeight)
         self.barImage.fill(self.palette().highlight().color())
@@ -143,27 +140,27 @@ class GuiWritingStats(QDialog):
         self.infoBox.setLayout(self.infoForm)
 
         self.labelTotal = QLabel(formatTime(0))
-        self.labelTotal.setFont(CONFIG.theme.guiFontFixed)
+        self.labelTotal.setFont(SHARED.theme.guiFontFixed)
         self.labelTotal.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.labelIdleT = QLabel(formatTime(0))
-        self.labelIdleT.setFont(CONFIG.theme.guiFontFixed)
+        self.labelIdleT.setFont(SHARED.theme.guiFontFixed)
         self.labelIdleT.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.labelFilter = QLabel(formatTime(0))
-        self.labelFilter.setFont(CONFIG.theme.guiFontFixed)
+        self.labelFilter.setFont(SHARED.theme.guiFontFixed)
         self.labelFilter.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.novelWords = QLabel("0")
-        self.novelWords.setFont(CONFIG.theme.guiFontFixed)
+        self.novelWords.setFont(SHARED.theme.guiFontFixed)
         self.novelWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.notesWords = QLabel("0")
-        self.notesWords.setFont(CONFIG.theme.guiFontFixed)
+        self.notesWords.setFont(SHARED.theme.guiFontFixed)
         self.notesWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         self.totalWords = QLabel("0")
-        self.totalWords.setFont(CONFIG.theme.guiFontFixed)
+        self.totalWords.setFont(SHARED.theme.guiFontFixed)
         self.totalWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
 
         lblTTime   = QLabel(self.tr("Total Time:"))
@@ -190,7 +187,7 @@ class GuiWritingStats(QDialog):
         self.infoForm.setRowStretch(6, 1)
 
         # Filter Options
-        sPx = CONFIG.theme.baseIconSize
+        sPx = SHARED.theme.baseIconSize
 
         self.filterBox = QGroupBox(self.tr("Filters"), self)
         self.filterForm = QGridLayout(self)
@@ -333,7 +330,7 @@ class GuiWritingStats(QDialog):
         showIdleTime = self.showIdleTime.isChecked()
         histMax      = self.histMax.value()
 
-        pOptions = self.mainGui.project.options
+        pOptions = SHARED.project.options
         pOptions.setValue("GuiWritingStats", "winWidth",     winWidth)
         pOptions.setValue("GuiWritingStats", "winHeight",    winHeight)
         pOptions.setValue("GuiWritingStats", "widthCol0",    widthCol0)
@@ -413,14 +410,14 @@ class GuiWritingStats(QDialog):
 
         # Report to user
         if wSuccess:
-            self.mainGui.makeAlert(
+            SHARED.info(
                 self.tr("{0} file successfully written to:").format(textFmt),
                 info=savePath
             )
         else:
-            self.mainGui.makeAlert(
+            SHARED.error(
                 self.tr("Failed to write {0} file.").format(textFmt),
-                info=errMsg, level=nwAlert.ERROR
+                info=errMsg
             )
 
         return wSuccess
@@ -441,7 +438,7 @@ class GuiWritingStats(QDialog):
         ttTime = 0
         ttIdle = 0
 
-        for record in self.mainGui.project.session.iterRecords():
+        for record in SHARED.project.session.iterRecords():
             rType = record.get("type")
             if rType == "initial":
                 self.wordOffset = checkInt(record.get("offset"), 0)
@@ -587,13 +584,13 @@ class GuiWritingStats(QDialog):
             newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
             newItem.setTextAlignment(self.C_BAR, Qt.AlignLeft | Qt.AlignVCenter)
 
-            newItem.setFont(self.C_TIME, CONFIG.theme.guiFontFixed)
-            newItem.setFont(self.C_LENGTH, CONFIG.theme.guiFontFixed)
-            newItem.setFont(self.C_COUNT, CONFIG.theme.guiFontFixed)
+            newItem.setFont(self.C_TIME, SHARED.theme.guiFontFixed)
+            newItem.setFont(self.C_LENGTH, SHARED.theme.guiFontFixed)
+            newItem.setFont(self.C_COUNT, SHARED.theme.guiFontFixed)
             if showIdleTime:
-                newItem.setFont(self.C_IDLE, CONFIG.theme.guiFontFixed)
+                newItem.setFont(self.C_IDLE, SHARED.theme.guiFontFixed)
             else:
-                newItem.setFont(self.C_IDLE, CONFIG.theme.guiFont)
+                newItem.setFont(self.C_IDLE, SHARED.theme.guiFont)
 
             self.listBox.addTopLevelItem(newItem)
             self.timeFilter += sDiff
