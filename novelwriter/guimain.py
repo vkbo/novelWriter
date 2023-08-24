@@ -590,8 +590,8 @@ class GuiMain(QMainWindow):
         return True
 
     def openNextDocument(self, tHandle: str, wrapAround: bool = False) -> bool:
-        """Opens the next document in the project tree, following the
-        document with the given handle. Stops when reaching the end.
+        """Open the next document in the project tree, following the
+        document with the given handle. Stop when reaching the end.
         """
         if not SHARED.hasProject:
             logger.error("No project open")

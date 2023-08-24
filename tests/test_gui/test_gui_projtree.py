@@ -348,7 +348,7 @@ def testGuiProjTree_RequestDeleteItem(qtbot, caplog, monkeypatch, nwGUI, projPat
         C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010"
     ]
-    trashHandle = SHARED.project.tree.trashRoot()
+    trashHandle = SHARED.project.tree.trashRoot
     assert projTree.getTreeFromHandle(trashHandle) == [
         trashHandle, "0000000000012", "0000000000011"
     ]
@@ -541,7 +541,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     projTree.setExpandedFromHandle(None, True)
 
     projTree._addTrashRoot()
-    hTrashRoot = SHARED.project.tree.trashRoot()
+    hTrashRoot = SHARED.project.tree.trashRoot
 
     projTree.setSelectedHandle(C.hCharRoot)
     projTree.newTreeItem(nwItemType.FILE)

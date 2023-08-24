@@ -40,6 +40,8 @@ if TYPE_CHECKING:  # pragma: no cover
 
 logger = logging.getLogger(__name__)
 
+MAX_DEPTH = 1000  # Cap of tree traversing for loops (recursion limit)
+
 
 class NWTree:
     """Core: Project Tree Data Class
@@ -59,7 +61,7 @@ class NWTree:
     also used for file names.
     """
 
-    MAX_DEPTH = 1000  # Cap of tree traversing for loops
+    __slots__ = ("_project", "_tree", "_order", "_roots", "_trash", "_changed")
 
     def __init__(self, project: NWProject) -> None:
 
@@ -73,6 +75,15 @@ class NWTree:
         self._changed = False  # True if tree structure has changed
 
         return
+
+    ##
+    #  Properties
+    ##
+
+    @property
+    def trashRoot(self) -> str | None:
+        """Return the handle of the trash folder, or None."""
+        return self._trash
 
     ##
     #  Class Methods
@@ -320,7 +331,7 @@ class NWTree:
             return False
 
         iItem = tItem
-        for _ in range(self.MAX_DEPTH):
+        for _ in range(MAX_DEPTH):
             if iItem.itemParent is None:
                 tItem.setRoot(iItem.itemHandle)
                 tItem.setClassDefaults(iItem.itemClass)
@@ -349,7 +360,7 @@ class NWTree:
         tItem = self.__getitem__(tHandle)
         if tItem is not None:
             tTree.append(tHandle)
-            for _ in range(self.MAX_DEPTH):
+            for _ in range(MAX_DEPTH):
                 if tItem.itemParent is None:
                     return tTree
                 else:
@@ -399,14 +410,6 @@ class NWTree:
             elif tItem.itemRoot == self._trash:
                 return True
         return False
-
-    def trashRoot(self) -> str | None:
-        """Returns the handle of the trash folder, or None if there
-        isn't one.
-        """
-        if self._trash:
-            return self._trash
-        return None
 
     def findRoot(self, itemClass: nwItemClass | None) -> str | None:
         """Find the first root item for a given class."""

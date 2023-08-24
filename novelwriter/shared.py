@@ -29,7 +29,7 @@ from time import time
 from typing import TYPE_CHECKING
 from pathlib import Path
 
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QMessageBox, QWidget
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -84,7 +84,7 @@ class SharedData(QObject):
 
     @property
     def hasProject(self) -> bool:
-        """Return True of the project instance is populated."""
+        """Return True if the project instance is populated."""
         return self.project.isValid
 
     @property
@@ -107,9 +107,9 @@ class SharedData(QObject):
     ##
 
     def initSharedData(self, gui: GuiMain, theme: GuiTheme) -> None:
-        """Initialise the UserData instance. This must be called as soon
-        as the Main GUI is created to ensure the SHARED singleton has the
-        properties needed for operation.
+        """Initialise the SharedData instance. This must be called as
+        soon as the Main GUI is created to ensure the SHARED singleton
+        has the properties needed for operation.
         """
         self._gui = gui
         self._theme = theme
@@ -159,6 +159,20 @@ class SharedData(QObject):
         self._idleRefTime = currTime
         return
 
+    def newStatusMessage(self, message: str) -> None:
+        """Request a new status message. This is a callable function for
+        core classes that cannot emit signals on their own.
+        """
+        self.projectStatusMessage.emit(message)
+        return
+
+    def setGlobalProjectState(self, state: bool) -> None:
+        """Change the global project status. This is a callable function
+        for core classes that cannot emit signals on their own.
+        """
+        self.projectStatusChanged.emit(state)
+        return
+
     ##
     #  Alert Boxes
     ##
@@ -202,22 +216,6 @@ class SharedData(QObject):
         return self._alert.result() == QMessageBox.Yes
 
     ##
-    #  Internal Slots
-    ##
-
-    @pyqtSlot(bool)
-    def _emitProjectStatusChange(self, state: bool) -> None:
-        """Forward the project status slot."""
-        self.projectStatusChanged.emit(state)
-        return
-
-    @pyqtSlot(str)
-    def _emitProjectStatusMeesage(self, message: str) -> None:
-        """Forward the project message slot."""
-        self.projectStatusMessage.emit(message)
-        return
-
-    ##
     #  Internal Functions
     ##
 
@@ -225,12 +223,8 @@ class SharedData(QObject):
         """Create a new project instance."""
         from novelwriter.core.project import NWProject
         if isinstance(self._project, NWProject):
-            self._project.statusChanged.disconnect()
-            self._project.statusMessage.disconnect()
-            self._project.deleteLater()
-        self._project = NWProject(self)
-        self._project.statusChanged.connect(self._emitProjectStatusChange)
-        self._project.statusMessage.connect(self._emitProjectStatusMeesage)
+            del self._project
+        self._project = NWProject()
         return
 
     def _resetIdleTimer(self) -> None:
