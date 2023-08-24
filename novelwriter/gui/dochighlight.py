@@ -51,24 +51,27 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         logger.debug("Create: GuiDocHighlighter")
 
-        self.theHandle  = None
-        self.spellCheck = False
-        self.spellRx    = None
-        self.hRules     = []
-        self.hStyles    = {}
+        self._tHandle    = None
+        self._spellCheck = False
+        self._spellRx    = QRegularExpression()
 
-        self.colHead   = QColor(0, 0, 0)
-        self.colHeadH  = QColor(0, 0, 0)
-        self.colEmph   = QColor(0, 0, 0)
-        self.colDialN  = QColor(0, 0, 0)
-        self.colDialD  = QColor(0, 0, 0)
-        self.colDialS  = QColor(0, 0, 0)
-        self.colHidden = QColor(0, 0, 0)
-        self.colKey    = QColor(0, 0, 0)
-        self.colVal    = QColor(0, 0, 0)
-        self.colSpell  = QColor(0, 0, 0)
-        self.colError  = QColor(0, 0, 0)
-        self.colRepTag = QColor(0, 0, 0)
+        self._hRules: list[tuple[str, dict]] = []
+        self._hStyles: dict[str, QTextCharFormat] = {}
+
+        self._colHead   = QColor(0, 0, 0)
+        self._colHeadH  = QColor(0, 0, 0)
+        self._colEmph   = QColor(0, 0, 0)
+        self._colDialN  = QColor(0, 0, 0)
+        self._colDialD  = QColor(0, 0, 0)
+        self._colDialS  = QColor(0, 0, 0)
+        self._colHidden = QColor(0, 0, 0)
+        self._colKey    = QColor(0, 0, 0)
+        self._colVal    = QColor(0, 0, 0)
+        self._colSpell  = QColor(0, 0, 0)
+        self._colError  = QColor(0, 0, 0)
+        self._colRepTag = QColor(0, 0, 0)
+        self._colMod    = QColor(0, 0, 0)
+        self._colBreak  = QColor(0, 0, 0)
 
         self.initHighlighter()
 
@@ -76,71 +79,76 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         return
 
-    def initHighlighter(self):
+    @property
+    def spellCheck(self) -> bool:
+        """Check if spell checking is enabled."""
+        return self._spellCheck
+
+    def initHighlighter(self) -> None:
         """Initialise the syntax highlighter, setting all the colour
         rules and building the RegExes.
         """
         logger.debug("Setting up highlighting rules")
 
-        self.colHead   = QColor(*SHARED.theme.colHead)
-        self.colHeadH  = QColor(*SHARED.theme.colHeadH)
-        self.colDialN  = QColor(*SHARED.theme.colDialN)
-        self.colDialD  = QColor(*SHARED.theme.colDialD)
-        self.colDialS  = QColor(*SHARED.theme.colDialS)
-        self.colHidden = QColor(*SHARED.theme.colHidden)
-        self.colKey    = QColor(*SHARED.theme.colKey)
-        self.colVal    = QColor(*SHARED.theme.colVal)
-        self.colSpell  = QColor(*SHARED.theme.colSpell)
-        self.colError  = QColor(*SHARED.theme.colError)
-        self.colRepTag = QColor(*SHARED.theme.colRepTag)
-        self.colMod    = QColor(*SHARED.theme.colMod)
-        self.colBreak  = QColor(*SHARED.theme.colEmph)
-        self.colBreak.setAlpha(64)
+        self._colHead   = QColor(*SHARED.theme.colHead)
+        self._colHeadH  = QColor(*SHARED.theme.colHeadH)
+        self._colDialN  = QColor(*SHARED.theme.colDialN)
+        self._colDialD  = QColor(*SHARED.theme.colDialD)
+        self._colDialS  = QColor(*SHARED.theme.colDialS)
+        self._colHidden = QColor(*SHARED.theme.colHidden)
+        self._colKey    = QColor(*SHARED.theme.colKey)
+        self._colVal    = QColor(*SHARED.theme.colVal)
+        self._colSpell  = QColor(*SHARED.theme.colSpell)
+        self._colError  = QColor(*SHARED.theme.colError)
+        self._colRepTag = QColor(*SHARED.theme.colRepTag)
+        self._colMod    = QColor(*SHARED.theme.colMod)
+        self._colBreak  = QColor(*SHARED.theme.colEmph)
+        self._colBreak.setAlpha(64)
 
-        self.colEmph = None
+        self._colEmph = None
         if CONFIG.highlightEmph:
-            self.colEmph = QColor(*SHARED.theme.colEmph)
+            self._colEmph = QColor(*SHARED.theme.colEmph)
 
-        self.hStyles = {
-            "header1":   self._makeFormat(self.colHead, "bold", 1.8),
-            "header2":   self._makeFormat(self.colHead, "bold", 1.6),
-            "header3":   self._makeFormat(self.colHead, "bold", 1.4),
-            "header4":   self._makeFormat(self.colHead, "bold", 1.2),
-            "header1h":  self._makeFormat(self.colHeadH, "bold", 1.8),
-            "header2h":  self._makeFormat(self.colHeadH, "bold", 1.6),
-            "header3h":  self._makeFormat(self.colHeadH, "bold", 1.4),
-            "header4h":  self._makeFormat(self.colHeadH, "bold", 1.2),
-            "bold":      self._makeFormat(self.colEmph, "bold"),
-            "italic":    self._makeFormat(self.colEmph, "italic"),
-            "strike":    self._makeFormat(self.colHidden, "strike"),
-            "mspaces":   self._makeFormat(self.colError, "errline"),
-            "nobreak":   self._makeFormat(self.colBreak, "background"),
-            "dialogue1": self._makeFormat(self.colDialN),
-            "dialogue2": self._makeFormat(self.colDialD),
-            "dialogue3": self._makeFormat(self.colDialS),
-            "replace":   self._makeFormat(self.colRepTag),
-            "hidden":    self._makeFormat(self.colHidden),
-            "keyword":   self._makeFormat(self.colKey),
-            "modifier":  self._makeFormat(self.colMod),
-            "value":     self._makeFormat(self.colVal, "underline"),
-            "codevalue": self._makeFormat(self.colVal),
+        self._hStyles = {
+            "header1":   self._makeFormat(self._colHead, "bold", 1.8),
+            "header2":   self._makeFormat(self._colHead, "bold", 1.6),
+            "header3":   self._makeFormat(self._colHead, "bold", 1.4),
+            "header4":   self._makeFormat(self._colHead, "bold", 1.2),
+            "header1h":  self._makeFormat(self._colHeadH, "bold", 1.8),
+            "header2h":  self._makeFormat(self._colHeadH, "bold", 1.6),
+            "header3h":  self._makeFormat(self._colHeadH, "bold", 1.4),
+            "header4h":  self._makeFormat(self._colHeadH, "bold", 1.2),
+            "bold":      self._makeFormat(self._colEmph, "bold"),
+            "italic":    self._makeFormat(self._colEmph, "italic"),
+            "strike":    self._makeFormat(self._colHidden, "strike"),
+            "mspaces":   self._makeFormat(self._colError, "errline"),
+            "nobreak":   self._makeFormat(self._colBreak, "background"),
+            "dialogue1": self._makeFormat(self._colDialN),
+            "dialogue2": self._makeFormat(self._colDialD),
+            "dialogue3": self._makeFormat(self._colDialS),
+            "replace":   self._makeFormat(self._colRepTag),
+            "hidden":    self._makeFormat(self._colHidden),
+            "keyword":   self._makeFormat(self._colKey),
+            "modifier":  self._makeFormat(self._colMod),
+            "value":     self._makeFormat(self._colVal, "underline"),
+            "codevalue": self._makeFormat(self._colVal),
             "codeinval": self._makeFormat(None, "errline"),
         }
 
-        self.hRules = []
+        self._hRules = []
 
         # Multiple or Trailing Spaces
         if CONFIG.showMultiSpaces:
-            self.hRules.append((
+            self._hRules.append((
                 r"[ ]{2,}|[ ]*$", {
-                    0: self.hStyles["mspaces"],
+                    0: self._hStyles["mspaces"],
                 }
             ))
 
         # Non-Breaking Spaces
-        self.hRules.append((
-            "[%s%s]+" % (nwUnicode.U_NBSP, nwUnicode.U_THNBSP), {
-                0: self.hStyles["nobreak"],
+        self._hRules.append((
+            f"[{nwUnicode.U_NBSP}{nwUnicode.U_THNBSP}]+", {
+                0: self._hStyles["nobreak"],
             }
         ))
 
@@ -153,68 +161,68 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
             # Straight Quotes
             if not (fmtDblO == fmtDblC == "\""):
-                self.hRules.append((
+                self._hRules.append((
                     "(\\B\")(.*?)(\"\\B)", {
-                        0: self.hStyles["dialogue1"],
+                        0: self._hStyles["dialogue1"],
                     }
                 ))
 
             # Double Quotes
             dblEnd = "|$" if CONFIG.allowOpenDQuote else ""
-            self.hRules.append((
+            self._hRules.append((
                 f"(\\B{fmtDblO})(.*?)({fmtDblC}\\B{dblEnd})", {
-                    0: self.hStyles["dialogue2"],
+                    0: self._hStyles["dialogue2"],
                 }
             ))
 
             # Single Quotes
             sngEnd = "|$" if CONFIG.allowOpenSQuote else ""
-            self.hRules.append((
+            self._hRules.append((
                 f"(\\B{fmtSngO})(.*?)({fmtSngC}\\B{sngEnd})", {
-                    0: self.hStyles["dialogue3"],
+                    0: self._hStyles["dialogue3"],
                 }
             ))
 
         # Markdown Syntax
-        self.hRules.append((
+        self._hRules.append((
             nwRegEx.FMT_EI, {
-                1: self.hStyles["hidden"],
-                2: self.hStyles["italic"],
-                3: self.hStyles["hidden"],
+                1: self._hStyles["hidden"],
+                2: self._hStyles["italic"],
+                3: self._hStyles["hidden"],
             }
         ))
-        self.hRules.append((
+        self._hRules.append((
             nwRegEx.FMT_EB, {
-                1: self.hStyles["hidden"],
-                2: self.hStyles["bold"],
-                3: self.hStyles["hidden"],
+                1: self._hStyles["hidden"],
+                2: self._hStyles["bold"],
+                3: self._hStyles["hidden"],
             }
         ))
-        self.hRules.append((
+        self._hRules.append((
             nwRegEx.FMT_ST, {
-                1: self.hStyles["hidden"],
-                2: self.hStyles["strike"],
-                3: self.hStyles["hidden"],
+                1: self._hStyles["hidden"],
+                2: self._hStyles["strike"],
+                3: self._hStyles["hidden"],
             }
         ))
 
         # Alignment Tags
-        self.hRules.append((
+        self._hRules.append((
             r"(^>{1,2}|<{1,2}$)", {
-                1: self.hStyles["hidden"],
+                1: self._hStyles["hidden"],
             }
         ))
 
         # Auto-Replace Tags
-        self.hRules.append((
+        self._hRules.append((
             r"<(\S+?)>", {
-                0: self.hStyles["replace"],
+                0: self._hStyles["replace"],
             }
         ))
 
         # Build a QRegExp for each highlight pattern
         self.rxRules = []
-        for regEx, regRules in self.hRules:
+        for regEx, regRules in self._hRules:
             hReg = QRegularExpression(regEx)
             hReg.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
             self.rxRules.append((hReg, regRules))
@@ -223,68 +231,65 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         # Include additional characters that the highlighter should
         # consider to be word separators
         uCode = nwUnicode.U_ENDASH + nwUnicode.U_EMDASH
-        self.spellRx = QRegularExpression(r"\b[^\s\-\+\/" + uCode + r"]+\b")
-        self.spellRx.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
+        self._spellRx = QRegularExpression(r"\b[^\s\-\+\/" + uCode + r"]+\b")
+        self._spellRx.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
 
-        return True
+        return
 
     ##
     #  Setters
     ##
 
-    def setSpellCheck(self, theMode):
-        """Enable/disable the real time spell checker.
-        """
-        self.spellCheck = theMode
-        return True
+    def setSpellCheck(self, state: bool) -> None:
+        """Enable/disable the real time spell checker."""
+        self._spellCheck = state
+        return
 
-    def setHandle(self, theHandle):
-        """Set the handle of the currently highlighted document. This is
-        needed for the index lookup for validating tags and references.
-        """
-        self.theHandle = theHandle
-        return True
+    def setHandle(self, tHandle: str) -> None:
+        """Set the handle of the currently highlighted document."""
+        self._tHandle = tHandle
+        return
 
     ##
     #  Methods
     ##
 
-    def rehighlightByType(self, theType):
+    def rehighlightByType(self, cType: int) -> None:
         """Loop through all blocks and re-highlight those of a given
         content type.
         """
         qDoc = self.document()
         nBlocks = qDoc.blockCount()
-        bfTime = time()
+        tStart = time()
         for i in range(nBlocks):
             theBlock = qDoc.findBlockByNumber(i)
-            if theBlock.userState() & theType > 0:
+            if theBlock.userState() & cType > 0:
                 self.rehighlightBlock(theBlock)
-        afTime = time()
-        logger.debug(
-            "Document highlighted in %.3f ms" % (1000*(afTime-bfTime))
-        )
+        logger.debug("Document highlighted in %.3f ms" % (1000*(time() - tStart)))
         return
 
     ##
     #  Highlight Block
     ##
 
-    def highlightBlock(self, theText):
+    def highlightBlock(self, text: str) -> None:
         """Highlight a single block. Prefer to check first character for
         all formats that are defined by their initial characters. This
         is significantly faster than running the regex checks used for
         text paragraphs.
         """
         self.setCurrentBlockState(self.BLOCK_NONE)
-        if self.theHandle is None or not theText:
+        if self._tHandle is None or not text:
             return
 
-        if theText.startswith("@"):  # Keywords and commands
+        if text.startswith("@"):  # Keywords and commands
             self.setCurrentBlockState(self.BLOCK_META)
             pIndex = SHARED.project.index
-            tItem = SHARED.project.tree[self.theHandle]
-            isValid, theBits, thePos = pIndex.scanThis(theText)
+            tItem = SHARED.project.tree[self._tHandle]
+            if tItem is None:
+                return
+
+            isValid, theBits, thePos = pIndex.scanThis(text)
             isGood = pIndex.checkThese(theBits, tItem)
             if isValid:
                 for n, theBit in enumerate(theBits):
@@ -292,12 +297,12 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                     xLen = len(theBit)
                     if isGood[n]:
                         if n == 0:
-                            self.setFormat(xPos, xLen, self.hStyles["keyword"])
+                            self.setFormat(xPos, xLen, self._hStyles["keyword"])
                         else:
-                            self.setFormat(xPos, xLen, self.hStyles["value"])
+                            self.setFormat(xPos, xLen, self._hStyles["value"])
                     else:
                         kwFmt = self.format(xPos)
-                        kwFmt.setUnderlineColor(self.colError)
+                        kwFmt.setUnderlineColor(self._colError)
                         kwFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
                         self.setFormat(xPos, xLen, kwFmt)
 
@@ -305,69 +310,67 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             # so we force a return here
             return
 
-        elif theText.startswith(("# ", "#! ", "## ", "##! ", "### ", "#### ")):
+        elif text.startswith(("# ", "#! ", "## ", "##! ", "### ", "#### ")):
             self.setCurrentBlockState(self.BLOCK_TITLE)
 
-            if theText.startswith("# "):  # Header 1
-                self.setFormat(0, 1, self.hStyles["header1h"])
-                self.setFormat(1, len(theText), self.hStyles["header1"])
+            if text.startswith("# "):  # Header 1
+                self.setFormat(0, 1, self._hStyles["header1h"])
+                self.setFormat(1, len(text), self._hStyles["header1"])
 
-            elif theText.startswith("## "):  # Header 2
-                self.setFormat(0, 2, self.hStyles["header2h"])
-                self.setFormat(2, len(theText), self.hStyles["header2"])
+            elif text.startswith("## "):  # Header 2
+                self.setFormat(0, 2, self._hStyles["header2h"])
+                self.setFormat(2, len(text), self._hStyles["header2"])
 
-            elif theText.startswith("### "):  # Header 3
-                self.setFormat(0, 3, self.hStyles["header3h"])
-                self.setFormat(3, len(theText), self.hStyles["header3"])
+            elif text.startswith("### "):  # Header 3
+                self.setFormat(0, 3, self._hStyles["header3h"])
+                self.setFormat(3, len(text), self._hStyles["header3"])
 
-            elif theText.startswith("#### "):  # Header 4
-                self.setFormat(0, 4, self.hStyles["header4h"])
-                self.setFormat(4, len(theText), self.hStyles["header4"])
+            elif text.startswith("#### "):  # Header 4
+                self.setFormat(0, 4, self._hStyles["header4h"])
+                self.setFormat(4, len(text), self._hStyles["header4"])
 
-            if theText.startswith("#! "):  # Title
-                self.setFormat(0, 2, self.hStyles["header1h"])
-                self.setFormat(2, len(theText), self.hStyles["header1"])
+            if text.startswith("#! "):  # Title
+                self.setFormat(0, 2, self._hStyles["header1h"])
+                self.setFormat(2, len(text), self._hStyles["header1"])
 
-            elif theText.startswith("##! "):  # Unnumbered
-                self.setFormat(0, 3, self.hStyles["header2h"])
-                self.setFormat(3, len(theText), self.hStyles["header2"])
+            elif text.startswith("##! "):  # Unnumbered
+                self.setFormat(0, 3, self._hStyles["header2h"])
+                self.setFormat(3, len(text), self._hStyles["header2"])
 
-        elif theText.startswith("%"):  # Comments
+        elif text.startswith("%"):  # Comments
             self.setCurrentBlockState(self.BLOCK_TEXT)
-            toCheck = theText[1:].lstrip()
+            toCheck = text[1:].lstrip()
             synTag  = toCheck[:9].lower()
-            tLen = len(theText)
+            tLen = len(text)
             cLen = len(toCheck)
             cOff = tLen - cLen
             if synTag == "synopsis:":
-                self.setFormat(0, cOff+9, self.hStyles["modifier"])
-                self.setFormat(cOff+9, tLen, self.hStyles["hidden"])
+                self.setFormat(0, cOff+9, self._hStyles["modifier"])
+                self.setFormat(cOff+9, tLen, self._hStyles["hidden"])
             else:
-                self.setFormat(0, tLen, self.hStyles["hidden"])
+                self.setFormat(0, tLen, self._hStyles["hidden"])
 
         else:  # Text Paragraph
 
-            if theText.startswith("["):  # Special Command
-                sText = theText.rstrip()
+            if text.startswith("["):  # Special Command
+                sText = text.rstrip()
                 if sText in ("[NEWPAGE]", "[NEW PAGE]", "[VSPACE]"):
-                    self.setFormat(0, len(theText), self.hStyles["keyword"])
+                    self.setFormat(0, len(text), self._hStyles["keyword"])
                     return
 
                 elif sText.startswith("[VSPACE:") and sText.endswith("]"):
                     tLen = len(sText)
                     tVal = checkInt(sText[8:-1], 0)
-                    self.setFormat(0, 8, self.hStyles["keyword"])
-                    if tVal > 0:
-                        self.setFormat(8, tLen-9, self.hStyles["codevalue"])
-                    else:
-                        self.setFormat(8, tLen-9, self.hStyles["codeinval"])
-                    self.setFormat(tLen-1, tLen, self.hStyles["keyword"])
+                    cVal = "codevalue" if tVal > 0 else "codeinval"
+                    self.setFormat(0, 8, self._hStyles["keyword"])
+                    self.setFormat(8, tLen-9, self._hStyles[cVal])
+                    self.setFormat(tLen-1, tLen, self._hStyles["keyword"])
                     return
 
             # Regular text
             self.setCurrentBlockState(self.BLOCK_TEXT)
             for rX, xFmt in self.rxRules:
-                rxItt = rX.globalMatch(theText, 0)
+                rxItt = rX.globalMatch(text, 0)
                 while rxItt.hasNext():
                     rxMatch = rxItt.next()
                     for xM in xFmt:
@@ -375,14 +378,14 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                         xLen = rxMatch.capturedLength(xM)
                         for x in range(xPos, xPos+xLen):
                             spFmt = self.format(x)
-                            if spFmt != self.hStyles["hidden"]:
+                            if spFmt != self._hStyles["hidden"]:
                                 spFmt.merge(xFmt[xM])
                                 self.setFormat(x, 1, spFmt)
 
-        if not self.spellCheck:
+        if not self._spellCheck:
             return
 
-        rxSpell = self.spellRx.globalMatch(theText.replace("_", " "), 0)
+        rxSpell = self._spellRx.globalMatch(text.replace("_", " "), 0)
         while rxSpell.hasNext():
             rxMatch = rxSpell.next()
             if not SHARED.spelling.checkWord(rxMatch.captured(0)):
@@ -392,7 +395,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 xLen = rxMatch.capturedLength(0)
                 for x in range(xPos, xPos+xLen):
                     spFmt = self.format(x)
-                    spFmt.setUnderlineColor(self.colSpell)
+                    spFmt.setUnderlineColor(self._colSpell)
                     spFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
                     self.setFormat(x, 1, spFmt)
 
@@ -402,33 +405,35 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     #  Internal Functions
     ##
 
-    def _makeFormat(self, fmtCol=None, fmtStyle=None, fmtSize=None):
+    def _makeFormat(self, color: QColor | None = None, style: str | None = None,
+                    size: float | None = None) -> QTextCharFormat:
         """Generate a valid character format to be applied to the text
         that is to be highlighted.
         """
-        theFormat = QTextCharFormat()
+        charFormat = QTextCharFormat()
 
-        if fmtCol is not None:
-            theFormat.setForeground(fmtCol)
+        if color is not None:
+            charFormat.setForeground(color)
 
-        if fmtStyle is not None:
-            if "bold" in fmtStyle:
-                theFormat.setFontWeight(QFont.Bold)
-            if "italic" in fmtStyle:
-                theFormat.setFontItalic(True)
-            if "strike" in fmtStyle:
-                theFormat.setFontStrikeOut(True)
-            if "errline" in fmtStyle:
-                theFormat.setUnderlineColor(self.colError)
-                theFormat.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
-            if "underline" in fmtStyle:
-                theFormat.setFontUnderline(True)
-            if "background" in fmtStyle:
-                theFormat.setBackground(QBrush(fmtCol, Qt.SolidPattern))
+        if style is not None:
+            styles = style.split(",")
+            if "bold" in styles:
+                charFormat.setFontWeight(QFont.Bold)
+            if "italic" in styles:
+                charFormat.setFontItalic(True)
+            if "strike" in styles:
+                charFormat.setFontStrikeOut(True)
+            if "errline" in styles:
+                charFormat.setUnderlineColor(self._colError)
+                charFormat.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
+            if "underline" in styles:
+                charFormat.setFontUnderline(True)
+            if "background" in styles and color is not None:
+                charFormat.setBackground(QBrush(color, Qt.SolidPattern))
 
-        if fmtSize is not None:
-            theFormat.setFontPointSize(int(round(fmtSize*CONFIG.textSize)))
+        if size is not None:
+            charFormat.setFontPointSize(int(round(size*CONFIG.textSize)))
 
-        return theFormat
+        return charFormat
 
 # END Class DocHighlighter

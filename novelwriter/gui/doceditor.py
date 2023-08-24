@@ -397,7 +397,7 @@ class GuiDocEditor(QTextEdit):
         self._checkDocSize(docSize)
         spTemp = self.highLight.spellCheck
         if self._bigDoc:
-            self.highLight.spellCheck = False
+            self.highLight.setSpellCheck(False)
 
         bfTime = time()
         self._allowAutoReplace(False)
@@ -418,7 +418,7 @@ class GuiDocEditor(QTextEdit):
         self.docHeader.setTitleFromHandle(self._docHandle)
         self.docFooter.setHandle(self._docHandle)
         self.updateDocMargins()
-        self.highLight.spellCheck = spTemp
+        self.highLight.setSpellCheck(spTemp)
 
         if tLine is None and self._nwItem is not None:
             # For large documents, we queue the repositioning until the
