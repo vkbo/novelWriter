@@ -30,7 +30,7 @@ from PyQt5.QtWidgets import (
     QDialogButtonBox, QDialog, QAction, QFileDialog, QFontDialog
 )
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.dialogs.preferences import GuiPreferences
 
@@ -42,7 +42,7 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
     """Test the preferences dialog."""
     monkeypatch.setattr(GuiPreferences, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiPreferences, "result", lambda *a: QDialog.Accepted)
-    monkeypatch.setattr(nwGUI.docEditor.spEnchant, "listDictionaries", lambda: [("en", "none")])
+    monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: [("en", "none")])
 
     with monkeypatch.context() as mp:
         mp.setattr(GuiPreferences, "updateTheme", lambda *a: True)

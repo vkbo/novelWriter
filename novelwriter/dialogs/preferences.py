@@ -49,8 +49,6 @@ class GuiPreferences(NPagedDialog):
         logger.debug("Create: GuiPreferences")
         self.setObjectName("GuiPreferences")
 
-        self.mainGui = mainGui
-
         self.setWindowTitle(self.tr("Preferences"))
 
         self.tabGeneral  = GuiPreferencesGeneral(self)
@@ -645,8 +643,6 @@ class GuiPreferencesEditor(QWidget):
     def __init__(self, prefsGui):
         super().__init__(parent=prefsGui)
 
-        self.mainGui = prefsGui.mainGui
-
         # The Form
         self.mainForm = NConfigLayout()
         self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
@@ -662,7 +658,7 @@ class GuiPreferencesEditor(QWidget):
         self.spellLanguage = QComboBox(self)
         self.spellLanguage.setMaximumWidth(mW)
 
-        langAvail = self.mainGui.docEditor.spEnchant.listDictionaries()
+        langAvail = SHARED.spelling.listDictionaries()
         if CONFIG.hasEnchant and langAvail:
             for spTag, spProv in langAvail:
                 qLocal = QLocale(spTag)

@@ -29,7 +29,7 @@ from time import time
 
 from PyQt5.QtCore import Qt, QRegularExpression
 from PyQt5.QtGui import (
-    QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush
+    QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush, QTextDocument
 )
 
 from novelwriter import CONFIG, SHARED
@@ -46,13 +46,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     BLOCK_META  = 2
     BLOCK_TITLE = 4
 
-    def __init__(self, theDoc, spEnchant):
-        super().__init__(theDoc)
+    def __init__(self, document: QTextDocument) -> None:
+        super().__init__(document)
 
         logger.debug("Create: GuiDocHighlighter")
 
-        self.theDoc     = theDoc
-        self.spEnchant  = spEnchant
         self.theHandle  = None
         self.spellCheck = False
         self.spellRx    = None
@@ -387,7 +385,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         rxSpell = self.spellRx.globalMatch(theText.replace("_", " "), 0)
         while rxSpell.hasNext():
             rxMatch = rxSpell.next()
-            if not self.spEnchant.checkWord(rxMatch.captured(0)):
+            if not SHARED.spelling.checkWord(rxMatch.captured(0)):
                 if rxMatch.captured(0).isupper() or rxMatch.captured(0).isnumeric():
                     continue
                 xPos = rxMatch.capturedStart(0)

@@ -54,7 +54,6 @@ from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemClass
 from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
 from novelwriter.core.index import countWords
-from novelwriter.core.spellcheck import NWSpellEnchant
 from novelwriter.gui.dochighlight import GuiDocHighlighter
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -133,8 +132,7 @@ class GuiDocEditor(QTextEdit):
         self.docSearch = GuiDocEditSearch(self)
 
         # Syntax
-        self.spEnchant = NWSpellEnchant(SHARED.project)
-        self.highLight = GuiDocHighlighter(qDoc, self.spEnchant)
+        self.highLight = GuiDocHighlighter(qDoc)
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -702,8 +700,8 @@ class GuiDocEditor(QTextEdit):
         else:
             theLang = SHARED.project.data.spellLang
 
-        self.spEnchant.setLanguage(theLang)
-        _, theProvider = self.spEnchant.describeDict()
+        SHARED.spelling.setLanguage(theLang)
+        _, theProvider = SHARED.spelling.describeDict()
 
         self.spellDictionaryChanged.emit(str(theLang), str(theProvider))
         if not self._bigDoc:
@@ -711,37 +709,37 @@ class GuiDocEditor(QTextEdit):
 
         return True
 
-    def toggleSpellCheck(self, theMode):
+    def toggleSpellCheck(self, state: bool) -> None:
         """This is the main spell check setting function, and this one
         should call all other setSpellCheck functions in other classes.
         If the spell check mode (theMode) is not defined (None), then
         toggle the current status saved in this class.
         """
-        if theMode is None:
-            theMode = not self._spellCheck
+        if state is None:
+            state = not self._spellCheck
 
         if not CONFIG.hasEnchant:
-            if theMode:
+            if state:
                 SHARED.info(self.tr(
                     "Spell checking requires the package PyEnchant. "
                     "It does not appear to be installed."
                 ))
-            theMode = False
+            state = False
 
-        if self.spEnchant.spellLanguage is None:
-            theMode = False
+        if SHARED.spelling.spellLanguage is None:
+            state = False
 
-        self._spellCheck = theMode
-        self.mainGui.mainMenu.setSpellCheck(theMode)
-        SHARED.project.data.setSpellCheck(theMode)
-        self.highLight.setSpellCheck(theMode)
-        if not self._bigDoc or theMode is False:
+        self._spellCheck = state
+        self.mainGui.mainMenu.setSpellCheck(state)
+        SHARED.project.data.setSpellCheck(state)
+        self.highLight.setSpellCheck(state)
+        if not self._bigDoc or state is False:
             # We don't run the spell checker automatically on big docs
             self.spellCheckDocument()
 
-        logger.debug("Spell check is set to '%s'", str(theMode))
+        logger.debug("Spell check is set to '%s'", str(state))
 
-        return True
+        return
 
     def spellCheckDocument(self) -> None:
         """Rerun the highlighter to update spell checking status of the
@@ -1193,14 +1191,14 @@ class GuiDocEditor(QTextEdit):
 
         if spellCheck:
             logger.debug("Looking up '%s' in the dictionary", theWord)
-            spellCheck &= not self.spEnchant.checkWord(theWord)
+            spellCheck &= not SHARED.spelling.checkWord(theWord)
 
         if spellCheck:
             mnuContext.addSeparator()
             mnuHead = QAction(self.tr("Spelling Suggestion(s)"), mnuContext)
             mnuContext.addAction(mnuHead)
 
-            theSuggest = self.spEnchant.suggestWords(theWord)[:15]
+            theSuggest = SHARED.spelling.suggestWords(theWord)[:15]
             if len(theSuggest) > 0:
                 for aWord in theSuggest:
                     mnuWord = QAction("%s %s" % (nwUnicode.U_ENDASH, aWord), mnuContext)
@@ -1245,7 +1243,7 @@ class GuiDocEditor(QTextEdit):
         """
         theWord = theCursor.selectedText().strip().strip(self._nonWord)
         logger.debug("Added '%s' to project dictionary", theWord)
-        self.spEnchant.addWord(theWord)
+        SHARED.spelling.addWord(theWord)
         self.highLight.rehighlightBlock(theCursor.block())
         return
 

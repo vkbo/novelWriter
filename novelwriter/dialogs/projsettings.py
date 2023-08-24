@@ -199,8 +199,6 @@ class GuiProjectEditMain(QWidget):
     def __init__(self, projGui):
         super().__init__(parent=projGui)
 
-        self.mainGui = projGui.mainGui
-
         # The Form
         self.mainForm = NConfigLayout()
         self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
@@ -244,7 +242,7 @@ class GuiProjectEditMain(QWidget):
         self.spellLang = QComboBox(self)
         self.spellLang.setMaximumWidth(xW)
         self.spellLang.addItem(self.tr("Default"), "None")
-        langAvail = self.mainGui.docEditor.spEnchant.listDictionaries()
+        langAvail = SHARED.spelling.listDictionaries()
         for spTag, spProv in langAvail:
             qLocal = QLocale(spTag)
             spLang = qLocal.nativeLanguageName().title()

@@ -32,6 +32,8 @@ from pathlib import Path
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QMessageBox, QWidget
 
+from novelwriter.core.spellcheck import NWSpellEnchant
+
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
     from novelwriter.gui.theme import GuiTheme
@@ -43,18 +45,20 @@ logger = logging.getLogger(__name__)
 class SharedData(QObject):
 
     __slots__ = (
-        "_gui", "_theme", "_project", "_lockedBy", "_alert",
+        "_gui", "_theme", "_project", "_spelling", "_lockedBy", "_alert",
         "_idleTime", "_idleRefTime",
     )
 
     projectStatusChanged = pyqtSignal(bool)
     projectStatusMessage = pyqtSignal(str)
+    spellLanguageChanged = pyqtSignal(str, str)
 
     def __init__(self) -> None:
         super().__init__()
         self._gui = None
         self._theme = None
         self._project = None
+        self._spelling = None
         self._lockedBy = None
         self._alert = None
         self._idleTime = 0.0
@@ -81,6 +85,13 @@ class SharedData(QObject):
         if self._project is None:
             raise Exception("SharedData class not fully initialised")
         return self._project
+
+    @property
+    def spelling(self) -> NWSpellEnchant:
+        """Return the active NWProject instance."""
+        if self._spelling is None:
+            raise Exception("SharedData class not fully initialised")
+        return self._spelling
 
     @property
     def hasProject(self) -> bool:
@@ -130,6 +141,7 @@ class SharedData(QObject):
             self._lockedBy = self.project.lockStatus
             self._resetProject()
 
+        self.spelling.loadUserWordList()
         self._resetIdleTimer()
 
         return status
@@ -220,11 +232,13 @@ class SharedData(QObject):
     ##
 
     def _resetProject(self) -> None:
-        """Create a new project instance."""
+        """Create a new project and spell checking instance."""
         from novelwriter.core.project import NWProject
         if isinstance(self._project, NWProject):
             del self._project
+            del self._spelling
         self._project = NWProject()
+        self._spelling = NWSpellEnchant(self._project)
         return
 
     def _resetIdleTimer(self) -> None:
