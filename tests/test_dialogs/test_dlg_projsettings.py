@@ -43,7 +43,6 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
     # Block the GUI blocking thread
     monkeypatch.setattr(GuiProjectSettings, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiProjectSettings, "result", lambda *a: QDialog.Accepted)
-    monkeypatch.setattr(GuiProjectSettings, "spellChanged", lambda *a: True)
 
     # Check that we cannot open when there is no project
     nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
@@ -129,7 +128,6 @@ def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockR
     assert tabMain.editName.text() == "Project Name"
     assert tabMain.editTitle.text() == "Project Title"
     assert tabMain.editAuthor.text() == "Jane Doe"
-    assert projSettings.spellChanged is False
 
     projSettings._doSave()
     assert theProject.data.name == "Project Name"

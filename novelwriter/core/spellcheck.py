@@ -97,6 +97,7 @@ class NWSpellEnchant:
         if self._enchant is None:
             self._enchant = FakeEnchant()
         else:
+            self._userDict.load()
             for word in self._userDict:
                 self._enchant.add_to_session(word)
 
@@ -135,11 +136,6 @@ class NWSpellEnchant:
             self._userDict.save()
 
         return added
-
-    def loadUserWordList(self) -> None:
-        """Load the user word list from the project."""
-        self._userDict.load()
-        return
 
     def listDictionaries(self) -> list[tuple[str, str]]:
         """Wrapper function for pyenchant."""

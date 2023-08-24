@@ -65,6 +65,10 @@ class SharedData(QObject):
         self._idleRefTime = time()
         return
 
+    ##
+    #  Properties
+    ##
+
     @property
     def mainGui(self) -> GuiMain:
         """Return the Main GUI instance."""
@@ -141,7 +145,7 @@ class SharedData(QObject):
             self._lockedBy = self.project.lockStatus
             self._resetProject()
 
-        self.spelling.loadUserWordList()
+        self.updateSpellCheckLanguage(reload=True)
         self._resetIdleTimer()
 
         return status
@@ -158,6 +162,16 @@ class SharedData(QObject):
         self.project.closeProject(self._idleTime)
         self._resetProject()
         self._resetIdleTimer()
+        return
+
+    def updateSpellCheckLanguage(self, reload: bool = False) -> None:
+        """Update the active spell check langauge from settings."""
+        from novelwriter import CONFIG
+        language = self.project.data.spellLang or CONFIG.spellLanguage
+        if language != self.spelling.spellLanguage or reload:
+            self.spelling.setLanguage(language)
+            _, provider = self.spelling.describeDict()
+            self.spellLanguageChanged.emit(language, provider)
         return
 
     def updateIdleTime(self, currTime: float, userIdle: bool) -> None:
@@ -239,6 +253,7 @@ class SharedData(QObject):
             del self._spelling
         self._project = NWProject()
         self._spelling = NWSpellEnchant(self._project)
+        self.updateSpellCheckLanguage()
         return
 
     def _resetIdleTimer(self) -> None:

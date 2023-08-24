@@ -89,9 +89,6 @@ class GuiProjectSettings(NPagedDialog):
         self.buttonBox.rejected.connect(self._doClose)
         self.addControls(self.buttonBox)
 
-        # Flags
-        self._spellChanged = False
-
         # Focus Tab
         self._focusTab(focusTab)
 
@@ -102,10 +99,6 @@ class GuiProjectSettings(NPagedDialog):
     def __del__(self):  # pragma: no cover
         logger.debug("Delete: GuiProjectSettings")
         return
-
-    @property
-    def spellChanged(self):
-        return self._spellChanged
 
     ##
     #  Slots
@@ -125,9 +118,7 @@ class GuiProjectSettings(NPagedDialog):
         project.data.setTitle(bookTitle)
         project.data.setAuthor(bookAuthor)
         project.data.setDoBackup(doBackup)
-
-        # Remember this as updating spell dictionary can be expensive
-        self._spellChanged = project.data.setSpellLang(spellLang)
+        project.data.setSpellLang(spellLang)
 
         if self.tabStatus.colChanged:
             newList, delList = self.tabStatus.getNewList()

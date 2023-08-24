@@ -73,7 +73,6 @@ class GuiDocEditor(QTextEdit):
     statusMessage = pyqtSignal(str)
     docCountsChanged = pyqtSignal(str, int, int, int)
     editedStatusChanged = pyqtSignal(bool)
-    spellDictionaryChanged = pyqtSignal(str, str)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
     novelStructureChanged = pyqtSignal()
     novelItemMetaChanged = pyqtSignal(str)
@@ -301,7 +300,7 @@ class GuiDocEditor(QTextEdit):
         self._typPadAfter = CONFIG.fmtPadAfter
 
         # Reload spell check and dictionaries
-        self.setDictionaries()
+        SHARED.updateSpellCheckLanguage()
 
         # Set font
         textFont = QFont()
@@ -690,24 +689,6 @@ class GuiDocEditor(QTextEdit):
     ##
     #  Spell Checking
     ##
-
-    def setDictionaries(self):
-        """Set the spell checker dictionary language, and emit the
-        dictionary changed signal.
-        """
-        if SHARED.project.data.spellLang is None:
-            theLang = CONFIG.spellLanguage
-        else:
-            theLang = SHARED.project.data.spellLang
-
-        SHARED.spelling.setLanguage(theLang)
-        _, theProvider = SHARED.spelling.describeDict()
-
-        self.spellDictionaryChanged.emit(str(theLang), str(theProvider))
-        if not self._bigDoc:
-            self.spellCheckDocument()
-
-        return True
 
     def toggleSpellCheck(self, state: bool) -> None:
         """This is the main spell check setting function, and this one

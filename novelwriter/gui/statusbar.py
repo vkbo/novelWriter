@@ -121,7 +121,7 @@ class GuiMainStatus(QStatusBar):
     def clearStatus(self) -> None:
         """Reset all widgets on the status bar to default values."""
         self.setRefTime(-1.0)
-        self.setLanguage(None, "")
+        self.setLanguage(*SHARED.spelling.describeDict())
         self.setProjectStats(0, 0)
         self.setProjectStatus(StatusLED.S_NONE)
         self.setDocumentStatus(StatusLED.S_NONE)
