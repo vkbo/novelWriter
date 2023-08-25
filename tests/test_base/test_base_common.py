@@ -21,7 +21,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import time
 import pytest
-import hashlib
 
 from pathlib import Path
 from xml.etree import ElementTree as ET
@@ -35,8 +34,8 @@ from novelwriter.common import (
     checkString, checkStringNone, checkUuid, formatInt, formatTime,
     formatTimeStamp, fuzzyTime, getGuiItem, hexToInt, isHandle, isItemClass,
     isItemLayout, isItemType, isTitleTag, jsonEncode, makeFileNameSafe, minmax,
-    numberToRoman, NWConfigParser, readTextFile, sha256sum, simplified,
-    transferCase, xmlIndent, yesNo
+    numberToRoman, NWConfigParser, readTextFile, simplified, transferCase,
+    xmlIndent, yesNo
 )
 
 
@@ -620,45 +619,6 @@ def testBaseCommon_makeFileNameSafe():
     assert makeFileNameSafe("Stuff œﬁ2⁵") == "Stuff œfi25"
 
 # END Test testBaseCommon_makeFileNameSafe
-
-
-@pytest.mark.base
-def testBaseCommon_sha256sum(monkeypatch, fncPath, ipsumText):
-    """Test the sha256sum function."""
-    longText = 50*(" ".join(ipsumText) + " ")
-    shortText = "This is a short file"
-    noneText = ""
-
-    assert len(longText) == 175650
-
-    longFile  = fncPath / "long_file.txt"
-    shortFile = fncPath / "short_file.txt"
-    noneFile  = fncPath / "none_file.txt"
-
-    writeFile(longFile, longText)
-    writeFile(shortFile, shortText)
-    writeFile(noneFile, noneText)
-
-    # Taken with sha256sum command on command line
-    longHash = "9b22aee35660da4fae204acbe96aec7f563022746ca2b7a3831f5e44544765eb"
-    shortHash = "6d7c9b2722364c471b8a8666bcb35d18500272d05b23b3427288e2e34c6618f0"
-    noneHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-
-    assert sha256sum(longFile) == longHash
-    assert sha256sum(shortFile) == shortHash
-    assert sha256sum(noneFile) == noneHash
-
-    assert hashlib.sha256(longText.encode("utf-8")).hexdigest() == longHash
-    assert hashlib.sha256(shortText.encode("utf-8")).hexdigest() == shortHash
-    assert hashlib.sha256(noneText.encode("utf-8")).hexdigest() == noneHash
-
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        assert sha256sum(longFile) is None
-        assert sha256sum(shortFile) is None
-        assert sha256sum(noneFile) is None
-
-# END Test testBaseCommon_sha256sum
 
 
 @pytest.mark.base

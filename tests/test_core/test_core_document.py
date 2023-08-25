@@ -114,7 +114,7 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
     assert theDoc.writeDocument(theText, forceWrite=True) is True
 
     # Force no meta data
-    theDoc._theItem = None
+    theDoc._item = None
     assert theDoc.writeDocument(theText) is True
     assert readFile(docPath) == theText
 
@@ -137,7 +137,7 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
     assert theDoc.getError() == ""
 
     # Saving with no handle
-    theDoc._docHandle = None
+    theDoc._handle = None
     assert theDoc.writeDocument(theText) is False
 
     # Delete Document
