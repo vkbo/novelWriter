@@ -183,8 +183,7 @@ class NWDocument:
         # Re-read the document on disk to check if it has changed
         prevHash = self._lastHash
         self.readDocument()
-        print(f"'{self._lastHash}', '{prevHash}'")
-        if self._lastHash != prevHash and not forceWrite:
+        if prevHash and self._lastHash != prevHash and not forceWrite:
             logger.error("File has been altered on disk since opened")
             self._hashError = True
             return False
