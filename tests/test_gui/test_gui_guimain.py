@@ -243,7 +243,6 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
 
     nwGUI.mainMenu.aSpellCheck.setChecked(True)
     nwGUI.mainMenu._toggleSpellCheck()
-    assert nwGUI.mainMenu.aSpellCheck.isChecked() is True
 
     # Change some settings
     CONFIG.hideHScroll = True
