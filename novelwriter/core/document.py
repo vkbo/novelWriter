@@ -59,8 +59,7 @@ class NWDocument:
         self._fileLoc   = None   # The file location of the currently open item
         self._docMeta   = {}     # The meta data of the currently open item
         self._docError  = ""     # The latest encountered IO error
-        self._readHash  = ""     # The SHA hash on last read
-        self._writeHash = ""     # The SHA hash on last write
+        self._lastHash  = ""     # The last known SHA hash
         self._hashError = False  # Hash mismatch on last write attempt
 
         if isHandle(tHandle):
@@ -130,6 +129,7 @@ class NWDocument:
 
         text = ""
         self._docMeta = {}
+        self._lastHash = ""
 
         if docPath.exists():
             try:
@@ -152,11 +152,10 @@ class NWDocument:
 
         else:
             # The document file does not exist, so we assume it's a new
-            # document and initialise an empty text string.
+            # document and return an empty text string.
             logger.debug("The requested document does not exist")
-            return ""
 
-        self._readHash = hashlib.sha1(text.encode()).hexdigest()
+        self._lastHash = hashlib.sha1(text.encode()).hexdigest()
 
         return text
 
@@ -182,19 +181,23 @@ class NWDocument:
         docTemp = docPath.with_suffix(".tmp")
 
         # Re-read the document on disk to check if it has changed
+        prevHash = self._lastHash
         self.readDocument()
-        if self._writeHash and self._writeHash != self._readHash and not forceWrite:
+        print(f"'{self._lastHash}', '{prevHash}'")
+        if self._lastHash != prevHash and not forceWrite:
             logger.error("File has been altered on disk since opened")
             self._hashError = True
             return False
 
+        currTime = formatTimeStamp(time())
         writeHash = hashlib.sha1(text.encode()).hexdigest()
         createdDate = self._docMeta.get("created", "Unknown")
         updatedDate = self._docMeta.get("updated", "Unknown")
-        if writeHash != self._writeHash:
-            updatedDate = formatTimeStamp(time())
+        if writeHash != self._lastHash:
+            updatedDate = currTime
         if not docPath.is_file():
-            createdDate = updatedDate
+            createdDate = currTime
+            updatedDate = currTime
 
         # DocMeta Line
         if self._item is None:
@@ -224,7 +227,7 @@ class NWDocument:
             self._docError = formatException(exc)
             return False
 
-        self._writeHash = writeHash
+        self._lastHash = writeHash
         self._hashError = False
 
         return True
