@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0.7" hexVersion="0x020007f0" fileVersion="1.5" fileRevision="1" timeStamp="2023-06-03 18:18:14">
-  <project id="5ac0df12-8b8b-476b-9905-21d33685687c" saveCount="42" autoCount="24" editTime="1913">
+<novelWriterXML appVersion="2.1-beta1" hexVersion="0x020100b1" fileVersion="1.5" fileRevision="1" timeStamp="2023-08-25 18:03:37">
+  <project id="5ac0df12-8b8b-476b-9905-21d33685687c" saveCount="43" autoCount="24" editTime="1935">
     <name>Lorem Ipsum</name>
     <title>Lorem Ipsum</title>
     <author>lipsum.com</author>

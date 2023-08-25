@@ -23,11 +23,14 @@ from __future__ import annotations
 import shutil
 
 from pathlib import Path
+from datetime import datetime
 
 from PyQt5.QtWidgets import qApp
 
 XML_IGNORE = ("<novelWriterXML", "<project")
 ODT_IGNORE = ("<meta:generator", "<meta:creation-date", "<dc:date", "<meta:editing")
+NWD_IGNORE = ("%%~date:",)
+MOCK_TIME = datetime(2019, 5, 10, 18, 52, 0).timestamp()
 
 
 class C:
@@ -62,8 +65,7 @@ def cmpFiles(
     ignoreLines: list | None = None,
     ignoreStart: tuple | None = None
 ) -> bool:
-    """Compare two files, but optionally ignore lines given by a list.
-    """
+    """Compare two files, with optional line ignore."""
     if ignoreLines is None:
         ignoreLines = []
 

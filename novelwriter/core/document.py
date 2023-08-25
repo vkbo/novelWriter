@@ -29,11 +29,11 @@ import logging
 from time import time
 from typing import TYPE_CHECKING
 from pathlib import Path
-from novelwriter.core.item import NWItem
 
 from novelwriter.enum import nwItemLayout, nwItemClass
 from novelwriter.error import formatException
 from novelwriter.common import formatTimeStamp, isHandle
+from novelwriter.core.item import NWItem
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.project import NWProject
@@ -199,9 +199,8 @@ class NWDocument:
             updatedDate = currTime
 
         # DocMeta Line
-        if self._item is None:
-            docMeta = ""
-        else:
+        docMeta = ""
+        if self._item:
             docMeta = (
                 f"%%~name: {self._item.itemName}\n"
                 f"%%~path: {self._item.itemParent}/{self._item.itemHandle}\n"
@@ -328,7 +327,7 @@ class NWDocument:
                 self._docMeta["updated"] = metaBits[1].strip()
 
         else:
-            logger.debug("Ignoring meta data: '%s'", metaLine.strip())
+            logger.debug("Unknown meta data: '%s'", metaLine.strip())
 
         return
 

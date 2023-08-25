@@ -21,8 +21,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 
+from tools import C, MOCK_TIME, buildTestProject, readFile, writeFile
 from mocked import causeOSError
-from tools import C, buildTestProject, readFile, writeFile
 
 from novelwriter.enum import nwItemClass, nwItemLayout
 from novelwriter.core.project import NWProject
@@ -32,6 +32,8 @@ from novelwriter.core.document import NWDocument
 @pytest.mark.core
 def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
     """Test loading and saving a document with the NWDocument class."""
+    monkeypatch.setattr("novelwriter.core.document.time", lambda: MOCK_TIME)
+
     theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
@@ -48,7 +50,7 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
     # Non-existent handle
     theDoc = NWDocument(theProject, C.hInvalid)
     assert theDoc.readDocument() is None
-    assert theDoc._currHash is None
+    assert theDoc._lastHash == ""
     assert theDoc.fileExists() is False
 
     # No content path
@@ -90,7 +92,7 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
     # Set handle and save
     theText = "### Test File\n\nText ...\n\n"
     theDoc = NWDocument(theProject, xHandle)
-    assert theDoc.readDocument(xHandle) == ""
+    assert theDoc.readDocument(xHandle) == ""  # type: ignore
     assert theDoc.writeDocument(theText) is True
 
     # Save again to ensure temp file and previous file is handled
@@ -102,6 +104,8 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
         "%%~name: New File\n"
         f"%%~path: {C.hNovelRoot}/{xHandle}\n"
         "%%~kind: NOVEL/DOCUMENT\n"
+        "%%~hash: b288c3ab03181027d9a16d7fd2291262f5de9ac8\n"
+        "%%~date: 2019-05-10 18:52:00/2019-05-10 18:52:00\n"
         "### Test File\n\n"
         "Text ...\n\n"
     )
@@ -170,9 +174,10 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreDocument_Methods(mockGUI, fncPath, mockRnd):
-    """Test other methods of the NWDocument class.
-    """
+def testCoreDocument_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
+    """Test other methods of the NWDocument class."""
+    monkeypatch.setattr("novelwriter.core.document.time", lambda: MOCK_TIME)
+
     theProject = NWProject()
     mockRnd.reset()
     buildTestProject(theProject, fncPath)
@@ -187,7 +192,7 @@ def testCoreDocument_Methods(mockGUI, fncPath, mockRnd):
 
     # Check the item
     assert theDoc.getCurrentItem() is not None
-    assert theDoc.getCurrentItem().itemHandle == C.hSceneDoc
+    assert theDoc.getCurrentItem().itemHandle == C.hSceneDoc  # type: ignore
 
     # Check the meta
     theName, theParent, theClass, theLayout = theDoc.getMeta()
@@ -202,6 +207,8 @@ def testCoreDocument_Methods(mockGUI, fncPath, mockRnd):
         "%%~name: New Scene\n"
         f"%%~path: {C.hChapterDir}/{C.hSceneDoc}\n"
         "%%~kind: NOVEL/DOCUMENT\n"
+        "%%~hash: dd350c602de803554b2a7c17f191ae25dea1df63\n"
+        "%%~date: 2019-05-10 18:52:00/2019-05-10 18:52:00\n"
         "%%~ stuff\n"
         "### Test File\n\n"
         "Text ...\n\n"
