@@ -43,7 +43,6 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
     # Block the GUI blocking thread
     monkeypatch.setattr(GuiProjectSettings, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiProjectSettings, "result", lambda *a: QDialog.Accepted)
-    monkeypatch.setattr(GuiProjectSettings, "spellChanged", lambda *a: True)
 
     # Check that we cannot open when there is no project
     nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
@@ -84,10 +83,8 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
 
 @pytest.mark.gui
 def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
-    """Test the main tab of the project settings dialog.
-    """
-    # Mock components
-    monkeypatch.setattr(nwGUI.docEditor.spEnchant, "listDictionaries", lambda: [("en", "none")])
+    """Test the main tab of the project settings dialog."""
+    monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: [("en", "English [en]")])
 
     # Create new project
     buildTestProject(nwGUI, projPath)
@@ -130,7 +127,6 @@ def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockR
     assert tabMain.editName.text() == "Project Name"
     assert tabMain.editTitle.text() == "Project Title"
     assert tabMain.editAuthor.text() == "Jane Doe"
-    assert projSettings.spellChanged is False
 
     projSettings._doSave()
     assert theProject.data.name == "Project Name"
@@ -150,9 +146,7 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncPath, projPat
     dialog.
     """
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
-
-    # Mock components
-    monkeypatch.setattr(nwGUI.docEditor.spEnchant, "listDictionaries", lambda: [("en", "none")])
+    monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: [("en", "English [en]")])
 
     # Create new project
     mockRnd.reset()
@@ -348,12 +342,9 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncPath, projPat
 
 @pytest.mark.gui
 def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
-    """Test the auto-replace tab of the project settings dialog.
-    """
+    """Test the auto-replace tab of the project settings dialog."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
-
-    # Mock components
-    monkeypatch.setattr(nwGUI.docEditor.spEnchant, "listDictionaries", lambda: [("en", "none")])
+    monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: [("en", "English [en]")])
 
     # Create new project
     mockRnd.reset()

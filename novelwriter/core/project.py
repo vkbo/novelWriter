@@ -31,7 +31,7 @@ from typing import TYPE_CHECKING, Iterator
 from pathlib import Path
 from functools import partial
 
-from PyQt5.QtCore import QCoreApplication, QObject, pyqtSignal
+from PyQt5.QtCore import QCoreApplication
 
 from novelwriter import CONFIG, SHARED, __version__, __hexversion__
 from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
@@ -55,13 +55,9 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-class NWProject(QObject):
+class NWProject:
 
-    statusChanged = pyqtSignal(bool)
-    statusMessage = pyqtSignal(str)
-
-    def __init__(self, parent: QObject | None = None) -> None:
-        super().__init__(parent=parent)
+    def __init__(self) -> None:
 
         # Core Elements
         self._options = OptionState(self)    # Project-specific GUI options
@@ -206,7 +202,7 @@ class NWProject(QObject):
 
     def trashFolder(self) -> str:
         """Add the special trash root folder to the project."""
-        trashHandle = self._tree.trashRoot()
+        trashHandle = self._tree.trashRoot
         if trashHandle is None:
             label = trConst(nwLabels.CLASS_NAME[nwItemClass.TRASH])
             return self._tree.create(label, None, nwItemType.ROOT, nwItemClass.TRASH)
@@ -331,7 +327,7 @@ class NWProject(QObject):
         self.setProjectChanged(False)
         self._valid = True
 
-        self.statusMessage.emit(self.tr("Opened Project: {0}").format(self._data.name))
+        SHARED.newStatusMessage(self.tr("Opened Project: {0}").format(self._data.name))
 
         return True
 
@@ -381,7 +377,7 @@ class NWProject(QObject):
             )
 
         self._storage.writeLockFile()
-        self.statusMessage.emit(self.tr("Saved Project: {0}").format(self._data.name))
+        SHARED.newStatusMessage(self.tr("Saved Project: {0}").format(self._data.name))
         self.setProjectChanged(False)
 
         return True
@@ -403,7 +399,7 @@ class NWProject(QObject):
             return False
 
         logger.info("Backing up project")
-        self.statusMessage.emit(self.tr("Backing up project ..."))
+        SHARED.newStatusMessage(self.tr("Backing up project ..."))
 
         if not self._data.name:
             SHARED.error(self.tr(
@@ -434,7 +430,7 @@ class NWProject(QObject):
             SHARED.error(self.tr("Could not write backup archive."))
             return False
 
-        self.statusMessage.emit(self.tr("Project backed up to '{0}'").format(str(archName)))
+        SHARED.newStatusMessage(self.tr("Project backed up to '{0}'").format(str(archName)))
 
         return True
 
@@ -488,7 +484,7 @@ class NWProject(QObject):
         """
         if isinstance(status, bool):
             self._changed = status
-            self.statusChanged.emit(self._changed)
+            SHARED.setGlobalProjectState(self._changed)
         return self._changed
 
     ##

@@ -26,7 +26,7 @@ from __future__ import annotations
 import logging
 
 from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt, QLocale
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QDialog, QWidget, QComboBox, QSpinBox, QPushButton, QDialogButtonBox,
     QLineEdit, QFileDialog, QFontDialog, QDoubleSpinBox
@@ -48,8 +48,6 @@ class GuiPreferences(NPagedDialog):
 
         logger.debug("Create: GuiPreferences")
         self.setObjectName("GuiPreferences")
-
-        self.mainGui = mainGui
 
         self.setWindowTitle(self.tr("Preferences"))
 
@@ -645,8 +643,6 @@ class GuiPreferencesEditor(QWidget):
     def __init__(self, prefsGui):
         super().__init__(parent=prefsGui)
 
-        self.mainGui = prefsGui.mainGui
-
         # The Form
         self.mainForm = NConfigLayout()
         self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
@@ -662,12 +658,9 @@ class GuiPreferencesEditor(QWidget):
         self.spellLanguage = QComboBox(self)
         self.spellLanguage.setMaximumWidth(mW)
 
-        langAvail = self.mainGui.docEditor.spEnchant.listDictionaries()
-        if CONFIG.hasEnchant and langAvail:
-            for spTag, spProv in langAvail:
-                qLocal = QLocale(spTag)
-                spLang = qLocal.nativeLanguageName().title()
-                self.spellLanguage.addItem("%s [%s]" % (spLang, spProv), spTag)
+        if CONFIG.hasEnchant:
+            for tag, language in SHARED.spelling.listDictionaries():
+                self.spellLanguage.addItem(language, tag)
         else:
             self.spellLanguage.addItem(self.tr("None"), "")
             self.spellLanguage.setEnabled(False)

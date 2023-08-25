@@ -798,7 +798,7 @@ class GuiProjectTree(QTreeWidget):
             logger.error("There is no item to delete")
             return False
 
-        trashHandle = SHARED.project.tree.trashRoot()
+        trashHandle = SHARED.project.tree.trashRoot
         if tHandle == trashHandle:
             logger.error("Cannot delete the Trash folder")
             return False
@@ -823,7 +823,7 @@ class GuiProjectTree(QTreeWidget):
             logger.error("No project open")
             return False
 
-        trashHandle = SHARED.project.tree.trashRoot()
+        trashHandle = SHARED.project.tree.trashRoot
 
         logger.debug("Emptying Trash folder")
         if trashHandle is None:
@@ -1201,7 +1201,7 @@ class GuiProjectTree(QTreeWidget):
         # Trash Folder
         # ============
 
-        trashHandle = SHARED.project.tree.trashRoot()
+        trashHandle = SHARED.project.tree.trashRoot
         if tItem.itemHandle == trashHandle and trashHandle is not None:
             # The trash folder only has one option
             aEmptyTrash = ctxMenu.addAction(self.tr("Empty Trash"))

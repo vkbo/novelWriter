@@ -234,6 +234,7 @@ class GuiMain(QMainWindow):
 
         SHARED.projectStatusChanged.connect(self.mainStatus.updateProjectStatus)
         SHARED.projectStatusMessage.connect(self.mainStatus.setStatusMessage)
+        SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
 
         self.viewsBar.viewChangeRequested.connect(self._changeView)
 
@@ -251,7 +252,6 @@ class GuiMain(QMainWindow):
         self.novelView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
         self.novelView.openDocumentRequest.connect(self._openDocument)
 
-        self.docEditor.spellDictionaryChanged.connect(self.mainStatus.setLanguage)
         self.docEditor.editedStatusChanged.connect(self.mainStatus.updateDocumentStatus)
         self.docEditor.docCountsChanged.connect(self.itemDetails.updateCounts)
         self.docEditor.docCountsChanged.connect(self.projView.updateCounts)
@@ -428,7 +428,6 @@ class GuiMain(QMainWindow):
 
             SHARED.closeProject()
 
-            self.docEditor.setDictionaries()
             self._updateWindowTitle()
             self._changeView(nwView.PROJECT)
 
@@ -489,7 +488,6 @@ class GuiMain(QMainWindow):
         # Update GUI
         self._updateWindowTitle(SHARED.project.data.name)
         self.rebuildTrees()
-        self.docEditor.setDictionaries()
         self.docEditor.toggleSpellCheck(SHARED.project.data.spellCheck)
         self.mainStatus.setRefTime(SHARED.project.projOpened)
         self.projView.openProjectTasks()
@@ -590,8 +588,8 @@ class GuiMain(QMainWindow):
         return True
 
     def openNextDocument(self, tHandle: str, wrapAround: bool = False) -> bool:
-        """Opens the next document in the project tree, following the
-        document with the given handle. Stops when reaching the end.
+        """Open the next document in the project tree, following the
+        document with the given handle. Stop when reaching the end.
         """
         if not SHARED.hasProject:
             logger.error("No project open")
@@ -907,8 +905,7 @@ class GuiMain(QMainWindow):
 
         if dlgProj.result() == QDialog.Accepted:
             logger.debug("Applying new project settings")
-            if dlgProj.spellChanged:
-                self.docEditor.setDictionaries()
+            SHARED.updateSpellCheckLanguage()
             self.itemDetails.refreshDetails()
             self._updateWindowTitle(SHARED.project.data.name)
 
@@ -982,7 +979,7 @@ class GuiMain(QMainWindow):
 
         if dlgWords.result() == QDialog.Accepted:
             logger.debug("Reloading word list")
-            self.docEditor.setDictionaries()
+            SHARED.updateSpellCheckLanguage(reload=True)
 
         return True
 

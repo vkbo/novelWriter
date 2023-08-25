@@ -58,17 +58,14 @@ def testCoreSpell_UserDictionary(monkeypatch, mockGUI, fncPath):
     assert sorted(userDict) == ["bar", "foo"]
 
     # Save the file, but fail
-    assert userDict._path is None
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
         userDict.save()
 
-    # There should be no file, but the file path should now be cached
-    assert userDict._path == dictFile
+    # There should be no file
     assert not dictFile.exists()
 
     # Break the path check
-    userDict._path = None
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
         userDict.save()
@@ -85,23 +82,19 @@ def testCoreSpell_UserDictionary(monkeypatch, mockGUI, fncPath):
     assert sorted(userDict) == []
 
     # Load the file, but fail
-    userDict._path = None
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
         userDict.load()
 
-    # Path is now set, but no words
-    assert userDict._path == dictFile
+    # No words loaded
     assert sorted(userDict) == []
 
     # Break the path check
-    userDict._path = None
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
         userDict.load()
 
-    # Path is now None, and no words
-    assert userDict._path is None
+    # No words loaded
     assert sorted(userDict) == []
 
     # Load the words again, properly
@@ -122,18 +115,18 @@ def testCoreSpell_FakeEnchant(monkeypatch, mockGUI, fncPath):
         mp.setitem(sys.modules, "enchant", None)
         spChk = NWSpellEnchant(project)
         spChk.setLanguage("en_US")
-        assert isinstance(spChk._dictObj, FakeEnchant)
+        assert isinstance(spChk._enchant, FakeEnchant)
 
     # Request a non-existent dictionary
     spChk = NWSpellEnchant(project)
     spChk.setLanguage("whatchamajig")
-    assert isinstance(spChk._dictObj, FakeEnchant)
+    assert isinstance(spChk._enchant, FakeEnchant)
 
     # Request an empty language string
     # See issue https://github.com/vkbo/novelWriter/issues/1096
     spChk = NWSpellEnchant(project)
     spChk.setLanguage("")
-    assert isinstance(spChk._dictObj, FakeEnchant)
+    assert isinstance(spChk._enchant, FakeEnchant)
 
     # FakeEnchant should handle requests
     fkChk = FakeEnchant()
@@ -164,14 +157,14 @@ def testCoreSpell_Enchant(monkeypatch, mockGUI, fncPath):
         assert spChk.spellLanguage is None
 
         # Check that the FakeEnchant class is actually handling this
-        assert isinstance(spChk._dictObj, FakeEnchant)
+        assert isinstance(spChk._enchant, FakeEnchant)
         assert spChk.checkWord("word") is True
         assert spChk.suggestWords("word") == []
         assert spChk.addWord("word") is True
 
     # Set the dict to None, and check enchant error handling
     spChk = NWSpellEnchant(project)
-    spChk._dictObj = None  # type: ignore
+    spChk._enchant = None  # type: ignore
     assert spChk.checkWord("word") is True
     assert spChk.suggestWords("word") == []
     assert spChk.addWord("word") is False
@@ -182,7 +175,7 @@ def testCoreSpell_Enchant(monkeypatch, mockGUI, fncPath):
     spChk = NWSpellEnchant(project)
     spChk.setLanguage("en_US")
     spChk.setLanguage("en_US")
-    assert isinstance(spChk._dictObj, enchant.Dict)
+    assert isinstance(spChk._enchant, enchant.Dict)
     assert spChk.spellLanguage == "en_US"
     assert spChk.listDictionaries() != []
     assert spChk.describeDict() != ("", "")
@@ -194,6 +187,6 @@ def testCoreSpell_Enchant(monkeypatch, mockGUI, fncPath):
     with monkeypatch.context() as mp:
         mp.setattr("enchant.Broker.request_dict", lambda *a: None)
         spChk.setLanguage("en_US")
-        assert isinstance(spChk._dictObj, FakeEnchant)
+        assert isinstance(spChk._enchant, FakeEnchant)
 
 # END Test testCoreSpell_Enchant

@@ -119,7 +119,7 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
     assert bool(theTree) is False
 
     # Check for archive and trash folders
-    assert theTree.trashRoot() is None
+    assert theTree.trashRoot is None
 
     aHandles = []
     for nwItem in mockItems:
@@ -146,7 +146,7 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
     # ============
 
     # Check that we have the correct archive and trash folders
-    assert theTree.trashRoot() == "a000000000003"
+    assert theTree.trashRoot == "a000000000003"
     assert theTree.findRoot(nwItemClass.ARCHIVE) == "a000000000002"
     assert theTree.isTrash("a000000000003") is True
 
@@ -261,7 +261,7 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
     del theTree["a000000000003"]
     assert len(theTree) == len(mockItems) - 3
     assert "a000000000003" not in theTree
-    assert theTree.trashRoot() is None
+    assert theTree.trashRoot is None
 
 # END Test testCoreTree_BuildTree
 
@@ -365,7 +365,7 @@ def testCoreTree_CheckConsistency(caplog: pytest.LogCaptureFixture, mockGUI, fnc
 
 
 @pytest.mark.core
-def testCoreTree_Methods(mockGUI, mockItems):
+def testCoreTree_Methods(monkeypatch, mockGUI, mockItems):
     """Test various class methods."""
     theProject = NWProject()
     theTree = NWTree(theProject)
@@ -389,11 +389,10 @@ def testCoreTree_Methods(mockGUI, mockItems):
     assert theTree.updateItemData("b000000000001") is True
 
     # Update item data, root is unreachable
-    maxDepth = theTree.MAX_DEPTH
-    theTree.MAX_DEPTH = 0  # type: ignore
-    with pytest.raises(RecursionError):
-        theTree.updateItemData("b000000000001")
-    theTree.MAX_DEPTH = maxDepth
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.tree.MAX_DEPTH", 0)
+        with pytest.raises(RecursionError):
+            theTree.updateItemData("b000000000001")
 
     # Check type
     assert theTree.checkType("blabla", nwItemType.FILE) is False
@@ -424,11 +423,10 @@ def testCoreTree_Methods(mockGUI, mockItems):
     ]
 
     # Cause recursion error
-    maxDepth = theTree.MAX_DEPTH
-    theTree.MAX_DEPTH = 0  # type: ignore
-    with pytest.raises(RecursionError):
-        theTree.getItemPath("c000000000001")
-    theTree.MAX_DEPTH = maxDepth
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.tree.MAX_DEPTH", 0)
+        with pytest.raises(RecursionError):
+            theTree.getItemPath("c000000000001")
 
     # Break the folder parent handle
     theTree["b000000000001"]._parent = "stuff"  # type: ignore

@@ -205,7 +205,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert len(SHARED.project.tree) == 0
     assert len(SHARED.project.tree._order) == 0
     assert len(SHARED.project.tree._roots) == 0
-    assert SHARED.project.tree.trashRoot() is None
+    assert SHARED.project.tree.trashRoot is None
     assert SHARED.project.data.name == ""
     assert SHARED.project.data.title == ""
     assert SHARED.project.data.author == ""
@@ -225,7 +225,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert len(SHARED.project.tree) == 8
     assert len(SHARED.project.tree._order) == 8
     assert len(SHARED.project.tree._roots) == 4
-    assert SHARED.project.tree.trashRoot() is None
+    assert SHARED.project.tree.trashRoot is None
     assert SHARED.project.data.name == "New Project"
     assert SHARED.project.data.title == "New Novel"
     assert SHARED.project.data.author == "Jane Doe"
@@ -242,7 +242,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert nwGUI.projView.projTree._getTreeItem(C.hSceneDoc) is not None
 
     nwGUI.mainMenu.aSpellCheck.setChecked(True)
-    assert nwGUI.mainMenu._toggleSpellCheck()
+    nwGUI.mainMenu._toggleSpellCheck()
 
     # Change some settings
     CONFIG.hideHScroll = True

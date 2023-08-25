@@ -28,7 +28,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from PyQt5.QtGui import QIcon, QPixmap, QColor
-from PyQt5.QtCore import Qt, QLocale, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QColorDialog, QComboBox, QDialogButtonBox, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
@@ -89,9 +89,6 @@ class GuiProjectSettings(NPagedDialog):
         self.buttonBox.rejected.connect(self._doClose)
         self.addControls(self.buttonBox)
 
-        # Flags
-        self._spellChanged = False
-
         # Focus Tab
         self._focusTab(focusTab)
 
@@ -102,10 +99,6 @@ class GuiProjectSettings(NPagedDialog):
     def __del__(self):  # pragma: no cover
         logger.debug("Delete: GuiProjectSettings")
         return
-
-    @property
-    def spellChanged(self):
-        return self._spellChanged
 
     ##
     #  Slots
@@ -125,9 +118,7 @@ class GuiProjectSettings(NPagedDialog):
         project.data.setTitle(bookTitle)
         project.data.setAuthor(bookAuthor)
         project.data.setDoBackup(doBackup)
-
-        # Remember this as updating spell dictionary can be expensive
-        self._spellChanged = project.data.setSpellLang(spellLang)
+        project.data.setSpellLang(spellLang)
 
         if self.tabStatus.colChanged:
             newList, delList = self.tabStatus.getNewList()
@@ -199,8 +190,6 @@ class GuiProjectEditMain(QWidget):
     def __init__(self, projGui):
         super().__init__(parent=projGui)
 
-        self.mainGui = projGui.mainGui
-
         # The Form
         self.mainForm = NConfigLayout()
         self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
@@ -244,11 +233,9 @@ class GuiProjectEditMain(QWidget):
         self.spellLang = QComboBox(self)
         self.spellLang.setMaximumWidth(xW)
         self.spellLang.addItem(self.tr("Default"), "None")
-        langAvail = self.mainGui.docEditor.spEnchant.listDictionaries()
-        for spTag, spProv in langAvail:
-            qLocal = QLocale(spTag)
-            spLang = qLocal.nativeLanguageName().title()
-            self.spellLang.addItem("%s [%s]" % (spLang, spProv), spTag)
+        if CONFIG.hasEnchant:
+            for tag, language in SHARED.spelling.listDictionaries():
+                self.spellLang.addItem(language, tag)
 
         self.mainForm.addRow(
             self.tr("Spell check language"),

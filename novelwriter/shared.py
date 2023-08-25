@@ -29,8 +29,10 @@ from time import time
 from typing import TYPE_CHECKING
 from pathlib import Path
 
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QMessageBox, QWidget
+
+from novelwriter.core.spellcheck import NWSpellEnchant
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -43,23 +45,29 @@ logger = logging.getLogger(__name__)
 class SharedData(QObject):
 
     __slots__ = (
-        "_gui", "_theme", "_project", "_lockedBy", "_alert",
+        "_gui", "_theme", "_project", "_spelling", "_lockedBy", "_alert",
         "_idleTime", "_idleRefTime",
     )
 
     projectStatusChanged = pyqtSignal(bool)
     projectStatusMessage = pyqtSignal(str)
+    spellLanguageChanged = pyqtSignal(str, str)
 
     def __init__(self) -> None:
         super().__init__()
         self._gui = None
         self._theme = None
         self._project = None
+        self._spelling = None
         self._lockedBy = None
         self._alert = None
         self._idleTime = 0.0
         self._idleRefTime = time()
         return
+
+    ##
+    #  Properties
+    ##
 
     @property
     def mainGui(self) -> GuiMain:
@@ -83,8 +91,15 @@ class SharedData(QObject):
         return self._project
 
     @property
+    def spelling(self) -> NWSpellEnchant:
+        """Return the active NWProject instance."""
+        if self._spelling is None:
+            raise Exception("SharedData class not fully initialised")
+        return self._spelling
+
+    @property
     def hasProject(self) -> bool:
-        """Return True of the project instance is populated."""
+        """Return True if the project instance is populated."""
         return self.project.isValid
 
     @property
@@ -107,9 +122,9 @@ class SharedData(QObject):
     ##
 
     def initSharedData(self, gui: GuiMain, theme: GuiTheme) -> None:
-        """Initialise the UserData instance. This must be called as soon
-        as the Main GUI is created to ensure the SHARED singleton has the
-        properties needed for operation.
+        """Initialise the SharedData instance. This must be called as
+        soon as the Main GUI is created to ensure the SHARED singleton
+        has the properties needed for operation.
         """
         self._gui = gui
         self._theme = theme
@@ -130,6 +145,7 @@ class SharedData(QObject):
             self._lockedBy = self.project.lockStatus
             self._resetProject()
 
+        self.updateSpellCheckLanguage(reload=True)
         self._resetIdleTimer()
 
         return status
@@ -148,6 +164,16 @@ class SharedData(QObject):
         self._resetIdleTimer()
         return
 
+    def updateSpellCheckLanguage(self, reload: bool = False) -> None:
+        """Update the active spell check langauge from settings."""
+        from novelwriter import CONFIG
+        language = self.project.data.spellLang or CONFIG.spellLanguage
+        if language != self.spelling.spellLanguage or reload:
+            self.spelling.setLanguage(language)
+            _, provider = self.spelling.describeDict()
+            self.spellLanguageChanged.emit(language, provider)
+        return
+
     def updateIdleTime(self, currTime: float, userIdle: bool) -> None:
         """Update the idle time record. If the userIdle flag is True,
         the user idle counter is updated with the time difference since
@@ -157,6 +183,20 @@ class SharedData(QObject):
         if userIdle:
             self._idleTime += currTime - self._idleRefTime
         self._idleRefTime = currTime
+        return
+
+    def newStatusMessage(self, message: str) -> None:
+        """Request a new status message. This is a callable function for
+        core classes that cannot emit signals on their own.
+        """
+        self.projectStatusMessage.emit(message)
+        return
+
+    def setGlobalProjectState(self, state: bool) -> None:
+        """Change the global project status. This is a callable function
+        for core classes that cannot emit signals on their own.
+        """
+        self.projectStatusChanged.emit(state)
         return
 
     ##
@@ -202,35 +242,18 @@ class SharedData(QObject):
         return self._alert.result() == QMessageBox.Yes
 
     ##
-    #  Internal Slots
-    ##
-
-    @pyqtSlot(bool)
-    def _emitProjectStatusChange(self, state: bool) -> None:
-        """Forward the project status slot."""
-        self.projectStatusChanged.emit(state)
-        return
-
-    @pyqtSlot(str)
-    def _emitProjectStatusMeesage(self, message: str) -> None:
-        """Forward the project message slot."""
-        self.projectStatusMessage.emit(message)
-        return
-
-    ##
     #  Internal Functions
     ##
 
     def _resetProject(self) -> None:
-        """Create a new project instance."""
+        """Create a new project and spell checking instance."""
         from novelwriter.core.project import NWProject
         if isinstance(self._project, NWProject):
-            self._project.statusChanged.disconnect()
-            self._project.statusMessage.disconnect()
-            self._project.deleteLater()
-        self._project = NWProject(self)
-        self._project.statusChanged.connect(self._emitProjectStatusChange)
-        self._project.statusMessage.connect(self._emitProjectStatusMeesage)
+            del self._project
+            del self._spelling
+        self._project = NWProject()
+        self._spelling = NWSpellEnchant(self._project)
+        self.updateSpellCheckLanguage()
         return
 
     def _resetIdleTimer(self) -> None:

@@ -3,8 +3,7 @@ novelWriter – GUI Main Window Status Bar
 ========================================
 
 File History:
-Created: 2019-04-20 [0.0.1] GuiMainStatus
-Created: 2020-05-17 [0.5.1] StatusLED
+Created: 2019-04-20 [0.0.1]
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
@@ -121,7 +120,7 @@ class GuiMainStatus(QStatusBar):
     def clearStatus(self) -> None:
         """Reset all widgets on the status bar to default values."""
         self.setRefTime(-1.0)
-        self.setLanguage(None, "")
+        self.setLanguage(*SHARED.spelling.describeDict())
         self.setProjectStats(0, 0)
         self.setProjectStatus(StatusLED.S_NONE)
         self.setDocumentStatus(StatusLED.S_NONE)
@@ -208,13 +207,8 @@ class GuiMainStatus(QStatusBar):
             self.langText.setText(self.tr("None"))
             self.langText.setToolTip("")
         else:
-            qLocal = QLocale(language)
-            spLang = qLocal.nativeLanguageName().title()
-            self.langText.setText(spLang)
-            if provider:
-                self.langText.setToolTip("%s (%s)" % (language, provider))
-            else:
-                self.langText.setToolTip(language)
+            self.langText.setText(QLocale(language).nativeLanguageName().title())
+            self.langText.setToolTip(f"{language} ({provider})" if provider else language)
         return
 
     @pyqtSlot(bool)

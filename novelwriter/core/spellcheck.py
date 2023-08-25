@@ -29,6 +29,8 @@ import logging
 from typing import TYPE_CHECKING, Iterator
 from pathlib import Path
 
+from PyQt5.QtCore import QLocale
+
 from novelwriter.error import logException
 from novelwriter.constants import nwFiles
 
@@ -47,11 +49,15 @@ class NWSpellEnchant:
 
     def __init__(self, project: NWProject) -> None:
         self._project = project
-        self._dictObj = FakeEnchant()
+        self._enchant = FakeEnchant()
         self._userDict = UserDictionary(project)
         self._language = None
         self._broker = None
-        logger.debug("Enchant spell checking activated")
+        logger.debug("Ready: NWSpellEnchant")
+        return
+
+    def __del__(self):  # pragma: no cover
+        logger.debug("Delete: NWSpellEnchant")
         return
 
     ##
@@ -72,7 +78,7 @@ class NWSpellEnchant:
         crash. Note that enchant will allow loading an empty string as
         a tag, but this will fail later on. See issue #1096.
         """
-        self._dictObj = FakeEnchant()
+        self._enchant = FakeEnchant()
         self._broker = None
         self._language = None
 
@@ -81,7 +87,7 @@ class NWSpellEnchant:
 
             if language and enchant.dict_exists(language):
                 self._broker = enchant.Broker()
-                self._dictObj = self._broker.request_dict(language)
+                self._enchant = self._broker.request_dict(language)
                 self._language = language
                 logger.debug("Enchant spell checking for language '%s' loaded", language)
             else:
@@ -90,12 +96,12 @@ class NWSpellEnchant:
         except Exception:
             logger.error("Failed to load enchant spell checking for language '%s'", language)
 
-        if self._dictObj is None:
-            self._dictObj = FakeEnchant()
+        if self._enchant is None:
+            self._enchant = FakeEnchant()
         else:
             self._userDict.load()
-            for pWord in self._userDict:
-                self._dictObj.add_to_session(pWord)
+            for word in self._userDict:
+                self._enchant.add_to_session(word)
 
         return
 
@@ -106,14 +112,14 @@ class NWSpellEnchant:
     def checkWord(self, word: str) -> bool:
         """Wrapper function for pyenchant."""
         try:
-            return bool(self._dictObj.check(word))
+            return bool(self._enchant.check(word))
         except Exception:
             return True
 
     def suggestWords(self, word: str) -> list[str]:
         """Wrapper function for pyenchant."""
         try:
-            return self._dictObj.suggest(word)
+            return self._enchant.suggest(word)
         except Exception:
             return []
 
@@ -123,7 +129,7 @@ class NWSpellEnchant:
         if not word:
             return False
         try:
-            self._dictObj.add_to_session(word)
+            self._enchant.add_to_session(word)
         except Exception:
             return False
 
@@ -134,30 +140,26 @@ class NWSpellEnchant:
         return added
 
     def listDictionaries(self) -> list[tuple[str, str]]:
-        """Wrapper function for pyenchant."""
-        retList = []
+        """List available dictionaries."""
+        lang = []
         try:
             import enchant
-            for spTag, spProvider in enchant.list_dicts():
-                retList.append((spTag, spProvider.name))
+            tags = [x for x, _ in enchant.list_dicts()]
+            lang = [(x, f"{QLocale(x).nativeLanguageName().title()} [{x}]") for x in set(tags)]
         except Exception:
             logger.error("Failed to list languages for enchant spell checking")
-
-        return retList
+        return sorted(lang, key=lambda x: x[1])
 
     def describeDict(self) -> tuple[str, str]:
-        """Return the tag and provider of the currently loaded
-        dictionary.
-        """
+        """Describe the currently loaded dictionary."""
         try:
-            tag = self._dictObj.tag
-            name = self._dictObj.provider.name  # type: ignore
+            tag = self._enchant.tag
+            name = self._enchant.provider.name  # type: ignore
         except Exception:
             logger.error("Failed to extract information about the dictionary")
             logException()
             tag = ""
             name = ""
-
         return tag, name
 
 # END Class NWSpellEnchant
@@ -192,7 +194,6 @@ class UserDictionary:
     def __init__(self, project: NWProject) -> None:
         self._project = project
         self._words = set()
-        self._path = None
         return
 
     def __contains__(self, word: str) -> bool:
@@ -212,13 +213,14 @@ class UserDictionary:
 
     def load(self) -> None:
         """Load the user's dictionary."""
-        self._path = self._project.storage.getMetaFile(nwFiles.DICT_FILE)
         self._words = set()
-        if isinstance(self._path, Path) and self._path.is_file():
+        wordList = self._project.storage.getMetaFile(nwFiles.DICT_FILE)
+        if isinstance(wordList, Path) and wordList.is_file():
             try:
-                with open(self._path, mode="r", encoding="utf-8") as fObj:
+                with open(wordList, mode="r", encoding="utf-8") as fObj:
                     data = json.load(fObj)
                 self._words = set(data.get("novelWriter.userDict", []))
+                logger.info("Loaded: %s", nwFiles.DICT_FILE)
             except Exception:
                 logger.error("Failed to load user dictionary")
                 logException()
@@ -226,17 +228,15 @@ class UserDictionary:
 
     def save(self) -> None:
         """Save the user's dictionary."""
-        if self._path is None:
-            self._path = self._project.storage.getMetaFile(nwFiles.DICT_FILE)
-        if not isinstance(self._path, Path):
-            return
-        try:
-            with open(self._path, mode="w", encoding="utf-8") as fObj:
-                data = {"novelWriter.userDict": list(self._words)}
-                json.dump(data, fObj, indent=2)
-        except Exception:
-            logger.error("Failed to save user dictionary")
-            logException()
+        wordList = self._project.storage.getMetaFile(nwFiles.DICT_FILE)
+        if isinstance(wordList, Path):
+            try:
+                with open(wordList, mode="w", encoding="utf-8") as fObj:
+                    data = {"novelWriter.userDict": list(self._words)}
+                    json.dump(data, fObj, indent=2)
+            except Exception:
+                logger.error("Failed to save user dictionary")
+                logException()
         return
 
 # END Class UserDictionary
