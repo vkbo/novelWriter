@@ -42,6 +42,8 @@ def testBaseSharedData_Init():
         shared.theme
     with pytest.raises(Exception):
         shared.project
+    with pytest.raises(Exception):
+        shared.spelling
 
     # Create some mock objects
     mockGui = MockGuiMain()
@@ -113,7 +115,7 @@ def testBaseSharedData_Projects(fncPath, caplog: pytest.LogCaptureFixture):
     project.openProject(fncPath)  # First open with our independent project instance
     assert shared.hasProject is False
     assert shared.projectLock is None
-    assert shared.openProject(fncPath) is False  # Then with out shared instance
+    assert shared.openProject(fncPath) is False  # Then with our shared instance
     assert shared.hasProject is False
     assert isinstance(shared.projectLock, list)
 

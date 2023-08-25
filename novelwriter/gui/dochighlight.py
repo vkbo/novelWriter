@@ -436,4 +436,4 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         return charFormat
 
-# END Class DocHighlighter
+# END Class GuiDocHighlighter

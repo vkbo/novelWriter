@@ -690,7 +690,7 @@ class GuiDocEditor(QTextEdit):
     #  Spell Checking
     ##
 
-    def toggleSpellCheck(self, state: bool) -> None:
+    def toggleSpellCheck(self, state: bool | None) -> None:
         """This is the main spell check setting function, and this one
         should call all other setSpellCheck functions in other classes.
         If the spell check mode (theMode) is not defined (None), then

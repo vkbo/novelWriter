@@ -25,17 +25,21 @@ from __future__ import annotations
 
 import logging
 
+from typing import TYPE_CHECKING
 from pathlib import Path
 from urllib.parse import urljoin
 from urllib.request import pathname2url
 
-from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import QUrl, pyqtSlot
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMenuBar, QAction
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction, nwDocInsert, nwWidget
 from novelwriter.constants import nwConst, trConst, nwKeyWords, nwLabels, nwUnicode
+
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +50,7 @@ class GuiMainMenu(QMenuBar):
     add them from this class.
     """
 
-    def __init__(self, mainGui):
+    def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
 
         logger.debug("Create: GuiMainMenu")
@@ -77,46 +81,52 @@ class GuiMainMenu(QMenuBar):
     #  Update Menu on Settings Changed
     ##
 
-    def setSpellCheck(self, theMode):
-        """Forward spell check check state to its action.
-        """
-        self.aSpellCheck.setChecked(theMode)
+    def setSpellCheck(self, state: bool) -> None:
+        """Forward spell check check state to its action."""
+        self.aSpellCheck.setChecked(state)
         return
 
     ##
-    #  Slots
+    #  Private Slots
     ##
 
-    def _toggleSpellCheck(self):
+    @pyqtSlot()
+    def _toggleSpellCheck(self) -> None:
         """Toggle spell checking. The active status of the spell check
         flag is handled by the document editor class, so we make no
         decision, just pass a None to the function and let it decide.
         """
         self.mainGui.docEditor.toggleSpellCheck(None)
-        return True
+        return
 
-    def _openWebsite(self, theUrl):
-        """Open a URL in the system's default browser.
-        """
-        QDesktopServices.openUrl(QUrl(theUrl))
-        return True
+    @pyqtSlot(str)
+    def _openWebsite(self, url: str) -> None:
+        """Open a URL in the system's default browser."""
+        QDesktopServices.openUrl(QUrl(url))
+        return
 
-    def _openUserManualFile(self):
-        """Open the documentation in PDF format.
-        """
+    @pyqtSlot()
+    def _openUserManualFile(self) -> None:
+        """Open the documentation in PDF format."""
         if isinstance(CONFIG.pdfDocs, Path):
             QDesktopServices.openUrl(
                 QUrl(urljoin("file:", pathname2url(str(CONFIG.pdfDocs))))
             )
         return
 
+    @pyqtSlot(str)
+    def _changeSpelling(self, language: str) -> None:
+        """Change the spell check language."""
+        SHARED.project.data.setSpellLang(language)
+        SHARED.updateSpellCheckLanguage()
+        return
+
     ##
-    #  Menu Builders
+    #  Internal Functions
     ##
 
-    def _buildProjectMenu(self):
-        """Assemble the Project menu.
-        """
+    def _buildProjectMenu(self) -> None:
+        """Assemble the Project menu."""
         # Project
         self.projMenu = self.addMenu(self.tr("&Project"))
 
@@ -190,9 +200,8 @@ class GuiMainMenu(QMenuBar):
 
         return
 
-    def _buildDocumentMenu(self):
-        """Assemble the Document menu.
-        """
+    def _buildDocumentMenu(self) -> None:
+        """Assemble the Document menu."""
         # Document
         self.docuMenu = self.addMenu(self.tr("&Document"))
 
@@ -245,9 +254,8 @@ class GuiMainMenu(QMenuBar):
 
         return
 
-    def _buildEditMenu(self):
-        """Assemble the Edit menu.
-        """
+    def _buildEditMenu(self) -> None:
+        """Assemble the Edit menu."""
         # Edit
         self.editMenu = self.addMenu(self.tr("&Edit"))
 
@@ -301,9 +309,8 @@ class GuiMainMenu(QMenuBar):
 
         return
 
-    def _buildViewMenu(self):
-        """Assemble the View menu.
-        """
+    def _buildViewMenu(self) -> None:
+        """Assemble the View menu."""
         # View
         self.viewMenu = self.addMenu(self.tr("&View"))
 
@@ -375,9 +382,8 @@ class GuiMainMenu(QMenuBar):
 
         return
 
-    def _buildInsertMenu(self):
-        """Assemble the Insert menu.
-        """
+    def _buildInsertMenu(self) -> None:
+        """Assemble the Insert menu."""
         # Insert
         self.insMenu = self.addMenu(self.tr("&Insert"))
 
@@ -589,9 +595,8 @@ class GuiMainMenu(QMenuBar):
 
         return
 
-    def _buildFormatMenu(self):
-        """Assemble the Format menu.
-        """
+    def _buildFormatMenu(self) -> None:
+        """Assemble the Format menu."""
         # Format
         self.fmtMenu = self.addMenu(self.tr("&Format"))
 
@@ -739,9 +744,8 @@ class GuiMainMenu(QMenuBar):
 
         return
 
-    def _buildSearchMenu(self):
-        """Assemble the Search menu.
-        """
+    def _buildSearchMenu(self) -> None:
+        """Assemble the Search menu."""
         # Search
         self.srcMenu = self.addMenu(self.tr("&Search"))
 
@@ -753,28 +757,21 @@ class GuiMainMenu(QMenuBar):
 
         # Search > Replace
         self.aReplace = QAction(self.tr("Replace"), self)
-        if CONFIG.osDarwin:
-            self.aReplace.setShortcut("Ctrl+=")
-        else:
-            self.aReplace.setShortcut("Ctrl+H")
+        self.aReplace.setShortcut("Ctrl+=" if CONFIG.osDarwin else "Ctrl+H")
         self.aReplace.triggered.connect(lambda: self.mainGui.docEditor.beginReplace())
         self.srcMenu.addAction(self.aReplace)
 
         # Search > Find Next
         self.aFindNext = QAction(self.tr("Find Next"), self)
-        if CONFIG.osDarwin:
-            self.aFindNext.setShortcuts(["Ctrl+G", "F3"])
-        else:
-            self.aFindNext.setShortcuts(["F3", "Ctrl+G"])
+        self.aFindNext.setShortcuts(["Ctrl+G", "F3"] if CONFIG.osDarwin else ["F3", "Ctrl+G"])
         self.aFindNext.triggered.connect(lambda: self.mainGui.docEditor.findNext())
         self.srcMenu.addAction(self.aFindNext)
 
         # Search > Find Prev
         self.aFindPrev = QAction(self.tr("Find Previous"), self)
-        if CONFIG.osDarwin:
-            self.aFindPrev.setShortcuts(["Ctrl+Shift+G", "Shift+F3"])
-        else:
-            self.aFindPrev.setShortcuts(["Shift+F3", "Ctrl+Shift+G"])
+        self.aFindPrev.setShortcuts(
+            ["Ctrl+Shift+G", "Shift+F3"] if CONFIG.osDarwin else ["Shift+F3", "Ctrl+Shift+G"]
+        )
         self.aFindPrev.triggered.connect(lambda: self.mainGui.docEditor.findNext(goBack=True))
         self.srcMenu.addAction(self.aFindPrev)
 
@@ -786,9 +783,8 @@ class GuiMainMenu(QMenuBar):
 
         return
 
-    def _buildToolsMenu(self):
-        """Assemble the Tools menu.
-        """
+    def _buildToolsMenu(self) -> None:
+        """Assemble the Tools menu."""
         # Tools
         self.toolsMenu = self.addMenu(self.tr("&Tools"))
 
@@ -799,6 +795,15 @@ class GuiMainMenu(QMenuBar):
         self.aSpellCheck.triggered.connect(self._toggleSpellCheck)  # triggered, not toggled!
         self.aSpellCheck.setShortcut("Ctrl+F7")
         self.toolsMenu.addAction(self.aSpellCheck)
+
+        self.mSelectLanguage = self.toolsMenu.addMenu(self.tr("Spell Check Language"))
+        languages = SHARED.spelling.listDictionaries()
+        languages.insert(0, ("None", self.tr("Default")))
+        for n, (tag, language) in enumerate(languages):
+            aSpell = QAction(self.mSelectLanguage)
+            aSpell.setText(language)
+            aSpell.triggered.connect(lambda n, tag=tag: self._changeSpelling(tag))
+            self.mSelectLanguage.addAction(aSpell)
 
         # Tools > Re-Run Spell Check
         self.aReRunSpell = QAction(self.tr("Re-Run Spell Check"), self)
@@ -849,9 +854,8 @@ class GuiMainMenu(QMenuBar):
 
         return
 
-    def _buildHelpMenu(self):
-        """Assemble the Help menu.
-        """
+    def _buildHelpMenu(self) -> None:
+        """Assemble the Help menu."""
         # Help
         self.helpMenu = self.addMenu(self.tr("&Help"))
 

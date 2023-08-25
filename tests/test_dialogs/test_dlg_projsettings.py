@@ -84,8 +84,7 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
 @pytest.mark.gui
 def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     """Test the main tab of the project settings dialog."""
-    # Mock components
-    monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: [("en", "none")])
+    monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: [("en", "English [en]")])
 
     # Create new project
     buildTestProject(nwGUI, projPath)
@@ -147,9 +146,7 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncPath, projPat
     dialog.
     """
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
-
-    # Mock components
-    monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: [("en", "none")])
+    monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: [("en", "English [en]")])
 
     # Create new project
     mockRnd.reset()
@@ -347,9 +344,7 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncPath, projPat
 def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     """Test the auto-replace tab of the project settings dialog."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
-
-    # Mock components
-    monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: [("en", "none")])
+    monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: [("en", "English [en]")])
 
     # Create new project
     mockRnd.reset()

@@ -242,7 +242,8 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert nwGUI.projView.projTree._getTreeItem(C.hSceneDoc) is not None
 
     nwGUI.mainMenu.aSpellCheck.setChecked(True)
-    assert nwGUI.mainMenu._toggleSpellCheck()
+    nwGUI.mainMenu._toggleSpellCheck()
+    assert nwGUI.mainMenu.aSpellCheck.isChecked() is True
 
     # Change some settings
     CONFIG.hideHScroll = True

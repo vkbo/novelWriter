@@ -28,7 +28,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from PyQt5.QtGui import QIcon, QPixmap, QColor
-from PyQt5.QtCore import Qt, QLocale, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QColorDialog, QComboBox, QDialogButtonBox, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
@@ -233,11 +233,9 @@ class GuiProjectEditMain(QWidget):
         self.spellLang = QComboBox(self)
         self.spellLang.setMaximumWidth(xW)
         self.spellLang.addItem(self.tr("Default"), "None")
-        langAvail = SHARED.spelling.listDictionaries()
-        for spTag, spProv in langAvail:
-            qLocal = QLocale(spTag)
-            spLang = qLocal.nativeLanguageName().title()
-            self.spellLang.addItem("%s [%s]" % (spLang, spProv), spTag)
+        if CONFIG.hasEnchant:
+            for tag, language in SHARED.spelling.listDictionaries():
+                self.spellLang.addItem(language, tag)
 
         self.mainForm.addRow(
             self.tr("Spell check language"),

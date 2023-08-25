@@ -29,6 +29,8 @@ import logging
 from typing import TYPE_CHECKING, Iterator
 from pathlib import Path
 
+from PyQt5.QtCore import QLocale
+
 from novelwriter.error import logException
 from novelwriter.constants import nwFiles
 
@@ -138,15 +140,15 @@ class NWSpellEnchant:
         return added
 
     def listDictionaries(self) -> list[tuple[str, str]]:
-        """Wrapper function for pyenchant."""
-        retList = []
+        """List available dictionaries."""
+        lang = []
         try:
             import enchant
-            for spTag, spProvider in enchant.list_dicts():
-                retList.append((spTag, spProvider.name))
+            tags = [x for x, _ in enchant.list_dicts()]
+            lang = [(x, f"{QLocale(x).nativeLanguageName().title()} [{x}]") for x in set(tags)]
         except Exception:
             logger.error("Failed to list languages for enchant spell checking")
-        return retList
+        return sorted(lang, key=lambda x: x[1])
 
     def describeDict(self) -> tuple[str, str]:
         """Describe the currently loaded dictionary."""
