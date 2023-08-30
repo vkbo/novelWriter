@@ -24,7 +24,7 @@ import pytest
 from shutil import copyfile
 
 from tools import (
-    C, cmpFiles, buildTestProject, XML_IGNORE, getGuiItem, writeFile
+    C, NWD_IGNORE, cmpFiles, buildTestProject, XML_IGNORE, getGuiItem, writeFile
 )
 
 from PyQt5.QtCore import Qt
@@ -529,25 +529,25 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     testFile = tstPaths.outDir / "guiEditor_Main_Final_000000000000f.nwd"
     compFile = tstPaths.refDir / "guiEditor_Main_Final_000000000000f.nwd"
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile)
+    assert cmpFiles(testFile, compFile, ignoreStart=NWD_IGNORE)
 
     projFile = projPath / "content" / "0000000000010.nwd"
     testFile = tstPaths.outDir / "guiEditor_Main_Final_0000000000010.nwd"
     compFile = tstPaths.refDir / "guiEditor_Main_Final_0000000000010.nwd"
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile)
+    assert cmpFiles(testFile, compFile, ignoreStart=NWD_IGNORE)
 
     projFile = projPath / "content" / "0000000000011.nwd"
     testFile = tstPaths.outDir / "guiEditor_Main_Final_0000000000011.nwd"
     compFile = tstPaths.refDir / "guiEditor_Main_Final_0000000000011.nwd"
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile)
+    assert cmpFiles(testFile, compFile, ignoreStart=NWD_IGNORE)
 
     projFile = projPath / "content" / "0000000000012.nwd"
     testFile = tstPaths.outDir / "guiEditor_Main_Final_0000000000012.nwd"
     compFile = tstPaths.refDir / "guiEditor_Main_Final_0000000000012.nwd"
     copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile)
+    assert cmpFiles(testFile, compFile, ignoreStart=NWD_IGNORE)
 
     # qtbot.stop()
 

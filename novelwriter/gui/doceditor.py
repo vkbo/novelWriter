@@ -520,7 +520,7 @@ class GuiDocEditor(QTextEdit):
         self.saveCursorPosition()
         if not self._nwDocument.writeDocument(docText):
             saveOk = False
-            if self._nwDocument._currHash != self._nwDocument._prevHash:
+            if self._nwDocument.hashError:
                 msgYes = SHARED.question(self.tr(
                     "This document has been changed outside of novelWriter "
                     "while it was open. Overwrite the file on disk?"

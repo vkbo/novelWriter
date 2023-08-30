@@ -26,8 +26,8 @@ from shutil import copyfile
 from pathlib import Path
 from zipfile import ZipFile
 
+from tools import C, NWD_IGNORE, buildTestProject, cmpFiles, XML_IGNORE
 from mocked import causeOSError
-from tools import C, buildTestProject, cmpFiles, XML_IGNORE
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwItemClass
@@ -46,19 +46,19 @@ def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ip
     # =====================
 
     hChapter1 = theProject.newFile("Chapter 1", C.hNovelRoot)
-    hSceneOne11 = theProject.newFile("Scene 1.1", hChapter1)
-    hSceneOne12 = theProject.newFile("Scene 1.2", hChapter1)
-    hSceneOne13 = theProject.newFile("Scene 1.3", hChapter1)
+    hSceneOne11 = theProject.newFile("Scene 1.1", hChapter1)  # type: ignore
+    hSceneOne12 = theProject.newFile("Scene 1.2", hChapter1)  # type: ignore
+    hSceneOne13 = theProject.newFile("Scene 1.3", hChapter1)  # type: ignore
 
     docText1 = "\n\n".join(ipsumText[0:2]) + "\n\n"
     docText2 = "\n\n".join(ipsumText[1:3]) + "\n\n"
     docText3 = "\n\n".join(ipsumText[2:4]) + "\n\n"
     docText4 = "\n\n".join(ipsumText[3:5]) + "\n\n"
 
-    theProject.writeNewFile(hChapter1, 2, True, docText1)
-    theProject.writeNewFile(hSceneOne11, 3, True, docText2)
-    theProject.writeNewFile(hSceneOne12, 3, True, docText3)
-    theProject.writeNewFile(hSceneOne13, 3, True, docText4)
+    theProject.writeNewFile(hChapter1, 2, True, docText1)  # type: ignore
+    theProject.writeNewFile(hSceneOne11, 3, True, docText2)  # type: ignore
+    theProject.writeNewFile(hSceneOne12, 3, True, docText3)  # type: ignore
+    theProject.writeNewFile(hSceneOne13, 3, True, docText4)  # type: ignore
 
     # Basic Checks
     # ============
@@ -81,12 +81,12 @@ def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ip
     testFile = tstPaths.outDir / "coreDocTools_DocMerger_0000000000014.nwd"
     compFile = tstPaths.refDir / "coreDocTools_DocMerger_0000000000014.nwd"
 
-    assert docMerger.newTargetDoc(hChapter1, "All of Chapter 1") == "0000000000014"
+    assert docMerger.newTargetDoc(hChapter1, "All of Chapter 1") == "0000000000014"  # type: ignore
 
-    assert docMerger.appendText(hChapter1, True, "Merge") is True
-    assert docMerger.appendText(hSceneOne11, True, "Merge") is True
-    assert docMerger.appendText(hSceneOne12, True, "Merge") is True
-    assert docMerger.appendText(hSceneOne13, True, "Merge") is True
+    assert docMerger.appendText(hChapter1, True, "Merge") is True  # type: ignore
+    assert docMerger.appendText(hSceneOne11, True, "Merge") is True  # type: ignore
+    assert docMerger.appendText(hSceneOne12, True, "Merge") is True  # type: ignore
+    assert docMerger.appendText(hSceneOne13, True, "Merge") is True  # type: ignore
 
     # Block writing and check error handling
     with monkeypatch.context() as mp:
@@ -98,7 +98,7 @@ def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ip
     # Write properly, and compare
     assert docMerger.writeTargetDoc() is True
     copyfile(saveFile, testFile)
-    assert cmpFiles(testFile, compFile)
+    assert cmpFiles(testFile, compFile, ignoreStart=NWD_IGNORE)
 
     # Merge into Existing
     # ===================
@@ -107,15 +107,15 @@ def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ip
     testFile = tstPaths.outDir / "coreDocTools_DocMerger_0000000000010.nwd"
     compFile = tstPaths.refDir / "coreDocTools_DocMerger_0000000000010.nwd"
 
-    docMerger.setTargetDoc(hChapter1)
+    docMerger.setTargetDoc(hChapter1)  # type: ignore
 
-    assert docMerger.appendText(hSceneOne11, True, "Merge") is True
-    assert docMerger.appendText(hSceneOne12, True, "Merge") is True
-    assert docMerger.appendText(hSceneOne13, True, "Merge") is True
+    assert docMerger.appendText(hSceneOne11, True, "Merge") is True  # type: ignore
+    assert docMerger.appendText(hSceneOne12, True, "Merge") is True  # type: ignore
+    assert docMerger.appendText(hSceneOne13, True, "Merge") is True  # type: ignore
 
     assert docMerger.writeTargetDoc() is True
     copyfile(saveFile, testFile)
-    assert cmpFiles(testFile, compFile)
+    assert cmpFiles(testFile, compFile, ignoreStart=NWD_IGNORE)
 
     # Just for debugging
     docMerger.writeTargetDoc()
@@ -163,11 +163,11 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText)
     docText = "\n\n".join(docData)
     docRaw = docText.splitlines()
     assert theProject.storage.getDocument(hSplitDoc).writeDocument(docText) is True
-    theProject.tree[hSplitDoc].setStatus(C.sFinished)
-    theProject.tree[hSplitDoc].setImport(C.iMain)
+    theProject.tree[hSplitDoc].setStatus(C.sFinished)  # type: ignore
+    theProject.tree[hSplitDoc].setImport(C.iMain)  # type: ignore
 
-    docSplitter = DocSplitter(theProject, hSplitDoc)
-    assert docSplitter._srcItem.isFileType()
+    docSplitter = DocSplitter(theProject, hSplitDoc)  # type: ignore
+    assert docSplitter._srcItem.isFileType()  # type: ignore
     assert docSplitter.getError() == ""
 
     # Run the split algorithm
@@ -247,8 +247,8 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText)
 
     # Check that status and importance has been preserved
     for rHandle in resDocHandle:
-        assert theProject.tree[rHandle].itemStatus == C.sFinished
-        assert theProject.tree[rHandle].itemImport == C.iMain
+        assert theProject.tree[rHandle].itemStatus == C.sFinished  # type: ignore
+        assert theProject.tree[rHandle].itemImport == C.iMain  # type: ignore
 
     # Check handling of improper initialisation
     docSplitter = DocSplitter(theProject, C.hInvalid)
@@ -416,7 +416,7 @@ def testCoreTools_NewMinimal(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
     assert projBuild.buildProject({}) is False
 
     # Wrong type should also fail
-    assert projBuild.buildProject("stuff") is False
+    assert projBuild.buildProject("stuff") is False  # type: ignore
 
     # Try again with a proper path
     assert projBuild.buildProject({"projPath": fncPath}) is True
@@ -508,7 +508,7 @@ def testCoreTools_NewCustomB(monkeypatch, fncPath, tstPaths,  mockRnd):
 
 
 @pytest.mark.core
-def testCoreTools_NewSample(monkeypatch, fncPath, tstPaths):
+def testCoreTools_NewSample(monkeypatch, mockGUI, fncPath, tstPaths):
     """Check that we can create a new project can be created from the
     provided sample project via a zip file.
     """

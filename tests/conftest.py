@@ -226,8 +226,7 @@ def prjLipsum():
 
 @pytest.fixture(scope="session")
 def ipsumText():
-    """Return five paragraphs of Lorem Ipsum text.
-    """
+    """Return five paragraphs of Lorem Ipsum text."""
     thatIpsum = [(
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc maximus justo non dictum co"
         "mmodo. Curabitur lacinia tempor orci vel luctus. Phasellus porta metus eu massa luctus, e"

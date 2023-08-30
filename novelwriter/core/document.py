@@ -23,15 +23,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import hashlib
 import logging
 
+from time import time
 from typing import TYPE_CHECKING
 from pathlib import Path
-from novelwriter.core.item import NWItem
 
 from novelwriter.enum import nwItemLayout, nwItemClass
 from novelwriter.error import formatException
-from novelwriter.common import isHandle, sha256sum
+from novelwriter.common import formatTimeStamp, isHandle
+from novelwriter.core.item import NWItem
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.project import NWProject
@@ -50,30 +52,38 @@ class NWDocument:
 
     def __init__(self, project: NWProject, tHandle: str | None) -> None:
 
-        self._project = project
+        self._project  = project
 
-        # Internal Variables
-        self._theItem   = None  # The currently open item
-        self._docHandle = None  # The handle of the currently open item
-        self._fileLoc   = None  # The file location of the currently open item
-        self._docMeta   = {}    # The meta data of the currently open item
-        self._docError  = ""    # The latest encountered IO error
-        self._prevHash  = None  # Previous sha256sum of the document file
-        self._currHash  = None  # Latest sha256sum of the document file
+        self._item      = None   # The currently open item
+        self._handle    = None   # The handle of the currently open item
+        self._fileLoc   = None   # The file location of the currently open item
+        self._docMeta   = {}     # The meta data of the currently open item
+        self._docError  = ""     # The latest encountered IO error
+        self._lastHash  = ""     # The last known SHA hash
+        self._hashError = False  # Hash mismatch on last write attempt
 
         if isHandle(tHandle):
-            self._docHandle = tHandle
+            self._handle = tHandle
 
-        if self._docHandle is not None:
-            self._theItem = self._project.tree[tHandle]
+        if self._handle is not None:
+            self._item = self._project.tree[tHandle]
 
         return
 
     def __repr__(self) -> str:
-        return f"<NWDocument handle={self._docHandle}>"
+        return f"<NWDocument handle={self._handle}>"
 
     def __bool__(self) -> bool:
-        return self._docHandle is not None and bool(self._theItem)
+        return self._handle is not None and self._item is not None
+
+    ##
+    #  Properties
+    ##
+
+    @property
+    def hashError(self) -> bool:
+        """Check if the file hash has changed outside of novelWriter."""
+        return self._hashError
 
     ##
     #  Class Methods
@@ -81,7 +91,7 @@ class NWDocument:
 
     def fileExists(self) -> bool:
         """Check if the document file exists."""
-        if self._docHandle is None:
+        if self._handle is None:
             return False
 
         contentPath = self._project.storage.contentPath
@@ -89,7 +99,7 @@ class NWDocument:
             logger.error("No content path set")
             return False
 
-        return (contentPath / f"{self._docHandle}.nwd").is_file()
+        return (contentPath / f"{self._handle}.nwd").is_file()
 
     def readDocument(self, isOrphan: bool = False) -> str | None:
         """Read the document specified by the handle set in the
@@ -98,11 +108,11 @@ class NWDocument:
         empty string. If something went wrong, return None.
         """
         self._docError = ""
-        if not isinstance(self._docHandle, str):
+        if not isinstance(self._handle, str):
             logger.error("No document handle set")
             return None
 
-        if self._theItem is None and not isOrphan:
+        if self._item is None and not isOrphan:
             logger.error("Unknown novelWriter document")
             return None
 
@@ -111,31 +121,30 @@ class NWDocument:
             logger.error("No content path set")
             return None
 
-        docFile = f"{self._docHandle}.nwd"
+        docFile = f"{self._handle}.nwd"
         logger.debug("Opening document: %s", docFile)
 
         docPath = contentPath / docFile
         self._fileLoc = docPath
 
-        theText = ""
+        text = ""
         self._docMeta = {}
-        self._prevHash = None
+        self._lastHash = ""
 
         if docPath.exists():
-            self._prevHash = sha256sum(docPath)
             try:
                 with open(docPath, mode="r", encoding="utf-8") as inFile:
                     # Check the first <= 10 lines for metadata
                     for i in range(10):
-                        inLine = inFile.readline()
-                        if inLine.startswith(r"%%~"):
-                            self._parseMeta(inLine)
+                        line = inFile.readline()
+                        if line.startswith(r"%%~"):
+                            self._parseMeta(line)
                         else:
-                            theText = inLine
+                            text = line
                             break
 
                     # Load the rest of the file
-                    theText += inFile.read()
+                    text += inFile.read()
 
             except Exception as exc:
                 self._docError = formatException(exc)
@@ -143,19 +152,20 @@ class NWDocument:
 
         else:
             # The document file does not exist, so we assume it's a new
-            # document and initialise an empty text string.
+            # document and return an empty text string.
             logger.debug("The requested document does not exist")
-            return ""
 
-        return theText
+        self._lastHash = hashlib.sha1(text.encode()).hexdigest()
 
-    def writeDocument(self, docText: str, forceWrite: bool = False) -> bool:
+        return text
+
+    def writeDocument(self, text: str, forceWrite: bool = False) -> bool:
         """Write the document specified by the handle attribute. Handle
         any IO errors in the process  Returns True if successful, False
         if not.
         """
         self._docError = ""
-        if not isinstance(self._docHandle, str):
+        if not isinstance(self._handle, str):
             logger.error("No document handle set")
             return False
 
@@ -164,32 +174,45 @@ class NWDocument:
             logger.error("No content path set")
             return False
 
-        docFile = f"{self._docHandle}.nwd"
+        docFile = f"{self._handle}.nwd"
         logger.debug("Saving document: %s", docFile)
 
         docPath = contentPath / docFile
         docTemp = docPath.with_suffix(".tmp")
 
-        if self._prevHash is not None and not forceWrite:
-            self._currHash = sha256sum(docPath)
-            if self._currHash is not None and self._currHash != self._prevHash:
-                logger.error("File has been altered on disk since opened")
-                return False
+        # Re-read the document on disk to check if it has changed
+        prevHash = self._lastHash
+        self.readDocument()
+        if prevHash and self._lastHash != prevHash and not forceWrite:
+            logger.error("File has been altered on disk since opened")
+            self._hashError = True
+            return False
+
+        currTime = formatTimeStamp(time())
+        writeHash = hashlib.sha1(text.encode()).hexdigest()
+        createdDate = self._docMeta.get("created", "Unknown")
+        updatedDate = self._docMeta.get("updated", "Unknown")
+        if writeHash != self._lastHash:
+            updatedDate = currTime
+        if not docPath.is_file():
+            createdDate = currTime
+            updatedDate = currTime
 
         # DocMeta Line
-        if self._theItem is None:
-            docMeta = ""
-        else:
+        docMeta = ""
+        if self._item:
             docMeta = (
-                f"%%~name: {self._theItem.itemName}\n"
-                f"%%~path: {self._theItem.itemParent}/{self._theItem.itemHandle}\n"
-                f"%%~kind: {self._theItem.itemClass.name}/{self._theItem.itemLayout.name}\n"
+                f"%%~name: {self._item.itemName}\n"
+                f"%%~path: {self._item.itemParent}/{self._item.itemHandle}\n"
+                f"%%~kind: {self._item.itemClass.name}/{self._item.itemLayout.name}\n"
+                f"%%~hash: {writeHash}\n"
+                f"%%~date: {createdDate}/{updatedDate}\n"
             )
 
         try:
             with open(docTemp, mode="w", encoding="utf-8") as outFile:
                 outFile.write(docMeta)
-                outFile.write(docText)
+                outFile.write(text)
         except Exception as exc:
             self._docError = formatException(exc)
             return False
@@ -202,8 +225,8 @@ class NWDocument:
             self._docError = formatException(exc)
             return False
 
-        self._prevHash = sha256sum(docPath)
-        self._currHash = self._prevHash
+        self._lastHash = writeHash
+        self._hashError = False
 
         return True
 
@@ -212,7 +235,7 @@ class NWDocument:
         from the project data folder.
         """
         self._docError = ""
-        if not isinstance(self._docHandle, str):
+        if not isinstance(self._handle, str):
             logger.error("No document handle set")
             return False
 
@@ -221,7 +244,7 @@ class NWDocument:
             logger.error("No content path set")
             return False
 
-        docPath = contentPath / f"{self._docHandle}.nwd"
+        docPath = contentPath / f"{self._handle}.nwd"
         docTemp = docPath.with_suffix(".tmp")
 
         try:
@@ -247,7 +270,7 @@ class NWDocument:
 
     def getCurrentItem(self) -> NWItem | None:
         """Return a pointer to the currently open NWItem."""
-        return self._theItem
+        return self._item
 
     def getMeta(self) -> tuple[str, str | None, nwItemClass | None, nwItemLayout | None]:
         """Parse the document meta tag and return the name, parent,
@@ -293,8 +316,18 @@ class NWDocument:
                 if metaBits[1] in nwItemLayout.__members__:
                     self._docMeta["layout"] = nwItemLayout[metaBits[1]]
 
+        elif metaLine.startswith("%%~hash:"):
+            self._docMeta["hash"] = metaLine[8:].strip()
+
+        elif metaLine.startswith("%%~date:"):
+            metaVal = metaLine[8:].strip()
+            metaBits = metaVal.split("/")
+            if len(metaBits) == 2:
+                self._docMeta["created"] = metaBits[0].strip()
+                self._docMeta["updated"] = metaBits[1].strip()
+
         else:
-            logger.debug("Ignoring meta data: '%s'", metaLine.strip())
+            logger.debug("Unknown meta data: '%s'", metaLine.strip())
 
         return
 

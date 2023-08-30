@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import json
 import uuid
-import hashlib
 import logging
 import unicodedata
 import xml.etree.ElementTree as ET
@@ -486,25 +485,6 @@ def makeFileNameSafe(text: str) -> str:
     text = unicodedata.normalize("NFKC", text).strip()
     allowed = (" ", ".", "-", "_")
     return "".join(c for c in text if c.isalnum() or c in allowed)
-
-
-def sha256sum(path: str | Path) -> str | None:
-    """Make a shasum of a file using a buffer.
-    Based on: https://stackoverflow.com/a/44873382/5825851
-    """
-    digest = hashlib.sha256()
-    bData = bytearray(65536)
-    mData = memoryview(bData)
-    try:
-        with open(path, mode="rb", buffering=0) as inFile:
-            for n in iter(lambda: inFile.readinto(mData), 0):
-                digest.update(mData[:n])
-    except Exception:
-        logger.error("Could not create sha256sum of: %s", path)
-        logException()
-        return None
-
-    return digest.hexdigest()
 
 
 # =============================================================================================== #
