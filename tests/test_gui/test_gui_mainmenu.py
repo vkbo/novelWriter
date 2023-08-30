@@ -656,7 +656,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     nwGUI.mainMenu.aFileDetails.activate(QAction.Trigger)
     path = str(projPath / "content" / "000000000000f.nwd")
     logMsg = SHARED.alert.logMessage if SHARED.alert else ""
-    assert logMsg == f"The currently open file is saved in: {path}"
+    assert logMsg.endswith(f"File Location: {path}")
 
     # qtbot.stop()
 

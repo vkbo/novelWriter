@@ -367,7 +367,7 @@ class GuiDocEditor(QTextEdit):
         the file.
         """
         self._nwDocument = SHARED.project.storage.getDocument(tHandle)
-        self._nwItem = self._nwDocument.getCurrentItem()
+        self._nwItem = self._nwDocument.nwItem
 
         theDoc = self._nwDocument.readDocument()
         if theDoc is None:
@@ -846,8 +846,14 @@ class GuiDocEditor(QTextEdit):
             logger.error("No document open")
             return False
         SHARED.info(
-            self.tr("The currently open file is saved in:"),
-            info=self._nwDocument.getFileLocation()
+            "<br>".join([
+                self.tr("Document Details"),
+                "–"*40,
+                self.tr("Created: {0}").format(self._nwDocument.createdDate),
+                self.tr("Updated: {0}").format(self._nwDocument.updatedDate),
+            ]),
+            details=self.tr("File Location: {0}").format(self._nwDocument.fileLocation),
+            log=False
         )
         return
 

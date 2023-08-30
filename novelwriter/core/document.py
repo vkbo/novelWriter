@@ -85,6 +85,26 @@ class NWDocument:
         """Check if the file hash has changed outside of novelWriter."""
         return self._hashError
 
+    @property
+    def fileLocation(self) -> str:
+        """Return the file location of the current document."""
+        return str(self._fileLoc)
+
+    @property
+    def createdDate(self) -> str:
+        """Return the document creation date."""
+        return self._docMeta.get("created", "Unknown")
+
+    @property
+    def updatedDate(self) -> str:
+        """Return the document creation date."""
+        return self._docMeta.get("updated", "Unknown")
+
+    @property
+    def nwItem(self) -> NWItem | None:
+        """Return a pointer to the currently open NWItem."""
+        return self._item
+
     ##
     #  Class Methods
     ##
@@ -263,14 +283,6 @@ class NWDocument:
     ##
     #  Getters
     ##
-
-    def getFileLocation(self) -> str:
-        """Return the file location of the current document."""
-        return str(self._fileLoc)
-
-    def getCurrentItem(self) -> NWItem | None:
-        """Return a pointer to the currently open NWItem."""
-        return self._item
 
     def getMeta(self) -> tuple[str, str | None, nwItemClass | None, nwItemLayout | None]:
         """Parse the document meta tag and return the name, parent,
