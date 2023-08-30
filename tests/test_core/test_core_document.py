@@ -188,11 +188,11 @@ def testCoreDocument_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     assert theDoc.readDocument() == "### New Scene\n\n"
 
     # Check location
-    assert theDoc.getFileLocation() == str(docPath)
+    assert theDoc.fileLocation == str(docPath)
 
     # Check the item
-    assert theDoc.getCurrentItem() is not None
-    assert theDoc.getCurrentItem().itemHandle == C.hSceneDoc  # type: ignore
+    assert theDoc.nwItem is not None
+    assert theDoc.nwItem.itemHandle == C.hSceneDoc  # type: ignore
 
     # Check the meta
     theName, theParent, theClass, theLayout = theDoc.getMeta()

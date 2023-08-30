@@ -203,25 +203,27 @@ class SharedData(QObject):
     #  Alert Boxes
     ##
 
-    def info(self, text: str, info: str = "", details: str = "") -> None:
+    def info(self, text: str, info: str = "", details: str = "", log: bool = True) -> None:
         """Open an information alert box."""
         self._alert = _GuiAlert(self.mainGui, self.theme)
         self._alert.setMessage(text, info, details)
         self._alert.setAlertType(_GuiAlert.INFO, False)
-        logger.info(self._alert.logMessage, stacklevel=2)
+        if log:
+            logger.info(self._alert.logMessage, stacklevel=2)
         self._alert.exec_()
         return
 
-    def warn(self, text: str, info: str = "", details: str = "") -> None:
+    def warn(self, text: str, info: str = "", details: str = "", log: bool = True) -> None:
         """Open a warning alert box."""
         self._alert = _GuiAlert(self.mainGui, self.theme)
         self._alert.setMessage(text, info, details)
         self._alert.setAlertType(_GuiAlert.WARN, False)
-        logger.warning(self._alert.logMessage, stacklevel=2)
+        if log:
+            logger.warning(self._alert.logMessage, stacklevel=2)
         self._alert.exec_()
         return
 
-    def error(self, text: str, info: str = "", details: str = "",
+    def error(self, text: str, info: str = "", details: str = "", log: bool = True,
               exc: Exception | None = None) -> None:
         """Open an error alert box."""
         self._alert = _GuiAlert(self.mainGui, self.theme)
@@ -229,7 +231,8 @@ class SharedData(QObject):
         self._alert.setAlertType(_GuiAlert.ERROR, False)
         if exc:
             self._alert.setException(exc)
-        logger.error(self._alert.logMessage, stacklevel=2)
+        if log:
+            logger.error(self._alert.logMessage, stacklevel=2)
         self._alert.exec_()
         return
 
