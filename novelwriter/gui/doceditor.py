@@ -55,6 +55,7 @@ from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
 from novelwriter.core.index import countWords
 from novelwriter.gui.dochighlight import GuiDocHighlighter
+from novelwriter.extensions.wheeleventfilter import WheelEventFilter
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -177,6 +178,10 @@ class GuiDocEditor(QTextEdit):
         self.wCounterSel = BackgroundWordCounter(self, forSelection=True)
         self.wCounterSel.setAutoDelete(False)
         self.wCounterSel.signals.countsReady.connect(self._updateSelCounts)
+
+        # Install Event Filter for Mouse Wheel
+        self.wheelEventFilter = WheelEventFilter(self)
+        self.installEventFilter(self.wheelEventFilter)
 
         # Finalise
         self.updateSyntaxColours()

@@ -3,7 +3,7 @@ novelWriter – Shared Data Class
 ===============================
 
 File History:
-Created: 2023-08-10 [2.1b2]
+Created: 2023-08-10 [2.1rc1]
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
