@@ -1978,32 +1978,32 @@
       <translation>Om Qt5</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="880" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="875" />
       <source>User Manual (Online)</source>
       <translation>Brukermanual (på nett)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="887" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="882" />
       <source>User Manual (PDF)</source>
       <translation>Brukermanual (PDF)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="896" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="891" />
       <source>Report an Issue (GitHub)</source>
       <translation>Rapporter en feil (GitHub)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="901" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="896" />
       <source>Ask a Question (GitHub)</source>
       <translation>Still et spørsmål (GitHub)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="906" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="901" />
       <source>The novelWriter Website</source>
       <translation>novelWriters nettside</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="914" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="909" />
       <source>Check for New Release</source>
       <translation>Sjekk etter oppdateringer</translation>
     </message>
