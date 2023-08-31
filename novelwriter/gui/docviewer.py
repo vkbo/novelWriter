@@ -47,6 +47,7 @@ from novelwriter.enum import nwItemType, nwDocAction, nwDocMode
 from novelwriter.error import logException
 from novelwriter.constants import nwUnicode
 from novelwriter.core.tohtml import ToHtml
+from novelwriter.extensions.wheeleventfilter import WheelEventFilter
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -84,6 +85,10 @@ class GuiDocViewer(QTextBrowser):
 
         # Signals
         self.anchorClicked.connect(self._linkClicked)
+
+        # Install Event Filter for Mouse Wheel
+        self.wheelEventForwarder = WheelEventFilter(self)
+        self.installEventFilter(self.wheelEventForwarder)
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
