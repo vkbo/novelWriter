@@ -74,7 +74,7 @@ rm Miniconda3-latest-MacOSX-x86_64.sh
 export PATH="$HOME/miniconda/bin:$PATH"
 
 echo "Creating Conda env ..."
-conda create -n novelWriter -c conda-forge python=3.10 --yes
+conda create -n novelWriter -c conda-forge python=3.11 --yes
 source activate novelWriter
 
 echo "Installing dictionaries ..."
