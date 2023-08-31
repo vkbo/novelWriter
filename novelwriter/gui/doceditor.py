@@ -180,8 +180,8 @@ class GuiDocEditor(QTextEdit):
         self.wCounterSel.signals.countsReady.connect(self._updateSelCounts)
 
         # Install Event Filter for Mouse Wheel
-        self.wheelEventForwarder = WheelEventFilter(self)
-        self.installEventFilter(self.wheelEventForwarder)
+        self.wheelEventFilter = WheelEventFilter(self)
+        self.installEventFilter(self.wheelEventFilter)
 
         # Finalise
         self.updateSyntaxColours()

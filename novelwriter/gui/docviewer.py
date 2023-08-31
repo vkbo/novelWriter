@@ -87,8 +87,8 @@ class GuiDocViewer(QTextBrowser):
         self.anchorClicked.connect(self._linkClicked)
 
         # Install Event Filter for Mouse Wheel
-        self.wheelEventForwarder = WheelEventFilter(self)
-        self.installEventFilter(self.wheelEventForwarder)
+        self.wheelEventFilter = WheelEventFilter(self)
+        self.installEventFilter(self.wheelEventFilter)
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
