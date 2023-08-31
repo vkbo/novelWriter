@@ -1,5 +1,57 @@
 # novelWriter Changelog
 
+## Version 2.1 RC 1 [2023-08-31]
+
+### Release Notes
+
+This is a release candidate of the next release version, and is intended for testing purposes.
+Please be careful when using this version on live writing projects, and make sure you take frequent
+backups.
+
+Please check the changelog for an overview of changes. The full release notes will be added to the
+final release.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue where closing modal dialogs would close their parent. Issue #1494. PR #1496.
+* The log output no longer prints an error message if the project does not have anything in its
+  custom dictionary. PR #1495.
+
+**Usability**
+
+* novelWriter will no longer try to restore full screen mode if full screen was activated when it
+  was last closed. This never worked right anyway. PR #1498.
+* There are several usability updates for the Build Settings tool. Please check the PR for details.
+  Some key changes are that the build dialogs are now children of the main GUI, so they can be
+  moved freely from each other. The Selection page has been given a new look that should hopefully
+  make it easier to understand, and the side bar for the tool has been redesigned. A few labels
+  have also been changed to be easier to understand. Issue #1497. PR #1499.
+* The alert and message boxes have been reimplemented with the full feature set of the Qt message
+  box dialog instead of using the quick access functions with limited functionality. PR #1501.
+* A project's spell check dictionary can now be set directly from the Tools menu. Issue #1260.
+  PR #1508.
+* The document details dialog box now shows a document's creation and update date if that has been
+  set. Issue #1423. PR #1510.
+* Moving the mouse wheel on any area within the border of the text editor or viewer will now scroll
+  the document. Issue #1425. PR #1511.
+
+**Code Improvements**
+
+* A new shared data instance now owns the Gui Theme, the Project class and holds a link to the main
+  Gui instance as well. This new class also handles message and alert boxes. The project instance
+  is now destroyed and recreated between each project close/open cycle. This should guard better
+  from project to project data leakage. PRs #1502 and #1504.
+* The spell checker instance has been moved to the new shared data instance where it is destroyed
+  and recreated together with the project instance. This blocks against bleed-through of the user's
+  custom dictionary. PR #1508.
+* Text hash (SHA1) and creation and update time stemps are now added to the document file's meta
+  data section. The hash is used to detect file changes outside of novelWriter while documents are
+  open. The old checker has been deleted. Issue #1423. PR #1509.
+
+----
+
 ## Version 2.1 Beta 1 [2023-07-30]
 
 ### Release Notes
