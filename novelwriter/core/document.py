@@ -268,12 +268,8 @@ class NWDocument:
         docTemp = docPath.with_suffix(".tmp")
 
         try:
-            # ToDo: When Python 3.7 is dropped, these can be changed to
-            # path.unlink(missing_ok=True)
-            if docPath.exists():
-                docPath.unlink()
-            if docTemp.exists():
-                docTemp.unlink()
+            docPath.unlink(missing_ok=True)
+            docTemp.unlink(missing_ok=True)
         except Exception as exc:
             self._docError = formatException(exc)
             return False

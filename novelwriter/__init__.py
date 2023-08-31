@@ -170,9 +170,9 @@ def main(sysArgs: list | None = None):
     # Check Packages and Versions
     errorData = []
     errorCode = 0
-    if sys.hexversion < 0x030700f0:
+    if sys.hexversion < 0x030800f0:
         errorData.append(
-            "At least Python 3.7 is required, found %s" % CONFIG.verPyString
+            "At least Python 3.8 is required, found %s" % CONFIG.verPyString
         )
         errorCode |= 0x04
     if CONFIG.verQtValue < 0x050a00:

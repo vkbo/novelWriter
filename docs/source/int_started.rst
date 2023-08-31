@@ -174,7 +174,7 @@ Installing Python on Windows
 In order to run novelWriter from source, or install from PyPi, you need to have Python set up on
 your system. Unlike Linux and MacOS, Windows does not come with Python pre-installed.
 
-You can download Python from `python.org`_. Python 3.7 or higher is required for running
+You can download Python from `python.org`_. Python 3.8 or higher is required for running
 novelWriter, but it is recommended that you install the latest version.
 
 Make sure you select the "Add Python to PATH" option during installation, otherwise the ``python``
