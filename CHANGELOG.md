@@ -46,7 +46,7 @@ final release.
 * The spell checker instance has been moved to the new shared data instance where it is destroyed
   and recreated together with the project instance. This blocks against bleed-through of the user's
   custom dictionary. PR #1508.
-* Text hash (SHA1) and creation and update time stemps are now added to the document file's meta
+* Text hash (SHA1) and creation and update time stamps are now added to the document file's meta
   data section. The hash is used to detect file changes outside of novelWriter while documents are
   open. The old checker has been deleted. Issue #1423. PR #1509.
 
