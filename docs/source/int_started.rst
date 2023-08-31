@@ -186,7 +186,7 @@ command will not work in the command line window.
 
    Screenshot of the Python installer on Windows.
 
-When Python is installed, you should be able to run Python commands from the COmmand Prompt or
+When Python is installed, you should be able to run Python commands from the Command Prompt or
 from PowerShell. You can verify this by running:
 
 .. code-block:: bash

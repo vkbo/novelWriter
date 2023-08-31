@@ -204,6 +204,12 @@ match the word being replaced.
 The regular expression search is somewhat dependant on which version of Qt your system has. If you
 have Qt 5.13 or higher, there is better support for unicode symbols in the search.
 
+.. seealso::
+
+   For more information on the capabilities of the Regular Expression option, see the Qt
+   documentation for the `QRegularExpression <https://doc.qt.io/qt-5/qregularexpression.html>`_
+   class.
+
 
 .. _a_ui_edit_auto:
 
