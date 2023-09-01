@@ -33,9 +33,9 @@ from datetime import datetime
 from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
 from PyQt5.QtCore import QSize, QTimer, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    QDialog, QGridLayout, QHBoxLayout, QLabel, QListWidget, QListWidgetItem,
-    QPushButton, QSplitter, QTextBrowser, QToolButton, QTreeWidget,
-    QTreeWidgetItem, QVBoxLayout, QWidget, qApp
+    QAbstractItemView, QDialog, QGridLayout, QHBoxLayout, QLabel, QListWidget,
+    QListWidgetItem, QPushButton, QSplitter, QTextBrowser, QToolButton,
+    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget, qApp
 )
 from PyQt5.QtPrintSupport import QPrintPreviewDialog, QPrinter
 
@@ -500,8 +500,9 @@ class _DetailsWidget(QWidget):
 
         # Tree Vidget
         self.listView = QTreeWidget(self)
-        self.listView.setHeaderLabels(["Setting", "Value"])
+        self.listView.setHeaderLabels([self.tr("Setting"), self.tr("Value")])
         self.listView.setIndentation(SHARED.theme.baseIconSize)
+        self.listView.setSelectionMode(QAbstractItemView.NoSelection)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -542,8 +543,10 @@ class _DetailsWidget(QWidget):
         count = len(state)
         for i in range(self.listView.topLevelItemCount()):
             item = self.listView.topLevelItem(i)
-            if isinstance(item, QTreeWidgetItem) and i < count:
-                item.setExpanded(state[i])
+            if isinstance(item, QTreeWidgetItem):
+                item.setExpanded(
+                    (state[i] if i < count else True) if item.childCount() > 0 else False
+                )
         return
 
     ##
