@@ -545,9 +545,7 @@ class _DetailsWidget(QWidget):
         for i in range(self.listView.topLevelItemCount()):
             item = self.listView.topLevelItem(i)
             if isinstance(item, QTreeWidgetItem):
-                item.setExpanded(
-                    (state[i] if i < count else True) if item.childCount() > 0 else False
-                )
+                item.setExpanded((state[i] if i < count else True) and item.childCount() > 0)
         return
 
     ##
