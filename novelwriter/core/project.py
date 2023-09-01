@@ -600,7 +600,7 @@ class NWProject:
                 self._langData = json.load(inFile)
             logger.debug("Loaded project language file: %s", langFile.name)
         except Exception:
-            logger.error("Failed to project language file")
+            logger.error("Failed to load project language file")
             logException()
             return False
 

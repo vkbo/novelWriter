@@ -36,7 +36,6 @@ from functools import partial
 
 from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
-from novelwriter import SHARED
 from novelwriter.enum import nwItemLayout
 from novelwriter.common import formatTimeStamp, numberToRoman, checkInt
 from novelwriter.constants import nwConst, nwHeadFmt, nwRegEx, nwUnicode
@@ -148,7 +147,7 @@ class Tokenizer(ABC):
         self._linkHeaders = False  # Add an anchor before headers
 
         # Instance Variables
-        self._hFormatter = HeadingFormatter()
+        self._hFormatter = HeadingFormatter(self._project)
         self._firstScene = False  # Flag to indicate that the first scene of the chapter
 
         # This File
@@ -772,7 +771,8 @@ class Tokenizer(ABC):
 
 class HeadingFormatter:
 
-    def __init__(self) -> None:
+    def __init__(self, project: NWProject) -> None:
+        self._project = project
         self._chCount = 0
         self._scChCount = 0
         self._scAbsCount = 0
@@ -801,7 +801,7 @@ class HeadingFormatter:
         hFormat = hFormat.replace(nwHeadFmt.SC_NUM, str(self._scChCount))
         hFormat = hFormat.replace(nwHeadFmt.SC_ABS, str(self._scAbsCount))
         if nwHeadFmt.CH_WORD in hFormat:
-            chWord = SHARED.project.localLookup(self._chCount)
+            chWord = self._project.localLookup(self._chCount)
             hFormat = hFormat.replace(nwHeadFmt.CH_WORD, chWord)
         if nwHeadFmt.CH_ROML in hFormat:
             chRom = numberToRoman(self._chCount, toLower=True)

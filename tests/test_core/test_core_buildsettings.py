@@ -377,6 +377,8 @@ def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRn
     builds = BuildCollection(project)
     assert len(builds) == 0
     assert not buildsFile.exists()
+    assert builds.lastBuild == ""
+    assert builds.defaultBuild == ""
 
     # Create a default build
     buildOne = BuildSettings()
@@ -412,7 +414,9 @@ def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRn
 
     # Check the file content
     data = json.loads(buildsFile.read_text(encoding="utf-8"))
-    assert list(data["novelWriter.builds"].keys()) == [buildIDOne, buildIDTwo]
+    assert list(data["novelWriter.builds"].keys()) == [
+        "lastBuild", "defaultBuild", buildIDOne, buildIDTwo
+    ]
 
     # Remove a build
     builds.removeBuild(buildIDOne)
@@ -423,12 +427,16 @@ def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRn
 
     # Check the file content
     data = json.loads(buildsFile.read_text(encoding="utf-8"))
-    assert list(data["novelWriter.builds"].keys()) == [buildIDTwo]
+    assert list(data["novelWriter.builds"].keys()) == [
+        "lastBuild", "defaultBuild", buildIDTwo
+    ]
     builds.setBuild(buildOne)
     assert list(builds.builds()) == [
         (buildIDTwo, "Build Two"),
         (buildIDOne, "Build One"),
     ]
+    builds.setLastBuild(buildIDOne)
+    builds.setDefaultBuild(buildIDTwo)
 
     # Check errors: No valid path
     with monkeypatch.context() as mp:
@@ -447,7 +455,7 @@ def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRn
     buildsFile.write_text("foobar")
     assert builds._loadCollection() is False
 
-    # Check errors: Valid jason file, but list instead of object
+    # Check errors: Valid json file, but list instead of object
     buildsFile.write_text("[]")
     assert builds._loadCollection() is False
     buildsFile.unlink()
@@ -459,5 +467,7 @@ def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRn
         (buildIDTwo, "Build Two"),
         (buildIDOne, "Build One"),
     ]
+    assert another.lastBuild == buildIDOne
+    assert another.defaultBuild == buildIDTwo
 
 # END Test testCoreBuildSettings_Collection

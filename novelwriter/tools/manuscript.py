@@ -290,9 +290,10 @@ class GuiManuscript(QDialog):
     @pyqtSlot("QListWidgetItem*", "QListWidgetItem*")
     def _updateBuildDetails(self, current: QListWidgetItem, previous: QListWidgetItem) -> None:
         """Process change of build selection to update the details."""
-        build = self._builds.getBuild(current.data(self.D_KEY))
-        if build is not None:
-            self.buildDetails.updateInfo(build)
+        if isinstance(current, QListWidgetItem):
+            build = self._builds.getBuild(current.data(self.D_KEY))
+            if build is not None:
+                self.buildDetails.updateInfo(build)
         return
 
     @pyqtSlot()
@@ -586,7 +587,7 @@ class _DetailsWidget(QWidget):
                 item.addChild(sub)
 
         # Headings
-        hFmt = HeadingFormatter()
+        hFmt = HeadingFormatter(SHARED.project)
         hFmt.incChapter()
         hFmt.incScene()
         hFmt.resetScene()
