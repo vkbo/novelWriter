@@ -319,7 +319,6 @@ class BuildSettings:
             value = min(max(value, definition[2]), definition[3])
         self._changed = value != self._settings[key]
         self._settings[key] = value
-        logger.debug(f"Build Setting '{key}' set to: {value}")
         return True
 
     ##
@@ -457,6 +456,8 @@ class BuildCollection:
     def __init__(self, project: NWProject) -> None:
         self._project = project
         self._builds = {}
+        self._lastBuild = ""
+        self._defaultBuild = ""
         self._loadCollection()
         return
 
@@ -465,7 +466,21 @@ class BuildCollection:
         return len(self._builds)
 
     ##
-    #  Methods
+    #  Properties
+    ##
+
+    @property
+    def lastBuild(self) -> str:
+        """Return the last active build."""
+        return self._lastBuild
+
+    @property
+    def defaultBuild(self) -> str:
+        """Return the default build."""
+        return self._defaultBuild
+
+    ##
+    #  Getters
     ##
 
     def getBuild(self, buildID: str) -> BuildSettings | None:
@@ -476,6 +491,24 @@ class BuildCollection:
         build.unpack(self._builds[buildID])
         return build
 
+    ##
+    #  Setters
+    ##
+
+    def setLastBuild(self, buildID: str) -> None:
+        """Set the last active build id."""
+        if buildID != self._lastBuild:
+            self._lastBuild = buildID
+            self._saveCollection()
+        return
+
+    def setDefaultBuild(self, buildID: str) -> None:
+        """Set the default build id."""
+        if buildID != self._defaultBuild:
+            self._defaultBuild = buildID
+            self._saveCollection()
+        return
+
     def setBuild(self, build: BuildSettings) -> None:
         """Set build settings data in the collection."""
         if isinstance(build, BuildSettings):
@@ -483,6 +516,10 @@ class BuildCollection:
             self._builds[buildID] = build.pack()
             self._saveCollection()
         return
+
+    ##
+    #  Methods
+    ##
 
     def removeBuild(self, buildID: str) -> None:
         """Remove the a build from the collection."""
@@ -527,7 +564,11 @@ class BuildCollection:
             return False
 
         for key, entry in builds.items():
-            if isinstance(entry, dict):
+            if key == "lastBuild":
+                self._lastBuild = str(entry)
+            elif key == "defaultBuild":
+                self._defaultBuild = str(entry)
+            elif isinstance(entry, dict):
                 self._builds[key] = entry
 
         return True
@@ -540,9 +581,13 @@ class BuildCollection:
 
         logger.debug("Saving builds file")
         try:
-            data = {"novelWriter.builds": self._builds}
+            data = {
+                "lastBuild": self._lastBuild,
+                "defaultBuild": self._defaultBuild,
+            }
+            data.update(self._builds)
             with open(buildsFile, mode="w+", encoding="utf-8") as outFile:
-                outFile.write(jsonEncode(data, nmax=4))
+                outFile.write(jsonEncode({"novelWriter.builds": data}, nmax=4))
         except Exception:
             logger.error("Failed to save builds file")
             logException()

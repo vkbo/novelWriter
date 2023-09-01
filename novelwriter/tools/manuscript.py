@@ -33,12 +33,14 @@ from datetime import datetime
 from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
 from PyQt5.QtCore import QSize, QTimer, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    QDialog, QGridLayout, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton,
-    QSplitter, QTextBrowser, QToolButton, QVBoxLayout, QWidget, qApp
+    QDialog, QGridLayout, QHBoxLayout, QLabel, QListWidget, QListWidgetItem,
+    QPushButton, QSplitter, QTextBrowser, QToolButton, QTreeWidget,
+    QTreeWidgetItem, QVBoxLayout, QWidget, qApp
 )
 from PyQt5.QtPrintSupport import QPrintPreviewDialog, QPrinter
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.core.tokenizer import HeadingFormatter
 from novelwriter.error import logException
 from novelwriter.common import checkInt, fuzzyTime
 from novelwriter.core.tohtml import ToHtml
@@ -127,10 +129,6 @@ class GuiManuscript(QDialog):
 
         self.lblBuilds = QLabel("<b>{0}</b>".format(self.tr("Builds")))
 
-        self.buildList = QListWidget()
-        self.buildList.setIconSize(QSize(iPx, iPx))
-        self.buildList.doubleClicked.connect(self._editSelectedBuild)
-
         self.listToolBox = QHBoxLayout()
         self.listToolBox.addWidget(self.lblBuilds)
         self.listToolBox.addStretch(1)
@@ -138,6 +136,27 @@ class GuiManuscript(QDialog):
         self.listToolBox.addWidget(self.tbDel)
         self.listToolBox.addWidget(self.tbEdit)
         self.listToolBox.setSpacing(0)
+
+        # Builds
+        # ======
+
+        self.buildList = QListWidget()
+        self.buildList.setIconSize(QSize(iPx, iPx))
+        self.buildList.doubleClicked.connect(self._editSelectedBuild)
+        self.buildList.currentItemChanged.connect(self._updateBuildDetails)
+
+        self.buildDetails = _DetailsWidget(self)
+        self.buildDetails.setColumnWidth(
+            CONFIG.pxInt(pOptions.getInt("GuiManuscript", "detailsWidth", 100)),
+        )
+
+        self.buildSplit = QSplitter(Qt.Orientation.Vertical, self)
+        self.buildSplit.addWidget(self.buildList)
+        self.buildSplit.addWidget(self.buildDetails)
+        self.buildSplit.setSizes([
+            CONFIG.pxInt(pOptions.getInt("GuiManuscript", "listHeight", 50)),
+            CONFIG.pxInt(pOptions.getInt("GuiManuscript", "detailsHeight", 50)),
+        ])
 
         # Process Controls
         # ================
@@ -167,7 +186,7 @@ class GuiManuscript(QDialog):
 
         self.controlBox = QVBoxLayout()
         self.controlBox.addLayout(self.listToolBox, 0)
-        self.controlBox.addWidget(self.buildList, 1)
+        self.controlBox.addWidget(self.buildSplit, 1)
         self.controlBox.addLayout(self.processBox, 0)
         self.controlBox.setContentsMargins(0, 0, 0, 0)
 
@@ -206,8 +225,13 @@ class GuiManuscript(QDialog):
             build = BuildSettings()
             build.setName(self.tr("My Manuscript"))
             self._builds.setBuild(build)
+            selected = build.buildID
+        else:
+            selected = self._builds.lastBuild
 
         self._updateBuildsList()
+        if selected in self._buildMap:
+            self.buildList.setCurrentItem(self._buildMap[selected])
 
         logger.debug("Loading build cache")
         cache = CONFIG.dataPath("cache") / f"build_{SHARED.project.data.uuid}.json"
@@ -263,6 +287,14 @@ class GuiManuscript(QDialog):
             self._openSettingsDialog(build)
         return
 
+    @pyqtSlot("QListWidgetItem*", "QListWidgetItem*")
+    def _updateBuildDetails(self, current: QListWidgetItem, previous: QListWidgetItem) -> None:
+        """Process change of build selection to update the details."""
+        build = self._builds.getBuild(current.data(self.D_KEY))
+        if build is not None:
+            self.buildDetails.updateInfo(build)
+        return
+
     @pyqtSlot()
     def _deleteSelectedBuild(self):
         """Delete the currently selected build settings entry."""
@@ -278,6 +310,9 @@ class GuiManuscript(QDialog):
         """Process new build settings from the settings dialog."""
         self._builds.setBuild(build)
         self._updateBuildItem(build)
+        current = self.buildList.currentItem()
+        if isinstance(current, QListWidgetItem) and current.data(self.D_KEY) == build.buildID:
+            self._updateBuildDetails(current, current)
         return
 
     @pyqtSlot()
@@ -363,8 +398,6 @@ class GuiManuscript(QDialog):
         self.docPreview.setJustify(
             build.getBool("format.justifyText")
         )
-        if build.buildID and build.buildID in self._buildMap:
-            self._buildMap[build.buildID].setSelected(True)
         return
 
     def _getSelectedBuild(self) -> BuildSettings | None:
@@ -383,6 +416,10 @@ class GuiManuscript(QDialog):
         """Save the user GUI settings."""
         logger.debug("Saving GuiManuscript settings")
 
+        current = self.buildList.currentItem()
+        if isinstance(current, QListWidgetItem):
+            self._builds.setLastBuild(current.data(self.D_KEY))
+
         winWidth  = CONFIG.rpxInt(self.width())
         winHeight = CONFIG.rpxInt(self.height())
 
@@ -390,11 +427,21 @@ class GuiManuscript(QDialog):
         optsWidth = CONFIG.rpxInt(mainSplit[0])
         viewWidth = CONFIG.rpxInt(mainSplit[1])
 
+        buildSplit = self.buildSplit.sizes()
+        listHeight = CONFIG.rpxInt(buildSplit[0])
+        detailsHeight = CONFIG.rpxInt(buildSplit[1])
+        detailsWidth = CONFIG.rpxInt(self.buildDetails.getColumnWidth())
+        detailsExpanded = self.buildDetails.getExpandedState()
+
         pOptions = SHARED.project.options
         pOptions.setValue("GuiManuscript", "winWidth", winWidth)
         pOptions.setValue("GuiManuscript", "winHeight", winHeight)
         pOptions.setValue("GuiManuscript", "optsWidth", optsWidth)
         pOptions.setValue("GuiManuscript", "viewWidth", viewWidth)
+        pOptions.setValue("GuiManuscript", "listHeight", listHeight)
+        pOptions.setValue("GuiManuscript", "detailsHeight", detailsHeight)
+        pOptions.setValue("GuiManuscript", "detailsWidth", detailsWidth)
+        pOptions.setValue("GuiManuscript", "detailsExpanded", detailsExpanded)
         pOptions.saveSettings()
 
         return
@@ -444,9 +491,150 @@ class GuiManuscript(QDialog):
 # END Class GuiManuscript
 
 
+class _DetailsWidget(QWidget):
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
+
+        self._initExpanded = True
+
+        # Tree Vidget
+        self.listView = QTreeWidget(self)
+        self.listView.setHeaderLabels(["Setting", "Value"])
+        self.listView.setIndentation(SHARED.theme.baseIconSize)
+
+        # Assemble
+        self.outerBox = QVBoxLayout()
+        self.outerBox.addWidget(self.listView)
+        self.outerBox.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(self.outerBox)
+
+        return
+
+    ##
+    #  Getters
+    ##
+
+    def getColumnWidth(self) -> int:
+        """Get the width of the first column."""
+        return self.listView.columnWidth(0)
+
+    def getExpandedState(self) -> list[bool]:
+        """Get the expanded state of each top level item."""
+        state = []
+        for i in range(self.listView.topLevelItemCount()):
+            item = self.listView.topLevelItem(i)
+            if isinstance(item, QTreeWidgetItem):
+                state.append(item.isExpanded())
+        return state
+
+    ##
+    #  Setters
+    ##
+
+    def setColumnWidth(self, value: int) -> None:
+        """Set the width of the first column."""
+        self.listView.setColumnWidth(0, value)
+        return
+
+    def setExpandedState(self, state: list[bool]) -> None:
+        """Set the expanded state of each top level item."""
+        count = len(state)
+        for i in range(self.listView.topLevelItemCount()):
+            item = self.listView.topLevelItem(i)
+            if isinstance(item, QTreeWidgetItem) and i < count:
+                item.setExpanded(state[i])
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def updateInfo(self, build: BuildSettings) -> None:
+        """Load the build settings info into the table."""
+        if self._initExpanded:
+            previous = SHARED.project.options.getValue("GuiManuscript", "detailsExpanded", [])
+            expanded = [bool(s) for s in previous]
+            self._initExpanded = False
+        else:
+            expanded = self.getExpandedState()
+
+        self.listView.clear()
+
+        on = SHARED.theme.getIcon("bullet-on")
+        off = SHARED.theme.getIcon("bullet-off")
+
+        # Name
+        item = QTreeWidgetItem()
+        item.setText(0, self.tr("Name"))
+        item.setText(1, build.name)
+        self.listView.addTopLevelItem(item)
+
+        # Selection
+        item = QTreeWidgetItem()
+        item.setText(0, self.tr("Selection"))
+        item.setText(1, "")
+        self.listView.addTopLevelItem(item)
+        for tHandle, nwItem in SHARED.project.tree.iterRoots(None):
+            if not nwItem.isInactiveClass():
+                sub = QTreeWidgetItem()
+                sub.setText(0, nwItem.itemName)
+                sub.setIcon(1, on if build.isRootAllowed(tHandle) else off)
+                item.addChild(sub)
+
+        # Headings
+        hFmt = HeadingFormatter()
+        hFmt.incChapter()
+        hFmt.incScene()
+        hFmt.resetScene()
+        hFmt.incScene()
+        title = self.tr("Title")
+
+        item = QTreeWidgetItem()
+        item.setText(0, build.getLabel("headings"))
+        item.setText(1, "")
+        self.listView.addTopLevelItem(item)
+        entries = [
+            "headings.fmtTitle", "headings.fmtChapter", "headings.fmtUnnumbered",
+            "headings.fmtScene", "headings.fmtSection"
+        ]
+        for key in entries:
+            sub = QTreeWidgetItem()
+            sub.setText(0, build.getLabel(key))
+            sub.setText(1, hFmt.apply(build.getStr(key), title))
+            item.addChild(sub)
+        for key in ["headings.hideScene", "headings.hideSection"]:
+            sub = QTreeWidgetItem()
+            sub.setText(0, build.getLabel(key))
+            sub.setIcon(1, on if build.getBool(key) else off)
+            item.addChild(sub)
+
+        # Text Content
+        item = QTreeWidgetItem()
+        item.setText(0, build.getLabel("text.grpContent"))
+        item.setText(1, "")
+        self.listView.addTopLevelItem(item)
+        entries = [
+            "text.includeSynopsis", "text.includeComments",
+            "text.includeKeywords", "text.includeBodyText",
+        ]
+        for key in entries:
+            sub = QTreeWidgetItem()
+            sub.setText(0, build.getLabel(key))
+            sub.setIcon(1, on if build.getBool(key) else off)
+            item.addChild(sub)
+
+        # Restore expanded state
+        self.setExpandedState(expanded)
+
+        return
+
+# END Class _DetailsWidget
+
+
 class _PreviewWidget(QTextBrowser):
 
-    def __init__(self, parent: QWidget):
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
         self._docTime = 0
@@ -512,13 +700,13 @@ class _PreviewWidget(QTextBrowser):
     #  Setters
     ##
 
-    def setBuildName(self, name: str):
+    def setBuildName(self, name: str) -> None:
         """Set the build name for the document label."""
         self._buildName = name
         self._updateBuildAge()
         return
 
-    def setJustify(self, state: bool):
+    def setJustify(self, state: bool) -> None:
         """Enable/disable the justify text option."""
         pOptions = self.document().defaultTextOption()
         if state:
@@ -528,7 +716,7 @@ class _PreviewWidget(QTextBrowser):
         self.document().setDefaultTextOption(pOptions)
         return
 
-    def setTextFont(self, family: str, size: int):
+    def setTextFont(self, family: str, size: int) -> None:
         """Set the text font properties."""
         if family:
             font = QFont()
@@ -541,7 +729,7 @@ class _PreviewWidget(QTextBrowser):
     #  Methods
     ##
 
-    def beginNewBuild(self, length: int):
+    def beginNewBuild(self, length: int) -> None:
         """Clear the document and show the progress bar."""
         self.buildProgress.setMaximum(length)
         self.buildProgress.setValue(0)
@@ -551,13 +739,13 @@ class _PreviewWidget(QTextBrowser):
         self.clear()
         return
 
-    def buildStep(self, value: int):
+    def buildStep(self, value: int) -> None:
         """Update the progress bar value."""
         self.buildProgress.setValue(value)
         qApp.processEvents()
         return
 
-    def setContent(self, data: dict):
+    def setContent(self, data: dict) -> None:
         """Set the content of the preview widget."""
         sPos = self.verticalScrollBar().value()
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
@@ -602,7 +790,7 @@ class _PreviewWidget(QTextBrowser):
     #  Events
     ##
 
-    def resizeEvent(self, event: QResizeEvent):
+    def resizeEvent(self, event: QResizeEvent) -> None:
         """Capture resize and update the document margins."""
         super().resizeEvent(event)
         self._updateDocMargins()
@@ -613,7 +801,7 @@ class _PreviewWidget(QTextBrowser):
     ##
 
     @pyqtSlot("QPrinter*")
-    def printPreview(self, printer: QPrinter):
+    def printPreview(self, printer: QPrinter) -> None:
         """Connect the print preview painter to the document viewer."""
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         printer.setOrientation(QPrinter.Portrait)
@@ -626,7 +814,7 @@ class _PreviewWidget(QTextBrowser):
     ##
 
     @pyqtSlot()
-    def _updateBuildAge(self):
+    def _updateBuildAge(self) -> None:
         """Update the build time and the fuzzy age."""
         if self._docTime > 0:
             strBuildTime = "%s (%s)" % (
@@ -642,7 +830,7 @@ class _PreviewWidget(QTextBrowser):
         return
 
     @pyqtSlot()
-    def _hideProgress(self):
+    def _hideProgress(self) -> None:
         """Clean up the build progress bar."""
         self.buildProgress.setVisible(False)
         return
@@ -651,7 +839,7 @@ class _PreviewWidget(QTextBrowser):
     #  Internal Functions
     ##
 
-    def _updateDocMargins(self):
+    def _updateDocMargins(self) -> None:
         """Automatically adjust the header to fill the top of the
         document within the viewport.
         """
