@@ -58,13 +58,14 @@ VALID_MAP = {
     "GuiWordList": {"winWidth", "winHeight"},
     "GuiNovelView": {"lastCol", "lastColSize"},
     "GuiBuildSettings": {
-        "winWidth", "winHeight", "treeWidth", "filterWidth"
+        "winWidth", "winHeight", "treeWidth", "filterWidth",
     },
     "GuiManuscript": {
-        "winWidth", "winHeight", "optsWidth", "viewWidth"
+        "winWidth", "winHeight", "optsWidth", "viewWidth", "listHeight",
+        "detailsHeight", "detailsWidth", "detailsExpanded",
     },
     "GuiManuscriptBuild": {
-        "winWidth", "winHeight", "fmtWidth", "sumWidth"
+        "winWidth", "winHeight", "fmtWidth", "sumWidth",
     },
 }
 
