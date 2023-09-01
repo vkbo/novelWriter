@@ -63,7 +63,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     CONFIG.hideHScroll = True
     CONFIG.fmtPadThin = True
 
-    assert nwGUI.docEditor.initEditor()
+    nwGUI.docEditor.initEditor()
 
     qDoc = nwGUI.docEditor.document()
     assert CONFIG.textFont == qDoc.defaultFont().family()
@@ -714,7 +714,7 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
     theText = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
     assert nwGUI.docEditor.replaceText(theText) is True
     assert nwGUI.docEditor.setCursorPosition(45) is True
-    assert nwGUI.docEditor._removeInParLineBreaks() is True
+    nwGUI.docEditor._removeInParLineBreaks()
     assert nwGUI.docEditor.getText() == "### A Scene\n\n%s\n" % "\n\n".join(ipsumText[0:2])
 
     # Remove First Paragraph
@@ -725,7 +725,7 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
     theCursor.setPosition(16, QTextCursor.MoveAnchor)
     theCursor.setPosition(680, QTextCursor.KeepAnchor)
     nwGUI.docEditor.setTextCursor(theCursor)
-    assert nwGUI.docEditor._removeInParLineBreaks() is True
+    nwGUI.docEditor._removeInParLineBreaks()
 
     newText = nwGUI.docEditor.getText()
     newPara = list(filter(str.strip, newText.split("\n")))
@@ -1211,7 +1211,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Activate search
     nwGUI.mainMenu.aFind.activate(QAction.Trigger)
     assert nwGUI.docEditor.docSearch.isVisible()
-    assert nwGUI.docEditor.docSearch.getSearchText() == "est"
+    assert nwGUI.docEditor.docSearch.searchText == "est"
 
     # Find next by enter key
     monkeypatch.setattr(nwGUI.docEditor.docSearch.searchBox, "hasFocus", lambda: True)
@@ -1238,12 +1238,12 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Toggle search again with header button
     qtbot.mouseClick(nwGUI.docEditor.docHeader.searchButton, Qt.LeftButton, delay=KEY_DELAY)
-    assert nwGUI.docEditor.docSearch.setSearchText("")
+    nwGUI.docEditor.docSearch.setSearchText("")
     assert nwGUI.docEditor.docSearch.isVisible() is True
 
     # Search for non-existing
     nwGUI.docEditor.setCursorPosition(0)
-    assert nwGUI.docEditor.docSearch.setSearchText("abcdef")
+    nwGUI.docEditor.docSearch.setSearchText("abcdef")
     qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
     assert nwGUI.docEditor.getCursorPosition() < 3  # No result
 
@@ -1254,19 +1254,19 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Set invalid RegEx
     nwGUI.docEditor.setCursorPosition(0)
-    assert nwGUI.docEditor.docSearch.setSearchText(r"\bSus[")
+    nwGUI.docEditor.docSearch.setSearchText(r"\bSus[")
     qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
     assert nwGUI.docEditor.getCursorPosition() < 3  # No result
 
     # Set dangerous RegEx (issue #1015)
     # If this doesn't get caught, the app will hang
     nwGUI.docEditor.setCursorPosition(0)
-    assert nwGUI.docEditor.docSearch.setSearchText(r".*")
+    nwGUI.docEditor.docSearch.setSearchText(r".*")
     qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
     assert abs(nwGUI.docEditor.getCursorPosition() - 14) < 3
 
     # Set valid RegEx
-    assert nwGUI.docEditor.docSearch.setSearchText(r"\bSus")
+    nwGUI.docEditor.docSearch.setSearchText(r"\bSus")
     qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
     assert abs(nwGUI.docEditor.getCursorPosition() - 208) < 3
 
@@ -1291,11 +1291,11 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Trigger replace
     nwGUI.mainMenu.aReplace.activate(QAction.Trigger)
-    assert nwGUI.docEditor.docSearch.setReplaceText("foo")
+    nwGUI.docEditor.docSearch.setReplaceText("foo")
 
     # Disable RegEx case sensitive
     nwGUI.docEditor.docSearch.toggleCase.activate(QAction.Trigger)
-    assert not nwGUI.docEditor.docSearch.toggleCase.isChecked()
+    assert nwGUI.docEditor.docSearch.toggleCase.isChecked() is False
     assert nwGUI.docEditor.docSearch.isCaseSense is False
 
     # Toggle replace preserve case
@@ -1341,7 +1341,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Activate search again
     nwGUI.mainMenu.aFind.activate(QAction.Trigger)
     assert nwGUI.docEditor.docSearch.isVisible()
-    assert nwGUI.docEditor.docSearch.getSearchText() == "est"
+    assert nwGUI.docEditor.docSearch.searchText == "est"
 
     # Enable full word search
     nwGUI.docEditor.docSearch.toggleWord.activate(QAction.Trigger)
@@ -1369,7 +1369,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Next doc, no match
     assert nwGUI.docEditor.docSearch.doNextFile is True
-    assert nwGUI.docEditor.docSearch.setSearchText("abcdef")
+    nwGUI.docEditor.docSearch.setSearchText("abcdef")
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
     assert nwGUI.docEditor.docHandle != "2426c6f0ca922"
     assert nwGUI.docEditor.docHandle == "04468803b92e1"
