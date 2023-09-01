@@ -40,11 +40,11 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtPrintSupport import QPrintPreviewDialog, QPrinter
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.core.tokenizer import HeadingFormatter
 from novelwriter.error import logException
 from novelwriter.common import checkInt, fuzzyTime
 from novelwriter.core.tohtml import ToHtml
 from novelwriter.core.docbuild import NWBuildDocument
+from novelwriter.core.tokenizer import HeadingFormatter
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
