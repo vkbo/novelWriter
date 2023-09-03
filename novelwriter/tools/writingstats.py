@@ -30,7 +30,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from PyQt5.QtGui import QPixmap, QCursor
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     qApp, QDialog, QTreeWidget, QTreeWidgetItem, QDialogButtonBox, QGridLayout,
     QLabel, QGroupBox, QMenu, QAction, QFileDialog, QSpinBox, QHBoxLayout
@@ -63,7 +63,7 @@ class GuiWritingStats(QDialog):
     FMT_JSON = 0
     FMT_CSV  = 1
 
-    def __init__(self, mainGui: GuiMain):
+    def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
 
         logger.debug("Create: GuiWritingStats")
@@ -294,11 +294,11 @@ class GuiWritingStats(QDialog):
 
         return
 
-    def __del__(self):  # pragma: no cover
+    def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiWritingStats")
         return
 
-    def populateGUI(self):
+    def populateGUI(self) -> None:
         """Populate list box with data from the log file."""
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         self._loadLogFile()
@@ -310,7 +310,7 @@ class GuiWritingStats(QDialog):
     #  Slots
     ##
 
-    def _doClose(self):
+    def _doClose(self) -> None:
         """Save the state of the window, clear cache, end close."""
         self.logData = []
 
@@ -351,7 +351,7 @@ class GuiWritingStats(QDialog):
 
         return
 
-    def _saveData(self, dataFmt):
+    def _saveData(self, dataFmt: int) -> bool:
         """Save the content of the list box to a file."""
         fileExt = ""
         textFmt = ""
@@ -426,7 +426,7 @@ class GuiWritingStats(QDialog):
     #  Internal Functions
     ##
 
-    def _loadLogFile(self):
+    def _loadLogFile(self) -> None:
         """Load the content of the log file into a buffer."""
         logger.debug("Loading session log file")
 
@@ -473,10 +473,11 @@ class GuiWritingStats(QDialog):
         return
 
     ##
-    #  Slots
+    #  Private Slots
     ##
 
-    def _updateListBox(self):
+    @pyqtSlot()
+    def _updateListBox(self) -> None:
         """Load/reload the content of the list box."""
         self.listBox.clear()
         self.timeFilter = 0.0
@@ -587,16 +588,13 @@ class GuiWritingStats(QDialog):
             newItem.setFont(self.C_TIME, SHARED.theme.guiFontFixed)
             newItem.setFont(self.C_LENGTH, SHARED.theme.guiFontFixed)
             newItem.setFont(self.C_COUNT, SHARED.theme.guiFontFixed)
-            if showIdleTime:
-                newItem.setFont(self.C_IDLE, SHARED.theme.guiFontFixed)
-            else:
-                newItem.setFont(self.C_IDLE, SHARED.theme.guiFont)
+            newItem.setFont(self.C_IDLE, SHARED.theme.guiFontFixed)
 
             self.listBox.addTopLevelItem(newItem)
             self.timeFilter += sDiff
 
         self.labelFilter.setText(formatTime(round(self.timeFilter)))
 
-        return True
+        return
 
 # END Class GuiWritingStats
