@@ -460,9 +460,8 @@ class GuiDocEditor(QTextEdit):
 
         return True
 
-    def updateTagHighLighting(self):
-        """Rerun the syntax highlighter on all meta data lines.
-        """
+    def updateTagHighLighting(self) -> None:
+        """Rerun the syntax highlighter on all meta data lines."""
         self.highLight.rehighlightByType(GuiDocHighlighter.BLOCK_META)
         return
 
@@ -672,7 +671,7 @@ class GuiDocEditor(QTextEdit):
             self._nwItem.setCursorPos(cursPos)
         return
 
-    def setCursorLine(self, line: int) -> bool:
+    def setCursorLine(self, line: int | None) -> bool:
         """Move the cursor to a given line in the document."""
         if not isinstance(line, int):
             return False
