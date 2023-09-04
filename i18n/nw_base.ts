@@ -4500,17 +4500,17 @@
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="573" />
+      <location filename="../novelwriter/tools/manuscript.py" line="571" />
       <source>Name</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="579" />
+      <location filename="../novelwriter/tools/manuscript.py" line="577" />
       <source>Selection</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="595" />
+      <location filename="../novelwriter/tools/manuscript.py" line="593" />
       <source>Title</source>
       <translation type="unfinished" />
     </message>
@@ -4653,27 +4653,27 @@
   <context>
     <name>_PreviewWidget</name>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="659" />
-      <source>Press the "Build Preview" button to generate ...</source>
+      <location filename="../novelwriter/tools/manuscript.py" line="657" />
+      <source>Press the "Preview" button to generate ...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="757" />
+      <location filename="../novelwriter/tools/manuscript.py" line="755" />
       <source>Processing ...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="786" />
+      <location filename="../novelwriter/tools/manuscript.py" line="784" />
       <source>Done</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="829" />
+      <location filename="../novelwriter/tools/manuscript.py" line="827" />
       <source>Unknown</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="830" />
+      <location filename="../novelwriter/tools/manuscript.py" line="828" />
       <source>Built</source>
       <translation type="unfinished" />
     </message>

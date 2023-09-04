@@ -655,7 +655,7 @@ class _PreviewWidget(QTextBrowser):
 
         self.document().setDocumentMargin(CONFIG.getTextMargin())
         self.setPlaceholderText(self.tr(
-            "Press the \"Build Preview\" button to generate ..."
+            "Press the \"Preview\" button to generate ..."
         ))
 
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
