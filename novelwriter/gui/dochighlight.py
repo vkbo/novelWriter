@@ -367,7 +367,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                     self.setFormat(tLen-1, tLen, self._hStyles["keyword"])
                     return
 
-            # Regular text
+            # Regular Text
             self.setCurrentBlockState(self.BLOCK_TEXT)
             for rX, xFmt in self.rxRules:
                 rxItt = rX.globalMatch(text, 0)
@@ -389,7 +389,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         while rxSpell.hasNext():
             rxMatch = rxSpell.next()
             if not SHARED.spelling.checkWord(rxMatch.captured(0)):
-                if rxMatch.captured(0).isupper() or rxMatch.captured(0).isnumeric():
+                if not rxMatch.captured(0).isalpha() or rxMatch.captured(0).isupper():
                     continue
                 xPos = rxMatch.capturedStart(0)
                 xLen = rxMatch.capturedLength(0)
