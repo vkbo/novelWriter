@@ -40,18 +40,6 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-class PopRightMenu(QMenu):
-
-    def event(self, event: QEvent):
-        """Overload the show event and move the menu popup location."""
-        if event.type() == QEvent.Show:
-            parent = self.parent()
-            if isinstance(parent, QWidget):
-                offset = QPoint(parent.width(), parent.height() - self.height())
-                self.move(parent.mapToGlobal(offset))
-        return super(PopRightMenu, self).event(event)
-
-
 class GuiSideBar(QWidget):
 
     viewChangeRequested = pyqtSignal(nwView)
@@ -104,7 +92,7 @@ class GuiSideBar(QWidget):
         self.tbSettings.setIconSize(iconSize)
         self.tbSettings.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
 
-        self.mSettings = PopRightMenu(self.tbSettings)
+        self.mSettings = _PopRightMenu(self.tbSettings)
         self.mSettings.addAction(self.mainGui.mainMenu.aEditWordList)
         self.mSettings.addAction(self.mainGui.mainMenu.aProjectSettings)
         self.mSettings.addSeparator()
@@ -171,3 +159,17 @@ class GuiSideBar(QWidget):
         return
 
 # END Class GuiSideBar
+
+
+class _PopRightMenu(QMenu):
+
+    def event(self, event: QEvent):
+        """Overload the show event and move the menu popup location."""
+        if event.type() == QEvent.Show:
+            parent = self.parent()
+            if isinstance(parent, QWidget):
+                offset = QPoint(parent.width(), parent.height() - self.height())
+                self.move(parent.mapToGlobal(offset))
+        return super(_PopRightMenu, self).event(event)
+
+# END Class _PopRightMenu

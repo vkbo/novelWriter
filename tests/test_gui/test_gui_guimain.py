@@ -595,7 +595,7 @@ def testGuiMain_Features(qtbot, nwGUI, projPath, mockRnd):
     # SideBar Menu
     # ============
 
-    # Just make sure the custom event handler executes and don't fail
+    # Just make sure the custom event handler executes and doesn't fail
     nwGUI.sideBar.mSettings.show()
     nwGUI.sideBar.mSettings.hide()
 
