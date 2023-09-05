@@ -329,7 +329,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 self.setFormat(0, 4, self._hStyles["header4h"])
                 self.setFormat(4, len(text), self._hStyles["header4"])
 
-            if text.startswith("#! "):  # Title
+            elif text.startswith("#! "):  # Title
                 self.setFormat(0, 2, self._hStyles["header1h"])
                 self.setFormat(2, len(text), self._hStyles["header1"])
 

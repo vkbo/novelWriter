@@ -33,8 +33,8 @@ from datetime import datetime
 from PyQt5.QtCore import Qt, QTimer, QThreadPool, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QCursor, QIcon, QKeySequence
 from PyQt5.QtWidgets import (
-    qApp, QDialog, QFileDialog, QMainWindow, QMessageBox, QShortcut, QSplitter,
-    QStackedWidget, QVBoxLayout, QWidget
+    QDialog, QFileDialog, QHBoxLayout, QMainWindow, QMessageBox, QShortcut,
+    QSplitter, QStackedWidget, QVBoxLayout, QWidget, qApp
 )
 
 from novelwriter import CONFIG, SHARED, __hexversion__
@@ -95,7 +95,7 @@ class GuiMain(QMainWindow):
 
         logger.debug("Create: GUI")
         self.setObjectName("GuiMain")
-        self.threadPool = QThreadPool()
+        self.threadPool = QThreadPool(self)
 
         # System Info
         # ===========
@@ -146,14 +146,14 @@ class GuiMain(QMainWindow):
         self.viewsBar    = GuiSideBar(self)
 
         # Project Tree Stack
-        self.projStack = QStackedWidget()
+        self.projStack = QStackedWidget(self)
         self.projStack.addWidget(self.projView)
         self.projStack.addWidget(self.novelView)
         self.projStack.currentChanged.connect(self._projStackChanged)
 
         # Project Tree View
-        self.treePane = QWidget()
-        self.treeBox = QVBoxLayout()
+        self.treePane = QWidget(self)
+        self.treeBox = QVBoxLayout(self)
         self.treeBox.setContentsMargins(0, 0, 0, 0)
         self.treeBox.setSpacing(mPx)
         self.treeBox.addWidget(self.projStack)
@@ -161,7 +161,7 @@ class GuiMain(QMainWindow):
         self.treePane.setLayout(self.treeBox)
 
         # Splitter : Document Viewer / Document Meta
-        self.splitView = QSplitter(Qt.Vertical)
+        self.splitView = QSplitter(Qt.Vertical, self)
         self.splitView.addWidget(self.docViewer)
         self.splitView.addWidget(self.viewMeta)
         self.splitView.setHandleWidth(hWd)
@@ -169,7 +169,7 @@ class GuiMain(QMainWindow):
         self.splitView.setSizes(CONFIG.viewPanePos)
 
         # Splitter : Document Editor / Document Viewer
-        self.splitDocs = QSplitter(Qt.Horizontal)
+        self.splitDocs = QSplitter(Qt.Horizontal, self)
         self.splitDocs.addWidget(self.docEditor)
         self.splitDocs.addWidget(self.splitView)
         self.splitDocs.setOpaqueResize(False)
@@ -185,7 +185,7 @@ class GuiMain(QMainWindow):
         self.splitMain.setSizes(CONFIG.mainPanePos)
 
         # Main Stack : Editor / Outline
-        self.mainStack = QStackedWidget()
+        self.mainStack = QStackedWidget(self)
         self.mainStack.addWidget(self.splitMain)
         self.mainStack.addWidget(self.outlineView)
         self.mainStack.currentChanged.connect(self._mainStackChanged)
@@ -222,11 +222,19 @@ class GuiMain(QMainWindow):
         # Initialise the Project Tree
         self.rebuildTrees()
 
-        # Set Main Window Elements
+        # Assemble Main Window Elements
+        self.mainBox = QHBoxLayout(self)
+        self.mainBox.addWidget(self.viewsBar)
+        self.mainBox.addWidget(self.mainStack)
+        self.mainBox.setContentsMargins(0, 0, 0, 0)
+        self.mainBox.setSpacing(0)
+
+        self.mainWidget = QWidget(self)
+        self.mainWidget.setLayout(self.mainBox)
+
         self.setMenuBar(self.mainMenu)
-        self.setCentralWidget(self.mainStack)
+        self.setCentralWidget(self.mainWidget)
         self.setStatusBar(self.mainStatus)
-        self.addToolBar(Qt.LeftToolBarArea, self.viewsBar)
         self.setContextMenuPolicy(Qt.NoContextMenu)  # Issue #1147
 
         # Connect Signals
@@ -269,15 +277,15 @@ class GuiMain(QMainWindow):
         # =======================
 
         # Set Up Auto-Save Project Timer
-        self.asProjTimer = QTimer()
+        self.asProjTimer = QTimer(self)
         self.asProjTimer.timeout.connect(self._autoSaveProject)
 
         # Set Up Auto-Save Document Timer
-        self.asDocTimer = QTimer()
+        self.asDocTimer = QTimer(self)
         self.asDocTimer.timeout.connect(self._autoSaveDocument)
 
         # Main Clock
-        self.mainTimer = QTimer()
+        self.mainTimer = QTimer(self)
         self.mainTimer.setInterval(1000)
         self.mainTimer.timeout.connect(self._timeTick)
         self.mainTimer.start()
@@ -1022,7 +1030,7 @@ class GuiMain(QMainWindow):
 
     def showAboutQtDialog(self) -> None:
         """Show the about dialog for Qt."""
-        msgBox = QMessageBox()
+        msgBox = QMessageBox(self)
         msgBox.aboutQt(self, "About Qt")
         return
 

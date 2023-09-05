@@ -25,99 +25,108 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtCore import Qt, QSize, pyqtSignal
-from PyQt5.QtWidgets import (
-    QToolBar, QWidget, QSizePolicy, QAction, QMenu, QToolButton
-)
+from typing import TYPE_CHECKING
+
+from PyQt5.QtCore import QEvent, QPoint, Qt, QSize, pyqtSignal
+from PyQt5.QtGui import QPalette
+from PyQt5.QtWidgets import QMenu, QToolButton, QVBoxLayout, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwView
 
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.guimain import GuiMain
+
 logger = logging.getLogger(__name__)
 
 
-class GuiSideBar(QToolBar):
+class PopRightMenu(QMenu):
+
+    def event(self, event: QEvent):
+        """Overload the show event and move the menu popup location."""
+        if event.type() == QEvent.Show:
+            parent = self.parent()
+            if isinstance(parent, QWidget):
+                offset = QPoint(parent.width(), parent.height() - self.height())
+                self.move(parent.mapToGlobal(offset))
+        return super(PopRightMenu, self).event(event)
+
+
+class GuiSideBar(QWidget):
 
     viewChangeRequested = pyqtSignal(nwView)
 
-    def __init__(self, mainGui):
+    def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
 
         logger.debug("Create: GuiSideBar")
 
         self.mainGui = mainGui
 
-        # Style
-        iPx = CONFIG.pxInt(22)
-        mPx = CONFIG.pxInt(60)
-
-        lblFont = SHARED.theme.guiFont
-        lblFont.setPointSizeF(0.65*SHARED.theme.fontPointSize)
-
-        self.setMovable(False)
-        self.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-        self.setIconSize(QSize(iPx, iPx))
-        self.setMaximumWidth(mPx)
+        iPx = CONFIG.pxInt(24)
+        iconSize = QSize(iPx, iPx)
         self.setContentsMargins(0, 0, 0, 0)
 
-        stretch = QWidget(self)
-        stretch.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
         # Actions
-        self.aProject = QAction(self.tr("Project"), self)
-        self.aProject.setFont(lblFont)
-        self.aProject.setToolTip(self.tr("Project Tree View"))
-        self.aProject.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.PROJECT))
+        self.tbProject = QToolButton(self)
+        self.tbProject.setToolTip(self.tr("Project Tree View"))
+        self.tbProject.setIconSize(iconSize)
+        self.tbProject.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.PROJECT))
 
-        self.aNovel = QAction(self.tr("Novel"), self)
-        self.aNovel.setFont(lblFont)
-        self.aNovel.setToolTip(self.tr("Novel Tree View"))
-        self.aNovel.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.NOVEL))
+        self.tbNovel = QToolButton(self)
+        self.tbNovel.setToolTip(self.tr("Novel Tree View"))
+        self.tbNovel.setIconSize(iconSize)
+        self.tbNovel.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.NOVEL))
 
-        self.aOutline = QAction(self.tr("Outline"), self)
-        self.aOutline.setFont(lblFont)
-        self.aOutline.setToolTip(self.tr("Novel Outline View"))
-        self.aOutline.triggered.connect(lambda: self.viewChangeRequested.emit(nwView.OUTLINE))
+        self.tbOutline = QToolButton(self)
+        self.tbOutline.setToolTip(self.tr("Novel Outline View"))
+        self.tbOutline.setIconSize(iconSize)
+        self.tbOutline.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.OUTLINE))
 
-        self.aBuild = QAction(self.tr("Build"), self)
-        self.aBuild.setFont(lblFont)
-        self.aBuild.setToolTip(self.tr("Build Manuscript"))
-        self.aBuild.triggered.connect(lambda: self.mainGui.showBuildManuscriptDialog())
+        self.tbBuild = QToolButton(self)
+        self.tbBuild.setToolTip(self.tr("Build Manuscript"))
+        self.tbBuild.setIconSize(iconSize)
+        self.tbBuild.clicked.connect(self.mainGui.showBuildManuscriptDialog)
 
-        self.aDetails = QAction(self.tr("Details"), self)
-        self.aDetails.setFont(lblFont)
-        self.aDetails.setToolTip(self.tr("Project Details"))
-        self.aDetails.triggered.connect(lambda: self.mainGui.showProjectDetailsDialog())
+        self.tbDetails = QToolButton(self)
+        self.tbDetails.setToolTip(self.tr("Project Details"))
+        self.tbDetails.setIconSize(iconSize)
+        self.tbDetails.clicked.connect(self.mainGui.showProjectDetailsDialog)
 
-        self.aStats = QAction(self.tr("Stats"), self)
-        self.aStats.setFont(lblFont)
-        self.aStats.setToolTip(self.tr("Writing Statistics"))
-        self.aStats.triggered.connect(lambda: self.mainGui.showWritingStatsDialog())
+        self.tbStats = QToolButton(self)
+        self.tbStats.setToolTip(self.tr("Writing Statistics"))
+        self.tbStats.setIconSize(iconSize)
+        self.tbStats.clicked.connect(self.mainGui.showWritingStatsDialog)
 
         # Settings Menu
-        self.mSettings = QMenu()
+        self.tbSettings = QToolButton(self)
+        self.tbSettings.setToolTip(self.tr("Settings"))
+        self.tbSettings.setIconSize(iconSize)
+        self.tbSettings.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
 
+        self.mSettings = PopRightMenu(self.tbSettings)
         self.mSettings.addAction(self.mainGui.mainMenu.aEditWordList)
         self.mSettings.addAction(self.mainGui.mainMenu.aProjectSettings)
         self.mSettings.addSeparator()
         self.mSettings.addAction(self.mainGui.mainMenu.aPreferences)
 
-        self.tbSettings = QToolButton(self)
-        self.tbSettings.setFont(lblFont)
-        self.tbSettings.setText(self.tr("Settings"))
         self.tbSettings.setMenu(self.mSettings)
-        self.tbSettings.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.tbSettings.setPopupMode(QToolButton.InstantPopup)
 
         # Assemble
-        self.addAction(self.aProject)
-        self.addAction(self.aNovel)
-        self.addAction(self.aOutline)
-        self.addAction(self.aBuild)
-        self.addWidget(stretch)
-        self.addAction(self.aDetails)
-        self.addAction(self.aStats)
-        self.addWidget(self.tbSettings)
+        self.outerBox = QVBoxLayout()
+        self.outerBox.addWidget(self.tbProject)
+        self.outerBox.addWidget(self.tbNovel)
+        self.outerBox.addWidget(self.tbOutline)
+        self.outerBox.addWidget(self.tbBuild)
+        self.outerBox.addStretch(1)
+        self.outerBox.addWidget(self.tbDetails)
+        self.outerBox.addWidget(self.tbStats)
+        self.outerBox.addWidget(self.tbSettings)
+        self.outerBox.setContentsMargins(0, 0, CONFIG.pxInt(2), 0)
+        self.outerBox.setSpacing(CONFIG.pxInt(4))
+
+        self.setLayout(self.outerBox)
 
         self.updateTheme()
 
@@ -125,18 +134,39 @@ class GuiSideBar(QToolBar):
 
         return
 
-    def updateTheme(self):
-        """Initialise GUI elements that depend on specific settings.
-        """
-        self.setStyleSheet("QToolBar {border: 0px;}")
+    def updateTheme(self) -> None:
+        """Initialise GUI elements that depend on specific settings."""
+        qPalette = self.palette()
+        qPalette.setBrush(QPalette.Window, qPalette.base())
+        self.setPalette(qPalette)
 
-        self.aProject.setIcon(SHARED.theme.getIcon("view_editor"))
-        self.aNovel.setIcon(SHARED.theme.getIcon("view_novel"))
-        self.aOutline.setIcon(SHARED.theme.getIcon("view_outline"))
-        self.aBuild.setIcon(SHARED.theme.getIcon("view_build"))
-        self.aDetails.setIcon(SHARED.theme.getIcon("proj_details"))
-        self.aStats.setIcon(SHARED.theme.getIcon("proj_stats"))
+        fadeCol = qPalette.text().color()
+        buttonStyle = (
+            "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
+        ).format(CONFIG.pxInt(4), fadeCol.red(), fadeCol.green(), fadeCol.blue())
+        buttonStyleMenu = f"{buttonStyle} QToolButton::menu-indicator {{image: none;}}"
+
+        self.tbProject.setIcon(SHARED.theme.getIcon("view_editor"))
+        self.tbProject.setStyleSheet(buttonStyle)
+
+        self.tbNovel.setIcon(SHARED.theme.getIcon("view_novel"))
+        self.tbNovel.setStyleSheet(buttonStyle)
+
+        self.tbOutline.setIcon(SHARED.theme.getIcon("view_outline"))
+        self.tbOutline.setStyleSheet(buttonStyle)
+
+        self.tbBuild.setIcon(SHARED.theme.getIcon("view_build"))
+        self.tbBuild.setStyleSheet(buttonStyle)
+
+        self.tbDetails.setIcon(SHARED.theme.getIcon("proj_details"))
+        self.tbDetails.setStyleSheet(buttonStyle)
+
+        self.tbStats.setIcon(SHARED.theme.getIcon("proj_stats"))
+        self.tbStats.setStyleSheet(buttonStyle)
+
         self.tbSettings.setIcon(SHARED.theme.getIcon("settings"))
+        self.tbSettings.setStyleSheet(buttonStyleMenu)
 
         return
 
