@@ -72,8 +72,7 @@ def testGuiMain_ProjectBlocker(nwGUI):
 
 @pytest.mark.gui
 def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, prjLipsum):
-    """Test the handling of launch tasks.
-    """
+    """Test the handling of launch tasks."""
     monkeypatch.setattr(GuiProjectLoad, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiProjectLoad, "result", lambda *a: QDialog.Accepted)
     CONFIG.lastNotes = "0x0"
@@ -140,8 +139,7 @@ def testGuiMain_NewProject(monkeypatch, nwGUI, projPath):
 
 @pytest.mark.gui
 def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
-    """Test handling of project tree items based on GUI focus states.
-    """
+    """Test handling of project tree items based on GUI focus states."""
     buildTestProject(nwGUI, projPath)
 
     sHandle = "000000000000f"
@@ -190,8 +188,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
 @pytest.mark.gui
 def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
-    """Test the document editor.
-    """
+    """Test the document editor."""
     monkeypatch.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
     monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
     monkeypatch.setattr(QInputDialog, "getText", lambda *a, text: (text, True))
@@ -555,9 +552,8 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
 
 
 @pytest.mark.gui
-def testGuiMain_FocusFullMode(qtbot, nwGUI, projPath, mockRnd):
-    """Test toggling focus mode in main window.
-    """
+def testGuiMain_Features(qtbot, nwGUI, projPath, mockRnd):
+    """Test various features of the main window."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.isFocusMode is False
 
@@ -576,7 +572,7 @@ def testGuiMain_FocusFullMode(qtbot, nwGUI, projPath, mockRnd):
     assert nwGUI.treePane.isVisible() is False
     assert nwGUI.mainStatus.isVisible() is False
     assert nwGUI.mainMenu.isVisible() is False
-    assert nwGUI.viewsBar.isVisible() is False
+    assert nwGUI.sideBar.isVisible() is False
     assert nwGUI.splitView.isVisible() is False
 
     # Disable focus mode
@@ -584,7 +580,7 @@ def testGuiMain_FocusFullMode(qtbot, nwGUI, projPath, mockRnd):
     assert nwGUI.treePane.isVisible() is True
     assert nwGUI.mainStatus.isVisible() is True
     assert nwGUI.mainMenu.isVisible() is True
-    assert nwGUI.viewsBar.isVisible() is True
+    assert nwGUI.sideBar.isVisible() is True
     assert nwGUI.splitView.isVisible() is True
 
     # Full Screen Mode
@@ -596,6 +592,13 @@ def testGuiMain_FocusFullMode(qtbot, nwGUI, projPath, mockRnd):
     nwGUI.toggleFullScreenMode()
     assert nwGUI.windowState() & Qt.WindowFullScreen != Qt.WindowFullScreen
 
+    # SideBar Menu
+    # ============
+
+    # Just make sure the custom event handler executes and doesn't fail
+    nwGUI.sideBar.mSettings.show()
+    nwGUI.sideBar.mSettings.hide()
+
     # qtbot.stop()
 
-# END Test testGuiMain_FocusFullMode
+# END Test testGuiMain_Features
