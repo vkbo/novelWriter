@@ -67,7 +67,7 @@ class GuiSideBar(QWidget):
         iconSize = QSize(iPx, iPx)
         self.setContentsMargins(0, 0, 0, 0)
 
-        # Actions
+        # Buttons
         self.tbProject = QToolButton(self)
         self.tbProject.setToolTip(self.tr("Project Tree View"))
         self.tbProject.setIconSize(iconSize)

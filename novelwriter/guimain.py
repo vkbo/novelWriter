@@ -143,7 +143,7 @@ class GuiMain(QMainWindow):
         self.itemDetails = GuiItemDetails(self)
         self.outlineView = GuiOutlineView(self)
         self.mainMenu    = GuiMainMenu(self)
-        self.viewsBar    = GuiSideBar(self)
+        self.sideBar     = GuiSideBar(self)
 
         # Project Tree Stack
         self.projStack = QStackedWidget(self)
@@ -224,7 +224,7 @@ class GuiMain(QMainWindow):
 
         # Assemble Main Window Elements
         self.mainBox = QHBoxLayout(self)
-        self.mainBox.addWidget(self.viewsBar)
+        self.mainBox.addWidget(self.sideBar)
         self.mainBox.addWidget(self.mainStack)
         self.mainBox.setContentsMargins(0, 0, 0, 0)
         self.mainBox.setSpacing(0)
@@ -244,7 +244,7 @@ class GuiMain(QMainWindow):
         SHARED.projectStatusMessage.connect(self.mainStatus.setStatusMessage)
         SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
 
-        self.viewsBar.viewChangeRequested.connect(self._changeView)
+        self.sideBar.viewChangeRequested.connect(self._changeView)
 
         self.projView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
         self.projView.openDocumentRequest.connect(self._openDocument)
@@ -880,7 +880,7 @@ class GuiMain(QMainWindow):
                 SHARED.theme.loadTheme()
                 self.docEditor.updateTheme()
                 self.docViewer.updateTheme()
-                self.viewsBar.updateTheme()
+                self.sideBar.updateTheme()
                 self.projView.updateTheme()
                 self.novelView.updateTheme()
                 self.outlineView.updateTheme()
@@ -1154,7 +1154,7 @@ class GuiMain(QMainWindow):
         self.treePane.setVisible(isVisible)
         self.mainStatus.setVisible(isVisible)
         self.mainMenu.setVisible(isVisible)
-        self.viewsBar.setVisible(isVisible)
+        self.sideBar.setVisible(isVisible)
 
         hideDocFooter = self.isFocusMode and CONFIG.hideFocusFooter
         self.docEditor.docFooter.setVisible(not hideDocFooter)
