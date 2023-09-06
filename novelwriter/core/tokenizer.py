@@ -38,7 +38,7 @@ from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
 from novelwriter.enum import nwItemLayout
 from novelwriter.common import formatTimeStamp, numberToRoman, checkInt
-from novelwriter.constants import nwConst, nwHeadFmt, nwRegEx, nwUnicode
+from novelwriter.constants import nwHeadFmt, nwRegEx, nwUnicode
 from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
@@ -348,14 +348,6 @@ class Tokenizer(ABC):
             text = self._project.storage.getDocument(tHandle).readDocument() or ""
 
         self._text = text
-
-        docSize = len(self._text)
-        if docSize > nwConst.MAX_DOCSIZE:
-            errVal = self.tr("Document '{0}' is too big ({1} MB). Skipping.").format(
-                self._nwItem.itemName, f"{docSize/1.0e6:.2f}"
-            )
-            self._text = "# {0}\n\n{1}\n\n".format(self.tr("ERROR"), errVal)
-            self._errData.append(errVal)
 
         self._isNone  = self._nwItem.itemLayout == nwItemLayout.NO_LAYOUT
         self._isNovel = self._nwItem.itemLayout == nwItemLayout.DOCUMENT

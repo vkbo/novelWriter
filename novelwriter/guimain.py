@@ -340,6 +340,7 @@ class GuiMain(QMainWindow):
     def postLaunchTasks(self, cmdOpen: str | None) -> None:
         """Process tasks after the main window has been created."""
         if cmdOpen:
+            qApp.processEvents()
             logger.info("Command line path: %s", cmdOpen)
             self.openProject(cmdOpen)
 
@@ -513,10 +514,12 @@ class GuiMain(QMainWindow):
                     break
 
         if lastEdited is not None:
+            qApp.processEvents()
             self.openDocument(lastEdited, doScroll=True)
 
         lastViewed = SHARED.project.data.getLastHandle("viewer")
         if lastViewed is not None:
+            qApp.processEvents()
             self.viewDocument(lastViewed)
 
         # Check if we need to rebuild the index

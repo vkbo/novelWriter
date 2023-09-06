@@ -183,14 +183,6 @@ def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
     assert theToken.setText(C.hSceneDoc) is True
     assert theToken._text == docText
 
-    with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.constants.nwConst.MAX_DOCSIZE", 100)
-        assert theToken.setText(C.hSceneDoc, docText) is True
-        assert theToken._text == (
-            "# ERROR\n\n"
-            "Document 'New Scene' is too big (0.00 MB). Skipping.\n\n"
-        )
-
     assert theToken.setText(C.hSceneDoc, docText) is True
     assert theToken._text == docText
 

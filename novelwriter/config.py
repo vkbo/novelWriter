@@ -144,12 +144,10 @@ class Config:
         self.doReplaceDash   = True   # Replace multiple hyphens with dashes
         self.doReplaceDots   = True   # Replace three dots with ellipsis
 
-        self.scrollPastEnd   = 25     # Number of lines to scroll past end of document
         self.autoScroll      = False  # Typewriter-like scrolling
         self.autoScrollPos   = 30     # Start point for typewriter-like scrolling
 
         self.wordCountTimer  = 5.0    # Interval for word count update in seconds
-        self.bigDocLimit     = 800    # Size threshold for heavy editor features in kilobytes
         self.incNotesWCount  = True   # The status bar word count includes notes
 
         self.highlightQuotes = True   # Highlight text in quotes
@@ -573,7 +571,6 @@ class Config:
         self.doReplaceDQuote = conf.rdBool(sec, "repdquotes", self.doReplaceDQuote)
         self.doReplaceDash   = conf.rdBool(sec, "repdash", self.doReplaceDash)
         self.doReplaceDots   = conf.rdBool(sec, "repdots", self.doReplaceDots)
-        self.scrollPastEnd   = conf.rdInt(sec, "scrollpastend", self.scrollPastEnd)
         self.autoScroll      = conf.rdBool(sec, "autoscroll", self.autoScroll)
         self.autoScrollPos   = conf.rdInt(sec, "autoscrollpos", self.autoScrollPos)
         self.fmtSQuoteOpen   = conf.rdStr(sec, "fmtsquoteopen", self.fmtSQuoteOpen)
@@ -588,7 +585,6 @@ class Config:
         self.showLineEndings = conf.rdBool(sec, "showlineendings", self.showLineEndings)
         self.showMultiSpaces = conf.rdBool(sec, "showmultispaces", self.showMultiSpaces)
         self.wordCountTimer  = conf.rdFlt(sec, "wordcounttimer", self.wordCountTimer)
-        self.bigDocLimit     = conf.rdInt(sec, "bigdoclimit", self.bigDocLimit)
         self.incNotesWCount  = conf.rdBool(sec, "incnoteswcount", self.incNotesWCount)
         self.showFullPath    = conf.rdBool(sec, "showfullpath", self.showFullPath)
         self.highlightQuotes = conf.rdBool(sec, "highlightquotes", self.highlightQuotes)
@@ -697,7 +693,6 @@ class Config:
             "repdquotes":      str(self.doReplaceDQuote),
             "repdash":         str(self.doReplaceDash),
             "repdots":         str(self.doReplaceDots),
-            "scrollpastend":   str(self.scrollPastEnd),
             "autoscroll":      str(self.autoScroll),
             "autoscrollpos":   str(self.autoScrollPos),
             "fmtsquoteopen":   str(self.fmtSQuoteOpen),
@@ -712,7 +707,6 @@ class Config:
             "showlineendings": str(self.showLineEndings),
             "showmultispaces": str(self.showMultiSpaces),
             "wordcounttimer":  str(self.wordCountTimer),
-            "bigdoclimit":     str(self.bigDocLimit),
             "incnoteswcount":  str(self.incNotesWCount),
             "showfullpath":    str(self.showFullPath),
             "highlightquotes": str(self.highlightQuotes),

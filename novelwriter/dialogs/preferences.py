@@ -675,19 +675,6 @@ class GuiPreferencesEditor(QWidget):
             self.tr("Available languages are determined by your system.")
         )
 
-        # Big Document Size Limit
-        self.bigDocLimit = QSpinBox(self)
-        self.bigDocLimit.setMinimum(10)
-        self.bigDocLimit.setMaximum(10000)
-        self.bigDocLimit.setSingleStep(10)
-        self.bigDocLimit.setValue(CONFIG.bigDocLimit)
-        self.mainForm.addRow(
-            self.tr("Big document limit"),
-            self.bigDocLimit,
-            self.tr("Full spell checking is disabled above this limit."),
-            unit=self.tr("kB")
-        )
-
         # Word Count
         # ==========
         self.mainForm.addGroupLabel(self.tr("Word Count"))
@@ -737,19 +724,6 @@ class GuiPreferencesEditor(QWidget):
         # ================
         self.mainForm.addGroupLabel(self.tr("Scroll Behaviour"))
 
-        # Scroll Past End
-        self.scrollPastEnd = QSpinBox(self)
-        self.scrollPastEnd.setMinimum(0)
-        self.scrollPastEnd.setMaximum(100)
-        self.scrollPastEnd.setSingleStep(1)
-        self.scrollPastEnd.setValue(int(CONFIG.scrollPastEnd))
-        self.mainForm.addRow(
-            self.tr("Scroll past end of the document"),
-            self.scrollPastEnd,
-            self.tr("Set to 0 to disable this feature."),
-            unit=self.tr("lines")
-        )
-
         # Typewriter Scrolling
         self.autoScroll = NSwitch()
         self.autoScroll.setChecked(CONFIG.autoScroll)
@@ -775,11 +749,9 @@ class GuiPreferencesEditor(QWidget):
         return
 
     def saveValues(self):
-        """Save the values set for this tab.
-        """
+        """Save the values set for this tab."""
         # Spell Checking
         CONFIG.spellLanguage = self.spellLanguage.currentData()
-        CONFIG.bigDocLimit   = self.bigDocLimit.value()
 
         # Word Count
         CONFIG.wordCountTimer = self.wordCountTimer.value()
@@ -790,7 +762,6 @@ class GuiPreferencesEditor(QWidget):
         CONFIG.showLineEndings = self.showLineEndings.isChecked()
 
         # Scroll Behaviour
-        CONFIG.scrollPastEnd = self.scrollPastEnd.value()
         CONFIG.autoScroll    = self.autoScroll.isChecked()
         CONFIG.autoScrollPos = self.autoScrollPos.value()
 

@@ -37,22 +37,23 @@ from time import time
 from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import (
-    pyqtSignal, pyqtSlot, QObject, QPoint, QPointF, QPropertyAnimation,
-    QRegExp, QRegularExpression, QRunnable, QSize, QSizeF, Qt, QTimer
+    pyqtSignal, pyqtSlot, QObject, QPoint, QRegExp, QRegularExpression,
+    QRunnable, QSize, Qt, QTimer
 )
 from PyQt5.QtGui import (
-    QColor, QCursor, QFont, QFontMetrics, QKeyEvent, QKeySequence, QMouseEvent,
-    QPalette, QPixmap, QResizeEvent, QTextBlock, QTextCursor, QTextDocument, QTextOption
+    QColor, QCursor, QFont, QKeyEvent, QKeySequence, QMouseEvent, QPalette,
+    QPixmap, QResizeEvent, QTextBlock, QTextCursor, QTextDocument, QTextOption
 )
 from PyQt5.QtWidgets import (
-    QAction, qApp, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
-    QPushButton, QShortcut, QTextEdit, QToolBar, QToolButton, QWidget
+    QAction, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
+    QPlainTextEdit, QPushButton, QShortcut, QToolBar, QToolButton, QWidget,
+    qApp
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemClass
 from novelwriter.common import minmax, transferCase
-from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
+from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.core.index import countWords
 from novelwriter.gui.dochighlight import GuiDocHighlighter
 from novelwriter.extensions.wheeleventfilter import WheelEventFilter
@@ -63,7 +64,7 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-class GuiDocEditor(QTextEdit):
+class GuiDocEditor(QPlainTextEdit):
     """Gui Widget: Main Document Editor"""
 
     MOVE_KEYS = (
@@ -104,9 +105,7 @@ class GuiDocEditor(QTextEdit):
         self._lastEdit   = 0      # Time stamp of last edit
         self._lastActive = 0.0    # Time stamp of last activity
         self._lastFind   = None   # Position of the last found search word
-        self._bigDoc     = False  # Flag for very large document size
         self._doReplace  = False  # Switch to temporarily disable auto-replace
-        self._queuePos   = None   # Used for delayed change of cursor position
 
         # Typography Cache
         self._typPadChar = " "
@@ -124,7 +123,6 @@ class GuiDocEditor(QTextEdit):
         # Core Elements and Signals
         qDoc = self.document()
         qDoc.contentsChange.connect(self._docChange)
-        qDoc.documentLayout().documentSizeChanged.connect(self._docSizeChanged)
         self.selectionChanged.connect(self._updateSelectedStatus)
 
         # Document Title
@@ -141,9 +139,9 @@ class GuiDocEditor(QTextEdit):
 
         # Editor Settings
         self.setMinimumWidth(CONFIG.pxInt(300))
-        self.setAcceptRichText(False)
         self.setAutoFillBackground(True)
         self.setFrameStyle(QFrame.NoFrame)
+        self.setCenterOnScroll(True)
 
         # Custom Shortcuts
         self.keyContext = QShortcut(self)
@@ -237,9 +235,7 @@ class GuiDocEditor(QTextEdit):
         self._lastEdit   = 0
         self._lastActive = 0.0
         self._lastFind   = None
-        self._bigDoc     = False
         self._doReplace  = False
-        self._queuePos   = None
 
         self.setDocumentChanged(False)
         self.docHeader.setTitleFromHandle(self._docHandle)
@@ -315,7 +311,7 @@ class GuiDocEditor(QTextEdit):
         # Set default text margins
         # Due to cursor visibility, a part of the margin must be
         # allocated to the document itself. See issue #1112.
-        cW = self.cursorWidth()
+        cW = 2*self.cursorWidth()
         qDoc = self.document()
         qDoc.setDocumentMargin(cW)
         self._vpMargin = max(CONFIG.getTextMargin() - cW, 0)
@@ -362,7 +358,7 @@ class GuiDocEditor(QTextEdit):
         return
 
     def loadText(self, tHandle, tLine=None) -> bool:
-        """Load text from a document into the editor. If we have an io
+        """Load text from a document into the editor. If we have an I/O
         error, we must handle this and clear the editor so that we don't
         risk overwriting the file if it exists. This can for instance
         happen of the file contains binary elements or an encoding that
@@ -373,86 +369,50 @@ class GuiDocEditor(QTextEdit):
         self._nwDocument = SHARED.project.storage.getDocument(tHandle)
         self._nwItem = self._nwDocument.nwItem
 
-        theDoc = self._nwDocument.readDocument()
-        if theDoc is None:
-            # There was an io error
-            self.clearEditor()
-            return False
-
-        docSize = len(theDoc)
-        if docSize > nwConst.MAX_DOCSIZE:
-            SHARED.error(self.tr(
-                "The document you are trying to open is too big. "
-                "The document size is {0} MB. "
-                "The maximum size allowed is {1} MB."
-            ).format(
-                f"{docSize/1.0e6:.2f}",
-                f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
-            ))
+        docText = self._nwDocument.readDocument()
+        if docText is None:
+            # There was an I/O error
             self.clearEditor()
             return False
 
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+        self._docHandle = tHandle
         self.highLight.setHandle(tHandle)
 
-        # Check that the document is not too big for full, initial spell
-        # checking. If it is too big, we switch to only check as we type
-        self._checkDocSize(docSize)
-        spTemp = self.highLight.spellCheck
-        if self._bigDoc:
-            self.highLight.setSpellCheck(False)
-
-        bfTime = time()
+        tStart = time()
         self._allowAutoReplace(False)
-        self.setPlainText(theDoc)
-        qApp.processEvents()
-
+        self.setPlainText(docText)
         self._allowAutoReplace(True)
-        afTime = time()
-        logger.debug("Document highlighted in %.3f ms", 1000*(afTime-bfTime))
+        logger.debug("Document text loaded in %.3f ms", 1000*(time() - tStart))
+        qApp.processEvents()
 
         self._lastEdit = time()
         self._lastActive = time()
         self._runDocCounter()
         self.wcTimerDoc.start()
-        self._docHandle = tHandle
 
         self.setReadOnly(False)
         self.docHeader.setTitleFromHandle(self._docHandle)
         self.docFooter.setHandle(self._docHandle)
         self.updateDocMargins()
-        self.highLight.setSpellCheck(spTemp)
 
         if tLine is None and self._nwItem is not None:
-            # For large documents, we queue the repositioning until the
-            # document layout has grown past the point we want to move
-            # the cursor to. This makes the loading significantly
-            # faster.
-            if docSize > 50000:
-                self._queuePos = self._nwItem.cursorPos
-            else:
-                self.setCursorPosition(self._nwItem.cursorPos)
+            self.setCursorPosition(self._nwItem.cursorPos)
         elif isinstance(tLine, int):
             self.setCursorLine(tLine)
 
-        if CONFIG.scrollPastEnd > 0:
-            fSize = QFontMetrics(self.font()).lineSpacing()
-            docFrame = self.document().rootFrame().frameFormat()
-            docFrame.setBottomMargin(round(CONFIG.scrollPastEnd * fSize))
-            self.document().rootFrame().setFrameFormat(docFrame)
-
         self.docFooter.updateLineCount()
-
-        qApp.processEvents()
-        self.document().clearUndoRedoStacks()
-        self.setDocumentChanged(False)
-        qApp.restoreOverrideCursor()
 
         # This is a hack to fix invisible cursor on an empty document
         if self.document().characterCount() <= 1:
             self.setPlainText("\n")
             self.setPlainText("")
             self.setCursorPosition(0)
+
+        qApp.processEvents()
+        self.document().clearUndoRedoStacks()
+        self.setDocumentChanged(False)
+        qApp.restoreOverrideCursor()
 
         # Update the status bar
         if self._nwItem is not None:
@@ -471,29 +431,16 @@ class GuiDocEditor(QTextEdit):
         self.updateDocMargins()
         return
 
-    def replaceText(self, text: str) -> bool:
+    def replaceText(self, text: str) -> None:
         """Replace the text of the current document with the provided
         text. This also clears undo history.
         """
-        docSize = len(text)
-        if docSize > nwConst.MAX_DOCSIZE:
-            SHARED.error(self.tr(
-                "The text you are trying to add is too big. "
-                "The text size is {0} MB. "
-                "The maximum size allowed is {1} MB."
-            ).format(
-                f"{docSize/1.0e6:.2f}",
-                f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
-            ))
-            return False
-
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         self.setPlainText(text)
         self.updateDocMargins()
         self.setDocumentChanged(True)
         qApp.restoreOverrideCursor()
-
-        return True
+        return
 
     def saveText(self) -> bool:
         """Save the text currently in the editor to the NWDocument
@@ -637,32 +584,16 @@ class GuiDocEditor(QTextEdit):
         self.editedStatusChanged.emit(self._docChanged)
         return self._docChanged
 
-    def setCursorPosition(self, position: int) -> bool:
+    def setCursorPosition(self, position: int) -> None:
         """Move the cursor to a given position in the document."""
-        if not isinstance(position, int):
-            return False
-
         nChars = self.document().characterCount()
-        if nChars > 1:
-            theCursor = self.textCursor()
-            theCursor.setPosition(minmax(position, 0, nChars-1))
-            self.setTextCursor(theCursor)
-
-            # By default, the editor scrolls so the cursor is on the
-            # last line, so we must correct it. The user setting for
-            # auto-scroll is used to determine the scroll distance. This
-            # makes it compatible with the typewriter scrolling feature
-            # when it is enabled. By default, it's 30% of viewport.
-            vPos = self.verticalScrollBar().value()
-            cPos = self.cursorRect().topLeft().y()
-            mPos = int(CONFIG.autoScrollPos*0.01 * self.viewport().height())
-            if cPos > mPos:
-                # Only scroll if the cursor is past the auto-scroll limit
-                self.verticalScrollBar().setValue(max(0, vPos + cPos - mPos))
-
+        if nChars > 1 and isinstance(position, int):
+            cursor = self.textCursor()
+            cursor.setPosition(minmax(position, 0, nChars-1))
+            self.setTextCursor(cursor)
+            self.centerCursor()
             self.docFooter.updateLineCount()
-
-        return True
+        return
 
     def saveCursorPosition(self) -> None:
         """Save the cursor position to the current project item."""
@@ -671,19 +602,14 @@ class GuiDocEditor(QTextEdit):
             self._nwItem.setCursorPos(cursPos)
         return
 
-    def setCursorLine(self, line: int | None) -> bool:
+    def setCursorLine(self, line: int | None) -> None:
         """Move the cursor to a given line in the document."""
-        if not isinstance(line, int):
-            return False
-
-        lineIdx = line - 1  # Block index is 0 offset, lineNo is 1 offset
-        if lineIdx >= 0:
-            theBlock = self.document().findBlockByLineNumber(lineIdx)
-            if theBlock:
-                self.setCursorPosition(theBlock.position())
+        if isinstance(line, int) and line > 0:
+            block = self.document().findBlockByNumber(line - 1)
+            if block:
+                self.setCursorPosition(block.position())
                 logger.debug("Cursor moved to line %d", line)
-
-        return True
+        return
 
     ##
     #  Spell Checking
@@ -713,8 +639,7 @@ class GuiDocEditor(QTextEdit):
         self.mainGui.mainMenu.setSpellCheck(state)
         SHARED.project.data.setSpellCheck(state)
         self.highLight.setSpellCheck(state)
-        if not self._bigDoc or state is False:
-            # We don't run the spell checker automatically on big docs
+        if state is False:
             self.spellCheckDocument()
 
         logger.debug("Spell check is set to '%s'", str(state))
@@ -730,11 +655,7 @@ class GuiDocEditor(QTextEdit):
         logger.debug("Running spell checker")
         start = time()
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
-        if self._bigDoc:
-            # This is much faster for large documents
-            self.setPlainText(self.getText())
-        else:
-            self.highLight.rehighlight()
+        self.highLight.rehighlight()
         qApp.restoreOverrideCursor()
         logger.debug("Document highlighted in %.3f ms", 1000*(time() - start))
         self.statusMessage.emit(self.tr("Spell check complete"))
@@ -990,26 +911,16 @@ class GuiDocEditor(QTextEdit):
             return
 
         if CONFIG.autoScroll:
-
-            cOld = self.cursorRect().center().y()
+            cPos = self.cursorRect().topLeft().y()
             super().keyPressEvent(event)
-
             kMod = event.modifiers()
             okMod = kMod == Qt.NoModifier or kMod == Qt.ShiftModifier
             okKey = event.key() not in self.MOVE_KEYS
             if okMod and okKey:
-                cNew = self.cursorRect().center().y()
-                cMov = cNew - cOld
                 mPos = CONFIG.autoScrollPos*0.01 * self.viewport().height()
-                if abs(cMov) > 0 and cOld > mPos:
-                    # Move the scroll bar
+                if cPos > mPos:
                     vBar = self.verticalScrollBar()
-                    doAnim = QPropertyAnimation(vBar, b"value", self)
-                    doAnim.setDuration(120)
-                    doAnim.setStartValue(vBar.value())
-                    doAnim.setEndValue(vBar.value() + cMov)
-                    doAnim.start()
-
+                    vBar.setValue(vBar.value() + 1)
         else:
             super().keyPressEvent(event)
 
@@ -1075,16 +986,6 @@ class GuiDocEditor(QTextEdit):
         """
         self._lastEdit = time()
         self._lastFind = None
-
-        if self.document().characterCount() > nwConst.MAX_DOCSIZE:
-            SHARED.error(self.tr(
-                "The document has grown too big and you cannot add more text to it. "
-                "The maximum size of a single novelWriter document is {0} MB."
-            ).format(
-                f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
-            ))
-            self.undo()
-            return
 
         if not self._docChanged:
             self.setDocumentChanged(removed != 0 or added != 0)
@@ -1260,8 +1161,6 @@ class GuiDocEditor(QTextEdit):
 
         # Must not be emitted if docHandle is None!
         self.docCountsChanged.emit(self._docHandle, cCount, wCount, pCount)
-
-        self._checkDocSize(self.document().characterCount())
         self.docFooter.updateCounts()
 
         return
@@ -1299,8 +1198,7 @@ class GuiDocEditor(QTextEdit):
 
     @pyqtSlot(int, int, int)
     def _updateSelCounts(self, cCount: int, wCount: int, pCount: int) -> None:
-        """Slot for the word counter's finished signal
-        """
+        """Update the counts on the counter's finished signal."""
         if self._docHandle is None or self._nwItem is None:
             return
 
@@ -1308,25 +1206,6 @@ class GuiDocEditor(QTextEdit):
         self.docFooter.updateCounts(wCount=wCount, cCount=cCount)
         self.wcTimerSel.stop()
 
-        return
-
-    @pyqtSlot("QSizeF")
-    def _docSizeChanged(self, size: QSizeF) -> None:
-        """Called whenever the underlying document layout size changes.
-        This is used to queue the repositioning of the cursor for very
-        large documents to ensure the region where the cursor is being
-        moved to has been drawn before the move is made.
-        """
-        if self._queuePos is not None:
-            thePos = self.document().documentLayout().hitTest(
-                QPointF(size.width(), size.height()), Qt.FuzzyHit
-            )
-            if self._queuePos <= thePos:
-                logger.debug("Allowed cursor move to %d <= %d", self._queuePos, thePos)
-                self.setCursorPosition(self._queuePos)
-                self._queuePos = None
-            else:
-                logger.debug("Denied cursor move to %d > %d", self._queuePos, thePos)
         return
 
     ##
@@ -2020,29 +1899,6 @@ class GuiDocEditor(QTextEdit):
                 if text[1:].lstrip()[:9].lower() == "synopsis:":
                     return False
         return True
-
-    def _checkDocSize(self, size: int) -> None:
-        """Check if document size crosses the big document limit set in
-        config. If so, we will set the big document flag to True.
-        """
-        bigLim = round(CONFIG.bigDocLimit*1000)
-        newState = size > bigLim
-
-        if newState != self._bigDoc:
-            if newState:
-                logger.info(
-                    f"The document size is {size:n} > {bigLim:n}, "
-                    f"big doc mode has been enabled"
-                )
-            else:
-                logger.info(
-                    f"The document size is {size:n} <= {bigLim:n}, "
-                    f"big doc mode has been disabled"
-                )
-
-        self._bigDoc = newState
-
-        return
 
     def _autoSelect(self) -> QTextCursor:
         """Return a cursor which may or may not have a selection based
