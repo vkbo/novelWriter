@@ -149,7 +149,6 @@ class Config:
         self.autoScrollPos   = 30     # Start point for typewriter-like scrolling
 
         self.wordCountTimer  = 5.0    # Interval for word count update in seconds
-        self.bigDocLimit     = 800    # Size threshold for heavy editor features in kilobytes
         self.incNotesWCount  = True   # The status bar word count includes notes
 
         self.highlightQuotes = True   # Highlight text in quotes
@@ -588,7 +587,6 @@ class Config:
         self.showLineEndings = conf.rdBool(sec, "showlineendings", self.showLineEndings)
         self.showMultiSpaces = conf.rdBool(sec, "showmultispaces", self.showMultiSpaces)
         self.wordCountTimer  = conf.rdFlt(sec, "wordcounttimer", self.wordCountTimer)
-        self.bigDocLimit     = conf.rdInt(sec, "bigdoclimit", self.bigDocLimit)
         self.incNotesWCount  = conf.rdBool(sec, "incnoteswcount", self.incNotesWCount)
         self.showFullPath    = conf.rdBool(sec, "showfullpath", self.showFullPath)
         self.highlightQuotes = conf.rdBool(sec, "highlightquotes", self.highlightQuotes)
@@ -712,7 +710,6 @@ class Config:
             "showlineendings": str(self.showLineEndings),
             "showmultispaces": str(self.showMultiSpaces),
             "wordcounttimer":  str(self.wordCountTimer),
-            "bigdoclimit":     str(self.bigDocLimit),
             "incnoteswcount":  str(self.incNotesWCount),
             "showfullpath":    str(self.showFullPath),
             "highlightquotes": str(self.highlightQuotes),

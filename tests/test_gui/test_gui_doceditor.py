@@ -104,18 +104,12 @@ def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumTex
 
     # Regular open
     assert nwGUI.docEditor.loadText(C.hSceneDoc) is True
-    assert nwGUI.docEditor._bigDoc is False
 
     # Reload too big text
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.constants.nwConst.MAX_DOCSIZE", 100)
         assert nwGUI.docEditor.replaceText(longText) is False
         assert "The document you are trying to open is too big." in caplog.text
-
-    # Big doc handling
-    CONFIG.bigDocLimit = 50
-    assert nwGUI.docEditor.loadText(C.hSceneDoc) is True
-    assert nwGUI.docEditor._bigDoc is True
 
     # Regular open, with line number (1 indexed)
     assert nwGUI.docEditor.loadText(C.hSceneDoc, tLine=4) is True

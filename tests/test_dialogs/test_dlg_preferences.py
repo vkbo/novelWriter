@@ -159,9 +159,6 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
     qtbot.wait(KEY_DELAY)
     tabEditor.scrollPastEnd.setValue(0)
 
-    qtbot.wait(KEY_DELAY)
-    tabEditor.bigDocLimit.setValue(500)
-
     # Syntax Settings
     qtbot.wait(KEY_DELAY)
     tabSyntax = nwPrefs.tabSyntax

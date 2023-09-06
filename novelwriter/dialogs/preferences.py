@@ -675,19 +675,6 @@ class GuiPreferencesEditor(QWidget):
             self.tr("Available languages are determined by your system.")
         )
 
-        # Big Document Size Limit
-        self.bigDocLimit = QSpinBox(self)
-        self.bigDocLimit.setMinimum(10)
-        self.bigDocLimit.setMaximum(10000)
-        self.bigDocLimit.setSingleStep(10)
-        self.bigDocLimit.setValue(CONFIG.bigDocLimit)
-        self.mainForm.addRow(
-            self.tr("Big document limit"),
-            self.bigDocLimit,
-            self.tr("Full spell checking is disabled above this limit."),
-            unit=self.tr("kB")
-        )
-
         # Word Count
         # ==========
         self.mainForm.addGroupLabel(self.tr("Word Count"))
@@ -775,11 +762,9 @@ class GuiPreferencesEditor(QWidget):
         return
 
     def saveValues(self):
-        """Save the values set for this tab.
-        """
+        """Save the values set for this tab."""
         # Spell Checking
         CONFIG.spellLanguage = self.spellLanguage.currentData()
-        CONFIG.bigDocLimit   = self.bigDocLimit.value()
 
         # Word Count
         CONFIG.wordCountTimer = self.wordCountTimer.value()

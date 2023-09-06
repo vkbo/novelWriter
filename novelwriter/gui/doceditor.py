@@ -106,7 +106,6 @@ class GuiDocEditor(QPlainTextEdit):
         self._lastEdit   = 0      # Time stamp of last edit
         self._lastActive = 0.0    # Time stamp of last activity
         self._lastFind   = None   # Position of the last found search word
-        self._bigDoc     = False  # Flag for very large document size
         self._doReplace  = False  # Switch to temporarily disable auto-replace
         self._queuePos   = None   # Used for delayed change of cursor position
 
@@ -238,7 +237,6 @@ class GuiDocEditor(QPlainTextEdit):
         self._lastEdit   = 0
         self._lastActive = 0.0
         self._lastFind   = None
-        self._bigDoc     = False
         self._doReplace  = False
         self._queuePos   = None
 
@@ -396,13 +394,6 @@ class GuiDocEditor(QPlainTextEdit):
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         self.highLight.setHandle(tHandle)
 
-        # Check that the document is not too big for full, initial spell
-        # checking. If it is too big, we switch to only check as we type
-        self._checkDocSize(docSize)
-        spTemp = self.highLight.spellCheck
-        if self._bigDoc:
-            self.highLight.setSpellCheck(False)
-
         bfTime = time()
         self._allowAutoReplace(False)
         self.setPlainText(theDoc)
@@ -422,7 +413,6 @@ class GuiDocEditor(QPlainTextEdit):
         self.docHeader.setTitleFromHandle(self._docHandle)
         self.docFooter.setHandle(self._docHandle)
         self.updateDocMargins()
-        self.highLight.setSpellCheck(spTemp)
 
         if tLine is None and self._nwItem is not None:
             # For large documents, we queue the repositioning until the
@@ -714,8 +704,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.mainGui.mainMenu.setSpellCheck(state)
         SHARED.project.data.setSpellCheck(state)
         self.highLight.setSpellCheck(state)
-        if not self._bigDoc or state is False:
-            # We don't run the spell checker automatically on big docs
+        if state is False:
             self.spellCheckDocument()
 
         logger.debug("Spell check is set to '%s'", str(state))
@@ -731,11 +720,7 @@ class GuiDocEditor(QPlainTextEdit):
         logger.debug("Running spell checker")
         start = time()
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
-        if self._bigDoc:
-            # This is much faster for large documents
-            self.setPlainText(self.getText())
-        else:
-            self.highLight.rehighlight()
+        self.highLight.rehighlight()
         qApp.restoreOverrideCursor()
         logger.debug("Document highlighted in %.3f ms", 1000*(time() - start))
         self.statusMessage.emit(self.tr("Spell check complete"))
@@ -1261,8 +1246,6 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Must not be emitted if docHandle is None!
         self.docCountsChanged.emit(self._docHandle, cCount, wCount, pCount)
-
-        self._checkDocSize(self.document().characterCount())
         self.docFooter.updateCounts()
 
         return
@@ -2021,29 +2004,6 @@ class GuiDocEditor(QPlainTextEdit):
                 if text[1:].lstrip()[:9].lower() == "synopsis:":
                     return False
         return True
-
-    def _checkDocSize(self, size: int) -> None:
-        """Check if document size crosses the big document limit set in
-        config. If so, we will set the big document flag to True.
-        """
-        bigLim = round(CONFIG.bigDocLimit*1000)
-        newState = size > bigLim
-
-        if newState != self._bigDoc:
-            if newState:
-                logger.info(
-                    f"The document size is {size:n} > {bigLim:n}, "
-                    f"big doc mode has been enabled"
-                )
-            else:
-                logger.info(
-                    f"The document size is {size:n} <= {bigLim:n}, "
-                    f"big doc mode has been disabled"
-                )
-
-        self._bigDoc = newState
-
-        return
 
     def _autoSelect(self) -> QTextCursor:
         """Return a cursor which may or may not have a selection based
