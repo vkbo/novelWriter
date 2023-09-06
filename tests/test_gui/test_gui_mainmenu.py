@@ -46,8 +46,7 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Split By Chapter
     assert nwGUI.openDocument("4c4f28287af27") is True
-    assert nwGUI.docEditor.setCursorPosition(42) is True
-
+    nwGUI.docEditor.setCursorPosition(42)
     cleanText = nwGUI.docEditor.getText()[39:86]
 
     # Bold
@@ -95,7 +94,7 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Block Formats
     # =============
     # cSpell:ignore Pellentesque erat nulla posuere commodo
-    assert nwGUI.docEditor.setCursorPosition(42)
+    nwGUI.docEditor.setCursorPosition(42)
 
     # Header 1
     nwGUI.mainMenu.aFmtHead1.activate(QAction.Trigger)
@@ -141,7 +140,7 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert nwGUI.docEditor.getText()[39:86] == cleanText
 
     # Check comment with no space before text
-    assert nwGUI.docEditor.setCursorPosition(39)
+    nwGUI.docEditor.setCursorPosition(39)
     assert nwGUI.docEditor.insertText("%")
     fmtStr = "%Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[39:87] == fmtStr
@@ -157,7 +156,7 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert nwGUI.docEditor.getText()[39:86] == cleanText
 
     # Cut, Copy and Paste
-    assert nwGUI.docEditor.setCursorPosition(39)
+    nwGUI.docEditor.setCursorPosition(39)
     nwGUI.docEditor._makeSelection(QTextCursor.WordUnderCursor)
 
     nwGUI.mainMenu.aEditCut.activate(QAction.Trigger)
@@ -170,7 +169,7 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
         "Pellentesque nec erat ut nulla posuere commodo. Cu"
     )
 
-    assert nwGUI.docEditor.setCursorPosition(39)
+    nwGUI.docEditor.setCursorPosition(39)
     nwGUI.docEditor._makeSelection(QTextCursor.WordUnderCursor)
 
     nwGUI.mainMenu.aEditCopy.activate(QAction.Trigger)
@@ -178,7 +177,7 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
         "Pellentesque nec erat ut nulla posuere commodo. Cu"
     )
 
-    assert nwGUI.docEditor.setCursorPosition(39)
+    nwGUI.docEditor.setCursorPosition(39)
     nwGUI.mainMenu.aEditPaste.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[39:89] == (
         "PellentesquePellentesque nec erat ut nulla posuere"
@@ -186,7 +185,7 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     nwGUI.mainMenu.aEditUndo.activate(QAction.Trigger)
 
     # Select Paragraph/All
-    assert nwGUI.docEditor.setCursorPosition(42)
+    nwGUI.docEditor.setCursorPosition(42)
     nwGUI.mainMenu.aSelectPar.activate(QAction.Trigger)
     theCursor = nwGUI.docEditor.textCursor()
     assert theCursor.selectedText() == (
@@ -199,7 +198,7 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
         "nunc lacus, imperdiet nec posuere ac, interdum non lectus."
     )
 
-    assert nwGUI.docEditor.setCursorPosition(42)
+    nwGUI.docEditor.setCursorPosition(42)
     nwGUI.mainMenu.aSelectAll.activate(QAction.Trigger)
     theCursor = nwGUI.docEditor.textCursor()
     assert len(theCursor.selectedText()) == 1895
@@ -213,7 +212,7 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     cleanText = "A single, short paragraph.\n\n"
     nwGUI.docEditor.setPlainText(cleanText)
-    assert nwGUI.docEditor.setCursorPosition(0)
+    nwGUI.docEditor.setCursorPosition(0)
 
     # Left Align
     nwGUI.mainMenu.aFmtAlignLeft.activate(QAction.Trigger)
@@ -322,11 +321,11 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     ))
 
     # Cannot Format Tag
-    assert nwGUI.docEditor.setCursorPosition(17)
+    nwGUI.docEditor.setCursorPosition(17)
     assert not nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT)
 
     # Invalid Action
-    assert nwGUI.docEditor.setCursorPosition(30)
+    nwGUI.docEditor.setCursorPosition(30)
     assert not nwGUI.docEditor._formatBlock(nwDocAction.NO_ACTION)
 
     # Ensure No Changes

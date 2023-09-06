@@ -37,8 +37,8 @@ from time import time
 from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import (
-    pyqtSignal, pyqtSlot, QObject, QPoint, QPointF, QPropertyAnimation,
-    QRegExp, QRegularExpression, QRunnable, QSize, QSizeF, Qt, QTimer
+    pyqtSignal, pyqtSlot, QObject, QPoint, QPropertyAnimation, QRegExp,
+    QRegularExpression, QRunnable, QSize, Qt, QTimer
 )
 from PyQt5.QtGui import (
     QColor, QCursor, QFont, QFontMetrics, QKeyEvent, QKeySequence, QMouseEvent,
@@ -107,7 +107,6 @@ class GuiDocEditor(QPlainTextEdit):
         self._lastActive = 0.0    # Time stamp of last activity
         self._lastFind   = None   # Position of the last found search word
         self._doReplace  = False  # Switch to temporarily disable auto-replace
-        self._queuePos   = None   # Used for delayed change of cursor position
 
         # Typography Cache
         self._typPadChar = " "
@@ -125,7 +124,6 @@ class GuiDocEditor(QPlainTextEdit):
         # Core Elements and Signals
         qDoc = self.document()
         qDoc.contentsChange.connect(self._docChange)
-        qDoc.documentLayout().documentSizeChanged.connect(self._docSizeChanged)
         self.selectionChanged.connect(self._updateSelectedStatus)
 
         # Document Title
@@ -238,7 +236,6 @@ class GuiDocEditor(QPlainTextEdit):
         self._lastActive = 0.0
         self._lastFind   = None
         self._doReplace  = False
-        self._queuePos   = None
 
         self.setDocumentChanged(False)
         self.docHeader.setTitleFromHandle(self._docHandle)
@@ -415,14 +412,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.updateDocMargins()
 
         if tLine is None and self._nwItem is not None:
-            # For large documents, we queue the repositioning until the
-            # document layout has grown past the point we want to move
-            # the cursor to. This makes the loading significantly
-            # faster.
-            if docSize > 50000:
-                self._queuePos = self._nwItem.cursorPos
-            else:
-                self.setCursorPosition(self._nwItem.cursorPos)
+            self.setCursorPosition(self._nwItem.cursorPos)
         elif isinstance(tLine, int):
             self.setCursorLine(tLine)
 
@@ -628,32 +618,16 @@ class GuiDocEditor(QPlainTextEdit):
         self.editedStatusChanged.emit(self._docChanged)
         return self._docChanged
 
-    def setCursorPosition(self, position: int) -> bool:
+    def setCursorPosition(self, position: int) -> None:
         """Move the cursor to a given position in the document."""
-        if not isinstance(position, int):
-            return False
-
         nChars = self.document().characterCount()
-        if nChars > 1:
-            theCursor = self.textCursor()
-            theCursor.setPosition(minmax(position, 0, nChars-1))
-            self.setTextCursor(theCursor)
-
-            # By default, the editor scrolls so the cursor is on the
-            # last line, so we must correct it. The user setting for
-            # auto-scroll is used to determine the scroll distance. This
-            # makes it compatible with the typewriter scrolling feature
-            # when it is enabled. By default, it's 30% of viewport.
-            vPos = self.verticalScrollBar().value()
-            cPos = self.cursorRect().topLeft().y()
-            mPos = int(CONFIG.autoScrollPos*0.01 * self.viewport().height())
-            if cPos > mPos:
-                # Only scroll if the cursor is past the auto-scroll limit
-                self.verticalScrollBar().setValue(max(0, vPos + cPos - mPos))
-
+        if nChars > 1 and isinstance(position, int):
+            cursor = self.textCursor()
+            cursor.setPosition(minmax(position, 0, nChars-1))
+            self.setTextCursor(cursor)
+            self.centerCursor()
             self.docFooter.updateLineCount()
-
-        return True
+        return
 
     def saveCursorPosition(self) -> None:
         """Save the cursor position to the current project item."""
@@ -1283,8 +1257,7 @@ class GuiDocEditor(QPlainTextEdit):
 
     @pyqtSlot(int, int, int)
     def _updateSelCounts(self, cCount: int, wCount: int, pCount: int) -> None:
-        """Slot for the word counter's finished signal
-        """
+        """Update the counts on the counter's finished signal."""
         if self._docHandle is None or self._nwItem is None:
             return
 
@@ -1292,25 +1265,6 @@ class GuiDocEditor(QPlainTextEdit):
         self.docFooter.updateCounts(wCount=wCount, cCount=cCount)
         self.wcTimerSel.stop()
 
-        return
-
-    @pyqtSlot("QSizeF")
-    def _docSizeChanged(self, size: QSizeF) -> None:
-        """Called whenever the underlying document layout size changes.
-        This is used to queue the repositioning of the cursor for very
-        large documents to ensure the region where the cursor is being
-        moved to has been drawn before the move is made.
-        """
-        if self._queuePos is not None:
-            thePos = self.document().documentLayout().hitTest(
-                QPointF(size.width(), size.height()), Qt.FuzzyHit
-            )
-            if self._queuePos <= thePos:
-                logger.debug("Allowed cursor move to %d <= %d", self._queuePos, thePos)
-                self.setCursorPosition(self._queuePos)
-                self._queuePos = None
-            else:
-                logger.debug("Denied cursor move to %d > %d", self._queuePos, thePos)
         return
 
     ##
