@@ -37,13 +37,12 @@ from time import time
 from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import (
-    pyqtSignal, pyqtSlot, QObject, QPoint, QPropertyAnimation, QRegExp,
-    QRegularExpression, QRunnable, QSize, Qt, QTimer
+    pyqtSignal, pyqtSlot, QObject, QPoint, QRegExp, QRegularExpression,
+    QRunnable, QSize, Qt, QTimer
 )
 from PyQt5.QtGui import (
-    QColor, QCursor, QFont, QFontMetrics, QKeyEvent, QKeySequence, QMouseEvent,
-    QPalette, QPixmap, QResizeEvent, QTextBlock, QTextCursor, QTextDocument,
-    QTextOption
+    QColor, QCursor, QFont, QKeyEvent, QKeySequence, QMouseEvent, QPalette,
+    QPixmap, QResizeEvent, QTextBlock, QTextCursor, QTextDocument, QTextOption
 )
 from PyQt5.QtWidgets import (
     QAction, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
@@ -142,6 +141,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.setMinimumWidth(CONFIG.pxInt(300))
         self.setAutoFillBackground(True)
         self.setFrameStyle(QFrame.NoFrame)
+        self.setCenterOnScroll(True)
 
         # Custom Shortcuts
         self.keyContext = QShortcut(self)
@@ -311,7 +311,7 @@ class GuiDocEditor(QPlainTextEdit):
         # Set default text margins
         # Due to cursor visibility, a part of the margin must be
         # allocated to the document itself. See issue #1112.
-        cW = self.cursorWidth()
+        cW = 2*self.cursorWidth()
         qDoc = self.document()
         qDoc.setDocumentMargin(cW)
         self._vpMargin = max(CONFIG.getTextMargin() - cW, 0)
@@ -369,13 +369,13 @@ class GuiDocEditor(QPlainTextEdit):
         self._nwDocument = SHARED.project.storage.getDocument(tHandle)
         self._nwItem = self._nwDocument.nwItem
 
-        theDoc = self._nwDocument.readDocument()
-        if theDoc is None:
+        docText = self._nwDocument.readDocument()
+        if docText is None:
             # There was an io error
             self.clearEditor()
             return False
 
-        docSize = len(theDoc)
+        docSize = len(docText)
         if docSize > nwConst.MAX_DOCSIZE:
             SHARED.error(self.tr(
                 "The document you are trying to open is too big. "
@@ -389,22 +389,20 @@ class GuiDocEditor(QPlainTextEdit):
             return False
 
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+        self._docHandle = tHandle
         self.highLight.setHandle(tHandle)
 
-        bfTime = time()
+        tStart = time()
         self._allowAutoReplace(False)
-        self.setPlainText(theDoc)
-        qApp.processEvents()
-
+        self.setPlainText(docText)
         self._allowAutoReplace(True)
-        afTime = time()
-        logger.debug("Document highlighted in %.3f ms", 1000*(afTime-bfTime))
+        logger.debug("Document text loaded in %.3f ms", 1000*(time() - tStart))
+        qApp.processEvents()
 
         self._lastEdit = time()
         self._lastActive = time()
         self._runDocCounter()
         self.wcTimerDoc.start()
-        self._docHandle = tHandle
 
         self.setReadOnly(False)
         self.docHeader.setTitleFromHandle(self._docHandle)
@@ -415,12 +413,6 @@ class GuiDocEditor(QPlainTextEdit):
             self.setCursorPosition(self._nwItem.cursorPos)
         elif isinstance(tLine, int):
             self.setCursorLine(tLine)
-
-        if CONFIG.scrollPastEnd > 0:
-            fSize = QFontMetrics(self.font()).lineSpacing()
-            docFrame = self.document().rootFrame().frameFormat()
-            docFrame.setBottomMargin(round(CONFIG.scrollPastEnd * fSize))
-            self.document().rootFrame().setFrameFormat(docFrame)
 
         self.docFooter.updateLineCount()
 
@@ -636,19 +628,14 @@ class GuiDocEditor(QPlainTextEdit):
             self._nwItem.setCursorPos(cursPos)
         return
 
-    def setCursorLine(self, line: int | None) -> bool:
+    def setCursorLine(self, line: int | None) -> None:
         """Move the cursor to a given line in the document."""
-        if not isinstance(line, int):
-            return False
-
-        lineIdx = line - 1  # Block index is 0 offset, lineNo is 1 offset
-        if lineIdx >= 0:
-            block = self.document().findBlockByNumber(lineIdx)
+        if isinstance(line, int) and line > 0:
+            block = self.document().findBlockByNumber(line - 1)
             if block:
                 self.setCursorPosition(block.position())
                 logger.debug("Cursor moved to line %d", line)
-
-        return True
+        return
 
     ##
     #  Spell Checking
@@ -950,26 +937,16 @@ class GuiDocEditor(QPlainTextEdit):
             return
 
         if CONFIG.autoScroll:
-
-            cOld = self.cursorRect().center().y()
+            cPos = self.cursorRect().topLeft().y()
             super().keyPressEvent(event)
-
             kMod = event.modifiers()
             okMod = kMod == Qt.NoModifier or kMod == Qt.ShiftModifier
             okKey = event.key() not in self.MOVE_KEYS
             if okMod and okKey:
-                cNew = self.cursorRect().center().y()
-                cMov = cNew - cOld
                 mPos = CONFIG.autoScrollPos*0.01 * self.viewport().height()
-                if abs(cMov) > 0 and cOld > mPos:
-                    # Move the scroll bar
+                if cPos > mPos:
                     vBar = self.verticalScrollBar()
-                    doAnim = QPropertyAnimation(vBar, b"value", self)
-                    doAnim.setDuration(120)
-                    doAnim.setStartValue(vBar.value())
-                    doAnim.setEndValue(vBar.value() + cMov)
-                    doAnim.start()
-
+                    vBar.setValue(vBar.value() + 1)
         else:
             super().keyPressEvent(event)
 

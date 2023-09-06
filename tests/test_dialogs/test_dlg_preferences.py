@@ -156,9 +156,6 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
     qtbot.mouseClick(tabEditor.autoScroll, Qt.LeftButton)
     assert tabEditor.autoScroll.isChecked()
 
-    qtbot.wait(KEY_DELAY)
-    tabEditor.scrollPastEnd.setValue(0)
-
     # Syntax Settings
     qtbot.wait(KEY_DELAY)
     tabSyntax = nwPrefs.tabSyntax

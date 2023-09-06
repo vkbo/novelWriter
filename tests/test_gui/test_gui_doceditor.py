@@ -200,8 +200,9 @@ def testGuiEditor_MetaData(qtbot, nwGUI, projPath, mockRnd):
     nwGUI.docEditor.saveCursorPosition()
     assert SHARED.project.tree[C.hSceneDoc].cursorPos == 10
 
-    assert nwGUI.docEditor.setCursorLine(None) is False
-    assert nwGUI.docEditor.setCursorLine(3) is True
+    nwGUI.docEditor.setCursorLine(None)
+    assert nwGUI.docEditor.getCursorPosition() == 10
+    nwGUI.docEditor.setCursorLine(3)
     assert nwGUI.docEditor.getCursorPosition() == 15
 
     # Document Changed Signal
@@ -499,7 +500,7 @@ def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd
 
     theText = "### A Scene\n\n\n%s" % ipsumText[0]
     assert nwGUI.docEditor.replaceText(theText) is True
-    assert nwGUI.docEditor.setCursorLine(3)
+    nwGUI.docEditor.setCursorLine(3)
 
     # Invalid Keyword
     assert nwGUI.docEditor.insertKeyWord("stuff") is False
@@ -1039,7 +1040,7 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, projPath, ipsumText
     # Third Line
     # This also needs to add a new block
     assert nwGUI.docEditor.replaceText("#### Title\n\nThe Text\n\n") is True
-    assert nwGUI.docEditor.setCursorLine(3) is True
+    nwGUI.docEditor.setCursorLine(3)
     assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_COM) is True
     assert nwGUI.docEditor.getText() == "#### Title\n\n% The Text\n\n"
 
@@ -1072,11 +1073,11 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
     # Empty Block
-    assert nwGUI.docEditor.setCursorLine(2) is True
+    nwGUI.docEditor.setCursorLine(2)
     assert nwGUI.docEditor._followTag() is False
 
     # Not On Tag
-    assert nwGUI.docEditor.setCursorLine(1) is True
+    nwGUI.docEditor.setCursorLine(1)
     assert nwGUI.docEditor._followTag() is False
 
     # On Tag Keyword

@@ -724,19 +724,6 @@ class GuiPreferencesEditor(QWidget):
         # ================
         self.mainForm.addGroupLabel(self.tr("Scroll Behaviour"))
 
-        # Scroll Past End
-        self.scrollPastEnd = QSpinBox(self)
-        self.scrollPastEnd.setMinimum(0)
-        self.scrollPastEnd.setMaximum(100)
-        self.scrollPastEnd.setSingleStep(1)
-        self.scrollPastEnd.setValue(int(CONFIG.scrollPastEnd))
-        self.mainForm.addRow(
-            self.tr("Scroll past end of the document"),
-            self.scrollPastEnd,
-            self.tr("Set to 0 to disable this feature."),
-            unit=self.tr("lines")
-        )
-
         # Typewriter Scrolling
         self.autoScroll = NSwitch()
         self.autoScroll.setChecked(CONFIG.autoScroll)
@@ -775,7 +762,6 @@ class GuiPreferencesEditor(QWidget):
         CONFIG.showLineEndings = self.showLineEndings.isChecked()
 
         # Scroll Behaviour
-        CONFIG.scrollPastEnd = self.scrollPastEnd.value()
         CONFIG.autoScroll    = self.autoScroll.isChecked()
         CONFIG.autoScrollPos = self.autoScrollPos.value()
 
