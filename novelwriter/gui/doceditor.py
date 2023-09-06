@@ -53,7 +53,7 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemClass
 from novelwriter.common import minmax, transferCase
-from novelwriter.constants import nwConst, nwKeyWords, nwUnicode
+from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.core.index import countWords
 from novelwriter.gui.dochighlight import GuiDocHighlighter
 from novelwriter.extensions.wheeleventfilter import WheelEventFilter
@@ -358,7 +358,7 @@ class GuiDocEditor(QPlainTextEdit):
         return
 
     def loadText(self, tHandle, tLine=None) -> bool:
-        """Load text from a document into the editor. If we have an io
+        """Load text from a document into the editor. If we have an I/O
         error, we must handle this and clear the editor so that we don't
         risk overwriting the file if it exists. This can for instance
         happen of the file contains binary elements or an encoding that
@@ -371,20 +371,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         docText = self._nwDocument.readDocument()
         if docText is None:
-            # There was an io error
-            self.clearEditor()
-            return False
-
-        docSize = len(docText)
-        if docSize > nwConst.MAX_DOCSIZE:
-            SHARED.error(self.tr(
-                "The document you are trying to open is too big. "
-                "The document size is {0} MB. "
-                "The maximum size allowed is {1} MB."
-            ).format(
-                f"{docSize/1.0e6:.2f}",
-                f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
-            ))
+            # There was an I/O error
             self.clearEditor()
             return False
 
@@ -416,16 +403,16 @@ class GuiDocEditor(QPlainTextEdit):
 
         self.docFooter.updateLineCount()
 
-        qApp.processEvents()
-        self.document().clearUndoRedoStacks()
-        self.setDocumentChanged(False)
-        qApp.restoreOverrideCursor()
-
         # This is a hack to fix invisible cursor on an empty document
         if self.document().characterCount() <= 1:
             self.setPlainText("\n")
             self.setPlainText("")
             self.setCursorPosition(0)
+
+        qApp.processEvents()
+        self.document().clearUndoRedoStacks()
+        self.setDocumentChanged(False)
+        qApp.restoreOverrideCursor()
 
         # Update the status bar
         if self._nwItem is not None:
@@ -444,29 +431,16 @@ class GuiDocEditor(QPlainTextEdit):
         self.updateDocMargins()
         return
 
-    def replaceText(self, text: str) -> bool:
+    def replaceText(self, text: str) -> None:
         """Replace the text of the current document with the provided
         text. This also clears undo history.
         """
-        docSize = len(text)
-        if docSize > nwConst.MAX_DOCSIZE:
-            SHARED.error(self.tr(
-                "The text you are trying to add is too big. "
-                "The text size is {0} MB. "
-                "The maximum size allowed is {1} MB."
-            ).format(
-                f"{docSize/1.0e6:.2f}",
-                f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
-            ))
-            return False
-
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         self.setPlainText(text)
         self.updateDocMargins()
         self.setDocumentChanged(True)
         qApp.restoreOverrideCursor()
-
-        return True
+        return
 
     def saveText(self) -> bool:
         """Save the text currently in the editor to the NWDocument
@@ -1012,16 +986,6 @@ class GuiDocEditor(QPlainTextEdit):
         """
         self._lastEdit = time()
         self._lastFind = None
-
-        if self.document().characterCount() > nwConst.MAX_DOCSIZE:
-            SHARED.error(self.tr(
-                "The document has grown too big and you cannot add more text to it. "
-                "The maximum size of a single novelWriter document is {0} MB."
-            ).format(
-                f"{nwConst.MAX_DOCSIZE/1.0e6:.2f}"
-            ))
-            self.undo()
-            return
 
         if not self._docChanged:
             self.setDocumentChanged(removed != 0 or added != 0)

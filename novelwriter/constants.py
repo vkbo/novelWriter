@@ -40,10 +40,6 @@ class nwConst:
     FMT_FSTAMP = "%Y-%m-%d %H.%M.%S"  # FileName safe format
     FMT_DSTAMP = "%Y-%m-%d"           # Date only format
 
-    # Various Hard Limits
-    MAX_DOCSIZE   = 5000000   # Maximum size of a single document
-    MAX_BUILDSIZE = 10000000  # Maximum size of a project build
-
     # URLs
     URL_WEB     = "https://novelwriter.io"
     URL_DOCS    = "https://docs.novelwriter.io"
