@@ -44,7 +44,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc)
 
-    nwGUI.docEditor.setText("### Lorem Ipsum\n\n%s" % ipsumText[0])
+    nwGUI.docEditor.setPlainText("### Lorem Ipsum\n\n%s" % ipsumText[0])
     assert nwGUI.saveDocument()
 
     # Check Defaults

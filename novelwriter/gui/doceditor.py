@@ -42,11 +42,13 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtGui import (
     QColor, QCursor, QFont, QFontMetrics, QKeyEvent, QKeySequence, QMouseEvent,
-    QPalette, QPixmap, QResizeEvent, QTextBlock, QTextCursor, QTextDocument, QTextOption
+    QPalette, QPixmap, QResizeEvent, QTextBlock, QTextCursor, QTextDocument,
+    QTextOption
 )
 from PyQt5.QtWidgets import (
-    QAction, qApp, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
-    QPushButton, QShortcut, QTextEdit, QToolBar, QToolButton, QWidget
+    QAction, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
+    QPlainTextEdit, QPushButton, QShortcut, QToolBar, QToolButton, QWidget,
+    qApp
 )
 
 from novelwriter import CONFIG, SHARED
@@ -63,7 +65,7 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-class GuiDocEditor(QTextEdit):
+class GuiDocEditor(QPlainTextEdit):
     """Gui Widget: Main Document Editor"""
 
     MOVE_KEYS = (
@@ -141,7 +143,6 @@ class GuiDocEditor(QTextEdit):
 
         # Editor Settings
         self.setMinimumWidth(CONFIG.pxInt(300))
-        self.setAcceptRichText(False)
         self.setAutoFillBackground(True)
         self.setFrameStyle(QFrame.NoFrame)
 
@@ -678,9 +679,9 @@ class GuiDocEditor(QTextEdit):
 
         lineIdx = line - 1  # Block index is 0 offset, lineNo is 1 offset
         if lineIdx >= 0:
-            theBlock = self.document().findBlockByLineNumber(lineIdx)
-            if theBlock:
-                self.setCursorPosition(theBlock.position())
+            block = self.document().findBlockByNumber(lineIdx)
+            if block:
+                self.setCursorPosition(block.position())
                 logger.debug("Cursor moved to line %d", line)
 
         return True
