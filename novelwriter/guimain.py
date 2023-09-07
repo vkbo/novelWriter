@@ -621,10 +621,10 @@ class GuiMain(QMainWindow):
                 break
 
         if nHandle is not None:
-            self.openDocument(nHandle, tLine=0, doScroll=True)
+            self.openDocument(nHandle, tLine=1, doScroll=True)
             return True
         elif wrapAround:
-            self.openDocument(fHandle, tLine=0, doScroll=True)
+            self.openDocument(fHandle, tLine=1, doScroll=True)
             return False
 
         return False

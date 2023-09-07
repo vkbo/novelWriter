@@ -56,6 +56,7 @@ from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.core.index import countWords
 from novelwriter.gui.dochighlight import GuiDocHighlighter
+from novelwriter.gui.editordocument import GuiTextDocument
 from novelwriter.extensions.wheeleventfilter import WheelEventFilter
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -120,18 +121,18 @@ class GuiDocEditor(QPlainTextEdit):
         self._typPadBefore = ""
         self._typPadAfter = ""
 
-        # Core Elements and Signals
-        qDoc = self.document()
-        qDoc.contentsChange.connect(self._docChange)
+        # Create Custom Document
+        self._qDocument = GuiTextDocument(self)
+        self.setDocument(self._qDocument)
+
+        # Connect Signals
+        self._qDocument.contentsChange.connect(self._docChange)
         self.selectionChanged.connect(self._updateSelectedStatus)
 
         # Document Title
         self.docHeader = GuiDocEditHeader(self)
         self.docFooter = GuiDocEditFooter(self)
         self.docSearch = GuiDocEditSearch(self)
-
-        # Syntax
-        self.highLight = GuiDocHighlighter(qDoc)
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -212,7 +213,7 @@ class GuiDocEditor(QPlainTextEdit):
     @property
     def isEmpty(self) -> bool:
         """Check if the current document is empty."""
-        return self.document().isEmpty()
+        return self._qDocument.isEmpty()
 
     ##
     #  Methods
@@ -266,7 +267,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.docHeader.matchColours()
         self.docFooter.matchColours()
 
-        self.highLight.initHighlighter()
+        self._qDocument.syntaxHighlighter.initHighlighter()
 
         return
 
@@ -312,8 +313,7 @@ class GuiDocEditor(QPlainTextEdit):
         # Due to cursor visibility, a part of the margin must be
         # allocated to the document itself. See issue #1112.
         cW = 2*self.cursorWidth()
-        qDoc = self.document()
-        qDoc.setDocumentMargin(cW)
+        self._qDocument.setDocumentMargin(cW)
         self._vpMargin = max(CONFIG.getTextMargin() - cW, 0)
         self.setViewportMargins(self._vpMargin, self._vpMargin, self._vpMargin, self._vpMargin)
 
@@ -327,7 +327,7 @@ class GuiDocEditor(QPlainTextEdit):
         if CONFIG.showLineEndings:
             theOpt.setFlags(theOpt.flags() | QTextOption.ShowLineAndParagraphSeparators)
 
-        qDoc.setDefaultTextOption(theOpt)
+        self._qDocument.setDefaultTextOption(theOpt)
 
         # Scroll bars
         if CONFIG.hideVScroll:
@@ -377,13 +377,12 @@ class GuiDocEditor(QPlainTextEdit):
 
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         self._docHandle = tHandle
-        self.highLight.setHandle(tHandle)
 
         tStart = time()
         self._allowAutoReplace(False)
-        self.setPlainText(docText)
+        self._qDocument.setTextContent(docText, tHandle)
         self._allowAutoReplace(True)
-        logger.debug("Document text loaded in %.3f ms", 1000*(time() - tStart))
+        logger.debug("Document text set in %.3f ms", 1000*(time() - tStart))
         qApp.processEvents()
 
         self._lastEdit = time()
@@ -404,14 +403,15 @@ class GuiDocEditor(QPlainTextEdit):
         self.docFooter.updateLineCount()
 
         # This is a hack to fix invisible cursor on an empty document
-        if self.document().characterCount() <= 1:
+        if self._qDocument.characterCount() <= 1:
             self.setPlainText("\n")
             self.setPlainText("")
             self.setCursorPosition(0)
 
         qApp.processEvents()
-        self.document().clearUndoRedoStacks()
         self.setDocumentChanged(False)
+        self._qDocument.clearUndoRedoStacks()
+
         qApp.restoreOverrideCursor()
 
         # Update the status bar
@@ -422,12 +422,12 @@ class GuiDocEditor(QPlainTextEdit):
 
     def updateTagHighLighting(self) -> None:
         """Rerun the syntax highlighter on all meta data lines."""
-        self.highLight.rehighlightByType(GuiDocHighlighter.BLOCK_META)
+        self._qDocument.syntaxHighlighter.rehighlightByType(GuiDocHighlighter.BLOCK_META)
         return
 
     def redrawText(self) -> None:
         """Redraw the text by marking the document content as dirty."""
-        self.document().markContentsDirty(0, self.document().characterCount())
+        self._qDocument.markContentsDirty(0, self._qDocument.characterCount())
         self.updateDocMargins()
         return
 
@@ -561,7 +561,7 @@ class GuiDocEditor(QPlainTextEdit):
         paragraph and line separators though.
         See: https://doc.qt.io/qt-5/qtextdocument.html#toPlainText
         """
-        text = self.document().toRawText()
+        text = self._qDocument.toRawText()
         text = text.replace(nwUnicode.U_LSEP, "\n")  # Line separators
         text = text.replace(nwUnicode.U_PSEP, "\n")  # Paragraph separators
         return text
@@ -586,7 +586,7 @@ class GuiDocEditor(QPlainTextEdit):
 
     def setCursorPosition(self, position: int) -> None:
         """Move the cursor to a given position in the document."""
-        nChars = self.document().characterCount()
+        nChars = self._qDocument.characterCount()
         if nChars > 1 and isinstance(position, int):
             cursor = self.textCursor()
             cursor.setPosition(minmax(position, 0, nChars-1))
@@ -605,7 +605,7 @@ class GuiDocEditor(QPlainTextEdit):
     def setCursorLine(self, line: int | None) -> None:
         """Move the cursor to a given line in the document."""
         if isinstance(line, int) and line > 0:
-            block = self.document().findBlockByNumber(line - 1)
+            block = self._qDocument.findBlockByNumber(line - 1)
             if block:
                 self.setCursorPosition(block.position())
                 logger.debug("Cursor moved to line %d", line)
@@ -638,7 +638,7 @@ class GuiDocEditor(QPlainTextEdit):
         self._spellCheck = state
         self.mainGui.mainMenu.setSpellCheck(state)
         SHARED.project.data.setSpellCheck(state)
-        self.highLight.setSpellCheck(state)
+        self._qDocument.syntaxHighlighter.setSpellCheck(state)
         if state is False:
             self.spellCheckDocument()
 
@@ -655,7 +655,7 @@ class GuiDocEditor(QPlainTextEdit):
         logger.debug("Running spell checker")
         start = time()
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
-        self.highLight.rehighlight()
+        self._qDocument.syntaxHighlighter.rehighlight()
         qApp.restoreOverrideCursor()
         logger.debug("Document highlighted in %.3f ms", 1000*(time() - start))
         self.statusMessage.emit(self.tr("Spell check complete"))
@@ -994,7 +994,7 @@ class GuiDocEditor(QPlainTextEdit):
             self.wcTimerDoc.start()
 
         if self._doReplace and added == 1:
-            self._docAutoReplace(self.document().findBlock(pos))
+            self._docAutoReplace(self._qDocument.findBlock(pos))
 
         return
 
@@ -1122,7 +1122,7 @@ class GuiDocEditor(QPlainTextEdit):
         theWord = cursor.selectedText().strip().strip(self._nonWord)
         logger.debug("Added '%s' to project dictionary", theWord)
         SHARED.spelling.addWord(theWord)
-        self.highLight.rehighlightBlock(cursor.block())
+        self._qDocument.syntaxHighlighter.rehighlightBlock(cursor.block())
         return
 
     @pyqtSlot()
@@ -1418,8 +1418,8 @@ class GuiDocEditor(QPlainTextEdit):
         posS = theCursor.selectionStart()
         posE = theCursor.selectionEnd()
 
-        blockS = self.document().findBlock(posS)
-        blockE = self.document().findBlock(posE)
+        blockS = self._qDocument.findBlock(posS)
+        blockE = self._qDocument.findBlock(posE)
 
         if blockS != blockE:
             posE = blockS.position() + blockS.length() - 1
@@ -1430,14 +1430,14 @@ class GuiDocEditor(QPlainTextEdit):
 
         numB = 0
         for n in range(fLen):
-            if self.document().characterAt(posS-n-1) == fChar:
+            if self._qDocument.characterAt(posS-n-1) == fChar:
                 numB += 1
             else:
                 break
 
         numA = 0
         for n in range(fLen):
-            if self.document().characterAt(posE+n) == fChar:
+            if self._qDocument.characterAt(posE+n) == fChar:
                 numA += 1
             else:
                 break
@@ -1487,9 +1487,8 @@ class GuiDocEditor(QPlainTextEdit):
         posS = theCursor.selectionStart()
         posE = theCursor.selectionEnd()
 
-        qDoc = self.document()
-        blockS = qDoc.findBlock(posS)
-        blockE = qDoc.findBlock(posE)
+        blockS = self._qDocument.findBlock(posS)
+        blockE = self._qDocument.findBlock(posE)
         if blockS != blockE:
             posE = blockS.position() + blockS.length() - 1
 
@@ -1690,16 +1689,15 @@ class GuiDocEditor(QPlainTextEdit):
 
     def _removeInParLineBreaks(self) -> None:
         """Strip line breaks within paragraphs in the selected text."""
-        theCursor = self.textCursor()
-        theDoc = self.document()
+        cursor = self.textCursor()
 
         iS = 0
-        iE = theDoc.blockCount() - 1
+        iE = self._qDocument.blockCount() - 1
         rS = 0
-        rE = theDoc.characterCount()
-        if theCursor.hasSelection():
-            sBlock = theDoc.findBlock(theCursor.selectionStart())
-            eBlock = theDoc.findBlock(theCursor.selectionEnd())
+        rE = self._qDocument.characterCount()
+        if cursor.hasSelection():
+            sBlock = self._qDocument.findBlock(cursor.selectionStart())
+            eBlock = self._qDocument.findBlock(cursor.selectionEnd())
             iS = sBlock.blockNumber()
             iE = eBlock.blockNumber()
             rS = sBlock.position()
@@ -1709,7 +1707,7 @@ class GuiDocEditor(QPlainTextEdit):
         currPar = []
         cleanText = ""
         for i in range(iS, iE+1):
-            cBlock = theDoc.findBlockByNumber(i)
+            cBlock = self._qDocument.findBlockByNumber(i)
             cText = cBlock.text()
             if cText.strip() == "":
                 if currPar:
@@ -1726,12 +1724,12 @@ class GuiDocEditor(QPlainTextEdit):
             cleanText += " ".join(currPar) + "\n\n"
 
         # Replace the text with the cleaned up text
-        theCursor.beginEditBlock()
-        theCursor.clearSelection()
-        theCursor.setPosition(rS)
-        theCursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, rE-rS)
-        theCursor.insertText(cleanText.rstrip() + "\n")
-        theCursor.endEditBlock()
+        cursor.beginEditBlock()
+        cursor.clearSelection()
+        cursor.setPosition(rS)
+        cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, rE-rS)
+        cursor.insertText(cleanText.rstrip() + "\n")
+        cursor.endEditBlock()
 
         return
 
@@ -1913,11 +1911,10 @@ class GuiDocEditor(QPlainTextEdit):
             # Underscore counts as a part of the word, so check that the
             # selection isn't wrapped in italics markers.
             reSelect = False
-            qDoc = self.document()
-            if qDoc.characterAt(posS) == "_":
+            if self._qDocument.characterAt(posS) == "_":
                 posS += 1
                 reSelect = True
-            if qDoc.characterAt(posE) == "_":
+            if self._qDocument.characterAt(posE) == "_":
                 posE -= 1
                 reSelect = True
             if reSelect:
@@ -2838,7 +2835,7 @@ class GuiDocEditFooter(QWidget):
         else:
             theCursor = self.docEditor.textCursor()
             iLine = theCursor.blockNumber() + 1
-            iDist = 100*iLine/self.docEditor.document().blockCount()
+            iDist = 100*iLine/self.docEditor._qDocument.blockCount()
         self.linesText.setText(
             self.tr("Line: {0} ({1})").format(f"{iLine:n}", f"{iDist:.0f} %")
         )
@@ -2869,7 +2866,7 @@ class GuiDocEditFooter(QWidget):
             self.tr("Words: {0} ({1})").format(f"{wCount:n}", f"{wDiff:+n}")
         )
 
-        byteSize = self.docEditor.document().characterCount()
+        byteSize = self.docEditor._qDocument.characterCount()
         self.wordsText.setToolTip(
             self.tr("Document size is {0} bytes").format(f"{byteSize:n}")
         )

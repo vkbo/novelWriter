@@ -51,6 +51,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         logger.debug("Create: GuiDocHighlighter")
 
+        self._tItem      = None
         self._tHandle    = None
         self._spellCheck = False
         self._spellRx    = QRegularExpression()
@@ -78,11 +79,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         logger.debug("Ready: GuiDocHighlighter")
 
         return
-
-    @property
-    def spellCheck(self) -> bool:
-        """Check if spell checking is enabled."""
-        return self._spellCheck
 
     def initHighlighter(self) -> None:
         """Initialise the syntax highlighter, setting all the colour
@@ -248,6 +244,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     def setHandle(self, tHandle: str) -> None:
         """Set the handle of the currently highlighted document."""
         self._tHandle = tHandle
+        self._tItem = SHARED.project.tree[tHandle]
+        logger.debug(
+            "Syntax highlighter %s for item '%s'",
+            "enabled" if self._tItem else "disabled", tHandle
+        )
         return
 
     ##
@@ -284,27 +285,24 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         if text.startswith("@"):  # Keywords and commands
             self.setCurrentBlockState(self.BLOCK_META)
-            pIndex = SHARED.project.index
-            tItem = SHARED.project.tree[self._tHandle]
-            if tItem is None:
-                return
-
-            isValid, theBits, thePos = pIndex.scanThis(text)
-            isGood = pIndex.checkThese(theBits, tItem)
-            if isValid:
-                for n, theBit in enumerate(theBits):
-                    xPos = thePos[n]
-                    xLen = len(theBit)
-                    if isGood[n]:
-                        if n == 0:
-                            self.setFormat(xPos, xLen, self._hStyles["keyword"])
+            if self._tItem:
+                pIndex = SHARED.project.index
+                isValid, theBits, thePos = pIndex.scanThis(text)
+                isGood = pIndex.checkThese(theBits, self._tItem)
+                if isValid:
+                    for n, theBit in enumerate(theBits):
+                        xPos = thePos[n]
+                        xLen = len(theBit)
+                        if isGood[n]:
+                            if n == 0:
+                                self.setFormat(xPos, xLen, self._hStyles["keyword"])
+                            else:
+                                self.setFormat(xPos, xLen, self._hStyles["value"])
                         else:
-                            self.setFormat(xPos, xLen, self._hStyles["value"])
-                    else:
-                        kwFmt = self.format(xPos)
-                        kwFmt.setUnderlineColor(self._colError)
-                        kwFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
-                        self.setFormat(xPos, xLen, kwFmt)
+                            kwFmt = self.format(xPos)
+                            kwFmt.setUnderlineColor(self._colError)
+                            kwFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
+                            self.setFormat(xPos, xLen, kwFmt)
 
             # We never want to run the spell checker on keyword/values,
             # so we force a return here
