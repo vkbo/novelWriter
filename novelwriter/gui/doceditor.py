@@ -318,16 +318,16 @@ class GuiDocEditor(QPlainTextEdit):
         self.setViewportMargins(self._vpMargin, self._vpMargin, self._vpMargin, self._vpMargin)
 
         # Also set the document text options for the document text flow
-        theOpt = QTextOption()
+        options = QTextOption()
 
         if CONFIG.doJustify:
-            theOpt.setAlignment(Qt.AlignJustify)
+            options.setAlignment(Qt.AlignJustify)
         if CONFIG.showTabsNSpaces:
-            theOpt.setFlags(theOpt.flags() | QTextOption.ShowTabsAndSpaces)
+            options.setFlags(options.flags() | QTextOption.ShowTabsAndSpaces)
         if CONFIG.showLineEndings:
-            theOpt.setFlags(theOpt.flags() | QTextOption.ShowLineAndParagraphSeparators)
+            options.setFlags(options.flags() | QTextOption.ShowLineAndParagraphSeparators)
 
-        self._qDocument.setDefaultTextOption(theOpt)
+        self._qDocument.setDefaultTextOption(options)
 
         # Scroll bars
         if CONFIG.hideVScroll:
@@ -378,11 +378,9 @@ class GuiDocEditor(QPlainTextEdit):
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         self._docHandle = tHandle
 
-        tStart = time()
         self._allowAutoReplace(False)
         self._qDocument.setTextContent(docText, tHandle)
         self._allowAutoReplace(True)
-        logger.debug("Document text set in %.3f ms", 1000*(time() - tStart))
         qApp.processEvents()
 
         self._lastEdit = time()
@@ -1003,100 +1001,63 @@ class GuiDocEditor(QPlainTextEdit):
         """Triggered by right click to open the context menu. Also
         triggered by the Ctrl+. shortcut.
         """
-        userCursor = self.textCursor()
-        userSelection = userCursor.hasSelection()
-        posCursor = self.cursorForPosition(pos)
+        uCursor = self.textCursor()
+        pCursor = self.cursorForPosition(pos)
 
-        mnuContext = QMenu()
+        ctxMenu = QMenu()
 
-        # Follow, Cut, Copy and Paste
-        # ===========================
+        # Follow
+        if self._followTag(cursor=pCursor, loadTag=False):
+            aTag = ctxMenu.addAction(self.tr("Follow Tag"))
+            aTag.triggered.connect(lambda: self._followTag(cursor=pCursor))
+            ctxMenu.addSeparator()
 
-        if self._followTag(cursor=posCursor, loadTag=False):
-            mnuTag = QAction(self.tr("Follow Tag"), mnuContext)
-            mnuTag.triggered.connect(lambda: self._followTag(cursor=posCursor))
-            mnuContext.addAction(mnuTag)
-            mnuContext.addSeparator()
+        # Cut, Copy and Paste
+        if uCursor.hasSelection():
+            aCut = ctxMenu.addAction(self.tr("Cut"))
+            aCut.triggered.connect(lambda: self.docAction(nwDocAction.CUT))
+            aCopy = ctxMenu.addAction(self.tr("Copy"))
+            aCopy.triggered.connect(lambda: self.docAction(nwDocAction.COPY))
 
-        if userSelection:
-            mnuCut = QAction(self.tr("Cut"), mnuContext)
-            mnuCut.triggered.connect(lambda: self.docAction(nwDocAction.CUT))
-            mnuContext.addAction(mnuCut)
-
-            mnuCopy = QAction(self.tr("Copy"), mnuContext)
-            mnuCopy.triggered.connect(lambda: self.docAction(nwDocAction.COPY))
-            mnuContext.addAction(mnuCopy)
-
-        mnuPaste = QAction(self.tr("Paste"), mnuContext)
-        mnuPaste.triggered.connect(lambda: self.docAction(nwDocAction.PASTE))
-        mnuContext.addAction(mnuPaste)
-
-        mnuContext.addSeparator()
+        aPaste = ctxMenu.addAction(self.tr("Paste"))
+        aPaste.triggered.connect(lambda: self.docAction(nwDocAction.PASTE))
+        ctxMenu.addSeparator()
 
         # Selections
-        # ==========
-
-        mnuSelAll = QAction(self.tr("Select All"), mnuContext)
-        mnuSelAll.triggered.connect(lambda: self.docAction(nwDocAction.SEL_ALL))
-        mnuContext.addAction(mnuSelAll)
-
-        mnuSelWord = QAction(self.tr("Select Word"), mnuContext)
-        mnuSelWord.triggered.connect(
-            lambda: self._makePosSelection(QTextCursor.WordUnderCursor, pos)
-        )
-        mnuContext.addAction(mnuSelWord)
-
-        mnuSelPara = QAction(self.tr("Select Paragraph"), mnuContext)
-        mnuSelPara.triggered.connect(
-            lambda: self._makePosSelection(QTextCursor.BlockUnderCursor, pos)
-        )
-        mnuContext.addAction(mnuSelPara)
+        aSAll = ctxMenu.addAction(self.tr("Select All"))
+        aSAll.triggered.connect(lambda: self.docAction(nwDocAction.SEL_ALL))
+        aSWrd = ctxMenu.addAction(self.tr("Select Word"))
+        aSWrd.triggered.connect(lambda: self._makePosSelection(QTextCursor.WordUnderCursor, pos))
+        aSPar = ctxMenu.addAction(self.tr("Select Paragraph"))
+        aSPar.triggered.connect(lambda: self._makePosSelection(QTextCursor.BlockUnderCursor, pos))
 
         # Spell Checking
-        # ==============
+        if self._spellCheck:
+            word, cPos, cLen, suggest = self._qDocument.spellErrorAtPos(pCursor.position())
+            if word and cPos >= 0 and cLen > 0:
+                logger.debug("Word '%s' is misspelled", word)
+                block = pCursor.block()
+                sCursor = self.textCursor()
+                sCursor.setPosition(block.position() + cPos)
+                sCursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, cLen)
+                if suggest:
+                    ctxMenu.addSeparator()
+                    ctxMenu.addAction(self.tr("Spelling Suggestion(s)"))
+                    for option in suggest:
+                        aFix = ctxMenu.addAction(f"{nwUnicode.U_ENDASH} {option}")
+                        aFix.triggered.connect(
+                            lambda _, option=option: self._correctWord(sCursor, option)
+                        )
+                else:
+                    ctxMenu.addAction("%s %s" % (nwUnicode.U_ENDASH, self.tr("No Suggestions")))
 
-        posCursor = self.cursorForPosition(pos)
-        spellCheck = self._spellCheck
-        theWord = ""
+                ctxMenu.addSeparator()
+                aAdd = QAction(self.tr("Add Word to Dictionary"), ctxMenu)
+                aAdd.triggered.connect(lambda: self._addWord(word, block))
+                ctxMenu.addAction(aAdd)
 
-        if posCursor.block().text().startswith("@"):
-            spellCheck = False
-
-        if spellCheck:
-            posCursor.select(QTextCursor.WordUnderCursor)
-            theWord = posCursor.selectedText().strip().strip(self._nonWord)
-            spellCheck &= theWord != ""
-
-        if spellCheck:
-            logger.debug("Looking up '%s' in the dictionary", theWord)
-            spellCheck &= not SHARED.spelling.checkWord(theWord)
-
-        if spellCheck:
-            mnuContext.addSeparator()
-            mnuHead = QAction(self.tr("Spelling Suggestion(s)"), mnuContext)
-            mnuContext.addAction(mnuHead)
-
-            theSuggest = SHARED.spelling.suggestWords(theWord)[:15]
-            if len(theSuggest) > 0:
-                for aWord in theSuggest:
-                    mnuWord = QAction("%s %s" % (nwUnicode.U_ENDASH, aWord), mnuContext)
-                    mnuWord.triggered.connect(
-                        lambda thePos, aWord=aWord: self._correctWord(posCursor, aWord)
-                    )
-                    mnuContext.addAction(mnuWord)
-            else:
-                mnuHead = QAction(
-                    "%s %s" % (nwUnicode.U_ENDASH, self.tr("No Suggestions")), mnuContext
-                )
-                mnuContext.addAction(mnuHead)
-
-            mnuContext.addSeparator()
-            mnuAdd = QAction(self.tr("Add Word to Dictionary"), mnuContext)
-            mnuAdd.triggered.connect(lambda thePos: self._addWord(posCursor))
-            mnuContext.addAction(mnuAdd)
-
-        # Open the context menu
-        mnuContext.exec_(self.viewport().mapToGlobal(pos))
+        # Execute the context menu
+        ctxMenu.exec_(self.viewport().mapToGlobal(pos))
 
         return
 
@@ -1105,24 +1066,23 @@ class GuiDocEditor(QPlainTextEdit):
         """Slot for the spell check context menu triggering the
         replacement of a word with the word from the dictionary.
         """
-        xPos = cursor.selectionStart()
+        pos = cursor.selectionStart()
         cursor.beginEditBlock()
         cursor.removeSelectedText()
         cursor.insertText(word)
         cursor.endEditBlock()
-        cursor.setPosition(xPos)
+        cursor.setPosition(pos)
         self.setTextCursor(cursor)
         return
 
-    @pyqtSlot("QTextCursor")
-    def _addWord(self, cursor: QTextCursor) -> None:
+    @pyqtSlot(str, "QTextBlock")
+    def _addWord(self, word: str, block: QTextBlock) -> None:
         """Slot for the spell check context menu triggered when the user
         wants to add a word to the project dictionary.
         """
-        theWord = cursor.selectedText().strip().strip(self._nonWord)
-        logger.debug("Added '%s' to project dictionary", theWord)
-        SHARED.spelling.addWord(theWord)
-        self._qDocument.syntaxHighlighter.rehighlightBlock(cursor.block())
+        logger.debug("Added '%s' to project dictionary", word)
+        SHARED.spelling.addWord(word)
+        self._qDocument.syntaxHighlighter.rehighlightBlock(block)
         return
 
     @pyqtSlot()

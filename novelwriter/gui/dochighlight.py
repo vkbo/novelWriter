@@ -29,7 +29,8 @@ from time import time
 
 from PyQt5.QtCore import Qt, QRegularExpression
 from PyQt5.QtGui import (
-    QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush, QTextDocument
+    QBrush, QColor, QFont, QSyntaxHighlighter, QTextBlockUserData,
+    QTextCharFormat, QTextDocument
 )
 
 from novelwriter import CONFIG, SHARED
@@ -37,6 +38,9 @@ from novelwriter.common import checkInt
 from novelwriter.constants import nwRegEx, nwUnicode
 
 logger = logging.getLogger(__name__)
+
+SPELLRX = QRegularExpression(r"\b[^\s\-\+\/–—]+\b")
+SPELLRX.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
 
 
 class GuiDocHighlighter(QSyntaxHighlighter):
@@ -54,7 +58,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._tItem      = None
         self._tHandle    = None
         self._spellCheck = False
-        self._spellRx    = QRegularExpression()
 
         self._hRules: list[tuple[str, dict]] = []
         self._hStyles: dict[str, QTextCharFormat] = {}
@@ -223,13 +226,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             hReg.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
             self.rxRules.append((hReg, regRules))
 
-        # Build a QRegExp for the spell checker
-        # Include additional characters that the highlighter should
-        # consider to be word separators
-        uCode = nwUnicode.U_ENDASH + nwUnicode.U_EMDASH
-        self._spellRx = QRegularExpression(r"\b[^\s\-\+\/" + uCode + r"]+\b")
-        self._spellRx.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
-
         return
 
     ##
@@ -383,19 +379,17 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         if not self._spellCheck:
             return
 
-        rxSpell = self._spellRx.globalMatch(text.replace("_", " "), 0)
-        while rxSpell.hasNext():
-            rxMatch = rxSpell.next()
-            if not SHARED.spelling.checkWord(rxMatch.captured(0)):
-                if not rxMatch.captured(0).isalpha() or rxMatch.captured(0).isupper():
-                    continue
-                xPos = rxMatch.capturedStart(0)
-                xLen = rxMatch.capturedLength(0)
-                for x in range(xPos, xPos+xLen):
-                    spFmt = self.format(x)
-                    spFmt.setUnderlineColor(self._colSpell)
-                    spFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
-                    self.setFormat(x, 1, spFmt)
+        data = self.currentBlockUserData()
+        if not isinstance(data, TextBlockData):
+            data = TextBlockData()
+            self.setCurrentBlockUserData(data)
+
+        for xPos, xLen in data.spellCheck(text):
+            for x in range(xPos, xPos+xLen):
+                spFmt = self.format(x)
+                spFmt.setUnderlineColor(self._colSpell)
+                spFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
+                self.setFormat(x, 1, spFmt)
 
         return
 
@@ -435,3 +429,33 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         return charFormat
 
 # END Class GuiDocHighlighter
+
+
+class TextBlockData(QTextBlockUserData):
+
+    __slots__ = ("_spellErrors")
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._spellErrors: list[tuple[int, int]] = []
+        return
+
+    @property
+    def spellErrors(self) -> list[tuple[int, int]]:
+        """Return spell error data from last check."""
+        return self._spellErrors
+
+    def spellCheck(self, text: str) -> list[tuple[int, int]]:
+        """Run the spell checker and cache the result, and return the
+        list of spell check errors.
+        """
+        self._spellErrors = []
+        rxSpell = SPELLRX.globalMatch(text.replace("_", " "), 0)
+        while rxSpell.hasNext():
+            rxMatch = rxSpell.next()
+            if not SHARED.spelling.checkWord(rxMatch.captured(0)):
+                if rxMatch.captured(0).isalpha() and not rxMatch.captured(0).isupper():
+                    self._spellErrors.append((rxMatch.capturedStart(0), rxMatch.capturedLength(0)))
+        return self._spellErrors
+
+# END Class TextBlockData

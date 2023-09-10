@@ -24,12 +24,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import logging
+
+from time import time
+
+from PyQt5.QtGui import QTextCursor, QTextDocument
 from PyQt5.QtCore import QObject
+from PyQt5.QtWidgets import QPlainTextDocumentLayout, qApp
+from novelwriter import SHARED
 
-from PyQt5.QtGui import QTextDocument
-from PyQt5.QtWidgets import QPlainTextDocumentLayout
-
-from novelwriter.gui.dochighlight import GuiDocHighlighter
+from novelwriter.gui.dochighlight import GuiDocHighlighter, TextBlockData
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +70,48 @@ class GuiTextDocument(QTextDocument):
     def setTextContent(self, text: str, tHandle: str) -> None:
         """Set the text content of the document."""
         self._syntax.setHandle(tHandle)
+
+        self.blockSignals(True)
+        self.setUndoRedoEnabled(False)
+        self.clear()
+
+        tStart = time()
+
         self.setPlainText(text)
+        count = self.lineCount()
+
+        tMid = time()
+
+        self.setUndoRedoEnabled(True)
+        self.blockSignals(False)
+        self._syntax.rehighlight()
+        qApp.processEvents()
+
+        tEnd = time()
+
+        logger.debug("Loaded %d text blocks in %.3f ms", count, 1000*(tMid - tStart))
+        logger.debug("Highlighted document in %.3f ms", 1000*(tEnd - tMid))
+
         return
+
+    def spellErrorAtPos(self, pos: int) -> tuple[str, int, int, list[str]]:
+        """Check if there is a misspelled word at a given position in
+        the document, and if so, return it.
+        """
+        cursor = QTextCursor(self)
+        cursor.setPosition(pos)
+        block = cursor.block()
+        if block.isValid():
+            data = block.userData()
+            if isinstance(data, TextBlockData):
+                text = block.text()
+                check = pos - block.position()
+                if check >= 0:
+                    for cPos, cLen in data.spellErrors:
+                        cEnd = cPos + cLen
+                        if cPos <= check <= cEnd:
+                            word = text[cPos:cEnd]
+                            return word, cPos, cLen, SHARED.spelling.suggestWords(word)
+        return "", -1, -1, []
 
 # END Class GuiTextDocument
