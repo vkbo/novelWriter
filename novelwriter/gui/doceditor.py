@@ -1043,7 +1043,7 @@ class GuiDocEditor(QPlainTextEdit):
                 if suggest:
                     ctxMenu.addSeparator()
                     ctxMenu.addAction(self.tr("Spelling Suggestion(s)"))
-                    for option in suggest:
+                    for option in suggest[:15]:
                         aFix = ctxMenu.addAction(f"{nwUnicode.U_ENDASH} {option}")
                         aFix.triggered.connect(
                             lambda _, option=option: self._correctWord(sCursor, option)
@@ -1052,9 +1052,8 @@ class GuiDocEditor(QPlainTextEdit):
                     ctxMenu.addAction("%s %s" % (nwUnicode.U_ENDASH, self.tr("No Suggestions")))
 
                 ctxMenu.addSeparator()
-                aAdd = QAction(self.tr("Add Word to Dictionary"), ctxMenu)
+                aAdd = ctxMenu.addAction(self.tr("Add Word to Dictionary"))
                 aAdd.triggered.connect(lambda: self._addWord(word, block))
-                ctxMenu.addAction(aAdd)
 
         # Execute the context menu
         ctxMenu.exec_(self.viewport().mapToGlobal(pos))

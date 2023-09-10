@@ -101,17 +101,16 @@ class GuiTextDocument(QTextDocument):
         cursor = QTextCursor(self)
         cursor.setPosition(pos)
         block = cursor.block()
-        if block.isValid():
-            data = block.userData()
-            if isinstance(data, TextBlockData):
-                text = block.text()
-                check = pos - block.position()
-                if check >= 0:
-                    for cPos, cLen in data.spellErrors:
-                        cEnd = cPos + cLen
-                        if cPos <= check <= cEnd:
-                            word = text[cPos:cEnd]
-                            return word, cPos, cLen, SHARED.spelling.suggestWords(word)
+        data = block.userData()
+        if block.isValid() and isinstance(data, TextBlockData):
+            text = block.text()
+            check = pos - block.position()
+            if check >= 0:
+                for cPos, cLen in data.spellErrors:
+                    cEnd = cPos + cLen
+                    if cPos <= check <= cEnd:
+                        word = text[cPos:cEnd]
+                        return word, cPos, cLen, SHARED.spelling.suggestWords(word)
         return "", -1, -1, []
 
 # END Class GuiTextDocument
