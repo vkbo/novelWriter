@@ -29,7 +29,7 @@ from time import time
 from typing import TYPE_CHECKING
 from pathlib import Path
 
-from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal
 from PyQt5.QtWidgets import QMessageBox, QWidget
 
 from novelwriter.core.spellcheck import NWSpellEnchant
@@ -55,14 +55,23 @@ class SharedData(QObject):
 
     def __init__(self) -> None:
         super().__init__()
+
+        # Objects
         self._gui = None
         self._theme = None
         self._project = None
         self._spelling = None
+
+        # Settings
         self._lockedBy = None
         self._alert = None
         self._idleTime = 0.0
         self._idleRefTime = time()
+
+        # Threading
+        self._threadPool = QThreadPool(self)
+        self._threadPool.setMaxThreadCount(5)
+
         return
 
     ##
@@ -197,6 +206,11 @@ class SharedData(QObject):
         for core classes that cannot emit signals on their own.
         """
         self.projectStatusChanged.emit(state)
+        return
+
+    def runInThreadPool(self, runnable: QRunnable, priority: int = 0) -> None:
+        """Queue a runnable in the application thread pool."""
+        self._threadPool.start(runnable, priority=priority)
         return
 
     ##

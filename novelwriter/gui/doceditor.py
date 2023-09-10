@@ -1139,7 +1139,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         if time() - self._lastEdit < 5 * self.wcInterval:
             logger.debug("Running word counter")
-            self.mainGui.threadPool.start(self.wCounterDoc)
+            SHARED.runInThreadPool(self.wCounterDoc)
 
         return
 
@@ -1192,7 +1192,7 @@ class GuiDocEditor(QPlainTextEdit):
             logger.debug("Selection word counter is busy")
             return
 
-        self.mainGui.threadPool.start(self.wCounterSel)
+        SHARED.runInThreadPool(self.wCounterSel)
 
         return
 

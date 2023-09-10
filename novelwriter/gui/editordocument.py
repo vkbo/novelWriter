@@ -51,9 +51,18 @@ class GuiTextDocument(QTextDocument):
         logger.debug("Delete: GuiTextDocument")
         return
 
+    ##
+    #  Properties
+    ##
+
     @property
     def syntaxHighlighter(self) -> GuiDocHighlighter:
+        """Return the document's syntax highlighter object."""
         return self._syntax
+
+    ##
+    #  Metods
+    ##
 
     def setTextContent(self, text: str, tHandle: str) -> None:
         """Set the text content of the document."""

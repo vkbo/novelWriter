@@ -1100,13 +1100,14 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
         def __init__(self):
             self._objID = None
 
-        def start(self, runObj):
+        def start(self, runObj, priority=0):
             self._objID = id(runObj)
 
         def objectID(self):
             return self._objID
 
-    nwGUI.threadPool = MockThreadPool()
+    threadPool = MockThreadPool()
+    monkeypatch.setattr(SHARED, "_threadPool", threadPool)
     nwGUI.docEditor.wcTimerDoc.blockSignals(True)
     nwGUI.docEditor.wcTimerSel.blockSignals(True)
 
@@ -1145,7 +1146,7 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
 
     # Run the full word counter
     nwGUI.docEditor._runDocCounter()
-    assert nwGUI.threadPool.objectID() == id(nwGUI.docEditor.wCounterDoc)
+    assert SHARED._threadPool.objectID() == id(nwGUI.docEditor.wCounterDoc)
 
     nwGUI.docEditor.wCounterDoc.run()
     # nwGUI.docEditor._updateDocCounts(cC, wC, pC)
@@ -1161,7 +1162,7 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
 
     # Run the selection word counter
     nwGUI.docEditor._runSelCounter()
-    assert nwGUI.threadPool.objectID() == id(nwGUI.docEditor.wCounterSel)
+    assert SHARED._threadPool.objectID() == id(nwGUI.docEditor.wCounterSel)
 
     nwGUI.docEditor.wCounterSel.run()
     # nwGUI.docEditor._updateSelCounts(cC, wC, pC)

@@ -30,7 +30,7 @@ from time import time
 from pathlib import Path
 from datetime import datetime
 
-from PyQt5.QtCore import Qt, QTimer, QThreadPool, pyqtSlot
+from PyQt5.QtCore import Qt, QTimer, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QCursor, QIcon, QKeySequence
 from PyQt5.QtWidgets import (
     QDialog, QFileDialog, QHBoxLayout, QMainWindow, QMessageBox, QShortcut,
@@ -95,7 +95,6 @@ class GuiMain(QMainWindow):
 
         logger.debug("Create: GUI")
         self.setObjectName("GuiMain")
-        self.threadPool = QThreadPool(self)
 
         # System Info
         # ===========
