@@ -24,7 +24,7 @@ import pytest
 from mocked import causeOSError
 from tools import C, buildTestProject
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QThreadPool, Qt
 from PyQt5.QtGui import QTextBlock, QTextCursor, QTextOption
 from PyQt5.QtWidgets import QAction, qApp
 
@@ -1107,7 +1107,7 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
             return self._objID
 
     threadPool = MockThreadPool()
-    monkeypatch.setattr(SHARED, "_threadPool", threadPool)
+    monkeypatch.setattr(QThreadPool, "globalInstance", lambda *a: threadPool)
     nwGUI.docEditor.wcTimerDoc.blockSignals(True)
     nwGUI.docEditor.wcTimerSel.blockSignals(True)
 
@@ -1146,7 +1146,7 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
 
     # Run the full word counter
     nwGUI.docEditor._runDocCounter()
-    assert SHARED._threadPool.objectID() == id(nwGUI.docEditor.wCounterDoc)
+    assert threadPool.objectID() == id(nwGUI.docEditor.wCounterDoc)
 
     nwGUI.docEditor.wCounterDoc.run()
     # nwGUI.docEditor._updateDocCounts(cC, wC, pC)
@@ -1162,7 +1162,7 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
 
     # Run the selection word counter
     nwGUI.docEditor._runSelCounter()
-    assert SHARED._threadPool.objectID() == id(nwGUI.docEditor.wCounterSel)
+    assert threadPool.objectID() == id(nwGUI.docEditor.wCounterSel)
 
     nwGUI.docEditor.wCounterSel.run()
     # nwGUI.docEditor._updateSelCounts(cC, wC, pC)

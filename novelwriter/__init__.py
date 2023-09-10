@@ -73,7 +73,7 @@ logger = logging.getLogger(__name__)
 #  Main Program
 ##
 
-# Global config singleton
+# Global config and data singletons
 CONFIG = Config()
 SHARED = SharedData()
 

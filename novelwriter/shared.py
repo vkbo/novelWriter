@@ -68,10 +68,6 @@ class SharedData(QObject):
         self._idleTime = 0.0
         self._idleRefTime = time()
 
-        # Threading
-        self._threadPool = QThreadPool(self)
-        self._threadPool.setMaxThreadCount(5)
-
         return
 
     ##
@@ -138,7 +134,8 @@ class SharedData(QObject):
         self._gui = gui
         self._theme = theme
         self._resetProject()
-        logger.debug("SharedData instance initialised")
+        logger.debug("Ready: SharedData")
+        logger.debug("Thread Pool Max Count: %d", QThreadPool.globalInstance().maxThreadCount())
         return
 
     def openProject(self, path: str | Path, clearLock: bool = False) -> bool:
@@ -210,7 +207,7 @@ class SharedData(QObject):
 
     def runInThreadPool(self, runnable: QRunnable, priority: int = 0) -> None:
         """Queue a runnable in the application thread pool."""
-        self._threadPool.start(runnable, priority=priority)
+        QThreadPool.globalInstance().start(runnable, priority=priority)
         return
 
     ##
