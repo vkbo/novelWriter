@@ -28,7 +28,7 @@ import logging
 from time import time
 
 from PyQt5.QtGui import QTextCursor, QTextDocument
-from PyQt5.QtCore import QObject
+from PyQt5.QtCore import QObject, pyqtSlot
 from PyQt5.QtWidgets import QPlainTextDocumentLayout, qApp
 from novelwriter import SHARED
 
@@ -112,5 +112,15 @@ class GuiTextDocument(QTextDocument):
                         word = text[cPos:cEnd]
                         return word, cPos, cLen, SHARED.spelling.suggestWords(word)
         return "", -1, -1, []
+
+    ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot(bool)
+    def setSpellCheckState(self, state: bool) -> None:
+        """Set the spell check state of the syntax highlighter."""
+        self._syntax.setSpellCheck(state)
+        return
 
 # END Class GuiTextDocument

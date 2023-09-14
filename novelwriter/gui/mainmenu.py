@@ -78,10 +78,11 @@ class GuiMainMenu(QMenuBar):
         return
 
     ##
-    #  Update Menu on Settings Changed
+    #  Public Slots
     ##
 
-    def setSpellCheck(self, state: bool) -> None:
+    @pyqtSlot(bool)
+    def setSpellCheckState(self, state: bool) -> None:
         """Forward spell check check state to its action."""
         self.aSpellCheck.setChecked(state)
         return

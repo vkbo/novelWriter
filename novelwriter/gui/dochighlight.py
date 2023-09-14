@@ -376,20 +376,18 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                                 spFmt.merge(xFmt[xM])
                                 self.setFormat(x, 1, spFmt)
 
-        if not self._spellCheck:
-            return
-
         data = self.currentBlockUserData()
         if not isinstance(data, TextBlockData):
             data = TextBlockData()
             self.setCurrentBlockUserData(data)
 
-        for xPos, xLen in data.spellCheck(text):
-            for x in range(xPos, xPos+xLen):
-                spFmt = self.format(x)
-                spFmt.setUnderlineColor(self._colSpell)
-                spFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
-                self.setFormat(x, 1, spFmt)
+        if self._spellCheck:
+            for xPos, xLen in data.spellCheck(text):
+                for x in range(xPos, xPos+xLen):
+                    spFmt = self.format(x)
+                    spFmt.setUnderlineColor(self._colSpell)
+                    spFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
+                    self.setFormat(x, 1, spFmt)
 
         return
 

@@ -266,6 +266,7 @@ class GuiMain(QMainWindow):
         self.docEditor.novelStructureChanged.connect(self.novelView.refreshTree)
         self.docEditor.novelItemMetaChanged.connect(self.novelView.updateNovelItemMeta)
         self.docEditor.statusMessage.connect(self.mainStatus.setStatusMessage)
+        self.docEditor.spellCheckStateChanged.connect(self.mainMenu.setSpellCheckState)
 
         self.docViewer.loadDocumentTagRequest.connect(self._followTag)
 

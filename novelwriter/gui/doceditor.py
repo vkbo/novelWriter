@@ -80,6 +80,7 @@ class GuiDocEditor(QPlainTextEdit):
     loadDocumentTagRequest = pyqtSignal(str, Enum)
     novelStructureChanged = pyqtSignal()
     novelItemMetaChanged = pyqtSignal(str)
+    spellCheckStateChanged = pyqtSignal(bool)
 
     def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
@@ -95,7 +96,6 @@ class GuiDocEditor(QPlainTextEdit):
         self._docChanged = False  # Flag for changed status of document
         self._docHandle  = None   # The handle of the open document
 
-        self._spellCheck = False  # Flag for spell checking enabled
         self._nonWord    = "\"'"  # Characters to not include in spell checking
         self._vpMargin   = 0      # The editor viewport margin, set during init
 
@@ -125,6 +125,7 @@ class GuiDocEditor(QPlainTextEdit):
         # Connect Signals
         self._qDocument.contentsChange.connect(self._docChange)
         self.selectionChanged.connect(self._updateSelectedStatus)
+        self.spellCheckStateChanged.connect(self._qDocument.setSpellCheckState)
 
         # Document Title
         self.docHeader = GuiDocEditHeader(self)
@@ -609,25 +610,21 @@ class GuiDocEditor(QPlainTextEdit):
         current status saved in this class.
         """
         if state is None:
-            state = not self._spellCheck
-
-        if not CONFIG.hasEnchant:
-            if state:
-                SHARED.info(self.tr(
-                    "Spell checking requires the package PyEnchant. "
-                    "It does not appear to be installed."
-                ))
-            state = False
+            state = not SHARED.project.data.spellCheck
 
         if SHARED.spelling.spellLanguage is None:
             state = False
 
-        self._spellCheck = state
-        self.mainGui.mainMenu.setSpellCheck(state)
+        if state and not CONFIG.hasEnchant:
+            SHARED.info(self.tr(
+                "Spell checking requires the package PyEnchant. "
+                "It does not appear to be installed."
+            ))
+            state = False
+
         SHARED.project.data.setSpellCheck(state)
-        self._qDocument.syntaxHighlighter.setSpellCheck(state)
-        if state is False:
-            self.spellCheckDocument()
+        self.spellCheckStateChanged.emit(state)
+        self.spellCheckDocument()
 
         logger.debug("Spell check is set to '%s'", str(state))
 
@@ -1021,7 +1018,7 @@ class GuiDocEditor(QPlainTextEdit):
         aSPar.triggered.connect(lambda: self._makePosSelection(QTextCursor.BlockUnderCursor, pos))
 
         # Spell Checking
-        if self._spellCheck:
+        if SHARED.project.data.spellCheck:
             word, cPos, cLen, suggest = self._qDocument.spellErrorAtPos(pCursor.position())
             if word and cPos >= 0 and cLen > 0:
                 logger.debug("Word '%s' is misspelled", word)
