@@ -93,18 +93,15 @@ class GuiDocEditor(QPlainTextEdit):
         self._nwItem     = None
 
         self._docChanged = False  # Flag for changed status of document
-        self._docHandle  = None   # The handle of the open file
+        self._docHandle  = None   # The handle of the open document
 
         self._spellCheck = False  # Flag for spell checking enabled
         self._nonWord    = "\"'"  # Characters to not include in spell checking
         self._vpMargin   = 0      # The editor viewport margin, set during init
 
         # Document Variables
-        self._charCount  = 0      # Character count
-        self._wordCount  = 0      # Word count
-        self._paraCount  = 0      # Paragraph count
-        self._lastEdit   = 0      # Time stamp of last edit
-        self._lastActive = 0.0    # Time stamp of last activity
+        self._lastEdit   = 0.0    # Timestamp of last edit
+        self._lastActive = 0.0    # Timestamp of last activity
         self._lastFind   = None   # Position of the last found search word
         self._doReplace  = False  # Switch to temporarily disable auto-replace
 
@@ -230,10 +227,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.wcTimerSel.stop()
 
         self._docHandle  = None
-        self._charCount  = 0
-        self._wordCount  = 0
-        self._paraCount  = 0
-        self._lastEdit   = 0
+        self._lastEdit   = 0.0
         self._lastActive = 0.0
         self._lastFind   = None
         self._doReplace  = False
@@ -456,13 +450,8 @@ class GuiDocEditor(QPlainTextEdit):
             return False
 
         docText = self.getText()
-
         cC, wC, pC = countWords(docText)
         self._updateDocCounts(cC, wC, pC)
-
-        self._nwItem.setCharCount(self._charCount)
-        self._nwItem.setWordCount(self._wordCount)
-        self._nwItem.setParaCount(self._paraCount)
 
         self.saveCursorPosition()
         if not self._nwDocument.writeDocument(docText):
@@ -911,14 +900,15 @@ class GuiDocEditor(QPlainTextEdit):
         if CONFIG.autoScroll:
             cPos = self.cursorRect().topLeft().y()
             super().keyPressEvent(event)
+            nPos = self.cursorRect().topLeft().y()
             kMod = event.modifiers()
             okMod = kMod == Qt.NoModifier or kMod == Qt.ShiftModifier
             okKey = event.key() not in self.MOVE_KEYS
-            if okMod and okKey:
+            if nPos != cPos and okMod and okKey:
                 mPos = CONFIG.autoScrollPos*0.01 * self.viewport().height()
                 if cPos > mPos:
                     vBar = self.verticalScrollBar()
-                    vBar.setValue(vBar.value() + 1)
+                    vBar.setValue(vBar.value() + (1 if nPos > cPos else -1))
         else:
             super().keyPressEvent(event)
 
@@ -1095,7 +1085,7 @@ class GuiDocEditor(QPlainTextEdit):
             logger.debug("Word counter is busy")
             return
 
-        if time() - self._lastEdit < 5 * self.wcInterval:
+        if time() - self._lastEdit < 5.0 * self.wcInterval:
             logger.debug("Running word counter")
             SHARED.runInThreadPool(self.wCounterDoc)
 
@@ -1108,10 +1098,6 @@ class GuiDocEditor(QPlainTextEdit):
             return
 
         logger.debug("Updating word count")
-
-        self._charCount = cCount
-        self._wordCount = wCount
-        self._paraCount = pCount
 
         self._nwItem.setCharCount(cCount)
         self._nwItem.setWordCount(wCount)
@@ -1132,12 +1118,10 @@ class GuiDocEditor(QPlainTextEdit):
             if not self.wcTimerSel.isActive():
                 self.wcTimerSel.start()
             self.docFooter.setHasSelection(True)
-
         else:
             self.wcTimerSel.stop()
             self.docFooter.setHasSelection(False)
             self.docFooter.updateCounts()
-
         return
 
     @pyqtSlot()
@@ -1270,7 +1254,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.setTextCursor(cursor)
 
         # Search up to a maximum of 1000, and make sure certain special
-        # searches like a regex search for .* turns into an infinite loop
+        # searches like a regex search for .* don't loop infinitely
         while self.find(searchFor, findOpt) and len(resE) <= 1000:
             cursor = self.textCursor()
             if cursor.hasSelection():
@@ -1987,7 +1971,6 @@ class GuiDocEditSearch(QFrame):
         logger.debug("Create: GuiDocEditSearch")
 
         self.docEditor = docEditor
-        self.mainGui   = docEditor.mainGui
 
         self.repVisible  = False
         self.isCaseSense = CONFIG.searchCase
@@ -2625,7 +2608,6 @@ class GuiDocEditFooter(QWidget):
         logger.debug("Create: GuiDocEditFooter")
 
         self.docEditor = docEditor
-        self.mainGui   = docEditor.mainGui
 
         self._tItem     = None
         self._docHandle = None
