@@ -152,7 +152,7 @@ class GuiMain(QMainWindow):
 
         # Project Tree View
         self.treePane = QWidget(self)
-        self.treeBox = QVBoxLayout(self)
+        self.treeBox = QVBoxLayout()
         self.treeBox.setContentsMargins(0, 0, 0, 0)
         self.treeBox.setSpacing(mPx)
         self.treeBox.addWidget(self.projStack)
@@ -222,7 +222,7 @@ class GuiMain(QMainWindow):
         self.rebuildTrees()
 
         # Assemble Main Window Elements
-        self.mainBox = QHBoxLayout(self)
+        self.mainBox = QHBoxLayout()
         self.mainBox.addWidget(self.sideBar)
         self.mainBox.addWidget(self.mainStack)
         self.mainBox.setContentsMargins(0, 0, 0, 0)
