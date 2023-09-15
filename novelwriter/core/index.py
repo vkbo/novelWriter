@@ -151,11 +151,13 @@ class NWIndex:
         """Check if the index has changed since a given time."""
         return self._indexChange > float(checkTime)
 
-    def rootChangedSince(self, rootHandle: str, checkTime: int | float) -> bool:
+    def rootChangedSince(self, rootHandle: str | None, checkTime: int | float) -> bool:
         """Check if the index has changed since a given time for a
         given root item.
         """
-        return self._rootChange.get(rootHandle, self._indexChange) > float(checkTime)
+        if isinstance(rootHandle, str):
+            return self._rootChange.get(rootHandle, self._indexChange) > float(checkTime)
+        return False
 
     ##
     #  Load and Save Index to/from File
@@ -475,10 +477,11 @@ class NWIndex:
             return isGood
 
         # If we're still here, we check that the references exist
-        theKey = nwKeyWords.KEY_CLASS[tBits[0]].name
+        refKey = nwKeyWords.KEY_CLASS[tBits[0]].name
         for n in range(1, nBits):
-            if tBits[n] in self._tagsIndex:
-                isGood[n] = self._tagsIndex.tagClass(tBits[n]) == theKey
+            tagKey = tBits[n].lower()
+            if tagKey in self._tagsIndex:
+                isGood[n] = self._tagsIndex.tagClass(tagKey) == refKey
 
         return isGood
 
@@ -586,15 +589,15 @@ class NWIndex:
         """Extract all references made in a file, and optionally title
         section.
         """
-        theRefs = {x: [] for x in nwKeyWords.KEY_CLASS}
+        tRefs = {x: [] for x in nwKeyWords.KEY_CLASS}
         for rTitle, hItem in self._itemIndex.iterItemHeaders(tHandle):
             if sTitle is None or sTitle == rTitle:
                 for aTag, refTypes in hItem.references.items():
                     for refType in refTypes:
-                        if refType in theRefs:
-                            theRefs[refType].append(aTag)
+                        if refType in tRefs:
+                            tRefs[refType].append(self._tagsIndex.tagName(aTag))
 
-        return theRefs
+        return tRefs
 
     def getBackReferenceList(self, tHandle: str) -> dict[str, str]:
         """Build a list of files referring back to our file, specified
@@ -603,17 +606,17 @@ class NWIndex:
         if tHandle is None or tHandle not in self._itemIndex:
             return {}
 
-        theRefs = {}
-        theTags = self._itemIndex.allItemTags(tHandle)
-        if not theTags:
-            return theRefs
+        tRefs = {}
+        tTags = self._itemIndex.allItemTags(tHandle)
+        if not tTags:
+            return tRefs
 
         for aHandle, sTitle, hItem in self._itemIndex.iterAllHeaders():
             for aTag in hItem.references:
-                if aTag in theTags and aHandle not in theRefs:
-                    theRefs[aHandle] = sTitle
+                if aTag in tTags and aHandle not in tRefs:
+                    tRefs[aHandle] = sTitle
 
-        return theRefs
+        return tRefs
 
     def getTagSource(self, tagKey: str) -> tuple[str, str]:
         """Return the source location of a given tag."""
@@ -663,22 +666,26 @@ class TagsIndex:
 
     def add(self, tagKey: str, tHandle: str, sTitle: str, itemClass: nwItemClass):
         """Add a key to the index and set all values."""
-        self._tags[tagKey] = {
-            "handle": tHandle, "heading": sTitle, "class": itemClass.name
+        self._tags[tagKey.lower()] = {
+            "name": tagKey, "handle": tHandle, "heading": sTitle, "class": itemClass.name
         }
         return
 
+    def tagName(self, tagKey: str) -> str:
+        """Get the display name of a given tag."""
+        return self._tags.get(tagKey.lower(), {}).get("name", None)
+
     def tagHandle(self, tagKey: str) -> str:
         """Get the handle of a given tag."""
-        return self._tags.get(tagKey, {}).get("handle", None)
+        return self._tags.get(tagKey.lower(), {}).get("handle", None)
 
     def tagHeading(self, tagKey: str) -> str:
         """Get the heading of a given tag."""
-        return self._tags.get(tagKey, {}).get("heading", TT_NONE)
+        return self._tags.get(tagKey.lower(), {}).get("heading", TT_NONE)
 
     def tagClass(self, tagKey: str) -> str | None:
         """Get the class of a given tag."""
-        return self._tags.get(tagKey, {}).get("class", None)
+        return self._tags.get(tagKey.lower(), {}).get("class", None)
 
     ##
     #  Pack/Unpack
@@ -699,12 +706,16 @@ class TagsIndex:
         for tagKey, tagData in data.items():
             if not isinstance(tagKey, str):
                 raise ValueError("tagsIndex keys must be a strings")
+            if "name" not in tagData:
+                raise KeyError("A tagIndex item is missing a name entry")
             if "handle" not in tagData:
                 raise KeyError("A tagIndex item is missing a handle entry")
             if "heading" not in tagData:
                 raise KeyError("A tagIndex item is missing a heading entry")
             if "class" not in tagData:
                 raise KeyError("A tagIndex item is missing a class entry")
+            if tagData["name"].lower() != tagKey.lower():
+                raise ValueError("tagsIndex name must match key")
             if not isHandle(tagData["handle"]):
                 raise ValueError("tagsIndex handle must be a handle")
             if not isTitleTag(tagData["heading"]):
@@ -1127,7 +1138,7 @@ class IndexHeading:
 
     def setTag(self, tagKey: str):
         """Set the tag for references, and make sure it is a string."""
-        self._tag = str(tagKey)
+        self._tag = str(tagKey).lower()
         return
 
     def addReference(self, tagKey: str, refType: str):
@@ -1135,6 +1146,7 @@ class IndexHeading:
         associated with.
         """
         if refType in nwKeyWords.VALID_KEYS:
+            tagKey = tagKey.lower()
             if tagKey not in self._refs:
                 self._refs[tagKey] = set()
             self._refs[tagKey].add(refType)
