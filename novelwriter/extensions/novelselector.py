@@ -62,7 +62,7 @@ class NovelSelector(QComboBox):
     #  Methods
     ##
 
-    def setHandle(self, tHandle: str, blockSignal: bool = True) -> None:
+    def setHandle(self, tHandle: str | None, blockSignal: bool = True) -> None:
         """Set the currently selected handle."""
         self._blockSignal = blockSignal
         if tHandle is None:
