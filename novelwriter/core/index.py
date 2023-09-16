@@ -240,50 +240,50 @@ class NWIndex:
     #  Index Building
     ##
 
-    def scanText(self, tHandle: str, theText: str) -> bool:
+    def scanText(self, tHandle: str, text: str) -> bool:
         """Scan a piece of text associated with a handle. This will
         update the indices accordingly. This function takes the handle
         and text as separate inputs as we want to primarily scan the
         files before we save them, in which case we already have the
         text.
         """
-        theItem = self._project.tree[tHandle]
-        if theItem is None:
+        tItem = self._project.tree[tHandle]
+        if tItem is None:
             logger.info("Not indexing unknown item '%s'", tHandle)
             return False
-        if not theItem.isFileType():
+        if not tItem.isFileType():
             logger.info("Not indexing non-file item '%s'", tHandle)
             return False
 
         # Keep a record of existing tags, and create a new item entry
         itemTags = dict.fromkeys(self._itemIndex.allItemTags(tHandle), False)
-        self._itemIndex.add(tHandle, theItem)
+        self._itemIndex.add(tHandle, tItem)
 
         # Run word counter for the whole text
-        cC, wC, pC = countWords(theText)
-        theItem.setCharCount(cC)
-        theItem.setWordCount(wC)
-        theItem.setParaCount(pC)
+        cC, wC, pC = countWords(text)
+        tItem.setCharCount(cC)
+        tItem.setWordCount(wC)
+        tItem.setParaCount(pC)
 
         # If the file's meta data is missing, or the file is out of the
         # main project, we don't index the content
-        if theItem.itemLayout == nwItemLayout.NO_LAYOUT:
+        if tItem.itemLayout == nwItemLayout.NO_LAYOUT:
             logger.info("Not indexing no-layout item '%s'", tHandle)
             return False
-        if theItem.itemParent is None:
+        if tItem.itemParent is None:
             logger.info("Not indexing orphaned item '%s'", tHandle)
             return False
 
         logger.debug("Indexing item with handle '%s'", tHandle)
-        if theItem.isInactiveClass():
-            self._scanInactive(theItem, theText)
+        if tItem.isInactiveClass():
+            self._scanInactive(tItem, text)
         else:
-            self._scanActive(tHandle, theItem, theText, itemTags)
+            self._scanActive(tHandle, tItem, text, itemTags)
 
         # Update timestamps for index changes
         nowTime = time()
         self._indexChange = nowTime
-        self._rootChange[theItem.itemRoot] = nowTime
+        self._rootChange[tItem.itemRoot] = nowTime
 
         return True
 
@@ -479,9 +479,8 @@ class NWIndex:
         # If we're still here, we check that the references exist
         refKey = nwKeyWords.KEY_CLASS[tBits[0]].name
         for n in range(1, nBits):
-            tagKey = tBits[n].lower()
-            if tagKey in self._tagsIndex:
-                isGood[n] = self._tagsIndex.tagClass(tagKey) == refKey
+            if tBits[n] in self._tagsIndex:
+                isGood[n] = self._tagsIndex.tagClass(tBits[n]) == refKey
 
         return isGood
 
@@ -641,30 +640,30 @@ class TagsIndex:
 
     __slots__ = ("_tags")
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._tags: dict[str, dict] = {}
         return
 
-    def __contains__(self, tagKey):
-        return tagKey in self._tags
+    def __contains__(self, tagKey: str) -> bool:
+        return tagKey.lower() in self._tags
 
-    def __delitem__(self, tagKey):
-        self._tags.pop(tagKey, None)
+    def __delitem__(self, tagKey: str) -> None:
+        self._tags.pop(tagKey.lower(), None)
         return
 
-    def __getitem__(self, tagKey):
-        return self._tags.get(tagKey, None)
+    def __getitem__(self, tagKey: str) -> dict | None:
+        return self._tags.get(tagKey.lower(), None)
 
     ##
     #  Methods
     ##
 
-    def clear(self):
+    def clear(self) -> None:
         """Clear the index."""
         self._tags = {}
         return
 
-    def add(self, tagKey: str, tHandle: str, sTitle: str, itemClass: nwItemClass):
+    def add(self, tagKey: str, tHandle: str, sTitle: str, itemClass: nwItemClass) -> None:
         """Add a key to the index and set all values."""
         self._tags[tagKey.lower()] = {
             "name": tagKey, "handle": tHandle, "heading": sTitle, "class": itemClass.name
@@ -673,7 +672,7 @@ class TagsIndex:
 
     def tagName(self, tagKey: str) -> str:
         """Get the display name of a given tag."""
-        return self._tags.get(tagKey.lower(), {}).get("name", None)
+        return self._tags.get(tagKey.lower(), {}).get("name", "")
 
     def tagHandle(self, tagKey: str) -> str:
         """Get the handle of a given tag."""
@@ -695,7 +694,7 @@ class TagsIndex:
         """Pack all the data of the tags into a single dictionary."""
         return self._tags
 
-    def unpackData(self, data: dict):
+    def unpackData(self, data: dict) -> None:
         """Iterate through the tagsIndex loaded from cache and check
         that it's valid.
         """
@@ -714,7 +713,7 @@ class TagsIndex:
                 raise KeyError("A tagIndex item is missing a heading entry")
             if "class" not in tagData:
                 raise KeyError("A tagIndex item is missing a class entry")
-            if tagData["name"].lower() != tagKey.lower():
+            if tagData["name"].lower() != tagKey:
                 raise ValueError("tagsIndex name must match key")
             if not isHandle(tagData["handle"]):
                 raise ValueError("tagsIndex handle must be a handle")
