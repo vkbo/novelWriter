@@ -1027,9 +1027,9 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     itemIndex.setHeadingCounts(cHandle, "T0001", 60, 10, 2)
     itemIndex.setHeadingSynopsis(cHandle, "T0001", "In the beginning ...")
     itemIndex.setHeadingTag(cHandle, "T0001", "One")
-    itemIndex.addHeadingReferences(cHandle, "T0001", ["Jane"], "@pov")
-    itemIndex.addHeadingReferences(cHandle, "T0001", ["Jane"], "@focus")
-    itemIndex.addHeadingReferences(cHandle, "T0001", ["Jane", "John"], "@char")
+    itemIndex.addHeadingRef(cHandle, "T0001", ["Jane"], "@pov")
+    itemIndex.addHeadingRef(cHandle, "T0001", ["Jane"], "@focus")
+    itemIndex.addHeadingRef(cHandle, "T0001", ["Jane", "John"], "@char")
     idxData = itemIndex.packData()
 
     assert idxData[cHandle]["headings"]["T0001"] == {
