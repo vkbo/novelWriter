@@ -151,11 +151,13 @@ class NWIndex:
         """Check if the index has changed since a given time."""
         return self._indexChange > float(checkTime)
 
-    def rootChangedSince(self, rootHandle: str, checkTime: int | float) -> bool:
+    def rootChangedSince(self, rootHandle: str | None, checkTime: int | float) -> bool:
         """Check if the index has changed since a given time for a
         given root item.
         """
-        return self._rootChange.get(rootHandle, self._indexChange) > float(checkTime)
+        if isinstance(rootHandle, str):
+            return self._rootChange.get(rootHandle, self._indexChange) > float(checkTime)
+        return False
 
     ##
     #  Load and Save Index to/from File
@@ -167,15 +169,13 @@ class NWIndex:
         if not isinstance(indexFile, Path):
             return False
 
-        theData = {}
         tStart = time()
-
         self._indexBroken = False
         if indexFile.exists():
             logger.debug("Loading index file")
             try:
                 with open(indexFile, mode="r", encoding="utf-8") as inFile:
-                    theData = json.load(inFile)
+                    data = json.load(inFile)
             except Exception:
                 logger.error("Failed to load index file")
                 logException()
@@ -183,8 +183,8 @@ class NWIndex:
                 return False
 
             try:
-                self._tagsIndex.unpackData(theData["novelWriter.tagsIndex"])
-                self._itemIndex.unpackData(theData["novelWriter.itemIndex"])
+                self._tagsIndex.unpackData(data["novelWriter.tagsIndex"])
+                self._itemIndex.unpackData(data["novelWriter.itemIndex"])
             except Exception:
                 logger.error("The index content is invalid")
                 logException()
@@ -238,50 +238,50 @@ class NWIndex:
     #  Index Building
     ##
 
-    def scanText(self, tHandle: str, theText: str) -> bool:
+    def scanText(self, tHandle: str, text: str) -> bool:
         """Scan a piece of text associated with a handle. This will
         update the indices accordingly. This function takes the handle
         and text as separate inputs as we want to primarily scan the
         files before we save them, in which case we already have the
         text.
         """
-        theItem = self._project.tree[tHandle]
-        if theItem is None:
+        tItem = self._project.tree[tHandle]
+        if tItem is None:
             logger.info("Not indexing unknown item '%s'", tHandle)
             return False
-        if not theItem.isFileType():
+        if not tItem.isFileType():
             logger.info("Not indexing non-file item '%s'", tHandle)
             return False
 
         # Keep a record of existing tags, and create a new item entry
         itemTags = dict.fromkeys(self._itemIndex.allItemTags(tHandle), False)
-        self._itemIndex.add(tHandle, theItem)
+        self._itemIndex.add(tHandle, tItem)
 
         # Run word counter for the whole text
-        cC, wC, pC = countWords(theText)
-        theItem.setCharCount(cC)
-        theItem.setWordCount(wC)
-        theItem.setParaCount(pC)
+        cC, wC, pC = countWords(text)
+        tItem.setCharCount(cC)
+        tItem.setWordCount(wC)
+        tItem.setParaCount(pC)
 
         # If the file's meta data is missing, or the file is out of the
         # main project, we don't index the content
-        if theItem.itemLayout == nwItemLayout.NO_LAYOUT:
+        if tItem.itemLayout == nwItemLayout.NO_LAYOUT:
             logger.info("Not indexing no-layout item '%s'", tHandle)
             return False
-        if theItem.itemParent is None:
+        if tItem.itemParent is None:
             logger.info("Not indexing orphaned item '%s'", tHandle)
             return False
 
         logger.debug("Indexing item with handle '%s'", tHandle)
-        if theItem.isInactiveClass():
-            self._scanInactive(theItem, theText)
+        if tItem.isInactiveClass():
+            self._scanInactive(tItem, text)
         else:
-            self._scanActive(tHandle, theItem, theText, itemTags)
+            self._scanActive(tHandle, tItem, text, itemTags)
 
         # Update timestamps for index changes
         nowTime = time()
         self._indexChange = nowTime
-        self._rootChange[theItem.itemRoot] = nowTime
+        self._rootChange[tItem.itemRoot] = nowTime
 
         return True
 
@@ -296,14 +296,14 @@ class NWIndex:
         pTitle = TT_NONE     # Tag of the previous title
         canSetHeader = True  # First header has not yet been set
 
-        theLines = text.splitlines()
-        for nLine, aLine in enumerate(theLines, start=1):
+        lines = text.splitlines()
+        for n, line in enumerate(lines, start=1):
 
-            if aLine.strip() == "":
+            if line.strip() == "":
                 continue
 
-            if aLine.startswith("#"):
-                hDepth, hText = self._splitHeading(aLine)
+            if line.startswith("#"):
+                hDepth, hText = self._splitHeading(line)
                 if hDepth == "H0":
                     continue
 
@@ -311,33 +311,33 @@ class NWIndex:
                     nwItem.setMainHeading(hDepth)
                     canSetHeader = False
 
-                cTitle = self._itemIndex.addItemHeading(tHandle, nLine, hDepth, hText)
+                cTitle = self._itemIndex.addItemHeading(tHandle, n, hDepth, hText)
                 if cTitle != TT_NONE:
                     if nTitle > 0:
                         # We have a new title, so we need to count the words of the previous one
-                        lastText = "\n".join(theLines[nTitle-1:nLine-1])
+                        lastText = "\n".join(lines[nTitle-1:n-1])
                         self._indexWordCounts(tHandle, lastText, pTitle)
-                    nTitle = nLine
+                    nTitle = n
                     pTitle = cTitle
 
-            elif aLine.startswith("@"):
+            elif line.startswith("@"):
                 if cTitle != TT_NONE:
-                    self._indexKeyword(tHandle, aLine, cTitle, nwItem.itemClass, tags)
+                    self._indexKeyword(tHandle, line, cTitle, nwItem.itemClass, tags)
 
-            elif aLine.startswith("%"):
+            elif line.startswith("%"):
                 if cTitle != TT_NONE:
-                    toCheck = aLine[1:].lstrip()
+                    toCheck = line[1:].lstrip()
                     synTag = toCheck[:9].lower()
-                    tLen = len(aLine)
+                    tLen = len(line)
                     cLen = len(toCheck)
                     cOff = tLen - cLen
                     if synTag == "synopsis:":
-                        sText = aLine[cOff+9:].strip()
+                        sText = line[cOff+9:].strip()
                         self._itemIndex.setHeadingSynopsis(tHandle, cTitle, sText)
 
         # Count words for remaining text after last heading
         if pTitle != TT_NONE:
-            lastText = "\n".join(theLines[nTitle-1:])
+            lastText = "\n".join(lines[nTitle-1:])
             self._indexWordCounts(tHandle, lastText, pTitle)
 
         # Also count words on a page with no titles
@@ -354,9 +354,9 @@ class NWIndex:
 
     def _scanInactive(self, nwItem: NWItem, text: str) -> None:
         """Scan an inactive document for meta data."""
-        for aLine in text.splitlines():
-            if aLine.startswith("#"):
-                hDepth, _ = self._splitHeading(aLine)
+        for line in text.splitlines():
+            if line.startswith("#"):
+                hDepth, _ = self._splitHeading(line)
                 if hDepth != "H0":
                     nwItem.setMainHeading(hDepth)
                     break
@@ -378,7 +378,7 @@ class NWIndex:
             return "H2", line[4:].strip()
         return "H0", ""
 
-    def _indexWordCounts(self, tHandle: str, text: str, sTitle: str):
+    def _indexWordCounts(self, tHandle: str, text: str, sTitle: str) -> None:
         """Count text stats and save the counts to the index."""
         cC, wC, pC = countWords(text)
         self._itemIndex.setHeadingCounts(tHandle, sTitle, cC, wC, pC)
@@ -391,22 +391,22 @@ class NWIndex:
         of active tags is updated so that no longer used tags can be
         pruned later.
         """
-        isValid, theBits, _ = self.scanThis(line)
-        if not isValid or len(theBits) < 2:
-            logger.warning("Skipping keyword with %d value(s) in '%s'", len(theBits), tHandle)
+        isValid, tBits, _ = self.scanThis(line)
+        if not isValid or len(tBits) < 2:
+            logger.warning("Skipping keyword with %d value(s) in '%s'", len(tBits), tHandle)
             return
 
-        if theBits[0] not in nwKeyWords.VALID_KEYS:
-            logger.warning("Skipping invalid keyword '%s' in '%s'", theBits[0], tHandle)
+        if tBits[0] not in nwKeyWords.VALID_KEYS:
+            logger.warning("Skipping invalid keyword '%s' in '%s'", tBits[0], tHandle)
             return
 
-        if theBits[0] == nwKeyWords.TAG_KEY:
-            tagName = theBits[1]
+        if tBits[0] == nwKeyWords.TAG_KEY:
+            tagName = tBits[1]
             self._tagsIndex.add(tagName, tHandle, sTitle, itemClass)
             self._itemIndex.setHeadingTag(tHandle, sTitle, tagName)
             tags[tagName] = True
         else:
-            self._itemIndex.addHeadingReferences(tHandle, sTitle, theBits[1:], theBits[0])
+            self._itemIndex.addHeadingRef(tHandle, sTitle, tBits[1:], tBits[0])
 
         return
 
@@ -475,10 +475,10 @@ class NWIndex:
             return isGood
 
         # If we're still here, we check that the references exist
-        theKey = nwKeyWords.KEY_CLASS[tBits[0]].name
+        refKey = nwKeyWords.KEY_CLASS[tBits[0]].name
         for n in range(1, nBits):
             if tBits[n] in self._tagsIndex:
-                isGood[n] = self._tagsIndex.tagClass(tBits[n]) == theKey
+                isGood[n] = self._tagsIndex.tagClass(tBits[n]) == refKey
 
         return isGood
 
@@ -504,8 +504,8 @@ class NWIndex:
         they appear in the tree view and in the respective document
         files, but skipping all note files.
         """
-        novStruct = self._itemIndex.iterNovelStructure(rHandle=rootHandle, skipExcl=skipExcl)
-        for tHandle, sTitle, hItem in novStruct:
+        structure = self._itemIndex.iterNovelStructure(rHandle=rootHandle, skipExcl=skipExcl)
+        for tHandle, sTitle, hItem in structure:
             yield f"{tHandle}:{sTitle}", tHandle, sTitle, hItem
         return
 
@@ -555,14 +555,14 @@ class NWIndex:
                     "words": hItem.wordCount,
                 }
 
-        theToC = [(
+        result = [(
             tKey,
             tData[tKey]["level"],
             tData[tKey]["title"],
             tData[tKey]["words"]
         ) for tKey in tOrder]
 
-        return theToC
+        return result
 
     def getCounts(self, tHandle: str, sTitle: str | None = None) -> tuple[int, int, int]:
         """Return the counts for a file, or a section of a file,
@@ -586,15 +586,15 @@ class NWIndex:
         """Extract all references made in a file, and optionally title
         section.
         """
-        theRefs = {x: [] for x in nwKeyWords.KEY_CLASS}
+        tRefs = {x: [] for x in nwKeyWords.KEY_CLASS}
         for rTitle, hItem in self._itemIndex.iterItemHeaders(tHandle):
             if sTitle is None or sTitle == rTitle:
                 for aTag, refTypes in hItem.references.items():
                     for refType in refTypes:
-                        if refType in theRefs:
-                            theRefs[refType].append(aTag)
+                        if refType in tRefs:
+                            tRefs[refType].append(self._tagsIndex.tagName(aTag))
 
-        return theRefs
+        return tRefs
 
     def getBackReferenceList(self, tHandle: str) -> dict[str, str]:
         """Build a list of files referring back to our file, specified
@@ -603,17 +603,17 @@ class NWIndex:
         if tHandle is None or tHandle not in self._itemIndex:
             return {}
 
-        theRefs = {}
-        theTags = self._itemIndex.allItemTags(tHandle)
-        if not theTags:
-            return theRefs
+        tRefs = {}
+        tTags = self._itemIndex.allItemTags(tHandle)
+        if not tTags:
+            return tRefs
 
         for aHandle, sTitle, hItem in self._itemIndex.iterAllHeaders():
             for aTag in hItem.references:
-                if aTag in theTags and aHandle not in theRefs:
-                    theRefs[aHandle] = sTitle
+                if aTag in tTags and aHandle not in tRefs:
+                    tRefs[aHandle] = sTitle
 
-        return theRefs
+        return tRefs
 
     def getTagSource(self, tagKey: str) -> tuple[str, str]:
         """Return the source location of a given tag."""
@@ -638,47 +638,51 @@ class TagsIndex:
 
     __slots__ = ("_tags")
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._tags: dict[str, dict] = {}
         return
 
-    def __contains__(self, tagKey):
-        return tagKey in self._tags
+    def __contains__(self, tagKey: str) -> bool:
+        return tagKey.lower() in self._tags
 
-    def __delitem__(self, tagKey):
-        self._tags.pop(tagKey, None)
+    def __delitem__(self, tagKey: str) -> None:
+        self._tags.pop(tagKey.lower(), None)
         return
 
-    def __getitem__(self, tagKey):
-        return self._tags.get(tagKey, None)
+    def __getitem__(self, tagKey: str) -> dict | None:
+        return self._tags.get(tagKey.lower(), None)
 
     ##
     #  Methods
     ##
 
-    def clear(self):
+    def clear(self) -> None:
         """Clear the index."""
         self._tags = {}
         return
 
-    def add(self, tagKey: str, tHandle: str, sTitle: str, itemClass: nwItemClass):
+    def add(self, tagKey: str, tHandle: str, sTitle: str, itemClass: nwItemClass) -> None:
         """Add a key to the index and set all values."""
-        self._tags[tagKey] = {
-            "handle": tHandle, "heading": sTitle, "class": itemClass.name
+        self._tags[tagKey.lower()] = {
+            "name": tagKey, "handle": tHandle, "heading": sTitle, "class": itemClass.name
         }
         return
 
+    def tagName(self, tagKey: str) -> str:
+        """Get the display name of a given tag."""
+        return self._tags.get(tagKey.lower(), {}).get("name", "")
+
     def tagHandle(self, tagKey: str) -> str:
         """Get the handle of a given tag."""
-        return self._tags.get(tagKey, {}).get("handle", None)
+        return self._tags.get(tagKey.lower(), {}).get("handle", None)
 
     def tagHeading(self, tagKey: str) -> str:
         """Get the heading of a given tag."""
-        return self._tags.get(tagKey, {}).get("heading", TT_NONE)
+        return self._tags.get(tagKey.lower(), {}).get("heading", TT_NONE)
 
     def tagClass(self, tagKey: str) -> str | None:
         """Get the class of a given tag."""
-        return self._tags.get(tagKey, {}).get("class", None)
+        return self._tags.get(tagKey.lower(), {}).get("class", None)
 
     ##
     #  Pack/Unpack
@@ -688,7 +692,7 @@ class TagsIndex:
         """Pack all the data of the tags into a single dictionary."""
         return self._tags
 
-    def unpackData(self, data: dict):
+    def unpackData(self, data: dict) -> None:
         """Iterate through the tagsIndex loaded from cache and check
         that it's valid.
         """
@@ -699,12 +703,16 @@ class TagsIndex:
         for tagKey, tagData in data.items():
             if not isinstance(tagKey, str):
                 raise ValueError("tagsIndex keys must be a strings")
+            if "name" not in tagData:
+                raise KeyError("A tagIndex item is missing a name entry")
             if "handle" not in tagData:
                 raise KeyError("A tagIndex item is missing a handle entry")
             if "heading" not in tagData:
                 raise KeyError("A tagIndex item is missing a heading entry")
             if "class" not in tagData:
                 raise KeyError("A tagIndex item is missing a class entry")
+            if tagData["name"].lower() != tagKey:
+                raise ValueError("tagsIndex name must match key")
             if not isHandle(tagData["handle"]):
                 raise ValueError("tagsIndex handle must be a handle")
             if not isTitleTag(tagData["heading"]):
@@ -735,7 +743,7 @@ class ItemIndex:
 
     __slots__ = ("_project", "_items")
 
-    def __init__(self, project: NWProject):
+    def __init__(self, project: NWProject) -> None:
         self._project = project
         self._items: dict[str, IndexItem] = {}
         return
@@ -743,7 +751,7 @@ class ItemIndex:
     def __contains__(self, tHandle: str) -> bool:
         return tHandle in self._items
 
-    def __delitem__(self, tHandle: str):
+    def __delitem__(self, tHandle: str) -> None:
         self._items.pop(tHandle, None)
         return
 
@@ -754,12 +762,12 @@ class ItemIndex:
     #  Methods
     ##
 
-    def clear(self):
+    def clear(self) -> None:
         """Clear the index."""
         self._items = {}
         return
 
-    def add(self, tHandle: str, nwItem: NWItem):
+    def add(self, tHandle: str, nwItem: NWItem) -> None:
         """Add a new item to the index. This will overwrite the item if
         it already exists.
         """
@@ -827,7 +835,7 @@ class ItemIndex:
             return sTitle
         return TT_NONE
 
-    def setHeadingCounts(self, tHandle: str, sTitle: str, cC: int, wC: int, pC: int):
+    def setHeadingCounts(self, tHandle: str, sTitle: str, cC: int, wC: int, pC: int) -> None:
         """Set the character, word and paragraph counts of a heading
         on a given item.
         """
@@ -835,22 +843,22 @@ class ItemIndex:
             self._items[tHandle].setHeadingCounts(sTitle, cC, wC, pC)
         return
 
-    def setHeadingSynopsis(self, tHandle: str, sTitle: str, text: str):
+    def setHeadingSynopsis(self, tHandle: str, sTitle: str, text: str) -> None:
         """Set the synopsis text for a heading on a given item."""
         if tHandle in self._items:
             self._items[tHandle].setHeadingSynopsis(sTitle, text)
         return
 
-    def setHeadingTag(self, tHandle: str, sTitle: str, tagKey: str):
+    def setHeadingTag(self, tHandle: str, sTitle: str, tagKey: str) -> None:
         """Set the main tag for a heading on a given item."""
         if tHandle in self._items:
             self._items[tHandle].setHeadingTag(sTitle, tagKey)
         return
 
-    def addHeadingReferences(self, tHandle: str, sTitle: str, tagKeys: list[str], refType: str):
+    def addHeadingRef(self, tHandle: str, sTitle: str, tagKeys: list[str], refType: str) -> None:
         """Set the reference tags for a heading on a given item."""
         if tHandle in self._items:
-            self._items[tHandle].addHeadingReferences(sTitle, tagKeys, refType)
+            self._items[tHandle].addHeadingRef(sTitle, tagKeys, refType)
         return
 
     ##
@@ -861,7 +869,7 @@ class ItemIndex:
         """Pack all the data of the index into a single dictionary."""
         return {handle: item.packData() for handle, item in self._items.items()}
 
-    def unpackData(self, data: dict):
+    def unpackData(self, data: dict) -> None:
         """Iterate through the itemIndex loaded from cache and check
         that it's valid. This will raise errors if there is a problem.
         """
@@ -894,17 +902,13 @@ class IndexItem:
     must be reset each time the item is re-indexed.
     """
 
-    __slots__ = ("_handle", "_item", "_headings", "_headings", "_count")
+    __slots__ = ("_handle", "_item", "_headings", "_count")
 
-    def __init__(self, tHandle: str, nwItem: NWItem):
+    def __init__(self, tHandle: str, nwItem: NWItem) -> None:
         self._handle = tHandle
         self._item = nwItem
-        self._headings: dict[str, IndexHeading] = {}
+        self._headings: dict[str, IndexHeading] = {TT_NONE: IndexHeading(TT_NONE)}
         self._count = 0
-
-        # Add a placeholder heading
-        self._headings[TT_NONE] = IndexHeading(TT_NONE)
-
         return
 
     def __repr__(self) -> str:
@@ -925,13 +929,14 @@ class IndexItem:
 
     @property
     def item(self) -> NWItem:
+        """Return the project item of the index item."""
         return self._item
 
     ##
     #  Setters
     ##
 
-    def addHeading(self, tHeading: IndexHeading):
+    def addHeading(self, tHeading: IndexHeading) -> None:
         """Add a heading to the item. Also remove the placeholder entry
         if it exists.
         """
@@ -940,25 +945,25 @@ class IndexItem:
         self._headings[tHeading.key] = tHeading
         return
 
-    def setHeadingCounts(self, sTitle: str, cCount: int, wCount: int, pCount: int):
+    def setHeadingCounts(self, sTitle: str, cCount: int, wCount: int, pCount: int) -> None:
         """Set the character, word and paragraph count of a heading."""
         if sTitle in self._headings:
             self._headings[sTitle].setCounts(cCount, wCount, pCount)
         return
 
-    def setHeadingSynopsis(self, sTitle: str, text: str):
+    def setHeadingSynopsis(self, sTitle: str, text: str) -> None:
         """Set the synopsis text of a heading."""
         if sTitle in self._headings:
             self._headings[sTitle].setSynopsis(text)
         return
 
-    def setHeadingTag(self, sTitle: str, tagKey: str):
+    def setHeadingTag(self, sTitle: str, tagKey: str) -> None:
         """Set the tag of a heading."""
         if sTitle in self._headings:
             self._headings[sTitle].setTag(tagKey)
         return
 
-    def addHeadingReferences(self, sTitle: str, tagKeys: list[str], refType: str):
+    def addHeadingRef(self, sTitle: str, tagKeys: list[str], refType: str) -> None:
         """Add a reference key and all its types to a heading."""
         if sTitle in self._headings:
             for tagKey in tagKeys:
@@ -970,9 +975,11 @@ class IndexItem:
     ##
 
     def items(self) -> ItemsView[str, IndexHeading]:
+        """Return IndexHeading items."""
         return self._headings.items()
 
     def headings(self) -> list[str]:
+        """Return heading keys in sorted order."""
         return sorted(self._headings.keys())
 
     def allTags(self) -> list[str]:
@@ -1005,7 +1012,7 @@ class IndexItem:
 
         return data
 
-    def unpackData(self, data: dict):
+    def unpackData(self, data: dict) -> None:
         """Unpack an item entry from the data."""
         references = data.get("references", {})
         for sTitle, hData in data.get("headings", {}).items():
@@ -1033,7 +1040,7 @@ class IndexHeading:
         "_paraCount", "_synopsis", "_tag", "_refs",
     )
 
-    def __init__(self, key: str, line: int = 0, level: str = "H0", title: str = ""):
+    def __init__(self, key: str, line: int = 0, level: str = "H0", title: str = "") -> None:
         self._key = key
         self._line = line
         self._level = level
@@ -1100,18 +1107,18 @@ class IndexHeading:
     #  Setters
     ##
 
-    def setLevel(self, level: str):
+    def setLevel(self, level: str) -> None:
         """Set the level of the header if it's a valid value."""
         if level in nwHeaders.H_VALID:
             self._level = level
         return
 
-    def setLine(self, line: int):
+    def setLine(self, line: int) -> None:
         """Set the line number of a heading."""
         self._line = max(0, checkInt(line, 0))
         return
 
-    def setCounts(self, charCount: int, wordCount: int, paraCount: int):
+    def setCounts(self, charCount: int, wordCount: int, paraCount: int) -> None:
         """Set the character, word and paragraph count. Make sure the
         value is an integer and is not smaller than 0.
         """
@@ -1120,21 +1127,22 @@ class IndexHeading:
         self._paraCount = max(0, checkInt(paraCount, 0))
         return
 
-    def setSynopsis(self, text: str):
+    def setSynopsis(self, text: str) -> None:
         """Set the synopsis text and make sure it is a string."""
         self._synopsis = str(text)
         return
 
-    def setTag(self, tagKey: str):
+    def setTag(self, tagKey: str) -> None:
         """Set the tag for references, and make sure it is a string."""
-        self._tag = str(tagKey)
+        self._tag = str(tagKey).lower()
         return
 
-    def addReference(self, tagKey: str, refType: str):
+    def addReference(self, tagKey: str, refType: str) -> None:
         """Add a record of a reference tag, and what keyword types it is
         associated with.
         """
         if refType in nwKeyWords.VALID_KEYS:
+            tagKey = tagKey.lower()
             if tagKey not in self._refs:
                 self._refs[tagKey] = set()
             self._refs[tagKey].add(refType)
@@ -1165,7 +1173,7 @@ class IndexHeading:
         """
         return {key: ",".join(sorted(list(value))) for key, value in self._refs.items()}
 
-    def unpackData(self, data: dict):
+    def unpackData(self, data: dict) -> None:
         """Unpack a heading entry from a dictionary."""
         self.setLevel(data.get("level", "H0"))
         self._title = str(data.get("title", ""))
@@ -1179,7 +1187,7 @@ class IndexHeading:
         self._synopsis = str(data.get("synopsis", ""))
         return
 
-    def unpackReferences(self, data: dict):
+    def unpackReferences(self, data: dict) -> None:
         """Unpack a set of references from a dictionary."""
         for tagKey, refTypes in data.items():
             if not isinstance(tagKey, str):
@@ -1221,55 +1229,55 @@ def countWords(text: str) -> tuple[int, int, int]:
     if nwUnicode.U_EMDASH in text:
         text = text.replace(nwUnicode.U_EMDASH, " ")
 
-    for aLine in text.splitlines():
+    for line in text.splitlines():
 
         countPara = True
 
-        if not aLine:
+        if not line:
             prevEmpty = True
             continue
 
-        if aLine[0] == "@" or aLine[0] == "%":
+        if line[0] == "@" or line[0] == "%":
             continue
 
-        if aLine[0] == "[":
-            if aLine.startswith(("[NEWPAGE]", "[NEW PAGE]", "[VSPACE]")):
+        if line[0] == "[":
+            if line.startswith(("[NEWPAGE]", "[NEW PAGE]", "[VSPACE]")):
                 continue
-            elif aLine.startswith("[VSPACE:") and aLine.endswith("]"):
+            elif line.startswith("[VSPACE:") and line.endswith("]"):
                 continue
 
-        elif aLine[0] == "#":
-            if aLine[:5] == "#### ":
-                aLine = aLine[5:]
+        elif line[0] == "#":
+            if line[:5] == "#### ":
+                line = line[5:]
                 countPara = False
-            elif aLine[:4] == "### ":
-                aLine = aLine[4:]
+            elif line[:4] == "### ":
+                line = line[4:]
                 countPara = False
-            elif aLine[:3] == "## ":
-                aLine = aLine[3:]
+            elif line[:3] == "## ":
+                line = line[3:]
                 countPara = False
-            elif aLine[:2] == "# ":
-                aLine = aLine[2:]
+            elif line[:2] == "# ":
+                line = line[2:]
                 countPara = False
-            elif aLine[:3] == "#! ":
-                aLine = aLine[3:]
+            elif line[:3] == "#! ":
+                line = line[3:]
                 countPara = False
-            elif aLine[:4] == "##! ":
-                aLine = aLine[4:]
+            elif line[:4] == "##! ":
+                line = line[4:]
                 countPara = False
 
-        elif aLine[0] == ">" or aLine[-1] == "<":
-            if aLine[:2] == ">>":
-                aLine = aLine[2:].lstrip(" ")
-            elif aLine[:1] == ">":
-                aLine = aLine[1:].lstrip(" ")
-            if aLine[-2:] == "<<":
-                aLine = aLine[:-2].rstrip(" ")
-            elif aLine[-1:] == "<":
-                aLine = aLine[:-1].rstrip(" ")
+        elif line[0] == ">" or line[-1] == "<":
+            if line[:2] == ">>":
+                line = line[2:].lstrip(" ")
+            elif line[:1] == ">":
+                line = line[1:].lstrip(" ")
+            if line[-2:] == "<<":
+                line = line[:-2].rstrip(" ")
+            elif line[-1:] == "<":
+                line = line[:-1].rstrip(" ")
 
-        wordCount += len(aLine.split())
-        charCount += len(aLine)
+        wordCount += len(line.split())
+        charCount += len(line)
         if countPara and prevEmpty:
             paraCount += 1
 

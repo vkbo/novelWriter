@@ -1,8 +1,8 @@
 {
   "novelWriter.tagsIndex": {
-    "Bod": {"handle": "4c4f28287af27", "heading": "T0001", "class": "CHARACTER"},
-    "Main": {"handle": "2426c6f0ca922", "heading": "T0001", "class": "PLOT"},
-    "Europe": {"handle": "04468803b92e1", "heading": "T0001", "class": "WORLD"}
+    "bod": {"name": "Bod", "handle": "4c4f28287af27", "heading": "T0001", "class": "CHARACTER"},
+    "main": {"name": "Main", "handle": "2426c6f0ca922", "heading": "T0001", "class": "PLOT"},
+    "europe": {"name": "Europe", "handle": "04468803b92e1", "heading": "T0001", "class": "WORLD"}
   },
   "novelWriter.itemIndex": {
     "7a992350f3eb6": {
@@ -30,7 +30,7 @@
         "T0001": {"level": "H2", "title": "Chapter One", "line": 1, "tag": "", "cCount": 419, "wCount": 67, "pCount": 1, "synopsis": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque at aliquam quam."}
       },
       "references": {
-        "T0001": {"Bod": "@pov", "Main": "@plot", "Europe": "@location"}
+        "T0001": {"bod": "@pov", "main": "@plot", "europe": "@location"}
       }
     },
     "88243afbe5ed8": {
@@ -39,7 +39,7 @@
         "T0002": {"level": "H4", "title": "Scene One, Section Two", "line": 13, "tag": "", "cCount": 1561, "wCount": 230, "pCount": 2, "synopsis": ""}
       },
       "references": {
-        "T0001": {"Bod": "@pov", "Main": "@plot", "Europe": "@location"}
+        "T0001": {"bod": "@pov", "main": "@plot", "europe": "@location"}
       }
     },
     "f96ec11c6a3da": {
@@ -48,7 +48,7 @@
         "T0002": {"level": "H4", "title": "Scene Two, Section Two", "line": 15, "tag": "", "cCount": 2009, "wCount": 301, "pCount": 3, "synopsis": ""}
       },
       "references": {
-        "T0001": {"Bod": "@pov", "Main": "@plot", "Europe": "@location"}
+        "T0001": {"bod": "@pov", "main": "@plot", "europe": "@location"}
       }
     },
     "846352075de7d": {
@@ -61,7 +61,7 @@
         "T0001": {"level": "H2", "title": "Chapter Two", "line": 1, "tag": "", "cCount": 477, "wCount": 70, "pCount": 1, "synopsis": "Curabitur a elit posuere, varius ex et, convallis neque. Phasellus sagittis pharetra sem vitae dapibus. Curabitur varius lorem non pulvinar congue."}
       },
       "references": {
-        "T0001": {"Bod": "@pov", "Main": "@plot", "Europe": "@location"}
+        "T0001": {"bod": "@pov", "main": "@plot", "europe": "@location"}
       }
     },
     "eb103bc70c90c": {
@@ -69,7 +69,7 @@
         "T0001": {"level": "H3", "title": "Scene Three", "line": 1, "tag": "", "cCount": 3006, "wCount": 439, "pCount": 4, "synopsis": "Aenean ut libero ut lectus porttitor rhoncus vel et massa. Nam pretium, nibh et varius vehicula, urna metus blandit eros, euismod pharetra diam diam et libero. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos."}
       },
       "references": {
-        "T0001": {"Bod": "@pov", "Main": "@plot", "Europe": "@location"}
+        "T0001": {"bod": "@pov", "main": "@plot", "europe": "@location"}
       }
     },
     "f8c0562e50f1b": {
@@ -77,7 +77,7 @@
         "T0001": {"level": "H3", "title": "Scene Four", "line": 1, "tag": "", "cCount": 3839, "wCount": 563, "pCount": 6, "synopsis": "Nam tempor blandit magna laoreet aliquet. Vestibulum auctor posuere leo, ac gravida nisi rhoncus varius. Aenean posuere dolor vitae condimentum volutpat. Donec egestas volutpat risus, quis luctus justo."}
       },
       "references": {
-        "T0001": {"Bod": "@pov", "Main": "@plot", "Europe": "@location"}
+        "T0001": {"bod": "@pov", "main": "@plot", "europe": "@location"}
       }
     },
     "47666c91c7ccf": {
@@ -85,25 +85,25 @@
         "T0001": {"level": "H3", "title": "Scene Five", "line": 1, "tag": "", "cCount": 3644, "wCount": 543, "pCount": 5, "synopsis": "Praesent eget est porta, dictum ante in, egestas risus. Mauris risus mauris, consequat aliquam mauris et, feugiat iaculis ipsum. Aliquam arcu ipsum, fermentum ut arcu sed, lobortis euismod sem. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."}
       },
       "references": {
-        "T0001": {"Bod": "@pov", "Main": "@plot", "Europe": "@location"}
+        "T0001": {"bod": "@pov", "main": "@plot", "europe": "@location"}
       }
     },
     "4c4f28287af27": {
       "headings": {
-        "T0001": {"level": "H1", "title": "Nobody Owens", "line": 1, "tag": "Bod", "cCount": 1864, "wCount": 284, "pCount": 3, "synopsis": ""}
+        "T0001": {"level": "H1", "title": "Nobody Owens", "line": 1, "tag": "bod", "cCount": 1864, "wCount": 284, "pCount": 3, "synopsis": ""}
       },
       "references": {
-        "T0001": {"Main": "@plot"}
+        "T0001": {"main": "@plot"}
       }
     },
     "2426c6f0ca922": {
       "headings": {
-        "T0001": {"level": "H1", "title": "Main Plot", "line": 1, "tag": "Main", "cCount": 1369, "wCount": 195, "pCount": 2, "synopsis": ""}
+        "T0001": {"level": "H1", "title": "Main Plot", "line": 1, "tag": "main", "cCount": 1369, "wCount": 195, "pCount": 2, "synopsis": ""}
       }
     },
     "04468803b92e1": {
       "headings": {
-        "T0001": {"level": "H1", "title": "Ancient Europe", "line": 1, "tag": "Europe", "cCount": 1770, "wCount": 259, "pCount": 3, "synopsis": ""}
+        "T0001": {"level": "H1", "title": "Ancient Europe", "line": 1, "tag": "europe", "cCount": 1770, "wCount": 259, "pCount": 3, "synopsis": ""}
       }
     }
   }
