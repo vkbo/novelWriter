@@ -57,7 +57,7 @@ interface elements other than the document editor itself are hidden away.
 Novel Tree View
 ---------------
 
-When in :guilabel:`Novel Tree View` mode, the project tree is replaces by an overview of your novel
+When in :guilabel:`Novel Tree View` mode, the project tree is replaced by an overview of your novel
 structure. Instead of showing individual documents, the tree now shows all headings of your novel
 text. This includes multiple headings within the same document.
 
@@ -65,7 +65,7 @@ Each heading is indented according to the heading level. You can open and edit y
 from this view as well. All headings contained in the currently open document should be highlighted
 in the view to indicate which ones belong together.
 
-If you have multiple Novel root folders, the header of the novel view becomes a droopdown box. You
+If you have multiple Novel root folders, the header of the novel view becomes a dropdown box. You
 can then switch between them by clicking the "Outline of ..." text. You can also click the novel
 icon button next to it.
 
