@@ -394,9 +394,9 @@ class ToOdt(Tokenizer):
             self.FMT_D_E: "s_",  # Strikethrough close format
         }
 
-        thisPar = []
-        thisFmt = []
-        parStyle = None
+        fmt = []
+        para = []
+        pStyle = None
         for tType, _, tText, tFormat, tStyle in self._tokens:
 
             # Styles
@@ -429,20 +429,20 @@ class ToOdt(Tokenizer):
 
             # Process Text Types
             if tType == self.T_EMPTY:
-                if len(thisPar) > 1 and parStyle is not None:
+                if len(para) > 1 and pStyle is not None:
                     if self._doJustify:
-                        parStyle.setTextAlign("left")
+                        pStyle.setTextAlign("left")
 
-                if len(thisPar) > 0 and parStyle is not None:
-                    tTemp = "\n".join(thisPar)
-                    fTemp = " ".join(thisFmt)
+                if len(para) > 0 and pStyle is not None:
+                    tTemp = "\n".join(para)
+                    fTemp = " ".join(fmt)
                     tTxt = tTemp.rstrip()
                     tFmt = fTemp[:len(tTxt)]
-                    self._addTextPar("Text_20_body", parStyle, tTxt, tFmt=tFmt)
+                    self._addTextPar("Text_20_body", pStyle, tTxt, tFmt=tFmt)
 
-                thisPar = []
-                thisFmt = []
-                parStyle = None
+                fmt = []
+                para = []
+                pStyle = None
 
             elif tType == self.T_TITLE:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
@@ -475,8 +475,8 @@ class ToOdt(Tokenizer):
                 self._addTextPar("Separator", oStyle, "")
 
             elif tType == self.T_TEXT:
-                if parStyle is None:
-                    parStyle = oStyle
+                if pStyle is None:
+                    pStyle = oStyle
 
                 tFmt = " "*len(tText)
                 for xPos, xLen, xFmt in tFormat:
@@ -484,8 +484,8 @@ class ToOdt(Tokenizer):
 
                 tTxt = tText.rstrip()
                 tFmt = tFmt[:len(tTxt)]
-                thisPar.append(tTxt)
-                thisFmt.append(tFmt)
+                para.append(tTxt)
+                fmt.append(tFmt)
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 tTemp, fTemp = self._formatSynopsis(tText)
@@ -501,8 +501,8 @@ class ToOdt(Tokenizer):
 
         return
 
-    def closeDocument(self):
-        """Return the serialised XML document"""
+    def closeDocument(self) -> None:
+        """Pack the styles of the XML document."""
         # Build the auto-generated styles
         for styleName, styleObj in self._autoPara.values():
             styleObj.packXML(self._xAuto, styleName)
@@ -510,7 +510,7 @@ class ToOdt(Tokenizer):
             styleObj.packXML(self._xAuto, styleName)
         return
 
-    def saveFlatXML(self, path: str | Path):
+    def saveFlatXML(self, path: str | Path) -> None:
         """Save the data to an .fodt file."""
         with open(path, mode="wb") as fObj:
             xml = ET.ElementTree(self._dFlat)
@@ -519,7 +519,7 @@ class ToOdt(Tokenizer):
         logger.info("Wrote file: %s", path)
         return
 
-    def saveOpenDocText(self, path: str | Path):
+    def saveOpenDocText(self, path: str | Path) -> None:
         """Save the data to an .odt file."""
         mMani = _mkTag("manifest", "manifest")
         mVers = _mkTag("manifest", "version")
