@@ -27,10 +27,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 import xml.etree.ElementTree as ET
 
 from hashlib import sha256
+from pathlib import Path
 from zipfile import ZipFile
 from datetime import datetime
 
