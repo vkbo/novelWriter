@@ -8,7 +8,7 @@ Project Format Changes
 .. _documentation: https://docs.novelwriter.io/
 
 Most of the changes to the file formats over the history of novelWriter have no impact on the
-user-side of things. The project files are generally updated automatically. However, some of the
+user side of things. The project files are generally updated automatically. However, some of the
 changes require minor actions from the user.
 
 The key changes in the formats are listed below, as well as the user actions required, where

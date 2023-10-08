@@ -34,9 +34,12 @@ read on.
 :ref:`a_breakdown` – Essential Information
    This section explains the basics of how the application works and what it can and cannot do.
 
-:ref:`a_ui` – Recommended Reading
-   This section will give you a more detailed explanation of what the various elements on the user
-   interface do and how you can use them more effectively.
+:ref:`a_ui_project` – Recommended Reading
+   This section will give you a more detailed explanation of how you the user interface components
+   to organise and view your project work.
+
+:ref:`a_ui_writing` – Recommended Reading
+   This section will give you a more detailed explanation of how the text editor and viewer work.
 
 :ref:`a_fmt` – Essential Information
    This section covers how you should format your text. The editor is plain text, so text

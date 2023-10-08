@@ -30,8 +30,8 @@ Dashes and Ellipsis
 
 With the auto-replace feature enabled (see :ref:`a_ui_edit_auto`), multiple hyphens are converted
 automatically to short and long dashes, and three dots to ellipsis. The last auto-replace can
-always be reverted with the undo command :kbd:`Ctrl`:kbd:`Z`, reverting the text to what you typed
-before the automatic replacement occurred.
+always be reverted with the undo command :kbd:`Ctrl+Z`, reverting the text to what you typed before
+the automatic replacement occurred.
 
 In addition, "Figure Dash" is available. The Figure Dash is a dash that has the same width as the
 numbers of the same font, for most fonts. It helps to align numbers nicely in columns when you need
@@ -79,7 +79,7 @@ right single quotation marks, depending on the font. There is a Wikipedia articl
 `Modifier letter apostrophe`_ with more details.
 
 .. note::
-   On export with the :guilabel:`Build Novel Project` tool, these apostrophes will be replaced
+   On export with the :guilabel:`Build Manuscript` tool, these apostrophes will be replaced
    automatically with the corresponding right hand single quote symbol as is generally recommended.
    Therefore it doesn't really matter if you only use them to correct highlighting.
 

@@ -10,8 +10,8 @@ values and allowing for some text formatting. The syntax is based on Markdown, b
 (bold) and strikethrough text, as well as four levels of headings.
 
 In addition to formatting codes, novelWriter allows for comments, a synopsis tag, and a set of
-keyword and value sets used for tags and references. There are also some codes that apply two whole
-paragraphs. See :ref:`a_fmt_text` below for more details.
+keyword and value sets used for :term:`tags<tag>` and :term:`references<reference>`. There are also
+some codes that apply to whole paragraphs. See :ref:`a_fmt_text` below for more details.
 
 
 .. _a_fmt_hlight:
@@ -24,8 +24,13 @@ formtatting tags or other features correctly. It will change the colour and font
 headings, change the text colour of emphasised text, and it can also show you where you have
 dialogue in your text.
 
+.. figure:: images/fig_references.png
+
+   An example of the colour highlighting of references. "Bob" is not defined, and "@blabla" is not
+   a valid reference type.
+
 When you use the commands to set tags and references, these also change colour. Correct commands
-have a dedicated colour, and the references themselves will get a colour if they are valid. Invalid
+have a distinct colour, and the references themselves will get a colour if they are valid. Invalid
 references will get a squiggly error line underneath. The same applies to duplicate tags.
 
 There are a number of syntax highlighter colour themes available, both for light and dark GUIs. You
@@ -37,10 +42,14 @@ can select them for :guilabel:`Preferences`.
 Headings
 ========
 
-Four levels of headings are allowed. For project notes, they are free to be used as you see fit.
-That is, novelWriter doesn't assign the different headings any particular meaning. However, for
-novel documents they indicate the structural level of the novel and must be used correctly to
-produce the intended result. See :ref:`a_struct_heads` for more details.
+.. figure:: images/fig_header_levels.png
+
+   An illustration of how header levels correspond to the novel structure.
+
+Four levels of headings are allowed. For :term:`project notes`, they are free to be used as you see
+fit. That is, novelWriter doesn't assign the different headings any particular meaning. However,
+for :term:`novel documents` they indicate the structural level of the novel and must be used
+correctly to produce the intended result. See :ref:`a_struct_heads` for more details.
 
 ``# Title Text``
    Heading level one. For novel documents, the header level indicates the start of a new partition.
@@ -87,10 +96,9 @@ paragraph.
 
 In addition, the editor supports a few additional types of whitespaces:
 
-* A non-breaking space can be inserted with :kbd:`Ctrl`:kbd:`K`, :kbd:`Space`.
-* Thin spaces are also supported, and can be inserted with :kbd:`Ctrl`:kbd:`K`, 
-  :kbd:`Shift`:kbd:`Space`.
-* Non-breaking thin space can be inserted  with :kbd:`Ctrl`:kbd:`K`, :kbd:`Ctrl`:kbd:`Space`.
+* A non-breaking space can be inserted with :kbd:`Ctrl+K`, :kbd:`Space`.
+* Thin spaces are also supported, and can be inserted with :kbd:`Ctrl+K`, :kbd:`Shift+Space`.
+* Non-breaking thin space can be inserted  with :kbd:`Ctrl+K`, :kbd:`Ctrl+Space`.
 
 These are all insert features, and the :guilabel:`Insert` menu has more. They are also listed
 in :ref:`a_kb_ins`.
@@ -141,7 +149,6 @@ In addition, the following rules apply:
    allow for formatting, and any formatting markup will be renderred as-is.
 
 .. tip::
-
    novelWriter supports standard escape syntax for the emphasis markup characters in case the
    editor misunderstands your intended usage of them. That is, ``\*``, ``\_`` and ``\~`` will
    generate a plain ``*``, ``_`` and ``~``, respectively, without interpreting them as part of the
@@ -183,15 +190,22 @@ Tags and References
 ===================
 
 The document editor supports a set of keywords used for setting tags, and making references between
-documents. The tag can be set once per section defined by a heading. Setting it multiple times
-under the same heading will just override the previous setting. References can be set anywhere
-within a section, and are collected according to their category.
+documents.
+
+Tags use the command ``@tag:`` to define a tag. The tag can be set once per section defined by a
+heading. Setting it multiple times under the same heading will just override the previous setting.
+
+``@tag: value``
+   A tag commad followed by the tag value, like for instance the name of a character.
+
+References can be set anywhere within a section, and are collected according to their category.
+References are on the form:
 
 ``@keyword: value``
-   A keyword argument followed by a value, or a comma separated list of values.
+   A reference keyword followed by a value, or a comma separated list of values.
 
-The available tag and reference keywords are listed in the :ref:`a_struct_tags` section. They can
-also be inserted at the cursor position in the editor via the :guilabel:`Insert` menu.
+The available reference keywords are listed in the :ref:`a_struct_tags` section. They can also be
+inserted at the cursor position in the editor via the :guilabel:`Insert` menu.
 
 
 .. _a_fmt_align:
@@ -255,3 +269,18 @@ documents. If you want such breaks for scenes and sections, you must add them ma
    The page break code is applied to the text that follows it. It adds a "page break before" mark
    to the text when exporting to HTML or Open Document. This means that a ``[NEW PAGE]`` which has
    no text following it, it will not result in a page break.
+
+**Example:**
+
+.. code-block:: markdown
+
+   This is a text paragraph.
+
+   [VSPACE:2]
+
+   This is another text paragraph, but there will be two empty paragraphs
+   in-between them.
+
+   [NEWPAGE]
+
+   This text will always start on a new page if the build format has pages.

@@ -79,11 +79,11 @@ folders are created the first time you start novelWriter.
 Once the files are copied there, they should show up in :guilabel:`Preferences` with the label you
 set as ``name`` inside the file.
 
-.. note::
-   In novelWriter 2.0 the ``icontheme`` value was added to GUI themes. Make sure you set this value
-   in existing custom themes. Otherwise it defaults to ``typicons_light``, which may not match your
-   theme colour scheme. Otherwise, novelWriter will try to guess your icon theme, and may not pick
-   the most suitable one.
+.. versionadded:: 2.0
+   The ``icontheme`` value was added to GUI themes. Make sure you set this value in existing custom
+   themes. Otherwise it defaults to ``typicons_light``, which may not match your theme colour
+   scheme. Otherwise, novelWriter will try to guess your icon theme, and may not pick the most
+   suitable one.
 
 
 Gustom GUI and Icons Theme
