@@ -17,14 +17,14 @@ Spell Check Dictionaries
 ========================
 
 novelWriter uses Enchant_ as the spell checking tool. Depending on your operating system, it may or
-may not load installed spell check dictionaries.
+may not load installed spell check dictionaries automatically.
 
 Linux and MacOS
 ---------------
 
 On Linux and MacOS, you generally only have to install hunspell or aspell dictionaries on your
 system like you do for other applications. See your distro or OS documentation for how to do this.
-These dictionaries should then show up as available spell check languages in novelWriter.
+These dictionaries should show up as available spell check languages in novelWriter.
 
 Windows
 -------
@@ -54,8 +54,9 @@ not exist, so you may need to create them.
 Syntax and GUI Themes
 =====================
 
-Adding your own GUI and syntax themes is relatively easy. The themes are defined by simple plain
-text config files with meta data and colour settings.
+Adding your own GUI and syntax themes is relatively easy altough requires that you manually edit
+config files with colour values. The themes are defined by simple plain text config files with meta
+data and colour settings.
 
 In order to make your own versions, first copy one of the existing files to your local computer and
 modify it as you like.
@@ -81,7 +82,8 @@ set as ``name`` inside the file.
 .. note::
    In novelWriter 2.0 the ``icontheme`` value was added to GUI themes. Make sure you set this value
    in existing custom themes. Otherwise it defaults to ``typicons_light``, which may not match your
-   theme colour scheme.
+   theme colour scheme. Otherwise, novelWriter will try to guess your icon theme, and may not pick
+   the most suitable one.
 
 
 Gustom GUI and Icons Theme

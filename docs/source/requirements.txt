@@ -1,5 +1,6 @@
 sphinx-book-theme
 sphinx>=5.0
 sphinx-favicon
+sphinx-design
 pygments>=2.7
 docutils>=0.17.1

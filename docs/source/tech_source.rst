@@ -13,8 +13,8 @@ to build the various components like the translation files and documentation.
 
 .. note::
    The text below assumes the command ``python`` corresponds to a Python 3 executable. Python 2 is
-   now deprecated, but many systems still have both Python 2 and 3. For such systems, the command
-   ``python3`` may be needed instead. Likewise, ``pip`` may need to be replaced with ``pip3``.
+   now deprecated, but on many systems the command ``python3`` may be needed instead. Likewise,
+   ``pip`` may need to be replaced with ``pip3``.
 
 Most of the custom commands for building packages of novelWriter, or building assets, are contained
 in the ``pkgutils.py`` script in the root of the source code. You can list the available commands

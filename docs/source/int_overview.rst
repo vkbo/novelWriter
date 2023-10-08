@@ -10,22 +10,18 @@ Overview
       :align: right
       :width: 220
 
-novelWriter is built on `Python 3 <https://www.python.org/>`_, a cross platform programming
-language that doesn't require a compiler to build and run. That means that the code can run on your
-computer right out of the box, or from a zip file.
+novelWriter is built as a cross-platform application using `Python 3 <https://www.python.org/>`_ as
+the programming language, and `Qt 5 <https://www.qt.io/>`_ for the user interface.
 
-While it is developed for Linux primarily, it runs just fine on Windows as well. It also works fine
-on macOS, but the author is not a mac user, so support for mac is dependant on user feedback and
-contributions.
+novelWriter is built for Linux first, and this is where it works best. However, it also runs fine
+on Windows and MacOS due to being built with cross-platform tools. The author of the application
+doesn't own a Mac, so on-going Mac support is dependant on user feedback and user contributions.
 
-In order to run novelWriter, you also need a few additional packages. The user interface is built
-with `Qt 5 <https://www.qt.io/>`_, a cross platform library for building graphical user interface
-applications. It also uses a third party XML package. If you want spell checking, you also need the
-spell check package Enchant developed for AbiWord
+Spell checking in novelWriter is provided by a third party library called
+`Enchant <https://abiword.github.io/enchant/>`_. Please see the section on :ref:`a_custom_dict` for
+how to handle spell checking in different languages.
 
 For install instructions, see :ref:`a_started`.
-
-For information on how to add spell check dictionaries, see :ref:`a_custom_dict`.
 
 
 Using novelWriter
@@ -45,7 +41,7 @@ read on.
 :ref:`a_fmt` – Essential Information
    This section covers how you should format your text. The editor is plain text, so text
    formatting requires some basic markup. The structure of your novel is also inferred by how you
-   use headings. Tags and references are implemented by simple codes.
+   use headings. Tags and references are implemented by special keywords.
 
 :ref:`a_kb` – Optional / Lookup
    This section lists all the keyboard shortcuts in novelWriter and what they do. Most of the
