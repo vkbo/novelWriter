@@ -58,14 +58,56 @@ At the top of the tree, you will find a set of buttons.
   folders. You can also activate this dropdown menu by pressing :kbd:`Ctrl+N`.
 * The last button is a menu of further actions you can apply to the project tree.
 
-.. tip::
-   Under the :guilabel:`Transform` submenu in the context menu of an item, you will find several
-   options on how to change a document or folder. This includes changing between document and note,
-   splitting them into multiple documents, or merging child items into a single document.
-
 Below the project tree you will find a small details panel showing the full information of the
 currently selected item. This panel also includes the latest paragraph and character counts in
 addition to the word count.
+
+
+.. _a_ui_tree_split_merge:
+
+Splitting and Merging Documents
+-------------------------------
+
+Under the :guilabel:`Transform` submenu in the context menu of an item in the project tree, you
+will find several options on how to change a document or folder. This includes changing between
+document and note, but also splitting them into multiple documents, or merging child items into a
+single document.
+
+Splitting Documents
+^^^^^^^^^^^^^^^^^^^
+
+.. figure:: images/fig_project_split_tool.png
+
+   The :guilabel:`Split Document` dialog.
+
+The :guilabel:`Split Document by Header` option will open a dialog that allows you to split the
+selected document into multiple new documents based on the headers it contains. You can select at
+which header level the split is to be performed from the dropdown box. The list box will preview
+which headers will be split into new documents.
+
+You are given the option to create a folder for these new documents, and whether or not to create a
+hierarchy of documents. That is, put sections under scenes, and scenes under chapters.
+
+The source document **is not** deleted in the process, but you have the option to let the tool move
+the source document to the :guilabel:`Trash` folder.
+
+Merging Documents
+^^^^^^^^^^^^^^^^^
+
+.. figure:: images/fig_project_merge_tool.png
+
+   The :guilabel:`Merge Documents` dialog.
+
+You have two options for merging documents that are child elements of another document. You can
+either :guilabel:`Merge Child Items into Self` and :guilabel:`Merge Child Items into New`. The
+first option will pull all content of child items and merge them into the parent document, while
+the second option will create a new document in the process.
+
+When merging documents in a folder, you only have the latter process is possible, so only the
+choice :guilabel:`Merge Documents in Folder` is available.
+
+In either case, the :guilabel:`Merge Documents` dialog will let you exclude documents you don't
+want to include, and it also lets you reorder them if you wish.
 
 
 .. _a_ui_tree_status:

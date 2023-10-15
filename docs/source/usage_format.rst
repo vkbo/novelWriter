@@ -204,8 +204,8 @@ References are on the form:
 ``@keyword: value``
    A reference keyword followed by a value, or a comma separated list of values.
 
-The available reference keywords are listed in the :ref:`a_struct_tags` section. They can also be
-inserted at the cursor position in the editor via the :guilabel:`Insert` menu.
+The available reference keywords are listed in the :ref:`a_references_references` section. They can
+also be inserted at the cursor position in the editor via the :guilabel:`Insert` menu.
 
 
 .. _a_fmt_align:

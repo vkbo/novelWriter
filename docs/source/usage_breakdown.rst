@@ -152,7 +152,7 @@ The project tree will select an icon for the document based on the first heading
 
 This header level structure is only taken into account for :term:`novel documents`. For
 :term:`project notes`, the header levels have no structural meaning, and the user is free to do
-whatever they want. See :ref:`a_struct` and :ref:`a_notes` for more details.
+whatever they want. See :ref:`a_struct` and :ref:`a_references` for more details.
 
 .. versionadded:: 2.0
    You can add documents as child items of other documents. This is often more useful than adding
@@ -177,12 +177,12 @@ In addition, you can export the content of the project to a JSON file. This is u
 to write your own custom processing script in for instance Python, as the entire novel can be read
 into a Python dictionary with a couple of lines of code. The JSON file can be populated with either
 HTML formatted text, or with the raw text as typed into the novel documents.
-See :ref:`a_export_options` for more details.
+See :ref:`a_manuscript_build` for more details.
 
 .. versionadded:: 2.1
    You can now define multiple build definitions in the :guilabel:`Build Manuscript` tool. This
    allows you to define specific settings for various types of draft documents, outline documents,
-   and manuscript formats. See :ref:`a_export` for more details.
+   and manuscript formats. See :ref:`a_manuscript` for more details.
 
 
 .. _a_breakdown_storage:

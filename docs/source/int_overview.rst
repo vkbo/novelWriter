@@ -81,11 +81,11 @@ meta data for it to extract.
    explains how the different levels of headings are used, and how you can include information
    about characters, plot elements, and other meta data in your text.
 
-:ref:`a_notes` - Recommended Reading
-   This section briefly describes what novelWriter does with the note files you add to your
-   project. Generally, the application doesn't do much with them at all aside from looking through
-   them for tags you've set so that it knows which file to open when you click on a reference.
+:ref:`a_references` - Recommended Reading
+   This section explains how you organise your notes, and how the Tags and References system works.
+   This system lets you cross-link your documents in your project, and display these references in
+   the application interface.
 
-:ref:`a_export` - Recommended Reading
-   This section explains in more detail how the build tool works. In particular how you can
-   control the way chapter titles are formatted, and how scene and section breaks are handled.
+:ref:`a_manuscript` - Recommended Reading
+   This section explains in more detail how the Manuscript Build tool works, how you can control
+   the way chapter titles are formatted, and how scene and section breaks are handled.

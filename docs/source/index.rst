@@ -75,8 +75,8 @@ from pip. See :ref:`a_started` for more details.
 
    project_overview
    project_structure
-   project_notes
-   project_export
+   project_references
+   project_manuscript
 
 .. toctree::
    :maxdepth: 1
