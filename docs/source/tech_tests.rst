@@ -34,12 +34,11 @@ Since several of the tests involve opening up the novelWriter GUI, you may want 
 for the duration of the test run. Moving your mouse while the tests are running may otherwise
 interfere with the execution of some tests.
 
-You can disable the renderring of the GUI by setting the flag ``export QT_QPA_PLATFORM=offscreen``,
-or alternatively run the tests with the ``xvfb`` package, like so:
+You can disable the renderring of the GUI by setting the flag ``QT_QPA_PLATFORM=offscreen``:
 
 .. code-block:: bash
 
-   xvfb-run pytest
+   export QT_QPA_PLATFORM=offscreen pytest
 
 
 Advanced Options
@@ -51,7 +50,7 @@ You can also add coverage report generation. For instance to HTML:
 
 .. code-block:: bash
 
-   xvfb-run pytest -v --cov=novelwriter --cov-report=html
+   export QT_QPA_PLATFORM=offscreen pytest -v --cov=novelwriter --cov-report=html
 
 Other useful report formats are ``xml``, and ``term`` for terminal output.
 
@@ -60,7 +59,7 @@ subpackage groups are ``base``, ``core``, and ``gui``. Consider for instance:
 
 .. code-block:: bash
 
-   xvfb-run pytest -v --cov=novelwriter --cov-report=html -m core
+   export QT_QPA_PLATFORM=offscreen pytest -v --cov=novelwriter --cov-report=html -m core
 
 This will only run the tests of the "core" package, that is, all the classes that deal with the
 project data of a novelWriter project. The "gui" tests, likewise, will run the tests for the GUI
@@ -71,7 +70,7 @@ You can also filter the tests with the ``-k`` switch. The following will do the 
 
 .. code-block:: bash
 
-   xvfb-run pytest -v --cov=novelwriter --cov-report=html -k testCore
+   export QT_QPA_PLATFORM=offscreen pytest -v --cov=novelwriter --cov-report=html -k testCore
 
 All tests are named in such a way that you can filter them by adding more bits of the test names.
 They all start with the word "test". Then comes the group: "Core", "Base", "Dlg", "Tool", or "Gui".
@@ -80,6 +79,6 @@ file. For instance, running the following will run all tests for the document ed
 
 .. code-block:: bash
 
-   xvfb-run pytest -v --cov=novelwriter --cov-report=html -k testGuiEditor
+   export QT_QPA_PLATFORM=offscreen pytest -v --cov=novelwriter --cov-report=html -k testGuiEditor
 
 To run a single test, simply add the full test name to the ``-k`` switch.

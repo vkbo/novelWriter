@@ -10,16 +10,16 @@ Getting Started
 .. _PPA: https://launchpad.net/~vkbo/+archive/ubuntu/novelwriter
 .. _Pre-Release PPA: https://launchpad.net/~vkbo/+archive/ubuntu/novelwriter-pre
 .. _PyPi: https://pypi.org/project/novelWriter/
-.. _python.org: https://www.python.org/downloads/windows
+.. _python.org: https://www.python.org/downloads/
 .. _Releases: https://github.com/vkbo/novelWriter/releases
 .. _AppImage: https://appimage.org/
 
-Package installers are available for all major platforms, including Linux, Windows and MacOS. See
-below for install instructions for each platform.
+Package installers for novelWriter are available for all major platforms, including Linux, Windows
+and MacOS. See below for install instructions for each platform.
 
 You can also install novelWriter from the Python Package Index (PyPi). See :ref:`a_started_pip`.
 Installing from PyPi does not set up icon launchers, so you will either have to do this yourself,
-or start novelWriter from command line.
+or start novelWriter from the command line.
 
 Spell checking in novelWriter is provided by a third party library called Enchant_. Generally, it
 should pull dictionaries from your operating system automatically. However, on Windows they must be
@@ -36,7 +36,14 @@ Installer (setup.exe) file from the `main website`_, or from the Releases_ page 
 Installing it should be straightforward.
 
 If you have any issues, try uninstalling the previous version and making a fresh install. If you
-already had a version installed via a different method, you should uninstall that first.
+already had a version installed via a different method, you should uninstall that first as having
+multiple installations has been known to cause problems.
+
+.. note::
+   The novelWriter installer is not signed because Microsoft doesn't currently provide a way for
+   non-profit open source projects to properly sign their installers. The novelWriter project
+   doesn't have the funding to pay for commercial software signing certificates. You will therefore
+   see an additional warning about this when you download the installer.
 
 
 .. _a_started_linux:
@@ -68,7 +75,7 @@ Debian and Mint
 ---------------
 
 Since this is a pure Python package, the Launchpad PPA can in principle also be used on Debian or
-Mint. However, the above command will fail to add the signing key.
+Mint. However, the above command will fail to add the signing key, as it is Ubuntu-specific.
 
 Instead, run the following commands to add the repository and key:
 
@@ -85,12 +92,10 @@ Then run the update and install commands as for Ubuntu:
    sudo apt install novelwriter
 
 .. note::
-
    You may need to use the Ubuntu 20.04 (focal) packages for Debian 11 or earlier. The newer Ubuntu
    packages use a different compression algorithm that may not be supported.
 
 .. tip::
-
    If you get an error message like ``gpg: failed to create temporary file`` when importing the key
    from the Ubuntu keyserver, try creating the folder it fails on, and import the key again:
 
@@ -105,6 +110,11 @@ AppImage Releases
 For other Linux distros than the ones mentioned above, the primary option is AppImage_. These are
 completely standalone images for the app that include the necessary environment to run novelWriter.
 They can of course be run on any Linux distro, if you prefer this to native packages.
+
+.. note::
+   novelWriter generally don't support Python versions that have reached end of life. If your Linux
+   distro still uses older Python versions and novelWriter won't run, you may want to try the
+   AppImage instead.
 
 
 .. _a_started_macos:
@@ -127,6 +137,11 @@ it should be straightforward.
 The context menu can also be accessed by option-clicking if you have a one button mouse. This is
 done by holding down the option key on your keyboard and clicking on the application in Finder.
 
+.. note::
+   The novelWriter DMG is not signed because Apple doesn't currently provide a way for non-profit
+   open source projects to properly sign their installers. The novelWriter project doesn't have the
+   funding to pay for commercial software signing certificates.
+
 
 .. _a_started_pip:
 
@@ -137,8 +152,9 @@ novelWriter is also available on the Python Package Index, or PyPi_. This instal
 all supported operating systems.
 
 To install from PyPi you must first have the ``python`` and ``pip`` commands available on your
-system. If you are on Windows, and don't have Python installed, see :ref:`a_started_win_py` for
-help.
+system. You can download Python from `python.org`_. It is recommended that you install the latest
+version. If you are on Windows, also make sure to select the "Add Python to PATH" option during
+installation.
 
 To install novelWriter from PyPi, use the following command:
 
@@ -159,38 +175,4 @@ When installing via pip, novelWriter can be launched from command line with:
    novelwriter
 
 Make sure the install location for pip is in your PATH variable. This is not always the case by
-default.
-
-.. note::
-
-   On systems with both Python 2 and 3, you may have to replace the ``pip`` command with ``pip3``.
-
-
-.. _a_started_win_py:
-
-Installing Python on Windows
-----------------------------
-
-In order to run novelWriter from source, or install from PyPi, you need to have Python set up on
-your system. Unlike Linux and MacOS, Windows does not come with Python pre-installed.
-
-You can download Python from `python.org`_. Python 3.8 or higher is required for running
-novelWriter, but it is recommended that you install the latest version.
-
-Make sure you select the "Add Python to PATH" option during installation, otherwise the ``python``
-command will not work in the command line window.
-
-.. figure:: images/python_win_install.png
-   :align: center
-   :width: 500
-
-   Screenshot of the Python installer on Windows.
-
-When Python is installed, you should be able to run Python commands from the Command Prompt or
-from PowerShell. You can verify this by running:
-
-.. code-block:: bash
-
-   python --version
-
-This should print out the version number of the Python installation.
+default, and then you may get a "Not Found" error when running the ``novelwriter`` command.
