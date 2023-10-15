@@ -8,8 +8,7 @@ This chapter covers the structure of a novel project.
 
 There are two different types of documents in a project, :guilabel:`Novel Documents` and
 :guilabel:`Project Notes`. Novel documents can only live in a :guilabel:`Novel` type root folder.
-You can also move them to :guilabel:`Archive` and :guilabel:`Trash` of course. This chapter covers
-the former type.
+You can also move them to :guilabel:`Archive` and :guilabel:`Trash` of course.
 
 The :guilabel:`Project Tree` can distinguish between the different header levels of the novel
 documents using coloured icons, and optionally add emphasis on the label, set in
@@ -22,16 +21,16 @@ Importance of Headings
 ======================
 
 Subfolders under root folders have no impact on the structure of the novel itself. The structure is
-instead dictated by the heading level of the headers within the documents.
+instead dictated by the heading level of the headings within the documents.
 
 Four levels of headings are supported, signified by the number of hashes (``#``) preceding the
-title. See also the :ref:`a_fmt` section for more details about the markdown syntax.
+title. See also the :ref:`a_fmt` section for more details about the markup syntax.
 
 .. note::
    The header levels are not only important when generating the manuscript, they are also used by
    the indexer when building the outline tree in the :guilabel:`Outline View` as well as in the
    :guilabel:`Novel Tree`. Each heading also starts a new region where new Tags and References
-   can be defined. See :ref:`a_references`.
+   can be defined. See :ref:`a_references` for more details.
 
 The syntax for the four basic header types, and the two special header types, is listed in section
 :ref:`a_fmt_head`. The meaning of the four levels for the structure of your novel is as follows:

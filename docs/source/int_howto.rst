@@ -25,7 +25,7 @@ Managing the Project
    :guilabel:`Merge Documents in Folder`.
 
    In the dialog that pops up, the documents will be in the same order as in the folder, but you
-   can also rearrange them here of you wish.
+   can also rearrange them here of you wish. See :ref:`a_ui_tree_split_merge` for more details.
 
 
 Layout Tricks
@@ -68,7 +68,7 @@ Organising Your Text
    for soft scene breaks. the :guilabel:`Build Manuscript` tool will let you add separate
    formatting for the two when you generate your manuscript. You can for instance add the common
    "``* * *``" for hard breaks and select to hide section breaks, which will just insert an empty
-   paragraph in their place.
+   paragraph in their place. See :ref:`a_manuscript_settings` for more details.
 
 
 Other Tools

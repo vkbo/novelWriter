@@ -17,7 +17,7 @@ Spell Check Dictionaries
 ========================
 
 novelWriter uses Enchant_ as the spell checking tool. Depending on your operating system, it may or
-may not load installed spell check dictionaries automatically.
+may not load all installed spell check dictionaries automatically.
 
 Linux and MacOS
 ---------------
@@ -40,7 +40,6 @@ This assumes your user profile is stored at ``C:\Users\<USER>``. The last one or
 not exist, so you may need to create them.
 
 .. note::
-
    The Free Desktop link points to a repository, and what may look like file links inside the
    dictionary folder are actually links to web pages. If you right-click and download those, you
    get HTML files, not dictionaries!
@@ -54,9 +53,9 @@ not exist, so you may need to create them.
 Syntax and GUI Themes
 =====================
 
-Adding your own GUI and syntax themes is relatively easy altough requires that you manually edit
-config files with colour values. The themes are defined by simple plain text config files with meta
-data and colour settings.
+Adding your own GUI and syntax themes is relatively easy, altough it requires that you manually
+edit config files with colour values. The themes are defined by simple plain text config files with
+meta data and colour settings.
 
 In order to make your own versions, first copy one of the existing files to your local computer and
 modify it as you like.
@@ -81,15 +80,14 @@ set as ``name`` inside the file.
 
 .. versionadded:: 2.0
    The ``icontheme`` value was added to GUI themes. Make sure you set this value in existing custom
-   themes. Otherwise it defaults to ``typicons_light``, which may not match your theme colour
-   scheme. Otherwise, novelWriter will try to guess your icon theme, and may not pick the most
+   themes. Otherwise, novelWriter will try to guess your icon theme, and may not pick the most
    suitable one.
 
 
 Gustom GUI and Icons Theme
 --------------------------
 
-A GUI theme conf file consists of the follwing settings:
+A GUI theme ``.conf`` file consists of the follwing settings:
 
 .. code-block:: cfg
 
@@ -138,7 +136,7 @@ Omitted values are not loaded and will use default values.
 Custom Syntax Theme
 -------------------
 
-A syntax theme conf file consists of the follwing settings:
+A syntax theme ``.conf`` file consists of the follwing settings:
 
 .. code-block:: cfg
 
@@ -168,7 +166,6 @@ A syntax theme conf file consists of the follwing settings:
    replacetag     =   0,   0,   0
    modifier       =   0,   0,   0
 
-
 In the Main section, you must define at least the ``name`` setting. The Syntax colour values are
-RGB numbers on the format ``r, g, b`` where each is an integer from  to 255. Omitted values are set
+RGB numbers on the format ``r, g, b`` where each is an integer from  to 255. Omitted values default
 to black, except ``background`` which defaults to white,

@@ -5,10 +5,10 @@ Keyboard Shortcuts
 ******************
 
 Most features in novelWriter are available as keyboard shortcuts. This is a reference list if these
-shortcuts. Most of them are also listed in the application.
+shortcuts. Most of them are also listed in the application's user interface.
 
 .. note::
-   On macOS, replace :kbd:`Ctrl` with :kbd:`Cmd`.
+   On MacOS, replace :kbd:`Ctrl` with :kbd:`Cmd`.
 
 
 .. _a_kb_main:

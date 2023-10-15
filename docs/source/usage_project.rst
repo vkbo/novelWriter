@@ -4,7 +4,7 @@
 Project Views
 *************
 
-This sections covers in more detail the different project views available in novelWriter.
+This chapter covers in more detail the different project views available in novelWriter.
 
 .. figure:: images/fig_project_tree_detailed.png
 
@@ -81,14 +81,14 @@ Splitting Documents
    The :guilabel:`Split Document` dialog.
 
 The :guilabel:`Split Document by Header` option will open a dialog that allows you to split the
-selected document into multiple new documents based on the headers it contains. You can select at
-which header level the split is to be performed from the dropdown box. The list box will preview
-which headers will be split into new documents.
+selected document into multiple new documents based on the headings it contains. You can select at
+which heading level the split is to be performed from the dropdown box. The list box will preview
+which headings will be split into new documents.
 
 You are given the option to create a folder for these new documents, and whether or not to create a
 hierarchy of documents. That is, put sections under scenes, and scenes under chapters.
 
-The source document **is not** deleted in the process, but you have the option to let the tool move
+The source document *is not* deleted in the process, but you have the option to let the tool move
 the source document to the :guilabel:`Trash` folder.
 
 Merging Documents
@@ -119,9 +119,9 @@ Each document or folder in your project can have either a "Status" or "Importanc
 are flags that you control and define yourself. novelWriter doesn't do anything with them at all.
 To modify the labels, go to their respective tabs in :guilabel:`Project Settings`.
 
-The "Status" flag is intended to tag a :term:`Novel document<novel documents>` as for instance a
+The "Status" flag is intended to tag a :term:`novel document<novel documents>` as for instance a
 draft or as completed, and the "Importance" flag is intended to tag character notes, or other
-:term:`project notes`, as for instance a main, major or minor character.
+:term:`project notes`, as for instance a main, major, or minor character or story element.
 
 Whether a document uses a "Status" or "Importance" flag depends on which :term:`root folder` it
 lives in. If it's in a :guilabel:`Novel` folder, it uses the "Status" flag, otherwise it uses an
@@ -139,10 +139,11 @@ your manuscript in the :guilabel:`Manuscript Build` tool.
 
 Drag & drop has only limited support for moving documents. In general, bulk actions are not
 allowed. This is deliberate to avoid accidentally messing up your project. If you make a mistake,
-the last move action can be undone by pressing :kbd:`Ctrl+Shift+Z`.
+the last move action can be undone by pressing :kbd:`Ctrl+Shift+Z` or from the menu icon in the
+project tree's toolbar.
 
 Documents and their folders can be rearranged freely within their root folders. If you move a Novel
-documents out of a Novel folder, it will be converted to a project note. Notes can be moved freely
+document out of a Novel folder, it will be converted to a project note. Notes can be moved freely
 between all root folders, but keep in mind that if you move a note into a :guilabel:`Novel` root
 folder, its "Importance" setting will be switched with a "Status" setting. See
 :ref:`a_ui_tree_status`. The old value will not be overwritten though, and should be restored if
@@ -171,7 +172,7 @@ of the story itself rather than the document files.
    You cannot reorganise the entries in the novel tree, or add any new documents, as that would
    imply restructuring the content of the document files themselves. Any such editing must be done
    in the project tree. However, you can add new headings to existing documents, or change
-   references, which will be updated in this view.
+   references, which will be updated in this view when the document is saved.
 
 
 .. _a_ui_outline:
@@ -189,16 +190,16 @@ the novel, that is, the level 1 to 4 headings representing partitions, chapters,
 sections.
 
 The document containing the heading can also be displayed as a separate column, as well as the line
-number where it occurs. Double-clicking an entry will open the corresponding document in the
-editor.
+number where the heading is defined. Double-clicking an entry will open the corresponding document
+in the editor and switch to :guilabel:`Project Tree View` mode.
 
 You can select which novel folder to display from the dropdown menu. You can optionally also choose
 to show a combination of all novel folders.
 
 .. note::
    Since the internal structure of the novel does not depend directly on the folder and document
-   structure of the project tree, these will not necessarily look the same, depending on how you
-   choose to organise your documents. See the :ref:`a_struct` page for more details.
+   structure of the project tree, this view will not necessarily look the same, depending on how
+   you choose to organise your documents. See the :ref:`a_struct` page for more details.
 
 Various meta data and information extracted from :term:`tags<tag>` can be displayed in columns in
 the outline. A default set of such columns is visible, but you can turn on or off more columns from

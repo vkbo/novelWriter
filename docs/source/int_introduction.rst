@@ -7,10 +7,10 @@ Key Features
 .. _Snowflake: https://www.advancedfictionwriting.com/articles/snowflake-method/
 .. _Markdown: https://en.wikipedia.org/wiki/Markdown
 
-At the core, novelWriter is a multi-document plain text editor. It uses a markup syntax inspired by
+At its core, novelWriter is a multi-document plain text editor. It uses a markup syntax inspired by
 Markdown_ to apply simple formatting to the text. It is designed for writing fiction, so the
-formatting features are limited to those relevant for this purpose. It is not suitable for
-technical writing, and it is *not* a full feature Markdown editor.
+formatting features available are limited to those relevant for this purpose. It is *not* suitable
+for technical writing, and it is *not* a full-feature Markdown editor.
 
 Your novel project is organised as a collection of separate plain text documents instead of a
 single, large document. The idea here is to make it easier to reorganise your project structure
@@ -22,8 +22,8 @@ your notes about your characters, your world building, and so on.
 
 You can at any point split the individual documents by their headers up into multiple documents, or
 merge multiple documents into single documents. This makes it easier to use variations of the
-popular Snowflake_ method for writing. You can focus on writing larger structure-focused documents,
-like one per act for instance, and later effortlessly split these up into scenes by their headers.
+Snowflake_ method for writing. You can focus on writing larger structure-focused documents, like
+one per act for instance, and later effortlessly split these up into scenes by their headers.
 
 Below are some key features of novelWriter.
 
@@ -42,11 +42,11 @@ Below are some key features of novelWriter.
 
 **Organise your documents how you like**
    You can split your novel project up into as many individual documents as you want to. When you
-   build the project, they are all glued together in the top-to-bottom order in which they appear
-   in the project tree. You can use as few text documents as you like, but splitting the project up
-   into chapters and scenes means you can easily reorder them using the drag and drop feature. You
-   can start out with a few documents and then later split them into multiple documents based on
-   their headers.
+   build the project into a manuscript, they are all glued together in the top-to-bottom order in
+   which they appear in the project tree. You can use as few text documents as you like, but
+   splitting the project up into chapters and scenes means you can easily reorder them using the
+   drag-and-drop feature. You can also start out with a few documents and then later split them
+   into multiple documents based on their headers.
 
 **Multi-novel project support**
    As of novelWriter 2.0, you can have multiple Novel type root folders in a project. This allows
@@ -56,22 +56,22 @@ Below are some key features of novelWriter.
 **Keep track of your plot elements**
    All notes in your project can be assigned a :term:`tag` that you can :term:`reference` from any
    other document or note. In fact, you can add a new tag under each heading of a note if you need
-   to be able to reference specific sections.
+   to be able to reference specific sections of ot.
 
 **Get an overview of your plot elements**
    In the :guilabel:`Outline View` on the main window you can see an outline of all the chapters,
    scenes, and sections of your project. If they have any references in them, these are listed in
-   additional columns. You can also add a synopsis to each document, which can be listed here as
-   well. You have the option to add or remove columns of information from this outline. A subset of
-   the outline information is also available in the :guilabel:`Novel View` as an alternative view
-   to the project tree.
+   additional columns. You can also add a synopsis to each chapter or scene, which can be listed
+   here as well. You have the option to add or remove columns of information from this outline. A
+   subset of the outline information is also available in the :guilabel:`Novel View` as an
+   alternative view to the project tree.
 
 **Building your manuscript**
    Whether you want to assemble a manuscript, or export all your notes, or generate an outline of
    your chapters and scenes with a synopsis, you can use the :guilabel:`Build Manuscript` tool to
    do so. The tool lets you select what information you want to include in the generated document,
    and how it is formatted. You can send the result to a printer, a PDF, or to an Open Document
-   file that  can be opened by most office type word processors. You can also generate the result
+   file that can be opened by most office type word processors. You can also generate the result
    as HTML, or Markdown, both suitable for further conversion to other formats.
 
 

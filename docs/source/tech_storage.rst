@@ -6,27 +6,27 @@ How Data is Stored
 
 .. _documentation: https://docs.novelwriter.io/
 
-This section contains details of how novelWriter stores and handles the project data.
+This chapter contains details of how novelWriter stores and handles the project data.
 
 
 Project Structure
 =================
 
 All novelWriter files are written with utf-8 encoding. Since Python automatically converts Unix
-line endings to Windows line endings on Windows systems, and vice versa, novelWriter does not make
-any adaptations to the formatting on Windows systems. This is handled entirely by the Python
-standard library. Python also handles this when working on the same files on both Windows and
-Unix-based operating systems.
+line endings to Windows line endings on Windows systems, novelWriter does not make any adaptations
+to the formatting on Windows systems. This is handled entirely by the Python standard library.
+Python also handles this when working on the same files on both Windows and Unix-based operating
+systems.
 
 
 Main Project File
 -----------------
 
 The project itself requires a dedicated folder for storing its files, where novelWriter will create
-its own "file system" where the folder and file hierarchy is described in a project XML file. This
-is the main project file in the project's root folder with the name ``nwProject.nwx``. This file
-also contains all the meta data required for the project (except the index data), and a number of
-related project settings.
+its own "file system" where the project's folder and file hierarchy is described in a project XML
+file. This is the main project file in the project's root folder with the name ``nwProject.nwx``.
+This file also contains all the meta data required for the project (except the index data), and a
+number of related project settings.
 
 If this file is lost or corrupted, the structure of the project is lost, although not the text
 itself. It is important to keep this file backed up, either through the built-in backup tool, or

@@ -59,8 +59,8 @@ Single and Double Prime
 ------------------------
 
 Both single and double prime symbols are available in the :guilabel:`Insert` menu. These symbols
-are the correct symbols to use for unit symbols for feet, inches, minutes and seconds. The usage of
-these is described in more detail on the Wikipedia Prime_ page. They look very similar to single
+are the correct symbols to use for unit symbols for feet, inches, minutes, and seconds. The usage
+of these is described in more detail on the Wikipedia Prime_ page. They look very similar to single
 and double straight quotes, and may be renderred similarly by the font, but they have different
 codes. Using these correctly will also prevent the auto-replace and dialogue highlighting features
 misunderstanding their meaning in the text.
@@ -81,7 +81,7 @@ right single quotation marks, depending on the font. There is a Wikipedia articl
 .. note::
    On export with the :guilabel:`Build Manuscript` tool, these apostrophes will be replaced
    automatically with the corresponding right hand single quote symbol as is generally recommended.
-   Therefore it doesn't really matter if you only use them to correct highlighting.
+   Therefore it doesn't really matter if you only use them to correct syntax highlighting.
 
 
 Special Space Symbols

@@ -6,7 +6,7 @@ The Editor and Viewer
 
 .. _Compose Key: https://en.wikipedia.org/wiki/Compose_key
 
-This sections covers in more detail how the document editor and viewer panels work.
+This chapter covers in more detail how the document editor and viewer panels work.
 
 
 .. _a_ui_edit:
@@ -21,7 +21,7 @@ Editing a Document
 To edit a document, double-click it in the project tree, or press the :kbd:`Return` key while
 having it selected. This will open the document in the document editor. The editor uses a
 Markdown-like syntax for some features, and a novelWriter-specific syntax for others. The syntax
-format is described in the :ref:`a_fmt` section.
+format is described in the :ref:`a_fmt` chapter.
 
 The editor has a maximise button (toggles the :guilabel:`Focus Mode`) and a close button in the
 top--right corner. On the top--left side you will find an edit button that opens the
@@ -33,8 +33,8 @@ header at the top of the edit or view panel. Optionally, the full project path t
 be shown. This can be set in :guilabel:`Preferences`.
 
 .. tip::
-   Clicking on the document title bar will select the document in the project tree and reveal its
-   location, making it easier to locate in a large project.
+   Clicking on the document title bar will select the document in the project tree and thus reveal
+   its location there, making it easier to find in a large project.
 
 Any :term:`references<reference>` in the editor can be opened in the viewer by moving the cursor to
 the label and pressing :kbd:`Ctrl+Return`. You can also control-click them with your mouse.
@@ -54,10 +54,10 @@ viewer. To view a document, press :kbd:`Ctrl+R`, or select :guilabel:`View Docum
 context menu. If you have a middle mouse button, middle-clicking on the document will also open it
 in the viewer.
 
-The document viewed does not have to be the same document as currently being edited. However, If
-you *are* viewing the same document, pressing :kbd:`Ctrl+R` again will update the document with
-your latest changes. You can also press the reload button in the top--right corner of the view
-panel, next to the close button, to achieve the same thing.
+The document viewed does not have to be the same document as the one currently being edited.
+However, If you *are* viewing the same document, pressing :kbd:`Ctrl+R` again will update the
+document with your latest changes. You can also press the reload button in the top--right corner of
+the viewer panel, next to the close button, to achieve the same thing.
 
 In the viewer :term:`references<reference>` become clickable links. Clicking them will replace the
 content of the viewer with the content of the document the reference points to.
@@ -75,10 +75,10 @@ This is convenient if you want to quickly look through all documents in the list
 :guilabel:`References` panel without losing the list in the process.
 
 .. note::
-   The :guilabel:`References` panel relies on an up-to-date index of the project. The index is
-   maintained automatically. However, if anything is missing, or seems wrong, the index can always
-   be rebuilt by selecting :guilabel:`Rebuild Index` from the :guilabel:`Tools` menu, or by
-   pressing :kbd:`F9`.
+   The :guilabel:`References` panel relies on an up-to-date :term:`index<project index>` of the
+   project. The index is maintained automatically. However, if anything is missing, or seems wrong,
+   the index can always be rebuilt by selecting :guilabel:`Rebuild Index` from the
+   :guilabel:`Tools` menu, or by pressing :kbd:`F9`.
 
 
 .. _a_ui_edit_search:
@@ -124,8 +124,8 @@ you wish.
 
 .. tip::
    If you don't like auto-replacement, all symbols inserted by this feature are also available in
-   the :guilabel:`Insert` menu, and via convenient :ref:`a_kb_ins`. You may also be using a
-   `Compose Key`_ setup, which means you may not need the auto-replace feature.
+   the :guilabel:`Insert` menu, and via :ref:`a_kb_ins`. You may also be using a `Compose Key`_
+   setup, which means you may not need the auto-replace feature at all.
 
 The editor is able to replace two and three hyphens with short and long dashes, triple points with
 ellipsis, and replace straight single and double quotes with user-defined quote symbols. It will
@@ -135,5 +135,5 @@ tricky for languages that use the same symbol for these, like English does.
 
 .. tip::
    If the auto-replace feature changes a symbol when you did not want it to change, pressing
-   :kbd:`Ctrl+Z` immediately after the auto-replacement will undo it without undoing the character
-   you typed.
+   :kbd:`Ctrl+Z` once after the auto-replacement will undo it without undoing the character
+   you typed before it.

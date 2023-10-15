@@ -9,7 +9,7 @@ This will open the :guilabel:`New Project Wizard` that will assist you in creati
 project suited to your needs.
 
 A novelWriter project requires a dedicated folder for storing its files on the local file system.
-See :ref:`a_storage` for further details on how files are organised.
+If you're interested in the details, you can have a look at the chapter :ref:`a_storage`.
 
 A list of recently opened projects is maintained, and displayed in the :guilabel:`Open Project`
 dialog. A project can be removed from this list by selecting it and pressing the :kbd:`Del` key or
@@ -36,16 +36,13 @@ various elements of your story. Using them is of course entirely optional.
 A new project may not have all of the root folders present, but you can add the ones you want from
 the project tree tool bar.
 
-Each root folder has one or more reference keyword associated with it that is used to reference
-them from other documents and notes. The intended usage of each type of root folder is listed
-below. However, aside from the :guilabel:`Novel` folder, no restrictions are applied by the
+Each root folder has one or more :term:`reference` :term:`keyword` associated with it that is used
+to reference them from other documents and notes. The intended usage of each type of root folder is
+listed below. However, aside from the :guilabel:`Novel` folder, no restrictions are applied by the
 application on what you put in them. You can use them however you want.
 
 The root folder system is closesly connected to how the Tags and References system works. For more
 details, see the :ref:`a_references` chapter.
-
-.. tip::
-   You can make multiple root folders of each kind if you wish to split up your notes.
 
 :guilabel:`Novel`
    This is the root folder type for text that goes into the final novel or novels. This class of
@@ -54,8 +51,8 @@ details, see the :ref:`a_references` chapter.
 
 :guilabel:`Plot`
    This is the root folder type where main plots can be outlined. It is optional, but adding at
-   least brief notes can be useful in order to tag plot elements for the Outline View. Tags in this
-   folder can be references using the ``@plot`` keyword.
+   least brief notes can be useful in order to tag plot elements for the :guilabel:`Outline View`.
+   Tags in this folder can be references using the ``@plot`` keyword.
 
 :guilabel:`Characters`
    Character notes go in this root folder type. These are especially important if you want to use
@@ -63,7 +60,7 @@ details, see the :ref:`a_references` chapter.
    told from a specific character's point-of-view, or focusing on a particular character's
    storyline. Tags in this type of folder can be referenced using the ``@pov`` keyword for
    point-of-view characters, ``@focus`` for a focus character, or the ``@char`` keyword for any
-   other character.
+   other character present.
 
 :guilabel:`Locations`
    The locations folder type is for various scene locations that you want to track. Tags in this
@@ -94,6 +91,9 @@ information about the tags listed, see :ref:`a_references_references`.
    You can rename root folders to whatever you want. However, this doesn't change the reference
    keyword or what they do.
 
+.. versionadded:: 2.0
+   As of version 2.0, you can make multiple root folders of each kind to split up your project.
+
 
 .. _a_proj_roots_del:
 
@@ -102,7 +102,7 @@ Deleted Documents
 
 Deleted documents will be moved into a special :guilabel:`Trash` root folder. Documents in the
 trash folder can then be deleted permanently, either individually, or by emptying the trash from
-the menu. Documents in the trash folder are removed from the project index and cannot be
+the menu. Documents in the trash folder are removed from the :term:`project index` and cannot be
 referenced.
 
 A document or a folder can be deleted from the :guilabel:`Project` menu, or by pressing
@@ -115,12 +115,12 @@ Archived Documents
 ------------------
 
 If you don't want to delete a document, or put it in the :guilabel:`Trash` folder where it may be
-deleted, but still want it out of your main project tree, you can create an :guilabel:`Archive`
-root folder and move it there.
+deleted accidentally, but still want it out of your main project tree, you can create an
+:guilabel:`Archive` root folder and move it there.
 
 You can drag any document to this folder and preserve its settings. The document will always be
-excluded from the :guilabel:`Build Manuscript` tool. It is also removed from the project index, so
-the tags and references defined in it will not show up anywhere else.
+excluded from the :guilabel:`Build Manuscript` tool. It is also removed from the
+:term:`project index`, so the tags and references defined in it will not show up anywhere else.
 
 
 .. _a_proj_roots_orphaned:
@@ -131,19 +131,19 @@ Recovered Documents
 If novelWriter crashes or otherwise exits without saving the project state, or if you're using a
 file synchronisation tool that runs out of sync, there may be files in the project folder that
 aren't tracked in the core project file. These files, when discovered, are recovered and added back
-into the project, if possible.
+into the project.
 
-The discovered files are scanned for meta information that give clues as to where the document may
-previously have been located in the project. The project loading routines will try to put them back
+The discovered files are scanned for metadata that give clues as to where the document may
+previously have been located in the project. The project loading routine will try to put them back
 as close as possible to this location, if it still exists. Generally, it will be appended to the
 end of the folder where it previously was located. If that folder doesn't exist, it will try to add
-it to the correct root folder. If it cannot figure out which root folder is correct, the document
-will be added to the :guilabel:`Novel` root folder. Finally, if the :guilabel:`Novel` folder is
-missing, one will be created.
+it to the correct root folder type. If it cannot figure out which root folder is correct, the
+document will be added to the :guilabel:`Novel` root folder. Finally, if the :guilabel:`Novel`
+folder is missing, one will be created.
 
-If the title of the document can be recovered, the word "Recovered:" will be added as a prefix. If
-the title cannot be determined, the document will be named after its internal key, which is a
-string of characters and numbers.
+If the title of the document can be recovered, the word "Recovered:" will be added as a prefix to
+indicate that it may need further attention. If the title cannot be determined, the document will
+be named after its internal key, which is a string of characters and numbers.
 
 
 .. _a_proj_roots_lock:
@@ -176,7 +176,7 @@ Using Folders in the Project Tree
 ---------------------------------
 
 Folders, aside from root folders, have no structural significance to the project. When novelWriter
-is processing the documents in the novel, like for instance when you create a manuscript from it,
+is processing the documents in a project, like for instance when you create a manuscript from it,
 these folders are ignored. Only the order of the documents themselves matter.
 
 The folders are there purely as a way for you to organise the documents in meaningful sections and
@@ -197,14 +197,15 @@ Project Documents
 
 New documents can be created from the toolbar in the :guilabel:`Project Tree`, or by pressing
 :kbd:`Ctrl+N`. This will open the create new item menu and let you choose between a number of
-pre-defined documents and folders. You will be prompted for a label for the new item. You can
-always rename an item by selecting :guilabel:`Rename Item` from the :guilabel:`Project` menu, or by
-pressing :kbd:`F2`.
+pre-defined documents and folders. You will be prompted for a label for the new item.
+
+You can always rename an item by selecting :guilabel:`Rename Item` from the :guilabel:`Project`
+menu, or by pressing :kbd:`F2`.
 
 Other settings for project items are available from the context menu that you can activate by
-right-clicking on an item in the :guilabel:`Project Tree`. The :guilabel:`Transform` submenu
-includes options for converting, splitting, or merging items. See :ref:`a_ui_tree_split_merge` for
-more details on the latter two.
+right-clicking on an item in the tree. The :guilabel:`Transform` submenu includes options for
+converting, splitting, or merging items. See :ref:`a_ui_tree_split_merge` for more details on the
+latter two.
 
 
 .. _a_proj_files_counts:
@@ -222,9 +223,9 @@ The word counts are not updated in real time, but run in the background every fe
 long as the document is being actively edited.
 
 A total project word count is displayed in the status bar. The total count depends on the sum of
-the values in the project tree, which again depend on an up to date index. If the counts seem
-wrong, a full project word recount can be initiated by rebuilding the project's index. Either from
-the :guilabel:`Tools` menu, or by pressing :kbd:`F9`.
+the values in the project tree, which again depend on an up to date :term:`project index`. If the
+counts seem wrong, a full project word recount can be initiated by rebuilding the project's index.
+Either from the :guilabel:`Tools` menu, or by pressing :kbd:`F9`.
 
 
 .. _a_proj_settings:
@@ -250,9 +251,9 @@ backup files may change too.
 The :guilabel:`Novel Title` and :guilabel:`Authors` settings are used when building the manuscript,
 for some formats.
 
-If your project is in a different language than your main spell checking is set to, you can
-override the default spell checking language here. You can also override the automatic backup
-setting. The project language can also be changed from the :guilabel:`Tools` menu.
+If your project is in a different language than your main spell checking language is set to, you
+can override the default setting here. You can also override the automatic backup setting. The
+project language can also be changed from the :guilabel:`Tools` menu.
 
 
 Status and Importance Tabs
