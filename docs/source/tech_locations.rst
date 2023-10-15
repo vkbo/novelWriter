@@ -24,7 +24,7 @@ The standard paths are:
 * Linux: ``~/.config/novelwriter/novelwriter.conf``
 * macOS: ``~/Library/Preferences/novelwriter/novelwriter.conf``
 * Windows: ``C:\Users\<USER>\AppData\Local\novelwriter\novelwriter.conf``
-   
+
 Here, ``~`` corresponds to the user's home directory on Linux and macOS, and ``<USER>`` is the
 user's username on Windows.
 
@@ -47,7 +47,7 @@ The standard paths are:
 * Linux: ``~/.local/share/novelwriter/``
 * macOS: ``~/Library/Application Support/novelwriter/``
 * Windows: ``C:\Users\<USER>\AppData\Roaming\novelwriter\``
-   
+
 Here, ``~`` corresponds to the user's home directory on Linux and macOS, and ``<USER>`` is the
 user's username on Windows.
 
