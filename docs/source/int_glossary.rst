@@ -5,6 +5,7 @@ Glossary
 ********
 
 .. glossary::
+   :sorted:
 
    Root Folder
       A "Root Folder" is a top level folder of the project tree in novelWriter. Each type of root
@@ -24,16 +25,27 @@ Glossary
       more details on how to use them.
 
    Tag
-      ...
+      A tag is a user defined value assigned as a tag to a section of your :term:`Project Notes`.
+      It is optional, and can be defined once per heading. It is set using the :term:`keyword`
+      syntax ``@tag: value``, where ``value`` is the user defined part. Each tag can be referenced
+      in another file using one of the :term:`reference` keywords. See :ref:`a_references` chapter
+      for more details.
 
    Reference
-      ...
+      A references is one of a set of :term:`keywords<keyword>` that can be used to link to a
+      :term:`tag` in another document. The reference keywords are specific to the different
+      :term:`root folder` types. A full overview is available in the :ref:`a_references` chapter.
 
    Project Index
-      ...
+      The project index is a record of all headings in a project, with all their meta data like
+      synopsis comments, :term:`tags<tag>` and :term:`references<reference>`. The project index is
+      kept up to date automatically, but can also be regenerated manually from the
+      :guilabel:`Tools` menu or by pressing :kbd:`F9`.
 
    Context Menu
-      ...
+      A context menu is a menu that pops up when you right click something in the user interface.
+      In novelWriter, you can often also open a context menu by pressing the keyboard shortcut
+      :kbd:`Ctrl+.`.
 
    Headings
       Each level of headings in :term:`Novel Documents` have a specific meaning in terms of the
@@ -42,4 +54,11 @@ Glossary
       matter. For more details on headings in novel documents, see :ref:`a_struct_heads`.
 
    Keyword
-      ...
+      A keyword in novelWriter is a special command you put in the text of your documents. They are
+      not standard Markdown, but is used in novelWriter to add information that is interpreted by
+      the application. For instance, keywords are used for :term:`tags<tag>` and
+      :term:`references<reference>`.
+
+      Keywords must always be on their own line, and the first character of the line must always be
+      the ``@`` character. The keyword must also always be followed by a ``:`` character, and the
+      values passed to the command are added after this, separated by commas.
