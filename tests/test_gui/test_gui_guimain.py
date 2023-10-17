@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import sys
 import pytest
 
 from shutil import copyfile
@@ -518,11 +519,13 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert docEditor._qDocument.spellErrorAtPos(currPos) == ("", -1, -1, [])
 
     errPos = currPos - 13
-    word, cPos, cLen, suggest = docEditor._qDocument.spellErrorAtPos(errPos)
-    assert word == "tesst"
-    assert cPos == 15
-    assert cLen == 5
-    assert "test" in suggest
+    if not sys.platform.startswith("win32"):
+        # Skip on Windows as spell checking is off there
+        word, cPos, cLen, suggest = docEditor._qDocument.spellErrorAtPos(errPos)
+        assert word == "tesst"
+        assert cPos == 15
+        assert cLen == 5
+        assert "test" in suggest
 
     with monkeypatch.context() as mp:
         mp.setattr(QMenu, "exec_", lambda *a: None)
