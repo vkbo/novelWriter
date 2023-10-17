@@ -35,7 +35,7 @@ os.environ["TZ"] = "Europe/Oslo"
 time.tzset()
 
 needs_sphinx = "5.0"
-extensions = []
+extensions = ["sphinx_design"]
 templates_path = ["_templates"]
 source_suffix = ".rst"
 master_doc = "index"

@@ -8,18 +8,17 @@ Project Format Changes
 .. _documentation: https://docs.novelwriter.io/
 
 Most of the changes to the file formats over the history of novelWriter have no impact on the
-user-side of things. The project files are generally updated automatically. However, some of the
+user side of things. The project files are generally updated automatically. However, some of the
 changes require minor actions from the user.
 
-The key changes in the formats are listed below, as well as the user actions required, where
-applicable.
+The key changes in the formats are listed in this chapter, as well as the user actions required,
+where applicable.
 
 .. only:: not html
 
    A full project file format specification is available in the online documentation_.
 
 .. caution::
-
    When you update a project from one format version to the next, the project can no longer be
    opened by a version of novelWriter prior to the version where the new file format was
    introduced. You will get a notification about any updates to your project file format and will
@@ -71,7 +70,7 @@ Format 1.3 Changes
 
 This project format was introduced in novelWriter version 1.5.
 
-With this format, the number of document layouts was reduced from 8 to 2. The conversion of
+With this format, the number of document layouts was reduced from eight to two. The conversion of
 document layouts is performed automatically when the project is opened.
 
 Due to the reduction of layouts, some features that were previously controlled by these layouts
@@ -85,7 +84,7 @@ should be used only a few places in any given project. These are as follows:
 
 * The formatting of the level one title on the title page must be changed from ``# Title Text`` to
   ``#! Title Text`` in order to retain the previous functionality. See :ref:`a_fmt_head`.
-* Any text that was previously centred on the page must be manually centred using the new text
+* Any text that was previously centred on the page must be manually centred using the text
   alignment feature. See :ref:`a_fmt_align`.
 
 **Unnumbered Chapters**
