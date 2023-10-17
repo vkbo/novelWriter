@@ -1,16 +1,30 @@
 #!/bin/bash
 set -e
 
+ENVPATH=/tmp/nwBuild
+
 if [ ! -f pkgutils.py ]; then
     echo "Must be called from the root folder of the source"
     exit 1
 fi
 
 echo ""
+echo " Building Dependencies"
+echo "================================================================================"
+echo ""
+
+if [ ! -d $ENVPATH ]; then
+    python3 -m venv $ENVPATH
+fi
+source $ENVPATH/bin/activate
+pip3 install -r docs/source/requirements.txt
+python3 pkgutils.py qtlrelease manual sample
+deactivate
+
+echo ""
 echo " Building Packages"
 echo "================================================================================"
 echo ""
-python3 pkgutils.py qtlrelease manual sample
 python3 -m build
 mkdir -pv dist_upload
 cp -v dist/novelWriter-*.whl dist_upload/

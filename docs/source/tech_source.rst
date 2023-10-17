@@ -8,13 +8,13 @@ Running from Source
 .. _PyPi: https://pypi.org/project/novelWriter/
 .. _Sphinx Docs: https://www.sphinx-doc.org/
 
-This section describes various ways of running novelWriter directly from the source code, and how
+This chapter describes various ways of running novelWriter directly from the source code, and how
 to build the various components like the translation files and documentation.
 
 .. note::
    The text below assumes the command ``python`` corresponds to a Python 3 executable. Python 2 is
-   now deprecated, but many systems still have both Python 2 and 3. For such systems, the command
-   ``python3`` may be needed instead. Likewise, ``pip`` may need to be replaced with ``pip3``.
+   now deprecated, but on many systems the command ``python3`` may be needed instead. Likewise,
+   ``pip`` may need to be replaced with ``pip3``.
 
 Most of the custom commands for building packages of novelWriter, or building assets, are contained
 in the ``pkgutils.py`` script in the root of the source code. You can list the available commands
@@ -30,11 +30,11 @@ by running:
 Dependencies
 ============
 
-novelWriter has been designed to rely on as few dependencies as possible. Aside from the packages
-needed to communicate with the Qt GUI libraries, only one package is required for handling the XML
-format of the main project file. Everything else is handled with standard Python libraries.
+novelWriter has been designed to rely on as few dependencies as possible. Only the Python wrapper
+for the Qt GUI libraries is required. The package for spell checking is optional, but recommended.
+Everything else is handled with standard Python libraries.
 
-The following Python packages are needed to run novelWriter:
+The following Python packages are needed to run all features of novelWriter:
 
 * ``PyQt5`` – needed for connecting with the Qt5 libraries.
 * ``PyEnchant`` – needed for spell checking (optional).
@@ -53,7 +53,6 @@ source, dependencies can still be installed from PyPi with:
    pip install -r requirements.txt
 
 .. note::
-
    On Linux distros, the Qt library is usually split up into multiple packages. In some cases,
    secondary dependencies may not be installed automatically. For novelWriter, the library files
    for renderring the SVG icons may be left out and needs to be installed manually. This is the
@@ -70,7 +69,7 @@ build the package using the Python Packaging Authority's build tool. It can be i
 
 .. code-block:: bash
 
-   pip install --upgrade build
+   pip install build
 
 On Debian-based systems the tool can also be installed with:
 
@@ -82,11 +81,11 @@ With the tool installed, run the following command from the root of the novelWri
 
 .. code-block:: bash
 
-   python -m build
+   python -m build --wheel
 
-This should generate two files in the ``dist/`` folder at your current location. One with file
-extension ``.tar.gz`` and one with extension ``.whl``. The latter is the package you want to
-install, here with example version number 2.0.7, but yours may be different:
+This should generate a ``.whl`` file in the ``dist/`` folder at your current location. The wheel
+file can then be installed on your system. Here with example version number 2.0.7, but yours may be
+different:
 
 .. code-block:: bash
 
@@ -124,7 +123,8 @@ Building the Example Project
 ============================
 
 In order to be able to create new projects from example files, you need a ``sample.zip`` file in
-the ``assets`` folder of the source. This file can be built from setup script by running:
+the ``assets`` folder of the source. This file can be built from the ``pkgutils.py`` script by
+running:
 
 .. code-block:: bash
 
@@ -152,7 +152,7 @@ The documentation can then be built from the root folder in the source code by r
 If successful, the documentation should be available in the ``docs/build/html`` folder and you can
 open the ``index.html`` file in your browser.
 
-You can also build a PDF manual from the documentation using the setup script:
+You can also build a PDF manual from the documentation using the ``pkgutils.py`` script:
 
 .. code-block:: bash
 

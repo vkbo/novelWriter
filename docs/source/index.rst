@@ -18,18 +18,13 @@ storage for robustness.
 
 The project storage is suitable for version control software, and also well suited for file
 synchronisation tools. All text is saved as plain text files with a meta data header. The core
-project structure is stored in a single project XML file. Other meta data is primarily saved as
-JSON files. See the :ref:`a_breakdown_storage` section for more details.
+project structure is stored in a single project XML file. Other meta data is saved as JSON files.
+See the :ref:`a_breakdown_storage` section for more details.
 
 Any operating system that can run Python 3 and has the Qt 5 libraries should be able to run
-novelWriter. It runs fine on Linux, Windows and macOS, and users have tested it on other platforms
+novelWriter. It runs fine on Linux, Windows and MacOS, and users have tested it on other platforms
 as well. novelWriter can also be run directly from the Python source, or installed from packages or
-the pip tool. See :ref:`a_started` for more details.
-
-.. note::
-   Release 1.5 introduced a few changes that will require you to make some minor modifications to
-   some of the headings in your project. It should be fairly quick and straightforward. Please see
-   the :ref:`a_prjfmt_1_3` section for more details.
+with pip. See :ref:`a_started` for more details.
 
 **Useful Links**
 
@@ -56,9 +51,9 @@ the pip tool. See :ref:`a_started` for more details.
    int_introduction
    int_overview
    int_started
-   int_source
    int_howto
    int_customise
+   int_glossary
 
 .. toctree::
    :maxdepth: 1
@@ -66,7 +61,8 @@ the pip tool. See :ref:`a_started` for more details.
    :hidden:
 
    usage_breakdown
-   usage_interface
+   usage_project
+   usage_writing
    usage_format
    usage_shortcuts
    usage_typography
@@ -79,14 +75,15 @@ the pip tool. See :ref:`a_started` for more details.
 
    project_overview
    project_structure
-   project_notes
-   project_export
+   project_references
+   project_manuscript
 
 .. toctree::
    :maxdepth: 1
-   :caption: Under the Hood
+   :caption: Additional Topics
    :hidden:
 
    tech_locations
    tech_storage
+   tech_source
    tech_tests

@@ -4,10 +4,15 @@
 Novel Structure
 ***************
 
-This section covers the structure of a novel project.
+This chapter covers the structure of a novel project.
 
-It concerns documents under the :guilabel:`Novel` type root folder only. There are some
-restrictions and features that only apply to these types of documents.
+There are two different types of documents in a project, :guilabel:`Novel Documents` and
+:guilabel:`Project Notes`. Novel documents can only live in a :guilabel:`Novel` type root folder.
+You can also move them to :guilabel:`Archive` and :guilabel:`Trash` of course.
+
+The :guilabel:`Project Tree` can distinguish between the different header levels of the novel
+documents using coloured icons, and optionally add emphasis on the label, set in
+:guilabel:`Preferences`.
 
 
 .. _a_struct_heads:
@@ -16,15 +21,16 @@ Importance of Headings
 ======================
 
 Subfolders under root folders have no impact on the structure of the novel itself. The structure is
-instead dictated by the heading level of the headers within the documents.
+instead dictated by the heading level of the headings within the documents.
 
 Four levels of headings are supported, signified by the number of hashes (``#``) preceding the
-title. See also the :ref:`a_fmt` section for more details about the markdown syntax.
+title. See also the :ref:`a_fmt` section for more details about the markup syntax.
 
 .. note::
    The header levels are not only important when generating the manuscript, they are also used by
-   the indexer when building the outline tree in the Outline as well as the Novel Tree. Each
-   heading also starts a new region where new references and tags can be defined.
+   the indexer when building the outline tree in the :guilabel:`Outline View` as well as in the
+   :guilabel:`Novel Tree`. Each heading also starts a new region where new Tags and References
+   can be defined. See :ref:`a_references` for more details.
 
 The syntax for the four basic header types, and the two special header types, is listed in section
 :ref:`a_fmt_head`. The meaning of the four levels for the structure of your novel is as follows:
@@ -32,7 +38,7 @@ The syntax for the four basic header types, and the two special header types, is
 **Header Level 1: Partition**
    This header level signifies that the text refers to a top level partition. This is useful when
    you want to split the manuscript up into books, parts, or acts. These headings are not required.
-   The novel title itself should use the special header level explained in :ref:`a_fmt_head`.
+   The novel title itself should use the special header level ``#!`` covered in :ref:`a_fmt_head`.
 
 **Header Level 2: Chapter**
    This header level signifies a chapter level partition. Each time you want to start a new
@@ -49,18 +55,19 @@ The syntax for the four basic header types, and the two special header types, is
 
 **Header Level 4: Section**
    This header level signifies a sub-scene level partition, usually called a "section" in the
-   documentation and the user interface. These can be useful if you want to change tag references
+   documentation and the user interface. These can be useful if you want to change references
    mid-scene, like if you change the point-of-view character. You are free to use sections as you
    wish, and you can filter them out of the final manuscript just like with scene titles.
 
 Page breaks are automatically added before level 1 and 2 headers when you build your project to a
-format that supports page breaks, or when you print the document directly from the build tool. If
-you want page breaks in other places, you have to specify them manually. See :ref:`a_fmt_break`.
+format that supports page breaks, or when you print the document directly from the
+:guilabel:`Manuscript Build` tool. If you want page breaks in other places, you have to specify
+them manually. See :ref:`a_fmt_break`.
 
 .. tip::
    There are multiple options of how to process novel titles when building the manuscript. For
    instance, chapter numbers can be applied automatically, and so can scene numbers if you want
-   them in a draft manuscript. See the :ref:`a_export` page for more details.
+   them in a draft manuscript. See the :ref:`a_manuscript` page for more details.
 
 
 .. _a_struct_heads_title:
@@ -89,13 +96,13 @@ Unnumbered Chapter Headings
 ---------------------------
 
 If you use the automatic numbering feature for your chapters, but you want to keep some special
-chapters separate from this, you cam add a ``!`` to the level 2 header formatting code to tell the
+chapters separate from this, you cam add an ``!`` to the level 2 header formatting code to tell the
 build tool to skip these chapters.
 
 ``##! Unnumbered Chapter Title``
 
-There is a separate formatting feature for such chapters in the :guilabel:`Build Novel Project`
-tool as well. See the :ref:`a_export` page for more details. When building a document of a format
+There is a separate formatting feature for such chapters in the :guilabel:`Manuscript Build` tool
+as well. See the :ref:`a_manuscript` page for more details. When building a document of a format
 that supports page breaks, also unnumbered chapters will have a page break added just like for
 normal chapters.
 
@@ -104,105 +111,3 @@ normal chapters.
    the first character of the chapter title itself. This feature has been dropped in favour of the
    current format in order to keep level 1 and 2 headers consistent. Please update your chapter
    headings if you've used this syntax.
-
-
-.. _a_struct_tags:
-
-Note References
-===============
-
-Each text partition, indicated by a heading of any level, can contain references to tags set in the
-project notes of the project. The references are gathered by the indexer and used to generate the
-Outline View. This section covers how to make references to tags. See :ref:`a_notes_tags` for how
-to define tags the references can point to.
-
-References and tags are also clickable in the document editor and viewer, making it easy to
-navigate between reference notes while writing. Clicked links are always opened in the view panel.
-
-References are set as a keyword and a list of corresponding tags. The valid keywords are listed
-below. The format of a reference line is ``@keyword: value1, [value2] ... [valueN]``. All keywords
-allow multiple values.
-
-``@pov``
-   The point-of-view character for the current section. The target must be a note tag in a
-   :guilabel:`Character` type root folder.
-
-``@focus``
-   The character that has the focus for the current section. This can be used in cases where the
-   focus is not a point-of-view character. The target must be a note tag in a :guilabel:`Character`
-   type root folder.
-
-``@char``
-   Other characters in the current section. The target must be a note tag in a
-   :guilabel:`Character` type root folder. This should not include the point-of-view or focus
-   character if those references are used.
-
-``@plot``
-   The plot or subplot advanced in the current section. The target must be a note tag in a
-   :guilabel:`Plot` type root folder.
-
-``@time``
-   The timelines touched by the current section. The target must be a note tag in a
-   :guilabel:`Timeline` type root folder.
-
-``@location``
-   The location the current section takes place in. The target must be a note tag in a
-   :guilabel:`Locations` type root folder.
-
-``@object``
-   Objects present in the current section. The target must be a note tag in a :guilabel:`Object`
-   type root folder.
-
-``@entity``
-   Entities present in the current section. The target must be a note tag in a
-   :guilabel:`Entities` type root folder.
-
-``@custom``
-   Custom references in the current section. The target must be a note tag in a :guilabel:`Custom`
-   type root folder. The custom folder are for any other category of notes you may want to use.
-
-The syntax highlighter will alert the user that the tags and references are used correctly, and
-that the tags referenced exist.
-
-The highlighter may be mistaken if the index of defined tags is out of date. If so, press :kbd:`F9`
-to regenerate it, or select :guilabel:`Rebuild Index` from the :guilabel:`Tools` menu. In general,
-the index for a document is regenerated when it is saved, so this shouldn't normally be necessary.
-
-Example of a novel document with references to characters and plots:
-
-.. code-block:: none
-   :linenos:
-
-   ## Chapter 1
-
-   @pov: Jane
-
-   ### Scene 1
-
-   @char: John, Sam
-   @plot: Main
-
-   Once upon a time ...
-
-
-.. _a_struct_layout:
-
-Document Layout
-===============
-
-All documents in the project can have a layout format set. Previously, there were multiple layouts
-available to change how the documents where formatted on export. These have now been reduced to
-just two layouts: :guilabel:`Novel Document` and :guilabel:`Project Note`.
-
-Novel documents can only live in a :guilabel:`Novel` type root folder. You can also move them to
-:guilabel:`Archive` and :guilabel:`Trash` of course. Project notes can be added anywhere in the
-project.
-
-The project tree can distinguish between the different layouts and header levels of the documents
-using coloured icons, and optionally add emphasis on the label (See the :guilabel:`Preferences`.)
-For novel documents, the heading level of the first heading is recorded, and indicated by the icon.
-
-.. tip::
-   You can always start writing with a coarse setup with one or a few documents, and then later use
-   the split tool to split the documents into separate chapter and scene documents. You can split a
-   document on any of the four header levels.

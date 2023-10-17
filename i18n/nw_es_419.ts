@@ -6,207 +6,207 @@
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="87" />
       <source>Document Filters</source>
-      <translation type="unfinished" />
+      <translation>Filtrado de Documentos</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="88" />
       <source>Novel Documents</source>
-      <translation type="unfinished" />
+      <translation>Documentos de Novela</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="89" />
       <source>Project Notes</source>
-      <translation type="unfinished" />
+      <translation>Notas del Proyecto</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="90" />
       <source>Inactive Documents</source>
-      <translation type="unfinished" />
+      <translation>Documentos Inactivos</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="92" />
       <source>Headings</source>
-      <translation type="unfinished" />
+      <translation>Títulación</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="93" />
       <source>Title Headings</source>
-      <translation type="unfinished" />
+      <translation>Títulos Iniciales</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="94" />
       <source>Chapter Headings</source>
-      <translation type="unfinished" />
+      <translation>Títulos de Capítulos</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="95" />
       <source>Unnumbered Headings</source>
-      <translation type="unfinished" />
+      <translation>Títulos Sin Numerar</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="96" />
       <source>Scene Headings</source>
-      <translation type="unfinished" />
+      <translation>Títulos de Escenas</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="97" />
       <source>Section Headings</source>
-      <translation type="unfinished" />
+      <translation>Títulos de Secciones</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="98" />
       <source>Hide Scene Headings</source>
-      <translation type="unfinished" />
+      <translation>Ocultar los Títulos de las Escenas</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="99" />
       <source>Hide Section Headings</source>
-      <translation type="unfinished" />
+      <translation>Ocultar los Títulos de las Secciones</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="101" />
       <source>Text Content</source>
-      <translation type="unfinished" />
+      <translation>Contenido Textual</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="102" />
       <source>Include Synopsis</source>
-      <translation type="unfinished" />
+      <translation>Incluir las Sinopsis</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="103" />
       <source>Include Comments</source>
-      <translation type="unfinished" />
+      <translation>Incluir los Comentarios</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="104" />
       <source>Include Keywords</source>
-      <translation type="unfinished" />
+      <translation>Incluir las Palabras Clave</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="105" />
       <source>Include Body Text</source>
-      <translation type="unfinished" />
+      <translation>Incluir el Texto Base</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="106" />
       <source>Insert Content</source>
-      <translation type="unfinished" />
+      <translation>Inserción de Contenido</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="107" />
       <source>Add Titles for Notes</source>
-      <translation type="unfinished" />
+      <translation>Añadir Títulos a las Notas</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="109" />
       <source>Text Format</source>
-      <translation type="unfinished" />
+      <translation>Formato del Texto</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="110" />
       <source>Language</source>
-      <translation type="unfinished">Idioma</translation>
+      <translation>Idioma</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="111" />
       <source>Font Family</source>
-      <translation type="unfinished" />
+      <translation>Tipografía</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="112" />
       <source>Font Size</source>
-      <translation type="unfinished" />
+      <translation>Tamaño</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="113" />
       <source>Line Height</source>
-      <translation type="unfinished" />
+      <translation>Altura de Línea</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="114" />
       <source>Text Options</source>
-      <translation type="unfinished" />
+      <translation>Opciones de Texto</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="115" />
       <source>Justify Text Margins</source>
-      <translation type="unfinished" />
+      <translation>Justificar los Márgenes del Texto</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="116" />
       <source>Replace Unicode Characters</source>
-      <translation type="unfinished" />
+      <translation>Reemplazar Caracteres Unicode</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="117" />
       <source>Replace Tabs with Spaces</source>
-      <translation type="unfinished" />
+      <translation>Reemplazar Tabulaciones por Espacios</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="118" />
       <source>Page Layout</source>
-      <translation type="unfinished" />
+      <translation>Diseño de Página</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="119" />
       <source>Unit</source>
-      <translation type="unfinished" />
+      <translation>Unidades</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="120" />
       <source>Page Size</source>
-      <translation type="unfinished" />
+      <translation>Tamaño de Página</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="121" />
       <source>Page Width</source>
-      <translation type="unfinished" />
+      <translation>Ancho de Página</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="122" />
       <source>Page Height</source>
-      <translation type="unfinished" />
+      <translation>Altura de Página</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="123" />
       <source>Top Margin</source>
-      <translation type="unfinished" />
+      <translation>Margen Superior</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="124" />
       <source>Bottom Margin</source>
-      <translation type="unfinished" />
+      <translation>Margen Inferior</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="125" />
       <source>Left Margin</source>
-      <translation type="unfinished" />
+      <translation>Margen Izquierdo</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="126" />
       <source>Right Margin</source>
-      <translation type="unfinished" />
+      <translation>Margen Derecho</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="128" />
       <source>Open Document (.odt)</source>
-      <translation type="unfinished">Open Document (.odt)</translation>
+      <translation>Open Document (.odt)</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="129" />
       <source>Add Highlight Colours</source>
-      <translation type="unfinished" />
+      <translation>Añadir Resaltes en Colores</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="131" />
       <source>HTML (.html)</source>
-      <translation type="unfinished" />
+      <translation>HTML (.html)</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="132" />
       <source>Add CSS Styles</source>
-      <translation type="unfinished" />
+      <translation>Añadir Estilos CSS</translation>
     </message>
   </context>
   <context>
@@ -455,82 +455,82 @@
     <message>
       <location filename="../novelwriter/constants.py" line="211" />
       <source>Open Document (.odt)</source>
-      <translation type="unfinished">Open Document (.odt)</translation>
+      <translation>Open Document (.odt)</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="212" />
       <source>Flat Open Document (.fodt)</source>
-      <translation type="unfinished">Flat Open Document (.fodt)</translation>
+      <translation>Flat Open Document (.fodt)</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="213" />
       <source>novelWriter HTML (.html)</source>
-      <translation type="unfinished" />
+      <translation>HTML de novelWriter (.html)</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="214" />
       <source>novelWriter Markup (.txt)</source>
-      <translation type="unfinished" />
+      <translation>Etiquetado de novelWriter (.txt)</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="215" />
       <source>Standard Markdown (.md)</source>
-      <translation type="unfinished">Markdown Estándar (.md)</translation>
+      <translation>Markdown Estándar (.md)</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="216" />
       <source>Extended Markdown (.md)</source>
-      <translation type="unfinished" />
+      <translation>Markdown Ampliado (.md)</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="217" />
       <source>JSON + novelWriter HTML (.json)</source>
-      <translation type="unfinished">JSON + HTML de novelWriter (.json)</translation>
+      <translation>JSON + HTML de novelWriter (.json)</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="218" />
       <source>JSON + novelWriter Markup (.json)</source>
-      <translation type="unfinished" />
+      <translation>JSON + Etiquetado de novelWriter (.json)</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="231" />
       <source>Millimetres</source>
-      <translation type="unfinished" />
+      <translation>Milímetros</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="232" />
       <source>Centimetres</source>
-      <translation type="unfinished" />
+      <translation>Centímetros</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="233" />
       <source>Inches</source>
-      <translation type="unfinished" />
+      <translation>Pulgadas</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="241" />
       <source>A4</source>
-      <translation type="unfinished" />
+      <translation>A4</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="242" />
       <source>A5</source>
-      <translation type="unfinished" />
+      <translation>A5</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="243" />
       <source>A6</source>
-      <translation type="unfinished" />
+      <translation>A6</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="244" />
       <source>US Legal</source>
-      <translation type="unfinished" />
+      <translation>Legal / Oficio</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="245" />
       <source>US Letter</source>
-      <translation type="unfinished" />
+      <translation>Letter / Carta</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="281" />
@@ -687,42 +687,42 @@
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="81" />
       <source>Manuscript Build Settings</source>
-      <translation type="unfinished" />
+      <translation>Opciones de Compilación del Manuscrito</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="103" />
       <source>Options</source>
-      <translation type="unfinished" />
+      <translation>Opciones</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="104" />
       <source>Selection</source>
-      <translation type="unfinished" />
+      <translation>Selección</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="105" />
       <source>Headings</source>
-      <translation type="unfinished" />
+      <translation>Títulación</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="106" />
       <source>Content</source>
-      <translation type="unfinished" />
+      <translation>Contenidos</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="107" />
       <source>Format</source>
-      <translation type="unfinished" />
+      <translation>Formato</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="108" />
       <source>Output</source>
-      <translation type="unfinished" />
+      <translation>Grabado</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="133" />
       <source>Name</source>
-      <translation type="unfinished" />
+      <translation>Nombre</translation>
     </message>
   </context>
   <context>
@@ -885,22 +885,22 @@
     <message>
       <location filename="../novelwriter/gui/doceditor.py" line="855" />
       <source>Document Details</source>
-      <translation type="unfinished" />
+      <translation>Detalles del Documento</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/doceditor.py" line="857" />
       <source>Created: {0}</source>
-      <translation type="unfinished" />
+      <translation>Creación: {0}</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/doceditor.py" line="858" />
       <source>Updated: {0}</source>
-      <translation type="unfinished" />
+      <translation>Actualizado en: {0}</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/doceditor.py" line="860" />
       <source>File Location: {0}</source>
-      <translation type="unfinished" />
+      <translation>Ubicación del Archivo: {0}</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/doceditor.py" line="1095" />
@@ -978,12 +978,12 @@
     <message>
       <location filename="../novelwriter/dialogs/docmerge.py" line="56" />
       <source>Drag and drop items to change the order, or uncheck to exclude.</source>
-      <translation>Arrastre y suelte elementos para cambiar su orden, o desmárquelos para excluirlos.</translation>
+      <translation>Arrastre y suelte ítems para cambiar su orden, o desmárquelos para excluirlos.</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/docmerge.py" line="74" />
       <source>Move merged items to Trash</source>
-      <translation>Mover elementos combinados a la papelera</translation>
+      <translation>Mover ítems combinados a la papelera</translation>
     </message>
   </context>
   <context>
@@ -1856,12 +1856,12 @@
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="799" />
       <source>Spell Check Language</source>
-      <translation type="unfinished" />
+      <translation>Idioma de la Comprobación Ortográfica</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="801" />
       <source>Default</source>
-      <translation type="unfinished">Por defecto</translation>
+      <translation>Por defecto</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="809" />
@@ -1886,7 +1886,7 @@
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="837" />
       <source>Build Manuscript</source>
-      <translation type="unfinished" />
+      <translation>Compilar el Manuscrito</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="843" />
@@ -1986,55 +1986,55 @@
   <context>
     <name>GuiManuscript</name>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="80" />
+      <location filename="../novelwriter/tools/manuscript.py" line="82" />
       <source>Build Manuscript</source>
-      <translation type="unfinished" />
+      <translation>Compilar Manuscrito</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="110" />
+      <location filename="../novelwriter/tools/manuscript.py" line="112" />
       <source>Add New Build</source>
-      <translation type="unfinished" />
+      <translation>Añadir una Nueva Compilación</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="117" />
+      <location filename="../novelwriter/tools/manuscript.py" line="119" />
       <source>Delete Selected Build</source>
-      <translation type="unfinished" />
+      <translation>Eliminar la Compilación Seleccionada</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="124" />
+      <location filename="../novelwriter/tools/manuscript.py" line="126" />
       <source>Edit Selected Build</source>
-      <translation type="unfinished" />
+      <translation>Editar la Compilación Seleccionada</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="128" />
+      <location filename="../novelwriter/tools/manuscript.py" line="130" />
       <source>Builds</source>
-      <translation type="unfinished" />
+      <translation>Compilaciones</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="145" />
+      <location filename="../novelwriter/tools/manuscript.py" line="164" />
       <source>Preview</source>
-      <translation type="unfinished" />
+      <translation>Vista Previa</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="148" />
+      <location filename="../novelwriter/tools/manuscript.py" line="167" />
       <source>Print</source>
-      <translation type="unfinished">Imprimir</translation>
+      <translation>Imprimir</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="151" />
+      <location filename="../novelwriter/tools/manuscript.py" line="170" />
       <source>Build</source>
-      <translation type="unfinished">Compilar</translation>
+      <translation>Compilar</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="154" />
+      <location filename="../novelwriter/tools/manuscript.py" line="173" />
       <source>Close</source>
-      <translation type="unfinished">Cerrar</translation>
+      <translation>Cerrar</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="254" />
-      <location filename="../novelwriter/tools/manuscript.py" line="207" />
+      <location filename="../novelwriter/tools/manuscript.py" line="278" />
+      <location filename="../novelwriter/tools/manuscript.py" line="226" />
       <source>My Manuscript</source>
-      <translation type="unfinished" />
+      <translation>Mi Manuscrito</translation>
     </message>
   </context>
   <context>
@@ -2042,52 +2042,52 @@
     <message>
       <location filename="../novelwriter/tools/manusbuild.py" line="67" />
       <source>Build Manuscript</source>
-      <translation type="unfinished" />
+      <translation>Compilar el Manuscrito</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manusbuild.py" line="87" />
       <source>Output Format</source>
-      <translation type="unfinished" />
+      <translation>Grabar al Siguiente Formato</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manusbuild.py" line="113" />
       <source>Table of Contents</source>
-      <translation type="unfinished">Tabla de Contenido</translation>
+      <translation>Tabla de Contenidos</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manusbuild.py" line="141" />
       <source>Path</source>
-      <translation type="unfinished">Ruta</translation>
+      <translation>Ruta</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manusbuild.py" line="151" />
       <source>File Name</source>
-      <translation type="unfinished" />
+      <translation>Nombre del Archivo</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manusbuild.py" line="154" />
       <source>Reset file name to default</source>
-      <translation type="unfinished" />
+      <translation>Restablecer al Nombre de Archivo Por Defecto</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manusbuild.py" line="178" />
       <source>&amp;Build</source>
-      <translation type="unfinished" />
+      <translation>C&amp;ompilar</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manusbuild.py" line="267" />
       <source>Select Folder</source>
-      <translation type="unfinished" />
+      <translation>Seleccionar una Carpeta</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manusbuild.py" line="305" />
       <source>Output folder does not exist.</source>
-      <translation type="unfinished" />
+      <translation>La carpeta destino no existe en la ruta definida.</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manusbuild.py" line="313" />
       <source>The file already exists. Do you want to overwrite it?</source>
-      <translation type="unfinished" />
+      <translation>El archivo ya existe. ¿Desea sobrescribirlo?</translation>
     </message>
   </context>
   <context>
@@ -3495,12 +3495,12 @@
     <message>
       <location filename="../novelwriter/gui/projtree.py" line="1328" />
       <source>Duplicate from Here</source>
-      <translation type="unfinished" />
+      <translation>Duplicar a partir de Aquí</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/projtree.py" line="1331" />
       <source>Duplicate Document</source>
-      <translation type="unfinished" />
+      <translation>Duplicar el Documento</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/projtree.py" line="1335" />
@@ -3536,22 +3536,22 @@
     <message>
       <location filename="../novelwriter/gui/projtree.py" line="1662" />
       <source>Do you want to duplicate this document?</source>
-      <translation type="unfinished" />
+      <translation>¿Desea duplicar este documento?</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/projtree.py" line="1664" />
       <source>Do you want to duplicate this item and all child items?</source>
-      <translation type="unfinished" />
+      <translation>¿Desea duplicar este ítem y todos sus ítems secundarios?</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/projtree.py" line="1678" />
       <source>Could not duplicate all items.</source>
-      <translation type="unfinished" />
+      <translation>No se ha podido duplicar todos los ítems.</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/projtree.py" line="1735" />
       <source>There is nowhere to add item with name '{0}'.</source>
-      <translation>No hay ningún lugar en el que añadir un elemento nombrado '{0}'.</translation>
+      <translation>No hay ningún lugar en el que añadir un ítem nombrado '{0}'.</translation>
     </message>
   </context>
   <context>
@@ -3594,7 +3594,7 @@
     <message>
       <location filename="../novelwriter/gui/sidebar.py" line="84" />
       <source>Build Manuscript</source>
-      <translation type="unfinished" />
+      <translation>Compilar el Manuscrito</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/sidebar.py" line="87" />
@@ -3873,7 +3873,7 @@
     <message>
       <location filename="../novelwriter/core/project.py" line="315" />
       <source>Found {0} orphaned file(s) in the project. {1} file(s) were recovered.</source>
-      <translation type="unfinished" />
+      <translation>Se ha(n) encontrado {0} archivo(s) sin vinculación en el proyecto. Se ha(n) recuperado {1} archivo(s).</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/project.py" line="330" />
@@ -3913,12 +3913,12 @@
     <message>
       <location filename="../novelwriter/core/project.py" line="426" />
       <source>Created a backup of your project of size {0}B.</source>
-      <translation type="unfinished" />
+      <translation>Se ha creado una copia de seguridad del proyecto de {0}B de tamaño.</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/project.py" line="427" />
       <source>Path: {0}</source>
-      <translation type="unfinished">Ruta elegida: {0}</translation>
+      <translation>Ruta destino: {0}</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/project.py" line="430" />
@@ -4488,41 +4488,69 @@
     </message>
   </context>
   <context>
+    <name>_DetailsWidget</name>
+    <message>
+      <location filename="../novelwriter/tools/manuscript.py" line="504" />
+      <source>Setting</source>
+      <translation>Opciones</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/tools/manuscript.py" line="504" />
+      <source>Value</source>
+      <translation>Valores Definidos</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/tools/manuscript.py" line="571" />
+      <source>Name</source>
+      <translation>Nombre</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/tools/manuscript.py" line="577" />
+      <source>Selection</source>
+      <translation>Selecciones</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/tools/manuscript.py" line="593" />
+      <source>Title</source>
+      <translation>Título</translation>
+    </message>
+  </context>
+  <context>
     <name>_FilterTab</name>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="314" />
       <source>Included in manuscript</source>
-      <translation type="unfinished" />
+      <translation>A incluir en el manuscrito</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="315" />
       <source>Excluded from manuscript</source>
-      <translation type="unfinished" />
+      <translation>A excluir del manuscrito</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="348" />
       <source>Always included</source>
-      <translation type="unfinished" />
+      <translation>Incluir de todos modos</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="353" />
       <source>Always excluded</source>
-      <translation type="unfinished" />
+      <translation>Excluir de todos modos</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="358" />
       <source>Reset to default</source>
-      <translation type="unfinished" />
+      <translation>Restablecer a por defecto</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="363" />
       <source>Mark selection as</source>
-      <translation type="unfinished" />
+      <translation>Ajustar la selección a:</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="519" />
       <source>Select Root Folders</source>
-      <translation type="unfinished" />
+      <translation>Carpetas Raíz a Seleccionar</translation>
     </message>
   </context>
   <context>
@@ -4530,7 +4558,7 @@
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="978" />
       <source>Not Set</source>
-      <translation type="unfinished">No establecido</translation>
+      <translation>No establecido</translation>
     </message>
   </context>
   <context>
@@ -4538,22 +4566,22 @@
     <message>
       <location filename="../novelwriter/shared.py" line="314" />
       <source>Information</source>
-      <translation type="unfinished">Información</translation>
+      <translation>Información</translation>
     </message>
     <message>
       <location filename="../novelwriter/shared.py" line="317" />
       <source>Warning</source>
-      <translation type="unfinished">Advertencia</translation>
+      <translation>Advertencia</translation>
     </message>
     <message>
       <location filename="../novelwriter/shared.py" line="320" />
       <source>Error</source>
-      <translation type="unfinished">Error</translation>
+      <translation>Error</translation>
     </message>
     <message>
       <location filename="../novelwriter/shared.py" line="323" />
       <source>Question</source>
-      <translation type="unfinished" />
+      <translation>Pregunta</translation>
     </message>
   </context>
   <context>
@@ -4562,92 +4590,92 @@
       <location filename="../novelwriter/tools/manussettings.py" line="691" />
       <location filename="../novelwriter/tools/manussettings.py" line="664" />
       <source>Hide</source>
-      <translation type="unfinished" />
+      <translation>Omitir</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="822" />
       <location filename="../novelwriter/tools/manussettings.py" line="713" />
       <source>Editing: {0}</source>
-      <translation type="unfinished" />
+      <translation>Editando: {0}</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="819" />
       <location filename="../novelwriter/tools/manussettings.py" line="713" />
       <source>None</source>
-      <translation type="unfinished">Ninguno</translation>
+      <translation>Ninguno</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="722" />
       <source>Title</source>
-      <translation type="unfinished">Título</translation>
+      <translation>Título</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="723" />
       <source>Chapter Number</source>
-      <translation type="unfinished" />
+      <translation>Numeral del Capítulo</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="724" />
       <source>Chapter Number (Word)</source>
-      <translation type="unfinished" />
+      <translation>Numeral del Capítulo (En Palabras)</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="725" />
       <source>Chapter Number (Upper Case Roman)</source>
-      <translation type="unfinished" />
+      <translation>Numeral Romano del Capítulo (Mayúsculas)</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="726" />
       <source>Chapter Number (Lower Case Roman)</source>
-      <translation type="unfinished" />
+      <translation>Numeral Romano del Capítulo (Minúsculas)</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="727" />
       <source>Scene Number (In Chapter)</source>
-      <translation type="unfinished" />
+      <translation>Numeral de la Escena (En el Capítulo)</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="728" />
       <source>Scene Number (Absolute)</source>
-      <translation type="unfinished" />
+      <translation>Numeral de la Escena (Valor Absoluto)</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="738" />
       <source>Insert</source>
-      <translation type="unfinished">Insertar</translation>
+      <translation>Insertar</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="741" />
       <source>Apply</source>
-      <translation type="unfinished">Aplicar</translation>
+      <translation>Aplicar</translation>
     </message>
   </context>
   <context>
     <name>_PreviewWidget</name>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="467" />
-      <source>Press the "Build Preview" button to generate ...</source>
-      <translation type="unfinished" />
+      <location filename="../novelwriter/tools/manuscript.py" line="657" />
+      <source>Press the "Preview" button to generate ...</source>
+      <translation>Pulse el botón "Vista Previa" para así generarla...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="565" />
+      <location filename="../novelwriter/tools/manuscript.py" line="755" />
       <source>Processing ...</source>
-      <translation type="unfinished" />
+      <translation>Procesando...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="594" />
+      <location filename="../novelwriter/tools/manuscript.py" line="784" />
       <source>Done</source>
-      <translation type="unfinished">Listo</translation>
+      <translation>Hecho</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="637" />
+      <location filename="../novelwriter/tools/manuscript.py" line="827" />
       <source>Unknown</source>
-      <translation type="unfinished">Desconocido</translation>
+      <translation>Desconocido</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="638" />
+      <location filename="../novelwriter/tools/manuscript.py" line="828" />
       <source>Built</source>
-      <translation type="unfinished" />
+      <translation>Compilado</translation>
     </message>
   </context>
 </TS>
