@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0.7" hexVersion="0x020007f0" fileVersion="1.5" fileRevision="1" timeStamp="2023-06-03 18:23:02">
-  <project id="d0f3fe10-c6e6-4310-8bfd-181eb4224eed" saveCount="3" autoCount="2" editTime="3">
+<novelWriterXML appVersion="2.2-alpha1" hexVersion="0x020200a1" fileVersion="1.5" fileRevision="1" timeStamp="2023-10-17 20:52:34">
+  <project id="d0f3fe10-c6e6-4310-8bfd-181eb4224eed" saveCount="3" autoCount="2" editTime="4">
     <name>New Project</name>
     <title>New Novel</title>
     <author>Jane Doe</author>
@@ -29,7 +29,7 @@
       <entry key="i000007" count="0" red="50" green="200" blue="0">Main</entry>
     </importance>
   </settings>
-  <content items="11" novelWords="136" notesWords="27">
+  <content items="11" novelWords="142" notesWords="27">
     <item handle="0000000000008" parent="None" root="0000000000008" order="0" type="ROOT" class="NOVEL">
       <meta expanded="yes" />
       <name status="s000000" import="i000004">Novel</name>
@@ -47,7 +47,7 @@
       <name status="s000000" import="i000004" active="yes">New Chapter</name>
     </item>
     <item handle="000000000000f" parent="000000000000d" root="0000000000008" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H1" charCount="781" wordCount="129" paraCount="14" cursorPos="1010" />
+      <meta expanded="no" heading="H1" charCount="808" wordCount="135" paraCount="15" cursorPos="1026" />
       <name status="s000000" import="i000004" active="yes">New Scene</name>
     </item>
     <item handle="0000000000009" parent="None" root="0000000000009" order="1" type="ROOT" class="PLOT">
