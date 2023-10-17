@@ -452,7 +452,7 @@ class TextBlockData(QTextBlockUserData):
         while rxSpell.hasNext():
             rxMatch = rxSpell.next()
             if not SHARED.spelling.checkWord(rxMatch.captured(0)):
-                if rxMatch.captured(0).isalpha() and not rxMatch.captured(0).isupper():
+                if not rxMatch.captured(0).isnumeric() and not rxMatch.captured(0).isupper():
                     self._spellErrors.append((rxMatch.capturedStart(0), rxMatch.capturedLength(0)))
         return self._spellErrors
 

@@ -95,8 +95,6 @@ class GuiDocEditor(QPlainTextEdit):
 
         self._docChanged = False  # Flag for changed status of document
         self._docHandle  = None   # The handle of the open document
-
-        self._nonWord    = "\"'"  # Characters to not include in spell checking
         self._vpMargin   = 0      # The editor viewport margin, set during init
 
         # Document Variables
@@ -271,13 +269,6 @@ class GuiDocEditor(QPlainTextEdit):
         settings. This function is both called when the editor is
         created, and when the user changes the main editor preferences.
         """
-        # Some Constants
-        self._nonWord = (
-            "\"'"
-            f"{CONFIG.fmtSQuoteOpen}{CONFIG.fmtSQuoteClose}"
-            f"{CONFIG.fmtDQuoteOpen}{CONFIG.fmtDQuoteClose}"
-        )
-
         # Typography
         if CONFIG.fmtPadThin:
             self._typPadChar = nwUnicode.U_THNBSP
@@ -307,9 +298,8 @@ class GuiDocEditor(QPlainTextEdit):
         # Set default text margins
         # Due to cursor visibility, a part of the margin must be
         # allocated to the document itself. See issue #1112.
-        cW = 2*self.cursorWidth()
-        self._qDocument.setDocumentMargin(cW)
-        self._vpMargin = max(CONFIG.getTextMargin() - cW, 0)
+        self._qDocument.setDocumentMargin(4)
+        self._vpMargin = max(CONFIG.getTextMargin() - 4, 0)
         self.setViewportMargins(self._vpMargin, self._vpMargin, self._vpMargin, self._vpMargin)
 
         # Also set the document text options for the document text flow
