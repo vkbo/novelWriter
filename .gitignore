@@ -10,6 +10,7 @@ setup.iss
 /novelwriter.desktop
 /novelWriter.pyw
 /setup/macos/Info.plist
+.venv
 
 # Translations
 /novelwriter/assets/i18n/*.qm
