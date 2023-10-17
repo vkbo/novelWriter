@@ -2,14 +2,31 @@
 <html>
 <body>
 
-<h2>Release Notes for 2.1 RC 1</h2>
-<p><i>Released on 31 August 2023</i></p>
+<h2>Release Notes for 2.1</h2>
+<p><i>Released on 17 October 2023</i></p>
 
-<p>This is a release candidate of the next release version, and is intended for testing purposes.
-Please be careful when using this version on live writing projects, and make sure you take frequent
-backups.</p>
-<p>Please check the changelog for an overview of changes. The full release notes will be added to
-the final release.</p>
+<p>The primary focus of this release has been a complete redesign of the Build Tool, that is, the
+tool that assembles your project into a manuscript document. The new tool, called the "Manuscript
+Build Tool" allows you to define multiple build definitions for your project. The build definitions
+are edited in a new Manuscript Build Settings dialog, with a lot more options than the old tool.</p>
+<p>The reason for this redesign is a long list of feature requests that could not easily be
+accommodated in the old, much simpler tool. Far from all the features have been added yet, but now
+that the new tool is in place, they will be gradually added in the coming releases.</p>
+<p>The key feature added in this release is the extended control you now have for selecting exactly
+what part of your project is included in a given build definition. You have the same filters for
+selecting documents and notes, and turning on or off root folders as before, but you can now easily
+override on a per-document basis what is included or excluded in addition to the filter.</p>
+<p>A second major improvement is a better tool to format your manuscript headings. You no longer
+have to look up formatting codes and add them manually. Instead, there is now a heading format
+editor in the Build Settings dialog for creating the header format, with syntax highlighting
+included.</p>
+
+<h3>Other Changes</h3>
+<p>Among other features is a new option to duplicate documents and folders in the project tree. The
+duplicate feature is available from the right-click menu. A proper light colour theme has also been
+added. In most cases it will be the same as the default theme, depending on your platform.</p>
+<p>There are other, minor improvements as well, and a lot of code improvements under the hood. For
+a full list of changes, see the detailed changelogs.</p>
 
 <p><i>See also the <a href="https://github.com/vkbo/novelWriter/releases">Releases</a> page.</i></p>
 
