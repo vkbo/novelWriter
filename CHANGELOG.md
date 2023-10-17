@@ -4,7 +4,53 @@
 
 ### Release Notes
 
+The primary focus of this release has been a complete redesign of the Build Tool, that is, the tool
+that assembles your project into a manuscript document. The new tool, called the "Manuscript Build
+Tool" allows you to define multiple build definitions for your project. The build definitions are
+edited in a new Manuscript Build Settings dialog, with a lot more options than the old tool.
+
+The reason for this redesign is a long list of feature requests that could not easily be
+accommodated in the old, much simpler tool. Far from all the features have been added yet, but now
+that the new tool is in place, they will be gradually added in the coming releases.
+
+The key feature added in this release is the extended control you now have for selecting exactly
+what part of your project is included in a given build definition. You have the same filters for
+selecting documents and notes, and turning on or off root folders as before, but you can now easily
+override on a per-document basis what is included or excluded in addition to the filter.
+
+A second major improvement is a better tool to format your manuscript headings. You no longer have
+to look up formatting codes and add them manually. Instead, there is now a heading format editor in
+the Build Settings dialog for creating the header format, with syntax highlighting included.
+
+#### Other Changes
+
+Among other features is a new option to duplicate documents and folders in the project tree. The
+duplicate feature is available from the right-click menu. A proper light colour theme has also been
+added. In most cases it will be the same as the default theme, depending on your platform.
+
+There are other, minor improvements as well, and a lot of code improvements under the hood. For a
+full list of changes, see the detailed changelogs.
+
+_These Release Notes also include the changes from the 2.1 Beta 1 and 2.1 RC 1 releases._
+
 ### Detailed Changelog
+
+**Usability**
+
+* A widget has been added to the Build Manuscript tool main window to show some select build
+  settings for the selected build definition. This should make it a little easier to find the
+  wanted build definition if there are many available. PR #1516.
+* All columns on the Writing Stats tool now uses the same fixed width font. Issue #1442, PR #1518.
+
+**Documentation**
+
+* The documentation has received significant updates for the 2.1 release. PR #1531.
+
+**Packaging and Installation**
+
+* Python 3.7 support has officially been dropped. Python 3.7 has reached end of life, and dropping
+  it relaxes some restrictions on development. PR #1515.
+* MacOS and Windows is now tested against Python 3.11, and 3.12 has been added to Linux. PR #1515.
 
 ----
 
@@ -168,7 +214,7 @@ such a document. In addition, the "Change Label" context menu entry has been cha
   underscores. The spell checker relies on RegEx for splitting words, and RegEx considers the
   underscore a word character. Issue #1415. PR #1417.
 * Fixed an issue where escaped markup characters were not being cleaned up when building HTML and
-    ODT outputs. Issue #1412. PR #1418.
+  ODT outputs. Issue #1412. PR #1418.
 
 **Usability Fixes**
 
