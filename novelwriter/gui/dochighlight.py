@@ -29,7 +29,8 @@ from time import time
 
 from PyQt5.QtCore import Qt, QRegularExpression
 from PyQt5.QtGui import (
-    QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QBrush, QTextDocument
+    QBrush, QColor, QFont, QSyntaxHighlighter, QTextBlockUserData,
+    QTextCharFormat, QTextDocument
 )
 
 from novelwriter import CONFIG, SHARED
@@ -37,6 +38,9 @@ from novelwriter.common import checkInt
 from novelwriter.constants import nwRegEx, nwUnicode
 
 logger = logging.getLogger(__name__)
+
+SPELLRX = QRegularExpression(r"\b[^\s\-\+\/–—]+\b")
+SPELLRX.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
 
 
 class GuiDocHighlighter(QSyntaxHighlighter):
@@ -51,9 +55,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         logger.debug("Create: GuiDocHighlighter")
 
+        self._tItem      = None
         self._tHandle    = None
         self._spellCheck = False
-        self._spellRx    = QRegularExpression()
 
         self._hRules: list[tuple[str, dict]] = []
         self._hStyles: dict[str, QTextCharFormat] = {}
@@ -78,11 +82,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         logger.debug("Ready: GuiDocHighlighter")
 
         return
-
-    @property
-    def spellCheck(self) -> bool:
-        """Check if spell checking is enabled."""
-        return self._spellCheck
 
     def initHighlighter(self) -> None:
         """Initialise the syntax highlighter, setting all the colour
@@ -227,13 +226,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             hReg.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
             self.rxRules.append((hReg, regRules))
 
-        # Build a QRegExp for the spell checker
-        # Include additional characters that the highlighter should
-        # consider to be word separators
-        uCode = nwUnicode.U_ENDASH + nwUnicode.U_EMDASH
-        self._spellRx = QRegularExpression(r"\b[^\s\-\+\/" + uCode + r"]+\b")
-        self._spellRx.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
-
         return
 
     ##
@@ -248,6 +240,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     def setHandle(self, tHandle: str) -> None:
         """Set the handle of the currently highlighted document."""
         self._tHandle = tHandle
+        self._tItem = SHARED.project.tree[tHandle]
+        logger.debug(
+            "Syntax highlighter %s for item '%s'",
+            "enabled" if self._tItem else "disabled", tHandle
+        )
         return
 
     ##
@@ -284,27 +281,24 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         if text.startswith("@"):  # Keywords and commands
             self.setCurrentBlockState(self.BLOCK_META)
-            pIndex = SHARED.project.index
-            tItem = SHARED.project.tree[self._tHandle]
-            if tItem is None:
-                return
-
-            isValid, theBits, thePos = pIndex.scanThis(text)
-            isGood = pIndex.checkThese(theBits, tItem)
-            if isValid:
-                for n, theBit in enumerate(theBits):
-                    xPos = thePos[n]
-                    xLen = len(theBit)
-                    if isGood[n]:
-                        if n == 0:
-                            self.setFormat(xPos, xLen, self._hStyles["keyword"])
+            if self._tItem:
+                pIndex = SHARED.project.index
+                isValid, theBits, thePos = pIndex.scanThis(text)
+                isGood = pIndex.checkThese(theBits, self._tItem)
+                if isValid:
+                    for n, theBit in enumerate(theBits):
+                        xPos = thePos[n]
+                        xLen = len(theBit)
+                        if isGood[n]:
+                            if n == 0:
+                                self.setFormat(xPos, xLen, self._hStyles["keyword"])
+                            else:
+                                self.setFormat(xPos, xLen, self._hStyles["value"])
                         else:
-                            self.setFormat(xPos, xLen, self._hStyles["value"])
-                    else:
-                        kwFmt = self.format(xPos)
-                        kwFmt.setUnderlineColor(self._colError)
-                        kwFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
-                        self.setFormat(xPos, xLen, kwFmt)
+                            kwFmt = self.format(xPos)
+                            kwFmt.setUnderlineColor(self._colError)
+                            kwFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
+                            self.setFormat(xPos, xLen, kwFmt)
 
             # We never want to run the spell checker on keyword/values,
             # so we force a return here
@@ -382,17 +376,13 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                                 spFmt.merge(xFmt[xM])
                                 self.setFormat(x, 1, spFmt)
 
-        if not self._spellCheck:
-            return
+        data = self.currentBlockUserData()
+        if not isinstance(data, TextBlockData):
+            data = TextBlockData()
+            self.setCurrentBlockUserData(data)
 
-        rxSpell = self._spellRx.globalMatch(text.replace("_", " "), 0)
-        while rxSpell.hasNext():
-            rxMatch = rxSpell.next()
-            if not SHARED.spelling.checkWord(rxMatch.captured(0)):
-                if not rxMatch.captured(0).isalpha() or rxMatch.captured(0).isupper():
-                    continue
-                xPos = rxMatch.capturedStart(0)
-                xLen = rxMatch.capturedLength(0)
+        if self._spellCheck:
+            for xPos, xLen in data.spellCheck(text):
                 for x in range(xPos, xPos+xLen):
                     spFmt = self.format(x)
                     spFmt.setUnderlineColor(self._colSpell)
@@ -437,3 +427,33 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         return charFormat
 
 # END Class GuiDocHighlighter
+
+
+class TextBlockData(QTextBlockUserData):
+
+    __slots__ = ("_spellErrors")
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._spellErrors: list[tuple[int, int]] = []
+        return
+
+    @property
+    def spellErrors(self) -> list[tuple[int, int]]:
+        """Return spell error data from last check."""
+        return self._spellErrors
+
+    def spellCheck(self, text: str) -> list[tuple[int, int]]:
+        """Run the spell checker and cache the result, and return the
+        list of spell check errors.
+        """
+        self._spellErrors = []
+        rxSpell = SPELLRX.globalMatch(text.replace("_", " "), 0)
+        while rxSpell.hasNext():
+            rxMatch = rxSpell.next()
+            if not SHARED.spelling.checkWord(rxMatch.captured(0)):
+                if not rxMatch.captured(0).isnumeric() and not rxMatch.captured(0).isupper():
+                    self._spellErrors.append((rxMatch.capturedStart(0), rxMatch.capturedLength(0)))
+        return self._spellErrors
+
+# END Class TextBlockData

@@ -56,6 +56,7 @@ from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.core.index import countWords
 from novelwriter.gui.dochighlight import GuiDocHighlighter
+from novelwriter.gui.editordocument import GuiTextDocument
 from novelwriter.extensions.wheeleventfilter import WheelEventFilter
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -79,6 +80,7 @@ class GuiDocEditor(QPlainTextEdit):
     loadDocumentTagRequest = pyqtSignal(str, Enum)
     novelStructureChanged = pyqtSignal()
     novelItemMetaChanged = pyqtSignal(str)
+    spellCheckStateChanged = pyqtSignal(bool)
 
     def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
@@ -92,18 +94,12 @@ class GuiDocEditor(QPlainTextEdit):
         self._nwItem     = None
 
         self._docChanged = False  # Flag for changed status of document
-        self._docHandle  = None   # The handle of the open file
-
-        self._spellCheck = False  # Flag for spell checking enabled
-        self._nonWord    = "\"'"  # Characters to not include in spell checking
+        self._docHandle  = None   # The handle of the open document
         self._vpMargin   = 0      # The editor viewport margin, set during init
 
         # Document Variables
-        self._charCount  = 0      # Character count
-        self._wordCount  = 0      # Word count
-        self._paraCount  = 0      # Paragraph count
-        self._lastEdit   = 0      # Time stamp of last edit
-        self._lastActive = 0.0    # Time stamp of last activity
+        self._lastEdit   = 0.0    # Timestamp of last edit
+        self._lastActive = 0.0    # Timestamp of last activity
         self._lastFind   = None   # Position of the last found search word
         self._doReplace  = False  # Switch to temporarily disable auto-replace
 
@@ -120,18 +116,19 @@ class GuiDocEditor(QPlainTextEdit):
         self._typPadBefore = ""
         self._typPadAfter = ""
 
-        # Core Elements and Signals
-        qDoc = self.document()
-        qDoc.contentsChange.connect(self._docChange)
+        # Create Custom Document
+        self._qDocument = GuiTextDocument(self)
+        self.setDocument(self._qDocument)
+
+        # Connect Signals
+        self._qDocument.contentsChange.connect(self._docChange)
         self.selectionChanged.connect(self._updateSelectedStatus)
+        self.spellCheckStateChanged.connect(self._qDocument.setSpellCheckState)
 
         # Document Title
         self.docHeader = GuiDocEditHeader(self)
         self.docFooter = GuiDocEditFooter(self)
         self.docSearch = GuiDocEditSearch(self)
-
-        # Syntax
-        self.highLight = GuiDocHighlighter(qDoc)
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -212,7 +209,7 @@ class GuiDocEditor(QPlainTextEdit):
     @property
     def isEmpty(self) -> bool:
         """Check if the current document is empty."""
-        return self.document().isEmpty()
+        return self._qDocument.isEmpty()
 
     ##
     #  Methods
@@ -229,10 +226,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.wcTimerSel.stop()
 
         self._docHandle  = None
-        self._charCount  = 0
-        self._wordCount  = 0
-        self._paraCount  = 0
-        self._lastEdit   = 0
+        self._lastEdit   = 0.0
         self._lastActive = 0.0
         self._lastFind   = None
         self._doReplace  = False
@@ -266,7 +260,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.docHeader.matchColours()
         self.docFooter.matchColours()
 
-        self.highLight.initHighlighter()
+        self._qDocument.syntaxHighlighter.initHighlighter()
 
         return
 
@@ -275,13 +269,6 @@ class GuiDocEditor(QPlainTextEdit):
         settings. This function is both called when the editor is
         created, and when the user changes the main editor preferences.
         """
-        # Some Constants
-        self._nonWord = (
-            "\"'"
-            f"{CONFIG.fmtSQuoteOpen}{CONFIG.fmtSQuoteClose}"
-            f"{CONFIG.fmtDQuoteOpen}{CONFIG.fmtDQuoteClose}"
-        )
-
         # Typography
         if CONFIG.fmtPadThin:
             self._typPadChar = nwUnicode.U_THNBSP
@@ -311,23 +298,21 @@ class GuiDocEditor(QPlainTextEdit):
         # Set default text margins
         # Due to cursor visibility, a part of the margin must be
         # allocated to the document itself. See issue #1112.
-        cW = 2*self.cursorWidth()
-        qDoc = self.document()
-        qDoc.setDocumentMargin(cW)
-        self._vpMargin = max(CONFIG.getTextMargin() - cW, 0)
+        self._qDocument.setDocumentMargin(4)
+        self._vpMargin = max(CONFIG.getTextMargin() - 4, 0)
         self.setViewportMargins(self._vpMargin, self._vpMargin, self._vpMargin, self._vpMargin)
 
         # Also set the document text options for the document text flow
-        theOpt = QTextOption()
+        options = QTextOption()
 
         if CONFIG.doJustify:
-            theOpt.setAlignment(Qt.AlignJustify)
+            options.setAlignment(Qt.AlignJustify)
         if CONFIG.showTabsNSpaces:
-            theOpt.setFlags(theOpt.flags() | QTextOption.ShowTabsAndSpaces)
+            options.setFlags(options.flags() | QTextOption.ShowTabsAndSpaces)
         if CONFIG.showLineEndings:
-            theOpt.setFlags(theOpt.flags() | QTextOption.ShowLineAndParagraphSeparators)
+            options.setFlags(options.flags() | QTextOption.ShowLineAndParagraphSeparators)
 
-        qDoc.setDefaultTextOption(theOpt)
+        self._qDocument.setDefaultTextOption(options)
 
         # Scroll bars
         if CONFIG.hideVScroll:
@@ -377,13 +362,10 @@ class GuiDocEditor(QPlainTextEdit):
 
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         self._docHandle = tHandle
-        self.highLight.setHandle(tHandle)
 
-        tStart = time()
         self._allowAutoReplace(False)
-        self.setPlainText(docText)
+        self._qDocument.setTextContent(docText, tHandle)
         self._allowAutoReplace(True)
-        logger.debug("Document text loaded in %.3f ms", 1000*(time() - tStart))
         qApp.processEvents()
 
         self._lastEdit = time()
@@ -404,14 +386,15 @@ class GuiDocEditor(QPlainTextEdit):
         self.docFooter.updateLineCount()
 
         # This is a hack to fix invisible cursor on an empty document
-        if self.document().characterCount() <= 1:
+        if self._qDocument.characterCount() <= 1:
             self.setPlainText("\n")
             self.setPlainText("")
             self.setCursorPosition(0)
 
         qApp.processEvents()
-        self.document().clearUndoRedoStacks()
         self.setDocumentChanged(False)
+        self._qDocument.clearUndoRedoStacks()
+
         qApp.restoreOverrideCursor()
 
         # Update the status bar
@@ -422,12 +405,12 @@ class GuiDocEditor(QPlainTextEdit):
 
     def updateTagHighLighting(self) -> None:
         """Rerun the syntax highlighter on all meta data lines."""
-        self.highLight.rehighlightByType(GuiDocHighlighter.BLOCK_META)
+        self._qDocument.syntaxHighlighter.rehighlightByType(GuiDocHighlighter.BLOCK_META)
         return
 
     def redrawText(self) -> None:
         """Redraw the text by marking the document content as dirty."""
-        self.document().markContentsDirty(0, self.document().characterCount())
+        self._qDocument.markContentsDirty(0, self._qDocument.characterCount())
         self.updateDocMargins()
         return
 
@@ -458,13 +441,8 @@ class GuiDocEditor(QPlainTextEdit):
             return False
 
         docText = self.getText()
-
         cC, wC, pC = countWords(docText)
         self._updateDocCounts(cC, wC, pC)
-
-        self._nwItem.setCharCount(self._charCount)
-        self._nwItem.setWordCount(self._wordCount)
-        self._nwItem.setParaCount(self._paraCount)
 
         self.saveCursorPosition()
         if not self._nwDocument.writeDocument(docText):
@@ -561,7 +539,7 @@ class GuiDocEditor(QPlainTextEdit):
         paragraph and line separators though.
         See: https://doc.qt.io/qt-5/qtextdocument.html#toPlainText
         """
-        text = self.document().toRawText()
+        text = self._qDocument.toRawText()
         text = text.replace(nwUnicode.U_LSEP, "\n")  # Line separators
         text = text.replace(nwUnicode.U_PSEP, "\n")  # Paragraph separators
         return text
@@ -586,7 +564,7 @@ class GuiDocEditor(QPlainTextEdit):
 
     def setCursorPosition(self, position: int) -> None:
         """Move the cursor to a given position in the document."""
-        nChars = self.document().characterCount()
+        nChars = self._qDocument.characterCount()
         if nChars > 1 and isinstance(position, int):
             cursor = self.textCursor()
             cursor.setPosition(minmax(position, 0, nChars-1))
@@ -605,7 +583,7 @@ class GuiDocEditor(QPlainTextEdit):
     def setCursorLine(self, line: int | None) -> None:
         """Move the cursor to a given line in the document."""
         if isinstance(line, int) and line > 0:
-            block = self.document().findBlockByNumber(line - 1)
+            block = self._qDocument.findBlockByNumber(line - 1)
             if block:
                 self.setCursorPosition(block.position())
                 logger.debug("Cursor moved to line %d", line)
@@ -618,29 +596,25 @@ class GuiDocEditor(QPlainTextEdit):
     def toggleSpellCheck(self, state: bool | None) -> None:
         """This is the main spell check setting function, and this one
         should call all other setSpellCheck functions in other classes.
-        If the spell check mode (theMode) is not defined (None), then
-        toggle the current status saved in this class.
+        If the spell check state is not defined (None), then toggle the
+        current status saved in this class.
         """
         if state is None:
-            state = not self._spellCheck
-
-        if not CONFIG.hasEnchant:
-            if state:
-                SHARED.info(self.tr(
-                    "Spell checking requires the package PyEnchant. "
-                    "It does not appear to be installed."
-                ))
-            state = False
+            state = not SHARED.project.data.spellCheck
 
         if SHARED.spelling.spellLanguage is None:
             state = False
 
-        self._spellCheck = state
-        self.mainGui.mainMenu.setSpellCheck(state)
+        if state and not CONFIG.hasEnchant:
+            SHARED.info(self.tr(
+                "Spell checking requires the package PyEnchant. "
+                "It does not appear to be installed."
+            ))
+            state = False
+
         SHARED.project.data.setSpellCheck(state)
-        self.highLight.setSpellCheck(state)
-        if state is False:
-            self.spellCheckDocument()
+        self.spellCheckStateChanged.emit(state)
+        self.spellCheckDocument()
 
         logger.debug("Spell check is set to '%s'", str(state))
 
@@ -655,7 +629,7 @@ class GuiDocEditor(QPlainTextEdit):
         logger.debug("Running spell checker")
         start = time()
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
-        self.highLight.rehighlight()
+        self._qDocument.syntaxHighlighter.rehighlight()
         qApp.restoreOverrideCursor()
         logger.debug("Document highlighted in %.3f ms", 1000*(time() - start))
         self.statusMessage.emit(self.tr("Spell check complete"))
@@ -786,30 +760,30 @@ class GuiDocEditor(QPlainTextEdit):
         goAfter = False
 
         if isinstance(insert, str):
-            theText = insert
+            text = insert
         elif isinstance(insert, nwDocInsert):
             if insert == nwDocInsert.QUOTE_LS:
-                theText = self._typSQuoteO
+                text = self._typSQuoteO
             elif insert == nwDocInsert.QUOTE_RS:
-                theText = self._typSQuoteC
+                text = self._typSQuoteC
             elif insert == nwDocInsert.QUOTE_LD:
-                theText = self._typDQuoteO
+                text = self._typDQuoteO
             elif insert == nwDocInsert.QUOTE_RD:
-                theText = self._typDQuoteC
+                text = self._typDQuoteC
             elif insert == nwDocInsert.SYNOPSIS:
-                theText = "% Synopsis: "
+                text = "% Synopsis: "
                 newBlock = True
                 goAfter = True
             elif insert == nwDocInsert.NEW_PAGE:
-                theText = "[NEW PAGE]"
+                text = "[NEW PAGE]"
                 newBlock = True
                 goAfter = False
             elif insert == nwDocInsert.VSPACE_S:
-                theText = "[VSPACE]"
+                text = "[VSPACE]"
                 newBlock = True
                 goAfter = False
             elif insert == nwDocInsert.VSPACE_M:
-                theText = "[VSPACE:2]"
+                text = "[VSPACE:2]"
                 newBlock = True
                 goAfter = False
             else:
@@ -818,42 +792,42 @@ class GuiDocEditor(QPlainTextEdit):
             return False
 
         if newBlock:
-            self.insertNewBlock(theText, defaultAfter=goAfter)
+            self.insertNewBlock(text, defaultAfter=goAfter)
         else:
-            theCursor = self.textCursor()
-            theCursor.beginEditBlock()
-            theCursor.insertText(theText)
-            theCursor.endEditBlock()
+            cursor = self.textCursor()
+            cursor.beginEditBlock()
+            cursor.insertText(text)
+            cursor.endEditBlock()
 
         return True
 
     def insertNewBlock(self, text: str, defaultAfter: bool = True) -> bool:
         """Insert a piece of text on a blank line."""
-        theCursor = self.textCursor()
-        theBlock = theCursor.block()
-        if not theBlock.isValid():
+        cursor = self.textCursor()
+        block = cursor.block()
+        if not block.isValid():
             logger.error("Not a valid text block")
             return False
 
-        sPos = theBlock.position()
-        sLen = theBlock.length()
+        sPos = block.position()
+        sLen = block.length()
 
-        theCursor.beginEditBlock()
+        cursor.beginEditBlock()
 
         if sLen > 1 and defaultAfter:
-            theCursor.setPosition(sPos + sLen - 1)
-            theCursor.insertText("\n")
+            cursor.setPosition(sPos + sLen - 1)
+            cursor.insertText("\n")
         else:
-            theCursor.setPosition(sPos)
+            cursor.setPosition(sPos)
 
-        theCursor.insertText(text)
+        cursor.insertText(text)
 
         if sLen > 1 and not defaultAfter:
-            theCursor.insertText("\n")
+            cursor.insertText("\n")
 
-        theCursor.endEditBlock()
+        cursor.endEditBlock()
 
-        self.setTextCursor(theCursor)
+        self.setTextCursor(cursor)
 
         return True
 
@@ -913,14 +887,15 @@ class GuiDocEditor(QPlainTextEdit):
         if CONFIG.autoScroll:
             cPos = self.cursorRect().topLeft().y()
             super().keyPressEvent(event)
+            nPos = self.cursorRect().topLeft().y()
             kMod = event.modifiers()
             okMod = kMod == Qt.NoModifier or kMod == Qt.ShiftModifier
             okKey = event.key() not in self.MOVE_KEYS
-            if okMod and okKey:
+            if nPos != cPos and okMod and okKey:
                 mPos = CONFIG.autoScrollPos*0.01 * self.viewport().height()
                 if cPos > mPos:
                     vBar = self.verticalScrollBar()
-                    vBar.setValue(vBar.value() + 1)
+                    vBar.setValue(vBar.value() + (1 if nPos > cPos else -1))
         else:
             super().keyPressEvent(event)
 
@@ -946,8 +921,7 @@ class GuiDocEditor(QPlainTextEdit):
         follow tag function.
         """
         if qApp.keyboardModifiers() == Qt.ControlModifier:
-            theCursor = self.cursorForPosition(event.pos())
-            self._followTag(theCursor)
+            self._followTag(self.cursorForPosition(event.pos()))
         super().mouseReleaseEvent(event)
         self.docFooter.updateLineCount()
         return
@@ -994,7 +968,7 @@ class GuiDocEditor(QPlainTextEdit):
             self.wcTimerDoc.start()
 
         if self._doReplace and added == 1:
-            self._docAutoReplace(self.document().findBlock(pos))
+            self._docAutoReplace(self._qDocument.findBlock(pos))
 
         return
 
@@ -1003,100 +977,62 @@ class GuiDocEditor(QPlainTextEdit):
         """Triggered by right click to open the context menu. Also
         triggered by the Ctrl+. shortcut.
         """
-        userCursor = self.textCursor()
-        userSelection = userCursor.hasSelection()
-        posCursor = self.cursorForPosition(pos)
+        uCursor = self.textCursor()
+        pCursor = self.cursorForPosition(pos)
 
-        mnuContext = QMenu()
+        ctxMenu = QMenu()
 
-        # Follow, Cut, Copy and Paste
-        # ===========================
+        # Follow
+        if self._followTag(cursor=pCursor, loadTag=False):
+            aTag = ctxMenu.addAction(self.tr("Follow Tag"))
+            aTag.triggered.connect(lambda: self._followTag(cursor=pCursor))
+            ctxMenu.addSeparator()
 
-        if self._followTag(cursor=posCursor, loadTag=False):
-            mnuTag = QAction(self.tr("Follow Tag"), mnuContext)
-            mnuTag.triggered.connect(lambda: self._followTag(cursor=posCursor))
-            mnuContext.addAction(mnuTag)
-            mnuContext.addSeparator()
+        # Cut, Copy and Paste
+        if uCursor.hasSelection():
+            aCut = ctxMenu.addAction(self.tr("Cut"))
+            aCut.triggered.connect(lambda: self.docAction(nwDocAction.CUT))
+            aCopy = ctxMenu.addAction(self.tr("Copy"))
+            aCopy.triggered.connect(lambda: self.docAction(nwDocAction.COPY))
 
-        if userSelection:
-            mnuCut = QAction(self.tr("Cut"), mnuContext)
-            mnuCut.triggered.connect(lambda: self.docAction(nwDocAction.CUT))
-            mnuContext.addAction(mnuCut)
-
-            mnuCopy = QAction(self.tr("Copy"), mnuContext)
-            mnuCopy.triggered.connect(lambda: self.docAction(nwDocAction.COPY))
-            mnuContext.addAction(mnuCopy)
-
-        mnuPaste = QAction(self.tr("Paste"), mnuContext)
-        mnuPaste.triggered.connect(lambda: self.docAction(nwDocAction.PASTE))
-        mnuContext.addAction(mnuPaste)
-
-        mnuContext.addSeparator()
+        aPaste = ctxMenu.addAction(self.tr("Paste"))
+        aPaste.triggered.connect(lambda: self.docAction(nwDocAction.PASTE))
+        ctxMenu.addSeparator()
 
         # Selections
-        # ==========
-
-        mnuSelAll = QAction(self.tr("Select All"), mnuContext)
-        mnuSelAll.triggered.connect(lambda: self.docAction(nwDocAction.SEL_ALL))
-        mnuContext.addAction(mnuSelAll)
-
-        mnuSelWord = QAction(self.tr("Select Word"), mnuContext)
-        mnuSelWord.triggered.connect(
-            lambda: self._makePosSelection(QTextCursor.WordUnderCursor, pos)
-        )
-        mnuContext.addAction(mnuSelWord)
-
-        mnuSelPara = QAction(self.tr("Select Paragraph"), mnuContext)
-        mnuSelPara.triggered.connect(
-            lambda: self._makePosSelection(QTextCursor.BlockUnderCursor, pos)
-        )
-        mnuContext.addAction(mnuSelPara)
+        aSAll = ctxMenu.addAction(self.tr("Select All"))
+        aSAll.triggered.connect(lambda: self.docAction(nwDocAction.SEL_ALL))
+        aSWrd = ctxMenu.addAction(self.tr("Select Word"))
+        aSWrd.triggered.connect(lambda: self._makePosSelection(QTextCursor.WordUnderCursor, pos))
+        aSPar = ctxMenu.addAction(self.tr("Select Paragraph"))
+        aSPar.triggered.connect(lambda: self._makePosSelection(QTextCursor.BlockUnderCursor, pos))
 
         # Spell Checking
-        # ==============
+        if SHARED.project.data.spellCheck:
+            word, cPos, cLen, suggest = self._qDocument.spellErrorAtPos(pCursor.position())
+            if word and cPos >= 0 and cLen > 0:
+                logger.debug("Word '%s' is misspelled", word)
+                block = pCursor.block()
+                sCursor = self.textCursor()
+                sCursor.setPosition(block.position() + cPos)
+                sCursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, cLen)
+                if suggest:
+                    ctxMenu.addSeparator()
+                    ctxMenu.addAction(self.tr("Spelling Suggestion(s)"))
+                    for option in suggest[:15]:
+                        aFix = ctxMenu.addAction(f"{nwUnicode.U_ENDASH} {option}")
+                        aFix.triggered.connect(
+                            lambda _, option=option: self._correctWord(sCursor, option)
+                        )
+                else:
+                    ctxMenu.addAction("%s %s" % (nwUnicode.U_ENDASH, self.tr("No Suggestions")))
 
-        posCursor = self.cursorForPosition(pos)
-        spellCheck = self._spellCheck
-        theWord = ""
+                ctxMenu.addSeparator()
+                aAdd = ctxMenu.addAction(self.tr("Add Word to Dictionary"))
+                aAdd.triggered.connect(lambda: self._addWord(word, block))
 
-        if posCursor.block().text().startswith("@"):
-            spellCheck = False
-
-        if spellCheck:
-            posCursor.select(QTextCursor.WordUnderCursor)
-            theWord = posCursor.selectedText().strip().strip(self._nonWord)
-            spellCheck &= theWord != ""
-
-        if spellCheck:
-            logger.debug("Looking up '%s' in the dictionary", theWord)
-            spellCheck &= not SHARED.spelling.checkWord(theWord)
-
-        if spellCheck:
-            mnuContext.addSeparator()
-            mnuHead = QAction(self.tr("Spelling Suggestion(s)"), mnuContext)
-            mnuContext.addAction(mnuHead)
-
-            theSuggest = SHARED.spelling.suggestWords(theWord)[:15]
-            if len(theSuggest) > 0:
-                for aWord in theSuggest:
-                    mnuWord = QAction("%s %s" % (nwUnicode.U_ENDASH, aWord), mnuContext)
-                    mnuWord.triggered.connect(
-                        lambda thePos, aWord=aWord: self._correctWord(posCursor, aWord)
-                    )
-                    mnuContext.addAction(mnuWord)
-            else:
-                mnuHead = QAction(
-                    "%s %s" % (nwUnicode.U_ENDASH, self.tr("No Suggestions")), mnuContext
-                )
-                mnuContext.addAction(mnuHead)
-
-            mnuContext.addSeparator()
-            mnuAdd = QAction(self.tr("Add Word to Dictionary"), mnuContext)
-            mnuAdd.triggered.connect(lambda thePos: self._addWord(posCursor))
-            mnuContext.addAction(mnuAdd)
-
-        # Open the context menu
-        mnuContext.exec_(self.viewport().mapToGlobal(pos))
+        # Execute the context menu
+        ctxMenu.exec_(self.viewport().mapToGlobal(pos))
 
         return
 
@@ -1105,24 +1041,23 @@ class GuiDocEditor(QPlainTextEdit):
         """Slot for the spell check context menu triggering the
         replacement of a word with the word from the dictionary.
         """
-        xPos = cursor.selectionStart()
+        pos = cursor.selectionStart()
         cursor.beginEditBlock()
         cursor.removeSelectedText()
         cursor.insertText(word)
         cursor.endEditBlock()
-        cursor.setPosition(xPos)
+        cursor.setPosition(pos)
         self.setTextCursor(cursor)
         return
 
-    @pyqtSlot("QTextCursor")
-    def _addWord(self, cursor: QTextCursor) -> None:
+    @pyqtSlot(str, "QTextBlock")
+    def _addWord(self, word: str, block: QTextBlock) -> None:
         """Slot for the spell check context menu triggered when the user
         wants to add a word to the project dictionary.
         """
-        theWord = cursor.selectedText().strip().strip(self._nonWord)
-        logger.debug("Added '%s' to project dictionary", theWord)
-        SHARED.spelling.addWord(theWord)
-        self.highLight.rehighlightBlock(cursor.block())
+        logger.debug("Added '%s' to project dictionary", word)
+        SHARED.spelling.addWord(word)
+        self._qDocument.syntaxHighlighter.rehighlightBlock(block)
         return
 
     @pyqtSlot()
@@ -1137,9 +1072,9 @@ class GuiDocEditor(QPlainTextEdit):
             logger.debug("Word counter is busy")
             return
 
-        if time() - self._lastEdit < 5 * self.wcInterval:
+        if time() - self._lastEdit < 5.0 * self.wcInterval:
             logger.debug("Running word counter")
-            self.mainGui.threadPool.start(self.wCounterDoc)
+            SHARED.runInThreadPool(self.wCounterDoc)
 
         return
 
@@ -1150,10 +1085,6 @@ class GuiDocEditor(QPlainTextEdit):
             return
 
         logger.debug("Updating word count")
-
-        self._charCount = cCount
-        self._wordCount = wCount
-        self._paraCount = pCount
 
         self._nwItem.setCharCount(cCount)
         self._nwItem.setWordCount(wCount)
@@ -1174,12 +1105,10 @@ class GuiDocEditor(QPlainTextEdit):
             if not self.wcTimerSel.isActive():
                 self.wcTimerSel.start()
             self.docFooter.setHasSelection(True)
-
         else:
             self.wcTimerSel.stop()
             self.docFooter.setHasSelection(False)
             self.docFooter.updateCounts()
-
         return
 
     @pyqtSlot()
@@ -1192,7 +1121,7 @@ class GuiDocEditor(QPlainTextEdit):
             logger.debug("Selection word counter is busy")
             return
 
-        self.mainGui.threadPool.start(self.wCounterSel)
+        SHARED.runInThreadPool(self.wCounterSel)
 
         return
 
@@ -1214,9 +1143,9 @@ class GuiDocEditor(QPlainTextEdit):
 
     def beginSearch(self) -> None:
         """Set the selected text as the search text."""
-        theCursor = self.textCursor()
-        if theCursor.hasSelection():
-            self.docSearch.setSearchText(theCursor.selectedText())
+        cursor = self.textCursor()
+        if cursor.hasSelection():
+            self.docSearch.setSearchText(cursor.selectedText())
         else:
             self.docSearch.setSearchText(None)
         resS, _ = self.findAllOccurences()
@@ -1254,8 +1183,8 @@ class GuiDocEditor(QPlainTextEdit):
                 self.beginSearch()
             return
 
-        theCursor = self.textCursor()
-        resIdx = bisect.bisect_left(resS, theCursor.position())
+        cursor = self.textCursor()
+        resIdx = bisect.bisect_left(resS, cursor.position())
 
         doLoop = self.docSearch.doLoop
         maxIdx = len(resS) - 1
@@ -1276,9 +1205,9 @@ class GuiDocEditor(QPlainTextEdit):
             else:
                 resIdx = 0 if doLoop else maxIdx
 
-        theCursor.setPosition(resS[resIdx], QTextCursor.MoveAnchor)
-        theCursor.setPosition(resE[resIdx], QTextCursor.KeepAnchor)
-        self.setTextCursor(theCursor)
+        cursor.setPosition(resS[resIdx], QTextCursor.MoveAnchor)
+        cursor.setPosition(resE[resIdx], QTextCursor.KeepAnchor)
+        self.setTextCursor(cursor)
 
         self.docFooter.updateLineCount()
         self.docSearch.setResultCount(resIdx + 1, len(resS))
@@ -1292,14 +1221,14 @@ class GuiDocEditor(QPlainTextEdit):
         """
         resS = []
         resE = []
-        theCursor = self.textCursor()
-        hasSelection = theCursor.hasSelection()
+        cursor = self.textCursor()
+        hasSelection = cursor.hasSelection()
         if hasSelection:
-            origA = theCursor.selectionStart()
-            origB = theCursor.selectionEnd()
+            origA = cursor.selectionStart()
+            origB = cursor.selectionEnd()
         else:
-            origA = theCursor.position()
-            origB = theCursor.position()
+            origA = cursor.position()
+            origB = cursor.position()
 
         findOpt = QTextDocument.FindFlag(0)
         if self.docSearch.isCaseSense:
@@ -1308,27 +1237,27 @@ class GuiDocEditor(QPlainTextEdit):
             findOpt |= QTextDocument.FindWholeWords
 
         searchFor = self.docSearch.getSearchObject()
-        theCursor.setPosition(0)
-        self.setTextCursor(theCursor)
+        cursor.setPosition(0)
+        self.setTextCursor(cursor)
 
         # Search up to a maximum of 1000, and make sure certain special
-        # searches like a regex search for .* turns into an infinite loop
+        # searches like a regex search for .* don't loop infinitely
         while self.find(searchFor, findOpt) and len(resE) <= 1000:
-            theCursor = self.textCursor()
-            if theCursor.hasSelection():
-                resS.append(theCursor.selectionStart())
-                resE.append(theCursor.selectionEnd())
+            cursor = self.textCursor()
+            if cursor.hasSelection():
+                resS.append(cursor.selectionStart())
+                resE.append(cursor.selectionEnd())
             else:
                 logger.warning("The search returned an empty result")
                 break
 
         if hasSelection:
-            theCursor.setPosition(origA, QTextCursor.MoveAnchor)
-            theCursor.setPosition(origB, QTextCursor.KeepAnchor)
+            cursor.setPosition(origA, QTextCursor.MoveAnchor)
+            cursor.setPosition(origB, QTextCursor.KeepAnchor)
         else:
-            theCursor.setPosition(origA)
+            cursor.setPosition(origA)
 
-        self.setTextCursor(theCursor)
+        self.setTextCursor(cursor)
 
         return resS, resE
 
@@ -1346,24 +1275,24 @@ class GuiDocEditor(QPlainTextEdit):
             self.beginSearch()
             return
 
-        theCursor = self.textCursor()
-        if not theCursor.hasSelection():
+        cursor = self.textCursor()
+        if not cursor.hasSelection():
             # We have no text selected at all, so just make this a
             # regular find next call.
             self.findNext()
             return
 
-        if self._lastFind is None and theCursor.hasSelection():
+        if self._lastFind is None and cursor.hasSelection():
             # If we have a selection but no search, it may have been the
             # text we triggered the search with, in which case we search
             # again from the beginning of that selection to make sure we
             # have a valid result.
-            sPos = theCursor.selectionStart()
-            theCursor.clearSelection()
-            theCursor.setPosition(sPos)
-            self.setTextCursor(theCursor)
+            sPos = cursor.selectionStart()
+            cursor.clearSelection()
+            cursor.setPosition(sPos)
+            self.setTextCursor(cursor)
             self.findNext()
-            theCursor = self.textCursor()
+            cursor = self.textCursor()
 
         if self._lastFind is None:
             # In case the above didn't find a result, we give up here.
@@ -1373,26 +1302,26 @@ class GuiDocEditor(QPlainTextEdit):
         replWith = self.docSearch.replaceText
 
         if self.docSearch.doMatchCap:
-            replWith = transferCase(theCursor.selectedText(), replWith)
+            replWith = transferCase(cursor.selectedText(), replWith)
 
         # Make sure the selected text was selected by an actual find
         # call, and not the user.
         try:
-            isFind  = self._lastFind[0] == theCursor.selectionStart()
-            isFind &= self._lastFind[1] == theCursor.selectionEnd()
+            isFind  = self._lastFind[0] == cursor.selectionStart()
+            isFind &= self._lastFind[1] == cursor.selectionEnd()
         except Exception:
             isFind = False
 
         if isFind:
-            theCursor.beginEditBlock()
-            theCursor.removeSelectedText()
-            theCursor.insertText(replWith)
-            theCursor.endEditBlock()
-            theCursor.setPosition(theCursor.selectionEnd())
-            self.setTextCursor(theCursor)
+            cursor.beginEditBlock()
+            cursor.removeSelectedText()
+            cursor.insertText(replWith)
+            cursor.endEditBlock()
+            cursor.setPosition(cursor.selectionEnd())
+            self.setTextCursor(cursor)
             logger.debug(
                 "Replaced occurrence of '%s' with '%s' on line %d",
-                searchFor, replWith, theCursor.blockNumber()
+                searchFor, replWith, cursor.blockNumber()
             )
         else:
             logger.error("The selected text is not a search result, skipping replace")
@@ -1410,40 +1339,40 @@ class GuiDocEditor(QPlainTextEdit):
         If more than one block is selected, the formatting is applied to
         the first block.
         """
-        theCursor = self._autoSelect()
-        if not theCursor.hasSelection():
+        cursor = self._autoSelect()
+        if not cursor.hasSelection():
             logger.warning("No selection made, nothing to do")
             return False
 
-        posS = theCursor.selectionStart()
-        posE = theCursor.selectionEnd()
+        posS = cursor.selectionStart()
+        posE = cursor.selectionEnd()
 
-        blockS = self.document().findBlock(posS)
-        blockE = self.document().findBlock(posE)
+        blockS = self._qDocument.findBlock(posS)
+        blockE = self._qDocument.findBlock(posE)
 
         if blockS != blockE:
             posE = blockS.position() + blockS.length() - 1
-            theCursor.clearSelection()
-            theCursor.setPosition(posS, QTextCursor.MoveAnchor)
-            theCursor.setPosition(posE, QTextCursor.KeepAnchor)
-            self.setTextCursor(theCursor)
+            cursor.clearSelection()
+            cursor.setPosition(posS, QTextCursor.MoveAnchor)
+            cursor.setPosition(posE, QTextCursor.KeepAnchor)
+            self.setTextCursor(cursor)
 
         numB = 0
         for n in range(fLen):
-            if self.document().characterAt(posS-n-1) == fChar:
+            if self._qDocument.characterAt(posS-n-1) == fChar:
                 numB += 1
             else:
                 break
 
         numA = 0
         for n in range(fLen):
-            if self.document().characterAt(posE+n) == fChar:
+            if self._qDocument.characterAt(posE+n) == fChar:
                 numA += 1
             else:
                 break
 
         if fLen == min(numA, numB):
-            self._clearSurrounding(theCursor, fLen)
+            self._clearSurrounding(cursor, fLen)
         else:
             self._wrapSelection(fChar*fLen)
 
@@ -1479,52 +1408,51 @@ class GuiDocEditor(QPlainTextEdit):
         if after is None:
             after = before
 
-        theCursor = self._autoSelect()
-        if not theCursor.hasSelection():
+        cursor = self._autoSelect()
+        if not cursor.hasSelection():
             logger.warning("No selection made, nothing to do")
             return False
 
-        posS = theCursor.selectionStart()
-        posE = theCursor.selectionEnd()
+        posS = cursor.selectionStart()
+        posE = cursor.selectionEnd()
 
-        qDoc = self.document()
-        blockS = qDoc.findBlock(posS)
-        blockE = qDoc.findBlock(posE)
+        blockS = self._qDocument.findBlock(posS)
+        blockE = self._qDocument.findBlock(posE)
         if blockS != blockE:
             posE = blockS.position() + blockS.length() - 1
 
-        theCursor.clearSelection()
-        theCursor.beginEditBlock()
-        theCursor.setPosition(posE)
-        theCursor.insertText(after)
-        theCursor.setPosition(posS)
-        theCursor.insertText(before)
-        theCursor.endEditBlock()
+        cursor.clearSelection()
+        cursor.beginEditBlock()
+        cursor.setPosition(posE)
+        cursor.insertText(after)
+        cursor.setPosition(posS)
+        cursor.insertText(before)
+        cursor.endEditBlock()
 
-        theCursor.setPosition(posE + len(before), QTextCursor.MoveAnchor)
-        theCursor.setPosition(posS + len(before), QTextCursor.KeepAnchor)
-        self.setTextCursor(theCursor)
+        cursor.setPosition(posE + len(before), QTextCursor.MoveAnchor)
+        cursor.setPosition(posS + len(before), QTextCursor.KeepAnchor)
+        self.setTextCursor(cursor)
 
         return True
 
     def _replaceQuotes(self, sQuote: str, oQuote: str, cQuote: str) -> bool:
         """Replace all straight quotes in the selected text."""
-        theCursor = self.textCursor()
-        if not theCursor.hasSelection():
+        cursor = self.textCursor()
+        if not cursor.hasSelection():
             SHARED.error(self.tr("Please select some text before calling replace quotes."))
             return False
 
-        posS = theCursor.selectionStart()
-        posE = theCursor.selectionEnd()
+        posS = cursor.selectionStart()
+        posE = cursor.selectionEnd()
         closeCheck = (
             " ", "\n", nwUnicode.U_LSEP, nwUnicode.U_PSEP
         )
 
         self._allowAutoReplace(False)
         for posC in range(posS, posE+1):
-            theCursor.setPosition(posC)
-            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 2)
-            selText = theCursor.selectedText()
+            cursor.setPosition(posC)
+            cursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 2)
+            selText = cursor.selectedText()
 
             nS = len(selText)
             if nS == 2:
@@ -1539,18 +1467,18 @@ class GuiDocEditor(QPlainTextEdit):
             if cC != sQuote:
                 continue
 
-            theCursor.clearSelection()
-            theCursor.setPosition(posC)
+            cursor.clearSelection()
+            cursor.setPosition(posC)
             if pC in closeCheck:
-                theCursor.beginEditBlock()
-                theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
-                theCursor.insertText(oQuote)
-                theCursor.endEditBlock()
+                cursor.beginEditBlock()
+                cursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
+                cursor.insertText(oQuote)
+                cursor.endEditBlock()
             else:
-                theCursor.beginEditBlock()
-                theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
-                theCursor.insertText(cQuote)
-                theCursor.endEditBlock()
+                cursor.beginEditBlock()
+                cursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, 1)
+                cursor.insertText(cQuote)
+                cursor.endEditBlock()
 
         self._allowAutoReplace(True)
 
@@ -1558,148 +1486,147 @@ class GuiDocEditor(QPlainTextEdit):
 
     def _formatBlock(self, action: nwDocAction) -> bool:
         """Change the block format of the block under the cursor."""
-        theCursor = self.textCursor()
-        theBlock = theCursor.block()
-        if not theBlock.isValid():
+        cursor = self.textCursor()
+        block = cursor.block()
+        if not block.isValid():
             logger.debug("Invalid block selected for action '%s'", str(action))
             return False
 
         # Remove existing format first, if any
-        theText = theBlock.text()
-        hasText = len(theText) > 0
-        if theText.startswith("@"):
+        setText = block.text()
+        hasText = len(setText) > 0
+        if setText.startswith("@"):
             logger.error("Cannot apply block format to keyword/value line")
             return False
-        elif theText.startswith("% "):
-            newText = theText[2:]
+        elif setText.startswith("% "):
+            newText = setText[2:]
             cOffset = 2
             if action == nwDocAction.BLOCK_COM:
                 action = nwDocAction.BLOCK_TXT
-        elif theText.startswith("%"):
-            newText = theText[1:]
+        elif setText.startswith("%"):
+            newText = setText[1:]
             cOffset = 1
             if action == nwDocAction.BLOCK_COM:
                 action = nwDocAction.BLOCK_TXT
-        elif theText.startswith("# "):
-            newText = theText[2:]
+        elif setText.startswith("# "):
+            newText = setText[2:]
             cOffset = 2
-        elif theText.startswith("## "):
-            newText = theText[3:]
+        elif setText.startswith("## "):
+            newText = setText[3:]
             cOffset = 3
-        elif theText.startswith("### "):
-            newText = theText[4:]
+        elif setText.startswith("### "):
+            newText = setText[4:]
             cOffset = 4
-        elif theText.startswith("#### "):
-            newText = theText[5:]
+        elif setText.startswith("#### "):
+            newText = setText[5:]
             cOffset = 5
-        elif theText.startswith("#! "):
-            newText = theText[3:]
+        elif setText.startswith("#! "):
+            newText = setText[3:]
             cOffset = 3
-        elif theText.startswith("##! "):
-            newText = theText[4:]
+        elif setText.startswith("##! "):
+            newText = setText[4:]
             cOffset = 4
-        elif theText.startswith(">> "):
-            newText = theText[3:]
+        elif setText.startswith(">> "):
+            newText = setText[3:]
             cOffset = 3
-        elif theText.startswith("> ") and action != nwDocAction.INDENT_R:
-            newText = theText[2:]
+        elif setText.startswith("> ") and action != nwDocAction.INDENT_R:
+            newText = setText[2:]
             cOffset = 2
-        elif theText.startswith(">>"):
-            newText = theText[2:]
+        elif setText.startswith(">>"):
+            newText = setText[2:]
             cOffset = 2
-        elif theText.startswith(">") and action != nwDocAction.INDENT_R:
-            newText = theText[1:]
+        elif setText.startswith(">") and action != nwDocAction.INDENT_R:
+            newText = setText[1:]
             cOffset = 1
         else:
-            newText = theText
+            newText = setText
             cOffset = 0
 
         # Also remove formatting tags at the end
-        if theText.endswith(" <<"):
+        if setText.endswith(" <<"):
             newText = newText[:-3]
-        elif theText.endswith(" <") and action != nwDocAction.INDENT_L:
+        elif setText.endswith(" <") and action != nwDocAction.INDENT_L:
             newText = newText[:-2]
-        elif theText.endswith("<<"):
+        elif setText.endswith("<<"):
             newText = newText[:-2]
-        elif theText.endswith("<") and action != nwDocAction.INDENT_L:
+        elif setText.endswith("<") and action != nwDocAction.INDENT_L:
             newText = newText[:-1]
 
         # Apply new format
         if action == nwDocAction.BLOCK_COM:
-            theText = "% "+newText
+            setText = "% "+newText
             cOffset -= 2
         elif action == nwDocAction.BLOCK_H1:
-            theText = "# "+newText
+            setText = "# "+newText
             cOffset -= 2
         elif action == nwDocAction.BLOCK_H2:
-            theText = "## "+newText
+            setText = "## "+newText
             cOffset -= 3
         elif action == nwDocAction.BLOCK_H3:
-            theText = "### "+newText
+            setText = "### "+newText
             cOffset -= 4
         elif action == nwDocAction.BLOCK_H4:
-            theText = "#### "+newText
+            setText = "#### "+newText
             cOffset -= 5
         elif action == nwDocAction.BLOCK_TTL:
-            theText = "#! "+newText
+            setText = "#! "+newText
             cOffset -= 3
         elif action == nwDocAction.BLOCK_UNN:
-            theText = "##! "+newText
+            setText = "##! "+newText
             cOffset -= 4
         elif action == nwDocAction.ALIGN_L:
-            theText = newText+" <<"
+            setText = newText+" <<"
         elif action == nwDocAction.ALIGN_C:
-            theText = ">> "+newText+" <<"
+            setText = ">> "+newText+" <<"
             cOffset -= 3
         elif action == nwDocAction.ALIGN_R:
-            theText = ">> "+newText
+            setText = ">> "+newText
             cOffset -= 3
         elif action == nwDocAction.INDENT_L:
-            theText = "> "+newText
+            setText = "> "+newText
             cOffset -= 2
         elif action == nwDocAction.INDENT_R:
-            theText = newText+" <"
+            setText = newText+" <"
         elif action == nwDocAction.BLOCK_TXT:
-            theText = newText
+            setText = newText
         else:
             logger.error("Unknown or unsupported block format requested: '%s'", str(action))
             return False
 
         # Replace the block text
-        theCursor.beginEditBlock()
-        posO = theCursor.position()
-        theCursor.select(QTextCursor.BlockUnderCursor)
-        posS = theCursor.selectionStart()
-        theCursor.removeSelectedText()
-        theCursor.setPosition(posS)
+        cursor.beginEditBlock()
+        posO = cursor.position()
+        cursor.select(QTextCursor.BlockUnderCursor)
+        posS = cursor.selectionStart()
+        cursor.removeSelectedText()
+        cursor.setPosition(posS)
 
         if posS > 0 and hasText:
             # If the block already had text, we must insert a new block
             # first before we can add back the text to it.
-            theCursor.insertBlock()
+            cursor.insertBlock()
 
-        theCursor.insertText(theText)
+        cursor.insertText(setText)
 
         if posO - cOffset >= 0:
-            theCursor.setPosition(posO - cOffset)
+            cursor.setPosition(posO - cOffset)
 
-        theCursor.endEditBlock()
-        self.setTextCursor(theCursor)
+        cursor.endEditBlock()
+        self.setTextCursor(cursor)
 
         return True
 
     def _removeInParLineBreaks(self) -> None:
         """Strip line breaks within paragraphs in the selected text."""
-        theCursor = self.textCursor()
-        theDoc = self.document()
+        cursor = self.textCursor()
 
         iS = 0
-        iE = theDoc.blockCount() - 1
+        iE = self._qDocument.blockCount() - 1
         rS = 0
-        rE = theDoc.characterCount()
-        if theCursor.hasSelection():
-            sBlock = theDoc.findBlock(theCursor.selectionStart())
-            eBlock = theDoc.findBlock(theCursor.selectionEnd())
+        rE = self._qDocument.characterCount()
+        if cursor.hasSelection():
+            sBlock = self._qDocument.findBlock(cursor.selectionStart())
+            eBlock = self._qDocument.findBlock(cursor.selectionEnd())
             iS = sBlock.blockNumber()
             iE = eBlock.blockNumber()
             rS = sBlock.position()
@@ -1709,7 +1636,7 @@ class GuiDocEditor(QPlainTextEdit):
         currPar = []
         cleanText = ""
         for i in range(iS, iE+1):
-            cBlock = theDoc.findBlockByNumber(i)
+            cBlock = self._qDocument.findBlockByNumber(i)
             cText = cBlock.text()
             if cText.strip() == "":
                 if currPar:
@@ -1726,12 +1653,12 @@ class GuiDocEditor(QPlainTextEdit):
             cleanText += " ".join(currPar) + "\n\n"
 
         # Replace the text with the cleaned up text
-        theCursor.beginEditBlock()
-        theCursor.clearSelection()
-        theCursor.setPosition(rS)
-        theCursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, rE-rS)
-        theCursor.insertText(cleanText.rstrip() + "\n")
-        theCursor.endEditBlock()
+        cursor.beginEditBlock()
+        cursor.clearSelection()
+        cursor.setPosition(rS)
+        cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, rE-rS)
+        cursor.insertText(cleanText.rstrip() + "\n")
+        cursor.endEditBlock()
 
         return
 
@@ -1749,37 +1676,37 @@ class GuiDocEditor(QPlainTextEdit):
         if cursor is None:
             cursor = self.textCursor()
 
-        theBlock = cursor.block()
-        theText = theBlock.text()
+        block = cursor.block()
+        text = block.text()
 
-        if len(theText) == 0:
+        if len(text) == 0:
             return False
 
-        if theText.startswith("@"):
+        if text.startswith("@"):
 
-            isGood, tBits, tPos = SHARED.project.index.scanThis(theText)
+            isGood, tBits, tPos = SHARED.project.index.scanThis(text)
             if not isGood:
                 return False
 
-            theTag = ""
-            cPos = cursor.selectionStart() - theBlock.position()
+            tag = ""
+            cPos = cursor.selectionStart() - block.position()
             for sTag, sPos in zip(reversed(tBits), reversed(tPos)):
                 if cPos >= sPos:
                     # The cursor is between the start of two tags
                     if cPos <= sPos + len(sTag):
                         # The cursor is inside or at the edge of the tag
-                        theTag = sTag
+                        tag = sTag
                     break
 
-            if not theTag or theTag.startswith("@"):
+            if not tag or tag.startswith("@"):
                 # The keyword cannot be looked up, so we ignore that
                 return False
 
             if loadTag:
-                logger.debug("Attempting to follow tag '%s'", theTag)
-                self.loadDocumentTagRequest.emit(theTag, nwDocMode.VIEW)
+                logger.debug("Attempting to follow tag '%s'", tag)
+                self.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
             else:
-                logger.debug("Potential tag '%s'", theTag)
+                logger.debug("Potential tag '%s'", tag)
 
             return True
 
@@ -1795,94 +1722,93 @@ class GuiDocEditor(QPlainTextEdit):
         if not block.isValid():
             return
 
-        theText = block.text()
-        theCursor = self.textCursor()
-        thePos = theCursor.positionInBlock()
-        theLen = len(theText)
+        text = block.text()
+        cursor = self.textCursor()
+        tPos = cursor.positionInBlock()
+        tLen = len(text)
 
-        if theLen < 1 or thePos-1 > theLen:
+        if tLen < 1 or tPos-1 > tLen:
             return
 
-        theOne = theText[thePos-1:thePos]
-        theTwo = theText[thePos-2:thePos]
-        theThree = theText[thePos-3:thePos]
+        tOne = text[tPos-1:tPos]
+        tTwo = text[tPos-2:tPos]
+        tThree = text[tPos-3:tPos]
 
-        if not theOne:
-            # Sorry, Neo and Zathras
+        if not tOne:
             return
 
         nDelete = 0
-        tInsert = theOne
+        tInsert = tOne
 
-        if self._typRepDQuote and theTwo[:1].isspace() and theTwo.endswith('"'):
+        if self._typRepDQuote and tTwo[:1].isspace() and tTwo.endswith('"'):
             nDelete = 1
             tInsert = self._typDQuoteO
 
-        elif self._typRepDQuote and theOne == '"':
+        elif self._typRepDQuote and tOne == '"':
             nDelete = 1
-            if thePos == 1:
+            if tPos == 1:
                 tInsert = self._typDQuoteO
-            elif thePos == 2 and theTwo == '>"':
+            elif tPos == 2 and tTwo == '>"':
                 tInsert = self._typDQuoteO
-            elif thePos == 3 and theThree == '>>"':
+            elif tPos == 3 and tThree == '>>"':
                 tInsert = self._typDQuoteO
             else:
                 tInsert = self._typDQuoteC
 
-        elif self._typRepSQuote and theTwo[:1].isspace() and theTwo.endswith("'"):
+        elif self._typRepSQuote and tTwo[:1].isspace() and tTwo.endswith("'"):
             nDelete = 1
             tInsert = self._typSQuoteO
 
-        elif self._typRepSQuote and theOne == "'":
+        elif self._typRepSQuote and tOne == "'":
             nDelete = 1
-            if thePos == 1:
+            if tPos == 1:
                 tInsert = self._typSQuoteO
-            elif thePos == 2 and theTwo == ">'":
+            elif tPos == 2 and tTwo == ">'":
                 tInsert = self._typSQuoteO
-            elif thePos == 3 and theThree == ">>'":
+            elif tPos == 3 and tThree == ">>'":
                 tInsert = self._typSQuoteO
             else:
                 tInsert = self._typSQuoteC
 
-        elif self._typRepDash and theThree == "---":
+        elif self._typRepDash and tThree == "---":
             nDelete = 3
             tInsert = nwUnicode.U_EMDASH
 
-        elif self._typRepDash and theTwo == "--":
+        elif self._typRepDash and tTwo == "--":
             nDelete = 2
             tInsert = nwUnicode.U_ENDASH
 
-        elif self._typRepDash and theTwo == nwUnicode.U_ENDASH + "-":
+        elif self._typRepDash and tTwo == nwUnicode.U_ENDASH + "-":
             nDelete = 2
             tInsert = nwUnicode.U_EMDASH
 
-        elif self._typRepDots and theThree == "...":
+        elif self._typRepDots and tThree == "...":
             nDelete = 3
             tInsert = nwUnicode.U_HELLIP
 
-        elif theOne == nwUnicode.U_LSEP:
+        elif tOne == nwUnicode.U_LSEP:
             # This resolves issue #1150
             nDelete = 1
             tInsert = nwUnicode.U_PSEP
 
         tCheck = tInsert
         if self._typPadBefore and tCheck in self._typPadBefore:
-            if self._allowSpaceBeforeColon(theText, tCheck):
+            if self._allowSpaceBeforeColon(text, tCheck):
                 nDelete = max(nDelete, 1)
-                chkPos = thePos - nDelete - 1
-                if chkPos >= 0 and theText[chkPos].isspace():
+                chkPos = tPos - nDelete - 1
+                if chkPos >= 0 and text[chkPos].isspace():
                     # Strip existing space before inserting a new (#1061)
                     nDelete += 1
                 tInsert = self._typPadChar + tInsert
 
         if self._typPadAfter and tCheck in self._typPadAfter:
-            if self._allowSpaceBeforeColon(theText, tCheck):
+            if self._allowSpaceBeforeColon(text, tCheck):
                 nDelete = max(nDelete, 1)
                 tInsert = tInsert + self._typPadChar
 
         if nDelete > 0:
-            theCursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, nDelete)
-            theCursor.insertText(tInsert)
+            cursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor, nDelete)
+            cursor.insertText(tInsert)
 
         return
 
@@ -1904,60 +1830,57 @@ class GuiDocEditor(QPlainTextEdit):
         """Return a cursor which may or may not have a selection based
         on user settings and document action.
         """
-        theCursor = self.textCursor()
-        if CONFIG.autoSelect and not theCursor.hasSelection():
-            theCursor.select(QTextCursor.WordUnderCursor)
-            posS = theCursor.selectionStart()
-            posE = theCursor.selectionEnd()
+        cursor = self.textCursor()
+        if CONFIG.autoSelect and not cursor.hasSelection():
+            cursor.select(QTextCursor.WordUnderCursor)
+            posS = cursor.selectionStart()
+            posE = cursor.selectionEnd()
 
             # Underscore counts as a part of the word, so check that the
             # selection isn't wrapped in italics markers.
             reSelect = False
-            qDoc = self.document()
-            if qDoc.characterAt(posS) == "_":
+            if self._qDocument.characterAt(posS) == "_":
                 posS += 1
                 reSelect = True
-            if qDoc.characterAt(posE) == "_":
+            if self._qDocument.characterAt(posE) == "_":
                 posE -= 1
                 reSelect = True
             if reSelect:
-                theCursor.clearSelection()
-                theCursor.setPosition(posS, QTextCursor.MoveAnchor)
-                theCursor.setPosition(posE-1, QTextCursor.KeepAnchor)
+                cursor.clearSelection()
+                cursor.setPosition(posS, QTextCursor.MoveAnchor)
+                cursor.setPosition(posE-1, QTextCursor.KeepAnchor)
 
-            self.setTextCursor(theCursor)
+            self.setTextCursor(cursor)
 
-        return theCursor
+        return cursor
 
     def _makeSelection(self, mode: QTextCursor.SelectionType) -> None:
-        """Select text based on a selection mode."""
-        theCursor = self.textCursor()
-        theCursor.clearSelection()
-        theCursor.select(mode)
+        """Select text based on selection mode."""
+        cursor = self.textCursor()
+        cursor.clearSelection()
+        cursor.select(mode)
 
         if mode == QTextCursor.WordUnderCursor:
-            theCursor = self._autoSelect()
+            cursor = self._autoSelect()
 
         elif mode == QTextCursor.BlockUnderCursor:
             # This selection mode also selects the preceding paragraph
             # separator, which we want to avoid.
-            posS = theCursor.selectionStart()
-            posE = theCursor.selectionEnd()
-            selTxt = theCursor.selectedText()
+            posS = cursor.selectionStart()
+            posE = cursor.selectionEnd()
+            selTxt = cursor.selectedText()
             if selTxt.startswith(nwUnicode.U_PSEP):
-                theCursor.setPosition(posS+1, QTextCursor.MoveAnchor)
-                theCursor.setPosition(posE, QTextCursor.KeepAnchor)
+                cursor.setPosition(posS+1, QTextCursor.MoveAnchor)
+                cursor.setPosition(posE, QTextCursor.KeepAnchor)
 
-        self.setTextCursor(theCursor)
+        self.setTextCursor(cursor)
 
         return
 
     def _makePosSelection(self, mode: QTextCursor.SelectionType, pos: QPoint) -> None:
-        """Wrapper function to select text based on selection mode, but
-        first move cursor to given position.
-        """
-        theCursor = self.cursorForPosition(pos)
-        self.setTextCursor(theCursor)
+        """Select text based on selection mode, but first move cursor."""
+        cursor = self.cursorForPosition(pos)
+        self.setTextCursor(cursor)
         self._makeSelection(mode)
         return
 
@@ -2000,11 +1923,11 @@ class BackgroundWordCounter(QRunnable):
         """
         self._isRunning = True
         if self._forSelection:
-            theText = self._docEditor.textCursor().selectedText()
+            text = self._docEditor.textCursor().selectedText()
         else:
-            theText = self._docEditor.getText()
+            text = self._docEditor.getText()
 
-        cC, wC, pC = countWords(theText)
+        cC, wC, pC = countWords(text)
         self.signals.countsReady.emit(cC, wC, pC)
         self._isRunning = False
 
@@ -2035,7 +1958,6 @@ class GuiDocEditSearch(QFrame):
         logger.debug("Create: GuiDocEditSearch")
 
         self.docEditor = docEditor
-        self.mainGui   = docEditor.mainGui
 
         self.repVisible  = False
         self.isCaseSense = CONFIG.searchCase
@@ -2455,18 +2377,18 @@ class GuiDocEditHeader(QWidget):
         self.setAutoFillBackground(True)
 
         # Title Label
-        self.theTitle = QLabel()
-        self.theTitle.setText("")
-        self.theTitle.setIndent(0)
-        self.theTitle.setMargin(0)
-        self.theTitle.setContentsMargins(0, 0, 0, 0)
-        self.theTitle.setAutoFillBackground(True)
-        self.theTitle.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
-        self.theTitle.setFixedHeight(fPx)
+        self.itemTitle = QLabel()
+        self.itemTitle.setText("")
+        self.itemTitle.setIndent(0)
+        self.itemTitle.setMargin(0)
+        self.itemTitle.setContentsMargins(0, 0, 0, 0)
+        self.itemTitle.setAutoFillBackground(True)
+        self.itemTitle.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+        self.itemTitle.setFixedHeight(fPx)
 
-        lblFont = self.theTitle.font()
+        lblFont = self.itemTitle.font()
         lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
-        self.theTitle.setFont(lblFont)
+        self.itemTitle.setFont(lblFont)
 
         # Buttons
         self.editButton = QToolButton(self)
@@ -2510,7 +2432,7 @@ class GuiDocEditHeader(QWidget):
         self.outerBox.setSpacing(hSp)
         self.outerBox.addWidget(self.editButton, 0)
         self.outerBox.addWidget(self.searchButton, 0)
-        self.outerBox.addWidget(self.theTitle, 1)
+        self.outerBox.addWidget(self.itemTitle, 1)
         self.outerBox.addWidget(self.minmaxButton, 0)
         self.outerBox.addWidget(self.closeButton, 0)
         self.setLayout(self.outerBox)
@@ -2557,13 +2479,13 @@ class GuiDocEditHeader(QWidget):
         """Update the colours of the widget to match those of the syntax
         theme rather than the main GUI.
         """
-        thePalette = QPalette()
-        thePalette.setColor(QPalette.Window, QColor(*SHARED.theme.colBack))
-        thePalette.setColor(QPalette.WindowText, QColor(*SHARED.theme.colText))
-        thePalette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
+        palette = QPalette()
+        palette.setColor(QPalette.Window, QColor(*SHARED.theme.colBack))
+        palette.setColor(QPalette.WindowText, QColor(*SHARED.theme.colText))
+        palette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
 
-        self.setPalette(thePalette)
-        self.theTitle.setPalette(thePalette)
+        self.setPalette(palette)
+        self.itemTitle.setPalette(palette)
 
         return
 
@@ -2573,7 +2495,7 @@ class GuiDocEditHeader(QWidget):
         """
         self._docHandle = tHandle
         if tHandle is None:
-            self.theTitle.setText("")
+            self.itemTitle.setText("")
             self.editButton.setVisible(False)
             self.searchButton.setVisible(False)
             self.closeButton.setVisible(False)
@@ -2589,12 +2511,12 @@ class GuiDocEditHeader(QWidget):
                 if nwItem is not None:
                     tTitle.append(nwItem.itemName)
             sSep = "  %s  " % nwUnicode.U_RSAQUO
-            self.theTitle.setText(sSep.join(tTitle))
+            self.itemTitle.setText(sSep.join(tTitle))
         else:
             nwItem = pTree[tHandle]
             if nwItem is None:
                 return False
-            self.theTitle.setText(nwItem.itemName)
+            self.itemTitle.setText(nwItem.itemName)
 
         self.editButton.setVisible(True)
         self.searchButton.setVisible(True)
@@ -2673,9 +2595,8 @@ class GuiDocEditFooter(QWidget):
         logger.debug("Create: GuiDocEditFooter")
 
         self.docEditor = docEditor
-        self.mainGui   = docEditor.mainGui
 
-        self._theItem   = None
+        self._tItem     = None
         self._docHandle = None
 
         self._docSelection = False
@@ -2781,15 +2702,15 @@ class GuiDocEditFooter(QWidget):
         """Update the colours of the widget to match those of the syntax
         theme rather than the main GUI.
         """
-        thePalette = QPalette()
-        thePalette.setColor(QPalette.Window, QColor(*SHARED.theme.colBack))
-        thePalette.setColor(QPalette.WindowText, QColor(*SHARED.theme.colText))
-        thePalette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
+        palette = QPalette()
+        palette.setColor(QPalette.Window, QColor(*SHARED.theme.colBack))
+        palette.setColor(QPalette.WindowText, QColor(*SHARED.theme.colText))
+        palette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
 
-        self.setPalette(thePalette)
-        self.statusText.setPalette(thePalette)
-        self.linesText.setPalette(thePalette)
-        self.wordsText.setPalette(thePalette)
+        self.setPalette(palette)
+        self.statusText.setPalette(palette)
+        self.linesText.setPalette(palette)
+        self.wordsText.setPalette(palette)
 
         return
 
@@ -2798,9 +2719,9 @@ class GuiDocEditFooter(QWidget):
         self._docHandle = tHandle
         if self._docHandle is None:
             logger.debug("No handle set, so clearing the editor footer")
-            self._theItem = None
+            self._tItem = None
         else:
-            self._theItem = SHARED.project.tree[self._docHandle]
+            self._tItem = SHARED.project.tree[self._docHandle]
 
         self.setHasSelection(False)
         self.updateInfo()
@@ -2817,13 +2738,13 @@ class GuiDocEditFooter(QWidget):
 
     def updateInfo(self) -> None:
         """Update the content of text labels."""
-        if self._theItem is None:
+        if self._tItem is None:
             sIcon = QPixmap()
             sText = ""
         else:
-            theStatus, theIcon = self._theItem.getImportStatus(incIcon=True)
-            sIcon = theIcon.pixmap(self.sPx, self.sPx)
-            sText = f"{theStatus} / {self._theItem.describeMe()}"
+            status, icon = self._tItem.getImportStatus(incIcon=True)
+            sIcon = icon.pixmap(self.sPx, self.sPx)
+            sText = f"{status} / {self._tItem.describeMe()}"
 
         self.statusIcon.setPixmap(sIcon)
         self.statusText.setText(sText)
@@ -2832,13 +2753,13 @@ class GuiDocEditFooter(QWidget):
 
     def updateLineCount(self) -> None:
         """Update the line counter."""
-        if self._theItem is None:
+        if self._tItem is None:
             iLine = 0
             iDist = 0
         else:
-            theCursor = self.docEditor.textCursor()
-            iLine = theCursor.blockNumber() + 1
-            iDist = 100*iLine/self.docEditor.document().blockCount()
+            cursor = self.docEditor.textCursor()
+            iLine = cursor.blockNumber() + 1
+            iDist = 100*iLine/self.docEditor._qDocument.blockCount()
         self.linesText.setText(
             self.tr("Line: {0} ({1})").format(f"{iLine:n}", f"{iDist:.0f} %")
         )
@@ -2858,18 +2779,18 @@ class GuiDocEditFooter(QWidget):
 
     def _updateWordCounts(self) -> None:
         """Update the word count for the whole document."""
-        if self._theItem is None:
+        if self._tItem is None:
             wCount = 0
             wDiff = 0
         else:
-            wCount = self._theItem.wordCount
-            wDiff = wCount - self._theItem.initCount
+            wCount = self._tItem.wordCount
+            wDiff = wCount - self._tItem.initCount
 
         self.wordsText.setText(
             self.tr("Words: {0} ({1})").format(f"{wCount:n}", f"{wDiff:+n}")
         )
 
-        byteSize = self.docEditor.document().characterCount()
+        byteSize = self.docEditor._qDocument.characterCount()
         self.wordsText.setToolTip(
             self.tr("Document size is {0} bytes").format(f"{byteSize:n}")
         )

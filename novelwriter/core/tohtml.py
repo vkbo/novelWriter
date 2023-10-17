@@ -111,7 +111,7 @@ class ToHtml(Tokenizer):
 
     def getFullResultSize(self) -> int:
         """Return the size of the full HTML result."""
-        return sum([len(x) for x in self._fullHTML])
+        return sum(len(x) for x in self._fullHTML)
 
     def doPreProcessing(self) -> None:
         """Extend the auto-replace to also properly encode some unicode
@@ -122,9 +122,7 @@ class ToHtml(Tokenizer):
         return
 
     def doConvert(self) -> None:
-        """Convert the list of text tokens into a HTML document saved
-        to _result.
-        """
+        """Convert the list of text tokens into an HTML document."""
         if self._genMode == self.M_PREVIEW:
             htmlTags = {  # HTML4 + CSS2 (for Qt)
                 self.FMT_B_B: "<b>",
@@ -160,9 +158,9 @@ class ToHtml(Tokenizer):
 
         self._result = ""
 
-        thisPar = []
-        parStyle = None
-        tmpResult = []
+        para = []
+        pStyle = None
+        lines = []
 
         for tType, tLine, tText, tFormat, tStyle in self._tokens:
 
@@ -231,69 +229,67 @@ class ToHtml(Tokenizer):
 
             # Process Text Type
             if tType == self.T_EMPTY:
-                if parStyle is None:
-                    parStyle = ""
-                if len(thisPar) > 1 and self._cssStyles:
-                    parClass = " class='break'"
+                if pStyle is None:
+                    pStyle = ""
+                if len(para) > 1 and self._cssStyles:
+                    pClass = " class='break'"
                 else:
-                    parClass = ""
-                if len(thisPar) > 0:
-                    tTemp = "<br/>".join(thisPar)
-                    tmpResult.append(f"<p{parClass+parStyle}>{tTemp.rstrip()}</p>\n")
-                thisPar = []
-                parStyle = None
+                    pClass = ""
+                if len(para) > 0:
+                    tTemp = "<br/>".join(para)
+                    lines.append(f"<p{pClass+pStyle}>{tTemp.rstrip()}</p>\n")
+                para = []
+                pStyle = None
 
             elif tType == self.T_TITLE:
                 tHead = tText.replace(nwHeadFmt.BR, "<br/>")
-                tmpResult.append(f"<h1 class='title'{hStyle}>{aNm}{tHead}</h1>\n")
+                lines.append(f"<h1 class='title'{hStyle}>{aNm}{tHead}</h1>\n")
 
             elif tType == self.T_UNNUM:
                 tHead = tText.replace(nwHeadFmt.BR, "<br/>")
-                tmpResult.append(f"<{h2}{hStyle}>{aNm}{tHead}</{h2}>\n")
+                lines.append(f"<{h2}{hStyle}>{aNm}{tHead}</{h2}>\n")
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(nwHeadFmt.BR, "<br/>")
-                tmpResult.append(f"<{h1}{h1Cl}{hStyle}>{aNm}{tHead}</{h1}>\n")
+                lines.append(f"<{h1}{h1Cl}{hStyle}>{aNm}{tHead}</{h1}>\n")
 
             elif tType == self.T_HEAD2:
                 tHead = tText.replace(nwHeadFmt.BR, "<br/>")
-                tmpResult.append(f"<{h2}{hStyle}>{aNm}{tHead}</{h2}>\n")
+                lines.append(f"<{h2}{hStyle}>{aNm}{tHead}</{h2}>\n")
 
             elif tType == self.T_HEAD3:
                 tHead = tText.replace(nwHeadFmt.BR, "<br/>")
-                tmpResult.append(f"<{h3}{hStyle}>{aNm}{tHead}</{h3}>\n")
+                lines.append(f"<{h3}{hStyle}>{aNm}{tHead}</{h3}>\n")
 
             elif tType == self.T_HEAD4:
                 tHead = tText.replace(nwHeadFmt.BR, "<br/>")
-                tmpResult.append(f"<{h4}{hStyle}>{aNm}{tHead}</{h4}>\n")
+                lines.append(f"<{h4}{hStyle}>{aNm}{tHead}</{h4}>\n")
 
             elif tType == self.T_SEP:
-                tmpResult.append(f"<p class='sep'{hStyle}>{tText}</p>\n")
+                lines.append(f"<p class='sep'{hStyle}>{tText}</p>\n")
 
             elif tType == self.T_SKIP:
-                tmpResult.append(f"<p class='skip'{hStyle}>&nbsp;</p>\n")
+                lines.append(f"<p class='skip'{hStyle}>&nbsp;</p>\n")
 
             elif tType == self.T_TEXT:
                 tTemp = tText
-                if parStyle is None:
-                    parStyle = hStyle
+                if pStyle is None:
+                    pStyle = hStyle
                 for xPos, xLen, xFmt in reversed(tFormat):
                     tTemp = tTemp[:xPos] + htmlTags[xFmt] + tTemp[xPos+xLen:]
-                thisPar.append(stripEscape(tTemp.rstrip()))
+                para.append(stripEscape(tTemp.rstrip()))
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
-                tmpResult.append(self._formatSynopsis(tText))
+                lines.append(self._formatSynopsis(tText))
 
             elif tType == self.T_COMMENT and self._doComments:
-                tmpResult.append(self._formatComments(tText))
+                lines.append(self._formatComments(tText))
 
             elif tType == self.T_KEYWORD and self._doKeywords:
                 tTemp = f"<p{hStyle}>{self._formatKeywords(tText)}</p>\n"
-                tmpResult.append(tTemp)
+                lines.append(tTemp)
 
-        self._result = "".join(tmpResult)
-        tmpResult = []
-
+        self._result = "".join(lines)
         if self._genMode != self.M_PREVIEW:
             self._fullHTML.append(self._result)
 

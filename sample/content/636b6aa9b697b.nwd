@@ -1,8 +1,8 @@
 %%~name: Making a Scene
 %%~path: 6a2d6d5f4f401/636b6aa9b697b
 %%~kind: NOVEL/DOCUMENT
-%%~hash: 053cc65631403c15ddc112849dc7fcae44eb9d63
-%%~date: Unknown/2023-08-25 16:56:11
+%%~hash: 7aae771de46c3cab06d8be0e860dc0bd383860a5
+%%~date: Unknown/2023-09-07 19:00:10
 ### Making a Scene
 
 @pov: Jane
@@ -15,7 +15,7 @@ Each paragraph in the scene is separated by a blank line. The text supports mini
 
 In addition, the editor supports automatic formatting of “quotes”, both double and ‘single’. Depending on the syntax highlighter settings and colour theme, these can be in different colours. “You can of course use **bold** and _italic_ text inside of quotes too.”
 
-If you have the need for it, you can also add text that can be automatically replaced by other text when you generate a preview or export the project. Now, let’s auto-replace this A with <A>, and this C with <C>. While <E> is just <E>. Press Ctrl+R to see what this looks like in the view pane. The list of auto-replaced text is sett in Project Settings.
+If you have the need for it, you can also add text that can be automatically replaced by other text when you generate a preview or export the project. Now, let’s auto-replace this A with <A>, and this C with <C>. While <E> is just <E>. Press Ctrl+R to see what this looks like in the view pane. The list of auto-replaced text is set in Project Settings.
 
 The editor also supports non breaking spaces, and the spell checker accepts long dashes—like this—as valid word separators. Regular dashes are also supported – and can be automatically inserted when typing two hyphens.
 

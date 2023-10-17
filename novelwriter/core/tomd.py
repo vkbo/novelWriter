@@ -65,10 +65,12 @@ class ToMarkdown(Tokenizer):
     ##
 
     def setStandardMarkdown(self) -> None:
+        """Set the converter to use standard Markdown formatting."""
         self._genMode = self.M_STD
         return
 
     def setGitHubMarkdown(self) -> None:
+        """Set the converter to use GitHub Markdown formatting."""
         self._genMode = self.M_GH
         return
 
@@ -78,12 +80,10 @@ class ToMarkdown(Tokenizer):
 
     def getFullResultSize(self) -> int:
         """Return the size of the full Markdown result."""
-        return sum([len(x) for x in self._fullMD])
+        return sum(len(x) for x in self._fullMD)
 
     def doConvert(self) -> None:
-        """Convert the list of text tokens into a HTML document saved
-        to theResult.
-        """
+        """Convert the list of text tokens into a Markdown document."""
         if self._genMode == self.M_STD:
             # Standard
             mdTags = {
@@ -107,68 +107,65 @@ class ToMarkdown(Tokenizer):
 
         self._result = ""
 
-        thisPar = []
-        tmpResult = []
+        para = []
+        lines = []
 
         for tType, _, tText, tFormat, tStyle in self._tokens:
 
-            # Process Text Type
             if tType == self.T_EMPTY:
-                if len(thisPar) > 0:
-                    tTemp = ("  \n".join(thisPar)).rstrip(" ")
-                    tmpResult.append(f"{tTemp}\n\n")
-                thisPar = []
+                if len(para) > 0:
+                    tTemp = ("  \n".join(para)).rstrip(" ")
+                    lines.append(f"{tTemp}\n\n")
+                para = []
 
             elif tType == self.T_TITLE:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                tmpResult.append(f"# {tHead}\n\n")
+                lines.append(f"# {tHead}\n\n")
 
             elif tType == self.T_UNNUM:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                tmpResult.append(f"## {tHead}\n\n")
+                lines.append(f"## {tHead}\n\n")
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                tmpResult.append(f"# {tHead}\n\n")
+                lines.append(f"# {tHead}\n\n")
 
             elif tType == self.T_HEAD2:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                tmpResult.append(f"## {tHead}\n\n")
+                lines.append(f"## {tHead}\n\n")
 
             elif tType == self.T_HEAD3:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                tmpResult.append(f"### {tHead}\n\n")
+                lines.append(f"### {tHead}\n\n")
 
             elif tType == self.T_HEAD4:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                tmpResult.append(f"#### {tHead}\n\n")
+                lines.append(f"#### {tHead}\n\n")
 
             elif tType == self.T_SEP:
-                tmpResult.append("%s\n\n" % tText)
+                lines.append(f"{tText}\n\n")
 
             elif tType == self.T_SKIP:
-                tmpResult.append("\n\n\n")
+                lines.append("\n\n\n")
 
             elif tType == self.T_TEXT:
                 tTemp = tText
                 for xPos, xLen, xFmt in reversed(tFormat):
                     tTemp = tTemp[:xPos] + mdTags[xFmt] + tTemp[xPos+xLen:]
-                thisPar.append(tTemp.rstrip())
+                para.append(tTemp.rstrip())
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
-                locName = self._localLookup("Synopsis")
-                tmpResult.append(f"**{locName}:** {tText}\n\n")
+                label = self._localLookup("Synopsis")
+                lines.append(f"**{label}:** {tText}\n\n")
 
             elif tType == self.T_COMMENT and self._doComments:
-                locName = self._localLookup("Comment")
-                tmpResult.append(f"**{locName}:** {tText}\n\n")
+                label = self._localLookup("Comment")
+                lines.append(f"**{label}:** {tText}\n\n")
 
             elif tType == self.T_KEYWORD and self._doKeywords:
-                tmpResult.append(self._formatKeywords(tText, tStyle))
+                lines.append(self._formatKeywords(tText, tStyle))
 
-        self._result = "".join(tmpResult)
-        tmpResult = []
-
+        self._result = "".join(lines)
         self._fullMD.append(self._result)
 
         return

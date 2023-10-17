@@ -27,10 +27,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 import xml.etree.ElementTree as ET
 
 from hashlib import sha256
+from pathlib import Path
 from zipfile import ZipFile
 from datetime import datetime
 
@@ -394,9 +394,9 @@ class ToOdt(Tokenizer):
             self.FMT_D_E: "s_",  # Strikethrough close format
         }
 
-        thisPar = []
-        thisFmt = []
-        parStyle = None
+        fmt = []
+        para = []
+        pStyle = None
         for tType, _, tText, tFormat, tStyle in self._tokens:
 
             # Styles
@@ -429,20 +429,20 @@ class ToOdt(Tokenizer):
 
             # Process Text Types
             if tType == self.T_EMPTY:
-                if len(thisPar) > 1 and parStyle is not None:
+                if len(para) > 1 and pStyle is not None:
                     if self._doJustify:
-                        parStyle.setTextAlign("left")
+                        pStyle.setTextAlign("left")
 
-                if len(thisPar) > 0 and parStyle is not None:
-                    tTemp = "\n".join(thisPar)
-                    fTemp = " ".join(thisFmt)
+                if len(para) > 0 and pStyle is not None:
+                    tTemp = "\n".join(para)
+                    fTemp = " ".join(fmt)
                     tTxt = tTemp.rstrip()
                     tFmt = fTemp[:len(tTxt)]
-                    self._addTextPar("Text_20_body", parStyle, tTxt, tFmt=tFmt)
+                    self._addTextPar("Text_20_body", pStyle, tTxt, tFmt=tFmt)
 
-                thisPar = []
-                thisFmt = []
-                parStyle = None
+                fmt = []
+                para = []
+                pStyle = None
 
             elif tType == self.T_TITLE:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
@@ -475,8 +475,8 @@ class ToOdt(Tokenizer):
                 self._addTextPar("Separator", oStyle, "")
 
             elif tType == self.T_TEXT:
-                if parStyle is None:
-                    parStyle = oStyle
+                if pStyle is None:
+                    pStyle = oStyle
 
                 tFmt = " "*len(tText)
                 for xPos, xLen, xFmt in tFormat:
@@ -484,8 +484,8 @@ class ToOdt(Tokenizer):
 
                 tTxt = tText.rstrip()
                 tFmt = tFmt[:len(tTxt)]
-                thisPar.append(tTxt)
-                thisFmt.append(tFmt)
+                para.append(tTxt)
+                fmt.append(tFmt)
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 tTemp, fTemp = self._formatSynopsis(tText)
@@ -501,8 +501,8 @@ class ToOdt(Tokenizer):
 
         return
 
-    def closeDocument(self):
-        """Return the serialised XML document"""
+    def closeDocument(self) -> None:
+        """Pack the styles of the XML document."""
         # Build the auto-generated styles
         for styleName, styleObj in self._autoPara.values():
             styleObj.packXML(self._xAuto, styleName)
@@ -510,7 +510,7 @@ class ToOdt(Tokenizer):
             styleObj.packXML(self._xAuto, styleName)
         return
 
-    def saveFlatXML(self, path: str | Path):
+    def saveFlatXML(self, path: str | Path) -> None:
         """Save the data to an .fodt file."""
         with open(path, mode="wb") as fObj:
             xml = ET.ElementTree(self._dFlat)
@@ -519,7 +519,7 @@ class ToOdt(Tokenizer):
         logger.info("Wrote file: %s", path)
         return
 
-    def saveOpenDocText(self, path: str | Path):
+    def saveOpenDocText(self, path: str | Path) -> None:
         """Save the data to an .odt file."""
         mMani = _mkTag("manifest", "manifest")
         mVers = _mkTag("manifest", "version")
@@ -718,9 +718,9 @@ class ToOdt(Tokenizer):
 
         return newName
 
-    def _emToCm(self, emVal: float) -> str:
+    def _emToCm(self, value: float) -> str:
         """Converts an em value to centimetres."""
-        return f"{emVal*2.54/72*self._textSize:.3f}cm"
+        return f"{value*2.54/72*self._textSize:.3f}cm"
 
     ##
     #  Style Elements
@@ -1193,56 +1193,56 @@ class ODTParagraphStyle:
     #  Methods
     ##
 
-    def checkNew(self, refStyle: ODTParagraphStyle) -> bool:
+    def checkNew(self, style: ODTParagraphStyle) -> bool:
         """Check if there are new settings in refStyle that differ from
         those in the current object.
         """
-        for aName, (_, aVal) in refStyle._mAttr.items():
-            if aVal is not None and aVal != self._mAttr[aName][1]:
+        for name, (_, aVal) in style._mAttr.items():
+            if aVal is not None and aVal != self._mAttr[name][1]:
                 return True
-        for aName, (_, aVal) in refStyle._pAttr.items():
-            if aVal is not None and aVal != self._pAttr[aName][1]:
+        for name, (_, aVal) in style._pAttr.items():
+            if aVal is not None and aVal != self._pAttr[name][1]:
                 return True
-        for aName, (_, aVal) in refStyle._tAttr.items():
-            if aVal is not None and aVal != self._tAttr[aName][1]:
+        for name, (_, aVal) in style._tAttr.items():
+            if aVal is not None and aVal != self._tAttr[name][1]:
                 return True
         return False
 
     def getID(self) -> str:
         """Generate a unique ID from the settings."""
-        theString = (
+        string = (
             f"Paragraph:Main:{str(self._mAttr)}:"
             f"Paragraph:Para:{str(self._pAttr)}:"
             f"Paragraph:Text:{str(self._tAttr)}:"
         )
-        return sha256(theString.encode()).hexdigest()
+        return sha256(string.encode()).hexdigest()
 
     def packXML(self, xParent: ET.Element, name: str) -> None:
         """Pack the content into an xml element."""
-        theAttr = {}
-        theAttr[_mkTag("style", "name")] = name
-        theAttr[_mkTag("style", "family")] = "paragraph"
+        attr = {}
+        attr[_mkTag("style", "name")] = name
+        attr[_mkTag("style", "family")] = "paragraph"
         for aName, (aNm, aVal) in self._mAttr.items():
             if aVal is not None:
-                theAttr[_mkTag(aNm, aName)] = aVal
+                attr[_mkTag(aNm, aName)] = aVal
 
-        xEntry = ET.SubElement(xParent, _mkTag("style", "style"), attrib=theAttr)
+        xEntry = ET.SubElement(xParent, _mkTag("style", "style"), attrib=attr)
 
-        theAttr = {}
+        attr = {}
         for aName, (aNm, aVal) in self._pAttr.items():
             if aVal is not None:
-                theAttr[_mkTag(aNm, aName)] = aVal
+                attr[_mkTag(aNm, aName)] = aVal
 
-        if theAttr:
-            ET.SubElement(xEntry, _mkTag("style", "paragraph-properties"), attrib=theAttr)
+        if attr:
+            ET.SubElement(xEntry, _mkTag("style", "paragraph-properties"), attrib=attr)
 
-        theAttr = {}
+        attr = {}
         for aName, (aNm, aVal) in self._tAttr.items():
             if aVal is not None:
-                theAttr[_mkTag(aNm, aName)] = aVal
+                attr[_mkTag(aNm, aName)] = aVal
 
-        if theAttr:
-            ET.SubElement(xEntry, _mkTag("style", "text-properties"), attrib=theAttr)
+        if attr:
+            ET.SubElement(xEntry, _mkTag("style", "text-properties"), attrib=attr)
 
         return
 
@@ -1307,18 +1307,18 @@ class ODTTextStyle:
 
     def packXML(self, xParent: ET.Element, name: str) -> None:
         """Pack the content into an xml element."""
-        theAttr = {}
-        theAttr[_mkTag("style", "name")] = name
-        theAttr[_mkTag("style", "family")] = "text"
-        xEntry = ET.SubElement(xParent, _mkTag("style", "style"), attrib=theAttr)
+        attr = {}
+        attr[_mkTag("style", "name")] = name
+        attr[_mkTag("style", "family")] = "text"
+        xEntry = ET.SubElement(xParent, _mkTag("style", "style"), attrib=attr)
 
-        theAttr = {}
+        attr = {}
         for aName, (aNm, aVal) in self._tAttr.items():
             if aVal is not None:
-                theAttr[_mkTag(aNm, aName)] = aVal
+                attr[_mkTag(aNm, aName)] = aVal
 
-        if theAttr:
-            ET.SubElement(xEntry, _mkTag("style", "text-properties"), attrib=theAttr)
+        if attr:
+            ET.SubElement(xEntry, _mkTag("style", "text-properties"), attrib=attr)
 
         return
 
@@ -1368,17 +1368,17 @@ class XMLParagraph:
 
         return
 
-    def appendText(self, tText: str) -> None:
+    def appendText(self, text: str) -> None:
         """Append text to the XML element. We do this one character at
         the time in order to be able to process line breaks, tabs and
         spaces separately. Multiple spaces are concatenated into a
         single tag, and must therefore be processed separately.
         """
-        tText = stripEscape(tText)
+        text = stripEscape(text)
         nSpaces = 0
-        self._rawTxt += tText
+        self._rawTxt += text
 
-        for c in tText:
+        for c in text:
             if c == " ":
                 nSpaces += 1
                 continue
@@ -1433,17 +1433,17 @@ class XMLParagraph:
 
         return
 
-    def appendSpan(self, tText: str, tFmt: str) -> None:
+    def appendSpan(self, text: str, fmt: str) -> None:
         """Append a text span to the XML element. The span is always
         closed since we do not allow nested spans (like Libre Office).
         Therefore we return to the root element level when we're done
         processing the text of the span.
         """
-        self._xTail = ET.SubElement(self._xRoot, TAG_SPAN, attrib={TAG_STNM: tFmt})
+        self._xTail = ET.SubElement(self._xRoot, TAG_SPAN, attrib={TAG_STNM: fmt})
         self._xTail.text = ""  # Defaults to None
         self._xTail.tail = ""  # Defaults to None
         self._nState = X_SPAN_TEXT
-        self.appendText(tText)
+        self.appendText(text)
         self._nState = X_ROOT_TAIL
         return
 

@@ -30,7 +30,7 @@ from time import time
 from pathlib import Path
 from datetime import datetime
 
-from PyQt5.QtCore import Qt, QTimer, QThreadPool, pyqtSlot
+from PyQt5.QtCore import Qt, QTimer, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QCursor, QIcon, QKeySequence
 from PyQt5.QtWidgets import (
     QDialog, QFileDialog, QHBoxLayout, QMainWindow, QMessageBox, QShortcut,
@@ -95,7 +95,6 @@ class GuiMain(QMainWindow):
 
         logger.debug("Create: GUI")
         self.setObjectName("GuiMain")
-        self.threadPool = QThreadPool(self)
 
         # System Info
         # ===========
@@ -153,7 +152,7 @@ class GuiMain(QMainWindow):
 
         # Project Tree View
         self.treePane = QWidget(self)
-        self.treeBox = QVBoxLayout(self)
+        self.treeBox = QVBoxLayout()
         self.treeBox.setContentsMargins(0, 0, 0, 0)
         self.treeBox.setSpacing(mPx)
         self.treeBox.addWidget(self.projStack)
@@ -223,7 +222,7 @@ class GuiMain(QMainWindow):
         self.rebuildTrees()
 
         # Assemble Main Window Elements
-        self.mainBox = QHBoxLayout(self)
+        self.mainBox = QHBoxLayout()
         self.mainBox.addWidget(self.sideBar)
         self.mainBox.addWidget(self.mainStack)
         self.mainBox.setContentsMargins(0, 0, 0, 0)
@@ -267,6 +266,7 @@ class GuiMain(QMainWindow):
         self.docEditor.novelStructureChanged.connect(self.novelView.refreshTree)
         self.docEditor.novelItemMetaChanged.connect(self.novelView.updateNovelItemMeta)
         self.docEditor.statusMessage.connect(self.mainStatus.setStatusMessage)
+        self.docEditor.spellCheckStateChanged.connect(self.mainMenu.setSpellCheckState)
 
         self.docViewer.loadDocumentTagRequest.connect(self._followTag)
 
@@ -621,10 +621,10 @@ class GuiMain(QMainWindow):
                 break
 
         if nHandle is not None:
-            self.openDocument(nHandle, tLine=0, doScroll=True)
+            self.openDocument(nHandle, tLine=1, doScroll=True)
             return True
         elif wrapAround:
-            self.openDocument(fHandle, tLine=0, doScroll=True)
+            self.openDocument(fHandle, tLine=1, doScroll=True)
             return False
 
         return False
