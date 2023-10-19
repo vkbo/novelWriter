@@ -209,8 +209,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._hRules.append((
             nwRegEx.FMT_IN, {
                 1: self._hStyles["keyword"],
-                2: self._hStyles["codevalue"],
+                2: self._hStyles["keyword"],
                 3: self._hStyles["keyword"],
+                4: self._hStyles["codevalue"],
+                5: self._hStyles["keyword"],
             }
         ))
 

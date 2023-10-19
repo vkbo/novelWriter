@@ -1,8 +1,8 @@
 %%~name: Making a Scene
 %%~path: 6a2d6d5f4f401/636b6aa9b697b
 %%~kind: NOVEL/DOCUMENT
-%%~hash: 7aae771de46c3cab06d8be0e860dc0bd383860a5
-%%~date: Unknown/2023-09-07 19:00:10
+%%~hash: 4bcd431d1d8b84d7bbfcacb5442d7b83f65745bb
+%%~date: Unknown/2023-10-19 23:57:46
 ### Making a Scene
 
 @pov: Jane
@@ -13,7 +13,9 @@ A scene is defined by a level three heading, like the one at the top of this pag
 
 Each paragraph in the scene is separated by a blank line. The text supports minimal formatting, like **bold**, _italic_ and **_bold italic_**. You can also ~~strike through~~ text. There is **some support for _nested_ emphasis**, but there are some known limitations. If the syntax highlighter doesn’t show it correctly, the export tool will not either.
 
-In addition, the editor supports automatic formatting of “quotes”, both double and ‘single’. Depending on the syntax highlighter settings and colour theme, these can be in different colours. “You can of course use **bold** and _italic_ text inside of quotes too.”
+For special formatting aside from standard emphasis, you can use inline commands. Here we have super[sup:script] and sub[sub:script], and [b:part]ial bold too, which ends in the middle of a word.
+
+In addition, the editor supports automatic formatting of “quotes”, both double and ‘single’. Depending on the syntax highlighter settings and colour theme, these can be in different colours. “You can of course use **bold** and _italic_ text inside of quotes too[sup:yay].”
 
 If you have the need for it, you can also add text that can be automatically replaced by other text when you generate a preview or export the project. Now, let’s auto-replace this A with <A>, and this C with <C>. While <E> is just <E>. Press Ctrl+R to see what this looks like in the view pane. The list of auto-replaced text is set in Project Settings.
 
