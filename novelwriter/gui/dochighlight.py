@@ -39,7 +39,7 @@ from novelwriter.constants import nwRegEx, nwUnicode
 
 logger = logging.getLogger(__name__)
 
-SPELLRX = QRegularExpression(r"\b[^\s\-\+\/–—]+\b")
+SPELLRX = QRegularExpression(r"\b[^\s\-\+\/–—\[\]]+\b")
 SPELLRX.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
 
 
@@ -205,6 +205,15 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             }
         ))
 
+        # In-Text Command
+        self._hRules.append((
+            nwRegEx.FMT_IN, {
+                1: self._hStyles["keyword"],
+                2: self._hStyles["codevalue"],
+                3: self._hStyles["keyword"],
+            }
+        ))
+
         # Alignment Tags
         self._hRules.append((
             r"(^>{1,2}|<{1,2}$)", {
@@ -351,7 +360,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 if sText in ("[NEWPAGE]", "[NEW PAGE]", "[VSPACE]"):
                     self.setFormat(0, len(text), self._hStyles["keyword"])
                     return
-
                 elif sText.startswith("[VSPACE:") and sText.endswith("]"):
                     tLen = len(sText)
                     tVal = checkInt(sText[8:-1], 0)
