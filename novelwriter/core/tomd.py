@@ -38,12 +38,12 @@ class ToMarkdown(Tokenizer):
     """Core: Markdown Document Writer
 
     Extend the Tokenizer class to writer Markdown output. It supports
-    both Standard Markdown and GitHub Flavour Markdown (Extended). The
-    class also supports concatenating novelWriter markup files.
+    both Standard Markdown and Extended Markdown. The class also
+    supports concatenating novelWriter markup files.
     """
 
     M_STD = 0  # Standard Markdown
-    M_GH  = 1  # GitHub Markdown
+    M_EXT = 1  # Extended Markdown
 
     def __init__(self, project: NWProject) -> None:
         super().__init__(project)
@@ -69,9 +69,9 @@ class ToMarkdown(Tokenizer):
         self._genMode = self.M_STD
         return
 
-    def setGitHubMarkdown(self) -> None:
-        """Set the converter to use GitHub Markdown formatting."""
-        self._genMode = self.M_GH
+    def setExtendedMarkdown(self) -> None:
+        """Set the converter to use Extended Markdown formatting."""
+        self._genMode = self.M_EXT
         return
 
     ##
@@ -85,7 +85,7 @@ class ToMarkdown(Tokenizer):
     def doConvert(self) -> None:
         """Convert the list of text tokens into a Markdown document."""
         if self._genMode == self.M_STD:
-            # Standard
+            # Standard Markdown
             mdTags = {
                 self.FMT_B_B: "**",
                 self.FMT_B_E: "**",
@@ -93,9 +93,15 @@ class ToMarkdown(Tokenizer):
                 self.FMT_I_E: "_",
                 self.FMT_D_B: "",
                 self.FMT_D_E: "",
+                self.FMT_U_B: "",
+                self.FMT_U_E: "",
+                self.FMT_SUP_B: "",
+                self.FMT_SUP_E: "",
+                self.FMT_SUB_B: "",
+                self.FMT_SUB_E: "",
             }
         else:
-            # GitHub
+            # Extended Markdown
             mdTags = {
                 self.FMT_B_B: "**",
                 self.FMT_B_E: "**",
@@ -103,6 +109,12 @@ class ToMarkdown(Tokenizer):
                 self.FMT_I_E: "_",
                 self.FMT_D_B: "~~",
                 self.FMT_D_E: "~~",
+                self.FMT_U_B: "",
+                self.FMT_U_E: "",
+                self.FMT_SUP_B: "^",
+                self.FMT_SUP_E: "^",
+                self.FMT_SUB_B: "~",
+                self.FMT_SUB_E: "~",
             }
 
         self._result = ""

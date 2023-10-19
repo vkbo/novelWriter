@@ -131,6 +131,8 @@ class ToHtml(Tokenizer):
                 self.FMT_I_E: "</i>",
                 self.FMT_D_B: "<span style='text-decoration: line-through;'>",
                 self.FMT_D_E: "</span>",
+                self.FMT_U_B: "<u>",
+                self.FMT_U_E: "</u>",
             }
         else:
             htmlTags = {  # HTML5 (for export)
@@ -140,7 +142,14 @@ class ToHtml(Tokenizer):
                 self.FMT_I_E: "</em>",
                 self.FMT_D_B: "<del>",
                 self.FMT_D_E: "</del>",
+                self.FMT_U_B: "<span style='text-decoration: underline;'>",
+                self.FMT_U_E: "</span>",
             }
+
+        htmlTags[self.FMT_SUP_B] = "<sup>"
+        htmlTags[self.FMT_SUP_E] = "</sup>"
+        htmlTags[self.FMT_SUB_B] = "<sub>"
+        htmlTags[self.FMT_SUB_E] = "</sub>"
 
         if self._isNovel and self._genMode != self.M_PREVIEW:
             # For story files, we bump the titles one level up

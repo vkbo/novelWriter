@@ -82,11 +82,17 @@ TAG_STNM = _mkTag("text", "style-name")
 X_BLD = 0x01  # Bold format
 X_ITA = 0x02  # Italic format
 X_DEL = 0x04  # Strikethrough format
+X_UND = 0x08  # Underline format
+X_SUP = 0x10  # Superscript
+X_SUB = 0x20  # Subscript
 
 # Formatting Masks
 M_BLD = ~X_BLD
 M_ITA = ~X_ITA
 M_DEL = ~X_DEL
+M_UND = ~X_UND
+M_SUP = ~X_SUP
+M_SUB = ~X_SUB
 
 
 class ToOdt(Tokenizer):
@@ -386,12 +392,18 @@ class ToOdt(Tokenizer):
         self._result = ""  # Not used, but cleared just in case
 
         odtTags = {
-            self.FMT_B_B: "_B",  # Bold open format
-            self.FMT_B_E: "b_",  # Bold close format
-            self.FMT_I_B: "I",   # Italic open format
-            self.FMT_I_E: "i",   # Italic close format
-            self.FMT_D_B: "_S",  # Strikethrough open format
-            self.FMT_D_E: "s_",  # Strikethrough close format
+            self.FMT_B_B: "B",    # Bold open format
+            self.FMT_B_E: "b",    # Bold close format
+            self.FMT_I_B: "I",    # Italic open format
+            self.FMT_I_E: "i",    # Italic close format
+            self.FMT_D_B: "S",    # Strikethrough open format
+            self.FMT_D_E: "s",    # Strikethrough close format
+            self.FMT_U_B: "U",    # Underline open format
+            self.FMT_U_E: "u",    # Underline close format
+            self.FMT_SUP_B: "P",  # Superscript open format
+            self.FMT_SUP_E: "p",  # Superscript close format
+            self.FMT_SUB_B: "D",  # Subscript open format
+            self.FMT_SUB_E: "d",  # Subscript close format
         }
 
         fmt = []
@@ -480,7 +492,10 @@ class ToOdt(Tokenizer):
 
                 tFmt = " "*len(tText)
                 for xPos, xLen, xFmt in tFormat:
-                    tFmt = tFmt[:xPos] + odtTags[xFmt] + tFmt[xPos+xLen:]
+                    if xFmt%2 == 0:  # Even number: End
+                        tFmt = tFmt[:xPos] + odtTags[xFmt].ljust(xLen, "_") + tFmt[xPos+xLen:]
+                    else:  # Odd number: Begin
+                        tFmt = tFmt[:xPos] + odtTags[xFmt].rjust(xLen, "_") + tFmt[xPos+xLen:]
 
                 tTxt = tText.rstrip()
                 tFmt = tFmt[:len(tTxt)]
@@ -650,6 +665,18 @@ class ToOdt(Tokenizer):
                 xFmt |= X_DEL
             elif tFmt[i] == "s":
                 xFmt &= M_DEL
+            elif tFmt[i] == "U":
+                xFmt |= X_UND
+            elif tFmt[i] == "u":
+                xFmt &= M_UND
+            elif tFmt[i] == "P":
+                xFmt |= X_SUP
+            elif tFmt[i] == "p":
+                xFmt &= M_SUP
+            elif tFmt[i] == "D":
+                xFmt |= X_SUB
+            elif tFmt[i] == "d":
+                xFmt &= M_SUB
             else:
                 pErr += 1
 
@@ -713,6 +740,14 @@ class ToOdt(Tokenizer):
         if hFmt & X_DEL:
             newStyle.setStrikeStyle("solid")
             newStyle.setStrikeType("single")
+        if hFmt & X_UND:
+            newStyle.setUnderlineStyle("solid")
+            newStyle.setUnderlineWidth("auto")
+            newStyle.setUnderlineColour("font-color")
+        if hFmt & X_SUP:
+            newStyle.setTextPosition("super")
+        if hFmt & X_SUB:
+            newStyle.setTextPosition("sub")
 
         self._autoText[hFmt] = (newName, newStyle)
 
@@ -1256,16 +1291,23 @@ class ODTTextStyle:
     """
     VALID_WEIGHT = ["normal", "inherit", "bold"]
     VALID_STYLE  = ["normal", "inherit", "italic"]
+    VALID_POS    = ["super", "sub"]
     VALID_LSTYLE = ["none", "solid"]
-    VALID_LTYPE  = ["none", "single", "double"]
+    VALID_LTYPE  = ["single", "double"]
+    VALID_LWIDTH = ["auto"]
+    VALID_LCOL   = ["font-color"]
 
     def __init__(self) -> None:
         # Text Attributes
         self._tAttr = {
             "font-weight":             ["fo",    None],
             "font-style":              ["fo",    None],
+            "text-position":           ["style", None],
             "text-line-through-style": ["style", None],
             "text-line-through-type":  ["style", None],
+            "text-underline-style":    ["style", None],
+            "text-underline-width":    ["style", None],
+            "text-underline-color":    ["style", None],
         }
         return
 
@@ -1287,6 +1329,13 @@ class ODTTextStyle:
             self._tAttr["font-style"][1] = None
         return
 
+    def setTextPosition(self, value: str | None) -> None:
+        if value in self.VALID_POS:
+            self._tAttr["text-position"][1] = f"{value} 58%"
+        else:
+            self._tAttr["text-position"][1] = None
+        return
+
     def setStrikeStyle(self, value: str | None) -> None:
         if value in self.VALID_LSTYLE:
             self._tAttr["text-line-through-style"][1] = value
@@ -1299,6 +1348,27 @@ class ODTTextStyle:
             self._tAttr["text-line-through-type"][1] = value
         else:
             self._tAttr["text-line-through-type"][1] = None
+        return
+
+    def setUnderlineStyle(self, value: str | None) -> None:
+        if value in self.VALID_LSTYLE:
+            self._tAttr["text-underline-style"][1] = value
+        else:
+            self._tAttr["text-underline-style"][1] = None
+        return
+
+    def setUnderlineWidth(self, value: str | None) -> None:
+        if value in self.VALID_LWIDTH:
+            self._tAttr["text-underline-width"][1] = value
+        else:
+            self._tAttr["text-underline-width"][1] = None
+        return
+
+    def setUnderlineColour(self, value: str | None) -> None:
+        if value in self.VALID_LCOL:
+            self._tAttr["text-underline-color"][1] = value
+        else:
+            self._tAttr["text-underline-color"][1] = None
         return
 
     ##
