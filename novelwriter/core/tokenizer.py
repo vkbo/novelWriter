@@ -43,15 +43,21 @@ from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 
+ESCAPES = {
+    r"\*": "*",
+    r"\~": "~",
+    r"\_": "_",
+    r"\[": "[",
+    r"\]": "]",
+    r"\ ": "",
+}
+RX_ESC = re.compile("|".join([re.escape(k) for k in ESCAPES.keys()]), flags=re.DOTALL)
+
 
 def stripEscape(text) -> str:
-    """Helper function to strip escaped Markdown characters from
-    paragraph text.
-    """
+    """Strip escaped Markdown characters from paragraph text."""
     if "\\" in text:
-        # Checking first is slightly slower when there are escaped
-        # characters in the text, but significantly faster when not
-        return text.replace(r"\*", "*").replace(r"\~", "~").replace(r"\_", "_")
+        return RX_ESC.sub(lambda x: ESCAPES[x.group(0)], text)
     return text
 
 
@@ -65,12 +71,18 @@ class Tokenizer(ABC):
     """
 
     # In-Text Format
-    FMT_B_B = 1  # Begin bold
-    FMT_B_E = 2  # End bold
-    FMT_I_B = 3  # Begin italics
-    FMT_I_E = 4  # End italics
-    FMT_D_B = 5  # Begin strikeout
-    FMT_D_E = 6  # End strikeout
+    FMT_B_B   = 1   # Begin bold
+    FMT_B_E   = 2   # End bold
+    FMT_I_B   = 3   # Begin italics
+    FMT_I_E   = 4   # End italics
+    FMT_D_B   = 5   # Begin strikeout
+    FMT_D_E   = 6   # End strikeout
+    FMT_U_B   = 7   # Begin underline
+    FMT_U_E   = 8   # End underline
+    FMT_SUP_B = 9   # Begin superscript
+    FMT_SUP_E = 10  # End superscript
+    FMT_SUB_B = 11  # Begin subscript
+    FMT_SUB_E = 12  # End subscript
 
     # Block Type
     T_EMPTY    = 1   # Empty line (new paragraph)
@@ -392,6 +404,12 @@ class Tokenizer(ABC):
             (QRegularExpression(nwRegEx.FMT_EI), [None, self.FMT_I_B, None, self.FMT_I_E]),
             (QRegularExpression(nwRegEx.FMT_EB), [None, self.FMT_B_B, None, self.FMT_B_E]),
             (QRegularExpression(nwRegEx.FMT_ST), [None, self.FMT_D_B, None, self.FMT_D_E]),
+            (QRegularExpression(nwRegEx.INL_EI), [None, self.FMT_I_B, None, self.FMT_I_E]),
+            (QRegularExpression(nwRegEx.INL_EB), [None, self.FMT_B_B, None, self.FMT_B_E]),
+            (QRegularExpression(nwRegEx.INL_ST), [None, self.FMT_D_B, None, self.FMT_D_E]),
+            (QRegularExpression(nwRegEx.INL_UN), [None, self.FMT_U_B, None, self.FMT_U_E]),
+            (QRegularExpression(nwRegEx.INL_UP), [None, self.FMT_SUP_B, None, self.FMT_SUP_E]),
+            (QRegularExpression(nwRegEx.INL_DN), [None, self.FMT_SUB_B, None, self.FMT_SUB_E]),
         ]
 
         self._tokens = []
@@ -423,6 +441,9 @@ class Tokenizer(ABC):
 
             if aLine[0] == "[":
                 # Parse special formatting line
+                # This must be a separate if statement, as it may not
+                # reach a continue statement and must thefore proceed to
+                # check other formats.
 
                 if sLine in ("[NEWPAGE]", "[NEW PAGE]"):
                     breakNext = True
@@ -446,7 +467,7 @@ class Tokenizer(ABC):
                         ]
                     continue
 
-            elif aLine[0] == "%":
+            if aLine[0] == "%":
                 cLine = aLine[1:].lstrip()
                 synTag = cLine[:9].lower()
                 if synTag == "synopsis:":
@@ -567,15 +588,15 @@ class Tokenizer(ABC):
 
                 # Otherwise we use RegEx to find formatting tags within a line of text
                 fmtPos = []
-                for theRX, theKeys in rxFormats:
-                    rxThis = theRX.globalMatch(aLine, 0)
+                for regEx, keys in rxFormats:
+                    rxThis = regEx.globalMatch(aLine, 0)
                     while rxThis.hasNext():
                         rxMatch = rxThis.next()
-                        for n in range(1, len(theKeys)):
-                            if theKeys[n] is not None:
+                        for n in range(1, len(keys)):
+                            if keys[n] is not None:
                                 xPos = rxMatch.capturedStart(n)
                                 xLen = rxMatch.capturedLength(n)
-                                fmtPos.append([xPos, xLen, theKeys[n]])
+                                fmtPos.append([xPos, xLen, keys[n]])
 
                 # Save the line as is, but append the array of formatting locations
                 # sorted by position
