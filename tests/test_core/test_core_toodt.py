@@ -1031,8 +1031,8 @@ def testCoreToOdt_ODTTextStyle():
     assert txtStyle._tAttr["text-line-through-type"]  == ["style", None]
     txtStyle.setStrikeType("stuff")
     assert txtStyle._tAttr["text-line-through-type"]  == ["style", None]
-    txtStyle.setStrikeType("none")
-    assert txtStyle._tAttr["text-line-through-type"]  == ["style", "none"]
+    txtStyle.setStrikeType("none")  # Deprecated in ODF 1.3
+    assert txtStyle._tAttr["text-line-through-type"]  == ["style", None]
     txtStyle.setStrikeType("single")
     assert txtStyle._tAttr["text-line-through-type"]  == ["style", "single"]
     txtStyle.setStrikeType("double")
