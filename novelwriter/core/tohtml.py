@@ -174,28 +174,7 @@ class ToHtml(Tokenizer):
         for tType, tLine, tText, tFormat, tStyle in self._tokens:
 
             # Replace < and > with HTML entities
-            if tFormat:
-                # If we have formatting, we must recompute the locations
-                cText = []
-                i = 0
-                for c in tText:
-                    if c == "<":
-                        cText.append("&lt;")
-                        tFormat = [[a + 3 if a > i else a, b, c] for a, b, c in tFormat]
-                        i += 4
-                    elif c == ">":
-                        cText.append("&gt;")
-                        tFormat = [[a + 3 if a > i else a, b, c] for a, b, c in tFormat]
-                        i += 4
-                    else:
-                        cText.append(c)
-                        i += 1
-
-                tText = "".join(cText)
-
-            else:
-                # If we don't have formatting, we can do a plain replace
-                tText = tText.replace("<", "&lt;").replace(">", "&gt;")
+            tText = tText.replace("<", "&lt;").replace(">", "&gt;")
 
             # Styles
             aStyle = []
@@ -284,8 +263,8 @@ class ToHtml(Tokenizer):
                 tTemp = tText
                 if pStyle is None:
                     pStyle = hStyle
-                for xPos, xLen, xFmt in reversed(tFormat):
-                    tTemp = tTemp[:xPos] + htmlTags[xFmt] + tTemp[xPos+xLen:]
+                for pos, fmt in reversed(tFormat):
+                    tTemp = f"{tTemp[:pos]}{htmlTags[fmt]}{tTemp[pos:]}"
                 para.append(stripEscape(tTemp.rstrip()))
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:

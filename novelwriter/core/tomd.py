@@ -162,8 +162,8 @@ class ToMarkdown(Tokenizer):
 
             elif tType == self.T_TEXT:
                 tTemp = tText
-                for xPos, xLen, xFmt in reversed(tFormat):
-                    tTemp = tTemp[:xPos] + mdTags[xFmt] + tTemp[xPos+xLen:]
+                for pos, fmt in reversed(tFormat):
+                    tTemp = f"{tTemp[:pos]}{mdTags[fmt]}{tTemp[pos:]}"
                 para.append(tTemp.rstrip())
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:

@@ -31,7 +31,6 @@ import logging
 from abc import ABC, abstractmethod
 from time import time
 from pathlib import Path
-from operator import itemgetter
 from functools import partial
 
 from PyQt5.QtCore import QCoreApplication, QRegularExpression
@@ -43,14 +42,7 @@ from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
 
-ESCAPES = {
-    r"\*": "*",
-    r"\~": "~",
-    r"\_": "_",
-    r"\[": "[",
-    r"\]": "]",
-    r"\ ": "",
-}
+ESCAPES = {r"\*": "*", r"\~": "~", r"\_": "_", r"\[": "[", r"\]": "]", r"\ ": ""}
 RX_ESC = re.compile("|".join([re.escape(k) for k in ESCAPES.keys()]), flags=re.DOTALL)
 
 
@@ -177,6 +169,24 @@ class Tokenizer(ABC):
 
         # Cached Translations
         self._trSynopsis = self.tr("Synopsis")
+
+        # Format RegEx
+        self._rxMarkdown = [
+            (QRegularExpression(nwRegEx.FMT_EI), [0, self.FMT_I_B, 0, self.FMT_I_E]),
+            (QRegularExpression(nwRegEx.FMT_EB), [0, self.FMT_B_B, 0, self.FMT_B_E]),
+            (QRegularExpression(nwRegEx.FMT_ST), [0, self.FMT_D_B, 0, self.FMT_D_E]),
+        ]
+        self._rxShortCodes = QRegularExpression(nwRegEx.FMT_SC)
+        self._rxShortCodeVals = QRegularExpression(nwRegEx.FMT_SV)
+
+        self._shortCodeFmt = {
+            "[i]": self.FMT_I_B, "[/i]": self.FMT_I_E,
+            "[b]": self.FMT_B_B, "[/b]": self.FMT_B_E,
+            "[s]": self.FMT_D_B, "[/s]": self.FMT_D_E,
+            "[u]": self.FMT_U_B, "[/u]": self.FMT_U_E,
+            "[sup]": self.FMT_SUP_B, "[/sup]": self.FMT_SUP_E,
+            "[sub]": self.FMT_SUB_B, "[/sub]": self.FMT_SUB_E,
+        }
 
         return
 
@@ -399,26 +409,13 @@ class Tokenizer(ABC):
           4: The internal formatting map of the text, self.FMT_*
           5: The style of the block, self.A_*
         """
-        # RegExes for adding formatting tags within text lines
-        rxFormats = [
-            (QRegularExpression(nwRegEx.FMT_EI), [None, self.FMT_I_B, None, self.FMT_I_E]),
-            (QRegularExpression(nwRegEx.FMT_EB), [None, self.FMT_B_B, None, self.FMT_B_E]),
-            (QRegularExpression(nwRegEx.FMT_ST), [None, self.FMT_D_B, None, self.FMT_D_E]),
-            (QRegularExpression(nwRegEx.INL_EI), [None, self.FMT_I_B, None, self.FMT_I_E]),
-            (QRegularExpression(nwRegEx.INL_EB), [None, self.FMT_B_B, None, self.FMT_B_E]),
-            (QRegularExpression(nwRegEx.INL_ST), [None, self.FMT_D_B, None, self.FMT_D_E]),
-            (QRegularExpression(nwRegEx.INL_UN), [None, self.FMT_U_B, None, self.FMT_U_E]),
-            (QRegularExpression(nwRegEx.INL_UP), [None, self.FMT_SUP_B, None, self.FMT_SUP_E]),
-            (QRegularExpression(nwRegEx.INL_DN), [None, self.FMT_SUB_B, None, self.FMT_SUB_E]),
-        ]
-
         self._tokens = []
         tmpMarkdown = []
         nLine = 0
         breakNext = False
         for aLine in self._text.splitlines():
             nLine += 1
-            sLine = aLine.strip()
+            sLine = aLine.strip().lower()
 
             # Check for blank lines
             if len(sLine) == 0:
@@ -445,17 +442,17 @@ class Tokenizer(ABC):
                 # reach a continue statement and must thefore proceed to
                 # check other formats.
 
-                if sLine in ("[NEWPAGE]", "[NEW PAGE]"):
+                if sLine in ("[newpage]", "[new page]"):
                     breakNext = True
                     continue
 
-                elif sLine == "[VSPACE]":
+                elif sLine == "[vspace]":
                     self._tokens.append(
                         (self.T_SKIP, nLine, "", None, sAlign)
                     )
                     continue
 
-                elif sLine.startswith("[VSPACE:") and sLine.endswith("]"):
+                elif sLine.startswith("[vspace:") and sLine.endswith("]"):
                     nSkip = checkInt(sLine[8:-1], 0)
                     if nSkip >= 1:
                         self._tokens.append(
@@ -586,23 +583,10 @@ class Tokenizer(ABC):
                 if indRight:
                     sAlign |= self.A_IND_R
 
-                # Otherwise we use RegEx to find formatting tags within a line of text
-                fmtPos = []
-                for regEx, keys in rxFormats:
-                    rxThis = regEx.globalMatch(aLine, 0)
-                    while rxThis.hasNext():
-                        rxMatch = rxThis.next()
-                        for n in range(1, len(keys)):
-                            if keys[n] is not None:
-                                xPos = rxMatch.capturedStart(n)
-                                xLen = rxMatch.capturedLength(n)
-                                fmtPos.append([xPos, xLen, keys[n]])
-
-                # Save the line as is, but append the array of formatting locations
-                # sorted by position
-                fmtPos = sorted(fmtPos, key=itemgetter(0))
+                # Process formats
+                tLine, fmtPos = self._extractFormats(aLine)
                 self._tokens.append((
-                    self.T_TEXT, nLine, aLine, fmtPos, sAlign
+                    self.T_TEXT, nLine, tLine, fmtPos, sAlign
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
@@ -778,6 +762,45 @@ class Tokenizer(ABC):
         with open(path, mode="w", encoding="utf-8") as fObj:
             json.dump(data, fObj, indent=2)
         return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _extractFormats(self, text: str) -> tuple[str, list[tuple[int, int]]]:
+        """Extract format markers from a text paragraph."""
+        temp = []
+
+        # Match Markdown
+        for regEx, fmts in self._rxMarkdown:
+            rxItt = regEx.globalMatch(text, 0)
+            while rxItt.hasNext():
+                rxMatch = rxItt.next()
+                temp.extend(
+                    [rxMatch.capturedStart(n), rxMatch.capturedLength(n), fmt]
+                    for n, fmt in enumerate(fmts) if fmt > 0
+                )
+
+        # Match Shortcodes
+        rxItt = self._rxShortCodes.globalMatch(text, 0)
+        while rxItt.hasNext():
+            rxMatch = rxItt.next()
+            temp.append([
+                rxMatch.capturedStart(1),
+                rxMatch.capturedLength(1),
+                self._shortCodeFmt.get(rxMatch.captured(1).lower(), 0)
+            ])
+
+        # Post-process text and format markers
+        result = text
+        formats = []
+        for pos, n, fmt in reversed(sorted(temp, key=lambda x: x[0])):
+            if fmt > 0:
+                result = result[:pos] + result[pos+n:]
+                formats = [(p-n, f) for p, f in formats]
+                formats.insert(0, (pos, fmt))
+
+        return result, formats
 
 # END Class Tokenizer
 
