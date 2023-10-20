@@ -29,6 +29,7 @@ from __future__ import annotations
 import logging
 import xml.etree.ElementTree as ET
 
+from typing import Sequence
 from hashlib import sha256
 from pathlib import Path
 from zipfile import ZipFile
@@ -578,7 +579,7 @@ class ToOdt(Tokenizer):
 
     def _addTextPar(
         self, styleName: str, oStyle: ODTParagraphStyle, tText: str,
-        tFmt: list[tuple[int, int]] = [], isHead: bool = False, oLevel: str | None = None
+        tFmt: Sequence[tuple[int, int]] = [], isHead: bool = False, oLevel: str | None = None
     ) -> None:
         """Add a text paragraph to the text XML element."""
         tAttr = {}
