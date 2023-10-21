@@ -31,7 +31,7 @@ from pathlib import Path
 
 from novelwriter import CONFIG
 from novelwriter.common import formatTimeStamp
-from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwHtmlUnicode
+from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwHtmlUnicode, trConst
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import Tokenizer, stripEscape
 
@@ -474,25 +474,18 @@ class ToHtml(Tokenizer):
     def _formatKeywords(self, text: str) -> str:
         """Apply HTML formatting to keywords."""
         valid, bits, _ = self._project.index.scanThis("@"+text)
-        if not valid or not bits:
+        if not valid or not bits or bits[0] not in nwLabels.KEY_NAME:
             return ""
 
-        result = ""
-        tags = []
-        if bits[0] in nwLabels.KEY_NAME:
-            result += f"<span class='tags'>{nwLabels.KEY_NAME[bits[0]]}:</span> "
-            if len(bits) > 1:
-                if bits[0] == nwKeyWords.TAG_KEY:
-                    result += f"<a name='tag_{bits[1]}'>{bits[1]}</a>"
+        result = f"<span class='tags'>{trConst(nwLabels.KEY_NAME[bits[0]])}:</span> "
+        if len(bits) > 1:
+            if bits[0] == nwKeyWords.TAG_KEY:
+                result += f"<a name='tag_{bits[1]}'>{bits[1]}</a>"
+            else:
+                if self._genMode == self.M_PREVIEW:
+                    result += ", ".join(f"<a href='#{bits[0][1:]}={t}'>{t}</a>" for t in bits[1:])
                 else:
-                    if self._genMode == self.M_PREVIEW:
-                        for tTag in bits[1:]:
-                            tags.append(f"<a href='#{bits[0][1:]}={tTag}'>{tTag}</a>")
-                        result += ", ".join(tags)
-                    else:
-                        for tTag in bits[1:]:
-                            tags.append(f"<a href='#tag_{tTag}'>{tTag}</a>")
-                        result += ", ".join(tags)
+                    result += ", ".join(f"<a href='#tag_{t}'>{t}</a>" for t in bits[1:])
 
         return result
 

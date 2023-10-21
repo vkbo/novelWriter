@@ -37,7 +37,7 @@ from datetime import datetime
 
 from novelwriter import __version__
 from novelwriter.common import xmlIndent
-from novelwriter.constants import nwHeadFmt, nwLabels, trConst
+from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, trConst
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import Tokenizer, stripEscape
 
@@ -571,10 +571,15 @@ class ToOdt(Tokenizer):
         valid, bits, _ = self._project.index.scanThis("@"+text)
         if not valid or not bits or bits[0] not in nwLabels.KEY_NAME:
             return "", []
-        name = trConst(nwLabels.KEY_NAME[bits[0]])
-        tags = ", ".join(bits[1:])
-        rTxt = f"{name}: {tags}"
-        rFmt = [(0, self.FMT_B_B), (len(name) + 1, self.FMT_B_E)]
+
+        rTxt = f"{trConst(nwLabels.KEY_NAME[bits[0]])}: "
+        rFmt = [(0, self.FMT_B_B), (len(rTxt) - 1, self.FMT_B_E)]
+        if len(bits) > 1:
+            if bits[0] == nwKeyWords.TAG_KEY:
+                rTxt += bits[1]
+            else:
+                rTxt += ", ".join(bits[1:])
+
         return rTxt, rFmt
 
     def _addTextPar(
