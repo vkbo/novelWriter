@@ -158,27 +158,27 @@ class NWStorage:
         return True
 
     def openProject(self, path: str | Path) -> bool:
-        """Open a novelWriter project in-place. That is, it is opened
-        directly from a project folder.
-        """
+        """Open a novelWriter project storage location."""
         self._state = NWStorageState.NO_ERROR
         inPath = Path(path).resolve()
-        isArchive = False
 
         if inPath.is_dir():
+            # We expect a folder with the project XML file
             nwxFile = inPath / nwFiles.PROJ_FILE
         elif inPath.is_file() and inPath.suffix == ".nwx":
+            # We expect either a project XML or Zip archive
             nwxFile = inPath
         else:
             logger.error("Not a novelWriter project")
             return False
 
         if not nwxFile.exists():
+            # The .nwx file must exist to continue
             logger.error("Not found: %s", nwxFile)
             self._state = NWStorageState.NOT_FOUND
             return False
 
-        inDir = nwxFile.parent
+        nwxPath = nwxFile.parent
         if is_zipfile(nwxFile):
             logger.info("Extracting: %s", nwxFile)
             try:
@@ -201,8 +201,9 @@ class NWStorage:
 
             self._storagePath = nwxFile
             self._runtimePath = runtimePath
-            self._lockFilePath = inDir / f"{nwxFile.name}.lock"
+            self._lockFilePath = nwxPath / f"{nwxFile.name}.lock"
             self._openMode = self.MODE_ARCHIVE
+            checkLegacy = False
 
         else:
             if not nwxFile.name == nwFiles.PROJ_FILE:
@@ -210,12 +211,13 @@ class NWStorage:
                 self.clear()
                 return False
 
-            self._storagePath = inDir
-            self._runtimePath = inDir
-            self._lockFilePath = inDir / nwFiles.PROJ_LOCK
+            self._storagePath = nwxPath
+            self._runtimePath = nwxPath
+            self._lockFilePath = nwxPath / nwFiles.PROJ_LOCK
             self._openMode = self.MODE_INPLACE
+            checkLegacy = True
 
-        if not self._prepareStorage(checkLegacy=not isArchive):
+        if not self._prepareStorage(checkLegacy=checkLegacy):
             logger.error("Failed to prepare project folder")
             self._state = NWStorageState.FAILED
             self.clear()
@@ -464,10 +466,6 @@ class NWStorage:
         legacy.deprecatedFiles(path)
 
         return True
-
-    ##
-    #  Legacy Project Data Handlers
-    ##
 
 # END Class NWStorage
 
