@@ -387,8 +387,7 @@ class Config:
         return self._appPath / "assets"
 
     def lastPath(self) -> Path:
-        """Return the last path used by the user, but ensure it exists.
-        """
+        """Return the last path used by the user, but ensure it exists."""
         if isinstance(self._lastPath, Path):
             if self._lastPath.is_dir():
                 return self._lastPath
@@ -468,6 +467,7 @@ class Config:
 
         # Also create the syntax, themes and icons folders if possible
         if self._dataPath.is_dir():
+            (self._dataPath / "projects").mkdir(exist_ok=True)
             (self._dataPath / "cache").mkdir(exist_ok=True)
             (self._dataPath / "icons").mkdir(exist_ok=True)
             (self._dataPath / "syntax").mkdir(exist_ok=True)

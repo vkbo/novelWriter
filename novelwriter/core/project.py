@@ -219,7 +219,7 @@ class NWProject:
         build the tree of project items.
         """
         logger.info("Opening project: %s", projPath)
-        if not self._storage.openProjectInPlace(projPath):
+        if not self._storage.openProjectWrapper(projPath):
             SHARED.error(self.tr("Could not open project with path: {0}").format(projPath))
             return False
 
@@ -370,8 +370,7 @@ class NWProject:
         self._storage.runPostSaveTasks(autoSave=autoSave)
 
         # Update recent projects
-        storePath = self._storage.storagePath
-        if storePath:
+        if storePath := self._storage.storagePath:
             CONFIG.recentProjects.update(
                 storePath, self._data.name, sum(self._data.currCounts), saveTime
             )
@@ -418,8 +417,8 @@ class NWProject:
             return False
 
         timeStamp = formatTimeStamp(time(), fileSafe=True)
-        archName = baseDir / f"{cleanName} {timeStamp}.zip"
-        if self._storage.zipIt(archName, compression=2):
+        archName = baseDir / f"{cleanName} {timeStamp}"
+        if self._storage.zipIt(archName, compression=2, isBackup=True):
             size = formatInt(archName.stat().st_size)
             if doNotify:
                 SHARED.info(

@@ -340,7 +340,11 @@ class ProjectBuilder:
             return False
 
         project = NWProject()
-        if not project.storage.openProjectInPlace(projPath, newProject=True):
+        if data.get("singleFile", False):
+            status = project.storage.openProjectInPlace(projPath, newProject=True)
+        else:
+            status = project.storage.openProjectArchive(projPath, newProject=True)
+        if not status:
             return False
 
         lblNewProject = self.tr("New Project")

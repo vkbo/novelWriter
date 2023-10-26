@@ -24,16 +24,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import json
+import uuid
 import logging
 
 from time import time
 from typing import TYPE_CHECKING
 from pathlib import Path
-from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile
+from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile, is_zipfile
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, __version__, __hexversion__
 from novelwriter.error import logException
-from novelwriter.common import isHandle, minmax
+from novelwriter.common import formatTimeStamp, isHandle, minmax, yesNo
 from novelwriter.constants import nwFiles
 from novelwriter.core.document import NWDocument
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
@@ -61,6 +62,7 @@ class NWStorage:
         self._runtimePath = None
         self._lockFilePath = None
         self._openMode = self.MODE_INACTIVE
+        self._readOnly = True
         return
 
     def clear(self) -> None:
@@ -69,6 +71,7 @@ class NWStorage:
         self._runtimePath = None
         self._lockFilePath = None
         self._openMode = self.MODE_INACTIVE
+        self._readOnly = True
         return
 
     ##
@@ -105,6 +108,18 @@ class NWStorage:
         """Check if the storage location is open."""
         return self._runtimePath is not None
 
+    def openProjectWrapper(self, path: str | Path, newProject: bool = False) -> bool:
+        """A wrapper function to open a project in the correct way,
+        depending on whether it's a single file or folder project.
+        """
+        inPath = Path(path).resolve()
+        if inPath.is_file() and is_zipfile(inPath):
+            logger.debug("Project is an archive file")
+            return self.openProjectArchive(path, newProject=newProject)
+        else:
+            logger.debug("Project is a folder")
+            return self.openProjectInPlace(path, newProject=newProject)
+
     def openProjectInPlace(self, path: str | Path, newProject: bool = False) -> bool:
         """Open a novelWriter project in-place. That is, it is opened
         directly from a project folder.
@@ -130,19 +145,62 @@ class NWStorage:
 
         return True
 
-    def openProjectArchive(self, path: str | Path) -> bool:  # pragma: no cover
-        """Open the project from a single file.
-        Placeholder for later implementation. See #977.
-        """
-        return False
+    def openProjectArchive(self, path: str | Path, newProject: bool = False) -> bool:
+        """Open the project from a single file."""
+        inPath = Path(path).resolve()
+        if not (is_zipfile(inPath) or newProject):
+            logger.error("Not an archive file: %s", path)
+            return False
+
+        if not inPath.suffix == ".nwx":
+            logger.error("Not a novelWriter file")
+            return False
+
+        projID = None
+        isProject = True
+        if not newProject:
+            logger.info("Inspecting: %s", inPath)
+            with ZipFile(inPath, mode="r") as zipObj:
+                meta = self._parseMetaDataComment(zipObj.comment)
+                isProject = nwFiles.PROJ_FILE in zipObj.namelist()
+
+            self._readOnly = meta.get("isBackup", "no") == "yes"
+            projID = meta.get("projectID")
+
+        if not isProject:
+            logger.error("Not a novelWriter project")
+            return False
+
+        if not projID:
+            projID = str(uuid.uuid4())
+            logger.info("Generated temporary project ID: %s", projID)
+
+        tmpPath = CONFIG.dataPath("projects") / projID
+        try:
+            if newProject:
+                tmpPath.mkdir()
+            else:
+                with ZipFile(inPath, mode="r") as zipObj:
+                    zipObj.extractall(tmpPath)
+        except Exception:
+            logger.error("Could not create temporary project path: %s", tmpPath)
+            return False
+
+        self._storagePath = inPath
+        self._runtimePath = tmpPath
+        self._lockFilePath = inPath.with_suffix(".lock")
+        self._openMode = self.MODE_ARCHIVE
+
+        if not self._prepareStorage(checkLegacy=True, newProject=newProject):
+            self.clear()
+            return False
+
+        return True
 
     def runPostSaveTasks(self, autoSave: bool = False) -> bool:  # pragma: no cover
-        """Run tasks after the project has been saved.
-        Placeholder for later implementation. See #977.
-        """
-        if self._openMode == self.MODE_INPLACE:
-            # Nothing to do, so we just return
-            return True
+        """Run tasks after the project has been saved."""
+        if self._openMode == self.MODE_ARCHIVE and isinstance(self._storagePath, Path):
+            return self.zipIt(self._storagePath, compression=None, isBackup=False)
         return True
 
     def closeSession(self) -> None:
@@ -243,7 +301,7 @@ class NWStorage:
 
         return True
 
-    def zipIt(self, target: str | Path, compression: int | None = None) -> bool:
+    def zipIt(self, target: Path, compression: int | None = None, isBackup: bool = False) -> bool:
         """Zip the content of the project at its runtime location into a
         zip file. This process will only grab files that are supposed to
         be in the project. All non-project files will be left out.
@@ -271,9 +329,11 @@ class NWStorage:
 
         comp = ZIP_STORED if compression is None else ZIP_DEFLATED
         level = minmax(compression, 0, 9) if isinstance(compression, int) else None
+        target = target.with_suffix(".nwx")
         try:
             with ZipFile(target, mode="w", compression=comp, compresslevel=level) as zipObj:
                 logger.info("Creating archive: %s", target)
+                zipObj.comment = self._createMetaDataComment(isBackup)
                 for srcPath, zipPath in files:
                     if srcPath.is_file():
                         zipObj.write(srcPath, zipPath)
@@ -288,6 +348,26 @@ class NWStorage:
     ##
     #  Internal Functions
     ##
+
+    def _createMetaDataComment(self, isBackup: bool) -> bytes:
+        """Create the meta data string for zip archives."""
+        data = {
+            "novelWriter": "project",
+            "projectID": self._project.data.uuid,
+            "isBackup": yesNo(isBackup),
+            "appVersion": __version__,
+            "hexVersion": __hexversion__,
+            "timeStamp": formatTimeStamp(time()),
+        }
+        return ("".join(f"{k}:{v};" for k, v in data.items())).encode(encoding="utf-8")
+
+    def _parseMetaDataComment(self, comment: bytes) -> dict[str, str]:
+        """Parse a meta data string from a zip archive."""
+        return {
+            x[0]: x[2] for x in (
+                x.partition(":") for x in comment.decode(encoding="utf-8").split(";") if x
+            )
+        }
 
     def _prepareStorage(self, checkLegacy: bool = True, newProject: bool = False) -> bool:
         """Prepare the storage area for the project."""
