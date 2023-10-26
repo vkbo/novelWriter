@@ -238,8 +238,6 @@ class NWTree:
             if oParent is None:  # If not, create a new novel folder
                 oParent = self.create(prefix, None, nwItemType.ROOT, nwItemClass.NOVEL)
 
-            assert oParent is not None  # Otherwise there's an issue with self.create()
-
             # Create a new item
             newItem = NWItem(self._project, cHandle)
             newItem.setName(f"[{prefix}] {oName}")

@@ -181,8 +181,8 @@ class ProjWizardFolderPage(QWizardPage):
         self.browseButton = QPushButton(SHARED.theme.getIcon("browse"), "")
         self.browseButton.clicked.connect(self._doBrowse)
 
-        self.asFile = QRadioButton(self.tr("Store the project as a single file"))
-        self.asFile.toggled.connect(self._updatePathField)
+        self.asArchive = QRadioButton(self.tr("Store the project as a single file (experimental)"))
+        self.asArchive.toggled.connect(self._updatePathField)
 
         self.asFolder = QRadioButton(self.tr("Store the project as a folder and files"))
         self.asFolder.setChecked(True)
@@ -190,7 +190,7 @@ class ProjWizardFolderPage(QWizardPage):
 
         self.formatBox = QVBoxLayout()
         self.formatBox.setSpacing(fS)
-        self.formatBox.addWidget(self.asFile)
+        self.formatBox.addWidget(self.asArchive)
         self.formatBox.addWidget(self.asFolder)
 
         self.errLabel = QLabel("")
@@ -203,7 +203,7 @@ class ProjWizardFolderPage(QWizardPage):
         self.mainForm.setSpacing(fS)
 
         self.registerField("projPath*", self.projPath)
-        self.registerField("singleFile", self.asFile)
+        self.registerField("asArchive", self.asArchive)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -270,7 +270,7 @@ class ProjWizardFolderPage(QWizardPage):
     def _updatePathField(self, checked: bool = False) -> None:
         """Update the project path field."""
         fullPath = self._projDir / makeFileNameSafe(self.field("projName") or "")
-        if self.field("singleFile"):
+        if self.field("asArchive"):
             fullPath = fullPath.with_suffix(".nwx")
         else:
             fullPath = fullPath.with_suffix("")

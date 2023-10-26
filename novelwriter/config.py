@@ -467,11 +467,12 @@ class Config:
 
         # Also create the syntax, themes and icons folders if possible
         if self._dataPath.is_dir():
-            (self._dataPath / "projects").mkdir(exist_ok=True)
+            (self._dataPath / "temp").mkdir(exist_ok=True)
             (self._dataPath / "cache").mkdir(exist_ok=True)
             (self._dataPath / "icons").mkdir(exist_ok=True)
             (self._dataPath / "syntax").mkdir(exist_ok=True)
             (self._dataPath / "themes").mkdir(exist_ok=True)
+            (self._dataPath / "projects").mkdir(exist_ok=True)
 
         # Check if config file exists, and load it. If not, we save defaults
         if (self._confPath / nwFiles.CONF_FILE).is_file():

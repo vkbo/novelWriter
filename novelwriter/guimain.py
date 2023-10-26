@@ -1291,6 +1291,7 @@ class GuiMain(QMainWindow):
             "popSample": newProj.field("popSample"),
             "popMinimal": newProj.field("popMinimal"),
             "popCustom": newProj.field("popCustom"),
+            "asArchive": newProj.field("asArchive"),
             "addRoots": [],
             "addNotes": False,
             "numChapters": 0,

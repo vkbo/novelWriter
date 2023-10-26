@@ -340,10 +340,10 @@ class ProjectBuilder:
             return False
 
         project = NWProject()
-        if data.get("singleFile", False):
-            status = project.storage.openProjectInPlace(projPath, newProject=True)
-        else:
+        if data.get("asArchive", False):
             status = project.storage.openProjectArchive(projPath, newProject=True)
+        else:
+            status = project.storage.openProjectInPlace(projPath, newProject=True)
         if not status:
             return False
 
@@ -475,7 +475,10 @@ class ProjectBuilder:
         pkgSample = CONFIG.assetPath("sample.zip")
         if pkgSample.is_file():
             try:
-                shutil.unpack_archive(pkgSample, projPath)
+                if data.get("asArchive", False) and projPath.endswith(".nwx"):
+                    shutil.copy(pkgSample, projPath)
+                else:
+                    shutil.unpack_archive(pkgSample, projPath)
             except Exception as exc:
                 SHARED.error(self.tr(
                     "Failed to create a new example project."

@@ -294,7 +294,7 @@ class NWStorage:
     def clearTempStorage(self) -> None:
         """Clear a temporary runtime path if it is safe."""
         runPath = self._runtimePath
-        if isinstance(runPath, Path) and runPath.is_relative_to(CONFIG.dataPath()):
+        if isinstance(runPath, Path) and runPath.is_relative_to(CONFIG.dataPath("projects")):
             for filePath, _ in self._projectFiles(runPath):
                 try:
                     filePath.unlink(missing_ok=True)
@@ -306,6 +306,13 @@ class NWStorage:
                     dirPath.rmdir()
                 except Exception:
                     logger.error("Could not delete: %s", dirPath)
+
+            # Check if anything remains, and move it out of the way
+            if runPath.exists():
+                try:
+                    runPath.rename(CONFIG.dataPath("temp") / f"error-{uuid.uuid4()}")
+                except Exception:
+                    logger.error("Could not clean up: %s", runPath)
         return
 
     def zipIt(self, target: Path, compression: int | None = None, isBackup: bool = False) -> bool:
@@ -549,7 +556,6 @@ class _LegacyStorage:
 
             # Save dictionary and clean up old file
             userDict.save()
-            assert wordJson.exists()
             wordList.unlink()
 
         except Exception:
