@@ -219,7 +219,7 @@ class NWProject:
         build the tree of project items.
         """
         logger.info("Opening project: %s", projPath)
-        if not self._storage.openProjectWrapper(projPath):
+        if not self._storage.openProject(projPath):
             SHARED.error(self.tr("Could not open project with path: {0}").format(projPath))
             return False
 
@@ -367,7 +367,7 @@ class NWProject:
         # Save other project data
         self._options.saveSettings()
         self._index.saveIndex()
-        self._storage.runPostSaveTasks(autoSave=autoSave)
+        self._storage.runPostSaveTasks()
 
         # Update recent projects
         if storePath := self._storage.storagePath:

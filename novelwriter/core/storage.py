@@ -27,6 +27,7 @@ import json
 import uuid
 import logging
 
+from enum import Enum
 from time import time
 from typing import TYPE_CHECKING
 from pathlib import Path
@@ -46,6 +47,17 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
+class NWStorageState(Enum):
+
+    NO_ACTION      = 0
+    NO_ERROR       = 1
+    NOT_FOUND      = 2
+    ALREADY_EXISTS = 3
+    FAILED         = 4
+
+# END Enum NWStorageState
+
+
 class NWStorage:
     """Core: Project Storage Class
 
@@ -63,6 +75,7 @@ class NWStorage:
         self._lockFilePath = None
         self._openMode = self.MODE_INACTIVE
         self._readOnly = True
+        self._state = NWStorageState.NO_ACTION
         return
 
     def clear(self) -> None:
@@ -108,55 +121,66 @@ class NWStorage:
         """Check if the storage location is open."""
         return self._runtimePath is not None
 
-    def openProjectWrapper(self, path: str | Path, newProject: bool = False) -> bool:
-        """A wrapper function to open a project in the correct way,
-        depending on whether it's a single file or folder project.
-        """
+    def createNewProject(self, path: str | Path, asArchive: bool) -> bool:
+        """Create a new project in a given location."""
+        self._state = NWStorageState.NO_ERROR
         inPath = Path(path).resolve()
-        if is_zipfile(inPath):
-            logger.debug("Project is an archive file")
-            return self.openProjectArchive(path, newProject=newProject)
-        else:
-            logger.debug("Project is a folder")
-            return self.openProjectInPlace(path, newProject=newProject)
-
-    def openProjectInPlace(self, path: str | Path, newProject: bool = False) -> bool:
-        """Open a novelWriter project in-place. That is, it is opened
-        directly from a project folder.
-        """
-        inPath = Path(path).resolve()
-        if inPath.is_file():
-            # The path should not point to an existing file,
-            # but it can point to a folder containing files
-            inPath = inPath.parent
-
-        if not (inPath.is_dir() or newProject):
-            # If the project is not new, the folder must already exist.
+        inPath = inPath.with_suffix(".nwx") if asArchive else inPath.with_suffix("")
+        if inPath.exists():
+            logger.error("Path already exists: %s", inPath)
+            self._state = NWStorageState.ALREADY_EXISTS
             return False
 
-        self._storagePath = inPath
-        self._runtimePath = inPath
-        self._lockFilePath = inPath / nwFiles.PROJ_LOCK
-        self._openMode = self.MODE_INPLACE
+        if asArchive:
+            self._storagePath = inPath
+            self._runtimePath = CONFIG.dataPath("temp") / str(uuid.uuid4())
+            self._lockFilePath = inPath.parent / f"{inPath.name}.lock"
+            self._openMode = self.MODE_ARCHIVE
+        else:
+            self._storagePath = inPath
+            self._runtimePath = inPath
+            self._lockFilePath = inPath / nwFiles.PROJ_LOCK
+            self._openMode = self.MODE_INPLACE
 
-        if not self._prepareStorage(checkLegacy=True, newProject=newProject):
+        basePath = self._runtimePath
+        metaPath = basePath / "meta"
+        contPath = basePath / "content"
+        try:
+            basePath.mkdir()
+            metaPath.mkdir()
+            contPath.mkdir()
+        except Exception as exc:
+            logger.error("Failed to create project folders", exc_info=exc)
+            self._state = NWStorageState.FAILED
             self.clear()
             return False
 
         return True
 
-    def openProjectArchive(self, path: str | Path, newProject: bool = False) -> bool:
-        """Open the project from a single archive file."""
+    def openProject(self, path: str | Path) -> bool:
+        """Open a novelWriter project in-place. That is, it is opened
+        directly from a project folder.
+        """
+        self._state = NWStorageState.NO_ERROR
         inPath = Path(path).resolve()
-        if not (is_zipfile(inPath) or newProject) or not inPath.suffix == ".nwx":
-            logger.error("Not a novelWriter archive file: %s", path)
+        isArchive = False
+
+        if inPath.is_dir():
+            nwxFile = inPath / nwFiles.PROJ_FILE
+        elif inPath.is_file() and inPath.suffix == ".nwx":
+            nwxFile = inPath
+        else:
+            logger.error("Not a novelWriter project")
             return False
 
-        if newProject:
-            runtimePath = CONFIG.dataPath("projects") / str(uuid.uuid4())
+        if not nwxFile.exists():
+            logger.error("Not found: %s", nwxFile)
+            self._state = NWStorageState.NOT_FOUND
+            return False
 
-        else:
-            logger.info("Extracting: %s", inPath)
+        inDir = nwxFile.parent
+        if is_zipfile(nwxFile):
+            logger.info("Extracting: %s", nwxFile)
             try:
                 with ZipFile(inPath, mode="r") as zipObj:
                     meta = self._parseMetaDataComment(zipObj.comment)
@@ -171,21 +195,35 @@ class NWStorage:
 
             except Exception:
                 logger.error("Could not extract project archive")
+                self._state = NWStorageState.FAILED
                 self.clear()
                 return False
 
-        self._storagePath = inPath
-        self._runtimePath = runtimePath
-        self._lockFilePath = inPath.parent / f"{inPath.name}.lock"
-        self._openMode = self.MODE_ARCHIVE
+            self._storagePath = nwxFile
+            self._runtimePath = runtimePath
+            self._lockFilePath = inDir / f"{nwxFile.name}.lock"
+            self._openMode = self.MODE_ARCHIVE
 
-        if not self._prepareStorage(checkLegacy=True, newProject=newProject):
+        else:
+            if not nwxFile.name == nwFiles.PROJ_FILE:
+                logger.error("Unknown file: %s", nwxFile)
+                self.clear()
+                return False
+
+            self._storagePath = inDir
+            self._runtimePath = inDir
+            self._lockFilePath = inDir / nwFiles.PROJ_LOCK
+            self._openMode = self.MODE_INPLACE
+
+        if not self._prepareStorage(checkLegacy=not isArchive):
+            logger.error("Failed to prepare project folder")
+            self._state = NWStorageState.FAILED
             self.clear()
             return False
 
         return True
 
-    def runPostSaveTasks(self, autoSave: bool = False) -> bool:  # pragma: no cover
+    def runPostSaveTasks(self) -> bool:
         """Run tasks after the project has been saved."""
         if self._openMode == self.MODE_ARCHIVE and isinstance(self._storagePath, Path):
             return self.zipIt(self._storagePath, compression=None, isBackup=False)
@@ -388,7 +426,7 @@ class NWStorage:
             )
         }
 
-    def _prepareStorage(self, checkLegacy: bool = True, newProject: bool = False) -> bool:
+    def _prepareStorage(self, checkLegacy: bool = True) -> bool:
         """Prepare the storage area for the project."""
         path = self._runtimePath
         if not isinstance(path, Path):
@@ -401,18 +439,7 @@ class NWStorage:
             self.clear()
             return False
 
-        if newProject:
-            # If it's a new project, we check that there is no existing
-            # project in the selected path.
-            if path.exists() and len(list(path.iterdir())) > 0:
-                logger.error("The new project folder is not empty")
-                self.clear()
-                return False
-
-        # The folder is not required to exist, as it could be a new
-        # project, so we make sure it does. Then we add subfolders.
         try:
-            path.mkdir(exist_ok=True)
             (path / "content").mkdir(exist_ok=True)
             (path / "meta").mkdir(exist_ok=True)
         except Exception as exc:

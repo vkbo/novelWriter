@@ -327,6 +327,7 @@ class ProjectBuilder:
         popMinimal = data.get("popMinimal", True)
         popCustom = data.get("popCustom", False)
         popSample = data.get("popSample", False)
+        asArchive = data.get("asArchive", False)
 
         # Check if we're extracting the sample project. This is handled
         # differently as it isn't actually a new project, so we forward
@@ -340,11 +341,7 @@ class ProjectBuilder:
             return False
 
         project = NWProject()
-        if data.get("asArchive", False):
-            status = project.storage.openProjectArchive(projPath, newProject=True)
-        else:
-            status = project.storage.openProjectInPlace(projPath, newProject=True)
-        if not status:
+        if not project.storage.createNewProject(projPath, asArchive):
             return False
 
         lblNewProject = self.tr("New Project")
