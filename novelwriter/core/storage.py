@@ -113,7 +113,7 @@ class NWStorage:
         depending on whether it's a single file or folder project.
         """
         inPath = Path(path).resolve()
-        if inPath.is_file() and is_zipfile(inPath):
+        if is_zipfile(inPath):
             logger.debug("Project is an archive file")
             return self.openProjectArchive(path, newProject=newProject)
         else:
@@ -146,49 +146,37 @@ class NWStorage:
         return True
 
     def openProjectArchive(self, path: str | Path, newProject: bool = False) -> bool:
-        """Open the project from a single file."""
+        """Open the project from a single archive file."""
         inPath = Path(path).resolve()
-        if not (is_zipfile(inPath) or newProject):
-            logger.error("Not an archive file: %s", path)
+        if not (is_zipfile(inPath) or newProject) or not inPath.suffix == ".nwx":
+            logger.error("Not a novelWriter archive file: %s", path)
             return False
 
-        if not inPath.suffix == ".nwx":
-            logger.error("Not a novelWriter file")
-            return False
+        if newProject:
+            runtimePath = CONFIG.dataPath("projects") / str(uuid.uuid4())
 
-        projID = None
-        isProject = True
-        if not newProject:
-            logger.info("Inspecting: %s", inPath)
-            with ZipFile(inPath, mode="r") as zipObj:
-                meta = self._parseMetaDataComment(zipObj.comment)
-                isProject = nwFiles.PROJ_FILE in zipObj.namelist()
-
-            self._readOnly = meta.get("isBackup", "no") == "yes"
-            projID = meta.get("projectID")
-
-        if not isProject:
-            logger.error("Not a novelWriter project")
-            return False
-
-        if not projID:
-            projID = str(uuid.uuid4())
-            logger.info("Generated temporary project ID: %s", projID)
-
-        tmpPath = CONFIG.dataPath("projects") / projID
-        try:
-            if newProject:
-                tmpPath.mkdir()
-            else:
+        else:
+            logger.info("Extracting: %s", inPath)
+            try:
                 with ZipFile(inPath, mode="r") as zipObj:
-                    zipObj.extractall(tmpPath)
-        except Exception:
-            logger.error("Could not create temporary project path: %s", tmpPath)
-            return False
+                    meta = self._parseMetaDataComment(zipObj.comment)
+                    if nwFiles.PROJ_FILE not in zipObj.namelist():
+                        logger.error("Not a novelWriter project")
+                        return False
+
+                    projID = meta.get("projectID", str(uuid.uuid4()))
+                    runtimePath = CONFIG.dataPath("projects") / projID
+                    zipObj.extractall(runtimePath)
+                    self._readOnly = meta.get("isBackup", "") == "yes"
+
+            except Exception:
+                logger.error("Could not extract project archive")
+                self.clear()
+                return False
 
         self._storagePath = inPath
-        self._runtimePath = tmpPath
-        self._lockFilePath = inPath.with_suffix(".lock")
+        self._runtimePath = runtimePath
+        self._lockFilePath = inPath.parent / f"{inPath.name}.lock"
         self._openMode = self.MODE_ARCHIVE
 
         if not self._prepareStorage(checkLegacy=True, newProject=newProject):
@@ -205,6 +193,8 @@ class NWStorage:
 
     def closeSession(self) -> None:
         """Run tasks related to closing the session."""
+        if self._openMode == self.MODE_ARCHIVE:
+            self.clearTempStorage()
         self.clearLockFile()
         self.clear()
         return
@@ -301,6 +291,23 @@ class NWStorage:
 
         return True
 
+    def clearTempStorage(self) -> None:
+        """Clear a temporary runtime path if it is safe."""
+        runPath = self._runtimePath
+        if isinstance(runPath, Path) and runPath.is_relative_to(CONFIG.dataPath()):
+            for filePath, _ in self._projectFiles(runPath):
+                try:
+                    filePath.unlink(missing_ok=True)
+                except Exception:
+                    logger.error("Could not delete: %s", filePath)
+            dirs = [runPath / "content", runPath / "meta", runPath]
+            for dirPath in dirs:
+                try:
+                    dirPath.rmdir()
+                except Exception:
+                    logger.error("Could not delete: %s", dirPath)
+        return
+
     def zipIt(self, target: Path, compression: int | None = None, isBackup: bool = False) -> bool:
         """Zip the content of the project at its runtime location into a
         zip file. This process will only grab files that are supposed to
@@ -311,22 +318,6 @@ class NWStorage:
             logger.error("No path set")
             return False
 
-        baseMeta = basePath / "meta"
-        baseCont = basePath / "content"
-        files = [
-            (basePath / nwFiles.PROJ_FILE,   nwFiles.PROJ_FILE),
-            (basePath / nwFiles.PROJ_BACKUP, nwFiles.PROJ_BACKUP),
-            (baseMeta / nwFiles.BUILDS_FILE, f"meta/{nwFiles.BUILDS_FILE}"),
-            (baseMeta / nwFiles.INDEX_FILE,  f"meta/{nwFiles.INDEX_FILE}"),
-            (baseMeta / nwFiles.OPTS_FILE,   f"meta/{nwFiles.OPTS_FILE}"),
-            (baseMeta / nwFiles.DICT_FILE,   f"meta/{nwFiles.DICT_FILE}"),
-            (baseMeta / nwFiles.SESS_FILE,   f"meta/{nwFiles.SESS_FILE}"),
-        ]
-        for contItem in baseCont.iterdir():
-            name = contItem.name
-            if contItem.is_file() and len(name) == 17 and name.endswith(".nwd"):
-                files.append((contItem, f"content/{name}"))
-
         comp = ZIP_STORED if compression is None else ZIP_DEFLATED
         level = minmax(compression, 0, 9) if isinstance(compression, int) else None
         target = target.with_suffix(".nwx")
@@ -334,7 +325,7 @@ class NWStorage:
             with ZipFile(target, mode="w", compression=comp, compresslevel=level) as zipObj:
                 logger.info("Creating archive: %s", target)
                 zipObj.comment = self._createMetaDataComment(isBackup)
-                for srcPath, zipPath in files:
+                for srcPath, zipPath in self._projectFiles(basePath):
                     if srcPath.is_file():
                         zipObj.write(srcPath, zipPath)
                         logger.debug("Added: %s", zipPath)
@@ -348,6 +339,27 @@ class NWStorage:
     ##
     #  Internal Functions
     ##
+
+    def _projectFiles(self, basePath: Path) -> list[tuple[Path, str]]:
+        """Build a list of files expected to be in a project."""
+        baseMeta = basePath / "meta"
+        baseCont = basePath / "content"
+        files = [
+            (basePath / nwFiles.PROJ_FILE,   nwFiles.PROJ_FILE),
+            (basePath / nwFiles.PROJ_BACKUP, nwFiles.PROJ_BACKUP),
+            (basePath / nwFiles.TOC_TXT,     nwFiles.TOC_TXT),
+            (baseMeta / nwFiles.BUILDS_FILE, f"meta/{nwFiles.BUILDS_FILE}"),
+            (baseMeta / nwFiles.INDEX_FILE,  f"meta/{nwFiles.INDEX_FILE}"),
+            (baseMeta / nwFiles.OPTS_FILE,   f"meta/{nwFiles.OPTS_FILE}"),
+            (baseMeta / nwFiles.DICT_FILE,   f"meta/{nwFiles.DICT_FILE}"),
+            (baseMeta / nwFiles.SESS_FILE,   f"meta/{nwFiles.SESS_FILE}"),
+        ]
+        for contItem in baseCont.iterdir():
+            name = contItem.name
+            if contItem.is_file() and len(name) == 17 and name.endswith(".nwd"):
+                files.append((contItem, f"content/{name}"))
+
+        return files
 
     def _createMetaDataComment(self, isBackup: bool) -> bytes:
         """Create the meta data string for zip archives."""
