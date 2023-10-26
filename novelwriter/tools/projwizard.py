@@ -25,8 +25,11 @@ from __future__ import annotations
 
 import os
 import logging
+from pathlib import Path
 
-from PyQt5.QtCore import Qt
+from typing import TYPE_CHECKING
+
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QFileDialog, QFormLayout, QGridLayout, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QRadioButton, QSpinBox, QVBoxLayout, QWizard, QWizardPage
@@ -35,6 +38,9 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import makeFileNameSafe
 from novelwriter.extensions.switch import NSwitch
+
+if TYPE_CHECKING:
+    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +53,7 @@ PAGE_FINAL  = 4
 
 class GuiProjectWizard(QWizard):
 
-    def __init__(self, mainGui):
+    def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
 
         logger.debug("Create: GuiProjectWizard")
@@ -61,11 +67,11 @@ class GuiProjectWizard(QWizard):
         self.setWizardStyle(QWizard.ModernStyle)
         self.setPixmap(QWizard.WatermarkPixmap, self.sideImage)
 
-        self.introPage = ProjWizardIntroPage(self)
-        self.storagePage = ProjWizardFolderPage(self)
-        self.popPage = ProjWizardPopulatePage(self)
-        self.customPage = ProjWizardCustomPage(self)
-        self.finalPage = ProjWizardFinalPage(self)
+        self.introPage = ProjWizardIntroPage()
+        self.storagePage = ProjWizardFolderPage()
+        self.popPage = ProjWizardPopulatePage()
+        self.customPage = ProjWizardCustomPage()
+        self.finalPage = ProjWizardFinalPage()
 
         self.setPage(PAGE_INTRO, self.introPage)
         self.setPage(PAGE_STORE, self.storagePage)
@@ -88,7 +94,7 @@ class GuiProjectWizard(QWizard):
 
 class ProjWizardIntroPage(QWizardPage):
 
-    def __init__(self, theWizard):
+    def __init__(self) -> None:
         super().__init__()
 
         self.setTitle(self.tr("Create New Project"))
@@ -153,15 +159,16 @@ class ProjWizardIntroPage(QWizardPage):
 
 class ProjWizardFolderPage(QWizardPage):
 
-    def __init__(self, theWizard):
+    def __init__(self) -> None:
         super().__init__()
 
         self.setTitle(self.tr("Select Project Folder"))
-        self.theText = QLabel(self.tr(
+        self.infoText = QLabel(self.tr(
             "Select a location to store the project. A new project folder "
             "will be created in the selected location."
         ))
-        self.theText.setWordWrap(True)
+        self.infoText.setWordWrap(True)
+        self._projDir = CONFIG.lastPath()
 
         xW = CONFIG.pxInt(300)
         vS = CONFIG.pxInt(12)
@@ -171,9 +178,20 @@ class ProjWizardFolderPage(QWizardPage):
         self.projPath.setFixedWidth(xW)
         self.projPath.setPlaceholderText(self.tr("Required"))
 
-        self.browseButton = QPushButton("...")
-        self.browseButton.setMaximumWidth(int(2.5*SHARED.theme.getTextWidth("...")))
+        self.browseButton = QPushButton(SHARED.theme.getIcon("browse"), "")
         self.browseButton.clicked.connect(self._doBrowse)
+
+        self.asFile = QRadioButton(self.tr("Store the project as a single file"))
+        self.asFile.toggled.connect(self._updatePathField)
+
+        self.asFolder = QRadioButton(self.tr("Store the project as a folder and files"))
+        self.asFolder.setChecked(True)
+        self.asFolder.toggled.connect(self._updatePathField)
+
+        self.formatBox = QVBoxLayout()
+        self.formatBox.setSpacing(fS)
+        self.formatBox.addWidget(self.asFile)
+        self.formatBox.addWidget(self.asFolder)
 
         self.errLabel = QLabel("")
         self.errLabel.setWordWrap(True)
@@ -185,21 +203,28 @@ class ProjWizardFolderPage(QWizardPage):
         self.mainForm.setSpacing(fS)
 
         self.registerField("projPath*", self.projPath)
+        self.registerField("singleFile", self.asFile)
 
         # Assemble
         self.outerBox = QVBoxLayout()
         self.outerBox.setSpacing(vS)
-        self.outerBox.addWidget(self.theText)
+        self.outerBox.addWidget(self.infoText)
         self.outerBox.addLayout(self.mainForm)
+        self.outerBox.addLayout(self.formatBox)
         self.outerBox.addWidget(self.errLabel)
         self.outerBox.addStretch(1)
         self.setLayout(self.outerBox)
 
         return
 
-    def isComplete(self):
-        """Check that the selected path isn't already being used.
-        """
+    def initializePage(self) -> None:
+        """Update suggested path."""
+        super().initializePage()
+        self._updatePathField()
+        return
+
+    def isComplete(self) -> bool:
+        """Check that the selected path isn't already being used."""
         self.errLabel.setText("")
         if not super().isComplete():
             return False
@@ -222,24 +247,34 @@ class ProjWizardFolderPage(QWizardPage):
         return True
 
     ##
-    #  Slots
+    #  Private Slots
     ##
 
-    def _doBrowse(self):
-        """Select a project folder.
-        """
+    @pyqtSlot()
+    def _doBrowse(self) -> None:
+        """Select a project folder."""
         lastPath = CONFIG.lastPath()
         projDir = QFileDialog.getExistingDirectory(
             self, self.tr("Select Project Folder"), str(lastPath), options=QFileDialog.ShowDirsOnly
         )
         if projDir:
-            projName = self.field("projName")
-            if projName is not None:
-                fullDir = os.path.join(os.path.abspath(projDir), makeFileNameSafe(projName))
-                self.projPath.setText(fullDir)
+            self._projDir = Path(projDir)
+            self._updatePathField()
+            CONFIG.setLastPath(self._projDir)
         else:
             self.projPath.setText("")
 
+        return
+
+    @pyqtSlot(bool)
+    def _updatePathField(self, checked: bool = False) -> None:
+        """Update the project path field."""
+        fullPath = self._projDir / makeFileNameSafe(self.field("projName") or "")
+        if self.field("singleFile"):
+            fullPath = fullPath.with_suffix(".nwx")
+        else:
+            fullPath = fullPath.with_suffix("")
+        self.projPath.setText(str(fullPath))
         return
 
 # END Class ProjWizardFolderPage
@@ -247,7 +282,7 @@ class ProjWizardFolderPage(QWizardPage):
 
 class ProjWizardPopulatePage(QWizardPage):
 
-    def __init__(self, theWizard):
+    def __init__(self) -> None:
         super().__init__()
 
         self.setTitle(self.tr("Populate Project"))
@@ -286,7 +321,7 @@ class ProjWizardPopulatePage(QWizardPage):
 
         return
 
-    def nextId(self):
+    def nextId(self) -> int:
         """Overload the nextID function to skip further pages if custom
         is not selected.
         """
@@ -300,7 +335,7 @@ class ProjWizardPopulatePage(QWizardPage):
 
 class ProjWizardCustomPage(QWizardPage):
 
-    def __init__(self, theWizard):
+    def __init__(self) -> None:
         super().__init__()
 
         self.setTitle(self.tr("Custom Project Options"))
@@ -383,9 +418,8 @@ class ProjWizardCustomPage(QWizardPage):
     #  Internal Functions
     ##
 
-    def _syncSwitches(self):
-        """Check if the add notes option should also be switched off.
-        """
+    def _syncSwitches(self) -> None:
+        """Check if the add notes option should also be switched off."""
         addPlot = self.addPlot.isChecked()
         addChar = self.addChar.isChecked()
         addWorld = self.addWorld.isChecked()
@@ -398,7 +432,7 @@ class ProjWizardCustomPage(QWizardPage):
 
 class ProjWizardFinalPage(QWizardPage):
 
-    def __init__(self, theWizard):
+    def __init__(self) -> None:
         super().__init__()
 
         self.setTitle(self.tr("Summary"))
@@ -414,9 +448,8 @@ class ProjWizardFinalPage(QWizardPage):
 
         return
 
-    def initializePage(self):
-        """Update the summary information on the final page.
-        """
+    def initializePage(self) -> None:
+        """Update the summary information on the final page."""
         super().initializePage()
 
         sumList = []
