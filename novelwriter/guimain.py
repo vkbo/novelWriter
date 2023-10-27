@@ -387,8 +387,8 @@ class GuiMain(QMainWindow):
 
         logger.info("Creating new project")
         nwProject = ProjectBuilder()
-        if nwProject.buildProject(projData):
-            self.openProject(projPath)
+        if nwProject.buildProject(projData) and (storagePath := nwProject.projPath):
+            self.openProject(storagePath)
         else:
             return False
 

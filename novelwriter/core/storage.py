@@ -35,7 +35,7 @@ from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile, is_zipfile
 
 from novelwriter import CONFIG, __version__, __hexversion__
 from novelwriter.error import logException
-from novelwriter.common import formatTimeStamp, isHandle, minmax, yesNo
+from novelwriter.common import formatTimeStamp, isHandle, minmax
 from novelwriter.constants import nwFiles
 from novelwriter.core.document import NWDocument
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
@@ -125,18 +125,22 @@ class NWStorage:
         """Create a new project in a given location."""
         self._state = NWStorageState.NO_ERROR
         inPath = Path(path).resolve()
-        inPath = inPath.with_suffix(".nwx") if asArchive else inPath.with_suffix("")
-        if inPath.exists():
-            logger.error("Path already exists: %s", inPath)
-            self._state = NWStorageState.ALREADY_EXISTS
-            return False
+        inPath = inPath.with_suffix(".nwproj") if asArchive else inPath.with_suffix("")
 
         if asArchive:
+            if inPath.is_file():
+                logger.error("File already exists: %s", inPath)
+                self._state = NWStorageState.ALREADY_EXISTS
+                return False
             self._storagePath = inPath
             self._runtimePath = CONFIG.dataPath("temp") / str(uuid.uuid4())
             self._lockFilePath = inPath.parent / f"{inPath.name}.lock"
             self._openMode = self.MODE_ARCHIVE
         else:
+            if inPath.is_dir() and len(list(inPath.iterdir())) > 0:
+                logger.error("Folder is not empty: %s", inPath)
+                self._state = NWStorageState.ALREADY_EXISTS
+                return False
             self._storagePath = inPath
             self._runtimePath = inPath
             self._lockFilePath = inPath / nwFiles.PROJ_LOCK
@@ -146,9 +150,9 @@ class NWStorage:
         metaPath = basePath / "meta"
         contPath = basePath / "content"
         try:
-            basePath.mkdir()
-            metaPath.mkdir()
-            contPath.mkdir()
+            basePath.mkdir(exist_ok=True)
+            metaPath.mkdir(exist_ok=True)
+            contPath.mkdir(exist_ok=True)
         except Exception as exc:
             logger.error("Failed to create project folders", exc_info=exc)
             self._state = NWStorageState.FAILED
@@ -161,25 +165,31 @@ class NWStorage:
         """Open a novelWriter project storage location."""
         self._state = NWStorageState.NO_ERROR
         inPath = Path(path).resolve()
+        isArchive = False
 
+        # Check what we're opening. Only three options are allowed:
+        #   1. A folder with a nwProject.nwx file in it
+        #   2. A zip file with the .nwproj extension
+        #   3. A nwProject.nwx opened directly
         if inPath.is_dir():
-            # We expect a folder with the project XML file
             nwxFile = inPath / nwFiles.PROJ_FILE
-        elif inPath.is_file() and inPath.suffix == ".nwx":
-            # We expect either a project XML or Zip archive
+        elif is_zipfile(inPath) and inPath.suffix == ".nwproj":
+            nwxFile = inPath
+            isArchive = True
+        elif inPath.is_file() and inPath.name == nwFiles.PROJ_FILE:
             nwxFile = inPath
         else:
             logger.error("Not a novelWriter project")
             return False
 
         if not nwxFile.exists():
-            # The .nwx file must exist to continue
+            # The .nwx/.nwproj file must exist to continue
             logger.error("Not found: %s", nwxFile)
             self._state = NWStorageState.NOT_FOUND
             return False
 
         nwxPath = nwxFile.parent
-        if is_zipfile(nwxFile):
+        if isArchive:
             logger.info("Extracting: %s", nwxFile)
             try:
                 with ZipFile(inPath, mode="r") as zipObj:
@@ -191,7 +201,7 @@ class NWStorage:
                     projID = meta.get("projectID", str(uuid.uuid4()))
                     runtimePath = CONFIG.dataPath("projects") / projID
                     zipObj.extractall(runtimePath)
-                    self._readOnly = meta.get("isBackup", "") == "yes"
+                    self._readOnly = meta.get("novelWriter", "") == "backup"
 
             except Exception:
                 logger.error("Could not extract project archive")
@@ -206,11 +216,6 @@ class NWStorage:
             checkLegacy = False
 
         else:
-            if not nwxFile.name == nwFiles.PROJ_FILE:
-                logger.error("Unknown file: %s", nwxFile)
-                self.clear()
-                return False
-
             self._storagePath = nwxPath
             self._runtimePath = nwxPath
             self._lockFilePath = nwxPath / nwFiles.PROJ_LOCK
@@ -367,7 +372,6 @@ class NWStorage:
 
         comp = ZIP_STORED if compression is None else ZIP_DEFLATED
         level = minmax(compression, 0, 9) if isinstance(compression, int) else None
-        target = target.with_suffix(".nwx")
         try:
             with ZipFile(target, mode="w", compression=comp, compresslevel=level) as zipObj:
                 logger.info("Creating archive: %s", target)
@@ -411,9 +415,8 @@ class NWStorage:
     def _createMetaDataComment(self, isBackup: bool) -> bytes:
         """Create the meta data string for zip archives."""
         data = {
-            "novelWriter": "project",
+            "novelWriter": "backup" if isBackup else "project",
             "projectID": self._project.data.uuid,
-            "isBackup": yesNo(isBackup),
             "appVersion": __version__,
             "hexVersion": __hexversion__,
             "timeStamp": formatTimeStamp(time()),

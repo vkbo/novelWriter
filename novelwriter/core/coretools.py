@@ -29,6 +29,7 @@ import shutil
 import logging
 
 from typing import Iterable
+from pathlib import Path
 from functools import partial
 
 from PyQt5.QtCore import QCoreApplication
@@ -310,7 +311,13 @@ class ProjectBuilder:
 
     def __init__(self) -> None:
         self.tr = partial(QCoreApplication.translate, "NWProject")
+        self._path = None
         return
+
+    @property
+    def projPath(self) -> Path | None:
+        """The actual path of the project."""
+        return self._path
 
     ##
     #  Methods
@@ -343,6 +350,8 @@ class ProjectBuilder:
         project = NWProject()
         if not project.storage.createNewProject(projPath, asArchive):
             return False
+
+        self._path = project.storage.storagePath
 
         lblNewProject = self.tr("New Project")
         lblNewChapter = self.tr("New Chapter")
@@ -469,13 +478,17 @@ class ProjectBuilder:
             logger.error("No project path set for the example project")
             return False
 
+        projPath = Path(projPath).resolve()
         pkgSample = CONFIG.assetPath("sample.zip")
         if pkgSample.is_file():
             try:
-                if data.get("asArchive", False) and projPath.endswith(".nwx"):
-                    shutil.copy(pkgSample, projPath)
+                if data.get("asArchive", False):
+                    targetPath = projPath.with_suffix(".nwproj")
+                    shutil.copy(pkgSample, targetPath)
+                    self._path = targetPath
                 else:
                     shutil.unpack_archive(pkgSample, projPath)
+                    self._path = projPath
             except Exception as exc:
                 SHARED.error(self.tr(
                     "Failed to create a new example project."

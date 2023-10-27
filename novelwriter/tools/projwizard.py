@@ -271,7 +271,7 @@ class ProjWizardFolderPage(QWizardPage):
         """Update the project path field."""
         fullPath = self._projDir / makeFileNameSafe(self.field("projName") or "")
         if self.field("asArchive"):
-            fullPath = fullPath.with_suffix(".nwx")
+            fullPath = fullPath.with_suffix(".nwproj")
         else:
             fullPath = fullPath.with_suffix("")
         self.projPath.setText(str(fullPath))

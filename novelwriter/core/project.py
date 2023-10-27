@@ -417,10 +417,13 @@ class NWProject:
             return False
 
         timeStamp = formatTimeStamp(time(), fileSafe=True)
-        archName = baseDir / f"{cleanName} {timeStamp}"
+        archName = baseDir / f"{cleanName} {timeStamp}.nwproj"
         if self._storage.zipIt(archName, compression=2, isBackup=True):
-            size = formatInt(archName.stat().st_size)
             if doNotify:
+                try:
+                    size = formatInt(archName.stat().st_size)
+                except Exception:
+                    size = -1
                 SHARED.info(
                     self.tr("Created a backup of your project of size {0}B.").format(size),
                     info=self.tr("Path: {0}").format(str(backupPath))
