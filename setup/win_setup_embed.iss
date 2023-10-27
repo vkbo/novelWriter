@@ -50,7 +50,12 @@ Filename:  "{app}\pythonw.exe"; Parameters: "{#nwAppExeName}"; Description: "{cm
 
 [Registry]
 Root: HKA; Subkey: "Software\Classes\.nwx\OpenWithProgids"; ValueType: string; ValueName: "novelWriterProject.nwx"; ValueData: ""; Flags: uninsdeletevalue
-Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx"; ValueType: string; ValueName: ""; ValueData: "novelWriter Project File"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx"; ValueType: string; ValueName: ""; ValueData: "novelWriter XML Project File"; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\novelwriter\assets\icons\x-novelwriter-project.ico"
 Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwx\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\pythonw.exe"" ""{app}\{#nwAppExeName}"" ""%1"""
 Root: HKA; Subkey: "Software\Classes\Applications\{#nwAppExeName}\SupportedTypes"; ValueType: string; ValueName: ".nwx"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\.nwproj\OpenWithProgids"; ValueType: string; ValueName: "novelWriterProject.nwproj"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwproj"; ValueType: string; ValueName: ""; ValueData: "novelWriter Project File"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwproj\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\novelwriter\assets\icons\x-novelwriter-project.ico"
+Root: HKA; Subkey: "Software\Classes\novelWriterProject.nwproj\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\pythonw.exe"" ""{app}\{#nwAppExeName}"" ""%1"""
+Root: HKA; Subkey: "Software\Classes\Applications\{#nwAppExeName}\SupportedTypes"; ValueType: string; ValueName: ".nwproj"; ValueData: ""; Flags: uninsdeletekey

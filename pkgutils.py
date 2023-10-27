@@ -1442,6 +1442,14 @@ def xdgInstall():
     else:
         print(f"Error {exCode}: Could not install mimetype")
 
+    exCode = subprocess.call([
+        "xdg-mime", "install", "setup/data/x-novelwriter-project-xml.xml"
+    ])
+    if exCode == 0:
+        print("Installed mimetype")
+    else:
+        print(f"Error {exCode}: Could not install mimetype")
+
     # Install Icons
     # =============
 

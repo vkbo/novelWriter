@@ -42,6 +42,7 @@
         <key>CFBundleTypeExtensions</key>
         <array>
           <string>nwx</string>
+          <string>nwproj</string>
         </array>
         <key>CFBundleTypeName</key>
         <string>novelWriter Project</string>
