@@ -6,5 +6,4 @@ Exec=novelwriter %f
 Icon=novelwriter
 Categories=Qt;Office;WordProcessor;
 Terminal=false
-MimeType=application/x-novelwriter-project-xml;
-MimeType=application/x-novelwriter-project;
+MimeType=application/x-novelwriter-project;application/x-novelwriter-project-xml;

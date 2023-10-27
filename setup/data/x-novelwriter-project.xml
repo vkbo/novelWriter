@@ -6,4 +6,10 @@
     <glob pattern="*.nwproj"/>
     <icon name="application-x-novelwriter-project"/>
   </mime-type>
+  <mime-type type="application/x-novelwriter-project-xml">
+    <comment>novelWriter Project XML</comment>
+    <sub-class-of type="application/xml"/>
+    <glob pattern="*.nwx"/>
+    <icon name="application-x-novelwriter-project"/>
+  </mime-type>
 </mime-info>
