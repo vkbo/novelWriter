@@ -606,7 +606,7 @@ def makeMinimalPackage(targetOS):
         "pyproject.toml",
     ]
 
-    with ZipFile(outFile, "w", compression=ZIP_DEFLATED, compresslevel=9) as zipObj:
+    with ZipFile(outFile, "w", compression=ZIP_DEFLATED, compresslevel=3) as zipObj:
 
         for nRoot, _, nFiles in os.walk("novelwriter"):
             if nRoot.endswith("__pycache__"):
@@ -623,10 +623,6 @@ def makeMinimalPackage(targetOS):
         if targetOS == OS_WIN:
             zipObj.write("novelWriter.py", "novelWriter.pyw")
             print("Added: novelWriter.pyw")
-            zipObj.write(os.path.join("setup", "windows_install.bat"), "windows_install.bat")
-            print("Added: windows_install.bat")
-            zipObj.write(os.path.join("setup", "windows_uninstall.bat"), "windows_uninstall.bat")
-            print("Added: windows_uninstall.bat")
 
         else:  # Linux and Mac
             # Add icons
