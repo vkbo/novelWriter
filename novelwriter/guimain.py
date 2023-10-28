@@ -414,7 +414,9 @@ class GuiMain(QMainWindow):
         if self.docEditor.docChanged:
             self.saveDocument()
 
-        saveOK = self.saveProject()
+        self.projView.saveProjectTasks()
+
+        saveOK = SHARED.saveAndCloseProject()
         doBackup = False
         if SHARED.project.data.doBackup and CONFIG.backupOnClose:
             doBackup = True
@@ -434,8 +436,6 @@ class GuiMain(QMainWindow):
             self.projView.clearProjectView()
             self.itemDetails.clearDetails()
             self.mainStatus.clearStatus()
-
-            SHARED.closeProject()
 
             self._updateWindowTitle()
             self._changeView(nwView.PROJECT)

@@ -381,12 +381,16 @@ class NWProject:
 
         return True
 
-    def closeProject(self, idleTime: float = 0.0) -> None:
+    def saveProjectMeta(self, idleTime: float) -> None:
+        """Save project meta data. Needed before closing the project."""
+        self._tree.writeToCFile()
+        self._options.saveSettings()
+        self._session.appendSession(idleTime)
+        return
+
+    def closeProject(self) -> None:
         """Close the project."""
         logger.info("Closing project")
-        self._options.saveSettings()
-        self._tree.writeToCFile()
-        self._session.appendSession(idleTime)
         self._storage.closeSession()
         self._lockedBy = None
         return

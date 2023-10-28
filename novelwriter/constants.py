@@ -78,6 +78,7 @@ class nwFiles:
     RECENT_FILE = "recentProjects.json"
 
     # Project Root Files
+    PROJ_XML    = "nwProject.xml"
     PROJ_FILE   = "nwProject.nwx"
     PROJ_BACKUP = "nwProject.bak"
     PROJ_LOCK   = "nwProject.lock"

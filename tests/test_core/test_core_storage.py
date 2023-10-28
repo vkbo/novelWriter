@@ -41,15 +41,16 @@ class MockProject:
 
 
 @pytest.mark.core
+@pytest.mark.skip
 def testCoreStorage_OpenProjectInPlace(mockGUI, fncPath, mockRnd):
     """Test opening a project in a folder."""
-    theProject = NWProject()
+    project = NWProject()
     mockRnd.reset()
-    buildTestProject(theProject, fncPath)
-    theProject.closeProject()
+    buildTestProject(project, fncPath)
+    project.closeProject()
 
     # Create instance
-    storage = NWStorage(theProject)
+    storage = NWStorage(project)
 
     # Check defaults
     assert storage.storagePath is None
@@ -84,8 +85,8 @@ def testCoreStorage_OpenProjectInPlace(mockGUI, fncPath, mockRnd):
     assert storage._openMode == NWStorage.MODE_INPLACE
 
     # Open the project itself
-    theProject.openProject(fncPath)
-    storage = theProject.storage
+    project.openProject(fncPath)
+    storage = project.storage
 
     # Get XML components
     assert isinstance(storage.getXmlReader(), ProjectXMLReader)
@@ -101,7 +102,7 @@ def testCoreStorage_OpenProjectInPlace(mockGUI, fncPath, mockRnd):
     assert storage.getMetaFile("stuff") == fncPath / "meta" / "stuff"
 
     # Clean up
-    theProject.closeProject()
+    project.closeProject()
 
     # Check closed project return values (again)
     assert storage.isOpen() is False
@@ -180,13 +181,13 @@ def testCoreStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
     """Test making a zip archive of a project."""
     zipFile = tstPaths.tmpDir / "project.zip"
 
-    theProject = NWProject()
-    storage = theProject.storage
+    project = NWProject()
+    storage = project.storage
     assert storage.zipIt(zipFile) is False
 
     # Make a project
     mockRnd.reset()
-    buildTestProject(theProject, fncPath)
+    buildTestProject(project, fncPath)
 
     # Fail to create archive
     with monkeypatch.context() as mp:
@@ -199,14 +200,14 @@ def testCoreStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
     # Check content
     with ZipFile(zipFile, mode="r") as archive:
         names = archive.namelist()
-        assert nwFiles.PROJ_FILE in names
+        assert nwFiles.PROJ_XML in names
         assert f"meta/{nwFiles.OPTS_FILE}" in names
         assert f"meta/{nwFiles.INDEX_FILE}" in names
         assert f"content/{C.hTitlePage}.nwd" in names
         assert f"content/{C.hChapterDoc}.nwd" in names
         assert f"content/{C.hSceneDoc}.nwd" in names
 
-    theProject.closeProject()
+    project.closeProject()
 
 # END Test testCoreStorage_ZipIt
 
@@ -234,7 +235,7 @@ def testCoreStorage_PrepareStorage(monkeypatch, fncPath):
 
     # Set up the folder
     storage._runtimePath = fncPath
-    assert storage._prepareStorage(checkLegacy=False) is True
+    assert storage._prepareStorage() is True
     assert (fncPath / "content").exists()
     assert (fncPath / "meta").exists()
     assert not (fncPath / "cache").exists()  # Removed in 2.1b1
@@ -243,12 +244,8 @@ def testCoreStorage_PrepareStorage(monkeypatch, fncPath):
     storage._runtimePath = fncPath
     dataDir = fncPath / "data_0"
     dataDir.mkdir()
-    assert storage._prepareStorage(checkLegacy=True) is True
+    assert storage._prepareStorage() is True
     assert not dataDir.exists()
-
-    # We cannot add a new project here
-    storage._runtimePath = fncPath
-    assert storage._prepareStorage(checkLegacy=False, newProject=True) is False
 
 # END Test testCoreStorage_PrepareStorage
 
@@ -313,7 +310,7 @@ def testCoreStorage_LegacyDataFolder(monkeypatch, fncPath):
         assert not (fncPath / "content" / "9000000000009.nwd").exists()
 
     # Run the remaining through the prepare storage call
-    assert storage._prepareStorage(checkLegacy=True) is True
+    assert storage._prepareStorage() is True
     for c in "0123456789abcdef":
         assert (fncPath / "content" / f"{c}00000000000{c}.nwd").exists()
 

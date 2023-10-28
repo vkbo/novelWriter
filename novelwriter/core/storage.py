@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import json
 import uuid
+import hashlib
 import logging
 
 from enum import Enum
@@ -168,9 +169,9 @@ class NWStorage:
         isArchive = False
 
         # Check what we're opening. Only three options are allowed:
-        #   1. A folder with a nwProject.nwx file in it
-        #   2. A zip file with the .nwproj extension
-        #   3. A nwProject.nwx opened directly
+        # 1. A folder with a nwProject.nwx file in it
+        # 2. A zip file with the .nwproj extension
+        # 3. A nwProject.nwx file opened directly
         if inPath.is_dir():
             nwxFile = inPath / nwFiles.PROJ_FILE
         elif is_zipfile(inPath) and inPath.suffix == ".nwproj":
@@ -179,7 +180,7 @@ class NWStorage:
         elif inPath.is_file() and inPath.name == nwFiles.PROJ_FILE:
             nwxFile = inPath
         else:
-            logger.error("Not a novelWriter project")
+            logger.error("Not a novelWriter project file")
             return False
 
         if not nwxFile.exists():
@@ -194,14 +195,25 @@ class NWStorage:
             try:
                 with ZipFile(inPath, mode="r") as zipObj:
                     meta = self._parseMetaDataComment(zipObj.comment)
-                    if nwFiles.PROJ_FILE not in zipObj.namelist():
+                    hasXml = nwFiles.PROJ_XML in zipObj.namelist()
+                    hasNwx = nwFiles.PROJ_FILE in zipObj.namelist()
+                    if not (hasXml or hasNwx):
                         logger.error("Not a novelWriter project")
                         return False
 
-                    projID = meta.get("projectID", str(uuid.uuid4()))
-                    runtimePath = CONFIG.dataPath("projects") / projID
+                    pathID = hashlib.sha1(str(nwxPath).encode()).hexdigest()
+                    runtimePath = CONFIG.dataPath("projects") / pathID
                     zipObj.extractall(runtimePath)
-                    self._readOnly = meta.get("novelWriter", "") == "backup"
+
+                with open(runtimePath / "instance", mode="w", encoding="utf-8") as of:
+                    json.dump({
+                        "path": str(nwxFile),
+                        "pathID": pathID,
+                        "projectID": meta.get("projectID", "None"),
+                        "timeStamp": formatTimeStamp(time()),
+                    }, of, indent=2)
+
+                self._readOnly = meta.get("novelWriter", "") == "backup"
 
             except Exception:
                 logger.error("Could not extract project archive")
@@ -213,16 +225,14 @@ class NWStorage:
             self._runtimePath = runtimePath
             self._lockFilePath = nwxPath / f"{nwxFile.name}.lock"
             self._openMode = self.MODE_ARCHIVE
-            checkLegacy = False
 
         else:
             self._storagePath = nwxPath
             self._runtimePath = nwxPath
             self._lockFilePath = nwxPath / nwFiles.PROJ_LOCK
             self._openMode = self.MODE_INPLACE
-            checkLegacy = True
 
-        if not self._prepareStorage(checkLegacy=checkLegacy):
+        if not self._prepareStorage():
             logger.error("Failed to prepare project folder")
             self._state = NWStorageState.FAILED
             self.clear()
@@ -251,14 +261,19 @@ class NWStorage:
     def getXmlReader(self) -> ProjectXMLReader | None:
         """Return a properly configured ProjectXMLReader instance."""
         if isinstance(self._runtimePath, Path):
-            projFile = self._runtimePath / nwFiles.PROJ_FILE
-            return ProjectXMLReader(projFile)
+            if self._openMode == self.MODE_ARCHIVE:
+                return ProjectXMLReader(self._runtimePath / nwFiles.PROJ_XML)
+            else:
+                return ProjectXMLReader(self._runtimePath / nwFiles.PROJ_FILE)
         return None
 
     def getXmlWriter(self) -> ProjectXMLWriter | None:
         """Return a properly configured ProjectXMLWriter instance."""
         if isinstance(self._runtimePath, Path):
-            return ProjectXMLWriter(self._runtimePath)
+            if self._openMode == self.MODE_ARCHIVE:
+                return ProjectXMLWriter(self._runtimePath / nwFiles.PROJ_XML)
+            else:
+                return ProjectXMLWriter(self._runtimePath / nwFiles.PROJ_FILE)
         return None
 
     def getDocument(self, tHandle: str | None) -> NWDocument:
@@ -339,8 +354,11 @@ class NWStorage:
     def clearTempStorage(self) -> None:
         """Clear a temporary runtime path if it is safe."""
         runPath = self._runtimePath
-        if isinstance(runPath, Path) and runPath.is_relative_to(CONFIG.dataPath("projects")):
-            for filePath, _ in self._projectFiles(runPath):
+        if isinstance(runPath, Path) and runPath.is_relative_to(CONFIG.dataPath()):
+            files = self._projectFiles(runPath)
+            files.append((runPath / "mimetype", "mimetype"))
+            files.append((runPath / "instance", "instance"))
+            for filePath, _ in files:
                 try:
                     filePath.unlink(missing_ok=True)
                 except Exception:
@@ -372,13 +390,16 @@ class NWStorage:
 
         comp = ZIP_STORED if compression is None else ZIP_DEFLATED
         level = minmax(compression, 0, 9) if isinstance(compression, int) else None
+        added = set()
         try:
             with ZipFile(target, mode="w", compression=comp, compresslevel=level) as zipObj:
+                zipObj.writestr("mimetype", "application/x-novelwriter-project")
                 logger.info("Creating archive: %s", target)
                 zipObj.comment = self._createMetaDataComment(isBackup)
                 for srcPath, zipPath in self._projectFiles(basePath):
-                    if srcPath.is_file():
+                    if srcPath.is_file() and zipPath not in added:
                         zipObj.write(srcPath, zipPath)
+                        added.add(zipPath)
                         logger.debug("Added: %s", zipPath)
         except Exception:
             logger.error("Failed to create acrhive")
@@ -396,7 +417,8 @@ class NWStorage:
         baseMeta = basePath / "meta"
         baseCont = basePath / "content"
         files = [
-            (basePath / nwFiles.PROJ_FILE,   nwFiles.PROJ_FILE),
+            (basePath / nwFiles.PROJ_XML,    nwFiles.PROJ_XML),
+            (basePath / nwFiles.PROJ_FILE,   nwFiles.PROJ_XML),  # Always as .xml in archive
             (basePath / nwFiles.PROJ_BACKUP, nwFiles.PROJ_BACKUP),
             (basePath / nwFiles.TOC_TXT,     nwFiles.TOC_TXT),
             (baseMeta / nwFiles.BUILDS_FILE, f"meta/{nwFiles.BUILDS_FILE}"),
@@ -431,7 +453,7 @@ class NWStorage:
             )
         }
 
-    def _prepareStorage(self, checkLegacy: bool = True) -> bool:
+    def _prepareStorage(self) -> bool:
         """Prepare the storage area for the project."""
         path = self._runtimePath
         if not isinstance(path, Path):
@@ -452,15 +474,8 @@ class NWStorage:
             self.clear()
             return False
 
-        if not checkLegacy:
-            # The legacy content check is only needed for project folder
-            # storage, so if it is not expected to be that, there's no
-            # need for the remaining checks.
-            return True
-
-        legacy = _LegacyStorage(self._project)
-
         # Check for legacy data folders
+        legacy = _LegacyStorage(self._project)
         for child in path.iterdir():
             if child.is_dir() and child.name.startswith("data_"):
                 legacy.legacyDataFolder(path, child)
