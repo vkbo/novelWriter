@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="1024" height="1024" version="1.1" viewBox="0 0 270.93 270.93" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<svg width="1024" height="1024" version="1.1" viewBox="0 0 270.93 270.93" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:xlink="http://www.w3.org/1999/xlink">
  <defs>
-  <filter id="filter1444" x="-.018715" y="-.021626" width="1.0465" height="1.0538" color-interpolation-filters="sRGB">
+  <filter id="filter1444" x="-.021584" y="-.024942" width="1.0489" height="1.0565" color-interpolation-filters="sRGB">
    <feFlood flood-color="rgb(0,0,0)" flood-opacity=".49804" result="flood"/>
    <feComposite in="flood" in2="SourceGraphic" operator="in" result="composite1"/>
-   <feGaussianBlur in="composite1" result="blur" stdDeviation="3"/>
-   <feOffset dx="6" dy="6" result="offset"/>
+   <feGaussianBlur in="composite1" result="blur" stdDeviation="1"/>
+   <feOffset dx="1" dy="1" result="offset"/>
    <feComposite in="SourceGraphic" in2="offset" result="composite2"/>
   </filter>
-  <filter id="filter1456" x="-.034758" y="-.067525" width="1.0866" height="1.168" color-interpolation-filters="sRGB">
+  <filter id="filter1456" x="-.040088" y="-.077879" width="1.0909" height="1.1765" color-interpolation-filters="sRGB">
    <feFlood flood-color="rgb(0,0,0)" flood-opacity=".49804" result="flood"/>
    <feComposite in="flood" in2="SourceGraphic" operator="in" result="composite1"/>
-   <feGaussianBlur in="composite1" result="blur" stdDeviation="3"/>
-   <feOffset dx="6" dy="6" result="offset"/>
+   <feGaussianBlur in="composite1" result="blur" stdDeviation="1"/>
+   <feOffset dx="1" dy="1" result="offset"/>
    <feComposite in="SourceGraphic" in2="offset" result="composite2"/>
   </filter>
+  <radialGradient id="radialGradient1474" cx="111.19" cy="67.111" r="130.97" gradientTransform="matrix(2.2584 1.5089 -.74487 1.1148 -169.6 -163.94)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#7a9cb8" offset="0"/>
+   <stop stop-color="#5978a6" offset="1"/>
+  </radialGradient>
  </defs>
  <metadata>
   <rdf:RDF>
@@ -25,11 +29,9 @@
   </rdf:RDF>
  </metadata>
  <g>
-  <g stroke-linejoin="round">
-   <rect x="5.8208" y="5.8208" width="259.29" height="259.29" rx="21.167" ry="21.167" fill="url(#radialGradient1474)" stroke="#517995" stroke-width="2.6458"/>
-   <path transform="scale(.26458)" d="m312 200c-44.32 0-80 35.68-80 80v200a280 280 0 0 0 0 2e-3 280 280 0 0 0 0 0.0195v199.98c0 44.32 35.68 80 80 80s80-35.68 80-80v-200a120 120 0 0 1 120-120 120 120 0 0 1 120 120v282.84h160v-282.84a280 280 0 0 0-280-280 280 280 0 0 0-0.81055 0 280 280 0 0 0-133.46 34.297c-14.424-20.753-38.428-34.299-65.725-34.299zm231.46 563.23c-0.62174 0.0972-1.2172 0.22317-1.7793 0.37696 0.5621-0.15379 1.1576-0.27973 1.7793-0.37696zm-1.7793 0.37696c-0.5621 0.15378-1.0907 0.33534-1.5801 0.53906 0.48937-0.20372 1.018-0.38528 1.5801-0.53906zm338.86-0.37696c0.62174 0.0972 1.2172 0.22317 1.7793 0.37696-0.5621-0.15379-1.1576-0.27973-1.7793-0.37696zm1.7793 0.37696c0.5621 0.15378 1.0907 0.33534 1.5801 0.53906-0.48938-0.20372-1.018-0.38528-1.5801-0.53906z" fill="#a11212" filter="url(#filter1444)" stroke="#7e1b1b" stroke-width="10"/>
-   <path transform="scale(.26458)" d="m632 762.84v0.16406h-85.584c-5.493 0-9.916 2.2329-9.916 5.0059 0 0.52294 0.15913 1.027 0.45117 1.5h-0.44531c0.30916 2.0361 1.241 3.9979 2.8164 5.5723l165.6 165.49c3.9206 3.9181 10.234 3.9181 14.154 0l165.6-165.49c1.5757-1.5746 2.5072-3.5358 2.8164-5.5723h-0.44531c0.29216-0.47304 0.45117-0.97706 0.45117-1.5 0-2.773-4.423-5.0059-9.916-5.0059h-85.584v-0.16406z" fill="#730d0d" filter="url(#filter1456)" stroke="#590d0d" stroke-width="10"/>
-  </g>
+  <rect x="5.8208" y="5.8208" width="259.29" height="259.29" rx="21.167" ry="21.167" fill="url(#radialGradient1474)" stroke="#517995" stroke-linejoin="round" stroke-width="2.6458"/>
+  <path d="m82.55 52.917c-11.726 0-21.167 9.4403-21.167 21.167v52.916a74.083 74.083 0 0 0 0 5.3e-4 74.083 74.083 0 0 0 0 5e-3v52.912c0 11.726 9.4403 21.167 21.167 21.167s21.167-9.4403 21.167-21.167v-52.917a31.75 31.75 0 0 1 31.75-31.75 31.75 31.75 0 0 1 31.75 31.75v74.834h42.333v-74.834a74.083 74.083 0 0 0-74.083-74.083 74.083 74.083 0 0 0-0.21445 0 74.083 74.083 0 0 0-35.313 9.0744c-3.8165-5.4906-10.167-9.0747-17.39-9.0747zm61.241 149.02c-0.16451 0.0257-0.32206 0.0591-0.47078 0.0997 0.14872-0.0407 0.30627-0.074 0.47078-0.0997zm-0.47078 0.0997c-0.14872 0.0407-0.28858 0.0887-0.41806 0.14263 0.12948-0.0539 0.26934-0.10194 0.41806-0.14263zm89.656-0.0997c0.1645 0.0257 0.32205 0.0591 0.47077 0.0997-0.14872-0.0407-0.30627-0.074-0.47077-0.0997zm0.47077 0.0997c0.14872 0.0407 0.28858 0.0887 0.41806 0.14263-0.12948-0.0539-0.26934-0.10194-0.41806-0.14263z" fill="#a11212" filter="url(#filter1444)" stroke="#7e1b1b" stroke-linejoin="round" stroke-width="2.6458"/>
   <rect x="69.85" y="67.998" width="10.583" height="119.06" rx="5.2917" ry="5.2917" fill="#c32222"/>
+  <path d="m167.22 201.83v0.0434h-22.644c-1.4534 0-2.6236 0.59078-2.6236 1.3245 0 0.13837 0.0421 0.27172 0.11937 0.39688h-0.11782c0.0818 0.53871 0.32835 1.0578 0.74517 1.4743l43.815 43.787c1.0373 1.0367 2.7077 1.0367 3.745 0l43.815-43.787c0.4169-0.41662 0.66338-0.93551 0.74517-1.4743h-0.11782c0.0773-0.12516 0.11938-0.25851 0.11938-0.39688 0-0.73368-1.1703-1.3245-2.6236-1.3245h-22.644v-0.0434z" fill="#730d0d" filter="url(#filter1456)" stroke="#590d0d" stroke-linejoin="round" stroke-width="2.6458"/>
  </g>
 </svg>
