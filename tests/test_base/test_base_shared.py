@@ -105,8 +105,9 @@ def testBaseSharedData_Projects(fncPath, caplog: pytest.LogCaptureFixture):
     assert shared.saveAndCloseProject() is True
     assert shared.hasProject is False
 
-    # Cannot save a project after it's been closed
+    # Cannot save or close a project after it's been closed
     assert shared.saveProject() is False
+    assert shared.saveAndCloseProject() is False
 
     # Check locked project info
     project.openProject(fncPath)  # First open with our independent project instance

@@ -370,9 +370,9 @@ class NWProject:
         self._storage.runPostSaveTasks()
 
         # Update recent projects
-        if storePath := self._storage.storagePath:
+        if storagePath := self._storage.storagePath:
             CONFIG.recentProjects.update(
-                storePath, self._data.name, sum(self._data.currCounts), saveTime
+                storagePath, self._data.name, sum(self._data.currCounts), saveTime
             )
 
         self._storage.writeLockFile()

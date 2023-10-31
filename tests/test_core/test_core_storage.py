@@ -200,7 +200,7 @@ def testCoreStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
     # Check content
     with ZipFile(zipFile, mode="r") as archive:
         names = archive.namelist()
-        assert nwFiles.PROJ_XML in names
+        assert nwFiles.PROJ_ARCH in names
         assert f"meta/{nwFiles.OPTS_FILE}" in names
         assert f"meta/{nwFiles.INDEX_FILE}" in names
         assert f"content/{C.hTitlePage}.nwd" in names

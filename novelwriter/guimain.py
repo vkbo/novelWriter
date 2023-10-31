@@ -415,8 +415,11 @@ class GuiMain(QMainWindow):
             self.saveDocument()
 
         self.projView.saveProjectTasks()
+        self.closeDocument()
+        self.closeDocViewer(byUser=False)
 
         saveOK = SHARED.saveAndCloseProject()
+
         doBackup = False
         if SHARED.project.data.doBackup and CONFIG.backupOnClose:
             doBackup = True
@@ -427,10 +430,7 @@ class GuiMain(QMainWindow):
             SHARED.project.backupProject(False)
 
         if saveOK:
-            self.closeDocument()
             self.docViewer.clearNavHistory()
-            self.closeDocViewer(byUser=False)
-
             self.outlineView.closeProjectTasks()
             self.novelView.closeProjectTasks()
             self.projView.clearProjectView()

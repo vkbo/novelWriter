@@ -164,7 +164,7 @@ class SharedData(QObject):
         return self.project.saveProject(autoSave=autoSave)
 
     def saveAndCloseProject(self) -> bool:
-        """Close the current project."""
+        """Save and close the current project."""
         if not self.project.isValid:
             logger.error("There is no project open")
             return False

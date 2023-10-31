@@ -630,8 +630,8 @@ def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tstPaths):
 
     # Check that the main project file was restored
     assert cmpFiles(
-        fncPath / "nwProject.nwx",
-        tstPaths.tmpDir / "extract" / "nwProject.xml"
+        fncPath / nwFiles.PROJ_FILE,
+        tstPaths.tmpDir / "extract" / nwFiles.PROJ_ARCH
     )
 
 # END Test testCoreProject_Backup

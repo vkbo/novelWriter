@@ -25,9 +25,9 @@ from __future__ import annotations
 
 import os
 import logging
-from pathlib import Path
 
 from typing import TYPE_CHECKING
+from pathlib import Path
 
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
