@@ -50,11 +50,11 @@ logger = logging.getLogger(__name__)
 
 class NWStorageState(Enum):
 
-    NO_ACTION      = 0
-    NO_ERROR       = 1
-    NOT_FOUND      = 2
-    ALREADY_EXISTS = 3
-    FAILED         = 4
+    NO_ERROR       = 0
+    NOT_FOUND      = 1
+    ALREADY_EXISTS = 2
+    FAILED         = 3
+    READ_ONLY      = 4
 
 # END Enum NWStorageState
 
@@ -76,7 +76,7 @@ class NWStorage:
         self._lockFilePath = None
         self._openMode = self.MODE_INACTIVE
         self._readOnly = True
-        self._state = NWStorageState.NO_ACTION
+        self._state = NWStorageState.NO_ERROR
         return
 
     def clear(self) -> None:
@@ -94,12 +94,12 @@ class NWStorage:
 
     @property
     def storagePath(self) -> Path | None:
-        """Get the path where the project is saved."""
+        """Return the path where the project is stored."""
         return self._storagePath
 
     @property
     def runtimePath(self) -> Path | None:
-        """Get the path where the project is saved at runtime."""
+        """Return the path where the project is stored at runtime."""
         return self._runtimePath
 
     @property
@@ -113,6 +113,16 @@ class NWStorage:
                 return contentPath
         logger.error("Content path cannot be resolved")
         return None
+
+    @property
+    def readOnly(self) -> bool:
+        """Return True of the project is read only."""
+        return self._readOnly
+
+    @property
+    def state(self) -> NWStorageState:
+        """Return the state of the storage instance."""
+        return self._state
 
     ##
     #  Core Methods
@@ -134,7 +144,7 @@ class NWStorage:
                 self._state = NWStorageState.ALREADY_EXISTS
                 return False
             self._storagePath = inPath
-            self._runtimePath = CONFIG.dataPath("temp") / str(uuid.uuid4())
+            self._runtimePath = CONFIG.dataPath("temp", mkdir=True) / str(uuid.uuid4())
             self._lockFilePath = inPath.parent / f"{inPath.name}.lock"
             self._openMode = self.MODE_ARCHIVE
         else:
@@ -195,14 +205,14 @@ class NWStorage:
             try:
                 with ZipFile(inPath, mode="r") as zipObj:
                     meta = self._parseMetaDataComment(zipObj.comment)
-                    hasXml = nwFiles.PROJ_XML in zipObj.namelist()
+                    hasXml = nwFiles.PROJ_ARCH in zipObj.namelist()
                     hasNwx = nwFiles.PROJ_FILE in zipObj.namelist()
                     if not (hasXml or hasNwx):
                         logger.error("Not a novelWriter project")
                         return False
 
                     pathID = hashlib.sha1(str(nwxPath).encode()).hexdigest()
-                    runtimePath = CONFIG.dataPath("projects") / pathID
+                    runtimePath = CONFIG.dataPath("projects", mkdir=True) / pathID
                     zipObj.extractall(runtimePath)
 
                 with open(runtimePath / "instance", mode="w", encoding="utf-8") as of:
@@ -242,7 +252,11 @@ class NWStorage:
 
     def runPostSaveTasks(self) -> bool:
         """Run tasks after the project has been saved."""
+        self._state = NWStorageState.NO_ERROR
         if self._openMode == self.MODE_ARCHIVE and isinstance(self._storagePath, Path):
+            if self._readOnly:
+                self._state = NWStorageState.READ_ONLY
+                return False
             return self.zipIt(self._storagePath, compression=None, isBackup=False)
         return True
 
@@ -262,7 +276,7 @@ class NWStorage:
         """Return a properly configured ProjectXMLReader instance."""
         if isinstance(self._runtimePath, Path):
             if self._openMode == self.MODE_ARCHIVE:
-                return ProjectXMLReader(self._runtimePath / nwFiles.PROJ_XML)
+                return ProjectXMLReader(self._runtimePath / nwFiles.PROJ_ARCH)
             else:
                 return ProjectXMLReader(self._runtimePath / nwFiles.PROJ_FILE)
         return None
@@ -271,7 +285,7 @@ class NWStorage:
         """Return a properly configured ProjectXMLWriter instance."""
         if isinstance(self._runtimePath, Path):
             if self._openMode == self.MODE_ARCHIVE:
-                return ProjectXMLWriter(self._runtimePath / nwFiles.PROJ_XML)
+                return ProjectXMLWriter(self._runtimePath / nwFiles.PROJ_ARCH)
             else:
                 return ProjectXMLWriter(self._runtimePath / nwFiles.PROJ_FILE)
         return None
@@ -373,7 +387,7 @@ class NWStorage:
             # Check if anything remains, and move it out of the way
             if runPath.exists():
                 try:
-                    runPath.rename(CONFIG.dataPath("temp") / f"error-{uuid.uuid4()}")
+                    runPath.rename(CONFIG.dataPath("temp", mkdir=True) / f"error-{uuid.uuid4()}")
                 except Exception:
                     logger.error("Could not clean up: %s", runPath)
         return
@@ -390,16 +404,14 @@ class NWStorage:
 
         comp = ZIP_STORED if compression is None else ZIP_DEFLATED
         level = minmax(compression, 0, 9) if isinstance(compression, int) else None
-        added = set()
         try:
             with ZipFile(target, mode="w", compression=comp, compresslevel=level) as zipObj:
                 zipObj.writestr("mimetype", "application/x-novelwriter-project")
                 logger.info("Creating archive: %s", target)
                 zipObj.comment = self._createMetaDataComment(isBackup)
                 for srcPath, zipPath in self._projectFiles(basePath):
-                    if srcPath.is_file() and zipPath not in added:
+                    if zipPath and srcPath.is_file():
                         zipObj.write(srcPath, zipPath)
-                        added.add(zipPath)
                         logger.debug("Added: %s", zipPath)
         except Exception:
             logger.error("Failed to create acrhive")
@@ -414,23 +426,32 @@ class NWStorage:
 
     def _projectFiles(self, basePath: Path) -> list[tuple[Path, str]]:
         """Build a list of files expected to be in a project."""
+        files = []
         baseMeta = basePath / "meta"
         baseCont = basePath / "content"
-        files = [
-            (basePath / nwFiles.PROJ_XML,    nwFiles.PROJ_XML),
-            (basePath / nwFiles.PROJ_FILE,   nwFiles.PROJ_XML),  # Always as .xml in archive
-            (basePath / nwFiles.PROJ_BACKUP, nwFiles.PROJ_BACKUP),
-            (basePath / nwFiles.TOC_TXT,     nwFiles.TOC_TXT),
-            (baseMeta / nwFiles.BUILDS_FILE, f"meta/{nwFiles.BUILDS_FILE}"),
-            (baseMeta / nwFiles.INDEX_FILE,  f"meta/{nwFiles.INDEX_FILE}"),
-            (baseMeta / nwFiles.OPTS_FILE,   f"meta/{nwFiles.OPTS_FILE}"),
-            (baseMeta / nwFiles.DICT_FILE,   f"meta/{nwFiles.DICT_FILE}"),
-            (baseMeta / nwFiles.SESS_FILE,   f"meta/{nwFiles.SESS_FILE}"),
-        ]
-        for contItem in baseCont.iterdir():
-            name = contItem.name
-            if contItem.is_file() and len(name) == 17 and name.endswith(".nwd"):
-                files.append((contItem, f"content/{name}"))
+
+        # Project files
+        nwxFile = basePath / nwFiles.PROJ_FILE
+        xmlFile = basePath / nwFiles.PROJ_ARCH
+        nwxBack = nwxFile.with_suffix(".bak")
+        xmlBack = xmlFile.with_suffix(".bak")
+
+        files.append((nwxFile if nwxFile.is_file() else xmlFile, nwFiles.PROJ_ARCH))
+        files.append((nwxBack if nwxBack.is_file() else xmlBack, str(xmlBack.name)))
+
+        # Other/meta files
+        files.append((basePath / nwFiles.TOC_TXT,     None))
+        files.append((baseMeta / nwFiles.BUILDS_FILE, f"meta/{nwFiles.BUILDS_FILE}"))
+        files.append((baseMeta / nwFiles.INDEX_FILE,  f"meta/{nwFiles.INDEX_FILE}"))
+        files.append((baseMeta / nwFiles.OPTS_FILE,   f"meta/{nwFiles.OPTS_FILE}"))
+        files.append((baseMeta / nwFiles.DICT_FILE,   f"meta/{nwFiles.DICT_FILE}"))
+        files.append((baseMeta / nwFiles.SESS_FILE,   f"meta/{nwFiles.SESS_FILE}"))
+
+        # Content files
+        for item in baseCont.iterdir():
+            name = item.name
+            if item.is_file() and len(name) == 17 and name.endswith(".nwd"):
+                files.append((item, f"content/{name}"))
 
         return files
 
