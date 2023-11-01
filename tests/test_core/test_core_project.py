@@ -170,7 +170,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
 
     # Initialising the storage class fails
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.openProject", lambda *a, **k: False)
+        mp.setattr("novelwriter.core.storage.NWStorage.readProject", lambda *a, **k: False)
         assert project.openProject(fncPath) is False
 
     # Fail on lock file

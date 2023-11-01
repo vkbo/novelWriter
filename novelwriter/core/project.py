@@ -219,7 +219,7 @@ class NWProject:
         build the tree of project items.
         """
         logger.info("Opening project: %s", projPath)
-        if not self._storage.openProject(projPath):
+        if not self._storage.readProject(projPath):
             SHARED.error(self.tr("Could not open project with path: {0}").format(projPath))
             return False
 
@@ -242,6 +242,10 @@ class NWProject:
 
         # Open The Project XML File
         # =========================
+
+        if not self._storage.readyProject():
+            SHARED.error(self.tr("Could not open project with path: {0}").format(projPath))
+            return False
 
         xmlReader = self._storage.getXmlReader()
         if not isinstance(xmlReader, ProjectXMLReader):

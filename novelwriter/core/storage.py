@@ -51,10 +51,12 @@ logger = logging.getLogger(__name__)
 class NWStorageState(Enum):
 
     NO_ERROR       = 0
-    NOT_FOUND      = 1
-    ALREADY_EXISTS = 2
-    FAILED         = 3
-    READ_ONLY      = 4
+    NOT_READY      = 1
+    NOT_FOUND      = 2
+    ALREADY_EXISTS = 3
+    FAILED         = 4
+    READ_ONLY      = 5
+    NEEDS_RECOVERY = 6
 
 # END Enum NWStorageState
 
@@ -172,8 +174,13 @@ class NWStorage:
 
         return True
 
-    def openProject(self, path: str | Path) -> bool:
-        """Open a novelWriter project storage location."""
+    def readProject(self, path: str | Path) -> bool:
+        """Read a novelWriter project storage location.
+
+        This mainly involves figuring out if the project is a folder
+        project or an archive project, and that we have the correct file
+        extension and format.
+        """
         self._state = NWStorageState.NO_ERROR
         inPath = Path(path).resolve()
         isArchive = False
@@ -181,7 +188,7 @@ class NWStorage:
         # Check what we're opening. Only three options are allowed:
         # 1. A folder with a nwProject.nwx file in it
         # 2. A zip file with the .nwproj extension
-        # 3. A nwProject.nwx file opened directly
+        # 3. A full path to an nwProject.nwx file
         if inPath.is_dir():
             nwxFile = inPath / nwFiles.PROJ_FILE
         elif is_zipfile(inPath) and inPath.suffix == ".nwproj":
@@ -201,9 +208,40 @@ class NWStorage:
 
         nwxPath = nwxFile.parent
         if isArchive:
+            pathID = hashlib.sha1(str(nwxPath).encode()).hexdigest()
+            self._storagePath = nwxFile
+            self._runtimePath = CONFIG.dataPath("projects", mkdir=True) / pathID
+            self._lockFilePath = nwxPath / f"{nwxFile.name}.lock"
+            self._openMode = self.MODE_ARCHIVE
+        else:
+            self._storagePath = nwxPath
+            self._runtimePath = nwxPath
+            self._lockFilePath = nwxPath / nwFiles.PROJ_LOCK
+            self._openMode = self.MODE_INPLACE
+
+        return True
+
+    def readyProject(self) -> bool:
+        """Prepare project for the session.
+
+        For an archived project, this means extracting the archive to a
+        temporary folder and adding a meta data file for the instance.
+
+        For a folder based project, this step is skipped. In either case
+        the project folder content is checked for legacy files that need
+        converting or cleaning up.
+        """
+        rPath = self._runtimePath
+        sPath = self._storagePath
+        if not isinstance(rPath, Path) or not isinstance(sPath, Path):
+            self._state = NWStorageState.NOT_READY
+            return False
+
+        if self._openMode == self.MODE_ARCHIVE:
+            nwxFile = rPath / nwFiles.PROJ_ARCH
             logger.info("Extracting: %s", nwxFile)
             try:
-                with ZipFile(inPath, mode="r") as zipObj:
+                with ZipFile(sPath, mode="r") as zipObj:
                     meta = self._parseMetaDataComment(zipObj.comment)
                     hasXml = nwFiles.PROJ_ARCH in zipObj.namelist()
                     hasNwx = nwFiles.PROJ_FILE in zipObj.namelist()
@@ -211,14 +249,18 @@ class NWStorage:
                         logger.error("Not a novelWriter project")
                         return False
 
-                    pathID = hashlib.sha1(str(nwxPath).encode()).hexdigest()
-                    runtimePath = CONFIG.dataPath("projects", mkdir=True) / pathID
-                    zipObj.extractall(runtimePath)
+                    if rPath.exists():
+                        print("Ping!")
+                        self._state = NWStorageState.NEEDS_RECOVERY
+                        self.clear()
+                        return False
 
-                with open(runtimePath / "instance", mode="w", encoding="utf-8") as of:
+                    zipObj.extractall(rPath)
+
+                with open(rPath / "instance", mode="w", encoding="utf-8") as of:
                     json.dump({
                         "path": str(nwxFile),
-                        "pathID": pathID,
+                        "pathID": rPath.name,
                         "projectID": meta.get("projectID", "None"),
                         "timeStamp": formatTimeStamp(time()),
                     }, of, indent=2)
@@ -230,17 +272,6 @@ class NWStorage:
                 self._state = NWStorageState.FAILED
                 self.clear()
                 return False
-
-            self._storagePath = nwxFile
-            self._runtimePath = runtimePath
-            self._lockFilePath = nwxPath / f"{nwxFile.name}.lock"
-            self._openMode = self.MODE_ARCHIVE
-
-        else:
-            self._storagePath = nwxPath
-            self._runtimePath = nwxPath
-            self._lockFilePath = nwxPath / nwFiles.PROJ_LOCK
-            self._openMode = self.MODE_INPLACE
 
         if not self._prepareStorage():
             logger.error("Failed to prepare project folder")
@@ -402,17 +433,19 @@ class NWStorage:
             logger.error("No path set")
             return False
 
+        temp = target.with_suffix(".tmp")
         comp = ZIP_STORED if compression is None else ZIP_DEFLATED
         level = minmax(compression, 0, 9) if isinstance(compression, int) else None
         try:
-            with ZipFile(target, mode="w", compression=comp, compresslevel=level) as zipObj:
-                zipObj.writestr("mimetype", "application/x-novelwriter-project")
+            with ZipFile(temp, mode="w", compression=comp, compresslevel=level) as zipObj:
                 logger.info("Creating archive: %s", target)
+                zipObj.writestr("mimetype", "application/x-novelwriter-project")
                 zipObj.comment = self._createMetaDataComment(isBackup)
                 for srcPath, zipPath in self._projectFiles(basePath):
                     if zipPath and srcPath.is_file():
                         zipObj.write(srcPath, zipPath)
                         logger.debug("Added: %s", zipPath)
+            temp.replace(target)
         except Exception:
             logger.error("Failed to create acrhive")
             logException()
@@ -513,7 +546,7 @@ class _LegacyStorage:
     """Core: Legacy Storage Converter Utils
 
     A class with various functions to convert old file formats and
-    file/folder layout to the current project format.
+    file/folder layouts to the current project format.
     """
 
     def __init__(self, project: NWProject) -> None:
@@ -522,7 +555,8 @@ class _LegacyStorage:
 
     def legacyDataFolder(self, path: Path, child: Path) -> None:
         """Handle the content of a legacy data folder from a version 1.0
-        project.
+        project. This format had 16 data folders where there now is only
+        one content folder.
         """
         logger.info("Processing legacy data folder: %s", path)
 
@@ -574,6 +608,7 @@ class _LegacyStorage:
             path / "meta" / nwFiles.OPTS_FILE
         )
 
+        # Delete removed files
         remove = [
             path / "meta" / "tagsIndex.json",          # Renamed in 2.1 Beta 1
             path / "meta" / "mainOptions.json",        # Replaced in 0.5
@@ -629,9 +664,7 @@ class _LegacyStorage:
         return
 
     def _convertOldLogFile(self, sessLog: Path, sessJson: Path) -> None:
-        """Convert the old text log file format to the new JSON Lines
-        format.
-        """
+        """Convert the old text log file format to JSON Lines."""
         if sessJson.exists() or not sessLog.exists():
             # If the new file already exists, we won't overwrite it
             return
@@ -670,7 +703,7 @@ class _LegacyStorage:
         return
 
     def _convertOldOptionsFile(self, optsOld: Path, optsNew: Path) -> None:
-        """Convert the old options state file format to the format."""
+        """Convert the old options state file format to new format."""
         if optsNew.exists() or not optsOld.exists():
             # If the new file already exists, we won't overwrite it
             return
