@@ -176,6 +176,8 @@ class GuiPreferencesGeneral(QWidget):
         for lang, langName in theLangs:
             self.guiLocale.addItem(langName, lang)
         langIdx = self.guiLocale.findData(CONFIG.guiLocale)
+        if langIdx < 0:
+            langIdx = self.guiLocale.findData("en_GB")
         if langIdx != -1:
             self.guiLocale.setCurrentIndex(langIdx)
 
