@@ -390,7 +390,7 @@ class Tokenizer(ABC):
         The format of the token list is an entry with a five-tuple for
         each line in the file. The tuple is as follows:
           1: The type of the block, self.T_*
-          2: The line in the file where this block occurred
+          2: The header number under which the text is placed
           3: The text content of the block, without leading tags
           4: The internal formatting map of the text, self.FMT_*
           5: The style of the block, self.A_*
@@ -404,16 +404,15 @@ class Tokenizer(ABC):
 
         self._tokens = []
         tmpMarkdown = []
-        nLine = 0
+        nHead = 0
         breakNext = False
         for aLine in self._text.splitlines():
-            nLine += 1
             sLine = aLine.strip()
 
             # Check for blank lines
             if len(sLine) == 0:
                 self._tokens.append((
-                    self.T_EMPTY, nLine, "", None, self.A_NONE
+                    self.T_EMPTY, nHead, "", None, self.A_NONE
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("\n")
@@ -438,7 +437,7 @@ class Tokenizer(ABC):
 
                 elif sLine == "[VSPACE]":
                     self._tokens.append(
-                        (self.T_SKIP, nLine, "", None, sAlign)
+                        (self.T_SKIP, nHead, "", None, sAlign)
                     )
                     continue
 
@@ -446,11 +445,11 @@ class Tokenizer(ABC):
                     nSkip = checkInt(sLine[8:-1], 0)
                     if nSkip >= 1:
                         self._tokens.append(
-                            (self.T_SKIP, nLine, "", None, sAlign)
+                            (self.T_SKIP, nHead, "", None, sAlign)
                         )
                     if nSkip > 1:
                         self._tokens += (nSkip - 1) * [
-                            (self.T_SKIP, nLine, "", None, self.A_NONE)
+                            (self.T_SKIP, nHead, "", None, self.A_NONE)
                         ]
                     continue
 
@@ -459,20 +458,20 @@ class Tokenizer(ABC):
                 synTag = cLine[:9].lower()
                 if synTag == "synopsis:":
                     self._tokens.append((
-                        self.T_SYNOPSIS, nLine, cLine[9:].strip(), None, sAlign
+                        self.T_SYNOPSIS, nHead, cLine[9:].strip(), None, sAlign
                     ))
                     if self._doSynopsis and self._keepMarkdown:
                         tmpMarkdown.append("%s\n" % aLine)
                 else:
                     self._tokens.append((
-                        self.T_COMMENT, nLine, aLine[1:].strip(), None, sAlign
+                        self.T_COMMENT, nHead, aLine[1:].strip(), None, sAlign
                     ))
                     if self._doComments and self._keepMarkdown:
                         tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[0] == "@":
                 self._tokens.append((
-                    self.T_KEYWORD, nLine, aLine[1:].strip(), None, sAlign
+                    self.T_KEYWORD, nHead, aLine[1:].strip(), None, sAlign
                 ))
                 if self._doKeywords and self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
@@ -482,8 +481,9 @@ class Tokenizer(ABC):
                     sAlign |= self.A_CENTRE
                     sAlign |= self.A_PBB
 
+                nHead += 1
                 self._tokens.append((
-                    self.T_HEAD1, nLine, aLine[2:].strip(), None, sAlign
+                    self.T_HEAD1, nHead, aLine[2:].strip(), None, sAlign
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
@@ -492,39 +492,44 @@ class Tokenizer(ABC):
                 if self._isNovel:
                     sAlign |= self.A_PBB
 
+                nHead += 1
                 self._tokens.append((
-                    self.T_HEAD2, nLine, aLine[3:].strip(), None, sAlign
+                    self.T_HEAD2, nHead, aLine[3:].strip(), None, sAlign
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:4] == "### ":
+                nHead += 1
                 self._tokens.append((
-                    self.T_HEAD3, nLine, aLine[4:].strip(), None, sAlign
+                    self.T_HEAD3, nHead, aLine[4:].strip(), None, sAlign
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:5] == "#### ":
+                nHead += 1
                 self._tokens.append((
-                    self.T_HEAD4, nLine, aLine[5:].strip(), None, sAlign
+                    self.T_HEAD4, nHead, aLine[5:].strip(), None, sAlign
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:3] == "#! ":
+                nHead += 1
                 if self._isNovel:
                     tStyle = self.T_TITLE
                 else:
                     tStyle = self.T_HEAD1
 
                 self._tokens.append((
-                    tStyle, nLine, aLine[3:].strip(), None, sAlign | self.A_CENTRE
+                    tStyle, nHead, aLine[3:].strip(), None, sAlign | self.A_CENTRE
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:4] == "##! ":
+                nHead += 1
                 if self._isNovel:
                     tStyle = self.T_UNNUM
                     sAlign |= self.A_PBB
@@ -532,7 +537,7 @@ class Tokenizer(ABC):
                     tStyle = self.T_HEAD2
 
                 self._tokens.append((
-                    tStyle, nLine, aLine[4:].strip(), None, sAlign
+                    tStyle, nHead, aLine[4:].strip(), None, sAlign
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
@@ -589,7 +594,7 @@ class Tokenizer(ABC):
                 # sorted by position
                 fmtPos = sorted(fmtPos, key=itemgetter(0))
                 self._tokens.append((
-                    self.T_TEXT, nLine, aLine, fmtPos, sAlign
+                    self.T_TEXT, nHead, aLine, fmtPos, sAlign
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
@@ -608,7 +613,7 @@ class Tokenizer(ABC):
 
         # Always add an empty line at the end of the file
         self._tokens.append((
-            self.T_EMPTY, nLine, "", None, self.A_NONE
+            self.T_EMPTY, nHead, "", None, self.A_NONE
         ))
         if self._keepMarkdown:
             tmpMarkdown.append("\n")
