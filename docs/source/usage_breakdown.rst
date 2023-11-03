@@ -105,7 +105,7 @@ much all collected meta data is available here in different columns.
 
 You can select which novel root folder to display from the dropdown box, and you can select which
 columns to show or hide from the menu button. You can also rearrange the columns by drag and drop.
-The app will remember you column order and size between sessions, and for each individual project.
+The app will remember your column order and size between sessions, and for each individual project.
 
 
 Colour Themes
@@ -220,7 +220,7 @@ makes it easier to track them with version control software.
    Drive is mapped on Linux Gnome desktops using gvfs/gio.
 
 .. caution::
-   You should not add additional files to the project folder yourself. Nor should you,a s a rule,
+   You should not add additional files to the project folder yourself. Nor should you, as a rule,
    manually edit files within it. If you really must manually edit the text files, e.g. with some
    automated task you want to perform, you need to rebuild the :term:`Project Index` when you open
    the project again.
