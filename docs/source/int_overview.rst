@@ -14,8 +14,8 @@ novelWriter is built as a cross-platform application using `Python 3 <https://ww
 the programming language, and `Qt 5 <https://www.qt.io/>`_ for the user interface.
 
 novelWriter is built for Linux first, and this is where it works best. However, it also runs fine
-on Windows and MacOS due to the cross-platform framework it's build on. The author of the
-application doesn't own a Mac, so on-going Mac support is dependant on user feedback and user
+on Windows and MacOS due to the cross-platform framework it's built on. The author of the
+application doesn't own a Mac, so on-going Mac support is dependent on user feedback and user
 contributions.
 
 Spell checking in novelWriter is provided by a third party library called
@@ -36,7 +36,7 @@ read on.
    This chapter explains the basics of how the application works and what it can and cannot do.
 
 :ref:`a_ui_project` – Recommended Reading
-   This chapter will give you a more detailed explanation of how you the user interface components
+   This chapter will give you a more detailed explanation of how you can use the user interface components
    to organise and view your project work.
 
 :ref:`a_ui_writing` – Recommended Reading
@@ -68,7 +68,7 @@ read on.
 Organising Your Projects
 ========================
 
-In addition to manage a collection of plain text files, novelWriter can interpret and map the
+In addition to managing a collection of plain text files, novelWriter can interpret and map the
 structure of your novel and show you additional information about its flow and content. In order
 to take advantage of these features, you must structure your text in a specific way and add some
 meta data for it to extract.
