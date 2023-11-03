@@ -10,7 +10,7 @@ Key Features
 At its core, novelWriter is a multi-document plain text editor. It uses a markup syntax inspired by
 Markdown_ to apply simple formatting to the text. It is designed for writing fiction, so the
 formatting features available are limited to those relevant for this purpose. It is *not* suitable
-for technical writing, and it is *not* a full-feature Markdown editor.
+for technical writing, and it is *not* a full-featured Markdown editor.
 
 Your novel project is organised as a collection of separate plain text documents instead of a
 single, large document. The idea here is to make it easier to reorganise your project structure
@@ -32,11 +32,11 @@ Below are some key features of novelWriter.
    formatting text. Formatting is therefore limited to a small set of formatting tags for simple
    things like text emphasis and paragraph alignment. When you really want to focus on just
    writing, you can switch the editor into :guilabel:`Focus Mode` where only the text editor panel
-   itself is vissible, and the project structure view is hidden away.
+   itself is visible, and the project structure view is hidden away.
 
 **Keep an eye on your notes**
    The main window can optionally show a document viewer to the right of the editor. This view
-   panel is intended for displaying another scene document, you character notes, plot notes, or any
+   panel is intended for displaying another scene document, your character notes, plot notes, or any
    other document you may need to reference while writing. It is not intended as a preview panel
    for the document you're editing, but if you wish, you can also use it for this purpose.
 
