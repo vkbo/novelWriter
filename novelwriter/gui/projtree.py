@@ -1739,9 +1739,7 @@ class GuiProjectTree(QTreeWidget):
         newItem.setData(self.C_DATA, self.D_WORDS, 0)
 
         if pHandle is None and nwItem.isRootType():
-            # newItem.setFlags(newItem.flags() ^ Qt.ItemFlag.ItemIsDragEnabled)
             pItem = self.invisibleRootItem()
-            # pItem.setFlags(pItem.flags() ^ Qt.ItemFlag.ItemIsDropEnabled)
         elif pHandle and pHandle in self._treeMap:
             pItem = self._treeMap[pHandle]
         else:
