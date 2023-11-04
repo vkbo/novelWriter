@@ -1402,11 +1402,11 @@ class GuiProjectTree(QTreeWidget):
     def dragMoveEvent(self, event: QDragMoveEvent) -> None:
         """Capture the drag move event to enable edge autoscroll."""
         y = event.pos().y()
-        if y < 16:
+        if y < self._scrollMargin:
             if not self._scrollTimer.isActive():
                 self._scrollDirection = -1
                 self._scrollTimer.start()
-        elif y > self.height() - 16:
+        elif y > self.height() - self._scrollMargin:
             if not self._scrollTimer.isActive():
                 self._scrollDirection = 1
                 self._scrollTimer.start()
