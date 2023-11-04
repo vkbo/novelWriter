@@ -31,8 +31,8 @@ from enum import Enum
 from time import time
 from typing import TYPE_CHECKING
 
-from PyQt5.QtGui import QDropEvent, QMouseEvent, QPalette
-from PyQt5.QtCore import QPoint, Qt, QSize, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QDragMoveEvent, QDropEvent, QMouseEvent, QPalette
+from PyQt5.QtCore import QPoint, QTimer, Qt, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QFrame, QHBoxLayout, QHeaderView, QLabel,
     QMenu, QShortcut, QSizePolicy, QToolButton, QTreeWidget, QTreeWidgetItem,
@@ -509,9 +509,13 @@ class GuiProjectTree(QTreeWidget):
         self.setDragDropMode(QAbstractItemView.InternalMove)
         self.setDropIndicatorShown(True)
 
+        # Disable built-in autoscroll as it isn't working in some Qt
+        # releases (see #1561) and instead use our own implementation
+        self.setAutoScroll(False)
+
         # But don't allow drop on root level
         # Due to a bug, this stops working somewhere between Qt 5.15.3
-        # and 5.15.8, so this is also blocked in dropEvent
+        # and 5.15.8, so this is also blocked in dropEvent (see #1569)
         trRoot = self.invisibleRootItem()
         trRoot.setFlags(trRoot.flags() ^ Qt.ItemIsDropEnabled)
 
@@ -526,6 +530,13 @@ class GuiProjectTree(QTreeWidget):
         # Connect signals
         self.itemDoubleClicked.connect(self._treeDoubleClick)
         self.itemSelectionChanged.connect(self._treeSelectionChange)
+
+        # Autoscroll
+        self._scrollMargin = SHARED.theme.baseIconSize
+        self._scrollDirection = 0
+        self._scrollTimer = QTimer()
+        self._scrollTimer.timeout.connect(self._doAutoScroll)
+        self._scrollTimer.setInterval(250)
 
         # Set custom settings
         self.initSettings()
@@ -1346,6 +1357,17 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
+    @pyqtSlot()
+    def _doAutoScroll(self) -> None:
+        """Scroll one item up or down based on direction value."""
+        if self._scrollDirection == -1:
+            self.scrollToItem(self.itemAbove(self.itemAt(1, 1)))
+        elif self._scrollDirection == 1:
+            self.scrollToItem(self.itemBelow(self.itemAt(1, self.height() - 1)))
+        self._scrollDirection = 0
+        self._scrollTimer.stop()
+        return
+
     ##
     #  Events
     ##
@@ -1375,6 +1397,20 @@ class GuiProjectTree(QTreeWidget):
             if tItem.isFileType():
                 self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, "", False)
 
+        return
+
+    def dragMoveEvent(self, event: QDragMoveEvent) -> None:
+        """Capture the drag move event to enable edge autoscroll."""
+        y = event.pos().y()
+        if y < self._scrollMargin:
+            if not self._scrollTimer.isActive():
+                self._scrollDirection = -1
+                self._scrollTimer.start()
+        elif y > self.height() - self._scrollMargin:
+            if not self._scrollTimer.isActive():
+                self._scrollDirection = 1
+                self._scrollTimer.start()
+        super().dragMoveEvent(event)
         return
 
     def dropEvent(self, event: QDropEvent) -> None:
