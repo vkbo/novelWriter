@@ -508,11 +508,14 @@ class GuiProjectTree(QTreeWidget):
         self.setDragEnabled(True)
         self.setDragDropMode(QAbstractItemView.InternalMove)
         self.setDropIndicatorShown(True)
+
+        # Disable built-in autoscroll as it isn't working in some Qt
+        # releases (see #1561) and instead use our own implementation
         self.setAutoScroll(False)
 
         # But don't allow drop on root level
         # Due to a bug, this stops working somewhere between Qt 5.15.3
-        # and 5.15.8, so this is also blocked in dropEvent
+        # and 5.15.8, so this is also blocked in dropEvent (see #1569)
         trRoot = self.invisibleRootItem()
         trRoot.setFlags(trRoot.flags() ^ Qt.ItemIsDropEnabled)
 
