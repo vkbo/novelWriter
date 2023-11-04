@@ -507,8 +507,11 @@ class GuiProjectTree(QTreeWidget):
         # Allow Move by Drag & Drop
         self.setDragEnabled(True)
         self.setDragDropMode(QAbstractItemView.InternalMove)
+        self.setDropIndicatorShown(True)
 
         # But don't allow drop on root level
+        # Due to a bug, this stops working somewhere between Qt 5.15.3
+        # and 5.15.8, so this is also blocked in dropEvent
         trRoot = self.invisibleRootItem()
         trRoot.setFlags(trRoot.flags() ^ Qt.ItemIsDropEnabled)
 
@@ -1380,8 +1383,16 @@ class GuiProjectTree(QTreeWidget):
         """
         sHandle = self.getSelectedHandle()
         sItem = self._getTreeItem(sHandle) if sHandle else None
-        if sHandle is None or sItem is None:
+        if sHandle is None or sItem is None or sItem.parent() is None:
             logger.error("Invalid drag and drop event")
+            event.ignore()
+            return
+
+        if not self.indexAt(event.pos()).isValid():
+            # Needed due to a bug somewhere around Qt 5.15.8 that
+            # ignores the invisible root item flags
+            logger.error("Invalid drop location")
+            event.ignore()
             return
 
         logger.debug("Drag'n'drop of item '%s' accepted", sHandle)
@@ -1728,7 +1739,9 @@ class GuiProjectTree(QTreeWidget):
         newItem.setData(self.C_DATA, self.D_WORDS, 0)
 
         if pHandle is None and nwItem.isRootType():
+            # newItem.setFlags(newItem.flags() ^ Qt.ItemFlag.ItemIsDragEnabled)
             pItem = self.invisibleRootItem()
+            # pItem.setFlags(pItem.flags() ^ Qt.ItemFlag.ItemIsDropEnabled)
         elif pHandle and pHandle in self._treeMap:
             pItem = self._treeMap[pHandle]
         else:
