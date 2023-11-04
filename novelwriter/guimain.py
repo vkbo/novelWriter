@@ -980,6 +980,7 @@ class GuiMain(QMainWindow):
         if dlgWords.result() == QDialog.Accepted:
             logger.debug("Reloading word list")
             SHARED.updateSpellCheckLanguage(reload=True)
+            self.docEditor.spellCheckDocument()
 
         return True
 
