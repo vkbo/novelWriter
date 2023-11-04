@@ -1121,7 +1121,7 @@ class GuiDocEditor(QTextEdit):
         userSelection = userCursor.hasSelection()
         posCursor = self.cursorForPosition(thePos)
 
-        mnuContext = QMenu()
+        mnuContext = QMenu(self)
 
         # Follow, Cut, Copy and Paste
         # ===========================

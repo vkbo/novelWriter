@@ -248,7 +248,7 @@ class GuiProjectToolBar(QWidget):
         self.viewLabel.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
         # Quick Links
-        self.mQuick = QMenu()
+        self.mQuick = QMenu(self)
 
         self.tbQuick = QToolButton(self)
         self.tbQuick.setToolTip("%s [Ctrl+L]" % self.tr("Quick Links"))
@@ -269,7 +269,7 @@ class GuiProjectToolBar(QWidget):
         self.tbMoveD.clicked.connect(lambda: self.projTree.moveTreeItem(1))
 
         # Add Item Menu
-        self.mAdd = QMenu()
+        self.mAdd = QMenu(self)
 
         self.aAddEmpty = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["document"]))
         self.aAddEmpty.triggered.connect(
@@ -307,7 +307,7 @@ class GuiProjectToolBar(QWidget):
         self.tbAdd.setPopupMode(QToolButton.InstantPopup)
 
         # More Options Menu
-        self.mMore = QMenu()
+        self.mMore = QMenu(self)
 
         self.aExpand = self.mMore.addAction(self.tr("Expand All"))
         self.aExpand.triggered.connect(lambda: self.projTree.setExpandedFromHandle(None, True))
@@ -1210,7 +1210,7 @@ class GuiProjectTree(QTreeWidget):
             logger.debug("No item found")
             return False
 
-        ctxMenu = QMenu()
+        ctxMenu = QMenu(self)
 
         # Trash Folder
         # ============
