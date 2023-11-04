@@ -1,5 +1,62 @@
 # novelWriter Changelog
 
+## Version 2.1.1 [2023-11-05]
+
+### Release Notes
+
+This is a patch release that fixes a layout issue and internationalisation issues with the new
+Manuscript Build tool. It also fixes a number of issues related to bugs in the underlying Qt
+framework that affects drag and drop functionality in the project tree. These issues were mostly
+only affecting Debian Linux package releases.
+
+Other, minor issues related to updating the editor on colour theme change and project word list
+changes have been fixed as well. See the full changelog for more details.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fix an issue with width of the last two columns on Selection page of the Build Settings dialog on
+  Windows. They were far too wide by default. Issue #1551. PR #1553.
+* Fix an issue where a lot of string were not translated to the UI language in the new Manuscript
+  Build tool. Issue #1563. PR #1565.
+* Fix an issue in the Document Viewer where it wouldn't scroll to a heading further down the page
+  when following a reference pointing to it. Issue #1566. PR #1568.
+* Add back in checks for illegal drag and drop moves in the project tree. In 2.0, the logic here
+  was changed to set certain restrictions on the elements of the project tree itself, but there are
+  numerous bugs in the Qt framework related to drag and drop, so the checks are ignored on at least
+  Qt 5.15.8. In particular, it is possible to drop items on the root level, and it's possible to
+  move root items to other locations. Neither should be possible and will severely mess up the
+  project if done. Issue #1569. PR #1570.
+* Add a custom autoscroll feature when dragging an item in the project tree to near the top or
+  bottom. This is actually a default feature of the tree widget in the Qt library, but this too is
+  broken in some versions of Qt 5.15.x. The default feature has been permanently disabled and
+  replaced by a custom written feature that behaves similarly. Issue #1561. PR #1571.
+* Fix an issue where the editor document wasn't re-highlighted when the Syntax Theme for it was
+  changed. Issue #1535. PR #1573.
+* Fix an issue where editing the Project Word List would not refresh the spell checking of the
+  editor. Issue #1559. PR #1573.
+
+**Usability**
+
+* Changed how the default UI language is selected. It used to default to the system locale, but
+  that is now changed to British English if the system local is not available in novelWriter. The
+  only real effects of this is that the dropdown box in Preferences now selects British English if
+  the system locale is not available rather than the first in the list (currently Deutch). The
+  second effect is that the language on buttons and other Qt components will match the rest of the
+  UI. Issue #1564. PR #1565.
+* There is a bug in Qt on Wayland desktops where menus don't open in the correct location.
+  According to one Qt ticket, QTBUG-68636, this can be mitigated by ensuring all QMenu instances
+  have a parent set. This does not fix all issues, but it should help. The menus without a parent
+  set have now been updated. Issue #1536. PR #1572.
+
+**Documentation**
+
+* Fixed a number of spelling errors and typing mistakes in the documentation for 2.1. Contributed
+  by @nisemono-neko. PR #1567.
+
+----
+
 ## Version 2.1 [2023-10-17]
 
 ### Release Notes
