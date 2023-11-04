@@ -720,7 +720,7 @@ class _HeadingsTab(QWidget):
 
         self.formSyntax = _HeadingSyntaxHighlighter(self.editTextBox.document())
 
-        self.menuInsert = QMenu()
+        self.menuInsert = QMenu(self)
         self.aInsTitle = self.menuInsert.addAction(self.tr("Title"))
         self.aInsChNum = self.menuInsert.addAction(self.tr("Chapter Number"))
         self.aInsChWord = self.menuInsert.addAction(self.tr("Chapter Number (Word)"))

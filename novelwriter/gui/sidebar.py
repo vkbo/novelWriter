@@ -95,7 +95,7 @@ class GuiSideBar(QToolBar):
         self.aStats.triggered.connect(lambda: self.mainGui.showWritingStatsDialog())
 
         # Settings Menu
-        self.mSettings = QMenu()
+        self.mSettings = QMenu(self)
 
         self.mSettings.addAction(self.mainGui.mainMenu.aEditWordList)
         self.mSettings.addAction(self.mainGui.mainMenu.aProjectSettings)

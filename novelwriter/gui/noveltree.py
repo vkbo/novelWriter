@@ -228,7 +228,7 @@ class GuiNovelToolBar(QWidget):
         self.tbRefresh.clicked.connect(self._refreshNovelTree)
 
         # More Options Menu
-        self.mMore = QMenu()
+        self.mMore = QMenu(self)
 
         self.mLastCol = self.mMore.addMenu(self.tr("Last Column"))
         self.gLastCol = QActionGroup(self.mMore)
