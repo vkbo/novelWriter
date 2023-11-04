@@ -359,6 +359,8 @@ class GuiDocEditor(QTextEdit):
             self.clearEditor()
         else:
             self.redrawText()
+            if not self._bigDoc:
+                self.highLight.rehighlight()
 
         return True
 
