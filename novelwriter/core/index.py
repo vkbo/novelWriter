@@ -404,7 +404,7 @@ class NWIndex:
             tagName = tBits[1]
             self._tagsIndex.add(tagName, tHandle, sTitle, itemClass)
             self._itemIndex.setHeadingTag(tHandle, sTitle, tagName)
-            tags[tagName] = True
+            tags[tagName.lower()] = True
         else:
             self._itemIndex.addHeadingRef(tHandle, sTitle, tBits[1:], tBits[0])
 
