@@ -4,7 +4,7 @@
 Keyboard Shortcuts
 ******************
 
-Most features in novelWriter are available as keyboard shortcuts. This is a reference list if these
+Most features in novelWriter are available as keyboard shortcuts. This is a reference list of those
 shortcuts. Most of them are also listed in the application's user interface.
 
 .. note::

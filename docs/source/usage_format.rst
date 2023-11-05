@@ -34,7 +34,7 @@ have a distinct colour, and the references themselves will get a colour if they 
 references will get a squiggly error line underneath. The same applies to duplicate tags.
 
 There are a number of syntax highlighter colour themes available, both for light and dark GUIs. You
-can select them for :guilabel:`Preferences`.
+can select them from :guilabel:`Preferences`.
 
 
 .. _a_fmt_head:
@@ -72,7 +72,7 @@ For headers level one and two, adding a ``!`` modifies the behaviour of the head
 ``#! Title Text``
    This tells the build tool that the level one heading is intended to be used for the novel's
    main title, like for instance on the front page. When building the manuscript, this will use a
-   different styling and will exclude the title from for instance a Table of Contents in Libre
+   different styling and will exclude the title from, for instance, a Table of Contents in Libre
    Office.
 
 ``##! Title Text``
@@ -170,7 +170,7 @@ in a special manner and will show up in the :ref:`a_ui_outline` in a dedicated c
 indicate this by altering the colour of the word.
 
 ``% text...``
-   This is a comment. The text is not renderred by default (this can be overridden), seen in the
+   This is a comment. The text is not rendered by default (this can be overridden), seen in the
    document viewer, or counted towards word counts.
 
 ``% Synopsis: text...``
@@ -196,10 +196,10 @@ Tags use the command ``@tag:`` to define a tag. The tag can be set once per sect
 heading. Setting it multiple times under the same heading will just override the previous setting.
 
 ``@tag: value``
-   A tag commad followed by the tag value, like for instance the name of a character.
+   A tag command followed by the tag value, like for instance the name of a character.
 
 References can be set anywhere within a section, and are collected according to their category.
-References are on the form:
+References are in the form:
 
 ``@keyword: value``
    A reference keyword followed by a value, or a comma separated list of values.
@@ -236,7 +236,7 @@ Examples:
    "``>> Centred text <<``",           "The text paragraph is centred."
    "``> Left indented text``",         "The text has an increased left margin."
    "``Right indented text <``",        "The text has an increased right margin."
-   "``> Left/right indented text <``", "The text has an both margins increased."
+   "``> Left/right indented text <``", "The text has both margins increased."
 
 .. note::
    The text editor will not show the alignment and indentation live. But the viewer will show them

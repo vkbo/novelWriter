@@ -87,7 +87,7 @@ set as ``name`` inside the file.
 Gustom GUI and Icons Theme
 --------------------------
 
-A GUI theme ``.conf`` file consists of the follwing settings:
+A GUI theme ``.conf`` file consists of the following settings:
 
 .. code-block:: cfg
 
@@ -127,7 +127,7 @@ In the Main section you must at least define the ``name`` and ``icontheme`` sett
 ``typicons_light`` or ``typicons_dark``, or to an icon theme in your custom icons directory. The
 setting must match the icon theme's folder name.
 
-The Palette values correspond the the Qt enum values for QPalette::ColorRole, see the
+The Palette values correspond to the Qt enum values for QPalette::ColorRole, see the
 `Qt documentation <https://doc.qt.io/qt-5.15/qpalette.html#ColorRole-enum>`_ for more details. The
 colour values are RGB numbers on the format ``r, g, b`` where each is an integer from  to 255.
 Omitted values are not loaded and will use default values.
@@ -167,5 +167,5 @@ A syntax theme ``.conf`` file consists of the follwing settings:
    modifier       =   0,   0,   0
 
 In the Main section, you must define at least the ``name`` setting. The Syntax colour values are
-RGB numbers on the format ``r, g, b`` where each is an integer from  to 255. Omitted values default
+RGB numbers of the format ``r, g, b`` where each is an integer from  to 255. Omitted values default
 to black, except ``background`` which defaults to white,

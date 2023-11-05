@@ -91,10 +91,12 @@ class Config:
 
         # Localisation
         # Note that these paths must be strings
-        self._qLocale    = QLocale.system()
-        self._qtTrans    = {}
+        self._nwLangPath = self._appPath / "assets" / "i18n"
         self._qtLangPath = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
-        self._nwLangPath = str(self._appPath / "assets" / "i18n")
+
+        wantedLocale = self._nwLangPath / f"nw_{QLocale.system().name()}.qm"
+        self._qLocale = QLocale.system() if wantedLocale.exists() else QLocale("en_GB")
+        self._qtTrans = {}
 
         # PDF Manual
         pdfDocs = self._appPath / "assets" / "manual.pdf"
@@ -437,7 +439,7 @@ class Config:
         else:
             return []
 
-        for qmFile in Path(self._nwLangPath).iterdir():
+        for qmFile in self._nwLangPath.iterdir():
             qmName = qmFile.name
             if not (qmFile.is_file() and qmName.startswith(fPre) and qmName.endswith(fExt)):
                 continue
@@ -507,8 +509,8 @@ class Config:
         self._qtTrans = {}
 
         langList = [
-            (self._qtLangPath, "qtbase"),  # Qt 5.x
-            (self._nwLangPath, "nw"),      # novelWriter
+            (self._qtLangPath, "qtbase"),   # Qt 5.x
+            (str(self._nwLangPath), "nw"),  # novelWriter
         ]
         for lngPath, lngBase in langList:
             for lngCode in self._qLocale.uiLanguages():

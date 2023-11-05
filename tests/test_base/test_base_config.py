@@ -166,21 +166,21 @@ def testBaseConfig_Localisation(fncPath, tstPaths):
 
     i18nDir = fncPath / "i18n"
     i18nDir.mkdir()
-    tstConf._nwLangPath = str(i18nDir)
+    tstConf._nwLangPath = i18nDir
 
     copyfile(tstPaths.filesDir / "nw_en_GB.qm", i18nDir / "nw_en_GB.qm")
     writeFile(i18nDir / "nw_en_GB.ts", "")
     writeFile(i18nDir / "nw_abcd.qm", "")
 
     tstApp = MockApp()
-    tstConf.initLocalisation(tstApp)
+    tstConf.initLocalisation(tstApp)  # type: ignore
 
     # Check Lists
     theList = tstConf.listLanguages(tstConf.LANG_NW)
     assert theList == [("en_GB", "British English")]
     theList = tstConf.listLanguages(tstConf.LANG_PROJ)
     assert theList == [("en_GB", "British English")]
-    theList = tstConf.listLanguages(None)
+    theList = tstConf.listLanguages(None)  # type: ignore
     assert theList == []
 
     # Add Language

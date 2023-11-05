@@ -315,6 +315,7 @@ def buildQtI18nTS(sysArgs):
         from PyQt6.lupdate import lupdate
     except ImportError:
         print("ERROR: This command requires lupdate from PyQt6")
+        print("On Debian/Ubuntu, install: pyqt6-dev-tools")
         sys.exit(1)
 
     print("")

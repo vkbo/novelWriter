@@ -338,7 +338,7 @@ class GuiDocEditor(QPlainTextEdit):
         if self._docHandle is None:
             self.clearEditor()
         else:
-            self.redrawText()
+            self._qDocument.syntaxHighlighter.rehighlight()
 
         return
 
@@ -980,7 +980,7 @@ class GuiDocEditor(QPlainTextEdit):
         uCursor = self.textCursor()
         pCursor = self.cursorForPosition(pos)
 
-        ctxMenu = QMenu()
+        ctxMenu = QMenu(self)
 
         # Follow
         if self._followTag(cursor=pCursor, loadTag=False):
