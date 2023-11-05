@@ -338,9 +338,7 @@ class GuiDocEditor(QPlainTextEdit):
         if self._docHandle is None:
             self.clearEditor()
         else:
-            self.redrawText()
-            if not self._bigDoc:
-                self.highLight.rehighlight()
+            self._qDocument.syntaxHighlighter.rehighlight()
 
         return
 
