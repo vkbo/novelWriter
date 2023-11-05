@@ -31,8 +31,8 @@ from enum import Enum
 from time import time
 from typing import TYPE_CHECKING
 
-from PyQt5.QtGui import QDropEvent, QMouseEvent, QPalette
-from PyQt5.QtCore import QPoint, Qt, QSize, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QDragMoveEvent, QDropEvent, QMouseEvent, QPalette
+from PyQt5.QtCore import QPoint, QTimer, Qt, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QFrame, QHBoxLayout, QHeaderView, QLabel,
     QMenu, QShortcut, QSizePolicy, QToolButton, QTreeWidget, QTreeWidgetItem,
@@ -248,7 +248,7 @@ class GuiProjectToolBar(QWidget):
         self.viewLabel.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
         # Quick Links
-        self.mQuick = QMenu()
+        self.mQuick = QMenu(self)
 
         self.tbQuick = QToolButton(self)
         self.tbQuick.setToolTip("%s [Ctrl+L]" % self.tr("Quick Links"))
@@ -269,7 +269,7 @@ class GuiProjectToolBar(QWidget):
         self.tbMoveD.clicked.connect(lambda: self.projTree.moveTreeItem(1))
 
         # Add Item Menu
-        self.mAdd = QMenu()
+        self.mAdd = QMenu(self)
 
         self.aAddEmpty = self.mAdd.addAction(trConst(nwLabels.ITEM_DESCRIPTION["document"]))
         self.aAddEmpty.triggered.connect(
@@ -307,7 +307,7 @@ class GuiProjectToolBar(QWidget):
         self.tbAdd.setPopupMode(QToolButton.InstantPopup)
 
         # More Options Menu
-        self.mMore = QMenu()
+        self.mMore = QMenu(self)
 
         self.aExpand = self.mMore.addAction(self.tr("Expand All"))
         self.aExpand.triggered.connect(lambda: self.projTree.setExpandedFromHandle(None, True))
@@ -507,8 +507,15 @@ class GuiProjectTree(QTreeWidget):
         # Allow Move by Drag & Drop
         self.setDragEnabled(True)
         self.setDragDropMode(QAbstractItemView.InternalMove)
+        self.setDropIndicatorShown(True)
+
+        # Disable built-in autoscroll as it isn't working in some Qt
+        # releases (see #1561) and instead use our own implementation
+        self.setAutoScroll(False)
 
         # But don't allow drop on root level
+        # Due to a bug, this stops working somewhere between Qt 5.15.3
+        # and 5.15.8, so this is also blocked in dropEvent (see #1569)
         trRoot = self.invisibleRootItem()
         trRoot.setFlags(trRoot.flags() ^ Qt.ItemIsDropEnabled)
 
@@ -523,6 +530,13 @@ class GuiProjectTree(QTreeWidget):
         # Connect signals
         self.itemDoubleClicked.connect(self._treeDoubleClick)
         self.itemSelectionChanged.connect(self._treeSelectionChange)
+
+        # Autoscroll
+        self._scrollMargin = SHARED.theme.baseIconSize
+        self._scrollDirection = 0
+        self._scrollTimer = QTimer()
+        self._scrollTimer.timeout.connect(self._doAutoScroll)
+        self._scrollTimer.setInterval(250)
 
         # Set custom settings
         self.initSettings()
@@ -1196,7 +1210,7 @@ class GuiProjectTree(QTreeWidget):
             logger.debug("No item found")
             return False
 
-        ctxMenu = QMenu()
+        ctxMenu = QMenu(self)
 
         # Trash Folder
         # ============
@@ -1343,6 +1357,17 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
+    @pyqtSlot()
+    def _doAutoScroll(self) -> None:
+        """Scroll one item up or down based on direction value."""
+        if self._scrollDirection == -1:
+            self.scrollToItem(self.itemAbove(self.itemAt(1, 1)))
+        elif self._scrollDirection == 1:
+            self.scrollToItem(self.itemBelow(self.itemAt(1, self.height() - 1)))
+        self._scrollDirection = 0
+        self._scrollTimer.stop()
+        return
+
     ##
     #  Events
     ##
@@ -1374,14 +1399,36 @@ class GuiProjectTree(QTreeWidget):
 
         return
 
+    def dragMoveEvent(self, event: QDragMoveEvent) -> None:
+        """Capture the drag move event to enable edge autoscroll."""
+        y = event.pos().y()
+        if y < self._scrollMargin:
+            if not self._scrollTimer.isActive():
+                self._scrollDirection = -1
+                self._scrollTimer.start()
+        elif y > self.height() - self._scrollMargin:
+            if not self._scrollTimer.isActive():
+                self._scrollDirection = 1
+                self._scrollTimer.start()
+        super().dragMoveEvent(event)
+        return
+
     def dropEvent(self, event: QDropEvent) -> None:
         """Overload the drop item event to ensure relevant data has been
         updated.
         """
         sHandle = self.getSelectedHandle()
         sItem = self._getTreeItem(sHandle) if sHandle else None
-        if sHandle is None or sItem is None:
+        if sHandle is None or sItem is None or sItem.parent() is None:
             logger.error("Invalid drag and drop event")
+            event.ignore()
+            return
+
+        if not self.indexAt(event.pos()).isValid():
+            # Needed due to a bug somewhere around Qt 5.15.8 that
+            # ignores the invisible root item flags
+            logger.error("Invalid drop location")
+            event.ignore()
             return
 
         logger.debug("Drag'n'drop of item '%s' accepted", sHandle)

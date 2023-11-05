@@ -27,7 +27,7 @@ with open(initFile) as inFile:
     else:
         release = "unknown"
 
-version = release.split("-")[0]
+version = release.partition("-")[0]
 
 # -- General Configuration ---------------------------------------------------
 
@@ -67,11 +67,6 @@ html_sidebars = {
     "**": ["navbar-logo", "sidebar-title", "sbt-sidebar-nav"],
 }
 
-# -- Options for HTMLHelp Output ---------------------------------------------
-
-# Output file base name for HTML help builder.
-htmlhelp_basename = "novelWriterDoc"
-
 # -- Options for LaTeX Output ------------------------------------------------
 
 latex_elements = {
@@ -84,11 +79,6 @@ latex_elements = {
     "figure_align": "htbp",
 }
 latex_logo = "_static/novelwriter-pdf.png"
-
-# Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title,
-#  author, documentclass [howto, manual, or own class]).
 latex_documents = [(
-    master_doc, "manual.tex", "User Guide",
-    author, "manual"
+    master_doc, "manual.tex", "User Guide", author, "manual"
 )]

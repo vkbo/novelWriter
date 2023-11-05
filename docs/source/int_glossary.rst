@@ -32,7 +32,7 @@ Glossary
       for more details.
 
    Reference
-      A references is one of a set of :term:`keywords<keyword>` that can be used to link to a
+      A reference is one of a set of :term:`keywords<keyword>` that can be used to link to a
       :term:`tag` in another document. The reference keywords are specific to the different
       :term:`root folder` types. A full overview is available in the :ref:`a_references` chapter.
 
@@ -55,7 +55,7 @@ Glossary
 
    Keyword
       A keyword in novelWriter is a special command you put in the text of your documents. They are
-      not standard Markdown, but is used in novelWriter to add information that is interpreted by
+      not standard Markdown, but are used in novelWriter to add information that is interpreted by
       the application. For instance, keywords are used for :term:`tags<tag>` and
       :term:`references<reference>`.
 

@@ -381,7 +381,7 @@ class GuiDocViewer(QTextBrowser):
         userCursor = self.textCursor()
         userSelection = userCursor.hasSelection()
 
-        mnuContext = QMenu()
+        mnuContext = QMenu(self)
 
         # Cut, Copy and Paste
         # ===================

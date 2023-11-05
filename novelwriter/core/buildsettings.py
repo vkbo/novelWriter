@@ -32,7 +32,7 @@ from enum import Enum
 from typing import Iterable
 from pathlib import Path
 
-from PyQt5.QtCore import QT_TRANSLATE_NOOP
+from PyQt5.QtCore import QT_TRANSLATE_NOOP, QCoreApplication
 
 from novelwriter import CONFIG
 from novelwriter.enum import nwBuildFmt
@@ -209,7 +209,7 @@ class BuildSettings:
     @staticmethod
     def getLabel(key: str) -> str:
         """Extract the GUI label for a specific setting."""
-        return SETTINGS_LABELS.get(key, "ERROR")
+        return QCoreApplication.translate("Builds", SETTINGS_LABELS.get(key, "ERROR"))
 
     def getStr(self, key: str) -> str:
         """Type safe value access for strings."""
