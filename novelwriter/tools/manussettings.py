@@ -332,14 +332,16 @@ class _FilterTab(QWidget):
 
         treeHeader = self.optTree.header()
         treeHeader.setStretchLastSection(False)
+        treeHeader.setMinimumSectionSize(iPx + cMg)  # See Issue #1551
         treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.Stretch)
         treeHeader.setSectionResizeMode(self.C_ACTIVE, QHeaderView.Fixed)
         treeHeader.setSectionResizeMode(self.C_STATUS, QHeaderView.Fixed)
         treeHeader.resizeSection(self.C_ACTIVE, iPx + cMg)
         treeHeader.resizeSection(self.C_STATUS, iPx + cMg)
 
-        self.optTree.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.optTree.setDragDropMode(QAbstractItemView.NoDragDrop)
+        self.optTree.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.optTree.setSelectionBehavior(QAbstractItemView.SelectRows)
 
         # Filters
         # =======
@@ -390,11 +392,11 @@ class _FilterTab(QWidget):
         self.mainSplit.addWidget(self.filterOpt)
         self.mainSplit.setCollapsible(0, False)
         self.mainSplit.setCollapsible(1, False)
-        self.mainSplit.setStretchFactor(0, 0)
-        self.mainSplit.setStretchFactor(1, 1)
+        self.mainSplit.setStretchFactor(0, 1)
+        self.mainSplit.setStretchFactor(1, 0)
         self.mainSplit.setSizes([
-            CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "treeWidth", 1)),
-            CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "filterWidth", 1))
+            CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "treeWidth", 300)),
+            CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "filterWidth", 300))
         ])
 
         self.outerBox = QHBoxLayout()
@@ -718,7 +720,7 @@ class _HeadingsTab(QWidget):
 
         self.formSyntax = _HeadingSyntaxHighlighter(self.editTextBox.document())
 
-        self.menuInsert = QMenu()
+        self.menuInsert = QMenu(self)
         self.aInsTitle = self.menuInsert.addAction(self.tr("Title"))
         self.aInsChNum = self.menuInsert.addAction(self.tr("Chapter Number"))
         self.aInsChWord = self.menuInsert.addAction(self.tr("Chapter Number (Word)"))
