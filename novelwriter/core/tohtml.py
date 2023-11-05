@@ -171,7 +171,7 @@ class ToHtml(Tokenizer):
         pStyle = None
         lines = []
 
-        for tType, tLine, tText, tFormat, tStyle in self._tokens:
+        for tType, nHead, tText, tFormat, tStyle in self._tokens:
 
             # Replace < and > with HTML entities
             if tFormat:
@@ -230,7 +230,7 @@ class ToHtml(Tokenizer):
                 hStyle = ""
 
             if self._linkHeaders:
-                aNm = f"<a name='T{tLine:06d}'></a>"
+                aNm = f"<a name='T{nHead:04d}'></a>"
             else:
                 aNm = ""
 
