@@ -147,6 +147,7 @@ class GuiProjectView(QWidget):
         self.getSelectedHandle = self.projTree.getSelectedHandle
         self.setSelectedHandle = self.projTree.setSelectedHandle
         self.changedSince = self.projTree.changedSince
+        self.createNewNote = self.projTree.createNewNote
 
         return
 
@@ -569,6 +570,20 @@ class GuiProjectTree(QTreeWidget):
         self._lastMove = {}
         self._timeChanged = 0.0
         return
+
+    def createNewNote(self, tag: str, itemClass: nwItemClass | None) -> bool:
+        """Create a new note. This function is used by the document
+        editor to create note files for unknown tags.
+        """
+        rHandle = SHARED.project.tree.findRoot(itemClass)
+        if rHandle:
+            tHandle = SHARED.project.newFile(tag, rHandle)
+            if tHandle:
+                text = f"# {tag}\n\n@tag: {tag}\n\n"
+                SHARED.project.writeNewFile(tHandle, 1, False, text)
+                self.revealNewTreeItem(tHandle, wordCount=True)
+                return True
+        return False
 
     def newTreeItem(self, itemType: nwItemType, itemClass: nwItemClass | None = None,
                     hLevel: int = 1, isNote: bool = False) -> bool:

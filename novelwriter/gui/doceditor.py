@@ -51,9 +51,10 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemClass
+from novelwriter.core.item import NWItem
+from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwTrinary
 from novelwriter.common import minmax, transferCase
-from novelwriter.constants import nwKeyWords, nwUnicode
+from novelwriter.constants import nwKeyWords, nwLabels, nwUnicode, trConst
 from novelwriter.core.index import countWords
 from novelwriter.core.document import NWDocument
 from novelwriter.gui.dochighlight import GuiDocHighlighter
@@ -149,7 +150,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.keyContext = QShortcut(self)
         self.keyContext.setKey("Ctrl+.")
         self.keyContext.setContext(Qt.WidgetShortcut)
-        self.keyContext.activated.connect(self._openSpellContext)
+        self.keyContext.activated.connect(self._openContextFromCursor)
 
         self.followTag1 = QShortcut(self)
         self.followTag1.setKey(Qt.Key_Return | Qt.ControlModifier)
@@ -974,10 +975,9 @@ class GuiDocEditor(QPlainTextEdit):
             bPos = cursor.positionInBlock()
             if bPos > 0:
                 show = self._completer.updateText(text, bPos)
-                if not self._completer.isVisible() and show:
-                    point = self.cursorRect().bottomRight()
-                    self._completer.move(self.viewport().mapToGlobal(point))
-                    self._completer.show()
+                point = self.cursorRect().bottomRight()
+                self._completer.move(self.viewport().mapToGlobal(point))
+                self._completer.setVisible(show)
 
         elif self._doReplace and added == 1:
             self._docAutoReplace(text)
@@ -994,6 +994,7 @@ class GuiDocEditor(QPlainTextEdit):
             cursor.setPosition(pos, QTextCursor.MoveMode.MoveAnchor)
             cursor.setPosition(pos + length, QTextCursor.MoveMode.KeepAnchor)
             cursor.insertText(text)
+            self._completer.hide()
         return
 
     @pyqtSlot("QPoint")
@@ -1007,9 +1008,14 @@ class GuiDocEditor(QPlainTextEdit):
         ctxMenu = QMenu(self)
 
         # Follow
-        if self._followTag(cursor=pCursor, loadTag=False):
+        status = self._followTag(cursor=pCursor, process=False)
+        if status == nwTrinary.POSITIVE:
             aTag = ctxMenu.addAction(self.tr("Follow Tag"))
-            aTag.triggered.connect(lambda: self._followTag(cursor=pCursor))
+            aTag.triggered.connect(lambda: self._followTag(cursor=pCursor, process=True))
+            ctxMenu.addSeparator()
+        elif status == nwTrinary.NEGATIVE:
+            aTag = ctxMenu.addAction(self.tr("Create Note for Tag"))
+            aTag.triggered.connect(lambda: self._followTag(cursor=pCursor, process=True))
             ctxMenu.addSeparator()
 
         # Cut, Copy and Paste
@@ -1690,7 +1696,7 @@ class GuiDocEditor(QPlainTextEdit):
     #  Internal Functions
     ##
 
-    def _followTag(self, cursor: QTextCursor | None = None, loadTag: bool = True) -> bool:
+    def _followTag(self, cursor: QTextCursor | None = None, process: bool = True) -> nwTrinary:
         """Activated by Ctrl+Enter. Checks that we're in a block
         starting with '@'. We then find the tag under the cursor and
         check that it is not the tag itself. If all this is fine, we
@@ -1702,41 +1708,53 @@ class GuiDocEditor(QPlainTextEdit):
 
         block = cursor.block()
         text = block.text()
-
         if len(text) == 0:
-            return False
+            return nwTrinary.UNKNOWN
 
-        if text.startswith("@"):
+        if text.startswith("@") and isinstance(self._nwItem, NWItem):
 
             isGood, tBits, tPos = SHARED.project.index.scanThis(text)
             if not isGood:
-                return False
+                return nwTrinary.UNKNOWN
 
             tag = ""
+            exist = False
             cPos = cursor.selectionStart() - block.position()
-            for sTag, sPos in zip(reversed(tBits), reversed(tPos)):
+            tExist = SHARED.project.index.checkThese(tBits, self._nwItem)
+            for sTag, sPos, sExist in zip(reversed(tBits), reversed(tPos), reversed(tExist)):
                 if cPos >= sPos:
                     # The cursor is between the start of two tags
                     if cPos <= sPos + len(sTag):
                         # The cursor is inside or at the edge of the tag
                         tag = sTag
+                        exist = sExist
                     break
 
             if not tag or tag.startswith("@"):
                 # The keyword cannot be looked up, so we ignore that
-                return False
+                return nwTrinary.UNKNOWN
 
-            if loadTag:
+            if process and exist:
                 logger.debug("Attempting to follow tag '%s'", tag)
                 self.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
-            else:
-                logger.debug("Potential tag '%s'", tag)
+            elif process and not exist:
+                if SHARED.question(self.tr(
+                    "Do you want to create a new project note for the tag '{0}'?"
+                ).format(tag)):
+                    itemClass = nwKeyWords.KEY_CLASS.get(tBits[0], nwItemClass.NO_CLASS)
+                    if SHARED.mainGui.projView.createNewNote(tag, itemClass):
+                        self._qDocument.syntaxHighlighter.rehighlightBlock(block)
+                    else:
+                        SHARED.error(self.tr(
+                            "Could not create note in a root folder for '{0}'. "
+                            "If one doesn't exist, you must create one first."
+                        ).format(trConst(nwLabels.CLASS_NAME[itemClass])))
 
-            return True
+            return nwTrinary.POSITIVE if exist else nwTrinary.NEGATIVE
 
-        return False
+        return nwTrinary.UNKNOWN
 
-    def _openSpellContext(self) -> None:
+    def _openContextFromCursor(self) -> None:
         """Open the spell check context menu at the cursor."""
         self._openContextMenu(self.cursorRect().center())
         return
