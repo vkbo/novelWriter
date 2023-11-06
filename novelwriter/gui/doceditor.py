@@ -51,10 +51,10 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.core.item import NWItem
 from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwTrinary
 from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwKeyWords, nwLabels, nwUnicode, trConst
+from novelwriter.core.item import NWItem
 from novelwriter.core.index import countWords
 from novelwriter.core.document import NWDocument
 from novelwriter.gui.dochighlight import GuiDocHighlighter
