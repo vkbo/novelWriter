@@ -196,6 +196,16 @@ def testCoreIndex_ScanThis(mockGUI):
     assert theBits == ["@tag", "this", "and this"]
     assert thePos  == [0, 6, 12]
 
+    isValid, theBits, thePos = index.scanThis("@tag: this,, and this")
+    assert isValid is True
+    assert theBits == ["@tag", "this", "", "and this"]
+    assert thePos  == [0, 6, 11, 13]
+
+    isValid, theBits, thePos = index.scanThis("@tag: this, , and this")
+    assert isValid is True
+    assert theBits == ["@tag", "this", "", "and this"]
+    assert thePos  == [0, 6, 12, 14]
+
     project.closeProject()
 
 # END Test testCoreIndex_ScanThis
