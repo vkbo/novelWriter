@@ -117,6 +117,10 @@ class GuiDocEditor(QPlainTextEdit):
         self._typPadBefore = ""
         self._typPadAfter = ""
 
+        # Completer
+        self._completer = MetaCompleter(self)
+        self._completer.complete.connect(self._insertCompletion)
+
         # Create Custom Document
         self._qDocument = GuiTextDocument(self)
         self.setDocument(self._qDocument)
@@ -960,9 +964,39 @@ class GuiDocEditor(QPlainTextEdit):
         if not self.wcTimerDoc.isActive():
             self.wcTimerDoc.start()
 
-        if self._doReplace and added == 1:
-            self._docAutoReplace(self._qDocument.findBlock(pos))
+        if added != 1:
+            return
 
+        block = self._qDocument.findBlock(pos)
+        if not block.isValid():
+            return
+
+        text = block.text()
+        if text.startswith("@"):
+            cursor = self.textCursor()
+            bPos = cursor.positionInBlock()
+            if bPos > 0:
+                show = self._completer.updateText(text, bPos)
+                if not self._completer.isVisible() and show:
+                    point = self.cursorRect().bottomRight()
+                    self._completer.move(self.viewport().mapToGlobal(point))
+                    self._completer.show()
+
+        elif self._doReplace:
+            self._docAutoReplace(text)
+
+        return
+
+    @pyqtSlot(int, int, str)
+    def _insertCompletion(self, pos: int, length: int, text: str) -> None:
+        """Insert choice from the completer menu."""
+        cursor = self.textCursor()
+        block = cursor.block()
+        if block.isValid():
+            pos += block.position()
+            cursor.setPosition(pos, QTextCursor.MoveMode.MoveAnchor)
+            cursor.setPosition(pos + length, QTextCursor.MoveMode.KeepAnchor)
+            cursor.insertText(text)
         return
 
     @pyqtSlot("QPoint")
@@ -1710,12 +1744,8 @@ class GuiDocEditor(QPlainTextEdit):
         self._openContextMenu(self.cursorRect().center())
         return
 
-    def _docAutoReplace(self, block: QTextBlock) -> None:
+    def _docAutoReplace(self, text: str) -> None:
         """Auto-replace text elements based on main configuration."""
-        if not block.isValid():
-            return
-
-        text = block.text()
         cursor = self.textCursor()
         tPos = cursor.positionInBlock()
         tLen = len(text)
@@ -1886,6 +1916,77 @@ class GuiDocEditor(QPlainTextEdit):
         return
 
 # END Class GuiDocEditor
+
+
+class MetaCompleter(QMenu):
+    """GuiWidget: Meta Completer Menu
+
+    This is a context menu with options populated from the user's
+    defined tags. It also helps to type the meta data keyword on a new
+    line starting with an @. The updateText function should be called on
+    every keystroke on a line starting with @.
+    """
+
+    complete = pyqtSignal(int, int, str)
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
+        return
+
+    def updateText(self, text: str, pos: int) -> bool:
+        """Update the menu options based on the line of text."""
+        self.clear()
+        options = []
+        kw, sep, _ = text.partition(":")
+        if pos <= len(kw):
+            options = list(filter(lambda x: x.startswith(kw.rstrip()), nwKeyWords.VALID_KEYS))
+            if not options:
+                return False
+            for value in options:
+                n = len(kw.rstrip())
+                rep = value if sep else f"{value}:"
+                action = self.addAction(value)
+                action.triggered.connect(lambda _, r=rep: self._emitComplete(0, n, r))
+
+        elif pos > len(kw):
+            status, tBits, tPos = SHARED.project.index.scanThis(text)
+            if not status:
+                return False
+
+            index = bisect.bisect_right(tPos, pos) - 1
+            lookup = tBits[index].lower() if index > 0 else ""
+            offset = tPos[index] if lookup else pos
+            itemClass = nwKeyWords.KEY_CLASS.get(kw.strip(), nwItemClass.NO_CLASS)
+            options = list(filter(
+                lambda x: lookup in x.lower(), SHARED.project.index.getTags(itemClass)
+            ))
+            if not options:
+                return False
+            for value in sorted(options[:15]):
+                n = len(lookup)
+                action = self.addAction(value)
+                action.triggered.connect(lambda _, r=value: self._emitComplete(offset, n, r))
+
+        else:
+            return False
+
+        return True
+
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+        """Capture keypresses and forward most of them to the editor."""
+        parent = self.parent()
+        if event.key() in (Qt.Key_Up, Qt.Key_Down, Qt.Key_Return, Qt.Key_Enter, Qt.Key_Escape):
+            super().keyPressEvent(event)
+        elif isinstance(parent, GuiDocEditor):
+            parent.keyPressEvent(event)
+        return
+
+    def _emitComplete(self, pos: int, length: int, value: str):
+        """Emit the signal to indicate a selection has been made."""
+        self.complete.emit(pos, length, value)
+        return
+
+# END Class MetaCompleter
 
 
 # =============================================================================================== #
