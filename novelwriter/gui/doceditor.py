@@ -55,6 +55,7 @@ from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemClass
 from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.core.index import countWords
+from novelwriter.core.document import NWDocument
 from novelwriter.gui.dochighlight import GuiDocHighlighter
 from novelwriter.gui.editordocument import GuiTextDocument
 from novelwriter.extensions.wheeleventfilter import WheelEventFilter
@@ -408,12 +409,6 @@ class GuiDocEditor(QPlainTextEdit):
         self._qDocument.syntaxHighlighter.rehighlightByType(GuiDocHighlighter.BLOCK_META)
         return
 
-    def redrawText(self) -> None:
-        """Redraw the text by marking the document content as dirty."""
-        self._qDocument.markContentsDirty(0, self._qDocument.characterCount())
-        self.updateDocMargins()
-        return
-
     def replaceText(self, text: str) -> None:
         """Replace the text of the current document with the provided
         text. This also clears undo history.
@@ -735,19 +730,17 @@ class GuiDocEditor(QPlainTextEdit):
         """Tell the user where on the file system the file in the editor
         is saved.
         """
-        if self._nwDocument is None:
-            logger.error("No document open")
-            return
-        SHARED.info(
-            "<br>".join([
-                self.tr("Document Details"),
-                "–"*40,
-                self.tr("Created: {0}").format(self._nwDocument.createdDate),
-                self.tr("Updated: {0}").format(self._nwDocument.updatedDate),
-            ]),
-            details=self.tr("File Location: {0}").format(self._nwDocument.fileLocation),
-            log=False
-        )
+        if isinstance(self._nwDocument, NWDocument):
+            SHARED.info(
+                "<br>".join([
+                    self.tr("Document Details"),
+                    "–"*40,
+                    self.tr("Created: {0}").format(self._nwDocument.createdDate),
+                    self.tr("Updated: {0}").format(self._nwDocument.updatedDate),
+                ]),
+                details=self.tr("File Location: {0}").format(self._nwDocument.fileLocation),
+                log=False
+            )
         return
 
     def insertText(self, insert: str | nwDocInsert) -> bool:
@@ -775,15 +768,15 @@ class GuiDocEditor(QPlainTextEdit):
                 newBlock = True
                 goAfter = True
             elif insert == nwDocInsert.NEW_PAGE:
-                text = "[NEW PAGE]"
+                text = "[newpage]"
                 newBlock = True
                 goAfter = False
             elif insert == nwDocInsert.VSPACE_S:
-                text = "[VSPACE]"
+                text = "[vspace]"
                 newBlock = True
                 goAfter = False
             elif insert == nwDocInsert.VSPACE_M:
-                text = "[VSPACE:2]"
+                text = "[vspace:2]"
                 newBlock = True
                 goAfter = False
             else:

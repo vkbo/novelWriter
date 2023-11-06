@@ -39,7 +39,7 @@ from novelwriter.constants import nwRegEx, nwUnicode
 
 logger = logging.getLogger(__name__)
 
-SPELLRX = QRegularExpression(r"\b[^\s\-\+\/–—]+\b")
+SPELLRX = QRegularExpression(r"\b[^\s\-\+\/–—\[\]:]+\b")
 SPELLRX.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
 
 
@@ -69,6 +69,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._colDialD  = QColor(0, 0, 0)
         self._colDialS  = QColor(0, 0, 0)
         self._colHidden = QColor(0, 0, 0)
+        self._colCode   = QColor(0, 0, 0)
         self._colKey    = QColor(0, 0, 0)
         self._colVal    = QColor(0, 0, 0)
         self._colSpell  = QColor(0, 0, 0)
@@ -95,6 +96,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._colDialD  = QColor(*SHARED.theme.colDialD)
         self._colDialS  = QColor(*SHARED.theme.colDialS)
         self._colHidden = QColor(*SHARED.theme.colHidden)
+        self._colCode   = QColor(*SHARED.theme.colCode)
         self._colKey    = QColor(*SHARED.theme.colKey)
         self._colVal    = QColor(*SHARED.theme.colVal)
         self._colSpell  = QColor(*SHARED.theme.colSpell)
@@ -127,6 +129,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             "dialogue3": self._makeFormat(self._colDialS),
             "replace":   self._makeFormat(self._colRepTag),
             "hidden":    self._makeFormat(self._colHidden),
+            "code":      self._makeFormat(self._colCode),
             "keyword":   self._makeFormat(self._colKey),
             "modifier":  self._makeFormat(self._colMod),
             "value":     self._makeFormat(self._colVal, "underline"),
@@ -202,6 +205,22 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 1: self._hStyles["hidden"],
                 2: self._hStyles["strike"],
                 3: self._hStyles["hidden"],
+            }
+        ))
+
+        # Shortcodes
+        self._hRules.append((
+            nwRegEx.FMT_SC, {
+                1: self._hStyles["code"],
+            }
+        ))
+
+        # Shortcodes w/Value
+        self._hRules.append((
+            nwRegEx.FMT_SV, {
+                1: self._hStyles["code"],
+                2: self._hStyles["codevalue"],
+                3: self._hStyles["code"],
             }
         ))
 
@@ -347,18 +366,17 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         else:  # Text Paragraph
 
             if text.startswith("["):  # Special Command
-                sText = text.rstrip()
-                if sText in ("[NEWPAGE]", "[NEW PAGE]", "[VSPACE]"):
-                    self.setFormat(0, len(text), self._hStyles["keyword"])
+                sText = text.rstrip().lower()
+                if sText in ("[newpage]", "[new page]", "[vspace]"):
+                    self.setFormat(0, len(text), self._hStyles["code"])
                     return
-
-                elif sText.startswith("[VSPACE:") and sText.endswith("]"):
+                elif sText.startswith("[vspace:") and sText.endswith("]"):
                     tLen = len(sText)
                     tVal = checkInt(sText[8:-1], 0)
                     cVal = "codevalue" if tVal > 0 else "codeinval"
-                    self.setFormat(0, 8, self._hStyles["keyword"])
+                    self.setFormat(0, 8, self._hStyles["code"])
                     self.setFormat(8, tLen-9, self._hStyles[cVal])
-                    self.setFormat(tLen-1, tLen, self._hStyles["keyword"])
+                    self.setFormat(tLen-1, tLen, self._hStyles["code"])
                     return
 
             # Regular Text

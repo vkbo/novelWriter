@@ -81,8 +81,8 @@ def testCoreToMarkdown_ConvertFormat(mockGUI):
     # Paragraphs
     # ==========
 
-    # Text for GitHub Markdown
-    theMD.setGitHubMarkdown()
+    # Text for Extended Markdown
+    theMD.setExtendedMarkdown()
     theMD._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
     theMD.tokenizeText()
     theMD.doConvert()

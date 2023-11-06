@@ -29,6 +29,7 @@ from __future__ import annotations
 import logging
 import xml.etree.ElementTree as ET
 
+from typing import Sequence
 from hashlib import sha256
 from pathlib import Path
 from zipfile import ZipFile
@@ -36,7 +37,7 @@ from datetime import datetime
 
 from novelwriter import __version__
 from novelwriter.common import xmlIndent
-from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels
+from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, trConst
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import Tokenizer, stripEscape
 
@@ -82,11 +83,17 @@ TAG_STNM = _mkTag("text", "style-name")
 X_BLD = 0x01  # Bold format
 X_ITA = 0x02  # Italic format
 X_DEL = 0x04  # Strikethrough format
+X_UND = 0x08  # Underline format
+X_SUP = 0x10  # Superscript
+X_SUB = 0x20  # Subscript
 
 # Formatting Masks
 M_BLD = ~X_BLD
 M_ITA = ~X_ITA
 M_DEL = ~X_DEL
+M_UND = ~X_UND
+M_SUP = ~X_SUP
+M_SUB = ~X_SUB
 
 
 class ToOdt(Tokenizer):
@@ -385,17 +392,8 @@ class ToOdt(Tokenizer):
         """Convert the list of text tokens into XML elements."""
         self._result = ""  # Not used, but cleared just in case
 
-        odtTags = {
-            self.FMT_B_B: "_B",  # Bold open format
-            self.FMT_B_E: "b_",  # Bold close format
-            self.FMT_I_B: "I",   # Italic open format
-            self.FMT_I_E: "i",   # Italic close format
-            self.FMT_D_B: "_S",  # Strikethrough open format
-            self.FMT_D_E: "s_",  # Strikethrough close format
-        }
-
-        fmt = []
-        para = []
+        pFmt = []
+        pText = []
         pStyle = None
         for tType, _, tText, tFormat, tStyle in self._tokens:
 
@@ -429,19 +427,21 @@ class ToOdt(Tokenizer):
 
             # Process Text Types
             if tType == self.T_EMPTY:
-                if len(para) > 1 and pStyle is not None:
+                if len(pText) > 1 and pStyle is not None:
                     if self._doJustify:
                         pStyle.setTextAlign("left")
 
-                if len(para) > 0 and pStyle is not None:
-                    tTemp = "\n".join(para)
-                    fTemp = " ".join(fmt)
-                    tTxt = tTemp.rstrip()
-                    tFmt = fTemp[:len(tTxt)]
-                    self._addTextPar("Text_20_body", pStyle, tTxt, tFmt=tFmt)
+                if len(pText) > 0 and pStyle is not None:
+                    tTxt = ""
+                    tFmt = []
+                    for nText, nFmt in zip(pText, pFmt):
+                        tLen = len(tTxt)
+                        tTxt += f"{nText}\n"
+                        tFmt.extend((p+tLen, fmt) for p, fmt in nFmt)
+                    self._addTextPar("Text_20_body", pStyle, tTxt.rstrip(), tFmt=tFmt)
 
-                fmt = []
-                para = []
+                pFmt = []
+                pText = []
                 pStyle = None
 
             elif tType == self.T_TITLE:
@@ -477,15 +477,8 @@ class ToOdt(Tokenizer):
             elif tType == self.T_TEXT:
                 if pStyle is None:
                     pStyle = oStyle
-
-                tFmt = " "*len(tText)
-                for xPos, xLen, xFmt in tFormat:
-                    tFmt = tFmt[:xPos] + odtTags[xFmt] + tFmt[xPos+xLen:]
-
-                tTxt = tText.rstrip()
-                tFmt = tFmt[:len(tTxt)]
-                para.append(tTxt)
-                fmt.append(tFmt)
+                pText.append(tText)
+                pFmt.append(tFormat)
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 tTemp, fTemp = self._formatSynopsis(tText)
@@ -559,46 +552,39 @@ class ToOdt(Tokenizer):
     #  Internal Functions
     ##
 
-    def _formatSynopsis(self, text: str) -> tuple[str, str]:
+    def _formatSynopsis(self, text: str) -> tuple[str, list[tuple[int, int]]]:
         """Apply formatting to synopsis lines."""
-        sSynop = self._localLookup("Synopsis")
-        rTxt = "**{0}:** {1}".format(sSynop, text)
-        rFmt = "_B{0} b_ {1}".format(" "*len(sSynop), " "*len(text))
+        name = self._localLookup("Synopsis")
+        rTxt = f"{name}: {text}"
+        rFmt = [(0, self.FMT_B_B), (len(name) + 1, self.FMT_B_E)]
         return rTxt, rFmt
 
-    def _formatComments(self, text: str) -> tuple[str, str]:
+    def _formatComments(self, text: str) -> tuple[str, list[tuple[int, int]]]:
         """Apply formatting to comments."""
-        sComm = self._localLookup("Comment")
-        rTxt = "**{0}:** {1}".format(sComm, text)
-        rFmt = "_B{0} b_ {1}".format(" "*len(sComm), " "*len(text))
+        name = self._localLookup("Comment")
+        rTxt = f"{name}: {text}"
+        rFmt = [(0, self.FMT_B_B), (len(name) + 1, self.FMT_B_E)]
         return rTxt, rFmt
 
-    def _formatKeywords(self, text: str) -> tuple[str, str]:
+    def _formatKeywords(self, text: str) -> tuple[str, list[tuple[int, int]]]:
         """Apply formatting to keywords."""
         valid, bits, _ = self._project.index.scanThis("@"+text)
-        if not valid or not bits:
-            return "", ""
+        if not valid or not bits or bits[0] not in nwLabels.KEY_NAME:
+            return "", []
 
-        rTxt = ""
-        rFmt = ""
-        if bits[0] in nwLabels.KEY_NAME:
-            text = nwLabels.KEY_NAME[bits[0]]
-            rTxt += "**{0}:** ".format(text)
-            rFmt += "_B{0} b_ ".format(" "*len(text))
-            if len(bits) > 1:
-                if bits[0] == nwKeyWords.TAG_KEY:
-                    rTxt += bits[1]
-                    rFmt += " "*len(bits[1])
-                else:
-                    tTags = ", ".join(bits[1:])
-                    rTxt += tTags
-                    rFmt += (" "*len(tTags))
+        rTxt = f"{trConst(nwLabels.KEY_NAME[bits[0]])}: "
+        rFmt = [(0, self.FMT_B_B), (len(rTxt) - 1, self.FMT_B_E)]
+        if len(bits) > 1:
+            if bits[0] == nwKeyWords.TAG_KEY:
+                rTxt += bits[1]
+            else:
+                rTxt += ", ".join(bits[1:])
 
         return rTxt, rFmt
 
     def _addTextPar(
-        self, styleName: str, oStyle: ODTParagraphStyle, tText: str, tFmt: str = "",
-        isHead: bool = False, oLevel: str | None = None
+        self, styleName: str, oStyle: ODTParagraphStyle, tText: str,
+        tFmt: Sequence[tuple[int, int]] = [], isHead: bool = False, oLevel: str | None = None
     ) -> None:
         """Add a text paragraph to the text XML element."""
         tAttr = {}
@@ -616,58 +602,59 @@ class ToOdt(Tokenizer):
         if not tText:
             return
 
-        ##
-        #  Process Formatting
-        ##
-
-        if len(tText) != len(tFmt):
-            # Generate an empty format if there isn't any or it doesn't match
-            tFmt = " "*len(tText)
-
-        # The formatting loop
-        tTemp = ""
-        xFmt = 0x00
-        pFmt = 0x00
-        pErr = 0
+        # Loop Over Fragments
+        # ===================
 
         parProc = XMLParagraph(xElem)
 
-        for i, c in enumerate(tText):
+        pErr = 0
+        xFmt = 0x00
+        tFrag = ""
+        fLast = 0
+        for fPos, fFmt in tFmt:
 
-            if tFmt[i] == " ":
-                tTemp += c
-            elif tFmt[i] == "_":
-                continue
-            elif tFmt[i] == "B":
+            # Add the text up to the current fragment
+            if tFrag := tText[fLast:fPos]:
+                if xFmt == 0x00:
+                    parProc.appendText(tFrag)
+                else:
+                    parProc.appendSpan(tFrag, self._textStyle(xFmt))
+
+            # Calculate the change of format
+            if fFmt == self.FMT_B_B:
                 xFmt |= X_BLD
-            elif tFmt[i] == "b":
+            elif fFmt == self.FMT_B_E:
                 xFmt &= M_BLD
-            elif tFmt[i] == "I":
+            elif fFmt == self.FMT_I_B:
                 xFmt |= X_ITA
-            elif tFmt[i] == "i":
+            elif fFmt == self.FMT_I_E:
                 xFmt &= M_ITA
-            elif tFmt[i] == "S":
+            elif fFmt == self.FMT_D_B:
                 xFmt |= X_DEL
-            elif tFmt[i] == "s":
+            elif fFmt == self.FMT_D_E:
                 xFmt &= M_DEL
+            elif fFmt == self.FMT_U_B:
+                xFmt |= X_UND
+            elif fFmt == self.FMT_U_E:
+                xFmt &= M_UND
+            elif fFmt == self.FMT_SUP_B:
+                xFmt |= X_SUP
+            elif fFmt == self.FMT_SUP_E:
+                xFmt &= M_SUP
+            elif fFmt == self.FMT_SUB_B:
+                xFmt |= X_SUB
+            elif fFmt == self.FMT_SUB_E:
+                xFmt &= M_SUB
             else:
                 pErr += 1
 
-            if xFmt != pFmt:
-                if pFmt == 0x00:
-                    parProc.appendText(tTemp)
-                    tTemp = ""
-                else:
-                    parProc.appendSpan(tTemp, self._textStyle(pFmt))
-                    tTemp = ""
+            fLast = fPos
 
-            pFmt = xFmt
-
-        # Save what remains in the buffer
-        if pFmt == 0x00:
-            parProc.appendText(tTemp)
-        else:
-            parProc.appendSpan(tTemp, self._textStyle(pFmt))
+        if tFrag := tText[fLast:]:
+            if xFmt == 0x00:
+                parProc.appendText(tFrag)
+            else:
+                parProc.appendSpan(tFrag, self._textStyle(xFmt))
 
         if pErr > 0:
             self._errData.append("Unknown format tag encountered")
@@ -713,6 +700,14 @@ class ToOdt(Tokenizer):
         if hFmt & X_DEL:
             newStyle.setStrikeStyle("solid")
             newStyle.setStrikeType("single")
+        if hFmt & X_UND:
+            newStyle.setUnderlineStyle("solid")
+            newStyle.setUnderlineWidth("auto")
+            newStyle.setUnderlineColour("font-color")
+        if hFmt & X_SUP:
+            newStyle.setTextPosition("super")
+        if hFmt & X_SUB:
+            newStyle.setTextPosition("sub")
 
         self._autoText[hFmt] = (newName, newStyle)
 
@@ -1256,16 +1251,23 @@ class ODTTextStyle:
     """
     VALID_WEIGHT = ["normal", "inherit", "bold"]
     VALID_STYLE  = ["normal", "inherit", "italic"]
+    VALID_POS    = ["super", "sub"]
     VALID_LSTYLE = ["none", "solid"]
-    VALID_LTYPE  = ["none", "single", "double"]
+    VALID_LTYPE  = ["single", "double"]
+    VALID_LWIDTH = ["auto"]
+    VALID_LCOL   = ["font-color"]
 
     def __init__(self) -> None:
         # Text Attributes
         self._tAttr = {
             "font-weight":             ["fo",    None],
             "font-style":              ["fo",    None],
+            "text-position":           ["style", None],
             "text-line-through-style": ["style", None],
             "text-line-through-type":  ["style", None],
+            "text-underline-style":    ["style", None],
+            "text-underline-width":    ["style", None],
+            "text-underline-color":    ["style", None],
         }
         return
 
@@ -1287,6 +1289,13 @@ class ODTTextStyle:
             self._tAttr["font-style"][1] = None
         return
 
+    def setTextPosition(self, value: str | None) -> None:
+        if value in self.VALID_POS:
+            self._tAttr["text-position"][1] = f"{value} 58%"
+        else:
+            self._tAttr["text-position"][1] = None
+        return
+
     def setStrikeStyle(self, value: str | None) -> None:
         if value in self.VALID_LSTYLE:
             self._tAttr["text-line-through-style"][1] = value
@@ -1299,6 +1308,27 @@ class ODTTextStyle:
             self._tAttr["text-line-through-type"][1] = value
         else:
             self._tAttr["text-line-through-type"][1] = None
+        return
+
+    def setUnderlineStyle(self, value: str | None) -> None:
+        if value in self.VALID_LSTYLE:
+            self._tAttr["text-underline-style"][1] = value
+        else:
+            self._tAttr["text-underline-style"][1] = None
+        return
+
+    def setUnderlineWidth(self, value: str | None) -> None:
+        if value in self.VALID_LWIDTH:
+            self._tAttr["text-underline-width"][1] = value
+        else:
+            self._tAttr["text-underline-width"][1] = None
+        return
+
+    def setUnderlineColour(self, value: str | None) -> None:
+        if value in self.VALID_LCOL:
+            self._tAttr["text-underline-color"][1] = value
+        else:
+            self._tAttr["text-underline-color"][1] = None
         return
 
     ##

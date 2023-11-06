@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
 <office:document xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" office:version="1.3" office:mimetype="application/vnd.oasis.opendocument.text">
   <office:meta>
-    <meta:creation-date>2023-07-19T23:55:29</meta:creation-date>
-    <meta:generator>novelWriter/2.1-beta1</meta:generator>
+    <meta:creation-date>2023-10-20T22:51:30</meta:creation-date>
+    <meta:generator>novelWriter/2.2-alpha1</meta:generator>
     <meta:initial-creator>Jane Smith</meta:initial-creator>
     <meta:editing-cycles>1234</meta:editing-cycles>
     <meta:editing-duration>P42DT12H34M56S</meta:editing-duration>
     <dc:title>Test Project</dc:title>
-    <dc:date>2023-07-19T23:55:29</dc:date>
+    <dc:date>2023-10-20T22:51:30</dc:date>
     <dc:creator>Jane Smith</dc:creator>
   </office:meta>
   <office:font-face-decls>
@@ -64,7 +64,7 @@
   </office:styles>
   <office:automatic-styles>
     <style:page-layout style:name="PM1">
-      <style:page-layout-properties fo:page-width="21.0cm" fo:page-height="29.7cm" fo:margin-top="2.000cm" fo:margin-bottom="2.000cm" fo:margin-left="2.000cm" fo:margin-right="2.000cm" fo:print-orientation="portrait" />
+      <style:page-layout-properties fo:page-width="14.800cm" fo:page-height="21.000cm" fo:margin-top="2.000cm" fo:margin-bottom="1.800cm" fo:margin-left="1.700cm" fo:margin-right="1.500cm" fo:print-orientation="portrait" />
       <style:header-style>
         <style:header-footer-properties fo:min-height="0.600cm" fo:margin-left="0.000cm" fo:margin-right="0.000cm" fo:margin-bottom="0.500cm" />
       </style:header-style>

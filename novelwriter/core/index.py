@@ -38,7 +38,7 @@ from pathlib import Path
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.common import checkInt, isHandle, isItemClass, isTitleTag, jsonEncode
-from novelwriter.constants import nwFiles, nwKeyWords, nwUnicode, nwHeaders
+from novelwriter.constants import nwFiles, nwKeyWords, nwRegEx, nwUnicode, nwHeaders
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.item import NWItem
@@ -1229,6 +1229,10 @@ def countWords(text: str) -> tuple[int, int, int]:
     if nwUnicode.U_EMDASH in text:
         text = text.replace(nwUnicode.U_EMDASH, " ")
 
+    # Strip shortcodes
+    if "[" in text:
+        text = nwRegEx.RX_SC.sub("", text)
+
     for line in text.splitlines():
 
         countPara = True
@@ -1241,9 +1245,10 @@ def countWords(text: str) -> tuple[int, int, int]:
             continue
 
         if line[0] == "[":
-            if line.startswith(("[NEWPAGE]", "[NEW PAGE]", "[VSPACE]")):
+            check = line.lower()
+            if check.startswith(("[newpage]", "[new page]", "[vspace]")):
                 continue
-            elif line.startswith("[VSPACE:") and line.endswith("]"):
+            elif check.startswith("[vspace:") and line.endswith("]"):
                 continue
 
         elif line[0] == "#":

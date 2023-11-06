@@ -31,7 +31,7 @@ from pathlib import Path
 
 from novelwriter import CONFIG
 from novelwriter.common import formatTimeStamp
-from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwHtmlUnicode
+from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwHtmlUnicode, trConst
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import Tokenizer, stripEscape
 
@@ -131,6 +131,8 @@ class ToHtml(Tokenizer):
                 self.FMT_I_E: "</i>",
                 self.FMT_D_B: "<span style='text-decoration: line-through;'>",
                 self.FMT_D_E: "</span>",
+                self.FMT_U_B: "<u>",
+                self.FMT_U_E: "</u>",
             }
         else:
             htmlTags = {  # HTML5 (for export)
@@ -140,7 +142,14 @@ class ToHtml(Tokenizer):
                 self.FMT_I_E: "</em>",
                 self.FMT_D_B: "<del>",
                 self.FMT_D_E: "</del>",
+                self.FMT_U_B: "<span style='text-decoration: underline;'>",
+                self.FMT_U_E: "</span>",
             }
+
+        htmlTags[self.FMT_SUP_B] = "<sup>"
+        htmlTags[self.FMT_SUP_E] = "</sup>"
+        htmlTags[self.FMT_SUB_B] = "<sub>"
+        htmlTags[self.FMT_SUB_E] = "</sub>"
 
         if self._isNovel and self._genMode != self.M_PREVIEW:
             # For story files, we bump the titles one level up
@@ -172,18 +181,16 @@ class ToHtml(Tokenizer):
                 for c in tText:
                     if c == "<":
                         cText.append("&lt;")
-                        tFormat = [[a + 3 if a > i else a, b, c] for a, b, c in tFormat]
+                        tFormat = [[p + 3 if p > i else p, f] for p, f in tFormat]
                         i += 4
                     elif c == ">":
                         cText.append("&gt;")
-                        tFormat = [[a + 3 if a > i else a, b, c] for a, b, c in tFormat]
+                        tFormat = [[p + 3 if p > i else p, f] for p, f in tFormat]
                         i += 4
                     else:
                         cText.append(c)
                         i += 1
-
                 tText = "".join(cText)
-
             else:
                 # If we don't have formatting, we can do a plain replace
                 tText = tText.replace("<", "&lt;").replace(">", "&gt;")
@@ -275,8 +282,8 @@ class ToHtml(Tokenizer):
                 tTemp = tText
                 if pStyle is None:
                     pStyle = hStyle
-                for xPos, xLen, xFmt in reversed(tFormat):
-                    tTemp = tTemp[:xPos] + htmlTags[xFmt] + tTemp[xPos+xLen:]
+                for pos, fmt in reversed(tFormat):
+                    tTemp = f"{tTemp[:pos]}{htmlTags[fmt]}{tTemp[pos:]}"
                 para.append(stripEscape(tTemp.rstrip()))
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
@@ -467,25 +474,18 @@ class ToHtml(Tokenizer):
     def _formatKeywords(self, text: str) -> str:
         """Apply HTML formatting to keywords."""
         valid, bits, _ = self._project.index.scanThis("@"+text)
-        if not valid or not bits:
+        if not valid or not bits or bits[0] not in nwLabels.KEY_NAME:
             return ""
 
-        result = ""
-        tags = []
-        if bits[0] in nwLabels.KEY_NAME:
-            result += f"<span class='tags'>{nwLabels.KEY_NAME[bits[0]]}:</span> "
-            if len(bits) > 1:
-                if bits[0] == nwKeyWords.TAG_KEY:
-                    result += f"<a name='tag_{bits[1]}'>{bits[1]}</a>"
+        result = f"<span class='tags'>{trConst(nwLabels.KEY_NAME[bits[0]])}:</span> "
+        if len(bits) > 1:
+            if bits[0] == nwKeyWords.TAG_KEY:
+                result += f"<a name='tag_{bits[1]}'>{bits[1]}</a>"
+            else:
+                if self._genMode == self.M_PREVIEW:
+                    result += ", ".join(f"<a href='#{bits[0][1:]}={t}'>{t}</a>" for t in bits[1:])
                 else:
-                    if self._genMode == self.M_PREVIEW:
-                        for tTag in bits[1:]:
-                            tags.append(f"<a href='#{bits[0][1:]}={tTag}'>{tTag}</a>")
-                        result += ", ".join(tags)
-                    else:
-                        for tTag in bits[1:]:
-                            tags.append(f"<a href='#tag_{tTag}'>{tTag}</a>")
-                        result += ", ".join(tags)
+                    result += ", ".join(f"<a href='#tag_{t}'>{t}</a>" for t in bits[1:])
 
         return result
 
