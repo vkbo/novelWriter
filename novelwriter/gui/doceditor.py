@@ -964,9 +964,6 @@ class GuiDocEditor(QPlainTextEdit):
         if not self.wcTimerDoc.isActive():
             self.wcTimerDoc.start()
 
-        if added != 1:
-            return
-
         block = self._qDocument.findBlock(pos)
         if not block.isValid():
             return
@@ -982,7 +979,7 @@ class GuiDocEditor(QPlainTextEdit):
                     self._completer.move(self.viewport().mapToGlobal(point))
                     self._completer.show()
 
-        elif self._doReplace:
+        elif self._doReplace and added == 1:
             self._docAutoReplace(text)
 
         return
@@ -1936,41 +1933,42 @@ class MetaCompleter(QMenu):
     def updateText(self, text: str, pos: int) -> bool:
         """Update the menu options based on the line of text."""
         self.clear()
-        options = []
         kw, sep, _ = text.partition(":")
         if pos <= len(kw):
-            options = list(filter(lambda x: x.startswith(kw.rstrip()), nwKeyWords.VALID_KEYS))
-            if not options:
-                return False
-            for value in options:
-                n = len(kw.rstrip())
-                rep = value if sep else f"{value}:"
-                action = self.addAction(value)
-                action.triggered.connect(lambda _, r=rep: self._emitComplete(0, n, r))
-
-        elif pos > len(kw):
+            offset = 0
+            length = len(kw.rstrip())
+            suffix = "" if sep else ":"
+            options = list(filter(
+                lambda x: x.startswith(kw.rstrip()), nwKeyWords.VALID_KEYS
+            ))
+        else:
             status, tBits, tPos = SHARED.project.index.scanThis(text)
             if not status:
                 return False
-
             index = bisect.bisect_right(tPos, pos) - 1
             lookup = tBits[index].lower() if index > 0 else ""
             offset = tPos[index] if lookup else pos
-            itemClass = nwKeyWords.KEY_CLASS.get(kw.strip(), nwItemClass.NO_CLASS)
+            length = len(lookup)
+            suffix = ""
             options = list(filter(
-                lambda x: lookup in x.lower(), SHARED.project.index.getTags(itemClass)
-            ))
-            if not options:
-                return False
-            for value in sorted(options[:15]):
-                n = len(lookup)
-                action = self.addAction(value)
-                action.triggered.connect(lambda _, r=value: self._emitComplete(offset, n, r))
+                lambda x: lookup in x.lower(), SHARED.project.index.getTags(
+                    nwKeyWords.KEY_CLASS.get(kw.strip(), nwItemClass.NO_CLASS)
+                )
+            ))[:15]
 
-        else:
+        if not options:
             return False
 
+        for value in sorted(options):
+            rep = value + suffix
+            action = self.addAction(value)
+            action.triggered.connect(lambda _, r=rep: self._emitComplete(offset, length, r))
+
         return True
+
+    ##
+    #  Events
+    ##
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         """Capture keypresses and forward most of them to the editor."""
@@ -1980,6 +1978,10 @@ class MetaCompleter(QMenu):
         elif isinstance(parent, GuiDocEditor):
             parent.keyPressEvent(event)
         return
+
+    ##
+    #  Internal Functions
+    ##
 
     def _emitComplete(self, pos: int, length: int, value: str):
         """Emit the signal to indicate a selection has been made."""
