@@ -579,8 +579,7 @@ class GuiProjectTree(QTreeWidget):
         if rHandle:
             tHandle = SHARED.project.newFile(tag, rHandle)
             if tHandle:
-                text = f"# {tag}\n\n@tag: {tag}\n\n"
-                SHARED.project.writeNewFile(tHandle, 1, False, text)
+                SHARED.project.writeNewFile(tHandle, 1, False, f"@tag: {tag}\n\n")
                 self.revealNewTreeItem(tHandle, wordCount=True)
                 return True
         return False

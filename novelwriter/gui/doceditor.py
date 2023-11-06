@@ -155,12 +155,12 @@ class GuiDocEditor(QPlainTextEdit):
         self.followTag1 = QShortcut(self)
         self.followTag1.setKey(Qt.Key_Return | Qt.ControlModifier)
         self.followTag1.setContext(Qt.WidgetShortcut)
-        self.followTag1.activated.connect(self._followTag)
+        self.followTag1.activated.connect(self._processTag)
 
         self.followTag2 = QShortcut(self)
         self.followTag2.setKey(Qt.Key_Enter | Qt.ControlModifier)
         self.followTag2.setContext(Qt.WidgetShortcut)
-        self.followTag2.activated.connect(self._followTag)
+        self.followTag2.activated.connect(self._processTag)
 
         # Set Up Document Word Counter
         self.wcTimerDoc = QTimer()
@@ -919,7 +919,7 @@ class GuiDocEditor(QPlainTextEdit):
         follow tag function.
         """
         if qApp.keyboardModifiers() == Qt.ControlModifier:
-            self._followTag(self.cursorForPosition(event.pos()))
+            self._processTag(self.cursorForPosition(event.pos()))
         super().mouseReleaseEvent(event)
         self.docFooter.updateLineCount()
         return
@@ -1008,14 +1008,14 @@ class GuiDocEditor(QPlainTextEdit):
         ctxMenu = QMenu(self)
 
         # Follow
-        status = self._followTag(cursor=pCursor, process=False)
+        status = self._processTag(cursor=pCursor, follow=False)
         if status == nwTrinary.POSITIVE:
             aTag = ctxMenu.addAction(self.tr("Follow Tag"))
-            aTag.triggered.connect(lambda: self._followTag(cursor=pCursor, process=True))
+            aTag.triggered.connect(lambda: self._processTag(cursor=pCursor, follow=True))
             ctxMenu.addSeparator()
         elif status == nwTrinary.NEGATIVE:
             aTag = ctxMenu.addAction(self.tr("Create Note for Tag"))
-            aTag.triggered.connect(lambda: self._followTag(cursor=pCursor, process=True))
+            aTag.triggered.connect(lambda: self._processTag(cursor=pCursor, create=True))
             ctxMenu.addSeparator()
 
         # Cut, Copy and Paste
@@ -1696,7 +1696,8 @@ class GuiDocEditor(QPlainTextEdit):
     #  Internal Functions
     ##
 
-    def _followTag(self, cursor: QTextCursor | None = None, process: bool = True) -> nwTrinary:
+    def _processTag(self, cursor: QTextCursor | None = None,
+                    follow: bool = True, create: bool = False) -> nwTrinary:
         """Activated by Ctrl+Enter. Checks that we're in a block
         starting with '@'. We then find the tag under the cursor and
         check that it is not the tag itself. If all this is fine, we
@@ -1734,10 +1735,10 @@ class GuiDocEditor(QPlainTextEdit):
                 # The keyword cannot be looked up, so we ignore that
                 return nwTrinary.UNKNOWN
 
-            if process and exist:
+            if follow and exist:
                 logger.debug("Attempting to follow tag '%s'", tag)
                 self.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
-            elif process and not exist:
+            elif create and not exist:
                 if SHARED.question(self.tr(
                     "Do you want to create a new project note for the tag '{0}'?"
                 ).format(tag)):
