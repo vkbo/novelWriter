@@ -621,6 +621,10 @@ class NWIndex:
         sTitle = self._tagsIndex.tagHeading(tagKey)
         return tHandle, sTitle
 
+    def getTags(self, itemClass: nwItemClass) -> list[str]:
+        """Return all tags based on itemClass."""
+        return self._tagsIndex.filterTagNames(itemClass.name)
+
 # END Class NWIndex
 
 
@@ -683,6 +687,12 @@ class TagsIndex:
     def tagClass(self, tagKey: str) -> str | None:
         """Get the class of a given tag."""
         return self._tags.get(tagKey.lower(), {}).get("class", None)
+
+    def filterTagNames(self, className: str) -> list[str]:
+        """Get a list of tag names for a given class."""
+        return [
+            x.get("name", "") for x in self._tags.values() if x.get("class", "") == className
+        ]
 
     ##
     #  Pack/Unpack
