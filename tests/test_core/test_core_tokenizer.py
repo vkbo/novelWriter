@@ -789,7 +789,7 @@ def testCoreToken_SpecialFormat(mockGUI):
     tokens._isFirst = True
     tokens._text = (
         "# Title One\n\n"
-        "[NEWPAGE]\n\n"
+        "[newpage]\n\n"
         "# Title Two\n\n"
     )
     tokens.tokenizeText()
@@ -799,7 +799,7 @@ def testCoreToken_SpecialFormat(mockGUI):
     tokens._isFirst = True
     tokens._text = (
         "# Title One\n\n"
-        "[NEW PAGE]\n\n"
+        "[new page]\n\n"
         "# Title Two\n\n"
     )
     tokens.tokenizeText()
@@ -809,7 +809,7 @@ def testCoreToken_SpecialFormat(mockGUI):
     tokens._isFirst = True
     tokens._text = (
         "# Title One\n\n"
-        "[NEW PAGE]   \t\n\n"
+        "[new page]   \t\n\n"
         "# Title Two\n\n"
     )
     tokens.tokenizeText()
@@ -820,7 +820,7 @@ def testCoreToken_SpecialFormat(mockGUI):
 
     tokens._text = (
         "# Title One\n\n"
-        "[VSPACE] \n\n"
+        "[vspace] \n\n"
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
@@ -840,7 +840,7 @@ def testCoreToken_SpecialFormat(mockGUI):
     # One Skip
     tokens._text = (
         "# Title One\n\n"
-        "[VSPACE:1] \n\n"
+        "[vspace:1] \n\n"
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
@@ -857,7 +857,7 @@ def testCoreToken_SpecialFormat(mockGUI):
     # Three Skips
     tokens._text = (
         "# Title One\n\n"
-        "[VSPACE:3] \n\n"
+        "[vspace:3] \n\n"
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
@@ -876,7 +876,7 @@ def testCoreToken_SpecialFormat(mockGUI):
     # Malformed Command, Case 1
     tokens._text = (
         "# Title One\n\n"
-        "[VSPACE:3xa] \n\n"
+        "[vspace:3xa] \n\n"
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
@@ -892,7 +892,7 @@ def testCoreToken_SpecialFormat(mockGUI):
     # Malformed Command, Case 2
     tokens._text = (
         "# Title One\n\n"
-        "[VSPACE:3.5]\n\n"
+        "[vspace:3.5]\n\n"
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
@@ -908,7 +908,7 @@ def testCoreToken_SpecialFormat(mockGUI):
     # Malformed Command, Case 3
     tokens._text = (
         "# Title One\n\n"
-        "[VSPACE:-1]\n\n"
+        "[vspace:-1]\n\n"
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
@@ -927,8 +927,8 @@ def testCoreToken_SpecialFormat(mockGUI):
     # Single Skip
     tokens._text = (
         "# Title One\n\n"
-        "[NEW PAGE]\n\n"
-        "[VSPACE]\n\n"
+        "[new page]\n\n"
+        "[vspace]\n\n"
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
@@ -946,8 +946,8 @@ def testCoreToken_SpecialFormat(mockGUI):
     # Multiple Skip
     tokens._text = (
         "# Title One\n\n"
-        "[NEW PAGE]\n\n"
-        "[VSPACE:3]\n\n"
+        "[new page]\n\n"
+        "[vspace:3]\n\n"
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()

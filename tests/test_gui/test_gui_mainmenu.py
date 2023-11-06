@@ -600,15 +600,15 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
 
     nwGUI.docEditor.setPlainText("### Stuff\n")
     nwGUI.mainMenu.aInsNewPage.activate(QAction.Trigger)
-    assert nwGUI.docEditor.getText() == "[NEW PAGE]\n### Stuff\n"
+    assert nwGUI.docEditor.getText() == "[newpage]\n### Stuff\n"
 
     nwGUI.docEditor.setPlainText("### Stuff\n")
     nwGUI.mainMenu.aInsVSpaceS.activate(QAction.Trigger)
-    assert nwGUI.docEditor.getText() == "[VSPACE]\n### Stuff\n"
+    assert nwGUI.docEditor.getText() == "[vspace]\n### Stuff\n"
 
     nwGUI.docEditor.setPlainText("### Stuff\n")
     nwGUI.mainMenu.aInsVSpaceM.activate(QAction.Trigger)
-    assert nwGUI.docEditor.getText() == "[VSPACE:2]\n### Stuff\n"
+    assert nwGUI.docEditor.getText() == "[vspace:2]\n### Stuff\n"
 
     nwGUI.docEditor.clear()
 
