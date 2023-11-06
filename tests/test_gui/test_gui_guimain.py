@@ -530,7 +530,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     with monkeypatch.context() as mp:
         mp.setattr(QMenu, "exec_", lambda *a: None)
         docEditor.setCursorPosition(errPos)
-        docEditor._openSpellContext()
+        docEditor._openContextFromCursor()
 
     # Check Files
     # ===========

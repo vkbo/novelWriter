@@ -29,7 +29,7 @@ from PyQt5.QtGui import QTextBlock, QTextCursor, QTextOption
 from PyQt5.QtWidgets import QAction, qApp
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwDocAction, nwDocInsert, nwItemLayout, nwWidget
+from novelwriter.enum import nwDocAction, nwDocInsert, nwItemLayout, nwTrinary, nwWidget
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.core.index import countWords
 from novelwriter.gui.doceditor import GuiDocEditor
@@ -1041,7 +1041,7 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
     # Create Scene
-    text = "### A Scene\n\n@char: Jane, John\n\n" + ipsumText[0] + "\n\n"
+    text = "### A Scene\n\n@char: Jane, John\n\n@object: Gun\n\n@:\n\n" + ipsumText[0] + "\n\n"
     nwGUI.docEditor.replaceText(text)
 
     # Create Character
@@ -1059,33 +1059,43 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # Empty Block
     nwGUI.docEditor.setCursorLine(2)
-    assert nwGUI.docEditor._followTag() is False
+    assert nwGUI.docEditor._processTag() is nwTrinary.UNKNOWN
 
     # Not On Tag
     nwGUI.docEditor.setCursorLine(1)
-    assert nwGUI.docEditor._followTag() is False
+    assert nwGUI.docEditor._processTag() is nwTrinary.UNKNOWN
 
     # On Tag Keyword
     nwGUI.docEditor.setCursorPosition(15)
-    assert nwGUI.docEditor._followTag() is False
-
-    # On Unknown Tag
-    nwGUI.docEditor.setCursorPosition(28)
-    assert nwGUI.docEditor._followTag() is True
-    assert nwGUI.docViewer._docHandle is None
+    assert nwGUI.docEditor._processTag() is nwTrinary.UNKNOWN
 
     # On Known Tag, No Follow
     nwGUI.docEditor.setCursorPosition(22)
-    assert nwGUI.docEditor._followTag(loadTag=False) is True
+    assert nwGUI.docEditor._processTag(follow=False) is nwTrinary.POSITIVE
     assert nwGUI.docViewer._docHandle is None
 
     # On Known Tag, Follow
     nwGUI.docEditor.setCursorPosition(22)
     assert nwGUI.docViewer._docHandle is None
-    assert nwGUI.docEditor._followTag(loadTag=True) is True
+    assert nwGUI.docEditor._processTag(follow=True) is nwTrinary.POSITIVE
     assert nwGUI.docViewer._docHandle == cHandle
     assert nwGUI.closeDocViewer() is True
     assert nwGUI.docViewer._docHandle is None
+
+    # On Unknown Tag, Create It
+    assert "0000000000011" not in SHARED.project.tree
+    nwGUI.docEditor.setCursorPosition(28)
+    assert nwGUI.docEditor._processTag(create=True) is nwTrinary.NEGATIVE
+    assert "0000000000011" in SHARED.project.tree
+
+    # On Unknown Tag, Missing Root
+    assert "0000000000012" not in SHARED.project.tree
+    nwGUI.docEditor.setCursorPosition(42)
+    assert nwGUI.docEditor._processTag(create=True) is nwTrinary.NEGATIVE
+    assert "0000000000012" not in SHARED.project.tree
+
+    nwGUI.docEditor.setCursorPosition(47)
+    assert nwGUI.docEditor._processTag() is nwTrinary.UNKNOWN
 
     # qtbot.stop()
 

@@ -61,6 +61,15 @@ class nwItemLayout(Enum):
 # END Enum nwItemLayout
 
 
+class nwTrinary(Enum):
+
+    NEGATIVE = -1
+    UNKNOWN  = 0
+    POSITIVE = 1
+
+# END Enum nwTrinary
+
+
 class nwDocMode(Enum):
 
     VIEW = 0
