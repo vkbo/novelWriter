@@ -37,7 +37,7 @@ from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
 from novelwriter.enum import nwItemLayout
 from novelwriter.common import formatTimeStamp, numberToRoman, checkInt
-from novelwriter.constants import nwHeadFmt, nwRegEx, nwUnicode
+from novelwriter.constants import nwHeadFmt, nwRegEx, nwShortcode, nwUnicode
 from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
@@ -180,12 +180,12 @@ class Tokenizer(ABC):
         self._rxShortCodeVals = QRegularExpression(nwRegEx.FMT_SV)
 
         self._shortCodeFmt = {
-            "[i]": self.FMT_I_B, "[/i]": self.FMT_I_E,
-            "[b]": self.FMT_B_B, "[/b]": self.FMT_B_E,
-            "[s]": self.FMT_D_B, "[/s]": self.FMT_D_E,
-            "[u]": self.FMT_U_B, "[/u]": self.FMT_U_E,
-            "[sup]": self.FMT_SUP_B, "[/sup]": self.FMT_SUP_E,
-            "[sub]": self.FMT_SUB_B, "[/sub]": self.FMT_SUB_E,
+            nwShortcode.ITALIC_O: self.FMT_I_B,   nwShortcode.ITALIC_C: self.FMT_I_E,
+            nwShortcode.BOLD_O:   self.FMT_B_B,   nwShortcode.BOLD_C:   self.FMT_B_E,
+            nwShortcode.STRIKE_O: self.FMT_D_B,   nwShortcode.STRIKE_C: self.FMT_D_E,
+            nwShortcode.ULINE_O:  self.FMT_U_B,   nwShortcode.ULINE_C:  self.FMT_U_E,
+            nwShortcode.SUP_O:    self.FMT_SUP_B, nwShortcode.SUP_C:    self.FMT_SUP_E,
+            nwShortcode.SUB_O:    self.FMT_SUB_B, nwShortcode.SUB_C:    self.FMT_SUB_E,
         }
 
         return

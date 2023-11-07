@@ -53,7 +53,7 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwTrinary
 from novelwriter.common import minmax, transferCase
-from novelwriter.constants import nwKeyWords, nwLabels, nwUnicode, trConst
+from novelwriter.constants import nwKeyWords, nwLabels, nwShortcode, nwUnicode, trConst
 from novelwriter.core.item import NWItem
 from novelwriter.core.index import countWords
 from novelwriter.core.document import NWDocument
@@ -713,6 +713,18 @@ class GuiDocEditor(QPlainTextEdit):
             self._formatBlock(nwDocAction.INDENT_L)
         elif action == nwDocAction.INDENT_R:
             self._formatBlock(nwDocAction.INDENT_R)
+        elif action == nwDocAction.SC_ITALIC:
+            self._wrapSelection(nwShortcode.ITALIC_O, nwShortcode.ITALIC_C)
+        elif action == nwDocAction.SC_BOLD:
+            self._wrapSelection(nwShortcode.BOLD_O, nwShortcode.BOLD_C)
+        elif action == nwDocAction.SC_STRIKE:
+            self._wrapSelection(nwShortcode.STRIKE_O, nwShortcode.STRIKE_C)
+        elif action == nwDocAction.SC_ULINE:
+            self._wrapSelection(nwShortcode.ULINE_O, nwShortcode.ULINE_C)
+        elif action == nwDocAction.SC_SUP:
+            self._wrapSelection(nwShortcode.SUP_O, nwShortcode.SUP_C)
+        elif action == nwDocAction.SC_SUB:
+            self._wrapSelection(nwShortcode.SUB_O, nwShortcode.SUB_C)
         else:
             logger.debug("Unknown or unsupported document action '%s'", str(action))
             self._allowAutoReplace(True)

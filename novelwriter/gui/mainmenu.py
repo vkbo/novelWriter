@@ -637,6 +637,36 @@ class GuiMainMenu(QMenuBar):
         # Format > Separator
         self.fmtMenu.addSeparator()
 
+        # Shortcodes
+        self.mShortcodes = self.fmtMenu.addMenu(self.tr("More Options ..."))
+
+        # Shortcode Italic
+        self.aScItalic = self.mShortcodes.addAction(self.tr("Italics Shortcode"))
+        self.aScItalic.triggered.connect(lambda: self._docAction(nwDocAction.SC_ITALIC))
+
+        # Shortcode Bold
+        self.aScBold = self.mShortcodes.addAction(self.tr("Bold Shortcode"))
+        self.aScBold.triggered.connect(lambda: self._docAction(nwDocAction.SC_BOLD))
+
+        # Shortcode Underline
+        self.aScULine = self.mShortcodes.addAction(self.tr("Underline Shortcode"))
+        self.aScULine.triggered.connect(lambda: self._docAction(nwDocAction.SC_ULINE))
+
+        # Shortcode Strikethrough
+        self.aScStrike = self.mShortcodes.addAction(self.tr("Strikethrough Shortcode"))
+        self.aScStrike.triggered.connect(lambda: self._docAction(nwDocAction.SC_STRIKE))
+
+        # Shortcode Superscript
+        self.aScSuper = self.mShortcodes.addAction(self.tr("Superscript"))
+        self.aScSuper.triggered.connect(lambda: self._docAction(nwDocAction.SC_SUP))
+
+        # Shortcode Subscript
+        self.aScSub = self.mShortcodes.addAction(self.tr("Subscript"))
+        self.aScSub.triggered.connect(lambda: self._docAction(nwDocAction.SC_SUB))
+
+        # Format > Separator
+        self.fmtMenu.addSeparator()
+
         # Format > Header 1 (Partition)
         self.aFmtHead1 = QAction(self.tr("Header 1 (Partition)"), self)
         self.aFmtHead1.setShortcut("Ctrl+1")
