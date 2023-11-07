@@ -132,72 +132,62 @@ class GuiMainMenu(QMenuBar):
         self.projMenu = self.addMenu(self.tr("&Project"))
 
         # Project > New Project
-        self.aNewProject = QAction(self.tr("New Project"), self)
+        self.aNewProject = self.projMenu.addAction(self.tr("New Project"))
         self.aNewProject.triggered.connect(lambda: self.mainGui.newProject(None))
-        self.projMenu.addAction(self.aNewProject)
 
         # Project > Open Project
-        self.aOpenProject = QAction(self.tr("Open Project"), self)
+        self.aOpenProject = self.projMenu.addAction(self.tr("Open Project"))
         self.aOpenProject.setShortcut("Ctrl+Shift+O")
         self.aOpenProject.triggered.connect(lambda: self.mainGui.showProjectLoadDialog())
-        self.projMenu.addAction(self.aOpenProject)
 
         # Project > Save Project
-        self.aSaveProject = QAction(self.tr("Save Project"), self)
+        self.aSaveProject = self.projMenu.addAction(self.tr("Save Project"))
         self.aSaveProject.setShortcut("Ctrl+Shift+S")
         self.aSaveProject.triggered.connect(lambda: self.mainGui.saveProject())
-        self.projMenu.addAction(self.aSaveProject)
 
         # Project > Close Project
-        self.aCloseProject = QAction(self.tr("Close Project"), self)
+        self.aCloseProject = self.projMenu.addAction(self.tr("Close Project"))
         self.aCloseProject.setShortcut("Ctrl+Shift+W")
         self.aCloseProject.triggered.connect(lambda: self.mainGui.closeProject(False))
-        self.projMenu.addAction(self.aCloseProject)
 
         # Project > Separator
         self.projMenu.addSeparator()
 
         # Project > Project Settings
-        self.aProjectSettings = QAction(self.tr("Project Settings"), self)
+        self.aProjectSettings = self.projMenu.addAction(self.tr("Project Settings"))
         self.aProjectSettings.setShortcut("Ctrl+Shift+,")
         self.aProjectSettings.triggered.connect(lambda: self.mainGui.showProjectSettingsDialog())
-        self.projMenu.addAction(self.aProjectSettings)
 
         # Project > Project Details
-        self.aProjectDetails = QAction(self.tr("Project Details"), self)
+        self.aProjectDetails = self.projMenu.addAction(self.tr("Project Details"))
         self.aProjectDetails.setShortcut("Shift+F6")
         self.aProjectDetails.triggered.connect(lambda: self.mainGui.showProjectDetailsDialog())
-        self.projMenu.addAction(self.aProjectDetails)
 
         # Project > Separator
         self.projMenu.addSeparator()
 
         # Project > Edit
-        self.aEditItem = QAction(self.tr("Rename Item"), self)
+        self.aEditItem = self.projMenu.addAction(self.tr("Rename Item"))
         self.aEditItem.setShortcut("F2")
         self.aEditItem.triggered.connect(lambda: self.mainGui.editItemLabel(None))
-        self.projMenu.addAction(self.aEditItem)
 
         # Project > Delete
-        self.aDeleteItem = QAction(self.tr("Delete Item"), self)
+        self.aDeleteItem = self.projMenu.addAction(self.tr("Delete Item"))
         self.aDeleteItem.setShortcut("Ctrl+Shift+Del")
         self.aDeleteItem.triggered.connect(lambda: self.mainGui.projView.requestDeleteItem(None))
-        self.projMenu.addAction(self.aDeleteItem)
 
         # Project > Empty Trash
-        self.aEmptyTrash = QAction(self.tr("Empty Trash"), self)
+        self.aEmptyTrash = self.projMenu.addAction(self.tr("Empty Trash"))
         self.aEmptyTrash.triggered.connect(lambda: self.mainGui.projView.emptyTrash())
-        self.projMenu.addAction(self.aEmptyTrash)
 
         # Project > Separator
         self.projMenu.addSeparator()
 
         # Project > Exit
-        self.aExitNW = QAction(self.tr("Exit"), self)
+        self.aExitNW = self.projMenu.addAction(self.tr("Exit"))
         self.aExitNW.setShortcut("Ctrl+Q")
         self.aExitNW.setMenuRole(QAction.QuitRole)
         self.aExitNW.triggered.connect(lambda: self.mainGui.closeMain())
-        self.projMenu.addAction(self.aExitNW)
 
         return
 
@@ -207,51 +197,44 @@ class GuiMainMenu(QMenuBar):
         self.docuMenu = self.addMenu(self.tr("&Document"))
 
         # Document > Open
-        self.aOpenDoc = QAction(self.tr("Open Document"), self)
+        self.aOpenDoc = self.docuMenu.addAction(self.tr("Open Document"))
         self.aOpenDoc.setShortcut("Ctrl+O")
         self.aOpenDoc.triggered.connect(lambda: self.mainGui.openSelectedItem())
-        self.docuMenu.addAction(self.aOpenDoc)
 
         # Document > Save
-        self.aSaveDoc = QAction(self.tr("Save Document"), self)
+        self.aSaveDoc = self.docuMenu.addAction(self.tr("Save Document"))
         self.aSaveDoc.setShortcut("Ctrl+S")
         self.aSaveDoc.triggered.connect(lambda: self.mainGui.saveDocument())
-        self.docuMenu.addAction(self.aSaveDoc)
 
         # Document > Close
-        self.aCloseDoc = QAction(self.tr("Close Document"), self)
+        self.aCloseDoc = self.docuMenu.addAction(self.tr("Close Document"))
         self.aCloseDoc.setShortcut("Ctrl+W")
         self.aCloseDoc.triggered.connect(lambda: self.mainGui.closeDocEditor())
-        self.docuMenu.addAction(self.aCloseDoc)
 
         # Document > Separator
         self.docuMenu.addSeparator()
 
         # Document > Preview
-        self.aViewDoc = QAction(self.tr("View Document"), self)
+        self.aViewDoc = self.docuMenu.addAction(self.tr("View Document"))
         self.aViewDoc.setShortcut("Ctrl+R")
         self.aViewDoc.triggered.connect(lambda: self.mainGui.viewDocument(None))
-        self.docuMenu.addAction(self.aViewDoc)
 
         # Document > Close Preview
-        self.aCloseView = QAction(self.tr("Close Document View"), self)
+        self.aCloseView = self.docuMenu.addAction(self.tr("Close Document View"))
         self.aCloseView.setShortcut("Ctrl+Shift+R")
         self.aCloseView.triggered.connect(lambda: self.mainGui.closeDocViewer())
-        self.docuMenu.addAction(self.aCloseView)
 
         # Document > Separator
         self.docuMenu.addSeparator()
 
         # Document > Show File Details
-        self.aFileDetails = QAction(self.tr("Show File Details"), self)
+        self.aFileDetails = self.docuMenu.addAction(self.tr("Show File Details"))
         self.aFileDetails.triggered.connect(lambda: self.mainGui.docEditor.revealLocation())
-        self.docuMenu.addAction(self.aFileDetails)
 
         # Document > Import From File
-        self.aImportFile = QAction(self.tr("Import Text from File"), self)
+        self.aImportFile = self.docuMenu.addAction(self.tr("Import Text from File"))
         self.aImportFile.setShortcut("Ctrl+Shift+I")
         self.aImportFile.triggered.connect(lambda: self.mainGui.importDocument())
-        self.docuMenu.addAction(self.aImportFile)
 
         return
 
@@ -261,52 +244,45 @@ class GuiMainMenu(QMenuBar):
         self.editMenu = self.addMenu(self.tr("&Edit"))
 
         # Edit > Undo
-        self.aEditUndo = QAction(self.tr("Undo"), self)
+        self.aEditUndo = self.editMenu.addAction(self.tr("Undo"))
         self.aEditUndo.setShortcut("Ctrl+Z")
         self.aEditUndo.triggered.connect(lambda: self._docAction(nwDocAction.UNDO))
-        self.editMenu.addAction(self.aEditUndo)
 
         # Edit > Redo
-        self.aEditRedo = QAction(self.tr("Redo"), self)
+        self.aEditRedo = self.editMenu.addAction(self.tr("Redo"))
         self.aEditRedo.setShortcut("Ctrl+Y")
         self.aEditRedo.triggered.connect(lambda: self._docAction(nwDocAction.REDO))
-        self.editMenu.addAction(self.aEditRedo)
 
         # Edit > Separator
         self.editMenu.addSeparator()
 
         # Edit > Cut
-        self.aEditCut = QAction(self.tr("Cut"), self)
+        self.aEditCut = self.editMenu.addAction(self.tr("Cut"))
         self.aEditCut.setShortcut("Ctrl+X")
         self.aEditCut.triggered.connect(lambda: self._docAction(nwDocAction.CUT))
-        self.editMenu.addAction(self.aEditCut)
 
         # Edit > Copy
-        self.aEditCopy = QAction(self.tr("Copy"), self)
+        self.aEditCopy = self.editMenu.addAction(self.tr("Copy"))
         self.aEditCopy.setShortcut("Ctrl+C")
         self.aEditCopy.triggered.connect(lambda: self._docAction(nwDocAction.COPY))
-        self.editMenu.addAction(self.aEditCopy)
 
         # Edit > Paste
-        self.aEditPaste = QAction(self.tr("Paste"), self)
+        self.aEditPaste = self.editMenu.addAction(self.tr("Paste"))
         self.aEditPaste.setShortcut("Ctrl+V")
         self.aEditPaste.triggered.connect(lambda: self._docAction(nwDocAction.PASTE))
-        self.editMenu.addAction(self.aEditPaste)
 
         # Edit > Separator
         self.editMenu.addSeparator()
 
         # Edit > Select All
-        self.aSelectAll = QAction(self.tr("Select All"), self)
+        self.aSelectAll = self.editMenu.addAction(self.tr("Select All"))
         self.aSelectAll.setShortcut("Ctrl+A")
         self.aSelectAll.triggered.connect(lambda: self._docAction(nwDocAction.SEL_ALL))
-        self.editMenu.addAction(self.aSelectAll)
 
         # Edit > Select Paragraph
-        self.aSelectPar = QAction(self.tr("Select Paragraph"), self)
+        self.aSelectPar = self.editMenu.addAction(self.tr("Select Paragraph"))
         self.aSelectPar.setShortcut("Ctrl+Shift+A")
         self.aSelectPar.triggered.connect(lambda: self._docAction(nwDocAction.SEL_PARA))
-        self.editMenu.addAction(self.aSelectPar)
 
         return
 
@@ -316,70 +292,50 @@ class GuiMainMenu(QMenuBar):
         self.viewMenu = self.addMenu(self.tr("&View"))
 
         # View > TreeView
-        self.aFocusTree = QAction(self.tr("Go to Project Tree"), self)
-        if CONFIG.osWindows:
-            self.aFocusTree.setShortcut("Ctrl+Alt+1")
-        else:
-            self.aFocusTree.setShortcut("Alt+1")
+        self.aFocusTree = self.viewMenu.addAction(self.tr("Go to Project Tree"))
+        self.aFocusTree.setShortcut("Ctrl+Alt+1" if CONFIG.osWindows else "Alt+1")
         self.aFocusTree.triggered.connect(lambda: self.mainGui.switchFocus(nwWidget.TREE))
-        self.viewMenu.addAction(self.aFocusTree)
 
         # View > Document Pane 1
-        self.aFocusEditor = QAction(self.tr("Go to Document Editor"), self)
-        if CONFIG.osWindows:
-            self.aFocusEditor.setShortcut("Ctrl+Alt+2")
-        else:
-            self.aFocusEditor.setShortcut("Alt+2")
+        self.aFocusEditor = self.viewMenu.addAction(self.tr("Go to Document Editor"))
+        self.aFocusEditor.setShortcut("Ctrl+Alt+2" if CONFIG.osWindows else "Alt+2")
         self.aFocusEditor.triggered.connect(lambda: self.mainGui.switchFocus(nwWidget.EDITOR))
-        self.viewMenu.addAction(self.aFocusEditor)
 
         # View > Document Pane 2
-        self.aFocusView = QAction(self.tr("Go to Document Viewer"), self)
-        if CONFIG.osWindows:
-            self.aFocusView.setShortcut("Ctrl+Alt+3")
-        else:
-            self.aFocusView.setShortcut("Alt+3")
+        self.aFocusView = self.viewMenu.addAction(self.tr("Go to Document Viewer"))
+        self.aFocusView.setShortcut("Ctrl+Alt+3" if CONFIG.osWindows else "Alt+3")
         self.aFocusView.triggered.connect(lambda: self.mainGui.switchFocus(nwWidget.VIEWER))
-        self.viewMenu.addAction(self.aFocusView)
 
         # View > Outline
-        self.aFocusOutline = QAction(self.tr("Go to Outline"), self)
-        if CONFIG.osWindows:
-            self.aFocusOutline.setShortcut("Ctrl+Alt+4")
-        else:
-            self.aFocusOutline.setShortcut("Alt+4")
+        self.aFocusOutline = self.viewMenu.addAction(self.tr("Go to Outline"))
+        self.aFocusOutline.setShortcut("Ctrl+Alt+4" if CONFIG.osWindows else "Alt+4")
         self.aFocusOutline.triggered.connect(lambda: self.mainGui.switchFocus(nwWidget.OUTLINE))
-        self.viewMenu.addAction(self.aFocusOutline)
 
         # View > Separator
         self.viewMenu.addSeparator()
 
         # View > Go Backward
-        self.aViewPrev = QAction(self.tr("Navigate Backward"), self)
+        self.aViewPrev = self.viewMenu.addAction(self.tr("Navigate Backward"))
         self.aViewPrev.setShortcut("Alt+Left")
         self.aViewPrev.triggered.connect(self.mainGui.docViewer.navBackward)
-        self.viewMenu.addAction(self.aViewPrev)
 
         # View > Go Forward
-        self.aViewNext = QAction(self.tr("Navigate Forward"), self)
+        self.aViewNext = self.viewMenu.addAction(self.tr("Navigate Forward"))
         self.aViewNext.setShortcut("Alt+Right")
         self.aViewNext.triggered.connect(self.mainGui.docViewer.navForward)
-        self.viewMenu.addAction(self.aViewNext)
 
         # View > Separator
         self.viewMenu.addSeparator()
 
         # View > Focus Mode
-        self.aFocusMode = QAction(self.tr("Focus Mode"), self)
+        self.aFocusMode = self.viewMenu.addAction(self.tr("Focus Mode"))
         self.aFocusMode.setShortcut("F8")
         self.aFocusMode.triggered.connect(lambda: self.mainGui.toggleFocusMode())
-        self.viewMenu.addAction(self.aFocusMode)
 
         # View > Toggle Full Screen
-        self.aFullScreen = QAction(self.tr("Full Screen Mode"), self)
+        self.aFullScreen = self.viewMenu.addAction(self.tr("Full Screen Mode"))
         self.aFullScreen.setShortcut("F11")
         self.aFullScreen.triggered.connect(lambda: self.mainGui.toggleFullScreenMode())
-        self.viewMenu.addAction(self.aFullScreen)
 
         return
 
@@ -392,154 +348,131 @@ class GuiMainMenu(QMenuBar):
         self.mInsDashes = self.insMenu.addMenu(self.tr("Dashes"))
 
         # Insert > Short Dash
-        self.aInsENDash = QAction(self.tr("Short Dash"), self)
+        self.aInsENDash = self.mInsDashes.addAction(self.tr("Short Dash"))
         self.aInsENDash.setShortcut("Ctrl+K, -")
         self.aInsENDash.triggered.connect(lambda: self._docInsert(nwUnicode.U_ENDASH))
-        self.mInsDashes.addAction(self.aInsENDash)
 
         # Insert > Long Dash
-        self.aInsEMDash = QAction(self.tr("Long Dash"), self)
+        self.aInsEMDash = self.mInsDashes.addAction(self.tr("Long Dash"))
         self.aInsEMDash.setShortcut("Ctrl+K, _")
         self.aInsEMDash.triggered.connect(lambda: self._docInsert(nwUnicode.U_EMDASH))
-        self.mInsDashes.addAction(self.aInsEMDash)
 
         # Insert > Long Dash
-        self.aInsHorBar = QAction(self.tr("Horizontal Bar"), self)
+        self.aInsHorBar = self.mInsDashes.addAction(self.tr("Horizontal Bar"))
         self.aInsHorBar.setShortcut("Ctrl+K, Ctrl+_")
         self.aInsHorBar.triggered.connect(lambda: self._docInsert(nwUnicode.U_HBAR))
-        self.mInsDashes.addAction(self.aInsHorBar)
 
         # Insert > Figure Dash
-        self.aInsFigDash = QAction(self.tr("Figure Dash"), self)
+        self.aInsFigDash = self.mInsDashes.addAction(self.tr("Figure Dash"))
         self.aInsFigDash.setShortcut("Ctrl+K, ~")
         self.aInsFigDash.triggered.connect(lambda: self._docInsert(nwUnicode.U_FGDASH))
-        self.mInsDashes.addAction(self.aInsFigDash)
 
         # Insert > Quote Marks
         self.mInsQuotes = self.insMenu.addMenu(self.tr("Quote Marks"))
 
         # Insert > Left Single Quote
-        self.aInsQuoteLS = QAction(self.tr("Left Single Quote"), self)
+        self.aInsQuoteLS = self.mInsQuotes.addAction(self.tr("Left Single Quote"))
         self.aInsQuoteLS.setShortcut("Ctrl+K, 1")
         self.aInsQuoteLS.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_LS))
-        self.mInsQuotes.addAction(self.aInsQuoteLS)
 
         # Insert > Right Single Quote
-        self.aInsQuoteRS = QAction(self.tr("Right Single Quote"), self)
+        self.aInsQuoteRS = self.mInsQuotes.addAction(self.tr("Right Single Quote"))
         self.aInsQuoteRS.setShortcut("Ctrl+K, 2")
         self.aInsQuoteRS.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_RS))
-        self.mInsQuotes.addAction(self.aInsQuoteRS)
 
         # Insert > Left Double Quote
-        self.aInsQuoteLD = QAction(self.tr("Left Double Quote"), self)
+        self.aInsQuoteLD = self.mInsQuotes.addAction(self.tr("Left Double Quote"))
         self.aInsQuoteLD.setShortcut("Ctrl+K, 3")
         self.aInsQuoteLD.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_LD))
-        self.mInsQuotes.addAction(self.aInsQuoteLD)
 
         # Insert > Right Double Quote
-        self.aInsQuoteRD = QAction(self.tr("Right Double Quote"), self)
+        self.aInsQuoteRD = self.mInsQuotes.addAction(self.tr("Right Double Quote"))
         self.aInsQuoteRD.setShortcut("Ctrl+K, 4")
         self.aInsQuoteRD.triggered.connect(lambda: self._docInsert(nwDocInsert.QUOTE_RD))
-        self.mInsQuotes.addAction(self.aInsQuoteRD)
 
         # Insert > Alternative Apostrophe
-        self.aInsMSApos = QAction(self.tr("Alternative Apostrophe"), self)
+        self.aInsMSApos = self.mInsQuotes.addAction(self.tr("Alternative Apostrophe"))
         self.aInsMSApos.setShortcut("Ctrl+K, '")
         self.aInsMSApos.triggered.connect(lambda: self._docInsert(nwUnicode.U_MAPOSS))
-        self.mInsQuotes.addAction(self.aInsMSApos)
 
         # Insert > Symbols
         self.mInsPunct = self.insMenu.addMenu(self.tr("General Punctuation"))
 
         # Insert > Ellipsis
-        self.aInsEllipsis = QAction(self.tr("Ellipsis"), self)
+        self.aInsEllipsis = self.mInsPunct.addAction(self.tr("Ellipsis"))
         self.aInsEllipsis.setShortcut("Ctrl+K, .")
         self.aInsEllipsis.triggered.connect(lambda: self._docInsert(nwUnicode.U_HELLIP))
-        self.mInsPunct.addAction(self.aInsEllipsis)
 
         # Insert > Prime
-        self.aInsPrime = QAction(self.tr("Prime"), self)
+        self.aInsPrime = self.mInsPunct.addAction(self.tr("Prime"))
         self.aInsPrime.setShortcut("Ctrl+K, Ctrl+'")
         self.aInsPrime.triggered.connect(lambda: self._docInsert(nwUnicode.U_PRIME))
-        self.mInsPunct.addAction(self.aInsPrime)
 
         # Insert > Double Prime
-        self.aInsDPrime = QAction(self.tr("Double Prime"), self)
+        self.aInsDPrime = self.mInsPunct.addAction(self.tr("Double Prime"))
         self.aInsDPrime.setShortcut("Ctrl+K, Ctrl+\"")
         self.aInsDPrime.triggered.connect(lambda: self._docInsert(nwUnicode.U_DPRIME))
-        self.mInsPunct.addAction(self.aInsDPrime)
 
         # Insert > White Spaces
         self.mInsSpace = self.insMenu.addMenu(self.tr("White Spaces"))
 
         # Insert > Non-Breaking Space
-        self.aInsNBSpace = QAction(self.tr("Non-Breaking Space"), self)
+        self.aInsNBSpace = self.mInsSpace.addAction(self.tr("Non-Breaking Space"))
         self.aInsNBSpace.setShortcut("Ctrl+K, Space")
         self.aInsNBSpace.triggered.connect(lambda: self._docInsert(nwUnicode.U_NBSP))
-        self.mInsSpace.addAction(self.aInsNBSpace)
 
         # Insert > Thin Space
-        self.aInsThinSpace = QAction(self.tr("Thin Space"), self)
+        self.aInsThinSpace = self.mInsSpace.addAction(self.tr("Thin Space"))
         self.aInsThinSpace.setShortcut("Ctrl+K, Shift+Space")
         self.aInsThinSpace.triggered.connect(lambda: self._docInsert(nwUnicode.U_THSP))
-        self.mInsSpace.addAction(self.aInsThinSpace)
 
         # Insert > Thin Non-Breaking Space
-        self.aInsThinNBSpace = QAction(self.tr("Thin Non-Breaking Space"), self)
+        self.aInsThinNBSpace = self.mInsSpace.addAction(self.tr("Thin Non-Breaking Space"))
         self.aInsThinNBSpace.setShortcut("Ctrl+K, Ctrl+Space")
         self.aInsThinNBSpace.triggered.connect(lambda: self._docInsert(nwUnicode.U_THNBSP))
-        self.mInsSpace.addAction(self.aInsThinNBSpace)
 
         # Insert > Symbols
         self.mInsSymbol = self.insMenu.addMenu(self.tr("Other Symbols"))
 
         # Insert > List Bullet
-        self.aInsBullet = QAction(self.tr("List Bullet"), self)
+        self.aInsBullet = self.mInsSymbol.addAction(self.tr("List Bullet"))
         self.aInsBullet.setShortcut("Ctrl+K, *")
         self.aInsBullet.triggered.connect(lambda: self._docInsert(nwUnicode.U_BULL))
-        self.mInsSymbol.addAction(self.aInsBullet)
 
         # Insert > Hyphen Bullet
-        self.aInsHyBull = QAction(self.tr("Hyphen Bullet"), self)
+        self.aInsHyBull = self.mInsSymbol.addAction(self.tr("Hyphen Bullet"))
         self.aInsHyBull.setShortcut("Ctrl+K, Ctrl+-")
         self.aInsHyBull.triggered.connect(lambda: self._docInsert(nwUnicode.U_HYBULL))
-        self.mInsSymbol.addAction(self.aInsHyBull)
 
         # Insert > Flower Mark
-        self.aInsFlower = QAction(self.tr("Flower Mark"), self)
+        self.aInsFlower = self.mInsSymbol.addAction(self.tr("Flower Mark"))
         self.aInsFlower.setShortcut("Ctrl+K, Ctrl+*")
         self.aInsFlower.triggered.connect(lambda: self._docInsert(nwUnicode.U_FLOWER))
-        self.mInsSymbol.addAction(self.aInsFlower)
 
         # Insert > Per Mille
-        self.aInsPerMille = QAction(self.tr("Per Mille"), self)
+        self.aInsPerMille = self.mInsSymbol.addAction(self.tr("Per Mille"))
         self.aInsPerMille.setShortcut("Ctrl+K, %")
         self.aInsPerMille.triggered.connect(lambda: self._docInsert(nwUnicode.U_PERMIL))
-        self.mInsSymbol.addAction(self.aInsPerMille)
 
         # Insert > Degree Symbol
-        self.aInsDegree = QAction(self.tr("Degree Symbol"), self)
+        self.aInsDegree = self.mInsSymbol.addAction(self.tr("Degree Symbol"))
         self.aInsDegree.setShortcut("Ctrl+K, Ctrl+O")
         self.aInsDegree.triggered.connect(lambda: self._docInsert(nwUnicode.U_DEGREE))
-        self.mInsSymbol.addAction(self.aInsDegree)
 
         # Insert > Minus Sign
-        self.aInsMinus = QAction(self.tr("Minus Sign"), self)
+        self.aInsMinus = self.mInsSymbol.addAction(self.tr("Minus Sign"))
         self.aInsMinus.setShortcut("Ctrl+K, Ctrl+M")
         self.aInsMinus.triggered.connect(lambda: self._docInsert(nwUnicode.U_MINUS))
-        self.mInsSymbol.addAction(self.aInsMinus)
 
         # Insert > Times Sign
-        self.aInsTimes = QAction(self.tr("Times Sign"), self)
+        self.aInsTimes = self.mInsSymbol.addAction(self.tr("Times Sign"))
         self.aInsTimes.setShortcut("Ctrl+K, Ctrl+X")
         self.aInsTimes.triggered.connect(lambda: self._docInsert(nwUnicode.U_TIMES))
-        self.mInsSymbol.addAction(self.aInsTimes)
 
         # Insert > Division
-        self.aInsDivide = QAction(self.tr("Division Sign"), self)
+        self.aInsDivide = self.mInsSymbol.addAction(self.tr("Division Sign"))
         self.aInsDivide.setShortcut("Ctrl+K, Ctrl+D")
         self.aInsDivide.triggered.connect(lambda: self._docInsert(nwUnicode.U_DIVIDE))
-        self.mInsSymbol.addAction(self.aInsDivide)
 
         # Insert > Tags and References
         self.mInsKeywords = self.insMenu.addMenu(self.tr("Tags and References"))
@@ -566,33 +499,28 @@ class GuiMainMenu(QMenuBar):
         self.mInsComments = self.insMenu.addMenu(self.tr("Special Comments"))
 
         # Insert > Synopsis Comment
-        self.aInsSynopsis = QAction(self.tr("Synopsis Comment"), self)
+        self.aInsSynopsis = self.mInsComments.addAction(self.tr("Synopsis Comment"))
         self.aInsSynopsis.setShortcut("Ctrl+K, S")
         self.aInsSynopsis.triggered.connect(lambda: self._docInsert(nwDocInsert.SYNOPSIS))
-        self.mInsComments.addAction(self.aInsSynopsis)
 
         # Insert > Symbols
         self.mInsBreaks = self.insMenu.addMenu(self.tr("Page Break and Space"))
 
         # Insert > New Page
-        self.aInsNewPage = QAction(self.tr("Page Break"), self)
+        self.aInsNewPage = self.mInsBreaks.addAction(self.tr("Page Break"))
         self.aInsNewPage.triggered.connect(lambda: self._docInsert(nwDocInsert.NEW_PAGE))
-        self.mInsBreaks.addAction(self.aInsNewPage)
 
         # Insert > Vertical Space (Single)
-        self.aInsVSpaceS = QAction(self.tr("Vertical Space (Single)"), self)
+        self.aInsVSpaceS = self.mInsBreaks.addAction(self.tr("Vertical Space (Single)"))
         self.aInsVSpaceS.triggered.connect(lambda: self._docInsert(nwDocInsert.VSPACE_S))
-        self.mInsBreaks.addAction(self.aInsVSpaceS)
 
         # Insert > Vertical Space (Multi)
-        self.aInsVSpaceM = QAction(self.tr("Vertical Space (Multi)"), self)
+        self.aInsVSpaceM = self.mInsBreaks.addAction(self.tr("Vertical Space (Multi)"))
         self.aInsVSpaceM.triggered.connect(lambda: self._docInsert(nwDocInsert.VSPACE_M))
-        self.mInsBreaks.addAction(self.aInsVSpaceM)
 
         # Insert > Placeholder Text
-        self.aLipsumText = QAction(self.tr("Placeholder Text"), self)
+        self.aLipsumText = self.mInsBreaks.addAction(self.tr("Placeholder Text"))
         self.aLipsumText.triggered.connect(lambda: self.mainGui.showLoremIpsumDialog())
-        self.insMenu.addAction(self.aLipsumText)
 
         return
 
@@ -602,146 +530,155 @@ class GuiMainMenu(QMenuBar):
         self.fmtMenu = self.addMenu(self.tr("&Format"))
 
         # Format > Emphasis
-        self.aFmtEmph = QAction(self.tr("Emphasis"), self)
+        self.aFmtEmph = self.fmtMenu.addAction(self.tr("Emphasis"))
         self.aFmtEmph.setShortcut("Ctrl+I")
         self.aFmtEmph.triggered.connect(lambda: self._docAction(nwDocAction.EMPH))
-        self.fmtMenu.addAction(self.aFmtEmph)
 
         # Format > Strong Emphasis
-        self.aFmtStrong = QAction(self.tr("Strong Emphasis"), self)
+        self.aFmtStrong = self.fmtMenu.addAction(self.tr("Strong Emphasis"))
         self.aFmtStrong.setShortcut("Ctrl+B")
         self.aFmtStrong.triggered.connect(lambda: self._docAction(nwDocAction.STRONG))
-        self.fmtMenu.addAction(self.aFmtStrong)
 
         # Format > Strikethrough
-        self.aFmtStrike = QAction(self.tr("Strikethrough"), self)
+        self.aFmtStrike = self.fmtMenu.addAction(self.tr("Strikethrough"))
         self.aFmtStrike.setShortcut("Ctrl+D")
         self.aFmtStrike.triggered.connect(lambda: self._docAction(nwDocAction.STRIKE))
-        self.fmtMenu.addAction(self.aFmtStrike)
 
         # Edit > Separator
         self.fmtMenu.addSeparator()
 
         # Format > Double Quotes
-        self.aFmtDQuote = QAction(self.tr("Wrap Double Quotes"), self)
+        self.aFmtDQuote = self.fmtMenu.addAction(self.tr("Wrap Double Quotes"))
         self.aFmtDQuote.setShortcut("Ctrl+\"")
         self.aFmtDQuote.triggered.connect(lambda: self._docAction(nwDocAction.D_QUOTE))
-        self.fmtMenu.addAction(self.aFmtDQuote)
 
         # Format > Single Quotes
-        self.aFmtSQuote = QAction(self.tr("Wrap Single Quotes"), self)
+        self.aFmtSQuote = self.fmtMenu.addAction(self.tr("Wrap Single Quotes"))
         self.aFmtSQuote.setShortcut("Ctrl+'")
         self.aFmtSQuote.triggered.connect(lambda: self._docAction(nwDocAction.S_QUOTE))
-        self.fmtMenu.addAction(self.aFmtSQuote)
+
+        # Format > Separator
+        self.fmtMenu.addSeparator()
+
+        # Shortcodes
+        self.mShortcodes = self.fmtMenu.addMenu(self.tr("More Formats ..."))
+
+        # Shortcode Italic
+        self.aScItalic = self.mShortcodes.addAction(self.tr("Italics Shortcode"))
+        self.aScItalic.triggered.connect(lambda: self._docAction(nwDocAction.SC_ITALIC))
+
+        # Shortcode Bold
+        self.aScBold = self.mShortcodes.addAction(self.tr("Bold Shortcode"))
+        self.aScBold.triggered.connect(lambda: self._docAction(nwDocAction.SC_BOLD))
+
+        # Shortcode Underline
+        self.aScULine = self.mShortcodes.addAction(self.tr("Underline Shortcode"))
+        self.aScULine.triggered.connect(lambda: self._docAction(nwDocAction.SC_ULINE))
+
+        # Shortcode Strikethrough
+        self.aScStrike = self.mShortcodes.addAction(self.tr("Strikethrough Shortcode"))
+        self.aScStrike.triggered.connect(lambda: self._docAction(nwDocAction.SC_STRIKE))
+
+        # Shortcode Superscript
+        self.aScSuper = self.mShortcodes.addAction(self.tr("Superscript"))
+        self.aScSuper.triggered.connect(lambda: self._docAction(nwDocAction.SC_SUP))
+
+        # Shortcode Subscript
+        self.aScSub = self.mShortcodes.addAction(self.tr("Subscript"))
+        self.aScSub.triggered.connect(lambda: self._docAction(nwDocAction.SC_SUB))
 
         # Format > Separator
         self.fmtMenu.addSeparator()
 
         # Format > Header 1 (Partition)
-        self.aFmtHead1 = QAction(self.tr("Header 1 (Partition)"), self)
+        self.aFmtHead1 = self.fmtMenu.addAction(self.tr("Header 1 (Partition)"))
         self.aFmtHead1.setShortcut("Ctrl+1")
         self.aFmtHead1.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_H1))
-        self.fmtMenu.addAction(self.aFmtHead1)
 
         # Format > Header 2 (Chapter)
-        self.aFmtHead2 = QAction(self.tr("Header 2 (Chapter)"), self)
+        self.aFmtHead2 = self.fmtMenu.addAction(self.tr("Header 2 (Chapter)"))
         self.aFmtHead2.setShortcut("Ctrl+2")
         self.aFmtHead2.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_H2))
-        self.fmtMenu.addAction(self.aFmtHead2)
 
         # Format > Header 3 (Scene)
-        self.aFmtHead3 = QAction(self.tr("Header 3 (Scene)"), self)
+        self.aFmtHead3 = self.fmtMenu.addAction(self.tr("Header 3 (Scene)"))
         self.aFmtHead3.setShortcut("Ctrl+3")
         self.aFmtHead3.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_H3))
-        self.fmtMenu.addAction(self.aFmtHead3)
 
         # Format > Header 4 (Section)
-        self.aFmtHead4 = QAction(self.tr("Header 4 (Section)"), self)
+        self.aFmtHead4 = self.fmtMenu.addAction(self.tr("Header 4 (Section)"))
         self.aFmtHead4.setShortcut("Ctrl+4")
         self.aFmtHead4.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_H4))
-        self.fmtMenu.addAction(self.aFmtHead4)
 
         # Format > Separator
         self.fmtMenu.addSeparator()
 
         # Format > Novel Title
-        self.aFmtTitle = QAction(self.tr("Novel Title"), self)
+        self.aFmtTitle = self.fmtMenu.addAction(self.tr("Novel Title"))
         self.aFmtTitle.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_TTL))
-        self.fmtMenu.addAction(self.aFmtTitle)
 
         # Format > Unnumbered Chapter
-        self.aFmtUnNum = QAction(self.tr("Unnumbered Chapter"), self)
+        self.aFmtUnNum = self.fmtMenu.addAction(self.tr("Unnumbered Chapter"))
         self.aFmtUnNum.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_UNN))
-        self.fmtMenu.addAction(self.aFmtUnNum)
 
         # Format > Separator
         self.fmtMenu.addSeparator()
 
         # Format > Align Left
-        self.aFmtAlignLeft = QAction(self.tr("Align Left"), self)
+        self.aFmtAlignLeft = self.fmtMenu.addAction(self.tr("Align Left"))
         self.aFmtAlignLeft.setShortcut("Ctrl+5")
         self.aFmtAlignLeft.triggered.connect(lambda: self._docAction(nwDocAction.ALIGN_L))
-        self.fmtMenu.addAction(self.aFmtAlignLeft)
 
         # Format > Align Centre
-        self.aFmtAlignCentre = QAction(self.tr("Align Centre"), self)
+        self.aFmtAlignCentre = self.fmtMenu.addAction(self.tr("Align Centre"))
         self.aFmtAlignCentre.setShortcut("Ctrl+6")
         self.aFmtAlignCentre.triggered.connect(lambda: self._docAction(nwDocAction.ALIGN_C))
-        self.fmtMenu.addAction(self.aFmtAlignCentre)
 
         # Format > Align Right
-        self.aFmtAlignRight = QAction(self.tr("Align Right"), self)
+        self.aFmtAlignRight = self.fmtMenu.addAction(self.tr("Align Right"))
         self.aFmtAlignRight.setShortcut("Ctrl+7")
         self.aFmtAlignRight.triggered.connect(lambda: self._docAction(nwDocAction.ALIGN_R))
-        self.fmtMenu.addAction(self.aFmtAlignRight)
 
         # Format > Separator
         self.fmtMenu.addSeparator()
 
         # Format > Indent Left
-        self.aFmtIndentLeft = QAction(self.tr("Indent Left"), self)
+        self.aFmtIndentLeft = self.fmtMenu.addAction(self.tr("Indent Left"))
         self.aFmtIndentLeft.setShortcut("Ctrl+8")
         self.aFmtIndentLeft.triggered.connect(lambda: self._docAction(nwDocAction.INDENT_L))
-        self.fmtMenu.addAction(self.aFmtIndentLeft)
 
         # Format > Indent Right
-        self.aFmtIndentRight = QAction(self.tr("Indent Right"), self)
+        self.aFmtIndentRight = self.fmtMenu.addAction(self.tr("Indent Right"))
         self.aFmtIndentRight.setShortcut("Ctrl+9")
         self.aFmtIndentRight.triggered.connect(lambda: self._docAction(nwDocAction.INDENT_R))
-        self.fmtMenu.addAction(self.aFmtIndentRight)
 
         # Format > Separator
         self.fmtMenu.addSeparator()
 
         # Format > Comment
-        self.aFmtComment = QAction(self.tr("Toggle Comment"), self)
+        self.aFmtComment = self.fmtMenu.addAction(self.tr("Toggle Comment"))
         self.aFmtComment.setShortcut("Ctrl+/")
         self.aFmtComment.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_COM))
-        self.fmtMenu.addAction(self.aFmtComment)
 
         # Format > Remove Block Format
-        self.aFmtNoFormat = QAction(self.tr("Remove Block Format"), self)
+        self.aFmtNoFormat = self.fmtMenu.addAction(self.tr("Remove Block Format"))
         self.aFmtNoFormat.setShortcuts(["Ctrl+0", "Ctrl+Shift+/"])
         self.aFmtNoFormat.triggered.connect(lambda: self._docAction(nwDocAction.BLOCK_TXT))
-        self.fmtMenu.addAction(self.aFmtNoFormat)
 
         # Format > Separator
         self.fmtMenu.addSeparator()
 
         # Format > Replace Single Quotes
-        self.aFmtReplSng = QAction(self.tr("Convert Single Quotes"), self)
+        self.aFmtReplSng = self.fmtMenu.addAction(self.tr("Convert Single Quotes"))
         self.aFmtReplSng.triggered.connect(lambda: self._docAction(nwDocAction.REPL_SNG))
-        self.fmtMenu.addAction(self.aFmtReplSng)
 
         # Format > Replace Double Quotes
-        self.aFmtReplDbl = QAction(self.tr("Convert Double Quotes"), self)
+        self.aFmtReplDbl = self.fmtMenu.addAction(self.tr("Convert Double Quotes"))
         self.aFmtReplDbl.triggered.connect(lambda: self._docAction(nwDocAction.REPL_DBL))
-        self.fmtMenu.addAction(self.aFmtReplDbl)
 
         # Format > Remove In-Paragraph Breaks
-        self.aFmtRmBreaks = QAction(self.tr("Remove In-Paragraph Breaks"), self)
+        self.aFmtRmBreaks = self.fmtMenu.addAction(self.tr("Remove In-Paragraph Breaks"))
         self.aFmtRmBreaks.triggered.connect(lambda: self._docAction(nwDocAction.RM_BREAKS))
-        self.fmtMenu.addAction(self.aFmtRmBreaks)
 
         return
 
@@ -751,36 +688,31 @@ class GuiMainMenu(QMenuBar):
         self.srcMenu = self.addMenu(self.tr("&Search"))
 
         # Search > Find
-        self.aFind = QAction(self.tr("Find"), self)
+        self.aFind = self.srcMenu.addAction(self.tr("Find"))
         self.aFind.setShortcut("Ctrl+F")
         self.aFind.triggered.connect(lambda: self.mainGui.docEditor.beginSearch())
-        self.srcMenu.addAction(self.aFind)
 
         # Search > Replace
-        self.aReplace = QAction(self.tr("Replace"), self)
+        self.aReplace = self.srcMenu.addAction(self.tr("Replace"))
         self.aReplace.setShortcut("Ctrl+=" if CONFIG.osDarwin else "Ctrl+H")
         self.aReplace.triggered.connect(lambda: self.mainGui.docEditor.beginReplace())
-        self.srcMenu.addAction(self.aReplace)
 
         # Search > Find Next
-        self.aFindNext = QAction(self.tr("Find Next"), self)
+        self.aFindNext = self.srcMenu.addAction(self.tr("Find Next"))
         self.aFindNext.setShortcuts(["Ctrl+G", "F3"] if CONFIG.osDarwin else ["F3", "Ctrl+G"])
         self.aFindNext.triggered.connect(lambda: self.mainGui.docEditor.findNext())
-        self.srcMenu.addAction(self.aFindNext)
 
         # Search > Find Prev
-        self.aFindPrev = QAction(self.tr("Find Previous"), self)
+        self.aFindPrev = self.srcMenu.addAction(self.tr("Find Previous"))
         self.aFindPrev.setShortcuts(
             ["Ctrl+Shift+G", "Shift+F3"] if CONFIG.osDarwin else ["Shift+F3", "Ctrl+Shift+G"]
         )
         self.aFindPrev.triggered.connect(lambda: self.mainGui.docEditor.findNext(goBack=True))
-        self.srcMenu.addAction(self.aFindPrev)
 
         # Search > Replace Next
-        self.aReplaceNext = QAction(self.tr("Replace Next"), self)
+        self.aReplaceNext = self.srcMenu.addAction(self.tr("Replace Next"))
         self.aReplaceNext.setShortcut("Ctrl+Shift+1")
         self.aReplaceNext.triggered.connect(lambda: self.mainGui.docEditor.replaceNext())
-        self.srcMenu.addAction(self.aReplaceNext)
 
         return
 
@@ -790,12 +722,11 @@ class GuiMainMenu(QMenuBar):
         self.toolsMenu = self.addMenu(self.tr("&Tools"))
 
         # Tools > Check Spelling
-        self.aSpellCheck = QAction(self.tr("Check Spelling"), self)
+        self.aSpellCheck = self.toolsMenu.addAction(self.tr("Check Spelling"))
         self.aSpellCheck.setCheckable(True)
         self.aSpellCheck.setChecked(SHARED.project.data.spellCheck)
         self.aSpellCheck.triggered.connect(self._toggleSpellCheck)  # triggered, not toggled!
         self.aSpellCheck.setShortcut("Ctrl+F7")
-        self.toolsMenu.addAction(self.aSpellCheck)
 
         self.mSelectLanguage = self.toolsMenu.addMenu(self.tr("Spell Check Language"))
         languages = SHARED.spelling.listDictionaries()
@@ -807,51 +738,44 @@ class GuiMainMenu(QMenuBar):
             self.mSelectLanguage.addAction(aSpell)
 
         # Tools > Re-Run Spell Check
-        self.aReRunSpell = QAction(self.tr("Re-Run Spell Check"), self)
+        self.aReRunSpell = self.toolsMenu.addAction(self.tr("Re-Run Spell Check"))
         self.aReRunSpell.setShortcut("F7")
         self.aReRunSpell.triggered.connect(lambda: self.mainGui.docEditor.spellCheckDocument())
-        self.toolsMenu.addAction(self.aReRunSpell)
 
         # Tools > Project Word List
-        self.aEditWordList = QAction(self.tr("Project Word List"), self)
+        self.aEditWordList = self.toolsMenu.addAction(self.tr("Project Word List"))
         self.aEditWordList.triggered.connect(lambda: self.mainGui.showProjectWordListDialog())
-        self.toolsMenu.addAction(self.aEditWordList)
 
         # Tools > Separator
         self.toolsMenu.addSeparator()
 
         # Tools > Rebuild Index
-        self.aRebuildIndex = QAction(self.tr("Rebuild Index"), self)
+        self.aRebuildIndex = self.toolsMenu.addAction(self.tr("Rebuild Index"))
         self.aRebuildIndex.setShortcut("F9")
         self.aRebuildIndex.triggered.connect(lambda: self.mainGui.rebuildIndex())
-        self.toolsMenu.addAction(self.aRebuildIndex)
 
         # Tools > Separator
         self.toolsMenu.addSeparator()
 
         # Tools > Backup Project
-        self.aBackupProject = QAction(self.tr("Backup Project"), self)
+        self.aBackupProject = self.toolsMenu.addAction(self.tr("Backup Project"))
         self.aBackupProject.triggered.connect(lambda: SHARED.project.backupProject(True))
-        self.toolsMenu.addAction(self.aBackupProject)
 
         # Tools > Build Manuscript
-        self.aBuildManuscript = QAction(self.tr("Build Manuscript"), self)
+        self.aBuildManuscript = self.toolsMenu.addAction(self.tr("Build Manuscript"))
         self.aBuildManuscript.setShortcut("F5")
         self.aBuildManuscript.triggered.connect(self.mainGui.showBuildManuscriptDialog)
-        self.toolsMenu.addAction(self.aBuildManuscript)
 
         # Tools > Writing Statistics
-        self.aWritingStats = QAction(self.tr("Writing Statistics"), self)
+        self.aWritingStats = self.toolsMenu.addAction(self.tr("Writing Statistics"))
         self.aWritingStats.setShortcut("F6")
         self.aWritingStats.triggered.connect(lambda: self.mainGui.showWritingStatsDialog())
-        self.toolsMenu.addAction(self.aWritingStats)
 
         # Tools > Preferences
-        self.aPreferences = QAction(self.tr("Preferences"), self)
+        self.aPreferences = self.toolsMenu.addAction(self.tr("Preferences"))
         self.aPreferences.setShortcut("Ctrl+,")
         self.aPreferences.setMenuRole(QAction.PreferencesRole)
         self.aPreferences.triggered.connect(lambda: self.mainGui.showPreferencesDialog())
-        self.toolsMenu.addAction(self.aPreferences)
 
         return
 
@@ -861,58 +785,50 @@ class GuiMainMenu(QMenuBar):
         self.helpMenu = self.addMenu(self.tr("&Help"))
 
         # Help > About
-        self.aAboutNW = QAction(self.tr("About novelWriter"), self)
+        self.aAboutNW = self.helpMenu.addAction(self.tr("About novelWriter"))
         self.aAboutNW.setMenuRole(QAction.AboutRole)
         self.aAboutNW.triggered.connect(lambda: self.mainGui.showAboutNWDialog())
-        self.helpMenu.addAction(self.aAboutNW)
 
         # Help > About Qt5
-        self.aAboutQt = QAction(self.tr("About Qt5"), self)
+        self.aAboutQt = self.helpMenu.addAction(self.tr("About Qt5"))
         self.aAboutQt.setMenuRole(QAction.AboutQtRole)
         self.aAboutQt.triggered.connect(lambda: self.mainGui.showAboutQtDialog())
-        self.helpMenu.addAction(self.aAboutQt)
 
         # Help > Separator
         self.helpMenu.addSeparator()
 
         # Help > User Manual (Online)
-        self.aHelpDocs = QAction(self.tr("User Manual (Online)"), self)
+        self.aHelpDocs = self.helpMenu.addAction(self.tr("User Manual (Online)"))
         self.aHelpDocs.setShortcut("F1")
         self.aHelpDocs.triggered.connect(lambda: self._openWebsite(nwConst.URL_DOCS))
-        self.helpMenu.addAction(self.aHelpDocs)
 
         # Help > User Manual (PDF)
         if isinstance(CONFIG.pdfDocs, Path):
-            self.aPdfDocs = QAction(self.tr("User Manual (PDF)"), self)
+            self.aPdfDocs = self.helpMenu.addAction(self.tr("User Manual (PDF)"))
             self.aPdfDocs.setShortcut("Shift+F1")
             self.aPdfDocs.triggered.connect(self._openUserManualFile)
-            self.helpMenu.addAction(self.aPdfDocs)
 
         # Help > Separator
         self.helpMenu.addSeparator()
 
         # Document > Report an Issue
-        self.aIssue = QAction(self.tr("Report an Issue (GitHub)"), self)
+        self.aIssue = self.helpMenu.addAction(self.tr("Report an Issue (GitHub)"))
         self.aIssue.triggered.connect(lambda: self._openWebsite(nwConst.URL_REPORT))
-        self.helpMenu.addAction(self.aIssue)
 
         # Document > Ask a Question
-        self.aQuestion = QAction(self.tr("Ask a Question (GitHub)"), self)
+        self.aQuestion = self.helpMenu.addAction(self.tr("Ask a Question (GitHub)"))
         self.aQuestion.triggered.connect(lambda: self._openWebsite(nwConst.URL_HELP))
-        self.helpMenu.addAction(self.aQuestion)
 
         # Document > Main Website
-        self.aWebsite = QAction(self.tr("The novelWriter Website"), self)
+        self.aWebsite = self.helpMenu.addAction(self.tr("The novelWriter Website"))
         self.aWebsite.triggered.connect(lambda: self._openWebsite(nwConst.URL_WEB))
-        self.helpMenu.addAction(self.aWebsite)
 
         # Help > Separator
         self.helpMenu.addSeparator()
 
         # Document > Check for Updates
-        self.aUpdates = QAction(self.tr("Check for New Release"), self)
+        self.aUpdates = self.helpMenu.addAction(self.tr("Check for New Release"))
         self.aUpdates.triggered.connect(lambda: self.mainGui.showUpdatesDialog())
-        self.helpMenu.addAction(self.aUpdates)
 
         return
 

@@ -70,6 +70,24 @@ class nwRegEx:
 # END Class nwRegEx
 
 
+class nwShortcode:
+
+    BOLD_O   = "[b]"
+    BOLD_C   = "[/b]"
+    ITALIC_O = "[i]"
+    ITALIC_C = "[/i]"
+    STRIKE_O = "[s]"
+    STRIKE_C = "[/s]"
+    ULINE_O  = "[u]"
+    ULINE_C  = "[/u]"
+    SUP_O    = "[sup]"
+    SUP_C    = "[/sup]"
+    SUB_O    = "[sub]"
+    SUB_C    = "[/sub]"
+
+# END Class nwShortcode
+
+
 class nwHeaders:
 
     H_VALID = ("H0", "H1", "H2", "H3", "H4")

@@ -109,6 +109,12 @@ class nwDocAction(Enum):
     ALIGN_R   = 26
     INDENT_L  = 27
     INDENT_R  = 28
+    SC_ITALIC = 29
+    SC_BOLD   = 30
+    SC_STRIKE = 31
+    SC_ULINE  = 32
+    SC_SUP    = 33
+    SC_SUB    = 34
 
 # END Enum nwDocAction
 
