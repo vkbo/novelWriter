@@ -46,7 +46,7 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtWidgets import (
     QAction, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
-    QPlainTextEdit, QPushButton, QShortcut, QToolBar, QToolButton, QWidget,
+    QPlainTextEdit, QPushButton, QShortcut, QToolBar, QToolButton, QVBoxLayout, QWidget,
     qApp
 )
 
@@ -83,6 +83,8 @@ class GuiDocEditor(QPlainTextEdit):
     novelStructureChanged = pyqtSignal()
     novelItemMetaChanged = pyqtSignal(str)
     spellCheckStateChanged = pyqtSignal(bool)
+    closeDocumentRequest = pyqtSignal()
+    toggleFocusModeRequest = pyqtSignal()
 
     def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
@@ -135,6 +137,10 @@ class GuiDocEditor(QPlainTextEdit):
         self.docHeader = GuiDocEditHeader(self)
         self.docFooter = GuiDocEditFooter(self)
         self.docSearch = GuiDocEditSearch(self)
+        self.docToolBar = GuiDocToolBar(self)
+
+        # Connect Signals
+        self.docHeader.closeDocumentRequest.connect(self._closeCurrentDocument)
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -248,6 +254,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.docSearch.updateTheme()
         self.docHeader.updateTheme()
         self.docFooter.updateTheme()
+        self.docToolBar.updateTheme()
         return
 
     def updateSyntaxColours(self) -> None:
@@ -514,6 +521,7 @@ class GuiDocEditor(QPlainTextEdit):
         fY = wH - fH - tB - sH
         self.docHeader.setGeometry(tB, tB, tW, tH)
         self.docFooter.setGeometry(tB, fY, tW, fH)
+        self.docToolBar.move(0, tH)
 
         rH = 0
         if self.docSearch.isVisible():
@@ -857,6 +865,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.docSearch.closeSearch()
         return self.docSearch.isVisible()
 
+    @pyqtSlot()
     def toggleSearch(self) -> None:
         """Toggle the visibility of the search box."""
         if self.docSearch.isVisible():
@@ -1177,6 +1186,12 @@ class GuiDocEditor(QPlainTextEdit):
         self.docFooter.updateCounts(wCount=wCount, cCount=cCount)
         self.wcTimerSel.stop()
 
+        return
+
+    @pyqtSlot()
+    def _closeCurrentDocument(self) -> None:
+        """Close the document. Forwarded to the main Gui."""
+        self.closeDocumentRequest.emit()
         return
 
     ##
@@ -2073,6 +2088,77 @@ class BackgroundWordCounterSignals(QObject):
 
 
 # =============================================================================================== #
+#  The Formatting and Options Fold Out Menu
+#  Only used by DocEditor, and is opened by the first button in the header
+# =============================================================================================== #
+
+class GuiDocToolBar(QWidget):
+
+    def __init__(self, docEditor: GuiDocEditor) -> None:
+        super().__init__(parent=docEditor)
+
+        logger.debug("Create: GuiDocToolBar")
+
+        cM = CONFIG.pxInt(4)
+        tPx = int(0.8*SHARED.theme.fontPixelSize)
+        iconSize = QSize(tPx, tPx)
+        self.setContentsMargins(0, 0, 0, 0)
+
+        # General Buttons
+        # ===============
+
+        self.tbSticky = QToolButton(self)
+        self.tbSticky.setIconSize(iconSize)
+
+        self.tbEdit = QToolButton(self)
+        self.tbEdit.setIconSize(iconSize)
+
+        # Assemble
+        # ========
+
+        self.outerBox = QVBoxLayout()
+        self.outerBox.addWidget(self.tbSticky)
+        self.outerBox.addWidget(self.tbEdit)
+        self.outerBox.setContentsMargins(cM, cM, cM, cM)
+        self.outerBox.setSpacing(cM)
+
+        self.setLayout(self.outerBox)
+        self.updateTheme()
+
+        logger.debug("Ready: GuiDocToolBar")
+
+        return
+
+    def updateTheme(self) -> None:
+        """Initialise GUI elements that depend on specific settings."""
+        palette = QPalette()
+        palette.setColor(QPalette.Window, QColor(*SHARED.theme.colBack))
+        palette.setColor(QPalette.WindowText, QColor(*SHARED.theme.colText))
+        palette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
+
+        self.setPalette(palette)
+
+        # qPalette = self.palette()
+        # qPalette.setBrush(QPalette.Window, qPalette.base())
+        # self.setPalette(qPalette)
+
+        # fadeCol = qPalette.text().color()
+        # buttonStyle = (
+        #     "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
+        #     "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
+        # ).format(CONFIG.pxInt(4), fadeCol.red(), fadeCol.green(), fadeCol.blue())
+        # buttonStyleMenu = f"{buttonStyle} QToolButton::menu-indicator {{image: none;}}"
+        # self.tbEdit.setStyleSheet(buttonStyle)
+
+        self.tbSticky.setIcon(SHARED.theme.getIcon("sticky-off"))
+        self.tbEdit.setIcon(SHARED.theme.getIcon("edit"))
+
+        return
+
+# END Class GuiDocToolBar
+
+
+# =============================================================================================== #
 #  The Embedded Document Search/Replace Feature
 #  Only used by DocEditor, and is at a fixed position in the QTextEdit's viewport
 # =============================================================================================== #
@@ -2487,6 +2573,9 @@ class GuiDocEditSearch(QFrame):
 
 class GuiDocEditHeader(QWidget):
 
+    toggleToolBarRequest = pyqtSignal()
+    closeDocumentRequest = pyqtSignal()
+
     def __init__(self, docEditor: GuiDocEditor) -> None:
         super().__init__(parent=docEditor)
 
@@ -2499,6 +2588,7 @@ class GuiDocEditHeader(QWidget):
 
         fPx = int(0.9*SHARED.theme.fontPixelSize)
         hSp = CONFIG.pxInt(6)
+        iconSize = QSize(fPx, fPx)
 
         # Main Widget Settings
         self.setAutoFillBackground(True)
@@ -2518,46 +2608,46 @@ class GuiDocEditHeader(QWidget):
         self.itemTitle.setFont(lblFont)
 
         # Buttons
-        self.editButton = QToolButton(self)
-        self.editButton.setContentsMargins(0, 0, 0, 0)
-        self.editButton.setIconSize(QSize(fPx, fPx))
-        self.editButton.setFixedSize(fPx, fPx)
-        self.editButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
-        self.editButton.setVisible(False)
-        self.editButton.setToolTip(self.tr("Edit document label"))
-        self.editButton.clicked.connect(self._editDocument)
+        self.tbButton = QToolButton(self)
+        self.tbButton.setContentsMargins(0, 0, 0, 0)
+        self.tbButton.setIconSize(iconSize)
+        self.tbButton.setFixedSize(fPx, fPx)
+        self.tbButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.tbButton.setVisible(False)
+        self.tbButton.setToolTip(self.tr("Toggle Tool Bar"))
+        self.tbButton.clicked.connect(lambda: self.toggleToolBarRequest.emit())
 
         self.searchButton = QToolButton(self)
         self.searchButton.setContentsMargins(0, 0, 0, 0)
-        self.searchButton.setIconSize(QSize(fPx, fPx))
+        self.searchButton.setIconSize(iconSize)
         self.searchButton.setFixedSize(fPx, fPx)
         self.searchButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.searchButton.setVisible(False)
-        self.searchButton.setToolTip(self.tr("Search document"))
-        self.searchButton.clicked.connect(self._searchDocument)
+        self.searchButton.setToolTip(self.tr("Search"))
+        self.searchButton.clicked.connect(self.docEditor.toggleSearch)
 
         self.minmaxButton = QToolButton(self)
         self.minmaxButton.setContentsMargins(0, 0, 0, 0)
-        self.minmaxButton.setIconSize(QSize(fPx, fPx))
+        self.minmaxButton.setIconSize(iconSize)
         self.minmaxButton.setFixedSize(fPx, fPx)
         self.minmaxButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.minmaxButton.setVisible(False)
         self.minmaxButton.setToolTip(self.tr("Toggle Focus Mode"))
-        self.minmaxButton.clicked.connect(self._minmaxDocument)
+        self.minmaxButton.clicked.connect(lambda: self.docEditor.toggleFocusModeRequest.emit())
 
         self.closeButton = QToolButton(self)
         self.closeButton.setContentsMargins(0, 0, 0, 0)
-        self.closeButton.setIconSize(QSize(fPx, fPx))
+        self.closeButton.setIconSize(iconSize)
         self.closeButton.setFixedSize(fPx, fPx)
         self.closeButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.closeButton.setVisible(False)
-        self.closeButton.setToolTip(self.tr("Close the document"))
+        self.closeButton.setToolTip(self.tr("Close"))
         self.closeButton.clicked.connect(self._closeDocument)
 
         # Assemble Layout
         self.outerBox = QHBoxLayout()
         self.outerBox.setSpacing(hSp)
-        self.outerBox.addWidget(self.editButton, 0)
+        self.outerBox.addWidget(self.tbButton, 0)
         self.outerBox.addWidget(self.searchButton, 0)
         self.outerBox.addWidget(self.itemTitle, 1)
         self.outerBox.addWidget(self.minmaxButton, 0)
@@ -2583,7 +2673,7 @@ class GuiDocEditHeader(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        self.editButton.setIcon(SHARED.theme.getIcon("edit"))
+        self.tbButton.setIcon(SHARED.theme.getIcon("menu"))
         self.searchButton.setIcon(SHARED.theme.getIcon("search"))
         self.minmaxButton.setIcon(SHARED.theme.getIcon("maximise"))
         self.closeButton.setIcon(SHARED.theme.getIcon("close"))
@@ -2593,7 +2683,7 @@ class GuiDocEditHeader(QWidget):
             "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
         ).format(*SHARED.theme.colText)
 
-        self.editButton.setStyleSheet(buttonStyle)
+        self.tbButton.setStyleSheet(buttonStyle)
         self.searchButton.setStyleSheet(buttonStyle)
         self.minmaxButton.setStyleSheet(buttonStyle)
         self.closeButton.setStyleSheet(buttonStyle)
@@ -2623,7 +2713,7 @@ class GuiDocEditHeader(QWidget):
         self._docHandle = tHandle
         if tHandle is None:
             self.itemTitle.setText("")
-            self.editButton.setVisible(False)
+            self.tbButton.setVisible(False)
             self.searchButton.setVisible(False)
             self.closeButton.setVisible(False)
             self.minmaxButton.setVisible(False)
@@ -2645,7 +2735,7 @@ class GuiDocEditHeader(QWidget):
                 return False
             self.itemTitle.setText(nwItem.itemName)
 
-        self.editButton.setVisible(True)
+        self.tbButton.setVisible(True)
         self.searchButton.setVisible(True)
         self.closeButton.setVisible(True)
         self.minmaxButton.setVisible(True)
@@ -2668,31 +2758,13 @@ class GuiDocEditHeader(QWidget):
     ##
 
     @pyqtSlot()
-    def _editDocument(self) -> None:
-        """Open the edit item dialog from the main GUI."""
-        self.mainGui.editItemLabel(self._docHandle)
-        return
-
-    @pyqtSlot()
-    def _searchDocument(self) -> None:
-        """Toggle the visibility of the search box."""
-        self.docEditor.toggleSearch()
-        return
-
-    @pyqtSlot()
     def _closeDocument(self) -> None:
         """Trigger the close editor on the main window."""
-        self.mainGui.closeDocEditor()
-        self.editButton.setVisible(False)
+        self.closeDocumentRequest.emit()
+        self.tbButton.setVisible(False)
         self.searchButton.setVisible(False)
         self.closeButton.setVisible(False)
         self.minmaxButton.setVisible(False)
-        return
-
-    @pyqtSlot()
-    def _minmaxDocument(self) -> None:
-        """Switch on or off Focus Mode."""
-        self.mainGui.toggleFocusMode()
         return
 
     ##

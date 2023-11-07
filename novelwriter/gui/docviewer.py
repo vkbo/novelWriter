@@ -705,7 +705,7 @@ class GuiDocViewHeader(QWidget):
         self.backButton.setFixedSize(fPx, fPx)
         self.backButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.backButton.setVisible(False)
-        self.backButton.setToolTip(self.tr("Go backward"))
+        self.backButton.setToolTip(self.tr("Go Backward"))
         self.backButton.clicked.connect(self.docViewer.navBackward)
 
         self.forwardButton = QToolButton(self)
@@ -714,7 +714,7 @@ class GuiDocViewHeader(QWidget):
         self.forwardButton.setFixedSize(fPx, fPx)
         self.forwardButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.forwardButton.setVisible(False)
-        self.forwardButton.setToolTip(self.tr("Go forward"))
+        self.forwardButton.setToolTip(self.tr("Go Forward"))
         self.forwardButton.clicked.connect(self.docViewer.navForward)
 
         self.refreshButton = QToolButton(self)
@@ -723,7 +723,7 @@ class GuiDocViewHeader(QWidget):
         self.refreshButton.setFixedSize(fPx, fPx)
         self.refreshButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.refreshButton.setVisible(False)
-        self.refreshButton.setToolTip(self.tr("Reload the document"))
+        self.refreshButton.setToolTip(self.tr("Reload"))
         self.refreshButton.clicked.connect(self._refreshDocument)
 
         self.closeButton = QToolButton(self)
@@ -732,7 +732,7 @@ class GuiDocViewHeader(QWidget):
         self.closeButton.setFixedSize(fPx, fPx)
         self.closeButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.closeButton.setVisible(False)
-        self.closeButton.setToolTip(self.tr("Close the document"))
+        self.closeButton.setToolTip(self.tr("Close"))
         self.closeButton.clicked.connect(self._closeDocument)
 
         # Assemble Layout
