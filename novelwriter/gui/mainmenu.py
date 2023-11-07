@@ -209,7 +209,7 @@ class GuiMainMenu(QMenuBar):
         # Document > Close
         self.aCloseDoc = self.docuMenu.addAction(self.tr("Close Document"))
         self.aCloseDoc.setShortcut("Ctrl+W")
-        self.aCloseDoc.triggered.connect(lambda: self.mainGui.closeDocEditor())
+        self.aCloseDoc.triggered.connect(self.mainGui.closeDocEditor)
 
         # Document > Separator
         self.docuMenu.addSeparator()
@@ -330,7 +330,7 @@ class GuiMainMenu(QMenuBar):
         # View > Focus Mode
         self.aFocusMode = self.viewMenu.addAction(self.tr("Focus Mode"))
         self.aFocusMode.setShortcut("F8")
-        self.aFocusMode.triggered.connect(lambda: self.mainGui.toggleFocusMode())
+        self.aFocusMode.triggered.connect(self.mainGui.toggleFocusMode)
 
         # View > Toggle Full Screen
         self.aFullScreen = self.viewMenu.addAction(self.tr("Full Screen Mode"))

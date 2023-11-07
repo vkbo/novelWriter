@@ -77,10 +77,10 @@ Text Search Shortcuts
 
    ":kbd:`F3`",           "Find the next occurrence of the search word"
    ":kbd:`Ctrl+F`",       "Open the search bar and search for the selected word, if any is selected"
-   ":kbd:`Ctrl+G`",       "Find next occurrence of search word in current document"
+   ":kbd:`Ctrl+G`",       "Find the next occurrence of the search word"
    ":kbd:`Ctrl+H`",       "Open the search tool and populate with the selected word (Mac :kbd:`Cmd+=`)"
    ":kbd:`Ctrl+Shift+1`", "Replace selected occurrence of the search word, and move to the next"
-   ":kbd:`Ctrl+Shift+G`", "Find previous occurrence of the search word"
+   ":kbd:`Ctrl+Shift+G`", "Find the previous occurrence of the search word"
    ":kbd:`Shift+F3`",     "Find the previous occurrence of the search word"
 
 

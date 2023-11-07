@@ -594,14 +594,18 @@ def testGuiMain_Features(qtbot, nwGUI, projPath, mockRnd):
     # ==========
 
     # No document open, so not allowing focus mode
-    assert nwGUI.toggleFocusMode() is False
+    nwGUI.toggleFocusMode()
+    assert nwGUI.treePane.isVisible() is True
+    assert nwGUI.mainStatus.isVisible() is True
+    assert nwGUI.mainMenu.isVisible() is True
+    assert nwGUI.sideBar.isVisible() is True
 
     # Open a file in editor and viewer
     assert nwGUI.openDocument(C.hSceneDoc)
     assert nwGUI.viewDocument(C.hSceneDoc)
 
     # Enable focus mode
-    assert nwGUI.toggleFocusMode() is True
+    nwGUI.toggleFocusMode()
     assert nwGUI.treePane.isVisible() is False
     assert nwGUI.mainStatus.isVisible() is False
     assert nwGUI.mainMenu.isVisible() is False
@@ -609,7 +613,7 @@ def testGuiMain_Features(qtbot, nwGUI, projPath, mockRnd):
     assert nwGUI.splitView.isVisible() is False
 
     # Disable focus mode
-    assert nwGUI.toggleFocusMode() is True
+    nwGUI.toggleFocusMode()
     assert nwGUI.treePane.isVisible() is True
     assert nwGUI.mainStatus.isVisible() is True
     assert nwGUI.mainMenu.isVisible() is True
