@@ -138,7 +138,6 @@ class GuiDocEditor(QPlainTextEdit):
         self.docFooter = GuiDocEditFooter(self)
         self.docSearch = GuiDocEditSearch(self)
         self.docToolBar = GuiDocToolBar(self)
-        self.docToolBar.setVisible(CONFIG.showEditToolBar)
 
         # Connect Signals
         self.docHeader.closeDocumentRequest.connect(self._closeCurrentDocument)
@@ -410,6 +409,7 @@ class GuiDocEditor(QPlainTextEdit):
         qApp.processEvents()
         self.setDocumentChanged(False)
         self._qDocument.clearUndoRedoStacks()
+        self.docToolBar.setVisible(CONFIG.showEditToolBar)
 
         qApp.restoreOverrideCursor()
 
@@ -1196,6 +1196,7 @@ class GuiDocEditor(QPlainTextEdit):
     def _closeCurrentDocument(self) -> None:
         """Close the document. Forwarded to the main Gui."""
         self.closeDocumentRequest.emit()
+        self.docToolBar.setVisible(False)
         return
 
     @pyqtSlot()
