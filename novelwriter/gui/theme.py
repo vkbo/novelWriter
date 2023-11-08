@@ -130,6 +130,7 @@ class GuiTheme:
         self.getIcon = self.iconCache.getIcon
         self.getPixmap = self.iconCache.getPixmap
         self.getItemIcon = self.iconCache.getItemIcon
+        self.getToggleIcon = self.iconCache.getToggleIcon
         self.loadDecoration = self.iconCache.loadDecoration
         self.getHeaderDecoration = self.iconCache.getHeaderDecoration
 
@@ -447,14 +448,22 @@ class GuiIcons:
     ICON_KEYS = {
         # Project and GUI Icons
         "novelwriter", "alert_error", "alert_info", "alert_question", "alert_warn",
-        "build_excluded", "build_filtered", "build_included", "cls_archive", "cls_character",
-        "cls_custom", "cls_entity", "cls_none", "cls_novel", "cls_object", "cls_plot",
-        "cls_timeline", "cls_trash", "cls_world", "proj_chapter", "proj_details", "proj_document",
-        "proj_folder", "proj_note", "proj_nwx", "proj_section", "proj_scene", "proj_stats",
-        "proj_title", "search_cancel", "search_case", "search_loop", "search_preserve",
-        "search_project", "search_regex", "search_word", "status_idle", "status_lang",
-        "status_lines", "status_stats", "status_time", "view_build", "view_editor", "view_novel",
-        "view_outline",
+        "build_excluded", "build_filtered", "build_included", "proj_chapter", "proj_details",
+        "proj_document", "proj_folder", "proj_note", "proj_nwx", "proj_section", "proj_scene",
+        "proj_stats", "proj_title", "status_idle", "status_lang", "status_lines", "status_stats",
+        "status_time", "view_build", "view_editor", "view_novel", "view_outline",
+
+        # Class Icons
+        "cls_archive", "cls_character", "cls_custom", "cls_entity", "cls_none", "cls_novel",
+        "cls_object", "cls_plot", "cls_timeline", "cls_trash", "cls_world",
+
+        # Search Icons
+        "search_cancel", "search_case", "search_loop", "search_preserve", "search_project",
+        "search_regex", "search_word",
+
+        # Format Icons
+        "fmt_bold", "fmt_italic", "fmt_mode-md", "fmt_mode-sc", "fmt_strike", "fmt_subscript",
+        "fmt_superscript", "fmt_underline",
 
         # General Button Icons
         "add", "backward", "bookmark", "browse", "checked", "close", "cross", "down", "edit",
@@ -467,6 +476,12 @@ class GuiIcons:
 
         # Decorations
         "deco_doc_h0", "deco_doc_h1", "deco_doc_h2", "deco_doc_h3", "deco_doc_h4", "deco_doc_more",
+    }
+
+    TOGGLE_ICON_KEYS = {
+        "sticky":   ("sticky-on", "sticky-off"),
+        "bullet":   ("bullet-on", "bullet-off"),
+        "fmt_mode": ("fmt_mode-sc", "fmt_mode-md"),
     }
 
     IMAGE_MAP = {
@@ -602,16 +617,24 @@ class GuiIcons:
         return theDeco
 
     def getIcon(self, iconKey):
-        """Return an icon from the icon buffer. If it doesn't exist,
-        return, load it, and if it still doesn't exist, return an empty
-        icon.
-        """
+        """Return an icon from the icon buffer, or load it."""
         if iconKey in self._qIcons:
             return self._qIcons[iconKey]
         else:
             qIcon = self._loadIcon(iconKey)
             self._qIcons[iconKey] = qIcon
             return qIcon
+
+    def getToggleIcon(self, iconKey: str, iconSize: tuple[int, int]) -> QIcon:
+        """Return a toggle icon from the icon buffer. or load it."""
+        if iconKey in self.TOGGLE_ICON_KEYS:
+            pixOne  = self.getPixmap(self.TOGGLE_ICON_KEYS[iconKey][0], iconSize)
+            pixTwo = self.getPixmap(self.TOGGLE_ICON_KEYS[iconKey][1], iconSize)
+            qIcon = QIcon()
+            qIcon.addPixmap(pixOne, QIcon.Normal, QIcon.On)
+            qIcon.addPixmap(pixTwo, QIcon.Normal, QIcon.Off)
+            return qIcon
+        return QIcon()
 
     def getPixmap(self, iconKey, iconSize):
         """Return an icon from the icon buffer as a QPixmap. If it

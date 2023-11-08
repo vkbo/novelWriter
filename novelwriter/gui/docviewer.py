@@ -34,8 +34,8 @@ from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QPoint, QSize, Qt, QUrl
 from PyQt5.QtGui import (
-    QColor, QCursor, QFont, QIcon, QMouseEvent, QPalette, QResizeEvent,
-    QTextCursor, QTextOption
+    QColor, QCursor, QFont, QMouseEvent, QPalette, QResizeEvent, QTextCursor,
+    QTextOption
 )
 from PyQt5.QtWidgets import (
     QAction, qApp, QFrame, QHBoxLayout, QLabel, QMenu, QScrollArea,
@@ -1020,24 +1020,12 @@ class GuiDocViewFooter(QWidget):
     #  Methods
     ##
 
-    def updateTheme(self):
-        """Update theme elements.
-        """
+    def updateTheme(self) -> None:
+        """Update theme elements."""
         # Icons
-
         fPx = int(0.9*SHARED.theme.fontPixelSize)
-
-        stickyOn  = SHARED.theme.getPixmap("sticky-on", (fPx, fPx))
-        stickyOff = SHARED.theme.getPixmap("sticky-off", (fPx, fPx))
-        stickyIcon = QIcon()
-        stickyIcon.addPixmap(stickyOn, QIcon.Normal, QIcon.On)
-        stickyIcon.addPixmap(stickyOff, QIcon.Normal, QIcon.Off)
-
-        bulletOn  = SHARED.theme.getPixmap("bullet-on", (fPx, fPx))
-        bulletOff = SHARED.theme.getPixmap("bullet-off", (fPx, fPx))
-        bulletIcon = QIcon()
-        bulletIcon.addPixmap(bulletOn, QIcon.Normal, QIcon.On)
-        bulletIcon.addPixmap(bulletOff, QIcon.Normal, QIcon.Off)
+        stickyIcon = SHARED.theme.getToggleIcon("sticky", (fPx, fPx))
+        bulletIcon = SHARED.theme.getToggleIcon("bullet", (fPx, fPx))
 
         self.showHide.setIcon(SHARED.theme.getIcon("reference"))
         self.stickyRefs.setIcon(stickyIcon)

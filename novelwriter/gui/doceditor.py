@@ -2107,18 +2107,39 @@ class GuiDocToolBar(QWidget):
         # General Buttons
         # ===============
 
-        self.tbSticky = QToolButton(self)
-        self.tbSticky.setIconSize(iconSize)
+        self.tbMode = QToolButton(self)
+        self.tbMode.setIconSize(iconSize)
+        self.tbMode.setCheckable(True)
 
-        self.tbEdit = QToolButton(self)
-        self.tbEdit.setIconSize(iconSize)
+        self.tbBold = QToolButton(self)
+        self.tbBold.setIconSize(iconSize)
+
+        self.tbItalic = QToolButton(self)
+        self.tbItalic.setIconSize(iconSize)
+
+        self.tbStrike = QToolButton(self)
+        self.tbStrike.setIconSize(iconSize)
+
+        self.tbUnderline = QToolButton(self)
+        self.tbUnderline.setIconSize(iconSize)
+
+        self.tbSuperscript = QToolButton(self)
+        self.tbSuperscript.setIconSize(iconSize)
+
+        self.tbSubscript = QToolButton(self)
+        self.tbSubscript.setIconSize(iconSize)
 
         # Assemble
         # ========
 
         self.outerBox = QVBoxLayout()
-        self.outerBox.addWidget(self.tbSticky)
-        self.outerBox.addWidget(self.tbEdit)
+        self.outerBox.addWidget(self.tbMode)
+        self.outerBox.addWidget(self.tbBold)
+        self.outerBox.addWidget(self.tbItalic)
+        self.outerBox.addWidget(self.tbStrike)
+        self.outerBox.addWidget(self.tbUnderline)
+        self.outerBox.addWidget(self.tbSuperscript)
+        self.outerBox.addWidget(self.tbSubscript)
         self.outerBox.setContentsMargins(cM, cM, cM, cM)
         self.outerBox.setSpacing(cM)
 
@@ -2150,8 +2171,14 @@ class GuiDocToolBar(QWidget):
         # buttonStyleMenu = f"{buttonStyle} QToolButton::menu-indicator {{image: none;}}"
         # self.tbEdit.setStyleSheet(buttonStyle)
 
-        self.tbSticky.setIcon(SHARED.theme.getIcon("sticky-off"))
-        self.tbEdit.setIcon(SHARED.theme.getIcon("edit"))
+        tPx = int(0.8*SHARED.theme.fontPixelSize)
+        self.tbMode.setIcon(SHARED.theme.getToggleIcon("fmt_mode", (tPx, tPx)))
+        self.tbBold.setIcon(SHARED.theme.getIcon("fmt_bold"))
+        self.tbItalic.setIcon(SHARED.theme.getIcon("fmt_italic"))
+        self.tbStrike.setIcon(SHARED.theme.getIcon("fmt_strike"))
+        self.tbUnderline.setIcon(SHARED.theme.getIcon("fmt_underline"))
+        self.tbSuperscript.setIcon(SHARED.theme.getIcon("fmt_superscript"))
+        self.tbSubscript.setIcon(SHARED.theme.getIcon("fmt_subscript"))
 
         return
 
