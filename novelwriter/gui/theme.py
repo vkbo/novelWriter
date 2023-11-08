@@ -36,7 +36,7 @@ from PyQt5.QtGui import (
 )
 
 from novelwriter import CONFIG
-from novelwriter.enum import nwItemLayout, nwItemType
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
 from novelwriter.common import NWConfigParser, minmax
 from novelwriter.constants import nwLabels
@@ -51,7 +51,7 @@ logger = logging.getLogger(__name__)
 
 class GuiTheme:
 
-    def __init__(self):
+    def __init__(self) -> None:
 
         self.iconCache = GuiIcons(self)
 
@@ -183,7 +183,7 @@ class GuiTheme:
     #  Theme Methods
     ##
 
-    def loadTheme(self):
+    def loadTheme(self) -> bool:
         """Load the currently specified GUI theme."""
         guiTheme = CONFIG.guiTheme
         if guiTheme not in self._availThemes:
@@ -270,7 +270,7 @@ class GuiTheme:
 
         return True
 
-    def loadSyntax(self):
+    def loadSyntax(self) -> bool:
         """Load the currently specified syntax highlighter theme."""
         guiSyntax = CONFIG.guiSyntax
         if guiSyntax not in self._availSyntax:
@@ -364,7 +364,7 @@ class GuiTheme:
     #  Internal Functions
     ##
 
-    def _setGuiFont(self):
+    def _setGuiFont(self) -> None:
         """Update the GUI's font style from settings."""
         theFont = QFont()
         fontDB = QFontDatabase()
@@ -396,9 +396,7 @@ class GuiTheme:
 
         return True
 
-    def _parseColour(
-        self, parser: NWConfigParser, section: str, name: str
-    ) -> list[int]:
+    def _parseColour(self, parser: NWConfigParser, section: str, name: str) -> list[int]:
         """Parse a colour value from a config string."""
         if parser.has_option(section, name):
             values = parser.get(section, name).split(",")
@@ -415,9 +413,8 @@ class GuiTheme:
             result = [0, 0, 0]
         return result
 
-    def _setPalette(
-        self, parser: NWConfigParser, section: str, name: str, value: QPalette.ColorRole
-    ):
+    def _setPalette(self, parser: NWConfigParser, section: str,
+                    name: str, value: QPalette.ColorRole) -> None:
         """Set a palette colour value from a config string."""
         self._guiPalette.setColor(
             value, QColor(*self._parseColour(parser, section, name))
@@ -488,17 +485,17 @@ class GuiIcons:
         "wiz-back": "wizard-back.jpg",
     }
 
-    def __init__(self, mainTheme):
+    def __init__(self, mainTheme: GuiTheme) -> None:
 
         self.mainTheme = mainTheme
 
         # Storage
-        self._qIcons    = {}
-        self._themeMap  = {}
-        self._headerDec = []
-        self._confName  = "icons.conf"
+        self._qIcons: dict[str, QIcon] = {}
+        self._themeMap: dict[str, Path] = {}
+        self._headerDec: list[QPixmap] = []
 
         # Icon Theme Path
+        self._confName = "icons.conf"
         self._iconPath = CONFIG.assetPath("icons")
 
         # Icon Theme Meta
@@ -516,7 +513,7 @@ class GuiIcons:
     #  Actions
     ##
 
-    def loadTheme(self, iconTheme):
+    def loadTheme(self, iconTheme: str) -> bool:
         """Update the theme map. This is more of an init, since many of
         the GUI icons cannot really be replaced without writing specific
         update functions for the classes where they're used.
@@ -590,60 +587,60 @@ class GuiIcons:
     #  Access Functions
     ##
 
-    def loadDecoration(self, decoKey, pxW=None, pxH=None):
+    def loadDecoration(self, name: str, w: int | None = None, h: int | None = None) -> QPixmap:
         """Load graphical decoration element based on the decoration
         map or the icon map. This function always returns a QPixmap.
         """
-        if decoKey in self._themeMap:
-            imgPath = self._themeMap[decoKey]
-        elif decoKey in self.IMAGE_MAP:
-            imgPath = CONFIG.assetPath("images") / self.IMAGE_MAP[decoKey]
+        if name in self._themeMap:
+            imgPath = self._themeMap[name]
+        elif name in self.IMAGE_MAP:
+            imgPath = CONFIG.assetPath("images") / self.IMAGE_MAP[name]
         else:
-            logger.error("Decoration with name '%s' does not exist", decoKey)
+            logger.error("Decoration with name '%s' does not exist", name)
             return QPixmap()
 
         if not imgPath.is_file():
             logger.error("Asset not found: %s", imgPath)
             return QPixmap()
 
-        theDeco = QPixmap(str(imgPath))
-        if pxW is not None and pxH is not None:
-            return theDeco.scaled(pxW, pxH, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
-        elif pxW is None and pxH is not None:
-            return theDeco.scaledToHeight(pxH, Qt.SmoothTransformation)
-        elif pxW is not None and pxH is None:
-            return theDeco.scaledToWidth(pxW, Qt.SmoothTransformation)
+        pixmap = QPixmap(str(imgPath))
+        if w is not None and h is not None:
+            return pixmap.scaled(w, h, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        elif w is None and h is not None:
+            return pixmap.scaledToHeight(h, Qt.SmoothTransformation)
+        elif w is not None and h is None:
+            return pixmap.scaledToWidth(w, Qt.SmoothTransformation)
 
-        return theDeco
+        return pixmap
 
-    def getIcon(self, iconKey):
+    def getIcon(self, name: str) -> QIcon:
         """Return an icon from the icon buffer, or load it."""
-        if iconKey in self._qIcons:
-            return self._qIcons[iconKey]
+        if name in self._qIcons:
+            return self._qIcons[name]
         else:
-            qIcon = self._loadIcon(iconKey)
-            self._qIcons[iconKey] = qIcon
-            return qIcon
+            icon = self._loadIcon(name)
+            self._qIcons[name] = icon
+            return icon
 
-    def getToggleIcon(self, iconKey: str, iconSize: tuple[int, int]) -> QIcon:
+    def getToggleIcon(self, name: str, size: tuple[int, int]) -> QIcon:
         """Return a toggle icon from the icon buffer. or load it."""
-        if iconKey in self.TOGGLE_ICON_KEYS:
-            pixOne  = self.getPixmap(self.TOGGLE_ICON_KEYS[iconKey][0], iconSize)
-            pixTwo = self.getPixmap(self.TOGGLE_ICON_KEYS[iconKey][1], iconSize)
-            qIcon = QIcon()
-            qIcon.addPixmap(pixOne, QIcon.Normal, QIcon.On)
-            qIcon.addPixmap(pixTwo, QIcon.Normal, QIcon.Off)
-            return qIcon
+        if name in self.TOGGLE_ICON_KEYS:
+            pOne  = self.getPixmap(self.TOGGLE_ICON_KEYS[name][0], size)
+            pTwo = self.getPixmap(self.TOGGLE_ICON_KEYS[name][1], size)
+            icon = QIcon()
+            icon.addPixmap(pOne, QIcon.Normal, QIcon.On)
+            icon.addPixmap(pTwo, QIcon.Normal, QIcon.Off)
+            return icon
         return QIcon()
 
-    def getPixmap(self, iconKey, iconSize):
+    def getPixmap(self, name: str, size: tuple[int, int]) -> QPixmap:
         """Return an icon from the icon buffer as a QPixmap. If it
         doesn't exist, return an empty QPixmap.
         """
-        qIcon = self.getIcon(iconKey)
-        return qIcon.pixmap(iconSize[0], iconSize[1], QIcon.Normal)
+        return self.getIcon(name).pixmap(size[0], size[1], QIcon.Normal)
 
-    def getItemIcon(self, tType, tClass, tLayout, hLevel="H0"):
+    def getItemIcon(self, tType: nwItemType, tClass: nwItemClass,
+                    tLayout: nwItemLayout, hLevel: str = "H0") -> QIcon:
         """Get the correct icon for a project item based on type, class
         and header level
         """
@@ -670,17 +667,16 @@ class GuiIcons:
 
         return self.getIcon(iconName)
 
-    def getHeaderDecoration(self, hLevel):
-        """Get the decoration for a specific header level.
-        """
+    def getHeaderDecoration(self, hLevel: int) -> QPixmap:
+        """Get the decoration for a specific header level."""
         if not self._headerDec:
             iPx = self.mainTheme.baseIconSize
             self._headerDec = [
-                self.loadDecoration("deco_doc_h0", pxH=iPx),
-                self.loadDecoration("deco_doc_h1", pxH=iPx),
-                self.loadDecoration("deco_doc_h2", pxH=iPx),
-                self.loadDecoration("deco_doc_h3", pxH=iPx),
-                self.loadDecoration("deco_doc_h4", pxH=iPx),
+                self.loadDecoration("deco_doc_h0", h=iPx),
+                self.loadDecoration("deco_doc_h1", h=iPx),
+                self.loadDecoration("deco_doc_h2", h=iPx),
+                self.loadDecoration("deco_doc_h3", h=iPx),
+                self.loadDecoration("deco_doc_h4", h=iPx),
             ]
         return self._headerDec[minmax(hLevel, 0, 4)]
 
@@ -688,27 +684,27 @@ class GuiIcons:
     #  Internal Functions
     ##
 
-    def _loadIcon(self, iconKey):
+    def _loadIcon(self, name: str) -> QIcon:
         """Load an icon from the assets themes folder. Is guaranteed to
         return a QIcon.
         """
-        if iconKey not in self.ICON_KEYS:
-            logger.error("Requested unknown icon name '%s'", iconKey)
+        if name not in self.ICON_KEYS:
+            logger.error("Requested unknown icon name '%s'", name)
             return QIcon()
 
         # If we just want the app icons, return right away
-        if iconKey == "novelwriter":
+        if name == "novelwriter":
             return QIcon(str(self._iconPath / "novelwriter.svg"))
-        elif iconKey == "proj_nwx":
+        elif name == "proj_nwx":
             return QIcon(str(self._iconPath / "x-novelwriter-project.svg"))
 
         # Otherwise, we load from the theme folder
-        if iconKey in self._themeMap:
-            logger.debug("Loading: %s", self._themeMap[iconKey].name)
-            return QIcon(str(self._themeMap[iconKey]))
+        if name in self._themeMap:
+            logger.debug("Loading: %s", self._themeMap[name].name)
+            return QIcon(str(self._themeMap[name]))
 
         # If we didn't find one, give up and return an empty icon
-        logger.warning("Did not load an icon for '%s'", iconKey)
+        logger.warning("Did not load an icon for '%s'", name)
 
         return QIcon()
 
@@ -719,9 +715,8 @@ class GuiIcons:
 #  Module Functions
 # =============================================================================================== #
 
-def _loadInternalName(confParser, confFile):
-    """Open a conf file and read the 'name' setting.
-    """
+def _loadInternalName(confParser: NWConfigParser, confFile: str | Path) -> str:
+    """Open a conf file and read the 'name' setting."""
     try:
         with open(confFile, mode="r", encoding="utf-8") as inFile:
             confParser.read_file(inFile)

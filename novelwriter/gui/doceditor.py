@@ -2188,18 +2188,6 @@ class GuiDocToolBar(QWidget):
         palette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
         self.setPalette(palette)
 
-        # qPalette = self.palette()
-        # qPalette.setBrush(QPalette.Window, qPalette.base())
-        # self.setPalette(qPalette)
-
-        # fadeCol = qPalette.text().color()
-        # buttonStyle = (
-        #     "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
-        #     "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
-        # ).format(CONFIG.pxInt(4), fadeCol.red(), fadeCol.green(), fadeCol.blue())
-        # buttonStyleMenu = f"{buttonStyle} QToolButton::menu-indicator {{image: none;}}"
-        # self.tbEdit.setStyleSheet(buttonStyle)
-
         tPx = int(0.8*SHARED.theme.fontPixelSize)
         self.tbMode.setIcon(SHARED.theme.getToggleIcon("fmt_mode", (tPx, tPx)))
         self.tbBold.setIcon(SHARED.theme.getIcon("fmt_bold"))
@@ -2212,7 +2200,7 @@ class GuiDocToolBar(QWidget):
         return
 
     ##
-    #  Internal Slots
+    #  Private Slots
     ##
 
     @pyqtSlot(bool)

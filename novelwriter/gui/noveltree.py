@@ -468,7 +468,7 @@ class GuiNovelTree(QTreeWidget):
     def updateTheme(self) -> None:
         """Update theme elements."""
         iPx = SHARED.theme.baseIconSize
-        self._pMore = SHARED.theme.loadDecoration("deco_doc_more", pxH=iPx)
+        self._pMore = SHARED.theme.loadDecoration("deco_doc_more", h=iPx)
         return
 
     ##
