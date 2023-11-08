@@ -178,9 +178,11 @@ class Config:
         self.spellLanguage = "en"
 
         # State
-        self.showRefPanel = True  # The reference panel for the viewer is visible
-        self.viewComments = True  # Comments are shown in the viewer
-        self.viewSynopsis = True  # Synopsis is shown in the viewer
+        self.showRefPanel    = True   # The reference panel for the viewer is visible
+        self.showEditToolBar = False  # The document editor toolbar visibility
+        self.useShortcodes   = False  # Use shorcodes for basic formatting
+        self.viewComments    = True   # Comments are shown in the viewer
+        self.viewSynopsis    = True   # Synopsis is shown in the viewer
 
         # Search Bar Switches
         self.searchCase     = False
@@ -598,15 +600,17 @@ class Config:
 
         # State
         sec = "State"
-        self.showRefPanel   = conf.rdBool(sec, "showrefpanel", self.showRefPanel)
-        self.viewComments   = conf.rdBool(sec, "viewcomments", self.viewComments)
-        self.viewSynopsis   = conf.rdBool(sec, "viewsynopsis", self.viewSynopsis)
-        self.searchCase     = conf.rdBool(sec, "searchcase", self.searchCase)
-        self.searchWord     = conf.rdBool(sec, "searchword", self.searchWord)
-        self.searchRegEx    = conf.rdBool(sec, "searchregex", self.searchRegEx)
-        self.searchLoop     = conf.rdBool(sec, "searchloop", self.searchLoop)
-        self.searchNextFile = conf.rdBool(sec, "searchnextfile", self.searchNextFile)
-        self.searchMatchCap = conf.rdBool(sec, "searchmatchcap", self.searchMatchCap)
+        self.showRefPanel    = conf.rdBool(sec, "showrefpanel", self.showRefPanel)
+        self.showEditToolBar = conf.rdBool(sec, "showedittoolbar", self.showEditToolBar)
+        self.useShortcodes   = conf.rdBool(sec, "useshortcodes", self.useShortcodes)
+        self.viewComments    = conf.rdBool(sec, "viewcomments", self.viewComments)
+        self.viewSynopsis    = conf.rdBool(sec, "viewsynopsis", self.viewSynopsis)
+        self.searchCase      = conf.rdBool(sec, "searchcase", self.searchCase)
+        self.searchWord      = conf.rdBool(sec, "searchword", self.searchWord)
+        self.searchRegEx     = conf.rdBool(sec, "searchregex", self.searchRegEx)
+        self.searchLoop      = conf.rdBool(sec, "searchloop", self.searchLoop)
+        self.searchNextFile  = conf.rdBool(sec, "searchnextfile", self.searchNextFile)
+        self.searchMatchCap  = conf.rdBool(sec, "searchmatchcap", self.searchMatchCap)
 
         # Deprecated Settings or Locations as of 2.0
         # ToDo: These will be loaded for a few minor releases until the users have converted them
@@ -721,6 +725,8 @@ class Config:
 
         conf["State"] = {
             "showrefpanel":    str(self.showRefPanel),
+            "showedittoolbar": str(self.showEditToolBar),
+            "useshortcodes":   str(self.useShortcodes),
             "viewcomments":    str(self.viewComments),
             "viewsynopsis":    str(self.viewSynopsis),
             "searchcase":      str(self.searchCase),

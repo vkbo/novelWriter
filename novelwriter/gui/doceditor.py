@@ -138,9 +138,12 @@ class GuiDocEditor(QPlainTextEdit):
         self.docFooter = GuiDocEditFooter(self)
         self.docSearch = GuiDocEditSearch(self)
         self.docToolBar = GuiDocToolBar(self)
+        self.docToolBar.setVisible(CONFIG.showEditToolBar)
 
         # Connect Signals
         self.docHeader.closeDocumentRequest.connect(self._closeCurrentDocument)
+        self.docHeader.toggleToolBarRequest.connect(self._toggleToolBarVisibility)
+        self.docToolBar.requestDocAction.connect(self.docAction)
 
         # Context Menu
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -849,30 +852,10 @@ class GuiDocEditor(QPlainTextEdit):
 
         return True
 
-    def insertKeyWord(self, keyword: str) -> bool:
-        """Insert a keyword in the text editor, at the cursor position.
-        If the insert line is not blank, a new line is started.
-        """
-        if keyword not in nwKeyWords.VALID_KEYS:
-            logger.error("Invalid keyword '%s'", keyword)
-            return False
-        logger.debug("Inserting keyword '%s'", keyword)
-        state = self.insertNewBlock("%s: " % keyword)
-        return state
-
     def closeSearch(self) -> bool:
         """Close the search box."""
         self.docSearch.closeSearch()
         return self.docSearch.isVisible()
-
-    @pyqtSlot()
-    def toggleSearch(self) -> None:
-        """Toggle the visibility of the search box."""
-        if self.docSearch.isVisible():
-            self.docSearch.closeSearch()
-        else:
-            self.beginSearch()
-        return
 
     ##
     #  Document Events and Maintenance
@@ -966,6 +949,27 @@ class GuiDocEditor(QPlainTextEdit):
             self.docHeader.setTitleFromHandle(self._docHandle)
             self.docFooter.updateInfo()
             self.updateDocMargins()
+        return
+
+    @pyqtSlot(str)
+    def insertKeyWord(self, keyword: str) -> bool:
+        """Insert a keyword in the text editor, at the cursor position.
+        If the insert line is not blank, a new line is started.
+        """
+        if keyword not in nwKeyWords.VALID_KEYS:
+            logger.error("Invalid keyword '%s'", keyword)
+            return False
+        logger.debug("Inserting keyword '%s'", keyword)
+        state = self.insertNewBlock("%s: " % keyword)
+        return state
+
+    @pyqtSlot()
+    def toggleSearch(self) -> None:
+        """Toggle the visibility of the search box."""
+        if self.docSearch.isVisible():
+            self.docSearch.closeSearch()
+        else:
+            self.beginSearch()
         return
 
     ##
@@ -1192,6 +1196,14 @@ class GuiDocEditor(QPlainTextEdit):
     def _closeCurrentDocument(self) -> None:
         """Close the document. Forwarded to the main Gui."""
         self.closeDocumentRequest.emit()
+        return
+
+    @pyqtSlot()
+    def _toggleToolBarVisibility(self) -> None:
+        """Toggle the visibility of the tool bar."""
+        state = not self.docToolBar.isVisible()
+        self.docToolBar.setVisible(state)
+        CONFIG.showEditToolBar = state
         return
 
     ##
@@ -2094,6 +2106,8 @@ class BackgroundWordCounterSignals(QObject):
 
 class GuiDocToolBar(QWidget):
 
+    requestDocAction = pyqtSignal(nwDocAction)
+
     def __init__(self, docEditor: GuiDocEditor) -> None:
         super().__init__(parent=docEditor)
 
@@ -2108,26 +2122,41 @@ class GuiDocToolBar(QWidget):
         # ===============
 
         self.tbMode = QToolButton(self)
+        self.tbMode.setToolTip(self.tr("Toggle Markdown or Shortcodes Mode"))
         self.tbMode.setIconSize(iconSize)
         self.tbMode.setCheckable(True)
+        self.tbMode.setChecked(CONFIG.useShortcodes)
+        self.tbMode.toggled.connect(self._toggleFormatMode)
 
         self.tbBold = QToolButton(self)
         self.tbBold.setIconSize(iconSize)
+        self.tbBold.clicked.connect(self._formatBold)
 
         self.tbItalic = QToolButton(self)
         self.tbItalic.setIconSize(iconSize)
+        self.tbItalic.clicked.connect(self._formatItalic)
 
         self.tbStrike = QToolButton(self)
         self.tbStrike.setIconSize(iconSize)
+        self.tbStrike.clicked.connect(self._formatStrike)
 
         self.tbUnderline = QToolButton(self)
         self.tbUnderline.setIconSize(iconSize)
+        self.tbUnderline.clicked.connect(
+            lambda: self.requestDocAction.emit(nwDocAction.SC_ULINE)
+        )
 
         self.tbSuperscript = QToolButton(self)
         self.tbSuperscript.setIconSize(iconSize)
+        self.tbSuperscript.clicked.connect(
+            lambda: self.requestDocAction.emit(nwDocAction.SC_SUP)
+        )
 
         self.tbSubscript = QToolButton(self)
         self.tbSubscript.setIconSize(iconSize)
+        self.tbSubscript.clicked.connect(
+            lambda: self.requestDocAction.emit(nwDocAction.SC_SUB)
+        )
 
         # Assemble
         # ========
@@ -2156,7 +2185,6 @@ class GuiDocToolBar(QWidget):
         palette.setColor(QPalette.Window, QColor(*SHARED.theme.colBack))
         palette.setColor(QPalette.WindowText, QColor(*SHARED.theme.colText))
         palette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
-
         self.setPalette(palette)
 
         # qPalette = self.palette()
@@ -2180,6 +2208,40 @@ class GuiDocToolBar(QWidget):
         self.tbSuperscript.setIcon(SHARED.theme.getIcon("fmt_superscript"))
         self.tbSubscript.setIcon(SHARED.theme.getIcon("fmt_subscript"))
 
+        return
+
+    ##
+    #  Internal Slots
+    ##
+
+    @pyqtSlot(bool)
+    def _toggleFormatMode(self, checked: bool) -> None:
+        """Toggle the formatting mode."""
+        CONFIG.useShortcodes = checked
+        return
+
+    @pyqtSlot()
+    def _formatBold(self):
+        """Call the bold format action."""
+        self.requestDocAction.emit(
+            nwDocAction.SC_BOLD if self.tbMode.isChecked() else nwDocAction.STRONG
+        )
+        return
+
+    @pyqtSlot()
+    def _formatItalic(self):
+        """Call the italic format action."""
+        self.requestDocAction.emit(
+            nwDocAction.SC_ITALIC if self.tbMode.isChecked() else nwDocAction.EMPH
+        )
+        return
+
+    @pyqtSlot()
+    def _formatStrike(self):
+        """Call the strikethrough format action."""
+        self.requestDocAction.emit(
+            nwDocAction.SC_STRIKE if self.tbMode.isChecked() else nwDocAction.STRIKE
+        )
         return
 
 # END Class GuiDocToolBar
@@ -2600,8 +2662,8 @@ class GuiDocEditSearch(QFrame):
 
 class GuiDocEditHeader(QWidget):
 
-    toggleToolBarRequest = pyqtSignal()
     closeDocumentRequest = pyqtSignal()
+    toggleToolBarRequest = pyqtSignal()
 
     def __init__(self, docEditor: GuiDocEditor) -> None:
         super().__init__(parent=docEditor)

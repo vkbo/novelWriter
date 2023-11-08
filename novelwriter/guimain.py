@@ -62,7 +62,7 @@ from novelwriter.tools.writingstats import GuiWritingStats
 from novelwriter.core.coretools import ProjectBuilder
 
 from novelwriter.enum import (
-    nwDocAction, nwDocMode, nwItemType, nwItemClass, nwWidget, nwView
+    nwDocAction, nwDocInsert, nwDocMode, nwItemType, nwItemClass, nwWidget, nwView
 )
 from novelwriter.common import getGuiItem, hexToInt
 from novelwriter.constants import nwFiles
@@ -242,6 +242,11 @@ class GuiMain(QMainWindow):
         SHARED.projectStatusChanged.connect(self.mainStatus.updateProjectStatus)
         SHARED.projectStatusMessage.connect(self.mainStatus.setStatusMessage)
         SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
+
+        self.mainMenu.requestDocAction.connect(self._passDocumentAction)
+        self.mainMenu.requestDocInsert.connect(self._passDocumentInsert)
+        self.mainMenu.requestDocInsertText.connect(self._passDocumentInsert)
+        self.mainMenu.requestDocKeyWordInsert.connect(self.docEditor.insertKeyWord)
 
         self.sideBar.viewChangeRequested.connect(self._changeView)
 
@@ -734,20 +739,6 @@ class GuiMain(QMainWindow):
         self.docEditor.replaceText(theText)
 
         return True
-
-    def passDocumentAction(self, action: nwDocAction) -> None:
-        """Pass on document action to the document viewer if it has
-        focus, or pass it to the document editor if it or any of
-        its child widgets have focus. If neither has focus, ignore the
-        action.
-        """
-        if self.docViewer.hasFocus():
-            self.docViewer.docAction(action)
-        elif self.docEditor.hasFocus():
-            self.docEditor.docAction(action)
-        else:
-            logger.debug("Action cancelled as neither editor nor viewer has focus")
-        return
 
     ##
     #  Tree Item Actions
@@ -1245,6 +1236,30 @@ class GuiMain(QMainWindow):
         elif view == nwView.OUTLINE:
             self.mainStack.setCurrentWidget(self.outlineView)
 
+        return
+
+    @pyqtSlot(nwDocAction)
+    def _passDocumentAction(self, action: nwDocAction) -> None:
+        """Pass on a document action to the document viewer if it has
+        focus, or pass it to the document editor if it or any of its
+        child widgets have focus. If neither has focus, ignore it.
+        """
+        if self.docViewer.hasFocus():
+            self.docViewer.docAction(action)
+        elif self.docEditor.hasFocus():
+            self.docEditor.docAction(action)
+        else:
+            logger.debug("Action cancelled as neither editor nor viewer has focus")
+        return
+
+    @pyqtSlot(str)
+    @pyqtSlot(nwDocInsert)
+    def _passDocumentInsert(self, content: str | nwDocInsert) -> None:
+        """Pass on a document insert action to the document editor if it
+        has focus. If not, ignore it.
+        """
+        if self.docEditor.hasFocus():
+            self.docEditor.insertText(content)
         return
 
     @pyqtSlot()
