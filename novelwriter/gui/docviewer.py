@@ -34,8 +34,8 @@ from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QPoint, QSize, Qt, QUrl
 from PyQt5.QtGui import (
-    QColor, QCursor, QFont, QIcon, QMouseEvent, QPalette, QResizeEvent,
-    QTextCursor, QTextOption
+    QColor, QCursor, QFont, QMouseEvent, QPalette, QResizeEvent, QTextCursor,
+    QTextOption
 )
 from PyQt5.QtWidgets import (
     QAction, qApp, QFrame, QHBoxLayout, QLabel, QMenu, QScrollArea,
@@ -705,7 +705,7 @@ class GuiDocViewHeader(QWidget):
         self.backButton.setFixedSize(fPx, fPx)
         self.backButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.backButton.setVisible(False)
-        self.backButton.setToolTip(self.tr("Go backward"))
+        self.backButton.setToolTip(self.tr("Go Backward"))
         self.backButton.clicked.connect(self.docViewer.navBackward)
 
         self.forwardButton = QToolButton(self)
@@ -714,7 +714,7 @@ class GuiDocViewHeader(QWidget):
         self.forwardButton.setFixedSize(fPx, fPx)
         self.forwardButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.forwardButton.setVisible(False)
-        self.forwardButton.setToolTip(self.tr("Go forward"))
+        self.forwardButton.setToolTip(self.tr("Go Forward"))
         self.forwardButton.clicked.connect(self.docViewer.navForward)
 
         self.refreshButton = QToolButton(self)
@@ -723,7 +723,7 @@ class GuiDocViewHeader(QWidget):
         self.refreshButton.setFixedSize(fPx, fPx)
         self.refreshButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.refreshButton.setVisible(False)
-        self.refreshButton.setToolTip(self.tr("Reload the document"))
+        self.refreshButton.setToolTip(self.tr("Reload"))
         self.refreshButton.clicked.connect(self._refreshDocument)
 
         self.closeButton = QToolButton(self)
@@ -732,7 +732,7 @@ class GuiDocViewHeader(QWidget):
         self.closeButton.setFixedSize(fPx, fPx)
         self.closeButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.closeButton.setVisible(False)
-        self.closeButton.setToolTip(self.tr("Close the document"))
+        self.closeButton.setToolTip(self.tr("Close"))
         self.closeButton.clicked.connect(self._closeDocument)
 
         # Assemble Layout
@@ -1020,24 +1020,12 @@ class GuiDocViewFooter(QWidget):
     #  Methods
     ##
 
-    def updateTheme(self):
-        """Update theme elements.
-        """
+    def updateTheme(self) -> None:
+        """Update theme elements."""
         # Icons
-
         fPx = int(0.9*SHARED.theme.fontPixelSize)
-
-        stickyOn  = SHARED.theme.getPixmap("sticky-on", (fPx, fPx))
-        stickyOff = SHARED.theme.getPixmap("sticky-off", (fPx, fPx))
-        stickyIcon = QIcon()
-        stickyIcon.addPixmap(stickyOn, QIcon.Normal, QIcon.On)
-        stickyIcon.addPixmap(stickyOff, QIcon.Normal, QIcon.Off)
-
-        bulletOn  = SHARED.theme.getPixmap("bullet-on", (fPx, fPx))
-        bulletOff = SHARED.theme.getPixmap("bullet-off", (fPx, fPx))
-        bulletIcon = QIcon()
-        bulletIcon.addPixmap(bulletOn, QIcon.Normal, QIcon.On)
-        bulletIcon.addPixmap(bulletOff, QIcon.Normal, QIcon.Off)
+        stickyIcon = SHARED.theme.getToggleIcon("sticky", (fPx, fPx))
+        bulletIcon = SHARED.theme.getToggleIcon("bullet", (fPx, fPx))
 
         self.showHide.setIcon(SHARED.theme.getIcon("reference"))
         self.stickyRefs.setIcon(stickyIcon)

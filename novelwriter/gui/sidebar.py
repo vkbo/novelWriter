@@ -115,7 +115,6 @@ class GuiSideBar(QWidget):
         self.outerBox.setSpacing(CONFIG.pxInt(4))
 
         self.setLayout(self.outerBox)
-
         self.updateTheme()
 
         logger.debug("Ready: GuiSideBar")
