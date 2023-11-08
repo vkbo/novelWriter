@@ -248,6 +248,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.setDocumentChanged(False)
         self.docHeader.setTitleFromHandle(self._docHandle)
         self.docFooter.setHandle(self._docHandle)
+        self.docToolBar.setVisible(False)
 
         return
 
@@ -2175,6 +2176,9 @@ class GuiDocToolBar(QWidget):
 
         self.setLayout(self.outerBox)
         self.updateTheme()
+
+        # Starts as Invisible
+        self.setVisible(False)
 
         logger.debug("Ready: GuiDocToolBar")
 
