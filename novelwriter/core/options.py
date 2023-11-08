@@ -28,7 +28,7 @@ import json
 import logging
 
 from enum import Enum
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeVar
 from pathlib import Path
 
 from novelwriter.error import logException
@@ -39,6 +39,8 @@ if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
+
+NWEnum = TypeVar("NWEnum", bound=Enum)
 
 VALID_MAP = {
     "GuiWritingStats": {
@@ -201,11 +203,11 @@ class OptionState:
             return checkBool(self._state[group].get(name, default), default)
         return default
 
-    def getEnum(self, group: str, name: str, lookup: type, default: Enum) -> Enum:
+    def getEnum(self, group: str, name: str, lookup: type, default: NWEnum) -> NWEnum:
         """Return the value mapped to an enum. Otherwise return the
         default value.
         """
-        if issubclass(lookup, Enum):
+        if issubclass(lookup, type(default)):
             if group in self._state:
                 if name in self._state[group]:
                     value = self._state[group][name]

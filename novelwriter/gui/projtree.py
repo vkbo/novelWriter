@@ -361,12 +361,13 @@ class GuiProjectToolBar(QWidget):
             "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
             "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
         ).format(CONFIG.pxInt(2), fadeCol.red(), fadeCol.green(), fadeCol.blue())
+        buttonStyleMenu = f"{buttonStyle} QToolButton::menu-indicator {{image: none;}}"
 
-        self.tbQuick.setStyleSheet(buttonStyle)
+        self.tbQuick.setStyleSheet(buttonStyleMenu)
         self.tbMoveU.setStyleSheet(buttonStyle)
         self.tbMoveD.setStyleSheet(buttonStyle)
-        self.tbAdd.setStyleSheet(buttonStyle)
-        self.tbMore.setStyleSheet(buttonStyle)
+        self.tbAdd.setStyleSheet(buttonStyleMenu)
+        self.tbMore.setStyleSheet(buttonStyleMenu)
 
         self.tbQuick.setIcon(SHARED.theme.getIcon("bookmark"))
         self.tbMoveU.setIcon(SHARED.theme.getIcon("up"))

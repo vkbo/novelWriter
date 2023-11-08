@@ -261,6 +261,7 @@ class GuiOutlineToolBar(QToolBar):
         self.novelValue.updateList(includeAll=True)
         self.aRefresh.setIcon(SHARED.theme.getIcon("refresh"))
         self.tbColumns.setIcon(SHARED.theme.getIcon("menu"))
+        self.tbColumns.setStyleSheet("QToolButton::menu-indicator {image: none;}")
         return
 
     def populateNovelList(self) -> None:
