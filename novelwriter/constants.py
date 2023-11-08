@@ -23,6 +23,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import re
+
 from PyQt5.QtCore import QCoreApplication, QT_TRANSLATE_NOOP
 
 from novelwriter.enum import nwBuildFmt, nwItemClass, nwItemLayout, nwOutline
@@ -59,8 +61,31 @@ class nwRegEx:
     FMT_EI = r"(?<![\w\\])(_)(?![\s_])(.+?)(?<![\s\\])(\1)(?!\w)"
     FMT_EB = r"(?<![\w\\])([\*]{2})(?![\s\*])(.+?)(?<![\s\\])(\1)(?!\w)"
     FMT_ST = r"(?<![\w\\])([~]{2})(?![\s~])(.+?)(?<![\s\\])(\1)(?!\w)"
+    FMT_SC = r"(?i)(?<!\\)(\[[\/\!]?(?:i|b|s|u|sup|sub)\])"
+    FMT_SV = r"(?<!\\)(\[(?i)(?:fn|footnote):)(.+?)(?<!\\)(\])"
+
+    # Pre-Compiled RegEx
+    RX_SC = re.compile(FMT_SC)
 
 # END Class nwRegEx
+
+
+class nwShortcode:
+
+    BOLD_O   = "[b]"
+    BOLD_C   = "[/b]"
+    ITALIC_O = "[i]"
+    ITALIC_C = "[/i]"
+    STRIKE_O = "[s]"
+    STRIKE_C = "[/s]"
+    ULINE_O  = "[u]"
+    ULINE_C  = "[/u]"
+    SUP_O    = "[sup]"
+    SUP_C    = "[/sup]"
+    SUB_O    = "[sub]"
+    SUB_C    = "[/sub]"
+
+# END Class nwShortcode
 
 
 class nwHeaders:

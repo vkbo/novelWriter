@@ -38,7 +38,7 @@ from pathlib import Path
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.common import checkInt, isHandle, isItemClass, isTitleTag, jsonEncode
-from novelwriter.constants import nwFiles, nwKeyWords, nwUnicode, nwHeaders
+from novelwriter.constants import nwFiles, nwKeyWords, nwRegEx, nwUnicode, nwHeaders
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.item import NWItem
@@ -621,6 +621,10 @@ class NWIndex:
         sTitle = self._tagsIndex.tagHeading(tagKey)
         return tHandle, sTitle
 
+    def getTags(self, itemClass: nwItemClass) -> list[str]:
+        """Return all tags based on itemClass."""
+        return self._tagsIndex.filterTagNames(itemClass.name)
+
 # END Class NWIndex
 
 
@@ -683,6 +687,12 @@ class TagsIndex:
     def tagClass(self, tagKey: str) -> str | None:
         """Get the class of a given tag."""
         return self._tags.get(tagKey.lower(), {}).get("class", None)
+
+    def filterTagNames(self, className: str) -> list[str]:
+        """Get a list of tag names for a given class."""
+        return [
+            x.get("name", "") for x in self._tags.values() if x.get("class", "") == className
+        ]
 
     ##
     #  Pack/Unpack
@@ -1229,6 +1239,10 @@ def countWords(text: str) -> tuple[int, int, int]:
     if nwUnicode.U_EMDASH in text:
         text = text.replace(nwUnicode.U_EMDASH, " ")
 
+    # Strip shortcodes
+    if "[" in text:
+        text = nwRegEx.RX_SC.sub("", text)
+
     for line in text.splitlines():
 
         countPara = True
@@ -1241,9 +1255,10 @@ def countWords(text: str) -> tuple[int, int, int]:
             continue
 
         if line[0] == "[":
-            if line.startswith(("[NEWPAGE]", "[NEW PAGE]", "[VSPACE]")):
+            check = line.lower()
+            if check.startswith(("[newpage]", "[new page]", "[vspace]")):
                 continue
-            elif line.startswith("[VSPACE:") and line.endswith("]"):
+            elif check.startswith("[vspace:") and line.endswith("]"):
                 continue
 
         elif line[0] == "#":

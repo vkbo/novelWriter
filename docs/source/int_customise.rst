@@ -159,6 +159,7 @@ A syntax theme ``.conf`` file consists of the follwing settings:
    doublequotes   =   0,   0,   0
    singlequotes   =   0,   0,   0
    hidden         =   0,   0,   0
+   shortcode      =   0,   0,   0
    keyword        =   0,   0,   0
    value          =   0,   0,   0
    spellcheckline =   0,   0,   0
@@ -169,3 +170,7 @@ A syntax theme ``.conf`` file consists of the follwing settings:
 In the Main section, you must define at least the ``name`` setting. The Syntax colour values are
 RGB numbers of the format ``r, g, b`` where each is an integer from  to 255. Omitted values default
 to black, except ``background`` which defaults to white,
+
+.. versionadded:: 2.2
+   The `shortcode` syntax colour entry was added, so you need to update your custom themes if you
+   made any before version 2.2.

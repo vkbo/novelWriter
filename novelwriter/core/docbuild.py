@@ -184,7 +184,7 @@ class NWBuildDocument:
         filtered = self._setupBuild(makeObj)
 
         if extendedMd:
-            makeObj.setGitHubMarkdown()
+            makeObj.setExtendedMarkdown()
         else:
             makeObj.setStandardMarkdown()
 

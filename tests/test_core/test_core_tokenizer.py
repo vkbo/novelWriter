@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import json
 import pytest
 
 from tools import C, buildTestProject, readFile
@@ -36,96 +37,96 @@ class BareTokenizer(Tokenizer):
 @pytest.mark.core
 def testCoreToken_Setters(mockGUI):
     """Test all the setters for the Tokenizer class."""
-    theProject = NWProject()
-    theToken = BareTokenizer(theProject)
+    project = NWProject()
+    tokens = BareTokenizer(project)
 
     # Verify defaults
-    assert theToken._fmtTitle == nwHeadFmt.TITLE
-    assert theToken._fmtChapter == nwHeadFmt.TITLE
-    assert theToken._fmtUnNum == nwHeadFmt.TITLE
-    assert theToken._fmtScene == nwHeadFmt.TITLE
-    assert theToken._fmtSection == nwHeadFmt.TITLE
-    assert theToken._textFont == "Serif"
-    assert theToken._textSize == 11
-    assert theToken._textFixed is False
-    assert theToken._lineHeight == 1.15
-    assert theToken._blockIndent == 4.0
-    assert theToken._doJustify is False
-    assert theToken._marginTitle == (1.000, 0.500)
-    assert theToken._marginHead1 == (1.000, 0.500)
-    assert theToken._marginHead2 == (0.834, 0.500)
-    assert theToken._marginHead3 == (0.584, 0.500)
-    assert theToken._marginHead4 == (0.584, 0.500)
-    assert theToken._marginText == (0.000, 0.584)
-    assert theToken._marginMeta == (0.000, 0.584)
-    assert theToken._hideScene is False
-    assert theToken._hideSection is False
-    assert theToken._linkHeaders is False
-    assert theToken._doBodyText is True
-    assert theToken._doSynopsis is False
-    assert theToken._doComments is False
-    assert theToken._doKeywords is False
+    assert tokens._fmtTitle == nwHeadFmt.TITLE
+    assert tokens._fmtChapter == nwHeadFmt.TITLE
+    assert tokens._fmtUnNum == nwHeadFmt.TITLE
+    assert tokens._fmtScene == nwHeadFmt.TITLE
+    assert tokens._fmtSection == nwHeadFmt.TITLE
+    assert tokens._textFont == "Serif"
+    assert tokens._textSize == 11
+    assert tokens._textFixed is False
+    assert tokens._lineHeight == 1.15
+    assert tokens._blockIndent == 4.0
+    assert tokens._doJustify is False
+    assert tokens._marginTitle == (1.000, 0.500)
+    assert tokens._marginHead1 == (1.000, 0.500)
+    assert tokens._marginHead2 == (0.834, 0.500)
+    assert tokens._marginHead3 == (0.584, 0.500)
+    assert tokens._marginHead4 == (0.584, 0.500)
+    assert tokens._marginText == (0.000, 0.584)
+    assert tokens._marginMeta == (0.000, 0.584)
+    assert tokens._hideScene is False
+    assert tokens._hideSection is False
+    assert tokens._linkHeaders is False
+    assert tokens._doBodyText is True
+    assert tokens._doSynopsis is False
+    assert tokens._doComments is False
+    assert tokens._doKeywords is False
 
     # Set new values
-    theToken.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
-    theToken.setChapterFormat(f"C: {nwHeadFmt.TITLE}")
-    theToken.setUnNumberedFormat(f"U: {nwHeadFmt.TITLE}")
-    theToken.setSceneFormat(f"S: {nwHeadFmt.TITLE}", True)
-    theToken.setSectionFormat(f"X: {nwHeadFmt.TITLE}", True)
-    theToken.setFont("Monospace", 10, True)
-    theToken.setLineHeight(2.0)
-    theToken.setBlockIndent(6.0)
-    theToken.setJustify(True)
-    theToken.setTitleMargins(2.0, 2.0)
-    theToken.setHead1Margins(2.0, 2.0)
-    theToken.setHead2Margins(2.0, 2.0)
-    theToken.setHead3Margins(2.0, 2.0)
-    theToken.setHead4Margins(2.0, 2.0)
-    theToken.setTextMargins(2.0, 2.0)
-    theToken.setMetaMargins(2.0, 2.0)
-    theToken.setLinkHeaders(True)
-    theToken.setBodyText(False)
-    theToken.setSynopsis(True)
-    theToken.setComments(True)
-    theToken.setKeywords(True)
+    tokens.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
+    tokens.setChapterFormat(f"C: {nwHeadFmt.TITLE}")
+    tokens.setUnNumberedFormat(f"U: {nwHeadFmt.TITLE}")
+    tokens.setSceneFormat(f"S: {nwHeadFmt.TITLE}", True)
+    tokens.setSectionFormat(f"X: {nwHeadFmt.TITLE}", True)
+    tokens.setFont("Monospace", 10, True)
+    tokens.setLineHeight(2.0)
+    tokens.setBlockIndent(6.0)
+    tokens.setJustify(True)
+    tokens.setTitleMargins(2.0, 2.0)
+    tokens.setHead1Margins(2.0, 2.0)
+    tokens.setHead2Margins(2.0, 2.0)
+    tokens.setHead3Margins(2.0, 2.0)
+    tokens.setHead4Margins(2.0, 2.0)
+    tokens.setTextMargins(2.0, 2.0)
+    tokens.setMetaMargins(2.0, 2.0)
+    tokens.setLinkHeaders(True)
+    tokens.setBodyText(False)
+    tokens.setSynopsis(True)
+    tokens.setComments(True)
+    tokens.setKeywords(True)
 
     # Check new values
-    assert theToken._fmtTitle == f"T: {nwHeadFmt.TITLE}"
-    assert theToken._fmtChapter == f"C: {nwHeadFmt.TITLE}"
-    assert theToken._fmtUnNum == f"U: {nwHeadFmt.TITLE}"
-    assert theToken._fmtScene == f"S: {nwHeadFmt.TITLE}"
-    assert theToken._fmtSection == f"X: {nwHeadFmt.TITLE}"
-    assert theToken._textFont == "Monospace"
-    assert theToken._textSize == 10
-    assert theToken._textFixed is True
-    assert theToken._lineHeight == 2.0
-    assert theToken._blockIndent == 6.0
-    assert theToken._doJustify is True
-    assert theToken._marginTitle == (2.0, 2.0)
-    assert theToken._marginHead1 == (2.0, 2.0)
-    assert theToken._marginHead2 == (2.0, 2.0)
-    assert theToken._marginHead3 == (2.0, 2.0)
-    assert theToken._marginHead4 == (2.0, 2.0)
-    assert theToken._marginText == (2.0, 2.0)
-    assert theToken._marginMeta == (2.0, 2.0)
-    assert theToken._hideScene is True
-    assert theToken._hideSection is True
-    assert theToken._linkHeaders is True
-    assert theToken._doBodyText is False
-    assert theToken._doSynopsis is True
-    assert theToken._doComments is True
-    assert theToken._doKeywords is True
+    assert tokens._fmtTitle == f"T: {nwHeadFmt.TITLE}"
+    assert tokens._fmtChapter == f"C: {nwHeadFmt.TITLE}"
+    assert tokens._fmtUnNum == f"U: {nwHeadFmt.TITLE}"
+    assert tokens._fmtScene == f"S: {nwHeadFmt.TITLE}"
+    assert tokens._fmtSection == f"X: {nwHeadFmt.TITLE}"
+    assert tokens._textFont == "Monospace"
+    assert tokens._textSize == 10
+    assert tokens._textFixed is True
+    assert tokens._lineHeight == 2.0
+    assert tokens._blockIndent == 6.0
+    assert tokens._doJustify is True
+    assert tokens._marginTitle == (2.0, 2.0)
+    assert tokens._marginHead1 == (2.0, 2.0)
+    assert tokens._marginHead2 == (2.0, 2.0)
+    assert tokens._marginHead3 == (2.0, 2.0)
+    assert tokens._marginHead4 == (2.0, 2.0)
+    assert tokens._marginText == (2.0, 2.0)
+    assert tokens._marginMeta == (2.0, 2.0)
+    assert tokens._hideScene is True
+    assert tokens._hideSection is True
+    assert tokens._linkHeaders is True
+    assert tokens._doBodyText is False
+    assert tokens._doSynopsis is True
+    assert tokens._doComments is True
+    assert tokens._doKeywords is True
 
     # Check Limits
-    theToken.setLineHeight(0.0)
-    assert theToken._lineHeight == 0.5
-    theToken.setLineHeight(10.0)
-    assert theToken._lineHeight == 5.0
+    tokens.setLineHeight(0.0)
+    assert tokens._lineHeight == 0.5
+    tokens.setLineHeight(10.0)
+    assert tokens._lineHeight == 5.0
 
-    theToken.setBlockIndent(-6.0)
-    assert theToken._blockIndent == 0.0
-    theToken.setBlockIndent(60.0)
-    assert theToken._blockIndent == 10.0
+    tokens.setBlockIndent(-6.0)
+    assert tokens._blockIndent == 0.0
+    tokens.setBlockIndent(60.0)
+    assert tokens._blockIndent == 10.0
 
 # END Test testCoreToken_Setters
 
@@ -133,15 +134,15 @@ def testCoreToken_Setters(mockGUI):
 @pytest.mark.core
 def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
     """Test handling files and text in the Tokenizer class."""
-    theProject = NWProject()
+    project = NWProject()
     mockRnd.reset()
-    buildTestProject(theProject, fncPath)
+    buildTestProject(project, fncPath)
 
-    theProject.data.setLanguage("en")
-    theProject._loadProjectLocalisation()
+    project.data.setLanguage("en")
+    project._loadProjectLocalisation()
 
-    theToken = BareTokenizer(theProject)
-    theToken.setKeepMarkdown(True)
+    tokens = BareTokenizer(project)
+    tokens.setKeepMarkdown(True)
 
     # Set some content to work with
     docText = (
@@ -153,58 +154,65 @@ def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
     )
     docTextR = docText.replace("<A>", "this").replace("<B>", "that")
 
-    nDoc = theProject.storage.getDocument(C.hSceneDoc)
+    nDoc = project.storage.getDocument(C.hSceneDoc)
     assert nDoc.writeDocument(docText)
 
-    theProject.data.setAutoReplace({"A": "this", "B": "that"})
+    project.data.setAutoReplace({"A": "this", "B": "that"})
 
-    assert theProject.saveProject()
+    assert project.saveProject()
 
     # Root Heading
-    assert theToken.addRootHeading("stuff") is False
-    assert theToken.addRootHeading(C.hSceneDoc) is False
+    assert tokens.addRootHeading("stuff") is False
+    assert tokens.addRootHeading(C.hSceneDoc) is False
 
     # First Page
-    assert theToken.addRootHeading(C.hPlotRoot) is True
-    assert theToken.theMarkdown[-1] == "# Notes: Plot\n\n"
-    assert theToken._tokens[-1] == (
+    assert tokens.addRootHeading(C.hPlotRoot) is True
+    assert tokens.theMarkdown[-1] == "# Notes: Plot\n\n"
+    assert tokens._tokens[-1] == (
         Tokenizer.T_TITLE, 0, "Notes: Plot", None, Tokenizer.A_CENTRE
     )
 
     # Not First Page
-    assert theToken.addRootHeading(C.hPlotRoot) is True
-    assert theToken.theMarkdown[-1] == "# Notes: Plot\n\n"
-    assert theToken._tokens[-1] == (
+    assert tokens.addRootHeading(C.hPlotRoot) is True
+    assert tokens.theMarkdown[-1] == "# Notes: Plot\n\n"
+    assert tokens._tokens[-1] == (
         Tokenizer.T_TITLE, 0, "Notes: Plot", None, Tokenizer.A_CENTRE | Tokenizer.A_PBB
     )
 
     # Set Text
-    assert theToken.setText("stuff") is False
-    assert theToken.setText(C.hSceneDoc) is True
-    assert theToken._text == docText
+    assert tokens.setText("stuff") is False
+    assert tokens.setText(C.hSceneDoc) is True
+    assert tokens._text == docText
 
-    assert theToken.setText(C.hSceneDoc, docText) is True
-    assert theToken._text == docText
+    assert tokens.setText(C.hSceneDoc, docText) is True
+    assert tokens._text == docText
 
-    assert theToken._isNone is False
-    assert theToken._isNovel is True
-    assert theToken._isNote is False
+    assert tokens._isNone is False
+    assert tokens._isNovel is True
+    assert tokens._isNote is False
 
     # Pre Processing
-    theToken.doPreProcessing()
-    assert theToken._text == docTextR
+    tokens.doPreProcessing()
+    assert tokens._text == docTextR
 
     # Save File
     savePath = fncPath / "dump.nwd"
-    theToken.saveRawMarkdown(savePath)
+    tokens.saveRawMarkdown(savePath)
     assert readFile(savePath) == (
         "# Notes: Plot\n\n"
         "# Notes: Plot\n\n"
     )
+    tokens.saveRawMarkdownJSON(savePath)
+    assert json.loads(readFile(savePath))["text"] == {
+        "nwd": [
+            ["# Notes: Plot"],
+            ["# Notes: Plot"]
+        ]
+    }
 
     # Check abstract method
     with pytest.raises(NotImplementedError):
-        theToken.doConvert()
+        tokens.doConvert()
 
 # END Test testCoreToken_TextOps
 
@@ -223,202 +231,202 @@ def testCoreToken_StripEscape():
 @pytest.mark.core
 def testCoreToken_HeaderFormat(mockGUI):
     """Test the tokenization of header formats in the Tokenizer class."""
-    theProject = NWProject()
-    theToken = BareTokenizer(theProject)
-    theToken.setKeepMarkdown(True)
+    project = NWProject()
+    tokens = BareTokenizer(project)
+    tokens.setKeepMarkdown(True)
 
     # Title
     # =====
 
     # Story File
-    theToken._isNovel = True
-    theToken._isNote  = False
-    theToken._isFirst = True
-    theToken._text = "#! Novel Title\n"
+    tokens._isNovel = True
+    tokens._isNote  = False
+    tokens._isFirst = True
+    tokens._text = "#! Novel Title\n"
 
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_TITLE, 1, "Novel Title", None, Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "#! Novel Title\n\n"
+    assert tokens.theMarkdown[-1] == "#! Novel Title\n\n"
 
     # Note File
-    theToken._isNovel = False
-    theToken._isNote  = True
-    theToken._isFirst = True
-    theToken._text = "#! Note Title\n"
+    tokens._isNovel = False
+    tokens._isNote  = True
+    tokens._isFirst = True
+    tokens._text = "#! Note Title\n"
 
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Note Title", None, Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "#! Note Title\n\n"
+    assert tokens.theMarkdown[-1] == "#! Note Title\n\n"
 
     # Header 1
     # ========
 
     # Story File
-    theToken._isNovel = True
-    theToken._isNote  = False
-    theToken._isFirst = True
-    theToken._text = "# Novel Title\n"
+    tokens._isNovel = True
+    tokens._isNote  = False
+    tokens._isFirst = True
+    tokens._text = "# Novel Title\n"
 
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Novel Title", None, Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "# Novel Title\n\n"
+    assert tokens.theMarkdown[-1] == "# Novel Title\n\n"
 
     # Note File
-    theToken._isNovel = False
-    theToken._isNote  = True
-    theToken._isFirst = True
-    theToken._text = "# Note Title\n"
+    tokens._isNovel = False
+    tokens._isNote  = True
+    tokens._isFirst = True
+    tokens._text = "# Note Title\n"
 
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Note Title", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "# Note Title\n\n"
+    assert tokens.theMarkdown[-1] == "# Note Title\n\n"
 
     # Header 2
     # ========
 
     # Story File
-    theToken._isNovel = True
-    theToken._isNote  = False
-    theToken._text = "## Chapter One\n"
+    tokens._isNovel = True
+    tokens._isNote  = False
+    tokens._text = "## Chapter One\n"
 
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD2, 1, "Chapter One", None, Tokenizer.A_PBB),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "## Chapter One\n\n"
+    assert tokens.theMarkdown[-1] == "## Chapter One\n\n"
 
     # Note File
-    theToken._isNovel = False
-    theToken._isNote  = True
-    theToken._text = "## Heading 2\n"
+    tokens._isNovel = False
+    tokens._isNote  = True
+    tokens._text = "## Heading 2\n"
 
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD2, 1, "Heading 2", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "## Heading 2\n\n"
+    assert tokens.theMarkdown[-1] == "## Heading 2\n\n"
 
     # Header 3
     # ========
 
     # Story File
-    theToken._isNovel = True
-    theToken._isNote  = False
-    theToken._text = "### Scene One\n"
+    tokens._isNovel = True
+    tokens._isNote  = False
+    tokens._text = "### Scene One\n"
 
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD3, 1, "Scene One", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "### Scene One\n\n"
+    assert tokens.theMarkdown[-1] == "### Scene One\n\n"
 
     # Note File
-    theToken._isNovel = False
-    theToken._isNote  = True
-    theToken._text = "### Heading 3\n"
+    tokens._isNovel = False
+    tokens._isNote  = True
+    tokens._text = "### Heading 3\n"
 
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD3, 1, "Heading 3", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "### Heading 3\n\n"
+    assert tokens.theMarkdown[-1] == "### Heading 3\n\n"
 
     # Header 4
     # ========
 
     # Story File
-    theToken._isNovel = True
-    theToken._isNote  = False
-    theToken._text = "#### A Section\n"
+    tokens._isNovel = True
+    tokens._isNote  = False
+    tokens._text = "#### A Section\n"
 
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD4, 1, "A Section", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "#### A Section\n\n"
+    assert tokens.theMarkdown[-1] == "#### A Section\n\n"
 
     # Note File
-    theToken._isNovel = False
-    theToken._isNote  = True
-    theToken._text = "#### Heading 4\n"
+    tokens._isNovel = False
+    tokens._isNote  = True
+    tokens._text = "#### Heading 4\n"
 
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD4, 1, "Heading 4", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "#### Heading 4\n\n"
+    assert tokens.theMarkdown[-1] == "#### Heading 4\n\n"
 
     # Title
     # =====
 
     # Story File
-    theToken._isNovel = True
-    theToken._isNote  = False
-    theToken._text = "#! Title\n"
+    tokens._isNovel = True
+    tokens._isNote  = False
+    tokens._text = "#! Title\n"
 
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_TITLE, 1, "Title", None, Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "#! Title\n\n"
+    assert tokens.theMarkdown[-1] == "#! Title\n\n"
 
     # Note File
-    theToken._isNovel = False
-    theToken._isNote  = True
-    theToken._text = "#! Title\n"
+    tokens._isNovel = False
+    tokens._isNote  = True
+    tokens._text = "#! Title\n"
 
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title", None, Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "#! Title\n\n"
+    assert tokens.theMarkdown[-1] == "#! Title\n\n"
 
     # Unnumbered
     # ==========
 
     # Story File
-    theToken._isNovel = True
-    theToken._isNote  = False
-    theToken._text = "##! Prologue\n"
+    tokens._isNovel = True
+    tokens._isNote  = False
+    tokens._text = "##! Prologue\n"
 
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_UNNUM, 1, "Prologue", None, Tokenizer.A_PBB),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "##! Prologue\n\n"
+    assert tokens.theMarkdown[-1] == "##! Prologue\n\n"
 
     # Note File
-    theToken._isNovel = False
-    theToken._isNote  = True
-    theToken._text = "##! Prologue\n"
+    tokens._isNovel = False
+    tokens._isNote  = True
+    tokens._text = "##! Prologue\n"
 
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD2, 1, "Prologue", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "##! Prologue\n\n"
+    assert tokens.theMarkdown[-1] == "##! Prologue\n\n"
 
 # END Test testCoreToken_HeaderFormat
 
@@ -426,67 +434,67 @@ def testCoreToken_HeaderFormat(mockGUI):
 @pytest.mark.core
 def testCoreToken_MetaFormat(mockGUI):
     """Test the tokenization of meta formats in the Tokenizer class."""
-    theProject = NWProject()
-    theToken = BareTokenizer(theProject)
-    theToken.setKeepMarkdown(True)
+    project = NWProject()
+    tokens = BareTokenizer(project)
+    tokens.setKeepMarkdown(True)
 
     # Comment
-    theToken._text = "% A comment\n"
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens._text = "% A comment\n"
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_COMMENT, 0, "A comment", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "\n"
+    assert tokens.theMarkdown[-1] == "\n"
 
-    theToken.setComments(True)
-    theToken.tokenizeText()
-    assert theToken.theMarkdown[-1] == "% A comment\n\n"
+    tokens.setComments(True)
+    tokens.tokenizeText()
+    assert tokens.theMarkdown[-1] == "% A comment\n\n"
 
     # Synopsis
-    theToken._text = "%synopsis: The synopsis\n"
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens._text = "%synopsis: The synopsis\n"
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_SYNOPSIS, 0, "The synopsis", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
     ]
-    theToken._text = "% synopsis: The synopsis\n"
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens._text = "% synopsis: The synopsis\n"
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_SYNOPSIS, 0, "The synopsis", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "\n"
+    assert tokens.theMarkdown[-1] == "\n"
 
-    theToken.setSynopsis(True)
-    theToken.tokenizeText()
-    assert theToken.theMarkdown[-1] == "% synopsis: The synopsis\n\n"
+    tokens.setSynopsis(True)
+    tokens.tokenizeText()
+    assert tokens.theMarkdown[-1] == "% synopsis: The synopsis\n\n"
 
     # Keyword
-    theToken._text = "@char: Bod\n"
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens._text = "@char: Bod\n"
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_KEYWORD, 0, "char: Bod", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "\n"
+    assert tokens.theMarkdown[-1] == "\n"
 
-    theToken.setKeywords(True)
-    theToken.tokenizeText()
-    assert theToken.theMarkdown[-1] == "@char: Bod\n\n"
+    tokens.setKeywords(True)
+    tokens.tokenizeText()
+    assert tokens.theMarkdown[-1] == "@char: Bod\n\n"
 
-    theToken._text = "@pov: Bod\n@plot: Main\n@location: Europe\n"
-    theToken.tokenizeText()
+    tokens._text = "@pov: Bod\n@plot: Main\n@location: Europe\n"
+    tokens.tokenizeText()
     styTop = Tokenizer.A_NONE | Tokenizer.A_Z_BTMMRG
     styMid = Tokenizer.A_NONE | Tokenizer.A_Z_BTMMRG | Tokenizer.A_Z_TOPMRG
     styBtm = Tokenizer.A_NONE | Tokenizer.A_Z_TOPMRG
-    assert theToken._tokens == [
+    assert tokens._tokens == [
         (Tokenizer.T_KEYWORD, 0, "pov: Bod", None, styTop),
         (Tokenizer.T_KEYWORD, 0, "plot: Main", None, styMid),
         (Tokenizer.T_KEYWORD, 0, "location: Europe", None, styBtm),
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "@pov: Bod\n@plot: Main\n@location: Europe\n\n"
+    assert tokens.theMarkdown[-1] == "@pov: Bod\n@plot: Main\n@location: Europe\n\n"
 
 # END Test testCoreToken_MetaFormat
 
@@ -494,14 +502,14 @@ def testCoreToken_MetaFormat(mockGUI):
 @pytest.mark.core
 def testCoreToken_MarginFormat(mockGUI):
     """Test the tokenization of margin formats in the Tokenizer class."""
-    theProject = NWProject()
-    theToken = BareTokenizer(theProject)
-    theToken.setKeepMarkdown(True)
+    project = NWProject()
+    tokens = BareTokenizer(project)
+    tokens.setKeepMarkdown(True)
 
     # Alignment and Indentation
     dblIndent = Tokenizer.A_IND_L | Tokenizer.A_IND_R
     rIndAlign = Tokenizer.A_RIGHT | Tokenizer.A_IND_R
-    theToken._text = (
+    tokens._text = (
         "Some regular text\n\n"
         "Some left-aligned text <<\n\n"
         ">> Some right-aligned text\n\n"
@@ -511,8 +519,8 @@ def testCoreToken_MarginFormat(mockGUI):
         "> Double-indented block <\n\n"
         ">> Right-indent, right-aligned <\n\n"
     )
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_TEXT,  0, "Some regular text", [], Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_TEXT,  0, "Some left-aligned text", [], Tokenizer.A_LEFT),
@@ -531,7 +539,7 @@ def testCoreToken_MarginFormat(mockGUI):
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == (
+    assert tokens.theMarkdown[-1] == (
         "Some regular text\n\n"
         "Some left-aligned text\n\n"
         "Some right-aligned text\n\n"
@@ -546,120 +554,211 @@ def testCoreToken_MarginFormat(mockGUI):
 
 
 @pytest.mark.core
+def testCoreToken_ExtractFormats(mockGUI):
+    """Test the extraction of formats in the Tokenizer class."""
+    project = NWProject()
+    tokens = BareTokenizer(project)
+    tokens.setKeepMarkdown(True)
+
+    # Markdown
+    # ========
+
+    # Plain bold
+    text, fmt = tokens._extractFormats("Text with **bold** in it.")
+    assert text == "Text with bold in it."
+    assert fmt == [(10, tokens.FMT_B_B), (14, tokens.FMT_B_E)]
+
+    # Plain italics
+    text, fmt = tokens._extractFormats("Text with _italics_ in it.")
+    assert text == "Text with italics in it."
+    assert fmt == [(10, tokens.FMT_I_B), (17, tokens.FMT_I_E)]
+
+    # Plain strikethrough
+    text, fmt = tokens._extractFormats("Text with ~~strikethrough~~ in it.")
+    assert text == "Text with strikethrough in it."
+    assert fmt == [(10, tokens.FMT_D_B), (23, tokens.FMT_D_E)]
+
+    # Nested bold/italics
+    text, fmt = tokens._extractFormats("Text with **bold and _italics_** in it.")
+    assert text == "Text with bold and italics in it."
+    assert fmt == [
+        (10, tokens.FMT_B_B), (19, tokens.FMT_I_B), (26, tokens.FMT_I_E), (26, tokens.FMT_B_E)
+    ]
+
+    # Bold with overlapping italics
+    # Here, bold is ignored because it is not on word boundary
+    text, fmt = tokens._extractFormats("Text with **bold and overlapping _italics**_ in it.")
+    assert text == "Text with **bold and overlapping italics** in it."
+    assert fmt == [(33, tokens.FMT_I_B), (42, tokens.FMT_I_E)]
+
+    # Shortcodes
+    # ==========
+
+    # Plain bold
+    text, fmt = tokens._extractFormats("Text with [b]bold[/b] in it.")
+    assert text == "Text with bold in it."
+    assert fmt == [(10, tokens.FMT_B_B), (14, tokens.FMT_B_E)]
+
+    # Plain italics
+    text, fmt = tokens._extractFormats("Text with [i]italics[/i] in it.")
+    assert text == "Text with italics in it."
+    assert fmt == [(10, tokens.FMT_I_B), (17, tokens.FMT_I_E)]
+
+    # Plain strikethrough
+    text, fmt = tokens._extractFormats("Text with [s]strikethrough[/s] in it.")
+    assert text == "Text with strikethrough in it."
+    assert fmt == [(10, tokens.FMT_D_B), (23, tokens.FMT_D_E)]
+
+    # Plain underline
+    text, fmt = tokens._extractFormats("Text with [u]underline[/u] in it.")
+    assert text == "Text with underline in it."
+    assert fmt == [(10, tokens.FMT_U_B), (19, tokens.FMT_U_E)]
+
+    # Plain superscript
+    text, fmt = tokens._extractFormats("Text with super[sup]script[/sup] in it.")
+    assert text == "Text with superscript in it."
+    assert fmt == [(15, tokens.FMT_SUP_B), (21, tokens.FMT_SUP_E)]
+
+    # Plain subscript
+    text, fmt = tokens._extractFormats("Text with sub[sub]script[/sub] in it.")
+    assert text == "Text with subscript in it."
+    assert fmt == [(13, tokens.FMT_SUB_B), (19, tokens.FMT_SUB_E)]
+
+    # Nested bold/italics
+    text, fmt = tokens._extractFormats("Text with [b]bold and [i]italics[/i][/b] in it.")
+    assert text == "Text with bold and italics in it."
+    assert fmt == [
+        (10, tokens.FMT_B_B), (19, tokens.FMT_I_B), (26, tokens.FMT_I_E), (26, tokens.FMT_B_E)
+    ]
+
+    # Bold with overlapping italics
+    # With shortcodes, this works
+    text, fmt = tokens._extractFormats(
+        "Text with [b]bold and overlapping [i]italics[/b][/i] in it."
+    )
+    assert text == "Text with bold and overlapping italics in it."
+    assert fmt == [
+        (10, tokens.FMT_B_B), (31, tokens.FMT_I_B), (38, tokens.FMT_B_E), (38, tokens.FMT_I_E)
+    ]
+
+# END Test testCoreToken_ExtractFormats
+
+
+@pytest.mark.core
 def testCoreToken_TextFormat(mockGUI):
     """Test the tokenization of text formats in the Tokenizer class."""
-    theProject = NWProject()
-    theToken = BareTokenizer(theProject)
-    theToken.setKeepMarkdown(True)
+    project = NWProject()
+    tokens = BareTokenizer(project)
+    tokens.setKeepMarkdown(True)
 
     # Text
-    theToken._text = "Some plain text\non two lines\n\n\n"
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens._text = "Some plain text\non two lines\n\n\n"
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_TEXT, 0, "Some plain text", [], Tokenizer.A_NONE),
         (Tokenizer.T_TEXT, 0, "on two lines", [], Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "Some plain text\non two lines\n\n\n\n"
+    assert tokens.theMarkdown[-1] == "Some plain text\non two lines\n\n\n\n"
 
-    theToken.setBodyText(False)
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.setBodyText(False)
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "\n\n\n"
-    theToken.setBodyText(True)
+    assert tokens.theMarkdown[-1] == "\n\n\n"
+    tokens.setBodyText(True)
 
     # Text Emphasis
-    theToken._text = "Some **bolded text** on this lines\n"
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens._text = "Some **bolded text** on this lines\n"
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (
             Tokenizer.T_TEXT, 0,
-            "Some **bolded text** on this lines",
+            "Some bolded text on this lines",
             [
-                [5,  2, Tokenizer.FMT_B_B],
-                [18, 2, Tokenizer.FMT_B_E],
+                (5,  Tokenizer.FMT_B_B),
+                (16, Tokenizer.FMT_B_E),
             ],
             Tokenizer.A_NONE
         ),
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "Some **bolded text** on this lines\n\n"
+    assert tokens.theMarkdown[-1] == "Some **bolded text** on this lines\n\n"
 
-    theToken._text = "Some _italic text_ on this lines\n"
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens._text = "Some _italic text_ on this lines\n"
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (
             Tokenizer.T_TEXT, 0,
-            "Some _italic text_ on this lines",
+            "Some italic text on this lines",
             [
-                [5,  1, Tokenizer.FMT_I_B],
-                [17, 1, Tokenizer.FMT_I_E],
+                (5,  Tokenizer.FMT_I_B),
+                (16, Tokenizer.FMT_I_E),
             ],
             Tokenizer.A_NONE
         ),
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "Some _italic text_ on this lines\n\n"
+    assert tokens.theMarkdown[-1] == "Some _italic text_ on this lines\n\n"
 
-    theToken._text = "Some **_bold italic text_** on this lines\n"
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens._text = "Some **_bold italic text_** on this lines\n"
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (
             Tokenizer.T_TEXT, 0,
-            "Some **_bold italic text_** on this lines",
+            "Some bold italic text on this lines",
             [
-                [5,  2, Tokenizer.FMT_B_B],
-                [7,  1, Tokenizer.FMT_I_B],
-                [24, 1, Tokenizer.FMT_I_E],
-                [25, 2, Tokenizer.FMT_B_E],
+                (5,  Tokenizer.FMT_B_B),
+                (5,  Tokenizer.FMT_I_B),
+                (21, Tokenizer.FMT_I_E),
+                (21, Tokenizer.FMT_B_E),
             ],
             Tokenizer.A_NONE
         ),
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "Some **_bold italic text_** on this lines\n\n"
+    assert tokens.theMarkdown[-1] == "Some **_bold italic text_** on this lines\n\n"
 
-    theToken._text = "Some ~~strikethrough text~~ on this lines\n"
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens._text = "Some ~~strikethrough text~~ on this lines\n"
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (
             Tokenizer.T_TEXT, 0,
-            "Some ~~strikethrough text~~ on this lines",
+            "Some strikethrough text on this lines",
             [
-                [5,  2, Tokenizer.FMT_D_B],
-                [25, 2, Tokenizer.FMT_D_E],
+                (5,  Tokenizer.FMT_D_B),
+                (23, Tokenizer.FMT_D_E),
             ],
             Tokenizer.A_NONE
         ),
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == "Some ~~strikethrough text~~ on this lines\n\n"
+    assert tokens.theMarkdown[-1] == "Some ~~strikethrough text~~ on this lines\n\n"
 
-    theToken._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (
             Tokenizer.T_TEXT, 0,
-            "Some **nested bold and _italic_ and ~~strikethrough~~ text** here",
+            "Some nested bold and italic and strikethrough text here",
             [
-                [5,  2, Tokenizer.FMT_B_B],
-                [23, 1, Tokenizer.FMT_I_B],
-                [30, 1, Tokenizer.FMT_I_E],
-                [36, 2, Tokenizer.FMT_D_B],
-                [51, 2, Tokenizer.FMT_D_E],
-                [58, 2, Tokenizer.FMT_B_E],
+                (5,  Tokenizer.FMT_B_B),
+                (21, Tokenizer.FMT_I_B),
+                (27, Tokenizer.FMT_I_E),
+                (32, Tokenizer.FMT_D_B),
+                (45, Tokenizer.FMT_D_E),
+                (50, Tokenizer.FMT_B_E),
             ],
             Tokenizer.A_NONE
         ),
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
     ]
-    assert theToken.theMarkdown[-1] == (
+    assert tokens.theMarkdown[-1] == (
         "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n\n"
     )
 
@@ -669,10 +768,10 @@ def testCoreToken_TextFormat(mockGUI):
 @pytest.mark.core
 def testCoreToken_SpecialFormat(mockGUI):
     """Test the tokenization of special formats in the Tokenizer class."""
-    theProject = NWProject()
-    theToken = BareTokenizer(theProject)
+    project = NWProject()
+    tokens = BareTokenizer(project)
 
-    theToken._isNovel = True
+    tokens._isNovel = True
 
     # New Page
     # ========
@@ -687,45 +786,45 @@ def testCoreToken_SpecialFormat(mockGUI):
     ]
 
     # Command wo/Space
-    theToken._isFirst = True
-    theToken._text = (
+    tokens._isFirst = True
+    tokens._text = (
         "# Title One\n\n"
-        "[NEWPAGE]\n\n"
+        "[newpage]\n\n"
         "# Title Two\n\n"
     )
-    theToken.tokenizeText()
-    assert theToken._tokens == correctResp
+    tokens.tokenizeText()
+    assert tokens._tokens == correctResp
 
     # Command w/Space
-    theToken._isFirst = True
-    theToken._text = (
+    tokens._isFirst = True
+    tokens._text = (
         "# Title One\n\n"
-        "[NEW PAGE]\n\n"
+        "[new page]\n\n"
         "# Title Two\n\n"
     )
-    theToken.tokenizeText()
-    assert theToken._tokens == correctResp
+    tokens.tokenizeText()
+    assert tokens._tokens == correctResp
 
     # Trailing Spaces
-    theToken._isFirst = True
-    theToken._text = (
+    tokens._isFirst = True
+    tokens._text = (
         "# Title One\n\n"
-        "[NEW PAGE]   \t\n\n"
+        "[new page]   \t\n\n"
         "# Title Two\n\n"
     )
-    theToken.tokenizeText()
-    assert theToken._tokens == correctResp
+    tokens.tokenizeText()
+    assert tokens._tokens == correctResp
 
     # Single Empty Paragraph
     # ======================
 
-    theToken._text = (
+    tokens._text = (
         "# Title One\n\n"
-        "[VSPACE] \n\n"
+        "[vspace] \n\n"
         "Some text to go here ...\n\n"
     )
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", None, Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_SKIP,  1, "", None, Tokenizer.A_NONE),
@@ -739,13 +838,13 @@ def testCoreToken_SpecialFormat(mockGUI):
     # =========================
 
     # One Skip
-    theToken._text = (
+    tokens._text = (
         "# Title One\n\n"
-        "[VSPACE:1] \n\n"
+        "[vspace:1] \n\n"
         "Some text to go here ...\n\n"
     )
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", None, Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_SKIP,  1, "", None, Tokenizer.A_NONE),
@@ -756,13 +855,13 @@ def testCoreToken_SpecialFormat(mockGUI):
     ]
 
     # Three Skips
-    theToken._text = (
+    tokens._text = (
         "# Title One\n\n"
-        "[VSPACE:3] \n\n"
+        "[vspace:3] \n\n"
         "Some text to go here ...\n\n"
     )
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", None, Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_SKIP,  1, "", None, Tokenizer.A_NONE),
@@ -775,13 +874,13 @@ def testCoreToken_SpecialFormat(mockGUI):
     ]
 
     # Malformed Command, Case 1
-    theToken._text = (
+    tokens._text = (
         "# Title One\n\n"
-        "[VSPACE:3xa] \n\n"
+        "[vspace:3xa] \n\n"
         "Some text to go here ...\n\n"
     )
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", None, Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
@@ -791,13 +890,13 @@ def testCoreToken_SpecialFormat(mockGUI):
     ]
 
     # Malformed Command, Case 2
-    theToken._text = (
+    tokens._text = (
         "# Title One\n\n"
-        "[VSPACE:3.5]\n\n"
+        "[vspace:3.5]\n\n"
         "Some text to go here ...\n\n"
     )
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", None, Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
@@ -807,13 +906,13 @@ def testCoreToken_SpecialFormat(mockGUI):
     ]
 
     # Malformed Command, Case 3
-    theToken._text = (
+    tokens._text = (
         "# Title One\n\n"
-        "[VSPACE:-1]\n\n"
+        "[vspace:-1]\n\n"
         "Some text to go here ...\n\n"
     )
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", None, Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
@@ -826,14 +925,14 @@ def testCoreToken_SpecialFormat(mockGUI):
     # ==============================
 
     # Single Skip
-    theToken._text = (
+    tokens._text = (
         "# Title One\n\n"
-        "[NEW PAGE]\n\n"
-        "[VSPACE]\n\n"
+        "[new page]\n\n"
+        "[vspace]\n\n"
         "Some text to go here ...\n\n"
     )
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", None, Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
@@ -845,14 +944,14 @@ def testCoreToken_SpecialFormat(mockGUI):
     ]
 
     # Multiple Skip
-    theToken._text = (
+    tokens._text = (
         "# Title One\n\n"
-        "[NEW PAGE]\n\n"
-        "[VSPACE:3]\n\n"
+        "[new page]\n\n"
+        "[vspace:3]\n\n"
         "Some text to go here ...\n\n"
     )
-    theToken.tokenizeText()
-    assert theToken._tokens == [
+    tokens.tokenizeText()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", None, Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
@@ -871,51 +970,51 @@ def testCoreToken_SpecialFormat(mockGUI):
 @pytest.mark.core
 def testCoreToken_ProcessHeaders(mockGUI):
     """Test the header and page parser of the Tokenizer class."""
-    theProject = NWProject()
-    theProject.data.setLanguage("en")
-    theProject._loadProjectLocalisation()
-    theToken = BareTokenizer(theProject)
+    project = NWProject()
+    project.data.setLanguage("en")
+    project._loadProjectLocalisation()
+    tokens = BareTokenizer(project)
 
     # Nothing
-    theToken._text = "Some text ...\n"
-    assert theToken.doHeaders() is False
-    theToken._isNone = True
-    assert theToken.doHeaders() is False
-    theToken._isNone = False
-    assert theToken.doHeaders() is False
-    theToken._isNote = True
-    assert theToken.doHeaders() is False
-    theToken._isNote = False
+    tokens._text = "Some text ...\n"
+    assert tokens.doHeaders() is False
+    tokens._isNone = True
+    assert tokens.doHeaders() is False
+    tokens._isNone = False
+    assert tokens.doHeaders() is False
+    tokens._isNote = True
+    assert tokens.doHeaders() is False
+    tokens._isNote = False
 
     ##
     #  Story FIles
     ##
 
-    theToken._isNone  = False
-    theToken._isNote  = False
-    theToken._isNovel = True
+    tokens._isNone  = False
+    tokens._isNote  = False
+    tokens._isNovel = True
 
     # Titles
     # ======
 
     # H1: Title, First Page
-    assert theToken._isFirst is True
-    theToken._text = "# Part One\n"
-    theToken.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._tokens == [
+    assert tokens._isFirst is True
+    tokens._text = "# Part One\n"
+    tokens.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "T: Part One", None, Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 
     # H1: Title, Not First Page
-    assert theToken._isFirst is False
-    theToken._text = "# Part One\n"
-    theToken.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._tokens == [
+    assert tokens._isFirst is False
+    tokens._text = "# Part One\n"
+    tokens.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "T: Part One", None, Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
@@ -924,52 +1023,52 @@ def testCoreToken_ProcessHeaders(mockGUI):
     # ========
 
     # H2: Chapter
-    theToken._text = "## Chapter One\n"
-    theToken.setChapterFormat(f"C: {nwHeadFmt.TITLE}")
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._tokens == [
+    tokens._text = "## Chapter One\n"
+    tokens.setChapterFormat(f"C: {nwHeadFmt.TITLE}")
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD2, 1, "C: Chapter One", None, Tokenizer.A_PBB),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 
     # H2: Unnumbered Chapter
-    theToken._text = "##! Prologue\n"
-    theToken.setUnNumberedFormat(f"U: {nwHeadFmt.TITLE}")
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._tokens == [
+    tokens._text = "##! Prologue\n"
+    tokens.setUnNumberedFormat(f"U: {nwHeadFmt.TITLE}")
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._tokens == [
         (Tokenizer.T_UNNUM, 1, "U: Prologue", None, Tokenizer.A_PBB),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 
     # H2: Chapter Word Number
-    theToken._text = "## Chapter\n"
-    theToken.setChapterFormat(f"Chapter {nwHeadFmt.CH_WORD}")
-    theToken._hFormatter._chCount = 0
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._tokens == [
+    tokens._text = "## Chapter\n"
+    tokens.setChapterFormat(f"Chapter {nwHeadFmt.CH_WORD}")
+    tokens._hFormatter._chCount = 0
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD2, 1, "Chapter One", None, Tokenizer.A_PBB),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 
     # H2: Chapter Roman Number Upper Case
-    theToken._text = "## Chapter\n"
-    theToken.setChapterFormat(f"Chapter {nwHeadFmt.CH_ROMU}")
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._tokens == [
+    tokens._text = "## Chapter\n"
+    tokens.setChapterFormat(f"Chapter {nwHeadFmt.CH_ROMU}")
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD2, 1, "Chapter II", None, Tokenizer.A_PBB),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 
     # H2: Chapter Roman Number Lower Case
-    theToken._text = "## Chapter\n"
-    theToken.setChapterFormat(f"Chapter {nwHeadFmt.CH_ROML}")
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._tokens == [
+    tokens._text = "## Chapter\n"
+    tokens.setChapterFormat(f"Chapter {nwHeadFmt.CH_ROML}")
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD2, 1, "Chapter iii", None, Tokenizer.A_PBB),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
@@ -978,89 +1077,89 @@ def testCoreToken_ProcessHeaders(mockGUI):
     # ======
 
     # H3: Scene w/Title
-    theToken._text = "### Scene One\n"
-    theToken.setSceneFormat(f"S: {nwHeadFmt.TITLE}", False)
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._tokens == [
+    tokens._text = "### Scene One\n"
+    tokens.setSceneFormat(f"S: {nwHeadFmt.TITLE}", False)
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD3, 1, "S: Scene One", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 
     # H3: Scene Hidden wo/Format
-    theToken._text = "### Scene One\n"
-    theToken.setSceneFormat("", True)
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._tokens == [
+    tokens._text = "### Scene One\n"
+    tokens.setSceneFormat("", True)
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._tokens == [
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 
     # H3: Scene wo/Format, first
-    theToken._text = "### Scene One\n"
-    theToken.setSceneFormat("", False)
-    theToken._firstScene = True
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._tokens == [
+    tokens._text = "### Scene One\n"
+    tokens.setSceneFormat("", False)
+    tokens._firstScene = True
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._tokens == [
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 
     # H3: Scene wo/Format, not first
-    theToken._text = "### Scene One\n"
-    theToken.setSceneFormat("", False)
-    theToken._firstScene = False
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._tokens == [
+    tokens._text = "### Scene One\n"
+    tokens.setSceneFormat("", False)
+    tokens._firstScene = False
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._tokens == [
         (Tokenizer.T_SKIP, 1, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 
     # H3: Scene Separator, first
-    theToken._text = "### Scene One\n"
-    theToken.setSceneFormat("* * *", False)
-    theToken._firstScene = True
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._tokens == [
+    tokens._text = "### Scene One\n"
+    tokens.setSceneFormat("* * *", False)
+    tokens._firstScene = True
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._tokens == [
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 
     # H3: Scene Separator, not first
-    theToken._text = "### Scene One\n"
-    theToken.setSceneFormat("* * *", False)
-    theToken._firstScene = False
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._tokens == [
+    tokens._text = "### Scene One\n"
+    tokens.setSceneFormat("* * *", False)
+    tokens._firstScene = False
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._tokens == [
         (Tokenizer.T_SEP, 1, "* * *", None, Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 
     # H3: Scene w/Absolute Number
-    theToken._text = "### A Scene\n"
-    theToken.setSceneFormat(f"Scene {nwHeadFmt.SC_ABS}", False)
-    theToken._hFormatter._scAbsCount = 0
-    theToken._hFormatter._scChCount = 0
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._tokens == [
+    tokens._text = "### A Scene\n"
+    tokens.setSceneFormat(f"Scene {nwHeadFmt.SC_ABS}", False)
+    tokens._hFormatter._scAbsCount = 0
+    tokens._hFormatter._scChCount = 0
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD3, 1, "Scene 1", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 
     # H3: Scene w/Chapter Number
-    theToken._text = "### A Scene\n"
-    theToken.setSceneFormat(f"Scene {nwHeadFmt.CH_NUM}.{nwHeadFmt.SC_NUM}", False)
-    theToken._hFormatter._scAbsCount = 0
-    theToken._hFormatter._scChCount = 1
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._tokens == [
+    tokens._text = "### A Scene\n"
+    tokens.setSceneFormat(f"Scene {nwHeadFmt.CH_NUM}.{nwHeadFmt.SC_NUM}", False)
+    tokens._hFormatter._scAbsCount = 0
+    tokens._hFormatter._scChCount = 1
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD3, 1, "Scene 3.2", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
@@ -1069,51 +1168,51 @@ def testCoreToken_ProcessHeaders(mockGUI):
     # ========
 
     # H4: Section Hidden wo/Format
-    theToken._text = "#### A Section\n"
-    theToken.setSectionFormat(r"", True)
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._tokens == [
+    tokens._text = "#### A Section\n"
+    tokens.setSectionFormat(r"", True)
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._tokens == [
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 
     # H4: Section Visible wo/Format
-    theToken._text = "#### A Section\n"
-    theToken.setSectionFormat("", False)
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._tokens == [
+    tokens._text = "#### A Section\n"
+    tokens.setSectionFormat("", False)
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._tokens == [
         (Tokenizer.T_SKIP, 1, "", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 
     # H4: Section w/Format
-    theToken._text = "#### A Section\n"
-    theToken.setSectionFormat(f"X: {nwHeadFmt.TITLE}", False)
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._tokens == [
+    tokens._text = "#### A Section\n"
+    tokens.setSectionFormat(f"X: {nwHeadFmt.TITLE}", False)
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._tokens == [
         (Tokenizer.T_HEAD4, 1, "X: A Section", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 
     # H4: Section Separator
-    theToken._text = "#### A Section\n"
-    theToken.setSectionFormat("* * *", False)
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._tokens == [
+    tokens._text = "#### A Section\n"
+    tokens.setSectionFormat("* * *", False)
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._tokens == [
         (Tokenizer.T_SEP, 1, "* * *", None, Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", None, Tokenizer.A_NONE),
     ]
 
     # Check the first scene detector
-    assert theToken._firstScene is False
-    theToken._firstScene = True
-    theToken._text = "Some text ...\n"
-    theToken.tokenizeText()
-    theToken.doHeaders()
-    assert theToken._firstScene is False
+    assert tokens._firstScene is False
+    tokens._firstScene = True
+    tokens._text = "Some text ...\n"
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._firstScene is False
 
 # END Test testCoreToken_ProcessHeaders

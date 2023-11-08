@@ -21,15 +21,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import pytest
 
-from mocked import causeOSError
 from tools import C, buildTestProject
+from mocked import causeOSError
 
 from PyQt5.QtCore import QThreadPool, Qt
 from PyQt5.QtGui import QTextBlock, QTextCursor, QTextOption
 from PyQt5.QtWidgets import QAction, qApp
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwDocAction, nwDocInsert, nwItemLayout
+from novelwriter.enum import nwDocAction, nwDocInsert, nwItemLayout, nwTrinary, nwWidget
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.core.index import countWords
 from novelwriter.gui.doceditor import GuiDocEditor
@@ -145,10 +145,10 @@ def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumTex
         assert "Could not save document." in caplog.text
 
     # Change header level
-    assert SHARED.project.tree[C.hSceneDoc].itemLayout == nwItemLayout.DOCUMENT
+    assert SHARED.project.tree[C.hSceneDoc].itemLayout == nwItemLayout.DOCUMENT  # type: ignore
     nwGUI.docEditor.replaceText(longText[1:])
     assert nwGUI.docEditor.saveText() is True
-    assert SHARED.project.tree[C.hSceneDoc].itemLayout == nwItemLayout.DOCUMENT
+    assert SHARED.project.tree[C.hSceneDoc].itemLayout == nwItemLayout.DOCUMENT  # type: ignore
 
     # Regular save
     assert nwGUI.docEditor.saveText() is True
@@ -184,9 +184,9 @@ def testGuiEditor_MetaData(qtbot, nwGUI, projPath, mockRnd):
     # Cursor Position
     nwGUI.docEditor.setCursorPosition(10)
     assert nwGUI.docEditor.getCursorPosition() == 10
-    assert SHARED.project.tree[C.hSceneDoc].cursorPos != 10
+    assert SHARED.project.tree[C.hSceneDoc].cursorPos != 10  # type: ignore
     nwGUI.docEditor.saveCursorPosition()
-    assert SHARED.project.tree[C.hSceneDoc].cursorPos == 10
+    assert SHARED.project.tree[C.hSceneDoc].cursorPos == 10  # type: ignore
 
     nwGUI.docEditor.setCursorLine(None)
     assert nwGUI.docEditor.getCursorPosition() == 10
@@ -1041,14 +1041,14 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
     # Create Scene
-    theText = "### A Scene\n\n@char: Jane, John\n\n" + ipsumText[0] + "\n\n"
-    nwGUI.docEditor.replaceText(theText)
+    text = "### A Scene\n\n@char: Jane, John\n\n@object: Gun\n\n@:\n\n" + ipsumText[0] + "\n\n"
+    nwGUI.docEditor.replaceText(text)
 
     # Create Character
-    theText = "### Jane Doe\n\n@tag: Jane\n\n" + ipsumText[1] + "\n\n"
+    text = "### Jane Doe\n\n@tag: Jane\n\n" + ipsumText[1] + "\n\n"
     cHandle = SHARED.project.newFile("Jane Doe", C.hCharRoot)
     assert nwGUI.openDocument(cHandle) is True
-    nwGUI.docEditor.replaceText(theText)
+    nwGUI.docEditor.replaceText(text)
     assert nwGUI.saveDocument() is True
     assert nwGUI.projView.projTree.revealNewTreeItem(cHandle)
     nwGUI.docEditor.updateTagHighLighting()
@@ -1059,37 +1059,148 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # Empty Block
     nwGUI.docEditor.setCursorLine(2)
-    assert nwGUI.docEditor._followTag() is False
+    assert nwGUI.docEditor._processTag() is nwTrinary.UNKNOWN
 
     # Not On Tag
     nwGUI.docEditor.setCursorLine(1)
-    assert nwGUI.docEditor._followTag() is False
+    assert nwGUI.docEditor._processTag() is nwTrinary.UNKNOWN
 
     # On Tag Keyword
     nwGUI.docEditor.setCursorPosition(15)
-    assert nwGUI.docEditor._followTag() is False
-
-    # On Unknown Tag
-    nwGUI.docEditor.setCursorPosition(28)
-    assert nwGUI.docEditor._followTag() is True
-    assert nwGUI.docViewer._docHandle is None
+    assert nwGUI.docEditor._processTag() is nwTrinary.UNKNOWN
 
     # On Known Tag, No Follow
     nwGUI.docEditor.setCursorPosition(22)
-    assert nwGUI.docEditor._followTag(loadTag=False) is True
+    assert nwGUI.docEditor._processTag(follow=False) is nwTrinary.POSITIVE
     assert nwGUI.docViewer._docHandle is None
 
     # On Known Tag, Follow
     nwGUI.docEditor.setCursorPosition(22)
     assert nwGUI.docViewer._docHandle is None
-    assert nwGUI.docEditor._followTag(loadTag=True) is True
+    assert nwGUI.docEditor._processTag(follow=True) is nwTrinary.POSITIVE
     assert nwGUI.docViewer._docHandle == cHandle
     assert nwGUI.closeDocViewer() is True
     assert nwGUI.docViewer._docHandle is None
 
+    # On Unknown Tag, Create It
+    assert "0000000000011" not in SHARED.project.tree
+    nwGUI.docEditor.setCursorPosition(28)
+    assert nwGUI.docEditor._processTag(create=True) is nwTrinary.NEGATIVE
+    assert "0000000000011" in SHARED.project.tree
+
+    # On Unknown Tag, Missing Root
+    assert "0000000000012" not in SHARED.project.tree
+    nwGUI.docEditor.setCursorPosition(42)
+    assert nwGUI.docEditor._processTag(create=True) is nwTrinary.NEGATIVE
+    assert "0000000000012" not in SHARED.project.tree
+
+    nwGUI.docEditor.setCursorPosition(47)
+    assert nwGUI.docEditor._processTag() is nwTrinary.UNKNOWN
+
     # qtbot.stop()
 
 # END Test testGuiEditor_Tags
+
+
+@pytest.mark.gui
+def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
+    """Test the document editor meta completer functionality."""
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+
+    # Create Character
+    text = (
+        "# Jane Doe\n\n"
+        "@tag: Jane\n\n"
+        "# John Doe\n\n"
+        "@tag: John\n\n"
+    )
+    cHandle = SHARED.project.newFile("People", C.hCharRoot)
+    assert nwGUI.openDocument(cHandle) is True
+    nwGUI.docEditor.replaceText(text)
+    assert nwGUI.saveDocument() is True
+    assert nwGUI.projView.projTree.revealNewTreeItem(cHandle)
+
+    docEditor = nwGUI.docEditor
+    docEditor.replaceText("")
+    completer = docEditor._completer
+
+    # Create Scene
+    nwGUI.switchFocus(nwWidget.EDITOR)
+    for c in "### Scene One":
+        qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key_Return, delay=KEY_DELAY)
+
+    # Type Keyword @
+    qtbot.keyClick(docEditor, "@", delay=KEY_DELAY)
+    assert len(completer.actions()) == len(nwKeyWords.VALID_KEYS)
+
+    # Type "c" to filer list to 2
+    qtbot.keyClick(docEditor, "c", delay=KEY_DELAY)
+    assert len(completer.actions()) == 2
+
+    # Type "q" to filer list to 0
+    qtbot.keyClick(docEditor, "q", delay=KEY_DELAY)
+    assert len(completer.actions()) == 0
+
+    # Delete character and go select @char
+    qtbot.keyClick(docEditor, Qt.Key_Backspace, delay=KEY_DELAY)
+    assert len(completer.actions()) == 2
+    completer.actions()[0].trigger()
+    assert docEditor.getText() == (
+        "### Scene One\n\n"
+        "@char:"
+    )
+
+    # The list of Characters should show up automatically
+    qtbot.keyClick(docEditor, " ", delay=KEY_DELAY)
+    assert [a.text() for a in completer.actions()] == ["Jane", "John"]
+
+    # Typing "q" should clear the list
+    qtbot.keyClick(docEditor, "q", delay=KEY_DELAY)
+    assert [a.text() for a in completer.actions()] == []
+
+    # Deleting it and typing "a", should leave "Jane"
+    qtbot.keyClick(docEditor, Qt.Key_Backspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, "a", delay=KEY_DELAY)
+    assert [a.text() for a in completer.actions()] == ["Jane"]
+
+    # Selecting "Jane" should insert it
+    completer.actions()[0].trigger()
+    qtbot.keyClick(docEditor, Qt.Key_Return, delay=KEY_DELAY)
+    assert docEditor.getText() == (
+        "### Scene One\n\n"
+        "@char: Jane\n"
+    )
+
+    # Start a new line with a nonsense keyword, which should be handled
+    for c in "@: ":
+        qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key_Backspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key_Backspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key_Backspace, delay=KEY_DELAY)
+
+    # Send keypresses to the completer object
+    qtbot.keyClick(docEditor, "@", delay=KEY_DELAY)
+    assert len(completer.actions()) == len(nwKeyWords.VALID_KEYS)
+    qtbot.keyClick(completer, "f", delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(completer, " ", delay=KEY_DELAY)
+    qtbot.keyClick(completer, "h", delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key_Escape, delay=KEY_DELAY)
+    assert docEditor.getText() == (
+        "### Scene One\n\n"
+        "@char: Jane\n"
+        "@focus: John"
+    )
+
+    # qtbot.stop()
+
+# END Test testGuiEditor_Completer
 
 
 @pytest.mark.gui
@@ -1125,8 +1236,8 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
     assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
     # Open a document and populate it
-    SHARED.project.tree[C.hSceneDoc]._initCount = 0  # Clear item's count
-    SHARED.project.tree[C.hSceneDoc]._wordCount = 0  # Clear item's count
+    SHARED.project.tree[C.hSceneDoc]._initCount = 0  # type: ignore
+    SHARED.project.tree[C.hSceneDoc]._wordCount = 0  # type: ignore
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
     theText = "\n\n".join(ipsumText)
@@ -1150,9 +1261,9 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
 
     nwGUI.docEditor.wCounterDoc.run()
     # nwGUI.docEditor._updateDocCounts(cC, wC, pC)
-    assert SHARED.project.tree[C.hSceneDoc]._charCount == cC
-    assert SHARED.project.tree[C.hSceneDoc]._wordCount == wC
-    assert SHARED.project.tree[C.hSceneDoc]._paraCount == pC
+    assert SHARED.project.tree[C.hSceneDoc]._charCount == cC  # type: ignore
+    assert SHARED.project.tree[C.hSceneDoc]._wordCount == wC  # type: ignore
+    assert SHARED.project.tree[C.hSceneDoc]._paraCount == pC  # type: ignore
     assert nwGUI.docEditor.docFooter.wordsText.text() == f"Words: {wC} (+{wC})"
 
     # Select all text

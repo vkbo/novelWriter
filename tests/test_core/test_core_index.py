@@ -196,6 +196,16 @@ def testCoreIndex_ScanThis(mockGUI):
     assert theBits == ["@tag", "this", "and this"]
     assert thePos  == [0, 6, 12]
 
+    isValid, theBits, thePos = index.scanThis("@tag: this,, and this")
+    assert isValid is True
+    assert theBits == ["@tag", "this", "", "and this"]
+    assert thePos  == [0, 6, 11, 13]
+
+    isValid, theBits, thePos = index.scanThis("@tag: this, , and this")
+    assert isValid is True
+    assert theBits == ["@tag", "this", "", "and this"]
+    assert thePos  == [0, 6, 12, 14]
+
     project.closeProject()
 
 # END Test testCoreIndex_ScanThis
@@ -1281,7 +1291,7 @@ def testCoreIndex_CountWords():
     assert wC == 9
     assert pC == 4
 
-    # Formatting Codes
+    # Formatting Codes, Upper Case (Old Implementation)
     cC, wC, pC = countWords((
         "Some text\n\n"
         "[NEWPAGE]\n\n"
@@ -1296,5 +1306,30 @@ def testCoreIndex_CountWords():
     assert cC == 58
     assert wC == 13
     assert pC == 5
+
+    # Formatting Codes, Lower Case (Current Implementation)
+    cC, wC, pC = countWords((
+        "Some text\n\n"
+        "[newpage]\n\n"
+        "more text\n\n"
+        "[new page]]\n\n"
+        "even more text\n\n"
+        "[vspace]\n\n"
+        "and some final text\n\n"
+        "[vspace:4]\n\n"
+        "THE END\n\n"
+    ))
+    assert cC == 58
+    assert wC == 13
+    assert pC == 5
+
+    # Check ShortCodes
+    cC, wC, pC = countWords((
+        "Text with [b]bold[/b] text and padded [b] bold [/b] text.\n\n"
+        "Text with [b][i] nested [/i] emphasis [/b] in it.\n\n"
+    ))
+    assert cC == 78
+    assert wC == 14
+    assert pC == 2
 
 # END Test testCoreIndex_CountWords
