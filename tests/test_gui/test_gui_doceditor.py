@@ -24,15 +24,15 @@ import pytest
 from tools import C, buildTestProject
 from mocked import causeOSError
 
-from PyQt5.QtCore import QThreadPool, Qt
 from PyQt5.QtGui import QTextBlock, QTextCursor, QTextOption
+from PyQt5.QtCore import QThreadPool, Qt
 from PyQt5.QtWidgets import QAction, qApp
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction, nwDocInsert, nwItemLayout, nwTrinary, nwWidget
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.core.index import countWords
-from novelwriter.gui.doceditor import GuiDocEditor
+from novelwriter.gui.doceditor import GuiDocEditor, GuiDocToolBar
 
 KEY_DELAY = 1
 
@@ -214,9 +214,8 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
-    theText = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
-    nwGUI.docEditor.replaceText(theText)
-
+    text = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
+    nwGUI.docEditor.replaceText(text)
     theDoc = nwGUI.docEditor.document()
 
     # Select/Cut/Copy/Paste/Undo/Redo
@@ -228,7 +227,7 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.docEditor.docAction(nwDocAction.SEL_ALL) is True
     theCursor = nwGUI.docEditor.textCursor()
     assert theCursor.hasSelection() is True
-    assert theCursor.selectedText() == theText.replace("\n", "\u2029")
+    assert theCursor.selectedText() == text.replace("\n", "\u2029")
     theCursor.clearSelection()
 
     # Select Paragraph
@@ -239,7 +238,7 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert theCursor.selectedText() == ipsumText[1]
 
     # Cut Selected Text
-    nwGUI.docEditor.replaceText(theText)
+    nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(1000)
     assert nwGUI.docEditor.docAction(nwDocAction.SEL_PARA) is True
     assert nwGUI.docEditor.docAction(nwDocAction.CUT) is True
@@ -254,10 +253,10 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # Paste Back In
     assert nwGUI.docEditor.docAction(nwDocAction.PASTE) is True
-    assert nwGUI.docEditor.getText() == theText
+    assert nwGUI.docEditor.getText() == text
 
     # Copy Next Paragraph
-    nwGUI.docEditor.replaceText(theText)
+    nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(1500)
     assert nwGUI.docEditor.docAction(nwDocAction.SEL_PARA) is True
     assert nwGUI.docEditor.docAction(nwDocAction.COPY) is True
@@ -279,84 +278,132 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # Emphasis/Undo/Redo
     # ==================
 
-    theText = "### A Scene\n\n%s" % ipsumText[0]
-    nwGUI.docEditor.replaceText(theText)
+    text = "### A Scene\n\n%s" % ipsumText[0]
+    nwGUI.docEditor.replaceText(text)
 
     # Emphasis
     nwGUI.docEditor.setCursorPosition(50)
     assert nwGUI.docEditor.docAction(nwDocAction.EMPH) is True
-    assert nwGUI.docEditor.getText() == theText.replace("consectetur", "_consectetur_")
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "_consectetur_")
     assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
-    assert nwGUI.docEditor.getText() == theText
+    assert nwGUI.docEditor.getText() == text
 
     # Strong
     nwGUI.docEditor.setCursorPosition(50)
     assert nwGUI.docEditor.docAction(nwDocAction.STRONG) is True
-    assert nwGUI.docEditor.getText() == theText.replace("consectetur", "**consectetur**")
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "**consectetur**")
     assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
-    assert nwGUI.docEditor.getText() == theText
+    assert nwGUI.docEditor.getText() == text
 
     # Strikeout
     nwGUI.docEditor.setCursorPosition(50)
     assert nwGUI.docEditor.docAction(nwDocAction.STRIKE) is True
-    assert nwGUI.docEditor.getText() == theText.replace("consectetur", "~~consectetur~~")
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "~~consectetur~~")
     assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
-    assert nwGUI.docEditor.getText() == theText
+    assert nwGUI.docEditor.getText() == text
 
     # Redo
     assert nwGUI.docEditor.docAction(nwDocAction.REDO) is True
-    assert nwGUI.docEditor.getText() == theText.replace("consectetur", "~~consectetur~~")
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "~~consectetur~~")
     assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
-    assert nwGUI.docEditor.getText() == theText
+    assert nwGUI.docEditor.getText() == text
+
+    # Shortcodes
+    # ==========
+
+    text = "### A Scene\n\n%s" % ipsumText[0]
+    nwGUI.docEditor.replaceText(text)
+
+    # Italic
+    nwGUI.docEditor.setCursorPosition(46)
+    assert nwGUI.docEditor.docAction(nwDocAction.SC_ITALIC) is True
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "[i]consectetur[/i]")
+    assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
+    assert nwGUI.docEditor.getText() == text
+
+    # Bold
+    nwGUI.docEditor.setCursorPosition(46)
+    assert nwGUI.docEditor.docAction(nwDocAction.SC_BOLD) is True
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "[b]consectetur[/b]")
+    assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
+    assert nwGUI.docEditor.getText() == text
+
+    # Strikethrough
+    nwGUI.docEditor.setCursorPosition(46)
+    assert nwGUI.docEditor.docAction(nwDocAction.SC_STRIKE) is True
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "[s]consectetur[/s]")
+    assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
+    assert nwGUI.docEditor.getText() == text
+
+    # Underline
+    nwGUI.docEditor.setCursorPosition(46)
+    assert nwGUI.docEditor.docAction(nwDocAction.SC_ULINE) is True
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "[u]consectetur[/u]")
+    assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
+    assert nwGUI.docEditor.getText() == text
+
+    # Superscript
+    nwGUI.docEditor.setCursorPosition(46)
+    assert nwGUI.docEditor.docAction(nwDocAction.SC_SUP) is True
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "[sup]consectetur[/sup]")
+    assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
+    assert nwGUI.docEditor.getText() == text
+
+    # Subscript
+    nwGUI.docEditor.setCursorPosition(46)
+    assert nwGUI.docEditor.docAction(nwDocAction.SC_SUB) is True
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "[sub]consectetur[/sub]")
+    assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
+    assert nwGUI.docEditor.getText() == text
 
     # Quotes
     # ======
 
-    theText = "### A Scene\n\n%s" % ipsumText[0]
-    nwGUI.docEditor.replaceText(theText)
+    text = "### A Scene\n\n%s" % ipsumText[0]
+    nwGUI.docEditor.replaceText(text)
 
     # Add Single Quotes
     nwGUI.docEditor.setCursorPosition(50)
     assert nwGUI.docEditor.docAction(nwDocAction.S_QUOTE) is True
-    assert nwGUI.docEditor.getText() == theText.replace("consectetur", "\u2018consectetur\u2019")
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "\u2018consectetur\u2019")
     assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
-    assert nwGUI.docEditor.getText() == theText
+    assert nwGUI.docEditor.getText() == text
 
     # Add Double Quotes
     nwGUI.docEditor.setCursorPosition(50)
     assert nwGUI.docEditor.docAction(nwDocAction.D_QUOTE) is True
-    assert nwGUI.docEditor.getText() == theText.replace("consectetur", "\u201cconsectetur\u201d")
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "\u201cconsectetur\u201d")
     assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
-    assert nwGUI.docEditor.getText() == theText
+    assert nwGUI.docEditor.getText() == text
 
     # Replace Single Quotes
-    repText = theText.replace("consectetur", "'consectetur'")
+    repText = text.replace("consectetur", "'consectetur'")
     nwGUI.docEditor.replaceText(repText)
     assert nwGUI.docEditor.docAction(nwDocAction.SEL_ALL) is True
     assert nwGUI.docEditor.docAction(nwDocAction.REPL_SNG) is True
-    assert nwGUI.docEditor.getText() == theText.replace("consectetur", "\u2018consectetur\u2019")
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "\u2018consectetur\u2019")
 
     # Replace Double Quotes
-    repText = theText.replace("consectetur", "\"consectetur\"")
+    repText = text.replace("consectetur", "\"consectetur\"")
     nwGUI.docEditor.replaceText(repText)
     assert nwGUI.docEditor.docAction(nwDocAction.SEL_ALL) is True
     assert nwGUI.docEditor.docAction(nwDocAction.REPL_DBL) is True
-    assert nwGUI.docEditor.getText() == theText.replace("consectetur", "\u201cconsectetur\u201d")
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "\u201cconsectetur\u201d")
 
     # Remove Line Breaks
     # ==================
 
-    theText = "### A Scene\n\n%s" % ipsumText[0]
-    repText = theText[:100] + theText[100:].replace(" ", "\n", 3)
+    text = "### A Scene\n\n%s" % ipsumText[0]
+    repText = text[:100] + text[100:].replace(" ", "\n", 3)
     nwGUI.docEditor.replaceText(repText)
     assert nwGUI.docEditor.docAction(nwDocAction.RM_BREAKS) is True
-    assert nwGUI.docEditor.getText().strip() == theText.strip()
+    assert nwGUI.docEditor.getText().strip() == text.strip()
 
     # Format Block
     # ============
 
-    theText = "## Scene Title\n\nScene text.\n\n"
-    nwGUI.docEditor.replaceText(theText)
+    text = "## Scene Title\n\nScene text.\n\n"
+    nwGUI.docEditor.replaceText(text)
 
     # Header 1
     nwGUI.docEditor.setCursorPosition(0)
@@ -438,19 +485,124 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
 
 @pytest.mark.gui
+def testGuiEditor_ToolBar(qtbot, nwGUI, projPath, mockRnd):
+    """Test the document actions. This is not an extensive test of the
+    action features, just that the actions are actually called. The
+    various action features are tested when their respective functions
+    are tested.
+    """
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+
+    docEditor: GuiDocEditor = nwGUI.docEditor
+    docToolBar: GuiDocToolBar = docEditor.docToolBar
+
+    text = (
+        "### A Scene\n\n"
+        "Text bold one\n\n"
+        "Text bold two\n\n"
+        "Text italic one\n\n"
+        "Text italic two\n\n"
+        "Text strikethrough one\n\n"
+        "Text strikethrough two\n\n"
+        "Text underline one\n\n"
+        "Text superscript one\n\n"
+        "Text subscript one\n\n"
+    )
+    length = len(text)
+    docEditor.replaceText(text)
+    assert len(docEditor.getText()) == length
+
+    # Show the ToolBar
+    assert docToolBar.isVisible() is False
+    docEditor._toggleToolBarVisibility()
+    assert docToolBar.isVisible() is True
+
+    # Markdown Mode
+    assert docToolBar.tbMode.isChecked() is False
+
+    # Click Bold
+    docEditor.setCursorPosition(20)
+    docToolBar.tbBold.click()
+    assert len(docEditor.getText()) == length + 4
+
+    # Click Italic
+    docEditor.setCursorPosition(54)
+    docToolBar.tbItalic.click()
+    assert len(docEditor.getText()) == length + 6
+
+    # Click Strikethrough
+    docEditor.setCursorPosition(90)
+    docToolBar.tbStrike.click()
+    assert len(docEditor.getText()) == length + 10
+
+    # Shortcode Mode
+    docToolBar.tbMode.click()
+    assert docToolBar.tbMode.isChecked() is True
+
+    # Click Bold
+    docEditor.setCursorPosition(39)
+    docToolBar.tbBold.click()
+    assert len(docEditor.getText()) == length + 17
+
+    # Click Italic
+    docEditor.setCursorPosition(80)
+    docToolBar.tbItalic.click()
+    assert len(docEditor.getText()) == length + 24
+
+    # Click Strikethrough
+    docEditor.setCursorPosition(132)
+    docToolBar.tbStrike.click()
+    assert len(docEditor.getText()) == length + 31
+
+    # Click Underline
+    docEditor.setCursorPosition(163)
+    docToolBar.tbUnderline.click()
+    assert len(docEditor.getText()) == length + 38
+
+    # Click Superscript
+    docEditor.setCursorPosition(190)
+    docToolBar.tbSuperscript.click()
+    assert len(docEditor.getText()) == length + 49
+
+    # Click Subscript
+    docEditor.setCursorPosition(223)
+    docToolBar.tbSubscript.click()
+    assert len(docEditor.getText()) == length + 60
+
+    # Check Result
+    assert docEditor.getText() == (
+        "### A Scene\n\n"
+        "Text **bold** one\n\n"
+        "Text [b]bold[/b] two\n\n"
+        "Text _italic_ one\n\n"
+        "Text [i]italic[/i] two\n\n"
+        "Text ~~strikethrough~~ one\n\n"
+        "Text [s]strikethrough[/s] two\n\n"
+        "Text [u]underline[/u] one\n\n"
+        "Text [sup]superscript[/sup] one\n\n"
+        "Text [sub]subscript[/sub] one\n\n"
+    )
+
+    # qtbot.stop()
+
+# END Test testGuiEditor_ToolBar
+
+
+@pytest.mark.gui
 def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
     """Test the document insert functions."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
-    theText = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
-    nwGUI.docEditor.replaceText(theText)
+    text = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
+    nwGUI.docEditor.replaceText(text)
 
     # Insert Text
     # ===========
 
-    theText = "### A Scene\n\n%s" % ipsumText[0]
-    nwGUI.docEditor.replaceText(theText)
+    text = "### A Scene\n\n%s" % ipsumText[0]
+    nwGUI.docEditor.replaceText(text)
 
     # No Document Handle
     nwGUI.docEditor._docHandle = None
@@ -461,23 +613,23 @@ def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd
     # Insert String
     nwGUI.docEditor.setCursorPosition(24)
     assert nwGUI.docEditor.insertText(", ipsumer,") is True
-    assert nwGUI.docEditor.getText() == theText[:24] + ", ipsumer," + theText[24:]
+    assert nwGUI.docEditor.getText() == text[:24] + ", ipsumer," + text[24:]
 
     # Single Quotes
-    nwGUI.docEditor.replaceText(theText)
+    nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(41)
     assert nwGUI.docEditor.insertText(nwDocInsert.QUOTE_LS) is True
     nwGUI.docEditor.setCursorPosition(53)
     assert nwGUI.docEditor.insertText(nwDocInsert.QUOTE_RS) is True
-    assert nwGUI.docEditor.getText() == theText.replace("consectetur", "\u2018consectetur\u2019")
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "\u2018consectetur\u2019")
 
     # Double Quotes
-    nwGUI.docEditor.replaceText(theText)
+    nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(41)
     assert nwGUI.docEditor.insertText(nwDocInsert.QUOTE_LD) is True
     nwGUI.docEditor.setCursorPosition(53)
     assert nwGUI.docEditor.insertText(nwDocInsert.QUOTE_RD) is True
-    assert nwGUI.docEditor.getText() == theText.replace("consectetur", "\u201cconsectetur\u201d")
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "\u201cconsectetur\u201d")
 
     # Invalid Inserts
     assert nwGUI.docEditor.insertText(nwDocInsert.NO_INSERT) is False
@@ -486,18 +638,18 @@ def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd
     # Insert KeyWords
     # ===============
 
-    theText = "### A Scene\n\n\n%s" % ipsumText[0]
-    nwGUI.docEditor.replaceText(theText)
+    text = "### A Scene\n\n\n%s" % ipsumText[0]
+    nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorLine(3)
 
     # Invalid Keyword
     assert nwGUI.docEditor.insertKeyWord("stuff") is False
-    assert nwGUI.docEditor.getText() == theText
+    assert nwGUI.docEditor.getText() == text
 
     # Valid Keyword
     assert nwGUI.docEditor.insertKeyWord(nwKeyWords.POV_KEY) is True
     assert nwGUI.docEditor.insertText("Jane\n")
-    assert nwGUI.docEditor.getText() == theText.replace(
+    assert nwGUI.docEditor.getText() == text.replace(
         "\n\n\n", "\n\n@pov: Jane\n\n", 1
     )
 
@@ -510,7 +662,7 @@ def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd
     nwGUI.docEditor.setCursorPosition(20)
     assert nwGUI.docEditor.insertKeyWord(nwKeyWords.CHAR_KEY) is True
     assert nwGUI.docEditor.insertText("John")
-    assert nwGUI.docEditor.getText() == theText.replace(
+    assert nwGUI.docEditor.getText() == text.replace(
         "\n\n\n", "\n\n@pov: Jane\n@char: John\n\n", 1
     )
 
@@ -525,45 +677,45 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
-    theText = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
-    nwGUI.docEditor.replaceText(theText)
+    text = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
+    nwGUI.docEditor.replaceText(text)
 
     # Clear Surrounding
     # =================
 
     # No Selection
-    theText = "### A Scene\n\n%s" % ipsumText[0]
-    nwGUI.docEditor.replaceText(theText)
+    text = "### A Scene\n\n%s" % ipsumText[0]
+    nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
 
-    theCursor = nwGUI.docEditor.textCursor()
-    assert nwGUI.docEditor._clearSurrounding(theCursor, 1) is False
+    cursor = nwGUI.docEditor.textCursor()
+    assert nwGUI.docEditor._clearSurrounding(cursor, 1) is False
 
     # Clear Characters, 1 Layer
-    repText = theText.replace("consectetur", "=consectetur=")
+    repText = text.replace("consectetur", "=consectetur=")
     nwGUI.docEditor.replaceText(repText)
     nwGUI.docEditor.setCursorPosition(45)
 
-    theCursor = nwGUI.docEditor.textCursor()
-    theCursor.select(QTextCursor.WordUnderCursor)
-    assert nwGUI.docEditor._clearSurrounding(theCursor, 1) is True
-    assert nwGUI.docEditor.getText() == theText
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.select(QTextCursor.WordUnderCursor)
+    assert nwGUI.docEditor._clearSurrounding(cursor, 1) is True
+    assert nwGUI.docEditor.getText() == text
 
     # Clear Characters, 2 Layers
-    repText = theText.replace("consectetur", "==consectetur==")
+    repText = text.replace("consectetur", "==consectetur==")
     nwGUI.docEditor.replaceText(repText)
     nwGUI.docEditor.setCursorPosition(45)
 
-    theCursor = nwGUI.docEditor.textCursor()
-    theCursor.select(QTextCursor.WordUnderCursor)
-    assert nwGUI.docEditor._clearSurrounding(theCursor, 2) is True
-    assert nwGUI.docEditor.getText() == theText
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.select(QTextCursor.WordUnderCursor)
+    assert nwGUI.docEditor._clearSurrounding(cursor, 2) is True
+    assert nwGUI.docEditor.getText() == text
 
     # Wrap Selection
     # ==============
 
-    theText = "### A Scene\n\n%s" % "\n\n".join(ipsumText[0:2])
-    nwGUI.docEditor.replaceText(theText)
+    text = "### A Scene\n\n%s" % "\n\n".join(ipsumText[0:2])
+    nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
 
     # No Selection
@@ -572,23 +724,23 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
         assert nwGUI.docEditor._wrapSelection("=", "=") is False
 
     # Wrap Equal
-    nwGUI.docEditor.replaceText(theText)
+    nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
     assert nwGUI.docEditor._wrapSelection("=") is True
-    assert nwGUI.docEditor.getText() == theText.replace("consectetur", "=consectetur=")
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "=consectetur=")
 
     # Wrap Unequal
-    nwGUI.docEditor.replaceText(theText)
+    nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
     assert nwGUI.docEditor._wrapSelection("=", "*") is True
-    assert nwGUI.docEditor.getText() == theText.replace("consectetur", "=consectetur*")
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "=consectetur*")
 
     # Past Paragraph
-    nwGUI.docEditor.replaceText(theText)
-    theCursor = nwGUI.docEditor.textCursor()
-    theCursor.setPosition(13, QTextCursor.MoveAnchor)
-    theCursor.setPosition(1000, QTextCursor.KeepAnchor)
-    nwGUI.docEditor.setTextCursor(theCursor)
+    nwGUI.docEditor.replaceText(text)
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.setPosition(13, QTextCursor.MoveAnchor)
+    cursor.setPosition(1000, QTextCursor.KeepAnchor)
+    nwGUI.docEditor.setTextCursor(cursor)
     assert nwGUI.docEditor._wrapSelection("=") is True
 
     newText = nwGUI.docEditor.getText()
@@ -599,8 +751,8 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
     # Toggle Format
     # =============
 
-    theText = "### A Scene\n\n%s" % "\n\n".join(ipsumText[0:2])
-    nwGUI.docEditor.replaceText(theText)
+    text = "### A Scene\n\n%s" % "\n\n".join(ipsumText[0:2])
+    nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
 
     # No Selection
@@ -609,17 +761,17 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
         assert nwGUI.docEditor._toggleFormat(2, "=") is False
 
     # Wrap Single Equal
-    nwGUI.docEditor.replaceText(theText)
+    nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
     assert nwGUI.docEditor._toggleFormat(1, "=") is True
-    assert nwGUI.docEditor.getText() == theText.replace("consectetur", "=consectetur=")
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "=consectetur=")
 
     # Past Paragraph
-    nwGUI.docEditor.replaceText(theText)
-    theCursor = nwGUI.docEditor.textCursor()
-    theCursor.setPosition(13, QTextCursor.MoveAnchor)
-    theCursor.setPosition(1000, QTextCursor.KeepAnchor)
-    nwGUI.docEditor.setTextCursor(theCursor)
+    nwGUI.docEditor.replaceText(text)
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.setPosition(13, QTextCursor.MoveAnchor)
+    cursor.setPosition(1000, QTextCursor.KeepAnchor)
+    nwGUI.docEditor.setTextCursor(cursor)
     assert nwGUI.docEditor._toggleFormat(1, "=") is True
 
     newText = nwGUI.docEditor.getText()
@@ -628,31 +780,31 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
     assert newPara[2] == ipsumText[1]
 
     # Wrap Double Equal
-    nwGUI.docEditor.replaceText(theText)
+    nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
     assert nwGUI.docEditor._toggleFormat(2, "=") is True
-    assert nwGUI.docEditor.getText() == theText.replace("consectetur", "==consectetur==")
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "==consectetur==")
 
     # Toggle Double Equal
-    nwGUI.docEditor.replaceText(theText)
+    nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
     assert nwGUI.docEditor._toggleFormat(2, "=") is True
     assert nwGUI.docEditor._toggleFormat(2, "=") is True
-    assert nwGUI.docEditor.getText() == theText
+    assert nwGUI.docEditor.getText() == text
 
     # Toggle Triple+Double Equal
-    nwGUI.docEditor.replaceText(theText)
+    nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
     assert nwGUI.docEditor._toggleFormat(3, "=") is True
     assert nwGUI.docEditor._toggleFormat(2, "=") is True
-    assert nwGUI.docEditor.getText() == theText.replace("consectetur", "=consectetur=")
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "=consectetur=")
 
     # Toggle Unequal
-    repText = theText.replace("consectetur", "=consectetur==")
+    repText = text.replace("consectetur", "=consectetur==")
     nwGUI.docEditor.replaceText(repText)
     nwGUI.docEditor.setCursorPosition(45)
     assert nwGUI.docEditor._toggleFormat(1, "=") is True
-    assert nwGUI.docEditor.getText() == theText.replace("consectetur", "consectetur=")
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "consectetur=")
     assert nwGUI.docEditor._toggleFormat(1, "=") is True
     assert nwGUI.docEditor.getText() == repText
 
@@ -660,15 +812,15 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
     # ==============
 
     # No Selection
-    theText = "### A Scene\n\n%s" % ipsumText[0].replace("consectetur", "=consectetur=")
-    nwGUI.docEditor.replaceText(theText)
+    text = "### A Scene\n\n%s" % ipsumText[0].replace("consectetur", "=consectetur=")
+    nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
     assert nwGUI.docEditor._replaceQuotes("=", "<", ">") is False
 
     # First Paragraph Selected
     # This should not replace anything in second paragraph
-    theText = "### A Scene\n\n%s" % "\n\n".join(ipsumText[0:2]).replace("ipsum", "=ipsum=")
-    nwGUI.docEditor.replaceText(theText)
+    text = "### A Scene\n\n%s" % "\n\n".join(ipsumText[0:2]).replace("ipsum", "=ipsum=")
+    nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
     assert nwGUI.docEditor.docAction(nwDocAction.SEL_PARA)
     assert nwGUI.docEditor._replaceQuotes("=", "<", ">") is True
@@ -679,12 +831,12 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
     assert newPara[2] == ipsumText[1].replace("ipsum", "=ipsum=")
 
     # Edge of Document
-    theText = ipsumText[0].replace("Lorem", "=Lorem=")
-    nwGUI.docEditor.replaceText(theText)
+    text = ipsumText[0].replace("Lorem", "=Lorem=")
+    nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
     assert nwGUI.docEditor.docAction(nwDocAction.SEL_ALL)
     assert nwGUI.docEditor._replaceQuotes("=", "<", ">") is True
-    assert nwGUI.docEditor.getText() == theText.replace("=Lorem=", "<Lorem>")
+    assert nwGUI.docEditor.getText() == text.replace("=Lorem=", "<Lorem>")
 
     # Remove Line Breaks
     # ==================
@@ -693,20 +845,20 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
     parTwo = ipsumText[1].replace(" ", "\n", 5)
 
     # Remove All
-    theText = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
-    nwGUI.docEditor.replaceText(theText)
+    text = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
+    nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
     nwGUI.docEditor._removeInParLineBreaks()
     assert nwGUI.docEditor.getText() == "### A Scene\n\n%s\n" % "\n\n".join(ipsumText[0:2])
 
     # Remove First Paragraph
     # Second paragraphs should remain unchanged
-    theText = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
-    nwGUI.docEditor.replaceText(theText)
-    theCursor = nwGUI.docEditor.textCursor()
-    theCursor.setPosition(16, QTextCursor.MoveAnchor)
-    theCursor.setPosition(680, QTextCursor.KeepAnchor)
-    nwGUI.docEditor.setTextCursor(theCursor)
+    text = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
+    nwGUI.docEditor.replaceText(text)
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.setPosition(16, QTextCursor.MoveAnchor)
+    cursor.setPosition(680, QTextCursor.KeepAnchor)
+    nwGUI.docEditor.setTextCursor(cursor)
     nwGUI.docEditor._removeInParLineBreaks()
 
     newText = nwGUI.docEditor.getText()
@@ -719,6 +871,25 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
     assert newPara[5] == twoBits[3]
     assert newPara[6] == twoBits[4]
     assert newPara[7] == " ".join(twoBits[5:])
+
+    # Key Press Events
+    # ================
+    text = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
+    nwGUI.docEditor.replaceText(text)
+    assert nwGUI.docEditor.getText() == text
+
+    # Select All
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_A, modifier=Qt.ControlModifier, delay=KEY_DELAY)
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Delete, delay=KEY_DELAY)
+    assert nwGUI.docEditor.getText() == ""
+
+    # Undo
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Z, modifier=Qt.ControlModifier, delay=KEY_DELAY)
+    assert nwGUI.docEditor.getText() == text
+
+    # Redo
+    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Y, modifier=Qt.ControlModifier, delay=KEY_DELAY)
+    assert nwGUI.docEditor.getText() == ""
 
     # qtbot.stop()
 
