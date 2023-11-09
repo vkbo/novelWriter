@@ -1482,6 +1482,12 @@ class GuiMain(QMainWindow):
             projData["numChapters"] = newProj.field("numChapters")
             projData["numScenes"] = newProj.field("numScenes")
 
+        try:
+            langIdx = newProj.field("projLang")
+            projData["projLang"] = CONFIG.listLanguages(CONFIG.LANG_PROJ)[langIdx][0]
+        except Exception:
+            projData["projLang"] = "en_GB"
+
         return projData
 
     def _getTagSource(self, tag: str) -> tuple[str | None, str | None]:

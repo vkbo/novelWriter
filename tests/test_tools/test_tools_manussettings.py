@@ -562,7 +562,6 @@ def testBuildSettings_Format(monkeypatch, qtbot: QtBot, nwGUI: GuiMain):
     assert bSettings.toolStack.currentWidget() is fmtTab
 
     # Check initial values
-    assert fmtTab.buildLang.currentData() == "en_US"
     assert fmtTab.textFont.text() == textFont
     assert fmtTab.textSize.value() == 12
     assert fmtTab.lineHeight.value() == 1.2
@@ -581,7 +580,6 @@ def testBuildSettings_Format(monkeypatch, qtbot: QtBot, nwGUI: GuiMain):
     assert fmtTab.rightMargin.value() == 15.0
 
     # Change values
-    fmtTab.buildLang.setCurrentIndex(fmtTab.buildLang.findData("en_GB"))
     fmtTab.textFont.setText("Arial")
     fmtTab.textSize.setValue(11)
     fmtTab.lineHeight.setValue(1.15)
@@ -596,7 +594,6 @@ def testBuildSettings_Format(monkeypatch, qtbot: QtBot, nwGUI: GuiMain):
     # Save values
     fmtTab.saveContent()
 
-    assert build.getStr("format.buildLang") == "en_GB"
     assert build.getStr("format.textFont") == "Arial"
     assert build.getInt("format.textSize") == 11
     assert build.getFloat("format.lineHeight") == 1.15
