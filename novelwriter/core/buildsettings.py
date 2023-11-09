@@ -64,7 +64,6 @@ SETTINGS_TEMPLATE = {
     "text.includeKeywords":   (bool, False),
     "text.includeBodyText":   (bool, True),
     "text.addNoteHeadings":   (bool, True),
-    "format.buildLang":       (str, "en_GB"),
     "format.textFont":        (str, CONFIG.textFont),
     "format.textSize":        (int, 12),
     "format.lineHeight":      (float, 1.15, 0.75, 3.0),
@@ -107,7 +106,6 @@ SETTINGS_LABELS = {
     "text.addNoteHeadings":   QT_TRANSLATE_NOOP("Builds", "Add Titles for Notes"),
 
     "format.grpFormat":       QT_TRANSLATE_NOOP("Builds", "Text Format"),
-    "format.buildLang":       QT_TRANSLATE_NOOP("Builds", "Language"),
     "format.textFont":        QT_TRANSLATE_NOOP("Builds", "Font Family"),
     "format.textSize":        QT_TRANSLATE_NOOP("Builds", "Font Size"),
     "format.lineHeight":      QT_TRANSLATE_NOOP("Builds", "Line Height"),
