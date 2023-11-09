@@ -27,7 +27,7 @@ import logging
 
 from pathlib import Path
 
-from novelwriter.constants import nwHeadFmt, nwLabels, trConst
+from novelwriter.constants import nwHeadFmt, nwLabels
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import Tokenizer
 
@@ -209,7 +209,7 @@ class ToMarkdown(Tokenizer):
 
         result = ""
         if bits[0] in nwLabels.KEY_NAME:
-            result += f"**{trConst(nwLabels.KEY_NAME[bits[0]])}:** "
+            result += f"**{self._localLookup(nwLabels.KEY_NAME[bits[0]])}:** "
             if len(bits) > 1:
                 result += ", ".join(bits[1:])
 
