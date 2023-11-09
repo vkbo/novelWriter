@@ -31,7 +31,7 @@ from pathlib import Path
 
 from novelwriter import CONFIG
 from novelwriter.common import formatTimeStamp
-from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwHtmlUnicode
+from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwHtmlUnicode, trConst
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import Tokenizer, stripEscape
 
@@ -477,7 +477,11 @@ class ToHtml(Tokenizer):
         if not valid or not bits or bits[0] not in nwLabels.KEY_NAME:
             return ""
 
-        result = f"<span class='tags'>{self._localLookup(nwLabels.KEY_NAME[bits[0]])}:</span> "
+        if self._genMode == self.M_PREVIEW:
+            result = f"<span class='tags'>{trConst(nwLabels.KEY_NAME[bits[0]])}:</span> "
+        else:
+            result = f"<span class='tags'>{self._localLookup(nwLabels.KEY_NAME[bits[0]])}:</span> "
+
         if len(bits) > 1:
             if bits[0] == nwKeyWords.TAG_KEY:
                 result += f"<a name='tag_{bits[1]}'>{bits[1]}</a>"
