@@ -974,15 +974,6 @@ class _FormatTab(QWidget):
         self.formFormat = NConfigLayout()
         self.formFormat.addGroupLabel(self._build.getLabel("format.grpFormat"))
 
-        # Build Language
-        self.buildLang = QComboBox()
-        langauges = CONFIG.listLanguages(CONFIG.LANG_PROJ)
-        self.buildLang.addItem("[%s]" % self.tr("Not Set"), "None")
-        for langID, langName in langauges:
-            self.buildLang.addItem(langName, langID)
-
-        self.formFormat.addRow(self._build.getLabel("format.buildLang"), self.buildLang)
-
         # Font Family
         self.textFont = QLineEdit()
         self.textFont.setReadOnly(True)
@@ -1103,10 +1094,6 @@ class _FormatTab(QWidget):
 
     def loadContent(self) -> None:
         """Populate the widgets."""
-        langIdx = self.buildLang.findData(self._build.getStr("format.buildLang"))
-        if langIdx != -1:
-            self.buildLang.setCurrentIndex(langIdx)
-
         textFont = self._build.getStr("format.textFont")
         if not textFont:
             textFont = str(CONFIG.textFont)
@@ -1146,7 +1133,6 @@ class _FormatTab(QWidget):
 
     def saveContent(self) -> None:
         """Save choices back into build object."""
-        self._build.setValue("format.buildLang", str(self.buildLang.currentData()))
         self._build.setValue("format.textFont", self.textFont.text())
         self._build.setValue("format.textSize", self.textSize.value())
         self._build.setValue("format.lineHeight", self.lineHeight.value())

@@ -248,12 +248,8 @@ class NWBuildDocument:
     def _setupBuild(self, bldObj: Tokenizer) -> dict:
         """Configure the build object."""
         # Get Settings
-        buildLang = self._build.getStr("format.buildLang")
         textFont  = self._build.getStr("format.textFont")
         textSize  = self._build.getInt("format.textSize")
-
-        # The language lookup dict is reloaded if needed
-        self._project.setProjectLang(buildLang)
 
         fontFamily = textFont or CONFIG.textFont
         bldFont = QFont(fontFamily, textSize)
@@ -287,7 +283,7 @@ class NWBuildDocument:
 
         if isinstance(bldObj, ToOdt):
             bldObj.setColourHeaders(self._build.getBool("odt.addColours"))
-            bldObj.setLanguage(buildLang)
+            bldObj.setLanguage(self._project.data.language)
 
             scale = nwLabels.UNIT_SCALE.get(self._build.getStr("format.pageUnit"), 1.0)
             pW, pH = nwLabels.PAPER_SIZE.get(self._build.getStr("format.pageSize"), (-1.0, -1.0))

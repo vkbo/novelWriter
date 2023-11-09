@@ -107,10 +107,11 @@ class GuiProjectSettings(NPagedDialog):
     @pyqtSlot()
     def _doSave(self) -> None:
         """Save settings and close dialog."""
-        project = SHARED.project
+        project    = SHARED.project
         projName   = self.tabMain.editName.text()
         bookTitle  = self.tabMain.editTitle.text()
         bookAuthor = self.tabMain.editAuthor.text()
+        projLang   = self.tabMain.projLang.currentData()
         spellLang  = self.tabMain.spellLang.currentData()
         doBackup   = not self.tabMain.doBackup.isChecked()
 
@@ -119,6 +120,7 @@ class GuiProjectSettings(NPagedDialog):
         project.data.setAuthor(bookAuthor)
         project.data.setDoBackup(doBackup)
         project.data.setSpellLang(spellLang)
+        project.setProjectLang(projLang)
 
         if self.tabStatus.colChanged:
             newList, delList = self.tabStatus.getNewList()
@@ -228,24 +230,42 @@ class GuiProjectEditMain(QWidget):
             self.tr("Change whenever you want!")
         )
 
+        self.projLang = QComboBox(self)
+        self.projLang.setMaximumWidth(xW)
+        if CONFIG.hasEnchant:
+            for tag, language in CONFIG.listLanguages(CONFIG.LANG_PROJ):
+                self.projLang.addItem(language, tag)
+        self.mainForm.addRow(
+            self.tr("Project language"),
+            self.projLang,
+            self.tr("Used when building the manuscript.")
+        )
+
+        langIdx = 0
+        if pData.language is not None:
+            langIdx = self.projLang.findData(pData.language)
+        if langIdx == -1:
+            langIdx = self.projLang.findData("en_GB")
+        if langIdx != -1:
+            self.projLang.setCurrentIndex(langIdx)
+
         self.spellLang = QComboBox(self)
         self.spellLang.setMaximumWidth(xW)
         self.spellLang.addItem(self.tr("Default"), "None")
         if CONFIG.hasEnchant:
             for tag, language in SHARED.spelling.listDictionaries():
                 self.spellLang.addItem(language, tag)
-
         self.mainForm.addRow(
             self.tr("Spell check language"),
             self.spellLang,
             self.tr("Overrides main preferences.")
         )
 
-        spellIdx = 0
+        langIdx = 0
         if pData.spellLang is not None:
-            spellIdx = self.spellLang.findData(pData.spellLang)
-        if spellIdx != -1:
-            self.spellLang.setCurrentIndex(spellIdx)
+            langIdx = self.spellLang.findData(pData.spellLang)
+        if langIdx != -1:
+            self.spellLang.setCurrentIndex(langIdx)
 
         self.doBackup = NSwitch(self)
         self.doBackup.setChecked(not pData.doBackup)
