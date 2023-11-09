@@ -155,9 +155,9 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncPath, projPat
 
     # Set some values
     theProject = SHARED.project
-    theProject.tree[C.hTitlePage].setStatus(C.sFinished)
-    theProject.tree[C.hChapterDoc].setStatus(C.sDraft)
-    theProject.tree[C.hSceneDoc].setStatus(C.sDraft)
+    theProject.tree[C.hTitlePage].setStatus(C.sFinished)  # type: ignore
+    theProject.tree[C.hChapterDoc].setStatus(C.sDraft)  # type: ignore
+    theProject.tree[C.hSceneDoc].setStatus(C.sDraft)  # type: ignore
 
     nwGUI.projView.projTree.setSelectedHandle(C.hPlotRoot)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True)
@@ -170,9 +170,9 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncPath, projPat
     hCharNote = "0000000000011"
     hWorldNote = "0000000000012"
 
-    theProject.tree[hPlotNote].setImport(C.iMajor)
-    theProject.tree[hCharNote].setImport(C.iMajor)
-    theProject.tree[hWorldNote].setImport(C.iMain)
+    theProject.tree[hPlotNote].setImport(C.iMajor)  # type: ignore
+    theProject.tree[hCharNote].setImport(C.iMajor)  # type: ignore
+    theProject.tree[hWorldNote].setImport(C.iMain)  # type: ignore
 
     # Create Dialog
     projSettings = GuiProjectSettings(nwGUI, GuiProjectSettings.TAB_STATUS)
@@ -367,23 +367,23 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncPath, projPath, mo
 
     tabReplace = projSettings.tabReplace
 
-    assert tabReplace.listBox.topLevelItem(0).text(0) == "<A>"
-    assert tabReplace.listBox.topLevelItem(0).text(1) == "B"
-    assert tabReplace.listBox.topLevelItem(1).text(0) == "<C>"
-    assert tabReplace.listBox.topLevelItem(1).text(1) == "D"
+    assert tabReplace.listBox.topLevelItem(0).text(0) == "<A>"  # type: ignore
+    assert tabReplace.listBox.topLevelItem(0).text(1) == "B"    # type: ignore
+    assert tabReplace.listBox.topLevelItem(1).text(0) == "<C>"  # type: ignore
+    assert tabReplace.listBox.topLevelItem(1).text(1) == "D"    # type: ignore
     assert tabReplace.listBox.topLevelItemCount() == 2
 
     # Nothing to save or delete
     tabReplace.listBox.clearSelection()
-    assert tabReplace._saveEntry() is False
-    assert tabReplace._delEntry() is False
+    tabReplace._saveEntry()
+    tabReplace._delEntry()
     assert tabReplace.listBox.topLevelItemCount() == 2
 
     # Create a new entry
     qtbot.mouseClick(tabReplace.addButton, Qt.LeftButton)
     assert tabReplace.listBox.topLevelItemCount() == 3
-    assert tabReplace.listBox.topLevelItem(2).text(0) == "<keyword3>"
-    assert tabReplace.listBox.topLevelItem(2).text(1) == ""
+    assert tabReplace.listBox.topLevelItem(2).text(0) == "<keyword3>"  # type: ignore
+    assert tabReplace.listBox.topLevelItem(2).text(1) == ""  # type: ignore
 
     # Edit the entry
     tabReplace.listBox.setCurrentItem(tabReplace.listBox.topLevelItem(2))
@@ -394,8 +394,8 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncPath, projPath, mo
     for c in "With This Stuff ":
         qtbot.keyClick(tabReplace.editValue, c, delay=KEY_DELAY)
     qtbot.mouseClick(tabReplace.saveButton, Qt.LeftButton)
-    assert tabReplace.listBox.topLevelItem(2).text(0) == "<This>"
-    assert tabReplace.listBox.topLevelItem(2).text(1) == "With This Stuff "
+    assert tabReplace.listBox.topLevelItem(2).text(0) == "<This>"  # type: ignore
+    assert tabReplace.listBox.topLevelItem(2).text(1) == "With This Stuff "  # type: ignore
 
     # Create a new entry again
     tabReplace.listBox.clearSelection()
@@ -405,7 +405,7 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncPath, projPath, mo
     # The list is sorted, so we must find it
     newIdx = -1
     for i in range(tabReplace.listBox.topLevelItemCount()):
-        if tabReplace.listBox.topLevelItem(i).text(0) == "<keyword4>":
+        if tabReplace.listBox.topLevelItem(i).text(0) == "<keyword4>":  # type: ignore
             newIdx = i
             break
     assert newIdx >= 0

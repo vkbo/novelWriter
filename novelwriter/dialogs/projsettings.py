@@ -96,17 +96,17 @@ class GuiProjectSettings(NPagedDialog):
 
         return
 
-    def __del__(self):  # pragma: no cover
+    def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiProjectSettings")
         return
 
     ##
-    #  Slots
+    #  Private Slots
     ##
 
-    def _doSave(self):
-        """Save settings and close dialog.
-        """
+    @pyqtSlot()
+    def _doSave(self) -> None:
+        """Save settings and close dialog."""
         project = SHARED.project
         projName   = self.tabMain.editName.text()
         bookTitle  = self.tabMain.editTitle.text()
@@ -140,9 +140,9 @@ class GuiProjectSettings(NPagedDialog):
 
         return
 
-    def _doClose(self):
-        """Save settings and close the dialog.
-        """
+    @pyqtSlot()
+    def _doClose(self) -> None:
+        """Save settings and close the dialog."""
         self._saveGuiSettings()
         self.reject()
         return
@@ -151,9 +151,8 @@ class GuiProjectSettings(NPagedDialog):
     #  Internal Functions
     ##
 
-    def _focusTab(self, tab):
-        """Change which is the focused tab.
-        """
+    def _focusTab(self, tab: int) -> None:
+        """Change which is the focused tab."""
         if tab == self.TAB_MAIN:
             self.setCurrentWidget(self.tabMain)
         elif tab == self.TAB_STATUS:
@@ -164,9 +163,8 @@ class GuiProjectSettings(NPagedDialog):
             self.setCurrentWidget(self.tabReplace)
         return
 
-    def _saveGuiSettings(self):
-        """Save GUI settings.
-        """
+    def _saveGuiSettings(self) -> None:
+        """Save GUI settings."""
         winWidth    = CONFIG.rpxInt(self.width())
         winHeight   = CONFIG.rpxInt(self.height())
         replaceColW = CONFIG.rpxInt(self.tabReplace.listBox.columnWidth(0))
@@ -187,8 +185,8 @@ class GuiProjectSettings(NPagedDialog):
 
 class GuiProjectEditMain(QWidget):
 
-    def __init__(self, projGui):
-        super().__init__(parent=projGui)
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
 
         # The Form
         self.mainForm = NConfigLayout()
@@ -271,8 +269,8 @@ class GuiProjectEditStatus(QWidget):
     COL_ROLE = Qt.ItemDataRole.UserRole + 1
     NUM_ROLE = Qt.ItemDataRole.UserRole + 2
 
-    def __init__(self, projGui, isStatus):
-        super().__init__(parent=projGui)
+    def __init__(self, parent: QWidget, isStatus: bool) -> None:
+        super().__init__(parent=parent)
 
         if isStatus:
             self.theStatus = SHARED.project.data.itemStatus
@@ -372,9 +370,8 @@ class GuiProjectEditStatus(QWidget):
 
         return
 
-    def getNewList(self):
-        """Return list of entries.
-        """
+    def getNewList(self) -> tuple[list, list]:
+        """Return list of entries."""
         if self.colChanged:
             newList = []
             for n in range(self.listBox.topLevelItemCount()):
@@ -394,9 +391,8 @@ class GuiProjectEditStatus(QWidget):
     ##
 
     @pyqtSlot()
-    def _selectColour(self):
-        """Open a dialog to select the status icon colour.
-        """
+    def _selectColour(self) -> None:
+        """Open a dialog to select the status icon colour."""
         if self.selColour is not None:
             newCol = QColorDialog.getColor(
                 self.selColour, self, self.tr("Select Colour")
@@ -410,17 +406,15 @@ class GuiProjectEditStatus(QWidget):
         return
 
     @pyqtSlot()
-    def _newItem(self):
-        """Create a new status item.
-        """
+    def _newItem(self) -> None:
+        """Create a new status item."""
         self._addItem(None, self.tr("New Item"), (100, 100, 100), 0)
         self.colChanged = True
         return
 
     @pyqtSlot()
-    def _delItem(self):
-        """Delete a status item.
-        """
+    def _delItem(self) -> None:
+        """Delete a status item."""
         selItem = self._getSelectedItem()
         if isinstance(selItem, QTreeWidgetItem):
             iRow = self.listBox.indexOfTopLevelItem(selItem)
@@ -433,9 +427,8 @@ class GuiProjectEditStatus(QWidget):
         return
 
     @pyqtSlot()
-    def _saveItem(self):
-        """Save changes made to a status item.
-        """
+    def _saveItem(self) -> None:
+        """Save changes made to a status item."""
         selItem = self._getSelectedItem()
         if isinstance(selItem, QTreeWidgetItem):
             selItem.setText(self.COL_LABEL, simplified(self.editName.text()))
@@ -444,11 +437,10 @@ class GuiProjectEditStatus(QWidget):
                 self.selColour.red(), self.selColour.green(), self.selColour.blue()
             ))
             self.colChanged = True
-
         return
 
     @pyqtSlot()
-    def _selectedItem(self):
+    def _selectedItem(self) -> None:
         """Extract the info of a selected item and populate the settings
         boxes and button. If no item is selected, clear the form.
         """
@@ -456,7 +448,6 @@ class GuiProjectEditStatus(QWidget):
         if isinstance(selItem, QTreeWidgetItem):
             cols = selItem.data(self.COL_LABEL, self.COL_ROLE)
             name = selItem.text(self.COL_LABEL)
-
             pixmap = QPixmap(self.iPx, self.iPx)
             pixmap.fill(QColor(*cols))
             self.selColour = QColor(*cols)
@@ -464,31 +455,27 @@ class GuiProjectEditStatus(QWidget):
             self.colButton.setIcon(QIcon(pixmap))
             self.editName.selectAll()
             self.editName.setFocus()
-
             self.editName.setEnabled(True)
             self.colButton.setEnabled(True)
             self.saveButton.setEnabled(True)
-
         else:
             pixmap = QPixmap(self.iPx, self.iPx)
             pixmap.fill(QColor(100, 100, 100))
             self.selColour = QColor(100, 100, 100)
             self.editName.setText("")
             self.colButton.setIcon(QIcon(pixmap))
-
             self.editName.setEnabled(False)
             self.colButton.setEnabled(False)
             self.saveButton.setEnabled(False)
-
         return
 
     ##
     #  Internal Functions
     ##
 
-    def _addItem(self, key, name, cols, count):
-        """Add a status item to the list.
-        """
+    def _addItem(self, key: str | None, name: str,
+                 cols: tuple[int, int, int], count: int) -> None:
+        """Add a status item to the list."""
         pixmap = QPixmap(self.iPx, self.iPx)
         pixmap.fill(QColor(*cols))
 
@@ -504,9 +491,8 @@ class GuiProjectEditStatus(QWidget):
 
         return
 
-    def _moveItem(self, step):
-        """Move and item up or down step.
-        """
+    def _moveItem(self, step: int) -> None:
+        """Move and item up or down step."""
         selItem = self._getSelectedItem()
         if selItem is None:
             return
@@ -527,17 +513,15 @@ class GuiProjectEditStatus(QWidget):
 
         return
 
-    def _getSelectedItem(self):
-        """Get the currently selected item.
-        """
+    def _getSelectedItem(self) -> QTreeWidgetItem | None:
+        """Get the currently selected item."""
         selItem = self.listBox.selectedItems()
         if len(selItem) > 0:
             return selItem[0]
         return None
 
-    def _usageString(self, nUse):
-        """Generate usage string.
-        """
+    def _usageString(self, nUse: int) -> str:
+        """Generate usage string."""
         if nUse == 0:
             return self.tr("Not in use")
         elif nUse == 1:
@@ -553,8 +537,8 @@ class GuiProjectEditReplace(QWidget):
     COL_KEY  = 0
     COL_REPL = 1
 
-    def __init__(self, projGui):
-        super().__init__(parent=projGui)
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
 
         self.arChanged = False
 
@@ -635,25 +619,23 @@ class GuiProjectEditReplace(QWidget):
 
         return
 
-    def getNewList(self):
-        """Extract the list from the widget.
-        """
-        newList = {}
+    def getNewList(self) -> dict:
+        """Extract the list from the widget."""
+        new = {}
         for n in range(self.listBox.topLevelItemCount()):
             tItem = self.listBox.topLevelItem(n)
             if tItem is not None:
                 aKey = self._stripNotAllowed(tItem.text(0))
                 aVal = tItem.text(1)
                 if len(aKey) > 0:
-                    newList[aKey] = aVal
-
-        return newList
+                    new[aKey] = aVal
+        return new
 
     ##
     #  Internal Functions
     ##
 
-    def _selectedItem(self):
+    def _selectedItem(self) -> bool:
         """Extract the details from the selected item and populate the
         edit form.
         """
@@ -670,63 +652,53 @@ class GuiProjectEditReplace(QWidget):
         self.editKey.setFocus()
         return True
 
-    def _saveEntry(self):
-        """Save the form data into the list widget.
-        """
+    def _saveEntry(self) -> None:
+        """Save the form data into the list widget."""
         selItem = self._getSelectedItem()
-        if selItem is None:
-            return False
-
-        newKey = self.editKey.text()
-        newVal = self.editValue.text()
-        saveKey = self._stripNotAllowed(newKey)
-
-        if len(saveKey) > 0 and len(newVal) > 0:
-            selItem.setText(self.COL_KEY,  "<%s>" % saveKey)
-            selItem.setText(self.COL_REPL, newVal)
-            self.editKey.clear()
-            self.editValue.clear()
-            self.editKey.setEnabled(False)
-            self.editValue.setEnabled(False)
-            self.listBox.clearSelection()
-            self.arChanged = True
-
+        if selItem:
+            newKey = self.editKey.text()
+            newVal = self.editValue.text()
+            saveKey = self._stripNotAllowed(newKey)
+            if len(saveKey) > 0 and len(newVal) > 0:
+                selItem.setText(self.COL_KEY,  "<%s>" % saveKey)
+                selItem.setText(self.COL_REPL, newVal)
+                self.editKey.clear()
+                self.editValue.clear()
+                self.editKey.setEnabled(False)
+                self.editValue.setEnabled(False)
+                self.listBox.clearSelection()
+                self.arChanged = True
         return
 
-    def _addEntry(self):
-        """Add a new list entry.
-        """
+    def _addEntry(self) -> None:
+        """Add a new list entry."""
         saveKey = "<keyword%d>" % (self.listBox.topLevelItemCount() + 1)
         newVal  = ""
         newItem = QTreeWidgetItem([saveKey, newVal])
         self.listBox.addTopLevelItem(newItem)
-        return True
+        return
 
-    def _delEntry(self):
-        """Delete the selected entry.
-        """
+    def _delEntry(self) -> None:
+        """Delete the selected entry."""
         selItem = self._getSelectedItem()
-        if selItem is None:
-            return False
-        self.listBox.takeTopLevelItem(self.listBox.indexOfTopLevelItem(selItem))
-        self.arChanged = True
-        return True
+        if selItem:
+            self.listBox.takeTopLevelItem(self.listBox.indexOfTopLevelItem(selItem))
+            self.arChanged = True
+        return
 
-    def _getSelectedItem(self):
-        """Extract the currently selected item.
-        """
+    def _getSelectedItem(self) -> QTreeWidgetItem | None:
+        """Extract the currently selected item."""
         selItem = self.listBox.selectedItems()
         if len(selItem) == 0:
             return None
         return selItem[0]
 
-    def _stripNotAllowed(self, theKey):
-        """Clean up the replace key string.
-        """
-        retKey = ""
-        for c in theKey:
+    def _stripNotAllowed(self, key: str) -> str:
+        """Clean up the replace key string."""
+        result = ""
+        for c in key:
             if c.isalnum():
-                retKey += c
-        return retKey
+                result += c
+        return result
 
 # END Class GuiProjectEditReplace
