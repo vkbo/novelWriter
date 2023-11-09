@@ -232,9 +232,8 @@ class GuiProjectEditMain(QWidget):
 
         self.projLang = QComboBox(self)
         self.projLang.setMaximumWidth(xW)
-        if CONFIG.hasEnchant:
-            for tag, language in CONFIG.listLanguages(CONFIG.LANG_PROJ):
-                self.projLang.addItem(language, tag)
+        for tag, language in CONFIG.listLanguages(CONFIG.LANG_PROJ):
+            self.projLang.addItem(language, tag)
         self.mainForm.addRow(
             self.tr("Project language"),
             self.projLang,
