@@ -25,18 +25,18 @@ Main Window Shortcuts
    ":kbd:`F8`",           "Toggle :guilabel:`Focus Mode`"
    ":kbd:`F9`",           "Re-build the project index"
    ":kbd:`F11`",          "Toggle full screen mode"
-   ":kbd:`Alt+1`",        "Switch focus to the project tree (Windows :kbd:`Ctrl+Alt+1`)"
-   ":kbd:`Alt+2`",        "Switch focus to document editor (Windows :kbd:`Ctrl+Alt+2`)"
-   ":kbd:`Alt+3`",        "Switch focus to document viewer (Windows :kbd:`Ctrl+Alt+3`)"
-   ":kbd:`Alt+4`",        "Switch focus to outline view (Windows :kbd:`Ctrl+Alt+4`)"
    ":kbd:`Ctrl+,`",       "Open the :guilabel:`Preferences` dialog"
+   ":kbd:`Ctrl+E`",       "Switch focus to the document editor"
+   ":kbd:`Ctrl+T`",       "Switch focus to the project/novel tree"
    ":kbd:`Ctrl+Q`",       "Exit novelWriter"
    ":kbd:`Ctrl+Shift+,`", "Open the :guilabel:`Project Settings` dialog"
    ":kbd:`Ctrl+Shift+O`", "Open a project"
    ":kbd:`Ctrl+Shift+S`", "Save the current project"
+   ":kbd:`Ctrl+Shift+T`", "Switch focus to the outline view"
    ":kbd:`Ctrl+Shift+W`", "Close the current project"
    ":kbd:`Shift+F1`",     "Open the local user manual (PDF) if it is available"
    ":kbd:`Shift+F6`",     "Open the :guilabel:`Project Details` dialog"
+
 
 .. _a_kb_tree:
 
@@ -133,6 +133,7 @@ Other Editor Shortcuts
    ":kbd:`Ctrl+F7`",        "Toggle spell checking"
    ":kbd:`Ctrl+Shift+A`",   "Select all text in the current paragraph"
    ":kbd:`Ctrl+Shift+I`",   "Import text to the current document from a text file"
+
 
 .. _a_kb_ins:
 
