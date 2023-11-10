@@ -247,6 +247,7 @@ class GuiMain(QMainWindow):
         self.mainMenu.requestDocInsert.connect(self._passDocumentInsert)
         self.mainMenu.requestDocInsertText.connect(self._passDocumentInsert)
         self.mainMenu.requestDocKeyWordInsert.connect(self.docEditor.insertKeyWord)
+        self.mainMenu.requestFocusChange.connect(self.switchFocus)
 
         self.sideBar.viewChangeRequested.connect(self._changeView)
 
@@ -311,10 +312,6 @@ class GuiMain(QMainWindow):
         self.keyEscape = QShortcut(self)
         self.keyEscape.setKey(Qt.Key.Key_Escape)
         self.keyEscape.activated.connect(self._keyPressEscape)
-
-        self.keyTreeView = QShortcut(self)
-        self.keyTreeView.setKey("Ctrl+T")
-        self.keyTreeView.activated.connect(self._rotateTreeView)
 
         # Check that config loaded fine
         self.reportConfErr()
@@ -1097,25 +1094,6 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def switchFocus(self, paneNo: nwWidget) -> None:
-        """Switch focus between main GUI views."""
-        if paneNo == nwWidget.TREE:
-            tabIdx = self.projStack.currentIndex()
-            if tabIdx == self.idxProjView:
-                self.projView.setFocus()
-            elif tabIdx == self.idxNovelView:
-                self.novelView.setTreeFocus()
-        elif paneNo == nwWidget.EDITOR:
-            self._changeView(nwView.EDITOR)
-            self.docEditor.setFocus()
-        elif paneNo == nwWidget.VIEWER:
-            self._changeView(nwView.EDITOR)
-            self.docViewer.setFocus()
-        elif paneNo == nwWidget.OUTLINE:
-            self._changeView(nwView.OUTLINE)
-            self.outlineView.setTreeFocus()
-        return
-
     def closeDocViewer(self, byUser: bool = True) -> bool:
         """Close the document view panel."""
         self.docViewer.clearViewer()
@@ -1193,6 +1171,33 @@ class GuiMain(QMainWindow):
 
         return
 
+    @pyqtSlot(nwWidget)
+    def switchFocus(self, paneNo: nwWidget) -> None:
+        """Switch focus between main GUI views."""
+        if paneNo == nwWidget.TREE:
+            if self.projStack.currentWidget() is self.projView:
+                if self.projView.treeHasFocus():
+                    self._changeView(nwView.NOVEL)
+                    self.novelView.setTreeFocus()
+                else:
+                    self.projView.setTreeFocus()
+            else:
+                if self.novelView.treeHasFocus():
+                    self._changeView(nwView.PROJECT)
+                    self.projView.setTreeFocus()
+                else:
+                    self.novelView.setTreeFocus()
+        elif paneNo == nwWidget.EDITOR:
+            self._changeView(nwView.EDITOR)
+            self.docEditor.setFocus()
+        elif paneNo == nwWidget.VIEWER:
+            self._changeView(nwView.EDITOR)
+            self.docViewer.setFocus()
+        elif paneNo == nwWidget.OUTLINE:
+            self._changeView(nwView.OUTLINE)
+            self.outlineView.setTreeFocus()
+        return
+
     ##
     #  Private Slots
     ##
@@ -1236,15 +1241,6 @@ class GuiMain(QMainWindow):
             self.projStack.setCurrentWidget(self.novelView)
         elif view == nwView.OUTLINE:
             self.mainStack.setCurrentWidget(self.outlineView)
-        return
-
-    @pyqtSlot()
-    def _rotateTreeView(self) -> None:
-        """Change view to the next tree view."""
-        if self.projStack.currentWidget() is self.projView:
-            self._changeView(nwView.NOVEL)
-        else:
-            self._changeView(nwView.PROJECT)
         return
 
     @pyqtSlot(nwDocAction)

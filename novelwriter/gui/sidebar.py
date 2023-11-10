@@ -67,7 +67,7 @@ class GuiSideBar(QWidget):
         self.tbNovel.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.NOVEL))
 
         self.tbOutline = QToolButton(self)
-        self.tbOutline.setToolTip(self.tr("Novel Outline View"))
+        self.tbOutline.setToolTip(f"{0} [Ctrl+Shift+T]".format(self.tr("Novel Outline View")))
         self.tbOutline.setIconSize(iconSize)
         self.tbOutline.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.OUTLINE))
 

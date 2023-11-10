@@ -54,6 +54,7 @@ class GuiMainMenu(QMenuBar):
     requestDocInsert = pyqtSignal(nwDocInsert)
     requestDocInsertText = pyqtSignal(str)
     requestDocKeyWordInsert = pyqtSignal(str)
+    requestFocusChange = pyqtSignal(nwWidget)
 
     def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
@@ -246,12 +247,16 @@ class GuiMainMenu(QMenuBar):
         # Edit > Undo
         self.aEditUndo = self.editMenu.addAction(self.tr("Undo"))
         self.aEditUndo.setShortcut("Ctrl+Z")
-        self.aEditUndo.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.UNDO))
+        self.aEditUndo.triggered.connect(
+            lambda: self.requestDocAction.emit(nwDocAction.UNDO)
+        )
 
         # Edit > Redo
         self.aEditRedo = self.editMenu.addAction(self.tr("Redo"))
         self.aEditRedo.setShortcut("Ctrl+Y")
-        self.aEditRedo.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.REDO))
+        self.aEditRedo.triggered.connect(
+            lambda: self.requestDocAction.emit(nwDocAction.REDO)
+        )
 
         # Edit > Separator
         self.editMenu.addSeparator()
@@ -259,17 +264,23 @@ class GuiMainMenu(QMenuBar):
         # Edit > Cut
         self.aEditCut = self.editMenu.addAction(self.tr("Cut"))
         self.aEditCut.setShortcut("Ctrl+X")
-        self.aEditCut.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.CUT))
+        self.aEditCut.triggered.connect(
+            lambda: self.requestDocAction.emit(nwDocAction.CUT)
+        )
 
         # Edit > Copy
         self.aEditCopy = self.editMenu.addAction(self.tr("Copy"))
         self.aEditCopy.setShortcut("Ctrl+C")
-        self.aEditCopy.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.COPY))
+        self.aEditCopy.triggered.connect(
+            lambda: self.requestDocAction.emit(nwDocAction.COPY)
+        )
 
         # Edit > Paste
         self.aEditPaste = self.editMenu.addAction(self.tr("Paste"))
         self.aEditPaste.setShortcut("Ctrl+V")
-        self.aEditPaste.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.PASTE))
+        self.aEditPaste.triggered.connect(
+            lambda: self.requestDocAction.emit(nwDocAction.PASTE)
+        )
 
         # Edit > Separator
         self.editMenu.addSeparator()
@@ -277,12 +288,16 @@ class GuiMainMenu(QMenuBar):
         # Edit > Select All
         self.aSelectAll = self.editMenu.addAction(self.tr("Select All"))
         self.aSelectAll.setShortcut("Ctrl+A")
-        self.aSelectAll.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.SEL_ALL))
+        self.aSelectAll.triggered.connect(
+            lambda: self.requestDocAction.emit(nwDocAction.SEL_ALL)
+        )
 
         # Edit > Select Paragraph
         self.aSelectPar = self.editMenu.addAction(self.tr("Select Paragraph"))
         self.aSelectPar.setShortcut("Ctrl+Shift+A")
-        self.aSelectPar.triggered.connect(lambda: self.requestDocAction.emit(nwDocAction.SEL_PARA))
+        self.aSelectPar.triggered.connect(
+            lambda: self.requestDocAction.emit(nwDocAction.SEL_PARA)
+        )
 
         return
 
@@ -293,23 +308,24 @@ class GuiMainMenu(QMenuBar):
 
         # View > TreeView
         self.aFocusTree = self.viewMenu.addAction(self.tr("Go to Project Tree"))
-        self.aFocusTree.setShortcut("Ctrl+Alt+1" if CONFIG.osWindows else "Alt+1")
-        self.aFocusTree.triggered.connect(lambda: self.mainGui.switchFocus(nwWidget.TREE))
+        self.aFocusTree.setShortcut("Ctrl+T")
+        self.aFocusTree.triggered.connect(
+            lambda: self.requestFocusChange.emit(nwWidget.TREE)
+        )
 
-        # View > Document Pane 1
+        # View > Document Editor
         self.aFocusEditor = self.viewMenu.addAction(self.tr("Go to Document Editor"))
-        self.aFocusEditor.setShortcut("Ctrl+Alt+2" if CONFIG.osWindows else "Alt+2")
-        self.aFocusEditor.triggered.connect(lambda: self.mainGui.switchFocus(nwWidget.EDITOR))
-
-        # View > Document Pane 2
-        self.aFocusView = self.viewMenu.addAction(self.tr("Go to Document Viewer"))
-        self.aFocusView.setShortcut("Ctrl+Alt+3" if CONFIG.osWindows else "Alt+3")
-        self.aFocusView.triggered.connect(lambda: self.mainGui.switchFocus(nwWidget.VIEWER))
+        self.aFocusEditor.setShortcut("Ctrl+E")
+        self.aFocusEditor.triggered.connect(
+            lambda: self.requestFocusChange.emit(nwWidget.EDITOR)
+        )
 
         # View > Outline
         self.aFocusOutline = self.viewMenu.addAction(self.tr("Go to Outline"))
-        self.aFocusOutline.setShortcut("Ctrl+Alt+4" if CONFIG.osWindows else "Alt+4")
-        self.aFocusOutline.triggered.connect(lambda: self.mainGui.switchFocus(nwWidget.OUTLINE))
+        self.aFocusOutline.setShortcut("Ctrl+Shift+T")
+        self.aFocusOutline.triggered.connect(
+            lambda: self.requestFocusChange.emit(nwWidget.OUTLINE)
+        )
 
         # View > Separator
         self.viewMenu.addSeparator()
