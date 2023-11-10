@@ -156,6 +156,7 @@ class BuildSettings:
         self._uuid = str(uuid.uuid4())
         self._path = Path.home()
         self._build = ""
+        self._order = 0
         self._format = nwBuildFmt.ODT
         self._skipRoot = set()
         self._excluded = set()
@@ -164,19 +165,31 @@ class BuildSettings:
         self._changed = False
         return
 
+    @classmethod
+    def fromDict(cls, data: dict) -> BuildSettings:
+        """Create a build settings object from a dict."""
+        cls = BuildSettings()
+        cls.unpack(data)
+        return cls
+
     ##
     #  Properties
     ##
 
     @property
     def name(self) -> str:
-        """The build name."""
+        """Return the build name."""
         return self._name
 
     @property
     def buildID(self) -> str:
-        """The build ID as a UUID."""
+        """Return the build ID as a UUID."""
         return self._uuid
+
+    @property
+    def order(self) -> int:
+        """Return the build order."""
+        return self._order
 
     @property
     def lastPath(self) -> Path:
@@ -249,6 +262,12 @@ class BuildSettings:
             self._uuid = str(uuid.uuid4())
         elif value != self._uuid:
             self._uuid = value
+        return
+
+    def setOrder(self, value: int) -> None:
+        """Set the build order."""
+        if isinstance(value, int):
+            self._order = value
         return
 
     def setLastPath(self, path: Path | str | None) -> None:
@@ -398,6 +417,7 @@ class BuildSettings:
             "uuid": self._uuid,
             "path": str(self._path),
             "build": self._build,
+            "order": self._order,
             "format": self._format.name,
             "settings": self._settings.copy(),
             "content": {
@@ -409,14 +429,15 @@ class BuildSettings:
 
     def unpack(self, data: dict) -> None:
         """Unpack a dictionary and populate the class."""
+        content = data.get("content", {})
         settings = data.get("settings", {})
-        content  = data.get("content", {})
         included = content.get("included", [])
         excluded = content.get("excluded", [])
         skipRoot = content.get("skipRoot", [])
 
         self.setName(data.get("name", ""))
         self.setBuildID(data.get("uuid", ""))
+        self.setOrder(data.get("order", 0))
         self.setLastPath(data.get("path", None))
         self.setLastBuildName(data.get("build", ""))
 
@@ -453,9 +474,9 @@ class BuildCollection:
 
     def __init__(self, project: NWProject) -> None:
         self._project = project
-        self._builds = {}
         self._lastBuild = ""
         self._defaultBuild = ""
+        self._builds: dict[str, BuildSettings] = {}
         self._loadCollection()
         return
 
@@ -483,21 +504,19 @@ class BuildCollection:
 
     def getBuild(self, buildID: str) -> BuildSettings | None:
         """Get a specific build settings object."""
-        if buildID not in self._builds:
-            return None
-        build = BuildSettings()
-        build.unpack(self._builds[buildID])
-        return build
+        return self._builds.get(buildID, None)
 
     ##
     #  Setters
     ##
 
-    def setLastBuild(self, buildID: str) -> None:
+    def setBuildsState(self, lastBuild: str, order: list[str]) -> None:
         """Set the last active build id."""
-        if buildID != self._lastBuild:
-            self._lastBuild = buildID
-            self._saveCollection()
+        for i, key in enumerate(order):
+            if build := self._builds.get(key):
+                build.setOrder(i)
+        self._lastBuild = lastBuild
+        self._saveCollection()
         return
 
     def setDefaultBuild(self, buildID: str) -> None:
@@ -510,8 +529,7 @@ class BuildCollection:
     def setBuild(self, build: BuildSettings) -> None:
         """Set build settings data in the collection."""
         if isinstance(build, BuildSettings):
-            buildID = build.buildID
-            self._builds[buildID] = build.pack()
+            self._builds[build.buildID] = build
             self._saveCollection()
         return
 
@@ -520,15 +538,15 @@ class BuildCollection:
     ##
 
     def removeBuild(self, buildID: str) -> None:
-        """Remove the a build from the collection."""
+        """Remove a build from the collection."""
         self._builds.pop(buildID, None)
         self._saveCollection()
         return
 
     def builds(self) -> Iterable[tuple[str, str]]:
         """Iterate over all available builds."""
-        for buildID in self._builds:
-            yield buildID, self._builds[buildID].get("name", "")
+        for buildID, build in sorted(self._builds.items(), key=lambda x: x[1].order):
+            yield buildID, build.name
         return
 
     ##
@@ -567,7 +585,7 @@ class BuildCollection:
             elif key == "defaultBuild":
                 self._defaultBuild = str(entry)
             elif isinstance(entry, dict):
-                self._builds[key] = entry
+                self._builds[key] = BuildSettings.fromDict(entry)
 
         return True
 
@@ -579,11 +597,11 @@ class BuildCollection:
 
         logger.debug("Saving builds file")
         try:
-            data = {
+            data: dict[str, str | dict] = {
                 "lastBuild": self._lastBuild,
                 "defaultBuild": self._defaultBuild,
             }
-            data.update(self._builds)
+            data.update({k: b.pack() for k, b in self._builds.items()})
             with open(buildsFile, mode="w+", encoding="utf-8") as outFile:
                 outFile.write(jsonEncode({"novelWriter.builds": data}, nmax=4))
         except Exception:

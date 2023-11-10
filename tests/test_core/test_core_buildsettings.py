@@ -435,7 +435,7 @@ def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRn
         (buildIDTwo, "Build Two"),
         (buildIDOne, "Build One"),
     ]
-    builds.setLastBuild(buildIDOne)
+    builds.setBuildsState(buildIDOne, [buildIDTwo, buildIDOne])
     builds.setDefaultBuild(buildIDTwo)
 
     # Check errors: No valid path

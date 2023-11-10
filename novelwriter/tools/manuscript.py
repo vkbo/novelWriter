@@ -144,6 +144,8 @@ class GuiManuscript(QDialog):
         self.buildList.setIconSize(QSize(iPx, iPx))
         self.buildList.doubleClicked.connect(self._editSelectedBuild)
         self.buildList.currentItemChanged.connect(self._updateBuildDetails)
+        self.buildList.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.buildList.setDragDropMode(QAbstractItemView.InternalMove)
 
         self.buildDetails = _DetailsWidget(self)
         self.buildDetails.setColumnWidth(
@@ -417,9 +419,15 @@ class GuiManuscript(QDialog):
         """Save the user GUI settings."""
         logger.debug("Saving GuiManuscript settings")
 
+        buildOrder = []
+        for i in range(self.buildList.count()):
+            if item := self.buildList.item(i):
+                buildOrder.append(item.data(self.D_KEY))
+
         current = self.buildList.currentItem()
-        if isinstance(current, QListWidgetItem):
-            self._builds.setLastBuild(current.data(self.D_KEY))
+        lastBuild = current.data(self.D_KEY) if isinstance(current, QListWidgetItem) else ""
+
+        self._builds.setBuildsState(lastBuild, buildOrder)
 
         winWidth  = CONFIG.rpxInt(self.width())
         winHeight = CONFIG.rpxInt(self.height())
