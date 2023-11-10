@@ -31,7 +31,7 @@ from pathlib import Path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt, QTimer, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QCursor, QIcon, QKeySequence
+from PyQt5.QtGui import QCloseEvent, QCursor, QIcon
 from PyQt5.QtWidgets import (
     QDialog, QFileDialog, QHBoxLayout, QMainWindow, QMessageBox, QShortcut,
     QSplitter, QStackedWidget, QVBoxLayout, QWidget, qApp
@@ -300,17 +300,21 @@ class GuiMain(QMainWindow):
         # Shortcuts and Actions
         self._connectMenuActions()
 
-        keyReturn = QShortcut(self)
-        keyReturn.setKey(QKeySequence(Qt.Key_Return))
-        keyReturn.activated.connect(self._keyPressReturn)
+        self.keyReturn = QShortcut(self)
+        self.keyReturn.setKey(Qt.Key.Key_Return)
+        self.keyReturn.activated.connect(self._keyPressReturn)
 
-        keyEnter = QShortcut(self)
-        keyEnter.setKey(QKeySequence(Qt.Key_Enter))
-        keyEnter.activated.connect(self._keyPressReturn)
+        self.keyEnter = QShortcut(self)
+        self.keyEnter.setKey(Qt.Key.Key_Enter)
+        self.keyEnter.activated.connect(self._keyPressReturn)
 
-        keyEscape = QShortcut(self)
-        keyEscape.setKey(QKeySequence(Qt.Key_Escape))
-        keyEscape.activated.connect(self._keyPressEscape)
+        self.keyEscape = QShortcut(self)
+        self.keyEscape.setKey(Qt.Key.Key_Escape)
+        self.keyEscape.activated.connect(self._keyPressEscape)
+
+        self.keyTreeView = QShortcut(self)
+        self.keyTreeView.setKey("Ctrl+T")
+        self.keyTreeView.activated.connect(self._rotateTreeView)
 
         # Check that config loaded fine
         self.reportConfErr()
@@ -1224,18 +1228,23 @@ class GuiMain(QMainWindow):
         if view == nwView.EDITOR:
             # Only change the main stack, but not the project stack
             self.mainStack.setCurrentWidget(self.splitMain)
-
         elif view == nwView.PROJECT:
             self.mainStack.setCurrentWidget(self.splitMain)
             self.projStack.setCurrentWidget(self.projView)
-
         elif view == nwView.NOVEL:
             self.mainStack.setCurrentWidget(self.splitMain)
             self.projStack.setCurrentWidget(self.novelView)
-
         elif view == nwView.OUTLINE:
             self.mainStack.setCurrentWidget(self.outlineView)
+        return
 
+    @pyqtSlot()
+    def _rotateTreeView(self) -> None:
+        """Change view to the next tree view."""
+        if self.projStack.currentWidget() is self.projView:
+            self._changeView(nwView.NOVEL)
+        else:
+            self._changeView(nwView.PROJECT)
         return
 
     @pyqtSlot(nwDocAction)
