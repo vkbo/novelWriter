@@ -31,7 +31,7 @@ from pathlib import Path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt, QTimer, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QCursor, QIcon, QKeySequence
+from PyQt5.QtGui import QCloseEvent, QCursor, QIcon
 from PyQt5.QtWidgets import (
     QDialog, QFileDialog, QHBoxLayout, QMainWindow, QMessageBox, QShortcut,
     QSplitter, QStackedWidget, QVBoxLayout, QWidget, qApp
@@ -247,6 +247,7 @@ class GuiMain(QMainWindow):
         self.mainMenu.requestDocInsert.connect(self._passDocumentInsert)
         self.mainMenu.requestDocInsertText.connect(self._passDocumentInsert)
         self.mainMenu.requestDocKeyWordInsert.connect(self.docEditor.insertKeyWord)
+        self.mainMenu.requestFocusChange.connect(self.switchFocus)
 
         self.sideBar.viewChangeRequested.connect(self._changeView)
 
@@ -300,17 +301,17 @@ class GuiMain(QMainWindow):
         # Shortcuts and Actions
         self._connectMenuActions()
 
-        keyReturn = QShortcut(self)
-        keyReturn.setKey(QKeySequence(Qt.Key_Return))
-        keyReturn.activated.connect(self._keyPressReturn)
+        self.keyReturn = QShortcut(self)
+        self.keyReturn.setKey(Qt.Key.Key_Return)
+        self.keyReturn.activated.connect(self._keyPressReturn)
 
-        keyEnter = QShortcut(self)
-        keyEnter.setKey(QKeySequence(Qt.Key_Enter))
-        keyEnter.activated.connect(self._keyPressReturn)
+        self.keyEnter = QShortcut(self)
+        self.keyEnter.setKey(Qt.Key.Key_Enter)
+        self.keyEnter.activated.connect(self._keyPressReturn)
 
-        keyEscape = QShortcut(self)
-        keyEscape.setKey(QKeySequence(Qt.Key_Escape))
-        keyEscape.activated.connect(self._keyPressEscape)
+        self.keyEscape = QShortcut(self)
+        self.keyEscape.setKey(Qt.Key.Key_Escape)
+        self.keyEscape.activated.connect(self._keyPressEscape)
 
         # Check that config loaded fine
         self.reportConfErr()
@@ -1093,25 +1094,6 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def switchFocus(self, paneNo: nwWidget) -> None:
-        """Switch focus between main GUI views."""
-        if paneNo == nwWidget.TREE:
-            tabIdx = self.projStack.currentIndex()
-            if tabIdx == self.idxProjView:
-                self.projView.setFocus()
-            elif tabIdx == self.idxNovelView:
-                self.novelView.setTreeFocus()
-        elif paneNo == nwWidget.EDITOR:
-            self._changeView(nwView.EDITOR)
-            self.docEditor.setFocus()
-        elif paneNo == nwWidget.VIEWER:
-            self._changeView(nwView.EDITOR)
-            self.docViewer.setFocus()
-        elif paneNo == nwWidget.OUTLINE:
-            self._changeView(nwView.OUTLINE)
-            self.outlineView.setTreeFocus()
-        return
-
     def closeDocViewer(self, byUser: bool = True) -> bool:
         """Close the document view panel."""
         self.docViewer.clearViewer()
@@ -1189,6 +1171,33 @@ class GuiMain(QMainWindow):
 
         return
 
+    @pyqtSlot(nwWidget)
+    def switchFocus(self, paneNo: nwWidget) -> None:
+        """Switch focus between main GUI views."""
+        if paneNo == nwWidget.TREE:
+            if self.projStack.currentWidget() is self.projView:
+                if self.projView.treeHasFocus():
+                    self._changeView(nwView.NOVEL)
+                    self.novelView.setTreeFocus()
+                else:
+                    self.projView.setTreeFocus()
+            else:
+                if self.novelView.treeHasFocus():
+                    self._changeView(nwView.PROJECT)
+                    self.projView.setTreeFocus()
+                else:
+                    self.novelView.setTreeFocus()
+        elif paneNo == nwWidget.EDITOR:
+            self._changeView(nwView.EDITOR)
+            self.docEditor.setFocus()
+        elif paneNo == nwWidget.VIEWER:
+            self._changeView(nwView.EDITOR)
+            self.docViewer.setFocus()
+        elif paneNo == nwWidget.OUTLINE:
+            self._changeView(nwView.OUTLINE)
+            self.outlineView.setTreeFocus()
+        return
+
     ##
     #  Private Slots
     ##
@@ -1224,18 +1233,14 @@ class GuiMain(QMainWindow):
         if view == nwView.EDITOR:
             # Only change the main stack, but not the project stack
             self.mainStack.setCurrentWidget(self.splitMain)
-
         elif view == nwView.PROJECT:
             self.mainStack.setCurrentWidget(self.splitMain)
             self.projStack.setCurrentWidget(self.projView)
-
         elif view == nwView.NOVEL:
             self.mainStack.setCurrentWidget(self.splitMain)
             self.projStack.setCurrentWidget(self.novelView)
-
         elif view == nwView.OUTLINE:
             self.mainStack.setCurrentWidget(self.outlineView)
-
         return
 
     @pyqtSlot(nwDocAction)
