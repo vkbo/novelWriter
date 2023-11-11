@@ -88,5 +88,5 @@ meta data for it to extract.
    the application interface.
 
 :ref:`a_manuscript` - Recommended Reading
-   This chapter explains how the :guilabel:`Manuscript Build` tool works, how you can control the
+   This chapter explains how the :guilabel:`Manuscript Compile` tool works, how you can control the
    way chapter titles are formatted, and how scene and section breaks are handled.

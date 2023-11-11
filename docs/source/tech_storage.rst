@@ -127,11 +127,11 @@ check somehow fails and novelWriter keeps crashing, you can delete the file manu
 the index. If this too fails, you have likely encountered a bug.
 
 
-Build Definitions
------------------
+Compile Definitions
+-------------------
 
-The build definitions from the :guilabel:`Manuscript Build` tool are kept in the
-``meta/builds.json`` file. If this file is lost, all custom build definitions are lost too.
+The compile definitions from the :guilabel:`Compile Manuscript` tool are kept in the
+``meta/builds.json`` file. If this file is lost, all custom definitions are lost too.
 
 
 Cached GUI Options

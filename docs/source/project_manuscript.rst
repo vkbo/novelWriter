@@ -1,45 +1,46 @@
 .. _a_manuscript:
 
-***********************
-Building the Manuscript
-***********************
+************************
+Compiling the Manuscript
+************************
 
-You can at any time build a manuscript, an outline of your notes, or any other type of document
-from the text in your project. All of this is handled by the :guilabel:`Manuscript Build` tool.
-You can activate it from the sidebar, the :guilabel:`Tools` menu, or by pressing :kbd:`F5`.
+You can at any time compile a manuscript, an outline of your notes, or any other type of document
+from the text in your project. All of this is handled by the :guilabel:`Compile ManuscriptBuild`
+tool. You can activate it from the sidebar, the :guilabel:`Tools` menu, or by pressing :kbd:`F5`.
 
 .. versionadded:: 2.1
    This tool is new for version 2.1. A simpler tool was used for earlier versions. The simpler tool
-   only allows you to define a single set of options for the build, but otherwise has much the same
-   functionality.
+   only allowed you to define a single set of options for the manuscript, but otherwise has much
+   the same functionality as the new one.
 
 
 .. _a_manuscript_main:
 
-The Manuscript Build Tool
-=========================
+The Compile Manuscript Tool
+===========================
 
 .. figure:: images/fig_manuscript_build.png
 
-   The :guilabel:`Manuscript Build` tool main window.
+   The :guilabel:`Compile Manuscript` tool main window.
 
-The main window of the :guilabel:`Manuscript Build` tool contains a list of all the builds you have
-defined, a selection of settings, and a few buttons to generate preview, open the print dialog, or
-run the build to create a manuscript document.
+The main window of the :guilabel:`Compile Manuscript` tool contains a list of all the compile
+settings have defined, an overview of some of their settings, and a few buttons to generate
+preview, open the print dialog, or compile a manuscript document.
 
 
 .. _a_manuscript_settings:
 
-Build Settings
-==============
+Manuscript Compile Settings
+===========================
 
-Each build definition can be edited by opening it in the :guilabel:`Manuscript Build Settings`
-dialog, either by double-clicking or by selecting it and pressing the edit button in the toolbar.
+Each compile settings definition can be edited by opening it in the
+:guilabel:`Manuscript Compile Settings` dialog, either by double-clicking or by selecting it and
+pressing the edit button in the toolbar.
 
 .. tip::
-   You can keep the :guilabel:`Manuscript Build Settings` dialog open while testing the different
+   You can keep the :guilabel:`Manuscript Compile Settings` dialog open while testing the different
    options, and just hit the :guilabel:`Apply` button. You can test the result of your settings
-   by pressing the :guilabel:`Preview` button in the main :guilabel:`Manuscript Build` window.
+   by pressing the :guilabel:`Preview` button in the main :guilabel:`Compile Manuscript` window.
    When you're happy with the result, you can close the settings.
 
 
@@ -48,11 +49,11 @@ Document Selection
 
 .. figure:: images/fig_build_settings_selections.png
 
-   The :guilabel:`Selections` page of the :guilabel:`Manuscript Build Settings` dialog.
+   The :guilabel:`Selections` page of the :guilabel:`Manuscript Compile Settings` dialog.
 
-The :guilabel:`Selections` page of the :guilabel:`Manuscript Build Settings` dialog allows you to
-fine tune which documents are included in the build. They are indicated by a green arrow icon in
-the last column. On the right you have some filter options for selecting content of a specific
+The :guilabel:`Selections` page of the :guilabel:`Manuscript Compile Settings` dialog allows you to
+fine tune which documents are included in the manuscript. They are indicated by a green arrow icon
+in the last column. On the right you have some filter options for selecting content of a specific
 type, and a set of switches for which root folders to include.
 
 You can override the result of these filters by marking one or more documents and selecting to
@@ -68,23 +69,24 @@ Formatting Headings
 
 .. figure:: images/fig_build_settings_headings.png
 
-   The :guilabel:`Headings` page of the :guilabel:`Manuscript Build Settings` dialog.
+   The :guilabel:`Headings` page of the :guilabel:`Manuscript Compile Settings` dialog.
 
-The :guilabel:`Headings` page of the :guilabel:`Manuscript Build Settings` dialog allows you to set
-how the headings in your :term:`Novel Documents` are formatted. By default, the title is just
+The :guilabel:`Headings` page of the :guilabel:`Manuscript Compile Settings` dialog allows you to
+set how the headings in your :term:`Novel Documents` are formatted. By default, the title is just
 copied as-is, indicated by the ``{Title}`` format. You can change this to for instance add chapter
 numbers and scene numbers like shown int he figure above.
 
 Clicking the edit button next to a format will copy the formatting string into the edit box where
 it can be modified, and where a syntax highlighter will help indicate which parts are automatically
-generated by the build tool. The :guilabel:`Insert` button is a dropdown list of these formats, and
-selecting one will insert it at the position of the cursor.
+generated by the compile tool. The :guilabel:`Insert` button is a dropdown list of these formats,
+and selecting one will insert it at the position of the cursor.
 
 Any text you add that isn't highlighted in colours will remain in your formatted titles.
 ``{Title}`` will always be replaced by the text in the heading from your documents.
 
 You can preview the result of these format strings by clicking :guilabel:`Apply`, and then clicking
-:guilabel:`Preview` in the :guilabel:`Manuscript Build` tool main window.
+:guilabel:`Preview` in the :guilabel:`Compile Manuscript` tool main window.
+
 
 Scene Separators
 ^^^^^^^^^^^^^^^^
@@ -103,30 +105,30 @@ Output Settings
 ---------------
 
 The :guilabel:`Content`, :guilabel:`Format` and :guilabel:`Output` pages of the
-:guilabel:`Manuscript Build Settings` dialog control a number of other settings for the output.
+:guilabel:`Manuscript Compile Settings` dialog control a number of other settings for the output.
 Some of these only apply to specific output formats, which is indicated by the section headings on
 the settings pages.
 
 
 .. _a_manuscript_build:
 
-Building Manuscript Documents
-=============================
+Compiling Manuscript Documents
+==============================
 
 .. figure:: images/fig_build_build.png
 
-   The :guilabel:`Manuscript Build` dialog used for writing the actual manuscript documents.
+   The :guilabel:`Compile Manuscript` dialog used for writing the actual manuscript documents.
 
-When you press the :guilabel:`Build` button on the :guilabel:`Build Manuscript` tool main window, a
-special file dialog opens up. This is where you pick your desired output format and where to write
-the file.
+When you press the :guilabel:`Compile` button on the :guilabel:`Compile Manuscript` tool main
+window, a special file dialog opens up. This is where you pick your desired output format and where
+to write the file.
 
 On the left side of the dialog is a list of all the available file formats, and on the right, a
-list of the documents which are included based on the build definition you selected. You can choose
+list of the documents which are included based on the compile settings you selected. You can choose
 an output path, and set a base file name as well. The file extension will be added automatically.
 
-To generate the manuscript document, press the :guilabel:`Build` button. A small progress bar will
-show the build progress, but for small projects it may pass very fast.
+To generate the manuscript document, press the :guilabel:`Compile` button. A small progress bar
+will show the progress, but for small projects it may pass very fast.
 
 
 File Formats
@@ -135,7 +137,7 @@ File Formats
 Currently, four document formats are supported.
 
 Open Document Format
-   The Build tool can produce either an ``.odt`` file, or an ``.fodt`` file. The latter is just a
+   The Compile tool can produce either an ``.odt`` file, or an ``.fodt`` file. The latter is just a
    flat version of the document format as a single XML file. Most rich text editors support the
    former, and only a few the latter.
 

@@ -79,7 +79,7 @@ right single quotation marks, depending on the font. There is a Wikipedia articl
 `Modifier letter apostrophe`_ with more details.
 
 .. note::
-   On export with the :guilabel:`Build Manuscript` tool, these apostrophes will be replaced
+   On export with the :guilabel:`Compile Manuscript` tool, these apostrophes will be replaced
    automatically with the corresponding right hand single quote symbol as is generally recommended.
    Therefore it doesn't really matter if you only use them to correct syntax highlighting.
 

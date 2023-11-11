@@ -35,7 +35,7 @@ the project, and has four columns.
 **Column 3**
    The third column indicates whether the document is considered active or inactive in the project.
    You can use this flag to indicate that a document is still in the project, but should not be
-   considered an active part of it. When you run the :guilabel:`Build Manuscript` tool, you can
+   considered an active part of it. When you run the :guilabel:`Compile Manuscript` tool, you can
    include or exclude documents based on this flag. You can change this value from the
    :term:`context menu`.
 
@@ -135,7 +135,7 @@ Project Tree Drag & Drop
 
 The project tree allows drag & drop to a certain extent to allow you to reorder your documents and
 folders. Moving a document in the project tree will affect the text's position when you assemble
-your manuscript in the :guilabel:`Manuscript Build` tool.
+your manuscript in the :guilabel:`Compile Manuscript` tool.
 
 Drag & drop has only limited support for moving documents. In general, bulk actions are not
 allowed. This is deliberate to avoid accidentally messing up your project. If you make a mistake,

@@ -119,7 +119,7 @@ deleted accidentally, but still want it out of your main project tree, you can c
 :guilabel:`Archive` root folder and move it there.
 
 You can drag any document to this folder and preserve its settings. The document will always be
-excluded from the :guilabel:`Build Manuscript` tool. It is also removed from the
+excluded from the :guilabel:`Compile Manuscript` tool. It is also removed from the
 :term:`project index`, so the tags and references defined in it will not show up anywhere else.
 
 

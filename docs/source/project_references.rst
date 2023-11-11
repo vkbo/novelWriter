@@ -67,7 +67,7 @@ colour that valid tags do.
 The tag is the only part of these notes that the novelWriter uses. The rest of the document content
 is there for the writer to use in whatever way they wish. Of course, the content of the documents
 can be added to the manuscript, or an outline document. If you want to compile a single document of
-all your notes, you can do this from the :guilabel:`Manuscript Build` tool.
+all your notes, you can do this from the :guilabel:`Compile Manuscript` tool.
 
 Example of a heading with a tag for a character of the story:
 
@@ -159,7 +159,7 @@ highlight that two notes are related.
 
 .. tip::
    If you cross-reference between notes and export your project as an HTML document using the
-   :guilabel:`Manuscript Build` tool, the cross-references become clickable links in the exported
+   :guilabel:`Compile Manuscript` tool, the cross-references become clickable links in the exported
    HTML document as well.
 
 Example of a novel document with references to characters and plots:

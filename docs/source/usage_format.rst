@@ -56,29 +56,30 @@ correctly to produce the intended result. See :ref:`a_struct_heads` for more det
 
 ``## Title Text``
    Heading level two. For novel documents, the header level indicates the start of a new chapter.
-   Chapter numbers can be inserted automatically when building the manuscript.
+   Chapter numbers can be inserted automatically when compiling the manuscript.
 
 ``### Title Text``
    Heading level three. For novel documents, the header level indicates the start of a new scene.
-   Scene numbers or scene separators can be inserted automatically when building the manuscript,
+   Scene numbers or scene separators can be inserted automatically when compiling the manuscript,
    so you can use the title field as a working title for your scenes if you wish.
 
 ``#### Title Text``
    Heading level four. For novel documents, the header level indicates the start of a new section.
-   Section titles can be replaced by separators or ignored completely when building the manuscript.
+   Section titles can be replaced by separators or ignored completely when compiling the
+   manuscript.
 
 For headers level one and two, adding a ``!`` modifies the behaviour of the heading:
 
 ``#! Title Text``
-   This tells the build tool that the level one heading is intended to be used for the novel's
-   main title, like for instance on the front page. When building the manuscript, this will use a
-   different styling and will exclude the title from, for instance, a Table of Contents in Libre
-   Office.
+   This tells the :guilabel:`Compile Manuscrip` tool that the level one heading is intended to be
+   used for the novel's main title, like for instance on the front page. When compiling the
+   manuscript, this will use a different styling and will exclude the title from, for instance, a
+   Table of Contents in Libre Office.
 
 ``##! Title Text``
-   This tells the build tool to not assign a chapter number to this chapter title if automatic
-   chapter numbers are being used. Such titles are useful for a prologue for instance. See
-   :ref:`a_struct_heads_unnum` for more details.
+   This tells the :guilabel:`Compile Manuscrip` tool to not assign a chapter number to this chapter
+   title if automatic chapter numbers are being used. Such titles are useful for a prologue for
+   instance. See :ref:`a_struct_heads_unnum` for more details.
 
 .. note::
    The space after the ``#`` or ``!`` character is mandatory. The syntax highlighter will change
@@ -162,7 +163,7 @@ Comments and Synopsis
 
 In addition to these standard Markdown features, novelWriter also allows for comments in documents.
 The text of a comment is ignored by the word counter. The text can also be filtered out when
-building the manuscript or viewing the document.
+compiling the manuscript or viewing the document.
 
 If the first word of a comment is ``Synopsis:`` (with the colon included), the comment is treated
 in a special manner and will show up in the :ref:`a_ui_outline` in a dedicated column. The word
@@ -176,7 +177,7 @@ indicate this by altering the colour of the word.
 ``% Synopsis: text...``
    This is a synopsis comment. It is generally treated in the same way as a regular comment, except
    that it is also captured by the indexing algorithm and displayed in the :ref:`a_ui_outline`. It
-   can also be filtered separately when building the project to for instance generate an outline
+   can also be filtered separately when compiling the project to for instance generate an outline
    document of the whole project.
 
 .. note::
@@ -241,7 +242,7 @@ Examples:
 .. note::
    The text editor will not show the alignment and indentation live. But the viewer will show them
    when you open the document there. It will of course also be reflected in the document generated
-   from the build tool as long as the format supports paragraph alignment.
+   from the :guilabel:`Compile Manuscrip` tool as long as the format supports paragraph alignment.
 
 
 .. _a_fmt_break:
@@ -250,14 +251,16 @@ Vertical Space and Page Breaks
 ==============================
 
 Adding more than one line break between paragraphs will *not* increase the space between those
-paragraphs when building the project. To add additional space between paragraphs, add the text
-``[VSPACE]`` on a line of its own, and the build tool will insert a blank paragraph in its place.
+paragraphs when compiling the project. To add additional space between paragraphs, add the text
+``[VSPACE]`` on a line of its own, and the :guilabel:`Compile Manuscrip` tool will insert a blank
+paragraph in its place.
 
 If you need multiple blank paragraphs just add a colon and a number to the above code. For
 instance, writing ``[VSPACE:3]`` will insert three blank paragraphs.
 
-Normally, the build tool will insert a page break before all headers of level one and for all
-headers of level two for novel documents, i.e. chapters, but not for project notes.
+Normally, the :guilabel:`Compile Manuscrip` tool will insert a page break before all headers of
+level one and for all headers of level two for novel documents, i.e. chapters, but not for project
+notes.
 
 If you need to add a page break somewhere else, put the text ``[NEW PAGE]`` on a line by itself
 before the text you wish to start on a new page.
@@ -282,4 +285,4 @@ If you want page breaks for scenes and sections, you must add them manually.
 
    [NEWPAGE]
 
-   This text will always start on a new page if the build format has pages.
+   This text will always start on a new page if the manuscript documents format has pages.

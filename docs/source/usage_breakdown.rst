@@ -33,7 +33,7 @@ them. For reference, a list of all shortcuts can be found in the :ref:`a_kb` cha
    Formatting is limited to headers, emphasis, text alignment, and a few other simple features.
 
 On the left side of the main window, you will find a sidebar. This bar has buttons for the standard
-views you can switch between, a quick link to the :guilabel:`Build Manuscript` tool, and a set of
+views you can switch between, a quick link to the :guilabel:`Compile Manuscript` tool, and a set of
 project-related tools and quick access to settings at the bottom.
 
 
@@ -165,11 +165,11 @@ whatever they want. See :ref:`a_struct` and :ref:`a_references` for more details
 
 .. _a_breakdown_export:
 
-Building the Manuscript
-=======================
+Compiling the Manuscript
+========================
 
 The project can at any time be assembled into a range of different formats through the
-:guilabel:`Build Manuscript` tool. Natively, novelWriter supports `Open Document`_, HTML5, and
+:guilabel:`Compile Manuscript` tool. Natively, novelWriter supports `Open Document`_, HTML5, and
 various flavours of Markdown.
 
 The HTML5 format is suitable for conversion by a number of other tools like Pandoc_, or for
@@ -184,7 +184,7 @@ HTML formatted text, or with the raw text as typed into the novel documents.
 See :ref:`a_manuscript` for more details.
 
 .. versionadded:: 2.1
-   You can now define multiple build definitions in the :guilabel:`Build Manuscript` tool. This
+   You can now define multiple compile settings in the :guilabel:`Compile Manuscript` tool. This
    allows you to define specific settings for various types of draft documents, outline documents,
    and manuscript formats. See :ref:`a_manuscript` for more details.
 

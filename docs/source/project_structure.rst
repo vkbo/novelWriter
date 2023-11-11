@@ -50,7 +50,7 @@ The syntax for the four basic header types, and the two special header types, is
 
 **Header Level 3: Scene**
    This header level signifies a scene level partition. You must provide a title text, but the
-   title text can be replaced with a scene separator or just skipped entirely when you build your
+   title text can be replaced with a scene separator or just skipped entirely when you compile your
    manuscript.
 
 **Header Level 4: Section**
@@ -59,13 +59,13 @@ The syntax for the four basic header types, and the two special header types, is
    mid-scene, like if you change the point-of-view character. You are free to use sections as you
    wish, and you can filter them out of the final manuscript just like with scene titles.
 
-Page breaks are automatically added before level 1 and 2 headers when you build your project to a
+Page breaks are automatically added before level 1 and 2 headers when you compile your project to a
 format that supports page breaks, or when you print the document directly from the
-:guilabel:`Manuscript Build` tool. If you want page breaks in other places, you have to specify
+:guilabel:`Compile Manuscript` tool. If you want page breaks in other places, you have to specify
 them manually. See :ref:`a_fmt_break`.
 
 .. tip::
-   There are multiple options of how to process novel titles when building the manuscript. For
+   There are multiple options of how to process novel titles when compiling the manuscript. For
    instance, chapter numbers can be applied automatically, and so can scene numbers if you want
    them in a draft manuscript. See the :ref:`a_manuscript` page for more details.
 
@@ -78,7 +78,7 @@ Novel Title and Front Matter
 It is recommended that you add a document at the very top of each Novel root folder with the novel
 title as the first line. You should modify the level 1 header format code with an ``!`` in order to
 render it as a document title that is excluded from any automatic Table of Content in a manuscript
-build document, like so:
+document, like so:
 
 ``#! My Novel``
 
@@ -97,12 +97,12 @@ Unnumbered Chapter Headings
 
 If you use the automatic numbering feature for your chapters, but you want to keep some special
 chapters separate from this, you cam add an ``!`` to the level 2 header formatting code to tell the
-build tool to skip these chapters.
+compile tool to skip these chapters.
 
 ``##! Unnumbered Chapter Title``
 
-There is a separate formatting feature for such chapters in the :guilabel:`Manuscript Build` tool
-as well. See the :ref:`a_manuscript` page for more details. When building a document of a format
+There is a separate formatting feature for such chapters in the :guilabel:`Compile Manuscript` tool
+as well. See the :ref:`a_manuscript` page for more details. When compiling a document of a format
 that supports page breaks, also unnumbered chapters will have a page break added just like for
 normal chapters.
 

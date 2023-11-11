@@ -20,7 +20,7 @@ Main Window Shortcuts
    :header: "Shortcut", "Description"
 
    ":kbd:`F1`",           "Open the online user manual"
-   ":kbd:`F5`",           "Open the :guilabel:`Build Manuscript` tool"
+   ":kbd:`F5`",           "Open the :guilabel:`Compile Manuscript` tool"
    ":kbd:`F6`",           "Open the :guilabel:`Writing Statistics` tool"
    ":kbd:`F8`",           "Toggle :guilabel:`Focus Mode`"
    ":kbd:`F9`",           "Re-build the project index"

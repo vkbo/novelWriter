@@ -42,7 +42,7 @@ Below are some key features of novelWriter.
 
 **Organise your documents how you like**
    You can split your novel project up into as many individual documents as you want to. When you
-   build the project into a manuscript, they are all glued together in the top-to-bottom order in
+   compile the project into a manuscript, they are all glued together in the top-to-bottom order in
    which they appear in the project tree. You can use as few text documents as you like, but
    splitting the project up into chapters and scenes means you can easily reorder them using the
    drag-and-drop feature. You can also start out with a few documents and then later split them
@@ -66,13 +66,13 @@ Below are some key features of novelWriter.
    subset of the outline information is also available in the :guilabel:`Novel View` as an
    alternative view to the project tree.
 
-**Building your manuscript**
+**Compiling your manuscript**
    Whether you want to assemble a manuscript, or export all your notes, or generate an outline of
-   your chapters and scenes with a synopsis, you can use the :guilabel:`Build Manuscript` tool to
-   do so. The tool lets you select what information you want to include in the generated document,
-   and how it is formatted. You can send the result to a printer, a PDF, or to an Open Document
-   file that can be opened by most office type word processors. You can also generate the result
-   as HTML, or Markdown, both suitable for further conversion to other formats.
+   your chapters and scenes with a synopsis, you can use the :guilabel:`Settings Manuscript` tool
+   to do so. The tool lets you select what information you want to include in the generated
+   document, and how it is formatted. You can send the result to a printer, a PDF, or to an Open
+   Document file that can be opened by most office type word processors. You can also generate the
+   result as HTML, or Markdown, both suitable for further conversion to other formats.
 
 
 .. _a_intro_screenshots:
