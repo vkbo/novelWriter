@@ -167,9 +167,6 @@ class Tokenizer(ABC):
         self._localLookup = self._project.localLookup
         self.tr = partial(QCoreApplication.translate, "Tokenizer")
 
-        # Cached Translations
-        self._trSynopsis = self.tr("Synopsis")
-
         # Format RegEx
         self._rxMarkdown = [
             (QRegularExpression(nwRegEx.FMT_EI), [0, self.FMT_I_B, 0, self.FMT_I_E]),

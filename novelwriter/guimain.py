@@ -31,7 +31,7 @@ from pathlib import Path
 from datetime import datetime
 
 from PyQt5.QtCore import Qt, QTimer, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QCursor, QIcon, QKeySequence
+from PyQt5.QtGui import QCloseEvent, QCursor, QIcon
 from PyQt5.QtWidgets import (
     QDialog, QFileDialog, QHBoxLayout, QMainWindow, QMessageBox, QShortcut,
     QSplitter, QStackedWidget, QVBoxLayout, QWidget, qApp
@@ -62,7 +62,7 @@ from novelwriter.tools.writingstats import GuiWritingStats
 from novelwriter.core.coretools import ProjectBuilder
 
 from novelwriter.enum import (
-    nwDocAction, nwDocMode, nwItemType, nwItemClass, nwWidget, nwView
+    nwDocAction, nwDocInsert, nwDocMode, nwItemType, nwItemClass, nwWidget, nwView
 )
 from novelwriter.common import getGuiItem, hexToInt
 from novelwriter.constants import nwFiles
@@ -243,6 +243,12 @@ class GuiMain(QMainWindow):
         SHARED.projectStatusMessage.connect(self.mainStatus.setStatusMessage)
         SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
 
+        self.mainMenu.requestDocAction.connect(self._passDocumentAction)
+        self.mainMenu.requestDocInsert.connect(self._passDocumentInsert)
+        self.mainMenu.requestDocInsertText.connect(self._passDocumentInsert)
+        self.mainMenu.requestDocKeyWordInsert.connect(self.docEditor.insertKeyWord)
+        self.mainMenu.requestFocusChange.connect(self.switchFocus)
+
         self.sideBar.viewChangeRequested.connect(self._changeView)
 
         self.projView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
@@ -267,6 +273,8 @@ class GuiMain(QMainWindow):
         self.docEditor.novelItemMetaChanged.connect(self.novelView.updateNovelItemMeta)
         self.docEditor.statusMessage.connect(self.mainStatus.setStatusMessage)
         self.docEditor.spellCheckStateChanged.connect(self.mainMenu.setSpellCheckState)
+        self.docEditor.closeDocumentRequest.connect(self.closeDocEditor)
+        self.docEditor.toggleFocusModeRequest.connect(self.toggleFocusMode)
 
         self.docViewer.loadDocumentTagRequest.connect(self._followTag)
 
@@ -293,17 +301,17 @@ class GuiMain(QMainWindow):
         # Shortcuts and Actions
         self._connectMenuActions()
 
-        keyReturn = QShortcut(self)
-        keyReturn.setKey(QKeySequence(Qt.Key_Return))
-        keyReturn.activated.connect(self._keyPressReturn)
+        self.keyReturn = QShortcut(self)
+        self.keyReturn.setKey(Qt.Key.Key_Return)
+        self.keyReturn.activated.connect(self._keyPressReturn)
 
-        keyEnter = QShortcut(self)
-        keyEnter.setKey(QKeySequence(Qt.Key_Enter))
-        keyEnter.activated.connect(self._keyPressReturn)
+        self.keyEnter = QShortcut(self)
+        self.keyEnter.setKey(Qt.Key.Key_Enter)
+        self.keyEnter.activated.connect(self._keyPressReturn)
 
-        keyEscape = QShortcut(self)
-        keyEscape.setKey(QKeySequence(Qt.Key_Escape))
-        keyEscape.activated.connect(self._keyPressEscape)
+        self.keyEscape = QShortcut(self)
+        self.keyEscape.setKey(Qt.Key.Key_Escape)
+        self.keyEscape.activated.connect(self._keyPressEscape)
 
         # Check that config loaded fine
         self.reportConfErr()
@@ -733,20 +741,6 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def passDocumentAction(self, action: nwDocAction) -> None:
-        """Pass on document action to the document viewer if it has
-        focus, or pass it to the document editor if it or any of
-        its child widgets have focus. If neither has focus, ignore the
-        action.
-        """
-        if self.docViewer.hasFocus():
-            self.docViewer.docAction(action)
-        elif self.docEditor.hasFocus():
-            self.docEditor.docAction(action)
-        else:
-            logger.debug("Action cancelled as neither editor nor viewer has focus")
-        return
-
     ##
     #  Tree Item Actions
     ##
@@ -1100,31 +1094,6 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def switchFocus(self, paneNo: nwWidget) -> None:
-        """Switch focus between main GUI views."""
-        if paneNo == nwWidget.TREE:
-            tabIdx = self.projStack.currentIndex()
-            if tabIdx == self.idxProjView:
-                self.projView.setFocus()
-            elif tabIdx == self.idxNovelView:
-                self.novelView.setTreeFocus()
-        elif paneNo == nwWidget.EDITOR:
-            self._changeView(nwView.EDITOR)
-            self.docEditor.setFocus()
-        elif paneNo == nwWidget.VIEWER:
-            self._changeView(nwView.EDITOR)
-            self.docViewer.setFocus()
-        elif paneNo == nwWidget.OUTLINE:
-            self._changeView(nwView.OUTLINE)
-            self.outlineView.setTreeFocus()
-        return
-
-    def closeDocEditor(self) -> None:
-        """Close the document editor. This does not hide the editor."""
-        self.closeDocument()
-        SHARED.project.data.setLastHandle(None, "editor")
-        return
-
     def closeDocViewer(self, byUser: bool = True) -> bool:
         """Close the document view panel."""
         self.docViewer.clearViewer()
@@ -1139,13 +1108,44 @@ class GuiMain(QMainWindow):
 
         return not self.splitView.isVisible()
 
-    def toggleFocusMode(self) -> bool:
+    def toggleFullScreenMode(self) -> None:
+        """Toggle full screen mode"""
+        self.setWindowState(self.windowState() ^ Qt.WindowFullScreen)
+        return
+
+    ##
+    #  Events
+    ##
+
+    def closeEvent(self, event: QCloseEvent):
+        """Capture the closing event of the GUI and call the close
+        function to handle all the close process steps.
+        """
+        if self.closeMain():
+            event.accept()
+        else:
+            event.ignore()
+        return
+
+    ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot()
+    def closeDocEditor(self) -> None:
+        """Close the document editor. This does not hide the editor."""
+        self.closeDocument()
+        SHARED.project.data.setLastHandle(None, "editor")
+        return
+
+    @pyqtSlot()
+    def toggleFocusMode(self) -> None:
         """Handle toggle focus mode. The Main GUI Focus Mode hides tree,
         view, statusbar and menu.
         """
         if self.docEditor.docHandle is None:
             logger.error("No document open, so not activating Focus Mode")
-            return False
+            return
 
         self.isFocusMode = not self.isFocusMode
         if self.isFocusMode:
@@ -1169,11 +1169,188 @@ class GuiMain(QMainWindow):
         elif self.docViewer.docHandle is not None:
             self.splitView.setVisible(True)
 
-        return True
+        return
 
-    def toggleFullScreenMode(self) -> None:
-        """Toggle full screen mode"""
-        self.setWindowState(self.windowState() ^ Qt.WindowFullScreen)
+    @pyqtSlot(nwWidget)
+    def switchFocus(self, paneNo: nwWidget) -> None:
+        """Switch focus between main GUI views."""
+        if paneNo == nwWidget.TREE:
+            if self.projStack.currentWidget() is self.projView:
+                if self.projView.treeHasFocus():
+                    self._changeView(nwView.NOVEL)
+                    self.novelView.setTreeFocus()
+                else:
+                    self.projView.setTreeFocus()
+            else:
+                if self.novelView.treeHasFocus():
+                    self._changeView(nwView.PROJECT)
+                    self.projView.setTreeFocus()
+                else:
+                    self.novelView.setTreeFocus()
+        elif paneNo == nwWidget.EDITOR:
+            self._changeView(nwView.EDITOR)
+            self.docEditor.setFocus()
+        elif paneNo == nwWidget.VIEWER:
+            self._changeView(nwView.EDITOR)
+            self.docViewer.setFocus()
+        elif paneNo == nwWidget.OUTLINE:
+            self._changeView(nwView.OUTLINE)
+            self.outlineView.setTreeFocus()
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(str, nwDocMode)
+    def _followTag(self, tag: str, mode: nwDocMode) -> None:
+        """Follow a tag after user interaction with a link."""
+        tHandle, sTitle = self._getTagSource(tag)
+        if tHandle is not None:
+            if mode == nwDocMode.EDIT:
+                self.openDocument(tHandle)
+            elif mode == nwDocMode.VIEW:
+                self.viewDocument(tHandle=tHandle, sTitle=sTitle)
+        return
+
+    @pyqtSlot(str, nwDocMode, str, bool)
+    def _openDocument(self, tHandle: str, mode: nwDocMode, sTitle: str, setFocus: bool) -> None:
+        """Handle an open document request."""
+        if tHandle is not None:
+            if mode == nwDocMode.EDIT:
+                tLine = None
+                hItem = SHARED.project.index.getItemHeader(tHandle, sTitle)
+                if hItem is not None:
+                    tLine = hItem.line
+                self.openDocument(tHandle, tLine=tLine, changeFocus=setFocus)
+            elif mode == nwDocMode.VIEW:
+                self.viewDocument(tHandle=tHandle, sTitle=sTitle)
+        return
+
+    @pyqtSlot(nwView)
+    def _changeView(self, view: nwView) -> None:
+        """Handle the requested change of view from the GuiViewBar."""
+        if view == nwView.EDITOR:
+            # Only change the main stack, but not the project stack
+            self.mainStack.setCurrentWidget(self.splitMain)
+        elif view == nwView.PROJECT:
+            self.mainStack.setCurrentWidget(self.splitMain)
+            self.projStack.setCurrentWidget(self.projView)
+        elif view == nwView.NOVEL:
+            self.mainStack.setCurrentWidget(self.splitMain)
+            self.projStack.setCurrentWidget(self.novelView)
+        elif view == nwView.OUTLINE:
+            self.mainStack.setCurrentWidget(self.outlineView)
+        return
+
+    @pyqtSlot(nwDocAction)
+    def _passDocumentAction(self, action: nwDocAction) -> None:
+        """Pass on a document action to the document viewer if it has
+        focus, or pass it to the document editor if it or any of its
+        child widgets have focus. If neither has focus, ignore it.
+        """
+        if self.docViewer.hasFocus():
+            self.docViewer.docAction(action)
+        elif self.docEditor.hasFocus():
+            self.docEditor.docAction(action)
+        else:
+            logger.debug("Action cancelled as neither editor nor viewer has focus")
+        return
+
+    @pyqtSlot(str)
+    @pyqtSlot(nwDocInsert)
+    def _passDocumentInsert(self, content: str | nwDocInsert) -> None:
+        """Pass on a document insert action to the document editor if it
+        has focus. If not, ignore it.
+        """
+        if self.docEditor.hasFocus():
+            self.docEditor.insertText(content)
+        return
+
+    @pyqtSlot()
+    def _timeTick(self) -> None:
+        """Process time tick of the main timer."""
+        if not SHARED.hasProject:
+            return
+        currTime = time()
+        editIdle = currTime - self.docEditor.lastActive > CONFIG.userIdleTime
+        userIdle = qApp.applicationState() != Qt.ApplicationActive
+        self.mainStatus.setUserIdle(editIdle or userIdle)
+        SHARED.updateIdleTime(currTime, editIdle or userIdle)
+        self.mainStatus.updateTime(idleTime=SHARED.projectIdleTime)
+        return
+
+    @pyqtSlot()
+    def _autoSaveProject(self) -> None:
+        """Autosave of the project. This is a timer-activated slot."""
+        doSave  = SHARED.hasProject
+        doSave &= SHARED.project.projChanged
+        doSave &= SHARED.project.storage.isOpen()
+        if doSave:
+            logger.debug("Autosaving project")
+            self.saveProject(autoSave=True)
+        return
+
+    @pyqtSlot()
+    def _autoSaveDocument(self) -> None:
+        """Autosave of the document. This is a timer-activated slot."""
+        if SHARED.hasProject and self.docEditor.docChanged:
+            logger.debug("Autosaving document")
+            self.saveDocument()
+        return
+
+    @pyqtSlot()
+    def _updateStatusWordCount(self) -> None:
+        """Update the word count on the status bar."""
+        if not SHARED.hasProject:
+            self.mainStatus.setProjectStats(0, 0)
+
+        SHARED.project.updateWordCounts()
+        if CONFIG.incNotesWCount:
+            iTotal = sum(SHARED.project.data.initCounts)
+            cTotal = sum(SHARED.project.data.currCounts)
+            self.mainStatus.setProjectStats(cTotal, cTotal - iTotal)
+        else:
+            iNovel, _ = SHARED.project.data.initCounts
+            cNovel, _ = SHARED.project.data.currCounts
+            self.mainStatus.setProjectStats(cNovel, cNovel - iNovel)
+
+        return
+
+    @pyqtSlot()
+    def _keyPressReturn(self) -> None:
+        """Forward the return/enter keypress to the function that opens
+        the currently selected item.
+        """
+        self.openSelectedItem()
+        return
+
+    @pyqtSlot()
+    def _keyPressEscape(self) -> None:
+        """Process escape keypress in the main window."""
+        if self.docEditor.docSearch.isVisible():
+            self.docEditor.closeSearch()
+        elif self.isFocusMode:
+            self.toggleFocusMode()
+        return
+
+    @pyqtSlot(int)
+    def _mainStackChanged(self, index: int) -> None:
+        """Process main window tab change."""
+        if index == self.idxOutlineView:
+            if SHARED.hasProject:
+                self.outlineView.refreshTree()
+        return
+
+    @pyqtSlot(int)
+    def _projStackChanged(self, index: int) -> None:
+        """Process project view tab change."""
+        sHandle = None
+        if index == self.idxProjView:
+            sHandle = self.projView.getSelectedHandle()
+        elif index == self.idxNovelView:
+            sHandle, _ = self.novelView.getSelectedHandle()
+        self.itemDetails.updateViewBox(sHandle)
         return
 
     ##
@@ -1311,6 +1488,12 @@ class GuiMain(QMainWindow):
             projData["numChapters"] = newProj.field("numChapters")
             projData["numScenes"] = newProj.field("numScenes")
 
+        try:
+            langIdx = newProj.field("projLang")
+            projData["projLang"] = CONFIG.listLanguages(CONFIG.LANG_PROJ)[langIdx][0]
+        except Exception:
+            projData["projLang"] = "en_GB"
+
         return projData
 
     def _getTagSource(self, tag: str) -> tuple[str | None, str | None]:
@@ -1328,154 +1511,5 @@ class GuiMain(QMainWindow):
             ))
             return None, None
         return tHandle, sTitle
-
-    ##
-    #  Events
-    ##
-
-    def closeEvent(self, event: QCloseEvent):
-        """Capture the closing event of the GUI and call the close
-        function to handle all the close process steps.
-        """
-        if self.closeMain():
-            event.accept()
-        else:
-            event.ignore()
-        return
-
-    ##
-    #  Private Slots
-    ##
-
-    @pyqtSlot(str, nwDocMode)
-    def _followTag(self, tag: str, mode: nwDocMode) -> None:
-        """Follow a tag after user interaction with a link."""
-        tHandle, sTitle = self._getTagSource(tag)
-        if tHandle is not None:
-            if mode == nwDocMode.EDIT:
-                self.openDocument(tHandle)
-            elif mode == nwDocMode.VIEW:
-                self.viewDocument(tHandle=tHandle, sTitle=sTitle)
-        return
-
-    @pyqtSlot(str, nwDocMode, str, bool)
-    def _openDocument(self, tHandle: str, mode: nwDocMode, sTitle: str, setFocus: bool) -> None:
-        """Handle an open document request."""
-        if tHandle is not None:
-            if mode == nwDocMode.EDIT:
-                tLine = None
-                hItem = SHARED.project.index.getItemHeader(tHandle, sTitle)
-                if hItem is not None:
-                    tLine = hItem.line
-                self.openDocument(tHandle, tLine=tLine, changeFocus=setFocus)
-            elif mode == nwDocMode.VIEW:
-                self.viewDocument(tHandle=tHandle, sTitle=sTitle)
-        return
-
-    @pyqtSlot(nwView)
-    def _changeView(self, view: nwView) -> None:
-        """Handle the requested change of view from the GuiViewBar."""
-        if view == nwView.EDITOR:
-            # Only change the main stack, but not the project stack
-            self.mainStack.setCurrentWidget(self.splitMain)
-
-        elif view == nwView.PROJECT:
-            self.mainStack.setCurrentWidget(self.splitMain)
-            self.projStack.setCurrentWidget(self.projView)
-
-        elif view == nwView.NOVEL:
-            self.mainStack.setCurrentWidget(self.splitMain)
-            self.projStack.setCurrentWidget(self.novelView)
-
-        elif view == nwView.OUTLINE:
-            self.mainStack.setCurrentWidget(self.outlineView)
-
-        return
-
-    @pyqtSlot()
-    def _timeTick(self) -> None:
-        """Process time tick of the main timer."""
-        if not SHARED.hasProject:
-            return
-        currTime = time()
-        editIdle = currTime - self.docEditor.lastActive > CONFIG.userIdleTime
-        userIdle = qApp.applicationState() != Qt.ApplicationActive
-        self.mainStatus.setUserIdle(editIdle or userIdle)
-        SHARED.updateIdleTime(currTime, editIdle or userIdle)
-        self.mainStatus.updateTime(idleTime=SHARED.projectIdleTime)
-        return
-
-    @pyqtSlot()
-    def _autoSaveProject(self) -> None:
-        """Autosave of the project. This is a timer-activated slot."""
-        doSave  = SHARED.hasProject
-        doSave &= SHARED.project.projChanged
-        doSave &= SHARED.project.storage.isOpen()
-        if doSave:
-            logger.debug("Autosaving project")
-            self.saveProject(autoSave=True)
-        return
-
-    @pyqtSlot()
-    def _autoSaveDocument(self) -> None:
-        """Autosave of the document. This is a timer-activated slot."""
-        if SHARED.hasProject and self.docEditor.docChanged:
-            logger.debug("Autosaving document")
-            self.saveDocument()
-        return
-
-    @pyqtSlot()
-    def _updateStatusWordCount(self) -> None:
-        """Update the word count on the status bar."""
-        if not SHARED.hasProject:
-            self.mainStatus.setProjectStats(0, 0)
-
-        SHARED.project.updateWordCounts()
-        if CONFIG.incNotesWCount:
-            iTotal = sum(SHARED.project.data.initCounts)
-            cTotal = sum(SHARED.project.data.currCounts)
-            self.mainStatus.setProjectStats(cTotal, cTotal - iTotal)
-        else:
-            iNovel, _ = SHARED.project.data.initCounts
-            cNovel, _ = SHARED.project.data.currCounts
-            self.mainStatus.setProjectStats(cNovel, cNovel - iNovel)
-
-        return
-
-    @pyqtSlot()
-    def _keyPressReturn(self) -> None:
-        """Forward the return/enter keypress to the function that opens
-        the currently selected item.
-        """
-        self.openSelectedItem()
-        return
-
-    @pyqtSlot()
-    def _keyPressEscape(self) -> None:
-        """Process escape keypress in the main window."""
-        if self.docEditor.docSearch.isVisible():
-            self.docEditor.closeSearch()
-        elif self.isFocusMode:
-            self.toggleFocusMode()
-        return
-
-    @pyqtSlot(int)
-    def _mainStackChanged(self, index: int) -> None:
-        """Process main window tab change."""
-        if index == self.idxOutlineView:
-            if SHARED.hasProject:
-                self.outlineView.refreshTree()
-        return
-
-    @pyqtSlot(int)
-    def _projStackChanged(self, index: int) -> None:
-        """Process project view tab change."""
-        sHandle = None
-        if index == self.idxProjView:
-            sHandle = self.projView.getSelectedHandle()
-        elif index == self.idxNovelView:
-            sHandle, _ = self.novelView.getSelectedHandle()
-        self.itemDetails.updateViewBox(sHandle)
-        return
 
 # END Class GuiMain

@@ -25,18 +25,18 @@ Main Window Shortcuts
    ":kbd:`F8`",           "Toggle :guilabel:`Focus Mode`"
    ":kbd:`F9`",           "Re-build the project index"
    ":kbd:`F11`",          "Toggle full screen mode"
-   ":kbd:`Alt+1`",        "Switch focus to the project tree (Windows :kbd:`Ctrl+Alt+1`)"
-   ":kbd:`Alt+2`",        "Switch focus to document editor (Windows :kbd:`Ctrl+Alt+2`)"
-   ":kbd:`Alt+3`",        "Switch focus to document viewer (Windows :kbd:`Ctrl+Alt+3`)"
-   ":kbd:`Alt+4`",        "Switch focus to outline view (Windows :kbd:`Ctrl+Alt+4`)"
    ":kbd:`Ctrl+,`",       "Open the :guilabel:`Preferences` dialog"
+   ":kbd:`Ctrl+E`",       "Switch focus to the document editor"
+   ":kbd:`Ctrl+T`",       "Switch focus to the project/novel tree"
    ":kbd:`Ctrl+Q`",       "Exit novelWriter"
    ":kbd:`Ctrl+Shift+,`", "Open the :guilabel:`Project Settings` dialog"
    ":kbd:`Ctrl+Shift+O`", "Open a project"
    ":kbd:`Ctrl+Shift+S`", "Save the current project"
+   ":kbd:`Ctrl+Shift+T`", "Switch focus to the outline view"
    ":kbd:`Ctrl+Shift+W`", "Close the current project"
    ":kbd:`Shift+F1`",     "Open the local user manual (PDF) if it is available"
    ":kbd:`Shift+F6`",     "Open the :guilabel:`Project Details` dialog"
+
 
 .. _a_kb_tree:
 
@@ -46,21 +46,21 @@ Project Tree Shortcuts
 .. csv-table::
    :header: "Shortcut", "Description"
 
-   ":kbd:`F2`",             "Edit the label of the selected item"
-   ":kbd:`Return`",         "Open the selected document in the editor"
-   ":kbd:`Alt+Up`",         "Jump or go to the previous item at same level in the tree"
-   ":kbd:`Alt+Down`",       "Jump or go to the next item at same level in the tree"
-   ":kbd:`Alt+Left`",       "Jump to the parent item in the tree"
-   ":kbd:`Alt+Right`",      "Jump to the first child item in the project tree"
-   ":kbd:`Ctrl+.`",         "Open the context menu on the selected item"
-   ":kbd:`Ctrl+L`",         "Open the :guilabel:`Quick Links` menu"
-   ":kbd:`Ctrl+N`",         "Open the :guilabel:`Create New Item` menu"
-   ":kbd:`Ctrl+O`",         "Open selected document"
-   ":kbd:`Ctrl+R`",         "Open the selected document in the viewer"
-   ":kbd:`Ctrl+Up`",        "Move selected item one step up in the tree"
-   ":kbd:`Ctrl+Down`",      "Move selected item one step down in the tree"
-   ":kbd:`Ctrl+Shift+Z`",   "Undo the last move of a project item, if possible"
-   ":kbd:`Ctrl+Shift+Del`", "Move the selected item to Trash"
+   ":kbd:`F2`",           "Edit the label of the selected item"
+   ":kbd:`Return`",       "Open the selected document in the editor"
+   ":kbd:`Alt+Up`",       "Jump or go to the previous item at same level in the tree"
+   ":kbd:`Alt+Down`",     "Jump or go to the next item at same level in the tree"
+   ":kbd:`Alt+Left`",     "Jump to the parent item in the tree"
+   ":kbd:`Alt+Right`",    "Jump to the first child item in the project tree"
+   ":kbd:`Ctrl+.`",       "Open the context menu on the selected item"
+   ":kbd:`Ctrl+L`",       "Open the :guilabel:`Quick Links` menu"
+   ":kbd:`Ctrl+N`",       "Open the :guilabel:`Create New Item` menu"
+   ":kbd:`Ctrl+O`",       "Open selected document"
+   ":kbd:`Ctrl+R`",       "Open the selected document in the viewer"
+   ":kbd:`Ctrl+Up`",      "Move selected item one step up in the tree"
+   ":kbd:`Ctrl+Down`",    "Move selected item one step down in the tree"
+   ":kbd:`Ctrl+Del`",     "Move the selected item to Trash"
+   ":kbd:`Ctrl+Shift+Z`", "Undo the last move of a project item, if possible"
 
 
 .. _a_kb_editor:
@@ -77,10 +77,10 @@ Text Search Shortcuts
 
    ":kbd:`F3`",           "Find the next occurrence of the search word"
    ":kbd:`Ctrl+F`",       "Open the search bar and search for the selected word, if any is selected"
-   ":kbd:`Ctrl+G`",       "Find next occurrence of search word in current document"
+   ":kbd:`Ctrl+G`",       "Find the next occurrence of the search word"
    ":kbd:`Ctrl+H`",       "Open the search tool and populate with the selected word (Mac :kbd:`Cmd+=`)"
    ":kbd:`Ctrl+Shift+1`", "Replace selected occurrence of the search word, and move to the next"
-   ":kbd:`Ctrl+Shift+G`", "Find previous occurrence of the search word"
+   ":kbd:`Ctrl+Shift+G`", "Find the previous occurrence of the search word"
    ":kbd:`Shift+F3`",     "Find the previous occurrence of the search word"
 
 
@@ -133,6 +133,7 @@ Other Editor Shortcuts
    ":kbd:`Ctrl+F7`",        "Toggle spell checking"
    ":kbd:`Ctrl+Shift+A`",   "Select all text in the current paragraph"
    ":kbd:`Ctrl+Shift+I`",   "Import text to the current document from a text file"
+
 
 .. _a_kb_ins:
 

@@ -57,32 +57,32 @@ class GuiSideBar(QWidget):
 
         # Buttons
         self.tbProject = QToolButton(self)
-        self.tbProject.setToolTip(self.tr("Project Tree View"))
+        self.tbProject.setToolTip("{0} [Ctrl+T]".format(self.tr("Project Tree View")))
         self.tbProject.setIconSize(iconSize)
         self.tbProject.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.PROJECT))
 
         self.tbNovel = QToolButton(self)
-        self.tbNovel.setToolTip(self.tr("Novel Tree View"))
+        self.tbNovel.setToolTip("{0} [Ctrl+T]".format(self.tr("Novel Tree View")))
         self.tbNovel.setIconSize(iconSize)
         self.tbNovel.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.NOVEL))
 
         self.tbOutline = QToolButton(self)
-        self.tbOutline.setToolTip(self.tr("Novel Outline View"))
+        self.tbOutline.setToolTip(f"{0} [Ctrl+Shift+T]".format(self.tr("Novel Outline View")))
         self.tbOutline.setIconSize(iconSize)
         self.tbOutline.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.OUTLINE))
 
         self.tbBuild = QToolButton(self)
-        self.tbBuild.setToolTip(self.tr("Build Manuscript"))
+        self.tbBuild.setToolTip("{0} [F5]".format(self.tr("Build Manuscript")))
         self.tbBuild.setIconSize(iconSize)
         self.tbBuild.clicked.connect(self.mainGui.showBuildManuscriptDialog)
 
         self.tbDetails = QToolButton(self)
-        self.tbDetails.setToolTip(self.tr("Project Details"))
+        self.tbDetails.setToolTip("{0} [Shift+F6]".format(self.tr("Project Details")))
         self.tbDetails.setIconSize(iconSize)
         self.tbDetails.clicked.connect(self.mainGui.showProjectDetailsDialog)
 
         self.tbStats = QToolButton(self)
-        self.tbStats.setToolTip(self.tr("Writing Statistics"))
+        self.tbStats.setToolTip("{0} [F6]".format(self.tr("Writing Statistics")))
         self.tbStats.setIconSize(iconSize)
         self.tbStats.clicked.connect(self.mainGui.showWritingStatsDialog)
 
@@ -115,7 +115,6 @@ class GuiSideBar(QWidget):
         self.outerBox.setSpacing(CONFIG.pxInt(4))
 
         self.setLayout(self.outerBox)
-
         self.updateTheme()
 
         logger.debug("Ready: GuiSideBar")

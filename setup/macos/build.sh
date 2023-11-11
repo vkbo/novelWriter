@@ -62,6 +62,14 @@ fi
 echo "Content of current dir:"
 ls -lah .
 
+# Create icon
+echo "Creating icon ..."
+pushd "$SRC_DIR/setup/macos" || exit 1
+iconutil -c icns $SRC_DIR/setup/macos/novelwriter.iconset
+echo "Content of current dir:"
+ls -lah .
+
+popd || exit 1
 popd || exit 1
 pushd "$BUILD_DIR"/ || exit 1
 

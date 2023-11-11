@@ -7,7 +7,7 @@
   </project>
   <settings>
     <doBackup>yes</doBackup>
-    <language>None</language>
+    <language>en_GB</language>
     <spellChecking auto="no">None</spellChecking>
     <lastHandle>
       <entry key="editor">None</entry>

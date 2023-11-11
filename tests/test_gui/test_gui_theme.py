@@ -322,17 +322,17 @@ def testGuiTheme_Icons(qtbot, caplog, monkeypatch, nwGUI, tstPaths):
         assert qPix.isNull() is True
 
     # Test image sizes
-    qPix = iconCache.loadDecoration("wiz-back", pxW=100, pxH=None)
+    qPix = iconCache.loadDecoration("wiz-back", w=100, h=None)
     assert qPix.isNull() is False
     assert qPix.width() == 100
     assert qPix.height() > 100
 
-    qPix = iconCache.loadDecoration("wiz-back", pxW=None, pxH=100)
+    qPix = iconCache.loadDecoration("wiz-back", w=None, h=100)
     assert qPix.isNull() is False
     assert qPix.width() < 100
     assert qPix.height() == 100
 
-    qPix = iconCache.loadDecoration("wiz-back", pxW=100, pxH=100)
+    qPix = iconCache.loadDecoration("wiz-back", w=100, h=100)
     assert qPix.isNull() is False
     assert qPix.width() == 100
     assert qPix.height() == 100

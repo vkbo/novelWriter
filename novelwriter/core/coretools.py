@@ -363,11 +363,13 @@ class ProjectBuilder:
         projName = data.get("projName", lblNewProject)
         projTitle = data.get("projTitle", lblNewProject)
         projAuthor = data.get("projAuthor", "")
+        projLang = data.get("projLang", "en_GB")
 
         project.data.setUuid(None)
         project.data.setName(projName)
         project.data.setTitle(projTitle)
         project.data.setAuthor(projAuthor)
+        project.data.setLanguage(projLang)
         project.setDefaultStatusImport()
         project.session.startSession()
 

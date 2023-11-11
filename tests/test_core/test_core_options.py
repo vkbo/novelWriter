@@ -140,7 +140,7 @@ def testCoreOptions_SetGet(mockGUI):
     assert theOpts.getFloat("GuiProjectDetails", "mockItem", None) is None
     assert theOpts.getBool("GuiProjectDetails", "clearDouble", None) is True
     assert theOpts.getBool("GuiProjectDetails", "mockItem", None) is None
-    assert theOpts.getEnum("GuiNovelView", "lastCol", NovelTreeColumn, None) == nwColHidden
+    assert theOpts.getEnum("GuiNovelView", "lastCol", NovelTreeColumn, nwColHidden) == nwColHidden
 
     # Get from non-existent  groups
     assert theOpts.getValue("SomeGroup", "mockItem", None) is None

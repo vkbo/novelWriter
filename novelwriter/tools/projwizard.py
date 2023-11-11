@@ -31,8 +31,9 @@ from pathlib import Path
 
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    QFileDialog, QFormLayout, QGridLayout, QHBoxLayout, QLabel, QLineEdit,
-    QPushButton, QRadioButton, QSpinBox, QVBoxLayout, QWizard, QWizardPage
+    QComboBox, QFileDialog, QFormLayout, QGridLayout, QHBoxLayout, QLabel,
+    QLineEdit, QPushButton, QRadioButton, QSpinBox, QVBoxLayout, QWizard,
+    QWizardPage
 )
 
 from novelwriter import CONFIG, SHARED
@@ -133,15 +134,28 @@ class ProjWizardIntroPage(QWizardPage):
         self.projAuthor.setFixedWidth(xW)
         self.projAuthor.setPlaceholderText(self.tr("Optional"))
 
+        self.projLang = QComboBox(self)
+        self.projLang.setMaximumWidth(xW)
+        for tag, language in CONFIG.listLanguages(CONFIG.LANG_PROJ):
+            self.projLang.addItem(language, tag)
+
+        langIdx = self.projLang.findData(CONFIG.guiLocale)
+        if langIdx == -1:
+            langIdx = self.projLang.findData("en_GB")
+        if langIdx != -1:
+            self.projLang.setCurrentIndex(langIdx)
+
         self.mainForm = QFormLayout()
         self.mainForm.addRow(self.tr("Project Name"), self.projName)
         self.mainForm.addRow(self.tr("Novel Title"), self.projTitle)
         self.mainForm.addRow(self.tr("Author(s)"), self.projAuthor)
+        self.mainForm.addRow(self.tr("Language"), self.projLang)
         self.mainForm.setVerticalSpacing(fS)
 
         self.registerField("projName*", self.projName)
         self.registerField("projTitle", self.projTitle)
         self.registerField("projAuthor", self.projAuthor)
+        self.registerField("projLang", self.projLang)
 
         # Assemble
         self.outerBox = QVBoxLayout()
