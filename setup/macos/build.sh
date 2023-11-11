@@ -111,7 +111,8 @@ for file in "${FILES_COPY[@]}"; do
     cp -R $SRC_DIR/$file novelWriter.app/Contents/Resources/novelWriter/
 done
 
-cp $SRC_DIR/setup/macos/novelwriter.icns novelWriter.app/Contents/Resources/
+iconutil -c icns -o novelWriter.app/Contents/Resources/novelwriter.icns $SRC_DIR/setup/macos/novelwriter.iconset
+# cp $SRC_DIR/setup/macos/novelwriter.icns novelWriter.app/Contents/Resources/
 
 # Create entry script
 echo "Creating entry script ..."
