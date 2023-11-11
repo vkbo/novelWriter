@@ -1,6 +1,6 @@
 """
-novelWriter – GUI Build Manuscript
-==================================
+novelWriter – GUI Compile Manuscript
+====================================
 
 File History:
 Created: 2023-05-24 [2.1b1] GuiManuscriptBuild
@@ -47,10 +47,10 @@ logger = logging.getLogger(__name__)
 
 
 class GuiManuscriptBuild(QDialog):
-    """GUI Tools: Manuscript Build Dialog
+    """GUI Tools: Manuscript Compile Dialog
 
     This is the tool for running the build itself. It can be accessed
-    independently of the Manuscript Build Tool.
+    independently of the Manuscript Compile Tool.
     """
 
     D_KEY = Qt.ItemDataRole.UserRole
@@ -64,7 +64,7 @@ class GuiManuscriptBuild(QDialog):
         self._parent = parent
         self._build = build
 
-        self.setWindowTitle(self.tr("Build Manuscript"))
+        self.setWindowTitle(self.tr("Compile Manuscript"))
         self.setMinimumWidth(CONFIG.pxInt(500))
         self.setMinimumHeight(CONFIG.pxInt(300))
 
@@ -175,7 +175,7 @@ class GuiManuscriptBuild(QDialog):
         self.buildBox.setVerticalSpacing(sp4)
 
         # Dialog Buttons
-        self.btnBuild = QPushButton(SHARED.theme.getIcon("export"), self.tr("&Build"))
+        self.btnBuild = QPushButton(SHARED.theme.getIcon("export"), self.tr("&Compile"))
         self.dlgButtons = QDialogButtonBox(QDialogButtonBox.Close)
         self.dlgButtons.addButton(self.btnBuild, QDialogButtonBox.ActionRole)
 

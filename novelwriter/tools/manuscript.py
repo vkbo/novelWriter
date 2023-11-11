@@ -79,7 +79,7 @@ class GuiManuscript(QDialog):
         self._builds = BuildCollection(SHARED.project)
         self._buildMap: dict[str, QListWidgetItem] = {}
 
-        self.setWindowTitle(self.tr("Build Manuscript"))
+        self.setWindowTitle(self.tr("Compile Manuscript"))
         self.setMinimumWidth(CONFIG.pxInt(600))
         self.setMinimumHeight(CONFIG.pxInt(500))
 
@@ -109,21 +109,21 @@ class GuiManuscript(QDialog):
         self.tbAdd = QToolButton(self)
         self.tbAdd.setIcon(SHARED.theme.getIcon("add"))
         self.tbAdd.setIconSize(QSize(iPx, iPx))
-        self.tbAdd.setToolTip(self.tr("Add New Build"))
+        self.tbAdd.setToolTip(self.tr("Add New Compile Settings"))
         self.tbAdd.setStyleSheet(buttonStyle)
         self.tbAdd.clicked.connect(self._createNewBuild)
 
         self.tbDel = QToolButton(self)
         self.tbDel.setIcon(SHARED.theme.getIcon("remove"))
         self.tbDel.setIconSize(QSize(iPx, iPx))
-        self.tbDel.setToolTip(self.tr("Delete Selected Build"))
+        self.tbDel.setToolTip(self.tr("Delete Selected Compile Settings"))
         self.tbDel.setStyleSheet(buttonStyle)
         self.tbDel.clicked.connect(self._deleteSelectedBuild)
 
         self.tbEdit = QToolButton(self)
         self.tbEdit.setIcon(SHARED.theme.getIcon("edit"))
         self.tbEdit.setIconSize(QSize(iPx, iPx))
-        self.tbEdit.setToolTip(self.tr("Edit Selected Build"))
+        self.tbEdit.setToolTip(self.tr("Edit Selected Compile Settings"))
         self.tbEdit.setStyleSheet(buttonStyle)
         self.tbEdit.clicked.connect(self._editSelectedBuild)
 
@@ -169,7 +169,7 @@ class GuiManuscript(QDialog):
         self.btnPrint = QPushButton(self.tr("Print"))
         self.btnPrint.clicked.connect(self._printDocument)
 
-        self.btnBuild = QPushButton(self.tr("Build"))
+        self.btnBuild = QPushButton(self.tr("Compile"))
         self.btnBuild.clicked.connect(self._buildManuscript)
 
         self.btnClose = QPushButton(self.tr("Close"))

@@ -1,6 +1,6 @@
 """
-novelWriter – GUI Build Settings
-================================
+novelWriter – GUI Compile Settings
+==================================
 
 File History:
 Created: 2023-02-13 [2.1b1] GuiBuildSettings
@@ -54,7 +54,7 @@ logger = logging.getLogger(__name__)
 
 
 class GuiBuildSettings(QDialog):
-    """GUI Tools: Manuscript Build Settings Dialog
+    """GUI Tools: Manuscript Compile Settings Dialog
 
     The main tool for configuring manuscript builds. It's a GUI tool for
     editing JSON build definitions, wrapped as a BuildSettings object.
@@ -78,7 +78,7 @@ class GuiBuildSettings(QDialog):
 
         self._build = build
 
-        self.setWindowTitle(self.tr("Manuscript Build Settings"))
+        self.setWindowTitle(self.tr("Manuscript Compile Settings"))
         self.setMinimumWidth(CONFIG.pxInt(700))
         self.setMinimumHeight(CONFIG.pxInt(400))
 

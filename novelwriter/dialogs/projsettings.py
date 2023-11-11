@@ -237,7 +237,7 @@ class GuiProjectEditMain(QWidget):
         self.mainForm.addRow(
             self.tr("Project language"),
             self.projLang,
-            self.tr("Used when building the manuscript.")
+            self.tr("Used when compiling the manuscript.")
         )
 
         langIdx = 0

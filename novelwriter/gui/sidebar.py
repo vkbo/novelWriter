@@ -72,7 +72,7 @@ class GuiSideBar(QWidget):
         self.tbOutline.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.OUTLINE))
 
         self.tbBuild = QToolButton(self)
-        self.tbBuild.setToolTip("{0} [F5]".format(self.tr("Build Manuscript")))
+        self.tbBuild.setToolTip("{0} [F5]".format(self.tr("Compile Manuscript")))
         self.tbBuild.setIconSize(iconSize)
         self.tbBuild.clicked.connect(self.mainGui.showBuildManuscriptDialog)
 
