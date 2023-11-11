@@ -62,6 +62,14 @@ fi
 echo "Content of current dir:"
 ls -lah .
 
+# Create icon
+echo "Creating icon ..."
+pushd "$SRC_DIR/setup/macos" || exit 1
+iconutil -c icns $SRC_DIR/setup/macos/novelwriter.iconset
+echo "Content of current dir:"
+ls -lah .
+
+popd || exit 1
 popd || exit 1
 pushd "$BUILD_DIR"/ || exit 1
 
@@ -111,8 +119,7 @@ for file in "${FILES_COPY[@]}"; do
     cp -R $SRC_DIR/$file novelWriter.app/Contents/Resources/novelWriter/
 done
 
-iconutil -c icns -o novelWriter.app/Contents/Resources/novelwriter.icns $SRC_DIR/setup/macos/novelwriter.iconset
-# cp $SRC_DIR/setup/macos/novelwriter.icns novelWriter.app/Contents/Resources/
+cp $SRC_DIR/setup/macos/novelwriter.icns novelWriter.app/Contents/Resources/
 
 # Create entry script
 echo "Creating entry script ..."
