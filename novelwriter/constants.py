@@ -327,8 +327,7 @@ class nwQuotes:
 
 
 class nwUnicode:
-    """Supported unicode character constants and their HTML equivalents.
-    """
+    """Supported unicode character constants and their HTML equivalents."""
     # Unicode Constants
     # =================
 
