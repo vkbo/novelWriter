@@ -1934,27 +1934,39 @@ class GuiDocEditor(QPlainTextEdit):
 
     def _autoSelect(self) -> QTextCursor:
         """Return a cursor which may or may not have a selection based
-        on user settings and document action.
+        on user settings and document action. The selection will be the
+        word closest to the cursor consisting of alphanumerical unicode
+        characters.
         """
         cursor = self.textCursor()
         if CONFIG.autoSelect and not cursor.hasSelection():
-            cursor.select(QTextCursor.WordUnderCursor)
-            posS = cursor.selectionStart()
-            posE = cursor.selectionEnd()
+            cPos = cursor.position()
+            bPos = cursor.block().position()
+            bLen = cursor.block().length()
 
-            # Underscore counts as a part of the word, so check that the
-            # selection isn't wrapped in italics markers.
-            reSelect = False
-            if self._qDocument.characterAt(posS) == "_":
-                posS += 1
-                reSelect = True
-            if self._qDocument.characterAt(posE) == "_":
-                posE -= 1
-                reSelect = True
-            if reSelect:
-                cursor.clearSelection()
-                cursor.setPosition(posS, QTextCursor.MoveAnchor)
-                cursor.setPosition(posE-1, QTextCursor.KeepAnchor)
+            # Scan backwards
+            sPos = cPos
+            for i in range(cPos - bPos):
+                sPos = cPos - i - 1
+                if not self._qDocument.characterAt(sPos).isalnum():
+                    sPos += 1
+                    break
+
+            # Scan forwards
+            ePos = cPos
+            for i in range(bPos + bLen - cPos):
+                ePos = cPos + i
+                if not self._qDocument.characterAt(ePos).isalnum():
+                    # ePos -= 1
+                    break
+
+            if ePos - sPos <= 0:
+                # No selection possible
+                return cursor
+
+            cursor.clearSelection()
+            cursor.setPosition(sPos, QTextCursor.MoveAnchor)
+            cursor.setPosition(ePos, QTextCursor.KeepAnchor)
 
             self.setTextCursor(cursor)
 
