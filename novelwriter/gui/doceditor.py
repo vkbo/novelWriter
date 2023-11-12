@@ -10,6 +10,8 @@ Created:   2020-04-25 [0.4.5] GuiDocEditHeader
 Rewritten: 2020-06-15 [0.9]   GuiDocEditSearch
 Created:   2020-06-27 [0.10]  GuiDocEditFooter
 Rewritten: 2020-10-07 [1.0b3] BackgroundWordCounter
+Created:   2023-11-06 [2.2b1] MetaCompleter
+Created:   2023-11-07 [2.2b1] GuiDocToolBar
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
