@@ -74,7 +74,7 @@ class _SelectAction(Enum):
     KEEP_POSITION  = 2
     MOVE_AFTER     = 3
 
-# END Class EditorSelectMode
+# END Class _SelectAction
 
 
 class GuiDocEditor(QPlainTextEdit):
