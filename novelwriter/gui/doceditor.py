@@ -1008,7 +1008,9 @@ class GuiDocEditor(QPlainTextEdit):
             return
 
         text = block.text()
-        if text.startswith("@"):
+        if text.startswith("@") and added + removed == 1:
+            # Only run on single keypresses, otherwise it will trigger
+            # at unwanted times when other changes are made to the document
             cursor = self.textCursor()
             bPos = cursor.positionInBlock()
             if bPos > 0:
@@ -1016,8 +1018,10 @@ class GuiDocEditor(QPlainTextEdit):
                 point = self.cursorRect().bottomRight()
                 self._completer.move(self.viewport().mapToGlobal(point))
                 self._completer.setVisible(show)
+        else:
+            self._completer.setVisible(False)
 
-        elif self._doReplace and added == 1:
+        if self._doReplace and added == 1:
             self._docAutoReplace(text)
 
         return

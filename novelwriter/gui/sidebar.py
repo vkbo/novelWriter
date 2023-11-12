@@ -111,7 +111,7 @@ class GuiSideBar(QWidget):
         self.outerBox.addWidget(self.tbDetails)
         self.outerBox.addWidget(self.tbStats)
         self.outerBox.addWidget(self.tbSettings)
-        self.outerBox.setContentsMargins(0, 0, CONFIG.pxInt(2), 0)
+        self.outerBox.setContentsMargins(0, 0, 0, 0)
         self.outerBox.setSpacing(CONFIG.pxInt(4))
 
         self.setLayout(self.outerBox)
