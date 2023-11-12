@@ -48,26 +48,26 @@ final release.
 **Usability**
 
 * The Settings menu in the sidebar now always pops out to the right and upwards from the bottom of
-  the icon. The previous behaviour was not guaranteed to stay in the vissible area of the screen.
+  the icon. The previous behaviour was not guaranteed to stay in the visible area of the screen.
   PR #1520.
 * The right click action on a misspelled word now uses the actual spell checker data for lookup.
   Previously, the spell checker would underline a word that was misspelled, but the right click
   action actually had no way of reading where the error line was, so it had to guess again what
   word the user was clicking. Since these two parts of the code used different logic, they
   sometimes produced different results. The spell checker now saves the location of each spell
-  check error, and the right click action retrieves this data when genrating suggestions, which
+  check error, and the right click action retrieves this data when generating suggestions, which
   should eliminate the problem of picking the correct word boundaries. Issue #1532. PR #1525.
 * The language of a project is not set in the New Project Wizard and in Project Settings. It is no
   longer defined in the Build Settings panel. Issue #1588. PR #1589.
-* The way switching focus and view in the main GUi has changed. Pressing `Ctrl+T` will now switch
+* The way switching focus and view in the main GUI has changed. Pressing `Ctrl+T` will now switch
   focus to the Project or Novel Tree if focus is elsewhere, or if either have focus already, it
   will switch view to the other tree. Pressing `Ctrl+E` will switch focus and view to the Document
-  Editor. Pressing `Ctrl+Shift+T` will do the same for the Outline View. The old Alt-based shorcuts
-  have been removed. Issues #1310 and #1291. PR #1590.
+  Editor. Pressing `Ctrl+Shift+T` will do the same for the Outline View. The old Alt-based
+  shortcuts have been removed. Issues #1310 and #1291. PR #1590.
 
 **User Interface**
 
-* The labels under the sidebar buttons have been removed. The tooltips have the necessary
+* The labels under the sidebar buttons have been removed. The tool tips have the necessary
   information. PR #1520.
 
 **Other Improvements**
