@@ -67,6 +67,16 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
+class SelectAction(Enum):
+
+    NO_DECISION    = 0
+    KEEP_SELECTION = 1
+    KEEP_POSITION  = 2
+    MOVE_AFTER     = 3
+
+# END Class EditorSelectMode
+
+
 class GuiDocEditor(QPlainTextEdit):
     """Gui Widget: Main Document Editor"""
 
@@ -1410,17 +1420,28 @@ class GuiDocEditor(QPlainTextEdit):
         If more than one block is selected, the formatting is applied to
         the first block.
         """
-        cursor = self._autoSelect()
-        if not cursor.hasSelection():
-            logger.warning("No selection made, nothing to do")
-            return False
+        cursor = self.textCursor()
+        posO = cursor.position()
+        if cursor.hasSelection():
+            select = SelectAction.KEEP_SELECTION
+        else:
+            cursor = self._autoSelect()
+            if cursor.hasSelection() and posO == cursor.selectionEnd():
+                select = SelectAction.MOVE_AFTER
+            else:
+                select = SelectAction.KEEP_POSITION
 
         posS = cursor.selectionStart()
         posE = cursor.selectionEnd()
+        if self._qDocument.characterAt(posO - 1) == fChar:
+            logger.warning("Format repetition, cancelling action")
+            cursor.clearSelection()
+            cursor.setPosition(posO)
+            self.setTextCursor(cursor)
+            return False
 
         blockS = self._qDocument.findBlock(posS)
         blockE = self._qDocument.findBlock(posE)
-
         if blockS != blockE:
             posE = blockS.position() + blockS.length() - 1
             cursor.clearSelection()
@@ -1443,34 +1464,26 @@ class GuiDocEditor(QPlainTextEdit):
                 break
 
         if fLen == min(numA, numB):
-            self._clearSurrounding(cursor, fLen)
+            cursor.clearSelection()
+            cursor.beginEditBlock()
+            cursor.setPosition(posS)
+            for i in range(fLen):
+                cursor.deletePreviousChar()
+            cursor.setPosition(posE)
+            for i in range(fLen):
+                cursor.deletePreviousChar()
+            cursor.endEditBlock()
+            cursor.clearSelection()
+            cursor.setPosition(posO - fLen)
+            self.setTextCursor(cursor)
+
         else:
-            self._wrapSelection(fChar*fLen)
+            self._wrapSelection(fChar*fLen, pos=posO, select=select)
 
         return True
 
-    def _clearSurrounding(self, cursor: QTextCursor, nChars: int) -> bool:
-        """Clear n characters before and after the cursor."""
-        if not cursor.hasSelection():
-            logger.warning("No selection made, nothing to do")
-            return False
-
-        posS = cursor.selectionStart()
-        posE = cursor.selectionEnd()
-        cursor.clearSelection()
-        cursor.beginEditBlock()
-        cursor.setPosition(posS)
-        for i in range(nChars):
-            cursor.deletePreviousChar()
-        cursor.setPosition(posE)
-        for i in range(nChars):
-            cursor.deletePreviousChar()
-        cursor.endEditBlock()
-        cursor.clearSelection()
-
-        return True
-
-    def _wrapSelection(self, before: str, after: str | None = None) -> bool:
+    def _wrapSelection(self, before: str, after: str | None = None, pos: int | None = None,
+                       select: SelectAction = SelectAction.NO_DECISION) -> bool:
         """Wrap the selected text in whatever is in tBefore and tAfter.
         If there is no selection, the autoSelect setting decides the
         action. AutoSelect will select the word under the cursor before
@@ -1479,10 +1492,17 @@ class GuiDocEditor(QPlainTextEdit):
         if after is None:
             after = before
 
-        cursor = self._autoSelect()
-        if not cursor.hasSelection():
-            logger.warning("No selection made, nothing to do")
-            return False
+        cursor = self.textCursor()
+        posO = pos if isinstance(pos, int) else cursor.position()
+        if select == SelectAction.NO_DECISION:
+            if cursor.hasSelection():
+                select = SelectAction.KEEP_SELECTION
+            else:
+                cursor = self._autoSelect()
+                if cursor.hasSelection() and posO == cursor.selectionEnd():
+                    select = SelectAction.MOVE_AFTER
+                else:
+                    select = SelectAction.KEEP_POSITION
 
         posS = cursor.selectionStart()
         posE = cursor.selectionEnd()
@@ -1500,8 +1520,14 @@ class GuiDocEditor(QPlainTextEdit):
         cursor.insertText(before)
         cursor.endEditBlock()
 
-        cursor.setPosition(posE + len(before), QTextCursor.MoveAnchor)
-        cursor.setPosition(posS + len(before), QTextCursor.KeepAnchor)
+        if select == SelectAction.MOVE_AFTER:
+            cursor.setPosition(posE + len(before + after))
+        elif select == SelectAction.KEEP_SELECTION:
+            cursor.setPosition(posE + len(before), QTextCursor.MoveMode.MoveAnchor)
+            cursor.setPosition(posS + len(before), QTextCursor.MoveMode.KeepAnchor)
+        elif select == SelectAction.KEEP_POSITION:
+            cursor.setPosition(posO + len(before))
+
         self.setTextCursor(cursor)
 
         return True
