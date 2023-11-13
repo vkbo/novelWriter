@@ -26,7 +26,7 @@ from __future__ import annotations
 import logging
 
 from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog, QWidget, QComboBox, QSpinBox, QPushButton, QDialogButtonBox,
     QLineEdit, QFileDialog, QFontDialog, QDoubleSpinBox
@@ -43,12 +43,11 @@ logger = logging.getLogger(__name__)
 
 class GuiPreferences(NPagedDialog):
 
-    def __init__(self, mainGui):
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiPreferences")
         self.setObjectName("GuiPreferences")
-
         self.setWindowTitle(self.tr("Preferences"))
 
         self.tabGeneral  = GuiPreferencesGeneral(self)
@@ -93,26 +92,27 @@ class GuiPreferences(NPagedDialog):
     ##
 
     @property
-    def updateTheme(self):
+    def updateTheme(self) -> bool:
         return self._updateTheme
 
     @property
-    def updateSyntax(self):
+    def updateSyntax(self) -> bool:
         return self._updateSyntax
 
     @property
-    def needsRestart(self):
+    def needsRestart(self) -> bool:
         return self._needsRestart
 
     @property
-    def refreshTree(self):
+    def refreshTree(self) -> bool:
         return self._refreshTree
 
     ##
-    #  Slots
+    #  Private Slots
     ##
 
-    def _doSave(self):
+    @pyqtSlot()
+    def _doSave(self) -> None:
         """Trigger all the save functions in the tabs, and collect the
         status of the saves.
         """
@@ -132,9 +132,9 @@ class GuiPreferences(NPagedDialog):
 
         return
 
-    def _doClose(self):
-        """Close the preferences without saving the changes.
-        """
+    @pyqtSlot()
+    def _doClose(self) -> None:
+        """Close the preferences without saving the changes."""
         self._saveWindowSize()
         self.reject()
         return
@@ -143,9 +143,8 @@ class GuiPreferences(NPagedDialog):
     #  Internal Functions
     ##
 
-    def _saveWindowSize(self):
-        """Save the dialog window size.
-        """
+    def _saveWindowSize(self) -> None:
+        """Save the dialog window size."""
         CONFIG.setPreferencesWinSize(self.width(), self.height())
         return
 
@@ -154,7 +153,7 @@ class GuiPreferences(NPagedDialog):
 
 class GuiPreferencesGeneral(QWidget):
 
-    def __init__(self, prefsGui):
+    def __init__(self, prefsGui: GuiPreferences) -> None:
         super().__init__(parent=prefsGui)
 
         self.prefsGui = prefsGui
@@ -285,9 +284,8 @@ class GuiPreferencesGeneral(QWidget):
 
         return
 
-    def saveValues(self):
-        """Save the values set for this tab.
-        """
+    def saveValues(self) -> None:
+        """Save the values set for this tab."""
         guiLocale   = self.guiLocale.currentData()
         guiTheme    = self.guiTheme.currentData()
         guiSyntax   = self.guiSyntax.currentData()
@@ -316,12 +314,12 @@ class GuiPreferencesGeneral(QWidget):
         return
 
     ##
-    #  Slots
+    #  Private Slots
     ##
 
-    def _selectFont(self):
-        """Open the QFontDialog and set a font for the font style.
-        """
+    @pyqtSlot()
+    def _selectFont(self) -> None:
+        """Open the QFontDialog and set a font for the font style."""
         currFont = QFont()
         currFont.setFamily(CONFIG.guiFont)
         currFont.setPointSize(CONFIG.guiFontSize)
@@ -336,7 +334,7 @@ class GuiPreferencesGeneral(QWidget):
 
 class GuiPreferencesProjects(QWidget):
 
-    def __init__(self, prefsGui):
+    def __init__(self, prefsGui: GuiPreferences) -> None:
         super().__init__(parent=prefsGui)
 
         # The Form
@@ -438,9 +436,8 @@ class GuiPreferencesProjects(QWidget):
 
         return
 
-    def saveValues(self):
-        """Save the values set for this tab.
-        """
+    def saveValues(self) -> None:
+        """Save the values set for this tab."""
         # Automatic Save
         CONFIG.autoSaveDoc  = self.autoSaveDoc.value()
         CONFIG.autoSaveProj = self.autoSaveProj.value()
@@ -457,12 +454,12 @@ class GuiPreferencesProjects(QWidget):
         return
 
     ##
-    #  Slots
+    #  Private Slots
     ##
 
-    def _backupFolder(self):
-        """Open a dialog to select the backup folder.
-        """
+    @pyqtSlot()
+    def _backupFolder(self) -> None:
+        """Open a dialog to select the backup folder."""
         currDir = self.backupPath or ""
         newDir = QFileDialog.getExistingDirectory(
             self, self.tr("Backup Directory"), str(currDir), options=QFileDialog.ShowDirsOnly
@@ -472,15 +469,13 @@ class GuiPreferencesProjects(QWidget):
             self.mainForm.setHelpText(
                 self.backupPathRow, self.tr("Path: {0}").format(self.backupPath)
             )
-            return True
+            return
+        return
 
-        return False
-
-    def _toggledBackupOnClose(self, theState):
-        """Enable or disable switch that depends on the backup on close
-        switch.
-        """
-        self.askBeforeBackup.setEnabled(theState)
+    @pyqtSlot(bool)
+    def _toggledBackupOnClose(self, state: bool) -> None:
+        """Toggle switch that depends on the backup on close switch."""
+        self.askBeforeBackup.setEnabled(state)
         return
 
 # END Class GuiPreferencesProjects
@@ -488,7 +483,7 @@ class GuiPreferencesProjects(QWidget):
 
 class GuiPreferencesDocuments(QWidget):
 
-    def __init__(self, prefsGui):
+    def __init__(self, prefsGui: GuiPreferences)  -> None:
         super().__init__(parent=prefsGui)
 
         # The Form
@@ -604,9 +599,8 @@ class GuiPreferencesDocuments(QWidget):
 
         return
 
-    def saveValues(self):
-        """Save the values set for this tab.
-        """
+    def saveValues(self) -> None:
+        """Save the values set for this tab."""
         # Text Style
         CONFIG.setTextFont(self.textFont.text(), self.textSize.value())
 
@@ -621,12 +615,12 @@ class GuiPreferencesDocuments(QWidget):
         return
 
     ##
-    #  Slots
+    #  Private Slots
     ##
 
+    @pyqtSlot()
     def _selectFont(self):
-        """Open the QFontDialog and set a font for the font style.
-        """
+        """Open the QFontDialog and set a font for the font style."""
         currFont = QFont()
         currFont.setFamily(CONFIG.textFont)
         currFont.setPointSize(CONFIG.textSize)
@@ -642,7 +636,7 @@ class GuiPreferencesDocuments(QWidget):
 
 class GuiPreferencesEditor(QWidget):
 
-    def __init__(self, prefsGui):
+    def __init__(self, prefsGui: GuiPreferences) -> None:
         super().__init__(parent=prefsGui)
 
         # The Form
@@ -726,6 +720,15 @@ class GuiPreferencesEditor(QWidget):
         # ================
         self.mainForm.addGroupLabel(self.tr("Scroll Behaviour"))
 
+        # Scroll Past End
+        self.scrollPastEnd = NSwitch()
+        self.scrollPastEnd.setChecked(CONFIG.scrollPastEnd)
+        self.mainForm.addRow(
+            self.tr("Scroll past end of the document"),
+            self.scrollPastEnd,
+            self.tr("Also centres the cursor when scrolling.")
+        )
+
         # Typewriter Scrolling
         self.autoScroll = NSwitch()
         self.autoScroll.setChecked(CONFIG.autoScroll)
@@ -750,7 +753,7 @@ class GuiPreferencesEditor(QWidget):
 
         return
 
-    def saveValues(self):
+    def saveValues(self) -> None:
         """Save the values set for this tab."""
         # Spell Checking
         CONFIG.spellLanguage = self.spellLanguage.currentData()
@@ -766,6 +769,7 @@ class GuiPreferencesEditor(QWidget):
         # Scroll Behaviour
         CONFIG.autoScroll    = self.autoScroll.isChecked()
         CONFIG.autoScrollPos = self.autoScrollPos.value()
+        CONFIG.scrollPastEnd = self.scrollPastEnd.isChecked()
 
         return
 
@@ -774,7 +778,7 @@ class GuiPreferencesEditor(QWidget):
 
 class GuiPreferencesSyntax(QWidget):
 
-    def __init__(self, prefsGui):
+    def __init__(self, prefsGui: GuiPreferences) -> None:
         super().__init__(parent=prefsGui)
 
         self.prefsGui = prefsGui
@@ -840,9 +844,8 @@ class GuiPreferencesSyntax(QWidget):
 
         return
 
-    def saveValues(self):
-        """Save the values set for this tab.
-        """
+    def saveValues(self) -> None:
+        """Save the values set for this tab."""
         highlightQuotes = self.highlightQuotes.isChecked()
         allowOpenSQuote = self.allowOpenSQuote.isChecked()
         allowOpenDQuote = self.allowOpenDQuote.isChecked()
@@ -862,15 +865,14 @@ class GuiPreferencesSyntax(QWidget):
         return
 
     ##
-    #  Slots
+    #  Private Slots
     ##
 
-    def _toggleHighlightQuotes(self, theState):
-        """Enables or disables switches controlled by the highlight
-        quotes switch.
-        """
-        self.allowOpenSQuote.setEnabled(theState)
-        self.allowOpenDQuote.setEnabled(theState)
+    @pyqtSlot(bool)
+    def _toggleHighlightQuotes(self, state: bool) -> None:
+        """Toggle switches controlled by the highlight quotes switch."""
+        self.allowOpenSQuote.setEnabled(state)
+        self.allowOpenDQuote.setEnabled(state)
         return
 
 # END Class GuiPreferencesSyntax
@@ -878,7 +880,7 @@ class GuiPreferencesSyntax(QWidget):
 
 class GuiPreferencesAutomation(QWidget):
 
-    def __init__(self, prefsGui):
+    def __init__(self, prefsGui: GuiPreferences) -> None:
         super().__init__(parent=prefsGui)
 
         # The Form
@@ -989,9 +991,8 @@ class GuiPreferencesAutomation(QWidget):
 
         return
 
-    def saveValues(self):
-        """Save the values set for this tab.
-        """
+    def saveValues(self) -> None:
+        """Save the values set for this tab."""
         # Automatic Features
         CONFIG.autoSelect = self.autoSelect.isChecked()
         CONFIG.doReplace  = self.doReplace.isChecked()
@@ -1010,18 +1011,17 @@ class GuiPreferencesAutomation(QWidget):
         return
 
     ##
-    #  Slots
+    #  Private Slots
     ##
 
-    def _toggleAutoReplaceMain(self, theState):
-        """Enables or disables switches controlled by the main auto
-        replace switch.
-        """
-        self.doReplaceSQuote.setEnabled(theState)
-        self.doReplaceDQuote.setEnabled(theState)
-        self.doReplaceDash.setEnabled(theState)
-        self.doReplaceDots.setEnabled(theState)
-        self.fmtPadThin.setEnabled(theState)
+    @pyqtSlot(bool)
+    def _toggleAutoReplaceMain(self, state: bool) -> None:
+        """Toggle switches controlled by the auto replace switch."""
+        self.doReplaceSQuote.setEnabled(state)
+        self.doReplaceDQuote.setEnabled(state)
+        self.doReplaceDash.setEnabled(state)
+        self.doReplaceDots.setEnabled(state)
+        self.fmtPadThin.setEnabled(state)
         return
 
 # END Class GuiPreferencesAutomation
@@ -1029,7 +1029,7 @@ class GuiPreferencesAutomation(QWidget):
 
 class GuiPreferencesQuotes(QWidget):
 
-    def __init__(self, prefsGui):
+    def __init__(self, prefsGui: GuiPreferences) -> None:
         super().__init__(parent=prefsGui)
 
         # The Form
@@ -1113,9 +1113,8 @@ class GuiPreferencesQuotes(QWidget):
 
         return
 
-    def saveValues(self):
-        """Save the values set for this tab.
-        """
+    def saveValues(self) -> None:
+        """Save the values set for this tab."""
         # Quotation Style
         CONFIG.fmtSQuoteOpen = self.quoteSym["SO"].text()
         CONFIG.fmtSQuoteClose = self.quoteSym["SC"].text()
@@ -1124,12 +1123,11 @@ class GuiPreferencesQuotes(QWidget):
         return
 
     ##
-    #  Slots
+    #  Internal Functions
     ##
 
-    def _getQuote(self, qType):
-        """Dialog for single quote open.
-        """
+    def _getQuote(self, qType: str) -> None:
+        """Dialog for single quote open."""
         qtBox = GuiQuoteSelect(self, currentQuote=self.quoteSym[qType].text())
         if qtBox.exec_() == QDialog.Accepted:
             self.quoteSym[qType].setText(qtBox.selectedQuote)
