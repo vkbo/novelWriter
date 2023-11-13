@@ -726,6 +726,15 @@ class GuiPreferencesEditor(QWidget):
         # ================
         self.mainForm.addGroupLabel(self.tr("Scroll Behaviour"))
 
+        # Scroll Past End
+        self.scrollPastEnd = NSwitch()
+        self.scrollPastEnd.setChecked(CONFIG.scrollPastEnd)
+        self.mainForm.addRow(
+            self.tr("Scroll past end of the document"),
+            self.scrollPastEnd,
+            self.tr("Also centres the cursor when scrolling.")
+        )
+
         # Typewriter Scrolling
         self.autoScroll = NSwitch()
         self.autoScroll.setChecked(CONFIG.autoScroll)
@@ -766,6 +775,7 @@ class GuiPreferencesEditor(QWidget):
         # Scroll Behaviour
         CONFIG.autoScroll    = self.autoScroll.isChecked()
         CONFIG.autoScrollPos = self.autoScrollPos.value()
+        CONFIG.scrollPastEnd = self.scrollPastEnd.isChecked()
 
         return
 

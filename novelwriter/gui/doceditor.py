@@ -164,7 +164,6 @@ class GuiDocEditor(QPlainTextEdit):
         self.setMinimumWidth(CONFIG.pxInt(300))
         self.setAutoFillBackground(True)
         self.setFrameStyle(QFrame.NoFrame)
-        self.setCenterOnScroll(True)
 
         # Custom Shortcuts
         self.keyContext = QShortcut(self)
@@ -342,7 +341,8 @@ class GuiDocEditor(QPlainTextEdit):
 
         self._qDocument.setDefaultTextOption(options)
 
-        # Scroll bars
+        # Scrolling
+        self.setCenterOnScroll(CONFIG.scrollPastEnd)
         if CONFIG.hideVScroll:
             self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         else:
