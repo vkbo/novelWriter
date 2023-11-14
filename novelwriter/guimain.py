@@ -277,6 +277,7 @@ class GuiMain(QMainWindow):
         self.docEditor.closeDocumentRequest.connect(self.closeDocEditor)
         self.docEditor.toggleFocusModeRequest.connect(self.toggleFocusMode)
 
+        self.docViewer.documentLoaded.connect(self.docViewerPanel.updateHandle)
         self.docViewer.loadDocumentTagRequest.connect(self._followTag)
         self.docViewer.togglePanelVisibility.connect(self._toggleViewerPanelVisibility)
 

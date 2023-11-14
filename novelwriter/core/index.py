@@ -596,7 +596,7 @@ class NWIndex:
 
         return tRefs
 
-    def getBackReferenceList(self, tHandle: str) -> dict[str, str]:
+    def getBackReferenceList(self, tHandle: str) -> dict[str, tuple[str, IndexHeading]]:
         """Build a list of files referring back to our file, specified
         by tHandle.
         """
@@ -611,7 +611,7 @@ class NWIndex:
         for aHandle, sTitle, hItem in self._itemIndex.iterAllHeaders():
             for aTag in hItem.references:
                 if aTag in tTags and aHandle not in tRefs:
-                    tRefs[aHandle] = sTitle
+                    tRefs[aHandle] = (sTitle, hItem)
 
         return tRefs
 

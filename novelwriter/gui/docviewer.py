@@ -56,6 +56,7 @@ logger = logging.getLogger(__name__)
 
 class GuiDocViewer(QTextBrowser):
 
+    documentLoaded = pyqtSignal(str)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
     togglePanelVisibility = pyqtSignal()
 
@@ -191,6 +192,7 @@ class GuiDocViewer(QTextBrowser):
         """Load text into the viewer from an item handle."""
         if not SHARED.project.tree.checkType(tHandle, nwItemType.FILE):
             logger.warning("Item not found")
+            self.documentLoaded.emit("")
             return False
 
         logger.debug("Generating preview for item '%s'", tHandle)
@@ -248,6 +250,7 @@ class GuiDocViewer(QTextBrowser):
         # the document dirty again to make sure it's re-rendered properly.
         self.redrawText()
         qApp.restoreOverrideCursor()
+        self.documentLoaded.emit(tHandle)
 
         return True
 
