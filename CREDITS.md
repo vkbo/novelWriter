@@ -52,6 +52,12 @@ Some of the assets bundled with novelWriter were adapted from the following sour
 * [Owl](https://github.com/sdras/night-owl-vscode-theme) syntax themes by Sarah Drasner (MIT License)
 * [Solarized](https://github.com/altercation/solarized) themes by Ethan Schoonover (MIT License)
 
+## Fonts
+
+The font used for the main novelWriter logo, mimetype and text banners is:
+
+* Pridi by Cadson Demak (Open Font License, Version 1.1)
+
 ## Special Mentions
 
 Additional thanks to @johnblommers who was an early user and who has provided a lot of very useful

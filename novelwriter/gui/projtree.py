@@ -189,7 +189,7 @@ class GuiProjectView(QWidget):
         self.projTree.buildTree()
         return
 
-    def setFocus(self) -> None:
+    def setTreeFocus(self) -> None:
         """Forward the set focus call to the tree widget."""
         self.projTree.setFocus()
         return

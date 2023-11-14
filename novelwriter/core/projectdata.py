@@ -152,14 +152,14 @@ class NWProjectData:
         """Return the initial count of words for novel and note
         documents.
         """
-        return tuple(self._initCounts)
+        return self._initCounts[0], self._initCounts[1]
 
     @property
     def currCounts(self) -> tuple[int, int]:
         """Return the current count of words for novel and note
         documents.
         """
-        return tuple(self._currCounts)
+        return self._currCounts[0], self._currCounts[1]
 
     @property
     def lastHandle(self) -> dict[str, str | None]:

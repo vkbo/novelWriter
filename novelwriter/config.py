@@ -148,6 +148,7 @@ class Config:
 
         self.autoScroll      = False  # Typewriter-like scrolling
         self.autoScrollPos   = 30     # Start point for typewriter-like scrolling
+        self.scrollPastEnd   = True   # Scroll past end of document, and centre cursor
 
         self.wordCountTimer  = 5.0    # Interval for word count update in seconds
         self.incNotesWCount  = True   # The status bar word count includes notes
@@ -577,6 +578,7 @@ class Config:
         self.doReplaceDots   = conf.rdBool(sec, "repdots", self.doReplaceDots)
         self.autoScroll      = conf.rdBool(sec, "autoscroll", self.autoScroll)
         self.autoScrollPos   = conf.rdInt(sec, "autoscrollpos", self.autoScrollPos)
+        self.scrollPastEnd   = conf.rdBool(sec, "scrollpastend", self.scrollPastEnd)
         self.fmtSQuoteOpen   = conf.rdStr(sec, "fmtsquoteopen", self.fmtSQuoteOpen)
         self.fmtSQuoteClose  = conf.rdStr(sec, "fmtsquoteclose", self.fmtSQuoteClose)
         self.fmtDQuoteOpen   = conf.rdStr(sec, "fmtdquoteopen", self.fmtDQuoteOpen)
@@ -701,6 +703,7 @@ class Config:
             "repdots":         str(self.doReplaceDots),
             "autoscroll":      str(self.autoScroll),
             "autoscrollpos":   str(self.autoScrollPos),
+            "scrollpastend":   str(self.scrollPastEnd),
             "fmtsquoteopen":   str(self.fmtSQuoteOpen),
             "fmtsquoteclose":  str(self.fmtSQuoteClose),
             "fmtdquoteopen":   str(self.fmtDQuoteOpen),

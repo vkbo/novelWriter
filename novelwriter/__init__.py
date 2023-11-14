@@ -33,26 +33,8 @@ from novelwriter.error import exceptionHandler, logException
 from novelwriter.config import Config
 from novelwriter.shared import SharedData
 
-##
-#  Version Scheme
-# ================
-#  Generally follows PEP 440
-#  Hex Version:
-#  - Digit 1,2 : Major Version (01-ff)
-#  - Digit 3,4 : Minor Version (01-ff)
-#  - Digit 5,6 : Patch Version (01-ff)
-#  - Digit 7   : Release Type (a: alpha, b: beta, c: candidate, f: final)
-#  - Digit 8   : Release Number (0-f)
-#
-#  Example    : Full        Short   Description
-# --------------------------------------------------------------------
-#  0x010200a0 : 1.2-alpha0  1.2a0   Use while developing next release
-#  0x010200a1 : 1.2-alpha1  1.2a1   First alpha release
-#  0x010200b1 : 1.2-beta1   1.2b1   First beta release
-#  0x010200c1 : 1.2-rc1     1.2rc1  First release candidate
-#  0x010200f0 : 1.2.0       1.2.0   Final release
-#  0x010201f0 : 1.2.1       1.2.1   Patch release
-##
+# Package Meta
+# ============
 
 __package__    = "novelwriter"
 __copyright__  = "Copyright 2018–2023, Veronica Berglyd Olsen"
@@ -60,9 +42,9 @@ __license__    = "GPLv3"
 __author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__version__    = "2.2-alpha1"
-__hexversion__ = "0x020200a1"
-__date__       = "2023-09-01"
+__version__    = "2.2-beta1"
+__hexversion__ = "0x020200b1"
+__date__       = "2023-11-12"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
 

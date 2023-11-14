@@ -1,5 +1,82 @@
 # novelWriter Changelog
 
+## Version 2.2 Beta 1 [2023-11-11]
+
+### Release Notes
+
+This is a beta release of the next release version, and is intended for testing purposes. Please be
+careful when using this version on live writing projects, and make sure you take frequent backups.
+
+Please check the changelog for an overview of changes. The full release notes will be added to the
+final release.
+
+### Detailed Changelog
+
+**Features**
+
+* novelWriter has a new logo and icon. PR #1593.
+* The Document Editor is now a true plain text editor. This has a number of benefits and a couple
+  of drawbacks. The most important benefits is that the editor responds a lot faster, and can hold
+  much larger text documents. The big document limit has therefore been removed. It mostly affected
+  automatic spell checking. The syntax highlighter and spell checker are also more efficient, which
+  allows for needed improvements to these. The drawbacks are mainly that the editor now scrolls one
+  line at a time, instead of scrolling pixel by pixel like before. PRs #1521 and #1525.
+* Tags and References are now case insensitive. Their display name on the user interface remains
+  the same as the value set for the `@tag` entry. Issue #1313. PRs #1522 and #1578.
+* Keywords for Tags and References, and the References themselves, now have an auto-complete menu
+  that pops up in the editor on lines starting with the `@` character. It will first suggest what
+  keyword you want to use, and when it has been added, use that keyword to look up suggestions for
+  references to add. The suggestions improve as you type by looking for the characters you've
+  already typed in the tags you've previously defined. Issue #823. PR #1581.
+* You can now right-click an undefined tag, and a context menu option to create a Project Note for
+  that tag will appear in the menu. On selection, it will create a note in the first root folder of
+  the correct kind, and set the title and tag to match the undefined reference, making it instantly
+  defined. Issues #1580 and #823. PR #1582.
+* Shortcodes have been added to the Document Editor. Shorcodes are HTML-like syntax, but uses
+  square brackets instead of angular brackets. So `[b]text[/b]` will make the word "text" appear as
+  bold. Shortcodes currently support bold, italic, striketrough, underline, superscript and
+  subscript text. The first three are complimentary to the Markdown-like syntax that. The benefit
+  of the shortcode emphasis syntax, however, is that it does not care about word boundaries, and
+  can therefore be used any place in the text. Including in the middle of words. Issues #1337 and
+  #1444. PRs #1540 and #1583.
+* A show/hide toolbar has been added to the editor where toolbuttons for formatting options are
+  available. The toolbar is hidden by default, but can be activated from a three dots icon in the
+  top left corner of the editor. Issue #1585. PR #1584.
+* Build Definitions in the Manuscript Build tool can now be re-ordered, and the order is preserved
+  when the tool is closed and re-opened. Issue #1542. PR #1591.
+
+**Usability**
+
+* The Settings menu in the sidebar now always pops out to the right and upwards from the bottom of
+  the icon. The previous behaviour was not guaranteed to stay in the visible area of the screen.
+  PR #1520.
+* The right click action on a misspelled word now uses the actual spell checker data for lookup.
+  Previously, the spell checker would underline a word that was misspelled, but the right click
+  action actually had no way of reading where the error line was, so it had to guess again what
+  word the user was clicking. Since these two parts of the code used different logic, they
+  sometimes produced different results. The spell checker now saves the location of each spell
+  check error, and the right click action retrieves this data when generating suggestions, which
+  should eliminate the problem of picking the correct word boundaries. Issue #1532. PR #1525.
+* The language of a project is not set in the New Project Wizard and in Project Settings. It is no
+  longer defined in the Build Settings panel. Issue #1588. PR #1589.
+* The way switching focus and view in the main GUI has changed. Pressing `Ctrl+T` will now switch
+  focus to the Project or Novel Tree if focus is elsewhere, or if either have focus already, it
+  will switch view to the other tree. Pressing `Ctrl+E` will switch focus and view to the Document
+  Editor. Pressing `Ctrl+Shift+T` will do the same for the Outline View. The old Alt-based
+  shortcuts have been removed. Issues #1310 and #1291. PR #1590.
+
+**User Interface**
+
+* The labels under the sidebar buttons have been removed. The tool tips have the necessary
+  information. PR #1520.
+
+**Other Improvements**
+
+* Also the Tags and References keywords are now translated into the project language when these are
+  included in Manuscript builds. As long as the phrases have been translated. PR #1586.
+
+----
+
 ## Version 2.1.1 [2023-11-05]
 
 ### Release Notes

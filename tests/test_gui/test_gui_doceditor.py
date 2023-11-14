@@ -672,7 +672,7 @@ def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd
 
 
 @pytest.mark.gui
-def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
+def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     """Test the text manipulation functions."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
@@ -680,48 +680,12 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
     text = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
     nwGUI.docEditor.replaceText(text)
 
-    # Clear Surrounding
-    # =================
-
-    # No Selection
-    text = "### A Scene\n\n%s" % ipsumText[0]
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(45)
-
-    cursor = nwGUI.docEditor.textCursor()
-    assert nwGUI.docEditor._clearSurrounding(cursor, 1) is False
-
-    # Clear Characters, 1 Layer
-    repText = text.replace("consectetur", "=consectetur=")
-    nwGUI.docEditor.replaceText(repText)
-    nwGUI.docEditor.setCursorPosition(45)
-
-    cursor = nwGUI.docEditor.textCursor()
-    cursor.select(QTextCursor.WordUnderCursor)
-    assert nwGUI.docEditor._clearSurrounding(cursor, 1) is True
-    assert nwGUI.docEditor.getText() == text
-
-    # Clear Characters, 2 Layers
-    repText = text.replace("consectetur", "==consectetur==")
-    nwGUI.docEditor.replaceText(repText)
-    nwGUI.docEditor.setCursorPosition(45)
-
-    cursor = nwGUI.docEditor.textCursor()
-    cursor.select(QTextCursor.WordUnderCursor)
-    assert nwGUI.docEditor._clearSurrounding(cursor, 2) is True
-    assert nwGUI.docEditor.getText() == text
-
     # Wrap Selection
     # ==============
 
     text = "### A Scene\n\n%s" % "\n\n".join(ipsumText[0:2])
     nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
-
-    # No Selection
-    with monkeypatch.context() as mp:
-        mp.setattr(nwGUI.docEditor, "_autoSelect", lambda: QTextCursor())
-        assert nwGUI.docEditor._wrapSelection("=", "=") is False
 
     # Wrap Equal
     nwGUI.docEditor.replaceText(text)
@@ -752,13 +716,13 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
     # =============
 
     text = "### A Scene\n\n%s" % "\n\n".join(ipsumText[0:2])
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(45)
 
-    # No Selection
-    with monkeypatch.context() as mp:
-        mp.setattr(nwGUI.docEditor, "_autoSelect", lambda: QTextCursor())
-        assert nwGUI.docEditor._toggleFormat(2, "=") is False
+    # Block format repetition
+    nwGUI.docEditor.replaceText(text)
+    nwGUI.docEditor.setCursorPosition(39)
+    assert nwGUI.docEditor._toggleFormat(1, "=") is True
+    assert nwGUI.docEditor.getText() == text.replace("amet", "=amet=", 1)
+    assert nwGUI.docEditor._toggleFormat(1, "=") is False
 
     # Wrap Single Equal
     nwGUI.docEditor.replaceText(text)
