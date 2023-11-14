@@ -44,10 +44,11 @@ from novelwriter.gui.outline import GuiOutlineView
 from novelwriter.gui.mainmenu import GuiMainMenu
 from novelwriter.gui.projtree import GuiProjectView
 from novelwriter.gui.doceditor import GuiDocEditor
-from novelwriter.gui.docviewer import GuiDocViewDetails, GuiDocViewer
+from novelwriter.gui.docviewer import GuiDocViewer
 from novelwriter.gui.noveltree import GuiNovelView
 from novelwriter.gui.statusbar import GuiMainStatus
 from novelwriter.gui.itemdetails import GuiItemDetails
+from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
 from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.updates import GuiUpdates
 from novelwriter.dialogs.projload import GuiProjectLoad
@@ -133,16 +134,16 @@ class GuiMain(QMainWindow):
         hWd = CONFIG.pxInt(4)
 
         # Main GUI Elements
-        self.mainStatus  = GuiMainStatus(self)
-        self.projView    = GuiProjectView(self)
-        self.novelView   = GuiNovelView(self)
-        self.docEditor   = GuiDocEditor(self)
-        self.viewMeta    = GuiDocViewDetails(self)
-        self.docViewer   = GuiDocViewer(self)
-        self.itemDetails = GuiItemDetails(self)
-        self.outlineView = GuiOutlineView(self)
-        self.mainMenu    = GuiMainMenu(self)
-        self.sideBar     = GuiSideBar(self)
+        self.mainStatus     = GuiMainStatus(self)
+        self.projView       = GuiProjectView(self)
+        self.novelView      = GuiNovelView(self)
+        self.docEditor      = GuiDocEditor(self)
+        self.docViewer      = GuiDocViewer(self)
+        self.docViewerPanel = GuiDocViewerPanel(self)
+        self.itemDetails    = GuiItemDetails(self)
+        self.outlineView    = GuiOutlineView(self)
+        self.mainMenu       = GuiMainMenu(self)
+        self.sideBar        = GuiSideBar(self)
 
         # Project Tree Stack
         self.projStack = QStackedWidget(self)
@@ -162,7 +163,7 @@ class GuiMain(QMainWindow):
         # Splitter : Document Viewer / Document Meta
         self.splitView = QSplitter(Qt.Vertical, self)
         self.splitView.addWidget(self.docViewer)
-        self.splitView.addWidget(self.viewMeta)
+        self.splitView.addWidget(self.docViewerPanel)
         self.splitView.setHandleWidth(hWd)
         self.splitView.setOpaqueResize(False)
         self.splitView.setSizes(CONFIG.viewPanePos)
@@ -190,12 +191,12 @@ class GuiMain(QMainWindow):
         self.mainStack.currentChanged.connect(self._mainStackChanged)
 
         # Indices of Splitter Widgets
-        self.idxTree     = self.splitMain.indexOf(self.treePane)
-        self.idxMain     = self.splitMain.indexOf(self.splitDocs)
-        self.idxEditor   = self.splitDocs.indexOf(self.docEditor)
-        self.idxViewer   = self.splitDocs.indexOf(self.splitView)
-        self.idxViewDoc  = self.splitView.indexOf(self.docViewer)
-        self.idxViewMeta = self.splitView.indexOf(self.viewMeta)
+        self.idxTree         = self.splitMain.indexOf(self.treePane)
+        self.idxMain         = self.splitMain.indexOf(self.splitDocs)
+        self.idxEditor       = self.splitDocs.indexOf(self.docEditor)
+        self.idxViewer       = self.splitDocs.indexOf(self.splitView)
+        self.idxViewDoc      = self.splitView.indexOf(self.docViewer)
+        self.idxViewDocPanel = self.splitView.indexOf(self.docViewerPanel)
 
         # Indices of Stack Widgets
         self.idxEditorView  = self.mainStack.indexOf(self.splitMain)
@@ -209,7 +210,7 @@ class GuiMain(QMainWindow):
         self.splitDocs.setCollapsible(self.idxEditor, False)
         self.splitDocs.setCollapsible(self.idxViewer, False)
         self.splitView.setCollapsible(self.idxViewDoc, False)
-        self.splitView.setCollapsible(self.idxViewMeta, False)
+        self.splitView.setCollapsible(self.idxViewDocPanel, False)
 
         self.splitMain.setStretchFactor(self.idxTree, 0)
         self.splitMain.setStretchFactor(self.idxMain, 1)
@@ -277,6 +278,7 @@ class GuiMain(QMainWindow):
         self.docEditor.toggleFocusModeRequest.connect(self.toggleFocusMode)
 
         self.docViewer.loadDocumentTagRequest.connect(self._followTag)
+        self.docViewer.togglePanelVisibility.connect(self._toggleViewerPanelVisibility)
 
         self.outlineView.loadDocumentTagRequest.connect(self._followTag)
         self.outlineView.openDocumentRequest.connect(self._openDocument)
@@ -681,7 +683,7 @@ class GuiMain(QMainWindow):
                 vPos[0] = int(bPos[1]/2)
                 vPos[1] = bPos[1] - vPos[0]
                 self.splitDocs.setSizes(vPos)
-                self.viewMeta.setVisible(CONFIG.showRefPanel)
+                self.docViewerPanel.setVisible(CONFIG.showViewerPanel)
 
             if sTitle:
                 self.docViewer.navigateTo(f"#{sTitle}")
@@ -877,6 +879,7 @@ class GuiMain(QMainWindow):
                 SHARED.theme.loadTheme()
                 self.docEditor.updateTheme()
                 self.docViewer.updateTheme()
+                self.docViewerPanel.updateTheme()
                 self.sideBar.updateTheme()
                 self.projView.updateTheme()
                 self.novelView.updateTheme()
@@ -1076,10 +1079,10 @@ class GuiMain(QMainWindow):
         if not self.isFocusMode:
             CONFIG.setMainPanePos(self.splitMain.sizes())
             CONFIG.setOutlinePanePos(self.outlineView.splitSizes())
-            if self.viewMeta.isVisible():
+            if self.docViewerPanel.isVisible():
                 CONFIG.setViewPanePos(self.splitView.sizes())
 
-        CONFIG.showRefPanel = self.viewMeta.isVisible()
+        CONFIG.showViewerPanel = self.docViewerPanel.isVisible()
         if self.windowState() & Qt.WindowFullScreen != Qt.WindowFullScreen:
             # Ignore window size if in full screen mode
             CONFIG.setMainWinSize(self.width(), self.height())
@@ -1265,6 +1268,13 @@ class GuiMain(QMainWindow):
         """
         if self.docEditor.hasFocus():
             self.docEditor.insertText(content)
+        return
+
+    @pyqtSlot()
+    def _toggleViewerPanelVisibility(self):
+        """Toggle the visibility of the document viewer panel."""
+        CONFIG.showViewerPanel = not CONFIG.showViewerPanel
+        self.docViewerPanel.setVisible(CONFIG.showViewerPanel)
         return
 
     @pyqtSlot()

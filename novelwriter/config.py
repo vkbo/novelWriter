@@ -179,9 +179,9 @@ class Config:
         self.spellLanguage = "en"
 
         # State
-        self.showRefPanel    = True   # The reference panel for the viewer is visible
+        self.showViewerPanel = True   # The panel for the viewer is visible
         self.showEditToolBar = False  # The document editor toolbar visibility
-        self.useShortcodes   = False  # Use shorcodes for basic formatting
+        self.useShortcodes   = False  # Use shortcodes for basic formatting
         self.viewComments    = True   # Comments are shown in the viewer
         self.viewSynopsis    = True   # Synopsis is shown in the viewer
 
@@ -602,7 +602,7 @@ class Config:
 
         # State
         sec = "State"
-        self.showRefPanel    = conf.rdBool(sec, "showrefpanel", self.showRefPanel)
+        self.showViewerPanel = conf.rdBool(sec, "showviewerpanel", self.showViewerPanel)
         self.showEditToolBar = conf.rdBool(sec, "showedittoolbar", self.showEditToolBar)
         self.useShortcodes   = conf.rdBool(sec, "useshortcodes", self.useShortcodes)
         self.viewComments    = conf.rdBool(sec, "viewcomments", self.viewComments)
@@ -727,7 +727,7 @@ class Config:
         }
 
         conf["State"] = {
-            "showrefpanel":    str(self.showRefPanel),
+            "showviewerpanel": str(self.showViewerPanel),
             "showedittoolbar": str(self.showEditToolBar),
             "useshortcodes":   str(self.useShortcodes),
             "viewcomments":    str(self.viewComments),
