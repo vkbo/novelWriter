@@ -131,7 +131,7 @@ class GuiSideBar(QWidget):
         buttonStyle = (
             "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
             "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
-        ).format(CONFIG.pxInt(4), fadeCol.red(), fadeCol.green(), fadeCol.blue())
+        ).format(CONFIG.pxInt(6), fadeCol.red(), fadeCol.green(), fadeCol.blue())
         buttonStyleMenu = f"{buttonStyle} QToolButton::menu-indicator {{image: none;}}"
 
         self.tbProject.setIcon(SHARED.theme.getIcon("view_editor"))
