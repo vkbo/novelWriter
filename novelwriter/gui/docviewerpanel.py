@@ -168,7 +168,7 @@ class GuiDocViewerPanel(QWidget):
     def _updateTabVisibility(self) -> None:
         """Hide class tabs with no content."""
         for tClass, cTab in self.kwTabs.items():
-            self.mainTabs.setTabVisible(self.idTabs[tClass], cTab.count() > 0)
+            self.mainTabs.setTabVisible(self.idTabs[tClass], cTab.countEntries() > 0)
         return
 
 # END Class GuiDocViewerPanel
@@ -345,7 +345,7 @@ class _ViewPanelKeyWords(QTreeWidget):
 
         return
 
-    def count(self) -> int:
+    def countEntries(self) -> int:
         """Return the number of items in the list."""
         return self.topLevelItemCount()
 
