@@ -245,6 +245,8 @@ class GuiMain(QMainWindow):
         SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
         SHARED.indexChangedTags.connect(self.docViewerPanel.updateChangedTags)
         SHARED.indexScannedDocument.connect(self.docViewerPanel.projectItemChanged)
+        SHARED.indexScannedDocument.connect(self.projView.updateItemValues)
+        SHARED.indexScannedDocument.connect(self.itemDetails.updateViewBox)
 
         self.mainMenu.requestDocAction.connect(self._passDocumentAction)
         self.mainMenu.requestDocInsert.connect(self._passDocumentInsert)

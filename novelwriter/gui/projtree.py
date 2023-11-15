@@ -142,7 +142,6 @@ class GuiProjectView(QWidget):
         # Function Mappings
         self.emptyTrash = self.projTree.emptyTrash
         self.requestDeleteItem = self.projTree.requestDeleteItem
-        self.setTreeItemValues = self.projTree.setTreeItemValues
         self.propagateCount = self.projTree.propagateCount
         self.getSelectedHandle = self.projTree.getSelectedHandle
         self.setSelectedHandle = self.projTree.setSelectedHandle
@@ -209,6 +208,12 @@ class GuiProjectView(QWidget):
     ##
     #  Public Slots
     ##
+
+    @pyqtSlot(str)
+    def updateItemValues(self, tHandle: str) -> None:
+        """Update tree item"""
+        self.projTree.setTreeItemValues(tHandle)
+        return
 
     @pyqtSlot(str, int, int, int)
     def updateCounts(self, tHandle: str, cCount: int, wCount: int, pCount: int) -> None:
@@ -431,7 +436,7 @@ class GuiProjectToolBar(QWidget):
         return
 
     ##
-    #  Slots
+    #  Private Slots
     ##
 
     @pyqtSlot(str)

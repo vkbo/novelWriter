@@ -221,11 +221,11 @@ class _ViewPanelBackRefs(QTreeWidget):
 
     def refreshDocument(self, tHandle: str) -> None:
         """Refresh document meta data."""
-        print("Ping")
         iItem = SHARED.project.index.getItemData(tHandle)
         if iItem:
             for sTitle, hItem in iItem.items():
-                self._setTreeItemValues(tHandle, sTitle, hItem)
+                if f"{tHandle}:{sTitle}" in self._treeMap:
+                    self._setTreeItemValues(tHandle, sTitle, hItem)
         return
 
     ##

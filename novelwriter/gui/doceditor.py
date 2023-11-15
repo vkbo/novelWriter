@@ -500,10 +500,7 @@ class GuiDocEditor(QPlainTextEdit):
             else:
                 self.novelStructureChanged.emit()
 
-        # ToDo: This should be a signal
         if oldHeader != newHeader:
-            self.mainGui.projView.setTreeItemValues(tHandle)
-            self.mainGui.itemDetails.updateViewBox(tHandle)
             self.docFooter.updateInfo()
 
         # Update the status bar
