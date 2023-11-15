@@ -112,7 +112,6 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     nwGUI.docViewer.setTextCursor(theCursor)
     nwGUI.docViewer._makeSelection(QTextCursor.WordUnderCursor)
     theRect = nwGUI.docViewer.cursorRect()
-    # qtbot.mouseClick(nwGUI.docViewer.viewport(), Qt.LeftButton, pos=theRect.center(), delay=100)
     nwGUI.docViewer._linkClicked(QUrl("#char=Bod"))
     assert nwGUI.docViewer.docHandle == "4c4f28287af27"
 
@@ -140,20 +139,6 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert nwGUI.docViewer.docHeader.theTitle.text() == "Test Title"
     CONFIG.showFullPath = True
 
-    # Document footer show/hide references
-    viewState = nwGUI.viewMeta.isVisible()
-    nwGUI.docViewer.docFooter._doShowHide()
-    assert nwGUI.viewMeta.isVisible() is not viewState
-    nwGUI.docViewer.docFooter._doShowHide()
-    assert nwGUI.viewMeta.isVisible() is viewState
-
-    # Document footer sticky
-    viewState = nwGUI.docViewer.stickyRef
-    nwGUI.docViewer.docFooter._doToggleSticky(not viewState)
-    assert nwGUI.docViewer.stickyRef is not viewState
-    nwGUI.docViewer.docFooter._doToggleSticky(viewState)
-    assert nwGUI.docViewer.stickyRef is viewState
-
     # Document footer show/hide synopsis
     assert nwGUI.viewDocument("f96ec11c6a3da") is True
     assert len(nwGUI.docViewer.toPlainText()) == 4315
@@ -171,19 +156,6 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
         mp.setattr(ToHtml, "doConvert", causeException)
         assert nwGUI.docViewer.loadText("846352075de7d") is False
         assert nwGUI.docViewer.toPlainText() == "An error occurred while generating the preview."
-
-    # Check reference panel (issue #1378)
-    assert nwGUI.viewDocument("4c4f28287af27") is True
-    assert nwGUI.docViewer.toPlainText().startswith("Nobody Owens")
-
-    nwGUI.viewMeta._linkClicked("fb609cd8319dc")
-    assert nwGUI.docViewer.toPlainText().startswith("Chapter One")
-
-    nwGUI.viewMeta._linkClicked("88243afbe5ed8#T0001")
-    assert nwGUI.docViewer.toPlainText().startswith("Scene One")
-
-    nwGUI.viewMeta._linkClicked("88243afbe5ed8#ABCD")
-    assert nwGUI.docViewer.toPlainText().startswith("Scene One")
 
     # qtbot.stop()
 

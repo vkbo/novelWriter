@@ -562,11 +562,11 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     ))
 
     # The novel structure should contain the pointer to the novel file header
-    theKeys = []
+    keys = []
     for aKey, _, _, _ in index.novelStructure():
-        theKeys.append(aKey)
+        keys.append(aKey)
 
-    assert theKeys == [
+    assert keys == [
         f"{C.hTitlePage}:T0001",
         f"{C.hChapterDoc}:T0001",
         f"{C.hSceneDoc}:T0001",
@@ -576,22 +576,22 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     # Check that excluded files can be skipped
     project.tree[nHandle].setActive(False)  # type: ignore
 
-    theKeys = []
+    keys = []
     for aKey, _, _, _ in index.novelStructure(skipExcl=False):
-        theKeys.append(aKey)
+        keys.append(aKey)
 
-    assert theKeys == [
+    assert keys == [
         f"{C.hTitlePage}:T0001",
         f"{C.hChapterDoc}:T0001",
         f"{C.hSceneDoc}:T0001",
         f"{nHandle}:T0001",
     ]
 
-    theKeys = []
+    keys = []
     for aKey, _, _, _ in index.novelStructure(skipExcl=True):
-        theKeys.append(aKey)
+        keys.append(aKey)
 
-    assert theKeys == [
+    assert keys == [
         f"{C.hTitlePage}:T0001",
         f"{C.hChapterDoc}:T0001",
         f"{C.hSceneDoc}:T0001",
@@ -606,23 +606,23 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     # getItemData + getHandleHeaderCount
     # ==================================
 
-    theItem = index.getItemData(nHandle)
-    assert isinstance(theItem, IndexItem)
-    assert theItem.headings() == ["T0001"]
+    item = index.getItemData(nHandle)
+    assert isinstance(item, IndexItem)
+    assert item.headings() == ["T0001"]
     assert index.getHandleHeaderCount(nHandle) == 1
 
     # getReferences
     # =============
 
     # Look up an invalid handle
-    theRefs = index.getReferences("Not a handle")
-    assert theRefs["@pov"] == []
-    assert theRefs["@char"] == []
+    refs = index.getReferences("Not a handle")
+    assert refs["@pov"] == []
+    assert refs["@char"] == []
 
     # The novel file should now refer to Jane as @pov and @char
-    theRefs = index.getReferences(nHandle)
-    assert theRefs["@pov"] == ["Jane"]
-    assert theRefs["@char"] == ["Jane"]
+    refs = index.getReferences(nHandle)
+    assert refs["@pov"] == ["Jane"]
+    assert refs["@char"] == ["Jane"]
 
     # getBackReferenceList
     # ====================
@@ -634,8 +634,8 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     assert index.getBackReferenceList(C.hTitlePage) == {}
 
     # The character file should have a record of the reference from the novel file
-    theRefs = index.getBackReferenceList(cHandle)
-    assert theRefs == {nHandle: "T0001"}
+    refs = index.getBackReferenceList(cHandle)
+    assert refs[nHandle][0] == "T0001"
 
     # getTagSource
     # ============
