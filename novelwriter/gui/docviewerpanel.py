@@ -27,7 +27,7 @@ import logging
 
 from PyQt5.QtCore import QSize, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    QFrame, QHBoxLayout, QHeaderView, QTabWidget, QTreeWidget, QTreeWidgetItem,
+    QAbstractItemView, QFrame, QHBoxLayout, QHeaderView, QTabWidget, QTreeWidget, QTreeWidgetItem,
     QVBoxLayout, QWidget
 )
 
@@ -44,10 +44,12 @@ class GuiDocViewerPanel(QWidget):
 
         logger.debug("Create: GuiDocViewerPanel")
 
+        self._lastHandle = None
+
         self.tabBackRefs = _ViewPanelBackRefs(self)
 
         self.mainTabs = QTabWidget(self)
-        self.mainTabs.addTab(self.tabBackRefs, self.tr("Back References"))
+        self.mainTabs.addTab(self.tabBackRefs, self.tr("Backreferences"))
 
         self.kwTabs = {}
         for itemClass in nwLists.USER_CLASSES:
@@ -83,6 +85,7 @@ class GuiDocViewerPanel(QWidget):
             "} "
         )
         self.mainTabs.setStyleSheet(styleSheet)
+        self.updateHandle(self._lastHandle)
 
         return
 
@@ -93,6 +96,7 @@ class GuiDocViewerPanel(QWidget):
     @pyqtSlot(str)
     def updateHandle(self, tHandle: str | None) -> None:
         """Update the document handle."""
+        self._lastHandle = tHandle
         self.tabBackRefs.refreshContent(tHandle or None)
         return
 
@@ -101,10 +105,11 @@ class GuiDocViewerPanel(QWidget):
 
 class _ViewPanelBackRefs(QWidget):
 
-    C_DATA     = 0
-    C_TITLE    = 0
-    C_NAME     = 1
-    C_SYNOPSIS = 2
+    C_DATA  = 0
+    C_TITLE = 0
+    C_EDIT  = 1
+    C_VIEW  = 2
+    C_NAME  = 3
 
     D_HANDLE = Qt.ItemDataRole.UserRole
     D_TITLE  = Qt.ItemDataRole.UserRole + 1
@@ -113,22 +118,28 @@ class _ViewPanelBackRefs(QWidget):
         super().__init__(parent=parent)
 
         iPx = SHARED.theme.baseIconSize
+        cMg = CONFIG.pxInt(6)
 
         # Content
         self.listBox = QTreeWidget(self)
         # self.listBox.setHeaderHidden(True)
-        # self.listBox.setColumnCount(3)
+        # self.listBox.setColumnCount(4)
         self.listBox.setHeaderLabels([
-            self.tr("Title"), self.tr("Document"), self.tr("Synopsis")
+            self.tr("Title"), "", "", self.tr("Document")
         ])
         self.listBox.setIndentation(0)
+        self.listBox.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.listBox.setIconSize(QSize(iPx, iPx))
         self.listBox.setFrameStyle(QFrame.Shape.NoFrame)
 
         treeHeader = self.listBox.header()
         treeHeader.setStretchLastSection(True)
+        treeHeader.setSectionResizeMode(self.C_EDIT, QHeaderView.ResizeMode.Fixed)
+        treeHeader.setSectionResizeMode(self.C_VIEW, QHeaderView.ResizeMode.Fixed)
         treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.ResizeMode.ResizeToContents)
         treeHeader.setSectionResizeMode(self.C_TITLE, QHeaderView.ResizeMode.ResizeToContents)
+        treeHeader.resizeSection(self.C_EDIT, iPx + cMg)
+        treeHeader.resizeSection(self.C_VIEW, iPx + cMg)
 
         fH1 = self.font()
         fH1.setBold(True)
@@ -137,7 +148,9 @@ class _ViewPanelBackRefs(QWidget):
         fH2 = self.font()
         fH2.setBold(True)
 
-        self._hFonts = [self.font(), fH1, fH2, self.font(), self.font()]
+        self._hFonts = [self.font(), fH1, fH2, self.font(), self.font(), self.font()]
+        self._editIcon = SHARED.theme.getIcon("edit")
+        self._viewIcon = SHARED.theme.getIcon("view")
 
         # Assemble
         self.outerBox = QHBoxLayout()
@@ -159,20 +172,21 @@ class _ViewPanelBackRefs(QWidget):
                 if nwItem is None:
                     continue
 
-                icon = SHARED.theme.getItemIcon(
+                docIcon = SHARED.theme.getItemIcon(
                     nwItem.itemType, nwItem.itemClass,
                     nwItem.itemLayout, nwItem.mainHeading
                 )
-                iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0)
-                hDec = SHARED.theme.getHeaderDecoration(iLevel)
+                iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0) if nwItem.isDocumentLayout() else 5
+                hDec = SHARED.theme.getHeaderDecorationNarrow(iLevel)
 
                 trItem = QTreeWidgetItem()
                 trItem.setText(self.C_TITLE, hItem.title)
                 trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
                 trItem.setFont(self.C_TITLE, self._hFonts[iLevel])
-                trItem.setIcon(self.C_NAME, icon)
+                trItem.setIcon(self.C_EDIT, self._editIcon)
+                trItem.setIcon(self.C_VIEW, self._viewIcon)
+                trItem.setIcon(self.C_NAME, docIcon)
                 trItem.setText(self.C_NAME, nwItem.itemName)
-                trItem.setText(self.C_SYNOPSIS, hItem.synopsis)
 
                 trItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
                 trItem.setData(self.C_DATA, self.D_TITLE, sTitle)
