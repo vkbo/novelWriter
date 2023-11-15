@@ -25,7 +25,9 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtCore import QSize, Qt, pyqtSlot
+from enum import Enum
+
+from PyQt5.QtCore import QModelIndex, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QFrame, QHeaderView, QTabWidget, QTreeWidget,
     QTreeWidgetItem, QVBoxLayout, QWidget
@@ -34,12 +36,15 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwHeaders, nwLabels, nwLists, trConst
 from novelwriter.core.index import IndexHeading, IndexItem
-from novelwriter.enum import nwItemClass
+from novelwriter.enum import nwDocMode, nwItemClass
 
 logger = logging.getLogger(__name__)
 
 
 class GuiDocViewerPanel(QWidget):
+
+    loadDocumentTagRequest = pyqtSignal(str, Enum)
+    openDocumentRequest = pyqtSignal(str, Enum, str, bool)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -180,21 +185,23 @@ class _ViewPanelBackRefs(QTreeWidget):
     D_HANDLE = Qt.ItemDataRole.UserRole
     D_TITLE  = Qt.ItemDataRole.UserRole + 1
 
-    def __init__(self, parent: QWidget) -> None:
-        super().__init__(parent=parent)
+    def __init__(self, docViewerPanel: GuiDocViewerPanel) -> None:
+        super().__init__(parent=docViewerPanel)
+
+        self.docViewerPanel = docViewerPanel
 
         self._treeMap: dict[str, QTreeWidgetItem] = {}
 
         iPx = SHARED.theme.baseIconSize
         cMg = CONFIG.pxInt(6)
 
-        # Content
         self.setHeaderLabels([self.tr("Document"), "", "", self.tr("First Heading")])
         self.setIndentation(0)
         self.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.setIconSize(QSize(iPx, iPx))
         self.setFrameStyle(QFrame.Shape.NoFrame)
 
+        # Set Header Sizes
         treeHeader = self.header()
         treeHeader.setStretchLastSection(True)
         treeHeader.setSectionResizeMode(self.C_DOC, QHeaderView.ResizeMode.ResizeToContents)
@@ -204,8 +211,12 @@ class _ViewPanelBackRefs(QTreeWidget):
         treeHeader.resizeSection(self.C_EDIT, iPx + cMg)
         treeHeader.resizeSection(self.C_VIEW, iPx + cMg)
 
+        # Cache Icons Locally
         self._editIcon = SHARED.theme.getIcon("edit")
         self._viewIcon = SHARED.theme.getIcon("view")
+
+        # Signals
+        self.clicked.connect(self._treeItemClicked)
 
         return
 
@@ -226,6 +237,20 @@ class _ViewPanelBackRefs(QTreeWidget):
             for sTitle, hItem in iItem.items():
                 if f"{tHandle}:{sTitle}" in self._treeMap:
                     self._setTreeItemValues(tHandle, sTitle, hItem)
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot("QModelIndex")
+    def _treeItemClicked(self, index: QModelIndex) -> None:
+        """The user clicked on an item in the tree."""
+        tHandle = index.siblingAtColumn(self.C_DATA).data(self.D_HANDLE)
+        if index.column() == self.C_EDIT:
+            self.docViewerPanel.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, "", True)
+        elif index.column() == self.C_VIEW:
+            self.docViewerPanel.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, "", True)
         return
 
     ##
@@ -282,8 +307,10 @@ class _ViewPanelKeyWords(QTreeWidget):
     D_TAG    = Qt.ItemDataRole.UserRole
     D_HANDLE = Qt.ItemDataRole.UserRole + 1
 
-    def __init__(self, parent: QWidget, itemClass: nwItemClass) -> None:
-        super().__init__(parent=parent)
+    def __init__(self, docViewerPanel: GuiDocViewerPanel, itemClass: nwItemClass) -> None:
+        super().__init__(parent=docViewerPanel)
+
+        self.docViewerPanel = docViewerPanel
 
         self._tagMap: dict[str, QTreeWidgetItem] = {}
 
@@ -304,6 +331,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.ResizeMode.ResizeToContents)
         treeHeader.setSectionResizeMode(self.C_EDIT, QHeaderView.ResizeMode.Fixed)
         treeHeader.setSectionResizeMode(self.C_VIEW, QHeaderView.ResizeMode.Fixed)
+        treeHeader.setSectionResizeMode(self.C_DOC, QHeaderView.ResizeMode.ResizeToContents)
         treeHeader.resizeSection(self.C_EDIT, iPx + cMg)
         treeHeader.resizeSection(self.C_VIEW, iPx + cMg)
 
@@ -311,6 +339,9 @@ class _ViewPanelKeyWords(QTreeWidget):
         self._classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[itemClass])
         self._editIcon = SHARED.theme.getIcon("edit")
         self._viewIcon = SHARED.theme.getIcon("view")
+
+        # Signals
+        self.clicked.connect(self._treeItemClicked)
 
         return
 
@@ -359,5 +390,19 @@ class _ViewPanelKeyWords(QTreeWidget):
             self._tagMap.pop(tag, None)
             return True
         return False
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot("QModelIndex")
+    def _treeItemClicked(self, index: QModelIndex) -> None:
+        """The user clicked on an item in the tree."""
+        tag = index.siblingAtColumn(self.C_DATA).data(self.D_TAG)
+        if index.column() == self.C_EDIT:
+            self.docViewerPanel.loadDocumentTagRequest.emit(tag, nwDocMode.EDIT)
+        elif index.column() == self.C_VIEW:
+            self.docViewerPanel.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
+        return
 
 # END Class _ViewPanelRefs

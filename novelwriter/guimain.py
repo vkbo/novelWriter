@@ -286,6 +286,9 @@ class GuiMain(QMainWindow):
         self.docViewer.loadDocumentTagRequest.connect(self._followTag)
         self.docViewer.togglePanelVisibility.connect(self._toggleViewerPanelVisibility)
 
+        self.docViewerPanel.loadDocumentTagRequest.connect(self._followTag)
+        self.docViewerPanel.openDocumentRequest.connect(self._openDocument)
+
         self.outlineView.loadDocumentTagRequest.connect(self._followTag)
         self.outlineView.openDocumentRequest.connect(self._openDocument)
 
