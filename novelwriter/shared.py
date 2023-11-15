@@ -215,9 +215,9 @@ class SharedData(QObject):
     #  Call-Back Functions
     ##
 
-    def indexUpdatedTags(self, added: list[str], deleted: list[str]) -> None:
+    def indexUpdatedTags(self, updated: list[str], deleted: list[str]) -> None:
         """Emit the index changed tags signal."""
-        self.indexChangedTags.emit(added, deleted)
+        self.indexChangedTags.emit(updated, deleted)
         return
 
     ##

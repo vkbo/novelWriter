@@ -259,6 +259,7 @@ class GuiMain(QMainWindow):
         self.projView.treeItemChanged.connect(self.docEditor.updateDocInfo)
         self.projView.treeItemChanged.connect(self.docViewer.updateDocInfo)
         self.projView.treeItemChanged.connect(self.itemDetails.updateViewBox)
+        self.projView.treeItemChanged.connect(self.docViewerPanel.projectItemChanged)
         self.projView.rootFolderChanged.connect(self.outlineView.updateRootItem)
         self.projView.rootFolderChanged.connect(self.novelView.updateRootItem)
         self.projView.rootFolderChanged.connect(self.projView.updateRootItem)
@@ -788,11 +789,9 @@ class GuiMain(QMainWindow):
         if not SHARED.hasProject:
             logger.error("No project open")
             return False
-
         if tHandle is None and (self.docEditor.anyFocus() or self.isFocusMode):
             tHandle = self.docEditor.docHandle
         self.projView.renameTreeItem(tHandle)
-
         return True
 
     def rebuildTrees(self) -> None:

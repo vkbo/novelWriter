@@ -102,8 +102,8 @@ class GuiDocViewerPanel(QWidget):
         """Run open project tasks."""
         self.clearClassTabs()
         for key, name, tClass, iItem, hItem in SHARED.project.index.getTagsData():
-            if tClass in self.kwTabs:
-                self.kwTabs[tClass].addEntry(key, name, iItem, hItem)
+            if tClass in self.kwTabs and iItem and hItem:
+                self.kwTabs[tClass].addUpdateEntry(key, name, iItem, hItem)
         self._updateTabVisibility()
         return
 
@@ -124,6 +124,16 @@ class GuiDocViewerPanel(QWidget):
     ##
 
     @pyqtSlot(str)
+    def projectItemChanged(self, tHandle: str) -> None:
+        """Update meta data for project item."""
+        self.tabBackRefs.refreshDocument(tHandle)
+        for key in SHARED.project.index.getDocumentTags(tHandle):
+            name, tClass, iItem, hItem = SHARED.project.index.getSingleTag(key)
+            if tClass in self.kwTabs and iItem and hItem:
+                self.kwTabs[tClass].addUpdateEntry(key, name, iItem, hItem)
+        return
+
+    @pyqtSlot(str)
     def updateHandle(self, tHandle: str | None) -> None:
         """Update the document handle."""
         self._lastHandle = tHandle
@@ -131,22 +141,19 @@ class GuiDocViewerPanel(QWidget):
         return
 
     @pyqtSlot(list, list)
-    def updateChangedTags(self, added: list[str], deleted: list[str]) -> None:
+    def updateChangedTags(self, updated: list[str], deleted: list[str]) -> None:
         """Forward tags changes to the lists."""
-        for key in added:
+        for key in updated:
             name, tClass, iItem, hItem = SHARED.project.index.getSingleTag(key)
-            if tClass in self.kwTabs:
-                self.kwTabs[tClass].addEntry(key, name, iItem, hItem)
-
+            if tClass in self.kwTabs and iItem and hItem:
+                self.kwTabs[tClass].addUpdateEntry(key, name, iItem, hItem)
         for key in deleted:
             for cTab in self.kwTabs.values():
                 if cTab.removeEntry(key):
                     break
             else:
                 logger.warning("Could not remove tag '%s' from view panel", key)
-
         self._updateTabVisibility()
-
         return
 
     ##
@@ -180,9 +187,7 @@ class _ViewPanelBackRefs(QTreeWidget):
         cMg = CONFIG.pxInt(6)
 
         # Content
-        self.setHeaderLabels([
-            self.tr("Heading"), "", "", self.tr("Document")
-        ])
+        self.setHeaderLabels([self.tr("Heading"), "", "", self.tr("Document")])
         self.setIndentation(0)
         self.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.setIconSize(QSize(iPx, iPx))
@@ -233,6 +238,21 @@ class _ViewPanelBackRefs(QTreeWidget):
                 self.addTopLevelItem(trItem)
         return
 
+    def refreshDocument(self, tHandle: str) -> None:
+        """Refresh document meta data."""
+        nwItem = SHARED.project.tree[tHandle]
+        if nwItem:
+            docIcon = SHARED.theme.getItemIcon(
+                nwItem.itemType, nwItem.itemClass,
+                nwItem.itemLayout, nwItem.mainHeading
+            )
+            for i in range(self.topLevelItemCount()):
+                trItem = self.topLevelItem(i)
+                if trItem and trItem.data(self.C_DATA, self.D_HANDLE) == tHandle:
+                    trItem.setIcon(self.C_DOCUMENT, docIcon)
+                    trItem.setText(self.C_DOCUMENT, nwItem.itemName)
+        return
+
 # END Class _ViewPanelBackRefs
 
 
@@ -250,15 +270,13 @@ class _ViewPanelKeyWords(QTreeWidget):
 
     def __init__(self, parent: QWidget, itemClass: nwItemClass) -> None:
         super().__init__(parent=parent)
-        self._itemClass = nwItemClass
+
         self._tagMap: dict[str, QTreeWidgetItem] = {}
 
         iPx = SHARED.theme.baseIconSize
         cMg = CONFIG.pxInt(6)
 
-        self.setHeaderLabels([
-            self.tr("Tag"), "", "", self.tr("Heading"), self.tr("Document")
-        ])
+        self.setHeaderLabels([self.tr("Tag"), "", "", self.tr("Heading"), self.tr("Document")])
         self.setIndentation(0)
         self.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.setIconSize(QSize(iPx, iPx))
@@ -266,6 +284,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         self.setSortingEnabled(True)
         self.sortByColumn(self.C_NAME, Qt.SortOrder.AscendingOrder)
 
+        # Set Header Sizes
         treeHeader = self.header()
         treeHeader.setStretchLastSection(True)
         treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.ResizeMode.ResizeToContents)
@@ -274,6 +293,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         treeHeader.resizeSection(self.C_EDIT, iPx + cMg)
         treeHeader.resizeSection(self.C_VIEW, iPx + cMg)
 
+        # Cache Icons Locally
         self._classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[itemClass])
         self._editIcon = SHARED.theme.getIcon("edit")
         self._viewIcon = SHARED.theme.getIcon("view")
@@ -281,14 +301,11 @@ class _ViewPanelKeyWords(QTreeWidget):
         return
 
     def count(self) -> int:
+        """Return the number of items in the list."""
         return self.topLevelItemCount()
 
-    def addEntry(self, tag: str, name: str, iItem: IndexItem | None,
-                 hItem: IndexHeading | None) -> None:
-        """Add a tag entry to the list."""
-        if not iItem or not hItem:
-            return
-
+    def addUpdateEntry(self, tag: str, name: str, iItem: IndexItem, hItem: IndexHeading) -> None:
+        """Add a new entry, or update an existing one."""
         nwItem = iItem.item
         docIcon = SHARED.theme.getItemIcon(
             nwItem.itemType, nwItem.itemClass,
@@ -297,7 +314,13 @@ class _ViewPanelKeyWords(QTreeWidget):
         iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0) if nwItem.isDocumentLayout() else 5
         hDec = SHARED.theme.getHeaderDecorationNarrow(iLevel)
 
-        trItem = QTreeWidgetItem()
+        # This can not use a get call to the dictionary as that creates
+        # some weird issue with Qt, so we need to do this with an if
+        if tag in self._tagMap:
+            trItem = self._tagMap[tag]
+        else:
+            trItem = QTreeWidgetItem()
+
         trItem.setText(self.C_NAME, name)
         trItem.setIcon(self.C_NAME, self._classIcon)
         trItem.setIcon(self.C_EDIT, self._editIcon)
@@ -308,8 +331,10 @@ class _ViewPanelKeyWords(QTreeWidget):
         trItem.setText(self.C_DOCUMENT, nwItem.itemName)
         trItem.setData(self.C_DATA, self.D_TAG, tag)
         trItem.setData(self.C_DATA, self.D_HANDLE, iItem.handle)
-        self.addTopLevelItem(trItem)
-        self._tagMap[tag] = trItem
+
+        if tag not in self._tagMap:
+            self.addTopLevelItem(trItem)
+            self._tagMap[tag] = trItem
 
         return
 

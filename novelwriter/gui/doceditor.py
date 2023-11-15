@@ -2054,7 +2054,7 @@ class MetaCompleter(QMenu):
             length = len(lookup)
             suffix = ""
             options = list(filter(
-                lambda x: lookup in x.lower(), SHARED.project.index.getTags(
+                lambda x: lookup in x.lower(), SHARED.project.index.getClassTags(
                     nwKeyWords.KEY_CLASS.get(kw.strip(), nwItemClass.NO_CLASS)
                 )
             ))[:15]
