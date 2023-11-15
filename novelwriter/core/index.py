@@ -34,8 +34,8 @@ import logging
 from time import time
 from typing import TYPE_CHECKING, ItemsView, Iterable, Iterator
 from pathlib import Path
-from novelwriter import SHARED
 
+from novelwriter import SHARED
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.common import checkInt, isHandle, isItemClass, isTitleTag, jsonEncode
@@ -283,6 +283,7 @@ class NWIndex:
         nowTime = time()
         self._indexChange = nowTime
         self._rootChange[tItem.itemRoot] = nowTime
+        SHARED.indexDocumentScanned(tHandle)
 
         return True
 
@@ -606,9 +607,7 @@ class NWIndex:
         return tRefs
 
     def getBackReferenceList(self, tHandle: str) -> dict[str, tuple[str, IndexHeading]]:
-        """Build a list of files referring back to our file, specified
-        by tHandle.
-        """
+        """Build a dict of files referring back to our file."""
         if tHandle is None or tHandle not in self._itemIndex:
             return {}
 

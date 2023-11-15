@@ -171,11 +171,11 @@ class GuiDocViewerPanel(QWidget):
 
 class _ViewPanelBackRefs(QTreeWidget):
 
-    C_DATA     = 0
-    C_TITLE    = 0
-    C_EDIT     = 1
-    C_VIEW     = 2
-    C_DOCUMENT = 3
+    C_DATA  = 0
+    C_DOC   = 0
+    C_EDIT  = 1
+    C_VIEW  = 2
+    C_TITLE = 3
 
     D_HANDLE = Qt.ItemDataRole.UserRole
     D_TITLE  = Qt.ItemDataRole.UserRole + 1
@@ -183,11 +183,13 @@ class _ViewPanelBackRefs(QTreeWidget):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
+        self._treeMap: dict[str, QTreeWidgetItem] = {}
+
         iPx = SHARED.theme.baseIconSize
         cMg = CONFIG.pxInt(6)
 
         # Content
-        self.setHeaderLabels([self.tr("Heading"), "", "", self.tr("Document")])
+        self.setHeaderLabels([self.tr("Document"), "", "", self.tr("First Heading")])
         self.setIndentation(0)
         self.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.setIconSize(QSize(iPx, iPx))
@@ -195,7 +197,7 @@ class _ViewPanelBackRefs(QTreeWidget):
 
         treeHeader = self.header()
         treeHeader.setStretchLastSection(True)
-        treeHeader.setSectionResizeMode(self.C_DOCUMENT, QHeaderView.ResizeMode.ResizeToContents)
+        treeHeader.setSectionResizeMode(self.C_DOC, QHeaderView.ResizeMode.ResizeToContents)
         treeHeader.setSectionResizeMode(self.C_EDIT, QHeaderView.ResizeMode.Fixed)
         treeHeader.setSectionResizeMode(self.C_VIEW, QHeaderView.ResizeMode.Fixed)
         treeHeader.setSectionResizeMode(self.C_TITLE, QHeaderView.ResizeMode.ResizeToContents)
@@ -210,47 +212,59 @@ class _ViewPanelBackRefs(QTreeWidget):
     def refreshContent(self, dHandle: str | None) -> None:
         """Update the content."""
         self.clear()
+        self._treeMap = {}
         if dHandle:
             refs = SHARED.project.index.getBackReferenceList(dHandle)
             for tHandle, (sTitle, hItem) in refs.items():
-                nwItem = SHARED.project.tree[tHandle]
-                if nwItem is None:
-                    continue
-
-                docIcon = SHARED.theme.getItemIcon(
-                    nwItem.itemType, nwItem.itemClass,
-                    nwItem.itemLayout, nwItem.mainHeading
-                )
-                iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0) if nwItem.isDocumentLayout() else 5
-                hDec = SHARED.theme.getHeaderDecorationNarrow(iLevel)
-
-                trItem = QTreeWidgetItem()
-                trItem.setText(self.C_TITLE, hItem.title)
-                trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
-                trItem.setIcon(self.C_EDIT, self._editIcon)
-                trItem.setIcon(self.C_VIEW, self._viewIcon)
-                trItem.setIcon(self.C_DOCUMENT, docIcon)
-                trItem.setText(self.C_DOCUMENT, nwItem.itemName)
-
-                trItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
-                trItem.setData(self.C_DATA, self.D_TITLE, sTitle)
-
-                self.addTopLevelItem(trItem)
+                self._setTreeItemValues(tHandle, sTitle, hItem)
         return
 
     def refreshDocument(self, tHandle: str) -> None:
         """Refresh document meta data."""
+        print("Ping")
+        iItem = SHARED.project.index.getItemData(tHandle)
+        if iItem:
+            for sTitle, hItem in iItem.items():
+                self._setTreeItemValues(tHandle, sTitle, hItem)
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _setTreeItemValues(self, tHandle: str, sTitle: str, hItem: IndexHeading) -> None:
+        """Add or update a tree item."""
         nwItem = SHARED.project.tree[tHandle]
-        if nwItem:
-            docIcon = SHARED.theme.getItemIcon(
-                nwItem.itemType, nwItem.itemClass,
-                nwItem.itemLayout, nwItem.mainHeading
-            )
-            for i in range(self.topLevelItemCount()):
-                trItem = self.topLevelItem(i)
-                if trItem and trItem.data(self.C_DATA, self.D_HANDLE) == tHandle:
-                    trItem.setIcon(self.C_DOCUMENT, docIcon)
-                    trItem.setText(self.C_DOCUMENT, nwItem.itemName)
+        if nwItem is None:
+            return
+
+        docIcon = SHARED.theme.getItemIcon(
+            nwItem.itemType, nwItem.itemClass,
+            nwItem.itemLayout, nwItem.mainHeading
+        )
+        iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0) if nwItem.isDocumentLayout() else 5
+        hDec = SHARED.theme.getHeaderDecorationNarrow(iLevel)
+
+        tKey = f"{tHandle}:{sTitle}"
+        if tKey in self._treeMap:
+            trItem = self._treeMap[tKey]
+        else:
+            trItem = QTreeWidgetItem()
+
+        trItem.setIcon(self.C_DOC, docIcon)
+        trItem.setText(self.C_DOC, nwItem.itemName)
+        trItem.setIcon(self.C_EDIT, self._editIcon)
+        trItem.setIcon(self.C_VIEW, self._viewIcon)
+        trItem.setText(self.C_TITLE, hItem.title)
+        trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
+
+        trItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
+        trItem.setData(self.C_DATA, self.D_TITLE, sTitle)
+
+        if tKey not in self._treeMap:
+            self.addTopLevelItem(trItem)
+            self._treeMap[tKey] = trItem
+
         return
 
 # END Class _ViewPanelBackRefs
@@ -258,12 +272,12 @@ class _ViewPanelBackRefs(QTreeWidget):
 
 class _ViewPanelKeyWords(QTreeWidget):
 
-    C_DATA     = 0
-    C_NAME     = 0
-    C_EDIT     = 1
-    C_VIEW     = 2
-    C_TITLE    = 3
-    C_DOCUMENT = 4
+    C_DATA  = 0
+    C_NAME  = 0
+    C_EDIT  = 1
+    C_VIEW  = 2
+    C_DOC   = 3
+    C_TITLE = 4
 
     D_TAG    = Qt.ItemDataRole.UserRole
     D_HANDLE = Qt.ItemDataRole.UserRole + 1
@@ -276,7 +290,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         iPx = SHARED.theme.baseIconSize
         cMg = CONFIG.pxInt(6)
 
-        self.setHeaderLabels([self.tr("Tag"), "", "", self.tr("Heading"), self.tr("Document")])
+        self.setHeaderLabels([self.tr("Tag"), "", "", self.tr("Document"), self.tr("Heading")])
         self.setIndentation(0)
         self.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.setIconSize(QSize(iPx, iPx))
@@ -325,10 +339,10 @@ class _ViewPanelKeyWords(QTreeWidget):
         trItem.setIcon(self.C_NAME, self._classIcon)
         trItem.setIcon(self.C_EDIT, self._editIcon)
         trItem.setIcon(self.C_VIEW, self._viewIcon)
+        trItem.setIcon(self.C_DOC, docIcon)
+        trItem.setText(self.C_DOC, nwItem.itemName)
         trItem.setText(self.C_TITLE, hItem.title)
         trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
-        trItem.setIcon(self.C_DOCUMENT, docIcon)
-        trItem.setText(self.C_DOCUMENT, nwItem.itemName)
         trItem.setData(self.C_DATA, self.D_TAG, tag)
         trItem.setData(self.C_DATA, self.D_HANDLE, iItem.handle)
 

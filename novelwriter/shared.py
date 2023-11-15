@@ -52,6 +52,7 @@ class SharedData(QObject):
     projectStatusChanged = pyqtSignal(bool)
     projectStatusMessage = pyqtSignal(str)
     spellLanguageChanged = pyqtSignal(str, str)
+    indexScannedDocument = pyqtSignal(str)
     indexChangedTags = pyqtSignal(list, list)
 
     def __init__(self) -> None:
@@ -218,6 +219,11 @@ class SharedData(QObject):
     def indexUpdatedTags(self, updated: list[str], deleted: list[str]) -> None:
         """Emit the index changed tags signal."""
         self.indexChangedTags.emit(updated, deleted)
+        return
+
+    def indexDocumentScanned(self, tHandle: str) -> None:
+        """Emit the index scanned document signal."""
+        self.indexScannedDocument.emit(tHandle)
         return
 
     ##
