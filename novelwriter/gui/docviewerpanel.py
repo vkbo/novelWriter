@@ -121,7 +121,7 @@ class GuiDocViewerPanel(QWidget):
     def clearClassTabs(self) -> None:
         """Clear all the class tabs"""
         for cTab in self.kwTabs.values():
-            cTab.clear()
+            cTab.clearContent()
         return
 
     ##
@@ -348,6 +348,12 @@ class _ViewPanelKeyWords(QTreeWidget):
     def count(self) -> int:
         """Return the number of items in the list."""
         return self.topLevelItemCount()
+
+    def clearContent(self) -> None:
+        """Clear the list."""
+        self._tagMap = {}
+        self.clear()
+        return
 
     def addUpdateEntry(self, tag: str, name: str, iItem: IndexItem, hItem: IndexHeading) -> None:
         """Add a new entry, or update an existing one."""
