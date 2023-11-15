@@ -43,8 +43,8 @@ logger = logging.getLogger(__name__)
 
 class GuiDocViewerPanel(QWidget):
 
-    loadDocumentTagRequest = pyqtSignal(str, Enum)
     openDocumentRequest = pyqtSignal(str, Enum, str, bool)
+    loadDocumentTagRequest = pyqtSignal(str, Enum)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -183,13 +183,11 @@ class _ViewPanelBackRefs(QTreeWidget):
     C_TITLE = 3
 
     D_HANDLE = Qt.ItemDataRole.UserRole
-    D_TITLE  = Qt.ItemDataRole.UserRole + 1
 
-    def __init__(self, docViewerPanel: GuiDocViewerPanel) -> None:
-        super().__init__(parent=docViewerPanel)
+    def __init__(self, parent: GuiDocViewerPanel) -> None:
+        super().__init__(parent=parent)
 
-        self.docViewerPanel = docViewerPanel
-
+        self._parent = parent
         self._treeMap: dict[str, QTreeWidgetItem] = {}
 
         iPx = SHARED.theme.baseIconSize
@@ -232,8 +230,7 @@ class _ViewPanelBackRefs(QTreeWidget):
 
     def refreshDocument(self, tHandle: str) -> None:
         """Refresh document meta data."""
-        iItem = SHARED.project.index.getItemData(tHandle)
-        if iItem:
+        if iItem := SHARED.project.index.getItemData(tHandle):
             for sTitle, hItem in iItem.items():
                 if f"{tHandle}:{sTitle}" in self._treeMap:
                     self._setTreeItemValues(tHandle, sTitle, hItem)
@@ -245,12 +242,12 @@ class _ViewPanelBackRefs(QTreeWidget):
 
     @pyqtSlot("QModelIndex")
     def _treeItemClicked(self, index: QModelIndex) -> None:
-        """The user clicked on an item in the tree."""
+        """Emit document open signal on user click."""
         tHandle = index.siblingAtColumn(self.C_DATA).data(self.D_HANDLE)
         if index.column() == self.C_EDIT:
-            self.docViewerPanel.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, "", True)
+            self._parent.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, "", True)
         elif index.column() == self.C_VIEW:
-            self.docViewerPanel.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, "", True)
+            self._parent.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, "", True)
         return
 
     ##
@@ -259,8 +256,7 @@ class _ViewPanelBackRefs(QTreeWidget):
 
     def _setTreeItemValues(self, tHandle: str, sTitle: str, hItem: IndexHeading) -> None:
         """Add or update a tree item."""
-        nwItem = SHARED.project.tree[tHandle]
-        if nwItem is None:
+        if (nwItem := SHARED.project.tree[tHandle]) is None:
             return
 
         docIcon = SHARED.theme.getItemIcon(
@@ -271,10 +267,7 @@ class _ViewPanelBackRefs(QTreeWidget):
         hDec = SHARED.theme.getHeaderDecorationNarrow(iLevel)
 
         tKey = f"{tHandle}:{sTitle}"
-        if tKey in self._treeMap:
-            trItem = self._treeMap[tKey]
-        else:
-            trItem = QTreeWidgetItem()
+        trItem = self._treeMap[tKey] if tKey in self._treeMap else QTreeWidgetItem()
 
         trItem.setIcon(self.C_DOC, docIcon)
         trItem.setText(self.C_DOC, nwItem.itemName)
@@ -282,9 +275,7 @@ class _ViewPanelBackRefs(QTreeWidget):
         trItem.setIcon(self.C_VIEW, self._viewIcon)
         trItem.setText(self.C_TITLE, hItem.title)
         trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
-
         trItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
-        trItem.setData(self.C_DATA, self.D_TITLE, sTitle)
 
         if tKey not in self._treeMap:
             self.addTopLevelItem(trItem)
@@ -304,15 +295,13 @@ class _ViewPanelKeyWords(QTreeWidget):
     C_DOC   = 3
     C_TITLE = 4
 
-    D_TAG    = Qt.ItemDataRole.UserRole
-    D_HANDLE = Qt.ItemDataRole.UserRole + 1
+    D_TAG = Qt.ItemDataRole.UserRole
 
-    def __init__(self, docViewerPanel: GuiDocViewerPanel, itemClass: nwItemClass) -> None:
-        super().__init__(parent=docViewerPanel)
+    def __init__(self, parent: GuiDocViewerPanel, itemClass: nwItemClass) -> None:
+        super().__init__(parent=parent)
 
-        self.docViewerPanel = docViewerPanel
-
-        self._tagMap: dict[str, QTreeWidgetItem] = {}
+        self._parent = parent
+        self._treeMap: dict[str, QTreeWidgetItem] = {}
 
         iPx = SHARED.theme.baseIconSize
         cMg = CONFIG.pxInt(6)
@@ -351,7 +340,7 @@ class _ViewPanelKeyWords(QTreeWidget):
 
     def clearContent(self) -> None:
         """Clear the list."""
-        self._tagMap = {}
+        self._treeMap = {}
         self.clear()
         return
 
@@ -367,10 +356,7 @@ class _ViewPanelKeyWords(QTreeWidget):
 
         # This can not use a get call to the dictionary as that creates
         # some weird issue with Qt, so we need to do this with an if
-        if tag in self._tagMap:
-            trItem = self._tagMap[tag]
-        else:
-            trItem = QTreeWidgetItem()
+        trItem = self._treeMap[tag] if tag in self._treeMap else QTreeWidgetItem()
 
         trItem.setText(self.C_NAME, name)
         trItem.setIcon(self.C_NAME, self._classIcon)
@@ -381,19 +367,18 @@ class _ViewPanelKeyWords(QTreeWidget):
         trItem.setText(self.C_TITLE, hItem.title)
         trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
         trItem.setData(self.C_DATA, self.D_TAG, tag)
-        trItem.setData(self.C_DATA, self.D_HANDLE, iItem.handle)
 
-        if tag not in self._tagMap:
+        if tag not in self._treeMap:
             self.addTopLevelItem(trItem)
-            self._tagMap[tag] = trItem
+            self._treeMap[tag] = trItem
 
         return
 
     def removeEntry(self, tag: str) -> bool:
         """Remove a tag from the list."""
-        if tag in self._tagMap:
-            self.takeTopLevelItem(self.indexOfTopLevelItem(self._tagMap[tag]))
-            self._tagMap.pop(tag, None)
+        if tag in self._treeMap:
+            self.takeTopLevelItem(self.indexOfTopLevelItem(self._treeMap[tag]))
+            self._treeMap.pop(tag, None)
             return True
         return False
 
@@ -403,12 +388,12 @@ class _ViewPanelKeyWords(QTreeWidget):
 
     @pyqtSlot("QModelIndex")
     def _treeItemClicked(self, index: QModelIndex) -> None:
-        """The user clicked on an item in the tree."""
+        """Emit follow tag signal on user click."""
         tag = index.siblingAtColumn(self.C_DATA).data(self.D_TAG)
         if index.column() == self.C_EDIT:
-            self.docViewerPanel.loadDocumentTagRequest.emit(tag, nwDocMode.EDIT)
+            self._parent.loadDocumentTagRequest.emit(tag, nwDocMode.EDIT)
         elif index.column() == self.C_VIEW:
-            self.docViewerPanel.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
+            self._parent.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
         return
 
 # END Class _ViewPanelRefs
