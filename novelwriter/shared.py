@@ -52,7 +52,7 @@ class SharedData(QObject):
     projectStatusChanged = pyqtSignal(bool)
     projectStatusMessage = pyqtSignal(str)
     spellLanguageChanged = pyqtSignal(str, str)
-    indexChangedTags = pyqtSignal(list[str], list[str])
+    indexChangedTags = pyqtSignal(list, list)
 
     def __init__(self) -> None:
         super().__init__()

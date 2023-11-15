@@ -27,8 +27,8 @@ import logging
 
 from PyQt5.QtCore import QSize, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QFrame, QHBoxLayout, QHeaderView, QTabWidget, QTreeWidget, QTreeWidgetItem,
-    QVBoxLayout, QWidget
+    QAbstractItemView, QFrame, QHeaderView, QTabWidget, QTreeWidget,
+    QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -100,11 +100,23 @@ class GuiDocViewerPanel(QWidget):
 
     def openProjectTasks(self) -> None:
         """Run open project tasks."""
+        self.clearClassTabs()
         for key, name, tClass, iItem, hItem in SHARED.project.index.getTagsData():
             if tClass in self.kwTabs:
-                print(key, name, iItem, hItem)
                 self.kwTabs[tClass].addEntry(key, name, iItem, hItem)
         self._updateTabVisibility()
+        return
+
+    def closeProjectTasks(self) -> None:
+        """Run closing project tasks."""
+        self.tabBackRefs.refreshContent(None)
+        self.clearClassTabs()
+        return
+
+    def clearClassTabs(self) -> None:
+        """Clear all the class tabs"""
+        for cTab in self.kwTabs.values():
+            cTab.clear()
         return
 
     ##
@@ -116,6 +128,25 @@ class GuiDocViewerPanel(QWidget):
         """Update the document handle."""
         self._lastHandle = tHandle
         self.tabBackRefs.refreshContent(tHandle or None)
+        return
+
+    @pyqtSlot(list, list)
+    def updateChangedTags(self, added: list[str], deleted: list[str]) -> None:
+        """Forward tags changes to the lists."""
+        for key in added:
+            name, tClass, iItem, hItem = SHARED.project.index.getSingleTag(key)
+            if tClass in self.kwTabs:
+                self.kwTabs[tClass].addEntry(key, name, iItem, hItem)
+
+        for key in deleted:
+            for cTab in self.kwTabs.values():
+                if cTab.removeEntry(key):
+                    break
+            else:
+                logger.warning("Could not remove tag '%s' from view panel", key)
+
+        self._updateTabVisibility()
+
         return
 
     ##
@@ -131,7 +162,7 @@ class GuiDocViewerPanel(QWidget):
 # END Class GuiDocViewerPanel
 
 
-class _ViewPanelBackRefs(QWidget):
+class _ViewPanelBackRefs(QTreeWidget):
 
     C_DATA     = 0
     C_TITLE    = 0
@@ -149,18 +180,15 @@ class _ViewPanelBackRefs(QWidget):
         cMg = CONFIG.pxInt(6)
 
         # Content
-        self.listBox = QTreeWidget(self)
-        # self.listBox.setHeaderHidden(True)
-        # self.listBox.setColumnCount(4)
-        self.listBox.setHeaderLabels([
+        self.setHeaderLabels([
             self.tr("Heading"), "", "", self.tr("Document")
         ])
-        self.listBox.setIndentation(0)
-        self.listBox.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
-        self.listBox.setIconSize(QSize(iPx, iPx))
-        self.listBox.setFrameStyle(QFrame.Shape.NoFrame)
+        self.setIndentation(0)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+        self.setIconSize(QSize(iPx, iPx))
+        self.setFrameStyle(QFrame.Shape.NoFrame)
 
-        treeHeader = self.listBox.header()
+        treeHeader = self.header()
         treeHeader.setStretchLastSection(True)
         treeHeader.setSectionResizeMode(self.C_DOCUMENT, QHeaderView.ResizeMode.ResizeToContents)
         treeHeader.setSectionResizeMode(self.C_EDIT, QHeaderView.ResizeMode.Fixed)
@@ -169,30 +197,14 @@ class _ViewPanelBackRefs(QWidget):
         treeHeader.resizeSection(self.C_EDIT, iPx + cMg)
         treeHeader.resizeSection(self.C_VIEW, iPx + cMg)
 
-        fH1 = self.font()
-        fH1.setBold(True)
-        fH1.setUnderline(True)
-
-        fH2 = self.font()
-        fH2.setBold(True)
-
-        self._hFonts = [self.font(), fH1, fH2, self.font(), self.font(), self.font()]
         self._editIcon = SHARED.theme.getIcon("edit")
         self._viewIcon = SHARED.theme.getIcon("view")
-
-        # Assemble
-        self.outerBox = QHBoxLayout()
-        self.outerBox.addWidget(self.listBox)
-        self.outerBox.setContentsMargins(0, 0, 0, 0)
-
-        self.setLayout(self.outerBox)
-        self.setContentsMargins(0, 0, 0, 0)
 
         return
 
     def refreshContent(self, dHandle: str | None) -> None:
         """Update the content."""
-        self.listBox.clear()
+        self.clear()
         if dHandle:
             refs = SHARED.project.index.getBackReferenceList(dHandle)
             for tHandle, (sTitle, hItem) in refs.items():
@@ -210,7 +222,6 @@ class _ViewPanelBackRefs(QWidget):
                 trItem = QTreeWidgetItem()
                 trItem.setText(self.C_TITLE, hItem.title)
                 trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
-                trItem.setFont(self.C_TITLE, self._hFonts[iLevel])
                 trItem.setIcon(self.C_EDIT, self._editIcon)
                 trItem.setIcon(self.C_VIEW, self._viewIcon)
                 trItem.setIcon(self.C_DOCUMENT, docIcon)
@@ -219,7 +230,7 @@ class _ViewPanelBackRefs(QWidget):
                 trItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
                 trItem.setData(self.C_DATA, self.D_TITLE, sTitle)
 
-                self.listBox.addTopLevelItem(trItem)
+                self.addTopLevelItem(trItem)
         return
 
 # END Class _ViewPanelBackRefs
@@ -240,6 +251,7 @@ class _ViewPanelKeyWords(QTreeWidget):
     def __init__(self, parent: QWidget, itemClass: nwItemClass) -> None:
         super().__init__(parent=parent)
         self._itemClass = nwItemClass
+        self._tagMap: dict[str, QTreeWidgetItem] = {}
 
         iPx = SHARED.theme.baseIconSize
         cMg = CONFIG.pxInt(6)
@@ -297,7 +309,16 @@ class _ViewPanelKeyWords(QTreeWidget):
         trItem.setData(self.C_DATA, self.D_TAG, tag)
         trItem.setData(self.C_DATA, self.D_HANDLE, iItem.handle)
         self.addTopLevelItem(trItem)
+        self._tagMap[tag] = trItem
 
         return
+
+    def removeEntry(self, tag: str) -> bool:
+        """Remove a tag from the list."""
+        if tag in self._tagMap:
+            self.takeTopLevelItem(self.indexOfTopLevelItem(self._tagMap[tag]))
+            self._tagMap.pop(tag, None)
+            return True
+        return False
 
 # END Class _ViewPanelRefs

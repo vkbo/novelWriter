@@ -511,7 +511,7 @@ class GuiProjectTree(QTreeWidget):
         self.setDragDropMode(QAbstractItemView.InternalMove)
         self.setDropIndicatorShown(True)
 
-        # Disable built-in autoscroll as it isn't working in some Qt
+        # Disable built-in auto scroll as it isn't working in some Qt
         # releases (see #1561) and instead use our own implementation
         self.setAutoScroll(False)
 
@@ -533,7 +533,7 @@ class GuiProjectTree(QTreeWidget):
         self.itemDoubleClicked.connect(self._treeDoubleClick)
         self.itemSelectionChanged.connect(self._treeSelectionChange)
 
-        # Autoscroll
+        # Auto Scroll
         self._scrollMargin = SHARED.theme.baseIconSize
         self._scrollDirection = 0
         self._scrollTimer = QTimer()

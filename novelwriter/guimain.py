@@ -243,6 +243,7 @@ class GuiMain(QMainWindow):
         SHARED.projectStatusChanged.connect(self.mainStatus.updateProjectStatus)
         SHARED.projectStatusMessage.connect(self.mainStatus.setStatusMessage)
         SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
+        SHARED.indexChangedTags.connect(self.docViewerPanel.updateChangedTags)
 
         self.mainMenu.requestDocAction.connect(self._passDocumentAction)
         self.mainMenu.requestDocInsert.connect(self._passDocumentInsert)
@@ -440,6 +441,7 @@ class GuiMain(QMainWindow):
             self.docViewer.clearNavHistory()
             self.closeDocViewer(byUser=False)
 
+            self.docViewerPanel.closeProjectTasks()
             self.outlineView.closeProjectTasks()
             self.novelView.closeProjectTasks()
             self.projView.clearProjectView()
@@ -809,6 +811,7 @@ class GuiMain(QMainWindow):
         tStart = time()
 
         self.projView.saveProjectTasks()
+        self.docViewerPanel.clearClassTabs()
         SHARED.project.index.rebuildIndex()
         self.projView.populateTree()
         self.novelView.refreshTree()

@@ -646,6 +646,17 @@ class NWIndex:
             yield tag, data.get("name", ""), data.get("class", ""), iItem, hItem
         return
 
+    def getSingleTag(self, tagKey: str) -> tuple[str, str, IndexItem | None, IndexHeading | None]:
+        """Return tag data for a specific tag."""
+        tName = self._tagsIndex.tagName(tagKey)
+        tClass = self._tagsIndex.tagClass(tagKey)
+        tHandle = self._tagsIndex.tagHandle(tagKey)
+        tHeading = self._tagsIndex.tagHeading(tagKey)
+        if tName and tClass and tHandle and tHeading:
+            iItem = self._itemIndex[tHandle]
+            return tName, tClass, iItem, None if iItem is None else iItem[tHeading]
+        return "", "", None, None
+
 # END Class NWIndex
 
 
