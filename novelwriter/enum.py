@@ -64,7 +64,7 @@ class nwItemLayout(Enum):
 class nwTrinary(Enum):
 
     NEGATIVE = -1
-    UNKNOWN  = 0
+    NEUTRAL  = 0
     POSITIVE = 1
 
 # END Enum nwTrinary

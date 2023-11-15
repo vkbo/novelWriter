@@ -34,8 +34,9 @@ import logging
 from time import time
 from typing import TYPE_CHECKING, ItemsView, Iterable, Iterator
 from pathlib import Path
+from novelwriter import SHARED
 
-from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
+from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout, nwTrinary
 from novelwriter.error import logException
 from novelwriter.common import checkInt, isHandle, isItemClass, isTitleTag, jsonEncode
 from novelwriter.constants import nwFiles, nwKeyWords, nwRegEx, nwUnicode, nwHeaders
@@ -254,7 +255,7 @@ class NWIndex:
             return False
 
         # Keep a record of existing tags, and create a new item entry
-        itemTags = dict.fromkeys(self._itemIndex.allItemTags(tHandle), False)
+        itemTags = dict.fromkeys(self._itemIndex.allItemTags(tHandle), nwTrinary.NEGATIVE)
         self._itemIndex.add(tHandle, tItem)
 
         # Run word counter for the whole text
@@ -289,7 +290,8 @@ class NWIndex:
     #  Internal Indexer Helpers
     ##
 
-    def _scanActive(self, tHandle: str, nwItem: NWItem, text: str, tags: dict) -> None:
+    def _scanActive(self, tHandle: str, nwItem: NWItem, text: str,
+                    tags: dict[str, nwTrinary]) -> None:
         """Scan an active document for meta data."""
         nTitle = 0           # Line Number of the previous title
         cTitle = TT_NONE     # Tag of the current title
@@ -345,10 +347,20 @@ class NWIndex:
             self._indexWordCounts(tHandle, text, cTitle)
 
         # Prune no longer used tags
-        for tTag, isActive in tags.items():
-            if not isActive:
-                logger.debug("Deleting removed tag '%s'", tTag)
+        for tTag, tStatus in tags.items():
+            added = []
+            deleted = []
+            if tStatus == nwTrinary.NEGATIVE:
+                logger.debug("Removed tag '%s'", tTag)
                 del self._tagsIndex[tTag]
+                deleted.append(tTag)
+            elif tStatus == nwTrinary.POSITIVE:
+                logger.debug("Added new tag '%s'", tTag)
+                added.append(tTag)
+            else:
+                logger.debug("Unchanged tag '%s'", tTag)
+            if added or deleted:
+                SHARED.indexUpdatedTags(added, deleted)
 
         return
 
@@ -385,7 +397,7 @@ class NWIndex:
         return
 
     def _indexKeyword(self, tHandle: str, line: str, sTitle: str,
-                      itemClass: nwItemClass, tags: dict) -> None:
+                      itemClass: nwItemClass, tags: dict[str, nwTrinary]) -> None:
         """Validate and save the information about a reference to a tag
         in another file, or the setting of a tag in the file. A record
         of active tags is updated so that no longer used tags can be
@@ -402,9 +414,10 @@ class NWIndex:
 
         if tBits[0] == nwKeyWords.TAG_KEY:
             tagName = tBits[1]
+            tagKey = tagName.lower()
             self._tagsIndex.add(tagName, tHandle, sTitle, itemClass)
             self._itemIndex.setHeadingTag(tHandle, sTitle, tagName)
-            tags[tagName.lower()] = True
+            tags[tagKey] = nwTrinary.NEUTRAL if tagKey in tags else nwTrinary.POSITIVE
         else:
             self._itemIndex.addHeadingRef(tHandle, sTitle, tBits[1:], tBits[0])
 
@@ -615,7 +628,7 @@ class NWIndex:
 
         return tRefs
 
-    def getTagSource(self, tagKey: str) -> tuple[str, str]:
+    def getTagSource(self, tagKey: str) -> tuple[str | None, str]:
         """Return the source location of a given tag."""
         tHandle = self._tagsIndex.tagHandle(tagKey)
         sTitle = self._tagsIndex.tagHeading(tagKey)
@@ -624,6 +637,14 @@ class NWIndex:
     def getTags(self, itemClass: nwItemClass) -> list[str]:
         """Return all tags based on itemClass."""
         return self._tagsIndex.filterTagNames(itemClass.name)
+
+    def getTagsData(self) -> Iterator[tuple[str, str, str, IndexItem | None, IndexHeading | None]]:
+        """Return all known tags."""
+        for tag, data in self._tagsIndex.items():
+            iItem = self._itemIndex[data.get("handle")]
+            hItem = None if iItem is None else iItem[data.get("heading")]
+            yield tag, data.get("name", ""), data.get("class", ""), iItem, hItem
+        return
 
 # END Class NWIndex
 
@@ -643,7 +664,7 @@ class TagsIndex:
     __slots__ = ("_tags")
 
     def __init__(self) -> None:
-        self._tags: dict[str, dict] = {}
+        self._tags: dict[str, dict[str, str]] = {}
         return
 
     def __contains__(self, tagKey: str) -> bool:
@@ -665,6 +686,10 @@ class TagsIndex:
         self._tags = {}
         return
 
+    def items(self) -> ItemsView:
+        """Return a dictionary view of all tags."""
+        return self._tags.items()
+
     def add(self, tagKey: str, tHandle: str, sTitle: str, itemClass: nwItemClass) -> None:
         """Add a key to the index and set all values."""
         self._tags[tagKey.lower()] = {
@@ -676,7 +701,7 @@ class TagsIndex:
         """Get the display name of a given tag."""
         return self._tags.get(tagKey.lower(), {}).get("name", "")
 
-    def tagHandle(self, tagKey: str) -> str:
+    def tagHandle(self, tagKey: str) -> str | None:
         """Get the handle of a given tag."""
         return self._tags.get(tagKey.lower(), {}).get("handle", None)
 
@@ -936,6 +961,11 @@ class IndexItem:
     ##
     # Properties
     ##
+
+    @property
+    def handle(self) -> str:
+        """Return the item handle of the index item."""
+        return self._handle
 
     @property
     def item(self) -> NWItem:

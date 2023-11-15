@@ -52,6 +52,7 @@ class SharedData(QObject):
     projectStatusChanged = pyqtSignal(bool)
     projectStatusMessage = pyqtSignal(str)
     spellLanguageChanged = pyqtSignal(str, str)
+    indexChangedTags = pyqtSignal(list[str], list[str])
 
     def __init__(self) -> None:
         super().__init__()
@@ -171,7 +172,7 @@ class SharedData(QObject):
         return
 
     def updateSpellCheckLanguage(self, reload: bool = False) -> None:
-        """Update the active spell check langauge from settings."""
+        """Update the active spell check language from settings."""
         from novelwriter import CONFIG
         language = self.project.data.spellLang or CONFIG.spellLanguage
         if language != self.spelling.spellLanguage or reload:
@@ -208,6 +209,15 @@ class SharedData(QObject):
     def runInThreadPool(self, runnable: QRunnable, priority: int = 0) -> None:
         """Queue a runnable in the application thread pool."""
         QThreadPool.globalInstance().start(runnable, priority=priority)
+        return
+
+    ##
+    #  Call-Back Functions
+    ##
+
+    def indexUpdatedTags(self, added: list[str], deleted: list[str]) -> None:
+        """Emit the index changed tags signal."""
+        self.indexChangedTags.emit(added, deleted)
         return
 
     ##
