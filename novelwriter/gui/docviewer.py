@@ -225,14 +225,12 @@ class GuiDocViewer(QTextBrowser):
         if updateHistory:
             self.docHistory.append(tHandle)
 
-        self.setHtml(aDoc.theResult.replace("\t", "!!tab!!"))
         self.setDocumentTitle(tHandle)
 
-        # Loop through the text and put back in the tabs. Tabs are removed by
-        # the setHtml function, so the ToHtml class puts in a placeholder.
+        # Replace tabs before setting the HTML, and then put them back in
+        self.setHtml(aDoc.theResult.replace("\t", "!!tab!!"))
         while self.find("!!tab!!"):
-            theCursor = self.textCursor()
-            theCursor.insertText("\t")
+            self.textCursor().insertText("\t")
 
         if self._docHandle == tHandle:
             # This is a refresh, so we set the scrollbar back to where it was
@@ -263,22 +261,22 @@ class GuiDocViewer(QTextBrowser):
         self.updateDocMargins()
         return
 
-    def docAction(self, theAction: nwDocAction) -> bool:
+    def docAction(self, action: nwDocAction) -> bool:
         """Process document actions on the current document."""
-        logger.debug("Requesting action: '%s'", theAction.name)
+        logger.debug("Requesting action: '%s'", action.name)
         if self._docHandle is None:
             logger.error("No document open")
             return False
-        if theAction == nwDocAction.CUT:
+        if action == nwDocAction.CUT:
             self.copy()
-        elif theAction == nwDocAction.COPY:
+        elif action == nwDocAction.COPY:
             self.copy()
-        elif theAction == nwDocAction.SEL_ALL:
+        elif action == nwDocAction.SEL_ALL:
             self._makeSelection(QTextCursor.Document)
-        elif theAction == nwDocAction.SEL_PARA:
+        elif action == nwDocAction.SEL_PARA:
             self._makeSelection(QTextCursor.BlockUnderCursor)
         else:
-            logger.debug("Unknown or unsupported document action '%s'", str(theAction))
+            logger.debug("Unknown or unsupported document action '%s'", str(action))
             return False
         return True
 
@@ -366,11 +364,11 @@ class GuiDocViewer(QTextBrowser):
 
     @pyqtSlot("QUrl")
     def _linkClicked(self, url: QUrl) -> None:
-        """Process a clicked link internally in the document."""
-        theLink = url.url()
-        logger.debug("Clicked link: '%s'", theLink)
-        if len(theLink) > 0:
-            theBits = theLink.split("=")
+        """Process a clicked link in the document."""
+        link = url.url()
+        logger.debug("Clicked link: '%s'", link)
+        if len(link) > 0:
+            theBits = link.split("=")
             if len(theBits) == 2:
                 self.loadDocumentTagRequest.emit(theBits[1], nwDocMode.VIEW)
         return
@@ -442,29 +440,28 @@ class GuiDocViewer(QTextBrowser):
     ##
 
     def _makeSelection(self, selType: QTextCursor.SelectionType) -> None:
-        """Handle select of text based on a selection mode."""
-        theCursor = self.textCursor()
-        theCursor.clearSelection()
-        theCursor.select(selType)
+        """Handle selection of text based on a selection mode."""
+        cursor = self.textCursor()
+        cursor.clearSelection()
+        cursor.select(selType)
 
         if selType == QTextCursor.BlockUnderCursor:
             # This selection mode also selects the preceding paragraph
             # separator, which we want to avoid.
-            posS = theCursor.selectionStart()
-            posE = theCursor.selectionEnd()
-            selTxt = theCursor.selectedText()
+            posS = cursor.selectionStart()
+            posE = cursor.selectionEnd()
+            selTxt = cursor.selectedText()
             if selTxt.startswith(nwUnicode.U_PSEP):
-                theCursor.setPosition(posS+1, QTextCursor.MoveAnchor)
-                theCursor.setPosition(posE, QTextCursor.KeepAnchor)
+                cursor.setPosition(posS+1, QTextCursor.MoveAnchor)
+                cursor.setPosition(posE, QTextCursor.KeepAnchor)
 
-        self.setTextCursor(theCursor)
+        self.setTextCursor(cursor)
 
         return
 
     def _makePosSelection(self, selType: QTextCursor.SelectionType, pos: QPoint) -> None:
         """Handle text selection at a given location."""
-        theCursor = self.cursorForPosition(pos)
-        self.setTextCursor(theCursor)
+        self.setTextCursor(self.cursorForPosition(pos))
         self._makeSelection(selType)
         return
 
@@ -668,18 +665,18 @@ class GuiDocViewHeader(QWidget):
         self.setAutoFillBackground(True)
 
         # Title Label
-        self.theTitle = QLabel()
-        self.theTitle.setText("")
-        self.theTitle.setIndent(0)
-        self.theTitle.setMargin(0)
-        self.theTitle.setContentsMargins(0, 0, 0, 0)
-        self.theTitle.setAutoFillBackground(True)
-        self.theTitle.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
-        self.theTitle.setFixedHeight(fPx)
+        self.docTitle = QLabel()
+        self.docTitle.setText("")
+        self.docTitle.setIndent(0)
+        self.docTitle.setMargin(0)
+        self.docTitle.setContentsMargins(0, 0, 0, 0)
+        self.docTitle.setAutoFillBackground(True)
+        self.docTitle.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+        self.docTitle.setFixedHeight(fPx)
 
-        lblFont = self.theTitle.font()
+        lblFont = self.docTitle.font()
         lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
-        self.theTitle.setFont(lblFont)
+        self.docTitle.setFont(lblFont)
 
         # Buttons
         self.backButton = QToolButton(self)
@@ -723,7 +720,7 @@ class GuiDocViewHeader(QWidget):
         self.outerBox.setSpacing(hSp)
         self.outerBox.addWidget(self.backButton, 0)
         self.outerBox.addWidget(self.forwardButton, 0)
-        self.outerBox.addWidget(self.theTitle, 1)
+        self.outerBox.addWidget(self.docTitle, 1)
         self.outerBox.addWidget(self.refreshButton, 0)
         self.outerBox.addWidget(self.closeButton, 0)
         self.setLayout(self.outerBox)
@@ -771,12 +768,12 @@ class GuiDocViewHeader(QWidget):
         """Update the colours of the widget to match those of the syntax
         theme rather than the main GUI.
         """
-        thePalette = QPalette()
-        thePalette.setColor(QPalette.Window, QColor(*SHARED.theme.colBack))
-        thePalette.setColor(QPalette.WindowText, QColor(*SHARED.theme.colText))
-        thePalette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
-        self.setPalette(thePalette)
-        self.theTitle.setPalette(thePalette)
+        palette = QPalette()
+        palette.setColor(QPalette.Window, QColor(*SHARED.theme.colBack))
+        palette.setColor(QPalette.WindowText, QColor(*SHARED.theme.colText))
+        palette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
+        self.setPalette(palette)
+        self.docTitle.setPalette(palette)
         return
 
     def setTitleFromHandle(self, tHandle: str | None) -> bool:
@@ -785,7 +782,7 @@ class GuiDocViewHeader(QWidget):
         """
         self._docHandle = tHandle
         if tHandle is None:
-            self.theTitle.setText("")
+            self.docTitle.setText("")
             self.backButton.setVisible(False)
             self.forwardButton.setVisible(False)
             self.closeButton.setVisible(False)
@@ -801,12 +798,12 @@ class GuiDocViewHeader(QWidget):
                 if nwItem is not None:
                     tTitle.append(nwItem.itemName)
             sSep = "  %s  " % nwUnicode.U_RSAQUO
-            self.theTitle.setText(sSep.join(tTitle))
+            self.docTitle.setText(sSep.join(tTitle))
         else:
             nwItem = pTree[tHandle]
             if nwItem is None:
                 return False
-            self.theTitle.setText(nwItem.itemName)
+            self.docTitle.setText(nwItem.itemName)
 
         self.backButton.setVisible(True)
         self.forwardButton.setVisible(True)
