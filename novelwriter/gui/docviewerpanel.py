@@ -103,30 +103,27 @@ class GuiDocViewerPanel(QWidget):
 
         return
 
-    def openProjectTasks(self) -> None:
-        """Run open project tasks."""
-        self.clearClassTabs()
-        for key, name, tClass, iItem, hItem in SHARED.project.index.getTagsData():
-            if tClass in self.kwTabs and iItem and hItem:
-                self.kwTabs[tClass].addUpdateEntry(key, name, iItem, hItem)
-        self._updateTabVisibility()
-        return
+    ##
+    #  Public Slots
+    ##
 
-    def closeProjectTasks(self) -> None:
-        """Run closing project tasks."""
-        self.tabBackRefs.refreshContent(None)
-        self.clearClassTabs()
-        return
-
-    def clearClassTabs(self) -> None:
-        """Clear all the class tabs"""
+    @pyqtSlot()
+    def indexWasCleared(self) -> None:
+        """Handle event when the index has been cleared of content."""
+        self.tabBackRefs.clearContent()
         for cTab in self.kwTabs.values():
             cTab.clearContent()
         return
 
-    ##
-    #  Public Slots
-    ##
+    @pyqtSlot()
+    def indexHasAppeared(self) -> None:
+        """Handle event when the index has appeared."""
+        for key, name, tClass, iItem, hItem in SHARED.project.index.getTagsData():
+            if tClass in self.kwTabs and iItem and hItem:
+                self.kwTabs[tClass].addUpdateEntry(key, name, iItem, hItem)
+        self._updateTabVisibility()
+        self.updateHandle(self._lastHandle)
+        return
 
     @pyqtSlot(str)
     def projectItemChanged(self, tHandle: str) -> None:
@@ -218,10 +215,15 @@ class _ViewPanelBackRefs(QTreeWidget):
 
         return
 
-    def refreshContent(self, dHandle: str | None) -> None:
-        """Update the content."""
+    def clearContent(self) -> None:
+        """Clear the widget."""
         self.clear()
         self._treeMap = {}
+        return
+
+    def refreshContent(self, dHandle: str | None) -> None:
+        """Update the content."""
+        self.clearContent()
         if dHandle:
             refs = SHARED.project.index.getBackReferenceList(dHandle)
             for tHandle, (sTitle, hItem) in refs.items():

@@ -244,9 +244,11 @@ class GuiMain(QMainWindow):
         SHARED.projectStatusMessage.connect(self.mainStatus.setStatusMessage)
         SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
         SHARED.indexChangedTags.connect(self.docViewerPanel.updateChangedTags)
-        SHARED.indexScannedDocument.connect(self.docViewerPanel.projectItemChanged)
-        SHARED.indexScannedDocument.connect(self.projView.updateItemValues)
-        SHARED.indexScannedDocument.connect(self.itemDetails.updateViewBox)
+        SHARED.indexScannedText.connect(self.docViewerPanel.projectItemChanged)
+        SHARED.indexScannedText.connect(self.projView.updateItemValues)
+        SHARED.indexScannedText.connect(self.itemDetails.updateViewBox)
+        SHARED.indexCleared.connect(self.docViewerPanel.indexWasCleared)
+        SHARED.indexAvailable.connect(self.docViewerPanel.indexHasAppeared)
 
         self.mainMenu.requestDocAction.connect(self._passDocumentAction)
         self.mainMenu.requestDocInsert.connect(self._passDocumentInsert)
@@ -448,7 +450,6 @@ class GuiMain(QMainWindow):
             self.docViewer.clearNavHistory()
             self.closeDocViewer(byUser=False)
 
-            self.docViewerPanel.closeProjectTasks()
             self.outlineView.closeProjectTasks()
             self.novelView.closeProjectTasks()
             self.projView.clearProjectView()
@@ -522,7 +523,6 @@ class GuiMain(QMainWindow):
         self.projView.openProjectTasks()
         self.novelView.openProjectTasks()
         self.outlineView.openProjectTasks()
-        self.docViewerPanel.openProjectTasks()
         self._updateStatusWordCount()
 
         # Restore previously open documents, if any
@@ -816,7 +816,6 @@ class GuiMain(QMainWindow):
         tStart = time()
 
         self.projView.saveProjectTasks()
-        self.docViewerPanel.clearClassTabs()
         SHARED.project.index.rebuildIndex()
         self.projView.populateTree()
         self.novelView.refreshTree()

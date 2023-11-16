@@ -52,8 +52,10 @@ class SharedData(QObject):
     projectStatusChanged = pyqtSignal(bool)
     projectStatusMessage = pyqtSignal(str)
     spellLanguageChanged = pyqtSignal(str, str)
-    indexScannedDocument = pyqtSignal(str)
+    indexScannedText = pyqtSignal(str)
     indexChangedTags = pyqtSignal(list, list)
+    indexCleared = pyqtSignal()
+    indexAvailable = pyqtSignal()
 
     def __init__(self) -> None:
         super().__init__()
@@ -216,14 +218,18 @@ class SharedData(QObject):
     #  Call-Back Functions
     ##
 
-    def indexUpdatedTags(self, updated: list[str], deleted: list[str]) -> None:
-        """Emit the index changed tags signal."""
-        self.indexChangedTags.emit(updated, deleted)
-        return
-
-    def indexDocumentScanned(self, tHandle: str) -> None:
-        """Emit the index scanned document signal."""
-        self.indexScannedDocument.emit(tHandle)
+    def indexCallBack(self, data: dict) -> None:
+        """Emit signals on behalf of the index."""
+        event = data.get("event")
+        logger.debug("Received '%s' event from the index", event)
+        if event == "updateTags":
+            self.indexChangedTags.emit(data.get("updated", []), data.get("deleted", []))
+        elif event == "scanText":
+            self.indexScannedText.emit(data.get("handle", ""))
+        elif event == "clearIndex":
+            self.indexCleared.emit()
+        elif event == "buildIndex":
+            self.indexAvailable.emit()
         return
 
     ##

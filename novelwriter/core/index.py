@@ -113,6 +113,7 @@ class NWIndex:
         self._itemIndex.clear()
         self._indexChange = 0.0
         self._rootChange = {}
+        SHARED.indexCallBack({"event": "clearIndex"})
         return
 
     def rebuildIndex(self) -> None:
@@ -122,16 +123,22 @@ class NWIndex:
             if nwItem.isFileType():
                 tHandle = nwItem.itemHandle
                 theDoc = self._project.storage.getDocument(tHandle)
-                self.scanText(tHandle, theDoc.readDocument() or "")
+                self.scanText(tHandle, theDoc.readDocument() or "", blockSignal=True)
         self._indexBroken = False
+        SHARED.indexCallBack({"event": "buildIndex"})
         return
 
     def deleteHandle(self, tHandle: str) -> None:
         """Delete all entries of a given document handle."""
         logger.debug("Removing item '%s' from the index", tHandle)
-        for tTag in self._itemIndex.allItemTags(tHandle):
+        delTags = self._itemIndex.allItemTags(tHandle)
+        for tTag in delTags:
             del self._tagsIndex[tTag]
         del self._itemIndex[tHandle]
+        SHARED.indexCallBack({
+            "event": "updateTags",
+            "deleted": delTags,
+        })
         return
 
     def reIndexHandle(self, tHandle: str | None) -> bool:
@@ -139,14 +146,12 @@ class NWIndex:
         moved from the archive or trash folders back into the active
         project.
         """
-        if tHandle is None or not self._project.tree.checkType(tHandle, nwItemType.FILE):
-            return False
-
-        logger.debug("Re-indexing item '%s'", tHandle)
-        theDoc = self._project.storage.getDocument(tHandle)
-        self.scanText(tHandle, theDoc.readDocument() or "")
-
-        return True
+        if tHandle and self._project.tree.checkType(tHandle, nwItemType.FILE):
+            logger.debug("Re-indexing item '%s'", tHandle)
+            theDoc = self._project.storage.getDocument(tHandle)
+            self.scanText(tHandle, theDoc.readDocument() or "")
+            return True
+        return False
 
     def indexChangedSince(self, checkTime: int | float) -> bool:
         """Check if the index has changed since a given time."""
@@ -201,6 +206,7 @@ class NWIndex:
                 self.reIndexHandle(fHandle)
 
         self._indexChange = time()
+        SHARED.indexCallBack({"event": "buildIndex"})
 
         logger.debug("Index loaded in %.3f ms", (time() - tStart)*1000)
 
@@ -239,7 +245,7 @@ class NWIndex:
     #  Index Building
     ##
 
-    def scanText(self, tHandle: str, text: str) -> bool:
+    def scanText(self, tHandle: str, text: str, blockSignal: bool = False) -> bool:
         """Scan a piece of text associated with a handle. This will
         update the indices accordingly. This function takes the handle
         and text as separate inputs as we want to primarily scan the
@@ -283,7 +289,11 @@ class NWIndex:
         nowTime = time()
         self._indexChange = nowTime
         self._rootChange[tItem.itemRoot] = nowTime
-        SHARED.indexDocumentScanned(tHandle)
+        if not blockSignal:
+            SHARED.indexCallBack({
+                "event": "scanText",
+                "handle": tHandle,
+            })
 
         return True
 
@@ -358,7 +368,11 @@ class NWIndex:
                 del self._tagsIndex[tTag]
                 deleted.append(tTag)
             if updated or deleted:
-                SHARED.indexUpdatedTags(updated, deleted)
+                SHARED.indexCallBack({
+                    "event": "updateTags",
+                    "updated": updated,
+                    "deleted": deleted,
+                })
 
         return
 
