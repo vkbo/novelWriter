@@ -113,7 +113,7 @@ class NWIndex:
         self._itemIndex.clear()
         self._indexChange = 0.0
         self._rootChange = {}
-        SHARED.indexCallBack({"event": "clearIndex"})
+        SHARED.indexSignalProxy({"event": "clearIndex"})
         return
 
     def rebuildIndex(self) -> None:
@@ -125,7 +125,7 @@ class NWIndex:
                 theDoc = self._project.storage.getDocument(tHandle)
                 self.scanText(tHandle, theDoc.readDocument() or "", blockSignal=True)
         self._indexBroken = False
-        SHARED.indexCallBack({"event": "buildIndex"})
+        SHARED.indexSignalProxy({"event": "buildIndex"})
         return
 
     def deleteHandle(self, tHandle: str) -> None:
@@ -135,7 +135,7 @@ class NWIndex:
         for tTag in delTags:
             del self._tagsIndex[tTag]
         del self._itemIndex[tHandle]
-        SHARED.indexCallBack({
+        SHARED.indexSignalProxy({
             "event": "updateTags",
             "deleted": delTags,
         })
@@ -206,7 +206,7 @@ class NWIndex:
                 self.reIndexHandle(fHandle)
 
         self._indexChange = time()
-        SHARED.indexCallBack({"event": "buildIndex"})
+        SHARED.indexSignalProxy({"event": "buildIndex"})
 
         logger.debug("Index loaded in %.3f ms", (time() - tStart)*1000)
 
@@ -290,7 +290,7 @@ class NWIndex:
         self._indexChange = nowTime
         self._rootChange[tItem.itemRoot] = nowTime
         if not blockSignal:
-            SHARED.indexCallBack({
+            SHARED.indexSignalProxy({
                 "event": "scanText",
                 "handle": tHandle,
             })
@@ -368,7 +368,7 @@ class NWIndex:
                 del self._tagsIndex[tTag]
                 deleted.append(tTag)
             if updated or deleted:
-                SHARED.indexCallBack({
+                SHARED.indexSignalProxy({
                     "event": "updateTags",
                     "updated": updated,
                     "deleted": deleted,

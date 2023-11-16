@@ -243,9 +243,6 @@ class GuiDocViewer(QTextBrowser):
         self.docHeader.setTitleFromHandle(self._docHandle)
         self.updateDocMargins()
 
-        # Make sure the main GUI knows we changed the content
-        # self.mainGui.viewMeta.refreshReferences(tHandle)
-
         # Since we change the content while it may still be rendering, we mark
         # the document dirty again to make sure it's re-rendered properly.
         self.redrawText()

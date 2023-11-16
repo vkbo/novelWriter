@@ -215,10 +215,10 @@ class SharedData(QObject):
         return
 
     ##
-    #  Call-Back Functions
+    #  Signal Proxy
     ##
 
-    def indexCallBack(self, data: dict) -> None:
+    def indexSignalProxy(self, data: dict) -> None:
         """Emit signals on behalf of the index."""
         event = data.get("event")
         logger.debug("Received '%s' event from the index", event)
