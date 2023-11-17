@@ -1420,7 +1420,7 @@ class GuiProjectTree(QTreeWidget):
         return
 
     def dragMoveEvent(self, event: QDragMoveEvent) -> None:
-        """Capture the drag move event to enable edge autoscroll."""
+        """Capture the drag move event to enable edge auto scroll."""
         y = event.pos().y()
         if y < self._scrollMargin:
             if not self._scrollTimer.isActive():
@@ -1434,8 +1434,8 @@ class GuiProjectTree(QTreeWidget):
         return
 
     def dropEvent(self, event: QDropEvent) -> None:
-        """Overload the drop item event to ensure relevant data has been
-        updated.
+        """Overload the drop item event to ensure the drag and drop
+        action is allowed, and update relevant data.
         """
         sHandle = self.getSelectedHandle()
         sItem = self._getTreeItem(sHandle) if sHandle else None
