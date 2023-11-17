@@ -30,6 +30,7 @@ from PyQt5.QtWidgets import qApp, QAction
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction
 from novelwriter.core.tohtml import ToHtml
+from novelwriter.gui.docviewer import GuiDocViewer
 
 
 @pytest.mark.gui
@@ -37,6 +38,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     """Test the document viewer."""
     # Open project
     assert nwGUI.openProject(prjLipsum)
+    docViewer: GuiDocViewer = nwGUI.docViewer
 
     # Rebuild the index
     nwGUI.mainMenu.aRebuildIndex.activate(QAction.Trigger)
@@ -47,40 +49,40 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     nwGUI.projView.setSelectedHandle("88243afbe5ed8")
 
     # Middle-click the selected item
-    theItem = nwGUI.projView.projTree._getTreeItem("88243afbe5ed8")
-    theRect = nwGUI.projView.projTree.visualItemRect(theItem)
-    qtbot.mouseClick(nwGUI.projView.projTree.viewport(), Qt.MidButton, pos=theRect.center())
-    assert nwGUI.docViewer.docHandle == "88243afbe5ed8"
+    item = nwGUI.projView.projTree._getTreeItem("88243afbe5ed8")
+    rect = nwGUI.projView.projTree.visualItemRect(item)
+    qtbot.mouseClick(nwGUI.projView.projTree.viewport(), Qt.MidButton, pos=rect.center())
+    assert docViewer.docHandle == "88243afbe5ed8"
 
     # Reload the text
-    origText = nwGUI.docViewer.toPlainText()
-    nwGUI.docViewer.setPlainText("Oops, all gone!")
-    nwGUI.docViewer.docHeader._refreshDocument()
-    assert nwGUI.docViewer.toPlainText() == origText
+    origText = docViewer.toPlainText()
+    docViewer.setPlainText("Oops, all gone!")
+    docViewer.docHeader._refreshDocument()
+    assert docViewer.toPlainText() == origText
 
     # Select word
-    theCursor = nwGUI.docViewer.textCursor()
-    theCursor.setPosition(100)
-    nwGUI.docViewer.setTextCursor(theCursor)
-    nwGUI.docViewer._makeSelection(QTextCursor.WordUnderCursor)
+    cursor = docViewer.textCursor()
+    cursor.setPosition(100)
+    docViewer.setTextCursor(cursor)
+    docViewer._makeSelection(QTextCursor.WordUnderCursor)
 
     qClip = qApp.clipboard()
     qClip.clear()
 
     # Cut
-    assert nwGUI.docViewer.docAction(nwDocAction.CUT) is True
+    assert docViewer.docAction(nwDocAction.CUT) is True
     assert qClip.text() == "laoreet"
     qClip.clear()
 
     # Copy
-    assert nwGUI.docViewer.docAction(nwDocAction.COPY) is True
+    assert docViewer.docAction(nwDocAction.COPY) is True
     assert qClip.text() == "laoreet"
     qClip.clear()
 
     # Select Paragraph
-    assert nwGUI.docViewer.docAction(nwDocAction.SEL_PARA) is True
-    theCursor = nwGUI.docViewer.textCursor()
-    assert theCursor.selectedText() == (
+    assert docViewer.docAction(nwDocAction.SEL_PARA) is True
+    cursor = docViewer.textCursor()
+    assert cursor.selectedText() == (
         "Synopsis: Aenean ut placerat velit. Etiam laoreet ullamcorper risus, "
         "eget lobortis enim scelerisque non. Suspendisse id maximus nunc, et "
         "mollis sapien. Curabitur vel semper sapien, non pulvinar dolor. "
@@ -88,74 +90,74 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     )
 
     # Select All
-    assert nwGUI.docViewer.docAction(nwDocAction.SEL_ALL) is True
-    theCursor = nwGUI.docViewer.textCursor()
-    assert len(theCursor.selectedText()) == 3061
+    assert docViewer.docAction(nwDocAction.SEL_ALL) is True
+    cursor = docViewer.textCursor()
+    assert len(cursor.selectedText()) == 3061
 
     # Other actions
-    assert nwGUI.docViewer.docAction(nwDocAction.NO_ACTION) is False
+    assert docViewer.docAction(nwDocAction.NO_ACTION) is False
 
     # Close document
-    nwGUI.docViewer.docHeader._closeDocument()
-    assert nwGUI.docViewer.docHandle is None
+    docViewer.docHeader._closeDocument()
+    assert docViewer.docHandle is None
 
     # Action on no document
-    assert nwGUI.docViewer.docAction(nwDocAction.COPY) is False
+    assert docViewer.docAction(nwDocAction.COPY) is False
 
     # Open again via menu
     assert nwGUI.projView.setSelectedHandle("88243afbe5ed8")
     nwGUI.mainMenu.aViewDoc.activate(QAction.Trigger)
 
     # Select "Bod" link
-    theCursor = nwGUI.docViewer.textCursor()
-    theCursor.setPosition(27)
-    nwGUI.docViewer.setTextCursor(theCursor)
-    nwGUI.docViewer._makeSelection(QTextCursor.WordUnderCursor)
-    theRect = nwGUI.docViewer.cursorRect()
-    nwGUI.docViewer._linkClicked(QUrl("#char=Bod"))
-    assert nwGUI.docViewer.docHandle == "4c4f28287af27"
+    cursor = docViewer.textCursor()
+    cursor.setPosition(27)
+    docViewer.setTextCursor(cursor)
+    docViewer._makeSelection(QTextCursor.WordUnderCursor)
+    rect = docViewer.cursorRect()
+    docViewer._linkClicked(QUrl("#char=Bod"))
+    assert docViewer.docHandle == "4c4f28287af27"
 
     # Click mouse nav buttons
-    qtbot.mouseClick(nwGUI.docViewer.viewport(), Qt.BackButton, pos=theRect.center(), delay=100)
-    assert nwGUI.docViewer.docHandle == "88243afbe5ed8"
-    qtbot.mouseClick(nwGUI.docViewer.viewport(), Qt.ForwardButton, pos=theRect.center(), delay=100)
-    assert nwGUI.docViewer.docHandle == "4c4f28287af27"
+    qtbot.mouseClick(docViewer.viewport(), Qt.BackButton, pos=rect.center(), delay=100)
+    assert docViewer.docHandle == "88243afbe5ed8"
+    qtbot.mouseClick(docViewer.viewport(), Qt.ForwardButton, pos=rect.center(), delay=100)
+    assert docViewer.docHandle == "4c4f28287af27"
 
     # Scroll bar default on empty document
-    nwGUI.docViewer.clear()
-    assert nwGUI.docViewer.scrollPosition == 0
-    nwGUI.docViewer.reloadText()
+    docViewer.clear()
+    assert docViewer.scrollPosition == 0
+    docViewer.reloadText()
 
     # Change document title
     nwItem = SHARED.project.tree["4c4f28287af27"]
-    nwItem.setName("Test Title")
-    assert nwItem.itemName == "Test Title"
-    nwGUI.docViewer.updateDocInfo("4c4f28287af27")
-    assert nwGUI.docViewer.docHeader.theTitle.text() == "Characters  ›  Test Title"
+    nwItem.setName("Test Title")  # type: ignore
+    assert nwItem.itemName == "Test Title"  # type: ignore
+    docViewer.updateDocInfo("4c4f28287af27")
+    assert docViewer.docHeader.docTitle.text() == "Characters  \u203a  Test Title"
 
     # Title without full path
     CONFIG.showFullPath = False
-    nwGUI.docViewer.updateDocInfo("4c4f28287af27")
-    assert nwGUI.docViewer.docHeader.theTitle.text() == "Test Title"
+    docViewer.updateDocInfo("4c4f28287af27")
+    assert docViewer.docHeader.docTitle.text() == "Test Title"
     CONFIG.showFullPath = True
 
     # Document footer show/hide synopsis
     assert nwGUI.viewDocument("f96ec11c6a3da") is True
-    assert len(nwGUI.docViewer.toPlainText()) == 4315
-    nwGUI.docViewer.docFooter._doToggleSynopsis(False)
-    assert len(nwGUI.docViewer.toPlainText()) == 4099
+    assert len(docViewer.toPlainText()) == 4315
+    docViewer.docFooter._doToggleSynopsis(False)
+    assert len(docViewer.toPlainText()) == 4099
 
     # Document footer show/hide comments
     assert nwGUI.viewDocument("846352075de7d") is True
-    assert len(nwGUI.docViewer.toPlainText()) == 675
-    nwGUI.docViewer.docFooter._doToggleComments(False)
-    assert len(nwGUI.docViewer.toPlainText()) == 635
+    assert len(docViewer.toPlainText()) == 675
+    docViewer.docFooter._doToggleComments(False)
+    assert len(docViewer.toPlainText()) == 635
 
     # Crash the HTML rendering
     with monkeypatch.context() as mp:
         mp.setattr(ToHtml, "doConvert", causeException)
-        assert nwGUI.docViewer.loadText("846352075de7d") is False
-        assert nwGUI.docViewer.toPlainText() == "An error occurred while generating the preview."
+        assert docViewer.loadText("846352075de7d") is False
+        assert docViewer.toPlainText() == "An error occurred while generating the preview."
 
     # qtbot.stop()
 
