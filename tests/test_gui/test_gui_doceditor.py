@@ -1194,15 +1194,15 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # Empty Block
     nwGUI.docEditor.setCursorLine(2)
-    assert nwGUI.docEditor._processTag() is nwTrinary.UNKNOWN
+    assert nwGUI.docEditor._processTag() is nwTrinary.NEUTRAL
 
     # Not On Tag
     nwGUI.docEditor.setCursorLine(1)
-    assert nwGUI.docEditor._processTag() is nwTrinary.UNKNOWN
+    assert nwGUI.docEditor._processTag() is nwTrinary.NEUTRAL
 
     # On Tag Keyword
     nwGUI.docEditor.setCursorPosition(15)
-    assert nwGUI.docEditor._processTag() is nwTrinary.UNKNOWN
+    assert nwGUI.docEditor._processTag() is nwTrinary.NEUTRAL
 
     # On Known Tag, No Follow
     nwGUI.docEditor.setCursorPosition(22)
@@ -1230,7 +1230,7 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert "0000000000012" not in SHARED.project.tree
 
     nwGUI.docEditor.setCursorPosition(47)
-    assert nwGUI.docEditor._processTag() is nwTrinary.UNKNOWN
+    assert nwGUI.docEditor._processTag() is nwTrinary.NEUTRAL
 
     # qtbot.stop()
 

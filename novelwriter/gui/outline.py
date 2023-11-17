@@ -377,13 +377,17 @@ class GuiOutlineTree(QTreeWidget):
         fH2 = self.font()
         fH2.setBold(True)
 
+        iType = nwItemType.FILE
+        iClass = nwItemClass.NO_CLASS
+        iLayout = nwItemLayout.DOCUMENT
+
         self._hFonts = [self.font(), fH1, fH2, self.font(), self.font()]
         self._dIcon = {
-            "H0": SHARED.theme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H0"),
-            "H1": SHARED.theme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H1"),
-            "H2": SHARED.theme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H2"),
-            "H3": SHARED.theme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H3"),
-            "H4": SHARED.theme.getItemIcon(nwItemType.FILE, None, nwItemLayout.DOCUMENT, "H4"),
+            "H0": SHARED.theme.getItemIcon(iType, iClass, iLayout, "H0"),
+            "H1": SHARED.theme.getItemIcon(iType, iClass, iLayout, "H1"),
+            "H2": SHARED.theme.getItemIcon(iType, iClass, iLayout, "H2"),
+            "H3": SHARED.theme.getItemIcon(iType, iClass, iLayout, "H3"),
+            "H4": SHARED.theme.getItemIcon(iType, iClass, iLayout, "H4"),
         }
 
         # Internals
@@ -549,7 +553,7 @@ class GuiOutlineTree(QTreeWidget):
         """Load the state of the main tree header, that is, column order
         and column width.
         """
-        # Load whatever we saved last time, regardless of wether it
+        # Load whatever we saved last time, regardless of whether it
         # contains the correct names or number of columns.
         colState = SHARED.project.options.getValue("GuiOutline", "columnState", {})
 

@@ -133,6 +133,7 @@ class GuiTheme:
         self.getToggleIcon = self.iconCache.getToggleIcon
         self.loadDecoration = self.iconCache.loadDecoration
         self.getHeaderDecoration = self.iconCache.getHeaderDecoration
+        self.getHeaderDecorationNarrow = self.iconCache.getHeaderDecorationNarrow
 
         # Extract Other Info
         self.guiDPI = qApp.primaryScreen().logicalDotsPerInchX()
@@ -464,8 +465,8 @@ class GuiIcons:
 
         # General Button Icons
         "add", "backward", "bookmark", "browse", "checked", "close", "cross", "down", "edit",
-        "export", "forward", "maximise", "menu", "minimise", "noncheckable", "reference",
-        "refresh", "remove", "revert", "search_replace", "search", "settings", "unchecked", "up",
+        "export", "forward", "maximise", "menu", "minimise", "noncheckable", "panel", "refresh",
+        "remove", "revert", "search_replace", "search", "settings", "unchecked", "up", "view",
 
         # Switches
         "sticky-on", "sticky-off",
@@ -473,6 +474,8 @@ class GuiIcons:
 
         # Decorations
         "deco_doc_h0", "deco_doc_h1", "deco_doc_h2", "deco_doc_h3", "deco_doc_h4", "deco_doc_more",
+        "deco_doc_h0_n", "deco_doc_h1_n", "deco_doc_h2_n", "deco_doc_h3_n", "deco_doc_h4_n",
+        "deco_doc_nt_n",
     }
 
     TOGGLE_ICON_KEYS = {
@@ -493,6 +496,7 @@ class GuiIcons:
         self._qIcons: dict[str, QIcon] = {}
         self._themeMap: dict[str, Path] = {}
         self._headerDec: list[QPixmap] = []
+        self._headerDecNarrow: list[QPixmap] = []
 
         # Icon Theme Path
         self._confName = "icons.conf"
@@ -580,6 +584,7 @@ class GuiIcons:
             self._qIcons[iconKey] = qIcon
 
         self._headerDec = []
+        self._headerDecNarrow = []
 
         return True
 
@@ -679,6 +684,20 @@ class GuiIcons:
                 self.loadDecoration("deco_doc_h4", h=iPx),
             ]
         return self._headerDec[minmax(hLevel, 0, 4)]
+
+    def getHeaderDecorationNarrow(self, hLevel: int) -> QPixmap:
+        """Get the narrow decoration for a specific header level."""
+        if not self._headerDecNarrow:
+            iPx = self.mainTheme.baseIconSize
+            self._headerDecNarrow = [
+                self.loadDecoration("deco_doc_h0_n", h=iPx),
+                self.loadDecoration("deco_doc_h1_n", h=iPx),
+                self.loadDecoration("deco_doc_h2_n", h=iPx),
+                self.loadDecoration("deco_doc_h3_n", h=iPx),
+                self.loadDecoration("deco_doc_h4_n", h=iPx),
+                self.loadDecoration("deco_doc_nt_n", h=iPx),
+            ]
+        return self._headerDecNarrow[minmax(hLevel, 0, 5)]
 
     ##
     #  Internal Functions

@@ -35,6 +35,7 @@ from time import time
 from typing import TYPE_CHECKING, ItemsView, Iterable, Iterator
 from pathlib import Path
 
+from novelwriter import SHARED
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.common import checkInt, isHandle, isItemClass, isTitleTag, jsonEncode
@@ -112,6 +113,7 @@ class NWIndex:
         self._itemIndex.clear()
         self._indexChange = 0.0
         self._rootChange = {}
+        SHARED.indexSignalProxy({"event": "clearIndex"})
         return
 
     def rebuildIndex(self) -> None:
@@ -121,16 +123,22 @@ class NWIndex:
             if nwItem.isFileType():
                 tHandle = nwItem.itemHandle
                 theDoc = self._project.storage.getDocument(tHandle)
-                self.scanText(tHandle, theDoc.readDocument() or "")
+                self.scanText(tHandle, theDoc.readDocument() or "", blockSignal=True)
         self._indexBroken = False
+        SHARED.indexSignalProxy({"event": "buildIndex"})
         return
 
     def deleteHandle(self, tHandle: str) -> None:
         """Delete all entries of a given document handle."""
         logger.debug("Removing item '%s' from the index", tHandle)
-        for tTag in self._itemIndex.allItemTags(tHandle):
+        delTags = self._itemIndex.allItemTags(tHandle)
+        for tTag in delTags:
             del self._tagsIndex[tTag]
         del self._itemIndex[tHandle]
+        SHARED.indexSignalProxy({
+            "event": "updateTags",
+            "deleted": delTags,
+        })
         return
 
     def reIndexHandle(self, tHandle: str | None) -> bool:
@@ -138,14 +146,12 @@ class NWIndex:
         moved from the archive or trash folders back into the active
         project.
         """
-        if tHandle is None or not self._project.tree.checkType(tHandle, nwItemType.FILE):
-            return False
-
-        logger.debug("Re-indexing item '%s'", tHandle)
-        theDoc = self._project.storage.getDocument(tHandle)
-        self.scanText(tHandle, theDoc.readDocument() or "")
-
-        return True
+        if tHandle and self._project.tree.checkType(tHandle, nwItemType.FILE):
+            logger.debug("Re-indexing item '%s'", tHandle)
+            theDoc = self._project.storage.getDocument(tHandle)
+            self.scanText(tHandle, theDoc.readDocument() or "")
+            return True
+        return False
 
     def indexChangedSince(self, checkTime: int | float) -> bool:
         """Check if the index has changed since a given time."""
@@ -200,6 +206,7 @@ class NWIndex:
                 self.reIndexHandle(fHandle)
 
         self._indexChange = time()
+        SHARED.indexSignalProxy({"event": "buildIndex"})
 
         logger.debug("Index loaded in %.3f ms", (time() - tStart)*1000)
 
@@ -238,7 +245,7 @@ class NWIndex:
     #  Index Building
     ##
 
-    def scanText(self, tHandle: str, text: str) -> bool:
+    def scanText(self, tHandle: str, text: str, blockSignal: bool = False) -> bool:
         """Scan a piece of text associated with a handle. This will
         update the indices accordingly. This function takes the handle
         and text as separate inputs as we want to primarily scan the
@@ -282,6 +289,11 @@ class NWIndex:
         nowTime = time()
         self._indexChange = nowTime
         self._rootChange[tItem.itemRoot] = nowTime
+        if not blockSignal:
+            SHARED.indexSignalProxy({
+                "event": "scanText",
+                "handle": tHandle,
+            })
 
         return True
 
@@ -289,7 +301,7 @@ class NWIndex:
     #  Internal Indexer Helpers
     ##
 
-    def _scanActive(self, tHandle: str, nwItem: NWItem, text: str, tags: dict) -> None:
+    def _scanActive(self, tHandle: str, nwItem: NWItem, text: str, tags: dict[str, bool]) -> None:
         """Scan an active document for meta data."""
         nTitle = 0           # Line Number of the previous title
         cTitle = TT_NONE     # Tag of the current title
@@ -346,9 +358,21 @@ class NWIndex:
 
         # Prune no longer used tags
         for tTag, isActive in tags.items():
-            if not isActive:
-                logger.debug("Deleting removed tag '%s'", tTag)
+            updated = []
+            deleted = []
+            if isActive:
+                logger.debug("Added/updated tag '%s'", tTag)
+                updated.append(tTag)
+            else:
+                logger.debug("Removed tag '%s'", tTag)
                 del self._tagsIndex[tTag]
+                deleted.append(tTag)
+            if updated or deleted:
+                SHARED.indexSignalProxy({
+                    "event": "updateTags",
+                    "updated": updated,
+                    "deleted": deleted,
+                })
 
         return
 
@@ -385,7 +409,7 @@ class NWIndex:
         return
 
     def _indexKeyword(self, tHandle: str, line: str, sTitle: str,
-                      itemClass: nwItemClass, tags: dict) -> None:
+                      itemClass: nwItemClass, tags: dict[str, bool]) -> None:
         """Validate and save the information about a reference to a tag
         in another file, or the setting of a tag in the file. A record
         of active tags is updated so that no longer used tags can be
@@ -596,10 +620,8 @@ class NWIndex:
 
         return tRefs
 
-    def getBackReferenceList(self, tHandle: str) -> dict[str, str]:
-        """Build a list of files referring back to our file, specified
-        by tHandle.
-        """
+    def getBackReferenceList(self, tHandle: str) -> dict[str, tuple[str, IndexHeading]]:
+        """Build a dict of files referring back to our file."""
         if tHandle is None or tHandle not in self._itemIndex:
             return {}
 
@@ -611,19 +633,42 @@ class NWIndex:
         for aHandle, sTitle, hItem in self._itemIndex.iterAllHeaders():
             for aTag in hItem.references:
                 if aTag in tTags and aHandle not in tRefs:
-                    tRefs[aHandle] = sTitle
+                    tRefs[aHandle] = (sTitle, hItem)
 
         return tRefs
 
-    def getTagSource(self, tagKey: str) -> tuple[str, str]:
+    def getTagSource(self, tagKey: str) -> tuple[str | None, str]:
         """Return the source location of a given tag."""
         tHandle = self._tagsIndex.tagHandle(tagKey)
         sTitle = self._tagsIndex.tagHeading(tagKey)
         return tHandle, sTitle
 
-    def getTags(self, itemClass: nwItemClass) -> list[str]:
+    def getDocumentTags(self, tHandle: str | None) -> list[str]:
+        """Return all tags used by a specific document."""
+        return self._itemIndex.allItemTags(tHandle) if tHandle else []
+
+    def getClassTags(self, itemClass: nwItemClass) -> list[str]:
         """Return all tags based on itemClass."""
         return self._tagsIndex.filterTagNames(itemClass.name)
+
+    def getTagsData(self) -> Iterator[tuple[str, str, str, IndexItem | None, IndexHeading | None]]:
+        """Return all known tags."""
+        for tag, data in self._tagsIndex.items():
+            iItem = self._itemIndex[data.get("handle")]
+            hItem = None if iItem is None else iItem[data.get("heading")]
+            yield tag, data.get("name", ""), data.get("class", ""), iItem, hItem
+        return
+
+    def getSingleTag(self, tagKey: str) -> tuple[str, str, IndexItem | None, IndexHeading | None]:
+        """Return tag data for a specific tag."""
+        tName = self._tagsIndex.tagName(tagKey)
+        tClass = self._tagsIndex.tagClass(tagKey)
+        tHandle = self._tagsIndex.tagHandle(tagKey)
+        tHeading = self._tagsIndex.tagHeading(tagKey)
+        if tName and tClass and tHandle and tHeading:
+            iItem = self._itemIndex[tHandle]
+            return tName, tClass, iItem, None if iItem is None else iItem[tHeading]
+        return "", "", None, None
 
 # END Class NWIndex
 
@@ -643,7 +688,7 @@ class TagsIndex:
     __slots__ = ("_tags")
 
     def __init__(self) -> None:
-        self._tags: dict[str, dict] = {}
+        self._tags: dict[str, dict[str, str]] = {}
         return
 
     def __contains__(self, tagKey: str) -> bool:
@@ -665,6 +710,10 @@ class TagsIndex:
         self._tags = {}
         return
 
+    def items(self) -> ItemsView:
+        """Return a dictionary view of all tags."""
+        return self._tags.items()
+
     def add(self, tagKey: str, tHandle: str, sTitle: str, itemClass: nwItemClass) -> None:
         """Add a key to the index and set all values."""
         self._tags[tagKey.lower()] = {
@@ -676,7 +725,7 @@ class TagsIndex:
         """Get the display name of a given tag."""
         return self._tags.get(tagKey.lower(), {}).get("name", "")
 
-    def tagHandle(self, tagKey: str) -> str:
+    def tagHandle(self, tagKey: str) -> str | None:
         """Get the handle of a given tag."""
         return self._tags.get(tagKey.lower(), {}).get("handle", None)
 
@@ -936,6 +985,11 @@ class IndexItem:
     ##
     # Properties
     ##
+
+    @property
+    def handle(self) -> str:
+        """Return the item handle of the index item."""
+        return self._handle
 
     @property
     def item(self) -> NWItem:

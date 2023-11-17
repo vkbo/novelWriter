@@ -500,10 +500,7 @@ class GuiDocEditor(QPlainTextEdit):
             else:
                 self.novelStructureChanged.emit()
 
-        # ToDo: This should be a signal
         if oldHeader != newHeader:
-            self.mainGui.projView.setTreeItemValues(tHandle)
-            self.mainGui.itemDetails.updateViewBox(tHandle)
             self.docFooter.updateInfo()
 
         # Update the status bar
@@ -1783,13 +1780,13 @@ class GuiDocEditor(QPlainTextEdit):
         block = cursor.block()
         text = block.text()
         if len(text) == 0:
-            return nwTrinary.UNKNOWN
+            return nwTrinary.NEUTRAL
 
         if text.startswith("@") and isinstance(self._nwItem, NWItem):
 
             isGood, tBits, tPos = SHARED.project.index.scanThis(text)
             if not isGood:
-                return nwTrinary.UNKNOWN
+                return nwTrinary.NEUTRAL
 
             tag = ""
             exist = False
@@ -1806,7 +1803,7 @@ class GuiDocEditor(QPlainTextEdit):
 
             if not tag or tag.startswith("@"):
                 # The keyword cannot be looked up, so we ignore that
-                return nwTrinary.UNKNOWN
+                return nwTrinary.NEUTRAL
 
             if follow and exist:
                 logger.debug("Attempting to follow tag '%s'", tag)
@@ -1826,7 +1823,7 @@ class GuiDocEditor(QPlainTextEdit):
 
             return nwTrinary.POSITIVE if exist else nwTrinary.NEGATIVE
 
-        return nwTrinary.UNKNOWN
+        return nwTrinary.NEUTRAL
 
     def _openContextFromCursor(self) -> None:
         """Open the spell check context menu at the cursor."""
@@ -2054,7 +2051,7 @@ class MetaCompleter(QMenu):
             length = len(lookup)
             suffix = ""
             options = list(filter(
-                lambda x: lookup in x.lower(), SHARED.project.index.getTags(
+                lambda x: lookup in x.lower(), SHARED.project.index.getClassTags(
                     nwKeyWords.KEY_CLASS.get(kw.strip(), nwItemClass.NO_CLASS)
                 )
             ))[:15]
