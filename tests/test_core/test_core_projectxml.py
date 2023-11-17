@@ -84,7 +84,7 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
     assert xmlReader.read(data, content) is False
     assert xmlReader.state == XMLReadState.NOT_NWX_FILE
 
-    # Add a valid novelwriter file without a file version
+    # Add a valid novelWriter file without a file version
     writeFile(xmlFile, "<novelWriterXML/>")
     assert xmlReader.read(data, content) is False
     assert xmlReader.state == XMLReadState.UNKNOWN_VERSION

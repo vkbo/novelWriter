@@ -23,9 +23,9 @@ import pytest
 
 from mocked import causeException
 
-from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QTextCursor
-from PyQt5.QtWidgets import qApp, QAction
+from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtWidgets import QMenu, qApp, QAction
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction
@@ -40,19 +40,26 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert nwGUI.openProject(prjLipsum)
     docViewer: GuiDocViewer = nwGUI.docViewer
 
-    # Rebuild the index
-    nwGUI.mainMenu.aRebuildIndex.activate(QAction.Trigger)
-    assert SHARED.project.index._tagsIndex._tags != {}
-    assert SHARED.project.index._itemIndex._items != {}
-
     # Select a document in the project tree
     nwGUI.projView.setSelectedHandle("88243afbe5ed8")
+    nwGUI.openDocument("88243afbe5ed8")
+
+    # Can only open a document
+    assert docViewer.loadText("b3643d0f92e32") is False
 
     # Middle-click the selected item
     item = nwGUI.projView.projTree._getTreeItem("88243afbe5ed8")
     rect = nwGUI.projView.projTree.visualItemRect(item)
     qtbot.mouseClick(nwGUI.projView.projTree.viewport(), Qt.MidButton, pos=rect.center())
     assert docViewer.docHandle == "88243afbe5ed8"
+
+    # Clear selection
+    nwGUI.projView.projTree.clearSelection()
+    assert nwGUI.projView.projTree.getSelectedHandle() is None
+
+    # Re-select via header click
+    docViewer.docHeader.mousePressEvent(None)  # type: ignore
+    assert nwGUI.projView.projTree.getSelectedHandle() == "88243afbe5ed8"
 
     # Reload the text
     origText = docViewer.toPlainText()
@@ -88,6 +95,21 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
         "mollis sapien. Curabitur vel semper sapien, non pulvinar dolor. "
         "Etiam finibus nisi vel mi molestie consectetur."
     )
+    cursor.clearSelection()
+    docViewer.setTextCursor(cursor)
+
+    docViewer._makePosSelection(
+        QTextCursor.SelectionType.BlockUnderCursor, docViewer.cursorRect().center()
+    )
+    cursor = docViewer.textCursor()
+    assert cursor.selectedText() == (
+        "Synopsis: Aenean ut placerat velit. Etiam laoreet ullamcorper risus, "
+        "eget lobortis enim scelerisque non. Suspendisse id maximus nunc, et "
+        "mollis sapien. Curabitur vel semper sapien, non pulvinar dolor. "
+        "Etiam finibus nisi vel mi molestie consectetur."
+    )
+    cursor.clearSelection()
+    docViewer.setTextCursor(cursor)
 
     # Select All
     assert docViewer.docAction(nwDocAction.SEL_ALL) is True
@@ -108,6 +130,22 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert nwGUI.projView.setSelectedHandle("88243afbe5ed8")
     nwGUI.mainMenu.aViewDoc.activate(QAction.Trigger)
 
+    # Open context menu
+    menuOpened = False
+
+    def mockExec(*a):
+        nonlocal menuOpened
+        menuOpened = True
+
+    cursor = docViewer.textCursor()
+    cursor.setPosition(27)
+    docViewer.setTextCursor(cursor)
+    docViewer._makeSelection(QTextCursor.WordUnderCursor)
+    with monkeypatch.context() as mp:
+        mp.setattr(QMenu, "exec_", mockExec)
+        docViewer._openContextMenu(docViewer.cursorRect().center())
+        assert menuOpened
+
     # Select "Bod" link
     cursor = docViewer.textCursor()
     cursor.setPosition(27)
@@ -122,11 +160,21 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert docViewer.docHandle == "88243afbe5ed8"
     qtbot.mouseClick(docViewer.viewport(), Qt.ForwardButton, pos=rect.center(), delay=100)
     assert docViewer.docHandle == "4c4f28287af27"
+    qtbot.mouseClick(docViewer.viewport(), Qt.LeftButton, pos=rect.center(), delay=100)
+    assert docViewer.docHandle == "4c4f28287af27"
 
     # Scroll bar default on empty document
     docViewer.clear()
     assert docViewer.scrollPosition == 0
     docViewer.reloadText()
+
+    # Flip some settings
+    CONFIG.doJustify = True
+    CONFIG.hideVScroll = True
+    CONFIG.hideHScroll = True
+    docViewer.initViewer()
+    assert docViewer.verticalScrollBar().isVisible() is False
+    assert docViewer.horizontalScrollBar().isVisible() is False
 
     # Change document title
     nwItem = SHARED.project.tree["4c4f28287af27"]
@@ -158,6 +206,10 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
         mp.setattr(ToHtml, "doConvert", causeException)
         assert docViewer.loadText("846352075de7d") is False
         assert docViewer.toPlainText() == "An error occurred while generating the preview."
+
+    # Call the update theme function
+    # This only checks that t doesn't fail, functionality tested elsewhere
+    docViewer.updateTheme()
 
     # qtbot.stop()
 

@@ -280,14 +280,12 @@ class GuiDocViewer(QTextBrowser):
             return False
         return True
 
-    def navigateTo(self, tAnchor: str) -> bool:
+    def navigateTo(self, tAnchor: str) -> None:
         """Go to a specific #link in the document."""
-        if not isinstance(tAnchor, str):
-            return False
-        if tAnchor.startswith("#"):
+        if isinstance(tAnchor, str) and tAnchor.startswith("#"):
             logger.debug("Moving to anchor '%s'", tAnchor)
             self.setSource(QUrl(tAnchor))
-        return True
+        return
 
     def clearNavHistory(self) -> None:
         """Clear the navigation history."""
@@ -381,18 +379,12 @@ class GuiDocViewer(QTextBrowser):
 
         mnuContext = QMenu(self)
 
-        # Cut, Copy and Paste
-        # ===================
-
         if userSelection:
             mnuCopy = QAction(self.tr("Copy"), mnuContext)
             mnuCopy.triggered.connect(lambda: self.docAction(nwDocAction.COPY))
             mnuContext.addAction(mnuCopy)
 
             mnuContext.addSeparator()
-
-        # Selections
-        # ==========
 
         mnuSelAll = QAction(self.tr("Select All"), mnuContext)
         mnuSelAll.triggered.connect(lambda: self.docAction(nwDocAction.SEL_ALL))
@@ -628,7 +620,7 @@ class GuiDocViewHistory:
         """Debug function to dump history to the logger. Since it is a
         for loop, it is skipped entirely if log level isn't DEBUG.
         """
-        if logger.getEffectiveLevel() == logging.DEBUG:
+        if logger.getEffectiveLevel() == logging.DEBUG:  # pragma: no cover
             for i, (h, p) in enumerate(zip(self._navHistory, self._posHistory)):
                 logger.debug(
                     "History %02d: %s %13s [x:%d]" % (
@@ -776,7 +768,7 @@ class GuiDocViewHeader(QWidget):
         self.docTitle.setPalette(palette)
         return
 
-    def setTitleFromHandle(self, tHandle: str | None) -> bool:
+    def setTitleFromHandle(self, tHandle: str | None) -> None:
         """Sets the document title from the handle, or alternatively,
         set the whole document path.
         """
@@ -787,7 +779,7 @@ class GuiDocViewHeader(QWidget):
             self.forwardButton.setVisible(False)
             self.closeButton.setVisible(False)
             self.refreshButton.setVisible(False)
-            return True
+            return
 
         pTree = SHARED.project.tree
         if CONFIG.showFullPath:
@@ -800,17 +792,15 @@ class GuiDocViewHeader(QWidget):
             sSep = "  %s  " % nwUnicode.U_RSAQUO
             self.docTitle.setText(sSep.join(tTitle))
         else:
-            nwItem = pTree[tHandle]
-            if nwItem is None:
-                return False
-            self.docTitle.setText(nwItem.itemName)
+            if nwItem := pTree[tHandle]:
+                self.docTitle.setText(nwItem.itemName)
 
         self.backButton.setVisible(True)
         self.forwardButton.setVisible(True)
         self.closeButton.setVisible(True)
         self.refreshButton.setVisible(True)
 
-        return True
+        return
 
     def updateNavButtons(self, firstIdx: int, lastIdx: int, currIdx: int) -> None:
         """Enable and disable nav buttons based on index in history."""
