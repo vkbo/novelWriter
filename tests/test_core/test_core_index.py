@@ -231,6 +231,7 @@ def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
     assert isinstance(cItem, NWItem)
 
     assert index.rootChangedSince(C.hNovelRoot, 0) is False
+    assert index.rootChangedSince(None, 0) is False
     assert index.indexChangedSince(0) is False
 
     assert index.scanText(cHandle, (
@@ -610,6 +611,7 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     assert isinstance(item, IndexItem)
     assert item.headings() == ["T0001"]
     assert index.getHandleHeaderCount(nHandle) == 1
+    assert index.getHandleHeaderCount("foo") == 0
 
     # getReferences
     # =============
@@ -642,6 +644,32 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
 
     assert index.getTagSource("Jane") == (cHandle, "T0001")
     assert index.getTagSource("John") == (None, "T0000")
+
+    # getDocumentTags
+    # ===============
+    assert index.getDocumentTags(cHandle) == ["jane"]
+    assert index.getDocumentTags(None) == []
+
+    # getClassTags
+    # ============
+    assert index.getClassTags(nwItemClass.CHARACTER) == ["Jane"]
+
+    # getTagsData
+    # ===========
+    assert list(index.getTagsData()) == [(
+        "jane", "Jane", "CHARACTER",
+        index.getItemData(cHandle),
+        index.getItemHeader(cHandle, "T0001")
+    )]
+
+    # getSingleTag
+    # ============
+    assert index.getSingleTag("jane") == (
+        "Jane", "CHARACTER",
+        index.getItemData(cHandle),
+        index.getItemHeader(cHandle, "T0001")
+    )
+    assert index.getSingleTag("foobar") == ("", "", None, None)
 
     # getCounts
     # =========
@@ -1176,9 +1204,10 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     itemIndex.unpackData({C.hInvalid: {}})
     assert itemIndex._items == {}
 
-    # Known keys can be added, even witout data
+    # Known keys can be added, even without data
     itemIndex.unpackData({nHandle: {}})
     assert nHandle in itemIndex
+    assert itemIndex[nHandle].handle == nHandle  # type: ignore
 
     # Title tags must be valid
     with pytest.raises(ValueError):
