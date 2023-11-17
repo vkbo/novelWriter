@@ -37,8 +37,7 @@ from novelwriter.dialogs.editlabel import GuiEditLabel
 
 @pytest.mark.gui
 def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
-    """Test navigating the novel tree.
-    """
+    """Test navigating the novel tree."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
     buildTestProject(nwGUI, projPath)

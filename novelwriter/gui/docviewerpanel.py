@@ -258,30 +258,28 @@ class _ViewPanelBackRefs(QTreeWidget):
 
     def _setTreeItemValues(self, tHandle: str, sTitle: str, hItem: IndexHeading) -> None:
         """Add or update a tree item."""
-        if (nwItem := SHARED.project.tree[tHandle]) is None:
-            return
+        if nwItem := SHARED.project.tree[tHandle]:
+            docIcon = SHARED.theme.getItemIcon(
+                nwItem.itemType, nwItem.itemClass,
+                nwItem.itemLayout, nwItem.mainHeading
+            )
+            iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0) if nwItem.isDocumentLayout() else 5
+            hDec = SHARED.theme.getHeaderDecorationNarrow(iLevel)
 
-        docIcon = SHARED.theme.getItemIcon(
-            nwItem.itemType, nwItem.itemClass,
-            nwItem.itemLayout, nwItem.mainHeading
-        )
-        iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0) if nwItem.isDocumentLayout() else 5
-        hDec = SHARED.theme.getHeaderDecorationNarrow(iLevel)
+            tKey = f"{tHandle}:{sTitle}"
+            trItem = self._treeMap[tKey] if tKey in self._treeMap else QTreeWidgetItem()
 
-        tKey = f"{tHandle}:{sTitle}"
-        trItem = self._treeMap[tKey] if tKey in self._treeMap else QTreeWidgetItem()
+            trItem.setIcon(self.C_DOC, docIcon)
+            trItem.setText(self.C_DOC, nwItem.itemName)
+            trItem.setIcon(self.C_EDIT, self._editIcon)
+            trItem.setIcon(self.C_VIEW, self._viewIcon)
+            trItem.setText(self.C_TITLE, hItem.title)
+            trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
+            trItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
 
-        trItem.setIcon(self.C_DOC, docIcon)
-        trItem.setText(self.C_DOC, nwItem.itemName)
-        trItem.setIcon(self.C_EDIT, self._editIcon)
-        trItem.setIcon(self.C_VIEW, self._viewIcon)
-        trItem.setText(self.C_TITLE, hItem.title)
-        trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
-        trItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
-
-        if tKey not in self._treeMap:
-            self.addTopLevelItem(trItem)
-            self._treeMap[tKey] = trItem
+            if tKey not in self._treeMap:
+                self.addTopLevelItem(trItem)
+                self._treeMap[tKey] = trItem
 
         return
 
@@ -398,4 +396,4 @@ class _ViewPanelKeyWords(QTreeWidget):
             self._parent.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
         return
 
-# END Class _ViewPanelRefs
+# END Class _ViewPanelKeyWords
