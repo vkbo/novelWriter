@@ -181,7 +181,7 @@ class Config:
         # State
         self.showRefPanel    = True   # The reference panel for the viewer is visible
         self.showEditToolBar = False  # The document editor toolbar visibility
-        self.useShortcodes   = False  # Use shorcodes for basic formatting
+        self.useShortcodes   = False  # Use shortcodes for basic formatting
         self.viewComments    = True   # Comments are shown in the viewer
         self.viewSynopsis    = True   # Synopsis is shown in the viewer
 
@@ -392,8 +392,7 @@ class Config:
         return self._appPath / "assets"
 
     def lastPath(self) -> Path:
-        """Return the last path used by the user, but ensure it exists.
-        """
+        """Return the last path used by the user, if it exists."""
         if isinstance(self._lastPath, Path):
             if self._lastPath.is_dir():
                 return self._lastPath
@@ -401,9 +400,8 @@ class Config:
 
     def backupPath(self) -> Path:
         """Return the backup path."""
-        if isinstance(self._backupPath, Path):
-            if self._backupPath.is_dir():
-                return self._backupPath
+        if isinstance(self._backupPath, Path) and self._backupPath.is_dir():
+            return self._backupPath
         return self._backPath
 
     def errorText(self) -> str:
@@ -613,24 +611,6 @@ class Config:
         self.searchLoop      = conf.rdBool(sec, "searchloop", self.searchLoop)
         self.searchNextFile  = conf.rdBool(sec, "searchnextfile", self.searchNextFile)
         self.searchMatchCap  = conf.rdBool(sec, "searchmatchcap", self.searchMatchCap)
-
-        # Deprecated Settings or Locations as of 2.0
-        # ToDo: These will be loaded for a few minor releases until the users have converted them
-        self.guiFont         = conf.rdStr("Main", "guifont", self.guiFont)
-        self.guiFontSize     = conf.rdInt("Main", "guifontsize", self.guiFontSize)
-        self.guiLocale       = conf.rdStr("Main", "guilang", self.guiLocale)
-        self._backupPath     = conf.rdPath("Backup", "backuppath", self._backupPath)
-        self.backupOnClose   = conf.rdBool("Backup", "backuponclose", self.backupOnClose)
-        self.askBeforeBackup = conf.rdBool("Backup", "askbeforebackup", self.askBeforeBackup)
-        fmtSingleQuotes      = conf.rdStrList(sec, "fmtsinglequote", [])
-        fmtDoubleQuotes      = conf.rdStrList(sec, "fmtdoublequote", [])
-
-        if isinstance(fmtSingleQuotes, list) and len(fmtSingleQuotes) == 2:
-            self.fmtSQuoteOpen = fmtSingleQuotes[0]
-            self.fmtSQuoteClose = fmtSingleQuotes[1]
-        if isinstance(fmtDoubleQuotes, list) and len(fmtDoubleQuotes) == 2:
-            self.fmtDQuoteOpen = fmtDoubleQuotes[0]
-            self.fmtDQuoteClose = fmtDoubleQuotes[1]
 
         # Check Values
         # ============
