@@ -1455,7 +1455,6 @@ class GuiProjectTree(QTreeWidget):
         wCount = self._getItemWordCount(sHandle)
         self.propagateCount(sHandle, 0)
 
-        event.accept()
         super().dropEvent(event)
         self._postItemMove(sHandle, wCount)
         self._recordLastMove(sItem, pItem, pIndex)

@@ -988,9 +988,17 @@ def testGuiProjTree_DragAndDrop(qtbot, monkeypatch, caplog, nwGUI: GuiMain, proj
     mouse = Qt.MouseButton.LeftButton
     modifier = Qt.KeyboardModifier.NoModifier
 
+    # Move an item
+    # The actual move is blocked, but the undo history should record
+    # the event, although without an actual move implied
+    assert projTree._lastMove == {}
     event = QDropEvent(nPos, action, mime, mouse, modifier)
     projTree.dropEvent(event)
-    assert event.isAccepted() is True
+    assert projTree._lastMove == {
+        "item": projTree._getTreeItem(C.hSceneDoc),
+        "parent": projTree._getTreeItem(C.hChapterDir),
+        "index": 1,
+    }
 
     # Invalid location
     caplog.clear()
