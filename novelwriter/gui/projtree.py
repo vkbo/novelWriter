@@ -511,7 +511,7 @@ class GuiProjectTree(QTreeWidget):
         self.setDragDropMode(QAbstractItemView.InternalMove)
         self.setDropIndicatorShown(True)
 
-        # Disable built-in autoscroll as it isn't working in some Qt
+        # Disable built-in auto scroll as it isn't working in some Qt
         # releases (see #1561) and instead use our own implementation
         self.setAutoScroll(False)
 
@@ -533,7 +533,7 @@ class GuiProjectTree(QTreeWidget):
         self.itemDoubleClicked.connect(self._treeDoubleClick)
         self.itemSelectionChanged.connect(self._treeSelectionChange)
 
-        # Autoscroll
+        # Auto Scroll
         self._scrollMargin = SHARED.theme.baseIconSize
         self._scrollDirection = 0
         self._scrollTimer = QTimer()
@@ -1415,7 +1415,7 @@ class GuiProjectTree(QTreeWidget):
         return
 
     def dragMoveEvent(self, event: QDragMoveEvent) -> None:
-        """Capture the drag move event to enable edge autoscroll."""
+        """Capture the drag move event to enable edge auto scroll."""
         y = event.pos().y()
         if y < self._scrollMargin:
             if not self._scrollTimer.isActive():
@@ -1429,8 +1429,8 @@ class GuiProjectTree(QTreeWidget):
         return
 
     def dropEvent(self, event: QDropEvent) -> None:
-        """Overload the drop item event to ensure relevant data has been
-        updated.
+        """Overload the drop item event to ensure the drag and drop
+        action is allowed, and update relevant data.
         """
         sHandle = self.getSelectedHandle()
         sItem = self._getTreeItem(sHandle) if sHandle else None
@@ -1455,6 +1455,7 @@ class GuiProjectTree(QTreeWidget):
         wCount = self._getItemWordCount(sHandle)
         self.propagateCount(sHandle, 0)
 
+        event.accept()
         super().dropEvent(event)
         self._postItemMove(sHandle, wCount)
         self._recordLastMove(sItem, pItem, pIndex)
