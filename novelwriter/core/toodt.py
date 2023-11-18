@@ -195,7 +195,7 @@ class ToOdt(Tokenizer):
     #  Setters
     ##
 
-    def setLanguage(self, language: str) -> None:
+    def setLanguage(self, language: str | None) -> None:
         """Set language for the document."""
         if language:
             langBits = language.split("_")

@@ -97,7 +97,7 @@ class GuiMainStatus(QStatusBar):
         self.addPermanentWidget(self.statsText)
 
         # The Session Clock
-        # Set the mimimum width so the label doesn't rescale every second
+        # Set the minimum width so the label doesn't rescale every second
         self.timeIcon = QLabel()
         self.timeText = QLabel("")
         self.timeText.setToolTip(self.tr("Session Time"))

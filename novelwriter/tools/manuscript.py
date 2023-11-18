@@ -507,7 +507,7 @@ class _DetailsWidget(QWidget):
 
         self._initExpanded = True
 
-        # Tree Vidget
+        # Tree Widget
         self.listView = QTreeWidget(self)
         self.listView.setHeaderLabels([self.tr("Setting"), self.tr("Value")])
         self.listView.setIndentation(SHARED.theme.baseIconSize)

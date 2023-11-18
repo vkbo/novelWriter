@@ -64,7 +64,7 @@ class GuiTextDocument(QTextDocument):
         return self._syntax
 
     ##
-    #  Metods
+    #  Methods
     ##
 
     def setTextContent(self, text: str, tHandle: str) -> None:
