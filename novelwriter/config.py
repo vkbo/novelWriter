@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import sys
 import json
+import uuid
 import logging
 
 from time import time
@@ -43,6 +44,15 @@ from novelwriter.common import NWConfigParser, checkInt, checkPath, formatTimeSt
 from novelwriter.constants import nwFiles, nwUnicode
 
 logger = logging.getLogger(__name__)
+
+
+def _ensureFolder(path: Path) -> None:
+    """Ensure a folder exists and handle name conflicts."""
+    if not path.is_dir():
+        if path.exists():
+            path.rename(path.with_stem(f"{path.stem}-{uuid.uuid4()}"))
+        path.mkdir()
+    return
 
 
 class Config:
@@ -379,10 +389,13 @@ class Config:
         """Un-scale fixed gui sizes by the screen scale factor."""
         return int(value/self.guiScale)
 
-    def dataPath(self, target: str | None = None) -> Path:
+    def dataPath(self, target: str | None = None, mkdir: bool = False) -> Path:
         """Return a path in the data folder."""
         if isinstance(target, str):
-            return self._dataPath / target
+            targetPath = self._dataPath / target
+            if mkdir:
+                _ensureFolder(targetPath)
+            return targetPath
         return self._dataPath
 
     def assetPath(self, target: str | None = None) -> Path:
@@ -466,15 +479,17 @@ class Config:
 
         # If the config and data folders don't exist, create them
         # This assumes that the os config and data folders exist
-        self._confPath.mkdir(exist_ok=True)
-        self._dataPath.mkdir(exist_ok=True)
+        _ensureFolder(self._confPath)
+        _ensureFolder(self._dataPath)
 
         # Also create the syntax, themes and icons folders if possible
         if self._dataPath.is_dir():
-            (self._dataPath / "cache").mkdir(exist_ok=True)
-            (self._dataPath / "icons").mkdir(exist_ok=True)
-            (self._dataPath / "syntax").mkdir(exist_ok=True)
-            (self._dataPath / "themes").mkdir(exist_ok=True)
+            _ensureFolder(self._dataPath / "temp")
+            _ensureFolder(self._dataPath / "cache")
+            _ensureFolder(self._dataPath / "icons")
+            _ensureFolder(self._dataPath / "syntax")
+            _ensureFolder(self._dataPath / "themes")
+            _ensureFolder(self._dataPath / "projects")
 
         # Check if config file exists, and load it. If not, we save defaults
         if (self._confPath / nwFiles.CONF_FILE).is_file():

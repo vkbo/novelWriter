@@ -29,10 +29,10 @@ from typing import TYPE_CHECKING
 from pathlib import Path
 from datetime import datetime
 
-from PyQt5.QtGui import QKeySequence
+from PyQt5.QtGui import QCloseEvent, QKeySequence
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import (
-    QDialog, QHBoxLayout, QVBoxLayout, QGridLayout, QPushButton, QTreeWidget,
+    QDialog, QHBoxLayout, QVBoxLayout, QGridLayout, QTreeWidget,
     QAbstractItemView, QTreeWidgetItem, QDialogButtonBox, QLabel, QShortcut,
     QFileDialog, QLineEdit
 )
@@ -112,15 +112,10 @@ class GuiProjectLoad(QDialog):
         self.selPath = QLineEdit("")
         self.selPath.setReadOnly(True)
 
-        self.browseButton = QPushButton("...")
-        self.browseButton.setMaximumWidth(int(2.5*SHARED.theme.getTextWidth("...")))
-        self.browseButton.clicked.connect(self._doBrowse)
-
-        self.projectForm.addWidget(self.lblRecent,    0, 0, 1, 3)
-        self.projectForm.addWidget(self.listBox,      1, 0, 1, 3)
-        self.projectForm.addWidget(self.lblPath,      2, 0, 1, 1)
-        self.projectForm.addWidget(self.selPath,      2, 1, 1, 1)
-        self.projectForm.addWidget(self.browseButton, 2, 2, 1, 1)
+        self.projectForm.addWidget(self.lblRecent, 0, 0, 1, 2)
+        self.projectForm.addWidget(self.listBox,   1, 0, 1, 2)
+        self.projectForm.addWidget(self.lblPath,   2, 0, 1, 1)
+        self.projectForm.addWidget(self.selPath,   2, 1, 1, 1)
         self.projectForm.setColumnStretch(0, 0)
         self.projectForm.setColumnStretch(1, 1)
         self.projectForm.setColumnStretch(2, 0)
@@ -139,6 +134,9 @@ class GuiProjectLoad(QDialog):
         self.delButton = self.buttonBox.addButton(self.tr("Remove"), QDialogButtonBox.ActionRole)
         self.delButton.clicked.connect(self._doDeleteRecent)
 
+        self.brwsButton = self.buttonBox.addButton(self.tr("Browse"), QDialogButtonBox.ActionRole)
+        self.brwsButton.clicked.connect(self._doBrowse)
+
         self.outerBox.addLayout(self.innerBox)
         self.outerBox.addWidget(self.buttonBox)
         self.setLayout(self.outerBox)
@@ -154,7 +152,7 @@ class GuiProjectLoad(QDialog):
 
         return
 
-    def __del__(self):  # pragma: no cover
+    def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiProjectLoad")
         return
 
@@ -162,9 +160,8 @@ class GuiProjectLoad(QDialog):
     #  Buttons
     ##
 
-    def _doOpenRecent(self):
-        """Close the dialog window with a recent project selected.
-        """
+    def _doOpenRecent(self) -> None:
+        """Close the dialog window with a recent project selected."""
         self._saveSettings()
 
         self.openPath = None
@@ -178,19 +175,17 @@ class GuiProjectLoad(QDialog):
 
         return
 
-    def _doSelectRecent(self):
-        """A recent item has been selected.
-        """
+    def _doSelectRecent(self) -> None:
+        """A recent item has been selected."""
         selList = self.listBox.selectedItems()
         if selList:
             self.selPath.setText(selList[0].data(self.C_NAME, self.D_PATH))
         return
 
-    def _doBrowse(self):
-        """Browse for a folder path.
-        """
+    def _doBrowse(self) -> None:
+        """Browse for a folder path."""
         extFilter = [
-            self.tr("novelWriter Project File ({0})").format(nwFiles.PROJ_FILE),
+            self.tr("novelWriter Project File ({0})").format(f"{nwFiles.PROJ_FILE}, *.nwproj"),
             self.tr("All files ({0})").format("*"),
         ]
         projFile, _ = QFileDialog.getOpenFileName(
@@ -205,26 +200,23 @@ class GuiProjectLoad(QDialog):
 
         return
 
-    def _doCancel(self):
-        """Close the dialog window without doing anything.
-        """
+    def _doCancel(self) -> None:
+        """Close the dialog window without doing anything."""
         self.openPath = None
         self.openState = self.NONE_STATE
         self.close()
         return
 
-    def _doNewProject(self):
-        """Create a new project.
-        """
+    def _doNewProject(self) -> None:
+        """Create a new project."""
         self._saveSettings()
         self.openPath = None
         self.openState = self.NEW_STATE
         self.accept()
         return
 
-    def _doDeleteRecent(self):
-        """Remove an entry from the recent projects list.
-        """
+    def _doDeleteRecent(self) -> None:
+        """Remove an entry from the recent projects list."""
         selList = self.listBox.selectedItems()
         if selList:
             projName = selList[0].text(self.C_NAME)
@@ -237,27 +229,24 @@ class GuiProjectLoad(QDialog):
                     selList[0].data(self.C_NAME, self.D_PATH)
                 )
                 self._populateList()
-
         return
 
     ##
     #  Events
     ##
 
-    def closeEvent(self, theEvent):
-        """Capture the user closing the dialog so we can save settings.
-        """
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Capture the user closing the dialog and can save settings."""
         self._saveSettings()
-        theEvent.accept()
+        event.accept()
         return
 
     ##
     #  Internal Functions
     ##
 
-    def _saveSettings(self):
-        """Save the changes made to the dialog.
-        """
+    def _saveSettings(self) -> None:
+        """Save the changes made to the dialog."""
         colWidths = [0, 0, 0]
         colWidths[self.C_NAME]  = self.listBox.columnWidth(self.C_NAME)
         colWidths[self.C_COUNT] = self.listBox.columnWidth(self.C_COUNT)
@@ -265,9 +254,8 @@ class GuiProjectLoad(QDialog):
         CONFIG.setProjLoadColWidths(colWidths)
         return
 
-    def _populateList(self):
-        """Populate the list box with recent project data.
-        """
+    def _populateList(self) -> None:
+        """Populate the list box with recent project data."""
         self.listBox.clear()
         dataList = CONFIG.recentProjects.listEntries()
         sortList = sorted(dataList, key=lambda x: x[3], reverse=True)
