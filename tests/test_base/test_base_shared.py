@@ -67,7 +67,7 @@ def testBaseSharedData_Init():
 
 
 @pytest.mark.base
-def testBaseSharedData_Projects(fncPath, caplog: pytest.LogCaptureFixture):
+def testBaseSharedData_Projects(fncPath, caplog):
     """Test SharedData handling of projects."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -123,7 +123,7 @@ def testBaseSharedData_Projects(fncPath, caplog: pytest.LogCaptureFixture):
 
 
 @pytest.mark.base
-def testBaseSharedData_Alerts(monkeypatch, caplog: pytest.LogCaptureFixture):
+def testBaseSharedData_Alerts(monkeypatch, caplog):
     """Test SharedData class alert helper functions."""
     monkeypatch.setattr(QMessageBox, "exec_", lambda *a: None)
     monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.Yes)
