@@ -26,8 +26,8 @@ echo " Building Minimal Packages"
 echo "================================================================================"
 echo ""
 python3 pkgutils.py minimal-zip --target-win
-python3 pkgutils.py minimal-zip --target-linux
-python3 pkgutils.py minimal-zip --target-darwin
+# python3 pkgutils.py minimal-zip --target-linux
+# python3 pkgutils.py minimal-zip --target-darwin
 
 echo ""
 echo " Building Linux Packages"

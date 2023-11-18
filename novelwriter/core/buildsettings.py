@@ -349,7 +349,7 @@ class BuildSettings:
     def buildItemFilter(
         self, project: NWProject, withRoots: bool = False
     ) -> dict[str, tuple[bool, FilterMode]]:
-        """Return a dictionary of item handles with filter decissions
+        """Return a dictionary of item handles with filter decisions
         applied.
         """
         result: dict[str, tuple[bool, FilterMode]] = {}

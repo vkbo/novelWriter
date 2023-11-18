@@ -231,6 +231,7 @@ def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
     assert isinstance(cItem, NWItem)
 
     assert index.rootChangedSince(C.hNovelRoot, 0) is False
+    assert index.rootChangedSince(None, 0) is False
     assert index.indexChangedSince(0) is False
 
     assert index.scanText(cHandle, (
@@ -562,11 +563,11 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     ))
 
     # The novel structure should contain the pointer to the novel file header
-    theKeys = []
+    keys = []
     for aKey, _, _, _ in index.novelStructure():
-        theKeys.append(aKey)
+        keys.append(aKey)
 
-    assert theKeys == [
+    assert keys == [
         f"{C.hTitlePage}:T0001",
         f"{C.hChapterDoc}:T0001",
         f"{C.hSceneDoc}:T0001",
@@ -576,22 +577,22 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     # Check that excluded files can be skipped
     project.tree[nHandle].setActive(False)  # type: ignore
 
-    theKeys = []
+    keys = []
     for aKey, _, _, _ in index.novelStructure(skipExcl=False):
-        theKeys.append(aKey)
+        keys.append(aKey)
 
-    assert theKeys == [
+    assert keys == [
         f"{C.hTitlePage}:T0001",
         f"{C.hChapterDoc}:T0001",
         f"{C.hSceneDoc}:T0001",
         f"{nHandle}:T0001",
     ]
 
-    theKeys = []
+    keys = []
     for aKey, _, _, _ in index.novelStructure(skipExcl=True):
-        theKeys.append(aKey)
+        keys.append(aKey)
 
-    assert theKeys == [
+    assert keys == [
         f"{C.hTitlePage}:T0001",
         f"{C.hChapterDoc}:T0001",
         f"{C.hSceneDoc}:T0001",
@@ -606,23 +607,24 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     # getItemData + getHandleHeaderCount
     # ==================================
 
-    theItem = index.getItemData(nHandle)
-    assert isinstance(theItem, IndexItem)
-    assert theItem.headings() == ["T0001"]
+    item = index.getItemData(nHandle)
+    assert isinstance(item, IndexItem)
+    assert item.headings() == ["T0001"]
     assert index.getHandleHeaderCount(nHandle) == 1
+    assert index.getHandleHeaderCount("foo") == 0
 
     # getReferences
     # =============
 
     # Look up an invalid handle
-    theRefs = index.getReferences("Not a handle")
-    assert theRefs["@pov"] == []
-    assert theRefs["@char"] == []
+    refs = index.getReferences("Not a handle")
+    assert refs["@pov"] == []
+    assert refs["@char"] == []
 
     # The novel file should now refer to Jane as @pov and @char
-    theRefs = index.getReferences(nHandle)
-    assert theRefs["@pov"] == ["Jane"]
-    assert theRefs["@char"] == ["Jane"]
+    refs = index.getReferences(nHandle)
+    assert refs["@pov"] == ["Jane"]
+    assert refs["@char"] == ["Jane"]
 
     # getBackReferenceList
     # ====================
@@ -634,14 +636,40 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     assert index.getBackReferenceList(C.hTitlePage) == {}
 
     # The character file should have a record of the reference from the novel file
-    theRefs = index.getBackReferenceList(cHandle)
-    assert theRefs == {nHandle: "T0001"}
+    refs = index.getBackReferenceList(cHandle)
+    assert refs[nHandle][0] == "T0001"
 
     # getTagSource
     # ============
 
     assert index.getTagSource("Jane") == (cHandle, "T0001")
     assert index.getTagSource("John") == (None, "T0000")
+
+    # getDocumentTags
+    # ===============
+    assert index.getDocumentTags(cHandle) == ["jane"]
+    assert index.getDocumentTags(None) == []
+
+    # getClassTags
+    # ============
+    assert index.getClassTags(nwItemClass.CHARACTER) == ["Jane"]
+
+    # getTagsData
+    # ===========
+    assert list(index.getTagsData()) == [(
+        "jane", "Jane", "CHARACTER",
+        index.getItemData(cHandle),
+        index.getItemHeader(cHandle, "T0001")
+    )]
+
+    # getSingleTag
+    # ============
+    assert index.getSingleTag("jane") == (
+        "Jane", "CHARACTER",
+        index.getItemData(cHandle),
+        index.getItemHeader(cHandle, "T0001")
+    )
+    assert index.getSingleTag("foobar") == ("", "", None, None)
 
     # getCounts
     # =========
@@ -1176,9 +1204,10 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     itemIndex.unpackData({C.hInvalid: {}})
     assert itemIndex._items == {}
 
-    # Known keys can be added, even witout data
+    # Known keys can be added, even without data
     itemIndex.unpackData({nHandle: {}})
     assert nHandle in itemIndex
+    assert itemIndex[nHandle].handle == nHandle  # type: ignore
 
     # Title tags must be valid
     with pytest.raises(ValueError):

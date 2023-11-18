@@ -45,7 +45,7 @@ def testBaseConfig_Constructor(monkeypatch):
         assert tstConf.osWindows is False
         assert tstConf.osUnknown is False
 
-    # macOS
+    # MacOS
     with monkeypatch.context() as mp:
         mp.setattr("sys.platform", "darwin")
         tstConf = Config()
@@ -225,6 +225,11 @@ def testBaseConfig_Methods(fncPath):
     tmpStuff.rmdir()
     assert tstConf.lastPath() == Path.home().absolute()
 
+    # Backup Path
+    assert tstConf.backupPath() == tstConf._backPath
+    tstConf.setBackupPath(fncPath)
+    assert tstConf.backupPath() == fncPath
+
     # Recent Projects
     assert isinstance(tstConf.recentProjects, RecentProjects)
 
@@ -233,8 +238,7 @@ def testBaseConfig_Methods(fncPath):
 
 @pytest.mark.base
 def testBaseConfig_SettersGetters(fncPath):
-    """Set various sizes and positions
-    """
+    """Set various sizes and positions."""
     tstConf = Config()
     tstConf.initConfig(confPath=fncPath, dataPath=fncPath)
 
@@ -358,8 +362,7 @@ def testBaseConfig_SettersGetters(fncPath):
 
 @pytest.mark.base
 def testBaseConfig_Internal(monkeypatch, fncPath):
-    """Check internal functions.
-    """
+    """Check internal functions."""
     tstConf = Config()
     tstConf.initConfig(confPath=fncPath, dataPath=fncPath)
 
@@ -381,8 +384,7 @@ def testBaseConfig_Internal(monkeypatch, fncPath):
 
 @pytest.mark.base
 def testBaseConfig_RecentCache(monkeypatch, tstPaths):
-    """Test recent cache file.
-    """
+    """Test recent cache file."""
     cacheFile = tstPaths.cnfDir / nwFiles.RECENT_FILE
     recent = RecentProjects(CONFIG)
 

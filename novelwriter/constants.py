@@ -153,6 +153,21 @@ class nwKeyWords:
 # END Class nwKeyWords
 
 
+class nwLists:
+
+    USER_CLASSES = [
+        nwItemClass.CHARACTER,
+        nwItemClass.PLOT,
+        nwItemClass.WORLD,
+        nwItemClass.TIMELINE,
+        nwItemClass.OBJECT,
+        nwItemClass.ENTITY,
+        nwItemClass.CUSTOM,
+    ]
+
+# END Class nwLists
+
+
 class nwLabels:
 
     CLASS_NAME = {
@@ -221,8 +236,8 @@ class nwLabels:
         nwOutline.FOCUS:  QT_TRANSLATE_NOOP("Constant", "Focus"),
         nwOutline.CHAR:   KEY_NAME[nwKeyWords.CHAR_KEY],
         nwOutline.PLOT:   KEY_NAME[nwKeyWords.PLOT_KEY],
-        nwOutline.TIME:   KEY_NAME[nwKeyWords.TIME_KEY],
         nwOutline.WORLD:  KEY_NAME[nwKeyWords.WORLD_KEY],
+        nwOutline.TIME:   KEY_NAME[nwKeyWords.TIME_KEY],
         nwOutline.OBJECT: KEY_NAME[nwKeyWords.OBJECT_KEY],
         nwOutline.ENTITY: KEY_NAME[nwKeyWords.ENTITY_KEY],
         nwOutline.CUSTOM: KEY_NAME[nwKeyWords.CUSTOM_KEY],
@@ -327,8 +342,7 @@ class nwQuotes:
 
 
 class nwUnicode:
-    """Supported unicode character constants and their HTML equivalents.
-    """
+    """Supported unicode character constants and their HTML equivalents."""
     # Unicode Constants
     # =================
 

@@ -173,9 +173,14 @@ def testGuiEditor_MetaData(qtbot, nwGUI, projPath, mockRnd):
         "More\u00a0text.\u2029"
     )
     nwGUI.docEditor.replaceText(newText)
-    assert nwGUI.docEditor.getText() == "### New Scene\n\nSome\ntext.\nMore\u00a0text.\n"
+    assert nwGUI.docEditor.getText() == (
+        "### New Scene\n\n"
+        "Some\n"
+        "text.\n"
+        "More\u00a0text.\n"
+    )
 
-    # Check Propertoes
+    # Check Properties
     assert nwGUI.docEditor.docChanged is True
     assert nwGUI.docEditor.docHandle == C.hSceneDoc
     assert nwGUI.docEditor.lastActive > 0.0
@@ -672,7 +677,7 @@ def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd
 
 
 @pytest.mark.gui
-def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
+def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     """Test the text manipulation functions."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
@@ -680,48 +685,12 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
     text = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
     nwGUI.docEditor.replaceText(text)
 
-    # Clear Surrounding
-    # =================
-
-    # No Selection
-    text = "### A Scene\n\n%s" % ipsumText[0]
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(45)
-
-    cursor = nwGUI.docEditor.textCursor()
-    assert nwGUI.docEditor._clearSurrounding(cursor, 1) is False
-
-    # Clear Characters, 1 Layer
-    repText = text.replace("consectetur", "=consectetur=")
-    nwGUI.docEditor.replaceText(repText)
-    nwGUI.docEditor.setCursorPosition(45)
-
-    cursor = nwGUI.docEditor.textCursor()
-    cursor.select(QTextCursor.WordUnderCursor)
-    assert nwGUI.docEditor._clearSurrounding(cursor, 1) is True
-    assert nwGUI.docEditor.getText() == text
-
-    # Clear Characters, 2 Layers
-    repText = text.replace("consectetur", "==consectetur==")
-    nwGUI.docEditor.replaceText(repText)
-    nwGUI.docEditor.setCursorPosition(45)
-
-    cursor = nwGUI.docEditor.textCursor()
-    cursor.select(QTextCursor.WordUnderCursor)
-    assert nwGUI.docEditor._clearSurrounding(cursor, 2) is True
-    assert nwGUI.docEditor.getText() == text
-
     # Wrap Selection
     # ==============
 
     text = "### A Scene\n\n%s" % "\n\n".join(ipsumText[0:2])
     nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
-
-    # No Selection
-    with monkeypatch.context() as mp:
-        mp.setattr(nwGUI.docEditor, "_autoSelect", lambda: QTextCursor())
-        assert nwGUI.docEditor._wrapSelection("=", "=") is False
 
     # Wrap Equal
     nwGUI.docEditor.replaceText(text)
@@ -752,13 +721,13 @@ def testGuiEditor_TextManipulation(qtbot, monkeypatch, nwGUI, projPath, ipsumTex
     # =============
 
     text = "### A Scene\n\n%s" % "\n\n".join(ipsumText[0:2])
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(45)
 
-    # No Selection
-    with monkeypatch.context() as mp:
-        mp.setattr(nwGUI.docEditor, "_autoSelect", lambda: QTextCursor())
-        assert nwGUI.docEditor._toggleFormat(2, "=") is False
+    # Block format repetition
+    nwGUI.docEditor.replaceText(text)
+    nwGUI.docEditor.setCursorPosition(39)
+    assert nwGUI.docEditor._toggleFormat(1, "=") is True
+    assert nwGUI.docEditor.getText() == text.replace("amet", "=amet=", 1)
+    assert nwGUI.docEditor._toggleFormat(1, "=") is False
 
     # Wrap Single Equal
     nwGUI.docEditor.replaceText(text)
@@ -1230,15 +1199,15 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # Empty Block
     nwGUI.docEditor.setCursorLine(2)
-    assert nwGUI.docEditor._processTag() is nwTrinary.UNKNOWN
+    assert nwGUI.docEditor._processTag() is nwTrinary.NEUTRAL
 
     # Not On Tag
     nwGUI.docEditor.setCursorLine(1)
-    assert nwGUI.docEditor._processTag() is nwTrinary.UNKNOWN
+    assert nwGUI.docEditor._processTag() is nwTrinary.NEUTRAL
 
     # On Tag Keyword
     nwGUI.docEditor.setCursorPosition(15)
-    assert nwGUI.docEditor._processTag() is nwTrinary.UNKNOWN
+    assert nwGUI.docEditor._processTag() is nwTrinary.NEUTRAL
 
     # On Known Tag, No Follow
     nwGUI.docEditor.setCursorPosition(22)
@@ -1266,7 +1235,7 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert "0000000000012" not in SHARED.project.tree
 
     nwGUI.docEditor.setCursorPosition(47)
-    assert nwGUI.docEditor._processTag() is nwTrinary.UNKNOWN
+    assert nwGUI.docEditor._processTag() is nwTrinary.NEUTRAL
 
     # qtbot.stop()
 
@@ -1375,8 +1344,46 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
 
 
 @pytest.mark.gui
+def testGuiEditor_CursorVisibility(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test the custom ensure cursor visible feature."""
+    buildTestProject(nwGUI, projPath)
+    nwGUI.openDocument(C.hSceneDoc)
+    docEditor = nwGUI.docEditor
+
+    docEditor.setPlainText(
+        "### Scene\n\n" + "".join(["Text\n\n"]*100)
+    )
+    assert docEditor.cursorIsVisible() is True
+    docEditor.setCenterOnScroll(False)
+
+    # Scroll Down
+    cursor = docEditor.textCursor()
+    cursor.setPosition(605)
+    docEditor.setTextCursor(cursor)
+    docEditor.verticalScrollBar().setValue(0)
+    assert docEditor.verticalScrollBar().value() == 0
+    docEditor.ensureCursorVisibleNoCentre()
+    assert docEditor.verticalScrollBar().value() > 0
+    assert docEditor.cursorIsVisible() is True
+
+    # Scroll Up
+    cursor = docEditor.textCursor()
+    cursor.setPosition(0)
+    docEditor.setTextCursor(cursor)
+    docEditor.verticalScrollBar().setValue(200)
+    assert docEditor.verticalScrollBar().value() > 100
+    docEditor.ensureCursorVisibleNoCentre()
+    assert docEditor.verticalScrollBar().value() == 0
+    assert docEditor.cursorIsVisible() is True
+
+    # qtbot.stop()
+
+# END Test testGuiEditor_CursorVisibility
+
+
+@pytest.mark.gui
 def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
-    """Test saving text from the editor."""
+    """Test the word counter."""
     class MockThreadPool:
 
         def __init__(self):

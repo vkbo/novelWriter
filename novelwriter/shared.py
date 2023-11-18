@@ -52,6 +52,10 @@ class SharedData(QObject):
     projectStatusChanged = pyqtSignal(bool)
     projectStatusMessage = pyqtSignal(str)
     spellLanguageChanged = pyqtSignal(str, str)
+    indexScannedText = pyqtSignal(str)
+    indexChangedTags = pyqtSignal(list, list)
+    indexCleared = pyqtSignal()
+    indexAvailable = pyqtSignal()
 
     def __init__(self) -> None:
         super().__init__()
@@ -176,7 +180,7 @@ class SharedData(QObject):
         return saveOk
 
     def updateSpellCheckLanguage(self, reload: bool = False) -> None:
-        """Update the active spell check langauge from settings."""
+        """Update the active spell check language from settings."""
         from novelwriter import CONFIG
         language = self.project.data.spellLang or CONFIG.spellLanguage
         if language != self.spelling.spellLanguage or reload:
@@ -213,6 +217,24 @@ class SharedData(QObject):
     def runInThreadPool(self, runnable: QRunnable, priority: int = 0) -> None:
         """Queue a runnable in the application thread pool."""
         QThreadPool.globalInstance().start(runnable, priority=priority)
+        return
+
+    ##
+    #  Signal Proxy
+    ##
+
+    def indexSignalProxy(self, data: dict) -> None:
+        """Emit signals on behalf of the index."""
+        event = data.get("event")
+        logger.debug("Received '%s' event from the index", event)
+        if event == "updateTags":
+            self.indexChangedTags.emit(data.get("updated", []), data.get("deleted", []))
+        elif event == "scanText":
+            self.indexScannedText.emit(data.get("handle", ""))
+        elif event == "clearIndex":
+            self.indexCleared.emit()
+        elif event == "buildIndex":
+            self.indexAvailable.emit()
         return
 
     ##

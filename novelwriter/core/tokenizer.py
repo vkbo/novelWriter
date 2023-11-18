@@ -216,7 +216,7 @@ class Tokenizer(ABC):
         return
 
     def setChapterFormat(self, hFormat: str) -> None:
-        """Set the chapert format pattern."""
+        """Set the chapter format pattern."""
         self._fmtChapter = hFormat.strip()
         return
 
@@ -435,8 +435,8 @@ class Tokenizer(ABC):
             if aLine[0] == "[":
                 # Parse special formatting line
                 # This must be a separate if statement, as it may not
-                # reach a continue statement and must thefore proceed to
-                # check other formats.
+                # reach a continue statement and must therefore proceed
+                # to check other formats.
 
                 if sLine in ("[newpage]", "[new page]"):
                     breakNext = True

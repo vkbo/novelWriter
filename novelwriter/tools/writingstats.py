@@ -125,7 +125,7 @@ class GuiWritingStats(QDialog):
             pOptions.getInt("GuiWritingStats", "sortOrder", Qt.DescendingOrder),
             (Qt.AscendingOrder, Qt.DescendingOrder), Qt.DescendingOrder
         )
-        self.listBox.sortByColumn(sortCol, sortOrder)
+        self.listBox.sortByColumn(sortCol, sortOrder)  # type: ignore
         self.listBox.setSortingEnabled(True)
 
         # Word Bar

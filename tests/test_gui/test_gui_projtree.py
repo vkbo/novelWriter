@@ -27,8 +27,9 @@ from pathlib import Path
 from tools import C, buildTestProject
 from mocked import causeOSError
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMessageBox, QMenu, QTreeWidgetItem, QDialog
+from PyQt5.QtGui import QDragMoveEvent, QDropEvent
+from PyQt5.QtCore import QMimeData, QPoint, QTimer, Qt
+from PyQt5.QtWidgets import QMessageBox, QMenu, QTreeWidget, QTreeWidgetItem, QDialog
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemLayout, nwItemType, nwItemClass
@@ -46,7 +47,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
 
     projView = nwGUI.projView
     projTree = nwGUI.projView.projTree
-    theProject = SHARED.project
+    project = SHARED.project
 
     # Try to add item with no project
     assert projView.projTree.newTreeItem(nwItemType.FILE) is False
@@ -66,7 +67,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
 
     # Create root item
     assert projView.projTree.newTreeItem(nwItemType.ROOT, nwItemClass.WORLD) is True
-    assert "0000000000010" in theProject.tree
+    assert "0000000000010" in project.tree
 
     # File/Folder Items
     # =================
@@ -81,51 +82,51 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
     # Create new folder as child of Novel folder
     projView.setSelectedHandle(C.hNovelRoot)
     assert projView.projTree.newTreeItem(nwItemType.FOLDER) is True
-    assert theProject.tree["0000000000011"].itemParent == C.hNovelRoot
-    assert theProject.tree["0000000000011"].itemRoot == C.hNovelRoot
-    assert theProject.tree["0000000000011"].itemClass == nwItemClass.NOVEL
+    assert project.tree["0000000000011"].itemParent == C.hNovelRoot  # type: ignore
+    assert project.tree["0000000000011"].itemRoot == C.hNovelRoot  # type: ignore
+    assert project.tree["0000000000011"].itemClass == nwItemClass.NOVEL  # type: ignore
 
     # Add a new file in the new folder
     projView.setSelectedHandle("0000000000011")
     assert projView.projTree.newTreeItem(nwItemType.FILE) is True
-    assert theProject.tree["0000000000012"].itemParent == "0000000000011"
-    assert theProject.tree["0000000000012"].itemRoot == C.hNovelRoot
-    assert theProject.tree["0000000000012"].itemClass == nwItemClass.NOVEL
+    assert project.tree["0000000000012"].itemParent == "0000000000011"  # type: ignore
+    assert project.tree["0000000000012"].itemRoot == C.hNovelRoot  # type: ignore
+    assert project.tree["0000000000012"].itemClass == nwItemClass.NOVEL  # type: ignore
 
     # Add a new chapter next to the other new file
     projView.setSelectedHandle("0000000000012")
     assert projView.projTree.newTreeItem(nwItemType.FILE, hLevel=2) is True
-    assert theProject.tree["0000000000013"].itemParent == "0000000000011"
-    assert theProject.tree["0000000000013"].itemRoot == C.hNovelRoot
-    assert theProject.tree["0000000000013"].itemClass == nwItemClass.NOVEL
+    assert project.tree["0000000000013"].itemParent == "0000000000011"  # type: ignore
+    assert project.tree["0000000000013"].itemRoot == C.hNovelRoot  # type: ignore
+    assert project.tree["0000000000013"].itemClass == nwItemClass.NOVEL  # type: ignore
     assert nwGUI.openDocument("0000000000013")
     assert nwGUI.docEditor.getText() == "## New Chapter\n\n"
 
     # Add a new scene next to the other new file
     projView.setSelectedHandle("0000000000012")
     assert projView.projTree.newTreeItem(nwItemType.FILE, hLevel=3) is True
-    assert theProject.tree["0000000000014"].itemParent == "0000000000011"
-    assert theProject.tree["0000000000014"].itemRoot == C.hNovelRoot
-    assert theProject.tree["0000000000014"].itemClass == nwItemClass.NOVEL
+    assert project.tree["0000000000014"].itemParent == "0000000000011"  # type: ignore
+    assert project.tree["0000000000014"].itemRoot == C.hNovelRoot  # type: ignore
+    assert project.tree["0000000000014"].itemClass == nwItemClass.NOVEL  # type: ignore
     assert nwGUI.openDocument("0000000000014")
     assert nwGUI.docEditor.getText() == "### New Scene\n\n"
 
     # Add a new file to the characters folder
     projView.setSelectedHandle(C.hCharRoot)
     assert projView.projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True) is True
-    assert theProject.tree["0000000000015"].itemParent == C.hCharRoot
-    assert theProject.tree["0000000000015"].itemRoot == C.hCharRoot
-    assert theProject.tree["0000000000015"].itemClass == nwItemClass.CHARACTER
+    assert project.tree["0000000000015"].itemParent == C.hCharRoot  # type: ignore
+    assert project.tree["0000000000015"].itemRoot == C.hCharRoot  # type: ignore
+    assert project.tree["0000000000015"].itemClass == nwItemClass.CHARACTER  # type: ignore
     assert nwGUI.openDocument("0000000000015")
     assert nwGUI.docEditor.getText() == "# New Note\n\n"
 
     # Make sure the sibling folder bug trap works
     projView.setSelectedHandle("0000000000013")
-    theProject.tree["0000000000013"].setParent(None)  # This should not happen
+    project.tree["0000000000013"].setParent(None)  # This should not happen  # type: ignore
     caplog.clear()
     assert projView.projTree.newTreeItem(nwItemType.FILE) is False
     assert "Internal error" in caplog.text
-    theProject.tree["0000000000013"].setParent("0000000000011")
+    project.tree["0000000000013"].setParent("0000000000011")  # type: ignore
 
     # Cancel during creation
     with monkeypatch.context() as mp:
@@ -135,7 +136,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
 
     # Get the trash folder
     projView.projTree._addTrashRoot()
-    trashHandle = theProject.trashFolder()
+    trashHandle = project.trashFolder()
     projView.setSelectedHandle(trashHandle)
     assert projView.projTree.newTreeItem(nwItemType.FILE) is False
     assert "Cannot add new files or folders to the Trash folder" in caplog.text
@@ -147,7 +148,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
     with monkeypatch.context() as mp:
         mp.setattr(GuiEditLabel, "getLabel", lambda *a, **k: ("Stuff", True))
         projTree.renameTreeItem(C.hPlotRoot) is True
-        assert theProject.tree[C.hPlotRoot].itemName == "Stuff"
+        assert project.tree[C.hPlotRoot].itemName == "Stuff"  # type: ignore
 
     # Rename invalid folder
     projTree.renameTreeItem("0000000000000") is False
@@ -159,7 +160,7 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
     assert projView.projTree.revealNewTreeItem("abc") is False
 
     # Add an item that cannot be displayed in the tree
-    nHandle = theProject.newFile("Test", None)
+    nHandle = project.newFile("Test", None)  # type: ignore
     assert projView.projTree.revealNewTreeItem(nHandle) is False
 
     # Adding an invalid item directly to the tree should also fail
@@ -550,7 +551,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     SHARED.project.newFile("SubNote", hNovelNote)
     projTree.revealNewTreeItem(hSubNote)
-    assert SHARED.project.tree[hSubNote].itemParent == hNovelNote
+    assert SHARED.project.tree[hSubNote].itemParent == hNovelNote  # type: ignore
 
     def itemPos(tHandle):
         return projTree.visualItemRect(projTree._getTreeItem(tHandle)).center()
@@ -579,6 +580,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # =====================
     # Trigger the dedicated functions the menu entries connect to
     nwItem = SHARED.project.tree[hNovelNote]
+    assert nwItem is not None
 
     # Toggle active flag
     assert nwItem.isActive is True
@@ -619,17 +621,17 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     with monkeypatch.context() as mp:
         mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         projTree._covertFolderToFile(hNewFolderOne, nwItemLayout.DOCUMENT)
-        assert SHARED.project.tree[hNewFolderOne].isFolderType()
+        assert SHARED.project.tree[hNewFolderOne].isFolderType()  # type: ignore
 
     # Convert the first folder to a document
     projTree._covertFolderToFile(hNewFolderOne, nwItemLayout.DOCUMENT)
-    assert SHARED.project.tree[hNewFolderOne].isFileType()
-    assert SHARED.project.tree[hNewFolderOne].isDocumentLayout()
+    assert SHARED.project.tree[hNewFolderOne].isFileType()  # type: ignore
+    assert SHARED.project.tree[hNewFolderOne].isDocumentLayout()  # type: ignore
 
     # Convert the second folder to a note
     projTree._covertFolderToFile(hNewFolderTwo, nwItemLayout.NOTE)
-    assert SHARED.project.tree[hNewFolderTwo].isFileType()
-    assert SHARED.project.tree[hNewFolderTwo].isNoteLayout()
+    assert SHARED.project.tree[hNewFolderTwo].isFileType()  # type: ignore
+    assert SHARED.project.tree[hNewFolderTwo].isNoteLayout()  # type: ignore
 
     # qtbot.stop()
 
@@ -646,19 +648,18 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd,
     monkeypatch.setattr(GuiDocMerge, "result", lambda *a: QDialog.Accepted)
     monkeypatch.setattr(GuiDocMerge, "getData", lambda *a: mergeData)
 
-    # Create a project
     buildTestProject(nwGUI, projPath)
 
-    theProject = SHARED.project
+    project = SHARED.project
     projTree = nwGUI.projView.projTree
 
     mergedDoc1 = "0000000000014"
 
     # Create File to Merge
-    hChapter1 = theProject.newFile("Chapter 1", C.hNovelRoot)
-    hSceneOne11 = theProject.newFile("Scene 1.1", hChapter1)
-    hSceneOne12 = theProject.newFile("Scene 1.2", hChapter1)
-    hSceneOne13 = theProject.newFile("Scene 1.3", hChapter1)
+    hChapter1 = project.newFile("Chapter 1", C.hNovelRoot)
+    hSceneOne11 = project.newFile("Scene 1.1", hChapter1)  # type: ignore
+    hSceneOne12 = project.newFile("Scene 1.2", hChapter1)  # type: ignore
+    hSceneOne13 = project.newFile("Scene 1.3", hChapter1)  # type: ignore
 
     docText1 = "\n\n".join(ipsumText[0:2]) + "\n\n"
     docText2 = "\n\n".join(ipsumText[1:3]) + "\n\n"
@@ -671,10 +672,10 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd,
     lenText4 = len(docText4)
     lenAll = lenText1 + lenText2 + lenText3 + lenText4
 
-    theProject.writeNewFile(hChapter1, 2, True, docText1)
-    theProject.writeNewFile(hSceneOne11, 3, True, docText2)
-    theProject.writeNewFile(hSceneOne12, 3, True, docText3)
-    theProject.writeNewFile(hSceneOne13, 3, True, docText4)
+    project.writeNewFile(hChapter1, 2, True, docText1)  # type: ignore
+    project.writeNewFile(hSceneOne11, 3, True, docText2)  # type: ignore
+    project.writeNewFile(hSceneOne12, 3, True, docText3)  # type: ignore
+    project.writeNewFile(hSceneOne13, 3, True, docText4)  # type: ignore
 
     projTree.revealNewTreeItem(hChapter1)
     projTree.revealNewTreeItem(hSceneOne11)
@@ -705,7 +706,7 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd,
 
     # The merge goes through
     assert projTree._mergeDocuments(hChapter1, True) is True
-    assert len(theProject.storage.getDocument(mergedDoc1).readDocument()) > lenAll
+    assert len(project.storage.getDocument(mergedDoc1).readDocument()) > lenAll  # type: ignore
 
     # Merge to Existing Doc
     # =====================
@@ -724,13 +725,13 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd,
 
     # Successful merge, and move to trash
     mergeData["moveToTrash"] = True
-    assert len(theProject.storage.getDocument(hChapter1).readDocument()) < lenAll
+    assert len(project.storage.getDocument(hChapter1).readDocument()) < lenAll  # type: ignore
     assert projTree._mergeDocuments(hChapter1, False) is True
-    assert len(theProject.storage.getDocument(hChapter1).readDocument()) > lenAll
+    assert len(project.storage.getDocument(hChapter1).readDocument()) > lenAll  # type: ignore
 
-    assert theProject.tree.isTrash(hSceneOne11)
-    assert theProject.tree.isTrash(hSceneOne12)
-    assert theProject.tree.isTrash(hSceneOne13)
+    assert project.tree.isTrash(hSceneOne11)  # type: ignore
+    assert project.tree.isTrash(hSceneOne12)  # type: ignore
+    assert project.tree.isTrash(hSceneOne13)  # type: ignore
 
     # qtbot.stop()
 
@@ -770,7 +771,7 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRnd, 
     )
 
     hSplitDoc = theProject.newFile("Split Doc", C.hNovelRoot)
-    theProject.writeNewFile(hSplitDoc, 1, True, docText)
+    theProject.writeNewFile(hSplitDoc, 1, True, docText)  # type: ignore
     projTree.revealNewTreeItem(hSplitDoc, nHandle=C.hNovelRoot, wordCount=True)
 
     docText = f"# Split Doc\n\n{docText}"
@@ -835,7 +836,7 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRnd, 
         assert tHandle in theProject.tree
         assert (projPath / "content" / f"{tHandle}.nwd").is_file()
 
-    assert theProject.tree.isTrash(hSplitDoc) is True
+    assert theProject.tree.isTrash(hSplitDoc) is True  # type: ignore
 
     # Cancelled by user
     with monkeypatch.context() as mp:
@@ -880,7 +881,7 @@ def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mock
     assert projTree._duplicateFromHandle(C.hNovelRoot) is True
     assert len(SHARED.project.tree) == 21
 
-    # Check tree order that all items are next to eachother
+    # Check tree order that all items are next to each other
     assert SHARED.project.tree._order == [
         C.hNovelRoot, C.hTitlePage, "0000000000010", C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000011", "0000000000012", "0000000000013", "0000000000014", "0000000000015",
@@ -905,13 +906,135 @@ def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mock
 
 
 @pytest.mark.gui
+def testGuiProjTree_AutoScroll(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd):
+    """Test the auto scroll feature."""
+    buildTestProject(nwGUI, projPath)
+    projTree: GuiProjectTree = nwGUI.projView.projTree
+
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda parent, text: (text, True))
+    monkeypatch.setattr(QTreeWidget, "dragMoveEvent", lambda *a, **k: None)
+    monkeypatch.setattr(QTimer, "isActive", lambda *a: False)
+    monkeypatch.setattr(QTimer, "start", lambda *a: None)
+
+    projTree.setSelectedHandle(C.hChapterDir, True)
+    projTree._getTreeItem(C.hChapterDir).setExpanded(True)  # type: ignore
+    for i in range(100):
+        projTree.newTreeItem(nwItemType.FILE, None, 3, False)
+
+    projTree.setSelectedHandle("0000000000015", True)
+    nwGUI.resize(500, 500)
+
+    action = Qt.DropAction.MoveAction
+    mime = QMimeData()
+    mouse = Qt.MouseButton.LeftButton
+    modifier = Qt.KeyboardModifier.NoModifier
+
+    # Scroll Down
+    h = projTree.height()
+    projTree.dragMoveEvent(QDragMoveEvent(QPoint(1, h-1), action, mime, mouse, modifier))
+    assert projTree._scrollDirection == 1
+    projTree._doAutoScroll()
+    assert projTree._scrollDirection == 0
+    projTree.dragMoveEvent(QDragMoveEvent(QPoint(1, h-2), action, mime, mouse, modifier))
+    assert projTree._scrollDirection == 1
+    projTree._doAutoScroll()
+    assert projTree._scrollDirection == 0
+    projTree.dragMoveEvent(QDragMoveEvent(QPoint(1, h-3), action, mime, mouse, modifier))
+    assert projTree._scrollDirection == 1
+    projTree._doAutoScroll()
+    assert projTree._scrollDirection == 0
+    projTree.dragMoveEvent(QDragMoveEvent(QPoint(1, h-4), action, mime, mouse, modifier))
+    assert projTree._scrollDirection == 1
+    projTree._doAutoScroll()
+    assert projTree._scrollDirection == 0
+
+    # Scroll Up
+    projTree.dragMoveEvent(QDragMoveEvent(QPoint(1, 1), action, mime, mouse, modifier))
+    assert projTree._scrollDirection == -1
+    projTree._doAutoScroll()
+    assert projTree._scrollDirection == 0
+    projTree.dragMoveEvent(QDragMoveEvent(QPoint(1, 2), action, mime, mouse, modifier))
+    assert projTree._scrollDirection == -1
+    projTree._doAutoScroll()
+    assert projTree._scrollDirection == 0
+    projTree.dragMoveEvent(QDragMoveEvent(QPoint(1, 3), action, mime, mouse, modifier))
+    assert projTree._scrollDirection == -1
+    projTree._doAutoScroll()
+    assert projTree._scrollDirection == 0
+    projTree.dragMoveEvent(QDragMoveEvent(QPoint(1, 4), action, mime, mouse, modifier))
+    assert projTree._scrollDirection == -1
+    projTree._doAutoScroll()
+    assert projTree._scrollDirection == 0
+
+    # qtbot.stop()
+
+# END Test testGuiProjTree_AutoScroll
+
+
+@pytest.mark.gui
+def testGuiProjTree_DragAndDrop(qtbot, monkeypatch, caplog, nwGUI: GuiMain, projPath, mockRnd):
+    """Test the auto scroll feature."""
+    buildTestProject(nwGUI, projPath)
+    projTree: GuiProjectTree = nwGUI.projView.projTree
+
+    monkeypatch.setattr(QTreeWidget, "dropEvent", lambda *a, **k: None)
+
+    projTree.setSelectedHandle(C.hSceneDoc, True)
+    projTree._getTreeItem(C.hChapterDir).setExpanded(True)  # type: ignore
+
+    nPos = projTree.visualItemRect(projTree._getTreeItem(C.hNovelRoot)).bottomLeft()
+    action = Qt.DropAction.MoveAction
+    mime = QMimeData()
+    mouse = Qt.MouseButton.LeftButton
+    modifier = Qt.KeyboardModifier.NoModifier
+
+    # Move an item
+    # The actual move is blocked, but the undo history should record
+    # the event, although without an actual move implied
+    assert projTree._lastMove == {}
+    event = QDropEvent(nPos, action, mime, mouse, modifier)
+    projTree.dropEvent(event)
+    assert projTree._lastMove == {
+        "item": projTree._getTreeItem(C.hSceneDoc),
+        "parent": projTree._getTreeItem(C.hChapterDir),
+        "index": 1,
+    }
+
+    # Invalid location
+    caplog.clear()
+    event = QDropEvent(QPoint(1000, 1000), action, mime, mouse, modifier)
+    projTree.dropEvent(event)
+    assert event.isAccepted() is False
+    assert "Invalid drop location" in caplog.text
+
+    # No item selected
+    caplog.clear()
+    event = QDropEvent(nPos, action, mime, mouse, modifier)
+    projTree.clearSelection()
+    projTree.dropEvent(event)
+    assert event.isAccepted() is False
+    assert "Invalid drag and drop event" in caplog.text
+
+    # Root item selected
+    caplog.clear()
+    event = QDropEvent(nPos, action, mime, mouse, modifier)
+    projTree.clearSelection()
+    projTree.setSelectedHandle(C.hNovelRoot, True)
+    projTree.dropEvent(event)
+    assert event.isAccepted() is False
+    assert "Invalid drag and drop event" in caplog.text
+
+    # qtbot.stop()
+
+# END Test testGuiProjTree_DragAndDrop
+
+
+@pytest.mark.gui
 def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd):
     """Test various parts of the project tree class not covered by
     other tests.
     """
-    # Create a project
     buildTestProject(nwGUI, projPath)
-
     projView: GuiProjectView = nwGUI.projView
     projTree: GuiProjectTree = nwGUI.projView.projTree
 

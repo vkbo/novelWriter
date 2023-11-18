@@ -67,7 +67,7 @@ class GuiSideBar(QWidget):
         self.tbNovel.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.NOVEL))
 
         self.tbOutline = QToolButton(self)
-        self.tbOutline.setToolTip(f"{0} [Ctrl+Shift+T]".format(self.tr("Novel Outline View")))
+        self.tbOutline.setToolTip("{0} [Ctrl+Shift+T]".format(self.tr("Novel Outline View")))
         self.tbOutline.setIconSize(iconSize)
         self.tbOutline.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.OUTLINE))
 
@@ -111,7 +111,7 @@ class GuiSideBar(QWidget):
         self.outerBox.addWidget(self.tbDetails)
         self.outerBox.addWidget(self.tbStats)
         self.outerBox.addWidget(self.tbSettings)
-        self.outerBox.setContentsMargins(0, 0, CONFIG.pxInt(2), 0)
+        self.outerBox.setContentsMargins(0, 0, 0, 0)
         self.outerBox.setSpacing(CONFIG.pxInt(4))
 
         self.setLayout(self.outerBox)
@@ -131,7 +131,7 @@ class GuiSideBar(QWidget):
         buttonStyle = (
             "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
             "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
-        ).format(CONFIG.pxInt(4), fadeCol.red(), fadeCol.green(), fadeCol.blue())
+        ).format(CONFIG.pxInt(6), fadeCol.red(), fadeCol.green(), fadeCol.blue())
         buttonStyleMenu = f"{buttonStyle} QToolButton::menu-indicator {{image: none;}}"
 
         self.tbProject.setIcon(SHARED.theme.getIcon("view_editor"))

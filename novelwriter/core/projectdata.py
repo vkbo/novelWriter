@@ -170,7 +170,7 @@ class NWProjectData:
 
     @property
     def autoReplace(self) -> dict[str, str]:
-        """Return the autoreplace dictionary."""
+        """Return the auto-replace dictionary."""
         return self._autoReplace
 
     @property
