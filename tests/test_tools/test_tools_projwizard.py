@@ -125,7 +125,6 @@ def testToolProjectWizard_Run(qtbot, monkeypatch, nwGUI, fncPath, prjType):
 
     storagePage = nwWiz.currentPage()
     assert isinstance(storagePage, ProjWizardFolderPage)
-    assert not nwWiz.button(QWizard.NextButton).isEnabled()
     assert storagePage.errLabel.text() == ""
 
     # Set an invalid path

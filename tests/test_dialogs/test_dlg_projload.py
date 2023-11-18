@@ -33,8 +33,7 @@ from novelwriter.dialogs.projload import GuiProjectLoad
 
 @pytest.mark.gui
 def testDlgLoadProject_Main(qtbot, monkeypatch, nwGUI, projPath):
-    """Test the load project wizard.
-    """
+    """Test the load project wizard."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.closeProject()
 
@@ -88,7 +87,7 @@ def testDlgLoadProject_Main(qtbot, monkeypatch, nwGUI, projPath):
 
     getFile = str(projPath / "nwProject.nwx")
     monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (getFile, None))
-    qtbot.mouseClick(nwLoad.browseButton, Qt.LeftButton)
+    qtbot.mouseClick(nwLoad.brwsButton, Qt.LeftButton)
     assert nwLoad.openPath == projPath / "nwProject.nwx"
     assert nwLoad.openState == nwLoad.OPEN_STATE
 

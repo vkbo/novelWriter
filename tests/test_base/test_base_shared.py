@@ -71,7 +71,7 @@ def testBaseSharedData_Projects(fncPath, caplog: pytest.LogCaptureFixture):
     """Test SharedData handling of projects."""
     project = NWProject()
     buildTestProject(project, fncPath)
-    project.closeProject(0.0)  # Clears the lockfile
+    project.closeProject()  # Clears the lockfile
 
     shared = SharedData()
     assert shared._project is None
@@ -101,15 +101,13 @@ def testBaseSharedData_Projects(fncPath, caplog: pytest.LogCaptureFixture):
     shared.updateIdleTime(refTime + 4.0, True)
     assert round(shared.projectIdleTime) == 2
 
-    # Save project
-    assert shared.saveProject() is True
-
-    # Close project
-    shared.closeProject()
+    # Save amd close project
+    assert shared.saveAndCloseProject() is True
     assert shared.hasProject is False
 
-    # Cannot save a project after it's been closed
+    # Cannot save or close a project after it's been closed
     assert shared.saveProject() is False
+    assert shared.saveAndCloseProject() is False
 
     # Check locked project info
     project.openProject(fncPath)  # First open with our independent project instance
