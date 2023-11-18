@@ -29,6 +29,7 @@ import shutil
 import logging
 
 from typing import Iterable
+from pathlib import Path
 from functools import partial
 
 from PyQt5.QtCore import QCoreApplication
@@ -310,7 +311,13 @@ class ProjectBuilder:
 
     def __init__(self) -> None:
         self.tr = partial(QCoreApplication.translate, "NWProject")
+        self._path = None
         return
+
+    @property
+    def projPath(self) -> Path | None:
+        """The actual path of the project."""
+        return self._path
 
     ##
     #  Methods
@@ -327,6 +334,7 @@ class ProjectBuilder:
         popMinimal = data.get("popMinimal", True)
         popCustom = data.get("popCustom", False)
         popSample = data.get("popSample", False)
+        asArchive = data.get("asArchive", False)
 
         # Check if we're extracting the sample project. This is handled
         # differently as it isn't actually a new project, so we forward
@@ -340,8 +348,10 @@ class ProjectBuilder:
             return False
 
         project = NWProject()
-        if not project.storage.openProjectInPlace(projPath, newProject=True):
+        if not project.storage.createNewProject(projPath, asArchive):
             return False
+
+        self._path = project.storage.storagePath
 
         lblNewProject = self.tr("New Project")
         lblNewChapter = self.tr("New Chapter")
@@ -470,10 +480,17 @@ class ProjectBuilder:
             logger.error("No project path set for the example project")
             return False
 
+        projPath = Path(projPath).resolve()
         pkgSample = CONFIG.assetPath("sample.zip")
         if pkgSample.is_file():
             try:
-                shutil.unpack_archive(pkgSample, projPath)
+                if data.get("asArchive", False):
+                    targetPath = projPath.with_suffix(".nwproj")
+                    shutil.copy(pkgSample, targetPath)
+                    self._path = targetPath
+                else:
+                    shutil.unpack_archive(pkgSample, projPath)
+                    self._path = projPath
             except Exception as exc:
                 SHARED.error(self.tr(
                     "Failed to create a new example project."

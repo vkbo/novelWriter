@@ -167,12 +167,17 @@ class SharedData(QObject):
             return False
         return self.project.saveProject(autoSave=autoSave)
 
-    def closeProject(self) -> None:
-        """Close the current project."""
-        self.project.closeProject(self._idleTime)
+    def saveAndCloseProject(self) -> bool:
+        """Save and close the current project."""
+        if not self.project.isValid:
+            logger.error("There is no project open")
+            return False
+        self.project.saveProjectMeta(self._idleTime)
+        saveOk = self.project.saveProject()
+        self.project.closeProject()
         self._resetProject()
         self._resetIdleTimer()
-        return
+        return saveOk
 
     def updateSpellCheckLanguage(self, reload: bool = False) -> None:
         """Update the active spell check language from settings."""

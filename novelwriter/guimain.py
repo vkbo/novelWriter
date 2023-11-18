@@ -408,8 +408,8 @@ class GuiMain(QMainWindow):
 
         logger.info("Creating new project")
         nwProject = ProjectBuilder()
-        if nwProject.buildProject(projData):
-            self.openProject(projPath)
+        if nwProject.buildProject(projData) and (storagePath := nwProject.projPath):
+            self.openProject(storagePath)
         else:
             return False
 
@@ -435,7 +435,12 @@ class GuiMain(QMainWindow):
         if self.docEditor.docChanged:
             self.saveDocument()
 
-        saveOK = self.saveProject()
+        self.projView.saveProjectTasks()
+        self.closeDocument()
+        self.closeDocViewer(byUser=False)
+
+        saveOK = SHARED.saveAndCloseProject()
+
         doBackup = False
         if SHARED.project.data.doBackup and CONFIG.backupOnClose:
             doBackup = True
@@ -446,17 +451,12 @@ class GuiMain(QMainWindow):
             SHARED.project.backupProject(False)
 
         if saveOK:
-            self.closeDocument()
             self.docViewer.clearNavHistory()
-            self.closeDocViewer(byUser=False)
-
             self.outlineView.closeProjectTasks()
             self.novelView.closeProjectTasks()
             self.projView.clearProjectView()
             self.itemDetails.clearDetails()
             self.mainStatus.clearStatus()
-
-            SHARED.closeProject()
 
             self._updateWindowTitle()
             self._changeView(nwView.PROJECT)
