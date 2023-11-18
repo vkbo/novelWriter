@@ -246,7 +246,6 @@ class NWProject:
                 self._state = NWProjectState.RECOVERY
             elif status == NWStorageOpen.FAILED:
                 SHARED.error(self.tr("Failed to open project."), exc=self._storage.exc)
-            print("oops", status)
             return False
 
         # Read Project XML

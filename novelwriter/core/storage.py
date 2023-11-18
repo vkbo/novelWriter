@@ -255,12 +255,12 @@ class NWStorage:
             self._clearLockFile()
 
         self._readLockFile()
-        if self._lockedBy and len(self._lockedBy) > 0:
+        if self._lockedBy and len(self._lockedBy) == 4:
             if self._lockedBy[0] == "ERROR":
                 logger.warning("Failed to check lock file")
             else:
                 logger.error("Project is locked, so not opening")
-                return NWStorageOpen.LOCKED
+            return NWStorageOpen.LOCKED
         else:
             logger.debug("Project is not locked")
 
@@ -514,52 +514,39 @@ class NWStorage:
 
     def _readLockFile(self) -> None:
         """Read the project lock file."""
-        if self._lockFilePath is None:
-            self._lockedBy = None
-            return
-
-        if not self._lockFilePath.exists():
-            self._lockedBy = []
-            return
-
-        try:
-            self._lockedBy = self._lockFilePath.read_text(encoding="utf-8").strip().split(";")
-            if len(self._lockedBy) != 4:
-                self._lockedBy = None
+        self._lockedBy = None
+        path = self._lockFilePath
+        if isinstance(path, Path) and path.exists():
+            try:
+                self._lockedBy = path.read_text(encoding="utf-8").strip().split(";")
+            except Exception:
+                logger.error("Failed to read project lockfile")
+                logException()
+                self._lockedBy = ["ERROR", "ERROR", "ERROR", "ERROR"]
                 return
-        except Exception:
-            logger.error("Failed to read project lockfile")
-            logException()
-            self._lockedBy = None
-            return
-
         return
 
     def _writeLockFile(self) -> bool:
         """Write the project lock file."""
         if self._lockFilePath is None:
             return False
-
-        data = [
-            CONFIG.hostName, CONFIG.osType,
-            CONFIG.kernelVer, str(int(time()))
-        ]
         try:
-            self._lockFilePath.write_text(";".join(data), encoding="utf-8")
+            self._lockFilePath.write_text(
+                f"{CONFIG.hostName};{CONFIG.osType};{CONFIG.kernelVer};{int(time())}",
+                encoding="utf-8"
+            )
             if CONFIG.osWindows and self._openMode == self.MODE_ARCHIVE:
-                subprocess.run(["attrib", "+H", self._lockFilePath])
+                subprocess.run(["attrib", "+H", str(self._lockFilePath)])
         except Exception:
             logger.error("Failed to write project lockfile")
             logException()
             return False
-
         return True
 
     def _clearLockFile(self) -> bool:
         """Remove the lock file, if it exists."""
         if self._lockFilePath is None:
             return False
-
         if self._lockFilePath.exists():
             try:
                 self._lockFilePath.unlink()
@@ -567,9 +554,7 @@ class NWStorage:
                 logger.error("Failed to remove project lockfile")
                 logException()
                 return False
-
         self._lockedBy = None
-
         return True
 
 # END Class NWStorage

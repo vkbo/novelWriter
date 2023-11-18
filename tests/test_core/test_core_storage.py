@@ -25,7 +25,7 @@ import pytest
 from pathlib import Path
 from zipfile import ZipFile
 
-from tools import C, buildTestProject, writeFile
+from tools import C, buildTestProject
 from mocked import causeOSError
 
 from novelwriter import CONFIG
@@ -134,7 +134,7 @@ def testCoreStorage_LockFile(monkeypatch, fncPath):
 
     # Path is set, but there is no lockfile
     storage._readLockFile()
-    assert storage._lockedBy == []
+    assert storage._lockedBy is None
 
     # Write lockfile fails
     with monkeypatch.context() as mp:
@@ -151,8 +151,8 @@ def testCoreStorage_LockFile(monkeypatch, fncPath):
     with monkeypatch.context() as mp:
         mp.setattr("pathlib.Path.read_text", causeOSError)
         storage._readLockFile()
-        assert storage.lockStatus is None
-        assert storage._lockedBy == ["ERROR"]
+        assert storage.lockStatus == ["ERROR", "ERROR", "ERROR", "ERROR"]
+        assert storage._lockedBy == ["ERROR", "ERROR", "ERROR", "ERROR"]
         assert lockFilePath.exists()
 
     # Successful read
@@ -165,10 +165,10 @@ def testCoreStorage_LockFile(monkeypatch, fncPath):
     ]
 
     # Write an invalid lockfile
-    writeFile(lockFilePath, "a;b;c")
+    lockFilePath.write_text("a;b;c")
     storage._readLockFile()
     assert storage.lockStatus is None
-    assert storage._lockedBy == ["ERROR"]
+    assert storage._lockedBy == ["a", "b", "c"]
 
     # Fail to remove lockfile
     with monkeypatch.context() as mp:
