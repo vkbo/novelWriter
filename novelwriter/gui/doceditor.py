@@ -48,8 +48,8 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtWidgets import (
     QAction, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
-    QPlainTextEdit, QPushButton, QShortcut, QToolBar, QToolButton, QVBoxLayout, QWidget,
-    qApp
+    QPlainTextEdit, QPushButton, QShortcut, QToolBar, QToolButton, QVBoxLayout,
+    QWidget, qApp
 )
 
 from novelwriter import CONFIG, SHARED
@@ -507,6 +507,33 @@ class GuiDocEditor(QPlainTextEdit):
         self.statusMessage.emit(self.tr("Saved Document: {0}").format(self._nwItem.itemName))
 
         return True
+
+    def cursorIsVisible(self) -> bool:
+        """Check if the cursor is visible in the editor."""
+        return (
+            0 < self.cursorRect().top()
+            and self.cursorRect().bottom() < self.viewport().height()
+        )
+
+    def ensureCursorVisibleNoCentre(self) -> None:
+        """Ensure cursor is visible, but don't force it to centre."""
+        cT = self.cursorRect().top()
+        cB = self.cursorRect().bottom()
+        vH = self.viewport().height()
+        if cT < 0:
+            count = 0
+            vBar = self.verticalScrollBar()
+            while self.cursorRect().top() < 0 and count < 100000:
+                vBar.setValue(vBar.value() - 1)
+                count += 1
+        elif cB > vH:
+            count = 0
+            vBar = self.verticalScrollBar()
+            while self.cursorRect().bottom() > vH and count < 100000:
+                vBar.setValue(vBar.value() + 1)
+                count += 1
+        qApp.processEvents()
+        return
 
     def updateDocMargins(self) -> None:
         """Automatically adjust the margins so the text is centred if

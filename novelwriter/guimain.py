@@ -1166,6 +1166,7 @@ class GuiMain(QMainWindow):
         else:
             logger.debug("Deactivating Focus Mode")
 
+        cursorVisible = self.docEditor.cursorIsVisible()
         isVisible = not self.isFocusMode
         self.treePane.setVisible(isVisible)
         self.mainStatus.setVisible(isVisible)
@@ -1180,6 +1181,9 @@ class GuiMain(QMainWindow):
             self.splitView.setVisible(False)
         elif self.docViewer.docHandle is not None:
             self.splitView.setVisible(True)
+
+        if cursorVisible:
+            self.docEditor.ensureCursorVisibleNoCentre()
 
         return
 
