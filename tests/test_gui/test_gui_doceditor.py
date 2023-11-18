@@ -173,9 +173,14 @@ def testGuiEditor_MetaData(qtbot, nwGUI, projPath, mockRnd):
         "More\u00a0text.\u2029"
     )
     nwGUI.docEditor.replaceText(newText)
-    assert nwGUI.docEditor.getText() == "### New Scene\n\nSome\ntext.\nMore\u00a0text.\n"
+    assert nwGUI.docEditor.getText() == (
+        "### New Scene\n\n"
+        "Some\n"
+        "text.\n"
+        "More\u00a0text.\n"
+    )
 
-    # Check Propertoes
+    # Check Properties
     assert nwGUI.docEditor.docChanged is True
     assert nwGUI.docEditor.docHandle == C.hSceneDoc
     assert nwGUI.docEditor.lastActive > 0.0
@@ -1339,8 +1344,46 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
 
 
 @pytest.mark.gui
+def testGuiEditor_CursorVisibility(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test the custom ensure cursor visible feature."""
+    buildTestProject(nwGUI, projPath)
+    nwGUI.openDocument(C.hSceneDoc)
+    docEditor = nwGUI.docEditor
+
+    docEditor.setPlainText(
+        "### Scene\n\n" + "".join(["Text\n\n"]*100)
+    )
+    assert docEditor.cursorIsVisible() is True
+    docEditor.setCenterOnScroll(False)
+
+    # Scroll Down
+    cursor = docEditor.textCursor()
+    cursor.setPosition(605)
+    docEditor.setTextCursor(cursor)
+    docEditor.verticalScrollBar().setValue(0)
+    assert docEditor.verticalScrollBar().value() == 0
+    docEditor.ensureCursorVisibleNoCentre()
+    assert docEditor.verticalScrollBar().value() > 0
+    assert docEditor.cursorIsVisible() is True
+
+    # Scroll Up
+    cursor = docEditor.textCursor()
+    cursor.setPosition(0)
+    docEditor.setTextCursor(cursor)
+    docEditor.verticalScrollBar().setValue(200)
+    assert docEditor.verticalScrollBar().value() > 100
+    docEditor.ensureCursorVisibleNoCentre()
+    assert docEditor.verticalScrollBar().value() == 0
+    assert docEditor.cursorIsVisible() is True
+
+    # qtbot.stop()
+
+# END Test testGuiEditor_CursorVisibility
+
+
+@pytest.mark.gui
 def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
-    """Test saving text from the editor."""
+    """Test the word counter."""
     class MockThreadPool:
 
         def __init__(self):

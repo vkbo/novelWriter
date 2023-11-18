@@ -688,6 +688,7 @@ class GuiMain(QMainWindow):
         logger.debug("Viewing document with handle '%s'", tHandle)
         if self.docViewer.loadText(tHandle):
             if not self.splitView.isVisible():
+                cursorVisible = self.docEditor.cursorIsVisible()
                 bPos = self.splitMain.sizes()
                 self.splitView.setVisible(True)
                 vPos = [0, 0]
@@ -695,6 +696,11 @@ class GuiMain(QMainWindow):
                 vPos[1] = bPos[1] - vPos[0]
                 self.splitDocs.setSizes(vPos)
                 self.docViewerPanel.setVisible(CONFIG.showViewerPanel)
+
+                # Since editor width changes, we need to make sure we
+                # restore cursor visibility in the editor. See #1302
+                if cursorVisible:
+                    self.docEditor.ensureCursorVisibleNoCentre()
 
             if sTitle:
                 self.docViewer.navigateTo(f"#{sTitle}")
@@ -1113,10 +1119,17 @@ class GuiMain(QMainWindow):
             # Only reset the last handle if the user called this
             SHARED.project.data.setLastHandle(None, "viewer")
 
+        cursorVisible = self.docEditor.cursorIsVisible()
+
         # Hide the panel
         bPos = self.splitMain.sizes()
         self.splitView.setVisible(False)
         self.splitDocs.setSizes([bPos[1], 0])
+
+        # Since editor width changes, we need to make sure we restore
+        # cursor visibility in the editor. See #1302
+        if cursorVisible:
+            self.docEditor.ensureCursorVisibleNoCentre()
 
         return not self.splitView.isVisible()
 
@@ -1166,6 +1179,7 @@ class GuiMain(QMainWindow):
         else:
             logger.debug("Deactivating Focus Mode")
 
+        cursorVisible = self.docEditor.cursorIsVisible()
         isVisible = not self.isFocusMode
         self.treePane.setVisible(isVisible)
         self.mainStatus.setVisible(isVisible)
@@ -1180,6 +1194,9 @@ class GuiMain(QMainWindow):
             self.splitView.setVisible(False)
         elif self.docViewer.docHandle is not None:
             self.splitView.setVisible(True)
+
+        if cursorVisible:
+            self.docEditor.ensureCursorVisibleNoCentre()
 
         return
 
