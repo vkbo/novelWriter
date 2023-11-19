@@ -99,16 +99,20 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
 
     # List Dictionaries
     # =================
-    PAYLOAD.response = json.dumps([{
-        "name": "README.md",
-        "type": "file",
-    }, {
-        "name": "en_GB",
-        "type": "dir",
-    }, {
-        "name": "en_US",
-        "type": "dir",
-    }]).encode()
+    PAYLOAD.response = json.dumps({
+        "en_GB": {
+            "code": "en_GB",
+            "name": "English, United Kingdom",
+            "aff": "file:///foo/bar/en_GB.aff",
+            "dic": "file:///foo/bar/en_GB.dic"
+        },
+        "en_US": {
+            "code": "en_US",
+            "name": "English, United States",
+            "aff": "file:///foo/bar/en_US.aff",
+            "dic": "file:///foo/bar/en_US.dic"
+        },
+    }).encode()
 
     nwDicts._loadDictionaries()
     assert nwDicts.listBox.topLevelItemCount() == 2
@@ -116,34 +120,17 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
     item = nwDicts.listBox.topLevelItem(0)
     assert isinstance(item, QTreeWidgetItem)
     assert item.text(nwDicts.C_CODE) == "en_GB"
-    assert item.text(nwDicts.C_NAME) == "English"
+    assert item.text(nwDicts.C_NAME) == "English, United Kingdom"
     assert item.text(nwDicts.C_STATE) == ""
 
     item = nwDicts.listBox.topLevelItem(1)
     assert isinstance(item, QTreeWidgetItem)
     assert item.text(nwDicts.C_CODE) == "en_US"
-    assert item.text(nwDicts.C_NAME) == "English"
+    assert item.text(nwDicts.C_NAME) == "English, United States"
     assert item.text(nwDicts.C_STATE) == "Downloaded"
 
     # Download Dictionary
     # ===================
-    PAYLOAD.response = json.dumps([{
-        "name": "en_GB.aff",
-        "type": "file",
-        "download_url": "foo/bar",
-    }, {
-        "name": "en_GB.dic",
-        "type": "file",
-        "download_url": "foo/bar",
-    }, {
-        "name": "README.txt",
-        "type": "file",
-        "download_url": "foo/bar",
-    }, {
-        "name": "META-INF",
-        "type": "dir",
-        "download_url": None,
-    }]).encode()
 
     # No Selection
     nwDicts.listBox.clearSelection()
@@ -151,7 +138,7 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
     item = nwDicts.listBox.topLevelItem(0)
     assert isinstance(item, QTreeWidgetItem)
     assert item.text(nwDicts.C_CODE) == "en_GB"
-    assert item.text(nwDicts.C_NAME) == "English"
+    assert item.text(nwDicts.C_NAME) == "English, United Kingdom"
     assert item.text(nwDicts.C_STATE) == ""
 
     # Select en_GB, fail mkdir
@@ -162,7 +149,7 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
         item.setSelected(True)
         nwDicts._downloadDictionary()
         assert item.text(nwDicts.C_CODE) == "en_GB"
-        assert item.text(nwDicts.C_NAME) == "English"
+        assert item.text(nwDicts.C_NAME) == "English, United Kingdom"
         assert item.text(nwDicts.C_STATE) == ""
 
     # Succeed the download, but fail files check
@@ -173,7 +160,7 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
         item.setSelected(True)
         nwDicts._downloadDictionary()
         assert item.text(nwDicts.C_CODE) == "en_GB"
-        assert item.text(nwDicts.C_NAME) == "English"
+        assert item.text(nwDicts.C_NAME) == "English, United Kingdom"
         assert item.text(nwDicts.C_STATE) == "Failed"
 
     # Create the files and try again
@@ -186,7 +173,7 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
         item.setSelected(True)
         nwDicts._downloadDictionary()
         assert item.text(nwDicts.C_CODE) == "en_GB"
-        assert item.text(nwDicts.C_NAME) == "English"
+        assert item.text(nwDicts.C_NAME) == "English, United Kingdom"
         assert item.text(nwDicts.C_STATE) == "Downloaded"
 
     # Delete Dictionary
@@ -198,7 +185,7 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
     item = nwDicts.listBox.topLevelItem(0)
     assert isinstance(item, QTreeWidgetItem)
     assert item.text(nwDicts.C_CODE) == "en_GB"
-    assert item.text(nwDicts.C_NAME) == "English"
+    assert item.text(nwDicts.C_NAME) == "English, United Kingdom"
     assert item.text(nwDicts.C_STATE) == "Downloaded"
     assert (fncPath / "hunspell" / "en_GB.aff").is_file()
     assert (fncPath / "hunspell" / "en_GB.dic").is_file()
@@ -211,7 +198,7 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
         item.setSelected(True)
         nwDicts._deleteDictionary()
         assert item.text(nwDicts.C_CODE) == "en_GB"
-        assert item.text(nwDicts.C_NAME) == "English"
+        assert item.text(nwDicts.C_NAME) == "English, United Kingdom"
         assert item.text(nwDicts.C_STATE) == "Downloaded"
         assert (fncPath / "hunspell" / "en_GB.aff").is_file()
         assert (fncPath / "hunspell" / "en_GB.dic").is_file()
@@ -222,7 +209,7 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
     item.setSelected(True)
     nwDicts._deleteDictionary()
     assert item.text(nwDicts.C_CODE) == "en_GB"
-    assert item.text(nwDicts.C_NAME) == "English"
+    assert item.text(nwDicts.C_NAME) == "English, United Kingdom"
     assert item.text(nwDicts.C_STATE) == ""
     assert not (fncPath / "hunspell" / "en_GB.aff").is_file()
     assert not (fncPath / "hunspell" / "en_GB.dic").is_file()
@@ -232,9 +219,9 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
 
     # API Call
     PAYLOAD.response = b"foobar"
-    assert nwDicts._callGitHubAPI("") == {}
+    assert nwDicts._getJson("file:///foo/bar") == {}
     PAYLOAD.response = b"{\"foo\": \"bar\"}"
-    assert nwDicts._callGitHubAPI("") == {"foo": "bar"}
+    assert nwDicts._getJson("file:///foo/bar") == {"foo": "bar"}
 
     # Download File
     fooBar = fncPath / "foobar.txt"

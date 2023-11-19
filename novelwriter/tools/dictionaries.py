@@ -31,7 +31,7 @@ from urllib.parse import urljoin
 from urllib.request import Request, pathname2url, urlopen
 
 from PyQt5.QtGui import QCloseEvent, QCursor, QDesktopServices
-from PyQt5.QtCore import QLocale, QUrl, Qt, pyqtSlot
+from PyQt5.QtCore import QUrl, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QDialogButtonBox, QHBoxLayout, QHeaderView,
     QLabel, QLineEdit, QPlainTextEdit, QPushButton, QTreeWidget,
@@ -40,7 +40,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.error import logException
-from novelwriter.common import checkInt, formatInt
+from novelwriter.common import formatInt, getFileSize
 from novelwriter.constants import nwConst
 
 logger = logging.getLogger(__name__)
@@ -67,6 +67,7 @@ class GuiDictionaries(QDialog):
         self.setMinimumHeight(CONFIG.pxInt(200))
 
         self._currDicts = set()
+        self._availDicts = {}
         self._trHave = self.tr("Downloaded")
         self._trFailed = self.tr("Failed")
 
@@ -188,21 +189,24 @@ class GuiDictionaries(QDialog):
         """Check for latest release."""
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
 
-        data = self._callGitHubAPI("contents/")
-        dictionaries = []
-        if isinstance(data, list):
-            for entry in data:
-                if isinstance(entry, dict) and entry.get("type", "") == "dir":
-                    code = entry.get("name", "")
-                    name = QLocale.languageToString(QLocale(code).language())
-                    if code not in (".github", "util"):
-                        dictionaries.append((code, code if name == "C" else name))
+        data = self._getJson("https://vkbo.github.io/dictionaries/dictionaries.json")
+        dicts = {}
+        if isinstance(data, dict):
+            for entry in data.values():
+                if isinstance(entry, dict):
+                    code = entry.get("code", "")
+                    name = entry.get("name", "")
+                    aff = entry.get("aff", "")
+                    dic = entry.get("dic", "")
+                    if code and name and aff and dic:
+                        dicts[code] = (name, aff, dic)
 
+        self._availDicts = dicts
         self.infoBox.appendPlainText(self.tr(
             "{0} dictionaries available for download"
-        ).format(len(dictionaries)))
+        ).format(len(dicts)))
 
-        for code, name in dictionaries:
+        for code, (name, aff, dic) in dicts.items():
             trItem = QTreeWidgetItem()
             trItem.setText(self.C_CODE, code)
             trItem.setText(self.C_NAME, name)
@@ -221,10 +225,6 @@ class GuiDictionaries(QDialog):
             return
 
         path = Path(temp) / "hunspell"
-        code = items[0].text(self.C_CODE)
-        data = self._callGitHubAPI(f"contents/{code}")
-        files = (f"{code}.aff", f"{code}.dic")
-
         try:
             path.mkdir(parents=True, exist_ok=True)
         except Exception:
@@ -232,19 +232,19 @@ class GuiDictionaries(QDialog):
             logException()
             return
 
-        if isinstance(data, list):
-            for entry in data:
-                if isinstance(entry, dict) and entry.get("type", "") == "file":
-                    name = entry.get("name", "")
-                    url = entry.get("download_url")
-                    size = checkInt(entry.get("size"), 0)
-                    if url and name in files:
-                        if self._downloadFile(url, path / name):
-                            self.infoBox.appendPlainText(self.tr(
-                                "Downloaded '{0}' of size {1}B"
-                            ).format(name, formatInt(size)))
+        code = items[0].text(self.C_CODE)
+        _, aff, dic = self._availDicts.get(code, ("", "", ""))
+        files = [
+            (aff, path / f"{code}.aff"),
+            (dic, path / f"{code}.dic"),
+        ]
+        for url, output in files:
+            if self._downloadFile(url, output):
+                self.infoBox.appendPlainText(self.tr(
+                    "Downloaded '{0}' of size {1}B"
+                ).format(output.name, formatInt(getFileSize(output))))
 
-        if (path / files[0]).is_file() and (path / files[1]).is_file():
+        if files[0][1].is_file() and files[1][1].is_file():
             items[0].setText(self.C_STATE, self._trHave)
             self._currDicts.add(code)
         else:
@@ -267,6 +267,9 @@ class GuiDictionaries(QDialog):
         for item in files:
             try:
                 item.unlink()
+                self.infoBox.appendPlainText(self.tr(
+                    "Deleted '{0}'"
+                ).format(item.name))
             except Exception:
                 logger.error("Could not delete: %s", item)
                 return
@@ -298,30 +301,31 @@ class GuiDictionaries(QDialog):
     #  Internal Functions
     ##
 
-    def _callGitHubAPI(self, path: str) -> dict:
+    def _getJson(self, url: str) -> dict:
         """Make a call to the GitHub API."""
-        req = Request(f"https://api.github.com/repos/vkbo/dictionaries/{path}")
+        req = Request(url)
         req.add_header("User-Agent", nwConst.USER_AGENT)
-        req.add_header("Accept", "application/vnd.github.v3+json")
+        req.add_header("Accept", "application/json")
         try:
             return json.loads(urlopen(req, timeout=30).read().decode())
         except Exception:
-            logger.error("Failed to get data from GitHub API")
+            logger.error("Failed to get JSON data")
             logException()
         return {}
 
     def _downloadFile(self, url: str, path: Path) -> bool:
         """Download a file to a specific location."""
-        req = Request(url)
-        req.add_header("User-Agent", nwConst.USER_AGENT)
-        req.add_header("Accept", "application/vnd.github.v3+json")
-        try:
-            with open(path, mode="wb") as of:
-                of.write(urlopen(req, timeout=60).read())
-        except Exception:
-            logger.error("Failed to get data from GitHub API")
-            logException()
-            return False
-        return True
+        if url:
+            req = Request(url)
+            req.add_header("User-Agent", nwConst.USER_AGENT)
+            req.add_header("Accept", "application/vnd.github.v3+json")
+            try:
+                with open(path, mode="wb") as of:
+                    of.write(urlopen(req, timeout=60).read())
+                return True
+            except Exception:
+                logger.error("Failed to get data from GitHub API")
+                logException()
+        return False
 
 # END Class GuiDictionaries
