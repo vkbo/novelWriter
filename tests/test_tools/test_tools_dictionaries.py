@@ -101,13 +101,11 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
     # =================
     PAYLOAD.response = json.dumps({
         "en_GB": {
-            "code": "en_GB",
             "name": "English, United Kingdom",
             "aff": "file:///foo/bar/en_GB.aff",
             "dic": "file:///foo/bar/en_GB.dic"
         },
         "en_US": {
-            "code": "en_US",
             "name": "English, United States",
             "aff": "file:///foo/bar/en_US.aff",
             "dic": "file:///foo/bar/en_US.dic"

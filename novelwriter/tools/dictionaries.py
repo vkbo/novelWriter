@@ -192,9 +192,8 @@ class GuiDictionaries(QDialog):
         data = self._getJson("https://vkbo.github.io/dictionaries/dictionaries.json")
         dicts = {}
         if isinstance(data, dict):
-            for entry in data.values():
+            for code, entry in data.items():
                 if isinstance(entry, dict):
-                    code = entry.get("code", "")
                     name = entry.get("name", "")
                     aff = entry.get("aff", "")
                     dic = entry.get("dic", "")
