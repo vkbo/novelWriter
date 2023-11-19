@@ -55,11 +55,11 @@ from novelwriter.dialogs.projload import GuiProjectLoad
 from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projdetails import GuiProjectDetails
-from novelwriter.dialogs.dictionaries import GuiDictionaries
 from novelwriter.dialogs.projsettings import GuiProjectSettings
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.projwizard import GuiProjectWizard
+from novelwriter.tools.dictionaries import GuiDictionaries
 from novelwriter.tools.writingstats import GuiWritingStats
 from novelwriter.core.coretools import ProjectBuilder
 
