@@ -68,6 +68,7 @@ class GuiDictionaries(QDialog):
 
         self._currDicts = set()
         self._trHave = self.tr("Downloaded")
+        self._trFailed = self.tr("Failed")
 
         # Info
         self.pathLabel = QLabel(self.tr("Location"))
@@ -244,8 +245,11 @@ class GuiDictionaries(QDialog):
                                 "Downloaded '{0}' of size {1}B"
                             ).format(name, formatInt(size)))
 
-        items[0].setText(self.C_STATE, self._trHave)
-        self._currDicts.add(code)
+        if (path / files[0]).is_file() and (path / files[1]).is_file():
+            items[0].setText(self.C_STATE, self._trHave)
+            self._currDicts.add(code)
+        else:
+            items[0].setText(self.C_STATE, self._trFailed)
 
         return
 
@@ -266,6 +270,7 @@ class GuiDictionaries(QDialog):
                 item.unlink()
             except Exception:
                 logger.error("Could not delete: %s", item)
+                return
 
         items[0].setText(self.C_STATE, "")
         self._currDicts.remove(code)
@@ -310,7 +315,7 @@ class GuiDictionaries(QDialog):
         """Download a file to a specific location."""
         req = Request(url)
         req.add_header("User-Agent", nwConst.USER_AGENT)
-        # req.add_header("Accept", "application/vnd.github.v3+json")
+        req.add_header("Accept", "application/vnd.github.v3+json")
         try:
             with open(path, mode="wb") as of:
                 of.write(urlopen(req, timeout=60).read())
