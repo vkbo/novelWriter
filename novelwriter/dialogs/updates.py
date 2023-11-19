@@ -30,9 +30,9 @@ from datetime import datetime
 from urllib.request import Request, urlopen
 
 from PyQt5.QtGui import QCursor
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    qApp, QDialog, QHBoxLayout, QVBoxLayout, QDialogButtonBox, QLabel
+    QWidget, qApp, QDialog, QHBoxLayout, QVBoxLayout, QDialogButtonBox, QLabel
 )
 
 from novelwriter import CONFIG, SHARED, __version__, __date__
@@ -44,8 +44,8 @@ logger = logging.getLogger(__name__)
 
 class GuiUpdates(QDialog):
 
-    def __init__(self, mainGui):
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiUpdates")
         self.setObjectName("GuiUpdates")
@@ -114,17 +114,16 @@ class GuiUpdates(QDialog):
 
         return
 
-    def __del__(self):  # pragma: no cover
+    def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiUpdates")
         return
 
-    def checkLatest(self):
-        """Check for latest release.
-        """
+    def checkLatest(self) -> None:
+        """Check for latest release."""
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
 
         urlReq = Request("https://api.github.com/repos/vkbo/novelwriter/releases/latest")
-        urlReq.add_header("User-Agent", "Mozilla/5.0 (compatible; novelWriter (Python))")
+        urlReq.add_header("User-Agent", nwConst.USER_AGENT)
         urlReq.add_header("Accept", "application/vnd.github.v3+json")
 
         rawData = {}
@@ -161,10 +160,11 @@ class GuiUpdates(QDialog):
         return
 
     ##
-    #  Internal Functions
+    #  Private Slots
     ##
 
-    def _doClose(self):
+    @pyqtSlot()
+    def _doClose(self) -> None:
         self.close()
         return
 
