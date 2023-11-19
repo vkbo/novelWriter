@@ -55,6 +55,7 @@ from novelwriter.dialogs.projload import GuiProjectLoad
 from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projdetails import GuiProjectDetails
+from novelwriter.dialogs.dictionaries import GuiDictionaries
 from novelwriter.dialogs.projsettings import GuiProjectSettings
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.tools.manuscript import GuiManuscript
@@ -1062,6 +1063,24 @@ class GuiMain(QMainWindow):
         dlgUpdate.raise_()
         qApp.processEvents()
         dlgUpdate.checkLatest()
+
+        return
+
+    @pyqtSlot()
+    def showDictionariesDialog(self) -> None:
+        """Show the download dictionaries dialog."""
+        dlgDicts = getGuiItem("GuiDictionaries")
+        if dlgDicts is None:
+            dlgDicts = GuiDictionaries(self)
+        assert isinstance(dlgDicts, GuiDictionaries)
+
+        dlgDicts.setModal(True)
+        dlgDicts.show()
+        dlgDicts.raise_()
+        qApp.processEvents()
+        if not dlgDicts.initDialog():
+            dlgDicts.close()
+            SHARED.error(self.tr("Could not initialise the dialog."))
 
         return
 

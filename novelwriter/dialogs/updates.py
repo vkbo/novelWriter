@@ -29,7 +29,7 @@ import logging
 from datetime import datetime
 from urllib.request import Request, urlopen
 
-from PyQt5.QtGui import QCursor
+from PyQt5.QtGui import QCloseEvent, QCursor
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QWidget, qApp, QDialog, QHBoxLayout, QVBoxLayout, QDialogButtonBox, QLabel
@@ -94,8 +94,8 @@ class GuiUpdates(QDialog):
         self.latestLabel.setFont(hFont)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
-        self.buttonBox.accepted.connect(self._doClose)
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
+        self.buttonBox.rejected.connect(self._doClose)
 
         # Assemble
         self.innerBox = QHBoxLayout()
@@ -160,11 +160,22 @@ class GuiUpdates(QDialog):
         return
 
     ##
+    #  Events
+    ##
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Capture the user closing the window."""
+        event.accept()
+        self.deleteLater()
+        return
+
+    ##
     #  Private Slots
     ##
 
     @pyqtSlot()
     def _doClose(self) -> None:
+        """Close the dialog."""
         self.close()
         return
 
