@@ -71,12 +71,11 @@ class GuiDictionaries(QDialog):
         self._trFailed = self.tr("Failed")
 
         # Info
-        self.pathLabel = QLabel(self.tr("Location"))
+        self.pathLabel = QLabel(self.tr("Download Path"))
         self.pathBox = QLineEdit(self)
         self.pathBox.setReadOnly(True)
         self.pathButton = QPushButton(self)
         self.pathButton.setIcon(SHARED.theme.getIcon("browse"))
-        self.pathButton.setToolTip(self.tr("Open Location"))
         self.pathButton.clicked.connect(self._openLocation)
 
         self.pathLayout = QHBoxLayout()
@@ -107,7 +106,7 @@ class GuiDictionaries(QDialog):
 
         # Buttons
         self.checkButton = QPushButton(self)
-        self.checkButton.setText("Check Dictionaries")
+        self.checkButton.setText("List Dictionaries")
         self.checkButton.clicked.connect(self._loadDictionaries)
 
         self.downloadButton = QPushButton(self)

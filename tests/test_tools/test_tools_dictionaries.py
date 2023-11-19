@@ -30,7 +30,7 @@ from tools import getGuiItem
 from mocked import causeException, causeOSError
 
 from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QAction, QTreeWidgetItem
+from PyQt5.QtWidgets import QTreeWidgetItem
 
 from novelwriter import SHARED
 from novelwriter.tools import dictionaries
@@ -61,8 +61,15 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
     monkeypatch.setattr(enchant, "get_user_config_dir", lambda *a: str(fncPath))
     monkeypatch.setattr(dictionaries, "urlopen", mockUrlopen)
 
+    # Fail to open
+    with monkeypatch.context() as mp:
+        mp.setattr(enchant, "get_user_config_dir", lambda *a: causeException)
+        nwGUI.showDictionariesDialog()
+        assert SHARED.alert is not None
+        assert SHARED.alert.logMessage == "Could not initialise the dialog."
+
     # Open the tool
-    nwGUI.mainMenu.aNewDicts.activate(QAction.Trigger)
+    nwGUI.showDictionariesDialog()
     qtbot.waitUntil(lambda: getGuiItem("GuiDictionaries") is not None, timeout=1000)
 
     nwDicts = getGuiItem("GuiDictionaries")
@@ -70,12 +77,8 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
     assert nwDicts.isVisible()
     assert nwDicts.pathBox.text() == str(fncPath)
 
-    # Fail Re-Init
-    with monkeypatch.context() as mp:
-        mp.setattr(enchant, "get_user_config_dir", lambda *a: causeException)
-        assert nwDicts.initDialog() is False
-
     # Allow Open Dir
+    SHARED._alert = None
     with monkeypatch.context() as mp:
         mp.setattr(QDesktopServices, "openUrl", lambda *a: None)
         nwDicts._openLocation()

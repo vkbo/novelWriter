@@ -871,8 +871,9 @@ class GuiMainMenu(QMenuBar):
         self.aEditWordList.triggered.connect(lambda: self.mainGui.showProjectWordListDialog())
 
         # Tools > Download Dictionaries
-        self.aNewDicts = self.toolsMenu.addAction(self.tr("Download Dictionaries"))
-        self.aNewDicts.triggered.connect(self.mainGui.showDictionariesDialog)
+        if CONFIG.osWindows or CONFIG.isDebug:
+            self.aNewDicts = self.toolsMenu.addAction(self.tr("Download Dictionaries"))
+            self.aNewDicts.triggered.connect(self.mainGui.showDictionariesDialog)
 
         # Tools > Separator
         self.toolsMenu.addSeparator()

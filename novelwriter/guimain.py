@@ -341,7 +341,7 @@ class GuiMain(QMainWindow):
 
         logger.debug("Ready: GUI")
 
-        if __hexversion__[-2] == "a" and logger.getEffectiveLevel() > logging.DEBUG:
+        if __hexversion__[-2] == "a" and not CONFIG.isDebug:
             SHARED.warn(self.tr(
                 "You are running an untested development version of novelWriter. "
                 "Please be careful when working on a live project "
@@ -1069,11 +1069,7 @@ class GuiMain(QMainWindow):
     @pyqtSlot()
     def showDictionariesDialog(self) -> None:
         """Show the download dictionaries dialog."""
-        dlgDicts = getGuiItem("GuiDictionaries")
-        if dlgDicts is None:
-            dlgDicts = GuiDictionaries(self)
-        assert isinstance(dlgDicts, GuiDictionaries)
-
+        dlgDicts = GuiDictionaries(self)
         dlgDicts.setModal(True)
         dlgDicts.show()
         dlgDicts.raise_()
