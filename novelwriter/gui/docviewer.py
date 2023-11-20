@@ -620,7 +620,7 @@ class GuiDocViewHistory:
         """Debug function to dump history to the logger. Since it is a
         for loop, it is skipped entirely if log level isn't DEBUG.
         """
-        if logger.getEffectiveLevel() == logging.DEBUG:  # pragma: no cover
+        if CONFIG.isDebug:  # pragma: no cover
             for i, (h, p) in enumerate(zip(self._navHistory, self._posHistory)):
                 logger.debug(
                     "History %02d: %s %13s [x:%d]" % (

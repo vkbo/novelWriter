@@ -487,6 +487,14 @@ def makeFileNameSafe(text: str) -> str:
     return "".join(c for c in text if c.isalnum() or c in allowed)
 
 
+def getFileSize(path: Path) -> int:
+    """Return the size of a file."""
+    try:
+        return path.stat().st_size
+    except Exception:
+        return -1
+
+
 # =============================================================================================== #
 #  Other Functions
 # =============================================================================================== #

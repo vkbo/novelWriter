@@ -27,6 +27,7 @@ import logging
 
 from pathlib import Path
 
+from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtCore import QSize, QTimer, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractButton, QAbstractItemView, QDialog, QDialogButtonBox, QFileDialog,
@@ -227,7 +228,7 @@ class GuiManuscriptBuild(QDialog):
 
         return
 
-    def __del__(self):  # pragma: no cover
+    def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiManuscriptBuild")
         return
 
@@ -235,7 +236,7 @@ class GuiManuscriptBuild(QDialog):
     #  Events
     ##
 
-    def closeEvent(self, event):
+    def closeEvent(self, event: QCloseEvent) -> None:
         """Capture the user closing the window so we can save GUI
         settings.
         """

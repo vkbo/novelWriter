@@ -29,10 +29,10 @@ import logging
 from datetime import datetime
 from urllib.request import Request, urlopen
 
-from PyQt5.QtGui import QCursor
-from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QCloseEvent, QCursor
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    qApp, QDialog, QHBoxLayout, QVBoxLayout, QDialogButtonBox, QLabel
+    QWidget, qApp, QDialog, QHBoxLayout, QVBoxLayout, QDialogButtonBox, QLabel
 )
 
 from novelwriter import CONFIG, SHARED, __version__, __date__
@@ -44,8 +44,8 @@ logger = logging.getLogger(__name__)
 
 class GuiUpdates(QDialog):
 
-    def __init__(self, mainGui):
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiUpdates")
         self.setObjectName("GuiUpdates")
@@ -94,8 +94,8 @@ class GuiUpdates(QDialog):
         self.latestLabel.setFont(hFont)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
-        self.buttonBox.accepted.connect(self._doClose)
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
+        self.buttonBox.rejected.connect(self._doClose)
 
         # Assemble
         self.innerBox = QHBoxLayout()
@@ -114,17 +114,16 @@ class GuiUpdates(QDialog):
 
         return
 
-    def __del__(self):  # pragma: no cover
+    def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiUpdates")
         return
 
-    def checkLatest(self):
-        """Check for latest release.
-        """
+    def checkLatest(self) -> None:
+        """Check for latest release."""
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
 
         urlReq = Request("https://api.github.com/repos/vkbo/novelwriter/releases/latest")
-        urlReq.add_header("User-Agent", "Mozilla/5.0 (compatible; novelWriter (Python))")
+        urlReq.add_header("User-Agent", nwConst.USER_AGENT)
         urlReq.add_header("Accept", "application/vnd.github.v3+json")
 
         rawData = {}
@@ -161,10 +160,22 @@ class GuiUpdates(QDialog):
         return
 
     ##
-    #  Internal Functions
+    #  Events
     ##
 
-    def _doClose(self):
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Capture the user closing the window."""
+        event.accept()
+        self.deleteLater()
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot()
+    def _doClose(self) -> None:
+        """Close the dialog."""
         self.close()
         return
 
