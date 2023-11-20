@@ -39,6 +39,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatInt, getFileSize
+from novelwriter.error import formatException
 
 logger = logging.getLogger(__name__)
 
@@ -156,7 +157,7 @@ class GuiDictionaries(QDialog):
                     i.stem for i in hunspell.iterdir() if i.is_file() and i.suffix == ".aff"
                 )
             self._appendLog(self.tr(
-                "{0} additional dictionaries currently installed"
+                "Additional dictionaries found: {0}"
             ).format(len(self._currDicts)))
 
         qApp.processEvents()
@@ -196,29 +197,21 @@ class GuiDictionaries(QDialog):
     @pyqtSlot()
     def _doImportHunspell(self):
         """Import a hunspell dictionary from .sox or .oxt file."""
-        temp = self.huInput.text()
-        output = self._installPath
-        if not output:
-            return
-        if output and temp and (path := Path(temp)).is_file():
-            hunspell = output / "hunspell"
-            hunspell.mkdir(exist_ok=True)
-            try:
-                with ZipFile(path, mode="r") as zipObj:
-                    for item in zipObj.namelist():
-                        zPath = Path(item)
-                        if zPath.suffix in (".aff", ".dic"):
-                            with zipObj.open(item) as zF:
-                                oPath = hunspell / zPath.name
-                                oPath.write_bytes(zF.read())
-                                size = getFileSize(oPath)
-                                self._appendLog(self.tr(
-                                    "Added: {0} [{1}B]"
-                                ).format(zPath.name, formatInt(size)))
-            except Exception as exc:
-                SHARED.error(self.tr("Could not process dictionary file."), exc=exc)
-        else:
-            SHARED.error(self.tr("File not found."))
+        procErr = self.tr("Could not process dictionary file")
+        if self._installPath:
+            temp = self.huInput.text()
+            if temp and (path := Path(temp)).is_file():
+                hunspell = self._installPath / "hunspell"
+                hunspell.mkdir(exist_ok=True)
+                try:
+                    nAff, nDic = self._extractDicts(path, hunspell)
+                    if nAff == 0 or nDic == 0:
+                        self._appendLog(procErr, err=True)
+                except Exception as exc:
+                    self._appendLog(procErr, err=True)
+                    self._appendLog(formatException(exc), err=True)
+            else:
+                self._appendLog(procErr, err=True)
         return
 
     @pyqtSlot()
@@ -243,13 +236,40 @@ class GuiDictionaries(QDialog):
     #  Internal Functions
     ##
 
-    def _appendLog(self, text: str) -> None:
+    def _extractDicts(self, path: Path, output: Path) -> tuple[int, int]:
+        """Extract a zip archive and return the number of .aff and .dic
+        files found in it.
+        """
+        nAff = nDic = 0
+        with ZipFile(path, mode="r") as zipObj:
+            for item in zipObj.namelist():
+                zPath = Path(item)
+                if zPath.suffix not in (".aff", ".dic"):
+                    continue
+                nAff += 1 if zPath.suffix == ".aff" else 0
+                nDic += 1 if zPath.suffix == ".dic" else 0
+                with zipObj.open(item) as zF:
+                    oPath = output / zPath.name
+                    oPath.write_bytes(zF.read())
+                    size = getFileSize(oPath)
+                    self._appendLog(self.tr(
+                        "Added: {0} [{1}B]"
+                    ).format(zPath.name, formatInt(size)))
+        return nAff, nDic
+
+    def _appendLog(self, text: str, err: bool = False) -> None:
         """Append a line to the log output."""
-        self.infoBox.moveCursor(QTextCursor.MoveOperation.End)
-        if self.infoBox.textCursor().position() > 0:
-            self.infoBox.insertPlainText("\n")
-        self.infoBox.insertPlainText(text)
-        self.infoBox.moveCursor(QTextCursor.MoveOperation.End)
+        cursor = self.infoBox.textCursor()
+        cursor.movePosition(QTextCursor.MoveOperation.End)
+        if cursor.position() > 0:
+            cursor.insertText("\n")
+        if err:
+            cursor.insertHtml(f"<font color='red'>{text}</font>")
+        else:
+            cursor.insertText(text)
+        cursor.movePosition(QTextCursor.MoveOperation.End)
+        cursor.deleteChar()
+        self.infoBox.setTextCursor(cursor)
         return
 
 # END Class GuiDictionaries
