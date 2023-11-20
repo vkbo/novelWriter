@@ -59,6 +59,7 @@ from novelwriter.dialogs.projsettings import GuiProjectSettings
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.projwizard import GuiProjectWizard
+from novelwriter.tools.dictionaries import GuiDictionaries
 from novelwriter.tools.writingstats import GuiWritingStats
 from novelwriter.core.coretools import ProjectBuilder
 
@@ -340,7 +341,7 @@ class GuiMain(QMainWindow):
 
         logger.debug("Ready: GUI")
 
-        if __hexversion__[-2] == "a" and logger.getEffectiveLevel() > logging.DEBUG:
+        if __hexversion__[-2] == "a" and not CONFIG.isDebug:
             SHARED.warn(self.tr(
                 "You are running an untested development version of novelWriter. "
                 "Please be careful when working on a live project "
@@ -1062,6 +1063,20 @@ class GuiMain(QMainWindow):
         dlgUpdate.raise_()
         qApp.processEvents()
         dlgUpdate.checkLatest()
+
+        return
+
+    @pyqtSlot()
+    def showDictionariesDialog(self) -> None:
+        """Show the download dictionaries dialog."""
+        dlgDicts = GuiDictionaries(self)
+        dlgDicts.setModal(True)
+        dlgDicts.show()
+        dlgDicts.raise_()
+        qApp.processEvents()
+        if not dlgDicts.initDialog():
+            dlgDicts.close()
+            SHARED.error(self.tr("Could not initialise the dialog."))
 
         return
 

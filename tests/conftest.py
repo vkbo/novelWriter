@@ -159,6 +159,7 @@ def nwGUI(qtbot, monkeypatch, functionFixture):
     nwGUI = main(["--testmode", f"--config={_TMP_CONF}", f"--data={_TMP_CONF}"])
     qtbot.addWidget(nwGUI)
     resetConfigVars()
+    SHARED._alert = None
     nwGUI.docEditor.initEditor()
 
     nwGUI.show()

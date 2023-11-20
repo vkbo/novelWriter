@@ -35,8 +35,7 @@ from novelwriter.gui.doceditor import GuiDocEditor
 
 @pytest.mark.gui
 def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
-    """Test the main menu Edit and Format entries.
-    """
+    """Test the main menu Edit and Format entries."""
     monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
 
     # Test Document Action with No Project
@@ -343,8 +342,7 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
 
 @pytest.mark.gui
 def testGuiMenu_ContextMenus(qtbot, nwGUI, prjLipsum):
-    """Test the context menus.
-    """
+    """Test the context menus."""
     assert nwGUI.openProject(prjLipsum)
     assert nwGUI.openDocument("4c4f28287af27")
 
@@ -423,8 +421,7 @@ def testGuiMenu_ContextMenus(qtbot, nwGUI, prjLipsum):
 
 @pytest.mark.gui
 def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
-    """Test the Insert menu.
-    """
+    """Test the Insert menu."""
     buildTestProject(nwGUI, projPath)
 
     assert nwGUI.projView.projTree._getTreeItem(C.hSceneDoc) is not None

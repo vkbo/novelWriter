@@ -870,6 +870,11 @@ class GuiMainMenu(QMenuBar):
         self.aEditWordList = self.toolsMenu.addAction(self.tr("Project Word List"))
         self.aEditWordList.triggered.connect(lambda: self.mainGui.showProjectWordListDialog())
 
+        # Tools > Add Dictionaries
+        if CONFIG.osWindows or CONFIG.isDebug:
+            self.aAddDicts = self.toolsMenu.addAction(self.tr("Add Dictionaries"))
+            self.aAddDicts.triggered.connect(self.mainGui.showDictionariesDialog)
+
         # Tools > Separator
         self.toolsMenu.addSeparator()
 
