@@ -1356,25 +1356,16 @@ class GuiProjectTree(QTreeWidget):
         for viewing if the user middle-clicked.
         """
         super().mousePressEvent(event)
-
         if event.button() == Qt.MouseButton.LeftButton:
             selItem = self.indexAt(event.pos())
             if not selItem.isValid():
                 self.clearSelection()
-
         elif event.button() == Qt.MouseButton.MiddleButton:
             selItem = self.itemAt(event.pos())
-            if not isinstance(selItem, QTreeWidgetItem):
-                return
-
-            tHandle = selItem.data(self.C_DATA, self.D_HANDLE)
-            tItem = SHARED.project.tree[tHandle]
-            if tItem is None:
-                return
-
-            if tItem.isFileType():
-                self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, "", False)
-
+            if selItem:
+                tHandle = selItem.data(self.C_DATA, self.D_HANDLE)
+                if (tItem := SHARED.project.tree[tHandle]) and tItem.isFileType():
+                    self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, "", False)
         return
 
     def startDrag(self, dropAction: Qt.DropActions) -> None:
@@ -1395,8 +1386,8 @@ class GuiProjectTree(QTreeWidget):
         else:
             logger.warning("Drag action is not allowed and has been cancelled")
             self._popAlert = self.tr(
-                "Drag and drop is only allowed for single, non-root items, "
-                "or multiple items with the same parent."
+                "Drag and drop is only allowed for single items, non-root "
+                "items, or multiple items with the same parent."
             )
             event.mimeData().clear()
             event.ignore()
@@ -1876,13 +1867,13 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def _iterItemActive(self, active: bool) -> None:
+    def _iterItemActive(self, isActive: bool) -> None:
         """Change the active status multiple items."""
         for item in self.selectedItems():
             tHandle = str(item.data(self.C_DATA, self.D_HANDLE))
             tItem = SHARED.project.tree[tHandle]
             if tItem and tItem.isFileType():
-                tItem.setActive(active)
+                tItem.setActive(isActive)
                 self.setTreeItemValues(tItem.itemHandle)
                 self._alertTreeChange(tHandle, flush=False)
         return
