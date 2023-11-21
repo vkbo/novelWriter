@@ -1185,6 +1185,9 @@ class GuiProjectTree(QTreeWidget):
             logger.debug("No item found")
             return False
 
+        if len(self.selectedItems()) > 1:
+            return self._openMultiSelectContextMenu(clickPos, tItem)
+
         ctxMenu = QMenu(self)
 
         # Trash Folder
@@ -1236,7 +1239,7 @@ class GuiProjectTree(QTreeWidget):
                     lambda n, key=key: self._changeItemStatus(tHandle, key)
                 )
             mStatus.addSeparator()
-            aManage1 = mStatus.addAction("Manage Labels ...")
+            aManage1 = mStatus.addAction(self.tr("Manage Labels ..."))
             aManage1.triggered.connect(
                 lambda: self.projView.projectSettingsRequest.emit(GuiProjectSettings.TAB_STATUS)
             )
@@ -1249,7 +1252,7 @@ class GuiProjectTree(QTreeWidget):
                     lambda n, key=key: self._changeItemImport(tHandle, key)
                 )
             mImport.addSeparator()
-            aManage2 = mImport.addAction("Manage Labels ...")
+            aManage2 = mImport.addAction(self.tr("Manage Labels ..."))
             aManage2.triggered.connect(
                 lambda: self.projView.projectSettingsRequest.emit(GuiProjectSettings.TAB_IMPORT)
             )
@@ -1512,7 +1515,7 @@ class GuiProjectTree(QTreeWidget):
     def _changeItemStatus(self, tHandle: str, tStatus: str) -> None:
         """Set a new status value of an item."""
         tItem = SHARED.project.tree[tHandle]
-        if tItem is not None:
+        if tItem and tItem.isDocumentLayout():
             tItem.setStatus(tStatus)
             self.setTreeItemValues(tItem.itemHandle)
             self._alertTreeChange(tHandle, flush=False)
@@ -1521,7 +1524,7 @@ class GuiProjectTree(QTreeWidget):
     def _changeItemImport(self, tHandle: str, tImport: str) -> None:
         """Set a new importance value of an item."""
         tItem = SHARED.project.tree[tHandle]
-        if tItem is not None:
+        if tItem and tItem.isNoteLayout():
             tItem.setImport(tImport)
             self.setTreeItemValues(tItem.itemHandle)
             self._alertTreeChange(tHandle, flush=False)
@@ -1826,6 +1829,89 @@ class GuiProjectTree(QTreeWidget):
 
         self.projView.treeItemChanged.emit(tHandle)
 
+        return
+
+    ##
+    #  Multi-Select Context Menu Functions
+    ##
+
+    def _openMultiSelectContextMenu(self, clickPos: QPoint, tItem: NWItem) -> bool:
+        """Alternative menu for multiple selected items."""
+        ctxMenu = QMenu(self)
+
+        mActive = ctxMenu.addMenu(self.tr("Set Active to ..."))
+        aActive = mActive.addAction(SHARED.theme.getIcon("checked"), self.tr("Active"))
+        aActive.triggered.connect(lambda: self._iterItemActive(True))
+        aInactive = mActive.addAction(SHARED.theme.getIcon("unchecked"), self.tr("Inactive"))
+        aInactive.triggered.connect(lambda: self._iterItemActive(False))
+
+        if tItem.isNovelLike():
+            mStatus = ctxMenu.addMenu(self.tr("Set Status to ..."))
+            for n, (key, entry) in enumerate(SHARED.project.data.itemStatus.items()):
+                aStatus = mStatus.addAction(entry["icon"], entry["name"])
+                aStatus.triggered.connect(lambda n, key=key: self._iterSetItemStatus(key))
+            mStatus.addSeparator()
+            aManage1 = mStatus.addAction(self.tr("Manage Labels ..."))
+            aManage1.triggered.connect(
+                lambda: self.projView.projectSettingsRequest.emit(GuiProjectSettings.TAB_STATUS)
+            )
+        else:
+            mImport = ctxMenu.addMenu(self.tr("Set Importance to ..."))
+            for n, (key, entry) in enumerate(SHARED.project.data.itemImport.items()):
+                aImport = mImport.addAction(entry["icon"], entry["name"], )
+                aImport.triggered.connect(lambda n, key=key: self._iterSetItemImport(key))
+            mImport.addSeparator()
+            aManage2 = mImport.addAction(self.tr("Manage Labels ..."))
+            aManage2.triggered.connect(
+                lambda: self.projView.projectSettingsRequest.emit(GuiProjectSettings.TAB_IMPORT)
+            )
+
+        ctxMenu.addSeparator()
+
+        aMoveTrash = ctxMenu.addAction(self.tr("Move to Trash"))
+        aMoveTrash.triggered.connect(self._iterMoveToTrash)
+
+        # Show Context Menu
+        ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
+
+        return True
+
+    def _iterItemActive(self, active: bool) -> None:
+        """Change the active status multiple items."""
+        for item in self.selectedItems():
+            tHandle = str(item.data(self.C_DATA, self.D_HANDLE))
+            tItem = SHARED.project.tree[tHandle]
+            if tItem and tItem.isFileType():
+                tItem.setActive(active)
+                self.setTreeItemValues(tItem.itemHandle)
+                self._alertTreeChange(tHandle, flush=False)
+        return
+
+    def _iterSetItemStatus(self, tStatus: str) -> None:
+        """Change the status value for multiple items."""
+        for item in self.selectedItems():
+            tHandle = str(item.data(self.C_DATA, self.D_HANDLE))
+            self._changeItemStatus(tHandle, tStatus)
+        return
+
+    def _iterSetItemImport(self, tStatus: str) -> None:
+        """Change the importance value for multiple items."""
+        for item in self.selectedItems():
+            tHandle = str(item.data(self.C_DATA, self.D_HANDLE))
+            self._changeItemImport(tHandle, tStatus)
+        return
+
+    @pyqtSlot()
+    def _iterMoveToTrash(self) -> None:
+        """Iterate through files and move them to Trash."""
+        items = self.selectedItems()
+        if SHARED.question(self.tr("Move {0} items to Trash?").format(len(items))):
+            for item in self.selectedItems():
+                tHandle = str(item.data(self.C_DATA, self.D_HANDLE))
+                tItem = SHARED.project.tree[tHandle]
+                if tItem and tItem.isFileType():
+                    self.moveItemToTrash(tHandle, askFirst=False, flush=False)
+                self.saveTreeOrder()
         return
 
 # END Class GuiProjectTree
