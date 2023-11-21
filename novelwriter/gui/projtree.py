@@ -98,42 +98,42 @@ class GuiProjectView(QWidget):
         # Keyboard Shortcuts
         self.keyMoveUp = QShortcut(self.projTree)
         self.keyMoveUp.setKey("Ctrl+Up")
-        self.keyMoveUp.setContext(Qt.WidgetShortcut)
+        self.keyMoveUp.setContext(Qt.ShortcutContext.WidgetShortcut)
         self.keyMoveUp.activated.connect(lambda: self.projTree.moveTreeItem(-1))
 
         self.keyMoveDn = QShortcut(self.projTree)
         self.keyMoveDn.setKey("Ctrl+Down")
-        self.keyMoveDn.setContext(Qt.WidgetShortcut)
+        self.keyMoveDn.setContext(Qt.ShortcutContext.WidgetShortcut)
         self.keyMoveDn.activated.connect(lambda: self.projTree.moveTreeItem(1))
 
         self.keyGoPrev = QShortcut(self.projTree)
         self.keyGoPrev.setKey("Alt+Up")
-        self.keyGoPrev.setContext(Qt.WidgetShortcut)
+        self.keyGoPrev.setContext(Qt.ShortcutContext.WidgetShortcut)
         self.keyGoPrev.activated.connect(lambda: self.projTree.moveToNextItem(-1))
 
         self.keyGoNext = QShortcut(self.projTree)
         self.keyGoNext.setKey("Alt+Down")
-        self.keyGoNext.setContext(Qt.WidgetShortcut)
+        self.keyGoNext.setContext(Qt.ShortcutContext.WidgetShortcut)
         self.keyGoNext.activated.connect(lambda: self.projTree.moveToNextItem(1))
 
         self.keyGoUp = QShortcut(self.projTree)
         self.keyGoUp.setKey("Alt+Left")
-        self.keyGoUp.setContext(Qt.WidgetShortcut)
+        self.keyGoUp.setContext(Qt.ShortcutContext.WidgetShortcut)
         self.keyGoUp.activated.connect(lambda: self.projTree.moveToLevel(-1))
 
         self.keyGoDown = QShortcut(self.projTree)
         self.keyGoDown.setKey("Alt+Right")
-        self.keyGoDown.setContext(Qt.WidgetShortcut)
+        self.keyGoDown.setContext(Qt.ShortcutContext.WidgetShortcut)
         self.keyGoDown.activated.connect(lambda: self.projTree.moveToLevel(1))
 
         self.keyUndoMv = QShortcut(self.projTree)
         self.keyUndoMv.setKey("Ctrl+Shift+Z")
-        self.keyUndoMv.setContext(Qt.WidgetShortcut)
+        self.keyUndoMv.setContext(Qt.ShortcutContext.WidgetShortcut)
         self.keyUndoMv.activated.connect(lambda: self.projTree.undoLastMove())
 
         self.keyContext = QShortcut(self.projTree)
         self.keyContext.setKey("Ctrl+.")
-        self.keyContext.setContext(Qt.WidgetShortcut)
+        self.keyContext.setContext(Qt.ShortcutContext.WidgetShortcut)
         self.keyContext.activated.connect(lambda: self.projTree.openContextOnSelected())
 
         # Signals
@@ -261,7 +261,7 @@ class GuiProjectToolBar(QWidget):
         self.tbQuick.setShortcut("Ctrl+L")
         self.tbQuick.setIconSize(QSize(iPx, iPx))
         self.tbQuick.setMenu(self.mQuick)
-        self.tbQuick.setPopupMode(QToolButton.InstantPopup)
+        self.tbQuick.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
         # Move Buttons
         self.tbMoveU = QToolButton(self)
@@ -310,7 +310,7 @@ class GuiProjectToolBar(QWidget):
         self.tbAdd.setShortcut("Ctrl+N")
         self.tbAdd.setIconSize(QSize(iPx, iPx))
         self.tbAdd.setMenu(self.mAdd)
-        self.tbAdd.setPopupMode(QToolButton.InstantPopup)
+        self.tbAdd.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
         # More Options Menu
         self.mMore = QMenu(self)
@@ -331,7 +331,7 @@ class GuiProjectToolBar(QWidget):
         self.tbMore.setToolTip(self.tr("More Options"))
         self.tbMore.setIconSize(QSize(iPx, iPx))
         self.tbMore.setMenu(self.mMore)
-        self.tbMore.setPopupMode(QToolButton.InstantPopup)
+        self.tbMore.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
         # Assemble
         self.outerBox = QHBoxLayout()
@@ -358,7 +358,7 @@ class GuiProjectToolBar(QWidget):
     def updateTheme(self) -> None:
         """Update theme elements."""
         qPalette = self.palette()
-        qPalette.setBrush(QPalette.Window, qPalette.base())
+        qPalette.setBrush(QPalette.ColorRole.Window, qPalette.base())
         self.setPalette(qPalette)
 
         fadeCol = qPalette.text().color()
@@ -483,7 +483,7 @@ class GuiProjectTree(QTreeWidget):
         # =========
 
         # Context Menu
-        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self._openContextMenu)
 
         # Tree Settings
@@ -491,7 +491,7 @@ class GuiProjectTree(QTreeWidget):
         cMg = CONFIG.pxInt(6)
 
         self.setIconSize(QSize(iPx, iPx))
-        self.setFrameStyle(QFrame.NoFrame)
+        self.setFrameStyle(QFrame.Shape.NoFrame)
         self.setUniformRowHeights(True)
         self.setAllColumnsShowFocus(True)
         self.setExpandsOnDoubleClick(False)
@@ -504,16 +504,16 @@ class GuiProjectTree(QTreeWidget):
         treeHeader = self.header()
         treeHeader.setStretchLastSection(False)
         treeHeader.setMinimumSectionSize(iPx + cMg)
-        treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.Stretch)
-        treeHeader.setSectionResizeMode(self.C_COUNT, QHeaderView.ResizeToContents)
-        treeHeader.setSectionResizeMode(self.C_ACTIVE, QHeaderView.Fixed)
-        treeHeader.setSectionResizeMode(self.C_STATUS, QHeaderView.Fixed)
+        treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.ResizeMode.Stretch)
+        treeHeader.setSectionResizeMode(self.C_COUNT, QHeaderView.ResizeMode.ResizeToContents)
+        treeHeader.setSectionResizeMode(self.C_ACTIVE, QHeaderView.ResizeMode.Fixed)
+        treeHeader.setSectionResizeMode(self.C_STATUS, QHeaderView.ResizeMode.Fixed)
         treeHeader.resizeSection(self.C_ACTIVE, iPx + cMg)
         treeHeader.resizeSection(self.C_STATUS, iPx + cMg)
 
         # Allow Move by Drag & Drop
         self.setDragEnabled(True)
-        self.setDragDropMode(QAbstractItemView.InternalMove)
+        self.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
         self.setDropIndicatorShown(True)
 
         # Disable built-in auto scroll as it isn't working in some Qt
@@ -524,15 +524,15 @@ class GuiProjectTree(QTreeWidget):
         # Due to a bug, this stops working somewhere between Qt 5.15.3
         # and 5.15.8, so this is also blocked in dropEvent (see #1569)
         trRoot = self.invisibleRootItem()
-        trRoot.setFlags(trRoot.flags() ^ Qt.ItemIsDropEnabled)
+        trRoot.setFlags(trRoot.flags() ^ Qt.ItemFlag.ItemIsDropEnabled)
 
         # Cached values
         self._lblActive = self.tr("Active")
         self._lblInactive = self.tr("Inactive")
 
         # Set selection options
-        self.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
+        self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
 
         # Connect signals
         self.itemDoubleClicked.connect(self._treeDoubleClick)
@@ -556,13 +556,13 @@ class GuiProjectTree(QTreeWidget):
         """Set or update tree widget settings."""
         # Scroll bars
         if CONFIG.hideVScroll:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         else:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         if CONFIG.hideHScroll:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         else:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         return
 
     ##
@@ -1155,7 +1155,7 @@ class GuiProjectTree(QTreeWidget):
 
         selIndex = self.selectedIndexes()
         if selIndex and doScroll:
-            self.scrollTo(selIndex[0], QAbstractItemView.PositionAtCenter)
+            self.scrollTo(selIndex[0], QAbstractItemView.ScrollHint.PositionAtCenter)
 
         return True
 
@@ -1399,12 +1399,12 @@ class GuiProjectTree(QTreeWidget):
         """
         super().mousePressEvent(event)
 
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.MouseButton.LeftButton:
             selItem = self.indexAt(event.pos())
             if not selItem.isValid():
                 self.clearSelection()
 
-        elif event.button() == Qt.MiddleButton:
+        elif event.button() == Qt.MouseButton.MiddleButton:
             selItem = self.itemAt(event.pos())
             if not isinstance(selItem, QTreeWidgetItem):
                 return
@@ -1611,7 +1611,7 @@ class GuiProjectTree(QTreeWidget):
         dlgMerge = GuiDocMerge(self.mainGui, tHandle, itemList)
         dlgMerge.exec_()
 
-        if dlgMerge.result() == QDialog.Accepted:
+        if dlgMerge.result() == QDialog.DialogCode.Accepted:
 
             mrgData = dlgMerge.getData()
             mrgList = mrgData.get("finalItems", [])
@@ -1681,7 +1681,7 @@ class GuiProjectTree(QTreeWidget):
         dlgSplit = GuiDocSplit(self.mainGui, tHandle)
         dlgSplit.exec_()
 
-        if dlgSplit.result() == QDialog.Accepted:
+        if dlgSplit.result() == QDialog.DialogCode.Accepted:
 
             splitData, splitText = dlgSplit.getData()
 
@@ -1786,10 +1786,10 @@ class GuiProjectTree(QTreeWidget):
         newItem.setText(self.C_ACTIVE, "")
         newItem.setText(self.C_STATUS, "")
 
-        newItem.setTextAlignment(self.C_NAME, Qt.AlignLeft)
-        newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
-        newItem.setTextAlignment(self.C_ACTIVE, Qt.AlignLeft)
-        newItem.setTextAlignment(self.C_STATUS, Qt.AlignLeft)
+        newItem.setTextAlignment(self.C_NAME, Qt.AlignmentFlag.AlignLeft)
+        newItem.setTextAlignment(self.C_COUNT, Qt.AlignmentFlag.AlignRight)
+        newItem.setTextAlignment(self.C_ACTIVE, Qt.AlignmentFlag.AlignLeft)
+        newItem.setTextAlignment(self.C_STATUS, Qt.AlignmentFlag.AlignLeft)
 
         newItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
         newItem.setData(self.C_DATA, self.D_WORDS, 0)
