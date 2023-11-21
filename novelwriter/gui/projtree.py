@@ -31,7 +31,7 @@ from enum import Enum
 from time import time
 from typing import TYPE_CHECKING
 
-from PyQt5.QtGui import QDragMoveEvent, QDropEvent, QMouseEvent, QPalette
+from PyQt5.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QMouseEvent, QPalette
 from PyQt5.QtCore import QPoint, QTimer, Qt, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QFrame, QHBoxLayout, QHeaderView, QLabel,
@@ -142,7 +142,6 @@ class GuiProjectView(QWidget):
         # Function Mappings
         self.emptyTrash = self.projTree.emptyTrash
         self.requestDeleteItem = self.projTree.requestDeleteItem
-        self.propagateCount = self.projTree.propagateCount
         self.getSelectedHandle = self.projTree.getSelectedHandle
         self.setSelectedHandle = self.projTree.setSelectedHandle
         self.changedSince = self.projTree.changedSince
@@ -478,6 +477,7 @@ class GuiProjectTree(QTreeWidget):
         self._treeMap = {}
         self._lastMove = {}
         self._timeChanged = 0.0
+        self._popAlert = None
 
         # Build GUI
         # =========
@@ -514,7 +514,6 @@ class GuiProjectTree(QTreeWidget):
         # Allow Move by Drag & Drop
         self.setDragEnabled(True)
         self.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
-        self.setDropIndicatorShown(True)
 
         # Disable built-in auto scroll as it isn't working in some Qt
         # releases (see #1561) and instead use our own implementation
@@ -523,8 +522,8 @@ class GuiProjectTree(QTreeWidget):
         # But don't allow drop on root level
         # Due to a bug, this stops working somewhere between Qt 5.15.3
         # and 5.15.8, so this is also blocked in dropEvent (see #1569)
-        trRoot = self.invisibleRootItem()
-        trRoot.setFlags(trRoot.flags() ^ Qt.ItemFlag.ItemIsDropEnabled)
+        # trRoot = self.invisibleRootItem()
+        # trRoot.setFlags(trRoot.flags() ^ Qt.ItemFlag.ItemIsDropEnabled)
 
         # Cached values
         self._lblActive = self.tr("Active")
@@ -926,14 +925,13 @@ class GuiProjectTree(QTreeWidget):
                 logger.info("Action cancelled by user")
                 return False
 
-        wCount = self._getItemWordCount(tHandle)
         self.propagateCount(tHandle, 0)
 
         tIndex = trItemP.indexOfChild(trItemS)
         trItemC = trItemP.takeChild(tIndex)
         trItemT.addChild(trItemC)
 
-        self._postItemMove(tHandle, wCount)
+        self._postItemMove(tHandle)
         self._recordLastMove(trItemS, trItemP, tIndex)
         self._alertTreeChange(tHandle, flush=flush)
 
@@ -1120,14 +1118,13 @@ class GuiProjectTree(QTreeWidget):
         dHandle = dstItem.data(self.C_DATA, self.D_HANDLE)
         logger.debug("Moving item '%s' back to '%s', index %d", sHandle, dHandle, dstIndex)
 
-        wCount = self._getItemWordCount(sHandle)
         self.propagateCount(sHandle, 0)
         parItem = srcItem.parent()
         srcIndex = parItem.indexOfChild(srcItem)
         movItem = parItem.takeChild(srcIndex)
         dstItem.insertChild(dstIndex, movItem)
 
-        self._postItemMove(sHandle, wCount)
+        self._postItemMove(sHandle)
         self._alertTreeChange(sHandle, flush=True)
 
         self.setCurrentItem(movItem)
@@ -1190,6 +1187,15 @@ class GuiProjectTree(QTreeWidget):
         tHandle = self.getSelectedHandle()
         if tHandle is not None:
             self.projView.selectedItemChanged.emit(tHandle)
+
+        # When selecting multiple items, don't allow including root
+        # items in the selection and instead deselect them
+        items = self.selectedItems()
+        if items and len(items) > 1:
+            for item in items:
+                if item.parent() is None:
+                    item.setSelected(False)
+
         return
 
     @pyqtSlot("QTreeWidgetItem*", int)
@@ -1419,6 +1425,31 @@ class GuiProjectTree(QTreeWidget):
 
         return
 
+    def startDrag(self, dropAction: Qt.DropActions) -> None:
+        """Capture the drag and drop handling to pop alerts."""
+        super().startDrag(dropAction)
+        if self._popAlert:
+            SHARED.error(self._popAlert)
+            self._popAlert = None
+        return
+
+    def dragEnterEvent(self, event: QDragEnterEvent) -> None:
+        """Check that we're only dragging items that are siblings, and
+        not a root level item.
+        """
+        items = self.selectedItems()
+        if items and (parent := items[0].parent()) and all(x.parent() is parent for x in items):
+            super().dragEnterEvent(event)
+        else:
+            logger.warning("Drag action is not allowed and has been cancelled")
+            self._popAlert = self.tr(
+                "Drag and drop is only allowed for single, non-root items, "
+                "or multiple items with the same parent."
+            )
+            event.mimeData().clear()
+            event.ignore()
+        return
+
     def dragMoveEvent(self, event: QDragMoveEvent) -> None:
         """Capture the drag move event to enable edge auto scroll."""
         y = event.pos().y()
@@ -1437,35 +1468,35 @@ class GuiProjectTree(QTreeWidget):
         """Overload the drop item event to ensure the drag and drop
         action is allowed, and update relevant data.
         """
-        sHandle = self.getSelectedHandle()
-        sItem = self._getTreeItem(sHandle) if sHandle else None
-        if sHandle is None or sItem is None or sItem.parent() is None:
-            logger.error("Invalid drag and drop event")
-            event.ignore()
-            return
-
         if not self.indexAt(event.pos()).isValid():
-            # Needed due to a bug somewhere around Qt 5.15.8 that
-            # ignores the invisible root item flags
+            # Make sure nothing can be dropped on invisible root
             logger.error("Invalid drop location")
             event.ignore()
             return
 
-        logger.debug("Drag'n'drop of item '%s' accepted", sHandle)
+        mItems: dict[str, tuple[QTreeWidgetItem, QTreeWidgetItem, bool]] = {}
+        sItems = self.selectedItems()
+        if sItems and (parent := sItems[0].parent()) and all(x.parent() is parent for x in sItems):
+            for sItem in sItems:
+                if (pItem := sItem.parent()):
+                    mHandle = str(sItem.data(self.C_DATA, self.D_HANDLE))
+                    mItems[mHandle] = (sItem, pItem, sItem.isExpanded())
+                else:
+                    logger.error("Cannot drag and drop a root item")
+                    event.ignore()
+                    return
 
-        isExpanded = sItem.isExpanded()
-        pItem = sItem.parent()
-        pIndex = pItem.indexOfChild(sItem) if pItem else 0
+            for mHandle in mItems:
+                self.propagateCount(mHandle, 0)
 
-        wCount = self._getItemWordCount(sHandle)
-        self.propagateCount(sHandle, 0)
+            super().dropEvent(event)
 
-        super().dropEvent(event)
-        self._postItemMove(sHandle, wCount)
-        self._recordLastMove(sItem, pItem, pIndex)
-        self._alertTreeChange(sHandle, flush=True)
+            for mHandle, (sItem, pItem, isExpanded) in mItems.items():
+                self._postItemMove(mHandle)
+                sItem.setExpanded(isExpanded)
+                self._alertTreeChange(mHandle, flush=False)
 
-        sItem.setExpanded(isExpanded)
+            self.saveTreeOrder()
 
         return
 
@@ -1473,17 +1504,16 @@ class GuiProjectTree(QTreeWidget):
     #  Internal Functions
     ##
 
-    def _postItemMove(self, tHandle: str, wCount: int) -> bool:
+    def _postItemMove(self, tHandle: str) -> None:
         """Run various maintenance tasks for a moved item."""
         trItemS = self._getTreeItem(tHandle)
         nwItemS = SHARED.project.tree[tHandle]
         trItemP = trItemS.parent() if trItemS else None
         if trItemP is None or nwItemS is None:
             logger.error("Failed to find new parent item of '%s'", tHandle)
-            return False
+            return
 
-        # Update item parent handle in the project, make sure meta data
-        # is updated accordingly, and update word count
+        # Update item parent handle in the project
         pHandle = trItemP.data(self.C_DATA, self.D_HANDLE)
         nwItemS.setParent(pHandle)
         trItemP.setExpanded(True)
@@ -1494,19 +1524,16 @@ class GuiProjectTree(QTreeWidget):
         for mHandle in mHandles:
             logger.debug("Updating item '%s'", mHandle)
             SHARED.project.tree.updateItemData(mHandle)
-
-            # Update the index
             if nwItemS.isInactiveClass():
                 SHARED.project.index.deleteHandle(mHandle)
             else:
                 SHARED.project.index.reIndexHandle(mHandle)
-
             self.setTreeItemValues(mHandle)
 
         # Trigger dependent updates
-        self.propagateCount(tHandle, wCount)
+        self.propagateCount(tHandle, nwItemS.wordCount)
 
-        return True
+        return
 
     def _getItemWordCount(self, tHandle: str) -> int:
         """Return the word count of a given item handle."""
