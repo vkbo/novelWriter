@@ -251,11 +251,6 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010", "0000000000012", "0000000000011",
     ]
-    assert projTree.undoLastMove() is True
-    assert projTree.getTreeFromHandle(C.hChapterDir) == [
-        C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
-        "0000000000010", "0000000000011", "0000000000012",
-    ]
 
     # Root Folder
     # ===========
@@ -988,17 +983,14 @@ def testGuiProjTree_DragAndDrop(qtbot, monkeypatch, caplog, nwGUI: GuiMain, proj
     mouse = Qt.MouseButton.LeftButton
     modifier = Qt.KeyboardModifier.NoModifier
 
-    # Move an item
-    # The actual move is blocked, but the undo history should record
-    # the event, although without an actual move implied
-    assert projTree._lastMove == {}
+    projTree.saveTreeOrder()
+    treeOrder = SHARED.project.tree._order
+
+    # Move an item, but no selection
     event = QDropEvent(nPos, action, mime, mouse, modifier)
     projTree.dropEvent(event)
-    assert projTree._lastMove == {
-        "item": projTree._getTreeItem(C.hSceneDoc),
-        "parent": projTree._getTreeItem(C.hChapterDir),
-        "index": 1,
-    }
+    projTree.saveTreeOrder()
+    assert SHARED.project.tree._order == treeOrder
 
     # Invalid location
     caplog.clear()
@@ -1006,23 +998,19 @@ def testGuiProjTree_DragAndDrop(qtbot, monkeypatch, caplog, nwGUI: GuiMain, proj
     projTree.dropEvent(event)
     assert event.isAccepted() is False
     assert "Invalid drop location" in caplog.text
-
-    # No item selected
-    caplog.clear()
-    event = QDropEvent(nPos, action, mime, mouse, modifier)
-    projTree.clearSelection()
-    projTree.dropEvent(event)
-    assert event.isAccepted() is False
-    assert "Invalid drag and drop event" in caplog.text
+    projTree.saveTreeOrder()
+    assert SHARED.project.tree._order == treeOrder
 
     # Root item selected
     caplog.clear()
     event = QDropEvent(nPos, action, mime, mouse, modifier)
     projTree.clearSelection()
-    projTree.setSelectedHandle(C.hNovelRoot, True)
+    projTree._getTreeItem(C.hTitlePage).setSelected(True)  # type: ignore
+    projTree._getTreeItem(C.hNovelRoot).setSelected(True)  # type: ignore
     projTree.dropEvent(event)
     assert event.isAccepted() is False
-    assert "Invalid drag and drop event" in caplog.text
+    projTree.saveTreeOrder()
+    assert SHARED.project.tree._order == treeOrder
 
     # qtbot.stop()
 
@@ -1069,22 +1057,6 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd)
     nHandle = SHARED.project.newFile("Test", C.hNovelRoot)
     SHARED.project.tree[nHandle].setParent(C.hInvalid)  # type: ignore
     assert projTree.revealNewTreeItem(nHandle) is False
-
-    # Method: undoLastMove
-    # ====================
-
-    # Nothing to move
-    assert projTree.undoLastMove() is False
-
-    projTree._lastMove["item"] = QTreeWidgetItem()
-    projTree._lastMove["parent"] = QTreeWidgetItem()
-    projTree._lastMove["index"] = 0
-    assert projTree.undoLastMove() is False
-
-    projTree._lastMove["item"] = projTree._treeMap[C.hTitlePage]
-    projTree._lastMove["parent"] = QTreeWidgetItem()
-    projTree._lastMove["index"] = 0
-    assert projTree.undoLastMove() is False
 
     # Slot: _treeDoubleClick
     # ======================

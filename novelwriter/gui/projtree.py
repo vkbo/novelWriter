@@ -126,11 +126,6 @@ class GuiProjectView(QWidget):
         self.keyGoDown.setContext(Qt.ShortcutContext.WidgetShortcut)
         self.keyGoDown.activated.connect(lambda: self.projTree.moveToLevel(1))
 
-        self.keyUndoMv = QShortcut(self.projTree)
-        self.keyUndoMv.setKey("Ctrl+Shift+Z")
-        self.keyUndoMv.setContext(Qt.ShortcutContext.WidgetShortcut)
-        self.keyUndoMv.activated.connect(lambda: self.projTree.undoLastMove())
-
         self.keyContext = QShortcut(self.projTree)
         self.keyContext.setKey("Ctrl+.")
         self.keyContext.setContext(Qt.ShortcutContext.WidgetShortcut)
@@ -320,9 +315,6 @@ class GuiProjectToolBar(QWidget):
         self.aCollapse = self.mMore.addAction(self.tr("Collapse All"))
         self.aCollapse.triggered.connect(lambda: self.projTree.setExpandedFromHandle(None, False))
 
-        self.aMoreUndo = self.mMore.addAction(self.tr("Undo Move"))
-        self.aMoreUndo.triggered.connect(lambda: self.projTree.undoLastMove())
-
         self.aEmptyTrash = self.mMore.addAction(self.tr("Empty Trash"))
         self.aEmptyTrash.triggered.connect(lambda: self.projTree.emptyTrash())
 
@@ -475,7 +467,6 @@ class GuiProjectTree(QTreeWidget):
 
         # Internal Variables
         self._treeMap = {}
-        self._lastMove = {}
         self._timeChanged = 0.0
         self._popAlert = None
 
@@ -522,8 +513,8 @@ class GuiProjectTree(QTreeWidget):
         # But don't allow drop on root level
         # Due to a bug, this stops working somewhere between Qt 5.15.3
         # and 5.15.8, so this is also blocked in dropEvent (see #1569)
-        # trRoot = self.invisibleRootItem()
-        # trRoot.setFlags(trRoot.flags() ^ Qt.ItemFlag.ItemIsDropEnabled)
+        trRoot = self.invisibleRootItem()
+        trRoot.setFlags(trRoot.flags() ^ Qt.ItemFlag.ItemIsDropEnabled)
 
         # Cached values
         self._lblActive = self.tr("Active")
@@ -572,7 +563,6 @@ class GuiProjectTree(QTreeWidget):
         """Clear the GUI content and the related map."""
         self.clear()
         self._treeMap = {}
-        self._lastMove = {}
         self._timeChanged = 0.0
         return
 
@@ -743,7 +733,6 @@ class GuiProjectTree(QTreeWidget):
 
             cItem = pItem.takeChild(tIndex)
             pItem.insertChild(nIndex, cItem)
-            self._recordLastMove(cItem, pItem, tIndex)
 
         self._alertTreeChange(tHandle, flush=True)
         self.setCurrentItem(tItem)
@@ -932,7 +921,6 @@ class GuiProjectTree(QTreeWidget):
         trItemT.addChild(trItemC)
 
         self._postItemMove(tHandle)
-        self._recordLastMove(trItemS, trItemP, tIndex)
         self._alertTreeChange(tHandle, flush=flush)
 
         logger.debug("Moved item '%s' to Trash", tHandle)
@@ -1092,45 +1080,6 @@ class GuiProjectTree(QTreeWidget):
         if count > 0:
             logger.info("%d item(s) added to the project tree", count)
         return
-
-    def undoLastMove(self) -> bool:
-        """Attempt to undo the last action."""
-        srcItem = self._lastMove.get("item", None)
-        dstItem = self._lastMove.get("parent", None)
-        dstIndex = self._lastMove.get("index", None)
-
-        srcOK = isinstance(srcItem, QTreeWidgetItem)
-        dstOk = isinstance(dstItem, QTreeWidgetItem)
-        if not srcOK or not dstOk or dstIndex is None:
-            logger.debug("No tree move to undo")
-            return False
-
-        if srcItem not in self._treeMap.values():
-            logger.warning("Source item no longer exists")
-            return False
-
-        if dstItem not in self._treeMap.values():
-            logger.warning("Previous parent item no longer exists")
-            return False
-
-        dstIndex = min(max(0, dstIndex), dstItem.childCount())
-        sHandle = srcItem.data(self.C_DATA, self.D_HANDLE)
-        dHandle = dstItem.data(self.C_DATA, self.D_HANDLE)
-        logger.debug("Moving item '%s' back to '%s', index %d", sHandle, dHandle, dstIndex)
-
-        self.propagateCount(sHandle, 0)
-        parItem = srcItem.parent()
-        srcIndex = parItem.indexOfChild(srcItem)
-        movItem = parItem.takeChild(srcIndex)
-        dstItem.insertChild(dstIndex, movItem)
-
-        self._postItemMove(sHandle)
-        self._alertTreeChange(sHandle, flush=True)
-
-        self.setCurrentItem(movItem)
-        self._lastMove = {}
-
-        return True
 
     def getSelectedHandle(self) -> str | None:
         """Get the currently selected handle. If multiple items are
@@ -1468,30 +1417,25 @@ class GuiProjectTree(QTreeWidget):
         """Overload the drop item event to ensure the drag and drop
         action is allowed, and update relevant data.
         """
-        if not self.indexAt(event.pos()).isValid():
-            # Make sure nothing can be dropped on invisible root
+        tItem = self.itemAt(event.pos())
+        dropOn = self.dropIndicatorPosition() == QAbstractItemView.DropIndicatorPosition.OnItem
+        # Make sure nothing can be dropped on invisible root (see #1569)
+        if not tItem or tItem.parent() is None and not dropOn:
             logger.error("Invalid drop location")
             event.ignore()
             return
 
-        mItems: dict[str, tuple[QTreeWidgetItem, QTreeWidgetItem, bool]] = {}
+        mItems: dict[str, tuple[QTreeWidgetItem, bool]] = {}
         sItems = self.selectedItems()
         if sItems and (parent := sItems[0].parent()) and all(x.parent() is parent for x in sItems):
             for sItem in sItems:
-                if (pItem := sItem.parent()):
-                    mHandle = str(sItem.data(self.C_DATA, self.D_HANDLE))
-                    mItems[mHandle] = (sItem, pItem, sItem.isExpanded())
-                else:
-                    logger.error("Cannot drag and drop a root item")
-                    event.ignore()
-                    return
-
-            for mHandle in mItems:
+                mHandle = str(sItem.data(self.C_DATA, self.D_HANDLE))
+                mItems[mHandle] = (sItem, sItem.isExpanded())
                 self.propagateCount(mHandle, 0)
 
             super().dropEvent(event)
 
-            for mHandle, (sItem, pItem, isExpanded) in mItems.items():
+            for mHandle, (sItem, isExpanded) in mItems.items():
                 self._postItemMove(mHandle)
                 sItem.setExpanded(isExpanded)
                 self._alertTreeChange(mHandle, flush=False)
@@ -1530,8 +1474,8 @@ class GuiProjectTree(QTreeWidget):
                 SHARED.project.index.reIndexHandle(mHandle)
             self.setTreeItemValues(mHandle)
 
-        # Trigger dependent updates
-        self.propagateCount(tHandle, nwItemS.wordCount)
+        # Update word count
+        self.propagateCount(tHandle, nwItemS.wordCount, countChildren=True)
 
         return
 
@@ -1882,18 +1826,6 @@ class GuiProjectTree(QTreeWidget):
 
         self.projView.treeItemChanged.emit(tHandle)
 
-        return
-
-    def _recordLastMove(self, srcItem: QTreeWidgetItem,
-                        parItem: QTreeWidgetItem, parIndex: int) -> None:
-        """Record the last action so that it can be undone."""
-        prevItem = self._lastMove.get("item", None)
-        if prevItem is None or srcItem != prevItem:
-            self._lastMove = {
-                "item": srcItem,
-                "parent": parItem,
-                "index": parIndex,
-            }
         return
 
 # END Class GuiProjectTree
