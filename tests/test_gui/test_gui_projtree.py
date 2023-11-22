@@ -23,18 +23,20 @@ from __future__ import annotations
 import pytest
 
 from pathlib import Path
+from novelwriter.core.project import NWProject
 
 from tools import C, buildTestProject
 from mocked import causeOSError
 
-from PyQt5.QtGui import QDragMoveEvent, QDropEvent
-from PyQt5.QtCore import QMimeData, QPoint, QTimer, Qt
+from PyQt5.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QMouseEvent
+from PyQt5.QtCore import QEvent, QMimeData, QPoint, QTimer, Qt
 from PyQt5.QtWidgets import QMessageBox, QMenu, QTreeWidget, QTreeWidgetItem, QDialog
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwItemLayout, nwItemType, nwItemClass
+from novelwriter.enum import nwItemLayout, nwItemType, nwItemClass, nwWidget
 from novelwriter.guimain import GuiMain
-from novelwriter.gui.projtree import GuiProjectTree, GuiProjectView
+from novelwriter.core.item import NWItem
+from novelwriter.gui.projtree import GuiProjectTree, GuiProjectView, _TreeContextMenu
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
@@ -50,81 +52,84 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
     project = SHARED.project
 
     # Try to add item with no project
-    assert projView.projTree.newTreeItem(nwItemType.FILE) is False
+    assert projTree.newTreeItem(nwItemType.FILE) is False
 
     # Create a project
     buildTestProject(nwGUI, projPath)
 
     # No itemType set
-    projView.projTree.clearSelection()
-    assert projView.projTree.newTreeItem(None) is False
+    projTree.clearSelection()
+    assert projTree.newTreeItem(None) is False
 
     # Root Items
     # ==========
 
     # No class set
-    assert projView.projTree.newTreeItem(nwItemType.ROOT) is False
+    assert projTree.newTreeItem(nwItemType.ROOT) is False
 
     # Create root item
-    assert projView.projTree.newTreeItem(nwItemType.ROOT, nwItemClass.WORLD) is True
+    assert projTree.newTreeItem(nwItemType.ROOT, nwItemClass.WORLD) is True
     assert "0000000000010" in project.tree
 
     # File/Folder Items
     # =================
 
     # No location selected for new item
-    projView.projTree.clearSelection()
+    projTree.clearSelection()
     caplog.clear()
-    assert projView.projTree.newTreeItem(nwItemType.FILE) is False
-    assert projView.projTree.newTreeItem(nwItemType.FOLDER) is False
+    assert projTree.newTreeItem(nwItemType.FILE) is False
+    assert projTree.newTreeItem(nwItemType.FOLDER) is False
     assert "Did not find anywhere" in caplog.text
 
     # Create new folder as child of Novel folder
     projView.setSelectedHandle(C.hNovelRoot)
-    assert projView.projTree.newTreeItem(nwItemType.FOLDER) is True
+    assert projTree.newTreeItem(nwItemType.FOLDER) is True
     assert project.tree["0000000000011"].itemParent == C.hNovelRoot  # type: ignore
     assert project.tree["0000000000011"].itemRoot == C.hNovelRoot  # type: ignore
     assert project.tree["0000000000011"].itemClass == nwItemClass.NOVEL  # type: ignore
 
     # Add a new file in the new folder
     projView.setSelectedHandle("0000000000011")
-    assert projView.projTree.newTreeItem(nwItemType.FILE) is True
+    assert projTree.newTreeItem(nwItemType.FILE) is True
     assert project.tree["0000000000012"].itemParent == "0000000000011"  # type: ignore
     assert project.tree["0000000000012"].itemRoot == C.hNovelRoot  # type: ignore
     assert project.tree["0000000000012"].itemClass == nwItemClass.NOVEL  # type: ignore
 
     # Add a new chapter next to the other new file
     projView.setSelectedHandle("0000000000012")
-    assert projView.projTree.newTreeItem(nwItemType.FILE, hLevel=2) is True
+    assert projTree.newTreeItem(nwItemType.FILE, hLevel=2) is True
     assert project.tree["0000000000013"].itemParent == "0000000000011"  # type: ignore
     assert project.tree["0000000000013"].itemRoot == C.hNovelRoot  # type: ignore
     assert project.tree["0000000000013"].itemClass == nwItemClass.NOVEL  # type: ignore
     assert nwGUI.openDocument("0000000000013")
     assert nwGUI.docEditor.getText() == "## New Chapter\n\n"
+    assert projTree._getItemWordCount("0000000000013") == 2
 
     # Add a new scene next to the other new file
     projView.setSelectedHandle("0000000000012")
-    assert projView.projTree.newTreeItem(nwItemType.FILE, hLevel=3) is True
+    assert projTree.newTreeItem(nwItemType.FILE, hLevel=3) is True
     assert project.tree["0000000000014"].itemParent == "0000000000011"  # type: ignore
     assert project.tree["0000000000014"].itemRoot == C.hNovelRoot  # type: ignore
     assert project.tree["0000000000014"].itemClass == nwItemClass.NOVEL  # type: ignore
     assert nwGUI.openDocument("0000000000014")
     assert nwGUI.docEditor.getText() == "### New Scene\n\n"
+    assert projTree._getItemWordCount("0000000000014") == 2
 
     # Add a new file to the characters folder
     projView.setSelectedHandle(C.hCharRoot)
-    assert projView.projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True) is True
+    assert projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True) is True
     assert project.tree["0000000000015"].itemParent == C.hCharRoot  # type: ignore
     assert project.tree["0000000000015"].itemRoot == C.hCharRoot  # type: ignore
     assert project.tree["0000000000015"].itemClass == nwItemClass.CHARACTER  # type: ignore
     assert nwGUI.openDocument("0000000000015")
     assert nwGUI.docEditor.getText() == "# New Note\n\n"
+    assert projTree._getItemWordCount("0000000000015") == 2
 
     # Make sure the sibling folder bug trap works
     projView.setSelectedHandle("0000000000013")
     project.tree["0000000000013"].setParent(None)  # This should not happen  # type: ignore
     caplog.clear()
-    assert projView.projTree.newTreeItem(nwItemType.FILE) is False
+    assert projTree.newTreeItem(nwItemType.FILE) is False
     assert "Internal error" in caplog.text
     project.tree["0000000000013"].setParent("0000000000011")  # type: ignore
 
@@ -132,13 +137,17 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
     with monkeypatch.context() as mp:
         mp.setattr(GuiEditLabel, "getLabel", lambda *a, **k: ("", False))
         projView.setSelectedHandle("0000000000013")
-        assert projView.projTree.newTreeItem(nwItemType.FILE) is False
+        assert projTree.newTreeItem(nwItemType.FILE) is False
 
     # Get the trash folder
-    projView.projTree._addTrashRoot()
+    with monkeypatch.context() as mp:
+        mp.setattr(NWProject, "trashFolder", lambda *a: None)
+        assert projTree._addTrashRoot() is None
+
+    assert isinstance(projTree._addTrashRoot(), QTreeWidgetItem)
     trashHandle = project.trashFolder()
     projView.setSelectedHandle(trashHandle)
-    assert projView.projTree.newTreeItem(nwItemType.FILE) is False
+    assert projTree.newTreeItem(nwItemType.FILE) is False
     assert "Cannot add new files or folders to the Trash folder" in caplog.text
 
     # Rename Item
@@ -157,14 +166,14 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
     # ============
 
     # Also check error handling in reveal function
-    assert projView.projTree.revealNewTreeItem("abc") is False
+    assert projTree.revealNewTreeItem("abc") is False
 
     # Add an item that cannot be displayed in the tree
     nHandle = project.newFile("Test", None)  # type: ignore
-    assert projView.projTree.revealNewTreeItem(nHandle) is False
+    assert projTree.revealNewTreeItem(nHandle) is False
 
     # Adding an invalid item directly to the tree should also fail
-    assert projView.projTree._addTreeItem(None) is None
+    assert projTree._addTreeItem(None) is None
 
     # Clean up
     # qtbot.stop()
@@ -182,7 +191,7 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     projTree = nwGUI.projView.projTree
 
     # Try to move item with no project
-    assert projView.projTree.moveTreeItem(1) is False
+    assert projTree.moveTreeItem(1) is False
 
     # Create a project
     buildTestProject(nwGUI, projPath)
@@ -244,17 +253,12 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         "0000000000010", "0000000000011", "0000000000012",
     ]
 
-    # Move down again, and restore via undo
+    # Move down again
     projView.setSelectedHandle("0000000000011")
     assert projTree.moveTreeItem(1) is True
     assert projTree.getTreeFromHandle(C.hChapterDir) == [
         C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010", "0000000000012", "0000000000011",
-    ]
-    assert projTree.undoLastMove() is True
-    assert projTree.getTreeFromHandle(C.hChapterDir) == [
-        C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
-        "0000000000010", "0000000000011", "0000000000012",
     ]
 
     # Root Folder
@@ -517,125 +521,6 @@ def testGuiProjTree_EmptyTrash(qtbot, caplog, monkeypatch, nwGUI, projPath, mock
     nwGUI.closeProject()
 
 # END Test testGuiProjTree_EmptyTrash
-
-
-@pytest.mark.gui
-def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
-    """Test the building of the project tree context menu. All this does
-    is test that the menu builds. It doesn't open the actual menu,
-    """
-    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
-    monkeypatch.setattr(QMenu, "exec_", lambda *a: None)
-
-    # Create a project
-    buildTestProject(nwGUI, projPath)
-
-    # Handles for new objects
-    hCharNote     = "0000000000011"
-    hNovelNote    = "0000000000012"
-    hSubNote      = "0000000000013"
-    hNewFolderOne = "0000000000014"
-    hNewFolderTwo = "0000000000016"
-
-    projView = nwGUI.projView
-    projTree = nwGUI.projView.projTree
-    projTree.setExpandedFromHandle(None, True)
-
-    projTree._addTrashRoot()
-    hTrashRoot = SHARED.project.tree.trashRoot
-
-    projTree.setSelectedHandle(C.hCharRoot)
-    projTree.newTreeItem(nwItemType.FILE)
-    projTree.setSelectedHandle(C.hNovelRoot)
-    projTree.newTreeItem(nwItemType.FILE, isNote=True)
-
-    SHARED.project.newFile("SubNote", hNovelNote)
-    projTree.revealNewTreeItem(hSubNote)
-    assert SHARED.project.tree[hSubNote].itemParent == hNovelNote  # type: ignore
-
-    def itemPos(tHandle):
-        return projTree.visualItemRect(projTree._getTreeItem(tHandle)).center()
-
-    # No item under menu
-    assert projTree._openContextMenu(projTree.viewport().rect().bottomRight()) is False
-
-    # Generate the possible menu combinations
-    assert projTree._openContextMenu(itemPos(hTrashRoot)) is True
-    assert projTree._openContextMenu(itemPos(C.hNovelRoot)) is True
-    assert projTree._openContextMenu(itemPos(hNovelNote)) is True
-    assert projTree._openContextMenu(itemPos(C.hTitlePage)) is True
-    assert projTree._openContextMenu(itemPos(C.hChapterDir)) is True
-    assert projTree._openContextMenu(itemPos(C.hChapterDoc)) is True
-    assert projTree._openContextMenu(itemPos(C.hCharRoot)) is True
-    assert projTree._openContextMenu(itemPos(hCharNote)) is True
-    assert projTree._openContextMenu(itemPos(hNovelNote)) is True
-
-    # Check the keyboard shortcut handler as well
-    projTree.setSelectedHandle(C.hNovelRoot)
-    assert projTree.openContextOnSelected() is True
-    projTree.clearSelection()
-    assert projTree.openContextOnSelected() is False
-
-    # Direct Edit Functions
-    # =====================
-    # Trigger the dedicated functions the menu entries connect to
-    nwItem = SHARED.project.tree[hNovelNote]
-    assert nwItem is not None
-
-    # Toggle active flag
-    assert nwItem.isActive is True
-    projTree._toggleItemActive(hNovelNote)
-    assert nwItem.isActive is False
-
-    # Change item status
-    assert nwItem.itemStatus == "s000000"
-    projTree._changeItemStatus(hNovelNote, "s000001")
-    assert nwItem.itemStatus == "s000001"
-
-    # Change item importance
-    assert nwItem.itemImport == "i000004"
-    projTree._changeItemImport(hNovelNote, "i000005")
-    assert nwItem.itemImport == "i000005"
-
-    # Change item layout
-    assert nwItem.itemLayout == nwItemLayout.NOTE
-    projTree._changeItemLayout(hNovelNote, nwItemLayout.DOCUMENT)
-    assert nwItem.itemLayout == nwItemLayout.DOCUMENT
-    projTree._changeItemLayout(hNovelNote, nwItemLayout.NOTE)
-    assert nwItem.itemLayout == nwItemLayout.NOTE
-
-    # Convert Folders to Documents
-    # ============================
-
-    projView.setSelectedHandle(hNovelNote)
-    assert projView.projTree.newTreeItem(nwItemType.FOLDER) is True
-    projView.setSelectedHandle(hNewFolderOne)
-    assert projView.projTree.newTreeItem(nwItemType.FILE) is True
-
-    projView.setSelectedHandle(hNovelNote)
-    assert projView.projTree.newTreeItem(nwItemType.FOLDER) is True
-    projView.setSelectedHandle(hNewFolderTwo)
-    assert projView.projTree.newTreeItem(nwItemType.FILE, isNote=True) is True
-
-    # Click no on the dialog
-    with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
-        projTree._covertFolderToFile(hNewFolderOne, nwItemLayout.DOCUMENT)
-        assert SHARED.project.tree[hNewFolderOne].isFolderType()  # type: ignore
-
-    # Convert the first folder to a document
-    projTree._covertFolderToFile(hNewFolderOne, nwItemLayout.DOCUMENT)
-    assert SHARED.project.tree[hNewFolderOne].isFileType()  # type: ignore
-    assert SHARED.project.tree[hNewFolderOne].isDocumentLayout()  # type: ignore
-
-    # Convert the second folder to a note
-    projTree._covertFolderToFile(hNewFolderTwo, nwItemLayout.NOTE)
-    assert SHARED.project.tree[hNewFolderTwo].isFileType()  # type: ignore
-    assert SHARED.project.tree[hNewFolderTwo].isNoteLayout()  # type: ignore
-
-    # qtbot.stop()
-
-# END Test testGuiProjTree_ContextMenu
 
 
 @pytest.mark.gui
@@ -988,17 +873,14 @@ def testGuiProjTree_DragAndDrop(qtbot, monkeypatch, caplog, nwGUI: GuiMain, proj
     mouse = Qt.MouseButton.LeftButton
     modifier = Qt.KeyboardModifier.NoModifier
 
-    # Move an item
-    # The actual move is blocked, but the undo history should record
-    # the event, although without an actual move implied
-    assert projTree._lastMove == {}
+    projTree.saveTreeOrder()
+    treeOrder = SHARED.project.tree._order
+
+    # Move an item, but no selection
     event = QDropEvent(nPos, action, mime, mouse, modifier)
     projTree.dropEvent(event)
-    assert projTree._lastMove == {
-        "item": projTree._getTreeItem(C.hSceneDoc),
-        "parent": projTree._getTreeItem(C.hChapterDir),
-        "index": 1,
-    }
+    projTree.saveTreeOrder()
+    assert SHARED.project.tree._order == treeOrder
 
     # Invalid location
     caplog.clear()
@@ -1006,23 +888,58 @@ def testGuiProjTree_DragAndDrop(qtbot, monkeypatch, caplog, nwGUI: GuiMain, proj
     projTree.dropEvent(event)
     assert event.isAccepted() is False
     assert "Invalid drop location" in caplog.text
-
-    # No item selected
-    caplog.clear()
-    event = QDropEvent(nPos, action, mime, mouse, modifier)
-    projTree.clearSelection()
-    projTree.dropEvent(event)
-    assert event.isAccepted() is False
-    assert "Invalid drag and drop event" in caplog.text
+    projTree.saveTreeOrder()
+    assert SHARED.project.tree._order == treeOrder
 
     # Root item selected
     caplog.clear()
     event = QDropEvent(nPos, action, mime, mouse, modifier)
     projTree.clearSelection()
-    projTree.setSelectedHandle(C.hNovelRoot, True)
+    projTree._getTreeItem(C.hTitlePage).setSelected(True)  # type: ignore
+    projTree._getTreeItem(C.hNovelRoot).setSelected(True)  # type: ignore
     projTree.dropEvent(event)
     assert event.isAccepted() is False
-    assert "Invalid drag and drop event" in caplog.text
+    projTree.saveTreeOrder()
+    assert SHARED.project.tree._order == treeOrder
+
+    # Make sure illegal drag events are cancelled
+    with monkeypatch.context() as mp:
+        mp.setattr(QTreeWidget, "dragEnterEvent", lambda *a: None)
+        mime = QMimeData()
+        mime.setText("foobar")
+        event = QDragEnterEvent(nPos, action, mime, mouse, modifier)
+        projTree.clearSelection()
+        projTree._getTreeItem(C.hNovelRoot).setSelected(True)  # type: ignore
+        projTree._getTreeItem(C.hTitlePage).setSelected(True)  # type: ignore
+        projTree._getTreeItem(C.hChapterDoc).setSelected(True)  # type: ignore
+        assert projTree.selectedItems() == [  # Novel Root selection is cancelled automatically
+            projTree._getTreeItem(C.hTitlePage), projTree._getTreeItem(C.hChapterDoc)
+        ]
+        projTree.dragEnterEvent(event)
+        assert mime.text() == ""
+        assert projTree._popAlert is not None
+
+    # Pop the alert
+    with monkeypatch.context() as mp:
+        mp.setattr(QTreeWidget, "startDrag", lambda *a: None)
+        projTree.startDrag(None)  # type: ignore
+        assert projTree._popAlert is None
+
+    # Valid drag events are processed
+    with monkeypatch.context() as mp:
+        mp.setattr(QTreeWidget, "dragEnterEvent", lambda *a: None)
+        mime = QMimeData()
+        mime.setText("foobar")
+        event = QDragEnterEvent(nPos, action, mime, mouse, modifier)
+        projTree.clearSelection()
+        projTree._getTreeItem(C.hChapterDoc).setSelected(True)  # type: ignore
+        projTree._getTreeItem(C.hSceneDoc).setSelected(True)  # type: ignore
+        assert projTree.selectedItems() == [  # Novel Root selection is cancelled automatically
+            projTree._getTreeItem(C.hChapterDoc), projTree._getTreeItem(C.hSceneDoc)
+        ]
+        projTree.dragEnterEvent(event)
+        assert mime.text() == "foobar"
+        assert projTree._popAlert is None
 
     # qtbot.stop()
 
@@ -1069,22 +986,6 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd)
     nHandle = SHARED.project.newFile("Test", C.hNovelRoot)
     SHARED.project.tree[nHandle].setParent(C.hInvalid)  # type: ignore
     assert projTree.revealNewTreeItem(nHandle) is False
-
-    # Method: undoLastMove
-    # ====================
-
-    # Nothing to move
-    assert projTree.undoLastMove() is False
-
-    projTree._lastMove["item"] = QTreeWidgetItem()
-    projTree._lastMove["parent"] = QTreeWidgetItem()
-    projTree._lastMove["index"] = 0
-    assert projTree.undoLastMove() is False
-
-    projTree._lastMove["item"] = projTree._treeMap[C.hTitlePage]
-    projTree._lastMove["parent"] = QTreeWidgetItem()
-    projTree._lastMove["index"] = 0
-    assert projTree.undoLastMove() is False
 
     # Slot: _treeDoubleClick
     # ======================
@@ -1166,6 +1067,330 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd)
     projTree.moveToLevel(1)
     assert projTree.getSelectedHandle() is None
 
+    # Mouse Button Clicks
+    # ===================
+
+    eType = QEvent.Type.MouseButtonPress
+    pos = projTree.visualItemRect(projTree._getTreeItem(C.hChapterDoc)).center()
+    button = Qt.MouseButton.MiddleButton
+    modifier = Qt.KeyboardModifier.NoModifier
+
+    # Trigger the viewer
+    event = QMouseEvent(eType, pos, button, button, modifier)
+    projTree.mousePressEvent(event)
+    assert nwGUI.docViewer.docHandle == C.hChapterDoc
+
+    # Trigger the left click clear
+    pos = QPoint(5000, 5000)
+    button = Qt.MouseButton.LeftButton
+    event = QMouseEvent(eType, pos, button, button, modifier)
+    projTree.setSelectedHandle(C.hChapterDoc)
+    projTree.mousePressEvent(event)
+    assert projTree.selectedItems() == []
+
+    # Rename Item
+    # ===========
+
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiEditLabel, "getLabel", lambda *a, **k: ("FooBar", True))
+        projTree.clearSelection()
+        assert SHARED.project.tree[C.hChapterDoc].itemName == "New Chapter"  # type: ignore
+        assert projView.renameTreeItem(C.hChapterDoc) is True
+        assert SHARED.project.tree[C.hChapterDoc].itemName == "FooBar"  # type: ignore
+
+        projTree.setSelectedHandle(C.hSceneDoc)
+        assert SHARED.project.tree[C.hSceneDoc].itemName == "New Scene"  # type: ignore
+        assert projView.renameTreeItem() is True
+        assert SHARED.project.tree[C.hSceneDoc].itemName == "FooBar"  # type: ignore
+
+    # Check Crash Resistance
+    # ======================
+    projTree._postItemMove("dfghj")  # This should exit cleanly
+
     # qtbot.stop()
 
 # END Test testGuiProjTree_Other
+
+
+@pytest.mark.gui
+def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test the building of the project tree context menu. All this does
+    is test that the menu builds. It doesn't open the actual menu,
+    """
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
+
+    # Create a project
+    buildTestProject(nwGUI, projPath)
+    nwGUI.openProject(projPath)
+    nwGUI.switchFocus(nwWidget.TREE)
+
+    # Handles for new objects
+    hCharNote     = "0000000000011"
+    hNovelNote    = "0000000000012"
+    hSubNote      = "0000000000013"
+    hNewFolderOne = "0000000000014"
+    hNewFolderTwo = "0000000000016"
+
+    projView = nwGUI.projView
+    projTree = nwGUI.projView.projTree
+    projTree.setExpandedFromHandle(None, True)
+
+    projTree._addTrashRoot()
+    hTrashRoot = SHARED.project.tree.trashRoot
+
+    projTree.setSelectedHandle(C.hCharRoot)
+    projTree.newTreeItem(nwItemType.FILE)
+    projTree.setSelectedHandle(C.hNovelRoot)
+    projTree.newTreeItem(nwItemType.FILE, isNote=True)
+
+    SHARED.project.newFile("SubNote", hNovelNote)
+    projTree.revealNewTreeItem(hSubNote)
+    assert SHARED.project.tree[hSubNote].itemParent == hNovelNote  # type: ignore
+
+    def itemPos(tHandle):
+        return projTree.visualItemRect(projTree._getTreeItem(tHandle)).center()
+
+    # Pop the menu
+    with monkeypatch.context() as mp:
+        mp.setattr(QMenu, "exec_", lambda *a: None)
+        projTree.clearSelection()
+
+        # No item under menu
+        assert projTree._openContextMenu(projTree.viewport().rect().bottomRight()) is False
+
+        # Open Trash Menu
+        assert projTree._openContextMenu(itemPos(hTrashRoot)) is True
+
+        # Open Single Select Menu
+        assert projTree._openContextMenu(itemPos(C.hNovelRoot)) is True
+
+        # Open Multi-Select Menu
+        projTree._getTreeItem(hNovelNote).setSelected(True)
+        projTree._getTreeItem(hSubNote).setSelected(True)
+        assert projTree._openContextMenu(itemPos(hCharNote)) is True
+
+        # Check the keyboard shortcut handler as well
+        projTree.setSelectedHandle(C.hNovelRoot)
+        assert projTree.openContextOnSelected() is True
+        projTree.clearSelection()
+        assert projTree.openContextOnSelected() is False
+
+    # Menu Builders
+    # =============
+
+    # Context Menu on Root Item
+    nwItem = SHARED.project.tree[C.hNovelRoot]
+    assert isinstance(nwItem, NWItem)
+    ctxMenu = _TreeContextMenu(projTree, nwItem)
+    ctxMenu.buildSingleSelectMenu(True)
+    actions = [x.text() for x in ctxMenu.actions() if x.text()]
+    assert actions == [
+        "Rename", "Set Status to ...", "Expand All", "Collapse All",
+        "Duplicate from Here", "Delete Permanently",
+    ]
+
+    # Context Menu on Folder Item
+    nwItem = SHARED.project.tree[C.hChapterDir]
+    assert isinstance(nwItem, NWItem)
+    ctxMenu = _TreeContextMenu(projTree, nwItem)
+    ctxMenu.buildSingleSelectMenu(True)
+    actions = [x.text() for x in ctxMenu.actions() if x.text()]
+    assert actions == [
+        "Rename", "Set Status to ...", "Transform", "Expand All", "Collapse All",
+        "Duplicate from Here", "Move to Trash",
+    ]
+
+    def getTransformSubMenu(menu: QMenu) -> list[str]:
+        for action in menu.actions():
+            if action.text() == "Transform":
+                return [x.text() for x in action.menu().actions() if x.text()]
+        return []
+
+    # Context Menu on Document File Item
+    nwItem = SHARED.project.tree[C.hChapterDoc]
+    assert isinstance(nwItem, NWItem)
+    ctxMenu = _TreeContextMenu(projTree, nwItem)
+    ctxMenu.buildSingleSelectMenu(True)
+    actions = [x.text() for x in ctxMenu.actions() if x.text()]
+    assert actions == [
+        "Open Document", "View Document", "Rename", "Toggle Active", "Set Status to ...",
+        "Transform", "Expand All", "Collapse All", "Duplicate from Here", "Move to Trash",
+    ]
+    assert getTransformSubMenu(ctxMenu) == [
+        "Convert to Project Note", "Merge Child Items into Self",
+        "Merge Child Items into New", "Split Document by Headers"
+    ]
+
+    # Context Menu on Note File Item in Character Folder
+    nwItem = SHARED.project.tree[hCharNote]
+    assert isinstance(nwItem, NWItem)
+    ctxMenu = _TreeContextMenu(projTree, nwItem)
+    ctxMenu.buildSingleSelectMenu(False)
+    actions = [x.text() for x in ctxMenu.actions() if x.text()]
+    assert actions == [
+        "Open Document", "View Document", "Rename", "Toggle Active", "Set Importance to ...",
+        "Transform", "Duplicate Document", "Move to Trash",
+    ]
+    assert getTransformSubMenu(ctxMenu) == [
+        "Split Document by Headers",
+    ]
+
+    # Context Menu on Note File Item in Novel Tree
+    nwItem = SHARED.project.tree[hNovelNote]
+    assert isinstance(nwItem, NWItem)
+    ctxMenu = _TreeContextMenu(projTree, nwItem)
+    ctxMenu.buildSingleSelectMenu(False)
+    actions = [x.text() for x in ctxMenu.actions() if x.text()]
+    assert actions == [
+        "Open Document", "View Document", "Rename", "Toggle Active", "Set Status to ...",
+        "Transform", "Duplicate Document", "Move to Trash",
+    ]
+    assert getTransformSubMenu(ctxMenu) == [
+        "Convert to Novel Document", "Split Document by Headers",
+    ]
+
+    # Context Menu on Multiple Items, Clicked on Document
+    nwItem = SHARED.project.tree[hNovelNote]
+    assert isinstance(nwItem, NWItem)
+    ctxMenu = _TreeContextMenu(projTree, nwItem)
+    ctxMenu.buildMultiSelectMenu([hCharNote, hNovelNote, hSubNote])
+    actions = [x.text() for x in ctxMenu.actions() if x.text()]
+    assert actions == [
+        "Set Active to ...", "Set Status to ...", "Move to Trash",
+    ]
+
+    # Context Menu on Multiple Items, Clicked on Note
+    nwItem = SHARED.project.tree[hCharNote]
+    assert isinstance(nwItem, NWItem)
+    ctxMenu = _TreeContextMenu(projTree, nwItem)
+    ctxMenu.buildMultiSelectMenu([hCharNote, hNovelNote, hSubNote])
+    actions = [x.text() for x in ctxMenu.actions() if x.text()]
+    assert actions == [
+        "Set Active to ...", "Set Importance to ...", "Move to Trash",
+    ]
+
+    # Direct Edit Functions, Single
+    # =============================
+
+    nwItem = SHARED.project.tree[hNovelNote]
+    assert isinstance(nwItem, NWItem)
+
+    # # Toggle active flag
+    ctxMenu = _TreeContextMenu(projTree, nwItem)
+    ctxMenu.buildSingleSelectMenu(False)
+    assert nwItem.isActive is True
+    ctxMenu._toggleItemActive()
+    assert nwItem.isActive is False
+
+    # Change item status
+    assert nwItem.itemStatus == "s000000"
+    ctxMenu._changeItemStatus("s000001")
+    assert nwItem.itemStatus == "s000001"
+
+    # Change item importance
+    assert nwItem.itemImport == "i000004"
+    ctxMenu._changeItemImport("i000005")
+    assert nwItem.itemImport == "i000005"
+
+    # Change item layout
+    assert nwItem.itemLayout == nwItemLayout.NOTE
+    ctxMenu._changeItemLayout(nwItemLayout.DOCUMENT)
+    assert nwItem.itemLayout == nwItemLayout.DOCUMENT
+    ctxMenu._changeItemLayout(nwItemLayout.NOTE)
+    assert nwItem.itemLayout == nwItemLayout.NOTE
+
+    # Convert Folders to Documents
+    # ============================
+
+    projView.setSelectedHandle(hNovelNote)
+    assert projTree.newTreeItem(nwItemType.FOLDER) is True
+    projView.setSelectedHandle(hNewFolderOne)
+    assert projTree.newTreeItem(nwItemType.FILE) is True
+
+    projView.setSelectedHandle(hNovelNote)
+    assert projTree.newTreeItem(nwItemType.FOLDER) is True
+    projView.setSelectedHandle(hNewFolderTwo)
+    assert projTree.newTreeItem(nwItemType.FILE, isNote=True) is True
+
+    nwItem = SHARED.project.tree[hNewFolderOne]
+    assert isinstance(nwItem, NWItem)
+    ctxMenu = _TreeContextMenu(projTree, nwItem)
+    ctxMenu.buildSingleSelectMenu(False)
+
+    # Click no on the dialog
+    with monkeypatch.context() as mp:
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
+        ctxMenu._covertFolderToFile(nwItemLayout.DOCUMENT)
+        assert SHARED.project.tree[hNewFolderOne].isFolderType()  # type: ignore
+
+    # Convert the first folder to a document
+    ctxMenu._covertFolderToFile(nwItemLayout.DOCUMENT)
+    assert SHARED.project.tree[hNewFolderOne].isFileType()  # type: ignore
+    assert SHARED.project.tree[hNewFolderOne].isDocumentLayout()  # type: ignore
+
+    nwItem = SHARED.project.tree[hNewFolderTwo]
+    assert isinstance(nwItem, NWItem)
+    ctxMenu = _TreeContextMenu(projTree, nwItem)
+    ctxMenu.buildSingleSelectMenu(False)
+
+    # Convert the second folder to a note
+    ctxMenu._covertFolderToFile(nwItemLayout.NOTE)
+    assert SHARED.project.tree[hNewFolderTwo].isFileType()  # type: ignore
+    assert SHARED.project.tree[hNewFolderTwo].isNoteLayout()  # type: ignore
+
+    # Direct Edit Functions, Multi
+    # ============================
+
+    nwItem = SHARED.project.tree[hCharNote]
+    assert isinstance(nwItem, NWItem)
+    ctxMenu = _TreeContextMenu(projTree, nwItem)
+    ctxMenu.buildMultiSelectMenu([hCharNote, hNovelNote, hSubNote])
+
+    projTree.clearSelection()
+    projTree._getTreeItem(hCharNote).setSelected(True)
+    projTree._getTreeItem(hNovelNote).setSelected(True)
+    projTree._getTreeItem(hSubNote).setSelected(True)
+
+    # Item Active
+    assert SHARED.project.tree[hCharNote].isActive is True  # type: ignore
+    assert SHARED.project.tree[hNovelNote].isActive is False  # type: ignore
+    assert SHARED.project.tree[hSubNote].isActive is True  # type: ignore
+    ctxMenu._iterItemActive(False)
+    assert SHARED.project.tree[hCharNote].isActive is False  # type: ignore
+    assert SHARED.project.tree[hNovelNote].isActive is False  # type: ignore
+    assert SHARED.project.tree[hSubNote].isActive is False  # type: ignore
+    ctxMenu._iterItemActive(True)
+    assert SHARED.project.tree[hCharNote].isActive is True  # type: ignore
+    assert SHARED.project.tree[hNovelNote].isActive is True  # type: ignore
+    assert SHARED.project.tree[hSubNote].isActive is True  # type: ignore
+
+    # Item Status
+    assert SHARED.project.tree[hCharNote].itemStatus  == "s000000"  # type: ignore
+    assert SHARED.project.tree[hNovelNote].itemStatus == "s000001"  # type: ignore
+    assert SHARED.project.tree[hSubNote].itemStatus   == "s000000"  # type: ignore
+    ctxMenu._iterSetItemStatus("s000003")
+    assert SHARED.project.tree[hCharNote].itemStatus  == "s000000"  # type: ignore
+    assert SHARED.project.tree[hNovelNote].itemStatus == "s000003"  # type: ignore
+    assert SHARED.project.tree[hSubNote].itemStatus   == "s000003"  # type: ignore
+
+    # Item Importance
+    assert SHARED.project.tree[hCharNote].itemImport  == "i000004"  # type: ignore
+    assert SHARED.project.tree[hNovelNote].itemImport == "i000005"  # type: ignore
+    assert SHARED.project.tree[hSubNote].itemImport   == "i000004"  # type: ignore
+    ctxMenu._iterSetItemImport("i000007")
+    assert SHARED.project.tree[hCharNote].itemImport  == "i000007"  # type: ignore
+    assert SHARED.project.tree[hNovelNote].itemImport == "i000005"  # type: ignore
+    assert SHARED.project.tree[hSubNote].itemImport   == "i000004"  # type: ignore
+
+    # Move to Trash
+    assert SHARED.project.tree[hCharNote].itemRoot  == C.hCharRoot   # type: ignore
+    assert SHARED.project.tree[hNovelNote].itemRoot == C.hNovelRoot  # type: ignore
+    assert SHARED.project.tree[hSubNote].itemRoot   == C.hNovelRoot  # type: ignore
+    ctxMenu._iterMoveToTrash()
+    assert SHARED.project.tree[hCharNote].itemRoot  == hTrashRoot  # type: ignore
+    assert SHARED.project.tree[hNovelNote].itemRoot == hTrashRoot  # type: ignore
+    assert SHARED.project.tree[hSubNote].itemRoot   == hTrashRoot  # type: ignore
+
+    # qtbot.stop()
+
+# END Test testGuiProjTree_ContextMenu
