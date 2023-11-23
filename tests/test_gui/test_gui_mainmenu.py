@@ -18,14 +18,15 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import pytest
+
+from tools import C, writeFile, buildTestProject
 
 from PyQt5.QtGui import QTextCursor, QTextBlock
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
-
-from tools import C, writeFile, buildTestProject
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction, nwDocInsert

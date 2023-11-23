@@ -18,9 +18,8 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
-from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QDesktopServices
 import pytest
 
 from pathlib import Path
@@ -28,6 +27,8 @@ from pytestqt.qtbot import QtBot
 
 from tools import buildTestProject
 
+from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtCore import QUrl
 from PyQt5.QtWidgets import QDialogButtonBox, QFileDialog, QListWidgetItem, QMessageBox
 
 from novelwriter.enum import nwBuildFmt

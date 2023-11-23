@@ -18,9 +18,9 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import pytest
-from novelwriter.dialogs.editlabel import GuiEditLabel
 
 from tools import C, buildTestProject
 from mocked import causeOSError
@@ -34,6 +34,7 @@ from novelwriter.enum import nwDocAction, nwDocInsert, nwItemLayout, nwTrinary, 
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.core.index import countWords
 from novelwriter.gui.doceditor import GuiDocEditor, GuiDocToolBar
+from novelwriter.dialogs.editlabel import GuiEditLabel
 
 KEY_DELAY = 1
 
