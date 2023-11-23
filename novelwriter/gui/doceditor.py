@@ -1067,49 +1067,48 @@ class GuiDocEditor(QPlainTextEdit):
 
     @pyqtSlot("QPoint")
     def _openContextMenu(self, pos: QPoint) -> None:
-        """Triggered by right click to open the context menu. Also
-        triggered by the Ctrl+. shortcut.
-        """
+        """Open the editor context menu at a given coordinate."""
         uCursor = self.textCursor()
         pCursor = self.cursorForPosition(pos)
         pBlock = pCursor.block()
 
         ctxMenu = QMenu(self)
+        ctxMenu.setObjectName("ContextMenu")
         if pBlock.userState() == GuiDocHighlighter.BLOCK_TITLE:
-            aLabel = ctxMenu.addAction(self.tr("Set as Document Name"))
-            aLabel.triggered.connect(lambda: self._emitRenameItem(pBlock))
+            action = ctxMenu.addAction(self.tr("Set as Document Name"))
+            action.triggered.connect(lambda: self._emitRenameItem(pBlock))
 
         # Follow
         status = self._processTag(cursor=pCursor, follow=False)
         if status == nwTrinary.POSITIVE:
-            aTag = ctxMenu.addAction(self.tr("Follow Tag"))
-            aTag.triggered.connect(lambda: self._processTag(cursor=pCursor, follow=True))
+            action = ctxMenu.addAction(self.tr("Follow Tag"))
+            action.triggered.connect(lambda: self._processTag(cursor=pCursor, follow=True))
             ctxMenu.addSeparator()
         elif status == nwTrinary.NEGATIVE:
-            aTag = ctxMenu.addAction(self.tr("Create Note for Tag"))
-            aTag.triggered.connect(lambda: self._processTag(cursor=pCursor, create=True))
+            action = ctxMenu.addAction(self.tr("Create Note for Tag"))
+            action.triggered.connect(lambda: self._processTag(cursor=pCursor, create=True))
             ctxMenu.addSeparator()
 
         # Cut, Copy and Paste
         if uCursor.hasSelection():
-            aCut = ctxMenu.addAction(self.tr("Cut"))
-            aCut.triggered.connect(lambda: self.docAction(nwDocAction.CUT))
-            aCopy = ctxMenu.addAction(self.tr("Copy"))
-            aCopy.triggered.connect(lambda: self.docAction(nwDocAction.COPY))
+            action = ctxMenu.addAction(self.tr("Cut"))
+            action.triggered.connect(lambda: self.docAction(nwDocAction.CUT))
+            action = ctxMenu.addAction(self.tr("Copy"))
+            action.triggered.connect(lambda: self.docAction(nwDocAction.COPY))
 
-        aPaste = ctxMenu.addAction(self.tr("Paste"))
-        aPaste.triggered.connect(lambda: self.docAction(nwDocAction.PASTE))
+        action = ctxMenu.addAction(self.tr("Paste"))
+        action.triggered.connect(lambda: self.docAction(nwDocAction.PASTE))
         ctxMenu.addSeparator()
 
         # Selections
-        aSAll = ctxMenu.addAction(self.tr("Select All"))
-        aSAll.triggered.connect(lambda: self.docAction(nwDocAction.SEL_ALL))
-        aSWrd = ctxMenu.addAction(self.tr("Select Word"))
-        aSWrd.triggered.connect(
+        action = ctxMenu.addAction(self.tr("Select All"))
+        action.triggered.connect(lambda: self.docAction(nwDocAction.SEL_ALL))
+        action = ctxMenu.addAction(self.tr("Select Word"))
+        action.triggered.connect(
             lambda: self._makePosSelection(QTextCursor.SelectionType.WordUnderCursor, pos)
         )
-        aSPar = ctxMenu.addAction(self.tr("Select Paragraph"))
-        aSPar.triggered.connect(lambda: self._makePosSelection(
+        action = ctxMenu.addAction(self.tr("Select Paragraph"))
+        action.triggered.connect(lambda: self._makePosSelection(
             QTextCursor.SelectionType.BlockUnderCursor, pos)
         )
 
@@ -1128,16 +1127,16 @@ class GuiDocEditor(QPlainTextEdit):
                     ctxMenu.addSeparator()
                     ctxMenu.addAction(self.tr("Spelling Suggestion(s)"))
                     for option in suggest[:15]:
-                        aFix = ctxMenu.addAction(f"{nwUnicode.U_ENDASH} {option}")
-                        aFix.triggered.connect(
+                        action = ctxMenu.addAction(f"{nwUnicode.U_ENDASH} {option}")
+                        action.triggered.connect(
                             lambda _, option=option: self._correctWord(sCursor, option)
                         )
                 else:
                     ctxMenu.addAction("%s %s" % (nwUnicode.U_ENDASH, self.tr("No Suggestions")))
 
                 ctxMenu.addSeparator()
-                aAdd = ctxMenu.addAction(self.tr("Add Word to Dictionary"))
-                aAdd.triggered.connect(lambda: self._addWord(word, block))
+                action = ctxMenu.addAction(self.tr("Add Word to Dictionary"))
+                action.triggered.connect(lambda: self._addWord(word, block))
 
         # Execute the context menu
         ctxMenu.exec_(self.viewport().mapToGlobal(pos))
