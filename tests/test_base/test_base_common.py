@@ -20,6 +20,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
 import time
+from PyQt5.QtCore import QUrl
+from PyQt5.QtGui import QDesktopServices
 import pytest
 
 from pathlib import Path
@@ -32,10 +34,10 @@ from novelwriter.guimain import GuiMain
 from novelwriter.common import (
     checkBool, checkFloat, checkHandle, checkInt, checkIntTuple, checkPath,
     checkString, checkStringNone, checkUuid, formatInt, formatTime,
-    formatTimeStamp, fuzzyTime, getGuiItem, hexToInt, isHandle, isItemClass,
-    isItemLayout, isItemType, isTitleTag, jsonEncode, makeFileNameSafe, minmax,
-    numberToRoman, NWConfigParser, readTextFile, simplified, transferCase,
-    xmlIndent, yesNo
+    formatTimeStamp, fuzzyTime, getFileSize, getGuiItem, hexToInt, isHandle,
+    isItemClass, isItemLayout, isItemType, isTitleTag, jsonEncode,
+    makeFileNameSafe, minmax, numberToRoman, NWConfigParser, openExternalPath,
+    readTextFile, simplified, transferCase, xmlIndent, yesNo
 )
 
 
@@ -619,6 +621,37 @@ def testBaseCommon_makeFileNameSafe():
     assert makeFileNameSafe("Stuff œﬁ2⁵") == "Stuff œfi25"
 
 # END Test testBaseCommon_makeFileNameSafe
+
+
+@pytest.mark.base
+def testBaseCommon_getFileSize(fncPath):
+    """Test the getFileSize function."""
+    (fncPath / "one.txt").write_bytes(b"foobar")
+    (fncPath / "two.txt").touch()
+
+    assert getFileSize(fncPath / "nope.txt") == -1
+    assert getFileSize(fncPath / "one.txt") == 6
+    assert getFileSize(fncPath / "two.txt") == 0
+
+# END Test testBaseCommon_getFileSize
+
+
+@pytest.mark.base
+def testBaseCommon_openExternalPath(monkeypatch, tstPaths):
+    """Test the openExternalPath function."""
+    lastUrl = ""
+
+    def mockOpenUrl(url: QUrl) -> None:
+        nonlocal lastUrl
+        lastUrl = url.toString()
+        return
+
+    monkeypatch.setattr(QDesktopServices, "openUrl", mockOpenUrl)
+    assert openExternalPath(Path("/foo/bar")) is False
+    assert openExternalPath(tstPaths.tmpDir) is True
+    assert lastUrl.startswith("file://")
+
+# END Test testBaseCommon_openExternalPath
 
 
 @pytest.mark.base
