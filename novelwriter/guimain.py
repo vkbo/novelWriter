@@ -285,6 +285,7 @@ class GuiMain(QMainWindow):
         self.docEditor.closeDocumentRequest.connect(self.closeDocEditor)
         self.docEditor.toggleFocusModeRequest.connect(self.toggleFocusMode)
         self.docEditor.requestProjectItemSelected.connect(self.projView.setSelectedHandle)
+        self.docEditor.requestProjectItemRenamed.connect(self.projView.renameTreeItem)
 
         self.docViewer.documentLoaded.connect(self.docViewerPanel.updateHandle)
         self.docViewer.loadDocumentTagRequest.connect(self._followTag)

@@ -98,6 +98,7 @@ class GuiDocEditor(QPlainTextEdit):
     closeDocumentRequest = pyqtSignal()
     toggleFocusModeRequest = pyqtSignal()
     requestProjectItemSelected = pyqtSignal(str, bool)
+    requestProjectItemRenamed = pyqtSignal(str, str)
 
     def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
@@ -371,7 +372,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         return
 
-    def loadText(self, tHandle, tLine=None) -> bool:
+    def loadText(self, tHandle: str, tLine=None) -> bool:
         """Load text from a document into the editor. If we have an I/O
         error, we must handle this and clear the editor so that we don't
         risk overwriting the file if it exists. This can for instance
@@ -1071,8 +1072,12 @@ class GuiDocEditor(QPlainTextEdit):
         """
         uCursor = self.textCursor()
         pCursor = self.cursorForPosition(pos)
+        pBlock = pCursor.block()
 
         ctxMenu = QMenu(self)
+        if pBlock.userState() == GuiDocHighlighter.BLOCK_TITLE:
+            aLabel = ctxMenu.addAction(self.tr("Set as Document Name"))
+            aLabel.triggered.connect(lambda: self._emitRenameItem(pBlock))
 
         # Follow
         status = self._processTag(cursor=pCursor, follow=False)
@@ -1866,6 +1871,13 @@ class GuiDocEditor(QPlainTextEdit):
             return nwTrinary.POSITIVE if exist else nwTrinary.NEGATIVE
 
         return nwTrinary.NEUTRAL
+
+    def _emitRenameItem(self, block: QTextBlock) -> None:
+        """Emit a signal to request an item be renamed."""
+        if self._docHandle:
+            text = block.text().lstrip("#").lstrip("!").strip()
+            self.requestProjectItemRenamed.emit(self._docHandle, text)
+        return
 
     def _openContextFromCursor(self) -> None:
         """Open the spell check context menu at the cursor."""
