@@ -138,7 +138,6 @@ class GuiProjectView(QWidget):
         self.emptyTrash = self.projTree.emptyTrash
         self.requestDeleteItem = self.projTree.requestDeleteItem
         self.getSelectedHandle = self.projTree.getSelectedHandle
-        self.setSelectedHandle = self.projTree.setSelectedHandle
         self.changedSince = self.projTree.changedSince
         self.createNewNote = self.projTree.createNewNote
 
@@ -202,6 +201,12 @@ class GuiProjectView(QWidget):
     ##
     #  Public Slots
     ##
+
+    @pyqtSlot(str, bool)
+    def setSelectedHandle(self, tHandle: str, doScroll: bool = False) -> None:
+        """Select an item and optionally scroll it into view."""
+        self.projTree.setSelectedHandle(tHandle, doScroll=doScroll)
+        return
 
     @pyqtSlot(str)
     def updateItemValues(self, tHandle: str) -> None:

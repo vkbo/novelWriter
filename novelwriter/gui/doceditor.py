@@ -97,6 +97,7 @@ class GuiDocEditor(QPlainTextEdit):
     spellCheckStateChanged = pyqtSignal(bool)
     closeDocumentRequest = pyqtSignal()
     toggleFocusModeRequest = pyqtSignal()
+    requestProjectItemSelected = pyqtSignal(str, bool)
 
     def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
@@ -2943,7 +2944,8 @@ class GuiDocEditHeader(QWidget):
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
-        self.mainGui.projView.setSelectedHandle(self._docHandle, doScroll=True)
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.docEditor.requestProjectItemSelected.emit(self._docHandle, True)
         return
 
 # END Class GuiDocEditHeader

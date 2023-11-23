@@ -23,8 +23,8 @@ import pytest
 
 from mocked import causeException
 
-from PyQt5.QtGui import QTextCursor
-from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtGui import QMouseEvent, QTextCursor
+from PyQt5.QtCore import QEvent, QPoint, Qt, QUrl
 from PyQt5.QtWidgets import QMenu, qApp, QAction
 
 from novelwriter import CONFIG, SHARED
@@ -58,7 +58,10 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert nwGUI.projView.projTree.getSelectedHandle() is None
 
     # Re-select via header click
-    docViewer.docHeader.mousePressEvent(None)  # type: ignore
+    button = Qt.MouseButton.LeftButton
+    modifier = Qt.KeyboardModifier.NoModifier
+    event = QMouseEvent(QEvent.MouseButtonPress, QPoint(), button, button, modifier)
+    docViewer.docHeader.mousePressEvent(event)
     assert nwGUI.projView.projTree.getSelectedHandle() == "88243afbe5ed8"
 
     # Reload the text
@@ -127,7 +130,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert docViewer.docAction(nwDocAction.COPY) is False
 
     # Open again via menu
-    assert nwGUI.projView.setSelectedHandle("88243afbe5ed8")
+    assert nwGUI.projView.projTree.setSelectedHandle("88243afbe5ed8")
     nwGUI.mainMenu.aViewDoc.activate(QAction.Trigger)
 
     # Open context menu

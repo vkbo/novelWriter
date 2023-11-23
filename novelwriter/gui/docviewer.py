@@ -59,6 +59,7 @@ class GuiDocViewer(QTextBrowser):
     documentLoaded = pyqtSignal(str)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
     togglePanelVisibility = pyqtSignal()
+    requestProjectItemSelected = pyqtSignal(str, bool)
 
     def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
@@ -834,7 +835,8 @@ class GuiDocViewHeader(QWidget):
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
-        self.mainGui.projView.setSelectedHandle(self._docHandle, doScroll=True)
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.docViewer.requestProjectItemSelected.emit(self._docHandle, True)
         return
 
 # END Class GuiDocViewHeader
