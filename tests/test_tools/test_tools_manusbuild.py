@@ -19,6 +19,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+from PyQt5.QtCore import QUrl
+from PyQt5.QtGui import QDesktopServices
 import pytest
 
 from pathlib import Path
@@ -131,6 +133,19 @@ def testManuscriptBuild_Main(
     with monkeypatch.context() as mp:
         mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         assert manus._runBuild() is False
+
+    # Test that the open button works
+    lastUrl = ""
+
+    def mockOpenUrl(url: QUrl) -> None:
+        nonlocal lastUrl
+        lastUrl = url.toString()
+        return
+
+    with monkeypatch.context() as mp:
+        mp.setattr(QDesktopServices, "openUrl", mockOpenUrl)
+        manus.btnOpen.click()
+        assert lastUrl.startswith("file://")
 
     # Finish
     manus._dialogButtonClicked(manus.dlgButtons.button(QDialogButtonBox.Close))

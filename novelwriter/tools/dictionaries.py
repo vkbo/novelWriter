@@ -27,19 +27,17 @@ import logging
 
 from pathlib import Path
 from zipfile import ZipFile
-from urllib.parse import urljoin
-from urllib.request import pathname2url
 
-from PyQt5.QtGui import QCloseEvent, QDesktopServices, QTextCursor
-from PyQt5.QtCore import QUrl, pyqtSlot
+from PyQt5.QtGui import QCloseEvent, QTextCursor
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog, QDialogButtonBox, QFileDialog, QFrame, QHBoxLayout, QLabel,
     QLineEdit, QPlainTextEdit, QPushButton, QVBoxLayout, QWidget, qApp
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import formatInt, getFileSize
 from novelwriter.error import formatException
+from novelwriter.common import openExternalPath, formatInt, getFileSize
 
 logger = logging.getLogger(__name__)
 
@@ -217,12 +215,7 @@ class GuiDictionaries(QDialog):
     @pyqtSlot()
     def _doOpenInstallLocation(self) -> None:
         """Open the dictionary folder."""
-        path = self.inPath.text()
-        if Path(path).is_dir():
-            QDesktopServices.openUrl(
-                QUrl(urljoin("file:", pathname2url(path)))
-            )
-        else:
+        if not openExternalPath(Path(self.inPath.text())):
             SHARED.error("Path not found.")
         return
 

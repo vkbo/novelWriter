@@ -37,7 +37,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwBuildFmt
-from novelwriter.common import makeFileNameSafe
+from novelwriter.common import makeFileNameSafe, openExternalPath
 from novelwriter.constants import nwLabels
 from novelwriter.core.item import NWItem
 from novelwriter.core.docbuild import NWBuildDocument
@@ -176,9 +176,11 @@ class GuiManuscriptBuild(QDialog):
         self.buildBox.setVerticalSpacing(sp4)
 
         # Dialog Buttons
+        self.btnOpen = QPushButton(SHARED.theme.getIcon("browse"), self.tr("Open Folder"))
         self.btnBuild = QPushButton(SHARED.theme.getIcon("export"), self.tr("&Build"))
-        self.dlgButtons = QDialogButtonBox(QDialogButtonBox.Close)
-        self.dlgButtons.addButton(self.btnBuild, QDialogButtonBox.ActionRole)
+        self.dlgButtons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
+        self.dlgButtons.addButton(self.btnOpen, QDialogButtonBox.ButtonRole.ActionRole)
+        self.dlgButtons.addButton(self.btnBuild, QDialogButtonBox.ButtonRole.ActionRole)
 
         # Assemble GUI
         # ============
@@ -254,7 +256,10 @@ class GuiManuscriptBuild(QDialog):
         """Handle button clicks from the dialog button box."""
         role = self.dlgButtons.buttonRole(button)
         if role == QDialogButtonBox.ActionRole:
-            self._runBuild()
+            if button == self.btnBuild:
+                self._runBuild()
+            elif button == self.btnOpen:
+                self._openOutputFolder()
         elif role == QDialogButtonBox.RejectRole:
             self.close()
         return
@@ -384,6 +389,11 @@ class GuiManuscriptBuild(QDialog):
                 item.setIcon(itemIcon)
                 self.listContent.addItem(item)
 
+        return
+
+    def _openOutputFolder(self):
+        """Open the build folder in the system's file explorer."""
+        openExternalPath(Path(self.buildPath.text()))
         return
 
 # END Class GuiManuscriptBuild

@@ -45,7 +45,7 @@ from novelwriter.core.sessions import NWSessionLog
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.core.projectdata import NWProjectData
 from novelwriter.common import (
-    checkStringNone, formatInt, formatTimeStamp, hexToInt, makeFileNameSafe, minmax
+    checkStringNone, formatInt, formatTimeStamp, getFileSize, hexToInt, makeFileNameSafe, minmax
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -420,7 +420,7 @@ class NWProject:
         timeStamp = formatTimeStamp(time(), fileSafe=True)
         archName = baseDir / f"{cleanName} {timeStamp}.zip"
         if self._storage.zipIt(archName, compression=2):
-            size = formatInt(archName.stat().st_size)
+            size = formatInt(getFileSize(archName))
             if doNotify:
                 SHARED.info(
                     self.tr("Created a backup of your project of size {0}B.").format(size),
