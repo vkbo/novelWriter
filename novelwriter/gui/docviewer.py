@@ -37,8 +37,8 @@ from PyQt5.QtGui import (
     QTextOption
 )
 from PyQt5.QtWidgets import (
-    QAction, qApp, QFrame, QHBoxLayout, QLabel, QMenu, QTextBrowser,
-    QToolButton, QWidget
+    QAction, QFrame, QHBoxLayout, QLabel, QMenu, QTextBrowser, QToolButton,
+    QWidget, qApp
 )
 
 from novelwriter import CONFIG, SHARED
@@ -75,8 +75,8 @@ class GuiDocViewer(QTextBrowser):
         self.setMinimumWidth(CONFIG.pxInt(300))
         self.setAutoFillBackground(True)
         self.setOpenExternalLinks(False)
-        self.setFocusPolicy(Qt.StrongFocus)
-        self.setFrameStyle(QFrame.NoFrame)
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.setFrameStyle(QFrame.Shape.NoFrame)
 
         # Document Header and Footer
         self.docHeader  = GuiDocViewHeader(self)
@@ -92,7 +92,7 @@ class GuiDocViewer(QTextBrowser):
         self.installEventFilter(self.wheelEventFilter)
 
         # Context Menu
-        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self._openContextMenu)
 
         self.initViewer()
@@ -148,14 +148,14 @@ class GuiDocViewer(QTextBrowser):
 
         # Set the widget colours to match syntax theme
         mainPalette = self.palette()
-        mainPalette.setColor(QPalette.Window, QColor(*SHARED.theme.colBack))
-        mainPalette.setColor(QPalette.Base, QColor(*SHARED.theme.colBack))
-        mainPalette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
+        mainPalette.setColor(QPalette.ColorRole.Window, QColor(*SHARED.theme.colBack))
+        mainPalette.setColor(QPalette.ColorRole.Base, QColor(*SHARED.theme.colBack))
+        mainPalette.setColor(QPalette.ColorRole.Text, QColor(*SHARED.theme.colText))
         self.setPalette(mainPalette)
 
         docPalette = self.viewport().palette()
-        docPalette.setColor(QPalette.Base, QColor(*SHARED.theme.colBack))
-        docPalette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
+        docPalette.setColor(QPalette.ColorRole.Base, QColor(*SHARED.theme.colBack))
+        docPalette.setColor(QPalette.ColorRole.Text, QColor(*SHARED.theme.colText))
         self.viewport().setPalette(docPalette)
 
         self.docHeader.matchColours()
@@ -165,19 +165,19 @@ class GuiDocViewer(QTextBrowser):
         self.document().setDocumentMargin(0)
         theOpt = QTextOption()
         if CONFIG.doJustify:
-            theOpt.setAlignment(Qt.AlignJustify)
+            theOpt.setAlignment(Qt.AlignmentFlag.AlignJustify)
         self.document().setDefaultTextOption(theOpt)
 
         # Scroll bars
         if CONFIG.hideVScroll:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         else:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
         if CONFIG.hideHScroll:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         else:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
         # Refresh the tab stops
         self.setTabStopDistance(CONFIG.getTabWidth())
@@ -196,7 +196,7 @@ class GuiDocViewer(QTextBrowser):
             return False
 
         logger.debug("Generating preview for item '%s'", tHandle)
-        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+        qApp.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
 
         sPos = self.verticalScrollBar().value()
         aDoc = ToHtml(SHARED.project)
@@ -272,9 +272,9 @@ class GuiDocViewer(QTextBrowser):
         elif action == nwDocAction.COPY:
             self.copy()
         elif action == nwDocAction.SEL_ALL:
-            self._makeSelection(QTextCursor.Document)
+            self._makeSelection(QTextCursor.SelectionType.Document)
         elif action == nwDocAction.SEL_PARA:
-            self._makeSelection(QTextCursor.BlockUnderCursor)
+            self._makeSelection(QTextCursor.SelectionType.BlockUnderCursor)
         else:
             logger.debug("Unknown or unsupported document action '%s'", str(action))
             return False
@@ -392,13 +392,13 @@ class GuiDocViewer(QTextBrowser):
 
         mnuSelWord = QAction(self.tr("Select Word"), mnuContext)
         mnuSelWord.triggered.connect(
-            lambda: self._makePosSelection(QTextCursor.WordUnderCursor, point)
+            lambda: self._makePosSelection(QTextCursor.SelectionType.WordUnderCursor, point)
         )
         mnuContext.addAction(mnuSelWord)
 
         mnuSelPara = QAction(self.tr("Select Paragraph"), mnuContext)
         mnuSelPara.triggered.connect(
-            lambda: self._makePosSelection(QTextCursor.BlockUnderCursor, point)
+            lambda: self._makePosSelection(QTextCursor.SelectionType.BlockUnderCursor, point)
         )
         mnuContext.addAction(mnuSelPara)
 
@@ -419,9 +419,9 @@ class GuiDocViewer(QTextBrowser):
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         """Capture mouse click events on the document."""
-        if event.button() == Qt.BackButton:
+        if event.button() == Qt.MouseButton.BackButton:
             self.navBackward()
-        elif event.button() == Qt.ForwardButton:
+        elif event.button() == Qt.MouseButton.ForwardButton:
             self.navForward()
         else:
             super().mouseReleaseEvent(event)
@@ -437,15 +437,15 @@ class GuiDocViewer(QTextBrowser):
         cursor.clearSelection()
         cursor.select(selType)
 
-        if selType == QTextCursor.BlockUnderCursor:
+        if selType == QTextCursor.SelectionType.BlockUnderCursor:
             # This selection mode also selects the preceding paragraph
             # separator, which we want to avoid.
             posS = cursor.selectionStart()
             posE = cursor.selectionEnd()
             selTxt = cursor.selectedText()
             if selTxt.startswith(nwUnicode.U_PSEP):
-                cursor.setPosition(posS+1, QTextCursor.MoveAnchor)
-                cursor.setPosition(posE, QTextCursor.KeepAnchor)
+                cursor.setPosition(posS+1, QTextCursor.MoveMode.MoveAnchor)
+                cursor.setPosition(posE, QTextCursor.MoveMode.KeepAnchor)
 
         self.setTextCursor(cursor)
 
@@ -663,7 +663,7 @@ class GuiDocViewHeader(QWidget):
         self.docTitle.setMargin(0)
         self.docTitle.setContentsMargins(0, 0, 0, 0)
         self.docTitle.setAutoFillBackground(True)
-        self.docTitle.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+        self.docTitle.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
         self.docTitle.setFixedHeight(fPx)
 
         lblFont = self.docTitle.font()
@@ -675,7 +675,7 @@ class GuiDocViewHeader(QWidget):
         self.backButton.setContentsMargins(0, 0, 0, 0)
         self.backButton.setIconSize(QSize(fPx, fPx))
         self.backButton.setFixedSize(fPx, fPx)
-        self.backButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.backButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.backButton.setVisible(False)
         self.backButton.setToolTip(self.tr("Go Backward"))
         self.backButton.clicked.connect(self.docViewer.navBackward)
@@ -684,7 +684,7 @@ class GuiDocViewHeader(QWidget):
         self.forwardButton.setContentsMargins(0, 0, 0, 0)
         self.forwardButton.setIconSize(QSize(fPx, fPx))
         self.forwardButton.setFixedSize(fPx, fPx)
-        self.forwardButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.forwardButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.forwardButton.setVisible(False)
         self.forwardButton.setToolTip(self.tr("Go Forward"))
         self.forwardButton.clicked.connect(self.docViewer.navForward)
@@ -693,7 +693,7 @@ class GuiDocViewHeader(QWidget):
         self.refreshButton.setContentsMargins(0, 0, 0, 0)
         self.refreshButton.setIconSize(QSize(fPx, fPx))
         self.refreshButton.setFixedSize(fPx, fPx)
-        self.refreshButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.refreshButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.refreshButton.setVisible(False)
         self.refreshButton.setToolTip(self.tr("Reload"))
         self.refreshButton.clicked.connect(self._refreshDocument)
@@ -702,7 +702,7 @@ class GuiDocViewHeader(QWidget):
         self.closeButton.setContentsMargins(0, 0, 0, 0)
         self.closeButton.setIconSize(QSize(fPx, fPx))
         self.closeButton.setFixedSize(fPx, fPx)
-        self.closeButton.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.closeButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.closeButton.setVisible(False)
         self.closeButton.setToolTip(self.tr("Close"))
         self.closeButton.clicked.connect(self._closeDocument)
@@ -761,9 +761,9 @@ class GuiDocViewHeader(QWidget):
         theme rather than the main GUI.
         """
         palette = QPalette()
-        palette.setColor(QPalette.Window, QColor(*SHARED.theme.colBack))
-        palette.setColor(QPalette.WindowText, QColor(*SHARED.theme.colText))
-        palette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
+        palette.setColor(QPalette.ColorRole.Window, QColor(*SHARED.theme.colBack))
+        palette.setColor(QPalette.ColorRole.WindowText, QColor(*SHARED.theme.colText))
+        palette.setColor(QPalette.ColorRole.Text, QColor(*SHARED.theme.colText))
         self.setPalette(palette)
         self.docTitle.setPalette(palette)
         return
@@ -868,7 +868,7 @@ class GuiDocViewFooter(QWidget):
 
         # Show/Hide Details
         self.showHide = QToolButton(self)
-        self.showHide.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.showHide.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.showHide.setIconSize(QSize(fPx, fPx))
         self.showHide.setFixedSize(QSize(fPx, fPx))
         self.showHide.clicked.connect(lambda: self.docViewer.togglePanelVisibility.emit())
@@ -878,7 +878,7 @@ class GuiDocViewFooter(QWidget):
         self.showComments = QToolButton(self)
         self.showComments.setCheckable(True)
         self.showComments.setChecked(CONFIG.viewComments)
-        self.showComments.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.showComments.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.showComments.setIconSize(QSize(fPx, fPx))
         self.showComments.setFixedSize(QSize(fPx, fPx))
         self.showComments.toggled.connect(self._doToggleComments)
@@ -888,7 +888,7 @@ class GuiDocViewFooter(QWidget):
         self.showSynopsis = QToolButton(self)
         self.showSynopsis.setCheckable(True)
         self.showSynopsis.setChecked(CONFIG.viewSynopsis)
-        self.showSynopsis.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.showSynopsis.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.showSynopsis.setIconSize(QSize(fPx, fPx))
         self.showSynopsis.setFixedSize(QSize(fPx, fPx))
         self.showSynopsis.toggled.connect(self._doToggleSynopsis)
@@ -902,7 +902,7 @@ class GuiDocViewFooter(QWidget):
         self.lblComments.setContentsMargins(0, 0, 0, 0)
         self.lblComments.setAutoFillBackground(True)
         self.lblComments.setFixedHeight(fPx)
-        self.lblComments.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.lblComments.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
 
         self.lblSynopsis = QLabel(self.tr("Synopsis"))
         self.lblSynopsis.setBuddy(self.showSynopsis)
@@ -911,7 +911,7 @@ class GuiDocViewFooter(QWidget):
         self.lblSynopsis.setContentsMargins(0, 0, 0, 0)
         self.lblSynopsis.setAutoFillBackground(True)
         self.lblSynopsis.setFixedHeight(fPx)
-        self.lblSynopsis.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.lblSynopsis.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
 
         lblFont = self.font()
         lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
@@ -977,9 +977,9 @@ class GuiDocViewFooter(QWidget):
         theme rather than the main GUI.
         """
         palette = QPalette()
-        palette.setColor(QPalette.Window, QColor(*SHARED.theme.colBack))
-        palette.setColor(QPalette.WindowText, QColor(*SHARED.theme.colText))
-        palette.setColor(QPalette.Text, QColor(*SHARED.theme.colText))
+        palette.setColor(QPalette.ColorRole.Window, QColor(*SHARED.theme.colBack))
+        palette.setColor(QPalette.ColorRole.WindowText, QColor(*SHARED.theme.colText))
+        palette.setColor(QPalette.ColorRole.Text, QColor(*SHARED.theme.colText))
         self.setPalette(palette)
         self.lblComments.setPalette(palette)
         self.lblSynopsis.setPalette(palette)
