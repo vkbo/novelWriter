@@ -156,11 +156,8 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
     # Rename plot folder
     with monkeypatch.context() as mp:
         mp.setattr(GuiEditLabel, "getLabel", lambda *a, **k: ("Stuff", True))
-        projTree.renameTreeItem(C.hPlotRoot) is True
+        projTree.renameTreeItem(C.hPlotRoot)
         assert project.tree[C.hPlotRoot].itemName == "Stuff"  # type: ignore
-
-    # Rename invalid folder
-    projTree.renameTreeItem("0000000000000") is False
 
     # Other Checks
     # ============
@@ -1095,12 +1092,12 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd)
         mp.setattr(GuiEditLabel, "getLabel", lambda *a, **k: ("FooBar", True))
         projTree.clearSelection()
         assert SHARED.project.tree[C.hChapterDoc].itemName == "New Chapter"  # type: ignore
-        assert projView.renameTreeItem(C.hChapterDoc) is True
+        projView.renameTreeItem(C.hChapterDoc)
         assert SHARED.project.tree[C.hChapterDoc].itemName == "FooBar"  # type: ignore
 
         projTree.setSelectedHandle(C.hSceneDoc)
         assert SHARED.project.tree[C.hSceneDoc].itemName == "New Scene"  # type: ignore
-        assert projView.renameTreeItem() is True
+        projView.renameTreeItem()
         assert SHARED.project.tree[C.hSceneDoc].itemName == "FooBar"  # type: ignore
 
     # Check Crash Resistance

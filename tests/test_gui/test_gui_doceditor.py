@@ -18,21 +18,23 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import pytest
 
 from tools import C, buildTestProject
 from mocked import causeOSError
 
-from PyQt5.QtGui import QTextBlock, QTextCursor, QTextOption
+from PyQt5.QtGui import QClipboard, QTextBlock, QTextCursor, QTextOption
 from PyQt5.QtCore import QThreadPool, Qt
-from PyQt5.QtWidgets import QAction, qApp
+from PyQt5.QtWidgets import QAction, QMenu, qApp
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction, nwDocInsert, nwItemLayout, nwTrinary, nwWidget
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.core.index import countWords
 from novelwriter.gui.doceditor import GuiDocEditor, GuiDocToolBar
+from novelwriter.dialogs.editlabel import GuiEditLabel
 
 KEY_DELAY = 1
 
@@ -207,6 +209,148 @@ def testGuiEditor_MetaData(qtbot, nwGUI, projPath, mockRnd):
     # qtbot.stop()
 
 # END Test testGuiEditor_MetaData
+
+
+@pytest.mark.gui
+def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
+    """Test the editor context menu."""
+    monkeypatch.setattr(QMenu, "exec_", lambda *a: None)
+
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+    docEditor = nwGUI.docEditor
+    sceneItem = SHARED.project.tree[C.hSceneDoc]
+    assert sceneItem is not None
+
+    def getMenuForPos(pos: int, select: bool = False) -> QMenu | None:
+        nonlocal docEditor
+        cursor = docEditor.textCursor()
+        cursor.setPosition(pos)
+        if select:
+            cursor.select(QTextCursor.SelectionType.WordUnderCursor)
+        docEditor.setTextCursor(cursor)
+        docEditor._openContextMenu(docEditor.cursorRect().center())
+        for obj in docEditor.children():
+            if isinstance(obj, QMenu) and obj.objectName() == "ContextMenu":
+                return obj
+        return None
+
+    docText = (
+        "### A Scene\n\n"
+        "@pov: Jane\n"
+        "Some text ..."
+    )
+    docEditor.setPlainText(docText)
+    assert docEditor.getText() == docText
+
+    # Rename Item from Heading
+    ctxMenu = getMenuForPos(1)
+    assert ctxMenu is not None
+    actions = [x.text() for x in ctxMenu.actions() if x.text()]
+    assert actions == [
+        "Set as Document Name", "Paste",
+        "Select All", "Select Word", "Select Paragraph"
+    ]
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiEditLabel, "getLabel", lambda a, text: (text, True))
+        assert sceneItem.itemName == "New Scene"
+        ctxMenu.actions()[0].trigger()
+        assert sceneItem.itemName == "A Scene"
+    ctxMenu.setObjectName("")
+    ctxMenu.deleteLater()
+
+    # Create Character
+    ctxMenu = getMenuForPos(21)
+    assert ctxMenu is not None
+    actions = [x.text() for x in ctxMenu.actions() if x.text()]
+    assert actions == [
+        "Create Note for Tag", "Paste",
+        "Select All", "Select Word", "Select Paragraph"
+    ]
+    ctxMenu.actions()[0].trigger()
+    janeItem = SHARED.project.tree["0000000000010"]
+    assert janeItem is not None
+    assert janeItem.itemName == "Jane"
+    ctxMenu.setObjectName("")
+    ctxMenu.deleteLater()
+
+    # Follow Character Tag
+    ctxMenu = getMenuForPos(21)
+    assert ctxMenu is not None
+    actions = [x.text() for x in ctxMenu.actions() if x.text()]
+    assert actions == [
+        "Follow Tag", "Paste",
+        "Select All", "Select Word", "Select Paragraph"
+    ]
+    ctxMenu.actions()[0].trigger()
+    assert nwGUI.docViewer.docHandle == "0000000000010"
+    ctxMenu.setObjectName("")
+    ctxMenu.deleteLater()
+
+    # Select Word
+    ctxMenu = getMenuForPos(31)
+    assert ctxMenu is not None
+    actions = [x.text() for x in ctxMenu.actions() if x.text()]
+    assert actions == [
+        "Paste", "Select All", "Select Word", "Select Paragraph"
+    ]
+    ctxMenu.actions()[3].trigger()
+    assert docEditor.textCursor().selectedText() == "text"
+    ctxMenu.setObjectName("")
+    ctxMenu.deleteLater()
+
+    # Select Paragraph
+    ctxMenu = getMenuForPos(31)
+    assert ctxMenu is not None
+    actions = [x.text() for x in ctxMenu.actions() if x.text()]
+    assert actions == [
+        "Paste", "Select All", "Select Word", "Select Paragraph"
+    ]
+    ctxMenu.actions()[4].trigger()
+    assert docEditor.textCursor().selectedText() == "Some text ..."
+    ctxMenu.setObjectName("")
+    ctxMenu.deleteLater()
+
+    # Select All
+    ctxMenu = getMenuForPos(31)
+    assert ctxMenu is not None
+    actions = [x.text() for x in ctxMenu.actions() if x.text()]
+    assert actions == [
+        "Paste", "Select All", "Select Word", "Select Paragraph"
+    ]
+    ctxMenu.actions()[2].trigger()
+    assert docEditor.textCursor().selectedText() == docEditor.document().toRawText()
+    ctxMenu.setObjectName("")
+    ctxMenu.deleteLater()
+
+    # Copy Text
+    ctxMenu = getMenuForPos(31, True)
+    assert ctxMenu is not None
+    assert docEditor.textCursor().selectedText() == "text"
+    actions = [x.text() for x in ctxMenu.actions() if x.text()]
+    assert actions == [
+        "Cut", "Copy", "Paste", "Select All", "Select Word", "Select Paragraph"
+    ]
+    qApp.clipboard().clear()
+    ctxMenu.actions()[1].trigger()
+    assert qApp.clipboard().text(QClipboard.Mode.Clipboard) == "text"
+
+    # Cut Text
+    qApp.clipboard().clear()
+    ctxMenu.actions()[0].trigger()
+    assert qApp.clipboard().text(QClipboard.Mode.Clipboard) == "text"
+    assert "text" not in docEditor.getText()
+
+    # Paste Text
+    ctxMenu.actions()[2].trigger()
+    assert docEditor.getText() == docText
+
+    ctxMenu.setObjectName("")
+    ctxMenu.deleteLater()
+
+    # qtbot.stop()
+
+# END Test testGuiEditor_ContextMenu
 
 
 @pytest.mark.gui

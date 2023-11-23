@@ -138,7 +138,6 @@ class GuiProjectView(QWidget):
         self.emptyTrash = self.projTree.emptyTrash
         self.requestDeleteItem = self.projTree.requestDeleteItem
         self.getSelectedHandle = self.projTree.getSelectedHandle
-        self.setSelectedHandle = self.projTree.setSelectedHandle
         self.changedSince = self.projTree.changedSince
         self.createNewNote = self.projTree.createNewNote
 
@@ -191,17 +190,26 @@ class GuiProjectView(QWidget):
         """Check if the project tree has focus."""
         return self.projTree.hasFocus()
 
-    def renameTreeItem(self, tHandle: str | None = None) -> bool:
+    ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot(str, str)
+    def renameTreeItem(self, tHandle: str | None = None, name: str = "") -> None:
         """External request to rename an item or the currently selected
         item. This is triggered by the global menu or keyboard shortcut.
         """
         if tHandle is None:
             tHandle = self.projTree.getSelectedHandle()
-        return self.projTree.renameTreeItem(tHandle) if tHandle else False
+        if tHandle:
+            self.projTree.renameTreeItem(tHandle, name=name)
+        return
 
-    ##
-    #  Public Slots
-    ##
+    @pyqtSlot(str, bool)
+    def setSelectedHandle(self, tHandle: str, doScroll: bool = False) -> None:
+        """Select an item and optionally scroll it into view."""
+        self.projTree.setSelectedHandle(tHandle, doScroll=doScroll)
+        return
 
     @pyqtSlot(str)
     def updateItemValues(self, tHandle: str) -> None:
@@ -761,19 +769,16 @@ class GuiProjectTree(QTreeWidget):
                 self.setCurrentItem(tItem.child(0))
         return
 
-    def renameTreeItem(self, tHandle: str) -> bool:
+    def renameTreeItem(self, tHandle: str, name: str = "") -> None:
         """Open a dialog to edit the label of an item."""
         tItem = SHARED.project.tree[tHandle]
-        if tItem is None:
-            return False
-
-        newLabel, dlgOk = GuiEditLabel.getLabel(self, text=tItem.itemName)
-        if dlgOk:
-            tItem.setName(newLabel)
-            self.setTreeItemValues(tHandle)
-            self._alertTreeChange(tHandle, flush=False)
-
-        return True
+        if tItem:
+            newLabel, dlgOk = GuiEditLabel.getLabel(self, text=name or tItem.itemName)
+            if dlgOk:
+                tItem.setName(newLabel)
+                self.setTreeItemValues(tHandle)
+                self._alertTreeChange(tHandle, flush=False)
+        return
 
     def saveTreeOrder(self) -> None:
         """Build a list of the items in the project tree and send them

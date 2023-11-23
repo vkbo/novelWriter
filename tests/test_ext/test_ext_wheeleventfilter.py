@@ -18,11 +18,12 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
-from PyQt5.QtCore import QEvent, QObject, QPoint, Qt
 import pytest
 
 from PyQt5.QtGui import QKeyEvent, QWheelEvent
+from PyQt5.QtCore import QEvent, QObject, QPoint, Qt
 from PyQt5.QtWidgets import QWidget
 
 from novelwriter.extensions.wheeleventfilter import WheelEventFilter

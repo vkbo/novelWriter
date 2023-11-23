@@ -18,8 +18,8 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
-from PyQt5.QtWidgets import QMessageBox
 import pytest
 
 from shutil import copyfile
@@ -27,6 +27,8 @@ from zipfile import ZipFile
 
 from mocked import causeOSError
 from tools import C, cmpFiles, buildTestProject, XML_IGNORE
+
+from PyQt5.QtWidgets import QMessageBox
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemClass
