@@ -33,8 +33,11 @@ from typing import Any, Literal
 from pathlib import Path
 from datetime import datetime
 from configparser import ConfigParser
+from urllib.parse import urljoin
+from urllib.request import pathname2url
 
-from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtCore import QCoreApplication, QUrl
 from PyQt5.QtWidgets import QWidget, qApp
 
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
@@ -493,6 +496,16 @@ def getFileSize(path: Path) -> int:
         return path.stat().st_size
     except Exception:
         return -1
+
+
+def openExternalPath(path: Path) -> bool:
+    """Open a path by passing it to the desktop environment."""
+    if Path(path).exists():
+        QDesktopServices.openUrl(
+            QUrl(urljoin("file:", pathname2url(str(path))))
+        )
+        return True
+    return False
 
 
 # =============================================================================================== #

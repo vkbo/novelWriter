@@ -27,15 +27,14 @@ import logging
 
 from typing import TYPE_CHECKING
 from pathlib import Path
-from urllib.parse import urljoin
-from urllib.request import pathname2url
 
-from PyQt5.QtCore import QUrl, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtCore import QUrl, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMenuBar, QAction
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction, nwDocInsert, nwWidget
+from novelwriter.common import openExternalPath
 from novelwriter.constants import nwConst, trConst, nwKeyWords, nwLabels, nwUnicode
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -111,9 +110,7 @@ class GuiMainMenu(QMenuBar):
     def _openUserManualFile(self) -> None:
         """Open the documentation in PDF format."""
         if isinstance(CONFIG.pdfDocs, Path):
-            QDesktopServices.openUrl(
-                QUrl(urljoin("file:", pathname2url(str(CONFIG.pdfDocs))))
-            )
+            openExternalPath(CONFIG.pdfDocs)
         return
 
     @pyqtSlot(str)
