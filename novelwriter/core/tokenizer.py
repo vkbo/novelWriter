@@ -34,8 +34,9 @@ from pathlib import Path
 from functools import partial
 
 from PyQt5.QtCore import QCoreApplication, QRegularExpression
+from novelwriter.core.index import processComment
 
-from novelwriter.enum import nwItemLayout
+from novelwriter.enum import nwComment, nwItemLayout
 from novelwriter.common import formatTimeStamp, numberToRoman, checkInt
 from novelwriter.constants import nwHeadFmt, nwRegEx, nwShortcode, nwUnicode
 from novelwriter.core.project import NWProject
@@ -79,17 +80,18 @@ class Tokenizer(ABC):
     # Block Type
     T_EMPTY    = 1   # Empty line (new paragraph)
     T_SYNOPSIS = 2   # Synopsis comment
-    T_COMMENT  = 3   # Comment line
-    T_KEYWORD  = 4   # Command line
-    T_TITLE    = 5   # Title
-    T_UNNUM    = 6   # Unnumbered
-    T_HEAD1    = 7   # Header 1
-    T_HEAD2    = 8   # Header 2
-    T_HEAD3    = 9   # Header 3
-    T_HEAD4    = 10  # Header 4
-    T_TEXT     = 11  # Text line
-    T_SEP      = 12  # Scene separator
-    T_SKIP     = 13  # Paragraph break
+    T_BRIEF    = 3   # Brief comment
+    T_COMMENT  = 4   # Comment line
+    T_KEYWORD  = 5   # Command line
+    T_TITLE    = 6   # Title
+    T_UNNUM    = 7   # Unnumbered
+    T_HEAD1    = 8   # Header 1
+    T_HEAD2    = 9   # Header 2
+    T_HEAD3    = 10   # Header 3
+    T_HEAD4    = 11  # Header 4
+    T_TEXT     = 12  # Text line
+    T_SEP      = 13  # Scene separator
+    T_SKIP     = 14  # Paragraph break
 
     # Block Style
     A_NONE     = 0x0000  # No special style
@@ -461,17 +463,22 @@ class Tokenizer(ABC):
                     continue
 
             if aLine[0] == "%":
-                cLine = aLine[1:].lstrip()
-                synTag = cLine[:9].lower()
-                if synTag == "synopsis:":
+                cStyle, cText, _ = processComment(aLine)
+                if cStyle == nwComment.SYNOPSIS:
                     self._tokens.append((
-                        self.T_SYNOPSIS, nHead, cLine[9:].strip(), None, sAlign
+                        self.T_SYNOPSIS, nHead, cText, None, sAlign
+                    ))
+                    if self._doSynopsis and self._keepMarkdown:
+                        tmpMarkdown.append("%s\n" % aLine)
+                elif cStyle == nwComment.BRIEF:
+                    self._tokens.append((
+                        self.T_BRIEF, nHead, cText, None, sAlign
                     ))
                     if self._doSynopsis and self._keepMarkdown:
                         tmpMarkdown.append("%s\n" % aLine)
                 else:
                     self._tokens.append((
-                        self.T_COMMENT, nHead, aLine[1:].strip(), None, sAlign
+                        self.T_COMMENT, nHead, cText, None, sAlign
                     ))
                     if self._doComments and self._keepMarkdown:
                         tmpMarkdown.append("%s\n" % aLine)

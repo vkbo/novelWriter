@@ -170,6 +170,10 @@ class ToMarkdown(Tokenizer):
                 label = self._localLookup("Synopsis")
                 lines.append(f"**{label}:** {tText}\n\n")
 
+            elif tType == self.T_BRIEF and self._doSynopsis:
+                label = self._localLookup("Brief")
+                lines.append(f"**{label}:** {tText}\n\n")
+
             elif tType == self.T_COMMENT and self._doComments:
                 label = self._localLookup("Comment")
                 lines.append(f"**{label}:** {tText}\n\n")

@@ -61,6 +61,15 @@ class nwItemLayout(Enum):
 # END Enum nwItemLayout
 
 
+class nwComment(Enum):
+
+    PLAIN    = 0
+    SYNOPSIS = 1
+    BRIEF    = 2
+
+# END Enum nwComment
+
+
 class nwTrinary(Enum):
 
     NEGATIVE = -1

@@ -149,7 +149,7 @@ def testCoreToHtml_ConvertFormat(mockGUI):
         "<p class='break'>Line one<br/>Line two<br/>Line three</p>\n"
     )
 
-    # Synopsis
+    # Synopsis, Brief
     html._text = "%synopsis: The synopsis ...\n"
     html.tokenizeText()
     html.doConvert()
@@ -161,6 +161,14 @@ def testCoreToHtml_ConvertFormat(mockGUI):
     html.doConvert()
     assert html.theResult == (
         "<p class='synopsis'><strong>Synopsis:</strong> The synopsis ...</p>\n"
+    )
+
+    html.setSynopsis(True)
+    html._text = "%brief: A description ...\n"
+    html.tokenizeText()
+    html.doConvert()
+    assert html.theResult == (
+        "<p class='synopsis'><strong>Brief:</strong> A description ...</p>\n"
     )
 
     # Comment
@@ -610,8 +618,11 @@ def testCoreToHtml_Format(mockGUI):
     # Export Mode
     # ===========
 
-    assert html._formatSynopsis("synopsis text") == (
+    assert html._formatSynopsis("synopsis text", True) == (
         "<p class='synopsis'><strong>Synopsis:</strong> synopsis text</p>\n"
+    )
+    assert html._formatSynopsis("brief text", False) == (
+        "<p class='synopsis'><strong>Brief:</strong> brief text</p>\n"
     )
     assert html._formatComments("comment text") == (
         "<p class='comment'><strong>Comment:</strong> comment text</p>\n"
@@ -632,8 +643,11 @@ def testCoreToHtml_Format(mockGUI):
 
     html.setPreview(True, True)
 
-    assert html._formatSynopsis("synopsis text") == (
+    assert html._formatSynopsis("synopsis text", True) == (
         "<p class='comment'><span class='synopsis'>Synopsis:</span> synopsis text</p>\n"
+    )
+    assert html._formatSynopsis("brief text", False) == (
+        "<p class='comment'><span class='synopsis'>Brief:</span> brief text</p>\n"
     )
     assert html._formatComments("comment text") == (
         "<p class='comment'>comment text</p>\n"

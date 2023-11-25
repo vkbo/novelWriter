@@ -34,9 +34,10 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.enum import nwDocMode, nwItemClass
+from novelwriter.common import checkInt
 from novelwriter.constants import nwHeaders, nwLabels, nwLists, trConst
 from novelwriter.core.index import IndexHeading, IndexItem
-from novelwriter.enum import nwDocMode, nwItemClass
 
 logger = logging.getLogger(__name__)
 
@@ -101,6 +102,23 @@ class GuiDocViewerPanel(QWidget):
         self.mainTabs.setStyleSheet(styleSheet)
         self.updateHandle(self._lastHandle)
 
+        return
+
+    def openProjectTasks(self) -> None:
+        """Run open project tasks."""
+        widths = SHARED.project.options.getValue("GuiDocViewerPanel", "colWidths", {})
+        if isinstance(widths, dict):
+            for key, value in widths.items():
+                if key in self.kwTabs and isinstance(value, list):
+                    self.kwTabs[key].setColumnWidths(value)
+        return
+
+    def closeProjectTasks(self) -> None:
+        """Run close project tasks."""
+        widths = {}
+        for key, tab in self.kwTabs.items():
+            widths[key] = tab.getColumnWidths()
+        SHARED.project.options.setValue("GuiDocViewerPanel", "colWidths", widths)
         return
 
     ##
@@ -213,6 +231,7 @@ class _ViewPanelBackRefs(QTreeWidget):
 
         # Signals
         self.clicked.connect(self._treeItemClicked)
+        self.doubleClicked.connect(self._treeItemDoubleClicked)
 
         return
 
@@ -250,6 +269,14 @@ class _ViewPanelBackRefs(QTreeWidget):
         if index.column() == self.C_EDIT:
             self._parent.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, "", True)
         elif index.column() == self.C_VIEW:
+            self._parent.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, "", True)
+        return
+
+    @pyqtSlot("QModelIndex")
+    def _treeItemDoubleClicked(self, index: QModelIndex) -> None:
+        """Emit follow tag signal on user double click."""
+        tHandle = index.siblingAtColumn(self.C_DATA).data(self.D_HANDLE)
+        if index.column() == self.C_DOC:
             self._parent.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, "", True)
         return
 
@@ -295,6 +322,7 @@ class _ViewPanelKeyWords(QTreeWidget):
     C_VIEW  = 2
     C_DOC   = 3
     C_TITLE = 4
+    C_BRIEF = 5
 
     D_TAG = Qt.ItemDataRole.UserRole
 
@@ -307,11 +335,16 @@ class _ViewPanelKeyWords(QTreeWidget):
         iPx = SHARED.theme.baseIconSize
         cMg = CONFIG.pxInt(6)
 
-        self.setHeaderLabels([self.tr("Tag"), "", "", self.tr("Document"), self.tr("Heading")])
+        self.setHeaderLabels([
+            self.tr("Tag"), "", "", self.tr("Document"),
+            self.tr("Heading"), self.tr("Brief")
+        ])
         self.setIndentation(0)
-        self.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.setIconSize(QSize(iPx, iPx))
         self.setFrameStyle(QFrame.Shape.NoFrame)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+        self.setExpandsOnDoubleClick(False)
+        self.setDragEnabled(False)
         self.setSortingEnabled(True)
         self.sortByColumn(self.C_NAME, Qt.SortOrder.AscendingOrder)
 
@@ -321,9 +354,9 @@ class _ViewPanelKeyWords(QTreeWidget):
         treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.ResizeMode.ResizeToContents)
         treeHeader.setSectionResizeMode(self.C_EDIT, QHeaderView.ResizeMode.Fixed)
         treeHeader.setSectionResizeMode(self.C_VIEW, QHeaderView.ResizeMode.Fixed)
-        treeHeader.setSectionResizeMode(self.C_DOC, QHeaderView.ResizeMode.ResizeToContents)
         treeHeader.resizeSection(self.C_EDIT, iPx + cMg)
         treeHeader.resizeSection(self.C_VIEW, iPx + cMg)
+        treeHeader.setSectionsMovable(False)
 
         # Cache Icons Locally
         self._classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[itemClass])
@@ -332,6 +365,7 @@ class _ViewPanelKeyWords(QTreeWidget):
 
         # Signals
         self.clicked.connect(self._treeItemClicked)
+        self.doubleClicked.connect(self._treeItemDoubleClicked)
 
         return
 
@@ -367,6 +401,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         trItem.setText(self.C_DOC, nwItem.itemName)
         trItem.setText(self.C_TITLE, hItem.title)
         trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
+        trItem.setText(self.C_BRIEF, hItem.synopsis)
         trItem.setData(self.C_DATA, self.D_TAG, tag)
 
         if tag not in self._treeMap:
@@ -383,6 +418,20 @@ class _ViewPanelKeyWords(QTreeWidget):
             return True
         return False
 
+    def setColumnWidths(self, widths: list[int]) -> None:
+        """Set the column widths."""
+        if isinstance(widths, list) and len(widths) >= 2:
+            self.setColumnWidth(self.C_DOC, CONFIG.pxInt(checkInt(widths[0], 100)))
+            self.setColumnWidth(self.C_TITLE, CONFIG.pxInt(checkInt(widths[1], 100)))
+        return
+
+    def getColumnWidths(self) -> list[int]:
+        """Get the widths of the user-adjustable columns."""
+        return [
+            CONFIG.rpxInt(self.columnWidth(self.C_DOC)),
+            CONFIG.rpxInt(self.columnWidth(self.C_TITLE)),
+        ]
+
     ##
     #  Private Slots
     ##
@@ -394,6 +443,14 @@ class _ViewPanelKeyWords(QTreeWidget):
         if index.column() == self.C_EDIT:
             self._parent.loadDocumentTagRequest.emit(tag, nwDocMode.EDIT)
         elif index.column() == self.C_VIEW:
+            self._parent.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
+        return
+
+    @pyqtSlot("QModelIndex")
+    def _treeItemDoubleClicked(self, index: QModelIndex) -> None:
+        """Emit follow tag signal on user double click."""
+        tag = index.siblingAtColumn(self.C_DATA).data(self.D_TAG)
+        if index.column() == self.C_NAME:
             self._parent.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
         return
 
