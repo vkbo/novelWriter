@@ -231,6 +231,7 @@ class _ViewPanelBackRefs(QTreeWidget):
 
         # Signals
         self.clicked.connect(self._treeItemClicked)
+        self.doubleClicked.connect(self._treeItemDoubleClicked)
 
         return
 
@@ -268,6 +269,14 @@ class _ViewPanelBackRefs(QTreeWidget):
         if index.column() == self.C_EDIT:
             self._parent.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, "", True)
         elif index.column() == self.C_VIEW:
+            self._parent.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, "", True)
+        return
+
+    @pyqtSlot("QModelIndex")
+    def _treeItemDoubleClicked(self, index: QModelIndex) -> None:
+        """Emit follow tag signal on user double click."""
+        tHandle = index.siblingAtColumn(self.C_DATA).data(self.D_HANDLE)
+        if index.column() == self.C_DOC:
             self._parent.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, "", True)
         return
 
@@ -356,6 +365,7 @@ class _ViewPanelKeyWords(QTreeWidget):
 
         # Signals
         self.clicked.connect(self._treeItemClicked)
+        self.doubleClicked.connect(self._treeItemDoubleClicked)
 
         return
 
@@ -433,6 +443,14 @@ class _ViewPanelKeyWords(QTreeWidget):
         if index.column() == self.C_EDIT:
             self._parent.loadDocumentTagRequest.emit(tag, nwDocMode.EDIT)
         elif index.column() == self.C_VIEW:
+            self._parent.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
+        return
+
+    @pyqtSlot("QModelIndex")
+    def _treeItemDoubleClicked(self, index: QModelIndex) -> None:
+        """Emit follow tag signal on user double click."""
+        tag = index.siblingAtColumn(self.C_DATA).data(self.D_TAG)
+        if index.column() == self.C_NAME:
             self._parent.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
         return
 

@@ -102,6 +102,12 @@ def testGuiViewerPanel_BackRefs(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     tabBackRefs._treeItemClicked(tabBackRefs.model().index(0, tabBackRefs.C_VIEW))
     assert nwGUI.docViewer.docHandle == C.hSceneDoc
 
+    # Double-Click
+    nwGUI.viewDocument(hJane)
+    assert nwGUI.docViewer.docHandle == hJane
+    tabBackRefs._treeItemDoubleClicked(tabBackRefs.model().index(0, tabBackRefs.C_DOC))
+    assert nwGUI.docViewer.docHandle == C.hSceneDoc
+
     # qtbot.stop()
 
 # END Test testGuiViewerPanel_BackRefs
@@ -189,6 +195,8 @@ def testGuiViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mockRnd
     assert nwGUI.docViewer.docHandle == C.hSceneDoc
     charTab._treeItemClicked(charTab.model().index(1, charTab.C_VIEW))
     assert nwGUI.docViewer.docHandle == hJohn
+    charTab._treeItemDoubleClicked(charTab.model().index(0, charTab.C_NAME))
+    assert nwGUI.docViewer.docHandle == hJane
 
     # qtbot.stop()
 
