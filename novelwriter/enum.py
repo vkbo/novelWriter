@@ -65,7 +65,7 @@ class nwComment(Enum):
 
     PLAIN    = 0
     SYNOPSIS = 1
-    BRIEF    = 2
+    SUMMARY  = 2
 
 # END Enum nwComment
 

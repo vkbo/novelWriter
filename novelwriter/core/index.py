@@ -339,7 +339,7 @@ class NWIndex:
             elif line.startswith("%"):
                 if cTitle != TT_NONE:
                     cStyle, cText, _ = processComment(line)
-                    if cStyle in (nwComment.BRIEF, nwComment.SYNOPSIS):
+                    if cStyle in (nwComment.SYNOPSIS, nwComment.SUMMARY):
                         self._itemIndex.setHeadingSynopsis(tHandle, cTitle, cText)
 
         # Count words for remaining text after last heading
@@ -1268,7 +1268,7 @@ class IndexHeading:
 # =============================================================================================== #
 
 CLASSIFIERS = {
-    "brief": nwComment.BRIEF,
+    "summary": nwComment.SUMMARY,
     "synopsis": nwComment.SYNOPSIS,
 }
 
