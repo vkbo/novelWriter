@@ -36,7 +36,7 @@ from typing import TYPE_CHECKING, ItemsView, Iterable, Iterator
 from pathlib import Path
 
 from novelwriter import SHARED
-from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
+from novelwriter.enum import nwComment, nwItemClass, nwItemType, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.common import checkInt, isHandle, isItemClass, isTitleTag, jsonEncode
 from novelwriter.constants import nwFiles, nwKeyWords, nwRegEx, nwUnicode, nwHeaders
@@ -338,14 +338,9 @@ class NWIndex:
 
             elif line.startswith("%"):
                 if cTitle != TT_NONE:
-                    toCheck = line[1:].lstrip()
-                    synTag = toCheck[:9].lower()
-                    tLen = len(line)
-                    cLen = len(toCheck)
-                    cOff = tLen - cLen
-                    if synTag == "synopsis:":
-                        sText = line[cOff+9:].strip()
-                        self._itemIndex.setHeadingSynopsis(tHandle, cTitle, sText)
+                    cStyle, cText, _ = processComment(line)
+                    if cStyle in (nwComment.BRIEF, nwComment.SYNOPSIS):
+                        self._itemIndex.setHeadingSynopsis(tHandle, cTitle, cText)
 
         # Count words for remaining text after last heading
         if pTitle != TT_NONE:
@@ -1269,8 +1264,25 @@ class IndexHeading:
 
 
 # =============================================================================================== #
-#  Simple Word Counter
+#  text Processing Functions
 # =============================================================================================== #
+
+CLASSIFIERS = {
+    "brief": nwComment.BRIEF,
+    "synopsis": nwComment.SYNOPSIS,
+}
+
+
+def processComment(text: str) -> tuple[nwComment, str, int]:
+    """Extract comment style and text. Should only be called on text
+    starting with a %.
+    """
+    check = text[1:].lstrip()
+    classifier, _, content = check.partition(":")
+    if content and (clean := classifier.strip().lower()) in CLASSIFIERS:
+        return CLASSIFIERS[clean], content.strip(), text.find(":") + 1
+    return nwComment.PLAIN, check, 0
+
 
 def countWords(text: str) -> tuple[int, int, int]:
     """Count words in a piece of text, skipping special syntax and
