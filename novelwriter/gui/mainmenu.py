@@ -171,7 +171,7 @@ class GuiMainMenu(QMenuBar):
 
         # Project > Delete
         self.aDeleteItem = self.projMenu.addAction(self.tr("Delete Item"))
-        self.aDeleteItem.setShortcuts(["Ctrl+Del", "Ctrl+Shift+Del"])  # Latter is deprecated
+        self.aDeleteItem.setShortcut("Ctrl+Shift+Del")  # Cannot be Ctrl+Del, see #629
         self.aDeleteItem.triggered.connect(lambda: self.mainGui.projView.requestDeleteItem(None))
 
         # Project > Empty Trash
