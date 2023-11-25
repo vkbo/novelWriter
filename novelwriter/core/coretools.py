@@ -450,7 +450,7 @@ class ProjectBuilder:
                         aDoc.writeDocument(
                             f"# {noteTitles[newRoot]}\n\n"
                             f"@tag: {ntTag}\n\n"
-                            f"% Brief: {bfNote}\n\n"
+                            f"% Summary: {bfNote}\n\n"
                         )
 
             # Also add the archive and trash folders

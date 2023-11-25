@@ -834,6 +834,10 @@ class GuiDocEditor(QPlainTextEdit):
                 text = "% Synopsis: "
                 newBlock = True
                 goAfter = True
+            elif insert == nwDocInsert.SUMMARY:
+                text = "% Summary: "
+                newBlock = True
+                goAfter = True
             elif insert == nwDocInsert.NEW_PAGE:
                 text = "[newpage]"
                 newBlock = True

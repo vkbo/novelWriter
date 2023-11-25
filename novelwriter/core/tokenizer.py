@@ -80,7 +80,7 @@ class Tokenizer(ABC):
     # Block Type
     T_EMPTY    = 1   # Empty line (new paragraph)
     T_SYNOPSIS = 2   # Synopsis comment
-    T_BRIEF    = 3   # Brief comment
+    T_SUMMARY  = 3   # Summary comment
     T_COMMENT  = 4   # Comment line
     T_KEYWORD  = 5   # Command line
     T_TITLE    = 6   # Title
@@ -470,9 +470,9 @@ class Tokenizer(ABC):
                     ))
                     if self._doSynopsis and self._keepMarkdown:
                         tmpMarkdown.append("%s\n" % aLine)
-                elif cStyle == nwComment.BRIEF:
+                elif cStyle == nwComment.SUMMARY:
                     self._tokens.append((
-                        self.T_BRIEF, nHead, cText, None, sAlign
+                        self.T_SUMMARY, nHead, cText, None, sAlign
                     ))
                     if self._doSynopsis and self._keepMarkdown:
                         tmpMarkdown.append("%s\n" % aLine)

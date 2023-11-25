@@ -1269,7 +1269,7 @@ def testCoreIndex_processComment():
     # Regular comment
     assert processComment("%Hi") == (nwComment.PLAIN, "Hi", 0)
     assert processComment("% Hi") == (nwComment.PLAIN, "Hi", 0)
-    assert processComment("% Hi:you") == (nwComment.PLAIN, "Hi:you", 0)
+    assert processComment("% Hi:You") == (nwComment.PLAIN, "Hi:You", 0)
 
     # Synopsis
     assert processComment("%synopsis:") == (nwComment.PLAIN, "synopsis:", 0)
@@ -1278,14 +1278,16 @@ def testCoreIndex_processComment():
     assert processComment("%  synopsis : Hi") == (nwComment.SYNOPSIS, "Hi", 13)
     assert processComment("%   Synopsis  : Hi") == (nwComment.SYNOPSIS, "Hi", 15)
     assert processComment("% \t  SYNOPSIS  : Hi") == (nwComment.SYNOPSIS, "Hi", 16)
+    assert processComment("% \t  SYNOPSIS  : Hi:You") == (nwComment.SYNOPSIS, "Hi:You", 16)
 
-    # Brief
-    assert processComment("%brief:") == (nwComment.PLAIN, "brief:", 0)
-    assert processComment("%brief: Hi") == (nwComment.BRIEF, "Hi", 7)
-    assert processComment("% brief: Hi") == (nwComment.BRIEF, "Hi", 8)
-    assert processComment("%  brief : Hi") == (nwComment.BRIEF, "Hi", 10)
-    assert processComment("%   Brief  : Hi") == (nwComment.BRIEF, "Hi", 12)
-    assert processComment("% \t  BRIEF  : Hi") == (nwComment.BRIEF, "Hi", 13)
+    # Summary
+    assert processComment("%summary:") == (nwComment.PLAIN, "summary:", 0)
+    assert processComment("%summary: Hi") == (nwComment.SUMMARY, "Hi", 9)
+    assert processComment("% summary: Hi") == (nwComment.SUMMARY, "Hi", 10)
+    assert processComment("%  summary : Hi") == (nwComment.SUMMARY, "Hi", 12)
+    assert processComment("%   Summary  : Hi") == (nwComment.SUMMARY, "Hi", 14)
+    assert processComment("% \t  SUMMARY  : Hi") == (nwComment.SUMMARY, "Hi", 15)
+    assert processComment("% \t  SUMMARY  : Hi:You") == (nwComment.SUMMARY, "Hi:You", 15)
 
 # END Test testCoreIndex_processComment
 

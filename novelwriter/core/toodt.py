@@ -484,7 +484,7 @@ class ToOdt(Tokenizer):
                 tTemp, fTemp = self._formatSynopsis(tText, True)
                 self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=fTemp)
 
-            elif tType == self.T_BRIEF and self._doSynopsis:
+            elif tType == self.T_SUMMARY and self._doSynopsis:
                 tTemp, fTemp = self._formatSynopsis(tText, False)
                 self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=fTemp)
 
@@ -558,7 +558,7 @@ class ToOdt(Tokenizer):
 
     def _formatSynopsis(self, text: str, synopsis: bool) -> tuple[str, list[tuple[int, int]]]:
         """Apply formatting to synopsis lines."""
-        name = self._localLookup("Synopsis") if synopsis else self._localLookup("Brief")
+        name = self._localLookup("Synopsis") if synopsis else self._localLookup("Summary")
         rTxt = f"{name}: {text}"
         rFmt = [(0, self.FMT_B_B), (len(name) + 1, self.FMT_B_E)]
         return rTxt, rFmt

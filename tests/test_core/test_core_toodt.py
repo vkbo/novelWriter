@@ -447,12 +447,12 @@ def testCoreToOdt_Convert(mockGUI):
         '</office:text>'
     )
 
-    # Synopsis, Brief, Comment, Keywords
+    # Synopsis, Summary, Comment, Keywords
     odt._text = (
         "### Scene\n\n"
         "@pov: Jane\n\n"
         "% synopsis: So it begins\n\n"
-        "% brief: Then what\n\n"
+        "% summary: Then what\n\n"
         "% A plain comment\n\n"
     )
     odt.setSynopsis(True)
@@ -471,7 +471,7 @@ def testCoreToOdt_Convert(mockGUI):
         '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T7">'
         'Synopsis:</text:span> So it begins</text:p>'
         '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T7">'
-        'Brief:</text:span> Then what</text:p>'
+        'Summary:</text:span> Then what</text:p>'
         '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T7">'
         'Comment:</text:span> A plain comment</text:p>'
         '</office:text>'
@@ -810,8 +810,8 @@ def testCoreToOdt_Format(mockGUI):
     assert odt._formatSynopsis("synopsis text", True) == (
         "Synopsis: synopsis text", [(0, ToOdt.FMT_B_B), (9, ToOdt.FMT_B_E)]
     )
-    assert odt._formatSynopsis("brief text", False) == (
-        "Brief: brief text", [(0, ToOdt.FMT_B_B), (6, ToOdt.FMT_B_E)]
+    assert odt._formatSynopsis("summary text", False) == (
+        "Summary: summary text", [(0, ToOdt.FMT_B_B), (8, ToOdt.FMT_B_E)]
     )
     assert odt._formatComments("comment text") == (
         "Comment: comment text", [(0, ToOdt.FMT_B_B), (8, ToOdt.FMT_B_E)]
