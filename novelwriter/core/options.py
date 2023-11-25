@@ -69,6 +69,9 @@ VALID_MAP = {
     "GuiManuscriptBuild": {
         "winWidth", "winHeight", "fmtWidth", "sumWidth",
     },
+    "GuiDocViewerPanel": {
+        "colWidths",
+    }
 }
 
 

@@ -34,9 +34,10 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.enum import nwDocMode, nwItemClass
+from novelwriter.common import checkInt
 from novelwriter.constants import nwHeaders, nwLabels, nwLists, trConst
 from novelwriter.core.index import IndexHeading, IndexItem
-from novelwriter.enum import nwDocMode, nwItemClass
 
 logger = logging.getLogger(__name__)
 
@@ -101,6 +102,23 @@ class GuiDocViewerPanel(QWidget):
         self.mainTabs.setStyleSheet(styleSheet)
         self.updateHandle(self._lastHandle)
 
+        return
+
+    def openProjectTasks(self) -> None:
+        """Run open project tasks."""
+        widths = SHARED.project.options.getValue("GuiDocViewerPanel", "colWidths", {})
+        if isinstance(widths, dict):
+            for key, value in widths.items():
+                if key in self.kwTabs and isinstance(value, list):
+                    self.kwTabs[key].setColumnWidths(value)
+        return
+
+    def closeProjectTasks(self) -> None:
+        """Run close project tasks."""
+        widths = {}
+        for key, tab in self.kwTabs.items():
+            widths[key] = tab.getColumnWidths()
+        SHARED.project.options.setValue("GuiDocViewerPanel", "colWidths", widths)
         return
 
     ##
@@ -313,9 +331,11 @@ class _ViewPanelKeyWords(QTreeWidget):
             self.tr("Heading"), self.tr("Brief")
         ])
         self.setIndentation(0)
-        self.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.setIconSize(QSize(iPx, iPx))
         self.setFrameStyle(QFrame.Shape.NoFrame)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+        self.setExpandsOnDoubleClick(False)
+        self.setDragEnabled(False)
         self.setSortingEnabled(True)
         self.sortByColumn(self.C_NAME, Qt.SortOrder.AscendingOrder)
 
@@ -327,6 +347,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         treeHeader.setSectionResizeMode(self.C_VIEW, QHeaderView.ResizeMode.Fixed)
         treeHeader.resizeSection(self.C_EDIT, iPx + cMg)
         treeHeader.resizeSection(self.C_VIEW, iPx + cMg)
+        treeHeader.setSectionsMovable(False)
 
         # Cache Icons Locally
         self._classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[itemClass])
@@ -386,6 +407,20 @@ class _ViewPanelKeyWords(QTreeWidget):
             self._treeMap.pop(tag, None)
             return True
         return False
+
+    def setColumnWidths(self, widths: list[int]) -> None:
+        """Set the column widths."""
+        if isinstance(widths, list) and len(widths) >= 2:
+            self.setColumnWidth(self.C_DOC, CONFIG.pxInt(checkInt(widths[0], 100)))
+            self.setColumnWidth(self.C_TITLE, CONFIG.pxInt(checkInt(widths[1], 100)))
+        return
+
+    def getColumnWidths(self) -> list[int]:
+        """Get the widths of the user-adjustable columns."""
+        return [
+            CONFIG.rpxInt(self.columnWidth(self.C_DOC)),
+            CONFIG.rpxInt(self.columnWidth(self.C_TITLE)),
+        ]
 
     ##
     #  Private Slots

@@ -454,6 +454,7 @@ class GuiMain(QMainWindow):
             self.docViewer.clearNavHistory()
             self.closeDocViewer(byUser=False)
 
+            self.docViewerPanel.closeProjectTasks()
             self.outlineView.closeProjectTasks()
             self.novelView.closeProjectTasks()
             self.projView.clearProjectView()
@@ -527,6 +528,7 @@ class GuiMain(QMainWindow):
         self.projView.openProjectTasks()
         self.novelView.openProjectTasks()
         self.outlineView.openProjectTasks()
+        self.docViewerPanel.openProjectTasks()
         self._updateStatusWordCount()
 
         # Restore previously open documents, if any
