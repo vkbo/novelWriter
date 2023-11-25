@@ -32,14 +32,14 @@ final release.
   that tag will appear in the menu. On selection, it will create a note in the first root folder of
   the correct kind, and set the title and tag to match the undefined reference, making it instantly
   defined. Issues #1580 and #823. PR #1582.
-* Shortcodes have been added to the Document Editor. Shorcodes are HTML-like syntax, but uses
+* Shortcodes have been added to the Document Editor. Shortcodes are HTML-like syntax, but uses
   square brackets instead of angular brackets. So `[b]text[/b]` will make the word "text" appear as
-  bold. Shortcodes currently support bold, italic, striketrough, underline, superscript and
+  bold. Shortcodes currently support bold, italic, strike trough, underline, superscript and
   subscript text. The first three are complimentary to the Markdown-like syntax that. The benefit
   of the shortcode emphasis syntax, however, is that it does not care about word boundaries, and
   can therefore be used any place in the text. Including in the middle of words. Issues #1337 and
   #1444. PRs #1540 and #1583.
-* A show/hide toolbar has been added to the editor where toolbuttons for formatting options are
+* A show/hide toolbar has been added to the editor where tool buttons for formatting options are
   available. The toolbar is hidden by default, but can be activated from a three dots icon in the
   top left corner of the editor. Issue #1585. PR #1584.
 * Build Definitions in the Manuscript Build tool can now be re-ordered, and the order is preserved
@@ -105,7 +105,7 @@ changes have been fixed as well. See the full changelog for more details.
   Qt 5.15.8. In particular, it is possible to drop items on the root level, and it's possible to
   move root items to other locations. Neither should be possible and will severely mess up the
   project if done. Issue #1569. PR #1570.
-* Add a custom autoscroll feature when dragging an item in the project tree to near the top or
+* Add a custom auto-scroll feature when dragging an item in the project tree to near the top or
   bottom. This is actually a default feature of the tree widget in the Qt library, but this too is
   broken in some versions of Qt 5.15.x. The default feature has been permanently disabled and
   replaced by a custom written feature that behaves similarly. Issue #1561. PR #1571.
@@ -327,7 +327,7 @@ This is a patch release that fixes a few issues and adds a Japanese translation.
 
 The issues were mostly related to spell checking. In particular, issues with finding the word
 boundary when using underscore characters for italics markup. These issues should now be resolved.
-In addition, escaped markup characters are now renderred properly in HTML and ODT build formats.
+In addition, escaped markup characters are now rendered properly in HTML and ODT build formats.
 
 A few usability improvements have also been made. The Add Item menu in the project tree no longer
 shows the options to create Novel Documents when an item in the tree is selected that cannot hold
@@ -487,7 +487,7 @@ This is a patch release that fixes a few bugs and usability issues. The editing 
 importance labels in Project Settings should now be a bit more intuitive. Opening a document from
 the Outline View that is already open in the editor should now switch to the editor view. The
 convert folder to note or document feature in the project tree has also been fixed. Some icons have
-been updated and a renderring issue with one of them fixed. Chinese, Norwegian, US English, German
+been updated and a rendering issue with one of them fixed. Chinese, Norwegian, US English, German
 and Spanish translations have been updated as well. A new credits tab has been added to the About
 dialog box, replacing the Credits section on the main About tab.
 
@@ -757,7 +757,7 @@ opened, a request to update the file format will show up.
   PR #1212.
 * The GUI theme now determines which icon theme is to be loaded. It is no longer a separate
   setting. The icon theme can also be reloaded without restart. Issue #1172. PR #1212.
-* The block formating features in the Format menu now also works on empty lines. Issue #1178.
+* The block formatting features in the Format menu now also works on empty lines. Issue #1178.
   PR #1214.
 * There is now a Format menu entry and shortcut code for synopsis comments. Issue #1177. PR #1214.
 * The split document dialog now has the option to move teh source document to trash. Issue #1179.
@@ -794,7 +794,7 @@ opened, a request to update the file format will show up.
   correct type information. PR #1197.
 * Saving and loading of XML data is now handled by a separate set of reader and writer classes. The
   reader class is capable of reading all file formats that have been used thus far. The various
-  data classes have been improved, and a new XML file formart version 1.5 added. Issue #1189.
+  data classes have been improved, and a new XML file format version 1.5 added. Issue #1189.
   PRs #1221 and #1232.
 * The index is now automatically rebuilt when the project file format is updated. Issue #1235.
   PR #1236.
@@ -987,8 +987,8 @@ final release.
   setting is preserved. Previously, the Importance setting would overwrite it during the
   conversion. PR #1030.
 * Item labels, Status labels, and other labels on the GUI are now run through a "simplify" function
-  before being accepted. This functions strips out all whitespaces and consecutive whitespaces and
-  replace them with single plain whitespaces. This is a safer format to store in XML, and also
+  before being accepted. This functions strips out all white spaces and consecutive white spaces
+  and replace them with single plain white spaces. This is a safer format to store in XML, and also
   makes sure there aren't invisible characters floating around in the labels. PR #1038.
 * Due to the changes to how drag and drop works, there are no longer any restrictions on folders
   and documents. Only root folders remain restricted in terms of moving. Root folders can only be
@@ -1494,7 +1494,7 @@ checking enabled if there is something wrong with the spell check package.
 **Bugfixes**
 
 * When the HTML converter replaced grater than or smaller than symbols with the corresponding HTML
-  entities. the poisition of the formatting tags following in the text would be shifted, but the
+  entities. the position of the formatting tags following in the text would be shifted, but the
   positions were not updated. This is now solved by updating these positions when such a symbol is
   encountered. This issue has been backported from 1.6 development. Issue #929.
 * If the pyenchant package is installed, but the underlying enchant library is broken in one way or
@@ -1659,7 +1659,7 @@ backups.
   the case. Having two alternative spell checkers complicated the code a great deal, and the
   internal spell checker also required full word lists to be distributed with novelWriter. PR #875.
 * Added a setting in Preferences to change how the word count on the status bar is calculated. The
-  new setting allows the project notes to be filetred out, leaving only the word count for novel
+  new setting allows the project notes to be filtered out, leaving only the word count for novel
   files. Feature request #857. PR #882.
 
 **Installation and Packaging**
@@ -1678,7 +1678,7 @@ backups.
 
 **Internationalisation**
 
-* The US English and Nowregian translation files have been updated. PR #884.
+* The US English and Norwegian translation files have been updated. PR #884.
 
 **Documentation**
 
@@ -1709,7 +1709,7 @@ careful when using this version on live writing projects, and make sure you take
 
 **Internationalisation**
 
-* The US English and Nowregian translation files have been updated. PR #870.
+* The US English and Norwegian translation files have been updated. PR #870.
 
 **Documentation**
 
@@ -2297,7 +2297,7 @@ buttons were blocked when they shouldn't. This release resolves these issues.
 This release is mainly focused on the Build Novel Project tool. Completely new export classes have
 been written to support Open Document and Markdown exports. In addition, the way document layouts
 are handled have been automated a little to assist the user in keeping header levels and document
-layout flags in sync. The third new additoion is the ability to record and log idle time during a
+layout flags in sync. The third new addition is the ability to record and log idle time during a
 writing session to improve the writing statistics information as requested by several users.
 Finally, it is now possible to directly edit the project dictionary via a new, simple GUI dialog.
 
@@ -2390,7 +2390,7 @@ _These Release Notes also include the changes from 1.2 Beta 1 and RC 1._
   the index on next load. For earlier versions of novelWriter before 1.1.1, it would also cause a
   crash. Invalid keywords are now rejected during indexing. Issue #688. PR #689.
 * The "Empty Trash" option was no longer working due to an earlier fix that added a requirement
-  that the project tree has focus to allow the emptying to procede. Since the Empty Trash feature
+  that the project tree has focus to allow the emptying to proceed. Since the Empty Trash feature
   opens a dialog, the tree loses focus, and the deletions are therefore ignored. The focus check is
   no longer considered when emptying the trash. Issue #701. PR #702.
 
@@ -2450,7 +2450,7 @@ _The Release Notes have been moved and merged into the 1.2 RC 1 notes._
 * A full Markdown exporter has been written and added for the Build Novel Project tool. This too
   replaces a Qt feature that was used to save the content of the preview window into a markdown
   file. The exporter allows for both standard markdown and GitHub flavour markdown. The only
-  relevant difference being that the latter allows strikethrough text. Issue #617. PR #650.
+  relevant difference being that the latter allows strike through text. Issue #617. PR #650.
 * The Build Novel Project tool now has a "Line height" property that is applied to the preview, and
   to the HTML5 and Open Document export formats. Discussion #653. Issue #654. PR #660.
 * The Build Novel Project tool now has an option to convert Unicode characters to HTML entities on
@@ -2531,7 +2531,7 @@ but is still lacking in functionality compared to Enchant.
   exclude negative word counts is active. Previously, the entries with negative counts were
   filtered out, but the change in count was still applied to the next line, altering the value.
   Now, the GUI will instead just drop the lines that are negative and keep the other lines
-  unchanged. This is more intutitive, but it also means that the total count now longer matches the
+  unchanged. This is more intuitive, but it also means that the total count now longer matches the
   sum of the lines. PR #659.
 * The keyboard shortcut for deleting entries in the project tree has been changed from `Ctrl+Del`
   to `Ctrl+Shift+Del`. The `Ctrl+Del` shortcut is thus free to be used exclusively by the editor to
@@ -2544,7 +2544,7 @@ but is still lacking in functionality compared to Enchant.
   given a significant speed improvement by caching the imported dictionary as a Python `set`
   instead of a `list`. The `set` has a hashed key lookup algorithm that is significantly faster.
   PR #668.
-* Sessions shortar than 5 minutes, and with no word count changes, are no longer recorded in the
+* Sessions shorter than 5 minutes, and with no word count changes, are no longer recorded in the
   session stats log file. PR #685.
 
 **Installation**
@@ -3009,7 +3009,7 @@ issues are discovered, the next release will be the final version 1.0 release.
 
 * The tests for the core classes of novelWriter have been completely rewritten. Every class or
   source file of the core functionality (everything handling the actual project data and documents,
-  as well as the meta data) is now covered by its own testmodule with a 100% coverage for each
+  as well as the meta data) is now covered by its own test module with a 100% coverage for each
   module. PR #512.
 * Likewise, the base tests have been rewritten to cover the `Config` class, the `main` function
   that launches the app, and the error handling class. The structure matches the core tests from
@@ -3041,7 +3041,7 @@ The "Typewriter Mode" of the editor has been improved. Essentially, this feature
 scroll. It tries to keep the cursor stationary in the vertical direction, and will try to scroll
 the document up when the cursor skips to a new line while typing (or down in case of backspaces).
 This is similar to the way a typewriter scrolls the paper when hitting the return key. It improves
-the writing experience as the current active line will stay at the same eye heightlevel on the
+the writing experience as the current active line will stay at the same eye height level on the
 screen.
 
 Previously, the feature would lock the cursor to a given vertical position defined by the user.
@@ -3089,7 +3089,7 @@ Switching main GUI theme still requires a restart.
   handled by the various tools, but they shouldn't even trigger when there is no project or
   document to perform the action on. PR #492.
 * Clarify the message of the Close Project and Exit novelWriter dialogs. Previously, it may have
-  seemed to some users that clicking "No" would allow the closing to procede without saving
+  seemed to some users that clicking "No" would allow the closing to proceed without saving
   changes. This is not true as changes are saved automatically when editing a project. The dialog
   text should now make this clearer. Issue #494, PR #495.
 
@@ -3134,7 +3134,7 @@ Switching main GUI theme still requires a restart.
 **User Interface**
 
 * An option has been added in Preferences to hide horizontal or vertical scroll bars on the main
-  GUI. These optons will hide scroll bars on the Project Tree, Document Editor, Document Viewer,
+  GUI. These options will hide scroll bars on the Project Tree, Document Editor, Document Viewer,
   Outline Tab and on the controls of the Build Novel Project tool. Scroll bars take up space, and
   as long as the project doesn't contain very long documents, scrolling with the mouse wheel is
   enough. The feature is of course entirely optional. PRs #468 and #469.
@@ -3154,7 +3154,7 @@ Switching main GUI theme still requires a restart.
 * When applying a format from the format menu to a selection of multiple paragraphs (or lines),
   only the first paragraph (or line) receives the formatting. The editor doesn't allow markdown
   formatting to span multiple lines. Issue #451, PR #475.
-* The syntax highlighter no longer uses the same colour to highlight strikethrough text as for
+* The syntax highlighter no longer uses the same colour to highlight strike through text as for
   emphasised text. The colour is intended to stand out, which makes little sense for such text.
   Instead, the highlighter uses the same colour as for comments. PR #476.
 
@@ -3305,7 +3305,7 @@ Switching main GUI theme still requires a restart.
 
 **Code Improvements**
 
-* Minor improvemenmts have been made to the core project classes to improve encapsulation and
+* Minor improvements have been made to the core project classes to improve encapsulation and
   better ensure consistency between the different data structures that store the novel project in
   memory. PR #447.
 * Some unused or redundant code has been removed, and in some places, functions have been merged to
@@ -3322,9 +3322,9 @@ Switching main GUI theme still requires a restart.
 **Bugfixes**
 
 * If the horizontal scroll bar appeared at the bottom of the document editor or viewer, for
-  instance if a long, un-wrapable line was entered, the scroll bar would sit on top of the document
-  footer. The footer bar now properly moves out of the way when the horizontal scroll bar appears.
-  Issue #433, PR #434.
+  instance if a long, un-wrappable line was entered, the scroll bar would sit on top of the
+  document footer. The footer bar now properly moves out of the way when the horizontal scroll bar
+  appears. Issue #433, PR #434.
 
 **New Features**
 
@@ -3446,7 +3446,7 @@ Switching main GUI theme still requires a restart.
   leading line break. This was previously handled entirely by the Qt library, which does this for
   some reason. Issue #395, PR #405.
 * A chapter heading in a file with a different layout than `Unnumbered` can now also be flagged as
-  an unnumbered chapter heading by adding an asterisk to the begfinning of the title text. This
+  an unnumbered chapter heading by adding an asterisk to the beginning of the title text. This
   only affects the number assignment and counter when running the Build Novel Project tool. The
   rest of the app ignores the asterisk. Issue #402, PR #406.
 
@@ -3461,7 +3461,7 @@ Switching main GUI theme still requires a restart.
   create a copy of the example project from the source code. Either from the `sample` folder in the
   source, or from a `sample.zip` file generated by the `setup.py` script and saved to the
   `nw/assets` folder. PR #366.
-* When the user clicked cancel on the colour dialog in Project Settins, the icon would be reset to
+* When the user clicked cancel on the colour dialog in Project Settings, the icon would be reset to
   black. Instead, the colour should remain unchanged. A check that the user actually selected a
   colour has now been added. Issue #395, PR #403.
 
@@ -3537,7 +3537,7 @@ planned by GitHub. See their [notes](https://github.com/github/renaming) for mor
   [novelwriter.readthedocs.io](https://novelwriter.readthedocs.io/) has been rewritten. It was
   drifting out of sync with the development of the code. In addition, many improvements have been
   made to the reStructuredText formatting of the documentation source by providing better
-  cross-reference linking and highlightings. The main repository README file has been updated to
+  cross-reference linking and highlighting. The main repository README file has been updated to
   match. PRs #375, #382, and #384.
 * The main `setup.py` script has been updated to also build documentation for the Qt Assistant when
   given a `qthelp` flag. The compiled help files are copied into the `nw/assets/help` folder, and
@@ -3635,7 +3635,7 @@ longer be read by an earlier version due to the change of how autoReplace settin
   has been removed from the main window status bar. PR #348.
 * The document editor footer can optionally be hidden in Distraction Free mode. PR #351.
 * The Italic and Bold menu entries have been renamed to Emphasis and Strong Emphasis, which is more
-  in line with what they represent in Markdown and HTML. They are still renderred as Italic and
+  in line with what they represent in Markdown and HTML. They are still rendered as Italic and
   Bold in the document viewer, but the HTML export is using the `<em>` and `<strong>` tags.
   PR #350.
 * Due to several issues with the formatting of emphasised text using `*`, `**`, and `***` wrappers,
@@ -3648,9 +3648,9 @@ longer be read by an earlier version due to the change of how autoReplace settin
   for emphasis and strong is commonly recommended when writing Markdown anyway, so it is a sensible
   compromise between speed and flexibility. This PR partially reverses PR #310. Issue #353,
   PR #355.
-* The syntax highlighter now properly highlights overlapping formattings, including emphasised text
+* The syntax highlighter now properly highlights overlapping formatting, including emphasised text
   inside of highlighted quotes. PR #355.
-* The colour highlighting of emphasis, strong and strikethrough, can now be switch off in
+* The colour highlighting of emphasis, strong and strike through, can now be switch off in
   Preferences. The syntax highlighter will still apply the italic, bold and strike effects.
   PR #357.
 * The project path in the Details tab of Project Settings can now be selected and copied to
@@ -3681,7 +3681,7 @@ longer be read by an earlier version due to the change of how autoReplace settin
   visible in the tree. It is called when you for instance click the header of an open document. It
   was also activated when opening a document from the tree view with either double-click by mouse,
   or by using the Enter key. This meant that the tree view would often move, which made it hard to
-  mouse click on items after eachother since you ended up chasing a moving target. This feature is
+  mouse click on items after each other since you ended up chasing a moving target. This feature is
   now disabled for document open. In addition, the scroll into view feature has been added to the
   search/replace call to move into the next document when reaching the end of the current document.
   This was requested in Issue #332. PR #334.
@@ -3692,7 +3692,7 @@ longer be read by an earlier version due to the change of how autoReplace settin
 **Documentation**
 
 * The documentation has been updated to clarify the correct formatting for italic, bold and
-  strikethrough formatting tags. Issue #220, PR #338.
+  strike through formatting tags. Issue #220, PR #338.
 
 ----
 
@@ -3711,11 +3711,11 @@ longer be read by an earlier version due to the change of how autoReplace settin
 
 * Underline text formatting has been removed. It is not standard HTML5, nor Markdown, and was
   previously implemented using the double underscore notation that in standard Markdown is
-  renderred as bold text. Instead, novelWriter now renders a single `*` or `_` wrapping a piece of
+  rendered as bold text. Instead, novelWriter now renders a single `*` or `_` wrapping a piece of
   text _within_ a paragraphs as italicised text, and a double `**` or `__` as bold text. The
   keyboard shortcuts and automatic features _only_ support the `*` notation. A triple set of `***`
   are treated as both bold and italicised. PR #310.
-* Strikethrough formatting has been added back into novelWriter using the standard Markdown `~~`
+* Strike through formatting has been added back into novelWriter using the standard Markdown `~~`
   wrapping. PR #310.
 * Added support for thin spaces and non-breaking thin spaces. PR #319.
 * The `Ctrl+Z` key sequence (undo) would not go through the wrapper function for document action
@@ -3732,7 +3732,7 @@ longer be read by an earlier version due to the change of how autoReplace settin
   PR #309.
 * The text emphasis functions, either selected from the menu or via keyboard shortcuts, will now
   try to respond to the command in a more meaningful way. That is, the text editor will try to
-  toggle the bold or italics features independently of eachother on the selected text. A menu entry
+  toggle the bold or italics features independently of each other on the selected text. A menu entry
   to apply both at the same time has also been added. PR #310.
 * The document editor search tool has been completely rewritten. It now appears as a search box at
   the top of the document, and has a number of toggle switches added to it. You can modify the
@@ -4102,7 +4102,7 @@ that I can spend more time using it than creating it.
 **Additional thanks** to @countjocular for PRs #173 and #174, and to @johnblommers for all the
 helpful feedback and issue reports for the new features added in this, and previous releases.
 
-### Noteable Changes
+### Notable Changes
 
 * The Timeline View dialog is now gone. Instead, the main window area has been split into two tabs.
   The first, the "Editor", contains the Document Editor and Viewer panels. The second, the
@@ -4253,7 +4253,7 @@ helpful feedback and issue reports for the new features added in this, and previ
 **Bug Fixes**
 
 * Fixed an issue when closing the import file dialog without selecting a file, the import would
-  procede, but fail on file not found. The import is now cancelled when there is no file selected.
+  proceed, but fail on file not found. The import is now cancelled when there is no file selected.
   PR #149.
 * Fixed an issue with markdown export where it did not take into account hard line breaks. Issue
   #151, PR #152.
@@ -4663,7 +4663,7 @@ This is the initial release of a working version of novelWriter, but with very l
 capabilities. So far, the following has been implemented:
 
 * A document tree with a set of pre-defined root folders of a given set of classes for different
-  purposes for novel writing. That is, a root item for the novel itself, one for charcaters, plot
+  purposes for novel writing. That is, a root item for the novel itself, one for characters, plot
   elements, timeline, locations, objects, and a custom one.
 * A plain text editor with a simplified markdown format that allows for four levels of titles, and
   bold, italics and underline text.
@@ -4671,7 +4671,7 @@ capabilities. So far, the following has been implemented:
   * It also allows for keyword/value sets staring with the character `@`. These will later be used
     to link documents together as tags point to other documents. For instance, a scene file can
     point the keyword `@POV:name` to a character file with the keyword `@THIS:name`.
-* The text editor has a set of autoreplace features:
+* The text editor has a set of auto replace features:
   * Dashes are made by combining two or three hyphens.
   * Three dots are replaced with the ellipsis.
   * Straight quotes with your quote format of choice.

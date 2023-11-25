@@ -1164,10 +1164,7 @@ class GuiMain(QMainWindow):
         """Capture the closing event of the GUI and call the close
         function to handle all the close process steps.
         """
-        if self.closeMain():
-            event.accept()
-        else:
-            event.ignore()
+        event.accept() if self.closeMain() else event.ignore()
         return
 
     ##
