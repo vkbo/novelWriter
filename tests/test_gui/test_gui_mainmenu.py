@@ -593,6 +593,10 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     nwGUI.mainMenu.aInsSynopsis.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText() == "Stuff\n% Synopsis: \n"
 
+    nwGUI.docEditor.setPlainText("Stuff\n")
+    nwGUI.mainMenu.aInsSummary.activate(QAction.Trigger)
+    assert nwGUI.docEditor.getText() == "Stuff\n% Summary: \n"
+
     # Insert Break or Space
     # =====================
 

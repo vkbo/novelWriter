@@ -565,9 +565,9 @@ class GuiMainMenu(QMenuBar):
         )
 
         # Insert > Summary Comment
-        self.aInsSynopsis = self.mInsComments.addAction(self.tr("Summary Comment"))
-        self.aInsSynopsis.setShortcut("Ctrl+K, U")
-        self.aInsSynopsis.triggered.connect(
+        self.aInsSummary = self.mInsComments.addAction(self.tr("Summary Comment"))
+        self.aInsSummary.setShortcut("Ctrl+K, U")
+        self.aInsSummary.triggered.connect(
             lambda: self.requestDocInsert.emit(nwDocInsert.SUMMARY)
         )
 
