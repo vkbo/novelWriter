@@ -564,6 +564,13 @@ class GuiMainMenu(QMenuBar):
             lambda: self.requestDocInsert.emit(nwDocInsert.SYNOPSIS)
         )
 
+        # Insert > Summary Comment
+        self.aInsSynopsis = self.mInsComments.addAction(self.tr("Summary Comment"))
+        self.aInsSynopsis.setShortcut("Ctrl+K, U")
+        self.aInsSynopsis.triggered.connect(
+            lambda: self.requestDocInsert.emit(nwDocInsert.SUMMARY)
+        )
+
         # Insert > Symbols
         self.mInsBreaks = self.insMenu.addMenu(self.tr("Page Break and Space"))
 
