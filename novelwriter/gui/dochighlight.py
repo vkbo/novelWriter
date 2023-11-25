@@ -36,6 +36,8 @@ from PyQt5.QtGui import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt
 from novelwriter.constants import nwRegEx, nwUnicode
+from novelwriter.core.index import processComment
+from novelwriter.enum import nwComment
 
 logger = logging.getLogger(__name__)
 
@@ -352,16 +354,12 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         elif text.startswith("%"):  # Comments
             self.setCurrentBlockState(self.BLOCK_TEXT)
-            toCheck = text[1:].lstrip()
-            synTag  = toCheck[:9].lower()
-            tLen = len(text)
-            cLen = len(toCheck)
-            cOff = tLen - cLen
-            if synTag == "synopsis:":
-                self.setFormat(0, cOff+9, self._hStyles["modifier"])
-                self.setFormat(cOff+9, tLen, self._hStyles["hidden"])
+            cStyle, _, cPos = processComment(text)
+            if cStyle == nwComment.PLAIN:
+                self.setFormat(0, len(text), self._hStyles["hidden"])
             else:
-                self.setFormat(0, tLen, self._hStyles["hidden"])
+                self.setFormat(0, cPos, self._hStyles["modifier"])
+                self.setFormat(cPos, len(text), self._hStyles["hidden"])
 
         else:  # Text Paragraph
 
