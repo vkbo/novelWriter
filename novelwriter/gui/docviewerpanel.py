@@ -295,6 +295,7 @@ class _ViewPanelKeyWords(QTreeWidget):
     C_VIEW  = 2
     C_DOC   = 3
     C_TITLE = 4
+    C_BRIEF = 5
 
     D_TAG = Qt.ItemDataRole.UserRole
 
@@ -307,7 +308,10 @@ class _ViewPanelKeyWords(QTreeWidget):
         iPx = SHARED.theme.baseIconSize
         cMg = CONFIG.pxInt(6)
 
-        self.setHeaderLabels([self.tr("Tag"), "", "", self.tr("Document"), self.tr("Heading")])
+        self.setHeaderLabels([
+            self.tr("Tag"), "", "", self.tr("Document"),
+            self.tr("Heading"), self.tr("Brief")
+        ])
         self.setIndentation(0)
         self.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.setIconSize(QSize(iPx, iPx))
@@ -321,7 +325,6 @@ class _ViewPanelKeyWords(QTreeWidget):
         treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.ResizeMode.ResizeToContents)
         treeHeader.setSectionResizeMode(self.C_EDIT, QHeaderView.ResizeMode.Fixed)
         treeHeader.setSectionResizeMode(self.C_VIEW, QHeaderView.ResizeMode.Fixed)
-        treeHeader.setSectionResizeMode(self.C_DOC, QHeaderView.ResizeMode.ResizeToContents)
         treeHeader.resizeSection(self.C_EDIT, iPx + cMg)
         treeHeader.resizeSection(self.C_VIEW, iPx + cMg)
 
@@ -367,6 +370,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         trItem.setText(self.C_DOC, nwItem.itemName)
         trItem.setText(self.C_TITLE, hItem.title)
         trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
+        trItem.setText(self.C_BRIEF, hItem.synopsis)
         trItem.setData(self.C_DATA, self.D_TAG, tag)
 
         if tag not in self._treeMap:

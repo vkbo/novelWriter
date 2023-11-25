@@ -449,8 +449,8 @@ class ProjectBuilder:
                         aDoc = project.storage.getDocument(aHandle)
                         aDoc.writeDocument(
                             f"# {noteTitles[newRoot]}\n\n"
-                            f"% Brief: {bfNote}\n\n"
                             f"@tag: {ntTag}\n\n"
+                            f"% Brief: {bfNote}\n\n"
                         )
 
             # Also add the archive and trash folders
