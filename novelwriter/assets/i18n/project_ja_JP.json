@@ -1,6 +1,7 @@
 {
   "Synopsis": "あらすじ",
-  "Comment": "コメント",
+  "Short Description": "短い説明",
+  "Comment": "コメント ",
   "Notes": "ノート",
   "Tag": "タグ",
   "Point of View": "視点",
