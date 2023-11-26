@@ -36,7 +36,7 @@ final release.
   effects some users may want to avoid. Issue #1602. PR #1605.
 * For Windows users, there is now an "Add Dictionaries" tool in the Tools menu where new spell
   check dictionaries can be added. Links are provided to sources for these dictionaries, and a file
-  selector tool to import the files into novelWriter. Issue #982. PR #1610.
+  selector tool to import the files into novelWriter. Issue #982. PR #1611.
 * You can now update the name of a document by right-clicking on any heading inside the document
   and select "Set as Document Name". This will open the Rename dialog with the text of the heading
   pre-filled. Issue #1503. PR #1614.
