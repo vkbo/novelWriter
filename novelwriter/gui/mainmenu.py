@@ -566,7 +566,7 @@ class GuiMainMenu(QMenuBar):
 
         # Insert > Short Description Comment
         self.aInsShort = self.mInsComments.addAction(self.tr("Short Description Comment"))
-        self.aInsShort.setShortcut("Ctrl+K, U")
+        self.aInsShort.setShortcut("Ctrl+K, H")
         self.aInsShort.triggered.connect(
             lambda: self.requestDocInsert.emit(nwDocInsert.SHORT)
         )
