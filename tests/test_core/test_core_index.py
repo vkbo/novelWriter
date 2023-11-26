@@ -29,9 +29,9 @@ from mocked import causeException
 from novelwriter.core.item import NWItem
 from tools import C, buildTestProject, cmpFiles, writeFile
 
-from novelwriter.enum import nwItemClass, nwItemLayout
+from novelwriter.enum import nwComment, nwItemClass, nwItemLayout
 from novelwriter.constants import nwFiles
-from novelwriter.core.index import IndexItem, NWIndex, countWords, TagsIndex
+from novelwriter.core.index import IndexItem, NWIndex, countWords, TagsIndex, processComment
 from novelwriter.core.project import NWProject
 
 
@@ -1264,7 +1264,36 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreIndex_CountWords():
+def testCoreIndex_processComment():
+    """Test the comment processing function."""
+    # Regular comment
+    assert processComment("%Hi") == (nwComment.PLAIN, "Hi", 0)
+    assert processComment("% Hi") == (nwComment.PLAIN, "Hi", 0)
+    assert processComment("% Hi:You") == (nwComment.PLAIN, "Hi:You", 0)
+
+    # Synopsis
+    assert processComment("%synopsis:") == (nwComment.PLAIN, "synopsis:", 0)
+    assert processComment("%synopsis: Hi") == (nwComment.SYNOPSIS, "Hi", 10)
+    assert processComment("% synopsis: Hi") == (nwComment.SYNOPSIS, "Hi", 11)
+    assert processComment("%  synopsis : Hi") == (nwComment.SYNOPSIS, "Hi", 13)
+    assert processComment("%   Synopsis  : Hi") == (nwComment.SYNOPSIS, "Hi", 15)
+    assert processComment("% \t  SYNOPSIS  : Hi") == (nwComment.SYNOPSIS, "Hi", 16)
+    assert processComment("% \t  SYNOPSIS  : Hi:You") == (nwComment.SYNOPSIS, "Hi:You", 16)
+
+    # Short Description
+    assert processComment("%short:") == (nwComment.PLAIN, "short:", 0)
+    assert processComment("%short: Hi") == (nwComment.SHORT, "Hi", 7)
+    assert processComment("% short: Hi") == (nwComment.SHORT, "Hi", 8)
+    assert processComment("%  short : Hi") == (nwComment.SHORT, "Hi", 10)
+    assert processComment("%   Short  : Hi") == (nwComment.SHORT, "Hi", 12)
+    assert processComment("% \t  SHORT  : Hi") == (nwComment.SHORT, "Hi", 13)
+    assert processComment("% \t  SHORT  : Hi:You") == (nwComment.SHORT, "Hi:You", 13)
+
+# END Test testCoreIndex_processComment
+
+
+@pytest.mark.core
+def testCoreIndex_countWords():
     """Test the word counter and the exclusion filers."""
     # Non-Text
     assert countWords(None) == (0, 0, 0)  # type: ignore
@@ -1362,4 +1391,4 @@ def testCoreIndex_CountWords():
     assert wC == 14
     assert pC == 2
 
-# END Test testCoreIndex_CountWords
+# END Test testCoreIndex_countWords

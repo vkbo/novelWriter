@@ -345,11 +345,11 @@ class GuiMain(QMainWindow):
         logger.debug("Ready: GUI")
 
         if __hexversion__[-2] == "a" and not CONFIG.isDebug:
-            SHARED.warn(self.tr(
+            SHARED.warn(
                 "You are running an untested development version of novelWriter. "
-                "Please be careful when working on a live project "
+                "Please be careful when you are working on live projects "
                 "and make sure you take regular backups."
-            ))
+            )
 
         logger.info("novelWriter is ready ...")
         self.mainStatus.setStatusMessage(self.tr("novelWriter is ready ..."))
@@ -454,6 +454,7 @@ class GuiMain(QMainWindow):
             self.docViewer.clearNavHistory()
             self.closeDocViewer(byUser=False)
 
+            self.docViewerPanel.closeProjectTasks()
             self.outlineView.closeProjectTasks()
             self.novelView.closeProjectTasks()
             self.projView.clearProjectView()
@@ -527,6 +528,7 @@ class GuiMain(QMainWindow):
         self.projView.openProjectTasks()
         self.novelView.openProjectTasks()
         self.outlineView.openProjectTasks()
+        self.docViewerPanel.openProjectTasks()
         self._updateStatusWordCount()
 
         # Restore previously open documents, if any
@@ -1164,10 +1166,7 @@ class GuiMain(QMainWindow):
         """Capture the closing event of the GUI and call the close
         function to handle all the close process steps.
         """
-        if self.closeMain():
-            event.accept()
-        else:
-            event.ignore()
+        event.accept() if self.closeMain() else event.ignore()
         return
 
     ##
@@ -1462,6 +1461,7 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aInsTimes)
         self.addAction(self.mainMenu.aInsDivide)
         self.addAction(self.mainMenu.aInsSynopsis)
+        self.addAction(self.mainMenu.aInsShort)
 
         for mAction, _ in self.mainMenu.mInsKWItems.values():
             self.addAction(mAction)

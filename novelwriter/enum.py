@@ -61,6 +61,15 @@ class nwItemLayout(Enum):
 # END Enum nwItemLayout
 
 
+class nwComment(Enum):
+
+    PLAIN    = 0
+    SYNOPSIS = 1
+    SHORT    = 2
+
+# END Enum nwComment
+
+
 class nwTrinary(Enum):
 
     NEGATIVE = -1
@@ -127,9 +136,10 @@ class nwDocInsert(Enum):
     QUOTE_LD  = 3
     QUOTE_RD  = 4
     SYNOPSIS  = 5
-    NEW_PAGE  = 6
-    VSPACE_S  = 7
-    VSPACE_M  = 8
+    SHORT     = 6
+    NEW_PAGE  = 7
+    VSPACE_S  = 8
+    VSPACE_M  = 9
 
 # END Enum nwDocInsert
 

@@ -171,7 +171,7 @@ class GuiMainMenu(QMenuBar):
 
         # Project > Delete
         self.aDeleteItem = self.projMenu.addAction(self.tr("Delete Item"))
-        self.aDeleteItem.setShortcuts(["Ctrl+Del", "Ctrl+Shift+Del"])  # Latter is deprecated
+        self.aDeleteItem.setShortcut("Ctrl+Shift+Del")  # Cannot be Ctrl+Del, see #629
         self.aDeleteItem.triggered.connect(lambda: self.mainGui.projView.requestDeleteItem(None))
 
         # Project > Empty Trash
@@ -562,6 +562,13 @@ class GuiMainMenu(QMenuBar):
         self.aInsSynopsis.setShortcut("Ctrl+K, S")
         self.aInsSynopsis.triggered.connect(
             lambda: self.requestDocInsert.emit(nwDocInsert.SYNOPSIS)
+        )
+
+        # Insert > Short Description Comment
+        self.aInsShort = self.mInsComments.addAction(self.tr("Short Description Comment"))
+        self.aInsShort.setShortcut("Ctrl+K, U")
+        self.aInsShort.triggered.connect(
+            lambda: self.requestDocInsert.emit(nwDocInsert.SHORT)
         )
 
         # Insert > Symbols

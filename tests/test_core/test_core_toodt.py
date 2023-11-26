@@ -447,12 +447,13 @@ def testCoreToOdt_Convert(mockGUI):
         '</office:text>'
     )
 
-    # Synopsis, Comment, Keywords
+    # Synopsis, Short, Comment, Keywords
     odt._text = (
         "### Scene\n\n"
         "@pov: Jane\n\n"
         "% synopsis: So it begins\n\n"
-        "% a plain comment\n\n"
+        "% short: Then what\n\n"
+        "% A plain comment\n\n"
     )
     odt.setSynopsis(True)
     odt.setComments(True)
@@ -470,7 +471,9 @@ def testCoreToOdt_Convert(mockGUI):
         '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T7">'
         'Synopsis:</text:span> So it begins</text:p>'
         '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T7">'
-        'Comment:</text:span> a plain comment</text:p>'
+        'Short Description:</text:span> Then what</text:p>'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T7">'
+        'Comment:</text:span> A plain comment</text:p>'
         '</office:text>'
     )
 
@@ -804,8 +807,11 @@ def testCoreToOdt_Format(mockGUI):
     project = NWProject()
     odt = ToOdt(project, isFlat=True)
 
-    assert odt._formatSynopsis("synopsis text") == (
+    assert odt._formatSynopsis("synopsis text", True) == (
         "Synopsis: synopsis text", [(0, ToOdt.FMT_B_B), (9, ToOdt.FMT_B_E)]
+    )
+    assert odt._formatSynopsis("short text", False) == (
+        "Short Description: short text", [(0, ToOdt.FMT_B_B), (18, ToOdt.FMT_B_E)]
     )
     assert odt._formatComments("comment text") == (
         "Comment: comment text", [(0, ToOdt.FMT_B_B), (8, ToOdt.FMT_B_E)]
