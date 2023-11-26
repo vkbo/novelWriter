@@ -1280,14 +1280,14 @@ def testCoreIndex_processComment():
     assert processComment("% \t  SYNOPSIS  : Hi") == (nwComment.SYNOPSIS, "Hi", 16)
     assert processComment("% \t  SYNOPSIS  : Hi:You") == (nwComment.SYNOPSIS, "Hi:You", 16)
 
-    # Summary
-    assert processComment("%summary:") == (nwComment.PLAIN, "summary:", 0)
-    assert processComment("%summary: Hi") == (nwComment.SUMMARY, "Hi", 9)
-    assert processComment("% summary: Hi") == (nwComment.SUMMARY, "Hi", 10)
-    assert processComment("%  summary : Hi") == (nwComment.SUMMARY, "Hi", 12)
-    assert processComment("%   Summary  : Hi") == (nwComment.SUMMARY, "Hi", 14)
-    assert processComment("% \t  SUMMARY  : Hi") == (nwComment.SUMMARY, "Hi", 15)
-    assert processComment("% \t  SUMMARY  : Hi:You") == (nwComment.SUMMARY, "Hi:You", 15)
+    # Short Description
+    assert processComment("%short:") == (nwComment.PLAIN, "short:", 0)
+    assert processComment("%short: Hi") == (nwComment.SHORT, "Hi", 7)
+    assert processComment("% short: Hi") == (nwComment.SHORT, "Hi", 8)
+    assert processComment("%  short : Hi") == (nwComment.SHORT, "Hi", 10)
+    assert processComment("%   Short  : Hi") == (nwComment.SHORT, "Hi", 12)
+    assert processComment("% \t  SHORT  : Hi") == (nwComment.SHORT, "Hi", 13)
+    assert processComment("% \t  SHORT  : Hi:You") == (nwComment.SHORT, "Hi:You", 13)
 
 # END Test testCoreIndex_processComment
 

@@ -1461,7 +1461,7 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aInsTimes)
         self.addAction(self.mainMenu.aInsDivide)
         self.addAction(self.mainMenu.aInsSynopsis)
-        self.addAction(self.mainMenu.aInsSummary)
+        self.addAction(self.mainMenu.aInsShort)
 
         for mAction, _ in self.mainMenu.mInsKWItems.values():
             self.addAction(mAction)
