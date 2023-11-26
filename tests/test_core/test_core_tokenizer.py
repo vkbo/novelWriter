@@ -471,19 +471,19 @@ def testCoreToken_MetaFormat(mockGUI):
     tokens.tokenizeText()
     assert tokens.theMarkdown[-1] == "% synopsis: The synopsis\n\n"
 
-    # Summary
+    # Short
     tokens.setSynopsis(False)
-    tokens._text = "% summary: A description\n"
+    tokens._text = "% short: A short description\n"
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_SUMMARY, 0, "A description", None, Tokenizer.A_NONE),
+        (Tokenizer.T_SHORT, 0, "A short description", None, Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 0, "", None, Tokenizer.A_NONE),
     ]
     assert tokens.theMarkdown[-1] == "\n"
 
     tokens.setSynopsis(True)
     tokens.tokenizeText()
-    assert tokens.theMarkdown[-1] == "% summary: A description\n\n"
+    assert tokens.theMarkdown[-1] == "% short: A short description\n\n"
 
     # Keyword
     tokens._text = "@char: Bod\n"

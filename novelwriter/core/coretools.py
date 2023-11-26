@@ -406,7 +406,7 @@ class ProjectBuilder:
 
             chSynop = self.tr("Summary of the chapter.")
             scSynop = self.tr("Summary of the scene.")
-            bfNote = self.tr("A brief description.")
+            bfNote = self.tr("A short description.")
 
             # Create chapters
             if numChapters > 0:
@@ -450,7 +450,7 @@ class ProjectBuilder:
                         aDoc.writeDocument(
                             f"# {noteTitles[newRoot]}\n\n"
                             f"@tag: {ntTag}\n\n"
-                            f"% Summary: {bfNote}\n\n"
+                            f"% Short: {bfNote}\n\n"
                         )
 
             # Also add the archive and trash folders

@@ -316,13 +316,13 @@ class _ViewPanelBackRefs(QTreeWidget):
 
 class _ViewPanelKeyWords(QTreeWidget):
 
-    C_DATA    = 0
-    C_NAME    = 0
-    C_EDIT    = 1
-    C_VIEW    = 2
-    C_DOC     = 3
-    C_TITLE   = 4
-    C_SUMMARY = 5
+    C_DATA  = 0
+    C_NAME  = 0
+    C_EDIT  = 1
+    C_VIEW  = 2
+    C_DOC   = 3
+    C_TITLE = 4
+    C_SHORT = 5
 
     D_TAG = Qt.ItemDataRole.UserRole
 
@@ -337,7 +337,7 @@ class _ViewPanelKeyWords(QTreeWidget):
 
         self.setHeaderLabels([
             self.tr("Tag"), "", "", self.tr("Document"),
-            self.tr("Heading"), self.tr("Summary")
+            self.tr("Heading"), self.tr("Short Description")
         ])
         self.setIndentation(0)
         self.setIconSize(QSize(iPx, iPx))
@@ -401,7 +401,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         trItem.setText(self.C_DOC, nwItem.itemName)
         trItem.setText(self.C_TITLE, hItem.title)
         trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
-        trItem.setText(self.C_SUMMARY, hItem.synopsis)
+        trItem.setText(self.C_SHORT, hItem.synopsis)
         trItem.setData(self.C_DATA, self.D_TAG, tag)
 
         if tag not in self._treeMap:

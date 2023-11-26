@@ -106,7 +106,7 @@ def testCoreToMarkdown_ConvertFormat(mockGUI):
     theMD.doConvert()
     assert theMD.theResult == "Line one  \nLine two  \nLine three\n\n"
 
-    # Synopsis, Summary
+    # Synopsis, Short
     theMD._text = "%synopsis: The synopsis ...\n"
     theMD.tokenizeText()
     theMD.doConvert()
@@ -119,10 +119,10 @@ def testCoreToMarkdown_ConvertFormat(mockGUI):
     assert theMD.theResult == "**Synopsis:** The synopsis ...\n\n"
 
     theMD.setSynopsis(True)
-    theMD._text = "%summary: A description ...\n"
+    theMD._text = "%short: A description ...\n"
     theMD.tokenizeText()
     theMD.doConvert()
-    assert theMD.theResult == "**Summary:** A description ...\n\n"
+    assert theMD.theResult == "**Short Description:** A description ...\n\n"
 
     # Comment
     theMD._text = "% A comment ...\n"

@@ -289,7 +289,7 @@ class ToHtml(Tokenizer):
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 lines.append(self._formatSynopsis(tText, True))
 
-            elif tType == self.T_SUMMARY and self._doSynopsis:
+            elif tType == self.T_SHORT and self._doSynopsis:
                 lines.append(self._formatSynopsis(tText, False))
 
             elif tType == self.T_COMMENT and self._doComments:
@@ -459,7 +459,10 @@ class ToHtml(Tokenizer):
 
     def _formatSynopsis(self, text: str, synopsis: bool) -> str:
         """Apply HTML formatting to synopsis."""
-        sSynop = self._localLookup("Synopsis") if synopsis else self._localLookup("Summary")
+        if synopsis:
+            sSynop = self._localLookup("Synopsis")
+        else:
+            sSynop = self._localLookup("Short Description")
         if self._genMode == self.M_PREVIEW:
             return f"<p class='comment'><span class='synopsis'>{sSynop}:</span> {text}</p>\n"
         else:
