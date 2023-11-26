@@ -72,14 +72,30 @@ def testGuiMain_ProjectBlocker(nwGUI):
 
 
 @pytest.mark.gui
-def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, prjLipsum):
+def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
     """Test the handling of launch tasks."""
     monkeypatch.setattr(GuiProjectLoad, "exec_", lambda *a: None)
     monkeypatch.setattr(GuiProjectLoad, "result", lambda *a: QDialog.Accepted)
     CONFIG.lastNotes = "0x0"
+    buildTestProject(nwGUI, projPath)
 
     # Open Lipsum project
-    nwGUI.postLaunchTasks(prjLipsum)
+    nwGUI.postLaunchTasks(projPath)
+    nwGUI.closeProject()
+
+    # Project open fails
+    with monkeypatch.context() as mp:
+        mp.setattr(SHARED, "openProject", lambda *a: False)
+        assert nwGUI.openProject(projPath) is False
+
+    # Handle locked project
+    with monkeypatch.context() as mp:
+        mp.setattr(SHARED, "openProject", lambda *a, **k: False)
+        SHARED._lockedBy = ["a", "b", "c", "d"]
+        assert nwGUI.openProject(projPath) is False
+        SHARED._lockedBy = None
+
+    assert nwGUI.openProject(projPath) is True
     nwGUI.closeProject()
 
     # Check that release notes opened

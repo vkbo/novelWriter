@@ -338,8 +338,6 @@ class GuiMain(QMainWindow):
         self.asProjTimer.start()
         self.asDocTimer.start()
         self.mainStatus.clearStatus()
-
-        # Handle Windows Mode
         self.showNormal()
 
         logger.debug("Ready: GUI")
