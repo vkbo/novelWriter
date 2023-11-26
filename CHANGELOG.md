@@ -1,5 +1,73 @@
 # novelWriter Changelog
 
+## Version 2.2 RC 1 [2023-11-26]
+
+### Release Notes
+
+This is a release candidate of the next release version, and is intended for testing purposes.
+Please be careful when using this version on live writing projects, and make sure you take frequent
+backups.
+
+Please check the changelog for an overview of changes. The full release notes will be added to the
+final release.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Revert the change of keyboard shortcut to delete a project tree item made in 2.2 Beta 1 as it
+  blocks certain features in the editor. This is a regression. PR 1616.
+
+**Features**
+
+* The old References panel under the Document Viewer has been replaced with a completely new widget
+  with a lot more features. The Back-references panel is still there, but is now a scrollable list
+  with a lot more information. In addition, tabs for each category of tags are available when there
+  are tags defined for them. These panels list all available tags, with a good deal of information
+  about them that may be useful to the writer, as well as buttons to open them in the viewer or
+  editor. Issues #925 and #998. PR #1606.
+* Multi-select is now possible in the project tree, with some limitations. Drag and drop is only
+  permitted if the selected items have the same parent item. Any other drag and drop selection will
+  be cancelled and the user notified. A new context menu has been added for the case when multiple
+  items are selected, with a reduced set of options that can be collectively applied to them.
+  Issues #1549 and #1592. PR #1612.
+* The "Scroll Past End" setting in Preferences has been added back in. It is slightly different
+  than the old one, as this one uses the Qt Plain Text Editor implementation, which has some side
+  effects some users may want to avoid. Issue #1602. PR #1605.
+* For Windows users, there is now an "Add Dictionaries" tool in the Tools menu where new spell
+  check dictionaries can be added. Links are provided to sources for these dictionaries, and a file
+  selector tool to import the files into novelWriter. Issue #982. PR #1610.
+* You can now update the name of a document by right-clicking on any heading inside the document
+  and select "Set as Document Name". This will open the Rename dialog with the text of the heading
+  pre-filled. Issue #1503. PR #1614.
+* A new special comment, called "Short" can be added to Project Notes. They are identical to
+  Synopsis comments, and are in fact just an alias for them. The "Short Description" will be
+  displayed alongside the tags in the new panel under the Document Viewer. Issues #1617 and #1621.
+  PRs #1617, #1619 and #1622.
+
+**Usability**
+
+* The feature to auto select word under cursor no longer uses the default Qt implementation, and
+  has instead been implemented by iterating backward and forward in the text to find the nearest
+  word boundaries. It will stop on characters that aren't Unicode alphanumeric as per Python's
+  definition. Toggling markup will also move the cursor to after the markup if it was already at
+  the end of the word. Otherwise it remains within the word at the same position. The word is not
+  selected after formatting if it wasn't selected before. If no selection was made, and no word is
+  auto selected, the formatting tags are inserted in-place with the cursor in the middle.
+  Issues #1333 and #1598. PR #1600.
+* The auto complete context menu is now only triggered on actual user input consisting of adding or
+  removing a single character. PR #1601.
+* Various improvements to the visibility of the cursor when the dimensions of the editor changes
+  have been added. Like for instance keeping the cursor visible when opening or closing the Viewer
+  panel, or toggling Focus Mode. Issues #1302 and #1478. PR #1608.
+* The Manuscript Build dialog now has a button to open the output folder. Issue #1554. PR #1613.
+
+**Code Improvements**
+
+* Improve test coverage. PR #1607.
+
+----
+
 ## Version 2.2 Beta 1 [2023-11-11]
 
 ### Release Notes
