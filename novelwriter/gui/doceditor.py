@@ -831,11 +831,11 @@ class GuiDocEditor(QPlainTextEdit):
             elif insert == nwDocInsert.QUOTE_RD:
                 text = self._typDQuoteC
             elif insert == nwDocInsert.SYNOPSIS:
-                text = "% Synopsis: "
+                text = "%Synopsis: "
                 newBlock = True
                 goAfter = True
             elif insert == nwDocInsert.SHORT:
-                text = "% Short: "
+                text = "%Short: "
                 newBlock = True
                 goAfter = True
             elif insert == nwDocInsert.NEW_PAGE:
