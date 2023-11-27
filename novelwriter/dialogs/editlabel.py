@@ -26,7 +26,8 @@ from __future__ import annotations
 import logging
 
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QLineEdit, QLabel, QDialogButtonBox, QHBoxLayout
+    QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QLineEdit, QVBoxLayout,
+    QWidget
 )
 
 from novelwriter import CONFIG
@@ -36,9 +37,10 @@ logger = logging.getLogger(__name__)
 
 class GuiEditLabel(QDialog):
 
-    def __init__(self, parent, text=""):
+    def __init__(self, parent: QWidget, text: str = "") -> None:
         super().__init__(parent=parent)
 
+        logger.debug("Create: GuiEditLabel")
         self.setObjectName("GuiEditLabel")
         self.setWindowTitle(self.tr("Item Label"))
 
@@ -70,14 +72,20 @@ class GuiEditLabel(QDialog):
 
         self.setLayout(self.outerBox)
 
+        logger.debug("Ready: GuiEditLabel")
+
+        return
+
+    def __del__(self) -> None:  # pragma: no cover
+        logger.debug("Delete: GuiEditLabel")
         return
 
     @property
-    def itemLabel(self):
+    def itemLabel(self) -> str:
         return self.labelValue.text()
 
     @classmethod
-    def getLabel(cls, parent, text):
+    def getLabel(cls, parent: QWidget, text: str) -> tuple[str, bool]:
         cls = GuiEditLabel(parent, text=text)
         cls.exec_()
         return cls.itemLabel, cls.result() == QDialog.Accepted

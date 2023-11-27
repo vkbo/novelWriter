@@ -26,8 +26,8 @@ from __future__ import annotations
 import math
 import logging
 
-from PyQt5.QtCore import Qt, QSize, pyqtSlot
 from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt, QSize, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialogButtonBox, QGridLayout, QHBoxLayout, QLabel,
     QLineEdit, QSpinBox, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 
 class GuiProjectDetails(NPagedDialog):
 
-    def __init__(self, parent):
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
         logger.debug("Create: GuiProjectDetails")
@@ -79,24 +79,23 @@ class GuiProjectDetails(NPagedDialog):
 
         return
 
-    def __del__(self):  # pragma: no cover
+    def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiProjectDetails")
         return
 
-    def updateValues(self):
-        """Set all the values of the pages.
-        """
+    def updateValues(self) -> None:
+        """Set all the values of the pages."""
         self.tabMain.updateValues()
         self.tabContents.updateValues()
         return
 
     ##
-    #  Slots
+    #  Private Slots
     ##
 
-    def _doClose(self):
-        """Save settings and close the dialog.
-        """
+    @pyqtSlot()
+    def _doClose(self) -> None:
+        """Save settings and close the dialog."""
         self._saveGuiSettings()
         self.close()
         return
@@ -105,9 +104,8 @@ class GuiProjectDetails(NPagedDialog):
     #  Internal Functions
     ##
 
-    def _saveGuiSettings(self):
-        """Save GUI settings.
-        """
+    def _saveGuiSettings(self) -> None:
+        """Save GUI settings."""
         winWidth  = CONFIG.rpxInt(self.width())
         winHeight = CONFIG.rpxInt(self.height())
 
@@ -141,7 +139,7 @@ class GuiProjectDetails(NPagedDialog):
 
 class GuiProjectDetailsMain(QWidget):
 
-    def __init__(self, parent):
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
         fPx = SHARED.theme.fontPixelSize
@@ -270,7 +268,7 @@ class GuiProjectDetailsContents(QWidget):
     C_PAGE  = 3
     C_PROG  = 4
 
-    def __init__(self, parent):
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
         # Internal
@@ -406,9 +404,8 @@ class GuiProjectDetailsContents(QWidget):
 
         return
 
-    def getColumnSizes(self):
-        """Return the column widths for the tree columns.
-        """
+    def getColumnSizes(self) -> list[int]:
+        """Return the column widths for the tree columns."""
         retVals = [
             self.tocTree.columnWidth(0),
             self.tocTree.columnWidth(1),
@@ -418,24 +415,21 @@ class GuiProjectDetailsContents(QWidget):
         ]
         return retVals
 
-    def updateValues(self):
-        """Populate the tree.
-        """
+    def updateValues(self) -> None:
+        """Populate the tree."""
         self._currentRoot = None
         self.novelValue.updateList()
         self.novelValue.setHandle(self.novelValue.firstHandle)
         self._prepareData(self.novelValue.firstHandle)
         self._populateTree()
-
         return
 
     ##
     #  Internal Functions
     ##
 
-    def _prepareData(self, rootHandle):
-        """Extract the information from the project index.
-        """
+    def _prepareData(self, rootHandle: str) -> None:
+        """Extract the information from the project index."""
         logger.debug("Populating ToC from handle '%s'", rootHandle)
         self._theToC = SHARED.project.index.getTableOfContents(rootHandle, 2)
         self._theToC.append(("", 0, self.tr("END"), 0))
@@ -446,9 +440,8 @@ class GuiProjectDetailsContents(QWidget):
     ##
 
     @pyqtSlot(str)
-    def _novelValueChanged(self, tHandle):
-        """Refresh the tree with another root item.
-        """
+    def _novelValueChanged(self, tHandle: str) -> None:
+        """Refresh the tree with another root item."""
         if tHandle != self._currentRoot:
             self._prepareData(tHandle)
             self._populateTree()
@@ -456,9 +449,8 @@ class GuiProjectDetailsContents(QWidget):
         return
 
     @pyqtSlot()
-    def _populateTree(self):
-        """Set the content of the chapter/page tree.
-        """
+    def _populateTree(self) -> None:
+        """Set the content of the chapter/page tree."""
         dblPages = self.dblValue.isChecked()
         wpPage = self.wpValue.value()
         fstPage = self.poValue.value() - 1

@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 
 class GuiWordList(QDialog):
 
-    def __init__(self, mainGui: GuiMain):
+    def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
 
         logger.debug("Create: GuiWordList")
@@ -108,7 +108,7 @@ class GuiWordList(QDialog):
 
         return
 
-    def __del__(self):  # pragma: no cover
+    def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiWordList")
         return
 
@@ -116,7 +116,7 @@ class GuiWordList(QDialog):
     #  Slots
     ##
 
-    def _doAdd(self):
+    def _doAdd(self) -> None:
         """Add a new word to the word list."""
         word = self.newEntry.text().strip()
         if word == "":
@@ -134,14 +134,14 @@ class GuiWordList(QDialog):
 
         return
 
-    def _doDelete(self):
+    def _doDelete(self) -> None:
         """Delete the selected item."""
         selItem = self.listBox.selectedItems()
         if selItem:
             self.listBox.takeItem(self.listBox.row(selItem[0]))
         return
 
-    def _doSave(self):
+    def _doSave(self) -> None:
         """Save the new word list and close."""
         self._saveGuiSettings()
         userDict = UserDictionary(SHARED.project)
@@ -153,9 +153,9 @@ class GuiWordList(QDialog):
                     userDict.add(word)
         userDict.save()
         self.accept()
-        return True
+        return
 
-    def _doClose(self):
+    def _doClose(self) -> None:
         """Close without saving the word list."""
         self._saveGuiSettings()
         self.reject()
@@ -165,7 +165,7 @@ class GuiWordList(QDialog):
     #  Internal Functions
     ##
 
-    def _loadWordList(self):
+    def _loadWordList(self) -> None:
         """Load the project's word list, if it exists."""
         userDict = UserDictionary(SHARED.project)
         userDict.load()
@@ -175,7 +175,7 @@ class GuiWordList(QDialog):
                 self.listBox.addItem(word)
         return
 
-    def _saveGuiSettings(self):
+    def _saveGuiSettings(self) -> None:
         """Save GUI settings."""
         winWidth  = CONFIG.rpxInt(self.width())
         winHeight = CONFIG.rpxInt(self.height())

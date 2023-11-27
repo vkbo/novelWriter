@@ -111,7 +111,7 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, projPath):
     assert wList.listBox.item(0).text() == "word_a"
 
     # Save files
-    assert wList._doSave()
+    wList._doSave()
     userDict.load()
     assert len(list(userDict)) == 6
     assert "word_a" in userDict
