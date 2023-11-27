@@ -139,6 +139,7 @@ class GuiAbout(QDialog):
     def _doClose(self) -> None:
         """Close the dialog"""
         self.close()
+        self.deleteLater()
         return
 
     ##

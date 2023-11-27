@@ -98,6 +98,7 @@ class GuiProjectDetails(NPagedDialog):
         """Save settings and close the dialog."""
         self._saveGuiSettings()
         self.close()
+        self.deleteLater()
         return
 
     ##
@@ -428,7 +429,7 @@ class GuiProjectDetailsContents(QWidget):
     #  Internal Functions
     ##
 
-    def _prepareData(self, rootHandle: str) -> None:
+    def _prepareData(self, rootHandle: str | None) -> None:
         """Extract the information from the project index."""
         logger.debug("Populating ToC from handle '%s'", rootHandle)
         self._theToC = SHARED.project.index.getTableOfContents(rootHandle, 2)
