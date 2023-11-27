@@ -218,12 +218,14 @@ class _ViewPanelBackRefs(QTreeWidget):
         # Set Header Sizes
         treeHeader = self.header()
         treeHeader.setStretchLastSection(True)
+        treeHeader.setMinimumSectionSize(iPx + cMg)  # See Issue #1627
         treeHeader.setSectionResizeMode(self.C_DOC, QHeaderView.ResizeMode.ResizeToContents)
         treeHeader.setSectionResizeMode(self.C_EDIT, QHeaderView.ResizeMode.Fixed)
         treeHeader.setSectionResizeMode(self.C_VIEW, QHeaderView.ResizeMode.Fixed)
         treeHeader.setSectionResizeMode(self.C_TITLE, QHeaderView.ResizeMode.ResizeToContents)
         treeHeader.resizeSection(self.C_EDIT, iPx + cMg)
         treeHeader.resizeSection(self.C_VIEW, iPx + cMg)
+        treeHeader.setSectionsMovable(False)
 
         # Cache Icons Locally
         self._editIcon = SHARED.theme.getIcon("edit")
@@ -351,6 +353,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         # Set Header Sizes
         treeHeader = self.header()
         treeHeader.setStretchLastSection(True)
+        treeHeader.setMinimumSectionSize(iPx + cMg)  # See Issue #1627
         treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.ResizeMode.ResizeToContents)
         treeHeader.setSectionResizeMode(self.C_EDIT, QHeaderView.ResizeMode.Fixed)
         treeHeader.setSectionResizeMode(self.C_VIEW, QHeaderView.ResizeMode.Fixed)
