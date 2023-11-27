@@ -57,7 +57,7 @@ class GuiDocViewerPanel(QWidget):
         self.tabBackRefs = _ViewPanelBackRefs(self)
 
         self.mainTabs = QTabWidget(self)
-        self.mainTabs.addTab(self.tabBackRefs, self.tr("Backreferences"))
+        self.mainTabs.addTab(self.tabBackRefs, self.tr("References"))
 
         self.kwTabs: dict[str, _ViewPanelKeyWords] = {}
         self.idTabs: dict[str, int] = {}
