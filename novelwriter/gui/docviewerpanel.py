@@ -57,7 +57,7 @@ class GuiDocViewerPanel(QWidget):
         self.tabBackRefs = _ViewPanelBackRefs(self)
 
         self.mainTabs = QTabWidget(self)
-        self.mainTabs.addTab(self.tabBackRefs, self.tr("Backreferences"))
+        self.mainTabs.addTab(self.tabBackRefs, self.tr("References"))
 
         self.kwTabs: dict[str, _ViewPanelKeyWords] = {}
         self.idTabs: dict[str, int] = {}
@@ -73,7 +73,7 @@ class GuiDocViewerPanel(QWidget):
         self.outerBox.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(self.outerBox)
-        self.updateTheme()
+        self.updateTheme(updateTabs=False)
 
         logger.debug("Ready: GuiDocViewerPanel")
 
@@ -83,7 +83,7 @@ class GuiDocViewerPanel(QWidget):
     #  Methods
     ##
 
-    def updateTheme(self) -> None:
+    def updateTheme(self, updateTabs: bool = True) -> None:
         """Update theme elements."""
         vPx = CONFIG.pxInt(4)
         lPx = CONFIG.pxInt(2)
@@ -101,6 +101,11 @@ class GuiDocViewerPanel(QWidget):
         )
         self.mainTabs.setStyleSheet(styleSheet)
         self.updateHandle(self._lastHandle)
+
+        if updateTabs:
+            self.tabBackRefs.updateTheme()
+            for tab in self.kwTabs.values():
+                tab.updateTheme()
 
         return
 
@@ -218,12 +223,14 @@ class _ViewPanelBackRefs(QTreeWidget):
         # Set Header Sizes
         treeHeader = self.header()
         treeHeader.setStretchLastSection(True)
+        treeHeader.setMinimumSectionSize(iPx + cMg)  # See Issue #1627
         treeHeader.setSectionResizeMode(self.C_DOC, QHeaderView.ResizeMode.ResizeToContents)
         treeHeader.setSectionResizeMode(self.C_EDIT, QHeaderView.ResizeMode.Fixed)
         treeHeader.setSectionResizeMode(self.C_VIEW, QHeaderView.ResizeMode.Fixed)
         treeHeader.setSectionResizeMode(self.C_TITLE, QHeaderView.ResizeMode.ResizeToContents)
         treeHeader.resizeSection(self.C_EDIT, iPx + cMg)
         treeHeader.resizeSection(self.C_VIEW, iPx + cMg)
+        treeHeader.setSectionsMovable(False)
 
         # Cache Icons Locally
         self._editIcon = SHARED.theme.getIcon("edit")
@@ -233,6 +240,16 @@ class _ViewPanelBackRefs(QTreeWidget):
         self.clicked.connect(self._treeItemClicked)
         self.doubleClicked.connect(self._treeItemDoubleClicked)
 
+        return
+
+    def updateTheme(self) -> None:
+        """Update theme elements."""
+        self._editIcon = SHARED.theme.getIcon("edit")
+        self._viewIcon = SHARED.theme.getIcon("view")
+        for i in range(self.topLevelItemCount()):
+            if item := self.topLevelItem(i):
+                item.setIcon(self.C_EDIT, self._editIcon)
+                item.setIcon(self.C_VIEW, self._viewIcon)
         return
 
     def clearContent(self) -> None:
@@ -330,6 +347,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         super().__init__(parent=parent)
 
         self._parent = parent
+        self._class = itemClass
         self._treeMap: dict[str, QTreeWidgetItem] = {}
 
         iPx = SHARED.theme.baseIconSize
@@ -351,6 +369,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         # Set Header Sizes
         treeHeader = self.header()
         treeHeader.setStretchLastSection(True)
+        treeHeader.setMinimumSectionSize(iPx + cMg)  # See Issue #1627
         treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.ResizeMode.ResizeToContents)
         treeHeader.setSectionResizeMode(self.C_EDIT, QHeaderView.ResizeMode.Fixed)
         treeHeader.setSectionResizeMode(self.C_VIEW, QHeaderView.ResizeMode.Fixed)
@@ -367,6 +386,17 @@ class _ViewPanelKeyWords(QTreeWidget):
         self.clicked.connect(self._treeItemClicked)
         self.doubleClicked.connect(self._treeItemDoubleClicked)
 
+        return
+
+    def updateTheme(self) -> None:
+        """Update theme elements."""
+        self._classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[self._class])
+        self._editIcon = SHARED.theme.getIcon("edit")
+        self._viewIcon = SHARED.theme.getIcon("view")
+        for i in range(self.topLevelItemCount()):
+            if item := self.topLevelItem(i):
+                item.setIcon(self.C_EDIT, self._editIcon)
+                item.setIcon(self.C_VIEW, self._viewIcon)
         return
 
     def countEntries(self) -> int:
@@ -389,8 +419,8 @@ class _ViewPanelKeyWords(QTreeWidget):
         iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0) if nwItem.isDocumentLayout() else 5
         hDec = SHARED.theme.getHeaderDecorationNarrow(iLevel)
 
-        # This can not use a get call to the dictionary as that creates
-        # some weird issue with Qt, so we need to do this with an if
+        # This can not use a get call to the dictionary as that would create an
+        # instance of the QTreeWidgetItem, which has some weird side effects
         trItem = self._treeMap[tag] if tag in self._treeMap else QTreeWidgetItem()
 
         trItem.setText(self.C_NAME, name)

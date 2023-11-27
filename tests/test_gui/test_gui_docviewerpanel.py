@@ -24,6 +24,8 @@ import pytest
 
 from tools import C, buildTestProject
 
+from PyQt5.QtGui import QIcon
+
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwLists
 from novelwriter.dialogs.editlabel import GuiEditLabel
@@ -90,6 +92,13 @@ def testGuiViewerPanel_BackRefs(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Rebuild Index
     SHARED.project.index.rebuildIndex()
     assert tabBackRefs.topLevelItemCount() == 1
+
+    # Test Update Theme
+    tabBackRefs._editIcon = None
+    tabBackRefs._viewIcon = None
+    tabBackRefs.updateTheme()
+    assert isinstance(tabBackRefs._editIcon, QIcon)
+    assert isinstance(tabBackRefs._viewIcon, QIcon)
 
     # Click the Edit Button
     nwGUI.openDocument(C.hChapterDoc)
@@ -181,6 +190,15 @@ def testGuiViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mockRnd
     # Rebuild Index
     SHARED.project.index.rebuildIndex()
     assert charTab.topLevelItemCount() == 2
+
+    # Test Update Theme
+    charTab._classIcon = None
+    charTab._editIcon = None
+    charTab._viewIcon = None
+    charTab.updateTheme()
+    assert isinstance(charTab._classIcon, QIcon)
+    assert isinstance(charTab._editIcon, QIcon)
+    assert isinstance(charTab._viewIcon, QIcon)
 
     # Remove Non-Existing Tag
     caplog.clear()

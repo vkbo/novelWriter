@@ -1183,8 +1183,8 @@
     <name>GuiDocViewerPanel</name>
     <message>
       <location filename="../novelwriter/gui/docviewerpanel.py" line="60" />
-      <source>Backreferences</source>
-      <translation>Referanser hit</translation>
+      <source>References</source>
+      <translation>Referanser</translation>
     </message>
   </context>
   <context>
@@ -1269,123 +1269,123 @@
   <context>
     <name>GuiMain</name>
     <message>
-      <location filename="../novelwriter/guimain.py" line="355" />
+      <location filename="../novelwriter/guimain.py" line="345" />
       <source>novelWriter is ready ...</source>
       <translation>novelWriter er klar ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="390" />
+      <location filename="../novelwriter/guimain.py" line="380" />
       <source>Cannot create a new project when another project is open.</source>
       <translation>Kan ikke lage et nytt prosjekt mens et annet prosjekt er åpent.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="407" />
+      <location filename="../novelwriter/guimain.py" line="397" />
       <source>A project already exists in that location. Please choose another folder.</source>
       <translation>Et prosjekt finnes allerede i den mappen. Vennligst velg et annet sted å lagre prosjektet.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="433" />
+      <location filename="../novelwriter/guimain.py" line="423" />
       <source>Close the current project?</source>
       <translation>Ønsker du å lukke dette prosjektet?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="1107" />
-      <location filename="../novelwriter/guimain.py" line="434" />
+      <location filename="../novelwriter/guimain.py" line="1097" />
+      <location filename="../novelwriter/guimain.py" line="424" />
       <source>Changes are saved automatically.</source>
       <translation>Endringer lagres automatisk.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="447" />
+      <location filename="../novelwriter/guimain.py" line="437" />
       <source>Backup the current project?</source>
       <translation>Ønsker du å ta sikkerhetskopi av dette prosjektet?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="494" />
+      <location filename="../novelwriter/guimain.py" line="484" />
       <source>The project is already open by another instance of novelWriter, and is therefore locked. Override lock and continue anyway?</source>
       <translation>Prosjektet er allerede åpent av en annen instans av novelWriter, og er derfor låst. Vil du overstyre denne låsen og fortsette likevel?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="499" />
+      <location filename="../novelwriter/guimain.py" line="489" />
       <source>Note: If the program or the computer previously crashed, the lock can safely be overridden. However, overriding it is not recommended if the project is open in another instance of novelWriter. Doing so may corrupt the project.</source>
       <translation>Merk: Hvis programmet eller datamaskinen tidligere krasjet, kan fil-låsen trygt overstyres. Det anbefales imidlertid ikke å overstyre den hvis prosjektet er åpent i en annen instans av novelWriter. Å gjøre det kan skape konflikter i prosjektets filer.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="507" />
+      <location filename="../novelwriter/guimain.py" line="497" />
       <source>The project was locked by the computer '{0}' ({1} {2}), last active on {3}.</source>
       <translation>Prosjektet er låst av datamaskinen {0} ({1} {2}), siste registrerte aktivitet var {3}.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="554" />
+      <location filename="../novelwriter/guimain.py" line="544" />
       <source>The project index is outdated or broken. Rebuilding index.</source>
       <translation>Prosjektets indeks er utdatert eller skadet. Bygger indeksen på nytt.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="726" />
+      <location filename="../novelwriter/guimain.py" line="716" />
       <source>Text files ({0})</source>
       <translation>Tekstfiler ({0})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="727" />
+      <location filename="../novelwriter/guimain.py" line="717" />
       <source>Markdown files ({0})</source>
       <translation>Markdown-filer ({0})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="728" />
+      <location filename="../novelwriter/guimain.py" line="718" />
       <source>novelWriter files ({0})</source>
       <translation>novelWriter-filer ({0})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="729" />
+      <location filename="../novelwriter/guimain.py" line="719" />
       <source>All files ({0})</source>
       <translation>Alle filer ({0})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="732" />
+      <location filename="../novelwriter/guimain.py" line="722" />
       <source>Import File</source>
       <translation>Importer fil</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="746" />
+      <location filename="../novelwriter/guimain.py" line="736" />
       <source>Could not read file. The file must be an existing text file.</source>
       <translation>Kunne ikke lese filen. Filen må eksistere fra før av.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="752" />
+      <location filename="../novelwriter/guimain.py" line="742" />
       <source>Please open a document to import the text file into.</source>
       <translation>Vennligst åpne et dokument hvor teksten i filen kan importeres.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="758" />
+      <location filename="../novelwriter/guimain.py" line="748" />
       <source>Importing the file will overwrite the current content of the document. Do you want to proceed?</source>
       <translation>Å importere filen vil overskrive all eksisterende tekst i dokumentet. Ønsker du å fortsette?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="837" />
+      <location filename="../novelwriter/guimain.py" line="827" />
       <source>Indexing completed in {0} ms</source>
       <translation>Indekseringen tok {0} ms</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="844" />
+      <location filename="../novelwriter/guimain.py" line="834" />
       <source>The project index has been successfully rebuilt.</source>
       <translation>Prosjektets indeks har blitt bygget på nytt.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="890" />
+      <location filename="../novelwriter/guimain.py" line="880" />
       <source>Some changes will not be applied until novelWriter has been restarted.</source>
       <translation>Noen endringer vil ikke tas i bruk før neste gang novelWriter startes.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="1084" />
+      <location filename="../novelwriter/guimain.py" line="1074" />
       <source>Could not initialise the dialog.</source>
       <translation>Kunne ikke initialisere dialogen.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="1106" />
+      <location filename="../novelwriter/guimain.py" line="1096" />
       <source>Do you want to exit novelWriter?</source>
       <translation>Ønsker du å avslutte novelWriter?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="1558" />
+      <location filename="../novelwriter/guimain.py" line="1548" />
       <source>Could not find the reference for tag '{0}'. It either doesn't exist, or the index is out of date. The index can be updated from the Tools menu, or by pressing {1}.</source>
       <translation>Kunne ikke finne referansen til knagg {0}. Enten finnes den ikke, eller så er prosjektets indeks ikke oppdatert. Indeksen kan oppdateres fra Verktøy-menyen eller ved å trykke på {1}.</translation>
     </message>
@@ -3289,7 +3289,7 @@
   <context>
     <name>GuiProjectLoad</name>
     <message>
-      <location filename="../novelwriter/dialogs/projload.py" line="197" />
+      <location filename="../novelwriter/dialogs/projload.py" line="196" />
       <location filename="../novelwriter/dialogs/projload.py" line="80" />
       <source>Open Project</source>
       <translation>Åpne prosjekt</translation>
@@ -3320,27 +3320,27 @@
       <translation>Filbane</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projload.py" line="136" />
+      <location filename="../novelwriter/dialogs/projload.py" line="135" />
       <source>New</source>
       <translation>Ny</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projload.py" line="139" />
+      <location filename="../novelwriter/dialogs/projload.py" line="138" />
       <source>Remove</source>
       <translation>Fjern</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projload.py" line="193" />
+      <location filename="../novelwriter/dialogs/projload.py" line="192" />
       <source>novelWriter Project File ({0})</source>
       <translation>novelWriter-prosjektfil ({0})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projload.py" line="194" />
+      <location filename="../novelwriter/dialogs/projload.py" line="193" />
       <source>All files ({0})</source>
       <translation>Alle filer ({0})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projload.py" line="231" />
+      <location filename="../novelwriter/dialogs/projload.py" line="230" />
       <source>Remove '{0}' from the recent projects list? The project files will not be deleted.</source>
       <translation>Vil du fjerne {0} fra listen over tidligere åpnede prosjekter? Selve prosjektfilene blir ikke slettet.</translation>
     </message>

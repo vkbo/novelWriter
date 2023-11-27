@@ -338,19 +338,9 @@ class GuiMain(QMainWindow):
         self.asProjTimer.start()
         self.asDocTimer.start()
         self.mainStatus.clearStatus()
-
-        # Handle Windows Mode
         self.showNormal()
 
         logger.debug("Ready: GUI")
-
-        if __hexversion__[-2] == "a" and not CONFIG.isDebug:
-            SHARED.warn(
-                "You are running an untested development version of novelWriter. "
-                "Please be careful when you are working on live projects "
-                "and make sure you take regular backups."
-            )
-
         logger.info("novelWriter is ready ...")
         self.mainStatus.setStatusMessage(self.tr("novelWriter is ready ..."))
 
