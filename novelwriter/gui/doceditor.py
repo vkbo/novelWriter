@@ -1144,6 +1144,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Execute the context menu
         ctxMenu.exec_(self.viewport().mapToGlobal(pos))
+        ctxMenu.deleteLater()
 
         return
 
