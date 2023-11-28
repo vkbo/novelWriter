@@ -25,11 +25,11 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtGui import QCloseEvent, QFont
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog, QWidget, QComboBox, QSpinBox, QPushButton, QDialogButtonBox,
-    QLineEdit, QFileDialog, QFontDialog, QDoubleSpinBox
+    QLineEdit, QFileDialog, QFontDialog, QDoubleSpinBox, qApp
 )
 
 from novelwriter import CONFIG, SHARED
@@ -42,6 +42,8 @@ logger = logging.getLogger(__name__)
 
 
 class GuiPreferences(NPagedDialog):
+
+    newPreferencesReady = pyqtSignal(bool, bool, bool, bool)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -68,7 +70,8 @@ class GuiPreferences(NPagedDialog):
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
         self.buttonBox.accepted.connect(self._doSave)
-        self.buttonBox.rejected.connect(self._doClose)
+        self.buttonBox.rejected.connect(self.close)
+        self.rejected.connect(self.close)
         self.addControls(self.buttonBox)
 
         self.resize(*CONFIG.preferencesWinSize)
@@ -88,24 +91,16 @@ class GuiPreferences(NPagedDialog):
         return
 
     ##
-    #  Properties
+    #  Events
     ##
 
-    @property
-    def updateTheme(self) -> bool:
-        return self._updateTheme
-
-    @property
-    def updateSyntax(self) -> bool:
-        return self._updateSyntax
-
-    @property
-    def needsRestart(self) -> bool:
-        return self._needsRestart
-
-    @property
-    def refreshTree(self) -> bool:
-        return self._refreshTree
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Capture the close event and perform cleanup."""
+        logger.debug("Close: GuiPreferences")
+        self._saveWindowSize()
+        event.accept()
+        self.deleteLater()
+        return
 
     ##
     #  Private Slots
@@ -113,11 +108,7 @@ class GuiPreferences(NPagedDialog):
 
     @pyqtSlot()
     def _doSave(self) -> None:
-        """Trigger all the save functions in the tabs, and collect the
-        status of the saves.
-        """
-        logger.debug("Saving new preferences")
-
+        """Trigger save functions in the tabs and emit ready signal."""
         self.tabGeneral.saveValues()
         self.tabProjects.saveValues()
         self.tabDocs.saveValues()
@@ -126,17 +117,13 @@ class GuiPreferences(NPagedDialog):
         self.tabAuto.saveValues()
         self.tabQuote.saveValues()
 
-        self._saveWindowSize()
         CONFIG.saveConfig()
-        self.accept()
+        self.newPreferencesReady.emit(
+            self._needsRestart, self._refreshTree, self._updateTheme, self._updateSyntax
+        )
+        qApp.processEvents()
+        self.close()
 
-        return
-
-    @pyqtSlot()
-    def _doClose(self) -> None:
-        """Close the preferences without saving the changes."""
-        self._saveWindowSize()
-        self.reject()
         return
 
     ##

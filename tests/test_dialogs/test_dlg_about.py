@@ -35,7 +35,7 @@ from novelwriter.dialogs.about import GuiAbout
 def testDlgAbout_NWDialog(qtbot, monkeypatch, nwGUI):
     """Test the novelWriter about dialogs."""
     # NW About
-    assert nwGUI.showAboutNWDialog(showNotes=True) is True
+    nwGUI.showAboutNWDialog(showNotes=True)
 
     qtbot.waitUntil(lambda: getGuiItem("GuiAbout") is not None, timeout=1000)
     msgAbout = getGuiItem("GuiAbout")

@@ -30,7 +30,7 @@ from tools import C, buildTestProject, getGuiItem
 from mocked import causeOSError
 
 from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QDialogButtonBox
+from PyQt5.QtWidgets import QAction, QDialogButtonBox
 from PyQt5.QtPrintSupport import QPrintPreviewDialog
 
 from novelwriter import CONFIG, SHARED
@@ -49,9 +49,11 @@ def testManuscript_Init(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath: Pat
     SHARED.project.storage.getDocument(C.hChapterDoc).writeDocument("## A Chapter\n\n\t\tHi")
     allText = "New Novel\nBy Jane Doe\nA Chapter\n\t\tHi\n* * *"
 
-    manus = GuiManuscript(nwGUI)
+    nwGUI.mainMenu.aBuildManuscript.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiManuscript") is not None, timeout=1000)
+    manus = getGuiItem("GuiManuscript")
+    assert isinstance(manus, GuiManuscript)
     manus.show()
-    manus.loadContent()
     assert manus.docPreview.toPlainText().strip() == ""
 
     # Run the default build
@@ -79,7 +81,6 @@ def testManuscript_Init(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath: Pat
         assert manus.docPreview.toPlainText().strip() == ""
         manus.close()
 
-    # Finish
     # qtbot.stop()
 
 # END Test testManuscript_Init

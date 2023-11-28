@@ -122,6 +122,5 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, projPath):
     assert "word_g" in userDict
 
     # qtbot.stop()
-    wList.close()
 
 # END Test testDlgWordList_Dialog

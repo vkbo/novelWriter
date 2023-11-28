@@ -45,22 +45,11 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
     monkeypatch.setattr(GuiPreferences, "result", lambda *a: QDialog.Accepted)
     monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: [("en", "English [en]")])
 
-    with monkeypatch.context() as mp:
-        mp.setattr(GuiPreferences, "updateTheme", lambda *a: True)
-        mp.setattr(GuiPreferences, "updateSyntax", lambda *a: True)
-        mp.setattr(GuiPreferences, "needsRestart", lambda *a: True)
-        mp.setattr(GuiPreferences, "refreshTree", lambda *a: True)
-        nwGUI.mainMenu.aPreferences.activate(QAction.Trigger)
-        qtbot.waitUntil(lambda: getGuiItem("GuiPreferences") is not None, timeout=1000)
-
+    nwGUI.mainMenu.aPreferences.activate(QAction.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiPreferences") is not None, timeout=1000)
     nwPrefs = getGuiItem("GuiPreferences")
     assert isinstance(nwPrefs, GuiPreferences)
     nwPrefs.show()
-
-    assert nwPrefs.updateTheme is False
-    assert nwPrefs.updateSyntax is False
-    assert nwPrefs.needsRestart is False
-    assert nwPrefs.refreshTree is False
 
     # General Settings
     qtbot.wait(KEY_DELAY)
@@ -99,8 +88,6 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
     assert not tabProjects.backupOnClose.isChecked()
     qtbot.mouseClick(tabProjects.backupOnClose, Qt.LeftButton)
     assert tabProjects.backupOnClose.isChecked()
-
-    # qtbot.stop()
 
     # Check Browse button
     monkeypatch.setattr(QFileDialog, "getExistingDirectory", lambda *a, **k: "")
@@ -204,7 +191,6 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
 
     # Save and Check Config
     qtbot.mouseClick(nwPrefs.buttonBox.button(QDialogButtonBox.Ok), Qt.LeftButton)
-    nwPrefs._doClose()
 
     assert CONFIG.saveConfig()
     projFile = tstPaths.cnfDir / "novelwriter.conf"

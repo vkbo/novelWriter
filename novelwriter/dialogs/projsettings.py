@@ -27,11 +27,11 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt5.QtGui import QIcon, QPixmap, QColor
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtGui import QCloseEvent, QIcon, QPixmap, QColor
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QColorDialog, QComboBox, QDialogButtonBox, QHBoxLayout, QLabel, QLineEdit,
-    QPushButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QPushButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget, qApp
 )
 
 from novelwriter import CONFIG, SHARED
@@ -52,6 +52,8 @@ class GuiProjectSettings(NPagedDialog):
     TAB_STATUS  = 1
     TAB_IMPORT  = 2
     TAB_REPLACE = 3
+
+    newProjectSettingsReady = pyqtSignal()
 
     def __init__(self, mainGui: GuiMain, focusTab: int = TAB_MAIN) -> None:
         super().__init__(parent=mainGui)
@@ -86,7 +88,8 @@ class GuiProjectSettings(NPagedDialog):
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self._doSave)
-        self.buttonBox.rejected.connect(self._doClose)
+        self.buttonBox.rejected.connect(self.close)
+        self.rejected.connect(self.close)
         self.addControls(self.buttonBox)
 
         # Focus Tab
@@ -98,6 +101,13 @@ class GuiProjectSettings(NPagedDialog):
 
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiProjectSettings")
+        return
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Capture the close event and perform cleanup."""
+        self._saveGuiSettings()
+        event.accept()
+        self.deleteLater()
         return
 
     ##
@@ -137,16 +147,10 @@ class GuiProjectSettings(NPagedDialog):
             newList = self.tabReplace.getNewList()
             project.data.setAutoReplace(newList)
 
-        self._saveGuiSettings()
-        self.accept()
+        self.newProjectSettingsReady.emit()
+        qApp.processEvents()
+        self.close()
 
-        return
-
-    @pyqtSlot()
-    def _doClose(self) -> None:
-        """Save settings and close the dialog."""
-        self._saveGuiSettings()
-        self.reject()
         return
 
     ##

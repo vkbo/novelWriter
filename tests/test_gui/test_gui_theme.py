@@ -23,7 +23,6 @@ from __future__ import annotations
 import pytest
 
 from pathlib import Path
-from configparser import ConfigParser
 
 from mocked import causeOSError
 from tools import writeFile
@@ -33,6 +32,7 @@ from PyQt5.QtWidgets import QApplication
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
+from novelwriter.common import NWConfigParser
 from novelwriter.constants import nwLabels
 
 
@@ -87,7 +87,7 @@ def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
     # Parse Colours
     # =============
 
-    parser = ConfigParser()
+    parser = NWConfigParser()
     parser["Palette"] = {
         "colour1": "100, 150, 200",
         "colour2": "100, 150, 200, 250",

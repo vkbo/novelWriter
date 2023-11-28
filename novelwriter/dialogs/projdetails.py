@@ -71,8 +71,8 @@ class GuiProjectDetails(NPagedDialog):
         self.addTab(self.tabContents, self.tr("Contents"))
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
-        self.buttonBox.button(QDialogButtonBox.Close)
-        self.buttonBox.rejected.connect(self._doClose)
+        self.buttonBox.rejected.connect(self.close)
+        self.rejected.connect(self.close)
         self.addControls(self.buttonBox)
 
         logger.debug("Ready: GuiProjectDetails")
@@ -95,19 +95,9 @@ class GuiProjectDetails(NPagedDialog):
 
     def closeEvent(self, event: QCloseEvent) -> None:
         """Capture the close event and perform cleanup."""
+        self._saveGuiSettings()
         event.accept()
         self.deleteLater()
-        return
-
-    ##
-    #  Private Slots
-    ##
-
-    @pyqtSlot()
-    def _doClose(self) -> None:
-        """Save settings and close the dialog."""
-        self._saveGuiSettings()
-        self.close()
         return
 
     ##
