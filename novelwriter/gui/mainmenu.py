@@ -3,7 +3,8 @@ novelWriter – GUI Main Menu
 ===========================
 
 File History:
-Created: 2019-04-27 [0.0.1]
+Created: 2019-04-27 [0.0.1] GuiMainMenu
+Created: 2023-11-28 [2.2]   StatusTipFilter
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
@@ -28,8 +29,8 @@ import logging
 from typing import TYPE_CHECKING
 from pathlib import Path
 
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtCore import QUrl, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QDesktopServices, QStatusTipEvent
+from PyQt5.QtCore import QEvent, QObject, QUrl, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMenuBar, QAction
 
 from novelwriter import CONFIG, SHARED
@@ -72,6 +73,8 @@ class GuiMainMenu(QMenuBar):
         self._buildSearchMenu()
         self._buildToolsMenu()
         self._buildHelpMenu()
+
+        self.installEventFilter(StatusTipFilter(mainGui))
 
         logger.debug("Ready: GuiMainMenu")
 
@@ -968,3 +971,12 @@ class GuiMainMenu(QMenuBar):
         return
 
 # END Class GuiMainMenu
+
+
+class StatusTipFilter(QObject):
+
+    def eventFilter(self, obj: QObject, event: QEvent) -> bool:
+        """Filter out status tip events."""
+        return True if isinstance(event, QStatusTipEvent) else super().eventFilter(obj, event)
+
+# END Class StatusTipFilter
