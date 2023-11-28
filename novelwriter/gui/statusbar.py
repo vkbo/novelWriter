@@ -230,8 +230,14 @@ class GuiMainStatus(QStatusBar):
     ##
 
     def memInfo(self) -> None:  # pragma: no cover
-        """Display memory info on the status bar."""
+        """Display memory info on the status bar. This is used to
+        investigate memory usage and Qt widgets that get left in memory.
+        Enabled by the --meminfo command line flag.
+        """
         import tracemalloc
+        from collections import Counter
+
+        widgets = qApp.allWidgets()
         if not self._debugInfo:
             if tracemalloc.is_tracing():
                 self._traceMallocRef = "Total"
@@ -239,6 +245,12 @@ class GuiMainStatus(QStatusBar):
                 self._traceMallocRef = "Relative"
                 tracemalloc.start()
             self._debugInfo = True
+            self._wCounts = Counter([type(x).__name__ for x in widgets])
+
+        if hasattr(self, "_wCounts"):
+            diff = Counter([type(x).__name__ for x in widgets]) - self._wCounts
+            for name, count in diff.items():
+                logger.debug("Widget '%s': +%d", name, count)
 
         mem = tracemalloc.get_traced_memory()
         stamp = datetime.now().strftime("%H:%M:%S")
