@@ -83,7 +83,7 @@ def testBaseInit_Options(monkeypatch, fncPath):
     """Test command line options for logging level."""
     monkeypatch.setattr("novelwriter.guimain.GuiMain", MockGuiMain)
     monkeypatch.setattr(sys, "argv", [
-        "novelWriter.py", "--testmode", f"--config={fncPath}", f"--data={fncPath}"
+        "novelWriter.py", "--testmode", "--meminfo", f"--config={fncPath}", f"--data={fncPath}"
     ])
 
     # Defaults w/None Args

@@ -225,7 +225,8 @@ class Config:
         # Other System Info
         self.hostName  = QSysInfo.machineHostName()
         self.kernelVer = QSysInfo.kernelVersion()
-        self.isDebug   = False
+        self.isDebug   = False  # True if running in debug mode
+        self.memInfo   = False  # True if displaying mem info in status bar
 
         # Packages
         self.hasEnchant = False  # The pyenchant package
@@ -485,7 +486,6 @@ class Config:
 
         self._recentObj.loadCache()
         self._checkOptionalPackages()
-        self.isDebug = logger.getEffectiveLevel() == logging.DEBUG
 
         logger.debug("Config instance initialised")
 

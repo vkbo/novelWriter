@@ -1321,6 +1321,8 @@ class GuiMain(QMainWindow):
         self.mainStatus.setUserIdle(editIdle or userIdle)
         SHARED.updateIdleTime(currTime, editIdle or userIdle)
         self.mainStatus.updateTime(idleTime=SHARED.projectIdleTime)
+        if CONFIG.memInfo and int(currTime) % 5 == 0:  # pragma: no cover
+            self.mainStatus.memInfo()
         return
 
     @pyqtSlot()

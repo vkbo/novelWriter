@@ -76,6 +76,7 @@ def main(sysArgs: list | None = None):
         "config=",
         "data=",
         "testmode",
+        "meminfo"
     ]
 
     helpMsg = (
@@ -127,6 +128,7 @@ def main(sysArgs: list | None = None):
         elif inOpt == "--info":
             logLevel = logging.INFO
         elif inOpt == "--debug":
+            CONFIG.isDebug = True
             logLevel = logging.DEBUG
             logFormat  = "[{asctime:}]  {filename:>17}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt == "--style":
@@ -137,6 +139,8 @@ def main(sysArgs: list | None = None):
             dataPath = inArg
         elif inOpt == "--testmode":
             testMode = True
+        elif inOpt == "--meminfo":
+            CONFIG.memInfo = True
 
     # Setup Logging
     pkgLogger = logging.getLogger(__package__)

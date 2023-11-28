@@ -27,6 +27,7 @@ import logging
 
 from time import time
 from typing import TYPE_CHECKING, Literal
+from datetime import datetime
 
 from PyQt5.QtCore import pyqtSlot, QLocale
 from PyQt5.QtGui import QColor
@@ -50,8 +51,9 @@ class GuiMainStatus(QStatusBar):
 
         logger.debug("Create: GuiMainStatus")
 
-        self._refTime  = -1.0
+        self._refTime = -1.0
         self._userIdle = False
+        self._debugInfo = False
 
         colNone = QColor(*SHARED.theme.statNone)
         colSaved = QColor(*SHARED.theme.statSaved)
@@ -221,6 +223,31 @@ class GuiMainStatus(QStatusBar):
     def updateDocumentStatus(self, status: bool) -> None:
         """Update the document status."""
         self.setDocumentStatus(StatusLED.S_BAD if status else StatusLED.S_GOOD)
+        return
+
+    ##
+    #  Debug
+    ##
+
+    def memInfo(self) -> None:  # pragma: no cover
+        """Display memory info on the status bar."""
+        import tracemalloc
+        if not self._debugInfo:
+            if tracemalloc.is_tracing():
+                self._traceMallocRef = "Total"
+            else:
+                self._traceMallocRef = "Relative"
+                tracemalloc.start()
+            self._debugInfo = True
+
+        mem = tracemalloc.get_traced_memory()
+        stamp = datetime.now().strftime("%H:%M:%S")
+        self.showMessage((
+            f"Debug [{stamp}]"
+            f" \u2013 Widgets: {len(qApp.allWidgets())}"
+            f" \u2013 {self._traceMallocRef} Memory: {mem[0]:n}"
+            f" \u2013 Peak: {mem[1]:n}"
+        ), 6000)
         return
 
 # END Class GuiMainStatus
