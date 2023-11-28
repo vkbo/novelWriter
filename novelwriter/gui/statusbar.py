@@ -29,8 +29,8 @@ from time import time
 from typing import TYPE_CHECKING, Literal
 from datetime import datetime
 
-from PyQt5.QtCore import pyqtSlot, QLocale
 from PyQt5.QtGui import QColor
+from PyQt5.QtCore import pyqtSlot, QLocale
 from PyQt5.QtWidgets import qApp, QStatusBar, QLabel
 
 from novelwriter import CONFIG, SHARED
