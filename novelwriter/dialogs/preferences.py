@@ -25,11 +25,11 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtGui import QCloseEvent, QFont
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog, QWidget, QComboBox, QSpinBox, QPushButton, QDialogButtonBox,
-    QLineEdit, QFileDialog, QFontDialog, QDoubleSpinBox
+    QLineEdit, QFileDialog, QFontDialog, QDoubleSpinBox, qApp
 )
 
 from novelwriter import CONFIG, SHARED
@@ -42,6 +42,8 @@ logger = logging.getLogger(__name__)
 
 
 class GuiPreferences(NPagedDialog):
+
+    newPreferencesReady = pyqtSignal(bool, bool, bool, bool)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -66,9 +68,10 @@ class GuiPreferences(NPagedDialog):
         self.addTab(self.tabAuto,     self.tr("Automation"))
         self.addTab(self.tabQuote,    self.tr("Quotes"))
 
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
         self.buttonBox.accepted.connect(self._doSave)
-        self.buttonBox.rejected.connect(self._doClose)
+        self.buttonBox.rejected.connect(self.close)
+        self.rejected.connect(self.close)
         self.addControls(self.buttonBox)
 
         self.resize(*CONFIG.preferencesWinSize)
@@ -83,29 +86,21 @@ class GuiPreferences(NPagedDialog):
 
         return
 
-    def __del__(self):  # pragma: no cover
+    def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiPreferences")
         return
 
     ##
-    #  Properties
+    #  Events
     ##
 
-    @property
-    def updateTheme(self) -> bool:
-        return self._updateTheme
-
-    @property
-    def updateSyntax(self) -> bool:
-        return self._updateSyntax
-
-    @property
-    def needsRestart(self) -> bool:
-        return self._needsRestart
-
-    @property
-    def refreshTree(self) -> bool:
-        return self._refreshTree
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Capture the close event and perform cleanup."""
+        logger.debug("Close: GuiPreferences")
+        self._saveWindowSize()
+        event.accept()
+        self.deleteLater()
+        return
 
     ##
     #  Private Slots
@@ -113,11 +108,7 @@ class GuiPreferences(NPagedDialog):
 
     @pyqtSlot()
     def _doSave(self) -> None:
-        """Trigger all the save functions in the tabs, and collect the
-        status of the saves.
-        """
-        logger.debug("Saving new preferences")
-
+        """Trigger save functions in the tabs and emit ready signal."""
         self.tabGeneral.saveValues()
         self.tabProjects.saveValues()
         self.tabDocs.saveValues()
@@ -126,17 +117,13 @@ class GuiPreferences(NPagedDialog):
         self.tabAuto.saveValues()
         self.tabQuote.saveValues()
 
-        self._saveWindowSize()
         CONFIG.saveConfig()
-        self.accept()
+        self.newPreferencesReady.emit(
+            self._needsRestart, self._refreshTree, self._updateTheme, self._updateSyntax
+        )
+        qApp.processEvents()
+        self.close()
 
-        return
-
-    @pyqtSlot()
-    def _doClose(self) -> None:
-        """Close the preferences without saving the changes."""
-        self._saveWindowSize()
-        self.reject()
         return
 
     ##
@@ -169,7 +156,7 @@ class GuiPreferencesGeneral(QWidget):
         minWidth = CONFIG.pxInt(200)
 
         # Select Locale
-        self.guiLocale = QComboBox()
+        self.guiLocale = QComboBox(self)
         self.guiLocale.setMinimumWidth(minWidth)
         theLangs = CONFIG.listLanguages(CONFIG.LANG_NW)
         for lang, langName in theLangs:
@@ -187,7 +174,7 @@ class GuiPreferencesGeneral(QWidget):
         )
 
         # Select Theme
-        self.guiTheme = QComboBox()
+        self.guiTheme = QComboBox(self)
         self.guiTheme.setMinimumWidth(minWidth)
         self.theThemes = SHARED.theme.listThemes()
         for themeDir, themeName in self.theThemes:
@@ -203,7 +190,7 @@ class GuiPreferencesGeneral(QWidget):
         )
 
         # Editor Theme
-        self.guiSyntax = QComboBox()
+        self.guiSyntax = QComboBox(self)
         self.guiSyntax.setMinimumWidth(CONFIG.pxInt(200))
         self.theSyntaxes = SHARED.theme.listSyntax()
         for syntaxFile, syntaxName in self.theSyntaxes:
@@ -219,11 +206,11 @@ class GuiPreferencesGeneral(QWidget):
         )
 
         # Font Family
-        self.guiFont = QLineEdit()
+        self.guiFont = QLineEdit(self)
         self.guiFont.setReadOnly(True)
         self.guiFont.setFixedWidth(CONFIG.pxInt(162))
         self.guiFont.setText(CONFIG.guiFont)
-        self.fontButton = QPushButton("...")
+        self.fontButton = QPushButton("...", self)
         self.fontButton.setMaximumWidth(int(2.5*SHARED.theme.getTextWidth("...")))
         self.fontButton.clicked.connect(self._selectFont)
         self.mainForm.addRow(
@@ -378,7 +365,7 @@ class GuiPreferencesProjects(QWidget):
 
         # Backup Path
         self.backupPath = CONFIG.backupPath()
-        self.backupGetPath = QPushButton(self.tr("Browse"))
+        self.backupGetPath = QPushButton(self.tr("Browse"), self)
         self.backupGetPath.clicked.connect(self._backupFolder)
         self.backupPathRow = self.mainForm.addRow(
             self.tr("Backup storage location"),
@@ -421,7 +408,7 @@ class GuiPreferencesProjects(QWidget):
         )
 
         # Inactive time for idle
-        self.userIdleTime = QDoubleSpinBox()
+        self.userIdleTime = QDoubleSpinBox(self)
         self.userIdleTime.setMinimum(0.5)
         self.userIdleTime.setMaximum(600.0)
         self.userIdleTime.setSingleStep(0.5)
@@ -496,11 +483,11 @@ class GuiPreferencesDocuments(QWidget):
         self.mainForm.addGroupLabel(self.tr("Text Style"))
 
         # Font Family
-        self.textFont = QLineEdit()
+        self.textFont = QLineEdit(self)
         self.textFont.setReadOnly(True)
         self.textFont.setFixedWidth(CONFIG.pxInt(162))
         self.textFont.setText(CONFIG.textFont)
-        self.fontButton = QPushButton("...")
+        self.fontButton = QPushButton("...", self)
         self.fontButton.setMaximumWidth(int(2.5*SHARED.theme.getTextWidth("...")))
         self.fontButton.clicked.connect(self._selectFont)
         self.mainForm.addRow(
@@ -960,7 +947,7 @@ class GuiPreferencesAutomation(QWidget):
         self.mainForm.addGroupLabel(self.tr("Automatic Padding"))
 
         # Pad Before
-        self.fmtPadBefore = QLineEdit()
+        self.fmtPadBefore = QLineEdit(self)
         self.fmtPadBefore.setMaxLength(32)
         self.fmtPadBefore.setText(CONFIG.fmtPadBefore)
         self.mainForm.addRow(
@@ -970,7 +957,7 @@ class GuiPreferencesAutomation(QWidget):
         )
 
         # Pad After
-        self.fmtPadAfter = QLineEdit()
+        self.fmtPadAfter = QLineEdit(self)
         self.fmtPadAfter.setMaxLength(32)
         self.fmtPadAfter.setText(CONFIG.fmtPadAfter)
         self.mainForm.addRow(
@@ -1046,13 +1033,13 @@ class GuiPreferencesQuotes(QWidget):
         self.quoteSym = {}
 
         # Single Quote Style
-        self.quoteSym["SO"] = QLineEdit()
+        self.quoteSym["SO"] = QLineEdit(self)
         self.quoteSym["SO"].setMaxLength(1)
         self.quoteSym["SO"].setReadOnly(True)
         self.quoteSym["SO"].setFixedWidth(qWidth)
         self.quoteSym["SO"].setAlignment(Qt.AlignCenter)
         self.quoteSym["SO"].setText(CONFIG.fmtSQuoteOpen)
-        self.btnSingleStyleO = QPushButton("...")
+        self.btnSingleStyleO = QPushButton("...", self)
         self.btnSingleStyleO.setMaximumWidth(bWidth)
         self.btnSingleStyleO.clicked.connect(lambda: self._getQuote("SO"))
         self.mainForm.addRow(
@@ -1062,13 +1049,13 @@ class GuiPreferencesQuotes(QWidget):
             button=self.btnSingleStyleO
         )
 
-        self.quoteSym["SC"] = QLineEdit()
+        self.quoteSym["SC"] = QLineEdit(self)
         self.quoteSym["SC"].setMaxLength(1)
         self.quoteSym["SC"].setReadOnly(True)
         self.quoteSym["SC"].setFixedWidth(qWidth)
         self.quoteSym["SC"].setAlignment(Qt.AlignCenter)
         self.quoteSym["SC"].setText(CONFIG.fmtSQuoteClose)
-        self.btnSingleStyleC = QPushButton("...")
+        self.btnSingleStyleC = QPushButton("...", self)
         self.btnSingleStyleC.setMaximumWidth(bWidth)
         self.btnSingleStyleC.clicked.connect(lambda: self._getQuote("SC"))
         self.mainForm.addRow(
@@ -1079,13 +1066,13 @@ class GuiPreferencesQuotes(QWidget):
         )
 
         # Double Quote Style
-        self.quoteSym["DO"] = QLineEdit()
+        self.quoteSym["DO"] = QLineEdit(self)
         self.quoteSym["DO"].setMaxLength(1)
         self.quoteSym["DO"].setReadOnly(True)
         self.quoteSym["DO"].setFixedWidth(qWidth)
         self.quoteSym["DO"].setAlignment(Qt.AlignCenter)
         self.quoteSym["DO"].setText(CONFIG.fmtDQuoteOpen)
-        self.btnDoubleStyleO = QPushButton("...")
+        self.btnDoubleStyleO = QPushButton("...", self)
         self.btnDoubleStyleO.setMaximumWidth(bWidth)
         self.btnDoubleStyleO.clicked.connect(lambda: self._getQuote("DO"))
         self.mainForm.addRow(
@@ -1095,13 +1082,13 @@ class GuiPreferencesQuotes(QWidget):
             button=self.btnDoubleStyleO
         )
 
-        self.quoteSym["DC"] = QLineEdit()
+        self.quoteSym["DC"] = QLineEdit(self)
         self.quoteSym["DC"].setMaxLength(1)
         self.quoteSym["DC"].setReadOnly(True)
         self.quoteSym["DC"].setFixedWidth(qWidth)
         self.quoteSym["DC"].setAlignment(Qt.AlignCenter)
         self.quoteSym["DC"].setText(CONFIG.fmtDQuoteClose)
-        self.btnDoubleStyleC = QPushButton("...")
+        self.btnDoubleStyleC = QPushButton("...", self)
         self.btnDoubleStyleC.setMaximumWidth(bWidth)
         self.btnDoubleStyleC.clicked.connect(lambda: self._getQuote("DC"))
         self.mainForm.addRow(

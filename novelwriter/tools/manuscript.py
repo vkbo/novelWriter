@@ -417,8 +417,6 @@ class GuiManuscript(QDialog):
 
     def _saveSettings(self):
         """Save the user GUI settings."""
-        logger.debug("Saving GuiManuscript settings")
-
         buildOrder = []
         for i in range(self.buildList.count()):
             if item := self.buildList.item(i):
@@ -442,6 +440,7 @@ class GuiManuscript(QDialog):
         detailsWidth = CONFIG.rpxInt(self.buildDetails.getColumnWidth())
         detailsExpanded = self.buildDetails.getExpandedState()
 
+        logger.debug("Saving State: GuiManuscript")
         pOptions = SHARED.project.options
         pOptions.setValue("GuiManuscript", "winWidth", winWidth)
         pOptions.setValue("GuiManuscript", "winHeight", winHeight)

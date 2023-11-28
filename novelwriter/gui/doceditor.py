@@ -58,6 +58,7 @@ from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwKeyWords, nwLabels, nwShortcode, nwUnicode, trConst
 from novelwriter.core.item import NWItem
 from novelwriter.core.index import countWords
+from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.core.document import NWDocument
 from novelwriter.gui.dochighlight import GuiDocHighlighter
 from novelwriter.gui.editordocument import GuiTextDocument
@@ -850,18 +851,23 @@ class GuiDocEditor(QPlainTextEdit):
                 text = "[vspace:2]"
                 newBlock = True
                 goAfter = False
+            elif insert == nwDocInsert.LIPSUM:
+                text = GuiLipsum.getLipsum(self)
+                newBlock = True
+                goAfter = False
             else:
                 return False
         else:
             return False
 
-        if newBlock:
-            self.insertNewBlock(text, defaultAfter=goAfter)
-        else:
-            cursor = self.textCursor()
-            cursor.beginEditBlock()
-            cursor.insertText(text)
-            cursor.endEditBlock()
+        if text:
+            if newBlock:
+                self.insertNewBlock(text, defaultAfter=goAfter)
+            else:
+                cursor = self.textCursor()
+                cursor.beginEditBlock()
+                cursor.insertText(text)
+                cursor.endEditBlock()
 
         return True
 
@@ -1144,6 +1150,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Execute the context menu
         ctxMenu.exec_(self.viewport().mapToGlobal(pos))
+        ctxMenu.deleteLater()
 
         return
 

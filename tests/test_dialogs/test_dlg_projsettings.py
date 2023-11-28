@@ -57,26 +57,26 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
     nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
     qtbot.waitUntil(lambda: getGuiItem("GuiProjectSettings") is not None, timeout=1000)
 
-    projEdit = getGuiItem("GuiProjectSettings")
-    assert isinstance(projEdit, GuiProjectSettings)
-    projEdit.show()
-    qtbot.addWidget(projEdit)
+    projSettings = getGuiItem("GuiProjectSettings")
+    assert isinstance(projSettings, GuiProjectSettings)
+    projSettings.show()
+    qtbot.addWidget(projSettings)
 
     # Switch Tabs
-    projEdit._focusTab(GuiProjectSettings.TAB_REPLACE)
-    assert projEdit._tabBox.currentWidget() == projEdit.tabReplace
+    projSettings._focusTab(GuiProjectSettings.TAB_REPLACE)
+    assert projSettings._tabBox.currentWidget() == projSettings.tabReplace
 
-    projEdit._focusTab(GuiProjectSettings.TAB_IMPORT)
-    assert projEdit._tabBox.currentWidget() == projEdit.tabImport
+    projSettings._focusTab(GuiProjectSettings.TAB_IMPORT)
+    assert projSettings._tabBox.currentWidget() == projSettings.tabImport
 
-    projEdit._focusTab(GuiProjectSettings.TAB_STATUS)
-    assert projEdit._tabBox.currentWidget() == projEdit.tabStatus
+    projSettings._focusTab(GuiProjectSettings.TAB_STATUS)
+    assert projSettings._tabBox.currentWidget() == projSettings.tabStatus
 
-    projEdit._focusTab(GuiProjectSettings.TAB_MAIN)
-    assert projEdit._tabBox.currentWidget() == projEdit.tabMain
+    projSettings._focusTab(GuiProjectSettings.TAB_MAIN)
+    assert projSettings._tabBox.currentWidget() == projSettings.tabMain
 
     # Clean Up
-    projEdit._doClose()
+    projSettings.close()
     # qtbot.stop()
 
 # END Test testDlgProjSettings_Dialog
@@ -93,10 +93,10 @@ def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockR
     CONFIG.setBackupPath(fncPath)
 
     # Set some values
-    theProject = SHARED.project
-    theProject.data.setSpellLang("en")
-    theProject.data.setAuthor("Jane Smith")
-    theProject.data.setAutoReplace({"A": "B", "C": "D"})
+    project = SHARED.project
+    project.data.setSpellLang("en")
+    project.data.setAuthor("Jane Smith")
+    project.data.setAutoReplace({"A": "B", "C": "D"})
 
     # Create Dialog
     projSettings = GuiProjectSettings(nwGUI, GuiProjectSettings.TAB_MAIN)
@@ -130,12 +130,13 @@ def testDlgProjSettings_Main(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockR
     assert tabMain.editAuthor.text() == "Jane Doe"
 
     projSettings._doSave()
-    assert theProject.data.name == "Project Name"
-    assert theProject.data.title == "Project Title"
-    assert theProject.data.author == "Jane Doe"
+    assert project.data.name == "Project Name"
+    assert project.data.title == "Project Title"
+    assert project.data.author == "Jane Doe"
 
-    # Clean up
-    projSettings._doClose()
+    nwGUI._processProjectSettingsChanges()
+    assert nwGUI.windowTitle() == "novelWriter - Project Name"
+
     # qtbot.stop()
 
 # END Test testDlgProjSettings_Main
@@ -334,9 +335,7 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, fncPath, projPat
     assert importItems[C.iMain]["name"] == "Main"
     assert importItems["i000014"]["name"] == "Final"
 
-    # Clean up
     # qtbot.stop()
-    projSettings._doClose()
 
 # END Test testDlgProjSettings_StatusImport
 
@@ -422,8 +421,6 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, fncPath, projPath, mo
         "A": "B", "C": "D", "This": "With This Stuff"
     }
 
-    # Clean up
     # qtbot.stop()
-    projSettings._doClose()
 
 # END Test testDlgProjSettings_Replace

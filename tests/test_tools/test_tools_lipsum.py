@@ -30,43 +30,39 @@ from novelwriter.tools.lipsum import GuiLipsum
 
 
 @pytest.mark.gui
-def testToolLipsum_Main(qtbot, nwGUI, projPath, mockRnd):
-    """Test the Lorem Ipsum tool.
-    """
+def testToolLipsum_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test the Lorem Ipsum tool."""
     # Check that we cannot open when there is no project
     nwGUI.mainMenu.aLipsumText.activate(QAction.Trigger)
     assert getGuiItem("GuiLipsum") is None
 
-    # Create a new project
     buildTestProject(nwGUI, projPath)
-    assert nwGUI.openDocument(C.hSceneDoc) is True
-    assert len(nwGUI.docEditor.getText()) == 15
+    nwLipsum = GuiLipsum(nwGUI)
 
-    # Open the tool
-    nwGUI.mainMenu.aLipsumText.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiLipsum") is not None, timeout=1000)
-
-    nwLipsum = getGuiItem("GuiLipsum")
-    assert isinstance(nwLipsum, GuiLipsum)
-
-    # Insert paragraphs
+    # Generate paragraphs
     nwGUI.docEditor.setCursorPosition(100)  # End of document
     nwLipsum.paraCount.setValue(2)
     nwLipsum._doInsert()
-    theText = nwGUI.docEditor.getText()
-    assert "Lorem ipsum" in theText
-    assert len(theText) == 965
+    assert "Lorem ipsum" in nwLipsum.lipsumText
 
-    # Insert random paragraph
+    # Generate random paragraph
     nwGUI.docEditor.setCursorPosition(1000)  # End of document
     nwLipsum.randSwitch.setChecked(True)
     nwLipsum.paraCount.setValue(1)
     nwLipsum._doInsert()
-    theText = nwGUI.docEditor.getText()
-    assert len(theText) > 965
+    assert len(nwLipsum.lipsumText) > 0
 
-    # Close
-    nwLipsum._doClose()
+    nwLipsum.setObjectName("")
+    nwLipsum.close()
+
+    # Trigger insertion in document
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+    nwGUI.docEditor.setCursorLine(3)
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiLipsum, "exec_", lambda *a: None)
+        mp.setattr(GuiLipsum, "lipsumText", "FooBar")
+        nwGUI.mainMenu.aLipsumText.activate(QAction.Trigger)
+        assert nwGUI.docEditor.getText() == "### New Scene\n\nFooBar"
 
     # qtbot.stop()
 

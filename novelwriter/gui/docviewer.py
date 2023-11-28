@@ -378,33 +378,34 @@ class GuiDocViewer(QTextBrowser):
         userCursor = self.textCursor()
         userSelection = userCursor.hasSelection()
 
-        mnuContext = QMenu(self)
+        ctxMenu = QMenu(self)
 
         if userSelection:
-            mnuCopy = QAction(self.tr("Copy"), mnuContext)
+            mnuCopy = QAction(self.tr("Copy"), ctxMenu)
             mnuCopy.triggered.connect(lambda: self.docAction(nwDocAction.COPY))
-            mnuContext.addAction(mnuCopy)
+            ctxMenu.addAction(mnuCopy)
 
-            mnuContext.addSeparator()
+            ctxMenu.addSeparator()
 
-        mnuSelAll = QAction(self.tr("Select All"), mnuContext)
+        mnuSelAll = QAction(self.tr("Select All"), ctxMenu)
         mnuSelAll.triggered.connect(lambda: self.docAction(nwDocAction.SEL_ALL))
-        mnuContext.addAction(mnuSelAll)
+        ctxMenu.addAction(mnuSelAll)
 
-        mnuSelWord = QAction(self.tr("Select Word"), mnuContext)
+        mnuSelWord = QAction(self.tr("Select Word"), ctxMenu)
         mnuSelWord.triggered.connect(
             lambda: self._makePosSelection(QTextCursor.SelectionType.WordUnderCursor, point)
         )
-        mnuContext.addAction(mnuSelWord)
+        ctxMenu.addAction(mnuSelWord)
 
-        mnuSelPara = QAction(self.tr("Select Paragraph"), mnuContext)
+        mnuSelPara = QAction(self.tr("Select Paragraph"), ctxMenu)
         mnuSelPara.triggered.connect(
             lambda: self._makePosSelection(QTextCursor.SelectionType.BlockUnderCursor, point)
         )
-        mnuContext.addAction(mnuSelPara)
+        ctxMenu.addAction(mnuSelPara)
 
         # Open the context menu
-        mnuContext.exec_(self.viewport().mapToGlobal(point))
+        ctxMenu.exec_(self.viewport().mapToGlobal(point))
+        ctxMenu.deleteLater()
 
         return
 

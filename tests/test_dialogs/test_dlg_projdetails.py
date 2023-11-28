@@ -66,12 +66,12 @@ def testDlgProjDetails_Dialog(qtbot, nwGUI, prjLipsum):
     tocTab = projDet.tabContents
     tocTree = tocTab.tocTree
     assert tocTree.topLevelItemCount() == 7
-    assert tocTree.topLevelItem(0).text(tocTab.C_TITLE) == "Lorem Ipsum"
-    assert tocTree.topLevelItem(2).text(tocTab.C_TITLE) == "Prologue"
-    assert tocTree.topLevelItem(3).text(tocTab.C_TITLE) == "Act One"
-    assert tocTree.topLevelItem(4).text(tocTab.C_TITLE) == "Chapter One"
-    assert tocTree.topLevelItem(5).text(tocTab.C_TITLE) == "Chapter Two"
-    assert tocTree.topLevelItem(6).text(tocTab.C_TITLE) == "END"
+    assert tocTree.topLevelItem(0).text(tocTab.C_TITLE) == "Lorem Ipsum"  # type: ignore
+    assert tocTree.topLevelItem(2).text(tocTab.C_TITLE) == "Prologue"  # type: ignore
+    assert tocTree.topLevelItem(3).text(tocTab.C_TITLE) == "Act One"  # type: ignore
+    assert tocTree.topLevelItem(4).text(tocTab.C_TITLE) == "Chapter One"  # type: ignore
+    assert tocTree.topLevelItem(5).text(tocTab.C_TITLE) == "Chapter Two"  # type: ignore
+    assert tocTree.topLevelItem(6).text(tocTab.C_TITLE) == "END"  # type: ignore
 
     # Count Pages
     tocTab.wpValue.setValue(100)
@@ -82,8 +82,8 @@ def testDlgProjDetails_Dialog(qtbot, nwGUI, prjLipsum):
     thePages = ["1", "2", "1", "1", "11", "17", "0"]
     thePage = ["i", "ii", "1", "2", "3", "14", "31"]
     for i in range(7):
-        assert tocTree.topLevelItem(i).text(tocTab.C_PAGES) == thePages[i]
-        assert tocTree.topLevelItem(i).text(tocTab.C_PAGE) == thePage[i]
+        assert tocTree.topLevelItem(i).text(tocTab.C_PAGES) == thePages[i]  # type: ignore
+        assert tocTree.topLevelItem(i).text(tocTab.C_PAGE) == thePage[i]  # type: ignore
 
     tocTab.poValue.setValue(5)
     tocTab.dblValue.setChecked(True)
@@ -92,8 +92,8 @@ def testDlgProjDetails_Dialog(qtbot, nwGUI, prjLipsum):
     thePages = ["2", "2", "2", "2", "12", "18", "0"]
     thePage = ["i", "iii", "1", "3", "5", "17", "35"]
     for i in range(7):
-        assert tocTree.topLevelItem(i).text(tocTab.C_PAGES) == thePages[i]
-        assert tocTree.topLevelItem(i).text(tocTab.C_PAGE) == thePage[i]
+        assert tocTree.topLevelItem(i).text(tocTab.C_PAGES) == thePages[i]  # type: ignore
+        assert tocTree.topLevelItem(i).text(tocTab.C_PAGE) == thePage[i]  # type: ignore
 
     # Re-populate
     assert tocTab._currentRoot is None
@@ -103,7 +103,7 @@ def testDlgProjDetails_Dialog(qtbot, nwGUI, prjLipsum):
     # qtbot.stop()
 
     # Clean Up
-    projDet._doClose()
+    projDet.close()
     nwGUI.closeMain()
 
 # END Test testDlgProjDetails_Dialog

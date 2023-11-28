@@ -26,7 +26,8 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QCloseEvent
+from PyQt5.QtCore import Qt, QSize, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QDialogButtonBox, QGridLayout, QLabel,
     QListWidget, QListWidgetItem, QVBoxLayout, QWidget
@@ -108,13 +109,12 @@ class GuiDocMerge(QDialog):
 
         return
 
-    def __del__(self):  # pragma: no cover
+    def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiDocMerge")
         return
 
-    def getData(self):
-        """Return the user's choices.
-        """
+    def getData(self) -> dict:
+        """Return the user's choices."""
         finalItems = []
         for i in range(self.listBox.count()):
             item = self.listBox.item(i)
@@ -127,12 +127,22 @@ class GuiDocMerge(QDialog):
         return self._data
 
     ##
-    #  Slots
+    #  Events
     ##
 
-    def _resetList(self):
-        """Reset the content of the list box to its original state.
-        """
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Capture the close event and perform cleanup."""
+        event.accept()
+        self.deleteLater()
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot()
+    def _resetList(self) -> None:
+        """Reset the content of the list box to its original state."""
         logger.debug("Resetting list box content")
         sHandle = self._data.get("sHandle", None)
         itemList = self._data.get("origItems", [])
@@ -143,9 +153,8 @@ class GuiDocMerge(QDialog):
     #  Internal Functions
     ##
 
-    def _loadContent(self, sHandle, itemList):
-        """Load content from a given list of items.
-        """
+    def _loadContent(self, sHandle: str, itemList: list[str]) -> None:
+        """Load content from a given list of items."""
         self._data = {}
         self._data["sHandle"] = sHandle
         self._data["origItems"] = itemList

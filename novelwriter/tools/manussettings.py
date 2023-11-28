@@ -253,13 +253,11 @@ class GuiBuildSettings(QDialog):
 
     def _saveSettings(self) -> None:
         """Save the various user settings."""
-        logger.debug("Saving GuiBuildSettings settings")
-
         winWidth  = CONFIG.rpxInt(self.width())
         winHeight = CONFIG.rpxInt(self.height())
-
         treeWidth, filterWidth = self.optTabSelect.mainSplitSizes()
 
+        logger.debug("Saving State: GuiBuildSettings")
         pOptions = SHARED.project.options
         pOptions.setValue("GuiBuildSettings", "winWidth", winWidth)
         pOptions.setValue("GuiBuildSettings", "winHeight", winHeight)

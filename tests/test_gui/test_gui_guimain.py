@@ -29,6 +29,7 @@ from tools import (
     C, NWD_IGNORE, cmpFiles, buildTestProject, XML_IGNORE, getGuiItem, writeFile
 )
 
+from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QMenu, QMessageBox, QInputDialog
 
@@ -62,11 +63,6 @@ def testGuiMain_ProjectBlocker(nwGUI):
     assert nwGUI.openSelectedItem() is False
     assert nwGUI.editItemLabel() is False
     assert nwGUI.rebuildIndex() is False
-    assert nwGUI.showProjectSettingsDialog() is False
-    assert nwGUI.showProjectDetailsDialog() is False
-    assert nwGUI.showBuildManuscriptDialog() is False
-    assert nwGUI.showProjectWordListDialog() is False
-    assert nwGUI.showWritingStatsDialog() is False
 
 # END Test testGuiMain_ProjectBlocker
 
@@ -201,6 +197,28 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # qtbot.stop()
 
 # END Test testGuiMain_ProjectTreeItems
+
+
+@pytest.mark.gui
+def testGuiMain_UpdateTheme(qtbot, nwGUI):
+    """Test updating the theme in the GUI."""
+    mainTheme = SHARED.theme
+    CONFIG.guiTheme = "default_dark"
+    CONFIG.guiSyntax = "default_dark"
+    mainTheme.loadTheme()
+    mainTheme.loadSyntax()
+    nwGUI._processConfigChanges(True, True, True, True)
+
+    syntaxBack = QColor(*SHARED.theme.colBack)
+
+    assert nwGUI.docEditor.palette().color(QPalette.ColorRole.Window) == syntaxBack
+    assert nwGUI.docEditor.docHeader.palette().color(QPalette.ColorRole.Window) == syntaxBack
+    assert nwGUI.docViewer.palette().color(QPalette.ColorRole.Window) == syntaxBack
+    assert nwGUI.docViewer.docHeader.palette().color(QPalette.ColorRole.Window) == syntaxBack
+
+    # qtbot.stop()
+
+# END Test testGuiMain_UpdateTheme
 
 
 @pytest.mark.gui

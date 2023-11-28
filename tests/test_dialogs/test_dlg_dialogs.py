@@ -45,12 +45,11 @@ def testDlgOther_QuoteSelect(qtbot, nwGUI):
         lastItem = anItem.text()[2]
         assert nwQuot.previewLabel.text() == lastItem
 
-    nwQuot._doAccept()
+    nwQuot.accept()
     assert nwQuot.result() == QDialog.Accepted
     assert nwQuot.selectedQuote == lastItem
 
     # qtbot.stop()
-    nwQuot._doReject()
     nwQuot.close()
 
 # END Test testDlgOther_QuoteSelect
@@ -89,7 +88,7 @@ def testDlgOther_Updates(qtbot, monkeypatch, nwGUI):
     nwGUI.mainMenu.aUpdates.activate(QAction.Trigger)
 
     # qtbot.stop()
-    nwUpdate._doClose()
+    nwUpdate.close()
 
 # END Test testDlgOther_Updates
 
@@ -101,13 +100,13 @@ def testDlgOther_EditLabel(qtbot, monkeypatch):
 
     with monkeypatch.context() as mp:
         mp.setattr(GuiEditLabel, "result", lambda *a: QDialog.Accepted)
-        newLabel, dlgOk = GuiEditLabel.getLabel(None, text="Hello World")
+        newLabel, dlgOk = GuiEditLabel.getLabel(None, text="Hello World")  # type: ignore
         assert dlgOk is True
         assert newLabel == "Hello World"
 
     with monkeypatch.context() as mp:
         mp.setattr(GuiEditLabel, "result", lambda *a: QDialog.Rejected)
-        newLabel, dlgOk = GuiEditLabel.getLabel(None, text="Hello World")
+        newLabel, dlgOk = GuiEditLabel.getLabel(None, text="Hello World")  # type: ignore
         assert dlgOk is False
         assert newLabel == "Hello World"
 

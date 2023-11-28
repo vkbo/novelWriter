@@ -140,6 +140,7 @@ class nwDocInsert(Enum):
     NEW_PAGE  = 7
     VSPACE_S  = 8
     VSPACE_M  = 9
+    LIPSUM    = 10
 
 # END Enum nwDocInsert
 

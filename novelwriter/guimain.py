@@ -56,7 +56,6 @@ from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projdetails import GuiProjectDetails
 from novelwriter.dialogs.projsettings import GuiProjectSettings
-from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.projwizard import GuiProjectWizard
 from novelwriter.tools.dictionaries import GuiDictionaries
@@ -66,7 +65,7 @@ from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.enum import (
     nwDocAction, nwDocInsert, nwDocMode, nwItemType, nwItemClass, nwWidget, nwView
 )
-from novelwriter.common import getGuiItem, hexToInt
+from novelwriter.common import hexToInt
 from novelwriter.constants import nwFiles
 
 logger = logging.getLogger(__name__)
@@ -866,213 +865,111 @@ class GuiMain(QMainWindow):
 
         return None
 
+    @pyqtSlot()
     def showPreferencesDialog(self) -> None:
         """Open the preferences dialog."""
-        dlgConf = GuiPreferences(self)
-        dlgConf.exec_()
-
-        if dlgConf.result() == QDialog.Accepted:
-            logger.debug("Applying new preferences")
-            self.initMain()
-            self.saveDocument()
-
-            if dlgConf.needsRestart:
-                SHARED.info(self.tr(
-                    "Some changes will not be applied until novelWriter has been restarted."
-                ))
-
-            if dlgConf.refreshTree:
-                self.projView.populateTree()
-
-            if dlgConf.updateTheme:
-                # We are doing this manually instead of connecting to
-                # qApp.paletteChanged since the processing order matters
-                SHARED.theme.loadTheme()
-                self.docEditor.updateTheme()
-                self.docViewer.updateTheme()
-                self.docViewerPanel.updateTheme()
-                self.sideBar.updateTheme()
-                self.projView.updateTheme()
-                self.novelView.updateTheme()
-                self.outlineView.updateTheme()
-                self.itemDetails.updateTheme()
-                self.mainStatus.updateTheme()
-
-            if dlgConf.updateSyntax:
-                SHARED.theme.loadSyntax()
-                self.docEditor.updateSyntaxColours()
-
-            self.docEditor.initEditor()
-            self.docViewer.initViewer()
-            self.projView.initSettings()
-            self.novelView.initSettings()
-            self.outlineView.initSettings()
-
-            self._updateStatusWordCount()
-
+        dialog = GuiPreferences(self)
+        dialog.newPreferencesReady.connect(self._processConfigChanges)
+        dialog.exec_()
         return
 
+    @pyqtSlot()
     @pyqtSlot(int)
-    def showProjectSettingsDialog(self, focusTab: int = GuiProjectSettings.TAB_MAIN) -> bool:
+    def showProjectSettingsDialog(self, focusTab: int = GuiProjectSettings.TAB_MAIN) -> None:
         """Open the project settings dialog."""
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
-
-        dlgProj = GuiProjectSettings(self, focusTab=focusTab)
-        dlgProj.exec_()
-
-        if dlgProj.result() == QDialog.Accepted:
-            logger.debug("Applying new project settings")
-            SHARED.updateSpellCheckLanguage()
-            self.itemDetails.refreshDetails()
-            self._updateWindowTitle(SHARED.project.data.name)
-
-        return True
-
-    def showProjectDetailsDialog(self) -> bool:
-        """Open the project details dialog."""
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
-
-        dlgDetails = getGuiItem("GuiProjectDetails")
-        if dlgDetails is None:
-            dlgDetails = GuiProjectDetails(self)
-        assert isinstance(dlgDetails, GuiProjectDetails)
-
-        dlgDetails.setModal(True)
-        dlgDetails.show()
-        dlgDetails.raise_()
-        dlgDetails.updateValues()
-
-        return True
+        if SHARED.hasProject:
+            dialog = GuiProjectSettings(self, focusTab=focusTab)
+            dialog.newProjectSettingsReady.connect(self._processProjectSettingsChanges)
+            dialog.exec_()
+        return
 
     @pyqtSlot()
-    def showBuildManuscriptDialog(self) -> bool:
+    def showProjectDetailsDialog(self) -> None:
+        """Open the project details dialog."""
+        if SHARED.hasProject:
+            dialog = GuiProjectDetails(self)
+            dialog.setModal(True)
+            dialog.show()
+            dialog.raise_()
+            qApp.processEvents()
+            dialog.updateValues()
+        return
+
+    @pyqtSlot()
+    def showBuildManuscriptDialog(self) -> None:
         """Open the build manuscript dialog."""
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
+        if SHARED.hasProject:
+            dialog = GuiManuscript(self)
+            dialog.setModal(False)
+            dialog.show()
+            dialog.raise_()
+            qApp.processEvents()
+            dialog.loadContent()
+        return
 
-        dlgBuild = getGuiItem("GuiManuscript")
-        if dlgBuild is None:
-            dlgBuild = GuiManuscript(self)
-        assert isinstance(dlgBuild, GuiManuscript)
-
-        dlgBuild.setModal(False)
-        dlgBuild.show()
-        dlgBuild.raise_()
-        qApp.processEvents()
-
-        dlgBuild.loadContent()
-
-        return True
-
-    def showLoremIpsumDialog(self) -> bool:
-        """Open the insert lorem ipsum text dialog."""
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
-
-        dlgLipsum = getGuiItem("GuiLipsum")
-        if dlgLipsum is None:
-            dlgLipsum = GuiLipsum(self)
-        assert isinstance(dlgLipsum, GuiLipsum)
-
-        dlgLipsum.setModal(False)
-        dlgLipsum.show()
-        dlgLipsum.raise_()
-        qApp.processEvents()
-
-        return True
-
-    def showProjectWordListDialog(self) -> bool:
+    @pyqtSlot()
+    def showProjectWordListDialog(self) -> None:
         """Open the project word list dialog."""
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
+        if SHARED.hasProject:
+            dialog = GuiWordList(self)
+            dialog.newWordListReady.connect(self._processWordListChanges)
+            dialog.exec_()
+        return
 
-        dlgWords = GuiWordList(self)
-        dlgWords.exec_()
-
-        if dlgWords.result() == QDialog.Accepted:
-            logger.debug("Reloading word list")
-            SHARED.updateSpellCheckLanguage(reload=True)
-            self.docEditor.spellCheckDocument()
-
-        return True
-
-    def showWritingStatsDialog(self) -> bool:
+    @pyqtSlot()
+    def showWritingStatsDialog(self) -> None:
         """Open the session stats dialog."""
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
+        if SHARED.hasProject:
+            dialog = GuiWritingStats(self)
+            dialog.setModal(False)
+            dialog.show()
+            dialog.raise_()
+            qApp.processEvents()
+            dialog.populateGUI()
+        return
 
-        dlgStats = getGuiItem("GuiWritingStats")
-        if dlgStats is None:
-            dlgStats = GuiWritingStats(self)
-        assert isinstance(dlgStats, GuiWritingStats)
-
-        dlgStats.setModal(False)
-        dlgStats.show()
-        dlgStats.raise_()
+    @pyqtSlot()
+    def showAboutNWDialog(self, showNotes: bool = False) -> None:
+        """Show the novelWriter about dialog."""
+        dialog = GuiAbout(self)
+        dialog.setModal(True)
+        dialog.show()
+        dialog.raise_()
         qApp.processEvents()
-        dlgStats.populateGUI()
-
-        return True
-
-    def showAboutNWDialog(self, showNotes: bool = False) -> bool:
-        """Show the about dialog for novelWriter."""
-        dlgAbout = getGuiItem("GuiAbout")
-        if dlgAbout is None:
-            dlgAbout = GuiAbout(self)
-        assert isinstance(dlgAbout, GuiAbout)
-
-        dlgAbout.setModal(True)
-        dlgAbout.show()
-        dlgAbout.raise_()
-        qApp.processEvents()
-        dlgAbout.populateGUI()
-
+        dialog.populateGUI()
         if showNotes:
-            dlgAbout.showReleaseNotes()
+            dialog.showReleaseNotes()
+        return
 
-        return True
-
+    @pyqtSlot()
     def showAboutQtDialog(self) -> None:
-        """Show the about dialog for Qt."""
+        """Show the Qt about dialog."""
         msgBox = QMessageBox(self)
         msgBox.aboutQt(self, "About Qt")
         return
 
+    @pyqtSlot()
     def showUpdatesDialog(self) -> None:
         """Show the check for updates dialog."""
-        dlgUpdate = getGuiItem("GuiUpdates")
-        if dlgUpdate is None:
-            dlgUpdate = GuiUpdates(self)
-        assert isinstance(dlgUpdate, GuiUpdates)
-
-        dlgUpdate.setModal(True)
-        dlgUpdate.show()
-        dlgUpdate.raise_()
+        dialog = GuiUpdates(self)
+        dialog.setModal(True)
+        dialog.show()
+        dialog.raise_()
         qApp.processEvents()
-        dlgUpdate.checkLatest()
-
+        dialog.checkLatest()
         return
 
     @pyqtSlot()
     def showDictionariesDialog(self) -> None:
         """Show the download dictionaries dialog."""
-        dlgDicts = GuiDictionaries(self)
-        dlgDicts.setModal(True)
-        dlgDicts.show()
-        dlgDicts.raise_()
+        dialog = GuiDictionaries(self)
+        dialog.setModal(True)
+        dialog.show()
+        dialog.raise_()
         qApp.processEvents()
-        if not dlgDicts.initDialog():
-            dlgDicts.close()
+        if not dialog.initDialog():
+            dialog.close()
             SHARED.error(self.tr("Could not initialise the dialog."))
-
         return
 
     def reportConfErr(self) -> bool:
@@ -1238,6 +1135,65 @@ class GuiMain(QMainWindow):
     #  Private Slots
     ##
 
+    @pyqtSlot(bool, bool, bool, bool)
+    def _processConfigChanges(self, restart: bool, tree: bool, theme: bool, syntax: bool) -> None:
+        """Refresh GUI based on flags from the Preferences dialog."""
+        logger.debug("Applying new preferences")
+        self.initMain()
+        self.saveDocument()
+
+        if restart:
+            SHARED.info(self.tr(
+                "Some changes will not be applied until novelWriter has been restarted."
+            ))
+
+        if tree:
+            self.projView.populateTree()
+
+        if theme:
+            # We are doing this manually instead of connecting to
+            # qApp.paletteChanged since the processing order matters
+            SHARED.theme.loadTheme()
+            self.docEditor.updateTheme()
+            self.docViewer.updateTheme()
+            self.docViewerPanel.updateTheme()
+            self.sideBar.updateTheme()
+            self.projView.updateTheme()
+            self.novelView.updateTheme()
+            self.outlineView.updateTheme()
+            self.itemDetails.updateTheme()
+            self.mainStatus.updateTheme()
+
+        if syntax:
+            SHARED.theme.loadSyntax()
+            self.docEditor.updateSyntaxColours()
+
+        self.docEditor.initEditor()
+        self.docViewer.initViewer()
+        self.projView.initSettings()
+        self.novelView.initSettings()
+        self.outlineView.initSettings()
+        self._updateStatusWordCount()
+
+        return
+
+    @pyqtSlot()
+    def _processProjectSettingsChanges(self) -> None:
+        """Refresh data dependent on project settings."""
+        logger.debug("Applying new project settings")
+        SHARED.updateSpellCheckLanguage()
+        self.itemDetails.refreshDetails()
+        self._updateWindowTitle(SHARED.project.data.name)
+        return
+
+    @pyqtSlot()
+    def _processWordListChanges(self) -> None:
+        """Reload project word list."""
+        logger.debug("Reloading word list")
+        SHARED.updateSpellCheckLanguage(reload=True)
+        self.docEditor.spellCheckDocument()
+        return
+
     @pyqtSlot(str, nwDocMode)
     def _followTag(self, tag: str, mode: nwDocMode) -> None:
         """Follow a tag after user interaction with a link."""
@@ -1321,6 +1277,8 @@ class GuiMain(QMainWindow):
         self.mainStatus.setUserIdle(editIdle or userIdle)
         SHARED.updateIdleTime(currTime, editIdle or userIdle)
         self.mainStatus.updateTime(idleTime=SHARED.projectIdleTime)
+        if CONFIG.memInfo and int(currTime) % 5 == 0:  # pragma: no cover
+            self.mainStatus.memInfo()
         return
 
     @pyqtSlot()

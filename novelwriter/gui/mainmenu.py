@@ -154,12 +154,12 @@ class GuiMainMenu(QMenuBar):
         # Project > Project Settings
         self.aProjectSettings = self.projMenu.addAction(self.tr("Project Settings"))
         self.aProjectSettings.setShortcut("Ctrl+Shift+,")
-        self.aProjectSettings.triggered.connect(lambda: self.mainGui.showProjectSettingsDialog())
+        self.aProjectSettings.triggered.connect(self.mainGui.showProjectSettingsDialog)
 
         # Project > Project Details
         self.aProjectDetails = self.projMenu.addAction(self.tr("Project Details"))
         self.aProjectDetails.setShortcut("Shift+F6")
-        self.aProjectDetails.triggered.connect(lambda: self.mainGui.showProjectDetailsDialog())
+        self.aProjectDetails.triggered.connect(self.mainGui.showProjectDetailsDialog)
 
         # Project > Separator
         self.projMenu.addSeparator()
@@ -593,8 +593,10 @@ class GuiMainMenu(QMenuBar):
         )
 
         # Insert > Placeholder Text
-        self.aLipsumText = self.mInsBreaks.addAction(self.tr("Placeholder Text"))
-        self.aLipsumText.triggered.connect(lambda: self.mainGui.showLoremIpsumDialog())
+        self.aLipsumText = self.insMenu.addAction(self.tr("Placeholder Text"))
+        self.aLipsumText.triggered.connect(
+            lambda: self.requestDocInsert.emit(nwDocInsert.LIPSUM)
+        )
 
         return
 
@@ -872,7 +874,7 @@ class GuiMainMenu(QMenuBar):
 
         # Tools > Project Word List
         self.aEditWordList = self.toolsMenu.addAction(self.tr("Project Word List"))
-        self.aEditWordList.triggered.connect(lambda: self.mainGui.showProjectWordListDialog())
+        self.aEditWordList.triggered.connect(self.mainGui.showProjectWordListDialog)
 
         # Tools > Add Dictionaries
         if CONFIG.osWindows or CONFIG.isDebug:
@@ -902,13 +904,13 @@ class GuiMainMenu(QMenuBar):
         # Tools > Writing Statistics
         self.aWritingStats = self.toolsMenu.addAction(self.tr("Writing Statistics"))
         self.aWritingStats.setShortcut("F6")
-        self.aWritingStats.triggered.connect(lambda: self.mainGui.showWritingStatsDialog())
+        self.aWritingStats.triggered.connect(self.mainGui.showWritingStatsDialog)
 
         # Tools > Preferences
         self.aPreferences = self.toolsMenu.addAction(self.tr("Preferences"))
         self.aPreferences.setShortcut("Ctrl+,")
         self.aPreferences.setMenuRole(QAction.PreferencesRole)
-        self.aPreferences.triggered.connect(lambda: self.mainGui.showPreferencesDialog())
+        self.aPreferences.triggered.connect(self.mainGui.showPreferencesDialog)
 
         return
 
@@ -920,12 +922,12 @@ class GuiMainMenu(QMenuBar):
         # Help > About
         self.aAboutNW = self.helpMenu.addAction(self.tr("About novelWriter"))
         self.aAboutNW.setMenuRole(QAction.AboutRole)
-        self.aAboutNW.triggered.connect(lambda: self.mainGui.showAboutNWDialog())
+        self.aAboutNW.triggered.connect(self.mainGui.showAboutNWDialog)
 
         # Help > About Qt5
         self.aAboutQt = self.helpMenu.addAction(self.tr("About Qt5"))
         self.aAboutQt.setMenuRole(QAction.AboutQtRole)
-        self.aAboutQt.triggered.connect(lambda: self.mainGui.showAboutQtDialog())
+        self.aAboutQt.triggered.connect(self.mainGui.showAboutQtDialog)
 
         # Help > Separator
         self.helpMenu.addSeparator()
@@ -961,7 +963,7 @@ class GuiMainMenu(QMenuBar):
 
         # Document > Check for Updates
         self.aUpdates = self.helpMenu.addAction(self.tr("Check for New Release"))
-        self.aUpdates.triggered.connect(lambda: self.mainGui.showUpdatesDialog())
+        self.aUpdates.triggered.connect(self.mainGui.showUpdatesDialog)
 
         return
 

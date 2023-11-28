@@ -606,6 +606,7 @@ class GuiOutlineTree(QTreeWidget):
                 logHidden, orgWidth if logHidden and logWidth == 0 else logWidth
             ]
 
+        logger.debug("Saving State: GuiOutline")
         pOptions = SHARED.project.options
         pOptions.setValue("GuiOutline", "columnState", colState)
         pOptions.saveSettings()

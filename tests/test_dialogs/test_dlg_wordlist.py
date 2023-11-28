@@ -68,11 +68,11 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, projPath):
     wList._loadWordList()
 
     # Check that the content was loaded
-    assert wList.listBox.item(0).text() == "word_a"
-    assert wList.listBox.item(1).text() == "word_b"
-    assert wList.listBox.item(2).text() == "word_c"
-    assert wList.listBox.item(3).text() == "word_f"
-    assert wList.listBox.item(4).text() == "word_g"
+    assert wList.listBox.item(0).text() == "word_a"  # type: ignore
+    assert wList.listBox.item(1).text() == "word_b"  # type: ignore
+    assert wList.listBox.item(2).text() == "word_c"  # type: ignore
+    assert wList.listBox.item(3).text() == "word_f"  # type: ignore
+    assert wList.listBox.item(4).text() == "word_g"  # type: ignore
     assert wList.listBox.count() == 5
 
     # Add a blank word, which is ignored
@@ -91,27 +91,27 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, projPath):
     assert wList.listBox.count() == 6
 
     # Check that the content now
-    assert wList.listBox.item(0).text() == "word_a"
-    assert wList.listBox.item(1).text() == "word_b"
-    assert wList.listBox.item(2).text() == "word_c"
-    assert wList.listBox.item(3).text() == "word_d"
-    assert wList.listBox.item(4).text() == "word_f"
-    assert wList.listBox.item(5).text() == "word_g"
+    assert wList.listBox.item(0).text() == "word_a"  # type: ignore
+    assert wList.listBox.item(1).text() == "word_b"  # type: ignore
+    assert wList.listBox.item(2).text() == "word_c"  # type: ignore
+    assert wList.listBox.item(3).text() == "word_d"  # type: ignore
+    assert wList.listBox.item(4).text() == "word_f"  # type: ignore
+    assert wList.listBox.item(5).text() == "word_g"  # type: ignore
 
     # Delete a word
     wList.newEntry.setText("delete_me")
     wList._doAdd()
-    assert wList.listBox.item(0).text() == "delete_me"
+    assert wList.listBox.item(0).text() == "delete_me"  # type: ignore
 
     delItem = wList.listBox.findItems("delete_me", Qt.MatchExactly)[0]
     assert delItem.text() == "delete_me"
     delItem.setSelected(True)
     wList._doDelete()
     assert wList.listBox.findItems("delete_me", Qt.MatchExactly) == []
-    assert wList.listBox.item(0).text() == "word_a"
+    assert wList.listBox.item(0).text() == "word_a"  # type: ignore
 
     # Save files
-    assert wList._doSave()
+    wList._doSave()
     userDict.load()
     assert len(list(userDict)) == 6
     assert "word_a" in userDict
@@ -122,6 +122,5 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, projPath):
     assert "word_g" in userDict
 
     # qtbot.stop()
-    wList._doClose()
 
 # END Test testDlgWordList_Dialog

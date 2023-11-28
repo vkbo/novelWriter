@@ -145,6 +145,7 @@ class GuiNovelView(QWidget):
         """Run closing project tasks."""
         lastColType = self.novelTree.lastColType
         lastColSize = self.novelTree.lastColSize
+        logger.debug("Saving State: GuiNovelView")
         pOptions = SHARED.project.options
         pOptions.setValue("GuiNovelView", "lastCol", lastColType)
         pOptions.setValue("GuiNovelView", "lastColSize", lastColSize)

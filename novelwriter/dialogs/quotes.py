@@ -25,11 +25,11 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtGui import QFontMetrics
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QCloseEvent, QFontMetrics
+from PyQt5.QtCore import QSize, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    QLabel, QVBoxLayout, QHBoxLayout, QDialog, QDialogButtonBox,
-    QListWidget, QListWidgetItem, QFrame
+    QDialog, QDialogButtonBox, QFrame, QHBoxLayout, QLabel, QListWidget,
+    QListWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG
@@ -44,8 +44,11 @@ class GuiQuoteSelect(QDialog):
 
     D_KEY = Qt.ItemDataRole.UserRole
 
-    def __init__(self, parent=None, currentQuote='"'):
+    def __init__(self, parent: QWidget, currentQuote: str = '"') -> None:
         super().__init__(parent=parent)
+
+        logger.debug("Create: GuiQuoteSelect")
+        self.setObjectName("GuiQuoteSelect")
 
         self.outerBox = QVBoxLayout()
         self.innerBox = QHBoxLayout()
@@ -87,8 +90,8 @@ class GuiQuoteSelect(QDialog):
 
         # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        self.buttonBox.accepted.connect(self._doAccept)
-        self.buttonBox.rejected.connect(self._doReject)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
 
         # Assemble
         self.labelBox.addWidget(self.previewLabel, 0, Qt.AlignTop)
@@ -102,32 +105,36 @@ class GuiQuoteSelect(QDialog):
 
         self.setLayout(self.outerBox)
 
+        logger.debug("Ready: GuiQuoteSelect")
+
+        return
+
+    def __del__(self) -> None:  # pragma: no cover
+        logger.debug("Delete: GuiQuoteSelect")
         return
 
     ##
-    #  Slots
+    #  Events
     ##
 
-    def _selectedSymbol(self):
-        """Update the preview label and the selected quote style.
-        """
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Capture the close event and perform cleanup."""
+        event.accept()
+        self.deleteLater()
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot()
+    def _selectedSymbol(self) -> None:
+        """Update the preview label and the selected quote style."""
         selItems = self.listBox.selectedItems()
         if selItems:
             theSymbol = selItems[0].data(self.D_KEY)
             self.previewLabel.setText(theSymbol)
             self.selectedQuote = theSymbol
-        return
-
-    def _doAccept(self):
-        """Ok button clicked.
-        """
-        self.accept()
-        return
-
-    def _doReject(self):
-        """Cancel button clicked.
-        """
-        self.reject()
         return
 
 # END Class GuiQuoteSelect

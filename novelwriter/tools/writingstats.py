@@ -29,7 +29,7 @@ import logging
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from PyQt5.QtGui import QPixmap, QCursor
+from PyQt5.QtGui import QCloseEvent, QPixmap, QCursor
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     qApp, QDialog, QTreeWidget, QTreeWidgetItem, QDialogButtonBox, QGridLayout,
@@ -307,9 +307,20 @@ class GuiWritingStats(QDialog):
         return
 
     ##
-    #  Slots
+    #  Events
     ##
 
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Capture the user closing the window."""
+        event.accept()
+        self.deleteLater()
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot()
     def _doClose(self) -> None:
         """Save the state of the window, clear cache, end close."""
         self.logData = []
@@ -330,6 +341,7 @@ class GuiWritingStats(QDialog):
         showIdleTime = self.showIdleTime.isChecked()
         histMax      = self.histMax.value()
 
+        logger.debug("Saving State: GuiWritingStats")
         pOptions = SHARED.project.options
         pOptions.setValue("GuiWritingStats", "winWidth",     winWidth)
         pOptions.setValue("GuiWritingStats", "winHeight",    winHeight)
@@ -347,6 +359,7 @@ class GuiWritingStats(QDialog):
         pOptions.setValue("GuiWritingStats", "showIdleTime", showIdleTime)
         pOptions.setValue("GuiWritingStats", "histMax",      histMax)
         pOptions.saveSettings()
+
         self.close()
 
         return

@@ -26,10 +26,11 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QCloseEvent
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QComboBox, QListWidget, QAbstractItemView,
-    QListWidgetItem, QDialogButtonBox, QLabel, QGridLayout
+    QAbstractItemView, QComboBox, QDialog, QDialogButtonBox, QGridLayout,
+    QLabel, QListWidget, QListWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -45,7 +46,7 @@ class GuiDocSplit(QDialog):
     LEVEL_ROLE = Qt.ItemDataRole.UserRole + 1
     LABEL_ROLE = Qt.ItemDataRole.UserRole + 2
 
-    def __init__(self, parent, sHandle):
+    def __init__(self, parent: QWidget, sHandle: str) -> None:
         super().__init__(parent=parent)
 
         logger.debug("Create: GuiDocSplit")
@@ -138,11 +139,11 @@ class GuiDocSplit(QDialog):
 
         return
 
-    def __del__(self):  # pragma: no cover
+    def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiDocSplit")
         return
 
-    def getData(self):
+    def getData(self) -> tuple[dict, list]:
         """Return the user's choices. Also save the users options for
         the next time the dialog is used.
         """
@@ -167,6 +168,7 @@ class GuiDocSplit(QDialog):
         self._data["docHierarchy"] = docHierarchy
         self._data["moveToTrash"] = moveToTrash
 
+        logger.debug("Saving State: GuiDocSplit")
         pOptions = SHARED.project.options
         pOptions.setValue("GuiDocSplit", "spLevel", spLevel)
         pOptions.setValue("GuiDocSplit", "intoFolder", intoFolder)
@@ -175,12 +177,22 @@ class GuiDocSplit(QDialog):
         return self._data, self._text
 
     ##
-    #  Slots
+    #  Events
     ##
 
-    def _reloadList(self):
-        """Reload the content of the list box.
-        """
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Capture the close event and perform cleanup."""
+        event.accept()
+        self.deleteLater()
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot()
+    def _reloadList(self) -> None:
+        """Reload the content of the list box."""
         sHandle = self._data.get("sHandle", None)
         self._loadContent(sHandle)
         return
@@ -189,9 +201,8 @@ class GuiDocSplit(QDialog):
     #  Internal Functions
     ##
 
-    def _loadContent(self, sHandle):
-        """Load content from a given source item.
-        """
+    def _loadContent(self, sHandle: str) -> None:
+        """Load content from a given source item."""
         self._data = {}
         self._data["sHandle"] = sHandle
 

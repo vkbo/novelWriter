@@ -551,7 +551,7 @@ class NWIndex:
         return 0
 
     def getTableOfContents(
-        self, rHandle: str, maxDepth: int, skipExcl: bool = True
+        self, rHandle: str | None, maxDepth: int, skipExcl: bool = True
     ) -> list[tuple[str, int, str, int]]:
         """Generate a table of contents up to a maximum depth."""
         tOrder = []

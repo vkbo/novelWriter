@@ -76,6 +76,7 @@ def main(sysArgs: list | None = None):
         "config=",
         "data=",
         "testmode",
+        "meminfo"
     ]
 
     helpMsg = (
@@ -92,6 +93,7 @@ def main(sysArgs: list | None = None):
         " -v, --version  Print program version and exit.\n"
         "     --info     Print additional runtime information.\n"
         "     --debug    Print debug output. Includes --info.\n"
+        "     --meminfo  Show memory usage information in the status bar.\n"
         "     --style=   Sets Qt5 style flag. Defaults to 'Fusion'.\n"
         "     --config=  Alternative config file.\n"
         "     --data=    Alternative user data path.\n"
@@ -127,6 +129,7 @@ def main(sysArgs: list | None = None):
         elif inOpt == "--info":
             logLevel = logging.INFO
         elif inOpt == "--debug":
+            CONFIG.isDebug = True
             logLevel = logging.DEBUG
             logFormat  = "[{asctime:}]  {filename:>17}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt == "--style":
@@ -137,6 +140,8 @@ def main(sysArgs: list | None = None):
             dataPath = inArg
         elif inOpt == "--testmode":
             testMode = True
+        elif inOpt == "--meminfo":
+            CONFIG.memInfo = True
 
     # Setup Logging
     pkgLogger = logging.getLogger(__package__)

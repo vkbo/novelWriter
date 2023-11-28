@@ -27,6 +27,7 @@ import logging
 
 from time import time
 from typing import TYPE_CHECKING, Literal
+from datetime import datetime
 
 from PyQt5.QtCore import pyqtSlot, QLocale
 from PyQt5.QtGui import QColor
@@ -50,8 +51,9 @@ class GuiMainStatus(QStatusBar):
 
         logger.debug("Create: GuiMainStatus")
 
-        self._refTime  = -1.0
+        self._refTime = -1.0
         self._userIdle = False
+        self._debugInfo = False
 
         colNone = QColor(*SHARED.theme.statNone)
         colSaved = QColor(*SHARED.theme.statSaved)
@@ -221,6 +223,43 @@ class GuiMainStatus(QStatusBar):
     def updateDocumentStatus(self, status: bool) -> None:
         """Update the document status."""
         self.setDocumentStatus(StatusLED.S_BAD if status else StatusLED.S_GOOD)
+        return
+
+    ##
+    #  Debug
+    ##
+
+    def memInfo(self) -> None:  # pragma: no cover
+        """Display memory info on the status bar. This is used to
+        investigate memory usage and Qt widgets that get left in memory.
+        Enabled by the --meminfo command line flag.
+        """
+        import tracemalloc
+        from collections import Counter
+
+        widgets = qApp.allWidgets()
+        if not self._debugInfo:
+            if tracemalloc.is_tracing():
+                self._traceMallocRef = "Total"
+            else:
+                self._traceMallocRef = "Relative"
+                tracemalloc.start()
+            self._debugInfo = True
+            self._wCounts = Counter([type(x).__name__ for x in widgets])
+
+        if hasattr(self, "_wCounts"):
+            diff = Counter([type(x).__name__ for x in widgets]) - self._wCounts
+            for name, count in diff.items():
+                logger.debug("Widget '%s': +%d", name, count)
+
+        mem = tracemalloc.get_traced_memory()
+        stamp = datetime.now().strftime("%H:%M:%S")
+        self.showMessage((
+            f"Debug [{stamp}]"
+            f" \u2013 Widgets: {len(qApp.allWidgets())}"
+            f" \u2013 {self._traceMallocRef} Memory: {mem[0]:n}"
+            f" \u2013 Peak: {mem[1]:n}"
+        ), 6000)
         return
 
 # END Class GuiMainStatus

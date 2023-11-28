@@ -123,6 +123,7 @@ class GuiDocViewerPanel(QWidget):
         widths = {}
         for key, tab in self.kwTabs.items():
             widths[key] = tab.getColumnWidths()
+        logger.debug("Saving State: GuiDocViewerPanel")
         SHARED.project.options.setValue("GuiDocViewerPanel", "colWidths", widths)
         return
 

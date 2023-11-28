@@ -28,7 +28,7 @@ import novelwriter
 
 from datetime import datetime
 
-from PyQt5.QtGui import QCursor
+from PyQt5.QtGui import QCloseEvent, QCursor
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     qApp, QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QTabWidget,
@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 
 class GuiAbout(QDialog):
 
-    def __init__(self, parent: QWidget):
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
         logger.debug("Create: GuiAbout")
@@ -101,7 +101,7 @@ class GuiAbout(QDialog):
 
         # OK Button
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
-        self.buttonBox.accepted.connect(self._doClose)
+        self.buttonBox.accepted.connect(self.close)
 
         self.outerBox.addLayout(self.innerBox)
         self.outerBox.addWidget(self.buttonBox)
@@ -111,13 +111,12 @@ class GuiAbout(QDialog):
 
         return
 
-    def __del__(self):  # pragma: no cover
+    def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiAbout")
         return
 
-    def populateGUI(self):
-        """Populate tabs with text.
-        """
+    def populateGUI(self) -> None:
+        """Populate tabs with text."""
         qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
         self._setStyleSheet()
         self._fillAboutPage()
@@ -127,19 +126,27 @@ class GuiAbout(QDialog):
         qApp.restoreOverrideCursor()
         return
 
-    def showReleaseNotes(self):
-        """Show the release notes.
-        """
+    def showReleaseNotes(self) -> None:
+        """Show the release notes."""
         self.tabBox.setCurrentWidget(self.pageNotes)
+        return
+
+    ##
+    #  Events
+    ##
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Capture the close event and perform cleanup."""
+        event.accept()
+        self.deleteLater()
         return
 
     ##
     #  Internal Functions
     ##
 
-    def _fillAboutPage(self):
-        """Generate the content for the About page.
-        """
+    def _fillAboutPage(self) -> None:
+        """Generate the content for the About page."""
         aboutMsg = (
             "<h2>{title1}</h2>"
             "<p>{copy}</p>"
@@ -181,9 +188,8 @@ class GuiAbout(QDialog):
 
         return
 
-    def _fillNotesPage(self):
-        """Load the content for the Release Notes page.
-        """
+    def _fillNotesPage(self) -> None:
+        """Load the content for the Release Notes page."""
         docPath = CONFIG.assetPath("text") / "release_notes.htm"
         docText = readTextFile(docPath)
         if docText:
@@ -192,9 +198,8 @@ class GuiAbout(QDialog):
             self.pageNotes.setHtml("Error loading release notes text ...")
         return
 
-    def _fillCreditsPage(self):
-        """Load the content for the Credits page.
-        """
+    def _fillCreditsPage(self) -> None:
+        """Load the content for the Credits page."""
         docPath = CONFIG.assetPath("text") / "credits_en.htm"
         docText = readTextFile(docPath)
         if docText:
@@ -203,9 +208,8 @@ class GuiAbout(QDialog):
             self.pageCredits.setHtml("Error loading credits text ...")
         return
 
-    def _fillLicensePage(self):
-        """Load the content for the Licence page.
-        """
+    def _fillLicensePage(self) -> None:
+        """Load the content for the Licence page."""
         docPath = CONFIG.assetPath("text") / "gplv3_en.htm"
         docText = readTextFile(docPath)
         if docText:
@@ -214,9 +218,8 @@ class GuiAbout(QDialog):
             self.pageLicense.setHtml("Error loading licence text ...")
         return
 
-    def _setStyleSheet(self):
-        """Set stylesheet for all browser tabs
-        """
+    def _setStyleSheet(self) -> None:
+        """Set stylesheet for all browser tabs."""
         styleSheet = (
             "h1, h2, h3, h4 {{"
             "  color: rgb({hColR},{hColG},{hColB});"
@@ -240,10 +243,6 @@ class GuiAbout(QDialog):
         self.pageCredits.document().setDefaultStyleSheet(styleSheet)
         self.pageLicense.document().setDefaultStyleSheet(styleSheet)
 
-        return
-
-    def _doClose(self):
-        self.close()
         return
 
 # END Class GuiAbout
