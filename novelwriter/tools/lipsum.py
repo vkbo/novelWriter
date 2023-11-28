@@ -97,9 +97,9 @@ class GuiLipsum(QDialog):
         self.btnClose = self.buttonBox.addButton(QDialogButtonBox.Close)
         self.btnClose.setAutoDefault(False)
 
-        self.btnSave = self.buttonBox.addButton(self.tr("Insert"), QDialogButtonBox.ActionRole)
-        self.btnSave.clicked.connect(self._doInsert)
-        self.btnSave.setAutoDefault(False)
+        self.btnInsert = self.buttonBox.addButton(self.tr("Insert"), QDialogButtonBox.ActionRole)
+        self.btnInsert.clicked.connect(self._doInsert)
+        self.btnInsert.setAutoDefault(False)
 
         self.rejected.connect(self.close)
 
