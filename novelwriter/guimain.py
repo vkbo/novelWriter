@@ -56,7 +56,6 @@ from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projdetails import GuiProjectDetails
 from novelwriter.dialogs.projsettings import GuiProjectSettings
-from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.projwizard import GuiProjectWizard
 from novelwriter.tools.dictionaries import GuiDictionaries
@@ -906,17 +905,6 @@ class GuiMain(QMainWindow):
             dialog.raise_()
             qApp.processEvents()
             dialog.loadContent()
-        return
-
-    @pyqtSlot()
-    def showLoremIpsumDialog(self) -> None:
-        """Open the insert lorem ipsum text dialog."""
-        if SHARED.hasProject:
-            dialog = GuiLipsum(self)
-            dialog.setModal(False)
-            dialog.show()
-            dialog.raise_()
-            qApp.processEvents()
         return
 
     @pyqtSlot()

@@ -26,10 +26,10 @@ from __future__ import annotations
 import random
 import logging
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    QDialog, QGridLayout, QHBoxLayout, QVBoxLayout, QLabel, QDialogButtonBox,
-    QSpinBox
+    QDialog, QDialogButtonBox, QGridLayout, QHBoxLayout, QLabel, QSpinBox,
+    QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -41,15 +41,15 @@ logger = logging.getLogger(__name__)
 
 class GuiLipsum(QDialog):
 
-    def __init__(self, mainGui):
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiLipsum")
         self.setObjectName("GuiLipsum")
         if CONFIG.osDarwin:
             self.setWindowFlag(Qt.WindowType.Tool)
 
-        self.mainGui = mainGui
+        self._lipsumText = ""
 
         self.setWindowTitle(self.tr("Insert Placeholder Text"))
 
@@ -92,7 +92,7 @@ class GuiLipsum(QDialog):
 
         # Buttons
         self.buttonBox = QDialogButtonBox()
-        self.buttonBox.rejected.connect(self._doClose)
+        self.buttonBox.rejected.connect(self.close)
 
         self.btnClose = self.buttonBox.addButton(QDialogButtonBox.Close)
         self.btnClose.setAutoDefault(False)
@@ -100,6 +100,8 @@ class GuiLipsum(QDialog):
         self.btnSave = self.buttonBox.addButton(self.tr("Insert"), QDialogButtonBox.ActionRole)
         self.btnSave.clicked.connect(self._doInsert)
         self.btnSave.setAutoDefault(False)
+
+        self.rejected.connect(self.close)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -112,33 +114,37 @@ class GuiLipsum(QDialog):
 
         return
 
-    def __del__(self):  # pragma: no cover
+    def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiLipsum")
         return
 
+    @property
+    def lipsumText(self) -> str:
+        """Return the generated text."""
+        return self._lipsumText
+
+    @classmethod
+    def getLipsum(cls, parent: QWidget) -> str:
+        """Pop the dialog and return the lipsum text."""
+        cls = GuiLipsum(parent)
+        cls.exec_()
+        text = cls.lipsumText
+        cls.deleteLater()
+        return text
+
     ##
-    #  Slots
+    #  Private Slots
     ##
 
-    def _doInsert(self):
-        """Load the text and insert it in the open document.
-        """
+    @pyqtSlot()
+    def _doInsert(self) -> None:
+        """Generate the text."""
         lipsumFile = CONFIG.assetPath("text") / "lipsum.txt"
         lipsumText = readTextFile(lipsumFile).splitlines()
-
         if self.randSwitch.isChecked():
             random.shuffle(lipsumText)
-
         pCount = self.paraCount.value()
-        inText = "\n\n".join(lipsumText[0:pCount]) + "\n\n"
-
-        self.mainGui.docEditor.insertText(inText)
-
-        return
-
-    def _doClose(self):
-        """Close the dialog window without doing anything.
-        """
+        self._lipsumText = "\n\n".join(lipsumText[0:pCount]) + "\n\n"
         self.close()
         return
 

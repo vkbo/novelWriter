@@ -593,8 +593,10 @@ class GuiMainMenu(QMenuBar):
         )
 
         # Insert > Placeholder Text
-        self.aLipsumText = self.mInsBreaks.addAction(self.tr("Placeholder Text"))
-        self.aLipsumText.triggered.connect(self.mainGui.showLoremIpsumDialog)
+        self.aLipsumText = self.insMenu.addAction(self.tr("Placeholder Text"))
+        self.aLipsumText.triggered.connect(
+            lambda: self.requestDocInsert.emit(nwDocInsert.LIPSUM)
+        )
 
         return
 

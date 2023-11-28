@@ -86,6 +86,7 @@ class GuiEditLabel(QDialog):
 
     @classmethod
     def getLabel(cls, parent: QWidget, text: str) -> tuple[str, bool]:
+        """Pop the dialog and return the result."""
         cls = GuiEditLabel(parent, text=text)
         cls.exec_()
         label = cls.itemLabel
