@@ -26,7 +26,7 @@ from __future__ import annotations
 import math
 import logging
 
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QCloseEvent, QFont
 from PyQt5.QtCore import Qt, QSize, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialogButtonBox, QGridLayout, QHBoxLayout, QLabel,
@@ -90,6 +90,16 @@ class GuiProjectDetails(NPagedDialog):
         return
 
     ##
+    #  Events
+    ##
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Capture the close event and perform cleanup."""
+        event.accept()
+        self.deleteLater()
+        return
+
+    ##
     #  Private Slots
     ##
 
@@ -98,7 +108,6 @@ class GuiProjectDetails(NPagedDialog):
         """Save settings and close the dialog."""
         self._saveGuiSettings()
         self.close()
-        self.deleteLater()
         return
 
     ##
@@ -121,6 +130,7 @@ class GuiProjectDetails(NPagedDialog):
         countFrom    = self.tabContents.poValue.value()
         clearDouble  = self.tabContents.dblValue.isChecked()
 
+        logger.debug("Saving State: GuiProjectDetails")
         pOptions = SHARED.project.options
         pOptions.setValue("GuiProjectDetails", "winWidth",     winWidth)
         pOptions.setValue("GuiProjectDetails", "winHeight",    winHeight)

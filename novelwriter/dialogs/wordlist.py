@@ -27,7 +27,8 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QDialogButtonBox, QHBoxLayout, QLabel,
     QLineEdit, QListWidget, QListWidgetItem, QPushButton, QVBoxLayout
@@ -87,7 +88,7 @@ class GuiWordList(QDialog):
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Close)
         self.buttonBox.accepted.connect(self._doSave)
-        self.buttonBox.rejected.connect(self._doClose)
+        self.buttonBox.rejected.connect(self.close)
 
         # Assemble
         # ========
@@ -113,9 +114,21 @@ class GuiWordList(QDialog):
         return
 
     ##
-    #  Slots
+    #  Events
     ##
 
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Capture the close event and perform cleanup."""
+        self._saveGuiSettings()
+        event.accept()
+        self.deleteLater()
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot()
     def _doAdd(self) -> None:
         """Add a new word to the word list."""
         word = self.newEntry.text().strip()
@@ -134,6 +147,7 @@ class GuiWordList(QDialog):
 
         return
 
+    @pyqtSlot()
     def _doDelete(self) -> None:
         """Delete the selected item."""
         selItem = self.listBox.selectedItems()
@@ -141,9 +155,9 @@ class GuiWordList(QDialog):
             self.listBox.takeItem(self.listBox.row(selItem[0]))
         return
 
+    @pyqtSlot()
     def _doSave(self) -> None:
         """Save the new word list and close."""
-        self._saveGuiSettings()
         userDict = UserDictionary(SHARED.project)
         for i in range(self.listBox.count()):
             item = self.listBox.item(i)
@@ -152,13 +166,7 @@ class GuiWordList(QDialog):
                 if word:
                     userDict.add(word)
         userDict.save()
-        self.accept()
-        return
-
-    def _doClose(self) -> None:
-        """Close without saving the word list."""
-        self._saveGuiSettings()
-        self.reject()
+        self.close()
         return
 
     ##
@@ -180,6 +188,7 @@ class GuiWordList(QDialog):
         winWidth  = CONFIG.rpxInt(self.width())
         winHeight = CONFIG.rpxInt(self.height())
 
+        logger.debug("Saving State: GuiWordList")
         pOptions = SHARED.project.options
         pOptions.setValue("GuiWordList", "winWidth",  winWidth)
         pOptions.setValue("GuiWordList", "winHeight", winHeight)

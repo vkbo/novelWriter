@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtGui import QFontMetrics
+from PyQt5.QtGui import QCloseEvent, QFontMetrics
 from PyQt5.QtCore import QSize, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog, QDialogButtonBox, QFrame, QHBoxLayout, QLabel, QListWidget,
@@ -90,8 +90,8 @@ class GuiQuoteSelect(QDialog):
 
         # Buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        self.buttonBox.accepted.connect(self._doAccept)
-        self.buttonBox.rejected.connect(self._doReject)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
 
         # Assemble
         self.labelBox.addWidget(self.previewLabel, 0, Qt.AlignTop)
@@ -114,6 +114,16 @@ class GuiQuoteSelect(QDialog):
         return
 
     ##
+    #  Events
+    ##
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Capture the close event and perform cleanup."""
+        event.accept()
+        self.deleteLater()
+        return
+
+    ##
     #  Private Slots
     ##
 
@@ -125,18 +135,6 @@ class GuiQuoteSelect(QDialog):
             theSymbol = selItems[0].data(self.D_KEY)
             self.previewLabel.setText(theSymbol)
             self.selectedQuote = theSymbol
-        return
-
-    @pyqtSlot()
-    def _doAccept(self) -> None:
-        """Handle Ok button clicked."""
-        self.accept()
-        return
-
-    @pyqtSlot()
-    def _doReject(self) -> None:
-        """Handle Cancel button clicked."""
-        self.reject()
         return
 
 # END Class GuiQuoteSelect

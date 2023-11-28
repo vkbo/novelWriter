@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import logging
 
+from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QComboBox, QDialog, QDialogButtonBox, QGridLayout,
@@ -167,12 +168,23 @@ class GuiDocSplit(QDialog):
         self._data["docHierarchy"] = docHierarchy
         self._data["moveToTrash"] = moveToTrash
 
+        logger.debug("Saving State: GuiDocSplit")
         pOptions = SHARED.project.options
         pOptions.setValue("GuiDocSplit", "spLevel", spLevel)
         pOptions.setValue("GuiDocSplit", "intoFolder", intoFolder)
         pOptions.setValue("GuiDocSplit", "docHierarchy", docHierarchy)
 
         return self._data, self._text
+
+    ##
+    #  Events
+    ##
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Capture the close event and perform cleanup."""
+        event.accept()
+        self.deleteLater()
+        return
 
     ##
     #  Private Slots

@@ -28,8 +28,8 @@ import novelwriter
 
 from datetime import datetime
 
-from PyQt5.QtGui import QCursor
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtGui import QCloseEvent, QCursor
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     qApp, QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QTabWidget,
     QTextBrowser, QVBoxLayout, QWidget
@@ -101,7 +101,7 @@ class GuiAbout(QDialog):
 
         # OK Button
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
-        self.buttonBox.accepted.connect(self._doClose)
+        self.buttonBox.accepted.connect(self.close)
 
         self.outerBox.addLayout(self.innerBox)
         self.outerBox.addWidget(self.buttonBox)
@@ -132,13 +132,12 @@ class GuiAbout(QDialog):
         return
 
     ##
-    #  Private Slots
+    #  Events
     ##
 
-    @pyqtSlot()
-    def _doClose(self) -> None:
-        """Close the dialog"""
-        self.close()
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Capture the close event and perform cleanup."""
+        event.accept()
         self.deleteLater()
         return
 

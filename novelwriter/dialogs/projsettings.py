@@ -173,6 +173,7 @@ class GuiProjectSettings(NPagedDialog):
         statusColW  = CONFIG.rpxInt(self.tabStatus.listBox.columnWidth(0))
         importColW  = CONFIG.rpxInt(self.tabImport.listBox.columnWidth(0))
 
+        logger.debug("Saving State: GuiProjectSettings")
         pOptions = SHARED.project.options
         pOptions.setValue("GuiProjectSettings", "winWidth",    winWidth)
         pOptions.setValue("GuiProjectSettings", "winHeight",   winHeight)

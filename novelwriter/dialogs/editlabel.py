@@ -88,6 +88,9 @@ class GuiEditLabel(QDialog):
     def getLabel(cls, parent: QWidget, text: str) -> tuple[str, bool]:
         cls = GuiEditLabel(parent, text=text)
         cls.exec_()
-        return cls.itemLabel, cls.result() == QDialog.Accepted
+        label = cls.itemLabel
+        accepted = cls.result() == QDialog.Accepted
+        cls.deleteLater()
+        return label, accepted
 
 # END Class GuiEditLabel

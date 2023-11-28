@@ -26,7 +26,8 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QCloseEvent
+from PyQt5.QtCore import Qt, QSize, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QDialogButtonBox, QGridLayout, QLabel,
     QListWidget, QListWidgetItem, QVBoxLayout, QWidget
@@ -126,9 +127,20 @@ class GuiDocMerge(QDialog):
         return self._data
 
     ##
+    #  Events
+    ##
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Capture the close event and perform cleanup."""
+        event.accept()
+        self.deleteLater()
+        return
+
+    ##
     #  Private Slots
     ##
 
+    @pyqtSlot()
     def _resetList(self) -> None:
         """Reset the content of the list box to its original state."""
         logger.debug("Resetting list box content")

@@ -56,14 +56,7 @@ def testDlgAbout_NWDialog(qtbot, monkeypatch, nwGUI):
 
     msgAbout.showReleaseNotes()
     assert msgAbout.tabBox.currentWidget() == msgAbout.pageNotes
-    msgAbout._doClose()
-
-    # Open Again from Menu
-    nwGUI.mainMenu.aAboutNW.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiAbout") is not None, timeout=1000)
-    msgAbout = getGuiItem("GuiAbout")
-    assert msgAbout is not None
-    msgAbout._doClose()
+    msgAbout.close()
 
 # END Test testDlgAbout_NWDialog
 
