@@ -27,12 +27,12 @@ from pathlib import Path
 from tools import C, buildTestProject
 
 from PyQt5.QtGui import QFocusEvent
-from PyQt5.QtCore import Qt, QEvent
+from PyQt5.QtCore import QPoint, Qt, QEvent
 from PyQt5.QtWidgets import QInputDialog, QToolTip
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwWidget, nwItemType
-from novelwriter.gui.noveltree import NovelTreeColumn
+from novelwriter.gui.noveltree import GuiNovelTree, NovelTreeColumn
 from novelwriter.dialogs.editlabel import GuiEditLabel
 
 
@@ -192,11 +192,31 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     mIndex = novelTree.model().index(2, novelTree.C_MORE)
     with monkeypatch.context() as mp:
         mp.setattr(QToolTip, "showText", showText)
+
+        ttText = ""
         novelTree._treeItemClicked(mIndex)
         assert ttText == (
             "<p><b>Point of View</b>: Jane<br><b>Focus</b>: Jane</p>"
             "<p><b>Synopsis</b>: This is a scene.</p>"
         )
+
+        ttText = ""
+        novelTree._popMetaBox(QPoint(1, 1), C.hInvalid, "T0001")
+        assert ttText == ""
+
+    # Set Default Root
+    # ================
+    SHARED.project.data.setLastHandle(C.hInvalid, "novelTree")
+    novelView.openProjectTasks()
+    assert novelBar.novelValue.handle == C.hNovelRoot
+
+    # Tree Focus
+    # ==========
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiNovelTree, "hasFocus", lambda *a: False)
+        assert novelView.treeHasFocus() is False
+        mp.setattr(GuiNovelTree, "hasFocus", lambda *a: True)
+        assert novelView.treeHasFocus() is True
 
     # Other Checks
     # ============
