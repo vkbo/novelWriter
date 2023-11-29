@@ -62,7 +62,7 @@ from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.core.document import NWDocument
 from novelwriter.gui.dochighlight import GuiDocHighlighter
 from novelwriter.gui.editordocument import GuiTextDocument
-from novelwriter.extensions.wheeleventfilter import WheelEventFilter
+from novelwriter.extensions.eventfilters import WheelEventFilter
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain

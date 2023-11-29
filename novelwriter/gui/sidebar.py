@@ -27,12 +27,13 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import QEvent, QPoint, Qt, QSize, pyqtSignal
 from PyQt5.QtGui import QPalette
+from PyQt5.QtCore import QEvent, QPoint, Qt, QSize, pyqtSignal
 from PyQt5.QtWidgets import QMenu, QToolButton, QVBoxLayout, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwView
+from novelwriter.extensions.eventfilters import StatusTipFilter
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -54,6 +55,7 @@ class GuiSideBar(QWidget):
         iPx = CONFIG.pxInt(24)
         iconSize = QSize(iPx, iPx)
         self.setContentsMargins(0, 0, 0, 0)
+        self.installEventFilter(StatusTipFilter(mainGui))
 
         # Buttons
         self.tbProject = QToolButton(self)
@@ -162,7 +164,7 @@ class GuiSideBar(QWidget):
 
 class _PopRightMenu(QMenu):
 
-    def event(self, event: QEvent):
+    def event(self, event: QEvent) -> bool:
         """Overload the show event and move the menu popup location."""
         if event.type() == QEvent.Show:
             parent = self.parent()
