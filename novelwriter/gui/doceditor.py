@@ -2012,7 +2012,7 @@ class GuiDocEditor(QPlainTextEdit):
             cPos = cursor.position()
             bPos = cursor.block().position()
             bLen = cursor.block().length()
-            apos = nwUnicode.APOS_TYPE
+            apos = nwUnicode.U_APOS + nwUnicode.U_RSQUO
 
             # Scan backward
             sPos = cPos
