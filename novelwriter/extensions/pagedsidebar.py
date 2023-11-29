@@ -65,10 +65,7 @@ class NPagedSideBar(QToolBar):
 
     def setLabelColor(self, color: list | QColor) -> None:
         """Set the text color for the labels."""
-        if isinstance(color, list):
-            self._labelCol = QColor(*color)
-        elif isinstance(color, QColor):
-            self._labelCol = color
+        self._labelCol = color if isinstance(color, QColor) else QColor(*color)
         return
 
     def addSeparator(self) -> None:

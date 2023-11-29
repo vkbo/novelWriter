@@ -134,10 +134,10 @@ class NSwitch(QAbstractButton):
         qPaint.setBrush(thumbBrush)
         qPaint.drawEllipse(self._offset - self._rR, self._rB, self._rH, self._rH)
 
-        theFont = qPaint.font()
-        theFont.setPixelSize(self._xT)
+        font = qPaint.font()
+        font.setPixelSize(self._xT)
         qPaint.setPen(textColor)
-        qPaint.setFont(theFont)
+        qPaint.setFont(font)
         qPaint.drawText(
             QRectF(self._offset - self._rR, self._rB, self._rH, self._rH),
             Qt.AlignCenter, thumbText

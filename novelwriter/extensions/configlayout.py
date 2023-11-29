@@ -59,10 +59,7 @@ class NConfigLayout(QGridLayout):
     def setHelpTextStyle(self, color: QColor | list | tuple,
                          fontScale: float = FONT_SCALE) -> None:
         """Set the text color for the help text."""
-        if isinstance(color, QColor):
-            self._helpCol = color
-        else:
-            self._helpCol = QColor(*color)
+        self._helpCol = color if isinstance(color, QColor) else QColor(*color)
         self._fontScale = fontScale
         return
 
@@ -72,12 +69,6 @@ class NConfigLayout(QGridLayout):
             qHelp = self._itemMap[row][1]
             if isinstance(qHelp, NHelpLabel):
                 qHelp.setText(text)
-        return
-
-    def setLabelText(self, row: int, text: str) -> None:
-        """Set the text for the main label."""
-        if row in self._itemMap:
-            self._itemMap[row](0).setText(text)
         return
 
     ##
@@ -211,10 +202,7 @@ class NHelpLabel(QLabel):
                  fontSize: float = FONT_SCALE) -> None:
         super().__init__(text)
 
-        if isinstance(color, QColor):
-            qCol = color
-        else:
-            qCol = QColor(*color)
+        qCol = color if isinstance(color, QColor) else QColor(*color)
 
         lblCol = self.palette()
         lblCol.setColor(QPalette.WindowText, qCol)

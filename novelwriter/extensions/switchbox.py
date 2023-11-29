@@ -106,11 +106,6 @@ class NSwitchBox(QScrollArea):
         self._bumpIndex()
         return
 
-    def setInnerContentsMargins(self, left: int, top: int, right: int, bottom: int) -> None:
-        """Set the contents margins of the inner layout."""
-        self._content.setContentsMargins(left, top, right, bottom)
-        return
-
     ##
     #  Internal Functions
     ##

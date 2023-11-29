@@ -41,14 +41,13 @@ class NProgressSimple(QProgressBar):
 
     def paintEvent(self, event: QPaintEvent) -> None:
         """Custom painter for the progress bar."""
-        if self.value() == 0:
-            return
-        progress = ceil(self.width()*float(self.value())/self.maximum())
-        qPaint = QPainter(self)
-        qPaint.setRenderHint(QPainter.Antialiasing, True)
-        qPaint.setPen(self.palette().highlight().color())
-        qPaint.setBrush(self.palette().highlight())
-        qPaint.drawRect(0, 0, progress, self.height())
+        if (value := self.value()) > 0:
+            progress = ceil(self.width()*float(value)/self.maximum())
+            qPaint = QPainter(self)
+            qPaint.setRenderHint(QPainter.Antialiasing, True)
+            qPaint.setPen(self.palette().highlight().color())
+            qPaint.setBrush(self.palette().highlight())
+            qPaint.drawRect(0, 0, progress, self.height())
         return
 
 # END Class NProgressSimple
