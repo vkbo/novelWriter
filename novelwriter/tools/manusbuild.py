@@ -331,7 +331,7 @@ class GuiManuscriptBuild(QDialog):
         self._build.setLastBuildName(bName)
         self._build.setLastFormat(bFormat)
 
-        QTimer.singleShot(1000, self._resetProgress)
+        QTimer.singleShot(3000, self._resetProgress)
 
         return True
 

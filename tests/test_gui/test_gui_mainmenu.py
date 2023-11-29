@@ -441,6 +441,7 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     assert nwGUI.docEditor.isEmpty
 
     # qtbot.stop()
+    nwGUI.docEditor.clear()
 
     # Check Menu Entries
     nwGUI.mainMenu.aInsENDash.activate(QAction.Trigger)
