@@ -22,13 +22,13 @@ from __future__ import annotations
 
 import pytest
 
+from tools import buildTestProject
 from mocked import MockGuiMain, MockTheme
 
 from PyQt5.QtWidgets import QMessageBox
 
+from novelwriter.shared import SharedData
 from novelwriter.core.project import NWProject
-from novelwriter.shared import SharedData, _GuiAlert
-from tests.tools import buildTestProject
 
 
 @pytest.mark.base
@@ -61,8 +61,6 @@ def testBaseSharedData_Init():
     assert shared.hasProject is False
     assert shared.projectIdleTime == 0.0
     assert shared.projectLock is None
-
-    assert shared.alert is None
 
 # END Test testBaseSharedData_Init
 
@@ -124,7 +122,7 @@ def testBaseSharedData_Projects(fncPath, caplog):
 
 
 @pytest.mark.base
-def testBaseSharedData_Alerts(monkeypatch, caplog):
+def testBaseSharedData_Alerts(qtbot, monkeypatch, caplog):
     """Test SharedData class alert helper functions."""
     monkeypatch.setattr(QMessageBox, "exec_", lambda *a: None)
     monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.Yes)
@@ -135,56 +133,38 @@ def testBaseSharedData_Alerts(monkeypatch, caplog):
     mockTheme = MockTheme()
     shared.initSharedData(mockGui, mockTheme)  # type: ignore
 
-    assert shared.alert is None
+    assert shared.lastAlert == ""
 
     # Info box
     caplog.clear()
     shared.info("Hello World", info="foo", details="bar")
-    assert isinstance(shared.alert, _GuiAlert)
-    assert shared.alert.text() == "Hello World"
-    assert shared.alert.informativeText() == "foo"
-    assert shared.alert.detailedText() == "bar"
+    assert shared.lastAlert == "Hello World foo bar"
     assert caplog.text.strip().startswith("INFO")
     assert caplog.text.strip().endswith("Hello World foo bar")
-    shared._alert = None
 
     # Warning box
     caplog.clear()
     shared.warn("Oops!", info="foo", details="bar")
-    assert isinstance(shared.alert, _GuiAlert)
-    assert shared.alert.text() == "Oops!"
-    assert shared.alert.informativeText() == "foo"
-    assert shared.alert.detailedText() == "bar"
+    assert shared.lastAlert == "Oops! foo bar"
     assert caplog.text.strip().startswith("WARNING")
     assert caplog.text.strip().endswith("Oops! foo bar")
-    shared._alert = None
 
     # Error box
     caplog.clear()
     shared.error("Oh noes!", info="foo", details="bar")
-    assert isinstance(shared.alert, _GuiAlert)
-    assert shared.alert.text() == "Oh noes!"
-    assert shared.alert.informativeText() == "foo"
-    assert shared.alert.detailedText() == "bar"
+    assert shared.lastAlert == "Oh noes! foo bar"
     assert caplog.text.strip().startswith("ERROR")
     assert caplog.text.strip().endswith("Oh noes! foo bar")
-    shared._alert = None
 
     # Error box with exception
     caplog.clear()
     shared.error("Oh noes!", info="foo", details="bar", exc=Exception("Boom!"))
-    assert isinstance(shared.alert, _GuiAlert)
-    assert shared.alert.text() == "Oh noes!"
-    assert shared.alert.informativeText() == "foo<br><b>Exception</b>: Boom!"
-    assert shared.alert.detailedText() == "bar"
+    assert shared.lastAlert == "Oh noes! foo bar"
     assert caplog.text.strip().startswith("ERROR")
     assert caplog.text.strip().endswith("Oh noes! foo bar")
-    shared._alert = None
 
     # Question box
     assert shared.question("Why?") is True
-    assert isinstance(shared.alert, _GuiAlert)
-    assert shared.alert.text() == "Why?"
-    shared._alert = None
+    assert shared.lastAlert == "Why?"
 
 # END Test testBaseSharedData_Alerts

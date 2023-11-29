@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 class SharedData(QObject):
 
     __slots__ = (
-        "_gui", "_theme", "_project", "_spelling", "_lockedBy", "_alert",
+        "_gui", "_theme", "_project", "_spelling", "_lockedBy", "_lastAlert",
         "_idleTime", "_idleRefTime",
     )
 
@@ -68,7 +68,7 @@ class SharedData(QObject):
 
         # Settings
         self._lockedBy = None
-        self._alert = None
+        self._lastAlert = ""
         self._idleTime = 0.0
         self._idleRefTime = time()
 
@@ -122,9 +122,9 @@ class SharedData(QObject):
         return self._idleTime
 
     @property
-    def alert(self) -> _GuiAlert | None:
-        """Return a pointer to the last alert box."""
-        return self._alert
+    def lastAlert(self) -> str:
+        """Return the last alert message."""
+        return self._lastAlert
 
     ##
     #  Methods
@@ -238,44 +238,53 @@ class SharedData(QObject):
 
     def info(self, text: str, info: str = "", details: str = "", log: bool = True) -> None:
         """Open an information alert box."""
-        self._alert = _GuiAlert(self.mainGui, self.theme)
-        self._alert.setMessage(text, info, details)
-        self._alert.setAlertType(_GuiAlert.INFO, False)
+        alert = _GuiAlert(self.mainGui, self.theme)
+        alert.setMessage(text, info, details)
+        alert.setAlertType(_GuiAlert.INFO, False)
+        self._lastAlert = alert.logMessage
         if log:
-            logger.info(self._alert.logMessage, stacklevel=2)
-        self._alert.exec_()
+            logger.info(self._lastAlert, stacklevel=2)
+        alert.exec_()
+        alert.deleteLater()
         return
 
     def warn(self, text: str, info: str = "", details: str = "", log: bool = True) -> None:
         """Open a warning alert box."""
-        self._alert = _GuiAlert(self.mainGui, self.theme)
-        self._alert.setMessage(text, info, details)
-        self._alert.setAlertType(_GuiAlert.WARN, False)
+        alert = _GuiAlert(self.mainGui, self.theme)
+        alert.setMessage(text, info, details)
+        alert.setAlertType(_GuiAlert.WARN, False)
+        self._lastAlert = alert.logMessage
         if log:
-            logger.warning(self._alert.logMessage, stacklevel=2)
-        self._alert.exec_()
+            logger.warning(self._lastAlert, stacklevel=2)
+        alert.exec_()
+        alert.deleteLater()
         return
 
     def error(self, text: str, info: str = "", details: str = "", log: bool = True,
               exc: Exception | None = None) -> None:
         """Open an error alert box."""
-        self._alert = _GuiAlert(self.mainGui, self.theme)
-        self._alert.setMessage(text, info, details)
-        self._alert.setAlertType(_GuiAlert.ERROR, False)
+        alert = _GuiAlert(self.mainGui, self.theme)
+        alert.setMessage(text, info, details)
+        alert.setAlertType(_GuiAlert.ERROR, False)
         if exc:
-            self._alert.setException(exc)
+            alert.setException(exc)
+        self._lastAlert = alert.logMessage
         if log:
-            logger.error(self._alert.logMessage, stacklevel=2)
-        self._alert.exec_()
+            logger.error(self._lastAlert, stacklevel=2)
+        alert.exec_()
+        alert.deleteLater()
         return
 
     def question(self, text: str, info: str = "", details: str = "", warn: bool = False) -> bool:
         """Open a question box."""
-        self._alert = _GuiAlert(self.mainGui, self.theme)
-        self._alert.setMessage(text, info, details)
-        self._alert.setAlertType(_GuiAlert.WARN if warn else _GuiAlert.ASK, True)
-        self._alert.exec_()
-        return self._alert.result() == QMessageBox.Yes
+        alert = _GuiAlert(self.mainGui, self.theme)
+        alert.setMessage(text, info, details)
+        alert.setAlertType(_GuiAlert.WARN if warn else _GuiAlert.ASK, True)
+        self._lastAlert = alert.logMessage
+        alert.exec_()
+        isYes = alert.result() == QMessageBox.StandardButton.Yes
+        alert.deleteLater()
+        return isYes
 
     ##
     #  Internal Functions
@@ -312,6 +321,11 @@ class _GuiAlert(QMessageBox):
         super().__init__(parent=parent)
         self._theme = theme
         self._message = ""
+        logger.debug("Ready: _GuiAlert")
+        return
+
+    def __del__(self) -> None:  # pragma: no cover
+        logger.debug("Delete: _GuiAlert")
         return
 
     @property

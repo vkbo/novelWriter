@@ -206,40 +206,35 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
         mp.setattr(ProjectXMLReader, "read", lambda *a: False)
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.NOT_NWX_FILE))
         assert theProject.openProject(fncPath) is False
-        lastMsg = SHARED.alert.logMessage if SHARED.alert else ""
-        assert "Project file does not appear" in lastMsg
+        assert "Project file does not appear" in SHARED.lastAlert
 
     # Unknown project file version
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "read", lambda *a: False)
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.UNKNOWN_VERSION))
         assert theProject.openProject(fncPath) is False
-        lastMsg = SHARED.alert.logMessage if SHARED.alert else ""
-        assert "Unknown or unsupported novelWriter project file" in lastMsg
+        assert "Unknown or unsupported novelWriter project file" in SHARED.lastAlert
 
     # Other parse error
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "read", lambda *a: False)
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.CANNOT_PARSE))
         assert theProject.openProject(fncPath) is False
-        lastMsg = SHARED.alert.logMessage if SHARED.alert else ""
-        assert "Failed to parse project xml" in lastMsg
+        assert "Failed to parse project xml" in SHARED.lastAlert
 
     # Won't convert legacy file
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.WAS_LEGACY))
         mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         assert theProject.openProject(fncPath) is False
-        lastMsg = SHARED.alert.logMessage if SHARED.alert else ""
-        assert "The file format of your project is about to be" in lastMsg
+        assert "The file format of your project is about to be" in SHARED.lastAlert
 
     # Won't open project from newer version
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "hexVersion", property(lambda *a: 0x99999999))
         mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         assert theProject.openProject(fncPath) is False
-        lastMsg = SHARED.alert.logMessage if SHARED.alert else ""
-        assert "This project was saved by a newer version" in lastMsg
+        assert "This project was saved by a newer version" in SHARED.lastAlert
 
     # Fail checking items should still pass
     with monkeypatch.context() as mp:
@@ -254,8 +249,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
         mp.setattr("novelwriter.core.index.NWIndex.loadIndex", lambda *a: True)
         theProject.index._indexBroken = True
         assert theProject.openProject(fncPath) is True
-        lastMsg = SHARED.alert.logMessage if SHARED.alert else ""
-        assert "The file format of your project is about to be" in lastMsg
+        assert "The file format of your project is about to be" in SHARED.lastAlert
         assert theProject.index._indexBroken is False
 
     theProject.closeProject()
