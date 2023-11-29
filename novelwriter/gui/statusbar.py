@@ -233,6 +233,10 @@ class GuiMainStatus(QStatusBar):
         """Display memory info on the status bar. This is used to
         investigate memory usage and Qt widgets that get left in memory.
         Enabled by the --meminfo command line flag.
+
+        By default, this tracks memory usage diff after launch. To track
+        full memory usage, set environment variable PYTHONTRACEMALLOC=1
+        before starting novelWriter.
         """
         import tracemalloc
         from collections import Counter
