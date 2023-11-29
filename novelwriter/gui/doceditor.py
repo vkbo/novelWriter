@@ -2012,20 +2012,25 @@ class GuiDocEditor(QPlainTextEdit):
             cPos = cursor.position()
             bPos = cursor.block().position()
             bLen = cursor.block().length()
+            apos = nwUnicode.U_APOS + nwUnicode.U_RSQUO
 
-            # Scan backwards
+            # Scan backward
             sPos = cPos
             for i in range(cPos - bPos):
                 sPos = cPos - i - 1
-                if not self._qDocument.characterAt(sPos).isalnum():
+                cOne = self._qDocument.characterAt(sPos)
+                cTwo = self._qDocument.characterAt(sPos - 1)
+                if not (cOne.isalnum() or cOne in apos and cTwo.isalnum()):
                     sPos += 1
                     break
 
-            # Scan forwards
+            # Scan forward
             ePos = cPos
             for i in range(bPos + bLen - cPos):
                 ePos = cPos + i
-                if not self._qDocument.characterAt(ePos).isalnum():
+                cOne = self._qDocument.characterAt(ePos)
+                cTwo = self._qDocument.characterAt(ePos + 1)
+                if not (cOne.isalnum() or cOne in apos and cTwo.isalnum()):
                     break
 
             if ePos - sPos <= 0:

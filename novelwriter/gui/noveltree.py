@@ -206,18 +206,18 @@ class GuiNovelToolBar(QWidget):
 
         # Novel Selector
         selFont = self.font()
-        selFont.setWeight(QFont.Bold)
+        selFont.setWeight(QFont.Weight.Bold)
         self.novelPrefix = self.tr("Outline of {0}")
         self.novelValue = NovelSelector(self)
         self.novelValue.setFont(selFont)
         self.novelValue.setMinimumWidth(CONFIG.pxInt(150))
-        self.novelValue.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.novelValue.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.novelValue.novelSelectionChanged.connect(self.setCurrentRoot)
 
         self.tbNovel = QToolButton(self)
         self.tbNovel.setToolTip(self.tr("Novel Root"))
         self.tbNovel.setIconSize(QSize(iPx, iPx))
-        self.tbNovel.clicked.connect(self._openNovelSelector)
+        self.tbNovel.clicked.connect(self.novelValue.showPopup)
 
         # Refresh Button
         self.tbRefresh = QToolButton(self)
@@ -244,7 +244,7 @@ class GuiNovelToolBar(QWidget):
         self.tbMore.setToolTip(self.tr("More Options"))
         self.tbMore.setIconSize(QSize(iPx, iPx))
         self.tbMore.setMenu(self.mMore)
-        self.tbMore.setPopupMode(QToolButton.InstantPopup)
+        self.tbMore.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
         # Assemble
         self.outerBox = QHBoxLayout()
@@ -275,7 +275,7 @@ class GuiNovelToolBar(QWidget):
         self.tbMore.setIcon(SHARED.theme.getIcon("menu"))
 
         qPalette = self.palette()
-        qPalette.setBrush(QPalette.Window, qPalette.base())
+        qPalette.setBrush(QPalette.ColorRole.Window, qPalette.base())
         self.setPalette(qPalette)
 
         # StyleSheets
@@ -326,12 +326,6 @@ class GuiNovelToolBar(QWidget):
     ##
     #  Private Slots
     ##
-
-    @pyqtSlot()
-    def _openNovelSelector(self) -> None:
-        """Trigger the dropdown list of the novel selector."""
-        self.novelValue.showPopup()
-        return
 
     @pyqtSlot()
     def _refreshNovelTree(self) -> None:
@@ -408,14 +402,14 @@ class GuiNovelTree(QTreeWidget):
         cMg = CONFIG.pxInt(6)
 
         self.setIconSize(QSize(iPx, iPx))
-        self.setFrameStyle(QFrame.NoFrame)
+        self.setFrameStyle(QFrame.Shape.NoFrame)
         self.setUniformRowHeights(True)
         self.setAllColumnsShowFocus(True)
         self.setHeaderHidden(True)
         self.setIndentation(0)
         self.setColumnCount(4)
-        self.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.setExpandsOnDoubleClick(False)
         self.setDragEnabled(False)
 
@@ -423,10 +417,10 @@ class GuiNovelTree(QTreeWidget):
         treeHeader = self.header()
         treeHeader.setStretchLastSection(False)
         treeHeader.setMinimumSectionSize(iPx + cMg)
-        treeHeader.setSectionResizeMode(self.C_TITLE, QHeaderView.Stretch)
-        treeHeader.setSectionResizeMode(self.C_WORDS, QHeaderView.ResizeToContents)
-        treeHeader.setSectionResizeMode(self.C_EXTRA, QHeaderView.ResizeToContents)
-        treeHeader.setSectionResizeMode(self.C_MORE, QHeaderView.ResizeToContents)
+        treeHeader.setSectionResizeMode(self.C_TITLE, QHeaderView.ResizeMode.Stretch)
+        treeHeader.setSectionResizeMode(self.C_WORDS, QHeaderView.ResizeMode.ResizeToContents)
+        treeHeader.setSectionResizeMode(self.C_EXTRA, QHeaderView.ResizeMode.ResizeToContents)
+        treeHeader.setSectionResizeMode(self.C_MORE, QHeaderView.ResizeMode.ResizeToContents)
 
         # Pre-Generate Tree Formatting
         fH1 = self.font()
@@ -455,14 +449,14 @@ class GuiNovelTree(QTreeWidget):
         """Set or update tree widget settings."""
         # Scroll bars
         if CONFIG.hideVScroll:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         else:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
         if CONFIG.hideHScroll:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         else:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+            self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
         return
 
@@ -522,21 +516,16 @@ class GuiNovelTree(QTreeWidget):
 
     def refreshHandle(self, tHandle: str) -> None:
         """Refresh the data for a given handle."""
-        idxData = SHARED.project.index.getItemData(tHandle)
-        if idxData is None:
-            return
-
-        logger.debug("Refreshing meta data for item '%s'", tHandle)
-        for sTitle, tHeading in idxData.items():
-            sKey = f"{tHandle}:{sTitle}"
-            trItem = self._treeMap.get(sKey, None)
-            if trItem is None:
-                logger.debug("Heading '%s' not in novel tree", sKey)
-                self.refreshTree()
-                return
-
-            self._updateTreeItemValues(trItem, tHeading, tHandle, sTitle)
-
+        if idxData := SHARED.project.index.getItemData(tHandle):
+            logger.debug("Refreshing meta data for item '%s'", tHandle)
+            for sTitle, tHeading in idxData.items():
+                sKey = f"{tHandle}:{sTitle}"
+                if trItem := self._treeMap.get(sKey, None):
+                    self._updateTreeItemValues(trItem, tHeading, tHandle, sTitle)
+                else:
+                    logger.debug("Heading '%s' not in novel tree", sKey)
+                    self.refreshTree()
+                    return
         return
 
     def getSelectedHandle(self) -> tuple[str | None, str | None]:
@@ -567,27 +556,25 @@ class GuiNovelTree(QTreeWidget):
         self._lastColSize = minmax(colSize, 15, 75)/100.0
         return
 
-    def setActiveHandle(self, tHandle: str | None) -> None:
+    def setActiveHandle(self, tHandle: str | None, doScroll: bool = False) -> None:
         """Highlight the rows associated with a given handle."""
-        tStart = time()
-
+        didScroll = False
         self._actHandle = tHandle
         for i in range(self.topLevelItemCount()):
-            tItem = self.topLevelItem(i)
-            if tItem is not None:
+            if tItem := self.topLevelItem(i):
                 if tItem.data(self.C_DATA, self.D_HANDLE) == tHandle:
                     tItem.setBackground(self.C_TITLE, self.palette().alternateBase())
                     tItem.setBackground(self.C_WORDS, self.palette().alternateBase())
                     tItem.setBackground(self.C_EXTRA, self.palette().alternateBase())
                     tItem.setBackground(self.C_MORE, self.palette().alternateBase())
+                    if doScroll and not didScroll:
+                        self.scrollToItem(tItem, QAbstractItemView.ScrollHint.PositionAtCenter)
+                        didScroll = True
                 else:
                     tItem.setBackground(self.C_TITLE, self.palette().base())
                     tItem.setBackground(self.C_WORDS, self.palette().base())
                     tItem.setBackground(self.C_EXTRA, self.palette().base())
                     tItem.setBackground(self.C_MORE, self.palette().base())
-
-        logger.debug("Highlighted Novel Tree in %.3f ms", (time() - tStart)*1000)
-
         return
 
     ##
@@ -601,12 +588,12 @@ class GuiNovelTree(QTreeWidget):
         """
         super().mousePressEvent(event)
 
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.MouseButton.LeftButton:
             selItem = self.indexAt(event.pos())
             if not selItem.isValid():
                 self.clearSelection()
 
-        elif event.button() == Qt.MiddleButton:
+        elif event.button() == Qt.MouseButton.MiddleButton:
             selItem = self.itemAt(event.pos())
             if not isinstance(selItem, QTreeWidgetItem):
                 return
@@ -637,7 +624,10 @@ class GuiNovelTree(QTreeWidget):
                 trItem = self.topLevelItem(i)
                 if isinstance(trItem, QTreeWidgetItem):
                     lastText = trItem.data(self.C_DATA, self.D_EXTRA)
-                    trItem.setText(self.C_EXTRA, fMetric.elidedText(lastText, Qt.ElideRight, eliW))
+                    trItem.setText(
+                        self.C_EXTRA,
+                        fMetric.elidedText(lastText, Qt.TextElideMode.ElideRight, eliW)
+                    )
         return
 
     ##
@@ -693,7 +683,7 @@ class GuiNovelTree(QTreeWidget):
             newItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
             newItem.setData(self.C_DATA, self.D_TITLE, sTitle)
             newItem.setData(self.C_DATA, self.D_KEY, tKey)
-            newItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
+            newItem.setTextAlignment(self.C_WORDS, Qt.AlignmentFlag.AlignRight)
 
             self._updateTreeItemValues(newItem, novIdx, tHandle, sTitle)
             self._treeMap[tKey] = newItem
@@ -712,16 +702,16 @@ class GuiNovelTree(QTreeWidget):
         iLevel = nwHeaders.H_LEVEL.get(idxItem.level, 0)
         hDec = SHARED.theme.getHeaderDecoration(iLevel)
 
-        trItem.setData(self.C_TITLE, Qt.DecorationRole, hDec)
+        trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
         trItem.setText(self.C_TITLE, idxItem.title)
         trItem.setFont(self.C_TITLE, self._hFonts[iLevel])
         trItem.setText(self.C_WORDS, f"{idxItem.wordCount:n}")
-        trItem.setData(self.C_MORE, Qt.DecorationRole, self._pMore)
+        trItem.setData(self.C_MORE, Qt.ItemDataRole.DecorationRole, self._pMore)
 
         # Custom column
         mW = int(self._lastColSize * self.viewport().width())
         lastText, toolTip = self._getLastColumnText(tHandle, sTitle)
-        elideText = self.fontMetrics().elidedText(lastText, Qt.ElideRight, mW)
+        elideText = self.fontMetrics().elidedText(lastText, Qt.TextElideMode.ElideRight, mW)
         trItem.setText(self.C_EXTRA, elideText)
         trItem.setData(self.C_DATA, self.D_EXTRA, lastText)
         trItem.setToolTip(self.C_EXTRA, toolTip)
