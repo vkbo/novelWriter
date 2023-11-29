@@ -256,7 +256,7 @@ class GuiMainStatus(QStatusBar):
         stamp = datetime.now().strftime("%H:%M:%S")
         self.showMessage((
             f"Debug [{stamp}]"
-            f" \u2013 Widgets: {len(qApp.allWidgets())}"
+            f" \u2013 Widgets: {len(widgets)}"
             f" \u2013 {self._traceMallocRef} Memory: {mem[0]:n}"
             f" \u2013 Peak: {mem[1]:n}"
         ), 6000)
