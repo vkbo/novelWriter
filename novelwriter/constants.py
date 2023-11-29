@@ -349,6 +349,9 @@ class nwUnicode:
     # Unicode Constants
     # =================
 
+    # Lookup
+    APOS_TYPE = "\u0027\u2019\u02bc"
+
     # Quotation Marks
     U_QUOT   = "\u0022"  # Quotation mark
     U_APOS   = "\u0027"  # Apostrophe
