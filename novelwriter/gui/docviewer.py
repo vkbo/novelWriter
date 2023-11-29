@@ -46,7 +46,7 @@ from novelwriter.enum import nwItemType, nwDocAction, nwDocMode
 from novelwriter.error import logException
 from novelwriter.constants import nwUnicode
 from novelwriter.core.tohtml import ToHtml
-from novelwriter.extensions.wheeleventfilter import WheelEventFilter
+from novelwriter.extensions.eventfilters import WheelEventFilter
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain

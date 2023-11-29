@@ -26,7 +26,7 @@ from PyQt5.QtGui import QKeyEvent, QWheelEvent
 from PyQt5.QtCore import QEvent, QObject, QPoint, Qt
 from PyQt5.QtWidgets import QWidget
 
-from novelwriter.extensions.wheeleventfilter import WheelEventFilter
+from novelwriter.extensions.eventfilters import WheelEventFilter
 
 
 class MockWidget(QWidget):
@@ -42,7 +42,7 @@ class MockWidget(QWidget):
 
 
 @pytest.mark.gui
-def testExtWheelEventFilter_Main():
+def testExtEventFilters_WheelEventFilter():
     """Test the WheelEventFilter class."""
     obj = QObject()
     widget = MockWidget()
@@ -65,4 +65,4 @@ def testExtWheelEventFilter_Main():
     eFilter.eventFilter(obj, event)
     assert widget.count == 1
 
-# END Test testExtWheelEventFilter_Main
+# END Test testExtEventFilters_WheelEventFilter

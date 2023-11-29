@@ -21,8 +21,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import time
-from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QDesktopServices
 import pytest
 
 from pathlib import Path
@@ -31,14 +29,16 @@ from xml.etree import ElementTree as ET
 from tools import writeFile
 from mocked import causeOSError
 
-from novelwriter.guimain import GuiMain
+from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtCore import QUrl
+
 from novelwriter.common import (
     checkBool, checkFloat, checkHandle, checkInt, checkIntTuple, checkPath,
     checkString, checkStringNone, checkUuid, formatInt, formatTime,
-    formatTimeStamp, fuzzyTime, getFileSize, getGuiItem, hexToInt, isHandle,
-    isItemClass, isItemLayout, isItemType, isTitleTag, jsonEncode,
-    makeFileNameSafe, minmax, numberToRoman, NWConfigParser, openExternalPath,
-    readTextFile, simplified, transferCase, xmlIndent, yesNo
+    formatTimeStamp, fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass,
+    isItemLayout, isItemType, isTitleTag, jsonEncode, makeFileNameSafe, minmax,
+    numberToRoman, NWConfigParser, openExternalPath, readTextFile, simplified,
+    transferCase, xmlIndent, yesNo
 )
 
 
@@ -653,15 +653,6 @@ def testBaseCommon_openExternalPath(monkeypatch, tstPaths):
     assert lastUrl.startswith("file://")
 
 # END Test testBaseCommon_openExternalPath
-
-
-@pytest.mark.base
-def testBaseCommon_getGuiItem(nwGUI):
-    """Check the GUI item function."""
-    assert getGuiItem("gibberish") is None
-    assert isinstance(getGuiItem("GuiMain"), GuiMain)
-
-# END Test testBaseCommon_getGuiItem
 
 
 @pytest.mark.base

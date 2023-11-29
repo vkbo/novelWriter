@@ -38,7 +38,6 @@ from urllib.request import pathname2url
 
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtCore import QCoreApplication, QUrl
-from PyQt5.QtWidgets import QWidget, qApp
 
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.error import logException
@@ -506,18 +505,6 @@ def openExternalPath(path: Path) -> bool:
         )
         return True
     return False
-
-
-# =============================================================================================== #
-#  Other Functions
-# =============================================================================================== #
-
-def getGuiItem(objName: str) -> QWidget | None:
-    """Returns a QtWidget based on its objectName."""
-    for qWidget in qApp.topLevelWidgets():
-        if qWidget.objectName() == objName:
-            return qWidget
-    return None
 
 
 # =============================================================================================== #
