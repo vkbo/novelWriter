@@ -606,7 +606,7 @@ class GuiMain(QMainWindow):
         if self.docEditor.loadText(tHandle, tLine):
             SHARED.project.data.setLastHandle(tHandle, "editor")
             self.projView.setSelectedHandle(tHandle, doScroll=doScroll)
-            self.novelView.setActiveHandle(tHandle)
+            self.novelView.setActiveHandle(tHandle, doScroll=doScroll)
             if changeFocus:
                 self.docEditor.setFocus()
         else:

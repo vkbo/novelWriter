@@ -567,27 +567,25 @@ class GuiNovelTree(QTreeWidget):
         self._lastColSize = minmax(colSize, 15, 75)/100.0
         return
 
-    def setActiveHandle(self, tHandle: str | None) -> None:
+    def setActiveHandle(self, tHandle: str | None, doScroll: bool = False) -> None:
         """Highlight the rows associated with a given handle."""
-        tStart = time()
-
+        didScroll = False
         self._actHandle = tHandle
         for i in range(self.topLevelItemCount()):
-            tItem = self.topLevelItem(i)
-            if tItem is not None:
+            if tItem := self.topLevelItem(i):
                 if tItem.data(self.C_DATA, self.D_HANDLE) == tHandle:
                     tItem.setBackground(self.C_TITLE, self.palette().alternateBase())
                     tItem.setBackground(self.C_WORDS, self.palette().alternateBase())
                     tItem.setBackground(self.C_EXTRA, self.palette().alternateBase())
                     tItem.setBackground(self.C_MORE, self.palette().alternateBase())
+                    if doScroll and not didScroll:
+                        self.scrollToItem(tItem, QAbstractItemView.ScrollHint.PositionAtCenter)
+                        didScroll = True
                 else:
                     tItem.setBackground(self.C_TITLE, self.palette().base())
                     tItem.setBackground(self.C_WORDS, self.palette().base())
                     tItem.setBackground(self.C_EXTRA, self.palette().base())
                     tItem.setBackground(self.C_MORE, self.palette().base())
-
-        logger.debug("Highlighted Novel Tree in %.3f ms", (time() - tStart)*1000)
-
         return
 
     ##
