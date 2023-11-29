@@ -50,7 +50,7 @@ class GuiTextDocument(QTextDocument):
 
         return
 
-    def __del__(self):  # pragma: no cover
+    def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiTextDocument")
         return
 
