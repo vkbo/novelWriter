@@ -163,13 +163,13 @@ class NWStorage:
         return True
 
     def initProjectStorage(self, path: str | Path, clearLock: bool = False) -> NWStorageOpen:
-        """Initialise the a novelWriter project."""
+        """Initialise a novelWriter project location."""
         inPath = Path(path).resolve()
 
         # Initialise Storage Instance
         # ===========================
 
-        # Check what we're opening. Only three options are allowed:
+        # Check what we're opening. Only two options are allowed:
         # 1. A folder with a nwProject.nwx file in it (not home)
         # 2. A full path to an nwProject.nwx file
         if inPath.is_dir() and inPath != Path.home().resolve():

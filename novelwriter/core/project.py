@@ -306,8 +306,7 @@ class NWProject:
         self._loadProjectLocalisation()
 
         # Update recent projects
-        storePath = self._storage.storagePath
-        if storePath:
+        if storePath := self._storage.storagePath:
             CONFIG.recentProjects.update(
                 storePath, self._data.name, sum(self._data.initCounts), time()
             )
