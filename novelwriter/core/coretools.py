@@ -340,7 +340,7 @@ class ProjectBuilder:
             return False
 
         project = NWProject()
-        if not project.storage.openProjectInPlace(projPath, newProject=True):
+        if not project.storage.createNewProject(projPath):
             return False
 
         lblNewProject = self.tr("New Project")
