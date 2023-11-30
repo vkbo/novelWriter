@@ -242,8 +242,6 @@ class NWProject:
                 SHARED.error(self.tr("Project file not found."))
             elif status == NWStorageOpen.LOCKED:
                 self._state = NWProjectState.LOCKED
-            elif status == NWStorageOpen.RECOVERY:
-                self._state = NWProjectState.RECOVERY
             elif status == NWStorageOpen.FAILED:
                 SHARED.error(self.tr("Failed to open project."), exc=self._storage.exc)
             return False

@@ -51,9 +51,8 @@ class NWStorageOpen(Enum):
     UNKOWN    = 0
     NOT_FOUND = 1
     LOCKED    = 2
-    RECOVERY  = 3
-    FAILED    = 4
-    READY     = 5
+    FAILED    = 3
+    READY     = 4
 
 # END Enum NWStorageOpen
 
