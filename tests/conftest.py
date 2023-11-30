@@ -118,6 +118,8 @@ def fncPath():
     fncPath = _TMP_ROOT / "function"
     if fncPath.is_dir():
         shutil.rmtree(fncPath)
+    elif fncPath.is_file():
+        fncPath.unlink()
     fncPath.mkdir(exist_ok=True)
     return fncPath
 

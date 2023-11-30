@@ -171,7 +171,7 @@ def buildTestProject(obj, projPath):
         nwGUI = obj
         project = SHARED.project
 
-    project.storage.openProjectInPlace(projPath)
+    project.storage.createNewProject(projPath)
     project.setDefaultStatusImport()
 
     project.data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")

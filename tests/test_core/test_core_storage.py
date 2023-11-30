@@ -67,16 +67,16 @@ def testCoreStorage_OpenProjectInPlace(mockGUI, fncPath, mockRnd):
     assert storage.scanContent() == []
 
     # Open project as a new project should fail
-    assert storage.openProjectInPlace(fncPath, newProject=True) is False
+    assert storage.initProjectStorage(fncPath, newProject=True) is False
 
     # Opening as a non-new project is fine
-    assert storage.openProjectInPlace(fncPath, newProject=False) is True
+    assert storage.initProjectStorage(fncPath, newProject=False) is True
 
     # Opening the project file is also fine
-    assert storage.openProjectInPlace(fncPath / nwFiles.PROJ_FILE, newProject=False) is True
+    assert storage.initProjectStorage(fncPath / nwFiles.PROJ_FILE, newProject=False) is True
 
     # Opening as a non-new project on a non-existing folder should fail
-    assert storage.openProjectInPlace(fncPath / "foobar", newProject=False) is False
+    assert storage.initProjectStorage(fncPath / "foobar", newProject=False) is False
 
     # Check settings
     assert storage.storagePath == fncPath
@@ -123,36 +123,36 @@ def testCoreStorage_LockFile(monkeypatch, fncPath):
     assert storage.isOpen() is False
 
     # Project not open, so cannot read/write lock file
-    assert storage.readLockFile() == ["ERROR"]
-    assert storage.writeLockFile() is False
-    assert storage.clearLockFile() is False
+    assert storage._readLockFile() == ["ERROR"]
+    assert storage._writeLockFile() is False
+    assert storage._clearLockFile() is False
 
     # Set a path to work with
     lockFilePath = fncPath / nwFiles.PROJ_LOCK
     storage._lockFilePath = lockFilePath
 
     # Path is set, but there is no lockfile
-    assert storage.readLockFile() == []
+    assert storage._readLockFile() == []
 
     # Write lockfile fails
     with monkeypatch.context() as mp:
         mp.setattr("pathlib.Path.write_text", causeOSError)
-        assert storage.writeLockFile() is False
+        assert storage._writeLockFile() is False
         assert not lockFilePath.exists()
 
     # Successful write
-    assert storage.writeLockFile() is True
+    assert storage._writeLockFile() is True
     assert lockFilePath.exists()
     assert lockFilePath.read_text().split(";")[3] == "1000"
 
     # Read lockfile fails
     with monkeypatch.context() as mp:
         mp.setattr("pathlib.Path.read_text", causeOSError)
-        assert storage.readLockFile() == ["ERROR"]
+        assert storage._readLockFile() == ["ERROR"]
         assert lockFilePath.exists()
 
     # Successful read
-    assert storage.readLockFile() == [
+    assert storage._readLockFile() == [
         CONFIG.hostName,
         CONFIG.osType,
         CONFIG.kernelVer,
@@ -161,16 +161,16 @@ def testCoreStorage_LockFile(monkeypatch, fncPath):
 
     # Write an invalid lockfile
     writeFile(lockFilePath, "a;b;c")
-    assert storage.readLockFile() == ["ERROR"]
+    assert storage._readLockFile() == ["ERROR"]
 
     # Fail to remove lockfile
     with monkeypatch.context() as mp:
         mp.setattr("pathlib.Path.unlink", causeOSError)
-        assert storage.clearLockFile() is False
+        assert storage._clearLockFile() is False
         assert lockFilePath.exists()
 
     # Successful remove
-    assert storage.clearLockFile() is True
+    assert storage._clearLockFile() is True
     assert not lockFilePath.exists()
 
 # END Test testCoreStorage_LockFile

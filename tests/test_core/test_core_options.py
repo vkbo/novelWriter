@@ -34,8 +34,8 @@ from novelwriter.gui.noveltree import NovelTreeColumn
 @pytest.mark.core
 def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
     """Test loading and saving from the OptionState class."""
-    theProject = NWProject()
-    theOpts = OptionState(theProject)
+    project = NWProject()
+    options = OptionState(project)
 
     metaDir = fncPath / "meta"
     metaDir.mkdir()
@@ -58,25 +58,26 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
     }), encoding="utf-8")
 
     # Load and save with no path set
-    theProject.storage._runtimePath = None
-    assert theOpts.loadSettings() is False
-    assert theOpts.saveSettings() is False
+    project.storage._runtimePath = None
+    assert options.loadSettings() is False
+    assert options.saveSettings() is False
 
     # Set path
-    theProject.storage._runtimePath = fncPath
-    assert theProject.storage.getMetaFile(nwFiles.OPTS_FILE) == optFile
+    project.storage._runtimePath = fncPath
+    project.storage._ready = True
+    assert project.storage.getMetaFile(nwFiles.OPTS_FILE) == optFile
 
     # Cause open() to fail
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
-        assert theOpts.loadSettings() is False
-        assert theOpts.saveSettings() is False
+        assert options.loadSettings() is False
+        assert options.saveSettings() is False
 
     # Load proper
-    assert theOpts.loadSettings()
+    assert options.loadSettings()
 
     # Check that unwanted items have been removed
-    assert theOpts._state == {
+    assert options._state == {
         "GuiProjectSettings": {
             "winWidth": 570,
             "winHeight": 375,
@@ -87,11 +88,11 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
     }
 
     # Save proper
-    assert theOpts.saveSettings()
+    assert options.saveSettings()
 
     # Load again to check we get the values back
-    assert theOpts.loadSettings()
-    assert theOpts._state == {
+    assert options.loadSettings()
+    assert options._state == {
         "GuiProjectSettings": {
             "winWidth": 570,
             "winHeight": 375,
@@ -107,48 +108,48 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
 @pytest.mark.core
 def testCoreOptions_SetGet(mockGUI):
     """Test setting and getting values from the OptionState class."""
-    theProject = NWProject()
-    theOpts = OptionState(theProject)
+    project = NWProject()
+    options = OptionState(project)
 
     nwColHidden = NovelTreeColumn.HIDDEN
 
     # Set invalid values
-    assert theOpts.setValue("MockGroup", "mockItem", None) is False
-    assert theOpts.setValue("GuiProjectSettings", "mockItem", None) is False
+    assert options.setValue("MockGroup", "mockItem", None) is False
+    assert options.setValue("GuiProjectSettings", "mockItem", None) is False
 
     # Set valid value
-    assert theOpts.setValue("GuiProjectSettings", "winWidth", 100) is True
+    assert options.setValue("GuiProjectSettings", "winWidth", 100) is True
 
     # Set some values of different types
-    assert theOpts.setValue("GuiProjectDetails", "winWidth", 100) is True
-    assert theOpts.setValue("GuiProjectDetails", "winHeight", 12.34) is True
-    assert theOpts.setValue("GuiProjectDetails", "clearDouble", True) is True
-    assert theOpts.setValue("GuiNovelView", "lastCol", nwColHidden) is True
+    assert options.setValue("GuiProjectDetails", "winWidth", 100) is True
+    assert options.setValue("GuiProjectDetails", "winHeight", 12.34) is True
+    assert options.setValue("GuiProjectDetails", "clearDouble", True) is True
+    assert options.setValue("GuiNovelView", "lastCol", nwColHidden) is True
 
     # Generic get, doesn't check type
-    assert theOpts.getValue("GuiProjectDetails", "winWidth", None) == 100
-    assert theOpts.getValue("GuiProjectDetails", "winHeight", None) == 12.34
-    assert theOpts.getValue("GuiProjectDetails", "clearDouble", None) is True
-    assert theOpts.getValue("GuiProjectDetails", "mockItem", None) is None
+    assert options.getValue("GuiProjectDetails", "winWidth", None) == 100
+    assert options.getValue("GuiProjectDetails", "winHeight", None) == 12.34
+    assert options.getValue("GuiProjectDetails", "clearDouble", None) is True
+    assert options.getValue("GuiProjectDetails", "mockItem", None) is None
 
     # Get type-specific
-    assert theOpts.getString("GuiProjectDetails", "winWidth", None) is None
-    assert theOpts.getString("GuiProjectDetails", "mockItem", None) is None
-    assert theOpts.getInt("GuiProjectDetails", "winWidth", None) == 100
-    assert theOpts.getInt("GuiProjectDetails", "textFont", None) is None
-    assert theOpts.getInt("GuiProjectDetails", "mockItem", None) is None
-    assert theOpts.getFloat("GuiProjectDetails", "winWidth", None) == 100.0
-    assert theOpts.getFloat("GuiProjectDetails", "mockItem", None) is None
-    assert theOpts.getBool("GuiProjectDetails", "clearDouble", None) is True
-    assert theOpts.getBool("GuiProjectDetails", "mockItem", None) is None
-    assert theOpts.getEnum("GuiNovelView", "lastCol", NovelTreeColumn, nwColHidden) == nwColHidden
+    assert options.getString("GuiProjectDetails", "winWidth", None) is None  # type: ignore
+    assert options.getString("GuiProjectDetails", "mockItem", None) is None  # type: ignore
+    assert options.getInt("GuiProjectDetails", "winWidth", None) == 100  # type: ignore
+    assert options.getInt("GuiProjectDetails", "textFont", None) is None  # type: ignore
+    assert options.getInt("GuiProjectDetails", "mockItem", None) is None  # type: ignore
+    assert options.getFloat("GuiProjectDetails", "winWidth", None) == 100.0  # type: ignore
+    assert options.getFloat("GuiProjectDetails", "mockItem", None) is None  # type: ignore
+    assert options.getBool("GuiProjectDetails", "clearDouble", None) is True  # type: ignore
+    assert options.getBool("GuiProjectDetails", "mockItem", None) is None  # type: ignore
+    assert options.getEnum("GuiNovelView", "lastCol", NovelTreeColumn, nwColHidden) == nwColHidden
 
     # Get from non-existent  groups
-    assert theOpts.getValue("SomeGroup", "mockItem", None) is None
-    assert theOpts.getString("SomeGroup", "mockItem", None) is None
-    assert theOpts.getInt("SomeGroup", "mockItem", None) is None
-    assert theOpts.getFloat("SomeGroup", "mockItem", None) is None
-    assert theOpts.getBool("SomeGroup", "mockItem", None) is None
-    assert theOpts.getEnum("SomeGroup", "mockItem", NovelTreeColumn, None) is None
+    assert options.getValue("SomeGroup", "mockItem", None) is None
+    assert options.getString("SomeGroup", "mockItem", None) is None  # type: ignore
+    assert options.getInt("SomeGroup", "mockItem", None) is None  # type: ignore
+    assert options.getFloat("SomeGroup", "mockItem", None) is None  # type: ignore
+    assert options.getBool("SomeGroup", "mockItem", None) is None  # type: ignore
+    assert options.getEnum("SomeGroup", "mockItem", NovelTreeColumn, None) is None  # type: ignore
 
 # END Test testCoreOptions_SetGet

@@ -172,18 +172,18 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
 
     # Initialising the storage class fails
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.openProjectInPlace", lambda *a, **k: False)
+        mp.setattr("novelwriter.core.storage.NWStorage.initProjectStorage", lambda *a, **k: False)
         assert theProject.openProject(fncPath) is False
 
     # Fail on lock file
     theProject.storage._lockFilePath = fncPath / nwFiles.PROJ_LOCK
-    assert theProject.storage.writeLockFile() is True
+    assert theProject.storage._writeLockFile() is True
     assert theProject.openProject(fncPath) is False
     assert isinstance(theProject.lockStatus, list)
 
     # Fail to read lockfile (which still opens the project)
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.readLockFile", lambda *a: ["ERROR"])
+        mp.setattr("novelwriter.core.storage.NWStorage._readLockFile", lambda *a: ["ERROR"])
         caplog.clear()
         assert theProject.openProject(fncPath) is True
         assert "Failed to check lock file" in caplog.text
@@ -191,7 +191,7 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
 
     # Force open with lockfile
     theProject.storage._lockFilePath = fncPath / nwFiles.PROJ_LOCK
-    assert theProject.storage.writeLockFile() is True
+    assert theProject.storage._writeLockFile() is True
     assert theProject.openProject(fncPath, clearLock=True) is True
     theProject.closeProject()
     assert theProject.lockStatus is None
