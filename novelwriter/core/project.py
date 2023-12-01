@@ -26,6 +26,7 @@ from __future__ import annotations
 import json
 import logging
 
+from enum import Enum
 from time import time
 from typing import TYPE_CHECKING, Iterator
 from pathlib import Path
@@ -40,7 +41,7 @@ from novelwriter.constants import trConst, nwLabels
 from novelwriter.core.tree import NWTree
 from novelwriter.core.index import NWIndex
 from novelwriter.core.options import OptionState
-from novelwriter.core.storage import NWStorage
+from novelwriter.core.storage import NWStorage, NWStorageOpen
 from novelwriter.core.sessions import NWSessionLog
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.core.projectdata import NWProjectData
@@ -53,6 +54,16 @@ if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.status import NWStatus
 
 logger = logging.getLogger(__name__)
+
+
+class NWProjectState(Enum):
+
+    UNKNOWN  = 0
+    LOCKED   = 1
+    RECOVERY = 2
+    READY    = 3
+
+# END Enum NWProjectState
 
 
 class NWProject:
@@ -69,9 +80,9 @@ class NWProject:
 
         # Project Status
         self._langData = {}     # Localisation data
-        self._lockedBy = None   # Data on which computer has the project open
         self._changed  = False  # The project has unsaved changes
         self._valid    = False  # The project was successfully loaded
+        self._state    = NWProjectState.UNKNOWN
 
         # Internal Mapping
         self.tr = partial(QCoreApplication.translate, "NWProject")
@@ -126,11 +137,14 @@ class NWProject:
         return self._valid
 
     @property
+    def state(self) -> NWProjectState:
+        """Return the current project state."""
+        return self._state
+
+    @property
     def lockStatus(self) -> list | None:
         """Return the project lock information."""
-        if isinstance(self._lockedBy, list) and len(self._lockedBy) == 4:
-            return self._lockedBy
-        return None
+        return self._storage.lockStatus
 
     @property
     def currentEditTime(self) -> int:
@@ -219,29 +233,21 @@ class NWProject:
         build the tree of project items.
         """
         logger.info("Opening project: %s", projPath)
-        if not self._storage.openProjectInPlace(projPath):
-            SHARED.error(self.tr("Could not open project with path: {0}").format(projPath))
+
+        status = self._storage.initProjectStorage(projPath, clearLock)
+        if status != NWStorageOpen.READY:
+            if status == NWStorageOpen.UNKOWN:
+                SHARED.error(self.tr("Not a known project file format."))
+            elif status == NWStorageOpen.NOT_FOUND:
+                SHARED.error(self.tr("Project file not found."))
+            elif status == NWStorageOpen.LOCKED:
+                self._state = NWProjectState.LOCKED
+            elif status == NWStorageOpen.FAILED:
+                SHARED.error(self.tr("Failed to open project."), exc=self._storage.exc)
             return False
 
-        # Project Lock
-        # ============
-
-        if clearLock:
-            self._storage.clearLockFile()
-
-        lockStatus = self._storage.readLockFile()
-        if len(lockStatus) > 0:
-            if lockStatus[0] == "ERROR":
-                logger.warning("Failed to check lock file")
-            else:
-                logger.error("Project is locked, so not opening")
-                self._lockedBy = lockStatus
-                return False
-        else:
-            logger.debug("Project is not locked")
-
-        # Open The Project XML File
-        # =========================
+        # Read Project XML
+        # ================
 
         xmlReader = self._storage.getXmlReader()
         if not isinstance(xmlReader, ProjectXMLReader):
@@ -250,9 +256,7 @@ class NWProject:
         self._data = NWProjectData(self)
         projContent = []
         xmlParsed = xmlReader.read(self._data, projContent)
-
         appVersion = xmlReader.appVersion or self.tr("Unknown")
-
         if not xmlParsed:
             if xmlReader.state == XMLReadState.NOT_NWX_FILE:
                 SHARED.error(self.tr(
@@ -302,8 +306,7 @@ class NWProject:
         self._loadProjectLocalisation()
 
         # Update recent projects
-        storePath = self._storage.storagePath
-        if storePath:
+        if storePath := self._storage.storagePath:
             CONFIG.recentProjects.update(
                 storePath, self._data.name, sum(self._data.initCounts), time()
             )
@@ -323,9 +326,9 @@ class NWProject:
 
         self.updateWordCounts()
         self._session.startSession()
-        self._storage.writeLockFile()
         self.setProjectChanged(False)
         self._valid = True
+        self._state = NWProjectState.READY
 
         SHARED.newStatusMessage(self.tr("Opened Project: {0}").format(self._data.name))
 
@@ -370,13 +373,11 @@ class NWProject:
         self._storage.runPostSaveTasks(autoSave=autoSave)
 
         # Update recent projects
-        storePath = self._storage.storagePath
-        if storePath:
+        if storagePath := self._storage.storagePath:
             CONFIG.recentProjects.update(
-                storePath, self._data.name, sum(self._data.currCounts), saveTime
+                storagePath, self._data.name, sum(self._data.currCounts), saveTime
             )
 
-        self._storage.writeLockFile()
         SHARED.newStatusMessage(self.tr("Saved Project: {0}").format(self._data.name))
         self.setProjectChanged(False)
 
@@ -420,8 +421,8 @@ class NWProject:
         timeStamp = formatTimeStamp(time(), fileSafe=True)
         archName = baseDir / f"{cleanName} {timeStamp}.zip"
         if self._storage.zipIt(archName, compression=2):
-            size = formatInt(getFileSize(archName))
             if doNotify:
+                size = formatInt(getFileSize(archName))
                 SHARED.info(
                     self.tr("Created a backup of your project of size {0}B.").format(size),
                     info=self.tr("Path: {0}").format(str(backupPath))

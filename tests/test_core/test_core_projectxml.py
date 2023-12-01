@@ -25,6 +25,7 @@ import pytest
 
 from shutil import copyfile
 from datetime import datetime
+from novelwriter.constants import nwFiles
 
 from tools import cmpFiles, writeFile
 from mocked import causeOSError
@@ -62,7 +63,7 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
 
-    data = NWProjectData(MockProject())
+    data = NWProjectData(MockProject())  # type: ignore
     content = []
 
     # With no valid files, the read should fail
@@ -132,7 +133,7 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
     assert xmlReader.state == XMLReadState.WAS_LEGACY
 
     # Reset data objects
-    data = NWProjectData(MockProject())
+    data = NWProjectData(MockProject())  # type: ignore
     content = []
 
     # Parse a valid, complete file
@@ -215,13 +216,13 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
     mockProject = MockProject()
     mockProject.__setattr__("data", data)
     for entry in content:
-        item = NWItem(mockProject, "0000000000000")
+        item = NWItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
         packedContent.append(item.pack())
 
     # Save the project again, which should produce an identical project xml
     timeStamp = int(datetime.fromisoformat(xmlReader.timeStamp).timestamp())
-    xmlWriter = ProjectXMLWriter(fncPath)
+    xmlWriter = ProjectXMLWriter(fncPath / nwFiles.PROJ_FILE)
 
     # Fail saving
     with monkeypatch.context() as mp:
@@ -254,7 +255,7 @@ def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockRnd):
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
 
-    data = NWProjectData(MockProject())
+    data = NWProjectData(MockProject())  # type: ignore
     content = []
 
     assert xmlReader.read(data, content) is True
@@ -335,7 +336,7 @@ def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockRnd):
     mockProject.__setattr__("data", data)
     status = {}
     for entry in content:
-        item = NWItem(mockProject, "0000000000000")
+        item = NWItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
         status[item.itemHandle] = item.getImportStatus(incIcon=False)[0]
         packedContent.append(item.pack())
@@ -367,7 +368,7 @@ def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockRnd):
 
     # Save the project again, which should produce an identical project xml
     timeStamp = int(datetime.fromisoformat(xmlReader.timeStamp).timestamp())
-    xmlWriter = ProjectXMLWriter(fncPath)
+    xmlWriter = ProjectXMLWriter(fncPath / nwFiles.PROJ_FILE)
     data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
     testFile = tstPaths.outDir / "projectXML_ReadLegacy10.nwx"
@@ -389,7 +390,7 @@ def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockRnd):
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
 
-    data = NWProjectData(MockProject())
+    data = NWProjectData(MockProject())  # type: ignore
     content = []
 
     assert xmlReader.read(data, content) is True
@@ -470,7 +471,7 @@ def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockRnd):
     mockProject.__setattr__("data", data)
     status = {}
     for entry in content:
-        item = NWItem(mockProject, "0000000000000")
+        item = NWItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
         status[item.itemHandle] = item.getImportStatus(incIcon=False)[0]
         packedContent.append(item.pack())
@@ -502,7 +503,7 @@ def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockRnd):
 
     # Save the project again, which should produce an identical project xml
     timeStamp = int(datetime.fromisoformat(xmlReader.timeStamp).timestamp())
-    xmlWriter = ProjectXMLWriter(fncPath)
+    xmlWriter = ProjectXMLWriter(fncPath / nwFiles.PROJ_FILE)
     data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
     testFile = tstPaths.outDir / "projectXML_ReadLegacy11.nwx"
@@ -524,7 +525,7 @@ def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockRnd):
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
 
-    data = NWProjectData(MockProject())
+    data = NWProjectData(MockProject())  # type: ignore
     content = []
 
     assert xmlReader.read(data, content) is True
@@ -605,7 +606,7 @@ def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockRnd):
     mockProject.__setattr__("data", data)
     status = {}
     for entry in content:
-        item = NWItem(mockProject, "0000000000000")
+        item = NWItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
         status[item.itemHandle] = item.getImportStatus(incIcon=False)[0]
         packedContent.append(item.pack())
@@ -640,7 +641,7 @@ def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockRnd):
 
     # Save the project again, which should produce an identical project xml
     timeStamp = int(datetime.fromisoformat(xmlReader.timeStamp).timestamp())
-    xmlWriter = ProjectXMLWriter(fncPath)
+    xmlWriter = ProjectXMLWriter(fncPath / nwFiles.PROJ_FILE)
     data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
     testFile = tstPaths.outDir / "projectXML_ReadLegacy12.nwx"
@@ -662,7 +663,7 @@ def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockRnd):
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
 
-    data = NWProjectData(MockProject())
+    data = NWProjectData(MockProject())  # type: ignore
     content = []
 
     assert xmlReader.read(data, content) is True
@@ -743,7 +744,7 @@ def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockRnd):
     mockProject.__setattr__("data", data)
     status = {}
     for entry in content:
-        item = NWItem(mockProject, "0000000000000")
+        item = NWItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
         status[item.itemHandle] = item.getImportStatus(incIcon=False)[0]
         packedContent.append(item.pack())
@@ -778,7 +779,7 @@ def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockRnd):
 
     # Save the project again, which should produce an identical project xml
     timeStamp = int(datetime.fromisoformat(xmlReader.timeStamp).timestamp())
-    xmlWriter = ProjectXMLWriter(fncPath)
+    xmlWriter = ProjectXMLWriter(fncPath / nwFiles.PROJ_FILE)
     data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
     testFile = tstPaths.outDir / "projectXML_ReadLegacy13.nwx"
@@ -800,7 +801,7 @@ def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockRnd):
     xmlReader = ProjectXMLReader(xmlFile)
     assert xmlReader.state == XMLReadState.NO_ACTION
 
-    data = NWProjectData(MockProject())
+    data = NWProjectData(MockProject())  # type: ignore
     content = []
 
     assert xmlReader.read(data, content) is True
@@ -881,7 +882,7 @@ def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockRnd):
     mockProject.__setattr__("data", data)
     status = {}
     for entry in content:
-        item = NWItem(mockProject, "0000000000000")
+        item = NWItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
         status[item.itemHandle] = item.getImportStatus(incIcon=False)[0]
         packedContent.append(item.pack())
@@ -918,7 +919,7 @@ def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockRnd):
 
     # Save the project again, which should produce an identical project xml
     timeStamp = int(datetime.fromisoformat(xmlReader.timeStamp).timestamp())
-    xmlWriter = ProjectXMLWriter(fncPath)
+    xmlWriter = ProjectXMLWriter(fncPath / nwFiles.PROJ_FILE)
     data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")
     assert xmlWriter.write(data, packedContent, timeStamp, 1000) is True
     testFile = tstPaths.outDir / "projectXML_ReadLegacy14.nwx"

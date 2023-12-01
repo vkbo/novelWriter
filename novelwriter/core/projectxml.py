@@ -38,7 +38,6 @@ from novelwriter.common import (
     checkBool, checkInt, checkString, checkStringNone, formatTimeStamp,
     hexToInt, simplified, xmlIndent, yesNo
 )
-from novelwriter.constants import nwFiles
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.status import NWStatus
@@ -558,9 +557,8 @@ class ProjectXMLWriter:
             xName.text = item["name"]
 
         # Write the XML tree to file
-        saveFile = self._path / nwFiles.PROJ_FILE
-        tempFile = saveFile.with_suffix(".tmp")
-        backFile = saveFile.with_suffix(".bak")
+        tempFile = self._path.with_suffix(".tmp")
+        backFile = self._path.with_suffix(".bak")
         try:
             xml = ET.ElementTree(xRoot)
             xmlIndent(xml)
@@ -572,9 +570,9 @@ class ProjectXMLWriter:
         # If we're here, the file was successfully saved,
         # so let's sort out the temps and backups
         try:
-            if saveFile.exists():
-                saveFile.replace(backFile)
-            tempFile.replace(saveFile)
+            if self._path.exists():
+                self._path.replace(backFile)
+            tempFile.replace(self._path)
         except Exception as exc:
             self._error = exc
             return False

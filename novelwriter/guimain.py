@@ -462,8 +462,7 @@ class GuiMain(QMainWindow):
         if projFile is None:
             return False
 
-        # Make sure any open project is cleared out first before we load
-        # another one
+        # Make sure any open project is cleared out first
         if not self.closeProject():
             return False
 
