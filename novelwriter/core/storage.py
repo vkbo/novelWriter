@@ -131,7 +131,7 @@ class NWStorage:
 
     def isOpen(self) -> bool:
         """Check if the storage location is open."""
-        return self._runtimePath is not None
+        return self._ready and self._runtimePath is not None
 
     def createNewProject(self, path: str | Path) -> bool:
         """Create a new project at the given location."""
@@ -170,7 +170,7 @@ class NWStorage:
         # ===========================
 
         # Check what we're opening. Only two options are allowed:
-        # 1. A folder with a nwProject.nwx file in it (not home)
+        # 1. A folder with an nwProject.nwx file in it (not home)
         # 2. A full path to an nwProject.nwx file
         if inPath.is_dir() and inPath != Path.home().resolve():
             nwxFile = inPath / nwFiles.PROJ_FILE
