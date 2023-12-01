@@ -26,7 +26,6 @@ from shutil import copyfile
 from zipfile import ZipFile
 
 from mocked import causeOSError
-from novelwriter.core.item import NWItem
 from tools import C, cmpFiles, buildTestProject, XML_IGNORE
 
 from PyQt5.QtWidgets import QMessageBox
@@ -34,9 +33,10 @@ from PyQt5.QtWidgets import QMessageBox
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemClass
 from novelwriter.constants import nwFiles
+from novelwriter.core.item import NWItem
 from novelwriter.core.tree import NWTree
 from novelwriter.core.index import NWIndex
-from novelwriter.core.project import NWProject
+from novelwriter.core.project import NWProject, NWProjectState
 from novelwriter.core.options import OptionState
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 
@@ -169,79 +169,97 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     """Test opening a project."""
     project = NWProject()
     mockRnd.reset()
+    # buildTestProject(project, fncPath)
+
+    # Unknown project file
+    fooBar = fncPath / "foobar.txt"
+    fooBar.touch()
+    caplog.clear()
+    assert project.openProject(fooBar) is False
+    assert "Not a known project file format." in caplog.text
+
+    # No project file
+    caplog.clear()
+    assert project.openProject(fncPath) is False
+    assert "Project file not found." in caplog.text
+    fooBar.unlink()
+
+    # Fail to open project location
+    projFile = fncPath / nwFiles.PROJ_FILE
+    metaFile = fncPath / "meta"
+    projFile.touch()
+    metaFile.touch()
+    caplog.clear()
+    assert project.openProject(fncPath) is False
+    assert "Failed to open project." in caplog.text
+    metaFile.unlink()
+    projFile.unlink()
+
+    # Create test project
     buildTestProject(project, fncPath)
 
-    # Initialising the storage class fails
-    with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.storage.NWStorage.initProjectStorage", lambda *a, **k: False)
-        assert project.openProject(fncPath) is False
+    # Open successfully
+    assert project.openProject(fncPath) is True
 
-    # Fail on lock file
-    project.storage._lockFilePath = fncPath / nwFiles.PROJ_LOCK
-    assert project.storage._writeLockFile() is True
+    # Open again should fail on lock file
     assert project.openProject(fncPath) is False
-    assert isinstance(project.lockStatus, list)
+    assert project.state == NWProjectState.LOCKED
 
-    # Force open with lockfile
-    project.storage._lockFilePath = fncPath / nwFiles.PROJ_LOCK
-    assert project.storage._writeLockFile() is True
+    # Force re-open
     assert project.openProject(fncPath, clearLock=True) is True
-    project.closeProject()
-    assert project.lockStatus is None
+    assert project.state == NWProjectState.READY
 
     # Fail getting xml reader
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.storage.NWStorage.getXmlReader", lambda *a: None)
-        assert project.openProject(fncPath) is False
+        assert project.openProject(fncPath, clearLock=True) is False
 
     # Not a novelwriter XML file
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "read", lambda *a: False)
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.NOT_NWX_FILE))
-        assert project.openProject(fncPath) is False
+        assert project.openProject(fncPath, clearLock=True) is False
         assert "Project file does not appear" in SHARED.lastAlert
 
     # Unknown project file version
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "read", lambda *a: False)
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.UNKNOWN_VERSION))
-        assert project.openProject(fncPath) is False
+        assert project.openProject(fncPath, clearLock=True) is False
         assert "Unknown or unsupported novelWriter project file" in SHARED.lastAlert
 
     # Other parse error
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "read", lambda *a: False)
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.CANNOT_PARSE))
-        assert project.openProject(fncPath) is False
+        assert project.openProject(fncPath, clearLock=True) is False
         assert "Failed to parse project xml" in SHARED.lastAlert
 
     # Won't convert legacy file
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.WAS_LEGACY))
         mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
-        assert project.openProject(fncPath) is False
+        assert project.openProject(fncPath, clearLock=True) is False
         assert "The file format of your project is about to be" in SHARED.lastAlert
 
     # Won't open project from newer version
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "hexVersion", property(lambda *a: 0x99999999))
         mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
-        assert project.openProject(fncPath) is False
+        assert project.openProject(fncPath, clearLock=True) is False
         assert "This project was saved by a newer version" in SHARED.lastAlert
 
     # Fail checking items should still pass
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.tree.NWTree.updateItemData", lambda *a: False)
-        assert project.openProject(fncPath) is True
-
-    project.closeProject()
+        assert project.openProject(fncPath, clearLock=True) is True
 
     # Trigger an index rebuild
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.WAS_LEGACY))
         mp.setattr("novelwriter.core.index.NWIndex.loadIndex", lambda *a: True)
         project.index._indexBroken = True
-        assert project.openProject(fncPath) is True
+        assert project.openProject(fncPath, clearLock=True) is True
         assert "The file format of your project is about to be" in SHARED.lastAlert
         assert project.index._indexBroken is False
 
