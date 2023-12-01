@@ -85,7 +85,6 @@ class NWStorage:
         self._lockFilePath = None
         self._openMode = self.MODE_INACTIVE
         self._ready = False
-        self._exception = None
         return
 
     ##
@@ -154,6 +153,7 @@ class NWStorage:
             metaPath.mkdir(exist_ok=True)
             contPath.mkdir(exist_ok=True)
         except Exception as exc:
+            self._exception = exc
             logger.error("Failed to create project folders", exc_info=exc)
             self.clear()
             return False
@@ -199,11 +199,8 @@ class NWStorage:
             self._clearLockFile()
 
         self._readLockFile()
-        if self._lockedBy and len(self._lockedBy) == 4:
-            if self._lockedBy[0] == "ERROR":
-                logger.warning("Failed to check lock file")
-            else:
-                logger.error("Project is locked, so not opening")
+        if self._lockedBy:
+            logger.error("Project is locked, so not opening")
             return NWStorageOpen.LOCKED
         else:
             logger.debug("Project is not locked")
