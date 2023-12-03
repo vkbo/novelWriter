@@ -95,21 +95,14 @@ def testGuiViewerPanel_BackRefs(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Test Update Theme
     tabBackRefs._editIcon = None
-    tabBackRefs._viewIcon = None
     tabBackRefs.updateTheme()
     assert isinstance(tabBackRefs._editIcon, QIcon)
-    assert isinstance(tabBackRefs._viewIcon, QIcon)
 
     # Click the Edit Button
     nwGUI.openDocument(C.hChapterDoc)
     assert nwGUI.docEditor.docHandle == C.hChapterDoc
     tabBackRefs._treeItemClicked(tabBackRefs.model().index(0, tabBackRefs.C_EDIT))
     assert nwGUI.docEditor.docHandle == C.hSceneDoc
-
-    # Click the View Button
-    assert nwGUI.docViewer.docHandle == hJane
-    tabBackRefs._treeItemClicked(tabBackRefs.model().index(0, tabBackRefs.C_VIEW))
-    assert nwGUI.docViewer.docHandle == C.hSceneDoc
 
     # Double-Click
     nwGUI.viewDocument(hJane)
@@ -194,11 +187,9 @@ def testGuiViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mockRnd
     # Test Update Theme
     charTab._classIcon = None
     charTab._editIcon = None
-    charTab._viewIcon = None
     charTab.updateTheme()
     assert isinstance(charTab._classIcon, QIcon)
     assert isinstance(charTab._editIcon, QIcon)
-    assert isinstance(charTab._viewIcon, QIcon)
 
     # Remove Non-Existing Tag
     caplog.clear()
@@ -211,8 +202,6 @@ def testGuiViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mockRnd
     charTab._treeItemClicked(charTab.model().index(1, charTab.C_EDIT))
     assert nwGUI.docEditor.docHandle == hJohn
     assert nwGUI.docViewer.docHandle == C.hSceneDoc
-    charTab._treeItemClicked(charTab.model().index(1, charTab.C_VIEW))
-    assert nwGUI.docViewer.docHandle == hJohn
     charTab._treeItemDoubleClicked(charTab.model().index(0, charTab.C_NAME))
     assert nwGUI.docViewer.docHandle == hJane
 
