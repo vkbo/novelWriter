@@ -309,9 +309,11 @@ class _ViewPanelBackRefs(QTreeWidget):
 
             trItem.setIcon(self.C_DOC, docIcon)
             trItem.setText(self.C_DOC, nwItem.itemName)
+            trItem.setToolTip(self.C_DOC, nwItem.itemName)
             trItem.setIcon(self.C_EDIT, self._editIcon)
-            trItem.setText(self.C_TITLE, hItem.title)
             trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
+            trItem.setText(self.C_TITLE, hItem.title)
+            trItem.setToolTip(self.C_TITLE, hItem.title)
             trItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
 
             if tKey not in self._treeMap:
@@ -412,14 +414,19 @@ class _ViewPanelKeyWords(QTreeWidget):
 
         trItem.setIcon(self.C_NAME, self._classIcon)
         trItem.setText(self.C_NAME, name)
+        trItem.setToolTip(self.C_NAME, name)
         trItem.setIcon(self.C_EDIT, self._editIcon)
         trItem.setIcon(self.C_IMPORT, impIcon)
         trItem.setText(self.C_IMPORT, impLabel)
+        trItem.setToolTip(self.C_IMPORT, impLabel)
         trItem.setIcon(self.C_DOC, docIcon)
         trItem.setText(self.C_DOC, nwItem.itemName)
-        trItem.setText(self.C_TITLE, hItem.title)
+        trItem.setToolTip(self.C_DOC, nwItem.itemName)
         trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
+        trItem.setText(self.C_TITLE, hItem.title)
+        trItem.setToolTip(self.C_TITLE, hItem.title)
         trItem.setText(self.C_SHORT, hItem.synopsis)
+        trItem.setToolTip(self.C_SHORT, hItem.synopsis)
         trItem.setData(self.C_DATA, self.D_TAG, tag)
 
         if tag not in self._treeMap:
