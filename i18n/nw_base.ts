@@ -1834,12 +1834,12 @@
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="656" />
-      <source>Italics (Shortcode)</source>
+      <source>Bold (Shortcode)</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="662" />
-      <source>Bold (Shortcode)</source>
+      <source>Italics (Shortcode)</source>
       <translation type="unfinished" />
     </message>
     <message>
@@ -4807,22 +4807,27 @@
   <context>
     <name>_ViewPanelKeyWords</name>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="358" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="361" />
       <source>Tag</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="358" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="361" />
+      <source>Importance</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="361" />
       <source>Document</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="359" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="362" />
       <source>Heading</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="359" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="362" />
       <source>Short Description</source>
       <translation type="unfinished" />
     </message>
