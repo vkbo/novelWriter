@@ -667,27 +667,26 @@ def testGuiEditor_ToolBar(qtbot, nwGUI, projPath, mockRnd):
     docEditor._toggleToolBarVisibility()
     assert docToolBar.isVisible() is True
 
-    # Markdown Mode
-    assert docToolBar.tbMode.isChecked() is False
+    # Markdown
+    # ========
 
     # Click Bold
     docEditor.setCursorPosition(20)
-    docToolBar.tbBold.click()
+    docToolBar.tbBoldMD.click()
     assert len(docEditor.getText()) == length + 4
 
     # Click Italic
     docEditor.setCursorPosition(54)
-    docToolBar.tbItalic.click()
+    docToolBar.tbItalicMD.click()
     assert len(docEditor.getText()) == length + 6
 
     # Click Strikethrough
     docEditor.setCursorPosition(90)
-    docToolBar.tbStrike.click()
+    docToolBar.tbStrikeMD.click()
     assert len(docEditor.getText()) == length + 10
 
-    # Shortcode Mode
-    docToolBar.tbMode.click()
-    assert docToolBar.tbMode.isChecked() is True
+    # Shortcodes
+    # ==========
 
     # Click Bold
     docEditor.setCursorPosition(39)
