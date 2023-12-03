@@ -1834,13 +1834,13 @@
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="656" />
-      <source>Italics (Shortcode)</source>
-      <translation>Kursiv (kortkode)</translation>
+      <source>Bold (Shortcode)</source>
+      <translation>Fet (kortkode)</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="662" />
-      <source>Bold (Shortcode)</source>
-      <translation>Fet (kortkode)</translation>
+      <source>Italics (Shortcode)</source>
+      <translation>Kursiv (kortkode)</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="668" />
@@ -4807,22 +4807,27 @@
   <context>
     <name>_ViewPanelKeyWords</name>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="358" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="361" />
       <source>Tag</source>
       <translation>Knagg</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="358" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="361" />
+      <source>Importance</source>
+      <translation>Viktighet</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="361" />
       <source>Document</source>
       <translation>Dokument</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="359" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="362" />
       <source>Heading</source>
       <translation>Overskrift</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="359" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="362" />
       <source>Short Description</source>
       <translation>Kort beskrivelse</translation>
     </message>
