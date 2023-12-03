@@ -862,8 +862,7 @@ class GuiDocViewFooter(QWidget):
         self._docHandle = None
 
         fPx = int(0.9*SHARED.theme.fontPixelSize)
-        bSp = CONFIG.pxInt(2)
-        hSp = CONFIG.pxInt(8)
+        hSp = CONFIG.pxInt(4)
 
         # Main Widget Settings
         self.setContentsMargins(0, 0, 0, 0)
@@ -873,64 +872,41 @@ class GuiDocViewFooter(QWidget):
         self.showHide = QToolButton(self)
         self.showHide.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.showHide.setIconSize(QSize(fPx, fPx))
-        self.showHide.setFixedSize(QSize(fPx, fPx))
         self.showHide.clicked.connect(lambda: self.docViewer.togglePanelVisibility.emit())
         self.showHide.setToolTip(self.tr("Show/Hide Viewer Panel"))
 
         # Show Comments
         self.showComments = QToolButton(self)
+        self.showComments.setText(self.tr("Comments"))
         self.showComments.setCheckable(True)
         self.showComments.setChecked(CONFIG.viewComments)
-        self.showComments.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.showComments.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.showComments.setIconSize(QSize(fPx, fPx))
-        self.showComments.setFixedSize(QSize(fPx, fPx))
         self.showComments.toggled.connect(self._doToggleComments)
         self.showComments.setToolTip(self.tr("Show Comments"))
 
         # Show Synopsis
         self.showSynopsis = QToolButton(self)
+        self.showSynopsis.setText(self.tr("Synopsis"))
         self.showSynopsis.setCheckable(True)
         self.showSynopsis.setChecked(CONFIG.viewSynopsis)
-        self.showSynopsis.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.showSynopsis.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.showSynopsis.setIconSize(QSize(fPx, fPx))
-        self.showSynopsis.setFixedSize(QSize(fPx, fPx))
         self.showSynopsis.toggled.connect(self._doToggleSynopsis)
         self.showSynopsis.setToolTip(self.tr("Show Synopsis Comments"))
 
-        # Labels
-        self.lblComments = QLabel(self.tr("Comments"))
-        self.lblComments.setBuddy(self.showComments)
-        self.lblComments.setIndent(0)
-        self.lblComments.setMargin(0)
-        self.lblComments.setContentsMargins(0, 0, 0, 0)
-        self.lblComments.setAutoFillBackground(True)
-        self.lblComments.setFixedHeight(fPx)
-        self.lblComments.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
-
-        self.lblSynopsis = QLabel(self.tr("Synopsis"))
-        self.lblSynopsis.setBuddy(self.showSynopsis)
-        self.lblSynopsis.setIndent(0)
-        self.lblSynopsis.setMargin(0)
-        self.lblSynopsis.setContentsMargins(0, 0, 0, 0)
-        self.lblSynopsis.setAutoFillBackground(True)
-        self.lblSynopsis.setFixedHeight(fPx)
-        self.lblSynopsis.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
-
         lblFont = self.font()
         lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
-        self.lblComments.setFont(lblFont)
-        self.lblSynopsis.setFont(lblFont)
+        self.showComments.setFont(lblFont)
+        self.showSynopsis.setFont(lblFont)
 
         # Assemble Layout
         self.outerBox = QHBoxLayout()
-        self.outerBox.setSpacing(bSp)
         self.outerBox.addWidget(self.showHide, 0)
         self.outerBox.addStretch(1)
         self.outerBox.addWidget(self.showComments, 0)
-        self.outerBox.addWidget(self.lblComments, 0)
-        self.outerBox.addSpacing(hSp)
         self.outerBox.addWidget(self.showSynopsis, 0)
-        self.outerBox.addWidget(self.lblSynopsis, 0)
+        self.outerBox.setSpacing(hSp)
         self.setLayout(self.outerBox)
 
         # Fix Margins and Size
@@ -984,8 +960,6 @@ class GuiDocViewFooter(QWidget):
         palette.setColor(QPalette.ColorRole.WindowText, QColor(*SHARED.theme.colText))
         palette.setColor(QPalette.ColorRole.Text, QColor(*SHARED.theme.colText))
         self.setPalette(palette)
-        self.lblComments.setPalette(palette)
-        self.lblSynopsis.setPalette(palette)
         return
 
     ##
