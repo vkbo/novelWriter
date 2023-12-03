@@ -652,16 +652,16 @@ class GuiMainMenu(QMenuBar):
         # Shortcodes
         self.mShortcodes = self.fmtMenu.addMenu(self.tr("More Formats ..."))
 
-        # Shortcode Italic
-        self.aScItalic = self.mShortcodes.addAction(self.tr("Italics (Shortcode)"))
-        self.aScItalic.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.SC_ITALIC)
-        )
-
         # Shortcode Bold
         self.aScBold = self.mShortcodes.addAction(self.tr("Bold (Shortcode)"))
         self.aScBold.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.SC_BOLD)
+        )
+
+        # Shortcode Italic
+        self.aScItalic = self.mShortcodes.addAction(self.tr("Italics (Shortcode)"))
+        self.aScItalic.triggered.connect(
+            lambda: self.requestDocAction.emit(nwDocAction.SC_ITALIC)
         )
 
         # Shortcode Strikethrough
