@@ -201,7 +201,8 @@ class _ViewPanelBackRefs(QTreeWidget):
     C_DATA  = 0
     C_DOC   = 0
     C_EDIT  = 1
-    C_TITLE = 2
+    C_VIEW  = 2
+    C_TITLE = 3
 
     D_HANDLE = Qt.ItemDataRole.UserRole
 
@@ -214,7 +215,7 @@ class _ViewPanelBackRefs(QTreeWidget):
         iPx = SHARED.theme.baseIconSize
         cMg = CONFIG.pxInt(6)
 
-        self.setHeaderLabels([self.tr("Document"), "", self.tr("First Heading")])
+        self.setHeaderLabels([self.tr("Document"), "", "", self.tr("First Heading")])
         self.setIndentation(0)
         self.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.setIconSize(QSize(iPx, iPx))
@@ -226,12 +227,15 @@ class _ViewPanelBackRefs(QTreeWidget):
         treeHeader.setMinimumSectionSize(iPx + cMg)  # See Issue #1627
         treeHeader.setSectionResizeMode(self.C_DOC, QHeaderView.ResizeMode.ResizeToContents)
         treeHeader.setSectionResizeMode(self.C_EDIT, QHeaderView.ResizeMode.Fixed)
+        treeHeader.setSectionResizeMode(self.C_VIEW, QHeaderView.ResizeMode.Fixed)
         treeHeader.setSectionResizeMode(self.C_TITLE, QHeaderView.ResizeMode.ResizeToContents)
         treeHeader.resizeSection(self.C_EDIT, iPx + cMg)
+        treeHeader.resizeSection(self.C_VIEW, iPx + cMg)
         treeHeader.setSectionsMovable(False)
 
         # Cache Icons Locally
         self._editIcon = SHARED.theme.getIcon("edit")
+        self._viewIcon = SHARED.theme.getIcon("view")
 
         # Signals
         self.clicked.connect(self._treeItemClicked)
@@ -242,9 +246,11 @@ class _ViewPanelBackRefs(QTreeWidget):
     def updateTheme(self) -> None:
         """Update theme elements."""
         self._editIcon = SHARED.theme.getIcon("edit")
+        self._viewIcon = SHARED.theme.getIcon("view")
         for i in range(self.topLevelItemCount()):
             if item := self.topLevelItem(i):
                 item.setIcon(self.C_EDIT, self._editIcon)
+                item.setIcon(self.C_VIEW, self._viewIcon)
         return
 
     def clearContent(self) -> None:
@@ -280,13 +286,15 @@ class _ViewPanelBackRefs(QTreeWidget):
         tHandle = index.siblingAtColumn(self.C_DATA).data(self.D_HANDLE)
         if index.column() == self.C_EDIT:
             self._parent.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, "", True)
+        elif index.column() == self.C_VIEW:
+            self._parent.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, "", True)
         return
 
     @pyqtSlot("QModelIndex")
     def _treeItemDoubleClicked(self, index: QModelIndex) -> None:
         """Emit follow tag signal on user double click."""
         tHandle = index.siblingAtColumn(self.C_DATA).data(self.D_HANDLE)
-        if index.column() != self.C_EDIT:
+        if index.column() not in (self.C_EDIT, self.C_VIEW):
             self._parent.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, "", True)
         return
 
@@ -311,6 +319,7 @@ class _ViewPanelBackRefs(QTreeWidget):
             trItem.setText(self.C_DOC, nwItem.itemName)
             trItem.setToolTip(self.C_DOC, nwItem.itemName)
             trItem.setIcon(self.C_EDIT, self._editIcon)
+            trItem.setIcon(self.C_VIEW, self._viewIcon)
             trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
             trItem.setText(self.C_TITLE, hItem.title)
             trItem.setToolTip(self.C_TITLE, hItem.title)
@@ -330,10 +339,11 @@ class _ViewPanelKeyWords(QTreeWidget):
     C_DATA   = 0
     C_NAME   = 0
     C_EDIT   = 1
-    C_IMPORT = 2
-    C_DOC    = 3
-    C_TITLE  = 4
-    C_SHORT  = 5
+    C_VIEW   = 2
+    C_IMPORT = 3
+    C_DOC    = 4
+    C_TITLE  = 5
+    C_SHORT  = 6
 
     D_TAG = Qt.ItemDataRole.UserRole
 
@@ -348,7 +358,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         cMg = CONFIG.pxInt(6)
 
         self.setHeaderLabels([
-            self.tr("Tag"), "", self.tr("Importance"), self.tr("Document"),
+            self.tr("Tag"), "", "", self.tr("Importance"), self.tr("Document"),
             self.tr("Heading"), self.tr("Short Description")
         ])
         self.setIndentation(0)
@@ -365,12 +375,15 @@ class _ViewPanelKeyWords(QTreeWidget):
         treeHeader.setStretchLastSection(True)
         treeHeader.setMinimumSectionSize(iPx + cMg)  # See Issue #1627
         treeHeader.setSectionResizeMode(self.C_EDIT, QHeaderView.ResizeMode.Fixed)
+        treeHeader.setSectionResizeMode(self.C_VIEW, QHeaderView.ResizeMode.Fixed)
         treeHeader.resizeSection(self.C_EDIT, iPx + cMg)
+        treeHeader.resizeSection(self.C_VIEW, iPx + cMg)
         treeHeader.setSectionsMovable(False)
 
         # Cache Icons Locally
         self._classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[itemClass])
         self._editIcon = SHARED.theme.getIcon("edit")
+        self._viewIcon = SHARED.theme.getIcon("view")
 
         # Signals
         self.clicked.connect(self._treeItemClicked)
@@ -382,9 +395,11 @@ class _ViewPanelKeyWords(QTreeWidget):
         """Update theme elements."""
         self._classIcon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[self._class])
         self._editIcon = SHARED.theme.getIcon("edit")
+        self._viewIcon = SHARED.theme.getIcon("view")
         for i in range(self.topLevelItemCount()):
             if item := self.topLevelItem(i):
                 item.setIcon(self.C_EDIT, self._editIcon)
+                item.setIcon(self.C_VIEW, self._viewIcon)
         return
 
     def countEntries(self) -> int:
@@ -416,6 +431,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         trItem.setText(self.C_NAME, name)
         trItem.setToolTip(self.C_NAME, name)
         trItem.setIcon(self.C_EDIT, self._editIcon)
+        trItem.setIcon(self.C_VIEW, self._viewIcon)
         trItem.setIcon(self.C_IMPORT, impIcon)
         trItem.setText(self.C_IMPORT, impLabel)
         trItem.setToolTip(self.C_IMPORT, impLabel)
@@ -471,13 +487,15 @@ class _ViewPanelKeyWords(QTreeWidget):
         tag = index.siblingAtColumn(self.C_DATA).data(self.D_TAG)
         if index.column() == self.C_EDIT:
             self._parent.loadDocumentTagRequest.emit(tag, nwDocMode.EDIT)
+        elif index.column() == self.C_VIEW:
+            self._parent.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
         return
 
     @pyqtSlot("QModelIndex")
     def _treeItemDoubleClicked(self, index: QModelIndex) -> None:
         """Emit follow tag signal on user double click."""
         tag = index.siblingAtColumn(self.C_DATA).data(self.D_TAG)
-        if index.column() != self.C_EDIT:
+        if index.column() not in (self.C_EDIT, self.C_VIEW):
             self._parent.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
         return
 
