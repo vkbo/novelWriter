@@ -95,9 +95,9 @@ class nwDocAction(Enum):
     CUT       = 3
     COPY      = 4
     PASTE     = 5
-    EMPH      = 6
-    STRONG    = 7
-    STRIKE    = 8
+    MD_ITALIC = 6
+    MD_BOLD   = 7
+    MD_STRIKE = 8
     S_QUOTE   = 9
     D_QUOTE   = 10
     SEL_ALL   = 11

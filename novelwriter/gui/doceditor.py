@@ -718,11 +718,11 @@ class GuiDocEditor(QPlainTextEdit):
             self.copy()
         elif action == nwDocAction.PASTE:
             self.paste()
-        elif action == nwDocAction.EMPH:
+        elif action == nwDocAction.MD_ITALIC:
             self._toggleFormat(1, "_")
-        elif action == nwDocAction.STRONG:
+        elif action == nwDocAction.MD_BOLD:
             self._toggleFormat(2, "*")
-        elif action == nwDocAction.STRIKE:
+        elif action == nwDocAction.MD_STRIKE:
             self._toggleFormat(2, "~")
         elif action == nwDocAction.S_QUOTE:
             self._wrapSelection(self._typSQuoteO, self._typSQuoteC)
@@ -2239,54 +2239,63 @@ class GuiDocToolBar(QWidget):
 
         self.tbBoldMD = QToolButton(self)
         self.tbBoldMD.setIconSize(iconSize)
+        self.tbBoldMD.setToolTip(self.tr("Markdown Bold"))
         self.tbBoldMD.clicked.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.STRONG)
+            lambda: self.requestDocAction.emit(nwDocAction.MD_BOLD)
         )
 
         self.tbItalicMD = QToolButton(self)
         self.tbItalicMD.setIconSize(iconSize)
+        self.tbItalicMD.setToolTip(self.tr("Markdown Italic"))
         self.tbItalicMD.clicked.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.EMPH)
+            lambda: self.requestDocAction.emit(nwDocAction.MD_ITALIC)
         )
 
         self.tbStrikeMD = QToolButton(self)
         self.tbStrikeMD.setIconSize(iconSize)
+        self.tbStrikeMD.setToolTip(self.tr("Markdown Strikethrough"))
         self.tbStrikeMD.clicked.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.STRIKE)
+            lambda: self.requestDocAction.emit(nwDocAction.MD_STRIKE)
         )
 
         self.tbBold = QToolButton(self)
         self.tbBold.setIconSize(iconSize)
+        self.tbBold.setToolTip(self.tr("Shortcode Bold"))
         self.tbBold.clicked.connect(
             lambda: self.requestDocAction.emit(nwDocAction.SC_BOLD)
         )
 
         self.tbItalic = QToolButton(self)
         self.tbItalic.setIconSize(iconSize)
+        self.tbItalic.setToolTip(self.tr("Shortcode Italic"))
         self.tbItalic.clicked.connect(
             lambda: self.requestDocAction.emit(nwDocAction.SC_ITALIC)
         )
 
         self.tbStrike = QToolButton(self)
         self.tbStrike.setIconSize(iconSize)
+        self.tbStrike.setToolTip(self.tr("Shortcode Strikethrough"))
         self.tbStrike.clicked.connect(
             lambda: self.requestDocAction.emit(nwDocAction.SC_STRIKE)
         )
 
         self.tbUnderline = QToolButton(self)
         self.tbUnderline.setIconSize(iconSize)
+        self.tbUnderline.setToolTip(self.tr("Shortcode Underline"))
         self.tbUnderline.clicked.connect(
             lambda: self.requestDocAction.emit(nwDocAction.SC_ULINE)
         )
 
         self.tbSuperscript = QToolButton(self)
         self.tbSuperscript.setIconSize(iconSize)
+        self.tbSuperscript.setToolTip(self.tr("Shortcode Superscript"))
         self.tbSuperscript.clicked.connect(
             lambda: self.requestDocAction.emit(nwDocAction.SC_SUP)
         )
 
         self.tbSubscript = QToolButton(self)
         self.tbSubscript.setIconSize(iconSize)
+        self.tbSubscript.setToolTip(self.tr("Shortcode Subscript"))
         self.tbSubscript.clicked.connect(
             lambda: self.requestDocAction.emit(nwDocAction.SC_SUB)
         )

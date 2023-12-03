@@ -608,25 +608,25 @@ class GuiMainMenu(QMenuBar):
         # Format
         self.fmtMenu = self.addMenu(self.tr("&Format"))
 
-        # Format > Emphasis
-        self.aFmtEmph = self.fmtMenu.addAction(self.tr("Emphasis"))
-        self.aFmtEmph.setShortcut("Ctrl+I")
-        self.aFmtEmph.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.EMPH)
+        # Format > Bold
+        self.aFmtBold = self.fmtMenu.addAction(self.tr("Bold"))
+        self.aFmtBold.setShortcut("Ctrl+B")
+        self.aFmtBold.triggered.connect(
+            lambda: self.requestDocAction.emit(nwDocAction.MD_BOLD)
         )
 
-        # Format > Strong Emphasis
-        self.aFmtStrong = self.fmtMenu.addAction(self.tr("Strong Emphasis"))
-        self.aFmtStrong.setShortcut("Ctrl+B")
-        self.aFmtStrong.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.STRONG)
+        # Format > Italic
+        self.aFmtItalic = self.fmtMenu.addAction(self.tr("Italic"))
+        self.aFmtItalic.setShortcut("Ctrl+I")
+        self.aFmtItalic.triggered.connect(
+            lambda: self.requestDocAction.emit(nwDocAction.MD_ITALIC)
         )
 
         # Format > Strikethrough
         self.aFmtStrike = self.fmtMenu.addAction(self.tr("Strikethrough"))
         self.aFmtStrike.setShortcut("Ctrl+D")
         self.aFmtStrike.triggered.connect(
-            lambda: self.requestDocAction.emit(nwDocAction.STRIKE)
+            lambda: self.requestDocAction.emit(nwDocAction.MD_STRIKE)
         )
 
         # Edit > Separator

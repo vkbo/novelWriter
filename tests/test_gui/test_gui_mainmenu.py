@@ -50,17 +50,17 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     cleanText = nwGUI.docEditor.getText()[39:86]
 
     # Bold
-    nwGUI.mainMenu.aFmtStrong.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtBold.activate(QAction.Trigger)
     fmtStr = "**Pellentesque** nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[39:90] == fmtStr
-    nwGUI.mainMenu.aFmtStrong.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtBold.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[39:86] == cleanText
 
     # Italic
-    nwGUI.mainMenu.aFmtEmph.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtItalic.activate(QAction.Trigger)
     fmtStr = "_Pellentesque_ nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[39:88] == fmtStr
-    nwGUI.mainMenu.aFmtEmph.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtItalic.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[39:86] == cleanText
 
     # Strikethrough
@@ -71,10 +71,10 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert nwGUI.docEditor.getText()[39:86] == cleanText
 
     # Should get us back to plain
-    nwGUI.mainMenu.aFmtStrong.activate(QAction.Trigger)
-    nwGUI.mainMenu.aFmtEmph.activate(QAction.Trigger)
-    nwGUI.mainMenu.aFmtEmph.activate(QAction.Trigger)
-    nwGUI.mainMenu.aFmtStrong.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtBold.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtItalic.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtItalic.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtBold.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[39:86] == cleanText
 
     # Double Quotes
