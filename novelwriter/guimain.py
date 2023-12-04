@@ -1421,8 +1421,8 @@ class GuiMain(QMainWindow):
         self.addAction(self.mainMenu.aReplaceNext)
 
         # Format
-        self.addAction(self.mainMenu.aFmtEmph)
-        self.addAction(self.mainMenu.aFmtStrong)
+        self.addAction(self.mainMenu.aFmtItalic)
+        self.addAction(self.mainMenu.aFmtBold)
         self.addAction(self.mainMenu.aFmtStrike)
         self.addAction(self.mainMenu.aFmtDQuote)
         self.addAction(self.mainMenu.aFmtSQuote)

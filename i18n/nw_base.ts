@@ -207,72 +207,72 @@
   <context>
     <name>Common</name>
     <message>
-      <location filename="../novelwriter/common.py" line="295" />
+      <location filename="../novelwriter/common.py" line="294" />
       <source>in the future</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="299" />
+      <location filename="../novelwriter/common.py" line="298" />
       <source>just now</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="303" />
+      <location filename="../novelwriter/common.py" line="302" />
       <source>a minute ago</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="307" />
+      <location filename="../novelwriter/common.py" line="306" />
       <source>{0} minutes ago</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="311" />
+      <location filename="../novelwriter/common.py" line="310" />
       <source>an hour ago</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="315" />
+      <location filename="../novelwriter/common.py" line="314" />
       <source>{0} hours ago</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="319" />
+      <location filename="../novelwriter/common.py" line="318" />
       <source>a day ago</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="323" />
+      <location filename="../novelwriter/common.py" line="322" />
       <source>{0} days ago</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="327" />
+      <location filename="../novelwriter/common.py" line="326" />
       <source>a week ago</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="331" />
+      <location filename="../novelwriter/common.py" line="330" />
       <source>{0} weeks ago</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="335" />
+      <location filename="../novelwriter/common.py" line="334" />
       <source>a month ago</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="339" />
+      <location filename="../novelwriter/common.py" line="338" />
       <source>{0} months ago</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="343" />
+      <location filename="../novelwriter/common.py" line="342" />
       <source>a year ago</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="347" />
+      <location filename="../novelwriter/common.py" line="346" />
       <source>{0} years ago</source>
       <translation type="unfinished" />
     </message>
@@ -626,7 +626,7 @@
   <context>
     <name>GuiAbout</name>
     <message>
-      <location filename="../novelwriter/dialogs/about.py" line="152" />
+      <location filename="../novelwriter/dialogs/about.py" line="159" />
       <location filename="../novelwriter/dialogs/about.py" line="57" />
       <source>About novelWriter</source>
       <translation type="unfinished" />
@@ -652,27 +652,27 @@
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/about.py" line="154" />
+      <location filename="../novelwriter/dialogs/about.py" line="161" />
       <source>Website: {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/about.py" line="157" />
+      <location filename="../novelwriter/dialogs/about.py" line="164" />
       <source>novelWriter is a markdown-like text editor designed for organising and writing novels. It is written in Python 3 with a Qt5 GUI, using PyQt5.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/about.py" line="161" />
+      <location filename="../novelwriter/dialogs/about.py" line="168" />
       <source>novelWriter is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/about.py" line="167" />
+      <location filename="../novelwriter/dialogs/about.py" line="174" />
       <source>novelWriter is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/about.py" line="172" />
+      <location filename="../novelwriter/dialogs/about.py" line="179" />
       <source>See the Licence tab for the full licence text, or visit the GNU website at {0} for more details.</source>
       <translation type="unfinished" />
     </message>
@@ -776,32 +776,32 @@
   <context>
     <name>GuiDocEditFooter</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3008" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3016" />
       <source>Status</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3150" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3158" />
       <source>Line: {0} ({1})</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3176" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3184" />
       <source>Words: {0} ({1})</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3181" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3189" />
       <source>Document size is {0} bytes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3191" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3199" />
       <source>Words: {0} selected</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3194" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3202" />
       <source>Character count: {0}</source>
       <translation type="unfinished" />
     </message>
@@ -809,22 +809,22 @@
   <context>
     <name>GuiDocEditHeader</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2801" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2809" />
       <source>Toggle Tool Bar</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2810" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2818" />
       <source>Search</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2819" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2827" />
       <source>Toggle Focus Mode</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2828" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2836" />
       <source>Close</source>
       <translation type="unfinished" />
     </message>
@@ -832,58 +832,58 @@
   <context>
     <name>GuiDocEditSearch</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2397" />
-      <location filename="../novelwriter/gui/doceditor.py" line="2384" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2405" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2392" />
       <source>Search</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2389" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2397" />
       <source>Replace</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2405" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2413" />
       <source>Case Sensitive</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2411" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2419" />
       <source>Whole Words Only</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2417" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2425" />
       <source>RegEx Mode</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2423" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2431" />
       <source>Loop Search</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2429" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2437" />
       <source>Search Next File</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2437" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2445" />
       <source>Preserve Case</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2445" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2453" />
       <source>Close Search</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2461" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2469" />
       <source>Find in current document</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2466" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2474" />
       <source>Find and replace in current document</source>
       <translation type="unfinished" />
     </message>
@@ -891,127 +891,127 @@
   <context>
     <name>GuiDocEditor</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="433" />
+      <location filename="../novelwriter/gui/doceditor.py" line="434" />
       <source>Opened Document: {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="476" />
+      <location filename="../novelwriter/gui/doceditor.py" line="477" />
       <source>This document has been changed outside of novelWriter while it was open. Overwrite the file on disk?</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="485" />
+      <location filename="../novelwriter/gui/doceditor.py" line="486" />
       <source>Could not save document.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="509" />
+      <location filename="../novelwriter/gui/doceditor.py" line="510" />
       <source>Saved Document: {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="659" />
+      <location filename="../novelwriter/gui/doceditor.py" line="660" />
       <source>Spell checking requires the package PyEnchant. It does not appear to be installed.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="685" />
+      <location filename="../novelwriter/gui/doceditor.py" line="686" />
       <source>Spell check complete</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="803" />
+      <location filename="../novelwriter/gui/doceditor.py" line="804" />
       <source>Document Details</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="805" />
+      <location filename="../novelwriter/gui/doceditor.py" line="806" />
       <source>Created: {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="806" />
+      <location filename="../novelwriter/gui/doceditor.py" line="807" />
       <source>Updated: {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="808" />
+      <location filename="../novelwriter/gui/doceditor.py" line="809" />
       <source>File Location: {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1082" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1088" />
       <source>Set as Document Name</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1088" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1094" />
       <source>Follow Tag</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1092" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1098" />
       <source>Create Note for Tag</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1098" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1104" />
       <source>Cut</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1100" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1106" />
       <source>Copy</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1103" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1109" />
       <source>Paste</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1108" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1114" />
       <source>Select All</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1110" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1116" />
       <source>Select Word</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1114" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1120" />
       <source>Select Paragraph</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1132" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1138" />
       <source>Spelling Suggestion(s)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1139" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1145" />
       <source>No Suggestions</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1142" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1148" />
       <source>Add Word to Dictionary</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1584" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1591" />
       <source>Please select some text before calling replace quotes.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1862" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1869" />
       <source>Do you want to create a new project note for the tag '{0}'?</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1869" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1876" />
       <source>Could not create note in a root folder for '{0}'. If one doesn't exist, you must create one first.</source>
       <translation type="unfinished" />
     </message>
@@ -1019,22 +1019,22 @@
   <context>
     <name>GuiDocMerge</name>
     <message>
-      <location filename="../novelwriter/dialogs/docmerge.py" line="51" />
+      <location filename="../novelwriter/dialogs/docmerge.py" line="52" />
       <source>Merge Documents</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/docmerge.py" line="55" />
+      <location filename="../novelwriter/dialogs/docmerge.py" line="56" />
       <source>Documents to Merge</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/docmerge.py" line="56" />
+      <location filename="../novelwriter/dialogs/docmerge.py" line="57" />
       <source>Drag and drop items to change the order, or uncheck to exclude.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/docmerge.py" line="74" />
+      <location filename="../novelwriter/dialogs/docmerge.py" line="75" />
       <source>Move merged items to Trash</source>
       <translation type="unfinished" />
     </message>
@@ -1042,52 +1042,52 @@
   <context>
     <name>GuiDocSplit</name>
     <message>
-      <location filename="../novelwriter/dialogs/docsplit.py" line="57" />
+      <location filename="../novelwriter/dialogs/docsplit.py" line="58" />
       <source>Split Document</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/docsplit.py" line="59" />
+      <location filename="../novelwriter/dialogs/docsplit.py" line="60" />
       <source>Document Headers</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/docsplit.py" line="61" />
+      <location filename="../novelwriter/dialogs/docsplit.py" line="62" />
       <source>Select the maximum level to split into files.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/docsplit.py" line="83" />
+      <location filename="../novelwriter/dialogs/docsplit.py" line="84" />
       <source>Split on Header Level 1 (Title)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/docsplit.py" line="84" />
+      <location filename="../novelwriter/dialogs/docsplit.py" line="85" />
       <source>Split up to Header Level 2 (Chapter)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/docsplit.py" line="85" />
+      <location filename="../novelwriter/dialogs/docsplit.py" line="86" />
       <source>Split up to Header Level 3 (Scene)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/docsplit.py" line="86" />
+      <location filename="../novelwriter/dialogs/docsplit.py" line="87" />
       <source>Split up to Header Level 4 (Section)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/docsplit.py" line="93" />
+      <location filename="../novelwriter/dialogs/docsplit.py" line="94" />
       <source>Split into a new folder</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/docsplit.py" line="97" />
+      <location filename="../novelwriter/dialogs/docsplit.py" line="98" />
       <source>Create document hierarchy</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/docsplit.py" line="101" />
+      <location filename="../novelwriter/dialogs/docsplit.py" line="102" />
       <source>Move split document to Trash</source>
       <translation type="unfinished" />
     </message>
@@ -1095,58 +1095,98 @@
   <context>
     <name>GuiDocToolBar</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2229" />
-      <source>Toggle Markdown or Shortcodes Mode</source>
+      <location filename="../novelwriter/gui/doceditor.py" line="2242" />
+      <source>Markdown Bold</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/doceditor.py" line="2249" />
+      <source>Markdown Italic</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/doceditor.py" line="2256" />
+      <source>Markdown Strikethrough</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/doceditor.py" line="2263" />
+      <source>Shortcode Bold</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/doceditor.py" line="2270" />
+      <source>Shortcode Italic</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/doceditor.py" line="2277" />
+      <source>Shortcode Strikethrough</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/doceditor.py" line="2284" />
+      <source>Shortcode Underline</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/doceditor.py" line="2291" />
+      <source>Shortcode Superscript</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/doceditor.py" line="2298" />
+      <source>Shortcode Subscript</source>
       <translation type="unfinished" />
     </message>
   </context>
   <context>
     <name>GuiDocViewFooter</name>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="877" />
+      <location filename="../novelwriter/gui/docviewer.py" line="876" />
       <source>Show/Hide Viewer Panel</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="887" />
-      <source>Show Comments</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="897" />
-      <source>Show Synopsis Comments</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="900" />
+      <location filename="../novelwriter/gui/docviewer.py" line="880" />
       <source>Comments</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="909" />
+      <location filename="../novelwriter/gui/docviewer.py" line="886" />
+      <source>Show Comments</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/docviewer.py" line="890" />
       <source>Synopsis</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/docviewer.py" line="896" />
+      <source>Show Synopsis Comments</source>
       <translation type="unfinished" />
     </message>
   </context>
   <context>
     <name>GuiDocViewHeader</name>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="681" />
+      <location filename="../novelwriter/gui/docviewer.py" line="682" />
       <source>Go Backward</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="690" />
+      <location filename="../novelwriter/gui/docviewer.py" line="691" />
       <source>Go Forward</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="699" />
+      <location filename="../novelwriter/gui/docviewer.py" line="700" />
       <source>Reload</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="708" />
+      <location filename="../novelwriter/gui/docviewer.py" line="709" />
       <source>Close</source>
       <translation type="unfinished" />
     </message>
@@ -1190,12 +1230,12 @@
   <context>
     <name>GuiEditLabel</name>
     <message>
-      <location filename="../novelwriter/dialogs/editlabel.py" line="43" />
+      <location filename="../novelwriter/dialogs/editlabel.py" line="45" />
       <source>Item Label</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/editlabel.py" line="62" />
+      <location filename="../novelwriter/dialogs/editlabel.py" line="64" />
       <source>Label</source>
       <translation type="unfinished" />
     </message>
@@ -1269,123 +1309,123 @@
   <context>
     <name>GuiMain</name>
     <message>
-      <location filename="../novelwriter/guimain.py" line="345" />
+      <location filename="../novelwriter/guimain.py" line="344" />
       <source>novelWriter is ready ...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="380" />
+      <location filename="../novelwriter/guimain.py" line="379" />
       <source>Cannot create a new project when another project is open.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="397" />
+      <location filename="../novelwriter/guimain.py" line="396" />
       <source>A project already exists in that location. Please choose another folder.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="423" />
+      <location filename="../novelwriter/guimain.py" line="422" />
       <source>Close the current project?</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="1097" />
-      <location filename="../novelwriter/guimain.py" line="424" />
+      <location filename="../novelwriter/guimain.py" line="994" />
+      <location filename="../novelwriter/guimain.py" line="423" />
       <source>Changes are saved automatically.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="437" />
+      <location filename="../novelwriter/guimain.py" line="436" />
       <source>Backup the current project?</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="484" />
+      <location filename="../novelwriter/guimain.py" line="483" />
       <source>The project is already open by another instance of novelWriter, and is therefore locked. Override lock and continue anyway?</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="489" />
+      <location filename="../novelwriter/guimain.py" line="488" />
       <source>Note: If the program or the computer previously crashed, the lock can safely be overridden. However, overriding it is not recommended if the project is open in another instance of novelWriter. Doing so may corrupt the project.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="497" />
+      <location filename="../novelwriter/guimain.py" line="496" />
       <source>The project was locked by the computer '{0}' ({1} {2}), last active on {3}.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="544" />
+      <location filename="../novelwriter/guimain.py" line="543" />
       <source>The project index is outdated or broken. Rebuilding index.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="716" />
+      <location filename="../novelwriter/guimain.py" line="715" />
       <source>Text files ({0})</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="717" />
+      <location filename="../novelwriter/guimain.py" line="716" />
       <source>Markdown files ({0})</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="718" />
+      <location filename="../novelwriter/guimain.py" line="717" />
       <source>novelWriter files ({0})</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="719" />
+      <location filename="../novelwriter/guimain.py" line="718" />
       <source>All files ({0})</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="722" />
+      <location filename="../novelwriter/guimain.py" line="721" />
       <source>Import File</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="736" />
+      <location filename="../novelwriter/guimain.py" line="735" />
       <source>Could not read file. The file must be an existing text file.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="742" />
+      <location filename="../novelwriter/guimain.py" line="741" />
       <source>Please open a document to import the text file into.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="748" />
+      <location filename="../novelwriter/guimain.py" line="747" />
       <source>Importing the file will overwrite the current content of the document. Do you want to proceed?</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="827" />
+      <location filename="../novelwriter/guimain.py" line="826" />
       <source>Indexing completed in {0} ms</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="834" />
+      <location filename="../novelwriter/guimain.py" line="833" />
       <source>The project index has been successfully rebuilt.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="880" />
-      <source>Some changes will not be applied until novelWriter has been restarted.</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../novelwriter/guimain.py" line="1074" />
+      <location filename="../novelwriter/guimain.py" line="972" />
       <source>Could not initialise the dialog.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="1096" />
+      <location filename="../novelwriter/guimain.py" line="993" />
       <source>Do you want to exit novelWriter?</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="1548" />
+      <location filename="../novelwriter/guimain.py" line="1146" />
+      <source>Some changes will not be applied until novelWriter has been restarted.</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/guimain.py" line="1506" />
       <source>Could not find the reference for tag '{0}'. It either doesn't exist, or the index is out of date. The index can be updated from the Tools menu, or by pressing {1}.</source>
       <translation type="unfinished" />
     </message>
@@ -1393,647 +1433,647 @@
   <context>
     <name>GuiMainMenu</name>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="130" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="133" />
       <source>&amp;Project</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="133" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="136" />
       <source>New Project</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="137" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="140" />
       <source>Open Project</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="142" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="145" />
       <source>Save Project</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="147" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="150" />
       <source>Close Project</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="155" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="158" />
       <source>Project Settings</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="160" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="163" />
       <source>Project Details</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="168" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="171" />
       <source>Rename Item</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="173" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="176" />
       <source>Delete Item</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="178" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="181" />
       <source>Empty Trash</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="185" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="188" />
       <source>Exit</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="195" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="198" />
       <source>&amp;Document</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="198" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="201" />
       <source>Open Document</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="203" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="206" />
       <source>Save Document</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="208" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="211" />
       <source>Close Document</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="216" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="219" />
       <source>View Document</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="221" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="224" />
       <source>Close Document View</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="229" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="232" />
       <source>Show File Details</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="233" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="236" />
       <source>Import Text from File</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="242" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="245" />
       <source>&amp;Edit</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="245" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="248" />
       <source>Undo</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="252" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="255" />
       <source>Redo</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="262" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="265" />
       <source>Cut</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="269" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="272" />
       <source>Copy</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="276" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="279" />
       <source>Paste</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="286" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="289" />
       <source>Select All</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="293" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="296" />
       <source>Select Paragraph</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="304" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="307" />
       <source>&amp;View</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="307" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="310" />
       <source>Go to Project Tree</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="314" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="317" />
       <source>Go to Document Editor</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="321" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="324" />
       <source>Go to Outline</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="331" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="334" />
       <source>Navigate Backward</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="336" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="339" />
       <source>Navigate Forward</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="344" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="347" />
       <source>Focus Mode</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="349" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="352" />
       <source>Full Screen Mode</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="358" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="361" />
       <source>&amp;Insert</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="361" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="364" />
       <source>Dashes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="364" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="367" />
       <source>Short Dash</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="371" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="374" />
       <source>Long Dash</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="378" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="381" />
       <source>Horizontal Bar</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="385" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="388" />
       <source>Figure Dash</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="392" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="395" />
       <source>Quote Marks</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="395" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="398" />
       <source>Left Single Quote</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="402" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="405" />
       <source>Right Single Quote</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="409" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="412" />
       <source>Left Double Quote</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="416" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="419" />
       <source>Right Double Quote</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="423" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="426" />
       <source>Alternative Apostrophe</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="430" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="433" />
       <source>General Punctuation</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="433" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="436" />
       <source>Ellipsis</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="440" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="443" />
       <source>Prime</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="447" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="450" />
       <source>Double Prime</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="454" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="457" />
       <source>White Spaces</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="457" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="460" />
       <source>Non-Breaking Space</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="464" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="467" />
       <source>Thin Space</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="471" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="474" />
       <source>Thin Non-Breaking Space</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="478" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="481" />
       <source>Other Symbols</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="481" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="484" />
       <source>List Bullet</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="488" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="491" />
       <source>Hyphen Bullet</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="495" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="498" />
       <source>Flower Mark</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="502" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="505" />
       <source>Per Mille</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="509" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="512" />
       <source>Degree Symbol</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="516" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="519" />
       <source>Minus Sign</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="523" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="526" />
       <source>Times Sign</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="530" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="533" />
       <source>Division Sign</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="537" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="540" />
       <source>Tags and References</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="558" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="561" />
       <source>Special Comments</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="561" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="564" />
       <source>Synopsis Comment</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="568" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="571" />
       <source>Short Description Comment</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="575" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="578" />
       <source>Page Break and Space</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="578" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="581" />
       <source>Page Break</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="584" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="587" />
       <source>Vertical Space (Single)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="590" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="593" />
       <source>Vertical Space (Multi)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="596" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="599" />
       <source>Placeholder Text</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="604" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="609" />
       <source>&amp;Format</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="607" />
-      <source>Emphasis</source>
+      <location filename="../novelwriter/gui/mainmenu.py" line="612" />
+      <source>Bold</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="614" />
-      <source>Strong Emphasis</source>
+      <location filename="../novelwriter/gui/mainmenu.py" line="619" />
+      <source>Italic</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="621" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="626" />
       <source>Strikethrough</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="631" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="636" />
       <source>Wrap Double Quotes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="638" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="643" />
       <source>Wrap Single Quotes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="648" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="653" />
       <source>More Formats ...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="651" />
-      <source>Italics (Shortcode)</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="657" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="656" />
       <source>Bold (Shortcode)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="663" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="662" />
+      <source>Italics (Shortcode)</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/mainmenu.py" line="668" />
       <source>Strikethrough (Shortcode)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="669" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="674" />
       <source>Underline</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="675" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="680" />
       <source>Superscript</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="681" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="686" />
       <source>Subscript</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="690" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="695" />
       <source>Header 1 (Partition)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="697" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="702" />
       <source>Header 2 (Chapter)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="704" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="709" />
       <source>Header 3 (Scene)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="711" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="716" />
       <source>Header 4 (Section)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="721" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="726" />
       <source>Novel Title</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="727" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="732" />
       <source>Unnumbered Chapter</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="736" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="741" />
       <source>Align Left</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="743" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="748" />
       <source>Align Centre</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="750" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="755" />
       <source>Align Right</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="760" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="765" />
       <source>Indent Left</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="767" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="772" />
       <source>Indent Right</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="777" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="782" />
       <source>Toggle Comment</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="784" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="789" />
       <source>Remove Block Format</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="794" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="799" />
       <source>Convert Single Quotes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="800" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="805" />
       <source>Convert Double Quotes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="806" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="811" />
       <source>Remove In-Paragraph Breaks</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="816" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="821" />
       <source>&amp;Search</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="819" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="824" />
       <source>Find</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="824" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="829" />
       <source>Replace</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="829" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="834" />
       <source>Find Next</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="834" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="839" />
       <source>Find Previous</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="841" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="846" />
       <source>Replace Next</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="850" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="855" />
       <source>&amp;Tools</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="853" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="858" />
       <source>Check Spelling</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="859" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="864" />
       <source>Spell Check Language</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="861" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="866" />
       <source>Default</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="869" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="874" />
       <source>Re-Run Spell Check</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="874" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="879" />
       <source>Project Word List</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="879" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="884" />
       <source>Add Dictionaries</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="886" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="891" />
       <source>Rebuild Index</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="894" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="899" />
       <source>Backup Project</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="898" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="903" />
       <source>Build Manuscript</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="903" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="908" />
       <source>Writing Statistics</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="908" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="913" />
       <source>Preferences</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="918" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="923" />
       <source>&amp;Help</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="921" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="926" />
       <source>About novelWriter</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="926" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="931" />
       <source>About Qt5</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="934" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="939" />
       <source>User Manual (Online)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="940" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="945" />
       <source>User Manual (PDF)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="948" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="953" />
       <source>Report an Issue (GitHub)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="952" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="957" />
       <source>Ask a Question (GitHub)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="956" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="961" />
       <source>The novelWriter Website</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="963" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="968" />
       <source>Check for New Release</source>
       <translation type="unfinished" />
     </message>
@@ -2041,38 +2081,38 @@
   <context>
     <name>GuiMainStatus</name>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="207" />
-      <location filename="../novelwriter/gui/statusbar.py" line="69" />
+      <location filename="../novelwriter/gui/statusbar.py" line="209" />
+      <location filename="../novelwriter/gui/statusbar.py" line="71" />
       <source>None</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="77" />
+      <location filename="../novelwriter/gui/statusbar.py" line="79" />
       <source>Editor</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="85" />
+      <location filename="../novelwriter/gui/statusbar.py" line="87" />
       <source>Project</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="103" />
+      <location filename="../novelwriter/gui/statusbar.py" line="105" />
       <source>Session Time</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="173" />
+      <location filename="../novelwriter/gui/statusbar.py" line="175" />
       <source>Words: {0} ({1})</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="175" />
+      <location filename="../novelwriter/gui/statusbar.py" line="177" />
       <source>Project word count (session change)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/statusbar.py" line="177" />
+      <location filename="../novelwriter/gui/statusbar.py" line="179" />
       <source>Novel word count (session change)</source>
       <translation type="unfinished" />
     </message>
@@ -2192,58 +2232,58 @@
   <context>
     <name>GuiNovelToolBar</name>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="209" />
+      <location filename="../novelwriter/gui/noveltree.py" line="210" />
       <source>Outline of {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="217" />
+      <location filename="../novelwriter/gui/noveltree.py" line="218" />
       <source>Novel Root</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="223" />
+      <location filename="../novelwriter/gui/noveltree.py" line="224" />
       <source>Refresh</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="230" />
+      <location filename="../novelwriter/gui/noveltree.py" line="231" />
       <source>Last Column</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="233" />
+      <location filename="../novelwriter/gui/noveltree.py" line="234" />
       <source>Hidden</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="234" />
+      <location filename="../novelwriter/gui/noveltree.py" line="235" />
       <source>Point of View Character</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="235" />
+      <location filename="../novelwriter/gui/noveltree.py" line="236" />
       <source>Focus Character</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="236" />
+      <location filename="../novelwriter/gui/noveltree.py" line="237" />
       <source>Novel Plot</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="347" />
-      <location filename="../novelwriter/gui/noveltree.py" line="239" />
+      <location filename="../novelwriter/gui/noveltree.py" line="342" />
+      <location filename="../novelwriter/gui/noveltree.py" line="240" />
       <source>Column Size</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="243" />
+      <location filename="../novelwriter/gui/noveltree.py" line="244" />
       <source>More Options</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="347" />
+      <location filename="../novelwriter/gui/noveltree.py" line="342" />
       <source>Maximum column size in %</source>
       <translation type="unfinished" />
     </message>
@@ -2251,7 +2291,7 @@
   <context>
     <name>GuiNovelTree</name>
     <message>
-      <location filename="../novelwriter/gui/noveltree.py" line="787" />
+      <location filename="../novelwriter/gui/noveltree.py" line="778" />
       <source>No meta data</source>
       <translation type="unfinished" />
     </message>
@@ -2259,65 +2299,65 @@
   <context>
     <name>GuiOutlineDetails</name>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="998" />
-      <location filename="../novelwriter/gui/outline.py" line="959" />
-      <location filename="../novelwriter/gui/outline.py" line="766" />
-      <location filename="../novelwriter/gui/outline.py" line="743" />
+      <location filename="../novelwriter/gui/outline.py" line="999" />
+      <location filename="../novelwriter/gui/outline.py" line="960" />
+      <location filename="../novelwriter/gui/outline.py" line="767" />
+      <location filename="../novelwriter/gui/outline.py" line="744" />
       <source>Title</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="744" />
+      <location filename="../novelwriter/gui/outline.py" line="745" />
       <source>Chapter</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="745" />
+      <location filename="../novelwriter/gui/outline.py" line="746" />
       <source>Scene</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="746" />
+      <location filename="../novelwriter/gui/outline.py" line="747" />
       <source>Section</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="767" />
+      <location filename="../novelwriter/gui/outline.py" line="768" />
       <source>Document</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="768" />
+      <location filename="../novelwriter/gui/outline.py" line="769" />
       <source>Status</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="781" />
+      <location filename="../novelwriter/gui/outline.py" line="782" />
       <source>Characters</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="782" />
+      <location filename="../novelwriter/gui/outline.py" line="783" />
       <source>Words</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="783" />
+      <location filename="../novelwriter/gui/outline.py" line="784" />
       <source>Paragraphs</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="796" />
+      <location filename="../novelwriter/gui/outline.py" line="797" />
       <source>Synopsis</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="868" />
+      <location filename="../novelwriter/gui/outline.py" line="869" />
       <source>Title Details</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="896" />
+      <location filename="../novelwriter/gui/outline.py" line="897" />
       <source>Reference Tags</source>
       <translation type="unfinished" />
     </message>
@@ -2325,7 +2365,7 @@
   <context>
     <name>GuiOutlineHeaderMenu</name>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="705" />
+      <location filename="../novelwriter/gui/outline.py" line="706" />
       <source>Select Columns</source>
       <translation type="unfinished" />
     </message>
@@ -2346,42 +2386,42 @@
   <context>
     <name>GuiPreferences</name>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="51" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="53" />
       <source>Preferences</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="61" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="63" />
       <source>General</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="62" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="64" />
       <source>Projects</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="63" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="65" />
       <source>Documents</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="64" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="66" />
       <source>Editor</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="65" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="67" />
       <source>Highlighting</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="66" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="68" />
       <source>Automation</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="67" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="69" />
       <source>Quotes</source>
       <translation type="unfinished" />
     </message>
@@ -2389,103 +2429,103 @@
   <context>
     <name>GuiPreferencesAutomation</name>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="893" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="880" />
       <source>Automatic Features</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="899" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="886" />
       <source>Auto-select word under cursor</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="901" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="888" />
       <source>Apply formatting to word under cursor if no selection is made.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="909" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="896" />
       <source>Auto-replace text as you type</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="911" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="898" />
       <source>Allow the editor to replace symbols as you type.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="916" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="903" />
       <source>Replace as You Type</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="923" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="910" />
       <source>Auto-replace single quotes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="935" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="925" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="922" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="912" />
       <source>Try to guess which is an opening or a closing quote.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="933" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="920" />
       <source>Auto-replace double quotes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="943" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="930" />
       <source>Auto-replace dashes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="945" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="932" />
       <source>Double and triple hyphens become short and long dashes.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="953" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="940" />
       <source>Auto-replace dots</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="955" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="942" />
       <source>Three consecutive dots become ellipsis.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="960" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="947" />
       <source>Automatic Padding</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="967" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="954" />
       <source>Insert non-breaking space before</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="969" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="956" />
       <source>Automatically add space before any of these symbols.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="977" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="964" />
       <source>Insert non-breaking space after</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="979" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="966" />
       <source>Automatically add space after any of these symbols.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="987" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="974" />
       <source>Use thin space instead</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="989" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="976" />
       <source>Inserts a thin space instead of a regular space.</source>
       <translation type="unfinished" />
     </message>
@@ -2493,93 +2533,93 @@
   <context>
     <name>GuiPreferencesDocuments</name>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="496" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="483" />
       <source>Text Style</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="507" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="494" />
       <source>Font family</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="583" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="571" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="522" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="570" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="558" />
       <location filename="../novelwriter/dialogs/preferences.py" line="509" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="496" />
       <source>Applies to both document editor and viewer.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="520" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="507" />
       <source>Font size</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="523" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="510" />
       <source>pt</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="528" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="515" />
       <source>Text Flow</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="537" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="524" />
       <source>Maximum text width in "Normal Mode"</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="539" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="526" />
       <source>Set to 0 to disable this feature.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="597" />
       <location filename="../novelwriter/dialogs/preferences.py" line="584" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="553" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="571" />
       <location filename="../novelwriter/dialogs/preferences.py" line="540" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="527" />
       <source>px</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="550" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="537" />
       <source>Maximum text width in "Focus Mode"</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="552" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="539" />
       <source>The maximum width cannot be disabled.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="560" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="547" />
       <source>Hide document footer in "Focus Mode"</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="562" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="549" />
       <source>Hide the information bar in the document editor.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="569" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="556" />
       <source>Justify the text margins</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="581" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="568" />
       <source>Minimum text margin</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="594" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="581" />
       <source>Tab width</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="596" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="583" />
       <source>The width of a tab key press in the editor and viewer.</source>
       <translation type="unfinished" />
     </message>
@@ -2587,92 +2627,92 @@
   <context>
     <name>GuiPreferencesEditor</name>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="651" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="638" />
       <source>Spell Checking</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="661" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="648" />
       <source>None</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="669" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="656" />
       <source>Spell check language</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="671" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="658" />
       <source>Available languages are determined by your system.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="676" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="663" />
       <source>Word Count</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="686" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="673" />
       <source>Word count interval</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="688" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="675" />
       <source>seconds</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="695" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="682" />
       <source>Include project notes in status bar word count</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="701" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="688" />
       <source>Writing Guides</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="707" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="694" />
       <source>Show tabs and spaces</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="715" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="702" />
       <source>Show line endings</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="721" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="708" />
       <source>Scroll Behaviour</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="727" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="714" />
       <source>Scroll past end of the document</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="729" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="716" />
       <source>Also centres the cursor when scrolling.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="736" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="723" />
       <source>Typewriter style scrolling when you type</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="738" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="725" />
       <source>Keeps the cursor at a fixed vertical position.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="748" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="735" />
       <source>Minimum position for Typewriter scrolling</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="750" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="737" />
       <source>Percentage of the editor height from the top.</source>
       <translation type="unfinished" />
     </message>
@@ -2680,95 +2720,95 @@
   <context>
     <name>GuiPreferencesGeneral</name>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="168" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="155" />
       <source>Look and Feel</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="184" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="171" />
       <source>Main GUI language</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="245" />
       <location filename="../novelwriter/dialogs/preferences.py" line="232" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="186" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="219" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="173" />
       <source>Requires restart to take effect.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="200" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="187" />
       <source>Main GUI theme</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="202" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="189" />
       <source>General colour theme and icons.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="216" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="203" />
       <source>Editor theme</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="218" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="205" />
       <source>Colour theme for the editor and viewer.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="230" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="217" />
       <source>Font family</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="243" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="230" />
       <source>Font size</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="246" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="233" />
       <source>pt</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="251" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="238" />
       <source>GUI Settings</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="256" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="243" />
       <source>Emphasise partition and chapter labels</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="258" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="245" />
       <source>Makes them stand out in the project tree.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="264" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="251" />
       <source>Show full path in document header</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="266" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="253" />
       <source>Add the parent folder names to the header.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="272" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="259" />
       <source>Hide vertical scroll bars in main windows</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="282" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="274" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="269" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="261" />
       <source>Scrolling available with mouse wheel and keys only.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="280" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="267" />
       <source>Hide horizontal scroll bars in main windows</source>
       <translation type="unfinished" />
     </message>
@@ -2776,109 +2816,109 @@
   <context>
     <name>GuiPreferencesProjects</name>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="347" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="334" />
       <source>Automatic Save</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="356" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="343" />
       <source>Save document interval</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="358" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="345" />
       <source>How often the document is automatically saved.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="372" />
       <location filename="../novelwriter/dialogs/preferences.py" line="359" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="346" />
       <source>seconds</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="369" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="356" />
       <source>Save project interval</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="371" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="358" />
       <source>How often the project is automatically saved.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="377" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="364" />
       <source>Project Backup</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="381" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="368" />
       <source>Browse</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="384" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="371" />
       <source>Backup storage location</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="470" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="386" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="457" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="373" />
       <source>Path: {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="394" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="381" />
       <source>Run backup when the project is closed</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="396" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="383" />
       <source>Can be overridden for individual projects in Project Settings.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="405" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="392" />
       <source>Ask before running backup</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="407" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="394" />
       <source>If off, backups will run in the background.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="412" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="399" />
       <source>Session Timer</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="418" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="405" />
       <source>Pause the session timer when not writing</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="420" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="407" />
       <source>Also pauses when the application window does not have focus.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="431" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="418" />
       <source>Editor inactive time before pausing timer</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="433" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="420" />
       <source>User activity includes typing and changing the content.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="434" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="421" />
       <source>minutes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="465" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="452" />
       <source>Backup Directory</source>
       <translation type="unfinished" />
     </message>
@@ -2886,47 +2926,47 @@
   <context>
     <name>GuiPreferencesQuotes</name>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="1042" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="1029" />
       <source>Quotation Style</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="1059" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="1046" />
       <source>Single quote open style</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="1061" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="1048" />
       <source>The symbol to use for a leading single quote.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="1075" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="1062" />
       <source>Single quote close style</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="1077" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="1064" />
       <source>The symbol to use for a trailing single quote.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="1092" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="1079" />
       <source>Double quote open style</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="1094" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="1081" />
       <source>The symbol to use for a leading double quote.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="1108" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="1095" />
       <source>Double quote close style</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="1110" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="1097" />
       <source>The symbol to use for a trailing double quote.</source>
       <translation type="unfinished" />
     </message>
@@ -2934,59 +2974,59 @@
   <context>
     <name>GuiPreferencesSyntax</name>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="793" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="780" />
       <source>Quotes &amp; Dialogue</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="799" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="786" />
       <source>Highlight text wrapped in quotes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="842" />
       <location filename="../novelwriter/dialogs/preferences.py" line="829" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="801" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="816" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="788" />
       <source>Applies to the document editor only.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="807" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="794" />
       <source>Allow open-ended single quotes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="809" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="796" />
       <source>Highlight single-quoted line with no closing quote.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="815" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="802" />
       <source>Allow open-ended double quotes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="817" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="804" />
       <source>Highlight double-quoted line with no closing quote.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="822" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="809" />
       <source>Text Emphasis</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="827" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="814" />
       <source>Add highlight colour to emphasised text</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="835" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="822" />
       <source>Text Errors</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="840" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="827" />
       <source>Highlight multiple or trailing spaces</source>
       <translation type="unfinished" />
     </message>
@@ -3012,72 +3052,72 @@
   <context>
     <name>GuiProjectDetailsContents</name>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="288" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="287" />
       <source>Table of Contents</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="307" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="306" />
       <source>Title</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="308" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="307" />
       <source>Words</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="309" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="308" />
       <source>Pages</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="310" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="309" />
       <source>Page</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="311" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="310" />
       <source>Progress</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="347" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="346" />
       <source>Typical word count for a 5 by 8 inch book page with 11 pt font is 350.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="350" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="349" />
       <source>Start counting page numbers from this page.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="353" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="352" />
       <source>Assume a new chapter or partition always start on an odd numbered page.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="356" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="355" />
       <source>Words per page</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="367" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="366" />
       <source>Count pages from</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="378" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="377" />
       <source>Clear double pages</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="441" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="436" />
       <source>END</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="495" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="488" />
       <source>Untitled</source>
       <translation type="unfinished" />
     </message>
@@ -3085,42 +3125,42 @@
   <context>
     <name>GuiProjectDetailsMain</name>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="181" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="180" />
       <source>Words</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="184" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="183" />
       <source>Chapters</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="187" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="186" />
       <source>Scenes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="190" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="189" />
       <source>Revisions</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="193" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="192" />
       <source>Editing Time</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="213" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="212" />
       <source>Path</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="249" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="248" />
       <source>Project: {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projdetails.py" line="250" />
+      <location filename="../novelwriter/dialogs/projdetails.py" line="249" />
       <source>By {0}</source>
       <translation type="unfinished" />
     </message>
@@ -3128,64 +3168,64 @@
   <context>
     <name>GuiProjectEditMain</name>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="198" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="203" />
       <source>Project Settings</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="208" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="213" />
       <source>Project name</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="210" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="215" />
       <source>Should be set only once.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="218" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="223" />
       <source>Novel title</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="230" />
-      <location filename="../novelwriter/dialogs/projsettings.py" line="220" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="235" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="225" />
       <source>Change whenever you want!</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="228" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="233" />
       <source>Author(s)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="238" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="243" />
       <source>Project language</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="240" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="245" />
       <source>Used when building the manuscript.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="253" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="258" />
       <source>Default</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="258" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="263" />
       <source>Spell check language</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="274" />
-      <location filename="../novelwriter/dialogs/projsettings.py" line="260" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="279" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="265" />
       <source>Overrides main preferences.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="272" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="277" />
       <source>No backup on close</source>
       <translation type="unfinished" />
     </message>
@@ -3193,27 +3233,27 @@
   <context>
     <name>GuiProjectEditReplace</name>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="567" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="572" />
       <source>Text Replace List for Preview and Export</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="574" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="579" />
       <source>Keyword</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="575" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="580" />
       <source>Replace With</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="601" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="606" />
       <source>Select item to edit</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="609" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="614" />
       <source>Save</source>
       <translation type="unfinished" />
     </message>
@@ -3221,67 +3261,67 @@
   <context>
     <name>GuiProjectEditStatus</name>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="296" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="301" />
       <source>Novel File Status Levels</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="300" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="305" />
       <source>Note File Importance Levels</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="318" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="323" />
       <source>Label</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="318" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="323" />
       <source>Usage</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="347" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="352" />
       <source>Select item to edit</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="352" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="357" />
       <source>Colour</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="357" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="362" />
       <source>Save</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="417" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="422" />
       <source>Select Colour</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="430" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="435" />
       <source>New Item</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="441" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="446" />
       <source>Cannot delete a status item that is in use.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="545" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="550" />
       <source>Not in use</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="547" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="552" />
       <source>Used once</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="549" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="554" />
       <source>Used by {0} items</source>
       <translation type="unfinished" />
     </message>
@@ -3348,27 +3388,27 @@
   <context>
     <name>GuiProjectSettings</name>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="64" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="66" />
       <source>Project Settings</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="82" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="84" />
       <source>Settings</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="83" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="85" />
       <source>Status</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="84" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="86" />
       <source>Importance</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projsettings.py" line="85" />
+      <location filename="../novelwriter/dialogs/projsettings.py" line="87" />
       <source>Auto-Replace</source>
       <translation type="unfinished" />
     </message>
@@ -3543,37 +3583,37 @@
   <context>
     <name>GuiSideBar</name>
     <message>
-      <location filename="../novelwriter/gui/sidebar.py" line="60" />
+      <location filename="../novelwriter/gui/sidebar.py" line="62" />
       <source>Project Tree View</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/sidebar.py" line="65" />
+      <location filename="../novelwriter/gui/sidebar.py" line="67" />
       <source>Novel Tree View</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/sidebar.py" line="70" />
+      <location filename="../novelwriter/gui/sidebar.py" line="72" />
       <source>Novel Outline View</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/sidebar.py" line="75" />
+      <location filename="../novelwriter/gui/sidebar.py" line="77" />
       <source>Build Manuscript</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/sidebar.py" line="80" />
+      <location filename="../novelwriter/gui/sidebar.py" line="82" />
       <source>Project Details</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/sidebar.py" line="85" />
+      <location filename="../novelwriter/gui/sidebar.py" line="87" />
       <source>Writing Statistics</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/sidebar.py" line="91" />
+      <location filename="../novelwriter/gui/sidebar.py" line="93" />
       <source>Settings</source>
       <translation type="unfinished" />
     </message>
@@ -3615,18 +3655,18 @@
   <context>
     <name>GuiWordList</name>
     <message>
-      <location filename="../novelwriter/dialogs/wordlist.py" line="69" />
-      <location filename="../novelwriter/dialogs/wordlist.py" line="52" />
+      <location filename="../novelwriter/dialogs/wordlist.py" line="72" />
+      <location filename="../novelwriter/dialogs/wordlist.py" line="55" />
       <source>Project Word List</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/wordlist.py" line="123" />
+      <location filename="../novelwriter/dialogs/wordlist.py" line="138" />
       <source>Cannot add a blank word.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/wordlist.py" line="127" />
+      <location filename="../novelwriter/dialogs/wordlist.py" line="142" />
       <source>The word '{0}' is already in the word list.</source>
       <translation type="unfinished" />
     </message>
@@ -3754,27 +3794,27 @@
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/writingstats.py" line="361" />
+      <location filename="../novelwriter/tools/writingstats.py" line="374" />
       <source>JSON Data File</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/writingstats.py" line="364" />
+      <location filename="../novelwriter/tools/writingstats.py" line="377" />
       <source>CSV Data File</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/writingstats.py" line="371" />
+      <location filename="../novelwriter/tools/writingstats.py" line="384" />
       <source>Save Data As</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/writingstats.py" line="414" />
+      <location filename="../novelwriter/tools/writingstats.py" line="427" />
       <source>{0} file successfully written to:</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/writingstats.py" line="419" />
+      <location filename="../novelwriter/tools/writingstats.py" line="432" />
       <source>Failed to write {0} file.</source>
       <translation type="unfinished" />
     </message>
@@ -4438,27 +4478,27 @@
   <context>
     <name>_DetailsWidget</name>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="512" />
+      <location filename="../novelwriter/tools/manuscript.py" line="505" />
       <source>Setting</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="512" />
+      <location filename="../novelwriter/tools/manuscript.py" line="505" />
       <source>Value</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="579" />
+      <location filename="../novelwriter/tools/manuscript.py" line="572" />
       <source>Name</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="585" />
+      <location filename="../novelwriter/tools/manuscript.py" line="578" />
       <source>Selection</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="601" />
+      <location filename="../novelwriter/tools/manuscript.py" line="594" />
       <source>Title</source>
       <translation type="unfinished" />
     </message>
@@ -4466,37 +4506,37 @@
   <context>
     <name>_FilterTab</name>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="314" />
+      <location filename="../novelwriter/tools/manussettings.py" line="312" />
       <source>Included in manuscript</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="315" />
+      <location filename="../novelwriter/tools/manussettings.py" line="313" />
       <source>Excluded from manuscript</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="350" />
+      <location filename="../novelwriter/tools/manussettings.py" line="348" />
       <source>Always included</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="355" />
+      <location filename="../novelwriter/tools/manussettings.py" line="353" />
       <source>Always excluded</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="360" />
+      <location filename="../novelwriter/tools/manussettings.py" line="358" />
       <source>Reset to default</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="365" />
+      <location filename="../novelwriter/tools/manussettings.py" line="363" />
       <source>Mark selection as</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="521" />
+      <location filename="../novelwriter/tools/manussettings.py" line="519" />
       <source>Select Root Folders</source>
       <translation type="unfinished" />
     </message>
@@ -4504,22 +4544,22 @@
   <context>
     <name>_GuiAlert</name>
     <message>
-      <location filename="../novelwriter/shared.py" line="347" />
+      <location filename="../novelwriter/shared.py" line="361" />
       <source>Information</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="350" />
+      <location filename="../novelwriter/shared.py" line="364" />
       <source>Warning</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="353" />
+      <location filename="../novelwriter/shared.py" line="367" />
       <source>Error</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="356" />
+      <location filename="../novelwriter/shared.py" line="370" />
       <source>Question</source>
       <translation type="unfinished" />
     </message>
@@ -4527,65 +4567,65 @@
   <context>
     <name>_HeadingsTab</name>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="693" />
-      <location filename="../novelwriter/tools/manussettings.py" line="666" />
+      <location filename="../novelwriter/tools/manussettings.py" line="691" />
+      <location filename="../novelwriter/tools/manussettings.py" line="664" />
       <source>Hide</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="824" />
-      <location filename="../novelwriter/tools/manussettings.py" line="715" />
+      <location filename="../novelwriter/tools/manussettings.py" line="822" />
+      <location filename="../novelwriter/tools/manussettings.py" line="713" />
       <source>Editing: {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="821" />
-      <location filename="../novelwriter/tools/manussettings.py" line="715" />
+      <location filename="../novelwriter/tools/manussettings.py" line="819" />
+      <location filename="../novelwriter/tools/manussettings.py" line="713" />
       <source>None</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="724" />
+      <location filename="../novelwriter/tools/manussettings.py" line="722" />
       <source>Title</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="725" />
+      <location filename="../novelwriter/tools/manussettings.py" line="723" />
       <source>Chapter Number</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="726" />
+      <location filename="../novelwriter/tools/manussettings.py" line="724" />
       <source>Chapter Number (Word)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="727" />
+      <location filename="../novelwriter/tools/manussettings.py" line="725" />
       <source>Chapter Number (Upper Case Roman)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="728" />
+      <location filename="../novelwriter/tools/manussettings.py" line="726" />
       <source>Chapter Number (Lower Case Roman)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="729" />
+      <location filename="../novelwriter/tools/manussettings.py" line="727" />
       <source>Scene Number (In Chapter)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="730" />
+      <location filename="../novelwriter/tools/manussettings.py" line="728" />
       <source>Scene Number (Absolute)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="740" />
+      <location filename="../novelwriter/tools/manussettings.py" line="738" />
       <source>Insert</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manussettings.py" line="743" />
+      <location filename="../novelwriter/tools/manussettings.py" line="741" />
       <source>Apply</source>
       <translation type="unfinished" />
     </message>
@@ -4593,27 +4633,27 @@
   <context>
     <name>_PreviewWidget</name>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="665" />
+      <location filename="../novelwriter/tools/manuscript.py" line="658" />
       <source>Press the "Preview" button to generate ...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="763" />
+      <location filename="../novelwriter/tools/manuscript.py" line="756" />
       <source>Processing ...</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="792" />
+      <location filename="../novelwriter/tools/manuscript.py" line="785" />
       <source>Done</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="835" />
+      <location filename="../novelwriter/tools/manuscript.py" line="828" />
       <source>Unknown</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="836" />
+      <location filename="../novelwriter/tools/manuscript.py" line="829" />
       <source>Built</source>
       <translation type="unfinished" />
     </message>
@@ -4754,12 +4794,12 @@
   <context>
     <name>_ViewPanelBackRefs</name>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="212" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="218" />
       <source>Document</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="212" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="218" />
       <source>First Heading</source>
       <translation type="unfinished" />
     </message>
@@ -4767,22 +4807,27 @@
   <context>
     <name>_ViewPanelKeyWords</name>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="339" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="361" />
       <source>Tag</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="339" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="361" />
+      <source>Importance</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="361" />
       <source>Document</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="340" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="362" />
       <source>Heading</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="340" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="362" />
       <source>Short Description</source>
       <translation type="unfinished" />
     </message>

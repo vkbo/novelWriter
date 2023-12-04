@@ -294,7 +294,7 @@ class _ViewPanelBackRefs(QTreeWidget):
     def _treeItemDoubleClicked(self, index: QModelIndex) -> None:
         """Emit follow tag signal on user double click."""
         tHandle = index.siblingAtColumn(self.C_DATA).data(self.D_HANDLE)
-        if index.column() == self.C_DOC:
+        if index.column() not in (self.C_EDIT, self.C_VIEW):
             self._parent.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, "", True)
         return
 
@@ -317,10 +317,12 @@ class _ViewPanelBackRefs(QTreeWidget):
 
             trItem.setIcon(self.C_DOC, docIcon)
             trItem.setText(self.C_DOC, nwItem.itemName)
+            trItem.setToolTip(self.C_DOC, nwItem.itemName)
             trItem.setIcon(self.C_EDIT, self._editIcon)
             trItem.setIcon(self.C_VIEW, self._viewIcon)
-            trItem.setText(self.C_TITLE, hItem.title)
             trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
+            trItem.setText(self.C_TITLE, hItem.title)
+            trItem.setToolTip(self.C_TITLE, hItem.title)
             trItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
 
             if tKey not in self._treeMap:
@@ -334,13 +336,14 @@ class _ViewPanelBackRefs(QTreeWidget):
 
 class _ViewPanelKeyWords(QTreeWidget):
 
-    C_DATA  = 0
-    C_NAME  = 0
-    C_EDIT  = 1
-    C_VIEW  = 2
-    C_DOC   = 3
-    C_TITLE = 4
-    C_SHORT = 5
+    C_DATA   = 0
+    C_NAME   = 0
+    C_EDIT   = 1
+    C_VIEW   = 2
+    C_IMPORT = 3
+    C_DOC    = 4
+    C_TITLE  = 5
+    C_SHORT  = 6
 
     D_TAG = Qt.ItemDataRole.UserRole
 
@@ -355,7 +358,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         cMg = CONFIG.pxInt(6)
 
         self.setHeaderLabels([
-            self.tr("Tag"), "", "", self.tr("Document"),
+            self.tr("Tag"), "", "", self.tr("Importance"), self.tr("Document"),
             self.tr("Heading"), self.tr("Short Description")
         ])
         self.setIndentation(0)
@@ -371,7 +374,6 @@ class _ViewPanelKeyWords(QTreeWidget):
         treeHeader = self.header()
         treeHeader.setStretchLastSection(True)
         treeHeader.setMinimumSectionSize(iPx + cMg)  # See Issue #1627
-        treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.ResizeMode.ResizeToContents)
         treeHeader.setSectionResizeMode(self.C_EDIT, QHeaderView.ResizeMode.Fixed)
         treeHeader.setSectionResizeMode(self.C_VIEW, QHeaderView.ResizeMode.Fixed)
         treeHeader.resizeSection(self.C_EDIT, iPx + cMg)
@@ -417,6 +419,7 @@ class _ViewPanelKeyWords(QTreeWidget):
             nwItem.itemType, nwItem.itemClass,
             nwItem.itemLayout, nwItem.mainHeading
         )
+        impLabel, impIcon = nwItem.getImportStatus(incIcon=True)
         iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0) if nwItem.isDocumentLayout() else 5
         hDec = SHARED.theme.getHeaderDecorationNarrow(iLevel)
 
@@ -424,15 +427,22 @@ class _ViewPanelKeyWords(QTreeWidget):
         # instance of the QTreeWidgetItem, which has some weird side effects
         trItem = self._treeMap[tag] if tag in self._treeMap else QTreeWidgetItem()
 
-        trItem.setText(self.C_NAME, name)
         trItem.setIcon(self.C_NAME, self._classIcon)
+        trItem.setText(self.C_NAME, name)
+        trItem.setToolTip(self.C_NAME, name)
         trItem.setIcon(self.C_EDIT, self._editIcon)
         trItem.setIcon(self.C_VIEW, self._viewIcon)
+        trItem.setIcon(self.C_IMPORT, impIcon)
+        trItem.setText(self.C_IMPORT, impLabel)
+        trItem.setToolTip(self.C_IMPORT, impLabel)
         trItem.setIcon(self.C_DOC, docIcon)
         trItem.setText(self.C_DOC, nwItem.itemName)
-        trItem.setText(self.C_TITLE, hItem.title)
+        trItem.setToolTip(self.C_DOC, nwItem.itemName)
         trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
+        trItem.setText(self.C_TITLE, hItem.title)
+        trItem.setToolTip(self.C_TITLE, hItem.title)
         trItem.setText(self.C_SHORT, hItem.synopsis)
+        trItem.setToolTip(self.C_SHORT, hItem.synopsis)
         trItem.setData(self.C_DATA, self.D_TAG, tag)
 
         if tag not in self._treeMap:
@@ -451,14 +461,18 @@ class _ViewPanelKeyWords(QTreeWidget):
 
     def setColumnWidths(self, widths: list[int]) -> None:
         """Set the column widths."""
-        if isinstance(widths, list) and len(widths) >= 2:
-            self.setColumnWidth(self.C_DOC, CONFIG.pxInt(checkInt(widths[0], 100)))
-            self.setColumnWidth(self.C_TITLE, CONFIG.pxInt(checkInt(widths[1], 100)))
+        if isinstance(widths, list) and len(widths) >= 4:
+            self.setColumnWidth(self.C_NAME, CONFIG.pxInt(checkInt(widths[0], 100)))
+            self.setColumnWidth(self.C_IMPORT, CONFIG.pxInt(checkInt(widths[1], 100)))
+            self.setColumnWidth(self.C_DOC, CONFIG.pxInt(checkInt(widths[2], 100)))
+            self.setColumnWidth(self.C_TITLE, CONFIG.pxInt(checkInt(widths[3], 100)))
         return
 
     def getColumnWidths(self) -> list[int]:
         """Get the widths of the user-adjustable columns."""
         return [
+            CONFIG.rpxInt(self.columnWidth(self.C_NAME)),
+            CONFIG.rpxInt(self.columnWidth(self.C_IMPORT)),
             CONFIG.rpxInt(self.columnWidth(self.C_DOC)),
             CONFIG.rpxInt(self.columnWidth(self.C_TITLE)),
         ]
@@ -481,7 +495,7 @@ class _ViewPanelKeyWords(QTreeWidget):
     def _treeItemDoubleClicked(self, index: QModelIndex) -> None:
         """Emit follow tag signal on user double click."""
         tag = index.siblingAtColumn(self.C_DATA).data(self.D_TAG)
-        if index.column() == self.C_NAME:
+        if index.column() not in (self.C_EDIT, self.C_VIEW):
             self._parent.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
         return
 
