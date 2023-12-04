@@ -776,32 +776,32 @@
   <context>
     <name>GuiDocEditFooter</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3020" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3016" />
       <source>Status</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3162" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3158" />
       <source>Line: {0} ({1})</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3188" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3184" />
       <source>Words: {0} ({1})</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3193" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3189" />
       <source>Document size is {0} bytes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3203" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3199" />
       <source>Words: {0} selected</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3206" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3202" />
       <source>Character count: {0}</source>
       <translation type="unfinished" />
     </message>
@@ -809,22 +809,22 @@
   <context>
     <name>GuiDocEditHeader</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2813" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2809" />
       <source>Toggle Tool Bar</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2822" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2818" />
       <source>Search</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2831" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2827" />
       <source>Toggle Focus Mode</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2840" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2836" />
       <source>Close</source>
       <translation type="unfinished" />
     </message>
@@ -832,58 +832,58 @@
   <context>
     <name>GuiDocEditSearch</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2409" />
-      <location filename="../novelwriter/gui/doceditor.py" line="2396" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2405" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2392" />
       <source>Search</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2401" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2397" />
       <source>Replace</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2417" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2413" />
       <source>Case Sensitive</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2423" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2419" />
       <source>Whole Words Only</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2429" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2425" />
       <source>RegEx Mode</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2435" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2431" />
       <source>Loop Search</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2441" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2437" />
       <source>Search Next File</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2449" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2445" />
       <source>Preserve Case</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2457" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2453" />
       <source>Close Search</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2473" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2469" />
       <source>Find in current document</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2478" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2474" />
       <source>Find and replace in current document</source>
       <translation type="unfinished" />
     </message>
@@ -1095,36 +1095,76 @@
   <context>
     <name>GuiDocToolBar</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2241" />
-      <source>Toggle Markdown or Shortcodes Mode</source>
+      <location filename="../novelwriter/gui/doceditor.py" line="2242" />
+      <source>Markdown Bold</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/doceditor.py" line="2249" />
+      <source>Markdown Italic</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/doceditor.py" line="2256" />
+      <source>Markdown Strikethrough</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/doceditor.py" line="2263" />
+      <source>Shortcode Bold</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/doceditor.py" line="2270" />
+      <source>Shortcode Italic</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/doceditor.py" line="2277" />
+      <source>Shortcode Strikethrough</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/doceditor.py" line="2284" />
+      <source>Shortcode Underline</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/doceditor.py" line="2291" />
+      <source>Shortcode Superscript</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/doceditor.py" line="2298" />
+      <source>Shortcode Subscript</source>
       <translation type="unfinished" />
     </message>
   </context>
   <context>
     <name>GuiDocViewFooter</name>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="878" />
+      <location filename="../novelwriter/gui/docviewer.py" line="876" />
       <source>Show/Hide Viewer Panel</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="888" />
-      <source>Show Comments</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="898" />
-      <source>Show Synopsis Comments</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="901" />
+      <location filename="../novelwriter/gui/docviewer.py" line="880" />
       <source>Comments</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="910" />
+      <location filename="../novelwriter/gui/docviewer.py" line="886" />
+      <source>Show Comments</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/docviewer.py" line="890" />
       <source>Synopsis</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/docviewer.py" line="896" />
+      <source>Show Synopsis Comments</source>
       <translation type="unfinished" />
     </message>
   </context>
@@ -1764,12 +1804,12 @@
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="612" />
-      <source>Emphasis</source>
+      <source>Bold</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="619" />
-      <source>Strong Emphasis</source>
+      <source>Italic</source>
       <translation type="unfinished" />
     </message>
     <message>
@@ -1794,12 +1834,12 @@
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="656" />
-      <source>Italics (Shortcode)</source>
+      <source>Bold (Shortcode)</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="662" />
-      <source>Bold (Shortcode)</source>
+      <source>Italics (Shortcode)</source>
       <translation type="unfinished" />
     </message>
     <message>
@@ -4754,12 +4794,12 @@
   <context>
     <name>_ViewPanelBackRefs</name>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="217" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="218" />
       <source>Document</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="217" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="218" />
       <source>First Heading</source>
       <translation type="unfinished" />
     </message>
@@ -4767,27 +4807,27 @@
   <context>
     <name>_ViewPanelKeyWords</name>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="351" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="361" />
       <source>Tag</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="351" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="361" />
       <source>Importance</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="351" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="361" />
       <source>Document</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="352" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="362" />
       <source>Heading</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="352" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="362" />
       <source>Short Description</source>
       <translation type="unfinished" />
     </message>

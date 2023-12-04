@@ -460,8 +460,8 @@ class GuiIcons:
         "search_regex", "search_word",
 
         # Format Icons
-        "fmt_bold", "fmt_italic", "fmt_mode-md", "fmt_mode-sc", "fmt_strike", "fmt_subscript",
-        "fmt_superscript", "fmt_underline",
+        "fmt_bold", "fmt_bold-md", "fmt_italic", "fmt_italic-md", "fmt_strike", "fmt_strike-md",
+        "fmt_subscript", "fmt_superscript", "fmt_underline",
 
         # General Button Icons
         "add", "backward", "bookmark", "browse", "checked", "close", "cross", "down", "edit",
@@ -479,9 +479,8 @@ class GuiIcons:
     }
 
     TOGGLE_ICON_KEYS = {
-        "sticky":   ("sticky-on", "sticky-off"),
-        "bullet":   ("bullet-on", "bullet-off"),
-        "fmt_mode": ("fmt_mode-sc", "fmt_mode-md"),
+        "sticky": ("sticky-on", "sticky-off"),
+        "bullet": ("bullet-on", "bullet-off"),
     }
 
     IMAGE_MAP = {
