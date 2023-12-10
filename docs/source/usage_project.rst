@@ -62,6 +62,11 @@ Below the project tree you will find a small details panel showing the full info
 currently selected item. This panel also includes the latest paragraph and character counts in
 addition to the word count.
 
+.. tip::
+   If you want to set the label of a document to be the same as a header within it, you can
+   right-click a header in the document when it is open in the editor and select
+   :guilabel:`Set as Document Name` from the context menu.
+
 
 .. _a_ui_tree_split_merge:
 
