@@ -7,7 +7,8 @@ Formatting Your Text
 The novelWriter text editor is a plain text editor that uses formatting codes for setting meta data
 values and allowing for some text formatting. The syntax is based on Markdown, but novelWriter is
 *not* a Markdown editor. It supports basic formatting like emphasis (italic), strong importance
-(bold) and strikethrough text, as well as four levels of headings.
+(bold) and strike through text, as well as four levels of headings. Form some further complex
+formatting needs, a set of shortcodes can be used.
 
 In addition to formatting codes, novelWriter allows for comments, a synopsis tag, and a set of
 keyword and value sets used for :term:`tags<tag>` and :term:`references<reference>`. There are also
@@ -20,7 +21,7 @@ Syntax Highlighting
 ===================
 
 The editor has a syntax highlighter feature that is meant to help you know when you've used the
-formtatting tags or other features correctly. It will change the colour and font size of your
+formatting tags or other features correctly. It will change the colour and font size of your
 headings, change the text colour of emphasised text, and it can also show you where you have
 dialogue in your text.
 
@@ -94,7 +95,7 @@ A text paragraph is indicated by a blank line. That is, you need two line breaks
 fragments of text into two paragraphs. Single line breaks are treated as line breaks within a
 paragraph.
 
-In addition, the editor supports a few additional types of whitespaces:
+In addition, the editor supports a few additional types of white spaces:
 
 * A non-breaking space can be inserted with :kbd:`Ctrl+K`, :kbd:`Space`.
 * Thin spaces are also supported, and can be inserted with :kbd:`Ctrl+K`, :kbd:`Shift+Space`.
@@ -126,7 +127,7 @@ A minimal set of text emphasis styles are supported for text paragraphs.
    The text is rendered as strongly important text (bold).
 
 ``~~text~~``
-   Strikethrough text.
+   Strike through text.
 
 In Markdown guides it is often recommended to differentiate between strong importance and emphasis
 by using ``**`` for strong and ``_`` for emphasis, although Markdown generally also supports ``__``
@@ -136,8 +137,8 @@ recommendation.
 
 In addition, the following rules apply:
 
-1. The emphasis and strikethrough formatting tags do not allow spaces between the words and the tag
-   itself. That is, ``**text**`` is valid, ``**text **`` is not.
+1. The emphasis and strike through formatting tags do not allow spaces between the words and the
+   tag itself. That is, ``**text**`` is valid, ``**text **`` is not.
 2. More generally, the delimiters must be on the outer edge of words. That is, ``some **text in
    bold** here`` is valid, ``some** text in bold** here`` is not.
 3. If using both ``**`` and ``_`` to wrap the same text, the underscore must be the *inner*
@@ -146,13 +147,46 @@ In addition, the following rules apply:
 4. Text emphasis does not span past line breaks. If you need to add emphasis to multiple lines or
    paragraphs, you must apply it to each of them in turn.
 5. Text emphasis can only be used in plain paragraphs. Comments, titles, and meta data tags don't
-   allow for formatting, and any formatting markup will be renderred as-is.
+   allow for formatting, and any formatting markup will be rendered as-is.
 
 .. tip::
    novelWriter supports standard escape syntax for the emphasis markup characters in case the
    editor misunderstands your intended usage of them. That is, ``\*``, ``\_`` and ``\~`` will
    generate a plain ``*``, ``_`` and ``~``, respectively, without interpreting them as part of the
    markup.
+
+
+.. _a_fmt_shortcodes:
+
+Extended Formatting with Shortcodes
+===================================
+
+For additional formatting options, you can use shortcodes. Shortcodes is a form of in-line codes
+that can be used to change the format of the text that follows and opening code, and last until
+that formatting region is ended with a closing code.
+
+These shortcodes are intended for special formatting cases, or more complex cases that cannot be
+solved with simple Markdown-like formatting codes. Available shortcodes are listed below.
+
+.. csv-table:: Shortcodes Formats
+   :header: "Syntax", "Description"
+   :widths: 40, 60
+   :class: "tight-table"
+
+   "``[b]text[/b]``",     "Text is rendered as bold text."
+   "``[i]text[/i]``",     "Text is rendered as italicised text."
+   "``[s]text[/s]``",     "Text is rendered as strike through text."
+   "``[u]text[/u]``",     "Text is rendered as underlined text."
+   "``[sup]text[/sup]``", "Text is rendered as superscript text."
+   "``[sub]text[/sub]``", "Text is rendered as subscript text."
+
+Unlike Markdown style codes, these can be used anywhere within a paragraph. Even in the middle of a
+word if you need to. You can also freely combine them to form more complex formatting.
+
+The shortcodes are available from the :guilabel:`Format` menu and in the editor toolbar, which can
+be activated by clicking the three dots in the editor header.
+
+.. versionadded:: 2.2
 
 
 .. _a_fmt_comm:
@@ -169,19 +203,25 @@ in a special manner and will show up in the :ref:`a_ui_outline` in a dedicated c
 ``synopsis`` is not case sensitive. If it is correctly formatted, the syntax highlighter will
 indicate this by altering the colour of the word.
 
-``% text...``
+``% text ...``
    This is a comment. The text is not rendered by default (this can be overridden), seen in the
    document viewer, or counted towards word counts.
 
-``% Synopsis: text...``
+``%Synopsis: text ...``
    This is a synopsis comment. It is generally treated in the same way as a regular comment, except
    that it is also captured by the indexing algorithm and displayed in the :ref:`a_ui_outline`. It
    can also be filtered separately when building the project to for instance generate an outline
    document of the whole project.
 
+``%Short: text ...``
+   This is a short description comment. It is identical to the synopsis comment, but is intended to
+   be used for project notes. The text shows up in the Reference panel below the document viewer in
+   the last column labelled :guilabel:`Short Description`.
+
 .. note::
-   Only one comment can be flagged as a synopsis comment for each heading. If multiple comments are
-   flagged as synopsis comments, the last one will be used and the rest ignored.
+   Only one comment can be flagged as a synopsis or short comment for each heading. If multiple
+   comments are flagged as synopsis or short comments, the last one will be used and the rest
+   ignored.
 
 
 .. _a_fmt_tags:
@@ -204,8 +244,9 @@ References are in the form:
 ``@keyword: value``
    A reference keyword followed by a value, or a comma separated list of values.
 
-Tags andreferences are covered in detail in the :ref:`a_references` chapter. The keywords can be
-inserted at the cursor position in the editor via the :guilabel:`Insert` menu.
+Tags and references are covered in detail in the :ref:`a_references` chapter. The keywords can be
+inserted at the cursor position in the editor via the :guilabel:`Insert` menu. If you start typing
+an ``@`` on a new line, and auto-complete menu will also pop up suggesting keywords.
 
 
 .. _a_fmt_align:

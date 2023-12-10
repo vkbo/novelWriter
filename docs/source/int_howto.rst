@@ -9,8 +9,8 @@ Tips & Tricks
 This is a list of hopefully helpful little tips on how to get the most out of novelWriter.
 
 .. note::
-   This section will be expanded over time, and if you would like to have something added, feel
-   free to contribute, or start a discussion on the project's `Discussions Page`_.
+   This section will be expanded over time. If you would like to have something added, feel free to
+   contribute, or start a discussion on the project's `Discussions Page`_.
 
 
 Managing the Project
