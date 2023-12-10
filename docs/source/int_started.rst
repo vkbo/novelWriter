@@ -14,8 +14,8 @@ Getting Started
 .. _Releases: https://github.com/vkbo/novelWriter/releases
 .. _AppImage: https://appimage.org/
 
-Package installers for novelWriter are available for all major platforms, including Linux, Windows
-and MacOS. See below for install instructions for each platform.
+Ready-made packages and installers for novelWriter are available for all major platforms, including
+Linux, Windows and MacOS. See below for install instructions for each platform.
 
 You can also install novelWriter from the Python Package Index (PyPi). See :ref:`a_started_pip`.
 Installing from PyPi does not set up icon launchers, so you will either have to do this yourself,
