@@ -6,6 +6,7 @@ File History:
 Created: 2022-10-02 [2.0rc1] DocMerger
 Created: 2022-10-11 [2.0rc1] DocSplitter
 Created: 2022-11-03 [2.0rc2] ProjectBuilder
+Created: 2023-07-20 [2.1b1]  DocDuplicator
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen

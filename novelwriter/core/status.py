@@ -3,8 +3,8 @@ novelWriter – Project Item Status Class
 =======================================
 
 File History:
-Created:   2019-05-19 [0.1.3]
-Rewritten: 2022-04-05 [2.0b1]
+Created:   2019-05-19 [0.1.3] NWStatus
+Rewritten: 2022-04-05 [2.0b1] NWStatus
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen

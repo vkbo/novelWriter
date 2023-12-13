@@ -3,7 +3,7 @@ novelWriter – GUI Project Details
 =================================
 
 File History:
-Created: 2021-01-03 [1.1rc1]
+Created: 2021-01-03 [1.1rc1] GuiProjectDetails
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen

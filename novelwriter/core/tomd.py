@@ -3,7 +3,7 @@ novelWriter – Markdown Text Converter
 =====================================
 
 File History:
-Created: 2021-02-06 [1.2b1]
+Created: 2021-02-06 [1.2b1] ToMarkdown
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen

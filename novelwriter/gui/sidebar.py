@@ -3,7 +3,7 @@ novelWriter – GUI Main Window SideBar
 =====================================
 
 File History:
-Created: 2022-05-10 [2.0rc1]
+Created: 2022-05-10 [2.0rc1] GuiSideBar
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen

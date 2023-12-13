@@ -3,7 +3,7 @@ novelWriter – HTML Text Converter
 =================================
 
 File History:
-Created: 2019-05-07 [0.0.1]
+Created: 2019-05-07 [0.0.1] ToHtml
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
