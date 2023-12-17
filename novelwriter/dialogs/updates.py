@@ -3,7 +3,7 @@ novelWriter – GUI Updates
 =========================
 
 File History:
-Created: 2021-08-21 [1.5b1]
+Created: 2021-08-21 [1.5b1] GuiUpdates
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen

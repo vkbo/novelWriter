@@ -1,5 +1,105 @@
 # novelWriter Changelog
 
+## Version 2.2 [2023-12-17]
+
+### Release Notes
+
+This release comes with a number of new features. These are some highlights.
+
+In addition to the common Markdown style formatting for bold, italic and strike through, a set of
+new shortcodes have been added. The shortcodes are far more flexible than the Markdown style
+syntax, and can be used for more complex formatting cases. Like when you need to add multiple,
+overlapping formats, or add emphasis to just a part of a word. The shortcodes also allow for
+underline, subscript and superscript, which the Markdown syntax does not. The new formats are
+available in the "Format" menu, and in a new toolbar in the editor that can be enabled by clicking
+the three dots in the top--left corner. The shortcode format was chosen because it can later be
+extended to include other requested features as well. Please have a look at the documentation for
+more details about the new shortcodes.
+
+The Tags and References system has been improved. The tags themselves are no longer case sensitive
+when you use them in references, but they are still displayed as you typed them in the tag
+definition when they are displayed in the user interface. Starting to type the `@` symbol in the
+text editor, on a new line, will now open an auto-completer menu which will display available
+options. It may not display all of your tags if you have a lot of them, but starting to type more
+characters will filter the list down further.
+
+You can now automatically create a note file for a new tag that you have added to a reference list
+in a document, but is not yet defined in a project note. So, for instance, if you come up with a
+new character while writing, and add a new tag to your `@char` references, you can right-click the
+new tag and create a new note for that entry directly. In addition, it is now also possible to
+right-click a heading in an open document and set the item label in the project tree to match the
+heading.
+
+In addition to the changes in the editor, the "References" panel below the document viewer has also
+been completely redesigned. It now shows all the references to the document you are viewing as a
+list, with a lot more details than before. In addition, tabs in the panel will appear to show all
+the tags you have defined in your notes, sorted as one tab per category. Like for instance
+Characters, Locations, Objects, etc. You can also give each note a short description comment on the
+same format as the summary comments for chapters and scenes. The short description comment can be
+added from the "Insert" menu under "Special Comments".
+
+The last major change in this release is the new multi-select feature in the project tree. You can
+now select multiple documents and folders using the mouse while pressing `Ctrl` or `Shift`. By
+right-clicking the selected items, you can perform a limited set of operations on all of them, like
+changing active status, and the status or importance labels. You can also drag and drop multiple
+items under the condition that all the selected items are in the same folder, at the same level.
+This restriction is in place due to limitations in the framework novelWriter is based on. But this
+should help in cases where multiple documents need to be moved in and out of folders or between
+folders. Note that adding the multi-select feature meant that the undo feature of the project tree
+had to be removed. It may be added back later.
+
+_These Release Notes also include the changes from the 2.2 Beta 1 and 2.2 RC 1 releases._
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fix column widths for columns with no text in the viewer panel lists, and fix an issues where
+  icons were not updated on theme switch. Issue #1627. PR #1626.
+* Fix auto-selection of words with apostrophes. Issue #1624. PR #1632.
+
+**Usability**
+
+* Use `Ctrl+K, H` for inserting short description comments (alias to synopsis), drop the space
+  after the `%` symbol when inserting special comments, add a browse icon to the open open project
+  dialog, and remove the popup warning for Alpha releases. PR #1626.
+* Menu entries no longer clear the status bar message when they are hovered. This was caused by a
+  status tip feature in Qt, which prints a blank message to the status bar. PR #1630.
+* The novel view panel now scrolls to bring the current document into view when iteratively
+  searching through documents in the project. Issue #1555. PR #1632.
+* The progress bar on the Manuscript Build dialog now stays for 3 seconds after completion instead
+  of 1 second. PR #1634.
+* The document viewer panel now shows the importance label next to each entry, and double-clicking
+  an entry will open it in the viewer. All entries also now show the content in tooltips so that
+  the columns can be shrunk to only view the icon if there is too little space. Issue #16220.
+  PR #1639.
+* The editor toolbar no longer uses the same buttons for markdown and shortcodes style formatting.
+  They have each received their separate buttons. Some additional space has been added between the
+  two types of buttons to visually separate them. Issues #1636 and #1637. PR #1638.
+* Convert the Synopsis and Comment buttons in the document viewer footer to buttons with both icon
+  and text, and drop the label. Issue #1628. PR #1638.
+
+**Internationalisation**
+
+* Updated US English, Norwegian, Japanese, Latin American Spanish, French, and Italian
+  translations. PRs #1625 and #1641.
+
+**Documentation**
+
+* The documentation has been updated to cover new features in 2.2. PR #1640.
+
+**Code Improvements**
+
+* Improve memory usage by making sure C++ objects are deleted when they are no longer used. There
+  is an issue between the Python and Qt side of things where objects are left in memory and not
+  properly garbage collected when they run out of scope. A number of deferred delete calls have
+  been added that seems to solve most of these cases. A `--meminfo` flag has been added to the
+  command line arguments to provide diagnostic data to help debug such issues. PR #1629.
+* Improve handling of alert boxes and their memory clean up, and refactor event filters. PR #1631.
+* Clean up unused methods in GUI extensions. PR #1634.
+
+----
+
 ## Version 2.2 RC 1 [2023-11-26]
 
 ### Release Notes

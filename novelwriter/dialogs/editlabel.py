@@ -3,7 +3,7 @@ novelWriter – Edit Label Dialog
 ===============================
 
 File History:
-Created: 2022-06-11 [2.0rc1]
+Created: 2022-06-11 [2.0rc1] GuiEditLabel
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen

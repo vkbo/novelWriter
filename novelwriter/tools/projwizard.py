@@ -3,7 +3,7 @@ novelWriter – GUI New Project Wizard
 ====================================
 
 File History:
-Created: 2020-07-11 [0.10.1]
+Created: 2020-07-11 [0.10.1] GuiProjectWizard
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen

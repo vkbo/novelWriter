@@ -3,7 +3,7 @@ novelWriter – GUI Dictionary Downloader
 =======================================
 
 File History:
-Created: 2023-11-19 [2.2rc1]
+Created: 2023-11-19 [2.2rc1] GuiDictionaries
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen

@@ -3,7 +3,8 @@ novelWriter – GUI Syntax Highlighter
 ====================================
 
 File History:
-Created: 2019-04-06 [0.0.1]
+Created: 2019-04-06 [0.0.1] GuiDocHighlighter
+Created: 2023-09-10 [2.2b1] TextBlockData
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen

@@ -3,7 +3,7 @@ novelWriter – GUI Writing Statistics
 ====================================
 
 File History:
-Created: 2019-10-20 [0.3]
+Created: 2019-10-20 [0.3.0] GuiWritingStats
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen

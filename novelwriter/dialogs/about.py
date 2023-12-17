@@ -3,7 +3,7 @@ novelWriter – GUI About Box
 ===========================
 
 File History:
-Created: 2020-05-21 [0.5.2]
+Created: 2020-05-21 [0.5.2] GuiAbout
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
