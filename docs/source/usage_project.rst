@@ -28,7 +28,7 @@ the project, and has four columns.
 
 **Column 2**
    The second column shows the word count of the document, or the sum of words of the child items
-   for folders and documents with subdocuments. If the counts seem incorrect, they can be updated
+   for folders and documents with sub-documents. If the counts seem incorrect, they can be updated
    by rebuilding the :term:`project index` from the :guilabel:`Tools` menu, or by pressing
    :kbd:`F9`.
 
@@ -62,6 +62,11 @@ Below the project tree you will find a small details panel showing the full info
 currently selected item. This panel also includes the latest paragraph and character counts in
 addition to the word count.
 
+.. tip::
+   If you want to set the label of a document to be the same as a header within it, you can
+   right-click a header in the document when it is open in the editor and select
+   :guilabel:`Set as Document Name` from the context menu.
+
 
 .. _a_ui_tree_split_merge:
 
@@ -72,6 +77,7 @@ Under the :guilabel:`Transform` submenu in the context menu of an item in the pr
 will find several options on how to change a document or folder. This includes changing between
 document and note, but also splitting them into multiple documents, or merging child items into a
 single document.
+
 
 Splitting Documents
 ^^^^^^^^^^^^^^^^^^^
@@ -90,6 +96,7 @@ hierarchy of documents. That is, put sections under scenes, and scenes under cha
 
 The source document *is not* deleted in the process, but you have the option to let the tool move
 the source document to the :guilabel:`Trash` folder.
+
 
 Merging Documents
 ^^^^^^^^^^^^^^^^^
@@ -137,10 +144,14 @@ The project tree allows drag & drop to a certain extent to allow you to reorder 
 folders. Moving a document in the project tree will affect the text's position when you assemble
 your manuscript in the :guilabel:`Manuscript Build` tool.
 
-Drag & drop has only limited support for moving documents. In general, bulk actions are not
-allowed. This is deliberate to avoid accidentally messing up your project. If you make a mistake,
-the last move action can be undone by pressing :kbd:`Ctrl+Shift+Z` or from the menu icon in the
-project tree's toolbar.
+.. versionadded:: 2.2
+   You can now select multiple items in the project tree by holding down the :kbd:`Ctrl` or
+   :kbd:`Shift` key while selecting items.
+
+You can drag and drop documents and regular folders, but not root folders. If you select multiple
+items, they can only be dragged and dropped if they are siblings. That is, they have the same
+parent item in the project. This is due to the way drag and drop is implemented in the user
+interface framework novelWriter is built upon.
 
 Documents and their folders can be rearranged freely within their root folders. If you move a Novel
 document out of a Novel folder, it will be converted to a project note. Notes can be moved freely
@@ -149,8 +160,8 @@ folder, its "Importance" setting will be switched with a "Status" setting. See
 :ref:`a_ui_tree_status`. The old value will not be overwritten though, and should be restored if
 you move it back at some point.
 
-Root folders in the project tree cannot be dragged & dropped at all. If you want to reorder them,
-you can move them up or down with respect to eachother from the arrow buttons at the top of the
+Root folders in the project tree cannot be dragged and dropped at all. If you want to reorder them,
+you can move them up or down with respect to each other from the arrow buttons at the top of the
 project tree, or by pressing :kbd:`Ctrl+Shift+Up` or :kbd:`Ctrl+Shift+Down` when they are selected.
 
 

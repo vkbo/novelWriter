@@ -3,7 +3,7 @@ novelWriter – Project Session Log Class
 =======================================
 
 File History:
-Created:   2023-06-11 [2.1b1]
+Created: 2023-06-11 [2.1b1] NWSessionLog
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen

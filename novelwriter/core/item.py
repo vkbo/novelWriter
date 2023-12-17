@@ -3,7 +3,7 @@ novelWriter – Project Item Class
 ================================
 
 File History:
-Created: 2018-10-27 [0.0.1]
+Created: 2018-10-27 [0.0.1] NWItem
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen

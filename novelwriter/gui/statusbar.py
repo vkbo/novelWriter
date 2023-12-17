@@ -3,7 +3,7 @@ novelWriter – GUI Main Window Status Bar
 ========================================
 
 File History:
-Created: 2019-04-20 [0.0.1]
+Created: 2019-04-20 [0.0.1] GuiMainStatus
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen

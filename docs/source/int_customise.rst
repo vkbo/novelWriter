@@ -7,7 +7,7 @@ Customisations
 .. _Enchant: https://abiword.github.io/enchant
 .. _Free Desktop: https://cgit.freedesktop.org/libreoffice/dictionaries/tree/
 
-There are a few ways you can customise novelWriter youself. Currently, you can add new GUI themes,
+There are a few ways you can customise novelWriter yourself. Currently, you can add new GUI themes,
 your own syntax themes, and install additional dictionaries.
 
 
@@ -22,22 +22,34 @@ may not load all installed spell check dictionaries automatically.
 Linux and MacOS
 ---------------
 
-On Linux and MacOS, you generally only have to install hunspell or aspell dictionaries on your
-system like you do for other applications. See your distro or OS documentation for how to do this.
-These dictionaries should show up as available spell check languages in novelWriter.
+On Linux and MacOS, you generally only have to install hunspell, aspell or myspell dictionaries on
+your system like you do for other applications. See your distro or OS documentation for how to do
+this. These dictionaries should show up as available spell check languages in novelWriter.
 
 Windows
 -------
 
 For Windows, English is included with the installation. For other languages you have to download
-and add dictionaries yourself. You can find the various dictionaries on the `Free Desktop`_
-website. You should find a folder for your language, if it is available at all, and download the
-files ending with ``.aff`` and ``.dic``. These files must then be copied to the following location:
+and add dictionaries yourself.
+
+**Install Tool**
+
+A small tool to assist with this can be found under :guilabel:`Tools > Add Dictionaries`. It will
+import spell checking dictionaries from Free Office or Libre Office extensions. The dictionaries
+are then installed in the install location for the Enchant library.
+
+**Manual Install**
+
+If you prefer to do this manually or want to use a different source than the ones mentioned above,
+You need to get compatible dictionary files for your language. You need two files files ending with
+``.aff`` and ``.dic``. These files must then be copied to the following location: 
 
 ``C:\Users\<USER>\AppData\Local\enchant\hunspell``
 
 This assumes your user profile is stored at ``C:\Users\<USER>``. The last one or two folders may
 not exist, so you may need to create them.
+
+You can find the various dictionaries on the `Free Desktop`_ website.
 
 .. note::
    The Free Desktop link points to a repository, and what may look like file links inside the
@@ -53,7 +65,7 @@ not exist, so you may need to create them.
 Syntax and GUI Themes
 =====================
 
-Adding your own GUI and syntax themes is relatively easy, altough it requires that you manually
+Adding your own GUI and syntax themes is relatively easy, although it requires that you manually
 edit config files with colour values. The themes are defined by simple plain text config files with
 meta data and colour settings.
 
@@ -136,7 +148,7 @@ Omitted values are not loaded and will use default values.
 Custom Syntax Theme
 -------------------
 
-A syntax theme ``.conf`` file consists of the follwing settings:
+A syntax theme ``.conf`` file consists of the following settings:
 
 .. code-block:: cfg
 

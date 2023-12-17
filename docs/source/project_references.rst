@@ -28,7 +28,7 @@ Metadata in novelWriter
 
 The structure of your novelWriter project is inferred from the :term:`headings` within the
 documents, not the documents themselves. See :ref:`a_struct_heads` for more details. Therefore,
-metadata is also associated with headings, and not documents.
+metadata is also associated with headings, and not the documents directly.
 
 If you split your project into separate documents for each scene, this distinction may not matter.
 However, there are several benefits to using documents at a larger structural scale when starting
@@ -51,9 +51,8 @@ by using the ``@tags`` :term:`keyword`. The full format of a tag is ``@tag: tagn
 ``tagname`` is an identifier of your choosing. You can only set *one* tag per heading, and the tag
 has to be unique across all documents in the project.
 
-.. note::
-   In version 2.2, tags will be made case insensitive, but as of novelWriter 2.1 they are not. You
-   should however avoid using tags that are only distinguished by case.
+.. versionadded:: 2.2
+   Tags are now case insensitive.
 
 After the tags have been defined, they can then be referenced in the novel documents, or
 cross-referenced in other notes. they will also show up in the :guilabel:`Outline View` and in the
@@ -64,10 +63,10 @@ allowed, that is, the tag is unique. Duplicate tags should be detected as long a
 to date. An invalid tag should have a green wiggly line under it, and will not receive the syntax
 colour that valid tags do.
 
-The tag is the only part of these notes that the novelWriter uses. The rest of the document content
-is there for the writer to use in whatever way they wish. Of course, the content of the documents
-can be added to the manuscript, or an outline document. If you want to compile a single document of
-all your notes, you can do this from the :guilabel:`Manuscript Build` tool.
+The tag is the only part of these notes that novelWriter uses. The rest of the document content is
+there for you to use in whatever way you wish. Of course, the content of the documents can be added
+to the manuscript, or an outline document. If you want to compile a single document of all your
+notes, you can do this from the :guilabel:`Manuscript Build` tool.
 
 Example of a heading with a tag for a character of the story:
 
@@ -81,10 +80,13 @@ Example of a heading with a tag for a character of the story:
 
 When this is done in a document in a :term:`Root Folder` of type "Characters", the tag is
 automatically treated as an available character in your project, and you will be able to reference
-it in any of your other documents using the reference keywords for characters.
+it in any of your other documents using the reference keywords for characters. It will also show up
+in the Character tab in the Reference panel below the document viewer, and in the reference
+auto-completer menu in the editor when you fill in references. See :ref:`a_ui_view` and
+:ref:`a_references_completer`.
 
 It is the root folder type that defines what category of story elements the tag is indexed under.
-See the :ref:`a_proj_roots` section for an overview of availabe root folder types. They are also
+See the :ref:`a_proj_roots` section for an overview of available root folder types. They are also
 covered in the next section.
 
 
@@ -148,6 +150,12 @@ that the tags referenced exist.
    In general, the index for a document is regenerated when it is saved, so this shouldn't normally
    be necessary.
 
+.. tip::
+   If you add a reference in the editor to a tag that doesn't yet exist, you can right-click it and
+   select :guilabel:`Create Note for Tag`. This will generate a new project note automatically with
+   the new tag defined. In order for this to be possible, a root folder for that category of
+   references must already exist.
+
 One note can also reference another note in the same way novel documents do. When the note is
 opened in the document viewer, the references become clickable links, making it easier to follow
 connections in the plot. You can follow links in the document editor by clicking them with the
@@ -176,3 +184,19 @@ Example of a novel document with references to characters and plots:
    @plot: Main
 
    Once upon a time ...
+
+
+.. _a_references_completer:
+
+The References Auto-Completer
+-----------------------------
+
+An auto-completer context menu will show up automatically in the document editor when you type the
+character ``@`` on a new line. It will first suggest tag or reference keywords for you to add, and
+after the ``:`` has been added, suggest references from the list of tags you have already defined.
+
+You can use the auto-completer to add multiple references with a ``,`` between them, and even type
+new ones. New references can be created by right-clicking on them and selecting
+:guilabel:`Create Note for Tag` from the menu.
+
+.. versionadded:: 2.2

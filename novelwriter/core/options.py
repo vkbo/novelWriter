@@ -3,8 +3,8 @@ novelWriter – Project Options Cache
 ===================================
 
 File History:
-Created:   2019-10-21 [0.3.1]
-Rewritten: 2020-02-19 [0.4.5]
+Created:   2019-10-21 [0.3.1] OptionState
+Rewritten: 2020-02-19 [0.4.5] OptionState
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen

@@ -3,7 +3,7 @@ novelWriter – GUI Project Settings
 ==================================
 
 File History:
-Created: 2018-09-29 [0.0.1]
+Created: 2018-09-29 [0.0.1] GuiProjectSettings
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen
