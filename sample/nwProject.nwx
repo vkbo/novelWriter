@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.2-rc1" hexVersion="0x020200c1" fileVersion="1.5" fileRevision="1" timeStamp="2023-11-26 14:25:29">
-  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="1615" autoCount="255" editTime="81229">
+<novelWriterXML appVersion="2.3-alpha1" hexVersion="0x020300a1" fileVersion="1.5" fileRevision="1" timeStamp="2023-12-17 17:48:43">
+  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="1617" autoCount="255" editTime="81245">
     <name>Sample Project</name>
     <title>Sample Project</title>
     <author>Jane Smith</author>

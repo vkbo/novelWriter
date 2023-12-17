@@ -3,7 +3,7 @@ novelWriter – GUI User Wordlist
 ===============================
 
 File History:
-Created: 2021-02-12 [1.2rc1]
+Created: 2021-02-12 [1.2rc1] GuiWordList
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen

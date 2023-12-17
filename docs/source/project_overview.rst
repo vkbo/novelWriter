@@ -5,7 +5,7 @@ Novel Projects
 **************
 
 New projects can be created from the :guilabel:`Project` menu by selecting :guilabel:`New Project`.
-This will open the :guilabel:`New Project Wizard` that will assist you in creating a barebone
+This will open the :guilabel:`New Project Wizard` that will assist you in creating a bare bone
 project suited to your needs.
 
 A novelWriter project requires a dedicated folder for storing its files on the local file system.
@@ -41,7 +41,7 @@ to reference them from other documents and notes. The intended usage of each typ
 listed below. However, aside from the :guilabel:`Novel` folder, no restrictions are applied by the
 application on what you put in them. You can use them however you want.
 
-The root folder system is closesly connected to how the Tags and References system works. For more
+The root folder system is closely connected to how the Tags and References system works. For more
 details, see the :ref:`a_references` chapter.
 
 :guilabel:`Novel`

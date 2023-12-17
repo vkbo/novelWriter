@@ -24,9 +24,8 @@ Markdown-like syntax for some features, and a novelWriter-specific syntax for ot
 format is described in the :ref:`a_fmt` chapter.
 
 The editor has a maximise button (toggles the :guilabel:`Focus Mode`) and a close button in the
-top--right corner. On the top--left side you will find an edit button that opens the
-:guilabel:`Item Label` dialog for the currently open document, and a search button to open the
-search dialog.
+top--right corner. On the top--left side you will find a tools button that opens a toolbar with a
+few buttons for applying text formatting, and a search button to open the search dialog.
 
 Both the document editor and viewer will show the label of the currently open document in the
 header at the top of the edit or view panel. Optionally, the full project path to the document can
@@ -38,6 +37,18 @@ be shown. This can be set in :guilabel:`Preferences`.
 
 Any :term:`references<reference>` in the editor can be opened in the viewer by moving the cursor to
 the label and pressing :kbd:`Ctrl+Return`. You can also control-click them with your mouse.
+
+
+Editor Auto-Completer
+---------------------
+
+If you type the character ``@`` on a new line, a context menu will appear showing the different
+available keywords. The list will shorten as you type. Once a keyword command has been selected or
+typed, the editor may suggest further content based on your project content. See
+:ref:`a_references_completer` for more details.
+
+.. versionadded:: 2.2
+   The auto-completer feature was added.
 
 
 .. _a_ui_view:
@@ -68,17 +79,19 @@ buttons, these can be used as well. They work just like the backward and forward
 browser.
 
 At the bottom of the view panel there is a :guilabel:`References` panel. (If it is hidden, click
-the icon next to it to reveal it.) This panel will show links to all documents referring back to
-the one you're currently viewing, if any has been defined. The :guilabel:`Sticky` button will
-freeze the content of the panel to the current document, even if you navigate to another document.
-This is convenient if you want to quickly look through all documents in the list in the
-:guilabel:`References` panel without losing the list in the process.
+the button on the left side of the footer area to reveal it.) This panel contains a References tab
+with links to all documents referring back to the one you're currently viewing, if any has been
+defined. If you have created root folders and tags for various story elements like characters and
+plot points, these will appear as additional tabs in this panel.
 
 .. note::
    The :guilabel:`References` panel relies on an up-to-date :term:`index<project index>` of the
    project. The index is maintained automatically. However, if anything is missing, or seems wrong,
    the index can always be rebuilt by selecting :guilabel:`Rebuild Index` from the
    :guilabel:`Tools` menu, or by pressing :kbd:`F9`.
+
+.. versionadded:: 2.2
+   The reference panel was redesigned and the additional tabs added.
 
 
 .. _a_ui_edit_search:

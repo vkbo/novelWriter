@@ -36,15 +36,15 @@ read on.
    This chapter explains the basics of how the application works and what it can and cannot do.
 
 :ref:`a_ui_project` – Recommended Reading
-   This chapter will give you a more detailed explanation of how you can use the user interface components
-   to organise and view your project work.
+   This chapter will give you a more detailed explanation of how you can use the user interface
+   components to organise and view your project work.
 
 :ref:`a_ui_writing` – Recommended Reading
    This chapter will give you a more detailed explanation of how the text editor and viewer work.
 
 :ref:`a_fmt` – Essential Information
    This chapter covers how you should format your text. The editor is plain text, so text
-   formatting requires some basic markup. The structure of your novel is also inferred by how you
+   formatting requires some basic markup. The structure of your novel is also inferred from how you
    use headings. Tags and references are implemented by special keywords.
 
 :ref:`a_kb` – Optional / Lookup
@@ -55,7 +55,7 @@ read on.
 :ref:`a_typ` – Optional
    This chapter gives you an overview of the special typographical symbols available in
    novelWriter. The auto-replace feature can handle the insertion of standard quote symbols for
-   your language, and other special characters. If you use any symbols aside from these. their
+   your language, and other special characters. If you use any symbols aside from these, their
    intended use is explained here.
 
 :ref:`a_prjfmt` – Optional

@@ -61,7 +61,7 @@ Single and Double Prime
 Both single and double prime symbols are available in the :guilabel:`Insert` menu. These symbols
 are the correct symbols to use for unit symbols for feet, inches, minutes, and seconds. The usage
 of these is described in more detail on the Wikipedia Prime_ page. They look very similar to single
-and double straight quotes, and may be renderred similarly by the font, but they have different
+and double straight quotes, and may be rendered similarly by the font, but they have different
 codes. Using these correctly will also prevent the auto-replace and dialogue highlighting features
 misunderstanding their meaning in the text.
 
@@ -74,7 +74,7 @@ even if it is intended as an apostrophe. This also includes the syntax highlight
 assume the first following apostrophe is the closing symbol of a single quoted region of text.
 
 To get around this, an alternative apostrophe is available. It is a special Unicode character that
-is not categorised as punctuation, but as a modifier. It is usually renderred the same way as the
+is not categorised as punctuation, but as a modifier. It is usually rendered the same way as the
 right single quotation marks, depending on the font. There is a Wikipedia article for the
 `Modifier letter apostrophe`_ with more details.
 

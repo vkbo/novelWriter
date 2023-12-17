@@ -23,6 +23,7 @@ at the same time provide useful features needed for writing a novel.
 
 The main window does not have an editor toolbar like many other applications do. This reduces
 clutter, and since the documents are formatted with style tags, it is more or less redundant.
+
 Most formatting features supported are available through convenient keyboard shortcuts. They are
 also available in the main menu, so you don't have to look up formatting codes every time you need
 them. For reference, a list of all shortcuts can be found in the :ref:`a_kb` chapter.
@@ -36,13 +37,18 @@ On the left side of the main window, you will find a sidebar. This bar has butto
 views you can switch between, a quick link to the :guilabel:`Build Manuscript` tool, and a set of
 project-related tools and quick access to settings at the bottom.
 
+.. versionadded:: 2.2
+   A number of new formatting options were added in 2.2 to allow for some special formatting cases.
+   At the same time, a small formatting toolbar was added in the editor. It is hidden by default,
+   but can be opened by pressing the three dots icon in the top right corner.
 
-Project Tree View
------------------
+
+Project Tree and Editor View
+----------------------------
 
 .. figure:: images/fig_project_tree_view.png
 
-   A screenshot of the Project Tree View.
+   A screenshot of the Project Tree and Editor View.
 
 When in :guilabel:`Project Tree View` mode, the main work area of the main window is split in two,
 or optionally three, panels. The left-most panel contains the project tree and all the documents in
@@ -59,8 +65,8 @@ the editor's header, or by pressing :kbd:`F8`. When :guilabel:`Focus Mode` is en
 interface elements other than the document editor itself are hidden away.
 
 
-Novel Tree View
----------------
+Novel Tree and Editor View
+--------------------------
 
 .. figure:: images/fig_novel_tree_view.png
 
@@ -134,7 +140,7 @@ This is a brief introduction to how you structure your writing projects. All of 
 covered in more detail later.
 
 The main point of novelWriter is that you are free to organise your project documents as you wish
-into subfolders or subdocuments, and split the text between these documents in whatever way suits
+into sub-folders or sub-documents, and split the text between these documents in whatever way suits
 you. All that matters to novelWriter is the linear order the documents appear at in the project
 tree (top to bottom). The chapters, scenes and sections of the novel are determined by the headings
 within those documents.
@@ -153,8 +159,8 @@ The four heading levels (**H1** to **H4**) are treated as follows:
 The project tree will select an icon for the document based on the first heading in it.
 
 This header level structure is only taken into account for :term:`novel documents`. For
-:term:`project notes`, the header levels have no structural meaning, and the user is free to do
-whatever they want. See :ref:`a_struct` and :ref:`a_references` for more details.
+:term:`project notes`, the header levels have no structural meaning, and you are free to use them
+however you want. See :ref:`a_struct` and :ref:`a_references` for more details.
 
 .. versionadded:: 2.0
    You can add documents as child items of other documents. This is often more useful than adding
@@ -173,8 +179,9 @@ The project can at any time be assembled into a range of different formats throu
 various flavours of Markdown.
 
 The HTML5 format is suitable for conversion by a number of other tools like Pandoc_, or for
-importing into word processors if the Open Document format isn't suitable. In addition, printing
-is also possible. Print to PDF is available from the print dialog.
+importing into word processors if the Open Document format isn't suitable. The Open Document format
+is supported by most Office type applications. In addition, printing is also possible. Print to PDF
+is available from the print dialog.
 
 In addition, you can export the content of the project to a JSON file. This is useful if you want
 to write your own custom processing script in for instance Python, as the entire novel can be read

@@ -3,7 +3,7 @@ novelWriter – Project Tree Class
 ================================
 
 File History:
-Created: 2020-05-07 [0.4.5]
+Created: 2020-05-07 [0.4.5] NWTree
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen

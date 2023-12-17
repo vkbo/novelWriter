@@ -3,7 +3,7 @@ novelWriter – Lorem Ipsum Tool
 ==============================
 
 File History:
-Created: 2022-04-02 [2.0rc1]
+Created: 2022-04-02 [2.0rc1] GuiLipsum
 
 This file is a part of novelWriter
 Copyright 2018–2023, Veronica Berglyd Olsen

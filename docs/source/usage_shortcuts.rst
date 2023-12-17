@@ -104,7 +104,7 @@ Text Formatting Shortcuts
    ":kbd:`Ctrl+8`",       "Add a left margin to the block"
    ":kbd:`Ctrl+9`",       "Add a right margin to the block"
    ":kbd:`Ctrl+B`",       "Format selected text, or word under cursor, with strong emphasis (bold)"
-   ":kbd:`Ctrl+D`",       "Strikethrough selected text, or word under cursor"
+   ":kbd:`Ctrl+D`",       "Strike through selected text, or word under cursor"
    ":kbd:`Ctrl+I`",       "Format selected text, or word under cursor, with emphasis (italic)"
    ":kbd:`Ctrl+Shift+/`", "Remove block formatting for block under cursor"
 
