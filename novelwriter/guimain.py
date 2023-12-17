@@ -51,11 +51,12 @@ from novelwriter.gui.itemdetails import GuiItemDetails
 from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
 from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.updates import GuiUpdates
-from novelwriter.dialogs.projload import GuiProjectLoad
+# from novelwriter.dialogs.projload import GuiProjectLoad
 from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projdetails import GuiProjectDetails
 from novelwriter.dialogs.projsettings import GuiProjectSettings
+from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.projwizard import GuiProjectWizard
 from novelwriter.tools.dictionaries import GuiDictionaries
@@ -843,14 +844,17 @@ class GuiMain(QMainWindow):
         browse button for projects not yet cached. Selecting to create a
         new project is forwarded to the new project wizard.
         """
-        dlgProj = GuiProjectLoad(self)
-        dlgProj.exec_()
+        # dlgProj = GuiProjectLoad(self)
+        # dlgProj.exec_()
 
-        if dlgProj.result() == QDialog.Accepted:
-            if dlgProj.openState == GuiProjectLoad.OPEN_STATE:
-                self.openProject(dlgProj.openPath)
-            elif dlgProj.openState == GuiProjectLoad.NEW_STATE:
-                self.newProject()
+        # if dlgProj.result() == QDialog.Accepted:
+        #     if dlgProj.openState == GuiProjectLoad.OPEN_STATE:
+        #         self.openProject(dlgProj.openPath)
+        #     elif dlgProj.openState == GuiProjectLoad.NEW_STATE:
+        #         self.newProject()
+
+        dialog = GuiWelcome(self)
+        dialog.exec_()
 
         return
 
