@@ -26,16 +26,19 @@ from __future__ import annotations
 import logging
 
 from typing import TYPE_CHECKING
+from pathlib import Path
 from datetime import datetime
 
 from PyQt5.QtGui import QCloseEvent, QPaintEvent, QPainter
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QStackedWidget,
+    QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFormLayout,
+    QHBoxLayout, QLabel, QLineEdit, QPushButton, QScrollArea, QStackedWidget,
     QTreeWidget, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED, __version__, __date__
+from novelwriter.common import makeFileNameSafe
 from novelwriter.constants import nwUnicode
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -77,8 +80,13 @@ class GuiWelcome(QDialog):
             __version__, nwUnicode.U_ENDASH, datetime.strptime(__date__, "%Y-%m-%d").strftime("%x")
         ))
 
+        self.tabOpen = _OpenProjectPage(self)
+        self.tabNew = _NewProjectPage(self)
+        self.tabNew.cancelNewProject.connect(self._showOpenProjectPage)
+
         self.mainStack = QStackedWidget()
-        self.mainStack.addWidget(_ProjectsPage(self))
+        self.mainStack.addWidget(self.tabOpen)
+        self.mainStack.addWidget(self.tabNew)
 
         # Buttons
         # =======
@@ -88,6 +96,7 @@ class GuiWelcome(QDialog):
 
         self.newButton = self.btnBox.addButton(self.tr("New Project"), QDialogButtonBox.ActionRole)
         self.newButton.setIcon(SHARED.theme.getIcon("add"))
+        self.newButton.clicked.connect(self._showNewProjectPage)
 
         self.browseButton = self.btnBox.addButton(self.tr("Browse"), QDialogButtonBox.ActionRole)
         self.browseButton.setIcon(SHARED.theme.getIcon("browse"))
@@ -142,6 +151,22 @@ class GuiWelcome(QDialog):
         return
 
     ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot()
+    def _showNewProjectPage(self) -> None:
+        """Show the create new project page."""
+        self.mainStack.setCurrentWidget(self.tabNew)
+        return
+
+    @pyqtSlot()
+    def _showOpenProjectPage(self) -> None:
+        """Show the open exiting project page."""
+        self.mainStack.setCurrentWidget(self.tabOpen)
+        return
+
+    ##
     #  Internal Functions
     ##
 
@@ -154,13 +179,19 @@ class GuiWelcome(QDialog):
 # END Class GuiWelcome
 
 
-class _ProjectsPage(QWidget):
+class _OpenProjectPage(QWidget):
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
+        baseCol = self.palette().base().color()
+        listStyle = (
+            "QTreeWidget {{border: none; background: rgba({0},{1},{2},0.5);}}"
+        ).format(baseCol.red(), baseCol.green(), baseCol.blue())
+
         self.listWidget = QTreeWidget(self)
         self.listWidget.setHeaderHidden(True)
+        self.listWidget.setStyleSheet(listStyle)
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.listWidget)
@@ -168,17 +199,121 @@ class _ProjectsPage(QWidget):
 
         self.setLayout(self.outerBox)
 
-        self.updateTheme()
-
         return
 
-    def updateTheme(self) -> None:
-        """"""
+# END Class _OpenProjectPage
+
+
+class _NewProjectPage(QWidget):
+
+    cancelNewProject = pyqtSignal()
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
+
         baseCol = self.palette().base().color()
         listStyle = (
-            "QTreeWidget {{border: none; background: rgba({0},{1},{2},0.5);}}"
+            "QScrollArea {{border: none; background: rgba({0},{1},{2},0.5);}}"
         ).format(baseCol.red(), baseCol.green(), baseCol.blue())
-        self.listWidget.setStyleSheet(listStyle)
+
+        self.centralScroll = QScrollArea(self)
+        self.centralScroll.setStyleSheet(listStyle)
+
+        # Controls
+        # ========
+
+        self.createButton = QPushButton(self.tr("Create Project"), self)
+        self.createButton.setIcon(SHARED.theme.getIcon("star"))
+
+        self.cancelButton = QPushButton(self.tr("Go Back"), self)
+        self.cancelButton.setIcon(SHARED.theme.getIcon("backward"))
+        self.cancelButton.clicked.connect(lambda: self.cancelNewProject.emit())
+
+        self.buttonBox = QHBoxLayout()
+        self.buttonBox.addStretch(1)
+        self.buttonBox.addWidget(self.cancelButton, 0)
+        self.buttonBox.addWidget(self.createButton, 0)
+
+        # Assemble
+        # ========
+
+        self.outerBox = QVBoxLayout()
+        self.outerBox.addWidget(self.centralScroll)
+        self.outerBox.addLayout(self.buttonBox)
+        self.outerBox.setContentsMargins(0, 0, 0, 0)
+
+        self.setLayout(self.outerBox)
+
+        self._buildNewProjectForm()
+
         return
 
-# END Class _ProjectsPage
+    def _buildNewProjectForm(self) -> None:
+        """Generate the new project form."""
+
+        self.projName = QLineEdit()
+        self.projName.setMaxLength(200)
+        self.projName.setPlaceholderText(self.tr("Required"))
+
+        self.projAuthor = QLineEdit()
+        self.projAuthor.setMaxLength(200)
+        self.projAuthor.setPlaceholderText(self.tr("Optional"))
+
+        self.projLang = QComboBox(self)
+        for tag, language in CONFIG.listLanguages(CONFIG.LANG_PROJ):
+            self.projLang.addItem(language, tag)
+
+        langIdx = self.projLang.findData(CONFIG.guiLocale)
+        if langIdx == -1:
+            langIdx = self.projLang.findData("en_GB")
+        if langIdx != -1:
+            self.projLang.setCurrentIndex(langIdx)
+
+        self.projPath = QLineEdit("")
+        self.projPath.setPlaceholderText(self.tr("Required"))
+
+        self.browsePath = QPushButton(self)
+        self.browsePath.setIcon(SHARED.theme.getIcon("browse"))
+        self.browsePath.clicked.connect(self._doBrowse)
+
+        self.pathBox = QHBoxLayout()
+        self.pathBox.addWidget(self.projPath)
+        self.pathBox.addWidget(self.browsePath)
+
+        self.projectForm = QFormLayout()
+        self.projectForm.addRow(self.tr("Project Name"), self.projName)
+        self.projectForm.addRow(self.tr("Author(s)"), self.projAuthor)
+        self.projectForm.addRow(self.tr("Language"), self.projLang)
+        self.projectForm.addRow(self.tr("Project Path"), self.pathBox)
+        # self.projectForm.setVerticalSpacing(fS)
+
+        # Assemble
+        # ========
+
+        self.newForm = QVBoxLayout()
+        self.newForm.addLayout(self.projectForm)
+
+        self.centralScroll.setLayout(self.newForm)
+
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot()
+    def _doBrowse(self) -> None:
+        """Select a project folder."""
+        lastPath = CONFIG.lastPath()
+        projDir = Path(QFileDialog.getExistingDirectory(
+            self, self.tr("Select Project Folder"), str(lastPath), options=QFileDialog.ShowDirsOnly
+        ))
+        if projDir and (projName := makeFileNameSafe(self.projName.text())):
+            self.projPath.setText(str(projDir / projName))
+        elif projDir:
+            self.projPath.setText(str(projDir))
+        else:
+            self.projPath.setText("")
+        return
+
+# END Class _NewProjectPage
