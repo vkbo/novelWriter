@@ -466,10 +466,10 @@ class GuiIcons:
         "fmt_subscript", "fmt_superscript", "fmt_underline",
 
         # General Button Icons
-        "add", "backward", "bookmark", "browse", "checked", "close", "cross", "down", "edit",
-        "export", "forward", "maximise", "menu", "minimise", "noncheckable", "panel", "refresh",
-        "remove", "revert", "search_replace", "search", "settings", "star", "unchecked", "up",
-        "view",
+        "add", "add_document", "backward", "bookmark", "browse", "checked", "close", "cross",
+        "down", "edit", "export", "forward", "maximise", "menu", "minimise", "noncheckable",
+        "panel", "refresh", "remove", "revert", "search_replace", "search", "settings", "star",
+        "unchecked", "up", "view",
 
         # Switches
         "sticky-on", "sticky-off",

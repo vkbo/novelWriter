@@ -263,23 +263,33 @@ class _NewProjectPage(QWidget):
 
 class _NewProjectForm(QWidget):
 
+    FILL_BLANK = 0
+    FILL_SAMPLE = 1
+    FILL_TEMPLATE = 2
+
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
         self._basePath = CONFIG.lastPath()
+        self._fillMode = self.FILL_BLANK
+        self._tmplPath = None
 
         # Project Settings
         # ================
+        posLast = QLineEdit.ActionPosition.TrailingPosition
 
+        # Project Name
         self.projName = QLineEdit()
         self.projName.setMaxLength(200)
         self.projName.setPlaceholderText(self.tr("Required"))
         self.projName.textChanged.connect(self._updateProjPath)
 
+        # Author(s)
         self.projAuthor = QLineEdit()
         self.projAuthor.setMaxLength(200)
         self.projAuthor.setPlaceholderText(self.tr("Optional"))
 
+        # Project Language
         self.projLang = QComboBox(self)
         for tag, language in CONFIG.listLanguages(CONFIG.LANG_PROJ):
             self.projLang.addItem(language, tag)
@@ -290,23 +300,25 @@ class _NewProjectForm(QWidget):
         if langIdx != -1:
             self.projLang.setCurrentIndex(langIdx)
 
-        self.projPath = QLineEdit("", self)
+        # Project Path
+        self.projPath = QLineEdit(self)
         self.projPath.setReadOnly(True)
         self.projPath.setPlaceholderText(self.tr("Required"))
+        action = self.projPath.addAction(SHARED.theme.getIcon("browse"), posLast)
+        action.triggered.connect(self._doBrowse)
 
-        self.browsePath = QPushButton(self)
-        self.browsePath.setIcon(SHARED.theme.getIcon("browse"))
-        self.browsePath.clicked.connect(self._doBrowse)
+        # Fill Project
+        self.projFill = QLineEdit(self)
+        self.projFill.setReadOnly(True)
+        action = self.projFill.addAction(SHARED.theme.getIcon("add_document"), posLast)
 
-        self.pathBox = QHBoxLayout()
-        self.pathBox.addWidget(self.projPath)
-        self.pathBox.addWidget(self.browsePath)
-
+        # Project Form
         self.projectForm = QFormLayout()
         self.projectForm.addRow(self.tr("Project Name"), self.projName)
         self.projectForm.addRow(self.tr("Author(s)"), self.projAuthor)
         self.projectForm.addRow(self.tr("Language"), self.projLang)
-        self.projectForm.addRow(self.tr("Project Path"), self.pathBox)
+        self.projectForm.addRow(self.tr("Project Path"), self.projPath)
+        self.projectForm.addRow(self.tr("Prefill Project"), self.projFill)
 
         # Chapters and Scenes
         # ===================
@@ -364,6 +376,7 @@ class _NewProjectForm(QWidget):
         # ========
 
         self.formBox = QVBoxLayout()
+        self.formBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Create New Project"))))
         self.formBox.addLayout(self.projectForm)
         self.formBox.addSpacing(16)
         self.formBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Chapters and Scenes"))))
@@ -376,6 +389,7 @@ class _NewProjectForm(QWidget):
         self.setLayout(self.formBox)
 
         self._updateProjPath()
+        self._updateFillInfo()
 
         return
 
@@ -410,6 +424,29 @@ class _NewProjectForm(QWidget):
         addWorld = self.addWorld.isChecked()
         if not (addPlot or addChar or addWorld):
             self.addNotes.setChecked(False)
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _updateFillInfo(self) -> None:
+        """Update the text of the project fill box."""
+        if self._fillMode == self.FILL_BLANK:
+            self.projFill.setText(self.tr("Fresh Project"))
+        elif self._fillMode == self.FILL_SAMPLE:
+            self.projFill.setText(self.tr("Example Project"))
+        elif self._fillMode == self.FILL_TEMPLATE:
+            self.projFill.setText(self.tr("Template: {0}").format(str(self._tmplPath)))
+
+        isBlank = self._fillMode == self.FILL_BLANK
+        self.numChapters.setEnabled(isBlank)
+        self.numScenes.setEnabled(isBlank)
+        self.addPlot.setEnabled(isBlank)
+        self.addChar.setEnabled(isBlank)
+        self.addWorld.setEnabled(isBlank)
+        self.addNotes.setEnabled(isBlank)
+
         return
 
 # END Class _NewProjectForm
