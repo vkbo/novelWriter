@@ -33,13 +33,14 @@ from PyQt5.QtGui import QCloseEvent, QPaintEvent, QPainter
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFormLayout,
-    QHBoxLayout, QLabel, QLineEdit, QPushButton, QScrollArea, QStackedWidget,
-    QTreeWidget, QVBoxLayout, QWidget
+    QHBoxLayout, QLabel, QLineEdit, QPushButton, QScrollArea, QSpinBox,
+    QStackedWidget, QTreeWidget, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED, __version__, __date__
 from novelwriter.common import makeFileNameSafe
 from novelwriter.constants import nwUnicode
+from novelwriter.extensions.switch import NSwitch
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -184,20 +185,19 @@ class _OpenProjectPage(QWidget):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
-        baseCol = self.palette().base().color()
-        listStyle = (
-            "QTreeWidget {{border: none; background: rgba({0},{1},{2},0.5);}}"
-        ).format(baseCol.red(), baseCol.green(), baseCol.blue())
-
         self.listWidget = QTreeWidget(self)
         self.listWidget.setHeaderHidden(True)
-        self.listWidget.setStyleSheet(listStyle)
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.listWidget)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(self.outerBox)
+
+        baseCol = self.palette().base().color()
+        self.setStyleSheet((
+            "QTreeWidget {{border: none; background: rgba({r},{g},{b},0.5);}}"
+        ).format(r=baseCol.red(), g=baseCol.green(), b=baseCol.blue()))
 
         return
 
@@ -211,13 +211,16 @@ class _NewProjectPage(QWidget):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
-        baseCol = self.palette().base().color()
-        listStyle = (
-            "QScrollArea {{border: none; background: rgba({0},{1},{2},0.5);}}"
-        ).format(baseCol.red(), baseCol.green(), baseCol.blue())
+        # Main Form
+        # =========
 
-        self.centralScroll = QScrollArea(self)
-        self.centralScroll.setStyleSheet(listStyle)
+        self.projectForm = _NewProjectForm(self)
+
+        self.scrollArea = QScrollArea(self)
+        self.scrollArea.setWidget(self.projectForm)
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
         # Controls
         # ========
@@ -238,22 +241,40 @@ class _NewProjectPage(QWidget):
         # ========
 
         self.outerBox = QVBoxLayout()
-        self.outerBox.addWidget(self.centralScroll)
+        self.outerBox.addWidget(self.scrollArea)
         self.outerBox.addLayout(self.buttonBox)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(self.outerBox)
 
-        self._buildNewProjectForm()
+        # Styles
+        # ======
+
+        baseCol = self.palette().base().color()
+        self.setStyleSheet((
+            "QScrollArea {{border: none; background: rgba({r},{g},{b},0.5);}} "
+            "_NewProjectForm {{border: none; background: rgba({r},{g},{b},0.5);}} "
+        ).format(r=baseCol.red(), g=baseCol.green(), b=baseCol.blue()))
 
         return
 
-    def _buildNewProjectForm(self) -> None:
-        """Generate the new project form."""
+# END Class _NewProjectPage
+
+
+class _NewProjectForm(QWidget):
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
+
+        self._basePath = CONFIG.lastPath()
+
+        # Project Settings
+        # ================
 
         self.projName = QLineEdit()
         self.projName.setMaxLength(200)
         self.projName.setPlaceholderText(self.tr("Required"))
+        self.projName.textChanged.connect(self._updateProjPath)
 
         self.projAuthor = QLineEdit()
         self.projAuthor.setMaxLength(200)
@@ -269,7 +290,8 @@ class _NewProjectPage(QWidget):
         if langIdx != -1:
             self.projLang.setCurrentIndex(langIdx)
 
-        self.projPath = QLineEdit("")
+        self.projPath = QLineEdit("", self)
+        self.projPath.setReadOnly(True)
         self.projPath.setPlaceholderText(self.tr("Required"))
 
         self.browsePath = QPushButton(self)
@@ -285,15 +307,75 @@ class _NewProjectPage(QWidget):
         self.projectForm.addRow(self.tr("Author(s)"), self.projAuthor)
         self.projectForm.addRow(self.tr("Language"), self.projLang)
         self.projectForm.addRow(self.tr("Project Path"), self.pathBox)
-        # self.projectForm.setVerticalSpacing(fS)
+
+        # Chapters and Scenes
+        # ===================
+
+        self.numChapters = QSpinBox()
+        self.numChapters.setRange(0, 200)
+        self.numChapters.setValue(5)
+        self.numChapters.setToolTip(self.tr("Set to 0 to only add scenes"))
+
+        self.chapterBox = QHBoxLayout()
+        self.chapterBox.addWidget(QLabel(self.tr("Add")))
+        self.chapterBox.addWidget(self.numChapters)
+        self.chapterBox.addWidget(QLabel(self.tr("chapter documents")))
+        self.chapterBox.addStretch(1)
+
+        self.numScenes = QSpinBox()
+        self.numScenes.setRange(0, 200)
+        self.numScenes.setValue(5)
+
+        self.sceneBox = QHBoxLayout()
+        self.sceneBox.addWidget(QLabel(self.tr("Add")))
+        self.sceneBox.addWidget(self.numScenes)
+        self.sceneBox.addWidget(QLabel(self.tr("scene documents (to each chapter)")))
+        self.sceneBox.addStretch(1)
+
+        self.novelForm = QVBoxLayout()
+        self.novelForm.addLayout(self.chapterBox)
+        self.novelForm.addLayout(self.sceneBox)
+
+        # Project Notes
+        # =============
+
+        self.addPlot = NSwitch(self)
+        self.addPlot.setChecked(True)
+        self.addPlot.clicked.connect(self._syncSwitches)
+
+        self.addChar = NSwitch(self)
+        self.addChar.setChecked(True)
+        self.addChar.clicked.connect(self._syncSwitches)
+
+        self.addWorld = NSwitch(self)
+        self.addWorld.setChecked(False)
+        self.addWorld.clicked.connect(self._syncSwitches)
+
+        self.addNotes = NSwitch()
+        self.addNotes.setChecked(False)
+
+        self.notesForm = QFormLayout()
+        self.notesForm.addRow(self.tr("Add a folder for plot notes"), self.addPlot)
+        self.notesForm.addRow(self.tr("Add a folder for character notes"), self.addChar)
+        self.notesForm.addRow(self.tr("Add a folder for location notes"), self.addWorld)
+        self.notesForm.addRow(self.tr("Add example notes to the above"), self.addNotes)
 
         # Assemble
         # ========
 
-        self.newForm = QVBoxLayout()
-        self.newForm.addLayout(self.projectForm)
+        self.formBox = QVBoxLayout()
+        self.formBox.addLayout(self.projectForm)
+        self.formBox.addSpacing(16)
+        self.formBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Chapters and Scenes"))))
+        self.formBox.addLayout(self.novelForm)
+        self.formBox.addSpacing(16)
+        self.formBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Project Notes"))))
+        self.formBox.addLayout(self.notesForm)
+        self.formBox.addStretch(1)
 
-        self.centralScroll.setLayout(self.newForm)
+        self.setLayout(self.formBox)
+
+        self._updateProjPath()
 
         return
 
@@ -304,16 +386,30 @@ class _NewProjectPage(QWidget):
     @pyqtSlot()
     def _doBrowse(self) -> None:
         """Select a project folder."""
-        lastPath = CONFIG.lastPath()
-        projDir = Path(QFileDialog.getExistingDirectory(
-            self, self.tr("Select Project Folder"), str(lastPath), options=QFileDialog.ShowDirsOnly
-        ))
-        if projDir and (projName := makeFileNameSafe(self.projName.text())):
-            self.projPath.setText(str(projDir / projName))
-        elif projDir:
-            self.projPath.setText(str(projDir))
-        else:
-            self.projPath.setText("")
+        if projDir := QFileDialog.getExistingDirectory(
+            self, self.tr("Select Project Folder"),
+            str(self._basePath), options=QFileDialog.ShowDirsOnly
+        ):
+            self._basePath = Path(projDir)
+            self._updateProjPath()
+            CONFIG.setLastPath(self._basePath)
         return
 
-# END Class _NewProjectPage
+    @pyqtSlot()
+    def _updateProjPath(self) -> None:
+        """Update the path box to show the full project path."""
+        projName = makeFileNameSafe(self.projName.text().strip())
+        self.projPath.setText(str(self._basePath / projName))
+        return
+
+    @pyqtSlot()
+    def _syncSwitches(self):
+        """Check if the add notes option should also be switched off."""
+        addPlot = self.addPlot.isChecked()
+        addChar = self.addChar.isChecked()
+        addWorld = self.addWorld.isChecked()
+        if not (addPlot or addChar or addWorld):
+            self.addNotes.setChecked(False)
+        return
+
+# END Class _NewProjectForm
