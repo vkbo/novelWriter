@@ -28,7 +28,7 @@ import logging
 from typing import TYPE_CHECKING
 from datetime import datetime
 
-from PyQt5.QtGui import QPaintEvent, QPainter, QPixmap
+from PyQt5.QtGui import QCloseEvent, QPaintEvent, QPainter
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QStackedWidget,
@@ -36,6 +36,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED, __version__, __date__
+from novelwriter.constants import nwUnicode
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -50,19 +51,30 @@ class GuiWelcome(QDialog):
 
         logger.debug("Create: GuiWelcome")
 
-        self.bgImage = QPixmap(str(CONFIG.assetPath("images") / "welcome.jpg"))
+        self.setWindowTitle(self.tr("Welcome"))
+        self.setMinimumWidth(CONFIG.pxInt(700))
+        self.setMinimumHeight(CONFIG.pxInt(400))
+
+        hA = CONFIG.pxInt(8)
+        hB = CONFIG.pxInt(16)
+        hC = CONFIG.pxInt(24)
+        hD = CONFIG.pxInt(36)
+        hE = CONFIG.pxInt(48)
+        hF = CONFIG.pxInt(96)
+
+        self.resize(*CONFIG.welcomeWinSize)
+
+        self.bgImage = SHARED.theme.loadDecoration("welcome")
+        self.nwImage = SHARED.theme.loadDecoration("nw-text", h=hD)
 
         self.nwLogo = QLabel()
-        self.nwLogo.setPixmap(SHARED.theme.getPixmap("novelwriter", (96, 96)))
-
-        font = self.font()
-        font.setPointSize(48)
+        self.nwLogo.setPixmap(SHARED.theme.getPixmap("novelwriter", (hF, hF)))
 
         self.nwLabel = QLabel("novelWriter")
-        self.nwLabel.setFont(font)
+        self.nwLabel.setPixmap(self.nwImage)
 
-        self.nwInfo = QLabel(self.tr("Version {0}, Released on {1}").format(
-            __version__, datetime.strptime(__date__, "%Y-%m-%d").strftime("%x")
+        self.nwInfo = QLabel(self.tr("Version {0} {1} Released on {2}").format(
+            __version__, nwUnicode.U_ENDASH, datetime.strptime(__date__, "%Y-%m-%d").strftime("%x")
         ))
 
         self.mainStack = QStackedWidget()
@@ -71,6 +83,8 @@ class GuiWelcome(QDialog):
         # Buttons
         # =======
         self.btnBox = QDialogButtonBox(QDialogButtonBox.Open | QDialogButtonBox.Cancel, self)
+        self.btnBox.accepted.connect(self.accept)
+        self.btnBox.rejected.connect(self.close)
 
         self.newButton = self.btnBox.addButton(self.tr("New Project"), QDialogButtonBox.ActionRole)
         self.newButton.setIcon(SHARED.theme.getIcon("add"))
@@ -81,9 +95,12 @@ class GuiWelcome(QDialog):
         # Assemble
         # ========
         self.innerBox = QVBoxLayout()
+        self.innerBox.addSpacing(hB)
         self.innerBox.addWidget(self.nwLabel)
         self.innerBox.addWidget(self.nwInfo)
+        self.innerBox.addSpacing(hA)
         self.innerBox.addWidget(self.mainStack)
+        self.innerBox.addSpacing(hA)
         self.innerBox.addWidget(self.btnBox)
 
         topRight = Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight
@@ -91,11 +108,9 @@ class GuiWelcome(QDialog):
         self.outerBox = QHBoxLayout()
         self.outerBox.addWidget(self.nwLogo, 3, topRight)
         self.outerBox.addLayout(self.innerBox, 7)
-        self.outerBox.setContentsMargins(24, 24, 24, 96)
+        self.outerBox.setContentsMargins(hF, hE, hC, hE)
 
         self.setLayout(self.outerBox)
-
-        self.setMinimumSize(900, 500)
 
         logger.debug("Ready: GuiWelcome")
 
@@ -117,6 +132,23 @@ class GuiWelcome(QDialog):
         qPaint = QPainter(self)
         qPaint.drawPixmap(0, hWin - hPix, self.bgImage.scaledToHeight(hPix, tMode))
         super().paintEvent(event)
+        return
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Capture the user closing the window and save settings."""
+        self._saveSettings()
+        event.accept()
+        self.deleteLater()
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _saveSettings(self) -> None:
+        """Save the user GUI settings."""
+        logger.debug("Saving State: GuiWelcome")
+        CONFIG.setWelcomeWinSize(self.width(), self.height())
         return
 
 # END Class GuiWelcome

@@ -67,6 +67,7 @@ class GuiTheme:
         self.themeLicense     = ""
         self.themeLicenseUrl  = ""
         self.themeIcons       = ""
+        self.isLightTheme     = True
 
         # GUI
         self.statNone    = [120, 120, 120]
@@ -112,7 +113,7 @@ class GuiTheme:
         self._setGuiFont()
 
         # Load Themes
-        self._guiPalette  = QPalette()
+        self._guiPalette = QPalette()
         self._themeList: list[tuple[str, str]] = []
         self._syntaxList: list[tuple[str, str]] = []
         self._availThemes: dict[str, Path] = {}
@@ -256,7 +257,8 @@ class GuiTheme:
         textLNess = textCol.lightnessF()
 
         if self.helpText == [0, 0, 0]:
-            if backLNess > textLNess:
+            self.isLightTheme = backLNess > textLNess
+            if self.isLightTheme:
                 helpLCol = textLNess + 0.35*(backLNess - textLNess)
             else:
                 helpLCol = backLNess + 0.65*(textLNess - backLNess)
@@ -443,7 +445,7 @@ class GuiIcons:
     missing, a blank icon is returned and a warning issued.
     """
 
-    ICON_KEYS = {
+    ICON_KEYS: set[str] = {
         # Project and GUI Icons
         "novelwriter", "alert_error", "alert_info", "alert_question", "alert_warn",
         "build_excluded", "build_filtered", "build_included", "proj_chapter", "proj_details",
@@ -478,13 +480,15 @@ class GuiIcons:
         "deco_doc_nt_n",
     }
 
-    TOGGLE_ICON_KEYS = {
+    TOGGLE_ICON_KEYS: dict[str, tuple[str, str]] = {
         "sticky": ("sticky-on", "sticky-off"),
         "bullet": ("bullet-on", "bullet-off"),
     }
 
-    IMAGE_MAP = {
-        "wiz-back": "wizard-back.jpg",
+    IMAGE_MAP: dict[str, tuple[str, str]] = {
+        "wiz-back": ("wizard-back.jpg", "wizard-back.jpg"),
+        "welcome":  ("welcome.jpg", "welcome.jpg"),
+        "nw-text":  ("novelwriter-text-light.svg", "novelwriter-text-dark.svg"),
     }
 
     def __init__(self, mainTheme: GuiTheme) -> None:
@@ -598,7 +602,8 @@ class GuiIcons:
         if name in self._themeMap:
             imgPath = self._themeMap[name]
         elif name in self.IMAGE_MAP:
-            imgPath = CONFIG.assetPath("images") / self.IMAGE_MAP[name]
+            idx = 0 if self.mainTheme.isLightTheme else 1
+            imgPath = CONFIG.assetPath("images") / self.IMAGE_MAP[name][idx]
         else:
             logger.error("Decoration with name '%s' does not exist", name)
             return QPixmap()
