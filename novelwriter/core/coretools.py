@@ -331,20 +331,19 @@ class ProjectBuilder:
             logger.error("Invalid call to buildProject function")
             return False
 
-        path = data.get("path", None)
-        if path is None:
-            SHARED.error("A project path is required.")
-            return False
+        path = data.get("path", None) or None
+        if isinstance(path, (str, Path)):
+            self._path = Path(path).resolve()
+            if data.get("sample", False):
+                return self._extractSampleProject(self._path)
+            elif data.get("template"):
+                return True
+            else:
+                return self._buildAndPopulate(self._path, data)
 
-        if data.get("sample", False):
-            self._path = path
-            return self._extractSampleProject(path)
-        elif data.get("template"):
-            pass
-        else:
-            self._buildAndPopulate(path, data)
+        SHARED.error("A project path is required.")
 
-        return True
+        return False
 
     ##
     #  Internal Functions
@@ -475,7 +474,6 @@ class ProjectBuilder:
                     "Failed to create a new example project."
                 ), exc=exc)
                 return False
-
         else:
             SHARED.error(self.tr(
                 "Failed to create a new example project. "

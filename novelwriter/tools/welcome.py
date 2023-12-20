@@ -175,7 +175,7 @@ class GuiWelcome(QDialog):
     @pyqtSlot()
     @pyqtSlot(Path)
     def _setProjectPath(self, path: Path | None = None) -> None:
-        """Set the path variable for the project to open."""
+        """Emit a project open signal."""
         if isinstance(path, Path):
             self.openProjectRequest.emit(path)
         self.close()
