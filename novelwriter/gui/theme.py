@@ -487,7 +487,6 @@ class GuiIcons:
     }
 
     IMAGE_MAP: dict[str, tuple[str, str]] = {
-        "wiz-back": ("wizard-back.jpg", "wizard-back.jpg"),
         "welcome":  ("welcome.jpg", "welcome.jpg"),
         "nw-text":  ("novelwriter-text-light.svg", "novelwriter-text-dark.svg"),
     }

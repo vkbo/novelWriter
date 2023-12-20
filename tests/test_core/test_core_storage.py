@@ -297,48 +297,6 @@ def testCoreStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
 # END Test testCoreStorage_ZipIt
 
 
-# @pytest.mark.core
-# def testCoreStorage_PrepareStorage(monkeypatch, fncPath):
-#     """Test the project path preparation functions."""
-#     storage = NWStorage(MockProject())  # type: ignore
-#     assert storage.isOpen() is False
-
-#     # No path set
-#     assert storage._prepareStorage() is False
-
-#     # Set path to home
-#     storage._runtimePath = fncPath
-#     with monkeypatch.context() as mp:
-#         mp.setattr("pathlib.Path.home", lambda: fncPath)
-#         assert storage._prepareStorage() is False
-
-#     # Fail on mkdir
-#     storage._runtimePath = fncPath
-#     with monkeypatch.context() as mp:
-#         mp.setattr("pathlib.Path.mkdir", causeOSError)
-#         assert storage._prepareStorage() is False
-
-#     # Set up the folder
-#     storage._runtimePath = fncPath
-#     assert storage._prepareStorage(checkLegacy=False) is True
-#     assert (fncPath / "content").exists()
-#     assert (fncPath / "meta").exists()
-#     assert not (fncPath / "cache").exists()  # Removed in 2.1b1
-
-#     # Add a legacy folder
-#     storage._runtimePath = fncPath
-#     dataDir = fncPath / "data_0"
-#     dataDir.mkdir()
-#     assert storage._prepareStorage(checkLegacy=True) is True
-#     assert not dataDir.exists()
-
-#     # We cannot add a new project here
-#     storage._runtimePath = fncPath
-#     assert storage._prepareStorage(checkLegacy=False, newProject=True) is False
-
-# # END Test testCoreStorage_PrepareStorage
-
-
 @pytest.mark.core
 def testCoreStorage_LegacyDataFolder(monkeypatch, fncPath):
     """Test project file format 1.0 folder structure conversion."""

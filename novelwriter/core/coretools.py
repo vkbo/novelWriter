@@ -326,11 +326,9 @@ class ProjectBuilder:
     ##
 
     def buildProject(self, data: dict) -> bool:
-        """Build a project from a data dictionary of specifications
-        provided by the wizard.
-        """
+        """Build or copy a project from a data dictionary."""
         if not isinstance(data, dict):
-            logger.error("Invalid call to newProject function")
+            logger.error("Invalid call to buildProject function")
             return False
 
         path = data.get("path", None)
@@ -353,9 +351,7 @@ class ProjectBuilder:
     ##
 
     def _buildAndPopulate(self, path: Path, data: dict) -> bool:
-        """Build a project from a data dictionary of specifications
-        provided by the wizard.
-        """
+        """Build a blank project from a data dictionary."""
         project = NWProject()
         status = project.storage.createNewProject(path)
         if status == NWStorageCreate.NOT_EMPTY:

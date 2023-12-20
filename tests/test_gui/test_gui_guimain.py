@@ -26,16 +26,15 @@ import pytest
 from shutil import copyfile
 
 from tools import (
-    C, NWD_IGNORE, cmpFiles, buildTestProject, XML_IGNORE, getGuiItem, writeFile
+    C, NWD_IGNORE, cmpFiles, buildTestProject, XML_IGNORE, getGuiItem
 )
 
 from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog, QMenu, QMessageBox, QInputDialog
+from PyQt5.QtWidgets import QDialog, QMenu, QInputDialog
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemType, nwView, nwWidget
-from novelwriter.constants import nwFiles
 from novelwriter.gui.outline import GuiOutlineView
 from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.gui.doceditor import GuiDocEditor
@@ -43,7 +42,6 @@ from novelwriter.gui.noveltree import GuiNovelView
 from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.projload import GuiProjectLoad
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.tools.projwizard import GuiProjectWizard
 
 KEY_DELAY = 1
 
@@ -112,42 +110,6 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
     # qtbot.stop()
 
 # END Test testGuiMain_Launch
-
-
-@pytest.mark.gui
-def testGuiMain_NewProject(monkeypatch, nwGUI, projPath):
-    """Test creating a new project."""
-    # Open wizard, but return no data
-    with monkeypatch.context() as mp:
-        mp.setattr(GuiProjectWizard, "exec_", lambda *a: None)
-        assert nwGUI.newProject(projData=None) is False
-
-    # Close project
-    with monkeypatch.context() as mp:
-        SHARED.project._valid = True
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
-        assert nwGUI.newProject(projData={"projPath": projPath}) is False
-        SHARED.project._valid = False
-
-    # No project path
-    assert nwGUI.newProject(projData={}) is False
-
-    # Project file already exists
-    projFile = projPath / nwFiles.PROJ_FILE
-    writeFile(projFile, "Stuff")
-    assert nwGUI.newProject(projData={"projPath": projPath}) is False
-    projFile.unlink()
-
-    # An unreachable path should also fail
-    stuffPath = projPath / "stuff" / "stuff" / "stuff"
-    assert nwGUI.newProject(projData={"projPath": stuffPath}) is False
-
-    # This one should work just fine
-    assert nwGUI.newProject(projData={"projPath": projPath}) is True
-    assert (projPath / nwFiles.PROJ_FILE).is_file()
-    assert (projPath / "content").is_dir()
-
-# END Test testGuiMain_NewProject
 
 
 @pytest.mark.gui
