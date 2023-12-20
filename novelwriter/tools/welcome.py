@@ -30,11 +30,11 @@ from pathlib import Path
 from datetime import datetime
 
 from PyQt5.QtGui import QCloseEvent, QPaintEvent, QPainter
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QEvent, QPoint, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFormLayout,
-    QHBoxLayout, QLabel, QLineEdit, QPushButton, QScrollArea, QSpinBox,
-    QStackedWidget, QTreeWidget, QVBoxLayout, QWidget
+    QHBoxLayout, QLabel, QLineEdit, QMenu, QPushButton, QScrollArea, QSpinBox,
+    QStackedWidget, QToolButton, QTreeWidget, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED, __version__, __date__
@@ -265,18 +265,17 @@ class _NewProjectForm(QWidget):
 
     FILL_BLANK = 0
     FILL_SAMPLE = 1
-    FILL_TEMPLATE = 2
+    FILL_COPY = 2
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
         self._basePath = CONFIG.lastPath()
         self._fillMode = self.FILL_BLANK
-        self._tmplPath = None
+        self._copyPath = None
 
         # Project Settings
         # ================
-        posLast = QLineEdit.ActionPosition.TrailingPosition
 
         # Project Name
         self.projName = QLineEdit()
@@ -303,22 +302,51 @@ class _NewProjectForm(QWidget):
         # Project Path
         self.projPath = QLineEdit(self)
         self.projPath.setReadOnly(True)
-        self.projPath.setPlaceholderText(self.tr("Required"))
-        action = self.projPath.addAction(SHARED.theme.getIcon("browse"), posLast)
-        action.triggered.connect(self._doBrowse)
+
+        self.browsePath = QToolButton(self)
+        self.browsePath.setIcon(SHARED.theme.getIcon("browse"))
+        self.browsePath.clicked.connect(self._doBrowse)
+
+        self.pathBox = QHBoxLayout()
+        self.pathBox.addWidget(self.projPath)
+        self.pathBox.addWidget(self.browsePath)
 
         # Fill Project
         self.projFill = QLineEdit(self)
         self.projFill.setReadOnly(True)
-        action = self.projFill.addAction(SHARED.theme.getIcon("add_document"), posLast)
+
+        self.browseFill = QToolButton(self)
+        self.browseFill.setIcon(SHARED.theme.getIcon("add_document"))
+
+        self.fillMenu = _PopLeftDirectionMenu(self.browseFill)
+
+        self.fillBlank = self.fillMenu.addAction(self.tr("Create a fresh project"))
+        self.fillBlank.setIcon(SHARED.theme.getIcon("document"))
+        self.fillBlank.triggered.connect(self._setFillBlank)
+
+        self.fillSample = self.fillMenu.addAction(self.tr("Create an example project"))
+        self.fillSample.setIcon(SHARED.theme.getIcon("add_document"))
+        self.fillSample.triggered.connect(self._setFillSample)
+
+        self.fillCopy = self.fillMenu.addAction(self.tr("Copy an existing project"))
+        self.fillCopy.setIcon(SHARED.theme.getIcon("browse"))
+        self.fillCopy.triggered.connect(self._setFillCopy)
+
+        self.browseFill.setMenu(self.fillMenu)
+        self.browseFill.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+
+        self.fillBox = QHBoxLayout()
+        self.fillBox.addWidget(self.projFill)
+        self.fillBox.addWidget(self.browseFill)
 
         # Project Form
         self.projectForm = QFormLayout()
+        self.projectForm.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.projectForm.addRow(self.tr("Project Name"), self.projName)
-        self.projectForm.addRow(self.tr("Author(s)"), self.projAuthor)
+        self.projectForm.addRow(self.tr("Author"), self.projAuthor)
         self.projectForm.addRow(self.tr("Language"), self.projLang)
-        self.projectForm.addRow(self.tr("Project Path"), self.projPath)
-        self.projectForm.addRow(self.tr("Prefill Project"), self.projFill)
+        self.projectForm.addRow(self.tr("Project Path"), self.pathBox)
+        self.projectForm.addRow(self.tr("Prefill Project"), self.fillBox)
 
         # Chapters and Scenes
         # ===================
@@ -367,6 +395,7 @@ class _NewProjectForm(QWidget):
         self.addNotes.setChecked(False)
 
         self.notesForm = QFormLayout()
+        self.notesForm.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.notesForm.addRow(self.tr("Add a folder for plot notes"), self.addPlot)
         self.notesForm.addRow(self.tr("Add a folder for character notes"), self.addChar)
         self.notesForm.addRow(self.tr("Add a folder for location notes"), self.addWorld)
@@ -426,18 +455,45 @@ class _NewProjectForm(QWidget):
             self.addNotes.setChecked(False)
         return
 
+    @pyqtSlot()
+    def _setFillBlank(self) -> None:
+        """Set fill mode to blank project."""
+        self._fillMode = self.FILL_BLANK
+        self._updateFillInfo()
+        return
+
+    @pyqtSlot()
+    def _setFillSample(self) -> None:
+        """Set fill mode to sample project."""
+        self._fillMode = self.FILL_SAMPLE
+        self._updateFillInfo()
+        return
+
+    @pyqtSlot()
+    def _setFillCopy(self) -> None:
+        """Set fill mode to copy project."""
+        self._fillMode = self.FILL_COPY
+        self._copyPath = SHARED.getProjectPath(self, allowZip=True)
+        self._updateFillInfo()
+        return
+
     ##
     #  Internal Functions
     ##
 
     def _updateFillInfo(self) -> None:
         """Update the text of the project fill box."""
+        text = ""
         if self._fillMode == self.FILL_BLANK:
-            self.projFill.setText(self.tr("Fresh Project"))
+            text = self.tr("Fresh Project")
         elif self._fillMode == self.FILL_SAMPLE:
-            self.projFill.setText(self.tr("Example Project"))
-        elif self._fillMode == self.FILL_TEMPLATE:
-            self.projFill.setText(self.tr("Template: {0}").format(str(self._tmplPath)))
+            text = self.tr("Example Project")
+        elif self._fillMode == self.FILL_COPY:
+            text = self.tr("Template: {0}").format(str(self._copyPath))
+
+        self.projFill.setText(text)
+        self.projFill.setToolTip(text)
+        self.projFill.setCursorPosition(0)
 
         isBlank = self._fillMode == self.FILL_BLANK
         self.numChapters.setEnabled(isBlank)
@@ -450,3 +506,16 @@ class _NewProjectForm(QWidget):
         return
 
 # END Class _NewProjectForm
+
+
+class _PopLeftDirectionMenu(QMenu):
+
+    def event(self, event: QEvent) -> bool:
+        """Overload the show event and move the menu popup location."""
+        if event.type() == QEvent.Show:
+            if isinstance(parent := self.parent(), QWidget):
+                offset = QPoint(parent.width() - self.width(), parent.height())
+                self.move(parent.mapToGlobal(offset))
+        return super(_PopLeftDirectionMenu, self).event(event)
+
+# END Class _PopLeftDirectionMenu

@@ -421,10 +421,10 @@ class Config:
         """Compile and return error messages from the initialisation of
         the Config class, and clear the error buffer.
         """
-        errMessage = "<br>".join(self._errData)
+        message = "<br>".join(self._errData)
         self._hasError = False
         self._errData = []
-        return errMessage
+        return message
 
     def listLanguages(self, lngSet: int) -> list[tuple[str, str]]:
         """List localisation files in the i18n folder. The default GUI
@@ -647,7 +647,7 @@ class Config:
         conf = NWConfigParser()
 
         conf["Meta"] = {
-            "timestamp":    formatTimeStamp(time()),
+            "timestamp": formatTimeStamp(time()),
         }
 
         conf["Main"] = {
@@ -787,22 +787,20 @@ class RecentProjects:
         self._data = {}
 
         cacheFile = self._conf.dataPath(nwFiles.RECENT_FILE)
-        if not cacheFile.is_file():
-            return True
-
-        try:
-            with open(cacheFile, mode="r", encoding="utf-8") as inFile:
-                theData = json.load(inFile)
-            for projPath, theEntry in theData.items():
-                self._data[projPath] = {
-                    "title": theEntry.get("title", ""),
-                    "words": theEntry.get("words", 0),
-                    "time": theEntry.get("time", 0),
-                }
-        except Exception:
-            logger.error("Could not load recent project cache")
-            logException()
-            return False
+        if cacheFile.is_file():
+            try:
+                with open(cacheFile, mode="r", encoding="utf-8") as inFile:
+                    data = json.load(inFile)
+                for path, entry in data.items():
+                    self._data[path] = {
+                        "title": entry.get("title", ""),
+                        "words": entry.get("words", 0),
+                        "time": entry.get("time", 0),
+                    }
+            except Exception:
+                logger.error("Could not load recent project cache")
+                logException()
+                return False
 
         return True
 

@@ -167,8 +167,7 @@ class _PopRightMenu(QMenu):
     def event(self, event: QEvent) -> bool:
         """Overload the show event and move the menu popup location."""
         if event.type() == QEvent.Show:
-            parent = self.parent()
-            if isinstance(parent, QWidget):
+            if isinstance(parent := self.parent(), QWidget):
                 offset = QPoint(parent.width(), parent.height() - self.height())
                 self.move(parent.mapToGlobal(offset))
         return super(_PopRightMenu, self).event(event)

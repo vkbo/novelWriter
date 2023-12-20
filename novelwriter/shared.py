@@ -31,8 +31,9 @@ from typing import TYPE_CHECKING
 from pathlib import Path
 
 from PyQt5.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal
-from PyQt5.QtWidgets import QMessageBox, QWidget
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget
 
+from novelwriter.constants import nwFiles
 from novelwriter.core.spellcheck import NWSpellEnchant
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -214,6 +215,19 @@ class SharedData(QObject):
         """Queue a runnable in the application thread pool."""
         QThreadPool.globalInstance().start(runnable, priority=priority)
         return
+
+    def getProjectPath(self, parent: QWidget, allowZip: bool = False) -> Path | None:
+        """Open the file dialog and select a novelWriter project file."""
+        ext = []
+        ext.append(self.tr("novelWriter Project File ({0})").format(nwFiles.PROJ_FILE))
+        if allowZip:
+            ext.append(self.tr("Zip Archives ({0})").format("*.zip"))
+        ext.append(self.tr("All files ({0})").format("*"))
+
+        projFile, _ = QFileDialog.getOpenFileName(
+            parent, self.tr("Open Project"), "", filter=";;".join(ext)
+        )
+        return Path(projFile) if projFile else None
 
     ##
     #  Signal Proxy
