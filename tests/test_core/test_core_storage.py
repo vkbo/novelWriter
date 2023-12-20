@@ -32,7 +32,7 @@ from mocked import causeOSError
 from novelwriter import CONFIG
 from novelwriter.constants import nwFiles
 from novelwriter.core.project import NWProject
-from novelwriter.core.storage import NWStorage, NWStorageOpen, _LegacyStorage
+from novelwriter.core.storage import NWStorage, NWStorageOpen, NWStorageCreate, _LegacyStorage
 from novelwriter.core.document import NWDocument
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
 
@@ -67,16 +67,16 @@ def testCoreStorage_CreateNewProject(mockGUI, fncPath):
 
     # Cannot prepare a non-empty folder
     (fncPath / "foobar.txt").touch()
-    assert storage.createNewProject(fncPath) is False
+    assert storage.createNewProject(fncPath) == NWStorageCreate.NOT_EMPTY
 
     # Try creating in a non-existent subfolder instead
-    assert storage.createNewProject(fncPath / "project1") is True
+    assert storage.createNewProject(fncPath / "project1") == NWStorageCreate.READY
     assert (fncPath / "project1").is_dir()
     assert (fncPath / "project1" / "meta").is_dir()
     assert (fncPath / "project1" / "content").is_dir()
 
     # However, the parent folder must exist
-    assert storage.createNewProject(fncPath / "foobar" / "project1") is False
+    assert storage.createNewProject(fncPath / "foobar" / "project1") == NWStorageCreate.OS_ERROR
     assert isinstance(storage.exc, FileNotFoundError)
 
     project.closeProject()

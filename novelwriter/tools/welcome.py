@@ -38,8 +38,10 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED, __version__, __date__
+from novelwriter.enum import nwItemClass
 from novelwriter.common import makeFileNameSafe
 from novelwriter.constants import nwUnicode
+from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.extensions.switch import NSwitch
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -49,6 +51,8 @@ logger = logging.getLogger(__name__)
 
 
 class GuiWelcome(QDialog):
+
+    openProjectRequest = pyqtSignal(Path)
 
     def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
@@ -84,6 +88,7 @@ class GuiWelcome(QDialog):
         self.tabOpen = _OpenProjectPage(self)
         self.tabNew = _NewProjectPage(self)
         self.tabNew.cancelNewProject.connect(self._showOpenProjectPage)
+        self.tabNew.openProjectRequest.connect(self._setProjectPath)
 
         self.mainStack = QStackedWidget()
         self.mainStack.addWidget(self.tabOpen)
@@ -167,6 +172,15 @@ class GuiWelcome(QDialog):
         self.mainStack.setCurrentWidget(self.tabOpen)
         return
 
+    @pyqtSlot()
+    @pyqtSlot(Path)
+    def _setProjectPath(self, path: Path | None = None) -> None:
+        """Set the path variable for the project to open."""
+        if isinstance(path, Path):
+            self.openProjectRequest.emit(path)
+        self.close()
+        return
+
     ##
     #  Internal Functions
     ##
@@ -207,6 +221,7 @@ class _OpenProjectPage(QWidget):
 class _NewProjectPage(QWidget):
 
     cancelNewProject = pyqtSignal()
+    openProjectRequest = pyqtSignal(Path)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -225,12 +240,13 @@ class _NewProjectPage(QWidget):
         # Controls
         # ========
 
-        self.createButton = QPushButton(self.tr("Create Project"), self)
-        self.createButton.setIcon(SHARED.theme.getIcon("star"))
-
         self.cancelButton = QPushButton(self.tr("Go Back"), self)
         self.cancelButton.setIcon(SHARED.theme.getIcon("backward"))
         self.cancelButton.clicked.connect(lambda: self.cancelNewProject.emit())
+
+        self.createButton = QPushButton(self.tr("Create Project"), self)
+        self.createButton.setIcon(SHARED.theme.getIcon("star"))
+        self.createButton.clicked.connect(self._createNewProject)
 
         self.buttonBox = QHBoxLayout()
         self.buttonBox.addStretch(1)
@@ -256,6 +272,22 @@ class _NewProjectPage(QWidget):
             "_NewProjectForm {{border: none; background: rgba({r},{g},{b},0.5);}} "
         ).format(r=baseCol.red(), g=baseCol.green(), b=baseCol.blue()))
 
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot()
+    def _createNewProject(self) -> None:
+        """Create a new project from the data in the form."""
+        data = self.projectForm.getProjectData()
+        if not data.get("name"):
+            SHARED.error(self.tr("A project name is required."))
+            return
+        builder = ProjectBuilder()
+        if builder.buildProject(data) and (path := builder.projPath):
+            self.openProjectRequest.emit(path)
         return
 
 # END Class _NewProjectPage
@@ -422,6 +454,29 @@ class _NewProjectForm(QWidget):
 
         return
 
+    def getProjectData(self) -> dict:
+        """Collect form data and return it as a dictionary."""
+        roots = []
+        if self.addPlot.isChecked():
+            roots.append(nwItemClass.PLOT)
+        if self.addChar.isChecked():
+            roots.append(nwItemClass.CHARACTER)
+        if self.addWorld.isChecked():
+            roots.append(nwItemClass.WORLD)
+        return {
+            "name": self.projName.text().strip(),
+            "author": self.projAuthor.text().strip(),
+            "language": self.projLang.currentData(),
+            "path": self.projPath.text(),
+            "blank": self._fillMode == self.FILL_BLANK,
+            "sample": self._fillMode == self.FILL_SAMPLE,
+            "template": self._copyPath if self._fillMode == self.FILL_COPY else None,
+            "chapters": self.numChapters.value(),
+            "scenes": self.numScenes.value(),
+            "roots": roots,
+            "notes": self.addNotes.isChecked(),
+        }
+
     ##
     #  Private Slots
     ##
@@ -472,9 +527,10 @@ class _NewProjectForm(QWidget):
     @pyqtSlot()
     def _setFillCopy(self) -> None:
         """Set fill mode to copy project."""
-        self._fillMode = self.FILL_COPY
-        self._copyPath = SHARED.getProjectPath(self, allowZip=True)
-        self._updateFillInfo()
+        if copyPath := SHARED.getProjectPath(self, allowZip=True):
+            self._fillMode = self.FILL_COPY
+            self._copyPath = copyPath
+            self._updateFillInfo()
         return
 
     ##

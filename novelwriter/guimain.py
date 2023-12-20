@@ -51,7 +51,7 @@ from novelwriter.gui.itemdetails import GuiItemDetails
 from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
 from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.updates import GuiUpdates
-# from novelwriter.dialogs.projload import GuiProjectLoad
+from novelwriter.dialogs.projload import GuiProjectLoad
 from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projdetails import GuiProjectDetails
@@ -360,7 +360,7 @@ class GuiMain(QMainWindow):
             self.openProject(cmdOpen)
 
         if not SHARED.hasProject:
-            self.showProjectLoadDialog()
+            self.showWelcomeDialog()
 
         # Determine whether release notes need to be shown or not
         if hexToInt(CONFIG.lastNotes) < hexToInt(__hexversion__):
@@ -844,18 +844,22 @@ class GuiMain(QMainWindow):
         browse button for projects not yet cached. Selecting to create a
         new project is forwarded to the new project wizard.
         """
-        # dlgProj = GuiProjectLoad(self)
-        # dlgProj.exec_()
+        dlgProj = GuiProjectLoad(self)
+        dlgProj.exec_()
 
-        # if dlgProj.result() == QDialog.Accepted:
-        #     if dlgProj.openState == GuiProjectLoad.OPEN_STATE:
-        #         self.openProject(dlgProj.openPath)
-        #     elif dlgProj.openState == GuiProjectLoad.NEW_STATE:
-        #         self.newProject()
+        if dlgProj.result() == QDialog.Accepted:
+            if dlgProj.openState == GuiProjectLoad.OPEN_STATE:
+                self.openProject(dlgProj.openPath)
+            elif dlgProj.openState == GuiProjectLoad.NEW_STATE:
+                self.newProject()
+        return
 
+    @pyqtSlot()
+    def showWelcomeDialog(self) -> None:
+        """Open the welcome dialog."""
         dialog = GuiWelcome(self)
+        dialog.openProjectRequest.connect(self._openProject)
         dialog.exec_()
-
         return
 
     def showNewProjectDialog(self) -> dict | None:
@@ -1206,6 +1210,12 @@ class GuiMain(QMainWindow):
                 self.openDocument(tHandle)
             elif mode == nwDocMode.VIEW:
                 self.viewDocument(tHandle=tHandle, sTitle=sTitle)
+        return
+
+    @pyqtSlot(Path)
+    def _openProject(self, path: Path) -> None:
+        """Handle an open project request."""
+        self.openProject(path)
         return
 
     @pyqtSlot(str, nwDocMode, str, bool)

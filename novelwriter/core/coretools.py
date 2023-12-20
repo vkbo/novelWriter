@@ -30,6 +30,7 @@ import shutil
 import logging
 
 from typing import Iterable
+from pathlib import Path
 from functools import partial
 
 from PyQt5.QtCore import QCoreApplication
@@ -39,6 +40,7 @@ from novelwriter.common import minmax, simplified
 from novelwriter.constants import nwItemClass
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
+from novelwriter.core.storage import NWStorageCreate
 
 logger = logging.getLogger(__name__)
 
@@ -310,8 +312,14 @@ class ProjectBuilder:
     """
 
     def __init__(self) -> None:
+        self._path = None
         self.tr = partial(QCoreApplication.translate, "NWProject")
         return
+
+    @property
+    def projPath(self) -> Path | None:
+        """The path of the newly created project."""
+        return self._path
 
     ##
     #  Methods
@@ -325,40 +333,56 @@ class ProjectBuilder:
             logger.error("Invalid call to newProject function")
             return False
 
-        popMinimal = data.get("popMinimal", True)
-        popCustom = data.get("popCustom", False)
-        popSample = data.get("popSample", False)
-
-        # Check if we're extracting the sample project. This is handled
-        # differently as it isn't actually a new project, so we forward
-        # this to another function and return here.
-        if popSample:
-            return self._extractSampleProject(data)
-
-        projPath = data.get("projPath", None)
-        if projPath is None:
-            logger.error("No project path set for the new project")
+        path = data.get("path", None)
+        if path is None:
+            SHARED.error("A project path is required.")
             return False
 
+        if data.get("sample", False):
+            self._path = path
+            return self._extractSampleProject(path)
+        elif data.get("template"):
+            pass
+        else:
+            self._buildAndPopulate(path, data)
+
+        return True
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _buildAndPopulate(self, path: Path, data: dict) -> bool:
+        """Build a project from a data dictionary of specifications
+        provided by the wizard.
+        """
         project = NWProject()
-        if not project.storage.createNewProject(projPath):
+        status = project.storage.createNewProject(path)
+        if status == NWStorageCreate.NOT_EMPTY:
+            SHARED.error(self.tr(
+                "A project already exists in that location. "
+                "Please choose another folder."
+            ))
             return False
+        elif status == NWStorageCreate.OS_ERROR:
+            SHARED.error(self.tr(
+                "An error occured while trying to create the project."
+            ), exc=project.storage.exc)
+            return False
+
+        self._path = project.storage.storagePath
 
         lblNewProject = self.tr("New Project")
-        lblNewChapter = self.tr("New Chapter")
-        lblNewScene   = self.tr("New Scene")
         lblTitlePage  = self.tr("Title Page")
         lblByAuthors  = self.tr("By")
 
         # Settings
-        projName = data.get("projName", lblNewProject)
-        projTitle = data.get("projTitle", lblNewProject)
-        projAuthor = data.get("projAuthor", "")
-        projLang = data.get("projLang", "en_GB")
+        projName = data.get("name", lblNewProject)
+        projAuthor = data.get("author", "")
+        projLang = data.get("language", "en_GB")
 
         project.data.setUuid(None)
         project.data.setName(projName)
-        project.data.setTitle(projTitle)
         project.data.setAuthor(projAuthor)
         project.data.setLanguage(projLang)
         project.setDefaultStatusImport()
@@ -376,110 +400,80 @@ class ProjectBuilder:
         aDoc = project.storage.getDocument(hTitlePage)
         aDoc.writeDocument(titlePage)
 
-        if popMinimal:
-            # Creating a minimal project with a few root folders and a
-            # single chapter with a single scene.
-            hChapter = project.newFile(lblNewChapter, hNovelRoot)
-            aDoc = project.storage.getDocument(hChapter)
-            aDoc.writeDocument(f"## {lblNewChapter}\n\n")
+        # Create a project structure based on selected root folders
+        # and a number of chapters and scenes selected in the
+        # wizard's custom page.
 
-            if hChapter:
-                hScene = project.newFile(lblNewScene, hChapter)
-                aDoc = project.storage.getDocument(hScene)
-                aDoc.writeDocument(f"### {lblNewScene}\n\n")
+        # Create chapters and scenes
+        numChapters = data.get("chapters", 0)
+        numScenes = data.get("scenes", 0)
 
-            project.newRoot(nwItemClass.PLOT)
-            project.newRoot(nwItemClass.CHARACTER)
-            project.newRoot(nwItemClass.WORLD)
-            project.newRoot(nwItemClass.ARCHIVE)
+        chSynop = self.tr("Summary of the chapter.")
+        scSynop = self.tr("Summary of the scene.")
+        bfNote = self.tr("A short description.")
 
-            project.saveProject()
-            project.closeProject()
+        # Create chapters
+        if numChapters > 0:
+            for ch in range(numChapters):
+                chTitle = self.tr("Chapter {0}").format(f"{ch+1:d}")
+                cHandle = project.newFile(chTitle, hNovelRoot)
+                aDoc = project.storage.getDocument(cHandle)
+                aDoc.writeDocument(f"## {chTitle}\n\n%Synopsis: {chSynop}\n\n")
 
-        elif popCustom:
-            # Create a project structure based on selected root folders
-            # and a number of chapters and scenes selected in the
-            # wizard's custom page.
+                # Create chapter scenes
+                if numScenes > 0 and cHandle:
+                    for sc in range(numScenes):
+                        scTitle = self.tr("Scene {0}").format(f"{ch+1:d}.{sc+1:d}")
+                        sHandle = project.newFile(scTitle, cHandle)
+                        aDoc = project.storage.getDocument(sHandle)
+                        aDoc.writeDocument(f"### {scTitle}\n\n%Synopsis: {scSynop}\n\n")
 
-            # Create chapters and scenes
-            numChapters = data.get("numChapters", 0)
-            numScenes = data.get("numScenes", 0)
+        # Create scenes (no chapters)
+        elif numScenes > 0:
+            for sc in range(numScenes):
+                scTitle = self.tr("Scene {0}").format(f"{sc+1:d}")
+                sHandle = project.newFile(scTitle, hNovelRoot)
+                aDoc = project.storage.getDocument(sHandle)
+                aDoc.writeDocument(f"### {scTitle}\n\n%Synopsis: {scSynop}\n\n")
 
-            chSynop = self.tr("Summary of the chapter.")
-            scSynop = self.tr("Summary of the scene.")
-            bfNote = self.tr("A short description.")
+        # Create notes folders
+        noteTitles = {
+            nwItemClass.PLOT: self.tr("Main Plot"),
+            nwItemClass.CHARACTER: self.tr("Protagonist"),
+            nwItemClass.WORLD: self.tr("Main Location"),
+        }
 
-            # Create chapters
-            if numChapters > 0:
-                for ch in range(numChapters):
-                    chTitle = self.tr("Chapter {0}").format(f"{ch+1:d}")
-                    cHandle = project.newFile(chTitle, hNovelRoot)
-                    aDoc = project.storage.getDocument(cHandle)
-                    aDoc.writeDocument(f"## {chTitle}\n\n% Synopsis: {chSynop}\n\n")
+        addNotes = data.get("notes", False)
+        for newRoot in data.get("roots", []):
+            if newRoot in nwItemClass:
+                rHandle = project.newRoot(newRoot)
+                if addNotes:
+                    aHandle = project.newFile(noteTitles[newRoot], rHandle)
+                    ntTag = simplified(noteTitles[newRoot]).replace(" ", "")
+                    aDoc = project.storage.getDocument(aHandle)
+                    aDoc.writeDocument(
+                        f"# {noteTitles[newRoot]}\n\n"
+                        f"@tag: {ntTag}\n\n"
+                        f"%Short: {bfNote}\n\n"
+                    )
 
-                    # Create chapter scenes
-                    if numScenes > 0 and cHandle:
-                        for sc in range(numScenes):
-                            scTitle = self.tr("Scene {0}").format(f"{ch+1:d}.{sc+1:d}")
-                            sHandle = project.newFile(scTitle, cHandle)
-                            aDoc = project.storage.getDocument(sHandle)
-                            aDoc.writeDocument(f"### {scTitle}\n\n% Synopsis: {scSynop}\n\n")
+        # Also add the archive and trash folders
+        project.newRoot(nwItemClass.ARCHIVE)
+        project.trashFolder()
 
-            # Create scenes (no chapters)
-            elif numScenes > 0:
-                for sc in range(numScenes):
-                    scTitle = self.tr("Scene {0}").format(f"{sc+1:d}")
-                    sHandle = project.newFile(scTitle, hNovelRoot)
-                    aDoc = project.storage.getDocument(sHandle)
-                    aDoc.writeDocument(f"### {scTitle}\n\n% Synopsis: {scSynop}\n\n")
-
-            # Create notes folders
-            noteTitles = {
-                nwItemClass.PLOT: self.tr("Main Plot"),
-                nwItemClass.CHARACTER: self.tr("Protagonist"),
-                nwItemClass.WORLD: self.tr("Main Location"),
-            }
-
-            addNotes = data.get("addNotes", False)
-            for newRoot in data.get("addRoots", []):
-                if newRoot in nwItemClass:
-                    rHandle = project.newRoot(newRoot)
-                    if addNotes:
-                        aHandle = project.newFile(noteTitles[newRoot], rHandle)
-                        ntTag = simplified(noteTitles[newRoot]).replace(" ", "")
-                        aDoc = project.storage.getDocument(aHandle)
-                        aDoc.writeDocument(
-                            f"# {noteTitles[newRoot]}\n\n"
-                            f"@tag: {ntTag}\n\n"
-                            f"% Short: {bfNote}\n\n"
-                        )
-
-            # Also add the archive and trash folders
-            project.newRoot(nwItemClass.ARCHIVE)
-            project.trashFolder()
-
-            project.saveProject()
-            project.closeProject()
+        project.saveProject()
+        project.closeProject()
 
         return True
 
-    ##
-    #  Internal Functions
-    ##
-
-    def _extractSampleProject(self, data: dict) -> bool:
+    def _extractSampleProject(self, path: Path) -> bool:
         """Make a copy of the sample project by extracting the
         sample.zip file to the new path.
         """
-        projPath = data.get("projPath", None)
-        if projPath is None:
-            logger.error("No project path set for the example project")
-            return False
-
         pkgSample = CONFIG.assetPath("sample.zip")
         if pkgSample.is_file():
             try:
-                shutil.unpack_archive(pkgSample, projPath)
+                shutil.unpack_archive(pkgSample, path)
             except Exception as exc:
                 SHARED.error(self.tr(
                     "Failed to create a new example project."
