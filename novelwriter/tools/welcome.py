@@ -29,17 +29,21 @@ from typing import TYPE_CHECKING
 from pathlib import Path
 from datetime import datetime
 
-from PyQt5.QtGui import QCloseEvent, QPaintEvent, QPainter
-from PyQt5.QtCore import QEvent, QPoint, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QCloseEvent, QColor, QFont, QPaintEvent, QPainter, QPen
+from PyQt5.QtCore import (
+    QAbstractListModel, QEvent, QModelIndex, QObject, QPoint, QSize, Qt,
+    pyqtSignal, pyqtSlot
+)
 from PyQt5.QtWidgets import (
     QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFormLayout,
-    QHBoxLayout, QLabel, QLineEdit, QMenu, QPushButton, QScrollArea, QSpinBox,
-    QStackedWidget, QToolButton, QTreeWidget, QVBoxLayout, QWidget
+    QHBoxLayout, QLabel, QLineEdit, QListView, QMenu, QPushButton, QScrollArea,
+    QSpinBox, QStackedWidget, QStyleOptionViewItem, QStyledItemDelegate,
+    QToolButton, QVBoxLayout, QWidget, qApp
 )
 
 from novelwriter import CONFIG, SHARED, __version__, __date__
 from novelwriter.enum import nwItemClass
-from novelwriter.common import makeFileNameSafe
+from novelwriter.common import formatInt, makeFileNameSafe
 from novelwriter.constants import nwUnicode
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.extensions.switch import NSwitch
@@ -199,8 +203,12 @@ class _OpenProjectPage(QWidget):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
-        self.listWidget = QTreeWidget(self)
-        self.listWidget.setHeaderHidden(True)
+        self.itemDelegate = _ProjectListItem(self)
+        self.listModel = _ProjectListModel(self)
+
+        self.listWidget = QListView(self)
+        self.listWidget.setItemDelegate(self.itemDelegate)
+        self.listWidget.setModel(self.listModel)
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.listWidget)
@@ -210,12 +218,99 @@ class _OpenProjectPage(QWidget):
 
         baseCol = self.palette().base().color()
         self.setStyleSheet((
-            "QTreeWidget {{border: none; background: rgba({r},{g},{b},0.5);}}"
+            "QListView {{border: none; background: rgba({r},{g},{b},0.5);}}"
         ).format(r=baseCol.red(), g=baseCol.green(), b=baseCol.blue()))
 
         return
 
 # END Class _OpenProjectPage
+
+
+class _ProjectListItem(QStyledItemDelegate):
+
+    __slots__ = ("_pos", "_hPx", "_tFont", "_dFont", "_dPen", "_icon")
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
+
+        fPx = SHARED.theme.fontPixelSize
+        fPt = SHARED.theme.fontPointSize
+        tPx = round(1.2 * fPx)
+        mPx = CONFIG.pxInt(4)
+        iPx = tPx + fPx
+
+        self._pos = (
+            3*mPx//2,         # Icon y pos
+            iPx + mPx,        # Text x pos
+            mPx,              # Line 1 y pos
+            mPx + tPx,        # Line 2 y pos
+            mPx + tPx + fPx,  # Line 3 y pos
+        )
+        self._hPx = 2*mPx + tPx + 2*fPx
+
+        self._tFont = qApp.font()
+        self._tFont.setPointSizeF(1.2*fPt)
+        self._tFont.setWeight(QFont.Weight.Bold)
+
+        self._dFont = qApp.font()
+        self._dFont.setPointSizeF(fPt)
+        self._dPen = QPen(QColor(*SHARED.theme.helpText))
+
+        self._icon = SHARED.theme.getPixmap("proj_nwx", (iPx, iPx))
+
+        return
+
+    def paint(self, painter: QPainter, opt: QStyleOptionViewItem, index: QModelIndex) -> None:
+        """Paint a project entry on the canvas."""
+        rect = opt.rect
+        title, path, details = index.data()
+        tFlag = Qt.TextFlag.TextSingleLine
+        m, x, y1, y2, y3 = self._pos
+
+        painter.save()
+        painter.drawPixmap(0, rect.top() + m, self._icon)
+        painter.setFont(self._tFont)
+        painter.drawText(rect.adjusted(x, y1, -x, 0), tFlag, str(title))
+        painter.setFont(self._dFont)
+        painter.setPen(self._dPen)
+        painter.drawText(rect.adjusted(x, y2, -x, 0), tFlag, details)
+        painter.drawText(rect.adjusted(x, y3, -x, 0), tFlag, path)
+        painter.restore()
+
+        return
+
+    def sizeHint(self, opt: QStyleOptionViewItem, index: QModelIndex) -> QSize:
+        """Set the size hint to fixed height."""
+        return QSize(opt.rect.width(), self._hPx)
+
+# END Class _ProjectListItem
+
+
+class _ProjectListModel(QAbstractListModel):
+
+    def __init__(self, parent: QObject) -> None:
+        super().__init__(parent=parent)
+
+        trWords = self.tr("words")
+
+        data = []
+        records = sorted(CONFIG.recentProjects.listEntries(), key=lambda x: x[3], reverse=True)
+        for path, title, words, time in records:
+            when = datetime.fromtimestamp(time).strftime("%x")
+            data.append((title, path, f"{when}, {formatInt(words)} {trWords}"))
+        self._data = data
+
+        return
+
+    def rowCount(self, parent: QModelIndex | None = None) -> int:
+        """Return the size of the model."""
+        return len(self._data)
+
+    def data(self, index: QModelIndex, role: int = 0) -> tuple[str, str, str, str]:
+        """Return data for an individual item."""
+        return self._data[index.row()] if index.isValid() else ("", "", "", "")
+
+# END Class _ProjectListModel
 
 
 class _NewProjectPage(QWidget):
