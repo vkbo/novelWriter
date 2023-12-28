@@ -37,7 +37,7 @@ from PyQt5.QtCore import (
 from PyQt5.QtWidgets import (
     QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFormLayout,
     QHBoxLayout, QLabel, QLineEdit, QListView, QMenu, QPushButton, QScrollArea,
-    QSpinBox, QStackedWidget, QStyleOptionViewItem, QStyledItemDelegate,
+    QSpinBox, QStackedWidget, QStyle, QStyleOptionViewItem, QStyledItemDelegate,
     QToolButton, QVBoxLayout, QWidget, qApp
 )
 
@@ -90,9 +90,11 @@ class GuiWelcome(QDialog):
         ))
 
         self.tabOpen = _OpenProjectPage(self)
+        self.tabOpen.openProjectRequest.connect(self._openProjectPath)
+
         self.tabNew = _NewProjectPage(self)
         self.tabNew.cancelNewProject.connect(self._showOpenProjectPage)
-        self.tabNew.openProjectRequest.connect(self._setProjectPath)
+        self.tabNew.openProjectRequest.connect(self._openProjectPath)
 
         self.mainStack = QStackedWidget()
         self.mainStack.addWidget(self.tabOpen)
@@ -101,7 +103,7 @@ class GuiWelcome(QDialog):
         # Buttons
         # =======
         self.btnBox = QDialogButtonBox(QDialogButtonBox.Open | QDialogButtonBox.Cancel, self)
-        self.btnBox.accepted.connect(self.accept)
+        self.btnBox.accepted.connect(self._openSelectedProject)
         self.btnBox.rejected.connect(self.close)
 
         self.newButton = self.btnBox.addButton(self.tr("New Project"), QDialogButtonBox.ActionRole)
@@ -110,6 +112,7 @@ class GuiWelcome(QDialog):
 
         self.browseButton = self.btnBox.addButton(self.tr("Browse"), QDialogButtonBox.ActionRole)
         self.browseButton.setIcon(SHARED.theme.getIcon("browse"))
+        self.browseButton.clicked.connect(self._browseForProject)
 
         # Assemble
         # ========
@@ -148,8 +151,9 @@ class GuiWelcome(QDialog):
         hWin = self.height()
         hPix = min(hWin, 700)
         tMode = Qt.TransformationMode.SmoothTransformation
-        qPaint = QPainter(self)
-        qPaint.drawPixmap(0, hWin - hPix, self.bgImage.scaledToHeight(hPix, tMode))
+        painter = QPainter(self)
+        painter.fillRect(self.rect(), QColor(255, 255, 255))
+        painter.drawPixmap(0, hWin - hPix, self.bgImage.scaledToHeight(hPix, tMode))
         super().paintEvent(event)
         return
 
@@ -177,8 +181,21 @@ class GuiWelcome(QDialog):
         return
 
     @pyqtSlot()
+    def _browseForProject(self) -> None:
+        """Browse for a project to open."""
+        if path := SHARED.getProjectPath(self, allowZip=False):
+            self._openProjectPath(path)
+        return
+
+    @pyqtSlot()
+    def _openSelectedProject(self) -> None:
+        """Open the selected project."""
+        if selected := self.tabOpen.listWidget.selectedIndexes():
+            self._openProjectPath(Path(str(selected[0].data()[1])))
+        return
+
     @pyqtSlot(Path)
-    def _setProjectPath(self, path: Path | None = None) -> None:
+    def _openProjectPath(self, path: Path) -> None:
         """Emit a project open signal."""
         if isinstance(path, Path):
             self.openProjectRequest.emit(path)
@@ -200,27 +217,62 @@ class GuiWelcome(QDialog):
 
 class _OpenProjectPage(QWidget):
 
+    openProjectRequest = pyqtSignal(Path)
+
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
-        self.itemDelegate = _ProjectListItem(self)
+        hPx = CONFIG.pxInt(6)
+        vPx = CONFIG.pxInt(4)
+
         self.listModel = _ProjectListModel(self)
+        self.itemDelegate = _ProjectListItem(self)
 
         self.listWidget = QListView(self)
         self.listWidget.setItemDelegate(self.itemDelegate)
         self.listWidget.setModel(self.listModel)
+        self.listWidget.clicked.connect(self._projectClicked)
+        self.listWidget.doubleClicked.connect(self._projectDoubleClicked)
+
+        self.selectedPath = QLineEdit(self)
+        self.selectedPath.setContentsMargins(hPx, vPx, hPx, vPx)
+        self.selectedPath.setReadOnly(True)
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.listWidget)
+        self.outerBox.addWidget(self.selectedPath)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(self.outerBox)
 
+        self.listWidget.setCurrentIndex(self.listModel.index(0))
+        self._projectClicked(self.listModel.index(0))
+
         baseCol = self.palette().base().color()
         self.setStyleSheet((
-            "QListView {{border: none; background: rgba({r},{g},{b},0.5);}}"
+            "QListView {{border: none; background: rgba({r},{g},{b},0.65);}} "
+            "QLineEdit {{border: none; background: rgba({r},{g},{b},0.65);}} "
         ).format(r=baseCol.red(), g=baseCol.green(), b=baseCol.blue()))
 
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(QModelIndex)
+    def _projectClicked(self, index: QModelIndex) -> None:
+        """Process single click on project item."""
+        if index.isValid():
+            path = self.tr("Path")
+            self.selectedPath.setText(f"{path}: {index.data()[1]}")
+        return
+
+    @pyqtSlot(QModelIndex)
+    def _projectDoubleClicked(self, index: QModelIndex) -> None:
+        """Process double click on project item."""
+        if index.isValid():
+            self.openProjectRequest.emit(Path(str(index.data()[1])))
         return
 
 # END Class _OpenProjectPage
@@ -228,7 +280,7 @@ class _OpenProjectPage(QWidget):
 
 class _ProjectListItem(QStyledItemDelegate):
 
-    __slots__ = ("_pos", "_hPx", "_tFont", "_dFont", "_dPen", "_icon")
+    __slots__ = ("_pPx", "_hPx", "_tFont", "_dFont", "_dPen", "_icon")
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -239,14 +291,8 @@ class _ProjectListItem(QStyledItemDelegate):
         mPx = CONFIG.pxInt(4)
         iPx = tPx + fPx
 
-        self._pos = (
-            3*mPx//2,         # Icon y pos
-            iPx + mPx,        # Text x pos
-            mPx,              # Line 1 y pos
-            mPx + tPx,        # Line 2 y pos
-            mPx + tPx + fPx,  # Line 3 y pos
-        )
-        self._hPx = 2*mPx + tPx + 2*fPx
+        self._pPx = (mPx//2, 3*mPx//2, iPx + mPx, mPx, mPx + tPx)  # Painter coordinates
+        self._hPx = 2*mPx + tPx + fPx  # Fixed height
 
         self._tFont = qApp.font()
         self._tFont.setPointSizeF(1.2*fPt)
@@ -263,18 +309,22 @@ class _ProjectListItem(QStyledItemDelegate):
     def paint(self, painter: QPainter, opt: QStyleOptionViewItem, index: QModelIndex) -> None:
         """Paint a project entry on the canvas."""
         rect = opt.rect
-        title, path, details = index.data()
+        title, _, details = index.data()
         tFlag = Qt.TextFlag.TextSingleLine
-        m, x, y1, y2, y3 = self._pos
+        ix, iy, x, y1, y2 = self._pPx
 
         painter.save()
-        painter.drawPixmap(0, rect.top() + m, self._icon)
+        if opt.state & QStyle.StateFlag.State_Selected == QStyle.StateFlag.State_Selected:
+            painter.setOpacity(0.5)
+            painter.fillRect(rect, qApp.palette().highlight())
+            painter.setOpacity(1.0)
+
+        painter.drawPixmap(ix, rect.top() + iy, self._icon)
         painter.setFont(self._tFont)
-        painter.drawText(rect.adjusted(x, y1, -x, 0), tFlag, str(title))
+        painter.drawText(rect.adjusted(x, y1, 0, 0), tFlag, title)
         painter.setFont(self._dFont)
         painter.setPen(self._dPen)
-        painter.drawText(rect.adjusted(x, y2, -x, 0), tFlag, details)
-        painter.drawText(rect.adjusted(x, y3, -x, 0), tFlag, path)
+        painter.drawText(rect.adjusted(x, y2, 0, 0), tFlag, details)
         painter.restore()
 
         return
@@ -290,25 +340,23 @@ class _ProjectListModel(QAbstractListModel):
 
     def __init__(self, parent: QObject) -> None:
         super().__init__(parent=parent)
-
-        trWords = self.tr("words")
-
         data = []
+        words = self.tr("Word Count")
+        opened = self.tr("Last Opened")
         records = sorted(CONFIG.recentProjects.listEntries(), key=lambda x: x[3], reverse=True)
-        for path, title, words, time in records:
+        for path, title, count, time in records:
             when = datetime.fromtimestamp(time).strftime("%x")
-            data.append((title, path, f"{when}, {formatInt(words)} {trWords}"))
+            data.append((title, path, f"{opened}: {when}, {words}: {formatInt(count)}"))
         self._data = data
-
         return
 
     def rowCount(self, parent: QModelIndex | None = None) -> int:
         """Return the size of the model."""
         return len(self._data)
 
-    def data(self, index: QModelIndex, role: int = 0) -> tuple[str, str, str, str]:
+    def data(self, index: QModelIndex, role: int = 0) -> tuple[str, str, str]:
         """Return data for an individual item."""
-        return self._data[index.row()] if index.isValid() else ("", "", "", "")
+        return self._data[index.row()] if index.isValid() else ("", "", "")
 
 # END Class _ProjectListModel
 
@@ -363,8 +411,8 @@ class _NewProjectPage(QWidget):
 
         baseCol = self.palette().base().color()
         self.setStyleSheet((
-            "QScrollArea {{border: none; background: rgba({r},{g},{b},0.5);}} "
-            "_NewProjectForm {{border: none; background: rgba({r},{g},{b},0.5);}} "
+            "QScrollArea {{border: none; background: rgba({r},{g},{b},0.65);}} "
+            "_NewProjectForm {{border: none; background: rgba({r},{g},{b},0.65);}} "
         ).format(r=baseCol.red(), g=baseCol.green(), b=baseCol.blue()))
 
         return
