@@ -30,11 +30,11 @@ from time import time
 from pathlib import Path
 from datetime import datetime
 
-from PyQt5.QtCore import Qt, QTimer, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QCursor, QIcon
+from PyQt5.QtCore import Qt, QTimer, pyqtSlot
 from PyQt5.QtWidgets import (
-    QDialog, QFileDialog, QHBoxLayout, QMainWindow, QMessageBox, QShortcut,
-    QSplitter, QStackedWidget, QVBoxLayout, QWidget, qApp
+    QFileDialog, QHBoxLayout, QMainWindow, QMessageBox, QShortcut, QSplitter,
+    QStackedWidget, QVBoxLayout, QWidget, qApp
 )
 
 from novelwriter import CONFIG, SHARED, __hexversion__
@@ -51,7 +51,6 @@ from novelwriter.gui.itemdetails import GuiItemDetails
 from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
 from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.updates import GuiUpdates
-from novelwriter.dialogs.projload import GuiProjectLoad
 from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projdetails import GuiProjectDetails
@@ -798,20 +797,6 @@ class GuiMain(QMainWindow):
     ##
     #  Main Dialogs
     ##
-
-    def showProjectLoadDialog(self) -> None:
-        """Open the projects dialog for selecting either existing
-        projects from a cache of recently opened projects, or provide a
-        browse button for projects not yet cached. Selecting to create a
-        new project is forwarded to the new project wizard.
-        """
-        dlgProj = GuiProjectLoad(self)
-        dlgProj.exec_()
-
-        if dlgProj.result() == QDialog.Accepted:
-            if dlgProj.openState == GuiProjectLoad.OPEN_STATE:
-                self.openProject(dlgProj.openPath)
-        return
 
     @pyqtSlot()
     def showWelcomeDialog(self) -> None:

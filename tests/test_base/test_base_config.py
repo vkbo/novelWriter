@@ -291,19 +291,6 @@ def testBaseConfig_SettersGetters(fncPath):
 
     tstConf.setPreferencesWinSize(700, 615)
 
-    # Project Settings Tree Columns
-    tstConf.guiScale = 2.0
-    tstConf.setProjLoadColWidths([10, 20, 30])
-    assert tstConf.projLoadColWidths == [10, 20, 30]
-    assert tstConf._projLoadCols == [5, 10, 15]
-
-    tstConf.guiScale = 1.0
-    tstConf.setProjLoadColWidths([10, 20, 30])
-    assert tstConf.projLoadColWidths == [10, 20, 30]
-    assert tstConf._projLoadCols == [10, 20, 30]
-
-    tstConf.setProjLoadColWidths([200, 60, 140])
-
     # Main Pane Splitter
     tstConf.guiScale = 2.0
     tstConf.setMainPanePos([200, 700])

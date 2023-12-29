@@ -112,7 +112,6 @@ class Config:
         self._mainWinSize  = [1200, 650]     # Last size of the main GUI window
         self._welcomeSize  = [800, 500]      # Last size of the welcome window
         self._prefsWinSize = [700, 615]      # Last size of the Preferences dialog
-        self._projLoadCols = [280, 60, 160]  # Last columns widths of the Project Load dialog
         self._mainPanePos  = [300, 800]      # Last position of the main window splitter
         self._viewPanePos  = [500, 150]      # Last position of the document viewer splitter
         self._outlnPanePos = [500, 150]      # Last position of the outline panel splitter
@@ -259,10 +258,6 @@ class Config:
         return [int(x*self.guiScale) for x in self._prefsWinSize]
 
     @property
-    def projLoadColWidths(self) -> list[int]:
-        return [int(x*self.guiScale) for x in self._projLoadCols]
-
-    @property
     def mainPanePos(self) -> list[int]:
         return [int(x*self.guiScale) for x in self._mainPanePos]
 
@@ -321,11 +316,6 @@ class Config:
         """Set the size of the Preferences dialog window."""
         self._prefsWinSize[0] = int(width/self.guiScale)
         self._prefsWinSize[1] = int(height/self.guiScale)
-        return
-
-    def setProjLoadColWidths(self, widths: list[int]) -> None:
-        """Set the column widths of the Load Project dialog."""
-        self._projLoadCols = [int(x/self.guiScale) for x in widths]
         return
 
     def setMainPanePos(self, pos: list[int]) -> None:
@@ -558,7 +548,6 @@ class Config:
         self._mainWinSize  = conf.rdIntList(sec, "mainwindow", self._mainWinSize)
         self._welcomeSize  = conf.rdIntList(sec, "welcome", self._welcomeSize)
         self._prefsWinSize = conf.rdIntList(sec, "preferences", self._prefsWinSize)
-        self._projLoadCols = conf.rdIntList(sec, "projloadcols", self._projLoadCols)
         self._mainPanePos  = conf.rdIntList(sec, "mainpane", self._mainPanePos)
         self._viewPanePos  = conf.rdIntList(sec, "viewpane", self._viewPanePos)
         self._outlnPanePos = conf.rdIntList(sec, "outlinepane", self._outlnPanePos)
@@ -666,7 +655,6 @@ class Config:
             "mainwindow":   self._packList(self._mainWinSize),
             "welcome":      self._packList(self._welcomeSize),
             "preferences":  self._packList(self._prefsWinSize),
-            "projloadcols": self._packList(self._projLoadCols),
             "mainpane":     self._packList(self._mainPanePos),
             "viewpane":     self._packList(self._viewPanePos),
             "outlinepane":  self._packList(self._outlnPanePos),
