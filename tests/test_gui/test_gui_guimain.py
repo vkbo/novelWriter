@@ -31,7 +31,7 @@ from tools import (
 
 from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog, QMenu, QInputDialog
+from PyQt5.QtWidgets import QMenu, QInputDialog
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemType, nwView, nwWidget
@@ -39,8 +39,8 @@ from novelwriter.gui.outline import GuiOutlineView
 from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.noveltree import GuiNovelView
+from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.dialogs.about import GuiAbout
-from novelwriter.dialogs.projload import GuiProjectLoad
 from novelwriter.dialogs.editlabel import GuiEditLabel
 
 KEY_DELAY = 1
@@ -68,8 +68,8 @@ def testGuiMain_ProjectBlocker(nwGUI):
 @pytest.mark.gui
 def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
     """Test the handling of launch tasks."""
-    monkeypatch.setattr(GuiProjectLoad, "exec_", lambda *a: None)
-    monkeypatch.setattr(GuiProjectLoad, "result", lambda *a: QDialog.Accepted)
+    monkeypatch.setattr(GuiWelcome, "exec_", lambda *a: None)
+    # monkeypatch.setattr(GuiProjectLoad, "result", lambda *a: QDialog.Accepted)
     CONFIG.lastNotes = "0x0"
     buildTestProject(nwGUI, projPath)
 
@@ -101,11 +101,10 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
 
     # Check that project open dialog launches
     nwGUI.postLaunchTasks(None)
-    qtbot.waitUntil(lambda: getGuiItem("GuiProjectLoad") is not None, timeout=1000)
-    nwLoad = getGuiItem("GuiProjectLoad")
-    assert isinstance(nwLoad, GuiProjectLoad)
-    nwLoad.show()
-    nwLoad.reject()
+    qtbot.waitUntil(lambda: getGuiItem("GuiWelcome") is not None, timeout=1000)
+    assert isinstance(welcome := getGuiItem("GuiWelcome"), GuiWelcome)
+    welcome.show()
+    welcome.close()
 
     # qtbot.stop()
 

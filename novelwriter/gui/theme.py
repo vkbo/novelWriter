@@ -613,12 +613,13 @@ class GuiIcons:
             return QPixmap()
 
         pixmap = QPixmap(str(imgPath))
+        tMode = Qt.TransformationMode.SmoothTransformation
         if w is not None and h is not None:
-            return pixmap.scaled(w, h, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+            return pixmap.scaled(w, h, Qt.AspectRatioMode.IgnoreAspectRatio, tMode)
         elif w is None and h is not None:
-            return pixmap.scaledToHeight(h, Qt.SmoothTransformation)
+            return pixmap.scaledToHeight(h, tMode)
         elif w is not None and h is None:
-            return pixmap.scaledToWidth(w, Qt.SmoothTransformation)
+            return pixmap.scaledToWidth(w, tMode)
 
         return pixmap
 
@@ -637,8 +638,8 @@ class GuiIcons:
             pOne  = self.getPixmap(self.TOGGLE_ICON_KEYS[name][0], size)
             pTwo = self.getPixmap(self.TOGGLE_ICON_KEYS[name][1], size)
             icon = QIcon()
-            icon.addPixmap(pOne, QIcon.Normal, QIcon.On)
-            icon.addPixmap(pTwo, QIcon.Normal, QIcon.Off)
+            icon.addPixmap(pOne, QIcon.Mode.Normal, QIcon.State.On)
+            icon.addPixmap(pTwo, QIcon.Mode.Normal, QIcon.State.Off)
             return icon
         return QIcon()
 
@@ -646,7 +647,7 @@ class GuiIcons:
         """Return an icon from the icon buffer as a QPixmap. If it
         doesn't exist, return an empty QPixmap.
         """
-        return self.getIcon(name).pixmap(size[0], size[1], QIcon.Normal)
+        return self.getIcon(name).pixmap(size[0], size[1], QIcon.Mode.Normal)
 
     def getItemIcon(self, tType: nwItemType, tClass: nwItemClass,
                     tLayout: nwItemLayout, hLevel: str = "H0") -> QIcon:

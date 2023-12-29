@@ -62,6 +62,7 @@ class GuiWelcome(QDialog):
         super().__init__(parent=mainGui)
 
         logger.debug("Create: GuiWelcome")
+        self.setObjectName("GuiWelcome")
 
         self.setWindowTitle(self.tr("Welcome"))
         self.setMinimumWidth(CONFIG.pxInt(700))
