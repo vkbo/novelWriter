@@ -680,6 +680,7 @@ class GuiProjectTree(QTreeWidget):
 
         # Add the new item to the project tree
         self.revealNewTreeItem(tHandle, nHandle=nHandle, wordCount=True)
+        self.projView.setTreeFocus()  # See issue #1376
 
         return True
 
