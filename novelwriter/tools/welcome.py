@@ -36,7 +36,7 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtWidgets import (
     QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFormLayout,
-    QHBoxLayout, QLabel, QLineEdit, QListView, QMenu, QPushButton, QScrollArea,
+    QHBoxLayout, QLabel, QLineEdit, QListView, QMenu, QPushButton, QScrollArea, QShortcut,
     QSpinBox, QStackedWidget, QStyle, QStyleOptionViewItem, QStyledItemDelegate,
     QToolButton, QVBoxLayout, QWidget, qApp
 )
@@ -76,6 +76,9 @@ class GuiWelcome(QDialog):
 
         self.resize(*CONFIG.welcomeWinSize)
 
+        # Elements
+        # ========
+
         self.bgImage = SHARED.theme.loadDecoration("welcome")
         self.nwImage = SHARED.theme.loadDecoration("nw-text", h=hD)
 
@@ -102,8 +105,9 @@ class GuiWelcome(QDialog):
 
         # Buttons
         # =======
+
         self.btnBox = QDialogButtonBox(QDialogButtonBox.Open | QDialogButtonBox.Cancel, self)
-        self.btnBox.accepted.connect(self._openSelectedProject)
+        self.btnBox.accepted.connect(self.tabOpen.openSelectedItem)
         self.btnBox.rejected.connect(self.close)
 
         self.newButton = self.btnBox.addButton(self.tr("New Project"), QDialogButtonBox.ActionRole)
@@ -116,6 +120,7 @@ class GuiWelcome(QDialog):
 
         # Assemble
         # ========
+
         self.innerBox = QVBoxLayout()
         self.innerBox.addSpacing(hB)
         self.innerBox.addWidget(self.nwLabel)
@@ -187,13 +192,6 @@ class GuiWelcome(QDialog):
             self._openProjectPath(path)
         return
 
-    @pyqtSlot()
-    def _openSelectedProject(self) -> None:
-        """Open the selected project."""
-        if selected := self.tabOpen.listWidget.selectedIndexes():
-            self._openProjectPath(Path(str(selected[0].data()[1])))
-        return
-
     @pyqtSlot(Path)
     def _openProjectPath(self, path: Path) -> None:
         """Emit a project open signal."""
@@ -225,19 +223,28 @@ class _OpenProjectPage(QWidget):
         hPx = CONFIG.pxInt(6)
         vPx = CONFIG.pxInt(4)
 
+        # List View
         self.listModel = _ProjectListModel(self)
         self.itemDelegate = _ProjectListItem(self)
 
         self.listWidget = QListView(self)
         self.listWidget.setItemDelegate(self.itemDelegate)
         self.listWidget.setModel(self.listModel)
+        self.listWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.listWidget.clicked.connect(self._projectClicked)
         self.listWidget.doubleClicked.connect(self._projectDoubleClicked)
+        self.listWidget.customContextMenuRequested.connect(self._openContextMenu)
 
+        # Info / Tool
         self.selectedPath = QLineEdit(self)
         self.selectedPath.setContentsMargins(hPx, vPx, hPx, vPx)
         self.selectedPath.setReadOnly(True)
 
+        self.keyDelete = QShortcut(self)
+        self.keyDelete.setKey(Qt.Key.Key_Delete)
+        self.keyDelete.activated.connect(self._deleteSelectedItem)
+
+        # Assemble
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.listWidget)
         self.outerBox.addWidget(self.selectedPath)
@@ -257,6 +264,17 @@ class _OpenProjectPage(QWidget):
         return
 
     ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot()
+    def openSelectedItem(self) -> None:
+        """Open the currently selected project item."""
+        if (selection := self.listWidget.selectedIndexes()) and (index := selection[0]).isValid():
+            self.openProjectRequest.emit(Path(str(index.data()[1])))
+        return
+
+    ##
     #  Private Slots
     ##
 
@@ -273,6 +291,30 @@ class _OpenProjectPage(QWidget):
         """Process double click on project item."""
         if index.isValid():
             self.openProjectRequest.emit(Path(str(index.data()[1])))
+        return
+
+    @pyqtSlot()
+    def _deleteSelectedItem(self) -> None:
+        """Delete the currently selected project item."""
+        if (selection := self.listWidget.selectedIndexes()) and (index := selection[0]).isValid():
+            text = self.tr(
+                "Remove '{0}' from the recent projects list? "
+                "The project files will not be deleted."
+            ).format(index.data()[0])
+            if SHARED.question(text):
+                self.listModel.removeEntry(index)
+        return
+
+    @pyqtSlot("QPoint")
+    def _openContextMenu(self, pos: QPoint) -> None:
+        """Open the custom context menu."""
+        ctxMenu = QMenu(self)
+        action = ctxMenu.addAction(self.tr("Open Project"))
+        action.triggered.connect(self.openSelectedItem)
+        action = ctxMenu.addAction(self.tr("Remove Project"))
+        action.triggered.connect(self._deleteSelectedItem)
+        ctxMenu.exec_(self.mapToGlobal(pos))
+        ctxMenu.deleteLater()
         return
 
 # END Class _OpenProjectPage
@@ -357,6 +399,19 @@ class _ProjectListModel(QAbstractListModel):
     def data(self, index: QModelIndex, role: int = 0) -> tuple[str, str, str]:
         """Return data for an individual item."""
         return self._data[index.row()] if index.isValid() else ("", "", "")
+
+    def removeEntry(self, index: QModelIndex) -> bool:
+        """Remove an entry in the model."""
+        if index.isValid() and (path := index.data()[1]):
+            try:
+                self.beginRemoveRows(index.parent(), index.row(), index.row())
+                self._data.pop(index.row())
+                self.endRemoveRows()
+            except IndexError:
+                return False
+            CONFIG.recentProjects.remove(path)
+            return True
+        return False
 
 # END Class _ProjectListModel
 

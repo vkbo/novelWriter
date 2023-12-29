@@ -652,12 +652,12 @@ class Config:
         }
 
         conf["Sizes"] = {
-            "mainwindow":   self._packList(self._mainWinSize),
-            "welcome":      self._packList(self._welcomeSize),
-            "preferences":  self._packList(self._prefsWinSize),
-            "mainpane":     self._packList(self._mainPanePos),
-            "viewpane":     self._packList(self._viewPanePos),
-            "outlinepane":  self._packList(self._outlnPanePos),
+            "mainwindow":  self._packList(self._mainWinSize),
+            "welcome":     self._packList(self._welcomeSize),
+            "preferences": self._packList(self._prefsWinSize),
+            "mainpane":    self._packList(self._mainPanePos),
+            "viewpane":    self._packList(self._viewPanePos),
+            "outlinepane": self._packList(self._outlnPanePos),
         }
 
         conf["Project"] = {
