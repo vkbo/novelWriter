@@ -327,22 +327,17 @@ class ProjectBuilder:
 
     def buildProject(self, data: dict) -> bool:
         """Build or copy a project from a data dictionary."""
-        if not isinstance(data, dict):
-            logger.error("Invalid call to buildProject function")
-            return False
-
-        path = data.get("path", None) or None
-        if isinstance(path, (str, Path)):
-            self._path = Path(path).resolve()
-            if data.get("sample", False):
-                return self._extractSampleProject(self._path)
-            elif data.get("template"):
-                return True
-            else:
-                return self._buildAndPopulate(self._path, data)
-
-        SHARED.error("A project path is required.")
-
+        if isinstance(data, dict):
+            path = data.get("path", None) or None
+            if isinstance(path, (str, Path)):
+                self._path = Path(path).resolve()
+                if data.get("sample", False):
+                    return self._extractSampleProject(self._path)
+                elif data.get("template"):
+                    return True
+                else:
+                    return self._buildAndPopulate(self._path, data)
+            SHARED.error("A project path is required.")
         return False
 
     ##
@@ -361,7 +356,7 @@ class ProjectBuilder:
             return False
         elif status == NWStorageCreate.OS_ERROR:
             SHARED.error(self.tr(
-                "An error occured while trying to create the project."
+                "An error occurred while trying to create the project."
             ), exc=project.storage.exc)
             return False
 
@@ -378,6 +373,7 @@ class ProjectBuilder:
 
         project.data.setUuid(None)
         project.data.setName(projName)
+        project.data.setTitle(projName)
         project.data.setAuthor(projAuthor)
         project.data.setLanguage(projLang)
         project.setDefaultStatusImport()
