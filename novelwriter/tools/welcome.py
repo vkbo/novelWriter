@@ -310,6 +310,7 @@ class _OpenProjectPage(QWidget):
     def _openContextMenu(self, pos: QPoint) -> None:
         """Open the custom context menu."""
         ctxMenu = QMenu(self)
+        ctxMenu.setObjectName("ContextMenu")  # Used for testing
         action = ctxMenu.addAction(self.tr("Open Project"))
         action.triggered.connect(self.openSelectedItem)
         action = ctxMenu.addAction(self.tr("Remove Project"))
@@ -399,7 +400,10 @@ class _ProjectListModel(QAbstractListModel):
 
     def data(self, index: QModelIndex, role: int = 0) -> tuple[str, str, str]:
         """Return data for an individual item."""
-        return self._data[index.row()] if index.isValid() else ("", "", "")
+        try:
+            return self._data[index.row()] if index.isValid() else ("", "", "")
+        except IndexError:
+            return "", "", ""
 
     def removeEntry(self, index: QModelIndex) -> bool:
         """Remove an entry in the model."""
@@ -525,8 +529,6 @@ class _NewProjectForm(QWidget):
             self.projLang.addItem(language, tag)
 
         langIdx = self.projLang.findData(CONFIG.guiLocale)
-        if langIdx == -1:
-            langIdx = self.projLang.findData("en_GB")
         if langIdx != -1:
             self.projLang.setCurrentIndex(langIdx)
 

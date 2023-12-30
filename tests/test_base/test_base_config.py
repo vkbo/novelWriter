@@ -278,6 +278,19 @@ def testBaseConfig_SettersGetters(fncPath):
 
     tstConf.setMainWinSize(1200, 650)
 
+    # Welcome Window Size
+    tstConf.guiScale = 2.0
+    tstConf.setWelcomeWinSize(70, 70)
+    assert tstConf.welcomeWinSize == [70, 70]
+    assert tstConf._welcomeSize == [35, 35]
+
+    tstConf.guiScale = 1.0
+    tstConf.setWelcomeWinSize(70, 70)
+    assert tstConf.welcomeWinSize == [70, 70]
+    assert tstConf._welcomeSize == [70, 70]
+
+    tstConf.setWelcomeWinSize(800, 500)
+
     # Preferences Size
     tstConf.guiScale = 2.0
     tstConf.setPreferencesWinSize(70, 70)
