@@ -255,9 +255,8 @@ class GuiTheme:
 
         backLNess = backCol.lightnessF()
         textLNess = textCol.lightnessF()
-
+        self.isLightTheme = backLNess > textLNess
         if self.helpText == [0, 0, 0]:
-            self.isLightTheme = backLNess > textLNess
             if self.isLightTheme:
                 helpLCol = textLNess + 0.35*(backLNess - textLNess)
             else:
@@ -487,7 +486,7 @@ class GuiIcons:
     }
 
     IMAGE_MAP: dict[str, tuple[str, str]] = {
-        "welcome":  ("welcome.jpg", "welcome.jpg"),
+        "welcome":  ("welcome-light.jpg", "welcome-dark.jpg"),
         "nw-text":  ("novelwriter-text-light.svg", "novelwriter-text-dark.svg"),
     }
 

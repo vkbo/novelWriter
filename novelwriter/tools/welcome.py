@@ -82,6 +82,7 @@ class GuiWelcome(QDialog):
 
         self.bgImage = SHARED.theme.loadDecoration("welcome")
         self.nwImage = SHARED.theme.loadDecoration("nw-text", h=hD)
+        self.bgColor = QColor(255, 255, 255) if SHARED.theme.isLightTheme else QColor(54, 54, 54)
 
         self.nwLogo = QLabel()
         self.nwLogo.setPixmap(SHARED.theme.getPixmap("novelwriter", (hF, hF)))
@@ -139,6 +140,7 @@ class GuiWelcome(QDialog):
         self.outerBox.setContentsMargins(hF, hE, hC, hE)
 
         self.setLayout(self.outerBox)
+        self.setSizeGripEnabled(True)
 
         logger.debug("Ready: GuiWelcome")
 
@@ -158,7 +160,7 @@ class GuiWelcome(QDialog):
         hPix = min(hWin, 700)
         tMode = Qt.TransformationMode.SmoothTransformation
         painter = QPainter(self)
-        painter.fillRect(self.rect(), QColor(255, 255, 255))
+        painter.fillRect(self.rect(), self.bgColor)
         painter.drawPixmap(0, hWin - hPix, self.bgImage.scaledToHeight(hPix, tMode))
         super().paintEvent(event)
         return
@@ -222,9 +224,6 @@ class _OpenProjectPage(QWidget):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
-        hPx = CONFIG.pxInt(6)
-        vPx = CONFIG.pxInt(4)
-
         # List View
         self.listModel = _ProjectListModel(self)
         self.itemDelegate = _ProjectListItem(self)
@@ -239,7 +238,6 @@ class _OpenProjectPage(QWidget):
 
         # Info / Tool
         self.selectedPath = QLineEdit(self)
-        self.selectedPath.setContentsMargins(hPx, vPx, hPx, vPx)
         self.selectedPath.setReadOnly(True)
 
         self.keyDelete = QShortcut(self)
@@ -260,8 +258,8 @@ class _OpenProjectPage(QWidget):
         baseCol = self.palette().base().color()
         self.setStyleSheet((
             "QListView {{border: none; background: rgba({r},{g},{b},0.65);}} "
-            "QLineEdit {{border: none; background: rgba({r},{g},{b},0.65);}} "
-        ).format(r=baseCol.red(), g=baseCol.green(), b=baseCol.blue()))
+            "QLineEdit {{border: none; background: rgba({r},{g},{b},0.65); padding: {m}px;}} "
+        ).format(r=baseCol.red(), g=baseCol.green(), b=baseCol.blue(), m=CONFIG.pxInt(4)))
 
         return
 
