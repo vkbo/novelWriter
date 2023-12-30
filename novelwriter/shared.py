@@ -216,16 +216,17 @@ class SharedData(QObject):
         QThreadPool.globalInstance().start(runnable, priority=priority)
         return
 
-    def getProjectPath(self, parent: QWidget, allowZip: bool = False) -> Path | None:
+    def getProjectPath(self, parent: QWidget, path: str | Path | None = None,
+                       allowZip: bool = False) -> Path | None:
         """Open the file dialog and select a novelWriter project file."""
-        ext = []
-        ext.append(self.tr("novelWriter Project File ({0})").format(nwFiles.PROJ_FILE))
+        ext = [
+            self.tr("novelWriter Project File ({0})").format(nwFiles.PROJ_FILE),
+            self.tr("All files ({0})").format("*"),
+        ]
         if allowZip:
-            ext.append(self.tr("Zip Archives ({0})").format("*.zip"))
-        ext.append(self.tr("All files ({0})").format("*"))
-
+            ext.insert(1, self.tr("Zip Archives ({0})").format("*.zip"))
         projFile, _ = QFileDialog.getOpenFileName(
-            parent, self.tr("Open Project"), "", filter=";;".join(ext)
+            parent, self.tr("Open Project"), str(path or ""), filter=";;".join(ext)
         )
         return Path(projFile) if projFile else None
 

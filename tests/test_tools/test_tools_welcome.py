@@ -30,8 +30,8 @@ from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtWidgets import QAction, QFileDialog, QMenu
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.constants import nwFiles
 from novelwriter.enum import nwItemClass
+from novelwriter.constants import nwFiles
 from novelwriter.tools.welcome import GuiWelcome
 
 

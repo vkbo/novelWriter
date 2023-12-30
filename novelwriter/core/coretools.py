@@ -333,7 +333,8 @@ class ProjectBuilder:
                 self._path = Path(path).resolve()
                 if data.get("sample", False):
                     return self._extractSampleProject(self._path)
-                elif data.get("template"):
+                elif data.get("template"):  # pragma: no cover
+                    # Not implemented yet
                     return True
                 else:
                     return self._buildAndPopulate(self._path, data)
