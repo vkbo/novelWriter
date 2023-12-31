@@ -67,6 +67,7 @@ class GuiTheme:
         self.themeLicense     = ""
         self.themeLicenseUrl  = ""
         self.themeIcons       = ""
+        self.isLightTheme     = True
 
         # GUI
         self.statNone    = [120, 120, 120]
@@ -112,7 +113,7 @@ class GuiTheme:
         self._setGuiFont()
 
         # Load Themes
-        self._guiPalette  = QPalette()
+        self._guiPalette = QPalette()
         self._themeList: list[tuple[str, str]] = []
         self._syntaxList: list[tuple[str, str]] = []
         self._availThemes: dict[str, Path] = {}
@@ -254,9 +255,9 @@ class GuiTheme:
 
         backLNess = backCol.lightnessF()
         textLNess = textCol.lightnessF()
-
+        self.isLightTheme = backLNess > textLNess
         if self.helpText == [0, 0, 0]:
-            if backLNess > textLNess:
+            if self.isLightTheme:
                 helpLCol = textLNess + 0.35*(backLNess - textLNess)
             else:
                 helpLCol = backLNess + 0.65*(textLNess - backLNess)
@@ -443,7 +444,7 @@ class GuiIcons:
     missing, a blank icon is returned and a warning issued.
     """
 
-    ICON_KEYS = {
+    ICON_KEYS: set[str] = {
         # Project and GUI Icons
         "novelwriter", "alert_error", "alert_info", "alert_question", "alert_warn",
         "build_excluded", "build_filtered", "build_included", "proj_chapter", "proj_details",
@@ -464,9 +465,10 @@ class GuiIcons:
         "fmt_subscript", "fmt_superscript", "fmt_underline",
 
         # General Button Icons
-        "add", "backward", "bookmark", "browse", "checked", "close", "cross", "down", "edit",
-        "export", "forward", "maximise", "menu", "minimise", "noncheckable", "panel", "refresh",
-        "remove", "revert", "search_replace", "search", "settings", "unchecked", "up", "view",
+        "add", "add_document", "backward", "bookmark", "browse", "checked", "close", "cross",
+        "document", "down", "edit", "export", "forward", "maximise", "menu", "minimise",
+        "noncheckable", "panel", "refresh", "remove", "revert", "search_replace", "search",
+        "settings", "star", "unchecked", "up", "view",
 
         # Switches
         "sticky-on", "sticky-off",
@@ -478,13 +480,14 @@ class GuiIcons:
         "deco_doc_nt_n",
     }
 
-    TOGGLE_ICON_KEYS = {
+    TOGGLE_ICON_KEYS: dict[str, tuple[str, str]] = {
         "sticky": ("sticky-on", "sticky-off"),
         "bullet": ("bullet-on", "bullet-off"),
     }
 
-    IMAGE_MAP = {
-        "wiz-back": "wizard-back.jpg",
+    IMAGE_MAP: dict[str, tuple[str, str]] = {
+        "welcome":  ("welcome-light.jpg", "welcome-dark.jpg"),
+        "nw-text":  ("novelwriter-text-light.svg", "novelwriter-text-dark.svg"),
     }
 
     def __init__(self, mainTheme: GuiTheme) -> None:
@@ -598,7 +601,8 @@ class GuiIcons:
         if name in self._themeMap:
             imgPath = self._themeMap[name]
         elif name in self.IMAGE_MAP:
-            imgPath = CONFIG.assetPath("images") / self.IMAGE_MAP[name]
+            idx = 0 if self.mainTheme.isLightTheme else 1
+            imgPath = CONFIG.assetPath("images") / self.IMAGE_MAP[name][idx]
         else:
             logger.error("Decoration with name '%s' does not exist", name)
             return QPixmap()
@@ -608,12 +612,13 @@ class GuiIcons:
             return QPixmap()
 
         pixmap = QPixmap(str(imgPath))
+        tMode = Qt.TransformationMode.SmoothTransformation
         if w is not None and h is not None:
-            return pixmap.scaled(w, h, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+            return pixmap.scaled(w, h, Qt.AspectRatioMode.IgnoreAspectRatio, tMode)
         elif w is None and h is not None:
-            return pixmap.scaledToHeight(h, Qt.SmoothTransformation)
+            return pixmap.scaledToHeight(h, tMode)
         elif w is not None and h is None:
-            return pixmap.scaledToWidth(w, Qt.SmoothTransformation)
+            return pixmap.scaledToWidth(w, tMode)
 
         return pixmap
 
@@ -632,8 +637,8 @@ class GuiIcons:
             pOne  = self.getPixmap(self.TOGGLE_ICON_KEYS[name][0], size)
             pTwo = self.getPixmap(self.TOGGLE_ICON_KEYS[name][1], size)
             icon = QIcon()
-            icon.addPixmap(pOne, QIcon.Normal, QIcon.On)
-            icon.addPixmap(pTwo, QIcon.Normal, QIcon.Off)
+            icon.addPixmap(pOne, QIcon.Mode.Normal, QIcon.State.On)
+            icon.addPixmap(pTwo, QIcon.Mode.Normal, QIcon.State.Off)
             return icon
         return QIcon()
 
@@ -641,7 +646,7 @@ class GuiIcons:
         """Return an icon from the icon buffer as a QPixmap. If it
         doesn't exist, return an empty QPixmap.
         """
-        return self.getIcon(name).pixmap(size[0], size[1], QIcon.Normal)
+        return self.getIcon(name).pixmap(size[0], size[1], QIcon.Mode.Normal)
 
     def getItemIcon(self, tType: nwItemType, tClass: nwItemClass,
                     tLayout: nwItemLayout, hLevel: str = "H0") -> QIcon:

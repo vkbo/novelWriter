@@ -30,11 +30,11 @@ from time import time
 from pathlib import Path
 from datetime import datetime
 
-from PyQt5.QtCore import Qt, QTimer, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QCursor, QIcon
+from PyQt5.QtCore import Qt, QTimer, pyqtSlot
 from PyQt5.QtWidgets import (
-    QDialog, QFileDialog, QHBoxLayout, QMainWindow, QMessageBox, QShortcut,
-    QSplitter, QStackedWidget, QVBoxLayout, QWidget, qApp
+    QFileDialog, QHBoxLayout, QMainWindow, QMessageBox, QShortcut, QSplitter,
+    QStackedWidget, QVBoxLayout, QWidget, qApp
 )
 
 from novelwriter import CONFIG, SHARED, __hexversion__
@@ -51,22 +51,19 @@ from novelwriter.gui.itemdetails import GuiItemDetails
 from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
 from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.updates import GuiUpdates
-from novelwriter.dialogs.projload import GuiProjectLoad
 from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projdetails import GuiProjectDetails
 from novelwriter.dialogs.projsettings import GuiProjectSettings
+from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.tools.manuscript import GuiManuscript
-from novelwriter.tools.projwizard import GuiProjectWizard
 from novelwriter.tools.dictionaries import GuiDictionaries
 from novelwriter.tools.writingstats import GuiWritingStats
-from novelwriter.core.coretools import ProjectBuilder
 
 from novelwriter.enum import (
-    nwDocAction, nwDocInsert, nwDocMode, nwItemType, nwItemClass, nwWidget, nwView
+    nwDocAction, nwDocInsert, nwDocMode, nwItemType, nwWidget, nwView
 )
 from novelwriter.common import hexToInt
-from novelwriter.constants import nwFiles
 
 logger = logging.getLogger(__name__)
 
@@ -359,7 +356,7 @@ class GuiMain(QMainWindow):
             self.openProject(cmdOpen)
 
         if not SHARED.hasProject:
-            self.showProjectLoadDialog()
+            self.showWelcomeDialog()
 
         # Determine whether release notes need to be shown or not
         if hexToInt(CONFIG.lastNotes) < hexToInt(__hexversion__):
@@ -371,42 +368,6 @@ class GuiMain(QMainWindow):
     ##
     #  Project Actions
     ##
-
-    def newProject(self, projData: dict | None = None) -> bool:
-        """Create a new project via the new project wizard."""
-        if SHARED.hasProject:
-            if not self.closeProject():
-                SHARED.error(self.tr(
-                    "Cannot create a new project when another project is open."
-                ))
-                return False
-
-        if projData is None:
-            projData = self.showNewProjectDialog()
-
-        if projData is None:
-            return False
-
-        projPath = projData.get("projPath", None)
-        if projPath is None or projData is None:
-            logger.error("No projData or projPath set")
-            return False
-
-        if (Path(projPath) / nwFiles.PROJ_FILE).is_file():
-            SHARED.error(self.tr(
-                "A project already exists in that location. "
-                "Please choose another folder."
-            ))
-            return False
-
-        logger.info("Creating new project")
-        nwProject = ProjectBuilder()
-        if nwProject.buildProject(projData):
-            self.openProject(projPath)
-        else:
-            return False
-
-        return True
 
     def closeProject(self, isYes: bool = False) -> bool:
         """Close the project if one is open. isYes is passed on from the
@@ -837,32 +798,13 @@ class GuiMain(QMainWindow):
     #  Main Dialogs
     ##
 
-    def showProjectLoadDialog(self) -> None:
-        """Open the projects dialog for selecting either existing
-        projects from a cache of recently opened projects, or provide a
-        browse button for projects not yet cached. Selecting to create a
-        new project is forwarded to the new project wizard.
-        """
-        dlgProj = GuiProjectLoad(self)
-        dlgProj.exec_()
-
-        if dlgProj.result() == QDialog.Accepted:
-            if dlgProj.openState == GuiProjectLoad.OPEN_STATE:
-                self.openProject(dlgProj.openPath)
-            elif dlgProj.openState == GuiProjectLoad.NEW_STATE:
-                self.newProject()
-
+    @pyqtSlot()
+    def showWelcomeDialog(self) -> None:
+        """Open the welcome dialog."""
+        dialog = GuiWelcome(self)
+        dialog.openProjectRequest.connect(self._openProject)
+        dialog.exec_()
         return
-
-    def showNewProjectDialog(self) -> dict | None:
-        """Open the wizard and assemble a project options dict."""
-        newProj = GuiProjectWizard(self)
-        newProj.exec_()
-
-        if newProj.result() == QDialog.Accepted:
-            return self._assembleProjectWizardData(newProj)
-
-        return None
 
     @pyqtSlot()
     def showPreferencesDialog(self) -> None:
@@ -1204,6 +1146,12 @@ class GuiMain(QMainWindow):
                 self.viewDocument(tHandle=tHandle, sTitle=sTitle)
         return
 
+    @pyqtSlot(Path)
+    def _openProject(self, path: Path) -> None:
+        """Handle an open project request."""
+        self.openProject(path)
+        return
+
     @pyqtSlot(str, nwDocMode, str, bool)
     def _openDocument(self, tHandle: str, mode: nwDocMode, sTitle: str, setFocus: bool) -> None:
         """Handle an open document request."""
@@ -1457,44 +1405,6 @@ class GuiMain(QMainWindow):
             winTitle += " - %s" % projName
         self.setWindowTitle(winTitle)
         return
-
-    def _assembleProjectWizardData(self, newProj: GuiProjectWizard) -> dict:
-        """Extract the user choices from the New Project Wizard and
-        store them in a dictionary.
-        """
-        projData = {
-            "projName": newProj.field("projName"),
-            "projTitle": newProj.field("projTitle"),
-            "projAuthor": newProj.field("projAuthor"),
-            "projPath": newProj.field("projPath"),
-            "popSample": newProj.field("popSample"),
-            "popMinimal": newProj.field("popMinimal"),
-            "popCustom": newProj.field("popCustom"),
-            "addRoots": [],
-            "addNotes": False,
-            "numChapters": 0,
-            "numScenes": 0,
-        }
-        if newProj.field("popCustom"):
-            addRoots = []
-            if newProj.field("addPlot"):
-                addRoots.append(nwItemClass.PLOT)
-            if newProj.field("addChar"):
-                addRoots.append(nwItemClass.CHARACTER)
-            if newProj.field("addWorld"):
-                addRoots.append(nwItemClass.WORLD)
-            projData["addRoots"] = addRoots
-            projData["addNotes"] = newProj.field("addNotes")
-            projData["numChapters"] = newProj.field("numChapters")
-            projData["numScenes"] = newProj.field("numScenes")
-
-        try:
-            langIdx = newProj.field("projLang")
-            projData["projLang"] = CONFIG.listLanguages(CONFIG.LANG_PROJ)[langIdx][0]
-        except Exception:
-            projData["projLang"] = "en_GB"
-
-        return projData
 
     def _getTagSource(self, tag: str) -> tuple[str | None, str | None]:
         """Handle the index lookup of a tag and display an alert if the

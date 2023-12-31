@@ -110,8 +110,8 @@ class Config:
 
         # Size Settings
         self._mainWinSize  = [1200, 650]     # Last size of the main GUI window
+        self._welcomeSize  = [800, 500]      # Last size of the welcome window
         self._prefsWinSize = [700, 615]      # Last size of the Preferences dialog
-        self._projLoadCols = [280, 60, 160]  # Last columns widths of the Project Load dialog
         self._mainPanePos  = [300, 800]      # Last position of the main window splitter
         self._viewPanePos  = [500, 150]      # Last position of the document viewer splitter
         self._outlnPanePos = [500, 150]      # Last position of the outline panel splitter
@@ -250,12 +250,12 @@ class Config:
         return [int(x*self.guiScale) for x in self._mainWinSize]
 
     @property
-    def preferencesWinSize(self) -> list[int]:
-        return [int(x*self.guiScale) for x in self._prefsWinSize]
+    def welcomeWinSize(self) -> list[int]:
+        return [int(x*self.guiScale) for x in self._welcomeSize]
 
     @property
-    def projLoadColWidths(self) -> list[int]:
-        return [int(x*self.guiScale) for x in self._projLoadCols]
+    def preferencesWinSize(self) -> list[int]:
+        return [int(x*self.guiScale) for x in self._prefsWinSize]
 
     @property
     def mainPanePos(self) -> list[int]:
@@ -306,15 +306,16 @@ class Config:
             self._mainWinSize[1] = height
         return
 
+    def setWelcomeWinSize(self, width: int, height: int) -> None:
+        """Set the size of the Preferences dialog window."""
+        self._welcomeSize[0] = int(width/self.guiScale)
+        self._welcomeSize[1] = int(height/self.guiScale)
+        return
+
     def setPreferencesWinSize(self, width: int, height: int) -> None:
         """Set the size of the Preferences dialog window."""
         self._prefsWinSize[0] = int(width/self.guiScale)
         self._prefsWinSize[1] = int(height/self.guiScale)
-        return
-
-    def setProjLoadColWidths(self, widths: list[int]) -> None:
-        """Set the column widths of the Load Project dialog."""
-        self._projLoadCols = [int(x/self.guiScale) for x in widths]
         return
 
     def setMainPanePos(self, pos: list[int]) -> None:
@@ -410,10 +411,10 @@ class Config:
         """Compile and return error messages from the initialisation of
         the Config class, and clear the error buffer.
         """
-        errMessage = "<br>".join(self._errData)
+        message = "<br>".join(self._errData)
         self._hasError = False
         self._errData = []
-        return errMessage
+        return message
 
     def listLanguages(self, lngSet: int) -> list[tuple[str, str]]:
         """List localisation files in the i18n folder. The default GUI
@@ -545,8 +546,8 @@ class Config:
         # Sizes
         sec = "Sizes"
         self._mainWinSize  = conf.rdIntList(sec, "mainwindow", self._mainWinSize)
+        self._welcomeSize  = conf.rdIntList(sec, "welcome", self._welcomeSize)
         self._prefsWinSize = conf.rdIntList(sec, "preferences", self._prefsWinSize)
-        self._projLoadCols = conf.rdIntList(sec, "projloadcols", self._projLoadCols)
         self._mainPanePos  = conf.rdIntList(sec, "mainpane", self._mainPanePos)
         self._viewPanePos  = conf.rdIntList(sec, "viewpane", self._viewPanePos)
         self._outlnPanePos = conf.rdIntList(sec, "outlinepane", self._outlnPanePos)
@@ -635,7 +636,7 @@ class Config:
         conf = NWConfigParser()
 
         conf["Meta"] = {
-            "timestamp":    formatTimeStamp(time()),
+            "timestamp": formatTimeStamp(time()),
         }
 
         conf["Main"] = {
@@ -651,12 +652,12 @@ class Config:
         }
 
         conf["Sizes"] = {
-            "mainwindow":   self._packList(self._mainWinSize),
-            "preferences":  self._packList(self._prefsWinSize),
-            "projloadcols": self._packList(self._projLoadCols),
-            "mainpane":     self._packList(self._mainPanePos),
-            "viewpane":     self._packList(self._viewPanePos),
-            "outlinepane":  self._packList(self._outlnPanePos),
+            "mainwindow":  self._packList(self._mainWinSize),
+            "welcome":     self._packList(self._welcomeSize),
+            "preferences": self._packList(self._prefsWinSize),
+            "mainpane":    self._packList(self._mainPanePos),
+            "viewpane":    self._packList(self._viewPanePos),
+            "outlinepane": self._packList(self._outlnPanePos),
         }
 
         conf["Project"] = {
@@ -774,22 +775,20 @@ class RecentProjects:
         self._data = {}
 
         cacheFile = self._conf.dataPath(nwFiles.RECENT_FILE)
-        if not cacheFile.is_file():
-            return True
-
-        try:
-            with open(cacheFile, mode="r", encoding="utf-8") as inFile:
-                theData = json.load(inFile)
-            for projPath, theEntry in theData.items():
-                self._data[projPath] = {
-                    "title": theEntry.get("title", ""),
-                    "words": theEntry.get("words", 0),
-                    "time": theEntry.get("time", 0),
-                }
-        except Exception:
-            logger.error("Could not load recent project cache")
-            logException()
-            return False
+        if cacheFile.is_file():
+            try:
+                with open(cacheFile, mode="r", encoding="utf-8") as inFile:
+                    data = json.load(inFile)
+                for path, entry in data.items():
+                    self._data[path] = {
+                        "title": entry.get("title", ""),
+                        "words": entry.get("words", 0),
+                        "time": entry.get("time", 0),
+                    }
+            except Exception:
+                logger.error("Could not load recent project cache")
+                logException()
+                return False
 
         return True
 

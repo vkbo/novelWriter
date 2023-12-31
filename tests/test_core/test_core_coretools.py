@@ -39,32 +39,32 @@ from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSplitter, Pr
 @pytest.mark.core
 def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ipsumText):
     """Test the DocMerger utility."""
-    theProject = NWProject()
+    project = NWProject()
     mockRnd.reset()
-    buildTestProject(theProject, fncPath)
+    buildTestProject(project, fncPath)
 
     # Create Files to Merge
     # =====================
 
-    hChapter1 = theProject.newFile("Chapter 1", C.hNovelRoot)
-    hSceneOne11 = theProject.newFile("Scene 1.1", hChapter1)  # type: ignore
-    hSceneOne12 = theProject.newFile("Scene 1.2", hChapter1)  # type: ignore
-    hSceneOne13 = theProject.newFile("Scene 1.3", hChapter1)  # type: ignore
+    hChapter1 = project.newFile("Chapter 1", C.hNovelRoot)
+    hSceneOne11 = project.newFile("Scene 1.1", hChapter1)  # type: ignore
+    hSceneOne12 = project.newFile("Scene 1.2", hChapter1)  # type: ignore
+    hSceneOne13 = project.newFile("Scene 1.3", hChapter1)  # type: ignore
 
     docText1 = "\n\n".join(ipsumText[0:2]) + "\n\n"
     docText2 = "\n\n".join(ipsumText[1:3]) + "\n\n"
     docText3 = "\n\n".join(ipsumText[2:4]) + "\n\n"
     docText4 = "\n\n".join(ipsumText[3:5]) + "\n\n"
 
-    theProject.writeNewFile(hChapter1, 2, True, docText1)  # type: ignore
-    theProject.writeNewFile(hSceneOne11, 3, True, docText2)  # type: ignore
-    theProject.writeNewFile(hSceneOne12, 3, True, docText3)  # type: ignore
-    theProject.writeNewFile(hSceneOne13, 3, True, docText4)  # type: ignore
+    project.writeNewFile(hChapter1, 2, True, docText1)  # type: ignore
+    project.writeNewFile(hSceneOne11, 3, True, docText2)  # type: ignore
+    project.writeNewFile(hSceneOne12, 3, True, docText3)  # type: ignore
+    project.writeNewFile(hSceneOne13, 3, True, docText4)  # type: ignore
 
     # Basic Checks
     # ============
 
-    docMerger = DocMerger(theProject)
+    docMerger = DocMerger(project)
 
     # No writing without a target set
     assert docMerger.writeTargetDoc() is False
@@ -127,14 +127,14 @@ def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ip
 @pytest.mark.core
 def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
     """Test the DocSplitter utility."""
-    theProject = NWProject()
+    project = NWProject()
     mockRnd.reset()
-    buildTestProject(theProject, fncPath)
+    buildTestProject(project, fncPath)
 
     # Create File to Split
     # ====================
 
-    hSplitDoc = theProject.newFile("Split Doc", C.hNovelRoot)
+    hSplitDoc = project.newFile("Split Doc", C.hNovelRoot)
 
     docData = [
         "# Part One", ipsumText[0],
@@ -163,16 +163,16 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText)
 
     docText = "\n\n".join(docData)
     docRaw = docText.splitlines()
-    assert theProject.storage.getDocument(hSplitDoc).writeDocument(docText) is True
-    theProject.tree[hSplitDoc].setStatus(C.sFinished)  # type: ignore
-    theProject.tree[hSplitDoc].setImport(C.iMain)  # type: ignore
+    assert project.storage.getDocument(hSplitDoc).writeDocument(docText) is True
+    project.tree[hSplitDoc].setStatus(C.sFinished)  # type: ignore
+    project.tree[hSplitDoc].setImport(C.iMain)  # type: ignore
 
-    docSplitter = DocSplitter(theProject, hSplitDoc)  # type: ignore
+    docSplitter = DocSplitter(project, hSplitDoc)  # type: ignore
     assert docSplitter._srcItem.isFileType()  # type: ignore
     assert docSplitter.getError() == ""
 
     # Run the split algorithm
-    docSplitter.splitDocument(splitData, docRaw)
+    docSplitter.splitDocument(splitData, docRaw)  # type: ignore
     for i, (lineNo, hLevel, hLabel) in enumerate(splitData):
         assert docSplitter._rawData[i] == (docRaw[lineNo:lineNo+4], hLevel, hLabel)
 
@@ -248,17 +248,17 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText)
 
     # Check that status and importance has been preserved
     for rHandle in resDocHandle:
-        assert theProject.tree[rHandle].itemStatus == C.sFinished  # type: ignore
-        assert theProject.tree[rHandle].itemImport == C.iMain  # type: ignore
+        assert project.tree[rHandle].itemStatus == C.sFinished  # type: ignore
+        assert project.tree[rHandle].itemImport == C.iMain  # type: ignore
 
     # Check handling of improper initialisation
-    docSplitter = DocSplitter(theProject, C.hInvalid)
+    docSplitter = DocSplitter(project, C.hInvalid)
     assert docSplitter._srcHandle is None
     assert docSplitter._srcItem is None
     assert docSplitter.newParentFolder(C.hNovelRoot, "Split Folder") is None
     assert list(docSplitter.writeDocuments(False)) == []
 
-    theProject.saveProject()
+    project.saveProject()
 
 # END Test testCoreTools_DocSplitter
 
@@ -266,20 +266,20 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText)
 @pytest.mark.core
 def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
     """Test the DocDuplicator utility."""
-    theProject = NWProject()
+    project = NWProject()
     mockRnd.reset()
-    buildTestProject(theProject, fncPath)
+    buildTestProject(project, fncPath)
 
-    dup = DocDuplicator(theProject)
+    dup = DocDuplicator(project)
 
     ttText = "#! New Novel\n\n>> By Jane Doe <<\n"
     chText = "## New Chapter\n\n"
     scText = "### New Scene\n\n"
 
     # Check document content
-    assert theProject.storage.getDocument(C.hTitlePage).readDocument() == ttText
-    assert theProject.storage.getDocument(C.hChapterDoc).readDocument() == chText
-    assert theProject.storage.getDocument(C.hSceneDoc).readDocument() == scText
+    assert project.storage.getDocument(C.hTitlePage).readDocument() == ttText
+    assert project.storage.getDocument(C.hChapterDoc).readDocument() == chText
+    assert project.storage.getDocument(C.hSceneDoc).readDocument() == scText
 
     # Nothing to do
     assert list(dup.duplicate([])) == []
@@ -291,17 +291,17 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
     assert list(dup.duplicate([C.hSceneDoc])) == [
         ("0000000000010", C.hSceneDoc),  # The Scene
     ]
-    assert theProject.tree._order == [
+    assert project.tree._order == [
         C.hNovelRoot, C.hPlotRoot, C.hCharRoot, C.hWorldRoot,
         C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010",
     ]
 
     # With the same content
-    assert theProject.storage.getDocument("0000000000010").readDocument() == scText
+    assert project.storage.getDocument("0000000000010").readDocument() == scText
 
     # They should have the same parent
-    assert theProject.tree["0000000000010"].itemParent == C.hChapterDir  # type: ignore
+    assert project.tree["0000000000010"].itemParent == C.hChapterDir  # type: ignore
 
     # Folder w/Two Files
     # ==================
@@ -312,7 +312,7 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
         ("0000000000012", None),           # The Chapter
         ("0000000000013", None),           # The Scene
     ]
-    assert theProject.tree._order == [
+    assert project.tree._order == [
         C.hNovelRoot, C.hPlotRoot, C.hCharRoot, C.hWorldRoot,
         C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010",
@@ -320,15 +320,15 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
     ]
 
     # With the same content
-    assert theProject.storage.getDocument("0000000000012").readDocument() == chText
-    assert theProject.storage.getDocument("0000000000013").readDocument() == scText
+    assert project.storage.getDocument("0000000000012").readDocument() == chText
+    assert project.storage.getDocument("0000000000013").readDocument() == scText
 
     # The chapter dirs should have the same parent
-    assert theProject.tree["0000000000011"].itemParent == C.hNovelRoot  # type: ignore
+    assert project.tree["0000000000011"].itemParent == C.hNovelRoot  # type: ignore
 
     # The new files should have the new folder as parent
-    assert theProject.tree["0000000000012"].itemParent == "0000000000011"  # type: ignore
-    assert theProject.tree["0000000000013"].itemParent == "0000000000011"  # type: ignore
+    assert project.tree["0000000000012"].itemParent == "0000000000011"  # type: ignore
+    assert project.tree["0000000000013"].itemParent == "0000000000011"  # type: ignore
 
     # Full Root Folder
     # ================
@@ -343,7 +343,7 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
         ("0000000000017", None),          # The Chapter
         ("0000000000018", None),          # The Scene
     ]
-    assert theProject.tree._order == [
+    assert project.tree._order == [
         C.hNovelRoot, C.hPlotRoot, C.hCharRoot, C.hWorldRoot,
         C.hTitlePage, C.hChapterDir, C.hChapterDoc, C.hSceneDoc,
         "0000000000010",
@@ -352,24 +352,24 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
     ]
 
     # With the same content
-    assert theProject.storage.getDocument("0000000000015").readDocument() == ttText
-    assert theProject.storage.getDocument("0000000000017").readDocument() == chText
-    assert theProject.storage.getDocument("0000000000018").readDocument() == scText
+    assert project.storage.getDocument("0000000000015").readDocument() == ttText
+    assert project.storage.getDocument("0000000000017").readDocument() == chText
+    assert project.storage.getDocument("0000000000018").readDocument() == scText
 
     # The root folder should have no parent
-    assert theProject.tree["0000000000014"].itemParent is None  # type: ignore
+    assert project.tree["0000000000014"].itemParent is None  # type: ignore
 
     # The folder and files should have the new root
-    assert theProject.tree["0000000000015"].itemRoot == "0000000000014"  # type: ignore
-    assert theProject.tree["0000000000016"].itemRoot == "0000000000014"  # type: ignore
-    assert theProject.tree["0000000000017"].itemRoot == "0000000000014"  # type: ignore
-    assert theProject.tree["0000000000018"].itemRoot == "0000000000014"  # type: ignore
+    assert project.tree["0000000000015"].itemRoot == "0000000000014"  # type: ignore
+    assert project.tree["0000000000016"].itemRoot == "0000000000014"  # type: ignore
+    assert project.tree["0000000000017"].itemRoot == "0000000000014"  # type: ignore
+    assert project.tree["0000000000018"].itemRoot == "0000000000014"  # type: ignore
 
     # And they should have new parents
-    assert theProject.tree["0000000000015"].itemParent == "0000000000014"  # type: ignore
-    assert theProject.tree["0000000000016"].itemParent == "0000000000014"  # type: ignore
-    assert theProject.tree["0000000000017"].itemParent == "0000000000016"  # type: ignore
-    assert theProject.tree["0000000000018"].itemParent == "0000000000016"  # type: ignore
+    assert project.tree["0000000000015"].itemParent == "0000000000014"  # type: ignore
+    assert project.tree["0000000000016"].itemParent == "0000000000014"  # type: ignore
+    assert project.tree["0000000000017"].itemParent == "0000000000016"  # type: ignore
+    assert project.tree["0000000000018"].itemParent == "0000000000016"  # type: ignore
 
     # Exceptions
     # ==========
@@ -381,14 +381,14 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
     assert list(dup.duplicate([C.hInvalid, C.hSceneDoc])) == []
 
     # Don't overwrite existing files
-    content = theProject.storage.contentPath
+    content = project.storage.contentPath
     assert isinstance(content, Path)
     (content / "0000000000019.nwd").touch()
     assert (content / "0000000000019.nwd").exists()
     assert list(dup.duplicate([C.hChapterDoc, C.hSceneDoc])) == []
 
     # Save and Close
-    theProject.saveProject()
+    project.saveProject()
 
     projFile = fncPath / "nwProject.nwx"
     testFile = tstPaths.outDir / "coreTools_DocDuplicator_nwProject.nwx"
@@ -401,134 +401,121 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
 
 
 @pytest.mark.core
-def testCoreTools_NewMinimal(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
-    """Create a new project from a project wizard dictionary. With
-    default setting, creating a Minimal project.
-    """
-    monkeypatch.setattr("uuid.uuid4", lambda *a: uuid.UUID("d0f3fe10-c6e6-4310-8bfd-181eb4224eed"))
-
-    projFile = fncPath / "nwProject.nwx"
-    testFile = tstPaths.outDir / "coreTools_NewMinimal_nwProject.nwx"
-    compFile = tstPaths.refDir / "coreTools_NewMinimal_nwProject.nwx"
-
-    projBuild = ProjectBuilder()
+def testCoreTools_ProjectBuilderWrapper(monkeypatch, caplog, fncPath, mockGUI):
+    """Test the wrapper function of the project builder."""
+    builder = ProjectBuilder()
 
     # Setting no data should fail
-    assert projBuild.buildProject({}) is False
+    assert builder.buildProject({}) is False
 
     # Wrong type should also fail
-    assert projBuild.buildProject("stuff") is False  # type: ignore
+    assert builder.buildProject("stuff") is False  # type: ignore
+
+    # Folder not writable
+    caplog.clear()
+    with monkeypatch.context() as mp:
+        mp.setattr("pathlib.Path.mkdir", causeOSError)
+        assert builder.buildProject({"path": fncPath}) is False
+        assert "An error occurred" in caplog.text
 
     # Try again with a proper path
-    assert projBuild.buildProject({"projPath": fncPath}) is True
+    assert builder.buildProject({"path": fncPath}) is True
+    assert builder.projPath == fncPath
 
     # Creating the project once more should fail
-    assert projBuild.buildProject({"projPath": fncPath}) is False
+    caplog.clear()
+    assert builder.buildProject({"path": fncPath}) is False
+    assert "A project already exists" in caplog.text
 
-    # Save and close
-    copyfile(projFile, testFile)
-    assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
-
-# END Test testCoreTools_NewMinimal
+# END Test testCoreTools_ProjectBuilderWrapper
 
 
 @pytest.mark.core
-def testCoreTools_NewCustomA(monkeypatch, fncPath, tstPaths, mockRnd):
-    """Create a new project from a project wizard dictionary.
-    Custom type with chapters and scenes.
-    """
+def testCoreTools_ProjectBuilderA(monkeypatch, fncPath, tstPaths, mockRnd):
+    """Create a new project from a project dictionary, with chapters."""
     monkeypatch.setattr("uuid.uuid4", lambda *a: uuid.UUID("d0f3fe10-c6e6-4310-8bfd-181eb4224eed"))
 
     projFile = fncPath / "nwProject.nwx"
-    testFile = tstPaths.outDir / "coreTools_NewCustomA_nwProject.nwx"
-    compFile = tstPaths.refDir / "coreTools_NewCustomA_nwProject.nwx"
+    testFile = tstPaths.outDir / "coreTools_ProjectBuilderA_nwProject.nwx"
+    compFile = tstPaths.refDir / "coreTools_ProjectBuilderA_nwProject.nwx"
 
-    projData = {
-        "projName": "Test Custom",
-        "projTitle": "Test Novel",
-        "projAuthor": "Jane Doe",
-        "projLang": -1,
-        "projPath": fncPath,
-        "popSample": False,
-        "popMinimal": False,
-        "popCustom": True,
-        "addRoots": [
+    data = {
+        "name": "Test Project A",
+        "author": "Jane Doe",
+        "language": -1,
+        "path": fncPath,
+        "sample": False,
+        "template": None,
+        "chapters": 3,
+        "scenes": 3,
+        "roots": [
             nwItemClass.PLOT,
             nwItemClass.CHARACTER,
             nwItemClass.WORLD,
         ],
-        "addNotes": True,
-        "numChapters": 3,
-        "numScenes": 3,
+        "notes": True,
     }
 
-    projBuild = ProjectBuilder()
-    assert projBuild.buildProject(projData) is True
+    builder = ProjectBuilder()
+    assert builder.buildProject(data) is True
 
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
-# END Test testCoreTools_NewCustomA
+# END Test testCoreTools_ProjectBuilderA
 
 
 @pytest.mark.core
-def testCoreTools_NewCustomB(monkeypatch, fncPath, tstPaths,  mockRnd):
-    """Create a new project from a project wizard dictionary.
-    Custom type without chapters, but with scenes.
-    """
+def testCoreTools_ProjectBuilderB(monkeypatch, fncPath, tstPaths,  mockRnd):
+    """Create a new project from a project dictionary, without chapters."""
     monkeypatch.setattr("uuid.uuid4", lambda *a: uuid.UUID("d0f3fe10-c6e6-4310-8bfd-181eb4224eed"))
 
     projFile = fncPath / "nwProject.nwx"
-    testFile = tstPaths.outDir / "coreTools_NewCustomB_nwProject.nwx"
-    compFile = tstPaths.refDir / "coreTools_NewCustomB_nwProject.nwx"
+    testFile = tstPaths.outDir / "coreTools_ProjectBuilderB_nwProject.nwx"
+    compFile = tstPaths.refDir / "coreTools_ProjectBuilderB_nwProject.nwx"
 
-    projData = {
-        "projName": "Test Custom",
-        "projTitle": "Test Novel",
-        "projAuthor": "Jane Doe",
-        "projLang": -1,
-        "projPath": fncPath,
-        "popSample": False,
-        "popMinimal": False,
-        "popCustom": True,
-        "addRoots": [
+    data = {
+        "name": "Test Project B",
+        "author": "Jane Doe",
+        "language": -1,
+        "path": fncPath,
+        "sample": False,
+        "template": None,
+        "chapters": 0,
+        "scenes": 6,
+        "roots": [
             nwItemClass.PLOT,
             nwItemClass.CHARACTER,
             nwItemClass.WORLD,
         ],
-        "addNotes": True,
-        "numChapters": 0,
-        "numScenes": 6,
+        "notes": True,
     }
 
-    projBuild = ProjectBuilder()
-    assert projBuild.buildProject(projData) is True
+    builder = ProjectBuilder()
+    assert builder.buildProject(data) is True
 
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
-# END Test testCoreTools_NewCustomB
+# END Test testCoreTools_ProjectBuilderB
 
 
 @pytest.mark.core
-def testCoreTools_NewSample(monkeypatch, mockGUI, fncPath, tstPaths):
+def testCoreTools_ProjectBuilderSample(monkeypatch, mockGUI, fncPath, tstPaths):
     """Check that we can create a new project can be created from the
     provided sample project via a zip file.
     """
-    projData = {
-        "projName": "Test Sample",
-        "projTitle": "Test Novel",
-        "projAuthor": "Jane Doe",
-        "projPath": fncPath,
-        "popSample": True,
-        "popMinimal": False,
-        "popCustom": False,
+    data = {
+        "name": "Test Sample",
+        "author": "Jane Doe",
+        "path": fncPath,
+        "sample": True,
     }
 
-    projBuild = ProjectBuilder()
+    builder = ProjectBuilder()
 
     # No path set
-    assert projBuild.buildProject({"popSample": True}) is False
+    assert builder.buildProject({"popSample": True}) is False
 
     # Force the lookup path for assets to our temp folder
     srcSample = CONFIG._appRoot / "sample"
@@ -538,13 +525,13 @@ def testCoreTools_NewSample(monkeypatch, mockGUI, fncPath, tstPaths):
     )
 
     # Cannot extract when the zip does not exist
-    assert projBuild.buildProject(projData) is False
+    assert builder.buildProject(data) is False
 
     # Create and open a defective zip file
     with open(dstSample, mode="w+") as outFile:
         outFile.write("foo")
 
-    assert projBuild.buildProject(projData) is False
+    assert builder.buildProject(data) is False
     dstSample.unlink()
 
     # Create a real zip file, and unpack it
@@ -553,7 +540,7 @@ def testCoreTools_NewSample(monkeypatch, mockGUI, fncPath, tstPaths):
         for docFile in (srcSample / "content").iterdir():
             zipObj.write(docFile, f"content/{docFile.name}")
 
-    assert projBuild.buildProject(projData) is True
+    assert builder.buildProject(data) is True
     dstSample.unlink()
 
-# END Test testCoreTools_NewSample
+# END Test testCoreTools_ProjectBuilderSample

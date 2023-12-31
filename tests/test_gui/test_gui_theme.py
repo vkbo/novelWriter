@@ -263,7 +263,7 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI):
 
 
 @pytest.mark.gui
-def testGuiTheme_Icons(qtbot, caplog, monkeypatch, nwGUI, tstPaths):
+def testGuiTheme_IconThemes(qtbot, caplog, monkeypatch, tstPaths):
     """Test the icon cache class."""
     iconCache = SHARED.theme.iconCache
 
@@ -305,38 +305,16 @@ def testGuiTheme_Icons(qtbot, caplog, monkeypatch, nwGUI, tstPaths):
     assert iconCache.loadTheme("typicons_dark") is True
     assert "add" in iconCache._themeMap
 
-    # Load Decorations
-    # ================
+    # qtbot.stop()
 
-    # Invalid name should return empty pixmap
-    qPix = iconCache.loadDecoration("stuff")
-    assert qPix.isNull() is True
+# END Test testGuiTheme_IconThemes
 
-    # Load an image
-    qPix = iconCache.loadDecoration("wiz-back")
-    assert qPix.isNull() is False
 
-    # Fail finding the file
-    with monkeypatch.context() as mp:
-        mp.setattr("pathlib.Path.is_file", lambda *a: False)
-        qPix = iconCache.loadDecoration("wiz-back")
-        assert qPix.isNull() is True
-
-    # Test image sizes
-    qPix = iconCache.loadDecoration("wiz-back", w=100, h=None)
-    assert qPix.isNull() is False
-    assert qPix.width() == 100
-    assert qPix.height() > 100
-
-    qPix = iconCache.loadDecoration("wiz-back", w=None, h=100)
-    assert qPix.isNull() is False
-    assert qPix.width() < 100
-    assert qPix.height() == 100
-
-    qPix = iconCache.loadDecoration("wiz-back", w=100, h=100)
-    assert qPix.isNull() is False
-    assert qPix.width() == 100
-    assert qPix.height() == 100
+@pytest.mark.gui
+def testGuiTheme_LoadIcons(qtbot):
+    """Test the icon cache class."""
+    iconCache = SHARED.theme.iconCache
+    assert iconCache.loadTheme("typicons_dark") is True
 
     # Load Icons
     # ==========
@@ -367,6 +345,19 @@ def testGuiTheme_Icons(qtbot, caplog, monkeypatch, nwGUI, tstPaths):
     qIcon = iconCache.getIcon("proj_nwx")
     assert isinstance(qIcon, QIcon)
     assert qIcon.isNull() is False
+
+    # Toggle icon
+    qIcon = iconCache.getToggleIcon("bullet", (24, 24))
+    assert isinstance(qIcon, QIcon)
+    assert qIcon.isNull() is False
+    pOn = qIcon.pixmap(24, 24, QIcon.Mode.Normal, QIcon.State.On)
+    pOff = qIcon.pixmap(24, 24, QIcon.Mode.Normal, QIcon.State.Off)
+    assert pOn != pOff
+
+    # Unknown toggle icon
+    qIcon = iconCache.getToggleIcon("stuff", (24, 24))
+    assert isinstance(qIcon, QIcon)
+    assert qIcon.isNull() is True
 
     # Load Item Icons
     # ===============
@@ -421,6 +412,50 @@ def testGuiTheme_Icons(qtbot, caplog, monkeypatch, nwGUI, tstPaths):
         nwItemType.NO_TYPE, nwItemClass.NOVEL, nwItemLayout.DOCUMENT, hLevel="H0"
     ).isNull() is True
 
+    # qtbot.stop()
+
+# END Test testGuiTheme_LoadIcons
+
+
+@pytest.mark.gui
+def testGuiTheme_LoadDecorations(qtbot, monkeypatch):
+    """Test the icon cache class."""
+    iconCache = SHARED.theme.iconCache
+    assert iconCache.loadTheme("typicons_dark") is True
+
+    # Load Decorations
+    # ================
+
+    # Invalid name should return empty pixmap
+    qPix = iconCache.loadDecoration("stuff")
+    assert qPix.isNull() is True
+
+    # Load an image
+    qPix = iconCache.loadDecoration("welcome")
+    assert qPix.isNull() is False
+
+    # Fail finding the file
+    with monkeypatch.context() as mp:
+        mp.setattr("pathlib.Path.is_file", lambda *a: False)
+        qPix = iconCache.loadDecoration("welcome")
+        assert qPix.isNull() is True
+
+    # Test image sizes
+    qPix = iconCache.loadDecoration("welcome", w=100, h=None)
+    assert qPix.isNull() is False
+    assert qPix.width() == 100
+    assert qPix.height() > 50
+
+    qPix = iconCache.loadDecoration("welcome", w=None, h=100)
+    assert qPix.isNull() is False
+    assert qPix.width() > 100
+    assert qPix.height() == 100
+
+    qPix = iconCache.loadDecoration("welcome", w=100, h=100)
+    assert qPix.isNull() is False
+    assert qPix.width() == 100
+    assert qPix.height() == 100
+
     # Header Decorations
     # ==================
 
@@ -432,6 +467,18 @@ def testGuiTheme_Icons(qtbot, caplog, monkeypatch, nwGUI, tstPaths):
     assert iconCache.getHeaderDecoration(4)  == iconCache._headerDec[4]
     assert iconCache.getHeaderDecoration(5)  == iconCache._headerDec[4]
 
+    # Narrow Header Decorations
+    # =========================
+
+    assert iconCache.getHeaderDecorationNarrow(-1) == iconCache._headerDecNarrow[0]
+    assert iconCache.getHeaderDecorationNarrow(0)  == iconCache._headerDecNarrow[0]
+    assert iconCache.getHeaderDecorationNarrow(1)  == iconCache._headerDecNarrow[1]
+    assert iconCache.getHeaderDecorationNarrow(2)  == iconCache._headerDecNarrow[2]
+    assert iconCache.getHeaderDecorationNarrow(3)  == iconCache._headerDecNarrow[3]
+    assert iconCache.getHeaderDecorationNarrow(4)  == iconCache._headerDecNarrow[4]
+    assert iconCache.getHeaderDecorationNarrow(5)  == iconCache._headerDecNarrow[5]
+    assert iconCache.getHeaderDecorationNarrow(6)  == iconCache._headerDecNarrow[5]
+
     # qtbot.stop()
 
-# END Test testGuiTheme_Icons
+# END Test testGuiTheme_LoadDecorations

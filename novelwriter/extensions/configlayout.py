@@ -33,6 +33,8 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG
 
 FONT_SCALE = 0.9
+RIGHT_TOP = Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignTop
+LEFT_TOP = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop
 
 
 class NConfigLayout(QGridLayout):
@@ -103,31 +105,31 @@ class NConfigLayout(QGridLayout):
             labelBox.addWidget(qHelp)
             labelBox.setSpacing(0)
             labelBox.addStretch(1)
-            self.addLayout(labelBox, self._nextRow, 0, 1, 1, Qt.AlignLeft | Qt.AlignTop)
+            self.addLayout(labelBox, self._nextRow, 0, 1, 1, LEFT_TOP)
         else:
-            self.addWidget(qLabel, self._nextRow, 0, 1, 1, Qt.AlignLeft | Qt.AlignTop)
+            self.addWidget(qLabel, self._nextRow, 0, 1, 1, LEFT_TOP)
 
         if isinstance(unit, str):
             controlBox = QHBoxLayout()
             controlBox.addWidget(widget, 0, Qt.AlignVCenter)
             controlBox.addWidget(QLabel(unit), 0, Qt.AlignVCenter)
             controlBox.setSpacing(wSp)
-            self.addLayout(controlBox, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignTop)
+            self.addLayout(controlBox, self._nextRow, 1, 1, 1, RIGHT_TOP)
 
         elif isinstance(button, QAbstractButton):
             controlBox = QHBoxLayout()
             controlBox.addWidget(widget, 0, Qt.AlignVCenter)
             controlBox.addWidget(button, 0, Qt.AlignVCenter)
             controlBox.setSpacing(wSp)
-            self.addLayout(controlBox, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignTop)
+            self.addLayout(controlBox, self._nextRow, 1, 1, 1, RIGHT_TOP)
 
         else:
             if isinstance(widget, QLineEdit):
                 qLayout = QHBoxLayout()
                 qLayout.addWidget(widget)
-                self.addLayout(qLayout, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignTop)
+                self.addLayout(qLayout, self._nextRow, 1, 1, 1, RIGHT_TOP)
             else:
-                self.addWidget(widget, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignTop)
+                self.addWidget(widget, self._nextRow, 1, 1, 1, RIGHT_TOP)
 
         self.setRowStretch(self._nextRow, 0)
         self.setRowStretch(self._nextRow+1, 1)
@@ -145,14 +147,14 @@ class NSimpleLayout(QGridLayout):
     column layout.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, stretcColumn: int = 0) -> None:
         super().__init__()
         self._nextRow = 0
 
         wSp = CONFIG.pxInt(8)
         self.setHorizontalSpacing(wSp)
         self.setVerticalSpacing(wSp)
-        self.setColumnStretch(0, 1)
+        self.setColumnStretch(stretcColumn, 1)
 
         return
 
@@ -176,14 +178,14 @@ class NSimpleLayout(QGridLayout):
         wSp = CONFIG.pxInt(8)
         qLabel = QLabel(label)
         qLabel.setIndent(wSp)
-        self.addWidget(qLabel, self._nextRow, 0, 1, 1, Qt.AlignLeft | Qt.AlignTop)
+        self.addWidget(qLabel, self._nextRow, 0, 1, 1, LEFT_TOP)
 
         if isinstance(widget, QLineEdit):
             qLayout = QHBoxLayout()
             qLayout.addWidget(widget)
-            self.addLayout(qLayout, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignTop)
+            self.addLayout(qLayout, self._nextRow, 1, 1, 1, RIGHT_TOP)
         else:
-            self.addWidget(widget, self._nextRow, 1, 1, 1, Qt.AlignRight | Qt.AlignTop)
+            self.addWidget(widget, self._nextRow, 1, 1, 1, RIGHT_TOP)
 
         qLabel.setBuddy(widget)
 

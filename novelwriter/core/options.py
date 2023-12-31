@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 NWEnum = TypeVar("NWEnum", bound=Enum)
 
-VALID_MAP = {
+VALID_MAP: dict[str, set[str]] = {
     "GuiWritingStats": {
         "winWidth", "winHeight", "widthCol0", "widthCol1", "widthCol2",
         "widthCol3", "sortCol", "sortOrder", "incNovel", "incNotes",

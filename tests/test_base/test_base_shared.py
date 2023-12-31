@@ -25,7 +25,7 @@ import pytest
 from tools import buildTestProject
 from mocked import MockGuiMain, MockTheme
 
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget
 
 from novelwriter.shared import SharedData
 from novelwriter.core.project import NWProject
@@ -66,7 +66,7 @@ def testBaseSharedData_Init():
 
 
 @pytest.mark.base
-def testBaseSharedData_Projects(fncPath, caplog):
+def testBaseSharedData_Projects(monkeypatch, caplog, fncPath):
     """Test SharedData handling of projects."""
     project = NWProject()
     buildTestProject(project, fncPath)
@@ -117,6 +117,11 @@ def testBaseSharedData_Projects(fncPath, caplog):
     assert shared.openProject(fncPath) is False  # Then with our shared instance
     assert shared.hasProject is False
     assert isinstance(shared.projectLock, list)
+
+    # Test browsing for projects
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (a[2], ""))
+        assert shared.getProjectPath(QWidget(), fncPath, allowZip=True) == fncPath
 
 # END Test testBaseSharedData_Projects
 

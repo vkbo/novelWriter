@@ -132,14 +132,10 @@ class GuiMainMenu(QMenuBar):
         # Project
         self.projMenu = self.addMenu(self.tr("&Project"))
 
-        # Project > New Project
-        self.aNewProject = self.projMenu.addAction(self.tr("New Project"))
-        self.aNewProject.triggered.connect(lambda: self.mainGui.newProject(None))
-
-        # Project > Open Project
-        self.aOpenProject = self.projMenu.addAction(self.tr("Open Project"))
+        # Project > Create or Open Project
+        self.aOpenProject = self.projMenu.addAction(self.tr("Create or Open Project"))
         self.aOpenProject.setShortcut("Ctrl+Shift+O")
-        self.aOpenProject.triggered.connect(lambda: self.mainGui.showProjectLoadDialog())
+        self.aOpenProject.triggered.connect(self.mainGui.showWelcomeDialog)
 
         # Project > Save Project
         self.aSaveProject = self.projMenu.addAction(self.tr("Save Project"))

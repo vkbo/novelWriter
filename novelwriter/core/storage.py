@@ -57,6 +57,15 @@ class NWStorageOpen(Enum):
 # END Enum NWStorageOpen
 
 
+class NWStorageCreate(Enum):
+
+    NOT_EMPTY = 0
+    OS_ERROR  = 1
+    READY     = 2
+
+# END Enum NWStorageCreate
+
+
 class NWStorage:
     """Core: Project Storage Class
 
@@ -133,12 +142,12 @@ class NWStorage:
         """Check if the storage location is open."""
         return self._ready and self._runtimePath is not None
 
-    def createNewProject(self, path: str | Path) -> bool:
+    def createNewProject(self, path: str | Path) -> NWStorageCreate:
         """Create a new project at the given location."""
         inPath = Path(path).resolve()
         if inPath.is_dir() and len(list(inPath.iterdir())) > 0:
             logger.error("Folder is not empty: %s", inPath)
-            return False
+            return NWStorageCreate.NOT_EMPTY
 
         self._storagePath = inPath
         self._runtimePath = inPath
@@ -156,11 +165,11 @@ class NWStorage:
             self._exception = exc
             logger.error("Failed to create project folders", exc_info=exc)
             self.clear()
-            return False
+            return NWStorageCreate.OS_ERROR
 
         self._ready = True
 
-        return True
+        return NWStorageCreate.READY
 
     def initProjectStorage(self, path: str | Path, clearLock: bool = False) -> NWStorageOpen:
         """Initialise a novelWriter project location."""
