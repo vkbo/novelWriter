@@ -8,7 +8,7 @@ Created: 2022-09-28 [2.0rc2] ProjectXMLReader
 Created: 2022-10-31 [2.0rc2] ProjectXMLWriter
 
 This file is a part of novelWriter
-Copyright 2018–2023, Veronica Berglyd Olsen
+Copyright 2018–2024, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
