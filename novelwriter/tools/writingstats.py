@@ -6,7 +6,7 @@ File History:
 Created: 2019-10-20 [0.3.0] GuiWritingStats
 
 This file is a part of novelWriter
-Copyright 2018–2023, Veronica Berglyd Olsen
+Copyright 2018–2024, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

@@ -7,7 +7,7 @@ Created: 2019-04-06 [0.0.1] GuiDocHighlighter
 Created: 2023-09-10 [2.2b1] TextBlockData
 
 This file is a part of novelWriter
-Copyright 2018–2023, Veronica Berglyd Olsen
+Copyright 2018–2024, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

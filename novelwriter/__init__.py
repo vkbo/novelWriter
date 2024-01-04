@@ -6,7 +6,7 @@ File History:
 Created: 2018-09-22 [0.0.1]
 
 This file is a part of novelWriter
-Copyright 2018–2023, Veronica Berglyd Olsen
+Copyright 2018–2024, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ from novelwriter.shared import SharedData
 # ============
 
 __package__    = "novelwriter"
-__copyright__  = "Copyright 2018–2023, Veronica Berglyd Olsen"
+__copyright__  = "Copyright 2018–2024, Veronica Berglyd Olsen"
 __license__    = "GPLv3"
 __author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
