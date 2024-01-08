@@ -45,6 +45,8 @@ class NScrollableForm(QScrollArea):
         super().__init__(parent=parent)
         self._helpCol = QColor(0, 0, 0)
         self._fontScale = FONT_SCALE
+        self._first = True
+
         self._sections: dict[int, QLabel] = {}
         self._editable: dict[str, NHelpLabel] = {}
         self._index: dict[str, QWidget] = {}
@@ -109,8 +111,11 @@ class NScrollableForm(QScrollArea):
         hM = CONFIG.pxInt(4)
         qLabel = QLabel(f"<b>{label}</b>", self)
         qLabel.setContentsMargins(0, hM, 0, hM)
+        if not self._first:
+            self._layout.addSpacing(5*hM)
         self._layout.addWidget(qLabel)
         self._sections[identifier] = qLabel
+        self._first = False
         return
 
     def addRow(self, label: str, widget: QWidget, helpText: str = "", unit: str | None = None,
@@ -118,7 +123,7 @@ class NScrollableForm(QScrollArea):
         """Add a label and a widget as a new row of the form."""
         row = QHBoxLayout()
 
-        wSp = CONFIG.pxInt(8)
+        wSp = CONFIG.pxInt(12)
         qLabel = QLabel(label, self)
         qLabel.setIndent(wSp)
         qLabel.setBuddy(widget)
@@ -146,11 +151,13 @@ class NScrollableForm(QScrollArea):
 
         self._layout.addLayout(row)
         self._index[label.strip()] = widget
+        self._first = False
 
         return
 
     def finalise(self) -> None:
         """Finalise the layout when the form is built."""
+        self._layout.addSpacing(CONFIG.pxInt(20))
         self._layout.addStretch(1)
         return
 
