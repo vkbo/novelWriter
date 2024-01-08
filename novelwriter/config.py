@@ -150,9 +150,6 @@ class Config:
         self.autoScrollPos   = 30     # Start point for typewriter-like scrolling
         self.scrollPastEnd   = True   # Scroll past end of document, and centre cursor
 
-        self.wordCountTimer  = 5.0    # Interval for word count update in seconds
-        self.incNotesWCount  = True   # The status bar word count includes notes
-
         self.highlightQuotes = True   # Highlight text in quotes
         self.allowOpenSQuote = False  # Allow open-ended single quotes
         self.allowOpenDQuote = True   # Allow open-ended double quotes
@@ -160,6 +157,7 @@ class Config:
 
         self.stopWhenIdle    = True   # Stop the status bar clock when the user is idle
         self.userIdleTime    = 300    # Time of inactivity to consider user idle
+        self.incNotesWCount  = True   # The status bar word count includes notes
 
         # User-Selected Symbol Settings
         self.fmtApostrophe   = nwUnicode.U_RSQUO
@@ -591,7 +589,6 @@ class Config:
         self.showTabsNSpaces = conf.rdBool(sec, "showtabsnspaces", self.showTabsNSpaces)
         self.showLineEndings = conf.rdBool(sec, "showlineendings", self.showLineEndings)
         self.showMultiSpaces = conf.rdBool(sec, "showmultispaces", self.showMultiSpaces)
-        self.wordCountTimer  = conf.rdFlt(sec, "wordcounttimer", self.wordCountTimer)
         self.incNotesWCount  = conf.rdBool(sec, "incnoteswcount", self.incNotesWCount)
         self.showFullPath    = conf.rdBool(sec, "showfullpath", self.showFullPath)
         self.highlightQuotes = conf.rdBool(sec, "highlightquotes", self.highlightQuotes)
@@ -698,7 +695,6 @@ class Config:
             "showtabsnspaces": str(self.showTabsNSpaces),
             "showlineendings": str(self.showLineEndings),
             "showmultispaces": str(self.showMultiSpaces),
-            "wordcounttimer":  str(self.wordCountTimer),
             "incnoteswcount":  str(self.incNotesWCount),
             "showfullpath":    str(self.showFullPath),
             "highlightquotes": str(self.highlightQuotes),
