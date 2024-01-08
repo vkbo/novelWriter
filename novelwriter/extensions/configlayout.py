@@ -3,7 +3,9 @@ novelWriter – Custom Widget: Config Layout
 ==========================================
 
 File History:
-Created: 2020-05-03 [0.4.5]
+Created: 2020-05-03 [0.4.5] NConfigLayout, NHelpLabel
+Created: 2023-05-23 [2.1b1] NSimpleLayout
+Created: 2024-01-08 [2.3b1] NScrollableForm
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen
@@ -45,6 +47,7 @@ class NScrollableForm(QScrollArea):
         self._fontScale = FONT_SCALE
         self._sections: dict[int, QLabel] = {}
         self._editable: dict[str, NHelpLabel] = {}
+        self._index: dict[str, QWidget] = {}
 
         self._layout = QVBoxLayout()
         self._layout.setSpacing(CONFIG.pxInt(12))
@@ -59,6 +62,18 @@ class NScrollableForm(QScrollArea):
 
         return
 
+    ##
+    #  Properties
+    ##
+
+    @property
+    def labels(self) -> list[str]:
+        return list(self._index.keys())
+
+    ##
+    #  Setters
+    ##
+
     def setHelpTextStyle(self, color: QColor | list | tuple, scale: float = FONT_SCALE) -> None:
         """Set the text color for the help text."""
         self._helpCol = color if isinstance(color, QColor) else QColor(*color)
@@ -71,15 +86,21 @@ class NScrollableForm(QScrollArea):
             qHelp.setText(text)
         return
 
-    def finalise(self) -> None:
-        """Finalise the layout when the form is built."""
-        self._layout.addStretch(1)
-        return
+    ##
+    #  Methods
+    ##
 
-    def scrollToSection(self, identifier: int, offset: int = 50) -> None:
+    def scrollToSection(self, identifier: int) -> None:
         """Scroll to the requested section identifier."""
         if identifier in self._sections:
             yPos = self._sections[identifier].pos().y() - CONFIG.pxInt(8)
+            self.verticalScrollBar().setValue(yPos)
+        return
+
+    def scrollToLabel(self, label: str) -> None:
+        """Scroll to the requested label."""
+        if label in self._index:
+            yPos = self._index[label].pos().y() - CONFIG.pxInt(8)
             self.verticalScrollBar().setValue(yPos)
         return
 
@@ -124,7 +145,13 @@ class NScrollableForm(QScrollArea):
             row.addWidget(button)
 
         self._layout.addLayout(row)
+        self._index[label.strip()] = widget
 
+        return
+
+    def finalise(self) -> None:
+        """Finalise the layout when the form is built."""
+        self._layout.addStretch(1)
         return
 
 # END Class NScrollableForm

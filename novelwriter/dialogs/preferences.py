@@ -26,12 +26,12 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtGui import QCloseEvent, QFont
+from PyQt5.QtGui import QCloseEvent, QColor, QFont, QKeyEvent, QKeySequence, QPalette
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractButton, QDialog, QHBoxLayout, QVBoxLayout, QWidget, QComboBox,
-    QSpinBox, QPushButton, QDialogButtonBox, QLineEdit, QFileDialog,
-    QFontDialog, QDoubleSpinBox, qApp
+    QAbstractButton, QComboBox, QCompleter, QDialog, QDialogButtonBox,
+    QDoubleSpinBox, QFileDialog, QFontDialog, QHBoxLayout, QLabel, QLineEdit,
+    QPushButton, QSpinBox, QVBoxLayout, QWidget, qApp
 )
 
 from novelwriter import CONFIG, SHARED
@@ -58,11 +58,36 @@ class GuiPreferences(QDialog):
         self.setMinimumSize(CONFIG.pxInt(600), CONFIG.pxInt(500))
         self.resize(*CONFIG.preferencesWinSize)
 
+        # Title
+        font = self.font()
+        font.setPointSizeF(1.5*SHARED.theme.fontPointSize)
+
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.WindowText, QColor(*SHARED.theme.helpText))
+
+        self.titleLabel = QLabel(self.tr("Preferences"), self)
+        self.titleLabel.setFont(font)
+        self.titleLabel.setPalette(palette)
+        self.titleLabel.setIndent(CONFIG.pxInt(4))
+
         # SideBar
         self.sidebar = NPagedSideBar(self)
         self.sidebar.setLabelColor(SHARED.theme.helpText)
-        self.sidebar.addLabel(self.tr("Preferences"))
         self.sidebar.buttonClicked.connect(self._sidebarClicked)
+
+        # Search Box
+        self.searchText = QLineEdit(self)
+        self.searchText.setPlaceholderText(self.tr("Search"))
+        self.searchText.setMinimumWidth(CONFIG.pxInt(200))
+        self.searchAction = self.searchText.addAction(
+            SHARED.theme.getIcon("search"), QLineEdit.ActionPosition.TrailingPosition
+        )
+        self.searchAction.triggered.connect(self._gotoSearch)
+
+        self.searchBox = QHBoxLayout()
+        self.searchBox.addWidget(self.titleLabel)
+        self.searchBox.addStretch(1)
+        self.searchBox.addWidget(self.searchText, 1)
 
         # Form
         self.mainForm = NScrollableForm(self)
@@ -70,24 +95,42 @@ class GuiPreferences(QDialog):
 
         # Buttons
         self.buttonBox = QDialogButtonBox(
-            QDialogButtonBox.Apply | QDialogButtonBox.Save | QDialogButtonBox.Close
+            QDialogButtonBox.StandardButton.Apply
+            | QDialogButtonBox.StandardButton.Save
+            | QDialogButtonBox.StandardButton.Close
         )
         self.buttonBox.clicked.connect(self._dialogButtonClicked)
 
         # Assemble
+        self.mainSearch = QVBoxLayout()
+        self.mainSearch.addItem(self.searchBox)
+        self.mainSearch.addWidget(self.mainForm)
+
         self.mainBox = QHBoxLayout()
         self.mainBox.addWidget(self.sidebar)
+        # self.mainBox.addLayout(self.mainSearch)
         self.mainBox.addWidget(self.mainForm)
         self.mainBox.setContentsMargins(0, 0, 0, 0)
 
         self.outerBox = QVBoxLayout()
+        self.outerBox.addLayout(self.searchBox)
         self.outerBox.addLayout(self.mainBox)
         self.outerBox.addWidget(self.buttonBox)
         self.outerBox.setSpacing(CONFIG.pxInt(8))
 
         self.setLayout(self.outerBox)
         self.setSizeGripEnabled(True)
+
+        # Build Form
         self.buildForm()
+
+        # Populate Search
+        self.searchCompleter = QCompleter(self.mainForm.labels, self)
+        self.searchCompleter.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+        self.searchCompleter.setFilterMode(Qt.MatchFlag.MatchContains)
+        self.searchCompleter.activated.connect(self._gotoSearch)
+
+        self.searchText.setCompleter(self.searchCompleter)
 
         logger.debug("Ready: GuiPreferences")
 
@@ -768,7 +811,15 @@ class GuiPreferences(QDialog):
         logger.debug("Close: GuiPreferences")
         self._saveWindowSize()
         event.accept()
+        qApp.processEvents()
         self.deleteLater()
+        return
+
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+        """Overload keyPressEvent to block enter key to save."""
+        if event.matches(QKeySequence.Cancel):
+            self.reject()
+        event.ignore()
         return
 
     ##
@@ -792,6 +843,12 @@ class GuiPreferences(QDialog):
     def _sidebarClicked(self, section: int) -> None:
         """Process a user request to switch page."""
         self.mainForm.scrollToSection(section)
+        return
+
+    @pyqtSlot()
+    def _gotoSearch(self) -> None:
+        """Go to the setting indicated by the search text."""
+        self.mainForm.scrollToLabel(self.searchText.text().strip())
         return
 
     @pyqtSlot()
@@ -972,7 +1029,6 @@ class GuiPreferences(QDialog):
         # Finalise
         CONFIG.saveConfig()
         self.newPreferencesReady.emit(needsRestart, refreshTree, updateTheme, updateSyntax)
-        qApp.processEvents()
 
         return
 
