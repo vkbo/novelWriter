@@ -28,20 +28,23 @@ import logging
 from PyQt5.QtGui import QCloseEvent, QFont
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QDialog, QWidget, QComboBox, QSpinBox, QPushButton, QDialogButtonBox,
+    QAbstractButton, QDialog, QHBoxLayout, QLabel, QScrollArea, QVBoxLayout, QWidget, QComboBox, QSpinBox, QPushButton, QDialogButtonBox,
     QLineEdit, QFileDialog, QFontDialog, QDoubleSpinBox, qApp
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.quotes import GuiQuoteSelect
+from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.pageddialog import NPagedDialog
-from novelwriter.extensions.configlayout import NConfigLayout
+from novelwriter.extensions.configlayout import NConfigLayout, NScrollableForm
 
 logger = logging.getLogger(__name__)
 
 
-class GuiPreferences(NPagedDialog):
+class GuiPreferences(QDialog):
+
+    NAV_APPEARANCE = 0
 
     newPreferencesReady = pyqtSignal(bool, bool, bool, bool)
 
@@ -50,31 +53,43 @@ class GuiPreferences(NPagedDialog):
 
         logger.debug("Create: GuiPreferences")
         self.setObjectName("GuiPreferences")
-        self.setWindowTitle(self.tr("Preferences"))
+        self.setWindowTitle(CONFIG.appName)
 
-        self.tabGeneral  = GuiPreferencesGeneral(self)
-        self.tabProjects = GuiPreferencesProjects(self)
-        self.tabDocs     = GuiPreferencesDocuments(self)
-        self.tabEditor   = GuiPreferencesEditor(self)
-        self.tabSyntax   = GuiPreferencesSyntax(self)
-        self.tabAuto     = GuiPreferencesAutomation(self)
-        self.tabQuote    = GuiPreferencesQuotes(self)
-
-        self.addTab(self.tabGeneral,  self.tr("General"))
-        self.addTab(self.tabProjects, self.tr("Projects"))
-        self.addTab(self.tabDocs,     self.tr("Documents"))
-        self.addTab(self.tabEditor,   self.tr("Editor"))
-        self.addTab(self.tabSyntax,   self.tr("Highlighting"))
-        self.addTab(self.tabAuto,     self.tr("Automation"))
-        self.addTab(self.tabQuote,    self.tr("Quotes"))
-
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
-        self.buttonBox.accepted.connect(self._doSave)
-        self.buttonBox.rejected.connect(self.close)
-        self.rejected.connect(self.close)
-        self.addControls(self.buttonBox)
-
+        mPx = CONFIG.pxInt(150)
         self.resize(*CONFIG.preferencesWinSize)
+
+        self.minWidth = CONFIG.pxInt(200)
+
+        # SideBar
+        self.optSideBar = NPagedSideBar(self)
+        self.optSideBar.setMinimumWidth(mPx)
+        self.optSideBar.setMaximumWidth(mPx)
+        self.optSideBar.setLabelColor(SHARED.theme.helpText)
+        self.optSideBar.addLabel(self.tr("Settings"))
+
+        # Form
+        self.mainForm = NScrollableForm(self)
+        self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
+
+        # Buttons
+        self.buttonBox = QDialogButtonBox(
+            QDialogButtonBox.Apply | QDialogButtonBox.Save | QDialogButtonBox.Close
+        )
+        self.buttonBox.clicked.connect(self._dialogButtonClicked)
+
+        # Assemble
+        self.mainBox = QHBoxLayout()
+        self.mainBox.addWidget(self.optSideBar)
+        self.mainBox.addWidget(self.mainForm)
+        self.mainBox.setContentsMargins(0, 0, 0, 0)
+
+        self.outerBox = QVBoxLayout()
+        self.outerBox.addLayout(self.mainBox)
+        self.outerBox.addWidget(self.buttonBox)
+        self.outerBox.setSpacing(CONFIG.pxInt(12))
+
+        self.setLayout(self.outerBox)
+        self.buildForm()
 
         # Settings
         self._updateTheme = False
@@ -88,6 +103,16 @@ class GuiPreferences(NPagedDialog):
 
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiPreferences")
+        return
+
+    def buildForm(self) -> None:
+        """"""
+        title = self.tr("Appearance")
+        self.optSideBar.addButton(title, self.NAV_APPEARANCE)
+        self.mainForm.addGroupLabel(title, self.NAV_APPEARANCE)
+        self._buildAppearance()
+
+        self.mainForm.finalise()
         return
 
     ##
@@ -106,22 +131,34 @@ class GuiPreferences(NPagedDialog):
     #  Private Slots
     ##
 
+    @pyqtSlot("QAbstractButton*")
+    def _dialogButtonClicked(self, button: QAbstractButton) -> None:
+        """Handle button clicks from the dialog button box."""
+        role = self.buttonBox.buttonRole(button)
+        if role == QDialogButtonBox.ApplyRole:
+            pass
+        elif role == QDialogButtonBox.AcceptRole:
+            self.close()
+        elif role == QDialogButtonBox.RejectRole:
+            self.close()
+        return
+
     @pyqtSlot()
     def _doSave(self) -> None:
         """Trigger save functions in the tabs and emit ready signal."""
-        self.tabGeneral.saveValues()
-        self.tabProjects.saveValues()
-        self.tabDocs.saveValues()
-        self.tabEditor.saveValues()
-        self.tabSyntax.saveValues()
-        self.tabAuto.saveValues()
-        self.tabQuote.saveValues()
+        # self.tabGeneral.saveValues()
+        # self.tabProjects.saveValues()
+        # self.tabDocs.saveValues()
+        # self.tabEditor.saveValues()
+        # self.tabSyntax.saveValues()
+        # self.tabAuto.saveValues()
+        # self.tabQuote.saveValues()
 
-        CONFIG.saveConfig()
-        self.newPreferencesReady.emit(
-            self._needsRestart, self._refreshTree, self._updateTheme, self._updateSyntax
-        )
-        qApp.processEvents()
+        # CONFIG.saveConfig()
+        # self.newPreferencesReady.emit(
+        #     self._needsRestart, self._refreshTree, self._updateTheme, self._updateSyntax
+        # )
+        # qApp.processEvents()
         self.close()
 
         return
@@ -133,6 +170,99 @@ class GuiPreferences(NPagedDialog):
     def _saveWindowSize(self) -> None:
         """Save the dialog window size."""
         CONFIG.setPreferencesWinSize(self.width(), self.height())
+        return
+
+    def _buildAppearance(self) -> None:
+        """Build the appearance section."""
+        # Select Locale
+        self.guiLocale = QComboBox(self)
+        self.guiLocale.setMinimumWidth(self.minWidth)
+        theLangs = CONFIG.listLanguages(CONFIG.LANG_NW)
+        for lang, langName in theLangs:
+            self.guiLocale.addItem(langName, lang)
+        langIdx = self.guiLocale.findData(CONFIG.guiLocale)
+        if langIdx < 0:
+            langIdx = self.guiLocale.findData("en_GB")
+        if langIdx != -1:
+            self.guiLocale.setCurrentIndex(langIdx)
+
+        self.mainForm.addRow(
+            self.tr("Main GUI language"),
+            self.guiLocale,
+            self.tr("Requires restart to take effect.")
+        )
+
+        # Select Theme
+        self.guiTheme = QComboBox(self)
+        self.guiTheme.setMinimumWidth(self.minWidth)
+        self.theThemes = SHARED.theme.listThemes()
+        for themeDir, themeName in self.theThemes:
+            self.guiTheme.addItem(themeName, themeDir)
+        themeIdx = self.guiTheme.findData(CONFIG.guiTheme)
+        if themeIdx != -1:
+            self.guiTheme.setCurrentIndex(themeIdx)
+
+        self.mainForm.addRow(
+            self.tr("Main GUI theme"),
+            self.guiTheme,
+            self.tr("General colour theme and icons.")
+        )
+
+        # Editor Theme
+        self.guiSyntax = QComboBox(self)
+        self.guiSyntax.setMinimumWidth(self.minWidth)
+        self.theSyntaxes = SHARED.theme.listSyntax()
+        for syntaxFile, syntaxName in self.theSyntaxes:
+            self.guiSyntax.addItem(syntaxName, syntaxFile)
+        syntaxIdx = self.guiSyntax.findData(CONFIG.guiSyntax)
+        if syntaxIdx != -1:
+            self.guiSyntax.setCurrentIndex(syntaxIdx)
+
+        self.mainForm.addRow(
+            self.tr("Editor theme"),
+            self.guiSyntax,
+            self.tr("Colour theme for the editor and viewer.")
+        )
+
+        # Font Family
+        self.guiFont = QLineEdit(self)
+        self.guiFont.setReadOnly(True)
+        self.guiFont.setFixedWidth(CONFIG.pxInt(162))
+        self.guiFont.setText(CONFIG.guiFont)
+        self.fontButton = QPushButton("...", self)
+        self.fontButton.setMaximumWidth(int(2.5*SHARED.theme.getTextWidth("...")))
+        # self.fontButton.clicked.connect(self._selectFont)
+        self.mainForm.addRow(
+            self.tr("Font family"),
+            self.guiFont,
+            self.tr("Requires restart to take effect."),
+            button=self.fontButton
+        )
+
+        # Font Size
+        self.guiFontSize = QSpinBox(self)
+        self.guiFontSize.setMinimum(8)
+        self.guiFontSize.setMaximum(60)
+        self.guiFontSize.setSingleStep(1)
+        self.guiFontSize.setValue(CONFIG.guiFontSize)
+        self.mainForm.addRow(
+            self.tr("Font size"),
+            self.guiFontSize,
+            self.tr("Requires restart to take effect."),
+            unit=self.tr("pt")
+        )
+
+        return
+    @pyqtSlot()
+    def _selectFont(self) -> None:
+        """Open the QFontDialog and set a font for the font style."""
+        currFont = QFont()
+        currFont.setFamily(CONFIG.guiFont)
+        currFont.setPointSize(CONFIG.guiFontSize)
+        theFont, theStatus = QFontDialog.getFont(currFont, self)
+        if theStatus:
+            self.guiFont.setText(theFont.family())
+            self.guiFontSize.setValue(theFont.pointSize())
         return
 
 # END Class GuiPreferences
