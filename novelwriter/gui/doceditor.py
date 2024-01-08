@@ -319,10 +319,10 @@ class GuiDocEditor(QPlainTextEdit):
         SHARED.updateSpellCheckLanguage()
 
         # Set font
-        textFont = QFont()
-        textFont.setFamily(CONFIG.textFont)
-        textFont.setPointSize(CONFIG.textSize)
-        self.setFont(textFont)
+        font = QFont()
+        font.setFamily(CONFIG.textFont)
+        font.setPointSize(CONFIG.textSize)
+        self.setFont(font)
 
         # Set default text margins
         # Due to cursor visibility, a part of the margin must be
@@ -358,13 +358,14 @@ class GuiDocEditor(QPlainTextEdit):
         # Refresh the tab stops
         self.setTabStopDistance(CONFIG.getTabWidth())
 
-        # If we have a document open, we should reload it in case the
+        # If we have a document open, we should refresh it in case the
         # font changed, otherwise we just clear the editor entirely,
         # which makes it read only.
-        if self._docHandle is None:
-            self.clearEditor()
-        else:
+        if self._docHandle:
             self._qDocument.syntaxHighlighter.rehighlight()
+            self.docHeader.setTitleFromHandle(self._docHandle)
+        else:
+            self.clearEditor()
 
         return
 

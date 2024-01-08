@@ -142,10 +142,10 @@ class GuiDocViewer(QTextBrowser):
         self._makeStyleSheet()
 
         # Set Font
-        textFont = QFont()
-        textFont.setFamily(CONFIG.textFont)
-        textFont.setPointSize(CONFIG.textSize)
-        self.setFont(textFont)
+        font = QFont()
+        font.setFamily(CONFIG.textFont)
+        font.setPointSize(CONFIG.textSize)
+        self.setFont(font)
 
         # Set the widget colours to match syntax theme
         mainPalette = self.palette()
@@ -164,10 +164,10 @@ class GuiDocViewer(QTextBrowser):
 
         # Set default text margins
         self.document().setDocumentMargin(0)
-        theOpt = QTextOption()
+        options = QTextOption()
         if CONFIG.doJustify:
-            theOpt.setAlignment(Qt.AlignmentFlag.AlignJustify)
-        self.document().setDefaultTextOption(theOpt)
+            options.setAlignment(Qt.AlignmentFlag.AlignJustify)
+        self.document().setDefaultTextOption(options)
 
         # Scroll bars
         if CONFIG.hideVScroll:
