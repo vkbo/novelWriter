@@ -60,7 +60,7 @@ class GuiPreferences(QDialog):
 
         # Title
         font = self.font()
-        font.setPointSizeF(1.5*SHARED.theme.fontPointSize)
+        font.setPointSizeF(1.25*SHARED.theme.fontPointSize)
 
         palette = self.palette()
         palette.setColor(QPalette.ColorRole.WindowText, QColor(*SHARED.theme.helpText))
@@ -102,13 +102,8 @@ class GuiPreferences(QDialog):
         self.buttonBox.clicked.connect(self._dialogButtonClicked)
 
         # Assemble
-        self.mainSearch = QVBoxLayout()
-        self.mainSearch.addItem(self.searchBox)
-        self.mainSearch.addWidget(self.mainForm)
-
         self.mainBox = QHBoxLayout()
         self.mainBox.addWidget(self.sidebar)
-        # self.mainBox.addLayout(self.mainSearch)
         self.mainBox.addWidget(self.mainForm)
         self.mainBox.setContentsMargins(0, 0, 0, 0)
 
@@ -818,7 +813,7 @@ class GuiPreferences(QDialog):
     def keyPressEvent(self, event: QKeyEvent) -> None:
         """Overload keyPressEvent to block enter key to save."""
         if event.matches(QKeySequence.Cancel):
-            self.reject()
+            self.close()
         event.ignore()
         return
 
