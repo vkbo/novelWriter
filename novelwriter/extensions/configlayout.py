@@ -94,7 +94,7 @@ class NScrollableForm(QScrollArea):
 
     def addRow(self, label: str, widget: QWidget, helpText: str = "", unit: str | None = None,
                button: QWidget | None = None, editable: str | None = None) -> None:
-        """Add a label and a widget as a new row of the grid."""
+        """Add a label and a widget as a new row of the form."""
         row = QHBoxLayout()
 
         wSp = CONFIG.pxInt(8)

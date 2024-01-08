@@ -3,7 +3,8 @@ novelWriter – GUI Preferences
 =============================
 
 File History:
-Created: 2019-06-10 [0.1.5] GuiPreferences
+Created:   2019-06-10 [0.1.5] GuiPreferences
+Rewritten: 2024-01-08 [2.3b1] GuiPreferences
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen
@@ -28,16 +29,16 @@ import logging
 from PyQt5.QtGui import QCloseEvent, QFont
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractButton, QDialog, QHBoxLayout, QLabel, QScrollArea, QVBoxLayout, QWidget, QComboBox, QSpinBox, QPushButton, QDialogButtonBox,
-    QLineEdit, QFileDialog, QFontDialog, QDoubleSpinBox, qApp
+    QAbstractButton, QDialog, QHBoxLayout, QVBoxLayout, QWidget, QComboBox,
+    QSpinBox, QPushButton, QDialogButtonBox, QLineEdit, QFileDialog,
+    QFontDialog, QDoubleSpinBox, qApp
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.quotes import GuiQuoteSelect
-from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.extensions.pageddialog import NPagedDialog
-from novelwriter.extensions.configlayout import NConfigLayout, NScrollableForm
+from novelwriter.extensions.configlayout import NScrollableForm
+from novelwriter.extensions.pagedsidebar import NPagedSideBar
 
 logger = logging.getLogger(__name__)
 
@@ -54,18 +55,14 @@ class GuiPreferences(QDialog):
         logger.debug("Create: GuiPreferences")
         self.setObjectName("GuiPreferences")
         self.setWindowTitle(CONFIG.appName)
-
-        mPx = CONFIG.pxInt(150)
+        self.setMinimumSize(CONFIG.pxInt(600), CONFIG.pxInt(500))
         self.resize(*CONFIG.preferencesWinSize)
 
-        self.minWidth = CONFIG.pxInt(200)
-
         # SideBar
-        self.optSideBar = NPagedSideBar(self)
-        self.optSideBar.setMinimumWidth(mPx)
-        self.optSideBar.setMaximumWidth(mPx)
-        self.optSideBar.setLabelColor(SHARED.theme.helpText)
-        self.optSideBar.addLabel(self.tr("Settings"))
+        self.sidebar = NPagedSideBar(self)
+        self.sidebar.setLabelColor(SHARED.theme.helpText)
+        self.sidebar.addLabel(self.tr("Preferences"))
+        self.sidebar.buttonClicked.connect(self._sidebarClicked)
 
         # Form
         self.mainForm = NScrollableForm(self)
@@ -79,23 +76,18 @@ class GuiPreferences(QDialog):
 
         # Assemble
         self.mainBox = QHBoxLayout()
-        self.mainBox.addWidget(self.optSideBar)
+        self.mainBox.addWidget(self.sidebar)
         self.mainBox.addWidget(self.mainForm)
         self.mainBox.setContentsMargins(0, 0, 0, 0)
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addLayout(self.mainBox)
         self.outerBox.addWidget(self.buttonBox)
-        self.outerBox.setSpacing(CONFIG.pxInt(12))
+        self.outerBox.setSpacing(CONFIG.pxInt(8))
 
         self.setLayout(self.outerBox)
+        self.setSizeGripEnabled(True)
         self.buildForm()
-
-        # Settings
-        self._updateTheme = False
-        self._updateSyntax = False
-        self._needsRestart = False
-        self._refreshTree = False
 
         logger.debug("Ready: GuiPreferences")
 
@@ -106,284 +98,76 @@ class GuiPreferences(QDialog):
         return
 
     def buildForm(self) -> None:
-        """"""
-        title = self.tr("Appearance")
-        self.optSideBar.addButton(title, self.NAV_APPEARANCE)
-        self.mainForm.addGroupLabel(title, self.NAV_APPEARANCE)
-        self._buildAppearance()
-
-        self.mainForm.finalise()
-        return
-
-    ##
-    #  Events
-    ##
-
-    def closeEvent(self, event: QCloseEvent) -> None:
-        """Capture the close event and perform cleanup."""
-        logger.debug("Close: GuiPreferences")
-        self._saveWindowSize()
-        event.accept()
-        self.deleteLater()
-        return
-
-    ##
-    #  Private Slots
-    ##
-
-    @pyqtSlot("QAbstractButton*")
-    def _dialogButtonClicked(self, button: QAbstractButton) -> None:
-        """Handle button clicks from the dialog button box."""
-        role = self.buttonBox.buttonRole(button)
-        if role == QDialogButtonBox.ApplyRole:
-            pass
-        elif role == QDialogButtonBox.AcceptRole:
-            self.close()
-        elif role == QDialogButtonBox.RejectRole:
-            self.close()
-        return
-
-    @pyqtSlot()
-    def _doSave(self) -> None:
-        """Trigger save functions in the tabs and emit ready signal."""
-        # self.tabGeneral.saveValues()
-        # self.tabProjects.saveValues()
-        # self.tabDocs.saveValues()
-        # self.tabEditor.saveValues()
-        # self.tabSyntax.saveValues()
-        # self.tabAuto.saveValues()
-        # self.tabQuote.saveValues()
-
-        # CONFIG.saveConfig()
-        # self.newPreferencesReady.emit(
-        #     self._needsRestart, self._refreshTree, self._updateTheme, self._updateSyntax
-        # )
-        # qApp.processEvents()
-        self.close()
-
-        return
-
-    ##
-    #  Internal Functions
-    ##
-
-    def _saveWindowSize(self) -> None:
-        """Save the dialog window size."""
-        CONFIG.setPreferencesWinSize(self.width(), self.height())
-        return
-
-    def _buildAppearance(self) -> None:
-        """Build the appearance section."""
-        # Select Locale
-        self.guiLocale = QComboBox(self)
-        self.guiLocale.setMinimumWidth(self.minWidth)
-        theLangs = CONFIG.listLanguages(CONFIG.LANG_NW)
-        for lang, langName in theLangs:
-            self.guiLocale.addItem(langName, lang)
-        langIdx = self.guiLocale.findData(CONFIG.guiLocale)
-        if langIdx < 0:
-            langIdx = self.guiLocale.findData("en_GB")
-        if langIdx != -1:
-            self.guiLocale.setCurrentIndex(langIdx)
-
-        self.mainForm.addRow(
-            self.tr("Main GUI language"),
-            self.guiLocale,
-            self.tr("Requires restart to take effect.")
-        )
-
-        # Select Theme
-        self.guiTheme = QComboBox(self)
-        self.guiTheme.setMinimumWidth(self.minWidth)
-        self.theThemes = SHARED.theme.listThemes()
-        for themeDir, themeName in self.theThemes:
-            self.guiTheme.addItem(themeName, themeDir)
-        themeIdx = self.guiTheme.findData(CONFIG.guiTheme)
-        if themeIdx != -1:
-            self.guiTheme.setCurrentIndex(themeIdx)
-
-        self.mainForm.addRow(
-            self.tr("Main GUI theme"),
-            self.guiTheme,
-            self.tr("General colour theme and icons.")
-        )
-
-        # Editor Theme
-        self.guiSyntax = QComboBox(self)
-        self.guiSyntax.setMinimumWidth(self.minWidth)
-        self.theSyntaxes = SHARED.theme.listSyntax()
-        for syntaxFile, syntaxName in self.theSyntaxes:
-            self.guiSyntax.addItem(syntaxName, syntaxFile)
-        syntaxIdx = self.guiSyntax.findData(CONFIG.guiSyntax)
-        if syntaxIdx != -1:
-            self.guiSyntax.setCurrentIndex(syntaxIdx)
-
-        self.mainForm.addRow(
-            self.tr("Editor theme"),
-            self.guiSyntax,
-            self.tr("Colour theme for the editor and viewer.")
-        )
-
-        # Font Family
-        self.guiFont = QLineEdit(self)
-        self.guiFont.setReadOnly(True)
-        self.guiFont.setFixedWidth(CONFIG.pxInt(162))
-        self.guiFont.setText(CONFIG.guiFont)
-        self.fontButton = QPushButton("...", self)
-        self.fontButton.setMaximumWidth(int(2.5*SHARED.theme.getTextWidth("...")))
-        # self.fontButton.clicked.connect(self._selectFont)
-        self.mainForm.addRow(
-            self.tr("Font family"),
-            self.guiFont,
-            self.tr("Requires restart to take effect."),
-            button=self.fontButton
-        )
-
-        # Font Size
-        self.guiFontSize = QSpinBox(self)
-        self.guiFontSize.setMinimum(8)
-        self.guiFontSize.setMaximum(60)
-        self.guiFontSize.setSingleStep(1)
-        self.guiFontSize.setValue(CONFIG.guiFontSize)
-        self.mainForm.addRow(
-            self.tr("Font size"),
-            self.guiFontSize,
-            self.tr("Requires restart to take effect."),
-            unit=self.tr("pt")
-        )
-
-        return
-    @pyqtSlot()
-    def _selectFont(self) -> None:
-        """Open the QFontDialog and set a font for the font style."""
-        currFont = QFont()
-        currFont.setFamily(CONFIG.guiFont)
-        currFont.setPointSize(CONFIG.guiFontSize)
-        theFont, theStatus = QFontDialog.getFont(currFont, self)
-        if theStatus:
-            self.guiFont.setText(theFont.family())
-            self.guiFontSize.setValue(theFont.pointSize())
-        return
-
-# END Class GuiPreferences
-
-
-class GuiPreferencesGeneral(QWidget):
-
-    def __init__(self, prefsGui: GuiPreferences) -> None:
-        super().__init__(parent=prefsGui)
-
-        self.prefsGui = prefsGui
-
-        # The Form
-        self.mainForm = NConfigLayout()
-        self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
-        self.setLayout(self.mainForm)
-
-        # Look and Feel
-        # =============
-        self.mainForm.addGroupLabel(self.tr("Look and Feel"))
+        """Build the settings form."""
+        section = 0
         minWidth = CONFIG.pxInt(200)
 
-        # Select Locale
+        # Appearance
+        # ==========
+
+        title = self.tr("Appearance")
+        section += 1
+        self.sidebar.addButton(title, section)
+        self.mainForm.addGroupLabel(title, section)
+
+        # Display Language
         self.guiLocale = QComboBox(self)
         self.guiLocale.setMinimumWidth(minWidth)
-        theLangs = CONFIG.listLanguages(CONFIG.LANG_NW)
-        for lang, langName in theLangs:
-            self.guiLocale.addItem(langName, lang)
-        langIdx = self.guiLocale.findData(CONFIG.guiLocale)
-        if langIdx < 0:
-            langIdx = self.guiLocale.findData("en_GB")
-        if langIdx != -1:
-            self.guiLocale.setCurrentIndex(langIdx)
+        for lang, name in CONFIG.listLanguages(CONFIG.LANG_NW):
+            self.guiLocale.addItem(name, lang)
+        if (idx := self.guiLocale.findData(CONFIG.guiLocale)) != -1:
+            self.guiLocale.setCurrentIndex(idx)
 
         self.mainForm.addRow(
-            self.tr("Main GUI language"),
+            self.tr("Display language"),
             self.guiLocale,
             self.tr("Requires restart to take effect.")
         )
 
-        # Select Theme
+        # Colour Theme
         self.guiTheme = QComboBox(self)
         self.guiTheme.setMinimumWidth(minWidth)
-        self.theThemes = SHARED.theme.listThemes()
-        for themeDir, themeName in self.theThemes:
-            self.guiTheme.addItem(themeName, themeDir)
-        themeIdx = self.guiTheme.findData(CONFIG.guiTheme)
-        if themeIdx != -1:
-            self.guiTheme.setCurrentIndex(themeIdx)
+        for theme, name in SHARED.theme.listThemes():
+            self.guiTheme.addItem(name, theme)
+        if (idx := self.guiTheme.findData(CONFIG.guiTheme)) != -1:
+            self.guiTheme.setCurrentIndex(idx)
 
         self.mainForm.addRow(
-            self.tr("Main GUI theme"),
+            self.tr("Colour theme"),
             self.guiTheme,
             self.tr("General colour theme and icons.")
         )
 
-        # Editor Theme
-        self.guiSyntax = QComboBox(self)
-        self.guiSyntax.setMinimumWidth(CONFIG.pxInt(200))
-        self.theSyntaxes = SHARED.theme.listSyntax()
-        for syntaxFile, syntaxName in self.theSyntaxes:
-            self.guiSyntax.addItem(syntaxName, syntaxFile)
-        syntaxIdx = self.guiSyntax.findData(CONFIG.guiSyntax)
-        if syntaxIdx != -1:
-            self.guiSyntax.setCurrentIndex(syntaxIdx)
-
-        self.mainForm.addRow(
-            self.tr("Editor theme"),
-            self.guiSyntax,
-            self.tr("Colour theme for the editor and viewer.")
-        )
-
-        # Font Family
+        # Application Font Family
         self.guiFont = QLineEdit(self)
         self.guiFont.setReadOnly(True)
         self.guiFont.setFixedWidth(CONFIG.pxInt(162))
         self.guiFont.setText(CONFIG.guiFont)
-        self.fontButton = QPushButton("...", self)
-        self.fontButton.setMaximumWidth(int(2.5*SHARED.theme.getTextWidth("...")))
-        self.fontButton.clicked.connect(self._selectFont)
+        self.guiFontButton = QPushButton("...", self)
+        self.guiFontButton.setMaximumWidth(int(2.5*SHARED.theme.getTextWidth("...")))
+        self.guiFontButton.clicked.connect(self._selectGuiFont)
         self.mainForm.addRow(
-            self.tr("Font family"),
+            self.tr("Application font family"),
             self.guiFont,
             self.tr("Requires restart to take effect."),
-            button=self.fontButton
+            button=self.guiFontButton
         )
 
-        # Font Size
+        # Application Font Size
         self.guiFontSize = QSpinBox(self)
         self.guiFontSize.setMinimum(8)
         self.guiFontSize.setMaximum(60)
         self.guiFontSize.setSingleStep(1)
         self.guiFontSize.setValue(CONFIG.guiFontSize)
         self.mainForm.addRow(
-            self.tr("Font size"),
+            self.tr("Application font size"),
             self.guiFontSize,
             self.tr("Requires restart to take effect."),
             unit=self.tr("pt")
         )
 
-        # GUI Settings
-        # ============
-        self.mainForm.addGroupLabel(self.tr("GUI Settings"))
-
-        self.emphLabels = NSwitch()
-        self.emphLabels.setChecked(CONFIG.emphLabels)
-        self.mainForm.addRow(
-            self.tr("Emphasise partition and chapter labels"),
-            self.emphLabels,
-            self.tr("Makes them stand out in the project tree."),
-        )
-
-        self.showFullPath = NSwitch()
-        self.showFullPath.setChecked(CONFIG.showFullPath)
-        self.mainForm.addRow(
-            self.tr("Show full path in document header"),
-            self.showFullPath,
-            self.tr("Add the parent folder names to the header.")
-        )
-
-        self.hideVScroll = NSwitch()
+        # Vertical Scrollbars
+        self.hideVScroll = NSwitch(self)
         self.hideVScroll.setChecked(CONFIG.hideVScroll)
         self.mainForm.addRow(
             self.tr("Hide vertical scroll bars in main windows"),
@@ -391,7 +175,8 @@ class GuiPreferencesGeneral(QWidget):
             self.tr("Scrolling available with mouse wheel and keys only.")
         )
 
-        self.hideHScroll = NSwitch()
+        # Horizontal Scrollbars
+        self.hideHScroll = NSwitch(self)
         self.hideHScroll.setChecked(CONFIG.hideHScroll)
         self.mainForm.addRow(
             self.tr("Hide horizontal scroll bars in main windows"),
@@ -399,69 +184,89 @@ class GuiPreferencesGeneral(QWidget):
             self.tr("Scrolling available with mouse wheel and keys only.")
         )
 
-        return
-
-    def saveValues(self) -> None:
-        """Save the values set for this tab."""
-        guiLocale   = self.guiLocale.currentData()
-        guiTheme    = self.guiTheme.currentData()
-        guiSyntax   = self.guiSyntax.currentData()
-        guiFont     = self.guiFont.text()
-        guiFontSize = self.guiFontSize.value()
-        emphLabels  = self.emphLabels.isChecked()
-
-        # Update Flags
-        self.prefsGui._updateTheme |= CONFIG.guiTheme != guiTheme
-        self.prefsGui._updateSyntax |= CONFIG.guiSyntax != guiSyntax
-        self.prefsGui._needsRestart |= CONFIG.guiLocale != guiLocale
-        self.prefsGui._needsRestart |= CONFIG.guiFont != guiFont
-        self.prefsGui._needsRestart |= CONFIG.guiFontSize != guiFontSize
-        self.prefsGui._refreshTree |= CONFIG.emphLabels != emphLabels
-
-        CONFIG.guiLocale    = guiLocale
-        CONFIG.guiTheme     = guiTheme
-        CONFIG.guiSyntax    = guiSyntax
-        CONFIG.guiFont      = guiFont
-        CONFIG.guiFontSize  = guiFontSize
-        CONFIG.emphLabels   = emphLabels
-        CONFIG.showFullPath = self.showFullPath.isChecked()
-        CONFIG.hideVScroll  = self.hideVScroll.isChecked()
-        CONFIG.hideHScroll  = self.hideHScroll.isChecked()
-
-        return
-
-    ##
-    #  Private Slots
-    ##
-
-    @pyqtSlot()
-    def _selectFont(self) -> None:
-        """Open the QFontDialog and set a font for the font style."""
-        currFont = QFont()
-        currFont.setFamily(CONFIG.guiFont)
-        currFont.setPointSize(CONFIG.guiFontSize)
-        theFont, theStatus = QFontDialog.getFont(currFont, self)
-        if theStatus:
-            self.guiFont.setText(theFont.family())
-            self.guiFontSize.setValue(theFont.pointSize())
-        return
-
-# END Class GuiPreferencesGeneral
-
-
-class GuiPreferencesProjects(QWidget):
-
-    def __init__(self, prefsGui: GuiPreferences) -> None:
-        super().__init__(parent=prefsGui)
-
-        # The Form
-        self.mainForm = NConfigLayout()
-        self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
-        self.setLayout(self.mainForm)
-
-        # Automatic Save
+        # Document Style
         # ==============
-        self.mainForm.addGroupLabel(self.tr("Automatic Save"))
+
+        title = self.tr("Document Style")
+        section += 1
+        self.sidebar.addButton(title, section)
+        self.mainForm.addGroupLabel(title, section)
+
+        # Document Colour Theme
+        self.guiSyntax = QComboBox(self)
+        self.guiSyntax.setMinimumWidth(CONFIG.pxInt(200))
+        for syntax, name in SHARED.theme.listSyntax():
+            self.guiSyntax.addItem(name, syntax)
+        if (idx := self.guiSyntax.findData(CONFIG.guiSyntax)) != -1:
+            self.guiSyntax.setCurrentIndex(idx)
+
+        self.mainForm.addRow(
+            self.tr("Document colour theme"),
+            self.guiSyntax,
+            self.tr("Colour theme for the editor and viewer.")
+        )
+
+        # Document Font Family
+        self.textFont = QLineEdit(self)
+        self.textFont.setReadOnly(True)
+        self.textFont.setFixedWidth(CONFIG.pxInt(162))
+        self.textFont.setText(CONFIG.textFont)
+        self.textFontButton = QPushButton("...", self)
+        self.textFontButton.setMaximumWidth(int(2.5*SHARED.theme.getTextWidth("...")))
+        self.textFontButton.clicked.connect(self._selectTextFont)
+        self.mainForm.addRow(
+            self.tr("Document font family"),
+            self.textFont,
+            self.tr("Applies to both document editor and viewer."),
+            button=self.textFontButton
+        )
+
+        # Document Font Size
+        self.textSize = QSpinBox(self)
+        self.textSize.setMinimum(8)
+        self.textSize.setMaximum(60)
+        self.textSize.setSingleStep(1)
+        self.textSize.setValue(CONFIG.textSize)
+        self.mainForm.addRow(
+            self.tr("Document font size"),
+            self.textSize,
+            self.tr("Applies to both document editor and viewer."),
+            unit=self.tr("pt")
+        )
+
+        # Emphasise Labels
+        self.emphLabels = NSwitch(self)
+        self.emphLabels.setChecked(CONFIG.emphLabels)
+        self.mainForm.addRow(
+            self.tr("Emphasise partition and chapter labels"),
+            self.emphLabels,
+            self.tr("Makes them stand out in the project tree."),
+        )
+
+        # Document Path
+        self.showFullPath = NSwitch(self)
+        self.showFullPath.setChecked(CONFIG.showFullPath)
+        self.mainForm.addRow(
+            self.tr("Show full path in document header"),
+            self.showFullPath,
+            self.tr("Add the parent folder names to the header.")
+        )
+
+        # Include Notes in Word Count
+        self.incNotesWCount = NSwitch(self)
+        self.incNotesWCount.setChecked(CONFIG.incNotesWCount)
+        self.mainForm.addRow(
+            self.tr("Include project notes in status bar word count"),
+            self.incNotesWCount
+        )
+
+        # Auto Save
+        # =========
+
+        title = self.tr("Auto Save")
+        section += 1
+        self.sidebar.addButton(title, section)
+        self.mainForm.addGroupLabel(title, section)
 
         # Document Save Timer
         self.autoSaveDoc = QSpinBox(self)
@@ -491,20 +296,25 @@ class GuiPreferencesProjects(QWidget):
 
         # Project Backup
         # ==============
-        self.mainForm.addGroupLabel(self.tr("Project Backup"))
+
+        title = self.tr("Project Backup")
+        section += 1
+        self.sidebar.addButton(title, section)
+        self.mainForm.addGroupLabel(title, section)
 
         # Backup Path
         self.backupPath = CONFIG.backupPath()
-        self.backupGetPath = QPushButton(self.tr("Browse"), self)
+        self.backupGetPath = QPushButton(SHARED.theme.getIcon("browse"), self.tr("Browse"), self)
         self.backupGetPath.clicked.connect(self._backupFolder)
-        self.backupPathRow = self.mainForm.addRow(
+        self.mainForm.addRow(
             self.tr("Backup storage location"),
             self.backupGetPath,
-            self.tr("Path: {0}").format(self.backupPath)
+            self.tr("Path: {0}").format(self.backupPath),
+            editable="backupPath"
         )
 
-        # Run when closing
-        self.backupOnClose = NSwitch()
+        # Run When Closing
+        self.backupOnClose = NSwitch(self)
         self.backupOnClose.setChecked(CONFIG.backupOnClose)
         self.backupOnClose.toggled.connect(self._toggledBackupOnClose)
         self.mainForm.addRow(
@@ -513,9 +323,9 @@ class GuiPreferencesProjects(QWidget):
             self.tr("Can be overridden for individual projects in Project Settings.")
         )
 
-        # Ask before backup
+        # Ask Before Backup
         # Only enabled when "Run when closing" is checked
-        self.askBeforeBackup = NSwitch()
+        self.askBeforeBackup = NSwitch(self)
         self.askBeforeBackup.setChecked(CONFIG.askBeforeBackup)
         self.askBeforeBackup.setEnabled(CONFIG.backupOnClose)
         self.mainForm.addRow(
@@ -526,10 +336,14 @@ class GuiPreferencesProjects(QWidget):
 
         # Session Timer
         # =============
-        self.mainForm.addGroupLabel(self.tr("Session Timer"))
 
-        # Pause when idle
-        self.stopWhenIdle = NSwitch()
+        title = self.tr("Session Timer")
+        section += 1
+        self.sidebar.addButton(title, section)
+        self.mainForm.addGroupLabel(title, section)
+
+        # Pause When Idle
+        self.stopWhenIdle = NSwitch(self)
         self.stopWhenIdle.setChecked(CONFIG.stopWhenIdle)
         self.mainForm.addRow(
             self.tr("Pause the session timer when not writing"),
@@ -537,7 +351,7 @@ class GuiPreferencesProjects(QWidget):
             self.tr("Also pauses when the application window does not have focus.")
         )
 
-        # Inactive time for idle
+        # Inactive Time for Idle
         self.userIdleTime = QDoubleSpinBox(self)
         self.userIdleTime.setMinimum(0.5)
         self.userIdleTime.setMaximum(600.0)
@@ -551,98 +365,13 @@ class GuiPreferencesProjects(QWidget):
             unit=self.tr("minutes")
         )
 
-        return
-
-    def saveValues(self) -> None:
-        """Save the values set for this tab."""
-        # Automatic Save
-        CONFIG.autoSaveDoc  = self.autoSaveDoc.value()
-        CONFIG.autoSaveProj = self.autoSaveProj.value()
-
-        # Project Backup
-        CONFIG.setBackupPath(self.backupPath)
-        CONFIG.backupOnClose   = self.backupOnClose.isChecked()
-        CONFIG.askBeforeBackup = self.askBeforeBackup.isChecked()
-
-        # Session Timer
-        CONFIG.stopWhenIdle = self.stopWhenIdle.isChecked()
-        CONFIG.userIdleTime = round(self.userIdleTime.value() * 60)
-
-        return
-
-    ##
-    #  Private Slots
-    ##
-
-    @pyqtSlot()
-    def _backupFolder(self) -> None:
-        """Open a dialog to select the backup folder."""
-        currDir = self.backupPath or ""
-        newDir = QFileDialog.getExistingDirectory(
-            self, self.tr("Backup Directory"), str(currDir), options=QFileDialog.ShowDirsOnly
-        )
-        if newDir:
-            self.backupPath = newDir
-            self.mainForm.setHelpText(
-                self.backupPathRow, self.tr("Path: {0}").format(self.backupPath)
-            )
-            return
-        return
-
-    @pyqtSlot(bool)
-    def _toggledBackupOnClose(self, state: bool) -> None:
-        """Toggle switch that depends on the backup on close switch."""
-        self.askBeforeBackup.setEnabled(state)
-        return
-
-# END Class GuiPreferencesProjects
-
-
-class GuiPreferencesDocuments(QWidget):
-
-    def __init__(self, prefsGui: GuiPreferences)  -> None:
-        super().__init__(parent=prefsGui)
-
-        # The Form
-        self.mainForm = NConfigLayout()
-        self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
-        self.setLayout(self.mainForm)
-
-        # Text Style
-        # ==========
-        self.mainForm.addGroupLabel(self.tr("Text Style"))
-
-        # Font Family
-        self.textFont = QLineEdit(self)
-        self.textFont.setReadOnly(True)
-        self.textFont.setFixedWidth(CONFIG.pxInt(162))
-        self.textFont.setText(CONFIG.textFont)
-        self.fontButton = QPushButton("...", self)
-        self.fontButton.setMaximumWidth(int(2.5*SHARED.theme.getTextWidth("...")))
-        self.fontButton.clicked.connect(self._selectFont)
-        self.mainForm.addRow(
-            self.tr("Font family"),
-            self.textFont,
-            self.tr("Applies to both document editor and viewer."),
-            button=self.fontButton
-        )
-
-        # Font Size
-        self.textSize = QSpinBox(self)
-        self.textSize.setMinimum(8)
-        self.textSize.setMaximum(60)
-        self.textSize.setSingleStep(1)
-        self.textSize.setValue(CONFIG.textSize)
-        self.mainForm.addRow(
-            self.tr("Font size"),
-            self.textSize,
-            self.tr("Applies to both document editor and viewer."),
-            unit=self.tr("pt")
-        )
-
         # Text Flow
         # =========
-        self.mainForm.addGroupLabel(self.tr("Text Flow"))
+
+        title = self.tr("Text Flow")
+        section += 1
+        self.sidebar.addButton(title, section)
+        self.mainForm.addGroupLabel(title, section)
 
         # Max Text Width in Normal Mode
         self.textWidth = QSpinBox(self)
@@ -671,7 +400,7 @@ class GuiPreferencesDocuments(QWidget):
         )
 
         # Focus Mode Footer
-        self.hideFocusFooter = NSwitch()
+        self.hideFocusFooter = NSwitch(self)
         self.hideFocusFooter.setChecked(CONFIG.hideFocusFooter)
         self.mainForm.addRow(
             self.tr("Hide document footer in \"Focus Mode\""),
@@ -680,7 +409,7 @@ class GuiPreferencesDocuments(QWidget):
         )
 
         # Justify Text
-        self.doJustify = NSwitch()
+        self.doJustify = NSwitch(self)
         self.doJustify.setChecked(CONFIG.doJustify)
         self.mainForm.addRow(
             self.tr("Justify the text margins"),
@@ -714,62 +443,17 @@ class GuiPreferencesDocuments(QWidget):
             unit=self.tr("px")
         )
 
-        return
+        # Text Editing
+        # ============
 
-    def saveValues(self) -> None:
-        """Save the values set for this tab."""
-        # Text Style
-        CONFIG.setTextFont(self.textFont.text(), self.textSize.value())
-
-        # Text Flow
-        CONFIG.textWidth       = self.textWidth.value()
-        CONFIG.focusWidth      = self.focusWidth.value()
-        CONFIG.hideFocusFooter = self.hideFocusFooter.isChecked()
-        CONFIG.doJustify       = self.doJustify.isChecked()
-        CONFIG.textMargin      = self.textMargin.value()
-        CONFIG.tabWidth        = self.tabWidth.value()
-
-        return
-
-    ##
-    #  Private Slots
-    ##
-
-    @pyqtSlot()
-    def _selectFont(self):
-        """Open the QFontDialog and set a font for the font style."""
-        currFont = QFont()
-        currFont.setFamily(CONFIG.textFont)
-        currFont.setPointSize(CONFIG.textSize)
-        theFont, theStatus = QFontDialog.getFont(currFont, self)
-        if theStatus:
-            self.textFont.setText(theFont.family())
-            self.textSize.setValue(theFont.pointSize())
-
-        return
-
-# END Class GuiPreferencesDocuments
-
-
-class GuiPreferencesEditor(QWidget):
-
-    def __init__(self, prefsGui: GuiPreferences) -> None:
-        super().__init__(parent=prefsGui)
-
-        # The Form
-        self.mainForm = NConfigLayout()
-        self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
-        self.setLayout(self.mainForm)
-
-        mW = CONFIG.pxInt(250)
+        title = self.tr("Text Editing")
+        section += 1
+        self.sidebar.addButton(title, section)
+        self.mainForm.addGroupLabel(title, section)
 
         # Spell Checking
-        # ==============
-        self.mainForm.addGroupLabel(self.tr("Spell Checking"))
-
-        # Spell Check Provider and Language
         self.spellLanguage = QComboBox(self)
-        self.spellLanguage.setMaximumWidth(mW)
+        self.spellLanguage.setMinimumWidth(minWidth)
 
         if CONFIG.hasEnchant:
             for tag, language in SHARED.spelling.listDictionaries():
@@ -778,9 +462,8 @@ class GuiPreferencesEditor(QWidget):
             self.spellLanguage.addItem(self.tr("None"), "")
             self.spellLanguage.setEnabled(False)
 
-        spellIdx = self.spellLanguage.findData(CONFIG.spellLanguage)
-        if spellIdx != -1:
-            self.spellLanguage.setCurrentIndex(spellIdx)
+        if (idx := self.spellLanguage.findData(CONFIG.spellLanguage)) != -1:
+            self.spellLanguage.setCurrentIndex(idx)
 
         self.mainForm.addRow(
             self.tr("Spell check language"),
@@ -788,37 +471,17 @@ class GuiPreferencesEditor(QWidget):
             self.tr("Available languages are determined by your system.")
         )
 
-        # Word Count
-        # ==========
-        self.mainForm.addGroupLabel(self.tr("Word Count"))
-
-        # Word Count Timer
-        self.wordCountTimer = QDoubleSpinBox(self)
-        self.wordCountTimer.setDecimals(1)
-        self.wordCountTimer.setMinimum(2.0)
-        self.wordCountTimer.setMaximum(600.0)
-        self.wordCountTimer.setSingleStep(0.1)
-        self.wordCountTimer.setValue(CONFIG.wordCountTimer)
+        # Auto-Select Word Under Cursor
+        self.autoSelect = NSwitch(self)
+        self.autoSelect.setChecked(CONFIG.autoSelect)
         self.mainForm.addRow(
-            self.tr("Word count interval"),
-            self.wordCountTimer,
-            unit=self.tr("seconds")
+            self.tr("Auto-select word under cursor"),
+            self.autoSelect,
+            self.tr("Apply formatting to word under cursor if no selection is made.")
         )
-
-        # Include Notes in Word Count
-        self.incNotesWCount = NSwitch()
-        self.incNotesWCount.setChecked(CONFIG.incNotesWCount)
-        self.mainForm.addRow(
-            self.tr("Include project notes in status bar word count"),
-            self.incNotesWCount
-        )
-
-        # Writing Guides
-        # ==============
-        self.mainForm.addGroupLabel(self.tr("Writing Guides"))
 
         # Show Tabs and Spaces
-        self.showTabsNSpaces = NSwitch()
+        self.showTabsNSpaces = NSwitch(self)
         self.showTabsNSpaces.setChecked(CONFIG.showTabsNSpaces)
         self.mainForm.addRow(
             self.tr("Show tabs and spaces"),
@@ -826,19 +489,23 @@ class GuiPreferencesEditor(QWidget):
         )
 
         # Show Line Endings
-        self.showLineEndings = NSwitch()
+        self.showLineEndings = NSwitch(self)
         self.showLineEndings.setChecked(CONFIG.showLineEndings)
         self.mainForm.addRow(
             self.tr("Show line endings"),
             self.showLineEndings
         )
 
-        # Scroll Behaviour
+        # Editor Scrolling
         # ================
-        self.mainForm.addGroupLabel(self.tr("Scroll Behaviour"))
+
+        title = self.tr("Editor Scrolling")
+        section += 1
+        self.sidebar.addButton(title, section)
+        self.mainForm.addGroupLabel(title, section)
 
         # Scroll Past End
-        self.scrollPastEnd = NSwitch()
+        self.scrollPastEnd = NSwitch(self)
         self.scrollPastEnd.setChecked(CONFIG.scrollPastEnd)
         self.mainForm.addRow(
             self.tr("Scroll past end of the document"),
@@ -847,7 +514,7 @@ class GuiPreferencesEditor(QWidget):
         )
 
         # Typewriter Scrolling
-        self.autoScroll = NSwitch()
+        self.autoScroll = NSwitch(self)
         self.autoScroll.setChecked(CONFIG.autoScroll)
         self.mainForm.addRow(
             self.tr("Typewriter style scrolling when you type"),
@@ -868,48 +535,15 @@ class GuiPreferencesEditor(QWidget):
             unit="%"
         )
 
-        return
-
-    def saveValues(self) -> None:
-        """Save the values set for this tab."""
-        # Spell Checking
-        CONFIG.spellLanguage = self.spellLanguage.currentData()
-
-        # Word Count
-        CONFIG.wordCountTimer = self.wordCountTimer.value()
-        CONFIG.incNotesWCount = self.incNotesWCount.isChecked()
-
-        # Writing Guides
-        CONFIG.showTabsNSpaces = self.showTabsNSpaces.isChecked()
-        CONFIG.showLineEndings = self.showLineEndings.isChecked()
-
-        # Scroll Behaviour
-        CONFIG.autoScroll    = self.autoScroll.isChecked()
-        CONFIG.autoScrollPos = self.autoScrollPos.value()
-        CONFIG.scrollPastEnd = self.scrollPastEnd.isChecked()
-
-        return
-
-# END Class GuiPreferencesEditor
-
-
-class GuiPreferencesSyntax(QWidget):
-
-    def __init__(self, prefsGui: GuiPreferences) -> None:
-        super().__init__(parent=prefsGui)
-
-        self.prefsGui = prefsGui
-
-        # The Form
-        self.mainForm = NConfigLayout()
-        self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
-        self.setLayout(self.mainForm)
-
-        # Quotes & Dialogue
+        # Text Highlighting
         # =================
-        self.mainForm.addGroupLabel(self.tr("Quotes & Dialogue"))
 
-        self.highlightQuotes = NSwitch()
+        title = self.tr("Text Highlighting")
+        section += 1
+        self.sidebar.addButton(title, section)
+        self.mainForm.addGroupLabel(title, section)
+
+        self.highlightQuotes = NSwitch(self)
         self.highlightQuotes.setChecked(CONFIG.highlightQuotes)
         self.highlightQuotes.toggled.connect(self._toggleHighlightQuotes)
         self.mainForm.addRow(
@@ -918,7 +552,7 @@ class GuiPreferencesSyntax(QWidget):
             self.tr("Applies to the document editor only.")
         )
 
-        self.allowOpenSQuote = NSwitch()
+        self.allowOpenSQuote = NSwitch(self)
         self.allowOpenSQuote.setChecked(CONFIG.allowOpenSQuote)
         self.mainForm.addRow(
             self.tr("Allow open-ended single quotes"),
@@ -926,7 +560,7 @@ class GuiPreferencesSyntax(QWidget):
             self.tr("Highlight single-quoted line with no closing quote.")
         )
 
-        self.allowOpenDQuote = NSwitch()
+        self.allowOpenDQuote = NSwitch(self)
         self.allowOpenDQuote.setChecked(CONFIG.allowOpenDQuote)
         self.mainForm.addRow(
             self.tr("Allow open-ended double quotes"),
@@ -934,11 +568,7 @@ class GuiPreferencesSyntax(QWidget):
             self.tr("Highlight double-quoted line with no closing quote.")
         )
 
-        # Text Emphasis
-        # =============
-        self.mainForm.addGroupLabel(self.tr("Text Emphasis"))
-
-        self.highlightEmph = NSwitch()
+        self.highlightEmph = NSwitch(self)
         self.highlightEmph.setChecked(CONFIG.highlightEmph)
         self.mainForm.addRow(
             self.tr("Add highlight colour to emphasised text"),
@@ -946,12 +576,7 @@ class GuiPreferencesSyntax(QWidget):
             self.tr("Applies to the document editor only.")
         )
 
-        # Text Errors
-        # ===========
-
-        self.mainForm.addGroupLabel(self.tr("Text Errors"))
-
-        self.showMultiSpaces = NSwitch()
+        self.showMultiSpaces = NSwitch(self)
         self.showMultiSpaces.setChecked(CONFIG.showMultiSpaces)
         self.mainForm.addRow(
             self.tr("Highlight multiple or trailing spaces"),
@@ -959,67 +584,18 @@ class GuiPreferencesSyntax(QWidget):
             self.tr("Applies to the document editor only.")
         )
 
-        return
+        # Text Automation
+        # ===============
 
-    def saveValues(self) -> None:
-        """Save the values set for this tab."""
-        highlightQuotes = self.highlightQuotes.isChecked()
-        allowOpenSQuote = self.allowOpenSQuote.isChecked()
-        allowOpenDQuote = self.allowOpenDQuote.isChecked()
-        highlightEmph   = self.highlightEmph.isChecked()
-        showMultiSpaces = self.showMultiSpaces.isChecked()
+        title = self.tr("Text Automation")
+        section += 1
+        self.sidebar.addButton(title, section)
+        self.mainForm.addGroupLabel(title, section)
 
-        self.prefsGui._updateSyntax |= CONFIG.highlightQuotes != highlightQuotes
-        self.prefsGui._updateSyntax |= CONFIG.highlightEmph != highlightEmph
-        self.prefsGui._updateSyntax |= CONFIG.showMultiSpaces != showMultiSpaces
-
-        CONFIG.highlightQuotes = highlightQuotes
-        CONFIG.allowOpenSQuote = allowOpenSQuote
-        CONFIG.allowOpenDQuote = allowOpenDQuote
-        CONFIG.highlightEmph   = highlightEmph
-        CONFIG.showMultiSpaces = showMultiSpaces
-
-        return
-
-    ##
-    #  Private Slots
-    ##
-
-    @pyqtSlot(bool)
-    def _toggleHighlightQuotes(self, state: bool) -> None:
-        """Toggle switches controlled by the highlight quotes switch."""
-        self.allowOpenSQuote.setEnabled(state)
-        self.allowOpenDQuote.setEnabled(state)
-        return
-
-# END Class GuiPreferencesSyntax
-
-
-class GuiPreferencesAutomation(QWidget):
-
-    def __init__(self, prefsGui: GuiPreferences) -> None:
-        super().__init__(parent=prefsGui)
-
-        # The Form
-        self.mainForm = NConfigLayout()
-        self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
-        self.setLayout(self.mainForm)
-
-        # Automatic Features
-        # ==================
-        self.mainForm.addGroupLabel(self.tr("Automatic Features"))
-
-        # Auto-Select Word Under Cursor
-        self.autoSelect = NSwitch()
-        self.autoSelect.setChecked(CONFIG.autoSelect)
-        self.mainForm.addRow(
-            self.tr("Auto-select word under cursor"),
-            self.autoSelect,
-            self.tr("Apply formatting to word under cursor if no selection is made.")
-        )
+        boxWidth = CONFIG.pxInt(150)
 
         # Auto-Replace as You Type Main Switch
-        self.doReplace = NSwitch()
+        self.doReplace = NSwitch(self)
         self.doReplace.setChecked(CONFIG.doReplace)
         self.doReplace.toggled.connect(self._toggleAutoReplaceMain)
         self.mainForm.addRow(
@@ -1028,12 +604,8 @@ class GuiPreferencesAutomation(QWidget):
             self.tr("Allow the editor to replace symbols as you type.")
         )
 
-        # Replace as You Type
-        # ===================
-        self.mainForm.addGroupLabel(self.tr("Replace as You Type"))
-
         # Auto-Replace Single Quotes
-        self.doReplaceSQuote = NSwitch()
+        self.doReplaceSQuote = NSwitch(self)
         self.doReplaceSQuote.setChecked(CONFIG.doReplaceSQuote)
         self.doReplaceSQuote.setEnabled(CONFIG.doReplace)
         self.mainForm.addRow(
@@ -1043,7 +615,7 @@ class GuiPreferencesAutomation(QWidget):
         )
 
         # Auto-Replace Double Quotes
-        self.doReplaceDQuote = NSwitch()
+        self.doReplaceDQuote = NSwitch(self)
         self.doReplaceDQuote.setChecked(CONFIG.doReplaceDQuote)
         self.doReplaceDQuote.setEnabled(CONFIG.doReplace)
         self.mainForm.addRow(
@@ -1053,7 +625,7 @@ class GuiPreferencesAutomation(QWidget):
         )
 
         # Auto-Replace Hyphens
-        self.doReplaceDash = NSwitch()
+        self.doReplaceDash = NSwitch(self)
         self.doReplaceDash.setChecked(CONFIG.doReplaceDash)
         self.doReplaceDash.setEnabled(CONFIG.doReplace)
         self.mainForm.addRow(
@@ -1063,7 +635,7 @@ class GuiPreferencesAutomation(QWidget):
         )
 
         # Auto-Replace Dots
-        self.doReplaceDots = NSwitch()
+        self.doReplaceDots = NSwitch(self)
         self.doReplaceDots.setChecked(CONFIG.doReplaceDots)
         self.doReplaceDots.setEnabled(CONFIG.doReplace)
         self.mainForm.addRow(
@@ -1072,13 +644,10 @@ class GuiPreferencesAutomation(QWidget):
             self.tr("Three consecutive dots become ellipsis.")
         )
 
-        # Automatic Padding
-        # =================
-        self.mainForm.addGroupLabel(self.tr("Automatic Padding"))
-
         # Pad Before
         self.fmtPadBefore = QLineEdit(self)
         self.fmtPadBefore.setMaxLength(32)
+        self.fmtPadBefore.setMaximumWidth(boxWidth)
         self.fmtPadBefore.setText(CONFIG.fmtPadBefore)
         self.mainForm.addRow(
             self.tr("Insert non-breaking space before"),
@@ -1089,6 +658,7 @@ class GuiPreferencesAutomation(QWidget):
         # Pad After
         self.fmtPadAfter = QLineEdit(self)
         self.fmtPadAfter.setMaxLength(32)
+        self.fmtPadAfter.setMaximumWidth(boxWidth)
         self.fmtPadAfter.setText(CONFIG.fmtPadAfter)
         self.mainForm.addRow(
             self.tr("Insert non-breaking space after"),
@@ -1097,7 +667,7 @@ class GuiPreferencesAutomation(QWidget):
         )
 
         # Use Thin Space
-        self.fmtPadThin = NSwitch()
+        self.fmtPadThin = NSwitch(self)
         self.fmtPadThin.setChecked(CONFIG.fmtPadThin)
         self.fmtPadThin.setEnabled(CONFIG.doReplace)
         self.mainForm.addRow(
@@ -1106,57 +676,13 @@ class GuiPreferencesAutomation(QWidget):
             self.tr("Inserts a thin space instead of a regular space.")
         )
 
-        return
-
-    def saveValues(self) -> None:
-        """Save the values set for this tab."""
-        # Automatic Features
-        CONFIG.autoSelect = self.autoSelect.isChecked()
-        CONFIG.doReplace  = self.doReplace.isChecked()
-
-        # Replace as You Type
-        CONFIG.doReplaceSQuote = self.doReplaceSQuote.isChecked()
-        CONFIG.doReplaceDQuote = self.doReplaceDQuote.isChecked()
-        CONFIG.doReplaceDash   = self.doReplaceDash.isChecked()
-        CONFIG.doReplaceDots   = self.doReplaceDots.isChecked()
-
-        # Automatic Padding
-        CONFIG.fmtPadBefore = self.fmtPadBefore.text().strip()
-        CONFIG.fmtPadAfter  = self.fmtPadAfter.text().strip()
-        CONFIG.fmtPadThin   = self.fmtPadThin.isChecked()
-
-        return
-
-    ##
-    #  Private Slots
-    ##
-
-    @pyqtSlot(bool)
-    def _toggleAutoReplaceMain(self, state: bool) -> None:
-        """Toggle switches controlled by the auto replace switch."""
-        self.doReplaceSQuote.setEnabled(state)
-        self.doReplaceDQuote.setEnabled(state)
-        self.doReplaceDash.setEnabled(state)
-        self.doReplaceDots.setEnabled(state)
-        self.fmtPadThin.setEnabled(state)
-        return
-
-# END Class GuiPreferencesAutomation
-
-
-class GuiPreferencesQuotes(QWidget):
-
-    def __init__(self, prefsGui: GuiPreferences) -> None:
-        super().__init__(parent=prefsGui)
-
-        # The Form
-        self.mainForm = NConfigLayout()
-        self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
-        self.setLayout(self.mainForm)
-
         # Quotation Style
         # ===============
-        self.mainForm.addGroupLabel(self.tr("Quotation Style"))
+
+        title = self.tr("Quotation Style")
+        section += 1
+        self.sidebar.addButton(title, section)
+        self.mainForm.addGroupLabel(title, section)
 
         qWidth = CONFIG.pxInt(40)
         bWidth = int(2.5*SHARED.theme.getTextWidth("..."))
@@ -1228,27 +754,226 @@ class GuiPreferencesQuotes(QWidget):
             button=self.btnDoubleStyleC
         )
 
+        self.mainForm.finalise()
+        self.sidebar.setSelected(1)
+
         return
 
-    def saveValues(self) -> None:
-        """Save the values set for this tab."""
-        # Quotation Style
-        CONFIG.fmtSQuoteOpen = self.quoteSym["SO"].text()
-        CONFIG.fmtSQuoteClose = self.quoteSym["SC"].text()
-        CONFIG.fmtDQuoteOpen = self.quoteSym["DO"].text()
-        CONFIG.fmtDQuoteClose = self.quoteSym["DC"].text()
+    ##
+    #  Events
+    ##
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Capture the close event and perform cleanup."""
+        logger.debug("Close: GuiPreferences")
+        self._saveWindowSize()
+        event.accept()
+        self.deleteLater()
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot("QAbstractButton*")
+    def _dialogButtonClicked(self, button: QAbstractButton) -> None:
+        """Handle button clicks from the dialog button box."""
+        role = self.buttonBox.buttonRole(button)
+        if role == QDialogButtonBox.ApplyRole:
+            self._saveValues()
+        elif role == QDialogButtonBox.AcceptRole:
+            self._saveValues()
+            self.close()
+        elif role == QDialogButtonBox.RejectRole:
+            self.close()
+        return
+
+    @pyqtSlot(int)
+    def _sidebarClicked(self, section: int) -> None:
+        """Process a user request to switch page."""
+        self.mainForm.scrollToSection(section)
+        return
+
+    @pyqtSlot()
+    def _selectGuiFont(self) -> None:
+        """Open the QFontDialog and set a font for the font style."""
+        current = QFont()
+        current.setFamily(CONFIG.guiFont)
+        current.setPointSize(CONFIG.guiFontSize)
+        font, status = QFontDialog.getFont(current, self)
+        if status:
+            self.guiFont.setText(font.family())
+            self.guiFontSize.setValue(font.pointSize())
+        return
+
+    @pyqtSlot()
+    def _selectTextFont(self):
+        """Open the QFontDialog and set a font for the font style."""
+        current = QFont()
+        current.setFamily(CONFIG.textFont)
+        current.setPointSize(CONFIG.textSize)
+        font, status = QFontDialog.getFont(current, self)
+        if status:
+            self.textFont.setText(font.family())
+            self.textSize.setValue(font.pointSize())
+        return
+
+    @pyqtSlot()
+    def _backupFolder(self) -> None:
+        """Open a dialog to select the backup folder."""
+        if path := QFileDialog.getExistingDirectory(
+            self, self.tr("Backup Directory"), str(self.backupPath or ""),
+            options=QFileDialog.ShowDirsOnly
+        ):
+            self.backupPath = path
+            self.mainForm.setHelpText("backupPath", self.tr("Path: {0}").format(path))
+        return
+
+    @pyqtSlot(bool)
+    def _toggledBackupOnClose(self, state: bool) -> None:
+        """Toggle switch that depends on the backup on close switch."""
+        self.askBeforeBackup.setEnabled(state)
+        return
+
+    @pyqtSlot(bool)
+    def _toggleHighlightQuotes(self, state: bool) -> None:
+        """Toggle switches controlled by the highlight quotes switch."""
+        self.allowOpenSQuote.setEnabled(state)
+        self.allowOpenDQuote.setEnabled(state)
+        return
+
+    @pyqtSlot(bool)
+    def _toggleAutoReplaceMain(self, state: bool) -> None:
+        """Toggle switches controlled by the auto replace switch."""
+        self.doReplaceSQuote.setEnabled(state)
+        self.doReplaceDQuote.setEnabled(state)
+        self.doReplaceDash.setEnabled(state)
+        self.doReplaceDots.setEnabled(state)
+        self.fmtPadThin.setEnabled(state)
+        return
+
+    def _getQuote(self, qType: str) -> None:
+        """Dialog for single quote open."""
+        quote = GuiQuoteSelect(self, currentQuote=self.quoteSym[qType].text())
+        if quote.exec_() == QDialog.Accepted:
+            self.quoteSym[qType].setText(quote.selectedQuote)
         return
 
     ##
     #  Internal Functions
     ##
 
-    def _getQuote(self, qType: str) -> None:
-        """Dialog for single quote open."""
-        qtBox = GuiQuoteSelect(self, currentQuote=self.quoteSym[qType].text())
-        if qtBox.exec_() == QDialog.Accepted:
-            self.quoteSym[qType].setText(qtBox.selectedQuote)
+    def _saveWindowSize(self) -> None:
+        """Save the dialog window size."""
+        CONFIG.setPreferencesWinSize(self.width(), self.height())
+        return
+
+    def _saveValues(self) -> None:
+        """Save the values set in the form."""
+        updateTheme  = False
+        needsRestart = False
+        updateSyntax = False
+        refreshTree  = False
+
+        # Appearance
+        guiLocale   = self.guiLocale.currentData()
+        guiTheme    = self.guiTheme.currentData()
+        guiFont     = self.guiFont.text()
+        guiFontSize = self.guiFontSize.value()
+
+        updateTheme  |= CONFIG.guiTheme != guiTheme
+        needsRestart |= CONFIG.guiLocale != guiLocale
+        needsRestart |= CONFIG.guiFont != guiFont
+        needsRestart |= CONFIG.guiFontSize != guiFontSize
+
+        CONFIG.guiLocale   = guiLocale
+        CONFIG.guiTheme    = guiTheme
+        CONFIG.guiFont     = guiFont
+        CONFIG.guiFontSize = guiFontSize
+        CONFIG.hideVScroll = self.hideVScroll.isChecked()
+        CONFIG.hideHScroll = self.hideHScroll.isChecked()
+
+        # Document Style
+        guiSyntax  = self.guiSyntax.currentData()
+        emphLabels = self.emphLabels.isChecked()
+
+        updateSyntax |= CONFIG.guiSyntax != guiSyntax
+        refreshTree  |= CONFIG.emphLabels != emphLabels
+
+        CONFIG.guiSyntax      = guiSyntax
+        CONFIG.emphLabels     = emphLabels
+        CONFIG.showFullPath   = self.showFullPath.isChecked()
+        CONFIG.incNotesWCount = self.incNotesWCount.isChecked()
+        CONFIG.setTextFont(self.textFont.text(), self.textSize.value())
+
+        # Auto Save
+        CONFIG.autoSaveDoc  = self.autoSaveDoc.value()
+        CONFIG.autoSaveProj = self.autoSaveProj.value()
+
+        # Project Backup
+        CONFIG.setBackupPath(self.backupPath)
+        CONFIG.backupOnClose   = self.backupOnClose.isChecked()
+        CONFIG.askBeforeBackup = self.askBeforeBackup.isChecked()
+
+        # Session Timer
+        CONFIG.stopWhenIdle = self.stopWhenIdle.isChecked()
+        CONFIG.userIdleTime = round(self.userIdleTime.value() * 60)
+
+        # Text Flow
+        CONFIG.textWidth       = self.textWidth.value()
+        CONFIG.focusWidth      = self.focusWidth.value()
+        CONFIG.hideFocusFooter = self.hideFocusFooter.isChecked()
+        CONFIG.doJustify       = self.doJustify.isChecked()
+        CONFIG.textMargin      = self.textMargin.value()
+        CONFIG.tabWidth        = self.tabWidth.value()
+
+        # Text Editing
+        CONFIG.spellLanguage   = self.spellLanguage.currentData()
+        CONFIG.autoSelect      = self.autoSelect.isChecked()
+        CONFIG.showTabsNSpaces = self.showTabsNSpaces.isChecked()
+        CONFIG.showLineEndings = self.showLineEndings.isChecked()
+
+        # Editor Scrolling
+        CONFIG.autoScroll    = self.autoScroll.isChecked()
+        CONFIG.autoScrollPos = self.autoScrollPos.value()
+        CONFIG.scrollPastEnd = self.scrollPastEnd.isChecked()
+
+        # Text Highlighting
+        highlightQuotes = self.highlightQuotes.isChecked()
+        highlightEmph   = self.highlightEmph.isChecked()
+        showMultiSpaces = self.showMultiSpaces.isChecked()
+
+        updateSyntax |= CONFIG.highlightQuotes != highlightQuotes
+        updateSyntax |= CONFIG.highlightEmph != highlightEmph
+        updateSyntax |= CONFIG.showMultiSpaces != showMultiSpaces
+
+        CONFIG.highlightQuotes = highlightQuotes
+        CONFIG.highlightEmph   = highlightEmph
+        CONFIG.showMultiSpaces = showMultiSpaces
+        CONFIG.allowOpenSQuote = self.allowOpenSQuote.isChecked()
+        CONFIG.allowOpenDQuote = self.allowOpenDQuote.isChecked()
+
+        # Text Automation
+        CONFIG.doReplace       = self.doReplace.isChecked()
+        CONFIG.doReplaceSQuote = self.doReplaceSQuote.isChecked()
+        CONFIG.doReplaceDQuote = self.doReplaceDQuote.isChecked()
+        CONFIG.doReplaceDash   = self.doReplaceDash.isChecked()
+        CONFIG.doReplaceDots   = self.doReplaceDots.isChecked()
+        CONFIG.fmtPadBefore    = self.fmtPadBefore.text().strip()
+        CONFIG.fmtPadAfter     = self.fmtPadAfter.text().strip()
+        CONFIG.fmtPadThin      = self.fmtPadThin.isChecked()
+
+        # Quotation Style
+        CONFIG.fmtSQuoteOpen  = self.quoteSym["SO"].text()
+        CONFIG.fmtSQuoteClose = self.quoteSym["SC"].text()
+        CONFIG.fmtDQuoteOpen  = self.quoteSym["DO"].text()
+        CONFIG.fmtDQuoteClose = self.quoteSym["DC"].text()
+
+        # Finalise
+        CONFIG.saveConfig()
+        self.newPreferencesReady.emit(needsRestart, refreshTree, updateTheme, updateSyntax)
+        qApp.processEvents()
 
         return
 
-# END Class GuiPreferencesQuotes
+# END Class GuiPreferences

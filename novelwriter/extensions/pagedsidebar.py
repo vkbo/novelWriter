@@ -26,7 +26,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 from PyQt5.QtGui import QColor, QPaintEvent, QPainter, QPolygon
-from PyQt5.QtCore import QPoint, QRectF, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QPoint, QRectF, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractButton, QAction, QButtonGroup, QLabel, QSizePolicy, QStyle,
     QStyleOptionToolButton, QToolBar, QToolButton, QWidget
@@ -135,6 +135,10 @@ class _NPagedToolButton(QToolButton):
         self.setFixedHeight(self._bH)
 
         return
+
+    def sizeHint(self) -> QSize:
+        """Return a size hint that includes the arrow."""
+        return super().sizeHint() + QSize(4*self._aH, 0)
 
     def paintEvent(self, event: QPaintEvent) -> None:
         """Overload the paint event to draw a simple, left aligned text
