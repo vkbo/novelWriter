@@ -31,7 +31,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractButton, QComboBox, QCompleter, QDialog, QDialogButtonBox,
     QDoubleSpinBox, QFileDialog, QFontDialog, QHBoxLayout, QLabel, QLineEdit,
-    QPushButton, QSpinBox, QVBoxLayout, QWidget, qApp
+    QPushButton, QSpinBox, QToolButton, QVBoxLayout, QWidget, qApp
 )
 
 from novelwriter import CONFIG, SHARED
@@ -54,7 +54,7 @@ class GuiPreferences(QDialog):
 
         logger.debug("Create: GuiPreferences")
         self.setObjectName("GuiPreferences")
-        self.setWindowTitle(CONFIG.appName)
+        self.setWindowTitle(self.tr("Preferences"))
         self.setMinimumSize(CONFIG.pxInt(600), CONFIG.pxInt(500))
         self.resize(*CONFIG.preferencesWinSize)
 
@@ -139,6 +139,7 @@ class GuiPreferences(QDialog):
         """Build the settings form."""
         section = 0
         minWidth = CONFIG.pxInt(200)
+        mIcon = SHARED.theme.getIcon("more")
 
         # Appearance
         # ==========
@@ -181,8 +182,8 @@ class GuiPreferences(QDialog):
         self.guiFont.setReadOnly(True)
         self.guiFont.setFixedWidth(CONFIG.pxInt(162))
         self.guiFont.setText(CONFIG.guiFont)
-        self.guiFontButton = QPushButton("...", self)
-        self.guiFontButton.setMaximumWidth(int(2.5*SHARED.theme.getTextWidth("...")))
+        self.guiFontButton = QToolButton(self)
+        self.guiFontButton.setIcon(mIcon)
         self.guiFontButton.clicked.connect(self._selectGuiFont)
         self.mainForm.addRow(
             self.tr("Application font family"),
@@ -249,8 +250,8 @@ class GuiPreferences(QDialog):
         self.textFont.setReadOnly(True)
         self.textFont.setFixedWidth(CONFIG.pxInt(162))
         self.textFont.setText(CONFIG.textFont)
-        self.textFontButton = QPushButton("...", self)
-        self.textFontButton.setMaximumWidth(int(2.5*SHARED.theme.getTextWidth("...")))
+        self.textFontButton = QToolButton(self)
+        self.textFontButton.setIcon(mIcon)
         self.textFontButton.clicked.connect(self._selectTextFont)
         self.mainForm.addRow(
             self.tr("Document font family"),
@@ -722,9 +723,8 @@ class GuiPreferences(QDialog):
         self.sidebar.addButton(title, section)
         self.mainForm.addGroupLabel(title, section)
 
-        qWidth = CONFIG.pxInt(40)
-        bWidth = int(2.5*SHARED.theme.getTextWidth("..."))
         self.quoteSym = {}
+        qWidth = CONFIG.pxInt(40)
 
         # Single Quote Style
         self.quoteSym["SO"] = QLineEdit(self)
@@ -733,8 +733,8 @@ class GuiPreferences(QDialog):
         self.quoteSym["SO"].setFixedWidth(qWidth)
         self.quoteSym["SO"].setAlignment(Qt.AlignCenter)
         self.quoteSym["SO"].setText(CONFIG.fmtSQuoteOpen)
-        self.btnSingleStyleO = QPushButton("...", self)
-        self.btnSingleStyleO.setMaximumWidth(bWidth)
+        self.btnSingleStyleO = QToolButton(self)
+        self.btnSingleStyleO.setIcon(mIcon)
         self.btnSingleStyleO.clicked.connect(lambda: self._getQuote("SO"))
         self.mainForm.addRow(
             self.tr("Single quote open style"),
@@ -749,8 +749,8 @@ class GuiPreferences(QDialog):
         self.quoteSym["SC"].setFixedWidth(qWidth)
         self.quoteSym["SC"].setAlignment(Qt.AlignCenter)
         self.quoteSym["SC"].setText(CONFIG.fmtSQuoteClose)
-        self.btnSingleStyleC = QPushButton("...", self)
-        self.btnSingleStyleC.setMaximumWidth(bWidth)
+        self.btnSingleStyleC = QToolButton(self)
+        self.btnSingleStyleC.setIcon(mIcon)
         self.btnSingleStyleC.clicked.connect(lambda: self._getQuote("SC"))
         self.mainForm.addRow(
             self.tr("Single quote close style"),
@@ -766,8 +766,8 @@ class GuiPreferences(QDialog):
         self.quoteSym["DO"].setFixedWidth(qWidth)
         self.quoteSym["DO"].setAlignment(Qt.AlignCenter)
         self.quoteSym["DO"].setText(CONFIG.fmtDQuoteOpen)
-        self.btnDoubleStyleO = QPushButton("...", self)
-        self.btnDoubleStyleO.setMaximumWidth(bWidth)
+        self.btnDoubleStyleO = QToolButton(self)
+        self.btnDoubleStyleO.setIcon(mIcon)
         self.btnDoubleStyleO.clicked.connect(lambda: self._getQuote("DO"))
         self.mainForm.addRow(
             self.tr("Double quote open style"),
@@ -782,8 +782,8 @@ class GuiPreferences(QDialog):
         self.quoteSym["DC"].setFixedWidth(qWidth)
         self.quoteSym["DC"].setAlignment(Qt.AlignCenter)
         self.quoteSym["DC"].setText(CONFIG.fmtDQuoteClose)
-        self.btnDoubleStyleC = QPushButton("...", self)
-        self.btnDoubleStyleC.setMaximumWidth(bWidth)
+        self.btnDoubleStyleC = QToolButton(self)
+        self.btnDoubleStyleC.setIcon(mIcon)
         self.btnDoubleStyleC.clicked.connect(lambda: self._getQuote("DC"))
         self.mainForm.addRow(
             self.tr("Double quote close style"),

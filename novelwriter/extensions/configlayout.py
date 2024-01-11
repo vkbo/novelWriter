@@ -122,15 +122,16 @@ class NScrollableForm(QScrollArea):
                button: QWidget | None = None, editable: str | None = None) -> None:
         """Add a label and a widget as a new row of the form."""
         row = QHBoxLayout()
+        row.setSpacing(CONFIG.pxInt(4))
 
-        wSp = CONFIG.pxInt(12)
+        mPx = CONFIG.pxInt(12)
         qLabel = QLabel(label, self)
-        qLabel.setIndent(wSp)
+        qLabel.setIndent(mPx)
         qLabel.setBuddy(widget)
 
         if helpText:
             qHelp = NHelpLabel(str(helpText), self._helpCol, self._fontScale)
-            qHelp.setIndent(wSp)
+            qHelp.setIndent(mPx)
             labelBox = QVBoxLayout()
             labelBox.addWidget(qLabel)
             labelBox.addWidget(qHelp)
@@ -142,6 +143,7 @@ class NScrollableForm(QScrollArea):
         else:
             row.addWidget(qLabel)
 
+        row.addSpacing(mPx)
         row.addWidget(widget)
 
         if isinstance(unit, str):

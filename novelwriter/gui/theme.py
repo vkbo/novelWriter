@@ -466,7 +466,7 @@ class GuiIcons:
 
         # General Button Icons
         "add", "add_document", "backward", "bookmark", "browse", "checked", "close", "cross",
-        "document", "down", "edit", "export", "forward", "maximise", "menu", "minimise",
+        "document", "down", "edit", "export", "forward", "maximise", "menu", "minimise", "more",
         "noncheckable", "panel", "refresh", "remove", "revert", "search_replace", "search",
         "settings", "star", "unchecked", "up", "view",
 
