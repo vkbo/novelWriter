@@ -46,8 +46,6 @@ logger = logging.getLogger(__name__)
 
 class GuiPreferences(QDialog):
 
-    NAV_APPEARANCE = 0
-
     newPreferencesReady = pyqtSignal(bool, bool, bool, bool)
 
     def __init__(self, parent: QWidget) -> None:
