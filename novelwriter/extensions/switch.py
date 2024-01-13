@@ -24,31 +24,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 from PyQt5.QtGui import QMouseEvent, QPainter, QPaintEvent, QResizeEvent
-from PyQt5.QtCore import QEvent, QPropertyAnimation, QRectF, Qt, pyqtProperty
+from PyQt5.QtCore import QEvent, QPropertyAnimation, Qt, pyqtProperty
 from PyQt5.QtWidgets import QAbstractButton, QSizePolicy, QWidget
 
 from novelwriter import CONFIG
-from novelwriter.constants import nwUnicode
 
 
 class NSwitch(QAbstractButton):
 
-    def __init__(self, parent: QWidget | None = None,
-                 width: int | None = None, height: int | None = None) -> None:
+    __slots__ = ("_xW", "_xH", "_xR", "_rB", "_rH", "_rR", "_offset")
+
+    def __init__(self, parent: QWidget | None = None, width: int = 0, height: int = 0) -> None:
         super().__init__(parent=parent)
 
-        if width is None:
-            self._xW = CONFIG.pxInt(40)
-        else:
-            self._xW = width
-
-        if height is None:
-            self._xH = CONFIG.pxInt(20)
-        else:
-            self._xH = height
-
+        self._xW = width or CONFIG.pxInt(40)
+        self._xH = height or CONFIG.pxInt(20)
         self._xR = int(self._xH*0.5)
-        self._xT = int(self._xH*0.6)
         self._rB = int(CONFIG.guiScale*2)
         self._rH = self._xH - 2*self._rB
         self._rR = self._xR - self._rB
@@ -82,10 +73,7 @@ class NSwitch(QAbstractButton):
     def setChecked(self, checked: bool) -> None:
         """Overload setChecked to also alter the offset."""
         super().setChecked(checked)
-        if checked:
-            self._offset = self._xW - self._xR
-        else:
-            self._offset = self._xR
+        self._offset = (self._xW - self._xR) if checked else self._xR
         return
 
     ##
@@ -95,53 +83,36 @@ class NSwitch(QAbstractButton):
     def resizeEvent(self, event: QResizeEvent) -> None:
         """Overload resize to ensure correct offset."""
         super().resizeEvent(event)
-        if self.isChecked():
-            self._offset = self._xW - self._xR
-        else:
-            self._offset = self._xR
+        self._offset = (self._xW - self._xR) if self.isChecked() else self._xR
         return
 
     def paintEvent(self, event: QPaintEvent) -> None:
         """Drawing the switch itself."""
-        qPaint = QPainter(self)
-        qPaint.setRenderHint(QPainter.Antialiasing, True)
-        qPaint.setPen(Qt.NoPen)
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.setPen(Qt.NoPen)
 
-        qPalette = self.palette()
+        palette = self.palette()
         if self.isChecked():
-            trackBrush = qPalette.highlight()
-            thumbBrush = qPalette.highlightedText()
-            textColor = qPalette.highlight().color()
-            thumbText = nwUnicode.U_CHECK
+            trackBrush = palette.highlight()
+            thumbBrush = palette.highlightedText()
         else:
-            trackBrush = qPalette.dark()
-            thumbBrush = qPalette.light()
-            textColor = qPalette.dark().color()
-            thumbText = nwUnicode.U_CROSS
+            trackBrush = palette.dark()
+            thumbBrush = palette.light()
 
         if self.isEnabled():
             trackOpacity = 1.0
         else:
             trackOpacity = 0.6
-            trackBrush = qPalette.shadow()
-            thumbBrush = qPalette.mid()
-            textColor = qPalette.shadow().color()
+            trackBrush = palette.shadow()
+            thumbBrush = palette.mid()
 
-        qPaint.setBrush(trackBrush)
-        qPaint.setOpacity(trackOpacity)
-        qPaint.drawRoundedRect(0, 0, self._xW, self._xH, self._xR, self._xR)
+        painter.setBrush(trackBrush)
+        painter.setOpacity(trackOpacity)
+        painter.drawRoundedRect(0, 0, self._xW, self._xH, self._xR, self._xR)
 
-        qPaint.setBrush(thumbBrush)
-        qPaint.drawEllipse(self._offset - self._rR, self._rB, self._rH, self._rH)
-
-        font = qPaint.font()
-        font.setPixelSize(self._xT)
-        qPaint.setPen(textColor)
-        qPaint.setFont(font)
-        qPaint.drawText(
-            QRectF(self._offset - self._rR, self._rB, self._rH, self._rH),
-            Qt.AlignCenter, thumbText
-        )
+        painter.setBrush(thumbBrush)
+        painter.drawEllipse(self._offset - self._rR, self._rB, self._rH, self._rH)
 
         return
 
@@ -149,14 +120,11 @@ class NSwitch(QAbstractButton):
         """Animate the switch on mouse release."""
         super().mouseReleaseEvent(event)
         if event.button() == Qt.LeftButton:
-            doAnim = QPropertyAnimation(self, b"offset", self)
-            doAnim.setDuration(120)
-            doAnim.setStartValue(self._offset)
-            if self.isChecked():
-                doAnim.setEndValue(self._xW - self._xR)
-            else:
-                doAnim.setEndValue(self._xR)
-            doAnim.start()
+            anim = QPropertyAnimation(self, b"offset", self)
+            anim.setDuration(120)
+            anim.setStartValue(self._offset)
+            anim.setEndValue((self._xW - self._xR) if self.isChecked() else self._xR)
+            anim.start()
         return
 
     def enterEvent(self, event: QEvent) -> None:

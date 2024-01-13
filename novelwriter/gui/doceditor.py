@@ -187,12 +187,11 @@ class GuiDocEditor(QPlainTextEdit):
         # Set Up Document Word Counter
         self.wcTimerDoc = QTimer()
         self.wcTimerDoc.timeout.connect(self._runDocCounter)
+        self.wcTimerDoc.setInterval(5000)
 
         self.wCounterDoc = BackgroundWordCounter(self)
         self.wCounterDoc.setAutoDelete(False)
         self.wCounterDoc.signals.countsReady.connect(self._updateDocCounts)
-
-        self.wcInterval = CONFIG.wordCountTimer
 
         # Set Up Selection Word Counter
         self.wcTimerSel = QTimer()
@@ -320,10 +319,10 @@ class GuiDocEditor(QPlainTextEdit):
         SHARED.updateSpellCheckLanguage()
 
         # Set font
-        textFont = QFont()
-        textFont.setFamily(CONFIG.textFont)
-        textFont.setPointSize(CONFIG.textSize)
-        self.setFont(textFont)
+        font = QFont()
+        font.setFamily(CONFIG.textFont)
+        font.setPointSize(CONFIG.textSize)
+        self.setFont(font)
 
         # Set default text margins
         # Due to cursor visibility, a part of the margin must be
@@ -359,17 +358,14 @@ class GuiDocEditor(QPlainTextEdit):
         # Refresh the tab stops
         self.setTabStopDistance(CONFIG.getTabWidth())
 
-        # Configure word count timer
-        self.wcInterval = CONFIG.wordCountTimer
-        self.wcTimerDoc.setInterval(int(self.wcInterval*1000))
-
-        # If we have a document open, we should reload it in case the
+        # If we have a document open, we should refresh it in case the
         # font changed, otherwise we just clear the editor entirely,
         # which makes it read only.
-        if self._docHandle is None:
-            self.clearEditor()
-        else:
+        if self._docHandle:
             self._qDocument.syntaxHighlighter.rehighlight()
+            self.docHeader.setTitleFromHandle(self._docHandle)
+        else:
+            self.clearEditor()
 
         return
 
@@ -1190,7 +1186,7 @@ class GuiDocEditor(QPlainTextEdit):
             logger.debug("Word counter is busy")
             return
 
-        if time() - self._lastEdit < 5.0 * self.wcInterval:
+        if time() - self._lastEdit < 25.0:
             logger.debug("Running word counter")
             SHARED.runInThreadPool(self.wCounterDoc)
 

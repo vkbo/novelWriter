@@ -31,8 +31,10 @@ from novelwriter.dialogs.editlabel import GuiEditLabel
 
 
 @pytest.mark.gui
-def testDlgOther_QuoteSelect(qtbot, nwGUI):
+def testDlgOther_QuoteSelect(qtbot, monkeypatch, nwGUI):
     """Test the quote symbols dialog."""
+    monkeypatch.setattr(GuiQuoteSelect, "exec_", lambda *a: None)
+
     nwQuot = GuiQuoteSelect(nwGUI)
     nwQuot.show()
 
@@ -41,16 +43,25 @@ def testDlgOther_QuoteSelect(qtbot, nwGUI):
         anItem = nwQuot.listBox.item(i)
         assert isinstance(anItem, QListWidgetItem)
         nwQuot.listBox.clearSelection()
-        nwQuot.listBox.setCurrentItem(anItem, QItemSelectionModel.Select)
+        nwQuot.listBox.setCurrentItem(anItem, QItemSelectionModel.SelectionFlag.Select)
         lastItem = anItem.text()[2]
         assert nwQuot.previewLabel.text() == lastItem
 
     nwQuot.accept()
     assert nwQuot.result() == QDialog.Accepted
     assert nwQuot.selectedQuote == lastItem
+    nwQuot.close()
+
+    # Test Class Method
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiQuoteSelect, "result", lambda *a: QDialog.DialogCode.Accepted)
+        assert GuiQuoteSelect.getQuote(nwGUI, current="X") == ("X", True)
+
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiQuoteSelect, "result", lambda *a: QDialog.DialogCode.Rejected)
+        assert GuiQuoteSelect.getQuote(nwGUI, current="X") == ("X", False)
 
     # qtbot.stop()
-    nwQuot.close()
 
 # END Test testDlgOther_QuoteSelect
 

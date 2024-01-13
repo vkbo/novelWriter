@@ -56,6 +56,9 @@ class nwConst:
     # Gui Settings
     STATUS_MSG_TIMEOUT = 15000  # milliseconds
 
+    # Dialogs
+    DLG_FINISHED = 2
+
 # END Class nwConst
 
 

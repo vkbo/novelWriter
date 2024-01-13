@@ -3,7 +3,9 @@ novelWriter – Custom Widget: Config Layout
 ==========================================
 
 File History:
-Created: 2020-05-03 [0.4.5]
+Created: 2020-05-03 [0.4.5] NConfigLayout, NHelpLabel
+Created: 2023-05-23 [2.1b1] NSimpleLayout
+Created: 2024-01-08 [2.3b1] NScrollableForm
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen
@@ -26,7 +28,7 @@ from __future__ import annotations
 from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QAbstractButton, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QSizePolicy,
+    QAbstractButton, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QScrollArea, QSizePolicy,
     QVBoxLayout, QWidget
 )
 
@@ -35,6 +37,133 @@ from novelwriter import CONFIG
 FONT_SCALE = 0.9
 RIGHT_TOP = Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignTop
 LEFT_TOP = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop
+
+
+class NScrollableForm(QScrollArea):
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
+        self._helpCol = QColor(0, 0, 0)
+        self._fontScale = FONT_SCALE
+        self._first = True
+
+        self._sections: dict[int, QLabel] = {}
+        self._editable: dict[str, NHelpLabel] = {}
+        self._index: dict[str, QWidget] = {}
+
+        self._layout = QVBoxLayout()
+        self._layout.setSpacing(CONFIG.pxInt(12))
+
+        self._widget = QWidget(self)
+        self._widget.setLayout(self._layout)
+
+        self.setWidget(self._widget)
+        self.setWidgetResizable(True)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+
+        return
+
+    ##
+    #  Properties
+    ##
+
+    @property
+    def labels(self) -> list[str]:
+        return list(self._index.keys())
+
+    ##
+    #  Setters
+    ##
+
+    def setHelpTextStyle(self, color: QColor | list | tuple, scale: float = FONT_SCALE) -> None:
+        """Set the text color for the help text."""
+        self._helpCol = color if isinstance(color, QColor) else QColor(*color)
+        self._fontScale = scale
+        return
+
+    def setHelpText(self, key: str, text: str) -> None:
+        """Set the text for the help label."""
+        if qHelp := self._editable.get(key):
+            qHelp.setText(text)
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def scrollToSection(self, identifier: int) -> None:
+        """Scroll to the requested section identifier."""
+        if identifier in self._sections:
+            yPos = self._sections[identifier].pos().y() - CONFIG.pxInt(8)
+            self.verticalScrollBar().setValue(yPos)
+        return
+
+    def scrollToLabel(self, label: str) -> None:
+        """Scroll to the requested label."""
+        if label in self._index:
+            yPos = self._index[label].pos().y() - CONFIG.pxInt(8)
+            self.verticalScrollBar().setValue(yPos)
+        return
+
+    def addGroupLabel(self, label: str, identifier: int) -> None:
+        """Add a text label to separate groups of settings."""
+        hM = CONFIG.pxInt(4)
+        qLabel = QLabel(f"<b>{label}</b>", self)
+        qLabel.setContentsMargins(0, hM, 0, hM)
+        if not self._first:
+            self._layout.addSpacing(5*hM)
+        self._layout.addWidget(qLabel)
+        self._sections[identifier] = qLabel
+        self._first = False
+        return
+
+    def addRow(self, label: str, widget: QWidget, helpText: str = "", unit: str | None = None,
+               button: QWidget | None = None, editable: str | None = None) -> None:
+        """Add a label and a widget as a new row of the form."""
+        row = QHBoxLayout()
+        row.setSpacing(CONFIG.pxInt(4))
+
+        mPx = CONFIG.pxInt(12)
+        qLabel = QLabel(label, self)
+        qLabel.setIndent(mPx)
+        qLabel.setBuddy(widget)
+
+        if helpText:
+            qHelp = NHelpLabel(str(helpText), self._helpCol, self._fontScale)
+            qHelp.setIndent(mPx)
+            labelBox = QVBoxLayout()
+            labelBox.addWidget(qLabel)
+            labelBox.addWidget(qHelp)
+            labelBox.setSpacing(0)
+            labelBox.addStretch(1)
+            row.addLayout(labelBox)
+            if editable:
+                self._editable[editable] = qHelp
+        else:
+            row.addWidget(qLabel)
+
+        row.addSpacing(mPx)
+        row.addWidget(widget)
+
+        if isinstance(unit, str):
+            row.addWidget(QLabel(unit, self))
+        elif isinstance(button, QAbstractButton):
+            row.addWidget(button)
+
+        self._layout.addLayout(row)
+        self._index[label.strip()] = widget
+        self._first = False
+
+        return
+
+    def finalise(self) -> None:
+        """Finalise the layout when the form is built."""
+        self._layout.addSpacing(CONFIG.pxInt(20))
+        self._layout.addStretch(1)
+        return
+
+# END Class NScrollableForm
 
 
 class NConfigLayout(QGridLayout):
@@ -58,11 +187,10 @@ class NConfigLayout(QGridLayout):
     #  Getters and Setters
     ##
 
-    def setHelpTextStyle(self, color: QColor | list | tuple,
-                         fontScale: float = FONT_SCALE) -> None:
+    def setHelpTextStyle(self, color: QColor | list | tuple, scale: float = FONT_SCALE) -> None:
         """Set the text color for the help text."""
         self._helpCol = color if isinstance(color, QColor) else QColor(*color)
-        self._fontScale = fontScale
+        self._fontScale = scale
         return
 
     def setHelpText(self, row: int, text: str) -> None:
