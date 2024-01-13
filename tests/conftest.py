@@ -63,7 +63,7 @@ def resetConfigVars():
 
 @pytest.fixture(scope="session", autouse=True)
 def sessionFixture():
-    """A session wide fixture to set up the test environment."""
+    """A default session wide fixture to set up the test environment."""
     logging.root.setLevel(logging.INFO)
     if _TMP_ROOT.exists():
         shutil.rmtree(_TMP_ROOT)
@@ -74,8 +74,10 @@ def sessionFixture():
 
 @pytest.fixture(scope="function", autouse=True)
 def functionFixture(qtbot):
-    """Ensures that the main Qt thread is always available, and reset
-    the config object for each function and redirect its storage paths.
+    """A default function fixture that:
+    * Ensures that the main Qt thread is always available
+    * Resets the config object for each function and redirect its
+      storage paths to temporary test folders.
     """
     if _TMP_CONF.exists():
         shutil.rmtree(_TMP_CONF)
@@ -95,7 +97,7 @@ def functionFixture(qtbot):
 
 @pytest.fixture(scope="session")
 def tstPaths():
-    """Returns an object that can provide the various paths needed for
+    """Return an object that can provide the various paths needed for
     running tests.
     """
     class _Store:
@@ -124,9 +126,7 @@ def fncPath():
 
 @pytest.fixture(scope="function")
 def projPath(fncPath):
-    """A temporary folder for a single test function,
-    with a project folder.
-    """
+    """A temp folder for a single test function + project folder."""
     prjDir = fncPath / "project"
     if prjDir.exists():
         shutil.rmtree(prjDir)
