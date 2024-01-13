@@ -35,6 +35,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.constants import nwConst, nwUnicode
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.configlayout import NScrollableForm
@@ -498,7 +499,7 @@ class GuiPreferences(QDialog):
             for tag, language in SHARED.spelling.listDictionaries():
                 self.spellLanguage.addItem(language, tag)
         else:
-            self.spellLanguage.addItem(self.tr("None"), "")
+            self.spellLanguage.addItem(nwUnicode.U_EMDASH, "")
             self.spellLanguage.setEnabled(False)
 
         if (idx := self.spellLanguage.findData(CONFIG.spellLanguage)) != -1:
@@ -807,12 +808,13 @@ class GuiPreferences(QDialog):
         self._saveWindowSize()
         event.accept()
         qApp.processEvents()
+        self.done(nwConst.DLG_FINISHED)
         self.deleteLater()
         return
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         """Overload keyPressEvent to block enter key to save."""
-        if event.matches(QKeySequence.Cancel):
+        if event.matches(QKeySequence.StandardKey.Cancel):
             self.close()
         event.ignore()
         return
@@ -825,12 +827,12 @@ class GuiPreferences(QDialog):
     def _dialogButtonClicked(self, button: QAbstractButton) -> None:
         """Handle button clicks from the dialog button box."""
         role = self.buttonBox.buttonRole(button)
-        if role == QDialogButtonBox.ApplyRole:
+        if role == QDialogButtonBox.ButtonRole.ApplyRole:
             self._saveValues()
-        elif role == QDialogButtonBox.AcceptRole:
+        elif role == QDialogButtonBox.ButtonRole.AcceptRole:
             self._saveValues()
             self.close()
-        elif role == QDialogButtonBox.RejectRole:
+        elif role == QDialogButtonBox.ButtonRole.RejectRole:
             self.close()
         return
 
@@ -874,7 +876,7 @@ class GuiPreferences(QDialog):
     def _backupFolder(self) -> None:
         """Open a dialog to select the backup folder."""
         if path := QFileDialog.getExistingDirectory(
-            self, self.tr("Backup Directory"), str(self.backupPath or ""),
+            self, self.tr("Backup Directory"), str(self.backupPath) or "",
             options=QFileDialog.ShowDirsOnly
         ):
             self.backupPath = path
@@ -906,9 +908,9 @@ class GuiPreferences(QDialog):
 
     def _getQuote(self, qType: str) -> None:
         """Dialog for single quote open."""
-        quote = GuiQuoteSelect(self, currentQuote=self.quoteSym[qType].text())
-        if quote.exec_() == QDialog.Accepted:
-            self.quoteSym[qType].setText(quote.selectedQuote)
+        quote, status = GuiQuoteSelect.getQuote(self, current=self.quoteSym[qType].text())
+        if status:
+            self.quoteSym[qType].setText(quote)
         return
 
     ##

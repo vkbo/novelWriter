@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtGui import QCloseEvent, QFontMetrics
+from PyQt5.QtGui import QFontMetrics
 from PyQt5.QtCore import QSize, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog, QDialogButtonBox, QFrame, QHBoxLayout, QLabel, QListWidget,
@@ -40,11 +40,11 @@ logger = logging.getLogger(__name__)
 
 class GuiQuoteSelect(QDialog):
 
-    selectedQuote = ""
+    _selected = ""
 
     D_KEY = Qt.ItemDataRole.UserRole
 
-    def __init__(self, parent: QWidget, currentQuote: str = '"') -> None:
+    def __init__(self, parent: QWidget, current: str = '"') -> None:
         super().__init__(parent=parent)
 
         logger.debug("Create: GuiQuoteSelect")
@@ -54,7 +54,7 @@ class GuiQuoteSelect(QDialog):
         self.innerBox = QHBoxLayout()
         self.labelBox = QVBoxLayout()
 
-        self.selectedQuote = currentQuote
+        self._selected = current
 
         qMetrics = QFontMetrics(self.font())
         pxW = 7*qMetrics.boundingRectChar("M").width()
@@ -65,7 +65,7 @@ class GuiQuoteSelect(QDialog):
         lblFont.setPointSizeF(4*lblFont.pointSizeF())
 
         # Preview Label
-        self.previewLabel = QLabel(currentQuote)
+        self.previewLabel = QLabel(current)
         self.previewLabel.setFont(lblFont)
         self.previewLabel.setFixedSize(QSize(pxW, pxH))
         self.previewLabel.setAlignment(Qt.AlignCenter)
@@ -82,7 +82,7 @@ class GuiQuoteSelect(QDialog):
             qtItem = QListWidgetItem(theText)
             qtItem.setData(self.D_KEY, sKey)
             self.listBox.addItem(qtItem)
-            if sKey == currentQuote:
+            if sKey == current:
                 self.listBox.setCurrentItem(qtItem)
 
         self.listBox.setMinimumWidth(minSize + CONFIG.pxInt(40))
@@ -113,15 +113,20 @@ class GuiQuoteSelect(QDialog):
         logger.debug("Delete: GuiQuoteSelect")
         return
 
-    ##
-    #  Events
-    ##
+    @property
+    def selectedQuote(self) -> str:
+        """Return the selected quote symbol."""
+        return self._selected
 
-    def closeEvent(self, event: QCloseEvent) -> None:
-        """Capture the close event and perform cleanup."""
-        event.accept()
-        self.deleteLater()
-        return
+    @classmethod
+    def getQuote(cls, parent: QWidget, current: str = "") -> tuple[str, bool]:
+        """Pop the dialog and return the result."""
+        cls = GuiQuoteSelect(parent, current=current)
+        cls.exec_()
+        quote = cls._selected
+        accepted = cls.result() == QDialog.DialogCode.Accepted
+        cls.deleteLater()
+        return quote, accepted
 
     ##
     #  Private Slots
@@ -130,11 +135,10 @@ class GuiQuoteSelect(QDialog):
     @pyqtSlot()
     def _selectedSymbol(self) -> None:
         """Update the preview label and the selected quote style."""
-        selItems = self.listBox.selectedItems()
-        if selItems:
-            theSymbol = selItems[0].data(self.D_KEY)
-            self.previewLabel.setText(theSymbol)
-            self.selectedQuote = theSymbol
+        if items := self.listBox.selectedItems():
+            quote = items[0].data(self.D_KEY)
+            self.previewLabel.setText(quote)
+            self._selected = quote
         return
 
 # END Class GuiQuoteSelect

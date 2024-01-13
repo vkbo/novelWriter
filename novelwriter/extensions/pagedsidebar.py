@@ -63,6 +63,10 @@ class NPagedSideBar(QToolBar):
 
         return
 
+    def button(self, buttonId: int) -> _NPagedToolButton:
+        """Return a specific button."""
+        return self._buttons[buttonId]
+
     def setLabelColor(self, color: list | QColor) -> None:
         """Set the text color for the labels."""
         self._labelCol = color if isinstance(color, QColor) else QColor(*color)
