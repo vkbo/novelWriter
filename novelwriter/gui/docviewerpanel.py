@@ -29,8 +29,8 @@ from enum import Enum
 
 from PyQt5.QtCore import QModelIndex, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QFrame, QHeaderView, QTabWidget, QTreeWidget,
-    QTreeWidgetItem, QVBoxLayout, QWidget
+    QAbstractItemView, QFrame, QHeaderView, QMenu, QTabWidget, QToolButton,
+    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -54,10 +54,24 @@ class GuiDocViewerPanel(QWidget):
 
         self._lastHandle = None
 
+        iPx = int(1.0*SHARED.theme.baseIconSize)
+
         self.tabBackRefs = _ViewPanelBackRefs(self)
+
+        self.optsMenu = QMenu(self)
+
+        self.aInactive = self.optsMenu.addAction(self.tr("Hide Inactive Tags"))
+        self.aInactive.setCheckable(True)
+        self.aInactive.toggled.connect(self._toggleHideInactive)
+
+        self.optsButton = QToolButton(self)
+        self.optsButton.setIconSize(QSize(iPx, iPx))
+        self.optsButton.setMenu(self.optsMenu)
+        self.optsButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
         self.mainTabs = QTabWidget(self)
         self.mainTabs.addTab(self.tabBackRefs, self.tr("References"))
+        self.mainTabs.setCornerWidget(self.optsButton, Qt.Corner.TopLeftCorner)
 
         self.kwTabs: dict[str, _ViewPanelKeyWords] = {}
         self.idTabs: dict[str, int] = {}
@@ -85,20 +99,27 @@ class GuiDocViewerPanel(QWidget):
 
     def updateTheme(self, updateTabs: bool = True) -> None:
         """Update theme elements."""
+        qPalette = self.palette()
+        mPx = CONFIG.pxInt(2)
         vPx = CONFIG.pxInt(4)
-        lPx = CONFIG.pxInt(2)
-        rPx = CONFIG.pxInt(14)
-        hCol = self.palette().highlight().color()
+        hPx = CONFIG.pxInt(8)
+        hCol = qPalette.highlight().color()
+        fCol = qPalette.text().color()
+
+        buttonStyle = (
+            "QToolButton {{padding: {0}px; margin: 0 0 {1}px 0; border: none; "
+            "background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({2}, {3}, {4}, 0.2);}} "
+            "QToolButton::menu-indicator {{image: none;}} "
+        ).format(mPx, mPx, fCol.red(), fCol.green(), fCol.blue())
+        self.optsButton.setIcon(SHARED.theme.getIcon("menu"))
+        self.optsButton.setStyleSheet(buttonStyle)
 
         styleSheet = (
-            "QTabWidget::pane {border: 0;} "
-            "QTabWidget QTabBar::tab {"
-            f"border: 0; padding: {vPx}px {rPx}px {vPx}px {lPx}px;"
-            "} "
-            "QTabWidget QTabBar::tab:selected {"
-            f"color: rgb({hCol.red()}, {hCol.green()}, {hCol.blue()});"
-            "} "
-        )
+            "QTabWidget::pane {{border: 0;}} "
+            "QTabWidget QTabBar::tab {{border: 0; padding: {0}px {1}px;}} "
+            "QTabWidget QTabBar::tab:selected {{color: rgb({2}, {3}, {4});}} "
+        ).format(vPx, hPx, hCol.red(), hCol.green(), hCol.blue())
         self.mainTabs.setStyleSheet(styleSheet)
         self.updateHandle(self._lastHandle)
 
@@ -111,20 +132,22 @@ class GuiDocViewerPanel(QWidget):
 
     def openProjectTasks(self) -> None:
         """Run open project tasks."""
-        widths = SHARED.project.options.getValue("GuiDocViewerPanel", "colWidths", {})
-        if isinstance(widths, dict):
-            for key, value in widths.items():
+        colWidths = SHARED.project.options.getValue("GuiDocViewerPanel", "colWidths", {})
+        hideInactive = SHARED.project.options.getBool("GuiDocViewerPanel", "hideInactive", False)
+        self.aInactive.setChecked(hideInactive)
+        if isinstance(colWidths, dict):
+            for key, value in colWidths.items():
                 if key in self.kwTabs and isinstance(value, list):
                     self.kwTabs[key].setColumnWidths(value)
         return
 
     def closeProjectTasks(self) -> None:
         """Run close project tasks."""
-        widths = {}
-        for key, tab in self.kwTabs.items():
-            widths[key] = tab.getColumnWidths()
         logger.debug("Saving State: GuiDocViewerPanel")
-        SHARED.project.options.setValue("GuiDocViewerPanel", "colWidths", widths)
+        colWidths = {k: t.getColumnWidths() for k, t in self.kwTabs.items()}
+        hideInactive = self.aInactive.isChecked()
+        SHARED.project.options.setValue("GuiDocViewerPanel", "colWidths", colWidths)
+        SHARED.project.options.setValue("GuiDocViewerPanel", "hideInactive", hideInactive)
         return
 
     ##
@@ -142,9 +165,7 @@ class GuiDocViewerPanel(QWidget):
     @pyqtSlot()
     def indexHasAppeared(self) -> None:
         """Handle event when the index has appeared."""
-        for key, name, tClass, iItem, hItem in SHARED.project.index.getTagsData():
-            if tClass in self.kwTabs and iItem and hItem:
-                self.kwTabs[tClass].addUpdateEntry(key, name, iItem, hItem)
+        self._loadAllTags()
         self._updateTabVisibility()
         self.updateHandle(self._lastHandle)
         return
@@ -153,10 +174,15 @@ class GuiDocViewerPanel(QWidget):
     def projectItemChanged(self, tHandle: str) -> None:
         """Update meta data for project item."""
         self.tabBackRefs.refreshDocument(tHandle)
+        activeOnly = self.aInactive.isChecked()
         for key in SHARED.project.index.getDocumentTags(tHandle):
             name, tClass, iItem, hItem = SHARED.project.index.getSingleTag(key)
             if tClass in self.kwTabs and iItem and hItem:
-                self.kwTabs[tClass].addUpdateEntry(key, name, iItem, hItem)
+                if not activeOnly or (iItem and iItem.item.isActive):
+                    self.kwTabs[tClass].addUpdateEntry(key, name, iItem, hItem)
+                else:
+                    self.kwTabs[tClass].removeEntry(key)
+        self._updateTabVisibility()
         return
 
     @pyqtSlot(str)
@@ -183,6 +209,20 @@ class GuiDocViewerPanel(QWidget):
         return
 
     ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(bool)
+    def _toggleHideInactive(self, state: bool) -> None:
+        """Process toggling of active/inactive visibility."""
+        logger.debug("Setting inactive items to %s", "hidden" if state else "visible")
+        for cTab in self.kwTabs.values():
+            cTab.clearContent()
+        self._loadAllTags()
+        self._updateTabVisibility()
+        return
+
+    ##
     #  Internal Functions
     ##
 
@@ -191,6 +231,14 @@ class GuiDocViewerPanel(QWidget):
         if CONFIG.verQtValue >= 0x050f00:
             for tClass, cTab in self.kwTabs.items():
                 self.mainTabs.setTabVisible(self.idTabs[tClass], cTab.countEntries() > 0)
+        return
+
+    def _loadAllTags(self) -> None:
+        """Load all tags into the tabs."""
+        data = SHARED.project.index.getTagsData(activeOnly=self.aInactive.isChecked())
+        for key, name, tClass, iItem, hItem in data:
+            if tClass in self.kwTabs and iItem and hItem:
+                self.kwTabs[tClass].addUpdateEntry(key, name, iItem, hItem)
         return
 
 # END Class GuiDocViewerPanel

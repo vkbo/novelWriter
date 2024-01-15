@@ -674,7 +674,7 @@ class GuiNovelTree(QTreeWidget):
         tStart = time()
         logger.debug("Building novel tree for root item '%s'", rootHandle)
 
-        novStruct = SHARED.project.index.novelStructure(rootHandle=rootHandle, skipExcl=True)
+        novStruct = SHARED.project.index.novelStructure(rootHandle=rootHandle, activeOnly=True)
         for tKey, tHandle, sTitle, novIdx in novStruct:
             if novIdx.level == "H0":
                 continue

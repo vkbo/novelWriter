@@ -646,7 +646,7 @@ class GuiOutlineTree(QTreeWidget):
                 headItem.setTextAlignment(
                     self._colIdx[nwOutline.PCOUNT], Qt.AlignmentFlag.AlignRight)
 
-        novStruct = SHARED.project.index.novelStructure(rootHandle=rootHandle, skipExcl=True)
+        novStruct = SHARED.project.index.novelStructure(rootHandle=rootHandle, activeOnly=True)
         for _, tHandle, sTitle, novIdx in novStruct:
 
             iLevel = nwHeaders.H_LEVEL.get(novIdx.level, 0)

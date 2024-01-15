@@ -517,28 +517,28 @@ class NWIndex:
         return None
 
     def novelStructure(
-        self, rootHandle: str | None = None, skipExcl: bool = True
+        self, rootHandle: str | None = None, activeOnly: bool = True
     ) -> Iterator[tuple[str, str, str, IndexHeading]]:
         """Iterate over all titles in the novel, in the correct order as
         they appear in the tree view and in the respective document
         files, but skipping all note files.
         """
-        structure = self._itemIndex.iterNovelStructure(rHandle=rootHandle, skipExcl=skipExcl)
+        structure = self._itemIndex.iterNovelStructure(rHandle=rootHandle, activeOnly=activeOnly)
         for tHandle, sTitle, hItem in structure:
             yield f"{tHandle}:{sTitle}", tHandle, sTitle, hItem
         return
 
-    def getNovelWordCount(self, skipExcl: bool = True) -> int:
+    def getNovelWordCount(self, activeOnly: bool = True) -> int:
         """Count the number of words in the novel project."""
         wCount = 0
-        for _, _, hItem in self._itemIndex.iterNovelStructure(skipExcl=skipExcl):
+        for _, _, hItem in self._itemIndex.iterNovelStructure(activeOnly=activeOnly):
             wCount += hItem.wordCount
         return wCount
 
-    def getNovelTitleCounts(self, skipExcl: bool = True) -> list[int]:
+    def getNovelTitleCounts(self, activeOnly: bool = True) -> list[int]:
         """Count the number of titles in the novel project."""
         hCount = [0, 0, 0, 0, 0]
-        for _, _, hItem in self._itemIndex.iterNovelStructure(skipExcl=skipExcl):
+        for _, _, hItem in self._itemIndex.iterNovelStructure(activeOnly=activeOnly):
             iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0)
             hCount[iLevel] += 1
         return hCount
@@ -551,14 +551,14 @@ class NWIndex:
         return 0
 
     def getTableOfContents(
-        self, rHandle: str | None, maxDepth: int, skipExcl: bool = True
+        self, rHandle: str | None, maxDepth: int, activeOnly: bool = True
     ) -> list[tuple[str, int, str, int]]:
         """Generate a table of contents up to a maximum depth."""
         tOrder = []
         tData = {}
         pKey = None
         for tHandle, sTitle, hItem in self._itemIndex.iterNovelStructure(
-            rHandle=rHandle, skipExcl=skipExcl
+            rHandle=rHandle, activeOnly=activeOnly
         ):
             tKey = f"{tHandle}:{sTitle}"
             iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0)
@@ -646,12 +646,15 @@ class NWIndex:
         """Return all tags based on itemClass."""
         return self._tagsIndex.filterTagNames(itemClass.name)
 
-    def getTagsData(self) -> Iterator[tuple[str, str, str, IndexItem | None, IndexHeading | None]]:
+    def getTagsData(
+        self, activeOnly: bool = True
+    ) -> Iterator[tuple[str, str, str, IndexItem | None, IndexHeading | None]]:
         """Return all known tags."""
         for tag, data in self._tagsIndex.items():
             iItem = self._itemIndex[data.get("handle")]
             hItem = None if iItem is None else iItem[data.get("heading")]
-            yield tag, data.get("name", ""), data.get("class", ""), iItem, hItem
+            if not activeOnly or (iItem and iItem.item.isActive):
+                yield tag, data.get("name", ""), data.get("class", ""), iItem, hItem
         return
 
     def getSingleTag(self, tagKey: str) -> tuple[str, str, IndexItem | None, IndexHeading | None]:
@@ -848,7 +851,7 @@ class ItemIndex:
         return
 
     def iterNovelStructure(
-        self, rHandle: str | None = None, skipExcl: bool = False
+        self, rHandle: str | None = None, activeOnly: bool = False
     ) -> Iterable[tuple[str, str, IndexHeading]]:
         """Iterate over all items and headers in the novel structure for
         a given root handle, or for all if root handle is None.
@@ -856,7 +859,7 @@ class ItemIndex:
         for tItem in self._project.tree:
             if tItem.isNoteLayout():
                 continue
-            if skipExcl and not tItem.isActive:
+            if activeOnly and not tItem.isActive:
                 continue
 
             tHandle = tItem.itemHandle
