@@ -60,7 +60,7 @@ class GuiDocViewerPanel(QWidget):
 
         self.optsMenu = QMenu(self)
 
-        self.aInactive = self.optsMenu.addAction(self.tr("Hide Inactive"))
+        self.aInactive = self.optsMenu.addAction(self.tr("Hide Inactive Tags"))
         self.aInactive.setCheckable(True)
         self.aInactive.toggled.connect(self._toggleHideInactive)
 
