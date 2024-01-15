@@ -28,6 +28,7 @@ from PyQt5.QtGui import QIcon
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwLists
+from novelwriter.core.item import NWItem
 from novelwriter.dialogs.editlabel import GuiEditLabel
 
 
@@ -215,6 +216,17 @@ def testGuiViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mockRnd
     assert nwGUI.docViewer.docHandle == hJohn
     charTab._treeItemDoubleClicked(charTab.model().index(0, charTab.C_NAME))
     assert nwGUI.docViewer.docHandle == hJane
+
+    # Hide Inactive Tags
+    viewPanel.aInactive.setChecked(True)
+    assert charTab.topLevelItemCount() == 2
+
+    nwJohn = SHARED.project.tree[hJohn]
+    assert isinstance(nwJohn, NWItem)
+    nwJohn.setActive(False)
+    projTree.setTreeItemValues(hJohn)
+    projTree._alertTreeChange(hJohn, flush=False)
+    assert charTab.topLevelItemCount() == 1
 
     # qtbot.stop()
 
