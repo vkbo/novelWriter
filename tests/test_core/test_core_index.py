@@ -579,7 +579,7 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     project.tree[nHandle].setActive(False)  # type: ignore
 
     keys = []
-    for aKey, _, _, _ in index.novelStructure(skipExcl=False):
+    for aKey, _, _, _ in index.novelStructure(activeOnly=False):
         keys.append(aKey)
 
     assert keys == [
@@ -590,7 +590,7 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     ]
 
     keys = []
-    for aKey, _, _, _ in index.novelStructure(skipExcl=True):
+    for aKey, _, _, _ in index.novelStructure(activeOnly=True):
         keys.append(aKey)
 
     assert keys == [
@@ -761,7 +761,7 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     assert index.scanText(sHandle, "### Scene One\n\n")  # type: ignore
     assert index.scanText(tHandle, "### Scene Two\n\n")  # type: ignore
 
-    assert [(h, t) for h, t, _ in index._itemIndex.iterNovelStructure(skipExcl=False)] == [
+    assert [(h, t) for h, t, _ in index._itemIndex.iterNovelStructure(activeOnly=False)] == [
         (C.hTitlePage, "T0001"),
         (C.hChapterDoc, "T0001"),
         (C.hSceneDoc, "T0001"),
@@ -772,7 +772,7 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
         (tHandle, "T0001"),
     ]
 
-    assert [(h, t) for h, t, _ in index._itemIndex.iterNovelStructure(skipExcl=True)] == [
+    assert [(h, t) for h, t, _ in index._itemIndex.iterNovelStructure(activeOnly=True)] == [
         (C.hTitlePage, "T0001"),
         (C.hChapterDoc, "T0001"),
         (C.hSceneDoc, "T0001"),
@@ -783,7 +783,7 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
 
     # Add a fake handle to the tree and check that it's ignored
     project.tree._order.append("0000000000000")
-    assert [(h, t) for h, t, _ in index._itemIndex.iterNovelStructure(skipExcl=False)] == [
+    assert [(h, t) for h, t, _ in index._itemIndex.iterNovelStructure(activeOnly=False)] == [
         (C.hTitlePage, "T0001"),
         (C.hChapterDoc, "T0001"),
         (C.hSceneDoc, "T0001"),
@@ -796,22 +796,22 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     project.tree._order.remove("0000000000000")
 
     # Extract stats
-    assert index.getNovelWordCount(skipExcl=False) == 43
-    assert index.getNovelWordCount(skipExcl=True) == 15
-    assert index.getNovelTitleCounts(skipExcl=False) == [0, 3, 2, 3, 0]
-    assert index.getNovelTitleCounts(skipExcl=True) == [0, 1, 2, 3, 0]
+    assert index.getNovelWordCount(activeOnly=False) == 43
+    assert index.getNovelWordCount(activeOnly=True) == 15
+    assert index.getNovelTitleCounts(activeOnly=False) == [0, 3, 2, 3, 0]
+    assert index.getNovelTitleCounts(activeOnly=True) == [0, 1, 2, 3, 0]
 
     # Table of Contents
-    assert index.getTableOfContents(C.hNovelRoot, 0, skipExcl=True) == []
-    assert index.getTableOfContents(C.hNovelRoot, 1, skipExcl=True) == [
+    assert index.getTableOfContents(C.hNovelRoot, 0, activeOnly=True) == []
+    assert index.getTableOfContents(C.hNovelRoot, 1, activeOnly=True) == [
         (f"{C.hTitlePage}:T0001", 1, "New Novel", 15),
     ]
-    assert index.getTableOfContents(C.hNovelRoot, 2, skipExcl=True) == [
+    assert index.getTableOfContents(C.hNovelRoot, 2, activeOnly=True) == [
         (f"{C.hTitlePage}:T0001", 1, "New Novel", 5),
         (f"{C.hChapterDoc}:T0001", 2, "New Chapter", 4),
         (f"{hHandle}:T0001", 2, "Chapter One", 6),
     ]
-    assert index.getTableOfContents(C.hNovelRoot, 3, skipExcl=True) == [
+    assert index.getTableOfContents(C.hNovelRoot, 3, activeOnly=True) == [
         (f"{C.hTitlePage}:T0001", 1, "New Novel", 5),
         (f"{C.hChapterDoc}:T0001", 2, "New Chapter", 2),
         (f"{C.hSceneDoc}:T0001", 3, "New Scene", 2),
@@ -820,8 +820,8 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
         (f"{tHandle}:T0001", 3, "Scene Two", 2),
     ]
 
-    assert index.getTableOfContents(C.hNovelRoot, 0, skipExcl=False) == []
-    assert index.getTableOfContents(C.hNovelRoot, 1, skipExcl=False) == [
+    assert index.getTableOfContents(C.hNovelRoot, 0, activeOnly=False) == []
+    assert index.getTableOfContents(C.hNovelRoot, 1, activeOnly=False) == [
         (f"{C.hTitlePage}:T0001", 1, "New Novel", 9),
         (f"{nHandle}:T0001", 1, "Hello World!", 12),
         (f"{nHandle}:T0002", 1, "Hello World!", 22),
@@ -1173,7 +1173,7 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
 
     # Skip excluded
     project.tree[sHandle].setActive(False)  # type: ignore
-    nStruct = list(itemIndex.iterNovelStructure(skipExcl=True))
+    nStruct = list(itemIndex.iterNovelStructure(activeOnly=True))
     assert len(nStruct) == 3
     assert nStruct[0][0] == nHandle
     assert nStruct[1][0] == cHandle
