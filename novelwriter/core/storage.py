@@ -307,7 +307,6 @@ class NWStorage:
         baseCont = basePath / "content"
         files = [
             (basePath / nwFiles.PROJ_FILE,   nwFiles.PROJ_FILE),
-            (basePath / nwFiles.PROJ_BACKUP, nwFiles.PROJ_BACKUP),
             (baseMeta / nwFiles.BUILDS_FILE, f"meta/{nwFiles.BUILDS_FILE}"),
             (baseMeta / nwFiles.INDEX_FILE,  f"meta/{nwFiles.INDEX_FILE}"),
             (baseMeta / nwFiles.OPTS_FILE,   f"meta/{nwFiles.OPTS_FILE}"),
@@ -463,6 +462,7 @@ class _LegacyStorage:
             path / "cache" / "prevBuild.json",         # Dropped in 2.1 Beta 1
             path / "cache",                            # Dropped in 2.1 Beta 1
             path / "ToC.json",                         # Dropped in 1.0 RC 1
+            path / "nwProject.bak",                    # Dropped in 2.3 Beta 1
         ]
         for item in remove:
             if item.exists():

@@ -33,7 +33,7 @@ itself. It is important to keep this file backed up, either through the built-in
 your own backup solution.
 
 The project XML file is indent-formatted, and is suitable for diff tools and version control since
-most of the file will stay static, although a timesetamp is set in the meta section on line 2, and
+most of the file will stay static, although a timestamp is set in the meta section on line 2, and
 various meta data entries incremented, on each save.
 
 .. only:: not html
@@ -90,11 +90,6 @@ When saving the project file, or any of the documents, the data is first saved t
 If successful, the old data file is then removed, and the temporary file replaces it. This ensures
 that the previously saved data is only replaced when the new data has been successfully saved to
 the storage medium.
-
-For the project XML file, a ``.bak`` file is in addition kept, which will always contain the
-previous version of the file, although when auto-save is enabled, they may have the same content.
-If the opening of a project file fails, novelWriter will automatically try to open the ``.bak``
-file instead.
 
 
 Project Meta Data

@@ -110,7 +110,6 @@ class nwFiles:
 
     # Project Root Files
     PROJ_FILE   = "nwProject.nwx"
-    PROJ_BACKUP = "nwProject.bak"
     PROJ_LOCK   = "nwProject.lock"
     TOC_TXT     = "ToC.txt"
 
