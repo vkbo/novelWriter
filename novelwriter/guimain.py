@@ -56,6 +56,7 @@ from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projdetails import GuiProjectDetails
 from novelwriter.dialogs.projsettings import GuiProjectSettings
 from novelwriter.tools.welcome import GuiWelcome
+from novelwriter.tools.novelinfo import GuiNovelInfo
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.dictionaries import GuiDictionaries
 from novelwriter.tools.writingstats import GuiWritingStats
@@ -834,6 +835,18 @@ class GuiMain(QMainWindow):
             dialog.raise_()
             qApp.processEvents()
             dialog.updateValues()
+        return
+
+    @pyqtSlot()
+    def showNovelInfoDialog(self) -> None:
+        """Open the novel info dialog."""
+        if SHARED.hasProject:
+            dialog = GuiNovelInfo(self)
+            dialog.setModal(True)
+            dialog.show()
+            dialog.raise_()
+            qApp.processEvents()
+            # dialog.updateValues()
         return
 
     @pyqtSlot()

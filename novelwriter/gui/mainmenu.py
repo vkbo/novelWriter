@@ -157,8 +157,12 @@ class GuiMainMenu(QMenuBar):
 
         # Project > Project Details
         self.aProjectDetails = self.projMenu.addAction(self.tr("Project Details"))
-        self.aProjectDetails.setShortcut("Shift+F6")
         self.aProjectDetails.triggered.connect(self.mainGui.showProjectDetailsDialog)
+
+        # Project > Novel Info
+        self.aNovelInfo = self.projMenu.addAction(self.tr("Novel Info"))
+        self.aNovelInfo.setShortcut("Shift+F6")
+        self.aNovelInfo.triggered.connect(self.mainGui.showNovelInfoDialog)
 
         # Project > Separator
         self.projMenu.addSeparator()
