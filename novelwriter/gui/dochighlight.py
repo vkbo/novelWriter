@@ -48,7 +48,7 @@ SPELLRX.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
 
 class GuiDocHighlighter(QSyntaxHighlighter):
 
-    __slots__ = ("_tItem", "_tHandle", "_spellCheck", "_hRules", "_hStyles", "_spellErr")
+    __slots__ = ("_tItem", "_tHandle", "_spellCheck", "_spellErr", "_hRules", "_hStyles")
 
     BLOCK_NONE  = 0
     BLOCK_TEXT  = 1
