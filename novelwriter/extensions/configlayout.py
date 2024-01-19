@@ -76,9 +76,9 @@ class NScrollableForm(QScrollArea):
     #  Setters
     ##
 
-    def setHelpTextStyle(self, color: QColor | list | tuple, scale: float = FONT_SCALE) -> None:
+    def setHelpTextStyle(self, color: QColor, scale: float = FONT_SCALE) -> None:
         """Set the text color for the help text."""
-        self._helpCol = color if isinstance(color, QColor) else QColor(*color)
+        self._helpCol = color
         self._fontScale = scale
         return
 
@@ -187,7 +187,7 @@ class NConfigLayout(QGridLayout):
     #  Getters and Setters
     ##
 
-    def setHelpTextStyle(self, color: QColor | list | tuple, scale: float = FONT_SCALE) -> None:
+    def setHelpTextStyle(self, color: QColor, scale: float = FONT_SCALE) -> None:
         """Set the text color for the help text."""
         self._helpCol = color if isinstance(color, QColor) else QColor(*color)
         self._fontScale = scale
@@ -328,18 +328,15 @@ class NSimpleLayout(QGridLayout):
 
 class NHelpLabel(QLabel):
 
-    def __init__(self, text: str, color: QColor | list | tuple,
-                 fontSize: float = FONT_SCALE) -> None:
+    def __init__(self, text: str, color: QColor, scale: float = FONT_SCALE) -> None:
         super().__init__(text)
 
-        qCol = color if isinstance(color, QColor) else QColor(*color)
-
         lblCol = self.palette()
-        lblCol.setColor(QPalette.WindowText, qCol)
+        lblCol.setColor(QPalette.WindowText, color)
         self.setPalette(lblCol)
 
         lblFont = self.font()
-        lblFont.setPointSizeF(fontSize*lblFont.pointSizeF())
+        lblFont.setPointSizeF(scale*lblFont.pointSizeF())
         self.setFont(lblFont)
 
         self.setWordWrap(True)

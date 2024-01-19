@@ -33,7 +33,7 @@ from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QPoint, QSize, Qt, QUrl
 from PyQt5.QtGui import (
-    QColor, QCursor, QFont, QMouseEvent, QPalette, QResizeEvent, QTextCursor,
+    QCursor, QFont, QMouseEvent, QPalette, QResizeEvent, QTextCursor,
     QTextOption
 )
 from PyQt5.QtWidgets import (
@@ -149,14 +149,14 @@ class GuiDocViewer(QTextBrowser):
 
         # Set the widget colours to match syntax theme
         mainPalette = self.palette()
-        mainPalette.setColor(QPalette.ColorRole.Window, QColor(*SHARED.theme.colBack))
-        mainPalette.setColor(QPalette.ColorRole.Base, QColor(*SHARED.theme.colBack))
-        mainPalette.setColor(QPalette.ColorRole.Text, QColor(*SHARED.theme.colText))
+        mainPalette.setColor(QPalette.ColorRole.Window, SHARED.theme.colBack)
+        mainPalette.setColor(QPalette.ColorRole.Base, SHARED.theme.colBack)
+        mainPalette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
         self.setPalette(mainPalette)
 
         docPalette = self.viewport().palette()
-        docPalette.setColor(QPalette.ColorRole.Base, QColor(*SHARED.theme.colBack))
-        docPalette.setColor(QPalette.ColorRole.Text, QColor(*SHARED.theme.colText))
+        docPalette.setColor(QPalette.ColorRole.Base, SHARED.theme.colBack)
+        docPalette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
         self.viewport().setPalette(docPalette)
 
         self.docHeader.matchColours()
@@ -463,7 +463,13 @@ class GuiDocViewer(QTextBrowser):
         """Generate an appropriate style sheet for the document viewer,
         based on the current syntax highlighter theme,
         """
-        pTheme = SHARED.theme
+        colText = SHARED.theme.colText
+        colHead = SHARED.theme.colHead
+        colVal = SHARED.theme.colVal
+        colEmph = SHARED.theme.colEmph
+        colKey = SHARED.theme.colKey
+        colHidden = SHARED.theme.colHidden
+        colMod = SHARED.theme.colMod
         styleSheet = (
             "body {{"
             "  color: rgb({tColR}, {tColG}, {tColB});"
@@ -490,27 +496,27 @@ class GuiDocViewer(QTextBrowser):
             "  text-align: center;"
             "}}\n"
         ).format(
-            tColR=pTheme.colText[0],
-            tColG=pTheme.colText[1],
-            tColB=pTheme.colText[2],
-            hColR=pTheme.colHead[0],
-            hColG=pTheme.colHead[1],
-            hColB=pTheme.colHead[2],
-            aColR=pTheme.colVal[0],
-            aColG=pTheme.colVal[1],
-            aColB=pTheme.colVal[2],
-            eColR=pTheme.colEmph[0],
-            eColG=pTheme.colEmph[1],
-            eColB=pTheme.colEmph[2],
-            kColR=pTheme.colKey[0],
-            kColG=pTheme.colKey[1],
-            kColB=pTheme.colKey[2],
-            cColR=pTheme.colHidden[0],
-            cColG=pTheme.colHidden[1],
-            cColB=pTheme.colHidden[2],
-            mColR=pTheme.colMod[0],
-            mColG=pTheme.colMod[1],
-            mColB=pTheme.colMod[2],
+            tColR=colText.red(),
+            tColG=colText.green(),
+            tColB=colText.blue(),
+            hColR=colHead.red(),
+            hColG=colHead.green(),
+            hColB=colHead.blue(),
+            aColR=colVal.red(),
+            aColG=colVal.green(),
+            aColB=colVal.blue(),
+            eColR=colEmph.red(),
+            eColG=colEmph.green(),
+            eColB=colEmph.blue(),
+            kColR=colKey.red(),
+            kColG=colKey.green(),
+            kColB=colKey.blue(),
+            cColR=colHidden.red(),
+            cColG=colHidden.green(),
+            cColB=colHidden.blue(),
+            mColR=colMod.red(),
+            mColG=colMod.green(),
+            mColB=colMod.blue(),
         )
         self.document().setDefaultStyleSheet(styleSheet)
 
@@ -744,10 +750,11 @@ class GuiDocViewHeader(QWidget):
         self.refreshButton.setIcon(SHARED.theme.getIcon("refresh"))
         self.closeButton.setIcon(SHARED.theme.getIcon("close"))
 
+        colText = SHARED.theme.colText
         buttonStyle = (
             "QToolButton {{border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(*SHARED.theme.colText)
+            "QToolButton:hover {{border: none; background: rgba({0}, {1}, {2}, 0.2);}}"
+        ).format(colText.red(), colText.green(), colText.blue())
 
         self.backButton.setStyleSheet(buttonStyle)
         self.forwardButton.setStyleSheet(buttonStyle)
@@ -763,9 +770,9 @@ class GuiDocViewHeader(QWidget):
         theme rather than the main GUI.
         """
         palette = QPalette()
-        palette.setColor(QPalette.ColorRole.Window, QColor(*SHARED.theme.colBack))
-        palette.setColor(QPalette.ColorRole.WindowText, QColor(*SHARED.theme.colText))
-        palette.setColor(QPalette.ColorRole.Text, QColor(*SHARED.theme.colText))
+        palette.setColor(QPalette.ColorRole.Window, SHARED.theme.colBack)
+        palette.setColor(QPalette.ColorRole.WindowText, SHARED.theme.colText)
+        palette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
         self.setPalette(palette)
         self.docTitle.setPalette(palette)
         return
@@ -937,11 +944,11 @@ class GuiDocViewFooter(QWidget):
         self.showComments.setIcon(bulletIcon)
         self.showSynopsis.setIcon(bulletIcon)
 
-        # StyleSheets
+        colText = SHARED.theme.colText
         buttonStyle = (
             "QToolButton {{border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(*SHARED.theme.colText)
+            "QToolButton:hover {{border: none; background: rgba({0}, {1}, {2}, 0.2);}}"
+        ).format(colText.red(), colText.green(), colText.blue())
 
         self.showHide.setStyleSheet(buttonStyle)
         self.showComments.setStyleSheet(buttonStyle)
@@ -956,9 +963,9 @@ class GuiDocViewFooter(QWidget):
         theme rather than the main GUI.
         """
         palette = QPalette()
-        palette.setColor(QPalette.ColorRole.Window, QColor(*SHARED.theme.colBack))
-        palette.setColor(QPalette.ColorRole.WindowText, QColor(*SHARED.theme.colText))
-        palette.setColor(QPalette.ColorRole.Text, QColor(*SHARED.theme.colText))
+        palette.setColor(QPalette.ColorRole.Window, SHARED.theme.colBack)
+        palette.setColor(QPalette.ColorRole.WindowText, SHARED.theme.colText)
+        palette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
         self.setPalette(palette)
         return
 
