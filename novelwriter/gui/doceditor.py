@@ -276,14 +276,14 @@ class GuiDocEditor(QPlainTextEdit):
     def updateSyntaxColours(self) -> None:
         """Update the syntax highlighting theme."""
         mainPalette = self.palette()
-        mainPalette.setColor(QPalette.ColorRole.Window, QColor(*SHARED.theme.colBack))
-        mainPalette.setColor(QPalette.ColorRole.Base, QColor(*SHARED.theme.colBack))
-        mainPalette.setColor(QPalette.ColorRole.Text, QColor(*SHARED.theme.colText))
+        mainPalette.setColor(QPalette.ColorRole.Window, SHARED.theme.colBack)
+        mainPalette.setColor(QPalette.ColorRole.Base, SHARED.theme.colBack)
+        mainPalette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
         self.setPalette(mainPalette)
 
         docPalette = self.viewport().palette()
-        docPalette.setColor(QPalette.ColorRole.Base, QColor(*SHARED.theme.colBack))
-        docPalette.setColor(QPalette.ColorRole.Text, QColor(*SHARED.theme.colText))
+        docPalette.setColor(QPalette.ColorRole.Base, SHARED.theme.colBack)
+        docPalette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
         self.viewport().setPalette(docPalette)
 
         self.docHeader.matchColours()
@@ -2326,9 +2326,9 @@ class GuiDocToolBar(QWidget):
     def updateTheme(self) -> None:
         """Initialise GUI elements that depend on specific settings."""
         palette = QPalette()
-        palette.setColor(QPalette.ColorRole.Window, QColor(*SHARED.theme.colBack))
-        palette.setColor(QPalette.ColorRole.WindowText, QColor(*SHARED.theme.colText))
-        palette.setColor(QPalette.ColorRole.Text, QColor(*SHARED.theme.colText))
+        palette.setColor(QPalette.ColorRole.Window, SHARED.theme.colBack)
+        palette.setColor(QPalette.ColorRole.WindowText, SHARED.theme.colText)
+        palette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
         self.setPalette(palette)
 
         self.tbBoldMD.setIcon(SHARED.theme.getIcon("fmt_bold-md"))
@@ -2866,10 +2866,11 @@ class GuiDocEditHeader(QWidget):
         self.minmaxButton.setIcon(SHARED.theme.getIcon("maximise"))
         self.closeButton.setIcon(SHARED.theme.getIcon("close"))
 
+        colText = SHARED.theme.colText
         buttonStyle = (
             "QToolButton {{border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(*SHARED.theme.colText)
+            "QToolButton:hover {{border: none; background: rgba({0}, {1}, {2}, 0.2);}}"
+        ).format(colText.red(), colText.green(), colText.blue())
 
         self.tbButton.setStyleSheet(buttonStyle)
         self.searchButton.setStyleSheet(buttonStyle)
@@ -2885,9 +2886,9 @@ class GuiDocEditHeader(QWidget):
         theme rather than the main GUI.
         """
         palette = QPalette()
-        palette.setColor(QPalette.ColorRole.Window, QColor(*SHARED.theme.colBack))
-        palette.setColor(QPalette.ColorRole.WindowText, QColor(*SHARED.theme.colText))
-        palette.setColor(QPalette.ColorRole.Text, QColor(*SHARED.theme.colText))
+        palette.setColor(QPalette.ColorRole.Window, SHARED.theme.colBack)
+        palette.setColor(QPalette.ColorRole.WindowText, SHARED.theme.colText)
+        palette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
 
         self.setPalette(palette)
         self.itemTitle.setPalette(palette)
@@ -3093,9 +3094,9 @@ class GuiDocEditFooter(QWidget):
         theme rather than the main GUI.
         """
         palette = QPalette()
-        palette.setColor(QPalette.ColorRole.Window, QColor(*SHARED.theme.colBack))
-        palette.setColor(QPalette.ColorRole.WindowText, QColor(*SHARED.theme.colText))
-        palette.setColor(QPalette.ColorRole.Text, QColor(*SHARED.theme.colText))
+        palette.setColor(QPalette.ColorRole.Window, SHARED.theme.colBack)
+        palette.setColor(QPalette.ColorRole.WindowText, SHARED.theme.colText)
+        palette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
 
         self.setPalette(palette)
         self.statusText.setPalette(palette)

@@ -220,23 +220,25 @@ class GuiAbout(QDialog):
 
     def _setStyleSheet(self) -> None:
         """Set stylesheet for all browser tabs."""
+        colHead = SHARED.theme.colHead
+        colKey = SHARED.theme.colKey
         styleSheet = (
             "h1, h2, h3, h4 {{"
-            "  color: rgb({hColR},{hColG},{hColB});"
+            "  color: rgb({hColR}, {hColG}, {hColB});"
             "}}\n"
             "a {{"
-            "  color: rgb({hColR},{hColG},{hColB});"
+            "  color: rgb({hColR}, {hColG}, {hColB});"
             "}}\n"
             ".alt {{"
-            "  color: rgb({kColR},{kColG},{kColB});"
+            "  color: rgb({kColR}, {kColG}, {kColB});"
             "}}\n"
         ).format(
-            hColR=SHARED.theme.colHead[0],
-            hColG=SHARED.theme.colHead[1],
-            hColB=SHARED.theme.colHead[2],
-            kColR=SHARED.theme.colKey[0],
-            kColG=SHARED.theme.colKey[1],
-            kColB=SHARED.theme.colKey[2],
+            hColR=colHead.red(),
+            hColG=colHead.green(),
+            hColB=colHead.blue(),
+            kColR=colKey.red(),
+            kColG=colKey.green(),
+            kColB=colKey.blue(),
         )
         self.pageAbout.document().setDefaultStyleSheet(styleSheet)
         self.pageNotes.document().setDefaultStyleSheet(styleSheet)

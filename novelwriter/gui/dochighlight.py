@@ -65,22 +65,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._hRules: list[tuple[str, dict]] = []
         self._hStyles: dict[str, QTextCharFormat] = {}
 
-        self._colHead   = QColor(0, 0, 0)
-        self._colHeadH  = QColor(0, 0, 0)
-        self._colEmph   = QColor(0, 0, 0)
-        self._colDialN  = QColor(0, 0, 0)
-        self._colDialD  = QColor(0, 0, 0)
-        self._colDialS  = QColor(0, 0, 0)
-        self._colHidden = QColor(0, 0, 0)
-        self._colCode   = QColor(0, 0, 0)
-        self._colKey    = QColor(0, 0, 0)
-        self._colVal    = QColor(0, 0, 0)
-        self._colSpell  = QColor(0, 0, 0)
-        self._colError  = QColor(0, 0, 0)
-        self._colRepTag = QColor(0, 0, 0)
-        self._colMod    = QColor(0, 0, 0)
-        self._colBreak  = QColor(0, 0, 0)
-
         self.initHighlighter()
 
         logger.debug("Ready: GuiDocHighlighter")
@@ -93,54 +77,37 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         """
         logger.debug("Setting up highlighting rules")
 
-        self._colHead   = QColor(*SHARED.theme.colHead)
-        self._colHeadH  = QColor(*SHARED.theme.colHeadH)
-        self._colDialN  = QColor(*SHARED.theme.colDialN)
-        self._colDialD  = QColor(*SHARED.theme.colDialD)
-        self._colDialS  = QColor(*SHARED.theme.colDialS)
-        self._colHidden = QColor(*SHARED.theme.colHidden)
-        self._colCode   = QColor(*SHARED.theme.colCode)
-        self._colKey    = QColor(*SHARED.theme.colKey)
-        self._colVal    = QColor(*SHARED.theme.colVal)
-        self._colSpell  = QColor(*SHARED.theme.colSpell)
-        self._colError  = QColor(*SHARED.theme.colError)
-        self._colRepTag = QColor(*SHARED.theme.colRepTag)
-        self._colMod    = QColor(*SHARED.theme.colMod)
-        self._colBreak  = QColor(*SHARED.theme.colEmph)
-        self._colBreak.setAlpha(64)
-
-        self._colEmph = None
-        if CONFIG.highlightEmph:
-            self._colEmph = QColor(*SHARED.theme.colEmph)
-
-        self._hStyles = {
-            "header1":   self._makeFormat(self._colHead, "bold", 1.8),
-            "header2":   self._makeFormat(self._colHead, "bold", 1.6),
-            "header3":   self._makeFormat(self._colHead, "bold", 1.4),
-            "header4":   self._makeFormat(self._colHead, "bold", 1.2),
-            "header1h":  self._makeFormat(self._colHeadH, "bold", 1.8),
-            "header2h":  self._makeFormat(self._colHeadH, "bold", 1.6),
-            "header3h":  self._makeFormat(self._colHeadH, "bold", 1.4),
-            "header4h":  self._makeFormat(self._colHeadH, "bold", 1.2),
-            "bold":      self._makeFormat(self._colEmph, "bold"),
-            "italic":    self._makeFormat(self._colEmph, "italic"),
-            "strike":    self._makeFormat(self._colHidden, "strike"),
-            "mspaces":   self._makeFormat(self._colError, "errline"),
-            "nobreak":   self._makeFormat(self._colBreak, "background"),
-            "dialogue1": self._makeFormat(self._colDialN),
-            "dialogue2": self._makeFormat(self._colDialD),
-            "dialogue3": self._makeFormat(self._colDialS),
-            "replace":   self._makeFormat(self._colRepTag),
-            "hidden":    self._makeFormat(self._colHidden),
-            "code":      self._makeFormat(self._colCode),
-            "keyword":   self._makeFormat(self._colKey),
-            "modifier":  self._makeFormat(self._colMod),
-            "value":     self._makeFormat(self._colVal, "underline"),
-            "codevalue": self._makeFormat(self._colVal),
-            "codeinval": self._makeFormat(None, "errline"),
-        }
+        colEmph = SHARED.theme.colEmph if CONFIG.highlightEmph else None
+        colBreak = QColor(SHARED.theme.colEmph)
+        colBreak.setAlpha(64)
 
         self._hRules = []
+        self._hStyles = {
+            "header1":   self._makeFormat(SHARED.theme.colHead, "bold", 1.8),
+            "header2":   self._makeFormat(SHARED.theme.colHead, "bold", 1.6),
+            "header3":   self._makeFormat(SHARED.theme.colHead, "bold", 1.4),
+            "header4":   self._makeFormat(SHARED.theme.colHead, "bold", 1.2),
+            "header1h":  self._makeFormat(SHARED.theme.colHeadH, "bold", 1.8),
+            "header2h":  self._makeFormat(SHARED.theme.colHeadH, "bold", 1.6),
+            "header3h":  self._makeFormat(SHARED.theme.colHeadH, "bold", 1.4),
+            "header4h":  self._makeFormat(SHARED.theme.colHeadH, "bold", 1.2),
+            "bold":      self._makeFormat(colEmph, "bold"),
+            "italic":    self._makeFormat(colEmph, "italic"),
+            "strike":    self._makeFormat(SHARED.theme.colHidden, "strike"),
+            "mspaces":   self._makeFormat(SHARED.theme.colError, "errline"),
+            "nobreak":   self._makeFormat(colBreak, "background"),
+            "dialogue1": self._makeFormat(SHARED.theme.colDialN),
+            "dialogue2": self._makeFormat(SHARED.theme.colDialD),
+            "dialogue3": self._makeFormat(SHARED.theme.colDialS),
+            "replace":   self._makeFormat(SHARED.theme.colRepTag),
+            "hidden":    self._makeFormat(SHARED.theme.colHidden),
+            "code":      self._makeFormat(SHARED.theme.colCode),
+            "keyword":   self._makeFormat(SHARED.theme.colKey),
+            "modifier":  self._makeFormat(SHARED.theme.colMod),
+            "value":     self._makeFormat(SHARED.theme.colVal, "underline"),
+            "codevalue": self._makeFormat(SHARED.theme.colVal),
+            "codeinval": self._makeFormat(None, "errline"),
+        }
 
         # Multiple or Trailing Spaces
         if CONFIG.showMultiSpaces:
@@ -318,7 +285,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                                 self.setFormat(xPos, xLen, self._hStyles["value"])
                         else:
                             kwFmt = self.format(xPos)
-                            kwFmt.setUnderlineColor(self._colError)
+                            kwFmt.setUnderlineColor(SHARED.theme.colError)
                             kwFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
                             self.setFormat(xPos, xLen, kwFmt)
 
@@ -402,8 +369,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             for xPos, xLen in data.spellCheck(text):
                 for x in range(xPos, xPos+xLen):
                     spFmt = self.format(x)
-                    spFmt.setUnderlineColor(self._colSpell)
-                    spFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
+                    spFmt.merge(self._hStyles["codeinval"])
                     self.setFormat(x, 1, spFmt)
 
         return
@@ -431,7 +397,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             if "strike" in styles:
                 charFormat.setFontStrikeOut(True)
             if "errline" in styles:
-                charFormat.setUnderlineColor(self._colError)
+                charFormat.setUnderlineColor(SHARED.theme.colError)
                 charFormat.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
             if "underline" in styles:
                 charFormat.setFontUnderline(True)
