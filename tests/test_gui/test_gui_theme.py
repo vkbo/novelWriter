@@ -27,7 +27,7 @@ from pathlib import Path
 from mocked import causeOSError
 from tools import writeFile
 
-from PyQt5.QtGui import QIcon, QPalette, QPixmap
+from PyQt5.QtGui import QColor, QIcon, QPalette, QPixmap
 from PyQt5.QtWidgets import QApplication
 
 from novelwriter import CONFIG, SHARED
@@ -95,22 +95,15 @@ def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
         "colour4": "-10, 127, 300",
     }
 
-    # Test the parser for several valid and invalid values
-    assert mainTheme._parseColour(parser, "Palette", "colour1") == [100, 150, 200]
-    assert mainTheme._parseColour(parser, "Palette", "colour2") == [100, 150, 200]
-    assert mainTheme._parseColour(parser, "Palette", "colour3") == [0, 0, 0]
-    assert mainTheme._parseColour(parser, "Palette", "colour4") == [0, 127, 255]
-    assert mainTheme._parseColour(parser, "Palette", "colour5") == [0, 0, 0]
-
     # The palette should load with the parsed values
     mainTheme._setPalette(parser, "Palette", "colour1", QPalette.Window)
     assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (100, 150, 200, 255)
     mainTheme._setPalette(parser, "Palette", "colour2", QPalette.Window)
-    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (100, 150, 200, 255)
+    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (100, 150, 200, 250)
     mainTheme._setPalette(parser, "Palette", "colour3", QPalette.Window)
-    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (0, 0, 0, 255)
+    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (250, 250, 0, 255)
     mainTheme._setPalette(parser, "Palette", "colour4", QPalette.Window)
-    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (0, 127, 255, 255)
+    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (0, 0, 0, 0)
     mainTheme._setPalette(parser, "Palette", "colour5", QPalette.Window)
     assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (0, 0, 0, 255)
 
@@ -240,9 +233,9 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI):
 
     # Check some values
     assert mainTheme.syntaxName == "Default Light"
-    assert mainTheme.colBack == [255, 255, 255]
-    assert mainTheme.colText == [0, 0, 0]
-    assert mainTheme.colLink == [0, 0, 200]
+    assert mainTheme.colBack == QColor(255, 255, 255)
+    assert mainTheme.colText == QColor(0, 0, 0)
+    assert mainTheme.colLink == QColor(0, 0, 200)
 
     # Load Default Dark Theme
     # =======================
@@ -253,9 +246,9 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI):
 
     # Check some values
     assert mainTheme.syntaxName == "Default Dark"
-    assert mainTheme.colBack == [54, 54, 54]
-    assert mainTheme.colText == [199, 207, 208]
-    assert mainTheme.colLink == [184, 200, 0]
+    assert mainTheme.colBack == QColor(54, 54, 54)
+    assert mainTheme.colText == QColor(199, 207, 208)
+    assert mainTheme.colLink == QColor(184, 200, 0)
 
     # qtbot.stop()
 

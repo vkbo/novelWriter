@@ -29,7 +29,7 @@ from tools import (
     C, NWD_IGNORE, cmpFiles, buildTestProject, XML_IGNORE, getGuiItem
 )
 
-from PyQt5.QtGui import QColor, QPalette
+from PyQt5.QtGui import QPalette
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMenu, QInputDialog
 
@@ -170,7 +170,7 @@ def testGuiMain_UpdateTheme(qtbot, nwGUI):
     mainTheme.loadSyntax()
     nwGUI._processConfigChanges(True, True, True, True)
 
-    syntaxBack = QColor(*SHARED.theme.colBack)
+    syntaxBack = SHARED.theme.colBack
 
     assert nwGUI.docEditor.palette().color(QPalette.ColorRole.Window) == syntaxBack
     assert nwGUI.docEditor.docHeader.palette().color(QPalette.ColorRole.Window) == syntaxBack
