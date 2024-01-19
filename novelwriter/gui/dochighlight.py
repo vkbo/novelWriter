@@ -48,6 +48,8 @@ SPELLRX.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
 
 class GuiDocHighlighter(QSyntaxHighlighter):
 
+    __slots__ = ("_tItem", "_tHandle", "_spellCheck", "_hRules", "_hStyles", "_spellErr")
+
     BLOCK_NONE  = 0
     BLOCK_TEXT  = 1
     BLOCK_META  = 2
@@ -58,9 +60,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         logger.debug("Create: GuiDocHighlighter")
 
-        self._tItem      = None
-        self._tHandle    = None
+        self._tItem = None
+        self._tHandle = None
         self._spellCheck = False
+        self._spellErr = QTextCharFormat()
 
         self._hRules: list[tuple[str, dict]] = []
         self._hStyles: dict[str, QTextCharFormat] = {}
@@ -108,6 +111,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             "codevalue": self._makeFormat(SHARED.theme.colVal),
             "codeinval": self._makeFormat(None, "errline"),
         }
+
+        # Cache Spell Error Format
+        self._spellErr = QTextCharFormat()
+        self._spellErr.setUnderlineColor(SHARED.theme.colSpell)
+        self._spellErr.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
 
         # Multiple or Trailing Spaces
         if CONFIG.showMultiSpaces:
@@ -272,12 +280,12 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             self.setCurrentBlockState(self.BLOCK_META)
             if self._tItem:
                 pIndex = SHARED.project.index
-                isValid, theBits, thePos = pIndex.scanThis(text)
-                isGood = pIndex.checkThese(theBits, self._tItem)
+                isValid, bits, pos = pIndex.scanThis(text)
+                isGood = pIndex.checkThese(bits, self._tItem)
                 if isValid:
-                    for n, theBit in enumerate(theBits):
-                        xPos = thePos[n]
-                        xLen = len(theBit)
+                    for n, bit in enumerate(bits):
+                        xPos = pos[n]
+                        xLen = len(bit)
                         if isGood[n]:
                             if n == 0:
                                 self.setFormat(xPos, xLen, self._hStyles["keyword"])
@@ -285,8 +293,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                                 self.setFormat(xPos, xLen, self._hStyles["value"])
                         else:
                             kwFmt = self.format(xPos)
-                            kwFmt.setUnderlineColor(SHARED.theme.colError)
-                            kwFmt.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
+                            kwFmt.merge(self._hStyles["codeinval"])
                             self.setFormat(xPos, xLen, kwFmt)
 
             # We never want to run the spell checker on keyword/values,
@@ -369,7 +376,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             for xPos, xLen in data.spellCheck(text):
                 for x in range(xPos, xPos+xLen):
                     spFmt = self.format(x)
-                    spFmt.merge(self._hStyles["codeinval"])
+                    spFmt.merge(self._spellErr)
                     self.setFormat(x, 1, spFmt)
 
         return
