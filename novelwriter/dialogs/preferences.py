@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtGui import QCloseEvent, QColor, QFont, QKeyEvent, QKeySequence, QPalette
+from PyQt5.QtGui import QCloseEvent, QFont, QKeyEvent, QKeySequence, QPalette
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractButton, QComboBox, QCompleter, QDialog, QDialogButtonBox,
@@ -62,7 +62,7 @@ class GuiPreferences(QDialog):
         font.setPointSizeF(1.25*SHARED.theme.fontPointSize)
 
         palette = self.palette()
-        palette.setColor(QPalette.ColorRole.WindowText, QColor(*SHARED.theme.helpText))
+        palette.setColor(QPalette.ColorRole.WindowText, SHARED.theme.helpText)
 
         self.titleLabel = QLabel(self.tr("Preferences"), self)
         self.titleLabel.setFont(font)

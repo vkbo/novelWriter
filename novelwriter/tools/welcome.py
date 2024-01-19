@@ -339,7 +339,7 @@ class _ProjectListItem(QStyledItemDelegate):
 
         self._dFont = qApp.font()
         self._dFont.setPointSizeF(fPt)
-        self._dPen = QPen(QColor(*SHARED.theme.helpText))
+        self._dPen = QPen(SHARED.theme.helpText)
 
         self._icon = SHARED.theme.getPixmap("proj_nwx", (iPx, iPx))
 

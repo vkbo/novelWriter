@@ -27,9 +27,7 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt5.QtGui import (
-    QColor, QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
-)
+from PyQt5.QtGui import QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from PyQt5.QtCore import QEvent, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractButton, QAbstractItemView, QComboBox, QDialog, QDialogButtonBox,
@@ -862,9 +860,9 @@ class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
     def __init__(self, document: QTextDocument) -> None:
         super().__init__(document)
         self._fmtSymbol = QTextCharFormat()
-        self._fmtSymbol.setForeground(QColor(*SHARED.theme.colHead))
+        self._fmtSymbol.setForeground(SHARED.theme.colHead)
         self._fmtFormat = QTextCharFormat()
-        self._fmtFormat.setForeground(QColor(*SHARED.theme.colEmph))
+        self._fmtFormat.setForeground(SHARED.theme.colEmph)
         return
 
     def highlightBlock(self, text: str) -> None:
