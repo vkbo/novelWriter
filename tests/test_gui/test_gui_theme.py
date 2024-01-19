@@ -89,11 +89,21 @@ def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
 
     parser = NWConfigParser()
     parser["Palette"] = {
-        "colour1": "100, 150, 200",
-        "colour2": "100, 150, 200, 250",
-        "colour3": "250, 250",
-        "colour4": "-10, 127, 300",
+        "colour1": "100, 150, 200",            # Valid
+        "colour2": "100, 150, 200, 250",       # With alpha
+        "colour3": "100, 150, 200, 250, 300",  # Too many values
+        "colour4": "250, 250",                 # Missing blue
+        "colour5": "-10, 127, 300",            # Invalid red and blue
+        "colour6": "bob, 127, 255",            # Invalid red
     }
+
+    # Test the parser for several valid and invalid values
+    assert mainTheme._parseColour(parser, "Palette", "colour1").getRgb() == (100, 150, 200, 255)
+    assert mainTheme._parseColour(parser, "Palette", "colour2").getRgb() == (100, 150, 200, 250)
+    assert mainTheme._parseColour(parser, "Palette", "colour3").getRgb() == (100, 150, 200, 250)
+    assert mainTheme._parseColour(parser, "Palette", "colour4").getRgb() == (250, 250, 0, 255)
+    assert mainTheme._parseColour(parser, "Palette", "colour5").getRgb() == (0, 0, 0, 0)
+    assert mainTheme._parseColour(parser, "Palette", "colour6").getRgb() == (0, 127, 255, 255)
 
     # The palette should load with the parsed values
     mainTheme._setPalette(parser, "Palette", "colour1", QPalette.Window)
@@ -101,10 +111,16 @@ def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
     mainTheme._setPalette(parser, "Palette", "colour2", QPalette.Window)
     assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (100, 150, 200, 250)
     mainTheme._setPalette(parser, "Palette", "colour3", QPalette.Window)
-    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (250, 250, 0, 255)
+    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (100, 150, 200, 250)
     mainTheme._setPalette(parser, "Palette", "colour4", QPalette.Window)
-    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (0, 0, 0, 0)
+    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (250, 250, 0, 255)
     mainTheme._setPalette(parser, "Palette", "colour5", QPalette.Window)
+    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (0, 0, 0, 0)
+    mainTheme._setPalette(parser, "Palette", "colour6", QPalette.Window)
+    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (0, 127, 255, 255)
+
+    # Non-existing value should return default colour
+    mainTheme._setPalette(parser, "Palette", "stuff", QPalette.Window)
     assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (0, 0, 0, 255)
 
     # qtbot.stop()
