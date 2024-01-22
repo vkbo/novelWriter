@@ -26,11 +26,11 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtGui import QCloseEvent, QFont, QKeyEvent, QKeySequence, QPalette
+from PyQt5.QtGui import QCloseEvent, QFont, QKeyEvent, QKeySequence
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractButton, QComboBox, QCompleter, QDialog, QDialogButtonBox,
-    QDoubleSpinBox, QFileDialog, QFontDialog, QHBoxLayout, QLabel, QLineEdit,
+    QDoubleSpinBox, QFileDialog, QFontDialog, QHBoxLayout, QLineEdit,
     QPushButton, QSpinBox, QToolButton, QVBoxLayout, QWidget, qApp
 )
 
@@ -38,7 +38,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwConst, nwUnicode
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.extensions.configlayout import NScrollableForm
+from novelwriter.extensions.configlayout import NColourLabel, NScrollableForm
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 
 logger = logging.getLogger(__name__)
@@ -58,15 +58,9 @@ class GuiPreferences(QDialog):
         self.resize(*CONFIG.preferencesWinSize)
 
         # Title
-        font = self.font()
-        font.setPointSizeF(1.25*SHARED.theme.fontPointSize)
-
-        palette = self.palette()
-        palette.setColor(QPalette.ColorRole.WindowText, SHARED.theme.helpText)
-
-        self.titleLabel = QLabel(self.tr("Preferences"), self)
-        self.titleLabel.setFont(font)
-        self.titleLabel.setPalette(palette)
+        self.titleLabel = NColourLabel(
+            self.tr("Preferences"), SHARED.theme.helpText, parent=self, scale=1.25
+        )
         self.titleLabel.setIndent(CONFIG.pxInt(4))
 
         # SideBar

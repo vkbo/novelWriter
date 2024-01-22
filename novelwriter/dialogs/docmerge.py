@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.extensions.configlayout import NHelpLabel
+from novelwriter.extensions.configlayout import NColourLabel
 
 logger = logging.getLogger(__name__)
 
@@ -54,9 +54,10 @@ class GuiDocMerge(QDialog):
         self._data = {}
 
         self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Documents to Merge")))
-        self.helpLabel = NHelpLabel(self.tr(
-            "Drag and drop items to change the order, or uncheck to exclude."
-        ), SHARED.theme.helpText)
+        self.helpLabel = NColourLabel(
+            self.tr("Drag and drop items to change the order, or uncheck to exclude."),
+            SHARED.theme.helpText, parent=self, wrap=True
+        )
 
         iPx = SHARED.theme.baseIconSize
         hSp = CONFIG.pxInt(12)
