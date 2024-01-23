@@ -73,9 +73,16 @@ def extractVersion(beQuiet=False):
     return numVers, hexVers, relDate
 
 
-def compactVersion(version):
-    """Make the version number more compact."""
-    return version.replace("-alpha", "a").replace("-beta", "b").replace("-rc", "rc")
+def stripVersion(version: str) -> str:
+    """Strip the pre-release part from a version number."""
+    if "a" in version:
+        return version.partition("a")[0]
+    elif "b" in version:
+        return version.partition("b")[0]
+    elif "rc" in version:
+        return version.partition("rc")[0]
+    else:
+        return version
 
 
 def sysCall(callArgs, cwd=None):
@@ -392,16 +399,16 @@ def buildQtI18nTS(sysArgs):
 
 
 ##
-#  Generage MacOS PList
+#  Generate MacOS PList
 ##
 
 def genMacOSPlist():
     """Set necessary values for .plist file for MacOS build."""
     outDir = "setup/macos"
-    numVers = extractVersion()[0].partition("-")[0]
+    numVers = stripVersion(extractVersion()[0])
     copyrightYear = datetime.datetime.now().year
 
-    # These keys are no longer used but are present for compatability
+    # These keys are no longer used but are present for compatibility
     pkgVersMaj, pkgVersMin = numVers.split(".")[:2]
 
     plistXML = readFile(f"{outDir}/Info.plist.template").format(
@@ -598,8 +605,7 @@ def makeMinimalPackage(targetOS):
     # Build Minimal Zip
     # =================
 
-    numVers, _, _ = extractVersion()
-    pkgVers = compactVersion(numVers)
+    pkgVers, _, _ = extractVersion()
     zipFile = f"novelwriter-{pkgVers}-minimal{targName}.zip"
     outFile = os.path.join(bldDir, zipFile)
     if os.path.isfile(outFile):
@@ -691,8 +697,7 @@ def makeDebianPackage(signKey=None, sourceBuild=False, distName="unstable", buil
     # Version Info
     # ============
 
-    numVers, hexVers, relDate = extractVersion()
-    pkgVers = compactVersion(numVers)
+    pkgVers, hexVers, relDate = extractVersion()
     relDate = datetime.datetime.strptime(relDate, "%Y-%m-%d")
     pkgDate = email.utils.format_datetime(relDate.replace(hour=12, tzinfo=None))
     print("")
@@ -968,8 +973,7 @@ def makeAppImage(sysArgs):
     # Version Info
     # ============
 
-    numVers, _, relDate = extractVersion()
-    pkgVers = compactVersion(numVers)
+    pkgVers, _, relDate = extractVersion()
     relDate = datetime.datetime.strptime(relDate, "%Y-%m-%d")
     print("")
 
@@ -1856,7 +1860,7 @@ if __name__ == "__main__":
         "",
         "    help           Print the help message.",
         "    pip            Install all package dependencies for novelWriter using pip.",
-        "    version        Print the novelWriter version. Add -c for short version.",
+        "    version        Print the novelWriter version.",
         "    build-clean    Will attempt to delete 'build' and 'dist' folders.",
         "",
         "Additional Builds:",
@@ -1912,12 +1916,7 @@ if __name__ == "__main__":
 
     if "version" in sys.argv:
         sys.argv.remove("version")
-        numVers, _, _ = extractVersion(beQuiet=True)
-        if "-c" in sys.argv:
-            sys.argv.remove("-c")
-            print(compactVersion(numVers), end=None)
-        else:
-            print(numVers, end=None)
+        print(extractVersion(beQuiet=True)[0], end=None)
         sys.exit(0)
 
     if "pip" in sys.argv:
@@ -1996,7 +1995,7 @@ if __name__ == "__main__":
     if "build-appimage" in sys.argv:
         sys.argv.remove("build-appimage")
         if hostOS == OS_LINUX:
-            sys.argv = makeAppImage(sys.argv)  # Build appimage and prune its args
+            sys.argv = makeAppImage(sys.argv)
         else:
             print("ERROR: Command 'build-appimage' can only be used on Linux")
             sys.exit(1)
