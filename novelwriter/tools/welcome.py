@@ -42,7 +42,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED, __version__, __date__
 from novelwriter.enum import nwItemClass
-from novelwriter.common import formatInt, makeFileNameSafe
+from novelwriter.common import formatInt, formatVersion, makeFileNameSafe
 from novelwriter.constants import nwUnicode
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.extensions.switch import NSwitch
@@ -87,7 +87,8 @@ class GuiWelcome(QDialog):
         self.nwLabel.setPixmap(self.nwImage)
 
         self.nwInfo = QLabel(self.tr("Version {0} {1} Released on {2}").format(
-            __version__, nwUnicode.U_ENDASH, datetime.strptime(__date__, "%Y-%m-%d").strftime("%x")
+            formatVersion(__version__), nwUnicode.U_ENDASH,
+            datetime.strptime(__date__, "%Y-%m-%d").strftime("%x")
         ))
 
         self.tabOpen = _OpenProjectPage(self)
