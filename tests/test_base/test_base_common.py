@@ -35,7 +35,7 @@ from PyQt5.QtCore import QUrl
 from novelwriter.common import (
     checkBool, checkFloat, checkHandle, checkInt, checkIntTuple, checkPath,
     checkString, checkStringNone, checkUuid, formatInt, formatTime,
-    formatTimeStamp, fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass,
+    formatTimeStamp, formatVersion, fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass,
     isItemLayout, isItemType, isTitleTag, jsonEncode, makeFileNameSafe, minmax,
     numberToRoman, NWConfigParser, openExternalPath, readTextFile, simplified,
     transferCase, xmlIndent, yesNo
@@ -346,6 +346,17 @@ def testBaseCommon_formatTime():
     assert formatTime(360000) == "4-04:00:00"
 
 # END Test testBaseCommon_formatTime
+
+
+@pytest.mark.base
+def testBaseCommon_formatVersion():
+    """Test the formatVersion function."""
+    assert formatVersion("1.2") == "1.2"
+    assert formatVersion("1.2a1") == "1.2 Alpha 1"
+    assert formatVersion("1.2b2") == "1.2 Beta 2"
+    assert formatVersion("1.2rc3") == "1.2 RC 3"
+
+# END Test testBaseCommon_formatVersion
 
 
 @pytest.mark.base
