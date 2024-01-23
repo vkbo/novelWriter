@@ -689,13 +689,13 @@ def makeDebianPackage(signKey: str | None = None, sourceBuild: bool = False,
     # Version Info
     # ============
 
-    pkgVers, hexVers, relDate = extractVersion()
+    numVers, hexVers, relDate = extractVersion()
     relDate = datetime.datetime.strptime(relDate, "%Y-%m-%d")
     pkgDate = email.utils.format_datetime(relDate.replace(hour=12, tzinfo=None))
     print("")
 
-    if buildName:
-        pkgVers = f"{pkgVers}{buildName}"
+    pkgVers = numVers.replace("a", "~a").replace("b", "~b").replace("rc", "~rc")
+    pkgVers = f"{pkgVers}+{buildName}" if buildName else pkgVers
 
     # Set Up Folder
     # =============
@@ -836,11 +836,7 @@ def makeDebianPackage(signKey: str | None = None, sourceBuild: bool = False,
     print("")
 
     if sourceBuild:
-        if hexVers[-2] == "f":
-            ppaName = "novelwriter"
-        else:
-            ppaName = "novelwriter-pre"
-
+        ppaName = "novelwriter" if hexVers[-2] == "f" else "novelwriter-pre"
         return f"dput {ppaName}/{distName} {bldDir}/{bldPkg}_source.changes"
 
     return ""
@@ -850,14 +846,14 @@ def makeDebianPackage(signKey: str | None = None, sourceBuild: bool = False,
 #  Make Launchpad Package (build-ubuntu)
 ##
 
-def makeForLaunchpad(sign: bool = False, first: bool = False, snapshot: bool = False) -> None:
+def makeForLaunchpad(doSign: bool = False, isFirst: bool = False) -> None:
     """Wrapper for building Debian packages for Launchpad."""
     print("")
     print("Launchpad Packages")
     print("==================")
     print("")
 
-    if first or snapshot:
+    if isFirst:
         bldNum = "0"
     else:
         bldNum = input("Build number [0]: ")
@@ -871,18 +867,13 @@ def makeForLaunchpad(sign: bool = False, first: bool = False, snapshot: bool = F
         ("23.10", "mantic"),
     ]
 
-    tStamp = datetime.datetime.now().strftime("%Y%m%d~%H%M%S")
-    if snapshot:
-        print(f"Building Ununtu SNAPSHOT~{tStamp} for:")
-        print("")
-    else:
-        print("Building Ubuntu packages for:")
-        print("")
+    print("Building Ubuntu packages for:")
+    print("")
     for distNum, codeName in distLoop:
         print(f" * Ubuntu {distNum} {codeName.title()}")
     print("")
 
-    if sign:
+    if doSign:
         signKey = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
     else:
         signKey = None
@@ -892,11 +883,7 @@ def makeForLaunchpad(sign: bool = False, first: bool = False, snapshot: bool = F
 
     dputCmd = []
     for distNum, codeName in distLoop:
-        if snapshot:
-            buildName = f"+SNAPSHOT~{tStamp}~ubuntu{distNum}.0"
-        else:
-            buildName = f"~ubuntu{distNum}.{bldNum}"
-
+        buildName = f"ubuntu{distNum}.{bldNum}"
         dCmd = makeDebianPackage(
             signKey=signKey,
             sourceBuild=True,
@@ -1830,13 +1817,6 @@ if __name__ == "__main__":
     else:
         isFirstBuild = False
 
-    # Build snapshot
-    if "--snapshot" in sysArgs:
-        sysArgs.remove("--snapshot")
-        isSnapshot = True
-    else:
-        isSnapshot = False
-
     helpMsg = [
         "",
         "novelWriter Setup Tool",
@@ -1878,7 +1858,6 @@ if __name__ == "__main__":
         "                   sign package.",
         "    build-ubuntu   Build a .deb packages Launchpad. Add --sign to ",
         "                   sign package. Add --first to set build number to 0.",
-        "                   Add --snapshot to make a snapshot package.",
         "    build-win-exe  Build a setup.exe file with Python embedded for Windows.",
         "                   The package must be built from a minimal windows zip file.",
         "    build-appimage Build an AppImage. Argument --linux-tag defaults to",
@@ -1976,7 +1955,7 @@ if __name__ == "__main__":
     if "build-ubuntu" in sysArgs:
         sysArgs.remove("build-ubuntu")
         if hostOS == OS_LINUX:
-            makeForLaunchpad(sign=doSign, first=isFirstBuild, snapshot=isSnapshot)
+            makeForLaunchpad(doSign=doSign, isFirst=isFirstBuild)
         else:
             print("ERROR: Command 'build-ubuntu' can only be used on Linux")
             sys.exit(1)
