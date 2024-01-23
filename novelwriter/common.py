@@ -250,6 +250,11 @@ def formatTime(t: int) -> str:
     return "ERROR"
 
 
+def formatVersion(value: str) -> str:
+    """Format a version number into a more human readable form."""
+    return value.lower().replace("a", " Alpha ").replace("b", " Beta ").replace("rc", " RC ")
+
+
 # =============================================================================================== #
 #  String Functions
 # =============================================================================================== #

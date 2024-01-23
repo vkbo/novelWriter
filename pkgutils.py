@@ -23,6 +23,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 import os
 import sys
@@ -42,7 +43,7 @@ OS_DARWIN = 3
 #  Utilities
 # =============================================================================================== #
 
-def extractVersion(beQuiet=False):
+def extractVersion(beQuiet: bool = False) -> tuple[str, str, str]:
     """Extract the novelWriter version number without having to import
     anything else from the main package.
     """
@@ -73,34 +74,31 @@ def extractVersion(beQuiet=False):
     return numVers, hexVers, relDate
 
 
-def compactVersion(version):
-    """Make the version number more compact."""
-    return version.replace("-alpha", "a").replace("-beta", "b").replace("-rc", "rc")
+def stripVersion(version: str) -> str:
+    """Strip the pre-release part from a version number."""
+    if "a" in version:
+        return version.partition("a")[0]
+    elif "b" in version:
+        return version.partition("b")[0]
+    elif "rc" in version:
+        return version.partition("rc")[0]
+    else:
+        return version
 
 
-def sysCall(callArgs, cwd=None):
-    """Wrapper function for system calls."""
-    sysP = subprocess.Popen(
-        callArgs, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-        shell=True, cwd=cwd
-    )
-    stdOut, stdErr = sysP.communicate()
-    return stdOut.decode("utf-8"), stdErr.decode("utf-8"), sysP.returncode
-
-
-def readFile(fileName):
+def readFile(fileName: str) -> str:
     """Read an entire file and return as a string."""
     with open(fileName, mode="r", encoding="utf-8") as inFile:
         return inFile.read()
 
 
-def writeFile(fileName, writeText):
+def writeFile(fileName: str, writeText: str) -> None:
     """Write string to file."""
     with open(fileName, mode="w+", encoding="utf-8") as outFile:
         outFile.write(writeText)
 
 
-def toUpload(srcPath, dstName=None):
+def toUpload(srcPath: str, dstName: str | None = None) -> None:
     """Copy a file produced by one of the build functions to the upload
     directory. The file can optionally be given a new name.
     """
@@ -113,7 +111,7 @@ def toUpload(srcPath, dstName=None):
     return
 
 
-def makeCheckSum(sumFile, cwd=None):
+def makeCheckSum(sumFile: str, cwd: str | None = None) -> str:
     """Create a SHA256 checksum file."""
     try:
         if cwd is None:
@@ -139,7 +137,7 @@ def makeCheckSum(sumFile, cwd=None):
 # Package Installer (pip)
 ##
 
-def installPackages(hostOS):
+def installPackages(hostOS: int) -> None:
     """Install package dependencies both for this script and for running
     novelWriter itself.
     """
@@ -172,7 +170,7 @@ def installPackages(hostOS):
 #  Clean Build and Dist Folders (build-clean)
 ##
 
-def cleanBuildDirs():
+def cleanBuildDirs() -> None:
     """Recursively delete the 'build' and 'dist' folders."""
     print("")
     print("Cleaning up build environment ...")
@@ -208,7 +206,7 @@ def cleanBuildDirs():
 #  Build PDF Manual (manual)
 ##
 
-def buildPdfManual():
+def buildPdfManual() -> None:
     """This function will build the documentation as manual.pdf."""
     print("")
     print("Building PDF Manual")
@@ -262,7 +260,7 @@ def buildPdfManual():
 #  Qt Linguist QM Builder (qtlrelease)
 ##
 
-def buildQtI18n():
+def buildQtI18n() -> None:
     """Build the lang.qm files for Qt Linguist."""
     print("")
     print("Building Qt Localisation Files")
@@ -315,7 +313,7 @@ def buildQtI18n():
 #  Qt Linguist TS Builder (qtlupdate)
 ##
 
-def buildQtI18nTS(sysArgs):
+def buildQtI18nTS(sysArgs: list[str]) -> None:
     """Build the lang.ts files for Qt Linguist."""
     print("")
     print("Building Qt Translation Files")
@@ -392,16 +390,16 @@ def buildQtI18nTS(sysArgs):
 
 
 ##
-#  Generage MacOS PList
+#  Generate MacOS PList
 ##
 
-def genMacOSPlist():
+def genMacOSPlist() -> None:
     """Set necessary values for .plist file for MacOS build."""
     outDir = "setup/macos"
-    numVers = extractVersion()[0].partition("-")[0]
+    numVers = stripVersion(extractVersion()[0])
     copyrightYear = datetime.datetime.now().year
 
-    # These keys are no longer used but are present for compatability
+    # These keys are no longer used but are present for compatibility
     pkgVersMaj, pkgVersMin = numVers.split(".")[:2]
 
     plistXML = readFile(f"{outDir}/Info.plist.template").format(
@@ -422,7 +420,7 @@ def genMacOSPlist():
 #  Sample Project ZIP File Builder (sample)
 ##
 
-def buildSampleZip():
+def buildSampleZip() -> None:
     """Bundle the sample project into a single zip file to be saved into
     the novelwriter/assets folder for further bundling into builds.
     """
@@ -459,7 +457,7 @@ def buildSampleZip():
     return
 
 
-def cleanBuiltAssets():
+def cleanBuiltAssets() -> None:
     """Remove assets built by this script."""
     print("")
     print("Removing Built Assets")
@@ -488,7 +486,7 @@ def cleanBuiltAssets():
     return
 
 
-def checkAssetsExist():
+def checkAssetsExist() -> bool:
     """Check that the necessary compiled assets exist ahead of a build.
     """
     hasSample = False
@@ -523,7 +521,7 @@ def checkAssetsExist():
 #  Import Translations (import-i18n)
 ##
 
-def importI18nUpdates(sysArgs):
+def importI18nUpdates(sysArgs: list[str]) -> None:
     """Import new translation files from a zip file."""
     print("")
     print("Import Updated Translations")
@@ -563,7 +561,7 @@ def importI18nUpdates(sysArgs):
 #  Make Minimal Package (minimal-zip)
 ##
 
-def makeMinimalPackage(targetOS):
+def makeMinimalPackage(targetOS: int) -> None:
     """Pack the core source file in a single zip file."""
     from zipfile import ZipFile, ZIP_DEFLATED
 
@@ -598,8 +596,7 @@ def makeMinimalPackage(targetOS):
     # Build Minimal Zip
     # =================
 
-    numVers, _, _ = extractVersion()
-    pkgVers = compactVersion(numVers)
+    pkgVers, _, _ = extractVersion()
     zipFile = f"novelwriter-{pkgVers}-minimal{targName}.zip"
     outFile = os.path.join(bldDir, zipFile)
     if os.path.isfile(outFile):
@@ -679,7 +676,8 @@ def makeMinimalPackage(targetOS):
 #  Make Debian Package (build-deb)
 ##
 
-def makeDebianPackage(signKey=None, sourceBuild=False, distName="unstable", buildName=""):
+def makeDebianPackage(signKey: str | None = None, sourceBuild: bool = False,
+                      distName: str = "unstable", buildName: str = "") -> str:
     """Build a Debian package."""
     print("")
     print("Build Debian Package")
@@ -692,13 +690,12 @@ def makeDebianPackage(signKey=None, sourceBuild=False, distName="unstable", buil
     # ============
 
     numVers, hexVers, relDate = extractVersion()
-    pkgVers = compactVersion(numVers)
     relDate = datetime.datetime.strptime(relDate, "%Y-%m-%d")
     pkgDate = email.utils.format_datetime(relDate.replace(hour=12, tzinfo=None))
     print("")
 
-    if buildName:
-        pkgVers = f"{pkgVers}{buildName}"
+    pkgVers = numVers.replace("a", "~a").replace("b", "~b").replace("rc", "~rc")
+    pkgVers = f"{pkgVers}+{buildName}" if buildName else pkgVers
 
     # Set Up Folder
     # =============
@@ -839,11 +836,7 @@ def makeDebianPackage(signKey=None, sourceBuild=False, distName="unstable", buil
     print("")
 
     if sourceBuild:
-        if hexVers[-2] == "f":
-            ppaName = "novelwriter"
-        else:
-            ppaName = "novelwriter-pre"
-
+        ppaName = "novelwriter" if hexVers[-2] == "f" else "novelwriter-pre"
         return f"dput {ppaName}/{distName} {bldDir}/{bldPkg}_source.changes"
 
     return ""
@@ -853,14 +846,14 @@ def makeDebianPackage(signKey=None, sourceBuild=False, distName="unstable", buil
 #  Make Launchpad Package (build-ubuntu)
 ##
 
-def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
+def makeForLaunchpad(doSign: bool = False, isFirst: bool = False) -> None:
     """Wrapper for building Debian packages for Launchpad."""
     print("")
     print("Launchpad Packages")
     print("==================")
     print("")
 
-    if isFirst or isSnapshot:
+    if isFirst:
         bldNum = "0"
     else:
         bldNum = input("Build number [0]: ")
@@ -874,13 +867,8 @@ def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
         ("23.10", "mantic"),
     ]
 
-    tStamp = datetime.datetime.now().strftime("%Y%m%d~%H%M%S")
-    if isSnapshot:
-        print(f"Building Ununtu SNAPSHOT~{tStamp} for:")
-        print("")
-    else:
-        print("Building Ubuntu packages for:")
-        print("")
+    print("Building Ubuntu packages for:")
+    print("")
     for distNum, codeName in distLoop:
         print(f" * Ubuntu {distNum} {codeName.title()}")
     print("")
@@ -895,11 +883,7 @@ def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
 
     dputCmd = []
     for distNum, codeName in distLoop:
-        if isSnapshot:
-            buildName = f"+SNAPSHOT~{tStamp}~ubuntu{distNum}.0"
-        else:
-            buildName = f"~ubuntu{distNum}.{bldNum}"
-
+        buildName = f"ubuntu{distNum}.{bldNum}"
         dCmd = makeDebianPackage(
             signKey=signKey,
             sourceBuild=True,
@@ -922,7 +906,7 @@ def makeForLaunchpad(doSign=False, isFirst=False, isSnapshot=False):
 #  Make AppImage (build-appimage)
 ##
 
-def makeAppImage(sysArgs):
+def makeAppImage(sysArgs: list[str]) -> list[str]:
     """Build an AppImage."""
     import glob
     import argparse
@@ -968,8 +952,7 @@ def makeAppImage(sysArgs):
     # Version Info
     # ============
 
-    numVers, _, relDate = extractVersion()
-    pkgVers = compactVersion(numVers)
+    pkgVers, _, relDate = extractVersion()
     relDate = datetime.datetime.strptime(relDate, "%Y-%m-%d")
     print("")
 
@@ -1139,7 +1122,7 @@ def makeAppImage(sysArgs):
 #  Make Windows Setup EXE (build-win-exe)
 ##
 
-def makeWindowsEmbedded(sysArgs):
+def makeWindowsEmbedded(sysArgs: list[str]) -> None:
     """Set up a package with embedded Python and dependencies for
     Windows installation.
     """
@@ -1371,7 +1354,7 @@ def makeWindowsEmbedded(sysArgs):
 #  XDG Installation (xdg-install)
 ##
 
-def xdgInstall():
+def xdgInstall() -> None:
     """Will attempt to install icons and make a launcher."""
     print("")
     print("XDG Install")
@@ -1507,7 +1490,7 @@ def xdgInstall():
 #  XDG Uninstallation (xdg-uninstall)
 ##
 
-def xdgUninstall():
+def xdgUninstall() -> None:
     """Will attempt to uninstall icons and the launcher."""
     print("")
     print("XDG Uninstall")
@@ -1577,7 +1560,7 @@ def xdgUninstall():
 #  WIN Installation (win-install)
 ##
 
-def winInstall():
+def winInstall() -> None:
     """Will attempt to install icons and make a launcher for Windows."""
     import winreg
     try:
@@ -1704,7 +1687,7 @@ def winInstall():
 #  WIN Uninstallation (win-uninstall)
 ##
 
-def winUninstall():
+def winUninstall() -> None:
     """Will attempt to uninstall icons previously installed."""
     import winreg
     try:
@@ -1805,39 +1788,34 @@ if __name__ == "__main__":
     else:
         hostOS = OS_NONE
 
+    sysArgs = sys.argv.copy()
+
     # Set Target OS
-    if "--target-linux" in sys.argv:
-        sys.argv.remove("--target-linux")
+    if "--target-linux" in sysArgs:
+        sysArgs.remove("--target-linux")
         targetOS = OS_LINUX
-    elif "--target-darwin" in sys.argv:
-        sys.argv.remove("--target-darwin")
+    elif "--target-darwin" in sysArgs:
+        sysArgs.remove("--target-darwin")
         targetOS = OS_DARWIN
-    elif "--target-win" in sys.argv:
-        sys.argv.remove("--target-win")
+    elif "--target-win" in sysArgs:
+        sysArgs.remove("--target-win")
         targetOS = OS_WIN
     else:
         targetOS = hostOS
 
     # Sign package
-    if "--sign" in sys.argv:
-        sys.argv.remove("--sign")
+    if "--sign" in sysArgs:
+        sysArgs.remove("--sign")
         doSign = True
     else:
         doSign = False
 
     # First build
-    if "--first" in sys.argv:
-        sys.argv.remove("--first")
+    if "--first" in sysArgs:
+        sysArgs.remove("--first")
         isFirstBuild = True
     else:
         isFirstBuild = False
-
-    # Build snapshot
-    if "--snapshot" in sys.argv:
-        sys.argv.remove("--snapshot")
-        isSnapshot = True
-    else:
-        isSnapshot = False
 
     helpMsg = [
         "",
@@ -1856,7 +1834,7 @@ if __name__ == "__main__":
         "",
         "    help           Print the help message.",
         "    pip            Install all package dependencies for novelWriter using pip.",
-        "    version        Print the novelWriter version. Add -c for short version.",
+        "    version        Print the novelWriter version.",
         "    build-clean    Will attempt to delete 'build' and 'dist' folders.",
         "",
         "Additional Builds:",
@@ -1880,7 +1858,6 @@ if __name__ == "__main__":
         "                   sign package.",
         "    build-ubuntu   Build a .deb packages Launchpad. Add --sign to ",
         "                   sign package. Add --first to set build number to 0.",
-        "                   Add --snapshot to make a snapshot package.",
         "    build-win-exe  Build a setup.exe file with Python embedded for Windows.",
         "                   The package must be built from a minimal windows zip file.",
         "    build-appimage Build an AppImage. Argument --linux-tag defaults to",
@@ -1905,71 +1882,66 @@ if __name__ == "__main__":
     # General
     # =======
 
-    if "help" in sys.argv:
-        sys.argv.remove("help")
+    if "help" in sysArgs:
+        sysArgs.remove("help")
         print("\n".join(helpMsg))
         sys.exit(0)
 
-    if "version" in sys.argv:
-        sys.argv.remove("version")
-        numVers, _, _ = extractVersion(beQuiet=True)
-        if "-c" in sys.argv:
-            sys.argv.remove("-c")
-            print(compactVersion(numVers), end=None)
-        else:
-            print(numVers, end=None)
+    if "version" in sysArgs:
+        sysArgs.remove("version")
+        print(extractVersion(beQuiet=True)[0], end=None)
         sys.exit(0)
 
-    if "pip" in sys.argv:
-        sys.argv.remove("pip")
+    if "pip" in sysArgs:
+        sysArgs.remove("pip")
         installPackages(hostOS)
 
-    if "build-clean" in sys.argv:
-        sys.argv.remove("build-clean")
+    if "build-clean" in sysArgs:
+        sysArgs.remove("build-clean")
         cleanBuildDirs()
 
     # Additional Builds
     # =================
 
-    if "manual" in sys.argv:
-        sys.argv.remove("manual")
+    if "manual" in sysArgs:
+        sysArgs.remove("manual")
         buildPdfManual()
 
-    if "qtlrelease" in sys.argv:
-        sys.argv.remove("qtlrelease")
+    if "qtlrelease" in sysArgs:
+        sysArgs.remove("qtlrelease")
         buildQtI18n()
 
-    if "qtlupdate" in sys.argv:
-        sys.argv.remove("qtlupdate")
-        buildQtI18nTS(sys.argv)
+    if "qtlupdate" in sysArgs:
+        sysArgs.remove("qtlupdate")
+        buildQtI18nTS(sysArgs)
         sys.exit(0)  # Don't continue execution
 
-    if "sample" in sys.argv:
-        sys.argv.remove("sample")
+    if "sample" in sysArgs:
+        sysArgs.remove("sample")
         buildSampleZip()
 
-    if "clean-assets" in sys.argv:
-        sys.argv.remove("clean-assets")
+    if "clean-assets" in sysArgs:
+        sysArgs.remove("clean-assets")
         cleanBuiltAssets()
 
-    if "gen-plist" in sys.argv:
-        sys.argv.remove("gen-plist")
+    if "gen-plist" in sysArgs:
+        sysArgs.remove("gen-plist")
         genMacOSPlist()
 
     # Python Packaging
     # ================
 
-    if "import-i18n" in sys.argv:
-        sys.argv.remove("import-i18n")
-        importI18nUpdates(sys.argv)
+    if "import-i18n" in sysArgs:
+        sysArgs.remove("import-i18n")
+        importI18nUpdates(sysArgs)
         sys.exit(0)  # Don't continue execution
 
-    if "minimal-zip" in sys.argv:
-        sys.argv.remove("minimal-zip")
+    if "minimal-zip" in sysArgs:
+        sysArgs.remove("minimal-zip")
         makeMinimalPackage(targetOS)
 
-    if "build-deb" in sys.argv:
-        sys.argv.remove("build-deb")
+    if "build-deb" in sysArgs:
+        sysArgs.remove("build-deb")
         if hostOS == OS_LINUX:
             if doSign:
                 signKey = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
@@ -1980,23 +1952,23 @@ if __name__ == "__main__":
             print("ERROR: Command 'build-deb' can only be used on Linux")
             sys.exit(1)
 
-    if "build-ubuntu" in sys.argv:
-        sys.argv.remove("build-ubuntu")
+    if "build-ubuntu" in sysArgs:
+        sysArgs.remove("build-ubuntu")
         if hostOS == OS_LINUX:
-            makeForLaunchpad(doSign=doSign, isFirst=isFirstBuild, isSnapshot=isSnapshot)
+            makeForLaunchpad(doSign=doSign, isFirst=isFirstBuild)
         else:
             print("ERROR: Command 'build-ubuntu' can only be used on Linux")
             sys.exit(1)
 
-    if "build-win-exe" in sys.argv:
-        sys.argv.remove("build-win-exe")
-        makeWindowsEmbedded(sys.argv)
+    if "build-win-exe" in sysArgs:
+        sysArgs.remove("build-win-exe")
+        makeWindowsEmbedded(sysArgs)
         sys.exit(0)  # Don't continue execution
 
-    if "build-appimage" in sys.argv:
-        sys.argv.remove("build-appimage")
+    if "build-appimage" in sysArgs:
+        sysArgs.remove("build-appimage")
         if hostOS == OS_LINUX:
-            sys.argv = makeAppImage(sys.argv)  # Build appimage and prune its args
+            sysArgs = makeAppImage(sysArgs)
         else:
             print("ERROR: Command 'build-appimage' can only be used on Linux")
             sys.exit(1)
@@ -2004,32 +1976,32 @@ if __name__ == "__main__":
     # General Installers
     # ==================
 
-    if "xdg-install" in sys.argv:
-        sys.argv.remove("xdg-install")
+    if "xdg-install" in sysArgs:
+        sysArgs.remove("xdg-install")
         if hostOS == OS_WIN:
             print("ERROR: Command 'xdg-install' cannot be used on Windows")
             sys.exit(1)
         else:
             xdgInstall()
 
-    if "xdg-uninstall" in sys.argv:
-        sys.argv.remove("xdg-uninstall")
+    if "xdg-uninstall" in sysArgs:
+        sysArgs.remove("xdg-uninstall")
         if hostOS == OS_WIN:
             print("ERROR: Command 'xdg-uninstall' cannot be used on Windows")
             sys.exit(1)
         else:
             xdgUninstall()
 
-    if "win-install" in sys.argv:
-        sys.argv.remove("win-install")
+    if "win-install" in sysArgs:
+        sysArgs.remove("win-install")
         if hostOS == OS_WIN:
             winInstall()
         else:
             print("ERROR: Command 'win-install' can only be used on Windows")
             sys.exit(1)
 
-    if "win-uninstall" in sys.argv:
-        sys.argv.remove("win-uninstall")
+    if "win-uninstall" in sysArgs:
+        sysArgs.remove("win-uninstall")
         if hostOS == OS_WIN:
             winUninstall()
         else:
