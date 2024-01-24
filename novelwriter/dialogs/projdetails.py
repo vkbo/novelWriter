@@ -419,7 +419,7 @@ class GuiProjectDetailsContents(QWidget):
     def updateValues(self) -> None:
         """Populate the tree."""
         self._currentRoot = None
-        self.novelValue.updateList()
+        self.novelValue.refreshNovelList()
         self.novelValue.setHandle(self.novelValue.firstHandle)
         self._prepareData(self.novelValue.firstHandle)
         self._populateTree()

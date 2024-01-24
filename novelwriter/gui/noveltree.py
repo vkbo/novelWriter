@@ -207,9 +207,10 @@ class GuiNovelToolBar(QWidget):
         # Novel Selector
         selFont = self.font()
         selFont.setWeight(QFont.Weight.Bold)
-        self.novelPrefix = self.tr("Outline of {0}")
+
         self.novelValue = NovelSelector(self)
         self.novelValue.setFont(selFont)
+        self.novelValue.setListFormat(self.tr("Outline of {0}"))
         self.novelValue.setMinimumWidth(CONFIG.pxInt(150))
         self.novelValue.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.novelValue.novelSelectionChanged.connect(self.setCurrentRoot)
@@ -294,7 +295,7 @@ class GuiNovelToolBar(QWidget):
             "QComboBox {border-style: none; padding-left: 0;} "
             "QComboBox::drop-down {border-style: none}"
         )
-        self.novelValue.updateList(prefix=self.novelPrefix)
+        self.novelValue.refreshNovelList()
         self.tbNovel.setVisible(self.novelValue.count() > 1)
 
         return
@@ -307,7 +308,7 @@ class GuiNovelToolBar(QWidget):
 
     def buildNovelRootMenu(self) -> None:
         """Build the novel root menu."""
-        self.novelValue.updateList(prefix=self.novelPrefix)
+        self.novelValue.refreshNovelList()
         self.tbNovel.setVisible(self.novelValue.count() > 1)
         return
 

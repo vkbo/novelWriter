@@ -63,11 +63,6 @@ class GuiPreferences(QDialog):
         )
         self.titleLabel.setIndent(CONFIG.pxInt(4))
 
-        # SideBar
-        self.sidebar = NPagedSideBar(self)
-        self.sidebar.setLabelColor(SHARED.theme.helpText)
-        self.sidebar.buttonClicked.connect(self._sidebarClicked)
-
         # Search Box
         self.searchText = QLineEdit(self)
         self.searchText.setPlaceholderText(self.tr("Search"))
@@ -77,10 +72,10 @@ class GuiPreferences(QDialog):
         )
         self.searchAction.triggered.connect(self._gotoSearch)
 
-        self.searchBox = QHBoxLayout()
-        self.searchBox.addWidget(self.titleLabel)
-        self.searchBox.addStretch(1)
-        self.searchBox.addWidget(self.searchText, 1)
+        # SideBar
+        self.sidebar = NPagedSideBar(self)
+        self.sidebar.setLabelColor(SHARED.theme.helpText)
+        self.sidebar.buttonClicked.connect(self._sidebarClicked)
 
         # Form
         self.mainForm = NScrollableForm(self)
@@ -95,6 +90,11 @@ class GuiPreferences(QDialog):
         self.buttonBox.clicked.connect(self._dialogButtonClicked)
 
         # Assemble
+        self.searchBox = QHBoxLayout()
+        self.searchBox.addWidget(self.titleLabel)
+        self.searchBox.addStretch(1)
+        self.searchBox.addWidget(self.searchText, 1)
+
         self.mainBox = QHBoxLayout()
         self.mainBox.addWidget(self.sidebar)
         self.mainBox.addWidget(self.mainForm)

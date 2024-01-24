@@ -3,7 +3,7 @@ novelWriter – Custom Widget: Novel Selector
 ===========================================
 
 File History:
-Created: 2022-11-17 [2.0]
+Created: 2022-11-17 [2.0] NovelSelector
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen
@@ -43,6 +43,8 @@ class NovelSelector(QComboBox):
         super().__init__(parent=parent)
         self._blockSignal = False
         self._firstHandle = None
+        self._includeAll = False
+        self._listFormat = None
         self.currentIndexChanged.connect(self._indexChanged)
         return
 
@@ -74,7 +76,23 @@ class NovelSelector(QComboBox):
         self._blockSignal = False
         return
 
-    def updateList(self, includeAll: bool = False, prefix: str | None = None) -> None:
+    def setIncludeAll(self, value: bool) -> None:
+        """Set flag to add an "All Novel Folders" option."""
+        self._includeAll = value
+        return
+
+    def setListFormat(self, value: str | None) -> None:
+        """Set a format string for the list entries."""
+        if value is None or "{0}" in value:
+            self._listFormat = value
+        return
+
+    ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot()
+    def refreshNovelList(self) -> None:
         """Rebuild the list of novel items."""
         self._blockSignal = True
         self._firstHandle = None
@@ -83,8 +101,8 @@ class NovelSelector(QComboBox):
         icon = SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItemClass.NOVEL])
         handle = self.currentData()
         for tHandle, nwItem in SHARED.project.tree.iterRoots(nwItemClass.NOVEL):
-            if prefix:
-                name = prefix.format(nwItem.itemName)
+            if self._listFormat:
+                name = self._listFormat.format(nwItem.itemName)
                 self.addItem(name, tHandle)
             else:
                 name = nwItem.itemName
@@ -92,7 +110,7 @@ class NovelSelector(QComboBox):
             if self._firstHandle is None:
                 self._firstHandle = tHandle
 
-        if includeAll:
+        if self._includeAll:
             self.insertSeparator(self.count())
             self.addItem(icon, self.tr("All Novel Folders"), "")
 
