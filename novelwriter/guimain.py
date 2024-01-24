@@ -846,7 +846,7 @@ class GuiMain(QMainWindow):
             dialog.show()
             dialog.raise_()
             qApp.processEvents()
-            # dialog.updateValues()
+            dialog.updateValues()
         return
 
     @pyqtSlot()

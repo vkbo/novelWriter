@@ -71,7 +71,10 @@ VALID_MAP: dict[str, set[str]] = {
     },
     "GuiDocViewerPanel": {
         "colWidths", "hideInactive",
-    }
+    },
+    "GuiNovelDetails": {
+        "winWidth", "winHeight",
+    },
 }
 
 
