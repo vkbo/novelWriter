@@ -9,7 +9,7 @@ Created: 2022-06-06 [2.0rc1] GuiProjectToolBar
 Created: 2023-11-22 [2.2rc1] _TreeContextMenu
 
 This file is a part of novelWriter
-Copyright 2018–2023, Veronica Berglyd Olsen
+Copyright 2018–2024, Veronica Berglyd Olsen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
