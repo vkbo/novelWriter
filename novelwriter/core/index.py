@@ -528,17 +528,20 @@ class NWIndex:
             yield f"{tHandle}:{sTitle}", tHandle, sTitle, hItem
         return
 
-    def getNovelWordCount(self, activeOnly: bool = True) -> int:
-        """Count the number of words in the novel project."""
-        wCount = 0
-        for _, _, hItem in self._itemIndex.iterNovelStructure(activeOnly=activeOnly):
-            wCount += hItem.wordCount
-        return wCount
+    def getNovelWordCount(self, rootHandle: str | None = None, activeOnly: bool = True) -> int:
+        """Count the number of words in one or all novel roots."""
+        return sum(hItem.wordCount for _, _, hItem in self._itemIndex.iterNovelStructure(
+            rHandle=rootHandle, activeOnly=activeOnly
+        ))
 
-    def getNovelTitleCounts(self, activeOnly: bool = True) -> list[int]:
-        """Count the number of titles in the novel project."""
+    def getNovelTitleCounts(
+        self, rootHandle: str | None = None, activeOnly: bool = True
+    ) -> list[int]:
+        """Count the number of titles in one or all novel roots."""
         hCount = [0, 0, 0, 0, 0]
-        for _, _, hItem in self._itemIndex.iterNovelStructure(activeOnly=activeOnly):
+        for _, _, hItem in self._itemIndex.iterNovelStructure(
+            rHandle=rootHandle, activeOnly=activeOnly
+        ):
             iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0)
             hCount[iLevel] += 1
         return hCount

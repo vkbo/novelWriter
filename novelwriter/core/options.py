@@ -73,7 +73,9 @@ VALID_MAP: dict[str, set[str]] = {
         "colWidths", "hideInactive",
     },
     "GuiNovelDetails": {
-        "winWidth", "winHeight",
+        "winWidth", "winHeight", "widthCol0", "widthCol1", "widthCol2",
+        "widthCol3", "widthCol4", "wordsPerPage", "countFrom", "clearDouble",
+        "novelRoot",
     },
 }
 
