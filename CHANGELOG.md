@@ -1,5 +1,27 @@
 # novelWriter Changelog
 
+## Version 2.2.1 [2024-01-28]
+
+### Release Notes
+
+This is a patch release that fixes an issue where the Project View would sometimes switch to the
+Novel View when a new item was created. This patch also includes updated translations for German
+and Chinese.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fix a bug in the toggle for the tree view on the left would trigger each time a new project item
+  was created. Issue #1649. PR #1648.
+
+**Internationalisation**
+
+* Updated German translation, by @HeyMyian. PR #1666.
+* Updated Chinese translation, by @ruixuan658 and @longqzh. PR #1666.
+
+----
+
 ## Version 2.2 [2023-12-17]
 
 ### Release Notes
