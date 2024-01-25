@@ -79,9 +79,9 @@ class GuiSideBar(QWidget):
         self.tbBuild.clicked.connect(self.mainGui.showBuildManuscriptDialog)
 
         self.tbDetails = QToolButton(self)
-        self.tbDetails.setToolTip("{0} [Shift+F6]".format(self.tr("Project Details")))
+        self.tbDetails.setToolTip("{0} [Shift+F6]".format(self.tr("Novel Details")))
         self.tbDetails.setIconSize(iconSize)
-        self.tbDetails.clicked.connect(self.mainGui.showProjectDetailsDialog)
+        self.tbDetails.clicked.connect(self.mainGui.showNovelDetailsDialog)
 
         self.tbStats = QToolButton(self)
         self.tbStats.setToolTip("{0} [F6]".format(self.tr("Writing Statistics")))

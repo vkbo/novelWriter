@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import logging
 
-from typing import TYPE_CHECKING
 from pathlib import Path
 from datetime import datetime
 
@@ -48,9 +47,6 @@ from novelwriter.constants import nwUnicode
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.extensions.switch import NSwitch
 
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
-
 logger = logging.getLogger(__name__)
 
 
@@ -58,8 +54,8 @@ class GuiWelcome(QDialog):
 
     openProjectRequest = pyqtSignal(Path)
 
-    def __init__(self, mainGui: GuiMain) -> None:
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiWelcome")
         self.setObjectName("GuiWelcome")

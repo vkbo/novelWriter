@@ -220,6 +220,7 @@ class GuiOutlineToolBar(QToolBar):
         self.novelLabel.setContentsMargins(0, 0, mPx, 0)
 
         self.novelValue = NovelSelector(self)
+        self.novelValue.setIncludeAll(True)
         self.novelValue.setMinimumWidth(CONFIG.pxInt(200))
         self.novelValue.novelSelectionChanged.connect(self._novelValueChanged)
 
@@ -258,7 +259,7 @@ class GuiOutlineToolBar(QToolBar):
     def updateTheme(self) -> None:
         """Update theme elements."""
         self.setStyleSheet("QToolBar {border: 0px;}")
-        self.novelValue.updateList(includeAll=True)
+        self.novelValue.refreshNovelList()
         self.aRefresh.setIcon(SHARED.theme.getIcon("refresh"))
         self.tbColumns.setIcon(SHARED.theme.getIcon("menu"))
         self.tbColumns.setStyleSheet("QToolButton::menu-indicator {image: none;}")
@@ -266,7 +267,7 @@ class GuiOutlineToolBar(QToolBar):
 
     def populateNovelList(self) -> None:
         """Reload the content of the novel list."""
-        self.novelValue.updateList(includeAll=True)
+        self.novelValue.refreshNovelList()
         return
 
     def setCurrentRoot(self, rootHandle: str | None) -> None:

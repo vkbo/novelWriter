@@ -3,7 +3,7 @@ novelWriter – Custom Widget: Config Layout
 ==========================================
 
 File History:
-Created: 2020-05-03 [0.4.5] NConfigLayout, NHelpLabel
+Created: 2020-05-03 [0.4.5] NConfigLayout, NColourLabel
 Created: 2023-05-23 [2.1b1] NSimpleLayout
 Created: 2024-01-08 [2.3b1] NScrollableForm
 
@@ -40,6 +40,10 @@ LEFT_TOP = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop
 
 
 class NScrollableForm(QScrollArea):
+    """Extension: Scrollable Form Widget
+
+    A custom widget that creates a form within a scrollable area.
+    """
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -48,7 +52,7 @@ class NScrollableForm(QScrollArea):
         self._first = True
 
         self._sections: dict[int, QLabel] = {}
-        self._editable: dict[str, NHelpLabel] = {}
+        self._editable: dict[str, NColourLabel] = {}
         self._index: dict[str, QWidget] = {}
 
         self._layout = QVBoxLayout()
@@ -130,7 +134,7 @@ class NScrollableForm(QScrollArea):
         qLabel.setBuddy(widget)
 
         if helpText:
-            qHelp = NHelpLabel(str(helpText), self._helpCol, self._fontScale)
+            qHelp = NColourLabel(str(helpText), self._helpCol, scale=self._fontScale, wrap=True)
             qHelp.setIndent(mPx)
             labelBox = QVBoxLayout()
             labelBox.addWidget(qLabel)
@@ -193,14 +197,6 @@ class NConfigLayout(QGridLayout):
         self._fontScale = scale
         return
 
-    def setHelpText(self, row: int, text: str) -> None:
-        """Set the text for the help label."""
-        if row in self._itemMap:
-            qHelp = self._itemMap[row][1]
-            if isinstance(qHelp, NHelpLabel):
-                qHelp.setText(text)
-        return
-
     ##
     #  Class Methods
     ##
@@ -226,7 +222,7 @@ class NConfigLayout(QGridLayout):
 
         qHelp = None
         if helpText is not None:
-            qHelp = NHelpLabel(str(helpText), self._helpCol, self._fontScale)
+            qHelp = NColourLabel(str(helpText), self._helpCol, scale=self._fontScale, wrap=True)
             qHelp.setIndent(wSp)
             labelBox = QVBoxLayout()
             labelBox.addWidget(qLabel)
@@ -306,17 +302,9 @@ class NSimpleLayout(QGridLayout):
         wSp = CONFIG.pxInt(8)
         qLabel = QLabel(label)
         qLabel.setIndent(wSp)
-        self.addWidget(qLabel, self._nextRow, 0, 1, 1, LEFT_TOP)
-
-        if isinstance(widget, QLineEdit):
-            qLayout = QHBoxLayout()
-            qLayout.addWidget(widget)
-            self.addLayout(qLayout, self._nextRow, 1, 1, 1, RIGHT_TOP)
-        else:
-            self.addWidget(widget, self._nextRow, 1, 1, 1, RIGHT_TOP)
-
         qLabel.setBuddy(widget)
-
+        self.addWidget(qLabel, self._nextRow, 0, 1, 1, LEFT_TOP)
+        self.addWidget(widget, self._nextRow, 1, 1, 1, RIGHT_TOP)
         self.setRowStretch(self._nextRow, 0)
         self.setRowStretch(self._nextRow+1, 1)
         self._nextRow += 1
@@ -326,10 +314,16 @@ class NSimpleLayout(QGridLayout):
 # END Class NSimpleLayout
 
 
-class NHelpLabel(QLabel):
+class NColourLabel(QLabel):
+    """Extension: A Coloured Label
 
-    def __init__(self, text: str, color: QColor, scale: float = FONT_SCALE) -> None:
-        super().__init__(text)
+    A custom widget that draws a label in a specific colour, and
+    optionally at a specific size, and word wrapped.
+    """
+
+    def __init__(self, text: str, color: QColor, parent: QWidget | None = None,
+                 scale: float = FONT_SCALE, wrap: bool = False) -> None:
+        super().__init__(text, parent=parent)
 
         lblCol = self.palette()
         lblCol.setColor(QPalette.WindowText, color)
@@ -339,9 +333,10 @@ class NHelpLabel(QLabel):
         lblFont.setPointSizeF(scale*lblFont.pointSizeF())
         self.setFont(lblFont)
 
-        self.setWordWrap(True)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        if wrap:
+            self.setWordWrap(True)
+            self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         return
 
-# END Class NHelpLabel
+# END Class NColourLabel
