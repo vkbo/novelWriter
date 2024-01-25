@@ -53,7 +53,6 @@ from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.updates import GuiUpdates
 from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.dialogs.preferences import GuiPreferences
-from novelwriter.dialogs.projdetails import GuiProjectDetails
 from novelwriter.dialogs.projsettings import GuiProjectSettings
 from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.tools.manuscript import GuiManuscript
@@ -823,18 +822,6 @@ class GuiMain(QMainWindow):
             dialog = GuiProjectSettings(self, focusTab=focusTab)
             dialog.newProjectSettingsReady.connect(self._processProjectSettingsChanges)
             dialog.exec_()
-        return
-
-    @pyqtSlot()
-    def showProjectDetailsDialog(self) -> None:
-        """Open the project details dialog."""
-        if SHARED.hasProject:
-            dialog = GuiProjectDetails(self)
-            dialog.setModal(True)
-            dialog.show()
-            dialog.raise_()
-            qApp.processEvents()
-            dialog.updateValues()
         return
 
     @pyqtSlot()

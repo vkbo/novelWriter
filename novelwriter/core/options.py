@@ -53,10 +53,6 @@ VALID_MAP: dict[str, set[str]] = {
     "GuiProjectSettings": {
         "winWidth", "winHeight", "replaceColW", "statusColW", "importColW",
     },
-    "GuiProjectDetails": {
-        "winWidth", "winHeight", "widthCol0", "widthCol1", "widthCol2",
-        "widthCol3", "widthCol4", "wordsPerPage", "countFrom", "clearDouble",
-    },
     "GuiWordList": {"winWidth", "winHeight"},
     "GuiNovelView": {"lastCol", "lastColSize"},
     "GuiBuildSettings": {
