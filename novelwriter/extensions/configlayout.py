@@ -197,14 +197,6 @@ class NConfigLayout(QGridLayout):
         self._fontScale = scale
         return
 
-    def setHelpText(self, row: int, text: str) -> None:
-        """Set the text for the help label."""
-        if row in self._itemMap:
-            qHelp = self._itemMap[row][1]
-            if isinstance(qHelp, NColourLabel):
-                qHelp.setText(text)
-        return
-
     ##
     #  Class Methods
     ##
@@ -310,17 +302,9 @@ class NSimpleLayout(QGridLayout):
         wSp = CONFIG.pxInt(8)
         qLabel = QLabel(label)
         qLabel.setIndent(wSp)
-        self.addWidget(qLabel, self._nextRow, 0, 1, 1, LEFT_TOP)
-
-        if isinstance(widget, QLineEdit):
-            qLayout = QHBoxLayout()
-            qLayout.addWidget(widget)
-            self.addLayout(qLayout, self._nextRow, 1, 1, 1, RIGHT_TOP)
-        else:
-            self.addWidget(widget, self._nextRow, 1, 1, 1, RIGHT_TOP)
-
         qLabel.setBuddy(widget)
-
+        self.addWidget(qLabel, self._nextRow, 0, 1, 1, LEFT_TOP)
+        self.addWidget(widget, self._nextRow, 1, 1, 1, RIGHT_TOP)
         self.setRowStretch(self._nextRow, 0)
         self.setRowStretch(self._nextRow+1, 1)
         self._nextRow += 1
