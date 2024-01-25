@@ -3416,47 +3416,47 @@
   <context>
     <name>GuiProjectToolBar</name>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="254" />
+      <location filename="../novelwriter/gui/projtree.py" line="253" />
       <source>Project Content</source>
       <translation>Prosjektets innhold</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="262" />
+      <location filename="../novelwriter/gui/projtree.py" line="261" />
       <source>Quick Links</source>
       <translation>Hurtiglenker</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="270" />
+      <location filename="../novelwriter/gui/projtree.py" line="269" />
       <source>Move Up</source>
       <translation>Flytt opp</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="275" />
+      <location filename="../novelwriter/gui/projtree.py" line="274" />
       <source>Move Down</source>
       <translation>Flytt ned</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="311" />
+      <location filename="../novelwriter/gui/projtree.py" line="310" />
       <source>Add Item</source>
       <translation>Legg til element</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="320" />
+      <location filename="../novelwriter/gui/projtree.py" line="319" />
       <source>Expand All</source>
       <translation>Utvid alle</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="323" />
+      <location filename="../novelwriter/gui/projtree.py" line="322" />
       <source>Collapse All</source>
       <translation>Lukk alle</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="326" />
+      <location filename="../novelwriter/gui/projtree.py" line="325" />
       <source>Empty Trash</source>
       <translation>Tøm papirkurven</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="330" />
+      <location filename="../novelwriter/gui/projtree.py" line="329" />
       <source>More Options</source>
       <translation>Flere valg</translation>
     </message>
@@ -3464,118 +3464,118 @@
   <context>
     <name>GuiProjectTree</name>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="528" />
+      <location filename="../novelwriter/gui/projtree.py" line="527" />
       <source>Active</source>
       <translation>Aktiv</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="529" />
+      <location filename="../novelwriter/gui/projtree.py" line="528" />
       <source>Inactive</source>
       <translation>Inaktiv</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="616" />
+      <location filename="../novelwriter/gui/projtree.py" line="615" />
       <source>Did not find anywhere to add the file or folder!</source>
       <translation>Fant ikke noe sted å legge til filen eller mappen!</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="625" />
+      <location filename="../novelwriter/gui/projtree.py" line="624" />
       <source>Cannot add new files or folders to the Trash folder.</source>
       <translation>Kan ikke legge til nye filer eller mapper i papirkurvmappen.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="632" />
+      <location filename="../novelwriter/gui/projtree.py" line="631" />
       <source>New Note</source>
       <translation>Nytt notat</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="635" />
+      <location filename="../novelwriter/gui/projtree.py" line="634" />
       <source>New Chapter</source>
       <translation>Nytt kapittel</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="638" />
+      <location filename="../novelwriter/gui/projtree.py" line="637" />
       <source>New Scene</source>
       <translation>Ny scene</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="641" />
+      <location filename="../novelwriter/gui/projtree.py" line="640" />
       <source>New Document</source>
       <translation>Nytt dokument</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="644" />
+      <location filename="../novelwriter/gui/projtree.py" line="643" />
       <source>New Folder</source>
       <translation>Ny mappe</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="858" />
+      <location filename="../novelwriter/gui/projtree.py" line="857" />
       <source>There is currently no Trash folder in this project.</source>
       <translation>Det er for øyeblikket ingen papirkurv i dette prosjektet.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="867" />
+      <location filename="../novelwriter/gui/projtree.py" line="866" />
       <source>The Trash folder is already empty.</source>
       <translation>Papirkurven er allerede tom.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="871" />
+      <location filename="../novelwriter/gui/projtree.py" line="870" />
       <source>Permanently delete {0} file(s) from Trash?</source>
       <translation>Vil du slette {0} filer i papirkurven for godt?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="917" />
+      <location filename="../novelwriter/gui/projtree.py" line="916" />
       <source>Move '{0}' to Trash?</source>
       <translation>Vil du flytte filen "{0}" til søpla?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="949" />
+      <location filename="../novelwriter/gui/projtree.py" line="948" />
       <source>Root folders can only be deleted when they are empty.</source>
       <translation>Rotmapper kan bare slettes når de er tomme.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="968" />
+      <location filename="../novelwriter/gui/projtree.py" line="967" />
       <source>Permanently delete '{0}'?</source>
       <translation>Slette filen "{0}" for godt?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1260" />
+      <location filename="../novelwriter/gui/projtree.py" line="1259" />
       <source>Drag and drop is only allowed for single items, non-root items, or multiple items with the same parent.</source>
       <translation>Dra og slipp er bare tillatt for enkeltelementer, ikke hovedmapper, eller elementer under samme mappe eller dokument.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1393" />
+      <location filename="../novelwriter/gui/projtree.py" line="1392" />
       <source>No documents selected for merging.</source>
       <translation>Ingen dokumenter er valgt for sammenslåing.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1401" />
+      <location filename="../novelwriter/gui/projtree.py" line="1400" />
       <source>Merged</source>
       <translation>Sammenslått</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1481" />
-      <location filename="../novelwriter/gui/projtree.py" line="1417" />
+      <location filename="../novelwriter/gui/projtree.py" line="1480" />
+      <location filename="../novelwriter/gui/projtree.py" line="1416" />
       <source>Could not write document content.</source>
       <translation>Kan ikke skrive til dokumentet.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1503" />
+      <location filename="../novelwriter/gui/projtree.py" line="1502" />
       <source>Do you want to duplicate this document?</source>
       <translation>Vil du duplisere dette dokumentet?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1505" />
+      <location filename="../novelwriter/gui/projtree.py" line="1504" />
       <source>Do you want to duplicate this item and all child items?</source>
       <translation>Vil du duplisere dette elementet og alle underelementer?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1519" />
+      <location filename="../novelwriter/gui/projtree.py" line="1518" />
       <source>Could not duplicate all items.</source>
       <translation>Kunne ikke duplisere alle elementer.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1576" />
+      <location filename="../novelwriter/gui/projtree.py" line="1575" />
       <source>There is nowhere to add item with name '{0}'.</source>
       <translation>Fant ikke noe sted å legge til enheten med navn {0}'.</translation>
     </message>
@@ -4211,78 +4211,78 @@
   <context>
     <name>ProjectBuilder</name>
     <message>
-      <location filename="../novelwriter/core/coretools.py" line="346" />
+      <location filename="../novelwriter/core/coretools.py" line="347" />
       <source>New Project</source>
       <translation>Nytt prosjekt</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/coretools.py" line="347" />
+      <location filename="../novelwriter/core/coretools.py" line="348" />
       <source>New Chapter</source>
       <translation>Nytt kapittel</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/coretools.py" line="348" />
+      <location filename="../novelwriter/core/coretools.py" line="349" />
       <source>New Scene</source>
       <translation>Ny scene</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/coretools.py" line="349" />
+      <location filename="../novelwriter/core/coretools.py" line="350" />
       <source>Title Page</source>
       <translation>Tittelside</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/coretools.py" line="350" />
+      <location filename="../novelwriter/core/coretools.py" line="351" />
       <source>By</source>
       <translation>Av</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/coretools.py" line="407" />
+      <location filename="../novelwriter/core/coretools.py" line="408" />
       <source>Summary of the chapter.</source>
       <translation>Sammendrag av kapittelet.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/coretools.py" line="408" />
+      <location filename="../novelwriter/core/coretools.py" line="409" />
       <source>Summary of the scene.</source>
       <translation>Sammendrag av scenen.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/coretools.py" line="409" />
+      <location filename="../novelwriter/core/coretools.py" line="410" />
       <source>A short description.</source>
       <translation>En kort beskrivelse.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/coretools.py" line="414" />
+      <location filename="../novelwriter/core/coretools.py" line="415" />
       <source>Chapter {0}</source>
       <translation>Kapittel {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/coretools.py" line="430" />
-      <location filename="../novelwriter/core/coretools.py" line="422" />
+      <location filename="../novelwriter/core/coretools.py" line="431" />
+      <location filename="../novelwriter/core/coretools.py" line="423" />
       <source>Scene {0}</source>
       <translation>Scene {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/coretools.py" line="437" />
+      <location filename="../novelwriter/core/coretools.py" line="438" />
       <source>Main Plot</source>
       <translation>Hovedplott</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/coretools.py" line="438" />
+      <location filename="../novelwriter/core/coretools.py" line="439" />
       <source>Protagonist</source>
       <translation>Protagonist</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/coretools.py" line="439" />
+      <location filename="../novelwriter/core/coretools.py" line="440" />
       <source>Main Location</source>
       <translation>Hovedlokasjon</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/coretools.py" line="483" />
+      <location filename="../novelwriter/core/coretools.py" line="484" />
       <source>Failed to create a new example project.</source>
       <translation>Kunne ikke lage nytt eksempel-prosjekt.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/coretools.py" line="489" />
+      <location filename="../novelwriter/core/coretools.py" line="490" />
       <source>Failed to create a new example project. Could not find the necessary files. They seem to be missing from this installation.</source>
       <translation>Kunne ikke lage nytt eksempel-prosjekt. Kunne ikke finne de nødvendige filene. De ser ut til å mangle i denne installasjonen.</translation>
     </message>
@@ -4544,22 +4544,22 @@
   <context>
     <name>_GuiAlert</name>
     <message>
-      <location filename="../novelwriter/shared.py" line="361" />
+      <location filename="../novelwriter/shared.py" line="362" />
       <source>Information</source>
       <translation>Informasjon</translation>
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="364" />
+      <location filename="../novelwriter/shared.py" line="365" />
       <source>Warning</source>
       <translation>Advarsel</translation>
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="367" />
+      <location filename="../novelwriter/shared.py" line="368" />
       <source>Error</source>
       <translation>Feil</translation>
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="370" />
+      <location filename="../novelwriter/shared.py" line="371" />
       <source>Question</source>
       <translation>Spørsmål</translation>
     </message>
@@ -4661,132 +4661,132 @@
   <context>
     <name>_TreeContextMenu</name>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1663" />
+      <location filename="../novelwriter/gui/projtree.py" line="1662" />
       <source>Empty Trash</source>
       <translation>Tøm papirkurven</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1679" />
+      <location filename="../novelwriter/gui/projtree.py" line="1678" />
       <source>Rename</source>
       <translation>Endre navn</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1710" />
+      <location filename="../novelwriter/gui/projtree.py" line="1709" />
       <source>Open Document</source>
       <translation>Åpne dokument</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1714" />
+      <location filename="../novelwriter/gui/projtree.py" line="1713" />
       <source>View Document</source>
       <translation>Vis dokument</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1723" />
+      <location filename="../novelwriter/gui/projtree.py" line="1722" />
       <source>Set Active to ...</source>
       <translation>Sett aktiv til ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1724" />
+      <location filename="../novelwriter/gui/projtree.py" line="1723" />
       <source>Active</source>
       <translation>Aktiv</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1726" />
+      <location filename="../novelwriter/gui/projtree.py" line="1725" />
       <source>Inactive</source>
       <translation>Inaktiv</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1729" />
+      <location filename="../novelwriter/gui/projtree.py" line="1728" />
       <source>Toggle Active</source>
       <translation>Aktiver/deaktiver</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1736" />
+      <location filename="../novelwriter/gui/projtree.py" line="1735" />
       <source>Set Status to ...</source>
       <translation>Sett status til ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1765" />
-      <location filename="../novelwriter/gui/projtree.py" line="1748" />
+      <location filename="../novelwriter/gui/projtree.py" line="1764" />
+      <location filename="../novelwriter/gui/projtree.py" line="1747" />
       <source>Manage Labels ...</source>
       <translation>Administrer etiketter ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1753" />
+      <location filename="../novelwriter/gui/projtree.py" line="1752" />
       <source>Set Importance to ...</source>
       <translation>Sett viktighetsnivå til ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1773" />
+      <location filename="../novelwriter/gui/projtree.py" line="1772" />
       <source>Transform</source>
       <translation>Transformer</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1798" />
-      <location filename="../novelwriter/gui/projtree.py" line="1794" />
-      <location filename="../novelwriter/gui/projtree.py" line="1790" />
-      <location filename="../novelwriter/gui/projtree.py" line="1786" />
+      <location filename="../novelwriter/gui/projtree.py" line="1797" />
+      <location filename="../novelwriter/gui/projtree.py" line="1793" />
+      <location filename="../novelwriter/gui/projtree.py" line="1789" />
+      <location filename="../novelwriter/gui/projtree.py" line="1785" />
       <source>Convert to {0}</source>
       <translation>Konverter til {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1802" />
+      <location filename="../novelwriter/gui/projtree.py" line="1801" />
       <source>Merge Child Items into Self</source>
       <translation>Lim inn underelementer i dette dokumentet</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1804" />
+      <location filename="../novelwriter/gui/projtree.py" line="1803" />
       <source>Merge Child Items into New</source>
       <translation>Lim inn underelementer i nytt dokument</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1808" />
+      <location filename="../novelwriter/gui/projtree.py" line="1807" />
       <source>Merge Documents in Folder</source>
       <translation>Slå sammen dokumenter i mappen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1812" />
+      <location filename="../novelwriter/gui/projtree.py" line="1811" />
       <source>Split Document by Headers</source>
       <translation>Del dokumentet etter overskrift</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1822" />
+      <location filename="../novelwriter/gui/projtree.py" line="1821" />
       <source>Expand All</source>
       <translation>Utvid alle</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1824" />
+      <location filename="../novelwriter/gui/projtree.py" line="1823" />
       <source>Collapse All</source>
       <translation>Lukk alle</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1826" />
+      <location filename="../novelwriter/gui/projtree.py" line="1825" />
       <source>Duplicate from Here</source>
       <translation>Dupliser herfra</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1829" />
+      <location filename="../novelwriter/gui/projtree.py" line="1828" />
       <source>Duplicate Document</source>
       <translation>Dupliser dokument</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1833" />
+      <location filename="../novelwriter/gui/projtree.py" line="1832" />
       <source>Delete Permanently</source>
       <translation>Slett permanent</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1843" />
-      <location filename="../novelwriter/gui/projtree.py" line="1836" />
+      <location filename="../novelwriter/gui/projtree.py" line="1842" />
+      <location filename="../novelwriter/gui/projtree.py" line="1835" />
       <source>Move to Trash</source>
       <translation>Flytt til papirkurv</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1855" />
+      <location filename="../novelwriter/gui/projtree.py" line="1854" />
       <source>Move {0} items to Trash?</source>
       <translation>Vil du flytte {0} filer til papirkurven?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1934" />
+      <location filename="../novelwriter/gui/projtree.py" line="1933" />
       <source>Do you want to convert the folder to a {0}? This action cannot be reversed.</source>
       <translation>Vil du konvertere mappen til et {0}? Denne handlingen kan ikke angres.</translation>
     </message>
