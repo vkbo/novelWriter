@@ -96,7 +96,7 @@ set as ``name`` inside the file.
    suitable one.
 
 
-Gustom GUI and Icons Theme
+Custom GUI and Icons Theme
 --------------------------
 
 A GUI theme ``.conf`` file consists of the following settings:
