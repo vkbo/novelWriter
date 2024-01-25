@@ -79,13 +79,6 @@ class GuiMain(QMainWindow):
     function. Also, the project instance and theme instance are created
     here. These should be passed around to all other objects who need
     them and new instances of them should generally not be created.
-
-      * All other GUI classes that depend on any components from the
-        main GUI should be passed a reference to the instance of this
-        class.
-      * All non-GUI classes can be passed a reference to the NWProject
-        instance if the Main GUI is not needed (which it generally
-        shouldn't need).
     """
 
     def __init__(self) -> None:
