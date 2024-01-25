@@ -22,9 +22,11 @@ from __future__ import annotations
 
 import pytest
 
+from tools import getGuiItem
+
 from PyQt5.QtGui import QFontDatabase, QKeyEvent
 from PyQt5.QtCore import QEvent, Qt
-from PyQt5.QtWidgets import QDialogButtonBox, QFileDialog, QFontDialog
+from PyQt5.QtWidgets import QAction, QDialogButtonBox, QFileDialog, QFontDialog
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwConst, nwUnicode
@@ -38,9 +40,13 @@ KEY_DELAY = 1
 def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
     """Test the preferences dialog loading."""
     monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: [("en", "English [en]")])
+    monkeypatch.setattr(GuiPreferences, "exec_", lambda *a: None)
 
     # Load GUI with standard values
-    prefs = GuiPreferences(nwGUI)
+    nwGUI.mainMenu.aPreferences.activate(QAction.ActionEvent.Trigger)
+    qtbot.waitUntil(lambda: getGuiItem("GuiPreferences") is not None, timeout=1000)
+    prefs = getGuiItem("GuiPreferences")
+    assert isinstance(prefs, GuiPreferences)
     prefs.show()
 
     # Check Languages
@@ -96,15 +102,15 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
     vBar = prefs.mainForm.verticalScrollBar()
     old = -1
     with qtbot.waitSignal(vBar.valueChanged) as value:
-        prefs.sidebar.button(0).click()
-        assert value.args[0] > old
-        old = value.args[0]
-    with qtbot.waitSignal(vBar.valueChanged) as value:
         prefs.sidebar.button(1).click()
         assert value.args[0] > old
         old = value.args[0]
     with qtbot.waitSignal(vBar.valueChanged) as value:
         prefs.sidebar.button(2).click()
+        assert value.args[0] > old
+        old = value.args[0]
+    with qtbot.waitSignal(vBar.valueChanged) as value:
+        prefs.sidebar.button(3).click()
         assert value.args[0] > old
         old = value.args[0]
 
