@@ -45,10 +45,9 @@ class NPagedSideBar(QToolBar):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
-        self._buttons = []
-        self._actions = []
         self._labelCol = None
         self._spacerHeight = self.fontMetrics().height() // 2
+        self._buttons: dict[int, _NPagedToolButton] = {}
 
         self._group = QButtonGroup(self)
         self._group.setExclusive(True)
@@ -95,8 +94,7 @@ class NPagedSideBar(QToolBar):
         action = self.insertWidget(self._stretchAction, button)
         self._group.addButton(button, id=buttonId)
 
-        self._buttons.append(button)
-        self._actions.append(action)
+        self._buttons[buttonId] = button
 
         return action
 

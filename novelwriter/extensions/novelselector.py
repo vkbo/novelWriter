@@ -66,14 +66,10 @@ class NovelSelector(QComboBox):
 
     def setHandle(self, tHandle: str | None, blockSignal: bool = True) -> None:
         """Set the currently selected handle."""
-        self._blockSignal = blockSignal
-        if tHandle is None:
-            index = self.count() - 1
-        else:
-            index = self.findData(tHandle)
-        if index >= 0:
+        if (index := self.findData(tHandle) if tHandle else (self.count() - 1)) >= 0:
+            self._blockSignal = blockSignal
             self.setCurrentIndex(index)
-        self._blockSignal = False
+            self._blockSignal = False
         return
 
     def setIncludeAll(self, value: bool) -> None:

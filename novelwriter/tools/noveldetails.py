@@ -78,7 +78,9 @@ class GuiNovelDetails(QDialog):
         # Novel Selector
         self.novelSelector = NovelSelector(self)
         self.novelSelector.refreshNovelList()
-        self.novelSelector.setHandle(options.getString("GuiNovelDetails", "novelRoot", ""))
+        self.novelSelector.setHandle(
+            options.getString("GuiNovelDetails", "novelRoot", self.novelSelector.firstHandle or "")
+        )
 
         # SideBar
         self.sidebar = NPagedSideBar(self)
@@ -423,17 +425,6 @@ class _ContentsPage(QWidget):
         options.setValue("GuiNovelDetails", "countFrom",    self.poValue.value())
         options.setValue("GuiNovelDetails", "clearDouble",  self.dblValue.isChecked())
         return
-
-    def getColumnSizes(self) -> list[int]:
-        """Return the column widths for the tree columns."""
-        retVals = [
-            self.tocTree.columnWidth(0),
-            self.tocTree.columnWidth(1),
-            self.tocTree.columnWidth(2),
-            self.tocTree.columnWidth(3),
-            self.tocTree.columnWidth(4),
-        ]
-        return retVals
 
     ##
     #  Public Slots
