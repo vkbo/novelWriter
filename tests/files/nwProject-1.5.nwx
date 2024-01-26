@@ -1,8 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.5" fileRevision="1" timeStamp="2022-11-07 13:00:48">
+<novelWriterXML appVersion="2.0-rc1" hexVersion="0x020000c1" fileVersion="1.5" fileRevision="2" timeStamp="2022-11-07 13:00:48">
   <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="5" autoCount="10" editTime="1000">
     <name>Sample Project</name>
-    <title>Sample Project</title>
     <author>Jane Smith</author>
   </project>
   <settings>
