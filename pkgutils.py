@@ -863,7 +863,6 @@ def makeForLaunchpad(doSign: bool = False, isFirst: bool = False) -> None:
     distLoop = [
         ("20.04", "focal"),
         ("22.04", "jammy"),
-        ("23.04", "lunar"),
         ("23.10", "mantic"),
     ]
 
