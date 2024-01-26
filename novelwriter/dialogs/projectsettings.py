@@ -177,17 +177,17 @@ class GuiProjectSettings(QDialog):
 
         rebuildTrees = False
 
-        if self.statusPage.colChanged:
+        if self.statusPage.wasChanged:
             newList, delList = self.statusPage.getNewList()
             project.setStatusColours(newList, delList)
             rebuildTrees = True
 
-        if self.importPage.colChanged:
+        if self.importPage.wasChanged:
             newList, delList = self.importPage.getNewList()
             project.setImportColours(newList, delList)
             rebuildTrees = True
 
-        if self.replacePage.arChanged:
+        if self.replacePage.wasChanged:
             newList = self.replacePage.getNewList()
             project.data.setAutoReplace(newList)
 
@@ -227,7 +227,7 @@ class _SettingsPage(NScrollableForm):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
-        xW = CONFIG.pxInt(250)
+        xW = CONFIG.pxInt(200)
         data = SHARED.project.data
         self.setHelpTextStyle(SHARED.theme.helpText)
         self.setRowIndent(0)
@@ -235,23 +235,23 @@ class _SettingsPage(NScrollableForm):
         # Project Name
         self.projName = QLineEdit(self)
         self.projName.setMaxLength(200)
-        self.projName.setMaximumWidth(xW)
+        self.projName.setMinimumWidth(xW)
         self.projName.setText(data.name)
         self.addRow(
-            self.tr("Project name"),
-            self.projName,
-            self.tr("Changing this will affect the backup path.")
+            self.tr("Project name"), self.projName,
+            self.tr("Changing this will affect the backup path."),
+            stretch=(3, 2)
         )
 
         # Project Author
         self.projAuthor = QLineEdit(self)
         self.projAuthor.setMaxLength(200)
-        self.projAuthor.setMaximumWidth(xW)
+        self.projAuthor.setMinimumWidth(xW)
         self.projAuthor.setText(data.author)
         self.addRow(
-            self.tr("Author(s)"),
-            self.projAuthor,
-            self.tr("Only used when building the manuscript.")
+            self.tr("Author(s)"), self.projAuthor,
+            self.tr("Only used when building the manuscript."),
+            stretch=(2, 1)
         )
 
         # Project Language
@@ -260,8 +260,7 @@ class _SettingsPage(NScrollableForm):
         for tag, language in CONFIG.listLanguages(CONFIG.LANG_PROJ):
             self.projLang.addItem(language, tag)
         self.addRow(
-            self.tr("Project language"),
-            self.projLang,
+            self.tr("Project language"), self.projLang,
             self.tr("Only used when building the manuscript.")
         )
         if (idx := self.projLang.findData(data.language)) != -1:
@@ -275,8 +274,7 @@ class _SettingsPage(NScrollableForm):
             for tag, language in SHARED.spelling.listDictionaries():
                 self.spellLang.addItem(language, tag)
         self.addRow(
-            self.tr("Spell check language"),
-            self.spellLang,
+            self.tr("Spell check language"), self.spellLang,
             self.tr("Overrides main preferences.")
         )
         if (idx := self.spellLang.findData(data.spellLang)) != -1:
@@ -286,8 +284,7 @@ class _SettingsPage(NScrollableForm):
         self.doBackup = NSwitch(self)
         self.doBackup.setChecked(not data.doBackup)
         self.addRow(
-            self.tr("Disable backup on close"),
-            self.doBackup,
+            self.tr("Disable backup on close"), self.doBackup,
             self.tr("Overrides main preferences.")
         )
 
@@ -323,9 +320,9 @@ class _StatusPage(QWidget):
             SHARED.project.options.getInt("GuiProjectSettings", colSetting, 130)
         )
 
-        self.colDeleted = []
-        self.colChanged = False
-        self.selColour = QColor(100, 100, 100)
+        self._changed = False
+        self._colDeleted = []
+        self._selColour = QColor(100, 100, 100)
 
         self.iPx = SHARED.theme.baseIconSize
 
@@ -344,8 +341,6 @@ class _StatusPage(QWidget):
             self._addItem(key, entry["name"], entry["cols"], entry["count"])
 
         # List Controls
-        # =============
-
         self.addButton = QPushButton(SHARED.theme.getIcon("add"), "", self)
         self.addButton.clicked.connect(self._newItem)
 
@@ -359,8 +354,6 @@ class _StatusPage(QWidget):
         self.dnButton.clicked.connect(lambda: self._moveItem(1))
 
         # Edit Form
-        # =========
-
         self.editName = QLineEdit()
         self.editName.setMaxLength(40)
         self.editName.setPlaceholderText(self.tr("Select item to edit"))
@@ -378,8 +371,6 @@ class _StatusPage(QWidget):
         self.saveButton.clicked.connect(self._saveItem)
 
         # Assemble
-        # ========
-
         self.listControls = QVBoxLayout()
         self.listControls.addWidget(self.addButton)
         self.listControls.addWidget(self.delButton)
@@ -409,9 +400,18 @@ class _StatusPage(QWidget):
 
         return
 
+    @property
+    def wasChanged(self) -> bool:
+        """The user changed these settings."""
+        return self._changed
+
+    ##
+    #  Methods
+    ##
+
     def getNewList(self) -> tuple[list, list]:
         """Return list of entries."""
-        if self.colChanged:
+        if self._changed:
             newList = []
             for n in range(self.listBox.topLevelItemCount()):
                 item = self.listBox.topLevelItem(n)
@@ -421,7 +421,7 @@ class _StatusPage(QWidget):
                         "name": item.text(self.COL_LABEL),
                         "cols": item.data(self.COL_LABEL, self.COL_ROLE),
                     })
-            return newList, self.colDeleted
+            return newList, self._colDeleted
 
         return [], []
 
@@ -436,12 +436,12 @@ class _StatusPage(QWidget):
     @pyqtSlot()
     def _selectColour(self) -> None:
         """Open a dialog to select the status icon colour."""
-        if self.selColour is not None:
+        if self._selColour is not None:
             newCol = QColorDialog.getColor(
-                self.selColour, self, self.tr("Select Colour")
+                self._selColour, self, self.tr("Select Colour")
             )
             if newCol.isValid():
-                self.selColour = newCol
+                self._selColour = newCol
                 pixmap = QPixmap(self.iPx, self.iPx)
                 pixmap.fill(newCol)
                 self.colButton.setIcon(QIcon(pixmap))
@@ -452,7 +452,7 @@ class _StatusPage(QWidget):
     def _newItem(self) -> None:
         """Create a new status item."""
         self._addItem(None, self.tr("New Item"), (100, 100, 100), 0)
-        self.colChanged = True
+        self._changed = True
         return
 
     @pyqtSlot()
@@ -465,8 +465,8 @@ class _StatusPage(QWidget):
                 SHARED.error(self.tr("Cannot delete a status item that is in use."))
             else:
                 self.listBox.takeTopLevelItem(iRow)
-                self.colDeleted.append(selItem.data(self.COL_LABEL, self.KEY_ROLE))
-                self.colChanged = True
+                self._colDeleted.append(selItem.data(self.COL_LABEL, self.KEY_ROLE))
+                self._changed = True
         return
 
     @pyqtSlot()
@@ -477,9 +477,9 @@ class _StatusPage(QWidget):
             selItem.setText(self.COL_LABEL, simplified(self.editName.text()))
             selItem.setIcon(self.COL_LABEL, self.colButton.icon())
             selItem.setData(self.COL_LABEL, self.COL_ROLE, (
-                self.selColour.red(), self.selColour.green(), self.selColour.blue()
+                self._selColour.red(), self._selColour.green(), self._selColour.blue()
             ))
-            self.colChanged = True
+            self._changed = True
         return
 
     @pyqtSlot()
@@ -493,7 +493,7 @@ class _StatusPage(QWidget):
             name = selItem.text(self.COL_LABEL)
             pixmap = QPixmap(self.iPx, self.iPx)
             pixmap.fill(QColor(*cols))
-            self.selColour = QColor(*cols)
+            self._selColour = QColor(*cols)
             self.editName.setText(name)
             self.colButton.setIcon(QIcon(pixmap))
             self.editName.selectAll()
@@ -504,7 +504,7 @@ class _StatusPage(QWidget):
         else:
             pixmap = QPixmap(self.iPx, self.iPx)
             pixmap.fill(QColor(100, 100, 100))
-            self.selColour = QColor(100, 100, 100)
+            self._selColour = QColor(100, 100, 100)
             self.editName.setText("")
             self.colButton.setIcon(QIcon(pixmap))
             self.editName.setEnabled(False)
@@ -552,7 +552,7 @@ class _StatusPage(QWidget):
 
         if cItem is not None:
             cItem.setSelected(True)
-        self.colChanged = True
+        self._changed = True
 
         return
 
@@ -583,7 +583,7 @@ class _ReplacePage(QWidget):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
-        self.arChanged = False
+        self._changed = False
 
         wCol0 = CONFIG.pxInt(
             SHARED.project.options.getInt("GuiProjectSettings", "replaceColW", 130)
@@ -591,16 +591,11 @@ class _ReplacePage(QWidget):
         pageLabel = self.tr("Text Replace List for Preview and Export")
 
         # List Box
-        # ========
-
         self.listBox = QTreeWidget()
-        self.listBox.setHeaderLabels([
-            self.tr("Keyword"),
-            self.tr("Replace With"),
-        ])
-        self.listBox.itemSelectionChanged.connect(self._selectedItem)
+        self.listBox.setHeaderLabels([self.tr("Keyword"), self.tr("Replace With")])
         self.listBox.setColumnWidth(self.COL_KEY, wCol0)
         self.listBox.setIndentation(0)
+        self.listBox.itemSelectionChanged.connect(self._selectedItem)
 
         for aKey, aVal in SHARED.project.data.autoReplace.items():
             newItem = QTreeWidgetItem(["<%s>" % aKey, aVal])
@@ -610,8 +605,6 @@ class _ReplacePage(QWidget):
         self.listBox.setSortingEnabled(True)
 
         # List Controls
-        # =============
-
         self.addButton = QPushButton(SHARED.theme.getIcon("add"), "")
         self.addButton.clicked.connect(self._addEntry)
 
@@ -619,8 +612,6 @@ class _ReplacePage(QWidget):
         self.delButton.clicked.connect(self._delEntry)
 
         # Edit Form
-        # =========
-
         self.editKey = QLineEdit()
         self.editKey.setPlaceholderText(self.tr("Select item to edit"))
         self.editKey.setEnabled(False)
@@ -634,8 +625,6 @@ class _ReplacePage(QWidget):
         self.saveButton.clicked.connect(self._saveEntry)
 
         # Assemble
-        # ========
-
         self.listControls = QVBoxLayout()
         self.listControls.addWidget(self.addButton)
         self.listControls.addWidget(self.delButton)
@@ -663,12 +652,20 @@ class _ReplacePage(QWidget):
 
         return
 
+    @property
+    def wasChanged(self) -> bool:
+        """The user changed these settings."""
+        return self._changed
+
+    ##
+    #  Methods
+    ##
+
     def getNewList(self) -> dict:
         """Extract the list from the widget."""
         new = {}
         for n in range(self.listBox.topLevelItemCount()):
-            tItem = self.listBox.topLevelItem(n)
-            if tItem is not None:
+            if tItem := self.listBox.topLevelItem(n):
                 aKey = self._stripNotAllowed(tItem.text(0))
                 aVal = tItem.text(1)
                 if len(aKey) > 0:
@@ -680,30 +677,29 @@ class _ReplacePage(QWidget):
         return self.listBox.columnWidth(0)
 
     ##
-    #  Internal Functions
+    #  Private Slots
     ##
 
-    def _selectedItem(self) -> bool:
+    @pyqtSlot()
+    def _selectedItem(self) -> None:
         """Extract the details from the selected item and populate the
         edit form.
         """
-        selItem = self._getSelectedItem()
-        if selItem is None:
-            return False
-        editKey = self._stripNotAllowed(selItem.text(0))
-        editVal = selItem.text(1)
-        self.editKey.setText(editKey)
-        self.editValue.setText(editVal)
-        self.editKey.setEnabled(True)
-        self.editValue.setEnabled(True)
-        self.editKey.selectAll()
-        self.editKey.setFocus()
-        return True
+        if selItem := self._getSelectedItem():
+            editKey = self._stripNotAllowed(selItem.text(0))
+            editVal = selItem.text(1)
+            self.editKey.setText(editKey)
+            self.editValue.setText(editVal)
+            self.editKey.setEnabled(True)
+            self.editValue.setEnabled(True)
+            self.editKey.selectAll()
+            self.editKey.setFocus()
+        return
 
+    @pyqtSlot()
     def _saveEntry(self) -> None:
         """Save the form data into the list widget."""
-        selItem = self._getSelectedItem()
-        if selItem:
+        if selItem := self._getSelectedItem():
             newKey = self.editKey.text()
             newVal = self.editValue.text()
             saveKey = self._stripNotAllowed(newKey)
@@ -715,38 +711,36 @@ class _ReplacePage(QWidget):
                 self.editKey.setEnabled(False)
                 self.editValue.setEnabled(False)
                 self.listBox.clearSelection()
-                self.arChanged = True
+                self._changed = True
         return
 
+    @pyqtSlot()
     def _addEntry(self) -> None:
         """Add a new list entry."""
         saveKey = "<keyword%d>" % (self.listBox.topLevelItemCount() + 1)
-        newVal  = ""
-        newItem = QTreeWidgetItem([saveKey, newVal])
-        self.listBox.addTopLevelItem(newItem)
+        self.listBox.addTopLevelItem(QTreeWidgetItem([saveKey, ""]))
         return
 
+    @pyqtSlot()
     def _delEntry(self) -> None:
         """Delete the selected entry."""
-        selItem = self._getSelectedItem()
-        if selItem:
+        if selItem := self._getSelectedItem():
             self.listBox.takeTopLevelItem(self.listBox.indexOfTopLevelItem(selItem))
-            self.arChanged = True
+            self._changed = True
         return
+
+    ##
+    #  Internal Functions
+    ##
 
     def _getSelectedItem(self) -> QTreeWidgetItem | None:
         """Extract the currently selected item."""
-        selItem = self.listBox.selectedItems()
-        if len(selItem) == 0:
-            return None
-        return selItem[0]
+        if items := self.listBox.selectedItems():
+            return items[0]
+        return None
 
     def _stripNotAllowed(self, key: str) -> str:
         """Clean up the replace key string."""
-        result = ""
-        for c in key:
-            if c.isalnum():
-                result += c
-        return result
+        return "".join(c for c in key if c.isalnum())
 
 # END Class _ReplacePage

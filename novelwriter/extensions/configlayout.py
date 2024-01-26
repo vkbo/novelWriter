@@ -134,10 +134,11 @@ class NScrollableForm(QScrollArea):
         return
 
     def addRow(self, label: str, widget: QWidget, helpText: str = "", unit: str | None = None,
-               button: QWidget | None = None, editable: str | None = None) -> None:
+               button: QWidget | None = None, editable: str | None = None,
+               stretch: tuple[int, int] = (0, 0)) -> None:
         """Add a label and a widget as a new row of the form."""
         row = QHBoxLayout()
-        row.setSpacing(CONFIG.pxInt(4))
+        row.setSpacing(CONFIG.pxInt(12))
 
         qLabel = QLabel(label, self)
         qLabel.setIndent(self._indent)
@@ -151,19 +152,24 @@ class NScrollableForm(QScrollArea):
             labelBox.addWidget(qHelp)
             labelBox.setSpacing(0)
             labelBox.addStretch(1)
-            row.addLayout(labelBox)
+            row.addLayout(labelBox, stretch[0])
             if editable:
                 self._editable[editable] = qHelp
         else:
-            row.addWidget(qLabel)
-
-        row.addSpacing(CONFIG.pxInt(12))
-        row.addWidget(widget)
+            row.addWidget(qLabel, stretch[0])
 
         if isinstance(unit, str):
-            row.addWidget(QLabel(unit, self))
+            box = QHBoxLayout()
+            box.addWidget(widget)
+            box.addWidget(QLabel(unit, self))
+            row.addLayout(box, stretch[1])
         elif isinstance(button, QAbstractButton):
-            row.addWidget(button)
+            box = QHBoxLayout()
+            box.addWidget(widget)
+            box.addWidget(button)
+            row.addLayout(box, stretch[1])
+        else:
+            row.addWidget(widget, stretch[1])
 
         self._layout.addLayout(row)
         self._index[label.strip()] = widget
