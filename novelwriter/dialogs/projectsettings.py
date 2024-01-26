@@ -29,15 +29,15 @@ import logging
 from PyQt5.QtGui import QCloseEvent, QColor, QIcon, QPixmap
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QColorDialog, QComboBox, QDialog, QDialogButtonBox, QHBoxLayout, QLabel,
-    QLineEdit, QPushButton, QStackedWidget, QTreeWidget, QTreeWidgetItem,
-    QVBoxLayout, QWidget, qApp
+    QColorDialog, QComboBox, QDialog, QDialogButtonBox, QHBoxLayout, QLineEdit,
+    QPushButton, QStackedWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+    QWidget, qApp
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import simplified
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.extensions.configlayout import NColourLabel, NScrollableForm
+from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrollableForm
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 
 logger = logging.getLogger(__name__)
@@ -59,21 +59,18 @@ class GuiProjectSettings(QDialog):
         self.setObjectName("GuiProjectSettings")
         self.setWindowTitle(self.tr("Project Settings"))
 
-        wW = CONFIG.pxInt(500)
-        wH = CONFIG.pxInt(400)
         options = SHARED.project.options
-
-        self.setMinimumSize(wW, wH)
+        self.setMinimumSize(CONFIG.pxInt(500), CONFIG.pxInt(400))
         self.resize(
-            CONFIG.pxInt(options.getInt("GuiProjectSettings", "winWidth", wW)),
-            CONFIG.pxInt(options.getInt("GuiProjectSettings", "winHeight", wH))
+            CONFIG.pxInt(options.getInt("GuiProjectSettings", "winWidth", CONFIG.pxInt(650))),
+            CONFIG.pxInt(options.getInt("GuiProjectSettings", "winHeight", CONFIG.pxInt(500)))
         )
 
         # Title
         self.titleLabel = NColourLabel(
-            self.tr("Project Settings"), SHARED.theme.helpText, parent=self, scale=1.25
+            self.tr("Project Settings"), SHARED.theme.helpText,
+            parent=self, scale=NColourLabel.HEADER_SCALE, indent=CONFIG.pxInt(4)
         )
-        self.titleLabel.setIndent(CONFIG.pxInt(4))
 
         # SideBar
         self.sidebar = NPagedSideBar(self)
@@ -251,31 +248,33 @@ class _SettingsPage(NScrollableForm):
         self.addRow(
             self.tr("Author(s)"), self.projAuthor,
             self.tr("Only used when building the manuscript."),
-            stretch=(2, 1)
+            stretch=(3, 2)
         )
 
         # Project Language
         self.projLang = QComboBox(self)
-        self.projLang.setMaximumWidth(xW)
+        self.projLang.setMinimumWidth(xW)
         for tag, language in CONFIG.listLanguages(CONFIG.LANG_PROJ):
             self.projLang.addItem(language, tag)
         self.addRow(
             self.tr("Project language"), self.projLang,
-            self.tr("Only used when building the manuscript.")
+            self.tr("Only used when building the manuscript."),
+            stretch=(3, 2)
         )
         if (idx := self.projLang.findData(data.language)) != -1:
             self.projLang.setCurrentIndex(idx)
 
         # Spell Check Language
         self.spellLang = QComboBox(self)
-        self.spellLang.setMaximumWidth(xW)
+        self.spellLang.setMinimumWidth(xW)
         self.spellLang.addItem(self.tr("Default"), "None")
         if CONFIG.hasEnchant:
             for tag, language in SHARED.spelling.listDictionaries():
                 self.spellLang.addItem(language, tag)
         self.addRow(
             self.tr("Spell check language"), self.spellLang,
-            self.tr("Overrides main preferences.")
+            self.tr("Overrides main preferences."),
+            stretch=(3, 2)
         )
         if (idx := self.spellLang.findData(data.spellLang)) != -1:
             self.spellLang.setCurrentIndex(idx)
@@ -295,7 +294,7 @@ class _SettingsPage(NScrollableForm):
 # END Class _SettingsPage
 
 
-class _StatusPage(QWidget):
+class _StatusPage(NFixedPage):
 
     COL_LABEL = 0
     COL_USAGE = 1
@@ -326,9 +325,13 @@ class _StatusPage(QWidget):
 
         self.iPx = SHARED.theme.baseIconSize
 
-        # The List
-        # ========
+        # Title
+        self.pageTitle = NColourLabel(
+            pageLabel, SHARED.theme.helpText, parent=self,
+            scale=NColourLabel.HEADER_SCALE
+        )
 
+        # List Box
         self.listBox = QTreeWidget(self)
         self.listBox.setHeaderLabels([
             self.tr("Label"), self.tr("Usage"),
@@ -392,11 +395,10 @@ class _StatusPage(QWidget):
         self.innerBox.addLayout(self.listControls)
 
         self.outerBox = QVBoxLayout()
-        self.outerBox.addWidget(QLabel("<b>%s</b>" % pageLabel))
+        self.outerBox.addWidget(self.pageTitle)
         self.outerBox.addLayout(self.innerBox)
-        self.outerBox.setContentsMargins(0, 0, 0, 0)
 
-        self.setLayout(self.outerBox)
+        self.setCentralLayout(self.outerBox)
 
         return
 
@@ -422,7 +424,6 @@ class _StatusPage(QWidget):
                         "cols": item.data(self.COL_LABEL, self.COL_ROLE),
                     })
             return newList, self._colDeleted
-
         return [], []
 
     def columnWidth(self) -> int:
@@ -517,16 +518,16 @@ class _StatusPage(QWidget):
     ##
 
     def _addItem(self, key: str | None, name: str,
-                 cols: tuple[int, int, int], count: int) -> None:
+                 colour: tuple[int, int, int], count: int) -> None:
         """Add a status item to the list."""
         pixmap = QPixmap(self.iPx, self.iPx)
-        pixmap.fill(QColor(*cols))
+        pixmap.fill(QColor(*colour))
 
         item = QTreeWidgetItem()
         item.setText(self.COL_LABEL, name)
         item.setIcon(self.COL_LABEL, QIcon(pixmap))
         item.setData(self.COL_LABEL, self.KEY_ROLE, key)
-        item.setData(self.COL_LABEL, self.COL_ROLE, cols)
+        item.setData(self.COL_LABEL, self.COL_ROLE, colour)
         item.setData(self.COL_LABEL, self.NUM_ROLE, count)
         item.setText(self.COL_USAGE, self._usageString(count))
 
@@ -558,24 +559,23 @@ class _StatusPage(QWidget):
 
     def _getSelectedItem(self) -> QTreeWidgetItem | None:
         """Get the currently selected item."""
-        selItem = self.listBox.selectedItems()
-        if len(selItem) > 0:
-            return selItem[0]
+        if items := self.listBox.selectedItems():
+            return items[0]
         return None
 
-    def _usageString(self, nUse: int) -> str:
+    def _usageString(self, count: int) -> str:
         """Generate usage string."""
-        if nUse == 0:
+        if count == 0:
             return self.tr("Not in use")
-        elif nUse == 1:
+        elif count == 1:
             return self.tr("Used once")
         else:
-            return self.tr("Used by {0} items").format(nUse)
+            return self.tr("Used by {0} items").format(count)
 
 # END Class _StatusPage
 
 
-class _ReplacePage(QWidget):
+class _ReplacePage(NFixedPage):
 
     COL_KEY  = 0
     COL_REPL = 1
@@ -588,7 +588,12 @@ class _ReplacePage(QWidget):
         wCol0 = CONFIG.pxInt(
             SHARED.project.options.getInt("GuiProjectSettings", "replaceColW", 130)
         )
-        pageLabel = self.tr("Text Replace List for Preview and Export")
+
+        # Title
+        self.pageTitle = NColourLabel(
+            self.tr("Text Auto-Replace for Preview and Build"),
+            SHARED.theme.helpText, parent=self, scale=NColourLabel.HEADER_SCALE
+        )
 
         # List Box
         self.listBox = QTreeWidget()
@@ -644,11 +649,10 @@ class _ReplacePage(QWidget):
         self.innerBox.addLayout(self.listControls)
 
         self.outerBox = QVBoxLayout()
-        self.outerBox.addWidget(QLabel("<b>%s</b>" % pageLabel))
+        self.outerBox.addWidget(self.pageTitle)
         self.outerBox.addLayout(self.innerBox)
-        self.outerBox.setContentsMargins(0, 0, 0, 0)
 
-        self.setLayout(self.outerBox)
+        self.setCentralLayout(self.outerBox)
 
         return
 
