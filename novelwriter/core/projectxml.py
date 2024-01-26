@@ -106,8 +106,8 @@ class ProjectXMLReader:
         the project or the content into their respective section nodes
         as attributes. The id attribute was also added to the project.
 
-        Rev 1: Drops the "titleFormat" section from "settings".
-        Rev 2: Drop the "title" setting from "project".
+        Rev 1: Drops the titleFormat node from settings. 2.1 Beta 1.
+        Rev 2: Drops the title node from project. 2.3 Beta 1.
     """
 
     def __init__(self, path: str | Path) -> None:
