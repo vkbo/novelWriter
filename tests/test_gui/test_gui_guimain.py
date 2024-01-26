@@ -200,7 +200,6 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert len(SHARED.project.tree._roots) == 0
     assert SHARED.project.tree.trashRoot is None
     assert SHARED.project.data.name == ""
-    assert SHARED.project.data.title == ""
     assert SHARED.project.data.author == ""
     assert SHARED.project.data.spellCheck is False
 
@@ -220,7 +219,6 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert len(SHARED.project.tree._roots) == 4
     assert SHARED.project.tree.trashRoot is None
     assert SHARED.project.data.name == "New Project"
-    assert SHARED.project.data.title == "New Novel"
     assert SHARED.project.data.author == "Jane Doe"
     assert SHARED.project.data.spellCheck is False
 

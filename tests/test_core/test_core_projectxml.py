@@ -148,7 +148,6 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
 
     # Check loaded data
     assert data.name == "Sample Project"
-    assert data.title == "Sample Project"
     assert data.author == "Jane Smith"
     assert data.saveCount == 5
     assert data.autoCount == 10
@@ -267,7 +266,6 @@ def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockRnd):
 
     # Check loaded data
     assert data.name == "Sample Project"
-    assert data.title == "Sample Project"
     assert data.author == "Jay Doh"  # Only last author is preserved
     assert data.saveCount == 0  # Doesn't exist in 1.0
     assert data.autoCount == 0  # Doesn't exist in 1.0
@@ -402,7 +400,6 @@ def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockRnd):
 
     # Check loaded data
     assert data.name == "Sample Project"
-    assert data.title == "Sample Project"
     assert data.author == "Jay Doh"  # Only last author is preserved
     assert data.saveCount == 5
     assert data.autoCount == 10
@@ -537,7 +534,6 @@ def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockRnd):
 
     # Check loaded data
     assert data.name == "Sample Project"
-    assert data.title == "Sample Project"
     assert data.author == "Jay Doh"  # Only last author is preserved
     assert data.saveCount == 5
     assert data.autoCount == 10
@@ -675,7 +671,6 @@ def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockRnd):
 
     # Check loaded data
     assert data.name == "Sample Project"
-    assert data.title == "Sample Project"
     assert data.author == "Jay Doh"  # Only last author is preserved
     assert data.saveCount == 5
     assert data.autoCount == 10
@@ -813,7 +808,6 @@ def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockRnd):
 
     # Check loaded data
     assert data.name == "Sample Project"
-    assert data.title == "Sample Project"
     assert data.author == "Jay Doh"  # Only last author is preserved
     assert data.saveCount == 5
     assert data.autoCount == 10
