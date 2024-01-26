@@ -338,7 +338,6 @@ class ToHtml(Tokenizer):
         data = {
             "meta": {
                 "projectName": self._project.data.name,
-                "novelTitle": self._project.data.title,
                 "novelAuthor": self._project.data.author,
                 "buildTime": int(timeStamp),
                 "buildTimeStr": formatTimeStamp(timeStamp),

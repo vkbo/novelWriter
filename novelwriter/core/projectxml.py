@@ -46,7 +46,7 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 FILE_VERSION = "1.5"  # The current project file format version
-FILE_REVISION = "1"   # The current project file format revision
+FILE_REVISION = "2"   # The current project file format revision
 HEX_VERSION = 0x0105
 
 NUM_VERSION = {
@@ -106,7 +106,8 @@ class ProjectXMLReader:
         the project or the content into their respective section nodes
         as attributes. The id attribute was also added to the project.
 
-        Rev 1: Drops the titleFormat section of settings.
+        Rev 1: Drops the "titleFormat" section from "settings".
+        Rev 2: Drop the "title" setting from "project".
     """
 
     def __init__(self, path: str | Path) -> None:
@@ -247,8 +248,6 @@ class ProjectXMLReader:
         for xItem in xSection:
             if xItem.tag == "name":
                 data.setName(xItem.text)
-            elif xItem.tag == "title":
-                data.setTitle(xItem.text)
             elif xItem.tag == "author":
                 data.setAuthor(xItem.text)
             else:
@@ -520,7 +519,6 @@ class ProjectXMLWriter:
 
         xProject = ET.SubElement(xRoot, "project", attrib=projAttr)
         self._packSingleValue(xProject, "name", data.name)
-        self._packSingleValue(xProject, "title", data.title)
         self._packSingleValue(xProject, "author", data.author)
 
         # Save Project Settings
