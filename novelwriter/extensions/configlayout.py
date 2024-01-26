@@ -30,7 +30,7 @@ from __future__ import annotations
 from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QAbstractButton, QFrame, QGridLayout, QHBoxLayout, QLabel, QLayout, QLineEdit,
+    QAbstractButton, QFrame, QGridLayout, QHBoxLayout, QLabel, QLayout,
     QScrollArea, QSizePolicy, QVBoxLayout, QWidget
 )
 
@@ -144,11 +144,6 @@ class NScrollableForm(QScrollArea):
         self._indent = max(indent, 0)
         return
 
-    def setLayoutMargins(self, left: int, top: int, right: int, bottom: int) -> None:
-        """Set the contents margins on the layout."""
-        self._layout.setContentsMargins(left, top, right, bottom)
-        return
-
     ##
     #  Methods
     ##
@@ -251,16 +246,6 @@ class NConfigLayout(QGridLayout):
         return
 
     ##
-    #  Getters and Setters
-    ##
-
-    def setHelpTextStyle(self, color: QColor, scale: float = DEFAULT_SCALE) -> None:
-        """Set the text color for the help text."""
-        self._helpCol = color if isinstance(color, QColor) else QColor(*color)
-        self._fontScale = scale
-        return
-
-    ##
     #  Class Methods
     ##
 
@@ -275,8 +260,8 @@ class NConfigLayout(QGridLayout):
         self._nextRow += 1
         return
 
-    def addRow(self, label: str, widget: QWidget, helpText: str | None = None,
-               unit: str | None = None, button: QWidget | None = None) -> int:
+    def addRow(self, label: str, widget: QWidget, unit: str | None = None,
+               button: QWidget | None = None) -> int:
         """Add a label and a widget as a new row of the grid."""
         wSp = CONFIG.pxInt(8)
         qLabel = QLabel(label)
@@ -284,19 +269,7 @@ class NConfigLayout(QGridLayout):
         qLabel.setBuddy(widget)
 
         qHelp = None
-        if helpText is not None:
-            qHelp = NColourLabel(
-                str(helpText), self._helpCol,
-                scale=self._fontScale, wrap=True, indent=wSp
-            )
-            labelBox = QVBoxLayout()
-            labelBox.addWidget(qLabel)
-            labelBox.addWidget(qHelp)
-            labelBox.setSpacing(0)
-            labelBox.addStretch(1)
-            self.addLayout(labelBox, self._nextRow, 0, 1, 1, LEFT_TOP)
-        else:
-            self.addWidget(qLabel, self._nextRow, 0, 1, 1, LEFT_TOP)
+        self.addWidget(qLabel, self._nextRow, 0, 1, 1, LEFT_TOP)
 
         if isinstance(unit, str):
             controlBox = QHBoxLayout()
@@ -313,12 +286,7 @@ class NConfigLayout(QGridLayout):
             self.addLayout(controlBox, self._nextRow, 1, 1, 1, RIGHT_TOP)
 
         else:
-            if isinstance(widget, QLineEdit):
-                qLayout = QHBoxLayout()
-                qLayout.addWidget(widget)
-                self.addLayout(qLayout, self._nextRow, 1, 1, 1, RIGHT_TOP)
-            else:
-                self.addWidget(widget, self._nextRow, 1, 1, 1, RIGHT_TOP)
+            self.addWidget(widget, self._nextRow, 1, 1, 1, RIGHT_TOP)
 
         self.setRowStretch(self._nextRow, 0)
         self.setRowStretch(self._nextRow+1, 1)
