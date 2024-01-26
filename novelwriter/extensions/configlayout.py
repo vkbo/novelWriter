@@ -50,6 +50,7 @@ class NScrollableForm(QScrollArea):
         self._helpCol = QColor(0, 0, 0)
         self._fontScale = FONT_SCALE
         self._first = True
+        self._indent = CONFIG.pxInt(12)
 
         self._sections: dict[int, QLabel] = {}
         self._editable: dict[str, NColourLabel] = {}
@@ -92,6 +93,16 @@ class NScrollableForm(QScrollArea):
             qHelp.setText(text)
         return
 
+    def setRowIndent(self, indent: int) -> None:
+        """Set the indentation of each row."""
+        self._indent = max(indent, 0)
+        return
+
+    def setLayoutMargins(self, left: int, top: int, right: int, bottom: int) -> None:
+        """Set the contents margins on the layout."""
+        self._layout.setContentsMargins(left, top, right, bottom)
+        return
+
     ##
     #  Methods
     ##
@@ -128,14 +139,13 @@ class NScrollableForm(QScrollArea):
         row = QHBoxLayout()
         row.setSpacing(CONFIG.pxInt(4))
 
-        mPx = CONFIG.pxInt(12)
         qLabel = QLabel(label, self)
-        qLabel.setIndent(mPx)
+        qLabel.setIndent(self._indent)
         qLabel.setBuddy(widget)
 
         if helpText:
             qHelp = NColourLabel(str(helpText), self._helpCol, scale=self._fontScale, wrap=True)
-            qHelp.setIndent(mPx)
+            qHelp.setIndent(self._indent)
             labelBox = QVBoxLayout()
             labelBox.addWidget(qLabel)
             labelBox.addWidget(qHelp)
@@ -147,7 +157,7 @@ class NScrollableForm(QScrollArea):
         else:
             row.addWidget(qLabel)
 
-        row.addSpacing(mPx)
+        row.addSpacing(CONFIG.pxInt(12))
         row.addWidget(widget)
 
         if isinstance(unit, str):

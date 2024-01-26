@@ -3,7 +3,8 @@ novelWriter – GUI Project Settings
 ==================================
 
 File History:
-Created: 2018-09-29 [0.0.1] GuiProjectSettings
+Created:   2018-09-29 [0.0.1] GuiProjectSettings
+Rewritten: 2024-01-26 [2.3b1] GuiProjectSettings
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen
@@ -25,75 +26,102 @@ from __future__ import annotations
 
 import logging
 
-from typing import TYPE_CHECKING
-
-from PyQt5.QtGui import QCloseEvent, QIcon, QPixmap, QColor
+from PyQt5.QtGui import QCloseEvent, QColor, QIcon, QPixmap
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QColorDialog, QComboBox, QDialogButtonBox, QHBoxLayout, QLabel, QLineEdit,
-    QPushButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget, qApp
+    QColorDialog, QComboBox, QDialog, QDialogButtonBox, QHBoxLayout, QLabel,
+    QLineEdit, QPushButton, QStackedWidget, QTreeWidget, QTreeWidgetItem,
+    QVBoxLayout, QWidget, qApp
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import simplified
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.extensions.pageddialog import NPagedDialog
-from novelwriter.extensions.configlayout import NConfigLayout
-
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
+from novelwriter.extensions.configlayout import NColourLabel, NScrollableForm
+from novelwriter.extensions.pagedsidebar import NPagedSideBar
 
 logger = logging.getLogger(__name__)
 
 
-class GuiProjectSettings(NPagedDialog):
+class GuiProjectSettings(QDialog):
 
-    TAB_MAIN    = 0
-    TAB_STATUS  = 1
-    TAB_IMPORT  = 2
-    TAB_REPLACE = 3
+    PAGE_SETTINGS = 0
+    PAGE_STATUS   = 1
+    PAGE_IMPORT   = 2
+    PAGE_REPLACE  = 3
 
-    newProjectSettingsReady = pyqtSignal()
+    newProjectSettingsReady = pyqtSignal(bool)
 
-    def __init__(self, mainGui: GuiMain, focusTab: int = TAB_MAIN) -> None:
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: QWidget, gotoPage: int = PAGE_SETTINGS) -> None:
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiProjectSettings")
         self.setObjectName("GuiProjectSettings")
-
-        self.mainGui = mainGui
-        SHARED.project.countStatus()
         self.setWindowTitle(self.tr("Project Settings"))
 
-        wW = CONFIG.pxInt(570)
-        wH = CONFIG.pxInt(375)
-        pOptions = SHARED.project.options
+        wW = CONFIG.pxInt(500)
+        wH = CONFIG.pxInt(400)
+        options = SHARED.project.options
 
-        self.setMinimumWidth(wW)
-        self.setMinimumHeight(wH)
+        self.setMinimumSize(wW, wH)
         self.resize(
-            CONFIG.pxInt(pOptions.getInt("GuiProjectSettings", "winWidth",  wW)),
-            CONFIG.pxInt(pOptions.getInt("GuiProjectSettings", "winHeight", wH))
+            CONFIG.pxInt(options.getInt("GuiProjectSettings", "winWidth", wW)),
+            CONFIG.pxInt(options.getInt("GuiProjectSettings", "winHeight", wH))
         )
 
-        self.tabMain    = GuiProjectEditMain(self)
-        self.tabStatus  = GuiProjectEditStatus(self, True)
-        self.tabImport  = GuiProjectEditStatus(self, False)
-        self.tabReplace = GuiProjectEditReplace(self)
+        # Title
+        self.titleLabel = NColourLabel(
+            self.tr("Project Settings"), SHARED.theme.helpText, parent=self, scale=1.25
+        )
+        self.titleLabel.setIndent(CONFIG.pxInt(4))
 
-        self.addTab(self.tabMain,    self.tr("Settings"))
-        self.addTab(self.tabStatus,  self.tr("Status"))
-        self.addTab(self.tabImport,  self.tr("Importance"))
-        self.addTab(self.tabReplace, self.tr("Auto-Replace"))
+        # SideBar
+        self.sidebar = NPagedSideBar(self)
+        self.sidebar.setLabelColor(SHARED.theme.helpText)
+        self.sidebar.addButton(self.tr("Settings"), self.PAGE_SETTINGS)
+        self.sidebar.addButton(self.tr("Status"), self.PAGE_STATUS)
+        self.sidebar.addButton(self.tr("Importance"), self.PAGE_IMPORT)
+        self.sidebar.addButton(self.tr("Auto-Replace"), self.PAGE_REPLACE)
+        self.sidebar.setSelected(gotoPage)
+        self.sidebar.buttonClicked.connect(self._sidebarClicked)
 
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        # Buttons
+        self.buttonBox = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel
+        )
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self.close)
-        self.rejected.connect(self.close)
-        self.addControls(self.buttonBox)
 
-        # Focus Tab
-        self._focusTab(focusTab)
+        # Content
+        self.settingsPage = _SettingsPage(self)
+        self.statusPage = _StatusPage(self, True)
+        self.importPage = _StatusPage(self, False)
+        self.replacePage = _ReplacePage(self)
+
+        self.mainStack = QStackedWidget(self)
+        self.mainStack.addWidget(self.settingsPage)
+        self.mainStack.addWidget(self.statusPage)
+        self.mainStack.addWidget(self.importPage)
+        self.mainStack.addWidget(self.replacePage)
+
+        # Assemble
+        self.topBox = QHBoxLayout()
+        self.topBox.addWidget(self.titleLabel)
+        self.topBox.addStretch(1)
+
+        self.mainBox = QHBoxLayout()
+        self.mainBox.addWidget(self.sidebar)
+        self.mainBox.addWidget(self.mainStack)
+        self.mainBox.setContentsMargins(0, 0, 0, 0)
+
+        self.outerBox = QVBoxLayout()
+        self.outerBox.addLayout(self.topBox)
+        self.outerBox.addLayout(self.mainBox)
+        self.outerBox.addWidget(self.buttonBox)
+        self.outerBox.setSpacing(CONFIG.pxInt(8))
+
+        self.setLayout(self.outerBox)
+        self.setSizeGripEnabled(True)
 
         logger.debug("Ready: GuiProjectSettings")
 
@@ -103,9 +131,13 @@ class GuiProjectSettings(NPagedDialog):
         logger.debug("Delete: GuiProjectSettings")
         return
 
+    ##
+    #  Events
+    ##
+
     def closeEvent(self, event: QCloseEvent) -> None:
-        """Capture the close event and perform cleanup."""
-        self._saveGuiSettings()
+        """Capture the user closing the window and save settings."""
+        self._saveSettings()
         event.accept()
         self.deleteLater()
         return
@@ -114,40 +146,52 @@ class GuiProjectSettings(NPagedDialog):
     #  Private Slots
     ##
 
+    @pyqtSlot(int)
+    def _sidebarClicked(self, pageId: int) -> None:
+        """Process a user request to switch page."""
+        if pageId == self.PAGE_SETTINGS:
+            self.mainStack.setCurrentWidget(self.settingsPage)
+        elif pageId == self.PAGE_STATUS:
+            self.mainStack.setCurrentWidget(self.statusPage)
+        elif pageId == self.PAGE_IMPORT:
+            self.mainStack.setCurrentWidget(self.importPage)
+        elif pageId == self.PAGE_REPLACE:
+            self.mainStack.setCurrentWidget(self.replacePage)
+        return
+
     @pyqtSlot()
     def _doSave(self) -> None:
         """Save settings and close dialog."""
         project    = SHARED.project
-        projName   = self.tabMain.editName.text()
-        bookTitle  = self.tabMain.editTitle.text()
-        bookAuthor = self.tabMain.editAuthor.text()
-        projLang   = self.tabMain.projLang.currentData()
-        spellLang  = self.tabMain.spellLang.currentData()
-        doBackup   = not self.tabMain.doBackup.isChecked()
+        projName   = self.settingsPage.projName.text()
+        projAuthor = self.settingsPage.projAuthor.text()
+        projLang   = self.settingsPage.projLang.currentData()
+        spellLang  = self.settingsPage.spellLang.currentData()
+        doBackup   = not self.settingsPage.doBackup.isChecked()
 
         project.data.setName(projName)
-        project.data.setTitle(bookTitle)
-        project.data.setAuthor(bookAuthor)
+        project.data.setAuthor(projAuthor)
         project.data.setDoBackup(doBackup)
         project.data.setSpellLang(spellLang)
         project.setProjectLang(projLang)
 
-        if self.tabStatus.colChanged:
-            newList, delList = self.tabStatus.getNewList()
+        rebuildTrees = False
+
+        if self.statusPage.colChanged:
+            newList, delList = self.statusPage.getNewList()
             project.setStatusColours(newList, delList)
+            rebuildTrees = True
 
-        if self.tabImport.colChanged:
-            newList, delList = self.tabImport.getNewList()
+        if self.importPage.colChanged:
+            newList, delList = self.importPage.getNewList()
             project.setImportColours(newList, delList)
+            rebuildTrees = True
 
-        if self.tabStatus.colChanged or self.tabImport.colChanged:
-            self.mainGui.rebuildTrees()
-
-        if self.tabReplace.arChanged:
-            newList = self.tabReplace.getNewList()
+        if self.replacePage.arChanged:
+            newList = self.replacePage.getNewList()
             project.data.setAutoReplace(newList)
 
-        self.newProjectSettingsReady.emit()
+        self.newProjectSettingsReady.emit(rebuildTrees)
         qApp.processEvents()
         self.close()
 
@@ -157,134 +201,104 @@ class GuiProjectSettings(NPagedDialog):
     #  Internal Functions
     ##
 
-    def _focusTab(self, tab: int) -> None:
-        """Change which is the focused tab."""
-        if tab == self.TAB_MAIN:
-            self.setCurrentWidget(self.tabMain)
-        elif tab == self.TAB_STATUS:
-            self.setCurrentWidget(self.tabStatus)
-        elif tab == self.TAB_IMPORT:
-            self.setCurrentWidget(self.tabImport)
-        elif tab == self.TAB_REPLACE:
-            self.setCurrentWidget(self.tabReplace)
-        return
-
-    def _saveGuiSettings(self) -> None:
+    def _saveSettings(self) -> None:
         """Save GUI settings."""
         winWidth    = CONFIG.rpxInt(self.width())
         winHeight   = CONFIG.rpxInt(self.height())
-        replaceColW = CONFIG.rpxInt(self.tabReplace.listBox.columnWidth(0))
-        statusColW  = CONFIG.rpxInt(self.tabStatus.listBox.columnWidth(0))
-        importColW  = CONFIG.rpxInt(self.tabImport.listBox.columnWidth(0))
+        statusColW  = CONFIG.rpxInt(self.statusPage.columnWidth())
+        importColW  = CONFIG.rpxInt(self.importPage.columnWidth())
+        replaceColW = CONFIG.rpxInt(self.replacePage.columnWidth())
 
         logger.debug("Saving State: GuiProjectSettings")
-        pOptions = SHARED.project.options
-        pOptions.setValue("GuiProjectSettings", "winWidth",    winWidth)
-        pOptions.setValue("GuiProjectSettings", "winHeight",   winHeight)
-        pOptions.setValue("GuiProjectSettings", "replaceColW", replaceColW)
-        pOptions.setValue("GuiProjectSettings", "statusColW",  statusColW)
-        pOptions.setValue("GuiProjectSettings", "importColW",  importColW)
+        options = SHARED.project.options
+        options.setValue("GuiProjectSettings", "winWidth", winWidth)
+        options.setValue("GuiProjectSettings", "winHeight", winHeight)
+        options.setValue("GuiProjectSettings", "statusColW", statusColW)
+        options.setValue("GuiProjectSettings", "importColW", importColW)
+        options.setValue("GuiProjectSettings", "replaceColW", replaceColW)
 
         return
 
 # END Class GuiProjectSettings
 
 
-class GuiProjectEditMain(QWidget):
+class _SettingsPage(NScrollableForm):
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
-        # The Form
-        self.mainForm = NConfigLayout()
-        self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
-        self.setLayout(self.mainForm)
-
-        self.mainForm.addGroupLabel(self.tr("Project Settings"))
-
         xW = CONFIG.pxInt(250)
-        pData = SHARED.project.data
+        data = SHARED.project.data
+        self.setHelpTextStyle(SHARED.theme.helpText)
+        self.setRowIndent(0)
 
-        self.editName = QLineEdit()
-        self.editName.setMaxLength(200)
-        self.editName.setMaximumWidth(xW)
-        self.editName.setText(pData.name)
-        self.mainForm.addRow(
+        # Project Name
+        self.projName = QLineEdit(self)
+        self.projName.setMaxLength(200)
+        self.projName.setMaximumWidth(xW)
+        self.projName.setText(data.name)
+        self.addRow(
             self.tr("Project name"),
-            self.editName,
-            self.tr("Should be set only once.")
+            self.projName,
+            self.tr("Changing this will affect the backup path.")
         )
 
-        self.editTitle = QLineEdit()
-        self.editTitle.setMaxLength(200)
-        self.editTitle.setMaximumWidth(xW)
-        self.editTitle.setText(pData.title)
-        self.mainForm.addRow(
-            self.tr("Novel title"),
-            self.editTitle,
-            self.tr("Change whenever you want!")
-        )
-
-        self.editAuthor = QLineEdit()
-        self.editAuthor.setMaxLength(200)
-        self.editAuthor.setMaximumWidth(xW)
-        self.editAuthor.setText(pData.author)
-        self.mainForm.addRow(
+        # Project Author
+        self.projAuthor = QLineEdit(self)
+        self.projAuthor.setMaxLength(200)
+        self.projAuthor.setMaximumWidth(xW)
+        self.projAuthor.setText(data.author)
+        self.addRow(
             self.tr("Author(s)"),
-            self.editAuthor,
-            self.tr("Change whenever you want!")
+            self.projAuthor,
+            self.tr("Only used when building the manuscript.")
         )
 
+        # Project Language
         self.projLang = QComboBox(self)
         self.projLang.setMaximumWidth(xW)
         for tag, language in CONFIG.listLanguages(CONFIG.LANG_PROJ):
             self.projLang.addItem(language, tag)
-        self.mainForm.addRow(
+        self.addRow(
             self.tr("Project language"),
             self.projLang,
-            self.tr("Used when building the manuscript.")
+            self.tr("Only used when building the manuscript.")
         )
+        if (idx := self.projLang.findData(data.language)) != -1:
+            self.projLang.setCurrentIndex(idx)
 
-        langIdx = 0
-        if pData.language is not None:
-            langIdx = self.projLang.findData(pData.language)
-        if langIdx == -1:
-            langIdx = self.projLang.findData("en_GB")
-        if langIdx != -1:
-            self.projLang.setCurrentIndex(langIdx)
-
+        # Spell Check Language
         self.spellLang = QComboBox(self)
         self.spellLang.setMaximumWidth(xW)
         self.spellLang.addItem(self.tr("Default"), "None")
         if CONFIG.hasEnchant:
             for tag, language in SHARED.spelling.listDictionaries():
                 self.spellLang.addItem(language, tag)
-        self.mainForm.addRow(
+        self.addRow(
             self.tr("Spell check language"),
             self.spellLang,
             self.tr("Overrides main preferences.")
         )
+        if (idx := self.spellLang.findData(data.spellLang)) != -1:
+            self.spellLang.setCurrentIndex(idx)
 
-        langIdx = 0
-        if pData.spellLang is not None:
-            langIdx = self.spellLang.findData(pData.spellLang)
-        if langIdx != -1:
-            self.spellLang.setCurrentIndex(langIdx)
-
+        # Backup on Close
         self.doBackup = NSwitch(self)
-        self.doBackup.setChecked(not pData.doBackup)
-        self.mainForm.addRow(
-            self.tr("No backup on close"),
+        self.doBackup.setChecked(not data.doBackup)
+        self.addRow(
+            self.tr("Disable backup on close"),
             self.doBackup,
             self.tr("Overrides main preferences.")
         )
 
+        self.finalise()
+
         return
 
-# END Class GuiProjectEditMain
+# END Class _SettingsPage
 
 
-class GuiProjectEditStatus(QWidget):
+class _StatusPage(QWidget):
 
     COL_LABEL = 0
     COL_USAGE = 1
@@ -318,7 +332,7 @@ class GuiProjectEditStatus(QWidget):
         # The List
         # ========
 
-        self.listBox = QTreeWidget()
+        self.listBox = QTreeWidget(self)
         self.listBox.setHeaderLabels([
             self.tr("Label"), self.tr("Usage"),
         ])
@@ -332,16 +346,16 @@ class GuiProjectEditStatus(QWidget):
         # List Controls
         # =============
 
-        self.addButton = QPushButton(SHARED.theme.getIcon("add"), "")
+        self.addButton = QPushButton(SHARED.theme.getIcon("add"), "", self)
         self.addButton.clicked.connect(self._newItem)
 
-        self.delButton = QPushButton(SHARED.theme.getIcon("remove"), "")
+        self.delButton = QPushButton(SHARED.theme.getIcon("remove"), "", self)
         self.delButton.clicked.connect(self._delItem)
 
-        self.upButton = QPushButton(SHARED.theme.getIcon("up"), "")
+        self.upButton = QPushButton(SHARED.theme.getIcon("up"), "", self)
         self.upButton.clicked.connect(lambda: self._moveItem(-1))
 
-        self.dnButton = QPushButton(SHARED.theme.getIcon("down"), "")
+        self.dnButton = QPushButton(SHARED.theme.getIcon("down"), "", self)
         self.dnButton.clicked.connect(lambda: self._moveItem(1))
 
         # Edit Form
@@ -389,6 +403,7 @@ class GuiProjectEditStatus(QWidget):
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(QLabel("<b>%s</b>" % pageLabel))
         self.outerBox.addLayout(self.innerBox)
+        self.outerBox.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(self.outerBox)
 
@@ -409,6 +424,10 @@ class GuiProjectEditStatus(QWidget):
             return newList, self.colDeleted
 
         return [], []
+
+    def columnWidth(self) -> int:
+        """Return the size of the header column."""
+        return self.listBox.columnWidth(0)
 
     ##
     #  Private Slots
@@ -553,10 +572,10 @@ class GuiProjectEditStatus(QWidget):
         else:
             return self.tr("Used by {0} items").format(nUse)
 
-# END Class GuiProjectEditStatus
+# END Class _StatusPage
 
 
-class GuiProjectEditReplace(QWidget):
+class _ReplacePage(QWidget):
 
     COL_KEY  = 0
     COL_REPL = 1
@@ -638,6 +657,7 @@ class GuiProjectEditReplace(QWidget):
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(QLabel("<b>%s</b>" % pageLabel))
         self.outerBox.addLayout(self.innerBox)
+        self.outerBox.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(self.outerBox)
 
@@ -654,6 +674,10 @@ class GuiProjectEditReplace(QWidget):
                 if len(aKey) > 0:
                     new[aKey] = aVal
         return new
+
+    def columnWidth(self) -> int:
+        """Return the size of the header column."""
+        return self.listBox.columnWidth(0)
 
     ##
     #  Internal Functions
@@ -725,4 +749,4 @@ class GuiProjectEditReplace(QWidget):
                 result += c
         return result
 
-# END Class GuiProjectEditReplace
+# END Class _ReplacePage

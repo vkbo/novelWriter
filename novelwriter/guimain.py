@@ -53,7 +53,7 @@ from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.updates import GuiUpdates
 from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.dialogs.preferences import GuiPreferences
-from novelwriter.dialogs.projsettings import GuiProjectSettings
+from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.dictionaries import GuiDictionaries
@@ -809,10 +809,10 @@ class GuiMain(QMainWindow):
 
     @pyqtSlot()
     @pyqtSlot(int)
-    def showProjectSettingsDialog(self, focusTab: int = GuiProjectSettings.TAB_MAIN) -> None:
+    def showProjectSettingsDialog(self, focusTab: int = GuiProjectSettings.PAGE_SETTINGS) -> None:
         """Open the project settings dialog."""
         if SHARED.hasProject:
-            dialog = GuiProjectSettings(self, focusTab=focusTab)
+            dialog = GuiProjectSettings(self, gotoPage=focusTab)
             dialog.newProjectSettingsReady.connect(self._processProjectSettingsChanges)
             dialog.exec_()
         return
@@ -1111,13 +1111,15 @@ class GuiMain(QMainWindow):
 
         return
 
-    @pyqtSlot()
-    def _processProjectSettingsChanges(self) -> None:
+    @pyqtSlot(bool)
+    def _processProjectSettingsChanges(self, rebuildTrees: bool) -> None:
         """Refresh data dependent on project settings."""
         logger.debug("Applying new project settings")
         SHARED.updateSpellCheckLanguage()
         self.itemDetails.refreshDetails()
         self._updateWindowTitle(SHARED.project.data.name)
+        if rebuildTrees:
+            self.rebuildTrees()
         return
 
     @pyqtSlot()
