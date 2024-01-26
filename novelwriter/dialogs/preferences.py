@@ -59,9 +59,9 @@ class GuiPreferences(QDialog):
 
         # Title
         self.titleLabel = NColourLabel(
-            self.tr("Preferences"), SHARED.theme.helpText, parent=self, scale=1.25
+            self.tr("Preferences"), SHARED.theme.helpText,
+            parent=self, scale=NColourLabel.HEADER_SCALE, indent=CONFIG.pxInt(4)
         )
-        self.titleLabel.setIndent(CONFIG.pxInt(4))
 
         # Search Box
         self.searchText = QLineEdit(self)

@@ -38,13 +38,11 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatTime, numberToRoman
 from novelwriter.constants import nwUnicode
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.extensions.configlayout import NColourLabel
+from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrollablePage
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.novelselector import NovelSelector
 
 logger = logging.getLogger(__name__)
-
-HEADER_SIZE = 1.4
 
 
 class GuiNovelDetails(QDialog):
@@ -59,21 +57,18 @@ class GuiNovelDetails(QDialog):
         self.setObjectName("GuiNovelDetails")
         self.setWindowTitle(self.tr("Novel Details"))
 
-        wW = CONFIG.pxInt(500)
-        wH = CONFIG.pxInt(400)
         options = SHARED.project.options
-
-        self.setMinimumSize(wW, wH)
+        self.setMinimumSize(CONFIG.pxInt(500), CONFIG.pxInt(400))
         self.resize(
-            CONFIG.pxInt(options.getInt("GuiNovelDetails", "winWidth", wW)),
-            CONFIG.pxInt(options.getInt("GuiNovelDetails", "winHeight", wH))
+            CONFIG.pxInt(options.getInt("GuiNovelDetails", "winWidth", CONFIG.pxInt(650))),
+            CONFIG.pxInt(options.getInt("GuiNovelDetails", "winHeight", CONFIG.pxInt(500)))
         )
 
         # Title
         self.titleLabel = NColourLabel(
-            self.tr("Novel Details"), SHARED.theme.helpText, parent=self, scale=1.25
+            self.tr("Novel Details"), SHARED.theme.helpText,
+            parent=self, scale=NColourLabel.HEADER_SCALE, indent=CONFIG.pxInt(4)
         )
-        self.titleLabel.setIndent(CONFIG.pxInt(4))
 
         # Novel Selector
         self.novelSelector = NovelSelector(self)
@@ -192,7 +187,7 @@ class GuiNovelDetails(QDialog):
 # END Class GuiNovelDetails
 
 
-class _OverviewPage(QWidget):
+class _OverviewPage(NScrollablePage):
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -204,7 +199,8 @@ class _OverviewPage(QWidget):
 
         # Project Info
         self.projLabel = NColourLabel(
-            self.tr("Project"), SHARED.theme.helpText, parent=self, scale=HEADER_SIZE
+            self.tr("Project"), SHARED.theme.helpText,
+            parent=self, scale=NColourLabel.HEADER_SCALE
         )
 
         self.projName = QLabel("", self)
@@ -227,7 +223,8 @@ class _OverviewPage(QWidget):
 
         # Novel Info
         self.novelLabel = NColourLabel(
-            self.tr("Selected Novel"), SHARED.theme.helpText, parent=self, scale=HEADER_SIZE
+            self.tr("Selected Novel"), SHARED.theme.helpText,
+            parent=self, scale=NColourLabel.HEADER_SCALE
         )
 
         self.novelName = QLabel("", self)
@@ -250,11 +247,10 @@ class _OverviewPage(QWidget):
         self.outerBox.addLayout(self.projForm)
         self.outerBox.addWidget(self.novelLabel)
         self.outerBox.addLayout(self.novelForm)
-        self.outerBox.setContentsMargins(0, 0, 0, 0)
         self.outerBox.setSpacing(sPx)
         self.outerBox.addStretch(1)
 
-        self.setLayout(self.outerBox)
+        self.setCentralLayout(self.outerBox)
 
         return
 
@@ -299,7 +295,7 @@ class _OverviewPage(QWidget):
 # END Class _OverviewPage
 
 
-class _ContentsPage(QWidget):
+class _ContentsPage(NFixedPage):
 
     C_TITLE = 0
     C_WORDS = 1
@@ -320,7 +316,8 @@ class _ContentsPage(QWidget):
 
         # Title
         self.contentLabel = NColourLabel(
-            self.tr("Table of Contents"), SHARED.theme.helpText, parent=self, scale=HEADER_SIZE
+            self.tr("Table of Contents"), SHARED.theme.helpText,
+            parent=self, scale=NColourLabel.HEADER_SCALE
         )
 
         # Contents Tree
@@ -407,20 +404,25 @@ class _ContentsPage(QWidget):
         self.outerBox.addWidget(self.contentLabel)
         self.outerBox.addWidget(self.tocTree)
         self.outerBox.addLayout(self.optionsBox)
-        self.outerBox.setContentsMargins(0, 0, 0, 0)
 
-        self.setLayout(self.outerBox)
+        self.setCentralLayout(self.outerBox)
 
         return
 
     def saveSettings(self) -> None:
         """Save the user GUI settings."""
+        widthCol0 = CONFIG.rpxInt(self.tocTree.columnWidth(0))
+        widthCol1 = CONFIG.rpxInt(self.tocTree.columnWidth(1))
+        widthCol2 = CONFIG.rpxInt(self.tocTree.columnWidth(2))
+        widthCol3 = CONFIG.rpxInt(self.tocTree.columnWidth(3))
+        widthCol4 = CONFIG.rpxInt(self.tocTree.columnWidth(4))
+
         options = SHARED.project.options
-        options.setValue("GuiNovelDetails", "widthCol0",    self.tocTree.columnWidth(0))
-        options.setValue("GuiNovelDetails", "widthCol1",    self.tocTree.columnWidth(1))
-        options.setValue("GuiNovelDetails", "widthCol2",    self.tocTree.columnWidth(2))
-        options.setValue("GuiNovelDetails", "widthCol3",    self.tocTree.columnWidth(3))
-        options.setValue("GuiNovelDetails", "widthCol4",    self.tocTree.columnWidth(4))
+        options.setValue("GuiNovelDetails", "widthCol0",    widthCol0)
+        options.setValue("GuiNovelDetails", "widthCol1",    widthCol1)
+        options.setValue("GuiNovelDetails", "widthCol2",    widthCol2)
+        options.setValue("GuiNovelDetails", "widthCol3",    widthCol3)
+        options.setValue("GuiNovelDetails", "widthCol4",    widthCol4)
         options.setValue("GuiNovelDetails", "wordsPerPage", self.wpValue.value())
         options.setValue("GuiNovelDetails", "countFrom",    self.poValue.value())
         options.setValue("GuiNovelDetails", "clearDouble",  self.dblValue.isChecked())

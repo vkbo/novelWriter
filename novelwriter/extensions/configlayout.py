@@ -6,6 +6,8 @@ File History:
 Created: 2020-05-03 [0.4.5] NConfigLayout, NColourLabel
 Created: 2023-05-23 [2.1b1] NSimpleLayout
 Created: 2024-01-08 [2.3b1] NScrollableForm
+Created: 2024-01-26 [2.3b1] NScrollablePage
+Created: 2024-01-26 [2.3b1] NFixedPage
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen
@@ -28,15 +30,57 @@ from __future__ import annotations
 from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QAbstractButton, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QScrollArea, QSizePolicy,
-    QVBoxLayout, QWidget
+    QAbstractButton, QFrame, QGridLayout, QHBoxLayout, QLabel, QLayout,
+    QScrollArea, QSizePolicy, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG
 
-FONT_SCALE = 0.9
+DEFAULT_SCALE = 0.9
 RIGHT_TOP = Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignTop
 LEFT_TOP = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop
+
+
+class NFixedPage(QFrame):
+    """Extension: Fixed Page Widget
+
+    A custom widget that holds a layout. This is just a wrapper around a
+    QFrame that sets the same frame style as the other Page widgets.
+    """
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
+        self.setFrameShadow(QFrame.Shadow.Sunken)
+        self.setFrameShape(QFrame.Shape.StyledPanel)
+        self.setCentralLayout = self.setLayout
+        return
+
+# END Class NFixedPage
+
+
+class NScrollablePage(QScrollArea):
+    """Extension: Scrollable Page Widget
+
+    A custom widget that holds a layout within a scrollable area.
+    """
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
+        self._widget = QWidget(self)
+        self.setWidget(self._widget)
+        self.setWidgetResizable(True)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.setFrameShadow(QFrame.Shadow.Sunken)
+        self.setFrameShape(QFrame.Shape.StyledPanel)
+        return
+
+    def setCentralLayout(self, layout: QLayout) -> None:
+        """Set the central layout of the scroll page."""
+        self._widget.setLayout(layout)
+        return
+
+# END Class NScrollablePage
 
 
 class NScrollableForm(QScrollArea):
@@ -48,8 +92,9 @@ class NScrollableForm(QScrollArea):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
         self._helpCol = QColor(0, 0, 0)
-        self._fontScale = FONT_SCALE
+        self._fontScale = DEFAULT_SCALE
         self._first = True
+        self._indent = CONFIG.pxInt(12)
 
         self._sections: dict[int, QLabel] = {}
         self._editable: dict[str, NColourLabel] = {}
@@ -65,6 +110,8 @@ class NScrollableForm(QScrollArea):
         self.setWidgetResizable(True)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.setFrameShadow(QFrame.Shadow.Sunken)
+        self.setFrameShape(QFrame.Shape.StyledPanel)
 
         return
 
@@ -80,7 +127,7 @@ class NScrollableForm(QScrollArea):
     #  Setters
     ##
 
-    def setHelpTextStyle(self, color: QColor, scale: float = FONT_SCALE) -> None:
+    def setHelpTextStyle(self, color: QColor, scale: float = DEFAULT_SCALE) -> None:
         """Set the text color for the help text."""
         self._helpCol = color
         self._fontScale = scale
@@ -90,6 +137,11 @@ class NScrollableForm(QScrollArea):
         """Set the text for the help label."""
         if qHelp := self._editable.get(key):
             qHelp.setText(text)
+        return
+
+    def setRowIndent(self, indent: int) -> None:
+        """Set the indentation of each row."""
+        self._indent = max(indent, 0)
         return
 
     ##
@@ -123,37 +175,43 @@ class NScrollableForm(QScrollArea):
         return
 
     def addRow(self, label: str, widget: QWidget, helpText: str = "", unit: str | None = None,
-               button: QWidget | None = None, editable: str | None = None) -> None:
+               button: QWidget | None = None, editable: str | None = None,
+               stretch: tuple[int, int] = (0, 0)) -> None:
         """Add a label and a widget as a new row of the form."""
         row = QHBoxLayout()
-        row.setSpacing(CONFIG.pxInt(4))
+        row.setSpacing(CONFIG.pxInt(12))
 
-        mPx = CONFIG.pxInt(12)
         qLabel = QLabel(label, self)
-        qLabel.setIndent(mPx)
+        qLabel.setIndent(self._indent)
         qLabel.setBuddy(widget)
 
         if helpText:
-            qHelp = NColourLabel(str(helpText), self._helpCol, scale=self._fontScale, wrap=True)
-            qHelp.setIndent(mPx)
+            qHelp = NColourLabel(
+                str(helpText), self._helpCol, parent=self,
+                scale=self._fontScale, wrap=True, indent=self._indent
+            )
             labelBox = QVBoxLayout()
             labelBox.addWidget(qLabel)
             labelBox.addWidget(qHelp)
             labelBox.setSpacing(0)
-            labelBox.addStretch(1)
-            row.addLayout(labelBox)
+            row.addLayout(labelBox, stretch[0])
             if editable:
                 self._editable[editable] = qHelp
         else:
-            row.addWidget(qLabel)
-
-        row.addSpacing(mPx)
-        row.addWidget(widget)
+            row.addWidget(qLabel, stretch[0])
 
         if isinstance(unit, str):
-            row.addWidget(QLabel(unit, self))
+            box = QHBoxLayout()
+            box.addWidget(widget)
+            box.addWidget(QLabel(unit, self))
+            row.addLayout(box, stretch[1])
         elif isinstance(button, QAbstractButton):
-            row.addWidget(button)
+            box = QHBoxLayout()
+            box.addWidget(widget)
+            box.addWidget(button)
+            row.addLayout(box, stretch[1])
+        else:
+            row.addWidget(widget, stretch[1])
 
         self._layout.addLayout(row)
         self._index[label.strip()] = widget
@@ -177,7 +235,7 @@ class NConfigLayout(QGridLayout):
 
         self._nextRow = 0
         self._helpCol = QColor(0, 0, 0)
-        self._fontScale = FONT_SCALE
+        self._fontScale = DEFAULT_SCALE
         self._itemMap = {}
 
         wSp = CONFIG.pxInt(8)
@@ -185,16 +243,6 @@ class NConfigLayout(QGridLayout):
         self.setVerticalSpacing(wSp)
         self.setColumnStretch(0, 1)
 
-        return
-
-    ##
-    #  Getters and Setters
-    ##
-
-    def setHelpTextStyle(self, color: QColor, scale: float = FONT_SCALE) -> None:
-        """Set the text color for the help text."""
-        self._helpCol = color if isinstance(color, QColor) else QColor(*color)
-        self._fontScale = scale
         return
 
     ##
@@ -212,8 +260,8 @@ class NConfigLayout(QGridLayout):
         self._nextRow += 1
         return
 
-    def addRow(self, label: str, widget: QWidget, helpText: str | None = None,
-               unit: str | None = None, button: QWidget | None = None) -> int:
+    def addRow(self, label: str, widget: QWidget, unit: str | None = None,
+               button: QWidget | None = None) -> int:
         """Add a label and a widget as a new row of the grid."""
         wSp = CONFIG.pxInt(8)
         qLabel = QLabel(label)
@@ -221,17 +269,7 @@ class NConfigLayout(QGridLayout):
         qLabel.setBuddy(widget)
 
         qHelp = None
-        if helpText is not None:
-            qHelp = NColourLabel(str(helpText), self._helpCol, scale=self._fontScale, wrap=True)
-            qHelp.setIndent(wSp)
-            labelBox = QVBoxLayout()
-            labelBox.addWidget(qLabel)
-            labelBox.addWidget(qHelp)
-            labelBox.setSpacing(0)
-            labelBox.addStretch(1)
-            self.addLayout(labelBox, self._nextRow, 0, 1, 1, LEFT_TOP)
-        else:
-            self.addWidget(qLabel, self._nextRow, 0, 1, 1, LEFT_TOP)
+        self.addWidget(qLabel, self._nextRow, 0, 1, 1, LEFT_TOP)
 
         if isinstance(unit, str):
             controlBox = QHBoxLayout()
@@ -248,12 +286,7 @@ class NConfigLayout(QGridLayout):
             self.addLayout(controlBox, self._nextRow, 1, 1, 1, RIGHT_TOP)
 
         else:
-            if isinstance(widget, QLineEdit):
-                qLayout = QHBoxLayout()
-                qLayout.addWidget(widget)
-                self.addLayout(qLayout, self._nextRow, 1, 1, 1, RIGHT_TOP)
-            else:
-                self.addWidget(widget, self._nextRow, 1, 1, 1, RIGHT_TOP)
+            self.addWidget(widget, self._nextRow, 1, 1, 1, RIGHT_TOP)
 
         self.setRowStretch(self._nextRow, 0)
         self.setRowStretch(self._nextRow+1, 1)
@@ -321,17 +354,21 @@ class NColourLabel(QLabel):
     optionally at a specific size, and word wrapped.
     """
 
+    HELP_SCALE = DEFAULT_SCALE
+    HEADER_SCALE = 1.25
+
     def __init__(self, text: str, color: QColor, parent: QWidget | None = None,
-                 scale: float = FONT_SCALE, wrap: bool = False) -> None:
+                 scale: float = HELP_SCALE, wrap: bool = False, indent: int = 0) -> None:
         super().__init__(text, parent=parent)
 
-        lblCol = self.palette()
-        lblCol.setColor(QPalette.WindowText, color)
-        self.setPalette(lblCol)
+        font = self.font()
+        font.setPointSizeF(scale*font.pointSizeF())
+        colour = self.palette()
+        colour.setColor(QPalette.WindowText, color)
 
-        lblFont = self.font()
-        lblFont.setPointSizeF(scale*lblFont.pointSizeF())
-        self.setFont(lblFont)
+        self.setPalette(colour)
+        self.setFont(font)
+        self.setIndent(indent)
 
         if wrap:
             self.setWordWrap(True)
