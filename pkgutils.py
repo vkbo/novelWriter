@@ -864,6 +864,7 @@ def makeForLaunchpad(doSign: bool = False, isFirst: bool = False) -> None:
         ("20.04", "focal"),
         ("22.04", "jammy"),
         ("23.10", "mantic"),
+        ("24.04", "noble"),
     ]
 
     print("Building Ubuntu packages for:")
