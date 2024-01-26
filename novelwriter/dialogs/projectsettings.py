@@ -90,6 +90,8 @@ class GuiProjectSettings(QDialog):
         self.buttonBox.rejected.connect(self.close)
 
         # Content
+        SHARED.project.countStatus()
+
         self.settingsPage = _SettingsPage(self)
         self.statusPage = _StatusPage(self, True)
         self.importPage = _StatusPage(self, False)
@@ -307,12 +309,12 @@ class _StatusPage(NFixedPage):
         super().__init__(parent=parent)
 
         if isStatus:
-            self.theStatus = SHARED.project.data.itemStatus
-            pageLabel = self.tr("Novel File Status Levels")
+            status = SHARED.project.data.itemStatus
+            pageLabel = self.tr("Novel Document Status Levels")
             colSetting = "statusColW"
         else:
-            self.theStatus = SHARED.project.data.itemImport
-            pageLabel = self.tr("Note File Importance Levels")
+            status = SHARED.project.data.itemImport
+            pageLabel = self.tr("Project Note Importance Levels")
             colSetting = "importColW"
 
         wCol0 = CONFIG.pxInt(
@@ -333,14 +335,12 @@ class _StatusPage(NFixedPage):
 
         # List Box
         self.listBox = QTreeWidget(self)
-        self.listBox.setHeaderLabels([
-            self.tr("Label"), self.tr("Usage"),
-        ])
+        self.listBox.setHeaderLabels([self.tr("Label"), self.tr("Usage")])
         self.listBox.itemSelectionChanged.connect(self._selectedItem)
         self.listBox.setColumnWidth(self.COL_LABEL, wCol0)
         self.listBox.setIndentation(0)
 
-        for key, entry in self.theStatus.items():
+        for key, entry in status.items():
             self._addItem(key, entry["name"], entry["cols"], entry["count"])
 
         # List Controls
