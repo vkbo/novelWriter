@@ -131,7 +131,7 @@ def main(sysArgs: list | None = None):
         elif inOpt == "--debug":
             CONFIG.isDebug = True
             logLevel = logging.DEBUG
-            logFormat  = "[{asctime:}]  {filename:>17}:{lineno:<4d}  {levelname:8}  {message:}"
+            logFormat  = "[{asctime:}]  {filename:>18}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt == "--style":
             qtStyle = inArg
         elif inOpt == "--config":
