@@ -482,10 +482,6 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     project.data.setName("  A Name ")
     assert project.data.name == "A Name"
 
-    # Project Title
-    project.data.setTitle("  A Title ")
-    assert project.data.title == "A Title"
-
     # Project Author
     project.data.setAuthor("  Jane\tDoe ")
     assert project.data.author == "Jane Doe"

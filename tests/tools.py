@@ -179,7 +179,6 @@ def buildTestProject(obj: object, projPath: Path) -> None:
 
     project.data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")
     project.data.setName("New Project")
-    project.data.setTitle("New Novel")
     project.data.setAuthor("Jane Doe")
 
     # Creating a minimal project with a few root folders and a

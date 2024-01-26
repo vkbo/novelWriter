@@ -283,9 +283,7 @@ class ToOdt(Tokenizer):
         # ===============
 
         if self._headerText == "":
-            theTitle = self._project.data.title or self._project.data.name
-            theAuth = self._project.data.author
-            self._headerText = f"{theTitle} / {theAuth} /"
+            self._headerText = f"{self._project.data.name} / {self._project.data.author} /"
 
         # Create Roots
         # ============
@@ -373,7 +371,7 @@ class ToOdt(Tokenizer):
 
         # Dublin Core Meta Data
         xMeta = ET.SubElement(self._xMeta, _mkTag("dc", "title"))
-        xMeta.text = self._project.data.title or self._project.data.name
+        xMeta.text = self._project.data.name
 
         xMeta = ET.SubElement(self._xMeta, _mkTag("dc", "date"))
         xMeta.text = timeStamp

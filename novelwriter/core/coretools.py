@@ -374,7 +374,6 @@ class ProjectBuilder:
 
         project.data.setUuid(None)
         project.data.setName(projName)
-        project.data.setTitle(projName)
         project.data.setAuthor(projAuthor)
         project.data.setLanguage(projLang)
         project.setDefaultStatusImport()
@@ -383,7 +382,7 @@ class ProjectBuilder:
         # Add Root Folders
         hNovelRoot = project.newRoot(nwItemClass.NOVEL)
         hTitlePage = project.newFile(lblTitlePage, hNovelRoot)
-        novelTitle = project.data.title if project.data.title else project.data.name
+        novelTitle = project.data.name
 
         titlePage = f"#! {novelTitle}\n\n"
         if project.data.author:
