@@ -3,8 +3,7 @@ novelWriter – Custom Widget: Config Layout
 ==========================================
 
 File History:
-Created: 2020-05-03 [0.4.5] NConfigLayout, NColourLabel
-Created: 2023-05-23 [2.1b1] NSimpleLayout
+Created: 2020-05-03 [0.4.5] NColourLabel
 Created: 2024-01-08 [2.3b1] NScrollableForm
 Created: 2024-01-26 [2.3b1] NScrollablePage
 Created: 2024-01-26 [2.3b1] NFixedPage
@@ -30,8 +29,8 @@ from __future__ import annotations
 from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QAbstractButton, QFrame, QGridLayout, QHBoxLayout, QLabel, QLayout,
-    QScrollArea, QSizePolicy, QVBoxLayout, QWidget
+    QAbstractButton, QFrame, QHBoxLayout, QLabel, QLayout, QScrollArea,
+    QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG
@@ -173,7 +172,7 @@ class NScrollableForm(QScrollArea):
             self.verticalScrollBar().setValue(yPos)
         return
 
-    def addGroupLabel(self, label: str, identifier: int) -> None:
+    def addGroupLabel(self, label: str, identifier: int | None = None) -> None:
         """Add a text label to separate groups of settings."""
         hM = CONFIG.pxInt(4)
         qLabel = QLabel(f"<b>{label}</b>", self)
@@ -181,13 +180,14 @@ class NScrollableForm(QScrollArea):
         if not self._first:
             self._layout.addSpacing(5*hM)
         self._layout.addWidget(qLabel)
-        self._sections[identifier] = qLabel
         self._first = False
+        if identifier is not None:
+            self._sections[identifier] = qLabel
         return
 
     def addRow(self, label: str, widget: QWidget, helpText: str = "", unit: str | None = None,
                button: QWidget | None = None, editable: str | None = None,
-               stretch: tuple[int, int] = (0, 0)) -> None:
+               stretch: tuple[int, int] = (1, 0)) -> None:
         """Add a label and a widget as a new row of the form."""
         row = QHBoxLayout()
         row.setSpacing(CONFIG.pxInt(12))
@@ -202,8 +202,8 @@ class NScrollableForm(QScrollArea):
                 scale=self._fontScale, wrap=True, indent=self._indent
             )
             labelBox = QVBoxLayout()
-            labelBox.addWidget(qLabel)
-            labelBox.addWidget(qHelp)
+            labelBox.addWidget(qLabel, 0)
+            labelBox.addWidget(qHelp, 1)
             labelBox.setSpacing(0)
             row.addLayout(labelBox, stretch[0])
             if editable:
@@ -213,13 +213,13 @@ class NScrollableForm(QScrollArea):
 
         if isinstance(unit, str):
             box = QHBoxLayout()
-            box.addWidget(widget)
-            box.addWidget(QLabel(unit, self))
+            box.addWidget(widget, 1)
+            box.addWidget(QLabel(unit, self), 0)
             row.addLayout(box, stretch[1])
         elif isinstance(button, QAbstractButton):
             box = QHBoxLayout()
-            box.addWidget(widget)
-            box.addWidget(button)
+            box.addWidget(widget, 1)
+            box.addWidget(button, 0)
             row.addLayout(box, stretch[1])
         else:
             row.addWidget(widget, stretch[1])
@@ -237,125 +237,6 @@ class NScrollableForm(QScrollArea):
         return
 
 # END Class NScrollableForm
-
-
-class NConfigLayout(QGridLayout):
-
-    def __init__(self) -> None:
-        super().__init__()
-
-        self._nextRow = 0
-        self._helpCol = QColor(0, 0, 0)
-        self._fontScale = DEFAULT_SCALE
-        self._itemMap = {}
-
-        wSp = CONFIG.pxInt(8)
-        self.setHorizontalSpacing(wSp)
-        self.setVerticalSpacing(wSp)
-        self.setColumnStretch(0, 1)
-
-        return
-
-    ##
-    #  Class Methods
-    ##
-
-    def addGroupLabel(self, label: str) -> None:
-        """Add a text label to separate groups of settings."""
-        hM = CONFIG.pxInt(4)
-        qLabel = QLabel("<b>%s</b>" % label)
-        qLabel.setContentsMargins(0, hM, 0, hM)
-        self.addWidget(qLabel, self._nextRow, 0, 1, 2, Qt.AlignLeft)
-        self.setRowStretch(self._nextRow, 0)
-        self.setRowStretch(self._nextRow + 1, 1)
-        self._nextRow += 1
-        return
-
-    def addRow(self, label: str, widget: QWidget, unit: str | None = None,
-               button: QWidget | None = None) -> int:
-        """Add a label and a widget as a new row of the grid."""
-        wSp = CONFIG.pxInt(8)
-        qLabel = QLabel(label)
-        qLabel.setIndent(wSp)
-        qLabel.setBuddy(widget)
-
-        qHelp = None
-        self.addWidget(qLabel, self._nextRow, 0, 1, 1, LEFT_TOP)
-
-        if isinstance(unit, str):
-            controlBox = QHBoxLayout()
-            controlBox.addWidget(widget, 0, Qt.AlignVCenter)
-            controlBox.addWidget(QLabel(unit), 0, Qt.AlignVCenter)
-            controlBox.setSpacing(wSp)
-            self.addLayout(controlBox, self._nextRow, 1, 1, 1, RIGHT_TOP)
-
-        elif isinstance(button, QAbstractButton):
-            controlBox = QHBoxLayout()
-            controlBox.addWidget(widget, 0, Qt.AlignVCenter)
-            controlBox.addWidget(button, 0, Qt.AlignVCenter)
-            controlBox.setSpacing(wSp)
-            self.addLayout(controlBox, self._nextRow, 1, 1, 1, RIGHT_TOP)
-
-        else:
-            self.addWidget(widget, self._nextRow, 1, 1, 1, RIGHT_TOP)
-
-        self.setRowStretch(self._nextRow, 0)
-        self.setRowStretch(self._nextRow+1, 1)
-
-        self._itemMap[self._nextRow] = (qLabel, qHelp, widget)
-        self._nextRow += 1
-
-        return self._nextRow - 1
-
-# END Class NConfigLayout
-
-
-class NSimpleLayout(QGridLayout):
-    """Similar to NConfigLayout, but only has a label + widget two
-    column layout.
-    """
-
-    def __init__(self, stretcColumn: int = 0) -> None:
-        super().__init__()
-        self._nextRow = 0
-
-        wSp = CONFIG.pxInt(8)
-        self.setHorizontalSpacing(wSp)
-        self.setVerticalSpacing(wSp)
-        self.setColumnStretch(stretcColumn, 1)
-
-        return
-
-    ##
-    #  Methods
-    ##
-
-    def addGroupLabel(self, label: str) -> None:
-        """Add a text label to separate groups of settings."""
-        hM = CONFIG.pxInt(4)
-        qLabel = QLabel("<b>%s</b>" % label)
-        qLabel.setContentsMargins(0, hM, 0, hM)
-        self.addWidget(qLabel, self._nextRow, 0, 1, 2, Qt.AlignLeft)
-        self.setRowStretch(self._nextRow, 0)
-        self.setRowStretch(self._nextRow + 1, 1)
-        self._nextRow += 1
-        return
-
-    def addRow(self, label: str, widget: QWidget) -> None:
-        """Add a label and a widget as a new row of the grid."""
-        wSp = CONFIG.pxInt(8)
-        qLabel = QLabel(label)
-        qLabel.setIndent(wSp)
-        qLabel.setBuddy(widget)
-        self.addWidget(qLabel, self._nextRow, 0, 1, 1, LEFT_TOP)
-        self.addWidget(widget, self._nextRow, 1, 1, 1, RIGHT_TOP)
-        self.setRowStretch(self._nextRow, 0)
-        self.setRowStretch(self._nextRow+1, 1)
-        self._nextRow += 1
-
-        return
-
-# END Class NSimpleLayout
 
 
 class NColourLabel(QLabel):
@@ -380,10 +261,7 @@ class NColourLabel(QLabel):
         self.setPalette(colour)
         self.setFont(font)
         self.setIndent(indent)
-
-        if wrap:
-            self.setWordWrap(True)
-            self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.setWordWrap(wrap)
 
         return
 
