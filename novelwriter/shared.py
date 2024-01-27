@@ -27,7 +27,7 @@ from __future__ import annotations
 import logging
 
 from time import time
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar
 from pathlib import Path
 
 from PyQt5.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal
@@ -41,6 +41,8 @@ if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
+
+NWWidget = TypeVar("NWWidget", bound=QWidget)
 
 
 class SharedData(QObject):
@@ -214,6 +216,13 @@ class SharedData(QObject):
         """Queue a runnable in the application thread pool."""
         QThreadPool.globalInstance().start(runnable, priority=priority)
         return
+
+    def findTopLevelWidget(self, kind: type[NWWidget]) -> NWWidget | None:
+        """Find a top level widget."""
+        for widget in self.mainGui.children():
+            if isinstance(widget, kind):
+                return widget
+        return None
 
     ##
     #  Signal Proxy
