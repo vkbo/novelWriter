@@ -52,7 +52,18 @@ class NFixedPage(QFrame):
         super().__init__(parent=parent)
         self.setFrameShadow(QFrame.Shadow.Sunken)
         self.setFrameShape(QFrame.Shape.StyledPanel)
-        self.setCentralLayout = self.setLayout
+        return
+
+    def setCentralLayout(self, layout: QLayout) -> None:
+        """Set a layout as the central object."""
+        self.setLayout(layout)
+        return
+
+    def setCentralWidget(self, widget: QWidget) -> None:
+        """Set a layout as the central object."""
+        layout = QHBoxLayout()
+        layout.addWidget(widget)
+        self.setLayout(layout)
         return
 
 # END Class NFixedPage

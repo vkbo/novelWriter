@@ -42,7 +42,9 @@ from novelwriter.constants import nwHeadFmt, nwLabels, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
-from novelwriter.extensions.configlayout import NConfigLayout, NSimpleLayout
+from novelwriter.extensions.configlayout import (
+    NColourLabel, NConfigLayout, NFixedPage, NScrollablePage, NSimpleLayout
+)
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -90,34 +92,37 @@ class GuiBuildSettings(QDialog):
             CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "winHeight", hWin))
         )
 
-        # Options SideBar
-        # ===============
+        # Title
+        self.titleLabel = NColourLabel(
+            self.tr("Manuscript Build Settings"), SHARED.theme.helpText,
+            parent=self, scale=NColourLabel.HEADER_SCALE, indent=CONFIG.pxInt(4)
+        )
 
-        self.optSideBar = NPagedSideBar(self)
-        self.optSideBar.setMinimumWidth(mPx)
-        self.optSideBar.setMaximumWidth(mPx)
-        self.optSideBar.setLabelColor(SHARED.theme.helpText)
+        # Settings Name
+        self.lblBuildName = QLabel(self.tr("Name"))
+        self.editBuildName = QLineEdit(self)
 
-        self.optSideBar.addLabel(self.tr("Options"))
-        self.optSideBar.addButton(self.tr("Selection"), self.OPT_FILTERS)
-        self.optSideBar.addButton(self.tr("Headings"), self.OPT_HEADINGS)
-        self.optSideBar.addButton(self.tr("Content"), self.OPT_CONTENT)
-        self.optSideBar.addButton(self.tr("Format"), self.OPT_FORMAT)
-        self.optSideBar.addButton(self.tr("Output"), self.OPT_OUTPUT)
+        # SideBar
+        self.sidebar = NPagedSideBar(self)
+        self.sidebar.setMinimumWidth(mPx)
+        self.sidebar.setMaximumWidth(mPx)
+        self.sidebar.setLabelColor(SHARED.theme.helpText)
 
-        self.optSideBar.buttonClicked.connect(self._stackPageSelected)
+        self.sidebar.addButton(self.tr("Selection"), self.OPT_FILTERS)
+        self.sidebar.addButton(self.tr("Headings"), self.OPT_HEADINGS)
+        self.sidebar.addButton(self.tr("Content"), self.OPT_CONTENT)
+        self.sidebar.addButton(self.tr("Format"), self.OPT_FORMAT)
+        self.sidebar.addButton(self.tr("Output"), self.OPT_OUTPUT)
 
-        # Options Area
-        # ============
+        self.sidebar.buttonClicked.connect(self._stackPageSelected)
 
-        # Create Tabs
+        # Content
         self.optTabSelect = _FilterTab(self, self._build)
         self.optTabHeadings = _HeadingsTab(self, self._build)
         self.optTabContent = _ContentTab(self, self._build)
         self.optTabFormat = _FormatTab(self, self._build)
         self.optTabOutput = _OutputTab(self, self._build)
 
-        # Add Tabs
         self.toolStack = QStackedWidget(self)
         self.toolStack.addWidget(self.optTabSelect)
         self.toolStack.addWidget(self.optTabHeadings)
@@ -125,38 +130,36 @@ class GuiBuildSettings(QDialog):
         self.toolStack.addWidget(self.optTabContent)
         self.toolStack.addWidget(self.optTabOutput)
 
-        # Main Settings + Buttons
-        # =======================
-
-        self.lblBuildName = QLabel(self.tr("Name"))
-        self.editBuildName = QLineEdit()
-        self.dlgButtons = QDialogButtonBox(
-            QDialogButtonBox.Apply | QDialogButtonBox.Save | QDialogButtonBox.Close
+        # Buttons
+        self.buttonBox = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Apply
+            | QDialogButtonBox.StandardButton.Save
+            | QDialogButtonBox.StandardButton.Close
         )
-        self.dlgButtons.clicked.connect(self._dialogButtonClicked)
+        self.buttonBox.clicked.connect(self._dialogButtonClicked)
 
-        self.buttonBox = QHBoxLayout()
-        self.buttonBox.addWidget(self.lblBuildName)
-        self.buttonBox.addWidget(self.editBuildName)
-        self.buttonBox.addWidget(self.dlgButtons)
-
-        # Assemble GUI
-        # ============
+        # Assemble
+        self.topBox = QHBoxLayout()
+        self.topBox.addWidget(self.titleLabel)
+        self.topBox.addStretch(1)
+        self.topBox.addWidget(self.lblBuildName)
+        self.topBox.addWidget(self.editBuildName, 1)
 
         self.mainBox = QHBoxLayout()
-        self.mainBox.addWidget(self.optSideBar)
+        self.mainBox.addWidget(self.sidebar)
         self.mainBox.addWidget(self.toolStack)
         self.mainBox.setContentsMargins(0, 0, 0, 0)
 
         self.outerBox = QVBoxLayout()
+        self.outerBox.addLayout(self.topBox)
         self.outerBox.addLayout(self.mainBox)
-        self.outerBox.addLayout(self.buttonBox)
+        self.outerBox.addWidget(self.buttonBox)
         self.outerBox.setSpacing(CONFIG.pxInt(12))
 
         self.setLayout(self.outerBox)
 
         # Set Default Tab
-        self.optSideBar.setSelected(self.OPT_FILTERS)
+        self.sidebar.setSelected(self.OPT_FILTERS)
 
         logger.debug("Ready: GuiBuildSettings")
 
@@ -186,6 +189,21 @@ class GuiBuildSettings(QDialog):
         return self._build.buildID
 
     ##
+    #  Events
+    ##
+
+    def closeEvent(self, event: QEvent) -> None:
+        """Capture the user closing the window so we can save
+        settings.
+        """
+        logger.debug("Closing: GuiBuildSettings")
+        self._askToSaveBuild()
+        self._saveSettings()
+        event.accept()
+        self.deleteLater()
+        return
+
+    ##
     #  Private Slots
     ##
 
@@ -207,7 +225,7 @@ class GuiBuildSettings(QDialog):
     @pyqtSlot("QAbstractButton*")
     def _dialogButtonClicked(self, button: QAbstractButton) -> None:
         """Handle button clicks from the dialog button box."""
-        role = self.dlgButtons.buttonRole(button)
+        role = self.buttonBox.buttonRole(button)
         if role == QDialogButtonBox.ApplyRole:
             self._emitBuildData()
         elif role == QDialogButtonBox.AcceptRole:
@@ -215,21 +233,6 @@ class GuiBuildSettings(QDialog):
             self.close()
         elif role == QDialogButtonBox.RejectRole:
             self.close()
-        return
-
-    ##
-    #  Events
-    ##
-
-    def closeEvent(self, event: QEvent) -> None:
-        """Capture the user closing the window so we can save
-        settings.
-        """
-        logger.debug("Closing: GuiBuildSettings")
-        self._askToSaveBuild()
-        self._saveSettings()
-        event.accept()
-        self.deleteLater()
         return
 
     ##
@@ -279,7 +282,7 @@ class GuiBuildSettings(QDialog):
 # END Class GuiBuildSettings
 
 
-class _FilterTab(QWidget):
+class _FilterTab(NFixedPage):
 
     C_DATA   = 0
     C_NAME   = 0
@@ -395,11 +398,7 @@ class _FilterTab(QWidget):
             CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "filterWidth", 300))
         ])
 
-        self.outerBox = QHBoxLayout()
-        self.outerBox.addWidget(self.mainSplit)
-        self.outerBox.setContentsMargins(0, 0, 0, 0)
-
-        self.setLayout(self.outerBox)
+        self.setCentralWidget(self.mainSplit)
 
         return
 
@@ -580,7 +579,7 @@ class _FilterTab(QWidget):
 # END Class _FilterTab
 
 
-class _HeadingsTab(QWidget):
+class _HeadingsTab(NScrollablePage):
 
     EDIT_TITLE   = 1
     EDIT_CHAPTER = 2
@@ -758,7 +757,7 @@ class _HeadingsTab(QWidget):
         self.outerBox.addLayout(self.editFormBox)
         self.outerBox.addStretch(1)
 
-        self.setLayout(self.outerBox)
+        self.setCentralLayout(self.outerBox)
 
         return
 
@@ -825,6 +824,7 @@ class _HeadingsTab(QWidget):
     #  Private Slots
     ##
 
+    @pyqtSlot()
     def _saveFormat(self) -> None:
         """Save the format from the edit text box."""
         heading = self._editing

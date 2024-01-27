@@ -53,19 +53,19 @@ def testBuildSettings_Init(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockRnd
     bSettings.loadContent()
 
     # Flip through pages
-    bSettings.optSideBar._group.button(bSettings.OPT_OUTPUT).click()
+    bSettings.sidebar._group.button(bSettings.OPT_OUTPUT).click()
     assert isinstance(bSettings.toolStack.currentWidget(), _OutputTab)
 
-    bSettings.optSideBar._group.button(bSettings.OPT_FORMAT).click()
+    bSettings.sidebar._group.button(bSettings.OPT_FORMAT).click()
     assert isinstance(bSettings.toolStack.currentWidget(), _FormatTab)
 
-    bSettings.optSideBar._group.button(bSettings.OPT_CONTENT).click()
+    bSettings.sidebar._group.button(bSettings.OPT_CONTENT).click()
     assert isinstance(bSettings.toolStack.currentWidget(), _ContentTab)
 
-    bSettings.optSideBar._group.button(bSettings.OPT_HEADINGS).click()
+    bSettings.sidebar._group.button(bSettings.OPT_HEADINGS).click()
     assert isinstance(bSettings.toolStack.currentWidget(), _HeadingsTab)
 
-    bSettings.optSideBar._group.button(bSettings.OPT_FILTERS).click()
+    bSettings.sidebar._group.button(bSettings.OPT_FILTERS).click()
     assert isinstance(bSettings.toolStack.currentWidget(), _FilterTab)
 
     # Check dialog buttons
@@ -80,7 +80,7 @@ def testBuildSettings_Init(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockRnd
     # Capture Apply button
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        bSettings._dialogButtonClicked(bSettings.dlgButtons.button(QDialogButtonBox.Apply))
+        bSettings._dialogButtonClicked(bSettings.buttonBox.button(QDialogButtonBox.Apply))
 
     assert triggered
 
@@ -89,7 +89,7 @@ def testBuildSettings_Init(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockRnd
 
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        bSettings._dialogButtonClicked(bSettings.dlgButtons.button(QDialogButtonBox.Save))
+        bSettings._dialogButtonClicked(bSettings.buttonBox.button(QDialogButtonBox.Save))
 
     assert triggered
 
@@ -106,7 +106,7 @@ def testBuildSettings_Init(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockRnd
     assert triggered
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.dlgButtons.button(QDialogButtonBox.Close))
+    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QDialogButtonBox.Close))
     # qtbot.stop()
 
 # END Test testBuildSettings_Init
@@ -141,7 +141,7 @@ def testBuildSettings_Filter(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockR
     bSettings.loadContent()
 
     filterTab = bSettings.optTabSelect
-    bSettings.optSideBar._group.button(bSettings.OPT_FILTERS).click()
+    bSettings.sidebar._group.button(bSettings.OPT_FILTERS).click()
     assert bSettings.toolStack.currentWidget() is filterTab
 
     # Check content
@@ -312,7 +312,7 @@ def testBuildSettings_Filter(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockR
     ]
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.dlgButtons.button(QDialogButtonBox.Close))
+    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QDialogButtonBox.Close))
     # qtbot.stop()
 
 # END Test testBuildSettings_Filter
@@ -343,7 +343,7 @@ def testBuildSettings_Headings(qtbot: QtBot, nwGUI: GuiMain):
     bSettings.loadContent()
 
     headTab = bSettings.optTabHeadings
-    bSettings.optSideBar._group.button(bSettings.OPT_HEADINGS).click()
+    bSettings.sidebar._group.button(bSettings.OPT_HEADINGS).click()
     assert bSettings.toolStack.currentWidget() is headTab
 
     # Check initial values
@@ -468,7 +468,7 @@ def testBuildSettings_Headings(qtbot: QtBot, nwGUI: GuiMain):
     assert build.getBool("headings.hideSection") is True
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.dlgButtons.button(QDialogButtonBox.Close))
+    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QDialogButtonBox.Close))
     # qtbot.stop()
 
 # END Test testBuildSettings_Headings
@@ -492,7 +492,7 @@ def testBuildSettings_Content(qtbot: QtBot, nwGUI: GuiMain):
     bSettings.loadContent()
 
     contTab = bSettings.optTabContent
-    bSettings.optSideBar._group.button(bSettings.OPT_CONTENT).click()
+    bSettings.sidebar._group.button(bSettings.OPT_CONTENT).click()
     assert bSettings.toolStack.currentWidget() is contTab
 
     # Check initial values
@@ -522,7 +522,7 @@ def testBuildSettings_Content(qtbot: QtBot, nwGUI: GuiMain):
     assert build.getBool("text.addNoteHeadings") is True
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.dlgButtons.button(QDialogButtonBox.Close))
+    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QDialogButtonBox.Close))
     # qtbot.stop()
 
 # END Test testBuildSettings_Content
@@ -559,7 +559,7 @@ def testBuildSettings_Format(monkeypatch, qtbot: QtBot, nwGUI: GuiMain):
     bSettings.loadContent()
 
     fmtTab = bSettings.optTabFormat
-    bSettings.optSideBar._group.button(bSettings.OPT_FORMAT).click()
+    bSettings.sidebar._group.button(bSettings.OPT_FORMAT).click()
     assert bSettings.toolStack.currentWidget() is fmtTab
 
     # Check initial values
@@ -624,7 +624,7 @@ def testBuildSettings_Format(monkeypatch, qtbot: QtBot, nwGUI: GuiMain):
         assert fmtTab.textSize.value() == 10
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.dlgButtons.button(QDialogButtonBox.Close))
+    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QDialogButtonBox.Close))
     # qtbot.stop()
 
 # END Test testBuildSettings_Format
@@ -644,7 +644,7 @@ def testBuildSettings_Output(qtbot: QtBot, nwGUI: GuiMain):
     bSettings.loadContent()
 
     outTab = bSettings.optTabOutput
-    bSettings.optSideBar._group.button(bSettings.OPT_OUTPUT).click()
+    bSettings.sidebar._group.button(bSettings.OPT_OUTPUT).click()
     assert bSettings.toolStack.currentWidget() is outTab
 
     # Check initial values
@@ -662,7 +662,7 @@ def testBuildSettings_Output(qtbot: QtBot, nwGUI: GuiMain):
     assert build.getBool("html.addStyles") is True
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.dlgButtons.button(QDialogButtonBox.Close))
+    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QDialogButtonBox.Close))
     # qtbot.stop()
 
 # END Test testBuildSettings_Output
