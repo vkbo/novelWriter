@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Python Setup
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           architecture: x64
@@ -18,7 +18,7 @@ jobs:
           sudo apt install qttools5-dev-tools latexmk texlive texlive-latex-extra
 
       - name: Checkout Source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Packages (pip)
         run: pip install -r docs/source/requirements.txt
@@ -27,7 +27,7 @@ jobs:
         run: python pkgutils.py qtlrelease sample manual
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nw-assets
           path: |
@@ -46,7 +46,7 @@ jobs:
         linux-tag: ["manylinux_2_24_x86_64", "manylinux_2_28_x86_64"]
     steps:
       - name: Python Setup
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           architecture: x64
@@ -55,7 +55,7 @@ jobs:
         run: pip install python-appimage
 
       - name: Checkout Source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download Artifacts
         uses: actions/download-artifact@v3
@@ -67,7 +67,7 @@ jobs:
         run: python pkgutils.py build-appimage --linux-tag ${{ matrix.linux-tag }} --python-version ${{ matrix.python-version }}
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: novelWriter-Packages
           path: |
@@ -81,7 +81,7 @@ jobs:
     runs-on: macos-12
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download Artifacts
         uses: actions/download-artifact@v3
@@ -93,7 +93,7 @@ jobs:
         run: ./setup/macos/build.sh
 
       - name: Upload DMG
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: novelWriter-Packages
           path: |
