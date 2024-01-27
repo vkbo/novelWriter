@@ -833,7 +833,8 @@ class GuiMain(QMainWindow):
     def showBuildManuscriptDialog(self) -> None:
         """Open the build manuscript dialog."""
         if SHARED.hasProject:
-            dialog = GuiManuscript(self)
+            if (dialog := SHARED.findTopLevelWidget(GuiManuscript)) is None:
+                dialog = GuiManuscript(self)
             dialog.setModal(False)
             dialog.show()
             dialog.raise_()
@@ -854,7 +855,8 @@ class GuiMain(QMainWindow):
     def showWritingStatsDialog(self) -> None:
         """Open the session stats dialog."""
         if SHARED.hasProject:
-            dialog = GuiWritingStats(self)
+            if (dialog := SHARED.findTopLevelWidget(GuiWritingStats)) is None:
+                dialog = GuiWritingStats(self)
             dialog.setModal(False)
             dialog.show()
             dialog.raise_()
