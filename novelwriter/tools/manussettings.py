@@ -42,7 +42,9 @@ from novelwriter.constants import nwHeadFmt, nwLabels, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
-from novelwriter.extensions.configlayout import NConfigLayout, NSimpleLayout
+from novelwriter.extensions.configlayout import (
+    NColourLabel, NFixedPage, NScrollableForm, NScrollablePage
+)
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -90,34 +92,37 @@ class GuiBuildSettings(QDialog):
             CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "winHeight", hWin))
         )
 
-        # Options SideBar
-        # ===============
+        # Title
+        self.titleLabel = NColourLabel(
+            self.tr("Manuscript Build Settings"), SHARED.theme.helpText,
+            parent=self, scale=NColourLabel.HEADER_SCALE, indent=CONFIG.pxInt(4)
+        )
 
-        self.optSideBar = NPagedSideBar(self)
-        self.optSideBar.setMinimumWidth(mPx)
-        self.optSideBar.setMaximumWidth(mPx)
-        self.optSideBar.setLabelColor(SHARED.theme.helpText)
+        # Settings Name
+        self.lblBuildName = QLabel(self.tr("Name"))
+        self.editBuildName = QLineEdit(self)
 
-        self.optSideBar.addLabel(self.tr("Options"))
-        self.optSideBar.addButton(self.tr("Selection"), self.OPT_FILTERS)
-        self.optSideBar.addButton(self.tr("Headings"), self.OPT_HEADINGS)
-        self.optSideBar.addButton(self.tr("Content"), self.OPT_CONTENT)
-        self.optSideBar.addButton(self.tr("Format"), self.OPT_FORMAT)
-        self.optSideBar.addButton(self.tr("Output"), self.OPT_OUTPUT)
+        # SideBar
+        self.sidebar = NPagedSideBar(self)
+        self.sidebar.setMinimumWidth(mPx)
+        self.sidebar.setMaximumWidth(mPx)
+        self.sidebar.setLabelColor(SHARED.theme.helpText)
 
-        self.optSideBar.buttonClicked.connect(self._stackPageSelected)
+        self.sidebar.addButton(self.tr("Selection"), self.OPT_FILTERS)
+        self.sidebar.addButton(self.tr("Headings"), self.OPT_HEADINGS)
+        self.sidebar.addButton(self.tr("Content"), self.OPT_CONTENT)
+        self.sidebar.addButton(self.tr("Format"), self.OPT_FORMAT)
+        self.sidebar.addButton(self.tr("Output"), self.OPT_OUTPUT)
 
-        # Options Area
-        # ============
+        self.sidebar.buttonClicked.connect(self._stackPageSelected)
 
-        # Create Tabs
+        # Content
         self.optTabSelect = _FilterTab(self, self._build)
         self.optTabHeadings = _HeadingsTab(self, self._build)
         self.optTabContent = _ContentTab(self, self._build)
         self.optTabFormat = _FormatTab(self, self._build)
         self.optTabOutput = _OutputTab(self, self._build)
 
-        # Add Tabs
         self.toolStack = QStackedWidget(self)
         self.toolStack.addWidget(self.optTabSelect)
         self.toolStack.addWidget(self.optTabHeadings)
@@ -125,38 +130,36 @@ class GuiBuildSettings(QDialog):
         self.toolStack.addWidget(self.optTabContent)
         self.toolStack.addWidget(self.optTabOutput)
 
-        # Main Settings + Buttons
-        # =======================
-
-        self.lblBuildName = QLabel(self.tr("Name"))
-        self.editBuildName = QLineEdit()
-        self.dlgButtons = QDialogButtonBox(
-            QDialogButtonBox.Apply | QDialogButtonBox.Save | QDialogButtonBox.Close
+        # Buttons
+        self.buttonBox = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Apply
+            | QDialogButtonBox.StandardButton.Save
+            | QDialogButtonBox.StandardButton.Close
         )
-        self.dlgButtons.clicked.connect(self._dialogButtonClicked)
+        self.buttonBox.clicked.connect(self._dialogButtonClicked)
 
-        self.buttonBox = QHBoxLayout()
-        self.buttonBox.addWidget(self.lblBuildName)
-        self.buttonBox.addWidget(self.editBuildName)
-        self.buttonBox.addWidget(self.dlgButtons)
-
-        # Assemble GUI
-        # ============
+        # Assemble
+        self.topBox = QHBoxLayout()
+        self.topBox.addWidget(self.titleLabel)
+        self.topBox.addStretch(1)
+        self.topBox.addWidget(self.lblBuildName)
+        self.topBox.addWidget(self.editBuildName, 1)
 
         self.mainBox = QHBoxLayout()
-        self.mainBox.addWidget(self.optSideBar)
+        self.mainBox.addWidget(self.sidebar)
         self.mainBox.addWidget(self.toolStack)
         self.mainBox.setContentsMargins(0, 0, 0, 0)
 
         self.outerBox = QVBoxLayout()
+        self.outerBox.addLayout(self.topBox)
         self.outerBox.addLayout(self.mainBox)
-        self.outerBox.addLayout(self.buttonBox)
+        self.outerBox.addWidget(self.buttonBox)
         self.outerBox.setSpacing(CONFIG.pxInt(12))
 
         self.setLayout(self.outerBox)
 
         # Set Default Tab
-        self.optSideBar.setSelected(self.OPT_FILTERS)
+        self.sidebar.setSelected(self.OPT_FILTERS)
 
         logger.debug("Ready: GuiBuildSettings")
 
@@ -186,6 +189,21 @@ class GuiBuildSettings(QDialog):
         return self._build.buildID
 
     ##
+    #  Events
+    ##
+
+    def closeEvent(self, event: QEvent) -> None:
+        """Capture the user closing the window so we can save
+        settings.
+        """
+        logger.debug("Closing: GuiBuildSettings")
+        self._askToSaveBuild()
+        self._saveSettings()
+        event.accept()
+        self.deleteLater()
+        return
+
+    ##
     #  Private Slots
     ##
 
@@ -207,7 +225,7 @@ class GuiBuildSettings(QDialog):
     @pyqtSlot("QAbstractButton*")
     def _dialogButtonClicked(self, button: QAbstractButton) -> None:
         """Handle button clicks from the dialog button box."""
-        role = self.dlgButtons.buttonRole(button)
+        role = self.buttonBox.buttonRole(button)
         if role == QDialogButtonBox.ApplyRole:
             self._emitBuildData()
         elif role == QDialogButtonBox.AcceptRole:
@@ -215,21 +233,6 @@ class GuiBuildSettings(QDialog):
             self.close()
         elif role == QDialogButtonBox.RejectRole:
             self.close()
-        return
-
-    ##
-    #  Events
-    ##
-
-    def closeEvent(self, event: QEvent) -> None:
-        """Capture the user closing the window so we can save
-        settings.
-        """
-        logger.debug("Closing: GuiBuildSettings")
-        self._askToSaveBuild()
-        self._saveSettings()
-        event.accept()
-        self.deleteLater()
         return
 
     ##
@@ -279,7 +282,7 @@ class GuiBuildSettings(QDialog):
 # END Class GuiBuildSettings
 
 
-class _FilterTab(QWidget):
+class _FilterTab(NFixedPage):
 
     C_DATA   = 0
     C_NAME   = 0
@@ -395,11 +398,7 @@ class _FilterTab(QWidget):
             CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "filterWidth", 300))
         ])
 
-        self.outerBox = QHBoxLayout()
-        self.outerBox.addWidget(self.mainSplit)
-        self.outerBox.setContentsMargins(0, 0, 0, 0)
-
-        self.setLayout(self.outerBox)
+        self.setCentralWidget(self.mainSplit)
 
         return
 
@@ -580,7 +579,7 @@ class _FilterTab(QWidget):
 # END Class _FilterTab
 
 
-class _HeadingsTab(QWidget):
+class _HeadingsTab(NScrollablePage):
 
     EDIT_TITLE   = 1
     EDIT_CHAPTER = 2
@@ -758,7 +757,7 @@ class _HeadingsTab(QWidget):
         self.outerBox.addLayout(self.editFormBox)
         self.outerBox.addStretch(1)
 
-        self.setLayout(self.outerBox)
+        self.setCentralLayout(self.outerBox)
 
         return
 
@@ -825,6 +824,7 @@ class _HeadingsTab(QWidget):
     #  Private Slots
     ##
 
+    @pyqtSlot()
     def _saveFormat(self) -> None:
         """Save the format from the edit text box."""
         heading = self._editing
@@ -881,7 +881,7 @@ class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
 # END Class _HeadingSyntaxHighlighter
 
 
-class _ContentTab(QWidget):
+class _ContentTab(NScrollableForm):
 
     def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
         super().__init__(parent=buildMain)
@@ -890,42 +890,26 @@ class _ContentTab(QWidget):
 
         iPx = SHARED.theme.baseIconSize
 
-        # Left Form
-        # =========
-
-        self.formLeft = NSimpleLayout()
-        self.formLeft.addGroupLabel(self._build.getLabel("text.grpContent"))
-
+        # Text Content
         self.incSynopsis = NSwitch(self, width=2*iPx, height=iPx)
         self.incComments = NSwitch(self, width=2*iPx, height=iPx)
         self.incKeywords = NSwitch(self, width=2*iPx, height=iPx)
         self.incBodyText = NSwitch(self, width=2*iPx, height=iPx)
 
-        self.formLeft.addRow(self._build.getLabel("text.includeSynopsis"), self.incSynopsis)
-        self.formLeft.addRow(self._build.getLabel("text.includeComments"), self.incComments)
-        self.formLeft.addRow(self._build.getLabel("text.includeKeywords"), self.incKeywords)
-        self.formLeft.addRow(self._build.getLabel("text.includeBodyText"), self.incBodyText)
+        self.addGroupLabel(self._build.getLabel("text.grpContent"))
+        self.addRow(self._build.getLabel("text.includeSynopsis"), self.incSynopsis)
+        self.addRow(self._build.getLabel("text.includeComments"), self.incComments)
+        self.addRow(self._build.getLabel("text.includeKeywords"), self.incKeywords)
+        self.addRow(self._build.getLabel("text.includeBodyText"), self.incBodyText)
 
-        # Right Form
-        # ==========
-
-        self.formRight = NSimpleLayout()
-        self.formRight.addGroupLabel(self._build.getLabel("text.grpInsert"))
-
+        # Insert Content
         self.addNoteHead = NSwitch(self, width=2*iPx, height=iPx)
 
-        self.formRight.addRow(self._build.getLabel("text.addNoteHeadings"), self.addNoteHead)
+        self.addGroupLabel(self._build.getLabel("text.grpInsert"))
+        self.addRow(self._build.getLabel("text.addNoteHeadings"), self.addNoteHead)
 
-        # Assemble GUI
-        # ============
-
-        self.outerBox = QHBoxLayout()
-        self.outerBox.addLayout(self.formLeft, 1)
-        self.outerBox.addLayout(self.formRight, 1)
-        self.outerBox.setContentsMargins(0, 0, 0, 0)
-        self.outerBox.setSpacing(CONFIG.pxInt(16))
-
-        self.setLayout(self.outerBox)
+        # Finalise
+        self.finalise()
 
         return
 
@@ -950,7 +934,7 @@ class _ContentTab(QWidget):
 # END Class _ContentTab
 
 
-class _FormatTab(QWidget):
+class _FormatTab(NScrollableForm):
 
     def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
         super().__init__(parent=buildMain)
@@ -964,20 +948,20 @@ class _FormatTab(QWidget):
         spW = 6*SHARED.theme.textNWidth
         dbW = 8*SHARED.theme.textNWidth
 
-        # Text Format Form
-        # ================
+        # Text Format
+        # ===========
 
-        self.formFormat = NConfigLayout()
-        self.formFormat.addGroupLabel(self._build.getLabel("format.grpFormat"))
+        self.addGroupLabel(self._build.getLabel("format.grpFormat"))
 
         # Font Family
-        self.textFont = QLineEdit()
+        self.textFont = QLineEdit(self)
         self.textFont.setReadOnly(True)
         self.btnTextFont = QPushButton("...")
         self.btnTextFont.setMaximumWidth(int(2.5*SHARED.theme.getTextWidth("...")))
         self.btnTextFont.clicked.connect(self._selectFont)
-        self.formFormat.addRow(
-            self._build.getLabel("format.textFont"), self.textFont, button=self.btnTextFont
+        self.addRow(
+            self._build.getLabel("format.textFont"), self.textFont,
+            button=self.btnTextFont, stretch=(3, 2)
         )
 
         # Font Size
@@ -986,9 +970,7 @@ class _FormatTab(QWidget):
         self.textSize.setMaximum(60)
         self.textSize.setSingleStep(1)
         self.textSize.setMinimumWidth(spW)
-        self.formFormat.addRow(
-            self._build.getLabel("format.textSize"), self.textSize, unit="pt"
-        )
+        self.addRow(self._build.getLabel("format.textSize"), self.textSize, unit="pt")
 
         # Line Height
         self.lineHeight = QDoubleSpinBox(self)
@@ -997,31 +979,25 @@ class _FormatTab(QWidget):
         self.lineHeight.setMaximum(3.0)
         self.lineHeight.setSingleStep(0.05)
         self.lineHeight.setDecimals(2)
-        self.formFormat.addRow(
-            self._build.getLabel("format.lineHeight"), self.lineHeight, unit="em"
-        )
+        self.addRow(self._build.getLabel("format.lineHeight"), self.lineHeight, unit="em")
 
-        # Text Options Form
-        # =================
+        # Text Options
+        # ============
 
-        self.formOptions = NSimpleLayout()
-        self.formOptions.addGroupLabel(self._build.getLabel("format.grpOptions"))
-        self.formOptions.setContentsMargins(0, 0, 0, 0)
+        self.addGroupLabel(self._build.getLabel("format.grpOptions"))
 
         self.justifyText = NSwitch(self, width=2*iPx, height=iPx)
         self.stripUnicode = NSwitch(self, width=2*iPx, height=iPx)
         self.replaceTabs = NSwitch(self, width=2*iPx, height=iPx)
 
-        self.formOptions.addRow(self._build.getLabel("format.justifyText"), self.justifyText)
-        self.formOptions.addRow(self._build.getLabel("format.stripUnicode"), self.stripUnicode)
-        self.formOptions.addRow(self._build.getLabel("format.replaceTabs"), self.replaceTabs)
+        self.addRow(self._build.getLabel("format.justifyText"), self.justifyText)
+        self.addRow(self._build.getLabel("format.stripUnicode"), self.stripUnicode)
+        self.addRow(self._build.getLabel("format.replaceTabs"), self.replaceTabs)
 
-        # Page Layout Form
-        # ================
+        # Page Layout
+        # ===========
 
-        self.formLayout = NSimpleLayout()
-        self.formLayout.addGroupLabel(self._build.getLabel("format.grpPage"))
-        self.formLayout.setContentsMargins(0, 0, 0, 0)
+        self.addGroupLabel(self._build.getLabel("format.grpPage"))
 
         self.pageUnit = QComboBox(self)
         for key, name in nwLabels.UNIT_NAME.items():
@@ -1053,38 +1029,17 @@ class _FormatTab(QWidget):
         self.rightMargin = QDoubleSpinBox(self)
         self.rightMargin.setFixedWidth(dbW)
 
-        self.formLayout.addRow(self._build.getLabel("format.pageUnit"), self.pageUnit)
-        self.formLayout.addRow(self._build.getLabel("format.pageSize"), self.pageSize)
-        self.formLayout.addRow(self._build.getLabel("format.pageWidth"), self.pageWidth)
-        self.formLayout.addRow(self._build.getLabel("format.pageHeight"), self.pageHeight)
-        self.formLayout.addRow(self._build.getLabel("format.topMargin"), self.topMargin)
-        self.formLayout.addRow(self._build.getLabel("format.bottomMargin"), self.bottomMargin)
-        self.formLayout.addRow(self._build.getLabel("format.leftMargin"), self.leftMargin)
-        self.formLayout.addRow(self._build.getLabel("format.rightMargin"), self.rightMargin)
+        self.addRow(self._build.getLabel("format.pageUnit"), self.pageUnit)
+        self.addRow(self._build.getLabel("format.pageSize"), self.pageSize)
+        self.addRow(self._build.getLabel("format.pageWidth"), self.pageWidth)
+        self.addRow(self._build.getLabel("format.pageHeight"), self.pageHeight)
+        self.addRow(self._build.getLabel("format.topMargin"), self.topMargin)
+        self.addRow(self._build.getLabel("format.bottomMargin"), self.bottomMargin)
+        self.addRow(self._build.getLabel("format.leftMargin"), self.leftMargin)
+        self.addRow(self._build.getLabel("format.rightMargin"), self.rightMargin)
 
-        # Assemble GUI
-        # ============
-
-        self.formLeft = QVBoxLayout()
-        self.formLeft.addLayout(self.formFormat)
-        self.formLeft.addLayout(self.formOptions)
-        self.formLeft.addStretch(1)
-        self.formLeft.setContentsMargins(0, 0, 0, 0)
-        self.formLeft.setSpacing(CONFIG.pxInt(8))
-
-        self.formRight = QVBoxLayout()
-        self.formRight.addLayout(self.formLayout)
-        self.formRight.addStretch(1)
-        self.formRight.setContentsMargins(0, 0, 0, 0)
-        self.formRight.setSpacing(CONFIG.pxInt(8))
-
-        self.outerBox = QHBoxLayout()
-        self.outerBox.addLayout(self.formLeft, 1)
-        self.outerBox.addLayout(self.formRight, 1)
-        self.outerBox.setContentsMargins(0, 0, 0, 0)
-        self.outerBox.setSpacing(CONFIG.pxInt(16))
-
-        self.setLayout(self.outerBox)
+        # Finalise
+        self.finalise()
 
         return
 
@@ -1248,7 +1203,7 @@ class _FormatTab(QWidget):
 # END Class _FormatTab
 
 
-class _OutputTab(QWidget):
+class _OutputTab(NScrollableForm):
 
     def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
         super().__init__(parent=buildMain)
@@ -1257,36 +1212,18 @@ class _OutputTab(QWidget):
 
         iPx = SHARED.theme.baseIconSize
 
-        # Left Form
-        # =========
-
-        self.formLeft = NSimpleLayout()
-        self.formLeft.addGroupLabel(self._build.getLabel("odt"))
-
+        # Open Document
+        self.addGroupLabel(self._build.getLabel("odt"))
         self.odtAddColours = NSwitch(self, width=2*iPx, height=iPx)
+        self.addRow(self._build.getLabel("odt.addColours"), self.odtAddColours)
 
-        self.formLeft.addRow(self._build.getLabel("odt.addColours"), self.odtAddColours)
-
-        # Right Form
-        # ==========
-
-        self.formRight = NSimpleLayout()
-        self.formRight.addGroupLabel(self._build.getLabel("html"))
-
+        # HTML Document
+        self.addGroupLabel(self._build.getLabel("html"))
         self.htmlAddStyles = NSwitch(self, width=2*iPx, height=iPx)
+        self.addRow(self._build.getLabel("html.addStyles"), self.htmlAddStyles)
 
-        self.formRight.addRow(self._build.getLabel("html.addStyles"), self.htmlAddStyles)
-
-        # Assemble GUI
-        # ============
-
-        self.outerBox = QHBoxLayout()
-        self.outerBox.addLayout(self.formLeft, 1)
-        self.outerBox.addLayout(self.formRight, 1)
-        self.outerBox.setContentsMargins(0, 0, 0, 0)
-        self.outerBox.setSpacing(CONFIG.pxInt(16))
-
-        self.setLayout(self.outerBox)
+        # Finalise
+        self.finalise()
 
         return
 

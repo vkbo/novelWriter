@@ -116,7 +116,7 @@ def testManuscript_Builds(qtbot: QtBot, nwGUI: GuiMain, projPath: Path):
 
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        bSettings.dlgButtons.button(QDialogButtonBox.Save).click()
+        bSettings.buttonBox.button(QDialogButtonBox.Save).click()
 
     assert isinstance(build, BuildSettings)
     assert build.name == "Test Build"
@@ -133,7 +133,7 @@ def testManuscript_Builds(qtbot: QtBot, nwGUI: GuiMain, projPath: Path):
 
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        bSettings.dlgButtons.button(QDialogButtonBox.Apply).click()  # Should leave the dialog open
+        bSettings.buttonBox.button(QDialogButtonBox.Apply).click()  # Should leave the dialog open
 
     assert isinstance(build, BuildSettings)
     assert build.name == "Test Build"
