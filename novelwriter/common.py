@@ -46,9 +46,9 @@ from novelwriter.constants import nwConst, nwUnicode
 logger = logging.getLogger(__name__)
 
 
-# =============================================================================================== #
+##
 #  Checker Functions
-# =============================================================================================== #
+##
 
 def checkStringNone(value: Any, default: str | None) -> str | None:
     """Check if a variable is a string or a None."""
@@ -131,9 +131,9 @@ def checkPath(value: Any, default: Path) -> Path:
     return default
 
 
-# =============================================================================================== #
+##
 #  Validator Functions
-# =============================================================================================== #
+##
 
 def isHandle(value: Any) -> bool:
     """Check if a string is a valid novelWriter handle.
@@ -204,9 +204,9 @@ def checkIntTuple(value: int, valid: tuple | list | set, default: int) -> int:
     return default
 
 
-# =============================================================================================== #
+##
 #  Formatting Functions
-# =============================================================================================== #
+##
 
 def formatInt(value: int) -> str:
     """Formats an integer with k, M, G etc."""
@@ -255,9 +255,9 @@ def formatVersion(value: str) -> str:
     return value.lower().replace("a", " Alpha ").replace("b", " Beta ").replace("rc", " RC ")
 
 
-# =============================================================================================== #
+##
 #  String Functions
-# =============================================================================================== #
+##
 
 def simplified(text: str) -> str:
     """Take a string and strip leading and trailing whitespaces, and
@@ -376,9 +376,9 @@ def numberToRoman(value: int, toLower: bool = False) -> str:
     return roman.lower() if toLower else roman
 
 
-# =============================================================================================== #
+##
 #  Encoder Functions
-# =============================================================================================== #
+##
 
 def jsonEncode(data: dict | list | tuple, n: int = 0, nmax: int = 0) -> str:
     """Encode a dictionary, list or tuple as a json object or array, and
@@ -468,9 +468,9 @@ def xmlIndent(tree: ET.Element | ET.ElementTree) -> None:
     return
 
 
-# =============================================================================================== #
+##
 #  File and File System Functions
-# =============================================================================================== #
+##
 
 def readTextFile(path: str | Path) -> str:
     """Read the content of a text file in a robust manner."""
@@ -512,9 +512,9 @@ def openExternalPath(path: Path) -> bool:
     return False
 
 
-# =============================================================================================== #
+##
 #  Classes
-# =============================================================================================== #
+##
 
 class NWConfigParser(ConfigParser):
     """Common: Adapted Config Parser

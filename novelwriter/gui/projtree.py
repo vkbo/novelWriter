@@ -41,6 +41,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout
 from novelwriter.common import minmax
 from novelwriter.constants import nwHeaders, nwUnicode, trConst, nwLabels
 from novelwriter.core.item import NWItem
@@ -49,9 +50,6 @@ from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
-from novelwriter.enum import (
-    nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwWidget
-)
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -682,7 +680,7 @@ class GuiProjectTree(QTreeWidget):
 
         # Add the new item to the project tree
         self.revealNewTreeItem(tHandle, nHandle=nHandle, wordCount=True)
-        self.mainGui.switchFocus(nwWidget.TREE)
+        self.projView.setTreeFocus()  # See issue #1376
 
         return True
 
