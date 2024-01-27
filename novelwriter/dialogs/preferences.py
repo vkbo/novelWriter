@@ -134,6 +134,9 @@ class GuiPreferences(QDialog):
         minWidth = CONFIG.pxInt(200)
         mIcon = SHARED.theme.getIcon("more")
 
+        # Label
+        self.sidebar.addLabel(self.tr("General"))
+
         # Appearance
         # ==========
 
@@ -151,9 +154,8 @@ class GuiPreferences(QDialog):
             self.guiLocale.setCurrentIndex(idx)
 
         self.mainForm.addRow(
-            self.tr("Display language"),
-            self.guiLocale,
-            self.tr("Requires restart to take effect.")
+            self.tr("Display language"), self.guiLocale,
+            self.tr("Requires restart to take effect."), stretch=(3, 2)
         )
 
         # Colour Theme
@@ -165,23 +167,21 @@ class GuiPreferences(QDialog):
             self.guiTheme.setCurrentIndex(idx)
 
         self.mainForm.addRow(
-            self.tr("Colour theme"),
-            self.guiTheme,
-            self.tr("General colour theme and icons.")
+            self.tr("Colour theme"), self.guiTheme,
+            self.tr("General colour theme and icons."), stretch=(3, 2)
         )
 
         # Application Font Family
         self.guiFont = QLineEdit(self)
         self.guiFont.setReadOnly(True)
-        self.guiFont.setFixedWidth(CONFIG.pxInt(162))
+        self.guiFont.setMinimumWidth(CONFIG.pxInt(162))
         self.guiFont.setText(CONFIG.guiFont)
         self.guiFontButton = QToolButton(self)
         self.guiFontButton.setIcon(mIcon)
         self.guiFontButton.clicked.connect(self._selectGuiFont)
         self.mainForm.addRow(
-            self.tr("Application font family"),
-            self.guiFont,
-            self.tr("Requires restart to take effect."),
+            self.tr("Application font family"), self.guiFont,
+            self.tr("Requires restart to take effect."), stretch=(3, 2),
             button=self.guiFontButton
         )
 
@@ -192,18 +192,15 @@ class GuiPreferences(QDialog):
         self.guiFontSize.setSingleStep(1)
         self.guiFontSize.setValue(CONFIG.guiFontSize)
         self.mainForm.addRow(
-            self.tr("Application font size"),
-            self.guiFontSize,
-            self.tr("Requires restart to take effect."),
-            unit=self.tr("pt")
+            self.tr("Application font size"), self.guiFontSize,
+            self.tr("Requires restart to take effect."), unit=self.tr("pt")
         )
 
         # Vertical Scrollbars
         self.hideVScroll = NSwitch(self)
         self.hideVScroll.setChecked(CONFIG.hideVScroll)
         self.mainForm.addRow(
-            self.tr("Hide vertical scroll bars in main windows"),
-            self.hideVScroll,
+            self.tr("Hide vertical scroll bars in main windows"), self.hideVScroll,
             self.tr("Scrolling available with mouse wheel and keys only.")
         )
 
@@ -211,8 +208,7 @@ class GuiPreferences(QDialog):
         self.hideHScroll = NSwitch(self)
         self.hideHScroll.setChecked(CONFIG.hideHScroll)
         self.mainForm.addRow(
-            self.tr("Hide horizontal scroll bars in main windows"),
-            self.hideHScroll,
+            self.tr("Hide horizontal scroll bars in main windows"), self.hideHScroll,
             self.tr("Scrolling available with mouse wheel and keys only.")
         )
 
@@ -233,23 +229,21 @@ class GuiPreferences(QDialog):
             self.guiSyntax.setCurrentIndex(idx)
 
         self.mainForm.addRow(
-            self.tr("Document colour theme"),
-            self.guiSyntax,
-            self.tr("Colour theme for the editor and viewer.")
+            self.tr("Document colour theme"), self.guiSyntax,
+            self.tr("Colour theme for the editor and viewer."), stretch=(3, 2)
         )
 
         # Document Font Family
         self.textFont = QLineEdit(self)
         self.textFont.setReadOnly(True)
-        self.textFont.setFixedWidth(CONFIG.pxInt(162))
+        self.textFont.setMinimumWidth(CONFIG.pxInt(162))
         self.textFont.setText(CONFIG.textFont)
         self.textFontButton = QToolButton(self)
         self.textFontButton.setIcon(mIcon)
         self.textFontButton.clicked.connect(self._selectTextFont)
         self.mainForm.addRow(
-            self.tr("Document font family"),
-            self.textFont,
-            self.tr("Applies to both document editor and viewer."),
+            self.tr("Document font family"), self.textFont,
+            self.tr("Applies to both document editor and viewer."), stretch=(3, 2),
             button=self.textFontButton
         )
 
@@ -260,18 +254,15 @@ class GuiPreferences(QDialog):
         self.textSize.setSingleStep(1)
         self.textSize.setValue(CONFIG.textSize)
         self.mainForm.addRow(
-            self.tr("Document font size"),
-            self.textSize,
-            self.tr("Applies to both document editor and viewer."),
-            unit=self.tr("pt")
+            self.tr("Document font size"), self.textSize,
+            self.tr("Applies to both document editor and viewer."), unit=self.tr("pt")
         )
 
         # Emphasise Labels
         self.emphLabels = NSwitch(self)
         self.emphLabels.setChecked(CONFIG.emphLabels)
         self.mainForm.addRow(
-            self.tr("Emphasise partition and chapter labels"),
-            self.emphLabels,
+            self.tr("Emphasise partition and chapter labels"), self.emphLabels,
             self.tr("Makes them stand out in the project tree."),
         )
 
@@ -279,8 +270,7 @@ class GuiPreferences(QDialog):
         self.showFullPath = NSwitch(self)
         self.showFullPath.setChecked(CONFIG.showFullPath)
         self.mainForm.addRow(
-            self.tr("Show full path in document header"),
-            self.showFullPath,
+            self.tr("Show full path in document header"), self.showFullPath,
             self.tr("Add the parent folder names to the header.")
         )
 
@@ -288,8 +278,7 @@ class GuiPreferences(QDialog):
         self.incNotesWCount = NSwitch(self)
         self.incNotesWCount.setChecked(CONFIG.incNotesWCount)
         self.mainForm.addRow(
-            self.tr("Include project notes in status bar word count"),
-            self.incNotesWCount
+            self.tr("Include project notes in status bar word count"), self.incNotesWCount
         )
 
         # Auto Save
@@ -307,10 +296,8 @@ class GuiPreferences(QDialog):
         self.autoSaveDoc.setSingleStep(1)
         self.autoSaveDoc.setValue(CONFIG.autoSaveDoc)
         self.mainForm.addRow(
-            self.tr("Save document interval"),
-            self.autoSaveDoc,
-            self.tr("How often the document is automatically saved."),
-            unit=self.tr("seconds")
+            self.tr("Save document interval"), self.autoSaveDoc,
+            self.tr("How often the document is automatically saved."), unit=self.tr("seconds")
         )
 
         # Project Save Timer
@@ -320,10 +307,8 @@ class GuiPreferences(QDialog):
         self.autoSaveProj.setSingleStep(1)
         self.autoSaveProj.setValue(CONFIG.autoSaveProj)
         self.mainForm.addRow(
-            self.tr("Save project interval"),
-            self.autoSaveProj,
-            self.tr("How often the project is automatically saved."),
-            unit=self.tr("seconds")
+            self.tr("Save project interval"), self.autoSaveProj,
+            self.tr("How often the project is automatically saved."), unit=self.tr("seconds")
         )
 
         # Project Backup
@@ -339,10 +324,8 @@ class GuiPreferences(QDialog):
         self.backupGetPath = QPushButton(SHARED.theme.getIcon("browse"), self.tr("Browse"), self)
         self.backupGetPath.clicked.connect(self._backupFolder)
         self.mainForm.addRow(
-            self.tr("Backup storage location"),
-            self.backupGetPath,
-            self.tr("Path: {0}").format(self.backupPath),
-            editable="backupPath"
+            self.tr("Backup storage location"), self.backupGetPath,
+            self.tr("Path: {0}").format(self.backupPath), editable="backupPath"
         )
 
         # Run When Closing
@@ -350,8 +333,7 @@ class GuiPreferences(QDialog):
         self.backupOnClose.setChecked(CONFIG.backupOnClose)
         self.backupOnClose.toggled.connect(self._toggledBackupOnClose)
         self.mainForm.addRow(
-            self.tr("Run backup when the project is closed"),
-            self.backupOnClose,
+            self.tr("Run backup when the project is closed"), self.backupOnClose,
             self.tr("Can be overridden for individual projects in Project Settings.")
         )
 
@@ -361,8 +343,7 @@ class GuiPreferences(QDialog):
         self.askBeforeBackup.setChecked(CONFIG.askBeforeBackup)
         self.askBeforeBackup.setEnabled(CONFIG.backupOnClose)
         self.mainForm.addRow(
-            self.tr("Ask before running backup"),
-            self.askBeforeBackup,
+            self.tr("Ask before running backup"), self.askBeforeBackup,
             self.tr("If off, backups will run in the background.")
         )
 
@@ -378,8 +359,7 @@ class GuiPreferences(QDialog):
         self.stopWhenIdle = NSwitch(self)
         self.stopWhenIdle.setChecked(CONFIG.stopWhenIdle)
         self.mainForm.addRow(
-            self.tr("Pause the session timer when not writing"),
-            self.stopWhenIdle,
+            self.tr("Pause the session timer when not writing"), self.stopWhenIdle,
             self.tr("Also pauses when the application window does not have focus.")
         )
 
@@ -391,11 +371,13 @@ class GuiPreferences(QDialog):
         self.userIdleTime.setDecimals(1)
         self.userIdleTime.setValue(CONFIG.userIdleTime/60.0)
         self.mainForm.addRow(
-            self.tr("Editor inactive time before pausing timer"),
-            self.userIdleTime,
+            self.tr("Editor inactive time before pausing timer"), self.userIdleTime,
             self.tr("User activity includes typing and changing the content."),
             unit=self.tr("minutes")
         )
+
+        # Label
+        self.sidebar.addLabel(self.tr("Writing"))
 
         # Text Flow
         # =========
@@ -412,10 +394,8 @@ class GuiPreferences(QDialog):
         self.textWidth.setSingleStep(10)
         self.textWidth.setValue(CONFIG.textWidth)
         self.mainForm.addRow(
-            self.tr("Maximum text width in \"Normal Mode\""),
-            self.textWidth,
-            self.tr("Set to 0 to disable this feature."),
-            unit=self.tr("px")
+            self.tr("Maximum text width in \"Normal Mode\""), self.textWidth,
+            self.tr("Set to 0 to disable this feature."), unit=self.tr("px")
         )
 
         # Max Text Width in Focus Mode
@@ -425,18 +405,15 @@ class GuiPreferences(QDialog):
         self.focusWidth.setSingleStep(10)
         self.focusWidth.setValue(CONFIG.focusWidth)
         self.mainForm.addRow(
-            self.tr("Maximum text width in \"Focus Mode\""),
-            self.focusWidth,
-            self.tr("The maximum width cannot be disabled."),
-            unit=self.tr("px")
+            self.tr("Maximum text width in \"Focus Mode\""), self.focusWidth,
+            self.tr("The maximum width cannot be disabled."), unit=self.tr("px")
         )
 
         # Focus Mode Footer
         self.hideFocusFooter = NSwitch(self)
         self.hideFocusFooter.setChecked(CONFIG.hideFocusFooter)
         self.mainForm.addRow(
-            self.tr("Hide document footer in \"Focus Mode\""),
-            self.hideFocusFooter,
+            self.tr("Hide document footer in \"Focus Mode\""), self.hideFocusFooter,
             self.tr("Hide the information bar in the document editor.")
         )
 
@@ -444,8 +421,7 @@ class GuiPreferences(QDialog):
         self.doJustify = NSwitch(self)
         self.doJustify.setChecked(CONFIG.doJustify)
         self.mainForm.addRow(
-            self.tr("Justify the text margins"),
-            self.doJustify,
+            self.tr("Justify the text margins"), self.doJustify,
             self.tr("Applies to both document editor and viewer."),
         )
 
@@ -456,8 +432,7 @@ class GuiPreferences(QDialog):
         self.textMargin.setSingleStep(1)
         self.textMargin.setValue(CONFIG.textMargin)
         self.mainForm.addRow(
-            self.tr("Minimum text margin"),
-            self.textMargin,
+            self.tr("Minimum text margin"), self.textMargin,
             self.tr("Applies to both document editor and viewer."),
             unit=self.tr("px")
         )
@@ -469,8 +444,7 @@ class GuiPreferences(QDialog):
         self.tabWidth.setSingleStep(1)
         self.tabWidth.setValue(CONFIG.tabWidth)
         self.mainForm.addRow(
-            self.tr("Tab width"),
-            self.tabWidth,
+            self.tr("Tab width"), self.tabWidth,
             self.tr("The width of a tab key press in the editor and viewer."),
             unit=self.tr("px")
         )
@@ -498,17 +472,15 @@ class GuiPreferences(QDialog):
             self.spellLanguage.setCurrentIndex(idx)
 
         self.mainForm.addRow(
-            self.tr("Spell check language"),
-            self.spellLanguage,
-            self.tr("Available languages are determined by your system.")
+            self.tr("Spell check language"), self.spellLanguage,
+            self.tr("Available languages are determined by your system."), stretch=(3, 2)
         )
 
         # Auto-Select Word Under Cursor
         self.autoSelect = NSwitch(self)
         self.autoSelect.setChecked(CONFIG.autoSelect)
         self.mainForm.addRow(
-            self.tr("Auto-select word under cursor"),
-            self.autoSelect,
+            self.tr("Auto-select word under cursor"), self.autoSelect,
             self.tr("Apply formatting to word under cursor if no selection is made.")
         )
 
@@ -516,16 +488,14 @@ class GuiPreferences(QDialog):
         self.showTabsNSpaces = NSwitch(self)
         self.showTabsNSpaces.setChecked(CONFIG.showTabsNSpaces)
         self.mainForm.addRow(
-            self.tr("Show tabs and spaces"),
-            self.showTabsNSpaces
+            self.tr("Show tabs and spaces"), self.showTabsNSpaces
         )
 
         # Show Line Endings
         self.showLineEndings = NSwitch(self)
         self.showLineEndings.setChecked(CONFIG.showLineEndings)
         self.mainForm.addRow(
-            self.tr("Show line endings"),
-            self.showLineEndings
+            self.tr("Show line endings"), self.showLineEndings
         )
 
         # Editor Scrolling
@@ -540,8 +510,7 @@ class GuiPreferences(QDialog):
         self.scrollPastEnd = NSwitch(self)
         self.scrollPastEnd.setChecked(CONFIG.scrollPastEnd)
         self.mainForm.addRow(
-            self.tr("Scroll past end of the document"),
-            self.scrollPastEnd,
+            self.tr("Scroll past end of the document"), self.scrollPastEnd,
             self.tr("Also centres the cursor when scrolling.")
         )
 
@@ -549,8 +518,7 @@ class GuiPreferences(QDialog):
         self.autoScroll = NSwitch(self)
         self.autoScroll.setChecked(CONFIG.autoScroll)
         self.mainForm.addRow(
-            self.tr("Typewriter style scrolling when you type"),
-            self.autoScroll,
+            self.tr("Typewriter style scrolling when you type"), self.autoScroll,
             self.tr("Keeps the cursor at a fixed vertical position.")
         )
 
@@ -561,10 +529,8 @@ class GuiPreferences(QDialog):
         self.autoScrollPos.setSingleStep(1)
         self.autoScrollPos.setValue(int(CONFIG.autoScrollPos))
         self.mainForm.addRow(
-            self.tr("Minimum position for Typewriter scrolling"),
-            self.autoScrollPos,
-            self.tr("Percentage of the editor height from the top."),
-            unit="%"
+            self.tr("Minimum position for Typewriter scrolling"), self.autoScrollPos,
+            self.tr("Percentage of the editor height from the top."), unit="%"
         )
 
         # Text Highlighting
@@ -579,40 +545,35 @@ class GuiPreferences(QDialog):
         self.highlightQuotes.setChecked(CONFIG.highlightQuotes)
         self.highlightQuotes.toggled.connect(self._toggleHighlightQuotes)
         self.mainForm.addRow(
-            self.tr("Highlight text wrapped in quotes"),
-            self.highlightQuotes,
+            self.tr("Highlight text wrapped in quotes"), self.highlightQuotes,
             self.tr("Applies to the document editor only.")
         )
 
         self.allowOpenSQuote = NSwitch(self)
         self.allowOpenSQuote.setChecked(CONFIG.allowOpenSQuote)
         self.mainForm.addRow(
-            self.tr("Allow open-ended single quotes"),
-            self.allowOpenSQuote,
+            self.tr("Allow open-ended single quotes"), self.allowOpenSQuote,
             self.tr("Highlight single-quoted line with no closing quote.")
         )
 
         self.allowOpenDQuote = NSwitch(self)
         self.allowOpenDQuote.setChecked(CONFIG.allowOpenDQuote)
         self.mainForm.addRow(
-            self.tr("Allow open-ended double quotes"),
-            self.allowOpenDQuote,
+            self.tr("Allow open-ended double quotes"), self.allowOpenDQuote,
             self.tr("Highlight double-quoted line with no closing quote.")
         )
 
         self.highlightEmph = NSwitch(self)
         self.highlightEmph.setChecked(CONFIG.highlightEmph)
         self.mainForm.addRow(
-            self.tr("Add highlight colour to emphasised text"),
-            self.highlightEmph,
+            self.tr("Add highlight colour to emphasised text"), self.highlightEmph,
             self.tr("Applies to the document editor only.")
         )
 
         self.showMultiSpaces = NSwitch(self)
         self.showMultiSpaces.setChecked(CONFIG.showMultiSpaces)
         self.mainForm.addRow(
-            self.tr("Highlight multiple or trailing spaces"),
-            self.showMultiSpaces,
+            self.tr("Highlight multiple or trailing spaces"), self.showMultiSpaces,
             self.tr("Applies to the document editor only.")
         )
 
@@ -631,8 +592,7 @@ class GuiPreferences(QDialog):
         self.doReplace.setChecked(CONFIG.doReplace)
         self.doReplace.toggled.connect(self._toggleAutoReplaceMain)
         self.mainForm.addRow(
-            self.tr("Auto-replace text as you type"),
-            self.doReplace,
+            self.tr("Auto-replace text as you type"), self.doReplace,
             self.tr("Allow the editor to replace symbols as you type.")
         )
 
@@ -641,8 +601,7 @@ class GuiPreferences(QDialog):
         self.doReplaceSQuote.setChecked(CONFIG.doReplaceSQuote)
         self.doReplaceSQuote.setEnabled(CONFIG.doReplace)
         self.mainForm.addRow(
-            self.tr("Auto-replace single quotes"),
-            self.doReplaceSQuote,
+            self.tr("Auto-replace single quotes"), self.doReplaceSQuote,
             self.tr("Try to guess which is an opening or a closing quote.")
         )
 
@@ -651,8 +610,7 @@ class GuiPreferences(QDialog):
         self.doReplaceDQuote.setChecked(CONFIG.doReplaceDQuote)
         self.doReplaceDQuote.setEnabled(CONFIG.doReplace)
         self.mainForm.addRow(
-            self.tr("Auto-replace double quotes"),
-            self.doReplaceDQuote,
+            self.tr("Auto-replace double quotes"), self.doReplaceDQuote,
             self.tr("Try to guess which is an opening or a closing quote.")
         )
 
@@ -661,8 +619,7 @@ class GuiPreferences(QDialog):
         self.doReplaceDash.setChecked(CONFIG.doReplaceDash)
         self.doReplaceDash.setEnabled(CONFIG.doReplace)
         self.mainForm.addRow(
-            self.tr("Auto-replace dashes"),
-            self.doReplaceDash,
+            self.tr("Auto-replace dashes"), self.doReplaceDash,
             self.tr("Double and triple hyphens become short and long dashes.")
         )
 
@@ -671,31 +628,28 @@ class GuiPreferences(QDialog):
         self.doReplaceDots.setChecked(CONFIG.doReplaceDots)
         self.doReplaceDots.setEnabled(CONFIG.doReplace)
         self.mainForm.addRow(
-            self.tr("Auto-replace dots"),
-            self.doReplaceDots,
+            self.tr("Auto-replace dots"), self.doReplaceDots,
             self.tr("Three consecutive dots become ellipsis.")
         )
 
         # Pad Before
         self.fmtPadBefore = QLineEdit(self)
         self.fmtPadBefore.setMaxLength(32)
-        self.fmtPadBefore.setMaximumWidth(boxWidth)
+        self.fmtPadBefore.setMinimumWidth(boxWidth)
         self.fmtPadBefore.setText(CONFIG.fmtPadBefore)
         self.mainForm.addRow(
-            self.tr("Insert non-breaking space before"),
-            self.fmtPadBefore,
-            self.tr("Automatically add space before any of these symbols."),
+            self.tr("Insert non-breaking space before"), self.fmtPadBefore,
+            self.tr("Automatically add space before any of these symbols."), stretch=(2, 1)
         )
 
         # Pad After
         self.fmtPadAfter = QLineEdit(self)
         self.fmtPadAfter.setMaxLength(32)
-        self.fmtPadAfter.setMaximumWidth(boxWidth)
+        self.fmtPadAfter.setMinimumWidth(boxWidth)
         self.fmtPadAfter.setText(CONFIG.fmtPadAfter)
         self.mainForm.addRow(
-            self.tr("Insert non-breaking space after"),
-            self.fmtPadAfter,
-            self.tr("Automatically add space after any of these symbols."),
+            self.tr("Insert non-breaking space after"), self.fmtPadAfter,
+            self.tr("Automatically add space after any of these symbols."), stretch=(2, 1)
         )
 
         # Use Thin Space
@@ -703,8 +657,7 @@ class GuiPreferences(QDialog):
         self.fmtPadThin.setChecked(CONFIG.fmtPadThin)
         self.fmtPadThin.setEnabled(CONFIG.doReplace)
         self.mainForm.addRow(
-            self.tr("Use thin space instead"),
-            self.fmtPadThin,
+            self.tr("Use thin space instead"), self.fmtPadThin,
             self.tr("Inserts a thin space instead of a regular space.")
         )
 
@@ -730,8 +683,7 @@ class GuiPreferences(QDialog):
         self.btnSingleStyleO.setIcon(mIcon)
         self.btnSingleStyleO.clicked.connect(lambda: self._getQuote("SO"))
         self.mainForm.addRow(
-            self.tr("Single quote open style"),
-            self.quoteSym["SO"],
+            self.tr("Single quote open style"), self.quoteSym["SO"],
             self.tr("The symbol to use for a leading single quote."),
             button=self.btnSingleStyleO
         )
@@ -746,8 +698,7 @@ class GuiPreferences(QDialog):
         self.btnSingleStyleC.setIcon(mIcon)
         self.btnSingleStyleC.clicked.connect(lambda: self._getQuote("SC"))
         self.mainForm.addRow(
-            self.tr("Single quote close style"),
-            self.quoteSym["SC"],
+            self.tr("Single quote close style"), self.quoteSym["SC"],
             self.tr("The symbol to use for a trailing single quote."),
             button=self.btnSingleStyleC
         )
@@ -763,8 +714,7 @@ class GuiPreferences(QDialog):
         self.btnDoubleStyleO.setIcon(mIcon)
         self.btnDoubleStyleO.clicked.connect(lambda: self._getQuote("DO"))
         self.mainForm.addRow(
-            self.tr("Double quote open style"),
-            self.quoteSym["DO"],
+            self.tr("Double quote open style"), self.quoteSym["DO"],
             self.tr("The symbol to use for a leading double quote."),
             button=self.btnDoubleStyleO
         )
@@ -779,8 +729,7 @@ class GuiPreferences(QDialog):
         self.btnDoubleStyleC.setIcon(mIcon)
         self.btnDoubleStyleC.clicked.connect(lambda: self._getQuote("DC"))
         self.mainForm.addRow(
-            self.tr("Double quote close style"),
-            self.quoteSym["DC"],
+            self.tr("Double quote close style"), self.quoteSym["DC"],
             self.tr("The symbol to use for a trailing double quote."),
             button=self.btnDoubleStyleC
         )

@@ -71,14 +71,6 @@ class NPagedSideBar(QToolBar):
         self._labelCol = color
         return
 
-    def addSeparator(self) -> None:
-        """Add a spacer widget."""
-        spacer = QWidget(self)
-        spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        spacer.setFixedHeight(self._spacerHeight)
-        self.insertWidget(self._stretchAction, spacer)
-        return
-
     def addLabel(self, text: str) -> None:
         """Add a new label to the toolbar."""
         label = _NPagedToolLabel(self, self._labelCol)
