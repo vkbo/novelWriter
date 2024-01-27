@@ -64,12 +64,11 @@ class XMLReadState(Enum):
 
     NO_ACTION       = 0
     NO_ERROR        = 1
-    PARSED_BACKUP   = 2
-    CANNOT_PARSE    = 3
-    NOT_NWX_FILE    = 4
-    UNKNOWN_VERSION = 5
-    PARSED_OK       = 6
-    WAS_LEGACY      = 7
+    CANNOT_PARSE    = 2
+    NOT_NWX_FILE    = 3
+    UNKNOWN_VERSION = 4
+    PARSED_OK       = 5
+    WAS_LEGACY      = 6
 
 # END Class XMLReadState
 
@@ -172,23 +171,9 @@ class ProjectXMLReader:
             xml = ET.parse(str(self._path))
             self._state = XMLReadState.NO_ERROR
         except Exception as exc:
-            # Trying to open backup file instead
             logger.error("Failed to parse project XML", exc_info=exc)
             self._state = XMLReadState.CANNOT_PARSE
-
-            backFile = self._path.with_suffix(".bak")
-            if backFile.is_file():
-                try:
-                    xml = ET.parse(str(backFile))
-                    self._state = XMLReadState.PARSED_BACKUP
-                    logger.info("Backup project file parsed")
-                except Exception as exc:
-                    logger.error("Failed to parse backup project XML", exc_info=exc)
-                    self._state = XMLReadState.CANNOT_PARSE
-                    return False
-            else:
-                self._state = XMLReadState.CANNOT_PARSE
-                return False
+            return False
 
         xRoot = xml.getroot()
         self._root = str(xRoot.tag)
@@ -555,22 +540,12 @@ class ProjectXMLWriter:
             xName.text = item["name"]
 
         # Write the XML tree to file
-        tempFile = self._path.with_suffix(".tmp")
-        backFile = self._path.with_suffix(".bak")
+        tmp = self._path.with_suffix(".tmp")
         try:
             xml = ET.ElementTree(xRoot)
             xmlIndent(xml)
-            xml.write(tempFile, encoding="utf-8", xml_declaration=True)
-        except Exception as exc:
-            self._error = exc
-            return False
-
-        # If we're here, the file was successfully saved,
-        # so let's sort out the temps and backups
-        try:
-            if self._path.exists():
-                self._path.replace(backFile)
-            tempFile.replace(self._path)
+            xml.write(tmp, encoding="utf-8", xml_declaration=True)
+            tmp.replace(self._path)
         except Exception as exc:
             self._error = exc
             return False

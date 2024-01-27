@@ -57,7 +57,6 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
     refFile = tstPaths.filesDir / "nwProject-1.5.nwx"
     tstFile = tstPaths.outDir / "ProjectXML_ReadCurrent.nwx"
     xmlFile = fncPath / "nwProject-1.5.nwx"
-    bakFile = fncPath / "nwProject-1.5.bak"
     outFile = fncPath / "nwProject.nwx"
 
     xmlReader = ProjectXMLReader(xmlFile)
@@ -70,16 +69,6 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
     writeFile(xmlFile, "")
     assert xmlReader.read(data, content) is False
     assert xmlReader.state == XMLReadState.CANNOT_PARSE
-
-    # Also add an invalid backup file
-    writeFile(bakFile, "")
-    assert xmlReader.read(data, content) is False
-    assert xmlReader.state == XMLReadState.CANNOT_PARSE
-
-    # Add a valid backup file, that is not novelWriter
-    writeFile(bakFile, "<xml/>")
-    assert xmlReader.read(data, content) is False
-    assert xmlReader.state == XMLReadState.NOT_NWX_FILE
 
     # Add a valid project file, that is not novelWriter
     writeFile(xmlFile, "<xml/>")
