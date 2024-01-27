@@ -585,13 +585,13 @@ class GuiWritingStats(QDialog):
             newItem.setText(self.C_COUNT, f"{nWords:n}")
 
             if nWords > 0 and listMax > 0:
-                theBar = self.barImage.scaled(
+                wBar = self.barImage.scaled(
                     int(200*min(nWords, histMax)/listMax),
                     self.barHeight,
                     Qt.IgnoreAspectRatio,
                     Qt.FastTransformation
                 )
-                newItem.setData(self.C_BAR, Qt.DecorationRole, theBar)
+                newItem.setData(self.C_BAR, Qt.DecorationRole, wBar)
 
             newItem.setTextAlignment(self.C_LENGTH, Qt.AlignRight)
             newItem.setTextAlignment(self.C_IDLE, Qt.AlignRight)

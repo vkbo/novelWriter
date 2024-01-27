@@ -235,16 +235,12 @@ class BuildSettings:
     def getInt(self, key: str) -> int:
         """Type safe value access for integers."""
         value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None))[1])
-        if isinstance(value, (int, float)):
-            return int(value)
-        return 0
+        return int(value) if isinstance(value, (int, float)) else 0
 
     def getFloat(self, key: str) -> float:
         """Type safe value access for floats."""
         value = self._settings.get(key, SETTINGS_TEMPLATE.get(key, (None, None))[1])
-        if isinstance(value, (int, float)):
-            return float(value)
-        return 0.0
+        return float(value) if isinstance(value, (int, float)) else 0.0
 
     ##
     #  Setters

@@ -187,8 +187,8 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Select Paragraph/All
     nwGUI.docEditor.setCursorPosition(42)
     nwGUI.mainMenu.aSelectPar.activate(QAction.Trigger)
-    theCursor = nwGUI.docEditor.textCursor()
-    assert theCursor.selectedText() == (
+    cursor = nwGUI.docEditor.textCursor()
+    assert cursor.selectedText() == (
         "Pellentesque nec erat ut nulla posuere commodo. Curabitur nisi augue, imperdiet et porta "
         "imperdiet, efficitur id leo. Cras finibus arcu at nibh commodo congue. Proin suscipit "
         "placerat condimentum. Aenean ante enim, cursus id lorem a, blandit venenatis nibh. "
@@ -200,8 +200,8 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     nwGUI.docEditor.setCursorPosition(42)
     nwGUI.mainMenu.aSelectAll.activate(QAction.Trigger)
-    theCursor = nwGUI.docEditor.textCursor()
-    assert len(theCursor.selectedText()) == 1895
+    cursor = nwGUI.docEditor.textCursor()
+    assert len(cursor.selectedText()) == 1895
 
     # Clear the Text
     nwGUI.docEditor.clear()
@@ -295,10 +295,10 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
         "Here is some text\non multiple\nlines.\n\n"
         "With another paragraph\nhere."
     ))
-    theCursor = nwGUI.docEditor.textCursor()
-    theCursor.setPosition(74)
-    theCursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, 29)
-    nwGUI.docEditor.setTextCursor(theCursor)
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.setPosition(74)
+    cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, 29)
+    nwGUI.docEditor.setTextCursor(cursor)
     nwGUI.mainMenu.aFmtRmBreaks.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText() == (
         "### New Text\n\n"
@@ -348,21 +348,21 @@ def testGuiMenu_ContextMenus(qtbot, nwGUI, prjLipsum):
     assert nwGUI.openDocument("4c4f28287af27")
 
     # Editor Context Menu
-    theCursor = nwGUI.docEditor.textCursor()
-    theCursor.setPosition(112)
-    nwGUI.docEditor.setTextCursor(theCursor)
-    theRect = nwGUI.docEditor.cursorRect()
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.setPosition(112)
+    nwGUI.docEditor.setTextCursor(cursor)
+    rect = nwGUI.docEditor.cursorRect()
 
-    nwGUI.docEditor._openContextMenu(theRect.bottomRight())
-    qtbot.mouseClick(nwGUI.docEditor, Qt.LeftButton, pos=theRect.topLeft())
+    nwGUI.docEditor._openContextMenu(rect.bottomRight())
+    qtbot.mouseClick(nwGUI.docEditor, Qt.LeftButton, pos=rect.topLeft())
 
-    nwGUI.docEditor._makePosSelection(QTextCursor.WordUnderCursor, theRect.center())
-    theCursor = nwGUI.docEditor.textCursor()
-    assert theCursor.selectedText() == "imperdiet"
+    nwGUI.docEditor._makePosSelection(QTextCursor.WordUnderCursor, rect.center())
+    cursor = nwGUI.docEditor.textCursor()
+    assert cursor.selectedText() == "imperdiet"
 
-    nwGUI.docEditor._makePosSelection(QTextCursor.BlockUnderCursor, theRect.center())
-    theCursor = nwGUI.docEditor.textCursor()
-    assert theCursor.selectedText() == (
+    nwGUI.docEditor._makePosSelection(QTextCursor.BlockUnderCursor, rect.center())
+    cursor = nwGUI.docEditor.textCursor()
+    assert cursor.selectedText() == (
         "Pellentesque nec erat ut nulla posuere commodo. Curabitur nisi augue, imperdiet et porta "
         "imperdiet, efficitur id leo. Cras finibus arcu at nibh commodo congue. Proin suscipit "
         "placerat condimentum. Aenean ante enim, cursus id lorem a, blandit venenatis nibh. "
@@ -375,21 +375,21 @@ def testGuiMenu_ContextMenus(qtbot, nwGUI, prjLipsum):
     # Viewer Context Menu
     assert nwGUI.viewDocument("4c4f28287af27")
 
-    theCursor = nwGUI.docViewer.textCursor()
-    theCursor.setPosition(112)
-    nwGUI.docViewer.setTextCursor(theCursor)
-    theRect = nwGUI.docViewer.cursorRect()
+    cursor = nwGUI.docViewer.textCursor()
+    cursor.setPosition(112)
+    nwGUI.docViewer.setTextCursor(cursor)
+    rect = nwGUI.docViewer.cursorRect()
 
-    nwGUI.docViewer._openContextMenu(theRect.bottomRight())
-    qtbot.mouseClick(nwGUI.docViewer, Qt.LeftButton, pos=theRect.topLeft())
+    nwGUI.docViewer._openContextMenu(rect.bottomRight())
+    qtbot.mouseClick(nwGUI.docViewer, Qt.LeftButton, pos=rect.topLeft())
 
-    nwGUI.docViewer._makePosSelection(QTextCursor.WordUnderCursor, theRect.center())
-    theCursor = nwGUI.docViewer.textCursor()
-    assert theCursor.selectedText() == "imperdiet"
+    nwGUI.docViewer._makePosSelection(QTextCursor.WordUnderCursor, rect.center())
+    cursor = nwGUI.docViewer.textCursor()
+    assert cursor.selectedText() == "imperdiet"
 
-    nwGUI.docEditor._makePosSelection(QTextCursor.BlockUnderCursor, theRect.center())
-    theCursor = nwGUI.docEditor.textCursor()
-    assert theCursor.selectedText() == (
+    nwGUI.docEditor._makePosSelection(QTextCursor.BlockUnderCursor, rect.center())
+    cursor = nwGUI.docEditor.textCursor()
+    assert cursor.selectedText() == (
         "Pellentesque nec erat ut nulla posuere commodo. Curabitur nisi augue, imperdiet et porta "
         "imperdiet, efficitur id leo. Cras finibus arcu at nibh commodo congue. Proin suscipit "
         "placerat condimentum. Aenean ante enim, cursus id lorem a, blandit venenatis nibh. "
@@ -629,12 +629,12 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     assert not nwGUI.importDocument()
 
     # Then a valid path, but bot a file that exists
-    theFile = fncPath / "import.txt"
-    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (str(theFile), ""))
+    iFile = fncPath / "import.txt"
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (str(iFile), ""))
     assert not nwGUI.importDocument()
 
     # Create the file and try again, but with no target document open
-    writeFile(theFile, "Foo")
+    writeFile(iFile, "Foo")
     assert not nwGUI.importDocument()
 
     # Open the document from before, and add some text to it

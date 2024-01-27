@@ -279,28 +279,25 @@ class DocDuplicator:
         """Run through a list of items, duplicate them, and copy the
         text content if they are documents.
         """
-        if not items:
-            return
-
-        nHandle = items[0]
-        hMap: dict[str, str | None] = {t: None for t in items}
-        for tHandle in items:
-            newItem = self._project.tree.duplicate(tHandle)
-            if newItem is None:
-                return
-            hMap[tHandle] = newItem.itemHandle
-            if newItem.itemParent in hMap:
-                newItem.setParent(hMap[newItem.itemParent])
-                self._project.tree.updateItemData(newItem.itemHandle)
-            if newItem.isFileType():
-                oldDoc = self._project.storage.getDocument(tHandle)
-                newDoc = self._project.storage.getDocument(newItem.itemHandle)
-                if newDoc.fileExists():
+        if items:
+            nHandle = items[0]
+            hMap: dict[str, str | None] = {t: None for t in items}
+            for tHandle in items:
+                newItem = self._project.tree.duplicate(tHandle)
+                if newItem is None:
                     return
-                newDoc.writeDocument(oldDoc.readDocument() or "")
-            yield newItem.itemHandle, nHandle
-            nHandle = None
-
+                hMap[tHandle] = newItem.itemHandle
+                if newItem.itemParent in hMap:
+                    newItem.setParent(hMap[newItem.itemParent])
+                    self._project.tree.updateItemData(newItem.itemHandle)
+                if newItem.isFileType():
+                    oldDoc = self._project.storage.getDocument(tHandle)
+                    newDoc = self._project.storage.getDocument(newItem.itemHandle)
+                    if newDoc.fileExists():
+                        return
+                    newDoc.writeDocument(oldDoc.readDocument() or "")
+                yield newItem.itemHandle, nHandle
+                nHandle = None
         return
 
 # END Class DocDuplicator
@@ -313,7 +310,7 @@ class ProjectBuilder:
 
     def __init__(self) -> None:
         self._path = None
-        self.tr = partial(QCoreApplication.translate, "NWProject")
+        self.tr = partial(QCoreApplication.translate, "ProjectBuilder")
         return
 
     @property

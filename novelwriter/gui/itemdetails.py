@@ -239,9 +239,9 @@ class GuiItemDetails(QWidget):
         # Label
         # =====
 
-        theLabel = nwItem.itemName
-        if len(theLabel) > 100:
-            theLabel = theLabel[:96].rstrip()+" ..."
+        label = nwItem.itemName
+        if len(label) > 100:
+            label = label[:96].rstrip()+" ..."
 
         if nwItem.isFileType():
             if nwItem.isActive:
@@ -251,14 +251,14 @@ class GuiItemDetails(QWidget):
         else:
             self.labelIcon.setPixmap(SHARED.theme.getPixmap("noncheckable", (iPx, iPx)))
 
-        self.labelData.setText(theLabel)
+        self.labelData.setText(label)
 
         # Status
         # ======
 
-        theStatus, theIcon = nwItem.getImportStatus(incIcon=True)
-        self.statusIcon.setPixmap(theIcon.pixmap(iPx, iPx))
-        self.statusData.setText(theStatus)
+        status, icon = nwItem.getImportStatus(incIcon=True)
+        self.statusIcon.setPixmap(icon.pixmap(iPx, iPx))
+        self.statusData.setText(status)
 
         # Class
         # =====

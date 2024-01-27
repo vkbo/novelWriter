@@ -160,52 +160,52 @@ def testCoreIndex_ScanThis(mockGUI):
     project = NWProject()
     index = project.index
 
-    isValid, theBits, thePos = index.scanThis("tag: this, and this")
+    isValid, bits, pos = index.scanThis("tag: this, and this")
     assert isValid is False
 
-    isValid, theBits, thePos = index.scanThis("@")
+    isValid, bits, pos = index.scanThis("@")
     assert isValid is False
 
-    isValid, theBits, thePos = index.scanThis("@:")
+    isValid, bits, pos = index.scanThis("@:")
     assert isValid is False
 
-    isValid, theBits, thePos = index.scanThis(" @a: b")
+    isValid, bits, pos = index.scanThis(" @a: b")
     assert isValid is False
 
-    isValid, theBits, thePos = index.scanThis("@a:")
+    isValid, bits, pos = index.scanThis("@a:")
     assert isValid is True
-    assert theBits == ["@a"]
-    assert thePos  == [0]
+    assert bits == ["@a"]
+    assert pos  == [0]
 
-    isValid, theBits, thePos = index.scanThis("@a:b")
+    isValid, bits, pos = index.scanThis("@a:b")
     assert isValid is True
-    assert theBits == ["@a", "b"]
-    assert thePos  == [0, 3]
+    assert bits == ["@a", "b"]
+    assert pos  == [0, 3]
 
-    isValid, theBits, thePos = index.scanThis("@a:b,c,d")
+    isValid, bits, pos = index.scanThis("@a:b,c,d")
     assert isValid is True
-    assert theBits == ["@a", "b", "c", "d"]
-    assert thePos  == [0, 3, 5, 7]
+    assert bits == ["@a", "b", "c", "d"]
+    assert pos  == [0, 3, 5, 7]
 
-    isValid, theBits, thePos = index.scanThis("@a : b , c , d")
+    isValid, bits, pos = index.scanThis("@a : b , c , d")
     assert isValid is True
-    assert theBits == ["@a", "b", "c", "d"]
-    assert thePos  == [0, 5, 9, 13]
+    assert bits == ["@a", "b", "c", "d"]
+    assert pos  == [0, 5, 9, 13]
 
-    isValid, theBits, thePos = index.scanThis("@tag: this, and this")
+    isValid, bits, pos = index.scanThis("@tag: this, and this")
     assert isValid is True
-    assert theBits == ["@tag", "this", "and this"]
-    assert thePos  == [0, 6, 12]
+    assert bits == ["@tag", "this", "and this"]
+    assert pos  == [0, 6, 12]
 
-    isValid, theBits, thePos = index.scanThis("@tag: this,, and this")
+    isValid, bits, pos = index.scanThis("@tag: this,, and this")
     assert isValid is True
-    assert theBits == ["@tag", "this", "", "and this"]
-    assert thePos  == [0, 6, 11, 13]
+    assert bits == ["@tag", "this", "", "and this"]
+    assert pos  == [0, 6, 11, 13]
 
-    isValid, theBits, thePos = index.scanThis("@tag: this, , and this")
+    isValid, bits, pos = index.scanThis("@tag: this, , and this")
     assert isValid is True
-    assert theBits == ["@tag", "this", "", "and this"]
-    assert thePos  == [0, 6, 12, 14]
+    assert bits == ["@tag", "this", "", "and this"]
+    assert pos  == [0, 6, 12, 14]
 
     project.closeProject()
 

@@ -213,17 +213,17 @@ def formatInt(value: int) -> str:
     if not isinstance(value, int):
         return "ERR"
 
-    theVal = float(value)
-    if theVal > 1000.0:
+    fVal = float(value)
+    if fVal > 1000.0:
         for pF in ["k", "M", "G", "T", "P", "E"]:
-            theVal /= 1000.0
-            if theVal < 1000.0:
-                if theVal < 10.0:
-                    return f"{theVal:4.2f}{nwUnicode.U_THSP}{pF}"
-                elif theVal < 100.0:
-                    return f"{theVal:4.1f}{nwUnicode.U_THSP}{pF}"
+            fVal /= 1000.0
+            if fVal < 1000.0:
+                if fVal < 10.0:
+                    return f"{fVal:4.2f}{nwUnicode.U_THSP}{pF}"
+                elif fVal < 100.0:
+                    return f"{fVal:4.1f}{nwUnicode.U_THSP}{pF}"
                 else:
-                    return f"{theVal:3.0f}{nwUnicode.U_THSP}{pF}"
+                    return f"{fVal:3.0f}{nwUnicode.U_THSP}{pF}"
 
     return str(value)
 
@@ -275,22 +275,22 @@ def transferCase(source: str, target: str) -> str:
     """Transfers the case of the source word to the target word. This
     will consider all upper or lower, and first char capitalisation.
     """
-    theResult = target
+    result = target
 
     if not isinstance(source, str) or not isinstance(target, str):
-        return theResult
+        return result
     if len(target) < 1 or len(source) < 1:
-        return theResult
+        return result
 
     if source.istitle():
-        theResult = target.title()
+        result = target.title()
 
     if source.isupper():
-        theResult = target.upper()
+        result = target.upper()
     elif source.islower():
-        theResult = target.lower()
+        result = target.lower()
 
-    return theResult
+    return result
 
 
 def fuzzyTime(seconds: int) -> str:

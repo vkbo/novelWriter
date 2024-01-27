@@ -455,19 +455,19 @@ class _ContentsPage(NFixedPage):
         pTotal = 0
         tPages = 1
 
-        theList = []
+        entries = []
         for _, tLevel, tTitle, wCount in self._data:
             pCount = math.ceil(wCount/wpPage)
             if dblPages:
                 pCount += pCount%2
 
             pTotal += pCount
-            theList.append((tLevel, tTitle, wCount, pCount))
+            entries.append((tLevel, tTitle, wCount, pCount))
 
         pMax = pTotal - fstPage
 
         self.tocTree.clear()
-        for tLevel, tTitle, wCount, pCount in theList:
+        for tLevel, tTitle, wCount, pCount in entries:
             newItem = QTreeWidgetItem()
 
             if tPages <= fstPage:

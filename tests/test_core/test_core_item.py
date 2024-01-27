@@ -35,150 +35,150 @@ from novelwriter.core.project import NWProject
 @pytest.mark.core
 def testCoreItem_Setters(mockGUI, mockRnd, fncPath):
     """Test all the simple setters for the NWItem class."""
-    theProject = NWProject()
+    project = NWProject()
     mockRnd.reset()
-    buildTestProject(theProject, fncPath)
-    theItem = NWItem(theProject, "0000000000000")
-    assert theItem.itemHandle == "0000000000000"
+    buildTestProject(project, fncPath)
+    item = NWItem(project, "0000000000000")
+    assert item.itemHandle == "0000000000000"
 
     statusKeys = ["s000000", "s000001", "s000002", "s000003"]
     importKeys = ["i000004", "i000005", "i000006", "i000007"]
 
     # Name
-    theItem.setName("A Name")
-    assert theItem.itemName == "A Name"
-    theItem.setName("\t A Name   ")
-    assert theItem.itemName == "A Name"
-    theItem.setName("\t A\t\u2009\u202f\u2002\u2003\u2028\u2029Name   ")
-    assert theItem.itemName == "A Name"
-    theItem.setName(123)
-    assert theItem.itemName == ""
+    item.setName("A Name")
+    assert item.itemName == "A Name"
+    item.setName("\t A Name   ")
+    assert item.itemName == "A Name"
+    item.setName("\t A\t\u2009\u202f\u2002\u2003\u2028\u2029Name   ")
+    assert item.itemName == "A Name"
+    item.setName(123)
+    assert item.itemName == ""
 
     # Parent
-    theItem.setParent(None)
-    assert theItem.itemParent is None
-    theItem.setParent(123)
-    assert theItem.itemParent is None
-    theItem.setParent("0123456789abcdef")
-    assert theItem.itemParent is None
-    theItem.setParent("0123456789abg")
-    assert theItem.itemParent is None
-    theItem.setParent("0123456789abc")
-    assert theItem.itemParent == "0123456789abc"
+    item.setParent(None)
+    assert item.itemParent is None
+    item.setParent(123)
+    assert item.itemParent is None
+    item.setParent("0123456789abcdef")
+    assert item.itemParent is None
+    item.setParent("0123456789abg")
+    assert item.itemParent is None
+    item.setParent("0123456789abc")
+    assert item.itemParent == "0123456789abc"
 
     # Root
-    theItem.setRoot(None)
-    assert theItem.itemRoot is None
-    theItem.setRoot(123)
-    assert theItem.itemRoot is None
-    theItem.setRoot("0123456789abcdef")
-    assert theItem.itemRoot is None
-    theItem.setRoot("0123456789abg")
-    assert theItem.itemRoot is None
-    theItem.setRoot("0123456789abc")
-    assert theItem.itemRoot == "0123456789abc"
+    item.setRoot(None)
+    assert item.itemRoot is None
+    item.setRoot(123)
+    assert item.itemRoot is None
+    item.setRoot("0123456789abcdef")
+    assert item.itemRoot is None
+    item.setRoot("0123456789abg")
+    assert item.itemRoot is None
+    item.setRoot("0123456789abc")
+    assert item.itemRoot == "0123456789abc"
 
     # Order
-    theItem.setOrder(None)
-    assert theItem.itemOrder == 0
-    theItem.setOrder("1")
-    assert theItem.itemOrder == 1
-    theItem.setOrder(1)
-    assert theItem.itemOrder == 1
+    item.setOrder(None)
+    assert item.itemOrder == 0
+    item.setOrder("1")
+    assert item.itemOrder == 1
+    item.setOrder(1)
+    assert item.itemOrder == 1
 
     # Importance
-    theItem._class = nwItemClass.CHARACTER
-    theItem.setImport("Word")
-    assert theItem.itemImport == importKeys[0]  # Default
+    item._class = nwItemClass.CHARACTER
+    item.setImport("Word")
+    assert item.itemImport == importKeys[0]  # Default
     for key in importKeys:
-        theItem.setImport(key)
-        assert theItem.itemImport == key
+        item.setImport(key)
+        assert item.itemImport == key
 
     # Status
-    theItem._class = nwItemClass.NOVEL
-    theItem.setStatus("Word")
-    assert theItem.itemStatus == statusKeys[0]  # Default
+    item._class = nwItemClass.NOVEL
+    item.setStatus("Word")
+    assert item.itemStatus == statusKeys[0]  # Default
     for key in statusKeys:
-        theItem.setStatus(key)
-        assert theItem.itemStatus == key
+        item.setStatus(key)
+        assert item.itemStatus == key
 
     # Status/Importance Wrapper
-    theItem._class = nwItemClass.CHARACTER
+    item._class = nwItemClass.CHARACTER
     for key in importKeys:
-        theItem.setImport(key)
-        assert theItem.itemImport == key
-        assert theItem.itemStatus == statusKeys[3]  # Should not change
+        item.setImport(key)
+        assert item.itemImport == key
+        assert item.itemStatus == statusKeys[3]  # Should not change
 
-    theItem._class = nwItemClass.NOVEL
+    item._class = nwItemClass.NOVEL
     for key in statusKeys:
-        theItem.setStatus(key)
-        assert theItem.itemImport == importKeys[3]  # Should not change
-        assert theItem.itemStatus == key
+        item.setStatus(key)
+        assert item.itemImport == importKeys[3]  # Should not change
+        assert item.itemStatus == key
 
     # Expanded
-    theItem.setExpanded(8)
-    assert theItem.isExpanded is False
-    theItem.setExpanded(None)
-    assert theItem.isExpanded is False
-    theItem.setExpanded("None")
-    assert theItem.isExpanded is False
-    theItem.setExpanded("What?")
-    assert theItem.isExpanded is False
-    theItem.setExpanded("True")
-    assert theItem.isExpanded is False
-    theItem.setExpanded(True)
-    assert theItem.isExpanded is True
+    item.setExpanded(8)
+    assert item.isExpanded is False
+    item.setExpanded(None)
+    assert item.isExpanded is False
+    item.setExpanded("None")
+    assert item.isExpanded is False
+    item.setExpanded("What?")
+    assert item.isExpanded is False
+    item.setExpanded("True")
+    assert item.isExpanded is False
+    item.setExpanded(True)
+    assert item.isExpanded is True
 
     # Active
-    theItem.setActive(8)
-    assert theItem.isActive is False
-    theItem.setActive(None)
-    assert theItem.isActive is False
-    theItem.setActive("None")
-    assert theItem.isActive is False
-    theItem.setActive("What?")
-    assert theItem.isActive is False
-    theItem.setActive("True")
-    assert theItem.isActive is False
-    theItem.setActive(True)
-    assert theItem.isActive is True
+    item.setActive(8)
+    assert item.isActive is False
+    item.setActive(None)
+    assert item.isActive is False
+    item.setActive("None")
+    assert item.isActive is False
+    item.setActive("What?")
+    assert item.isActive is False
+    item.setActive("True")
+    assert item.isActive is False
+    item.setActive(True)
+    assert item.isActive is True
 
     # CharCount
-    theItem.setCharCount(None)
-    assert theItem.charCount == 0
-    theItem.setCharCount("1")
-    assert theItem.charCount == 0
-    theItem.setCharCount(1)
-    assert theItem.charCount == 1
+    item.setCharCount(None)
+    assert item.charCount == 0
+    item.setCharCount("1")
+    assert item.charCount == 0
+    item.setCharCount(1)
+    assert item.charCount == 1
 
     # WordCount
-    theItem.setWordCount(None)
-    assert theItem.wordCount == 0
-    theItem.setWordCount("1")
-    assert theItem.wordCount == 0
-    theItem.setWordCount(1)
-    assert theItem.wordCount == 1
+    item.setWordCount(None)
+    assert item.wordCount == 0
+    item.setWordCount("1")
+    assert item.wordCount == 0
+    item.setWordCount(1)
+    assert item.wordCount == 1
 
     # ParaCount
-    theItem.setParaCount(None)
-    assert theItem.paraCount == 0
-    theItem.setParaCount("1")
-    assert theItem.paraCount == 0
-    theItem.setParaCount(1)
-    assert theItem.paraCount == 1
+    item.setParaCount(None)
+    assert item.paraCount == 0
+    item.setParaCount("1")
+    assert item.paraCount == 0
+    item.setParaCount(1)
+    assert item.paraCount == 1
 
     # CursorPos
-    theItem.setCursorPos(None)
-    assert theItem.cursorPos == 0
-    theItem.setCursorPos("1")
-    assert theItem.cursorPos == 0
-    theItem.setCursorPos(1)
-    assert theItem.cursorPos == 1
+    item.setCursorPos(None)
+    assert item.cursorPos == 0
+    item.setCursorPos("1")
+    assert item.cursorPos == 0
+    item.setCursorPos(1)
+    assert item.cursorPos == 1
 
     # Initial Count
-    theItem.setWordCount(234)
-    theItem.saveInitialCount()
-    assert theItem.initCount == 234
+    item.setWordCount(234)
+    item.saveInitialCount()
+    assert item.initCount == 234
 
 # END Test testCoreItem_Setters
 
@@ -186,91 +186,91 @@ def testCoreItem_Setters(mockGUI, mockRnd, fncPath):
 @pytest.mark.core
 def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
     """Test the simple methods of the NWItem class."""
-    theProject = NWProject()
+    project = NWProject()
     mockRnd.reset()
-    buildTestProject(theProject, fncPath)
-    theItem = NWItem(theProject, "0000000000000")
+    buildTestProject(project, fncPath)
+    item = NWItem(project, "0000000000000")
 
     # Describe Me
     # ===========
 
-    assert theItem.describeMe() == "None"
+    assert item.describeMe() == "None"
 
-    theItem.setType("ROOT")
-    assert theItem.describeMe() == "Root Folder"
-    assert theItem.isRootType() is True
+    item.setType("ROOT")
+    assert item.describeMe() == "Root Folder"
+    assert item.isRootType() is True
 
-    theItem.setType("FOLDER")
-    assert theItem.describeMe() == "Folder"
-    assert theItem.isFolderType() is True
+    item.setType("FOLDER")
+    assert item.describeMe() == "Folder"
+    assert item.isFolderType() is True
 
-    theItem.setType("FILE")
-    theItem.setLayout("DOCUMENT")
-    assert theItem.isFileType() is True
-    assert theItem.isDocumentLayout() is True
+    item.setType("FILE")
+    item.setLayout("DOCUMENT")
+    assert item.isFileType() is True
+    assert item.isDocumentLayout() is True
 
-    theItem.setMainHeading("HH")
-    assert theItem.mainHeading == "H0"
-    assert theItem.describeMe() == "Novel Document"
+    item.setMainHeading("HH")
+    assert item.mainHeading == "H0"
+    assert item.describeMe() == "Novel Document"
 
-    theItem.setMainHeading("H0")
-    assert theItem.mainHeading == "H0"
-    assert theItem.describeMe() == "Novel Document"
+    item.setMainHeading("H0")
+    assert item.mainHeading == "H0"
+    assert item.describeMe() == "Novel Document"
 
-    theItem.setMainHeading("H1")
-    assert theItem.mainHeading == "H1"
-    assert theItem.describeMe() == "Novel Title Page"
+    item.setMainHeading("H1")
+    assert item.mainHeading == "H1"
+    assert item.describeMe() == "Novel Title Page"
 
-    theItem.setMainHeading("H2")
-    assert theItem.mainHeading == "H2"
-    assert theItem.describeMe() == "Novel Chapter"
+    item.setMainHeading("H2")
+    assert item.mainHeading == "H2"
+    assert item.describeMe() == "Novel Chapter"
 
-    theItem.setMainHeading("H3")
-    assert theItem.mainHeading == "H3"
-    assert theItem.describeMe() == "Novel Scene"
+    item.setMainHeading("H3")
+    assert item.mainHeading == "H3"
+    assert item.describeMe() == "Novel Scene"
 
-    theItem.setMainHeading("H4")
-    assert theItem.mainHeading == "H4"
-    assert theItem.describeMe() == "Novel Section"
+    item.setMainHeading("H4")
+    assert item.mainHeading == "H4"
+    assert item.describeMe() == "Novel Section"
 
-    theItem.setMainHeading("H5")
-    assert theItem.mainHeading == "H4"
-    assert theItem.describeMe() == "Novel Section"
+    item.setMainHeading("H5")
+    assert item.mainHeading == "H4"
+    assert item.describeMe() == "Novel Section"
 
-    theItem.setLayout("NOTE")
-    assert theItem.isNoteLayout() is True
-    assert theItem.describeMe() == "Project Note"
+    item.setLayout("NOTE")
+    assert item.isNoteLayout() is True
+    assert item.describeMe() == "Project Note"
 
     # Status + Icon
     # =============
 
-    theItem.setType("FILE")
-    theItem.setStatus(C.sNote)
-    theItem.setImport(C.iMinor)
+    item.setType("FILE")
+    item.setStatus(C.sNote)
+    item.setImport(C.iMinor)
 
-    theItem.setClass("NOVEL")
-    stT, stI = theItem.getImportStatus()
+    item.setClass("NOVEL")
+    stT, stI = item.getImportStatus()
     assert stT == "Note"
     assert isinstance(stI, QIcon)
 
-    theItem.setClass("CHARACTER")
-    stT, stI = theItem.getImportStatus()
+    item.setClass("CHARACTER")
+    stT, stI = item.getImportStatus()
     assert stT == "Minor"
     assert isinstance(stI, QIcon)
 
     # Representation
     # ==============
 
-    theItem.setName("New Item")
-    theItem.setParent("1111111111111")
-    assert repr(theItem) == "<NWItem handle=0000000000000, parent=1111111111111, name='New Item'>"
+    item.setName("New Item")
+    item.setParent("1111111111111")
+    assert repr(item) == "<NWItem handle=0000000000000, parent=1111111111111, name='New Item'>"
 
     # Truthiness
     # ==========
 
     # Is True if the handle evaluates to True
-    assert bool(NWItem(theProject, "0000000000000")) is True
-    assert bool(NWItem(theProject, "")) is False
+    assert bool(NWItem(project, "0000000000000")) is True
+    assert bool(NWItem(project, "")) is False
 
     # Copy an Item
     # ============
@@ -302,11 +302,11 @@ def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
     }
 
     # Get the scene item
-    scItem = theProject.tree[C.hSceneDoc]
+    scItem = project.tree[C.hSceneDoc]
     assert isinstance(scItem, NWItem)
 
     # Duplicate and update the expected content with a new handle
-    cpHandle = theProject.tree._makeHandle()
+    cpHandle = project.tree._makeHandle()
     cpData = copy.deepcopy(scData)
     cpData["itemAttr"]["handle"] = cpHandle
 
@@ -334,26 +334,26 @@ def testCoreItem_TypeSetter(mockGUI):
     """Test the setter for all the nwItemType values for the NWItem
     class.
     """
-    theProject = NWProject()
-    theItem = NWItem(theProject, "0000000000000")
+    project = NWProject()
+    item = NWItem(project, "0000000000000")
 
     # Type
-    theItem.setType(None)
-    assert theItem.itemType == nwItemType.NO_TYPE
-    theItem.setType("NONSENSE")
-    assert theItem.itemType == nwItemType.NO_TYPE
-    theItem.setType("NO_TYPE")
-    assert theItem.itemType == nwItemType.NO_TYPE
-    theItem.setType("ROOT")
-    assert theItem.itemType == nwItemType.ROOT
-    theItem.setType("FOLDER")
-    assert theItem.itemType == nwItemType.FOLDER
-    theItem.setType("FILE")
-    assert theItem.itemType == nwItemType.FILE
+    item.setType(None)
+    assert item.itemType == nwItemType.NO_TYPE
+    item.setType("NONSENSE")
+    assert item.itemType == nwItemType.NO_TYPE
+    item.setType("NO_TYPE")
+    assert item.itemType == nwItemType.NO_TYPE
+    item.setType("ROOT")
+    assert item.itemType == nwItemType.ROOT
+    item.setType("FOLDER")
+    assert item.itemType == nwItemType.FOLDER
+    item.setType("FILE")
+    assert item.itemType == nwItemType.FILE
 
     # Alternative
-    theItem.setType(nwItemType.ROOT)
-    assert theItem.itemType == nwItemType.ROOT
+    item.setType(nwItemType.ROOT)
+    assert item.itemType == nwItemType.ROOT
 
 # END Test testCoreItem_TypeSetter
 
@@ -363,84 +363,84 @@ def testCoreItem_ClassSetter(mockGUI):
     """Test the setter for all the nwItemClass values for the NWItem
     class.
     """
-    theProject = NWProject()
-    theItem = NWItem(theProject, "0000000000000")
+    project = NWProject()
+    item = NWItem(project, "0000000000000")
 
     # Class
-    theItem.setClass(None)
-    assert theItem.itemClass == nwItemClass.NO_CLASS
-    theItem.setClass("NONSENSE")
-    assert theItem.itemClass == nwItemClass.NO_CLASS
+    item.setClass(None)
+    assert item.itemClass == nwItemClass.NO_CLASS
+    item.setClass("NONSENSE")
+    assert item.itemClass == nwItemClass.NO_CLASS
 
-    theItem.setClass("NO_CLASS")
-    assert theItem.itemClass == nwItemClass.NO_CLASS
-    assert theItem.isNovelLike() is False
-    assert theItem.documentAllowed() is False
-    assert theItem.isInactiveClass() is True
+    item.setClass("NO_CLASS")
+    assert item.itemClass == nwItemClass.NO_CLASS
+    assert item.isNovelLike() is False
+    assert item.documentAllowed() is False
+    assert item.isInactiveClass() is True
 
-    theItem.setClass("NOVEL")
-    assert theItem.itemClass == nwItemClass.NOVEL
-    assert theItem.isNovelLike() is True
-    assert theItem.documentAllowed() is True
-    assert theItem.isInactiveClass() is False
+    item.setClass("NOVEL")
+    assert item.itemClass == nwItemClass.NOVEL
+    assert item.isNovelLike() is True
+    assert item.documentAllowed() is True
+    assert item.isInactiveClass() is False
 
-    theItem.setClass("PLOT")
-    assert theItem.itemClass == nwItemClass.PLOT
-    assert theItem.isNovelLike() is False
-    assert theItem.documentAllowed() is False
-    assert theItem.isInactiveClass() is False
+    item.setClass("PLOT")
+    assert item.itemClass == nwItemClass.PLOT
+    assert item.isNovelLike() is False
+    assert item.documentAllowed() is False
+    assert item.isInactiveClass() is False
 
-    theItem.setClass("CHARACTER")
-    assert theItem.itemClass == nwItemClass.CHARACTER
-    assert theItem.isNovelLike() is False
-    assert theItem.documentAllowed() is False
-    assert theItem.isInactiveClass() is False
+    item.setClass("CHARACTER")
+    assert item.itemClass == nwItemClass.CHARACTER
+    assert item.isNovelLike() is False
+    assert item.documentAllowed() is False
+    assert item.isInactiveClass() is False
 
-    theItem.setClass("WORLD")
-    assert theItem.itemClass == nwItemClass.WORLD
-    assert theItem.isNovelLike() is False
-    assert theItem.documentAllowed() is False
-    assert theItem.isInactiveClass() is False
+    item.setClass("WORLD")
+    assert item.itemClass == nwItemClass.WORLD
+    assert item.isNovelLike() is False
+    assert item.documentAllowed() is False
+    assert item.isInactiveClass() is False
 
-    theItem.setClass("TIMELINE")
-    assert theItem.itemClass == nwItemClass.TIMELINE
-    assert theItem.isNovelLike() is False
-    assert theItem.documentAllowed() is False
-    assert theItem.isInactiveClass() is False
+    item.setClass("TIMELINE")
+    assert item.itemClass == nwItemClass.TIMELINE
+    assert item.isNovelLike() is False
+    assert item.documentAllowed() is False
+    assert item.isInactiveClass() is False
 
-    theItem.setClass("OBJECT")
-    assert theItem.itemClass == nwItemClass.OBJECT
-    assert theItem.isNovelLike() is False
-    assert theItem.documentAllowed() is False
-    assert theItem.isInactiveClass() is False
+    item.setClass("OBJECT")
+    assert item.itemClass == nwItemClass.OBJECT
+    assert item.isNovelLike() is False
+    assert item.documentAllowed() is False
+    assert item.isInactiveClass() is False
 
-    theItem.setClass("ENTITY")
-    assert theItem.itemClass == nwItemClass.ENTITY
-    assert theItem.isNovelLike() is False
-    assert theItem.documentAllowed() is False
-    assert theItem.isInactiveClass() is False
+    item.setClass("ENTITY")
+    assert item.itemClass == nwItemClass.ENTITY
+    assert item.isNovelLike() is False
+    assert item.documentAllowed() is False
+    assert item.isInactiveClass() is False
 
-    theItem.setClass("CUSTOM")
-    assert theItem.itemClass == nwItemClass.CUSTOM
-    assert theItem.isNovelLike() is False
-    assert theItem.documentAllowed() is False
-    assert theItem.isInactiveClass() is False
+    item.setClass("CUSTOM")
+    assert item.itemClass == nwItemClass.CUSTOM
+    assert item.isNovelLike() is False
+    assert item.documentAllowed() is False
+    assert item.isInactiveClass() is False
 
-    theItem.setClass("ARCHIVE")
-    assert theItem.itemClass == nwItemClass.ARCHIVE
-    assert theItem.isNovelLike() is True
-    assert theItem.documentAllowed() is True
-    assert theItem.isInactiveClass() is True
+    item.setClass("ARCHIVE")
+    assert item.itemClass == nwItemClass.ARCHIVE
+    assert item.isNovelLike() is True
+    assert item.documentAllowed() is True
+    assert item.isInactiveClass() is True
 
-    theItem.setClass("TRASH")
-    assert theItem.itemClass == nwItemClass.TRASH
-    assert theItem.isNovelLike() is False
-    assert theItem.documentAllowed() is True
-    assert theItem.isInactiveClass() is True
+    item.setClass("TRASH")
+    assert item.itemClass == nwItemClass.TRASH
+    assert item.isNovelLike() is False
+    assert item.documentAllowed() is True
+    assert item.isInactiveClass() is True
 
     # Alternative
-    theItem.setClass(nwItemClass.NOVEL)
-    assert theItem.itemClass == nwItemClass.NOVEL
+    item.setClass(nwItemClass.NOVEL)
+    assert item.itemClass == nwItemClass.NOVEL
 
 # END Test testCoreItem_ClassSetter
 
@@ -450,26 +450,26 @@ def testCoreItem_LayoutSetter(mockGUI):
     """Test the setter for all the nwItemLayout values for the NWItem
     class.
     """
-    theProject = NWProject()
-    theItem = NWItem(theProject, "0000000000000")
+    project = NWProject()
+    item = NWItem(project, "0000000000000")
 
     # Faulty Layouts
-    theItem.setLayout(None)
-    assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
-    theItem.setLayout("NONSENSE")
-    assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
+    item.setLayout(None)
+    assert item.itemLayout == nwItemLayout.NO_LAYOUT
+    item.setLayout("NONSENSE")
+    assert item.itemLayout == nwItemLayout.NO_LAYOUT
 
     # Current Layouts
-    theItem.setLayout("NO_LAYOUT")
-    assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
-    theItem.setLayout("DOCUMENT")
-    assert theItem.itemLayout == nwItemLayout.DOCUMENT
-    theItem.setLayout("NOTE")
-    assert theItem.itemLayout == nwItemLayout.NOTE
+    item.setLayout("NO_LAYOUT")
+    assert item.itemLayout == nwItemLayout.NO_LAYOUT
+    item.setLayout("DOCUMENT")
+    assert item.itemLayout == nwItemLayout.DOCUMENT
+    item.setLayout("NOTE")
+    assert item.itemLayout == nwItemLayout.NOTE
 
     # Alternative
-    theItem.setLayout(nwItemLayout.NOTE)
-    assert theItem.itemLayout == nwItemLayout.NOTE
+    item.setLayout(nwItemLayout.NOTE)
+    assert item.itemLayout == nwItemLayout.NOTE
 
 # END Test testCoreItem_LayoutSetter
 
@@ -478,54 +478,54 @@ def testCoreItem_LayoutSetter(mockGUI):
 def testCoreItem_ClassDefaults(mockGUI):
     """Test the setter for the default values.
     """
-    theProject = NWProject()
-    theItem = NWItem(theProject, "0000000000000")
+    project = NWProject()
+    item = NWItem(project, "0000000000000")
 
     # Root items should not have their class updated
-    theItem.setParent(None)
-    theItem.setClass(nwItemClass.NO_CLASS)
-    assert theItem.itemClass == nwItemClass.NO_CLASS
+    item.setParent(None)
+    item.setClass(nwItemClass.NO_CLASS)
+    assert item.itemClass == nwItemClass.NO_CLASS
 
-    theItem.setClassDefaults(nwItemClass.NOVEL)
-    assert theItem.itemClass == nwItemClass.NO_CLASS
+    item.setClassDefaults(nwItemClass.NOVEL)
+    assert item.itemClass == nwItemClass.NO_CLASS
 
     # Non-root items should have their class updated
-    theItem.setParent("0123456789abc")
-    theItem.setClass(nwItemClass.NO_CLASS)
-    assert theItem.itemClass == nwItemClass.NO_CLASS
+    item.setParent("0123456789abc")
+    item.setClass(nwItemClass.NO_CLASS)
+    assert item.itemClass == nwItemClass.NO_CLASS
 
-    theItem.setClassDefaults(nwItemClass.NOVEL)
-    assert theItem.itemClass == nwItemClass.NOVEL
+    item.setClassDefaults(nwItemClass.NOVEL)
+    assert item.itemClass == nwItemClass.NOVEL
 
     # Non-layout items should have their layout set based on class
-    theItem.setParent("0123456789abc")
-    theItem.setClass(nwItemClass.NO_CLASS)
-    theItem.setLayout(nwItemLayout.NO_LAYOUT)
-    assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
+    item.setParent("0123456789abc")
+    item.setClass(nwItemClass.NO_CLASS)
+    item.setLayout(nwItemLayout.NO_LAYOUT)
+    assert item.itemLayout == nwItemLayout.NO_LAYOUT
 
-    theItem.setClassDefaults(nwItemClass.NOVEL)
-    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+    item.setClassDefaults(nwItemClass.NOVEL)
+    assert item.itemLayout == nwItemLayout.DOCUMENT
 
-    theItem.setParent("0123456789abc")
-    theItem.setClass(nwItemClass.NO_CLASS)
-    theItem.setLayout(nwItemLayout.NO_LAYOUT)
-    assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
+    item.setParent("0123456789abc")
+    item.setClass(nwItemClass.NO_CLASS)
+    item.setLayout(nwItemLayout.NO_LAYOUT)
+    assert item.itemLayout == nwItemLayout.NO_LAYOUT
 
-    theItem.setClassDefaults(nwItemClass.PLOT)
-    assert theItem.itemLayout == nwItemLayout.NOTE
+    item.setClassDefaults(nwItemClass.PLOT)
+    assert item.itemLayout == nwItemLayout.NOTE
 
     # If documents are not allowed in that class, the layout should be changed
-    theItem.setParent("0123456789abc")
-    theItem.setClass(nwItemClass.NO_CLASS)
-    theItem.setLayout(nwItemLayout.DOCUMENT)
-    assert theItem.itemLayout == nwItemLayout.DOCUMENT
+    item.setParent("0123456789abc")
+    item.setClass(nwItemClass.NO_CLASS)
+    item.setLayout(nwItemLayout.DOCUMENT)
+    assert item.itemLayout == nwItemLayout.DOCUMENT
 
-    theItem.setClassDefaults(nwItemClass.PLOT)
-    assert theItem.itemLayout == nwItemLayout.NOTE
+    item.setClassDefaults(nwItemClass.PLOT)
+    assert item.itemLayout == nwItemLayout.NOTE
 
     # In all cases, status and importance should no longer be None
-    assert theItem.itemStatus is not None
-    assert theItem.itemImport is not None
+    assert item.itemStatus is not None
+    assert item.itemImport is not None
 
 # END Test testCoreItem_ClassDefaults
 
@@ -533,17 +533,17 @@ def testCoreItem_ClassDefaults(mockGUI):
 @pytest.mark.core
 def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
     """Test packing and unpacking entries for the NWItem class."""
-    theProject = NWProject()
-    theProject.data.itemStatus.write(None, "New", (100, 100, 100))
-    theProject.data.itemImport.write(None, "New", (100, 100, 100))
+    project = NWProject()
+    project.data.itemStatus.write(None, "New", (100, 100, 100))
+    project.data.itemImport.write(None, "New", (100, 100, 100))
 
     # Invalid
-    theItem = NWItem(theProject, "0000000000000")
-    assert theItem.unpack({}) is False
+    item = NWItem(project, "0000000000000")
+    assert item.unpack({}) is False
 
     # File
-    theItem = NWItem(theProject, "")
-    assert theItem.unpack({
+    item = NWItem(project, "")
+    assert item.unpack({
         "name": "A File",
         "itemAttr": {
             "handle": "0000000000003",
@@ -569,25 +569,25 @@ def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
         },
     }) is True
 
-    assert theItem.itemName == "A File"
-    assert theItem.itemHandle == "0000000000003"
-    assert theItem.itemParent == "0000000000002"
-    assert theItem.itemRoot == "0000000000001"
-    assert theItem.itemOrder == 1
-    assert theItem.itemType == nwItemType.FILE
-    assert theItem.itemClass == nwItemClass.NOVEL
-    assert theItem.itemLayout == nwItemLayout.DOCUMENT
-    assert theItem.itemStatus == "s000000"
-    assert theItem.itemImport == "i000001"
-    assert theItem.isActive is False
-    assert theItem.isExpanded is True
-    assert theItem.mainHeading == "H1"
-    assert theItem.charCount == 100
-    assert theItem.wordCount == 20
-    assert theItem.paraCount == 2
-    assert theItem.cursorPos == 50
+    assert item.itemName == "A File"
+    assert item.itemHandle == "0000000000003"
+    assert item.itemParent == "0000000000002"
+    assert item.itemRoot == "0000000000001"
+    assert item.itemOrder == 1
+    assert item.itemType == nwItemType.FILE
+    assert item.itemClass == nwItemClass.NOVEL
+    assert item.itemLayout == nwItemLayout.DOCUMENT
+    assert item.itemStatus == "s000000"
+    assert item.itemImport == "i000001"
+    assert item.isActive is False
+    assert item.isExpanded is True
+    assert item.mainHeading == "H1"
+    assert item.charCount == 100
+    assert item.wordCount == 20
+    assert item.paraCount == 2
+    assert item.cursorPos == 50
 
-    assert theItem.pack() == {
+    assert item.pack() == {
         "name": "A File",
         "itemAttr": {
             "handle": "0000000000003",
@@ -614,8 +614,8 @@ def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
     }
 
     # Folder
-    theItem = NWItem(theProject, "")
-    assert theItem.unpack({
+    item = NWItem(project, "")
+    assert item.unpack({
         "name": "A Folder",
         "itemAttr": {
             "handle": "0000000000003",
@@ -641,25 +641,25 @@ def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
         }
     }) is True
 
-    assert theItem.itemName == "A Folder"
-    assert theItem.itemHandle == "0000000000003"
-    assert theItem.itemParent == "0000000000002"
-    assert theItem.itemRoot == "0000000000001"
-    assert theItem.itemOrder == 1
-    assert theItem.itemType == nwItemType.FOLDER
-    assert theItem.itemClass == nwItemClass.NOVEL
-    assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
-    assert theItem.itemStatus == "s000000"
-    assert theItem.itemImport == "i000001"
-    assert theItem.isActive is False
-    assert theItem.isExpanded is True
-    assert theItem.mainHeading == "H0"
-    assert theItem.charCount == 0
-    assert theItem.wordCount == 0
-    assert theItem.paraCount == 0
-    assert theItem.cursorPos == 0
+    assert item.itemName == "A Folder"
+    assert item.itemHandle == "0000000000003"
+    assert item.itemParent == "0000000000002"
+    assert item.itemRoot == "0000000000001"
+    assert item.itemOrder == 1
+    assert item.itemType == nwItemType.FOLDER
+    assert item.itemClass == nwItemClass.NOVEL
+    assert item.itemLayout == nwItemLayout.NO_LAYOUT
+    assert item.itemStatus == "s000000"
+    assert item.itemImport == "i000001"
+    assert item.isActive is False
+    assert item.isExpanded is True
+    assert item.mainHeading == "H0"
+    assert item.charCount == 0
+    assert item.wordCount == 0
+    assert item.paraCount == 0
+    assert item.cursorPos == 0
 
-    assert theItem.pack() == {
+    assert item.pack() == {
         "name": "A Folder",
         "itemAttr": {
             "handle": "0000000000003",
@@ -679,8 +679,8 @@ def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
     }
 
     # Root
-    theItem = NWItem(theProject, "")
-    assert theItem.unpack({
+    item = NWItem(project, "")
+    assert item.unpack({
         "name": "A Novel",
         "itemAttr": {
             "handle": "0000000000003",
@@ -706,25 +706,25 @@ def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
         },
     }) is True
 
-    assert theItem.itemName == "A Novel"
-    assert theItem.itemHandle == "0000000000003"
-    assert theItem.itemParent is None
-    assert theItem.itemRoot == "0000000000003"
-    assert theItem.itemOrder == 1
-    assert theItem.itemType == nwItemType.ROOT
-    assert theItem.itemClass == nwItemClass.NOVEL
-    assert theItem.itemLayout == nwItemLayout.NO_LAYOUT
-    assert theItem.itemStatus == "s000000"
-    assert theItem.itemImport == "i000001"
-    assert theItem.isActive is False
-    assert theItem.isExpanded is True
-    assert theItem.mainHeading == "H0"
-    assert theItem.charCount == 0
-    assert theItem.wordCount == 0
-    assert theItem.paraCount == 0
-    assert theItem.cursorPos == 0
+    assert item.itemName == "A Novel"
+    assert item.itemHandle == "0000000000003"
+    assert item.itemParent is None
+    assert item.itemRoot == "0000000000003"
+    assert item.itemOrder == 1
+    assert item.itemType == nwItemType.ROOT
+    assert item.itemClass == nwItemClass.NOVEL
+    assert item.itemLayout == nwItemLayout.NO_LAYOUT
+    assert item.itemStatus == "s000000"
+    assert item.itemImport == "i000001"
+    assert item.isActive is False
+    assert item.isExpanded is True
+    assert item.mainHeading == "H0"
+    assert item.charCount == 0
+    assert item.wordCount == 0
+    assert item.paraCount == 0
+    assert item.cursorPos == 0
 
-    assert theItem.pack() == {
+    assert item.pack() == {
         "name": "A Novel",
         "itemAttr": {
             "handle": "0000000000003",

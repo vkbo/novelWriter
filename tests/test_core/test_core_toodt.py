@@ -134,9 +134,9 @@ def testCoreToOdt_TextFormatting(mockGUI):
         "Heading_20_1", "Heading_20_2", "Heading_20_3", "Heading_20_4", "Header",
     ]
 
-    theKey = "071d6b2e4764749f8c78d3c1ab9099fa04c07d2d53fd3de61eb1bdf1cb4845c3"
-    assert odt._autoPara[theKey][0] == "P1"
-    assert isinstance(odt._autoPara[theKey][1], ODTParagraphStyle)
+    key = "071d6b2e4764749f8c78d3c1ab9099fa04c07d2d53fd3de61eb1bdf1cb4845c3"
+    assert odt._autoPara[key][0] == "P1"
+    assert isinstance(odt._autoPara[key][1], ODTParagraphStyle)
 
     # Paragraph Formatting
     # ====================
@@ -624,48 +624,48 @@ def testCoreToOdt_ConvertDirect(mockGUI):
     """Test the converter directly using the ToOdt class to reach some
     otherwise hard to reach conditions.
     """
-    theProject = NWProject()
-    theDoc = ToOdt(theProject, isFlat=True)
+    project = NWProject()
+    doc = ToOdt(project, isFlat=True)
 
-    theDoc._isNovel = True
+    doc._isNovel = True
 
     # Justified
-    theDoc = ToOdt(theProject, isFlat=True)
-    theDoc._tokens = [
-        (theDoc.T_TEXT, 1, "This is a paragraph", [], theDoc.A_JUSTIFY),
-        (theDoc.T_EMPTY, 1, "", None, theDoc.A_NONE),
+    doc = ToOdt(project, isFlat=True)
+    doc._tokens = [
+        (doc.T_TEXT, 1, "This is a paragraph", [], doc.A_JUSTIFY),
+        (doc.T_EMPTY, 1, "", None, doc.A_NONE),
     ]
-    theDoc.initDocument()
-    theDoc.doConvert()
-    theDoc.closeDocument()
+    doc.initDocument()
+    doc.doConvert()
+    doc.closeDocument()
     assert (
         '<style:style style:name="P1" style:family="paragraph" '
         'style:parent-style-name="Text_20_body">'
         '<style:paragraph-properties fo:text-align="justify" />'
         '</style:style>'
-    ) in xmlToText(theDoc._xAuto)
-    assert xmlToText(theDoc._xText) == (
+    ) in xmlToText(doc._xAuto)
+    assert xmlToText(doc._xText) == (
         '<office:text>'
         '<text:p text:style-name="P1">This is a paragraph</text:p>'
         '</office:text>'
     )
 
     # Page Break After
-    theDoc = ToOdt(theProject, isFlat=True)
-    theDoc._tokens = [
-        (theDoc.T_TEXT, 1, "This is a paragraph", [], theDoc.A_PBA),
-        (theDoc.T_EMPTY, 1, "", None, theDoc.A_NONE),
+    doc = ToOdt(project, isFlat=True)
+    doc._tokens = [
+        (doc.T_TEXT, 1, "This is a paragraph", [], doc.A_PBA),
+        (doc.T_EMPTY, 1, "", None, doc.A_NONE),
     ]
-    theDoc.initDocument()
-    theDoc.doConvert()
-    theDoc.closeDocument()
+    doc.initDocument()
+    doc.doConvert()
+    doc.closeDocument()
     assert (
         '<style:style style:name="P1" style:family="paragraph" '
         'style:parent-style-name="Text_20_body">'
         '<style:paragraph-properties fo:break-after="page" />'
         '</style:style>'
-    ) in xmlToText(theDoc._xAuto)
-    assert xmlToText(theDoc._xText) == (
+    ) in xmlToText(doc._xAuto)
+    assert xmlToText(doc._xText) == (
         '<office:text>'
         '<text:p text:style-name="P1">This is a paragraph</text:p>'
         '</office:text>'
@@ -767,12 +767,12 @@ def testCoreToOdt_SaveFull(mockGUI, fncPath, tstPaths):
 
     extaxtTo = tstPaths.outDir / "coreToOdt_SaveFull"
 
-    with zipfile.ZipFile(fullFile, mode="r") as theZip:
-        theZip.extract("META-INF/manifest.xml", extaxtTo)
-        theZip.extract("settings.xml", extaxtTo)
-        theZip.extract("content.xml", extaxtTo)
-        theZip.extract("meta.xml", extaxtTo)
-        theZip.extract("styles.xml", extaxtTo)
+    with zipfile.ZipFile(fullFile, mode="r") as zipObj:
+        zipObj.extract("META-INF/manifest.xml", extaxtTo)
+        zipObj.extract("settings.xml", extaxtTo)
+        zipObj.extract("content.xml", extaxtTo)
+        zipObj.extract("meta.xml", extaxtTo)
+        zipObj.extract("styles.xml", extaxtTo)
 
     maniOut = tstPaths.outDir / "coreToOdt_SaveFull" / "META-INF" / "manifest.xml"
     settOut = tstPaths.outDir / "coreToOdt_SaveFull" / "settings.xml"

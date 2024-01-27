@@ -47,9 +47,9 @@ def extractVersion(beQuiet: bool = False) -> tuple[str, str, str]:
     """Extract the novelWriter version number without having to import
     anything else from the main package.
     """
-    def getValue(theString):
-        theBits = theString.partition("=")
-        return theBits[2].strip().strip('"')
+    def getValue(text):
+        bits = text.partition("=")
+        return bits[2].strip().strip('"')
 
     numVers = "0"
     hexVers = "0x0"
@@ -1744,7 +1744,7 @@ def winUninstall() -> None:
     print("")
     print("Removing registry keys ...")
 
-    theKeys = [
+    keys = [
         r"Software\Classes\novelWriterProject.nwx\shell\open\command",
         r"Software\Classes\novelWriterProject.nwx\shell\open",
         r"Software\Classes\novelWriterProject.nwx\shell",
@@ -1756,7 +1756,7 @@ def winUninstall() -> None:
         r"Software\Classes\Applications\novelWriter.pyw",
     ]
 
-    for aKey in theKeys:
+    for aKey in keys:
         try:
             winreg.DeleteKey(winreg.HKEY_CURRENT_USER, aKey)
             print("Deleted: HKEY_CURRENT_USER\\%s" % aKey)

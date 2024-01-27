@@ -375,9 +375,9 @@ class GuiManuscript(QDialog):
     @pyqtSlot()
     def _printDocument(self) -> None:
         """Open the print preview dialog."""
-        thePreview = QPrintPreviewDialog(self)
-        thePreview.paintRequested.connect(self.docPreview.printPreview)
-        thePreview.exec_()
+        preview = QPrintPreviewDialog(self)
+        preview.paintRequested.connect(self.docPreview.printPreview)
+        preview.exec_()
         return
 
     ##
@@ -771,8 +771,8 @@ class _PreviewWidget(QTextBrowser):
         self.setHtml(html)
         qApp.processEvents()
         while self.find("!!tab!!"):
-            theCursor = self.textCursor()
-            theCursor.insertText("\t")
+            cursor = self.textCursor()
+            cursor.insertText("\t")
 
         self.verticalScrollBar().setValue(sPos)
         self._docTime = checkInt(data.get("time"), 0)

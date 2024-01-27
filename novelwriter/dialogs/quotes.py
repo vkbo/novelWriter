@@ -77,9 +77,9 @@ class GuiQuoteSelect(QDialog):
 
         minSize = 100
         for sKey, sLabel in nwQuotes.SYMBOLS.items():
-            theText = "[ %s ] %s" % (sKey, trConst(sLabel))
-            minSize = max(minSize, qMetrics.boundingRect(theText).width())
-            qtItem = QListWidgetItem(theText)
+            text = "[ %s ] %s" % (sKey, trConst(sLabel))
+            minSize = max(minSize, qMetrics.boundingRect(text).width())
+            qtItem = QListWidgetItem(text)
             qtItem.setData(self.D_KEY, sKey)
             self.listBox.addItem(qtItem)
             if sKey == current:

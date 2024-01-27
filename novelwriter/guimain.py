@@ -679,10 +679,10 @@ class GuiMain(QMainWindow):
         if loadFile.strip() == "":
             return False
 
-        theText = None
+        text = None
         try:
             with open(loadFile, mode="rt", encoding="utf-8") as inFile:
-                theText = inFile.read()
+                text = inFile.read()
             CONFIG.setLastPath(loadFile)
         except Exception as exc:
             SHARED.error(self.tr(
@@ -704,7 +704,7 @@ class GuiMain(QMainWindow):
             if not msgYes:
                 return False
 
-        self.docEditor.replaceText(theText)
+        self.docEditor.replaceText(text)
 
         return True
 

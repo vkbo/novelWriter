@@ -622,15 +622,15 @@ def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tstPaths):
     # Test correct settings
     assert project.backupProject(doNotify=True) is True
 
-    theFiles = sorted((tstPaths.tmpDir / "Test Minimal").iterdir())
-    assert len(theFiles) in (1, 2)  # Sometimes 2 due to clock tick
+    files = sorted((tstPaths.tmpDir / "Test Minimal").iterdir())
+    assert len(files) in (1, 2)  # Sometimes 2 due to clock tick
 
-    theZip = theFiles[0]
-    assert theZip.name.startswith("Test Minimal")
-    assert theZip.suffix == ".zip"
+    zipFile = files[0]
+    assert zipFile.name.startswith("Test Minimal")
+    assert zipFile.suffix == ".zip"
 
     # Extract the archive
-    with ZipFile(tstPaths.tmpDir / "Test Minimal" / theZip.name, mode="r") as inZip:
+    with ZipFile(tstPaths.tmpDir / "Test Minimal" / zipFile.name, mode="r") as inZip:
         inZip.extractall(tstPaths.tmpDir / "extract")
 
     # Check that the main project file was restored

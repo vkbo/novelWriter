@@ -229,7 +229,7 @@ class GuiDocViewer(QTextBrowser):
         self.setDocumentTitle(tHandle)
 
         # Replace tabs before setting the HTML, and then put them back in
-        self.setHtml(aDoc.theResult.replace("\t", "!!tab!!"))
+        self.setHtml(aDoc.result.replace("\t", "!!tab!!"))
         while self.find("!!tab!!"):
             self.textCursor().insertText("\t")
 
@@ -367,9 +367,9 @@ class GuiDocViewer(QTextBrowser):
         link = url.url()
         logger.debug("Clicked link: '%s'", link)
         if len(link) > 0:
-            theBits = link.split("=")
-            if len(theBits) == 2:
-                self.loadDocumentTagRequest.emit(theBits[1], nwDocMode.VIEW)
+            bits = link.split("=")
+            if len(bits) == 2:
+                self.loadDocumentTagRequest.emit(bits[1], nwDocMode.VIEW)
         return
 
     @pyqtSlot("QPoint")

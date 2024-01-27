@@ -52,7 +52,7 @@ class NWDocument:
 
     def __init__(self, project: NWProject, tHandle: str | None) -> None:
 
-        self._project  = project
+        self._project = project
 
         self._item      = None   # The currently open item
         self._handle    = None   # The handle of the currently open item
@@ -284,12 +284,12 @@ class NWDocument:
         """Parse the document meta tag and return the name, parent,
         class and layout meta values.
         """
-        theName = self._docMeta.get("name", "")
-        theParent = self._docMeta.get("parent", None)
-        theClass = self._docMeta.get("class", None)
-        theLayout = self._docMeta.get("layout", None)
+        name = self._docMeta.get("name", "")
+        parent = self._docMeta.get("parent", None)
+        itemClass = self._docMeta.get("class", None)
+        itemLayout = self._docMeta.get("layout", None)
 
-        return theName, theParent, theClass, theLayout
+        return name, parent, itemClass, itemLayout
 
     def getError(self) -> str:
         """Return the last recorded exception."""

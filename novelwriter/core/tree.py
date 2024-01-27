@@ -500,7 +500,7 @@ class NWTree:
     ##
 
     def _setTreeChanged(self, state: bool) -> None:
-        """Set the changed flag to theState, and if being set to True,
+        """Set the changed flag to state, and if being set to True,
         propagate that state change to the parent NWProject class.
         """
         self._changed = state

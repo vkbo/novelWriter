@@ -266,13 +266,13 @@ def testCoreStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
     """Test making a zip archive of a project."""
     zipFile = tstPaths.tmpDir / "project.zip"
 
-    theProject = NWProject()
-    storage = theProject.storage
+    project = NWProject()
+    storage = project.storage
     assert storage.zipIt(zipFile) is False
 
     # Make a project
     mockRnd.reset()
-    buildTestProject(theProject, fncPath)
+    buildTestProject(project, fncPath)
 
     # Fail to create archive
     with monkeypatch.context() as mp:
@@ -292,7 +292,7 @@ def testCoreStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
         assert f"content/{C.hChapterDoc}.nwd" in names
         assert f"content/{C.hSceneDoc}.nwd" in names
 
-    theProject.closeProject()
+    project.closeProject()
 
 # END Test testCoreStorage_ZipIt
 

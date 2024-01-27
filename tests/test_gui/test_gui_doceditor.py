@@ -365,7 +365,7 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     text = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
     nwGUI.docEditor.replaceText(text)
-    theDoc = nwGUI.docEditor.document()
+    doc = nwGUI.docEditor.document()
 
     # Select/Cut/Copy/Paste/Undo/Redo
     # ===============================
@@ -374,17 +374,17 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # Select All
     assert nwGUI.docEditor.docAction(nwDocAction.SEL_ALL) is True
-    theCursor = nwGUI.docEditor.textCursor()
-    assert theCursor.hasSelection() is True
-    assert theCursor.selectedText() == text.replace("\n", "\u2029")
-    theCursor.clearSelection()
+    cursor = nwGUI.docEditor.textCursor()
+    assert cursor.hasSelection() is True
+    assert cursor.selectedText() == text.replace("\n", "\u2029")
+    cursor.clearSelection()
 
     # Select Paragraph
     nwGUI.docEditor.setCursorPosition(1000)
     assert nwGUI.docEditor.getCursorPosition() == 1000
     assert nwGUI.docEditor.docAction(nwDocAction.SEL_PARA) is True
-    theCursor = nwGUI.docEditor.textCursor()
-    assert theCursor.selectedText() == ipsumText[1]
+    cursor = nwGUI.docEditor.textCursor()
+    assert cursor.selectedText() == ipsumText[1]
 
     # Cut Selected Text
     nwGUI.docEditor.replaceText(text)
@@ -411,10 +411,10 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.docEditor.docAction(nwDocAction.COPY) is True
 
     # Paste at End
-    nwGUI.docEditor.setCursorPosition(theDoc.characterCount())
-    theCursor = nwGUI.docEditor.textCursor()
-    theCursor.insertBlock()
-    theCursor.insertBlock()
+    nwGUI.docEditor.setCursorPosition(doc.characterCount())
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.insertBlock()
+    cursor.insertBlock()
 
     assert nwGUI.docEditor.docAction(nwDocAction.PASTE) is True
     newText = nwGUI.docEditor.getText()
@@ -1017,8 +1017,8 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, projPath, ipsumText
     # Invalid and Generic
     # ===================
 
-    theText = "### A Scene\n\n%s" % ipsumText[0]
-    nwGUI.docEditor.replaceText(theText)
+    text = "### A Scene\n\n%s" % ipsumText[0]
+    nwGUI.docEditor.replaceText(text)
 
     # Invalid Block
     nwGUI.docEditor.setCursorPosition(0)
@@ -1561,9 +1561,9 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
     SHARED.project.tree[C.hSceneDoc]._wordCount = 0  # type: ignore
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
-    theText = "\n\n".join(ipsumText)
-    cC, wC, pC = countWords(theText)
-    nwGUI.docEditor.replaceText(theText)
+    text = "\n\n".join(ipsumText)
+    cC, wC, pC = countWords(text)
+    nwGUI.docEditor.replaceText(text)
 
     # Check that a busy counter is blocked
     with monkeypatch.context() as mp:
@@ -1617,8 +1617,8 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Select the Word "est"
     nwGUI.docEditor.setCursorPosition(630)
     nwGUI.docEditor._makeSelection(QTextCursor.WordUnderCursor)
-    theCursor = nwGUI.docEditor.textCursor()
-    assert theCursor.selectedText() == "est"
+    cursor = nwGUI.docEditor.textCursor()
+    assert cursor.selectedText() == "est"
 
     # Activate search
     nwGUI.mainMenu.aFind.activate(QAction.Trigger)
@@ -1747,8 +1747,8 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     nwGUI.docEditor.docSearch.cancelSearch.activate(QAction.Trigger)
     nwGUI.docEditor.setCursorPosition(630)
     nwGUI.docEditor._makeSelection(QTextCursor.WordUnderCursor)
-    theCursor = nwGUI.docEditor.textCursor()
-    assert theCursor.selectedText() == "est"
+    cursor = nwGUI.docEditor.textCursor()
+    assert cursor.selectedText() == "est"
 
     # Activate search again
     nwGUI.mainMenu.aFind.activate(QAction.Trigger)

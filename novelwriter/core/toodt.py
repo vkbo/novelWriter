@@ -682,12 +682,12 @@ class ToOdt(Tokenizer):
             return parName
 
         oStyle.setParentStyleName(parName)
-        theID = oStyle.getID()
-        if theID in self._autoPara:
-            return self._autoPara[theID][0]
+        pID = oStyle.getID()
+        if pID in self._autoPara:
+            return self._autoPara[pID][0]
 
         newName = "P%d" % (len(self._autoPara) + 1)
-        self._autoPara[theID] = (newName, oStyle)
+        self._autoPara[pID] = (newName, oStyle)
 
         return newName
 

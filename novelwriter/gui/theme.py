@@ -368,22 +368,22 @@ class GuiTheme:
 
     def _setGuiFont(self) -> None:
         """Update the GUI's font style from settings."""
-        theFont = QFont()
+        font = QFont()
         fontDB = QFontDatabase()
         if CONFIG.guiFont not in fontDB.families():
             if CONFIG.osWindows and "Arial" in fontDB.families():
                 # On Windows we default to Arial if possible
-                theFont.setFamily("Arial")
-                theFont.setPointSize(10)
+                font.setFamily("Arial")
+                font.setPointSize(10)
             else:
-                theFont = fontDB.systemFont(QFontDatabase.GeneralFont)
-            CONFIG.guiFont = theFont.family()
-            CONFIG.guiFontSize = theFont.pointSize()
+                font = fontDB.systemFont(QFontDatabase.GeneralFont)
+            CONFIG.guiFont = font.family()
+            CONFIG.guiFontSize = font.pointSize()
         else:
-            theFont.setFamily(CONFIG.guiFont)
-            theFont.setPointSize(CONFIG.guiFontSize)
+            font.setFamily(CONFIG.guiFont)
+            font.setPointSize(CONFIG.guiFontSize)
 
-        qApp.setFont(theFont)
+        qApp.setFont(font)
 
         return
 

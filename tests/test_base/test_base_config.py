@@ -177,19 +177,19 @@ def testBaseConfig_Localisation(fncPath, tstPaths):
     tstConf.initLocalisation(tstApp)  # type: ignore
 
     # Check Lists
-    theList = tstConf.listLanguages(tstConf.LANG_NW)
-    assert theList == [("en_GB", "British English")]
-    theList = tstConf.listLanguages(tstConf.LANG_PROJ)
-    assert theList == [("en_GB", "British English")]
-    theList = tstConf.listLanguages(None)  # type: ignore
-    assert theList == []
+    languages = tstConf.listLanguages(tstConf.LANG_NW)
+    assert languages == [("en_GB", "British English")]
+    languages = tstConf.listLanguages(tstConf.LANG_PROJ)
+    assert languages == [("en_GB", "British English")]
+    languages = tstConf.listLanguages(None)  # type: ignore
+    assert languages == []
 
     # Add Language
     copyfile(tstPaths.filesDir / "nw_en_GB.qm", i18nDir / "nw_fr.qm")
     writeFile(i18nDir / "nw_fr.ts", "")
 
-    theList = tstConf.listLanguages(tstConf.LANG_NW)
-    assert theList == [("en_GB", "British English"), ("fr", "Français")]
+    languages = tstConf.listLanguages(tstConf.LANG_NW)
+    assert languages == [("en_GB", "British English"), ("fr", "Français")]
 
 # END Test testBaseConfig_Localisation
 

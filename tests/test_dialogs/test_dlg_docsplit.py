@@ -37,7 +37,7 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Create a new project
     buildTestProject(nwGUI, projPath)
 
-    theProject = SHARED.project
+    project = SHARED.project
     projTree = nwGUI.projView.projTree
 
     docText = (
@@ -55,8 +55,8 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         "#### New Section\n\nText\n\n"
     )
 
-    hSplitDoc = theProject.newFile("Split Doc", C.hNovelRoot)
-    theProject.writeNewFile(hSplitDoc, 1, True, docText)
+    hSplitDoc = project.newFile("Split Doc", C.hNovelRoot)
+    project.writeNewFile(hSplitDoc, 1, True, docText)
     projTree.revealNewTreeItem(hSplitDoc, nHandle=C.hNovelRoot, wordCount=True)
 
     docText = f"# Split Doc\n\n{docText}"

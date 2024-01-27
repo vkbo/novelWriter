@@ -122,8 +122,8 @@ class NWIndex:
         for nwItem in self._project.tree:
             if nwItem.isFileType():
                 tHandle = nwItem.itemHandle
-                theDoc = self._project.storage.getDocument(tHandle)
-                self.scanText(tHandle, theDoc.readDocument() or "", blockSignal=True)
+                doc = self._project.storage.getDocument(tHandle)
+                self.scanText(tHandle, doc.readDocument() or "", blockSignal=True)
         self._indexBroken = False
         SHARED.indexSignalProxy({"event": "buildIndex"})
         return
@@ -148,8 +148,8 @@ class NWIndex:
         """
         if tHandle and self._project.tree.checkType(tHandle, nwItemType.FILE):
             logger.debug("Re-indexing item '%s'", tHandle)
-            theDoc = self._project.storage.getDocument(tHandle)
-            self.scanText(tHandle, theDoc.readDocument() or "")
+            doc = self._project.storage.getDocument(tHandle)
+            self.scanText(tHandle, doc.readDocument() or "")
             return True
         return False
 

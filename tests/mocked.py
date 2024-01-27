@@ -39,7 +39,7 @@ class MockGuiMain(QWidget):
     def postLaunchTasks(self, cmdOpen):
         return
 
-    def setStatus(self, theMessage):
+    def setStatus(self, message):
         return
 
     def openProject(self, projPath):
@@ -63,10 +63,10 @@ class MockStatusBar:
     def __init__(self):
         return
 
-    def setStatus(self, theText):
+    def setStatus(self, text):
         return
 
-    def updateProjectStatus(self, theStatus):
+    def updateProjectStatus(self, status):
         return
 
 # END Class MockStatusBar
@@ -89,7 +89,7 @@ class MockApp:
     def __init__(self):
         return
 
-    def installTranslator(self, theLang):
+    def installTranslator(self, language):
         return
 
 # END Class MockApp

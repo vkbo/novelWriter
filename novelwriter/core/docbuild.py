@@ -248,8 +248,8 @@ class NWBuildDocument:
     def _setupBuild(self, bldObj: Tokenizer) -> dict:
         """Configure the build object."""
         # Get Settings
-        textFont  = self._build.getStr("format.textFont")
-        textSize  = self._build.getInt("format.textSize")
+        textFont = self._build.getStr("format.textFont")
+        textSize = self._build.getInt("format.textSize")
 
         fontFamily = textFont or CONFIG.textFont
         bldFont = QFont(fontFamily, textSize)

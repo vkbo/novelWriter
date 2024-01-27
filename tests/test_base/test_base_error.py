@@ -43,19 +43,19 @@ def testBaseError_Dialog(qtbot, monkeypatch, nwGUI):
     with monkeypatch.context() as mp:
         mp.setattr("PyQt5.QtCore.QSysInfo.kernelVersion", lambda: "1.2.3")
         nwErr.setMessage(Exception, "Fine Error", None)
-        theMessage = nwErr.msgBody.toPlainText()
-        assert theMessage != ""
-        assert "Fine Error" in theMessage
-        assert "Exception" in theMessage
-        assert "(1.2.3)" in theMessage
+        message = nwErr.msgBody.toPlainText()
+        assert message != ""
+        assert "Fine Error" in message
+        assert "Exception" in message
+        assert "(1.2.3)" in message
 
     # No kernel version retrieved
     with monkeypatch.context() as mp:
         mp.setattr("PyQt5.QtCore.QSysInfo.kernelVersion", causeException)
         nwErr.setMessage(Exception, "Almost Fine Error", None)
-        theMessage = nwErr.msgBody.toPlainText()
-        assert theMessage != ""
-        assert "(Unknown)" in theMessage
+        message = nwErr.msgBody.toPlainText()
+        assert message != ""
+        assert "(Unknown)" in message
 
     nwErr._doClose()
     nwErr.close()

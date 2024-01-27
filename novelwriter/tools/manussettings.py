@@ -1112,10 +1112,10 @@ class _FormatTab(NScrollableForm):
         currFont = QFont()
         currFont.setFamily(self.textFont.text())
         currFont.setPointSize(self.textSize.value())
-        theFont, theStatus = QFontDialog.getFont(currFont, self)
-        if theStatus:
-            self.textFont.setText(theFont.family())
-            self.textSize.setValue(theFont.pointSize())
+        newFont, status = QFontDialog.getFont(currFont, self)
+        if status:
+            self.textFont.setText(newFont.family())
+            self.textSize.setValue(newFont.pointSize())
         return
 
     @pyqtSlot(int)

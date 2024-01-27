@@ -370,7 +370,7 @@ def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, projPath,
     """Test moving items to Trash."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
-    theProject = SHARED.project
+    project = SHARED.project
     projTree = nwGUI.projView.projTree
 
     # Create a project
@@ -392,7 +392,7 @@ def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, projPath,
 
     caplog.clear()
     assert projTree.moveItemToTrash(C.hTitlePage) is False
-    assert theProject.tree.isTrash(C.hTitlePage) is False
+    assert project.tree.isTrash(C.hTitlePage) is False
     assert "Could not delete item" in caplog.text
 
     projTree._addTrashRoot = funcPointer
@@ -401,11 +401,11 @@ def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, projPath,
     with monkeypatch.context() as mp:
         mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         assert projTree.moveItemToTrash(C.hTitlePage) is False
-        assert theProject.tree.isTrash(C.hTitlePage) is False
+        assert project.tree.isTrash(C.hTitlePage) is False
 
     # Move a document to Trash
     assert projTree.moveItemToTrash(C.hTitlePage) is True
-    assert theProject.tree.isTrash(C.hTitlePage) is True
+    assert project.tree.isTrash(C.hTitlePage) is True
 
     # Cannot be moved again
     caplog.clear()
@@ -422,7 +422,7 @@ def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, pro
     """Test permanently deleting items."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
-    theProject = SHARED.project
+    project = SHARED.project
     projTree = nwGUI.projView.projTree
 
     # Create a project
@@ -437,31 +437,31 @@ def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, pro
     caplog.clear()
     assert projTree.permDeleteItem(C.hNovelRoot) is False
     assert "Root folders can only be deleted when they are empty" in caplog.text
-    assert C.hNovelRoot in theProject.tree
+    assert C.hNovelRoot in project.tree
 
     # Deleting unused root item is allowed
     caplog.clear()
     assert projTree.permDeleteItem(C.hPlotRoot) is True
-    assert C.hPlotRoot not in theProject.tree
+    assert C.hPlotRoot not in project.tree
 
     # User cancels action
     with monkeypatch.context() as mp:
         mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         assert projTree.permDeleteItem(C.hTitlePage) is False
-        assert C.hTitlePage in theProject.tree
+        assert C.hTitlePage in project.tree
 
     # Deleting file is OK, and if it is open, it should close
     assert nwGUI.openDocument(C.hTitlePage) is True
     assert nwGUI.docEditor.docHandle == C.hTitlePage
     assert projTree.permDeleteItem(C.hTitlePage) is True
-    assert C.hTitlePage not in theProject.tree
+    assert C.hTitlePage not in project.tree
     assert nwGUI.docEditor.docHandle is None
 
     # Deleting folder + files recursively is ok
     assert projTree.permDeleteItem(C.hChapterDir) is True
-    assert C.hChapterDir not in theProject.tree
-    assert C.hChapterDoc not in theProject.tree
-    assert C.hSceneDoc not in theProject.tree
+    assert C.hChapterDir not in project.tree
+    assert C.hChapterDoc not in project.tree
+    assert C.hSceneDoc not in project.tree
 
     nwGUI.closeProject()
 
@@ -473,7 +473,7 @@ def testGuiProjTree_EmptyTrash(qtbot, caplog, monkeypatch, nwGUI, projPath, mock
     """Test emptying Trash."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
-    theProject = SHARED.project
+    project = SHARED.project
     projTree = nwGUI.projView.projTree
 
     # No project open
@@ -491,26 +491,26 @@ def testGuiProjTree_EmptyTrash(qtbot, caplog, monkeypatch, nwGUI, projPath, mock
     assert projTree.moveItemToTrash(C.hTitlePage) is True
     assert projTree.moveItemToTrash(C.hChapterDir) is True
 
-    assert theProject.tree.isTrash(C.hTitlePage) is True
-    assert theProject.tree.isTrash(C.hChapterDir) is True
-    assert theProject.tree.isTrash(C.hChapterDoc) is True
-    assert theProject.tree.isTrash(C.hSceneDoc) is True
+    assert project.tree.isTrash(C.hTitlePage) is True
+    assert project.tree.isTrash(C.hChapterDir) is True
+    assert project.tree.isTrash(C.hChapterDoc) is True
+    assert project.tree.isTrash(C.hSceneDoc) is True
 
     # User cancels
     with monkeypatch.context() as mp:
         mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
         assert projTree.emptyTrash() is False
-        assert C.hTitlePage in theProject.tree
-        assert C.hChapterDir in theProject.tree
-        assert C.hChapterDoc in theProject.tree
-        assert C.hSceneDoc in theProject.tree
+        assert C.hTitlePage in project.tree
+        assert C.hChapterDir in project.tree
+        assert C.hChapterDoc in project.tree
+        assert C.hSceneDoc in project.tree
 
     # Run again to empty all items
     assert projTree.emptyTrash() is True
-    assert C.hTitlePage not in theProject.tree
-    assert C.hChapterDir not in theProject.tree
-    assert C.hChapterDoc not in theProject.tree
-    assert C.hSceneDoc not in theProject.tree
+    assert C.hTitlePage not in project.tree
+    assert C.hChapterDir not in project.tree
+    assert C.hChapterDoc not in project.tree
+    assert C.hSceneDoc not in project.tree
 
     # Running Empty Trash again is cancelled due to empty folder
     assert projTree.emptyTrash() is False
@@ -634,7 +634,7 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRnd, 
     # Create a project
     buildTestProject(nwGUI, projPath)
 
-    theProject = SHARED.project
+    project = SHARED.project
     projTree = nwGUI.projView.projTree
 
     docText = (
@@ -652,8 +652,8 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRnd, 
         "#### New Section\n\nText\n\n"
     )
 
-    hSplitDoc = theProject.newFile("Split Doc", C.hNovelRoot)
-    theProject.writeNewFile(hSplitDoc, 1, True, docText)  # type: ignore
+    hSplitDoc = project.newFile("Split Doc", C.hNovelRoot)
+    project.writeNewFile(hSplitDoc, 1, True, docText)  # type: ignore
     projTree.revealNewTreeItem(hSplitDoc, nHandle=C.hNovelRoot, wordCount=True)
 
     docText = f"# Split Doc\n\n{docText}"
@@ -700,25 +700,25 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRnd, 
         mp.setattr("builtins.open", causeOSError)
         assert projTree._splitDocument(hSplitDoc) is True
         for tHandle in fstSet:
-            assert tHandle in theProject.tree
+            assert tHandle in project.tree
             assert not (projPath / "content" / f"{tHandle}.nwd").is_file()
 
     # Writing succeeds
     assert projTree._splitDocument(hSplitDoc) is True
     for tHandle in sndSet:
-        assert tHandle in theProject.tree
+        assert tHandle in project.tree
         assert (projPath / "content" / f"{tHandle}.nwd").is_file()
 
     # Add to a folder and move source to trash
     splitData["intoFolder"] = True
     splitData["moveToTrash"] = True
     assert projTree._splitDocument(hSplitDoc) is True
-    assert "0000000000029" in theProject.tree  # The folder
+    assert "0000000000029" in project.tree  # The folder
     for tHandle in trdSet:
-        assert tHandle in theProject.tree
+        assert tHandle in project.tree
         assert (projPath / "content" / f"{tHandle}.nwd").is_file()
 
-    assert theProject.tree.isTrash(hSplitDoc) is True  # type: ignore
+    assert project.tree.isTrash(hSplitDoc) is True  # type: ignore
 
     # Cancelled by user
     with monkeypatch.context() as mp:

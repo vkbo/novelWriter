@@ -194,12 +194,12 @@ class Tokenizer(ABC):
     ##
 
     @property
-    def theResult(self) -> str:
+    def result(self) -> str:
         """The result of the build process."""
         return self._result
 
     @property
-    def theMarkdown(self) -> list:
+    def allMarkdown(self) -> list:
         """The combined novelWriter Markdown text."""
         return self._allMarkdown
 
@@ -358,8 +358,8 @@ class Tokenizer(ABC):
         return True
 
     def setText(self, tHandle: str, text: str | None = None) -> bool:
-        """Set the text for the tokenizer from a handle. If theText is
-        not set, load it from the file.
+        """Set the text for the tokenizer from a handle. If text is not
+        set, load it from the file.
         """
         self._nwItem = self._project.tree[tHandle]
         if self._nwItem is None:

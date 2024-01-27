@@ -726,17 +726,17 @@ class GuiNovelTree(QTreeWidget):
 
         refData = []
         refName = ""
-        theRefs = SHARED.project.index.getReferences(tHandle, sTitle)
+        refs = SHARED.project.index.getReferences(tHandle, sTitle)
         if self._lastCol == NovelTreeColumn.POV:
-            refData = theRefs[nwKeyWords.POV_KEY]
+            refData = refs[nwKeyWords.POV_KEY]
             refName = self._povLabel
 
         elif self._lastCol == NovelTreeColumn.FOCUS:
-            refData = theRefs[nwKeyWords.FOCUS_KEY]
+            refData = refs[nwKeyWords.FOCUS_KEY]
             refName = self._focLabel
 
         elif self._lastCol == NovelTreeColumn.PLOT:
-            refData = theRefs[nwKeyWords.PLOT_KEY]
+            refData = refs[nwKeyWords.PLOT_KEY]
             refName = self._pltLabel
 
         if refData:

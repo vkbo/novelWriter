@@ -256,9 +256,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         nBlocks = qDoc.blockCount()
         tStart = time()
         for i in range(nBlocks):
-            theBlock = qDoc.findBlockByNumber(i)
-            if theBlock.userState() & cType > 0:
-                self.rehighlightBlock(theBlock)
+            block = qDoc.findBlockByNumber(i)
+            if block.userState() & cType > 0:
+                self.rehighlightBlock(block)
         logger.debug("Document highlighted in %.3f ms" % (1000*(time() - tStart)))
         return
 

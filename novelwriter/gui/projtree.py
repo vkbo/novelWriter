@@ -785,24 +785,24 @@ class GuiProjectTree(QTreeWidget):
         project structure, and must be called before any code that
         depends on this order to be up to date.
         """
-        theList = []
+        items = []
         for i in range(self.topLevelItemCount()):
             item = self.topLevelItem(i)
             if isinstance(item, QTreeWidgetItem):
-                theList = self._scanChildren(theList, item, i)
+                items = self._scanChildren(items, item, i)
         logger.debug("Saving project tree item order")
-        SHARED.project.setTreeOrder(theList)
+        SHARED.project.setTreeOrder(items)
         return
 
     def getTreeFromHandle(self, tHandle: str) -> list[str]:
         """Recursively return all the child items starting from a given
         item handle.
         """
-        theList = []
-        theItem = self._getTreeItem(tHandle)
-        if theItem is not None:
-            theList = self._scanChildren(theList, theItem, 0)
-        return theList
+        result = []
+        tIten = self._getTreeItem(tHandle)
+        if tIten is not None:
+            result = self._scanChildren(result, tIten, 0)
+        return result
 
     def requestDeleteItem(self, tHandle: str | None = None) -> bool:
         """Request an item deleted from the project tree. This function
@@ -857,11 +857,11 @@ class GuiProjectTree(QTreeWidget):
             SHARED.info(self.tr("There is currently no Trash folder in this project."))
             return False
 
-        theTrash = self.getTreeFromHandle(trashHandle)
-        if trashHandle in theTrash:
-            theTrash.remove(trashHandle)
+        trashItems = self.getTreeFromHandle(trashHandle)
+        if trashHandle in trashItems:
+            trashItems.remove(trashHandle)
 
-        nTrash = len(theTrash)
+        nTrash = len(trashItems)
         if nTrash == 0:
             SHARED.info(self.tr("The Trash folder is already empty."))
             return False

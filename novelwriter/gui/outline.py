@@ -625,12 +625,12 @@ class GuiOutlineTree(QTreeWidget):
         self.clear()
 
         if self._firstView:
-            theLabels = []
+            labels = []
             for i, hItem in enumerate(self._treeOrder):
-                theLabels.append(trConst(nwLabels.OUTLINE_COLS[hItem]))
+                labels.append(trConst(nwLabels.OUTLINE_COLS[hItem]))
                 self._colIdx[hItem] = i
 
-            self.setHeaderLabels(theLabels)
+            self.setHeaderLabels(labels)
             for hItem in self._treeOrder:
                 self.setColumnWidth(self._colIdx[hItem], self._colWidth[hItem])
                 self.setColumnHidden(self._colIdx[hItem], self._colHidden[hItem])
@@ -990,7 +990,7 @@ class GuiOutlineDetails(QScrollArea):
         pIndex = SHARED.project.index
         nwItem = SHARED.project.tree[tHandle]
         novIdx = pIndex.getItemHeader(tHandle, sTitle)
-        theRefs = pIndex.getReferences(tHandle, sTitle)
+        novRefs = pIndex.getReferences(tHandle, sTitle)
         if nwItem is None or novIdx is None:
             return False
 
@@ -1015,15 +1015,15 @@ class GuiOutlineDetails(QScrollArea):
 
         self.synopValue.setText(novIdx.synopsis)
 
-        self.povKeyValue.setText(self._formatTags(theRefs, nwKeyWords.POV_KEY))
-        self.focKeyValue.setText(self._formatTags(theRefs, nwKeyWords.FOCUS_KEY))
-        self.chrKeyValue.setText(self._formatTags(theRefs, nwKeyWords.CHAR_KEY))
-        self.pltKeyValue.setText(self._formatTags(theRefs, nwKeyWords.PLOT_KEY))
-        self.timKeyValue.setText(self._formatTags(theRefs, nwKeyWords.TIME_KEY))
-        self.wldKeyValue.setText(self._formatTags(theRefs, nwKeyWords.WORLD_KEY))
-        self.objKeyValue.setText(self._formatTags(theRefs, nwKeyWords.OBJECT_KEY))
-        self.entKeyValue.setText(self._formatTags(theRefs, nwKeyWords.ENTITY_KEY))
-        self.cstKeyValue.setText(self._formatTags(theRefs, nwKeyWords.CUSTOM_KEY))
+        self.povKeyValue.setText(self._formatTags(novRefs, nwKeyWords.POV_KEY))
+        self.focKeyValue.setText(self._formatTags(novRefs, nwKeyWords.FOCUS_KEY))
+        self.chrKeyValue.setText(self._formatTags(novRefs, nwKeyWords.CHAR_KEY))
+        self.pltKeyValue.setText(self._formatTags(novRefs, nwKeyWords.PLOT_KEY))
+        self.timKeyValue.setText(self._formatTags(novRefs, nwKeyWords.TIME_KEY))
+        self.wldKeyValue.setText(self._formatTags(novRefs, nwKeyWords.WORLD_KEY))
+        self.objKeyValue.setText(self._formatTags(novRefs, nwKeyWords.OBJECT_KEY))
+        self.entKeyValue.setText(self._formatTags(novRefs, nwKeyWords.ENTITY_KEY))
+        self.cstKeyValue.setText(self._formatTags(novRefs, nwKeyWords.CUSTOM_KEY))
 
         return True
 
