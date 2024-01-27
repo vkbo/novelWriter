@@ -1,6 +1,6 @@
 # novelWriter Changelog
 
-## Version 2.2.1 [2024-01-28]
+## Version 2.2.1 [2024-01-27]
 
 ### Release Notes
 
@@ -14,6 +14,7 @@ and Chinese.
 
 * Fix a bug in the toggle for the tree view on the left would trigger each time a new project item
   was created. Issue #1649. PR #1648.
+* Fix an issue where multiple Manuscript and Writing Stats dialogs could be opened. PR #1671.
 
 **Internationalisation**
 
