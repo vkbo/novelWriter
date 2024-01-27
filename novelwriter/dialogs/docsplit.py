@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.extensions.configlayout import NHelpLabel
+from novelwriter.extensions.configlayout import NColourLabel
 
 logger = logging.getLogger(__name__)
 
@@ -58,9 +58,9 @@ class GuiDocSplit(QDialog):
         self.setWindowTitle(self.tr("Split Document"))
 
         self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Document Headers")))
-        self.helpLabel = NHelpLabel(
+        self.helpLabel = NColourLabel(
             self.tr("Select the maximum level to split into files."),
-            SHARED.theme.helpText
+            SHARED.theme.helpText, parent=self, wrap=True
         )
 
         # Values

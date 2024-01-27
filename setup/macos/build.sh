@@ -24,7 +24,7 @@ echo "Build Dir: $BUILD_DIR"
 
 pushd "$SRC_DIR" || exit 1
 
-VERSION="$(python3 pkgutils.py version -c)"
+VERSION="$(python3 pkgutils.py version)"
 echo "novelWriter Version: $VERSION"
 
 # --- Prepare Files ----------------------------------------------------------------------------- #

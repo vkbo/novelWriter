@@ -53,11 +53,11 @@ from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.updates import GuiUpdates
 from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.dialogs.preferences import GuiPreferences
-from novelwriter.dialogs.projdetails import GuiProjectDetails
-from novelwriter.dialogs.projsettings import GuiProjectSettings
+from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.dictionaries import GuiDictionaries
+from novelwriter.tools.noveldetails import GuiNovelDetails
 from novelwriter.tools.writingstats import GuiWritingStats
 
 from novelwriter.enum import (
@@ -79,13 +79,6 @@ class GuiMain(QMainWindow):
     function. Also, the project instance and theme instance are created
     here. These should be passed around to all other objects who need
     them and new instances of them should generally not be created.
-
-      * All other GUI classes that depend on any components from the
-        main GUI should be passed a reference to the instance of this
-        class.
-      * All non-GUI classes can be passed a reference to the NWProject
-        instance if the Main GUI is not needed (which it generally
-        shouldn't need).
     """
 
     def __init__(self) -> None:
@@ -816,19 +809,19 @@ class GuiMain(QMainWindow):
 
     @pyqtSlot()
     @pyqtSlot(int)
-    def showProjectSettingsDialog(self, focusTab: int = GuiProjectSettings.TAB_MAIN) -> None:
+    def showProjectSettingsDialog(self, focusTab: int = GuiProjectSettings.PAGE_SETTINGS) -> None:
         """Open the project settings dialog."""
         if SHARED.hasProject:
-            dialog = GuiProjectSettings(self, focusTab=focusTab)
+            dialog = GuiProjectSettings(self, gotoPage=focusTab)
             dialog.newProjectSettingsReady.connect(self._processProjectSettingsChanges)
             dialog.exec_()
         return
 
     @pyqtSlot()
-    def showProjectDetailsDialog(self) -> None:
-        """Open the project details dialog."""
+    def showNovelDetailsDialog(self) -> None:
+        """Open the novel details dialog."""
         if SHARED.hasProject:
-            dialog = GuiProjectDetails(self)
+            dialog = GuiNovelDetails(self)
             dialog.setModal(True)
             dialog.show()
             dialog.raise_()
@@ -1118,13 +1111,15 @@ class GuiMain(QMainWindow):
 
         return
 
-    @pyqtSlot()
-    def _processProjectSettingsChanges(self) -> None:
+    @pyqtSlot(bool)
+    def _processProjectSettingsChanges(self, rebuildTrees: bool) -> None:
         """Refresh data dependent on project settings."""
         logger.debug("Applying new project settings")
         SHARED.updateSpellCheckLanguage()
         self.itemDetails.refreshDetails()
         self._updateWindowTitle(SHARED.project.data.name)
+        if rebuildTrees:
+            self.rebuildTrees()
         return
 
     @pyqtSlot()

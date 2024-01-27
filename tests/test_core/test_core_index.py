@@ -695,6 +695,7 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
         "This is a story about Jane Smith.\n\n"
         "Well, not really. She's still awesome though.\n"
     ))
+
     # Whole document
     cC, wC, pC = index.getCounts(nHandle)
     assert cC == 152
@@ -798,6 +799,10 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     # Extract stats
     assert index.getNovelWordCount(activeOnly=False) == 43
     assert index.getNovelWordCount(activeOnly=True) == 15
+    assert index.getNovelWordCount(rootHandle=C.hNovelRoot, activeOnly=False) == 43
+    assert index.getNovelWordCount(rootHandle=C.hNovelRoot, activeOnly=True) == 15
+    assert index.getNovelWordCount(rootHandle=C.hWorldRoot, activeOnly=False) == 0
+    assert index.getNovelWordCount(rootHandle=C.hWorldRoot, activeOnly=True) == 0
     assert index.getNovelTitleCounts(activeOnly=False) == [0, 3, 2, 3, 0]
     assert index.getNovelTitleCounts(activeOnly=True) == [0, 1, 2, 3, 0]
 

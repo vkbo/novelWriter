@@ -53,7 +53,6 @@ class NWProjectData:
         # Project Meta
         self._uuid = ""
         self._name = ""
-        self._title = ""
         self._author = ""
         self._saveCount = 0
         self._autoCount = 0
@@ -101,11 +100,6 @@ class NWProjectData:
     def name(self) -> str:
         """Return the project name."""
         return self._name
-
-    @property
-    def title(self) -> str:
-        """Return the project title."""
-        return self._title
 
     @property
     def author(self) -> str:
@@ -228,16 +222,9 @@ class NWProjectData:
             self._project.setProjectChanged(True)
         return
 
-    def setTitle(self, value: str | None) -> None:
-        """Set a new novel title."""
-        if value != self._title:
-            self._title = simplified(str(value or ""))
-            self._project.setProjectChanged(True)
-        return
-
     def setAuthor(self, value: str | None) -> None:
         """Set the author value."""
-        if value != self._title:
+        if value != self._author:
             self._author = simplified(str(value or ""))
             self._project.setProjectChanged(True)
         return

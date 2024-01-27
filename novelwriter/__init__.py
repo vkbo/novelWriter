@@ -42,9 +42,9 @@ __license__    = "GPLv3"
 __author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__version__    = "2.3-alpha1"
-__hexversion__ = "0x020300a1"
-__date__       = "2023-12-17"
+__version__    = "2.3a2"
+__hexversion__ = "0x020300a2"
+__date__       = "2024-01-26"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
 
@@ -131,7 +131,7 @@ def main(sysArgs: list | None = None):
         elif inOpt == "--debug":
             CONFIG.isDebug = True
             logLevel = logging.DEBUG
-            logFormat  = "[{asctime:}]  {filename:>17}:{lineno:<4d}  {levelname:8}  {message:}"
+            logFormat  = "[{asctime:}]  {filename:>18}:{lineno:<4d}  {levelname:8}  {message:}"
         elif inOpt == "--style":
             qtStyle = inArg
         elif inOpt == "--config":

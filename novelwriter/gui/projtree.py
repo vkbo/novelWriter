@@ -48,7 +48,7 @@ from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSplitter
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.dialogs.projsettings import GuiProjectSettings
+from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.enum import (
     nwDocMode, nwItemType, nwItemClass, nwItemLayout, nwWidget
 )
@@ -1748,7 +1748,7 @@ class _TreeContextMenu(QMenu):
             menu.addSeparator()
             action = menu.addAction(self.tr("Manage Labels ..."))
             action.triggered.connect(
-                lambda: self.projView.projectSettingsRequest.emit(GuiProjectSettings.TAB_STATUS)
+                lambda: self.projView.projectSettingsRequest.emit(GuiProjectSettings.PAGE_STATUS)
             )
         else:
             menu = self.addMenu(self.tr("Set Importance to ..."))
@@ -1765,7 +1765,7 @@ class _TreeContextMenu(QMenu):
             menu.addSeparator()
             action = menu.addAction(self.tr("Manage Labels ..."))
             action.triggered.connect(
-                lambda: self.projView.projectSettingsRequest.emit(GuiProjectSettings.TAB_IMPORT)
+                lambda: self.projView.projectSettingsRequest.emit(GuiProjectSettings.PAGE_IMPORT)
             )
         return
 

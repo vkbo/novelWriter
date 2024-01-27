@@ -230,7 +230,7 @@ def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     assert error == []
 
     copyfile(docFile, tstFile)
-    assert cmpFiles(tstFile, cmpFile, ignoreLines=[6, 7])
+    assert cmpFiles(tstFile, cmpFile, ignoreLines=[5, 6])
 
     # Check Error Handling
     # ====================
@@ -370,7 +370,7 @@ def testCoreDocBuild_NWD(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
     assert error == []
 
     copyfile(docFile, tstFile)
-    assert cmpFiles(tstFile, cmpFile, ignoreLines=[6, 7])
+    assert cmpFiles(tstFile, cmpFile, ignoreLines=[5, 6])
 
     # Check Error Handling
     # ====================

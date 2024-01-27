@@ -29,7 +29,7 @@ from tools import (
     C, NWD_IGNORE, cmpFiles, buildTestProject, XML_IGNORE, getGuiItem
 )
 
-from PyQt5.QtGui import QColor, QPalette
+from PyQt5.QtGui import QPalette
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMenu, QInputDialog
 
@@ -170,7 +170,7 @@ def testGuiMain_UpdateTheme(qtbot, nwGUI):
     mainTheme.loadSyntax()
     nwGUI._processConfigChanges(True, True, True, True)
 
-    syntaxBack = QColor(*SHARED.theme.colBack)
+    syntaxBack = SHARED.theme.colBack
 
     assert nwGUI.docEditor.palette().color(QPalette.ColorRole.Window) == syntaxBack
     assert nwGUI.docEditor.docHeader.palette().color(QPalette.ColorRole.Window) == syntaxBack
@@ -200,7 +200,6 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert len(SHARED.project.tree._roots) == 0
     assert SHARED.project.tree.trashRoot is None
     assert SHARED.project.data.name == ""
-    assert SHARED.project.data.title == ""
     assert SHARED.project.data.author == ""
     assert SHARED.project.data.spellCheck is False
 
@@ -220,7 +219,6 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert len(SHARED.project.tree._roots) == 4
     assert SHARED.project.tree.trashRoot is None
     assert SHARED.project.data.name == "New Project"
-    assert SHARED.project.data.title == "New Novel"
     assert SHARED.project.data.author == "Jane Doe"
     assert SHARED.project.data.spellCheck is False
 

@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import logging
 
-from typing import TYPE_CHECKING
 from pathlib import Path
 from datetime import datetime
 
@@ -43,13 +42,10 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED, __version__, __date__
 from novelwriter.enum import nwItemClass
-from novelwriter.common import formatInt, makeFileNameSafe
+from novelwriter.common import formatInt, formatVersion, makeFileNameSafe
 from novelwriter.constants import nwUnicode
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.extensions.switch import NSwitch
-
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
@@ -58,8 +54,8 @@ class GuiWelcome(QDialog):
 
     openProjectRequest = pyqtSignal(Path)
 
-    def __init__(self, mainGui: GuiMain) -> None:
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiWelcome")
         self.setObjectName("GuiWelcome")
@@ -91,7 +87,8 @@ class GuiWelcome(QDialog):
         self.nwLabel.setPixmap(self.nwImage)
 
         self.nwInfo = QLabel(self.tr("Version {0} {1} Released on {2}").format(
-            __version__, nwUnicode.U_ENDASH, datetime.strptime(__date__, "%Y-%m-%d").strftime("%x")
+            formatVersion(__version__), nwUnicode.U_ENDASH,
+            datetime.strptime(__date__, "%Y-%m-%d").strftime("%x")
         ))
 
         self.tabOpen = _OpenProjectPage(self)
@@ -343,7 +340,7 @@ class _ProjectListItem(QStyledItemDelegate):
 
         self._dFont = qApp.font()
         self._dFont.setPointSizeF(fPt)
-        self._dPen = QPen(QColor(*SHARED.theme.helpText))
+        self._dPen = QPen(SHARED.theme.helpText)
 
         self._icon = SHARED.theme.getPixmap("proj_nwx", (iPx, iPx))
 

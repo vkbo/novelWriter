@@ -70,10 +70,10 @@ class GuiTheme:
         self.isLightTheme     = True
 
         # GUI
-        self.statNone    = [120, 120, 120]
-        self.statUnsaved = [200, 15, 39]
-        self.statSaved   = [2, 133, 37]
-        self.helpText    = [0, 0, 0]
+        self.statNone    = QColor(120, 120, 120)
+        self.statUnsaved = QColor(200, 15, 39)
+        self.statSaved   = QColor(2, 133, 37)
+        self.helpText    = QColor(0, 0, 0)
 
         # Loaded Syntax Settings
         # ======================
@@ -88,23 +88,23 @@ class GuiTheme:
         self.syntaxLicenseUrl  = ""
 
         # Colours
-        self.colBack   = [255, 255, 255]
-        self.colText   = [0, 0, 0]
-        self.colLink   = [0, 0, 0]
-        self.colHead   = [0, 0, 0]
-        self.colHeadH  = [0, 0, 0]
-        self.colEmph   = [0, 0, 0]
-        self.colDialN  = [0, 0, 0]
-        self.colDialD  = [0, 0, 0]
-        self.colDialS  = [0, 0, 0]
-        self.colHidden = [0, 0, 0]
-        self.colCode   = [0, 0, 0]
-        self.colKey    = [0, 0, 0]
-        self.colVal    = [0, 0, 0]
-        self.colSpell  = [0, 0, 0]
-        self.colError  = [0, 0, 0]
-        self.colRepTag = [0, 0, 0]
-        self.colMod    = [0, 0, 0]
+        self.colBack   = QColor(255, 255, 255)
+        self.colText   = QColor(0, 0, 0)
+        self.colLink   = QColor(0, 0, 0)
+        self.colHead   = QColor(0, 0, 0)
+        self.colHeadH  = QColor(0, 0, 0)
+        self.colEmph   = QColor(0, 0, 0)
+        self.colDialN  = QColor(0, 0, 0)
+        self.colDialD  = QColor(0, 0, 0)
+        self.colDialS  = QColor(0, 0, 0)
+        self.colHidden = QColor(0, 0, 0)
+        self.colCode   = QColor(0, 0, 0)
+        self.colKey    = QColor(0, 0, 0)
+        self.colVal    = QColor(0, 0, 0)
+        self.colSpell  = QColor(0, 0, 0)
+        self.colError  = QColor(0, 0, 0)
+        self.colRepTag = QColor(0, 0, 0)
+        self.colMod    = QColor(0, 0, 0)
 
         # Class Setup
         # ===========
@@ -256,12 +256,12 @@ class GuiTheme:
         backLNess = backCol.lightnessF()
         textLNess = textCol.lightnessF()
         self.isLightTheme = backLNess > textLNess
-        if self.helpText == [0, 0, 0]:
+        if self.helpText == QColor(0, 0, 0):
             if self.isLightTheme:
                 helpLCol = textLNess + 0.35*(backLNess - textLNess)
             else:
                 helpLCol = backLNess + 0.65*(textLNess - backLNess)
-            self.helpText = [int(255*helpLCol)]*3
+            self.helpText = QColor.fromHsl(0, 0, int(255*helpLCol))
 
         # Icons
         defaultIcons = "typicons_light" if backLNess >= 0.5 else "typicons_dark"
@@ -398,29 +398,14 @@ class GuiTheme:
 
         return True
 
-    def _parseColour(self, parser: NWConfigParser, section: str, name: str) -> list[int]:
+    def _parseColour(self, parser: NWConfigParser, section: str, name: str) -> QColor:
         """Parse a colour value from a config string."""
-        if parser.has_option(section, name):
-            values = parser.get(section, name).split(",")
-            result = []
-            try:
-                result.append(minmax(int(values[0]), 0, 255))
-                result.append(minmax(int(values[1]), 0, 255))
-                result.append(minmax(int(values[2]), 0, 255))
-            except Exception:
-                logger.error("Could not load theme colours for '%s' from config file", name)
-                result = [0, 0, 0]
-        else:
-            logger.warning("Could not find theme colours for '%s' in config file", name)
-            result = [0, 0, 0]
-        return result
+        return QColor(*parser.rdIntList(section, name, [0, 0, 0, 255]))
 
     def _setPalette(self, parser: NWConfigParser, section: str,
                     name: str, value: QPalette.ColorRole) -> None:
         """Set a palette colour value from a config string."""
-        self._guiPalette.setColor(
-            value, QColor(*self._parseColour(parser, section, name))
-        )
+        self._guiPalette.setColor(value, self._parseColour(parser, section, name))
         return
 
 # End Class GuiTheme

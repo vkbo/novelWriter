@@ -156,52 +156,54 @@ def cleanProject(path: str | Path):
     return
 
 
-def buildTestProject(obj, projPath):
+def buildTestProject(obj: object, projPath: Path) -> None:
     """Build a standard test project in projPath using the project
     object as the parent.
     """
     from novelwriter.enum import nwItemClass
+    from novelwriter.guimain import GuiMain
     from novelwriter.core.project import NWProject
 
     if isinstance(obj, NWProject):
         nwGUI = None
         project = obj
-    else:
+    elif isinstance(obj, GuiMain):
         from novelwriter import SHARED
         nwGUI = obj
         project = SHARED.project
+    else:
+        return
 
     project.storage.createNewProject(projPath)
     project.setDefaultStatusImport()
 
     project.data.setUuid("d0f3fe10-c6e6-4310-8bfd-181eb4224eed")
     project.data.setName("New Project")
-    project.data.setTitle("New Novel")
     project.data.setAuthor("Jane Doe")
 
     # Creating a minimal project with a few root folders and a
     # single chapter folder with a single file.
-    xHandle = {}
-    xHandle[1] = project.newRoot(nwItemClass.NOVEL, "Novel")
-    xHandle[2] = project.newRoot(nwItemClass.PLOT, "Plot")
-    xHandle[3] = project.newRoot(nwItemClass.CHARACTER, "Characters")
-    xHandle[4] = project.newRoot(nwItemClass.WORLD, "World")
-    xHandle[5] = project.newFile("Title Page", xHandle[1])
-    xHandle[6] = project.newFolder("New Chapter", xHandle[1])
-    xHandle[7] = project.newFile("New Chapter", xHandle[6])
-    xHandle[8] = project.newFile("New Scene", xHandle[6])
+    nrHandle = project.newRoot(nwItemClass.NOVEL, "Novel")
+    project.newRoot(nwItemClass.PLOT, "Plot")
+    project.newRoot(nwItemClass.CHARACTER, "Characters")
+    project.newRoot(nwItemClass.WORLD, "World")
 
-    aDoc = project.storage.getDocument(xHandle[5])
+    tdHandle = project.newFile("Title Page", nrHandle)
+    cfHandle = project.newFolder("New Chapter", nrHandle) or ""
+    cdHandle = project.newFile("New Chapter", cfHandle)
+    sdHandle = project.newFile("New Scene", cfHandle)
+
+    aDoc = project.storage.getDocument(tdHandle)
     aDoc.writeDocument("#! New Novel\n\n>> By Jane Doe <<\n")
-    project.index.reIndexHandle(xHandle[5])
+    project.index.reIndexHandle(tdHandle)
 
-    aDoc = project.storage.getDocument(xHandle[7])
+    aDoc = project.storage.getDocument(cdHandle)
     aDoc.writeDocument("## %s\n\n" % project.tr("New Chapter"))
-    project.index.reIndexHandle(xHandle[7])
+    project.index.reIndexHandle(cdHandle)
 
-    aDoc = project.storage.getDocument(xHandle[8])
+    aDoc = project.storage.getDocument(sdHandle)
     aDoc.writeDocument("### %s\n\n" % project.tr("New Scene"))
-    project.index.reIndexHandle(xHandle[8])
+    project.index.reIndexHandle(sdHandle)
 
     project.session.startSession()
     project.setProjectChanged(True)

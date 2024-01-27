@@ -29,7 +29,6 @@ from time import time
 from typing import TYPE_CHECKING, Literal
 from datetime import datetime
 
-from PyQt5.QtGui import QColor
 from PyQt5.QtCore import pyqtSlot, QLocale
 from PyQt5.QtWidgets import qApp, QStatusBar, QLabel
 
@@ -55,9 +54,9 @@ class GuiMainStatus(QStatusBar):
         self._userIdle = False
         self._debugInfo = False
 
-        colNone = QColor(*SHARED.theme.statNone)
-        colSaved = QColor(*SHARED.theme.statSaved)
-        colUnsaved = QColor(*SHARED.theme.statUnsaved)
+        colNone = SHARED.theme.statNone
+        colSaved = SHARED.theme.statSaved
+        colUnsaved = SHARED.theme.statUnsaved
 
         iPx = SHARED.theme.baseIconSize
 
