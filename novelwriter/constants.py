@@ -309,7 +309,13 @@ class nwHeadFmt:
     SC_NUM  = "{Scene}"
     SC_ABS  = "{Scene:Abs}"
 
-    ALL = [TITLE, CH_NUM, CH_WORD, CH_ROMU, CH_ROML, SC_NUM, SC_ABS]
+    PAGE_HEADERS = [TITLE, CH_NUM, CH_WORD, CH_ROMU, CH_ROML, SC_NUM, SC_ABS]
+
+    # ODT Document Page Header
+    ODT_PROJECT = "{Project}"
+    ODT_AUTHOR = "{Author}"
+    ODT_PAGE = "{Page}"
+    ODT_AUTO = "{Project} / {Author} / {Page}"
 
 # END Class nwHeadFmt
 

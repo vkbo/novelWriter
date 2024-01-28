@@ -79,17 +79,16 @@ class GuiBuildSettings(QDialog):
         self._build = build
 
         self.setWindowTitle(self.tr("Manuscript Build Settings"))
-        self.setMinimumWidth(CONFIG.pxInt(700))
-        self.setMinimumHeight(CONFIG.pxInt(400))
+        self.setMinimumSize(CONFIG.pxInt(700), CONFIG.pxInt(400))
 
         mPx = CONFIG.pxInt(150)
         wWin = CONFIG.pxInt(750)
         hWin = CONFIG.pxInt(550)
 
-        pOptions = SHARED.project.options
+        options = SHARED.project.options
         self.resize(
-            CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "winWidth", wWin)),
-            CONFIG.pxInt(pOptions.getInt("GuiBuildSettings", "winHeight", hWin))
+            CONFIG.pxInt(options.getInt("GuiBuildSettings", "winWidth", wWin)),
+            CONFIG.pxInt(options.getInt("GuiBuildSettings", "winHeight", hWin))
         )
 
         # Title
@@ -604,9 +603,9 @@ class _HeadingsTab(NScrollablePage):
 
         # Title Heading
         self.lblTitle = QLabel(self._build.getLabel("headings.fmtTitle"))
-        self.fmtTitle = QLineEdit("")
+        self.fmtTitle = QLineEdit("", self)
         self.fmtTitle.setReadOnly(True)
-        self.btnTitle = QToolButton()
+        self.btnTitle = QToolButton(self)
         self.btnTitle.setIcon(SHARED.theme.getIcon("edit"))
         self.btnTitle.clicked.connect(lambda: self._editHeading(self.EDIT_TITLE))
 
@@ -620,9 +619,9 @@ class _HeadingsTab(NScrollablePage):
 
         # Chapter Heading
         self.lblChapter = QLabel(self._build.getLabel("headings.fmtChapter"))
-        self.fmtChapter = QLineEdit("")
+        self.fmtChapter = QLineEdit("", self)
         self.fmtChapter.setReadOnly(True)
-        self.btnChapter = QToolButton()
+        self.btnChapter = QToolButton(self)
         self.btnChapter.setIcon(SHARED.theme.getIcon("edit"))
         self.btnChapter.clicked.connect(lambda: self._editHeading(self.EDIT_CHAPTER))
 
@@ -636,9 +635,9 @@ class _HeadingsTab(NScrollablePage):
 
         # Unnumbered Chapter Heading
         self.lblUnnumbered = QLabel(self._build.getLabel("headings.fmtUnnumbered"))
-        self.fmtUnnumbered = QLineEdit("")
+        self.fmtUnnumbered = QLineEdit("", self)
         self.fmtUnnumbered.setReadOnly(True)
-        self.btnUnnumbered = QToolButton()
+        self.btnUnnumbered = QToolButton(self)
         self.btnUnnumbered.setIcon(SHARED.theme.getIcon("edit"))
         self.btnUnnumbered.clicked.connect(lambda: self._editHeading(self.EDIT_UNNUM))
 
@@ -653,9 +652,9 @@ class _HeadingsTab(NScrollablePage):
         # Scene Heading
         sceneHideTip = self._build.getLabel("headings.hideScene")
         self.lblScene = QLabel(self._build.getLabel("headings.fmtScene"))
-        self.fmtScene = QLineEdit("")
+        self.fmtScene = QLineEdit("", self)
         self.fmtScene.setReadOnly(True)
-        self.btnScene = QToolButton()
+        self.btnScene = QToolButton(self)
         self.btnScene.setIcon(SHARED.theme.getIcon("edit"))
         self.btnScene.clicked.connect(lambda: self._editHeading(self.EDIT_SCENE))
         self.hdeScene = QLabel(self.tr("Hide"))
@@ -680,9 +679,9 @@ class _HeadingsTab(NScrollablePage):
         # Section Heading
         sectionHideTip = self._build.getLabel("headings.hideSection")
         self.lblSection = QLabel(self._build.getLabel("headings.fmtSection"))
-        self.fmtSection = QLineEdit("")
+        self.fmtSection = QLineEdit("", self)
         self.fmtSection.setReadOnly(True)
-        self.btnSection = QToolButton()
+        self.btnSection = QToolButton(self)
         self.btnSection.setIcon(SHARED.theme.getIcon("edit"))
         self.btnSection.clicked.connect(lambda: self._editHeading(self.EDIT_SECTION))
         self.hdeSection = QLabel(self.tr("Hide"))
@@ -867,7 +866,7 @@ class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
 
     def highlightBlock(self, text: str) -> None:
         """Add syntax highlighting to the text block."""
-        for heading in nwHeadFmt.ALL:
+        for heading in nwHeadFmt.PAGE_HEADERS:
             pos = text.find(heading)
             if pos >= 0:
                 chars = len(heading)
@@ -1214,11 +1213,23 @@ class _OutputTab(NScrollableForm):
 
         # Open Document
         self.addGroupLabel(self._build.getLabel("odt"))
+
         self.odtAddColours = NSwitch(self, width=2*iPx, height=iPx)
         self.addRow(self._build.getLabel("odt.addColours"), self.odtAddColours)
 
+        self.odtPageHeader = QLineEdit(self)
+        self.odtPageHeader.setMinimumWidth(CONFIG.pxInt(200))
+        self.btnPageHeader = QToolButton(self)
+        self.btnPageHeader.setIcon(SHARED.theme.getIcon("revert"))
+        self.btnPageHeader.clicked.connect(self._resetPageHeader)
+        self.addRow(
+            self._build.getLabel("odt.pageHeader"), self.odtPageHeader,
+            button=self.btnPageHeader, stretch=(1, 1)
+        )
+
         # HTML Document
         self.addGroupLabel(self._build.getLabel("html"))
+
         self.htmlAddStyles = NSwitch(self, width=2*iPx, height=iPx)
         self.addRow(self._build.getLabel("html.addStyles"), self.htmlAddStyles)
 
@@ -1230,13 +1241,24 @@ class _OutputTab(NScrollableForm):
     def loadContent(self) -> None:
         """Populate the widgets."""
         self.odtAddColours.setChecked(self._build.getBool("odt.addColours"))
+        self.odtPageHeader.setText(self._build.getStr("odt.pageHeader"))
         self.htmlAddStyles.setChecked(self._build.getBool("html.addStyles"))
         return
 
     def saveContent(self) -> None:
         """Save choices back into build object."""
         self._build.setValue("odt.addColours", self.odtAddColours.isChecked())
+        self._build.setValue("odt.pageHeader", self.odtPageHeader.text())
         self._build.setValue("html.addStyles", self.htmlAddStyles.isChecked())
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    def _resetPageHeader(self) -> None:
+        """Reset the ODT header format to default."""
+        self.odtPageHeader.setText(nwHeadFmt.ODT_AUTO)
         return
 
 # END Class _OutputTab

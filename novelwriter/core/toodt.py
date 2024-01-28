@@ -132,11 +132,11 @@ class ToOdt(Tokenizer):
         self._errData = []  # List of errors encountered
 
         # Properties
-        self._textFont   = "Liberation Serif"
-        self._textSize   = 12
-        self._textFixed  = False
-        self._colourHead = False
-        self._headerText = ""
+        self._textFont     = "Liberation Serif"
+        self._textSize     = 12
+        self._textFixed    = False
+        self._colourHead   = False
+        self._headerFormat = ""
 
         # Internal
         self._fontFamily   = "&apos;Liberation Serif&apos;"
@@ -222,6 +222,11 @@ class ToOdt(Tokenizer):
         self._mDocRight  = f"{right/10.0:.3f}cm"
         return
 
+    def setHeaderFormat(self, format: str) -> None:
+        """Set the document header format."""
+        self._headerFormat = format.strip()
+        return
+
     ##
     #  Class Methods
     ##
@@ -278,12 +283,6 @@ class ToOdt(Tokenizer):
 
         # Clear Errors
         self._errData = []
-
-        # Document Header
-        # ===============
-
-        if self._headerText == "":
-            self._headerText = f"{self._project.data.name} / {self._project.data.author} /"
 
         # Create Roots
         # ============
@@ -1010,17 +1009,27 @@ class ToOdt(Tokenizer):
         xPage = ET.SubElement(self._xMast, _mkTag("style", "master-page"), attrib=tAttr)
 
         # Standard Page Header
-        xHead = ET.SubElement(xPage, _mkTag("style", "header"))
-        xPar = ET.SubElement(xHead, _mkTag("text", "p"), attrib={
-            _mkTag("text", "style-name"): "Header"
-        })
-        xPar.text = self._headerText.strip() + " "
+        if self._headerFormat:
+            pre, page, post = self._headerFormat.partition(nwHeadFmt.ODT_PAGE)
 
-        xTail = ET.SubElement(xPar, _mkTag("text", "page-number"), attrib={
-            _mkTag("text", "select-page"): "current"
-        })
-        xTail.text = "2"
-        xTail.tail = ""  # Prevent line break in indented XML
+            pre = pre.replace(nwHeadFmt.ODT_PROJECT, self._project.data.name)
+            pre = pre.replace(nwHeadFmt.ODT_AUTHOR, self._project.data.author)
+            post = post.replace(nwHeadFmt.ODT_PROJECT, self._project.data.name)
+            post = post.replace(nwHeadFmt.ODT_AUTHOR, self._project.data.author)
+
+            xHead = ET.SubElement(xPage, _mkTag("style", "header"))
+            xPar = ET.SubElement(xHead, _mkTag("text", "p"), attrib={
+                _mkTag("text", "style-name"): "Header"
+            })
+            xPar.text = pre
+            if page:
+                xTail = ET.SubElement(xPar, _mkTag("text", "page-number"), attrib={
+                    _mkTag("text", "select-page"): "current"
+                })
+                xTail.text = "2"
+                xTail.tail = post
+            else:
+                xPar.text += post
 
         # First Page Header
         xHead = ET.SubElement(xPage, _mkTag("style", "header-first"))
