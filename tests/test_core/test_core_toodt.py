@@ -25,11 +25,11 @@ import zipfile
 import xml.etree.ElementTree as ET
 
 from shutil import copyfile
-from novelwriter.constants import nwHeadFmt
 
 from tools import ODT_IGNORE, cmpFiles
 
 from novelwriter.common import xmlIndent
+from novelwriter.constants import nwHeadFmt
 from novelwriter.core.toodt import ToOdt, ODTParagraphStyle, ODTTextStyle, XMLParagraph, _mkTag
 from novelwriter.core.project import NWProject
 

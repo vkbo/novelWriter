@@ -34,11 +34,11 @@ from pathlib import Path
 from functools import partial
 
 from PyQt5.QtCore import QCoreApplication, QRegularExpression
-from novelwriter.core.index import processComment
 
 from novelwriter.enum import nwComment, nwItemLayout
 from novelwriter.common import formatTimeStamp, numberToRoman, checkInt
 from novelwriter.constants import nwHeadFmt, nwRegEx, nwShortcode, nwUnicode
+from novelwriter.core.index import processComment
 from novelwriter.core.project import NWProject
 
 logger = logging.getLogger(__name__)
