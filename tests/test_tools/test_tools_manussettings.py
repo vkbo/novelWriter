@@ -649,17 +649,26 @@ def testBuildSettings_Output(qtbot: QtBot, nwGUI: GuiMain):
 
     # Check initial values
     assert outTab.odtAddColours.isChecked() is False
+    assert outTab.odtPageHeader.text() == nwHeadFmt.ODT_AUTO
     assert outTab.htmlAddStyles.isChecked() is False
 
     # Toggle all
     outTab.odtAddColours.setChecked(True)
     outTab.htmlAddStyles.setChecked(True)
 
+    # Change header format
+    outTab.odtPageHeader.setText("Stuff")
+
     # Save values
     outTab.saveContent()
 
     assert build.getBool("odt.addColours") is True
+    assert build.getStr("odt.pageHeader") == "Stuff"
     assert build.getBool("html.addStyles") is True
+
+    # Reset header format
+    outTab.btnPageHeader.click()
+    assert outTab.odtPageHeader.text() == nwHeadFmt.ODT_AUTO
 
     # Finish
     bSettings._dialogButtonClicked(bSettings.buttonBox.button(QDialogButtonBox.Close))

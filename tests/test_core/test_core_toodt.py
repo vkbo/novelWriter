@@ -25,6 +25,7 @@ import zipfile
 import xml.etree.ElementTree as ET
 
 from shutil import copyfile
+from novelwriter.constants import nwHeadFmt
 
 from tools import ODT_IGNORE, cmpFiles
 
@@ -691,6 +692,9 @@ def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
     odt.setLanguage("nb_NO")
     assert odt._dLanguage == "nb"
     odt.setColourHeaders(True)
+    assert odt._colourHead is True
+    odt.setHeaderFormat(nwHeadFmt.ODT_AUTO)
+    assert odt._headerFormat == nwHeadFmt.ODT_AUTO
 
     odt.setPageLayout(148, 210, 20, 18, 17, 15)
     assert odt._mDocWidth  == "14.800cm"
@@ -735,6 +739,9 @@ def testCoreToOdt_SaveFull(mockGUI, fncPath, tstPaths):
 
     odt = ToOdt(project, isFlat=False)
     odt._isNovel = True
+
+    # Set a format without page number
+    odt.setHeaderFormat(f"{nwHeadFmt.ODT_PROJECT} - {nwHeadFmt.ODT_AUTHOR}")
 
     odt._text = (
         "## Chapter One\n\n"
