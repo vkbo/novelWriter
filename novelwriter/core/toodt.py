@@ -137,6 +137,7 @@ class ToOdt(Tokenizer):
         self._textFixed    = False
         self._colourHead   = False
         self._headerFormat = ""
+        self._pageOffset   = 0
 
         # Internal
         self._fontFamily   = "&apos;Liberation Serif&apos;"
@@ -222,9 +223,10 @@ class ToOdt(Tokenizer):
         self._mDocRight  = f"{right/10.0:.3f}cm"
         return
 
-    def setHeaderFormat(self, format: str) -> None:
+    def setHeaderFormat(self, format: str, offset: int) -> None:
         """Set the document header format."""
         self._headerFormat = format.strip()
+        self._pageOffset = offset
         return
 
     ##
@@ -1023,9 +1025,10 @@ class ToOdt(Tokenizer):
             })
             xPar.text = pre
             if page:
-                xTail = ET.SubElement(xPar, _mkTag("text", "page-number"), attrib={
-                    _mkTag("text", "select-page"): "current"
-                })
+                attrib = {_mkTag("text", "select-page"): "current"}
+                if self._pageOffset > 0:
+                    attrib = {_mkTag("text", "page-adjust"): str(0 - self._pageOffset)}
+                xTail = ET.SubElement(xPar, _mkTag("text", "page-number"), attrib=attrib)
                 xTail.text = "2"
                 xTail.tail = post
             else:

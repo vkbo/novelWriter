@@ -1210,6 +1210,7 @@ class _OutputTab(NScrollableForm):
         self._build = build
 
         iPx = SHARED.theme.baseIconSize
+        spW = 6*SHARED.theme.textNWidth
 
         # Open Document
         self.addGroupLabel(self._build.getLabel("odt"))
@@ -1227,6 +1228,13 @@ class _OutputTab(NScrollableForm):
             button=self.btnPageHeader, stretch=(1, 1)
         )
 
+        self.odtPageCountOffset = QSpinBox(self)
+        self.odtPageCountOffset.setMinimum(0)
+        self.odtPageCountOffset.setMaximum(999)
+        self.odtPageCountOffset.setSingleStep(1)
+        self.odtPageCountOffset.setMinimumWidth(spW)
+        self.addRow(self._build.getLabel("odt.pageCountOffset"), self.odtPageCountOffset)
+
         # HTML Document
         self.addGroupLabel(self._build.getLabel("html"))
 
@@ -1242,6 +1250,7 @@ class _OutputTab(NScrollableForm):
         """Populate the widgets."""
         self.odtAddColours.setChecked(self._build.getBool("odt.addColours"))
         self.odtPageHeader.setText(self._build.getStr("odt.pageHeader"))
+        self.odtPageCountOffset.setValue(self._build.getInt("odt.pageCountOffset"))
         self.htmlAddStyles.setChecked(self._build.getBool("html.addStyles"))
         return
 
@@ -1249,6 +1258,7 @@ class _OutputTab(NScrollableForm):
         """Save choices back into build object."""
         self._build.setValue("odt.addColours", self.odtAddColours.isChecked())
         self._build.setValue("odt.pageHeader", self.odtPageHeader.text())
+        self._build.setValue("odt.pageCountOffset", self.odtPageCountOffset.value())
         self._build.setValue("html.addStyles", self.htmlAddStyles.isChecked())
         return
 
