@@ -29,6 +29,7 @@ from shutil import copyfile
 from tools import ODT_IGNORE, cmpFiles
 
 from novelwriter.common import xmlIndent
+from novelwriter.constants import nwHeadFmt
 from novelwriter.core.toodt import ToOdt, ODTParagraphStyle, ODTTextStyle, XMLParagraph, _mkTag
 from novelwriter.core.project import NWProject
 
@@ -691,6 +692,9 @@ def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
     odt.setLanguage("nb_NO")
     assert odt._dLanguage == "nb"
     odt.setColourHeaders(True)
+    assert odt._colourHead is True
+    odt.setHeaderFormat(nwHeadFmt.ODT_AUTO, 1)
+    assert odt._headerFormat == nwHeadFmt.ODT_AUTO
 
     odt.setPageLayout(148, 210, 20, 18, 17, 15)
     assert odt._mDocWidth  == "14.800cm"
@@ -735,6 +739,9 @@ def testCoreToOdt_SaveFull(mockGUI, fncPath, tstPaths):
 
     odt = ToOdt(project, isFlat=False)
     odt._isNovel = True
+
+    # Set a format without page number
+    odt.setHeaderFormat(f"{nwHeadFmt.ODT_PROJECT} - {nwHeadFmt.ODT_AUTHOR}", 0)
 
     odt._text = (
         "## Chapter One\n\n"

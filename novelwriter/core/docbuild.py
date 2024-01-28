@@ -284,6 +284,9 @@ class NWBuildDocument:
         if isinstance(bldObj, ToOdt):
             bldObj.setColourHeaders(self._build.getBool("odt.addColours"))
             bldObj.setLanguage(self._project.data.language)
+            bldObj.setHeaderFormat(
+                self._build.getStr("odt.pageHeader"), self._build.getInt("odt.pageCountOffset")
+            )
 
             scale = nwLabels.UNIT_SCALE.get(self._build.getStr("format.pageUnit"), 1.0)
             pW, pH = nwLabels.PAPER_SIZE.get(self._build.getStr("format.pageSize"), (-1.0, -1.0))
