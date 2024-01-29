@@ -47,15 +47,24 @@ How to Use Tags
 ===============
 
 A "tag" in novelWriter is a word or phrase that you define as belonging to a heading. Tags are set
-by using the ``@tags`` :term:`keyword`. The full format of a tag is ``@tag: tagname``, where
-``tagname`` is an identifier of your choosing. You can only set *one* tag per heading, and the tag
-has to be unique across all documents in the project.
+by using the ``@tags`` :term:`keyword`.
 
-.. versionadded:: 2.2
-   Tags are now case insensitive.
+The full format of a tag is ``@tag: tagName, displayName``, where:
+
+``tagName`` (Required)
+   is a unique identifier of your choosing.
+
+``displayName`` (Optional)
+   is a display name that can be inserted into headings when you generate your manuscript. When you
+   build your manuscript, you can for instance insert the point of view character name into chapter
+   headings. By default, the ``tagName`` is used in headings, but if you use a shortened format
+   internally in your project, you can use this to specify a more suitable format.
+
+You can only set *one* tag per heading, and the tag has to be unique across *all* documents in the
+project.
 
 After the tags have been defined, they can then be referenced in the novel documents, or
-cross-referenced in other notes. they will also show up in the :guilabel:`Outline View` and in the
+cross-referenced in other notes. They will also show up in the :guilabel:`Outline View` and in the
 back-reference panel when a document is opened in the viewer.
 
 The syntax highlighter will indicate to you that the keyword is correctly used and that the tag is
@@ -67,6 +76,14 @@ The tag is the only part of these notes that novelWriter uses. The rest of the d
 there for you to use in whatever way you wish. Of course, the content of the documents can be added
 to the manuscript, or an outline document. If you want to compile a single document of all your
 notes, you can do this from the :guilabel:`Manuscript Build` tool.
+
+.. versionadded:: 2.2
+   Tags are no longer case sensitive. The tags are by default displayed with the capitalisation you
+   use when defining the tag, but you don't have to use the same capitalisation when referencing
+   it later.
+
+.. versionadded:: 2.3
+   Tags can have an optional display name for manuscript builds as a second parameter.
 
 Example of a heading with a tag for a character of the story:
 
