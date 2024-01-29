@@ -300,16 +300,21 @@ class nwLabels:
 
 class nwHeadFmt:
 
-    BR      = "{BR}"
-    TITLE   = "{Title}"
-    CH_NUM  = "{Chapter}"
-    CH_WORD = "{Chapter:Word}"
-    CH_ROMU = "{Chapter:URoman}"
-    CH_ROML = "{Chapter:LRoman}"
-    SC_NUM  = "{Scene}"
-    SC_ABS  = "{Scene:Abs}"
+    BR         = "{BR}"
+    TITLE      = "{Title}"
+    CH_NUM     = "{Chapter}"
+    CH_WORD    = "{Chapter:Word}"
+    CH_ROMU    = "{Chapter:URoman}"
+    CH_ROML    = "{Chapter:LRoman}"
+    SC_NUM     = "{Scene}"
+    SC_ABS     = "{Scene:Abs}"
+    CHAR_POV   = "{Char:POV}"
+    CHAR_FOCUS = "{Char:Focus}"
 
-    PAGE_HEADERS = [TITLE, CH_NUM, CH_WORD, CH_ROMU, CH_ROML, SC_NUM, SC_ABS]
+    PAGE_HEADERS = [
+        TITLE, CH_NUM, CH_WORD, CH_ROMU, CH_ROML, SC_NUM, SC_ABS,
+        CHAR_POV, CHAR_FOCUS
+    ]
 
     # ODT Document Page Header
     ODT_PROJECT = "{Project}"
