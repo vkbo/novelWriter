@@ -868,16 +868,16 @@ class HeadingFormatter:
 
         if nwHeadFmt.CHAR_POV in hFormat or nwHeadFmt.CHAR_FOCUS in hFormat:
             if self._handle and nHead > 0:
-                refs = self._project.index.getReferences(self._handle, f"T{nHead:04d}")
-                povData = refs[nwKeyWords.POV_KEY]
-                focData = refs[nwKeyWords.FOCUS_KEY]
-                povText = povData[0] if povData else nwUnicode.U_ENDASH
-                focText = focData[0] if focData else nwUnicode.U_ENDASH
+                index = self._project.index
+                pList = index.getReferenceForHeader(self._handle, nHead, nwKeyWords.POV_KEY)
+                fList = index.getReferenceForHeader(self._handle, nHead, nwKeyWords.FOCUS_KEY)
+                pText = pList[0] if pList else nwUnicode.U_ENDASH
+                fText = fList[0] if fList else nwUnicode.U_ENDASH
             else:
-                povText = trConst(nwLabels.KEY_NAME[nwKeyWords.POV_KEY])
-                focText = trConst(nwLabels.KEY_NAME[nwKeyWords.FOCUS_KEY])
-            hFormat = hFormat.replace(nwHeadFmt.CHAR_POV, povText)
-            hFormat = hFormat.replace(nwHeadFmt.CHAR_FOCUS, focText)
+                pText = trConst(nwLabels.KEY_NAME[nwKeyWords.POV_KEY])
+                fText = trConst(nwLabels.KEY_NAME[nwKeyWords.FOCUS_KEY])
+            hFormat = hFormat.replace(nwHeadFmt.CHAR_POV, pText)
+            hFormat = hFormat.replace(nwHeadFmt.CHAR_FOCUS, fText)
 
         return hFormat
 
