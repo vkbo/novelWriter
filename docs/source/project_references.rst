@@ -49,23 +49,26 @@ How to Use Tags
 A "tag" in novelWriter is a word or phrase that you define as belonging to a heading. Tags are set
 by using the ``@tags`` :term:`keyword`.
 
-The full format of a tag is ``@tag: tagName, displayName``, where:
+The general format of a tag is ``@tag: tagName``.
+
+The full format of a tag is ``@tag: tagName | displayName``.
 
 ``tagName`` (Required)
-   is a unique identifier of your choosing.
+   This is a unique identifier of your choosing. It is the value you use later for making
+   references back to this document, or section of the document.
 
 ``displayName`` (Optional)
-   is a display name that can be inserted into headings when you generate your manuscript. When you
-   build your manuscript, you can for instance insert the point of view character name into chapter
-   headings. By default, the ``tagName`` is used in headings, but if you use a shortened format
-   internally in your project, you can use this to specify a more suitable format.
+   This is an optional display name used for the tag. When you build your manuscript, you can for
+   instance insert the point of view character name into chapter headings. By default, the
+   ``tagName`` value is used in headings, but if you use a shortened format internally in your
+   project, you can use this to specify a more suitable format for your manuscript.
 
 You can only set *one* tag per heading, and the tag has to be unique across *all* documents in the
 project.
 
-After the tags have been defined, they can then be referenced in the novel documents, or
-cross-referenced in other notes. They will also show up in the :guilabel:`Outline View` and in the
-back-reference panel when a document is opened in the viewer.
+After a tag has been defined, it can be referenced in novel documents, or cross-referenced in other
+notes. Tags will also show up in the :guilabel:`Outline View` and in the back-reference panel when
+a document is opened in the viewer.
 
 The syntax highlighter will indicate to you that the keyword is correctly used and that the tag is
 allowed, that is, the tag is unique. Duplicate tags should be detected as long as the index is up
@@ -83,24 +86,24 @@ notes, you can do this from the :guilabel:`Manuscript Build` tool.
    it later.
 
 .. versionadded:: 2.3
-   Tags can have an optional display name for manuscript builds as a second parameter.
+   Tags can have an optional display name for manuscript builds.
 
 Example of a heading with a tag for a character of the story:
 
 .. code-block:: none
 
-   # Jane Doe
+   # Character: Jane Doe
 
-   @tag: Jane
+   @tag: Jane | Jane Doe
 
    Some information about the character Jane Doe.
 
 When this is done in a document in a :term:`Root Folder` of type "Characters", the tag is
-automatically treated as an available character in your project, and you will be able to reference
-it in any of your other documents using the reference keywords for characters. It will also show up
-in the Character tab in the Reference panel below the document viewer, and in the reference
-auto-completer menu in the editor when you fill in references. See :ref:`a_ui_view` and
-:ref:`a_references_completer`.
+automatically treated as an available character in your project with the value "Jane", and you will
+be able to reference it in any of your other documents using the reference keywords for characters.
+It will also show up in the Character tab in the Reference panel below the document viewer, and in
+the reference auto-completer menu in the editor when you fill in references. See :ref:`a_ui_view`
+and :ref:`a_references_completer`.
 
 It is the root folder type that defines what category of story elements the tag is indexed under.
 See the :ref:`a_proj_roots` section for an overview of available root folder types. They are also
