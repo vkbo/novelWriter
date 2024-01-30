@@ -484,7 +484,10 @@ class ToHtml(Tokenizer):
         result = f"<span class='tags'>{self._localLookup(nwLabels.KEY_NAME[bits[0]])}:</span> "
         if len(bits) > 1:
             if bits[0] == nwKeyWords.TAG_KEY:
-                result += f"<a name='tag_{bits[1]}'>{bits[1]}</a>"
+                one, two = self._project.index.parseValue(bits[1])
+                result += f"<a name='tag_{one}'>{one}</a>"
+                if two:
+                    result += f" | <span class='optional'>{two}</a>"
             else:
                 if self._genMode == self.M_PREVIEW:
                     result += ", ".join(f"<a href='#{bits[0][1:]}={t}'>{t}</a>" for t in bits[1:])

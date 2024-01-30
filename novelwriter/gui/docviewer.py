@@ -461,15 +461,16 @@ class GuiDocViewer(QTextBrowser):
 
     def _makeStyleSheet(self) -> None:
         """Generate an appropriate style sheet for the document viewer,
-        based on the current syntax highlighter theme,
+        based on the current syntax highlighter theme.
         """
         colText = SHARED.theme.colText
         colHead = SHARED.theme.colHead
-        colVal = SHARED.theme.colVal
+        colVals = SHARED.theme.colVal
         colEmph = SHARED.theme.colEmph
-        colKey = SHARED.theme.colKey
-        colHidden = SHARED.theme.colHidden
-        colMod = SHARED.theme.colMod
+        colKeys = SHARED.theme.colKey
+        colHide = SHARED.theme.colHidden
+        colMods = SHARED.theme.colMod
+        colOpts = SHARED.theme.colOpt
         styleSheet = (
             "body {{"
             "  color: rgb({tColR}, {tColG}, {tColB});"
@@ -486,6 +487,9 @@ class GuiDocViewer(QTextBrowser):
             ".tags {{"
             "  color: rgb({kColR}, {kColG}, {kColB});"
             "}}\n"
+            ".optional {{"
+            "  color: rgb({oColR}, {oColG}, {oColB});"
+            "}}\n"
             ".comment {{"
             "  color: rgb({cColR}, {cColG}, {cColB});"
             "}}\n"
@@ -496,27 +500,14 @@ class GuiDocViewer(QTextBrowser):
             "  text-align: center;"
             "}}\n"
         ).format(
-            tColR=colText.red(),
-            tColG=colText.green(),
-            tColB=colText.blue(),
-            hColR=colHead.red(),
-            hColG=colHead.green(),
-            hColB=colHead.blue(),
-            aColR=colVal.red(),
-            aColG=colVal.green(),
-            aColB=colVal.blue(),
-            eColR=colEmph.red(),
-            eColG=colEmph.green(),
-            eColB=colEmph.blue(),
-            kColR=colKey.red(),
-            kColG=colKey.green(),
-            kColB=colKey.blue(),
-            cColR=colHidden.red(),
-            cColG=colHidden.green(),
-            cColB=colHidden.blue(),
-            mColR=colMod.red(),
-            mColG=colMod.green(),
-            mColB=colMod.blue(),
+            tColR=colText.red(), tColG=colText.green(), tColB=colText.blue(),
+            hColR=colHead.red(), hColG=colHead.green(), hColB=colHead.blue(),
+            aColR=colVals.red(), aColG=colVals.green(), aColB=colVals.blue(),
+            eColR=colEmph.red(), eColG=colEmph.green(), eColB=colEmph.blue(),
+            kColR=colKeys.red(), kColG=colKeys.green(), kColB=colKeys.blue(),
+            cColR=colHide.red(), cColG=colHide.green(), cColB=colHide.blue(),
+            mColR=colMods.red(), mColG=colMods.green(), mColB=colMods.blue(),
+            oColR=colOpts.red(), oColG=colOpts.green(), oColB=colOpts.blue(),
         )
         self.document().setDefaultStyleSheet(styleSheet)
 

@@ -56,7 +56,6 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwTrinary
 from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwKeyWords, nwLabels, nwShortcode, nwUnicode, trConst
-from novelwriter.core.item import NWItem
 from novelwriter.core.index import countWords
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.core.document import NWDocument
@@ -1835,16 +1834,16 @@ class GuiDocEditor(QPlainTextEdit):
         if len(text) == 0:
             return nwTrinary.NEUTRAL
 
-        if text.startswith("@") and isinstance(self._nwItem, NWItem):
+        if text.startswith("@") and self._docHandle:
 
             isGood, tBits, tPos = SHARED.project.index.scanThis(text)
-            if not isGood:
+            if not isGood or not tBits or tBits[0] == nwKeyWords.TAG_KEY:
                 return nwTrinary.NEUTRAL
 
             tag = ""
             exist = False
             cPos = cursor.selectionStart() - block.position()
-            tExist = SHARED.project.index.checkThese(tBits, self._nwItem)
+            tExist = SHARED.project.index.checkThese(tBits, self._docHandle)
             for sTag, sPos, sExist in zip(reversed(tBits), reversed(tPos), reversed(tExist)):
                 if cPos >= sPos:
                     # The cursor is between the start of two tags

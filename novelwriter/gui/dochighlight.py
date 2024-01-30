@@ -279,23 +279,23 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         if text.startswith("@"):  # Keywords and commands
             self.setCurrentBlockState(self.BLOCK_META)
-            if self._tItem:
-                pIndex = SHARED.project.index
-                isValid, bits, pos = pIndex.scanThis(text)
-                isGood = pIndex.checkThese(bits, self._tItem)
-                if isValid:
-                    for n, bit in enumerate(bits):
-                        xPos = pos[n]
-                        xLen = len(bit)
-                        if isGood[n]:
-                            if n == 0:
-                                self.setFormat(xPos, xLen, self._hStyles["keyword"])
-                            else:
-                                self.setFormat(xPos, xLen, self._hStyles["value"])
-                        else:
-                            kwFmt = self.format(xPos)
-                            kwFmt.merge(self._hStyles["codeinval"])
-                            self.setFormat(xPos, xLen, kwFmt)
+            index = SHARED.project.index
+            isValid, bits, pos = index.scanThis(text)
+            isGood = index.checkThese(bits, self._tHandle)
+            if isValid:
+                for n, bit in enumerate(bits):
+                    xPos = pos[n]
+                    xLen = len(bit)
+                    if not isGood[n]:
+                        self.setFormat(xPos, xLen, self._hStyles["codeinval"])
+                    elif n == 0:
+                        self.setFormat(xPos, xLen, self._hStyles["keyword"])
+                    else:
+                        one, two = index.parseValue(bit)
+                        self.setFormat(xPos, len(one), self._hStyles["value"])
+                        if two:
+                            yPos = xPos + len(bit) - len(two)
+                            self.setFormat(yPos, len(two), self._hStyles["optional"])
 
             # We never want to run the spell checker on keyword/values,
             # so we force a return here

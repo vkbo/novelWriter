@@ -420,8 +420,7 @@ class NWIndex:
             return
 
         if tBits[0] == nwKeyWords.TAG_KEY:
-            tagKey = tBits[1]
-            displayName = tBits[2] if len(tBits) > 2 else tagKey
+            tagKey, displayName = self.parseValue(tBits[1])
             self._tagsIndex.add(tagKey, displayName, tHandle, sTitle, itemClass.name)
             self._itemIndex.setHeadingTag(tHandle, sTitle, tagKey)
             tags[tagKey.lower()] = True
@@ -472,10 +471,8 @@ class NWIndex:
 
         return True, tBits, tPos
 
-    def checkThese(self, tBits: list[str], nwItem: NWItem) -> list[bool]:
-        """Check the tags against the index to see if they are valid
-        tags. This is needed for syntax highlighting.
-        """
+    def checkThese(self, tBits: list[str], tHandle: str) -> list[bool]:
+        """Check tags against the index to see if they are valid."""
         nBits = len(tBits)
         isGood = [False]*nBits
         if nBits == 0:
@@ -489,18 +486,24 @@ class NWIndex:
         # For a tag, only the first value is accepted, the rest are ignored
         if tBits[0] == nwKeyWords.TAG_KEY and nBits > 1:
             if tBits[1] in self._tagsIndex:
-                isGood[1] = self._tagsIndex.tagHandle(tBits[1]) == nwItem.itemHandle
+                isGood[1] = self._tagsIndex.tagHandle(tBits[1]) == tHandle
             else:
                 isGood[1] = True
             return isGood
 
         # If we're still here, we check that the references exist
+        # Class references cannot have the | symbol in them
         refKey = nwKeyWords.KEY_CLASS[tBits[0]].name
         for n in range(1, nBits):
-            if tBits[n] in self._tagsIndex:
-                isGood[n] = self._tagsIndex.tagClass(tBits[n]) == refKey
+            if (aBit := tBits[n]) in self._tagsIndex:
+                isGood[n] = self._tagsIndex.tagClass(aBit) == refKey and "|" not in aBit
 
         return isGood
+
+    def parseValue(self, text: str) -> tuple[str, str]:
+        """Parse a single value into a name and display part."""
+        name, _, display = text.partition("|")
+        return name.rstrip(), display.lstrip()
 
     ##
     #  Extract Data
@@ -725,11 +728,12 @@ class TagsIndex:
         """Return a dictionary view of all tags."""
         return self._tags.items()
 
-    def add(self, tagKey: str, display: str, tHandle: str, sTitle: str, className: str) -> None:
+    def add(self, tagKey: str, displayName: str, tHandle: str,
+            sTitle: str, className: str) -> None:
         """Add a key to the index and set all values."""
         self._tags[tagKey.lower()] = {
             "name": tagKey,
-            "display": display,
+            "display": displayName or tagKey,
             "handle": tHandle,
             "heading": sTitle,
             "class": className,
@@ -786,9 +790,9 @@ class TagsIndex:
 
             name = entry.get("name")
             display = entry.get("display")
-            handle = entry.get("handle", "")
-            heading = entry.get("heading", "")
-            className = entry.get("class", "")
+            handle = entry.get("handle")
+            heading = entry.get("heading")
+            className = entry.get("class")
 
             if not isinstance(name, str):
                 raise ValueError("tagsIndex name is not a string")
