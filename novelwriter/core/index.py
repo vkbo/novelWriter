@@ -32,7 +32,7 @@ import json
 import logging
 
 from time import time
-from typing import TYPE_CHECKING, ItemsView, Iterable, Iterator, Literal
+from typing import TYPE_CHECKING, ItemsView, Iterable, Iterator
 from pathlib import Path
 
 from novelwriter import SHARED
@@ -472,41 +472,33 @@ class NWIndex:
 
         return True, tBits, tPos
 
-    def checkThese(self, tBits: list[str], nwItem: NWItem) -> list[Literal[0, 1, 2, 3]]:
+    def checkThese(self, tBits: list[str], nwItem: NWItem) -> list[bool]:
         """Check the tags against the index to see if they are valid
-        tags. This is needed for syntax highlighting. The return values
-        for each item are:
-            0: Invalid
-            1: Valid and a keyword
-            2: Valid and a value
-            3: Valid and an optional value
+        tags. This is needed for syntax highlighting.
         """
         nBits = len(tBits)
+        isGood = [False]*nBits
         if nBits == 0:
             return []
 
         # Check that the key is valid
-        isGood: list[Literal[0, 1, 2, 3]] = [0]*nBits
-        isGood[0] = 1 if tBits[0] in nwKeyWords.VALID_KEYS else 0
-        if isGood[0] == 0 or nBits == 1:
+        isGood[0] = tBits[0] in nwKeyWords.VALID_KEYS
+        if not isGood[0] or nBits == 1:
             return isGood
 
-        # For a tag, the first value is the tag, and the second is
-        # optional and is the display name
+        # For a tag, only the first value is accepted, the rest are ignored
         if tBits[0] == nwKeyWords.TAG_KEY and nBits > 1:
             if tBits[1] in self._tagsIndex:
-                isGood[1] = 2 if self._tagsIndex.tagHandle(tBits[1]) == nwItem.itemHandle else 0
+                isGood[1] = self._tagsIndex.tagHandle(tBits[1]) == nwItem.itemHandle
             else:
-                isGood[1] = 2
-            if nBits > 2:
-                isGood[2] = 3
+                isGood[1] = True
             return isGood
 
         # If we're still here, we check that the references exist
         refKey = nwKeyWords.KEY_CLASS[tBits[0]].name
         for n in range(1, nBits):
             if tBits[n] in self._tagsIndex:
-                isGood[n] = 2 if self._tagsIndex.tagClass(tBits[n]) == refKey else 0
+                isGood[n] = self._tagsIndex.tagClass(tBits[n]) == refKey
 
         return isGood
 

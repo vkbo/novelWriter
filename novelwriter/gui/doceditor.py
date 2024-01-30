@@ -1842,7 +1842,7 @@ class GuiDocEditor(QPlainTextEdit):
                 return nwTrinary.NEUTRAL
 
             tag = ""
-            exist = 0
+            exist = False
             cPos = cursor.selectionStart() - block.position()
             tExist = SHARED.project.index.checkThese(tBits, self._nwItem)
             for sTag, sPos, sExist in zip(reversed(tBits), reversed(tPos), reversed(tExist)):
@@ -1854,14 +1854,14 @@ class GuiDocEditor(QPlainTextEdit):
                         exist = sExist
                     break
 
-            if exist in (1, 3) or not tag:
-                # Ignore keywords, optionals and empty tags
+            if not tag or tag.startswith("@"):
+                # The keyword cannot be looked up, so we ignore that
                 return nwTrinary.NEUTRAL
 
-            if follow and exist == 2:
+            if follow and exist:
                 logger.debug("Attempting to follow tag '%s'", tag)
                 self.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
-            elif create and exist == 0:
+            elif create and not exist:
                 if SHARED.question(self.tr(
                     "Do you want to create a new project note for the tag '{0}'?"
                 ).format(tag)):
@@ -1874,7 +1874,7 @@ class GuiDocEditor(QPlainTextEdit):
                             "If one doesn't exist, you must create one first."
                         ).format(trConst(nwLabels.CLASS_NAME[itemClass])))
 
-            return nwTrinary.POSITIVE if exist == 2 else nwTrinary.NEGATIVE
+            return nwTrinary.POSITIVE if exist else nwTrinary.NEGATIVE
 
         return nwTrinary.NEUTRAL
 

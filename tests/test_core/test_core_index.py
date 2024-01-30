@@ -269,33 +269,26 @@ def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
     assert nItem.mainHeading == "H1"
 
     # Zero Items
-    assert index.checkThese([], cItem) == []
+    assert index.checkThese([], cHandle) == []
 
     # One Item
-    assert index.checkThese(["@tag"], cItem) == [1]
-    assert index.checkThese(["@who"], cItem) == [0]
+    assert index.checkThese(["@tag"], cItem) == [True]
+    assert index.checkThese(["@who"], cItem) == [False]
 
     # Two Items
-    assert index.checkThese(["@tag", "Jane"], cItem) == [1, 2]
-    assert index.checkThese(["@tag", "John"], cItem) == [1, 2]
-    assert index.checkThese(["@tag", "Jane"], nItem) == [1, 0]
-    assert index.checkThese(["@tag", "John"], nItem) == [1, 2]
-    assert index.checkThese(["@pov", "John"], nItem) == [1, 0]
-    assert index.checkThese(["@pov", "Jane"], nItem) == [1, 2]
-    assert index.checkThese(["@ pov", "Jane"], nItem) == [0, 0]
-    assert index.checkThese(["@what", "Jane"], nItem) == [0, 0]
+    assert index.checkThese(["@tag", "Jane"], cItem) == [True, True]
+    assert index.checkThese(["@tag", "John"], cItem) == [True, True]
+    assert index.checkThese(["@tag", "Jane"], nItem) == [True, False]
+    assert index.checkThese(["@tag", "John"], nItem) == [True, True]
+    assert index.checkThese(["@pov", "John"], nItem) == [True, False]
+    assert index.checkThese(["@pov", "Jane"], nItem) == [True, True]
+    assert index.checkThese(["@ pov", "Jane"], nItem) == [False, False]
+    assert index.checkThese(["@what", "Jane"], nItem) == [False, False]
 
     # Three Items
-    assert index.checkThese(["@tag", "Jane", "Jany"], cItem) == [1, 2, 3]
-    assert index.checkThese(["@who", "Jane", "John"], cItem) == [0, 0, 0]
-    assert index.checkThese(["@pov", "Jane", "John"], nItem) == [1, 2, 0]
-    assert index.checkThese(["@pov", "Jane", "Jane"], nItem) == [1, 2, 2]
-
-    # Four Items
-    assert index.checkThese(["@tag", "Jane", "Jany", "John"], cItem) == [1, 2, 3, 0]
-    assert index.checkThese(["@who", "Jane", "Jane", "Jane"], cItem) == [0, 0, 0, 0]
-    assert index.checkThese(["@pov", "Jane", "John", "Jane"], nItem) == [1, 2, 0, 2]
-    assert index.checkThese(["@pov", "Jane", "Jane", "Jane"], nItem) == [1, 2, 2, 2]
+    assert index.checkThese(["@tag", "Jane", "John"], cItem) == [True, True, False]
+    assert index.checkThese(["@who", "Jane", "John"], cItem) == [False, False, False]
+    assert index.checkThese(["@pov", "Jane", "John"], nItem) == [True, True, False]
 
     project.closeProject()
 

@@ -287,14 +287,15 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                     for n, bit in enumerate(bits):
                         xPos = pos[n]
                         xLen = len(bit)
-                        if isGood[n] == 1:
-                            self.setFormat(xPos, xLen, self._hStyles["keyword"])
-                        elif isGood[n] == 2:
-                            self.setFormat(xPos, xLen, self._hStyles["value"])
-                        elif isGood[n] == 3:
-                            self.setFormat(xPos, xLen, self._hStyles["optional"])
+                        if isGood[n]:
+                            if n == 0:
+                                self.setFormat(xPos, xLen, self._hStyles["keyword"])
+                            else:
+                                self.setFormat(xPos, xLen, self._hStyles["value"])
                         else:
-                            self.setFormat(xPos, xLen, self._hStyles["codeinval"])
+                            kwFmt = self.format(xPos)
+                            kwFmt.merge(self._hStyles["codeinval"])
+                            self.setFormat(xPos, xLen, kwFmt)
 
             # We never want to run the spell checker on keyword/values,
             # so we force a return here
