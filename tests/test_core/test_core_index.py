@@ -272,23 +272,30 @@ def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
     assert index.checkThese([], cItem) == []
 
     # One Item
-    assert index.checkThese(["@tag"], cItem) == [True]
-    assert index.checkThese(["@who"], cItem) == [False]
+    assert index.checkThese(["@tag"], cItem) == [1]
+    assert index.checkThese(["@who"], cItem) == [0]
 
     # Two Items
-    assert index.checkThese(["@tag", "Jane"], cItem) == [True, True]
-    assert index.checkThese(["@tag", "John"], cItem) == [True, True]
-    assert index.checkThese(["@tag", "Jane"], nItem) == [True, False]
-    assert index.checkThese(["@tag", "John"], nItem) == [True, True]
-    assert index.checkThese(["@pov", "John"], nItem) == [True, False]
-    assert index.checkThese(["@pov", "Jane"], nItem) == [True, True]
-    assert index.checkThese(["@ pov", "Jane"], nItem) == [False, False]
-    assert index.checkThese(["@what", "Jane"], nItem) == [False, False]
+    assert index.checkThese(["@tag", "Jane"], cItem) == [1, 2]
+    assert index.checkThese(["@tag", "John"], cItem) == [1, 2]
+    assert index.checkThese(["@tag", "Jane"], nItem) == [1, 0]
+    assert index.checkThese(["@tag", "John"], nItem) == [1, 2]
+    assert index.checkThese(["@pov", "John"], nItem) == [1, 0]
+    assert index.checkThese(["@pov", "Jane"], nItem) == [1, 2]
+    assert index.checkThese(["@ pov", "Jane"], nItem) == [0, 0]
+    assert index.checkThese(["@what", "Jane"], nItem) == [0, 0]
 
     # Three Items
-    assert index.checkThese(["@tag", "Jane", "John"], cItem) == [True, True, False]
-    assert index.checkThese(["@who", "Jane", "John"], cItem) == [False, False, False]
-    assert index.checkThese(["@pov", "Jane", "John"], nItem) == [True, True, False]
+    assert index.checkThese(["@tag", "Jane", "Jany"], cItem) == [1, 2, 3]
+    assert index.checkThese(["@who", "Jane", "John"], cItem) == [0, 0, 0]
+    assert index.checkThese(["@pov", "Jane", "John"], nItem) == [1, 2, 0]
+    assert index.checkThese(["@pov", "Jane", "Jane"], nItem) == [1, 2, 2]
+
+    # Four Items
+    assert index.checkThese(["@tag", "Jane", "Jany", "John"], cItem) == [1, 2, 3, 0]
+    assert index.checkThese(["@who", "Jane", "Jane", "Jane"], cItem) == [0, 0, 0, 0]
+    assert index.checkThese(["@pov", "Jane", "John", "Jane"], nItem) == [1, 2, 0, 2]
+    assert index.checkThese(["@pov", "Jane", "Jane", "Jane"], nItem) == [1, 2, 2, 2]
 
     project.closeProject()
 
@@ -849,18 +856,21 @@ def testCoreIndex_TagsIndex():
     content = {
         "tag1": {
             "name": "Tag1",
+            "display": "Tag 1",
             "handle": "0000000000001",
             "heading": "T0001",
             "class": nwItemClass.NOVEL.name,
         },
         "tag2": {
             "name": "Tag2",
+            "display": "Tag 2",
             "handle": "0000000000002",
             "heading": "T0002",
             "class": nwItemClass.CHARACTER.name,
         },
         "tag3": {
             "name": "Tag3",
+            "display": "Tag 3",
             "handle": "0000000000003",
             "heading": "T0003",
             "class": nwItemClass.PLOT.name,
@@ -868,9 +878,9 @@ def testCoreIndex_TagsIndex():
     }
 
     # Add data
-    tagsIndex.add("Tag1", "0000000000001", "T0001", nwItemClass.NOVEL)
-    tagsIndex.add("Tag2", "0000000000002", "T0002", nwItemClass.CHARACTER)
-    tagsIndex.add("Tag3", "0000000000003", "T0003", nwItemClass.PLOT)
+    tagsIndex.add("Tag1", "Tag 1", "0000000000001", "T0001", "NOVEL")
+    tagsIndex.add("Tag2", "Tag 2", "0000000000002", "T0002", "CHARACTER")
+    tagsIndex.add("Tag3", "Tag 3", "0000000000003", "T0003", "PLOT")
     assert tagsIndex._tags == content
 
     # Get items
@@ -884,6 +894,18 @@ def testCoreIndex_TagsIndex():
     assert "Tag2" in tagsIndex
     assert "Tag3" in tagsIndex
     assert "Tag4" not in tagsIndex
+
+    # Read back names
+    assert tagsIndex.tagName("Tag1") == "Tag1"
+    assert tagsIndex.tagName("Tag2") == "Tag2"
+    assert tagsIndex.tagName("Tag3") == "Tag3"
+    assert tagsIndex.tagName("Tag4") == ""
+
+    # Read back display names
+    assert tagsIndex.tagDisplay("Tag1") == "Tag 1"
+    assert tagsIndex.tagDisplay("Tag2") == "Tag 2"
+    assert tagsIndex.tagDisplay("Tag3") == "Tag 3"
+    assert tagsIndex.tagDisplay("Tag4") == ""
 
     # Read back handles
     assert tagsIndex.tagHandle("Tag1") == "0000000000001"
@@ -935,59 +957,39 @@ def testCoreIndex_TagsIndex():
     with pytest.raises(ValueError):
         tagsIndex.unpackData({
             1234: {
-                "name": "1234",
-                "handle": "0000000000001",
-                "heading": "T0001",
-                "class": "NOVEL",
-            }
-        })
-
-    # Missing name
-    with pytest.raises(KeyError):
-        tagsIndex.unpackData({
-            "tag1": {
-                "handle": "0000000000001",
-                "heading": "T0001",
-                "class": "NOVEL",
-            }
-        })
-
-    # Missing handle
-    with pytest.raises(KeyError):
-        tagsIndex.unpackData({
-            "tag1": {
                 "name": "Tag1",
+                "display": "Tag1",
+                "handle": "0000000000001",
                 "heading": "T0001",
                 "class": "NOVEL",
             }
         })
 
-    # Missing heading
-    with pytest.raises(KeyError):
-        tagsIndex.unpackData({
-            "tag1": {
-                "name": "Tag1",
-                "handle": "0000000000001",
-                "class": "NOVEL",
-            }
-        })
-
-    # Missing class
-    with pytest.raises(KeyError):
-        tagsIndex.unpackData({
-            "tag1": {
-                "name": "Tag1",
-                "handle": "0000000000001",
-                "heading": "T0001",
-            }
-        })
-
-    # Invalid key case
+    # Invalid entry
     with pytest.raises(ValueError):
         tagsIndex.unpackData({
-            "Tag1": {
+            "tag1": None
+        })
+
+    # Invalid name
+    with pytest.raises(ValueError):
+        tagsIndex.unpackData({
+            "tag1": {
+                "name": 1234,
+                "display": "Tag1",
+                "handle": "0000000000001",
+                "heading": "T0001",
+                "class": "NOVEL",
+            }
+        })
+
+    # Invalid display
+    with pytest.raises(ValueError):
+        tagsIndex.unpackData({
+            "tag1": {
                 "name": "Tag1",
-                "handle": "blablabla",
+                "display": 1234,
+                "handle": "0000000000001",
                 "heading": "T0001",
                 "class": "NOVEL",
             }
@@ -998,6 +1000,7 @@ def testCoreIndex_TagsIndex():
         tagsIndex.unpackData({
             "tag1": {
                 "name": "Tag1",
+                "display": "Tag1",
                 "handle": "blablabla",
                 "heading": "T0001",
                 "class": "NOVEL",
@@ -1009,8 +1012,9 @@ def testCoreIndex_TagsIndex():
         tagsIndex.unpackData({
             "tag1": {
                 "name": "Tag1",
+                "display": "Tag1",
                 "handle": "0000000000001",
-                "heading": "blabla",
+                "heading": "stuff",
                 "class": "NOVEL",
             }
         })
@@ -1020,9 +1024,10 @@ def testCoreIndex_TagsIndex():
         tagsIndex.unpackData({
             "tag1": {
                 "name": "Tag1",
+                "display": "Tag1",
                 "handle": "0000000000001",
                 "heading": "T0001",
-                "class": "blabla",
+                "class": "STUFF",
             }
         })
 

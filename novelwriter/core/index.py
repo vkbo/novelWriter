@@ -422,7 +422,7 @@ class NWIndex:
         if tBits[0] == nwKeyWords.TAG_KEY:
             tagKey = tBits[1]
             displayName = tBits[2] if len(tBits) > 2 else tagKey
-            self._tagsIndex.add(tagKey, displayName, tHandle, sTitle, itemClass)
+            self._tagsIndex.add(tagKey, displayName, tHandle, sTitle, itemClass.name)
             self._itemIndex.setHeadingTag(tHandle, sTitle, tagKey)
             tags[tagKey.lower()] = True
         else:
@@ -733,15 +733,14 @@ class TagsIndex:
         """Return a dictionary view of all tags."""
         return self._tags.items()
 
-    def add(self, tagKey: str, displayName: str, tHandle: str, sTitle: str,
-            itemClass: nwItemClass) -> None:
+    def add(self, tagKey: str, display: str, tHandle: str, sTitle: str, className: str) -> None:
         """Add a key to the index and set all values."""
         self._tags[tagKey.lower()] = {
             "name": tagKey,
-            "display": displayName,
+            "display": display,
             "handle": tHandle,
             "heading": sTitle,
-            "class": itemClass.name,
+            "class": className,
         }
         return
 
@@ -790,28 +789,27 @@ class TagsIndex:
         for key, entry in data.items():
             if not isinstance(key, str):
                 raise ValueError("tagsIndex keys must be a string")
-            if "name" not in entry:
-                raise KeyError("A tagIndex item is missing a name entry")
-            if "display" not in entry:
-                raise KeyError("A tagIndex item is missing a display entry")
-            if "handle" not in entry:
-                raise KeyError("A tagIndex item is missing a handle entry")
-            if "heading" not in entry:
-                raise KeyError("A tagIndex item is missing a heading entry")
-            if "class" not in entry:
-                raise KeyError("A tagIndex item is missing a class entry")
-            if not isinstance(entry["name"], str):
-                raise ValueError("tagsIndex name must be a string")
-            if not isinstance(entry["display"], str):
-                raise ValueError("tagsIndex display must be a string")
-            if not isHandle(entry["handle"]):
+            if not isinstance(entry, dict):
+                raise ValueError("tagsIndex entry is not a dict")
+
+            name = entry.get("name")
+            display = entry.get("display")
+            handle = entry.get("handle", "")
+            heading = entry.get("heading", "")
+            className = entry.get("class", "")
+
+            if not isinstance(name, str):
+                raise ValueError("tagsIndex name is not a string")
+            if not isinstance(display, str):
+                raise ValueError("tagsIndex display is not a string")
+            if not isHandle(handle):
                 raise ValueError("tagsIndex handle must be a handle")
-            if not isTitleTag(entry["heading"]):
+            if not isTitleTag(heading):
                 raise ValueError("tagsIndex heading must be a title tag")
-            if not isItemClass(entry["class"]):
+            if not isItemClass(className):
                 raise ValueError("tagsIndex handle must be an nwItemClass")
 
-        self._tags = data
+            self.add(name, display, handle, heading, className)
 
         return
 

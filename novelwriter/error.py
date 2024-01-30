@@ -50,7 +50,7 @@ def logException() -> None:
     """Log the content of an exception message."""
     exType, exValue, _ = sys.exc_info()
     if exType is not None:
-        logger.error("%s: %s", exType.__name__, str(exValue))
+        logger.error(f"{exType.__name__}: {str(exValue)}", stacklevel=2)
     return
 
 
