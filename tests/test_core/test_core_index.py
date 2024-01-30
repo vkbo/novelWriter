@@ -272,23 +272,23 @@ def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
     assert index.checkThese([], cHandle) == []
 
     # One Item
-    assert index.checkThese(["@tag"], cItem) == [True]
-    assert index.checkThese(["@who"], cItem) == [False]
+    assert index.checkThese(["@tag"], cHandle) == [True]
+    assert index.checkThese(["@who"], cHandle) == [False]
 
     # Two Items
-    assert index.checkThese(["@tag", "Jane"], cItem) == [True, True]
-    assert index.checkThese(["@tag", "John"], cItem) == [True, True]
-    assert index.checkThese(["@tag", "Jane"], nItem) == [True, False]
-    assert index.checkThese(["@tag", "John"], nItem) == [True, True]
-    assert index.checkThese(["@pov", "John"], nItem) == [True, False]
-    assert index.checkThese(["@pov", "Jane"], nItem) == [True, True]
-    assert index.checkThese(["@ pov", "Jane"], nItem) == [False, False]
-    assert index.checkThese(["@what", "Jane"], nItem) == [False, False]
+    assert index.checkThese(["@tag", "Jane"], cHandle) == [True, True]
+    assert index.checkThese(["@tag", "John"], cHandle) == [True, True]
+    assert index.checkThese(["@tag", "Jane"], nHandle) == [True, False]
+    assert index.checkThese(["@tag", "John"], nHandle) == [True, True]
+    assert index.checkThese(["@pov", "John"], nHandle) == [True, False]
+    assert index.checkThese(["@pov", "Jane"], nHandle) == [True, True]
+    assert index.checkThese(["@ pov", "Jane"], nHandle) == [False, False]
+    assert index.checkThese(["@what", "Jane"], nHandle) == [False, False]
 
     # Three Items
-    assert index.checkThese(["@tag", "Jane", "John"], cItem) == [True, True, False]
-    assert index.checkThese(["@who", "Jane", "John"], cItem) == [False, False, False]
-    assert index.checkThese(["@pov", "Jane", "John"], nItem) == [True, True, False]
+    assert index.checkThese(["@tag", "Jane", "John"], cHandle) == [True, True, False]
+    assert index.checkThese(["@who", "Jane", "John"], cHandle) == [False, False, False]
+    assert index.checkThese(["@pov", "Jane", "John"], nHandle) == [True, True, False]
 
     project.closeProject()
 
@@ -544,8 +544,10 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
 
     nHandle = project.newFile("Hello", C.hNovelRoot)
     cHandle = project.newFile("Jane",  C.hCharRoot)
+    dHandle = project.newFile("John",  C.hCharRoot)
     assert isinstance(nHandle, str)
     assert isinstance(cHandle, str)
+    assert isinstance(dHandle, str)
 
     assert index.getItemHeader("", "") is None
     assert index.getItemHeader(C.hNovelRoot, "") is None
@@ -554,10 +556,14 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
         "# Jane Smith\n"
         "@tag: Jane\n"
     ))
+    assert index.scanText(dHandle, (
+        "# John Smith\n"
+        "@tag: John\n"
+    ))
     assert index.scanText(nHandle, (
         "# Hello World!\n"
         "@pov: Jane\n"
-        "@char: Jane\n\n"
+        "@char: Jane, John\n\n"
         "% this is a comment\n\n"
         "This is a story about Jane Smith.\n\n"
         "Well, not really.\n"
@@ -625,7 +631,14 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     # The novel file should now refer to Jane as @pov and @char
     refs = index.getReferences(nHandle)
     assert refs["@pov"] == ["Jane"]
-    assert refs["@char"] == ["Jane"]
+    assert refs["@char"] == ["Jane", "John"]
+
+    # getReferenceForHeader
+    # =====================
+    assert index.getReferenceForHeader(nHandle, 1, "@pov") == ["Jane"]
+    assert index.getReferenceForHeader(nHandle, 1, "@char") == ["Jane", "John"]
+    assert index.getReferenceForHeader(nHandle, 1, "@focus") == []
+    assert index.getReferenceForHeader("00000", 1, "@focus") == []
 
     # getBackReferenceList
     # ====================
@@ -644,7 +657,8 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     # ============
 
     assert index.getTagSource("Jane") == (cHandle, "T0001")
-    assert index.getTagSource("John") == (None, "T0000")
+    assert index.getTagSource("John") == (dHandle, "T0001")
+    assert index.getTagSource("Hans") == (None, "T0000")
 
     # getDocumentTags
     # ===============
@@ -653,7 +667,7 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
 
     # getClassTags
     # ============
-    assert index.getClassTags(nwItemClass.CHARACTER) == ["Jane"]
+    assert index.getClassTags(nwItemClass.CHARACTER) == ["Jane", "John"]
 
     # getTagsData
     # ===========
@@ -661,6 +675,10 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
         "jane", "Jane", "CHARACTER",
         index.getItemData(cHandle),
         index.getItemHeader(cHandle, "T0001")
+    ), (
+        "john", "John", "CHARACTER",
+        index.getItemData(dHandle),
+        index.getItemHeader(dHandle, "T0001")
     )]
 
     # getSingleTag

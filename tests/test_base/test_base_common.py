@@ -669,6 +669,7 @@ def testBaseCommon_NWConfigParser(fncPath):
         "list1 = a, b, c\n"
         "list2 = 17, 18, 19\n"
         "float1 = 4.2\n"
+        f"path1 = {fncPath}\n"
     ))
 
     cfgParser = NWConfigParser()
@@ -710,6 +711,9 @@ def testBaseCommon_NWConfigParser(fncPath):
 
     assert cfgParser.rdFlt("nope", "intopt1", 13.0) == 13.0
     assert cfgParser.rdFlt("main", "blabla",  13.0) == 13.0
+
+    # Read Path
+    assert cfgParser.rdPath("main", "path1", Path.home()) == fncPath
 
     # Read String List
     assert cfgParser.rdStrList("main", "list1", []) == []
