@@ -27,7 +27,7 @@ from tools import C, buildTestProject, readFile
 
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.project import NWProject
-from novelwriter.core.tokenizer import Tokenizer, stripEscape
+from novelwriter.core.tokenizer import HeadingFormatter, Tokenizer, stripEscape
 
 
 class BareTokenizer(Tokenizer):
@@ -1231,3 +1231,105 @@ def testCoreToken_ProcessHeaders(mockGUI):
     assert tokens._firstScene is False
 
 # END Test testCoreToken_ProcessHeaders
+
+
+@pytest.mark.core
+def testCoreIndex_HeadingFormatter(fncPath, mockRnd):
+    """Check the HeadingFormatter class."""
+    project = NWProject()
+    project.setProjectLang("en_GB")
+    mockRnd.reset()
+    buildTestProject(project, fncPath)
+
+    nHandle = project.newFile("Hello", C.hNovelRoot)
+    cHandle = project.newFile("Jane",  C.hCharRoot)
+    dHandle = project.newFile("John",  C.hCharRoot)
+
+    assert isinstance(nHandle, str)
+    assert isinstance(cHandle, str)
+    assert isinstance(dHandle, str)
+
+    assert project.index.scanText(cHandle, (
+        "# Jane Smith\n"
+        "@tag: Jane | Jane Smith\n"
+    ))
+    assert project.index.scanText(dHandle, (
+        "# John Smith\n"
+        "@tag: John | John Smith\n"
+    ))
+    assert project.index.scanText(nHandle, (
+        "## Hi Bob\n"
+        "@pov: Jane\n"
+        "@focus: John\n"
+        "@char: Jane, John\n\n"
+        "This is a story about Jane Smith.\n\n"
+        "Well, not really.\n"
+    ))
+
+    formatter = HeadingFormatter(project)
+    formatter.setHandle(nHandle)
+
+    # Counters
+    # ========
+    cFormat = (
+        f"Chapter {nwHeadFmt.CH_NUM}.{nwHeadFmt.SC_NUM} - "
+        f"Scene {nwHeadFmt.SC_ABS} - {nwHeadFmt.TITLE}"
+    )
+
+    # Initial
+    assert formatter.apply(cFormat, "Hi Bob", 1) == "Chapter 0.0 - Scene 0 - Hi Bob"
+
+    # First Chapter and Scene
+    formatter.incChapter()
+    formatter.incScene()
+    assert formatter.apply(cFormat, "Hi Bob", 1) == "Chapter 1.1 - Scene 1 - Hi Bob"
+
+    # Next Scenes
+    formatter.incScene()
+    assert formatter.apply(cFormat, "Hi Bob", 1) == "Chapter 1.2 - Scene 2 - Hi Bob"
+    formatter.incScene()
+    assert formatter.apply(cFormat, "Hi Bob", 1) == "Chapter 1.3 - Scene 3 - Hi Bob"
+    formatter.incScene()
+    assert formatter.apply(cFormat, "Hi Bob", 1) == "Chapter 1.4 - Scene 4 - Hi Bob"
+
+    # Next Chapter and Scene
+    formatter.incChapter()
+    formatter.resetScene()
+    formatter.incScene()
+    assert formatter.apply(cFormat, "Hi Bob", 1) == "Chapter 2.1 - Scene 5 - Hi Bob"
+
+    # Special Formats
+    # ===============
+    formatter._chCount = 2
+    formatter._scChCount = 3
+    formatter._scAbsCount = 8
+
+    # Chapter Number Word
+    cFormat = f"Chapter {nwHeadFmt.CH_WORD}, Scene {nwHeadFmt.SC_NUM} - {nwHeadFmt.TITLE}"
+    assert formatter.apply(cFormat, "Hi Bob", 1) == "Chapter Two, Scene 3 - Hi Bob"
+
+    # Chapter Upper Case Roman
+    cFormat = f"Chapter {nwHeadFmt.CH_ROMU}, Scene {nwHeadFmt.SC_NUM} - {nwHeadFmt.TITLE}"
+    assert formatter.apply(cFormat, "Hi Bob", 1) == "Chapter II, Scene 3 - Hi Bob"
+
+    # Chapter Lower Case Roman
+    cFormat = f"Chapter {nwHeadFmt.CH_ROML}, Scene {nwHeadFmt.SC_NUM} - {nwHeadFmt.TITLE}"
+    assert formatter.apply(cFormat, "Hi Bob", 1) == "Chapter ii, Scene 3 - Hi Bob"
+
+    # Chapter w/PoV Character
+    cFormat = f"Chapter {nwHeadFmt.CH_NUM}, Scene {nwHeadFmt.SC_NUM} - {nwHeadFmt.CHAR_POV}"
+    assert formatter.apply(cFormat, "Hi Bob", 1) == "Chapter 2, Scene 3 - Jane Smith"
+
+    # Chapter w/Focus Character
+    cFormat = f"Chapter {nwHeadFmt.CH_NUM}, Scene {nwHeadFmt.SC_NUM} - {nwHeadFmt.CHAR_FOCUS}"
+    assert formatter.apply(cFormat, "Hi Bob", 1) == "Chapter 2, Scene 3 - John Smith"
+
+    # Chapter w/Fallback PoV
+    cFormat = f"Chapter {nwHeadFmt.CH_NUM}, Scene {nwHeadFmt.SC_NUM} - {nwHeadFmt.CHAR_POV}"
+    assert formatter.apply(cFormat, "Hi Bob", 0) == "Chapter 2, Scene 3 - Point of View"
+
+    # Chapter w/Fallback Focus
+    cFormat = f"Chapter {nwHeadFmt.CH_NUM}, Scene {nwHeadFmt.SC_NUM} - {nwHeadFmt.CHAR_FOCUS}"
+    assert formatter.apply(cFormat, "Hi Bob", 0) == "Chapter 2, Scene 3 - Focus"
+
+# END Test testCoreIndex_HeadingFormatter

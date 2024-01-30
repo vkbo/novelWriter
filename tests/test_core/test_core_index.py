@@ -290,6 +290,10 @@ def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
     assert index.checkThese(["@who", "Jane", "John"], cHandle) == [False, False, False]
     assert index.checkThese(["@pov", "Jane", "John"], nHandle) == [True, True, False]
 
+    # Parse a Checked Value
+    assert index.parseValue("Jane | Jane Smith") == ("Jane", "Jane Smith")
+    assert index.parseValue("Jane  |  Jane Smith") == ("Jane", "Jane Smith")
+
     project.closeProject()
 
 # END Test testCoreIndex_CheckThese
