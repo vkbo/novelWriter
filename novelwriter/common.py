@@ -29,7 +29,7 @@ import logging
 import unicodedata
 import xml.etree.ElementTree as ET
 
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 from pathlib import Path
 from datetime import datetime
 from configparser import ConfigParser
@@ -42,6 +42,9 @@ from PyQt5.QtCore import QCoreApplication, QUrl
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.constants import nwConst, nwUnicode
+
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import TypeGuard  # Requires Python 3.10
 
 logger = logging.getLogger(__name__)
 
@@ -104,15 +107,6 @@ def checkBool(value: Any, default: bool) -> bool:
     return default
 
 
-def checkHandle(value, default, allowNone=False):
-    """Check if a value is a handle."""
-    if allowNone and (value is None or value == "None"):
-        return None
-    if isHandle(value):
-        return str(value)
-    return default
-
-
 def checkUuid(value: Any, default: str) -> str:
     """Try to process a value as an UUID, or return a default."""
     try:
@@ -135,7 +129,7 @@ def checkPath(value: Any, default: Path) -> Path:
 #  Validator Functions
 ##
 
-def isHandle(value: Any) -> bool:
+def isHandle(value: Any) -> TypeGuard[str]:
     """Check if a string is a valid novelWriter handle.
     Note: This is case sensitive. Must be lower case!
     """
@@ -149,7 +143,7 @@ def isHandle(value: Any) -> bool:
     return True
 
 
-def isTitleTag(value: Any) -> bool:
+def isTitleTag(value: Any) -> TypeGuard[str]:
     """Check if a string is a valid title tag string."""
     if not isinstance(value, str):
         return False
@@ -163,19 +157,19 @@ def isTitleTag(value: Any) -> bool:
     return True
 
 
-def isItemClass(value: str) -> bool:
+def isItemClass(value: Any) -> TypeGuard[str]:
     """Check if a string is a valid nwItemClass identifier."""
-    return value in nwItemClass.__members__
+    return isinstance(value, str) and value in nwItemClass.__members__
 
 
-def isItemType(value: str) -> bool:
+def isItemType(value: Any) -> TypeGuard[str]:
     """Check if a string is a valid nwItemType identifier."""
-    return value in nwItemType.__members__
+    return isinstance(value, str) and value in nwItemType.__members__
 
 
-def isItemLayout(value: str) -> bool:
+def isItemLayout(value: Any) -> TypeGuard[str]:
     """Check if a string is a valid nwItemLayout identifier."""
-    return value in nwItemLayout.__members__
+    return isinstance(value, str) and value in nwItemLayout.__members__
 
 
 def hexToInt(value: Any, default: int = 0) -> int:
@@ -189,8 +183,7 @@ def hexToInt(value: Any, default: int = 0) -> int:
 
 
 def minmax(value: int, minVal: int, maxVal: int) -> int:
-    """Make sure an integer is between min and max value (inclusive).
-    """
+    """Check that an value is between min and max value (inclusive)."""
     return min(maxVal, max(minVal, value))
 
 
