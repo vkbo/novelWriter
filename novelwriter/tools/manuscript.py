@@ -604,7 +604,7 @@ class _DetailsWidget(QWidget):
         for key in entries:
             sub = QTreeWidgetItem()
             sub.setText(0, build.getLabel(key))
-            sub.setText(1, hFmt.apply(build.getStr(key), title))
+            sub.setText(1, hFmt.apply(build.getStr(key), title, 0))
             item.addChild(sub)
         for key in ["headings.hideScene", "headings.hideSection"]:
             sub = QTreeWidgetItem()

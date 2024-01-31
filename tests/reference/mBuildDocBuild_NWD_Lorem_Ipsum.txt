@@ -15,7 +15,7 @@ The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for t
 
 ##! Prologue
 
-% Synopsis:Explanation from the lipsum.com website.
+% Synopsis: Explanation from the lipsum.com website.
 
 _Lorem Ipsum_ is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
 
@@ -77,11 +77,11 @@ Ut et consequat enim, quis ornare nibh. In lectus neque, mollis et suscipit et, 
 
 % Exctracted from the lipsum.com website.
 
-	It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
+    It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
 
-	The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.
+    The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.
 
-	Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
+    Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
 
 ## Chapter Two
 
@@ -151,7 +151,7 @@ Integer egestas maximus leo eu facilisis. Nunc rhoncus dignissim lectus eu lacin
 
 # Nobody Owens
 
-@tag: Bod
+@tag: Bod | Nobody Owens
 @plot: Main
 
 Pellentesque nec erat ut nulla posuere commodo. Curabitur nisi augue, imperdiet et porta imperdiet, efficitur id leo. Cras finibus arcu at nibh commodo congue. Proin suscipit placerat condimentum. Aenean ante enim, cursus id lorem a, blandit venenatis nibh. Maecenas suscipit porta elit, sit amet porta felis porttitor eu. Sed a dui nibh. Phasellus sed faucibus dui. Pellentesque felis nulla, ultrices non efficitur quis, rutrum id mi. Mauris tempus auctor nisl, in bibendum enim pellentesque sit amet. Proin nunc lacus, imperdiet nec posuere ac, interdum non lectus.
@@ -174,7 +174,7 @@ Mauris ut erat eu lorem malesuada egestas vel vel urna. Maecenas ac semper quam.
 
 # Ancient Europe
 
-@tag: Europe
+@tag: Europe | Ancient Europe
 
 Vivamus sodales risus ac accumsan posuere. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nunc vel enim felis. Vestibulum dignissim massa nunc, a auctor magna eleifend et. Proin dignissim sodales erat vitae convallis. Aliquam id tellus dui. Curabitur sollicitudin scelerisque ex sit amet posuere. Nam rutrum felis id rhoncus feugiat. Duis sagittis quam quis purus efficitur, quis rutrum odio iaculis. Maecenas semper ante turpis, at vulputate mi consectetur non. Sed rutrum nibh turpis, quis rhoncus purus ornare quis. Vestibulum at rutrum mauris. Integer dolor nisi, tincidunt eget vehicula ac, ultricies at ligula.
 

@@ -1615,7 +1615,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     origText = nwGUI.docEditor.getText()
 
     # Select the Word "est"
-    nwGUI.docEditor.setCursorPosition(630)
+    nwGUI.docEditor.setCursorPosition(645)
     nwGUI.docEditor._makeSelection(QTextCursor.WordUnderCursor)
     cursor = nwGUI.docEditor.textCursor()
     assert cursor.selectedText() == "est"
@@ -1628,11 +1628,11 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Find next by enter key
     monkeypatch.setattr(nwGUI.docEditor.docSearch.searchBox, "hasFocus", lambda: True)
     qtbot.keyClick(nwGUI.docEditor.docSearch.searchBox, Qt.Key_Return, delay=KEY_DELAY)
-    assert abs(nwGUI.docEditor.getCursorPosition() - 1284) < 3
+    assert abs(nwGUI.docEditor.getCursorPosition() - 1299) < 3
 
     # Find next by button
     qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
-    assert abs(nwGUI.docEditor.getCursorPosition() - 1498) < 3
+    assert abs(nwGUI.docEditor.getCursorPosition() - 1513) < 3
 
     # Activate loop search
     nwGUI.docEditor.docSearch.toggleLoop.activate(QAction.Trigger)
@@ -1641,7 +1641,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Find next by menu Search > Find Next
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
-    assert abs(nwGUI.docEditor.getCursorPosition() - 632) < 3
+    assert abs(nwGUI.docEditor.getCursorPosition() - 647) < 3
 
     # Close search
     nwGUI.docEditor.docSearch.cancelSearch.activate(QAction.Trigger)
@@ -1680,13 +1680,13 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Set valid RegEx
     nwGUI.docEditor.docSearch.setSearchText(r"\bSus")
     qtbot.mouseClick(nwGUI.docEditor.docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
-    assert abs(nwGUI.docEditor.getCursorPosition() - 208) < 3
+    assert abs(nwGUI.docEditor.getCursorPosition() - 223) < 3
 
     # Find next and then prev
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
-    assert abs(nwGUI.docEditor.getCursorPosition() - 309) < 3
+    assert abs(nwGUI.docEditor.getCursorPosition() - 324) < 3
     nwGUI.mainMenu.aFindPrev.activate(QAction.Trigger)
-    assert abs(nwGUI.docEditor.getCursorPosition() - 208) < 3
+    assert abs(nwGUI.docEditor.getCursorPosition() - 223) < 3
 
     # Make RegEx case sensitive
     nwGUI.docEditor.docSearch.toggleCase.activate(QAction.Trigger)
@@ -1695,11 +1695,11 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Find next/prev (one result)
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
-    assert abs(nwGUI.docEditor.getCursorPosition() - 611) < 3
+    assert abs(nwGUI.docEditor.getCursorPosition() - 626) < 3
     nwGUI.mainMenu.aFindPrev.activate(QAction.Trigger)
-    assert abs(nwGUI.docEditor.getCursorPosition() - 611) < 3
+    assert abs(nwGUI.docEditor.getCursorPosition() - 626) < 3
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
-    assert abs(nwGUI.docEditor.getCursorPosition() - 611) < 3
+    assert abs(nwGUI.docEditor.getCursorPosition() - 626) < 3
 
     # Trigger replace
     nwGUI.mainMenu.aReplace.activate(QAction.Trigger)
@@ -1716,22 +1716,22 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert nwGUI.docEditor.docSearch.doMatchCap is True
 
     # Replace "Sus" with "Foo" via menu
-    nwGUI.docEditor.setCursorPosition(590)
+    nwGUI.docEditor.setCursorPosition(605)
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
     nwGUI.mainMenu.aReplaceNext.activate(QAction.Trigger)
-    assert nwGUI.docEditor.getText()[608:619] == "Foopendisse"
+    assert nwGUI.docEditor.getText()[623:634] == "Foopendisse"
 
     # Find next/prev to loop file
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
-    assert abs(nwGUI.docEditor.getCursorPosition() - 208) < 3
+    assert abs(nwGUI.docEditor.getCursorPosition() - 223) < 3
     nwGUI.mainMenu.aFindPrev.activate(QAction.Trigger)
-    assert abs(nwGUI.docEditor.getCursorPosition() - 1790) < 3
+    assert abs(nwGUI.docEditor.getCursorPosition() - 1805) < 3
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
-    assert abs(nwGUI.docEditor.getCursorPosition() - 208) < 3
+    assert abs(nwGUI.docEditor.getCursorPosition() - 223) < 3
 
     # Replace "sus" with "foo" via replace button
     qtbot.mouseClick(nwGUI.docEditor.docSearch.replaceButton, Qt.LeftButton, delay=KEY_DELAY)
-    assert nwGUI.docEditor.getText()[205:213] == "foocipit"
+    assert nwGUI.docEditor.getText()[220:228] == "foocipit"
 
     # Revert last two replaces
     assert nwGUI.docEditor.docAction(nwDocAction.UNDO)
@@ -1745,7 +1745,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Close search and select "est" again
     nwGUI.docEditor.docSearch.cancelSearch.activate(QAction.Trigger)
-    nwGUI.docEditor.setCursorPosition(630)
+    nwGUI.docEditor.setCursorPosition(645)
     nwGUI.docEditor._makeSelection(QTextCursor.WordUnderCursor)
     cursor = nwGUI.docEditor.textCursor()
     assert cursor.selectedText() == "est"
@@ -1762,9 +1762,9 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Only one match
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
-    assert abs(nwGUI.docEditor.getCursorPosition() - 632) < 3
+    assert abs(nwGUI.docEditor.getCursorPosition() - 647) < 3
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
-    assert abs(nwGUI.docEditor.getCursorPosition() - 632) < 3
+    assert abs(nwGUI.docEditor.getCursorPosition() - 647) < 3
 
     # Enable next doc search
     nwGUI.docEditor.docSearch.toggleProject.activate(QAction.Trigger)

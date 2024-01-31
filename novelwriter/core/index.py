@@ -420,10 +420,10 @@ class NWIndex:
             return
 
         if tBits[0] == nwKeyWords.TAG_KEY:
-            tagName = tBits[1]
-            self._tagsIndex.add(tagName, tHandle, sTitle, itemClass)
-            self._itemIndex.setHeadingTag(tHandle, sTitle, tagName)
-            tags[tagName.lower()] = True
+            tagKey, displayName = self.parseValue(tBits[1])
+            self._tagsIndex.add(tagKey, displayName, tHandle, sTitle, itemClass.name)
+            self._itemIndex.setHeadingTag(tHandle, sTitle, tagKey)
+            tags[tagKey.lower()] = True
         else:
             self._itemIndex.addHeadingRef(tHandle, sTitle, tBits[1:], tBits[0])
 
@@ -471,10 +471,8 @@ class NWIndex:
 
         return True, tBits, tPos
 
-    def checkThese(self, tBits: list[str], nwItem: NWItem) -> list[bool]:
-        """Check the tags against the index to see if they are valid
-        tags. This is needed for syntax highlighting.
-        """
+    def checkThese(self, tBits: list[str], tHandle: str) -> list[bool]:
+        """Check tags against the index to see if they are valid."""
         nBits = len(tBits)
         isGood = [False]*nBits
         if nBits == 0:
@@ -488,18 +486,24 @@ class NWIndex:
         # For a tag, only the first value is accepted, the rest are ignored
         if tBits[0] == nwKeyWords.TAG_KEY and nBits > 1:
             if tBits[1] in self._tagsIndex:
-                isGood[1] = self._tagsIndex.tagHandle(tBits[1]) == nwItem.itemHandle
+                isGood[1] = self._tagsIndex.tagHandle(tBits[1]) == tHandle
             else:
                 isGood[1] = True
             return isGood
 
         # If we're still here, we check that the references exist
+        # Class references cannot have the | symbol in them
         refKey = nwKeyWords.KEY_CLASS[tBits[0]].name
         for n in range(1, nBits):
-            if tBits[n] in self._tagsIndex:
-                isGood[n] = self._tagsIndex.tagClass(tBits[n]) == refKey
+            if (aBit := tBits[n]) in self._tagsIndex:
+                isGood[n] = self._tagsIndex.tagClass(aBit) == refKey and "|" not in aBit
 
         return isGood
+
+    def parseValue(self, text: str) -> tuple[str, str]:
+        """Parse a single value into a name and display part."""
+        name, _, display = text.partition("|")
+        return name.rstrip(), display.lstrip()
 
     ##
     #  Extract Data
@@ -615,8 +619,17 @@ class NWIndex:
                     for refType in refTypes:
                         if refType in tRefs:
                             tRefs[refType].append(self._tagsIndex.tagName(aTag))
-
         return tRefs
+
+    def getReferenceForHeader(self, tHandle: str, nHead: int, keyClass: str) -> list[str]:
+        """Get the display names for a tags class for insertion into a
+        heading by one of the build classes.
+        """
+        if iItem := self._itemIndex[tHandle]:
+            if hItem := iItem[f"T{nHead:04d}"]:
+                hRefs = [k for k, v in hItem.references.items() if keyClass in v]
+                return [self._tagsIndex.tagDisplay(k) for k in hRefs]
+        return []
 
     def getBackReferenceList(self, tHandle: str) -> dict[str, tuple[str, IndexHeading]]:
         """Build a dict of files referring back to our file."""
@@ -715,16 +728,25 @@ class TagsIndex:
         """Return a dictionary view of all tags."""
         return self._tags.items()
 
-    def add(self, tagKey: str, tHandle: str, sTitle: str, itemClass: nwItemClass) -> None:
+    def add(self, tagKey: str, displayName: str, tHandle: str,
+            sTitle: str, className: str) -> None:
         """Add a key to the index and set all values."""
         self._tags[tagKey.lower()] = {
-            "name": tagKey, "handle": tHandle, "heading": sTitle, "class": itemClass.name
+            "name": tagKey,
+            "display": displayName or tagKey,
+            "handle": tHandle,
+            "heading": sTitle,
+            "class": className,
         }
         return
 
     def tagName(self, tagKey: str) -> str:
-        """Get the display name of a given tag."""
+        """Get the name of a given tag."""
         return self._tags.get(tagKey.lower(), {}).get("name", "")
+
+    def tagDisplay(self, tagKey: str) -> str:
+        """Get the display name of a given tag."""
+        return self._tags.get(tagKey.lower(), {}).get("display", "")
 
     def tagHandle(self, tagKey: str) -> str | None:
         """Get the handle of a given tag."""
@@ -760,27 +782,30 @@ class TagsIndex:
         if not isinstance(data, dict):
             raise ValueError("tagsIndex is not a dict")
 
-        for tagKey, tagData in data.items():
-            if not isinstance(tagKey, str):
-                raise ValueError("tagsIndex keys must be a strings")
-            if "name" not in tagData:
-                raise KeyError("A tagIndex item is missing a name entry")
-            if "handle" not in tagData:
-                raise KeyError("A tagIndex item is missing a handle entry")
-            if "heading" not in tagData:
-                raise KeyError("A tagIndex item is missing a heading entry")
-            if "class" not in tagData:
-                raise KeyError("A tagIndex item is missing a class entry")
-            if tagData["name"].lower() != tagKey:
-                raise ValueError("tagsIndex name must match key")
-            if not isHandle(tagData["handle"]):
+        for key, entry in data.items():
+            if not isinstance(key, str):
+                raise ValueError("tagsIndex keys must be a string")
+            if not isinstance(entry, dict):
+                raise ValueError("tagsIndex entry is not a dict")
+
+            name = entry.get("name")
+            display = entry.get("display")
+            handle = entry.get("handle")
+            heading = entry.get("heading")
+            className = entry.get("class")
+
+            if not isinstance(name, str):
+                raise ValueError("tagsIndex name is not a string")
+            if not isinstance(display, str):
+                raise ValueError("tagsIndex display is not a string")
+            if not isHandle(handle):
                 raise ValueError("tagsIndex handle must be a handle")
-            if not isTitleTag(tagData["heading"]):
+            if not isTitleTag(heading):
                 raise ValueError("tagsIndex heading must be a title tag")
-            if not isItemClass(tagData["class"]):
+            if not isItemClass(className):
                 raise ValueError("tagsIndex handle must be an nwItemClass")
 
-        self._tags = data
+            self.add(name, display, handle, heading, className)
 
         return
 
@@ -1165,7 +1190,7 @@ class IndexHeading:
         return self._tag
 
     @property
-    def references(self) -> dict:
+    def references(self) -> dict[str, set[str]]:
         return self._refs
 
     ##

@@ -722,6 +722,8 @@ class _HeadingsTab(NScrollablePage):
         self.aInsChRomL = self.menuInsert.addAction(self.tr("Chapter Number (Lower Case Roman)"))
         self.aInsScNum = self.menuInsert.addAction(self.tr("Scene Number (In Chapter)"))
         self.aInsScAbs = self.menuInsert.addAction(self.tr("Scene Number (Absolute)"))
+        self.aInsCharPOV = self.menuInsert.addAction(self.tr("Point of View Character"))
+        self.aInsCharFocus = self.menuInsert.addAction(self.tr("Focus Character"))
 
         self.aInsTitle.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.TITLE))
         self.aInsChNum.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.CH_NUM))
@@ -730,6 +732,8 @@ class _HeadingsTab(NScrollablePage):
         self.aInsChRomL.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.CH_ROML))
         self.aInsScNum.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.SC_NUM))
         self.aInsScAbs.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.SC_ABS))
+        self.aInsCharPOV.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.CHAR_POV))
+        self.aInsCharFocus.triggered.connect(lambda: self._insertIntoForm(nwHeadFmt.CHAR_FOCUS))
 
         self.btnInsert = QPushButton(self.tr("Insert"))
         self.btnInsert.setMenu(self.menuInsert)

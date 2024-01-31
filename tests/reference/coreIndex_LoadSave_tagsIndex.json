@@ -1,8 +1,8 @@
 {
   "novelWriter.tagsIndex": {
-    "bod": {"name": "Bod", "handle": "4c4f28287af27", "heading": "T0001", "class": "CHARACTER"},
-    "main": {"name": "Main", "handle": "2426c6f0ca922", "heading": "T0001", "class": "PLOT"},
-    "europe": {"name": "Europe", "handle": "04468803b92e1", "heading": "T0001", "class": "WORLD"}
+    "bod": {"name": "Bod", "display": "Nobody Owens", "handle": "4c4f28287af27", "heading": "T0001", "class": "CHARACTER"},
+    "main": {"name": "Main", "display": "Main", "handle": "2426c6f0ca922", "heading": "T0001", "class": "PLOT"},
+    "europe": {"name": "Europe", "display": "Ancient Europe", "handle": "04468803b92e1", "heading": "T0001", "class": "WORLD"}
   },
   "novelWriter.itemIndex": {
     "7a992350f3eb6": {

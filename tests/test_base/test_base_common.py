@@ -33,9 +33,9 @@ from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtCore import QUrl
 
 from novelwriter.common import (
-    checkBool, checkFloat, checkHandle, checkInt, checkIntTuple, checkPath,
-    checkString, checkStringNone, checkUuid, formatInt, formatTime,
-    formatTimeStamp, formatVersion, fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass,
+    checkBool, checkFloat, checkInt, checkIntTuple, checkPath, checkString,
+    checkStringNone, checkUuid, formatInt, formatTime, formatTimeStamp,
+    formatVersion, fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass,
     isItemLayout, isItemType, isTitleTag, jsonEncode, makeFileNameSafe, minmax,
     numberToRoman, NWConfigParser, openExternalPath, readTextFile, simplified,
     transferCase, xmlIndent, yesNo
@@ -152,19 +152,6 @@ def testBaseCommon_checkBool():
 
 
 @pytest.mark.base
-def testBaseCommon_checkHandle():
-    """Test the checkHandle function."""
-    assert checkHandle("None", 1, True) is None
-    assert checkHandle("None", 1, False) == 1
-    assert checkHandle(None, 1, True) is None
-    assert checkHandle(None, 1, False) == 1
-    assert checkHandle("47666c91c7ccf", None, False) == "47666c91c7ccf"
-    assert checkHandle("h7666c91c7ccf", None, False) is None
-
-# END Test testBaseCommon_checkHandle
-
-
-@pytest.mark.base
 def testBaseCommon_checkUuid():
     """Test the checkUuid function."""
     testUuid = "e2be99af-f9bf-4403-857a-c3d1ac25abea"
@@ -236,7 +223,7 @@ def testBaseCommon_isItemClass():
 
     # Invalid
     assert isItemClass("None") is False
-    assert isItemClass(None) is False  # type: ignore
+    assert isItemClass(None) is False
     assert isItemClass("STUFF") is False
 
 # END Test testBaseCommon_isItemClass
@@ -682,6 +669,7 @@ def testBaseCommon_NWConfigParser(fncPath):
         "list1 = a, b, c\n"
         "list2 = 17, 18, 19\n"
         "float1 = 4.2\n"
+        f"path1 = {fncPath}\n"
     ))
 
     cfgParser = NWConfigParser()
@@ -723,6 +711,9 @@ def testBaseCommon_NWConfigParser(fncPath):
 
     assert cfgParser.rdFlt("nope", "intopt1", 13.0) == 13.0
     assert cfgParser.rdFlt("main", "blabla",  13.0) == 13.0
+
+    # Read Path
+    assert cfgParser.rdPath("main", "path1", Path.home()) == fncPath
 
     # Read String List
     assert cfgParser.rdStrList("main", "list1", []) == []

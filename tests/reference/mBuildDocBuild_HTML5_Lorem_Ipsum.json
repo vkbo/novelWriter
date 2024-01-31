@@ -2,8 +2,8 @@
   "meta": {
     "projectName": "Lorem Ipsum",
     "novelAuthor": "lipsum.com",
-    "buildTime": 1706306020,
-    "buildTimeStr": "2024-01-26 22:53:40"
+    "buildTime": 1706648755,
+    "buildTimeStr": "2024-01-30 22:05:55"
   },
   "text": {
     "css": [
@@ -132,7 +132,7 @@
       ],
       [
         "<h1>Nobody Owens</h1>",
-        "<p style='margin-bottom: 0;'><span class='tags'>Tag:</span> <a name='tag_Bod'>Bod</a></p>",
+        "<p style='margin-bottom: 0;'><span class='tags'>Tag:</span> <a name='tag_Bod'>Bod</a> | <span class='optional'>Nobody Owens</a></p>",
         "<p style='margin-top: 0;'><span class='tags'>Plot:</span> <a href='#tag_Main'>Main</a></p>",
         "<p>Pellentesque nec erat ut nulla posuere commodo. Curabitur nisi augue, imperdiet et porta imperdiet, efficitur id leo. Cras finibus arcu at nibh commodo congue. Proin suscipit placerat condimentum. Aenean ante enim, cursus id lorem a, blandit venenatis nibh. Maecenas suscipit porta elit, sit amet porta felis porttitor eu. Sed a dui nibh. Phasellus sed faucibus dui. Pellentesque felis nulla, ultrices non efficitur quis, rutrum id mi. Mauris tempus auctor nisl, in bibendum enim pellentesque sit amet. Proin nunc lacus, imperdiet nec posuere ac, interdum non lectus.</p>",
         "<p>Suspendisse faucibus est auctor orci mollis luctus. Praesent quis sodales neque. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec sodales rutrum mattis. In in sem ornare, consequat nulla ac, convallis arcu. Duis ac metus id felis commodo commodo sit amet eget diam. Curabitur rhoncus lacinia leo at sodales. Etiam finibus porta diam a viverra. Praesent nisi urna, volutpat sit amet odio at, vehicula vehicula leo. In non enim eget nisl luctus commodo. Pellentesque pellentesque at lectus at luctus. Quisque nec felis bibendum, lacinia libero ut, lacinia eros. Integer finibus ultricies nibh sit amet placerat.</p>",
@@ -152,7 +152,7 @@
       ],
       [
         "<h1>Ancient Europe</h1>",
-        "<p><span class='tags'>Tag:</span> <a name='tag_Europe'>Europe</a></p>",
+        "<p><span class='tags'>Tag:</span> <a name='tag_Europe'>Europe</a> | <span class='optional'>Ancient Europe</a></p>",
         "<p>Vivamus sodales risus ac accumsan posuere. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nunc vel enim felis. Vestibulum dignissim massa nunc, a auctor magna eleifend et. Proin dignissim sodales erat vitae convallis. Aliquam id tellus dui. Curabitur sollicitudin scelerisque ex sit amet posuere. Nam rutrum felis id rhoncus feugiat. Duis sagittis quam quis purus efficitur, quis rutrum odio iaculis. Maecenas semper ante turpis, at vulputate mi consectetur non. Sed rutrum nibh turpis, quis rhoncus purus ornare quis. Vestibulum at rutrum mauris. Integer dolor nisi, tincidunt eget vehicula ac, ultricies at ligula.</p>",
         "<p>Aenean semper turpis quis varius rhoncus. Vivamus ac mi eget felis euismod vulputate. Nam eu tempus velit. Etiam ut est porta, finibus erat sit amet, consectetur felis. Nullam consequat felis ut lacus pharetra, in lobortis urna mollis. Nulla varius eros nec lorem rhoncus, sed venenatis risus ultrices. Phasellus pellentesque laoreet neque, ut ultricies lacus vulputate quis. In malesuada dui sit amet est interdum, eget consectetur mi gravida. Cras vel bibendum purus. Quisque commodo tempor arcu, non lacinia sem blandit eleifend. Quisque at neque gravida, porttitor metus a, suscipit diam. Quisque convallis sodales lacus et condimentum. Donec a suscipit diam. Pellentesque eget cursus neque.</p>",
         "<p>Nunc ullamcorper magna quis elit condimentum rhoncus. Aenean dictum pulvinar dolor suscipit interdum. Aliquam elit massa, elementum nec cursus eu, maximus nec ipsum. Donec ullamcorper iaculis dolor eu commodo. Nunc eget tortor quis turpis consectetur varius. Vestibulum nec justo vel tellus venenatis condimentum. Duis auctor iaculis massa. Nunc risus magna, rutrum vitae eros non, tristique mollis enim.</p>"

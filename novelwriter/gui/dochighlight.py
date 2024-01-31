@@ -35,10 +35,10 @@ from PyQt5.QtGui import (
 )
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.enum import nwComment
 from novelwriter.common import checkInt
 from novelwriter.constants import nwRegEx, nwUnicode
 from novelwriter.core.index import processComment
-from novelwriter.enum import nwComment
 
 logger = logging.getLogger(__name__)
 
@@ -107,7 +107,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             "code":      self._makeFormat(SHARED.theme.colCode),
             "keyword":   self._makeFormat(SHARED.theme.colKey),
             "modifier":  self._makeFormat(SHARED.theme.colMod),
-            "value":     self._makeFormat(SHARED.theme.colVal, "underline"),
+            "value":     self._makeFormat(SHARED.theme.colVal),
+            "optional":  self._makeFormat(SHARED.theme.colOpt),
             "codevalue": self._makeFormat(SHARED.theme.colVal),
             "codeinval": self._makeFormat(None, "errline"),
         }
@@ -278,23 +279,23 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         if text.startswith("@"):  # Keywords and commands
             self.setCurrentBlockState(self.BLOCK_META)
-            if self._tItem:
-                pIndex = SHARED.project.index
-                isValid, bits, pos = pIndex.scanThis(text)
-                isGood = pIndex.checkThese(bits, self._tItem)
-                if isValid:
-                    for n, bit in enumerate(bits):
-                        xPos = pos[n]
-                        xLen = len(bit)
-                        if isGood[n]:
-                            if n == 0:
-                                self.setFormat(xPos, xLen, self._hStyles["keyword"])
-                            else:
-                                self.setFormat(xPos, xLen, self._hStyles["value"])
-                        else:
-                            kwFmt = self.format(xPos)
-                            kwFmt.merge(self._hStyles["codeinval"])
-                            self.setFormat(xPos, xLen, kwFmt)
+            index = SHARED.project.index
+            isValid, bits, pos = index.scanThis(text)
+            isGood = index.checkThese(bits, self._tHandle)
+            if isValid:
+                for n, bit in enumerate(bits):
+                    xPos = pos[n]
+                    xLen = len(bit)
+                    if not isGood[n]:
+                        self.setFormat(xPos, xLen, self._hStyles["codeinval"])
+                    elif n == 0:
+                        self.setFormat(xPos, xLen, self._hStyles["keyword"])
+                    else:
+                        one, two = index.parseValue(bit)
+                        self.setFormat(xPos, len(one), self._hStyles["value"])
+                        if two:
+                            yPos = xPos + len(bit) - len(two)
+                            self.setFormat(yPos, len(two), self._hStyles["optional"])
 
             # We never want to run the spell checker on keyword/values,
             # so we force a return here
@@ -406,8 +407,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             if "errline" in styles:
                 charFormat.setUnderlineColor(SHARED.theme.colError)
                 charFormat.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
-            if "underline" in styles:
-                charFormat.setFontUnderline(True)
             if "background" in styles and color is not None:
                 charFormat.setBackground(QBrush(color, Qt.SolidPattern))
 

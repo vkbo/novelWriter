@@ -174,6 +174,7 @@ A syntax theme ``.conf`` file consists of the following settings:
    shortcode      =   0,   0,   0
    keyword        =   0,   0,   0
    value          =   0,   0,   0
+   optional       =   0,   0,   0
    spellcheckline =   0,   0,   0
    errorline      =   0,   0,   0
    replacetag     =   0,   0,   0
@@ -186,3 +187,7 @@ to black, except ``background`` which defaults to white,
 .. versionadded:: 2.2
    The `shortcode` syntax colour entry was added, so you need to update your custom themes if you
    made any before version 2.2.
+
+.. versionadded:: 2.3
+   The `optional` syntax colour entry was added, so you need to update your custom themes if you
+   made any before version 2.3.
