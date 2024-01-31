@@ -1674,9 +1674,13 @@ class _TreeContextMenu(QMenu):
             self._docActions()
             self.addSeparator()
 
+        # Create New Items
+        self._itemCreation()
+        self.addSeparator()
+
         # Edit Item Settings
-        aLabel = self.addAction(self.tr("Rename"))
-        aLabel.triggered.connect(lambda: self.projTree.renameTreeItem(self._handle))
+        action = self.addAction(self.tr("Rename"))
+        action.triggered.connect(lambda: self.projTree.renameTreeItem(self._handle))
         if isFile:
             self._itemActive(False)
         self._itemStatusImport(False)
@@ -1714,6 +1718,16 @@ class _TreeContextMenu(QMenu):
         action.triggered.connect(
             lambda: self.projView.openDocumentRequest.emit(self._handle, nwDocMode.VIEW, "", False)
         )
+        return
+
+    def _itemCreation(self) -> None:
+        """Add create item actions."""
+        menu = self.addMenu(self.tr("Create New ..."))
+        menu.addAction(self.projView.projBar.aAddEmpty)
+        menu.addAction(self.projView.projBar.aAddChap)
+        menu.addAction(self.projView.projBar.aAddScene)
+        menu.addAction(self.projView.projBar.aAddNote)
+        menu.addAction(self.projView.projBar.aAddFolder)
         return
 
     def _itemActive(self, multi: bool) -> None:
@@ -1769,7 +1783,7 @@ class _TreeContextMenu(QMenu):
 
     def _itemTransform(self, isFile: bool, isFolder: bool, hasChild: bool) -> None:
         """Add actions for the Transform menu."""
-        menu = self.addMenu(self.tr("Transform"))
+        menu = self.addMenu(self.tr("Transform ..."))
 
         tree = self.projTree
         tHandle = self._handle
