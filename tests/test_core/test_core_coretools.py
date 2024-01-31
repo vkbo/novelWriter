@@ -425,7 +425,7 @@ def testCoreTools_ProjectBuilderWrapper(monkeypatch, caplog, fncPath, mockGUI):
     # Creating the project once more should fail
     caplog.clear()
     assert builder.buildProject({"path": fncPath}) is False
-    assert "A project already exists" in caplog.text
+    assert "The target folder is not empty." in caplog.text
 
 # END Test testCoreTools_ProjectBuilderWrapper
 

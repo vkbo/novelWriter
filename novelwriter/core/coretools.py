@@ -36,8 +36,8 @@ from functools import partial
 from PyQt5.QtCore import QCoreApplication
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import minmax, simplified
-from novelwriter.constants import nwItemClass
+from novelwriter.common import isHandle, minmax, simplified
+from novelwriter.constants import nwFiles, nwItemClass
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.core.storage import NWStorageCreate
@@ -330,9 +330,8 @@ class ProjectBuilder:
                 self._path = Path(path).resolve()
                 if data.get("sample", False):
                     return self._extractSampleProject(self._path)
-                elif data.get("template"):  # pragma: no cover
-                    # Not implemented yet
-                    return True
+                elif data.get("template"):
+                    return self._copyProject(self._path, data)
                 else:
                     return self._buildAndPopulate(self._path, data)
             SHARED.error("A project path is required.")
@@ -348,7 +347,7 @@ class ProjectBuilder:
         status = project.storage.createNewProject(path)
         if status == NWStorageCreate.NOT_EMPTY:
             SHARED.error(self.tr(
-                "A project already exists in that location. "
+                "The target folder is not empty. "
                 "Please choose another folder."
             ))
             return False
@@ -449,6 +448,53 @@ class ProjectBuilder:
         project.newRoot(nwItemClass.ARCHIVE)
         project.trashFolder()
 
+        project.saveProject()
+        project.closeProject()
+
+        return True
+
+    def _copyProject(self, path: Path, data: dict) -> bool:
+        """Copy an existing project content, but not the meta data, and
+        update new settings.
+        """
+        source = data.get("template")
+        if not (isinstance(source, Path) and source.is_file()
+                and source.name == nwFiles.PROJ_FILE):
+            return False
+
+        logger.info("Copying project: %s", source)
+        if path.exists():
+            SHARED.error(self.tr(
+                "The target folder already exists. "
+                "Please choose another folder."
+            ))
+            return False
+
+        # Begin copying
+        srcPath = source.parent
+        dstPath = path.resolve()
+        srcCont = srcPath / "content"
+        dstCont = dstPath / "content"
+        dstPath.mkdir(exist_ok=True)
+        dstCont.mkdir(exist_ok=True)
+        shutil.copy2(srcPath / nwFiles.PROJ_FILE, dstPath)
+        for contFile in srcCont.iterdir():
+            if contFile.is_file() and contFile.suffix == ".nwd" and isHandle(contFile.stem):
+                shutil.copy2(contFile, dstCont)
+
+        # Open the copied project and update settings
+        project = NWProject()
+        project.openProject(dstPath)
+        project.data.setUuid("")  # Creates a fresh uuid
+        project.data.setName(data.get("name", "None"))
+        project.data.setAuthor(data.get("author", ""))
+        project.data.setLanguage(data.get("language", "en_GB"))
+        project.data.setSpellCheck(True)
+        project.data.setSpellLang(None)
+        project.data.setDoBackup(True)
+        project.data.setSaveCount(0)
+        project.data.setAutoCount(0)
+        project.data.setEditTime(0)
         project.saveProject()
         project.closeProject()
 
