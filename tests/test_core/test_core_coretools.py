@@ -31,7 +31,7 @@ from tools import C, NWD_IGNORE, buildTestProject, cmpFiles, XML_IGNORE
 from mocked import causeOSError
 
 from novelwriter import CONFIG
-from novelwriter.constants import nwItemClass
+from novelwriter.constants import nwFiles, nwItemClass
 from novelwriter.core.project import NWProject
 from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSplitter, ProjectBuilder
 
@@ -466,7 +466,7 @@ def testCoreTools_ProjectBuilderA(monkeypatch, fncPath, tstPaths, mockRnd):
 
 
 @pytest.mark.core
-def testCoreTools_ProjectBuilderB(monkeypatch, fncPath, tstPaths,  mockRnd):
+def testCoreTools_ProjectBuilderB(monkeypatch, fncPath, tstPaths, mockRnd):
     """Create a new project from a project dictionary, without chapters."""
     monkeypatch.setattr("uuid.uuid4", lambda *a: uuid.UUID("d0f3fe10-c6e6-4310-8bfd-181eb4224eed"))
 
@@ -501,10 +501,67 @@ def testCoreTools_ProjectBuilderB(monkeypatch, fncPath, tstPaths,  mockRnd):
 
 
 @pytest.mark.core
+def testCoreTools_ProjectBuilderTemplate(monkeypatch, mockGUI, prjLipsum, fncPath):
+    """Create a new project copied from existing project."""
+    srcPath = prjLipsum / nwFiles.PROJ_FILE
+    dstPath = fncPath / "lipsum"
+    data = {
+        "name": "Test Project",
+        "author": "Jane Doe",
+        "language": "en_US",
+        "path": dstPath,
+        "template": srcPath,
+    }
+
+    builder = ProjectBuilder()
+
+    # No path set
+    assert builder.buildProject({"template": srcPath}) is False
+
+    # No project at path
+    assert builder.buildProject({"path": fncPath, "template": fncPath}) is False
+
+    # Cannot copy to existing folder
+    assert builder.buildProject({"path": fncPath, "template": srcPath}) is False
+
+    # Copy project properly
+    assert builder.buildProject(data) is True
+
+    # Check Copy
+    # ==========
+
+    srcProject = NWProject()
+    srcProject.openProject(srcPath)
+
+    dstProject = NWProject()
+    dstProject.openProject(dstPath)
+
+    # UUID should be different
+    assert srcProject.data.uuid != dstProject.data.uuid
+
+    # Name should be different
+    assert srcProject.data.name == "Lorem Ipsum"
+    assert dstProject.data.name == "Test Project"
+
+    # Author should be different
+    assert srcProject.data.author == "lipsum.com"
+    assert dstProject.data.author == "Jane Doe"
+
+    # Language should be different
+    assert srcProject.data.language == "en_GB"
+    assert dstProject.data.language == "en_US"
+
+    # Counts should be more or less zeroed
+    assert dstProject.data.saveCount < 5
+    assert dstProject.data.autoCount < 5
+    assert dstProject.data.editTime < 10
+
+# END Test testCoreTools_ProjectBuilderTemplate
+
+
+@pytest.mark.core
 def testCoreTools_ProjectBuilderSample(monkeypatch, mockGUI, fncPath, tstPaths):
-    """Check that we can create a new project can be created from the
-    provided sample project via a zip file.
-    """
+    """Create a new sample project."""
     data = {
         "name": "Test Sample",
         "author": "Jane Doe",
@@ -515,7 +572,7 @@ def testCoreTools_ProjectBuilderSample(monkeypatch, mockGUI, fncPath, tstPaths):
     builder = ProjectBuilder()
 
     # No path set
-    assert builder.buildProject({"popSample": True}) is False
+    assert builder.buildProject({"sample": True}) is False
 
     # Force the lookup path for assets to our temp folder
     srcSample = CONFIG._appRoot / "sample"
