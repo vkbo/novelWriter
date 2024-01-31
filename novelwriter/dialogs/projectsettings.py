@@ -79,7 +79,6 @@ class GuiProjectSettings(QDialog):
         self.sidebar.addButton(self.tr("Status"), self.PAGE_STATUS)
         self.sidebar.addButton(self.tr("Importance"), self.PAGE_IMPORT)
         self.sidebar.addButton(self.tr("Auto-Replace"), self.PAGE_REPLACE)
-        self.sidebar.setSelected(gotoPage)
         self.sidebar.buttonClicked.connect(self._sidebarClicked)
 
         # Buttons
@@ -121,6 +120,10 @@ class GuiProjectSettings(QDialog):
 
         self.setLayout(self.outerBox)
         self.setSizeGripEnabled(True)
+
+        # Jump to Specified Page
+        self.sidebar.setSelected(gotoPage)
+        self._sidebarClicked(gotoPage)
 
         logger.debug("Ready: GuiProjectSettings")
 

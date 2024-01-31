@@ -1783,7 +1783,7 @@ class _TreeContextMenu(QMenu):
 
     def _itemTransform(self, isFile: bool, isFolder: bool, hasChild: bool) -> None:
         """Add actions for the Transform menu."""
-        menu = self.addMenu(self.tr("Transform"))
+        menu = self.addMenu(self.tr("Transform ..."))
 
         tree = self.projTree
         tHandle = self._handle
