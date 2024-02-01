@@ -34,9 +34,9 @@ from PyQt5.QtCore import (
     pyqtSignal, pyqtSlot
 )
 from PyQt5.QtWidgets import (
-    QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFormLayout,
-    QHBoxLayout, QLabel, QLineEdit, QListView, QMenu, QPushButton, QScrollArea, QShortcut,
-    QSpinBox, QStackedWidget, QStyle, QStyleOptionViewItem, QStyledItemDelegate,
+    QDialog, QDialogButtonBox, QFileDialog, QFormLayout, QHBoxLayout, QLabel,
+    QLineEdit, QListView, QMenu, QPushButton, QScrollArea, QShortcut,
+    QStackedWidget, QStyle, QStyleOptionViewItem, QStyledItemDelegate,
     QToolButton, QVBoxLayout, QWidget, qApp
 )
 
@@ -46,6 +46,7 @@ from novelwriter.common import formatInt, formatVersion, makeFileNameSafe
 from novelwriter.constants import nwUnicode
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.extensions.switch import NSwitch
+from novelwriter.extensions.modified import NComboBox, NSpinBox
 
 logger = logging.getLogger(__name__)
 
@@ -534,7 +535,7 @@ class _NewProjectForm(QWidget):
         self.projAuthor.setPlaceholderText(self.tr("Optional"))
 
         # Project Language
-        self.projLang = QComboBox(self)
+        self.projLang = NComboBox(self)
         for tag, language in CONFIG.listLanguages(CONFIG.LANG_PROJ):
             self.projLang.addItem(language, tag)
 
@@ -594,7 +595,7 @@ class _NewProjectForm(QWidget):
         # Chapters and Scenes
         # ===================
 
-        self.numChapters = QSpinBox()
+        self.numChapters = NSpinBox(self)
         self.numChapters.setRange(0, 200)
         self.numChapters.setValue(5)
         self.numChapters.setToolTip(self.tr("Set to 0 to only add scenes"))
@@ -605,7 +606,7 @@ class _NewProjectForm(QWidget):
         self.chapterBox.addWidget(QLabel(self.tr("chapter documents")))
         self.chapterBox.addStretch(1)
 
-        self.numScenes = QSpinBox()
+        self.numScenes = NSpinBox(self)
         self.numScenes.setRange(0, 200)
         self.numScenes.setValue(5)
 

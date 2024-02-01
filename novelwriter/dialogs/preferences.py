@@ -29,15 +29,16 @@ import logging
 from PyQt5.QtGui import QCloseEvent, QFont, QKeyEvent, QKeySequence
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractButton, QComboBox, QCompleter, QDialog, QDialogButtonBox,
-    QDoubleSpinBox, QFileDialog, QFontDialog, QHBoxLayout, QLineEdit,
-    QPushButton, QSpinBox, QToolButton, QVBoxLayout, QWidget, qApp
+    QAbstractButton, QCompleter, QDialog, QDialogButtonBox, QFileDialog,
+    QFontDialog, QHBoxLayout, QLineEdit, QPushButton, QToolButton, QVBoxLayout,
+    QWidget, qApp
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwConst, nwUnicode
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.switch import NSwitch
+from novelwriter.extensions.modified import NComboBox, NDoubleSpinBox, NSpinBox
 from novelwriter.extensions.configlayout import NColourLabel, NScrollableForm
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 
@@ -146,7 +147,7 @@ class GuiPreferences(QDialog):
         self.mainForm.addGroupLabel(title, section)
 
         # Display Language
-        self.guiLocale = QComboBox(self)
+        self.guiLocale = NComboBox(self)
         self.guiLocale.setMinimumWidth(minWidth)
         for lang, name in CONFIG.listLanguages(CONFIG.LANG_NW):
             self.guiLocale.addItem(name, lang)
@@ -159,7 +160,7 @@ class GuiPreferences(QDialog):
         )
 
         # Colour Theme
-        self.guiTheme = QComboBox(self)
+        self.guiTheme = NComboBox(self)
         self.guiTheme.setMinimumWidth(minWidth)
         for theme, name in SHARED.theme.listThemes():
             self.guiTheme.addItem(name, theme)
@@ -186,7 +187,7 @@ class GuiPreferences(QDialog):
         )
 
         # Application Font Size
-        self.guiFontSize = QSpinBox(self)
+        self.guiFontSize = NSpinBox(self)
         self.guiFontSize.setMinimum(8)
         self.guiFontSize.setMaximum(60)
         self.guiFontSize.setSingleStep(1)
@@ -221,7 +222,7 @@ class GuiPreferences(QDialog):
         self.mainForm.addGroupLabel(title, section)
 
         # Document Colour Theme
-        self.guiSyntax = QComboBox(self)
+        self.guiSyntax = NComboBox(self)
         self.guiSyntax.setMinimumWidth(CONFIG.pxInt(200))
         for syntax, name in SHARED.theme.listSyntax():
             self.guiSyntax.addItem(name, syntax)
@@ -248,7 +249,7 @@ class GuiPreferences(QDialog):
         )
 
         # Document Font Size
-        self.textSize = QSpinBox(self)
+        self.textSize = NSpinBox(self)
         self.textSize.setMinimum(8)
         self.textSize.setMaximum(60)
         self.textSize.setSingleStep(1)
@@ -290,7 +291,7 @@ class GuiPreferences(QDialog):
         self.mainForm.addGroupLabel(title, section)
 
         # Document Save Timer
-        self.autoSaveDoc = QSpinBox(self)
+        self.autoSaveDoc = NSpinBox(self)
         self.autoSaveDoc.setMinimum(5)
         self.autoSaveDoc.setMaximum(600)
         self.autoSaveDoc.setSingleStep(1)
@@ -301,7 +302,7 @@ class GuiPreferences(QDialog):
         )
 
         # Project Save Timer
-        self.autoSaveProj = QSpinBox(self)
+        self.autoSaveProj = NSpinBox(self)
         self.autoSaveProj.setMinimum(5)
         self.autoSaveProj.setMaximum(600)
         self.autoSaveProj.setSingleStep(1)
@@ -364,7 +365,7 @@ class GuiPreferences(QDialog):
         )
 
         # Inactive Time for Idle
-        self.userIdleTime = QDoubleSpinBox(self)
+        self.userIdleTime = NDoubleSpinBox(self)
         self.userIdleTime.setMinimum(0.5)
         self.userIdleTime.setMaximum(600.0)
         self.userIdleTime.setSingleStep(0.5)
@@ -388,7 +389,7 @@ class GuiPreferences(QDialog):
         self.mainForm.addGroupLabel(title, section)
 
         # Max Text Width in Normal Mode
-        self.textWidth = QSpinBox(self)
+        self.textWidth = NSpinBox(self)
         self.textWidth.setMinimum(0)
         self.textWidth.setMaximum(10000)
         self.textWidth.setSingleStep(10)
@@ -399,7 +400,7 @@ class GuiPreferences(QDialog):
         )
 
         # Max Text Width in Focus Mode
-        self.focusWidth = QSpinBox(self)
+        self.focusWidth = NSpinBox(self)
         self.focusWidth.setMinimum(200)
         self.focusWidth.setMaximum(10000)
         self.focusWidth.setSingleStep(10)
@@ -426,7 +427,7 @@ class GuiPreferences(QDialog):
         )
 
         # Document Margins
-        self.textMargin = QSpinBox(self)
+        self.textMargin = NSpinBox(self)
         self.textMargin.setMinimum(0)
         self.textMargin.setMaximum(900)
         self.textMargin.setSingleStep(1)
@@ -438,7 +439,7 @@ class GuiPreferences(QDialog):
         )
 
         # Tab Width
-        self.tabWidth = QSpinBox(self)
+        self.tabWidth = NSpinBox(self)
         self.tabWidth.setMinimum(0)
         self.tabWidth.setMaximum(200)
         self.tabWidth.setSingleStep(1)
@@ -458,7 +459,7 @@ class GuiPreferences(QDialog):
         self.mainForm.addGroupLabel(title, section)
 
         # Spell Checking
-        self.spellLanguage = QComboBox(self)
+        self.spellLanguage = NComboBox(self)
         self.spellLanguage.setMinimumWidth(minWidth)
 
         if CONFIG.hasEnchant:
@@ -523,7 +524,7 @@ class GuiPreferences(QDialog):
         )
 
         # Typewriter Position
-        self.autoScrollPos = QSpinBox(self)
+        self.autoScrollPos = NSpinBox(self)
         self.autoScrollPos.setMinimum(10)
         self.autoScrollPos.setMaximum(90)
         self.autoScrollPos.setSingleStep(1)
