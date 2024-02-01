@@ -197,6 +197,9 @@ class GuiWelcome(QDialog):
     def _openProjectPath(self, path: Path) -> None:
         """Emit a project open signal."""
         if isinstance(path, Path):
+            # Hide before emitting the open project signal so that any
+            # close/backup dialogs don't pop up over it.
+            self.hide()
             self.openProjectRequest.emit(path)
         self.close()
         return

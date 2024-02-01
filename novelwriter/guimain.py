@@ -1146,6 +1146,7 @@ class GuiMain(QMainWindow):
     @pyqtSlot(Path)
     def _openProject(self, path: Path) -> None:
         """Handle an open project request."""
+        qApp.processEvents()
         self.openProject(path)
         return
 
