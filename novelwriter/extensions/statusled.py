@@ -24,6 +24,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import logging
+
 from typing import Literal
 
 from PyQt5.QtGui import QColor, QPaintEvent, QPainter
@@ -64,14 +65,13 @@ class StatusLED(QAbstractButton):
         return
 
     def paintEvent(self, event: QPaintEvent) -> None:
-        """Drawing the LED."""
-        qPalette = self.palette()
-        qPaint = QPainter(self)
-        qPaint.setRenderHint(QPainter.Antialiasing, True)
-        qPaint.setPen(qPalette.dark().color())
-        qPaint.setBrush(self._theCol)
-        qPaint.setOpacity(1.0)
-        qPaint.drawEllipse(1, 1, self.width() - 2, self.height() - 2)
+        """Draw the LED."""
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.setPen(self.palette().dark().color())
+        painter.setBrush(self._theCol)
+        painter.setOpacity(1.0)
+        painter.drawEllipse(1, 1, self.width() - 2, self.height() - 2)
         return
 
 # END Class StatusLED

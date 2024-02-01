@@ -355,7 +355,7 @@ class _ProjectListItem(QStyledItemDelegate):
 
         painter.save()
         if opt.state & QStyle.StateFlag.State_Selected == QStyle.StateFlag.State_Selected:
-            painter.setOpacity(0.5)
+            painter.setOpacity(0.25)
             painter.fillRect(rect, qApp.palette().highlight())
             painter.setOpacity(1.0)
 
