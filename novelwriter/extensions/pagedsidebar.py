@@ -160,7 +160,7 @@ class _NPagedToolButton(QToolButton):
         if self.isChecked():
             backCol = palette.highlight()
             paint.setBrush(backCol)
-            paint.setOpacity(0.5)
+            paint.setOpacity(0.35)
             paint.drawRoundedRect(0, 0, width, height, self._cR, self._cR)
             textCol = palette.highlightedText().color()
         else:

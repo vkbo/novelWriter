@@ -152,11 +152,6 @@ def testToolWelcome_Open(qtbot: QtBot, monkeypatch, nwGUI, fncPath):
         mp.setattr(listModel, "data", lambda *a: ("a", "b", "c"))
         assert listModel.removeEntry(listModel.createIndex(1, 0)) is False
 
-    # Delete last entry with keypress
-    qtbot.mouseClick(vPort, Qt.MouseButton.LeftButton, pos=posOne, delay=10)
-    qtbot.keyClick(tabOpen, Qt.Key.Key_Delete, delay=10)
-    assert len(CONFIG.recentProjects.listEntries()) == 0
-
     # qtbot.stop()
     welcome.close()
 

@@ -34,9 +34,9 @@ from PyQt5.QtCore import (
     pyqtSignal, pyqtSlot
 )
 from PyQt5.QtWidgets import (
-    QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFormLayout,
-    QHBoxLayout, QLabel, QLineEdit, QListView, QMenu, QPushButton, QScrollArea, QShortcut,
-    QSpinBox, QStackedWidget, QStyle, QStyleOptionViewItem, QStyledItemDelegate,
+    QDialog, QDialogButtonBox, QFileDialog, QFormLayout, QHBoxLayout, QLabel,
+    QLineEdit, QListView, QMenu, QPushButton, QScrollArea, QShortcut,
+    QStackedWidget, QStyle, QStyleOptionViewItem, QStyledItemDelegate,
     QToolButton, QVBoxLayout, QWidget, qApp
 )
 
@@ -46,6 +46,7 @@ from novelwriter.common import formatInt, formatVersion, makeFileNameSafe
 from novelwriter.constants import nwUnicode
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.extensions.switch import NSwitch
+from novelwriter.extensions.modified import NComboBox, NSpinBox
 
 logger = logging.getLogger(__name__)
 
@@ -197,6 +198,9 @@ class GuiWelcome(QDialog):
     def _openProjectPath(self, path: Path) -> None:
         """Emit a project open signal."""
         if isinstance(path, Path):
+            # Hide before emitting the open project signal so that any
+            # close/backup dialogs don't pop up over it.
+            self.hide()
             self.openProjectRequest.emit(path)
         self.close()
         return
@@ -249,8 +253,7 @@ class _OpenProjectPage(QWidget):
 
         self.setLayout(self.outerBox)
 
-        self.listWidget.setCurrentIndex(self.listModel.index(0))
-        self._projectClicked(self.listModel.index(0))
+        self._selectFirstItem()
 
         baseCol = self.palette().base().color()
         self.setStyleSheet((
@@ -278,9 +281,9 @@ class _OpenProjectPage(QWidget):
     @pyqtSlot(QModelIndex)
     def _projectClicked(self, index: QModelIndex) -> None:
         """Process single click on project item."""
-        if index.isValid():
-            path = self.tr("Path")
-            self.selectedPath.setText(f"{path}: {index.data()[1]}")
+        path = self.tr("Path")
+        value = index.data()[1] if index.isValid() else ""
+        self.selectedPath.setText(f"{path}: {value}")
         return
 
     @pyqtSlot(QModelIndex)
@@ -300,6 +303,7 @@ class _OpenProjectPage(QWidget):
             ).format(index.data()[0])
             if SHARED.question(text):
                 self.listModel.removeEntry(index)
+            self._selectFirstItem()
         return
 
     @pyqtSlot("QPoint")
@@ -313,6 +317,17 @@ class _OpenProjectPage(QWidget):
         action.triggered.connect(self._deleteSelectedItem)
         ctxMenu.exec_(self.mapToGlobal(pos))
         ctxMenu.deleteLater()
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _selectFirstItem(self) -> None:
+        """Select the first item, if any are available."""
+        index = self.listModel.index(0)
+        self.listWidget.setCurrentIndex(index)
+        self._projectClicked(index)
         return
 
 # END Class _OpenProjectPage
@@ -355,7 +370,7 @@ class _ProjectListItem(QStyledItemDelegate):
 
         painter.save()
         if opt.state & QStyle.StateFlag.State_Selected == QStyle.StateFlag.State_Selected:
-            painter.setOpacity(0.5)
+            painter.setOpacity(0.25)
             painter.fillRect(rect, qApp.palette().highlight())
             painter.setOpacity(1.0)
 
@@ -520,7 +535,7 @@ class _NewProjectForm(QWidget):
         self.projAuthor.setPlaceholderText(self.tr("Optional"))
 
         # Project Language
-        self.projLang = QComboBox(self)
+        self.projLang = NComboBox(self)
         for tag, language in CONFIG.listLanguages(CONFIG.LANG_PROJ):
             self.projLang.addItem(language, tag)
 
@@ -580,7 +595,7 @@ class _NewProjectForm(QWidget):
         # Chapters and Scenes
         # ===================
 
-        self.numChapters = QSpinBox()
+        self.numChapters = NSpinBox(self)
         self.numChapters.setRange(0, 200)
         self.numChapters.setValue(5)
         self.numChapters.setToolTip(self.tr("Set to 0 to only add scenes"))
@@ -591,7 +606,7 @@ class _NewProjectForm(QWidget):
         self.chapterBox.addWidget(QLabel(self.tr("chapter documents")))
         self.chapterBox.addStretch(1)
 
-        self.numScenes = QSpinBox()
+        self.numScenes = NSpinBox(self)
         self.numScenes.setRange(0, 200)
         self.numScenes.setValue(5)
 

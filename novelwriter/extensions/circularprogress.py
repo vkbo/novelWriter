@@ -84,17 +84,17 @@ class NProgressCircle(QProgressBar):
         """Custom painter for the progress bar."""
         progress = 100.0*self.value()/self.maximum()
         angle = ceil(16*3.6*progress)
-        qPaint = QPainter(self)
-        qPaint.setRenderHint(QPainter.Antialiasing, True)
-        qPaint.setPen(self._dPen)
-        qPaint.setBrush(self._dBrush)
-        qPaint.drawEllipse(self._dRect)
-        qPaint.setPen(self._bPen)
-        qPaint.drawArc(self._cRect, 0, 360*16)
-        qPaint.setPen(self._cPen)
-        qPaint.drawArc(self._cRect, 90*16, -angle)
-        qPaint.setPen(self._tColor)
-        qPaint.drawText(self._cRect, Qt.AlignCenter, self._text or f"{progress:.1f} %")
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.setPen(self._dPen)
+        painter.setBrush(self._dBrush)
+        painter.drawEllipse(self._dRect)
+        painter.setPen(self._bPen)
+        painter.drawArc(self._cRect, 0, 360*16)
+        painter.setPen(self._cPen)
+        painter.drawArc(self._cRect, 90*16, -angle)
+        painter.setPen(self._tColor)
+        painter.drawText(self._cRect, Qt.AlignCenter, self._text or f"{progress:.1f} %")
         return
 
 # END Class NProgressCircle

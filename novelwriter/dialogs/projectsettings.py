@@ -29,7 +29,7 @@ import logging
 from PyQt5.QtGui import QCloseEvent, QColor, QIcon, QPixmap
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QColorDialog, QComboBox, QDialog, QDialogButtonBox, QHBoxLayout, QLineEdit,
+    QColorDialog, QDialog, QDialogButtonBox, QHBoxLayout, QLineEdit,
     QPushButton, QStackedWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
     QWidget, qApp
 )
@@ -37,6 +37,7 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import simplified
 from novelwriter.extensions.switch import NSwitch
+from novelwriter.extensions.modified import NComboBox
 from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrollableForm
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 
@@ -257,7 +258,7 @@ class _SettingsPage(NScrollableForm):
         )
 
         # Project Language
-        self.projLang = QComboBox(self)
+        self.projLang = NComboBox(self)
         self.projLang.setMinimumWidth(xW)
         for tag, language in CONFIG.listLanguages(CONFIG.LANG_PROJ):
             self.projLang.addItem(language, tag)
@@ -270,7 +271,7 @@ class _SettingsPage(NScrollableForm):
             self.projLang.setCurrentIndex(idx)
 
         # Spell Check Language
-        self.spellLang = QComboBox(self)
+        self.spellLang = NComboBox(self)
         self.spellLang.setMinimumWidth(xW)
         self.spellLang.addItem(self.tr("Default"), "None")
         if CONFIG.hasEnchant:

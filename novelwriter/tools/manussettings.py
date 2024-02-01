@@ -30,17 +30,17 @@ from typing import TYPE_CHECKING
 from PyQt5.QtGui import QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from PyQt5.QtCore import QEvent, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractButton, QAbstractItemView, QComboBox, QDialog, QDialogButtonBox,
-    QDoubleSpinBox, QFontDialog, QFrame, QGridLayout, QHBoxLayout, QHeaderView,
-    QLabel, QLineEdit, QMenu, QPlainTextEdit, QPushButton, QSpinBox, QSplitter,
-    QStackedWidget, QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-    QWidget
+    QAbstractButton, QAbstractItemView, QDialog, QDialogButtonBox,
+    QFontDialog, QFrame, QGridLayout, QHBoxLayout, QHeaderView, QLabel,
+    QLineEdit, QMenu, QPlainTextEdit, QPushButton, QSplitter, QStackedWidget,
+    QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwHeadFmt, nwLabels, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.switch import NSwitch
+from novelwriter.extensions.modified import NComboBox, NDoubleSpinBox, NSpinBox
 from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.extensions.configlayout import (
     NColourLabel, NFixedPage, NScrollableForm, NScrollablePage
@@ -968,7 +968,7 @@ class _FormatTab(NScrollableForm):
         )
 
         # Font Size
-        self.textSize = QSpinBox(self)
+        self.textSize = NSpinBox(self)
         self.textSize.setMinimum(8)
         self.textSize.setMaximum(60)
         self.textSize.setSingleStep(1)
@@ -976,7 +976,7 @@ class _FormatTab(NScrollableForm):
         self.addRow(self._build.getLabel("format.textSize"), self.textSize, unit="pt")
 
         # Line Height
-        self.lineHeight = QDoubleSpinBox(self)
+        self.lineHeight = NDoubleSpinBox(self)
         self.lineHeight.setFixedWidth(spW)
         self.lineHeight.setMinimum(0.75)
         self.lineHeight.setMaximum(3.0)
@@ -1002,34 +1002,34 @@ class _FormatTab(NScrollableForm):
 
         self.addGroupLabel(self._build.getLabel("format.grpPage"))
 
-        self.pageUnit = QComboBox(self)
+        self.pageUnit = NComboBox(self)
         for key, name in nwLabels.UNIT_NAME.items():
             self.pageUnit.addItem(trConst(name), key)
 
-        self.pageSize = QComboBox(self)
+        self.pageSize = NComboBox(self)
         for key, name in nwLabels.PAPER_NAME.items():
             self.pageSize.addItem(trConst(name), key)
 
-        self.pageWidth = QDoubleSpinBox(self)
+        self.pageWidth = NDoubleSpinBox(self)
         self.pageWidth.setFixedWidth(dbW)
         self.pageWidth.setMaximum(500.0)
         self.pageWidth.valueChanged.connect(self._pageSizeValueChanged)
 
-        self.pageHeight = QDoubleSpinBox(self)
+        self.pageHeight = NDoubleSpinBox(self)
         self.pageHeight.setFixedWidth(dbW)
         self.pageHeight.setMaximum(500.0)
         self.pageHeight.valueChanged.connect(self._pageSizeValueChanged)
 
-        self.topMargin = QDoubleSpinBox(self)
+        self.topMargin = NDoubleSpinBox(self)
         self.topMargin.setFixedWidth(dbW)
 
-        self.bottomMargin = QDoubleSpinBox(self)
+        self.bottomMargin = NDoubleSpinBox(self)
         self.bottomMargin.setFixedWidth(dbW)
 
-        self.leftMargin = QDoubleSpinBox(self)
+        self.leftMargin = NDoubleSpinBox(self)
         self.leftMargin.setFixedWidth(dbW)
 
-        self.rightMargin = QDoubleSpinBox(self)
+        self.rightMargin = NDoubleSpinBox(self)
         self.rightMargin.setFixedWidth(dbW)
 
         self.addRow(self._build.getLabel("format.pageUnit"), self.pageUnit)
@@ -1232,7 +1232,7 @@ class _OutputTab(NScrollableForm):
             button=self.btnPageHeader, stretch=(1, 1)
         )
 
-        self.odtPageCountOffset = QSpinBox(self)
+        self.odtPageCountOffset = NSpinBox(self)
         self.odtPageCountOffset.setMinimum(0)
         self.odtPageCountOffset.setMaximum(999)
         self.odtPageCountOffset.setSingleStep(1)

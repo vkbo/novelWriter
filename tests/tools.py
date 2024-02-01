@@ -25,7 +25,7 @@ import shutil
 from pathlib import Path
 from datetime import datetime
 
-from PyQt5.QtWidgets import qApp
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QWidget, qApp
 
 XML_IGNORE = ("<novelWriterXML", "<project")
 ODT_IGNORE = ("<meta:generator", "<meta:creation-date", "<dc:date", "<meta:editing")
@@ -214,3 +214,23 @@ def buildTestProject(obj: object, projPath: Path) -> None:
         nwGUI.rebuildTrees()
 
     return
+
+
+class SimpleDialog(QDialog):
+
+    def __init__(self, widget: QWidget) -> None:
+        super().__init__()
+        self._widget = widget
+
+        layout = QVBoxLayout()
+        layout.addWidget(widget)
+        layout.setContentsMargins(40, 40, 40, 40)
+        self.setLayout(layout)
+
+        return
+
+    @property
+    def widget(self) -> QWidget:
+        return self._widget
+
+# END Class TestDialog

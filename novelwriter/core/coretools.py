@@ -460,6 +460,7 @@ class ProjectBuilder:
         source = data.get("template")
         if not (isinstance(source, Path) and source.is_file()
                 and source.name == nwFiles.PROJ_FILE):
+            logger.error("Could not access source project: %s", source)
             return False
 
         logger.info("Copying project: %s", source)
