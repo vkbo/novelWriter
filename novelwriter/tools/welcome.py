@@ -249,8 +249,7 @@ class _OpenProjectPage(QWidget):
 
         self.setLayout(self.outerBox)
 
-        self.listWidget.setCurrentIndex(self.listModel.index(0))
-        self._projectClicked(self.listModel.index(0))
+        self._selectFirstItem()
 
         baseCol = self.palette().base().color()
         self.setStyleSheet((
@@ -278,9 +277,9 @@ class _OpenProjectPage(QWidget):
     @pyqtSlot(QModelIndex)
     def _projectClicked(self, index: QModelIndex) -> None:
         """Process single click on project item."""
-        if index.isValid():
-            path = self.tr("Path")
-            self.selectedPath.setText(f"{path}: {index.data()[1]}")
+        path = self.tr("Path")
+        value = index.data()[1] if index.isValid() else ""
+        self.selectedPath.setText(f"{path}: {value}")
         return
 
     @pyqtSlot(QModelIndex)
@@ -300,6 +299,7 @@ class _OpenProjectPage(QWidget):
             ).format(index.data()[0])
             if SHARED.question(text):
                 self.listModel.removeEntry(index)
+            self._selectFirstItem()
         return
 
     @pyqtSlot("QPoint")
@@ -313,6 +313,17 @@ class _OpenProjectPage(QWidget):
         action.triggered.connect(self._deleteSelectedItem)
         ctxMenu.exec_(self.mapToGlobal(pos))
         ctxMenu.deleteLater()
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _selectFirstItem(self) -> None:
+        """Select the first item, if any are available."""
+        index = self.listModel.index(0)
+        self.listWidget.setCurrentIndex(index)
+        self._projectClicked(index)
         return
 
 # END Class _OpenProjectPage
