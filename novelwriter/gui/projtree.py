@@ -430,6 +430,8 @@ class GuiProjectToolBar(QWidget):
         addClass(nwItemClass.OBJECT)
         addClass(nwItemClass.ENTITY)
         addClass(nwItemClass.CUSTOM)
+        self.mAddRoot.addSeparator()
+        addClass(nwItemClass.TEMPLATES)
 
         return
 

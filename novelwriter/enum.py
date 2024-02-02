@@ -47,7 +47,8 @@ class nwItemClass(Enum):
     ENTITY    = 7
     CUSTOM    = 8
     ARCHIVE   = 9
-    TRASH     = 10
+    TEMPLATES = 10
+    TRASH     = 11
 
 # END Enum nwItemClass
 

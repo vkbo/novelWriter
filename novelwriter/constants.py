@@ -186,6 +186,7 @@ class nwLabels:
         nwItemClass.ENTITY:    QT_TRANSLATE_NOOP("Constant", "Entities"),
         nwItemClass.CUSTOM:    QT_TRANSLATE_NOOP("Constant", "Custom"),
         nwItemClass.ARCHIVE:   QT_TRANSLATE_NOOP("Constant", "Archive"),
+        nwItemClass.TEMPLATES: QT_TRANSLATE_NOOP("Constant", "Templates"),
         nwItemClass.TRASH:     QT_TRANSLATE_NOOP("Constant", "Trash"),
     }
     CLASS_ICON = {
@@ -199,6 +200,7 @@ class nwLabels:
         nwItemClass.ENTITY:    "cls_entity",
         nwItemClass.CUSTOM:    "cls_custom",
         nwItemClass.ARCHIVE:   "cls_archive",
+        nwItemClass.TEMPLATES: "cls_custom",
         nwItemClass.TRASH:     "cls_trash",
     }
     LAYOUT_NAME = {
