@@ -32,6 +32,7 @@ import logging
 from typing import Iterable
 from pathlib import Path
 from functools import partial
+from zipfile import ZipFile, is_zipfile
 
 from PyQt5.QtCore import QCoreApplication
 
@@ -459,7 +460,7 @@ class ProjectBuilder:
         """
         source = data.get("template")
         if not (isinstance(source, Path) and source.is_file()
-                and source.name == nwFiles.PROJ_FILE):
+                and (source.name == nwFiles.PROJ_FILE or is_zipfile(source))):
             logger.error("Could not access source project: %s", source)
             return False
 
@@ -476,12 +477,24 @@ class ProjectBuilder:
         dstPath = path.resolve()
         srcCont = srcPath / "content"
         dstCont = dstPath / "content"
-        dstPath.mkdir(exist_ok=True)
-        dstCont.mkdir(exist_ok=True)
-        shutil.copy2(srcPath / nwFiles.PROJ_FILE, dstPath)
-        for contFile in srcCont.iterdir():
-            if contFile.is_file() and contFile.suffix == ".nwd" and isHandle(contFile.stem):
-                shutil.copy2(contFile, dstCont)
+        try:
+            dstPath.mkdir(exist_ok=True)
+            dstCont.mkdir(exist_ok=True)
+            if is_zipfile(source):
+                with ZipFile(source) as zipObj:
+                    for member in zipObj.namelist():
+                        if member == nwFiles.PROJ_FILE:
+                            zipObj.extract(member, dstPath)
+                        elif member.startswith("content") and member.endswith(".nwd"):
+                            zipObj.extract(member, dstPath)
+            else:
+                shutil.copy2(srcPath / nwFiles.PROJ_FILE, dstPath)
+                for item in srcCont.iterdir():
+                    if item.is_file() and item.suffix == ".nwd" and isHandle(item.stem):
+                        shutil.copy2(item, dstCont)
+        except Exception as exc:
+            SHARED.error(self.tr("Could not copy project files."), exc=exc)
+            return False
 
         # Open the copied project and update settings
         project = NWProject()
@@ -505,14 +518,11 @@ class ProjectBuilder:
         """Make a copy of the sample project by extracting the
         sample.zip file to the new path.
         """
-        pkgSample = CONFIG.assetPath("sample.zip")
-        if pkgSample.is_file():
+        if (sample := CONFIG.assetPath("sample.zip")).is_file():
             try:
-                shutil.unpack_archive(pkgSample, path)
+                shutil.unpack_archive(sample, path)
             except Exception as exc:
-                SHARED.error(self.tr(
-                    "Failed to create a new example project."
-                ), exc=exc)
+                SHARED.error(self.tr("Failed to create a new example project."), exc=exc)
                 return False
         else:
             SHARED.error(self.tr(

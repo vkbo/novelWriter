@@ -22,8 +22,6 @@ from __future__ import annotations
 
 import pytest
 
-from tools import getGuiItem
-
 from PyQt5.QtGui import QFontDatabase, QKeyEvent
 from PyQt5.QtCore import QEvent, Qt
 from PyQt5.QtWidgets import QAction, QDialogButtonBox, QFileDialog, QFontDialog
@@ -44,8 +42,8 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
 
     # Load GUI with standard values
     nwGUI.mainMenu.aPreferences.activate(QAction.ActionEvent.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiPreferences") is not None, timeout=1000)
-    prefs = getGuiItem("GuiPreferences")
+    qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiPreferences) is not None, timeout=1000)
+    prefs = SHARED.findTopLevelWidget(GuiPreferences)
     assert isinstance(prefs, GuiPreferences)
     prefs.show()
 

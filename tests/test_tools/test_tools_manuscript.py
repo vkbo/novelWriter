@@ -26,7 +26,7 @@ import pytest
 from pathlib import Path
 from pytestqt.qtbot import QtBot
 
-from tools import C, buildTestProject, getGuiItem
+from tools import C, buildTestProject
 from mocked import causeOSError
 
 from PyQt5.QtCore import Qt, pyqtSlot
@@ -50,8 +50,8 @@ def testManuscript_Init(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath: Pat
     allText = "New Novel\nBy Jane Doe\nA Chapter\n\t\tHi\n* * *"
 
     nwGUI.mainMenu.aBuildManuscript.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiManuscript") is not None, timeout=1000)
-    manus = getGuiItem("GuiManuscript")
+    qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiManuscript) is not None, timeout=1000)
+    manus = SHARED.findTopLevelWidget(GuiManuscript)
     assert isinstance(manus, GuiManuscript)
     manus.show()
     assert manus.docPreview.toPlainText().strip() == ""
@@ -104,7 +104,7 @@ def testManuscript_Builds(qtbot: QtBot, nwGUI: GuiMain, projPath: Path):
 
     # Create a new build
     manus.tbAdd.click()
-    bSettings = getGuiItem("GuiBuildSettings")
+    bSettings = SHARED.findTopLevelWidget(GuiBuildSettings)
     assert isinstance(bSettings, GuiBuildSettings)
     bSettings.editBuildName.setText("Test Build")
     build = None
@@ -127,7 +127,7 @@ def testManuscript_Builds(qtbot: QtBot, nwGUI: GuiMain, projPath: Path):
     manus.buildList.setCurrentRow(0)
     manus.tbEdit.click()
 
-    bSettings = getGuiItem("GuiBuildSettings")
+    bSettings = SHARED.findTopLevelWidget(GuiBuildSettings)
     assert isinstance(bSettings, GuiBuildSettings)
     build = None
 

@@ -25,7 +25,7 @@ import pytest
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QAction
 
-from tools import buildTestProject, getGuiItem
+from tools import buildTestProject
 
 from novelwriter import SHARED
 from novelwriter.core.spellcheck import UserDictionary
@@ -47,9 +47,9 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, projPath):
 
     # Load the dialog
     nwGUI.mainMenu.aEditWordList.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiWordList") is not None, timeout=1000)
+    qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiWordList) is not None, timeout=1000)
 
-    wList = getGuiItem("GuiWordList")
+    wList = SHARED.findTopLevelWidget(GuiWordList)
     assert isinstance(wList, GuiWordList)
     wList.show()
 

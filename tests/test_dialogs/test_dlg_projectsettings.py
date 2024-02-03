@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import pytest
 
-from tools import C, getGuiItem, buildTestProject
+from tools import C, buildTestProject
 
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
@@ -47,7 +47,7 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
 
     # Check that we cannot open when there is no project
     nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
-    assert getGuiItem("GuiProjectSettings") is None
+    assert SHARED.findTopLevelWidget(GuiProjectSettings) is None
 
     # Pretend we have a project
     SHARED.project._valid = True
@@ -55,9 +55,11 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
 
     # Get the dialog object
     nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiProjectSettings") is not None, timeout=1000)
+    qtbot.waitUntil(
+        lambda: SHARED.findTopLevelWidget(GuiProjectSettings) is not None, timeout=1000
+    )
 
-    projSettings = getGuiItem("GuiProjectSettings")
+    projSettings = SHARED.findTopLevelWidget(GuiProjectSettings)
     assert isinstance(projSettings, GuiProjectSettings)
     projSettings.show()
     qtbot.addWidget(projSettings)

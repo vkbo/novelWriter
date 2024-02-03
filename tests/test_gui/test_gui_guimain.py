@@ -26,7 +26,7 @@ import pytest
 from shutil import copyfile
 
 from tools import (
-    C, NWD_IGNORE, cmpFiles, buildTestProject, XML_IGNORE, getGuiItem
+    C, NWD_IGNORE, cmpFiles, buildTestProject, XML_IGNORE
 )
 
 from PyQt5.QtGui import QPalette
@@ -93,16 +93,16 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
     nwGUI.closeProject()
 
     # Check that release notes opened
-    qtbot.waitUntil(lambda: getGuiItem("GuiAbout") is not None, timeout=1000)
-    msgAbout = getGuiItem("GuiAbout")
+    qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiAbout) is not None, timeout=1000)
+    msgAbout = SHARED.findTopLevelWidget(GuiAbout)
     assert isinstance(msgAbout, GuiAbout)
     assert msgAbout.tabBox.currentWidget() == msgAbout.pageNotes
     msgAbout.accept()
 
     # Check that project open dialog launches
     nwGUI.postLaunchTasks(None)
-    qtbot.waitUntil(lambda: getGuiItem("GuiWelcome") is not None, timeout=1000)
-    assert isinstance(welcome := getGuiItem("GuiWelcome"), GuiWelcome)
+    qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiWelcome) is not None, timeout=1000)
+    assert isinstance(welcome := SHARED.findTopLevelWidget(GuiWelcome), GuiWelcome)
     welcome.show()
     welcome.close()
 
