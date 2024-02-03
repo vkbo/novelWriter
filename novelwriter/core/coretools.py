@@ -477,9 +477,9 @@ class ProjectBuilder:
         dstPath = path.resolve()
         srcCont = srcPath / "content"
         dstCont = dstPath / "content"
-        dstPath.mkdir(exist_ok=True)
-        dstCont.mkdir(exist_ok=True)
         try:
+            dstPath.mkdir(exist_ok=True)
+            dstCont.mkdir(exist_ok=True)
             if is_zipfile(source):
                 with ZipFile(source) as zipObj:
                     for member in zipObj.namelist():

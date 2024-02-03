@@ -221,12 +221,9 @@ class SharedData(QObject):
     def getProjectPath(self, parent: QWidget, path: str | Path | None = None,
                        allowZip: bool = False) -> Path | None:
         """Open the file dialog and select a novelWriter project file."""
-        if allowZip:
-            label = self.tr("novelWriter Project File or Zip")
-            ext = f"{nwFiles.PROJ_FILE} *.zip"
-        else:
-            label = self.tr("novelWriter Project File")
-            ext = nwFiles.PROJ_FILE
+        label = (self.tr("novelWriter Project File or Zip")
+                 if allowZip else self.tr("novelWriter Project File"))
+        ext = f"{nwFiles.PROJ_FILE} *.zip" if allowZip else nwFiles.PROJ_FILE
         selected, _ = QFileDialog.getOpenFileName(
             parent, self.tr("Open Project"), str(path or ""), filter=";;".join(
                 [f"{label} ({ext})", "{0} (*)".format(self.tr("All Files"))]
