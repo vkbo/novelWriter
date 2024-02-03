@@ -25,7 +25,7 @@ import shutil
 from pathlib import Path
 from datetime import datetime
 
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QWidget, qApp
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QWidget
 
 XML_IGNORE = ("<novelWriterXML", "<project")
 ODT_IGNORE = ("<meta:generator", "<meta:creation-date", "<dc:date", "<meta:editing")
@@ -112,14 +112,6 @@ def cmpFiles(
     foTwo.close()
 
     return not diffFound
-
-
-def getGuiItem(name: str):
-    """Returns a QtWidget based on its objectName."""
-    for qWidget in qApp.topLevelWidgets():
-        if qWidget.objectName() == name:
-            return qWidget
-    return None
 
 
 def readFile(fileName: str | Path):
