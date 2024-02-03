@@ -22,8 +22,6 @@ from __future__ import annotations
 
 import pytest
 
-from tools import getGuiItem
-
 from PyQt5.QtWidgets import QAction
 
 from novelwriter import SHARED
@@ -49,8 +47,8 @@ def testToolNovelDetails_Main(qtbot, nwGUI, prjLipsum, ipsumText):
 
     # Create the dialog
     nwGUI.mainMenu.aNovelDetails.activate(QAction.ActionEvent.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiNovelDetails") is not None, timeout=1000)
-    details = getGuiItem("GuiNovelDetails")
+    qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiNovelDetails) is not None, timeout=1000)
+    details = SHARED.findTopLevelWidget(GuiNovelDetails)
     assert isinstance(details, GuiNovelDetails)
 
     # Overview Page

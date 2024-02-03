@@ -25,7 +25,6 @@ import enchant
 
 from zipfile import ZipFile
 
-from tools import getGuiItem
 from mocked import causeException
 
 from PyQt5.QtGui import QDesktopServices
@@ -48,9 +47,9 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
 
     # Open the tool
     nwGUI.showDictionariesDialog()
-    qtbot.waitUntil(lambda: getGuiItem("GuiDictionaries") is not None, timeout=1000)
+    qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiDictionaries) is not None, timeout=1000)
 
-    nwDicts = getGuiItem("GuiDictionaries")
+    nwDicts = SHARED.findTopLevelWidget(GuiDictionaries)
     assert isinstance(nwDicts, GuiDictionaries)
     assert nwDicts.isVisible()
     assert nwDicts.inPath.text() == str(fncPath)

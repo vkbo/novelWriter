@@ -24,10 +24,9 @@ import pytest
 
 from pathlib import Path
 
-from tools import getGuiItem
-
 from PyQt5.QtWidgets import QAction, QMessageBox
 
+from novelwriter import SHARED
 from novelwriter.dialogs.about import GuiAbout
 
 
@@ -37,8 +36,8 @@ def testDlgAbout_NWDialog(qtbot, monkeypatch, nwGUI):
     # NW About
     nwGUI.showAboutNWDialog(showNotes=True)
 
-    qtbot.waitUntil(lambda: getGuiItem("GuiAbout") is not None, timeout=1000)
-    msgAbout = getGuiItem("GuiAbout")
+    qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiAbout) is not None, timeout=1000)
+    msgAbout = SHARED.findTopLevelWidget(GuiAbout)
     assert isinstance(msgAbout, GuiAbout)
 
     assert msgAbout.pageAbout.document().characterCount() > 100

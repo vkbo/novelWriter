@@ -22,10 +22,11 @@ from __future__ import annotations
 
 import pytest
 
-from tools import C, getGuiItem, buildTestProject
+from tools import C, buildTestProject
 
 from PyQt5.QtWidgets import QAction
 
+from novelwriter import SHARED
 from novelwriter.tools.lipsum import GuiLipsum
 
 
@@ -34,7 +35,7 @@ def testToolLipsum_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the Lorem Ipsum tool."""
     # Check that we cannot open when there is no project
     nwGUI.mainMenu.aLipsumText.activate(QAction.Trigger)
-    assert getGuiItem("GuiLipsum") is None
+    assert SHARED.findTopLevelWidget(GuiLipsum) is None
 
     buildTestProject(nwGUI, projPath)
     nwLipsum = GuiLipsum(nwGUI)

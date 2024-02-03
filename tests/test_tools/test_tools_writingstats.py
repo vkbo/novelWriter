@@ -25,7 +25,7 @@ import pytest
 
 from pathlib import Path
 
-from tools import getGuiItem, buildTestProject
+from tools import buildTestProject
 from mocked import causeOSError
 
 from PyQt5.QtCore import Qt
@@ -38,8 +38,7 @@ from novelwriter.tools.writingstats import GuiWritingStats
 
 @pytest.mark.gui
 def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
-    """Test the full writing stats tool.
-    """
+    """Test the full writing stats tool."""
     # Create a project to work on
     buildTestProject(nwGUI, projPath)
     project = SHARED.project
@@ -50,9 +49,9 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
     # Open the Writing Stats dialog
     nwGUI.mainMenu.aWritingStats.activate(QAction.Trigger)
-    qtbot.waitUntil(lambda: getGuiItem("GuiWritingStats") is not None, timeout=1000)
+    qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiWritingStats) is not None, timeout=1000)
 
-    sessLog = getGuiItem("GuiWritingStats")
+    sessLog = SHARED.findTopLevelWidget(GuiWritingStats)
     assert isinstance(sessLog, GuiWritingStats)
 
     # Test Loading

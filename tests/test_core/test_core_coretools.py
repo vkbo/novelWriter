@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import uuid
 import pytest
+import shutil
 
 from shutil import copyfile
 from pathlib import Path
@@ -501,7 +502,7 @@ def testCoreTools_ProjectBuilderB(monkeypatch, fncPath, tstPaths, mockRnd):
 
 
 @pytest.mark.core
-def testCoreTools_ProjectBuilderTemplate(monkeypatch, mockGUI, prjLipsum, fncPath):
+def testCoreTools_ProjectBuilderCopyPlain(monkeypatch, caplog, mockGUI, prjLipsum, fncPath):
     """Create a new project copied from existing project."""
     srcPath = prjLipsum / nwFiles.PROJ_FILE
     dstPath = fncPath / "lipsum"
@@ -523,6 +524,14 @@ def testCoreTools_ProjectBuilderTemplate(monkeypatch, mockGUI, prjLipsum, fncPat
 
     # Cannot copy to existing folder
     assert builder.buildProject({"path": fncPath, "template": srcPath}) is False
+
+    # Valid data, but copy fails
+    caplog.clear()
+    with monkeypatch.context() as mp:
+        mp.setattr("pathlib.Path.mkdir", lambda *a, **k: causeOSError)
+        assert builder.buildProject(data) is False
+        assert "Could not copy project files." in caplog.text
+        dstPath.unlink(missing_ok=True)  # The failed mkdir leaves an empty file
 
     # Copy project properly
     assert builder.buildProject(data) is True
@@ -556,7 +565,85 @@ def testCoreTools_ProjectBuilderTemplate(monkeypatch, mockGUI, prjLipsum, fncPat
     assert dstProject.data.autoCount < 5
     assert dstProject.data.editTime < 10
 
-# END Test testCoreTools_ProjectBuilderTemplate
+# END Test testCoreTools_ProjectBuilderCopyPlain
+
+
+@pytest.mark.core
+def testCoreTools_ProjectBuilderCopyZipped(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
+    """Create a new project copied from existing zipped project."""
+
+    # Create a project
+    origPath = fncPath / "original"
+    srcProject = NWProject()
+    buildTestProject(srcProject, origPath)
+
+    # Zip it
+    shutil.make_archive(str(fncPath / "original"), "zip", origPath)
+
+    # Make fake zip file
+    fakeZip = fncPath / "broken.zip"
+    fakeZip.write_bytes(b"stuff")
+
+    # Set up the builder
+    srcPath = fncPath / "original.zip"
+    dstPath = fncPath / "copy"
+    data = {
+        "name": "Test Project",
+        "author": "Jane Doe",
+        "language": "en_US",
+        "path": dstPath,
+        "template": srcPath,
+    }
+
+    builder = ProjectBuilder()
+
+    # No path set
+    assert builder.buildProject({"template": srcPath}) is False
+
+    # No project at path
+    assert builder.buildProject({"path": fncPath, "template": fncPath}) is False
+
+    # Cannot copy to existing folder
+    assert builder.buildProject({"path": fncPath, "template": srcPath}) is False
+
+    # Cannot copy to existing folder
+    caplog.clear()
+    with monkeypatch.context() as mp:
+        mp.setattr("novelwriter.core.coretools.is_zipfile", lambda *a: True)
+        assert builder.buildProject({"path": dstPath, "template": fakeZip}) is False
+        assert "Could not copy project files." in caplog.text
+        shutil.rmtree(dstPath, ignore_errors=True)
+
+    # Copy project properly
+    assert builder.buildProject(data) is True
+
+    # Check Copy
+    # ==========
+
+    dstProject = NWProject()
+    dstProject.openProject(dstPath)
+
+    # UUID should be different
+    assert srcProject.data.uuid != dstProject.data.uuid
+
+    # Name should be different
+    assert srcProject.data.name == "New Project"
+    assert dstProject.data.name == "Test Project"
+
+    # Author should be different
+    assert srcProject.data.author == "Jane Doe"
+    assert dstProject.data.author == "Jane Doe"
+
+    # Language should be different
+    assert srcProject.data.language is None
+    assert dstProject.data.language == "en_US"
+
+    # Counts should be more or less zeroed
+    assert dstProject.data.saveCount < 5
+    assert dstProject.data.autoCount < 5
+    assert dstProject.data.editTime < 10
+
+# END Test testCoreTools_ProjectBuilderCopyZipped
 
 
 @pytest.mark.core
