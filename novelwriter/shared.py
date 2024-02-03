@@ -221,16 +221,18 @@ class SharedData(QObject):
     def getProjectPath(self, parent: QWidget, path: str | Path | None = None,
                        allowZip: bool = False) -> Path | None:
         """Open the file dialog and select a novelWriter project file."""
-        ext = [
-            self.tr("novelWriter Project File ({0})").format(nwFiles.PROJ_FILE),
-            self.tr("All files ({0})").format("*"),
-        ]
         if allowZip:
-            ext.insert(1, self.tr("Zip Archives ({0})").format("*.zip"))
-        projFile, _ = QFileDialog.getOpenFileName(
-            parent, self.tr("Open Project"), str(path or ""), filter=";;".join(ext)
+            label = self.tr("novelWriter Project File or Zip")
+            ext = f"{nwFiles.PROJ_FILE} *.zip"
+        else:
+            label = self.tr("novelWriter Project File")
+            ext = nwFiles.PROJ_FILE
+        selected, _ = QFileDialog.getOpenFileName(
+            parent, self.tr("Open Project"), str(path or ""), filter=";;".join(
+                [f"{label} ({ext})", "{0} (*)".format(self.tr("All Files"))]
+            )
         )
-        return Path(projFile) if projFile else None
+        return Path(selected) if selected else None
 
     def findTopLevelWidget(self, kind: type[NWWidget]) -> NWWidget | None:
         """Find a top level widget."""
