@@ -441,7 +441,7 @@ class GuiIcons:
 
         # Class Icons
         "cls_archive", "cls_character", "cls_custom", "cls_entity", "cls_none", "cls_novel",
-        "cls_object", "cls_plot", "cls_timeline", "cls_trash", "cls_world",
+        "cls_object", "cls_plot", "cls_template", "cls_timeline", "cls_trash", "cls_world",
 
         # Search Icons
         "search_cancel", "search_case", "search_loop", "search_preserve", "search_project",
