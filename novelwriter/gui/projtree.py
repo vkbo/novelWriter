@@ -32,12 +32,14 @@ from enum import Enum
 from time import time
 from typing import TYPE_CHECKING
 
-from PyQt5.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QMouseEvent, QPalette
+from PyQt5.QtGui import (
+    QDragEnterEvent, QDragMoveEvent, QDropEvent, QIcon, QMouseEvent, QPalette
+)
 from PyQt5.QtCore import QPoint, QTimer, Qt, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QDialog, QFrame, QHBoxLayout, QHeaderView, QLabel,
-    QMenu, QShortcut, QSizePolicy, QToolButton, QTreeWidget, QTreeWidgetItem,
-    QVBoxLayout, QWidget
+    QAbstractItemView, QAction, QDialog, QFrame, QHBoxLayout, QHeaderView,
+    QLabel, QMenu, QShortcut, QSizePolicy, QToolButton, QTreeWidget,
+    QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -131,7 +133,8 @@ class GuiProjectView(QWidget):
         self.keyContext.activated.connect(lambda: self.projTree.openContextOnSelected())
 
         # Signals
-        self.selectedItemChanged.connect(self.projBar._treeSelectionChanged)
+        self.selectedItemChanged.connect(self.projBar.treeSelectionChanged)
+        self.projTree.itemRefreshed.connect(self.projBar.treeItemRefreshed)
 
         # Function Mappings
         self.emptyTrash = self.projTree.emptyTrash
@@ -157,7 +160,7 @@ class GuiProjectView(QWidget):
         self.projTree.initSettings()
         return
 
-    def clearProjectView(self) -> None:
+    def closeProjectTasks(self) -> None:
         """Clear project-related GUI content."""
         self.projBar.clearContent()
         self.projBar.setEnabled(False)
@@ -166,7 +169,7 @@ class GuiProjectView(QWidget):
 
     def openProjectTasks(self) -> None:
         """Run open project tasks."""
-        self.projBar.buildQuickLinkMenu()
+        self.projBar.buildQuickLinksMenu()
         self.projBar.setEnabled(True)
         return
 
@@ -225,14 +228,16 @@ class GuiProjectView(QWidget):
 
     @pyqtSlot(str)
     def updateRootItem(self, tHandle: str) -> None:
-        """If any root item changes, rebuild the quick link menu."""
-        self.projBar.buildQuickLinkMenu()
+        """Process root item changes."""
+        self.projBar.buildQuickLinksMenu()
         return
 
 # END Class GuiProjectView
 
 
 class GuiProjectToolBar(QWidget):
+
+    newDocumentFromTemplate = pyqtSignal(str)
 
     def __init__(self, projView: GuiProjectView) -> None:
         super().__init__(parent=projView)
@@ -302,6 +307,11 @@ class GuiProjectToolBar(QWidget):
         self.aAddFolder.triggered.connect(
             lambda: self.projTree.newTreeItem(nwItemType.FOLDER)
         )
+
+        self.mTemplates = _UpdatableMenu(self.mAdd)
+        self.mTemplates.setActionsVisible(False)
+        self.mTemplates.menuItemTriggered.connect(self._templateSelected)
+        self.mAdd.addMenu(self.mTemplates)
 
         self.mAddRoot = self.mAdd.addMenu(trConst(nwLabels.ITEM_DESCRIPTION["root"]))
         self._buildRootMenu()
@@ -383,7 +393,7 @@ class GuiProjectToolBar(QWidget):
         self.tbAdd.setIcon(SHARED.theme.getIcon("add"))
         self.tbMore.setIcon(SHARED.theme.getIcon("menu"))
 
-        self.buildQuickLinkMenu()
+        self.buildQuickLinksMenu()
         self._buildRootMenu()
 
         return
@@ -391,19 +401,57 @@ class GuiProjectToolBar(QWidget):
     def clearContent(self) -> None:
         """Clear dynamic content on the tool bar."""
         self.mQuick.clear()
+        self.mTemplates.clearMenu()
         return
 
-    def buildQuickLinkMenu(self) -> None:
+    def buildQuickLinksMenu(self) -> None:
         """Build the quick link menu."""
         logger.debug("Rebuilding quick links menu")
         self.mQuick.clear()
-        for n, (tHandle, nwItem) in enumerate(SHARED.project.tree.iterRoots(None)):
-            aRoot = self.mQuick.addAction(nwItem.itemName)
-            aRoot.setData(tHandle)
-            aRoot.setIcon(SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass]))
-            aRoot.triggered.connect(
-                lambda n, tHandle=tHandle: self.projView.setSelectedHandle(tHandle, doScroll=True)
+        for tHandle, nwItem in SHARED.project.tree.iterRoots(None):
+            action = self.mQuick.addAction(nwItem.itemName)
+            action.setData(tHandle)
+            action.setIcon(SHARED.theme.getIcon(nwLabels.CLASS_ICON[nwItem.itemClass]))
+            action.triggered.connect(
+                lambda _, tHandle=tHandle: self.projView.setSelectedHandle(tHandle, doScroll=True)
             )
+        return
+
+    ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot(str, str, QIcon, bool)
+    def treeItemRefreshed(self, tHandle: str, name: str, icon: QIcon, isTemplate: bool) -> None:
+        """Process change in tree items to update menu content."""
+        if isTemplate:
+            self.mTemplates.addUpdate(tHandle, name, icon)
+        elif tHandle in self.mTemplates:
+            self.mTemplates.remove(tHandle)
+        return
+
+    @pyqtSlot(str)
+    def treeSelectionChanged(self, tHandle: str) -> None:
+        """Toggle the visibility of the new item entries for novel
+        documents. They should only be visible if novel documents can
+        actually be added.
+        """
+        nwItem = SHARED.project.tree[tHandle]
+        allowDoc = isinstance(nwItem, NWItem) and nwItem.documentAllowed()
+        self.aAddEmpty.setVisible(allowDoc)
+        self.aAddChap.setVisible(allowDoc)
+        self.aAddScene.setVisible(allowDoc)
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(str)
+    def _templateSelected(self, tHandle: str) -> None:
+        """Forward the template menu signal."""
+        logger.debug("Template selected: '%s'", tHandle)
+        self.newDocumentFromTemplate.emit(tHandle)
         return
 
     ##
@@ -421,7 +469,6 @@ class GuiProjectToolBar(QWidget):
 
         self.mAddRoot.clear()
         addClass(nwItemClass.NOVEL)
-        addClass(nwItemClass.ARCHIVE)
         self.mAddRoot.addSeparator()
         addClass(nwItemClass.PLOT)
         addClass(nwItemClass.CHARACTER)
@@ -431,25 +478,9 @@ class GuiProjectToolBar(QWidget):
         addClass(nwItemClass.ENTITY)
         addClass(nwItemClass.CUSTOM)
         self.mAddRoot.addSeparator()
+        addClass(nwItemClass.ARCHIVE)
         addClass(nwItemClass.TEMPLATE)
 
-        return
-
-    ##
-    #  Private Slots
-    ##
-
-    @pyqtSlot(str)
-    def _treeSelectionChanged(self, tHandle: str) -> None:
-        """Toggle the visibility of the new item entries for novel
-        documents. They should only be visible if novel documents can
-        actually be added.
-        """
-        nwItem = SHARED.project.tree[tHandle]
-        allowDoc = isinstance(nwItem, NWItem) and nwItem.documentAllowed()
-        self.aAddEmpty.setVisible(allowDoc)
-        self.aAddChap.setVisible(allowDoc)
-        self.aAddScene.setVisible(allowDoc)
         return
 
 # END Class GuiProjectToolBar
@@ -466,7 +497,7 @@ class GuiProjectTree(QTreeWidget):
     D_HANDLE = Qt.ItemDataRole.UserRole
     D_WORDS  = Qt.ItemDataRole.UserRole + 1
 
-    templatesUpdated = pyqtSignal(str)
+    itemRefreshed = pyqtSignal(str, str, QIcon, bool)
 
     def __init__(self, projView: GuiProjectView) -> None:
         super().__init__(parent=projView)
@@ -478,7 +509,6 @@ class GuiProjectTree(QTreeWidget):
 
         # Internal Variables
         self._treeMap = {}
-        self._templateItems = set()
         self._timeChanged = 0.0
         self._popAlert = None
 
@@ -1034,15 +1064,8 @@ class GuiProjectTree(QTreeWidget):
             trFont.setUnderline(hLevel == "H1")
             trItem.setFont(self.C_NAME, trFont)
 
-        # Templates
-        if nwItem.isTemplateFile():
-            self._templateItems.add(tHandle)
-            logger.debug("Updated template '%s'", tHandle)
-            self.templatesUpdated.emit(tHandle)
-        elif tHandle in self._templateItems:
-            self._templateItems.discard(tHandle)
-            logger.debug("Removed template '%s'", tHandle)
-            self.templatesUpdated.emit(tHandle)
+        # Emit Refresh Signal
+        self.itemRefreshed.emit(tHandle, nwItem.itemName, itemIcon, nwItem.isTemplateFile())
 
         return
 
@@ -1645,6 +1668,71 @@ class GuiProjectTree(QTreeWidget):
         return
 
 # END Class GuiProjectTree
+
+
+class _UpdatableMenu(QMenu):
+
+    menuItemTriggered = pyqtSignal(str)
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
+        self._map: dict[str, QAction] = {}
+        self.setTitle(self.tr("From Template"))
+        self.triggered.connect(self._actionTriggered)
+        return
+
+    def __contains__(self, tHandle: str) -> bool:
+        """Look up a handle in the menu."""
+        return tHandle in self._map
+
+    ##
+    #  Methods
+    ##
+
+    def addUpdate(self, tHandle: str, name: str, icon: QIcon) -> None:
+        """Add or update a template item."""
+        if tHandle in self._map:
+            action = self._map[tHandle]
+            action.setText(name)
+            action.setIcon(icon)
+        else:
+            action = QAction(icon, name, self)
+            action.setData(tHandle)
+            self.addAction(action)
+            self._map[tHandle] = action
+        self.setActionsVisible(True)
+        return
+
+    def remove(self, tHandle: str) -> None:
+        """Remove a template item."""
+        if action := self._map.pop(tHandle, None):
+            self.removeAction(action)
+        if not self._map:
+            self.setActionsVisible(True)
+        return
+
+    def clearMenu(self) -> None:
+        """Clear all menu content."""
+        self._map.clear()
+        self.clear()
+        return
+
+    def setActionsVisible(self, value: bool) -> None:
+        """Set the visibility of root action."""
+        self.menuAction().setVisible(value)
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(QAction)
+    def _actionTriggered(self, action: QAction) -> None:
+        """Translate the menu trigger into an item trigger."""
+        self.menuItemTriggered.emit(str(action.data()))
+        return
+
+# END Class _UpdatableMenu
 
 
 class _TreeContextMenu(QMenu):
