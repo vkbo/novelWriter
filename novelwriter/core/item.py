@@ -337,15 +337,19 @@ class NWItem:
         return self._class in (
             nwItemClass.NOVEL,
             nwItemClass.ARCHIVE,
-            nwItemClass.TEMPLATES,
+            nwItemClass.TEMPLATE,
         )
+
+    def isTemplateFile(self) -> bool:
+        """Check if the item is a template file."""
+        return self._type == nwItemType.FILE and self._class == nwItemClass.TEMPLATE
 
     def documentAllowed(self) -> bool:
         """Check if the item is allowed to be of document layout."""
         return self._class in (
             nwItemClass.NOVEL,
             nwItemClass.ARCHIVE,
-            nwItemClass.TEMPLATES,
+            nwItemClass.TEMPLATE,
             nwItemClass.TRASH,
         )
 
@@ -354,7 +358,7 @@ class NWItem:
         return self._class in (
             nwItemClass.NO_CLASS,
             nwItemClass.ARCHIVE,
-            nwItemClass.TEMPLATES,
+            nwItemClass.TEMPLATE,
             nwItemClass.TRASH,
         )
 

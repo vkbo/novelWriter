@@ -431,7 +431,7 @@ class GuiProjectToolBar(QWidget):
         addClass(nwItemClass.ENTITY)
         addClass(nwItemClass.CUSTOM)
         self.mAddRoot.addSeparator()
-        addClass(nwItemClass.TEMPLATES)
+        addClass(nwItemClass.TEMPLATE)
 
         return
 
@@ -466,6 +466,8 @@ class GuiProjectTree(QTreeWidget):
     D_HANDLE = Qt.ItemDataRole.UserRole
     D_WORDS  = Qt.ItemDataRole.UserRole + 1
 
+    templatesUpdated = pyqtSignal(str)
+
     def __init__(self, projView: GuiProjectView) -> None:
         super().__init__(parent=projView)
 
@@ -476,6 +478,7 @@ class GuiProjectTree(QTreeWidget):
 
         # Internal Variables
         self._treeMap = {}
+        self._templateItems = set()
         self._timeChanged = 0.0
         self._popAlert = None
 
@@ -1031,6 +1034,16 @@ class GuiProjectTree(QTreeWidget):
             trFont.setUnderline(hLevel == "H1")
             trItem.setFont(self.C_NAME, trFont)
 
+        # Templates
+        if nwItem.isTemplateFile():
+            self._templateItems.add(tHandle)
+            logger.debug("Updated template '%s'", tHandle)
+            self.templatesUpdated.emit(tHandle)
+        elif tHandle in self._templateItems:
+            self._templateItems.discard(tHandle)
+            logger.debug("Removed template '%s'", tHandle)
+            self.templatesUpdated.emit(tHandle)
+
         return
 
     def propagateCount(self, tHandle: str, newCount: int, countChildren: bool = False) -> None:
@@ -1360,8 +1373,7 @@ class GuiProjectTree(QTreeWidget):
         not including) a given item.
         """
         if isinstance(trItem, QTreeWidgetItem):
-            chCount = trItem.childCount()
-            for i in range(chCount):
+            for i in range(trItem.childCount()):
                 chItem = trItem.child(i)
                 chItem.setExpanded(isExpanded)
                 self._recursiveSetExpanded(chItem, isExpanded)
