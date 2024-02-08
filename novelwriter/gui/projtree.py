@@ -135,6 +135,7 @@ class GuiProjectView(QWidget):
         # Signals
         self.selectedItemChanged.connect(self.projBar.treeSelectionChanged)
         self.projTree.itemRefreshed.connect(self.projBar.treeItemRefreshed)
+        self.projBar.newDocumentFromTemplate.connect(self.createFileFromTemplate)
 
         # Function Mappings
         self.emptyTrash = self.projTree.emptyTrash
@@ -215,8 +216,15 @@ class GuiProjectView(QWidget):
 
     @pyqtSlot(str)
     def updateItemValues(self, tHandle: str) -> None:
-        """Update tree item"""
+        """Update tree item."""
         self.projTree.setTreeItemValues(tHandle)
+        return
+
+    @pyqtSlot(str)
+    def createFileFromTemplate(self, tHandle: str) -> None:
+        """Create a new document from a template."""
+        logger.debug("Template selected: '%s'", tHandle)
+        self.projTree.newTreeItem(nwItemType.FILE, copyDoc=tHandle)
         return
 
     @pyqtSlot(str, int, int, int)
@@ -310,7 +318,7 @@ class GuiProjectToolBar(QWidget):
 
         self.mTemplates = _UpdatableMenu(self.mAdd)
         self.mTemplates.setActionsVisible(False)
-        self.mTemplates.menuItemTriggered.connect(self._templateSelected)
+        self.mTemplates.menuItemTriggered.connect(lambda h: self.newDocumentFromTemplate.emit(h))
         self.mAdd.addMenu(self.mTemplates)
 
         self.mAddRoot = self.mAdd.addMenu(trConst(nwLabels.ITEM_DESCRIPTION["root"]))
@@ -441,17 +449,6 @@ class GuiProjectToolBar(QWidget):
         self.aAddEmpty.setVisible(allowDoc)
         self.aAddChap.setVisible(allowDoc)
         self.aAddScene.setVisible(allowDoc)
-        return
-
-    ##
-    #  Private Slots
-    ##
-
-    @pyqtSlot(str)
-    def _templateSelected(self, tHandle: str) -> None:
-        """Forward the template menu signal."""
-        logger.debug("Template selected: '%s'", tHandle)
-        self.newDocumentFromTemplate.emit(tHandle)
         return
 
     ##
@@ -622,7 +619,7 @@ class GuiProjectTree(QTreeWidget):
         return False
 
     def newTreeItem(self, itemType: nwItemType, itemClass: nwItemClass | None = None,
-                    hLevel: int = 1, isNote: bool = False) -> bool:
+                    hLevel: int = 1, isNote: bool = False, copyDoc: str | None = None) -> bool:
         """Add new item to the tree, with a given itemType (and
         itemClass if Root), and attach it to the selected handle. Also
         make sure the item is added in a place it can be added, and that
@@ -710,7 +707,9 @@ class GuiProjectTree(QTreeWidget):
             return True
 
         # Handle new file creation
-        if itemType == nwItemType.FILE and hLevel > 0:
+        if itemType == nwItemType.FILE and copyDoc:
+            SHARED.project.copyFileContent(tHandle, copyDoc)
+        elif itemType == nwItemType.FILE and hLevel > 0:
             SHARED.project.writeNewFile(tHandle, hLevel, not isNote)
 
         # Add the new item to the project tree

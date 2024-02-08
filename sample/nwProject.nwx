@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.3a4" hexVersion="0x020300a4" fileVersion="1.5" fileRevision="2" timeStamp="2024-02-08 00:03:11">
-  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="1671" autoCount="262" editTime="82534">
+<novelWriterXML appVersion="2.3a4" hexVersion="0x020300a4" fileVersion="1.5" fileRevision="2" timeStamp="2024-02-08 21:45:35">
+  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="1680" autoCount="263" editTime="82745">
     <name>Sample Project</name>
     <author>Jane Smith</author>
   </project>
@@ -35,7 +35,7 @@
       <entry key="i56be10" count="1" red="117" green="0" blue="175">Main</entry>
     </importance>
   </settings>
-  <content items="31" novelWords="990" notesWords="416">
+  <content items="31" novelWords="991" notesWords="416">
     <item handle="7031beac91f75" parent="None" root="7031beac91f75" order="0" type="ROOT" class="NOVEL">
       <meta expanded="yes" />
       <name status="sc24b8f" import="ia857f0">Novel</name>
@@ -141,11 +141,11 @@
       <name status="sf12341" import="ia857f0">Templates</name>
     </item>
     <item handle="5aec885635c85" parent="f4ed1ae756a1f" root="f4ed1ae756a1f" order="0" type="FILE" class="TEMPLATE" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="9" wordCount="2" paraCount="1" cursorPos="79" />
+      <meta expanded="no" heading="H3" charCount="9" wordCount="2" paraCount="1" cursorPos="78" />
       <name status="sf12341" import="ia857f0" active="yes">Scene</name>
     </item>
     <item handle="2a60782759c6f" parent="f4ed1ae756a1f" root="f4ed1ae756a1f" order="1" type="FILE" class="TEMPLATE" layout="DOCUMENT">
-      <meta expanded="no" heading="H2" charCount="7" wordCount="1" paraCount="0" cursorPos="3" />
+      <meta expanded="no" heading="H2" charCount="11" wordCount="2" paraCount="1" cursorPos="81" />
       <name status="sf12341" import="ia857f0" active="yes">Chapter</name>
     </item>
     <item handle="5ee8aebcdebc9" parent="f4ed1ae756a1f" root="f4ed1ae756a1f" order="2" type="FILE" class="TEMPLATE" layout="NOTE">
