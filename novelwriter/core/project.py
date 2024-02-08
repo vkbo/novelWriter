@@ -175,24 +175,47 @@ class NWProject:
         will not run if the file exists and is not empty.
         """
         tItem = self._tree[tHandle]
-        if tItem is None:
-            return False
-        if not tItem.isFileType():
+        if not (tItem and tItem.isFileType()):
             return False
 
         newDoc = self._storage.getDocument(tHandle)
         if (newDoc.readDocument() or "").strip():
             return False
 
-        hshText = "#"*minmax(hLevel, 1, 4)
-        newText = f"{hshText} {tItem.itemName}\n\n{text}"
+        indent = "#"*minmax(hLevel, 1, 4)
+        text = f"{indent} {tItem.itemName}\n\n{text}"
+
         if tItem.isNovelLike() and isDocument:
             tItem.setLayout(nwItemLayout.DOCUMENT)
         else:
             tItem.setLayout(nwItemLayout.NOTE)
 
-        newDoc.writeDocument(newText)
-        self._index.scanText(tHandle, newText)
+        newDoc.writeDocument(text)
+        self._index.scanText(tHandle, text)
+
+        return True
+
+    def copyFileContent(self, tHandle: str, sHandle: str) -> bool:
+        """Copy content to a new document after it is created. This
+        will not run if the file exists and is not empty.
+        """
+        tItem = self._tree[tHandle]
+        if not (tItem and tItem.isFileType()):
+            return False
+
+        sItem = self._tree[sHandle]
+        if not (sItem and sItem.isFileType()):
+            return False
+
+        newDoc = self._storage.getDocument(tHandle)
+        if (newDoc.readDocument() or "").strip():
+            return False
+
+        logger.debug("Populating '%s' with text from '%s'", tHandle, sHandle)
+        text = self._storage.getDocument(sHandle).readDocument() or ""
+        newDoc.writeDocument(text)
+        sItem.setLayout(tItem.itemLayout)
+        self._index.scanText(tHandle, text)
 
         return True
 
