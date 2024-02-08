@@ -365,6 +365,7 @@ def testCoreItem_ClassSetter(mockGUI):
     """
     project = NWProject()
     item = NWItem(project, "0000000000000")
+    item.setType(nwItemType.FILE)
 
     # Class
     item.setClass(None)
@@ -377,66 +378,84 @@ def testCoreItem_ClassSetter(mockGUI):
     assert item.isNovelLike() is False
     assert item.documentAllowed() is False
     assert item.isInactiveClass() is True
+    assert item.isTemplateFile() is False
 
     item.setClass("NOVEL")
     assert item.itemClass == nwItemClass.NOVEL
     assert item.isNovelLike() is True
     assert item.documentAllowed() is True
     assert item.isInactiveClass() is False
+    assert item.isTemplateFile() is False
 
     item.setClass("PLOT")
     assert item.itemClass == nwItemClass.PLOT
     assert item.isNovelLike() is False
     assert item.documentAllowed() is False
     assert item.isInactiveClass() is False
+    assert item.isTemplateFile() is False
 
     item.setClass("CHARACTER")
     assert item.itemClass == nwItemClass.CHARACTER
     assert item.isNovelLike() is False
     assert item.documentAllowed() is False
     assert item.isInactiveClass() is False
+    assert item.isTemplateFile() is False
 
     item.setClass("WORLD")
     assert item.itemClass == nwItemClass.WORLD
     assert item.isNovelLike() is False
     assert item.documentAllowed() is False
     assert item.isInactiveClass() is False
+    assert item.isTemplateFile() is False
 
     item.setClass("TIMELINE")
     assert item.itemClass == nwItemClass.TIMELINE
     assert item.isNovelLike() is False
     assert item.documentAllowed() is False
     assert item.isInactiveClass() is False
+    assert item.isTemplateFile() is False
 
     item.setClass("OBJECT")
     assert item.itemClass == nwItemClass.OBJECT
     assert item.isNovelLike() is False
     assert item.documentAllowed() is False
     assert item.isInactiveClass() is False
+    assert item.isTemplateFile() is False
 
     item.setClass("ENTITY")
     assert item.itemClass == nwItemClass.ENTITY
     assert item.isNovelLike() is False
     assert item.documentAllowed() is False
     assert item.isInactiveClass() is False
+    assert item.isTemplateFile() is False
 
     item.setClass("CUSTOM")
     assert item.itemClass == nwItemClass.CUSTOM
     assert item.isNovelLike() is False
     assert item.documentAllowed() is False
     assert item.isInactiveClass() is False
+    assert item.isTemplateFile() is False
 
     item.setClass("ARCHIVE")
     assert item.itemClass == nwItemClass.ARCHIVE
     assert item.isNovelLike() is True
     assert item.documentAllowed() is True
     assert item.isInactiveClass() is True
+    assert item.isTemplateFile() is False
+
+    item.setClass("TEMPLATE")
+    assert item.itemClass == nwItemClass.TEMPLATE
+    assert item.isNovelLike() is True
+    assert item.documentAllowed() is True
+    assert item.isInactiveClass() is True
+    assert item.isTemplateFile() is True
 
     item.setClass("TRASH")
     assert item.itemClass == nwItemClass.TRASH
     assert item.isNovelLike() is False
     assert item.documentAllowed() is True
     assert item.isInactiveClass() is True
+    assert item.isTemplateFile() is False
 
     # Alternative
     item.setClass(nwItemClass.NOVEL)

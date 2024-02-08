@@ -659,7 +659,10 @@ class GuiProjectTree(QTreeWidget):
             # Set default label and determine if new item is to be added
             # as child or sibling to the selected item
             if itemType == nwItemType.FILE:
-                if isNote:
+                if copyDoc and (cItem := SHARED.project.tree[copyDoc]):
+                    newLabel = cItem.itemName
+                    asChild = sIsParent and pItem.isDocumentLayout()
+                elif isNote:
                     newLabel = self.tr("New Note")
                     asChild = sIsParent
                 elif hLevel == 2:
@@ -804,8 +807,7 @@ class GuiProjectTree(QTreeWidget):
 
     def renameTreeItem(self, tHandle: str, name: str = "") -> None:
         """Open a dialog to edit the label of an item."""
-        tItem = SHARED.project.tree[tHandle]
-        if tItem:
+        if tItem := SHARED.project.tree[tHandle]:
             newLabel, dlgOk = GuiEditLabel.getLabel(self, text=name or tItem.itemName)
             if dlgOk:
                 tItem.setName(newLabel)
@@ -1707,7 +1709,7 @@ class _UpdatableMenu(QMenu):
         if action := self._map.pop(tHandle, None):
             self.removeAction(action)
         if not self._map:
-            self.setActionsVisible(True)
+            self.setActionsVisible(False)
         return
 
     def clearMenu(self) -> None:

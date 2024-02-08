@@ -115,15 +115,28 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
     assert nwGUI.docEditor.getText() == "### New Scene\n\n"
     assert projTree._getItemWordCount("0000000000014") == 2
 
+    # Add a new scene with the content copied from the previous
+    assert nwGUI.openDocument("0000000000014")
+    nwGUI.docEditor.setPlainText("### New Scene\n\nWith Stuff\n\n")
+    nwGUI.saveDocument()
+    projView.setSelectedHandle("0000000000014")
+    assert projTree.newTreeItem(nwItemType.FILE, copyDoc="0000000000014") is True
+    assert project.tree["0000000000015"].itemParent == "0000000000011"  # type: ignore
+    assert project.tree["0000000000015"].itemRoot == C.hNovelRoot  # type: ignore
+    assert project.tree["0000000000015"].itemClass == nwItemClass.NOVEL  # type: ignore
+    assert nwGUI.openDocument("0000000000015")
+    assert nwGUI.docEditor.getText() == "### New Scene\n\nWith Stuff\n\n"
+    assert projTree._getItemWordCount("0000000000015") == 4
+
     # Add a new file to the characters folder
     projView.setSelectedHandle(C.hCharRoot)
     assert projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True) is True
-    assert project.tree["0000000000015"].itemParent == C.hCharRoot  # type: ignore
-    assert project.tree["0000000000015"].itemRoot == C.hCharRoot  # type: ignore
-    assert project.tree["0000000000015"].itemClass == nwItemClass.CHARACTER  # type: ignore
-    assert nwGUI.openDocument("0000000000015")
+    assert project.tree["0000000000016"].itemParent == C.hCharRoot  # type: ignore
+    assert project.tree["0000000000016"].itemRoot == C.hCharRoot  # type: ignore
+    assert project.tree["0000000000016"].itemClass == nwItemClass.CHARACTER  # type: ignore
+    assert nwGUI.openDocument("0000000000016")
     assert nwGUI.docEditor.getText() == "# New Note\n\n"
-    assert projTree._getItemWordCount("0000000000015") == 2
+    assert projTree._getItemWordCount("0000000000016") == 2
 
     # Make sure the sibling folder bug trap works
     projView.setSelectedHandle("0000000000013")
@@ -1112,7 +1125,7 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd)
 @pytest.mark.gui
 def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the building of the project tree context menu. All this does
-    is test that the menu builds. It doesn't open the actual menu,
+    is test that the menu builds. It doesn't open the actual menu.
     """
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
 
@@ -1392,3 +1405,98 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # qtbot.stop()
 
 # END Test testGuiProjTree_ContextMenu
+
+
+@pytest.mark.gui
+def testGuiProjTree_Templates(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test the templates feature of the project tree."""
+    monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
+
+    # Create a project
+    buildTestProject(nwGUI, projPath)
+    nwGUI.openProject(projPath)
+    nwGUI.switchFocus(nwWidget.TREE)
+    nwGUI.show()
+
+    project = SHARED.project
+
+    projView = nwGUI.projView
+    projTree = projView.projTree
+    projBar  = projView.projBar
+
+    # Handles for new objects
+    hTemplatesRoot = "0000000000010"
+    hSceneTemplate = "0000000000011"
+    hNoteTemplate  = "0000000000012"
+    hNewScene      = "0000000000013"
+    hNewCharacter  = "0000000000014"
+
+    # Add template folder
+    projTree.newTreeItem(nwItemType.ROOT, nwItemClass.TEMPLATE)
+    nwTemplateRoot = project.tree[hTemplatesRoot]
+    assert nwTemplateRoot is not None
+    assert nwTemplateRoot.itemName == "Templates"
+
+    # Add a scene template
+    projTree.setSelectedHandle(hTemplatesRoot)
+    projTree.newTreeItem(nwItemType.FILE, hLevel=3, isNote=False)
+    nwSceneTemplate = project.tree[hSceneTemplate]
+    assert nwSceneTemplate is not None
+    assert nwSceneTemplate.itemName == "New Scene"
+    assert projBar.mTemplates.actions()[0].text() == "New Scene"
+
+    # Rename the scene template
+    with qtbot.waitSignal(projTree.itemRefreshed, timeout=1000) as signal:
+        projTree.renameTreeItem(hSceneTemplate, name="Scene")
+        assert signal.args[0] == hSceneTemplate
+        assert signal.args[1].itemName == "Scene"
+        assert projBar.mTemplates.actions()[0].text() == "Scene"
+
+    # Add a note template
+    projTree.setSelectedHandle(hTemplatesRoot)
+    projTree.newTreeItem(nwItemType.FILE, hLevel=1, isNote=True)
+    nwNoteTemplate = project.tree[hNoteTemplate]
+    assert nwNoteTemplate is not None
+    assert nwNoteTemplate.itemName == "New Note"
+    assert projBar.mTemplates.actions()[1].text() == "New Note"
+
+    # Rename the note template
+    with qtbot.waitSignal(projTree.itemRefreshed, timeout=1000) as signal:
+        projTree.renameTreeItem(hNoteTemplate, name="Note")
+        assert signal.args[0] == hNoteTemplate
+        assert signal.args[1].itemName == "Note"
+        assert projBar.mTemplates.actions()[1].text() == "Note"
+
+    # Add new content to template files
+    (projPath / "content" / f"{hSceneTemplate}.nwd").write_text("### Scene\n\n@pov: Jane\n\n")
+    (projPath / "content" / f"{hNoteTemplate}.nwd").write_text("# Jane\n\n@tag: Jane\n\n")
+
+    # Add a new scene using the template
+    projTree.setSelectedHandle(C.hSceneDoc, doScroll=True)
+    projBar.mTemplates.actions()[0].trigger()
+    nwNewScene = project.tree[hNewScene]
+    assert nwNewScene is not None
+    assert nwNewScene.itemName == "Scene"
+    assert project.storage.getDocument(hNewScene).readDocument() == "### Scene\n\n@pov: Jane\n\n"
+
+    # Add a new note using the template
+    projTree.setSelectedHandle(C.hCharRoot, doScroll=True)
+    projBar.mTemplates.actions()[1].trigger()
+    nwNewCharacter = project.tree[hNewCharacter]
+    assert nwNewCharacter is not None
+    assert nwNewCharacter.itemName == "Note"
+    assert project.storage.getDocument(hNewCharacter).readDocument() == "# Jane\n\n@tag: Jane\n\n"
+
+    # Remove the templates
+    with qtbot.waitSignal(projTree.itemRefreshed, timeout=1000) as signal:
+        assert projBar.mTemplates.menuAction().isVisible() is True
+        assert len(projBar.mTemplates.actions()) == 2
+        projTree.moveItemToTrash(hNoteTemplate)
+        assert len(projBar.mTemplates.actions()) == 1
+        projTree.moveItemToTrash(hSceneTemplate)
+        assert len(projBar.mTemplates.actions()) == 0
+        assert projBar.mTemplates.menuAction().isVisible() is False
+
+    # qtbot.stop()
+
+# END Test testGuiProjTree_Templates
