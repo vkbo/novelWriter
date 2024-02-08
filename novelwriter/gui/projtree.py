@@ -429,11 +429,11 @@ class GuiProjectToolBar(QWidget):
     #  Public Slots
     ##
 
-    @pyqtSlot(str, str, QIcon, bool)
-    def treeItemRefreshed(self, tHandle: str, name: str, icon: QIcon, isTemplate: bool) -> None:
+    @pyqtSlot(str, NWItem, QIcon)
+    def treeItemRefreshed(self, tHandle: str, nwItem: NWItem, icon: QIcon) -> None:
         """Process change in tree items to update menu content."""
-        if isTemplate:
-            self.mTemplates.addUpdate(tHandle, name, icon)
+        if nwItem.isTemplateFile() and nwItem.isActive:
+            self.mTemplates.addUpdate(tHandle, nwItem.itemName, icon)
         elif tHandle in self.mTemplates:
             self.mTemplates.remove(tHandle)
         return
@@ -494,7 +494,7 @@ class GuiProjectTree(QTreeWidget):
     D_HANDLE = Qt.ItemDataRole.UserRole
     D_WORDS  = Qt.ItemDataRole.UserRole + 1
 
-    itemRefreshed = pyqtSignal(str, str, QIcon, bool)
+    itemRefreshed = pyqtSignal(str, NWItem, QIcon)
 
     def __init__(self, projView: GuiProjectView) -> None:
         super().__init__(parent=projView)
@@ -1064,7 +1064,7 @@ class GuiProjectTree(QTreeWidget):
             trItem.setFont(self.C_NAME, trFont)
 
         # Emit Refresh Signal
-        self.itemRefreshed.emit(tHandle, nwItem.itemName, itemIcon, nwItem.isTemplateFile())
+        self.itemRefreshed.emit(tHandle, nwItem, itemIcon)
 
         return
 
