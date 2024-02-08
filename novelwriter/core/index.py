@@ -485,8 +485,9 @@ class NWIndex:
 
         # For a tag, only the first value is accepted, the rest are ignored
         if tBits[0] == nwKeyWords.TAG_KEY and nBits > 1:
-            if tBits[1] in self._tagsIndex:
-                isGood[1] = self._tagsIndex.tagHandle(tBits[1]) == tHandle
+            check, _ = self.parseValue(tBits[1])
+            if check in self._tagsIndex:
+                isGood[1] = self._tagsIndex.tagHandle(check) == tHandle
             else:
                 isGood[1] = True
             return isGood

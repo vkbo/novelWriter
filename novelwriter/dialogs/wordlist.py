@@ -75,7 +75,7 @@ class GuiWordList(QDialog):
         self.listBox.setDragDropMode(QAbstractItemView.NoDragDrop)
         self.listBox.setSortingEnabled(True)
 
-        self.newEntry = QLineEdit()
+        self.newEntry = QLineEdit(self)
 
         self.addButton = QPushButton(SHARED.theme.getIcon("add"), "")
         self.addButton.clicked.connect(self._doAdd)

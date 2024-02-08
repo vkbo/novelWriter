@@ -60,8 +60,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         logger.debug("Create: GuiDocHighlighter")
 
-        self._tItem = None
         self._tHandle = None
+        self._isInactive = False
         self._spellCheck = False
         self._spellErr = QTextCharFormat()
 
@@ -238,11 +238,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     def setHandle(self, tHandle: str) -> None:
         """Set the handle of the currently highlighted document."""
         self._tHandle = tHandle
-        self._tItem = SHARED.project.tree[tHandle]
-        logger.debug(
-            "Syntax highlighter %s for item '%s'",
-            "enabled" if self._tItem else "disabled", tHandle
+        self._isInactive = (
+            item.isInactiveClass() if (item := SHARED.project.tree[tHandle]) else False
         )
+        logger.debug("Syntax highlighter enabled for item '%s'", tHandle)
         return
 
     ##
@@ -286,16 +285,16 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 for n, bit in enumerate(bits):
                     xPos = pos[n]
                     xLen = len(bit)
-                    if not isGood[n]:
-                        self.setFormat(xPos, xLen, self._hStyles["codeinval"])
-                    elif n == 0:
+                    if n == 0 and isGood[n]:
                         self.setFormat(xPos, xLen, self._hStyles["keyword"])
-                    else:
+                    elif isGood[n] and not self._isInactive:
                         one, two = index.parseValue(bit)
                         self.setFormat(xPos, len(one), self._hStyles["value"])
                         if two:
                             yPos = xPos + len(bit) - len(two)
                             self.setFormat(yPos, len(two), self._hStyles["optional"])
+                    elif not self._isInactive:
+                        self.setFormat(xPos, xLen, self._hStyles["codeinval"])
 
             # We never want to run the spell checker on keyword/values,
             # so we force a return here

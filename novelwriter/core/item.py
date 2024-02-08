@@ -334,15 +334,33 @@ class NWItem:
 
     def isNovelLike(self) -> bool:
         """Check if the item is of a novel-like class."""
-        return self._class in (nwItemClass.NOVEL, nwItemClass.ARCHIVE)
+        return self._class in (
+            nwItemClass.NOVEL,
+            nwItemClass.ARCHIVE,
+            nwItemClass.TEMPLATE,
+        )
+
+    def isTemplateFile(self) -> bool:
+        """Check if the item is a template file."""
+        return self._type == nwItemType.FILE and self._class == nwItemClass.TEMPLATE
 
     def documentAllowed(self) -> bool:
         """Check if the item is allowed to be of document layout."""
-        return self._class in (nwItemClass.NOVEL, nwItemClass.ARCHIVE, nwItemClass.TRASH)
+        return self._class in (
+            nwItemClass.NOVEL,
+            nwItemClass.ARCHIVE,
+            nwItemClass.TEMPLATE,
+            nwItemClass.TRASH,
+        )
 
     def isInactiveClass(self) -> bool:
         """Check if the item is in an inactive class."""
-        return self._class in (nwItemClass.NO_CLASS, nwItemClass.ARCHIVE, nwItemClass.TRASH)
+        return self._class in (
+            nwItemClass.NO_CLASS,
+            nwItemClass.ARCHIVE,
+            nwItemClass.TEMPLATE,
+            nwItemClass.TRASH,
+        )
 
     def isRootType(self) -> bool:
         """Check if item is a root item."""

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.3a1" hexVersion="0x020300a1" fileVersion="1.5" fileRevision="2" timeStamp="2024-01-26 22:50:57">
+<novelWriterXML appVersion="2.3a4" hexVersion="0x020300a4" fileVersion="1.5" fileRevision="2" timeStamp="2024-02-08 21:34:07">
   <project id="d0f3fe10-c6e6-4310-8bfd-181eb4224eed" saveCount="1" autoCount="1" editTime="0">
     <name>New Project</name>
     <author>Jane Doe</author>
@@ -22,13 +22,13 @@
       <entry key="s000003" count="0" red="50" green="200" blue="0">Finished</entry>
     </status>
     <importance>
-      <entry key="i000004" count="4" red="100" green="100" blue="100">New</entry>
+      <entry key="i000004" count="5" red="100" green="100" blue="100">New</entry>
       <entry key="i000005" count="0" red="200" green="50" blue="0">Minor</entry>
       <entry key="i000006" count="0" red="200" green="150" blue="0">Major</entry>
       <entry key="i000007" count="0" red="50" green="200" blue="0">Main</entry>
     </importance>
   </settings>
-  <content items="11" novelWords="10" notesWords="3">
+  <content items="12" novelWords="10" notesWords="6">
     <item handle="0000000000008" parent="None" root="0000000000008" order="0" type="ROOT" class="NOVEL">
       <meta expanded="no" />
       <name status="s000000" import="i000004">Novel</name>
@@ -72,6 +72,10 @@
     <item handle="0000000000012" parent="000000000000a" root="000000000000a" order="0" type="FILE" class="CHARACTER" layout="NOTE">
       <meta expanded="no" heading="H1" charCount="11" wordCount="3" paraCount="1" cursorPos="0" />
       <name status="s000000" import="i000004" active="yes">Jane</name>
+    </item>
+    <item handle="0000000000013" parent="000000000000a" root="000000000000a" order="0" type="FILE" class="CHARACTER" layout="NOTE">
+      <meta expanded="no" heading="H1" charCount="11" wordCount="3" paraCount="1" cursorPos="0" />
+      <name status="s000000" import="i000004" active="yes">John</name>
     </item>
   </content>
 </novelWriterXML>

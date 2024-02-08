@@ -99,7 +99,7 @@ class GuiWelcome(QDialog):
         self.tabNew.cancelNewProject.connect(self._showOpenProjectPage)
         self.tabNew.openProjectRequest.connect(self._openProjectPath)
 
-        self.mainStack = QStackedWidget()
+        self.mainStack = QStackedWidget(self)
         self.mainStack.addWidget(self.tabOpen)
         self.mainStack.addWidget(self.tabNew)
 
@@ -524,13 +524,13 @@ class _NewProjectForm(QWidget):
         # ================
 
         # Project Name
-        self.projName = QLineEdit()
+        self.projName = QLineEdit(self)
         self.projName.setMaxLength(200)
         self.projName.setPlaceholderText(self.tr("Required"))
         self.projName.textChanged.connect(self._updateProjPath)
 
         # Author(s)
-        self.projAuthor = QLineEdit()
+        self.projAuthor = QLineEdit(self)
         self.projAuthor.setMaxLength(200)
         self.projAuthor.setPlaceholderText(self.tr("Optional"))
 

@@ -361,7 +361,7 @@ class _StatusPage(NFixedPage):
         self.dnButton.clicked.connect(lambda: self._moveItem(1))
 
         # Edit Form
-        self.editName = QLineEdit()
+        self.editName = QLineEdit(self)
         self.editName.setMaxLength(40)
         self.editName.setPlaceholderText(self.tr("Select item to edit"))
         self.editName.setEnabled(False)
@@ -621,12 +621,12 @@ class _ReplacePage(NFixedPage):
         self.delButton.clicked.connect(self._delEntry)
 
         # Edit Form
-        self.editKey = QLineEdit()
+        self.editKey = QLineEdit(self)
         self.editKey.setPlaceholderText(self.tr("Select item to edit"))
         self.editKey.setEnabled(False)
         self.editKey.setMaxLength(40)
 
-        self.editValue = QLineEdit()
+        self.editValue = QLineEdit(self)
         self.editValue.setEnabled(False)
         self.editValue.setMaxLength(80)
 

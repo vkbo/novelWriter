@@ -102,33 +102,60 @@ def testCoreProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockR
     mockRnd.reset()
     buildTestProject(project, fncPath)
 
+    aHandle = "0000000000010"
+    bHandle = "0000000000011"
+    cHandle = "0000000000012"
+    dHandle = "0000000000013"
+    xHandle = "1234567890abc"
+
     # Invalid call
-    assert project.newFolder("New Folder", "1234567890abc") is None
-    assert project.newFile("New File", "1234567890abc") is None
+    assert project.newFolder("New Folder", xHandle) is None
+    assert project.newFile("New File", xHandle) is None
 
     # Add files properly
-    assert project.newFolder("Stuff", C.hNovelRoot) == "0000000000010"
-    assert project.newFile("Hello", "0000000000010") == "0000000000011"
-    assert project.newFile("Jane", C.hCharRoot) == "0000000000012"
+    assert project.newFolder("Stuff", C.hNovelRoot) == aHandle
+    assert project.newFile("Hello", aHandle) == bHandle
+    assert project.newFile("Jane", C.hCharRoot) == cHandle
+    assert project.newFile("John", C.hCharRoot) == dHandle
 
-    assert "0000000000010" in project.tree
-    assert "0000000000011" in project.tree
-    assert "0000000000012" in project.tree
+    assert aHandle in project.tree
+    assert bHandle in project.tree
+    assert cHandle in project.tree
+    assert dHandle in project.tree
 
     # Write to file, failed
     assert project.writeNewFile("blabla", 1, True) is False         # Not a handle
-    assert project.writeNewFile("0000000000010", 1, True) is False  # Not a file
+    assert project.writeNewFile(aHandle, 1, True) is False  # Not a file
     assert project.writeNewFile(C.hTitlePage, 1, True) is False  # Already has content
 
     # Write to file, success
-    assert project.writeNewFile("0000000000011", 2, True) is True
-    assert project.storage.getDocument("0000000000011").readDocument() == "## Hello\n\n"
+    assert project.writeNewFile(bHandle, 2, True) is True
+    assert project.storage.getDocument(bHandle).readDocument() == "## Hello\n\n"
 
     # Write to file with additional text, success
-    assert project.writeNewFile("0000000000012", 1, False, "Hi Jane\n\n") is True
-    assert project.storage.getDocument("0000000000012").readDocument() == (
+    assert project.writeNewFile(cHandle, 1, False, "Hi Jane\n\n") is True
+    assert project.storage.getDocument(cHandle).readDocument() == (
         "# Jane\n\nHi Jane\n\n"
     )
+
+    # Copy file content, invalid target
+    assert project.copyFileContent(xHandle, cHandle) is False  # Unknown handle
+    assert project.copyFileContent(aHandle, cHandle) is False  # Target is a folder
+
+    # Copy file content, invalid source
+    assert project.copyFileContent(dHandle, xHandle) is False  # Unknown handle
+    assert project.copyFileContent(dHandle, aHandle) is False  # Source is a folder
+
+    # Copy file content, target not empty
+    assert project.copyFileContent(bHandle, cHandle) is False
+
+    # Copy file content, success
+    assert project.copyFileContent(dHandle, cHandle) is True
+
+    cText = project.storage.getDocument(cHandle).readDocument()
+    dText = project.storage.getDocument(dHandle).readDocument()
+
+    assert dText == cText
 
     # Save, close and check
     assert project.projChanged is True
@@ -141,23 +168,27 @@ def testCoreProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockR
     # Delete new file, but block access
     with monkeypatch.context() as mp:
         mp.setattr("pathlib.Path.unlink", causeOSError)
-        assert project.removeItem("0000000000011") is False
-        assert "0000000000011" in project.tree
+        assert project.removeItem(bHandle) is False
+        assert bHandle in project.tree
 
     # Delete new files and folders
-    assert (fncPath / "content" / "0000000000012.nwd").exists()
-    assert (fncPath / "content" / "0000000000011.nwd").exists()
+    assert (fncPath / "content" / f"{dHandle}.nwd").exists()
+    assert (fncPath / "content" / f"{cHandle}.nwd").exists()
+    assert (fncPath / "content" / f"{bHandle}.nwd").exists()
 
-    assert project.removeItem("0000000000012") is True
-    assert project.removeItem("0000000000011") is True
-    assert project.removeItem("0000000000010") is True
+    assert project.removeItem(dHandle) is True
+    assert project.removeItem(cHandle) is True
+    assert project.removeItem(bHandle) is True
+    assert project.removeItem(aHandle) is True
 
-    assert not (fncPath / "content" / "0000000000012.nwd").exists()
-    assert not (fncPath / "content" / "0000000000011.nwd").exists()
+    assert not (fncPath / "content" / f"{dHandle}.nwd").exists()
+    assert not (fncPath / "content" / f"{cHandle}.nwd").exists()
+    assert not (fncPath / "content" / f"{bHandle}.nwd").exists()
 
-    assert "0000000000010" not in project.tree
-    assert "0000000000011" not in project.tree
-    assert "0000000000012" not in project.tree
+    assert aHandle not in project.tree
+    assert bHandle not in project.tree
+    assert cHandle not in project.tree
+    assert dHandle not in project.tree
 
     project.closeProject()
 
@@ -177,6 +208,8 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     caplog.clear()
     assert project.openProject(fooBar) is False
     assert "Not a known project file format." in caplog.text
+    assert project.isValid is False
+    assert project.lockStatus is None
 
     # No project file
     caplog.clear()
@@ -204,10 +237,14 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     # Open again should fail on lock file
     assert project.openProject(fncPath) is False
     assert project.state == NWProjectState.LOCKED
+    assert project.isValid is True
+    assert project.lockStatus is not None
 
     # Force re-open
     assert project.openProject(fncPath, clearLock=True) is True
     assert project.state == NWProjectState.READY
+    assert project.isValid is True
+    assert project.lockStatus is None
 
     # Fail getting xml reader
     with monkeypatch.context() as mp:

@@ -294,6 +294,10 @@ def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
     assert index.parseValue("Jane | Jane Smith") == ("Jane", "Jane Smith")
     assert index.parseValue("Jane  |  Jane Smith") == ("Jane", "Jane Smith")
 
+    # Duplicates with Display Name
+    assert index.checkThese(["@tag", "Jane | Jane Doe"], cHandle) == [True, True]
+    assert index.checkThese(["@tag", "Jane | Jane Smith"], nHandle) == [True, False]
+
     project.closeProject()
 
 # END Test testCoreIndex_CheckThese

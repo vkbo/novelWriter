@@ -48,7 +48,7 @@ class GuiEditLabel(QDialog):
         mSp = CONFIG.pxInt(12)
 
         # Item Label
-        self.labelValue = QLineEdit()
+        self.labelValue = QLineEdit(self)
         self.labelValue.setMinimumWidth(mVd)
         self.labelValue.setMaxLength(200)
         self.labelValue.setText(text)

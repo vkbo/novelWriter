@@ -400,7 +400,7 @@ class GuiMain(QMainWindow):
             self.docViewerPanel.closeProjectTasks()
             self.outlineView.closeProjectTasks()
             self.novelView.closeProjectTasks()
-            self.projView.clearProjectView()
+            self.projView.closeProjectTasks()
             self.itemDetails.clearDetails()
             self.mainStatus.clearStatus()
 
