@@ -110,7 +110,7 @@ class Config:
 
         # Size Settings
         self._mainWinSize  = [1200, 650]     # Last size of the main GUI window
-        self._welcomeSize  = [800, 500]      # Last size of the welcome window
+        self._welcomeSize  = [800, 550]      # Last size of the welcome window
         self._prefsWinSize = [700, 615]      # Last size of the Preferences dialog
         self._mainPanePos  = [300, 800]      # Last position of the main window splitter
         self._viewPanePos  = [500, 150]      # Last position of the document viewer splitter
