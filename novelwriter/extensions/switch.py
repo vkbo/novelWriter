@@ -34,11 +34,11 @@ class NSwitch(QAbstractButton):
 
     __slots__ = ("_xW", "_xH", "_xR", "_rB", "_rH", "_rR", "_offset")
 
-    def __init__(self, parent: QWidget | None = None, width: int = 0, height: int = 0) -> None:
+    def __init__(self, parent: QWidget | None = None, height: int = 0) -> None:
         super().__init__(parent=parent)
 
-        self._xW = width or CONFIG.pxInt(40)
         self._xH = height or CONFIG.pxInt(20)
+        self._xW = 2*self._xH
         self._xR = int(self._xH*0.5)
         self._rB = int(CONFIG.guiScale*2)
         self._rH = self._xH - 2*self._rB
@@ -61,7 +61,7 @@ class NSwitch(QAbstractButton):
         return self._offset
 
     @offset.setter  # type: ignore
-    def offset(self, offset: int):
+    def offset(self, offset: int) -> None:
         self._offset = offset
         self.update()
         return

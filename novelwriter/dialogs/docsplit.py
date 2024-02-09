@@ -92,15 +92,15 @@ class GuiDocSplit(QDialog):
 
         # Split Options
         self.folderLabel = QLabel(self.tr("Split into a new folder"))
-        self.folderSwitch = NSwitch(width=2*iPx, height=iPx)
+        self.folderSwitch = NSwitch(self, height=iPx)
         self.folderSwitch.setChecked(intoFolder)
 
         self.hierarchyLabel = QLabel(self.tr("Create document hierarchy"))
-        self.hierarchySwitch = NSwitch(width=2*iPx, height=iPx)
+        self.hierarchySwitch = NSwitch(self, height=iPx)
         self.hierarchySwitch.setChecked(docHierarchy)
 
         self.trashLabel = QLabel(self.tr("Move split document to Trash"))
-        self.trashSwitch = NSwitch(width=2*iPx, height=iPx)
+        self.trashSwitch = NSwitch(self, height=iPx)
 
         self.optBox = QGridLayout()
         self.optBox.addWidget(self.folderLabel,  0, 0)
