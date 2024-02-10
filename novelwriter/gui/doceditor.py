@@ -736,11 +736,11 @@ class GuiDocEditor(QPlainTextEdit):
         elif action == nwDocAction.BLOCK_H4:
             self._formatBlock(nwDocAction.BLOCK_H4)
         elif action == nwDocAction.BLOCK_COM:
-            self._formatAllBlocks(nwDocAction.BLOCK_COM)
+            self._iterFormatBlocks(nwDocAction.BLOCK_COM)
         elif action == nwDocAction.BLOCK_IGN:
-            self._formatAllBlocks(nwDocAction.BLOCK_IGN)
+            self._iterFormatBlocks(nwDocAction.BLOCK_IGN)
         elif action == nwDocAction.BLOCK_TXT:
-            self._formatBlock(nwDocAction.BLOCK_TXT)
+            self._iterFormatBlocks(nwDocAction.BLOCK_TXT)
         elif action == nwDocAction.BLOCK_TTL:
             self._formatBlock(nwDocAction.BLOCK_TTL)
         elif action == nwDocAction.BLOCK_UNN:
@@ -1635,11 +1635,9 @@ class GuiDocEditor(QPlainTextEdit):
         return True
 
     def _processBlockFormat(
-        self, action: nwDocAction, block: QTextBlock
+        self, action: nwDocAction, text: str, toggle: bool = True
     ) -> tuple[nwDocAction, str, int]:
         """Process the formatting of a single text block."""
-        text = block.text()
-
         # Remove existing format first, if any
         if text.startswith("@"):
             logger.error("Cannot apply block format to keyword/value line")
@@ -1647,12 +1645,12 @@ class GuiDocEditor(QPlainTextEdit):
         elif text.startswith("%~"):
             temp = text[2:].lstrip()
             offset = len(text) - len(temp)
-            if action == nwDocAction.BLOCK_IGN:
+            if toggle and action == nwDocAction.BLOCK_IGN:
                 action = nwDocAction.BLOCK_TXT
         elif text.startswith("%"):
             temp = text[1:].lstrip()
             offset = len(text) - len(temp)
-            if action == nwDocAction.BLOCK_COM:
+            if toggle and action == nwDocAction.BLOCK_COM:
                 action = nwDocAction.BLOCK_TXT
         elif text.startswith("# "):
             temp = text[2:]
@@ -1744,50 +1742,55 @@ class GuiDocEditor(QPlainTextEdit):
 
         return action, text, offset
 
-    def _formatBlock(self, action: nwDocAction, block: QTextBlock | None = None) -> bool:
+    def _formatBlock(self, action: nwDocAction) -> bool:
         """Change the block format of the block under the cursor."""
         cursor = self.textCursor()
-        if block is None:
-            block = cursor.block()
+        block = cursor.block()
         if not block.isValid():
             logger.debug("Invalid block selected for action '%s'", str(action))
             return False
 
-        # Remove existing format first, if any
-        hasText = block.length() > 0
-        action, text, offset = self._processBlockFormat(action, block)
+        action, text, offset = self._processBlockFormat(action, block.text())
         if action == nwDocAction.NO_ACTION:
             return False
 
-        # Replace the block text
+        pos = cursor.position()
+
         cursor.beginEditBlock()
-        posO = cursor.position()
-        cursor.select(QTextCursor.SelectionType.BlockUnderCursor)
-        posS = cursor.selectionStart()
-        cursor.removeSelectedText()
-        cursor.setPosition(posS)
-
-        if posS > 0 and hasText:
-            # If the block already had text, we must insert a new block
-            # first before we can add back the text to it.
-            cursor.insertBlock()
-
+        self._makeSelection(QTextCursor.SelectionType.BlockUnderCursor, cursor)
         cursor.insertText(text)
-
-        if posO - offset >= 0:
-            cursor.setPosition(posO - offset)
-
         cursor.endEditBlock()
+
+        if (move := pos - offset) >= 0:
+            cursor.setPosition(move)
         self.setTextCursor(cursor)
 
         return True
 
-    def _formatAllBlocks(self, action: nwDocAction) -> bool:
+    def _iterFormatBlocks(self, action: nwDocAction) -> bool:
         """Iterate over all selected blocks and apply format. If no
         selection is made, just forward the call to the single block
         formatter function.
         """
-        self._formatBlock(action)
+        cursor = self.textCursor()
+        blocks = self._selectedBlocks(cursor)
+        if len(blocks) < 1:
+            return self._formatBlock(action)
+
+        toggle = True
+        cursor.beginEditBlock()
+        for block in blocks:
+            blockText = block.text()
+            pAction, text, _ = self._processBlockFormat(action, blockText, toggle)
+            if pAction != nwDocAction.NO_ACTION and blockText.strip():
+                action = pAction  # First block decides further actions
+                cursor.setPosition(block.position())
+                self._makeSelection(QTextCursor.SelectionType.BlockUnderCursor, cursor)
+                cursor.insertText(text)
+                toggle = False
+
+        cursor.endEditBlock()
+
         return True
 
     def _selectedBlocks(self, cursor: QTextCursor) -> list[QTextBlock]:
@@ -2067,9 +2070,11 @@ class GuiDocEditor(QPlainTextEdit):
 
         return cursor
 
-    def _makeSelection(self, mode: QTextCursor.SelectionType) -> None:
+    def _makeSelection(self, mode: QTextCursor.SelectionType,
+                       cursor: QTextCursor | None = None) -> None:
         """Select text based on selection mode."""
-        cursor = self.textCursor()
+        if cursor is None:
+            cursor = self.textCursor()
         cursor.clearSelection()
         cursor.select(mode)
 
