@@ -1348,6 +1348,80 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, projPath, ipsumText
 
 
 @pytest.mark.gui
+def testGuiEditor_MultiBlockFormatting(qtbot, nwGUI, projPath, ipsumText, mockRnd):
+    """Test the block formatting function."""
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+
+    text = "### A Scene\n\n@char: Jane, John\n\n" + "\n\n".join(ipsumText) + "\n\n"
+    nwGUI.docEditor.replaceText(text)
+    assert [x[:5] for x in nwGUI.docEditor.getText().splitlines()] == [
+        "### A", "", "@char", "", "Lorem", "", "Nulla", "", "Nulla", "", "Pelle", "", "Integ", ""
+    ]
+
+    # Toggle Comment
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.setPosition(50)
+    cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, 2000)
+    nwGUI.docEditor.setTextCursor(cursor)
+
+    nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_COM)
+    assert [x[:5] for x in nwGUI.docEditor.getText().splitlines()] == [
+        "### A", "", "@char", "", "% Lor", "", "% Nul", "", "% Nul", "", "% Pel", "", "Integ", ""
+    ]
+
+    # Un-toggle the second
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.setPosition(800)
+    nwGUI.docEditor.setTextCursor(cursor)
+
+    nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_COM)
+    assert [x[:5] for x in nwGUI.docEditor.getText().splitlines()] == [
+        "### A", "", "@char", "", "% Lor", "", "Nulla", "", "% Nul", "", "% Pel", "", "Integ", ""
+    ]
+
+    # Un-toggle all
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.setPosition(50)
+    cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, 3000)
+    nwGUI.docEditor.setTextCursor(cursor)
+
+    nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_COM)
+    assert [x[:5] for x in nwGUI.docEditor.getText().splitlines()] == [
+        "### A", "", "@char", "", "Lorem", "", "Nulla", "", "Nulla", "", "Pelle", "", "Integ", ""
+    ]
+
+    # Toggle Ignore Text
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.setPosition(50)
+    cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, 2000)
+    nwGUI.docEditor.setTextCursor(cursor)
+
+    nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_IGN)
+    assert [x[:5] for x in nwGUI.docEditor.getText().splitlines()] == [
+        "### A", "", "@char", "", "%~ Lo", "", "%~ Nu", "", "%~ Nu", "", "%~ Pe", "", "Integ", ""
+    ]
+
+    # Clear all paragraphs
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.setPosition(50)
+    cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, 3000)
+    nwGUI.docEditor.setTextCursor(cursor)
+
+    nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_TXT)
+    assert [x[:5] for x in nwGUI.docEditor.getText().splitlines()] == [
+        "### A", "", "@char", "", "Lorem", "", "Nulla", "", "Nulla", "", "Pelle", "", "Integ", ""
+    ]
+
+    # Final text should be identical to initial text
+    assert nwGUI.docEditor.getText() == text
+
+    # qtbot.stop()
+
+# END Test testGuiEditor_MultiBlockFormatting
+
+
+@pytest.mark.gui
 def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     """Test the document editor tags functionality."""
     buildTestProject(nwGUI, projPath)
