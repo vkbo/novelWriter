@@ -579,6 +579,11 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.docEditor.docAction(nwDocAction.BLOCK_COM) is True
     assert nwGUI.docEditor.getText() == "#### Scene Title\n\n% Scene text.\n\n"
 
+    # Ignore Text
+    nwGUI.docEditor.setCursorPosition(20)
+    assert nwGUI.docEditor.docAction(nwDocAction.BLOCK_IGN) is True
+    assert nwGUI.docEditor.getText() == "#### Scene Title\n\n%~ Scene text.\n\n"
+
     # Text
     nwGUI.docEditor.setCursorPosition(20)
     assert nwGUI.docEditor.docAction(nwDocAction.BLOCK_TXT) is True
@@ -1201,6 +1206,20 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, projPath, ipsumText
     assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_COM) is True
     assert nwGUI.docEditor.getText() == "Some text\n\n"
     assert nwGUI.docEditor.getCursorPosition() == 4
+
+    # Toggle Ignore Text w/Space
+    nwGUI.docEditor.replaceText("%~ Some text\n\n")
+    nwGUI.docEditor.setCursorPosition(5)
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_IGN) is True
+    assert nwGUI.docEditor.getText() == "Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 2
+
+    # Toggle Ignore Text wo/Space
+    nwGUI.docEditor.replaceText("%~Some text\n\n")
+    nwGUI.docEditor.setCursorPosition(5)
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_IGN) is True
+    assert nwGUI.docEditor.getText() == "Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 3
 
     # Header 1
     nwGUI.docEditor.replaceText("Some text\n\n")

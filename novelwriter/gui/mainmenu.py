@@ -782,9 +782,9 @@ class GuiMainMenu(QMenuBar):
         )
 
         # Format > Ignore Text
-        self.aFmtComment = self.fmtMenu.addAction(self.tr("Toggle Ignore Text"))
-        self.aFmtComment.setShortcut("Ctrl+Shift+D")
-        self.aFmtComment.triggered.connect(
+        self.aFmtIgnore = self.fmtMenu.addAction(self.tr("Toggle Ignore Text"))
+        self.aFmtIgnore.setShortcut("Ctrl+Shift+D")
+        self.aFmtIgnore.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.BLOCK_IGN)
         )
 

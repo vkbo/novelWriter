@@ -452,6 +452,14 @@ def testCoreToken_MetaFormat(mockGUI):
     tokens.tokenizeText()
     assert tokens.allMarkdown[-1] == "% A comment\n\n"
 
+    # Ignore Text
+    tokens._text = "%~ Some text\n"
+    tokens.tokenizeText()
+    assert tokens._tokens == [
+        (Tokenizer.T_EMPTY, 0, "", [], Tokenizer.A_NONE),
+    ]
+    assert tokens.allMarkdown[-1] == "\n"
+
     # Synopsis
     tokens._text = "%synopsis: The synopsis\n"
     tokens.tokenizeText()
