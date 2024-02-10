@@ -961,6 +961,17 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     parOne = ipsumText[0].replace(" ", "\n", 5)
     parTwo = ipsumText[1].replace(" ", "\n", 5)
 
+    # Check Blocks
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.clearSelection()
+    text = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
+    nwGUI.docEditor.replaceText(text)
+    nwGUI.docEditor.setCursorPosition(45)
+    assert len(nwGUI.docEditor._selectedBlocks(cursor)) == 0
+
+    cursor.select(QTextCursor.SelectionType.Document)
+    assert len(nwGUI.docEditor._selectedBlocks(cursor)) == 15
+
     # Remove All
     text = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
     nwGUI.docEditor.replaceText(text)
@@ -968,7 +979,7 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     nwGUI.docEditor._removeInParLineBreaks()
     assert nwGUI.docEditor.getText() == "### A Scene\n\n%s\n" % "\n\n".join(ipsumText[0:2])
 
-    # Remove First Paragraph
+    # Remove in First Paragraph
     # Second paragraphs should remain unchanged
     text = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
     nwGUI.docEditor.replaceText(text)
