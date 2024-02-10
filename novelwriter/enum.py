@@ -108,23 +108,24 @@ class nwDocAction(Enum):
     BLOCK_H3  = 15
     BLOCK_H4  = 16
     BLOCK_COM = 17
-    BLOCK_TXT = 18
-    BLOCK_TTL = 19
-    BLOCK_UNN = 20
-    REPL_SNG  = 21
-    REPL_DBL  = 22
-    RM_BREAKS = 23
-    ALIGN_L   = 24
-    ALIGN_C   = 25
-    ALIGN_R   = 26
-    INDENT_L  = 27
-    INDENT_R  = 28
-    SC_ITALIC = 29
-    SC_BOLD   = 30
-    SC_STRIKE = 31
-    SC_ULINE  = 32
-    SC_SUP    = 33
-    SC_SUB    = 34
+    BLOCK_IGN = 18
+    BLOCK_TXT = 19
+    BLOCK_TTL = 20
+    BLOCK_UNN = 21
+    REPL_SNG  = 22
+    REPL_DBL  = 23
+    RM_BREAKS = 24
+    ALIGN_L   = 25
+    ALIGN_C   = 26
+    ALIGN_R   = 27
+    INDENT_L  = 28
+    INDENT_R  = 29
+    SC_ITALIC = 30
+    SC_BOLD   = 31
+    SC_STRIKE = 32
+    SC_ULINE  = 33
+    SC_SUP    = 34
+    SC_SUB    = 35
 
 # END Enum nwDocAction
 

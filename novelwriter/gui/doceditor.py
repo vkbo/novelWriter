@@ -736,9 +736,11 @@ class GuiDocEditor(QPlainTextEdit):
         elif action == nwDocAction.BLOCK_H4:
             self._formatBlock(nwDocAction.BLOCK_H4)
         elif action == nwDocAction.BLOCK_COM:
-            self._formatBlock(nwDocAction.BLOCK_COM)
+            self._iterFormatBlocks(nwDocAction.BLOCK_COM)
+        elif action == nwDocAction.BLOCK_IGN:
+            self._iterFormatBlocks(nwDocAction.BLOCK_IGN)
         elif action == nwDocAction.BLOCK_TXT:
-            self._formatBlock(nwDocAction.BLOCK_TXT)
+            self._iterFormatBlocks(nwDocAction.BLOCK_TXT)
         elif action == nwDocAction.BLOCK_TTL:
             self._formatBlock(nwDocAction.BLOCK_TTL)
         elif action == nwDocAction.BLOCK_UNN:
@@ -1588,9 +1590,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         posS = cursor.selectionStart()
         posE = cursor.selectionEnd()
-        closeCheck = (
-            " ", "\n", nwUnicode.U_LSEP, nwUnicode.U_PSEP
-        )
+        closeCheck = (" ", "\n", nwUnicode.U_LSEP, nwUnicode.U_PSEP)
 
         self._allowAutoReplace(False)
         for posC in range(posS, posE+1):
@@ -1634,6 +1634,114 @@ class GuiDocEditor(QPlainTextEdit):
 
         return True
 
+    def _processBlockFormat(
+        self, action: nwDocAction, text: str, toggle: bool = True
+    ) -> tuple[nwDocAction, str, int]:
+        """Process the formatting of a single text block."""
+        # Remove existing format first, if any
+        if text.startswith("@"):
+            logger.error("Cannot apply block format to keyword/value line")
+            return nwDocAction.NO_ACTION, "", 0
+        elif text.startswith("%~"):
+            temp = text[2:].lstrip()
+            offset = len(text) - len(temp)
+            if toggle and action == nwDocAction.BLOCK_IGN:
+                action = nwDocAction.BLOCK_TXT
+        elif text.startswith("%"):
+            temp = text[1:].lstrip()
+            offset = len(text) - len(temp)
+            if toggle and action == nwDocAction.BLOCK_COM:
+                action = nwDocAction.BLOCK_TXT
+        elif text.startswith("# "):
+            temp = text[2:]
+            offset = 2
+        elif text.startswith("## "):
+            temp = text[3:]
+            offset = 3
+        elif text.startswith("### "):
+            temp = text[4:]
+            offset = 4
+        elif text.startswith("#### "):
+            temp = text[5:]
+            offset = 5
+        elif text.startswith("#! "):
+            temp = text[3:]
+            offset = 3
+        elif text.startswith("##! "):
+            temp = text[4:]
+            offset = 4
+        elif text.startswith(">> "):
+            temp = text[3:]
+            offset = 3
+        elif text.startswith("> ") and action != nwDocAction.INDENT_R:
+            temp = text[2:]
+            offset = 2
+        elif text.startswith(">>"):
+            temp = text[2:]
+            offset = 2
+        elif text.startswith(">") and action != nwDocAction.INDENT_R:
+            temp = text[1:]
+            offset = 1
+        else:
+            temp = text
+            offset = 0
+
+        # Also remove formatting tags at the end
+        if text.endswith(" <<"):
+            temp = temp[:-3]
+        elif text.endswith(" <") and action != nwDocAction.INDENT_L:
+            temp = temp[:-2]
+        elif text.endswith("<<"):
+            temp = temp[:-2]
+        elif text.endswith("<") and action != nwDocAction.INDENT_L:
+            temp = temp[:-1]
+
+        # Apply new format
+        if action == nwDocAction.BLOCK_COM:
+            text = f"% {temp}"
+            offset -= 2
+        elif action == nwDocAction.BLOCK_IGN:
+            text = f"%~ {temp}"
+            offset -= 3
+        elif action == nwDocAction.BLOCK_H1:
+            text = f"# {temp}"
+            offset -= 2
+        elif action == nwDocAction.BLOCK_H2:
+            text = f"## {temp}"
+            offset -= 3
+        elif action == nwDocAction.BLOCK_H3:
+            text = f"### {temp}"
+            offset -= 4
+        elif action == nwDocAction.BLOCK_H4:
+            text = f"#### {temp}"
+            offset -= 5
+        elif action == nwDocAction.BLOCK_TTL:
+            text = f"#! {temp}"
+            offset -= 3
+        elif action == nwDocAction.BLOCK_UNN:
+            text = f"##! {temp}"
+            offset -= 4
+        elif action == nwDocAction.ALIGN_L:
+            text = f"{temp} <<"
+        elif action == nwDocAction.ALIGN_C:
+            text = f">> {temp} <<"
+            offset -= 3
+        elif action == nwDocAction.ALIGN_R:
+            text = f">> {temp}"
+            offset -= 3
+        elif action == nwDocAction.INDENT_L:
+            text = f"> {temp}"
+            offset -= 2
+        elif action == nwDocAction.INDENT_R:
+            text = f"{temp} <"
+        elif action == nwDocAction.BLOCK_TXT:
+            text = temp
+        else:
+            logger.error("Unknown or unsupported block format requested: '%s'", str(action))
+            return nwDocAction.NO_ACTION, "", 0
+
+        return action, text, offset
+
     def _formatBlock(self, action: nwDocAction) -> bool:
         """Change the block format of the block under the cursor."""
         cursor = self.textCursor()
@@ -1642,151 +1750,73 @@ class GuiDocEditor(QPlainTextEdit):
             logger.debug("Invalid block selected for action '%s'", str(action))
             return False
 
-        # Remove existing format first, if any
-        setText = block.text()
-        hasText = len(setText) > 0
-        if setText.startswith("@"):
-            logger.error("Cannot apply block format to keyword/value line")
-            return False
-        elif setText.startswith("% "):
-            newText = setText[2:]
-            cOffset = 2
-            if action == nwDocAction.BLOCK_COM:
-                action = nwDocAction.BLOCK_TXT
-        elif setText.startswith("%"):
-            newText = setText[1:]
-            cOffset = 1
-            if action == nwDocAction.BLOCK_COM:
-                action = nwDocAction.BLOCK_TXT
-        elif setText.startswith("# "):
-            newText = setText[2:]
-            cOffset = 2
-        elif setText.startswith("## "):
-            newText = setText[3:]
-            cOffset = 3
-        elif setText.startswith("### "):
-            newText = setText[4:]
-            cOffset = 4
-        elif setText.startswith("#### "):
-            newText = setText[5:]
-            cOffset = 5
-        elif setText.startswith("#! "):
-            newText = setText[3:]
-            cOffset = 3
-        elif setText.startswith("##! "):
-            newText = setText[4:]
-            cOffset = 4
-        elif setText.startswith(">> "):
-            newText = setText[3:]
-            cOffset = 3
-        elif setText.startswith("> ") and action != nwDocAction.INDENT_R:
-            newText = setText[2:]
-            cOffset = 2
-        elif setText.startswith(">>"):
-            newText = setText[2:]
-            cOffset = 2
-        elif setText.startswith(">") and action != nwDocAction.INDENT_R:
-            newText = setText[1:]
-            cOffset = 1
-        else:
-            newText = setText
-            cOffset = 0
-
-        # Also remove formatting tags at the end
-        if setText.endswith(" <<"):
-            newText = newText[:-3]
-        elif setText.endswith(" <") and action != nwDocAction.INDENT_L:
-            newText = newText[:-2]
-        elif setText.endswith("<<"):
-            newText = newText[:-2]
-        elif setText.endswith("<") and action != nwDocAction.INDENT_L:
-            newText = newText[:-1]
-
-        # Apply new format
-        if action == nwDocAction.BLOCK_COM:
-            setText = "% "+newText
-            cOffset -= 2
-        elif action == nwDocAction.BLOCK_H1:
-            setText = "# "+newText
-            cOffset -= 2
-        elif action == nwDocAction.BLOCK_H2:
-            setText = "## "+newText
-            cOffset -= 3
-        elif action == nwDocAction.BLOCK_H3:
-            setText = "### "+newText
-            cOffset -= 4
-        elif action == nwDocAction.BLOCK_H4:
-            setText = "#### "+newText
-            cOffset -= 5
-        elif action == nwDocAction.BLOCK_TTL:
-            setText = "#! "+newText
-            cOffset -= 3
-        elif action == nwDocAction.BLOCK_UNN:
-            setText = "##! "+newText
-            cOffset -= 4
-        elif action == nwDocAction.ALIGN_L:
-            setText = newText+" <<"
-        elif action == nwDocAction.ALIGN_C:
-            setText = ">> "+newText+" <<"
-            cOffset -= 3
-        elif action == nwDocAction.ALIGN_R:
-            setText = ">> "+newText
-            cOffset -= 3
-        elif action == nwDocAction.INDENT_L:
-            setText = "> "+newText
-            cOffset -= 2
-        elif action == nwDocAction.INDENT_R:
-            setText = newText+" <"
-        elif action == nwDocAction.BLOCK_TXT:
-            setText = newText
-        else:
-            logger.error("Unknown or unsupported block format requested: '%s'", str(action))
+        action, text, offset = self._processBlockFormat(action, block.text())
+        if action == nwDocAction.NO_ACTION:
             return False
 
-        # Replace the block text
+        pos = cursor.position()
+
         cursor.beginEditBlock()
-        posO = cursor.position()
-        cursor.select(QTextCursor.SelectionType.BlockUnderCursor)
-        posS = cursor.selectionStart()
-        cursor.removeSelectedText()
-        cursor.setPosition(posS)
-
-        if posS > 0 and hasText:
-            # If the block already had text, we must insert a new block
-            # first before we can add back the text to it.
-            cursor.insertBlock()
-
-        cursor.insertText(setText)
-
-        if posO - cOffset >= 0:
-            cursor.setPosition(posO - cOffset)
-
+        self._makeSelection(QTextCursor.SelectionType.BlockUnderCursor, cursor)
+        cursor.insertText(text)
         cursor.endEditBlock()
+
+        if (move := pos - offset) >= 0:
+            cursor.setPosition(move)
         self.setTextCursor(cursor)
 
         return True
 
+    def _iterFormatBlocks(self, action: nwDocAction) -> bool:
+        """Iterate over all selected blocks and apply format. If no
+        selection is made, just forward the call to the single block
+        formatter function.
+        """
+        cursor = self.textCursor()
+        blocks = self._selectedBlocks(cursor)
+        if len(blocks) < 2:
+            return self._formatBlock(action)
+
+        toggle = True
+        cursor.beginEditBlock()
+        for block in blocks:
+            blockText = block.text()
+            pAction, text, _ = self._processBlockFormat(action, blockText, toggle)
+            if pAction != nwDocAction.NO_ACTION and blockText.strip():
+                action = pAction  # First block decides further actions
+                cursor.setPosition(block.position())
+                self._makeSelection(QTextCursor.SelectionType.BlockUnderCursor, cursor)
+                cursor.insertText(text)
+                toggle = False
+
+        cursor.endEditBlock()
+
+        return True
+
+    def _selectedBlocks(self, cursor: QTextCursor) -> list[QTextBlock]:
+        """Return a list of all blocks selected by a cursor."""
+        if cursor.hasSelection():
+            iS = self._qDocument.findBlock(cursor.selectionStart()).blockNumber()
+            iE = self._qDocument.findBlock(cursor.selectionEnd()).blockNumber()
+            return [self._qDocument.findBlockByNumber(i) for i in range(iS, iE+1)]
+        return []
+
     def _removeInParLineBreaks(self) -> None:
         """Strip line breaks within paragraphs in the selected text."""
         cursor = self.textCursor()
+        if not cursor.hasSelection():
+            cursor.select(QTextCursor.SelectionType.Document)
 
-        iS = 0
-        iE = self._qDocument.blockCount() - 1
         rS = 0
         rE = self._qDocument.characterCount()
-        if cursor.hasSelection():
-            sBlock = self._qDocument.findBlock(cursor.selectionStart())
-            eBlock = self._qDocument.findBlock(cursor.selectionEnd())
-            iS = sBlock.blockNumber()
-            iE = eBlock.blockNumber()
-            rS = sBlock.position()
-            rE = eBlock.position() + eBlock.length()
+        if sBlocks := self._selectedBlocks(cursor):
+            rS = sBlocks[0].position()
+            rE = sBlocks[-1].position() + sBlocks[-1].length()
 
         # Clean up the text
         currPar = []
         cleanText = ""
-        for i in range(iS, iE+1):
-            cBlock = self._qDocument.findBlockByNumber(i)
+        for cBlock in sBlocks:
             cText = cBlock.text()
             if cText.strip() == "":
                 if currPar:
@@ -2040,9 +2070,11 @@ class GuiDocEditor(QPlainTextEdit):
 
         return cursor
 
-    def _makeSelection(self, mode: QTextCursor.SelectionType) -> None:
+    def _makeSelection(self, mode: QTextCursor.SelectionType,
+                       cursor: QTextCursor | None = None) -> None:
         """Select text based on selection mode."""
-        cursor = self.textCursor()
+        if cursor is None:
+            cursor = self.textCursor()
         cursor.clearSelection()
         cursor.select(mode)
 

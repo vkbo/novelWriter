@@ -467,6 +467,10 @@ class Tokenizer(ABC):
                     continue
 
             if aLine[0] == "%":
+                if aLine[1] == "~":
+                    # Completely ignore the paragraph
+                    continue
+
                 cStyle, cText, _ = processComment(aLine)
                 if cStyle == nwComment.SYNOPSIS:
                     self._tokens.append((
