@@ -107,6 +107,7 @@ Text Formatting Shortcuts
    ":kbd:`Ctrl+D`",       "Strike through selected text, or word under cursor"
    ":kbd:`Ctrl+I`",       "Format selected text, or word under cursor, with emphasis (italic)"
    ":kbd:`Ctrl+Shift+/`", "Remove block formatting for block under cursor"
+   ":kbd:`Ctrl+Shift+D`", "Toggle block format as ignored text"
 
 
 Other Editor Shortcuts

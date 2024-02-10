@@ -781,6 +781,13 @@ class GuiMainMenu(QMenuBar):
             lambda: self.requestDocAction.emit(nwDocAction.BLOCK_COM)
         )
 
+        # Format > Ignore Text
+        self.aFmtIgnore = self.fmtMenu.addAction(self.tr("Toggle Ignore Text"))
+        self.aFmtIgnore.setShortcut("Ctrl+Shift+D")
+        self.aFmtIgnore.triggered.connect(
+            lambda: self.requestDocAction.emit(nwDocAction.BLOCK_IGN)
+        )
+
         # Format > Remove Block Format
         self.aFmtNoFormat = self.fmtMenu.addAction(self.tr("Remove Block Format"))
         self.aFmtNoFormat.setShortcuts(["Ctrl+0", "Ctrl+Shift+/"])

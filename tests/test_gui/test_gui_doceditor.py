@@ -579,6 +579,11 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.docEditor.docAction(nwDocAction.BLOCK_COM) is True
     assert nwGUI.docEditor.getText() == "#### Scene Title\n\n% Scene text.\n\n"
 
+    # Ignore Text
+    nwGUI.docEditor.setCursorPosition(20)
+    assert nwGUI.docEditor.docAction(nwDocAction.BLOCK_IGN) is True
+    assert nwGUI.docEditor.getText() == "#### Scene Title\n\n%~ Scene text.\n\n"
+
     # Text
     nwGUI.docEditor.setCursorPosition(20)
     assert nwGUI.docEditor.docAction(nwDocAction.BLOCK_TXT) is True
@@ -956,6 +961,17 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     parOne = ipsumText[0].replace(" ", "\n", 5)
     parTwo = ipsumText[1].replace(" ", "\n", 5)
 
+    # Check Blocks
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.clearSelection()
+    text = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
+    nwGUI.docEditor.replaceText(text)
+    nwGUI.docEditor.setCursorPosition(45)
+    assert len(nwGUI.docEditor._selectedBlocks(cursor)) == 0
+
+    cursor.select(QTextCursor.SelectionType.Document)
+    assert len(nwGUI.docEditor._selectedBlocks(cursor)) == 15
+
     # Remove All
     text = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
     nwGUI.docEditor.replaceText(text)
@@ -963,7 +979,7 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     nwGUI.docEditor._removeInParLineBreaks()
     assert nwGUI.docEditor.getText() == "### A Scene\n\n%s\n" % "\n\n".join(ipsumText[0:2])
 
-    # Remove First Paragraph
+    # Remove in First Paragraph
     # Second paragraphs should remain unchanged
     text = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
     nwGUI.docEditor.replaceText(text)
@@ -1202,6 +1218,20 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, projPath, ipsumText
     assert nwGUI.docEditor.getText() == "Some text\n\n"
     assert nwGUI.docEditor.getCursorPosition() == 4
 
+    # Toggle Ignore Text w/Space
+    nwGUI.docEditor.replaceText("%~ Some text\n\n")
+    nwGUI.docEditor.setCursorPosition(5)
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_IGN) is True
+    assert nwGUI.docEditor.getText() == "Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 2
+
+    # Toggle Ignore Text wo/Space
+    nwGUI.docEditor.replaceText("%~Some text\n\n")
+    nwGUI.docEditor.setCursorPosition(5)
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_IGN) is True
+    assert nwGUI.docEditor.getText() == "Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 3
+
     # Header 1
     nwGUI.docEditor.replaceText("Some text\n\n")
     nwGUI.docEditor.setCursorPosition(5)
@@ -1315,6 +1345,80 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, projPath, ipsumText
     # qtbot.stop()
 
 # END Test testGuiEditor_BlockFormatting
+
+
+@pytest.mark.gui
+def testGuiEditor_MultiBlockFormatting(qtbot, nwGUI, projPath, ipsumText, mockRnd):
+    """Test the block formatting function."""
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+
+    text = "### A Scene\n\n@char: Jane, John\n\n" + "\n\n".join(ipsumText) + "\n\n"
+    nwGUI.docEditor.replaceText(text)
+    assert [x[:5] for x in nwGUI.docEditor.getText().splitlines()] == [
+        "### A", "", "@char", "", "Lorem", "", "Nulla", "", "Nulla", "", "Pelle", "", "Integ", ""
+    ]
+
+    # Toggle Comment
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.setPosition(50)
+    cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, 2000)
+    nwGUI.docEditor.setTextCursor(cursor)
+
+    nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_COM)
+    assert [x[:5] for x in nwGUI.docEditor.getText().splitlines()] == [
+        "### A", "", "@char", "", "% Lor", "", "% Nul", "", "% Nul", "", "% Pel", "", "Integ", ""
+    ]
+
+    # Un-toggle the second
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.setPosition(800)
+    nwGUI.docEditor.setTextCursor(cursor)
+
+    nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_COM)
+    assert [x[:5] for x in nwGUI.docEditor.getText().splitlines()] == [
+        "### A", "", "@char", "", "% Lor", "", "Nulla", "", "% Nul", "", "% Pel", "", "Integ", ""
+    ]
+
+    # Un-toggle all
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.setPosition(50)
+    cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, 3000)
+    nwGUI.docEditor.setTextCursor(cursor)
+
+    nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_COM)
+    assert [x[:5] for x in nwGUI.docEditor.getText().splitlines()] == [
+        "### A", "", "@char", "", "Lorem", "", "Nulla", "", "Nulla", "", "Pelle", "", "Integ", ""
+    ]
+
+    # Toggle Ignore Text
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.setPosition(50)
+    cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, 2000)
+    nwGUI.docEditor.setTextCursor(cursor)
+
+    nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_IGN)
+    assert [x[:5] for x in nwGUI.docEditor.getText().splitlines()] == [
+        "### A", "", "@char", "", "%~ Lo", "", "%~ Nu", "", "%~ Nu", "", "%~ Pe", "", "Integ", ""
+    ]
+
+    # Clear all paragraphs
+    cursor = nwGUI.docEditor.textCursor()
+    cursor.setPosition(50)
+    cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, 3000)
+    nwGUI.docEditor.setTextCursor(cursor)
+
+    nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_TXT)
+    assert [x[:5] for x in nwGUI.docEditor.getText().splitlines()] == [
+        "### A", "", "@char", "", "Lorem", "", "Nulla", "", "Nulla", "", "Pelle", "", "Integ", ""
+    ]
+
+    # Final text should be identical to initial text
+    assert nwGUI.docEditor.getText() == text
+
+    # qtbot.stop()
+
+# END Test testGuiEditor_MultiBlockFormatting
 
 
 @pytest.mark.gui
