@@ -34,8 +34,8 @@ from PyQt5.QtCore import (
     pyqtSignal, pyqtSlot
 )
 from PyQt5.QtWidgets import (
-    QDialog, QDialogButtonBox, QFileDialog, QFormLayout, QHBoxLayout, QLabel,
-    QLineEdit, QListView, QMenu, QPushButton, QScrollArea, QShortcut,
+    QAction, QDialog, QDialogButtonBox, QFileDialog, QFormLayout, QHBoxLayout,
+    QLabel, QLineEdit, QListView, QMenu, QPushButton, QScrollArea, QShortcut,
     QStackedWidget, QStyle, QStyleOptionViewItem, QStyledItemDelegate,
     QToolButton, QVBoxLayout, QWidget, qApp
 )
@@ -43,7 +43,7 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED, __version__, __date__
 from novelwriter.enum import nwItemClass
 from novelwriter.common import formatInt, formatVersion, makeFileNameSafe
-from novelwriter.constants import nwUnicode
+from novelwriter.constants import nwFiles, nwUnicode
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.modified import NComboBox, NSpinBox
@@ -241,8 +241,13 @@ class _OpenProjectPage(QWidget):
         self.listWidget.customContextMenuRequested.connect(self._openContextMenu)
 
         # Info / Tool
+        self.aMissing = QAction(self)
+        self.aMissing.setIcon(SHARED.theme.getIcon("alert_warn"))
+        self.aMissing.setToolTip(self.tr("The project path is not reachable."))
+
         self.selectedPath = QLineEdit(self)
         self.selectedPath.setReadOnly(True)
+        self.selectedPath.addAction(self.aMissing, QLineEdit.ActionPosition.TrailingPosition)
 
         self.keyDelete = QShortcut(self)
         self.keyDelete.setKey(Qt.Key.Key_Delete)
@@ -287,7 +292,11 @@ class _OpenProjectPage(QWidget):
         """Process single click on project item."""
         path = self.tr("Path")
         value = index.data()[1] if index.isValid() else ""
-        self.selectedPath.setText(f"{path}: {value}")
+        text = f"{path}: {value}"
+        self.selectedPath.setText(text)
+        self.selectedPath.setToolTip(text)
+        self.selectedPath.setCursorPosition(0)
+        self.aMissing.setVisible(not (Path(value) / nwFiles.PROJ_FILE).is_file())
         return
 
     @pyqtSlot(QModelIndex)
