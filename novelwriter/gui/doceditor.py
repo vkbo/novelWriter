@@ -1774,7 +1774,7 @@ class GuiDocEditor(QPlainTextEdit):
         """
         cursor = self.textCursor()
         blocks = self._selectedBlocks(cursor)
-        if len(blocks) < 1:
+        if len(blocks) < 2:
             return self._formatBlock(action)
 
         toggle = True
