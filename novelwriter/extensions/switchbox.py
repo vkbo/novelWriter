@@ -87,7 +87,7 @@ class NSwitchBox(QScrollArea):
         label = QLabel(text)
         self._content.addWidget(label, self._index, 1, Qt.AlignLeft)
 
-        switch = NSwitch(width=self._wSwitch, height=self._hSwitch)
+        switch = NSwitch(self, height=self._hSwitch)
         switch.setChecked(default)
         switch.toggled.connect(lambda state: self._emitSwitchSignal(identifier, state))
         self._content.addWidget(switch, self._index, 2, Qt.AlignRight)

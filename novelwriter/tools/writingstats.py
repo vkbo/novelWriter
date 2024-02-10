@@ -193,37 +193,37 @@ class GuiWritingStats(QDialog):
         self.filterForm = QGridLayout(self)
         self.filterBox.setLayout(self.filterForm)
 
-        self.incNovel = NSwitch(width=2*sPx, height=sPx)
+        self.incNovel = NSwitch(self, height=sPx)
         self.incNovel.setChecked(
             pOptions.getBool("GuiWritingStats", "incNovel", True)
         )
         self.incNovel.clicked.connect(self._updateListBox)
 
-        self.incNotes = NSwitch(width=2*sPx, height=sPx)
+        self.incNotes = NSwitch(self, height=sPx)
         self.incNotes.setChecked(
             pOptions.getBool("GuiWritingStats", "incNotes", True)
         )
         self.incNotes.clicked.connect(self._updateListBox)
 
-        self.hideZeros = NSwitch(width=2*sPx, height=sPx)
+        self.hideZeros = NSwitch(self, height=sPx)
         self.hideZeros.setChecked(
             pOptions.getBool("GuiWritingStats", "hideZeros", True)
         )
         self.hideZeros.clicked.connect(self._updateListBox)
 
-        self.hideNegative = NSwitch(width=2*sPx, height=sPx)
+        self.hideNegative = NSwitch(self, height=sPx)
         self.hideNegative.setChecked(
             pOptions.getBool("GuiWritingStats", "hideNegative", False)
         )
         self.hideNegative.clicked.connect(self._updateListBox)
 
-        self.groupByDay = NSwitch(width=2*sPx, height=sPx)
+        self.groupByDay = NSwitch(self, height=sPx)
         self.groupByDay.setChecked(
             pOptions.getBool("GuiWritingStats", "groupByDay", False)
         )
         self.groupByDay.clicked.connect(self._updateListBox)
 
-        self.showIdleTime = NSwitch(width=2*sPx, height=sPx)
+        self.showIdleTime = NSwitch(self, height=sPx)
         self.showIdleTime.setChecked(
             pOptions.getBool("GuiWritingStats", "showIdleTime", False)
         )

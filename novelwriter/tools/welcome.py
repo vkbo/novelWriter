@@ -34,8 +34,8 @@ from PyQt5.QtCore import (
     pyqtSignal, pyqtSlot
 )
 from PyQt5.QtWidgets import (
-    QDialog, QDialogButtonBox, QFileDialog, QFormLayout, QHBoxLayout, QLabel,
-    QLineEdit, QListView, QMenu, QPushButton, QScrollArea, QShortcut,
+    QAction, QDialog, QDialogButtonBox, QFileDialog, QFormLayout, QHBoxLayout,
+    QLabel, QLineEdit, QListView, QMenu, QPushButton, QScrollArea, QShortcut,
     QStackedWidget, QStyle, QStyleOptionViewItem, QStyledItemDelegate,
     QToolButton, QVBoxLayout, QWidget, qApp
 )
@@ -43,12 +43,14 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED, __version__, __date__
 from novelwriter.enum import nwItemClass
 from novelwriter.common import formatInt, formatVersion, makeFileNameSafe
-from novelwriter.constants import nwUnicode
+from novelwriter.constants import nwFiles, nwUnicode
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.modified import NComboBox, NSpinBox
 
 logger = logging.getLogger(__name__)
+
+PANEL_ALPHA = 0.7
 
 
 class GuiWelcome(QDialog):
@@ -62,15 +64,16 @@ class GuiWelcome(QDialog):
         self.setObjectName("GuiWelcome")
 
         self.setWindowTitle(self.tr("Welcome"))
-        self.setMinimumWidth(CONFIG.pxInt(700))
-        self.setMinimumHeight(CONFIG.pxInt(400))
+        self.setMinimumWidth(CONFIG.pxInt(650))
+        self.setMinimumHeight(CONFIG.pxInt(450))
 
         hA = CONFIG.pxInt(8)
         hB = CONFIG.pxInt(16)
         hC = CONFIG.pxInt(24)
         hD = CONFIG.pxInt(36)
         hE = CONFIG.pxInt(48)
-        hF = CONFIG.pxInt(96)
+        hF = CONFIG.pxInt(128)
+        self._hPx = CONFIG.pxInt(600)
 
         self.resize(*CONFIG.welcomeWinSize)
 
@@ -127,14 +130,14 @@ class GuiWelcome(QDialog):
         self.innerBox.addWidget(self.nwInfo)
         self.innerBox.addSpacing(hA)
         self.innerBox.addWidget(self.mainStack)
-        self.innerBox.addSpacing(hA)
+        self.innerBox.addSpacing(hB)
         self.innerBox.addWidget(self.btnBox)
 
         topRight = Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight
 
         self.outerBox = QHBoxLayout()
         self.outerBox.addWidget(self.nwLogo, 3, topRight)
-        self.outerBox.addLayout(self.innerBox, 7)
+        self.outerBox.addLayout(self.innerBox, 9)
         self.outerBox.setContentsMargins(hF, hE, hC, hE)
 
         self.setLayout(self.outerBox)
@@ -155,7 +158,7 @@ class GuiWelcome(QDialog):
     def paintEvent(self, event: QPaintEvent) -> None:
         """Overload the paint event to draw the background image."""
         hWin = self.height()
-        hPix = min(hWin, 700)
+        hPix = min(hWin, self._hPx)
         tMode = Qt.TransformationMode.SmoothTransformation
         painter = QPainter(self)
         painter.fillRect(self.rect(), self.bgColor)
@@ -238,8 +241,13 @@ class _OpenProjectPage(QWidget):
         self.listWidget.customContextMenuRequested.connect(self._openContextMenu)
 
         # Info / Tool
+        self.aMissing = QAction(self)
+        self.aMissing.setIcon(SHARED.theme.getIcon("alert_warn"))
+        self.aMissing.setToolTip(self.tr("The project path is not reachable."))
+
         self.selectedPath = QLineEdit(self)
         self.selectedPath.setReadOnly(True)
+        self.selectedPath.addAction(self.aMissing, QLineEdit.ActionPosition.TrailingPosition)
 
         self.keyDelete = QShortcut(self)
         self.keyDelete.setKey(Qt.Key.Key_Delete)
@@ -257,9 +265,10 @@ class _OpenProjectPage(QWidget):
 
         baseCol = self.palette().base().color()
         self.setStyleSheet((
-            "QListView {{border: none; background: rgba({r},{g},{b},0.65);}} "
-            "QLineEdit {{border: none; background: rgba({r},{g},{b},0.65); padding: {m}px;}} "
-        ).format(r=baseCol.red(), g=baseCol.green(), b=baseCol.blue(), m=CONFIG.pxInt(4)))
+            "QListView {{border: none; background: rgba({r},{g},{b},{a});}} "
+            "QLineEdit {{border: none; background: rgba({r},{g},{b},{a}); padding: {m}px;}} "
+        ).format(r=baseCol.red(), g=baseCol.green(), b=baseCol.blue(),
+                 a=PANEL_ALPHA, m=CONFIG.pxInt(4)))
 
         return
 
@@ -283,7 +292,11 @@ class _OpenProjectPage(QWidget):
         """Process single click on project item."""
         path = self.tr("Path")
         value = index.data()[1] if index.isValid() else ""
-        self.selectedPath.setText(f"{path}: {value}")
+        text = f"{path}: {value}"
+        self.selectedPath.setText(text)
+        self.selectedPath.setToolTip(text)
+        self.selectedPath.setCursorPosition(0)
+        self.aMissing.setVisible(not (Path(value) / nwFiles.PROJ_FILE).is_file())
         return
 
     @pyqtSlot(QModelIndex)
@@ -482,9 +495,9 @@ class _NewProjectPage(QWidget):
 
         baseCol = self.palette().base().color()
         self.setStyleSheet((
-            "QScrollArea {{border: none; background: rgba({r},{g},{b},0.65);}} "
-            "_NewProjectForm {{border: none; background: rgba({r},{g},{b},0.65);}} "
-        ).format(r=baseCol.red(), g=baseCol.green(), b=baseCol.blue()))
+            "QScrollArea {{border: none; background: rgba({r},{g},{b},{a});}} "
+            "_NewProjectForm {{border: none; background: rgba({r},{g},{b},{a});}} "
+        ).format(r=baseCol.red(), g=baseCol.green(), b=baseCol.blue(), a=PANEL_ALPHA))
 
         return
 
@@ -519,6 +532,8 @@ class _NewProjectForm(QWidget):
         self._basePath = CONFIG.lastPath()
         self._fillMode = self.FILL_BLANK
         self._copyPath = None
+
+        iPx = SHARED.theme.baseIconSize
 
         # Project Settings
         # ================
@@ -623,19 +638,19 @@ class _NewProjectForm(QWidget):
         # Project Notes
         # =============
 
-        self.addPlot = NSwitch(self)
+        self.addPlot = NSwitch(self, height=iPx)
         self.addPlot.setChecked(True)
         self.addPlot.clicked.connect(self._syncSwitches)
 
-        self.addChar = NSwitch(self)
+        self.addChar = NSwitch(self, height=iPx)
         self.addChar.setChecked(True)
         self.addChar.clicked.connect(self._syncSwitches)
 
-        self.addWorld = NSwitch(self)
+        self.addWorld = NSwitch(self, height=iPx)
         self.addWorld.setChecked(False)
         self.addWorld.clicked.connect(self._syncSwitches)
 
-        self.addNotes = NSwitch()
+        self.addNotes = NSwitch(self, height=iPx)
         self.addNotes.setChecked(False)
 
         self.notesForm = QFormLayout()

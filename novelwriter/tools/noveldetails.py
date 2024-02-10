@@ -384,7 +384,7 @@ class _ContentsPage(NFixedPage):
 
         self.dblLabel = QLabel(self.tr("Chapters on odd pages"))
 
-        self.dblValue = NSwitch(self, 2*iPx, iPx)
+        self.dblValue = NSwitch(self, height=iPx)
         self.dblValue.setChecked(clearDouble)
         self.dblValue.clicked.connect(self._populateTree)
 

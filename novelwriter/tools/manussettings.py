@@ -659,7 +659,7 @@ class _HeadingsTab(NScrollablePage):
         self.btnScene.clicked.connect(lambda: self._editHeading(self.EDIT_SCENE))
         self.hdeScene = QLabel(self.tr("Hide"))
         self.hdeScene.setToolTip(sceneHideTip)
-        self.swtScene = NSwitch(self, width=2*iPx, height=iPx)
+        self.swtScene = NSwitch(self, height=iPx)
         self.swtScene.setToolTip(sceneHideTip)
 
         wrapScene = QHBoxLayout()
@@ -686,7 +686,7 @@ class _HeadingsTab(NScrollablePage):
         self.btnSection.clicked.connect(lambda: self._editHeading(self.EDIT_SECTION))
         self.hdeSection = QLabel(self.tr("Hide"))
         self.hdeSection.setToolTip(sectionHideTip)
-        self.swtSection = NSwitch(self, width=2*iPx, height=iPx)
+        self.swtSection = NSwitch(self, height=iPx)
         self.swtSection.setToolTip(sectionHideTip)
 
         wrapSection = QHBoxLayout()
@@ -894,10 +894,10 @@ class _ContentTab(NScrollableForm):
         iPx = SHARED.theme.baseIconSize
 
         # Text Content
-        self.incSynopsis = NSwitch(self, width=2*iPx, height=iPx)
-        self.incComments = NSwitch(self, width=2*iPx, height=iPx)
-        self.incKeywords = NSwitch(self, width=2*iPx, height=iPx)
-        self.incBodyText = NSwitch(self, width=2*iPx, height=iPx)
+        self.incSynopsis = NSwitch(self, height=iPx)
+        self.incComments = NSwitch(self, height=iPx)
+        self.incKeywords = NSwitch(self, height=iPx)
+        self.incBodyText = NSwitch(self, height=iPx)
 
         self.addGroupLabel(self._build.getLabel("text.grpContent"))
         self.addRow(self._build.getLabel("text.includeSynopsis"), self.incSynopsis)
@@ -906,7 +906,7 @@ class _ContentTab(NScrollableForm):
         self.addRow(self._build.getLabel("text.includeBodyText"), self.incBodyText)
 
         # Insert Content
-        self.addNoteHead = NSwitch(self, width=2*iPx, height=iPx)
+        self.addNoteHead = NSwitch(self, height=iPx)
 
         self.addGroupLabel(self._build.getLabel("text.grpInsert"))
         self.addRow(self._build.getLabel("text.addNoteHeadings"), self.addNoteHead)
@@ -989,9 +989,9 @@ class _FormatTab(NScrollableForm):
 
         self.addGroupLabel(self._build.getLabel("format.grpOptions"))
 
-        self.justifyText = NSwitch(self, width=2*iPx, height=iPx)
-        self.stripUnicode = NSwitch(self, width=2*iPx, height=iPx)
-        self.replaceTabs = NSwitch(self, width=2*iPx, height=iPx)
+        self.justifyText = NSwitch(self, height=iPx)
+        self.stripUnicode = NSwitch(self, height=iPx)
+        self.replaceTabs = NSwitch(self, height=iPx)
 
         self.addRow(self._build.getLabel("format.justifyText"), self.justifyText)
         self.addRow(self._build.getLabel("format.stripUnicode"), self.stripUnicode)
@@ -1219,7 +1219,7 @@ class _OutputTab(NScrollableForm):
         # Open Document
         self.addGroupLabel(self._build.getLabel("odt"))
 
-        self.odtAddColours = NSwitch(self, width=2*iPx, height=iPx)
+        self.odtAddColours = NSwitch(self, height=iPx)
         self.addRow(self._build.getLabel("odt.addColours"), self.odtAddColours)
 
         self.odtPageHeader = QLineEdit(self)
@@ -1242,7 +1242,7 @@ class _OutputTab(NScrollableForm):
         # HTML Document
         self.addGroupLabel(self._build.getLabel("html"))
 
-        self.htmlAddStyles = NSwitch(self, width=2*iPx, height=iPx)
+        self.htmlAddStyles = NSwitch(self, height=iPx)
         self.addRow(self._build.getLabel("html.addStyles"), self.htmlAddStyles)
 
         # Finalise
