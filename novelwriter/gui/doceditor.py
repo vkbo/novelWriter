@@ -737,6 +737,8 @@ class GuiDocEditor(QPlainTextEdit):
             self._formatBlock(nwDocAction.BLOCK_H4)
         elif action == nwDocAction.BLOCK_COM:
             self._formatBlock(nwDocAction.BLOCK_COM)
+        elif action == nwDocAction.BLOCK_IGN:
+            self._formatBlock(nwDocAction.BLOCK_IGN)
         elif action == nwDocAction.BLOCK_TXT:
             self._formatBlock(nwDocAction.BLOCK_TXT)
         elif action == nwDocAction.BLOCK_TTL:
@@ -1648,14 +1650,14 @@ class GuiDocEditor(QPlainTextEdit):
         if setText.startswith("@"):
             logger.error("Cannot apply block format to keyword/value line")
             return False
-        elif setText.startswith("% "):
-            newText = setText[2:]
-            cOffset = 2
-            if action == nwDocAction.BLOCK_COM:
+        elif setText.startswith("%~"):
+            newText = setText[2:].lstrip()
+            cOffset = len(setText) - len(newText)
+            if action == nwDocAction.BLOCK_IGN:
                 action = nwDocAction.BLOCK_TXT
         elif setText.startswith("%"):
-            newText = setText[1:]
-            cOffset = 1
+            newText = setText[1:].lstrip()
+            cOffset = len(setText) - len(newText)
             if action == nwDocAction.BLOCK_COM:
                 action = nwDocAction.BLOCK_TXT
         elif setText.startswith("# "):
@@ -1706,6 +1708,9 @@ class GuiDocEditor(QPlainTextEdit):
         if action == nwDocAction.BLOCK_COM:
             setText = "% "+newText
             cOffset -= 2
+        elif action == nwDocAction.BLOCK_IGN:
+            setText = "%~ "+newText
+            cOffset -= 3
         elif action == nwDocAction.BLOCK_H1:
             setText = "# "+newText
             cOffset -= 2
