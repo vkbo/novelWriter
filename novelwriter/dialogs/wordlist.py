@@ -32,11 +32,12 @@ from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QDialogButtonBox, QFileDialog, QHBoxLayout,
-    QLabel, QLineEdit, QListWidget, QPushButton, QVBoxLayout, qApp
+    QLineEdit, QListWidget, QPushButton, QVBoxLayout, qApp
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.core.spellcheck import UserDictionary
+from novelwriter.extensions.configlayout import NColourLabel
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -67,7 +68,10 @@ class GuiWordList(QDialog):
         )
 
         # Header
-        self.headLabel = QLabel("<b>%s</b>" % self.tr("Project Word List"))
+        self.headLabel = NColourLabel(
+            "Project Word List", SHARED.theme.helpText, parent=self,
+            scale=NColourLabel.HEADER_SCALE
+        )
 
         self.importButton = QPushButton(SHARED.theme.getIcon("import"), "", self)
         self.importButton.setToolTip(self.tr("Import words from text file"))

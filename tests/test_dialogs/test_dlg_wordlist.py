@@ -24,9 +24,9 @@ import pytest
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QAction, QFileDialog
-from tests.mocked import causeOSError
 
 from tools import buildTestProject
+from mocked import causeOSError
 
 from novelwriter import SHARED
 from novelwriter.core.spellcheck import UserDictionary
