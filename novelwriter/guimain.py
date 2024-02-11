@@ -665,10 +665,10 @@ class GuiMain(QMainWindow):
 
         lastPath = CONFIG.lastPath()
         extFilter = [
-            self.tr("Text files ({0})").format("*.txt"),
-            self.tr("Markdown files ({0})").format("*.md"),
-            self.tr("novelWriter files ({0})").format("*.nwd"),
-            self.tr("All files ({0})").format("*"),
+            "{0} (*.txt)".format(self.tr("Text files")),
+            "{0} (*.md)".format(self.tr("Markdown files")),
+            "{0} (*.nwd)".format(self.tr("novelWriter files")),
+            "{0} (*)".format(self.tr("All files")),
         ]
         loadFile, _ = QFileDialog.getOpenFileName(
             self, self.tr("Import File"), str(lastPath), filter=";;".join(extFilter)

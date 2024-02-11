@@ -23,9 +23,10 @@ from __future__ import annotations
 import pytest
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog, QAction
+from PyQt5.QtWidgets import QDialog, QAction, QFileDialog
 
 from tools import buildTestProject
+from mocked import causeOSError
 
 from novelwriter import SHARED
 from novelwriter.core.spellcheck import UserDictionary
@@ -33,9 +34,8 @@ from novelwriter.dialogs.wordlist import GuiWordList
 
 
 @pytest.mark.gui
-def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, projPath):
-    """test the word list editor.
-    """
+def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, fncPath, projPath):
+    """test the word list editor."""
     buildTestProject(nwGUI, projPath)
 
     monkeypatch.setattr(GuiWordList, "exec_", lambda *a: None)
@@ -110,16 +110,55 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, projPath):
     assert wList.listBox.findItems("delete_me", Qt.MatchExactly) == []
     assert wList.listBox.item(0).text() == "word_a"  # type: ignore
 
-    # Save files
+    # Import/Export
+    # =============
+    expFile = fncPath / "wordlist_export.txt"
+    impFile = fncPath / "wordlist_import.txt"
+    wList.show()
+
+    # Export File, OS Error
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getSaveFileName", lambda *a, **k: (str(expFile), ""))
+        mp.setattr("builtins.open", causeOSError)
+        wList.exportButton.click()
+        assert not expFile.exists()
+
+    # Export File, OK
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getSaveFileName", lambda *a, **k: (str(expFile), ""))
+        wList.exportButton.click()
+        assert expFile.exists()
+        assert expFile.read_text() == "word_a\nword_b\nword_c\nword_d\nword_f\nword_g"
+
+    # Write File
+    impFile.write_text("word_d\nword_e\nword_f\tword_g word_h word_i\n\n\n")
+
+    # Import File, OS Error
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (str(impFile), ""))
+        mp.setattr("builtins.open", causeOSError)
+        wList.importButton.click()
+        assert wList.listBox.count() == 6
+
+    # Import File, OK
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (str(impFile), ""))
+        wList.importButton.click()
+        assert wList.listBox.count() == 9
+
+    # Save and Check List
     wList._doSave()
     userDict.load()
-    assert len(list(userDict)) == 6
+    assert len(list(userDict)) == 9
     assert "word_a" in userDict
     assert "word_b" in userDict
     assert "word_c" in userDict
     assert "word_d" in userDict
+    assert "word_e" in userDict
     assert "word_f" in userDict
     assert "word_g" in userDict
+    assert "word_h" in userDict
+    assert "word_i" in userDict
 
     # qtbot.stop()
 
