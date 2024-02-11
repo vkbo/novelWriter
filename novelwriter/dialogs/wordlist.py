@@ -70,7 +70,7 @@ class GuiWordList(QDialog):
         # Header
         self.headLabel = QLabel("<b>%s</b>" % self.tr("Project Word List"))
 
-        self.importButton = QPushButton(SHARED.theme.getIcon("add_document"), "", self)
+        self.importButton = QPushButton(SHARED.theme.getIcon("import"), "", self)
         self.importButton.setToolTip(self.tr("Import words from text file"))
         self.importButton.clicked.connect(self._importWords)
 
