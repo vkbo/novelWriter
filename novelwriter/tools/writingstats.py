@@ -381,7 +381,7 @@ class GuiWritingStats(QDialog):
         # Generate the file name
         savePath = CONFIG.lastPath() / f"sessionStats.{fileExt}"
         savePath, _ = QFileDialog.getSaveFileName(
-            self, self.tr("Save Data As"), str(savePath), "%s (*.%s)" % (textFmt, fileExt)
+            self, self.tr("Save Data As"), str(savePath), f"{textFmt} (*.{fileExt})"
         )
         if not savePath:
             return False

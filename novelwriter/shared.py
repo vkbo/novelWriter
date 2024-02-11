@@ -32,6 +32,7 @@ from pathlib import Path
 
 from PyQt5.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget
+from novelwriter.common import formatFileFilter
 
 from novelwriter.constants import nwFiles
 from novelwriter.core.spellcheck import NWSpellEnchant
@@ -221,13 +222,12 @@ class SharedData(QObject):
     def getProjectPath(self, parent: QWidget, path: str | Path | None = None,
                        allowZip: bool = False) -> Path | None:
         """Open the file dialog and select a novelWriter project file."""
-        label = (self.tr("novelWriter Project File or Zip")
+        label = (self.tr("novelWriter Project File or Zip File")
                  if allowZip else self.tr("novelWriter Project File"))
         ext = f"{nwFiles.PROJ_FILE} *.zip" if allowZip else nwFiles.PROJ_FILE
+        ffilter = formatFileFilter([(label, ext), "*"])
         selected, _ = QFileDialog.getOpenFileName(
-            parent, self.tr("Open Project"), str(path or ""), filter=";;".join(
-                [f"{label} ({ext})", "{0} (*)".format(self.tr("All Files"))]
-            )
+            parent, self.tr("Open Project"), str(path or ""), filter=ffilter
         )
         return Path(selected) if selected else None
 

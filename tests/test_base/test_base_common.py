@@ -34,11 +34,11 @@ from PyQt5.QtCore import QUrl
 
 from novelwriter.common import (
     checkBool, checkFloat, checkInt, checkIntTuple, checkPath, checkString,
-    checkStringNone, checkUuid, formatInt, formatTime, formatTimeStamp,
-    formatVersion, fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass,
-    isItemLayout, isItemType, isTitleTag, jsonEncode, makeFileNameSafe, minmax,
-    numberToRoman, NWConfigParser, openExternalPath, readTextFile, simplified,
-    transferCase, xmlIndent, yesNo
+    checkStringNone, checkUuid, formatFileFilter, formatInt, formatTime,
+    formatTimeStamp, formatVersion, fuzzyTime, getFileSize, hexToInt, isHandle,
+    isItemClass, isItemLayout, isItemType, isTitleTag, jsonEncode,
+    makeFileNameSafe, minmax, numberToRoman, NWConfigParser, openExternalPath,
+    readTextFile, simplified, transferCase, xmlIndent, yesNo
 )
 
 
@@ -344,6 +344,18 @@ def testBaseCommon_formatVersion():
     assert formatVersion("1.2rc3") == "1.2 RC 3"
 
 # END Test testBaseCommon_formatVersion
+
+
+@pytest.mark.base
+def testBaseCommon_formatFileFilter():
+    """Test the formatFileFilter function."""
+    assert formatFileFilter(["*.txt"]) == "Text files (*.txt)"
+    assert formatFileFilter(["*.txt", "*"]) == "Text files (*.txt);;All files (*)"
+    assert formatFileFilter([("Stuff", "*.stuff"), "*.txt", "*"]) == (
+        "Stuff (*.stuff);;Text files (*.txt);;All files (*)"
+    )
+
+# END Test testBaseCommon_formatFileFilter
 
 
 @pytest.mark.base

@@ -270,6 +270,12 @@ class nwLabels:
         nwBuildFmt.J_HTML: ".json",
         nwBuildFmt.J_NWD:  ".json",
     }
+    FILE_FILTERS = {
+        "*.txt": QT_TRANSLATE_NOOP("Constant", "Text files"),
+        "*.md":  QT_TRANSLATE_NOOP("Constant", "Markdown files"),
+        "*.nwd": QT_TRANSLATE_NOOP("Constant", "novelWriter files"),
+        "*":     QT_TRANSLATE_NOOP("Constant", "All files"),
+    }
     UNIT_NAME = {
         "mm": QT_TRANSLATE_NOOP("Constant", "Millimetres"),
         "cm": QT_TRANSLATE_NOOP("Constant", "Centimetres"),

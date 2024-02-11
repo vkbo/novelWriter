@@ -41,7 +41,7 @@ from PyQt5.QtCore import QCoreApplication, QUrl
 
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.error import logException
-from novelwriter.constants import nwConst, nwUnicode
+from novelwriter.constants import nwConst, nwLabels, nwUnicode, trConst
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import TypeGuard  # Requires Python 3.10
@@ -246,6 +246,19 @@ def formatTime(t: int) -> str:
 def formatVersion(value: str) -> str:
     """Format a version number into a more human readable form."""
     return value.lower().replace("a", " Alpha ").replace("b", " Beta ").replace("rc", " RC ")
+
+
+def formatFileFilter(extensions: list[str | tuple[str, str]]) -> str:
+    """Format a list of extensions, or extension + label pairs into a
+    QFileDialog extensions filter.
+    """
+    result = []
+    for ext in extensions:
+        if isinstance(ext, str):
+            result.append(f"{trConst(nwLabels.FILE_FILTERS.get(ext))} ({ext})")
+        elif isinstance(ext, tuple) and len(ext) == 2:
+            result.append(f"{ext[0]} ({ext[1]})")
+    return ";;".join(result)
 
 
 ##
