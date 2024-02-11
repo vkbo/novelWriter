@@ -37,7 +37,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.error import formatException
-from novelwriter.common import openExternalPath, formatInt, getFileSize
+from novelwriter.common import formatFileFilter, openExternalPath, formatInt, getFileSize
 
 logger = logging.getLogger(__name__)
 
@@ -180,12 +180,11 @@ class GuiDictionaries(QDialog):
     @pyqtSlot()
     def _doBrowseHunspell(self):
         """Browse for a Free/Libre Office dictionary."""
-        extFilter = [
-            self.tr("Free or Libre Office extension ({0})").format("*.sox *.oxt"),
-            self.tr("All files ({0})").format("*"),
-        ]
+        ffilter = formatFileFilter([
+            (self.tr("Free or Libre Office extension"), "*.sox *.oxt"), "*"
+        ])
         soxFile, _ = QFileDialog.getOpenFileName(
-            self, self.tr("Browse Files"), "", filter=";;".join(extFilter)
+            self, self.tr("Browse Files"), "", filter=ffilter
         )
         if soxFile:
             path = Path(soxFile).absolute()

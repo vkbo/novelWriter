@@ -36,6 +36,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.common import formatFileFilter
 from novelwriter.core.spellcheck import UserDictionary
 from novelwriter.extensions.configlayout import NColourLabel
 
@@ -184,12 +185,9 @@ class GuiWordList(QDialog):
         SHARED.info(self.tr(
             "Note: The import file must be a plain text file with UTF-8 or ASCII encoding."
         ))
-        extFilter = [
-            "{0} (*.txt)".format(self.tr("Text files")),
-            "{0} (*)".format(self.tr("All files")),
-        ]
+        ffilter = formatFileFilter(["*.txt", "*"])
         path, _ = QFileDialog.getOpenFileName(
-            self, self.tr("Import File"), str(Path.home()), filter=";;".join(extFilter)
+            self, self.tr("Import File"), str(Path.home()), filter=ffilter
         )
         if path:
             try:

@@ -63,7 +63,7 @@ from novelwriter.tools.writingstats import GuiWritingStats
 from novelwriter.enum import (
     nwDocAction, nwDocInsert, nwDocMode, nwItemType, nwWidget, nwView
 )
-from novelwriter.common import hexToInt
+from novelwriter.common import formatFileFilter, hexToInt
 
 logger = logging.getLogger(__name__)
 
@@ -664,14 +664,9 @@ class GuiMain(QMainWindow):
             return False
 
         lastPath = CONFIG.lastPath()
-        extFilter = [
-            "{0} (*.txt)".format(self.tr("Text files")),
-            "{0} (*.md)".format(self.tr("Markdown files")),
-            "{0} (*.nwd)".format(self.tr("novelWriter files")),
-            "{0} (*)".format(self.tr("All files")),
-        ]
+        ffilter = formatFileFilter(["*.txt", "*.md", "*.nwd", "*"])
         loadFile, _ = QFileDialog.getOpenFileName(
-            self, self.tr("Import File"), str(lastPath), filter=";;".join(extFilter)
+            self, self.tr("Import File"), str(lastPath), filter=ffilter
         )
         if not loadFile:
             return False
