@@ -58,13 +58,12 @@ class GuiWordList(QDialog):
         mS = CONFIG.pxInt(250)
         wW = CONFIG.pxInt(320)
         wH = CONFIG.pxInt(340)
-        options = SHARED.project.options
 
         self.setMinimumWidth(mS)
         self.setMinimumHeight(mS)
         self.resize(
-            CONFIG.pxInt(options.getInt("GuiWordList", "winWidth",  wW)),
-            CONFIG.pxInt(options.getInt("GuiWordList", "winHeight", wH))
+            CONFIG.pxInt(SHARED.project.options.getInt("GuiWordList", "winWidth",  wW)),
+            CONFIG.pxInt(SHARED.project.options.getInt("GuiWordList", "winHeight", wH))
         )
 
         # Header
