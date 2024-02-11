@@ -1785,6 +1785,7 @@ class _TreeContextMenu(QMenu):
         action = self.addAction(self.tr("Rename"))
         action.triggered.connect(lambda: self.projTree.renameTreeItem(self._handle))
         if isFile:
+            self._itemHeader()
             self._itemActive(False)
         self._itemStatusImport(False)
 
@@ -1831,6 +1832,15 @@ class _TreeContextMenu(QMenu):
         menu.addAction(self.projView.projBar.aAddScene)
         menu.addAction(self.projView.projBar.aAddNote)
         menu.addAction(self.projView.projBar.aAddFolder)
+        return
+
+    def _itemHeader(self) -> None:
+        """Check if there is a header that can be used for rename."""
+        if hItem := SHARED.project.index.getItemHeader(self._handle, "T0001"):
+            action = self.addAction(self.tr("Rename to Heading"))
+            action.triggered.connect(
+                lambda: self.projTree.renameTreeItem(self._handle, hItem.title)
+            )
         return
 
     def _itemActive(self, multi: bool) -> None:
