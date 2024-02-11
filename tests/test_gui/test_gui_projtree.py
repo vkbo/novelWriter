@@ -1223,8 +1223,8 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     ctxMenu.buildSingleSelectMenu(True)
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Open Document", "View Document", "Create New ...", "Rename", "Toggle Active",
-        "Set Status to ...", "Transform ...", "Expand All", "Collapse All",
+        "Open Document", "View Document", "Create New ...", "Rename", "Rename to Heading",
+        "Toggle Active", "Set Status to ...", "Transform ...", "Expand All", "Collapse All",
         "Duplicate from Here", "Move to Trash",
     ]
     assert getTransformSubMenu(ctxMenu) == [
@@ -1239,8 +1239,9 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     ctxMenu.buildSingleSelectMenu(False)
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Open Document", "View Document", "Create New ...", "Rename", "Toggle Active",
-        "Set Importance to ...", "Transform ...", "Duplicate Document", "Move to Trash",
+        "Open Document", "View Document", "Create New ...", "Rename", "Rename to Heading",
+        "Toggle Active", "Set Importance to ...", "Transform ...", "Duplicate Document",
+        "Move to Trash",
     ]
     assert getTransformSubMenu(ctxMenu) == [
         "Split Document by Headers",
@@ -1253,8 +1254,9 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     ctxMenu.buildSingleSelectMenu(False)
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
-        "Open Document", "View Document", "Create New ...", "Rename", "Toggle Active",
-        "Set Status to ...", "Transform ...", "Duplicate Document", "Move to Trash",
+        "Open Document", "View Document", "Create New ...", "Rename", "Rename to Heading",
+        "Toggle Active", "Set Status to ...", "Transform ...", "Duplicate Document",
+        "Move to Trash",
     ]
     assert getTransformSubMenu(ctxMenu) == [
         "Convert to Novel Document", "Split Document by Headers",
