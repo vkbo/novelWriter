@@ -24,20 +24,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import logging
-import novelwriter
 
 from datetime import datetime
 
-from PyQt5.QtGui import QCloseEvent, QCursor
+from PyQt5.QtGui import QCloseEvent, QColor
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    qApp, QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QTabWidget,
-    QTextBrowser, QVBoxLayout, QWidget
+    QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QTextBrowser, QVBoxLayout,
+    QWidget
 )
 
-from novelwriter import CONFIG, SHARED
-from novelwriter.common import readTextFile
-from novelwriter.constants import nwConst
+from novelwriter import CONFIG, SHARED, __version__, __date__
+from novelwriter.common import formatVersion, readTextFile
+from novelwriter.constants import nwConst, nwUnicode
+from novelwriter.extensions.configlayout import NColourLabel
 
 logger = logging.getLogger(__name__)
 
@@ -50,62 +50,72 @@ class GuiAbout(QDialog):
         logger.debug("Create: GuiAbout")
         self.setObjectName("GuiAbout")
 
-        self.outerBox = QVBoxLayout()
-        self.innerBox = QHBoxLayout()
-        self.innerBox.setSpacing(CONFIG.pxInt(16))
-
         self.setWindowTitle(self.tr("About novelWriter"))
-        self.setMinimumWidth(CONFIG.pxInt(650))
-        self.setMinimumHeight(CONFIG.pxInt(600))
+        self.resize(CONFIG.pxInt(700), CONFIG.pxInt(500))
 
-        nPx = CONFIG.pxInt(96)
-        self.nwIcon = QLabel()
-        self.nwIcon.setPixmap(SHARED.theme.getPixmap("novelwriter", (nPx, nPx)))
-        self.lblName = QLabel("<b>novelWriter</b>")
-        self.lblVers = QLabel(f"v{novelwriter.__version__}")
-        self.lblDate = QLabel(datetime.strptime(novelwriter.__date__, "%Y-%m-%d").strftime("%x"))
+        hA = CONFIG.pxInt(8)
+        hB = CONFIG.pxInt(16)
+        nwH = CONFIG.pxInt(36)
+        nwPx = CONFIG.pxInt(128)
 
-        self.leftBox = QVBoxLayout()
-        self.leftBox.setSpacing(CONFIG.pxInt(4))
-        self.leftBox.addWidget(self.nwIcon,  0, Qt.AlignCenter)
-        self.leftBox.addWidget(self.lblName, 0, Qt.AlignCenter)
-        self.leftBox.addWidget(self.lblVers, 0, Qt.AlignCenter)
-        self.leftBox.addWidget(self.lblDate, 0, Qt.AlignCenter)
-        self.leftBox.addStretch(1)
-        self.innerBox.addLayout(self.leftBox)
+        # Logo and Banner
+        self.nwImage = SHARED.theme.loadDecoration("nw-text", h=nwH)
+        self.bgColor = QColor(255, 255, 255) if SHARED.theme.isLightTheme else QColor(54, 54, 54)
 
-        # Pages
-        self.pageAbout = QTextBrowser()
-        self.pageAbout.setOpenExternalLinks(True)
-        self.pageAbout.document().setDocumentMargin(CONFIG.pxInt(16))
+        self.nwLogo = QLabel(self)
+        self.nwLogo.setPixmap(SHARED.theme.getPixmap("novelwriter", (nwPx, nwPx)))
 
-        self.pageNotes = QTextBrowser()
-        self.pageNotes.setOpenExternalLinks(True)
-        self.pageNotes.document().setDocumentMargin(CONFIG.pxInt(16))
+        self.nwLabel = QLabel(self)
+        self.nwLabel.setPixmap(self.nwImage)
 
-        self.pageCredits = QTextBrowser()
-        self.pageCredits.setOpenExternalLinks(True)
-        self.pageCredits.document().setDocumentMargin(CONFIG.pxInt(16))
+        self.nwInfo = QLabel(self.tr("Version {0} {1} Released on {2} {1} {3}").format(
+            formatVersion(__version__), nwUnicode.U_ENDASH,
+            datetime.strptime(__date__, "%Y-%m-%d").strftime("%x"),
+            "<a href='{0}'>{1}</a>".format(nwConst.URL_RELEASES, self.tr("Release Notes"))
+        ))
+        self.nwInfo.setOpenExternalLinks(True)
 
-        self.pageLicense = QTextBrowser()
-        self.pageLicense.setOpenExternalLinks(True)
-        self.pageLicense.document().setDocumentMargin(CONFIG.pxInt(16))
+        self.nwLicence = QLabel(self.tr("This application is licenced under {0}".format(
+            "<a href='https://www.gnu.org/licenses/gpl-3.0.html'>GPL v3.0</a>"
+        )))
+        self.nwLicence.setOpenExternalLinks(True)
 
-        # Main Tab Area
-        self.tabBox = QTabWidget()
-        self.tabBox.addTab(self.pageAbout, self.tr("About"))
-        self.tabBox.addTab(self.pageNotes, self.tr("Release"))
-        self.tabBox.addTab(self.pageCredits, self.tr("Credits"))
-        self.tabBox.addTab(self.pageLicense, self.tr("Licence"))
-        self.innerBox.addWidget(self.tabBox)
+        # Credits
+        self.lblCredits = NColourLabel(
+            self.tr("Credits"), SHARED.theme.helpText,
+            scale=NColourLabel.HEADER_SCALE, parent=self
+        )
 
-        # OK Button
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
-        self.buttonBox.accepted.connect(self.close)
+        self.txtCredits = QTextBrowser(self)
+        self.txtCredits.setOpenExternalLinks(True)
+        self.txtCredits.document().setDocumentMargin(0)
+        self.txtCredits.setViewportMargins(0, hA, hA, 0)
 
-        self.outerBox.addLayout(self.innerBox)
-        self.outerBox.addWidget(self.buttonBox)
+        # Buttons
+        self.btnBox = QDialogButtonBox(QDialogButtonBox.Close, self)
+        self.btnBox.rejected.connect(self.close)
+
+        # Assemble
+        self.innerBox = QVBoxLayout()
+        self.innerBox.addSpacing(hB)
+        self.innerBox.addWidget(self.nwLabel)
+        self.innerBox.addWidget(self.nwInfo)
+        self.innerBox.addWidget(self.nwLicence)
+        self.innerBox.addSpacing(hA)
+        self.innerBox.addWidget(self.lblCredits)
+        self.innerBox.addWidget(self.txtCredits)
+        self.innerBox.addSpacing(hB)
+        self.innerBox.addWidget(self.btnBox)
+
+        topRight = Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight
+
+        self.outerBox = QHBoxLayout()
+        self.outerBox.addWidget(self.nwLogo, 0, topRight)
+        self.outerBox.addLayout(self.innerBox, 1)
+
         self.setLayout(self.outerBox)
+        self.setSizeGripEnabled(True)
+        self._setStyleSheet()
 
         logger.debug("Ready: GuiAbout")
 
@@ -117,18 +127,7 @@ class GuiAbout(QDialog):
 
     def populateGUI(self) -> None:
         """Populate tabs with text."""
-        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
-        self._setStyleSheet()
-        self._fillAboutPage()
-        self._fillNotesPage()
         self._fillCreditsPage()
-        self._fillLicensePage()
-        qApp.restoreOverrideCursor()
-        return
-
-    def showReleaseNotes(self) -> None:
-        """Show the release notes."""
-        self.tabBox.setCurrentWidget(self.pageNotes)
         return
 
     ##
@@ -145,77 +144,14 @@ class GuiAbout(QDialog):
     #  Internal Functions
     ##
 
-    def _fillAboutPage(self) -> None:
-        """Generate the content for the About page."""
-        aboutMsg = (
-            "<h2>{title1}</h2>"
-            "<p>{copy}</p>"
-            "<p>{link}</p>"
-            "<p>{intro}</p>"
-            "<p>{license1}</p>"
-            "<p>{license2}</p>"
-            "<p>{license3}</p>"
-        ).format(
-            title1=self.tr("About novelWriter"),
-            copy=novelwriter.__copyright__,
-            link=self.tr("Website: {0}").format(
-                f"<a href='{nwConst.URL_WEB}'>{novelwriter.__domain__}</a>"
-            ),
-            intro=self.tr(
-                "novelWriter is a markdown-like text editor designed for organising and "
-                "writing novels. It is written in Python 3 with a Qt5 GUI, using PyQt5."
-            ),
-            license1=self.tr(
-                "novelWriter is free software: you can redistribute it and/or modify it "
-                "under the terms of the GNU General Public License as published by the "
-                "Free Software Foundation, either version 3 of the License, or (at your "
-                "option) any later version."
-            ),
-            license2=self.tr(
-                "novelWriter is distributed in the hope that it will be useful, but "
-                "WITHOUT ANY WARRANTY; without even the implied warranty of "
-                "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
-            ),
-            license3=self.tr(
-                "See the Licence tab for the full licence text, or visit the "
-                "GNU website at {0} for more details."
-            ).format(
-                "<a href='https://www.gnu.org/licenses/gpl-3.0.html'>GPL v3.0</a>"
-            ),
-        )
-
-        self.pageAbout.setHtml(aboutMsg)
-
-        return
-
-    def _fillNotesPage(self) -> None:
-        """Load the content for the Release Notes page."""
-        docPath = CONFIG.assetPath("text") / "release_notes.htm"
-        docText = readTextFile(docPath)
-        if docText:
-            self.pageNotes.setHtml(docText)
-        else:
-            self.pageNotes.setHtml("Error loading release notes text ...")
-        return
-
     def _fillCreditsPage(self) -> None:
         """Load the content for the Credits page."""
         docPath = CONFIG.assetPath("text") / "credits_en.htm"
         docText = readTextFile(docPath)
         if docText:
-            self.pageCredits.setHtml(docText)
+            self.txtCredits.setHtml(docText)
         else:
-            self.pageCredits.setHtml("Error loading credits text ...")
-        return
-
-    def _fillLicensePage(self) -> None:
-        """Load the content for the Licence page."""
-        docPath = CONFIG.assetPath("text") / "gplv3_en.htm"
-        docText = readTextFile(docPath)
-        if docText:
-            self.pageLicense.setHtml(docText)
-        else:
-            self.pageLicense.setHtml("Error loading licence text ...")
+            self.txtCredits.setHtml("Error loading credits text ...")
         return
 
     def _setStyleSheet(self) -> None:
@@ -240,10 +176,12 @@ class GuiAbout(QDialog):
             kColG=colKey.green(),
             kColB=colKey.blue(),
         )
-        self.pageAbout.document().setDefaultStyleSheet(styleSheet)
-        self.pageNotes.document().setDefaultStyleSheet(styleSheet)
-        self.pageCredits.document().setDefaultStyleSheet(styleSheet)
-        self.pageLicense.document().setDefaultStyleSheet(styleSheet)
+        self.txtCredits.document().setDefaultStyleSheet(styleSheet)
+
+        baseCol = self.palette().window().color()
+        self.txtCredits.setStyleSheet((
+            "QTextBrowser {{border: none; background: rgb({r},{g},{b});}} "
+        ).format(r=baseCol.red(), g=baseCol.green(), b=baseCol.blue()))
 
         return
 
