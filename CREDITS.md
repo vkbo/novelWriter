@@ -12,6 +12,10 @@
 
 For other contributions, see the project's [Contributors](https://github.com/vkbo/novelWriter/graphs/contributors) page.
 
+## Artwork
+
+The artwork on the Welcome dialog was created by [Louis Durrant](https://louisdurrant.art).
+
 ## Translations
 
 The default language is English (UK) with English (US) as an option. These are the original

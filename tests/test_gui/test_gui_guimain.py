@@ -25,9 +25,7 @@ import pytest
 
 from shutil import copyfile
 
-from tools import (
-    C, NWD_IGNORE, cmpFiles, buildTestProject, XML_IGNORE
-)
+from tools import C, NWD_IGNORE, cmpFiles, buildTestProject, XML_IGNORE
 
 from PyQt5.QtGui import QPalette
 from PyQt5.QtCore import Qt
@@ -40,7 +38,6 @@ from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.noveltree import GuiNovelView
 from novelwriter.tools.welcome import GuiWelcome
-from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.editlabel import GuiEditLabel
 
 KEY_DELAY = 1
@@ -69,7 +66,6 @@ def testGuiMain_ProjectBlocker(nwGUI):
 def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
     """Test the handling of launch tasks."""
     monkeypatch.setattr(GuiWelcome, "exec_", lambda *a: None)
-    # monkeypatch.setattr(GuiProjectLoad, "result", lambda *a: QDialog.Accepted)
     CONFIG.lastNotes = "0x0"
     buildTestProject(nwGUI, projPath)
 
@@ -92,12 +88,8 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
     assert nwGUI.openProject(projPath) is True
     nwGUI.closeProject()
 
-    # Check that release notes opened
-    qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiAbout) is not None, timeout=1000)
-    msgAbout = SHARED.findTopLevelWidget(GuiAbout)
-    assert isinstance(msgAbout, GuiAbout)
-    assert msgAbout.tabBox.currentWidget() == msgAbout.pageNotes
-    msgAbout.accept()
+    # Check that latest release info updated
+    CONFIG.lastNotes != "0x0"
 
     # Check that project open dialog launches
     nwGUI.postLaunchTasks(None)

@@ -84,10 +84,10 @@ class GuiWelcome(QDialog):
         self.nwImage = SHARED.theme.loadDecoration("nw-text", h=hD)
         self.bgColor = QColor(255, 255, 255) if SHARED.theme.isLightTheme else QColor(54, 54, 54)
 
-        self.nwLogo = QLabel()
+        self.nwLogo = QLabel(self)
         self.nwLogo.setPixmap(SHARED.theme.getPixmap("novelwriter", (hF, hF)))
 
-        self.nwLabel = QLabel("novelWriter")
+        self.nwLabel = QLabel(self)
         self.nwLabel.setPixmap(self.nwImage)
 
         self.nwInfo = QLabel(self.tr("Version {0} {1} Released on {2}").format(

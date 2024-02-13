@@ -34,27 +34,19 @@ from novelwriter.dialogs.about import GuiAbout
 def testDlgAbout_NWDialog(qtbot, monkeypatch, nwGUI):
     """Test the novelWriter about dialogs."""
     # NW About
-    nwGUI.showAboutNWDialog(showNotes=True)
+    nwGUI.showAboutNWDialog()
 
     qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiAbout) is not None, timeout=1000)
     msgAbout = SHARED.findTopLevelWidget(GuiAbout)
     assert isinstance(msgAbout, GuiAbout)
 
-    assert msgAbout.pageAbout.document().characterCount() > 100
-    assert msgAbout.pageNotes.document().characterCount() > 100
-    assert msgAbout.pageLicense.document().characterCount() > 100
+    assert msgAbout.txtCredits.document().characterCount() > 100
 
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.config.Config.assetPath", lambda *a: Path("whatever"))
-        msgAbout._fillNotesPage()
-        assert msgAbout.pageNotes.toPlainText() == "Error loading release notes text ..."
         msgAbout._fillCreditsPage()
-        assert msgAbout.pageCredits.toPlainText() == "Error loading credits text ..."
-        msgAbout._fillLicensePage()
-        assert msgAbout.pageLicense.toPlainText() == "Error loading licence text ..."
+        assert msgAbout.txtCredits.toPlainText() == "Error loading credits text ..."
 
-    msgAbout.showReleaseNotes()
-    assert msgAbout.tabBox.currentWidget() == msgAbout.pageNotes
     msgAbout.close()
 
 # END Test testDlgAbout_NWDialog

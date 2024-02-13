@@ -43,12 +43,12 @@ class nwConst:
     FMT_DSTAMP = "%Y-%m-%d"           # Date only format
 
     # URLs
-    URL_WEB     = "https://novelwriter.io"
-    URL_DOCS    = "https://docs.novelwriter.io"
-    URL_CODE    = "https://github.com/vkbo/novelWriter"
-    URL_REPORT  = "https://github.com/vkbo/novelWriter/issues"
-    URL_HELP    = "https://github.com/vkbo/novelWriter/discussions"
-    URL_RELEASE = "https://github.com/vkbo/novelWriter/releases/latest"
+    URL_WEB      = "https://novelwriter.io"
+    URL_DOCS     = "https://docs.novelwriter.io"
+    URL_RELEASES = "https://releases.novelwriter.io"
+    URL_CODE     = "https://github.com/vkbo/novelWriter"
+    URL_REPORT   = "https://github.com/vkbo/novelWriter/issues"
+    URL_HELP     = "https://github.com/vkbo/novelWriter/discussions"
 
     # Requests
     USER_AGENT = "Mozilla/5.0 (compatible; novelWriter (Python))"
