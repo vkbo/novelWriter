@@ -37,7 +37,8 @@ from PyQt5.QtWidgets import (
     QStackedWidget, QVBoxLayout, QWidget, qApp
 )
 
-from novelwriter import CONFIG, SHARED, __hexversion__
+from novelwriter import CONFIG, SHARED, __hexversion__, __version__
+from novelwriter.constants import nwConst
 from novelwriter.gui.theme import GuiTheme
 from novelwriter.gui.sidebar import GuiSideBar
 from novelwriter.gui.outline import GuiOutlineView
@@ -63,7 +64,7 @@ from novelwriter.tools.writingstats import GuiWritingStats
 from novelwriter.enum import (
     nwDocAction, nwDocInsert, nwDocMode, nwItemType, nwWidget, nwView
 )
-from novelwriter.common import formatFileFilter, hexToInt
+from novelwriter.common import formatFileFilter, formatVersion, hexToInt
 
 logger = logging.getLogger(__name__)
 
@@ -351,10 +352,16 @@ class GuiMain(QMainWindow):
         if not SHARED.hasProject:
             self.showWelcomeDialog()
 
-        # Determine whether release notes need to be shown or not
+        # If this is a new release, let the user know
         if hexToInt(CONFIG.lastNotes) < hexToInt(__hexversion__):
             CONFIG.lastNotes = __hexversion__
-            self.showAboutNWDialog(showNotes=True)
+            trVersion = self.tr(
+                "You are now running novelWriter version {0}.".format(formatVersion(__version__))
+            )
+            trRelease = self.tr(
+                "Please check the {0}release notes{1} for further details."
+            ).format(f"<a href='{nwConst.URL_RELEASES}'>", "</a>")
+            SHARED.info(f"{trVersion}<br>{trRelease}")
 
         return
 
@@ -860,7 +867,7 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot()
-    def showAboutNWDialog(self, showNotes: bool = False) -> None:
+    def showAboutNWDialog(self) -> None:
         """Show the novelWriter about dialog."""
         dialog = GuiAbout(self)
         dialog.setModal(True)
@@ -868,8 +875,6 @@ class GuiMain(QMainWindow):
         dialog.raise_()
         qApp.processEvents()
         dialog.populateGUI()
-        if showNotes:
-            dialog.showReleaseNotes()
         return
 
     @pyqtSlot()
