@@ -22,7 +22,7 @@ jobs:
       - name: Checkout Source
         uses: actions/checkout@v4
       - name: Install flake8
-        run: pip install flake8
+        run: pip install flake8 flake8-pep585
       - name: Syntax Check
         run: |
           flake8 --version
