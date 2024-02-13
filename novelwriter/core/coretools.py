@@ -29,10 +29,10 @@ from __future__ import annotations
 import shutil
 import logging
 
-from typing import Iterable
 from pathlib import Path
 from functools import partial
 from zipfile import ZipFile, is_zipfile
+from collections.abc import Iterable
 
 from PyQt5.QtCore import QCoreApplication
 

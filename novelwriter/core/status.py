@@ -27,7 +27,8 @@ from __future__ import annotations
 import random
 import logging
 
-from typing import TYPE_CHECKING, ItemsView, Iterator, KeysView, Literal, ValuesView
+from typing import TYPE_CHECKING, Literal
+from collections.abc import ItemsView, Iterator, KeysView, ValuesView
 
 from PyQt5.QtGui import QIcon, QPainter, QPainterPath, QPixmap, QColor
 from PyQt5.QtCore import QRectF, Qt

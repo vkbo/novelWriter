@@ -29,11 +29,11 @@ from __future__ import annotations
 import logging
 import xml.etree.ElementTree as ET
 
-from typing import Sequence
 from hashlib import sha256
 from pathlib import Path
 from zipfile import ZipFile
 from datetime import datetime
+from collections.abc import Sequence
 
 from novelwriter import __version__
 from novelwriter.common import xmlIndent

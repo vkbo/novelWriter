@@ -29,8 +29,8 @@ import uuid
 import logging
 
 from enum import Enum
-from typing import Iterable
 from pathlib import Path
+from collections.abc import Iterable
 
 from PyQt5.QtCore import QT_TRANSLATE_NOOP, QCoreApplication
 

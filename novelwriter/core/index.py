@@ -32,8 +32,9 @@ import json
 import logging
 
 from time import time
-from typing import TYPE_CHECKING, ItemsView, Iterable, Iterator
+from typing import TYPE_CHECKING
 from pathlib import Path
+from collections.abc import ItemsView, Iterable, Iterator
 
 from novelwriter import SHARED
 from novelwriter.enum import nwComment, nwItemClass, nwItemType, nwItemLayout
