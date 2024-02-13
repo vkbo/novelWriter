@@ -28,9 +28,10 @@ import logging
 
 from enum import Enum
 from time import time
-from typing import TYPE_CHECKING, Iterator
+from typing import TYPE_CHECKING
 from pathlib import Path
 from functools import partial
+from collections.abc import Iterator
 
 from PyQt5.QtCore import QCoreApplication
 

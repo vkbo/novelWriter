@@ -27,8 +27,9 @@ import json
 import logging
 
 from time import time
-from typing import TYPE_CHECKING, Iterator
+from typing import TYPE_CHECKING
 from pathlib import Path
+from collections.abc import Iterator
 
 from novelwriter.error import logException
 from novelwriter.common import formatTimeStamp

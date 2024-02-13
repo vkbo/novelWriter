@@ -25,8 +25,8 @@ from __future__ import annotations
 
 import logging
 
-from typing import Iterable
 from pathlib import Path
+from collections.abc import Iterable
 
 from PyQt5.QtGui import QFont, QFontInfo
 

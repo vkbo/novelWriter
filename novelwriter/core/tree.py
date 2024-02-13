@@ -26,8 +26,9 @@ from __future__ import annotations
 import random
 import logging
 
-from typing import TYPE_CHECKING, Iterator, Literal, overload
+from typing import TYPE_CHECKING, Literal, overload
 from pathlib import Path
+from collections.abc import Iterator
 
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException

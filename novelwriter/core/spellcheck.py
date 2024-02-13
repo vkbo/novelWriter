@@ -27,8 +27,9 @@ from __future__ import annotations
 import json
 import logging
 
-from typing import TYPE_CHECKING, Iterator
+from typing import TYPE_CHECKING
 from pathlib import Path
+from collections.abc import Iterator
 
 from PyQt5.QtCore import QLocale
 
