@@ -51,7 +51,6 @@ from novelwriter.gui.statusbar import GuiMainStatus
 from novelwriter.gui.itemdetails import GuiItemDetails
 from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
 from novelwriter.dialogs.about import GuiAbout
-from novelwriter.dialogs.updates import GuiUpdates
 from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
@@ -882,17 +881,6 @@ class GuiMain(QMainWindow):
         """Show the Qt about dialog."""
         msgBox = QMessageBox(self)
         msgBox.aboutQt(self, "About Qt")
-        return
-
-    @pyqtSlot()
-    def showUpdatesDialog(self) -> None:
-        """Show the check for updates dialog."""
-        dialog = GuiUpdates(self)
-        dialog.setModal(True)
-        dialog.show()
-        dialog.raise_()
-        qApp.processEvents()
-        dialog.checkLatest()
         return
 
     @pyqtSlot()
