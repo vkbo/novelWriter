@@ -26,7 +26,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtGui import QColor, QPalette
+from PyQt5.QtGui import QColor, QFont, QPalette
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QAbstractButton, QFrame, QHBoxLayout, QLabel, QLayout, QScrollArea,
@@ -198,7 +198,7 @@ class NScrollableForm(QScrollArea):
 
         if helpText:
             qHelp = NColourLabel(
-                str(helpText), self._helpCol, parent=self,
+                str(helpText), color=self._helpCol, parent=self,
                 scale=self._fontScale, wrap=True, indent=self._indent
             )
             labelBox = QVBoxLayout()
@@ -249,16 +249,19 @@ class NColourLabel(QLabel):
     HELP_SCALE = DEFAULT_SCALE
     HEADER_SCALE = 1.25
 
-    def __init__(self, text: str, color: QColor, parent: QWidget | None = None,
-                 scale: float = HELP_SCALE, wrap: bool = False, indent: int = 0) -> None:
+    def __init__(self, text: str, color: QColor | None = None, parent: QWidget | None = None,
+                 scale: float = HELP_SCALE, wrap: bool = False, indent: int = 0,
+                 bold: bool = False) -> None:
         super().__init__(text, parent=parent)
 
         font = self.font()
         font.setPointSizeF(scale*font.pointSizeF())
-        colour = self.palette()
-        colour.setColor(QPalette.WindowText, color)
+        font.setWeight(QFont.Weight.Bold if bold else QFont.Weight.Normal)
+        if color:
+            colour = self.palette()
+            colour.setColor(QPalette.WindowText, color)
+            self.setPalette(colour)
 
-        self.setPalette(colour)
         self.setFont(font)
         self.setIndent(indent)
         self.setWordWrap(wrap)

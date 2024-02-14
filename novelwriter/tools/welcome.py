@@ -40,13 +40,14 @@ from PyQt5.QtWidgets import (
     QToolButton, QVBoxLayout, QWidget, qApp
 )
 
-from novelwriter import CONFIG, SHARED, __version__, __date__
+from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemClass
-from novelwriter.common import formatInt, formatVersion, makeFileNameSafe
-from novelwriter.constants import nwFiles, nwUnicode
+from novelwriter.common import formatInt, makeFileNameSafe
+from novelwriter.constants import nwFiles
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.modified import NComboBox, NSpinBox
+from novelwriter.extensions.versioninfo import VersionInfoWidget
 
 logger = logging.getLogger(__name__)
 
@@ -90,10 +91,7 @@ class GuiWelcome(QDialog):
         self.nwLabel = QLabel(self)
         self.nwLabel.setPixmap(self.nwImage)
 
-        self.nwInfo = QLabel(self.tr("Version {0} {1} Released on {2}").format(
-            formatVersion(__version__), nwUnicode.U_ENDASH,
-            datetime.strptime(__date__, "%Y-%m-%d").strftime("%x")
-        ))
+        self.nwInfo = VersionInfoWidget(self)
 
         self.tabOpen = _OpenProjectPage(self)
         self.tabOpen.openProjectRequest.connect(self._openProjectPath)
