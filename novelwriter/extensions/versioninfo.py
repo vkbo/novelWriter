@@ -118,7 +118,6 @@ class _Retriever(QRunnable):
 
     def __init__(self) -> None:
         super().__init__()
-        self._isRunning = False
         self.signals = _RetrieverSignal()
         return
 
