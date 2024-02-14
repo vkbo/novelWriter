@@ -23,10 +23,9 @@ from __future__ import annotations
 import pytest
 
 from PyQt5.QtCore import QItemSelectionModel
-from PyQt5.QtWidgets import QAction, QListWidgetItem, QDialog
+from PyQt5.QtWidgets import QListWidgetItem, QDialog
 
 from novelwriter.dialogs.quotes import GuiQuoteSelect
-from novelwriter.dialogs.updates import GuiUpdates
 from novelwriter.dialogs.editlabel import GuiEditLabel
 
 
@@ -64,44 +63,6 @@ def testDlgOther_QuoteSelect(qtbot, monkeypatch, nwGUI):
     # qtbot.stop()
 
 # END Test testDlgOther_QuoteSelect
-
-
-@pytest.mark.gui
-def testDlgOther_Updates(qtbot, monkeypatch, nwGUI):
-    """Test the check for updates dialog."""
-    nwUpdate = GuiUpdates(nwGUI)
-    nwUpdate.show()
-
-    class mockData:
-        def decode(self):
-            return '{"tag_name": "v1.0", "created_at": "2021-01-01T12:00:00Z"}'
-
-    class mockPayload:
-        def read(self):
-            return mockData()
-
-    def mockUrlopenA(*a, **k):
-        return None
-
-    def mockUrlopenB(*a, **k):
-        return mockPayload()
-
-    # Faulty Return
-    monkeypatch.setattr("novelwriter.dialogs.updates.urlopen", mockUrlopenA)
-    nwUpdate.checkLatest()
-
-    # Valid Return
-    monkeypatch.setattr("novelwriter.dialogs.updates.urlopen", mockUrlopenB)
-    nwUpdate.checkLatest()
-    assert nwUpdate.latestValue.text().startswith("novelWriter v1.0")
-
-    # Trigger from Menu
-    nwGUI.mainMenu.aUpdates.activate(QAction.Trigger)
-
-    # qtbot.stop()
-    nwUpdate.close()
-
-# END Test testDlgOther_Updates
 
 
 @pytest.mark.gui

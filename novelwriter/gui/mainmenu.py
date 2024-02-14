@@ -964,13 +964,6 @@ class GuiMainMenu(QMenuBar):
         self.aWebsite = self.helpMenu.addAction(self.tr("The novelWriter Website"))
         self.aWebsite.triggered.connect(lambda: self._openWebsite(nwConst.URL_WEB))
 
-        # Help > Separator
-        self.helpMenu.addSeparator()
-
-        # Document > Check for Updates
-        self.aUpdates = self.helpMenu.addAction(self.tr("Check for New Release"))
-        self.aUpdates.triggered.connect(self.mainGui.showUpdatesDialog)
-
         return
 
 # END Class GuiMainMenu

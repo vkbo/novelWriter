@@ -25,8 +25,6 @@ from __future__ import annotations
 
 import logging
 
-from datetime import datetime
-
 from PyQt5.QtGui import QCloseEvent, QColor
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -34,10 +32,10 @@ from PyQt5.QtWidgets import (
     QWidget
 )
 
-from novelwriter import CONFIG, SHARED, __version__, __date__
-from novelwriter.common import formatVersion, readTextFile
-from novelwriter.constants import nwConst, nwUnicode
+from novelwriter import CONFIG, SHARED
+from novelwriter.common import readTextFile
 from novelwriter.extensions.configlayout import NColourLabel
+from novelwriter.extensions.versioninfo import VersionInfoWidget
 
 logger = logging.getLogger(__name__)
 
@@ -68,12 +66,7 @@ class GuiAbout(QDialog):
         self.nwLabel = QLabel(self)
         self.nwLabel.setPixmap(self.nwImage)
 
-        self.nwInfo = QLabel(self.tr("Version {0} {1} Released on {2} {1} {3}").format(
-            formatVersion(__version__), nwUnicode.U_ENDASH,
-            datetime.strptime(__date__, "%Y-%m-%d").strftime("%x"),
-            "<a href='{0}'>{1}</a>".format(nwConst.URL_RELEASES, self.tr("Release Notes"))
-        ))
-        self.nwInfo.setOpenExternalLinks(True)
+        self.nwInfo = VersionInfoWidget(self)
 
         self.nwLicence = QLabel(self.tr("This application is licenced under {0}".format(
             "<a href='https://www.gnu.org/licenses/gpl-3.0.html'>GPL v3.0</a>"
@@ -82,8 +75,7 @@ class GuiAbout(QDialog):
 
         # Credits
         self.lblCredits = NColourLabel(
-            self.tr("Credits"), SHARED.theme.helpText,
-            scale=NColourLabel.HEADER_SCALE, parent=self
+            self.tr("Credits"), scale=1.6, parent=self, bold=True
         )
 
         self.txtCredits = QTextBrowser(self)
@@ -100,6 +92,7 @@ class GuiAbout(QDialog):
         self.innerBox.addSpacing(hB)
         self.innerBox.addWidget(self.nwLabel)
         self.innerBox.addWidget(self.nwInfo)
+        self.innerBox.addSpacing(hA)
         self.innerBox.addWidget(self.nwLicence)
         self.innerBox.addSpacing(hA)
         self.innerBox.addWidget(self.lblCredits)
@@ -156,33 +149,10 @@ class GuiAbout(QDialog):
 
     def _setStyleSheet(self) -> None:
         """Set stylesheet for all browser tabs."""
-        colHead = SHARED.theme.colHead
-        colKey = SHARED.theme.colKey
-        styleSheet = (
-            "h1, h2, h3, h4 {{"
-            "  color: rgb({hColR}, {hColG}, {hColB});"
-            "}}\n"
-            "a {{"
-            "  color: rgb({hColR}, {hColG}, {hColB});"
-            "}}\n"
-            ".alt {{"
-            "  color: rgb({kColR}, {kColG}, {kColB});"
-            "}}\n"
-        ).format(
-            hColR=colHead.red(),
-            hColG=colHead.green(),
-            hColB=colHead.blue(),
-            kColR=colKey.red(),
-            kColG=colKey.green(),
-            kColB=colKey.blue(),
-        )
-        self.txtCredits.document().setDefaultStyleSheet(styleSheet)
-
         baseCol = self.palette().window().color()
         self.txtCredits.setStyleSheet((
             "QTextBrowser {{border: none; background: rgb({r},{g},{b});}} "
         ).format(r=baseCol.red(), g=baseCol.green(), b=baseCol.blue()))
-
         return
 
 # END Class GuiAbout
