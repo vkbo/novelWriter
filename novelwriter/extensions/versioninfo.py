@@ -26,8 +26,9 @@ from __future__ import annotations
 import json
 import logging
 
-from random import shuffle
+from time import sleep
 from datetime import datetime
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from PyQt5.QtGui import QDesktopServices
@@ -40,11 +41,7 @@ from novelwriter.constants import nwConst
 
 logger = logging.getLogger(__name__)
 
-LOOKUPS = [
-    "https://novelwriter.io/release-latest.json",
-    "https://vkbo.github.io/novelWriter.io/release-latest.json",
-    "https://raw.githubusercontent.com/vkbo/novelWriter.io/main/source/_extra/release-latest.json",
-]
+API_URL = "https://api.github.com/repos/vkbo/novelwriter/releases/latest"
 
 
 class VersionInfoWidget(QWidget):
@@ -102,16 +99,16 @@ class VersionInfoWidget(QWidget):
     #  Private Slots
     ##
 
-    @pyqtSlot(dict)
-    def _updateReleaseInfo(self, result: dict) -> None:
+    @pyqtSlot(str, str)
+    def _updateReleaseInfo(self, tag: str, reason: str) -> None:
         """Update the widget release info."""
-        if version := result.get("version"):
+        if version := tag.lstrip("v"):
             download = f"<a href='#website'>{__domain__}</a>"
             self._lblRelease.setText(self._trLatest.format(
                 f"{version} \u2013 {self._trDownload.format(download)}"
             ))
         else:
-            self._lblRelease.setText(self._trLatest.format(self.tr("Failed")))
+            self._lblRelease.setText(self._trLatest.format(reason or self.tr("Failed")))
         return
 
 # END Class VersionInfoWidget
@@ -125,38 +122,33 @@ class _Retriever(QRunnable):
         self.signals = _RetrieverSignal()
         return
 
-    def isRunning(self) -> bool:
-        return self._isRunning
-
     @pyqtSlot()
     def run(self) -> None:
-        """Poll the urls in the background."""
-        self._isRunning = True
-
-        shuffle(LOOKUPS)
-        for url in LOOKUPS:
-            req = Request(url)
-            req.add_header("User-Agent", nwConst.USER_AGENT)
-            req.add_header("Accept", "application/json")
-            try:
-                logger.info("Contacting: %s", url)
-                data = urlopen(req, timeout=10).read().decode()
-                if isinstance(release := json.loads(data).get("release"), dict):
-                    self.signals.dataReady.emit(release)
-                    break
-            except Exception:
-                logger.error("Failed to retrieve release info")
-        else:
-            self.signals.dataReady.emit({})
-
-        self._isRunning = False
-
+        """Poll the GitHub API in the background.
+        Note: The GitHub API is rate limited at 60 requests per hour.
+        """
+        logger.info("Contacting: %s", API_URL)
+        req = Request(API_URL)
+        req.add_header("User-Agent", nwConst.USER_AGENT)
+        req.add_header("Accept", "application/vnd.github.v3+json")
+        sleep(0.2)
+        try:
+            with urlopen(req, timeout=15) as ret:
+                if isinstance(raw := json.loads(ret.read().decode()), dict):
+                    self.signals.dataReady.emit(raw.get("tag_name", ""), "")
+        except HTTPError as e:
+            reason = f"{e.reason.capitalize()} (HTTP {e.code})"
+            logger.error(reason)
+            self.signals.dataReady.emit("", reason)
+        except Exception as e:
+            logger.error("Failed to retrieve release info")
+            self.signals.dataReady.emit("", str(e))
         return
 
 # END Class _Retriever
 
 
 class _RetrieverSignal(QObject):
-    dataReady = pyqtSignal(dict)
+    dataReady = pyqtSignal(str, str)
 
 # END Class _RetrieverSignal
