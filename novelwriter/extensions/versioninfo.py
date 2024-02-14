@@ -31,10 +31,10 @@ from datetime import datetime
 from urllib.request import Request, urlopen
 
 from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtCore import QUrl, pyqtSlot
+from PyQt5.QtCore import QObject, QRunnable, QUrl, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
 
-from novelwriter import CONFIG, __version__, __date__, __domain__
+from novelwriter import CONFIG, SHARED, __version__, __date__, __domain__
 from novelwriter.common import formatVersion
 from novelwriter.constants import nwConst
 
@@ -52,6 +52,11 @@ class VersionInfoWidget(QWidget):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
+        # Label Strings
+        self._trLatest = self.tr("Latest Version: {0}")
+        self._trChecking = self.tr("Checking ...")
+        self._trDownload = self.tr("Download from {0}")
+
         # Labels
         self._lblInfo = QLabel("{0} {1} \u2013 {2} {3} \u2013 {4}".format(
             self.tr("Version"), formatVersion(__version__),
@@ -59,14 +64,10 @@ class VersionInfoWidget(QWidget):
             "<a href='#notes'>{0}</a>".format(self.tr("Release Notes")),
         ), self)
         self._lblInfo.linkActivated.connect(self._processLink)
-        self._lblRelease = QLabel(self.tr("Latest Version: {0}").format(
+        self._lblRelease = QLabel(self._trLatest.format(
             "<a href='#update'>{0}</a>".format(self.tr("Check Now"))
         ), self)
         self._lblRelease.linkActivated.connect(self._processLink)
-
-        # New Release
-        self._trRelease = self.tr("Latest Version: {0} {1} Download from {2}")
-        self._trFail = self.tr("Could not retrieve version information.")
 
         # Assemble
         self._layout = QVBoxLayout()
@@ -91,41 +92,71 @@ class VersionInfoWidget(QWidget):
         elif link == "#website":
             QDesktopServices.openUrl(QUrl(nwConst.URL_WEB))
         elif link == "#update":
-            shuffle(LOOKUPS)
-            for url in LOOKUPS:
-                if result := self._pullJson(url):
-                    self._updateReleaseInfo(result)
-                    break
-            else:
-                self._updateReleaseInfo({})
+            self._lblRelease.setText(self._trLatest.format(self._trChecking))
+            lookup = _Retriever()
+            lookup.signals.dataReady.connect(self._updateReleaseInfo)
+            SHARED.runInThreadPool(lookup)
         return
 
     ##
-    #  Internal Functions
+    #  Private Slots
     ##
 
+    @pyqtSlot(dict)
     def _updateReleaseInfo(self, result: dict) -> None:
         """Update the widget release info."""
         if version := result.get("version"):
             download = f"<a href='#website'>{__domain__}</a>"
-            self._lblRelease.setText(self._trRelease.format(version, "\u2013", download))
+            self._lblRelease.setText(self._trLatest.format(
+                f"{version} \u2013 {self._trDownload.format(download)}"
+            ))
         else:
-            self._lblRelease.setText(self._trFail)
+            self._lblRelease.setText(self._trLatest.format(self.tr("Failed")))
         return
 
-    def _pullJson(self, url: str) -> dict | None:
-        """Pull a JSON file from a URL."""
-        urlReq = Request(url)
-        urlReq.add_header("User-Agent", nwConst.USER_AGENT)
-        urlReq.add_header("Accept", "application/json")
-
-        try:
-            logger.info("Contacting: %s", url)
-            urlData = urlopen(urlReq, timeout=10)
-            return json.loads(urlData.read().decode()).get("release")
-        except Exception:
-            logger.error("Failed to retrieve data")
-
-        return None
-
 # END Class VersionInfoWidget
+
+
+class _Retriever(QRunnable):
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._isRunning = False
+        self.signals = _RetrieverSignal()
+        return
+
+    def isRunning(self) -> bool:
+        return self._isRunning
+
+    @pyqtSlot()
+    def run(self) -> None:
+        """Poll the urls in the background."""
+        self._isRunning = True
+
+        shuffle(LOOKUPS)
+        for url in LOOKUPS:
+            req = Request(url)
+            req.add_header("User-Agent", nwConst.USER_AGENT)
+            req.add_header("Accept", "application/json")
+            try:
+                logger.info("Contacting: %s", url)
+                data = urlopen(req, timeout=10).read().decode()
+                if isinstance(release := json.loads(data).get("release"), dict):
+                    self.signals.dataReady.emit(release)
+                    break
+            except Exception:
+                logger.error("Failed to retrieve release info")
+        else:
+            self.signals.dataReady.emit({})
+
+        self._isRunning = False
+
+        return
+
+# END Class _Retriever
+
+
+class _RetrieverSignal(QObject):
+    dataReady = pyqtSignal(dict)
+
+# END Class _RetrieverSignal
