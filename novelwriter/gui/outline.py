@@ -536,7 +536,7 @@ class GuiOutlineTree(QTreeWidget):
             logger.info("Writing CSV file: %s", path)
             cols = [col for col in self._treeOrder if not self._colHidden[col]]
             order = [self._colIdx[col] for col in cols]
-            with open(path, mode="w") as csvFile:
+            with open(path, mode="w", newline="") as csvFile:
                 writer = csv.writer(csvFile, dialect="excel", quoting=csv.QUOTE_ALL)
                 writer.writerow([trConst(nwLabels.OUTLINE_COLS[col]) for col in cols])
                 for i in range(self.topLevelItemCount()):
