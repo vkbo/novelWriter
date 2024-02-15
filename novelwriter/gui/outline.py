@@ -27,18 +27,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import csv
 import logging
 
 from time import time
 from enum import Enum
 
-from PyQt5.QtCore import (
-    Qt, pyqtSignal, pyqtSlot, QSize, QT_TRANSLATE_NOOP
-)
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QSize, QT_TRANSLATE_NOOP
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QAction, QFrame, QGridLayout, QGroupBox, QHBoxLayout,
-    QLabel, QMenu, QScrollArea, QSizePolicy, QSplitter, QToolBar, QToolButton,
-    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QAbstractItemView, QAction, QFileDialog, QFrame, QGridLayout, QGroupBox,
+    QHBoxLayout, QLabel, QMenu, QScrollArea, QSizePolicy, QSplitter, QToolBar,
+    QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -46,7 +45,7 @@ from novelwriter.enum import (
     nwDocMode, nwItemClass, nwItemLayout, nwItemType, nwOutline
 )
 from novelwriter.error import logException
-from novelwriter.common import checkInt
+from novelwriter.common import checkInt, formatFileFilter, makeFileNameSafe
 from novelwriter.constants import nwHeaders, trConst, nwKeyWords, nwLabels
 from novelwriter.extensions.novelselector import NovelSelector
 
@@ -88,6 +87,7 @@ class GuiOutlineView(QWidget):
         self.outlineData.itemTagClicked.connect(self._tagClicked)
         self.outlineBar.loadNovelRootRequest.connect(self._rootItemChanged)
         self.outlineBar.viewColumnToggled.connect(self.outlineTree.menuColumnToggled)
+        self.outlineBar.outlineExportRequest.connect(self.outlineTree.exportOutline)
 
         # Function Mappings
         self.getSelectedHandle = self.outlineTree.getSelectedHandle
@@ -198,6 +198,7 @@ class GuiOutlineView(QWidget):
 class GuiOutlineToolBar(QToolBar):
 
     loadNovelRootRequest = pyqtSignal(str)
+    outlineExportRequest = pyqtSignal()
     viewColumnToggled = pyqtSignal(bool, Enum)
 
     def __init__(self, outlineView: GuiOutlineView) -> None:
@@ -228,6 +229,9 @@ class GuiOutlineToolBar(QToolBar):
         self.aRefresh = QAction(self.tr("Refresh"), self)
         self.aRefresh.triggered.connect(self._refreshRequested)
 
+        self.aExport = QAction(self.tr("Export CSV"), self)
+        self.aExport.triggered.connect(self._exportRequested)
+
         # Column Menu
         self.mColumns = GuiOutlineHeaderMenu(self)
         self.mColumns.columnToggled.connect(
@@ -243,6 +247,7 @@ class GuiOutlineToolBar(QToolBar):
         self.addWidget(self.novelValue)
         self.addSeparator()
         self.addAction(self.aRefresh)
+        self.addAction(self.aExport)
         self.addWidget(self.tbColumns)
         self.addWidget(stretch)
 
@@ -261,6 +266,7 @@ class GuiOutlineToolBar(QToolBar):
         self.setStyleSheet("QToolBar {border: 0px;}")
         self.novelValue.refreshNovelList()
         self.aRefresh.setIcon(SHARED.theme.getIcon("refresh"))
+        self.aExport.setIcon(SHARED.theme.getIcon("export"))
         self.tbColumns.setIcon(SHARED.theme.getIcon("menu"))
         self.tbColumns.setStyleSheet("QToolButton::menu-indicator {image: none;}")
         return
@@ -294,6 +300,12 @@ class GuiOutlineToolBar(QToolBar):
     def _refreshRequested(self) -> None:
         """Emit a signal containing the handle of the selected item."""
         self.loadNovelRootRequest.emit(self.novelValue.handle)
+        return
+
+    @pyqtSlot()
+    def _exportRequested(self) -> None:
+        """Emit a signal that an export of the outline was requested."""
+        self.outlineExportRequest.emit()
         return
 
 # END Class GuiOutlineToolBar
@@ -500,7 +512,41 @@ class GuiOutlineTree(QTreeWidget):
         return None, None
 
     ##
-    #  Slots
+    #  Public Slots
+    ##
+
+    @pyqtSlot(bool, Enum)
+    def menuColumnToggled(self, isChecked: bool, hItem: nwOutline) -> None:
+        """Receive the changes to column visibility forwarded by the
+        column selection menu.
+        """
+        if hItem in self._colIdx:
+            self.setColumnHidden(self._colIdx[hItem], not isChecked)
+            self._saveHeaderState()
+        return
+
+    @pyqtSlot()
+    def exportOutline(self) -> None:
+        """Export the outline as a CSV file."""
+        path = CONFIG.lastPath() / f"{makeFileNameSafe(SHARED.project.data.name)}.csv"
+        path, _ = QFileDialog.getSaveFileName(
+            self, self.tr("Save Outline As"), str(path), formatFileFilter(["*.csv", "*"])
+        )
+        if path:
+            CONFIG.setLastPath(path)
+            logger.info("Writing CSV file: %s", path)
+            cols = [col for col in self._treeOrder if not self._colHidden[col]]
+            order = [self._colIdx[col] for col in cols]
+            with open(path, mode="w") as csvFile:
+                writer = csv.writer(csvFile, dialect="excel", quoting=csv.QUOTE_ALL)
+                writer.writerow([trConst(nwLabels.OUTLINE_COLS[col]) for col in cols])
+                for i in range(self.topLevelItemCount()):
+                    if item := self.topLevelItem(i):
+                        writer.writerow(item.text(i) for i in order)
+        return
+
+    ##
+    #  Private Slots
     ##
 
     @pyqtSlot("QTreeWidgetItem*", int)
@@ -510,9 +556,8 @@ class GuiOutlineTree(QTreeWidget):
         document editor.
         """
         tHandle, sTitle = self.getSelectedHandle()
-        if tHandle is None:
-            return
-        self.outlineView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, sTitle or "", True)
+        if tHandle:
+            self.outlineView.openDocumentRequest.emit(tHandle, nwDocMode.EDIT, sTitle or "", True)
         return
 
     @pyqtSlot()
@@ -534,16 +579,6 @@ class GuiOutlineTree(QTreeWidget):
         """
         self._treeOrder.insert(newVisualIdx, self._treeOrder.pop(oldVisualIdx))
         self._saveHeaderState()
-        return
-
-    @pyqtSlot(bool, Enum)
-    def menuColumnToggled(self, isChecked: bool, hItem: nwOutline) -> None:
-        """Receive the changes to column visibility forwarded by the
-        column selection menu.
-        """
-        if hItem in self._colIdx:
-            self.setColumnHidden(self._colIdx[hItem], not isChecked)
-            self._saveHeaderState()
         return
 
     ##

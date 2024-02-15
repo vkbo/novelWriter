@@ -274,6 +274,7 @@ class nwLabels:
         "*.txt": QT_TRANSLATE_NOOP("Constant", "Text files"),
         "*.md":  QT_TRANSLATE_NOOP("Constant", "Markdown files"),
         "*.nwd": QT_TRANSLATE_NOOP("Constant", "novelWriter files"),
+        "*.csv": QT_TRANSLATE_NOOP("Constant", "CSV files"),
         "*":     QT_TRANSLATE_NOOP("Constant", "All files"),
     }
     UNIT_NAME = {
