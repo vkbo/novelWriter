@@ -70,19 +70,18 @@ def cmpFiles(
         ignoreLines = []
 
     try:
-        foOne = open(fileOne, mode="r", encoding="utf-8")
+        with open(fileOne, mode="r", encoding="utf-8") as fo:
+            txtOne = fo.read().strip().splitlines()
     except Exception as exc:
         print(str(exc))
         return False
 
     try:
-        foTwo = open(fileTwo, mode="r", encoding="utf-8")
+        with open(fileTwo, mode="r", encoding="utf-8") as fo:
+            txtTwo = fo.read().strip().splitlines()
     except Exception as exc:
         print(str(exc))
         return False
-
-    txtOne = foOne.readlines()
-    txtTwo = foTwo.readlines()
 
     if len(txtOne) != len(txtTwo):
         print("Files are not the same length")
@@ -107,9 +106,6 @@ def cmpFiles(
             print(" << '%s'" % lnOne)
             print(" >> '%s'" % lnTwo)
             diffFound = True
-
-    foOne.close()
-    foTwo.close()
 
     return not diffFound
 

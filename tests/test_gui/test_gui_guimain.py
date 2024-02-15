@@ -507,6 +507,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     errPos = currPos - 13
     if not sys.platform.startswith("win32"):
         # Skip on Windows as spell checking is off there
+        # This check will fail without an 'en' dictionary, like aspell-en
         word, cPos, cLen, suggest = docEditor._qDocument.spellErrorAtPos(errPos)
         assert word == "tesst"
         assert cPos == 15
