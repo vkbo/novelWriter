@@ -124,7 +124,7 @@ class GuiOutlineView(QWidget):
     def openProjectTasks(self) -> None:
         """Run open project tasks."""
         lastOutline = SHARED.project.data.getLastHandle("outline")
-        if not (lastOutline is None or lastOutline in SHARED.project.tree):
+        if not lastOutline or lastOutline not in SHARED.project.tree:
             lastOutline = SHARED.project.tree.findRoot(nwItemClass.NOVEL)
 
         logger.debug("Setting outline tree to root item '%s'", lastOutline)
@@ -504,10 +504,9 @@ class GuiOutlineTree(QTreeWidget):
         """Get the currently selected handle. If multiple items are
         selected, return the first.
         """
-        selItem = self.selectedItems()
-        if selItem:
-            tHandle = selItem[0].data(self._colIdx[nwOutline.TITLE], self.D_HANDLE)
-            sTitle = selItem[0].data(self._colIdx[nwOutline.TITLE], self.D_TITLE)
+        if item := self.selectedItems():
+            tHandle = item[0].data(self._colIdx[nwOutline.TITLE], self.D_HANDLE)
+            sTitle = item[0].data(self._colIdx[nwOutline.TITLE], self.D_TITLE)
             return tHandle, sTitle
         return None, None
 
@@ -878,18 +877,15 @@ class GuiOutlineDetails(QScrollArea):
         self.entKeyValue.setWordWrap(True)
         self.cstKeyValue.setWordWrap(True)
 
-        def tagClicked(link):
-            self.itemTagClicked.emit(link)
-
-        self.povKeyValue.linkActivated.connect(tagClicked)
-        self.focKeyValue.linkActivated.connect(tagClicked)
-        self.chrKeyValue.linkActivated.connect(tagClicked)
-        self.pltKeyValue.linkActivated.connect(tagClicked)
-        self.timKeyValue.linkActivated.connect(tagClicked)
-        self.wldKeyValue.linkActivated.connect(tagClicked)
-        self.objKeyValue.linkActivated.connect(tagClicked)
-        self.entKeyValue.linkActivated.connect(tagClicked)
-        self.cstKeyValue.linkActivated.connect(tagClicked)
+        self.povKeyValue.linkActivated.connect(lambda x: self.itemTagClicked.emit(x))
+        self.focKeyValue.linkActivated.connect(lambda x: self.itemTagClicked.emit(x))
+        self.chrKeyValue.linkActivated.connect(lambda x: self.itemTagClicked.emit(x))
+        self.pltKeyValue.linkActivated.connect(lambda x: self.itemTagClicked.emit(x))
+        self.timKeyValue.linkActivated.connect(lambda x: self.itemTagClicked.emit(x))
+        self.wldKeyValue.linkActivated.connect(lambda x: self.itemTagClicked.emit(x))
+        self.objKeyValue.linkActivated.connect(lambda x: self.itemTagClicked.emit(x))
+        self.entKeyValue.linkActivated.connect(lambda x: self.itemTagClicked.emit(x))
+        self.cstKeyValue.linkActivated.connect(lambda x: self.itemTagClicked.emit(x))
 
         self.povKeyLWrap.addWidget(self.povKeyValue, 1)
         self.focKeyLWrap.addWidget(self.focKeyValue, 1)
@@ -1018,7 +1014,7 @@ class GuiOutlineDetails(QScrollArea):
     ##
 
     @pyqtSlot(str, str)
-    def showItem(self, tHandle: str, sTitle: str) -> bool:
+    def showItem(self, tHandle: str, sTitle: str) -> None:
         """Update the content of the tree with the given handle and line
         number pointing to a header.
         """
@@ -1026,41 +1022,32 @@ class GuiOutlineDetails(QScrollArea):
         nwItem = SHARED.project.tree[tHandle]
         novIdx = pIndex.getItemHeader(tHandle, sTitle)
         novRefs = pIndex.getReferences(tHandle, sTitle)
-        if nwItem is None or novIdx is None:
-            return False
+        if nwItem and novIdx:
+            self.titleLabel.setText("<b>%s</b>" % self.tr(self.LVL_MAP.get(novIdx.level, "H1")))
+            self.titleValue.setText(novIdx.title)
 
-        if novIdx.level in self.LVL_MAP:
-            self.titleLabel.setText("<b>%s</b>" % self.tr(self.LVL_MAP[novIdx.level]))
-        else:
-            self.titleLabel.setText("<b>%s</b>" % self.tr("Title"))
-        self.titleValue.setText(novIdx.title)
+            itemStatus, _ = nwItem.getImportStatus(incIcon=False)
 
-        itemStatus, _ = nwItem.getImportStatus(incIcon=False)
+            self.fileValue.setText(nwItem.itemName)
+            self.itemValue.setText(itemStatus)
 
-        self.fileValue.setText(nwItem.itemName)
-        self.itemValue.setText(itemStatus)
+            self.cCValue.setText(f"{checkInt(novIdx.charCount, 0):n}")
+            self.wCValue.setText(f"{checkInt(novIdx.wordCount, 0):n}")
+            self.pCValue.setText(f"{checkInt(novIdx.paraCount, 0):n}")
 
-        cC = checkInt(novIdx.charCount, 0)
-        wC = checkInt(novIdx.wordCount, 0)
-        pC = checkInt(novIdx.paraCount, 0)
+            self.synopValue.setText(novIdx.synopsis)
 
-        self.cCValue.setText(f"{cC:n}")
-        self.wCValue.setText(f"{wC:n}")
-        self.pCValue.setText(f"{pC:n}")
+            self.povKeyValue.setText(self._formatTags(novRefs, nwKeyWords.POV_KEY))
+            self.focKeyValue.setText(self._formatTags(novRefs, nwKeyWords.FOCUS_KEY))
+            self.chrKeyValue.setText(self._formatTags(novRefs, nwKeyWords.CHAR_KEY))
+            self.pltKeyValue.setText(self._formatTags(novRefs, nwKeyWords.PLOT_KEY))
+            self.timKeyValue.setText(self._formatTags(novRefs, nwKeyWords.TIME_KEY))
+            self.wldKeyValue.setText(self._formatTags(novRefs, nwKeyWords.WORLD_KEY))
+            self.objKeyValue.setText(self._formatTags(novRefs, nwKeyWords.OBJECT_KEY))
+            self.entKeyValue.setText(self._formatTags(novRefs, nwKeyWords.ENTITY_KEY))
+            self.cstKeyValue.setText(self._formatTags(novRefs, nwKeyWords.CUSTOM_KEY))
 
-        self.synopValue.setText(novIdx.synopsis)
-
-        self.povKeyValue.setText(self._formatTags(novRefs, nwKeyWords.POV_KEY))
-        self.focKeyValue.setText(self._formatTags(novRefs, nwKeyWords.FOCUS_KEY))
-        self.chrKeyValue.setText(self._formatTags(novRefs, nwKeyWords.CHAR_KEY))
-        self.pltKeyValue.setText(self._formatTags(novRefs, nwKeyWords.PLOT_KEY))
-        self.timKeyValue.setText(self._formatTags(novRefs, nwKeyWords.TIME_KEY))
-        self.wldKeyValue.setText(self._formatTags(novRefs, nwKeyWords.WORLD_KEY))
-        self.objKeyValue.setText(self._formatTags(novRefs, nwKeyWords.OBJECT_KEY))
-        self.entKeyValue.setText(self._formatTags(novRefs, nwKeyWords.ENTITY_KEY))
-        self.cstKeyValue.setText(self._formatTags(novRefs, nwKeyWords.CUSTOM_KEY))
-
-        return True
+        return
 
     @pyqtSlot()
     def updateClasses(self) -> None:

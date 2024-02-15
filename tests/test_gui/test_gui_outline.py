@@ -23,10 +23,12 @@ from __future__ import annotations
 import time
 import pytest
 
-from tools import buildTestProject, writeFile
+from shutil import copyfile
+
+from tools import buildTestProject, cmpFiles, writeFile
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QAction
+from PyQt5.QtWidgets import QFileDialog, QWidget, QAction
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemClass, nwOutline, nwView
@@ -72,6 +74,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, projPath):
 
     # Option State
     # ============
+
     pOptions = SHARED.project.options
     colNames = [h.name for h in nwOutline]
     colItems = [h for h in nwOutline]
@@ -156,13 +159,25 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, projPath):
     assert len(hiddenStates) == len(columnState)
     assert not any(hiddenStates)
 
+    # Move Columns
+    # ============
+
+    # Current Order
+    order = [outlineTree._colIdx[col] for col in outlineTree._treeOrder]
+    assert order == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+    # Move 3 to 0
+    outlineTree._columnMoved(0, 3, 0)
+    order = [outlineTree._colIdx[col] for col in outlineTree._treeOrder]
+    assert order == [3, 0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
     # qtbot.stop()
 
 # END Test testGuiOutline_Main
 
 
 @pytest.mark.gui
-def testGuiOutline_Content(qtbot, nwGUI, prjLipsum):
+def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPaths):
     """Test the outline view."""
     assert nwGUI.openProject(prjLipsum)
 
@@ -234,6 +249,8 @@ def testGuiOutline_Content(qtbot, nwGUI, prjLipsum):
     # Scene One
     selItem = outlineTree.topLevelItem(4)
 
+    outlineTree.clearSelection()
+    assert outlineTree.getSelectedHandle() == (None, None)  # No selection
     outlineTree.setCurrentItem(selItem)
     tHandle, sTitle = outlineTree.getSelectedHandle()
     assert tHandle == "88243afbe5ed8"
@@ -264,6 +281,19 @@ def testGuiOutline_Content(qtbot, nwGUI, prjLipsum):
 
     outlineTree._treeDoubleClick(selItem, 0)
     assert nwGUI.docEditor.docHandle == "88243afbe5ed8"
+
+    # Dump to CSV
+    # ===========
+    with monkeypatch.context() as mp:
+        csvFile = fncPath / "outline.csv"
+        mp.setattr(QFileDialog, "getSaveFileName", lambda *a, **k: (str(csvFile), ""))
+        outlineBar.aExport.trigger()
+
+    testFile = tstPaths.outDir / "guiOutline_Content_outline.csv"
+    compFile = tstPaths.refDir / "guiOutline_Content_outline.csv"
+
+    copyfile(csvFile, testFile)
+    assert cmpFiles(testFile, compFile)
 
     # qtbot.stop()
 
