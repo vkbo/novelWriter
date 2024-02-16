@@ -312,7 +312,7 @@ If you want page breaks for scenes and sections, you must add them manually.
 
 **Example:**
 
-.. code-block:: markdown
+.. code-block:: md
 
    This is a text paragraph.
 

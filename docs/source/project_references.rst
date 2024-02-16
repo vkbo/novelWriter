@@ -90,7 +90,7 @@ notes, you can do this from the :guilabel:`Manuscript Build` tool.
 
 Example of a heading with a tag for a character of the story:
 
-.. code-block:: none
+.. code-block:: md
 
    # Character: Jane Doe
 
@@ -192,7 +192,7 @@ highlight that two notes are related.
 
 Example of a novel document with references to characters and plots:
 
-.. code-block:: none
+.. code-block:: md
 
    ## Chapter 1
 
