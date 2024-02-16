@@ -1,5 +1,99 @@
 # novelWriter Changelog
 
+## Version 2.3 Beta 1 [2024-02-16]
+
+### Release Notes
+
+This is a beta release of the next release version, and is intended for testing purposes. Please be
+careful when using this version on live writing projects, and make sure you take frequent backups.
+
+Please check the changelog for an overview of changes. The full release notes will be added to the
+final release.
+
+### Detailed Changelog
+
+**Major Features**
+
+* A new Welcome dialog has been added. The dialog replaces the Open Project dialog and the New
+  Project Wizard. The Welcome dialog features artwork created by Louis Durrant, and a custom design
+  for the project list. New projects can be created by a form available from the same dialog, and
+  features a simplified set of options. Issue #1506. PRs #1647, #1681 and #1689.
+* It is now possible to create a new project by copying the content of another project, or a Zip
+  file of a project, including a backup. This option is available from the New Project feature of
+  the Welcome dialog. Issue #841. PRs #1680 and #1684.
+* The Preferences dialog has been completely redesigned. All options are now available in a single,
+  scrollable list with appropriate section headers. All sections are available as navigation
+  buttons along the side, and it is also possible to search for settings in a search box at the
+  top. The design matches that created for the Manuscript Build Settings dialog added in 2.1.
+  Issues #1603 and #1604. PR #1652.
+* The Project Details dialog has been redesigned to match the other new dialogs. It has also been
+  modified to properly handle multiple novel folders. The novel selector is placed at the top of
+  the dialog, and affects all data in the tabs. The Novel Title info has been removed. PR #1665.
+* The Manuscript Build Settings dialog has been updated to use the new config layout classes, which
+  are more flexible in terms of content flow. PR #1674.
+* A new root folder type called "Templates" has been added. Any document added here will show up in
+  the Add Item menu in the Project Tree view under a "From Template" submenu. Selecting such an
+  entry will create a new document at the selected location in the project, and populate it with
+  the content of the template file. Issues #996 and #1125. PR #1688.
+* The About novelWriter dialog has been simplified to only show some key information and the
+  credits text. A link to the releases page is available for checking release notes. Keeping the
+  release notes online means it is easier to update them, and make them more visually interesting
+  as the formatting of the dialog box is limited. PR #1695.
+* The old Check for Updates dialog has been removed. Checking for new releases of novelWriter can
+  be done directly in the Welcome dialog or the About dialog by clicking "Check Now" next to the
+  "Latest Version" label. PR #1696.
+
+**Minor Features**
+
+* A new drop down menu in the References panel below the Document Viewer has an option to filter
+  out inactive notes in the various tag lists in the tabs on the panel. Issue #1653. PR #1654.
+* The Novel Title fields, which no longer makes much sense after it was possible to add multiple
+  novel folders to a project, has been fully dropped. Issue #1655. PR #1669.
+* The document header for ODT manuscript files can now be customised. Issue #1505. PR #1675.
+* The Manuscript Build tool can now insert characters (Point of View or Focus) into chapter headers
+  and other headers. By default, it inserts the tag value, but the display name for a tag can be
+  set with a `|` character in the `@tag` definition if a different text is desired. Issue #1468.
+  PR #1677.
+* A new modified comment format for the editor has been added. Instead of the regular comment using
+  `%`, this one uses `%~`. The only difference is that the latter will never be exported to a
+  manuscript at all, while regular comments can be exported when a setting is enabled. Issue #1075.
+  PR #1690.
+* It is now possible to change a document's label from the first heading in the document by
+  right-clicking on it and selecting "Rename to heading". Issue #1443. PR #1692.
+* The content of the Project Word List can now be exported and imported using plain text files.
+  Issue #1560. PR #1691.
+* The content of the Outline View can now be exported to a CSV file to be opened in any spreadsheet
+  application. Issue #1507. PR #1697.
+
+**Usability**
+
+* A Create New submenu in the Project Tree context menu has been added, which give quick access to
+  the items at the top level of the Add Item menu. Issue #1519. PR #1679.
+* When multiple paragraphs are selected in the editor, and any of the comment features are toggled,
+  or formatting is reset, the action is applied to all selected paragraphs, not just the first.
+  Issue #1042 and #1687. PR #1690.
+
+**Packaging**
+
+* The in-app version format is now identical to the version tag, and the format for Ubuntu
+  pre-release packages has been updated so that they are compatible with release packages. That is,
+  if you add both the release and pre-release repos from Launchpad, release packages will now
+  properly replace pre-release packages when running apt upgrade. PR #1659.
+
+**Code Improvements**
+
+* The Storage class has been refactored. It is the class that handles the project storage folder
+  for a novelWriter project. The refactoring is a step towards allowing single file storage for
+  projects as an alternative to project folders. Issue #977. PR #1635.
+* All theme colours are now proper QColor objects from the start, which avoids the need to create
+  a large number of these where they are used. PR #1656.
+* A nwProject.bak file is no longer kept in the project folder. It never really served any purpose.
+  The project file is still written to a temp file before the old file is replaced, which prevents
+  partial overwrites. PR #1670.
+* Other minor code improvements in PRs #1693 and 1694.
+
+----
+
 ## Version 2.2.1 [2024-01-27]
 
 ### Release Notes
