@@ -38,6 +38,9 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode
 
+[InstallDelete]
+Type: filesandordirs; Name: "{app}\novelwriter\*"
+
 [Files]
 Source: "{#nwAppDir}\novelWriter\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
@@ -46,7 +49,7 @@ Name: "{autoprograms}\{#nwAppName}"; Filename: "{app}\pythonw.exe"; Parameters: 
 Name: "{autodesktop}\{#nwAppName}"; Filename: "{app}\pythonw.exe"; Parameters: "{#nwAppExeName}"; IconFilename: "{app}\novelwriter.ico"; Tasks: desktopicon;
 
 [Run]
-Filename:  "{app}\pythonw.exe"; Parameters: "{#nwAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(nwAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\pythonw.exe"; Parameters: "{#nwAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(nwAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [Registry]
 Root: HKA; Subkey: "Software\Classes\.nwx\OpenWithProgids"; ValueType: string; ValueName: "novelWriterProject.nwx"; ValueData: ""; Flags: uninsdeletevalue
