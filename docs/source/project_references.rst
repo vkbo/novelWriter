@@ -5,14 +5,14 @@ Tags and References
 *******************
 
 In novelWriter there are no forms or tables to fill in to define the characters, locations and
-other elements of your story. Instead, you can mark your :term:`project notes` as representing
-these story elements by creating a :term:`tag`. Whenever you want to link a piece of your story to
-a note defining a story element, like a character, you create a :term:`reference` back to that tag.
-You can also cross-link your project notes in the same way.
+other elements of your story. Instead, you create :term:`project notes` which you can mark as
+representing these story elements by creating a :term:`tag`. Whenever you want to link a piece of
+your story to a note defining a story element, like a character, you create a :term:`reference`
+back to that tag. You can also cross-link your project notes in the same way.
 
 This is perhaps one of the features that makes novelWriter different from other, similar
 applications. It is therefore not always obvious to new users how this is supposed to work, so
-this chapter hopes to explains in more detail how to use the tags and references system.
+this chapter hopes to explain in more detail how to use this tags and references system.
 
 .. tip::
    If you find the Tags and Reference system difficult to follow just from reading this chapter,
@@ -47,9 +47,9 @@ How to Use Tags
 ===============
 
 A "tag" in novelWriter is a word or phrase that you define as belonging to a heading. Tags are set
-by using the ``@tags`` :term:`keyword`.
+by using the ``@tag`` :term:`keyword`.
 
-The general format of a tag is ``@tag: tagName``.
+The basic format of a tag is ``@tag: tagName``.
 
 The full format of a tag is ``@tag: tagName | displayName``.
 
@@ -61,7 +61,7 @@ The full format of a tag is ``@tag: tagName | displayName``.
    This is an optional display name used for the tag. When you build your manuscript, you can for
    instance insert the point of view character name into chapter headings. By default, the
    ``tagName`` value is used in headings, but if you use a shortened format internally in your
-   project, you can use this to specify a more suitable format for your manuscript.
+   project, you can use this to specify a more suitable format for your manuscript headings.
 
 You can only set *one* tag per heading, and the tag has to be unique across *all* documents in the
 project.
