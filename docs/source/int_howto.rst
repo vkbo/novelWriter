@@ -65,7 +65,7 @@ Organising Your Text
    within chapters. Like for instance if you switch point-of-view character often.
 
    In such cases you may want to use the scene heading for hard scene breaks and section headings
-   for soft scene breaks. the :guilabel:`Build Manuscript` tool will let you add separate
+   for soft scene breaks. The :guilabel:`Build Manuscript` tool will let you add separate
    formatting for the two when you generate your manuscript. You can for instance add the common
    "``* * *``" for hard breaks and select to hide section breaks, which will just insert an empty
    paragraph in their place. See :ref:`a_manuscript_settings` for more details.
