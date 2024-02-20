@@ -196,12 +196,7 @@ def testToolWelcome_New(qtbot: QtBot, caplog, monkeypatch, nwGUI, fncPath):
     newForm.fillSample.trigger()
     assert newForm._fillMode == newForm.FILL_SAMPLE
     assert newForm.projFill.text() == "Example Project"
-    assert newForm.addNotes.isEnabled() is False
-    assert newForm.addPlot.isEnabled() is False
-    assert newForm.addChar.isEnabled() is False
-    assert newForm.addWorld.isEnabled() is False
-    assert newForm.numChapters.isEnabled() is False
-    assert newForm.numScenes.isEnabled() is False
+    assert newForm.extraWidget.isVisible() is False
 
     # Change fill info to template
     with monkeypatch.context() as mp:
@@ -209,12 +204,7 @@ def testToolWelcome_New(qtbot: QtBot, caplog, monkeypatch, nwGUI, fncPath):
         newForm.fillCopy.trigger()
         assert newForm._fillMode == newForm.FILL_COPY
         assert newForm.projFill.text() == f"Template: {fncPath}"
-        assert newForm.addNotes.isEnabled() is False
-        assert newForm.addPlot.isEnabled() is False
-        assert newForm.addChar.isEnabled() is False
-        assert newForm.addWorld.isEnabled() is False
-        assert newForm.numChapters.isEnabled() is False
-        assert newForm.numScenes.isEnabled() is False
+        assert newForm.extraWidget.isVisible() is False
 
     # Change back to fill blank using the menu
     newForm.browseFill.click()
@@ -223,12 +213,7 @@ def testToolWelcome_New(qtbot: QtBot, caplog, monkeypatch, nwGUI, fncPath):
     newForm.fillMenu.close()
     assert newForm._fillMode == newForm.FILL_BLANK
     assert newForm.projFill.text() == "Fresh Project"
-    assert newForm.addNotes.isEnabled() is True
-    assert newForm.addPlot.isEnabled() is True
-    assert newForm.addChar.isEnabled() is True
-    assert newForm.addWorld.isEnabled() is True
-    assert newForm.numChapters.isEnabled() is True
-    assert newForm.numScenes.isEnabled() is True
+    assert newForm.extraWidget.isVisible() is True
 
     # Creating a project without a name, pops an error
     caplog.clear()

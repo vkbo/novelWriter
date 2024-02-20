@@ -539,6 +539,7 @@ class _NewProjectForm(QWidget):
         self._copyPath = None
 
         iPx = SHARED.theme.baseIconSize
+        sPx = CONFIG.pxInt(16)
 
         # Project Settings
         # ================
@@ -668,15 +669,23 @@ class _NewProjectForm(QWidget):
         # Assemble
         # ========
 
+        self.extraBox = QVBoxLayout()
+        self.extraBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Chapters and Scenes"))))
+        self.extraBox.addLayout(self.novelForm)
+        self.extraBox.addSpacing(sPx)
+        self.extraBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Project Notes"))))
+        self.extraBox.addLayout(self.notesForm)
+        self.extraBox.setContentsMargins(0, 0, 0, 0)
+
+        self.extraWidget = QWidget(self)
+        self.extraWidget.setLayout(self.extraBox)
+        self.extraWidget.setContentsMargins(0, 0, 0, 0)
+
         self.formBox = QVBoxLayout()
         self.formBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Create New Project"))))
         self.formBox.addLayout(self.projectForm)
-        self.formBox.addSpacing(16)
-        self.formBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Chapters and Scenes"))))
-        self.formBox.addLayout(self.novelForm)
-        self.formBox.addSpacing(16)
-        self.formBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Project Notes"))))
-        self.formBox.addLayout(self.notesForm)
+        self.formBox.addSpacing(sPx)
+        self.formBox.addWidget(self.extraWidget)
         self.formBox.addStretch(1)
 
         self.setLayout(self.formBox)
@@ -782,14 +791,7 @@ class _NewProjectForm(QWidget):
         self.projFill.setText(text)
         self.projFill.setToolTip(text)
         self.projFill.setCursorPosition(0)
-
-        isBlank = self._fillMode == self.FILL_BLANK
-        self.numChapters.setEnabled(isBlank)
-        self.numScenes.setEnabled(isBlank)
-        self.addPlot.setEnabled(isBlank)
-        self.addChar.setEnabled(isBlank)
-        self.addWorld.setEnabled(isBlank)
-        self.addNotes.setEnabled(isBlank)
+        self.extraWidget.setVisible(self._fillMode == self.FILL_BLANK)
 
         return
 
