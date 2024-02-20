@@ -27,7 +27,7 @@ from datetime import datetime
 from pytestqt.qtbot import QtBot
 
 from PyQt5.QtCore import QPoint, Qt
-from PyQt5.QtWidgets import QAction, QDialogButtonBox, QFileDialog, QMenu
+from PyQt5.QtWidgets import QAction, QFileDialog, QMenu
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemClass
@@ -47,18 +47,18 @@ def testToolWelcome_Main(qtbot: QtBot, monkeypatch, nwGUI, fncPath):
     assert welcome.mainStack.currentIndex() == 0
 
     # Show the new project form
-    welcome.newButton.click()
+    welcome.btnNew.click()
     assert welcome.mainStack.currentIndex() == 1
 
     # Revert to project lits
-    welcome.tabNew.cancelNewProject.emit()
+    welcome.btnList.click()
     assert welcome.mainStack.currentIndex() == 0
 
     # Open a project
     with monkeypatch.context() as mp:
         mp.setattr(SHARED, "getProjectPath", lambda *a, **k: fncPath)
         with qtbot.waitSignal(welcome.openProjectRequest) as signal:
-            welcome.browseButton.click()
+            welcome.btnBrowse.click()
         assert signal.args and signal.args[0] == fncPath
 
     # qtbot.stop()
@@ -116,7 +116,7 @@ def testToolWelcome_Open(qtbot: QtBot, monkeypatch, nwGUI, fncPath):
     with monkeypatch.context() as mp:
         mp.setattr(welcome, "close", lambda *a: None)
         with qtbot.waitSignal(welcome.openProjectRequest, timeout=5000) as signal:
-            welcome.btnBox.button(QDialogButtonBox.StandardButton.Open).click()
+            welcome.btnOpen.click()
         assert signal.args and signal.args[0] == Path("/stuff/project_one")
 
     # Context Menu
@@ -173,7 +173,7 @@ def testToolWelcome_New(qtbot: QtBot, caplog, monkeypatch, nwGUI, fncPath):
     with qtbot.waitExposed(welcome):
         welcome.show()
 
-    welcome.newButton.click()
+    welcome.btnNew.click()
     assert welcome.mainStack.currentIndex() == 1
     tabNew = welcome.tabNew
     newForm = tabNew.projectForm
@@ -217,7 +217,7 @@ def testToolWelcome_New(qtbot: QtBot, caplog, monkeypatch, nwGUI, fncPath):
 
     # Creating a project without a name, pops an error
     caplog.clear()
-    tabNew.createButton.click()
+    welcome.btnCreate.click()
     assert "A project name is required." in caplog.text
 
     # Set some more values, and extract data
@@ -233,7 +233,6 @@ def testToolWelcome_New(qtbot: QtBot, caplog, monkeypatch, nwGUI, fncPath):
     assert newForm.getProjectData() == {
         "name": "Test Project",
         "author": "Jane Smith",
-        "language": "en_GB",
         "path": str(projPath),
         "blank": True,
         "sample": False,
@@ -246,7 +245,7 @@ def testToolWelcome_New(qtbot: QtBot, caplog, monkeypatch, nwGUI, fncPath):
 
     # Create a project with these values
     with qtbot.waitSignal(welcome.openProjectRequest, timeout=5000) as signal:
-        tabNew.createButton.click()
+        welcome.btnCreate.click()
     assert signal.args and signal.args[0] == projPath
     assert (projPath / nwFiles.PROJ_FILE).exists()
 
