@@ -45,10 +45,10 @@ from novelwriter.enum import nwItemClass
 from novelwriter.common import formatInt, makeFileNameSafe
 from novelwriter.constants import nwFiles
 from novelwriter.core.coretools import ProjectBuilder
-from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.modified import NSpinBox
 from novelwriter.extensions.versioninfo import VersionInfoWidget
+from novelwriter.extensions.configlayout import NColourLabel
 
 logger = logging.getLogger(__name__)
 
@@ -527,7 +527,7 @@ class _NewProjectPage(QWidget):
         return
 
     ##
-    #  Private Slots
+    #  Public Slots
     ##
 
     @pyqtSlot()
