@@ -27,7 +27,7 @@ from datetime import datetime
 from pytestqt.qtbot import QtBot
 
 from PyQt5.QtCore import QPoint, Qt
-from PyQt5.QtWidgets import QAction, QFileDialog, QMenu
+from PyQt5.QtWidgets import QAction, QDialogButtonBox, QFileDialog, QMenu
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemClass
@@ -103,12 +103,20 @@ def testToolWelcome_Open(qtbot: QtBot, monkeypatch, nwGUI, fncPath):
     qtbot.mouseClick(vPort, Qt.MouseButton.LeftButton, pos=posTwo, delay=10)
     assert tabOpen.selectedPath.text() == "Path: /stuff/project_one"
 
-    # Double Click item
+    # Double click item
     qtbot.mouseClick(vPort, Qt.MouseButton.LeftButton, pos=posTwo, delay=10)
     with monkeypatch.context() as mp:
         mp.setattr(welcome, "close", lambda *a: None)
         with qtbot.waitSignal(welcome.openProjectRequest, timeout=5000) as signal:
             qtbot.mouseDClick(vPort, Qt.MouseButton.LeftButton, pos=posTwo, delay=10)
+        assert signal.args and signal.args[0] == Path("/stuff/project_one")
+
+    # Press open button
+    qtbot.mouseClick(vPort, Qt.MouseButton.LeftButton, pos=posTwo, delay=10)
+    with monkeypatch.context() as mp:
+        mp.setattr(welcome, "close", lambda *a: None)
+        with qtbot.waitSignal(welcome.openProjectRequest, timeout=5000) as signal:
+            welcome.btnBox.button(QDialogButtonBox.StandardButton.Open).click()
         assert signal.args and signal.args[0] == Path("/stuff/project_one")
 
     # Context Menu

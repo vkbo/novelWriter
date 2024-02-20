@@ -108,7 +108,7 @@ class GuiWelcome(QDialog):
         # =======
 
         self.btnBox = QDialogButtonBox(QDialogButtonBox.Open | QDialogButtonBox.Cancel, self)
-        self.btnBox.accepted.connect(self.tabOpen.openSelectedItem)
+        self.btnBox.accepted.connect(self._openSelectedItem)
         self.btnBox.rejected.connect(self.close)
 
         self.newButton = self.btnBox.addButton(self.tr("New Project"), QDialogButtonBox.ActionRole)
@@ -193,6 +193,13 @@ class GuiWelcome(QDialog):
         if path := SHARED.getProjectPath(self, path=CONFIG.lastPath(), allowZip=False):
             CONFIG.setLastPath(path)
             self._openProjectPath(path)
+        return
+
+    @pyqtSlot()
+    def _openSelectedItem(self) -> None:
+        """Open the currently selected project item."""
+        if self.mainStack.currentWidget() == self.tabOpen:
+            self.tabOpen.openSelectedItem()
         return
 
     @pyqtSlot(Path)
