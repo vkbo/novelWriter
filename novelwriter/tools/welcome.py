@@ -34,10 +34,10 @@ from PyQt5.QtCore import (
     pyqtSignal, pyqtSlot
 )
 from PyQt5.QtWidgets import (
-    QAction, QDialog, QDialogButtonBox, QFileDialog, QFormLayout, QHBoxLayout,
-    QLabel, QLineEdit, QListView, QMenu, QPushButton, QScrollArea, QShortcut,
-    QStackedWidget, QStyle, QStyleOptionViewItem, QStyledItemDelegate,
-    QToolButton, QVBoxLayout, QWidget, qApp
+    QAction, QDialog, QFileDialog, QFormLayout, QHBoxLayout, QLabel, QLineEdit,
+    QListView, QMenu, QPushButton, QScrollArea, QShortcut, QStackedWidget,
+    QStyle, QStyleOptionViewItem, QStyledItemDelegate, QToolButton,
+    QVBoxLayout, QWidget, qApp
 )
 
 from novelwriter import CONFIG, SHARED
@@ -46,8 +46,9 @@ from novelwriter.common import formatInt, makeFileNameSafe
 from novelwriter.constants import nwFiles
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.extensions.modified import NComboBox, NSpinBox
+from novelwriter.extensions.modified import NSpinBox
 from novelwriter.extensions.versioninfo import VersionInfoWidget
+from novelwriter.extensions.configlayout import NColourLabel
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +98,6 @@ class GuiWelcome(QDialog):
         self.tabOpen.openProjectRequest.connect(self._openProjectPath)
 
         self.tabNew = _NewProjectPage(self)
-        self.tabNew.cancelNewProject.connect(self._showOpenProjectPage)
         self.tabNew.openProjectRequest.connect(self._openProjectPath)
 
         self.mainStack = QStackedWidget(self)
@@ -107,17 +107,39 @@ class GuiWelcome(QDialog):
         # Buttons
         # =======
 
-        self.btnBox = QDialogButtonBox(QDialogButtonBox.Open | QDialogButtonBox.Cancel, self)
-        self.btnBox.accepted.connect(self.tabOpen.openSelectedItem)
-        self.btnBox.rejected.connect(self.close)
+        self.btnList = QPushButton(self.tr("List Projects"), self)
+        self.btnList.setIcon(SHARED.theme.getIcon("list"))
+        self.btnList.clicked.connect(self._showOpenProjectPage)
 
-        self.newButton = self.btnBox.addButton(self.tr("New Project"), QDialogButtonBox.ActionRole)
-        self.newButton.setIcon(SHARED.theme.getIcon("add"))
-        self.newButton.clicked.connect(self._showNewProjectPage)
+        self.btnNew = QPushButton(self.tr("New Project"), self)
+        self.btnNew.setIcon(SHARED.theme.getIcon("add"))
+        self.btnNew.clicked.connect(self._showNewProjectPage)
 
-        self.browseButton = self.btnBox.addButton(self.tr("Browse"), QDialogButtonBox.ActionRole)
-        self.browseButton.setIcon(SHARED.theme.getIcon("browse"))
-        self.browseButton.clicked.connect(self._browseForProject)
+        self.btnBrowse = QPushButton(self.tr("Browse"), self)
+        self.btnBrowse.setIcon(SHARED.theme.getIcon("browse"))
+        self.btnBrowse.clicked.connect(self._browseForProject)
+
+        self.btnCancel = QPushButton(self.tr("Cancel"), self)
+        self.btnCancel.setIcon(SHARED.theme.getIcon("cross"))
+        self.btnCancel.clicked.connect(self.close)
+
+        self.btnCreate = QPushButton(self.tr("Create"), self)
+        self.btnCreate.setIcon(SHARED.theme.getIcon("star"))
+        self.btnCreate.clicked.connect(self.tabNew.createNewProject)
+
+        self.btnOpen = QPushButton(self.tr("Open"), self)
+        self.btnOpen.setIcon(SHARED.theme.getIcon("open"))
+        self.btnOpen.clicked.connect(self._openSelectedItem)
+
+        self.btnBox = QHBoxLayout()
+        self.btnBox.addStretch(1)
+        self.btnBox.addWidget(self.btnList)
+        self.btnBox.addWidget(self.btnNew)
+        self.btnBox.addWidget(self.btnBrowse)
+        self.btnBox.addWidget(self.btnCancel)
+        self.btnBox.addWidget(self.btnCreate)
+        self.btnBox.addWidget(self.btnOpen)
+        self._setButtonVisibility()
 
         # Assemble
         # ========
@@ -129,7 +151,7 @@ class GuiWelcome(QDialog):
         self.innerBox.addSpacing(hA)
         self.innerBox.addWidget(self.mainStack)
         self.innerBox.addSpacing(hB)
-        self.innerBox.addWidget(self.btnBox)
+        self.innerBox.addLayout(self.btnBox)
 
         topRight = Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight
 
@@ -179,12 +201,14 @@ class GuiWelcome(QDialog):
     def _showNewProjectPage(self) -> None:
         """Show the create new project page."""
         self.mainStack.setCurrentWidget(self.tabNew)
+        self._setButtonVisibility()
         return
 
     @pyqtSlot()
     def _showOpenProjectPage(self) -> None:
         """Show the open exiting project page."""
         self.mainStack.setCurrentWidget(self.tabOpen)
+        self._setButtonVisibility()
         return
 
     @pyqtSlot()
@@ -193,6 +217,13 @@ class GuiWelcome(QDialog):
         if path := SHARED.getProjectPath(self, path=CONFIG.lastPath(), allowZip=False):
             CONFIG.setLastPath(path)
             self._openProjectPath(path)
+        return
+
+    @pyqtSlot()
+    def _openSelectedItem(self) -> None:
+        """Open the currently selected project item."""
+        if self.mainStack.currentWidget() == self.tabOpen:
+            self.tabOpen.openSelectedItem()
         return
 
     @pyqtSlot(Path)
@@ -214,6 +245,20 @@ class GuiWelcome(QDialog):
         """Save the user GUI settings."""
         logger.debug("Saving State: GuiWelcome")
         CONFIG.setWelcomeWinSize(self.width(), self.height())
+        return
+
+    def _setButtonVisibility(self) -> None:
+        """Change the visibility of the dialog buttons."""
+        listMode = self.mainStack.currentWidget() == self.tabOpen
+        self.btnList.setVisible(not listMode)
+        self.btnNew.setVisible(listMode)
+        self.btnBrowse.setVisible(listMode)
+        self.btnCreate.setVisible(not listMode)
+        self.btnOpen.setVisible(listMode)
+        if listMode:
+            self.btnOpen.setFocus()
+        else:
+            self.btnCreate.setFocus()
         return
 
 # END Class GuiWelcome
@@ -445,7 +490,6 @@ class _ProjectListModel(QAbstractListModel):
 
 class _NewProjectPage(QWidget):
 
-    cancelNewProject = pyqtSignal()
     openProjectRequest = pyqtSignal(Path)
 
     def __init__(self, parent: QWidget) -> None:
@@ -462,28 +506,11 @@ class _NewProjectPage(QWidget):
         self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
-        # Controls
-        # ========
-
-        self.cancelButton = QPushButton(self.tr("Go Back"), self)
-        self.cancelButton.setIcon(SHARED.theme.getIcon("backward"))
-        self.cancelButton.clicked.connect(lambda: self.cancelNewProject.emit())
-
-        self.createButton = QPushButton(self.tr("Create Project"), self)
-        self.createButton.setIcon(SHARED.theme.getIcon("star"))
-        self.createButton.clicked.connect(self._createNewProject)
-
-        self.buttonBox = QHBoxLayout()
-        self.buttonBox.addStretch(1)
-        self.buttonBox.addWidget(self.cancelButton, 0)
-        self.buttonBox.addWidget(self.createButton, 0)
-
         # Assemble
         # ========
 
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.scrollArea)
-        self.outerBox.addLayout(self.buttonBox)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(self.outerBox)
@@ -500,11 +527,11 @@ class _NewProjectPage(QWidget):
         return
 
     ##
-    #  Private Slots
+    #  Public Slots
     ##
 
     @pyqtSlot()
-    def _createNewProject(self) -> None:
+    def createNewProject(self) -> None:
         """Create a new project from the data in the form."""
         data = self.projectForm.getProjectData()
         if not data.get("name"):
@@ -532,9 +559,14 @@ class _NewProjectForm(QWidget):
         self._copyPath = None
 
         iPx = SHARED.theme.baseIconSize
+        sPx = CONFIG.pxInt(16)
 
         # Project Settings
         # ================
+
+        self.projHelp = NColourLabel(self.tr(
+            "These setting can be changed later from Project Settings."
+        ), color=SHARED.theme.helpText, parent=self)
 
         # Project Name
         self.projName = QLineEdit(self)
@@ -546,15 +578,6 @@ class _NewProjectForm(QWidget):
         self.projAuthor = QLineEdit(self)
         self.projAuthor.setMaxLength(200)
         self.projAuthor.setPlaceholderText(self.tr("Optional"))
-
-        # Project Language
-        self.projLang = NComboBox(self)
-        for tag, language in CONFIG.listLanguages(CONFIG.LANG_PROJ):
-            self.projLang.addItem(language, tag)
-
-        langIdx = self.projLang.findData(CONFIG.guiLocale)
-        if langIdx != -1:
-            self.projLang.setCurrentIndex(langIdx)
 
         # Project Path
         self.projPath = QLineEdit(self)
@@ -601,7 +624,6 @@ class _NewProjectForm(QWidget):
         self.projectForm.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.projectForm.addRow(self.tr("Project Name"), self.projName)
         self.projectForm.addRow(self.tr("Author"), self.projAuthor)
-        self.projectForm.addRow(self.tr("Language"), self.projLang)
         self.projectForm.addRow(self.tr("Project Path"), self.pathBox)
         self.projectForm.addRow(self.tr("Prefill Project"), self.fillBox)
 
@@ -661,15 +683,24 @@ class _NewProjectForm(QWidget):
         # Assemble
         # ========
 
+        self.extraBox = QVBoxLayout()
+        self.extraBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Chapters and Scenes"))))
+        self.extraBox.addLayout(self.novelForm)
+        self.extraBox.addSpacing(sPx)
+        self.extraBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Project Notes"))))
+        self.extraBox.addLayout(self.notesForm)
+        self.extraBox.setContentsMargins(0, 0, 0, 0)
+
+        self.extraWidget = QWidget(self)
+        self.extraWidget.setLayout(self.extraBox)
+        self.extraWidget.setContentsMargins(0, 0, 0, 0)
+
         self.formBox = QVBoxLayout()
         self.formBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Create New Project"))))
+        self.formBox.addWidget(self.projHelp)
         self.formBox.addLayout(self.projectForm)
-        self.formBox.addSpacing(16)
-        self.formBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Chapters and Scenes"))))
-        self.formBox.addLayout(self.novelForm)
-        self.formBox.addSpacing(16)
-        self.formBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Project Notes"))))
-        self.formBox.addLayout(self.notesForm)
+        self.formBox.addSpacing(sPx)
+        self.formBox.addWidget(self.extraWidget)
         self.formBox.addStretch(1)
 
         self.setLayout(self.formBox)
@@ -691,7 +722,6 @@ class _NewProjectForm(QWidget):
         return {
             "name": self.projName.text().strip(),
             "author": self.projAuthor.text().strip(),
-            "language": self.projLang.currentData(),
             "path": self.projPath.text(),
             "blank": self._fillMode == self.FILL_BLANK,
             "sample": self._fillMode == self.FILL_SAMPLE,
@@ -775,14 +805,7 @@ class _NewProjectForm(QWidget):
         self.projFill.setText(text)
         self.projFill.setToolTip(text)
         self.projFill.setCursorPosition(0)
-
-        isBlank = self._fillMode == self.FILL_BLANK
-        self.numChapters.setEnabled(isBlank)
-        self.numScenes.setEnabled(isBlank)
-        self.addPlot.setEnabled(isBlank)
-        self.addChar.setEnabled(isBlank)
-        self.addWorld.setEnabled(isBlank)
-        self.addNotes.setEnabled(isBlank)
+        self.extraWidget.setVisible(self._fillMode == self.FILL_BLANK)
 
         return
 

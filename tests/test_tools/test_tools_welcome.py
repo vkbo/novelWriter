@@ -47,18 +47,18 @@ def testToolWelcome_Main(qtbot: QtBot, monkeypatch, nwGUI, fncPath):
     assert welcome.mainStack.currentIndex() == 0
 
     # Show the new project form
-    welcome.newButton.click()
+    welcome.btnNew.click()
     assert welcome.mainStack.currentIndex() == 1
 
     # Revert to project lits
-    welcome.tabNew.cancelNewProject.emit()
+    welcome.btnList.click()
     assert welcome.mainStack.currentIndex() == 0
 
     # Open a project
     with monkeypatch.context() as mp:
         mp.setattr(SHARED, "getProjectPath", lambda *a, **k: fncPath)
         with qtbot.waitSignal(welcome.openProjectRequest) as signal:
-            welcome.browseButton.click()
+            welcome.btnBrowse.click()
         assert signal.args and signal.args[0] == fncPath
 
     # qtbot.stop()
@@ -103,12 +103,20 @@ def testToolWelcome_Open(qtbot: QtBot, monkeypatch, nwGUI, fncPath):
     qtbot.mouseClick(vPort, Qt.MouseButton.LeftButton, pos=posTwo, delay=10)
     assert tabOpen.selectedPath.text() == "Path: /stuff/project_one"
 
-    # Double Click item
+    # Double click item
     qtbot.mouseClick(vPort, Qt.MouseButton.LeftButton, pos=posTwo, delay=10)
     with monkeypatch.context() as mp:
         mp.setattr(welcome, "close", lambda *a: None)
         with qtbot.waitSignal(welcome.openProjectRequest, timeout=5000) as signal:
             qtbot.mouseDClick(vPort, Qt.MouseButton.LeftButton, pos=posTwo, delay=10)
+        assert signal.args and signal.args[0] == Path("/stuff/project_one")
+
+    # Press open button
+    qtbot.mouseClick(vPort, Qt.MouseButton.LeftButton, pos=posTwo, delay=10)
+    with monkeypatch.context() as mp:
+        mp.setattr(welcome, "close", lambda *a: None)
+        with qtbot.waitSignal(welcome.openProjectRequest, timeout=5000) as signal:
+            welcome.btnOpen.click()
         assert signal.args and signal.args[0] == Path("/stuff/project_one")
 
     # Context Menu
@@ -165,7 +173,7 @@ def testToolWelcome_New(qtbot: QtBot, caplog, monkeypatch, nwGUI, fncPath):
     with qtbot.waitExposed(welcome):
         welcome.show()
 
-    welcome.newButton.click()
+    welcome.btnNew.click()
     assert welcome.mainStack.currentIndex() == 1
     tabNew = welcome.tabNew
     newForm = tabNew.projectForm
@@ -188,12 +196,7 @@ def testToolWelcome_New(qtbot: QtBot, caplog, monkeypatch, nwGUI, fncPath):
     newForm.fillSample.trigger()
     assert newForm._fillMode == newForm.FILL_SAMPLE
     assert newForm.projFill.text() == "Example Project"
-    assert newForm.addNotes.isEnabled() is False
-    assert newForm.addPlot.isEnabled() is False
-    assert newForm.addChar.isEnabled() is False
-    assert newForm.addWorld.isEnabled() is False
-    assert newForm.numChapters.isEnabled() is False
-    assert newForm.numScenes.isEnabled() is False
+    assert newForm.extraWidget.isVisible() is False
 
     # Change fill info to template
     with monkeypatch.context() as mp:
@@ -201,12 +204,7 @@ def testToolWelcome_New(qtbot: QtBot, caplog, monkeypatch, nwGUI, fncPath):
         newForm.fillCopy.trigger()
         assert newForm._fillMode == newForm.FILL_COPY
         assert newForm.projFill.text() == f"Template: {fncPath}"
-        assert newForm.addNotes.isEnabled() is False
-        assert newForm.addPlot.isEnabled() is False
-        assert newForm.addChar.isEnabled() is False
-        assert newForm.addWorld.isEnabled() is False
-        assert newForm.numChapters.isEnabled() is False
-        assert newForm.numScenes.isEnabled() is False
+        assert newForm.extraWidget.isVisible() is False
 
     # Change back to fill blank using the menu
     newForm.browseFill.click()
@@ -215,16 +213,11 @@ def testToolWelcome_New(qtbot: QtBot, caplog, monkeypatch, nwGUI, fncPath):
     newForm.fillMenu.close()
     assert newForm._fillMode == newForm.FILL_BLANK
     assert newForm.projFill.text() == "Fresh Project"
-    assert newForm.addNotes.isEnabled() is True
-    assert newForm.addPlot.isEnabled() is True
-    assert newForm.addChar.isEnabled() is True
-    assert newForm.addWorld.isEnabled() is True
-    assert newForm.numChapters.isEnabled() is True
-    assert newForm.numScenes.isEnabled() is True
+    assert newForm.extraWidget.isVisible() is True
 
     # Creating a project without a name, pops an error
     caplog.clear()
-    tabNew.createButton.click()
+    welcome.btnCreate.click()
     assert "A project name is required." in caplog.text
 
     # Set some more values, and extract data
@@ -240,7 +233,6 @@ def testToolWelcome_New(qtbot: QtBot, caplog, monkeypatch, nwGUI, fncPath):
     assert newForm.getProjectData() == {
         "name": "Test Project",
         "author": "Jane Smith",
-        "language": "en_GB",
         "path": str(projPath),
         "blank": True,
         "sample": False,
@@ -253,7 +245,7 @@ def testToolWelcome_New(qtbot: QtBot, caplog, monkeypatch, nwGUI, fncPath):
 
     # Create a project with these values
     with qtbot.waitSignal(welcome.openProjectRequest, timeout=5000) as signal:
-        tabNew.createButton.click()
+        welcome.btnCreate.click()
     assert signal.args and signal.args[0] == projPath
     assert (projPath / nwFiles.PROJ_FILE).exists()
 
