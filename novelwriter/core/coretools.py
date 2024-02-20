@@ -513,6 +513,13 @@ class ProjectBuilder:
         """Make a copy of the sample project by extracting the
         sample.zip file to the new path.
         """
+        if path.exists():
+            SHARED.error(self.tr(
+                "The target folder already exists. "
+                "Please choose another folder."
+            ))
+            return False
+
         if (sample := CONFIG.assetPath("sample.zip")).is_file():
             try:
                 shutil.unpack_archive(sample, path)

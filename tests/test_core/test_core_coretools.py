@@ -651,7 +651,7 @@ def testCoreTools_ProjectBuilderSample(monkeypatch, mockGUI, fncPath, tstPaths):
     data = {
         "name": "Test Sample",
         "author": "Jane Doe",
-        "path": fncPath,
+        "path": fncPath / "project",
         "sample": True,
     }
 
@@ -684,6 +684,9 @@ def testCoreTools_ProjectBuilderSample(monkeypatch, mockGUI, fncPath, tstPaths):
             zipObj.write(docFile, f"content/{docFile.name}")
 
     assert builder.buildProject(data) is True
+
+    # Can't create to the same target again
+    assert builder.buildProject(data) is False
     dstSample.unlink()
 
 # END Test testCoreTools_ProjectBuilderSample
