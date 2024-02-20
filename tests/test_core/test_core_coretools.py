@@ -509,7 +509,6 @@ def testCoreTools_ProjectBuilderCopyPlain(monkeypatch, caplog, mockGUI, prjLipsu
     data = {
         "name": "Test Project",
         "author": "Jane Doe",
-        "language": "en_US",
         "path": dstPath,
         "template": srcPath,
     }
@@ -556,9 +555,9 @@ def testCoreTools_ProjectBuilderCopyPlain(monkeypatch, caplog, mockGUI, prjLipsu
     assert srcProject.data.author == "lipsum.com"
     assert dstProject.data.author == "Jane Doe"
 
-    # Language should be different
+    # Language should be the same
     assert srcProject.data.language == "en_GB"
-    assert dstProject.data.language == "en_US"
+    assert dstProject.data.language == "en_GB"
 
     # Counts should be more or less zeroed
     assert dstProject.data.saveCount < 5
@@ -634,9 +633,9 @@ def testCoreTools_ProjectBuilderCopyZipped(monkeypatch, caplog, mockGUI, fncPath
     assert srcProject.data.author == "Jane Doe"
     assert dstProject.data.author == "Jane Doe"
 
-    # Language should be different
+    # Language should be the same
     assert srcProject.data.language is None
-    assert dstProject.data.language == "en_US"
+    assert dstProject.data.language is None
 
     # Counts should be more or less zeroed
     assert dstProject.data.saveCount < 5

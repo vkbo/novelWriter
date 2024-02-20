@@ -45,8 +45,9 @@ from novelwriter.enum import nwItemClass
 from novelwriter.common import formatInt, makeFileNameSafe
 from novelwriter.constants import nwFiles
 from novelwriter.core.coretools import ProjectBuilder
+from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.extensions.modified import NComboBox, NSpinBox
+from novelwriter.extensions.modified import NSpinBox
 from novelwriter.extensions.versioninfo import VersionInfoWidget
 
 logger = logging.getLogger(__name__)
@@ -544,6 +545,10 @@ class _NewProjectForm(QWidget):
         # Project Settings
         # ================
 
+        self.projHelp = NColourLabel(self.tr(
+            "These setting can be changed later from Project Settings."
+        ), color=SHARED.theme.helpText, parent=self)
+
         # Project Name
         self.projName = QLineEdit(self)
         self.projName.setMaxLength(200)
@@ -554,15 +559,6 @@ class _NewProjectForm(QWidget):
         self.projAuthor = QLineEdit(self)
         self.projAuthor.setMaxLength(200)
         self.projAuthor.setPlaceholderText(self.tr("Optional"))
-
-        # Project Language
-        self.projLang = NComboBox(self)
-        for tag, language in CONFIG.listLanguages(CONFIG.LANG_PROJ):
-            self.projLang.addItem(language, tag)
-
-        langIdx = self.projLang.findData(CONFIG.guiLocale)
-        if langIdx != -1:
-            self.projLang.setCurrentIndex(langIdx)
 
         # Project Path
         self.projPath = QLineEdit(self)
@@ -609,7 +605,6 @@ class _NewProjectForm(QWidget):
         self.projectForm.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.projectForm.addRow(self.tr("Project Name"), self.projName)
         self.projectForm.addRow(self.tr("Author"), self.projAuthor)
-        self.projectForm.addRow(self.tr("Language"), self.projLang)
         self.projectForm.addRow(self.tr("Project Path"), self.pathBox)
         self.projectForm.addRow(self.tr("Prefill Project"), self.fillBox)
 
@@ -683,6 +678,7 @@ class _NewProjectForm(QWidget):
 
         self.formBox = QVBoxLayout()
         self.formBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Create New Project"))))
+        self.formBox.addWidget(self.projHelp)
         self.formBox.addLayout(self.projectForm)
         self.formBox.addSpacing(sPx)
         self.formBox.addWidget(self.extraWidget)
@@ -707,7 +703,6 @@ class _NewProjectForm(QWidget):
         return {
             "name": self.projName.text().strip(),
             "author": self.projAuthor.text().strip(),
-            "language": self.projLang.currentData(),
             "path": self.projPath.text(),
             "blank": self._fillMode == self.FILL_BLANK,
             "sample": self._fillMode == self.FILL_SAMPLE,
