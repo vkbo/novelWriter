@@ -107,11 +107,11 @@ class GuiWelcome(QDialog):
         # Buttons
         # =======
 
-        self.btnList = QPushButton(self.tr("List Projects"), self)
+        self.btnList = QPushButton(self.tr("List"), self)
         self.btnList.setIcon(SHARED.theme.getIcon("list"))
         self.btnList.clicked.connect(self._showOpenProjectPage)
 
-        self.btnNew = QPushButton(self.tr("New Project"), self)
+        self.btnNew = QPushButton(self.tr("New"), self)
         self.btnNew.setIcon(SHARED.theme.getIcon("add"))
         self.btnNew.clicked.connect(self._showNewProjectPage)
 
