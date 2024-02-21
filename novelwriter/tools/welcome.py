@@ -48,7 +48,6 @@ from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.modified import NSpinBox
 from novelwriter.extensions.versioninfo import VersionInfoWidget
-from novelwriter.extensions.configlayout import NColourLabel
 
 logger = logging.getLogger(__name__)
 
@@ -564,10 +563,6 @@ class _NewProjectForm(QWidget):
         # Project Settings
         # ================
 
-        self.projHelp = NColourLabel(self.tr(
-            "These setting can be changed later from Project Settings."
-        ), color=SHARED.theme.helpText, parent=self)
-
         # Project Name
         self.projName = QLineEdit(self)
         self.projName.setMaxLength(200)
@@ -697,7 +692,6 @@ class _NewProjectForm(QWidget):
 
         self.formBox = QVBoxLayout()
         self.formBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Create New Project"))))
-        self.formBox.addWidget(self.projHelp)
         self.formBox.addLayout(self.projectForm)
         self.formBox.addSpacing(sPx)
         self.formBox.addWidget(self.extraWidget)
