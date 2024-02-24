@@ -671,16 +671,18 @@ class Tokenizer(ABC):
             if tToken[0] == self.T_TEXT:
                 self._firstScene = False
 
-            elif tToken[0] == self.T_HEAD1:
-                # Partition
+            elif tToken[0] == self.T_HEAD1:  # Partition
 
                 tTemp = self._hFormatter.apply(self._fmtTitle, tToken[2], tToken[1])
                 self._tokens[n] = (
                     tToken[0], tToken[1], tTemp, [], tToken[4]
                 )
 
-            elif tToken[0] in (self.T_HEAD2, self.T_UNNUM):
-                # Chapter
+                # Set scene variables
+                # self._firstScene = True
+                # self._hFormatter.resetScene()
+
+            elif tToken[0] in (self.T_HEAD2, self.T_UNNUM):  # Chapter
 
                 # Numbered or Unnumbered
                 if tToken[0] == self.T_UNNUM:
@@ -698,8 +700,7 @@ class Tokenizer(ABC):
                 self._firstScene = True
                 self._hFormatter.resetScene()
 
-            elif tToken[0] == self.T_HEAD3:
-                # Scene
+            elif tToken[0] == self.T_HEAD3:  # Scene
 
                 self._hFormatter.incScene()
 
@@ -709,23 +710,14 @@ class Tokenizer(ABC):
                         self.T_EMPTY, tToken[1], "", [], self.A_NONE
                     )
                 elif tTemp == "" and not self._hideScene:
-                    if self._firstScene:
-                        self._tokens[n] = (
-                            self.T_EMPTY, tToken[1], "", [], self.A_NONE
-                        )
-                    else:
-                        self._tokens[n] = (
-                            self.T_SKIP, tToken[1], "", [], tToken[4]
-                        )
+                    t1 = self.T_EMPTY if self._firstScene else self.T_SKIP
+                    t4 = self.A_NONE if self._firstScene else tToken[4]
+                    self._tokens[n] = (t1, tToken[1], "", [], t4)
                 elif tTemp == self._fmtScene:
-                    if self._firstScene:
-                        self._tokens[n] = (
-                            self.T_EMPTY, tToken[1], "", [], self.A_NONE
-                        )
-                    else:
-                        self._tokens[n] = (
-                            self.T_SEP, tToken[1], tTemp, [], tToken[4] | self.A_CENTRE
-                        )
+                    t1 = self.T_EMPTY if self._firstScene else self.T_SEP
+                    t2 = "" if self._firstScene else tTemp
+                    t4 = self.A_NONE if self._firstScene else (tToken[4] | self.A_CENTRE)
+                    self._tokens[n] = (t1, tToken[1], t2, [], t4)
                 else:
                     self._tokens[n] = (
                         tToken[0], tToken[1], tTemp, [], tToken[4]
@@ -733,8 +725,7 @@ class Tokenizer(ABC):
 
                 self._firstScene = False
 
-            elif tToken[0] == self.T_HEAD4:
-                # Section
+            elif tToken[0] == self.T_HEAD4:  # Section
 
                 tTemp = self._hFormatter.apply(self._fmtSection, tToken[2], tToken[1])
                 if tTemp == "" and self._hideSection:
