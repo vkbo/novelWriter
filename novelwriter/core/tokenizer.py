@@ -615,9 +615,9 @@ class Tokenizer(ABC):
             # Make sure the token array doesn't start with a page break
             # on the very first page, adding a blank first page.
             if self._tokens[0][4] & self.A_PBB:
-                tToken = self._tokens[0]
+                token = self._tokens[0]
                 self._tokens[0] = (
-                    tToken[0], tToken[1], tToken[2], tToken[3], tToken[4] & ~self.A_PBB
+                    token[0], token[1], token[2], token[3], token[4] & ~self.A_PBB
                 )
 
         # Always add an empty line at the end of the file
@@ -637,22 +637,20 @@ class Tokenizer(ABC):
         pToken = (self.T_EMPTY, 0, "", [], self.A_NONE)
         nToken = (self.T_EMPTY, 0, "", [], self.A_NONE)
         tCount = len(self._tokens)
-        for n, tToken in enumerate(self._tokens):
+        for n, token in enumerate(self._tokens):
 
             if n > 0:
                 pToken = self._tokens[n-1]
             if n < tCount - 1:
                 nToken = self._tokens[n+1]
 
-            if tToken[0] == self.T_KEYWORD:
-                aStyle = tToken[4]
+            if token[0] == self.T_KEYWORD:
+                aStyle = token[4]
                 if pToken[0] == self.T_KEYWORD:
                     aStyle |= self.A_Z_TOPMRG
                 if nToken[0] == self.T_KEYWORD:
                     aStyle |= self.A_Z_BTMMRG
-                self._tokens[n] = (
-                    tToken[0], tToken[1], tToken[2], tToken[3], aStyle
-                )
+                self._tokens[n] = (token[0], token[1], token[2], token[3], aStyle)
 
         return
 
@@ -665,89 +663,93 @@ class Tokenizer(ABC):
 
         self._hFormatter.setHandle(self._nwItem.itemHandle if self._nwItem else None)
 
-        for n, tToken in enumerate(self._tokens):
+        for n, token in enumerate(self._tokens):
 
-            if tToken[0] == self.T_TEXT:
+            if token[0] == self.T_TEXT:
                 # If we see text before a scene, we consider it a "scene"
                 self._allowSeparator = False
 
-            elif tToken[0] == self.T_TITLE:  # Title
-                # For titles, we reset all counters
+            elif token[0] == self.T_TITLE:  # Title
+                # For new titles, we reset all counters
                 self._allowSeparator = True
                 self._hFormatter.resetAll()
 
-            elif tToken[0] == self.T_HEAD1:  # Partition
+            elif token[0] == self.T_HEAD1:  # Partition
 
-                tTemp = self._hFormatter.apply(self._fmtTitle, tToken[2], tToken[1])
+                tTemp = self._hFormatter.apply(self._fmtTitle, token[2], token[1])
                 self._tokens[n] = (
-                    tToken[0], tToken[1], tTemp, [], tToken[4]
+                    token[0], token[1], tTemp, [], token[4]
                 )
 
                 # Set scene variables
                 self._allowSeparator = True
                 self._hFormatter.resetScene()
 
-            elif tToken[0] in (self.T_HEAD2, self.T_UNNUM):  # Chapter
+            elif token[0] in (self.T_HEAD2, self.T_UNNUM):  # Chapter
 
                 # Numbered or Unnumbered
-                if tToken[0] == self.T_UNNUM:
-                    tTemp = self._hFormatter.apply(self._fmtUnNum, tToken[2], tToken[1])
+                if token[0] == self.T_UNNUM:
+                    tTemp = self._hFormatter.apply(self._fmtUnNum, token[2], token[1])
                 else:
                     self._hFormatter.incChapter()
-                    tTemp = self._hFormatter.apply(self._fmtChapter, tToken[2], tToken[1])
+                    tTemp = self._hFormatter.apply(self._fmtChapter, token[2], token[1])
 
                 # Format the chapter header
                 self._tokens[n] = (
-                    tToken[0], tToken[1], tTemp, [], tToken[4]
+                    token[0], token[1], tTemp, [], token[4]
                 )
 
                 # Set scene variables
                 self._allowSeparator = True
                 self._hFormatter.resetScene()
 
-            elif tToken[0] == self.T_HEAD3:  # Scene
+            elif token[0] == self.T_HEAD3:  # Scene
 
                 self._hFormatter.incScene()
 
-                tTemp = self._hFormatter.apply(self._fmtScene, tToken[2], tToken[1])
+                tTemp = self._hFormatter.apply(self._fmtScene, token[2], token[1])
                 if tTemp == "" and self._hideScene:
                     self._tokens[n] = (
-                        self.T_EMPTY, tToken[1], "", [], self.A_NONE
+                        self.T_EMPTY, token[1], "", [], self.A_NONE
                     )
                 elif tTemp == "" and not self._hideScene:
                     t1 = self.T_EMPTY if self._allowSeparator else self.T_SKIP
-                    t4 = self.A_NONE if self._allowSeparator else tToken[4]
-                    self._tokens[n] = (t1, tToken[1], "", [], t4)
+                    t4 = self.A_NONE if self._allowSeparator else token[4]
+                    self._tokens[n] = (
+                        t1, token[1], "", [], t4
+                    )
                 elif tTemp == self._fmtScene:
                     t1 = self.T_EMPTY if self._allowSeparator else self.T_SEP
                     t2 = "" if self._allowSeparator else tTemp
-                    t4 = self.A_NONE if self._allowSeparator else (tToken[4] | self.A_CENTRE)
-                    self._tokens[n] = (t1, tToken[1], t2, [], t4)
+                    t4 = self.A_NONE if self._allowSeparator else (token[4] | self.A_CENTRE)
+                    self._tokens[n] = (
+                        t1, token[1], t2, [], t4
+                    )
                 else:
                     self._tokens[n] = (
-                        tToken[0], tToken[1], tTemp, [], tToken[4]
+                        token[0], token[1], tTemp, [], token[4]
                     )
 
                 self._allowSeparator = False
 
-            elif tToken[0] == self.T_HEAD4:  # Section
+            elif token[0] == self.T_HEAD4:  # Section
 
-                tTemp = self._hFormatter.apply(self._fmtSection, tToken[2], tToken[1])
+                tTemp = self._hFormatter.apply(self._fmtSection, token[2], token[1])
                 if tTemp == "" and self._hideSection:
                     self._tokens[n] = (
-                        self.T_EMPTY, tToken[1], "", [], self.A_NONE
+                        self.T_EMPTY, token[1], "", [], self.A_NONE
                     )
                 elif tTemp == "" and not self._hideSection:
                     self._tokens[n] = (
-                        self.T_SKIP, tToken[1], "", [], tToken[4]
+                        self.T_SKIP, token[1], "", [], token[4]
                     )
                 elif tTemp == self._fmtSection:
                     self._tokens[n] = (
-                        self.T_SEP, tToken[1], tTemp, [], tToken[4] | self.A_CENTRE
+                        self.T_SEP, token[1], tTemp, [], token[4] | self.A_CENTRE
                     )
                 else:
                     self._tokens[n] = (
-                        tToken[0], tToken[1], tTemp, [], tToken[4]
+                        token[0], token[1], tTemp, [], token[4]
                     )
 
         return True
