@@ -89,7 +89,7 @@ class Tokenizer(ABC):
     T_UNNUM    = 7   # Unnumbered
     T_HEAD1    = 8   # Header 1
     T_HEAD2    = 9   # Header 2
-    T_HEAD3    = 10   # Header 3
+    T_HEAD3    = 10  # Header 3
     T_HEAD4    = 11  # Header 4
     T_TEXT     = 12  # Text line
     T_SEP      = 13  # Scene separator
