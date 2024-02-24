@@ -713,17 +713,15 @@ class Tokenizer(ABC):
                         self.T_EMPTY, token[1], "", [], self.A_NONE
                     )
                 elif tTemp == "" and not self._hideScene:
-                    t1 = self.T_EMPTY if self._allowSeparator else self.T_SKIP
-                    t4 = self.A_NONE if self._allowSeparator else token[4]
                     self._tokens[n] = (
-                        t1, token[1], "", [], t4
+                        self.T_EMPTY if self._allowSeparator else self.T_SKIP, token[1],
+                        "", [], self.A_NONE if self._allowSeparator else token[4]
                     )
                 elif tTemp == self._fmtScene:
-                    t1 = self.T_EMPTY if self._allowSeparator else self.T_SEP
-                    t2 = "" if self._allowSeparator else tTemp
-                    t4 = self.A_NONE if self._allowSeparator else (token[4] | self.A_CENTRE)
                     self._tokens[n] = (
-                        t1, token[1], t2, [], t4
+                        self.T_EMPTY if self._allowSeparator else self.T_SEP, token[1],
+                        "" if self._allowSeparator else tTemp, [],
+                        self.A_NONE if self._allowSeparator else (token[4] | self.A_CENTRE)
                     )
                 else:
                     self._tokens[n] = (
