@@ -1,5 +1,33 @@
 # novelWriter Changelog
 
+## Version 2.3 RC 1 [2024-02-24]
+
+### Release Notes
+
+This is a release candidate of the next release version, and is intended for testing purposes.
+Please be careful when using this version on live writing projects, and make sure you take frequent
+backups.
+
+Please check the changelog for an overview of changes. The full release notes will be added to the
+final release.
+
+### Detailed Changelog
+
+**Improvements**
+
+* Redesign the buttons on the new Welcome dialog so that they only show buttons related to the
+  visible page. Drop the additional buttons on the New Project page. Issue #1706.
+  PRs #1707 and #1709.
+* Drop the Language setting on the Welcome dialog's New Project page. PR #1707.
+* Hide the additional settings for Fresh Projects on the New Project page of the new Welcome
+  dialog. Issue #1705. PR #1707.
+* Update the Templates root folder icon. PR #1709.
+* Scene separators are now hidden after a new title in manuscript builds, also when there are no
+  chapters. Issue #1704. PR #1711.
+* Scene and chapter counters are now reset when a novel title is encountered. PR #1711.
+
+----
+
 ## Version 2.3 Beta 1 [2024-02-16]
 
 ### Release Notes
