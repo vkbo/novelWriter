@@ -158,7 +158,7 @@ class Tokenizer(ABC):
 
         # Instance Variables
         self._hFormatter = HeadingFormatter(self._project)
-        self._firstScene = False  # Flag to indicate that the first scene of the chapter
+        self._allowSeparator = False  # Flag to indicate that the first scene of the chapter
 
         # This File
         self._isNone  = False  # Document has unknown layout
@@ -667,9 +667,14 @@ class Tokenizer(ABC):
 
         for n, tToken in enumerate(self._tokens):
 
-            # In case we see text before a scene, we reset the flag
             if tToken[0] == self.T_TEXT:
-                self._firstScene = False
+                # If we see text before a scene, we consider it a "scene"
+                self._allowSeparator = False
+
+            elif tToken[0] == self.T_TITLE:  # Title
+                # For titles, we reset all counters
+                self._allowSeparator = True
+                self._hFormatter.resetAll()
 
             elif tToken[0] == self.T_HEAD1:  # Partition
 
@@ -679,8 +684,8 @@ class Tokenizer(ABC):
                 )
 
                 # Set scene variables
-                # self._firstScene = True
-                # self._hFormatter.resetScene()
+                self._allowSeparator = True
+                self._hFormatter.resetScene()
 
             elif tToken[0] in (self.T_HEAD2, self.T_UNNUM):  # Chapter
 
@@ -697,7 +702,7 @@ class Tokenizer(ABC):
                 )
 
                 # Set scene variables
-                self._firstScene = True
+                self._allowSeparator = True
                 self._hFormatter.resetScene()
 
             elif tToken[0] == self.T_HEAD3:  # Scene
@@ -710,20 +715,20 @@ class Tokenizer(ABC):
                         self.T_EMPTY, tToken[1], "", [], self.A_NONE
                     )
                 elif tTemp == "" and not self._hideScene:
-                    t1 = self.T_EMPTY if self._firstScene else self.T_SKIP
-                    t4 = self.A_NONE if self._firstScene else tToken[4]
+                    t1 = self.T_EMPTY if self._allowSeparator else self.T_SKIP
+                    t4 = self.A_NONE if self._allowSeparator else tToken[4]
                     self._tokens[n] = (t1, tToken[1], "", [], t4)
                 elif tTemp == self._fmtScene:
-                    t1 = self.T_EMPTY if self._firstScene else self.T_SEP
-                    t2 = "" if self._firstScene else tTemp
-                    t4 = self.A_NONE if self._firstScene else (tToken[4] | self.A_CENTRE)
+                    t1 = self.T_EMPTY if self._allowSeparator else self.T_SEP
+                    t2 = "" if self._allowSeparator else tTemp
+                    t4 = self.A_NONE if self._allowSeparator else (tToken[4] | self.A_CENTRE)
                     self._tokens[n] = (t1, tToken[1], t2, [], t4)
                 else:
                     self._tokens[n] = (
                         tToken[0], tToken[1], tTemp, [], tToken[4]
                     )
 
-                self._firstScene = False
+                self._allowSeparator = False
 
             elif tToken[0] == self.T_HEAD4:  # Section
 
@@ -838,6 +843,13 @@ class HeadingFormatter:
         """Increment the scene counters."""
         self._scChCount += 1
         self._scAbsCount += 1
+        return
+
+    def resetAll(self) -> None:
+        """Reset all counters."""
+        self._chCount = 0
+        self._scChCount = 0
+        self._scAbsCount = 0
         return
 
     def resetScene(self) -> None:

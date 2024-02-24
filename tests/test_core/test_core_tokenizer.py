@@ -1122,7 +1122,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     # H3: Scene wo/Format, first
     tokens._text = "### Scene One\n"
     tokens.setSceneFormat("", False)
-    tokens._firstScene = True
+    tokens._allowSeparator = True
     tokens.tokenizeText()
     tokens.doHeaders()
     assert tokens._tokens == [
@@ -1133,7 +1133,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     # H3: Scene wo/Format, not first
     tokens._text = "### Scene One\n"
     tokens.setSceneFormat("", False)
-    tokens._firstScene = False
+    tokens._allowSeparator = False
     tokens.tokenizeText()
     tokens.doHeaders()
     assert tokens._tokens == [
@@ -1144,7 +1144,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     # H3: Scene Separator, first
     tokens._text = "### Scene One\n"
     tokens.setSceneFormat("* * *", False)
-    tokens._firstScene = True
+    tokens._allowSeparator = True
     tokens.tokenizeText()
     tokens.doHeaders()
     assert tokens._tokens == [
@@ -1155,7 +1155,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     # H3: Scene Separator, not first
     tokens._text = "### Scene One\n"
     tokens.setSceneFormat("* * *", False)
-    tokens._firstScene = False
+    tokens._allowSeparator = False
     tokens.tokenizeText()
     tokens.doHeaders()
     assert tokens._tokens == [
@@ -1231,12 +1231,12 @@ def testCoreToken_ProcessHeaders(mockGUI):
     ]
 
     # Check the first scene detector
-    assert tokens._firstScene is False
-    tokens._firstScene = True
+    assert tokens._allowSeparator is False
+    tokens._allowSeparator = True
     tokens._text = "Some text ...\n"
     tokens.tokenizeText()
     tokens.doHeaders()
-    assert tokens._firstScene is False
+    assert tokens._allowSeparator is False
 
 # END Test testCoreToken_ProcessHeaders
 
