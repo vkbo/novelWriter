@@ -26,6 +26,7 @@ import pytest
 from tools import C, buildTestProject, readFile
 
 from novelwriter.constants import nwHeadFmt
+from novelwriter.core.tomd import ToMarkdown
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import HeadingFormatter, Tokenizer, stripEscape
 
@@ -1010,7 +1011,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     tokens._isNote = False
 
     ##
-    #  Story FIles
+    #  Story Files
     ##
 
     tokens._isNone  = False
@@ -1122,7 +1123,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     # H3: Scene wo/Format, first
     tokens._text = "### Scene One\n"
     tokens.setSceneFormat("", False)
-    tokens._firstScene = True
+    tokens._allowSeparator = True
     tokens.tokenizeText()
     tokens.doHeaders()
     assert tokens._tokens == [
@@ -1133,7 +1134,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     # H3: Scene wo/Format, not first
     tokens._text = "### Scene One\n"
     tokens.setSceneFormat("", False)
-    tokens._firstScene = False
+    tokens._allowSeparator = False
     tokens.tokenizeText()
     tokens.doHeaders()
     assert tokens._tokens == [
@@ -1144,7 +1145,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     # H3: Scene Separator, first
     tokens._text = "### Scene One\n"
     tokens.setSceneFormat("* * *", False)
-    tokens._firstScene = True
+    tokens._allowSeparator = True
     tokens.tokenizeText()
     tokens.doHeaders()
     assert tokens._tokens == [
@@ -1155,7 +1156,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     # H3: Scene Separator, not first
     tokens._text = "### Scene One\n"
     tokens.setSceneFormat("* * *", False)
-    tokens._firstScene = False
+    tokens._allowSeparator = False
     tokens.tokenizeText()
     tokens.doHeaders()
     assert tokens._tokens == [
@@ -1192,7 +1193,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
     # H4: Section Hidden wo/Format
     tokens._text = "#### A Section\n"
-    tokens.setSectionFormat(r"", True)
+    tokens.setSectionFormat("", True)
     tokens.tokenizeText()
     tokens.doHeaders()
     assert tokens._tokens == [
@@ -1231,14 +1232,201 @@ def testCoreToken_ProcessHeaders(mockGUI):
     ]
 
     # Check the first scene detector
-    assert tokens._firstScene is False
-    tokens._firstScene = True
+    assert tokens._allowSeparator is False
+    tokens._allowSeparator = True
     tokens._text = "Some text ...\n"
     tokens.tokenizeText()
     tokens.doHeaders()
-    assert tokens._firstScene is False
+    assert tokens._allowSeparator is False
 
 # END Test testCoreToken_ProcessHeaders
+
+
+@pytest.mark.core
+def testCoreToken_HeaderCounterAndVisibility(mockGUI):
+    """Test the header counter and visibility of the Tokenizer class.
+    This is a special test to cover issue #1704.
+    """
+    project = NWProject()
+    project.data.setLanguage("en")
+    project._loadProjectLocalisation()
+    md = ToMarkdown(project)
+    md._isNone = False
+    md._isNote = False
+    md._isNovel = True
+
+    # Separator Handling, Titles
+    # ==========================
+
+    md._text = (
+        "# Title One\n\n"
+        "### Scene One\n\n"
+        "Text\n\n"
+        "### Scene Two\n\n"
+        "Text\n\n"
+        "# Title Two\n\n"
+        "### Scene Three\n\n"
+        "Text\n\n"
+        "### Scene Four\n\n"
+        "Text\n\n"
+    )
+    md.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
+    md.setChapterFormat(f"C: {nwHeadFmt.TITLE}")
+    md.setSectionFormat("", True)
+
+    # Static Separator
+    md.setSceneFormat("* * *", False)
+    md.tokenizeText()
+    md.doHeaders()
+    md.doConvert()
+    assert md.result == (
+        "# T: Title One\n\n"
+        "Text\n\n"
+        "* * *\n\n"
+        "Text\n\n"
+        "# T: Title Two\n\n"
+        "Text\n\n"
+        "* * *\n\n"
+        "Text\n\n"
+    )
+
+    # Scene Title Formatted
+    md.setSceneFormat(f"S: {nwHeadFmt.TITLE}", False)
+    md.tokenizeText()
+    md.doHeaders()
+    md.doConvert()
+    assert md.result == (
+        "# T: Title One\n\n"
+        "### S: Scene One\n\n"
+        "Text\n\n"
+        "### S: Scene Two\n\n"
+        "Text\n\n"
+        "# T: Title Two\n\n"
+        "### S: Scene Three\n\n"
+        "Text\n\n"
+        "### S: Scene Four\n\n"
+        "Text\n\n"
+    )
+
+    # Separator Handling, Chapters
+    # ============================
+
+    md._text = (
+        "# Title One\n\n"
+        "## Chapter One\n\n"
+        "### Scene One\n\n"
+        "Text\n\n"
+        "### Scene Two\n\n"
+        "Text\n\n"
+        "## Chapter Two\n\n"
+        "### Scene Three\n\n"
+        "Text\n\n"
+        "### Scene Four\n\n"
+        "Text\n\n"
+    )
+    md.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
+    md.setChapterFormat(f"C: {nwHeadFmt.TITLE}")
+    md.setSectionFormat("", True)
+
+    # Static Separator
+    md.setSceneFormat("* * *", False)
+    md.tokenizeText()
+    md.doHeaders()
+    md.doConvert()
+    assert md.result == (
+        "# T: Title One\n\n"
+        "## C: Chapter One\n\n"
+        "Text\n\n"
+        "* * *\n\n"
+        "Text\n\n"
+        "## C: Chapter Two\n\n"
+        "Text\n\n"
+        "* * *\n\n"
+        "Text\n\n"
+    )
+
+    # Scene Title Formatted
+    md.setSceneFormat(f"S: {nwHeadFmt.TITLE}", False)
+    md.tokenizeText()
+    md.doHeaders()
+    md.doConvert()
+    assert md.result == (
+        "# T: Title One\n\n"
+        "## C: Chapter One\n\n"
+        "### S: Scene One\n\n"
+        "Text\n\n"
+        "### S: Scene Two\n\n"
+        "Text\n\n"
+        "## C: Chapter Two\n\n"
+        "### S: Scene Three\n\n"
+        "Text\n\n"
+        "### S: Scene Four\n\n"
+        "Text\n\n"
+    )
+
+    # Counter Handling, Novel Titles
+    # ==============================
+
+    md._text = (
+        "#! Novel One\n\n"
+        "## Chapter One\n\n"
+        "### Scene One\n\n"
+        "Text\n\n"
+        "### Scene Two\n\n"
+        "Text\n\n"
+        "## Chapter Two\n\n"
+        "### Scene Three\n\n"
+        "Text\n\n"
+        "### Scene Four\n\n"
+        "Text\n\n"
+        "#! Novel Two\n\n"
+        "## Chapter One\n\n"
+        "### Scene One\n\n"
+        "Text\n\n"
+        "### Scene Two\n\n"
+        "Text\n\n"
+        "## Chapter Two\n\n"
+        "### Scene Three\n\n"
+        "Text\n\n"
+        "### Scene Four\n\n"
+        "Text\n\n"
+    )
+    md.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
+    md.setChapterFormat(f"C {nwHeadFmt.CH_NUM}: {nwHeadFmt.TITLE}")
+    md.setSceneFormat(f"S {nwHeadFmt.CH_NUM}.{nwHeadFmt.SC_NUM} ({nwHeadFmt.SC_ABS}): "
+                      f"{nwHeadFmt.TITLE}", False)
+    md.setSectionFormat("", True)
+
+    # Two Novel Format
+    md.tokenizeText()
+    md.doHeaders()
+    md.doConvert()
+    assert md.result == (
+        "# Novel One\n\n"
+        "## C 1: Chapter One\n\n"
+        "### S 1.1 (1): Scene One\n\n"
+        "Text\n\n"
+        "### S 1.2 (2): Scene Two\n\n"
+        "Text\n\n"
+        "## C 2: Chapter Two\n\n"
+        "### S 2.1 (3): Scene Three\n\n"
+        "Text\n\n"
+        "### S 2.2 (4): Scene Four\n\n"
+        "Text\n\n"
+        "# Novel Two\n\n"
+        "## C 1: Chapter One\n\n"
+        "### S 1.1 (1): Scene One\n\n"
+        "Text\n\n"
+        "### S 1.2 (2): Scene Two\n\n"
+        "Text\n\n"
+        "## C 2: Chapter Two\n\n"
+        "### S 2.1 (3): Scene Three\n\n"
+        "Text\n\n"
+        "### S 2.2 (4): Scene Four\n\n"
+        "Text\n\n"
+    )
+
+# END Test testCoreToken_HeaderCounterAndVisibility
 
 
 @pytest.mark.core
@@ -1305,6 +1493,12 @@ def testCoreIndex_HeadingFormatter(fncPath, mockRnd):
     formatter.resetScene()
     formatter.incScene()
     assert formatter.apply(cFormat, "Hi Bob", 1) == "Chapter 2.1 - Scene 5 - Hi Bob"
+
+    # New Main Title
+    formatter.resetAll()
+    formatter.incChapter()
+    formatter.incScene()
+    assert formatter.apply(cFormat, "Hi Bob", 1) == "Chapter 1.1 - Scene 1 - Hi Bob"
 
     # Special Formats
     # ===============
