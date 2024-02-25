@@ -47,7 +47,7 @@ def testManuscript_Init(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath: Pat
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
     SHARED.project.storage.getDocument(C.hChapterDoc).writeDocument("## A Chapter\n\n\t\tHi")
-    allText = "New Novel\nBy Jane Doe\nA Chapter\n\t\tHi\n* * *"
+    allText = "New Novel\nBy Jane Doe\nA Chapter\n\t\tHi"
 
     nwGUI.mainMenu.aBuildManuscript.activate(QAction.Trigger)
     qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiManuscript) is not None, timeout=1000)

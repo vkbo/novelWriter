@@ -1123,7 +1123,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     # H3: Scene wo/Format, first
     tokens._text = "### Scene One\n"
     tokens.setSceneFormat("", False)
-    tokens._allowSeparator = True
+    tokens._skipSeparator = True
     tokens.tokenizeText()
     tokens.doHeaders()
     assert tokens._tokens == [
@@ -1134,7 +1134,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     # H3: Scene wo/Format, not first
     tokens._text = "### Scene One\n"
     tokens.setSceneFormat("", False)
-    tokens._allowSeparator = False
+    tokens._skipSeparator = False
     tokens.tokenizeText()
     tokens.doHeaders()
     assert tokens._tokens == [
@@ -1145,7 +1145,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     # H3: Scene Separator, first
     tokens._text = "### Scene One\n"
     tokens.setSceneFormat("* * *", False)
-    tokens._allowSeparator = True
+    tokens._skipSeparator = True
     tokens.tokenizeText()
     tokens.doHeaders()
     assert tokens._tokens == [
@@ -1156,7 +1156,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     # H3: Scene Separator, not first
     tokens._text = "### Scene One\n"
     tokens.setSceneFormat("* * *", False)
-    tokens._allowSeparator = False
+    tokens._skipSeparator = False
     tokens.tokenizeText()
     tokens.doHeaders()
     assert tokens._tokens == [
@@ -1231,13 +1231,19 @@ def testCoreToken_ProcessHeaders(mockGUI):
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
     ]
 
-    # Check the first scene detector
-    assert tokens._allowSeparator is False
-    tokens._allowSeparator = True
+    # Check the first scene detector, plain text
+    tokens._skipSeparator = True
     tokens._text = "Some text ...\n"
     tokens.tokenizeText()
     tokens.doHeaders()
-    assert tokens._allowSeparator is False
+    assert tokens._skipSeparator is True
+
+    # Check the first scene detector, text plus scene
+    tokens._skipSeparator = True
+    tokens._text = "Some text ...\n\n### Scene\n\nText"
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    assert tokens._skipSeparator is False
 
 # END Test testCoreToken_ProcessHeaders
 
