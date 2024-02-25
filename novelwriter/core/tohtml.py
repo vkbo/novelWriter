@@ -29,7 +29,9 @@ import logging
 from time import time
 from pathlib import Path
 
-from novelwriter import CONFIG
+from PyQt5.QtGui import QColor
+
+from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwHtmlUnicode
 from novelwriter.core.project import NWProject
@@ -124,6 +126,7 @@ class ToHtml(Tokenizer):
     def doConvert(self) -> None:
         """Convert the list of text tokens into an HTML document."""
         if self._genMode == self.M_PREVIEW:
+            colMark = SHARED.theme.colMark.name(QColor.NameFormat.HexArgb)
             htmlTags = {  # HTML4 + CSS2 (for Qt)
                 self.FMT_B_B: "<b>",
                 self.FMT_B_E: "</b>",
@@ -133,7 +136,7 @@ class ToHtml(Tokenizer):
                 self.FMT_D_E: "</span>",
                 self.FMT_U_B: "<u>",
                 self.FMT_U_E: "</u>",
-                self.FMT_M_B: "<span style='background-color: yellow;'>",
+                self.FMT_M_B: f"<span style='background-color: {colMark};'>",
                 self.FMT_M_E: "</span>",
             }
         else:

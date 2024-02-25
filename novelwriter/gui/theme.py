@@ -106,6 +106,7 @@ class GuiTheme:
         self.colError  = QColor(0, 0, 0)
         self.colRepTag = QColor(0, 0, 0)
         self.colMod    = QColor(0, 0, 0)
+        self.colMark   = QColor(255, 255, 255, 128)
 
         # Class Setup
         # ===========
@@ -329,6 +330,7 @@ class GuiTheme:
             self.colError  = self._parseColour(confParser, cnfSec, "errorline")
             self.colRepTag = self._parseColour(confParser, cnfSec, "replacetag")
             self.colMod    = self._parseColour(confParser, cnfSec, "modifier")
+            self.colMark   = self._parseColour(confParser, cnfSec, "texthighlight")
 
         return True
 
