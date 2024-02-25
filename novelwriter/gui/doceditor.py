@@ -769,6 +769,8 @@ class GuiDocEditor(QPlainTextEdit):
             self._wrapSelection(nwShortcode.STRIKE_O, nwShortcode.STRIKE_C)
         elif action == nwDocAction.SC_ULINE:
             self._wrapSelection(nwShortcode.ULINE_O, nwShortcode.ULINE_C)
+        elif action == nwDocAction.SC_MARK:
+            self._wrapSelection(nwShortcode.MARK_O, nwShortcode.MARK_C)
         elif action == nwDocAction.SC_SUP:
             self._wrapSelection(nwShortcode.SUP_O, nwShortcode.SUP_C)
         elif action == nwDocAction.SC_SUB:
@@ -2313,6 +2315,13 @@ class GuiDocToolBar(QWidget):
             lambda: self.requestDocAction.emit(nwDocAction.SC_ULINE)
         )
 
+        self.tbMark = QToolButton(self)
+        self.tbMark.setIconSize(iconSize)
+        self.tbMark.setToolTip(self.tr("Shortcode Mark"))
+        self.tbMark.clicked.connect(
+            lambda: self.requestDocAction.emit(nwDocAction.SC_MARK)
+        )
+
         self.tbSuperscript = QToolButton(self)
         self.tbSuperscript.setIconSize(iconSize)
         self.tbSuperscript.setToolTip(self.tr("Shortcode Superscript"))
@@ -2339,6 +2348,7 @@ class GuiDocToolBar(QWidget):
         self.outerBox.addWidget(self.tbItalic)
         self.outerBox.addWidget(self.tbStrike)
         self.outerBox.addWidget(self.tbUnderline)
+        self.outerBox.addWidget(self.tbMark)
         self.outerBox.addWidget(self.tbSuperscript)
         self.outerBox.addWidget(self.tbSubscript)
         self.outerBox.setContentsMargins(cM, cM, cM, cM)

@@ -74,10 +74,12 @@ class Tokenizer(ABC):
     FMT_D_E   = 6   # End strikeout
     FMT_U_B   = 7   # Begin underline
     FMT_U_E   = 8   # End underline
-    FMT_SUP_B = 9   # Begin superscript
-    FMT_SUP_E = 10  # End superscript
-    FMT_SUB_B = 11  # Begin subscript
-    FMT_SUB_E = 12  # End subscript
+    FMT_M_B   = 9   # Begin mark
+    FMT_M_E   = 10  # End mark
+    FMT_SUP_B = 11  # Begin superscript
+    FMT_SUP_E = 12  # End superscript
+    FMT_SUB_B = 13  # Begin subscript
+    FMT_SUB_E = 14  # End subscript
 
     # Block Type
     T_EMPTY    = 1   # Empty line (new paragraph)
@@ -187,6 +189,7 @@ class Tokenizer(ABC):
             nwShortcode.BOLD_O:   self.FMT_B_B,   nwShortcode.BOLD_C:   self.FMT_B_E,
             nwShortcode.STRIKE_O: self.FMT_D_B,   nwShortcode.STRIKE_C: self.FMT_D_E,
             nwShortcode.ULINE_O:  self.FMT_U_B,   nwShortcode.ULINE_C:  self.FMT_U_E,
+            nwShortcode.MARK_O:   self.FMT_M_B,   nwShortcode.MARK_C:   self.FMT_M_E,
             nwShortcode.SUP_O:    self.FMT_SUP_B, nwShortcode.SUP_C:    self.FMT_SUP_E,
             nwShortcode.SUB_O:    self.FMT_SUB_B, nwShortcode.SUB_C:    self.FMT_SUB_E,
         }

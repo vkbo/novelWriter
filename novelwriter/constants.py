@@ -67,7 +67,7 @@ class nwRegEx:
     FMT_EI = r"(?<![\w\\])(_)(?![\s_])(.+?)(?<![\s\\])(\1)(?!\w)"
     FMT_EB = r"(?<![\w\\])([\*]{2})(?![\s\*])(.+?)(?<![\s\\])(\1)(?!\w)"
     FMT_ST = r"(?<![\w\\])([~]{2})(?![\s~])(.+?)(?<![\s\\])(\1)(?!\w)"
-    FMT_SC = r"(?i)(?<!\\)(\[[\/\!]?(?:i|b|s|u|sup|sub)\])"
+    FMT_SC = r"(?i)(?<!\\)(\[[\/\!]?(?:i|b|s|u|m|sup|sub)\])"
     FMT_SV = r"(?<!\\)(\[(?i)(?:fn|footnote):)(.+?)(?<!\\)(\])"
 
     # Pre-Compiled RegEx
@@ -86,6 +86,8 @@ class nwShortcode:
     STRIKE_C = "[/s]"
     ULINE_O  = "[u]"
     ULINE_C  = "[/u]"
+    MARK_O   = "[m]"
+    MARK_C   = "[/m]"
     SUP_O    = "[sup]"
     SUP_C    = "[/sup]"
     SUB_O    = "[sub]"
