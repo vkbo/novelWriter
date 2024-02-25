@@ -450,8 +450,8 @@ class GuiIcons:
         "search_regex", "search_word",
 
         # Format Icons
-        "fmt_bold", "fmt_bold-md", "fmt_italic", "fmt_italic-md", "fmt_strike", "fmt_strike-md",
-        "fmt_subscript", "fmt_superscript", "fmt_underline",
+        "fmt_bold", "fmt_bold-md", "fmt_italic", "fmt_italic-md", "fmt_mark", "fmt_strike",
+        "fmt_strike-md", "fmt_subscript", "fmt_superscript", "fmt_underline",
 
         # General Button Icons
         "add", "add_document", "backward", "bookmark", "browse", "checked", "close", "cross",

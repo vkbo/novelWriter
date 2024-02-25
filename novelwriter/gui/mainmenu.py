@@ -673,7 +673,7 @@ class GuiMainMenu(QMenuBar):
         )
 
         # Shortcode Mark
-        self.aScMark = self.mShortcodes.addAction(self.tr("Mark"))
+        self.aScMark = self.mShortcodes.addAction(self.tr("Highlight"))
         self.aScMark.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.SC_MARK)
         )

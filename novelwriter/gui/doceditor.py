@@ -2317,7 +2317,7 @@ class GuiDocToolBar(QWidget):
 
         self.tbMark = QToolButton(self)
         self.tbMark.setIconSize(iconSize)
-        self.tbMark.setToolTip(self.tr("Shortcode Mark"))
+        self.tbMark.setToolTip(self.tr("Shortcode Highlight"))
         self.tbMark.clicked.connect(
             lambda: self.requestDocAction.emit(nwDocAction.SC_MARK)
         )
@@ -2379,6 +2379,7 @@ class GuiDocToolBar(QWidget):
         self.tbItalic.setIcon(SHARED.theme.getIcon("fmt_italic"))
         self.tbStrike.setIcon(SHARED.theme.getIcon("fmt_strike"))
         self.tbUnderline.setIcon(SHARED.theme.getIcon("fmt_underline"))
+        self.tbMark.setIcon(SHARED.theme.getIcon("fmt_mark"))
         self.tbSuperscript.setIcon(SHARED.theme.getIcon("fmt_superscript"))
         self.tbSubscript.setIcon(SHARED.theme.getIcon("fmt_subscript"))
 

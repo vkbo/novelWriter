@@ -58,9 +58,11 @@ Some of the assets bundled with novelWriter were adapted from the following sour
 
 ## Fonts
 
-The font used for the main novelWriter logo, mimetype and text banners is:
+The font used for the main novelWriter logo, mimetype and text banners is Pridi. Other fonts are
+used on buttons and icons.
 
 * Pridi by Cadson Demak (Open Font License, Version 1.1)
+* Source Sans Pro by Paul D. Hunt (SIL Open Font License)
 
 ## Special Mentions
 
