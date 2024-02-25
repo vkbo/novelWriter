@@ -1,8 +1,8 @@
 %%~name: Making a Scene
 %%~path: 6a2d6d5f4f401/636b6aa9b697b
 %%~kind: NOVEL/DOCUMENT
-%%~hash: d7920fe95fb48140278ae160fe7c3c1ce530072c
-%%~date: Unknown/2023-10-20 22:57:56
+%%~hash: e1c58699b05b512306a534da70c2952aafc60e8b
+%%~date: Unknown/2024-02-25 16:33:40
 ### Making a Scene
 
 @pov: Jane
@@ -13,7 +13,7 @@ A scene is defined by a level three heading, like the one at the top of this pag
 
 Each paragraph in the scene is separated by a blank line. The text supports minimal formatting, like **bold**, _italic_ and **_bold italic_**. You can also ~~strike through~~ text. There is **some support for _nested_ emphasis**, but there are some known limitations. If the syntax highlighter doesn’t show it correctly, the export tool will not either.
 
-For special formatting aside from standard emphasis, you can use “shortcodes”. Here we have super[sup]script[/sup] and sub[sub]script[/sub], and [b]part[/b]ial bold too, which ends in the middle of a word. The shortcodes also support [u]underline[/u].
+For special formatting aside from standard emphasis, you can use “shortcodes”. Here we have super[sup]script[/sup] and sub[sub]script[/sub], and [b]part[/b]ial bold too, which ends in the middle of a word. The shortcodes also support [u]underline[/u], and you can [m]highlight text as well[/m].
 
 In addition, the editor supports automatic formatting of “quotes”, both double and ‘single’. Depending on the syntax highlighter settings and colour theme, these can be in different colours. “You can of course use **bold** and _italic_ text inside of quotes too.”
 

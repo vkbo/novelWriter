@@ -768,6 +768,8 @@ class _PreviewWidget(QTextBrowser):
         html = html.replace("\t", "!!tab!!")
         html = html.replace("<del>", "<span style='text-decoration: line-through;'>")
         html = html.replace("</del>", "</span>")
+        html = html.replace("<mark>", "<span style='background-color: #ffffa6;'>")
+        html = html.replace("</mark>", "</span>")
         self.setHtml(html)
         qApp.processEvents()
         while self.find("!!tab!!"):
