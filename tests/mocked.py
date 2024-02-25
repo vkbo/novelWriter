@@ -20,7 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QColor, QPixmap
 from PyQt5.QtWidgets import QWidget
 
 
@@ -76,6 +76,7 @@ class MockTheme:
 
     def __init__(self):
         self.baseIconSize = 10
+        self.colMark = QColor(255, 255, 166, 128)
         return
 
     def getPixmap(self, *a):
