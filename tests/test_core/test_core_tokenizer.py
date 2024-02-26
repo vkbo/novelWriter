@@ -638,6 +638,11 @@ def testCoreToken_ExtractFormats(mockGUI):
     assert text == "Text with underline in it."
     assert fmt == [(10, tokens.FMT_U_B), (19, tokens.FMT_U_E)]
 
+    # Plain mark
+    text, fmt = tokens._extractFormats("Text with [m]highlight[/m] in it.")
+    assert text == "Text with highlight in it."
+    assert fmt == [(10, tokens.FMT_M_B), (19, tokens.FMT_M_E)]
+
     # Plain superscript
     text, fmt = tokens._extractFormats("Text with super[sup]script[/sup] in it.")
     assert text == "Text with superscript in it."

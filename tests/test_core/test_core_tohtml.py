@@ -29,8 +29,8 @@ from novelwriter.core.project import NWProject
 
 
 @pytest.mark.core
-def testCoreToHtml_ConvertFormat(mockGUI):
-    """Test the tokenizer and converter chain using the ToHtml class."""
+def testCoreToHtml_ConvertHeaders(mockGUI):
+    """Test header formats in the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
 
@@ -129,6 +129,19 @@ def testCoreToHtml_ConvertFormat(mockGUI):
     html.doConvert()
     assert html.result == "<h2><a name='T0001'></a>Heading Two</h2>\n"
 
+# END Test testCoreToHtml_ConvertHeaders
+
+
+@pytest.mark.core
+def testCoreToHtml_ConvertParagraphs(mockGUI):
+    """Test paragraph formats in the ToHtml class."""
+    project = NWProject()
+    html = ToHtml(project)
+
+    html._isNovel = True
+    html._isNote = False
+    html._isFirst = True
+
     # Paragraphs
     # ==========
 
@@ -139,6 +152,19 @@ def testCoreToHtml_ConvertFormat(mockGUI):
     assert html.result == (
         "<p>Some <strong>nested bold and <em>italic</em> and "
         "<del>strikethrough</del> text</strong> here</p>\n"
+    )
+
+    # Shortcodes
+    html._text = (
+        "Some [b]bold[/b], [i]italic[/i], [s]strike[/s], [u]underline[/u], [m]mark[/m], "
+        "super[sup]script[/sup], sub[sub]script[/sub] here\n"
+    )
+    html.tokenizeText()
+    html.doConvert()
+    assert html.result == (
+        "<p>Some <strong>bold</strong>, <em>italic</em>, <del>strike</del>, "
+        "<span style='text-decoration: underline;'>underline</span>, <mark>mark</mark>, "
+        "super<sup>script</sup>, sub<sub>script</sub> here</p>\n"
     )
 
     # Text w/Hard Break
@@ -206,17 +232,13 @@ def testCoreToHtml_ConvertFormat(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<h2>"
-        "<a name='T0001'></a>Chapter</h2>\n"
-        "<p style='margin-bottom: 0;'>"
-        "<span class='tags'>Point of View:</span> <a href='#tag_Bod'>Bod</a>"
-        "</p>\n"
-        "<p style='margin-bottom: 0; margin-top: 0;'>"
-        "<span class='tags'>Plot:</span> <a href='#tag_Main'>Main</a>"
-        "</p>\n"
-        "<p style='margin-top: 0;'>"
-        "<span class='tags'>Locations:</span> <a href='#tag_Europe'>Europe</a>"
-        "</p>\n"
+        "<h1 style='page-break-before: always;'>Chapter</h1>\n"
+        "<p style='margin-bottom: 0;'><span class='tags'>Point of View:</span> "
+        "<a href='#tag_Bod'>Bod</a></p>\n"
+        "<p style='margin-bottom: 0; margin-top: 0;'><span class='tags'>Plot:</span> "
+        "<a href='#tag_Main'>Main</a></p>\n"
+        "<p style='margin-top: 0;'><span class='tags'>Locations:</span> "
+        "<a href='#tag_Europe'>Europe</a></p>\n"
     )
 
     # Preview Mode
@@ -234,7 +256,7 @@ def testCoreToHtml_ConvertFormat(mockGUI):
         "text</b> here</p>\n"
     )
 
-# END Test testCoreToHtml_ConvertFormat
+# END Test testCoreToHtml_ConvertParagraphs
 
 
 @pytest.mark.core
