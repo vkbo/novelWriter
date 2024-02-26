@@ -160,7 +160,7 @@ class Tokenizer(ABC):
 
         # Instance Variables
         self._hFormatter = HeadingFormatter(self._project)
-        self._allowSeparator = False  # Flag to indicate that the first scene of the chapter
+        self._skipSeparator = False  # Flag to indicate that we skip the scene separator
 
         # This File
         self._isNone  = False  # Document has unknown layout
@@ -668,13 +668,9 @@ class Tokenizer(ABC):
 
         for n, token in enumerate(self._tokens):
 
-            if token[0] == self.T_TEXT:
-                # If we see text before a scene, we consider it a "scene"
-                self._allowSeparator = False
-
-            elif token[0] == self.T_TITLE:  # Title
+            if token[0] == self.T_TITLE:  # Title
                 # For new titles, we reset all counters
-                self._allowSeparator = True
+                self._skipSeparator = True
                 self._hFormatter.resetAll()
 
             elif token[0] == self.T_HEAD1:  # Partition
@@ -685,10 +681,10 @@ class Tokenizer(ABC):
                 )
 
                 # Set scene variables
-                self._allowSeparator = True
+                self._skipSeparator = True
                 self._hFormatter.resetScene()
 
-            elif token[0] in (self.T_HEAD2, self.T_UNNUM):  # Chapter
+            elif token[0] in (self.T_HEAD2, self.T_UNNUM):  # Chapter, Unnumbered
 
                 # Numbered or Unnumbered
                 if token[0] == self.T_UNNUM:
@@ -703,7 +699,7 @@ class Tokenizer(ABC):
                 )
 
                 # Set scene variables
-                self._allowSeparator = True
+                self._skipSeparator = True
                 self._hFormatter.resetScene()
 
             elif token[0] == self.T_HEAD3:  # Scene
@@ -717,21 +713,21 @@ class Tokenizer(ABC):
                     )
                 elif tTemp == "" and not self._hideScene:
                     self._tokens[n] = (
-                        self.T_EMPTY if self._allowSeparator else self.T_SKIP, token[1],
-                        "", [], self.A_NONE if self._allowSeparator else token[4]
+                        self.T_EMPTY if self._skipSeparator else self.T_SKIP, token[1],
+                        "", [], self.A_NONE if self._skipSeparator else token[4]
                     )
                 elif tTemp == self._fmtScene:
                     self._tokens[n] = (
-                        self.T_EMPTY if self._allowSeparator else self.T_SEP, token[1],
-                        "" if self._allowSeparator else tTemp, [],
-                        self.A_NONE if self._allowSeparator else (token[4] | self.A_CENTRE)
+                        self.T_EMPTY if self._skipSeparator else self.T_SEP, token[1],
+                        "" if self._skipSeparator else tTemp, [],
+                        self.A_NONE if self._skipSeparator else (token[4] | self.A_CENTRE)
                     )
                 else:
                     self._tokens[n] = (
                         token[0], token[1], tTemp, [], token[4]
                     )
 
-                self._allowSeparator = False
+                self._skipSeparator = False
 
             elif token[0] == self.T_HEAD4:  # Section
 
