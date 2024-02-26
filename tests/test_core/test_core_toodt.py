@@ -237,21 +237,11 @@ def testCoreToOdt_TextFormatting(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToOdt_Convert(mockGUI):
+def testCoreToOdt_ConvertHeaders(mockGUI):
     """Test the converter of the ToOdt class."""
     project = NWProject()
     odt = ToOdt(project, isFlat=True)
-
     odt._isNovel = True
-
-    def getStyle(styleName):
-        for aSet in odt._autoPara.values():
-            if aSet[0] == styleName:
-                return aSet[1]
-        return None
-
-    # Headers
-    # =======
 
     # Header 1
     odt._text = "# Title\n"
@@ -331,8 +321,21 @@ def testCoreToOdt_Convert(mockGUI):
         '</office:text>'
     )
 
-    # Paragraphs
-    # ==========
+# END Test testCoreToOdt_ConvertHeaders
+
+
+@pytest.mark.core
+def testCoreToOdt_ConvertParagraphs(mockGUI):
+    """Test the converter of the ToOdt class."""
+    project = NWProject()
+    odt = ToOdt(project, isFlat=True)
+    odt._isNovel = True
+
+    def getStyle(styleName):
+        for aSet in odt._autoPara.values():
+            if aSet[0] == styleName:
+                return aSet[1]
+        return None
 
     # Nested Markdown Text
     odt._text = "Some ~~nested **bold** and _italics_ text~~ text."
@@ -372,7 +375,7 @@ def testCoreToOdt_Convert(mockGUI):
         '</office:text>'
     )
 
-    # Nested Shortcode Text, Super/Subscript
+    # Shortcode Text, Super/Subscript
     odt._text = "Some super[sup]script[/sup] and sub[sub]script[/sub] text."
     odt.tokenizeText()
     odt.initDocument()
@@ -384,6 +387,21 @@ def testCoreToOdt_Convert(mockGUI):
         '<text:p text:style-name="Text_20_body">Some '
         'super<text:span text:style-name="T5">script</text:span> and '
         'sub<text:span text:style-name="T6">script</text:span> text.</text:p>'
+        '</office:text>'
+    )
+
+    # Shortcode Text, Underline/Highlight
+    odt._text = "Some [u]underlined and [m]highlighted[/m][/u] text."
+    odt.tokenizeText()
+    odt.initDocument()
+    odt.doConvert()
+    odt.closeDocument()
+    assert odt.errData == []
+    assert xmlToText(odt._xText) == (
+        '<office:text>'
+        '<text:p text:style-name="Text_20_body">Some '
+        '<text:span text:style-name="T7">underlined and </text:span>'
+        '<text:span text:style-name="T8">highlighted</text:span> text.</text:p>'
         '</office:text>'
     )
 
@@ -422,7 +440,7 @@ def testCoreToOdt_Convert(mockGUI):
     assert odt.errData == []
     assert xmlToText(odt._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Text_20_body">Some <text:span text:style-name="T7">'
+        '<text:p text:style-name="Text_20_body">Some <text:span text:style-name="T9">'
         'bold<text:tab />text</text:span></text:p>'
         '</office:text>'
     )
@@ -467,13 +485,13 @@ def testCoreToOdt_Convert(mockGUI):
     assert xmlToText(odt._xText) == (
         '<office:text>'
         '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
-        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T7">'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T9">'
         'Point of View:</text:span> Jane</text:p>'
-        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T7">'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T9">'
         'Synopsis:</text:span> So it begins</text:p>'
-        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T7">'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T9">'
         'Short Description:</text:span> Then what</text:p>'
-        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T7">'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T9">'
         'Comment:</text:span> A plain comment</text:p>'
         '</office:text>'
     )
@@ -535,26 +553,26 @@ def testCoreToOdt_Convert(mockGUI):
     assert xmlToText(odt._xText) == (
         '<office:text>'
         '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
-        '<text:p text:style-name="P3"><text:span text:style-name="T7">'
+        '<text:p text:style-name="P1"><text:span text:style-name="T9">'
         'Point of View:</text:span> Jane</text:p>'
-        '<text:p text:style-name="P4"><text:span text:style-name="T7">'
+        '<text:p text:style-name="P2"><text:span text:style-name="T9">'
         'Characters:</text:span> John</text:p>'
-        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T7">'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T9">'
         'Plot:</text:span> Main</text:p>'
-        '<text:p text:style-name="P5">Right align</text:p>'
+        '<text:p text:style-name="P3">Right align</text:p>'
         '<text:p text:style-name="Text_20_body">Left Align</text:p>'
-        '<text:p text:style-name="P6">Centered</text:p>'
-        '<text:p text:style-name="P7">Left indent</text:p>'
-        '<text:p text:style-name="P8">Right indent</text:p>'
+        '<text:p text:style-name="P4">Centered</text:p>'
+        '<text:p text:style-name="P5">Left indent</text:p>'
+        '<text:p text:style-name="P6">Right indent</text:p>'
         '</office:text>'
     )
-    assert getStyle("P3")._pAttr["margin-bottom"] == ["fo", "0.000cm"]  # type: ignore
-    assert getStyle("P4")._pAttr["margin-bottom"] == ["fo", "0.000cm"]  # type: ignore
-    assert getStyle("P4")._pAttr["margin-top"] == ["fo", "0.000cm"]  # type: ignore
-    assert getStyle("P5")._pAttr["text-align"] == ["fo", "right"]  # type: ignore
-    assert getStyle("P6")._pAttr["text-align"] == ["fo", "center"]  # type: ignore
-    assert getStyle("P7")._pAttr["margin-left"] == ["fo", "1.693cm"]  # type: ignore
-    assert getStyle("P8")._pAttr["margin-right"] == ["fo", "1.693cm"]  # type: ignore
+    assert getStyle("P1")._pAttr["margin-bottom"] == ["fo", "0.000cm"]  # type: ignore
+    assert getStyle("P2")._pAttr["margin-bottom"] == ["fo", "0.000cm"]  # type: ignore
+    assert getStyle("P2")._pAttr["margin-top"] == ["fo", "0.000cm"]  # type: ignore
+    assert getStyle("P3")._pAttr["text-align"] == ["fo", "right"]  # type: ignore
+    assert getStyle("P4")._pAttr["text-align"] == ["fo", "center"]  # type: ignore
+    assert getStyle("P5")._pAttr["margin-left"] == ["fo", "1.693cm"]  # type: ignore
+    assert getStyle("P6")._pAttr["margin-right"] == ["fo", "1.693cm"]  # type: ignore
 
     # Justified
     odt._text = (
@@ -573,11 +591,11 @@ def testCoreToOdt_Convert(mockGUI):
         '<office:text>'
         '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
         '<text:p text:style-name="Text_20_body">Regular paragraph</text:p>'
-        '<text:p text:style-name="P9">with<text:line-break />break</text:p>'
-        '<text:p text:style-name="P9">Left Align</text:p>'
+        '<text:p text:style-name="P7">with<text:line-break />break</text:p>'
+        '<text:p text:style-name="P7">Left Align</text:p>'
         '</office:text>'
     )
-    assert getStyle("P9")._pAttr["text-align"] == ["fo", "left"]  # type: ignore
+    assert getStyle("P7")._pAttr["text-align"] == ["fo", "left"]  # type: ignore
 
     # Page Breaks
     odt._text = (
@@ -593,9 +611,9 @@ def testCoreToOdt_Convert(mockGUI):
     assert odt.errData == []
     assert xmlToText(odt._xText) == (
         '<office:text>'
-        '<text:h text:style-name="P2" text:outline-level="2">Chapter One</text:h>'
+        '<text:h text:style-name="P8" text:outline-level="2">Chapter One</text:h>'
         '<text:p text:style-name="Text_20_body">Text</text:p>'
-        '<text:h text:style-name="P2" text:outline-level="2">Chapter Two</text:h>'
+        '<text:h text:style-name="P8" text:outline-level="2">Chapter Two</text:h>'
         '<text:p text:style-name="Text_20_body">Text</text:p>'
         '</office:text>'
     )
@@ -612,12 +630,12 @@ def testCoreToOdt_Convert(mockGUI):
     assert odt.errData == []
     assert xmlToText(odt._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Text_20_body">Test text **<text:span text:style-name="T8">'
+        '<text:p text:style-name="Text_20_body">Test text **<text:span text:style-name="T10">'
         'bold</text:span>** and more.</text:p>'
         '</office:text>'
     )
 
-# END Test testCoreToOdt_Convert
+# END Test testCoreToOdt_ConvertParagraphs
 
 
 @pytest.mark.core
@@ -1080,6 +1098,17 @@ def testCoreToOdt_ODTTextStyle():
     assert txtStyle._tAttr["font-style"] == ["fo", "italic"]
     txtStyle.setFontStyle("stuff")
     assert txtStyle._tAttr["font-style"] == ["fo", None]
+
+    # Background Color
+    assert txtStyle._tAttr["background-color"] == ["fo", None]
+    txtStyle.setBackgroundColor("stuff")
+    assert txtStyle._tAttr["background-color"] == ["fo", None]
+    txtStyle.setBackgroundColor("012345")
+    assert txtStyle._tAttr["background-color"] == ["fo", None]
+    txtStyle.setBackgroundColor("#012345")
+    assert txtStyle._tAttr["background-color"] == ["fo", "#012345"]
+    txtStyle.setBackgroundColor("stuff")
+    assert txtStyle._tAttr["background-color"] == ["fo", None]
 
     # Text Position
     assert txtStyle._tAttr["text-position"] == ["style", None]

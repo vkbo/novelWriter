@@ -672,6 +672,12 @@ class GuiMainMenu(QMenuBar):
             lambda: self.requestDocAction.emit(nwDocAction.SC_ULINE)
         )
 
+        # Shortcode Mark
+        self.aScMark = self.mShortcodes.addAction(self.tr("Highlight"))
+        self.aScMark.triggered.connect(
+            lambda: self.requestDocAction.emit(nwDocAction.SC_MARK)
+        )
+
         # Shortcode Superscript
         self.aScSuper = self.mShortcodes.addAction(self.tr("Superscript"))
         self.aScSuper.triggered.connect(

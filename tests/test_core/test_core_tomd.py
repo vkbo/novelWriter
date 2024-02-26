@@ -29,15 +29,10 @@ from novelwriter.core.project import NWProject
 
 
 @pytest.mark.core
-def testCoreToMarkdown_ConvertFormat(mockGUI):
-    """Test the tokenizer and converter chain using the ToMarkdown
-    class.
-    """
+def testCoreToMarkdown_ConvertHeaders(mockGUI):
+    """Test header formats in the ToMarkdown class."""
     project = NWProject()
     toMD = ToMarkdown(project)
-
-    # Headers
-    # =======
 
     toMD._isNovel = True
     toMD._isNote = False
@@ -79,8 +74,18 @@ def testCoreToMarkdown_ConvertFormat(mockGUI):
     toMD.doConvert()
     assert toMD.result == "## Prologue\n\n"
 
-    # Paragraphs
-    # ==========
+# END Test testCoreToMarkdown_ConvertHeaders
+
+
+@pytest.mark.core
+def testCoreToMarkdown_ConvertParagraphs(mockGUI):
+    """Test paragraph formats in the ToMarkdown class."""
+    project = NWProject()
+    toMD = ToMarkdown(project)
+
+    toMD._isNovel = True
+    toMD._isNote = False
+    toMD._isFirst = True
 
     # Text for Extended Markdown
     toMD.setExtendedMarkdown()
@@ -98,6 +103,31 @@ def testCoreToMarkdown_ConvertFormat(mockGUI):
     toMD.doConvert()
     assert toMD.result == (
         "Some **nested bold and _italic_ and strikethrough text** here\n\n"
+    )
+
+    # Shortcodes for Extended Markdown
+    toMD.setExtendedMarkdown()
+    toMD._text = (
+        "Some [b]bold[/b], [i]italic[/i], [s]strike[/s], [u]underline[/u], [m]mark[/m], "
+        "super[sup]script[/sup], sub[sub]script[/sub] here\n"
+    )
+    toMD.tokenizeText()
+    toMD.doConvert()
+    assert toMD.result == (
+        "Some **bold**, _italic_, ~~strike~~, underline, ==mark==, "
+        "super^script^, sub~script~ here\n\n"
+    )
+
+    # Shortcodes for Standard Markdown
+    toMD.setStandardMarkdown()
+    toMD._text = (
+        "Some [b]bold[/b], [i]italic[/i], [s]strike[/s], [u]underline[/u], [m]mark[/m], "
+        "super[sup]script[/sup], sub[sub]script[/sub] here\n"
+    )
+    toMD.tokenizeText()
+    toMD.doConvert()
+    assert toMD.result == (
+        "Some **bold**, _italic_, strike, underline, mark, superscript, subscript here\n\n"
     )
 
     # Text w/Hard Break
@@ -160,7 +190,7 @@ def testCoreToMarkdown_ConvertFormat(mockGUI):
         "**Locations:** Europe\n\n"
     )
 
-# END Test testCoreToMarkdown_ConvertFormat
+# END Test testCoreToMarkdown_ConvertParagraphs
 
 
 @pytest.mark.core

@@ -124,8 +124,9 @@ class nwDocAction(Enum):
     SC_BOLD   = 31
     SC_STRIKE = 32
     SC_ULINE  = 33
-    SC_SUP    = 34
-    SC_SUB    = 35
+    SC_MARK   = 34
+    SC_SUP    = 35
+    SC_SUB    = 36
 
 # END Enum nwDocAction
 

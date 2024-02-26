@@ -466,48 +466,30 @@ class GuiDocViewer(QTextBrowser):
         colText = SHARED.theme.colText
         colHead = SHARED.theme.colHead
         colVals = SHARED.theme.colVal
-        colEmph = SHARED.theme.colEmph
+        colMark = SHARED.theme.colMark
         colKeys = SHARED.theme.colKey
         colHide = SHARED.theme.colHidden
         colMods = SHARED.theme.colMod
         colOpts = SHARED.theme.colOpt
         styleSheet = (
-            "body {{"
-            "  color: rgb({tColR}, {tColG}, {tColB});"
-            "}}\n"
-            "h1, h2, h3, h4 {{"
-            "  color: rgb({hColR}, {hColG}, {hColB});"
-            "}}\n"
-            "a {{"
-            "  color: rgb({aColR}, {aColG}, {aColB});"
-            "}}\n"
-            "mark {{"
-            "  color: rgb({eColR}, {eColG}, {eColB});"
-            "}}\n"
-            ".tags {{"
-            "  color: rgb({kColR}, {kColG}, {kColB});"
-            "}}\n"
-            ".optional {{"
-            "  color: rgb({oColR}, {oColG}, {oColB});"
-            "}}\n"
-            ".comment {{"
-            "  color: rgb({cColR}, {cColG}, {cColB});"
-            "}}\n"
-            ".synopsis {{"
-            "  color: rgb({mColR}, {mColG}, {mColB});"
-            "}}\n"
-            ".title {{"
-            "  text-align: center;"
-            "}}\n"
+            "body {{color: rgb({rT}, {gT}, {bT});}}\n"
+            "h1, h2, h3, h4 {{color: rgb({rH}, {gH}, {bH});}}\n"
+            "a {{color: rgb({rA}, {gA}, {bA});}}\n"
+            "mark {{background-color: rgba({rE}, {gE}, {bE}, {aE});}}\n"
+            ".tags {{color: rgb({rK}, {gK}, {bK});}}\n"
+            ".optional {{color: rgb({rO}, {gO}, {bO});}}\n"
+            ".comment {{color: rgb({rC}, {gC}, {bC});}}\n"
+            ".synopsis {{color: rgb({rM}, {gM}, {bM});}}\n"
+            ".title {{text-align: center;}}\n"
         ).format(
-            tColR=colText.red(), tColG=colText.green(), tColB=colText.blue(),
-            hColR=colHead.red(), hColG=colHead.green(), hColB=colHead.blue(),
-            aColR=colVals.red(), aColG=colVals.green(), aColB=colVals.blue(),
-            eColR=colEmph.red(), eColG=colEmph.green(), eColB=colEmph.blue(),
-            kColR=colKeys.red(), kColG=colKeys.green(), kColB=colKeys.blue(),
-            cColR=colHide.red(), cColG=colHide.green(), cColB=colHide.blue(),
-            mColR=colMods.red(), mColG=colMods.green(), mColB=colMods.blue(),
-            oColR=colOpts.red(), oColG=colOpts.green(), oColB=colOpts.blue(),
+            rT=colText.red(), gT=colText.green(), bT=colText.blue(),
+            rH=colHead.red(), gH=colHead.green(), bH=colHead.blue(),
+            rA=colVals.red(), gA=colVals.green(), bA=colVals.blue(),
+            rE=colMark.red(), gE=colMark.green(), bE=colMark.blue(), aE=colMark.alpha(),
+            rK=colKeys.red(), gK=colKeys.green(), bK=colKeys.blue(),
+            rC=colHide.red(), gC=colHide.green(), bC=colHide.blue(),
+            rM=colMods.red(), gM=colMods.green(), bM=colMods.blue(),
+            rO=colOpts.red(), gO=colOpts.green(), bO=colOpts.blue(),
         )
         self.document().setDefaultStyleSheet(styleSheet)
 

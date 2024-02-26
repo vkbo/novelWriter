@@ -84,14 +84,16 @@ X_BLD = 0x01  # Bold format
 X_ITA = 0x02  # Italic format
 X_DEL = 0x04  # Strikethrough format
 X_UND = 0x08  # Underline format
-X_SUP = 0x10  # Superscript
-X_SUB = 0x20  # Subscript
+X_MRK = 0x10  # Marked format
+X_SUP = 0x20  # Superscript
+X_SUB = 0x40  # Subscript
 
 # Formatting Masks
 M_BLD = ~X_BLD
 M_ITA = ~X_ITA
 M_DEL = ~X_DEL
 M_UND = ~X_UND
+M_MRK = ~X_MRK
 M_SUP = ~X_SUP
 M_SUB = ~X_SUB
 
@@ -189,6 +191,7 @@ class ToOdt(Tokenizer):
         self._opaHead34 = None
         self._colMetaTx = None
         self._opaMetaTx = None
+        self._markText  = "#ffffa6"
 
         return
 
@@ -643,6 +646,10 @@ class ToOdt(Tokenizer):
                 xFmt |= X_UND
             elif fFmt == self.FMT_U_E:
                 xFmt &= M_UND
+            elif fFmt == self.FMT_M_B:
+                xFmt |= X_MRK
+            elif fFmt == self.FMT_M_E:
+                xFmt &= M_MRK
             elif fFmt == self.FMT_SUP_B:
                 xFmt |= X_SUP
             elif fFmt == self.FMT_SUP_E:
@@ -710,6 +717,8 @@ class ToOdt(Tokenizer):
             newStyle.setUnderlineStyle("solid")
             newStyle.setUnderlineWidth("auto")
             newStyle.setUnderlineColour("font-color")
+        if hFmt & X_MRK:
+            newStyle.setBackgroundColor(self._markText)
         if hFmt & X_SUP:
             newStyle.setTextPosition("super")
         if hFmt & X_SUB:
@@ -1279,6 +1288,7 @@ class ODTTextStyle:
         self._tAttr = {
             "font-weight":             ["fo",    None],
             "font-style":              ["fo",    None],
+            "background-color":        ["fo",    None],
             "text-position":           ["style", None],
             "text-line-through-style": ["style", None],
             "text-line-through-type":  ["style", None],
@@ -1304,6 +1314,13 @@ class ODTTextStyle:
             self._tAttr["font-style"][1] = value
         else:
             self._tAttr["font-style"][1] = None
+        return
+
+    def setBackgroundColor(self, value: str | None) -> None:
+        if value and len(value) == 7 and value[0] == "#":
+            self._tAttr["background-color"][1] = value
+        else:
+            self._tAttr["background-color"][1] = None
         return
 
     def setTextPosition(self, value: str | None) -> None:

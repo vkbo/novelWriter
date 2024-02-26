@@ -106,6 +106,7 @@ class GuiTheme:
         self.colError  = QColor(0, 0, 0)
         self.colRepTag = QColor(0, 0, 0)
         self.colMod    = QColor(0, 0, 0)
+        self.colMark   = QColor(255, 255, 255, 128)
 
         # Class Setup
         # ===========
@@ -329,6 +330,7 @@ class GuiTheme:
             self.colError  = self._parseColour(confParser, cnfSec, "errorline")
             self.colRepTag = self._parseColour(confParser, cnfSec, "replacetag")
             self.colMod    = self._parseColour(confParser, cnfSec, "modifier")
+            self.colMark   = self._parseColour(confParser, cnfSec, "texthighlight")
 
         return True
 
@@ -448,8 +450,8 @@ class GuiIcons:
         "search_regex", "search_word",
 
         # Format Icons
-        "fmt_bold", "fmt_bold-md", "fmt_italic", "fmt_italic-md", "fmt_strike", "fmt_strike-md",
-        "fmt_subscript", "fmt_superscript", "fmt_underline",
+        "fmt_bold", "fmt_bold-md", "fmt_italic", "fmt_italic-md", "fmt_mark", "fmt_strike",
+        "fmt_strike-md", "fmt_subscript", "fmt_superscript", "fmt_underline",
 
         # General Button Icons
         "add", "add_document", "backward", "bookmark", "browse", "checked", "close", "cross",

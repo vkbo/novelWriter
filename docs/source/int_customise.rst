@@ -179,15 +179,20 @@ A syntax theme ``.conf`` file consists of the following settings:
    errorline      =   0,   0,   0
    replacetag     =   0,   0,   0
    modifier       =   0,   0,   0
+   texthighlight  = 255, 255, 255, 128
 
 In the Main section, you must define at least the ``name`` setting. The Syntax colour values are
-RGB numbers of the format ``r, g, b`` where each is an integer from  to 255. Omitted values default
-to black, except ``background`` which defaults to white,
+RGB(A) numbers of the format ``r, g, b, a`` where each is an integer from to 255. The fourth value
+is the alpha channel, which can be omitted.
+
+Omitted syntax colours default to black, except ``background`` which defaults to white, and
+``texthighlight`` which defaults to grey.
 
 .. versionadded:: 2.2
-   The `shortcode` syntax colour entry was added, so you need to update your custom themes if you
-   made any before version 2.2.
+   The `shortcode` syntax colour entry was added.
 
 .. versionadded:: 2.3
-   The `optional` syntax colour entry was added, so you need to update your custom themes if you
-   made any before version 2.3.
+   The `optional` syntax colour entry was added.
+
+.. versionadded:: 2.4
+   The `texthighlight` syntax colour entry was added.

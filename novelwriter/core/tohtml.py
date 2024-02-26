@@ -133,6 +133,8 @@ class ToHtml(Tokenizer):
                 self.FMT_D_E: "</span>",
                 self.FMT_U_B: "<u>",
                 self.FMT_U_E: "</u>",
+                self.FMT_M_B: "<mark>",
+                self.FMT_M_E: "</mark>",
             }
         else:
             htmlTags = {  # HTML5 (for export)
@@ -144,6 +146,8 @@ class ToHtml(Tokenizer):
                 self.FMT_D_E: "</del>",
                 self.FMT_U_B: "<span style='text-decoration: underline;'>",
                 self.FMT_U_E: "</span>",
+                self.FMT_M_B: "<mark>",
+                self.FMT_M_E: "</mark>",
             }
 
         htmlTags[self.FMT_SUP_B] = "<sup>"
