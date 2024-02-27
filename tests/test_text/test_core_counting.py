@@ -22,18 +22,69 @@ from __future__ import annotations
 
 import pytest
 
-from novelwriter.text.counting import standardCounter
+from novelwriter.text.counting import bodyTextCounter, preProcessText, standardCounter
+
+
+@pytest.mark.core
+def testTextCounting_preProcessText():
+    """Test the text preprocessor for counters."""
+    # Not Text
+    assert preProcessText(None) == []
+
+    # No Text
+    assert preProcessText("") == []
+
+    text = (
+        "#! Title\n"
+        "##! Prologue\n"
+        "# Heading One\n"
+        "## Heading Two\n"
+        "### Heading Three\n"
+        "#### Heading Four\n\n"
+        "@tag: value\n\n"
+        "% A comment.\n\n"
+        "A [b]paragraph[/b].\n\n"
+        "[vspace:3]\n\n"
+        "[New Page]\n\n"
+        "Dashes\u2013and even longer\u2014dashes.\n\n"
+    )
+
+    # Process Text, w/Headers
+    assert preProcessText(text) == [
+        "#! Title",
+        "##! Prologue",
+        "# Heading One",
+        "## Heading Two",
+        "### Heading Three",
+        "#### Heading Four",
+        "", "", "",
+        "A paragraph.", "",
+        "", "", "", "",
+        "Dashes and even longer dashes.", ""
+    ]
+
+    # Process Text, wo/Headers
+    assert preProcessText(text, keepHeaders=False) == [
+        "", "", "",
+        "A paragraph.", "",
+        "", "", "", "",
+        "Dashes and even longer dashes.", ""
+    ]
+
+# END Test testTextCounting_preProcessText
 
 
 @pytest.mark.core
 def testTextCounting_standardCounter():
-    """Test the word counter and the exclusion filers."""
+    """Test the standard counter."""
     # Non-Text
     assert standardCounter(None) == (0, 0, 0)  # type: ignore
     assert standardCounter(1234) == (0, 0, 0)  # type: ignore
 
     # General Text
     cC, wC, pC = standardCounter((
+        "#! Title\n\n"
+        "##! Prologue\n\n"
         "# Heading One\n"
         "## Heading Two\n"
         "### Heading Three\n"
@@ -45,8 +96,8 @@ def testTextCounting_standardCounter():
         "The third paragraph.\n\n"
         "Dashes\u2013and even longer\u2014dashes."
     ))
-    assert cC == 138
-    assert wC == 22
+    assert cC == 151
+    assert wC == 24
     assert pC == 4
 
     # Text Alignment
@@ -125,3 +176,31 @@ def testTextCounting_standardCounter():
     assert pC == 2
 
 # END Test testTextCounting_standardCounter
+
+
+@pytest.mark.core
+def testTextCounting_bodyTextCounter():
+    """Test the body text counter."""
+    # Not Text
+    assert bodyTextCounter(None) == (0, 0, 0)
+
+    # General Text
+    wC, cC, sC = bodyTextCounter((
+        "#! Title\n\n"
+        "##! Prologue\n\n"
+        "# Heading One\n"
+        "## Heading Two\n"
+        "### Heading Three\n"
+        "#### Heading Four\n\n"
+        "@tag: value\n\n"
+        "% A comment that should not be counted.\n\n"
+        "The first paragraph.\n\n"
+        "The second paragraph.\n\n\n"
+        "The third paragraph.\n\n"
+        "Dashes\u2013and even longer\u2014dashes."
+    ))
+    assert wC == 14
+    assert cC == 91
+    assert sC == 81
+
+# END Test testTextCounting_bodyTextCounter

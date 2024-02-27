@@ -5,6 +5,7 @@ novelWriter – Text Counting Functions
 File History:
 Created:   2019-04-22 [0.0.1] standardCounter
 Rewritten: 2024-02-27 [2.4b1] preProcessText, standardCounter
+Created:   2024-02-27 [2.4b1] bodyTextCounter
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen
@@ -75,15 +76,14 @@ def standardCounter(text: str) -> tuple[int, int, int]:
     This is the standard counter that includes headers in the word and
     character counts.
     """
-    charCount = 0
-    wordCount = 0
-    paraCount = 0
+    cCount = 0
+    wCount = 0
+    pCount = 0
     prevEmpty = True
 
     for line in preProcessText(text):
 
         countPara = True
-
         if not line:
             prevEmpty = True
             continue
@@ -108,11 +108,28 @@ def standardCounter(text: str) -> tuple[int, int, int]:
                 line = line[4:]
                 countPara = False
 
-        wordCount += len(line.split())
-        charCount += len(line)
+        wCount += len(line.split())
+        cCount += len(line)
         if countPara and prevEmpty:
-            paraCount += 1
+            pCount += 1
 
         prevEmpty = not countPara
 
-    return charCount, wordCount, paraCount
+    return cCount, wCount, pCount
+
+
+def bodyTextCounter(text: str | list[str]) -> tuple[int, int, int]:
+    """A counter that counts body text words, characters, and characters
+    without white spaces.
+    """
+    wCount = 0
+    cCount = 0
+    sCount = 0
+
+    for line in preProcessText(text, keepHeaders=False):
+        words = line.split()
+        wCount += len(words)
+        cCount += len(line)
+        sCount += len("".join(words))
+
+    return wCount, cCount, sCount
