@@ -50,3 +50,6 @@ ToC.txt
 # Coverage
 /.coverage
 /coverage.*
+
+# Other
+/test.py

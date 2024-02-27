@@ -56,9 +56,9 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwTrinary
 from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwKeyWords, nwLabels, nwShortcode, nwUnicode, trConst
-from novelwriter.core.index import countWords
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.core.document import NWDocument
+from novelwriter.text.counting import standardCounter
 from novelwriter.gui.dochighlight import GuiDocHighlighter
 from novelwriter.gui.editordocument import GuiTextDocument
 from novelwriter.extensions.eventfilters import WheelEventFilter
@@ -462,7 +462,7 @@ class GuiDocEditor(QPlainTextEdit):
             return False
 
         docText = self.getText()
-        cC, wC, pC = countWords(docText)
+        cC, wC, pC = standardCounter(docText)
         self._updateDocCounts(cC, wC, pC)
 
         self.saveCursorPosition()
@@ -2226,7 +2226,7 @@ class BackgroundWordCounter(QRunnable):
         else:
             text = self._docEditor.getText()
 
-        cC, wC, pC = countWords(text)
+        cC, wC, pC = standardCounter(text)
         self.signals.countsReady.emit(cC, wC, pC)
         self._isRunning = False
 
