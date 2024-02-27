@@ -756,20 +756,13 @@ class _PreviewWidget(QTextBrowser):
         self.buildProgress.setCentreText(self.tr("Processing ..."))
         qApp.processEvents()
 
-        styles = "\n".join(data.get("styles", [
-            "h1, h2 {color: rgb(66, 113, 174);}",
-            "h3, h4 {color: rgb(50, 50, 50);}",
-            "a {color: rgb(66, 113, 174);}",
-            ".tags {color: rgb(245, 135, 31); font-weight: bold;}",
-        ]))
+        styles = "\n".join(data.get("styles", []))
         self.document().setDefaultStyleSheet(styles)
 
         html = "".join(data.get("html", []))
         html = html.replace("\t", "!!tab!!")
         html = html.replace("<del>", "<span style='text-decoration: line-through;'>")
         html = html.replace("</del>", "</span>")
-        html = html.replace("<mark>", "<span style='background-color: #ffffa6;'>")
-        html = html.replace("</mark>", "</span>")
         self.setHtml(html)
         qApp.processEvents()
         while self.find("!!tab!!"):
