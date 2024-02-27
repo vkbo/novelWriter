@@ -245,7 +245,7 @@ class GuiManuscript(QDialog):
                 if isinstance(build, BuildSettings):
                     self._updatePreview(data, build)
             except Exception:
-                logger.error("Failed to save build cache")
+                logger.error("Failed to load build cache")
                 logException()
                 return
 
@@ -327,7 +327,7 @@ class GuiManuscript(QDialog):
         if build is None:
             return
 
-        docBuild = NWBuildDocument(SHARED.project, build)
+        docBuild = NWBuildDocument(SHARED.project, build, doCount=True)
         docBuild.queueAll()
 
         self.docPreview.beginNewBuild(len(docBuild))
@@ -340,6 +340,7 @@ class GuiManuscript(QDialog):
         result = {
             "uuid": build.buildID,
             "time": int(time()),
+            "stats": buildObj.textStats,
             "styles": buildObj.getStyleSheet(),
             "html": buildObj.fullHTML,
         }
