@@ -829,9 +829,8 @@ class Tokenizer(ABC):
             elif tType == self.T_KEYWORD and self._doKeywords:
                 valid, bits, _ = self._project.index.scanThis("@"+tText)
                 if valid and bits:
-                    text = "{0}: {1}".format(
-                        self._localLookup(nwLabels.KEY_NAME[bits[0]]), ", ".join(bits[1:])
-                    )
+                    key = self._localLookup(nwLabels.KEY_NAME[bits[0]])
+                    text = "{0}: {1}".format(key, ", ".join(bits[1:]))
                     allWords += len(text.split())
                     allChars += len(text)
 
