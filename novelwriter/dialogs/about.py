@@ -68,9 +68,9 @@ class GuiAbout(QDialog):
 
         self.nwInfo = VersionInfoWidget(self)
 
-        self.nwLicence = QLabel(self.tr("This application is licenced under {0}".format(
+        self.nwLicence = QLabel(self.tr("This application is licenced under {0}").format(
             "<a href='https://www.gnu.org/licenses/gpl-3.0.html'>GPL v3.0</a>"
-        )))
+        ))
         self.nwLicence.setOpenExternalLinks(True)
 
         # Credits
