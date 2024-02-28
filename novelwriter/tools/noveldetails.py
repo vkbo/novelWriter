@@ -216,7 +216,7 @@ class _OverviewPage(NScrollablePage):
         self.projForm.addRow("<b>{0}</b>".format(self.tr("Editing Time")), self.projEditTime)
         self.projForm.addRow("<b>{0}</b>".format(self.tr("Word Count")), self.projWords)
         self.projForm.addRow("<b>\u2026 {0}</b>".format(self.tr("In Novels")), self.projNovels)
-        self.projForm.addRow("<b>\u2026 {0}</b>".format(self.tr("In Notes ")), self.projNotes)
+        self.projForm.addRow("<b>\u2026 {0}</b>".format(self.tr("In Notes")), self.projNotes)
         self.projForm.setContentsMargins(mPx, 0, 0, 0)
         self.projForm.setHorizontalSpacing(hPx)
         self.projForm.setVerticalSpacing(vPx)
