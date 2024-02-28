@@ -777,6 +777,9 @@ class Tokenizer(ABC):
 
         para = []
         for tType, _, tText, _, _ in self._tokens:
+            tText = tText.replace(nwUnicode.U_ENDASH, " ")
+            tText = tText.replace(nwUnicode.U_EMDASH, " ")
+
             tWords = tText.split()
             nWords = len(tWords)
             nChars = len(tText)
