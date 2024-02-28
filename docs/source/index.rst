@@ -66,7 +66,6 @@ with pip. See :ref:`a_started` for more details.
    usage_format
    usage_shortcuts
    usage_typography
-   usage_projectformat
 
 .. toctree::
    :maxdepth: 1
@@ -80,7 +79,15 @@ with pip. See :ref:`a_started` for more details.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Additional Topics
+   :caption: Additional Details
+   :hidden:
+
+   more_projectformat
+   more_counting
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Technical Topics
    :hidden:
 
    tech_locations
