@@ -368,13 +368,12 @@ class ToHtml(Tokenizer):
 
     def getStyleSheet(self) -> list[str]:
         """Generate a stylesheet for the current settings."""
-        styles = []
         if not self._cssStyles:
-            return styles
+            return []
 
         mScale = self._lineHeight/1.15
-        textAlign = "justify" if self._doJustify else "left"
 
+        styles = []
         styles.append("body {{font-family: '{0:s}'; font-size: {1:d}pt;}}".format(
             self._textFont, self._textSize
         ))
@@ -384,7 +383,7 @@ class ToHtml(Tokenizer):
             "margin-top: {2:.2f}em; margin-bottom: {3:.2f}em;"
             "}}"
         ).format(
-            textAlign,
+            "justify" if self._doJustify else "left",
             round(100 * self._lineHeight),
             mScale * self._marginText[0],
             mScale * self._marginText[1],
@@ -449,6 +448,7 @@ class ToHtml(Tokenizer):
         ))
 
         styles.append("a {color: rgb(66, 113, 174);}")
+        styles.append("mark {background: rgb(255, 255, 166);}")
         styles.append(".tags {color: rgb(245, 135, 31); font-weight: bold;}")
         styles.append(".break {text-align: left;}")
         styles.append(".synopsis {font-style: italic;}")

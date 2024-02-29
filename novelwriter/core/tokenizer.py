@@ -110,6 +110,9 @@ class Tokenizer(ABC):
     A_IND_L    = 0x0100  # Left indentation
     A_IND_R    = 0x0200  # Right indentation
 
+    # Lookups
+    L_HEADINGS = [T_TITLE, T_UNNUM, T_HEAD1, T_HEAD2, T_HEAD3, T_HEAD4]
+
     def __init__(self, project: NWProject) -> None:
 
         self._project = project
@@ -118,6 +121,7 @@ class Tokenizer(ABC):
         self._text   = ""    # The raw text to be tokenized
         self._nwItem = None  # The NWItem currently being processed
         self._result = ""    # The result of the last document
+        self._counts = {}    # Counter data
 
         self._keepMarkdown = False  # Whether to keep the markdown text
         self._allMarkdown  = []     # The result novelWriter markdown of all documents
@@ -209,6 +213,11 @@ class Tokenizer(ABC):
     def allMarkdown(self) -> list:
         """The combined novelWriter Markdown text."""
         return self._allMarkdown
+
+    @property
+    def textStats(self) -> dict[str, int]:
+        """The collected stats about the text."""
+        return self._counts
 
     @property
     def errData(self) -> list:
@@ -750,6 +759,115 @@ class Tokenizer(ABC):
                     )
 
         return True
+
+    def countStats(self) -> dict[str, int]:
+        """Count stats on the tokenized text."""
+        titleCount = self._counts.get("titleCount", 0)
+        paragraphCount = self._counts.get("paragraphCount", 0)
+
+        allWords = self._counts.get("allWords", 0)
+        textWords = self._counts.get("textWords", 0)
+        titleWords = self._counts.get("titleWords", 0)
+
+        allChars = self._counts.get("allChars", 0)
+        textChars = self._counts.get("textChars", 0)
+        titleChars = self._counts.get("titleChars", 0)
+
+        allWordChars = self._counts.get("allWordChars", 0)
+        textWordChars = self._counts.get("textWordChars", 0)
+        titleWordChars = self._counts.get("titleWordChars", 0)
+
+        para = []
+        for tType, _, tText, _, _ in self._tokens:
+            tText = tText.replace(nwUnicode.U_ENDASH, " ")
+            tText = tText.replace(nwUnicode.U_EMDASH, " ")
+
+            tWords = tText.split()
+            nWords = len(tWords)
+            nChars = len(tText)
+            nWChars = len("".join(tWords))
+
+            if tType == self.T_EMPTY:
+                if len(para) > 0:
+                    tTemp = "\n".join(para)
+                    tPWords = tTemp.split()
+                    nPWords = len(tPWords)
+                    nPChars = len(tTemp)
+                    nPWChars = len("".join(tPWords))
+
+                    paragraphCount += 1
+                    allWords += nPWords
+                    textWords += nPWords
+                    allChars += nPChars
+                    textChars += nPChars
+                    allWordChars += nPWChars
+                    textWordChars += nPWChars
+                para = []
+
+            elif tType in self.L_HEADINGS:
+                titleCount += 1
+                allWords += nWords
+                titleWords += nWords
+                allChars += nChars
+                allWordChars += nWChars
+                titleChars += nChars
+                titleWordChars += nWChars
+
+            elif tType == self.T_SEP:
+                allWords += nWords
+                allChars += nChars
+                allWordChars += nWChars
+
+            elif tType == self.T_TEXT:
+                para.append(tText.rstrip())
+
+            elif tType == self.T_SYNOPSIS and self._doSynopsis:
+                text = "{0}: {1}".format(self._localLookup("Synopsis"), tText)
+                words = text.split()
+                allWords += len(words)
+                allChars += len(text)
+                allWordChars += len("".join(words))
+
+            elif tType == self.T_SHORT and self._doSynopsis:
+                text = "{0}: {1}".format(self._localLookup("Short Description"), tText)
+                words = text.split()
+                allWords += len(words)
+                allChars += len(text)
+                allWordChars += len("".join(words))
+
+            elif tType == self.T_COMMENT and self._doComments:
+                text = "{0}: {1}".format(self._localLookup("Comment"), tText)
+                words = text.split()
+                allWords += len(words)
+                allChars += len(text)
+                allWordChars += len("".join(words))
+
+            elif tType == self.T_KEYWORD and self._doKeywords:
+                valid, bits, _ = self._project.index.scanThis("@"+tText)
+                if valid and bits:
+                    key = self._localLookup(nwLabels.KEY_NAME[bits[0]])
+                    text = "{0}: {1}".format(key, ", ".join(bits[1:]))
+                    words = text.split()
+                    allWords += len(words)
+                    allChars += len(text)
+                    allWordChars += len("".join(words))
+
+        self._counts["titleCount"] = titleCount
+        self._counts["paragraphCount"] = paragraphCount
+
+        self._counts["allWords"] = allWords
+        self._counts["textWords"] = textWords
+        self._counts["titleWords"] = titleWords
+
+        self._counts["allChars"] = allChars
+        self._counts["textChars"] = textChars
+        self._counts["titleChars"] = titleChars
+
+        self._counts["allWordChars"] = allWordChars
+        self._counts["textWordChars"] = textWordChars
+        self._counts["titleWordChars"] = titleWordChars
+
+        return {}
 
     def saveRawMarkdown(self, path: str | Path) -> None:
         """Save the raw text to a plain text file."""

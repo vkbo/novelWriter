@@ -32,8 +32,8 @@ from PyQt5.QtWidgets import QAction, QMenu, qApp
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction, nwDocInsert, nwItemLayout, nwTrinary, nwWidget
 from novelwriter.constants import nwKeyWords, nwUnicode
-from novelwriter.core.index import countWords
 from novelwriter.gui.doceditor import GuiDocEditor, GuiDocToolBar
+from novelwriter.text.counting import standardCounter
 from novelwriter.dialogs.editlabel import GuiEditLabel
 
 KEY_DELAY = 1
@@ -1673,7 +1673,7 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
     text = "\n\n".join(ipsumText)
-    cC, wC, pC = countWords(text)
+    cC, wC, pC = standardCounter(text)
     nwGUI.docEditor.replaceText(text)
 
     # Check that a busy counter is blocked

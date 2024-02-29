@@ -1254,6 +1254,225 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
 
 @pytest.mark.core
+def testCoreToken_CountStats(mockGUI, ipsumText):
+    """Test stats counter of the Tokenizer class."""
+    project = NWProject()
+    project.data.setLanguage("en")
+    project._loadProjectLocalisation()
+    tokens = BareTokenizer(project)
+    tokens._isNone  = False
+    tokens._isNote  = False
+    tokens._isNovel = True
+
+    # Short Text
+    # ==========
+
+    # Header wo/Format
+    tokens._text = "## A Chapter Title\n\n"
+    tokens._counts = {}
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    tokens.countStats()
+    assert tokens._tokens[0][2] == "A Chapter Title"
+    assert tokens.textStats == {
+        "titleCount": 1, "paragraphCount": 0,
+        "allWords": 3, "textWords": 0, "titleWords": 3,
+        "allChars": 15, "textChars": 0, "titleChars": 15,
+        "allWordChars": 13, "textWordChars": 0, "titleWordChars": 13
+    }
+
+    # Header w/Format
+    tokens._text = "## A Chapter Title\n\n"
+    tokens._counts = {}
+    tokens.setChapterFormat(f"C {nwHeadFmt.CH_NUM}: {nwHeadFmt.TITLE}")
+    tokens._hFormatter.resetAll()
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    tokens.countStats()
+    assert tokens._tokens[0][2] == "C 1: A Chapter Title"
+    assert tokens.textStats == {
+        "titleCount": 1, "paragraphCount": 0,
+        "allWords": 5, "textWords": 0, "titleWords": 5,
+        "allChars": 20, "textChars": 0, "titleChars": 20,
+        "allWordChars": 16, "textWordChars": 0, "titleWordChars": 16
+    }
+
+    # Two Paragraphs
+    # First break should be counted, the double breaks not.
+    tokens._text = "Some text\non two lines.\n\nWith a second paragraph.\n\n"
+    tokens._counts = {}
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    tokens.countStats()
+    assert tokens.textStats == {
+        "titleCount": 0, "paragraphCount": 2,
+        "allWords": 9, "textWords": 9, "titleWords": 0,
+        "allChars": 47, "textChars": 47, "titleChars": 0,
+        "allWordChars": 40, "textWordChars": 40, "titleWordChars": 0
+    }
+
+    # Two Scenes w/Separator
+    tokens._text = "## Chapter\n\n### Scene\n\nText\n\n### Scene\n\nText"
+    tokens._counts = {}
+    tokens.setChapterFormat(nwHeadFmt.TITLE)
+    tokens.setSceneFormat("* * *", False)
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    tokens.countStats()
+    assert [t[2] for t in tokens._tokens] == [
+        "Chapter", "", "", "", "Text", "", "* * *", "", "Text", ""
+    ]
+    assert tokens.textStats == {
+        "titleCount": 1, "paragraphCount": 2,
+        "allWords": 6, "textWords": 2, "titleWords": 1,
+        "allChars": 20, "textChars": 8, "titleChars": 7,
+        "allWordChars": 18, "textWordChars": 8, "titleWordChars": 7
+    }
+
+    # Scene w/Synopsis
+    # Synopsis does not count as a paragraph, and counts as "Synopsis: Stuff"
+    tokens._text = "## Chapter\n\n### Scene\n\n%Synopsis: Stuff\n\nText"
+    tokens._counts = {}
+    tokens.setChapterFormat(nwHeadFmt.TITLE)
+    tokens.setSceneFormat("* * *", False)
+    tokens.setSynopsis(True)
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    tokens.countStats()
+    assert [t[2] for t in tokens._tokens] == [
+        "Chapter", "", "", "", "Stuff", "", "Text", ""
+    ]
+    assert tokens.textStats == {
+        "titleCount": 1, "paragraphCount": 1,
+        "allWords": 4, "textWords": 1, "titleWords": 1,
+        "allChars": 26, "textChars": 4, "titleChars": 7,
+        "allWordChars": 25, "textWordChars": 4, "titleWordChars": 7
+    }
+
+    # Scene w/Short
+    # Short does not count as a paragraph, and counts as "Short Description: Stuff"
+    tokens._text = "## Chapter\n\n### Scene\n\n%Short: Stuff\n\nText"
+    tokens._counts = {}
+    tokens.setChapterFormat(nwHeadFmt.TITLE)
+    tokens.setSceneFormat("* * *", False)
+    tokens.setSynopsis(True)
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    tokens.countStats()
+    assert [t[2] for t in tokens._tokens] == [
+        "Chapter", "", "", "", "Stuff", "", "Text", ""
+    ]
+    assert tokens.textStats == {
+        "titleCount": 1, "paragraphCount": 1,
+        "allWords": 5, "textWords": 1, "titleWords": 1,
+        "allChars": 35, "textChars": 4, "titleChars": 7,
+        "allWordChars": 33, "textWordChars": 4, "titleWordChars": 7
+    }
+
+    # Scene w/Comment
+    # Comment does not count as a paragraph, and counts as "Comment: Stuff"
+    tokens._text = "## Chapter\n\n### Scene\n\n% Stuff\n\nText"
+    tokens._counts = {}
+    tokens.setChapterFormat(nwHeadFmt.TITLE)
+    tokens.setSceneFormat("* * *", False)
+    tokens.setComments(True)
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    tokens.countStats()
+    assert [t[2] for t in tokens._tokens] == [
+        "Chapter", "", "", "", "Stuff", "", "Text", ""
+    ]
+    assert tokens.textStats == {
+        "titleCount": 1, "paragraphCount": 1,
+        "allWords": 4, "textWords": 1, "titleWords": 1,
+        "allChars": 25, "textChars": 4, "titleChars": 7,
+        "allWordChars": 24, "textWordChars": 4, "titleWordChars": 7
+    }
+
+    # Scene w/Keyword
+    # Keyword does not count as a paragraph, and counts as "Point of View: Jane"
+    tokens._text = "## Chapter\n\n### Scene\n\n@pov: Jane\n\nText"
+    tokens._counts = {}
+    tokens.setChapterFormat(nwHeadFmt.TITLE)
+    tokens.setSceneFormat("* * *", False)
+    tokens.setKeywords(True)
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    tokens.countStats()
+    assert [t[2] for t in tokens._tokens] == [
+        "Chapter", "", "", "", "pov: Jane", "", "Text", ""
+    ]
+    assert tokens.textStats == {
+        "titleCount": 1, "paragraphCount": 1,
+        "allWords": 6, "textWords": 1, "titleWords": 1,
+        "allChars": 30, "textChars": 4, "titleChars": 7,
+        "allWordChars": 27, "textWordChars": 4, "titleWordChars": 7
+    }
+
+    # Long Text
+    # =========
+    tokens._text = (
+        "# Act One\n\n"
+
+        "## Chapter\n\n"
+
+        "### Scene\n\n"
+        "@pov: Jane\n"
+        "@char: Jane, John\n\n"
+        "%Synopsis: A scene\n\n"
+        f"{ipsumText[0]}.\n\n"
+
+        "### Scene\n\n"
+        "@pov: Jane\n"
+        "@char: Jane, John\n\n"
+        "%Synopsis: A scene\n\n"
+        f"{ipsumText[1]}.\n\n"
+
+        "## Chapter\n\n"
+
+        "### Scene\n\n"
+        "@pov: Jane\n"
+        "@char: Jane, John\n\n"
+        "%Synopsis: A scene\n\n"
+        f"{ipsumText[2]}.\n\n"
+
+        "### Scene\n\n"
+        "@pov: Jane\n"
+        "@char: Jane, John\n\n"
+        "%Synopsis: A scene\n\n"
+        f"{ipsumText[3]}.\n\n"
+
+        "## Chapter\n\n"
+
+        "### Scene\n\n"
+        "@pov: Jane\n"
+        "@char: Jane, John\n\n"
+        "%Synopsis: A scene\n\n"
+        f"{ipsumText[4]}.\n\n"
+    )
+    tokens._counts = {}
+
+    tokens.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
+    tokens.setChapterFormat(f"C {nwHeadFmt.CH_NUM}: {nwHeadFmt.TITLE}")
+    tokens.setSceneFormat("* * *", False)
+    tokens.setSynopsis(True)
+    tokens.setComments(True)
+    tokens.setKeywords(True)
+
+    tokens.tokenizeText()
+    tokens.doHeaders()
+    tokens.countStats()
+    assert tokens.textStats == {
+        "titleCount": 4, "paragraphCount": 5,
+        "allWords": 596, "textWords": 528, "titleWords": 12,
+        "allChars": 3859, "textChars": 3513, "titleChars": 46,
+        "allWordChars": 3289, "textWordChars": 2990, "titleWordChars": 38
+    }
+
+# END Test testCoreToken_CountStats
+
+
+@pytest.mark.core
 def testCoreToken_HeaderCounterAndVisibility(mockGUI):
     """Test the header counter and visibility of the Tokenizer class.
     This is a special test to cover issue #1704.

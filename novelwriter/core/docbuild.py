@@ -52,14 +52,15 @@ class NWBuildDocument:
     manuscript, based on a build definition object (BuildSettings).
     """
 
-    __slots__ = ("_project", "_build", "_queue", "_error", "_cache")
+    __slots__ = ("_project", "_build", "_queue", "_error", "_cache", "_count")
 
-    def __init__(self, project: NWProject, build: BuildSettings) -> None:
+    def __init__(self, project: NWProject, build: BuildSettings, doCount: bool = False) -> None:
         self._project = project
         self._build = build
         self._queue = []
         self._error = None
         self._cache = None
+        self._count = doCount
         return
 
     ##
@@ -314,11 +315,15 @@ class NWBuildDocument:
                     bldObj.addRootHeading(tHandle)
                     if convert:
                         bldObj.doConvert()
+                    if self._count:
+                        bldObj.countStats()
                 elif tItem.isFileType():
                     bldObj.setText(tHandle)
                     bldObj.doPreProcessing()
                     bldObj.tokenizeText()
                     bldObj.doHeaders()
+                    if self._count:
+                        bldObj.countStats()
                     if convert:
                         bldObj.doConvert()
                 else:

@@ -1,0 +1,3 @@
+"""
+novelWriter – Text Analysis Tools
+"""

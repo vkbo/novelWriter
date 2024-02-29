@@ -462,6 +462,7 @@ class GuiIcons:
         # Switches
         "sticky-on", "sticky-off",
         "bullet-on", "bullet-off",
+        "unfold-show", "unfold-hide",
 
         # Decorations
         "deco_doc_h0", "deco_doc_h1", "deco_doc_h2", "deco_doc_h3", "deco_doc_h4", "deco_doc_more",
@@ -472,6 +473,7 @@ class GuiIcons:
     TOGGLE_ICON_KEYS: dict[str, tuple[str, str]] = {
         "sticky": ("sticky-on", "sticky-off"),
         "bullet": ("bullet-on", "bullet-off"),
+        "unfold": ("unfold-show", "unfold-hide"),
     }
 
     IMAGE_MAP: dict[str, tuple[str, str]] = {

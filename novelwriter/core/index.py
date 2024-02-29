@@ -3,7 +3,6 @@ novelWriter – Project Index
 ===========================
 
 File History:
-Created: 2019-04-22 [0.0.1]  countWords
 Created: 2019-05-27 [0.1.4]  NWIndex
 Created: 2022-05-28 [2.0rc1] IndexItem
 Created: 2022-05-28 [2.0rc1] IndexHeading
@@ -40,7 +39,8 @@ from novelwriter import SHARED
 from novelwriter.enum import nwComment, nwItemClass, nwItemType, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.common import checkInt, isHandle, isItemClass, isTitleTag, jsonEncode
-from novelwriter.constants import nwFiles, nwKeyWords, nwRegEx, nwUnicode, nwHeaders
+from novelwriter.constants import nwFiles, nwKeyWords, nwHeaders
+from novelwriter.text.counting import standardCounter
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.item import NWItem
@@ -266,7 +266,7 @@ class NWIndex:
         self._itemIndex.add(tHandle, tItem)
 
         # Run word counter for the whole text
-        cC, wC, pC = countWords(text)
+        cC, wC, pC = standardCounter(text)
         tItem.setCharCount(cC)
         tItem.setWordCount(wC)
         tItem.setParaCount(pC)
@@ -400,7 +400,7 @@ class NWIndex:
 
     def _indexWordCounts(self, tHandle: str, text: str, sTitle: str) -> None:
         """Count text stats and save the counts to the index."""
-        cC, wC, pC = countWords(text)
+        cC, wC, pC = standardCounter(text)
         self._itemIndex.setHeadingCounts(tHandle, sTitle, cC, wC, pC)
         return
 
@@ -1315,86 +1315,3 @@ def processComment(text: str) -> tuple[nwComment, str, int]:
     if content and (clean := classifier.strip().lower()) in CLASSIFIERS:
         return CLASSIFIERS[clean], content.strip(), text.find(":") + 1
     return nwComment.PLAIN, check, 0
-
-
-def countWords(text: str) -> tuple[int, int, int]:
-    """Count words in a piece of text, skipping special syntax and
-    comments.
-    """
-    charCount = 0
-    wordCount = 0
-    paraCount = 0
-    prevEmpty = True
-
-    if not isinstance(text, str):
-        return charCount, wordCount, paraCount
-
-    # We need to treat dashes as word separators for counting words.
-    # The check+replace approach is much faster than direct replace for
-    # large texts, and a bit slower for small texts, but in the latter
-    # case it doesn't really matter.
-    if nwUnicode.U_ENDASH in text:
-        text = text.replace(nwUnicode.U_ENDASH, " ")
-    if nwUnicode.U_EMDASH in text:
-        text = text.replace(nwUnicode.U_EMDASH, " ")
-
-    # Strip shortcodes
-    if "[" in text:
-        text = nwRegEx.RX_SC.sub("", text)
-
-    for line in text.splitlines():
-
-        countPara = True
-
-        if not line:
-            prevEmpty = True
-            continue
-
-        if line[0] == "@" or line[0] == "%":
-            continue
-
-        if line[0] == "[":
-            check = line.lower()
-            if check.startswith(("[newpage]", "[new page]", "[vspace]")):
-                continue
-            elif check.startswith("[vspace:") and line.endswith("]"):
-                continue
-
-        elif line[0] == "#":
-            if line[:5] == "#### ":
-                line = line[5:]
-                countPara = False
-            elif line[:4] == "### ":
-                line = line[4:]
-                countPara = False
-            elif line[:3] == "## ":
-                line = line[3:]
-                countPara = False
-            elif line[:2] == "# ":
-                line = line[2:]
-                countPara = False
-            elif line[:3] == "#! ":
-                line = line[3:]
-                countPara = False
-            elif line[:4] == "##! ":
-                line = line[4:]
-                countPara = False
-
-        elif line[0] == ">" or line[-1] == "<":
-            if line[:2] == ">>":
-                line = line[2:].lstrip(" ")
-            elif line[:1] == ">":
-                line = line[1:].lstrip(" ")
-            if line[-2:] == "<<":
-                line = line[:-2].rstrip(" ")
-            elif line[-1:] == "<":
-                line = line[:-1].rstrip(" ")
-
-        wordCount += len(line.split())
-        charCount += len(line)
-        if countPara and prevEmpty:
-            paraCount += 1
-
-        prevEmpty = not countPara
-
-    return charCount, wordCount, paraCount
