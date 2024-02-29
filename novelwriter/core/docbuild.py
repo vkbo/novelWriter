@@ -315,6 +315,8 @@ class NWBuildDocument:
                     bldObj.addRootHeading(tHandle)
                     if convert:
                         bldObj.doConvert()
+                    if self._count:
+                        bldObj.countStats()
                 elif tItem.isFileType():
                     bldObj.setText(tHandle)
                     bldObj.doPreProcessing()

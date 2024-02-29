@@ -33,9 +33,10 @@ from datetime import datetime
 from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
 from PyQt5.QtCore import QSize, QTimer, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QDialog, QGridLayout, QHBoxLayout, QLabel, QListWidget,
-    QListWidgetItem, QPushButton, QSplitter, QTextBrowser, QToolButton,
-    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget, qApp
+    QAbstractItemView, QDialog, QFormLayout, QGridLayout, QHBoxLayout, QLabel,
+    QListWidget, QListWidgetItem, QPushButton, QSizePolicy, QSplitter,
+    QStackedWidget, QTextBrowser, QToolButton, QTreeWidget, QTreeWidgetItem,
+    QVBoxLayout, QWidget, qApp
 )
 from PyQt5.QtPrintSupport import QPrintPreviewDialog, QPrinter
 
@@ -185,6 +186,15 @@ class GuiManuscript(QDialog):
         # ============
 
         self.docPreview = _PreviewWidget(self)
+        self.docStats = _StatsWidget(self)
+
+        self.docBox = QVBoxLayout()
+        self.docBox.addWidget(self.docPreview, 1)
+        self.docBox.addWidget(self.docStats, 0)
+        self.docBox.setContentsMargins(0, 0, 0, 0)
+
+        self.docWdiget = QWidget(self)
+        self.docWdiget.setLayout(self.docBox)
 
         self.controlBox = QVBoxLayout()
         self.controlBox.addLayout(self.listToolBox, 0)
@@ -192,12 +202,12 @@ class GuiManuscript(QDialog):
         self.controlBox.addLayout(self.processBox, 0)
         self.controlBox.setContentsMargins(0, 0, 0, 0)
 
-        self.optsWidget = QWidget()
+        self.optsWidget = QWidget(self)
         self.optsWidget.setLayout(self.controlBox)
 
         self.mainSplit = QSplitter()
         self.mainSplit.addWidget(self.optsWidget)
-        self.mainSplit.addWidget(self.docPreview)
+        self.mainSplit.addWidget(self.docWdiget)
         self.mainSplit.setCollapsible(0, False)
         self.mainSplit.setCollapsible(1, False)
         self.mainSplit.setStretchFactor(0, 0)
@@ -396,6 +406,7 @@ class GuiManuscript(QDialog):
         self.docPreview.setJustify(
             build.getBool("format.justifyText")
         )
+        self.docStats.updateStats(data.get("stats", {}))
         return
 
     def _getSelectedBuild(self) -> BuildSettings | None:
@@ -855,3 +866,195 @@ class _PreviewWidget(QTextBrowser):
         return
 
 # END Class _PreviewWidget
+
+
+class _StatsWidget(QWidget):
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
+
+        font = self.font()
+        font.setPointSizeF(0.9*SHARED.theme.fontPointSize)
+        self.setFont(font)
+
+        self.minWidget = QWidget(self)
+        self.maxWidget = QWidget(self)
+
+        fPx = int(0.6*SHARED.theme.fontPixelSize)
+        toggleIcon = SHARED.theme.getToggleIcon("unfold", (fPx, fPx))
+
+        fadeCol = self.palette().text().color()
+        buttonStyle = (
+            "QToolButton {{padding: 0; border: none; background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
+        ).format(fadeCol.red(), fadeCol.green(), fadeCol.blue())
+
+        self.toggleButton = QToolButton(self)
+        self.toggleButton.setCheckable(True)
+        self.toggleButton.setIcon(toggleIcon)
+        self.toggleButton.setStyleSheet(buttonStyle)
+        self.toggleButton.toggled.connect(self._toggleView)
+
+        self._buildMinimal()
+        self._buildMaximal()
+
+        self.mainStack = QStackedWidget(self)
+        self.mainStack.addWidget(self.minWidget)
+        self.mainStack.addWidget(self.maxWidget)
+
+        self.outerBox = QHBoxLayout()
+        self.outerBox.addWidget(self.toggleButton, 0, Qt.AlignmentFlag.AlignTop)
+        self.outerBox.addWidget(self.mainStack, 1, Qt.AlignmentFlag.AlignTop)
+        self.outerBox.setContentsMargins(0, 0, 0, 0)
+
+        self.setLayout(self.outerBox)
+
+        self._toggleView(False)
+
+        return
+
+    def updateStats(self, data: dict[str, int]) -> None:
+        """Update the stats values from a Tokenizer stats dict."""
+        # Minimal
+        self.minWordCount.setText("{0:n}".format(data.get("allWords", 0)))
+        self.minCharCount.setText("{0:n}".format(data.get("allChars", 0)))
+
+        # Maximal
+        self.maxTotalWords.setText("{0:n}".format(data.get("allWords", 0)))
+        self.maxHeaderWords.setText("{0:n}".format(data.get("titleWords", 0)))
+        self.maxTextWords.setText("{0:n}".format(data.get("textWords", 0)))
+        self.maxTitleCount.setText("{0:n}".format(data.get("titleCount", 0)))
+        self.maxParCount.setText("{0:n}".format(data.get("paragraphCount", 0)))
+
+        self.maxTotalChars.setText("{0:n}".format(data.get("allChars", 0)))
+        self.maxHeaderChars.setText("{0:n}".format(data.get("titleChars", 0)))
+        self.maxTextChars.setText("{0:n}".format(data.get("textChars", 0)))
+
+        self.maxTotalWordChars.setText("{0:n}".format(data.get("allWordChars", 0)))
+        self.maxHeaderWordChars.setText("{0:n}".format(data.get("titleWordChars", 0)))
+        self.maxTextWordChars.setText("{0:n}".format(data.get("textWordChars", 0)))
+
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot(bool)
+    def _toggleView(self, state: bool) -> None:
+        """Toggle minimal or maximal view."""
+        ignored = QSizePolicy.Policy.Ignored
+        expanded = QSizePolicy.Policy.Expanding
+        if state:
+            self.mainStack.setCurrentWidget(self.maxWidget)
+            self.maxWidget.setSizePolicy(expanded, expanded)
+            self.minWidget.setSizePolicy(ignored, ignored)
+        else:
+            self.mainStack.setCurrentWidget(self.minWidget)
+            self.maxWidget.setSizePolicy(ignored, ignored)
+            self.minWidget.setSizePolicy(expanded, expanded)
+        self.maxWidget.adjustSize()
+        self.minWidget.adjustSize()
+        self.mainStack.adjustSize()
+        self.adjustSize()
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _buildMinimal(self) -> None:
+        """Build the minimal stats page."""
+        mPx = CONFIG.pxInt(8)
+
+        self.lblWordCount = QLabel(self.tr("Words:"))
+        self.minWordCount = QLabel(self)
+
+        self.lblCharCount = QLabel(self.tr("Characters:"))
+        self.minCharCount = QLabel(self)
+
+        # Assemble
+        self.minLayout = QHBoxLayout()
+        self.minLayout.addWidget(self.lblWordCount)
+        self.minLayout.addWidget(self.minWordCount)
+        self.minLayout.addSpacing(mPx)
+        self.minLayout.addWidget(self.lblCharCount)
+        self.minLayout.addWidget(self.minCharCount)
+        self.minLayout.addStretch(1)
+        self.minLayout.setSpacing(mPx)
+        self.minLayout.setContentsMargins(0, 0, 0, 0)
+
+        self.minWidget.setLayout(self.minLayout)
+
+        return
+
+    def _buildMaximal(self) -> None:
+        """Build the maximal stats page."""
+        hPx = CONFIG.pxInt(12)
+        vPx = CONFIG.pxInt(4)
+
+        alignRight = Qt.AlignmentFlag.AlignRight
+
+        # Left Column
+        self.maxTotalWords = QLabel(self)
+        self.maxHeaderWords = QLabel(self)
+        self.maxTextWords = QLabel(self)
+        self.maxTitleCount = QLabel(self)
+        self.maxParCount = QLabel(self)
+
+        self.maxTotalWords.setAlignment(alignRight)
+        self.maxHeaderWords.setAlignment(alignRight)
+        self.maxTextWords.setAlignment(alignRight)
+        self.maxTitleCount.setAlignment(alignRight)
+        self.maxParCount.setAlignment(alignRight)
+
+        self.leftForm = QFormLayout()
+        self.leftForm.addRow(self.tr("Words:"), self.maxTotalWords)
+        self.leftForm.addRow(self.tr("Header Words:"), self.maxHeaderWords)
+        self.leftForm.addRow(self.tr("Body Text Words:"), self.maxTextWords)
+        self.leftForm.addRow("", QLabel(self))
+        self.leftForm.addRow(self.tr("Headers:"), self.maxTitleCount)
+        self.leftForm.addRow(self.tr("Paragraphs:"), self.maxParCount)
+        self.leftForm.setHorizontalSpacing(hPx)
+        self.leftForm.setVerticalSpacing(vPx)
+
+        # Right Column
+        self.maxTotalChars = QLabel(self)
+        self.maxHeaderChars = QLabel(self)
+        self.maxTextChars = QLabel(self)
+
+        self.maxTotalWordChars = QLabel(self)
+        self.maxHeaderWordChars = QLabel(self)
+        self.maxTextWordChars = QLabel(self)
+
+        self.maxTotalChars.setAlignment(alignRight)
+        self.maxHeaderChars.setAlignment(alignRight)
+        self.maxTextChars.setAlignment(alignRight)
+
+        self.maxTotalWordChars.setAlignment(alignRight)
+        self.maxHeaderWordChars.setAlignment(alignRight)
+        self.maxTextWordChars.setAlignment(alignRight)
+
+        self.rightForm = QFormLayout()
+        self.rightForm.addRow(self.tr("Characters:"), self.maxTotalChars)
+        self.rightForm.addRow(self.tr("Header Characters:"), self.maxHeaderChars)
+        self.rightForm.addRow(self.tr("Body Text Characters:"), self.maxTextChars)
+        self.rightForm.addRow(self.tr("Characters, No Spaces:"), self.maxTotalWordChars)
+        self.rightForm.addRow(self.tr("Header Characters, No Spaces:"), self.maxHeaderWordChars)
+        self.rightForm.addRow(self.tr("Body Text Characters, No Spaces:"), self.maxTextWordChars)
+        self.rightForm.setHorizontalSpacing(hPx)
+        self.rightForm.setVerticalSpacing(vPx)
+
+        # Assemble
+        self.maxLayout = QHBoxLayout()
+        self.maxLayout.addLayout(self.leftForm)
+        self.maxLayout.addLayout(self.rightForm)
+        self.maxLayout.addStretch(1)
+        self.maxLayout.setSpacing(CONFIG.pxInt(32))
+        self.maxLayout.setContentsMargins(0, 0, 0, 0)
+
+        self.maxWidget.setLayout(self.maxLayout)
+
+        return
+
+# END Class _StatsWidget
