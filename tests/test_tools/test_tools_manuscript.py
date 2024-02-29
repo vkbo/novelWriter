@@ -192,6 +192,16 @@ def testManuscript_Features(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath:
     assert manus.docPreview.toPlainText().strip() != ""
     assert cacheFile.exists() is True
 
+    # Check Preview Stats
+    assert manus.docStats.mainStack.currentWidget() == manus.docStats.minWidget
+    assert manus.docStats.minWordCount.text() == "7"
+    assert manus.docStats.minCharCount.text() == "31"
+
+    manus.docStats.toggleButton.toggle()
+    assert manus.docStats.mainStack.currentWidget() == manus.docStats.maxWidget
+    assert manus.docStats.maxTotalWords.text() == "7"
+    assert manus.docStats.maxTotalChars.text() == "31"
+
     # Toggle justify
     assert manus.docPreview.document().defaultTextOption().alignment() == Qt.AlignAbsolute
     manus.docPreview.setJustify(True)
