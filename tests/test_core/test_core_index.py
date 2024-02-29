@@ -26,6 +26,7 @@ import pytest
 from shutil import copyfile
 
 from mocked import causeException
+from novelwriter import SHARED
 from novelwriter.core.item import NWItem
 from tools import C, buildTestProject, cmpFiles, writeFile
 
@@ -36,7 +37,7 @@ from novelwriter.core.project import NWProject
 
 
 @pytest.mark.core
-def testCoreIndex_LoadSave(monkeypatch, prjLipsum, mockGUI, tstPaths):
+def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, mockGUI, tstPaths):
     """Test core functionality of scanning, saving, loading and checking
     the index cache file.
     """
@@ -148,8 +149,10 @@ def testCoreIndex_LoadSave(monkeypatch, prjLipsum, mockGUI, tstPaths):
     assert "fb609cd8319dc" in index._itemIndex
     assert "7a992350f3eb6" in index._itemIndex
 
-    # Finalise
-    project.closeProject()
+    # Close Project
+    with qtbot.waitSignal(SHARED.indexCleared, timeout=1000):
+        # Regression test for issue #1718
+        project.closeProject()
 
 # END Test testCoreIndex_LoadSave
 
