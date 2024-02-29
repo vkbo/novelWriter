@@ -25,13 +25,13 @@ import pytest
 
 from shutil import copyfile
 
-from mocked import causeException
-from novelwriter import SHARED
-from novelwriter.core.item import NWItem
 from tools import C, buildTestProject, cmpFiles, writeFile
+from mocked import causeException
 
+from novelwriter import SHARED
 from novelwriter.enum import nwComment, nwItemClass, nwItemLayout
 from novelwriter.constants import nwFiles
+from novelwriter.core.item import NWItem
 from novelwriter.core.index import IndexItem, NWIndex, countWords, TagsIndex, processComment
 from novelwriter.core.project import NWProject
 
