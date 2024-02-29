@@ -772,6 +772,8 @@ class Tokenizer(ABC):
         allChars = self._counts.get("allChars", 0)
         textChars = self._counts.get("textChars", 0)
         titleChars = self._counts.get("titleChars", 0)
+
+        allWordChars = self._counts.get("allWordChars", 0)
         textWordChars = self._counts.get("textWordChars", 0)
         titleWordChars = self._counts.get("titleWordChars", 0)
 
@@ -783,6 +785,7 @@ class Tokenizer(ABC):
             tWords = tText.split()
             nWords = len(tWords)
             nChars = len(tText)
+            nWChars = len("".join(tWords))
 
             if tType == self.T_EMPTY:
                 if len(para) > 0:
@@ -790,13 +793,15 @@ class Tokenizer(ABC):
                     tPWords = tTemp.split()
                     nPWords = len(tPWords)
                     nPChars = len(tTemp)
+                    nPWChars = len("".join(tPWords))
 
                     paragraphCount += 1
                     allWords += nPWords
                     textWords += nPWords
                     allChars += nPChars
                     textChars += nPChars
-                    textWordChars += len("".join(tPWords))
+                    allWordChars += nPWChars
+                    textWordChars += nPWChars
                 para = []
 
             elif tType in self.L_HEADINGS:
@@ -804,38 +809,48 @@ class Tokenizer(ABC):
                 allWords += nWords
                 titleWords += nWords
                 allChars += nChars
+                allWordChars += nWChars
                 titleChars += nChars
-                titleWordChars += len("".join(tWords))
+                titleWordChars += nWChars
 
             elif tType == self.T_SEP:
                 allWords += nWords
                 allChars += nChars
+                allWordChars += nWChars
 
             elif tType == self.T_TEXT:
                 para.append(tText.rstrip())
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 text = "{0}: {1}".format(self._localLookup("Synopsis"), tText)
-                allWords += len(text.split())
+                words = text.split()
+                allWords += len(words)
                 allChars += len(text)
+                allWordChars += len("".join(words))
 
             elif tType == self.T_SHORT and self._doSynopsis:
                 text = "{0}: {1}".format(self._localLookup("Short Description"), tText)
-                allWords += len(text.split())
+                words = text.split()
+                allWords += len(words)
                 allChars += len(text)
+                allWordChars += len("".join(words))
 
             elif tType == self.T_COMMENT and self._doComments:
                 text = "{0}: {1}".format(self._localLookup("Comment"), tText)
-                allWords += len(text.split())
+                words = text.split()
+                allWords += len(words)
                 allChars += len(text)
+                allWordChars += len("".join(words))
 
             elif tType == self.T_KEYWORD and self._doKeywords:
                 valid, bits, _ = self._project.index.scanThis("@"+tText)
                 if valid and bits:
                     key = self._localLookup(nwLabels.KEY_NAME[bits[0]])
                     text = "{0}: {1}".format(key, ", ".join(bits[1:]))
-                    allWords += len(text.split())
+                    words = text.split()
+                    allWords += len(words)
                     allChars += len(text)
+                    allWordChars += len("".join(words))
 
         self._counts["titleCount"] = titleCount
         self._counts["paragraphCount"] = paragraphCount
@@ -847,6 +862,8 @@ class Tokenizer(ABC):
         self._counts["allChars"] = allChars
         self._counts["textChars"] = textChars
         self._counts["titleChars"] = titleChars
+
+        self._counts["allWordChars"] = allWordChars
         self._counts["textWordChars"] = textWordChars
         self._counts["titleWordChars"] = titleWordChars
 

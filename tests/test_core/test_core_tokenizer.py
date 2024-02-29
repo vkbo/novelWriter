@@ -1278,7 +1278,7 @@ def testCoreToken_CountStats(mockGUI, ipsumText):
         "titleCount": 1, "paragraphCount": 0,
         "allWords": 3, "textWords": 0, "titleWords": 3,
         "allChars": 15, "textChars": 0, "titleChars": 15,
-        "textWordChars": 0, "titleWordChars": 13
+        "allWordChars": 13, "textWordChars": 0, "titleWordChars": 13
     }
 
     # Header w/Format
@@ -1294,7 +1294,7 @@ def testCoreToken_CountStats(mockGUI, ipsumText):
         "titleCount": 1, "paragraphCount": 0,
         "allWords": 5, "textWords": 0, "titleWords": 5,
         "allChars": 20, "textChars": 0, "titleChars": 20,
-        "textWordChars": 0, "titleWordChars": 16
+        "allWordChars": 16, "textWordChars": 0, "titleWordChars": 16
     }
 
     # Two Paragraphs
@@ -1308,7 +1308,7 @@ def testCoreToken_CountStats(mockGUI, ipsumText):
         "titleCount": 0, "paragraphCount": 2,
         "allWords": 9, "textWords": 9, "titleWords": 0,
         "allChars": 47, "textChars": 47, "titleChars": 0,
-        "textWordChars": 40, "titleWordChars": 0
+        "allWordChars": 40, "textWordChars": 40, "titleWordChars": 0
     }
 
     # Two Scenes w/Separator
@@ -1326,7 +1326,7 @@ def testCoreToken_CountStats(mockGUI, ipsumText):
         "titleCount": 1, "paragraphCount": 2,
         "allWords": 6, "textWords": 2, "titleWords": 1,
         "allChars": 20, "textChars": 8, "titleChars": 7,
-        "textWordChars": 8, "titleWordChars": 7
+        "allWordChars": 18, "textWordChars": 8, "titleWordChars": 7
     }
 
     # Scene w/Synopsis
@@ -1346,7 +1346,7 @@ def testCoreToken_CountStats(mockGUI, ipsumText):
         "titleCount": 1, "paragraphCount": 1,
         "allWords": 4, "textWords": 1, "titleWords": 1,
         "allChars": 26, "textChars": 4, "titleChars": 7,
-        "textWordChars": 4, "titleWordChars": 7
+        "allWordChars": 25, "textWordChars": 4, "titleWordChars": 7
     }
 
     # Scene w/Short
@@ -1366,7 +1366,7 @@ def testCoreToken_CountStats(mockGUI, ipsumText):
         "titleCount": 1, "paragraphCount": 1,
         "allWords": 5, "textWords": 1, "titleWords": 1,
         "allChars": 35, "textChars": 4, "titleChars": 7,
-        "textWordChars": 4, "titleWordChars": 7
+        "allWordChars": 33, "textWordChars": 4, "titleWordChars": 7
     }
 
     # Scene w/Comment
@@ -1386,7 +1386,7 @@ def testCoreToken_CountStats(mockGUI, ipsumText):
         "titleCount": 1, "paragraphCount": 1,
         "allWords": 4, "textWords": 1, "titleWords": 1,
         "allChars": 25, "textChars": 4, "titleChars": 7,
-        "textWordChars": 4, "titleWordChars": 7
+        "allWordChars": 24, "textWordChars": 4, "titleWordChars": 7
     }
 
     # Scene w/Keyword
@@ -1406,7 +1406,7 @@ def testCoreToken_CountStats(mockGUI, ipsumText):
         "titleCount": 1, "paragraphCount": 1,
         "allWords": 6, "textWords": 1, "titleWords": 1,
         "allChars": 30, "textChars": 4, "titleChars": 7,
-        "textWordChars": 4, "titleWordChars": 7
+        "allWordChars": 27, "textWordChars": 4, "titleWordChars": 7
     }
 
     # Long Text
@@ -1466,7 +1466,7 @@ def testCoreToken_CountStats(mockGUI, ipsumText):
         "titleCount": 4, "paragraphCount": 5,
         "allWords": 596, "textWords": 528, "titleWords": 12,
         "allChars": 3859, "textChars": 3513, "titleChars": 46,
-        "textWordChars": 2990, "titleWordChars": 38
+        "allWordChars": 3289, "textWordChars": 2990, "titleWordChars": 38
     }
 
 # END Test testCoreToken_CountStats
