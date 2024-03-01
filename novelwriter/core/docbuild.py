@@ -286,6 +286,18 @@ class NWBuildDocument:
             self._build.getStr("headings.fmtSection"),
             self._build.getBool("headings.hideSection")
         )
+        bldObj.setTitleStyle(
+            self._build.getBool("headings.centerTitle"),
+            self._build.getBool("headings.breakTitle")
+        )
+        bldObj.setChapterStyle(
+            self._build.getBool("headings.centerChapter"),
+            self._build.getBool("headings.breakChapter")
+        )
+        bldObj.setSceneStyle(
+            self._build.getBool("headings.centerScene"),
+            self._build.getBool("headings.breakScene")
+        )
 
         bldObj.setFont(fontFamily, textSize, textFixed)
         bldObj.setJustify(self._build.getBool("format.justifyText"))
