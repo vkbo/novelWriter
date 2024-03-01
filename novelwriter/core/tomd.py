@@ -49,6 +49,7 @@ class ToMarkdown(Tokenizer):
         super().__init__(project)
         self._genMode = self.M_STD
         self._fullMD: list[str] = []
+        self._preserveBreaks = True
         return
 
     ##
@@ -72,6 +73,11 @@ class ToMarkdown(Tokenizer):
     def setExtendedMarkdown(self) -> None:
         """Set the converter to use Extended Markdown formatting."""
         self._genMode = self.M_EXT
+        return
+
+    def setPreserveBreaks(self, state: bool) -> None:
+        """Preserve line breaks in paragraphs."""
+        self._preserveBreaks = state
         return
 
     ##
@@ -125,12 +131,13 @@ class ToMarkdown(Tokenizer):
 
         para = []
         lines = []
+        lineSep = "  \n" if self._preserveBreaks else " "
 
         for tType, _, tText, tFormat, tStyle in self._tokens:
 
             if tType == self.T_EMPTY:
                 if len(para) > 0:
-                    tTemp = ("  \n".join(para)).rstrip(" ")
+                    tTemp = (lineSep.join(para)).rstrip(" ")
                     lines.append(f"{tTemp}\n\n")
                 para = []
 

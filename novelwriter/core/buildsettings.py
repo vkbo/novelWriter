@@ -81,6 +81,7 @@ SETTINGS_TEMPLATE = {
     "odt.addColours":         (bool, True),
     "odt.pageHeader":         (str, nwHeadFmt.ODT_AUTO),
     "odt.pageCountOffset":    (int, 0),
+    "md.preserveBreaks":      (bool, True),
     "html.addStyles":         (bool, True),
     "html.preserveTabs":      (bool, False),
 }
@@ -130,6 +131,9 @@ SETTINGS_LABELS = {
     "odt.addColours":         QT_TRANSLATE_NOOP("Builds", "Add Highlight Colours"),
     "odt.pageHeader":         QT_TRANSLATE_NOOP("Builds", "Page Header"),
     "odt.pageCountOffset":    QT_TRANSLATE_NOOP("Builds", "Page Counter Offset"),
+
+    "md":                     QT_TRANSLATE_NOOP("Builds", "Markdown (.md)"),
+    "md.preserveBreaks":      QT_TRANSLATE_NOOP("Builds", "Preserve Hard Line Breaks"),
 
     "html":                   QT_TRANSLATE_NOOP("Builds", "HTML (.html)"),
     "html.addStyles":         QT_TRANSLATE_NOOP("Builds", "Add CSS Styles"),

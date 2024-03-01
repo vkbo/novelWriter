@@ -192,6 +192,8 @@ class NWBuildDocument:
         if self._build.getBool("format.replaceTabs"):
             makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
 
+        makeObj.setPreserveBreaks(self._build.getBool("md.preserveBreaks"))
+
         for i, tHandle in enumerate(self._queue):
             self._error = None
             if filtered.get(tHandle, (False, 0))[0]:
