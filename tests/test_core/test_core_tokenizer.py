@@ -276,6 +276,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     tokens._text = "# Novel Title\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Novel Title", [], Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -289,6 +290,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     tokens._text = "# Note Title\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Note Title", [], Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -301,9 +303,11 @@ def testCoreToken_HeaderFormat(mockGUI):
     # Story File
     tokens._isNovel = True
     tokens._isNote  = False
+    tokens._noBreak = False
     tokens._text = "## Chapter One\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD2, 1, "Chapter One", [], Tokenizer.A_PBB),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -316,6 +320,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     tokens._text = "## Heading 2\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD2, 1, "Heading 2", [], Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -331,6 +336,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     tokens._text = "### Scene One\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD3, 1, "Scene One", [], Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -343,6 +349,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     tokens._text = "### Heading 3\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD3, 1, "Heading 3", [], Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -358,6 +365,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     tokens._text = "#### A Section\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD4, 1, "A Section", [], Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -370,6 +378,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     tokens._text = "#### Heading 4\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD4, 1, "Heading 4", [], Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -382,11 +391,13 @@ def testCoreToken_HeaderFormat(mockGUI):
     # Story File
     tokens._isNovel = True
     tokens._isNote  = False
+    tokens._isFirst = False
     tokens._text = "#! Title\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
-        (Tokenizer.T_TITLE, 1, "Title", [], Tokenizer.A_CENTRE),
+        (Tokenizer.T_TITLE, 1, "Title", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
     ]
     assert tokens.allMarkdown[-1] == "#! Title\n\n"
@@ -394,11 +405,13 @@ def testCoreToken_HeaderFormat(mockGUI):
     # Note File
     tokens._isNovel = False
     tokens._isNote  = True
+    tokens._isFirst = False
     tokens._text = "#! Title\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "Title", [], Tokenizer.A_CENTRE),
+        (Tokenizer.T_HEAD1, 1, "Title", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
     ]
     assert tokens.allMarkdown[-1] == "#! Title\n\n"
@@ -412,6 +425,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     tokens._text = "##! Prologue\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_UNNUM, 1, "Prologue", [], Tokenizer.A_PBB),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -424,6 +438,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     tokens._text = "##! Prologue\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD2, 1, "Prologue", [], Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -822,6 +837,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "# Title Two\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == correctResp
 
     # Command w/Space
@@ -832,6 +848,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "# Title Two\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == correctResp
 
     # Trailing Spaces
@@ -842,6 +859,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "# Title Two\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == correctResp
 
     # Single Empty Paragraph
@@ -853,6 +871,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -873,6 +892,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -890,6 +910,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -909,6 +930,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -925,6 +947,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -941,6 +964,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -961,6 +985,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -980,6 +1005,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),

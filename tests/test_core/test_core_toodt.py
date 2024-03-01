@@ -246,6 +246,7 @@ def testCoreToOdt_ConvertHeaders(mockGUI):
     # Header 1
     odt._text = "# Title\n"
     odt.tokenizeText()
+    odt.doHeaders()
     odt.initDocument()
     odt.doConvert()
     odt.closeDocument()
@@ -259,6 +260,7 @@ def testCoreToOdt_ConvertHeaders(mockGUI):
     # Header 2
     odt._text = "## Chapter\n"
     odt.tokenizeText()
+    odt.doHeaders()
     odt.initDocument()
     odt.doConvert()
     odt.closeDocument()
@@ -272,6 +274,7 @@ def testCoreToOdt_ConvertHeaders(mockGUI):
     # Header 3
     odt._text = "### Scene\n"
     odt.tokenizeText()
+    odt.doHeaders()
     odt.initDocument()
     odt.doConvert()
     odt.closeDocument()
@@ -285,6 +288,7 @@ def testCoreToOdt_ConvertHeaders(mockGUI):
     # Header 4
     odt._text = "#### Section\n"
     odt.tokenizeText()
+    odt.doHeaders()
     odt.initDocument()
     odt.doConvert()
     odt.closeDocument()
@@ -296,8 +300,10 @@ def testCoreToOdt_ConvertHeaders(mockGUI):
     )
 
     # Title
+    odt._isFirst = True
     odt._text = "#! Title\n"
     odt.tokenizeText()
+    odt.doHeaders()
     odt.initDocument()
     odt.doConvert()
     odt.closeDocument()
@@ -311,6 +317,7 @@ def testCoreToOdt_ConvertHeaders(mockGUI):
     # Unnumbered chapter
     odt._text = "##! Prologue\n"
     odt.tokenizeText()
+    odt.doHeaders()
     odt.initDocument()
     odt.doConvert()
     odt.closeDocument()
@@ -605,6 +612,7 @@ def testCoreToOdt_ConvertParagraphs(mockGUI):
         "Text\n\n"
     )
     odt.tokenizeText()
+    odt.doHeaders()
     odt.initDocument()
     odt.doConvert()
     odt.closeDocument()
@@ -729,6 +737,7 @@ def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
         "Text\n\n"
     )
     odt.tokenizeText()
+    odt.doHeaders()
     odt.initDocument()
     odt.doConvert()
     odt.closeDocument()
@@ -768,6 +777,7 @@ def testCoreToOdt_SaveFull(mockGUI, fncPath, tstPaths):
         "Text\n\n"
     )
     odt.tokenizeText()
+    odt.doHeaders()
     odt.initDocument()
     odt.doConvert()
     odt.closeDocument()
