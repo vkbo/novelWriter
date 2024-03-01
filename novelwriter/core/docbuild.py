@@ -161,7 +161,7 @@ class NWBuildDocument:
             else:
                 yield i, False
 
-        if self._build.getBool("format.replaceTabs"):
+        if not self._build.getBool("html.preserveTabs"):
             makeObj.replaceTabs()
 
         self._error = None

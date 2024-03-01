@@ -1245,6 +1245,9 @@ class _OutputTab(NScrollableForm):
         self.htmlAddStyles = NSwitch(self, height=iPx)
         self.addRow(self._build.getLabel("html.addStyles"), self.htmlAddStyles)
 
+        self.htmlPreserveTabs = NSwitch(self, height=iPx)
+        self.addRow(self._build.getLabel("html.preserveTabs"), self.htmlPreserveTabs)
+
         # Finalise
         self.finalise()
 
@@ -1256,6 +1259,7 @@ class _OutputTab(NScrollableForm):
         self.odtPageHeader.setText(self._build.getStr("odt.pageHeader"))
         self.odtPageCountOffset.setValue(self._build.getInt("odt.pageCountOffset"))
         self.htmlAddStyles.setChecked(self._build.getBool("html.addStyles"))
+        self.htmlPreserveTabs.setChecked(self._build.getBool("html.preserveTabs"))
         return
 
     def saveContent(self) -> None:
@@ -1264,6 +1268,7 @@ class _OutputTab(NScrollableForm):
         self._build.setValue("odt.pageHeader", self.odtPageHeader.text())
         self._build.setValue("odt.pageCountOffset", self.odtPageCountOffset.value())
         self._build.setValue("html.addStyles", self.htmlAddStyles.isChecked())
+        self._build.setValue("html.preserveTabs", self.htmlPreserveTabs.isChecked())
         return
 
     ##

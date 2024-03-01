@@ -82,6 +82,7 @@ SETTINGS_TEMPLATE = {
     "odt.pageHeader":         (str, nwHeadFmt.ODT_AUTO),
     "odt.pageCountOffset":    (int, 0),
     "html.addStyles":         (bool, True),
+    "html.preserveTabs":      (bool, False),
 }
 
 SETTINGS_LABELS = {
@@ -132,6 +133,7 @@ SETTINGS_LABELS = {
 
     "html":                   QT_TRANSLATE_NOOP("Builds", "HTML (.html)"),
     "html.addStyles":         QT_TRANSLATE_NOOP("Builds", "Add CSS Styles"),
+    "html.preserveTabs":      QT_TRANSLATE_NOOP("Builds", "Preserve Tab Characters"),
 }
 
 
