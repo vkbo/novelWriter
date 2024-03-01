@@ -410,6 +410,7 @@ class NWProject:
     def closeProject(self, idleTime: float = 0.0) -> None:
         """Close the project."""
         logger.info("Closing project")
+        self._index.clearIndex()  # Triggers clear signal, see #1718
         self._options.saveSettings()
         self._tree.writeToCFile()
         self._session.appendSession(idleTime)
