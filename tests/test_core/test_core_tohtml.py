@@ -131,7 +131,7 @@ def testCoreToHtml_ConvertHeaders(mockGUI):
     html.doHeaders()
     html.doConvert()
     assert html.result == (
-        "<h1 style='text-align: center; page-break-before: always;'>"
+        "<h1 class='title' style='text-align: center; page-break-before: always;'>"
         "<a name='T0001'></a>Heading One</h1>\n"
     )
 

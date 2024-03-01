@@ -261,7 +261,7 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "Note Title", [], Tokenizer.A_CENTRE),
+        (Tokenizer.T_TITLE, 1, "Note Title", [], Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
     ]
     assert tokens.allMarkdown[-1] == "#! Note Title\n\n"
@@ -411,7 +411,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     tokens.tokenizeText()
     tokens.doHeaders()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "Title", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
+        (Tokenizer.T_TITLE, 1, "Title", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
     ]
     assert tokens.allMarkdown[-1] == "#! Title\n\n"

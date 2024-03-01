@@ -570,24 +570,16 @@ class Tokenizer(ABC):
 
             elif aLine[:3] == "#! ":
                 nHead += 1
-                if self._isNovel:
-                    tStyle = self.T_TITLE
-                else:
-                    tStyle = self.T_HEAD1
-
                 self._tokens.append((
-                    tStyle, nHead, aLine[3:].strip(), [], self.A_PBB | self.A_CENTRE
+                    self.T_TITLE, nHead, aLine[3:].strip(), [], self.A_PBB | self.A_CENTRE
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:4] == "##! ":
                 nHead += 1
-                if self._isNovel:
-                    tStyle = self.T_UNNUM
-                else:
-                    tStyle = self.T_HEAD2
-
+                # If we're not in a novel section, we just treat this as a regular H2
+                tStyle = self.T_UNNUM if self._isNovel else self.T_HEAD2
                 self._tokens.append((
                     tStyle, nHead, aLine[4:].strip(), [], self.A_NONE
                 ))
@@ -641,7 +633,7 @@ class Tokenizer(ABC):
         # If we have content, turn off the first page flag
         if self._isFirst and self._tokens:
             self._isFirst = False  # First document has been processed
-            self._noBreak = True   # Checks again after headers are processed
+            self._noBreak = True   # Check again after headers are processed
 
             # Make sure the token array doesn't start with a page break
             # on the very first page, adding a blank first page.
