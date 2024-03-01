@@ -52,15 +52,16 @@ class NWBuildDocument:
     manuscript, based on a build definition object (BuildSettings).
     """
 
-    __slots__ = ("_project", "_build", "_queue", "_error", "_cache", "_count")
+    __slots__ = ("_project", "_build", "_queue", "_error", "_cache", "_count", "_preview")
 
-    def __init__(self, project: NWProject, build: BuildSettings, doCount: bool = False) -> None:
+    def __init__(self, project: NWProject, build: BuildSettings) -> None:
         self._project = project
         self._build = build
         self._queue = []
         self._error = None
         self._cache = None
-        self._count = doCount
+        self._count = False
+        self._preview = False
         return
 
     ##
@@ -79,6 +80,21 @@ class NWBuildDocument:
         build job is completed.
         """
         return self._cache
+
+    ##
+    #  Setters
+    ##
+
+    def setCountEnabled(self, state: bool) -> None:
+        """Turn on/off stats counting for builds."""
+        self._count = state
+        return
+
+    def setPreviewMode(self, state: bool) -> None:
+        """Set the preview mode of the build. Implies count mode."""
+        self._preview = state
+        self._count = state
+        return
 
     ##
     #  Special Methods
@@ -161,7 +177,7 @@ class NWBuildDocument:
             else:
                 yield i, False
 
-        if not self._build.getBool("html.preserveTabs"):
+        if not (self._build.getBool("html.preserveTabs") or self._preview):
             makeObj.replaceTabs()
 
         self._error = None

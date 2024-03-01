@@ -83,7 +83,8 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
     build = BuildSettings()
     build.unpack(BUILD_CONF)
 
-    docBuild = NWBuildDocument(project, build, doCount=True)
+    docBuild = NWBuildDocument(project, build)
+    docBuild.setCountEnabled(True)
     docBuild.queueAll()
 
     assert len(docBuild) == 21
