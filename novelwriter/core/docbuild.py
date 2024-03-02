@@ -352,7 +352,6 @@ class NWBuildDocument:
                     bldObj.setText(tHandle)
                     bldObj.doPreProcessing()
                     bldObj.tokenizeText()
-                    bldObj.doHeaders()
                     if self._count:
                         bldObj.countStats()
                     if convert:

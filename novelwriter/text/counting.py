@@ -31,7 +31,6 @@ from novelwriter.constants import nwRegEx, nwUnicode
 
 RX_SC = re.compile(nwRegEx.FMT_SC)
 RX_LO = re.compile(r"(?i)(?<!\\)(\[(?:vspace|newpage|new page)(:\d+)?)(?<!\\)(\])")
-RX_IN = re.compile(r"^>{1,2}\s*|\s*<{1,2}$")
 
 
 def preProcessText(text: str, keepHeaders: bool = True) -> list[str]:

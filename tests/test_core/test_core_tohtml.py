@@ -44,7 +44,6 @@ def testCoreToHtml_ConvertHeaders(mockGUI):
     # Header 1
     html._text = "# Partition\n"
     html.tokenizeText()
-    html.doHeaders()
     html.doConvert()
     assert html.result == (
         "<h1 class='title' style='text-align: center;'>Partition</h1>\n"
@@ -53,7 +52,6 @@ def testCoreToHtml_ConvertHeaders(mockGUI):
     # Header 2
     html._text = "## Chapter Title\n"
     html.tokenizeText()
-    html.doHeaders()
     html.doConvert()
     assert html.result == (
         "<h1 style='page-break-before: always;'>Chapter Title</h1>\n"
@@ -62,21 +60,18 @@ def testCoreToHtml_ConvertHeaders(mockGUI):
     # Header 3
     html._text = "### Scene Title\n"
     html.tokenizeText()
-    html.doHeaders()
     html.doConvert()
     assert html.result == "<h2>Scene Title</h2>\n"
 
     # Header 4
     html._text = "#### Section Title\n"
     html.tokenizeText()
-    html.doHeaders()
     html.doConvert()
     assert html.result == "<h3>Section Title</h3>\n"
 
     # Title
     html._text = "#! Title\n"
     html.tokenizeText()
-    html.doHeaders()
     html.doConvert()
     assert html.result == (
         "<h1 class='title' style='text-align: center; page-break-before: always;'>Title</h1>\n"
@@ -85,7 +80,6 @@ def testCoreToHtml_ConvertHeaders(mockGUI):
     # Unnumbered
     html._text = "##! Prologue\n"
     html.tokenizeText()
-    html.doHeaders()
     html.doConvert()
     assert html.result == "<h1 style='page-break-before: always;'>Prologue</h1>\n"
 
@@ -100,35 +94,30 @@ def testCoreToHtml_ConvertHeaders(mockGUI):
     # Header 1
     html._text = "# Heading One\n"
     html.tokenizeText()
-    html.doHeaders()
     html.doConvert()
     assert html.result == "<h1><a name='T0001'></a>Heading One</h1>\n"
 
     # Header 2
     html._text = "## Heading Two\n"
     html.tokenizeText()
-    html.doHeaders()
     html.doConvert()
     assert html.result == "<h2><a name='T0001'></a>Heading Two</h2>\n"
 
     # Header 3
     html._text = "### Heading Three\n"
     html.tokenizeText()
-    html.doHeaders()
     html.doConvert()
     assert html.result == "<h3><a name='T0001'></a>Heading Three</h3>\n"
 
     # Header 4
     html._text = "#### Heading Four\n"
     html.tokenizeText()
-    html.doHeaders()
     html.doConvert()
     assert html.result == "<h4><a name='T0001'></a>Heading Four</h4>\n"
 
     # Title
     html._text = "#! Heading One\n"
     html.tokenizeText()
-    html.doHeaders()
     html.doConvert()
     assert html.result == (
         "<h1 class='title' style='text-align: center; page-break-before: always;'>"
@@ -138,7 +127,6 @@ def testCoreToHtml_ConvertHeaders(mockGUI):
     # Unnumbered
     html._text = "##! Heading Two\n"
     html.tokenizeText()
-    html.doHeaders()
     html.doConvert()
     assert html.result == "<h2><a name='T0001'></a>Heading Two</h2>\n"
 
@@ -245,7 +233,6 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
     html.setKeywords(True)
     html._text = "## Chapter\n\n@pov: Bod\n@plot: Main\n@location: Europe\n\n"
     html.tokenizeText()
-    html.doHeaders()
     html.doConvert()
     assert html.result == (
         "<h1 style='page-break-before: always;'>Chapter</h1>\n"
@@ -477,7 +464,6 @@ def testCoreToHtml_SpecialCases(mockGUI):
     html._noBreak = False
     html._text = "## Heading <1>\n"
     html.tokenizeText()
-    html.doHeaders()
     html.doConvert()
     assert html.result == (
         "<h1 style='page-break-before: always;'>Heading &lt;1&gt;</h1>\n"
@@ -551,7 +537,6 @@ def testCoreToHtml_Complex(mockGUI, fncPath):
         html._text = docText[i]
         html.doPreProcessing()
         html.tokenizeText()
-        html.doHeaders()
         html.doConvert()
         assert html.result == resText[i]
 
