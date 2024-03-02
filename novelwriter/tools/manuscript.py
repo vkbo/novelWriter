@@ -968,10 +968,10 @@ class _StatsWidget(QWidget):
         """Build the minimal stats page."""
         mPx = CONFIG.pxInt(8)
 
-        self.lblWordCount = QLabel(self.tr("Words:"))
+        self.lblWordCount = QLabel(self.tr("Words"))
         self.minWordCount = QLabel(self)
 
-        self.lblCharCount = QLabel(self.tr("Characters:"))
+        self.lblCharCount = QLabel(self.tr("Characters"))
         self.minCharCount = QLabel(self)
 
         # Assemble
@@ -1010,12 +1010,12 @@ class _StatsWidget(QWidget):
         self.maxParCount.setAlignment(alignRight)
 
         self.leftForm = QFormLayout()
-        self.leftForm.addRow(self.tr("Words:"), self.maxTotalWords)
-        self.leftForm.addRow(self.tr("Header Words:"), self.maxHeaderWords)
-        self.leftForm.addRow(self.tr("Body Text Words:"), self.maxTextWords)
+        self.leftForm.addRow(self.tr("Words"), self.maxTotalWords)
+        self.leftForm.addRow(self.tr("Header Words"), self.maxHeaderWords)
+        self.leftForm.addRow(self.tr("Body Text Words"), self.maxTextWords)
         self.leftForm.addRow("", QLabel(self))
-        self.leftForm.addRow(self.tr("Headers:"), self.maxTitleCount)
-        self.leftForm.addRow(self.tr("Paragraphs:"), self.maxParCount)
+        self.leftForm.addRow(self.tr("Headers"), self.maxTitleCount)
+        self.leftForm.addRow(self.tr("Paragraphs"), self.maxParCount)
         self.leftForm.setHorizontalSpacing(hPx)
         self.leftForm.setVerticalSpacing(vPx)
 
@@ -1037,12 +1037,12 @@ class _StatsWidget(QWidget):
         self.maxTextWordChars.setAlignment(alignRight)
 
         self.rightForm = QFormLayout()
-        self.rightForm.addRow(self.tr("Characters:"), self.maxTotalChars)
-        self.rightForm.addRow(self.tr("Header Characters:"), self.maxHeaderChars)
-        self.rightForm.addRow(self.tr("Body Text Characters:"), self.maxTextChars)
-        self.rightForm.addRow(self.tr("Characters, No Spaces:"), self.maxTotalWordChars)
-        self.rightForm.addRow(self.tr("Header Characters, No Spaces:"), self.maxHeaderWordChars)
-        self.rightForm.addRow(self.tr("Body Text Characters, No Spaces:"), self.maxTextWordChars)
+        self.rightForm.addRow(self.tr("Characters"), self.maxTotalChars)
+        self.rightForm.addRow(self.tr("Header Characters"), self.maxHeaderChars)
+        self.rightForm.addRow(self.tr("Body Text Characters"), self.maxTextChars)
+        self.rightForm.addRow(self.tr("Characters, No Spaces"), self.maxTotalWordChars)
+        self.rightForm.addRow(self.tr("Header Characters, No Spaces"), self.maxHeaderWordChars)
+        self.rightForm.addRow(self.tr("Body Text Characters, No Spaces"), self.maxTextWordChars)
         self.rightForm.setHorizontalSpacing(hPx)
         self.rightForm.setVerticalSpacing(vPx)
 
