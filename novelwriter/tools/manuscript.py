@@ -337,7 +337,8 @@ class GuiManuscript(QDialog):
         if build is None:
             return
 
-        docBuild = NWBuildDocument(SHARED.project, build, doCount=True)
+        docBuild = NWBuildDocument(SHARED.project, build)
+        docBuild.setPreviewMode(True)
         docBuild.queueAll()
 
         self.docPreview.beginNewBuild(len(docBuild))

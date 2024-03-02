@@ -59,10 +59,17 @@ SETTINGS_TEMPLATE = {
     "headings.fmtSection":    (str, ""),
     "headings.hideScene":     (bool, False),
     "headings.hideSection":   (bool, True),
+    "headings.centerTitle":   (bool, True),
+    "headings.centerChapter": (bool, False),
+    "headings.centerScene":   (bool, False),
+    "headings.breakTitle":    (bool, True),
+    "headings.breakChapter":  (bool, True),
+    "headings.breakScene":    (bool, False),
     "text.includeSynopsis":   (bool, False),
     "text.includeComments":   (bool, False),
     "text.includeKeywords":   (bool, False),
     "text.includeBodyText":   (bool, True),
+    "text.ignoredKeywords":   (str, ""),
     "text.addNoteHeadings":   (bool, True),
     "format.textFont":        (str, CONFIG.textFont),
     "format.textSize":        (int, 12),
@@ -81,7 +88,9 @@ SETTINGS_TEMPLATE = {
     "odt.addColours":         (bool, True),
     "odt.pageHeader":         (str, nwHeadFmt.ODT_AUTO),
     "odt.pageCountOffset":    (int, 0),
+    "md.preserveBreaks":      (bool, True),
     "html.addStyles":         (bool, True),
+    "html.preserveTabs":      (bool, False),
 }
 
 SETTINGS_LABELS = {
@@ -104,6 +113,7 @@ SETTINGS_LABELS = {
     "text.includeComments":   QT_TRANSLATE_NOOP("Builds", "Include Comments"),
     "text.includeKeywords":   QT_TRANSLATE_NOOP("Builds", "Include Keywords"),
     "text.includeBodyText":   QT_TRANSLATE_NOOP("Builds", "Include Body Text"),
+    "text.ignoredKeywords":   QT_TRANSLATE_NOOP("Builds", "Ignore These Keywords"),
     "text.grpInsert":         QT_TRANSLATE_NOOP("Builds", "Insert Content"),
     "text.addNoteHeadings":   QT_TRANSLATE_NOOP("Builds", "Add Titles for Notes"),
 
@@ -130,8 +140,12 @@ SETTINGS_LABELS = {
     "odt.pageHeader":         QT_TRANSLATE_NOOP("Builds", "Page Header"),
     "odt.pageCountOffset":    QT_TRANSLATE_NOOP("Builds", "Page Counter Offset"),
 
+    "md":                     QT_TRANSLATE_NOOP("Builds", "Markdown (.md)"),
+    "md.preserveBreaks":      QT_TRANSLATE_NOOP("Builds", "Preserve Hard Line Breaks"),
+
     "html":                   QT_TRANSLATE_NOOP("Builds", "HTML (.html)"),
     "html.addStyles":         QT_TRANSLATE_NOOP("Builds", "Add CSS Styles"),
+    "html.preserveTabs":      QT_TRANSLATE_NOOP("Builds", "Preserve Tab Characters"),
 }
 
 

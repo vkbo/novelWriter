@@ -52,15 +52,16 @@ class NWBuildDocument:
     manuscript, based on a build definition object (BuildSettings).
     """
 
-    __slots__ = ("_project", "_build", "_queue", "_error", "_cache", "_count")
+    __slots__ = ("_project", "_build", "_queue", "_error", "_cache", "_count", "_preview")
 
-    def __init__(self, project: NWProject, build: BuildSettings, doCount: bool = False) -> None:
+    def __init__(self, project: NWProject, build: BuildSettings) -> None:
         self._project = project
         self._build = build
         self._queue = []
         self._error = None
         self._cache = None
-        self._count = doCount
+        self._count = False
+        self._preview = False
         return
 
     ##
@@ -79,6 +80,21 @@ class NWBuildDocument:
         build job is completed.
         """
         return self._cache
+
+    ##
+    #  Setters
+    ##
+
+    def setCountEnabled(self, state: bool) -> None:
+        """Turn on/off stats counting for builds."""
+        self._count = state
+        return
+
+    def setPreviewMode(self, state: bool) -> None:
+        """Set the preview mode of the build. Implies count mode."""
+        self._preview = state
+        self._count = state
+        return
 
     ##
     #  Special Methods
@@ -161,7 +177,7 @@ class NWBuildDocument:
             else:
                 yield i, False
 
-        if self._build.getBool("format.replaceTabs"):
+        if not (self._build.getBool("html.preserveTabs") or self._preview):
             makeObj.replaceTabs()
 
         self._error = None
@@ -191,6 +207,8 @@ class NWBuildDocument:
 
         if self._build.getBool("format.replaceTabs"):
             makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
+
+        makeObj.setPreserveBreaks(self._build.getBool("md.preserveBreaks"))
 
         for i, tHandle in enumerate(self._queue):
             self._error = None
@@ -268,15 +286,28 @@ class NWBuildDocument:
             self._build.getStr("headings.fmtSection"),
             self._build.getBool("headings.hideSection")
         )
+        bldObj.setTitleStyle(
+            self._build.getBool("headings.centerTitle"),
+            self._build.getBool("headings.breakTitle")
+        )
+        bldObj.setChapterStyle(
+            self._build.getBool("headings.centerChapter"),
+            self._build.getBool("headings.breakChapter")
+        )
+        bldObj.setSceneStyle(
+            self._build.getBool("headings.centerScene"),
+            self._build.getBool("headings.breakScene")
+        )
 
         bldObj.setFont(fontFamily, textSize, textFixed)
         bldObj.setJustify(self._build.getBool("format.justifyText"))
         bldObj.setLineHeight(self._build.getFloat("format.lineHeight"))
 
+        bldObj.setBodyText(self._build.getBool("text.includeBodyText"))
         bldObj.setSynopsis(self._build.getBool("text.includeSynopsis"))
         bldObj.setComments(self._build.getBool("text.includeComments"))
         bldObj.setKeywords(self._build.getBool("text.includeKeywords"))
-        bldObj.setBodyText(self._build.getBool("text.includeBodyText"))
+        bldObj.setIgnoredKeywords(self._build.getStr("text.ignoredKeywords"))
 
         if isinstance(bldObj, ToHtml):
             bldObj.setStyles(self._build.getBool("html.addStyles"))

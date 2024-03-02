@@ -261,7 +261,7 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "Note Title", [], Tokenizer.A_CENTRE),
+        (Tokenizer.T_TITLE, 1, "Note Title", [], Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
     ]
     assert tokens.allMarkdown[-1] == "#! Note Title\n\n"
@@ -276,6 +276,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     tokens._text = "# Novel Title\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Novel Title", [], Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -289,6 +290,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     tokens._text = "# Note Title\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Note Title", [], Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -301,9 +303,11 @@ def testCoreToken_HeaderFormat(mockGUI):
     # Story File
     tokens._isNovel = True
     tokens._isNote  = False
+    tokens._noBreak = False
     tokens._text = "## Chapter One\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD2, 1, "Chapter One", [], Tokenizer.A_PBB),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -316,6 +320,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     tokens._text = "## Heading 2\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD2, 1, "Heading 2", [], Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -331,6 +336,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     tokens._text = "### Scene One\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD3, 1, "Scene One", [], Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -343,6 +349,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     tokens._text = "### Heading 3\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD3, 1, "Heading 3", [], Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -358,6 +365,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     tokens._text = "#### A Section\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD4, 1, "A Section", [], Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -370,6 +378,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     tokens._text = "#### Heading 4\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD4, 1, "Heading 4", [], Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -382,11 +391,13 @@ def testCoreToken_HeaderFormat(mockGUI):
     # Story File
     tokens._isNovel = True
     tokens._isNote  = False
+    tokens._isFirst = False
     tokens._text = "#! Title\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
-        (Tokenizer.T_TITLE, 1, "Title", [], Tokenizer.A_CENTRE),
+        (Tokenizer.T_TITLE, 1, "Title", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
     ]
     assert tokens.allMarkdown[-1] == "#! Title\n\n"
@@ -394,11 +405,13 @@ def testCoreToken_HeaderFormat(mockGUI):
     # Note File
     tokens._isNovel = False
     tokens._isNote  = True
+    tokens._isFirst = False
     tokens._text = "#! Title\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "Title", [], Tokenizer.A_CENTRE),
+        (Tokenizer.T_TITLE, 1, "Title", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
     ]
     assert tokens.allMarkdown[-1] == "#! Title\n\n"
@@ -412,6 +425,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     tokens._text = "##! Prologue\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_UNNUM, 1, "Prologue", [], Tokenizer.A_PBB),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -424,6 +438,7 @@ def testCoreToken_HeaderFormat(mockGUI):
     tokens._text = "##! Prologue\n"
 
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD2, 1, "Prologue", [], Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -431,6 +446,280 @@ def testCoreToken_HeaderFormat(mockGUI):
     assert tokens.allMarkdown[-1] == "##! Prologue\n\n"
 
 # END Test testCoreToken_HeaderFormat
+
+
+@pytest.mark.core
+def testCoreToken_HeaderStyle(mockGUI):
+    """Test the styling of headers in the Tokenizer class."""
+    project = NWProject()
+    tokens = BareTokenizer(project)
+
+    def processStyle(text: str, first: bool) -> int:
+        tokens._text = text
+        tokens._isFirst = first
+        tokens._noBreak = first
+        tokens.tokenizeText()
+        tokens.doHeaders()
+        return tokens._tokens[0][4]
+
+    # No Styles
+    # =========
+
+    tokens.setTitleStyle(False, False)
+    tokens.setChapterStyle(False, False)
+    tokens.setSceneStyle(False, False)
+
+    assert tokens._titleStyle == Tokenizer.A_NONE
+    assert tokens._chapterStyle == Tokenizer.A_NONE
+    assert tokens._sceneStyle == Tokenizer.A_NONE
+
+    # Novel Docs
+    tokens._isNovel = True
+    tokens._isNote  = False
+
+    # First Document is False
+    assert processStyle("# Title\n", False) == Tokenizer.A_NONE
+    assert processStyle("## Chapter\n", False) == Tokenizer.A_NONE
+    assert processStyle("### Scene\n", False) == Tokenizer.A_NONE
+    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
+    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert processStyle("##! Prologue\n", False) == Tokenizer.A_NONE
+
+    # First Document is True
+    assert processStyle("# Title\n", True) == Tokenizer.A_NONE
+    assert processStyle("## Chapter\n", True) == Tokenizer.A_NONE
+    assert processStyle("### Scene\n", True) == Tokenizer.A_NONE
+    assert processStyle("#### Section\n", True) == Tokenizer.A_NONE
+    assert processStyle("#! My Novel\n", True) == Tokenizer.A_CENTRE
+    assert processStyle("##! Prologue\n", True) == Tokenizer.A_NONE
+
+    # Note Docs
+    tokens._isNovel = False
+    tokens._isNote  = True
+
+    # First Document is False
+    assert processStyle("# Title\n", False) == Tokenizer.A_NONE
+    assert processStyle("## Chapter\n", False) == Tokenizer.A_NONE
+    assert processStyle("### Scene\n", False) == Tokenizer.A_NONE
+    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
+    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert processStyle("##! Prologue\n", False) == Tokenizer.A_NONE
+
+    # First Document is True
+    assert processStyle("# Title\n", True) == Tokenizer.A_NONE
+    assert processStyle("## Chapter\n", True) == Tokenizer.A_NONE
+    assert processStyle("### Scene\n", True) == Tokenizer.A_NONE
+    assert processStyle("#### Section\n", True) == Tokenizer.A_NONE
+    assert processStyle("#! My Novel\n", True) == Tokenizer.A_CENTRE
+    assert processStyle("##! Prologue\n", True) == Tokenizer.A_NONE
+
+    # Center Headers
+    # ==============
+
+    tokens.setTitleStyle(True, False)
+    tokens.setChapterStyle(True, False)
+    tokens.setSceneStyle(True, False)
+
+    assert tokens._titleStyle == Tokenizer.A_CENTRE
+    assert tokens._chapterStyle == Tokenizer.A_CENTRE
+    assert tokens._sceneStyle == Tokenizer.A_CENTRE
+
+    # Novel Docs
+    tokens._isNovel = True
+    tokens._isNote  = False
+
+    # First Document is False
+    assert processStyle("# Title\n", False) == Tokenizer.A_CENTRE
+    assert processStyle("## Chapter\n", False) == Tokenizer.A_CENTRE
+    assert processStyle("### Scene\n", False) == Tokenizer.A_CENTRE
+    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
+    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert processStyle("##! Prologue\n", False) == Tokenizer.A_CENTRE
+
+    # First Document is True
+    assert processStyle("# Title\n", True) == Tokenizer.A_CENTRE
+    assert processStyle("## Chapter\n", True) == Tokenizer.A_CENTRE
+    assert processStyle("### Scene\n", True) == Tokenizer.A_CENTRE
+    assert processStyle("#### Section\n", True) == Tokenizer.A_NONE
+    assert processStyle("#! My Novel\n", True) == Tokenizer.A_CENTRE
+    assert processStyle("##! Prologue\n", True) == Tokenizer.A_CENTRE
+
+    # Note Docs
+    tokens._isNovel = False
+    tokens._isNote  = True
+
+    # First Document is False
+    assert processStyle("# Title\n", False) == Tokenizer.A_NONE
+    assert processStyle("## Chapter\n", False) == Tokenizer.A_NONE
+    assert processStyle("### Scene\n", False) == Tokenizer.A_NONE
+    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
+    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert processStyle("##! Prologue\n", False) == Tokenizer.A_NONE
+
+    # First Document is True
+    assert processStyle("# Title\n", True) == Tokenizer.A_NONE
+    assert processStyle("## Chapter\n", True) == Tokenizer.A_NONE
+    assert processStyle("### Scene\n", True) == Tokenizer.A_NONE
+    assert processStyle("#### Section\n", True) == Tokenizer.A_NONE
+    assert processStyle("#! My Novel\n", True) == Tokenizer.A_CENTRE
+    assert processStyle("##! Prologue\n", True) == Tokenizer.A_NONE
+
+    # Page Break Headers
+    # ==================
+
+    tokens.setTitleStyle(False, True)
+    tokens.setChapterStyle(False, True)
+    tokens.setSceneStyle(False, True)
+
+    assert tokens._titleStyle == Tokenizer.A_PBB
+    assert tokens._chapterStyle == Tokenizer.A_PBB
+    assert tokens._sceneStyle == Tokenizer.A_PBB
+
+    # Novel Docs
+    tokens._isNovel = True
+    tokens._isNote  = False
+
+    # First Document is False
+    assert processStyle("# Title\n", False) == Tokenizer.A_PBB
+    assert processStyle("## Chapter\n", False) == Tokenizer.A_PBB
+    assert processStyle("### Scene\n", False) == Tokenizer.A_PBB
+    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
+    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert processStyle("##! Prologue\n", False) == Tokenizer.A_PBB
+
+    # First Document is True
+    assert processStyle("# Title\n", True) == Tokenizer.A_NONE
+    assert processStyle("## Chapter\n", True) == Tokenizer.A_NONE
+    assert processStyle("### Scene\n", True) == Tokenizer.A_NONE
+    assert processStyle("#### Section\n", True) == Tokenizer.A_NONE
+    assert processStyle("#! My Novel\n", True) == Tokenizer.A_CENTRE
+    assert processStyle("##! Prologue\n", True) == Tokenizer.A_NONE
+
+    # Note Docs
+    tokens._isNovel = False
+    tokens._isNote  = True
+
+    # First Document is False
+    assert processStyle("# Title\n", False) == Tokenizer.A_NONE
+    assert processStyle("## Chapter\n", False) == Tokenizer.A_NONE
+    assert processStyle("### Scene\n", False) == Tokenizer.A_NONE
+    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
+    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert processStyle("##! Prologue\n", False) == Tokenizer.A_NONE
+
+    # First Document is True
+    assert processStyle("# Title\n", True) == Tokenizer.A_NONE
+    assert processStyle("## Chapter\n", True) == Tokenizer.A_NONE
+    assert processStyle("### Scene\n", True) == Tokenizer.A_NONE
+    assert processStyle("#### Section\n", True) == Tokenizer.A_NONE
+    assert processStyle("#! My Novel\n", True) == Tokenizer.A_CENTRE
+    assert processStyle("##! Prologue\n", True) == Tokenizer.A_NONE
+
+    # Page Break and Centre Headers
+    # =============================
+
+    tokens.setTitleStyle(True, True)
+    tokens.setChapterStyle(True, True)
+    tokens.setSceneStyle(True, True)
+
+    assert tokens._titleStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert tokens._chapterStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert tokens._sceneStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+
+    # Novel Docs
+    tokens._isNovel = True
+    tokens._isNote  = False
+
+    # First Document is False
+    assert processStyle("# Title\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert processStyle("## Chapter\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert processStyle("### Scene\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
+    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert processStyle("##! Prologue\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+
+    # First Document is True
+    assert processStyle("# Title\n", True) == Tokenizer.A_CENTRE
+    assert processStyle("## Chapter\n", True) == Tokenizer.A_CENTRE
+    assert processStyle("### Scene\n", True) == Tokenizer.A_CENTRE
+    assert processStyle("#### Section\n", True) == Tokenizer.A_NONE
+    assert processStyle("#! My Novel\n", True) == Tokenizer.A_CENTRE
+    assert processStyle("##! Prologue\n", True) == Tokenizer.A_CENTRE
+
+    # Note Docs
+    tokens._isNovel = False
+    tokens._isNote  = True
+
+    # First Document is False
+    assert processStyle("# Title\n", False) == Tokenizer.A_NONE
+    assert processStyle("## Chapter\n", False) == Tokenizer.A_NONE
+    assert processStyle("### Scene\n", False) == Tokenizer.A_NONE
+    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
+    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert processStyle("##! Prologue\n", False) == Tokenizer.A_NONE
+
+    # First Document is True
+    assert processStyle("# Title\n", True) == Tokenizer.A_NONE
+    assert processStyle("## Chapter\n", True) == Tokenizer.A_NONE
+    assert processStyle("### Scene\n", True) == Tokenizer.A_NONE
+    assert processStyle("#### Section\n", True) == Tokenizer.A_NONE
+    assert processStyle("#! My Novel\n", True) == Tokenizer.A_CENTRE
+    assert processStyle("##! Prologue\n", True) == Tokenizer.A_NONE
+
+    # Check Separation
+    # ================
+    tokens._isNovel = True
+    tokens._isNote  = False
+
+    # Title Styles
+    tokens.setTitleStyle(True, True)
+    tokens.setChapterStyle(False, False)
+    tokens.setSceneStyle(False, False)
+
+    assert tokens._titleStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert tokens._chapterStyle == Tokenizer.A_NONE
+    assert tokens._sceneStyle == Tokenizer.A_NONE
+
+    assert processStyle("# Title\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert processStyle("## Chapter\n", False) == Tokenizer.A_NONE
+    assert processStyle("### Scene\n", False) == Tokenizer.A_NONE
+    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
+    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert processStyle("##! Prologue\n", False) == Tokenizer.A_NONE
+
+    # Chapter Styles
+    tokens.setTitleStyle(False, False)
+    tokens.setChapterStyle(True, True)
+    tokens.setSceneStyle(False, False)
+
+    assert tokens._titleStyle == Tokenizer.A_NONE
+    assert tokens._chapterStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert tokens._sceneStyle == Tokenizer.A_NONE
+
+    assert processStyle("# Title\n", False) == Tokenizer.A_NONE
+    assert processStyle("## Chapter\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert processStyle("### Scene\n", False) == Tokenizer.A_NONE
+    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
+    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert processStyle("##! Prologue\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+
+    # Scene Styles
+    tokens.setTitleStyle(False, False)
+    tokens.setChapterStyle(False, False)
+    tokens.setSceneStyle(True, True)
+
+    assert tokens._titleStyle == Tokenizer.A_NONE
+    assert tokens._chapterStyle == Tokenizer.A_NONE
+    assert tokens._sceneStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+
+    assert processStyle("# Title\n", False) == Tokenizer.A_NONE
+    assert processStyle("## Chapter\n", False) == Tokenizer.A_NONE
+    assert processStyle("### Scene\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
+    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert processStyle("##! Prologue\n", False) == Tokenizer.A_NONE
+
+# END Test testCoreToken_HeaderStyle
 
 
 @pytest.mark.core
@@ -519,6 +808,15 @@ def testCoreToken_MetaFormat(mockGUI):
         (Tokenizer.T_EMPTY, 0, "", [], Tokenizer.A_NONE),
     ]
     assert tokens.allMarkdown[-1] == "@pov: Bod\n@plot: Main\n@location: Europe\n\n"
+
+    # Ignored keywords
+    tokens._text = "@pov: Bod\n@plot: Main\n@location: Europe\n"
+    tokens.setIgnoredKeywords("@plot, @location")
+    tokens.tokenizeText()
+    assert tokens._tokens == [
+        (Tokenizer.T_KEYWORD, 0, "pov: Bod", [], Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 0, "", [], Tokenizer.A_NONE),
+    ]
 
 # END Test testCoreToken_MetaFormat
 
@@ -822,6 +1120,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "# Title Two\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == correctResp
 
     # Command w/Space
@@ -832,6 +1131,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "# Title Two\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == correctResp
 
     # Trailing Spaces
@@ -842,6 +1142,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "# Title Two\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == correctResp
 
     # Single Empty Paragraph
@@ -853,6 +1154,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -873,6 +1175,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -890,6 +1193,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -909,6 +1213,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -925,6 +1230,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -941,6 +1247,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -961,6 +1268,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
@@ -980,6 +1288,7 @@ def testCoreToken_SpecialFormat(mockGUI):
         "Some text to go here ...\n\n"
     )
     tokens.tokenizeText()
+    tokens.doHeaders()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),

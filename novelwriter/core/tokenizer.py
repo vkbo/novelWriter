@@ -130,16 +130,17 @@ class Tokenizer(ABC):
         self._tokens: list[tuple[int, int, str, list[tuple[int, int]], int]] = []
 
         # User Settings
-        self._textFont    = "Serif"  # Output text font
-        self._textSize    = 11       # Output text size
-        self._textFixed   = False    # Fixed width text
-        self._lineHeight  = 1.15     # Line height in units of em
-        self._blockIndent = 4.00     # Block indent in units of em
-        self._doJustify   = False    # Justify text
-        self._doBodyText  = True     # Include body text
-        self._doSynopsis  = False    # Also process synopsis comments
-        self._doComments  = False    # Also process comments
-        self._doKeywords  = False    # Also process keywords like tags and references
+        self._textFont     = "Serif"  # Output text font
+        self._textSize     = 11       # Output text size
+        self._textFixed    = False    # Fixed width text
+        self._lineHeight   = 1.15     # Line height in units of em
+        self._blockIndent  = 4.00     # Block indent in units of em
+        self._doJustify    = False    # Justify text
+        self._doBodyText   = True     # Include body text
+        self._doSynopsis   = False    # Also process synopsis comments
+        self._doComments   = False    # Also process comments
+        self._doKeywords   = False    # Also process keywords like tags and references
+        self._skipKeywords = set()    # Keywords to ignore
 
         # Margins
         self._marginTitle = (1.000, 0.500)
@@ -162,6 +163,10 @@ class Tokenizer(ABC):
 
         self._linkHeaders = False  # Add an anchor before headers
 
+        self._titleStyle   = self.A_CENTRE | self.A_PBB
+        self._chapterStyle = self.A_PBB
+        self._sceneStyle   = self.A_NONE
+
         # Instance Variables
         self._hFormatter = HeadingFormatter(self._project)
         self._skipSeparator = False  # Flag to indicate that we skip the scene separator
@@ -171,6 +176,7 @@ class Tokenizer(ABC):
         self._isNovel = False  # Document is a novel document
         self._isNote  = False  # Document is a project note
         self._isFirst = True   # Document is the first in a set
+        self._noBreak = False  # Don't allow an initial break when formatting headers
 
         # Error Handling
         self._errData = []
@@ -255,6 +261,27 @@ class Tokenizer(ABC):
         self._hideSection = hide
         return
 
+    def setTitleStyle(self, center: bool, pageBreak: bool) -> None:
+        """Set the title heading style."""
+        self._titleStyle = (
+            (self.A_CENTRE if center else self.A_NONE) | (self.A_PBB if pageBreak else self.A_NONE)
+        )
+        return
+
+    def setChapterStyle(self, center: bool, pageBreak: bool) -> None:
+        """Set the chapter heading style."""
+        self._chapterStyle = (
+            (self.A_CENTRE if center else self.A_NONE) | (self.A_PBB if pageBreak else self.A_NONE)
+        )
+        return
+
+    def setSceneStyle(self, center: bool, pageBreak: bool) -> None:
+        """Set the scene heading style."""
+        self._sceneStyle = (
+            (self.A_CENTRE if center else self.A_NONE) | (self.A_PBB if pageBreak else self.A_NONE)
+        )
+        return
+
     def setFont(self, family: str, size: int, isFixed: bool = False) -> None:
         """Set the build font."""
         self._textFont = family
@@ -335,6 +362,11 @@ class Tokenizer(ABC):
     def setKeywords(self, state: bool) -> None:
         """Include keywords in build."""
         self._doKeywords = state
+        return
+
+    def setIgnoredKeywords(self, keywords: str) -> None:
+        """Comma separated string of keywords to ignore."""
+        self._skipKeywords = set(x.lower().strip() for x in keywords.split(","))
         return
 
     def setKeepMarkdown(self, state: bool) -> None:
@@ -504,31 +536,26 @@ class Tokenizer(ABC):
                         tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[0] == "@":
-                self._tokens.append((
-                    self.T_KEYWORD, nHead, aLine[1:].strip(), [], sAlign
-                ))
-                if self._doKeywords and self._keepMarkdown:
-                    tmpMarkdown.append("%s\n" % aLine)
+                valid, bits, _ = self._project.index.scanThis(aLine)
+                if valid and bits and bits[0] not in self._skipKeywords:
+                    self._tokens.append((
+                        self.T_KEYWORD, nHead, aLine[1:].strip(), [], sAlign
+                    ))
+                    if self._doKeywords and self._keepMarkdown:
+                        tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:2] == "# ":
-                if self._isNovel:
-                    sAlign |= self.A_CENTRE
-                    sAlign |= self.A_PBB
-
                 nHead += 1
                 self._tokens.append((
-                    self.T_HEAD1, nHead, aLine[2:].strip(), [], sAlign
+                    self.T_HEAD1, nHead, aLine[2:].strip(), [], self.A_NONE
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:3] == "## ":
-                if self._isNovel:
-                    sAlign |= self.A_PBB
-
                 nHead += 1
                 self._tokens.append((
-                    self.T_HEAD2, nHead, aLine[3:].strip(), [], sAlign
+                    self.T_HEAD2, nHead, aLine[3:].strip(), [], self.A_NONE
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
@@ -536,7 +563,7 @@ class Tokenizer(ABC):
             elif aLine[:4] == "### ":
                 nHead += 1
                 self._tokens.append((
-                    self.T_HEAD3, nHead, aLine[4:].strip(), [], sAlign
+                    self.T_HEAD3, nHead, aLine[4:].strip(), [], self.A_NONE
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
@@ -544,34 +571,25 @@ class Tokenizer(ABC):
             elif aLine[:5] == "#### ":
                 nHead += 1
                 self._tokens.append((
-                    self.T_HEAD4, nHead, aLine[5:].strip(), [], sAlign
+                    self.T_HEAD4, nHead, aLine[5:].strip(), [], self.A_NONE
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:3] == "#! ":
                 nHead += 1
-                if self._isNovel:
-                    tStyle = self.T_TITLE
-                else:
-                    tStyle = self.T_HEAD1
-
                 self._tokens.append((
-                    tStyle, nHead, aLine[3:].strip(), [], sAlign | self.A_CENTRE
+                    self.T_TITLE, nHead, aLine[3:].strip(), [], self.A_PBB | self.A_CENTRE
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:4] == "##! ":
                 nHead += 1
-                if self._isNovel:
-                    tStyle = self.T_UNNUM
-                    sAlign |= self.A_PBB
-                else:
-                    tStyle = self.T_HEAD2
-
+                # If we're not in a novel section, we just treat this as a regular H2
+                tStyle = self.T_UNNUM if self._isNovel else self.T_HEAD2
                 self._tokens.append((
-                    tStyle, nHead, aLine[4:].strip(), [], sAlign
+                    tStyle, nHead, aLine[4:].strip(), [], self.A_NONE
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
@@ -622,7 +640,8 @@ class Tokenizer(ABC):
 
         # If we have content, turn off the first page flag
         if self._isFirst and self._tokens:
-            self._isFirst = False
+            self._isFirst = False  # First document has been processed
+            self._noBreak = True   # Check again after headers are processed
 
             # Make sure the token array doesn't start with a page break
             # on the very first page, adding a blank first page.
@@ -686,7 +705,7 @@ class Tokenizer(ABC):
 
                 tTemp = self._hFormatter.apply(self._fmtTitle, token[2], token[1])
                 self._tokens[n] = (
-                    token[0], token[1], tTemp, [], token[4]
+                    token[0], token[1], tTemp, [], self._titleStyle
                 )
 
                 # Set scene variables
@@ -704,7 +723,7 @@ class Tokenizer(ABC):
 
                 # Format the chapter header
                 self._tokens[n] = (
-                    token[0], token[1], tTemp, [], token[4]
+                    token[0], token[1], tTemp, [], self._chapterStyle
                 )
 
                 # Set scene variables
@@ -729,11 +748,11 @@ class Tokenizer(ABC):
                     self._tokens[n] = (
                         self.T_EMPTY if self._skipSeparator else self.T_SEP, token[1],
                         "" if self._skipSeparator else tTemp, [],
-                        self.A_NONE if self._skipSeparator else (token[4] | self.A_CENTRE)
+                        self.A_NONE if self._skipSeparator else self.A_CENTRE
                     )
                 else:
                     self._tokens[n] = (
-                        token[0], token[1], tTemp, [], token[4]
+                        token[0], token[1], tTemp, [], self._sceneStyle
                     )
 
                 self._skipSeparator = False
@@ -756,6 +775,15 @@ class Tokenizer(ABC):
                 else:
                     self._tokens[n] = (
                         token[0], token[1], tTemp, [], token[4]
+                    )
+
+            if n == 0 and self._noBreak:
+                # Make sure again that the token array doesn't start with a page break
+                self._noBreak = False
+                if self._tokens[0][4] & self.A_PBB:
+                    token = self._tokens[0]
+                    self._tokens[0] = (
+                        token[0], token[1], token[2], token[3], token[4] & ~self.A_PBB
                     )
 
         return True
