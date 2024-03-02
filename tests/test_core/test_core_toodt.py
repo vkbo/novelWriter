@@ -551,6 +551,7 @@ def testCoreToOdt_ConvertParagraphs(mockGUI):
         "> Left indent\n\n"
         "Right indent <\n\n"
     )
+    odt.setSceneFormat(nwHeadFmt.TITLE, False)
     odt.setKeywords(True)
     odt.tokenizeText()
     odt.initDocument()
