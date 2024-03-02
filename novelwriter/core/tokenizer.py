@@ -176,7 +176,6 @@ class Tokenizer(ABC):
         self._isNovel = False  # Document is a novel document
         self._isNote  = False  # Document is a project note
         self._isFirst = True   # Document is the first in a set
-        self._noBreak = False  # Don't allow an initial break when formatting headers
 
         # Error Handling
         self._errData = []
@@ -756,7 +755,6 @@ class Tokenizer(ABC):
         # If we have content, turn off the first page flag
         if self._isFirst and self._tokens:
             self._isFirst = False  # First document has been processed
-            self._noBreak = True   # Check again after headers are processed
 
             # Make sure the token array doesn't start with a page break
             # on the very first page, adding a blank first page.
