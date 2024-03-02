@@ -169,7 +169,7 @@ class Tokenizer(ABC):
 
         # Instance Variables
         self._hFormatter = HeadingFormatter(self._project)
-        self._skipSep = False  # Flag to indicate that we skip the scene separator
+        self._noSep = False  # Flag to indicate that we don't want a scene separator
 
         # This File
         self._isNone  = False  # Document has unknown layout
@@ -486,10 +486,11 @@ class Tokenizer(ABC):
             # =================
 
             if aLine[0] == "[":
-                # Parse special formatting line
-                # This must be a separate if statement, as it may not
-                # reach a continue statement and must therefore proceed
-                # to check other formats.
+                # Special Formats
+                # ===============
+                # Parse special formatting line. This must be a separate if
+                # statement, as it may not reach a continue statement and must
+                # therefore proceed to check other formats.
 
                 if sLine in ("[newpage]", "[new page]"):
                     breakNext = True
@@ -514,8 +515,12 @@ class Tokenizer(ABC):
                     continue
 
             if aLine[0] == "%":
+                # Comments
+                # ========
+                # All style comments are processed and the exact type exact
+                # style extracted. Ignored comments on the '%~' format are
+                # skipped completely.
                 if aLine[1] == "~":
-                    # Completely ignore the paragraph
                     continue
 
                 cStyle, cText, _ = processComment(aLine)
@@ -539,6 +544,11 @@ class Tokenizer(ABC):
                         tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[0] == "@":
+                # Keywords
+                # ========
+                # Only valid keyword lines are parsed, and any ignored keywords
+                # are automatically skipped.
+
                 valid, bits, _ = self._project.index.scanThis(aLine)
                 if valid and bits and bits[0] not in self._skipKeywords:
                     self._tokens.append((
@@ -548,13 +558,19 @@ class Tokenizer(ABC):
                         tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:2] == "# ":
+                # Partition Headers
+                # =================
+                # Partition headers are only formatted in novel documents, and
+                # otherwise unchanged. Scene separators are disabled
+                # immediately after partitions, and scene numbers are reset.
+
                 nHead += 1
                 tText = aLine[2:].strip()
                 tStyle = self.A_NONE
                 if self._isNovel:
                     tText = self._hFormatter.apply(self._fmtTitle, tText, nHead)
                     tStyle = self._titleStyle
-                    self._skipSep = True
+                    self._noSep = True
                     self._hFormatter.resetScene()
 
                 self._tokens.append((
@@ -564,6 +580,14 @@ class Tokenizer(ABC):
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:3] == "## ":
+                # Chapter Headers
+                # ===============
+                # Chapter headers are only formatted in novel documents, and
+                # otherwise unchanged. Chapter numbers are bumped before the
+                # heading is formatted. Scene separators are disabled
+                # immediately after chapter headers, and scene numbers are
+                # reset.
+
                 nHead += 1
                 tText = aLine[3:].strip()
                 tStyle = self.A_NONE
@@ -571,7 +595,7 @@ class Tokenizer(ABC):
                     self._hFormatter.incChapter()
                     tText = self._hFormatter.apply(self._fmtChapter, tText, nHead)
                     tStyle = self._chapterStyle
-                    self._skipSep = True
+                    self._noSep = True
                     self._hFormatter.resetScene()
 
                 self._tokens.append((
@@ -581,6 +605,17 @@ class Tokenizer(ABC):
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:4] == "### ":
+                # Scene Headers
+                # =============
+                # Scene headers in novel documents are treated as centred
+                # separators if the formatting does not change the text. If the
+                # format is empty, the scene can be hidden or a blank paragraph
+                # (skip). When the scene title has static text or no text, it
+                # is always ignored if the noSep flag is set. This prevents
+                # separators immediately after other titles. Scene numbers are
+                # always incremented before formatting. For notes, the header
+                # is unchanged.
+
                 nHead += 1
                 tText = aLine[4:].strip()
                 tType = self.T_HEAD3
@@ -590,13 +625,13 @@ class Tokenizer(ABC):
                     tText = self._hFormatter.apply(self._fmtScene, tText, nHead)
                     tStyle = self._sceneStyle
                     if tText == "":
-                        tType = self.T_EMPTY if self._skipSep or self._hideScene else self.T_SKIP
+                        tType = self.T_EMPTY if self._noSep or self._hideScene else self.T_SKIP
                         tStyle = self.A_NONE
                     elif tText == self._fmtScene:
-                        tText = "" if self._skipSep else tText
-                        tType = self.T_EMPTY if self._skipSep else self.T_SEP
-                        tStyle = self.A_NONE if self._skipSep else self.A_CENTRE
-                    self._skipSep = False
+                        tText = "" if self._noSep else tText
+                        tType = self.T_EMPTY if self._noSep else self.T_SEP
+                        tStyle = self.A_NONE if self._noSep else self.A_CENTRE
+                    self._noSep = False
 
                 self._tokens.append((
                     tType, nHead, tText, [], tStyle
@@ -605,6 +640,13 @@ class Tokenizer(ABC):
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:5] == "#### ":
+                # Section Headers
+                # ===============
+                # Section headers in novel docs are treated as centred
+                # separators if the formatting does not change the text. If the
+                # format is empty, the section can be hidden or a blank
+                # paragraph (skip). For notes, the header is unchanged.
+
                 nHead += 1
                 tText = aLine[5:].strip()
                 tType = self.T_HEAD4
@@ -624,6 +666,12 @@ class Tokenizer(ABC):
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:3] == "#! ":
+                # Main Title
+                # ==========
+                # Main titles are allowed in any document, and they are always
+                # centred and start on a new page. For novel documents, we also
+                # reset all counters when such a title is encountered.
+
                 nHead += 1
                 self._tokens.append((
                     self.T_TITLE, nHead, aLine[3:].strip(), [], self.A_PBB | self.A_CENTRE
@@ -631,11 +679,15 @@ class Tokenizer(ABC):
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
                 if self._isNovel:
-                    # For new titles, we reset all counters
-                    self._skipSep = True
+                    self._noSep = True
                     self._hFormatter.resetAll()
 
             elif aLine[:4] == "##! ":
+                # Unnumbered Chapter Header
+                # =========================
+                # Unnumbered chapters are only meaningful in Novel docs, so if
+                # we're in a note, we convert them to a plain level 2 header.
+
                 nHead += 1
                 tText = aLine[4:].strip()
                 tType = self.T_HEAD2
@@ -644,10 +696,9 @@ class Tokenizer(ABC):
                     tText = self._hFormatter.apply(self._fmtUnNum, tText, nHead)
                     tType = self.T_UNNUM
                     tStyle = self._chapterStyle
-                    self._skipSep = True
+                    self._noSep = True
                     self._hFormatter.resetScene()
 
-                # If we're not in a novel section, we just treat this as a regular H2
                 self._tokens.append((
                     tType, nHead, tText, [], tStyle
                 ))
@@ -655,6 +706,10 @@ class Tokenizer(ABC):
                     tmpMarkdown.append("%s\n" % aLine)
 
             else:
+                # Text Lines
+                # ==========
+                # Anything remaining at this point is body text. If body text
+                # is not disabled, we proceed to process text formatting.
                 if not self._doBodyText:
                     # Skip all body text
                     continue
@@ -744,14 +799,6 @@ class Tokenizer(ABC):
                 self._tokens[n] = (token[0], token[1], token[2], token[3], aStyle)
 
         return
-
-    def doHeaders(self) -> bool:
-        """Apply formatting to the text headers for novel files. This
-        also applies chapter and scene numbering.
-        """
-        if not self._isNovel:
-            return False
-        return True
 
     def countStats(self) -> dict[str, int]:
         """Count stats on the tokenized text."""
