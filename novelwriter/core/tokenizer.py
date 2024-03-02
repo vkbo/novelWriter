@@ -770,8 +770,6 @@ class Tokenizer(ABC):
         ))
         if self._keepMarkdown:
             tmpMarkdown.append("\n")
-
-        if self._keepMarkdown:
             self._allMarkdown.append("".join(tmpMarkdown))
 
         # Second Pass
