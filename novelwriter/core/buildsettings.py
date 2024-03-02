@@ -69,6 +69,7 @@ SETTINGS_TEMPLATE = {
     "text.includeComments":   (bool, False),
     "text.includeKeywords":   (bool, False),
     "text.includeBodyText":   (bool, True),
+    "text.ignoredKeywords":   (str, ""),
     "text.addNoteHeadings":   (bool, True),
     "format.textFont":        (str, CONFIG.textFont),
     "format.textSize":        (int, 12),
@@ -112,6 +113,7 @@ SETTINGS_LABELS = {
     "text.includeComments":   QT_TRANSLATE_NOOP("Builds", "Include Comments"),
     "text.includeKeywords":   QT_TRANSLATE_NOOP("Builds", "Include Keywords"),
     "text.includeBodyText":   QT_TRANSLATE_NOOP("Builds", "Include Body Text"),
+    "text.ignoredKeywords":   QT_TRANSLATE_NOOP("Builds", "Ignore These Keywords"),
     "text.grpInsert":         QT_TRANSLATE_NOOP("Builds", "Insert Content"),
     "text.addNoteHeadings":   QT_TRANSLATE_NOOP("Builds", "Add Titles for Notes"),
 

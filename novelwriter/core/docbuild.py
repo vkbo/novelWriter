@@ -303,10 +303,11 @@ class NWBuildDocument:
         bldObj.setJustify(self._build.getBool("format.justifyText"))
         bldObj.setLineHeight(self._build.getFloat("format.lineHeight"))
 
+        bldObj.setBodyText(self._build.getBool("text.includeBodyText"))
         bldObj.setSynopsis(self._build.getBool("text.includeSynopsis"))
         bldObj.setComments(self._build.getBool("text.includeComments"))
         bldObj.setKeywords(self._build.getBool("text.includeKeywords"))
-        bldObj.setBodyText(self._build.getBool("text.includeBodyText"))
+        bldObj.setIgnoredKeywords(self._build.getStr("text.ignoredKeywords"))
 
         if isinstance(bldObj, ToHtml):
             bldObj.setStyles(self._build.getBool("html.addStyles"))

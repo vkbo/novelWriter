@@ -130,16 +130,17 @@ class Tokenizer(ABC):
         self._tokens: list[tuple[int, int, str, list[tuple[int, int]], int]] = []
 
         # User Settings
-        self._textFont    = "Serif"  # Output text font
-        self._textSize    = 11       # Output text size
-        self._textFixed   = False    # Fixed width text
-        self._lineHeight  = 1.15     # Line height in units of em
-        self._blockIndent = 4.00     # Block indent in units of em
-        self._doJustify   = False    # Justify text
-        self._doBodyText  = True     # Include body text
-        self._doSynopsis  = False    # Also process synopsis comments
-        self._doComments  = False    # Also process comments
-        self._doKeywords  = False    # Also process keywords like tags and references
+        self._textFont     = "Serif"  # Output text font
+        self._textSize     = 11       # Output text size
+        self._textFixed    = False    # Fixed width text
+        self._lineHeight   = 1.15     # Line height in units of em
+        self._blockIndent  = 4.00     # Block indent in units of em
+        self._doJustify    = False    # Justify text
+        self._doBodyText   = True     # Include body text
+        self._doSynopsis   = False    # Also process synopsis comments
+        self._doComments   = False    # Also process comments
+        self._doKeywords   = False    # Also process keywords like tags and references
+        self._skipKeywords = set()    # Keywords to ignore
 
         # Margins
         self._marginTitle = (1.000, 0.500)
@@ -363,6 +364,11 @@ class Tokenizer(ABC):
         self._doKeywords = state
         return
 
+    def setIgnoredKeywords(self, keywords: str) -> None:
+        """Comma separated string of keywords to ignore."""
+        self._skipKeywords = set(x.lower().strip() for x in keywords.split(","))
+        return
+
     def setKeepMarkdown(self, state: bool) -> None:
         """Keep original markdown during build."""
         self._keepMarkdown = state
@@ -530,11 +536,13 @@ class Tokenizer(ABC):
                         tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[0] == "@":
-                self._tokens.append((
-                    self.T_KEYWORD, nHead, aLine[1:].strip(), [], sAlign
-                ))
-                if self._doKeywords and self._keepMarkdown:
-                    tmpMarkdown.append("%s\n" % aLine)
+                valid, bits, _ = self._project.index.scanThis(aLine)
+                if valid and bits and bits[0] not in self._skipKeywords:
+                    self._tokens.append((
+                        self.T_KEYWORD, nHead, aLine[1:].strip(), [], sAlign
+                    ))
+                    if self._doKeywords and self._keepMarkdown:
+                        tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:2] == "# ":
                 nHead += 1

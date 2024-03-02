@@ -37,7 +37,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.constants import nwHeadFmt, nwLabels, trConst
+from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.modified import NComboBox, NDoubleSpinBox, NSpinBox
@@ -966,16 +966,32 @@ class _ContentTab(NScrollableForm):
         iPx = SHARED.theme.baseIconSize
 
         # Text Content
+        self.incBodyText = NSwitch(self, height=iPx)
         self.incSynopsis = NSwitch(self, height=iPx)
         self.incComments = NSwitch(self, height=iPx)
         self.incKeywords = NSwitch(self, height=iPx)
-        self.incBodyText = NSwitch(self, height=iPx)
+
+        self.ignoredKeywords = QLineEdit(self)
+
+        self.mnKeywords = QMenu(self)
+        for keyword in nwKeyWords.VALID_KEYS:
+            self.mnKeywords.addAction(
+                trConst(nwLabels.KEY_NAME[keyword]),
+                lambda keyword=keyword: self._updateIgnoredKeywords(keyword)
+            )
+
+        self.ignoredKeywordsButton = QToolButton(self)
+        self.ignoredKeywordsButton.setIcon(SHARED.theme.getIcon("add"))
+        self.ignoredKeywordsButton.setMenu(self.mnKeywords)
+        self.ignoredKeywordsButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
         self.addGroupLabel(self._build.getLabel("text.grpContent"))
+        self.addRow(self._build.getLabel("text.includeBodyText"), self.incBodyText)
         self.addRow(self._build.getLabel("text.includeSynopsis"), self.incSynopsis)
         self.addRow(self._build.getLabel("text.includeComments"), self.incComments)
         self.addRow(self._build.getLabel("text.includeKeywords"), self.incKeywords)
-        self.addRow(self._build.getLabel("text.includeBodyText"), self.incBodyText)
+        self.addRow(self._build.getLabel("text.ignoredKeywords"), self.ignoredKeywords,
+                    button=self.ignoredKeywordsButton, stretch=(1, 1))
 
         # Insert Content
         self.addNoteHead = NSwitch(self, height=iPx)
@@ -990,20 +1006,37 @@ class _ContentTab(NScrollableForm):
 
     def loadContent(self) -> None:
         """Populate the widgets."""
+        self.incBodyText.setChecked(self._build.getBool("text.includeBodyText"))
         self.incSynopsis.setChecked(self._build.getBool("text.includeSynopsis"))
         self.incComments.setChecked(self._build.getBool("text.includeComments"))
         self.incKeywords.setChecked(self._build.getBool("text.includeKeywords"))
-        self.incBodyText.setChecked(self._build.getBool("text.includeBodyText"))
+        self.ignoredKeywords.setText(self._build.getStr("text.ignoredKeywords"))
         self.addNoteHead.setChecked(self._build.getBool("text.addNoteHeadings"))
+        self._updateIgnoredKeywords()
         return
 
     def saveContent(self) -> None:
         """Save choices back into build object."""
+        self._updateIgnoredKeywords()
+        self._build.setValue("text.includeBodyText", self.incBodyText.isChecked())
         self._build.setValue("text.includeSynopsis", self.incSynopsis.isChecked())
         self._build.setValue("text.includeComments", self.incComments.isChecked())
         self._build.setValue("text.includeKeywords", self.incKeywords.isChecked())
-        self._build.setValue("text.includeBodyText", self.incBodyText.isChecked())
+        self._build.setValue("text.ignoredKeywords", self.ignoredKeywords.text())
         self._build.setValue("text.addNoteHeadings", self.addNoteHead.isChecked())
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _updateIgnoredKeywords(self, keyword: str | None = None) -> None:
+        """Update the ignored keywords list."""
+        current = [x.lower().strip() for x in self.ignoredKeywords.text().split(",")]
+        if keyword:
+            current.append(keyword)
+        verified = set(x for x in current if x in nwKeyWords.VALID_KEYS)
+        self.ignoredKeywords.setText(", ".join(verified))
         return
 
 # END Class _ContentTab
