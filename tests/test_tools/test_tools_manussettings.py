@@ -479,10 +479,11 @@ def testBuildSettings_Content(qtbot: QtBot, nwGUI: GuiMain):
     """Test the Content Tab of the GuiBuildSettings dialog."""
     build = BuildSettings()
 
+    build.setValue("text.includeBodyText", False)
     build.setValue("text.includeSynopsis", False)
     build.setValue("text.includeComments", False)
     build.setValue("text.includeKeywords", False)
-    build.setValue("text.includeBodyText", False)
+    build.setValue("text.ignoredKeywords", "")
 
     build.setValue("text.addNoteHeadings", False)
 
@@ -496,28 +497,35 @@ def testBuildSettings_Content(qtbot: QtBot, nwGUI: GuiMain):
     assert bSettings.toolStack.currentWidget() is contTab
 
     # Check initial values
+    assert contTab.incBodyText.isChecked() is False
     assert contTab.incSynopsis.isChecked() is False
     assert contTab.incComments.isChecked() is False
     assert contTab.incKeywords.isChecked() is False
-    assert contTab.incBodyText.isChecked() is False
+    assert contTab.ignoredKeywords.text() == ""
 
     assert contTab.addNoteHead.isChecked() is False
 
-    # Toggle all
+    # Toggle switches
+    contTab.incBodyText.setChecked(True)
     contTab.incSynopsis.setChecked(True)
     contTab.incComments.setChecked(True)
     contTab.incKeywords.setChecked(True)
-    contTab.incBodyText.setChecked(True)
 
     contTab.addNoteHead.setChecked(True)
+
+    # Test cleanup of ignored keywords
+    contTab.ignoredKeywords.setText("@stuff, @pizza, @object")  # First two are invalid
+    contTab._updateIgnoredKeywords("@custom")  # Adding a new should trigger cleanup
+    assert contTab.ignoredKeywords.text() in ("@custom, @object", "@object, @custom")
 
     # Save values
     contTab.saveContent()
 
+    assert build.getBool("text.includeBodyText") is True
     assert build.getBool("text.includeSynopsis") is True
     assert build.getBool("text.includeComments") is True
     assert build.getBool("text.includeKeywords") is True
-    assert build.getBool("text.includeBodyText") is True
+    assert build.getStr("text.ignoredKeywords") in ("@custom, @object", "@object, @custom")
 
     assert build.getBool("text.addNoteHeadings") is True
 

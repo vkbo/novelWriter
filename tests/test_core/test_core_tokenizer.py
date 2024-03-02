@@ -809,6 +809,15 @@ def testCoreToken_MetaFormat(mockGUI):
     ]
     assert tokens.allMarkdown[-1] == "@pov: Bod\n@plot: Main\n@location: Europe\n\n"
 
+    # Ignored keywords
+    tokens._text = "@pov: Bod\n@plot: Main\n@location: Europe\n"
+    tokens.setIgnoredKeywords("@plot, @location")
+    tokens.tokenizeText()
+    assert tokens._tokens == [
+        (Tokenizer.T_KEYWORD, 0, "pov: Bod", [], Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 0, "", [], Tokenizer.A_NONE),
+    ]
+
 # END Test testCoreToken_MetaFormat
 
 
