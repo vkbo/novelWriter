@@ -169,7 +169,7 @@ class Tokenizer(ABC):
 
         # Instance Variables
         self._hFormatter = HeadingFormatter(self._project)
-        self._skipSeparator = False  # Flag to indicate that we skip the scene separator
+        self._skipSep = False  # Flag to indicate that we skip the scene separator
 
         # This File
         self._isNone  = False  # Document has unknown layout
@@ -457,9 +457,12 @@ class Tokenizer(ABC):
           5: The style of the block, self.A_*
         """
         self._tokens = []
-        tmpMarkdown = []
+        if self._isNovel:
+            self._hFormatter.setHandle(self._nwItem.itemHandle if self._nwItem else None)
+
         nHead = 0
         breakNext = False
+        tmpMarkdown = []
         for aLine in self._text.splitlines():
             sLine = aLine.strip().lower()
 
@@ -546,32 +549,76 @@ class Tokenizer(ABC):
 
             elif aLine[:2] == "# ":
                 nHead += 1
+                tText = aLine[2:].strip()
+                tStyle = self.A_NONE
+                if self._isNovel:
+                    tText = self._hFormatter.apply(self._fmtTitle, tText, nHead)
+                    tStyle = self._titleStyle
+                    self._skipSep = True
+                    self._hFormatter.resetScene()
+
                 self._tokens.append((
-                    self.T_HEAD1, nHead, aLine[2:].strip(), [], self.A_NONE
+                    self.T_HEAD1, nHead, tText, [], tStyle
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:3] == "## ":
                 nHead += 1
+                tText = aLine[3:].strip()
+                tStyle = self.A_NONE
+                if self._isNovel:
+                    self._hFormatter.incChapter()
+                    tText = self._hFormatter.apply(self._fmtChapter, tText, nHead)
+                    tStyle = self._chapterStyle
+                    self._skipSep = True
+                    self._hFormatter.resetScene()
+
                 self._tokens.append((
-                    self.T_HEAD2, nHead, aLine[3:].strip(), [], self.A_NONE
+                    self.T_HEAD2, nHead, tText, [], tStyle
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:4] == "### ":
                 nHead += 1
+                tText = aLine[4:].strip()
+                tType = self.T_HEAD3
+                tStyle = self.A_NONE
+                if self._isNovel:
+                    self._hFormatter.incScene()
+                    tText = self._hFormatter.apply(self._fmtScene, tText, nHead)
+                    tStyle = self._sceneStyle
+                    if tText == "":
+                        tType = self.T_EMPTY if self._skipSep or self._hideScene else self.T_SKIP
+                        tStyle = self.A_NONE
+                    elif tText == self._fmtScene:
+                        tText = "" if self._skipSep else tText
+                        tType = self.T_EMPTY if self._skipSep else self.T_SEP
+                        tStyle = self.A_NONE if self._skipSep else self.A_CENTRE
+                    self._skipSep = False
+
                 self._tokens.append((
-                    self.T_HEAD3, nHead, aLine[4:].strip(), [], self.A_NONE
+                    tType, nHead, tText, [], tStyle
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
 
             elif aLine[:5] == "#### ":
                 nHead += 1
+                tText = aLine[5:].strip()
+                tType = self.T_HEAD4
+                tStyle = self.A_NONE
+                if self._isNovel:
+                    tText = self._hFormatter.apply(self._fmtSection, tText, nHead)
+                    if tText == "":
+                        tType = self.T_EMPTY if self._hideSection else self.T_SKIP
+                    elif tText == self._fmtSection:
+                        tType = self.T_SEP
+                        tStyle = self.A_CENTRE
+
                 self._tokens.append((
-                    self.T_HEAD4, nHead, aLine[5:].strip(), [], self.A_NONE
+                    tType, nHead, tText, [], tStyle
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
@@ -583,13 +630,26 @@ class Tokenizer(ABC):
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
+                if self._isNovel:
+                    # For new titles, we reset all counters
+                    self._skipSep = True
+                    self._hFormatter.resetAll()
 
             elif aLine[:4] == "##! ":
                 nHead += 1
+                tText = aLine[4:].strip()
+                tType = self.T_HEAD2
+                tStyle = self.A_NONE
+                if self._isNovel:
+                    tText = self._hFormatter.apply(self._fmtUnNum, tText, nHead)
+                    tType = self.T_UNNUM
+                    tStyle = self._chapterStyle
+                    self._skipSep = True
+                    self._hFormatter.resetScene()
+
                 # If we're not in a novel section, we just treat this as a regular H2
-                tStyle = self.T_UNNUM if self._isNovel else self.T_HEAD2
                 self._tokens.append((
-                    tStyle, nHead, aLine[4:].strip(), [], self.A_NONE
+                    tType, nHead, tText, [], tStyle
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("%s\n" % aLine)
@@ -691,101 +751,6 @@ class Tokenizer(ABC):
         """
         if not self._isNovel:
             return False
-
-        self._hFormatter.setHandle(self._nwItem.itemHandle if self._nwItem else None)
-
-        for n, token in enumerate(self._tokens):
-
-            if token[0] == self.T_TITLE:  # Title
-                # For new titles, we reset all counters
-                self._skipSeparator = True
-                self._hFormatter.resetAll()
-
-            elif token[0] == self.T_HEAD1:  # Partition
-
-                tTemp = self._hFormatter.apply(self._fmtTitle, token[2], token[1])
-                self._tokens[n] = (
-                    token[0], token[1], tTemp, [], self._titleStyle
-                )
-
-                # Set scene variables
-                self._skipSeparator = True
-                self._hFormatter.resetScene()
-
-            elif token[0] in (self.T_HEAD2, self.T_UNNUM):  # Chapter, Unnumbered
-
-                # Numbered or Unnumbered
-                if token[0] == self.T_UNNUM:
-                    tTemp = self._hFormatter.apply(self._fmtUnNum, token[2], token[1])
-                else:
-                    self._hFormatter.incChapter()
-                    tTemp = self._hFormatter.apply(self._fmtChapter, token[2], token[1])
-
-                # Format the chapter header
-                self._tokens[n] = (
-                    token[0], token[1], tTemp, [], self._chapterStyle
-                )
-
-                # Set scene variables
-                self._skipSeparator = True
-                self._hFormatter.resetScene()
-
-            elif token[0] == self.T_HEAD3:  # Scene
-
-                self._hFormatter.incScene()
-
-                tTemp = self._hFormatter.apply(self._fmtScene, token[2], token[1])
-                if tTemp == "" and self._hideScene:
-                    self._tokens[n] = (
-                        self.T_EMPTY, token[1], "", [], self.A_NONE
-                    )
-                elif tTemp == "" and not self._hideScene:
-                    self._tokens[n] = (
-                        self.T_EMPTY if self._skipSeparator else self.T_SKIP, token[1],
-                        "", [], self.A_NONE if self._skipSeparator else token[4]
-                    )
-                elif tTemp == self._fmtScene:
-                    self._tokens[n] = (
-                        self.T_EMPTY if self._skipSeparator else self.T_SEP, token[1],
-                        "" if self._skipSeparator else tTemp, [],
-                        self.A_NONE if self._skipSeparator else self.A_CENTRE
-                    )
-                else:
-                    self._tokens[n] = (
-                        token[0], token[1], tTemp, [], self._sceneStyle
-                    )
-
-                self._skipSeparator = False
-
-            elif token[0] == self.T_HEAD4:  # Section
-
-                tTemp = self._hFormatter.apply(self._fmtSection, token[2], token[1])
-                if tTemp == "" and self._hideSection:
-                    self._tokens[n] = (
-                        self.T_EMPTY, token[1], "", [], self.A_NONE
-                    )
-                elif tTemp == "" and not self._hideSection:
-                    self._tokens[n] = (
-                        self.T_SKIP, token[1], "", [], token[4]
-                    )
-                elif tTemp == self._fmtSection:
-                    self._tokens[n] = (
-                        self.T_SEP, token[1], tTemp, [], token[4] | self.A_CENTRE
-                    )
-                else:
-                    self._tokens[n] = (
-                        token[0], token[1], tTemp, [], token[4]
-                    )
-
-            if n == 0 and self._noBreak:
-                # Make sure again that the token array doesn't start with a page break
-                self._noBreak = False
-                if self._tokens[0][4] & self.A_PBB:
-                    token = self._tokens[0]
-                    self._tokens[0] = (
-                        token[0], token[1], token[2], token[3], token[4] & ~self.A_PBB
-                    )
-
         return True
 
     def countStats(self) -> dict[str, int]:
