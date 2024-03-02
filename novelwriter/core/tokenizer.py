@@ -528,19 +528,19 @@ class Tokenizer(ABC):
                         self.T_SYNOPSIS, nHead, cText, [], sAlign
                     ))
                     if self._doSynopsis and self._keepMarkdown:
-                        tmpMarkdown.append("%s\n" % aLine)
+                        tmpMarkdown.append(f"{aLine}\n")
                 elif cStyle == nwComment.SHORT:
                     self._tokens.append((
                         self.T_SHORT, nHead, cText, [], sAlign
                     ))
                     if self._doSynopsis and self._keepMarkdown:
-                        tmpMarkdown.append("%s\n" % aLine)
+                        tmpMarkdown.append(f"{aLine}\n")
                 else:
                     self._tokens.append((
                         self.T_COMMENT, nHead, cText, [], sAlign
                     ))
                     if self._doComments and self._keepMarkdown:
-                        tmpMarkdown.append("%s\n" % aLine)
+                        tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine[0] == "@":
                 # Keywords
@@ -554,7 +554,7 @@ class Tokenizer(ABC):
                         self.T_KEYWORD, nHead, aLine[1:].strip(), [], sAlign
                     ))
                     if self._doKeywords and self._keepMarkdown:
-                        tmpMarkdown.append("%s\n" % aLine)
+                        tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine[:2] == "# ":
                 # Partition Headers
@@ -576,7 +576,7 @@ class Tokenizer(ABC):
                     self.T_HEAD1, nHead, tText, [], tStyle
                 ))
                 if self._keepMarkdown:
-                    tmpMarkdown.append("%s\n" % aLine)
+                    tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine[:3] == "## ":
                 # Chapter Headers
@@ -601,7 +601,7 @@ class Tokenizer(ABC):
                     self.T_HEAD2, nHead, tText, [], tStyle
                 ))
                 if self._keepMarkdown:
-                    tmpMarkdown.append("%s\n" % aLine)
+                    tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine[:4] == "### ":
                 # Scene Headers
@@ -636,7 +636,7 @@ class Tokenizer(ABC):
                     tType, nHead, tText, [], tStyle
                 ))
                 if self._keepMarkdown:
-                    tmpMarkdown.append("%s\n" % aLine)
+                    tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine[:5] == "#### ":
                 # Section Headers
@@ -662,7 +662,7 @@ class Tokenizer(ABC):
                     tType, nHead, tText, [], tStyle
                 ))
                 if self._keepMarkdown:
-                    tmpMarkdown.append("%s\n" % aLine)
+                    tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine[:3] == "#! ":
                 # Main Title
@@ -675,11 +675,11 @@ class Tokenizer(ABC):
                 self._tokens.append((
                     self.T_TITLE, nHead, aLine[3:].strip(), [], self.A_PBB | self.A_CENTRE
                 ))
-                if self._keepMarkdown:
-                    tmpMarkdown.append("%s\n" % aLine)
                 if self._isNovel:
                     self._noSep = True
                     self._hFormatter.resetAll()
+                if self._keepMarkdown:
+                    tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine[:4] == "##! ":
                 # Unnumbered Chapter Header
@@ -702,7 +702,7 @@ class Tokenizer(ABC):
                     tType, nHead, tText, [], tStyle
                 ))
                 if self._keepMarkdown:
-                    tmpMarkdown.append("%s\n" % aLine)
+                    tmpMarkdown.append(f"{aLine}\n")
 
             else:
                 # Text Lines
@@ -750,7 +750,7 @@ class Tokenizer(ABC):
                     self.T_TEXT, nHead, tLine, fmtPos, sAlign
                 ))
                 if self._keepMarkdown:
-                    tmpMarkdown.append("%s\n" % aLine)
+                    tmpMarkdown.append(f"{aLine}\n")
 
         # If we have content, turn off the first page flag
         if self._isFirst and self._tokens:
