@@ -804,14 +804,14 @@ class GuiMainMenu(QMenuBar):
         # Format > Separator
         self.fmtMenu.addSeparator()
 
-        # Format > Replace Single Quotes
-        self.aFmtReplSng = self.fmtMenu.addAction(self.tr("Convert Single Quotes"))
+        # Format > Replace Straight Single Quotes
+        self.aFmtReplSng = self.fmtMenu.addAction(self.tr("Replace Straight Single Quotes"))
         self.aFmtReplSng.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.REPL_SNG)
         )
 
-        # Format > Replace Double Quotes
-        self.aFmtReplDbl = self.fmtMenu.addAction(self.tr("Convert Double Quotes"))
+        # Format > Replace Straight Double Quotes
+        self.aFmtReplDbl = self.fmtMenu.addAction(self.tr("Replace Straight Double Quotes"))
         self.aFmtReplDbl.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.REPL_DBL)
         )
