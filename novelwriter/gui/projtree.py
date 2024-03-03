@@ -505,7 +505,7 @@ class GuiProjectTree(QTreeWidget):
         self.mainGui  = projView.mainGui
 
         # Internal Variables
-        self._treeMap = {}
+        self._treeMap: dict[str, QTreeWidgetItem] = {}
         self._timeChanged = 0.0
         self._popAlert = None
 
@@ -1129,9 +1129,8 @@ class GuiProjectTree(QTreeWidget):
         """Get the currently selected handle. If multiple items are
         selected, return the first.
         """
-        selItem = self.selectedItems()
-        if selItem:
-            return selItem[0].data(self.C_DATA, self.D_HANDLE)
+        if items := self.selectedItems():
+            return items[0].data(self.C_DATA, self.D_HANDLE)
         return None
 
     def setSelectedHandle(self, tHandle: str | None, doScroll: bool = False) -> bool:
@@ -1143,9 +1142,8 @@ class GuiProjectTree(QTreeWidget):
         if tHandle in self._treeMap:
             self.setCurrentItem(self._treeMap[tHandle])
 
-        selIndex = self.selectedIndexes()
-        if selIndex and doScroll:
-            self.scrollTo(selIndex[0], QAbstractItemView.ScrollHint.PositionAtCenter)
+        if (indexes := self.selectedIndexes()) and doScroll:
+            self.scrollTo(indexes[0], QAbstractItemView.ScrollHint.PositionAtCenter)
 
         return True
 
@@ -1160,10 +1158,8 @@ class GuiProjectTree(QTreeWidget):
 
     def openContextOnSelected(self) -> bool:
         """Open the context menu on the current selected item."""
-        selItem = self.selectedItems()
-        if selItem:
-            pos = self.visualItemRect(selItem[0]).center()
-            return self._openContextMenu(pos)
+        if items := self.selectedItems():
+            return self._openContextMenu(self.visualItemRect(items[0]).center())
         return False
 
     def changedSince(self, checkTime: float) -> bool:
@@ -1746,7 +1742,7 @@ class _TreeContextMenu(QMenu):
 
         self._item = nwItem
         self._handle = nwItem.itemHandle
-        self._items: list[str] = []
+        self._items: list[NWItem] = []
 
         logger.debug("Ready: _TreeContextMenu")
 
@@ -1799,13 +1795,17 @@ class _TreeContextMenu(QMenu):
 
         return
 
-    def buildMultiSelectMenu(self, items: list[str]) -> None:
+    def buildMultiSelectMenu(self, handles: list[str]) -> None:
         """Build the multi-select menu."""
-        self._items = items
+        self._items = []
+        for tHandle in handles:
+            if (tItem := SHARED.project.tree[tHandle]):
+                self._items.append(tItem)
+
         self._itemActive(True)
         self._itemStatusImport(True)
         self.addSeparator()
-        self._moveToTrash(True)
+        self._multiMoveToTrash()
         return
 
     ##
@@ -1964,10 +1964,14 @@ class _TreeContextMenu(QMenu):
 
         return
 
-    def _moveToTrash(self, multi: bool) -> None:
+    def _multiMoveToTrash(self) -> None:
         """Add move to Trash action."""
-        action = self.addAction(self.tr("Move to Trash"))
-        if multi:
+        areTrash = [i.itemClass == nwItemClass.TRASH for i in self._items]
+        if all(areTrash):
+            action = self.addAction(self.tr("Delete Permanently"))
+            action.triggered.connect(self._iterPermDelete)
+        elif not any(areTrash):
+            action = self.addAction(self.tr("Move to Trash"))
             action.triggered.connect(self._iterMoveToTrash)
         return
 
@@ -1979,10 +1983,21 @@ class _TreeContextMenu(QMenu):
     def _iterMoveToTrash(self) -> None:
         """Iterate through files and move them to Trash."""
         if SHARED.question(self.tr("Move {0} items to Trash?").format(len(self._items))):
-            for tHandle in self._items:
-                tItem = SHARED.project.tree[tHandle]
-                if tItem and tItem.isFileType():
-                    self.projTree.moveItemToTrash(tHandle, askFirst=False, flush=False)
+            for tItem in self._items:
+                if tItem.isFileType() and tItem.itemClass != nwItemClass.TRASH:
+                    self.projTree.moveItemToTrash(tItem.itemHandle, askFirst=False, flush=False)
+                self.projTree.saveTreeOrder()
+        return
+
+    @pyqtSlot()
+    def _iterPermDelete(self) -> None:
+        """Iterate through files and delete them."""
+        if SHARED.question(
+            self.tr("Permanently delete {0} documents in Trash?").format(len(self._items))
+        ):
+            for tItem in self._items:
+                if tItem.isFileType() and tItem.itemClass == nwItemClass.TRASH:
+                    self.projTree.permDeleteItem(tItem.itemHandle, askFirst=False, flush=False)
                 self.projTree.saveTreeOrder()
         return
 
@@ -2000,12 +2015,11 @@ class _TreeContextMenu(QMenu):
 
     def _iterItemActive(self, isActive: bool) -> None:
         """Set the active status of multiple items."""
-        for tHandle in self._items:
-            tItem = SHARED.project.tree[tHandle]
+        for tItem in self._items:
             if tItem and tItem.isFileType():
                 tItem.setActive(isActive)
-                self.projTree.setTreeItemValues(tHandle)
-                self.projTree._alertTreeChange(tHandle, flush=False)
+                self.projTree.setTreeItemValues(tItem.itemHandle)
+                self.projTree._alertTreeChange(tItem.itemHandle, flush=False)
         return
 
     def _changeItemStatus(self, key: str) -> None:
@@ -2017,12 +2031,11 @@ class _TreeContextMenu(QMenu):
 
     def _iterSetItemStatus(self, key: str) -> None:
         """Change the status value for multiple items."""
-        for tHandle in self._items:
-            tItem = SHARED.project.tree[tHandle]
+        for tItem in self._items:
             if tItem and tItem.isNovelLike():
                 tItem.setStatus(key)
-                self.projTree.setTreeItemValues(tHandle)
-                self.projTree._alertTreeChange(tHandle, flush=False)
+                self.projTree.setTreeItemValues(tItem.itemHandle)
+                self.projTree._alertTreeChange(tItem.itemHandle, flush=False)
         return
 
     def _changeItemImport(self, key: str) -> None:
@@ -2034,12 +2047,11 @@ class _TreeContextMenu(QMenu):
 
     def _iterSetItemImport(self, key: str) -> None:
         """Change the status value for multiple items."""
-        for tHandle in self._items:
-            tItem = SHARED.project.tree[tHandle]
+        for tItem in self._items:
             if tItem and not tItem.isNovelLike():
                 tItem.setImport(key)
-                self.projTree.setTreeItemValues(tHandle)
-                self.projTree._alertTreeChange(tHandle, flush=False)
+                self.projTree.setTreeItemValues(tItem.itemHandle)
+                self.projTree._alertTreeChange(tItem.itemHandle, flush=False)
         return
 
     def _changeItemLayout(self, itemLayout: nwItemLayout) -> None:
