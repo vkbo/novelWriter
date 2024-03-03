@@ -142,9 +142,10 @@ class GuiDocEditor(QPlainTextEdit):
         self._qDocument = GuiTextDocument(self)
         self.setDocument(self._qDocument)
 
-        # Connect Signals
+        # Connect Editor and Document Signals
         self._qDocument.contentsChange.connect(self._docChange)
         self.selectionChanged.connect(self._updateSelectedStatus)
+        self.cursorPositionChanged.connect(self._cursorMoved)
         self.spellCheckStateChanged.connect(self._qDocument.setSpellCheckState)
 
         # Document Title
@@ -153,7 +154,7 @@ class GuiDocEditor(QPlainTextEdit):
         self.docSearch = GuiDocEditSearch(self)
         self.docToolBar = GuiDocToolBar(self)
 
-        # Connect Signals
+        # Connect Widget Signals
         self.docHeader.closeDocumentRequest.connect(self._closeCurrentDocument)
         self.docHeader.toggleToolBarRequest.connect(self._toggleToolBarVisibility)
         self.docToolBar.requestDocAction.connect(self.docAction)
@@ -400,8 +401,6 @@ class GuiDocEditor(QPlainTextEdit):
         self.wcTimerDoc.start()
 
         self.setReadOnly(False)
-        self.docHeader.setTitleFromHandle(self._docHandle)
-        self.docFooter.setHandle(self._docHandle)
         self.updateDocMargins()
 
         if tLine is None and self._nwItem is not None:
@@ -409,7 +408,8 @@ class GuiDocEditor(QPlainTextEdit):
         elif isinstance(tLine, int):
             self.setCursorLine(tLine)
 
-        self.docFooter.updateLineCount()
+        self.docHeader.setTitleFromHandle(self._docHandle)
+        self.docFooter.setHandle(self._docHandle)
 
         # This is a hack to fix invisible cursor on an empty document
         if self._qDocument.characterCount() <= 1:
@@ -616,7 +616,6 @@ class GuiDocEditor(QPlainTextEdit):
             cursor.setPosition(minmax(position, 0, nChars-1))
             self.setTextCursor(cursor)
             self.centerCursor()
-            self.docFooter.updateLineCount()
         return
 
     def saveCursorPosition(self) -> None:
@@ -949,8 +948,6 @@ class GuiDocEditor(QPlainTextEdit):
         else:
             super().keyPressEvent(event)
 
-        self.docFooter.updateLineCount()
-
         return
 
     def focusNextPrevChild(self, next: bool) -> bool:
@@ -973,7 +970,6 @@ class GuiDocEditor(QPlainTextEdit):
         if qApp.keyboardModifiers() == Qt.KeyboardModifier.ControlModifier:
             self._processTag(self.cursorForPosition(event.pos()))
         super().mouseReleaseEvent(event)
-        self.docFooter.updateLineCount()
         return
 
     def resizeEvent(self, event: QResizeEvent) -> None:
@@ -1059,6 +1055,12 @@ class GuiDocEditor(QPlainTextEdit):
         if self._doReplace and added == 1:
             self._docAutoReplace(text)
 
+        return
+
+    @pyqtSlot()
+    def _cursorMoved(self):
+        """Triggered when the cursor moved in the editor."""
+        self.docFooter.updateLineCount(self.textCursor())
         return
 
     @pyqtSlot(int, int, str)
@@ -1341,7 +1343,6 @@ class GuiDocEditor(QPlainTextEdit):
         cursor.setPosition(resE[resIdx], QTextCursor.MoveMode.KeepAnchor)
         self.setTextCursor(cursor)
 
-        self.docFooter.updateLineCount()
         self.docSearch.setResultCount(resIdx + 1, len(resS))
         self._lastFind = (resS[resIdx], resE[resIdx])
 
@@ -3020,12 +3021,10 @@ class GuiDocEditHeader(QWidget):
 
 class GuiDocEditFooter(QWidget):
 
-    def __init__(self, docEditor: GuiDocEditor) -> None:
-        super().__init__(parent=docEditor)
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiDocEditFooter")
-
-        self.docEditor = docEditor
 
         self._tItem     = None
         self._docHandle = None
@@ -3047,7 +3046,7 @@ class GuiDocEditFooter(QWidget):
         alLeftTop = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop
 
         # Status
-        self.statusIcon = QLabel("")
+        self.statusIcon = QLabel("", self)
         self.statusIcon.setContentsMargins(0, 0, 0, 0)
         self.statusIcon.setFixedHeight(self.sPx)
         self.statusIcon.setAlignment(alLeftTop)
@@ -3062,12 +3061,12 @@ class GuiDocEditFooter(QWidget):
         self.statusText.setFont(lblFont)
 
         # Lines
-        self.linesIcon = QLabel("")
+        self.linesIcon = QLabel("", self)
         self.linesIcon.setContentsMargins(0, 0, 0, 0)
         self.linesIcon.setFixedHeight(self.sPx)
         self.linesIcon.setAlignment(alLeftTop)
 
-        self.linesText = QLabel("")
+        self.linesText = QLabel("", self)
         self.linesText.setIndent(0)
         self.linesText.setMargin(0)
         self.linesText.setContentsMargins(0, 0, 0, 0)
@@ -3077,12 +3076,12 @@ class GuiDocEditFooter(QWidget):
         self.linesText.setFont(lblFont)
 
         # Words
-        self.wordsIcon = QLabel("")
+        self.wordsIcon = QLabel("", self)
         self.wordsIcon.setContentsMargins(0, 0, 0, 0)
         self.wordsIcon.setFixedHeight(self.sPx)
         self.wordsIcon.setAlignment(alLeftTop)
 
-        self.wordsText = QLabel("")
+        self.wordsText = QLabel("", self)
         self.wordsText.setIndent(0)
         self.wordsText.setMargin(0)
         self.wordsText.setContentsMargins(0, 0, 0, 0)
@@ -3113,7 +3112,6 @@ class GuiDocEditFooter(QWidget):
 
         # Fix the Colours
         self.updateTheme()
-        self.updateLineCount()
         self.updateCounts()
 
         logger.debug("Ready: GuiDocEditFooter")
@@ -3184,17 +3182,17 @@ class GuiDocEditFooter(QWidget):
 
         return
 
-    def updateLineCount(self) -> None:
+    def updateLineCount(self, cursor: QTextCursor) -> None:
         """Update the line counter."""
-        if self._tItem is None:
-            iLine = 0
-            iDist = 0
-        else:
-            cursor = self.docEditor.textCursor()
-            iLine = cursor.blockNumber() + 1
-            iDist = 100*iLine/self.docEditor._qDocument.blockCount()
+        cPos = cursor.position() + 1
+        cCount = max(cursor.document().characterCount(), 1)
+        iLine = cursor.blockNumber() + 1
+        iDist = 100*cPos//cCount
         self.linesText.setText(
-            self.tr("Line: {0} ({1})").format(f"{iLine:n}", f"{iDist:.0f} %")
+            self.tr("Line: {0} ({1})").format(f"{iLine:n}", f"{iDist:d} %")
+        )
+        self.linesText.setToolTip(
+            self.tr("Document size is {0} bytes").format(f"{cCount:n}")
         )
         return
 
@@ -3212,34 +3210,22 @@ class GuiDocEditFooter(QWidget):
 
     def _updateWordCounts(self) -> None:
         """Update the word count for the whole document."""
-        if self._tItem is None:
-            wCount = 0
-            wDiff = 0
-        else:
-            wCount = self._tItem.wordCount
-            wDiff = wCount - self._tItem.initCount
-
+        wCount = self._tItem.wordCount if self._tItem else 0
+        wDiff = wCount - self._tItem.initCount if self._tItem else 0
         self.wordsText.setText(
             self.tr("Words: {0} ({1})").format(f"{wCount:n}", f"{wDiff:+n}")
         )
-
-        byteSize = self.docEditor._qDocument.characterCount()
-        self.wordsText.setToolTip(
-            self.tr("Document size is {0} bytes").format(f"{byteSize:n}")
-        )
-
         return
 
     def _updateSelectionWordCounts(self, wCount: int | None, cCount: int | None) -> None:
         """Update the word count for a selection."""
-        if wCount is None or cCount is None:
-            return
-        self.wordsText.setText(
-            self.tr("Words: {0} selected").format(f"{wCount:n}")
-        )
-        self.wordsText.setToolTip(
-            self.tr("Character count: {0}").format(f"{cCount:n}")
-        )
+        if wCount and cCount:
+            self.wordsText.setText(
+                self.tr("Words: {0} selected").format(f"{wCount:n}")
+            )
+            self.wordsText.setToolTip(
+                self.tr("Character count: {0}").format(f"{cCount:n}")
+            )
         return
 
 # END Class GuiDocEditFooter
