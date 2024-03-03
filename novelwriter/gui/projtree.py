@@ -509,6 +509,11 @@ class GuiProjectTree(QTreeWidget):
         self._timeChanged = 0.0
         self._popAlert = None
 
+        # Cached Translations
+        self.trActive = self.tr("Active")
+        self.trInactive = self.tr("Inactive")
+        self.trPermDelete = self.tr("Permanently delete {0} file(s) from Trash?")
+
         # Build GUI
         # =========
 
@@ -554,10 +559,6 @@ class GuiProjectTree(QTreeWidget):
         # and 5.15.8, so this is also blocked in dropEvent (see #1569)
         trRoot = self.invisibleRootItem()
         trRoot.setFlags(trRoot.flags() ^ Qt.ItemFlag.ItemIsDropEnabled)
-
-        # Cached values
-        self._lblActive = self.tr("Active")
-        self._lblInactive = self.tr("Inactive")
 
         # Set selection options
         self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
@@ -902,10 +903,7 @@ class GuiProjectTree(QTreeWidget):
             SHARED.info(self.tr("The Trash folder is already empty."))
             return False
 
-        msgYes = SHARED.question(
-            self.tr("Permanently delete {0} file(s) from Trash?").format(nTrash)
-        )
-        if not msgYes:
+        if not SHARED.question(self.trPermDelete.format(nTrash)):
             logger.info("Action cancelled by user")
             return False
 
@@ -1052,7 +1050,7 @@ class GuiProjectTree(QTreeWidget):
 
         if nwItem.isFileType():
             iconName = "checked" if nwItem.isActive else "unchecked"
-            toolTip = self._lblActive if nwItem.isActive else self._lblInactive
+            toolTip = self.trActive if nwItem.isActive else self.trInactive
             trItem.setToolTip(self.C_ACTIVE, toolTip)
         else:
             iconName = "noncheckable"
@@ -1847,9 +1845,9 @@ class _TreeContextMenu(QMenu):
         """Add Active/Inactive actions."""
         if multi:
             mSub = self.addMenu(self.tr("Set Active to ..."))
-            aOne = mSub.addAction(SHARED.theme.getIcon("checked"), self.tr("Active"))
+            aOne = mSub.addAction(SHARED.theme.getIcon("checked"), self.projTree.trActive)
             aOne.triggered.connect(lambda: self._iterItemActive(True))
-            aTwo = mSub.addAction(SHARED.theme.getIcon("unchecked"), self.tr("Inactive"))
+            aTwo = mSub.addAction(SHARED.theme.getIcon("unchecked"), self.projTree.trInactive)
             aTwo.triggered.connect(lambda: self._iterItemActive(False))
         else:
             action = self.addAction(self.tr("Toggle Active"))
@@ -1992,9 +1990,7 @@ class _TreeContextMenu(QMenu):
     @pyqtSlot()
     def _iterPermDelete(self) -> None:
         """Iterate through files and delete them."""
-        if SHARED.question(
-            self.tr("Permanently delete {0} documents in Trash?").format(len(self._items))
-        ):
+        if SHARED.question(self.projTree.trPermDelete.format(len(self._items))):
             for tItem in self._items:
                 if tItem.isFileType() and tItem.itemClass == nwItemClass.TRASH:
                     self.projTree.permDeleteItem(tItem.itemHandle, askFirst=False, flush=False)
