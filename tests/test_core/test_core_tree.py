@@ -421,6 +421,9 @@ def testCoreTree_Methods(monkeypatch, mockGUI, mockItems):
     assert tree.getItemPath("c000000000001") == [
         "c000000000001", "b000000000001", "a000000000001"
     ]
+    assert tree.getItemPath("c000000000001", asName=True) == [
+        "Chapter One", "Act One", "Novel"
+    ]
 
     # Cause recursion error
     with monkeypatch.context() as mp:
