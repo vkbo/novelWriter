@@ -1034,23 +1034,20 @@ class GuiDocEditor(QPlainTextEdit):
         if not self.wcTimerDoc.isActive():
             self.wcTimerDoc.start()
 
-        block = self._qDocument.findBlock(pos)
-        if not block.isValid():
-            return
-
-        text = block.text()
-        if text.startswith("@") and added + removed == 1:
-            # Only run on single keypresses, otherwise it will trigger
-            # at unwanted times when other changes are made to the document
-            cursor = self.textCursor()
-            bPos = cursor.positionInBlock()
-            if bPos > 0:
-                show = self._completer.updateText(text, bPos)
-                point = self.cursorRect().bottomRight()
-                self._completer.move(self.viewport().mapToGlobal(point))
-                self._completer.setVisible(show)
-        else:
-            self._completer.setVisible(False)
+        if (block := self._qDocument.findBlock(pos)).isValid():
+            text = block.text()
+            if text.startswith("@") and added + removed == 1:
+                # Only run on single keypresses, otherwise it will trigger
+                # at unwanted times when other changes are made to the document
+                cursor = self.textCursor()
+                bPos = cursor.positionInBlock()
+                if bPos > 0:
+                    show = self._completer.updateText(text, bPos)
+                    point = self.cursorRect().bottomRight()
+                    self._completer.move(self.viewport().mapToGlobal(point))
+                    self._completer.setVisible(show)
+            else:
+                self._completer.setVisible(False)
 
         if self._doReplace and added == 1:
             self._docAutoReplace(text)
@@ -1428,13 +1425,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         # Make sure the selected text was selected by an actual find
         # call, and not the user.
-        try:
-            isFind  = self._lastFind[0] == cursor.selectionStart()
-            isFind &= self._lastFind[1] == cursor.selectionEnd()
-        except Exception:
-            isFind = False
-
-        if isFind:
+        if self._lastFind == (cursor.selectionStart(), cursor.selectionEnd()):
             cursor.beginEditBlock()
             cursor.removeSelectedText()
             cursor.insertText(replWith)
@@ -1443,10 +1434,8 @@ class GuiDocEditor(QPlainTextEdit):
             self.setTextCursor(cursor)
             logger.debug(
                 "Replaced occurrence of '%s' with '%s' on line %d",
-                searchFor, replWith, cursor.blockNumber()
+                searchFor, replWith, cursor.blockNumber() + 1
             )
-        else:
-            logger.error("The selected text is not a search result, skipping replace")
 
         self.findNext()
 
