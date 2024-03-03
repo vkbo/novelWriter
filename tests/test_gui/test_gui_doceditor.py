@@ -55,6 +55,9 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.docEditor.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
     assert nwGUI.docEditor.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
     assert nwGUI.docEditor._typPadChar == nwUnicode.U_NBSP
+    assert nwGUI.docEditor.docHeader.itemTitle.text() == (
+        "Novel  \u203a  New Chapter  \u203a  New Scene"
+    )
 
     # Check that editor handles settings
     CONFIG.textFont = ""
@@ -64,6 +67,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     CONFIG.hideVScroll = True
     CONFIG.hideHScroll = True
     CONFIG.fmtPadThin = True
+    CONFIG.showFullPath = False
 
     nwGUI.docEditor.initEditor()
 
@@ -75,6 +79,29 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.docEditor.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
     assert nwGUI.docEditor.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
     assert nwGUI.docEditor._typPadChar == nwUnicode.U_THNBSP
+    assert nwGUI.docEditor.docHeader.itemTitle.text() == "New Scene"
+
+    # Header
+    # ======
+
+    # Select item from header
+    with qtbot.waitSignal(nwGUI.docEditor.requestProjectItemSelected, timeout=1000) as signal:
+        qtbot.mouseClick(nwGUI.docEditor.docHeader, Qt.MouseButton.LeftButton)
+        assert signal.args == [nwGUI.docEditor.docHeader._docHandle, True]
+
+    # Close from header
+    with qtbot.waitSignal(nwGUI.docEditor.docHeader.closeDocumentRequest, timeout=1000):
+        nwGUI.docEditor.docHeader.closeButton.click()
+
+    assert nwGUI.docEditor.docHeader.tbButton.isVisible() is False
+    assert nwGUI.docEditor.docHeader.searchButton.isVisible() is False
+    assert nwGUI.docEditor.docHeader.closeButton.isVisible() is False
+    assert nwGUI.docEditor.docHeader.minmaxButton.isVisible() is False
+
+    # Select item from header
+    with qtbot.waitSignal(nwGUI.docEditor.requestProjectItemSelected, timeout=1000) as signal:
+        qtbot.mouseClick(nwGUI.docEditor.docHeader, Qt.MouseButton.LeftButton)
+        assert signal.args == ["", True]
 
     # qtbot.stop()
 
@@ -82,7 +109,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
 
 @pytest.mark.gui
-def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumText, mockRnd):
+def testGuiEditor_LoadText(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     """Test loading text into the editor."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
@@ -91,9 +118,6 @@ def testGuiEditor_LoadText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumTex
     nwGUI.docEditor.replaceText(longText)
     assert nwGUI.saveDocument() is True
     assert nwGUI.closeDocument() is True
-
-    # Load Text
-    # =========
 
     # Invalid handle
     assert nwGUI.docEditor.loadText("abcdefghijklm") is False
@@ -122,9 +146,6 @@ def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumTex
     """Test saving text from the editor."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
-
-    # Save Text
-    # =========
 
     longText = "### Lorem Ipsum\n\n%s" % "\n\n".join(ipsumText)
     nwGUI.docEditor.replaceText(longText)
