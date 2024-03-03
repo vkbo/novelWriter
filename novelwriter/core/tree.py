@@ -351,16 +351,16 @@ class NWTree:
             return False
         return tItem.itemType == itemType
 
-    def getItemPath(self, tHandle: str) -> list[str]:
+    def getItemPath(self, tHandle: str, asName: bool = False) -> list[str]:
         """Iterate upwards in the tree until we find the item with
-        parent None, the root item, and return the list of handles.
-        We do this with a for loop with a maximum depth to make
-        infinite loops impossible.
+        parent None, the root item, and return the list of handles, or
+        alternatively item names. We do this with a for loop with a
+        maximum depth to make infinite loops impossible.
         """
         tTree = []
         tItem = self.__getitem__(tHandle)
         if tItem is not None:
-            tTree.append(tHandle)
+            tTree.append(tItem.itemName if asName else tHandle)
             for _ in range(MAX_DEPTH):
                 if tItem.itemParent is None:
                     return tTree
@@ -370,7 +370,7 @@ class NWTree:
                     if tItem is None:
                         return tTree
                     else:
-                        tTree.append(tHandle)
+                        tTree.append(tItem.itemName if asName else tHandle)
             else:
                 raise RecursionError("Critical internal error")
 

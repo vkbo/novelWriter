@@ -763,19 +763,12 @@ class GuiDocViewHeader(QWidget):
             self.refreshButton.setVisible(False)
             return
 
-        pTree = SHARED.project.tree
         if CONFIG.showFullPath:
-            tTitle = []
-            tTree = pTree.getItemPath(tHandle)
-            for aHandle in reversed(tTree):
-                nwItem = pTree[aHandle]
-                if nwItem is not None:
-                    tTitle.append(nwItem.itemName)
-            sSep = "  %s  " % nwUnicode.U_RSAQUO
-            self.docTitle.setText(sSep.join(tTitle))
+            self.docTitle.setText(f"  {nwUnicode.U_RSAQUO}  ".join(reversed(
+                [name for name in SHARED.project.tree.getItemPath(tHandle, asName=True)]
+            )))
         else:
-            if nwItem := pTree[tHandle]:
-                self.docTitle.setText(nwItem.itemName)
+            self.docTitle.setText(i.itemName if (i := SHARED.project.tree[tHandle]) else "")
 
         self.backButton.setVisible(True)
         self.forwardButton.setVisible(True)

@@ -2927,7 +2927,7 @@ class GuiDocEditHeader(QWidget):
 
         return
 
-    def setTitleFromHandle(self, tHandle: str | None) -> bool:
+    def setTitleFromHandle(self, tHandle: str | None) -> None:
         """Set the document title from the handle, or alternatively, set
         the whole document path within the project.
         """
@@ -2938,30 +2938,21 @@ class GuiDocEditHeader(QWidget):
             self.searchButton.setVisible(False)
             self.closeButton.setVisible(False)
             self.minmaxButton.setVisible(False)
-            return True
+            return
 
-        pTree = SHARED.project.tree
         if CONFIG.showFullPath:
-            tTitle = []
-            tTree = pTree.getItemPath(tHandle)
-            for aHandle in reversed(tTree):
-                nwItem = pTree[aHandle]
-                if nwItem is not None:
-                    tTitle.append(nwItem.itemName)
-            sSep = "  %s  " % nwUnicode.U_RSAQUO
-            self.itemTitle.setText(sSep.join(tTitle))
+            self.itemTitle.setText(f"  {nwUnicode.U_RSAQUO}  ".join(reversed(
+                [name for name in SHARED.project.tree.getItemPath(tHandle, asName=True)]
+            )))
         else:
-            nwItem = pTree[tHandle]
-            if nwItem is None:
-                return False
-            self.itemTitle.setText(nwItem.itemName)
+            self.itemTitle.setText(i.itemName if (i := SHARED.project.tree[tHandle]) else "")
 
         self.tbButton.setVisible(True)
         self.searchButton.setVisible(True)
         self.closeButton.setVisible(True)
         self.minmaxButton.setVisible(True)
 
-        return True
+        return
 
     def updateFocusMode(self) -> None:
         """Update the minimise/maximise icon of the Focus Mode button.
@@ -2997,7 +2988,7 @@ class GuiDocEditHeader(QWidget):
         selected in the project tree.
         """
         if event.button() == Qt.MouseButton.LeftButton:
-            self.docEditor.requestProjectItemSelected.emit(self._docHandle, True)
+            self.docEditor.requestProjectItemSelected.emit(self._docHandle or "", True)
         return
 
 # END Class GuiDocEditHeader
