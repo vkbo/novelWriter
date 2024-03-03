@@ -1949,11 +1949,9 @@ class _TreeContextMenu(QMenu):
             action.triggered.connect(lambda: tree.setExpandedFromHandle(tHandle, True))
             action = self.addAction(self.tr("Collapse All"))
             action.triggered.connect(lambda: tree.setExpandedFromHandle(tHandle, False))
-            action = self.addAction(self.tr("Duplicate from Here"))
-            action.triggered.connect(lambda: tree._duplicateFromHandle(tHandle))
-        elif isFile:
-            action = self.addAction(self.tr("Duplicate Document"))
-            action.triggered.connect(lambda: tree._duplicateFromHandle(tHandle))
+
+        action = self.addAction(self.tr("Duplicate"))
+        action.triggered.connect(lambda: tree._duplicateFromHandle(tHandle))
 
         if self._item.itemClass == nwItemClass.TRASH or isRoot or (isFolder and not hasChild):
             action = self.addAction(self.tr("Delete Permanently"))
