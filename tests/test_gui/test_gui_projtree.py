@@ -1402,6 +1402,22 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert SHARED.project.tree[hNovelNote].itemRoot == hTrashRoot  # type: ignore
     assert SHARED.project.tree[hSubNote].itemRoot   == hTrashRoot  # type: ignore
 
+    # Permanently Delete Menu
+    nwItem = SHARED.project.tree[hCharNote]
+    assert isinstance(nwItem, NWItem)
+    ctxMenu = _TreeContextMenu(projTree, nwItem)
+    ctxMenu.buildMultiSelectMenu([hCharNote, hNovelNote, hSubNote])
+    actions = [x.text() for x in ctxMenu.actions() if x.text()]
+    assert actions == [
+        "Set Active to ...", "Set Importance to ...", "Delete Permanently",
+    ]
+
+    # Permanently Delete
+    ctxMenu._iterPermDelete()
+    assert SHARED.project.tree[hCharNote] is None
+    assert SHARED.project.tree[hNovelNote] is None
+    assert SHARED.project.tree[hSubNote] is None
+
     # qtbot.stop()
 
 # END Test testGuiProjTree_ContextMenu
