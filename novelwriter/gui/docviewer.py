@@ -202,7 +202,7 @@ class GuiDocViewer(QTextBrowser):
         sPos = self.verticalScrollBar().value()
         aDoc = ToHtml(SHARED.project)
         aDoc.setPreview(CONFIG.viewComments, CONFIG.viewSynopsis)
-        aDoc.setLinkHeaders(True)
+        aDoc.setLinkHeadings(True)
 
         # Be extra careful here to prevent crashes when first opening a
         # project as a crash here leaves no way of recovering.

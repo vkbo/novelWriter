@@ -86,7 +86,7 @@ def testCoreToken_Setters(mockGUI):
     tokens.setHead4Margins(2.0, 2.0)
     tokens.setTextMargins(2.0, 2.0)
     tokens.setMetaMargins(2.0, 2.0)
-    tokens.setLinkHeaders(True)
+    tokens.setLinkHeadings(True)
     tokens.setBodyText(False)
     tokens.setSynopsis(True)
     tokens.setComments(True)

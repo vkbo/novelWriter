@@ -90,10 +90,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             "header2":   self._makeFormat(SHARED.theme.colHead, "bold", 1.6),
             "header3":   self._makeFormat(SHARED.theme.colHead, "bold", 1.4),
             "header4":   self._makeFormat(SHARED.theme.colHead, "bold", 1.2),
-            "header1h":  self._makeFormat(SHARED.theme.colHeadH, "bold", 1.8),
-            "header2h":  self._makeFormat(SHARED.theme.colHeadH, "bold", 1.6),
-            "header3h":  self._makeFormat(SHARED.theme.colHeadH, "bold", 1.4),
-            "header4h":  self._makeFormat(SHARED.theme.colHeadH, "bold", 1.2),
+            "head1h":    self._makeFormat(SHARED.theme.colHeadH, "bold", 1.8),
+            "head2h":    self._makeFormat(SHARED.theme.colHeadH, "bold", 1.6),
+            "head3h":    self._makeFormat(SHARED.theme.colHeadH, "bold", 1.4),
+            "head4h":    self._makeFormat(SHARED.theme.colHeadH, "bold", 1.2),
             "bold":      self._makeFormat(colEmph, "bold"),
             "italic":    self._makeFormat(colEmph, "italic"),
             "strike":    self._makeFormat(SHARED.theme.colHidden, "strike"),
@@ -303,28 +303,28 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         elif text.startswith(("# ", "#! ", "## ", "##! ", "### ", "#### ")):
             self.setCurrentBlockState(self.BLOCK_TITLE)
 
-            if text.startswith("# "):  # Header 1
-                self.setFormat(0, 1, self._hStyles["header1h"])
+            if text.startswith("# "):  # Heading 1
+                self.setFormat(0, 1, self._hStyles["head1h"])
                 self.setFormat(1, len(text), self._hStyles["header1"])
 
-            elif text.startswith("## "):  # Header 2
-                self.setFormat(0, 2, self._hStyles["header2h"])
+            elif text.startswith("## "):  # Heading 2
+                self.setFormat(0, 2, self._hStyles["head2h"])
                 self.setFormat(2, len(text), self._hStyles["header2"])
 
-            elif text.startswith("### "):  # Header 3
-                self.setFormat(0, 3, self._hStyles["header3h"])
+            elif text.startswith("### "):  # Heading 3
+                self.setFormat(0, 3, self._hStyles["head3h"])
                 self.setFormat(3, len(text), self._hStyles["header3"])
 
-            elif text.startswith("#### "):  # Header 4
-                self.setFormat(0, 4, self._hStyles["header4h"])
+            elif text.startswith("#### "):  # Heading 4
+                self.setFormat(0, 4, self._hStyles["head4h"])
                 self.setFormat(4, len(text), self._hStyles["header4"])
 
             elif text.startswith("#! "):  # Title
-                self.setFormat(0, 2, self._hStyles["header1h"])
+                self.setFormat(0, 2, self._hStyles["head1h"])
                 self.setFormat(2, len(text), self._hStyles["header1"])
 
             elif text.startswith("##! "):  # Unnumbered
-                self.setFormat(0, 3, self._hStyles["header2h"])
+                self.setFormat(0, 3, self._hStyles["head2h"])
                 self.setFormat(3, len(text), self._hStyles["header2"])
 
         elif text.startswith("%"):  # Comments

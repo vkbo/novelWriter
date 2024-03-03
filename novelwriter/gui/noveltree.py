@@ -750,7 +750,7 @@ class GuiNovelTree(QTreeWidget):
         logger.debug("Generating meta data tooltip for '%s:%s'", tHandle, sTitle)
 
         pIndex = SHARED.project.index
-        novIdx = pIndex.getItemHeader(tHandle, sTitle)
+        novIdx = pIndex.getItemHeading(tHandle, sTitle)
         refTags = pIndex.getReferences(tHandle, sTitle)
         if not novIdx:
             return

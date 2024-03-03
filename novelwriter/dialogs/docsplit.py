@@ -57,7 +57,7 @@ class GuiDocSplit(QDialog):
 
         self.setWindowTitle(self.tr("Split Document"))
 
-        self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Document Headers")))
+        self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Document Headings")))
         self.helpLabel = NColourLabel(
             self.tr("Select the maximum level to split into files."),
             SHARED.theme.helpText, parent=self, wrap=True
@@ -74,17 +74,17 @@ class GuiDocSplit(QDialog):
         intoFolder = pOptions.getBool("GuiDocSplit", "intoFolder", True)
         docHierarchy = pOptions.getBool("GuiDocSplit", "docHierarchy", True)
 
-        # Header Selection
+        # Heading Selection
         self.listBox = QListWidget()
         self.listBox.setDragDropMode(QAbstractItemView.NoDragDrop)
         self.listBox.setMinimumWidth(CONFIG.pxInt(400))
         self.listBox.setMinimumHeight(CONFIG.pxInt(180))
 
         self.splitLevel = QComboBox(self)
-        self.splitLevel.addItem(self.tr("Split on Header Level 1 (Title)"),      1)
-        self.splitLevel.addItem(self.tr("Split up to Header Level 2 (Chapter)"), 2)
-        self.splitLevel.addItem(self.tr("Split up to Header Level 3 (Scene)"),   3)
-        self.splitLevel.addItem(self.tr("Split up to Header Level 4 (Section)"), 4)
+        self.splitLevel.addItem(self.tr("Split on Heading Level 1 (Partition)"),      1)
+        self.splitLevel.addItem(self.tr("Split up to Heading Level 2 (Chapter)"), 2)
+        self.splitLevel.addItem(self.tr("Split up to Heading Level 3 (Scene)"),   3)
+        self.splitLevel.addItem(self.tr("Split up to Heading Level 4 (Section)"), 4)
         spIndex = self.splitLevel.findData(spLevel)
         if spIndex != -1:
             self.splitLevel.setCurrentIndex(spIndex)

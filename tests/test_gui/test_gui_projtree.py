@@ -1229,7 +1229,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     ]
     assert getTransformSubMenu(ctxMenu) == [
         "Convert to Project Note", "Merge Child Items into Self",
-        "Merge Child Items into New", "Split Document by Headers"
+        "Merge Child Items into New", "Split Document by Headings"
     ]
 
     # Context Menu on Note File Item in Character Folder
@@ -1244,7 +1244,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         "Move to Trash",
     ]
     assert getTransformSubMenu(ctxMenu) == [
-        "Split Document by Headers",
+        "Split Document by Headings",
     ]
 
     # Context Menu on Note File Item in Novel Tree
@@ -1259,7 +1259,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         "Move to Trash",
     ]
     assert getTransformSubMenu(ctxMenu) == [
-        "Convert to Novel Document", "Split Document by Headers",
+        "Convert to Novel Document", "Split Document by Headings",
     ]
 
     # Context Menu on Multiple Items, Clicked on Document

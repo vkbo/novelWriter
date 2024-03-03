@@ -89,10 +89,10 @@ class Tokenizer(ABC):
     T_KEYWORD  = 5   # Command line
     T_TITLE    = 6   # Title
     T_UNNUM    = 7   # Unnumbered
-    T_HEAD1    = 8   # Header 1
-    T_HEAD2    = 9   # Header 2
-    T_HEAD3    = 10  # Header 3
-    T_HEAD4    = 11  # Header 4
+    T_HEAD1    = 8   # Heading 1
+    T_HEAD2    = 9   # Heading 2
+    T_HEAD3    = 10  # Heading 3
+    T_HEAD4    = 11  # Heading 4
     T_TEXT     = 12  # Text line
     T_SEP      = 13  # Scene separator
     T_SKIP     = 14  # Paragraph break
@@ -158,10 +158,10 @@ class Tokenizer(ABC):
         self._fmtScene   = nwHeadFmt.TITLE  # Formatting for scenes
         self._fmtSection = nwHeadFmt.TITLE  # Formatting for sections
 
-        self._hideScene   = False  # Do not include scene headers
-        self._hideSection = False  # Do not include section headers
+        self._hideScene   = False  # Do not include scene headings
+        self._hideSection = False  # Do not include section headings
 
-        self._linkHeaders = False  # Add an anchor before headers
+        self._linkHeaders = False  # Add an anchor before headings
 
         self._titleStyle   = self.A_CENTRE | self.A_PBB
         self._chapterStyle = self.A_PBB
@@ -309,22 +309,22 @@ class Tokenizer(ABC):
         return
 
     def setHead1Margins(self, upper: float, lower: float) -> None:
-        """Set the upper and lower header 1 margin."""
+        """Set the upper and lower heading 1 margin."""
         self._marginHead1 = (float(upper), float(lower))
         return
 
     def setHead2Margins(self, upper: float, lower: float) -> None:
-        """Set the upper and lower header 2 margin."""
+        """Set the upper and lower heading 2 margin."""
         self._marginHead2 = (float(upper), float(lower))
         return
 
     def setHead3Margins(self, upper: float, lower: float) -> None:
-        """Set the upper and lower header 3 margin."""
+        """Set the upper and lower heading 3 margin."""
         self._marginHead3 = (float(upper), float(lower))
         return
 
     def setHead4Margins(self, upper: float, lower: float) -> None:
-        """Set the upper and lower header 4 margin."""
+        """Set the upper and lower heading 4 margin."""
         self._marginHead4 = (float(upper), float(lower))
         return
 
@@ -338,8 +338,8 @@ class Tokenizer(ABC):
         self._marginMeta = (float(upper), float(lower))
         return
 
-    def setLinkHeaders(self, state: bool) -> None:
-        """Enable or disable adding an anchor before headers."""
+    def setLinkHeadings(self, state: bool) -> None:
+        """Enable or disable adding an anchor before headings."""
         self._linkHeaders = state
         return
 
@@ -442,7 +442,7 @@ class Tokenizer(ABC):
 
     def tokenizeText(self) -> None:
         """Scan the text for either lines starting with specific
-        characters that indicate headers, comments, commands etc, or
+        characters that indicate headings, comments, commands etc, or
         just contain plain text. In the case of plain text, apply the
         same RegExes that the syntax highlighter uses and save the
         locations of these formatting tags into the token array.
@@ -450,7 +450,7 @@ class Tokenizer(ABC):
         The format of the token list is an entry with a five-tuple for
         each line in the file. The tuple is as follows:
           1: The type of the block, self.T_*
-          2: The header number under which the text is placed
+          2: The heading number under which the text is placed
           3: The text content of the block, without leading tags
           4: The internal formatting map of the text, self.FMT_*
           5: The style of the block, self.A_*
@@ -557,9 +557,9 @@ class Tokenizer(ABC):
                         tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine[:2] == "# ":
-                # Partition Headers
-                # =================
-                # Partition headers are only formatted in novel documents, and
+                # Partition Headings
+                # ==================
+                # Partition headings are only formatted in novel documents, and
                 # otherwise unchanged. Scene separators are disabled
                 # immediately after partitions, and scene numbers are reset.
 
@@ -579,12 +579,12 @@ class Tokenizer(ABC):
                     tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine[:3] == "## ":
-                # Chapter Headers
-                # ===============
-                # Chapter headers are only formatted in novel documents, and
+                # Chapter Headings
+                # ================
+                # Chapter headings are only formatted in novel documents, and
                 # otherwise unchanged. Chapter numbers are bumped before the
                 # heading is formatted. Scene separators are disabled
-                # immediately after chapter headers, and scene numbers are
+                # immediately after chapter headings, and scene numbers are
                 # reset.
 
                 nHead += 1
@@ -604,15 +604,15 @@ class Tokenizer(ABC):
                     tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine[:4] == "### ":
-                # Scene Headers
-                # =============
-                # Scene headers in novel documents are treated as centred
+                # Scene Headings
+                # ==============
+                # Scene headings in novel documents are treated as centred
                 # separators if the formatting does not change the text. If the
                 # format is empty, the scene can be hidden or a blank paragraph
                 # (skip). When the scene title has static text or no text, it
                 # is always ignored if the noSep flag is set. This prevents
                 # separators immediately after other titles. Scene numbers are
-                # always incremented before formatting. For notes, the header
+                # always incremented before formatting. For notes, the heading
                 # is unchanged.
 
                 nHead += 1
@@ -639,12 +639,12 @@ class Tokenizer(ABC):
                     tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine[:5] == "#### ":
-                # Section Headers
-                # ===============
-                # Section headers in novel docs are treated as centred
+                # Section Headings
+                # =================
+                # Section headings in novel docs are treated as centred
                 # separators if the formatting does not change the text. If the
                 # format is empty, the section can be hidden or a blank
-                # paragraph (skip). For notes, the header is unchanged.
+                # paragraph (skip). For notes, the heading is unchanged.
 
                 nHead += 1
                 tText = aLine[5:].strip()
@@ -682,10 +682,10 @@ class Tokenizer(ABC):
                     tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine[:4] == "##! ":
-                # Unnumbered Chapter Header
-                # =========================
+                # Unnumbered Chapter Headings
+                # ===========================
                 # Unnumbered chapters are only meaningful in Novel docs, so if
-                # we're in a note, we convert them to a plain level 2 header.
+                # we're in a note, we convert them to a plain level 2 heading.
 
                 nHead += 1
                 tText = aLine[4:].strip()

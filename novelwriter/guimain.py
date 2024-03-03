@@ -736,7 +736,7 @@ class GuiMain(QMainWindow):
             return False
 
         if tHandle is not None and sTitle is not None:
-            hItem = SHARED.project.index.getItemHeader(tHandle, sTitle)
+            hItem = SHARED.project.index.getItemHeading(tHandle, sTitle)
             if hItem is not None:
                 tLine = hItem.line
 
@@ -1144,7 +1144,7 @@ class GuiMain(QMainWindow):
         if tHandle is not None:
             if mode == nwDocMode.EDIT:
                 tLine = None
-                hItem = SHARED.project.index.getItemHeader(tHandle, sTitle)
+                hItem = SHARED.project.index.getItemHeading(tHandle, sTitle)
                 if hItem is not None:
                     tLine = hItem.line
                 self.openDocument(tHandle, tLine=tLine, changeFocus=setFocus)
