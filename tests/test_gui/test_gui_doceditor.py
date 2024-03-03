@@ -1698,17 +1698,12 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
     assert SHARED.project.tree[C.hSceneDoc]._paraCount == pC  # type: ignore
     assert nwGUI.docEditor.docFooter.wordsText.text() == f"Words: {wC} (+{wC})"
 
-    # Select all text
-    assert nwGUI.docEditor.docFooter._docSelection is False
+    # Select all text and run the selection word counter
     nwGUI.docEditor.docAction(nwDocAction.SEL_ALL)
-    assert nwGUI.docEditor.docFooter._docSelection is True
-
-    # Run the selection word counter
     nwGUI.docEditor._runSelCounter()
     assert threadPool.objectID() == id(nwGUI.docEditor.wCounterSel)
 
     nwGUI.docEditor.wCounterSel.run()
-    # nwGUI.docEditor._updateSelCounts(cC, wC, pC)
     assert nwGUI.docEditor.docFooter.wordsText.text() == f"Words: {wC} selected"
 
     # qtbot.stop()

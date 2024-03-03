@@ -1200,19 +1200,13 @@ class GuiDocEditor(QPlainTextEdit):
     @pyqtSlot(int, int, int)
     def _updateDocCounts(self, cCount: int, wCount: int, pCount: int) -> None:
         """Process the word counter's finished signal."""
-        if self._docHandle is None or self._nwItem is None:
-            return
-
-        logger.debug("Updating word count")
-
-        self._nwItem.setCharCount(cCount)
-        self._nwItem.setWordCount(wCount)
-        self._nwItem.setParaCount(pCount)
-
-        # Must not be emitted if docHandle is None!
-        self.docCountsChanged.emit(self._docHandle, cCount, wCount, pCount)
-        self.docFooter.updateCounts()
-
+        if self._docHandle and self._nwItem:
+            logger.debug("Updating word count")
+            self._nwItem.setCharCount(cCount)
+            self._nwItem.setWordCount(wCount)
+            self._nwItem.setParaCount(pCount)
+            self.docCountsChanged.emit(self._docHandle, cCount, wCount, pCount)
+            self.docFooter.updateWordCount(wCount, False)
         return
 
     @pyqtSlot()
@@ -1223,11 +1217,9 @@ class GuiDocEditor(QPlainTextEdit):
         if self.textCursor().hasSelection():
             if not self.wcTimerSel.isActive():
                 self.wcTimerSel.start()
-            self.docFooter.setHasSelection(True)
         else:
             self.wcTimerSel.stop()
-            self.docFooter.setHasSelection(False)
-            self.docFooter.updateCounts()
+            self.docFooter.updateWordCount(0, False)
         return
 
     @pyqtSlot()
@@ -1247,13 +1239,10 @@ class GuiDocEditor(QPlainTextEdit):
     @pyqtSlot(int, int, int)
     def _updateSelCounts(self, cCount: int, wCount: int, pCount: int) -> None:
         """Update the counts on the counter's finished signal."""
-        if self._docHandle is None or self._nwItem is None:
-            return
-
-        logger.debug("User selected %d words", wCount)
-        self.docFooter.updateCounts(wCount=wCount, cCount=cCount)
-        self.wcTimerSel.stop()
-
+        if self._docHandle and self._nwItem:
+            logger.debug("User selected %d words", wCount)
+            self.docFooter.updateWordCount(wCount, True)
+            self.wcTimerSel.stop()
         return
 
     @pyqtSlot()
@@ -2818,6 +2807,7 @@ class GuiDocEditHeader(QWidget):
         self._docHandle = None
 
         fPx = int(0.9*SHARED.theme.fontPixelSize)
+        mPx = CONFIG.pxInt(8)
         hSp = CONFIG.pxInt(6)
         iconSize = QSize(fPx, fPx)
 
@@ -2825,8 +2815,7 @@ class GuiDocEditHeader(QWidget):
         self.setAutoFillBackground(True)
 
         # Title Label
-        self.itemTitle = QLabel()
-        self.itemTitle.setText("")
+        self.itemTitle = QLabel("", self)
         self.itemTitle.setIndent(0)
         self.itemTitle.setMargin(0)
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
@@ -2883,14 +2872,14 @@ class GuiDocEditHeader(QWidget):
         self.outerBox.addWidget(self.itemTitle, 1)
         self.outerBox.addWidget(self.minmaxButton, 0)
         self.outerBox.addWidget(self.closeButton, 0)
+        self.outerBox.setContentsMargins(mPx, mPx, mPx, mPx)
+
         self.setLayout(self.outerBox)
 
         # Fix Margins and Size
         # This is needed for high DPI systems. See issue #499.
-        cM = CONFIG.pxInt(8)
         self.setContentsMargins(0, 0, 0, 0)
-        self.outerBox.setContentsMargins(cM, cM, cM, cM)
-        self.setMinimumHeight(fPx + 2*cM)
+        self.setMinimumHeight(fPx + 2*mPx)
 
         self.updateTheme()
 
@@ -3026,18 +3015,22 @@ class GuiDocEditFooter(QWidget):
 
         logger.debug("Create: GuiDocEditFooter")
 
-        self._tItem     = None
+        self._tItem = None
         self._docHandle = None
 
-        self._docSelection = False
-
-        self.sPx = int(round(0.9*SHARED.theme.baseIconSize))
+        iPx = round(0.9*SHARED.theme.baseIconSize)
         fPx = int(0.9*SHARED.theme.fontPixelSize)
+        mPx = CONFIG.pxInt(8)
         bSp = CONFIG.pxInt(4)
         hSp = CONFIG.pxInt(6)
 
         lblFont = self.font()
         lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
+
+        # Cached Translations
+        self._trLineCount = self.tr("Line: {0} ({1})")
+        self._trWordCount = self.tr("Words: {0} ({1})")
+        self._trSelectCount = self.tr("Words: {0} selected")
 
         # Main Widget Settings
         self.setContentsMargins(0, 0, 0, 0)
@@ -3048,7 +3041,7 @@ class GuiDocEditFooter(QWidget):
         # Status
         self.statusIcon = QLabel("", self)
         self.statusIcon.setContentsMargins(0, 0, 0, 0)
-        self.statusIcon.setFixedHeight(self.sPx)
+        self.statusIcon.setFixedHeight(iPx)
         self.statusIcon.setAlignment(alLeftTop)
 
         self.statusText = QLabel(self.tr("Status"))
@@ -3063,7 +3056,7 @@ class GuiDocEditFooter(QWidget):
         # Lines
         self.linesIcon = QLabel("", self)
         self.linesIcon.setContentsMargins(0, 0, 0, 0)
-        self.linesIcon.setFixedHeight(self.sPx)
+        self.linesIcon.setFixedHeight(iPx)
         self.linesIcon.setAlignment(alLeftTop)
 
         self.linesText = QLabel("", self)
@@ -3078,7 +3071,7 @@ class GuiDocEditFooter(QWidget):
         # Words
         self.wordsIcon = QLabel("", self)
         self.wordsIcon.setContentsMargins(0, 0, 0, 0)
-        self.wordsIcon.setFixedHeight(self.sPx)
+        self.wordsIcon.setFixedHeight(iPx)
         self.wordsIcon.setAlignment(alLeftTop)
 
         self.wordsText = QLabel("", self)
@@ -3101,18 +3094,20 @@ class GuiDocEditFooter(QWidget):
         self.outerBox.addSpacing(hSp)
         self.outerBox.addWidget(self.wordsIcon)
         self.outerBox.addWidget(self.wordsText)
+        self.outerBox.setContentsMargins(mPx, mPx, mPx, mPx)
+
         self.setLayout(self.outerBox)
 
         # Fix Margins and Size
         # This is needed for high DPI systems. See issue #499.
-        cM = CONFIG.pxInt(8)
         self.setContentsMargins(0, 0, 0, 0)
-        self.outerBox.setContentsMargins(cM, cM, cM, cM)
-        self.setMinimumHeight(fPx + 2*cM)
+        self.setMinimumHeight(fPx + 2*mPx)
 
         # Fix the Colours
         self.updateTheme()
-        self.updateCounts()
+
+        # Initialise Info
+        self.updateWordCount(0, False)
 
         logger.debug("Ready: GuiDocEditFooter")
 
@@ -3124,8 +3119,9 @@ class GuiDocEditFooter(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        self.linesIcon.setPixmap(SHARED.theme.getPixmap("status_lines", (self.sPx, self.sPx)))
-        self.wordsIcon.setPixmap(SHARED.theme.getPixmap("status_stats", (self.sPx, self.sPx)))
+        iPx = round(0.9*SHARED.theme.baseIconSize)
+        self.linesIcon.setPixmap(SHARED.theme.getPixmap("status_lines", (iPx, iPx)))
+        self.wordsIcon.setPixmap(SHARED.theme.getPixmap("status_stats", (iPx, iPx)))
         self.matchColours()
         return
 
@@ -3154,17 +3150,9 @@ class GuiDocEditFooter(QWidget):
         else:
             self._tItem = SHARED.project.tree[self._docHandle]
 
-        self.setHasSelection(False)
         self.updateInfo()
-        self.updateCounts()
+        self.updateWordCount(0, False)
 
-        return
-
-    def setHasSelection(self, hasSelection: bool) -> None:
-        """Toggle the word counter mode between full count and selection
-        count mode.
-        """
-        self._docSelection = hasSelection
         return
 
     def updateInfo(self) -> None:
@@ -3173,8 +3161,9 @@ class GuiDocEditFooter(QWidget):
             sIcon = QPixmap()
             sText = ""
         else:
+            iPx = round(0.9*SHARED.theme.baseIconSize)
             status, icon = self._tItem.getImportStatus(incIcon=True)
-            sIcon = icon.pixmap(self.sPx, self.sPx)
+            sIcon = icon.pixmap(iPx, iPx)
             sText = f"{status} / {self._tItem.describeMe()}"
 
         self.statusIcon.setPixmap(sIcon)
@@ -3183,49 +3172,26 @@ class GuiDocEditFooter(QWidget):
         return
 
     def updateLineCount(self, cursor: QTextCursor) -> None:
-        """Update the line counter."""
+        """Update the line and document position counter."""
         cPos = cursor.position() + 1
+        cLine = cursor.blockNumber() + 1
         cCount = max(cursor.document().characterCount(), 1)
-        iLine = cursor.blockNumber() + 1
-        iDist = 100*cPos//cCount
         self.linesText.setText(
-            self.tr("Line: {0} ({1})").format(f"{iLine:n}", f"{iDist:d} %")
-        )
-        self.linesText.setToolTip(
-            self.tr("Document size is {0} bytes").format(f"{cCount:n}")
+            self._trLineCount.format(f"{cLine:n}", f"{100*cPos//cCount:d} %")
         )
         return
 
-    def updateCounts(self, wCount: int | None = None, cCount: int | None = None) -> None:
-        """Select which word count display mode to use."""
-        if self._docSelection:
-            self._updateSelectionWordCounts(wCount, cCount)
+    def updateWordCount(self, wCount: int, selection: bool) -> None:
+        """Update word counter information."""
+        if selection and wCount:
+            wText = self._trSelectCount.format(f"{wCount:n}")
+        elif self._tItem:
+            wCount = self._tItem.wordCount
+            wDiff = wCount - self._tItem.initCount
+            wText = self._trWordCount.format(f"{wCount:n}", f"{wDiff:+n}")
         else:
-            self._updateWordCounts()
-        return
-
-    ##
-    #  Internal Functions
-    ##
-
-    def _updateWordCounts(self) -> None:
-        """Update the word count for the whole document."""
-        wCount = self._tItem.wordCount if self._tItem else 0
-        wDiff = wCount - self._tItem.initCount if self._tItem else 0
-        self.wordsText.setText(
-            self.tr("Words: {0} ({1})").format(f"{wCount:n}", f"{wDiff:+n}")
-        )
-        return
-
-    def _updateSelectionWordCounts(self, wCount: int | None, cCount: int | None) -> None:
-        """Update the word count for a selection."""
-        if wCount and cCount:
-            self.wordsText.setText(
-                self.tr("Words: {0} selected").format(f"{wCount:n}")
-            )
-            self.wordsText.setToolTip(
-                self.tr("Character count: {0}").format(f"{cCount:n}")
-            )
+            wText = self._trWordCount.format("0", "+0")
+        self.wordsText.setText(wText)
         return
 
 # END Class GuiDocEditFooter
