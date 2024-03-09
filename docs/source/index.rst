@@ -5,9 +5,9 @@ novelWriter User Guide
 | **Release Version:** |release|
 | **Updated:** |today|
 
-novelWriter is an open source plain text editor designed for writing novels assembled from many
-smaller text documents. It uses a minimal formatting syntax inspired by Markdown, and adds a meta
-data syntax for comments, synopsis, and cross-referencing. It is designed to be a simple text
+novelWriter is an open source plain text editor designed for writing novels assembled from
+individual text documents. It uses a minimal formatting syntax inspired by Markdown, and adds a
+meta data syntax for comments, synopsis, and cross-referencing. It is designed to be a simple text
 editor that allows for easy organisation of text and notes, using human readable text files as
 storage for robustness.
 
@@ -23,13 +23,14 @@ See the :ref:`a_breakdown_storage` section for more details.
 
 Any operating system that can run Python 3 and has the Qt 5 libraries should be able to run
 novelWriter. It runs fine on Linux, Windows and MacOS, and users have tested it on other platforms
-as well. novelWriter can also be run directly from the Python source, or installed from packages or
-with pip. See :ref:`a_started` for more details.
+as well. novelWriter can be run directly from the Python source, or installed from packages or with
+pip. See :ref:`a_started` for more details.
 
 **Useful Links**
 
 * Website: https://novelwriter.io
 * Documentation: https://docs.novelwriter.io
+* Public Releases: https://releases.novelwriter.io
 * Internationalisation: https://crowdin.com/project/novelwriter
 * Source Code: https://github.com/vkbo/novelWriter
 * Source Releases: https://github.com/vkbo/novelWriter/releases
@@ -66,7 +67,6 @@ with pip. See :ref:`a_started` for more details.
    usage_format
    usage_shortcuts
    usage_typography
-   usage_projectformat
 
 .. toctree::
    :maxdepth: 1
@@ -80,7 +80,15 @@ with pip. See :ref:`a_started` for more details.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Additional Topics
+   :caption: Additional Details
+   :hidden:
+
+   more_projectformat
+   more_counting
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Technical Topics
    :hidden:
 
    tech_locations
