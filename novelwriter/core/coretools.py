@@ -365,14 +365,10 @@ class ProjectBuilder:
         lblByAuthors  = self.tr("By")
 
         # Settings
-        projName = data.get("name", lblNewProject)
-        projAuthor = data.get("author", "")
-        projLang = data.get("language", "en_GB")
-
         project.data.setUuid(None)
-        project.data.setName(projName)
-        project.data.setAuthor(projAuthor)
-        project.data.setLanguage(projLang)
+        project.data.setName(data.get("name", lblNewProject))
+        project.data.setAuthor(data.get("author", ""))
+        project.data.setLanguage(CONFIG.guiLocale)
         project.setDefaultStatusImport()
         project.session.startSession()
 
@@ -502,7 +498,6 @@ class ProjectBuilder:
         project.data.setUuid("")  # Creates a fresh uuid
         project.data.setName(data.get("name", "None"))
         project.data.setAuthor(data.get("author", ""))
-        project.data.setLanguage(data.get("language", "en_GB"))
         project.data.setSpellCheck(True)
         project.data.setSpellLang(None)
         project.data.setDoBackup(True)
@@ -518,6 +513,13 @@ class ProjectBuilder:
         """Make a copy of the sample project by extracting the
         sample.zip file to the new path.
         """
+        if path.exists():
+            SHARED.error(self.tr(
+                "The target folder already exists. "
+                "Please choose another folder."
+            ))
+            return False
+
         if (sample := CONFIG.assetPath("sample.zip")).is_file():
             try:
                 shutil.unpack_archive(sample, path)

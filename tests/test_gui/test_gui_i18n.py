@@ -23,30 +23,63 @@ from __future__ import annotations
 import sys
 import pytest
 
-from PyQt5.QtWidgets import qApp, QMessageBox
+from collections.abc import Callable
 
-from novelwriter import CONFIG, main
+from tools import buildTestProject
+
+from PyQt5.QtWidgets import QDialog, qApp, QMessageBox
+
+from novelwriter import CONFIG, SHARED
+from novelwriter.dialogs.about import GuiAbout
+from novelwriter.dialogs.wordlist import GuiWordList
+from novelwriter.dialogs.preferences import GuiPreferences
+from novelwriter.dialogs.projectsettings import GuiProjectSettings
+from novelwriter.tools.welcome import GuiWelcome
+from novelwriter.tools.manuscript import GuiManuscript
+from novelwriter.tools.dictionaries import GuiDictionaries
+from novelwriter.tools.noveldetails import GuiNovelDetails
+from novelwriter.tools.writingstats import GuiWritingStats
 
 LANG_DATA = CONFIG.listLanguages(CONFIG.LANG_NW)
 
 
 @pytest.mark.gui
-@pytest.mark.skipif(not sys.platform.startswith("linux"), reason="Linux Only")
+@pytest.mark.skipif(sys.platform != "linux", reason="Linux Only")
 @pytest.mark.skipif(not LANG_DATA, reason="No i18n Data")
 @pytest.mark.parametrize("language", [a for a, b in LANG_DATA])
-def testI18n_Localisation(qtbot, monkeypatch, language, fncPath):
+def testGuiI18n_Localisation(qtbot, monkeypatch, language, nwGUI, projPath):
     """Test loading the gui with a specific language."""
+    monkeypatch.setattr(QDialog, "exec_", lambda *a: None)
     monkeypatch.setattr(QMessageBox, "exec_", lambda *a: None)
     monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.Yes)
 
-    # Set the test langauge
+    # Set the test language
     CONFIG.guiLocale = language
     CONFIG.initLocalisation(qApp)
 
-    nwGUI = main(["--testmode", f"--config={fncPath}", f"--data={fncPath}"])
-    qtbot.addWidget(nwGUI)
+    buildTestProject(nwGUI, projPath)
     nwGUI.show()
+
+    def showDialog(func: Callable, dType: QDialog) -> None:
+        func()
+        qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(dType) is not None, timeout=1000)
+        dialog = SHARED.findTopLevelWidget(dType)
+        assert isinstance(dialog, dType)
+        with qtbot.waitExposed(dialog):
+            dialog.show()
+        dialog.close()
+
+    showDialog(nwGUI.showWelcomeDialog, GuiWelcome)
+    showDialog(nwGUI.showPreferencesDialog, GuiPreferences)
+    showDialog(nwGUI.showProjectSettingsDialog, GuiProjectSettings)
+    showDialog(nwGUI.showNovelDetailsDialog, GuiNovelDetails)
+    showDialog(nwGUI.showBuildManuscriptDialog, GuiManuscript)
+    showDialog(nwGUI.showProjectWordListDialog, GuiWordList)
+    showDialog(nwGUI.showWritingStatsDialog, GuiWritingStats)
+    showDialog(nwGUI.showAboutNWDialog, GuiAbout)
+    showDialog(nwGUI.showDictionariesDialog, GuiDictionaries)
+
     qtbot.wait(20)
     nwGUI.closeMain()
 
-# END Test testI18n_Localisation
+# END Test testGuiI18n_Localisation

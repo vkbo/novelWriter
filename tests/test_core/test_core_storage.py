@@ -111,12 +111,15 @@ def testCoreStorage_InitProjectStorage(mockGUI, fncPath, mockRnd):
     buildTestProject(project, fncPath)
 
     # Init with the wrong file
+    foo = fncPath / "foobar.txt"
+    foo.touch()
     assert storage.initProjectStorage(fncPath / "foobar.txt") == NWStorageOpen.UNKOWN
+    foo.unlink()
     storage._clearLockFile()
     storage.clear()
 
     # Init with the user's home dir
-    assert storage.initProjectStorage(Path.home()) == NWStorageOpen.UNKOWN
+    assert storage.initProjectStorage(Path.home()) == NWStorageOpen.NOT_FOUND
     storage._clearLockFile()
     storage.clear()
 
