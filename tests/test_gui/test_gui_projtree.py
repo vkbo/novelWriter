@@ -1196,7 +1196,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
         "Create New ...", "Rename", "Set Status to ...", "Expand All",
-        "Collapse All", "Duplicate from Here", "Delete Permanently",
+        "Collapse All", "Duplicate", "Delete Permanently",
     ]
 
     # Context Menu on Folder Item
@@ -1207,7 +1207,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
         "Create New ...", "Rename", "Set Status to ...", "Transform ...", "Expand All",
-        "Collapse All", "Duplicate from Here", "Move to Trash",
+        "Collapse All", "Duplicate", "Move to Trash",
     ]
 
     def getTransformSubMenu(menu: QMenu) -> list[str]:
@@ -1225,11 +1225,11 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert actions == [
         "Open Document", "View Document", "Create New ...", "Rename", "Rename to Heading",
         "Toggle Active", "Set Status to ...", "Transform ...", "Expand All", "Collapse All",
-        "Duplicate from Here", "Move to Trash",
+        "Duplicate", "Move to Trash",
     ]
     assert getTransformSubMenu(ctxMenu) == [
         "Convert to Project Note", "Merge Child Items into Self",
-        "Merge Child Items into New", "Split Document by Headers"
+        "Merge Child Items into New", "Split Document by Headings"
     ]
 
     # Context Menu on Note File Item in Character Folder
@@ -1240,11 +1240,10 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
         "Open Document", "View Document", "Create New ...", "Rename", "Rename to Heading",
-        "Toggle Active", "Set Importance to ...", "Transform ...", "Duplicate Document",
-        "Move to Trash",
+        "Toggle Active", "Set Importance to ...", "Transform ...", "Duplicate", "Move to Trash",
     ]
     assert getTransformSubMenu(ctxMenu) == [
-        "Split Document by Headers",
+        "Split Document by Headings",
     ]
 
     # Context Menu on Note File Item in Novel Tree
@@ -1255,11 +1254,10 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
         "Open Document", "View Document", "Create New ...", "Rename", "Rename to Heading",
-        "Toggle Active", "Set Status to ...", "Transform ...", "Duplicate Document",
-        "Move to Trash",
+        "Toggle Active", "Set Status to ...", "Transform ...", "Duplicate", "Move to Trash",
     ]
     assert getTransformSubMenu(ctxMenu) == [
-        "Convert to Novel Document", "Split Document by Headers",
+        "Convert to Novel Document", "Split Document by Headings",
     ]
 
     # Context Menu on Multiple Items, Clicked on Document

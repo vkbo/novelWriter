@@ -252,7 +252,7 @@ def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
     assert index._tagsIndex.tagHandle("Jane") == cHandle
     assert index._tagsIndex.tagHeading("Jane") == "T0001"
     assert index._tagsIndex.tagClass("Jane") == "CHARACTER"
-    assert index.getItemHeader(nHandle, "T0001").title == "Hello World!"  # type: ignore
+    assert index.getItemHeading(nHandle, "T0001").title == "Hello World!"  # type: ignore
     assert index.getReferences(nHandle, "T0001") == {
         "@char": [],
         "@custom": [],
@@ -382,7 +382,7 @@ def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
     assert index._tagsIndex.tagHandle("Jane") == cHandle
     assert index._tagsIndex.tagHeading("Jane") == "T0001"
     assert index._tagsIndex.tagClass("Jane") == "CHARACTER"
-    assert index.getItemHeader(nHandle, "T0001").title == "Hello World!"  # type: ignore
+    assert index.getItemHeading(nHandle, "T0001").title == "Hello World!"  # type: ignore
 
     # Title Indexing
     # ==============
@@ -560,8 +560,8 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     assert isinstance(cHandle, str)
     assert isinstance(dHandle, str)
 
-    assert index.getItemHeader("", "") is None
-    assert index.getItemHeader(C.hNovelRoot, "") is None
+    assert index.getItemHeading("", "") is None
+    assert index.getItemHeading(C.hNovelRoot, "") is None
 
     assert index.scanText(cHandle, (
         "# Jane Smith\n"
@@ -685,11 +685,11 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     assert list(index.getTagsData()) == [(
         "jane", "Jane", "CHARACTER",
         index.getItemData(cHandle),
-        index.getItemHeader(cHandle, "T0001")
+        index.getItemHeading(cHandle, "T0001")
     ), (
         "john", "John", "CHARACTER",
         index.getItemData(dHandle),
-        index.getItemHeader(dHandle, "T0001")
+        index.getItemHeading(dHandle, "T0001")
     )]
 
     # getSingleTag
@@ -697,7 +697,7 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     assert index.getSingleTag("jane") == (
         "Jane", "CHARACTER",
         index.getItemData(cHandle),
-        index.getItemHeader(cHandle, "T0001")
+        index.getItemHeading(cHandle, "T0001")
     )
     assert index.getSingleTag("foobar") == ("", "", None, None)
 

@@ -642,7 +642,7 @@ class GuiIcons:
     def getItemIcon(self, tType: nwItemType, tClass: nwItemClass,
                     tLayout: nwItemLayout, hLevel: str = "H0") -> QIcon:
         """Get the correct icon for a project item based on type, class
-        and header level
+        and heading level
         """
         iconName = None
         if tType == nwItemType.ROOT:
@@ -668,7 +668,7 @@ class GuiIcons:
         return self.getIcon(iconName)
 
     def getHeaderDecoration(self, hLevel: int) -> QPixmap:
-        """Get the decoration for a specific header level."""
+        """Get the decoration for a specific heading level."""
         if not self._headerDec:
             iPx = self.mainTheme.baseIconSize
             self._headerDec = [
@@ -681,7 +681,7 @@ class GuiIcons:
         return self._headerDec[minmax(hLevel, 0, 4)]
 
     def getHeaderDecorationNarrow(self, hLevel: int) -> QPixmap:
-        """Get the narrow decoration for a specific header level."""
+        """Get the narrow decoration for a specific heading level."""
         if not self._headerDecNarrow:
             iPx = self.mainTheme.baseIconSize
             self._headerDecNarrow = [

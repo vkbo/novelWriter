@@ -72,7 +72,7 @@ def preProcessText(text: str, keepHeaders: bool = True) -> list[str]:
 
 def standardCounter(text: str) -> tuple[int, int, int]:
     """A counter that counts paragraphs, words and characters.
-    This is the standard counter that includes headers in the word and
+    This is the standard counter that includes headings in the word and
     character counts.
     """
     cCount = 0

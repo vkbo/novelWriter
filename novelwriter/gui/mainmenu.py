@@ -693,29 +693,29 @@ class GuiMainMenu(QMenuBar):
         # Format > Separator
         self.fmtMenu.addSeparator()
 
-        # Format > Header 1 (Partition)
-        self.aFmtHead1 = self.fmtMenu.addAction(self.tr("Header 1 (Partition)"))
+        # Format > Heading 1 (Partition)
+        self.aFmtHead1 = self.fmtMenu.addAction(self.tr("Heading 1 (Partition)"))
         self.aFmtHead1.setShortcut("Ctrl+1")
         self.aFmtHead1.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H1)
         )
 
-        # Format > Header 2 (Chapter)
-        self.aFmtHead2 = self.fmtMenu.addAction(self.tr("Header 2 (Chapter)"))
+        # Format > Heading 2 (Chapter)
+        self.aFmtHead2 = self.fmtMenu.addAction(self.tr("Heading 2 (Chapter)"))
         self.aFmtHead2.setShortcut("Ctrl+2")
         self.aFmtHead2.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H2)
         )
 
-        # Format > Header 3 (Scene)
-        self.aFmtHead3 = self.fmtMenu.addAction(self.tr("Header 3 (Scene)"))
+        # Format > Heading 3 (Scene)
+        self.aFmtHead3 = self.fmtMenu.addAction(self.tr("Heading 3 (Scene)"))
         self.aFmtHead3.setShortcut("Ctrl+3")
         self.aFmtHead3.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H3)
         )
 
-        # Format > Header 4 (Section)
-        self.aFmtHead4 = self.fmtMenu.addAction(self.tr("Header 4 (Section)"))
+        # Format > Heading 4 (Section)
+        self.aFmtHead4 = self.fmtMenu.addAction(self.tr("Heading 4 (Section)"))
         self.aFmtHead4.setShortcut("Ctrl+4")
         self.aFmtHead4.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H4)
@@ -804,14 +804,14 @@ class GuiMainMenu(QMenuBar):
         # Format > Separator
         self.fmtMenu.addSeparator()
 
-        # Format > Replace Single Quotes
-        self.aFmtReplSng = self.fmtMenu.addAction(self.tr("Convert Single Quotes"))
+        # Format > Replace Straight Single Quotes
+        self.aFmtReplSng = self.fmtMenu.addAction(self.tr("Replace Straight Single Quotes"))
         self.aFmtReplSng.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.REPL_SNG)
         )
 
-        # Format > Replace Double Quotes
-        self.aFmtReplDbl = self.fmtMenu.addAction(self.tr("Convert Double Quotes"))
+        # Format > Replace Straight Double Quotes
+        self.aFmtReplDbl = self.fmtMenu.addAction(self.tr("Replace Straight Double Quotes"))
         self.aFmtReplDbl.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.REPL_DBL)
         )

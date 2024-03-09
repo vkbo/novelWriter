@@ -1834,7 +1834,7 @@ class _TreeContextMenu(QMenu):
 
     def _itemHeader(self) -> None:
         """Check if there is a header that can be used for rename."""
-        if hItem := SHARED.project.index.getItemHeader(self._handle, "T0001"):
+        if hItem := SHARED.project.index.getItemHeading(self._handle, "T0001"):
             action = self.addAction(self.tr("Rename to Heading"))
             action.triggered.connect(
                 lambda: self.projTree.renameTreeItem(self._handle, hItem.title)
@@ -1933,7 +1933,7 @@ class _TreeContextMenu(QMenu):
             action.triggered.connect(lambda: tree._mergeDocuments(tHandle, True))
 
         if isFile:
-            action = menu.addAction(self.tr("Split Document by Headers"))
+            action = menu.addAction(self.tr("Split Document by Headings"))
             action.triggered.connect(lambda: tree._splitDocument(tHandle))
 
         return
@@ -1947,11 +1947,9 @@ class _TreeContextMenu(QMenu):
             action.triggered.connect(lambda: tree.setExpandedFromHandle(tHandle, True))
             action = self.addAction(self.tr("Collapse All"))
             action.triggered.connect(lambda: tree.setExpandedFromHandle(tHandle, False))
-            action = self.addAction(self.tr("Duplicate from Here"))
-            action.triggered.connect(lambda: tree._duplicateFromHandle(tHandle))
-        elif isFile:
-            action = self.addAction(self.tr("Duplicate Document"))
-            action.triggered.connect(lambda: tree._duplicateFromHandle(tHandle))
+
+        action = self.addAction(self.tr("Duplicate"))
+        action.triggered.connect(lambda: tree._duplicateFromHandle(tHandle))
 
         if self._item.itemClass == nwItemClass.TRASH or isRoot or (isFolder and not hasChild):
             action = self.addAction(self.tr("Delete Permanently"))

@@ -307,7 +307,7 @@ class NWIndex:
         nTitle = 0           # Line Number of the previous title
         cTitle = TT_NONE     # Tag of the current title
         pTitle = TT_NONE     # Tag of the previous title
-        canSetHeader = True  # First header has not yet been set
+        canSetHead = True  # First heading has not yet been set
 
         lines = text.splitlines()
         for n, line in enumerate(lines, start=1):
@@ -320,9 +320,9 @@ class NWIndex:
                 if hDepth == "H0":
                     continue
 
-                if canSetHeader:
+                if canSetHead:
                     nwItem.setMainHeading(hDepth)
-                    canSetHeader = False
+                    canSetHead = False
 
                 cTitle = self._itemIndex.addItemHeading(tHandle, n, hDepth, hText)
                 if cTitle != TT_NONE:
@@ -383,7 +383,7 @@ class NWIndex:
         return
 
     def _splitHeading(self, line: str) -> tuple[str, str]:
-        """Split a heading into its header level and text value."""
+        """Split a heading into its heading level and text value."""
         if line.startswith("# "):
             return "H1", line[2:].strip()
         elif line.startswith("## "):
@@ -515,8 +515,8 @@ class NWIndex:
         """Get the index data for a given item."""
         return self._itemIndex[tHandle]
 
-    def getItemHeader(self, tHandle: str, sTitle: str) -> IndexHeading | None:
-        """Get the header entry for a specific item and heading."""
+    def getItemHeading(self, tHandle: str, sTitle: str) -> IndexHeading | None:
+        """Get the heading entry for a specific item and heading."""
         tItem = self._itemIndex[tHandle]
         if isinstance(tItem, IndexItem):
             return tItem[sTitle]
@@ -825,7 +825,7 @@ class ItemIndex:
     class around a single storage dictionary with a set of utility
     functions for setting and accessing the index data. Each indexed
     item is stored in an IndexItem object, which again holds an
-    IndexHeading object for each header of the text.
+    IndexHeading object for each heading of the text.
     """
 
     __slots__ = ("_project", "_items")
@@ -1200,7 +1200,7 @@ class IndexHeading:
     ##
 
     def setLevel(self, level: str) -> None:
-        """Set the level of the header if it's a valid value."""
+        """Set the level of the heading if it's a valid value."""
         if level in nwHeaders.H_VALID:
             self._level = level
         return

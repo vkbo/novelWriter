@@ -89,7 +89,7 @@ def testCoreToHtml_ConvertHeaders(mockGUI):
     html._isNovel = False
     html._isNote = True
     html._isFirst = True
-    html.setLinkHeaders(True)
+    html.setLinkHeadings(True)
 
     # Header 1
     html._text = "# Heading One\n"
@@ -270,7 +270,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     html._isNovel = True
     html._isNote = False
-    html.setLinkHeaders(True)
+    html.setLinkHeadings(True)
 
     # Special Titles
     # ==============
@@ -319,7 +319,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     # Alignment
     # =========
 
-    html.setLinkHeaders(False)
+    html.setLinkHeadings(False)
 
     # Align Left
     html.setStyles(False)

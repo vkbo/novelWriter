@@ -1020,7 +1020,7 @@ class GuiOutlineDetails(QScrollArea):
         """
         pIndex = SHARED.project.index
         nwItem = SHARED.project.tree[tHandle]
-        novIdx = pIndex.getItemHeader(tHandle, sTitle)
+        novIdx = pIndex.getItemHeading(tHandle, sTitle)
         novRefs = pIndex.getReferences(tHandle, sTitle)
         if nwItem and novIdx:
             self.titleLabel.setText("<b>%s</b>" % self.tr(self.LVL_MAP.get(novIdx.level, "H1")))
