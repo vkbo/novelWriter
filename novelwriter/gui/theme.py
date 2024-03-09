@@ -344,7 +344,7 @@ class GuiTheme:
             if themeName:
                 self._themeList.append((themeKey, themeName))
 
-        self._themeList = sorted(self._themeList, key=lambda x: x[1])
+        self._themeList = sorted(self._themeList, key=_sortTheme)
 
         return self._themeList
 
@@ -360,7 +360,7 @@ class GuiTheme:
             if syntaxName:
                 self._syntaxList.append((syntaxKey, syntaxName))
 
-        self._syntaxList = sorted(self._syntaxList, key=lambda x: x[1])
+        self._syntaxList = sorted(self._syntaxList, key=_sortTheme)
 
         return self._syntaxList
 
@@ -724,6 +724,13 @@ class GuiIcons:
 # =============================================================================================== #
 #  Module Functions
 # =============================================================================================== #
+
+
+def _sortTheme(data: tuple[str, str]) -> str:
+    """Key function for theme sorting."""
+    key, name = data
+    return f"*{name}" if key.startswith("default_") else name
+
 
 def _loadInternalName(confParser: NWConfigParser, confFile: str | Path) -> str:
     """Open a conf file and read the 'name' setting."""
