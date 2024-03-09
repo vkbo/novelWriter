@@ -183,11 +183,15 @@ class NWStorage:
         # 2. A full path to an nwProject.nwx file
         if inPath.is_dir() and inPath != Path.home().resolve():
             nwxFile = inPath / nwFiles.PROJ_FILE
-        elif inPath.is_file() and inPath.name == nwFiles.PROJ_FILE:
-            nwxFile = inPath
+        elif inPath.is_file():
+            if inPath.name == nwFiles.PROJ_FILE:
+                nwxFile = inPath
+            else:
+                logger.error("Not a novelWriter project")
+                return NWStorageOpen.UNKOWN
         else:
-            logger.error("Not a novelWriter project")
-            return NWStorageOpen.UNKOWN
+            logger.error("Not found: %s", inPath)
+            return NWStorageOpen.NOT_FOUND
 
         if not nwxFile.exists():
             # The .nwx file must exist to continue
