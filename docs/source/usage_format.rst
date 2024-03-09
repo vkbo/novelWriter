@@ -6,8 +6,8 @@ Formatting Your Text
 
 The novelWriter text editor is a plain text editor that uses formatting codes for setting meta data
 values and allowing for some text formatting. The syntax is based on Markdown, but novelWriter is
-*not* a Markdown editor. It supports basic formatting like emphasis (italic), strong importance
-(bold) and strike through text, as well as four levels of headings. Form some further complex
+**not** a Markdown editor. It supports basic formatting like emphasis (italic), strong importance
+(bold) and strike through text, as well as four levels of headings. For some further complex
 formatting needs, a set of shortcodes can be used.
 
 In addition to formatting codes, novelWriter allows for comments, a synopsis tag, and a set of
@@ -30,7 +30,7 @@ dialogue in your text.
    An example of the colour highlighting of references. "Bob" is not defined, and "@blabla" is not
    a valid reference type.
 
-When you use the commands to set tags and references, these also change colour. Correct commands
+When you use the keywords to set tags and references, these also change colour. Correct keywords
 have a distinct colour, and the references themselves will get a colour if they are valid. Invalid
 references will get a squiggly error line underneath. The same applies to duplicate tags.
 
@@ -45,7 +45,7 @@ Headings
 
 .. figure:: images/fig_header_levels.png
 
-   An illustration of how header levels correspond to the novel structure.
+   An illustration of how heading levels correspond to the novel structure.
 
 Four levels of headings are allowed. For :term:`project notes`, they are free to be used as you see
 fit. That is, novelWriter doesn't assign the different headings any particular meaning. However,
@@ -53,28 +53,28 @@ for :term:`novel documents` they indicate the structural level of the novel and 
 correctly to produce the intended result. See :ref:`a_struct_heads` for more details.
 
 ``# Title Text``
-   Heading level one. For novel documents, the header level indicates the start of a new partition.
+   Heading level one. For novel documents, the level indicates the start of a new partition.
 
 ``## Title Text``
-   Heading level two. For novel documents, the header level indicates the start of a new chapter.
-   Chapter numbers can be inserted automatically when building the manuscript.
+   Heading level two. For novel documents, the level indicates the start of a new chapter. Chapter
+   numbers can be inserted automatically when building the manuscript.
 
 ``### Title Text``
-   Heading level three. For novel documents, the header level indicates the start of a new scene.
-   Scene numbers or scene separators can be inserted automatically when building the manuscript,
-   so you can use the title field as a working title for your scenes if you wish.
+   Heading level three. For novel documents, the level indicates the start of a new scene. Scene
+   numbers or scene separators can be inserted automatically when building the manuscript, so you
+   can use the title field as a working title for your scenes if you wish.
 
 ``#### Title Text``
-   Heading level four. For novel documents, the header level indicates the start of a new section.
-   Section titles can be replaced by separators or ignored completely when building the manuscript.
+   Heading level four. For novel documents, the level indicates the start of a new section. Section
+   titles can be replaced by separators or ignored completely when building the manuscript.
 
-For headers level one and two, adding a ``!`` modifies the behaviour of the heading:
+For headings level one and two, adding a ``!`` modifies its meaning:
 
 ``#! Title Text``
-   This tells the build tool that the level one heading is intended to be used for the novel's
-   main title, like for instance on the front page. When building the manuscript, this will use a
-   different styling and will exclude the title from, for instance, a Table of Contents in Libre
-   Office.
+   This tells the build tool that the level one heading is intended to be used for the novel's or
+   notes folder's main title, like for instance on the front page. When building the manuscript,
+   this will use a different styling and will exclude the title from, for instance, a Table of
+   Contents in Libre Office.
 
 ``##! Title Text``
    This tells the build tool to not assign a chapter number to this chapter title if automatic
@@ -99,10 +99,10 @@ In addition, the editor supports a few additional types of white spaces:
 
 * A non-breaking space can be inserted with :kbd:`Ctrl+K`, :kbd:`Space`.
 * Thin spaces are also supported, and can be inserted with :kbd:`Ctrl+K`, :kbd:`Shift+Space`.
-* Non-breaking thin space can be inserted  with :kbd:`Ctrl+K`, :kbd:`Ctrl+Space`.
+* Non-breaking thin space can be inserted with :kbd:`Ctrl+K`, :kbd:`Ctrl+Space`.
 
-These are all insert features, and the :guilabel:`Insert` menu has more. They are also listed
-in :ref:`a_kb_ins`.
+These are all insert features, and the :guilabel:`Insert` menu has more. The keyboard shortcuts for
+them are also listed in :ref:`a_kb_ins`.
 
 Non-breaking spaces are highlighted by the syntax highlighter with an alternate coloured
 background, depending on the selected theme.
@@ -118,7 +118,7 @@ background, depending on the selected theme.
 Text Emphasis
 =============
 
-A minimal set of text emphasis styles are supported for text paragraphs.
+A minimal set of Markdown text emphasis styles are supported for text paragraphs.
 
 ``_text_``
    The text is rendered as emphasised text (italicised).
@@ -141,7 +141,7 @@ In addition, the following rules apply:
    tag itself. That is, ``**text**`` is valid, ``**text **`` is not.
 2. More generally, the delimiters must be on the outer edge of words. That is, ``some **text in
    bold** here`` is valid, ``some** text in bold** here`` is not.
-3. If using both ``**`` and ``_`` to wrap the same text, the underscore must be the *inner*
+3. If using both ``**`` and ``_`` to wrap the same text, the underscore must be the **inner**
    wrapper. This is due to the underscore also being a valid word character, so if they are on the
    outside, they violate rule 2.
 4. Text emphasis does not span past line breaks. If you need to add emphasis to multiple lines or
@@ -214,9 +214,10 @@ indicate this by altering the colour of the word.
    document of the whole project.
 
 ``%Short: text ...``
-   This is a short description comment. It is identical to the synopsis comment, but is intended to
-   be used for project notes. The text shows up in the Reference panel below the document viewer in
-   the last column labelled :guilabel:`Short Description`.
+   This is a short description comment. It is identical to the synopsis comment (they are
+   interchangeable), but is intended to be used for project notes. The text shows up in the
+   Reference panel below the document viewer in the last column labelled
+   :guilabel:`Short Description`.
 
 .. note::
    Only one comment can be flagged as a synopsis or short comment for each heading. If multiple
@@ -232,11 +233,11 @@ Tags and References
 The document editor supports a set of keywords used for setting tags, and making references between
 documents.
 
-Tags use the command ``@tag:`` to define a tag. The tag can be set once per section defined by a
+Tags use the keyword ``@tag:`` to define a tag. The tag can be set once per section defined by a
 heading. Setting it multiple times under the same heading will just override the previous setting.
 
 ``@tag: value``
-   A tag command followed by the tag value, like for instance the name of a character.
+   A tag keyword followed by the tag value, like for instance the name of a character.
 
 References can be set anywhere within a section, and are collected according to their category.
 References are in the form:
@@ -282,7 +283,7 @@ Examples:
 .. note::
    The text editor will not show the alignment and indentation live. But the viewer will show them
    when you open the document there. It will of course also be reflected in the document generated
-   from the build tool as long as the format supports paragraph alignment.
+   from the manuscript build tool as long as the format supports paragraph alignment.
 
 
 .. _a_fmt_break:
@@ -290,37 +291,37 @@ Examples:
 Vertical Space and Page Breaks
 ==============================
 
-Adding more than one line break between paragraphs will *not* increase the space between those
+Adding more than one line break between paragraphs will **not** increase the space between those
 paragraphs when building the project. To add additional space between paragraphs, add the text
-``[VSPACE]`` on a line of its own, and the build tool will insert a blank paragraph in its place.
+``[vspace]`` on a line of its own, and the build tool will insert a blank paragraph in its place.
 
 If you need multiple blank paragraphs just add a colon and a number to the above code. For
-instance, writing ``[VSPACE:3]`` will insert three blank paragraphs.
+instance, writing ``[vspace:3]`` will insert three blank paragraphs.
 
-Normally, the build tool will insert a page break before all headers of level one and for all
-headers of level two for novel documents, i.e. chapters, but not for project notes.
+Normally, the manuscript build tool will insert a page break before all headings of level one and
+for all headings of level two for novel documents, i.e. chapters, but not for project notes.
 
-If you need to add a page break somewhere else, put the text ``[NEW PAGE]`` on a line by itself
+If you need to add a page break somewhere else, put the text ``[new page]`` on a line by itself
 before the text you wish to start on a new page.
 
 If you want page breaks for scenes and sections, you must add them manually.
 
 .. note::
    The page break code is applied to the text that follows it. It adds a "page break before" mark
-   to the text when exporting to HTML or Open Document. This means that a ``[NEW PAGE]`` which has
+   to the text when exporting to HTML or Open Document. This means that a ``[new page]`` which has
    no text following it, it will not result in a page break.
 
 **Example:**
 
-.. code-block:: markdown
+.. code-block:: md
 
    This is a text paragraph.
 
-   [VSPACE:2]
+   [vspace:2]
 
    This is another text paragraph, but there will be two empty paragraphs
    in-between them.
 
-   [NEWPAGE]
+   [new page]
 
    This text will always start on a new page if the build format has pages.

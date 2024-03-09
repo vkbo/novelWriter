@@ -23,14 +23,14 @@ Main Window Shortcuts
    ":kbd:`F5`",           "Open the :guilabel:`Build Manuscript` tool"
    ":kbd:`F6`",           "Open the :guilabel:`Writing Statistics` tool"
    ":kbd:`F8`",           "Toggle :guilabel:`Focus Mode`"
-   ":kbd:`F9`",           "Re-build the project index"
+   ":kbd:`F9`",           "Re-build the project's index"
    ":kbd:`F11`",          "Toggle full screen mode"
    ":kbd:`Ctrl+,`",       "Open the :guilabel:`Preferences` dialog"
    ":kbd:`Ctrl+E`",       "Switch focus to the document editor"
-   ":kbd:`Ctrl+T`",       "Switch focus to the project/novel tree"
+   ":kbd:`Ctrl+T`",       "Switch or toggle focus for the project tree or novel view"
    ":kbd:`Ctrl+Q`",       "Exit novelWriter"
    ":kbd:`Ctrl+Shift+,`", "Open the :guilabel:`Project Settings` dialog"
-   ":kbd:`Ctrl+Shift+O`", "Open a project"
+   ":kbd:`Ctrl+Shift+O`", "Open the Welcome dialog to open or create a project"
    ":kbd:`Ctrl+Shift+S`", "Save the current project"
    ":kbd:`Ctrl+Shift+T`", "Switch focus to the outline view"
    ":kbd:`Ctrl+Shift+W`", "Close the current project"
@@ -55,12 +55,11 @@ Project Tree Shortcuts
    ":kbd:`Ctrl+.`",         "Open the context menu on the selected item"
    ":kbd:`Ctrl+L`",         "Open the :guilabel:`Quick Links` menu"
    ":kbd:`Ctrl+N`",         "Open the :guilabel:`Create New Item` menu"
-   ":kbd:`Ctrl+O`",         "Open selected document"
+   ":kbd:`Ctrl+O`",         "Open the selected document in the editor"
    ":kbd:`Ctrl+R`",         "Open the selected document in the viewer"
    ":kbd:`Ctrl+Up`",        "Move selected item one step up in the tree"
    ":kbd:`Ctrl+Down`",      "Move selected item one step down in the tree"
    ":kbd:`Ctrl+Shift+Del`", "Move the selected item to Trash"
-   ":kbd:`Ctrl+Shift+Z`",   "Undo the last move of a project item, if possible"
 
 
 .. _a_kb_editor:
@@ -92,22 +91,22 @@ Text Formatting Shortcuts
 
    ":kbd:`Ctrl+'`",       "Wrap selected text, or word under cursor, in single quotes"
    ":kbd:`Ctrl+""`",      "Wrap selected text, or word under cursor, in double quotes"
-   ":kbd:`Ctrl+/`",       "Toggle block format as comment"
-   ":kbd:`Ctrl+0`",       "Remove block formatting for block under cursor"
-   ":kbd:`Ctrl+1`",       "Change block format to header level 1"
-   ":kbd:`Ctrl+2`",       "Change block format to header level 2"
-   ":kbd:`Ctrl+3`",       "Change block format to header level 3"
-   ":kbd:`Ctrl+4`",       "Change block format to header level 4"
+   ":kbd:`Ctrl+/`",       "Toggle block format as comment for block under cursor, or selected text"
+   ":kbd:`Ctrl+0`",       "Remove block formatting for block under cursor, or selected text"
+   ":kbd:`Ctrl+1`",       "Change block format to heading level 1"
+   ":kbd:`Ctrl+2`",       "Change block format to heading level 2"
+   ":kbd:`Ctrl+3`",       "Change block format to heading level 3"
+   ":kbd:`Ctrl+4`",       "Change block format to heading level 4"
    ":kbd:`Ctrl+5`",       "Change block alignment to left-aligned"
    ":kbd:`Ctrl+6`",       "Change block alignment to centred"
    ":kbd:`Ctrl+7`",       "Change block alignment to right-aligned"
    ":kbd:`Ctrl+8`",       "Add a left margin to the block"
    ":kbd:`Ctrl+9`",       "Add a right margin to the block"
    ":kbd:`Ctrl+B`",       "Format selected text, or word under cursor, with strong emphasis (bold)"
-   ":kbd:`Ctrl+D`",       "Strike through selected text, or word under cursor"
+   ":kbd:`Ctrl+D`",       "Format selected text, or word under cursor, with strike through"
    ":kbd:`Ctrl+I`",       "Format selected text, or word under cursor, with emphasis (italic)"
-   ":kbd:`Ctrl+Shift+/`", "Remove block formatting for block under cursor"
-   ":kbd:`Ctrl+Shift+D`", "Toggle block format as ignored text"
+   ":kbd:`Ctrl+Shift+/`", "Remove block formatting for block under cursor, or selected text"
+   ":kbd:`Ctrl+Shift+D`", "Toggle block format as ignored text for block under cursor, or selected text"
 
 
 Other Editor Shortcuts
@@ -116,7 +115,7 @@ Other Editor Shortcuts
 .. csv-table::
    :header: "Shortcut", "Description"
 
-   ":kbd:`F7`",             "Re-run the spell checker"
+   ":kbd:`F7`",             "Re-run the spell checker on the document"
    ":kbd:`Ctrl+.`",         "Open the context menu at the current cursor location"
    ":kbd:`Ctrl+A`",         "Select all text in the document"
    ":kbd:`Ctrl+C`",         "Copy selected text to clipboard"
@@ -133,7 +132,6 @@ Other Editor Shortcuts
    ":kbd:`Ctrl+F7`",        "Toggle spell checking"
    ":kbd:`Ctrl+Return`",    "Open the tag or reference under the cursor in the viewer"
    ":kbd:`Ctrl+Shift+A`",   "Select all text in the current paragraph"
-   ":kbd:`Ctrl+Shift+I`",   "Import text to the current document from a text file"
 
 
 .. _a_kb_ins:
