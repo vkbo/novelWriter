@@ -6,7 +6,7 @@ Getting Started
 
 .. _Enchant: https://abiword.github.io/enchant/
 .. _GitHub: https://github.com/vkbo/novelWriter
-.. _main website: https://novelwriter.io
+.. _Downloads page: https://download.novelwriter.io
 .. _PPA: https://launchpad.net/~vkbo/+archive/ubuntu/novelwriter
 .. _Pre-Release PPA: https://launchpad.net/~vkbo/+archive/ubuntu/novelwriter-pre
 .. _PyPi: https://pypi.org/project/novelWriter/
@@ -15,9 +15,10 @@ Getting Started
 .. _AppImage: https://appimage.org/
 
 Ready-made packages and installers for novelWriter are available for all major platforms, including
-Linux, Windows and MacOS. See below for install instructions for each platform.
+Linux, Windows and MacOS, from the `Downloads page`_. See below for install instructions for each
+platform.
 
-You can also install novelWriter from the Python Package Index (PyPi). See :ref:`a_started_pip`.
+You can also install novelWriter from the Python Package Index (PyPi_). See :ref:`a_started_pip`.
 Installing from PyPi does not set up icon launchers, so you will either have to do this yourself,
 or start novelWriter from the command line.
 
@@ -32,7 +33,7 @@ Installing on Windows
 =====================
 
 You can install novelWriter with both Python and library dependencies embedded using the Windows
-Installer (setup.exe) file from the `main website`_, or from the Releases_ page on GitHub_.
+Installer (setup.exe) file from the `Downloads page`_, or from the Releases_ page on GitHub_.
 Installing it should be straightforward.
 
 If you have any issues, try uninstalling the previous version and making a fresh install. If you
@@ -51,8 +52,8 @@ multiple installations has been known to cause problems.
 Installing on Linux
 ===================
 
-A Debian package can be downloaded from the `main website`_, or from the Releases_ page on GitHub_.
-This package should work on both Debian, Ubuntu and Linux Mint, at least.
+A Debian package can be downloaded from the `Downloads page`_, or from the Releases_ page on
+GitHub_. This package should work on both Debian, Ubuntu and Linux Mint, at least.
 
 If you prefer, you can also add the novelWriter repository on Launchpad to your package manager.
 
@@ -112,8 +113,8 @@ completely standalone images for the app that include the necessary environment 
 They can of course be run on any Linux distro, if you prefer this to native packages.
 
 .. note::
-   novelWriter generally don't support Python versions that have reached end of life. If your Linux
-   distro still uses older Python versions and novelWriter won't run, you may want to try the
+   novelWriter generally doesn't support Python versions that have reached end of life. If your
+   Linux distro still uses older Python versions and novelWriter won't run, you may want to try the
    AppImage instead.
 
 
@@ -123,14 +124,14 @@ Installing on MacOS
 ===================
 
 You can install novelWriter with both its Python and library dependencies embedded using the DMG
-application image file from the `main website`_, or from the Releases_ page on GitHub_. Installing
-it should be straightforward.
+application image file from the `Downloads page`_, or from the Releases_ page on GitHub_.
+Installing it should be straightforward.
 
 * Download the DMG file and open it. Then drag the novelWriter icon to the :guilabel:`Applications`
   folder on the right. This will install it into your :guilabel:`Applications`.
 * The first time you try to launch it, it will say that the bundle cannot be verified, simply press
   the :guilabel:`Open` button to add an exception.
-* If you are not presented with an :guilabel:`Open` button in the dialog launch the application
+* If you are not presented with an :guilabel:`Open` button in the dialog, launch the application
   again by right clicking on the application in Finder and selecting :guilabel:`Open` from the
   context menu.
 
@@ -149,7 +150,7 @@ Installing from PyPi
 ====================
 
 novelWriter is also available on the Python Package Index, or PyPi_. This install method works on
-all supported operating systems.
+all supported operating systems with a suitable Python environment.
 
 To install from PyPi you must first have the ``python`` and ``pip`` commands available on your
 system. You can download Python from `python.org`_. It is recommended that you install the latest

@@ -25,7 +25,7 @@ Managing the Project
    :guilabel:`Merge Documents in Folder`.
 
    In the dialog that pops up, the documents will be in the same order as in the folder, but you
-   can also rearrange them here of you wish. See :ref:`a_ui_tree_split_merge` for more details.
+   can rearrange them here of you wish. See :ref:`a_ui_tree_split_merge` for more details.
 
 
 Layout Tricks
@@ -42,7 +42,7 @@ Layout Tricks
    in columns using the tab key, and it should look the same when viewed next to the editor.
 
    This is most suitable for your notes, as the result in exported documents cannot be guaranteed
-   to match.
+   to match. Especially if you don't use the same font in your manuscript as in the editor.
 
 
 Organising Your Text
@@ -56,7 +56,9 @@ Organising Your Text
 
    If you add separate files for chapters and scenes, the chapter file is the perfect place to add
    such text. Separating chapter and scene files also allows you to make scene files child
-   documents of the chapter (added in novelWriter 2.0).
+   documents of the chapter.
+
+   .. versionadded:: 2.0
 
 .. dropdown:: Distinguishing Soft and Hard Scene Breaks
    :animate: fade-in-slide-down
@@ -64,11 +66,14 @@ Organising Your Text
    Depending on your writing style, you may need to separate between soft and hard scene breaks
    within chapters. Like for instance if you switch point-of-view character often.
 
-   In such cases you may want to use the scene heading for hard scene breaks and section headings
+   In such cases you may want to use a scene heading for hard scene breaks and a section heading
    for soft scene breaks. The :guilabel:`Build Manuscript` tool will let you add separate
    formatting for the two when you generate your manuscript. You can for instance add the common
    "``* * *``" for hard breaks and select to hide section breaks, which will just insert an empty
    paragraph in their place. See :ref:`a_manuscript_settings` for more details.
+
+   Keep in mind that this is not what the section heading is intended for, so the app will not
+   understand the section heading as a scene, but it will be formatted correctly in the manuscript.
 
 
 Other Tools

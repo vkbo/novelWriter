@@ -11,9 +11,9 @@ Overview
       :width: 220
 
 novelWriter is built as a cross-platform application using `Python 3 <https://www.python.org/>`_ as
-the programming language, and `Qt 5 <https://www.qt.io/>`_ for the user interface.
+the programming language, and `Qt 5 <https://www.qt.io/>`_ framework for the user interface.
 
-novelWriter is built for Linux first, and this is where it works best. However, it also runs fine
+novelWriter is built for Linux first, so this is where it works best. However, it also runs fine
 on Windows and MacOS due to the cross-platform framework it's built on. The author of the
 application doesn't own a Mac, so on-going Mac support is dependent on user feedback and user
 contributions.
@@ -22,7 +22,7 @@ Spell checking in novelWriter is provided by a third party library called
 `Enchant <https://abiword.github.io/enchant/>`_. Please see the section on :ref:`a_custom_dict` for
 how to install spell checking languages.
 
-For install instructions, see :ref:`a_started`.
+For install instructions for novelWriter, see :ref:`a_started`.
 
 
 Using novelWriter
@@ -58,12 +58,6 @@ read on.
    your language, and other special characters. If you use any symbols aside from these, their
    intended use is explained here.
 
-:ref:`a_prjfmt` – Optional
-   This chapter is more technical and has an overview of changes made to the way your project data
-   is stored. The format has changed a bit from time to time, and sometimes the changes require
-   that you make small modifications to your project. Everything you need to know is listed in this
-   chapter.
-
 
 Organising Your Projects
 ========================
@@ -90,3 +84,11 @@ meta data for it to extract.
 :ref:`a_manuscript` - Recommended Reading
    This chapter explains how the :guilabel:`Manuscript Build` tool works, how you can control the
    way chapter titles are formatted, and how scene and section breaks are handled.
+
+
+Additional Details & Technical Topics
+=====================================
+
+The Additional Details and the Technical Topics sections contain more in-depth information about
+how various bits of novelWriter works. This information is not essential to getting started using
+novelWriter.

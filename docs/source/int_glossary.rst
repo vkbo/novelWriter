@@ -50,7 +50,7 @@ Glossary
    Headings
       Each level of headings in :term:`Novel Documents` have a specific meaning in terms of the
       structure of the story. That is, they determine what novelWriter considers a partition, a
-      chapter, a scene or a text section. For :term:`Project Notes`, the header levels don't
+      chapter, a scene or a text section. For :term:`Project Notes`, the heading levels don't
       matter. For more details on headings in novel documents, see :ref:`a_struct_heads`.
 
    Keyword
