@@ -4,8 +4,8 @@
 Tags and References
 *******************
 
-In novelWriter there are no forms or tables to fill in to define the characters, locations and
-other elements of your story. Instead, you create :term:`project notes` which you can mark as
+In novelWriter there are no forms or tables to fill in to define characters, locations or other
+elements of your story. Instead, you create :term:`project notes` which you can mark as
 representing these story elements by creating a :term:`tag`. Whenever you want to link a piece of
 your story to a note defining a story element, like a character, you create a :term:`reference`
 back to that tag. You can also cross-link your project notes in the same way.
@@ -16,9 +16,9 @@ this chapter hopes to explain in more detail how to use this tags and references
 
 .. tip::
    If you find the Tags and Reference system difficult to follow just from reading this chapter,
-   you can create a new project in novelWriter and select to "Fill the project with example files"
-   in the :guilabel:`New Project Wizard`. The example project contains several examples of tags and
-   references.
+   you can create a new project in the :guilabel:`Welcome` dialog's New project form and select 
+   "Create an example project" from the "Pre-fill project" option. The example project contains
+   several examples of tags and references.
 
 
 .. _a_references_metadata:
@@ -31,14 +31,15 @@ documents, not the documents themselves. See :ref:`a_struct_heads` for more deta
 metadata is also associated with headings, and not the documents directly.
 
 If you split your project into separate documents for each scene, this distinction may not matter.
-However, there are several benefits to using documents at a larger structural scale when starting
-your project. For instance, it may make more sense to define all your scenes, and even chapters, in
-a single document at first, or perhaps a document per act. You can later split these documents up
-using the document split feature. See :ref:`a_ui_tree_split_merge` for more details.
+However, there are several benefits to using documents at a larger structural scale when first
+starting your project. For instance, it may make more sense to define all your scenes, and even
+chapters, in a single document at first, or perhaps a document per act. You can later split these
+documents up using the document split feature. See :ref:`a_ui_tree_split_merge` for more details.
 
-The implication here is that you can treat each heading as an independent element of your notes
-that can be referenced somewhere else. In order to make it possible to reference a header section,
-you need to assign it a tag.
+You can do the same with your notes. You can treat each heading as an independent element of your
+notes that can be referenced somewhere else. That way you can collect all your minor or background
+characters in a single note file, and still be able to reference them individually by separating
+them with headings and assigning each a tag.
 
 
 .. _a_references_tags:
@@ -51,7 +52,7 @@ by using the ``@tag`` :term:`keyword`.
 
 The basic format of a tag is ``@tag: tagName``.
 
-The full format of a tag is ``@tag: tagName | displayName``.
+An alternative format of a tag is ``@tag: tagName | displayName``.
 
 ``tagName`` (Required)
    This is a unique identifier of your choosing. It is the value you use later for making
@@ -59,21 +60,21 @@ The full format of a tag is ``@tag: tagName | displayName``.
 
 ``displayName`` (Optional)
    This is an optional display name used for the tag. When you build your manuscript, you can for
-   instance insert the point of view character name into chapter headings. By default, the
-   ``tagName`` value is used in headings, but if you use a shortened format internally in your
+   instance insert the point of view character name directly into chapter headings. By default, the
+   ``tagName`` value is used in such headings, but if you use a shortened format internally in your
    project, you can use this to specify a more suitable format for your manuscript headings.
 
-You can only set *one* tag per heading, and the tag has to be unique across *all* documents in the
-project.
+You can only set **one** tag per heading, and the tag has to be unique across **all** documents in
+the project.
 
 After a tag has been defined, it can be referenced in novel documents, or cross-referenced in other
-notes. Tags will also show up in the :guilabel:`Outline View` and in the back-reference panel when
-a document is opened in the viewer.
+notes. Tags will also show up in the :guilabel:`Outline View` and in the references panel under the
+document viewer when a document is open in the viewer.
 
 The syntax highlighter will indicate to you that the keyword is correctly used and that the tag is
 allowed, that is, the tag is unique. Duplicate tags should be detected as long as the index is up
-to date. An invalid tag should have a green wiggly line under it, and will not receive the syntax
-colour that valid tags do.
+to date. An invalid tag should have a green wiggly line under it, and will not receive the colour
+that valid tags do.
 
 The tag is the only part of these notes that novelWriter uses. The rest of the document content is
 there for you to use in whatever way you wish. Of course, the content of the documents can be added
