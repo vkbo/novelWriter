@@ -796,7 +796,7 @@ class GuiMain(QMainWindow):
     def showWelcomeDialog(self) -> None:
         """Open the welcome dialog."""
         dialog = GuiWelcome(self)
-        dialog.openProjectRequest.connect(self._openProject)
+        dialog.openProjectRequest.connect(self._openProjectFromWelcome)
         dialog.exec_()
         return
 
@@ -1132,10 +1132,12 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot(Path)
-    def _openProject(self, path: Path) -> None:
-        """Handle an open project request."""
+    def _openProjectFromWelcome(self, path: Path) -> None:
+        """Handle an open project request from the welcome dialog."""
         qApp.processEvents()
         self.openProject(path)
+        if not SHARED.hasProject:
+            self.showWelcomeDialog()
         return
 
     @pyqtSlot(str, nwDocMode, str, bool)
