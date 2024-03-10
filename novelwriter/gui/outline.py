@@ -700,11 +700,11 @@ class GuiOutlineTree(QTreeWidget):
             trItem.setText(self._colIdx[nwOutline.LEVEL], novIdx.level)
             trItem.setIcon(self._colIdx[nwOutline.LABEL], self._dIcon[nwItem.mainHeading])
             trItem.setText(self._colIdx[nwOutline.LABEL], nwItem.itemName)
-            trItem.setText(self._colIdx[nwOutline.LINE], f"{novIdx.line:n}")
+            trItem.setText(self._colIdx[nwOutline.LINE], CONFIG.localNumber(novIdx.line))
             trItem.setText(self._colIdx[nwOutline.SYNOP], novIdx.synopsis)
-            trItem.setText(self._colIdx[nwOutline.CCOUNT], f"{novIdx.charCount:n}")
-            trItem.setText(self._colIdx[nwOutline.WCOUNT], f"{novIdx.wordCount:n}")
-            trItem.setText(self._colIdx[nwOutline.PCOUNT], f"{novIdx.paraCount:n}")
+            trItem.setText(self._colIdx[nwOutline.CCOUNT], CONFIG.localNumber(novIdx.charCount))
+            trItem.setText(self._colIdx[nwOutline.WCOUNT], CONFIG.localNumber(novIdx.wordCount))
+            trItem.setText(self._colIdx[nwOutline.PCOUNT], CONFIG.localNumber(novIdx.paraCount))
             trItem.setTextAlignment(self._colIdx[nwOutline.CCOUNT], Qt.AlignmentFlag.AlignRight)
             trItem.setTextAlignment(self._colIdx[nwOutline.WCOUNT], Qt.AlignmentFlag.AlignRight)
             trItem.setTextAlignment(self._colIdx[nwOutline.PCOUNT], Qt.AlignmentFlag.AlignRight)
@@ -1031,9 +1031,9 @@ class GuiOutlineDetails(QScrollArea):
             self.fileValue.setText(nwItem.itemName)
             self.itemValue.setText(itemStatus)
 
-            self.cCValue.setText(f"{checkInt(novIdx.charCount, 0):n}")
-            self.wCValue.setText(f"{checkInt(novIdx.wordCount, 0):n}")
-            self.pCValue.setText(f"{checkInt(novIdx.paraCount, 0):n}")
+            self.cCValue.setText(CONFIG.localNumber(checkInt(novIdx.charCount, 0)))
+            self.wCValue.setText(CONFIG.localNumber(checkInt(novIdx.wordCount, 0)))
+            self.pCValue.setText(CONFIG.localNumber(checkInt(novIdx.paraCount, 0)))
 
             self.synopValue.setText(novIdx.synopsis)
 

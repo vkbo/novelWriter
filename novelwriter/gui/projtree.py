@@ -1084,7 +1084,7 @@ class GuiProjectTree(QTreeWidget):
             for i in range(tItem.childCount()):
                 newCount += int(tItem.child(i).data(self.C_DATA, self.D_WORDS))
 
-        tItem.setText(self.C_COUNT, f"{newCount:n}")
+        tItem.setText(self.C_COUNT, CONFIG.localNumber(newCount))
         tItem.setData(self.C_DATA, self.D_WORDS, int(newCount))
 
         pItem = tItem.parent()

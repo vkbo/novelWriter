@@ -917,23 +917,23 @@ class _StatsWidget(QWidget):
     def updateStats(self, data: dict[str, int]) -> None:
         """Update the stats values from a Tokenizer stats dict."""
         # Minimal
-        self.minWordCount.setText("{0:n}".format(data.get("allWords", 0)))
-        self.minCharCount.setText("{0:n}".format(data.get("allChars", 0)))
+        self.minWordCount.setText(CONFIG.localNumber(data.get("allWords", 0)))
+        self.minCharCount.setText(CONFIG.localNumber(data.get("allChars", 0)))
 
         # Maximal
-        self.maxTotalWords.setText("{0:n}".format(data.get("allWords", 0)))
-        self.maxHeaderWords.setText("{0:n}".format(data.get("titleWords", 0)))
-        self.maxTextWords.setText("{0:n}".format(data.get("textWords", 0)))
-        self.maxTitleCount.setText("{0:n}".format(data.get("titleCount", 0)))
-        self.maxParCount.setText("{0:n}".format(data.get("paragraphCount", 0)))
+        self.maxTotalWords.setText(CONFIG.localNumber(data.get("allWords", 0)))
+        self.maxHeaderWords.setText(CONFIG.localNumber(data.get("titleWords", 0)))
+        self.maxTextWords.setText(CONFIG.localNumber(data.get("textWords", 0)))
+        self.maxTitleCount.setText(CONFIG.localNumber(data.get("titleCount", 0)))
+        self.maxParCount.setText(CONFIG.localNumber(data.get("paragraphCount", 0)))
 
-        self.maxTotalChars.setText("{0:n}".format(data.get("allChars", 0)))
-        self.maxHeaderChars.setText("{0:n}".format(data.get("titleChars", 0)))
-        self.maxTextChars.setText("{0:n}".format(data.get("textChars", 0)))
+        self.maxTotalChars.setText(CONFIG.localNumber(data.get("allChars", 0)))
+        self.maxHeaderChars.setText(CONFIG.localNumber(data.get("titleChars", 0)))
+        self.maxTextChars.setText(CONFIG.localNumber(data.get("textChars", 0)))
 
-        self.maxTotalWordChars.setText("{0:n}".format(data.get("allWordChars", 0)))
-        self.maxHeaderWordChars.setText("{0:n}".format(data.get("titleWordChars", 0)))
-        self.maxTextWordChars.setText("{0:n}".format(data.get("textWordChars", 0)))
+        self.maxTotalWordChars.setText(CONFIG.localNumber(data.get("allWordChars", 0)))
+        self.maxHeaderWordChars.setText(CONFIG.localNumber(data.get("titleWordChars", 0)))
+        self.maxTextWordChars.setText(CONFIG.localNumber(data.get("textWordChars", 0)))
 
         return
 

@@ -3157,18 +3157,21 @@ class GuiDocEditFooter(QWidget):
         cLine = cursor.blockNumber() + 1
         cCount = max(cursor.document().characterCount(), 1)
         self.linesText.setText(
-            self._trLineCount.format(f"{cLine:n}", f"{100*cPos//cCount:d} %")
+            self._trLineCount.format(CONFIG.localNumber(cLine), f"{100*cPos//cCount:d} %")
         )
         return
 
     def updateWordCount(self, wCount: int, selection: bool) -> None:
         """Update word counter information."""
         if selection and wCount:
-            wText = self._trSelectCount.format(f"{wCount:n}")
+            wText = self._trSelectCount.format(CONFIG.localNumber(wCount))
         elif self._tItem:
             wCount = self._tItem.wordCount
             wDiff = wCount - self._tItem.initCount
-            wText = self._trWordCount.format(f"{wCount:n}", f"{wDiff:+n}")
+            wPre = "+" if wDiff >= 0 else ""
+            wText = self._trWordCount.format(
+                CONFIG.localNumber(wCount), f"{wPre}{CONFIG.localNumber(wDiff)}"
+            )
         else:
             wText = self._trWordCount.format("0", "+0")
         self.wordsText.setText(wText)

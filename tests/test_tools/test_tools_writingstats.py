@@ -31,7 +31,7 @@ from mocked import causeOSError
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QFileDialog
 
-from novelwriter import SHARED
+from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwFiles
 from novelwriter.tools.writingstats import GuiWritingStats
 
@@ -103,18 +103,18 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: (pp, ""))
     sessLog.listBox.sortByColumn(sessLog.C_TIME, 0)
 
-    assert sessLog.novelWords.text() == "{:n}".format(600)
-    assert sessLog.notesWords.text() == "{:n}".format(275)
-    assert sessLog.totalWords.text() == "{:n}".format(875)
+    assert sessLog.novelWords.text() == CONFIG.localNumber(600)
+    assert sessLog.notesWords.text() == CONFIG.localNumber(275)
+    assert sessLog.totalWords.text() == CONFIG.localNumber(875)
 
-    assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == "{:n}".format(1)
-    assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == "{:n}".format(-200)
-    assert sessLog.listBox.topLevelItem(2).text(sessLog.C_COUNT) == "{:n}".format(300)
-    assert sessLog.listBox.topLevelItem(3).text(sessLog.C_COUNT) == "{:n}".format(-120)
-    assert sessLog.listBox.topLevelItem(4).text(sessLog.C_COUNT) == "{:n}".format(-20)
-    assert sessLog.listBox.topLevelItem(5).text(sessLog.C_COUNT) == "{:n}".format(40)
-    assert sessLog.listBox.topLevelItem(6).text(sessLog.C_COUNT) == "{:n}".format(-400)
-    assert sessLog.listBox.topLevelItem(7).text(sessLog.C_COUNT) == "{:n}".format(200)
+    assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == CONFIG.localNumber(1)
+    assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == CONFIG.localNumber(-200)
+    assert sessLog.listBox.topLevelItem(2).text(sessLog.C_COUNT) == CONFIG.localNumber(300)
+    assert sessLog.listBox.topLevelItem(3).text(sessLog.C_COUNT) == CONFIG.localNumber(-120)
+    assert sessLog.listBox.topLevelItem(4).text(sessLog.C_COUNT) == CONFIG.localNumber(-20)
+    assert sessLog.listBox.topLevelItem(5).text(sessLog.C_COUNT) == CONFIG.localNumber(40)
+    assert sessLog.listBox.topLevelItem(6).text(sessLog.C_COUNT) == CONFIG.localNumber(-400)
+    assert sessLog.listBox.topLevelItem(7).text(sessLog.C_COUNT) == CONFIG.localNumber(200)
 
     assert sessLog._saveData(sessLog.FMT_CSV)
     assert sessLog._saveData(sessLog.FMT_JSON)
@@ -163,14 +163,14 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.loads(inFile.read())
 
-    assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == "{:n}".format(1)
-    assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == "{:n}".format(-100)
-    assert sessLog.listBox.topLevelItem(2).text(sessLog.C_COUNT) == "{:n}".format(150)
-    assert sessLog.listBox.topLevelItem(3).text(sessLog.C_COUNT) == "{:n}".format(-60)
-    assert sessLog.listBox.topLevelItem(4).text(sessLog.C_COUNT) == "{:n}".format(-10)
-    assert sessLog.listBox.topLevelItem(5).text(sessLog.C_COUNT) == "{:n}".format(20)
-    assert sessLog.listBox.topLevelItem(6).text(sessLog.C_COUNT) == "{:n}".format(-200)
-    assert sessLog.listBox.topLevelItem(7).text(sessLog.C_COUNT) == "{:n}".format(100)
+    assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == CONFIG.localNumber(1)
+    assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == CONFIG.localNumber(-100)
+    assert sessLog.listBox.topLevelItem(2).text(sessLog.C_COUNT) == CONFIG.localNumber(150)
+    assert sessLog.listBox.topLevelItem(3).text(sessLog.C_COUNT) == CONFIG.localNumber(-60)
+    assert sessLog.listBox.topLevelItem(4).text(sessLog.C_COUNT) == CONFIG.localNumber(-10)
+    assert sessLog.listBox.topLevelItem(5).text(sessLog.C_COUNT) == CONFIG.localNumber(20)
+    assert sessLog.listBox.topLevelItem(6).text(sessLog.C_COUNT) == CONFIG.localNumber(-200)
+    assert sessLog.listBox.topLevelItem(7).text(sessLog.C_COUNT) == CONFIG.localNumber(100)
 
     assert jsonData == [
         {
@@ -209,14 +209,14 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
-    assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == "{:n}".format(1)
-    assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == "{:n}".format(-100)
-    assert sessLog.listBox.topLevelItem(2).text(sessLog.C_COUNT) == "{:n}".format(150)
-    assert sessLog.listBox.topLevelItem(3).text(sessLog.C_COUNT) == "{:n}".format(-60)
-    assert sessLog.listBox.topLevelItem(4).text(sessLog.C_COUNT) == "{:n}".format(-10)
-    assert sessLog.listBox.topLevelItem(5).text(sessLog.C_COUNT) == "{:n}".format(20)
-    assert sessLog.listBox.topLevelItem(6).text(sessLog.C_COUNT) == "{:n}".format(-200)
-    assert sessLog.listBox.topLevelItem(7).text(sessLog.C_COUNT) == "{:n}".format(100)
+    assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == CONFIG.localNumber(1)
+    assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == CONFIG.localNumber(-100)
+    assert sessLog.listBox.topLevelItem(2).text(sessLog.C_COUNT) == CONFIG.localNumber(150)
+    assert sessLog.listBox.topLevelItem(3).text(sessLog.C_COUNT) == CONFIG.localNumber(-60)
+    assert sessLog.listBox.topLevelItem(4).text(sessLog.C_COUNT) == CONFIG.localNumber(-10)
+    assert sessLog.listBox.topLevelItem(5).text(sessLog.C_COUNT) == CONFIG.localNumber(20)
+    assert sessLog.listBox.topLevelItem(6).text(sessLog.C_COUNT) == CONFIG.localNumber(-200)
+    assert sessLog.listBox.topLevelItem(7).text(sessLog.C_COUNT) == CONFIG.localNumber(100)
 
     assert jsonData == [
         {
@@ -257,10 +257,10 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
-    assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == "{:n}".format(1)
-    assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == "{:n}".format(300)
-    assert sessLog.listBox.topLevelItem(2).text(sessLog.C_COUNT) == "{:n}".format(40)
-    assert sessLog.listBox.topLevelItem(3).text(sessLog.C_COUNT) == "{:n}".format(200)
+    assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == CONFIG.localNumber(1)
+    assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == CONFIG.localNumber(300)
+    assert sessLog.listBox.topLevelItem(2).text(sessLog.C_COUNT) == CONFIG.localNumber(40)
+    assert sessLog.listBox.topLevelItem(3).text(sessLog.C_COUNT) == CONFIG.localNumber(200)
 
     assert jsonData == [
         {
@@ -287,16 +287,16 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
-    assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == "{:n}".format(1)
-    assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == "{:n}".format(0)
-    assert sessLog.listBox.topLevelItem(2).text(sessLog.C_COUNT) == "{:n}".format(-200)
-    assert sessLog.listBox.topLevelItem(3).text(sessLog.C_COUNT) == "{:n}".format(300)
-    assert sessLog.listBox.topLevelItem(4).text(sessLog.C_COUNT) == "{:n}".format(-120)
-    assert sessLog.listBox.topLevelItem(5).text(sessLog.C_COUNT) == "{:n}".format(-20)
-    assert sessLog.listBox.topLevelItem(6).text(sessLog.C_COUNT) == "{:n}".format(40)
-    assert sessLog.listBox.topLevelItem(7).text(sessLog.C_COUNT) == "{:n}".format(-400)
-    assert sessLog.listBox.topLevelItem(8).text(sessLog.C_COUNT) == "{:n}".format(200)
-    assert sessLog.listBox.topLevelItem(9).text(sessLog.C_COUNT) == "{:n}".format(0)
+    assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == CONFIG.localNumber(1)
+    assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == CONFIG.localNumber(0)
+    assert sessLog.listBox.topLevelItem(2).text(sessLog.C_COUNT) == CONFIG.localNumber(-200)
+    assert sessLog.listBox.topLevelItem(3).text(sessLog.C_COUNT) == CONFIG.localNumber(300)
+    assert sessLog.listBox.topLevelItem(4).text(sessLog.C_COUNT) == CONFIG.localNumber(-120)
+    assert sessLog.listBox.topLevelItem(5).text(sessLog.C_COUNT) == CONFIG.localNumber(-20)
+    assert sessLog.listBox.topLevelItem(6).text(sessLog.C_COUNT) == CONFIG.localNumber(40)
+    assert sessLog.listBox.topLevelItem(7).text(sessLog.C_COUNT) == CONFIG.localNumber(-400)
+    assert sessLog.listBox.topLevelItem(8).text(sessLog.C_COUNT) == CONFIG.localNumber(200)
+    assert sessLog.listBox.topLevelItem(9).text(sessLog.C_COUNT) == CONFIG.localNumber(0)
 
     assert jsonData == [
         {
@@ -340,14 +340,14 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
 
-    assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == "{:n}".format(1)
-    assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == "{:n}".format(-200)
-    assert sessLog.listBox.topLevelItem(2).text(sessLog.C_COUNT) == "{:n}".format(180)
-    assert sessLog.listBox.topLevelItem(3).text(sessLog.C_COUNT) == "{:n}".format(-20)
-    assert sessLog.listBox.topLevelItem(4).text(sessLog.C_COUNT) == "{:n}".format(40)
-    assert sessLog.listBox.topLevelItem(5).text(sessLog.C_COUNT) == "{:n}".format(-400)
-    assert sessLog.listBox.topLevelItem(6).text(sessLog.C_COUNT) == "{:n}".format(200)
-    assert sessLog.listBox.topLevelItem(7).text(sessLog.C_COUNT) == "{:n}".format(0)
+    assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == CONFIG.localNumber(1)
+    assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == CONFIG.localNumber(-200)
+    assert sessLog.listBox.topLevelItem(2).text(sessLog.C_COUNT) == CONFIG.localNumber(180)
+    assert sessLog.listBox.topLevelItem(3).text(sessLog.C_COUNT) == CONFIG.localNumber(-20)
+    assert sessLog.listBox.topLevelItem(4).text(sessLog.C_COUNT) == CONFIG.localNumber(40)
+    assert sessLog.listBox.topLevelItem(5).text(sessLog.C_COUNT) == CONFIG.localNumber(-400)
+    assert sessLog.listBox.topLevelItem(6).text(sessLog.C_COUNT) == CONFIG.localNumber(200)
+    assert sessLog.listBox.topLevelItem(7).text(sessLog.C_COUNT) == CONFIG.localNumber(0)
 
     assert jsonData == [
         {

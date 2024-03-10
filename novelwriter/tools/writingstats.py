@@ -479,9 +479,9 @@ class GuiWritingStats(QDialog):
         ttWords = ttNovel + ttNotes
         self.labelTotal.setText(formatTime(round(ttTime)))
         self.labelIdleT.setText(formatTime(round(ttIdle)))
-        self.novelWords.setText(f"{ttNovel:n}")
-        self.notesWords.setText(f"{ttNotes:n}")
-        self.totalWords.setText(f"{ttWords:n}")
+        self.novelWords.setText(CONFIG.localNumber(ttNovel))
+        self.notesWords.setText(CONFIG.localNumber(ttNotes))
+        self.totalWords.setText(CONFIG.localNumber(ttWords))
 
         return
 
@@ -582,7 +582,7 @@ class GuiWritingStats(QDialog):
             newItem.setText(self.C_TIME, sStart)
             newItem.setText(self.C_LENGTH, formatTime(round(sDiff)))
             newItem.setText(self.C_IDLE, idleEntry)
-            newItem.setText(self.C_COUNT, f"{nWords:n}")
+            newItem.setText(self.C_COUNT, CONFIG.localNumber(nWords))
 
             if nWords > 0 and listMax > 0:
                 wBar = self.barImage.scaled(

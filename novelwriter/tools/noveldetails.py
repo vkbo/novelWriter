@@ -265,11 +265,11 @@ class _OverviewPage(NScrollablePage):
         wcNovel, wcNotes = project.data.currCounts
 
         self.projName.setText(project.data.name)
-        self.projRevisions.setText(f"{project.data.saveCount:n}")
+        self.projRevisions.setText(CONFIG.localNumber(project.data.saveCount))
         self.projEditTime.setText(formatTime(project.currentEditTime))
-        self.projWords.setText(f"{wcNovel + wcNotes:n}")
-        self.projNovels.setText(f"{wcNovel:n}")
-        self.projNotes.setText(f"{wcNotes:n}")
+        self.projWords.setText(CONFIG.localNumber(wcNovel + wcNotes))
+        self.projNovels.setText(CONFIG.localNumber(wcNovel))
+        self.projNotes.setText(CONFIG.localNumber(wcNotes))
         return
 
     ##
@@ -284,11 +284,11 @@ class _OverviewPage(NScrollablePage):
             self.novelName.setText(nwItem.itemName)
 
         nwCount = project.index.getNovelWordCount(rootHandle=tHandle)
-        self.novelWords.setText(f"{nwCount:n}")
+        self.novelWords.setText(CONFIG.localNumber(nwCount))
 
         hCounts = project.index.getNovelTitleCounts(rootHandle=tHandle)
-        self.novelChapters.setText(f"{hCounts[2]:n}")
-        self.novelScenes.setText(f"{hCounts[3]:n}")
+        self.novelChapters.setText(CONFIG.localNumber(hCounts[2]))
+        self.novelScenes.setText(CONFIG.localNumber(hCounts[3]))
 
         return
 
@@ -476,7 +476,7 @@ class _ContentsPage(NFixedPage):
             else:
                 cPage = tPages - fstPage
                 pgProg = 100.0*(cPage - 1)/pMax if pMax > 0 else 0.0
-                progPage = f"{cPage:n}"
+                progPage = CONFIG.localNumber(cPage)
                 progText = f"{pgProg:.1f}{nwUnicode.U_THSP}%"
 
             hDec = SHARED.theme.getHeaderDecoration(tLevel)
@@ -485,8 +485,8 @@ class _ContentsPage(NFixedPage):
 
             newItem.setData(self.C_TITLE, Qt.DecorationRole, hDec)
             newItem.setText(self.C_TITLE, tTitle)
-            newItem.setText(self.C_WORDS, f"{wCount:n}")
-            newItem.setText(self.C_PAGES, f"{pCount:n}")
+            newItem.setText(self.C_WORDS, CONFIG.localNumber(wCount))
+            newItem.setText(self.C_PAGES, CONFIG.localNumber(pCount))
             newItem.setText(self.C_PAGE,  progPage)
             newItem.setText(self.C_PROG,  progText)
 

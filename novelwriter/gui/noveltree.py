@@ -706,7 +706,7 @@ class GuiNovelTree(QTreeWidget):
         trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
         trItem.setText(self.C_TITLE, idxItem.title)
         trItem.setFont(self.C_TITLE, self._hFonts[iLevel])
-        trItem.setText(self.C_WORDS, f"{idxItem.wordCount:n}")
+        trItem.setText(self.C_WORDS, CONFIG.localNumber(idxItem.wordCount))
         trItem.setData(self.C_MORE, Qt.ItemDataRole.DecorationRole, self._pMore)
 
         # Custom column

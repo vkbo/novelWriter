@@ -24,7 +24,7 @@ import pytest
 
 from PyQt5.QtWidgets import QAction
 
-from novelwriter import SHARED
+from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemClass
 from novelwriter.tools.noveldetails import GuiNovelDetails
 
@@ -60,24 +60,24 @@ def testToolNovelDetails_Main(qtbot, nwGUI, prjLipsum, ipsumText):
 
     # Check project data
     assert overview.projName.text() == "Lorem Ipsum"
-    assert overview.projWords.text() == f"{4376:n}"
-    assert overview.projNovels.text() == f"{3638:n}"
-    assert overview.projNotes.text() == f"{738:n}"
+    assert overview.projWords.text() == CONFIG.localNumber(4376)
+    assert overview.projNovels.text() == CONFIG.localNumber(3638)
+    assert overview.projNotes.text() == CONFIG.localNumber(738)
     assert overview.projRevisions.text() != ""
     assert overview.projEditTime.text() != ""
 
     # Check novel data for "Novel"
     assert overview.novelName.text() == "Novel"
-    assert overview.novelWords.text() == f"{3000:n}"
-    assert overview.novelChapters.text() == f"{3:n}"
-    assert overview.novelScenes.text() == f"{5:n}"
+    assert overview.novelWords.text() == CONFIG.localNumber(3000)
+    assert overview.novelChapters.text() == "3"
+    assert overview.novelScenes.text() == "5"
 
     # Check novel data for "Second"
     details.novelSelector.setHandle(sHandle, blockSignal=False)
     assert overview.novelName.text() == "Second"
-    assert overview.novelWords.text() == f"{529:n}"
-    assert overview.novelChapters.text() == f"{0:n}"
-    assert overview.novelScenes.text() == f"{0:n}"
+    assert overview.novelWords.text() == CONFIG.localNumber(529)
+    assert overview.novelChapters.text() == "0"
+    assert overview.novelScenes.text() == "0"
 
     # Contents Page
     # =============
@@ -87,9 +87,9 @@ def testToolNovelDetails_Main(qtbot, nwGUI, prjLipsum, ipsumText):
     contents = details.contentsPage
 
     # Check defaults
-    words = [f"{v:n}" for v in [40, 176, 92, 6, 1071, 1615, 0]]
-    pages = [f"{v:n}" for v in [2, 2, 2, 2, 4, 6, 0]]
-    page = [f"{v:n}" for v in [1, 3, 5, 7, 9, 13, 19]]
+    words = [CONFIG.localNumber(v) for v in [40, 176, 92, 6, 1071, 1615, 0]]
+    pages = [CONFIG.localNumber(v) for v in [2, 2, 2, 2, 4, 6, 0]]
+    page = [CONFIG.localNumber(v) for v in [1, 3, 5, 7, 9, 13, 19]]
     for i in range(6):
         item = contents.tocTree.topLevelItem(i)
         assert item is not None
@@ -100,9 +100,9 @@ def testToolNovelDetails_Main(qtbot, nwGUI, prjLipsum, ipsumText):
     # Change Settings
     contents.poValue.setValue(7)
     contents.wpValue.setValue(50)
-    words = [f"{v:n}" for v in [40, 176, 92, 6, 1071, 1615, 0]]
-    pages = [f"{v:n}" for v in [2, 4, 2, 2, 22, 34, 0]]
-    page = ["i", "iii"] + [f"{v:n}" for v in [1, 3, 5, 27, 61]]
+    words = [CONFIG.localNumber(v) for v in [40, 176, 92, 6, 1071, 1615, 0]]
+    pages = [CONFIG.localNumber(v) for v in [2, 4, 2, 2, 22, 34, 0]]
+    page = ["i", "iii"] + [CONFIG.localNumber(v) for v in [1, 3, 5, 27, 61]]
     for i in range(6):
         item = contents.tocTree.topLevelItem(i)
         assert item is not None
@@ -114,9 +114,9 @@ def testToolNovelDetails_Main(qtbot, nwGUI, prjLipsum, ipsumText):
     contents.dblValue.setChecked(False)
     contents.poValue.setValue(0)
     contents.wpValue.setValue(100)
-    words = [f"{v:n}" for v in [40, 176, 92, 6, 1071, 1615, 0]]
-    pages = [f"{v:n}" for v in [1, 2, 1, 1, 11, 17, 0]]
-    page = [f"{v:n}" for v in [1, 2, 4, 5, 6, 17, 34]]
+    words = [CONFIG.localNumber(v) for v in [40, 176, 92, 6, 1071, 1615, 0]]
+    pages = [CONFIG.localNumber(v) for v in [1, 2, 1, 1, 11, 17, 0]]
+    page = [CONFIG.localNumber(v) for v in [1, 2, 4, 5, 6, 17, 34]]
     for i in range(6):
         item = contents.tocTree.topLevelItem(i)
         assert item is not None

@@ -280,9 +280,9 @@ class GuiItemDetails(QWidget):
         # ======
 
         if nwItem.isFileType():
-            self.cCountData.setText(f"{nwItem.charCount:n}")
-            self.wCountData.setText(f"{nwItem.wordCount:n}")
-            self.pCountData.setText(f"{nwItem.paraCount:n}")
+            self.cCountData.setText(CONFIG.localNumber(nwItem.charCount))
+            self.wCountData.setText(CONFIG.localNumber(nwItem.wordCount))
+            self.pCountData.setText(CONFIG.localNumber(nwItem.paraCount))
         else:
             self.cCountData.setText("–")
             self.wCountData.setText("–")
@@ -296,9 +296,9 @@ class GuiItemDetails(QWidget):
         already showing. Otherwise, do nothing.
         """
         if tHandle == self._itemHandle:
-            self.cCountData.setText(f"{cC:n}")
-            self.wCountData.setText(f"{wC:n}")
-            self.pCountData.setText(f"{pC:n}")
+            self.cCountData.setText(CONFIG.localNumber(cC))
+            self.wCountData.setText(CONFIG.localNumber(wC))
+            self.pCountData.setText(CONFIG.localNumber(pC))
         return
 
 # END Class GuiItemDetails
