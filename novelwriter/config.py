@@ -30,6 +30,7 @@ import logging
 
 from time import time
 from pathlib import Path
+from datetime import datetime
 
 from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtCore import (
@@ -86,6 +87,8 @@ class Config:
 
         wantedLocale = self._nwLangPath / f"nw_{QLocale.system().name()}.qm"
         self._qLocale = QLocale.system() if wantedLocale.exists() else QLocale("en_GB")
+        self._qShortDate = self._qLocale.dateFormat(QLocale.FormatType.ShortFormat)
+        self._qShortDateTime = self._qLocale.dateTimeFormat(QLocale.FormatType.ShortFormat)
         self._qtTrans = {}
 
         # PDF Manual
@@ -414,6 +417,18 @@ class Config:
         self._errData = []
         return message
 
+    def localNumber(self, value: int) -> str:
+        """Return a localised integer format."""
+        return self._qLocale.toString(value)
+
+    def localDate(self, value: datetime) -> str:
+        """Return a localised datetime format."""
+        return self._qLocale.toString(value, self._qShortDate)
+
+    def localDateTime(self, value: datetime) -> str:
+        """Return a localised datetime format."""
+        return self._qLocale.toString(value, self._qShortDateTime)
+
     def listLanguages(self, lngSet: int) -> list[tuple[str, str]]:
         """List localisation files in the i18n folder. The default GUI
         language is British English (en_GB).
@@ -493,6 +508,8 @@ class Config:
     def initLocalisation(self, nwApp: QApplication) -> None:
         """Initialise the localisation of the GUI."""
         self._qLocale = QLocale(self.guiLocale)
+        self._qShortDate = self._qLocale.dateFormat(QLocale.FormatType.ShortFormat)
+        self._qShortDateTime = self._qLocale.dateTimeFormat(QLocale.FormatType.ShortFormat)
         QLocale.setDefault(self._qLocale)
         self._qtTrans = {}
 
