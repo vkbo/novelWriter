@@ -10,7 +10,7 @@ How it Works
 
 The main features of novelWriter are listed in the :ref:`a_intro` chapter. In this chapter, we go
 into some more details on how they are implemented. This is intended as an overview. Later on in
-this documentation, these features will be covered in more detail.
+this documentation these features will be covered in more detail.
 
 
 .. _a_breakdown_design:
@@ -23,6 +23,8 @@ at the same time provide useful features needed for writing a novel.
 
 The main window does not have an editor toolbar like many other applications do. This reduces
 clutter, and since the documents are formatted with style tags, it is more or less redundant.
+Still, a small formatting toolbar can be popped out by clicking the three dots in the header of the
+document editor to give quick access to standard formatting codes.
 
 Most formatting features supported are available through convenient keyboard shortcuts. They are
 also available in the main menu, so you don't have to look up formatting codes every time you need
@@ -31,7 +33,8 @@ them. For reference, a list of all shortcuts can be found in the :ref:`a_kb` cha
 .. note::
    novelWriter is not intended to be a full office type word processor. It doesn't support images,
    links, tables, and other complex structures and objects often needed for such documents.
-   Formatting is limited to headers, emphasis, text alignment, and a few other simple features.
+   Formatting is limited to headings, in-line basic text formats, text alignment, and a few other
+   simple features.
 
 On the left side of the main window, you will find a sidebar. This bar has buttons for the standard
 views you can switch between, a quick link to the :guilabel:`Build Manuscript` tool, and a set of
@@ -54,18 +57,18 @@ When in :guilabel:`Project Tree View` mode, the main work area of the main windo
 or optionally three, panels. The left-most panel contains the project tree and all the documents in
 your project. The second panel is the document editor.
 
-An optional third panel on the right contains a document viewer which can view any document in your
-project independently of what is open in the document editor. This panel is not intended as a
-preview window, although you can use it for this purpose if you wish as it will apply the
-formatting tags you have specified. The main purpose of the viewer is for viewing your notes next
-to your editor while you're writing.
+An optional third panel on the right side contains a document viewer which can view any document in
+your project independently of what is open in the document editor. This panel is not intended as a
+preview window, although you can use it for this purpose if you wish if you need to check that the
+formatting tags behave as you expected. The main purpose of the viewer is for viewing your notes
+next to your editor while you're writing.
 
 The editor also has a :guilabel:`Focus Mode` you can toggle either from the menu, from the icon in
 the editor's header, or by pressing :kbd:`F8`. When :guilabel:`Focus Mode` is enabled, all the user
 interface elements other than the document editor itself are hidden away.
 
 
-Novel Tree and Editor View
+Novel View and Editor View
 --------------------------
 
 .. figure:: images/fig_novel_tree_view.png
@@ -81,17 +84,17 @@ Each heading is indented according to the heading level. You can open and edit y
 from this view as well. All headings contained in the currently open document should be highlighted
 in the view to indicate which ones belong together in the same document.
 
-If you have multiple Novel root folders, the header of the novel view becomes a dropdown box. You
-can then switch between them by clicking the :guilabel:`Outline of ...` text. You can also click
-the novel icon button next to it.
+If you have multiple "Novel" type root folders, the header of the novel view becomes a dropdown
+box. You can then switch between them by clicking the :guilabel:`Outline of ...` text. You can also
+click the novel icon button next to it.
 
 Generally, the novel view should update when you make changes to the novel structure, including
 edits of the current document in the editor. The information is only updated when the automatic
 save of the document is triggered, or you manually press :kbd:`Ctrl+S` to save changes. (You can
 adjust the auto-save interval in :guilabel:`Preferences`.) You can also regenerate the whole novel
-view by pressing the refresh button at the top of the side panel.
+view by pressing the refresh button in the novel view header.
 
-It is possible to show an optional third column in the novel view, The settings are available from
+It is possible to show an optional third column in the novel view. The settings are available from
 the menu button in the toolbar.
 
 If you click the arrow icon to the right of each item, a tooltip will pop out showing you all the
@@ -123,12 +126,12 @@ neutral colours from :guilabel:`Preferences`. Other colour themes are also avail
 can be contributed to novelWriter on GitHub.
 
 Switching the GUI colour theme does not affect the colours of the editor and viewer. They have
-separate colour themes called :guilabel:`Editor Themes`. They are separated because there are a lot
-more options to choose from for the editor and viewer.
+separate colour selectable from the "Document colour theme" setting in :guilabel:`Preferences`.
+They are separated because there are a lot more options to choose from for the editor and viewer.
 
 .. note::
-   If you switch to dark mode on the GUI, you should also switch editor theme to match, otherwise
-   icons may be hard to see in the editor and viewer.
+   If you switch between light and dark mode on the GUI, you should also switch editor theme to
+   match, otherwise icons may be hard to see in the editor and viewer.
 
 
 .. _a_breakdown_project:
@@ -147,7 +150,7 @@ within those documents.
 
 .. figure:: images/fig_header_levels.png
 
-   An illustration of how header levels correspond to the novel structure.
+   An illustration of how heading levels correspond to the novel structure.
 
 The four heading levels (**H1** to **H4**) are treated as follows:
 
@@ -158,8 +161,8 @@ The four heading levels (**H1** to **H4**) are treated as follows:
 
 The project tree will select an icon for the document based on the first heading in it.
 
-This header level structure is only taken into account for :term:`novel documents`. For
-:term:`project notes`, the header levels have no structural meaning, and you are free to use them
+This heading level structure is only taken into account for :term:`novel documents`. For
+:term:`project notes`, the heading levels have no structural meaning, and you are free to use them
 however you want. See :ref:`a_struct` and :ref:`a_references` for more details.
 
 .. versionadded:: 2.0
@@ -171,8 +174,8 @@ however you want. See :ref:`a_struct` and :ref:`a_references` for more details.
 
 .. _a_breakdown_export:
 
-Building the Manuscript
-=======================
+Building a Manuscript
+=====================
 
 The project can at any time be assembled into a range of different formats through the
 :guilabel:`Build Manuscript` tool. Natively, novelWriter supports `Open Document`_, HTML5, and
@@ -217,8 +220,8 @@ Secondly, having multiple small files means it is very easy to synchronise them 
 with standard file synchronisation tools.
 
 Thirdly, if you use version control software to track the changes to your project, the file formats
-used for the files are well suited. Also the JSON documents have line breaks and indents, which
-makes it easier to track them with version control software.
+used for the files are well suited. All the JSON documents have line breaks and indents as well,
+which makes it easier to track them with version control software.
 
 .. note::
    Since novelWriter has to keep track of a bunch of files and folders when a project is open, it

@@ -36,7 +36,8 @@ and add dictionaries yourself.
 
 A small tool to assist with this can be found under :guilabel:`Tools > Add Dictionaries`. It will
 import spell checking dictionaries from Free Office or Libre Office extensions. The dictionaries
-are then installed in the install location for the Enchant library.
+are then installed in the install location for the Enchant library and should thus work for any
+application that uses Enchant for spell checking.
 
 **Manual Install**
 
@@ -139,10 +140,10 @@ In the Main section you must at least define the ``name`` and ``icontheme`` sett
 ``typicons_light`` or ``typicons_dark``, or to an icon theme in your custom icons directory. The
 setting must match the icon theme's folder name.
 
-The Palette values correspond to the Qt enum values for QPalette::ColorRole, see the
+The Palette values correspond to the Qt enum values for ``QPalette::ColorRole``, see the
 `Qt documentation <https://doc.qt.io/qt-5.15/qpalette.html#ColorRole-enum>`_ for more details. The
-colour values are RGB numbers on the format ``r, g, b`` where each is an integer from  to 255.
-Omitted values are not loaded and will use default values.
+colour values are RGB numbers on the format ``r, g, b`` where each is an integer from ``0`` to
+``255``. Omitted values are not loaded and will use default values.
 
 
 Custom Syntax Theme
@@ -182,11 +183,11 @@ A syntax theme ``.conf`` file consists of the following settings:
    texthighlight  = 255, 255, 255, 128
 
 In the Main section, you must define at least the ``name`` setting. The Syntax colour values are
-RGB(A) numbers of the format ``r, g, b, a`` where each is an integer from to 255. The fourth value
-is the alpha channel, which can be omitted.
+RGB(A) numbers of the format ``r, g, b, a`` where each is an integer from ``0`` to ``255``. The
+fourth value is the alpha channel, which can be omitted.
 
 Omitted syntax colours default to black, except ``background`` which defaults to white, and
-``texthighlight`` which defaults to grey.
+``texthighlight`` which defaults to white with half transparency.
 
 .. versionadded:: 2.2
    The `shortcode` syntax colour entry was added.

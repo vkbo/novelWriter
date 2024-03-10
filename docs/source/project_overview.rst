@@ -4,21 +4,25 @@
 Novel Projects
 **************
 
-New projects can be created from the :guilabel:`Project` menu by selecting :guilabel:`New Project`.
-This will open the :guilabel:`New Project Wizard` that will assist you in creating a bare bone
-project suited to your needs.
+New projects can be created from the :guilabel:`Project` menu by selecting
+:guilabel:`Create or Open Project`. This will open the :guilabel:`Welcome` dialog, where you can
+select the :guilabel:`New` button that will assist you in creating a new project.
 
 A novelWriter project requires a dedicated folder for storing its files on the local file system.
 If you're interested in the details, you can have a look at the chapter :ref:`a_storage`.
 
-A list of recently opened projects is maintained, and displayed in the :guilabel:`Open Project`
+A list of recently opened projects is maintained, and displayed in the :guilabel:`Welcome`
 dialog. A project can be removed from this list by selecting it and pressing the :kbd:`Del` key or
-by clicking the :guilabel:`Remove` button.
+by right-clicking it and selecting the :guilabel:`Remove Project` option.
+
+.. figure:: images/fig_welcome.jpg
+
+   The project list (left) and new project form (right) of the :guilabel:`Welcome` dialog.
 
 Project-specific settings are available in :guilabel:`Project Settings` in the :guilabel:`Project`
-menu. See further details below in the :ref:`a_proj_settings` section. Details about the project,
-including word counts, and a table of contents with word and page counts, is available through the
-:guilabel:`Project Details` dialog.
+menu. See further details below in the :ref:`a_proj_settings` section. Details about the project's
+novel text, including word counts, and a table of contents with word and page counts, is available
+through the :guilabel:`Novel Details` dialog.
 
 
 .. _a_proj_roots:
@@ -58,8 +62,9 @@ details, see the :ref:`a_references` chapter.
    Character notes go in this root folder type. These are especially important if you want to use
    the :guilabel:`Outline View` to see which character appears where, which part of the story is
    told from a specific character's point-of-view, or focusing on a particular character's
-   storyline. Tags in this type of folder can be referenced using the ``@pov`` keyword for
-   point-of-view characters, ``@focus`` for a focus character, or the ``@char`` keyword for any
+   storyline. The character names can also be inserted into for instance chapter titles when you
+   create your manuscript. Tags in this type of folder can be referenced using the ``@pov`` keyword
+   for point-of-view characters, ``@focus`` for a focus character, or the ``@char`` keyword for any
    other character present.
 
 :guilabel:`Locations`
@@ -105,8 +110,8 @@ trash folder can then be deleted permanently, either individually, or by emptyin
 the menu. Documents in the trash folder are removed from the :term:`project index` and cannot be
 referenced.
 
-A document or a folder can be deleted from the :guilabel:`Project` menu, or by pressing
-:kbd:`Ctrl+Shift+Del`. Root folders can only be deleted when they are empty.
+A document or a folder can be moved to trash from the :guilabel:`Project` menu, or by pressing
+:kbd:`Ctrl+Shift+Del`. Root folders can only be removed when they are empty.
 
 
 .. _a_proj_roots_out:
@@ -129,9 +134,9 @@ Recovered Documents
 -------------------
 
 If novelWriter crashes or otherwise exits without saving the project state, or if you're using a
-file synchronisation tool that runs out of sync, there may be files in the project folder that
-aren't tracked in the core project file. These files, when discovered, are recovered and added back
-into the project.
+file synchronisation tool that runs out of sync, there may be files in the project storage folder
+that aren't tracked in the core project file. These files, when discovered, are recovered and added
+back into the project.
 
 The discovered files are scanned for metadata that give clues as to where the document may
 previously have been located in the project. The project loading routine will try to put them back
@@ -152,10 +157,10 @@ Project Lockfile
 ----------------
 
 To prevent lost documents caused by file conflicts when novelWriter projects are synchronised via
-file synchronisation tools, a project lockfile is written to the project folder. If you try to open
-a project which has such a file present, you will be presented with a warning, and some information
-about where else novelWriter thinks the project is also open. You will be given the option to
-ignore this warning, and continue opening the project at your own risk.
+file synchronisation tools, a project lockfile is written to the project storage folder. If you try
+to open a project which has such a file present, you will be presented with a warning, and some
+information about where else novelWriter thinks the project is also open. You will be given the
+option to ignore this warning, and continue opening the project at your own risk.
 
 .. note::
    If, for some reason, novelWriter crashes, the lock file may remain even if there are no other
@@ -208,6 +213,18 @@ converting, splitting, or merging items. See :ref:`a_ui_tree_split_merge` for mo
 latter two.
 
 
+Document Templates
+------------------
+
+If you wish to create template documents to be used when creating new project documents, like for
+instance a character note template, you can add a :guilabel:`Templates` root folder to your
+project. Any document added to this root folder will show up in the :guilabel:`Add Item` menu in
+the project tree toolbar. When selected, a new document is created with its content copied from the
+chosen template.
+
+.. versionadded:: 2.3
+
+
 .. _a_proj_files_counts:
 
 Word Counts
@@ -227,6 +244,8 @@ the values in the project tree, which again depend on an up to date :term:`proje
 counts seem wrong, a full project word recount can be initiated by rebuilding the project's index.
 Either from the :guilabel:`Tools` menu, or by pressing :kbd:`F9`.
 
+The rules for how the counts are made is covered in more detail in :ref:`a_counting`.
+
 
 .. _a_proj_settings:
 
@@ -242,25 +261,23 @@ Settings Tab
 
 The :guilabel:`Settings` tab holds the project name, title, and author settings.
 
-The :guilabel:`Project Name` can be set to a different value than the :guilabel:`Novel Title`. The
-difference between them is simply that the :guilabel:`Project Name` is used for the GUI (main
-window title) and for generating backup files. The intention is that the :guilabel:`Project Name`
-should remain unchanged throughout the project's lifetime, otherwise the name of exported files and
-backup files may change too.
+The :guilabel:`Project Name` can be edited here. It is used for the GUI (main window title) and for
+generating backup files. So keep in mind that if you do change this setting, the backup file names
+will change too.
 
-The :guilabel:`Novel Title` and :guilabel:`Authors` settings are used when building the manuscript,
-for some formats.
+You can also change the :guilabel:`Authors` and :guilabel:`Project Language` setting. These are
+only used when building the manuscript, for some formats.
 
 If your project is in a different language than your main spell checking language is set to, you
-can override the default setting here. You can also override the automatic backup setting. The
-project language can also be changed from the :guilabel:`Tools` menu.
+can override the default setting here. The project language can also be changed from the
+:guilabel:`Tools` menu. You can also override the automatic backup setting if you wish.
 
 
 Status and Importance Tabs
 --------------------------
 
-Each document or folder of type :guilabel:`Novel` can be given a *Status* label accompanied by a
-coloured icon, and each document or folder of the remaining types can be given an *Importance*
+Each document or folder of type :guilabel:`Novel` can be given a "Status" label accompanied by a
+coloured icon, and each document or folder of the remaining types can be given an "Importance"
 label.
 
 These labels are there purely for your convenience, and you are not required to use them for any

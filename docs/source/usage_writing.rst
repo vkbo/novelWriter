@@ -42,13 +42,12 @@ the label and pressing :kbd:`Ctrl+Return`. You can also control-click them with 
 Editor Auto-Completer
 ---------------------
 
-If you type the character ``@`` on a new line, a context menu will appear showing the different
-available keywords. The list will shorten as you type. Once a keyword command has been selected or
-typed, the editor may suggest further content based on your project content. See
-:ref:`a_references_completer` for more details.
+If you type the character ``@`` on a new line, a menu will appear showing the different available
+keywords. The list will shorten as you type. Once a keyword command has been selected or typed, the
+editor may suggest further content based on your project content. See :ref:`a_references_completer`
+for more details.
 
 .. versionadded:: 2.2
-   The auto-completer feature was added.
 
 
 .. _a_ui_view:

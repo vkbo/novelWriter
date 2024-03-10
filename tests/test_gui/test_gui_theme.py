@@ -141,11 +141,12 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI):
         mp.setattr("builtins.open", causeOSError)
         assert mainTheme.listThemes() == []
 
-    # Load the theme info
+    # Load the theme info, default themes first
     themesList = mainTheme.listThemes()
     assert themesList[0] == ("default_dark", "Default Dark Theme")
     assert themesList[1] == ("default_light", "Default Light Theme")
-    assert themesList[2] == ("default", "Qt Default Theme")
+    assert themesList[2] == ("cyberpunk_night", "Cyberpunk Night")
+    assert themesList[3] == ("default", "Qt Default Theme")
 
     # A second call should returned the cached list
     assert mainTheme.listThemes() == mainTheme._themeList

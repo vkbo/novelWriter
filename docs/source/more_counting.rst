@@ -5,7 +5,7 @@ Word and Text Counts
 ********************
 
 This is an overview of how words and other counts of your text are performed. The counting rules
-should be relatively standard, and are compared to LibreOffice Writer rules.
+should be relatively standard, and are compared to Libre Office Writer rules.
 
 The counts provided in the app on the raw text is meant to be approximate. For more accurate
 counts, you need to build your manuscript in the :guilabel:`Manuscript Tool` and check the counts
