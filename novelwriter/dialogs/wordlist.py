@@ -25,23 +25,19 @@ from __future__ import annotations
 
 import logging
 
-from typing import TYPE_CHECKING
 from pathlib import Path
 
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QDialogButtonBox, QFileDialog, QHBoxLayout,
-    QLineEdit, QListWidget, QPushButton, QVBoxLayout, qApp
+    QLineEdit, QListWidget, QPushButton, QVBoxLayout, QWidget, qApp
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatFileFilter
 from novelwriter.core.spellcheck import UserDictionary
 from novelwriter.extensions.configlayout import NColourLabel
-
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
@@ -50,8 +46,8 @@ class GuiWordList(QDialog):
 
     newWordListReady = pyqtSignal()
 
-    def __init__(self, mainGui: GuiMain) -> None:
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiWordList")
         self.setObjectName("GuiWordList")
@@ -64,13 +60,13 @@ class GuiWordList(QDialog):
         self.setMinimumWidth(mS)
         self.setMinimumHeight(mS)
         self.resize(
-            CONFIG.pxInt(SHARED.project.options.getInt("GuiWordList", "winWidth",  wW)),
+            CONFIG.pxInt(SHARED.project.options.getInt("GuiWordList", "winWidth", wW)),
             CONFIG.pxInt(SHARED.project.options.getInt("GuiWordList", "winHeight", wH))
         )
 
         # Header
         self.headLabel = NColourLabel(
-            "Project Word List", SHARED.theme.helpText, parent=self,
+            self.tr("Project Word List"), SHARED.theme.helpText, parent=self,
             scale=NColourLabel.HEADER_SCALE
         )
 
