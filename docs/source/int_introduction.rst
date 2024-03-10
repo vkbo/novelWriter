@@ -8,9 +8,18 @@ Key Features
 .. _Markdown: https://en.wikipedia.org/wiki/Markdown
 
 At its core, novelWriter is a multi-document plain text editor. It uses a markup syntax inspired by
-Markdown_ to apply simple formatting to the text. It is designed for writing fiction, so the
-formatting features available are limited to those relevant for this purpose. It is *not* suitable
-for technical writing, and it is *not* a full-featured Markdown editor.
+Markdown_ to apply simple formatting to the text. It also allows for some extended formatting codes
+using a shortcode format. See :ref:`a_fmt_shortcodes` for more details.
+
+.. admonition:: Limitations
+
+   novelWriter is designed for writing fiction, so the formatting features available are limited to
+   those relevant for this purpose. It is **not** suitable for technical writing, and it is **not**
+   a full-featured Markdown editor.
+
+   It is also not intended as a tool to organise research for writing, and therefore lacks
+   formatting features you may need for this purpose. The notes feature in novelWriter is mainly
+   intended for character profiles and plot outlines.
 
 Your novel project is organised as a collection of separate plain text documents instead of a
 single, large document. The idea is to make it easier to reorganise your project structure without
@@ -20,10 +29,10 @@ There are two kinds of documents in your project: :term:`Novel Documents` are do
 part of your story. The other kind of documents are :term:`Project Notes`. These are intended for
 your notes about your characters, your world building, and so on.
 
-You can at any point split the individual documents by their headers up into multiple documents, or
-merge multiple documents into single documents. This makes it easier to use variations of the
+You can at any point split the individual documents by their headings up into multiple documents,
+or merge multiple documents into single documents. This makes it easier to use variations of the
 Snowflake_ method for writing. You can start by writing larger structure-focused documents, like
-one per act for instance, and later effortlessly split these up into scenes by their headers.
+one per act for instance, and later effortlessly split these up into chapters or scenes.
 
 Below are some key features of novelWriter.
 
@@ -45,15 +54,15 @@ Below are some key features of novelWriter.
    build the project into a manuscript, they are all glued together in the top-to-bottom order in
    which they appear in the project tree. You can use as few text documents as you like, but
    splitting the project up into chapters and scenes means you can easily reorder them using the
-   drag-and-drop feature of the project tree. You can also start out with a few documents and then
-   later split them into multiple documents based on their headers.
+   drag-and-drop feature of the project tree. You can also start out with fewer documents and then
+   later split them into multiple documents based on chapter and scene headings.
 
 **Multi-novel project support**
-   As of novelWriter 2.0, you can have multiple Novel type root folders in a project. This allows
-   you to keep a series of individual novels with the same characters and world building in the
-   same project, and create manuscripts for them individually.
+   You can have multiple Novel type root folders in a project. This allows you to keep a series of
+   individual novels with the same characters and world building in the same project, and create
+   manuscripts for them individually.
 
-**Keep track of your plot elements**
+**Keep track of your story elements**
    All notes in your project can be assigned a :term:`tag` that you can :term:`reference` from any
    other document or note. In fact, you can add a new tag under each heading of a note if you need
    to be able to reference specific sections of it.
@@ -69,10 +78,10 @@ Below are some key features of novelWriter.
 **Get an overview of your story elements**
    Under the document viewer panel you will find a series of tabs that shows the different story
    elements you have created tags for. The tabs are sorted into Characters, Plots, etc, depending
-   on which categories you are using in your story. This panel can be hidden when you don't need it
-   to free up space.
+   on which categories you are using in your story. This panel can be hidden to free up space when
+   you don't need it.
 
-**Building your manuscript**
+**Assembling your manuscript**
    Whether you want to assemble a manuscript, or export all your notes, or generate an outline of
    your chapters and scenes with a synopsis, you can use the :guilabel:`Build Manuscript` tool to
    do so. The tool lets you select what information you want to include in the generated document,

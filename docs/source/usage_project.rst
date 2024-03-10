@@ -86,7 +86,7 @@ Splitting Documents
 
    The :guilabel:`Split Document` dialog.
 
-The :guilabel:`Split Document by Header` option will open a dialog that allows you to split the
+The :guilabel:`Split Document by Heading` option will open a dialog that allows you to split the
 selected document into multiple new documents based on the headings it contains. You can select at
 which heading level the split is to be performed from the dropdown box. The list box will preview
 which headings will be split into new documents.
@@ -94,7 +94,7 @@ which headings will be split into new documents.
 You are given the option to create a folder for these new documents, and whether or not to create a
 hierarchy of documents. That is, put sections under scenes, and scenes under chapters.
 
-The source document *is not* deleted in the process, but you have the option to let the tool move
+The source document **is not** deleted in the process, but you have the option to let the tool move
 the source document to the :guilabel:`Trash` folder.
 
 
@@ -123,16 +123,16 @@ Document Importance and Status
 ------------------------------
 
 Each document or folder in your project can have either a "Status" or "Importance" flag set. These
-are flags that you control and define yourself. novelWriter doesn't do anything with them at all.
-To modify the labels, go to their respective tabs in :guilabel:`Project Settings`.
+are flags that you control and define yourself, and novelWriter doesn't use them for anything. To
+modify the labels, go to their respective tabs in :guilabel:`Project Settings`.
 
 The "Status" flag is intended to tag a :term:`novel document<novel documents>` as for instance a
 draft or as completed, and the "Importance" flag is intended to tag character notes, or other
 :term:`project notes`, as for instance a main, major, or minor character or story element.
 
 Whether a document uses a "Status" or "Importance" flag depends on which :term:`root folder` it
-lives in. If it's in a :guilabel:`Novel` folder, it uses the "Status" flag, otherwise it uses an
-"Importance" flag. Some folders, like :guilabel:`Trash` and :guilabel:`Archive` allow both.
+lives in. If it's in a Novel type folder, it uses the "Status" flag, otherwise it uses an
+"Importance" flag.
 
 
 .. _a_ui_tree_dnd:
@@ -155,32 +155,31 @@ interface framework novelWriter is built upon.
 
 Documents and their folders can be rearranged freely within their root folders. If you move a Novel
 document out of a Novel folder, it will be converted to a project note. Notes can be moved freely
-between all root folders, but keep in mind that if you move a note into a :guilabel:`Novel` root
-folder, its "Importance" setting will be switched with a "Status" setting. See
-:ref:`a_ui_tree_status`. The old value will not be overwritten though, and should be restored if
-you move it back at some point.
+between all root folders, but keep in mind that if you move a note into a Novel type root folder,
+its "Importance" setting will be switched with a "Status" setting. See :ref:`a_ui_tree_status`. The
+old value will not be overwritten though, and should be restored if you move it back at some point.
 
 Root folders in the project tree cannot be dragged and dropped at all. If you want to reorder them,
 you can move them up or down with respect to each other from the arrow buttons at the top of the
-project tree, or by pressing :kbd:`Ctrl+Shift+Up` or :kbd:`Ctrl+Shift+Down` when they are selected.
+project tree, or by pressing :kbd:`Ctrl+Up` or :kbd:`Ctrl+Down` when they are selected.
 
 
 .. _a_ui_tree_novel:
 
-The Novel Tree
-==============
+The Novel Tree View
+===================
 
 .. figure:: images/fig_novel_tree_view.png
 
    A screenshot of the Novel Tree View.
 
-An alternative way to view the project structure is the novel tree. You can switch to this view by
-selecting the :guilabel:`Novel Tree View` button in the sidebar. This view is a simplified version
-of the view in the :guilabel:`Outline View`. It is convenient when you want to browse the structure
+An alternative way to view the project structure is the novel view. You can switch to this view by
+selecting the :guilabel:`Novel View` button in the sidebar. This view is a simplified version of
+the view in the :guilabel:`Outline View`. It is convenient when you want to browse the structure
 of the story itself rather than the document files.
 
 .. note::
-   You cannot reorganise the entries in the novel tree, or add any new documents, as that would
+   You cannot reorganise the entries in the novel view, or add any new documents, as that would
    imply restructuring the content of the document files themselves. Any such editing must be done
    in the project tree. However, you can add new headings to existing documents, or change
    references, which will be updated in this view when the document is saved.
@@ -188,17 +187,17 @@ of the story itself rather than the document files.
 
 .. _a_ui_outline:
 
-Project Outline View
-====================
+The Novel Outline View
+======================
 
 .. figure:: images/fig_outline_view.png
 
    A screenshot of the Novel Outline View.
 
-The project's :guilabel:`Outline View` is available as another view option from the sidebar. The
-outline provides an overview of the novel structure, displaying a tree hierarchy of the elements of
-the novel, that is, the level 1 to 4 headings representing partitions, chapters, scenes and
-sections.
+The project's :guilabel:`Novel Outline View` is available as another view option from the sidebar.
+The outline provides an overview of the novel structure, displaying a tree hierarchy of the
+elements of the novel, that is, the level 1 to 4 headings representing partitions, chapters, scenes
+and sections.
 
 The document containing the heading can also be displayed as a separate column, as well as the line
 number where the heading is defined. Double-clicking an entry will open the corresponding document

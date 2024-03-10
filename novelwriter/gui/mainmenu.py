@@ -230,7 +230,6 @@ class GuiMainMenu(QMenuBar):
 
         # Document > Import From File
         self.aImportFile = self.docuMenu.addAction(self.tr("Import Text from File"))
-        self.aImportFile.setShortcut("Ctrl+Shift+I")
         self.aImportFile.triggered.connect(lambda: self.mainGui.importDocument())
 
         return

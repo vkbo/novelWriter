@@ -10,7 +10,7 @@ You can activate it from the sidebar, the :guilabel:`Tools` menu, or by pressing
 
 .. versionadded:: 2.1
    This tool is new for version 2.1. A simpler tool was used for earlier versions. The simpler tool
-   only allows you to define a single set of options for the build, but otherwise has much the same
+   only allows you to define a single set of options for the build, but otherwise had much the same
    functionality.
 
 
@@ -73,7 +73,7 @@ Formatting Headings
 The :guilabel:`Headings` page of the :guilabel:`Manuscript Build Settings` dialog allows you to set
 how the headings in your :term:`Novel Documents` are formatted. By default, the title is just
 copied as-is, indicated by the ``{Title}`` format. You can change this to for instance add chapter
-numbers and scene numbers like shown int he figure above.
+numbers and scene numbers, or insert character names, like shown in the figure above.
 
 Clicking the edit button next to a format will copy the formatting string into the edit box where
 it can be modified, and where a syntax highlighter will help indicate which parts are automatically
@@ -152,7 +152,7 @@ novelWriter Markup
 
 Standard/Extended Markdown
    The Markdown format comes in both Standard and Extended flavour. The *only* difference in terms
-   of novelWriter functionality is the support for strikethrough text, which is not supported by
+   of novelWriter functionality is the support for strike through text, which is not supported by
    the Standard flavour.
 
 
