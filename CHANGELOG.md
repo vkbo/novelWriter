@@ -1,5 +1,64 @@
 # novelWriter Changelog
 
+## Version 2.3 [2024-03-10]
+
+### Release Notes
+
+This release introduces a new Welcome dialog that replaces both the previous Open Project dialog
+and the New Project Wizard. The Welcome dialog has received a friendly custom art design created by
+Louis Durrant.
+
+The Preferences, Project Settings, Project Details, and About dialogs have received completely new
+designs and layouts, and the Manuscript Build Settings dialog has been updated to match.
+
+Among new features is a new Templates root folder where the writer can store template documents to
+be used when creating new project documents and notes. It is now also possible to include Point of
+View and Focus character names in chapter titles in Manuscripts. A new feature to ignore text has
+also been added. It behaves similarly to comments, but is never included in a manuscript even if
+comments in the manuscript are enabled.
+
+See the website for complete [Release Notes](https://novelwriter.io/releases/release_2_3.html).
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fix an issue where the Tags and References panel below the document viewer was not cleared if a
+  project was opened, closed, and a new project with no tags defined were opened again. PR #1720.
+  Issue #1718.
+* Fixed an issue where multi-selecting documents in Trash would give the option to again move items
+  to Trash. The menu now properly offers the option to permanently delete the documents. PR #1728.
+* Fixed an issue where multi-select for deletion would only process the item right-clicked, and not
+  all the selected items. PR #1728.
+* Changed the error message that pops up when trying to open a project from the Welcome dialog that
+  no longer exists. The error message should no indicate that the project was not found, as opposed
+  to unreadable. PR #1740. Issue #1737.
+
+**Improvements**
+
+* The build tool no longer inserts a scene separator immediately after a partition heading, and
+  should now behave the same way as for chapters. If there is text before the first scene break,
+  the text flows continuously without a separator. PR #1716. Issue #1704.
+* Added one new GUI theme named "Cyberpunk Night" by @alemvigh. Also added a matching "Cyberpunk
+  Night" document editor theme by @alemvigh, and a new Tango theme by @vkbo. PR #1738. Issue #1730.
+* When the Welcome dialog fails to open a project, and there is not already a project open in the
+  app, the Welcome dialog appears again. PR #1740. Issue #1737.
+
+**Internationalisation**
+
+* Norwegian and US English translations updated by @vkbo. PR #1714.
+* Japanese translation updated by @hebekeg. PR #1714.
+* Italian translation updated by Lou Cyper (loucyper1). PR #1714.
+* Dutch translation updated by Annelotte and Martijn van der Kleijn (mvdkleijn). PR #1714.
+* Latin American Spanish translation updated by @tmarplatt. PR #1741.
+* German translation updated by Myian (@HeyMyian). PR #1741.
+
+**Other Changes**
+
+* Removed the novelwriter-cli entry point that was in any case broken. PR #1734. Issue #1732.
+
+----
+
 ## Version 2.3 RC 1 [2024-02-24]
 
 ### Release Notes
