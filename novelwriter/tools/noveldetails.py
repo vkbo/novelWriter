@@ -477,7 +477,7 @@ class _ContentsPage(NFixedPage):
                 cPage = tPages - fstPage
                 pgProg = 100.0*(cPage - 1)/pMax if pMax > 0 else 0.0
                 progPage = CONFIG.localNumber(cPage)
-                progText = f"{pgProg:.1f}{nwUnicode.U_THSP}%"
+                progText = f"{CONFIG.localFloat(pgProg, 1)}{nwUnicode.U_THSP}%"
 
             hDec = SHARED.theme.getHeaderDecoration(tLevel)
             if tTitle.strip() == "":

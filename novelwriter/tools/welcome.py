@@ -42,7 +42,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemClass
-from novelwriter.common import formatInt, makeFileNameSafe
+from novelwriter.common import makeFileNameSafe
 from novelwriter.constants import nwFiles
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.extensions.switch import NSwitch
@@ -456,7 +456,7 @@ class _ProjectListModel(QAbstractListModel):
         records = sorted(CONFIG.recentProjects.listEntries(), key=lambda x: x[3], reverse=True)
         for path, title, count, time in records:
             when = CONFIG.localDate(datetime.fromtimestamp(time))
-            data.append((title, path, f"{opened}: {when}, {words}: {formatInt(count)}"))
+            data.append((title, path, f"{opened}: {when}, {words}: {CONFIG.localFloatSI(count)}"))
         self._data = data
         return
 

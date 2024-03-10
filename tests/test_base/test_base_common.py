@@ -34,11 +34,11 @@ from PyQt5.QtCore import QUrl
 
 from novelwriter.common import (
     checkBool, checkFloat, checkInt, checkIntTuple, checkPath, checkString,
-    checkStringNone, checkUuid, formatFileFilter, formatInt, formatTime,
-    formatTimeStamp, formatVersion, fuzzyTime, getFileSize, hexToInt, isHandle,
-    isItemClass, isItemLayout, isItemType, isTitleTag, jsonEncode,
-    makeFileNameSafe, minmax, numberToRoman, NWConfigParser, openExternalPath,
-    readTextFile, simplified, transferCase, xmlIndent, yesNo
+    checkStringNone, checkUuid, formatFileFilter, formatTime, formatTimeStamp,
+    formatVersion, fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass,
+    isItemLayout, isItemType, isTitleTag, jsonEncode, makeFileNameSafe, minmax,
+    numberToRoman, NWConfigParser, openExternalPath, readTextFile, simplified,
+    transferCase, xmlIndent, yesNo
 )
 
 
@@ -393,29 +393,6 @@ def testBaseCommon_yesNo():
     assert yesNo(2.0) == "yes"  # type: ignore
 
 # END Test testBaseCommon_yesNo
-
-
-@pytest.mark.base
-def testBaseCommon_formatInt():
-    """Test the formatInt function."""
-    # Normal Cases
-    assert formatInt(1) == "1"
-    assert formatInt(12) == "12"
-    assert formatInt(123) == "123"
-    assert formatInt(1234) == "1.23\u2009k"
-    assert formatInt(12345) == "12.3\u2009k"
-    assert formatInt(123456) == "123\u2009k"
-    assert formatInt(1234567) == "1.23\u2009M"
-    assert formatInt(12345678) == "12.3\u2009M"
-    assert formatInt(123456789) == "123\u2009M"
-    assert formatInt(1234567890) == "1.23\u2009G"
-
-    # Exceptions
-    assert formatInt(12.3) == "ERR"  # type: ignore
-    assert formatInt(None) == "ERR"  # type: ignore
-    assert formatInt("42") == "ERR"  # type: ignore
-
-# END Test testBaseCommon_formatInt
 
 
 @pytest.mark.base

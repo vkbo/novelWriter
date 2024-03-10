@@ -195,6 +195,35 @@ def testBaseConfig_Localisation(fncPath, tstPaths):
 
 
 @pytest.mark.base
+def testBaseConfig_LocalFloatSI(fncPath):
+    """Test the localFloatSI function."""
+    tstConf = Config()
+    tstConf.initConfig(confPath=fncPath, dataPath=fncPath)
+    tstConf.guiLocale = "en_GB"
+
+    tstApp = MockApp()
+    tstConf.initLocalisation(tstApp)  # type: ignore
+
+    # Normal Cases
+    assert tstConf.localFloatSI(1) == "1"
+    assert tstConf.localFloatSI(12) == "12"
+    assert tstConf.localFloatSI(123) == "123"
+    assert tstConf.localFloatSI(1234) == "1.23\u2009k"
+    assert tstConf.localFloatSI(12345) == "12.3\u2009k"
+    assert tstConf.localFloatSI(123456) == "123\u2009k"
+    assert tstConf.localFloatSI(1234567) == "1.23\u2009M"
+    assert tstConf.localFloatSI(12345678) == "12.3\u2009M"
+    assert tstConf.localFloatSI(123456789) == "123\u2009M"
+    assert tstConf.localFloatSI(1234567890) == "1.23\u2009G"
+
+    # Exceptions
+    assert tstConf.localFloatSI("xx") == "ERR"  # type: ignore
+    assert tstConf.localFloatSI(None) == "ERR"  # type: ignore
+
+# END Test testBaseConfig_LocalPrefixed
+
+
+@pytest.mark.base
 def testBaseConfig_Methods(fncPath):
     """Check class methods."""
     tstConf = Config()

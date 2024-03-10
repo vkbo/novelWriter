@@ -37,7 +37,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.error import formatException
-from novelwriter.common import formatFileFilter, openExternalPath, formatInt, getFileSize
+from novelwriter.common import formatFileFilter, openExternalPath, getFileSize
 
 logger = logging.getLogger(__name__)
 
@@ -246,7 +246,7 @@ class GuiDictionaries(QDialog):
                     size = getFileSize(oPath)
                     self._appendLog(self.tr(
                         "Added: {0} [{1}B]"
-                    ).format(zPath.name, formatInt(size)))
+                    ).format(zPath.name, CONFIG.localFloatSI(size)))
         return nAff, nDic
 
     def _appendLog(self, text: str, err: bool = False) -> None:

@@ -29,6 +29,8 @@ from PyQt5.QtGui import QBrush, QColor, QPaintEvent, QPainter, QPen
 from PyQt5.QtCore import QRect, Qt
 from PyQt5.QtWidgets import QProgressBar, QSizePolicy, QWidget
 
+from novelwriter import CONFIG
+
 
 class NProgressCircle(QProgressBar):
     """Extension: Circular Progress Widget
@@ -94,7 +96,8 @@ class NProgressCircle(QProgressBar):
         painter.setPen(self._cPen)
         painter.drawArc(self._cRect, 90*16, -angle)
         painter.setPen(self._tColor)
-        painter.drawText(self._cRect, Qt.AlignCenter, self._text or f"{progress:.1f} %")
+        painter.drawText(self._cRect, Qt.AlignCenter,
+                         self._text or f"{CONFIG.localFloat(progress, 1)} %")
         return
 
 # END Class NProgressCircle

@@ -421,6 +421,27 @@ class Config:
         """Return a localised integer format."""
         return self._qLocale.toString(value)
 
+    def localFloat(self, value: float, precision: int) -> str:
+        """Return a localised integer format."""
+        return self._qLocale.toString(value, "f", precision)
+
+    def localFloatSI(self, value: int | float) -> str:
+        """Return a localised integer format with k, M, G etc."""
+        if not isinstance(value, (int, float)):
+            return "ERR"
+        fVal = float(value)
+        if fVal > 1000.0:
+            for pF in ["k", "M", "G", "T", "P", "E"]:
+                fVal /= 1000.0
+                if fVal < 1000.0:
+                    if fVal < 10.0:
+                        return f"{self.localFloat(fVal, 2)}{nwUnicode.U_THSP}{pF}"
+                    elif fVal < 100.0:
+                        return f"{self.localFloat(fVal, 1)}{nwUnicode.U_THSP}{pF}"
+                    else:
+                        return f"{self.localFloat(fVal, 0)}{nwUnicode.U_THSP}{pF}"
+        return str(value)
+
     def localDate(self, value: datetime) -> str:
         """Return a localised datetime format."""
         return self._qLocale.toString(value, self._qShortDate)

@@ -777,7 +777,9 @@ class GuiMain(QMainWindow):
 
         tEnd = time()
         self.mainStatus.setStatusMessage(
-            self.tr("Indexing completed in {0} ms").format(f"{(tEnd - tStart)*1000.0:.1f}")
+            self.tr("Indexing completed in {0} ms").format(
+                CONFIG.localFloat((tEnd - tStart)*1000.0, 1)
+            )
         )
         self.docEditor.updateTagHighLighting()
         self._updateStatusWordCount()

@@ -41,7 +41,7 @@ from PyQt5.QtCore import QCoreApplication, QUrl
 
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.error import logException
-from novelwriter.constants import nwConst, nwLabels, nwUnicode, trConst
+from novelwriter.constants import nwConst, nwLabels, trConst
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import TypeGuard  # Requires Python 3.10
@@ -200,26 +200,6 @@ def checkIntTuple(value: int, valid: tuple | list | set, default: int) -> int:
 ##
 #  Formatting Functions
 ##
-
-def formatInt(value: int) -> str:
-    """Formats an integer with k, M, G etc."""
-    if not isinstance(value, int):
-        return "ERR"
-
-    fVal = float(value)
-    if fVal > 1000.0:
-        for pF in ["k", "M", "G", "T", "P", "E"]:
-            fVal /= 1000.0
-            if fVal < 1000.0:
-                if fVal < 10.0:
-                    return f"{fVal:4.2f}{nwUnicode.U_THSP}{pF}"
-                elif fVal < 100.0:
-                    return f"{fVal:4.1f}{nwUnicode.U_THSP}{pF}"
-                else:
-                    return f"{fVal:3.0f}{nwUnicode.U_THSP}{pF}"
-
-    return str(value)
-
 
 def formatTimeStamp(value: float, fileSafe: bool = False) -> str:
     """Take a number (on the format returned by time.time()) and convert
