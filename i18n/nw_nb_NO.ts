@@ -1498,552 +1498,552 @@
       <translation>Importer tekst fra fil</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="241" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="240" />
       <source>&amp;Edit</source>
       <translation>&amp;Rediger</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="244" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="243" />
       <source>Undo</source>
       <translation>Angre</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="251" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="250" />
       <source>Redo</source>
       <translation>Gjenopprett</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="261" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="260" />
       <source>Cut</source>
       <translation>Klipp</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="268" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="267" />
       <source>Copy</source>
       <translation>Kopier</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="275" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="274" />
       <source>Paste</source>
       <translation>Lim inn</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="285" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="284" />
       <source>Select All</source>
       <translation>Velg hele teksten</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="292" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="291" />
       <source>Select Paragraph</source>
       <translation>Velg hele avsnittet</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="303" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="302" />
       <source>&amp;View</source>
       <translation>&amp;Vis</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="306" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="305" />
       <source>Go to Project Tree</source>
       <translation>Gå til prosjekt-tre</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="313" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="312" />
       <source>Go to Document Editor</source>
       <translation>Gå til dokument-editor</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="320" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="319" />
       <source>Go to Outline</source>
       <translation>Gå til disposisjon</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="330" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="329" />
       <source>Navigate Backward</source>
       <translation>Navigere bakover</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="335" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="334" />
       <source>Navigate Forward</source>
       <translation>Navigere fremover</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="343" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="342" />
       <source>Focus Mode</source>
       <translation>Focus-modus</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="348" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="347" />
       <source>Full Screen Mode</source>
       <translation>Fullskjerm-modus</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="357" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="356" />
       <source>&amp;Insert</source>
       <translation>Sett &amp;inn</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="360" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="359" />
       <source>Dashes</source>
       <translation>Bindestreker</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="363" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="362" />
       <source>Short Dash</source>
       <translation>Kort bindestrek</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="370" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="369" />
       <source>Long Dash</source>
       <translation>Lang bindestrek</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="377" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="376" />
       <source>Horizontal Bar</source>
       <translation>Horisontal strek</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="384" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="383" />
       <source>Figure Dash</source>
       <translation>Tallstrek</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="391" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="390" />
       <source>Quote Marks</source>
       <translation>Sitattegn</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="394" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="393" />
       <source>Left Single Quote</source>
       <translation>Venstre, enkelt sitattegn</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="401" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="400" />
       <source>Right Single Quote</source>
       <translation>Høyre, enkelt sitattegn</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="408" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="407" />
       <source>Left Double Quote</source>
       <translation>Venstre, dobbelt sitattegn</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="415" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="414" />
       <source>Right Double Quote</source>
       <translation>Høyre, dobbelt sitattegn</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="422" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="421" />
       <source>Alternative Apostrophe</source>
       <translation>Alternativ apostrof</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="429" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="428" />
       <source>General Punctuation</source>
       <translation>Generell tegnsetting</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="432" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="431" />
       <source>Ellipsis</source>
       <translation>Ellipsis</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="439" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="438" />
       <source>Prime</source>
       <translation>Primtegn</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="446" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="445" />
       <source>Double Prime</source>
       <translation>Dobbelt primtegn</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="453" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="452" />
       <source>White Spaces</source>
       <translation>Mellomrom</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="456" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="455" />
       <source>Non-Breaking Space</source>
       <translation>Hardt mellomrom</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="463" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="462" />
       <source>Thin Space</source>
       <translation>Kort mellomrom</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="470" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="469" />
       <source>Thin Non-Breaking Space</source>
       <translation>Hardt, kort mellomrom</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="477" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="476" />
       <source>Other Symbols</source>
       <translation>Andre symboler</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="480" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="479" />
       <source>List Bullet</source>
       <translation>Kulepunkt</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="487" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="486" />
       <source>Hyphen Bullet</source>
       <translation>Bindestrekpunkt</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="494" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="493" />
       <source>Flower Mark</source>
       <translation>Blomsterpunkt</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="501" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="500" />
       <source>Per Mille</source>
       <translation>Promille</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="508" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="507" />
       <source>Degree Symbol</source>
       <translation>Gradertegn</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="515" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="514" />
       <source>Minus Sign</source>
       <translation>Minustegn</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="522" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="521" />
       <source>Times Sign</source>
       <translation>Gangetegn</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="529" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="528" />
       <source>Division Sign</source>
       <translation>Deletegn</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="536" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="535" />
       <source>Tags and References</source>
       <translation>Knagger og referanser</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="557" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="556" />
       <source>Special Comments</source>
       <translation>Andre kommentartyper</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="560" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="559" />
       <source>Synopsis Comment</source>
       <translation>Kommentar med sammendrag</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="567" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="566" />
       <source>Short Description Comment</source>
       <translation>Kommentar for kort beskrivelse</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="574" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="573" />
       <source>Page Break and Space</source>
       <translation>Sideskift og avstand</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="577" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="576" />
       <source>Page Break</source>
       <translation>Sideskift</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="583" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="582" />
       <source>Vertical Space (Single)</source>
       <translation>Vertikal avstand (enkel)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="589" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="588" />
       <source>Vertical Space (Multi)</source>
       <translation>Vertikal avstand (flere)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="595" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="594" />
       <source>Placeholder Text</source>
       <translation>Midlertidig tekst</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="605" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="604" />
       <source>&amp;Format</source>
       <translation>&amp;Formattering</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="608" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="607" />
       <source>Bold</source>
       <translation>Fet</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="615" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="614" />
       <source>Italic</source>
       <translation>Kursiv</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="622" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="621" />
       <source>Strikethrough</source>
       <translation>Gjennomstrek</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="632" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="631" />
       <source>Wrap Double Quotes</source>
       <translation>Sett i doble sitattegn</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="639" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="638" />
       <source>Wrap Single Quotes</source>
       <translation>Sett i enkle sitattegn</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="649" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="648" />
       <source>More Formats ...</source>
       <translation>Flere formater ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="652" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="651" />
       <source>Bold (Shortcode)</source>
       <translation>Fet (kortkode)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="658" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="657" />
       <source>Italics (Shortcode)</source>
       <translation>Kursiv (kortkode)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="664" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="663" />
       <source>Strikethrough (Shortcode)</source>
       <translation>Gjennomstrek (Kortkode)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="670" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="669" />
       <source>Underline</source>
       <translation>Understrek</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="676" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="675" />
       <source>Superscript</source>
       <translation>Hevet skrift</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="682" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="681" />
       <source>Subscript</source>
       <translation>Senket skrift</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="691" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="690" />
       <source>Header 1 (Partition)</source>
       <translation>Overskrift 1 (inndeling)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="698" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="697" />
       <source>Header 2 (Chapter)</source>
       <translation>Overskrift 2 (kapittel)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="705" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="704" />
       <source>Header 3 (Scene)</source>
       <translation>Overskrift 3 (scene)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="712" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="711" />
       <source>Header 4 (Section)</source>
       <translation>Overskrift 4 (seksjon)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="722" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="721" />
       <source>Novel Title</source>
       <translation>Boktittel</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="728" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="727" />
       <source>Unnumbered Chapter</source>
       <translation>Unumrert kapittel</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="737" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="736" />
       <source>Align Left</source>
       <translation>Venstrejuster</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="744" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="743" />
       <source>Align Centre</source>
       <translation>Sentrer</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="751" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="750" />
       <source>Align Right</source>
       <translation>Høyrejuster</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="761" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="760" />
       <source>Indent Left</source>
       <translation>Innrykk fra venstre</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="768" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="767" />
       <source>Indent Right</source>
       <translation>Innrykk fra høyre</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="778" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="777" />
       <source>Toggle Comment</source>
       <translation>Veksle kommentar</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="785" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="784" />
       <source>Toggle Ignore Text</source>
       <translation>Aktiver/deaktiver ignorert tekst</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="792" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="791" />
       <source>Remove Block Format</source>
       <translation>Fjern formattering</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="802" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="801" />
       <source>Convert Single Quotes</source>
       <translation>Konverter enkle sitattegn</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="808" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="807" />
       <source>Convert Double Quotes</source>
       <translation>Konverter doble sitattegn</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="814" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="813" />
       <source>Remove In-Paragraph Breaks</source>
       <translation>Fjern linjeskift i avsnittet</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="824" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="823" />
       <source>&amp;Search</source>
       <translation>&amp;Søk</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="827" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="826" />
       <source>Find</source>
       <translation>Søk</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="832" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="831" />
       <source>Replace</source>
       <translation>Erstatt</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="837" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="836" />
       <source>Find Next</source>
       <translation>Finn neste</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="842" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="841" />
       <source>Find Previous</source>
       <translation>Finn forrige</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="849" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="848" />
       <source>Replace Next</source>
       <translation>Erstatt neste</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="858" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="857" />
       <source>&amp;Tools</source>
       <translation>&amp;Verktøy</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="861" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="860" />
       <source>Check Spelling</source>
       <translation>Stavekontroll</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="867" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="866" />
       <source>Spell Check Language</source>
       <translation>Språk for stavekontroll</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="869" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="868" />
       <source>Default</source>
       <translation>Ingen valg</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="877" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="876" />
       <source>Re-Run Spell Check</source>
       <translation>Kjør stavekontroll</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="882" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="881" />
       <source>Project Word List</source>
       <translation>Prosjektets ordliste</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="887" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="886" />
       <source>Add Dictionaries</source>
       <translation>Legg til ordbøker</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="894" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="893" />
       <source>Rebuild Index</source>
       <translation>Bygg indeks</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="902" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="901" />
       <source>Backup Project</source>
       <translation>Lag sikkerhetskopi av prosjektets mappe</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="906" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="905" />
       <source>Build Manuscript</source>
       <translation>Bygg manuskript</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="911" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="910" />
       <source>Writing Statistics</source>
       <translation>Statistikk</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="916" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="915" />
       <source>Preferences</source>
       <translation>Innstillinger</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="926" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="925" />
       <source>&amp;Help</source>
       <translation>&amp;Hjelp</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="929" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="928" />
       <source>About novelWriter</source>
       <translation>Om novelWriter</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="934" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="933" />
       <source>About Qt5</source>
       <translation>Om Qt5</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="942" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="941" />
       <source>User Manual (Online)</source>
       <translation>Brukermanual (på nett)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="948" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="947" />
       <source>User Manual (PDF)</source>
       <translation>Brukermanual (PDF)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="956" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="955" />
       <source>Report an Issue (GitHub)</source>
       <translation>Rapporter en feil (GitHub)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="960" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="959" />
       <source>Ask a Question (GitHub)</source>
       <translation>Still et spørsmål (GitHub)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="964" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="963" />
       <source>The novelWriter Website</source>
       <translation>novelWriters nettside</translation>
     </message>
@@ -3213,6 +3213,7 @@
   <context>
     <name>GuiWordList</name>
     <message>
+      <location filename="../novelwriter/dialogs/wordlist.py" line="73" />
       <location filename="../novelwriter/dialogs/wordlist.py" line="58" />
       <source>Project Word List</source>
       <translation>Prosjektets ordliste</translation>
@@ -4363,7 +4364,7 @@
     <message>
       <location filename="../novelwriter/tools/welcome.py" line="454" />
       <source>Word Count</source>
-      <translation>Telling av ord</translation>
+      <translation>Antall ord</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/welcome.py" line="455" />
