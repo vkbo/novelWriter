@@ -1651,6 +1651,9 @@ class GuiDocEditor(QPlainTextEdit):
         elif text.startswith("##! "):
             temp = text[4:]
             offset = 4
+        elif text.startswith("###! "):
+            temp = text[5:]
+            offset = 5
         elif text.startswith(">> "):
             temp = text[3:]
             offset = 3

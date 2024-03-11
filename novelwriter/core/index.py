@@ -396,6 +396,8 @@ class NWIndex:
             return "H1", line[3:].strip()
         elif line.startswith("##! "):
             return "H2", line[4:].strip()
+        elif line.startswith("###! "):
+            return "H3", line[5:].strip()
         return "H0", ""
 
     def _indexWordCounts(self, tHandle: str, text: str, sTitle: str) -> None:
