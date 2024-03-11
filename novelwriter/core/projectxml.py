@@ -46,7 +46,7 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 FILE_VERSION = "1.5"  # The current project file format version
-FILE_REVISION = "2"   # The current project file format revision
+FILE_REVISION = "3"   # The current project file format revision
 HEX_VERSION = 0x0105
 
 NUM_VERSION = {
@@ -108,6 +108,7 @@ class ProjectXMLReader:
         Rev 1: Drops the titleFormat node from settings. 2.1 Beta 1.
         Rev 2: Drops the title node from project and adds the TEMPLATE
                class for items. 2.3 Beta 1.
+        Rev 3: Added TEMPLATE class. 2.3.
     """
 
     def __init__(self, path: str | Path) -> None:

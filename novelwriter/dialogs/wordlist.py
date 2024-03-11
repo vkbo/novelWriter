@@ -70,7 +70,7 @@ class GuiWordList(QDialog):
 
         # Header
         self.headLabel = NColourLabel(
-            "Project Word List", SHARED.theme.helpText, parent=self,
+            self.tr("Project Word List"), SHARED.theme.helpText, parent=self,
             scale=NColourLabel.HEADER_SCALE
         )
 
