@@ -1498,552 +1498,552 @@
       <translation>ファイルからテキストをインポート</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="241" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="240" />
       <source>&amp;Edit</source>
       <translation>&amp;編集</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="244" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="243" />
       <source>Undo</source>
       <translation>元に戻す</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="251" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="250" />
       <source>Redo</source>
       <translation>やり直す</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="261" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="260" />
       <source>Cut</source>
       <translation>切り取り</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="268" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="267" />
       <source>Copy</source>
       <translation>コピー</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="275" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="274" />
       <source>Paste</source>
       <translation>貼り付け</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="285" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="284" />
       <source>Select All</source>
       <translation>すべて選択</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="292" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="291" />
       <source>Select Paragraph</source>
       <translation>段落を選択</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="303" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="302" />
       <source>&amp;View</source>
       <translation>&amp;表示</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="306" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="305" />
       <source>Go to Project Tree</source>
       <translation>プロジェクトツリーへ移動</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="313" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="312" />
       <source>Go to Document Editor</source>
       <translation>ドキュメントエディターへ移動</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="320" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="319" />
       <source>Go to Outline</source>
       <translation>アウトラインへ移動</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="330" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="329" />
       <source>Navigate Backward</source>
       <translation>前に戻る</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="335" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="334" />
       <source>Navigate Forward</source>
       <translation>次に進む</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="343" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="342" />
       <source>Focus Mode</source>
       <translation>フォーカスモード</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="348" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="347" />
       <source>Full Screen Mode</source>
       <translation>フルスクリーンモード</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="357" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="356" />
       <source>&amp;Insert</source>
       <translation>&amp;挿入</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="360" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="359" />
       <source>Dashes</source>
       <translation>ダッシュ</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="363" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="362" />
       <source>Short Dash</source>
       <translation>enダッシュ</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="370" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="369" />
       <source>Long Dash</source>
       <translation>emダッシュ</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="377" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="376" />
       <source>Horizontal Bar</source>
       <translation>水平線</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="384" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="383" />
       <source>Figure Dash</source>
       <translation>フィギュアダッシュ	</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="391" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="390" />
       <source>Quote Marks</source>
       <translation>引用符</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="394" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="393" />
       <source>Left Single Quote</source>
       <translation>左シングルクォーテーション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="401" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="400" />
       <source>Right Single Quote</source>
       <translation>右シングルクォーテーション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="408" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="407" />
       <source>Left Double Quote</source>
       <translation>左ダブルクォーテーション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="415" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="414" />
       <source>Right Double Quote</source>
       <translation>右ダブルクォーテーション</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="422" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="421" />
       <source>Alternative Apostrophe</source>
       <translation>代替アポストロフ</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="429" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="428" />
       <source>General Punctuation</source>
       <translation>一般的な句読点</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="432" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="431" />
       <source>Ellipsis</source>
       <translation>省略記号</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="439" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="438" />
       <source>Prime</source>
       <translation>プライム</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="446" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="445" />
       <source>Double Prime</source>
       <translation>ダブルプライム</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="453" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="452" />
       <source>White Spaces</source>
       <translation>空白</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="456" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="455" />
       <source>Non-Breaking Space</source>
       <translation>ノーブレークスペース</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="463" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="462" />
       <source>Thin Space</source>
       <translation>細いスペース</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="470" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="469" />
       <source>Thin Non-Breaking Space</source>
       <translation>細いノーブレークスペース</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="477" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="476" />
       <source>Other Symbols</source>
       <translation>その他の記号</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="480" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="479" />
       <source>List Bullet</source>
       <translation>箇条書きリスト</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="487" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="486" />
       <source>Hyphen Bullet</source>
       <translation>ハイフンリスト</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="494" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="493" />
       <source>Flower Mark</source>
       <translation>花記号</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="501" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="500" />
       <source>Per Mille</source>
       <translation>パーミル</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="508" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="507" />
       <source>Degree Symbol</source>
       <translation>度記号</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="515" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="514" />
       <source>Minus Sign</source>
       <translation>引き算記号</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="522" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="521" />
       <source>Times Sign</source>
       <translation>掛け算記号</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="529" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="528" />
       <source>Division Sign</source>
       <translation>割り算記号</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="536" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="535" />
       <source>Tags and References</source>
       <translation>タグと参照</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="557" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="556" />
       <source>Special Comments</source>
       <translation>特殊コメント</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="560" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="559" />
       <source>Synopsis Comment</source>
       <translation>あらすじコメント</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="567" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="566" />
       <source>Short Description Comment</source>
       <translation>短文説明コメント</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="574" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="573" />
       <source>Page Break and Space</source>
       <translation>改ページとスペース</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="577" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="576" />
       <source>Page Break</source>
       <translation>改ページ</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="583" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="582" />
       <source>Vertical Space (Single)</source>
       <translation>垂直スペース (シングル)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="589" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="588" />
       <source>Vertical Space (Multi)</source>
       <translation>垂直スペース (マルチ)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="595" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="594" />
       <source>Placeholder Text</source>
       <translation>プレースホルダーテキスト</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="605" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="604" />
       <source>&amp;Format</source>
       <translation>&amp;書式</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="608" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="607" />
       <source>Bold</source>
       <translation>太字</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="615" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="614" />
       <source>Italic</source>
       <translation>斜体</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="622" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="621" />
       <source>Strikethrough</source>
       <translation>取り消し線</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="632" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="631" />
       <source>Wrap Double Quotes</source>
       <translation>ダブルクォーテーションで包む</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="639" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="638" />
       <source>Wrap Single Quotes</source>
       <translation>シングルクォーテーションで包む</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="649" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="648" />
       <source>More Formats ...</source>
       <translation>より多くのフォーマット...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="652" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="651" />
       <source>Bold (Shortcode)</source>
       <translation>太字(ショートコード)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="658" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="657" />
       <source>Italics (Shortcode)</source>
       <translation>斜体 (ショートコード)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="664" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="663" />
       <source>Strikethrough (Shortcode)</source>
       <translation>取り消し線 (ショートコード)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="670" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="669" />
       <source>Underline</source>
       <translation>下線</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="676" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="675" />
       <source>Superscript</source>
       <translation>上付き文字</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="682" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="681" />
       <source>Subscript</source>
       <translation>下付き文字</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="691" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="690" />
       <source>Header 1 (Partition)</source>
       <translation>見出し1 (部)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="698" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="697" />
       <source>Header 2 (Chapter)</source>
       <translation>見出し2 (章)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="705" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="704" />
       <source>Header 3 (Scene)</source>
       <translation>見出し3 (場面)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="712" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="711" />
       <source>Header 4 (Section)</source>
       <translation>見出し4 (節)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="722" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="721" />
       <source>Novel Title</source>
       <translation>小説のタイトル</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="728" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="727" />
       <source>Unnumbered Chapter</source>
       <translation>番号のない章</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="737" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="736" />
       <source>Align Left</source>
       <translation>左揃え</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="744" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="743" />
       <source>Align Centre</source>
       <translation>中央揃え</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="751" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="750" />
       <source>Align Right</source>
       <translation>右揃え</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="761" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="760" />
       <source>Indent Left</source>
       <translation>左側をインデント</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="768" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="767" />
       <source>Indent Right</source>
       <translation>右側をインデント</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="778" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="777" />
       <source>Toggle Comment</source>
       <translation>コメントの切り替え</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="785" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="784" />
       <source>Toggle Ignore Text</source>
       <translation>無視テキストの切り替え</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="792" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="791" />
       <source>Remove Block Format</source>
       <translation>ブロック形式を削除</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="802" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="801" />
       <source>Convert Single Quotes</source>
       <translation>シングルクォーテーションを変換</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="808" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="807" />
       <source>Convert Double Quotes</source>
       <translation>ダブルクォーテーションを変換</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="814" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="813" />
       <source>Remove In-Paragraph Breaks</source>
       <translation>段落内の区切りを削除</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="824" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="823" />
       <source>&amp;Search</source>
       <translation>&amp;検索</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="827" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="826" />
       <source>Find</source>
       <translation>検索</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="832" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="831" />
       <source>Replace</source>
       <translation>置き換え</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="837" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="836" />
       <source>Find Next</source>
       <translation>次を検索</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="842" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="841" />
       <source>Find Previous</source>
       <translation>前を検索</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="849" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="848" />
       <source>Replace Next</source>
       <translation>次を置換</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="858" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="857" />
       <source>&amp;Tools</source>
       <translation>&amp;ツール</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="861" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="860" />
       <source>Check Spelling</source>
       <translation>スペルチェック</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="867" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="866" />
       <source>Spell Check Language</source>
       <translation>スペルチェック言語</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="869" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="868" />
       <source>Default</source>
       <translation>既定</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="877" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="876" />
       <source>Re-Run Spell Check</source>
       <translation>スペルチェックを再実行</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="882" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="881" />
       <source>Project Word List</source>
       <translation>プロジェクト単語リスト</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="887" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="886" />
       <source>Add Dictionaries</source>
       <translation>辞書を追加</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="894" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="893" />
       <source>Rebuild Index</source>
       <translation>インデックスを再構築</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="902" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="901" />
       <source>Backup Project</source>
       <translation>プロジェクトをバックアップ</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="906" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="905" />
       <source>Build Manuscript</source>
       <translation>原稿をビルド</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="911" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="910" />
       <source>Writing Statistics</source>
       <translation>統計の作成</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="916" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="915" />
       <source>Preferences</source>
       <translation>環境設定</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="926" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="925" />
       <source>&amp;Help</source>
       <translation>&amp;ヘルプ</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="929" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="928" />
       <source>About novelWriter</source>
       <translation>novelWriterについて</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="934" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="933" />
       <source>About Qt5</source>
       <translation>Qt5について</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="942" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="941" />
       <source>User Manual (Online)</source>
       <translation>ユーザーマニュアル (オンライン)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="948" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="947" />
       <source>User Manual (PDF)</source>
       <translation>ユーザーマニュアル (PDF)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="956" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="955" />
       <source>Report an Issue (GitHub)</source>
       <translation>問題を報告 (GitHub)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="960" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="959" />
       <source>Ask a Question (GitHub)</source>
       <translation>質問する (GitHub)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/mainmenu.py" line="964" />
+      <location filename="../novelwriter/gui/mainmenu.py" line="963" />
       <source>The novelWriter Website</source>
       <translation>novelWriterのウェブサイト</translation>
     </message>
@@ -3213,6 +3213,7 @@
   <context>
     <name>GuiWordList</name>
     <message>
+      <location filename="../novelwriter/dialogs/wordlist.py" line="73" />
       <location filename="../novelwriter/dialogs/wordlist.py" line="58" />
       <source>Project Word List</source>
       <translation>プロジェクト単語リスト</translation>
