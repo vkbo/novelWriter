@@ -1,8 +1,8 @@
 %%~name: Another Scene
 %%~path: 6a2d6d5f4f401/bc0cbd2a407f3
 %%~kind: NOVEL/DOCUMENT
-%%~hash: b3f9e4b097f7041c77489876577014c435a8be0c
-%%~date: Unknown/2023-08-25 16:51:57
+%%~hash: d35e2629876e627b1a2418affa40d477022984f8
+%%~date: Unknown/2024-03-11 22:56:28
 ### Another Scene
 
 @pov: John
@@ -13,7 +13,7 @@ Adding more scenes to a chapter is as easy as adding more scene files with a lev
 
 In fact, if you wish, you can add all the scenes in the chapter file too. All novelWriter cares about is the level of the headings and the order in which they appear.
 
-### More Scenes
+###! More Scenes
 
 @pov: Jane
 @focus: John

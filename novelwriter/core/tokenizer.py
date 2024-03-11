@@ -156,9 +156,11 @@ class Tokenizer(ABC):
         self._fmtChapter = nwHeadFmt.TITLE  # Formatting for numbered chapters
         self._fmtUnNum   = nwHeadFmt.TITLE  # Formatting for unnumbered chapters
         self._fmtScene   = nwHeadFmt.TITLE  # Formatting for scenes
+        self._fmtHScene  = nwHeadFmt.TITLE  # Formatting for hard scenes
         self._fmtSection = nwHeadFmt.TITLE  # Formatting for sections
 
         self._hideScene   = False  # Do not include scene headings
+        self._hideHScene  = False  # Do not include hard scene headings
         self._hideSection = False  # Do not include section headings
 
         self._linkHeaders = False  # Add an anchor before headings
@@ -252,6 +254,12 @@ class Tokenizer(ABC):
         """Set the scene format pattern and hidden status."""
         self._fmtScene = hFormat.strip()
         self._hideScene = hide
+        return
+
+    def setHardSceneFormat(self, hFormat: str, hide: bool) -> None:
+        """Set the hard scene format pattern and hidden status."""
+        self._fmtHScene = hFormat.strip()
+        self._hideHScene = hide
         return
 
     def setSectionFormat(self, hFormat: str, hide: bool) -> None:
@@ -603,7 +611,7 @@ class Tokenizer(ABC):
                 if self._keepMarkdown:
                     tmpMarkdown.append(f"{aLine}\n")
 
-            elif aLine[:4] == "### ":
+            elif aLine[:4] == "### " or aLine[:5] == "###! ":
                 # Scene Headings
                 # ==============
                 # Scene headings in novel documents are treated as centred
@@ -619,12 +627,15 @@ class Tokenizer(ABC):
                 tText = aLine[4:].strip()
                 tType = self.T_HEAD3
                 tStyle = self.A_NONE
+                isHard = aLine[:5] == "###! "
+                sHide = self._hideHScene if isHard else self._hideScene
+                fScene = self._fmtHScene if isHard else self._fmtScene
                 if self._isNovel:
                     self._hFormatter.incScene()
-                    tText = self._hFormatter.apply(self._fmtScene, tText, nHead)
+                    tText = self._hFormatter.apply(fScene, tText, nHead)
                     tStyle = self._sceneStyle
                     if tText == "":
-                        tType = self.T_EMPTY if self._noSep or self._hideScene else self.T_SKIP
+                        tType = self.T_EMPTY if self._noSep or sHide else self.T_SKIP
                         tStyle = self.A_NONE
                     elif tText == self._fmtScene:
                         tText = "" if self._noSep else tText
