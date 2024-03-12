@@ -275,9 +275,9 @@ class NColourLabel(QLabel):
 class NWrappedWidgetBox(QHBoxLayout):
     """Extension: A Text-Wrapped Widget Box
 
-    A custom layout box where a widget is wrapped within the box. The
-    widget is inserted at the {0} position so that it can be used for
-    translation strings.
+    A custom layout box where a widget is wrapped in text labels on
+    either side within a layout box. The widget is inserted at the {0}
+    position so that it can be used for translation strings.
     """
 
     def __init__(self, text: str, widget: QWidget) -> None:
