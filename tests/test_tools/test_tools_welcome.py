@@ -75,8 +75,8 @@ def testToolWelcome_Open(qtbot: QtBot, monkeypatch, nwGUI, fncPath):
 
     CONFIG.recentProjects.update("/stuff/project_one", "Project One", 12345, 1690000000)
     CONFIG.recentProjects.update("/stuff/project_two", "Project Two", 54321, 1700000000)
-    dateOne = datetime.fromtimestamp(1700000000).strftime("%x")
-    dateTwo = datetime.fromtimestamp(1690000000).strftime("%x")
+    dateOne = CONFIG.localDate(datetime.fromtimestamp(1700000000))
+    dateTwo = CONFIG.localDate(datetime.fromtimestamp(1690000000))
 
     welcome = GuiWelcome(nwGUI)
     with qtbot.waitExposed(welcome):

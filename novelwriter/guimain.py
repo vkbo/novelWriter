@@ -457,7 +457,7 @@ class GuiMain(QMainWindow):
                     "'{0}' ({1} {2}), last active on {3}."
                 ).format(
                     lockStatus[0], lockStatus[1], lockStatus[2],
-                    datetime.fromtimestamp(int(lockStatus[3])).strftime("%x %X")
+                    CONFIG.localDateTime(datetime.fromtimestamp(int(lockStatus[3])))
                 )
             except Exception:
                 lockDetails = ""

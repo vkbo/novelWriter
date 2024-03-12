@@ -829,7 +829,7 @@ class _PreviewWidget(QTextBrowser):
         """Update the build time and the fuzzy age."""
         if self._docTime > 0:
             strBuildTime = "%s (%s)" % (
-                datetime.fromtimestamp(self._docTime).strftime("%x %X"),
+                CONFIG.localDateTime(datetime.fromtimestamp(self._docTime)),
                 fuzzyTime(int(time()) - self._docTime)
             )
         else:

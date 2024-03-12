@@ -57,7 +57,7 @@ class VersionInfoWidget(QWidget):
         # Labels
         self._lblInfo = QLabel("{0} {1} \u2013 {2} {3} \u2013 {4}".format(
             self.tr("Version"), formatVersion(__version__),
-            self.tr("Released on"), datetime.strptime(__date__, "%Y-%m-%d").strftime("%x"),
+            self.tr("Released on"), CONFIG.localDate(datetime.strptime(__date__, "%Y-%m-%d")),
             "<a href='#notes'>{0}</a>".format(self.tr("Release Notes")),
         ), self)
         self._lblInfo.linkActivated.connect(self._processLink)
