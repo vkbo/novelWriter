@@ -45,6 +45,7 @@ from novelwriter.enum import nwItemClass
 from novelwriter.common import formatInt, makeFileNameSafe
 from novelwriter.constants import nwFiles
 from novelwriter.core.coretools import ProjectBuilder
+from novelwriter.extensions.configlayout import NWrappedWidgetBox
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.modified import NSpinBox
 from novelwriter.extensions.versioninfo import VersionInfoWidget
@@ -630,27 +631,18 @@ class _NewProjectForm(QWidget):
         self.numChapters.setValue(5)
         self.numChapters.setToolTip(self.tr("Set to 0 to only add scenes"))
 
-        lblChA, _, lblChB = self.tr("Add {0} chapter documents").partition(r"{0}")
-        lblScA, _, lblScB = self.tr("Add {0} scene documents (to each chapter)").partition(r"{0}")
-
-        self.chapterBox = QHBoxLayout()
-        if lblChA:
-            self.chapterBox.addWidget(QLabel(lblChA))
-        self.chapterBox.addWidget(self.numChapters)
-        if lblChB:
-            self.chapterBox.addWidget(QLabel(lblChB))
+        self.chapterBox = NWrappedWidgetBox(
+            self.tr("Add {0} chapter documents"), self.numChapters
+        )
         self.chapterBox.addStretch(1)
 
         self.numScenes = NSpinBox(self)
         self.numScenes.setRange(0, 200)
         self.numScenes.setValue(5)
 
-        self.sceneBox = QHBoxLayout()
-        if lblScA:
-            self.sceneBox.addWidget(QLabel(lblScA))
-        self.sceneBox.addWidget(self.numScenes)
-        if lblScB:
-            self.sceneBox.addWidget(QLabel(lblScB))
+        self.sceneBox = NWrappedWidgetBox(
+            self.tr("Add {0} scene documents (to each chapter)"), self.numScenes
+        )
         self.sceneBox.addStretch(1)
 
         self.novelForm = QVBoxLayout()

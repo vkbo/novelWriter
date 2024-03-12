@@ -7,6 +7,7 @@ Created: 2020-05-03 [0.4.5] NColourLabel
 Created: 2024-01-08 [2.3b1] NScrollableForm
 Created: 2024-01-26 [2.3b1] NScrollablePage
 Created: 2024-01-26 [2.3b1] NFixedPage
+Created: 2024-03-12 [2.4b1] NWrappedWidgetBox
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen
@@ -269,3 +270,24 @@ class NColourLabel(QLabel):
         return
 
 # END Class NColourLabel
+
+
+class NWrappedWidgetBox(QHBoxLayout):
+    """Extension: A Text-Wrapped Widget Box
+
+    A custom layout box where a widget is wrapped within the box. The
+    widget is inserted at the {0} position so that it can be used for
+    translation strings.
+    """
+
+    def __init__(self, text: str, widget: QWidget) -> None:
+        super().__init__()
+        before, _, after  = text.partition(r"{0}")
+        if before:
+            self.addWidget(QLabel(before.rstrip()))
+        self.addWidget(widget)
+        if after:
+            self.addWidget(QLabel(after.lstrip()))
+        return
+
+# END Class NWrappedWidgetBox
