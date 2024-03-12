@@ -456,7 +456,7 @@ class _ProjectListModel(QAbstractListModel):
         opened = self.tr("Last Opened")
         records = sorted(CONFIG.recentProjects.listEntries(), key=lambda x: x[3], reverse=True)
         for path, title, count, time in records:
-            when = datetime.fromtimestamp(time).strftime("%x")
+            when = CONFIG.localDate(datetime.fromtimestamp(time))
             data.append((title, path, f"{opened}: {when}, {words}: {formatInt(count)}"))
         self._data = data
         return
