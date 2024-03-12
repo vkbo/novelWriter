@@ -492,7 +492,7 @@ class Tokenizer(ABC):
             # Check Line Format
             # =================
 
-            if aLine[0] == "[":
+            if aLine.startswith("["):
                 # Special Formats
                 # ===============
                 # Parse special formatting line. This must be a separate if
@@ -521,13 +521,13 @@ class Tokenizer(ABC):
                         ]
                     continue
 
-            if aLine[0] == "%":
+            if aLine.startswith("%"):
                 # Comments
                 # ========
                 # All style comments are processed and the exact type exact
                 # style extracted. Ignored comments on the '%~' format are
                 # skipped completely.
-                if aLine[1] == "~":
+                if aLine.startswith("%~"):
                     continue
 
                 cStyle, cText, _ = processComment(aLine)
@@ -550,7 +550,7 @@ class Tokenizer(ABC):
                     if self._doComments and self._keepMarkdown:
                         tmpMarkdown.append(f"{aLine}\n")
 
-            elif aLine[0] == "@":
+            elif aLine.startswith("@"):
                 # Keywords
                 # ========
                 # Only valid keyword lines are parsed, and any ignored keywords
@@ -564,56 +564,71 @@ class Tokenizer(ABC):
                     if self._doKeywords and self._keepMarkdown:
                         tmpMarkdown.append(f"{aLine}\n")
 
-            elif aLine[:2] == "# ":
-                # Partition Headings
-                # ==================
+            elif aLine.startswith(("# ", "#! ")):
+                # Title or Partition Headings
+                # ===========================
+                # Main titles are allowed in any document, and they are always
+                # centred and start on a new page. For novel documents, we also
+                # reset all counters when such a title is encountered.
                 # Partition headings are only formatted in novel documents, and
                 # otherwise unchanged. Scene separators are disabled
                 # immediately after partitions, and scene numbers are reset.
+                isPart = aLine.startswith("# ")
 
                 nHead += 1
-                tText = aLine[2:].strip()
-                tStyle = self.A_NONE
-                if self._isNovel:
+                nSkip = 2 if isPart else 3
+                tText = aLine[nSkip:].strip()
+                tType = self.T_HEAD1 if isPart else self.T_TITLE
+                tStyle = self.A_NONE if isPart else (self.A_PBB | self.A_CENTRE)
+                if self._isNovel and isPart:
                     tText = self._hFormatter.apply(self._fmtTitle, tText, nHead)
                     tStyle = self._titleStyle
-                    self._noSep = True
                     self._hFormatter.resetScene()
+                    self._noSep = True
+                elif self._isNovel and not isPart:
+                    self._hFormatter.resetAll()
+                    self._noSep = True
 
                 self._tokens.append((
-                    self.T_HEAD1, nHead, tText, [], tStyle
+                    tType, nHead, tText, [], tStyle
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append(f"{aLine}\n")
 
-            elif aLine[:3] == "## ":
-                # Chapter Headings
-                # ================
+            elif aLine.startswith(("## ", "##! ")):
+                # (Unnumbered) Chapter Headings
+                # =============================
                 # Chapter headings are only formatted in novel documents, and
                 # otherwise unchanged. Chapter numbers are bumped before the
                 # heading is formatted. Scene separators are disabled
                 # immediately after chapter headings, and scene numbers are
-                # reset.
+                # reset. Unnumbered chapters are only meaningful in Novel docs,
+                # so if we're in a note, we keep them as level 2 headings.
+                isUnNum = aLine.startswith("##! ")
 
                 nHead += 1
-                tText = aLine[3:].strip()
+                nSkip = 4 if isUnNum else 3
+                tText = aLine[nSkip:].strip()
+                tType = self.T_HEAD2
                 tStyle = self.A_NONE
+                tFormat = self._fmtUnNum if isUnNum else self._fmtChapter
                 if self._isNovel:
                     self._hFormatter.incChapter()
-                    tText = self._hFormatter.apply(self._fmtChapter, tText, nHead)
+                    tText = self._hFormatter.apply(tFormat, tText, nHead)
+                    tType = self.T_UNNUM if isUnNum else tType
                     tStyle = self._chapterStyle
                     self._noSep = True
                     self._hFormatter.resetScene()
 
                 self._tokens.append((
-                    self.T_HEAD2, nHead, tText, [], tStyle
+                    tType, nHead, tText, [], tStyle
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append(f"{aLine}\n")
 
-            elif aLine[:4] == "### " or aLine[:5] == "###! ":
-                # Scene Headings
-                # ==============
+            elif aLine.startswith(("### ", "###! ")):
+                # (Hard) Scene Headings
+                # =====================
                 # Scene headings in novel documents are treated as centred
                 # separators if the formatting does not change the text. If the
                 # format is empty, the scene can be hidden or a blank paragraph
@@ -622,22 +637,23 @@ class Tokenizer(ABC):
                 # separators immediately after other titles. Scene numbers are
                 # always incremented before formatting. For notes, the heading
                 # is unchanged.
+                isHard = aLine.startswith("###! ")
 
                 nHead += 1
-                tText = aLine[4:].strip()
+                nSkip = 5 if isHard else 4
+                tText = aLine[nSkip:].strip()
                 tType = self.T_HEAD3
                 tStyle = self.A_NONE
-                isHard = aLine[:5] == "###! "
                 sHide = self._hideHScene if isHard else self._hideScene
-                fScene = self._fmtHScene if isHard else self._fmtScene
+                tFormat = self._fmtHScene if isHard else self._fmtScene
                 if self._isNovel:
                     self._hFormatter.incScene()
-                    tText = self._hFormatter.apply(fScene, tText, nHead)
+                    tText = self._hFormatter.apply(tFormat, tText, nHead)
                     tStyle = self._sceneStyle
                     if tText == "":
                         tType = self.T_EMPTY if self._noSep or sHide else self.T_SKIP
                         tStyle = self.A_NONE
-                    elif tText == self._fmtScene:
+                    elif tText == tFormat:
                         tText = "" if self._noSep else tText
                         tType = self.T_EMPTY if self._noSep else self.T_SEP
                         tStyle = self.A_NONE if self._noSep else self.A_CENTRE
@@ -649,7 +665,7 @@ class Tokenizer(ABC):
                 if self._keepMarkdown:
                     tmpMarkdown.append(f"{aLine}\n")
 
-            elif aLine[:5] == "#### ":
+            elif aLine.startswith("#### "):
                 # Section Headings
                 # =================
                 # Section headings in novel docs are treated as centred
@@ -668,46 +684,6 @@ class Tokenizer(ABC):
                     elif tText == self._fmtSection:
                         tType = self.T_SEP
                         tStyle = self.A_CENTRE
-
-                self._tokens.append((
-                    tType, nHead, tText, [], tStyle
-                ))
-                if self._keepMarkdown:
-                    tmpMarkdown.append(f"{aLine}\n")
-
-            elif aLine[:3] == "#! ":
-                # Main Title
-                # ==========
-                # Main titles are allowed in any document, and they are always
-                # centred and start on a new page. For novel documents, we also
-                # reset all counters when such a title is encountered.
-
-                nHead += 1
-                self._tokens.append((
-                    self.T_TITLE, nHead, aLine[3:].strip(), [], self.A_PBB | self.A_CENTRE
-                ))
-                if self._isNovel:
-                    self._noSep = True
-                    self._hFormatter.resetAll()
-                if self._keepMarkdown:
-                    tmpMarkdown.append(f"{aLine}\n")
-
-            elif aLine[:4] == "##! ":
-                # Unnumbered Chapter Headings
-                # ===========================
-                # Unnumbered chapters are only meaningful in Novel docs, so if
-                # we're in a note, we convert them to a plain level 2 heading.
-
-                nHead += 1
-                tText = aLine[4:].strip()
-                tType = self.T_HEAD2
-                tStyle = self.A_NONE
-                if self._isNovel:
-                    tText = self._hFormatter.apply(self._fmtUnNum, tText, nHead)
-                    tType = self.T_UNNUM
-                    tStyle = self._chapterStyle
-                    self._noSep = True
-                    self._hFormatter.resetScene()
 
                 self._tokens.append((
                     tType, nHead, tText, [], tStyle
