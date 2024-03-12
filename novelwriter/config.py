@@ -30,6 +30,7 @@ import logging
 
 from time import time
 from pathlib import Path
+from datetime import datetime
 
 from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtCore import (
@@ -84,8 +85,11 @@ class Config:
         self._nwLangPath = self._appPath / "assets" / "i18n"
         self._qtLangPath = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
 
-        wantedLocale = self._nwLangPath / f"nw_{QLocale.system().name()}.qm"
-        self._qLocale = QLocale.system() if wantedLocale.exists() else QLocale("en_GB")
+        hasLocale = (self._nwLangPath / f"nw_{QLocale.system().name()}.qm").exists()
+        self._qLocale = QLocale.system() if hasLocale else QLocale("en_GB")
+        self._dLocale = QLocale.system()
+        self._dShortDate = self._dLocale.dateFormat(QLocale.FormatType.ShortFormat)
+        self._dShortDateTime = self._dLocale.dateTimeFormat(QLocale.FormatType.ShortFormat)
         self._qtTrans = {}
 
         # PDF Manual
@@ -414,6 +418,14 @@ class Config:
         self._errData = []
         return message
 
+    def localDate(self, value: datetime) -> str:
+        """Return a localised date format."""
+        return self._dLocale.toString(value, self._dShortDate)
+
+    def localDateTime(self, value: datetime) -> str:
+        """Return a localised datetime format."""
+        return self._dLocale.toString(value, self._dShortDateTime)
+
     def listLanguages(self, lngSet: int) -> list[tuple[str, str]]:
         """List localisation files in the i18n folder. The default GUI
         language is British English (en_GB).
@@ -495,6 +507,11 @@ class Config:
         self._qLocale = QLocale(self.guiLocale)
         QLocale.setDefault(self._qLocale)
         self._qtTrans = {}
+
+        hasLocale = (self._nwLangPath / f"nw_{self._qLocale.name()}.qm").exists()
+        self._dLocale = self._qLocale if hasLocale else QLocale.system()
+        self._dShortDate = self._dLocale.dateFormat(QLocale.FormatType.ShortFormat)
+        self._dShortDateTime = self._dLocale.dateTimeFormat(QLocale.FormatType.ShortFormat)
 
         langList = [
             (self._qtLangPath, "qtbase"),   # Qt 5.x

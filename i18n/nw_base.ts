@@ -1314,6 +1314,11 @@
       <translation type="unfinished" />
     </message>
     <message>
+      <location filename="../novelwriter/guimain.py" line="357" />
+      <source>You are now running novelWriter version {0}.</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
       <location filename="../novelwriter/guimain.py" line="360" />
       <source>Please check the {0}release notes{1} for further details.</source>
       <translation type="unfinished" />
@@ -4169,73 +4174,67 @@
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="644" />
+      <location filename="../novelwriter/tools/welcome.py" line="633" />
+      <source>Add {0} chapter documents</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
       <location filename="../novelwriter/tools/welcome.py" line="634" />
-      <source>Add</source>
+      <source>Add {0} scene documents (to each chapter)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="636" />
-      <source>chapter documents</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../novelwriter/tools/welcome.py" line="646" />
-      <source>scene documents (to each chapter)</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../novelwriter/tools/welcome.py" line="673" />
+      <location filename="../novelwriter/tools/welcome.py" line="680" />
       <source>Add a folder for plot notes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="674" />
+      <location filename="../novelwriter/tools/welcome.py" line="681" />
       <source>Add a folder for character notes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="675" />
+      <location filename="../novelwriter/tools/welcome.py" line="682" />
       <source>Add a folder for location notes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="676" />
+      <location filename="../novelwriter/tools/welcome.py" line="683" />
       <source>Add example notes to the above</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="682" />
+      <location filename="../novelwriter/tools/welcome.py" line="689" />
       <source>Chapters and Scenes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="685" />
+      <location filename="../novelwriter/tools/welcome.py" line="692" />
       <source>Project Notes</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="694" />
+      <location filename="../novelwriter/tools/welcome.py" line="701" />
       <source>Create New Project</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="737" />
+      <location filename="../novelwriter/tools/welcome.py" line="744" />
       <source>Select Project Folder</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="793" />
+      <location filename="../novelwriter/tools/welcome.py" line="800" />
       <source>Fresh Project</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="795" />
+      <location filename="../novelwriter/tools/welcome.py" line="802" />
       <source>Example Project</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="797" />
+      <location filename="../novelwriter/tools/welcome.py" line="804" />
       <source>Template: {0}</source>
       <translation type="unfinished" />
     </message>

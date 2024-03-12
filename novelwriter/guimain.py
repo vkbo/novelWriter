@@ -355,8 +355,8 @@ class GuiMain(QMainWindow):
         if hexToInt(CONFIG.lastNotes) < hexToInt(__hexversion__):
             CONFIG.lastNotes = __hexversion__
             trVersion = self.tr(
-                "You are now running novelWriter version {0}.".format(formatVersion(__version__))
-            )
+                "You are now running novelWriter version {0}."
+            ).format(formatVersion(__version__))
             trRelease = self.tr(
                 "Please check the {0}release notes{1} for further details."
             ).format(f"<a href='{nwConst.URL_RELEASES}'>", "</a>")
@@ -457,7 +457,7 @@ class GuiMain(QMainWindow):
                     "'{0}' ({1} {2}), last active on {3}."
                 ).format(
                     lockStatus[0], lockStatus[1], lockStatus[2],
-                    datetime.fromtimestamp(int(lockStatus[3])).strftime("%x %X")
+                    CONFIG.localDateTime(datetime.fromtimestamp(int(lockStatus[3])))
                 )
             except Exception:
                 lockDetails = ""

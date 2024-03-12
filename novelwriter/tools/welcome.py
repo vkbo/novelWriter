@@ -45,6 +45,7 @@ from novelwriter.enum import nwItemClass
 from novelwriter.common import formatInt, makeFileNameSafe
 from novelwriter.constants import nwFiles
 from novelwriter.core.coretools import ProjectBuilder
+from novelwriter.extensions.configlayout import NWrappedWidgetBox
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.modified import NSpinBox
 from novelwriter.extensions.versioninfo import VersionInfoWidget
@@ -455,7 +456,7 @@ class _ProjectListModel(QAbstractListModel):
         opened = self.tr("Last Opened")
         records = sorted(CONFIG.recentProjects.listEntries(), key=lambda x: x[3], reverse=True)
         for path, title, count, time in records:
-            when = datetime.fromtimestamp(time).strftime("%x")
+            when = CONFIG.localDate(datetime.fromtimestamp(time))
             data.append((title, path, f"{opened}: {when}, {words}: {formatInt(count)}"))
         self._data = data
         return
@@ -630,20 +631,18 @@ class _NewProjectForm(QWidget):
         self.numChapters.setValue(5)
         self.numChapters.setToolTip(self.tr("Set to 0 to only add scenes"))
 
-        self.chapterBox = QHBoxLayout()
-        self.chapterBox.addWidget(QLabel(self.tr("Add")))
-        self.chapterBox.addWidget(self.numChapters)
-        self.chapterBox.addWidget(QLabel(self.tr("chapter documents")))
+        self.chapterBox = NWrappedWidgetBox(
+            self.tr("Add {0} chapter documents"), self.numChapters
+        )
         self.chapterBox.addStretch(1)
 
         self.numScenes = NSpinBox(self)
         self.numScenes.setRange(0, 200)
         self.numScenes.setValue(5)
 
-        self.sceneBox = QHBoxLayout()
-        self.sceneBox.addWidget(QLabel(self.tr("Add")))
-        self.sceneBox.addWidget(self.numScenes)
-        self.sceneBox.addWidget(QLabel(self.tr("scene documents (to each chapter)")))
+        self.sceneBox = NWrappedWidgetBox(
+            self.tr("Add {0} scene documents (to each chapter)"), self.numScenes
+        )
         self.sceneBox.addStretch(1)
 
         self.novelForm = QVBoxLayout()

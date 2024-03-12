@@ -151,8 +151,7 @@ class GuiPreferences(QDialog):
         self.guiLocale.setMinimumWidth(minWidth)
         for lang, name in CONFIG.listLanguages(CONFIG.LANG_NW):
             self.guiLocale.addItem(name, lang)
-        if (idx := self.guiLocale.findData(CONFIG.guiLocale)) != -1:
-            self.guiLocale.setCurrentIndex(idx)
+        self.guiLocale.setCurrentData(CONFIG.guiLocale, "en_GB")
 
         self.mainForm.addRow(
             self.tr("Display language"), self.guiLocale,
@@ -164,8 +163,7 @@ class GuiPreferences(QDialog):
         self.guiTheme.setMinimumWidth(minWidth)
         for theme, name in SHARED.theme.listThemes():
             self.guiTheme.addItem(name, theme)
-        if (idx := self.guiTheme.findData(CONFIG.guiTheme)) != -1:
-            self.guiTheme.setCurrentIndex(idx)
+        self.guiTheme.setCurrentData(CONFIG.guiTheme, "default")
 
         self.mainForm.addRow(
             self.tr("Colour theme"), self.guiTheme,
@@ -226,8 +224,7 @@ class GuiPreferences(QDialog):
         self.guiSyntax.setMinimumWidth(CONFIG.pxInt(200))
         for syntax, name in SHARED.theme.listSyntax():
             self.guiSyntax.addItem(name, syntax)
-        if (idx := self.guiSyntax.findData(CONFIG.guiSyntax)) != -1:
-            self.guiSyntax.setCurrentIndex(idx)
+        self.guiSyntax.setCurrentData(CONFIG.guiSyntax, "default_light")
 
         self.mainForm.addRow(
             self.tr("Document colour theme"), self.guiSyntax,
