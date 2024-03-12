@@ -47,6 +47,7 @@ def testCoreToken_Setters(mockGUI):
     assert tokens._fmtChapter == nwHeadFmt.TITLE
     assert tokens._fmtUnNum == nwHeadFmt.TITLE
     assert tokens._fmtScene == nwHeadFmt.TITLE
+    assert tokens._fmtHScene == nwHeadFmt.TITLE
     assert tokens._fmtSection == nwHeadFmt.TITLE
     assert tokens._textFont == "Serif"
     assert tokens._textSize == 11
@@ -74,6 +75,7 @@ def testCoreToken_Setters(mockGUI):
     tokens.setChapterFormat(f"C: {nwHeadFmt.TITLE}")
     tokens.setUnNumberedFormat(f"U: {nwHeadFmt.TITLE}")
     tokens.setSceneFormat(f"S: {nwHeadFmt.TITLE}", True)
+    tokens.setHardSceneFormat(f"H: {nwHeadFmt.TITLE}", True)
     tokens.setSectionFormat(f"X: {nwHeadFmt.TITLE}", True)
     tokens.setFont("Monospace", 10, True)
     tokens.setLineHeight(2.0)
@@ -97,6 +99,7 @@ def testCoreToken_Setters(mockGUI):
     assert tokens._fmtChapter == f"C: {nwHeadFmt.TITLE}"
     assert tokens._fmtUnNum == f"U: {nwHeadFmt.TITLE}"
     assert tokens._fmtScene == f"S: {nwHeadFmt.TITLE}"
+    assert tokens._fmtHScene == f"H: {nwHeadFmt.TITLE}"
     assert tokens._fmtSection == f"X: {nwHeadFmt.TITLE}"
     assert tokens._textFont == "Monospace"
     assert tokens._textSize == 10
@@ -1741,7 +1744,7 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
         "# Title Two\n\n"
         "### Scene Three\n\n"
         "Text\n\n"
-        "### Scene Four\n\n"
+        "###! Scene Four\n\n"
         "Text\n\n"
     )
     md.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
@@ -1749,13 +1752,14 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
     md.setSectionFormat("", True)
 
     # Static Separator
-    md.setSceneFormat("* * *", False)
+    md.setSceneFormat("~", False)
+    md.setHardSceneFormat("* * *", False)
     md.tokenizeText()
     md.doConvert()
     assert md.result == (
         "# T: Title One\n\n"
         "Text\n\n"
-        "* * *\n\n"
+        "~\n\n"
         "Text\n\n"
         "# T: Title Two\n\n"
         "Text\n\n"
@@ -1765,6 +1769,7 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
 
     # Scene Title Formatted
     md.setSceneFormat(f"S: {nwHeadFmt.TITLE}", False)
+    md.setHardSceneFormat(f"H: {nwHeadFmt.TITLE}", False)
     md.tokenizeText()
     md.doConvert()
     assert md.result == (
@@ -1776,7 +1781,7 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
         "# T: Title Two\n\n"
         "### S: Scene Three\n\n"
         "Text\n\n"
-        "### S: Scene Four\n\n"
+        "### H: Scene Four\n\n"
         "Text\n\n"
     )
 
@@ -1793,7 +1798,7 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
         "## Chapter Two\n\n"
         "### Scene Three\n\n"
         "Text\n\n"
-        "### Scene Four\n\n"
+        "###! Scene Four\n\n"
         "Text\n\n"
     )
     md.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
@@ -1802,6 +1807,7 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
 
     # Static Separator
     md.setSceneFormat("* * *", False)
+    md.setHardSceneFormat("* * *", False)
     md.tokenizeText()
     md.doConvert()
     assert md.result == (
@@ -1818,6 +1824,7 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
 
     # Scene Title Formatted
     md.setSceneFormat(f"S: {nwHeadFmt.TITLE}", False)
+    md.setHardSceneFormat(f"H: {nwHeadFmt.TITLE}", False)
     md.tokenizeText()
     md.doConvert()
     assert md.result == (
@@ -1830,7 +1837,7 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
         "## C: Chapter Two\n\n"
         "### S: Scene Three\n\n"
         "Text\n\n"
-        "### S: Scene Four\n\n"
+        "### H: Scene Four\n\n"
         "Text\n\n"
     )
 
@@ -1847,7 +1854,7 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
         "## Chapter Two\n\n"
         "### Scene Three\n\n"
         "Text\n\n"
-        "### Scene Four\n\n"
+        "###! Scene Four\n\n"
         "Text\n\n"
         "#! Novel Two\n\n"
         "## Chapter One\n\n"
@@ -1858,13 +1865,17 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
         "## Chapter Two\n\n"
         "### Scene Three\n\n"
         "Text\n\n"
-        "### Scene Four\n\n"
+        "###! Scene Four\n\n"
         "Text\n\n"
     )
     md.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
     md.setChapterFormat(f"C {nwHeadFmt.CH_NUM}: {nwHeadFmt.TITLE}")
-    md.setSceneFormat(f"S {nwHeadFmt.CH_NUM}.{nwHeadFmt.SC_NUM} ({nwHeadFmt.SC_ABS}): "
-                      f"{nwHeadFmt.TITLE}", False)
+    md.setSceneFormat(
+        f"S {nwHeadFmt.CH_NUM}.{nwHeadFmt.SC_NUM} ({nwHeadFmt.SC_ABS}): {nwHeadFmt.TITLE}", False
+    )
+    md.setHardSceneFormat(
+        f"H {nwHeadFmt.CH_NUM}.{nwHeadFmt.SC_NUM} ({nwHeadFmt.SC_ABS}): {nwHeadFmt.TITLE}", False
+    )
     md.setSectionFormat("", True)
 
     # Two Novel Format
@@ -1880,7 +1891,7 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
         "## C 2: Chapter Two\n\n"
         "### S 2.1 (3): Scene Three\n\n"
         "Text\n\n"
-        "### S 2.2 (4): Scene Four\n\n"
+        "### H 2.2 (4): Scene Four\n\n"
         "Text\n\n"
         "# Novel Two\n\n"
         "## C 1: Chapter One\n\n"
@@ -1891,7 +1902,7 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
         "## C 2: Chapter Two\n\n"
         "### S 2.1 (3): Scene Three\n\n"
         "Text\n\n"
-        "### S 2.2 (4): Scene Four\n\n"
+        "### H 2.2 (4): Scene Four\n\n"
         "Text\n\n"
     )
 
