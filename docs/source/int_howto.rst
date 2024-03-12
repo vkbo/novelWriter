@@ -75,6 +75,10 @@ Organising Your Text
    Keep in mind that this is not what the section heading is intended for, so the app will not
    understand the section heading as a scene, but it will be formatted correctly in the manuscript.
 
+   .. versionadded:: 2.4
+      You can now distinguish between soft and hard scene breaks with a modified scene header. See
+      :ref:`a_manuscript_settings_head_hard` for more details.
+
 
 Other Tools
 ===========

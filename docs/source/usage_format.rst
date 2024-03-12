@@ -68,7 +68,7 @@ correctly to produce the intended result. See :ref:`a_struct_heads` for more det
    Heading level four. For novel documents, the level indicates the start of a new section. Section
    titles can be replaced by separators or ignored completely when building the manuscript.
 
-For headings level one and two, adding a ``!`` modifies its meaning:
+For headings level one through three, adding a ``!`` modifies its meaning:
 
 ``#! Title Text``
    This tells the build tool that the level one heading is intended to be used for the novel's or
@@ -80,6 +80,11 @@ For headings level one and two, adding a ``!`` modifies its meaning:
    This tells the build tool to not assign a chapter number to this chapter title if automatic
    chapter numbers are being used. Such titles are useful for a prologue for instance. See
    :ref:`a_struct_heads_unnum` for more details.
+
+``###! Title Text``
+   This is an alternative scene heading that can be formatted differently in the
+   :guilabel:`Manuscript Build` tool. It is intended for separating "soft" and "hard" scene breaks.
+   Otherwise, it behaves identically to a regular scene heading.
 
 .. note::
    The space after the ``#`` or ``!`` character is mandatory. The syntax highlighter will change
