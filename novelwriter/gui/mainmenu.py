@@ -735,6 +735,12 @@ class GuiMainMenu(QMenuBar):
             lambda: self.requestDocAction.emit(nwDocAction.BLOCK_UNN)
         )
 
+        # Format > Hard Scene
+        self.aFmtHardSc = self.fmtMenu.addAction(self.tr("Hard Scene"))
+        self.aFmtHardSc.triggered.connect(
+            lambda: self.requestDocAction.emit(nwDocAction.BLOCK_HSC)
+        )
+
         # Format > Separator
         self.fmtMenu.addSeparator()
 

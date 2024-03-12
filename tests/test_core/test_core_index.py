@@ -502,6 +502,19 @@ def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
     assert index._itemIndex[tHandle]["T0001"].paraCount == 1  # type: ignore
     assert index._itemIndex[tHandle]["T0001"].synopsis == ""  # type: ignore
 
+    assert index.scanText(tHandle, (
+        "###! Hard Scene\n\n"
+        "We're no longer following Jane, but John!\n\n"
+    ))
+    assert index._itemIndex[cHandle]["T0001"].references == {}  # type: ignore
+    assert index._itemIndex[tHandle]["T0001"].level == "H3"  # type: ignore
+    assert index._itemIndex[tHandle]["T0001"].line == 1  # type: ignore
+    assert index._itemIndex[tHandle]["T0001"].title == "Hard Scene"  # type: ignore
+    assert index._itemIndex[tHandle]["T0001"].charCount == 51  # type: ignore
+    assert index._itemIndex[tHandle]["T0001"].wordCount == 9  # type: ignore
+    assert index._itemIndex[tHandle]["T0001"].paraCount == 1  # type: ignore
+    assert index._itemIndex[tHandle]["T0001"].synopsis == ""  # type: ignore
+
     # Page wo/Title
     # =============
 

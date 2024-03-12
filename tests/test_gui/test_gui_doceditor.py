@@ -1134,9 +1134,16 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, projPath, ipsumText
     assert nwGUI.docEditor.getText() == "Title\n\n"
     assert nwGUI.docEditor.getCursorPosition() == 2
 
-    # Strip Unnumbered CHapter
+    # Strip Unnumbered Chapter
     nwGUI.docEditor.replaceText("##! Title\n\n")
     nwGUI.docEditor.setCursorPosition(5)
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert nwGUI.docEditor.getText() == "Title\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 1
+
+    # Strip Hard Scene
+    nwGUI.docEditor.replaceText("###! Title\n\n")
+    nwGUI.docEditor.setCursorPosition(6)
     assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
     assert nwGUI.docEditor.getText() == "Title\n\n"
     assert nwGUI.docEditor.getCursorPosition() == 1
@@ -1301,6 +1308,13 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, projPath, ipsumText
     assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_UNN) is True
     assert nwGUI.docEditor.getText() == "##! Some text\n\n"
     assert nwGUI.docEditor.getCursorPosition() == 9
+
+    # Hard Scene
+    nwGUI.docEditor.replaceText("Some text\n\n")
+    nwGUI.docEditor.setCursorPosition(5)
+    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_HSC) is True
+    assert nwGUI.docEditor.getText() == "###! Some text\n\n"
+    assert nwGUI.docEditor.getCursorPosition() == 10
 
     # Left Indent
     nwGUI.docEditor.replaceText("Some text\n\n")

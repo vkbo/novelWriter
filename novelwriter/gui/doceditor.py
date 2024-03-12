@@ -744,6 +744,8 @@ class GuiDocEditor(QPlainTextEdit):
             self._formatBlock(nwDocAction.BLOCK_TTL)
         elif action == nwDocAction.BLOCK_UNN:
             self._formatBlock(nwDocAction.BLOCK_UNN)
+        elif action == nwDocAction.BLOCK_HSC:
+            self._formatBlock(nwDocAction.BLOCK_HSC)
         elif action == nwDocAction.REPL_SNG:
             self._replaceQuotes("'", self._typSQuoteO, self._typSQuoteC)
         elif action == nwDocAction.REPL_DBL:
@@ -1705,6 +1707,9 @@ class GuiDocEditor(QPlainTextEdit):
         elif action == nwDocAction.BLOCK_UNN:
             text = f"##! {temp}"
             offset -= 4
+        elif action == nwDocAction.BLOCK_HSC:
+            text = f"###! {temp}"
+            offset -= 5
         elif action == nwDocAction.ALIGN_L:
             text = f"{temp} <<"
         elif action == nwDocAction.ALIGN_C:
