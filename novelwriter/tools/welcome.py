@@ -630,10 +630,15 @@ class _NewProjectForm(QWidget):
         self.numChapters.setValue(5)
         self.numChapters.setToolTip(self.tr("Set to 0 to only add scenes"))
 
+        lblChA, _, lblChB = self.tr("Add {0} chapter documents").partition(r"{0}")
+        lblScA, _, lblScB = self.tr("Add {0} scene documents (to each chapter)").partition(r"{0}")
+
         self.chapterBox = QHBoxLayout()
-        self.chapterBox.addWidget(QLabel(self.tr("Add")))
+        if lblChA:
+            self.chapterBox.addWidget(QLabel(lblChA))
         self.chapterBox.addWidget(self.numChapters)
-        self.chapterBox.addWidget(QLabel(self.tr("chapter documents")))
+        if lblChB:
+            self.chapterBox.addWidget(QLabel(lblChB))
         self.chapterBox.addStretch(1)
 
         self.numScenes = NSpinBox(self)
@@ -641,9 +646,11 @@ class _NewProjectForm(QWidget):
         self.numScenes.setValue(5)
 
         self.sceneBox = QHBoxLayout()
-        self.sceneBox.addWidget(QLabel(self.tr("Add")))
+        if lblScA:
+            self.sceneBox.addWidget(QLabel(lblScA))
         self.sceneBox.addWidget(self.numScenes)
-        self.sceneBox.addWidget(QLabel(self.tr("scene documents (to each chapter)")))
+        if lblScB:
+            self.sceneBox.addWidget(QLabel(lblScB))
         self.sceneBox.addStretch(1)
 
         self.novelForm = QVBoxLayout()
