@@ -604,7 +604,7 @@ class _HeadingsTab(NScrollablePage):
         self.formatBox.setHorizontalSpacing(vSp)
 
         # Title Heading
-        self.lblTitle = QLabel(self._build.getLabel("headings.fmtTitle"))
+        self.lblTitle = QLabel(self._build.getLabel("headings.fmtTitle"), self)
         self.fmtTitle = QLineEdit("", self)
         self.fmtTitle.setReadOnly(True)
         self.btnTitle = QToolButton(self)
@@ -620,7 +620,7 @@ class _HeadingsTab(NScrollablePage):
         self.formatBox.addLayout(wrapTitle,     0, 1)
 
         # Chapter Heading
-        self.lblChapter = QLabel(self._build.getLabel("headings.fmtChapter"))
+        self.lblChapter = QLabel(self._build.getLabel("headings.fmtChapter"), self)
         self.fmtChapter = QLineEdit("", self)
         self.fmtChapter.setReadOnly(True)
         self.btnChapter = QToolButton(self)
@@ -636,7 +636,7 @@ class _HeadingsTab(NScrollablePage):
         self.formatBox.addLayout(wrapChapter,     1, 1)
 
         # Unnumbered Chapter Heading
-        self.lblUnnumbered = QLabel(self._build.getLabel("headings.fmtUnnumbered"))
+        self.lblUnnumbered = QLabel(self._build.getLabel("headings.fmtUnnumbered"), self)
         self.fmtUnnumbered = QLineEdit("", self)
         self.fmtUnnumbered.setReadOnly(True)
         self.btnUnnumbered = QToolButton(self)
@@ -653,7 +653,7 @@ class _HeadingsTab(NScrollablePage):
 
         # Scene Heading
         sceneHideTip = self._build.getLabel("headings.hideScene")
-        self.lblScene = QLabel(self._build.getLabel("headings.fmtScene"))
+        self.lblScene = QLabel(self._build.getLabel("headings.fmtScene"), self)
         self.fmtScene = QLineEdit("", self)
         self.fmtScene.setReadOnly(True)
         self.btnScene = QToolButton(self)
@@ -680,7 +680,7 @@ class _HeadingsTab(NScrollablePage):
 
         # Alt Scene Heading
         hardSceneHideTip = self._build.getLabel("headings.hideHardScene")
-        self.lblHScene = QLabel(self._build.getLabel("headings.fmtHardScene"))
+        self.lblHScene = QLabel(self._build.getLabel("headings.fmtHardScene"), self)
         self.fmtHScene = QLineEdit("", self)
         self.fmtHScene.setReadOnly(True)
         self.btnHScene = QToolButton(self)
@@ -707,7 +707,7 @@ class _HeadingsTab(NScrollablePage):
 
         # Section Heading
         sectionHideTip = self._build.getLabel("headings.hideSection")
-        self.lblSection = QLabel(self._build.getLabel("headings.fmtSection"))
+        self.lblSection = QLabel(self._build.getLabel("headings.fmtSection"), self)
         self.fmtSection = QLineEdit("", self)
         self.fmtSection.setReadOnly(True)
         self.btnSection = QToolButton(self)

@@ -610,16 +610,15 @@ class _DetailsWidget(QWidget):
         item.setText(0, build.getLabel("headings"))
         item.setText(1, "")
         self.listView.addTopLevelItem(item)
-        entries = [
+        for key in [
             "headings.fmtTitle", "headings.fmtChapter", "headings.fmtUnnumbered",
-            "headings.fmtScene", "headings.fmtSection"
-        ]
-        for key in entries:
+            "headings.fmtScene", "headings.fmtHardScene", "headings.fmtSection"
+        ]:
             sub = QTreeWidgetItem()
             sub.setText(0, build.getLabel(key))
             sub.setText(1, hFmt.apply(build.getStr(key), title, 0))
             item.addChild(sub)
-        for key in ["headings.hideScene", "headings.hideSection"]:
+        for key in ["headings.hideScene", "headings.hideHardScene", "headings.hideSection"]:
             sub = QTreeWidgetItem()
             sub.setText(0, build.getLabel(key))
             sub.setIcon(1, on if build.getBool(key) else off)
@@ -630,11 +629,10 @@ class _DetailsWidget(QWidget):
         item.setText(0, build.getLabel("text.grpContent"))
         item.setText(1, "")
         self.listView.addTopLevelItem(item)
-        entries = [
+        for key in [
             "text.includeSynopsis", "text.includeComments",
             "text.includeKeywords", "text.includeBodyText",
-        ]
-        for key in entries:
+        ]:
             sub = QTreeWidgetItem()
             sub.setText(0, build.getLabel(key))
             sub.setIcon(1, on if build.getBool(key) else off)
