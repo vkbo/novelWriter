@@ -355,8 +355,8 @@ class GuiMain(QMainWindow):
         if hexToInt(CONFIG.lastNotes) < hexToInt(__hexversion__):
             CONFIG.lastNotes = __hexversion__
             trVersion = self.tr(
-                "You are now running novelWriter version {0}.".format(formatVersion(__version__))
-            )
+                "You are now running novelWriter version {0}."
+            ).format(formatVersion(__version__))
             trRelease = self.tr(
                 "Please check the {0}release notes{1} for further details."
             ).format(f"<a href='{nwConst.URL_RELEASES}'>", "</a>")

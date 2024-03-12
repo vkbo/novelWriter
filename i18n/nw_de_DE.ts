@@ -311,7 +311,7 @@
       <location filename="../novelwriter/constants.py" line="226" />
       <location filename="../novelwriter/constants.py" line="182" />
       <source>Characters</source>
-      <translation>Charaktere</translation>
+      <translation>Figuren</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="229" />
@@ -394,7 +394,7 @@
     <message>
       <location filename="../novelwriter/constants.py" line="218" />
       <source>Novel Scene</source>
-      <translation>Roman Szene</translation>
+      <translation>Szene</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="219" />
@@ -1312,6 +1312,11 @@
       <location filename="../novelwriter/guimain.py" line="334" />
       <source>novelWriter is ready ...</source>
       <translation>novelWriter ist bereit ...</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/guimain.py" line="357" />
+      <source>You are now running novelWriter version {0}.</source>
+      <translation>Sie verwenden jetzt die novelWriter-Version {0}.</translation>
     </message>
     <message>
       <location filename="../novelwriter/guimain.py" line="360" />
@@ -2322,7 +2327,7 @@
     <message>
       <location filename="../novelwriter/gui/outline.py" line="817" />
       <source>Characters</source>
-      <translation>Charaktere</translation>
+      <translation>Zeichen</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/outline.py" line="818" />
@@ -3175,37 +3180,37 @@
   <context>
     <name>GuiWelcome</name>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="67" />
+      <location filename="../novelwriter/tools/welcome.py" line="68" />
       <source>Welcome</source>
       <translation>Willkommen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="109" />
+      <location filename="../novelwriter/tools/welcome.py" line="110" />
       <source>List</source>
       <translation>Liste</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="113" />
+      <location filename="../novelwriter/tools/welcome.py" line="114" />
       <source>New</source>
       <translation>Neu</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="117" />
+      <location filename="../novelwriter/tools/welcome.py" line="118" />
       <source>Browse</source>
       <translation>Auswählen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="121" />
+      <location filename="../novelwriter/tools/welcome.py" line="122" />
       <source>Cancel</source>
       <translation>Abbrechen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="125" />
+      <location filename="../novelwriter/tools/welcome.py" line="126" />
       <source>Create</source>
       <translation>Erstellen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="129" />
+      <location filename="../novelwriter/tools/welcome.py" line="130" />
       <source>Open</source>
       <translation>Öffnen</translation>
     </message>
@@ -4119,123 +4124,117 @@
   <context>
     <name>_NewProjectForm</name>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="569" />
+      <location filename="../novelwriter/tools/welcome.py" line="570" />
       <source>Required</source>
       <translation>Erforderlich</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="575" />
+      <location filename="../novelwriter/tools/welcome.py" line="576" />
       <source>Optional</source>
       <translation>Optional</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="598" />
+      <location filename="../novelwriter/tools/welcome.py" line="599" />
       <source>Create a fresh project</source>
       <translation>Neues Projekt erstellen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="602" />
+      <location filename="../novelwriter/tools/welcome.py" line="603" />
       <source>Create an example project</source>
       <translation>Beispielprojekt erstellen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="606" />
+      <location filename="../novelwriter/tools/welcome.py" line="607" />
       <source>Copy an existing project</source>
       <translation>Vorhandenes Projekt kopieren</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="620" />
+      <location filename="../novelwriter/tools/welcome.py" line="621" />
       <source>Project Name</source>
       <translation>Projektname</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="621" />
+      <location filename="../novelwriter/tools/welcome.py" line="622" />
       <source>Author</source>
       <translation>Autor</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="622" />
+      <location filename="../novelwriter/tools/welcome.py" line="623" />
       <source>Project Path</source>
       <translation>Projektpfad</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="623" />
+      <location filename="../novelwriter/tools/welcome.py" line="624" />
       <source>Prefill Project</source>
       <translation>Projekt vorbereiten</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="631" />
+      <location filename="../novelwriter/tools/welcome.py" line="632" />
       <source>Set to 0 to only add scenes</source>
       <translation>Auf 0 setzen um nur Szenen hinzuzufügen</translation>
     </message>
     <message>
+      <location filename="../novelwriter/tools/welcome.py" line="635" />
+      <source>Add {0} chapter documents</source>
+      <translation>{0} Kapiteldokumente hinzufügen</translation>
+    </message>
+    <message>
       <location filename="../novelwriter/tools/welcome.py" line="644" />
-      <location filename="../novelwriter/tools/welcome.py" line="634" />
-      <source>Add</source>
-      <translation />
+      <source>Add {0} scene documents (to each chapter)</source>
+      <translation>{0} Szenendokumente hinzufügen (pro Kapitel)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="636" />
-      <source>chapter documents</source>
-      <translation>Kapitel</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/tools/welcome.py" line="646" />
-      <source>scene documents (to each chapter)</source>
-      <translation>Szenen (pro Kapitel)</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/tools/welcome.py" line="673" />
+      <location filename="../novelwriter/tools/welcome.py" line="672" />
       <source>Add a folder for plot notes</source>
       <translation>Ordner hinzufügen: Notizen für Handlungsstränge</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="674" />
+      <location filename="../novelwriter/tools/welcome.py" line="673" />
       <source>Add a folder for character notes</source>
       <translation>Ordner hinzufügen: Notizen für Figuren</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="675" />
+      <location filename="../novelwriter/tools/welcome.py" line="674" />
       <source>Add a folder for location notes</source>
       <translation>Ordner hinzufügen: Notizen für Schauplätze</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="676" />
+      <location filename="../novelwriter/tools/welcome.py" line="675" />
       <source>Add example notes to the above</source>
       <translation>Beispielnotizen zur obigen Auswahl hinzufügen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="682" />
+      <location filename="../novelwriter/tools/welcome.py" line="681" />
       <source>Chapters and Scenes</source>
       <translation>Kapitel und Szenen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="685" />
+      <location filename="../novelwriter/tools/welcome.py" line="684" />
       <source>Project Notes</source>
       <translation>Projektnotizen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="694" />
+      <location filename="../novelwriter/tools/welcome.py" line="693" />
       <source>Create New Project</source>
       <translation>Neues Projekt erstellen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="737" />
+      <location filename="../novelwriter/tools/welcome.py" line="736" />
       <source>Select Project Folder</source>
       <translation>Speicherort wählen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="793" />
+      <location filename="../novelwriter/tools/welcome.py" line="792" />
       <source>Fresh Project</source>
       <translation>Neues Projekt</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="795" />
+      <location filename="../novelwriter/tools/welcome.py" line="794" />
       <source>Example Project</source>
       <translation>Beispielprojekt</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="797" />
+      <location filename="../novelwriter/tools/welcome.py" line="796" />
       <source>Template: {0}</source>
       <translation>Vorlage: {0}</translation>
     </message>
@@ -4243,7 +4242,7 @@
   <context>
     <name>_NewProjectPage</name>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="537" />
+      <location filename="../novelwriter/tools/welcome.py" line="538" />
       <source>A project name is required.</source>
       <translation>Ein Projektname ist erforderlich.</translation>
     </message>
@@ -4251,27 +4250,27 @@
   <context>
     <name>_OpenProjectPage</name>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="288" />
+      <location filename="../novelwriter/tools/welcome.py" line="289" />
       <source>The project path is not reachable.</source>
       <translation>Der Projektpfad ist nicht erreichbar.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="335" />
+      <location filename="../novelwriter/tools/welcome.py" line="336" />
       <source>Path</source>
       <translation>Pfad</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="355" />
+      <location filename="../novelwriter/tools/welcome.py" line="356" />
       <source>Remove '{0}' from the recent projects list? The project files will not be deleted.</source>
       <translation>„{0}“ von der Liste der zuletzt geöffneten Projekte entfernen? Ihre Daten werden nicht gelöscht.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="369" />
+      <location filename="../novelwriter/tools/welcome.py" line="370" />
       <source>Open Project</source>
       <translation>Projekt öffnen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="371" />
+      <location filename="../novelwriter/tools/welcome.py" line="372" />
       <source>Remove Project</source>
       <translation>Projekt entfernen</translation>
     </message>
@@ -4362,12 +4361,12 @@
   <context>
     <name>_ProjectListModel</name>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="454" />
+      <location filename="../novelwriter/tools/welcome.py" line="455" />
       <source>Word Count</source>
       <translation>Wörter</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="455" />
+      <location filename="../novelwriter/tools/welcome.py" line="456" />
       <source>Last Opened</source>
       <translation>Zuletzt geöffnet</translation>
     </message>
@@ -4382,7 +4381,7 @@
     <message>
       <location filename="../novelwriter/dialogs/projectsettings.py" line="604" />
       <source>Keyword</source>
-      <translation>Schlagwort</translation>
+      <translation>Stichwort</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/projectsettings.py" line="604" />
