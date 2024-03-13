@@ -300,7 +300,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             # so we force a return here
             return
 
-        elif text.startswith(("# ", "#! ", "## ", "##! ", "### ", "#### ")):
+        elif text.startswith(("# ", "#! ", "## ", "##! ", "### ", "###! ", "#### ")):
             self.setCurrentBlockState(self.BLOCK_TITLE)
 
             if text.startswith("# "):  # Heading 1
@@ -326,6 +326,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             elif text.startswith("##! "):  # Unnumbered
                 self.setFormat(0, 3, self._hStyles["head2h"])
                 self.setFormat(3, len(text), self._hStyles["header2"])
+
+            elif text.startswith("###! "):  # Hard Scene
+                self.setFormat(0, 4, self._hStyles["head3h"])
+                self.setFormat(4, len(text), self._hStyles["header3"])
 
         elif text.startswith("%"):  # Comments
             self.setCurrentBlockState(self.BLOCK_TEXT)

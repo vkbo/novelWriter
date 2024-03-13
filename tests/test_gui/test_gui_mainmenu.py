@@ -126,6 +126,11 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     fmtStr = "##! Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[54:105] == fmtStr
 
+    # Hard Scene
+    nwGUI.mainMenu.aFmtHardSc.activate(QAction.Trigger)
+    fmtStr = "###! Pellentesque nec erat ut nulla posuere commodo."
+    assert nwGUI.docEditor.getText()[54:106] == fmtStr
+
     # Clear Format
     nwGUI.mainMenu.aFmtNoFormat.activate(QAction.Trigger)
     assert nwGUI.docEditor.getText()[54:101] == cleanText

@@ -106,6 +106,9 @@ def standardCounter(text: str) -> tuple[int, int, int]:
             elif line[:4] == "##! ":
                 line = line[4:]
                 countPara = False
+            elif line[:5] == "###! ":
+                line = line[5:]
+                countPara = False
 
         wCount += len(line.split())
         cCount += len(line)

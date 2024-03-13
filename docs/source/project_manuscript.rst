@@ -63,6 +63,8 @@ In the figure, the green arrow icon and the blue pin icon indicates which docume
 and the red forbidden icon indicates that a document is explicitly excluded.
 
 
+.. _a_manuscript_settings_head:
+
 Formatting Headings
 -------------------
 
@@ -86,6 +88,7 @@ Any text you add that isn't highlighted in colours will remain in your formatted
 You can preview the result of these format strings by clicking :guilabel:`Apply`, and then clicking
 :guilabel:`Preview` in the :guilabel:`Manuscript Build` tool main window.
 
+
 Scene Separators
 ^^^^^^^^^^^^^^^^
 
@@ -97,6 +100,19 @@ setting, which will ignore them completely. That is, there won't even be an extr
 Alternatively, if you want a separator text between them, like the common ``* * *``, you can enter
 the desired separator text as the format. If the format is any piece of static text, it will always
 be treated as a separator.
+
+
+.. _a_manuscript_settings_head_hard:
+
+Hard and Soft Scenes
+^^^^^^^^^^^^^^^^^^^^
+
+If you wish to distinguish between so-called soft and hard scene breaks, where a hard scene break
+is understood as a scene break that changes point-of-view character, you can use the modified scene
+heading format in your text. You can then give these headings a different formatting in the
+:guilabel:`Headings` settings.
+
+See :ref:`a_fmt_head` for more info on how to format headings in your text.
 
 
 Output Settings
