@@ -1843,9 +1843,12 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
 
     # Counter Handling, Novel Titles
     # ==============================
+    # This also checks that only numbered chapters bump the counter
 
     md._text = (
         "#! Novel One\n\n"
+        "##! Prologue\n\n"
+        "Text\n\n"
         "## Chapter One\n\n"
         "### Scene One\n\n"
         "Text\n\n"
@@ -1857,6 +1860,8 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
         "###! Scene Four\n\n"
         "Text\n\n"
         "#! Novel Two\n\n"
+        "##! Prologue\n\n"
+        "Text\n\n"
         "## Chapter One\n\n"
         "### Scene One\n\n"
         "Text\n\n"
@@ -1883,6 +1888,8 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
     md.doConvert()
     assert md.result == (
         "# Novel One\n\n"
+        "## Prologue\n\n"
+        "Text\n\n"
         "## C 1: Chapter One\n\n"
         "### S 1.1 (1): Scene One\n\n"
         "Text\n\n"
@@ -1894,6 +1901,8 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
         "### H 2.2 (4): Scene Four\n\n"
         "Text\n\n"
         "# Novel Two\n\n"
+        "## Prologue\n\n"
+        "Text\n\n"
         "## C 1: Chapter One\n\n"
         "### S 1.1 (1): Scene One\n\n"
         "Text\n\n"

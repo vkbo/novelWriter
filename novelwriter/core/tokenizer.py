@@ -573,20 +573,19 @@ class Tokenizer(ABC):
                 # Partition headings are only formatted in novel documents, and
                 # otherwise unchanged. Scene separators are disabled
                 # immediately after partitions, and scene numbers are reset.
-                isPart = aLine.startswith("# ")
+                isPlain = aLine.startswith("# ")
 
                 nHead += 1
-                nSkip = 2 if isPart else 3
-                tText = aLine[nSkip:].strip()
-                tType = self.T_HEAD1 if isPart else self.T_TITLE
-                tStyle = self.A_NONE if isPart else (self.A_PBB | self.A_CENTRE)
-                if self._isNovel and isPart:
-                    tText = self._hFormatter.apply(self._fmtTitle, tText, nHead)
-                    tStyle = self._titleStyle
-                    self._hFormatter.resetScene()
-                    self._noSep = True
-                elif self._isNovel and not isPart:
-                    self._hFormatter.resetAll()
+                tText = aLine[2:].strip()
+                tType = self.T_HEAD1 if isPlain else self.T_TITLE
+                tStyle = self.A_NONE if isPlain else (self.A_PBB | self.A_CENTRE)
+                if self._isNovel:
+                    if isPlain:
+                        tText = self._hFormatter.apply(self._fmtTitle, tText, nHead)
+                        tStyle = self._titleStyle
+                        self._hFormatter.resetScene()
+                    else:
+                        self._hFormatter.resetAll()
                     self._noSep = True
 
                 self._tokens.append((
@@ -604,18 +603,18 @@ class Tokenizer(ABC):
                 # immediately after chapter headings, and scene numbers are
                 # reset. Unnumbered chapters are only meaningful in Novel docs,
                 # so if we're in a note, we keep them as level 2 headings.
-                isUnNum = aLine.startswith("##! ")
+                isPlain = aLine.startswith("## ")
 
                 nHead += 1
-                nSkip = 4 if isUnNum else 3
-                tText = aLine[nSkip:].strip()
+                tText = aLine[3:].strip()
                 tType = self.T_HEAD2
                 tStyle = self.A_NONE
-                tFormat = self._fmtUnNum if isUnNum else self._fmtChapter
+                tFormat = self._fmtChapter if isPlain else self._fmtUnNum
                 if self._isNovel:
-                    self._hFormatter.incChapter()
+                    if isPlain:
+                        self._hFormatter.incChapter()
                     tText = self._hFormatter.apply(tFormat, tText, nHead)
-                    tType = self.T_UNNUM if isUnNum else tType
+                    tType = self.T_HEAD2 if isPlain else self.T_UNNUM
                     tStyle = self._chapterStyle
                     self._noSep = True
                     self._hFormatter.resetScene()
@@ -637,15 +636,14 @@ class Tokenizer(ABC):
                 # separators immediately after other titles. Scene numbers are
                 # always incremented before formatting. For notes, the heading
                 # is unchanged.
-                isHard = aLine.startswith("###! ")
+                isPlain = aLine.startswith("### ")
 
                 nHead += 1
-                nSkip = 5 if isHard else 4
-                tText = aLine[nSkip:].strip()
+                tText = aLine[4:].strip()
                 tType = self.T_HEAD3
                 tStyle = self.A_NONE
-                sHide = self._hideHScene if isHard else self._hideScene
-                tFormat = self._fmtHScene if isHard else self._fmtScene
+                sHide = self._hideScene if isPlain else self._hideHScene
+                tFormat = self._fmtScene if isPlain else self._fmtHScene
                 if self._isNovel:
                     self._hFormatter.incScene()
                     tText = self._hFormatter.apply(tFormat, tText, nHead)
