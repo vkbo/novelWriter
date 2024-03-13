@@ -325,11 +325,8 @@ class nwHeadFmt:
         CHAR_POV, CHAR_FOCUS
     ]
 
-    # ODT Document Page Header
-    ODT_PROJECT = "{Project}"
-    ODT_AUTHOR = "{Author}"
+    # ODT Document Header Page Counter
     ODT_PAGE = "{Page}"
-    ODT_AUTO = "{Project} / {Author} / {Page}"
 
 # END Class nwHeadFmt
 
