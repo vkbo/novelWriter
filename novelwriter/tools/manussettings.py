@@ -601,7 +601,7 @@ class _HeadingsTab(NScrollablePage):
         # Format Boxes
         # ============
         self.formatBox = QGridLayout()
-        self.formatBox.setHorizontalSpacing(vSp)
+        self.formatBox.setHorizontalSpacing(bSp)
 
         # Title Heading
         self.lblTitle = QLabel(self._build.getLabel("headings.fmtTitle"), self)
@@ -610,14 +610,15 @@ class _HeadingsTab(NScrollablePage):
         self.btnTitle = QToolButton(self)
         self.btnTitle.setIcon(SHARED.theme.getIcon("edit"))
         self.btnTitle.clicked.connect(lambda: self._editHeading(self.EDIT_TITLE))
-
-        wrapTitle = QHBoxLayout()
-        wrapTitle.addWidget(self.fmtTitle)
-        wrapTitle.addWidget(self.btnTitle)
-        wrapTitle.setSpacing(bSp)
+        self.hdeTitle = QLabel(self.tr("Hide"), self)
+        self.hdeTitle.setIndent(bSp)
+        self.swtTitle = NSwitch(self, height=iPx)
 
         self.formatBox.addWidget(self.lblTitle, 0, 0)
-        self.formatBox.addLayout(wrapTitle,     0, 1)
+        self.formatBox.addWidget(self.fmtTitle, 0, 1)
+        self.formatBox.addWidget(self.btnTitle, 0, 2)
+        self.formatBox.addWidget(self.hdeTitle, 0, 3)
+        self.formatBox.addWidget(self.swtTitle, 0, 4)
 
         # Chapter Heading
         self.lblChapter = QLabel(self._build.getLabel("headings.fmtChapter"), self)
@@ -626,14 +627,15 @@ class _HeadingsTab(NScrollablePage):
         self.btnChapter = QToolButton(self)
         self.btnChapter.setIcon(SHARED.theme.getIcon("edit"))
         self.btnChapter.clicked.connect(lambda: self._editHeading(self.EDIT_CHAPTER))
-
-        wrapChapter = QHBoxLayout()
-        wrapChapter.addWidget(self.fmtChapter)
-        wrapChapter.addWidget(self.btnChapter)
-        wrapChapter.setSpacing(bSp)
+        self.hdeChapter = QLabel(self.tr("Hide"), self)
+        self.hdeChapter.setIndent(bSp)
+        self.swtChapter = NSwitch(self, height=iPx)
 
         self.formatBox.addWidget(self.lblChapter, 1, 0)
-        self.formatBox.addLayout(wrapChapter,     1, 1)
+        self.formatBox.addWidget(self.fmtChapter, 1, 1)
+        self.formatBox.addWidget(self.btnChapter, 1, 2)
+        self.formatBox.addWidget(self.hdeChapter, 1, 3)
+        self.formatBox.addWidget(self.swtChapter, 1, 4)
 
         # Unnumbered Chapter Heading
         self.lblUnnumbered = QLabel(self._build.getLabel("headings.fmtUnnumbered"), self)
@@ -642,95 +644,66 @@ class _HeadingsTab(NScrollablePage):
         self.btnUnnumbered = QToolButton(self)
         self.btnUnnumbered.setIcon(SHARED.theme.getIcon("edit"))
         self.btnUnnumbered.clicked.connect(lambda: self._editHeading(self.EDIT_UNNUM))
-
-        wrapUnnumbered = QHBoxLayout()
-        wrapUnnumbered.addWidget(self.fmtUnnumbered)
-        wrapUnnumbered.addWidget(self.btnUnnumbered)
-        wrapUnnumbered.setSpacing(bSp)
+        self.hdeUnnumbered = QLabel(self.tr("Hide"), self)
+        self.hdeUnnumbered.setIndent(bSp)
+        self.swtUnnumbered = NSwitch(self, height=iPx)
 
         self.formatBox.addWidget(self.lblUnnumbered, 2, 0)
-        self.formatBox.addLayout(wrapUnnumbered,     2, 1)
+        self.formatBox.addWidget(self.fmtUnnumbered, 2, 1)
+        self.formatBox.addWidget(self.btnUnnumbered, 2, 2)
+        self.formatBox.addWidget(self.hdeUnnumbered, 2, 3)
+        self.formatBox.addWidget(self.swtUnnumbered, 2, 4)
 
         # Scene Heading
-        sceneHideTip = self._build.getLabel("headings.hideScene")
         self.lblScene = QLabel(self._build.getLabel("headings.fmtScene"), self)
         self.fmtScene = QLineEdit("", self)
         self.fmtScene.setReadOnly(True)
         self.btnScene = QToolButton(self)
         self.btnScene.setIcon(SHARED.theme.getIcon("edit"))
         self.btnScene.clicked.connect(lambda: self._editHeading(self.EDIT_SCENE))
-        self.hdeScene = QLabel(self.tr("Hide"))
-        self.hdeScene.setToolTip(sceneHideTip)
+        self.hdeScene = QLabel(self.tr("Hide"), self)
+        self.hdeScene.setIndent(bSp)
         self.swtScene = NSwitch(self, height=iPx)
-        self.swtScene.setToolTip(sceneHideTip)
-
-        wrapScene = QHBoxLayout()
-        wrapScene.addWidget(self.fmtScene)
-        wrapScene.addWidget(self.btnScene)
-        wrapScene.setSpacing(bSp)
-
-        wrapSceneHide = QHBoxLayout()
-        wrapSceneHide.addWidget(self.hdeScene)
-        wrapSceneHide.addWidget(self.swtScene)
-        wrapSceneHide.setSpacing(bSp)
 
         self.formatBox.addWidget(self.lblScene, 3, 0)
-        self.formatBox.addLayout(wrapScene,     3, 1)
-        self.formatBox.addLayout(wrapSceneHide, 3, 2)
+        self.formatBox.addWidget(self.fmtScene, 3, 1)
+        self.formatBox.addWidget(self.btnScene, 3, 2)
+        self.formatBox.addWidget(self.hdeScene, 3, 3)
+        self.formatBox.addWidget(self.swtScene, 3, 4)
 
         # Alt Scene Heading
-        hardSceneHideTip = self._build.getLabel("headings.hideHardScene")
         self.lblHScene = QLabel(self._build.getLabel("headings.fmtHardScene"), self)
         self.fmtHScene = QLineEdit("", self)
         self.fmtHScene.setReadOnly(True)
         self.btnHScene = QToolButton(self)
         self.btnHScene.setIcon(SHARED.theme.getIcon("edit"))
         self.btnHScene.clicked.connect(lambda: self._editHeading(self.EDIT_HSCENE))
-        self.hdeHScene = QLabel(self.tr("Hide"))
-        self.hdeHScene.setToolTip(hardSceneHideTip)
+        self.hdeHScene = QLabel(self.tr("Hide"), self)
+        self.hdeHScene.setIndent(bSp)
         self.swtHScene = NSwitch(self, height=iPx)
-        self.swtHScene.setToolTip(hardSceneHideTip)
-
-        wrapHScene = QHBoxLayout()
-        wrapHScene.addWidget(self.fmtHScene)
-        wrapHScene.addWidget(self.btnHScene)
-        wrapHScene.setSpacing(bSp)
-
-        wrapHSceneHide = QHBoxLayout()
-        wrapHSceneHide.addWidget(self.hdeHScene)
-        wrapHSceneHide.addWidget(self.swtHScene)
-        wrapHSceneHide.setSpacing(bSp)
 
         self.formatBox.addWidget(self.lblHScene, 4, 0)
-        self.formatBox.addLayout(wrapHScene,     4, 1)
-        self.formatBox.addLayout(wrapHSceneHide, 4, 2)
+        self.formatBox.addWidget(self.fmtHScene, 4, 1)
+        self.formatBox.addWidget(self.btnHScene, 4, 2)
+        self.formatBox.addWidget(self.hdeHScene, 4, 3)
+        self.formatBox.addWidget(self.swtHScene, 4, 4)
 
         # Section Heading
-        sectionHideTip = self._build.getLabel("headings.hideSection")
         self.lblSection = QLabel(self._build.getLabel("headings.fmtSection"), self)
         self.fmtSection = QLineEdit("", self)
         self.fmtSection.setReadOnly(True)
         self.btnSection = QToolButton(self)
         self.btnSection.setIcon(SHARED.theme.getIcon("edit"))
         self.btnSection.clicked.connect(lambda: self._editHeading(self.EDIT_SECTION))
-        self.hdeSection = QLabel(self.tr("Hide"))
-        self.hdeSection.setToolTip(sectionHideTip)
+        self.hdeSection = QLabel(self.tr("Hide"), self)
+        self.hdeSection.setIndent(bSp)
         self.swtSection = NSwitch(self, height=iPx)
-        self.swtSection.setToolTip(sectionHideTip)
-
-        wrapSection = QHBoxLayout()
-        wrapSection.addWidget(self.fmtSection)
-        wrapSection.addWidget(self.btnSection)
-        wrapSection.setSpacing(bSp)
-
-        wrapSectionHide = QHBoxLayout()
-        wrapSectionHide.addWidget(self.hdeSection)
-        wrapSectionHide.addWidget(self.swtSection)
-        wrapSectionHide.setSpacing(bSp)
 
         self.formatBox.addWidget(self.lblSection, 5, 0)
-        self.formatBox.addLayout(wrapSection,     5, 1)
-        self.formatBox.addLayout(wrapSectionHide, 5, 2)
+        self.formatBox.addWidget(self.fmtSection, 5, 1)
+        self.formatBox.addWidget(self.btnSection, 5, 2)
+        self.formatBox.addWidget(self.hdeSection, 5, 3)
+        self.formatBox.addWidget(self.swtSection, 5, 4)
 
         # Edit Form
         # =========
@@ -860,9 +833,14 @@ class _HeadingsTab(NScrollablePage):
         self.fmtScene.setText(self._build.getStr("headings.fmtScene"))
         self.fmtHScene.setText(self._build.getStr("headings.fmtHardScene"))
         self.fmtSection.setText(self._build.getStr("headings.fmtSection"))
+
+        self.swtTitle.setChecked(self._build.getBool("headings.hideTitle"))
+        self.swtChapter.setChecked(self._build.getBool("headings.hideChapter"))
+        self.swtUnnumbered.setChecked(self._build.getBool("headings.hideUnnumbered"))
         self.swtScene.setChecked(self._build.getBool("headings.hideScene"))
         self.swtHScene.setChecked(self._build.getBool("headings.hideHardScene"))
         self.swtSection.setChecked(self._build.getBool("headings.hideSection"))
+
         self.centerTitle.setChecked(self._build.getBool("headings.centerTitle"))
         self.centerChapter.setChecked(self._build.getBool("headings.centerChapter"))
         self.centerScene.setChecked(self._build.getBool("headings.centerScene"))
@@ -873,9 +851,13 @@ class _HeadingsTab(NScrollablePage):
 
     def saveContent(self) -> None:
         """Save choices back into build object."""
+        self._build.setValue("headings.hideTitle", self.swtTitle.isChecked())
+        self._build.setValue("headings.hideChapter", self.swtChapter.isChecked())
+        self._build.setValue("headings.hideUnnumbered", self.swtUnnumbered.isChecked())
         self._build.setValue("headings.hideScene", self.swtScene.isChecked())
         self._build.setValue("headings.hideHardScene", self.swtHScene.isChecked())
         self._build.setValue("headings.hideSection", self.swtSection.isChecked())
+
         self._build.setValue("headings.centerTitle", self.centerTitle.isChecked())
         self._build.setValue("headings.centerChapter", self.centerChapter.isChecked())
         self._build.setValue("headings.centerScene", self.centerScene.isChecked())

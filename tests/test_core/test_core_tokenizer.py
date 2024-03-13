@@ -71,9 +71,9 @@ def testCoreToken_Setters(mockGUI):
     assert tokens._doKeywords is False
 
     # Set new values
-    tokens.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
-    tokens.setChapterFormat(f"C: {nwHeadFmt.TITLE}")
-    tokens.setUnNumberedFormat(f"U: {nwHeadFmt.TITLE}")
+    tokens.setTitleFormat(f"T: {nwHeadFmt.TITLE}", True)
+    tokens.setChapterFormat(f"C: {nwHeadFmt.TITLE}", True)
+    tokens.setUnNumberedFormat(f"U: {nwHeadFmt.TITLE}", True)
     tokens.setSceneFormat(f"S: {nwHeadFmt.TITLE}", True)
     tokens.setHardSceneFormat(f"H: {nwHeadFmt.TITLE}", True)
     tokens.setSectionFormat(f"X: {nwHeadFmt.TITLE}", True)
@@ -114,6 +114,9 @@ def testCoreToken_Setters(mockGUI):
     assert tokens._marginHead4 == (2.0, 2.0)
     assert tokens._marginText == (2.0, 2.0)
     assert tokens._marginMeta == (2.0, 2.0)
+    assert tokens._hideTitle is True
+    assert tokens._hideChapter is True
+    assert tokens._hideUnNum is True
     assert tokens._hideScene is True
     assert tokens._hideSection is True
     assert tokens._linkHeaders is True

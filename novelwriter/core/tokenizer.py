@@ -158,6 +158,9 @@ class Tokenizer(ABC):
         self._fmtHScene  = nwHeadFmt.TITLE  # Formatting for hard scenes
         self._fmtSection = nwHeadFmt.TITLE  # Formatting for sections
 
+        self._hideTitle   = False  # Do not include title headings
+        self._hideChapter = False  # Do not include chapter headings
+        self._hideUnNum   = False  # Do not include unnumbered headings
         self._hideScene   = False  # Do not include scene headings
         self._hideHScene  = False  # Do not include hard scene headings
         self._hideSection = False  # Do not include section headings
@@ -234,34 +237,37 @@ class Tokenizer(ABC):
     #  Setters
     ##
 
-    def setTitleFormat(self, hFormat: str) -> None:
+    def setTitleFormat(self, hFormat: str, hide: bool = False) -> None:
         """Set the title format pattern."""
         self._fmtTitle = hFormat.strip()
+        self._hideTitle = hide
         return
 
-    def setChapterFormat(self, hFormat: str) -> None:
+    def setChapterFormat(self, hFormat: str, hide: bool = False) -> None:
         """Set the chapter format pattern."""
         self._fmtChapter = hFormat.strip()
+        self._hideChapter = hide
         return
 
-    def setUnNumberedFormat(self, hFormat: str) -> None:
+    def setUnNumberedFormat(self, hFormat: str, hide: bool = False) -> None:
         """Set the unnumbered format pattern."""
         self._fmtUnNum = hFormat.strip()
+        self._hideUnNum = hide
         return
 
-    def setSceneFormat(self, hFormat: str, hide: bool) -> None:
+    def setSceneFormat(self, hFormat: str, hide: bool = False) -> None:
         """Set the scene format pattern and hidden status."""
         self._fmtScene = hFormat.strip()
         self._hideScene = hide
         return
 
-    def setHardSceneFormat(self, hFormat: str, hide: bool) -> None:
+    def setHardSceneFormat(self, hFormat: str, hide: bool = False) -> None:
         """Set the hard scene format pattern and hidden status."""
         self._fmtHScene = hFormat.strip()
         self._hideHScene = hide
         return
 
-    def setSectionFormat(self, hFormat: str, hide: bool) -> None:
+    def setSectionFormat(self, hFormat: str, hide: bool = False) -> None:
         """Set the section format pattern and hidden status."""
         self._fmtSection = hFormat.strip()
         self._hideSection = hide
@@ -578,10 +584,16 @@ class Tokenizer(ABC):
                 tText = aLine[2:].strip()
                 tType = self.T_HEAD1 if isPlain else self.T_TITLE
                 tStyle = self.A_NONE if isPlain else (self.A_PBB | self.A_CENTRE)
+                sHide = self._hideTitle if isPlain else False
                 if self._isNovel:
-                    if isPlain:
+                    if sHide:
+                        tText = ""
+                        tType = self.T_EMPTY
+                        tStyle = self.A_NONE
+                    elif isPlain:
                         tText = self._hFormatter.apply(self._fmtTitle, tText, nHead)
                         tStyle = self._titleStyle
+                    if isPlain:
                         self._hFormatter.resetScene()
                     else:
                         self._hFormatter.resetAll()
@@ -606,18 +618,24 @@ class Tokenizer(ABC):
 
                 nHead += 1
                 tText = aLine[3:].strip()
+                tType = self.T_HEAD2
                 tStyle = self.A_NONE
+                sHide = self._hideChapter if isPlain else self._hideUnNum
                 tFormat = self._fmtChapter if isPlain else self._fmtUnNum
                 if self._isNovel:
                     if isPlain:
                         self._hFormatter.incChapter()
-                    tText = self._hFormatter.apply(tFormat, tText, nHead)
-                    tStyle = self._chapterStyle
-                    self._noSep = True
+                    if sHide:
+                        tText = ""
+                        tType = self.T_EMPTY
+                    else:
+                        tText = self._hFormatter.apply(tFormat, tText, nHead)
+                        tStyle = self._chapterStyle
                     self._hFormatter.resetScene()
+                    self._noSep = True
 
                 self._tokens.append((
-                    self.T_HEAD2, nHead, tText, [], tStyle
+                    tType, nHead, tText, [], tStyle
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append(f"{aLine}\n")
