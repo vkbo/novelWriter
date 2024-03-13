@@ -145,10 +145,6 @@ class ToMarkdown(Tokenizer):
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 lines.append(f"# {tHead}\n\n")
 
-            elif tType == self.T_UNNUM:
-                tHead = tText.replace(nwHeadFmt.BR, "\n")
-                lines.append(f"## {tHead}\n\n")
-
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 lines.append(f"# {tHead}\n\n")

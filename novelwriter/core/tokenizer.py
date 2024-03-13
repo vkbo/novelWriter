@@ -88,14 +88,13 @@ class Tokenizer(ABC):
     T_COMMENT  = 4   # Comment line
     T_KEYWORD  = 5   # Command line
     T_TITLE    = 6   # Title
-    T_UNNUM    = 7   # Unnumbered
-    T_HEAD1    = 8   # Heading 1
-    T_HEAD2    = 9   # Heading 2
-    T_HEAD3    = 10  # Heading 3
-    T_HEAD4    = 11  # Heading 4
-    T_TEXT     = 12  # Text line
-    T_SEP      = 13  # Scene separator
-    T_SKIP     = 14  # Paragraph break
+    T_HEAD1    = 7   # Heading 1
+    T_HEAD2    = 8   # Heading 2
+    T_HEAD3    = 9   # Heading 3
+    T_HEAD4    = 10  # Heading 4
+    T_TEXT     = 11  # Text line
+    T_SEP      = 12  # Scene separator
+    T_SKIP     = 13  # Paragraph break
 
     # Block Style
     A_NONE     = 0x0000  # No special style
@@ -111,7 +110,7 @@ class Tokenizer(ABC):
     A_IND_R    = 0x0200  # Right indentation
 
     # Lookups
-    L_HEADINGS = [T_TITLE, T_UNNUM, T_HEAD1, T_HEAD2, T_HEAD3, T_HEAD4]
+    L_HEADINGS = [T_TITLE, T_HEAD1, T_HEAD2, T_HEAD3, T_HEAD4]
 
     def __init__(self, project: NWProject) -> None:
 
@@ -607,20 +606,18 @@ class Tokenizer(ABC):
 
                 nHead += 1
                 tText = aLine[3:].strip()
-                tType = self.T_HEAD2
                 tStyle = self.A_NONE
                 tFormat = self._fmtChapter if isPlain else self._fmtUnNum
                 if self._isNovel:
                     if isPlain:
                         self._hFormatter.incChapter()
                     tText = self._hFormatter.apply(tFormat, tText, nHead)
-                    tType = self.T_HEAD2 if isPlain else self.T_UNNUM
                     tStyle = self._chapterStyle
                     self._noSep = True
                     self._hFormatter.resetScene()
 
                 self._tokens.append((
-                    tType, nHead, tText, [], tStyle
+                    self.T_HEAD2, nHead, tText, [], tStyle
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append(f"{aLine}\n")

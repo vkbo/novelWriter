@@ -419,7 +419,7 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_UNNUM, 1, "Prologue", [], Tokenizer.A_PBB),
+        (Tokenizer.T_HEAD2, 1, "Prologue", [], Tokenizer.A_PBB),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
     ]
     assert tokens.allMarkdown[-1] == "##! Prologue\n\n"
@@ -1340,7 +1340,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     tokens.setUnNumberedFormat(f"U: {nwHeadFmt.TITLE}")
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_UNNUM, 1, "U: Prologue", [], Tokenizer.A_PBB),
+        (Tokenizer.T_HEAD2, 1, "U: Prologue", [], Tokenizer.A_PBB),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
     ]
 

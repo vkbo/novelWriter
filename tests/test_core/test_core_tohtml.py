@@ -288,7 +288,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     # Unnumbered
     html._tokens = [
-        (html.T_UNNUM, 1, "Prologue", None, html.A_PBB),
+        (html.T_HEAD2, 1, "Prologue", None, html.A_PBB),
         (html.T_EMPTY, 1, "", None, html.A_NONE),
     ]
     html.doConvert()
