@@ -646,15 +646,18 @@ class Tokenizer(ABC):
                 tFormat = self._fmtScene if isPlain else self._fmtHScene
                 if self._isNovel:
                     self._hFormatter.incScene()
-                    tText = self._hFormatter.apply(tFormat, tText, nHead)
-                    tStyle = self._sceneStyle
-                    if tText == "":
-                        tType = self.T_EMPTY if self._noSep or sHide else self.T_SKIP
-                        tStyle = self.A_NONE
-                    elif tText == tFormat:
-                        tText = "" if self._noSep else tText
-                        tType = self.T_EMPTY if self._noSep else self.T_SEP
-                        tStyle = self.A_NONE if self._noSep else self.A_CENTRE
+                    if sHide:
+                        tText = ""
+                        tType = self.T_EMPTY
+                    else:
+                        tText = self._hFormatter.apply(tFormat, tText, nHead)
+                        tStyle = self._sceneStyle
+                        if tText == "":  # Empty Format
+                            tType = self.T_EMPTY if self._noSep else self.T_SKIP
+                        elif tText == tFormat:  # Static Format
+                            tText = "" if self._noSep else tText
+                            tType = self.T_EMPTY if self._noSep else self.T_SEP
+                            tStyle = self.A_NONE if self._noSep else self.A_CENTRE
                     self._noSep = False
 
                 self._tokens.append((
@@ -676,12 +679,16 @@ class Tokenizer(ABC):
                 tType = self.T_HEAD4
                 tStyle = self.A_NONE
                 if self._isNovel:
-                    tText = self._hFormatter.apply(self._fmtSection, tText, nHead)
-                    if tText == "":
-                        tType = self.T_EMPTY if self._hideSection else self.T_SKIP
-                    elif tText == self._fmtSection:
-                        tType = self.T_SEP
-                        tStyle = self.A_CENTRE
+                    if self._hideSection:
+                        tText = ""
+                        tType = self.T_EMPTY
+                    else:
+                        tText = self._hFormatter.apply(self._fmtSection, tText, nHead)
+                        if tText == "":  # Empty Format
+                            tType = self.T_SKIP
+                        elif tText == self._fmtSection:  # Static Format
+                            tType = self.T_SEP
+                            tStyle = self.A_CENTRE
 
                 self._tokens.append((
                     tType, nHead, tText, [], tStyle
