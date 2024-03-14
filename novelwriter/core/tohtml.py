@@ -256,10 +256,6 @@ class ToHtml(Tokenizer):
                 tHead = tText.replace(nwHeadFmt.BR, "<br/>")
                 lines.append(f"<h1 class='title'{hStyle}>{aNm}{tHead}</h1>\n")
 
-            elif tType == self.T_UNNUM:
-                tHead = tText.replace(nwHeadFmt.BR, "<br/>")
-                lines.append(f"<{h2}{hStyle}>{aNm}{tHead}</{h2}>\n")
-
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(nwHeadFmt.BR, "<br/>")
                 lines.append(f"<{h1}{h1Cl}{hStyle}>{aNm}{tHead}</{h1}>\n")

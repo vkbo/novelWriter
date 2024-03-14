@@ -605,23 +605,26 @@ class _DetailsWidget(QWidget):
         hFmt.resetScene()
         hFmt.incScene()
         title = self.tr("Title")
+        hidden = self.tr("Hidden")
 
         item = QTreeWidgetItem()
         item.setText(0, build.getLabel("headings"))
         item.setText(1, "")
         self.listView.addTopLevelItem(item)
-        for key in [
-            "headings.fmtTitle", "headings.fmtChapter", "headings.fmtUnnumbered",
-            "headings.fmtScene", "headings.fmtHardScene", "headings.fmtSection"
+        for hFormat, hHide in [
+            ("headings.fmtTitle", "headings.hideTitle"),
+            ("headings.fmtChapter", "headings.hideChapter"),
+            ("headings.fmtUnnumbered", "headings.hideUnnumbered"),
+            ("headings.fmtScene", "headings.hideScene"),
+            ("headings.fmtHardScene", "headings.hideHardScene"),
+            ("headings.fmtSection", "headings.hideSection"),
         ]:
             sub = QTreeWidgetItem()
-            sub.setText(0, build.getLabel(key))
-            sub.setText(1, hFmt.apply(build.getStr(key), title, 0))
-            item.addChild(sub)
-        for key in ["headings.hideScene", "headings.hideHardScene", "headings.hideSection"]:
-            sub = QTreeWidgetItem()
-            sub.setText(0, build.getLabel(key))
-            sub.setIcon(1, on if build.getBool(key) else off)
+            sub.setText(0, build.getLabel(hFormat))
+            if build.getBool(hHide):
+                sub.setText(1, f"[{hidden}]")
+            else:
+                sub.setText(1, hFmt.apply(build.getStr(hFormat), title, 0))
             item.addChild(sub)
 
         # Text Content

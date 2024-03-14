@@ -275,9 +275,18 @@ class NWBuildDocument:
         fontInfo = QFontInfo(bldFont)
         textFixed = fontInfo.fixedPitch()
 
-        bldObj.setTitleFormat(self._build.getStr("headings.fmtTitle"))
-        bldObj.setChapterFormat(self._build.getStr("headings.fmtChapter"))
-        bldObj.setUnNumberedFormat(self._build.getStr("headings.fmtUnnumbered"))
+        bldObj.setTitleFormat(
+            self._build.getStr("headings.fmtTitle"),
+            self._build.getBool("headings.hideTitle")
+        )
+        bldObj.setChapterFormat(
+            self._build.getStr("headings.fmtChapter"),
+            self._build.getBool("headings.hideChapter")
+        )
+        bldObj.setUnNumberedFormat(
+            self._build.getStr("headings.fmtUnnumbered"),
+            self._build.getBool("headings.hideUnnumbered")
+        )
         bldObj.setSceneFormat(
             self._build.getStr("headings.fmtScene"),
             self._build.getBool("headings.hideScene")

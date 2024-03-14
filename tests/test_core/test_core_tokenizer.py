@@ -62,7 +62,11 @@ def testCoreToken_Setters(mockGUI):
     assert tokens._marginHead4 == (0.584, 0.500)
     assert tokens._marginText == (0.000, 0.584)
     assert tokens._marginMeta == (0.000, 0.584)
+    assert tokens._hideTitle is False
+    assert tokens._hideChapter is False
+    assert tokens._hideUnNum is False
     assert tokens._hideScene is False
+    assert tokens._hideHScene is False
     assert tokens._hideSection is False
     assert tokens._linkHeaders is False
     assert tokens._doBodyText is True
@@ -71,9 +75,9 @@ def testCoreToken_Setters(mockGUI):
     assert tokens._doKeywords is False
 
     # Set new values
-    tokens.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
-    tokens.setChapterFormat(f"C: {nwHeadFmt.TITLE}")
-    tokens.setUnNumberedFormat(f"U: {nwHeadFmt.TITLE}")
+    tokens.setTitleFormat(f"T: {nwHeadFmt.TITLE}", True)
+    tokens.setChapterFormat(f"C: {nwHeadFmt.TITLE}", True)
+    tokens.setUnNumberedFormat(f"U: {nwHeadFmt.TITLE}", True)
     tokens.setSceneFormat(f"S: {nwHeadFmt.TITLE}", True)
     tokens.setHardSceneFormat(f"H: {nwHeadFmt.TITLE}", True)
     tokens.setSectionFormat(f"X: {nwHeadFmt.TITLE}", True)
@@ -114,13 +118,23 @@ def testCoreToken_Setters(mockGUI):
     assert tokens._marginHead4 == (2.0, 2.0)
     assert tokens._marginText == (2.0, 2.0)
     assert tokens._marginMeta == (2.0, 2.0)
+    assert tokens._hideTitle is True
+    assert tokens._hideChapter is True
+    assert tokens._hideUnNum is True
     assert tokens._hideScene is True
+    assert tokens._hideHScene is True
     assert tokens._hideSection is True
     assert tokens._linkHeaders is True
     assert tokens._doBodyText is False
     assert tokens._doSynopsis is True
     assert tokens._doComments is True
     assert tokens._doKeywords is True
+
+    # Properties
+    assert tokens.result == ""
+    assert tokens.allMarkdown == []
+    assert tokens.textStats == {}
+    assert tokens.errData == []
 
     # Check Limits
     tokens.setLineHeight(0.0)
@@ -419,7 +433,7 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_UNNUM, 1, "Prologue", [], Tokenizer.A_PBB),
+        (Tokenizer.T_HEAD2, 1, "Prologue", [], Tokenizer.A_PBB),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
     ]
     assert tokens.allMarkdown[-1] == "##! Prologue\n\n"
@@ -1340,7 +1354,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     tokens.setUnNumberedFormat(f"U: {nwHeadFmt.TITLE}")
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_UNNUM, 1, "U: Prologue", [], Tokenizer.A_PBB),
+        (Tokenizer.T_HEAD2, 1, "U: Prologue", [], Tokenizer.A_PBB),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
     ]
 
@@ -1720,10 +1734,8 @@ def testCoreToken_CountStats(mockGUI, ipsumText):
 
 
 @pytest.mark.core
-def testCoreToken_HeaderCounterAndVisibility(mockGUI):
-    """Test the header counter and visibility of the Tokenizer class.
-    This is a special test to cover issue #1704.
-    """
+def testCoreToken_SceneSeparators(mockGUI):
+    """Test the section and scene separators of the Tokenizer class."""
     project = NWProject()
     project.data.setLanguage("en")
     project._loadProjectLocalisation()
@@ -1841,6 +1853,172 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
         "Text\n\n"
     )
 
+    # Separators with Scenes Only
+    # ===========================
+    # Requires a fresh builder class
+    md = ToMarkdown(project)
+    md.setExtendedMarkdown()
+    md._isNone = False
+    md._isNote = False
+    md._isNovel = True
+
+    md._text = (
+        "### Scene One\n\n"
+        "Text\n\n"
+        "### Scene Two\n\n"
+        "Text\n\n"
+        "### Scene Three\n\n"
+        "Text\n\n"
+        "###! Scene Four\n\n"
+        "Text\n\n"
+    )
+
+    md.setSceneFormat("", False)
+    md.setHardSceneFormat("* * *", False)
+    md.tokenizeText()
+    md.doConvert()
+    assert md.result == (
+        "Text\n\n"
+        "\u205f\n\n"
+        "Text\n\n"
+        "\u205f\n\n"
+        "Text\n\n"
+        "* * *\n\n"
+        "Text\n\n"
+    )
+
+# END Test testCoreToken_SceneSeparators
+
+
+@pytest.mark.core
+def testCoreToken_HeaderVisibility(mockGUI):
+    """Test the heading visibility settings of the Tokenizer class."""
+    project = NWProject()
+    project.data.setLanguage("en")
+    project._loadProjectLocalisation()
+    md = ToMarkdown(project)
+
+    md._text = (
+        "#! Novel\n\n"
+        "# Title One\n\n"
+        "##! Prologue\n\n"
+        "Text\n\n"
+        "## Chapter One\n\n"
+        "### Scene One\n\n"
+        "Text\n\n"
+        "### Scene Two\n\n"
+        "#### Section Two\n\n"
+        "Text\n\n"
+        "## Chapter Two\n\n"
+        "### Scene Three\n\n"
+        "Text\n\n"
+        "###! Scene Four\n\n"
+        "Text\n\n"
+    )
+
+    # Novel Files
+    # ===========
+
+    md._isNone = False
+    md._isNote = False
+    md._isNovel = True
+
+    # Show All
+    md.setTitleFormat(nwHeadFmt.TITLE, False)
+    md.setChapterFormat(nwHeadFmt.TITLE, False)
+    md.setUnNumberedFormat(nwHeadFmt.TITLE, False)
+    md.setSceneFormat(nwHeadFmt.TITLE, False)
+    md.setHardSceneFormat(nwHeadFmt.TITLE, False)
+    md.setSectionFormat(nwHeadFmt.TITLE, False)
+
+    md.tokenizeText()
+    md.doConvert()
+    assert md.result == (
+        "# Novel\n\n"
+        "# Title One\n\n"
+        "## Prologue\n\n"
+        "Text\n\n"
+        "## Chapter One\n\n"
+        "### Scene One\n\n"
+        "Text\n\n"
+        "### Scene Two\n\n"
+        "#### Section Two\n\n"
+        "Text\n\n"
+        "## Chapter Two\n\n"
+        "### Scene Three\n\n"
+        "Text\n\n"
+        "### Scene Four\n\n"
+        "Text\n\n"
+    )
+
+    # Hide All
+    md.setTitleFormat(nwHeadFmt.TITLE, True)
+    md.setChapterFormat(nwHeadFmt.TITLE, True)
+    md.setUnNumberedFormat(nwHeadFmt.TITLE, True)
+    md.setSceneFormat(nwHeadFmt.TITLE, True)
+    md.setHardSceneFormat(nwHeadFmt.TITLE, True)
+    md.setSectionFormat(nwHeadFmt.TITLE, True)
+
+    md.tokenizeText()
+    md.doConvert()
+    assert md.result == (
+        "# Novel\n\n"
+        "Text\n\n"
+        "Text\n\n"
+        "Text\n\n"
+        "Text\n\n"
+        "Text\n\n"
+    )
+
+    # Note Files
+    # ==========
+
+    md._isNone = False
+    md._isNote = True
+    md._isNovel = False
+
+    # Hide All
+    md.setTitleFormat(nwHeadFmt.TITLE, True)
+    md.setChapterFormat(nwHeadFmt.TITLE, True)
+    md.setUnNumberedFormat(nwHeadFmt.TITLE, True)
+    md.setSceneFormat(nwHeadFmt.TITLE, True)
+    md.setHardSceneFormat(nwHeadFmt.TITLE, True)
+    md.setSectionFormat(nwHeadFmt.TITLE, True)
+
+    md.tokenizeText()
+    md.doConvert()
+    assert md.result == (
+        "# Novel\n\n"
+        "# Title One\n\n"
+        "## Prologue\n\n"
+        "Text\n\n"
+        "## Chapter One\n\n"
+        "### Scene One\n\n"
+        "Text\n\n"
+        "### Scene Two\n\n"
+        "#### Section Two\n\n"
+        "Text\n\n"
+        "## Chapter Two\n\n"
+        "### Scene Three\n\n"
+        "Text\n\n"
+        "### Scene Four\n\n"
+        "Text\n\n"
+    )
+
+# END Test testCoreToken_HeaderVisibility
+
+
+@pytest.mark.core
+def testCoreToken_CounterHandling(mockGUI):
+    """Test the heading counter of the Tokenizer class."""
+    project = NWProject()
+    project.data.setLanguage("en")
+    project._loadProjectLocalisation()
+    md = ToMarkdown(project)
+    md._isNone = False
+    md._isNote = False
+    md._isNovel = True
+
     # Counter Handling, Novel Titles
     # ==============================
     # This also checks that only numbered chapters bump the counter
@@ -1875,6 +2053,7 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
     )
     md.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
     md.setChapterFormat(f"C {nwHeadFmt.CH_NUM}: {nwHeadFmt.TITLE}")
+    md.setUnNumberedFormat(f"U: {nwHeadFmt.TITLE}")
     md.setSceneFormat(
         f"S {nwHeadFmt.CH_NUM}.{nwHeadFmt.SC_NUM} ({nwHeadFmt.SC_ABS}): {nwHeadFmt.TITLE}", False
     )
@@ -1888,7 +2067,7 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
     md.doConvert()
     assert md.result == (
         "# Novel One\n\n"
-        "## Prologue\n\n"
+        "## U: Prologue\n\n"
         "Text\n\n"
         "## C 1: Chapter One\n\n"
         "### S 1.1 (1): Scene One\n\n"
@@ -1901,7 +2080,7 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
         "### H 2.2 (4): Scene Four\n\n"
         "Text\n\n"
         "# Novel Two\n\n"
-        "## Prologue\n\n"
+        "## U: Prologue\n\n"
         "Text\n\n"
         "## C 1: Chapter One\n\n"
         "### S 1.1 (1): Scene One\n\n"
@@ -1915,11 +2094,11 @@ def testCoreToken_HeaderCounterAndVisibility(mockGUI):
         "Text\n\n"
     )
 
-# END Test testCoreToken_HeaderCounterAndVisibility
+# END Test testCoreToken_CounterHandling
 
 
 @pytest.mark.core
-def testCoreIndex_HeadingFormatter(fncPath, mockRnd):
+def testCoreToken_HeadingFormatter(fncPath, mockRnd):
     """Check the HeadingFormatter class."""
     project = NWProject()
     project.setProjectLang("en_GB")
@@ -2023,4 +2202,4 @@ def testCoreIndex_HeadingFormatter(fncPath, mockRnd):
     cFormat = f"Chapter {nwHeadFmt.CH_NUM}, Scene {nwHeadFmt.SC_NUM} - {nwHeadFmt.CHAR_FOCUS}"
     assert formatter.apply(cFormat, "Hi Bob", 0) == "Chapter 2, Scene 3 - Focus"
 
-# END Test testCoreIndex_HeadingFormatter
+# END Test testCoreToken_HeadingFormatter

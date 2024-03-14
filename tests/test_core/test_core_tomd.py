@@ -213,14 +213,6 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
     toMD.doConvert()
     assert toMD.result == "# A Title\n\n"
 
-    # Unnumbered
-    toMD._tokens = [
-        (toMD.T_UNNUM, 1, "Prologue", None, toMD.A_PBB),
-        (toMD.T_EMPTY, 1, "", None, toMD.A_NONE),
-    ]
-    toMD.doConvert()
-    assert toMD.result == "## Prologue\n\n"
-
     # Separators
     # ==========
 
@@ -238,7 +230,7 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
         (toMD.T_EMPTY, 1, "", None, toMD.A_NONE),
     ]
     toMD.doConvert()
-    assert toMD.result == "\n\n\n"
+    assert toMD.result == "\n\n"
 
 # END Test testCoreToMarkdown_ConvertDirect
 

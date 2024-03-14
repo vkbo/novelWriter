@@ -405,6 +405,7 @@ class nwUnicode:
     U_THNBSP = "\u202f"  # Thin non-breaking space
     U_ENSP   = "\u2002"  # Short (en) space
     U_EMSP   = "\u2003"  # Long (em) space
+    U_MMSP   = "\u205f"  # Medium mathematical space
     U_LSEP   = "\u2028"  # Line separator
     U_PSEP   = "\u2029"  # Paragraph separator
 

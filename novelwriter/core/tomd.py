@@ -27,7 +27,7 @@ import logging
 
 from pathlib import Path
 
-from novelwriter.constants import nwHeadFmt, nwLabels
+from novelwriter.constants import nwHeadFmt, nwLabels, nwUnicode
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import Tokenizer
 
@@ -108,6 +108,7 @@ class ToMarkdown(Tokenizer):
                 self.FMT_SUB_B: "",
                 self.FMT_SUB_E: "",
             }
+            cSkip = ""
         else:
             # Extended Markdown
             mdTags = {
@@ -126,6 +127,7 @@ class ToMarkdown(Tokenizer):
                 self.FMT_SUB_B: "~",
                 self.FMT_SUB_E: "~",
             }
+            cSkip = nwUnicode.U_MMSP
 
         self._result = ""
 
@@ -136,7 +138,7 @@ class ToMarkdown(Tokenizer):
         for tType, _, tText, tFormat, tStyle in self._tokens:
 
             if tType == self.T_EMPTY:
-                if len(para) > 0:
+                if para:
                     tTemp = (lineSep.join(para)).rstrip(" ")
                     lines.append(f"{tTemp}\n\n")
                 para = []
@@ -144,10 +146,6 @@ class ToMarkdown(Tokenizer):
             elif tType == self.T_TITLE:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 lines.append(f"# {tHead}\n\n")
-
-            elif tType == self.T_UNNUM:
-                tHead = tText.replace(nwHeadFmt.BR, "\n")
-                lines.append(f"## {tHead}\n\n")
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
@@ -169,7 +167,7 @@ class ToMarkdown(Tokenizer):
                 lines.append(f"{tText}\n\n")
 
             elif tType == self.T_SKIP:
-                lines.append("\n\n\n")
+                lines.append(f"{cSkip}\n\n")
 
             elif tType == self.T_TEXT:
                 tTemp = tText
