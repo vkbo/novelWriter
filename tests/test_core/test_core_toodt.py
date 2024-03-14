@@ -131,11 +131,11 @@ def testCoreToOdt_TextFormatting(mockGUI):
     assert odt._paraStyle("Text_20_body", oStyle) == "P1"
 
     assert list(odt._mainPara.keys()) == [
-        "Text_20_body", "Text_20_Meta", "Title", "Separator",
+        "Text_20_body", "First_20_line_20_indent", "Text_20_Meta", "Title", "Separator",
         "Heading_20_1", "Heading_20_2", "Heading_20_3", "Heading_20_4", "Header",
     ]
 
-    key = "071d6b2e4764749f8c78d3c1ab9099fa04c07d2d53fd3de61eb1bdf1cb4845c3"
+    key = "55db6c1d22ff5aba93f0f67c8d4a857a26e2d3813dfbcba1ef7c0d424f501be5"
     assert odt._autoPara[key][0] == "P1"
     assert isinstance(odt._autoPara[key][1], ODTParagraphStyle)
 

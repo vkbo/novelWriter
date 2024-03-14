@@ -20,6 +20,9 @@
       <style:paragraph-properties fo:margin-top="0.000cm" fo:margin-bottom="0.247cm" fo:line-height="115%" fo:text-align="left" />
       <style:text-properties style:font-name="Liberation Serif" fo:font-family="'Liberation Serif'" fo:font-size="12pt" />
     </style:style>
+    <style:style style:name="First_20_line_20_indent" style:family="paragraph" style:display-name="First line indent" style:parent-style-name="Text_20_body" style:class="text">
+      <style:paragraph-properties fo:text-indent="0.499cm" />
+    </style:style>
     <style:style style:name="Text_20_Meta" style:family="paragraph" style:display-name="Text Meta" style:parent-style-name="Standard" style:class="text">
       <style:paragraph-properties fo:margin-top="0.000cm" fo:margin-bottom="0.247cm" fo:line-height="115%" />
       <style:text-properties style:font-name="Liberation Serif" fo:font-family="'Liberation Serif'" fo:font-size="12pt" />

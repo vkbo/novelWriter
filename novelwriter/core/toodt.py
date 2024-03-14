@@ -138,7 +138,7 @@ class ToOdt(Tokenizer):
         self._textSize     = 12
         self._textFixed    = False
         self._colourHead   = False
-        self._firstIndent  = True
+        self._firstIndent  = False
         self._headerFormat = ""
         self._pageOffset   = 0
 
