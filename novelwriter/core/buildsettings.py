@@ -91,7 +91,7 @@ SETTINGS_TEMPLATE = {
     "format.leftMargin":       (float, 2.0),
     "format.rightMargin":      (float, 2.0),
     "odt.addColours":          (bool, True),
-    "odt.pageHeader":          (str, nwHeadFmt.ODT_AUTO),
+    "odt.pageHeaderText":      (str, nwHeadFmt.ODT_PAGE),
     "odt.pageCountOffset":     (int, 0),
     "odt.firstLineIndent":     (bool, False),
     "md.preserveBreaks":       (bool, True),
@@ -142,7 +142,7 @@ SETTINGS_LABELS = {
 
     "odt":                    QT_TRANSLATE_NOOP("Builds", "Open Document (.odt)"),
     "odt.addColours":         QT_TRANSLATE_NOOP("Builds", "Add Highlight Colours"),
-    "odt.pageHeader":         QT_TRANSLATE_NOOP("Builds", "Page Header"),
+    "odt.pageHeaderText":     QT_TRANSLATE_NOOP("Builds", "Page Header"),
     "odt.pageCountOffset":    QT_TRANSLATE_NOOP("Builds", "Page Counter Offset"),
     "odt.firstLineIndent":    QT_TRANSLATE_NOOP("Builds", "First Line Indent"),
 
