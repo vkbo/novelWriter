@@ -230,7 +230,7 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
         (toMD.T_EMPTY, 1, "", None, toMD.A_NONE),
     ]
     toMD.doConvert()
-    assert toMD.result == "\n\n\n"
+    assert toMD.result == "\n\n"
 
 # END Test testCoreToMarkdown_ConvertDirect
 
