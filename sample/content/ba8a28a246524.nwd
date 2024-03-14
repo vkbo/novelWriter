@@ -1,8 +1,8 @@
 %%~name: Interlude
 %%~path: 7031beac91f75/ba8a28a246524
 %%~kind: NOVEL/DOCUMENT
-%%~hash: df8904011eda90c7b694bed725dc774bf631b348
-%%~date: Unknown/2023-08-25 16:51:58
+%%~hash: 721d3d15e0233186354ac6fa61f27db10f38e6bc
+%%~date: Unknown/2024-03-14 22:55:04
 ##! Interlude
 
 % Notice that this document has a title with a ‘!’ in it in addition to the two hash symbols. This means it is an unnumbered chapter. Unnumbered chapters can be treated separately from numbered chapters during export. Perfect for when you want to add an interlude, or for a prologue or epilogue.
@@ -12,12 +12,12 @@ I've information vegetable, animal, and mineral
 I know the kings of England, and I quote the fights historical
 From Marathon to Waterloo, in order categorical
 
-I'm very well acquainted, too, with matters mathematical
+I'm very well acquainted, too, with matters mathematical <<
 I understand equations, both the simple and quadratical
 About binomial theorem I'm teeming with a lot o’ news
 With many cheerful facts about the square of the hypotenuse
 
-	With many cheerful facts about the square of the hypotenuse
+	With many cheerful facts about the square of the hypotenuse <<
 	With many cheerful facts about the square of the hypotenuse
 	With many cheerful facts about the square of the hypotepotenuse
 

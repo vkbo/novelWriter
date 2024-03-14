@@ -1363,6 +1363,9 @@ class _OutputTab(NScrollableForm):
         self.odtPageCountOffset.setMinimumWidth(spW)
         self.addRow(self._build.getLabel("odt.pageCountOffset"), self.odtPageCountOffset)
 
+        self.odtFirstLineIndent = NSwitch(self, height=iPx)
+        self.addRow(self._build.getLabel("odt.firstLineIndent"), self.odtFirstLineIndent)
+
         # HTML Document
         self.addGroupLabel(self._build.getLabel("html"))
 
@@ -1388,6 +1391,7 @@ class _OutputTab(NScrollableForm):
         self.odtAddColours.setChecked(self._build.getBool("odt.addColours"))
         self.odtPageHeader.setText(self._build.getStr("odt.pageHeader"))
         self.odtPageCountOffset.setValue(self._build.getInt("odt.pageCountOffset"))
+        self.odtFirstLineIndent.setChecked(self._build.getBool("odt.firstLineIndent"))
         self.htmlAddStyles.setChecked(self._build.getBool("html.addStyles"))
         self.htmlPreserveTabs.setChecked(self._build.getBool("html.preserveTabs"))
         self.mdPreserveBreaks.setChecked(self._build.getBool("md.preserveBreaks"))
@@ -1398,6 +1402,7 @@ class _OutputTab(NScrollableForm):
         self._build.setValue("odt.addColours", self.odtAddColours.isChecked())
         self._build.setValue("odt.pageHeader", self.odtPageHeader.text())
         self._build.setValue("odt.pageCountOffset", self.odtPageCountOffset.value())
+        self._build.setValue("odt.firstLineIndent", self.odtFirstLineIndent.isChecked())
         self._build.setValue("html.addStyles", self.htmlAddStyles.isChecked())
         self._build.setValue("html.preserveTabs", self.htmlPreserveTabs.isChecked())
         self._build.setValue("md.preserveBreaks", self.mdPreserveBreaks.isChecked())

@@ -234,6 +234,11 @@ class ToOdt(Tokenizer):
         self._pageOffset = offset
         return
 
+    def setFirstLineIndent(self, state: bool) -> None:
+        """Enable or disable first line indent."""
+        self._firstIndent = state
+        return
+
     ##
     #  Class Methods
     ##
