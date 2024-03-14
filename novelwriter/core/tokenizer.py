@@ -173,7 +173,7 @@ class Tokenizer(ABC):
 
         # Instance Variables
         self._hFormatter = HeadingFormatter(self._project)
-        self._noSep = False  # Flag to indicate that we don't want a scene separator
+        self._noSep      = True  # Flag to indicate that we don't want a scene separator
 
         # This File
         self._isNone  = False  # Document has unknown layout
@@ -219,7 +219,7 @@ class Tokenizer(ABC):
         return self._result
 
     @property
-    def allMarkdown(self) -> list:
+    def allMarkdown(self) -> list[str]:
         """The combined novelWriter Markdown text."""
         return self._allMarkdown
 
@@ -229,7 +229,7 @@ class Tokenizer(ABC):
         return self._counts
 
     @property
-    def errData(self) -> list:
+    def errData(self) -> list[str]:
         """The error data."""
         return self._errData
 
