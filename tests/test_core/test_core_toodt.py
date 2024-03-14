@@ -908,19 +908,26 @@ def testCoreToOdt_ODTParagraphStyle():
     assert parStyle._pAttr["margin-bottom"] == ["fo", None]
     assert parStyle._pAttr["margin-left"]   == ["fo", None]
     assert parStyle._pAttr["margin-right"]  == ["fo", None]
+    assert parStyle._pAttr["text-indent"]   == ["fo", None]
     assert parStyle._pAttr["line-height"]   == ["fo", None]
+
+    assert parStyle.isUnaligned() is True
 
     parStyle.setMarginTop("0.000cm")
     parStyle.setMarginBottom("0.000cm")
     parStyle.setMarginLeft("0.000cm")
     parStyle.setMarginRight("0.000cm")
+    parStyle.setTextIndent("0.000cm")
     parStyle.setLineHeight("1.15")
 
     assert parStyle._pAttr["margin-top"]    == ["fo", "0.000cm"]
     assert parStyle._pAttr["margin-bottom"] == ["fo", "0.000cm"]
     assert parStyle._pAttr["margin-left"]   == ["fo", "0.000cm"]
     assert parStyle._pAttr["margin-right"]  == ["fo", "0.000cm"]
+    assert parStyle._pAttr["text-indent"]   == ["fo", "0.000cm"]
     assert parStyle._pAttr["line-height"]   == ["fo", "1.15"]
+
+    assert parStyle.isUnaligned() is False
 
     # Text Alignment
     assert parStyle._pAttr["text-align"] == ["fo", None]
@@ -1031,7 +1038,8 @@ def testCoreToOdt_ODTParagraphStyle():
         '<style:style style:name="test" style:family="paragraph" style:display-name="Name" '
         'style:parent-style-name="Name" style:next-style-name="Name">'
         '<style:paragraph-properties fo:margin-top="0.000cm" fo:margin-bottom="0.000cm" '
-        'fo:margin-left="0.000cm" fo:margin-right="0.000cm" fo:line-height="1.15" />'
+        'fo:margin-left="0.000cm" fo:margin-right="0.000cm" fo:text-indent="0.000cm" '
+        'fo:line-height="1.15" />'
         '<style:text-properties style:font-name="Verdana" fo:font-family="Verdana" '
         'fo:font-size="12pt" fo:color="#000000" loext:opacity="1.00" />'
         '</style:style>'
