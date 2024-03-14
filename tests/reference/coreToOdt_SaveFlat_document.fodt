@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
 <office:document xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" office:version="1.3" office:mimetype="application/vnd.oasis.opendocument.text">
   <office:meta>
-    <meta:creation-date>2024-01-28T15:48:36</meta:creation-date>
-    <meta:generator>novelWriter/2.3a3</meta:generator>
+    <meta:creation-date>2024-03-14T23:26:28</meta:creation-date>
+    <meta:generator>novelWriter/2.4a2</meta:generator>
     <meta:initial-creator>Jane Smith</meta:initial-creator>
     <meta:editing-cycles>1234</meta:editing-cycles>
     <meta:editing-duration>P42DT12H34M56S</meta:editing-duration>
     <dc:title>Test Project</dc:title>
-    <dc:date>2024-01-28T15:48:36</dc:date>
+    <dc:date>2024-03-14T23:26:28</dc:date>
     <dc:creator>Jane Smith</dc:creator>
   </office:meta>
   <office:font-face-decls>
@@ -29,6 +29,9 @@
     <style:style style:name="Text_20_body" style:family="paragraph" style:display-name="Text body" style:parent-style-name="Standard" style:class="text">
       <style:paragraph-properties fo:margin-top="0.000cm" fo:margin-bottom="0.247cm" fo:line-height="115%" fo:text-align="left" />
       <style:text-properties style:font-name="Liberation Serif" fo:font-family="'Liberation Serif'" fo:font-size="12pt" />
+    </style:style>
+    <style:style style:name="First_20_line_20_indent" style:family="paragraph" style:display-name="First line indent" style:parent-style-name="Text_20_body" style:class="text">
+      <style:paragraph-properties fo:text-indent="0.499cm" />
     </style:style>
     <style:style style:name="Text_20_Meta" style:family="paragraph" style:display-name="Text Meta" style:parent-style-name="Standard" style:class="text">
       <style:paragraph-properties fo:margin-top="0.000cm" fo:margin-bottom="0.247cm" fo:line-height="115%" />

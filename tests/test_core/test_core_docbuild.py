@@ -64,6 +64,7 @@ BUILD_CONF = {
         "format.stripUnicode": False,
         "format.replaceTabs": True,
         "odt.addColours": True,
+        "odt.firstLineIndent": True,
         "html.addStyles": True,
     },
     "content": {

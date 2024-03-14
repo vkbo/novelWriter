@@ -131,11 +131,11 @@ def testCoreToOdt_TextFormatting(mockGUI):
     assert odt._paraStyle("Text_20_body", oStyle) == "P1"
 
     assert list(odt._mainPara.keys()) == [
-        "Text_20_body", "Text_20_Meta", "Title", "Separator",
+        "Text_20_body", "First_20_line_20_indent", "Text_20_Meta", "Title", "Separator",
         "Heading_20_1", "Heading_20_2", "Heading_20_3", "Heading_20_4", "Header",
     ]
 
-    key = "071d6b2e4764749f8c78d3c1ab9099fa04c07d2d53fd3de61eb1bdf1cb4845c3"
+    key = "55db6c1d22ff5aba93f0f67c8d4a857a26e2d3813dfbcba1ef7c0d424f501be5"
     assert odt._autoPara[key][0] == "P1"
     assert isinstance(odt._autoPara[key][1], ODTParagraphStyle)
 
@@ -908,19 +908,26 @@ def testCoreToOdt_ODTParagraphStyle():
     assert parStyle._pAttr["margin-bottom"] == ["fo", None]
     assert parStyle._pAttr["margin-left"]   == ["fo", None]
     assert parStyle._pAttr["margin-right"]  == ["fo", None]
+    assert parStyle._pAttr["text-indent"]   == ["fo", None]
     assert parStyle._pAttr["line-height"]   == ["fo", None]
+
+    assert parStyle.isUnaligned() is True
 
     parStyle.setMarginTop("0.000cm")
     parStyle.setMarginBottom("0.000cm")
     parStyle.setMarginLeft("0.000cm")
     parStyle.setMarginRight("0.000cm")
+    parStyle.setTextIndent("0.000cm")
     parStyle.setLineHeight("1.15")
 
     assert parStyle._pAttr["margin-top"]    == ["fo", "0.000cm"]
     assert parStyle._pAttr["margin-bottom"] == ["fo", "0.000cm"]
     assert parStyle._pAttr["margin-left"]   == ["fo", "0.000cm"]
     assert parStyle._pAttr["margin-right"]  == ["fo", "0.000cm"]
+    assert parStyle._pAttr["text-indent"]   == ["fo", "0.000cm"]
     assert parStyle._pAttr["line-height"]   == ["fo", "1.15"]
+
+    assert parStyle.isUnaligned() is False
 
     # Text Alignment
     assert parStyle._pAttr["text-align"] == ["fo", None]
@@ -1031,7 +1038,8 @@ def testCoreToOdt_ODTParagraphStyle():
         '<style:style style:name="test" style:family="paragraph" style:display-name="Name" '
         'style:parent-style-name="Name" style:next-style-name="Name">'
         '<style:paragraph-properties fo:margin-top="0.000cm" fo:margin-bottom="0.000cm" '
-        'fo:margin-left="0.000cm" fo:margin-right="0.000cm" fo:line-height="1.15" />'
+        'fo:margin-left="0.000cm" fo:margin-right="0.000cm" fo:text-indent="0.000cm" '
+        'fo:line-height="1.15" />'
         '<style:text-properties style:font-name="Verdana" fo:font-family="Verdana" '
         'fo:font-size="12pt" fo:color="#000000" loext:opacity="1.00" />'
         '</style:style>'

@@ -138,6 +138,7 @@ class ToOdt(Tokenizer):
         self._textSize     = 12
         self._textFixed    = False
         self._colourHead   = False
+        self._firstIndent  = False
         self._headerFormat = ""
         self._pageOffset   = 0
 
@@ -153,6 +154,7 @@ class ToOdt(Tokenizer):
         self._fSizeText    = "12pt"
         self._fLineHeight  = "115%"
         self._fBlockIndent = "1.693cm"
+        self._fTextIndent  = "0.499cm"
         self._textAlign    = "left"
         self._dLanguage    = "en"
         self._dCountry     = "GB"
@@ -230,6 +232,11 @@ class ToOdt(Tokenizer):
         """Set the document header format."""
         self._headerFormat = format.strip()
         self._pageOffset = offset
+        return
+
+    def setFirstLineIndent(self, state: bool) -> None:
+        """Enable or disable first line indent."""
+        self._firstIndent = state
         return
 
     ##
@@ -397,6 +404,7 @@ class ToOdt(Tokenizer):
         pFmt = []
         pText = []
         pStyle = None
+        pIndent = True
         for tType, _, tText, tFormat, tStyle in self._tokens:
 
             # Styles
@@ -427,6 +435,9 @@ class ToOdt(Tokenizer):
                 if tStyle & self.A_IND_R:
                     oStyle.setMarginRight(self._fBlockIndent)
 
+            if tType not in (self.T_EMPTY, self.T_TEXT):
+                pIndent = False
+
             # Process Text Types
             if tType == self.T_EMPTY:
                 if len(pText) > 1 and pStyle is not None:
@@ -440,7 +451,14 @@ class ToOdt(Tokenizer):
                         tLen = len(tTxt)
                         tTxt += f"{nText}\n"
                         tFmt.extend((p+tLen, fmt) for p, fmt in nFmt)
-                    self._addTextPar("Text_20_body", pStyle, tTxt.rstrip(), tFmt=tFmt)
+
+                    # Don't indent a paragraph if it has alignment set
+                    tIndent = self._firstIndent and pIndent and pStyle.isUnaligned()
+                    self._addTextPar(
+                        "First_20_line_20_indent" if tIndent else "Text_20_body",
+                        pStyle, tTxt.rstrip(), tFmt=tFmt
+                    )
+                    pIndent = True
 
                 pFmt = []
                 pText = []
@@ -855,6 +873,18 @@ class ToOdt(Tokenizer):
 
         self._mainPara["Text_20_body"] = oStyle
 
+        # Add First Line Indent Style
+        # ===========================
+
+        oStyle = ODTParagraphStyle()
+        oStyle.setDisplayName("First line indent")
+        oStyle.setParentStyleName("Text_20_body")
+        oStyle.setClass("text")
+        oStyle.setTextIndent(self._fTextIndent)
+        oStyle.packXML(self._xStyl, "First_20_line_20_indent")
+
+        self._mainPara["First_20_line_20_indent"] = oStyle
+
         # Add Text Meta Style
         # ===================
 
@@ -1082,6 +1112,7 @@ class ODTParagraphStyle:
             "margin-bottom": ["fo", None],
             "margin-left":   ["fo", None],
             "margin-right":  ["fo", None],
+            "text-indent":   ["fo", None],
             "line-height":   ["fo", None],
             "text-align":    ["fo", None],
             "break-before":  ["fo", None],
@@ -1099,6 +1130,16 @@ class ODTParagraphStyle:
         }
 
         return
+
+    ##
+    #  Checkers
+    ##
+
+    def isUnaligned(self) -> bool:
+        """Check if paragraph has any sort of alignment or margins."""
+        return all(
+            self._pAttr[n][1] is None for n in ["text-align", "margin-left", "margin-right"]
+        )
 
     ##
     #  Attribute Setters
@@ -1148,6 +1189,10 @@ class ODTParagraphStyle:
 
     def setMarginRight(self, value: str | None) -> None:
         self._pAttr["margin-right"][1] = value
+        return
+
+    def setTextIndent(self, value: str | None) -> None:
+        self._pAttr["text-indent"][1] = value
         return
 
     def setLineHeight(self, value: str | None) -> None:

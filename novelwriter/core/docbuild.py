@@ -332,6 +332,7 @@ class NWBuildDocument:
             bldObj.setHeaderFormat(
                 self._build.getStr("odt.pageHeader"), self._build.getInt("odt.pageCountOffset")
             )
+            bldObj.setFirstLineIndent(self._build.getBool("odt.firstLineIndent"))
 
             scale = nwLabels.UNIT_SCALE.get(self._build.getStr("format.pageUnit"), 1.0)
             pW, pH = nwLabels.PAPER_SIZE.get(self._build.getStr("format.pageSize"), (-1.0, -1.0))

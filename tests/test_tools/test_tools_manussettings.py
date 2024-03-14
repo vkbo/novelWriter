@@ -674,13 +674,21 @@ def testBuildSettings_Output(qtbot: QtBot, nwGUI: GuiMain):
     # Check initial values
     assert outTab.odtAddColours.isChecked() is False
     assert outTab.odtPageHeader.text() == nwHeadFmt.ODT_AUTO
+    assert outTab.odtPageCountOffset.value() == 0
+    assert outTab.odtFirstLineIndent.isChecked() is False
     assert outTab.htmlAddStyles.isChecked() is False
+    assert outTab.htmlPreserveTabs.isChecked() is False
+    assert outTab.mdPreserveBreaks.isChecked() is True
 
     # Toggle all
     outTab.odtAddColours.setChecked(True)
+    outTab.odtFirstLineIndent.setChecked(True)
     outTab.htmlAddStyles.setChecked(True)
+    outTab.htmlPreserveTabs.setChecked(True)
+    outTab.mdPreserveBreaks.setChecked(False)
 
-    # Change header format
+    # Change Values
+    outTab.odtPageCountOffset.setValue(1)
     outTab.odtPageHeader.setText("Stuff")
 
     # Save values
@@ -688,7 +696,11 @@ def testBuildSettings_Output(qtbot: QtBot, nwGUI: GuiMain):
 
     assert build.getBool("odt.addColours") is True
     assert build.getStr("odt.pageHeader") == "Stuff"
+    assert build.getInt("odt.pageCountOffset") == 1
+    assert build.getBool("odt.firstLineIndent") is True
     assert build.getBool("html.addStyles") is True
+    assert build.getBool("html.preserveTabs") is True
+    assert build.getBool("md.preserveBreaks") is False
 
     # Reset header format
     outTab.btnPageHeader.click()
