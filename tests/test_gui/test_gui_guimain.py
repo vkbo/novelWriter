@@ -574,7 +574,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
 def testGuiMain_Features(qtbot, nwGUI, projPath, mockRnd):
     """Test various features of the main window."""
     buildTestProject(nwGUI, projPath)
-    assert nwGUI.isFocusMode is False
+    assert SHARED.focusMode is False
 
     # Focus Mode
     # ==========

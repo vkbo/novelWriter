@@ -104,9 +104,6 @@ class GuiMain(QMainWindow):
         # Initialise UserData Instance
         SHARED.initSharedData(self, GuiTheme())
 
-        # Core Settings
-        self.isFocusMode = False
-
         # Prepare Main Window
         self.resize(*CONFIG.mainWinSize)
         self._updateWindowTitle()
@@ -233,6 +230,7 @@ class GuiMain(QMainWindow):
         SHARED.projectStatusChanged.connect(self.mainStatus.updateProjectStatus)
         SHARED.projectStatusMessage.connect(self.mainStatus.setStatusMessage)
         SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
+        SHARED.focusModeChanged.connect(self._focusModeChanged)
         SHARED.indexChangedTags.connect(self.docViewerPanel.updateChangedTags)
         SHARED.indexScannedText.connect(self.docViewerPanel.projectItemChanged)
         SHARED.indexScannedText.connect(self.projView.updateItemValues)
@@ -532,8 +530,8 @@ class GuiMain(QMainWindow):
             return False
 
         # Disable focus mode if it is active
-        if self.isFocusMode:
-            self.toggleFocusMode()
+        if SHARED.focusMode:
+            SHARED.setFocusMode(False)
 
         self.docEditor.saveCursorPosition()
         if self.docEditor.docChanged:
@@ -747,7 +745,7 @@ class GuiMain(QMainWindow):
         if not SHARED.hasProject:
             logger.error("No project open")
             return False
-        if tHandle is None and (self.docEditor.anyFocus() or self.isFocusMode):
+        if tHandle is None and (self.docEditor.anyFocus() or SHARED.focusMode):
             tHandle = self.docEditor.docHandle
         self.projView.renameTreeItem(tHandle)
         return True
@@ -919,7 +917,7 @@ class GuiMain(QMainWindow):
 
         logger.info("Exiting novelWriter")
 
-        if not self.isFocusMode:
+        if not SHARED.focusMode:
             CONFIG.setMainPanePos(self.splitMain.sizes())
             CONFIG.setOutlinePanePos(self.outlineView.splitSizes())
             if self.docViewerPanel.isVisible():
@@ -997,30 +995,31 @@ class GuiMain(QMainWindow):
 
     @pyqtSlot()
     def toggleFocusMode(self) -> None:
-        """Handle toggle focus mode. The Main GUI Focus Mode hides tree,
+        """Toggle focus mode."""
+        if self.docEditor.docHandle:
+            SHARED.setFocusMode(not SHARED.focusMode)
+        return
+
+    @pyqtSlot(bool)
+    def _focusModeChanged(self, focusMode: bool) -> None:
+        """Handle change of focus mode. The Main GUI Focus Mode hides tree,
         view, statusbar and menu.
         """
-        if self.docEditor.docHandle is None:
-            logger.error("No document open, so not activating Focus Mode")
-            return
-
-        self.isFocusMode = not self.isFocusMode
-        if self.isFocusMode:
+        if focusMode:
             logger.debug("Activating Focus Mode")
             self.switchFocus(nwWidget.EDITOR)
         else:
             logger.debug("Deactivating Focus Mode")
 
         cursorVisible = self.docEditor.cursorIsVisible()
-        isVisible = not self.isFocusMode
+        isVisible = not focusMode
         self.treePane.setVisible(isVisible)
         self.mainStatus.setVisible(isVisible)
         self.mainMenu.setVisible(isVisible)
         self.sideBar.setVisible(isVisible)
 
-        hideDocFooter = self.isFocusMode and CONFIG.hideFocusFooter
+        hideDocFooter = focusMode and CONFIG.hideFocusFooter
         self.docEditor.docFooter.setVisible(not hideDocFooter)
-        self.docEditor.docHeader.updateFocusMode()
 
         if self.splitView.isVisible():
             self.splitView.setVisible(False)
@@ -1029,7 +1028,6 @@ class GuiMain(QMainWindow):
 
         if cursorVisible:
             self.docEditor.ensureCursorVisibleNoCentre()
-
         return
 
     @pyqtSlot(nwWidget)
@@ -1279,8 +1277,8 @@ class GuiMain(QMainWindow):
         """Process escape keypress in the main window."""
         if self.docEditor.docSearch.isVisible():
             self.docEditor.closeSearch()
-        elif self.isFocusMode:
-            self.toggleFocusMode()
+        elif SHARED.focusMode:
+            SHARED.setFocusMode(False)
         return
 
     @pyqtSlot(int)

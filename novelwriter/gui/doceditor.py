@@ -548,8 +548,8 @@ class GuiDocEditor(QPlainTextEdit):
         sH = hBar.height() if hBar.isVisible() else 0
 
         tM = self._vpMargin
-        if CONFIG.textWidth > 0 or self.mainGui.isFocusMode:
-            tW = CONFIG.getTextWidth(self.mainGui.isFocusMode)
+        if CONFIG.textWidth > 0 or SHARED.focusMode:
+            tW = CONFIG.getTextWidth(SHARED.focusMode)
             tM = max((wW - sW - tW)//2, self._vpMargin)
 
         tB = self.frameWidth()
@@ -2894,6 +2894,9 @@ class GuiDocEditHeader(QWidget):
 
         self.setLayout(self.outerBox)
 
+        # Other Signals
+        SHARED.focusModeChanged.connect(self._focusModeChanged)
+
         # Fix Margins and Size
         # This is needed for high DPI systems. See issue #499.
         self.setContentsMargins(0, 0, 0, 0)
@@ -2997,17 +3000,6 @@ class GuiDocEditHeader(QWidget):
 
         return
 
-    def updateFocusMode(self) -> None:
-        """Update the minimise/maximise icon of the Focus Mode button.
-        This function is called by the GuiMain class via the
-        toggleFocusMode function and should not be activated directly.
-        """
-        if self.mainGui.isFocusMode:
-            self.minmaxButton.setIcon(SHARED.theme.getIcon("minimise"))
-        else:
-            self.minmaxButton.setIcon(SHARED.theme.getIcon("maximise"))
-        return
-
     ##
     #  Private Slots
     ##
@@ -3023,6 +3015,12 @@ class GuiDocEditHeader(QWidget):
     def _gotoBlock(self, blockNumber: int) -> None:
         """Move cursor to a specific heading."""
         self.docEditor.setCursorLine(blockNumber + 1)
+        return
+
+    @pyqtSlot(bool)
+    def _focusModeChanged(self, focusMode: bool) -> None:
+        """Update minimise/maximise icon of the Focus Mode button."""
+        self.minmaxButton.setIcon(SHARED.theme.getIcon("minimise" if focusMode else "maximise"))
         return
 
     ##

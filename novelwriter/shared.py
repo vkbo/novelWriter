@@ -57,6 +57,7 @@ class SharedData(QObject):
     projectStatusChanged = pyqtSignal(bool)
     projectStatusMessage = pyqtSignal(str)
     spellLanguageChanged = pyqtSignal(str, str)
+    focusModeChanged = pyqtSignal(bool)
     indexScannedText = pyqtSignal(str)
     indexChangedTags = pyqtSignal(list, list)
     indexCleared = pyqtSignal()
@@ -76,6 +77,7 @@ class SharedData(QObject):
         self._lastAlert = ""
         self._idleTime = 0.0
         self._idleRefTime = time()
+        self._focusMode = False
 
         return
 
@@ -112,6 +114,11 @@ class SharedData(QObject):
         return self._spelling
 
     @property
+    def focusMode(self) -> bool:
+        """Return the Focus Mode state."""
+        return self._focusMode
+
+    @property
     def hasProject(self) -> bool:
         """Return True if the project instance is populated."""
         return self.project.isValid
@@ -130,6 +137,17 @@ class SharedData(QObject):
     def lastAlert(self) -> str:
         """Return the last alert message."""
         return self._lastAlert
+
+    ##
+    #  Setters
+    ##
+
+    def setFocusMode(self, state: bool) -> None:
+        """Set focus mode on or off."""
+        if state is not self._focusMode:
+            self._focusMode = state
+            self.focusModeChanged.emit(state)
+        return
 
     ##
     #  Methods
@@ -323,6 +341,7 @@ class SharedData(QObject):
         self._project = NWProject()
         self._spelling = NWSpellEnchant(self._project)
         self.updateSpellCheckLanguage()
+        self._focusMode = False
         return
 
     def _resetIdleTimer(self) -> None:
