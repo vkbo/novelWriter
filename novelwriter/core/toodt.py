@@ -1048,6 +1048,12 @@ class ToOdt(Tokenizer):
         # Standard Page Header
         if self._headerFormat:
             pre, page, post = self._headerFormat.partition(nwHeadFmt.ODT_PAGE)
+
+            pre = pre.replace(nwHeadFmt.ODT_PROJECT, self._project.data.name)
+            pre = pre.replace(nwHeadFmt.ODT_AUTHOR, self._project.data.author)
+            post = post.replace(nwHeadFmt.ODT_PROJECT, self._project.data.name)
+            post = post.replace(nwHeadFmt.ODT_AUTHOR, self._project.data.author)
+
             xHead = ET.SubElement(xPage, _mkTag("style", "header"))
             xPar = ET.SubElement(xHead, _mkTag("text", "p"), attrib={
                 _mkTag("text", "style-name"): "Header"

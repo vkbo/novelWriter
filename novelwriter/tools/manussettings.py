@@ -1352,8 +1352,8 @@ class _OutputTab(NScrollableForm):
         self.btnPageHeader.setIcon(SHARED.theme.getIcon("revert"))
         self.btnPageHeader.clicked.connect(self._resetPageHeader)
         self.addRow(
-            self._build.getLabel("odt.pageHeaderText"), self.odtPageHeader,
-            button=self.btnPageHeader, stretch=(2, 3)
+            self._build.getLabel("odt.pageHeader"), self.odtPageHeader,
+            button=self.btnPageHeader, stretch=(1, 1)
         )
 
         self.odtPageCountOffset = NSpinBox(self)
@@ -1389,7 +1389,7 @@ class _OutputTab(NScrollableForm):
     def loadContent(self) -> None:
         """Populate the widgets."""
         self.odtAddColours.setChecked(self._build.getBool("odt.addColours"))
-        self.odtPageHeader.setText(self._build.getStr("odt.pageHeaderText"))
+        self.odtPageHeader.setText(self._build.getStr("odt.pageHeader"))
         self.odtPageCountOffset.setValue(self._build.getInt("odt.pageCountOffset"))
         self.odtFirstLineIndent.setChecked(self._build.getBool("odt.firstLineIndent"))
         self.htmlAddStyles.setChecked(self._build.getBool("html.addStyles"))
@@ -1400,7 +1400,7 @@ class _OutputTab(NScrollableForm):
     def saveContent(self) -> None:
         """Save choices back into build object."""
         self._build.setValue("odt.addColours", self.odtAddColours.isChecked())
-        self._build.setValue("odt.pageHeaderText", self.odtPageHeader.text())
+        self._build.setValue("odt.pageHeader", self.odtPageHeader.text())
         self._build.setValue("odt.pageCountOffset", self.odtPageCountOffset.value())
         self._build.setValue("odt.firstLineIndent", self.odtFirstLineIndent.isChecked())
         self._build.setValue("html.addStyles", self.htmlAddStyles.isChecked())
@@ -1414,9 +1414,7 @@ class _OutputTab(NScrollableForm):
 
     def _resetPageHeader(self) -> None:
         """Reset the ODT header format to default."""
-        self.odtPageHeader.setText(" / ".join(filter(bool, [
-            SHARED.project.data.name, SHARED.project.data.author, nwHeadFmt.ODT_PAGE
-        ])))
+        self.odtPageHeader.setText(nwHeadFmt.ODT_AUTO)
         self.odtPageHeader.setCursorPosition(0)
         return
 
