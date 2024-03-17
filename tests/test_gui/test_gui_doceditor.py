@@ -58,6 +58,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.docEditor.docHeader.itemTitle.text() == (
         "Novel  \u203a  New Chapter  \u203a  New Scene"
     )
+    assert nwGUI.docEditor.docHeader._docOutline == {0: "### New Scene"}
 
     # Check that editor handles settings
     CONFIG.textFont = ""
@@ -83,6 +84,11 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # Header
     # ======
+
+    # Go to outline
+    nwGUI.docEditor.setCursorLine(3)
+    nwGUI.docEditor.docHeader.outlineMenu.actions()[0].trigger()
+    assert nwGUI.docEditor.getCursorPosition() == 0
 
     # Select item from header
     with qtbot.waitSignal(nwGUI.docEditor.requestProjectItemSelected, timeout=1000) as signal:
@@ -1686,13 +1692,13 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
 
     threadPool = MockThreadPool()
     monkeypatch.setattr(QThreadPool, "globalInstance", lambda *a: threadPool)
-    nwGUI.docEditor.wcTimerDoc.blockSignals(True)
-    nwGUI.docEditor.wcTimerSel.blockSignals(True)
+    nwGUI.docEditor.timerDoc.blockSignals(True)
+    nwGUI.docEditor.timerSel.blockSignals(True)
 
     buildTestProject(nwGUI, projPath)
 
     # Run on an empty document
-    nwGUI.docEditor._runDocCounter()
+    nwGUI.docEditor._runDocumentTasks()
     assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
     nwGUI.docEditor._updateDocCounts(0, 0, 0)
     assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
@@ -1714,7 +1720,7 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
     # Check that a busy counter is blocked
     with monkeypatch.context() as mp:
         mp.setattr(nwGUI.docEditor.wCounterDoc, "isRunning", lambda *a: True)
-        nwGUI.docEditor._runDocCounter()
+        nwGUI.docEditor._runDocumentTasks()
         assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
     with monkeypatch.context() as mp:
@@ -1723,7 +1729,7 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
         assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
     # Run the full word counter
-    nwGUI.docEditor._runDocCounter()
+    nwGUI.docEditor._runDocumentTasks()
     assert threadPool.objectID() == id(nwGUI.docEditor.wCounterDoc)
 
     nwGUI.docEditor.wCounterDoc.run()

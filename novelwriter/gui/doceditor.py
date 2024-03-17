@@ -1838,9 +1838,10 @@ class GuiDocEditor(QPlainTextEdit):
 
     def _updateOutline(self) -> None:
         """Scan the text for headings and update the outline."""
-        data = [(b.blockNumber(), b.text()) for b in self._qDocument.iterBlockByType(BLOCK_TITLE)]
-        logger.debug("Document contains %d heading(s)", len(data))
-        self.docHeader.setOutline(data)
+        self.docHeader.setOutline({
+            block.blockNumber(): block.text()
+            for block in self._qDocument.iterBlockByType(BLOCK_TITLE)
+        })
         return
 
     def _processTag(self, cursor: QTextCursor | None = None,
@@ -2710,11 +2711,9 @@ class GuiDocEditSearch(QFrame):
     @pyqtSlot()
     def _doSearch(self) -> None:
         """Call the search action function for the document editor."""
-        modKey = qApp.keyboardModifiers()
-        if modKey == Qt.KeyboardModifier.ShiftModifier:
-            self.docEditor.findNext(goBack=True)
-        else:
-            self.docEditor.findNext()
+        self.docEditor.findNext(goBack=(
+            qApp.keyboardModifiers() == Qt.KeyboardModifier.ShiftModifier)
+        )
         return
 
     @pyqtSlot()
@@ -2808,7 +2807,7 @@ class GuiDocEditHeader(QWidget):
         self.mainGui   = docEditor.mainGui
 
         self._docHandle = None
-        self._docOutline: list[tuple[int, str]] = []
+        self._docOutline: dict[int, str] = {}
 
         fPx = int(0.9*SHARED.theme.fontPixelSize)
         mPx = CONFIG.pxInt(8)
@@ -2831,6 +2830,9 @@ class GuiDocEditHeader(QWidget):
         lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
         self.itemTitle.setFont(lblFont)
 
+        # Other Widgets
+        self.outlineMenu = QMenu(self)
+
         # Buttons
         self.tbButton = QToolButton(self)
         self.tbButton.setContentsMargins(0, 0, 0, 0)
@@ -2849,6 +2851,16 @@ class GuiDocEditHeader(QWidget):
         self.searchButton.setVisible(False)
         self.searchButton.setToolTip(self.tr("Search"))
         self.searchButton.clicked.connect(self.docEditor.toggleSearch)
+
+        self.outlineButton = QToolButton(self)
+        self.outlineButton.setContentsMargins(0, 0, 0, 0)
+        self.outlineButton.setIconSize(iconSize)
+        self.outlineButton.setFixedSize(fPx, fPx)
+        self.outlineButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.outlineButton.setVisible(False)
+        self.outlineButton.setToolTip(self.tr("Outline"))
+        self.outlineButton.setMenu(self.outlineMenu)
+        self.outlineButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
         self.minmaxButton = QToolButton(self)
         self.minmaxButton.setContentsMargins(0, 0, 0, 0)
@@ -2873,7 +2885,9 @@ class GuiDocEditHeader(QWidget):
         self.outerBox.setSpacing(hSp)
         self.outerBox.addWidget(self.tbButton, 0)
         self.outerBox.addWidget(self.searchButton, 0)
+        self.outerBox.addWidget(self.outlineButton, 0)
         self.outerBox.addWidget(self.itemTitle, 1)
+        self.outerBox.addSpacing(fPx + hSp)
         self.outerBox.addWidget(self.minmaxButton, 0)
         self.outerBox.addWidget(self.closeButton, 0)
         self.outerBox.setContentsMargins(mPx, mPx, mPx, mPx)
@@ -2895,15 +2909,25 @@ class GuiDocEditHeader(QWidget):
     #  Methods
     ##
 
-    def setOutline(self, data: list[tuple[int, str]]) -> None:
+    def setOutline(self, data: dict[int, str]) -> None:
         """Set the document outline dataset."""
-        self._docOutline = data
+        if data != self._docOutline:
+            tStart = time()
+            self.outlineMenu.clear()
+            for number, text in data.items():
+                action = self.outlineMenu.addAction(text)
+                action.triggered.connect(
+                    lambda _, number=number: self._gotoBlock(number)
+                )
+            self._docOutline = data
+            logger.debug("Document outline updated in %.3f ms", 1000*(time() - tStart))
         return
 
     def updateTheme(self) -> None:
         """Update theme elements."""
         self.tbButton.setIcon(SHARED.theme.getIcon("menu"))
         self.searchButton.setIcon(SHARED.theme.getIcon("search"))
+        self.outlineButton.setIcon(SHARED.theme.getIcon("list"))
         self.minmaxButton.setIcon(SHARED.theme.getIcon("maximise"))
         self.closeButton.setIcon(SHARED.theme.getIcon("close"))
 
@@ -2912,9 +2936,11 @@ class GuiDocEditHeader(QWidget):
             "QToolButton {{border: none; background: transparent;}} "
             "QToolButton:hover {{border: none; background: rgba({0}, {1}, {2}, 0.2);}}"
         ).format(colText.red(), colText.green(), colText.blue())
+        buttonStyleMenu = f"{buttonStyle} QToolButton::menu-indicator {{image: none;}}"
 
         self.tbButton.setStyleSheet(buttonStyle)
         self.searchButton.setStyleSheet(buttonStyle)
+        self.outlineButton.setStyleSheet(buttonStyleMenu)
         self.minmaxButton.setStyleSheet(buttonStyle)
         self.closeButton.setStyleSheet(buttonStyle)
 
@@ -2945,6 +2971,7 @@ class GuiDocEditHeader(QWidget):
             self.itemTitle.setText("")
             self.tbButton.setVisible(False)
             self.searchButton.setVisible(False)
+            self.outlineButton.setVisible(False)
             self.closeButton.setVisible(False)
             self.minmaxButton.setVisible(False)
             return
@@ -2958,6 +2985,7 @@ class GuiDocEditHeader(QWidget):
 
         self.tbButton.setVisible(True)
         self.searchButton.setVisible(True)
+        self.outlineButton.setVisible(True)
         self.closeButton.setVisible(True)
         self.minmaxButton.setVisible(True)
 
@@ -2986,6 +3014,12 @@ class GuiDocEditHeader(QWidget):
         self.searchButton.setVisible(False)
         self.closeButton.setVisible(False)
         self.minmaxButton.setVisible(False)
+        return
+
+    @pyqtSlot(int)
+    def _gotoBlock(self, blockNumber: int) -> None:
+        """Move cursor to a specific heading."""
+        self.docEditor.setCursorLine(blockNumber + 1)
         return
 
     ##
