@@ -59,7 +59,7 @@ from novelwriter.constants import nwKeyWords, nwLabels, nwShortcode, nwUnicode, 
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.core.document import NWDocument
 from novelwriter.text.counting import standardCounter
-from novelwriter.gui.dochighlight import GuiDocHighlighter
+from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE
 from novelwriter.gui.editordocument import GuiTextDocument
 from novelwriter.extensions.eventfilters import WheelEventFilter
 
@@ -185,18 +185,18 @@ class GuiDocEditor(QPlainTextEdit):
         self.followTag2.activated.connect(self._processTag)
 
         # Set Up Document Word Counter
-        self.wcTimerDoc = QTimer()
-        self.wcTimerDoc.timeout.connect(self._runDocCounter)
-        self.wcTimerDoc.setInterval(5000)
+        self.timerDoc = QTimer(self)
+        self.timerDoc.timeout.connect(self._runDocumentTasks)
+        self.timerDoc.setInterval(5000)
 
         self.wCounterDoc = BackgroundWordCounter(self)
         self.wCounterDoc.setAutoDelete(False)
         self.wCounterDoc.signals.countsReady.connect(self._updateDocCounts)
 
         # Set Up Selection Word Counter
-        self.wcTimerSel = QTimer()
-        self.wcTimerSel.timeout.connect(self._runSelCounter)
-        self.wcTimerSel.setInterval(500)
+        self.timerSel = QTimer(self)
+        self.timerSel.timeout.connect(self._runSelCounter)
+        self.timerSel.setInterval(500)
 
         self.wCounterSel = BackgroundWordCounter(self, forSelection=True)
         self.wCounterSel.setAutoDelete(False)
@@ -249,8 +249,8 @@ class GuiDocEditor(QPlainTextEdit):
         self._nwDocument = None
         self.setReadOnly(True)
         self.clear()
-        self.wcTimerDoc.stop()
-        self.wcTimerSel.stop()
+        self.timerDoc.stop()
+        self.timerSel.stop()
 
         self._docHandle  = None
         self._lastEdit   = 0.0
@@ -397,8 +397,8 @@ class GuiDocEditor(QPlainTextEdit):
 
         self._lastEdit = time()
         self._lastActive = time()
-        self._runDocCounter()
-        self.wcTimerDoc.start()
+        self._runDocumentTasks()
+        self.timerDoc.start()
 
         self.setReadOnly(False)
         self.updateDocMargins()
@@ -432,7 +432,7 @@ class GuiDocEditor(QPlainTextEdit):
 
     def updateTagHighLighting(self) -> None:
         """Rerun the syntax highlighter on all meta data lines."""
-        self._qDocument.syntaxHighlighter.rehighlightByType(GuiDocHighlighter.BLOCK_META)
+        self._qDocument.syntaxHighlighter.rehighlightByType(BLOCK_META)
         return
 
     def replaceText(self, text: str) -> None:
@@ -1033,8 +1033,8 @@ class GuiDocEditor(QPlainTextEdit):
         if not self._docChanged:
             self.setDocumentChanged(removed != 0 or added != 0)
 
-        if not self.wcTimerDoc.isActive():
-            self.wcTimerDoc.start()
+        if not self.timerDoc.isActive():
+            self.timerDoc.start()
 
         if (block := self._qDocument.findBlock(pos)).isValid():
             text = block.text()
@@ -1084,7 +1084,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         ctxMenu = QMenu(self)
         ctxMenu.setObjectName("ContextMenu")
-        if pBlock.userState() == GuiDocHighlighter.BLOCK_TITLE:
+        if pBlock.userState() == BLOCK_TITLE:
             action = ctxMenu.addAction(self.tr("Set as Document Name"))
             action.triggered.connect(lambda: self._emitRenameItem(pBlock))
 
@@ -1179,10 +1179,8 @@ class GuiDocEditor(QPlainTextEdit):
         return
 
     @pyqtSlot()
-    def _runDocCounter(self) -> None:
-        """Decide whether to run the word counter, or not due to
-        inactivity.
-        """
+    def _runDocumentTasks(self) -> None:
+        """Run timer document tasks."""
         if self._docHandle is None:
             return
 
@@ -1193,6 +1191,7 @@ class GuiDocEditor(QPlainTextEdit):
         if time() - self._lastEdit < 25.0:
             logger.debug("Running word counter")
             SHARED.runInThreadPool(self.wCounterDoc)
+            self._updateOutline()
 
         return
 
@@ -1214,10 +1213,10 @@ class GuiDocEditor(QPlainTextEdit):
         information to the footer, and start the selection word counter.
         """
         if self.textCursor().hasSelection():
-            if not self.wcTimerSel.isActive():
-                self.wcTimerSel.start()
+            if not self.timerSel.isActive():
+                self.timerSel.start()
         else:
-            self.wcTimerSel.stop()
+            self.timerSel.stop()
             self.docFooter.updateWordCount(0, False)
         return
 
@@ -1241,7 +1240,7 @@ class GuiDocEditor(QPlainTextEdit):
         if self._docHandle and self._nwItem:
             logger.debug("User selected %d words", wCount)
             self.docFooter.updateWordCount(wCount, True)
-            self.wcTimerSel.stop()
+            self.timerSel.stop()
         return
 
     @pyqtSlot()
@@ -1836,6 +1835,13 @@ class GuiDocEditor(QPlainTextEdit):
     ##
     #  Internal Functions
     ##
+
+    def _updateOutline(self) -> None:
+        """Scan the text for headings and update the outline."""
+        data = [(b.blockNumber(), b.text()) for b in self._qDocument.iterBlockByType(BLOCK_TITLE)]
+        logger.debug("Document contains %d heading(s)", len(data))
+        self.docHeader.setOutline(data)
+        return
 
     def _processTag(self, cursor: QTextCursor | None = None,
                     follow: bool = True, create: bool = False) -> nwTrinary:
@@ -2802,6 +2808,7 @@ class GuiDocEditHeader(QWidget):
         self.mainGui   = docEditor.mainGui
 
         self._docHandle = None
+        self._docOutline: list[tuple[int, str]] = []
 
         fPx = int(0.9*SHARED.theme.fontPixelSize)
         mPx = CONFIG.pxInt(8)
@@ -2887,6 +2894,11 @@ class GuiDocEditHeader(QWidget):
     ##
     #  Methods
     ##
+
+    def setOutline(self, data: list[tuple[int, str]]) -> None:
+        """Set the document outline dataset."""
+        self._docOutline = data
+        return
 
     def updateTheme(self) -> None:
         """Update theme elements."""

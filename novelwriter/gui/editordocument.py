@@ -23,11 +23,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+from collections.abc import Generator
 import logging
 
 from time import time
 
-from PyQt5.QtGui import QTextCursor, QTextDocument
+from PyQt5.QtGui import QTextBlock, QTextCursor, QTextDocument
 from PyQt5.QtCore import QObject, pyqtSlot
 from PyQt5.QtWidgets import QPlainTextDocumentLayout, qApp
 from novelwriter import SHARED
@@ -112,6 +113,14 @@ class GuiTextDocument(QTextDocument):
                         word = text[cPos:cEnd]
                         return word, cPos, cLen, SHARED.spelling.suggestWords(word)
         return "", -1, -1, []
+
+    def iterBlockByType(self, cType: int) -> Generator[QTextBlock]:
+        """Iterate over all text blocks of a given type."""
+        for i in range(self.blockCount()):
+            block = self.findBlockByNumber(i)
+            if block.isValid() and block.userState() & cType > 0:
+                yield block
+        return None
 
     ##
     #  Public Slots
