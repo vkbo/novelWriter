@@ -1,5 +1,32 @@
 # novelWriter Changelog
 
+## Version 2.3.1 [2024-03-17]
+
+### Release Notes
+
+This is a patch release that fixes several issues with translations into other languages than the
+default English, and adds completed translations for French.
+
+### Detailed Changelog
+
+**Internationalisation**
+
+* Fix untranslated text on the "Project Word List" dialog. PR #1744. Issue #1746.
+* Fix untranslated text on the dialog that pops up after an upgrade, PR #1754. Issue #1749.
+* Fix error in Norwegian translation. PR #1744.
+* Allow the translated text for adding chapter and scenes on the Welcome dialog to flow around the
+  number selector since the number is inserted into the sentence, and not all languages will split
+  the sentence around the number like is done in English. PR #1754. Issue #1750.
+* French translation updated by Albert Aribaud (@aaribaud). PR #1760.
+* Minor updates to other translations for the 2.3.1 fixes by other contributors. PR #1760.
+
+**Other Changes**
+
+* Bump the revision of the project file format to 1.5 Revision 3 from Revision 2. This should have
+  been done in the 2.3 release due to the addition of the Templates root folder type. PR #1748.
+
+----
+
 ## Version 2.3 [2024-03-10]
 
 ### Release Notes
