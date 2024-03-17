@@ -285,7 +285,7 @@ class NWBuildDocument:
             bldObj.setColourHeaders(self._build.getBool("odt.addColours"))
             bldObj.setLanguage(self._project.data.language)
             bldObj.setHeaderFormat(
-                self._build.getStr("odt.pageHeaderText"), self._build.getInt("odt.pageCountOffset")
+                self._build.getStr("odt.pageHeader"), self._build.getInt("odt.pageCountOffset")
             )
 
             scale = nwLabels.UNIT_SCALE.get(self._build.getStr("format.pageUnit"), 1.0)

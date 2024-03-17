@@ -693,8 +693,8 @@ def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
     assert odt._dLanguage == "nb"
     odt.setColourHeaders(True)
     assert odt._colourHead is True
-    odt.setHeaderFormat(nwHeadFmt.ODT_PAGE, 1)
-    assert odt._headerFormat == nwHeadFmt.ODT_PAGE
+    odt.setHeaderFormat(nwHeadFmt.ODT_AUTO, 1)
+    assert odt._headerFormat == nwHeadFmt.ODT_AUTO
 
     odt.setPageLayout(148, 210, 20, 18, 17, 15)
     assert odt._mDocWidth  == "14.800cm"
@@ -741,7 +741,7 @@ def testCoreToOdt_SaveFull(mockGUI, fncPath, tstPaths):
     odt._isNovel = True
 
     # Set a format without page number
-    odt.setHeaderFormat("Test Project - Jane Smith", 0)
+    odt.setHeaderFormat(f"{nwHeadFmt.ODT_PROJECT} - {nwHeadFmt.ODT_AUTHOR}", 0)
 
     odt._text = (
         "## Chapter One\n\n"

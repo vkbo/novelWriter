@@ -1314,6 +1314,11 @@
       <translation>novelWriterの準備ができました...</translation>
     </message>
     <message>
+      <location filename="../novelwriter/guimain.py" line="357" />
+      <source>You are now running novelWriter version {0}.</source>
+      <translation>novelWriter バージョン {0} を実行しています。</translation>
+    </message>
+    <message>
       <location filename="../novelwriter/guimain.py" line="360" />
       <source>Please check the {0}release notes{1} for further details.</source>
       <translation>詳細については、 {0}リリース ノート{1} を確認してください。</translation>
@@ -3175,37 +3180,37 @@
   <context>
     <name>GuiWelcome</name>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="67" />
+      <location filename="../novelwriter/tools/welcome.py" line="68" />
       <source>Welcome</source>
       <translation>ようこそ</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="109" />
+      <location filename="../novelwriter/tools/welcome.py" line="110" />
       <source>List</source>
       <translation>一覧</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="113" />
+      <location filename="../novelwriter/tools/welcome.py" line="114" />
       <source>New</source>
       <translation>新規</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="117" />
+      <location filename="../novelwriter/tools/welcome.py" line="118" />
       <source>Browse</source>
       <translation>ブラウズ</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="121" />
+      <location filename="../novelwriter/tools/welcome.py" line="122" />
       <source>Cancel</source>
       <translation>キャンセル</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="125" />
+      <location filename="../novelwriter/tools/welcome.py" line="126" />
       <source>Create</source>
       <translation>作成</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="129" />
+      <location filename="../novelwriter/tools/welcome.py" line="130" />
       <source>Open</source>
       <translation>開く</translation>
     </message>
@@ -4119,123 +4124,117 @@
   <context>
     <name>_NewProjectForm</name>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="569" />
+      <location filename="../novelwriter/tools/welcome.py" line="570" />
       <source>Required</source>
       <translation>必須</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="575" />
+      <location filename="../novelwriter/tools/welcome.py" line="576" />
       <source>Optional</source>
       <translation>任意</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="598" />
+      <location filename="../novelwriter/tools/welcome.py" line="599" />
       <source>Create a fresh project</source>
       <translation>新鮮なプロジェクトを作成</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="602" />
+      <location filename="../novelwriter/tools/welcome.py" line="603" />
       <source>Create an example project</source>
       <translation>サンプルプロジェクトを作成</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="606" />
+      <location filename="../novelwriter/tools/welcome.py" line="607" />
       <source>Copy an existing project</source>
       <translation>既存のプロジェクトをコピー</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="620" />
+      <location filename="../novelwriter/tools/welcome.py" line="621" />
       <source>Project Name</source>
       <translation>プロジェクト名</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="621" />
+      <location filename="../novelwriter/tools/welcome.py" line="622" />
       <source>Author</source>
       <translation>著者</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="622" />
+      <location filename="../novelwriter/tools/welcome.py" line="623" />
       <source>Project Path</source>
       <translation>プロジェクトパス</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="623" />
+      <location filename="../novelwriter/tools/welcome.py" line="624" />
       <source>Prefill Project</source>
       <translation>プロジェクトのプリフィル</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="631" />
+      <location filename="../novelwriter/tools/welcome.py" line="632" />
       <source>Set to 0 to only add scenes</source>
       <translation>シーンのみを追加するには0に設定してください</translation>
     </message>
     <message>
+      <location filename="../novelwriter/tools/welcome.py" line="635" />
+      <source>Add {0} chapter documents</source>
+      <translation>{0} 章ドキュメントを追加</translation>
+    </message>
+    <message>
       <location filename="../novelwriter/tools/welcome.py" line="644" />
-      <location filename="../novelwriter/tools/welcome.py" line="634" />
-      <source>Add</source>
-      <translation>追加</translation>
+      <source>Add {0} scene documents (to each chapter)</source>
+      <translation>{0} 場面ドキュメントを追加(各章に)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="636" />
-      <source>chapter documents</source>
-      <translation>章ドキュメント</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/tools/welcome.py" line="646" />
-      <source>scene documents (to each chapter)</source>
-      <translation>場面ドキュメント(各章に)</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/tools/welcome.py" line="673" />
+      <location filename="../novelwriter/tools/welcome.py" line="672" />
       <source>Add a folder for plot notes</source>
       <translation>プロットノート用のフォルダーを追加</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="674" />
+      <location filename="../novelwriter/tools/welcome.py" line="673" />
       <source>Add a folder for character notes</source>
       <translation>登場人物ノート用のフォルダーを追加</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="675" />
+      <location filename="../novelwriter/tools/welcome.py" line="674" />
       <source>Add a folder for location notes</source>
       <translation>場所ノート用のフォルダーを追加</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="676" />
+      <location filename="../novelwriter/tools/welcome.py" line="675" />
       <source>Add example notes to the above</source>
       <translation>上記にノートの例を追加する</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="682" />
+      <location filename="../novelwriter/tools/welcome.py" line="681" />
       <source>Chapters and Scenes</source>
       <translation>章と場面</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="685" />
+      <location filename="../novelwriter/tools/welcome.py" line="684" />
       <source>Project Notes</source>
       <translation>プロジェクトノート</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="694" />
+      <location filename="../novelwriter/tools/welcome.py" line="693" />
       <source>Create New Project</source>
       <translation>新規プロジェクトを作成</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="737" />
+      <location filename="../novelwriter/tools/welcome.py" line="736" />
       <source>Select Project Folder</source>
       <translation>プロジェクトフォルダーを選択</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="793" />
+      <location filename="../novelwriter/tools/welcome.py" line="792" />
       <source>Fresh Project</source>
       <translation>新鮮なプロジェクト</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="795" />
+      <location filename="../novelwriter/tools/welcome.py" line="794" />
       <source>Example Project</source>
       <translation>サンプルプロジェクト</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="797" />
+      <location filename="../novelwriter/tools/welcome.py" line="796" />
       <source>Template: {0}</source>
       <translation>テンプレート: {0}</translation>
     </message>
@@ -4243,7 +4242,7 @@
   <context>
     <name>_NewProjectPage</name>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="537" />
+      <location filename="../novelwriter/tools/welcome.py" line="538" />
       <source>A project name is required.</source>
       <translation>プロジェクト名は必須です。</translation>
     </message>
@@ -4251,27 +4250,27 @@
   <context>
     <name>_OpenProjectPage</name>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="288" />
+      <location filename="../novelwriter/tools/welcome.py" line="289" />
       <source>The project path is not reachable.</source>
       <translation>プロジェクトパスに到達できません。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="335" />
+      <location filename="../novelwriter/tools/welcome.py" line="336" />
       <source>Path</source>
       <translation>パス</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="355" />
+      <location filename="../novelwriter/tools/welcome.py" line="356" />
       <source>Remove '{0}' from the recent projects list? The project files will not be deleted.</source>
       <translation>'{0}' を最近のプロジェクトリストから削除しますか？　プロジェクトファイルは削除されません。</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="369" />
+      <location filename="../novelwriter/tools/welcome.py" line="370" />
       <source>Open Project</source>
       <translation>プロジェクトを開く</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="371" />
+      <location filename="../novelwriter/tools/welcome.py" line="372" />
       <source>Remove Project</source>
       <translation>プロジェクトを削除</translation>
     </message>
@@ -4362,12 +4361,12 @@
   <context>
     <name>_ProjectListModel</name>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="454" />
+      <location filename="../novelwriter/tools/welcome.py" line="455" />
       <source>Word Count</source>
       <translation>単語カウント</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="455" />
+      <location filename="../novelwriter/tools/welcome.py" line="456" />
       <source>Last Opened</source>
       <translation>最後に開いた</translation>
     </message>

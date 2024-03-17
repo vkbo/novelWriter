@@ -100,7 +100,7 @@
   <office:master-styles>
     <style:master-page style:name="Standard" style:page-layout-name="PM1">
       <style:header>
-        <text:p text:style-name="Header"><text:page-number text:select-page="current">2</text:page-number></text:p>
+        <text:p text:style-name="Header">Lorem Ipsum / lipsum.com / <text:page-number text:select-page="current">2</text:page-number></text:p>
       </style:header>
       <style:header-first>
         <text:p text:style-name="Header" />
