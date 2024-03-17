@@ -196,12 +196,12 @@ class GuiMainMenu(QMenuBar):
         # Document > Open
         self.aOpenDoc = self.docuMenu.addAction(self.tr("Open Document"))
         self.aOpenDoc.setShortcut("Ctrl+O")
-        self.aOpenDoc.triggered.connect(lambda: self.mainGui.openSelectedItem())
+        self.aOpenDoc.triggered.connect(self.mainGui.openSelectedItem)
 
         # Document > Save
         self.aSaveDoc = self.docuMenu.addAction(self.tr("Save Document"))
         self.aSaveDoc.setShortcut("Ctrl+S")
-        self.aSaveDoc.triggered.connect(lambda: self.mainGui.saveDocument())
+        self.aSaveDoc.triggered.connect(self.mainGui.saveDocument)
 
         # Document > Close
         self.aCloseDoc = self.docuMenu.addAction(self.tr("Close Document"))
@@ -219,7 +219,7 @@ class GuiMainMenu(QMenuBar):
         # Document > Close Preview
         self.aCloseView = self.docuMenu.addAction(self.tr("Close Document View"))
         self.aCloseView.setShortcut("Ctrl+Shift+R")
-        self.aCloseView.triggered.connect(lambda: self.mainGui.closeDocViewer())
+        self.aCloseView.triggered.connect(self.mainGui.closeDocViewer)
 
         # Document > Separator
         self.docuMenu.addSeparator()

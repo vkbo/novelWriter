@@ -278,6 +278,8 @@ class GuiMain(QMainWindow):
 
         self.docViewer.documentLoaded.connect(self.docViewerPanel.updateHandle)
         self.docViewer.loadDocumentTagRequest.connect(self._followTag)
+        self.docViewer.closeDocumentRequest.connect(self.closeDocViewer)
+        self.docViewer.reloadDocumentRequest.connect(self._reloadViewer)
         self.docViewer.togglePanelVisibility.connect(self._toggleViewerPanelVisibility)
         self.docViewer.requestProjectItemSelected.connect(self.projView.setSelectedHandle)
 
@@ -401,7 +403,7 @@ class GuiMain(QMainWindow):
         if saveOK:
             self.closeDocument()
             self.docViewer.clearNavHistory()
-            self.closeDocViewer(byUser=False)
+            self.closeViewerPanel(byUser=False)
 
             self.docViewerPanel.closeProjectTasks()
             self.outlineView.closeProjectTasks()
@@ -604,13 +606,12 @@ class GuiMain(QMainWindow):
 
         return False
 
-    def saveDocument(self) -> bool:
+    @pyqtSlot()
+    def saveDocument(self) -> None:
         """Save the current documents."""
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
-        self.docEditor.saveText()
-        return True
+        if SHARED.hasProject:
+            self.docEditor.saveText()
+        return
 
     def viewDocument(self, tHandle: str | None = None, sTitle: str | None = None) -> bool:
         """Load a document for viewing in the view panel."""
@@ -640,7 +641,8 @@ class GuiMain(QMainWindow):
         self._changeView(nwView.EDITOR)
 
         logger.debug("Viewing document with handle '%s'", tHandle)
-        if self.docViewer.loadText(tHandle):
+        updateHistory = tHandle != self.docViewer.docHandle
+        if self.docViewer.loadText(tHandle, updateHistory=updateHistory):
             if not self.splitView.isVisible():
                 cursorVisible = self.docEditor.cursorIsVisible()
                 bPos = self.splitMain.sizes()
@@ -713,37 +715,32 @@ class GuiMain(QMainWindow):
     #  Tree Item Actions
     ##
 
-    def openSelectedItem(self) -> bool:
+    @pyqtSlot()
+    def openSelectedItem(self) -> None:
         """Open the selected item from the tree that is currently
         active. It is not checked that the item is actually a document.
         That should be handled by the openDocument function.
         """
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
-
-        tHandle = None
-        sTitle = None
-        tLine = None
-        if self.projView.treeHasFocus():
-            tHandle = self.projView.getSelectedHandle()
-        elif self.novelView.treeHasFocus():
-            tHandle, sTitle = self.novelView.getSelectedHandle()
-        elif self.outlineView.treeHasFocus():
-            tHandle, sTitle = self.outlineView.getSelectedHandle()
-        else:
-            logger.warning("No item selected")
-            return False
-
-        if tHandle is not None and sTitle is not None:
-            hItem = SHARED.project.index.getItemHeading(tHandle, sTitle)
-            if hItem is not None:
-                tLine = hItem.line
-
-        if tHandle is not None:
-            self.openDocument(tHandle, tLine=tLine, changeFocus=False, doScroll=False)
-
-        return True
+        if SHARED.hasProject:
+            tHandle = None
+            sTitle = None
+            tLine = None
+            if self.projView.treeHasFocus():
+                tHandle = self.projView.getSelectedHandle()
+            elif self.novelView.treeHasFocus():
+                tHandle, sTitle = self.novelView.getSelectedHandle()
+            elif self.outlineView.treeHasFocus():
+                tHandle, sTitle = self.outlineView.getSelectedHandle()
+            else:
+                logger.warning("No item selected")
+                return False
+            if tHandle is not None and sTitle is not None:
+                hItem = SHARED.project.index.getItemHeading(tHandle, sTitle)
+                if hItem is not None:
+                    tLine = hItem.line
+            if tHandle is not None:
+                self.openDocument(tHandle, tLine=tLine, changeFocus=False, doScroll=False)
+        return
 
     def editItemLabel(self, tHandle: str | None = None) -> bool:
         """Open the edit item dialog."""
@@ -943,7 +940,7 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def closeDocViewer(self, byUser: bool = True) -> bool:
+    def closeViewerPanel(self, byUser: bool = True) -> bool:
         """Close the document view panel."""
         self.docViewer.clearViewer()
         if byUser:
@@ -989,6 +986,13 @@ class GuiMain(QMainWindow):
         """Close the document editor. This does not hide the editor."""
         self.closeDocument()
         SHARED.project.data.setLastHandle(None, "editor")
+        return
+
+    @pyqtSlot()
+    def closeDocViewer(self) -> None:
+        """Close the document viewer."""
+        self.closeViewerPanel()
+        SHARED.project.data.setLastHandle(None, "viewer")
         return
 
     @pyqtSlot()
@@ -1152,6 +1156,15 @@ class GuiMain(QMainWindow):
                 self.openDocument(tHandle, tLine=tLine, changeFocus=setFocus)
             elif mode == nwDocMode.VIEW:
                 self.viewDocument(tHandle=tHandle, sTitle=sTitle)
+        return
+
+    @pyqtSlot()
+    def _reloadViewer(self) -> None:
+        """Reload the document in the viewer."""
+        if self.docEditor.docChanged and self.docEditor.docHandle == self.docViewer.docHandle:
+            # If the two panels have the same document, save any changes in the editor
+            self.saveDocument()
+        self.docViewer.reloadText()
         return
 
     @pyqtSlot(nwView)

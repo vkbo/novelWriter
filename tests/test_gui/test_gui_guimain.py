@@ -52,10 +52,8 @@ def testGuiMain_ProjectBlocker(nwGUI):
     assert nwGUI.closeDocument() is False
     assert nwGUI.openDocument(None) is False
     assert nwGUI.openNextDocument(None) is False
-    assert nwGUI.saveDocument() is False
     assert nwGUI.viewDocument(None) is False
     assert nwGUI.importDocument() is False
-    assert nwGUI.openSelectedItem() is False
     assert nwGUI.editItemLabel() is False
     assert nwGUI.rebuildIndex() is False
 
@@ -109,7 +107,8 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     buildTestProject(nwGUI, projPath)
 
     sHandle = "000000000000f"
-    assert nwGUI.openSelectedItem() is False
+    nwGUI.openSelectedItem()
+    assert nwGUI.docEditor.docHandle is None
 
     # Project Tree has focus
     nwGUI._changeView(nwView.PROJECT)
@@ -238,7 +237,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     nwGUI.projView.projTree.clearSelection()
     nwGUI.projView.projTree._getTreeItem(C.hCharRoot).setSelected(True)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
-    assert nwGUI.openSelectedItem()
+    nwGUI.openSelectedItem()
 
     # Text Editor
     # ===========
@@ -265,7 +264,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     nwGUI.projView.projTree.clearSelection()
     nwGUI.projView.projTree._getTreeItem(C.hPlotRoot).setSelected(True)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
-    assert nwGUI.openSelectedItem()
+    nwGUI.openSelectedItem()
 
     # Type something into the document
     nwGUI.switchFocus(nwWidget.EDITOR)
@@ -287,7 +286,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     nwGUI.projView.projTree.clearSelection()
     nwGUI.projView.projTree._getTreeItem(C.hWorldRoot).setSelected(True)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
-    assert nwGUI.openSelectedItem()
+    nwGUI.openSelectedItem()
 
     # Add Some Text
     docEditor.replaceText("Hello World!")
@@ -319,7 +318,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     nwGUI.projView.projTree._getTreeItem(C.hNovelRoot).setExpanded(True)
     nwGUI.projView.projTree._getTreeItem(C.hChapterDir).setExpanded(True)
     nwGUI.projView.projTree._getTreeItem(C.hSceneDoc).setSelected(True)
-    assert nwGUI.openSelectedItem()
+    nwGUI.openSelectedItem()
 
     # Type something into the document
     nwGUI.switchFocus(nwWidget.EDITOR)
@@ -524,8 +523,8 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
 
     # Save the document
     assert docEditor.docChanged
-    assert nwGUI.saveDocument()
-    assert not docEditor.docChanged
+    nwGUI.saveDocument()
+    assert docEditor.docChanged is False
     nwGUI.rebuildIndex()
 
     # Open and view the edited document
@@ -533,7 +532,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert nwGUI.openDocument(C.hSceneDoc)
     assert nwGUI.viewDocument(C.hSceneDoc)
     assert nwGUI.saveProject()
-    assert nwGUI.closeDocViewer()
+    assert nwGUI.closeViewerPanel()
 
     # Check the files
     projFile = projPath / "nwProject.nwx"

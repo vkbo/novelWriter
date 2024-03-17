@@ -259,7 +259,7 @@ class GuiDocEditor(QPlainTextEdit):
         self._doReplace  = False
 
         self.setDocumentChanged(False)
-        self.docHeader.setTitleFromHandle(self._docHandle)
+        self.docHeader.clearHeader()
         self.docFooter.setHandle(self._docHandle)
         self.docToolBar.setVisible(False)
 
@@ -363,7 +363,7 @@ class GuiDocEditor(QPlainTextEdit):
         # which makes it read only.
         if self._docHandle:
             self._qDocument.syntaxHighlighter.rehighlight()
-            self.docHeader.setTitleFromHandle(self._docHandle)
+            self.docHeader.setHandle(self._docHandle)
         else:
             self.clearEditor()
 
@@ -408,8 +408,8 @@ class GuiDocEditor(QPlainTextEdit):
         elif isinstance(tLine, int):
             self.setCursorLine(tLine)
 
-        self.docHeader.setTitleFromHandle(self._docHandle)
-        self.docFooter.setHandle(self._docHandle)
+        self.docHeader.setHandle(tHandle)
+        self.docFooter.setHandle(tHandle)
 
         # This is a hack to fix invisible cursor on an empty document
         if self._qDocument.characterCount() <= 1:
@@ -991,8 +991,8 @@ class GuiDocEditor(QPlainTextEdit):
         """Called when an item label is changed to check if the document
         title bar needs updating,
         """
-        if tHandle == self._docHandle:
-            self.docHeader.setTitleFromHandle(self._docHandle)
+        if tHandle and tHandle == self._docHandle:
+            self.docHeader.setHandle(tHandle)
             self.docFooter.updateInfo()
             self.updateDocMargins()
         return
@@ -2909,6 +2909,20 @@ class GuiDocEditHeader(QWidget):
     #  Methods
     ##
 
+    def clearHeader(self) -> None:
+        """Clear the header."""
+        self._docHandle = None
+        self._docOutline = {}
+
+        self.itemTitle.setText("")
+        self.outlineMenu.clear()
+        self.tbButton.setVisible(False)
+        self.searchButton.setVisible(False)
+        self.outlineButton.setVisible(False)
+        self.closeButton.setVisible(False)
+        self.minmaxButton.setVisible(False)
+        return
+
     def setOutline(self, data: dict[int, str]) -> None:
         """Set the document outline dataset."""
         if data != self._docOutline:
@@ -2962,21 +2976,11 @@ class GuiDocEditHeader(QWidget):
 
         return
 
-    def setTitleFromHandle(self, tHandle: str | None) -> None:
+    def setHandle(self, tHandle: str) -> None:
         """Set the document title from the handle, or alternatively, set
         the whole document path within the project.
         """
         self._docHandle = tHandle
-        if tHandle is None:
-            self.itemTitle.setText("")
-            self.tbButton.setVisible(False)
-            self.searchButton.setVisible(False)
-            self.outlineButton.setVisible(False)
-            self.closeButton.setVisible(False)
-            self.minmaxButton.setVisible(False)
-            self.outlineMenu.clear()
-            self._docOutline = {}
-            return
 
         if CONFIG.showFullPath:
             self.itemTitle.setText(f"  {nwUnicode.U_RSAQUO}  ".join(reversed(
@@ -3011,14 +3015,8 @@ class GuiDocEditHeader(QWidget):
     @pyqtSlot()
     def _closeDocument(self) -> None:
         """Trigger the close editor on the main window."""
+        self.clearHeader()
         self.closeDocumentRequest.emit()
-        self.tbButton.setVisible(False)
-        self.searchButton.setVisible(False)
-        self.outlineButton.setVisible(False)
-        self.closeButton.setVisible(False)
-        self.minmaxButton.setVisible(False)
-        self.outlineMenu.clear()
-        self._docOutline = {}
         return
 
     @pyqtSlot(int)

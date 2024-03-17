@@ -47,7 +47,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.openDocument(C.hSceneDoc)
 
     nwGUI.docEditor.setPlainText("### Lorem Ipsum\n\n%s" % ipsumText[0])
-    assert nwGUI.saveDocument()
+    nwGUI.saveDocument()
 
     # Check Defaults
     qDoc = nwGUI.docEditor.document()
@@ -122,7 +122,7 @@ def testGuiEditor_LoadText(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     longText = "### Lorem Ipsum\n\n%s" % "\n\n".join(ipsumText*20)
     nwGUI.docEditor.replaceText(longText)
-    assert nwGUI.saveDocument() is True
+    nwGUI.saveDocument()
     assert nwGUI.closeDocument() is True
 
     # Invalid handle
@@ -138,7 +138,7 @@ def testGuiEditor_LoadText(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # Load empty document
     nwGUI.docEditor.replaceText("")
-    assert nwGUI.saveDocument() is True
+    nwGUI.saveDocument()
     assert nwGUI.docEditor.loadText(C.hSceneDoc) is True
     assert nwGUI.docEditor.toPlainText() == ""
 
@@ -1484,7 +1484,7 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     cHandle = SHARED.project.newFile("Jane Doe", C.hCharRoot)
     assert nwGUI.openDocument(cHandle) is True
     nwGUI.docEditor.replaceText(text)
-    assert nwGUI.saveDocument() is True
+    nwGUI.saveDocument()
     assert nwGUI.projView.projTree.revealNewTreeItem(cHandle)
     nwGUI.docEditor.updateTagHighLighting()
 
@@ -1514,7 +1514,7 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.docViewer._docHandle is None
     assert nwGUI.docEditor._processTag(follow=True) is nwTrinary.POSITIVE
     assert nwGUI.docViewer._docHandle == cHandle
-    assert nwGUI.closeDocViewer() is True
+    assert nwGUI.closeViewerPanel() is True
     assert nwGUI.docViewer._docHandle is None
 
     # On Unknown Tag, Create It
@@ -1553,7 +1553,7 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     cHandle = SHARED.project.newFile("People", C.hCharRoot)
     assert nwGUI.openDocument(cHandle) is True
     nwGUI.docEditor.replaceText(text)
-    assert nwGUI.saveDocument() is True
+    nwGUI.saveDocument()
     assert nwGUI.projView.projTree.revealNewTreeItem(cHandle)
 
     docEditor = nwGUI.docEditor
