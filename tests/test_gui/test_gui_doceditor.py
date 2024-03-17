@@ -125,7 +125,7 @@ def testGuiEditor_LoadText(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     longText = "### Lorem Ipsum\n\n%s" % "\n\n".join(ipsumText*20)
     nwGUI.docEditor.replaceText(longText)
     nwGUI.saveDocument()
-    assert nwGUI.closeDocument() is True
+    nwGUI.closeDocument()
 
     # Invalid handle
     assert nwGUI.docEditor.loadText("abcdefghijklm") is False

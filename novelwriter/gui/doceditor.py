@@ -1192,7 +1192,10 @@ class GuiDocEditor(QPlainTextEdit):
         if time() - self._lastEdit < 25.0:
             logger.debug("Running word counter")
             SHARED.runInThreadPool(self.wCounterDoc)
-            self._updateOutline()
+            self.docHeader.setOutline({
+                block.blockNumber(): block.text()
+                for block in self._qDocument.iterBlockByType(BLOCK_TITLE)
+            })
 
         return
 
@@ -1836,14 +1839,6 @@ class GuiDocEditor(QPlainTextEdit):
     ##
     #  Internal Functions
     ##
-
-    def _updateOutline(self) -> None:
-        """Scan the text for headings and update the outline."""
-        self.docHeader.setOutline({
-            block.blockNumber(): block.text()
-            for block in self._qDocument.iterBlockByType(BLOCK_TITLE)
-        })
-        return
 
     def _processTag(self, cursor: QTextCursor | None = None,
                     follow: bool = True, create: bool = False) -> nwTrinary:

@@ -524,24 +524,19 @@ class GuiMain(QMainWindow):
     #  Document Actions
     ##
 
-    def closeDocument(self, beforeOpen: bool = False) -> bool:
+    def closeDocument(self, beforeOpen: bool = False) -> None:
         """Close the document and clear the editor and title field."""
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
-
-        # Disable focus mode if it is active
-        if SHARED.focusMode:
-            SHARED.setFocusMode(False)
-
-        self.docEditor.saveCursorPosition()
-        if self.docEditor.docChanged:
-            self.saveDocument()
-        self.docEditor.clearEditor()
-        if not beforeOpen:
-            self.novelView.setActiveHandle(None)
-
-        return True
+        if SHARED.hasProject:
+            # Disable focus mode if it is active
+            if SHARED.focusMode:
+                SHARED.setFocusMode(False)
+            self.docEditor.saveCursorPosition()
+            if self.docEditor.docChanged:
+                self.saveDocument()
+            self.docEditor.clearEditor()
+            if not beforeOpen:
+                self.novelView.setActiveHandle(None)
+        return
 
     def openDocument(self, tHandle: str | None, tLine: int | None = None,
                      changeFocus: bool = True, doScroll: bool = False) -> bool:
@@ -732,57 +727,53 @@ class GuiMain(QMainWindow):
                 tHandle, sTitle = self.outlineView.getSelectedHandle()
             else:
                 logger.warning("No item selected")
-                return False
-            if tHandle is not None and sTitle is not None:
-                hItem = SHARED.project.index.getItemHeading(tHandle, sTitle)
-                if hItem is not None:
+                return
+
+            if tHandle and sTitle:
+                if hItem := SHARED.project.index.getItemHeading(tHandle, sTitle):
                     tLine = hItem.line
-            if tHandle is not None:
+            if tHandle:
                 self.openDocument(tHandle, tLine=tLine, changeFocus=False, doScroll=False)
+
         return
 
-    def editItemLabel(self, tHandle: str | None = None) -> bool:
+    def editItemLabel(self, tHandle: str | None = None) -> None:
         """Open the edit item dialog."""
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
-        if tHandle is None and (self.docEditor.anyFocus() or SHARED.focusMode):
-            tHandle = self.docEditor.docHandle
-        self.projView.renameTreeItem(tHandle)
-        return True
+        if SHARED.hasProject:
+            if tHandle is None and (self.docEditor.anyFocus() or SHARED.focusMode):
+                tHandle = self.docEditor.docHandle
+            self.projView.renameTreeItem(tHandle)
+        return
 
     def rebuildTrees(self) -> None:
         """Rebuild the project tree."""
         self.projView.populateTree()
         return
 
-    def rebuildIndex(self, beQuiet: bool = False) -> bool:
+    def rebuildIndex(self, beQuiet: bool = False) -> None:
         """Rebuild the entire index."""
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
+        if SHARED.hasProject:
+            logger.info("Rebuilding index ...")
+            qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+            tStart = time()
 
-        logger.info("Rebuilding index ...")
-        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
-        tStart = time()
+            self.projView.saveProjectTasks()
+            SHARED.project.index.rebuildIndex()
+            self.projView.populateTree()
+            self.novelView.refreshTree()
 
-        self.projView.saveProjectTasks()
-        SHARED.project.index.rebuildIndex()
-        self.projView.populateTree()
-        self.novelView.refreshTree()
+            tEnd = time()
+            self.mainStatus.setStatusMessage(
+                self.tr("Indexing completed in {0} ms").format(f"{(tEnd - tStart)*1000.0:.1f}")
+            )
+            self.docEditor.updateTagHighLighting()
+            self._updateStatusWordCount()
+            qApp.restoreOverrideCursor()
 
-        tEnd = time()
-        self.mainStatus.setStatusMessage(
-            self.tr("Indexing completed in {0} ms").format(f"{(tEnd - tStart)*1000.0:.1f}")
-        )
-        self.docEditor.updateTagHighLighting()
-        self._updateStatusWordCount()
-        qApp.restoreOverrideCursor()
+            if not beQuiet:
+                SHARED.info(self.tr("The project index has been successfully rebuilt."))
 
-        if not beQuiet:
-            SHARED.info(self.tr("The project index has been successfully rebuilt."))
-
-        return True
+        return
 
     ##
     #  Main Dialogs
@@ -892,15 +883,14 @@ class GuiMain(QMainWindow):
             SHARED.error(self.tr("Could not initialise the dialog."))
         return
 
-    def reportConfErr(self) -> bool:
+    def reportConfErr(self) -> None:
         """Checks if the Config module has any errors to report, and let
         the user know if this is the case. The Config module caches
         errors since it is initialised before the GUI itself.
         """
         if CONFIG.hasError:
             SHARED.error(CONFIG.errorText())
-            return True
-        return False
+        return
 
     ##
     #  Main Window Actions

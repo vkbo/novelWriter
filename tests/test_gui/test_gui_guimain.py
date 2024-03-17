@@ -49,13 +49,10 @@ def testGuiMain_ProjectBlocker(nwGUI):
     # Test no-project blocking
     assert nwGUI.closeProject() is True
     assert nwGUI.saveProject() is False
-    assert nwGUI.closeDocument() is False
     assert nwGUI.openDocument(None) is False
     assert nwGUI.openNextDocument(None) is False
     assert nwGUI.viewDocument(None) is False
     assert nwGUI.importDocument() is False
-    assert nwGUI.editItemLabel() is False
-    assert nwGUI.rebuildIndex() is False
 
 # END Test testGuiMain_ProjectBlocker
 
@@ -120,7 +117,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         nwGUI.projView.projTree._getTreeItem(sHandle).setSelected(True)
         nwGUI._keyPressReturn()
         assert nwGUI.docEditor.docHandle == sHandle
-        assert nwGUI.closeDocument() is True
+        nwGUI.closeDocument()
 
     # Novel Tree has focus
     nwGUI._changeView(nwView.NOVEL)
@@ -132,7 +129,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         nwGUI.novelView.novelTree.setCurrentItem(selItem)
         nwGUI._keyPressReturn()
         assert nwGUI.docEditor.docHandle == sHandle
-        assert nwGUI.closeDocument() is True
+        nwGUI.closeDocument()
 
     # Project Outline has focus
     nwGUI._changeView(nwView.OUTLINE)
@@ -144,7 +141,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         nwGUI.outlineView.outlineTree.setCurrentItem(selItem)
         nwGUI._keyPressReturn()
         assert nwGUI.docEditor.docHandle == sHandle
-        assert nwGUI.closeDocument() is True
+        nwGUI.closeDocument()
 
     # qtbot.stop()
 
