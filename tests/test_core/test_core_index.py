@@ -705,6 +705,16 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
         index.getItemHeading(dHandle, "T0001")
     )]
 
+    # getItemHeading
+    # ==============
+    assert list(index.iterItemHeadings(cHandle)) == [
+        ("T0001", index.getItemHeading(cHandle, "T0001"))
+    ]
+    assert list(index.iterItemHeadings(dHandle)) == [
+        ("T0001", index.getItemHeading(dHandle, "T0001"))
+    ]
+    assert list(index.iterItemHeadings(C.hInvalid)) == []
+
     # getSingleTag
     # ============
     assert index.getSingleTag("jane") == (

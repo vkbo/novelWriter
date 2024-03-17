@@ -2837,15 +2837,6 @@ class GuiDocEditHeader(QWidget):
         self.tbButton.setToolTip(self.tr("Toggle Tool Bar"))
         self.tbButton.clicked.connect(lambda: self.toggleToolBarRequest.emit())
 
-        self.searchButton = QToolButton(self)
-        self.searchButton.setContentsMargins(0, 0, 0, 0)
-        self.searchButton.setIconSize(iconSize)
-        self.searchButton.setFixedSize(fPx, fPx)
-        self.searchButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
-        self.searchButton.setVisible(False)
-        self.searchButton.setToolTip(self.tr("Search"))
-        self.searchButton.clicked.connect(self.docEditor.toggleSearch)
-
         self.outlineButton = QToolButton(self)
         self.outlineButton.setContentsMargins(0, 0, 0, 0)
         self.outlineButton.setIconSize(iconSize)
@@ -2855,6 +2846,15 @@ class GuiDocEditHeader(QWidget):
         self.outlineButton.setToolTip(self.tr("Outline"))
         self.outlineButton.setMenu(self.outlineMenu)
         self.outlineButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+
+        self.searchButton = QToolButton(self)
+        self.searchButton.setContentsMargins(0, 0, 0, 0)
+        self.searchButton.setIconSize(iconSize)
+        self.searchButton.setFixedSize(fPx, fPx)
+        self.searchButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.searchButton.setVisible(False)
+        self.searchButton.setToolTip(self.tr("Search"))
+        self.searchButton.clicked.connect(self.docEditor.toggleSearch)
 
         self.minmaxButton = QToolButton(self)
         self.minmaxButton.setContentsMargins(0, 0, 0, 0)
@@ -2878,8 +2878,8 @@ class GuiDocEditHeader(QWidget):
         self.outerBox = QHBoxLayout()
         self.outerBox.setSpacing(hSp)
         self.outerBox.addWidget(self.tbButton, 0)
-        self.outerBox.addWidget(self.searchButton, 0)
         self.outerBox.addWidget(self.outlineButton, 0)
+        self.outerBox.addWidget(self.searchButton, 0)
         self.outerBox.addWidget(self.itemTitle, 1)
         self.outerBox.addSpacing(fPx + hSp)
         self.outerBox.addWidget(self.minmaxButton, 0)
@@ -2914,8 +2914,8 @@ class GuiDocEditHeader(QWidget):
         self.itemTitle.setText("")
         self.outlineMenu.clear()
         self.tbButton.setVisible(False)
-        self.searchButton.setVisible(False)
         self.outlineButton.setVisible(False)
+        self.searchButton.setVisible(False)
         self.closeButton.setVisible(False)
         self.minmaxButton.setVisible(False)
         return
@@ -2937,8 +2937,8 @@ class GuiDocEditHeader(QWidget):
     def updateTheme(self) -> None:
         """Update theme elements."""
         self.tbButton.setIcon(SHARED.theme.getIcon("menu"))
-        self.searchButton.setIcon(SHARED.theme.getIcon("search"))
         self.outlineButton.setIcon(SHARED.theme.getIcon("list"))
+        self.searchButton.setIcon(SHARED.theme.getIcon("search"))
         self.minmaxButton.setIcon(SHARED.theme.getIcon("maximise"))
         self.closeButton.setIcon(SHARED.theme.getIcon("close"))
 
@@ -2950,8 +2950,8 @@ class GuiDocEditHeader(QWidget):
         buttonStyleMenu = f"{buttonStyle} QToolButton::menu-indicator {{image: none;}}"
 
         self.tbButton.setStyleSheet(buttonStyle)
-        self.searchButton.setStyleSheet(buttonStyle)
         self.outlineButton.setStyleSheet(buttonStyleMenu)
+        self.searchButton.setStyleSheet(buttonStyle)
         self.minmaxButton.setStyleSheet(buttonStyle)
         self.closeButton.setStyleSheet(buttonStyle)
 
