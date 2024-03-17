@@ -29,7 +29,6 @@ from __future__ import annotations
 import logging
 
 from enum import Enum
-from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QPoint, QSize, Qt, QUrl
 from PyQt5.QtGui import (
@@ -44,12 +43,9 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemType, nwDocAction, nwDocMode
 from novelwriter.error import logException
-from novelwriter.constants import nwUnicode
+from novelwriter.constants import nwHeaders, nwUnicode
 from novelwriter.core.tohtml import ToHtml
 from novelwriter.extensions.eventfilters import WheelEventFilter
-
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
@@ -58,16 +54,15 @@ class GuiDocViewer(QTextBrowser):
 
     documentLoaded = pyqtSignal(str)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
+    closeDocumentRequest = pyqtSignal()
+    reloadDocumentRequest = pyqtSignal()
     togglePanelVisibility = pyqtSignal()
     requestProjectItemSelected = pyqtSignal(str, bool)
 
-    def __init__(self, mainGui: GuiMain) -> None:
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiDocViewer")
-
-        # Class Variables
-        self.mainGui = mainGui
 
         # Internal Variables
         self._docHandle = None
@@ -128,7 +123,7 @@ class GuiDocViewer(QTextBrowser):
         self.clear()
         self.setSearchPaths([""])
         self._docHandle = None
-        self.docHeader.setTitleFromHandle(self._docHandle)
+        self.docHeader.clearHeader()
         return
 
     def updateTheme(self) -> None:
@@ -184,8 +179,7 @@ class GuiDocViewer(QTextBrowser):
         self.setTabStopDistance(CONFIG.getTabWidth())
 
         # If we have a document open, we should reload it in case the font changed
-        if self._docHandle is not None:
-            self.reloadText()
+        self.reloadText()
 
         return
 
@@ -239,7 +233,11 @@ class GuiDocViewer(QTextBrowser):
 
         self._docHandle = tHandle
         SHARED.project.data.setLastHandle(tHandle, "viewer")
-        self.docHeader.setTitleFromHandle(self._docHandle)
+        self.docHeader.setHandle(tHandle)
+        self.docHeader.setOutline({
+            sTitle: (hItem.title, nwHeaders.H_LEVEL.get(hItem.level, 0))
+            for sTitle, hItem in SHARED.project.index.iterItemHeadings(tHandle)
+        })
         self.updateDocMargins()
 
         # Since we change the content while it may still be rendering, we mark
@@ -280,13 +278,6 @@ class GuiDocViewer(QTextBrowser):
             logger.debug("Unknown or unsupported document action '%s'", str(action))
             return False
         return True
-
-    def navigateTo(self, tAnchor: str) -> None:
-        """Go to a specific #link in the document."""
-        if isinstance(tAnchor, str) and tAnchor.startswith("#"):
-            logger.debug("Moving to anchor '%s'", tAnchor)
-            self.setSource(QUrl(tAnchor))
-        return
 
     def clearNavHistory(self) -> None:
         """Clear the navigation history."""
@@ -340,9 +331,17 @@ class GuiDocViewer(QTextBrowser):
     @pyqtSlot(str)
     def updateDocInfo(self, tHandle: str) -> None:
         """Update the header title bar if needed."""
-        if tHandle == self._docHandle:
-            self.docHeader.setTitleFromHandle(self._docHandle)
+        if tHandle and tHandle == self._docHandle:
+            self.docHeader.setHandle(tHandle)
             self.updateDocMargins()
+        return
+
+    @pyqtSlot(str)
+    def navigateTo(self, anchor: str) -> None:
+        """Go to a specific #link in the document."""
+        if isinstance(anchor, str) and anchor.startswith("#"):
+            logger.debug("Moving to anchor '%s'", anchor)
+            self.setSource(QUrl(anchor))
         return
 
     ##
@@ -626,35 +625,50 @@ class GuiDocViewHeader(QWidget):
         logger.debug("Create: GuiDocViewHeader")
 
         self.docViewer = docViewer
-        self.mainGui   = docViewer.mainGui
 
         # Internal Variables
         self._docHandle = None
+        self._docOutline: dict[int, tuple[str, int]] = {}
 
         fPx = int(0.9*SHARED.theme.fontPixelSize)
         hSp = CONFIG.pxInt(6)
+        mPx = CONFIG.pxInt(8)
+        iconSize = QSize(fPx, fPx)
 
         # Main Widget Settings
         self.setAutoFillBackground(True)
 
         # Title Label
-        self.docTitle = QLabel()
-        self.docTitle.setText("")
-        self.docTitle.setIndent(0)
-        self.docTitle.setMargin(0)
-        self.docTitle.setContentsMargins(0, 0, 0, 0)
-        self.docTitle.setAutoFillBackground(True)
-        self.docTitle.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
-        self.docTitle.setFixedHeight(fPx)
+        self.itemTitle = QLabel()
+        self.itemTitle.setText("")
+        self.itemTitle.setIndent(0)
+        self.itemTitle.setMargin(0)
+        self.itemTitle.setContentsMargins(0, 0, 0, 0)
+        self.itemTitle.setAutoFillBackground(True)
+        self.itemTitle.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.itemTitle.setFixedHeight(fPx)
 
-        lblFont = self.docTitle.font()
+        lblFont = self.itemTitle.font()
         lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
-        self.docTitle.setFont(lblFont)
+        self.itemTitle.setFont(lblFont)
+
+        # Other Widgets
+        self.outlineMenu = QMenu(self)
 
         # Buttons
+        self.outlineButton = QToolButton(self)
+        self.outlineButton.setContentsMargins(0, 0, 0, 0)
+        self.outlineButton.setIconSize(iconSize)
+        self.outlineButton.setFixedSize(fPx, fPx)
+        self.outlineButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.outlineButton.setVisible(False)
+        self.outlineButton.setToolTip(self.tr("Outline"))
+        self.outlineButton.setMenu(self.outlineMenu)
+        self.outlineButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+
         self.backButton = QToolButton(self)
         self.backButton.setContentsMargins(0, 0, 0, 0)
-        self.backButton.setIconSize(QSize(fPx, fPx))
+        self.backButton.setIconSize(iconSize)
         self.backButton.setFixedSize(fPx, fPx)
         self.backButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.backButton.setVisible(False)
@@ -663,7 +677,7 @@ class GuiDocViewHeader(QWidget):
 
         self.forwardButton = QToolButton(self)
         self.forwardButton.setContentsMargins(0, 0, 0, 0)
-        self.forwardButton.setIconSize(QSize(fPx, fPx))
+        self.forwardButton.setIconSize(iconSize)
         self.forwardButton.setFixedSize(fPx, fPx)
         self.forwardButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.forwardButton.setVisible(False)
@@ -672,7 +686,7 @@ class GuiDocViewHeader(QWidget):
 
         self.refreshButton = QToolButton(self)
         self.refreshButton.setContentsMargins(0, 0, 0, 0)
-        self.refreshButton.setIconSize(QSize(fPx, fPx))
+        self.refreshButton.setIconSize(iconSize)
         self.refreshButton.setFixedSize(fPx, fPx)
         self.refreshButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.refreshButton.setVisible(False)
@@ -681,7 +695,7 @@ class GuiDocViewHeader(QWidget):
 
         self.closeButton = QToolButton(self)
         self.closeButton.setContentsMargins(0, 0, 0, 0)
-        self.closeButton.setIconSize(QSize(fPx, fPx))
+        self.closeButton.setIconSize(iconSize)
         self.closeButton.setFixedSize(fPx, fPx)
         self.closeButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.closeButton.setVisible(False)
@@ -691,19 +705,21 @@ class GuiDocViewHeader(QWidget):
         # Assemble Layout
         self.outerBox = QHBoxLayout()
         self.outerBox.setSpacing(hSp)
+        self.outerBox.addWidget(self.outlineButton, 0)
         self.outerBox.addWidget(self.backButton, 0)
         self.outerBox.addWidget(self.forwardButton, 0)
-        self.outerBox.addWidget(self.docTitle, 1)
+        self.outerBox.addWidget(self.itemTitle, 1)
+        self.outerBox.addSpacing(fPx + hSp)
         self.outerBox.addWidget(self.refreshButton, 0)
         self.outerBox.addWidget(self.closeButton, 0)
+
         self.setLayout(self.outerBox)
 
         # Fix Margins and Size
         # This is needed for high DPI systems. See issue #499.
-        cM = CONFIG.pxInt(8)
         self.setContentsMargins(0, 0, 0, 0)
-        self.outerBox.setContentsMargins(cM, cM, cM, cM)
-        self.setMinimumHeight(fPx + 2*cM)
+        self.outerBox.setContentsMargins(mPx, mPx, mPx, mPx)
+        self.setMinimumHeight(fPx + 2*mPx)
 
         # Fix the Colours
         self.updateTheme()
@@ -716,8 +732,42 @@ class GuiDocViewHeader(QWidget):
     #  Methods
     ##
 
+    def clearHeader(self) -> None:
+        """Clear the header."""
+        self._docHandle = None
+        self._docOutline = {}
+
+        self.itemTitle.setText("")
+        self.outlineMenu.clear()
+        self.outlineButton.setVisible(False)
+        self.backButton.setVisible(False)
+        self.forwardButton.setVisible(False)
+        self.closeButton.setVisible(False)
+        self.refreshButton.setVisible(False)
+        return
+
+    def setOutline(self, data: dict[int, tuple[str, int]]) -> None:
+        """Set the document outline dataset."""
+        if data != self._docOutline:
+            self.outlineMenu.clear()
+            entries = []
+            minLevel = 5
+            for title, (text, level) in data.items():
+                if title != "T0000":
+                    entries.append((title, text, level))
+                    minLevel = min(minLevel, level)
+            for title, text, level in entries[:30]:
+                indent = "    "*(level - minLevel)
+                action = self.outlineMenu.addAction(f"{indent}{text}")
+                action.triggered.connect(
+                    lambda _, title=title: self.docViewer.navigateTo(f"#{title}")
+                )
+            self._docOutline = data
+        return
+
     def updateTheme(self) -> None:
         """Update theme elements."""
+        self.outlineButton.setIcon(SHARED.theme.getIcon("list"))
         self.backButton.setIcon(SHARED.theme.getIcon("backward"))
         self.forwardButton.setIcon(SHARED.theme.getIcon("forward"))
         self.refreshButton.setIcon(SHARED.theme.getIcon("refresh"))
@@ -728,7 +778,9 @@ class GuiDocViewHeader(QWidget):
             "QToolButton {{border: none; background: transparent;}} "
             "QToolButton:hover {{border: none; background: rgba({0}, {1}, {2}, 0.2);}}"
         ).format(colText.red(), colText.green(), colText.blue())
+        buttonStyleMenu = f"{buttonStyle} QToolButton::menu-indicator {{image: none;}}"
 
+        self.outlineButton.setStyleSheet(buttonStyleMenu)
         self.backButton.setStyleSheet(buttonStyle)
         self.forwardButton.setStyleSheet(buttonStyle)
         self.refreshButton.setStyleSheet(buttonStyle)
@@ -747,31 +799,25 @@ class GuiDocViewHeader(QWidget):
         palette.setColor(QPalette.ColorRole.WindowText, SHARED.theme.colText)
         palette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
         self.setPalette(palette)
-        self.docTitle.setPalette(palette)
+        self.itemTitle.setPalette(palette)
         return
 
-    def setTitleFromHandle(self, tHandle: str | None) -> None:
+    def setHandle(self, tHandle: str) -> None:
         """Sets the document title from the handle, or alternatively,
         set the whole document path.
         """
         self._docHandle = tHandle
-        if tHandle is None:
-            self.docTitle.setText("")
-            self.backButton.setVisible(False)
-            self.forwardButton.setVisible(False)
-            self.closeButton.setVisible(False)
-            self.refreshButton.setVisible(False)
-            return
 
         if CONFIG.showFullPath:
-            self.docTitle.setText(f"  {nwUnicode.U_RSAQUO}  ".join(reversed(
+            self.itemTitle.setText(f"  {nwUnicode.U_RSAQUO}  ".join(reversed(
                 [name for name in SHARED.project.tree.getItemPath(tHandle, asName=True)]
             )))
         else:
-            self.docTitle.setText(i.itemName if (i := SHARED.project.tree[tHandle]) else "")
+            self.itemTitle.setText(i.itemName if (i := SHARED.project.tree[tHandle]) else "")
 
         self.backButton.setVisible(True)
         self.forwardButton.setVisible(True)
+        self.outlineButton.setVisible(True)
         self.closeButton.setVisible(True)
         self.refreshButton.setVisible(True)
 
@@ -790,15 +836,14 @@ class GuiDocViewHeader(QWidget):
     @pyqtSlot()
     def _closeDocument(self) -> None:
         """Trigger the close editor/viewer on the main window."""
-        self.mainGui.closeDocViewer()
+        self.clearHeader()
+        self.docViewer.closeDocumentRequest.emit()
         return
 
     @pyqtSlot()
     def _refreshDocument(self) -> None:
         """Reload the content of the document."""
-        if self.docViewer.docHandle == self.mainGui.docEditor.docHandle:
-            self.mainGui.saveDocument()
-        self.docViewer.reloadText()
+        self.docViewer.reloadDocumentRequest.emit()
         return
 
     ##
@@ -829,7 +874,6 @@ class GuiDocViewFooter(QWidget):
         logger.debug("Create: GuiDocViewFooter")
 
         self.docViewer = docViewer
-        self.mainGui   = docViewer.mainGui
 
         # Internal Variables
         self._docHandle = None

@@ -30,7 +30,9 @@ from PyQt5.QtCore import QThreadPool, Qt
 from PyQt5.QtWidgets import QAction, QMenu, qApp
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwDocAction, nwDocInsert, nwItemLayout, nwTrinary, nwWidget
+from novelwriter.enum import (
+    nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwTrinary, nwWidget
+)
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.gui.doceditor import GuiDocEditor, GuiDocToolBar
 from novelwriter.text.counting import standardCounter
@@ -47,7 +49,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.openDocument(C.hSceneDoc)
 
     nwGUI.docEditor.setPlainText("### Lorem Ipsum\n\n%s" % ipsumText[0])
-    assert nwGUI.saveDocument()
+    nwGUI.saveDocument()
 
     # Check Defaults
     qDoc = nwGUI.docEditor.document()
@@ -58,6 +60,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.docEditor.docHeader.itemTitle.text() == (
         "Novel  \u203a  New Chapter  \u203a  New Scene"
     )
+    assert nwGUI.docEditor.docHeader._docOutline == {0: "### New Scene"}
 
     # Check that editor handles settings
     CONFIG.textFont = ""
@@ -83,6 +86,11 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # Header
     # ======
+
+    # Go to outline
+    nwGUI.docEditor.setCursorLine(3)
+    nwGUI.docEditor.docHeader.outlineMenu.actions()[0].trigger()
+    assert nwGUI.docEditor.getCursorPosition() == 0
 
     # Select item from header
     with qtbot.waitSignal(nwGUI.docEditor.requestProjectItemSelected, timeout=1000) as signal:
@@ -116,8 +124,8 @@ def testGuiEditor_LoadText(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     longText = "### Lorem Ipsum\n\n%s" % "\n\n".join(ipsumText*20)
     nwGUI.docEditor.replaceText(longText)
-    assert nwGUI.saveDocument() is True
-    assert nwGUI.closeDocument() is True
+    nwGUI.saveDocument()
+    nwGUI.closeDocument()
 
     # Invalid handle
     assert nwGUI.docEditor.loadText("abcdefghijklm") is False
@@ -132,7 +140,7 @@ def testGuiEditor_LoadText(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # Load empty document
     nwGUI.docEditor.replaceText("")
-    assert nwGUI.saveDocument() is True
+    nwGUI.saveDocument()
     assert nwGUI.docEditor.loadText(C.hSceneDoc) is True
     assert nwGUI.docEditor.toPlainText() == ""
 
@@ -1478,7 +1486,7 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     cHandle = SHARED.project.newFile("Jane Doe", C.hCharRoot)
     assert nwGUI.openDocument(cHandle) is True
     nwGUI.docEditor.replaceText(text)
-    assert nwGUI.saveDocument() is True
+    nwGUI.saveDocument()
     assert nwGUI.projView.projTree.revealNewTreeItem(cHandle)
     nwGUI.docEditor.updateTagHighLighting()
 
@@ -1508,7 +1516,7 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert nwGUI.docViewer._docHandle is None
     assert nwGUI.docEditor._processTag(follow=True) is nwTrinary.POSITIVE
     assert nwGUI.docViewer._docHandle == cHandle
-    assert nwGUI.closeDocViewer() is True
+    assert nwGUI.closeViewerPanel() is True
     assert nwGUI.docViewer._docHandle is None
 
     # On Unknown Tag, Create It
@@ -1521,7 +1529,12 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert "0000000000012" not in SHARED.project.tree
     nwGUI.docEditor.setCursorPosition(42)
     assert nwGUI.docEditor._processTag(create=True) is nwTrinary.NEGATIVE
-    assert "0000000000012" not in SHARED.project.tree
+    oHandle = SHARED.project.tree.findRoot(nwItemClass.OBJECT)
+    assert oHandle == "0000000000012"
+
+    oItem = SHARED.project.tree["0000000000013"]
+    assert oItem is not None
+    assert oItem.itemParent == "0000000000012"
 
     nwGUI.docEditor.setCursorPosition(47)
     assert nwGUI.docEditor._processTag() is nwTrinary.NEUTRAL
@@ -1547,7 +1560,7 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     cHandle = SHARED.project.newFile("People", C.hCharRoot)
     assert nwGUI.openDocument(cHandle) is True
     nwGUI.docEditor.replaceText(text)
-    assert nwGUI.saveDocument() is True
+    nwGUI.saveDocument()
     assert nwGUI.projView.projTree.revealNewTreeItem(cHandle)
 
     docEditor = nwGUI.docEditor
@@ -1686,13 +1699,13 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
 
     threadPool = MockThreadPool()
     monkeypatch.setattr(QThreadPool, "globalInstance", lambda *a: threadPool)
-    nwGUI.docEditor.wcTimerDoc.blockSignals(True)
-    nwGUI.docEditor.wcTimerSel.blockSignals(True)
+    nwGUI.docEditor.timerDoc.blockSignals(True)
+    nwGUI.docEditor.timerSel.blockSignals(True)
 
     buildTestProject(nwGUI, projPath)
 
     # Run on an empty document
-    nwGUI.docEditor._runDocCounter()
+    nwGUI.docEditor._runDocumentTasks()
     assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
     nwGUI.docEditor._updateDocCounts(0, 0, 0)
     assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
@@ -1714,7 +1727,7 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
     # Check that a busy counter is blocked
     with monkeypatch.context() as mp:
         mp.setattr(nwGUI.docEditor.wCounterDoc, "isRunning", lambda *a: True)
-        nwGUI.docEditor._runDocCounter()
+        nwGUI.docEditor._runDocumentTasks()
         assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
     with monkeypatch.context() as mp:
@@ -1723,7 +1736,7 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
         assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
     # Run the full word counter
-    nwGUI.docEditor._runDocCounter()
+    nwGUI.docEditor._runDocumentTasks()
     assert threadPool.objectID() == id(nwGUI.docEditor.wCounterDoc)
 
     nwGUI.docEditor.wCounterDoc.run()

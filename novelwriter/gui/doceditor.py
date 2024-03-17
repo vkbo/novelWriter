@@ -55,11 +55,11 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwTrinary
 from novelwriter.common import minmax, transferCase
-from novelwriter.constants import nwKeyWords, nwLabels, nwShortcode, nwUnicode, trConst
+from novelwriter.constants import nwKeyWords, nwShortcode, nwUnicode
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.core.document import NWDocument
 from novelwriter.text.counting import standardCounter
-from novelwriter.gui.dochighlight import GuiDocHighlighter
+from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE
 from novelwriter.gui.editordocument import GuiTextDocument
 from novelwriter.extensions.eventfilters import WheelEventFilter
 
@@ -99,6 +99,7 @@ class GuiDocEditor(QPlainTextEdit):
     toggleFocusModeRequest = pyqtSignal()
     requestProjectItemSelected = pyqtSignal(str, bool)
     requestProjectItemRenamed = pyqtSignal(str, str)
+    requestNewNoteCreation = pyqtSignal(str, nwItemClass)
 
     def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
@@ -185,18 +186,18 @@ class GuiDocEditor(QPlainTextEdit):
         self.followTag2.activated.connect(self._processTag)
 
         # Set Up Document Word Counter
-        self.wcTimerDoc = QTimer()
-        self.wcTimerDoc.timeout.connect(self._runDocCounter)
-        self.wcTimerDoc.setInterval(5000)
+        self.timerDoc = QTimer(self)
+        self.timerDoc.timeout.connect(self._runDocumentTasks)
+        self.timerDoc.setInterval(5000)
 
         self.wCounterDoc = BackgroundWordCounter(self)
         self.wCounterDoc.setAutoDelete(False)
         self.wCounterDoc.signals.countsReady.connect(self._updateDocCounts)
 
         # Set Up Selection Word Counter
-        self.wcTimerSel = QTimer()
-        self.wcTimerSel.timeout.connect(self._runSelCounter)
-        self.wcTimerSel.setInterval(500)
+        self.timerSel = QTimer(self)
+        self.timerSel.timeout.connect(self._runSelCounter)
+        self.timerSel.setInterval(500)
 
         self.wCounterSel = BackgroundWordCounter(self, forSelection=True)
         self.wCounterSel.setAutoDelete(False)
@@ -249,8 +250,8 @@ class GuiDocEditor(QPlainTextEdit):
         self._nwDocument = None
         self.setReadOnly(True)
         self.clear()
-        self.wcTimerDoc.stop()
-        self.wcTimerSel.stop()
+        self.timerDoc.stop()
+        self.timerSel.stop()
 
         self._docHandle  = None
         self._lastEdit   = 0.0
@@ -259,7 +260,7 @@ class GuiDocEditor(QPlainTextEdit):
         self._doReplace  = False
 
         self.setDocumentChanged(False)
-        self.docHeader.setTitleFromHandle(self._docHandle)
+        self.docHeader.clearHeader()
         self.docFooter.setHandle(self._docHandle)
         self.docToolBar.setVisible(False)
 
@@ -363,7 +364,7 @@ class GuiDocEditor(QPlainTextEdit):
         # which makes it read only.
         if self._docHandle:
             self._qDocument.syntaxHighlighter.rehighlight()
-            self.docHeader.setTitleFromHandle(self._docHandle)
+            self.docHeader.setHandle(self._docHandle)
         else:
             self.clearEditor()
 
@@ -397,8 +398,8 @@ class GuiDocEditor(QPlainTextEdit):
 
         self._lastEdit = time()
         self._lastActive = time()
-        self._runDocCounter()
-        self.wcTimerDoc.start()
+        self._runDocumentTasks()
+        self.timerDoc.start()
 
         self.setReadOnly(False)
         self.updateDocMargins()
@@ -408,8 +409,8 @@ class GuiDocEditor(QPlainTextEdit):
         elif isinstance(tLine, int):
             self.setCursorLine(tLine)
 
-        self.docHeader.setTitleFromHandle(self._docHandle)
-        self.docFooter.setHandle(self._docHandle)
+        self.docHeader.setHandle(tHandle)
+        self.docFooter.setHandle(tHandle)
 
         # This is a hack to fix invisible cursor on an empty document
         if self._qDocument.characterCount() <= 1:
@@ -432,7 +433,7 @@ class GuiDocEditor(QPlainTextEdit):
 
     def updateTagHighLighting(self) -> None:
         """Rerun the syntax highlighter on all meta data lines."""
-        self._qDocument.syntaxHighlighter.rehighlightByType(GuiDocHighlighter.BLOCK_META)
+        self._qDocument.syntaxHighlighter.rehighlightByType(BLOCK_META)
         return
 
     def replaceText(self, text: str) -> None:
@@ -548,8 +549,8 @@ class GuiDocEditor(QPlainTextEdit):
         sH = hBar.height() if hBar.isVisible() else 0
 
         tM = self._vpMargin
-        if CONFIG.textWidth > 0 or self.mainGui.isFocusMode:
-            tW = CONFIG.getTextWidth(self.mainGui.isFocusMode)
+        if CONFIG.textWidth > 0 or SHARED.focusMode:
+            tW = CONFIG.getTextWidth(SHARED.focusMode)
             tM = max((wW - sW - tW)//2, self._vpMargin)
 
         tB = self.frameWidth()
@@ -991,8 +992,8 @@ class GuiDocEditor(QPlainTextEdit):
         """Called when an item label is changed to check if the document
         title bar needs updating,
         """
-        if tHandle == self._docHandle:
-            self.docHeader.setTitleFromHandle(self._docHandle)
+        if tHandle and tHandle == self._docHandle:
+            self.docHeader.setHandle(tHandle)
             self.docFooter.updateInfo()
             self.updateDocMargins()
         return
@@ -1033,8 +1034,8 @@ class GuiDocEditor(QPlainTextEdit):
         if not self._docChanged:
             self.setDocumentChanged(removed != 0 or added != 0)
 
-        if not self.wcTimerDoc.isActive():
-            self.wcTimerDoc.start()
+        if not self.timerDoc.isActive():
+            self.timerDoc.start()
 
         if (block := self._qDocument.findBlock(pos)).isValid():
             text = block.text()
@@ -1084,7 +1085,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         ctxMenu = QMenu(self)
         ctxMenu.setObjectName("ContextMenu")
-        if pBlock.userState() == GuiDocHighlighter.BLOCK_TITLE:
+        if pBlock.userState() == BLOCK_TITLE:
             action = ctxMenu.addAction(self.tr("Set as Document Name"))
             action.triggered.connect(lambda: self._emitRenameItem(pBlock))
 
@@ -1179,10 +1180,8 @@ class GuiDocEditor(QPlainTextEdit):
         return
 
     @pyqtSlot()
-    def _runDocCounter(self) -> None:
-        """Decide whether to run the word counter, or not due to
-        inactivity.
-        """
+    def _runDocumentTasks(self) -> None:
+        """Run timer document tasks."""
         if self._docHandle is None:
             return
 
@@ -1193,6 +1192,10 @@ class GuiDocEditor(QPlainTextEdit):
         if time() - self._lastEdit < 25.0:
             logger.debug("Running word counter")
             SHARED.runInThreadPool(self.wCounterDoc)
+            self.docHeader.setOutline({
+                block.blockNumber(): block.text()
+                for block in self._qDocument.iterBlockByType(BLOCK_TITLE, maxCount=30)
+            })
 
         return
 
@@ -1214,10 +1217,10 @@ class GuiDocEditor(QPlainTextEdit):
         information to the footer, and start the selection word counter.
         """
         if self.textCursor().hasSelection():
-            if not self.wcTimerSel.isActive():
-                self.wcTimerSel.start()
+            if not self.timerSel.isActive():
+                self.timerSel.start()
         else:
-            self.wcTimerSel.stop()
+            self.timerSel.stop()
             self.docFooter.updateWordCount(0, False)
         return
 
@@ -1241,7 +1244,7 @@ class GuiDocEditor(QPlainTextEdit):
         if self._docHandle and self._nwItem:
             logger.debug("User selected %d words", wCount)
             self.docFooter.updateWordCount(wCount, True)
-            self.wcTimerSel.stop()
+            self.timerSel.stop()
         return
 
     @pyqtSlot()
@@ -1303,6 +1306,7 @@ class GuiDocEditor(QPlainTextEdit):
                     self._docHandle, wrapAround=self.docSearch.doLoop
                 )
                 self.beginSearch()
+                self.setFocus()
             return
 
         cursor = self.textCursor()
@@ -1323,6 +1327,7 @@ class GuiDocEditor(QPlainTextEdit):
                     self._docHandle, wrapAround=self.docSearch.doLoop
                 )
                 self.beginSearch()
+                self.setFocus()
                 return
             else:
                 resIdx = 0 if doLoop else maxIdx
@@ -1856,7 +1861,10 @@ class GuiDocEditor(QPlainTextEdit):
         if text.startswith("@") and self._docHandle:
 
             isGood, tBits, tPos = SHARED.project.index.scanThis(text)
-            if not isGood or not tBits or tBits[0] == nwKeyWords.TAG_KEY:
+            if (
+                not isGood or not tBits or tBits[0] == nwKeyWords.TAG_KEY
+                or tBits[0] not in nwKeyWords.VALID_KEYS
+            ):
                 return nwTrinary.NEUTRAL
 
             tag = ""
@@ -1884,13 +1892,9 @@ class GuiDocEditor(QPlainTextEdit):
                     "Do you want to create a new project note for the tag '{0}'?"
                 ).format(tag)):
                     itemClass = nwKeyWords.KEY_CLASS.get(tBits[0], nwItemClass.NO_CLASS)
-                    if SHARED.mainGui.projView.createNewNote(tag, itemClass):
-                        self._qDocument.syntaxHighlighter.rehighlightBlock(block)
-                    else:
-                        SHARED.error(self.tr(
-                            "Could not create note in a root folder for '{0}'. "
-                            "If one doesn't exist, you must create one first."
-                        ).format(trConst(nwLabels.CLASS_NAME[itemClass])))
+                    self.requestNewNoteCreation.emit(tag, itemClass)
+                    qApp.processEvents()
+                    self._qDocument.syntaxHighlighter.rehighlightBlock(block)
 
             return nwTrinary.POSITIVE if exist else nwTrinary.NEGATIVE
 
@@ -2704,11 +2708,9 @@ class GuiDocEditSearch(QFrame):
     @pyqtSlot()
     def _doSearch(self) -> None:
         """Call the search action function for the document editor."""
-        modKey = qApp.keyboardModifiers()
-        if modKey == Qt.KeyboardModifier.ShiftModifier:
-            self.docEditor.findNext(goBack=True)
-        else:
-            self.docEditor.findNext()
+        self.docEditor.findNext(goBack=(
+            qApp.keyboardModifiers() == Qt.KeyboardModifier.ShiftModifier)
+        )
         return
 
     @pyqtSlot()
@@ -2799,9 +2801,9 @@ class GuiDocEditHeader(QWidget):
         logger.debug("Create: GuiDocEditHeader")
 
         self.docEditor = docEditor
-        self.mainGui   = docEditor.mainGui
 
         self._docHandle = None
+        self._docOutline: dict[int, str] = {}
 
         fPx = int(0.9*SHARED.theme.fontPixelSize)
         mPx = CONFIG.pxInt(8)
@@ -2824,6 +2826,9 @@ class GuiDocEditHeader(QWidget):
         lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
         self.itemTitle.setFont(lblFont)
 
+        # Other Widgets
+        self.outlineMenu = QMenu(self)
+
         # Buttons
         self.tbButton = QToolButton(self)
         self.tbButton.setContentsMargins(0, 0, 0, 0)
@@ -2833,6 +2838,16 @@ class GuiDocEditHeader(QWidget):
         self.tbButton.setVisible(False)
         self.tbButton.setToolTip(self.tr("Toggle Tool Bar"))
         self.tbButton.clicked.connect(lambda: self.toggleToolBarRequest.emit())
+
+        self.outlineButton = QToolButton(self)
+        self.outlineButton.setContentsMargins(0, 0, 0, 0)
+        self.outlineButton.setIconSize(iconSize)
+        self.outlineButton.setFixedSize(fPx, fPx)
+        self.outlineButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.outlineButton.setVisible(False)
+        self.outlineButton.setToolTip(self.tr("Outline"))
+        self.outlineButton.setMenu(self.outlineMenu)
+        self.outlineButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
         self.searchButton = QToolButton(self)
         self.searchButton.setContentsMargins(0, 0, 0, 0)
@@ -2865,13 +2880,18 @@ class GuiDocEditHeader(QWidget):
         self.outerBox = QHBoxLayout()
         self.outerBox.setSpacing(hSp)
         self.outerBox.addWidget(self.tbButton, 0)
+        self.outerBox.addWidget(self.outlineButton, 0)
         self.outerBox.addWidget(self.searchButton, 0)
         self.outerBox.addWidget(self.itemTitle, 1)
+        self.outerBox.addSpacing(fPx + hSp)
         self.outerBox.addWidget(self.minmaxButton, 0)
         self.outerBox.addWidget(self.closeButton, 0)
         self.outerBox.setContentsMargins(mPx, mPx, mPx, mPx)
 
         self.setLayout(self.outerBox)
+
+        # Other Signals
+        SHARED.focusModeChanged.connect(self._focusModeChanged)
 
         # Fix Margins and Size
         # This is needed for high DPI systems. See issue #499.
@@ -2888,9 +2908,38 @@ class GuiDocEditHeader(QWidget):
     #  Methods
     ##
 
+    def clearHeader(self) -> None:
+        """Clear the header."""
+        self._docHandle = None
+        self._docOutline = {}
+
+        self.itemTitle.setText("")
+        self.outlineMenu.clear()
+        self.tbButton.setVisible(False)
+        self.outlineButton.setVisible(False)
+        self.searchButton.setVisible(False)
+        self.closeButton.setVisible(False)
+        self.minmaxButton.setVisible(False)
+        return
+
+    def setOutline(self, data: dict[int, str]) -> None:
+        """Set the document outline dataset."""
+        if data != self._docOutline:
+            tStart = time()
+            self.outlineMenu.clear()
+            for number, text in data.items():
+                action = self.outlineMenu.addAction(text)
+                action.triggered.connect(
+                    lambda _, number=number: self._gotoBlock(number)
+                )
+            self._docOutline = data
+            logger.debug("Document outline updated in %.3f ms", 1000*(time() - tStart))
+        return
+
     def updateTheme(self) -> None:
         """Update theme elements."""
         self.tbButton.setIcon(SHARED.theme.getIcon("menu"))
+        self.outlineButton.setIcon(SHARED.theme.getIcon("list"))
         self.searchButton.setIcon(SHARED.theme.getIcon("search"))
         self.minmaxButton.setIcon(SHARED.theme.getIcon("maximise"))
         self.closeButton.setIcon(SHARED.theme.getIcon("close"))
@@ -2900,8 +2949,10 @@ class GuiDocEditHeader(QWidget):
             "QToolButton {{border: none; background: transparent;}} "
             "QToolButton:hover {{border: none; background: rgba({0}, {1}, {2}, 0.2);}}"
         ).format(colText.red(), colText.green(), colText.blue())
+        buttonStyleMenu = f"{buttonStyle} QToolButton::menu-indicator {{image: none;}}"
 
         self.tbButton.setStyleSheet(buttonStyle)
+        self.outlineButton.setStyleSheet(buttonStyleMenu)
         self.searchButton.setStyleSheet(buttonStyle)
         self.minmaxButton.setStyleSheet(buttonStyle)
         self.closeButton.setStyleSheet(buttonStyle)
@@ -2924,18 +2975,11 @@ class GuiDocEditHeader(QWidget):
 
         return
 
-    def setTitleFromHandle(self, tHandle: str | None) -> None:
+    def setHandle(self, tHandle: str) -> None:
         """Set the document title from the handle, or alternatively, set
         the whole document path within the project.
         """
         self._docHandle = tHandle
-        if tHandle is None:
-            self.itemTitle.setText("")
-            self.tbButton.setVisible(False)
-            self.searchButton.setVisible(False)
-            self.closeButton.setVisible(False)
-            self.minmaxButton.setVisible(False)
-            return
 
         if CONFIG.showFullPath:
             self.itemTitle.setText(f"  {nwUnicode.U_RSAQUO}  ".join(reversed(
@@ -2946,20 +2990,10 @@ class GuiDocEditHeader(QWidget):
 
         self.tbButton.setVisible(True)
         self.searchButton.setVisible(True)
+        self.outlineButton.setVisible(True)
         self.closeButton.setVisible(True)
         self.minmaxButton.setVisible(True)
 
-        return
-
-    def updateFocusMode(self) -> None:
-        """Update the minimise/maximise icon of the Focus Mode button.
-        This function is called by the GuiMain class via the
-        toggleFocusMode function and should not be activated directly.
-        """
-        if self.mainGui.isFocusMode:
-            self.minmaxButton.setIcon(SHARED.theme.getIcon("minimise"))
-        else:
-            self.minmaxButton.setIcon(SHARED.theme.getIcon("maximise"))
         return
 
     ##
@@ -2969,11 +3003,20 @@ class GuiDocEditHeader(QWidget):
     @pyqtSlot()
     def _closeDocument(self) -> None:
         """Trigger the close editor on the main window."""
+        self.clearHeader()
         self.closeDocumentRequest.emit()
-        self.tbButton.setVisible(False)
-        self.searchButton.setVisible(False)
-        self.closeButton.setVisible(False)
-        self.minmaxButton.setVisible(False)
+        return
+
+    @pyqtSlot(int)
+    def _gotoBlock(self, blockNumber: int) -> None:
+        """Move cursor to a specific heading."""
+        self.docEditor.setCursorLine(blockNumber + 1)
+        return
+
+    @pyqtSlot(bool)
+    def _focusModeChanged(self, focusMode: bool) -> None:
+        """Update minimise/maximise icon of the Focus Mode button."""
+        self.minmaxButton.setIcon(SHARED.theme.getIcon("minimise" if focusMode else "maximise"))
         return
 
     ##

@@ -45,15 +45,15 @@ logger = logging.getLogger(__name__)
 SPELLRX = QRegularExpression(r"\b[^\s\-\+\/–—\[\]:]+\b")
 SPELLRX.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
 
+BLOCK_NONE  = 0
+BLOCK_TEXT  = 1
+BLOCK_META  = 2
+BLOCK_TITLE = 4
+
 
 class GuiDocHighlighter(QSyntaxHighlighter):
 
     __slots__ = ("_tItem", "_tHandle", "_spellCheck", "_spellErr", "_hRules", "_hStyles")
-
-    BLOCK_NONE  = 0
-    BLOCK_TEXT  = 1
-    BLOCK_META  = 2
-    BLOCK_TITLE = 4
 
     def __init__(self, document: QTextDocument) -> None:
         super().__init__(document)
@@ -272,12 +272,12 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         is significantly faster than running the regex checks used for
         text paragraphs.
         """
-        self.setCurrentBlockState(self.BLOCK_NONE)
+        self.setCurrentBlockState(BLOCK_NONE)
         if self._tHandle is None or not text:
             return
 
         if text.startswith("@"):  # Keywords and commands
-            self.setCurrentBlockState(self.BLOCK_META)
+            self.setCurrentBlockState(BLOCK_META)
             index = SHARED.project.index
             isValid, bits, pos = index.scanThis(text)
             isGood = index.checkThese(bits, self._tHandle)
@@ -301,7 +301,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             return
 
         elif text.startswith(("# ", "#! ", "## ", "##! ", "### ", "###! ", "#### ")):
-            self.setCurrentBlockState(self.BLOCK_TITLE)
+            self.setCurrentBlockState(BLOCK_TITLE)
 
             if text.startswith("# "):  # Heading 1
                 self.setFormat(0, 1, self._hStyles["head1h"])
@@ -332,7 +332,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 self.setFormat(4, len(text), self._hStyles["header3"])
 
         elif text.startswith("%"):  # Comments
-            self.setCurrentBlockState(self.BLOCK_TEXT)
+            self.setCurrentBlockState(BLOCK_TEXT)
             cStyle, _, cPos = processComment(text)
             if cStyle == nwComment.PLAIN:
                 self.setFormat(0, len(text), self._hStyles["hidden"])
@@ -357,7 +357,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                     return
 
             # Regular Text
-            self.setCurrentBlockState(self.BLOCK_TEXT)
+            self.setCurrentBlockState(BLOCK_TEXT)
             for rX, xFmt in self.rxRules:
                 rxItt = rX.globalMatch(text, 0)
                 while rxItt.hasNext():

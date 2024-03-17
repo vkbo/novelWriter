@@ -142,7 +142,6 @@ class GuiProjectView(QWidget):
         self.requestDeleteItem = self.projTree.requestDeleteItem
         self.getSelectedHandle = self.projTree.getSelectedHandle
         self.changedSince = self.projTree.changedSince
-        self.createNewNote = self.projTree.createNewNote
 
         return
 
@@ -238,6 +237,12 @@ class GuiProjectView(QWidget):
     def updateRootItem(self, tHandle: str) -> None:
         """Process root item changes."""
         self.projBar.buildQuickLinksMenu()
+        return
+
+    @pyqtSlot(str, nwItemClass)
+    def createNewNote(self, tag: str, itemClass: nwItemClass) -> None:
+        """Process new not request."""
+        self.projTree.createNewNote(tag, itemClass)
         return
 
 # END Class GuiProjectView
@@ -606,18 +611,18 @@ class GuiProjectTree(QTreeWidget):
         self._timeChanged = 0.0
         return
 
-    def createNewNote(self, tag: str, itemClass: nwItemClass | None) -> bool:
+    def createNewNote(self, tag: str, itemClass: nwItemClass) -> None:
         """Create a new note. This function is used by the document
         editor to create note files for unknown tags.
         """
-        rHandle = SHARED.project.tree.findRoot(itemClass)
-        if rHandle:
-            tHandle = SHARED.project.newFile(tag, rHandle)
-            if tHandle:
+        if itemClass != nwItemClass.NO_CLASS:
+            if not (rHandle := SHARED.project.tree.findRoot(itemClass)):
+                self.newTreeItem(nwItemType.ROOT, itemClass)
+                rHandle = SHARED.project.tree.findRoot(itemClass)
+            if rHandle and (tHandle := SHARED.project.newFile(tag, rHandle)):
                 SHARED.project.writeNewFile(tHandle, 1, False, f"@tag: {tag}\n\n")
                 self.revealNewTreeItem(tHandle, wordCount=True)
-                return True
-        return False
+        return
 
     def newTreeItem(self, itemType: nwItemType, itemClass: nwItemClass | None = None,
                     hLevel: int = 1, isNote: bool = False, copyDoc: str | None = None) -> bool:

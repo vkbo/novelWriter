@@ -185,12 +185,12 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     nwItem.setName("Test Title")  # type: ignore
     assert nwItem.itemName == "Test Title"  # type: ignore
     docViewer.updateDocInfo("4c4f28287af27")
-    assert docViewer.docHeader.docTitle.text() == "Characters  \u203a  Test Title"
+    assert docViewer.docHeader.itemTitle.text() == "Characters  \u203a  Test Title"
 
     # Title without full path
     CONFIG.showFullPath = False
     docViewer.updateDocInfo("4c4f28287af27")
-    assert docViewer.docHeader.docTitle.text() == "Test Title"
+    assert docViewer.docHeader.itemTitle.text() == "Test Title"
     CONFIG.showFullPath = True
 
     # Document footer show/hide synopsis

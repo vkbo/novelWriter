@@ -519,10 +519,15 @@ class NWIndex:
 
     def getItemHeading(self, tHandle: str, sTitle: str) -> IndexHeading | None:
         """Get the heading entry for a specific item and heading."""
-        tItem = self._itemIndex[tHandle]
-        if isinstance(tItem, IndexItem):
+        if tItem := self._itemIndex[tHandle]:
             return tItem[sTitle]
         return None
+
+    def iterItemHeadings(self, tHandle: str) -> Iterator[str, IndexHeading]:
+        """Get all headings for a specific item."""
+        if tItem := self._itemIndex[tHandle]:
+            yield from tItem.items()
+        return []
 
     def novelStructure(
         self, rootHandle: str | None = None, activeOnly: bool = True
@@ -900,13 +905,11 @@ class ItemIndex:
 
             if rHandle is None:
                 for sTitle in self._items[tHandle].headings():
-                    hItem = self._items[tHandle][sTitle]
-                    if hItem:
+                    if hItem := self._items[tHandle][sTitle]:
                         yield tHandle, sTitle, hItem
             elif tItem.itemRoot == rHandle:
                 for sTitle in self._items[tHandle].headings():
-                    hItem = self._items[tHandle][sTitle]
-                    if hItem:
+                    if hItem := self._items[tHandle][sTitle]:
                         yield tHandle, sTitle, hItem
 
         return

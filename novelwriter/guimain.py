@@ -104,9 +104,6 @@ class GuiMain(QMainWindow):
         # Initialise UserData Instance
         SHARED.initSharedData(self, GuiTheme())
 
-        # Core Settings
-        self.isFocusMode = False
-
         # Prepare Main Window
         self.resize(*CONFIG.mainWinSize)
         self._updateWindowTitle()
@@ -233,6 +230,7 @@ class GuiMain(QMainWindow):
         SHARED.projectStatusChanged.connect(self.mainStatus.updateProjectStatus)
         SHARED.projectStatusMessage.connect(self.mainStatus.setStatusMessage)
         SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
+        SHARED.focusModeChanged.connect(self._focusModeChanged)
         SHARED.indexChangedTags.connect(self.docViewerPanel.updateChangedTags)
         SHARED.indexScannedText.connect(self.docViewerPanel.projectItemChanged)
         SHARED.indexScannedText.connect(self.projView.updateItemValues)
@@ -275,9 +273,12 @@ class GuiMain(QMainWindow):
         self.docEditor.toggleFocusModeRequest.connect(self.toggleFocusMode)
         self.docEditor.requestProjectItemSelected.connect(self.projView.setSelectedHandle)
         self.docEditor.requestProjectItemRenamed.connect(self.projView.renameTreeItem)
+        self.docEditor.requestNewNoteCreation.connect(self.projView.createNewNote)
 
         self.docViewer.documentLoaded.connect(self.docViewerPanel.updateHandle)
         self.docViewer.loadDocumentTagRequest.connect(self._followTag)
+        self.docViewer.closeDocumentRequest.connect(self.closeDocViewer)
+        self.docViewer.reloadDocumentRequest.connect(self._reloadViewer)
         self.docViewer.togglePanelVisibility.connect(self._toggleViewerPanelVisibility)
         self.docViewer.requestProjectItemSelected.connect(self.projView.setSelectedHandle)
 
@@ -401,7 +402,7 @@ class GuiMain(QMainWindow):
         if saveOK:
             self.closeDocument()
             self.docViewer.clearNavHistory()
-            self.closeDocViewer(byUser=False)
+            self.closeViewerPanel(byUser=False)
 
             self.docViewerPanel.closeProjectTasks()
             self.outlineView.closeProjectTasks()
@@ -523,24 +524,19 @@ class GuiMain(QMainWindow):
     #  Document Actions
     ##
 
-    def closeDocument(self, beforeOpen: bool = False) -> bool:
+    def closeDocument(self, beforeOpen: bool = False) -> None:
         """Close the document and clear the editor and title field."""
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
-
-        # Disable focus mode if it is active
-        if self.isFocusMode:
-            self.toggleFocusMode()
-
-        self.docEditor.saveCursorPosition()
-        if self.docEditor.docChanged:
-            self.saveDocument()
-        self.docEditor.clearEditor()
-        if not beforeOpen:
-            self.novelView.setActiveHandle(None)
-
-        return True
+        if SHARED.hasProject:
+            # Disable focus mode if it is active
+            if SHARED.focusMode:
+                SHARED.setFocusMode(False)
+            self.docEditor.saveCursorPosition()
+            if self.docEditor.docChanged:
+                self.saveDocument()
+            self.docEditor.clearEditor()
+            if not beforeOpen:
+                self.novelView.setActiveHandle(None)
+        return
 
     def openDocument(self, tHandle: str | None, tLine: int | None = None,
                      changeFocus: bool = True, doScroll: bool = False) -> bool:
@@ -604,13 +600,12 @@ class GuiMain(QMainWindow):
 
         return False
 
-    def saveDocument(self) -> bool:
+    @pyqtSlot()
+    def saveDocument(self) -> None:
         """Save the current documents."""
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
-        self.docEditor.saveText()
-        return True
+        if SHARED.hasProject:
+            self.docEditor.saveText()
+        return
 
     def viewDocument(self, tHandle: str | None = None, sTitle: str | None = None) -> bool:
         """Load a document for viewing in the view panel."""
@@ -640,7 +635,8 @@ class GuiMain(QMainWindow):
         self._changeView(nwView.EDITOR)
 
         logger.debug("Viewing document with handle '%s'", tHandle)
-        if self.docViewer.loadText(tHandle):
+        updateHistory = tHandle != self.docViewer.docHandle
+        if self.docViewer.loadText(tHandle, updateHistory=updateHistory):
             if not self.splitView.isVisible():
                 cursorVisible = self.docEditor.cursorIsVisible()
                 bPos = self.splitMain.sizes()
@@ -713,80 +709,71 @@ class GuiMain(QMainWindow):
     #  Tree Item Actions
     ##
 
-    def openSelectedItem(self) -> bool:
+    @pyqtSlot()
+    def openSelectedItem(self) -> None:
         """Open the selected item from the tree that is currently
         active. It is not checked that the item is actually a document.
         That should be handled by the openDocument function.
         """
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
+        if SHARED.hasProject:
+            tHandle = None
+            sTitle = None
+            tLine = None
+            if self.projView.treeHasFocus():
+                tHandle = self.projView.getSelectedHandle()
+            elif self.novelView.treeHasFocus():
+                tHandle, sTitle = self.novelView.getSelectedHandle()
+            elif self.outlineView.treeHasFocus():
+                tHandle, sTitle = self.outlineView.getSelectedHandle()
+            else:
+                logger.warning("No item selected")
+                return
 
-        tHandle = None
-        sTitle = None
-        tLine = None
-        if self.projView.treeHasFocus():
-            tHandle = self.projView.getSelectedHandle()
-        elif self.novelView.treeHasFocus():
-            tHandle, sTitle = self.novelView.getSelectedHandle()
-        elif self.outlineView.treeHasFocus():
-            tHandle, sTitle = self.outlineView.getSelectedHandle()
-        else:
-            logger.warning("No item selected")
-            return False
+            if tHandle and sTitle:
+                if hItem := SHARED.project.index.getItemHeading(tHandle, sTitle):
+                    tLine = hItem.line
+            if tHandle:
+                self.openDocument(tHandle, tLine=tLine, changeFocus=False, doScroll=False)
 
-        if tHandle is not None and sTitle is not None:
-            hItem = SHARED.project.index.getItemHeading(tHandle, sTitle)
-            if hItem is not None:
-                tLine = hItem.line
+        return
 
-        if tHandle is not None:
-            self.openDocument(tHandle, tLine=tLine, changeFocus=False, doScroll=False)
-
-        return True
-
-    def editItemLabel(self, tHandle: str | None = None) -> bool:
+    def editItemLabel(self, tHandle: str | None = None) -> None:
         """Open the edit item dialog."""
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
-        if tHandle is None and (self.docEditor.anyFocus() or self.isFocusMode):
-            tHandle = self.docEditor.docHandle
-        self.projView.renameTreeItem(tHandle)
-        return True
+        if SHARED.hasProject:
+            if tHandle is None and (self.docEditor.anyFocus() or SHARED.focusMode):
+                tHandle = self.docEditor.docHandle
+            self.projView.renameTreeItem(tHandle)
+        return
 
     def rebuildTrees(self) -> None:
         """Rebuild the project tree."""
         self.projView.populateTree()
         return
 
-    def rebuildIndex(self, beQuiet: bool = False) -> bool:
+    def rebuildIndex(self, beQuiet: bool = False) -> None:
         """Rebuild the entire index."""
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
+        if SHARED.hasProject:
+            logger.info("Rebuilding index ...")
+            qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+            tStart = time()
 
-        logger.info("Rebuilding index ...")
-        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
-        tStart = time()
+            self.projView.saveProjectTasks()
+            SHARED.project.index.rebuildIndex()
+            self.projView.populateTree()
+            self.novelView.refreshTree()
 
-        self.projView.saveProjectTasks()
-        SHARED.project.index.rebuildIndex()
-        self.projView.populateTree()
-        self.novelView.refreshTree()
+            tEnd = time()
+            self.mainStatus.setStatusMessage(
+                self.tr("Indexing completed in {0} ms").format(f"{(tEnd - tStart)*1000.0:.1f}")
+            )
+            self.docEditor.updateTagHighLighting()
+            self._updateStatusWordCount()
+            qApp.restoreOverrideCursor()
 
-        tEnd = time()
-        self.mainStatus.setStatusMessage(
-            self.tr("Indexing completed in {0} ms").format(f"{(tEnd - tStart)*1000.0:.1f}")
-        )
-        self.docEditor.updateTagHighLighting()
-        self._updateStatusWordCount()
-        qApp.restoreOverrideCursor()
+            if not beQuiet:
+                SHARED.info(self.tr("The project index has been successfully rebuilt."))
 
-        if not beQuiet:
-            SHARED.info(self.tr("The project index has been successfully rebuilt."))
-
-        return True
+        return
 
     ##
     #  Main Dialogs
@@ -896,15 +883,14 @@ class GuiMain(QMainWindow):
             SHARED.error(self.tr("Could not initialise the dialog."))
         return
 
-    def reportConfErr(self) -> bool:
+    def reportConfErr(self) -> None:
         """Checks if the Config module has any errors to report, and let
         the user know if this is the case. The Config module caches
         errors since it is initialised before the GUI itself.
         """
         if CONFIG.hasError:
             SHARED.error(CONFIG.errorText())
-            return True
-        return False
+        return
 
     ##
     #  Main Window Actions
@@ -922,7 +908,7 @@ class GuiMain(QMainWindow):
 
         logger.info("Exiting novelWriter")
 
-        if not self.isFocusMode:
+        if not SHARED.focusMode:
             CONFIG.setMainPanePos(self.splitMain.sizes())
             CONFIG.setOutlinePanePos(self.outlineView.splitSizes())
             if self.docViewerPanel.isVisible():
@@ -943,7 +929,7 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def closeDocViewer(self, byUser: bool = True) -> bool:
+    def closeViewerPanel(self, byUser: bool = True) -> bool:
         """Close the document view panel."""
         self.docViewer.clearViewer()
         if byUser:
@@ -992,31 +978,39 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot()
+    def closeDocViewer(self) -> None:
+        """Close the document viewer."""
+        self.closeViewerPanel()
+        SHARED.project.data.setLastHandle(None, "viewer")
+        return
+
+    @pyqtSlot()
     def toggleFocusMode(self) -> None:
-        """Handle toggle focus mode. The Main GUI Focus Mode hides tree,
+        """Toggle focus mode."""
+        if self.docEditor.docHandle:
+            SHARED.setFocusMode(not SHARED.focusMode)
+        return
+
+    @pyqtSlot(bool)
+    def _focusModeChanged(self, focusMode: bool) -> None:
+        """Handle change of focus mode. The Main GUI Focus Mode hides tree,
         view, statusbar and menu.
         """
-        if self.docEditor.docHandle is None:
-            logger.error("No document open, so not activating Focus Mode")
-            return
-
-        self.isFocusMode = not self.isFocusMode
-        if self.isFocusMode:
+        if focusMode:
             logger.debug("Activating Focus Mode")
             self.switchFocus(nwWidget.EDITOR)
         else:
             logger.debug("Deactivating Focus Mode")
 
         cursorVisible = self.docEditor.cursorIsVisible()
-        isVisible = not self.isFocusMode
+        isVisible = not focusMode
         self.treePane.setVisible(isVisible)
         self.mainStatus.setVisible(isVisible)
         self.mainMenu.setVisible(isVisible)
         self.sideBar.setVisible(isVisible)
 
-        hideDocFooter = self.isFocusMode and CONFIG.hideFocusFooter
+        hideDocFooter = focusMode and CONFIG.hideFocusFooter
         self.docEditor.docFooter.setVisible(not hideDocFooter)
-        self.docEditor.docHeader.updateFocusMode()
 
         if self.splitView.isVisible():
             self.splitView.setVisible(False)
@@ -1025,7 +1019,6 @@ class GuiMain(QMainWindow):
 
         if cursorVisible:
             self.docEditor.ensureCursorVisibleNoCentre()
-
         return
 
     @pyqtSlot(nwWidget)
@@ -1154,6 +1147,15 @@ class GuiMain(QMainWindow):
                 self.viewDocument(tHandle=tHandle, sTitle=sTitle)
         return
 
+    @pyqtSlot()
+    def _reloadViewer(self) -> None:
+        """Reload the document in the viewer."""
+        if self.docEditor.docChanged and self.docEditor.docHandle == self.docViewer.docHandle:
+            # If the two panels have the same document, save any changes in the editor
+            self.saveDocument()
+        self.docViewer.reloadText()
+        return
+
     @pyqtSlot(nwView)
     def _changeView(self, view: nwView) -> None:
         """Handle the requested change of view from the GuiViewBar."""
@@ -1266,8 +1268,8 @@ class GuiMain(QMainWindow):
         """Process escape keypress in the main window."""
         if self.docEditor.docSearch.isVisible():
             self.docEditor.closeSearch()
-        elif self.isFocusMode:
-            self.toggleFocusMode()
+        elif SHARED.focusMode:
+            SHARED.setFocusMode(False)
         return
 
     @pyqtSlot(int)
