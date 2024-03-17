@@ -649,7 +649,7 @@ def testBuildSettings_Output(qtbot: QtBot, nwGUI: GuiMain):
 
     # Check initial values
     assert outTab.odtAddColours.isChecked() is False
-    assert outTab.odtPageHeader.text() == nwHeadFmt.ODT_PAGE
+    assert outTab.odtPageHeader.text() == nwHeadFmt.ODT_AUTO
     assert outTab.htmlAddStyles.isChecked() is False
 
     # Toggle all
@@ -663,13 +663,12 @@ def testBuildSettings_Output(qtbot: QtBot, nwGUI: GuiMain):
     outTab.saveContent()
 
     assert build.getBool("odt.addColours") is True
-    assert build.getStr("odt.pageHeaderText") == "Stuff"
+    assert build.getStr("odt.pageHeader") == "Stuff"
     assert build.getBool("html.addStyles") is True
 
     # Reset header format
-    SHARED.project.data.setName("Test Project")
     outTab.btnPageHeader.click()
-    assert outTab.odtPageHeader.text() == f"Test Project / {nwHeadFmt.ODT_PAGE}"
+    assert outTab.odtPageHeader.text() == nwHeadFmt.ODT_AUTO
 
     # Finish
     bSettings._dialogButtonClicked(bSettings.buttonBox.button(QDialogButtonBox.Close))

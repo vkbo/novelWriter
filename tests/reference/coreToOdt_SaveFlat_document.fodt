@@ -76,7 +76,7 @@
   <office:master-styles>
     <style:master-page style:name="Standard" style:page-layout-name="PM1">
       <style:header>
-        <text:p text:style-name="Header"><text:page-number text:page-adjust="-1">2</text:page-number></text:p>
+        <text:p text:style-name="Header">Test Project / Jane Smith / <text:page-number text:page-adjust="-1">2</text:page-number></text:p>
       </style:header>
       <style:header-first>
         <text:p text:style-name="Header" />
