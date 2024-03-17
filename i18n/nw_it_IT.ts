@@ -568,97 +568,97 @@
       <translation>US Lettera</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="339" />
+      <location filename="../novelwriter/constants.py" line="342" />
       <source>Straight single quotation mark</source>
       <translation>Virgoletta singola diritta</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="340" />
+      <location filename="../novelwriter/constants.py" line="343" />
       <source>Straight double quotation mark</source>
       <translation>Virgolette doppie diritte</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="342" />
+      <location filename="../novelwriter/constants.py" line="345" />
       <source>Left single quotation mark</source>
       <translation>Virgoletta singola a sinistra</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="343" />
+      <location filename="../novelwriter/constants.py" line="346" />
       <source>Right single quotation mark</source>
       <translation>Virgoletta singola a destra</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="344" />
+      <location filename="../novelwriter/constants.py" line="347" />
       <source>Single low-9 quotation mark</source>
       <translation>Singola virgoletta bassa 9</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="345" />
+      <location filename="../novelwriter/constants.py" line="348" />
       <source>Single high-reversed-9 quotation mark</source>
       <translation>Singola virgoletta alta inversa-9</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="346" />
+      <location filename="../novelwriter/constants.py" line="349" />
       <source>Left double quotation mark</source>
       <translation>Virgolette doppie a sinistra</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="347" />
+      <location filename="../novelwriter/constants.py" line="350" />
       <source>Right double quotation mark</source>
       <translation>Virgolette doppie a destra</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="348" />
+      <location filename="../novelwriter/constants.py" line="351" />
       <source>Double low-9 quotation mark</source>
       <translation>Doppie virgolette basse 9</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="349" />
+      <location filename="../novelwriter/constants.py" line="352" />
       <source>Double high-reversed-9 quotation mark</source>
       <translation>Doppie virgolette alte inverse 9</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="350" />
+      <location filename="../novelwriter/constants.py" line="353" />
       <source>Double low-reversed-9 quotation mark</source>
       <translation>Doppie virgolette basse inverse 9</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="352" />
+      <location filename="../novelwriter/constants.py" line="355" />
       <source>Single left-pointing angle quotation mark</source>
       <translation>Virgoletta singola ad angolo sinistro (&lt;)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="353" />
+      <location filename="../novelwriter/constants.py" line="356" />
       <source>Single right-pointing angle quotation mark</source>
       <translation>Virgoletta singola ad angolo destro (&gt;)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="354" />
+      <location filename="../novelwriter/constants.py" line="357" />
       <source>Double left-pointing angle quotation mark</source>
       <translation>Virgolette doppie ad angolo sinistro (&lt;&lt;)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="355" />
+      <location filename="../novelwriter/constants.py" line="358" />
       <source>Double right-pointing angle quotation mark</source>
       <translation>Virgolette doppie ad angolo destro (&gt;&gt;)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="357" />
+      <location filename="../novelwriter/constants.py" line="360" />
       <source>Left corner bracket</source>
       <translation>Staffa angolare sinistra</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="358" />
+      <location filename="../novelwriter/constants.py" line="361" />
       <source>Right corner bracket</source>
       <translation>Staffa angolare destra</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="359" />
+      <location filename="../novelwriter/constants.py" line="362" />
       <source>Left white corner bracket</source>
       <translation>Staffa angolare bianca sinistra</translation>
     </message>
     <message>
-      <location filename="../novelwriter/constants.py" line="360" />
+      <location filename="../novelwriter/constants.py" line="363" />
       <source>Right white corner bracket</source>
       <translation>Staffa angolare bianca destra</translation>
     </message>
