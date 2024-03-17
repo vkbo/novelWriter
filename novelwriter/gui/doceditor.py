@@ -55,7 +55,7 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwTrinary
 from novelwriter.common import minmax, transferCase
-from novelwriter.constants import nwKeyWords, nwLabels, nwShortcode, nwUnicode, trConst
+from novelwriter.constants import nwKeyWords, nwShortcode, nwUnicode
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.core.document import NWDocument
 from novelwriter.text.counting import standardCounter
@@ -99,6 +99,7 @@ class GuiDocEditor(QPlainTextEdit):
     toggleFocusModeRequest = pyqtSignal()
     requestProjectItemSelected = pyqtSignal(str, bool)
     requestProjectItemRenamed = pyqtSignal(str, str)
+    requestNewNoteCreation = pyqtSignal(str, nwItemClass)
 
     def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
@@ -1863,7 +1864,10 @@ class GuiDocEditor(QPlainTextEdit):
         if text.startswith("@") and self._docHandle:
 
             isGood, tBits, tPos = SHARED.project.index.scanThis(text)
-            if not isGood or not tBits or tBits[0] == nwKeyWords.TAG_KEY:
+            if (
+                not isGood or not tBits or tBits[0] == nwKeyWords.TAG_KEY
+                or tBits[0] not in nwKeyWords.VALID_KEYS
+            ):
                 return nwTrinary.NEUTRAL
 
             tag = ""
@@ -1891,13 +1895,9 @@ class GuiDocEditor(QPlainTextEdit):
                     "Do you want to create a new project note for the tag '{0}'?"
                 ).format(tag)):
                     itemClass = nwKeyWords.KEY_CLASS.get(tBits[0], nwItemClass.NO_CLASS)
-                    if SHARED.mainGui.projView.createNewNote(tag, itemClass):
-                        self._qDocument.syntaxHighlighter.rehighlightBlock(block)
-                    else:
-                        SHARED.error(self.tr(
-                            "Could not create note in a root folder for '{0}'. "
-                            "If one doesn't exist, you must create one first."
-                        ).format(trConst(nwLabels.CLASS_NAME[itemClass])))
+                    self.requestNewNoteCreation.emit(tag, itemClass)
+                    qApp.processEvents()
+                    self._qDocument.syntaxHighlighter.rehighlightBlock(block)
 
             return nwTrinary.POSITIVE if exist else nwTrinary.NEGATIVE
 
@@ -2804,7 +2804,6 @@ class GuiDocEditHeader(QWidget):
         logger.debug("Create: GuiDocEditHeader")
 
         self.docEditor = docEditor
-        self.mainGui   = docEditor.mainGui
 
         self._docHandle = None
         self._docOutline: dict[int, str] = {}

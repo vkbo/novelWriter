@@ -30,7 +30,9 @@ from PyQt5.QtCore import QThreadPool, Qt
 from PyQt5.QtWidgets import QAction, QMenu, qApp
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwDocAction, nwDocInsert, nwItemLayout, nwTrinary, nwWidget
+from novelwriter.enum import (
+    nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwTrinary, nwWidget
+)
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.gui.doceditor import GuiDocEditor, GuiDocToolBar
 from novelwriter.text.counting import standardCounter
@@ -1527,7 +1529,12 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert "0000000000012" not in SHARED.project.tree
     nwGUI.docEditor.setCursorPosition(42)
     assert nwGUI.docEditor._processTag(create=True) is nwTrinary.NEGATIVE
-    assert "0000000000012" not in SHARED.project.tree
+    oHandle = SHARED.project.tree.findRoot(nwItemClass.OBJECT)
+    assert oHandle == "0000000000012"
+
+    oItem = SHARED.project.tree["0000000000013"]
+    assert oItem is not None
+    assert oItem.itemParent == "0000000000012"
 
     nwGUI.docEditor.setCursorPosition(47)
     assert nwGUI.docEditor._processTag() is nwTrinary.NEUTRAL
