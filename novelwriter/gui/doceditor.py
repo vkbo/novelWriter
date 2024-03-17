@@ -1194,7 +1194,7 @@ class GuiDocEditor(QPlainTextEdit):
             SHARED.runInThreadPool(self.wCounterDoc)
             self.docHeader.setOutline({
                 block.blockNumber(): block.text()
-                for block in self._qDocument.iterBlockByType(BLOCK_TITLE)
+                for block in self._qDocument.iterBlockByType(BLOCK_TITLE, maxCount=30)
             })
 
         return
@@ -1306,6 +1306,7 @@ class GuiDocEditor(QPlainTextEdit):
                     self._docHandle, wrapAround=self.docSearch.doLoop
                 )
                 self.beginSearch()
+                self.setFocus()
             return
 
         cursor = self.textCursor()
@@ -1326,6 +1327,7 @@ class GuiDocEditor(QPlainTextEdit):
                     self._docHandle, wrapAround=self.docSearch.doLoop
                 )
                 self.beginSearch()
+                self.setFocus()
                 return
             else:
                 resIdx = 0 if doLoop else maxIdx

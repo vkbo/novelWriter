@@ -756,7 +756,7 @@ class GuiDocViewHeader(QWidget):
                 if title != "T0000":
                     entries.append((title, text, level))
                     minLevel = min(minLevel, level)
-            for title, text, level in entries:
+            for title, text, level in entries[:30]:
                 indent = "    "*(level - minLevel)
                 action = self.outlineMenu.addAction(f"{indent}{text}")
                 action.triggered.connect(

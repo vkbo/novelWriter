@@ -114,11 +114,13 @@ class GuiTextDocument(QTextDocument):
                         return word, cPos, cLen, SHARED.spelling.suggestWords(word)
         return "", -1, -1, []
 
-    def iterBlockByType(self, cType: int) -> Generator[QTextBlock]:
+    def iterBlockByType(self, cType: int, maxCount: int = 1000) -> Generator[QTextBlock]:
         """Iterate over all text blocks of a given type."""
+        count = 0
         for i in range(self.blockCount()):
             block = self.findBlockByNumber(i)
-            if block.isValid() and block.userState() & cType > 0:
+            if count < maxCount and block.isValid() and block.userState() & cType > 0:
+                count += 1
                 yield block
         return None
 
