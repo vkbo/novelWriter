@@ -2974,6 +2974,8 @@ class GuiDocEditHeader(QWidget):
             self.outlineButton.setVisible(False)
             self.closeButton.setVisible(False)
             self.minmaxButton.setVisible(False)
+            self.outlineMenu.clear()
+            self._docOutline = {}
             return
 
         if CONFIG.showFullPath:
@@ -3012,8 +3014,11 @@ class GuiDocEditHeader(QWidget):
         self.closeDocumentRequest.emit()
         self.tbButton.setVisible(False)
         self.searchButton.setVisible(False)
+        self.outlineButton.setVisible(False)
         self.closeButton.setVisible(False)
         self.minmaxButton.setVisible(False)
+        self.outlineMenu.clear()
+        self._docOutline = {}
         return
 
     @pyqtSlot(int)
