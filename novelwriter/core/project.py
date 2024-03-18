@@ -31,7 +31,7 @@ from time import time
 from typing import TYPE_CHECKING
 from pathlib import Path
 from functools import partial
-from collections.abc import Iterator
+from collections.abc import Generator
 
 from PyQt5.QtCore import QCoreApplication
 
@@ -517,7 +517,7 @@ class NWProject:
     #  Class Methods
     ##
 
-    def iterProjectItems(self) -> Iterator[NWItem]:
+    def iterProjectItems(self) -> Generator[NWItem]:
         """This function ensures that the item tree loaded is sent to
         the GUI tree view in such a way that the tree can be built. That
         is, the parent item must be sent before its child. In principle,

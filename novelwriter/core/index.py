@@ -33,7 +33,7 @@ import logging
 from time import time
 from typing import TYPE_CHECKING
 from pathlib import Path
-from collections.abc import ItemsView, Iterable, Iterator
+from collections.abc import Generator, ItemsView, Iterable
 
 from novelwriter import SHARED
 from novelwriter.enum import nwComment, nwItemClass, nwItemType, nwItemLayout
@@ -523,7 +523,7 @@ class NWIndex:
             return tItem[sTitle]
         return None
 
-    def iterItemHeadings(self, tHandle: str) -> Iterator[str, IndexHeading]:
+    def iterItemHeadings(self, tHandle: str) -> Generator[str, IndexHeading]:
         """Get all headings for a specific item."""
         if tItem := self._itemIndex[tHandle]:
             yield from tItem.items()
@@ -531,7 +531,7 @@ class NWIndex:
 
     def novelStructure(
         self, rootHandle: str | None = None, activeOnly: bool = True
-    ) -> Iterator[tuple[str, str, str, IndexHeading]]:
+    ) -> Generator[tuple[str, str, str, IndexHeading]]:
         """Iterate over all titles in the novel, in the correct order as
         they appear in the tree view and in the respective document
         files, but skipping all note files.
@@ -673,7 +673,7 @@ class NWIndex:
 
     def getTagsData(
         self, activeOnly: bool = True
-    ) -> Iterator[tuple[str, str, str, IndexItem | None, IndexHeading | None]]:
+    ) -> Generator[tuple[str, str, str, IndexItem | None, IndexHeading | None]]:
         """Return all known tags."""
         for tag, data in self._tagsIndex.items():
             iItem = self._itemIndex[data.get("handle")]

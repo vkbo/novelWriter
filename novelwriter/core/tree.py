@@ -28,7 +28,7 @@ import logging
 
 from typing import TYPE_CHECKING, Literal, overload
 from pathlib import Path
-from collections.abc import Iterator
+from collections.abc import Generator, Iterator
 
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
@@ -387,7 +387,7 @@ class NWTree:
             rootClasses.add(nwItem.itemClass)
         return rootClasses
 
-    def iterRoots(self, itemClass: nwItemClass | None) -> Iterator[tuple[str, NWItem]]:
+    def iterRoots(self, itemClass: nwItemClass | None) -> Generator[tuple[str, NWItem]]:
         """Iterate over all root items of a given class in order."""
         for tHandle in self._order:
             nwItem = self.__getitem__(tHandle)

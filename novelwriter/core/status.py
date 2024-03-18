@@ -28,7 +28,7 @@ import random
 import logging
 
 from typing import TYPE_CHECKING, Literal
-from collections.abc import ItemsView, Iterator, KeysView, ValuesView
+from collections.abc import Generator, ItemsView, Iterator, KeysView, ValuesView
 
 from PyQt5.QtGui import QIcon, QPainter, QPainterPath, QPixmap, QColor
 from PyQt5.QtCore import QRectF, Qt
@@ -193,7 +193,7 @@ class NWStatus:
             self._store[key]["count"] += 1
         return
 
-    def pack(self) -> Iterator[tuple[str, dict]]:
+    def pack(self) -> Generator[tuple[str, dict]]:
         """Pack the status entries into a dictionary."""
         for key, data in self._store.items():
             yield (data["name"], {
