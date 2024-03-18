@@ -296,7 +296,9 @@ class ToHtml(Tokenizer):
                 lines.append(self._formatComments(tText))
 
             elif tType == self.T_KEYWORD and self._doKeywords:
-                tTemp = f"<p{hStyle}>{self._formatKeywords(tText)}</p>\n"
+                tag, text = self._formatKeywords(tText)
+                kClass = f" class='meta meta-{tag}'" if tag else ""
+                tTemp = f"<p{kClass}{hStyle}>{text}</p>\n"
                 lines.append(tTemp)
 
         self._result = "".join(lines)
@@ -475,11 +477,11 @@ class ToHtml(Tokenizer):
             sComm = self._localLookup("Comment")
             return f"<p class='comment'><strong>{sComm}:</strong> {text}</p>\n"
 
-    def _formatKeywords(self, text: str) -> str:
+    def _formatKeywords(self, text: str) -> tuple[str, str]:
         """Apply HTML formatting to keywords."""
         valid, bits, _ = self._project.index.scanThis("@"+text)
         if not valid or not bits or bits[0] not in nwLabels.KEY_NAME:
-            return ""
+            return "", ""
 
         result = f"<span class='tags'>{self._localLookup(nwLabels.KEY_NAME[bits[0]])}:</span> "
         if len(bits) > 1:
@@ -494,6 +496,6 @@ class ToHtml(Tokenizer):
                 else:
                     result += ", ".join(f"<a href='#tag_{t}'>{t}</a>" for t in bits[1:])
 
-        return result
+        return bits[0][1:], result
 
 # END Class ToHtml

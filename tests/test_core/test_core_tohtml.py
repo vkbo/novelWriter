@@ -223,7 +223,7 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p><span class='tags'>Characters:</span> "
+        "<p class='meta meta-char'><span class='tags'>Characters:</span> "
         "<a href='#tag_Bod'>Bod</a>, <a href='#tag_Jane'>Jane</a></p>\n"
     )
 
@@ -236,12 +236,12 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
     html.doConvert()
     assert html.result == (
         "<h1 style='page-break-before: always;'>Chapter</h1>\n"
-        "<p style='margin-bottom: 0;'><span class='tags'>Point of View:</span> "
-        "<a href='#tag_Bod'>Bod</a></p>\n"
-        "<p style='margin-bottom: 0; margin-top: 0;'><span class='tags'>Plot:</span> "
-        "<a href='#tag_Main'>Main</a></p>\n"
-        "<p style='margin-top: 0;'><span class='tags'>Locations:</span> "
-        "<a href='#tag_Europe'>Europe</a></p>\n"
+        "<p class='meta meta-pov' style='margin-bottom: 0;'>"
+        "<span class='tags'>Point of View:</span> <a href='#tag_Bod'>Bod</a></p>\n"
+        "<p class='meta meta-plot' style='margin-bottom: 0; margin-top: 0;'>"
+        "<span class='tags'>Plot:</span> <a href='#tag_Main'>Main</a></p>\n"
+        "<p class='meta meta-location' style='margin-top: 0;'>"
+        "<span class='tags'>Locations:</span> <a href='#tag_Europe'>Europe</a></p>\n"
     )
 
     # Preview Mode
@@ -655,11 +655,12 @@ def testCoreToHtml_Format(mockGUI):
         "<p class='comment'><strong>Comment:</strong> comment text</p>\n"
     )
 
-    assert html._formatKeywords("") == ""
+    assert html._formatKeywords("") == ("", "")
     assert html._formatKeywords("tag: Jane") == (
-        "<span class='tags'>Tag:</span> <a name='tag_Jane'>Jane</a>"
+        "tag", "<span class='tags'>Tag:</span> <a name='tag_Jane'>Jane</a>"
     )
     assert html._formatKeywords("char: Bod, Jane") == (
+        "char",
         "<span class='tags'>Characters:</span> "
         "<a href='#tag_Bod'>Bod</a>, "
         "<a href='#tag_Jane'>Jane</a>"
@@ -680,11 +681,12 @@ def testCoreToHtml_Format(mockGUI):
         "<p class='comment'>comment text</p>\n"
     )
 
-    assert html._formatKeywords("") == ""
+    assert html._formatKeywords("") == ("", "")
     assert html._formatKeywords("tag: Jane") == (
-        "<span class='tags'>Tag:</span> <a name='tag_Jane'>Jane</a>"
+        "tag", "<span class='tags'>Tag:</span> <a name='tag_Jane'>Jane</a>"
     )
     assert html._formatKeywords("char: Bod, Jane") == (
+        "char",
         "<span class='tags'>Characters:</span> "
         "<a href='#char=Bod'>Bod</a>, "
         "<a href='#char=Jane'>Jane</a>"
