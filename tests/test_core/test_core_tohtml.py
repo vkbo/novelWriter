@@ -38,7 +38,6 @@ def testCoreToHtml_ConvertHeaders(mockGUI):
     # ===================
 
     html._isNovel = True
-    html._isNote = False
     html._isFirst = True
 
     # Header 1
@@ -87,33 +86,33 @@ def testCoreToHtml_ConvertHeaders(mockGUI):
     # ==================
 
     html._isNovel = False
-    html._isNote = True
     html._isFirst = True
+    html._handle = "0000000000000"
     html.setLinkHeadings(True)
 
     # Header 1
     html._text = "# Heading One\n"
     html.tokenizeText()
     html.doConvert()
-    assert html.result == "<h1><a name='T0001'></a>Heading One</h1>\n"
+    assert html.result == "<h1><a name='0000000000000:T0001'></a>Heading One</h1>\n"
 
     # Header 2
     html._text = "## Heading Two\n"
     html.tokenizeText()
     html.doConvert()
-    assert html.result == "<h2><a name='T0001'></a>Heading Two</h2>\n"
+    assert html.result == "<h2><a name='0000000000000:T0001'></a>Heading Two</h2>\n"
 
     # Header 3
     html._text = "### Heading Three\n"
     html.tokenizeText()
     html.doConvert()
-    assert html.result == "<h3><a name='T0001'></a>Heading Three</h3>\n"
+    assert html.result == "<h3><a name='0000000000000:T0001'></a>Heading Three</h3>\n"
 
     # Header 4
     html._text = "#### Heading Four\n"
     html.tokenizeText()
     html.doConvert()
-    assert html.result == "<h4><a name='T0001'></a>Heading Four</h4>\n"
+    assert html.result == "<h4><a name='0000000000000:T0001'></a>Heading Four</h4>\n"
 
     # Title
     html._text = "#! Heading One\n"
@@ -121,14 +120,14 @@ def testCoreToHtml_ConvertHeaders(mockGUI):
     html.doConvert()
     assert html.result == (
         "<h1 class='title' style='text-align: center; page-break-before: always;'>"
-        "<a name='T0001'></a>Heading One</h1>\n"
+        "<a name='0000000000000:T0001'></a>Heading One</h1>\n"
     )
 
     # Unnumbered
     html._text = "##! Heading Two\n"
     html.tokenizeText()
     html.doConvert()
-    assert html.result == "<h2><a name='T0001'></a>Heading Two</h2>\n"
+    assert html.result == "<h2><a name='0000000000000:T0001'></a>Heading Two</h2>\n"
 
 # END Test testCoreToHtml_ConvertHeaders
 
@@ -140,7 +139,6 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
     html = ToHtml(project)
 
     html._isNovel = True
-    html._isNote = False
     html._isFirst = True
 
     # Paragraphs
@@ -269,7 +267,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     html = ToHtml(project)
 
     html._isNovel = True
-    html._isNote = False
+    html._handle = "0000000000000"
     html.setLinkHeadings(True)
 
     # Special Titles
@@ -283,7 +281,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     html.doConvert()
     assert html.result == (
         "<h1 class='title' style='text-align: center; page-break-before: always;'>"
-        "<a name='T0001'></a>A Title</h1>\n"
+        "<a name='0000000000000:T0001'></a>A Title</h1>\n"
     )
 
     # Unnumbered
@@ -294,7 +292,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     html.doConvert()
     assert html.result == (
         "<h1 style='page-break-before: always;'>"
-        "<a name='T0001'></a>Prologue</h1>\n"
+        "<a name='0000000000000:T0001'></a>Prologue</h1>\n"
     )
 
     # Separators

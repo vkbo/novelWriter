@@ -199,16 +199,16 @@ def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
     )
 
     # Set Text
-    assert tokens.setText("stuff") is False
-    assert tokens.setText(C.hSceneDoc) is True
+    tokens.setText("stuff")
+    assert tokens._text == ""
+
+    tokens.setText(C.hSceneDoc)
     assert tokens._text == docText
 
-    assert tokens.setText(C.hSceneDoc, docText) is True
+    tokens.setText(C.hSceneDoc, docText)
     assert tokens._text == docText
 
-    assert tokens._isNone is False
     assert tokens._isNovel is True
-    assert tokens._isNote is False
 
     # Pre Processing
     tokens.doPreProcessing()
@@ -259,7 +259,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Story File
     tokens._isNovel = True
-    tokens._isNote  = False
     tokens._isFirst = True
     tokens._text = "#! Novel Title\n"
 
@@ -272,7 +271,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Note File
     tokens._isNovel = False
-    tokens._isNote  = True
     tokens._isFirst = True
     tokens._text = "#! Note Title\n"
 
@@ -288,7 +286,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Story File
     tokens._isNovel = True
-    tokens._isNote  = False
     tokens._isFirst = True
     tokens._text = "# Novel Title\n"
 
@@ -301,7 +298,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Note File
     tokens._isNovel = False
-    tokens._isNote  = True
     tokens._isFirst = True
     tokens._text = "# Note Title\n"
 
@@ -317,7 +313,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Story File
     tokens._isNovel = True
-    tokens._isNote  = False
     tokens._noBreak = False
     tokens._text = "## Chapter One\n"
 
@@ -330,7 +325,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Note File
     tokens._isNovel = False
-    tokens._isNote  = True
     tokens._text = "## Heading 2\n"
 
     tokens.tokenizeText()
@@ -345,7 +339,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Story File
     tokens._isNovel = True
-    tokens._isNote  = False
     tokens._text = "### Scene One\n"
 
     tokens.tokenizeText()
@@ -357,7 +350,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Note File
     tokens._isNovel = False
-    tokens._isNote  = True
     tokens._text = "### Heading 3\n"
 
     tokens.tokenizeText()
@@ -372,7 +364,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Story File
     tokens._isNovel = True
-    tokens._isNote  = False
     tokens._text = "#### A Section\n"
 
     tokens.tokenizeText()
@@ -384,7 +375,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Note File
     tokens._isNovel = False
-    tokens._isNote  = True
     tokens._text = "#### Heading 4\n"
 
     tokens.tokenizeText()
@@ -399,7 +389,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Story File
     tokens._isNovel = True
-    tokens._isNote  = False
     tokens._isFirst = False
     tokens._text = "#! Title\n"
 
@@ -412,7 +401,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Note File
     tokens._isNovel = False
-    tokens._isNote  = True
     tokens._isFirst = False
     tokens._text = "#! Title\n"
 
@@ -428,7 +416,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Story File
     tokens._isNovel = True
-    tokens._isNote  = False
     tokens._text = "##! Prologue\n"
 
     tokens.tokenizeText()
@@ -440,7 +427,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Note File
     tokens._isNovel = False
-    tokens._isNote  = True
     tokens._text = "##! Prologue\n"
 
     tokens.tokenizeText()
@@ -479,7 +465,6 @@ def testCoreToken_HeaderStyle(mockGUI):
 
     # Novel Docs
     tokens._isNovel = True
-    tokens._isNote  = False
 
     # First Document is False
     assert processStyle("# Title\n", False) == Tokenizer.A_NONE
@@ -499,7 +484,6 @@ def testCoreToken_HeaderStyle(mockGUI):
 
     # Note Docs
     tokens._isNovel = False
-    tokens._isNote  = True
 
     # First Document is False
     assert processStyle("# Title\n", False) == Tokenizer.A_NONE
@@ -530,7 +514,6 @@ def testCoreToken_HeaderStyle(mockGUI):
 
     # Novel Docs
     tokens._isNovel = True
-    tokens._isNote  = False
 
     # First Document is False
     assert processStyle("# Title\n", False) == Tokenizer.A_CENTRE
@@ -550,7 +533,6 @@ def testCoreToken_HeaderStyle(mockGUI):
 
     # Note Docs
     tokens._isNovel = False
-    tokens._isNote  = True
 
     # First Document is False
     assert processStyle("# Title\n", False) == Tokenizer.A_NONE
@@ -581,7 +563,6 @@ def testCoreToken_HeaderStyle(mockGUI):
 
     # Novel Docs
     tokens._isNovel = True
-    tokens._isNote  = False
 
     # First Document is False
     assert processStyle("# Title\n", False) == Tokenizer.A_PBB
@@ -601,7 +582,6 @@ def testCoreToken_HeaderStyle(mockGUI):
 
     # Note Docs
     tokens._isNovel = False
-    tokens._isNote  = True
 
     # First Document is False
     assert processStyle("# Title\n", False) == Tokenizer.A_NONE
@@ -632,7 +612,6 @@ def testCoreToken_HeaderStyle(mockGUI):
 
     # Novel Docs
     tokens._isNovel = True
-    tokens._isNote  = False
 
     # First Document is False
     assert processStyle("# Title\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
@@ -652,7 +631,6 @@ def testCoreToken_HeaderStyle(mockGUI):
 
     # Note Docs
     tokens._isNovel = False
-    tokens._isNote  = True
 
     # First Document is False
     assert processStyle("# Title\n", False) == Tokenizer.A_NONE
@@ -673,7 +651,6 @@ def testCoreToken_HeaderStyle(mockGUI):
     # Check Separation
     # ================
     tokens._isNovel = True
-    tokens._isNote  = False
 
     # Title Styles
     tokens.setTitleStyle(True, True)
@@ -1310,8 +1287,6 @@ def testCoreToken_ProcessHeaders(mockGUI):
     #  Story Files
     ##
 
-    tokens._isNone  = False
-    tokens._isNote  = False
     tokens._isNovel = True
 
     # Titles
@@ -1530,8 +1505,6 @@ def testCoreToken_CountStats(mockGUI, ipsumText):
     project.data.setLanguage("en")
     project._loadProjectLocalisation()
     tokens = BareTokenizer(project)
-    tokens._isNone  = False
-    tokens._isNote  = False
     tokens._isNovel = True
 
     # Short Text
@@ -1740,8 +1713,6 @@ def testCoreToken_SceneSeparators(mockGUI):
     project.data.setLanguage("en")
     project._loadProjectLocalisation()
     md = ToMarkdown(project)
-    md._isNone = False
-    md._isNote = False
     md._isNovel = True
 
     # Separator Handling, Titles
@@ -1858,8 +1829,6 @@ def testCoreToken_SceneSeparators(mockGUI):
     # Requires a fresh builder class
     md = ToMarkdown(project)
     md.setExtendedMarkdown()
-    md._isNone = False
-    md._isNote = False
     md._isNovel = True
 
     md._text = (
@@ -1919,8 +1888,6 @@ def testCoreToken_HeaderVisibility(mockGUI):
     # Novel Files
     # ===========
 
-    md._isNone = False
-    md._isNote = False
     md._isNovel = True
 
     # Show All
@@ -1973,8 +1940,6 @@ def testCoreToken_HeaderVisibility(mockGUI):
     # Note Files
     # ==========
 
-    md._isNone = False
-    md._isNote = True
     md._isNovel = False
 
     # Hide All
@@ -2015,8 +1980,6 @@ def testCoreToken_CounterHandling(mockGUI):
     project.data.setLanguage("en")
     project._loadProjectLocalisation()
     md = ToMarkdown(project)
-    md._isNone = False
-    md._isNote = False
     md._isNovel = True
 
     # Counter Handling, Novel Titles

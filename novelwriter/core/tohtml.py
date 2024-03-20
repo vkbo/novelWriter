@@ -232,8 +232,8 @@ class ToHtml(Tokenizer):
             else:
                 hStyle = ""
 
-            if self._linkHeadings and self._nwItem:
-                tHH = f"{self._nwItem.itemHandle}:T{nHead:04d}"
+            if self._linkHeadings and self._handle:
+                tHH = f"{self._handle}:T{nHead:04d}"
                 aNm = f"<a name='{tHH}'></a>"
             else:
                 tHH = ""
@@ -257,31 +257,31 @@ class ToHtml(Tokenizer):
                 tHead = tText.replace(nwHeadFmt.BR, "<br/>")
                 lines.append(f"<h1 class='title'{hStyle}>{aNm}{tHead}</h1>\n")
                 if tHH:
-                    self._navMap[tHH] = f"TT {tHead}"
+                    self._navMap[tHH] = f"TT:{tHead}"
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(nwHeadFmt.BR, "<br/>")
                 lines.append(f"<{h1}{h1Cl}{hStyle}>{aNm}{tHead}</{h1}>\n")
                 if tHH:
-                    self._navMap[tHH] = f"H1 {tHead}"
+                    self._navMap[tHH] = f"H1:{tHead}"
 
             elif tType == self.T_HEAD2:
                 tHead = tText.replace(nwHeadFmt.BR, "<br/>")
                 lines.append(f"<{h2}{hStyle}>{aNm}{tHead}</{h2}>\n")
                 if tHH:
-                    self._navMap[tHH] = f"H2 {tHead}"
+                    self._navMap[tHH] = f"H2:{tHead}"
 
             elif tType == self.T_HEAD3:
                 tHead = tText.replace(nwHeadFmt.BR, "<br/>")
                 lines.append(f"<{h3}{hStyle}>{aNm}{tHead}</{h3}>\n")
                 if tHH:
-                    self._navMap[tHH] = f"H3 {tHead}"
+                    self._navMap[tHH] = f"H3:{tHead}"
 
             elif tType == self.T_HEAD4:
                 tHead = tText.replace(nwHeadFmt.BR, "<br/>")
                 lines.append(f"<{h4}{hStyle}>{aNm}{tHead}</{h4}>\n")
                 if tHH:
-                    self._navMap[tHH] = f"H4 {tHead}"
+                    self._navMap[tHH] = f"H4:{tHead}"
 
             elif tType == self.T_SEP:
                 lines.append(f"<p class='sep'{hStyle}>{tText}</p>\n")

@@ -118,7 +118,7 @@ class Tokenizer(ABC):
 
         # Data Variables
         self._text   = ""    # The raw text to be tokenized
-        self._nwItem = None  # The NWItem currently being processed
+        self._handle = None  # The item handle currently being processed
         self._result = ""    # The result of the last document
         self._counts = {}    # Counter data
 
@@ -176,9 +176,7 @@ class Tokenizer(ABC):
         self._noSep      = True  # Flag to indicate that we don't want a scene separator
 
         # This File
-        self._isNone  = False  # Document has unknown layout
         self._isNovel = False  # Document is a novel document
-        self._isNote  = False  # Document is a project note
         self._isFirst = True   # Document is the first in a set
 
         # Error Handling
@@ -417,24 +415,21 @@ class Tokenizer(ABC):
 
         return True
 
-    def setText(self, tHandle: str, text: str | None = None) -> bool:
+    def setText(self, tHandle: str, text: str | None = None) -> None:
         """Set the text for the tokenizer from a handle. If text is not
-        set, load it from the file.
+        set, its is loaded from the file.
         """
-        self._nwItem = self._project.tree[tHandle]
-        if self._nwItem is None:
-            return False
+        self._text = ""
+        self._handle = None
+        if nwItem := self._project.tree[tHandle]:
+            if text is None:
+                text = self._project.storage.getDocument(tHandle).readDocument() or ""
 
-        if text is None:
-            text = self._project.storage.getDocument(tHandle).readDocument() or ""
+            self._text = text
+            self._handle = tHandle
+            self._isNovel = nwItem.itemLayout == nwItemLayout.DOCUMENT
 
-        self._text = text
-
-        self._isNone  = self._nwItem.itemLayout == nwItemLayout.NO_LAYOUT
-        self._isNovel = self._nwItem.itemLayout == nwItemLayout.DOCUMENT
-        self._isNote  = self._nwItem.itemLayout == nwItemLayout.NOTE
-
-        return True
+        return
 
     def doPreProcessing(self) -> None:
         """Run trough the various replace dictionaries."""
@@ -470,7 +465,7 @@ class Tokenizer(ABC):
         """
         self._tokens = []
         if self._isNovel:
-            self._hFormatter.setHandle(self._nwItem.itemHandle if self._nwItem else None)
+            self._hFormatter.setHandle(self._handle)
 
         nHead = 0
         breakNext = False

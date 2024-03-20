@@ -707,6 +707,7 @@ class _OutlineWidget(QWidget):
 
             root = self.listView.invisibleRootItem()
             parent = root
+            indent = False
             for anchor, text in data.items():
                 level = OUTLINE_MAP.get(text[:2], -1)
                 text = text[3:]
@@ -724,7 +725,9 @@ class _OutlineWidget(QWidget):
                         parent = item
                     elif parent:
                         parent.addChild(item)
+                        indent = True
 
+            self.listView.setIndentation(SHARED.theme.baseIconSize if indent else CONFIG.pxInt(4))
             self._outline = data
 
         return

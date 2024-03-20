@@ -35,7 +35,6 @@ def testCoreToMarkdown_ConvertHeaders(mockGUI):
     toMD = ToMarkdown(project)
 
     toMD._isNovel = True
-    toMD._isNote = False
     toMD._isFirst = True
 
     # Header 1
@@ -84,7 +83,6 @@ def testCoreToMarkdown_ConvertParagraphs(mockGUI):
     toMD = ToMarkdown(project)
 
     toMD._isNovel = True
-    toMD._isNote = False
     toMD._isFirst = True
 
     # Text for Extended Markdown
@@ -200,7 +198,6 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
     toMD = ToMarkdown(project)
 
     toMD._isNovel = True
-    toMD._isNote = False
 
     # Special Titles
     # ==============
