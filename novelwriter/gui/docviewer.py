@@ -44,6 +44,8 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemType, nwDocAction, nwDocMode
 from novelwriter.error import logException
 from novelwriter.constants import nwHeaders, nwUnicode
+from novelwriter.extensions.modified import NIconToolButton
+from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.core.tohtml import ToHtml
 from novelwriter.extensions.eventfilters import WheelEventFilter
 
@@ -630,10 +632,8 @@ class GuiDocViewHeader(QWidget):
         self._docHandle = None
         self._docOutline: dict[int, tuple[str, int]] = {}
 
-        fPx = int(0.9*SHARED.theme.fontPixelSize)
-        hSp = CONFIG.pxInt(6)
-        mPx = CONFIG.pxInt(8)
-        iconSize = QSize(fPx, fPx)
+        iPx = SHARED.theme.baseIconSize
+        mPx = CONFIG.pxInt(4)
 
         # Main Widget Settings
         self.setAutoFillBackground(True)
@@ -646,7 +646,7 @@ class GuiDocViewHeader(QWidget):
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
         self.itemTitle.setAutoFillBackground(True)
         self.itemTitle.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
-        self.itemTitle.setFixedHeight(fPx)
+        self.itemTitle.setFixedHeight(iPx)
 
         lblFont = self.itemTitle.font()
         lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
@@ -656,62 +656,43 @@ class GuiDocViewHeader(QWidget):
         self.outlineMenu = QMenu(self)
 
         # Buttons
-        self.outlineButton = QToolButton(self)
-        self.outlineButton.setContentsMargins(0, 0, 0, 0)
-        self.outlineButton.setIconSize(iconSize)
-        self.outlineButton.setFixedSize(fPx, fPx)
-        self.outlineButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.outlineButton = NIconToolButton(self, iPx)
         self.outlineButton.setVisible(False)
         self.outlineButton.setToolTip(self.tr("Outline"))
         self.outlineButton.setMenu(self.outlineMenu)
-        self.outlineButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
-        self.backButton = QToolButton(self)
-        self.backButton.setContentsMargins(0, 0, 0, 0)
-        self.backButton.setIconSize(iconSize)
-        self.backButton.setFixedSize(fPx, fPx)
-        self.backButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.backButton = NIconToolButton(self, iPx)
         self.backButton.setVisible(False)
         self.backButton.setToolTip(self.tr("Go Backward"))
         self.backButton.clicked.connect(self.docViewer.navBackward)
 
-        self.forwardButton = QToolButton(self)
-        self.forwardButton.setContentsMargins(0, 0, 0, 0)
-        self.forwardButton.setIconSize(iconSize)
-        self.forwardButton.setFixedSize(fPx, fPx)
-        self.forwardButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.forwardButton = NIconToolButton(self, iPx)
         self.forwardButton.setVisible(False)
         self.forwardButton.setToolTip(self.tr("Go Forward"))
         self.forwardButton.clicked.connect(self.docViewer.navForward)
 
-        self.refreshButton = QToolButton(self)
-        self.refreshButton.setContentsMargins(0, 0, 0, 0)
-        self.refreshButton.setIconSize(iconSize)
-        self.refreshButton.setFixedSize(fPx, fPx)
-        self.refreshButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.refreshButton = NIconToolButton(self, iPx)
         self.refreshButton.setVisible(False)
         self.refreshButton.setToolTip(self.tr("Reload"))
         self.refreshButton.clicked.connect(self._refreshDocument)
 
-        self.closeButton = QToolButton(self)
-        self.closeButton.setContentsMargins(0, 0, 0, 0)
-        self.closeButton.setIconSize(iconSize)
-        self.closeButton.setFixedSize(fPx, fPx)
-        self.closeButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.closeButton = NIconToolButton(self, iPx)
         self.closeButton.setVisible(False)
         self.closeButton.setToolTip(self.tr("Close"))
         self.closeButton.clicked.connect(self._closeDocument)
 
         # Assemble Layout
         self.outerBox = QHBoxLayout()
-        self.outerBox.setSpacing(hSp)
         self.outerBox.addWidget(self.outlineButton, 0)
         self.outerBox.addWidget(self.backButton, 0)
         self.outerBox.addWidget(self.forwardButton, 0)
+        self.outerBox.addSpacing(mPx)
         self.outerBox.addWidget(self.itemTitle, 1)
-        self.outerBox.addSpacing(fPx + hSp)
+        self.outerBox.addSpacing(mPx)
+        self.outerBox.addSpacing(iPx)
         self.outerBox.addWidget(self.refreshButton, 0)
         self.outerBox.addWidget(self.closeButton, 0)
+        self.outerBox.setSpacing(0)
 
         self.setLayout(self.outerBox)
 
@@ -719,7 +700,7 @@ class GuiDocViewHeader(QWidget):
         # This is needed for high DPI systems. See issue #499.
         self.setContentsMargins(0, 0, 0, 0)
         self.outerBox.setContentsMargins(mPx, mPx, mPx, mPx)
-        self.setMinimumHeight(fPx + 2*mPx)
+        self.setMinimumHeight(iPx + 2*mPx)
 
         # Fix the Colours
         self.updateTheme()
@@ -773,14 +754,8 @@ class GuiDocViewHeader(QWidget):
         self.refreshButton.setIcon(SHARED.theme.getIcon("refresh"))
         self.closeButton.setIcon(SHARED.theme.getIcon("close"))
 
-        colText = SHARED.theme.colText
-        buttonStyle = (
-            "QToolButton {{border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({0}, {1}, {2}, 0.2);}}"
-        ).format(colText.red(), colText.green(), colText.blue())
-        buttonStyleMenu = f"{buttonStyle} QToolButton::menu-indicator {{image: none;}}"
-
-        self.outlineButton.setStyleSheet(buttonStyleMenu)
+        buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
+        self.outlineButton.setStyleSheet(buttonStyle)
         self.backButton.setStyleSheet(buttonStyle)
         self.forwardButton.setStyleSheet(buttonStyle)
         self.refreshButton.setStyleSheet(buttonStyle)
@@ -878,17 +853,16 @@ class GuiDocViewFooter(QWidget):
         # Internal Variables
         self._docHandle = None
 
-        fPx = int(0.9*SHARED.theme.fontPixelSize)
+        iPx = SHARED.theme.baseIconSize
         hSp = CONFIG.pxInt(4)
+        mPx = CONFIG.pxInt(4)
 
         # Main Widget Settings
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
 
         # Show/Hide Details
-        self.showHide = QToolButton(self)
-        self.showHide.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
-        self.showHide.setIconSize(QSize(fPx, fPx))
+        self.showHide = NIconToolButton(self, iPx)
         self.showHide.clicked.connect(lambda: self.docViewer.togglePanelVisibility.emit())
         self.showHide.setToolTip(self.tr("Show/Hide Viewer Panel"))
 
@@ -898,7 +872,7 @@ class GuiDocViewFooter(QWidget):
         self.showComments.setCheckable(True)
         self.showComments.setChecked(CONFIG.viewComments)
         self.showComments.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
-        self.showComments.setIconSize(QSize(fPx, fPx))
+        self.showComments.setIconSize(QSize(iPx, iPx))
         self.showComments.toggled.connect(self._doToggleComments)
         self.showComments.setToolTip(self.tr("Show Comments"))
 
@@ -908,7 +882,7 @@ class GuiDocViewFooter(QWidget):
         self.showSynopsis.setCheckable(True)
         self.showSynopsis.setChecked(CONFIG.viewSynopsis)
         self.showSynopsis.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
-        self.showSynopsis.setIconSize(QSize(fPx, fPx))
+        self.showSynopsis.setIconSize(QSize(iPx, iPx))
         self.showSynopsis.toggled.connect(self._doToggleSynopsis)
         self.showSynopsis.setToolTip(self.tr("Show Synopsis Comments"))
 
@@ -928,10 +902,9 @@ class GuiDocViewFooter(QWidget):
 
         # Fix Margins and Size
         # This is needed for high DPI systems. See issue #499.
-        cM = CONFIG.pxInt(8)
         self.setContentsMargins(0, 0, 0, 0)
-        self.outerBox.setContentsMargins(cM, cM, cM, cM)
-        self.setMinimumHeight(fPx + 2*cM)
+        self.outerBox.setContentsMargins(mPx, mPx, mPx, mPx)
+        self.setMinimumHeight(iPx + 2*mPx)
 
         # Fix the Colours
         self.updateTheme()
@@ -954,12 +927,7 @@ class GuiDocViewFooter(QWidget):
         self.showComments.setIcon(bulletIcon)
         self.showSynopsis.setIcon(bulletIcon)
 
-        colText = SHARED.theme.colText
-        buttonStyle = (
-            "QToolButton {{border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({0}, {1}, {2}, 0.2);}}"
-        ).format(colText.red(), colText.green(), colText.blue())
-
+        buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.showHide.setStyleSheet(buttonStyle)
         self.showComments.setStyleSheet(buttonStyle)
         self.showSynopsis.setStyleSheet(buttonStyle)

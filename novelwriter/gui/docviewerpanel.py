@@ -34,10 +34,11 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwDocMode, nwItemClass
 from novelwriter.common import checkInt
 from novelwriter.constants import nwHeaders, nwLabels, nwLists, trConst
 from novelwriter.core.index import IndexHeading, IndexItem
+from novelwriter.enum import nwDocMode, nwItemClass
+from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 
 logger = logging.getLogger(__name__)
 
@@ -99,35 +100,14 @@ class GuiDocViewerPanel(QWidget):
 
     def updateTheme(self, updateTabs: bool = True) -> None:
         """Update theme elements."""
-        qPalette = self.palette()
-        mPx = CONFIG.pxInt(2)
-        vPx = CONFIG.pxInt(4)
-        hPx = CONFIG.pxInt(8)
-        hCol = qPalette.highlight().color()
-        fCol = qPalette.text().color()
-
-        buttonStyle = (
-            "QToolButton {{padding: {0}px; margin: 0 0 {1}px 0; border: none; "
-            "background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({2}, {3}, {4}, 0.2);}} "
-            "QToolButton::menu-indicator {{image: none;}} "
-        ).format(mPx, mPx, fCol.red(), fCol.green(), fCol.blue())
         self.optsButton.setIcon(SHARED.theme.getIcon("menu"))
-        self.optsButton.setStyleSheet(buttonStyle)
-
-        styleSheet = (
-            "QTabWidget::pane {{border: 0;}} "
-            "QTabWidget QTabBar::tab {{border: 0; padding: {0}px {1}px;}} "
-            "QTabWidget QTabBar::tab:selected {{color: rgb({2}, {3}, {4});}} "
-        ).format(vPx, hPx, hCol.red(), hCol.green(), hCol.blue())
-        self.mainTabs.setStyleSheet(styleSheet)
+        self.optsButton.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON))
+        self.mainTabs.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_FLAT_TABS))
         self.updateHandle(self._lastHandle)
-
         if updateTabs:
             self.tabBackRefs.updateTheme()
             for tab in self.kwTabs.values():
                 tab.updateTheme()
-
         return
 
     def openProjectTasks(self) -> None:

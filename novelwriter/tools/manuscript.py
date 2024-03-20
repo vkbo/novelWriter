@@ -35,21 +35,23 @@ from PyQt5.QtCore import QSize, QTimer, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QFormLayout, QGridLayout, QHBoxLayout, QLabel,
     QListWidget, QListWidgetItem, QPushButton, QSizePolicy, QSplitter,
-    QStackedWidget, QTextBrowser, QToolButton, QTreeWidget, QTreeWidgetItem,
+    QStackedWidget, QTabWidget, QTextBrowser, QTreeWidget, QTreeWidgetItem,
     QVBoxLayout, QWidget, qApp
 )
 from PyQt5.QtPrintSupport import QPrintPreviewDialog, QPrinter
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.error import logException
 from novelwriter.common import checkInt, fuzzyTime
-from novelwriter.core.tohtml import ToHtml
-from novelwriter.core.docbuild import NWBuildDocument
-from novelwriter.core.tokenizer import HeadingFormatter
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings
+from novelwriter.core.docbuild import NWBuildDocument
+from novelwriter.core.tohtml import ToHtml
+from novelwriter.core.tokenizer import HeadingFormatter
+from novelwriter.error import logException
+from novelwriter.extensions.circularprogress import NProgressCircle
+from novelwriter.extensions.modified import NIconToolButton
+from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
-from novelwriter.extensions.circularprogress import NProgressCircle
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -101,29 +103,22 @@ class GuiManuscript(QDialog):
         qPalette.setBrush(QPalette.Window, qPalette.base())
         self.setPalette(qPalette)
 
-        fadeCol = qPalette.text().color()
-        buttonStyle = (
-            "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
-        ).format(CONFIG.pxInt(2), fadeCol.red(), fadeCol.green(), fadeCol.blue())
+        buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
 
-        self.tbAdd = QToolButton(self)
+        self.tbAdd = NIconToolButton(self, iPx)
         self.tbAdd.setIcon(SHARED.theme.getIcon("add"))
-        self.tbAdd.setIconSize(QSize(iPx, iPx))
         self.tbAdd.setToolTip(self.tr("Add New Build"))
         self.tbAdd.setStyleSheet(buttonStyle)
         self.tbAdd.clicked.connect(self._createNewBuild)
 
-        self.tbDel = QToolButton(self)
+        self.tbDel = NIconToolButton(self, iPx)
         self.tbDel.setIcon(SHARED.theme.getIcon("remove"))
-        self.tbDel.setIconSize(QSize(iPx, iPx))
         self.tbDel.setToolTip(self.tr("Delete Selected Build"))
         self.tbDel.setStyleSheet(buttonStyle)
         self.tbDel.clicked.connect(self._deleteSelectedBuild)
 
-        self.tbEdit = QToolButton(self)
+        self.tbEdit = NIconToolButton(self, iPx)
         self.tbEdit.setIcon(SHARED.theme.getIcon("edit"))
-        self.tbEdit.setIconSize(QSize(iPx, iPx))
         self.tbEdit.setToolTip(self.tr("Edit Selected Build"))
         self.tbEdit.setStyleSheet(buttonStyle)
         self.tbEdit.clicked.connect(self._editSelectedBuild)
@@ -141,21 +136,28 @@ class GuiManuscript(QDialog):
         # Builds
         # ======
 
-        self.buildList = QListWidget()
+        self.buildList = QListWidget(self)
         self.buildList.setIconSize(QSize(iPx, iPx))
         self.buildList.doubleClicked.connect(self._editSelectedBuild)
         self.buildList.currentItemChanged.connect(self._updateBuildDetails)
         self.buildList.setSelectionMode(QAbstractItemView.SingleSelection)
         self.buildList.setDragDropMode(QAbstractItemView.InternalMove)
 
+        # Details Tabs
+        # ============
+
         self.buildDetails = _DetailsWidget(self)
         self.buildDetails.setColumnWidth(
             CONFIG.pxInt(pOptions.getInt("GuiManuscript", "detailsWidth", 100)),
         )
 
+        self.detailsTabs = QTabWidget(self)
+        self.detailsTabs.addTab(self.buildDetails, self.tr("Build"))
+        self.detailsTabs.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_FLAT_TABS))
+
         self.buildSplit = QSplitter(Qt.Orientation.Vertical, self)
         self.buildSplit.addWidget(self.buildList)
-        self.buildSplit.addWidget(self.buildDetails)
+        self.buildSplit.addWidget(self.detailsTabs)
         self.buildSplit.setSizes([
             CONFIG.pxInt(pOptions.getInt("GuiManuscript", "listHeight", 50)),
             CONFIG.pxInt(pOptions.getInt("GuiManuscript", "detailsHeight", 50)),
@@ -882,19 +884,13 @@ class _StatsWidget(QWidget):
         self.minWidget = QWidget(self)
         self.maxWidget = QWidget(self)
 
-        fPx = int(0.6*SHARED.theme.fontPixelSize)
-        toggleIcon = SHARED.theme.getToggleIcon("unfold", (fPx, fPx))
+        iPx = int(0.6*SHARED.theme.baseIconSize)
+        toggleIcon = SHARED.theme.getToggleIcon("unfold", (iPx, iPx))
 
-        fadeCol = self.palette().text().color()
-        buttonStyle = (
-            "QToolButton {{padding: 0; border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({0},{1},{2},0.2);}}"
-        ).format(fadeCol.red(), fadeCol.green(), fadeCol.blue())
-
-        self.toggleButton = QToolButton(self)
+        self.toggleButton = NIconToolButton(self, iPx)
         self.toggleButton.setCheckable(True)
         self.toggleButton.setIcon(toggleIcon)
-        self.toggleButton.setStyleSheet(buttonStyle)
+        self.toggleButton.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON))
         self.toggleButton.toggled.connect(self._toggleView)
 
         self._buildMinimal()

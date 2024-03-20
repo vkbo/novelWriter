@@ -25,9 +25,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QWheelEvent
-from PyQt5.QtWidgets import QComboBox, QDoubleSpinBox, QSpinBox, QWidget
+from PyQt5.QtWidgets import QComboBox, QDoubleSpinBox, QSpinBox, QToolButton, QWidget
 
 
 class NComboBox(QComboBox):
@@ -85,3 +85,15 @@ class NDoubleSpinBox(QDoubleSpinBox):
         return
 
 # END Class NDoubleSpinBox
+
+
+class NIconToolButton(QToolButton):
+
+    def __init__(self, parent: QWidget, iconSize: int) -> None:
+        super().__init__(parent=parent)
+        self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.setIconSize(QSize(iconSize, iconSize))
+        self.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+        return
+
+# END Class NIconToolButton

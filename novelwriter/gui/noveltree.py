@@ -35,16 +35,18 @@ from PyQt5.QtGui import QFocusEvent, QFont, QMouseEvent, QPalette, QResizeEvent
 from PyQt5.QtCore import QModelIndex, QPoint, Qt, QSize, pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import (
     QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QHeaderView,
-    QInputDialog, QMenu, QSizePolicy, QToolButton, QToolTip, QTreeWidget,
-    QTreeWidgetItem, QVBoxLayout, QWidget
+    QInputDialog, QMenu, QSizePolicy, QToolTip, QTreeWidget, QTreeWidgetItem,
+    QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwDocMode, nwItemClass, nwOutline
 from novelwriter.common import minmax
 from novelwriter.constants import nwHeaders, nwKeyWords, nwLabels, trConst
 from novelwriter.core.index import IndexHeading
+from novelwriter.enum import nwDocMode, nwItemClass, nwOutline
+from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.extensions.novelselector import NovelSelector
+from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -215,15 +217,13 @@ class GuiNovelToolBar(QWidget):
         self.novelValue.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.novelValue.novelSelectionChanged.connect(self.setCurrentRoot)
 
-        self.tbNovel = QToolButton(self)
+        self.tbNovel = NIconToolButton(self, iPx)
         self.tbNovel.setToolTip(self.tr("Novel Root"))
-        self.tbNovel.setIconSize(QSize(iPx, iPx))
         self.tbNovel.clicked.connect(self.novelValue.showPopup)
 
         # Refresh Button
-        self.tbRefresh = QToolButton(self)
+        self.tbRefresh = NIconToolButton(self, iPx)
         self.tbRefresh.setToolTip(self.tr("Refresh"))
-        self.tbRefresh.setIconSize(QSize(iPx, iPx))
         self.tbRefresh.clicked.connect(self._refreshNovelTree)
 
         # More Options Menu
@@ -241,11 +241,9 @@ class GuiNovelToolBar(QWidget):
         self.aLastColSize = self.mLastCol.addAction(self.tr("Column Size"))
         self.aLastColSize.triggered.connect(self._selectLastColumnSize)
 
-        self.tbMore = QToolButton(self)
+        self.tbMore = NIconToolButton(self, iPx)
         self.tbMore.setToolTip(self.tr("More Options"))
-        self.tbMore.setIconSize(QSize(iPx, iPx))
         self.tbMore.setMenu(self.mMore)
-        self.tbMore.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
         # Assemble
         self.outerBox = QHBoxLayout()
@@ -280,16 +278,10 @@ class GuiNovelToolBar(QWidget):
         self.setPalette(qPalette)
 
         # StyleSheets
-        fadeCol = qPalette.text().color()
-        buttonStyle = (
-            "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
-        ).format(CONFIG.pxInt(2), fadeCol.red(), fadeCol.green(), fadeCol.blue())
-        buttonStyleMenu = f"{buttonStyle} QToolButton::menu-indicator {{image: none;}}"
-
+        buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.tbNovel.setStyleSheet(buttonStyle)
         self.tbRefresh.setStyleSheet(buttonStyle)
-        self.tbMore.setStyleSheet(buttonStyleMenu)
+        self.tbMore.setStyleSheet(buttonStyle)
 
         self.novelValue.setStyleSheet(
             "QComboBox {border-style: none; padding-left: 0;} "

@@ -28,12 +28,14 @@ import logging
 from typing import TYPE_CHECKING
 
 from PyQt5.QtGui import QPalette
-from PyQt5.QtCore import QEvent, QPoint, Qt, QSize, pyqtSignal
-from PyQt5.QtWidgets import QMenu, QToolButton, QVBoxLayout, QWidget
+from PyQt5.QtCore import QEvent, QPoint, pyqtSignal
+from PyQt5.QtWidgets import QMenu, QVBoxLayout, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwView
 from novelwriter.extensions.eventfilters import StatusTipFilter
+from novelwriter.extensions.modified import NIconToolButton
+from novelwriter.gui.theme import STYLES_BIG_TOOLBUTTON
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -53,46 +55,37 @@ class GuiSideBar(QWidget):
         self.mainGui = mainGui
 
         iPx = CONFIG.pxInt(24)
-        iconSize = QSize(iPx, iPx)
         self.setContentsMargins(0, 0, 0, 0)
         self.installEventFilter(StatusTipFilter(mainGui))
 
         # Buttons
-        self.tbProject = QToolButton(self)
+        self.tbProject = NIconToolButton(self, iPx)
         self.tbProject.setToolTip("{0} [Ctrl+T]".format(self.tr("Project Tree View")))
-        self.tbProject.setIconSize(iconSize)
         self.tbProject.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.PROJECT))
 
-        self.tbNovel = QToolButton(self)
+        self.tbNovel = NIconToolButton(self, iPx)
         self.tbNovel.setToolTip("{0} [Ctrl+T]".format(self.tr("Novel Tree View")))
-        self.tbNovel.setIconSize(iconSize)
         self.tbNovel.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.NOVEL))
 
-        self.tbOutline = QToolButton(self)
+        self.tbOutline = NIconToolButton(self, iPx)
         self.tbOutline.setToolTip("{0} [Ctrl+Shift+T]".format(self.tr("Novel Outline View")))
-        self.tbOutline.setIconSize(iconSize)
         self.tbOutline.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.OUTLINE))
 
-        self.tbBuild = QToolButton(self)
+        self.tbBuild = NIconToolButton(self, iPx)
         self.tbBuild.setToolTip("{0} [F5]".format(self.tr("Build Manuscript")))
-        self.tbBuild.setIconSize(iconSize)
         self.tbBuild.clicked.connect(self.mainGui.showBuildManuscriptDialog)
 
-        self.tbDetails = QToolButton(self)
+        self.tbDetails = NIconToolButton(self, iPx)
         self.tbDetails.setToolTip("{0} [Shift+F6]".format(self.tr("Novel Details")))
-        self.tbDetails.setIconSize(iconSize)
         self.tbDetails.clicked.connect(self.mainGui.showNovelDetailsDialog)
 
-        self.tbStats = QToolButton(self)
+        self.tbStats = NIconToolButton(self, iPx)
         self.tbStats.setToolTip("{0} [F6]".format(self.tr("Writing Statistics")))
-        self.tbStats.setIconSize(iconSize)
         self.tbStats.clicked.connect(self.mainGui.showWritingStatsDialog)
 
         # Settings Menu
-        self.tbSettings = QToolButton(self)
+        self.tbSettings = NIconToolButton(self, iPx)
         self.tbSettings.setToolTip(self.tr("Settings"))
-        self.tbSettings.setIconSize(iconSize)
-        self.tbSettings.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
 
         self.mSettings = _PopRightMenu(self.tbSettings)
         self.mSettings.addAction(self.mainGui.mainMenu.aEditWordList)
@@ -101,7 +94,6 @@ class GuiSideBar(QWidget):
         self.mSettings.addAction(self.mainGui.mainMenu.aPreferences)
 
         self.tbSettings.setMenu(self.mSettings)
-        self.tbSettings.setPopupMode(QToolButton.InstantPopup)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -129,12 +121,7 @@ class GuiSideBar(QWidget):
         qPalette.setBrush(QPalette.Window, qPalette.base())
         self.setPalette(qPalette)
 
-        fadeCol = qPalette.text().color()
-        buttonStyle = (
-            "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
-        ).format(CONFIG.pxInt(6), fadeCol.red(), fadeCol.green(), fadeCol.blue())
-        buttonStyleMenu = f"{buttonStyle} QToolButton::menu-indicator {{image: none;}}"
+        buttonStyle = SHARED.theme.getStyleSheet(STYLES_BIG_TOOLBUTTON)
 
         self.tbProject.setIcon(SHARED.theme.getIcon("view_editor"))
         self.tbProject.setStyleSheet(buttonStyle)
@@ -155,7 +142,7 @@ class GuiSideBar(QWidget):
         self.tbStats.setStyleSheet(buttonStyle)
 
         self.tbSettings.setIcon(SHARED.theme.getIcon("settings"))
-        self.tbSettings.setStyleSheet(buttonStyleMenu)
+        self.tbSettings.setStyleSheet(buttonStyle)
 
         return
 
