@@ -170,6 +170,7 @@ class NWBuildDocument:
         makeObj = ToHtml(self._project)
         filtered = self._setupBuild(makeObj)
 
+        makeObj.setPreview(self._preview)
         for i, tHandle in enumerate(self._queue):
             self._error = None
             if filtered.get(tHandle, (False, 0))[0]:

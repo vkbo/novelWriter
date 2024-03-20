@@ -74,15 +74,9 @@ class ToHtml(Tokenizer):
     #  Setters
     ##
 
-    def setPreview(self, doComments: bool, doSynopsis: bool) -> None:
-        """If we're using this class to generate markdown preview, we
-        need to make a few changes to formatting, which is managed by
-        these flags.
-        """
-        self._genMode = self.M_PREVIEW
-        self._doKeywords = True
-        self._doComments = doComments
-        self._doSynopsis = doSynopsis
+    def setPreview(self, state: bool) -> None:
+        """Set to preview generator mode."""
+        self._genMode = self.M_PREVIEW if state else self.M_EXPORT
         return
 
     def setStyles(self, cssStyles: bool) -> None:
@@ -302,8 +296,7 @@ class ToHtml(Tokenizer):
                 lines.append(tTemp)
 
         self._result = "".join(lines)
-        if self._genMode != self.M_PREVIEW:
-            self._fullHTML.append(self._result)
+        self._fullHTML.append(self._result)
 
         return
 

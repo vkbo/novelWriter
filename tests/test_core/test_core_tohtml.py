@@ -247,7 +247,7 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
     # Preview Mode
     # ============
 
-    html.setPreview(True, True)
+    html.setPreview(True)
 
     # Text (HTML4)
     html._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
@@ -606,16 +606,6 @@ def testCoreToHtml_Methods(mockGUI):
         "<p>Text with &lt;brackets&gt; &amp; short&ndash;dash, long&mdash;dash &hellip;</p>\n"
     )
 
-    # With Preview
-    html.setPreview(True, True)
-    html._text = docText
-    html.doPreProcessing()
-    html.tokenizeText()
-    html.doConvert()
-    assert html.allMarkdown[-1] == (
-        "Text with <brackets> &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
-    )
-
     # Result Size
     assert html.getFullResultSize() == 147
 
@@ -669,7 +659,7 @@ def testCoreToHtml_Format(mockGUI):
     # Preview Mode
     # ============
 
-    html.setPreview(True, True)
+    html.setPreview(True)
 
     assert html._formatSynopsis("synopsis text", True) == (
         "<p class='comment'><span class='synopsis'>Synopsis:</span> synopsis text</p>\n"
