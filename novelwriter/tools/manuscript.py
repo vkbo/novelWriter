@@ -31,7 +31,7 @@ from typing import TYPE_CHECKING
 from datetime import datetime
 
 from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
-from PyQt5.QtCore import QSize, QTimer, Qt, pyqtSlot
+from PyQt5.QtCore import QSize, QTimer, QUrl, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QFormLayout, QGridLayout, QHBoxLayout, QLabel,
     QListWidget, QListWidgetItem, QPushButton, QSizePolicy, QSplitter,
@@ -57,6 +57,14 @@ if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
+
+OUTLINE_MAP = {
+    "TT": 0,
+    "H1": 1,
+    "H2": 2,
+    "H3": 3,
+    "H4": 4,
+}
 
 
 class GuiManuscript(QDialog):
@@ -151,8 +159,11 @@ class GuiManuscript(QDialog):
             CONFIG.pxInt(pOptions.getInt("GuiManuscript", "detailsWidth", 100)),
         )
 
+        self.buildOutline = _OutlineWidget(self)
+
         self.detailsTabs = QTabWidget(self)
         self.detailsTabs.addTab(self.buildDetails, self.tr("Build"))
+        self.detailsTabs.addTab(self.buildOutline, self.tr("Outline"))
         self.detailsTabs.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_FLAT_TABS))
 
         self.buildSplit = QSplitter(Qt.Orientation.Vertical, self)
@@ -224,6 +235,9 @@ class GuiManuscript(QDialog):
 
         self.setLayout(self.outerBox)
         self.setSizeGripEnabled(True)
+
+        # Signals
+        self.buildOutline.outlineEntryClicked.connect(self.docPreview.navigateTo)
 
         logger.debug("Ready: GuiManuscript")
 
@@ -354,6 +368,7 @@ class GuiManuscript(QDialog):
             "uuid": build.buildID,
             "time": int(time()),
             "stats": buildObj.textStats,
+            "outline": buildObj.navigationMap,
             "styles": buildObj.getStyleSheet(),
             "html": buildObj.fullHTML,
         }
@@ -410,6 +425,7 @@ class GuiManuscript(QDialog):
             build.getBool("format.justifyText")
         )
         self.docStats.updateStats(data.get("stats", {}))
+        self.buildOutline.updateOutline(data.get("outline", {}))
         return
 
     def _getSelectedBuild(self) -> BuildSettings | None:
@@ -519,7 +535,7 @@ class _DetailsWidget(QWidget):
         self.listView = QTreeWidget(self)
         self.listView.setHeaderLabels([self.tr("Setting"), self.tr("Value")])
         self.listView.setIndentation(SHARED.theme.baseIconSize)
-        self.listView.setSelectionMode(QAbstractItemView.NoSelection)
+        self.listView.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
 
         # Assemble
         self.outerBox = QVBoxLayout()
@@ -651,6 +667,80 @@ class _DetailsWidget(QWidget):
 # END Class _DetailsWidget
 
 
+class _OutlineWidget(QWidget):
+
+    D_LINE = Qt.ItemDataRole.UserRole
+
+    outlineEntryClicked = pyqtSignal(str)
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
+
+        self._outline = {}
+
+        # Tree Widget
+        self.listView = QTreeWidget(self)
+        self.listView.setHeaderHidden(True)
+        self.listView.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+        self.listView.itemClicked.connect(self._onItemClick)
+
+        # Assemble
+        self.outerBox = QVBoxLayout()
+        self.outerBox.addWidget(self.listView)
+        self.outerBox.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(self.outerBox)
+
+        return
+
+    def updateOutline(self, data: dict[str, str]) -> None:
+        """Update the outline."""
+        if isinstance(data, dict) and data != self._outline:
+            self.listView.clear()
+
+            tFont = self.font()
+            tFont.setBold(True)
+            tBrush = self.palette().highlight()
+
+            hFont = self.font()
+            hFont.setBold(True)
+            hFont.setUnderline(True)
+
+            root = self.listView.invisibleRootItem()
+            parent = root
+            for anchor, text in data.items():
+                level = OUTLINE_MAP.get(text[:2], -1)
+                text = text[3:]
+                if 0 <= level < 4:
+                    item = QTreeWidgetItem([text])
+                    item.setData(0, self.D_LINE, anchor)
+                    if level == 0:
+                        item.setFont(0, tFont)
+                        item.setForeground(0, tBrush)
+                    elif level == 1:
+                        item.setFont(0, hFont)
+
+                    if level < 3:
+                        root.addChild(item)
+                        parent = item
+                    elif parent:
+                        parent.addChild(item)
+
+            self._outline = data
+
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    def _onItemClick(self, item: QTreeWidgetItem) -> None:
+        """Process tree item click."""
+        self.outlineEntryClicked.emit(str(item.data(0, self.D_LINE)))
+        return
+
+# END Class _OutlineWidget
+
+
 class _PreviewWidget(QTextBrowser):
 
     def __init__(self, parent: QWidget) -> None:
@@ -690,7 +780,7 @@ class _PreviewWidget(QTextBrowser):
         self.ageLabel.setFont(aFont)
         self.ageLabel.setPalette(aPalette)
         self.ageLabel.setAutoFillBackground(True)
-        self.ageLabel.setAlignment(Qt.AlignCenter)
+        self.ageLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.ageLabel.setFixedHeight(int(2.1*SHARED.theme.fontPixelSize))
 
         # Progress
@@ -708,7 +798,7 @@ class _PreviewWidget(QTextBrowser):
         self._updateBuildAge()
 
         # Age Timer
-        self.ageTimer = QTimer()
+        self.ageTimer = QTimer(self)
         self.ageTimer.setInterval(10)
         self.ageTimer.timeout.connect(self._updateBuildAge)
         self.ageTimer.start()
@@ -729,9 +819,9 @@ class _PreviewWidget(QTextBrowser):
         """Enable/disable the justify text option."""
         pOptions = self.document().defaultTextOption()
         if state:
-            pOptions.setAlignment(Qt.AlignJustify)
+            pOptions.setAlignment(Qt.AlignmentFlag.AlignJustify)
         else:
-            pOptions.setAlignment(Qt.AlignAbsolute)
+            pOptions.setAlignment(Qt.AlignmentFlag.AlignAbsolute)
         self.document().setDefaultTextOption(pOptions)
         return
 
@@ -767,7 +857,7 @@ class _PreviewWidget(QTextBrowser):
     def setContent(self, data: dict) -> None:
         """Set the content of the preview widget."""
         sPos = self.verticalScrollBar().value()
-        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+        qApp.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
 
         self.buildProgress.setCentreText(self.tr("Processing ..."))
         qApp.processEvents()
@@ -777,8 +867,6 @@ class _PreviewWidget(QTextBrowser):
 
         html = "".join(data.get("html", []))
         html = html.replace("\t", "!!tab!!")
-        html = html.replace("<del>", "<span style='text-decoration: line-through;'>")
-        html = html.replace("</del>", "</span>")
         self.setHtml(html)
         qApp.processEvents()
         while self.find("!!tab!!"):
@@ -821,6 +909,13 @@ class _PreviewWidget(QTextBrowser):
         printer.setOrientation(QPrinter.Portrait)
         self.document().print(printer)
         qApp.restoreOverrideCursor()
+        return
+
+    @pyqtSlot(str)
+    def navigateTo(self, anchor: str) -> None:
+        """Go to a specific #link in the document."""
+        logger.debug("Moving to anchor '#%s'", anchor)
+        self.setSource(QUrl(f"#{anchor}"))
         return
 
     ##
