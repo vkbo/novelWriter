@@ -732,7 +732,8 @@ class GuiDocViewHeader(QWidget):
 
     def setOutline(self, data: dict[int, tuple[str, int]]) -> None:
         """Set the document outline dataset."""
-        if data != self._docOutline:
+        tHandle = self._docHandle
+        if data != self._docOutline and tHandle:
             self.outlineMenu.clear()
             entries = []
             minLevel = 5
@@ -744,7 +745,7 @@ class GuiDocViewHeader(QWidget):
                 indent = "    "*(level - minLevel)
                 action = self.outlineMenu.addAction(f"{indent}{text}")
                 action.triggered.connect(
-                    lambda _, title=title: self.docViewer.navigateTo(f"#{title}")
+                    lambda _, title=title: self.docViewer.navigateTo(f"#{tHandle}:{title}")
                 )
             self._docOutline = data
         return

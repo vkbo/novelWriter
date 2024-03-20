@@ -68,7 +68,7 @@ def testCoreToken_Setters(mockGUI):
     assert tokens._hideScene is False
     assert tokens._hideHScene is False
     assert tokens._hideSection is False
-    assert tokens._linkHeaders is False
+    assert tokens._linkHeadings is False
     assert tokens._doBodyText is True
     assert tokens._doSynopsis is False
     assert tokens._doComments is False
@@ -124,7 +124,7 @@ def testCoreToken_Setters(mockGUI):
     assert tokens._hideScene is True
     assert tokens._hideHScene is True
     assert tokens._hideSection is True
-    assert tokens._linkHeaders is True
+    assert tokens._linkHeadings is True
     assert tokens._doBodyText is False
     assert tokens._doSynopsis is True
     assert tokens._doComments is True

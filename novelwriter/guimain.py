@@ -653,7 +653,7 @@ class GuiMain(QMainWindow):
                     self.docEditor.ensureCursorVisibleNoCentre()
 
             if sTitle:
-                self.docViewer.navigateTo(f"#{sTitle}")
+                self.docViewer.navigateTo(f"#{tHandle}:{sTitle}")
 
         return True
 

@@ -165,7 +165,7 @@ class Tokenizer(ABC):
         self._hideHScene  = False  # Do not include hard scene headings
         self._hideSection = False  # Do not include section headings
 
-        self._linkHeaders = False  # Add an anchor before headings
+        self._linkHeadings = False  # Add an anchor before headings
 
         self._titleStyle   = self.A_CENTRE | self.A_PBB
         self._chapterStyle = self.A_PBB
@@ -353,7 +353,7 @@ class Tokenizer(ABC):
 
     def setLinkHeadings(self, state: bool) -> None:
         """Enable or disable adding an anchor before headings."""
-        self._linkHeaders = state
+        self._linkHeadings = state
         return
 
     def setBodyText(self, state: bool) -> None:
