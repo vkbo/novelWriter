@@ -86,7 +86,11 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
 
     docBuild = NWBuildDocument(project, build)
     docBuild.setCountEnabled(True)
+    docBuild.setBuildOutline(True)
     docBuild.queueAll()
+
+    assert docBuild._count is True
+    assert docBuild._outline is True
 
     assert len(docBuild) == 21
 

@@ -1499,6 +1499,73 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
 
 @pytest.mark.core
+def testCoreToken_BuildOutline(mockGUI, ipsumText):
+    """Test stats counter of the Tokenizer class."""
+    project = NWProject()
+    project.data.setLanguage("en")
+    project._loadProjectLocalisation()
+    tokens = BareTokenizer(project)
+
+    # Novel
+    tokens._isNovel = True
+    tokens._handle = "0000000000000"
+    tokens._text = (
+        "#! My Novel\n\n"
+        "# Part One\n\n"
+        "## Chapter One\n\n"
+        "### Scene One\n\n"
+        "Text\n\n"
+        "### Scene Two\n\n"
+        "Text\n\n"
+        "## Chapter Two\n\n"
+        "### Scene Three\n\n"
+        "Text\n\n"
+        "###! Scene Four\n\n"
+        "Text\n\n"
+        "#### Section\n\n"
+        "Text\n\n"
+    )
+    tokens.tokenizeText()
+    tokens.buildOutline()
+
+    # Note
+    tokens._isNovel = False
+    tokens._handle = "0000000000001"
+    tokens._text = (
+        "#! My Notes\n\n"
+        "# Header 1\n\n"
+        "Text\n\n"
+        "## Header 2\n\n"
+        "Text\n\n"
+        "### Header 3\n\n"
+        "Text\n\n"
+        "#### Header 4\n\n"
+        "Text\n\n"
+    )
+    tokens.tokenizeText()
+    tokens.buildOutline()
+
+    # Check Outline
+    assert tokens.textOutline == {
+        "0000000000000:T0001": "TT|My Novel",
+        "0000000000000:T0002": "PT|Part One",
+        "0000000000000:T0003": "CH|Chapter One",
+        "0000000000000:T0004": "SC|Scene One",
+        "0000000000000:T0005": "SC|Scene Two",
+        "0000000000000:T0006": "CH|Chapter Two",
+        "0000000000000:T0007": "SC|Scene Three",
+        "0000000000000:T0008": "SC|Scene Four",
+        "0000000000001:T0001": "TT|My Notes",
+        "0000000000001:T0002": "H1|Header 1",
+        "0000000000001:T0003": "H2|Header 2",
+        "0000000000001:T0004": "H3|Header 3",
+    }
+
+
+# END Test testCoreToken_BuildOutline
+
+
+@pytest.mark.core
 def testCoreToken_CountStats(mockGUI, ipsumText):
     """Test stats counter of the Tokenizer class."""
     project = NWProject()
