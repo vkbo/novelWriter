@@ -58,14 +58,6 @@ if TYPE_CHECKING:  # pragma: no cover
 
 logger = logging.getLogger(__name__)
 
-OUTLINE_MAP = {
-    "TT": 0,
-    "H1": 1,
-    "H2": 2,
-    "H3": 3,
-    "H4": 4,
-}
-
 
 class GuiManuscript(QDialog):
     """GUI Tools: Manuscript Tool
@@ -368,7 +360,7 @@ class GuiManuscript(QDialog):
             "uuid": build.buildID,
             "time": int(time()),
             "stats": buildObj.textStats,
-            "outline": buildObj.navigationMap,
+            "outline": buildObj.textOutline,
             "styles": buildObj.getStyleSheet(),
             "html": buildObj.fullHTML,
         }
@@ -708,22 +700,24 @@ class _OutlineWidget(QWidget):
             root = self.listView.invisibleRootItem()
             parent = root
             indent = False
-            for anchor, text in data.items():
-                level = OUTLINE_MAP.get(text[:2], -1)
-                text = text[3:]
-                if 0 <= level < 4:
+            for anchor, entry in data.items():
+                prefix, _, text = entry.partition("|")
+                if prefix in ("TT", "PT", "CH", "SC", "H1", "H2"):
                     item = QTreeWidgetItem([text])
                     item.setData(0, self.D_LINE, anchor)
-                    if level == 0:
+                    if prefix == "TT":
                         item.setFont(0, tFont)
                         item.setForeground(0, tBrush)
-                    elif level == 1:
+                        root.addChild(item)
+                        parent = root
+                    elif prefix == "PT":
                         item.setFont(0, hFont)
-
-                    if level < 3:
+                        root.addChild(item)
+                        parent = root
+                    elif prefix in ("CH", "H1"):
                         root.addChild(item)
                         parent = item
-                    elif parent:
+                    elif prefix in ("SC", "H2"):
                         parent.addChild(item)
                         indent = True
 

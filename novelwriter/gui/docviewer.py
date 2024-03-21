@@ -41,13 +41,13 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.constants import nwHeaders, nwUnicode
+from novelwriter.core.tohtml import ToHtml
 from novelwriter.enum import nwItemType, nwDocAction, nwDocMode
 from novelwriter.error import logException
-from novelwriter.constants import nwHeaders, nwUnicode
+from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
-from novelwriter.core.tohtml import ToHtml
-from novelwriter.extensions.eventfilters import WheelEventFilter
 
 logger = logging.getLogger(__name__)
 
@@ -633,7 +633,7 @@ class GuiDocViewHeader(QWidget):
 
         # Internal Variables
         self._docHandle = None
-        self._docOutline: dict[int, tuple[str, int]] = {}
+        self._docOutline: dict[str, tuple[str, int]] = {}
 
         iPx = SHARED.theme.baseIconSize
         mPx = CONFIG.pxInt(4)
@@ -730,7 +730,7 @@ class GuiDocViewHeader(QWidget):
         self.refreshButton.setVisible(False)
         return
 
-    def setOutline(self, data: dict[int, tuple[str, int]]) -> None:
+    def setOutline(self, data: dict[str, tuple[str, int]]) -> None:
         """Set the document outline dataset."""
         tHandle = self._docHandle
         if data != self._docOutline and tHandle:

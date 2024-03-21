@@ -52,7 +52,10 @@ class NWBuildDocument:
     manuscript, based on a build definition object (BuildSettings).
     """
 
-    __slots__ = ("_project", "_build", "_queue", "_error", "_cache", "_count", "_preview")
+    __slots__ = (
+        "_project", "_build", "_queue", "_error", "_cache", "_count",
+        "_outline", "_preview"
+    )
 
     def __init__(self, project: NWProject, build: BuildSettings) -> None:
         self._project = project
@@ -61,6 +64,7 @@ class NWBuildDocument:
         self._error = None
         self._cache = None
         self._count = False
+        self._outline = False
         self._preview = False
         return
 
@@ -86,13 +90,21 @@ class NWBuildDocument:
     ##
 
     def setCountEnabled(self, state: bool) -> None:
-        """Turn on/off stats counting for builds."""
+        """Turn on/off stats for builds."""
         self._count = state
         return
 
+    def setBuildOutline(self, state: bool) -> None:
+        """Turn on/off outline for builds."""
+        self._outline = state
+        return
+
     def setPreviewMode(self, state: bool) -> None:
-        """Set the preview mode of the build. Implies count mode."""
+        """Set the preview mode of the build. This also enables stats
+        count and outline mode.
+        """
         self._preview = state
+        self._outline = state
         self._count = state
         return
 
@@ -364,12 +376,16 @@ class NWBuildDocument:
                         bldObj.doConvert()
                     if self._count:
                         bldObj.countStats()
+                    if self._outline:
+                        bldObj.buildOutline()
                 elif tItem.isFileType():
                     bldObj.setText(tHandle)
                     bldObj.doPreProcessing()
                     bldObj.tokenizeText()
                     if self._count:
                         bldObj.countStats()
+                    if self._outline:
+                        bldObj.buildOutline()
                     if convert:
                         bldObj.doConvert()
                 else:

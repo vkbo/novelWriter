@@ -23,10 +23,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from collections.abc import Generator
 import logging
 
 from time import time
+from collections.abc import Iterable
 
 from PyQt5.QtGui import QTextBlock, QTextCursor, QTextDocument
 from PyQt5.QtCore import QObject, pyqtSlot
@@ -114,7 +114,7 @@ class GuiTextDocument(QTextDocument):
                         return word, cPos, cLen, SHARED.spelling.suggestWords(word)
         return "", -1, -1, []
 
-    def iterBlockByType(self, cType: int, maxCount: int = 1000) -> Generator[QTextBlock]:
+    def iterBlockByType(self, cType: int, maxCount: int = 1000) -> Iterable[QTextBlock]:
         """Iterate over all text blocks of a given type."""
         count = 0
         for i in range(self.blockCount()):

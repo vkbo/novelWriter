@@ -55,7 +55,6 @@ class ToHtml(Tokenizer):
         self._genMode = self.M_EXPORT
         self._cssStyles = True
         self._fullHTML: list[str] = []
-        self._navMap: dict[str, str] = {}
 
         # Internals
         self._trMap = {}
@@ -70,10 +69,6 @@ class ToHtml(Tokenizer):
     @property
     def fullHTML(self) -> list[str]:
         return self._fullHTML
-
-    @property
-    def navigationMap(self) -> dict[str, str]:
-        return self._navMap
 
     ##
     #  Setters
@@ -174,6 +169,8 @@ class ToHtml(Tokenizer):
         pStyle = None
         lines = []
 
+        tHandle = self._handle
+
         for tType, nHead, tText, tFormat, tStyle in self._tokens:
 
             # Replace < and > with HTML entities
@@ -232,11 +229,9 @@ class ToHtml(Tokenizer):
             else:
                 hStyle = ""
 
-            if self._linkHeadings and self._handle:
-                tHH = f"{self._handle}:T{nHead:04d}"
-                aNm = f"<a name='{tHH}'></a>"
+            if self._linkHeadings and tHandle:
+                aNm = f"<a name='{tHandle}:T{nHead:04d}'></a>"
             else:
-                tHH = ""
                 aNm = ""
 
             # Process Text Type
@@ -256,32 +251,22 @@ class ToHtml(Tokenizer):
             elif tType == self.T_TITLE:
                 tHead = tText.replace(nwHeadFmt.BR, "<br/>")
                 lines.append(f"<h1 class='title'{hStyle}>{aNm}{tHead}</h1>\n")
-                if tHH:
-                    self._navMap[tHH] = f"TT:{tHead}"
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(nwHeadFmt.BR, "<br/>")
                 lines.append(f"<{h1}{h1Cl}{hStyle}>{aNm}{tHead}</{h1}>\n")
-                if tHH:
-                    self._navMap[tHH] = f"H1:{tHead}"
 
             elif tType == self.T_HEAD2:
                 tHead = tText.replace(nwHeadFmt.BR, "<br/>")
                 lines.append(f"<{h2}{hStyle}>{aNm}{tHead}</{h2}>\n")
-                if tHH:
-                    self._navMap[tHH] = f"H2:{tHead}"
 
             elif tType == self.T_HEAD3:
                 tHead = tText.replace(nwHeadFmt.BR, "<br/>")
                 lines.append(f"<{h3}{hStyle}>{aNm}{tHead}</{h3}>\n")
-                if tHH:
-                    self._navMap[tHH] = f"H3:{tHead}"
 
             elif tType == self.T_HEAD4:
                 tHead = tText.replace(nwHeadFmt.BR, "<br/>")
                 lines.append(f"<{h4}{hStyle}>{aNm}{tHead}</{h4}>\n")
-                if tHH:
-                    self._navMap[tHH] = f"H4:{tHead}"
 
             elif tType == self.T_SEP:
                 lines.append(f"<p class='sep'{hStyle}>{tText}</p>\n")
