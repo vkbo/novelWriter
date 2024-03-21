@@ -43,6 +43,10 @@ from novelwriter.constants import nwLabels
 
 logger = logging.getLogger(__name__)
 
+STYLES_FLAT_TABS = "flatTabWidget"
+STYLES_MIN_TOOLBUTTON = "minimalToolButton"
+STYLES_BIG_TOOLBUTTON = "bigToolButton"
+
 
 # =============================================================================================== #
 #  Gui Theme Class
@@ -120,6 +124,7 @@ class GuiTheme:
         self._syntaxList: list[tuple[str, str]] = []
         self._availThemes: dict[str, Path] = {}
         self._availSyntax: dict[str, Path] = {}
+        self._styleSheets: dict[str, str] = {}
 
         self._listConf(self._availSyntax, CONFIG.assetPath("syntax"))
         self._listConf(self._availThemes, CONFIG.assetPath("themes"))
@@ -272,6 +277,9 @@ class GuiTheme:
         # Apply Styles
         qApp.setPalette(self._guiPalette)
 
+        # Reset stylesheets so that they are regenerated
+        self._buildStyleSheets(self._guiPalette)
+
         return True
 
     def loadSyntax(self) -> bool:
@@ -366,6 +374,10 @@ class GuiTheme:
 
         return self._syntaxList
 
+    def getStyleSheet(self, name: str) -> str:
+        """Load a standard style sheet."""
+        return self._styleSheets.get(name, "")
+
     ##
     #  Internal Functions
     ##
@@ -410,6 +422,41 @@ class GuiTheme:
                     name: str, value: QPalette.ColorRole) -> None:
         """Set a palette colour value from a config string."""
         self._guiPalette.setColor(value, self._parseColour(parser, section, name))
+        return
+
+    def _buildStyleSheets(self, palette: QPalette) -> None:
+        """Build default style sheets."""
+        self._styleSheets = {}
+
+        aPx = CONFIG.pxInt(2)
+        bPx = CONFIG.pxInt(4)
+        cPx = CONFIG.pxInt(6)
+        dPx = CONFIG.pxInt(8)
+
+        tCol = palette.text().color()
+        hCol = palette.highlight().color()
+
+        # Flat Tab Widget and Tab Bar:
+        self._styleSheets[STYLES_FLAT_TABS] = (
+            "QTabWidget::pane {{border: 0;}} "
+            "QTabWidget QTabBar::tab {{border: 0; padding: {0}px {1}px;}} "
+            "QTabWidget QTabBar::tab:selected {{color: rgb({2}, {3}, {4});}} "
+        ).format(bPx, dPx, hCol.red(), hCol.green(), hCol.blue())
+
+        # Minimal Tool Button
+        self._styleSheets[STYLES_MIN_TOOLBUTTON] = (
+            "QToolButton {{padding: {0}px; margin: 0; border: none; background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({1}, {2}, {3}, 0.2);}} "
+            "QToolButton::menu-indicator {{image: none;}} "
+        ).format(aPx, tCol.red(), tCol.green(), tCol.blue())
+
+        # Big Tool Button
+        self._styleSheets[STYLES_BIG_TOOLBUTTON] = (
+            "QToolButton {{padding: {0}px; margin: 0; border: none; background: transparent;}} "
+            "QToolButton:hover {{border: none; background: rgba({1}, {2}, {3}, 0.2);}} "
+            "QToolButton::menu-indicator {{image: none;}} "
+        ).format(cPx, tCol.red(), tCol.green(), tCol.blue())
+
         return
 
 # End Class GuiTheme

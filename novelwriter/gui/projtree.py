@@ -38,20 +38,22 @@ from PyQt5.QtGui import (
 from PyQt5.QtCore import QPoint, QTimer, Qt, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QAction, QDialog, QFrame, QHBoxLayout, QHeaderView,
-    QLabel, QMenu, QShortcut, QSizePolicy, QToolButton, QTreeWidget,
-    QTreeWidgetItem, QVBoxLayout, QWidget
+    QLabel, QMenu, QShortcut, QSizePolicy, QTreeWidget, QTreeWidgetItem,
+    QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout
 from novelwriter.common import minmax
 from novelwriter.constants import nwHeaders, nwUnicode, trConst, nwLabels
-from novelwriter.core.item import NWItem
 from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSplitter
+from novelwriter.core.item import NWItem
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
+from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout
+from novelwriter.extensions.modified import NIconToolButton
+from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -275,22 +277,18 @@ class GuiProjectToolBar(QWidget):
         # Quick Links
         self.mQuick = QMenu(self)
 
-        self.tbQuick = QToolButton(self)
+        self.tbQuick = NIconToolButton(self, iPx)
         self.tbQuick.setToolTip("%s [Ctrl+L]" % self.tr("Quick Links"))
         self.tbQuick.setShortcut("Ctrl+L")
-        self.tbQuick.setIconSize(QSize(iPx, iPx))
         self.tbQuick.setMenu(self.mQuick)
-        self.tbQuick.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
         # Move Buttons
-        self.tbMoveU = QToolButton(self)
+        self.tbMoveU = NIconToolButton(self, iPx)
         self.tbMoveU.setToolTip("%s [Ctrl+Up]" % self.tr("Move Up"))
-        self.tbMoveU.setIconSize(QSize(iPx, iPx))
         self.tbMoveU.clicked.connect(lambda: self.projTree.moveTreeItem(-1))
 
-        self.tbMoveD = QToolButton(self)
+        self.tbMoveD = NIconToolButton(self, iPx)
         self.tbMoveD.setToolTip("%s [Ctrl+Down]" % self.tr("Move Down"))
-        self.tbMoveD.setIconSize(QSize(iPx, iPx))
         self.tbMoveD.clicked.connect(lambda: self.projTree.moveTreeItem(1))
 
         # Add Item Menu
@@ -329,12 +327,10 @@ class GuiProjectToolBar(QWidget):
         self.mAddRoot = self.mAdd.addMenu(trConst(nwLabels.ITEM_DESCRIPTION["root"]))
         self._buildRootMenu()
 
-        self.tbAdd = QToolButton(self)
+        self.tbAdd = NIconToolButton(self, iPx)
         self.tbAdd.setToolTip("%s [Ctrl+N]" % self.tr("Add Item"))
         self.tbAdd.setShortcut("Ctrl+N")
-        self.tbAdd.setIconSize(QSize(iPx, iPx))
         self.tbAdd.setMenu(self.mAdd)
-        self.tbAdd.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
         # More Options Menu
         self.mMore = QMenu(self)
@@ -348,11 +344,9 @@ class GuiProjectToolBar(QWidget):
         self.aEmptyTrash = self.mMore.addAction(self.tr("Empty Trash"))
         self.aEmptyTrash.triggered.connect(lambda: self.projTree.emptyTrash())
 
-        self.tbMore = QToolButton(self)
+        self.tbMore = NIconToolButton(self, iPx)
         self.tbMore.setToolTip(self.tr("More Options"))
-        self.tbMore.setIconSize(QSize(iPx, iPx))
         self.tbMore.setMenu(self.mMore)
-        self.tbMore.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
         # Assemble
         self.outerBox = QHBoxLayout()
@@ -382,18 +376,12 @@ class GuiProjectToolBar(QWidget):
         qPalette.setBrush(QPalette.ColorRole.Window, qPalette.base())
         self.setPalette(qPalette)
 
-        fadeCol = qPalette.text().color()
-        buttonStyle = (
-            "QToolButton {{padding: {0}px; border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({1},{2},{3},0.2);}}"
-        ).format(CONFIG.pxInt(2), fadeCol.red(), fadeCol.green(), fadeCol.blue())
-        buttonStyleMenu = f"{buttonStyle} QToolButton::menu-indicator {{image: none;}}"
-
-        self.tbQuick.setStyleSheet(buttonStyleMenu)
+        buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
+        self.tbQuick.setStyleSheet(buttonStyle)
         self.tbMoveU.setStyleSheet(buttonStyle)
         self.tbMoveD.setStyleSheet(buttonStyle)
-        self.tbAdd.setStyleSheet(buttonStyleMenu)
-        self.tbMore.setStyleSheet(buttonStyleMenu)
+        self.tbAdd.setStyleSheet(buttonStyle)
+        self.tbMore.setStyleSheet(buttonStyle)
 
         self.tbQuick.setIcon(SHARED.theme.getIcon("bookmark"))
         self.tbMoveU.setIcon(SHARED.theme.getIcon("up"))

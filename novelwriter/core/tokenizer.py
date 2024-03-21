@@ -35,13 +35,13 @@ from functools import partial
 
 from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
-from novelwriter.enum import nwComment, nwItemLayout
 from novelwriter.common import formatTimeStamp, numberToRoman, checkInt
 from novelwriter.constants import (
     nwHeadFmt, nwKeyWords, nwLabels, nwRegEx, nwShortcode, nwUnicode, trConst
 )
 from novelwriter.core.index import processComment
 from novelwriter.core.project import NWProject
+from novelwriter.enum import nwComment, nwItemLayout
 
 logger = logging.getLogger(__name__)
 
@@ -118,15 +118,16 @@ class Tokenizer(ABC):
 
         # Data Variables
         self._text   = ""    # The raw text to be tokenized
-        self._nwItem = None  # The NWItem currently being processed
+        self._handle = None  # The item handle currently being processed
         self._result = ""    # The result of the last document
-        self._counts = {}    # Counter data
 
         self._keepMarkdown = False  # Whether to keep the markdown text
         self._allMarkdown  = []     # The result novelWriter markdown of all documents
 
-        # Processed Tokens
+        # Processed Tokens and Meta Data
         self._tokens: list[tuple[int, int, str, list[tuple[int, int]], int]] = []
+        self._counts: dict[str, int] = {}
+        self._outline: dict[str, str] = {}
 
         # User Settings
         self._textFont     = "Serif"  # Output text font
@@ -165,7 +166,7 @@ class Tokenizer(ABC):
         self._hideHScene  = False  # Do not include hard scene headings
         self._hideSection = False  # Do not include section headings
 
-        self._linkHeaders = False  # Add an anchor before headings
+        self._linkHeadings = False  # Add an anchor before headings
 
         self._titleStyle   = self.A_CENTRE | self.A_PBB
         self._chapterStyle = self.A_PBB
@@ -176,9 +177,7 @@ class Tokenizer(ABC):
         self._noSep      = True  # Flag to indicate that we don't want a scene separator
 
         # This File
-        self._isNone  = False  # Document has unknown layout
         self._isNovel = False  # Document is a novel document
-        self._isNote  = False  # Document is a project note
         self._isFirst = True   # Document is the first in a set
 
         # Error Handling
@@ -227,6 +226,11 @@ class Tokenizer(ABC):
     def textStats(self) -> dict[str, int]:
         """The collected stats about the text."""
         return self._counts
+
+    @property
+    def textOutline(self) -> dict[str, str]:
+        """The generated outline of the text."""
+        return self._outline
 
     @property
     def errData(self) -> list[str]:
@@ -353,7 +357,7 @@ class Tokenizer(ABC):
 
     def setLinkHeadings(self, state: bool) -> None:
         """Enable or disable adding an anchor before headings."""
-        self._linkHeaders = state
+        self._linkHeadings = state
         return
 
     def setBodyText(self, state: bool) -> None:
@@ -394,47 +398,43 @@ class Tokenizer(ABC):
     def doConvert(self) -> None:
         raise NotImplementedError
 
-    def addRootHeading(self, tHandle: str) -> bool:
+    def addRootHeading(self, tHandle: str) -> None:
         """Add a heading at the start of a new root folder."""
-        tItem = self._project.tree[tHandle]
-        if not tItem or not tItem.isRootType():
-            return False
+        self._text = ""
+        self._handle = None
 
-        if self._isFirst:
-            textAlign = self.A_CENTRE
-            self._isFirst = False
-        else:
-            textAlign = self.A_PBB | self.A_CENTRE
+        if (tItem := self._project.tree[tHandle]) and tItem.isRootType():
+            self._handle = tHandle
+            if self._isFirst:
+                textAlign = self.A_CENTRE
+                self._isFirst = False
+            else:
+                textAlign = self.A_PBB | self.A_CENTRE
 
-        trNotes = self._localLookup("Notes")
-        title = f"{trNotes}: {tItem.itemName}"
-        self._tokens = []
-        self._tokens.append((
-            self.T_TITLE, 0, title, [], textAlign
-        ))
-        if self._keepMarkdown:
-            self._allMarkdown.append(f"# {title}\n\n")
+            trNotes = self._localLookup("Notes")
+            title = f"{trNotes}: {tItem.itemName}"
+            self._tokens = []
+            self._tokens.append((
+                self.T_TITLE, 1, title, [], textAlign
+            ))
+            if self._keepMarkdown:
+                self._allMarkdown.append(f"#! {title}\n\n")
 
-        return True
+        return
 
-    def setText(self, tHandle: str, text: str | None = None) -> bool:
+    def setText(self, tHandle: str, text: str | None = None) -> None:
         """Set the text for the tokenizer from a handle. If text is not
-        set, load it from the file.
+        set, it's is loaded from the file.
         """
-        self._nwItem = self._project.tree[tHandle]
-        if self._nwItem is None:
-            return False
-
-        if text is None:
-            text = self._project.storage.getDocument(tHandle).readDocument() or ""
-
-        self._text = text
-
-        self._isNone  = self._nwItem.itemLayout == nwItemLayout.NO_LAYOUT
-        self._isNovel = self._nwItem.itemLayout == nwItemLayout.DOCUMENT
-        self._isNote  = self._nwItem.itemLayout == nwItemLayout.NOTE
-
-        return True
+        self._text = ""
+        self._handle = None
+        if nwItem := self._project.tree[tHandle]:
+            if text is None:
+                text = self._project.storage.getDocument(tHandle).readDocument() or ""
+            self._text = text
+            self._handle = tHandle
+            self._isNovel = nwItem.itemLayout == nwItemLayout.DOCUMENT
+        return
 
     def doPreProcessing(self) -> None:
         """Run trough the various replace dictionaries."""
@@ -470,7 +470,7 @@ class Tokenizer(ABC):
         """
         self._tokens = []
         if self._isNovel:
-            self._hFormatter.setHandle(self._nwItem.itemHandle if self._nwItem else None)
+            self._hFormatter.setHandle(self._handle)
 
         nHead = 0
         breakNext = False
@@ -803,7 +803,29 @@ class Tokenizer(ABC):
 
         return
 
-    def countStats(self) -> dict[str, int]:
+    def buildOutline(self) -> None:
+        """Build an outline of the text up to level 3 headings."""
+        tHandle = self._handle or ""
+        isNovel = self._isNovel
+        for tType, nHead, tText, _, _ in self._tokens:
+            if tType == self.T_TITLE:
+                prefix = "TT"
+            elif tType == self.T_HEAD1:
+                prefix = "PT" if isNovel else "H1"
+            elif tType == self.T_HEAD2:
+                prefix = "CH" if isNovel else "H2"
+            elif tType == self.T_HEAD3:
+                prefix = "SC" if isNovel else "H3"
+            else:
+                continue
+
+            key = f"{tHandle}:T{nHead:04d}"
+            text = tText.replace(nwHeadFmt.BR, " ").replace("&amp;", "&")
+            self._outline[key] = f"{prefix}|{text}"
+
+        return
+
+    def countStats(self) -> None:
         """Count stats on the tokenized text."""
         titleCount = self._counts.get("titleCount", 0)
         paragraphCount = self._counts.get("paragraphCount", 0)
@@ -910,7 +932,7 @@ class Tokenizer(ABC):
         self._counts["textWordChars"] = textWordChars
         self._counts["titleWordChars"] = titleWordChars
 
-        return {}
+        return
 
     def saveRawMarkdown(self, path: str | Path) -> None:
         """Save the raw text to a plain text file."""

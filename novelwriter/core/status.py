@@ -28,10 +28,10 @@ import random
 import logging
 
 from typing import TYPE_CHECKING, Literal
-from collections.abc import Generator, ItemsView, Iterator, KeysView, ValuesView
+from collections.abc import ItemsView, Iterable, Iterator, KeysView, ValuesView
 
 from PyQt5.QtGui import QIcon, QPainter, QPainterPath, QPixmap, QColor
-from PyQt5.QtCore import QRectF, Qt
+from PyQt5.QtCore import QRectF
 
 from novelwriter import CONFIG
 from novelwriter.common import minmax, simplified
@@ -193,7 +193,7 @@ class NWStatus:
             self._store[key]["count"] += 1
         return
 
-    def pack(self) -> Generator[tuple[str, dict]]:
+    def pack(self) -> Iterable[tuple[str, dict]]:
         """Pack the status entries into a dictionary."""
         for key, data in self._store.items():
             yield (data["name"], {
@@ -248,7 +248,7 @@ class NWStatus:
     def _createIcon(self, red: int, green: int, blue: int) -> QIcon:
         """Generate an icon for a status label."""
         pixmap = QPixmap(self._iPX, self._iPX)
-        pixmap.fill(Qt.transparent)
+        pixmap.fill(QColor(0, 0, 0, 0))
 
         painter = QPainter(pixmap)
         painter.setRenderHint(QPainter.Antialiasing)

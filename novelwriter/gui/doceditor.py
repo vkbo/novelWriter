@@ -53,15 +53,17 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwTrinary
 from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwKeyWords, nwShortcode, nwUnicode
-from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.core.document import NWDocument
-from novelwriter.text.counting import standardCounter
+from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwTrinary
+from novelwriter.extensions.eventfilters import WheelEventFilter
+from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE
 from novelwriter.gui.editordocument import GuiTextDocument
-from novelwriter.extensions.eventfilters import WheelEventFilter
+from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
+from novelwriter.text.counting import standardCounter
+from novelwriter.tools.lipsum import GuiLipsum
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -2805,10 +2807,8 @@ class GuiDocEditHeader(QWidget):
         self._docHandle = None
         self._docOutline: dict[int, str] = {}
 
-        fPx = int(0.9*SHARED.theme.fontPixelSize)
-        mPx = CONFIG.pxInt(8)
-        hSp = CONFIG.pxInt(6)
-        iconSize = QSize(fPx, fPx)
+        iPx = SHARED.theme.baseIconSize
+        mPx = CONFIG.pxInt(4)
 
         # Main Widget Settings
         self.setAutoFillBackground(True)
@@ -2820,7 +2820,7 @@ class GuiDocEditHeader(QWidget):
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
         self.itemTitle.setAutoFillBackground(True)
         self.itemTitle.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
-        self.itemTitle.setFixedHeight(fPx)
+        self.itemTitle.setFixedHeight(iPx)
 
         lblFont = self.itemTitle.font()
         lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
@@ -2830,63 +2830,44 @@ class GuiDocEditHeader(QWidget):
         self.outlineMenu = QMenu(self)
 
         # Buttons
-        self.tbButton = QToolButton(self)
-        self.tbButton.setContentsMargins(0, 0, 0, 0)
-        self.tbButton.setIconSize(iconSize)
-        self.tbButton.setFixedSize(fPx, fPx)
-        self.tbButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.tbButton = NIconToolButton(self, iPx)
         self.tbButton.setVisible(False)
         self.tbButton.setToolTip(self.tr("Toggle Tool Bar"))
         self.tbButton.clicked.connect(lambda: self.toggleToolBarRequest.emit())
 
-        self.outlineButton = QToolButton(self)
-        self.outlineButton.setContentsMargins(0, 0, 0, 0)
-        self.outlineButton.setIconSize(iconSize)
-        self.outlineButton.setFixedSize(fPx, fPx)
-        self.outlineButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.outlineButton = NIconToolButton(self, iPx)
         self.outlineButton.setVisible(False)
         self.outlineButton.setToolTip(self.tr("Outline"))
         self.outlineButton.setMenu(self.outlineMenu)
-        self.outlineButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
-        self.searchButton = QToolButton(self)
-        self.searchButton.setContentsMargins(0, 0, 0, 0)
-        self.searchButton.setIconSize(iconSize)
-        self.searchButton.setFixedSize(fPx, fPx)
-        self.searchButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.searchButton = NIconToolButton(self, iPx)
         self.searchButton.setVisible(False)
         self.searchButton.setToolTip(self.tr("Search"))
         self.searchButton.clicked.connect(self.docEditor.toggleSearch)
 
-        self.minmaxButton = QToolButton(self)
-        self.minmaxButton.setContentsMargins(0, 0, 0, 0)
-        self.minmaxButton.setIconSize(iconSize)
-        self.minmaxButton.setFixedSize(fPx, fPx)
-        self.minmaxButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.minmaxButton = NIconToolButton(self, iPx)
         self.minmaxButton.setVisible(False)
         self.minmaxButton.setToolTip(self.tr("Toggle Focus Mode"))
         self.minmaxButton.clicked.connect(lambda: self.docEditor.toggleFocusModeRequest.emit())
 
-        self.closeButton = QToolButton(self)
-        self.closeButton.setContentsMargins(0, 0, 0, 0)
-        self.closeButton.setIconSize(iconSize)
-        self.closeButton.setFixedSize(fPx, fPx)
-        self.closeButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.closeButton = NIconToolButton(self, iPx)
         self.closeButton.setVisible(False)
         self.closeButton.setToolTip(self.tr("Close"))
         self.closeButton.clicked.connect(self._closeDocument)
 
         # Assemble Layout
         self.outerBox = QHBoxLayout()
-        self.outerBox.setSpacing(hSp)
         self.outerBox.addWidget(self.tbButton, 0)
         self.outerBox.addWidget(self.outlineButton, 0)
         self.outerBox.addWidget(self.searchButton, 0)
+        self.outerBox.addSpacing(mPx)
         self.outerBox.addWidget(self.itemTitle, 1)
-        self.outerBox.addSpacing(fPx + hSp)
+        self.outerBox.addSpacing(mPx)
+        self.outerBox.addSpacing(iPx)
         self.outerBox.addWidget(self.minmaxButton, 0)
         self.outerBox.addWidget(self.closeButton, 0)
         self.outerBox.setContentsMargins(mPx, mPx, mPx, mPx)
+        self.outerBox.setSpacing(0)
 
         self.setLayout(self.outerBox)
 
@@ -2896,7 +2877,7 @@ class GuiDocEditHeader(QWidget):
         # Fix Margins and Size
         # This is needed for high DPI systems. See issue #499.
         self.setContentsMargins(0, 0, 0, 0)
-        self.setMinimumHeight(fPx + 2*mPx)
+        self.setMinimumHeight(iPx + 2*mPx)
 
         self.updateTheme()
 
@@ -2944,15 +2925,9 @@ class GuiDocEditHeader(QWidget):
         self.minmaxButton.setIcon(SHARED.theme.getIcon("maximise"))
         self.closeButton.setIcon(SHARED.theme.getIcon("close"))
 
-        colText = SHARED.theme.colText
-        buttonStyle = (
-            "QToolButton {{border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({0}, {1}, {2}, 0.2);}}"
-        ).format(colText.red(), colText.green(), colText.blue())
-        buttonStyleMenu = f"{buttonStyle} QToolButton::menu-indicator {{image: none;}}"
-
+        buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.tbButton.setStyleSheet(buttonStyle)
-        self.outlineButton.setStyleSheet(buttonStyleMenu)
+        self.outlineButton.setStyleSheet(buttonStyle)
         self.searchButton.setStyleSheet(buttonStyle)
         self.minmaxButton.setStyleSheet(buttonStyle)
         self.closeButton.setStyleSheet(buttonStyle)

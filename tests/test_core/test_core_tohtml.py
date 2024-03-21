@@ -38,7 +38,6 @@ def testCoreToHtml_ConvertHeaders(mockGUI):
     # ===================
 
     html._isNovel = True
-    html._isNote = False
     html._isFirst = True
 
     # Header 1
@@ -87,33 +86,33 @@ def testCoreToHtml_ConvertHeaders(mockGUI):
     # ==================
 
     html._isNovel = False
-    html._isNote = True
     html._isFirst = True
+    html._handle = "0000000000000"
     html.setLinkHeadings(True)
 
     # Header 1
     html._text = "# Heading One\n"
     html.tokenizeText()
     html.doConvert()
-    assert html.result == "<h1><a name='T0001'></a>Heading One</h1>\n"
+    assert html.result == "<h1><a name='0000000000000:T0001'></a>Heading One</h1>\n"
 
     # Header 2
     html._text = "## Heading Two\n"
     html.tokenizeText()
     html.doConvert()
-    assert html.result == "<h2><a name='T0001'></a>Heading Two</h2>\n"
+    assert html.result == "<h2><a name='0000000000000:T0001'></a>Heading Two</h2>\n"
 
     # Header 3
     html._text = "### Heading Three\n"
     html.tokenizeText()
     html.doConvert()
-    assert html.result == "<h3><a name='T0001'></a>Heading Three</h3>\n"
+    assert html.result == "<h3><a name='0000000000000:T0001'></a>Heading Three</h3>\n"
 
     # Header 4
     html._text = "#### Heading Four\n"
     html.tokenizeText()
     html.doConvert()
-    assert html.result == "<h4><a name='T0001'></a>Heading Four</h4>\n"
+    assert html.result == "<h4><a name='0000000000000:T0001'></a>Heading Four</h4>\n"
 
     # Title
     html._text = "#! Heading One\n"
@@ -121,14 +120,14 @@ def testCoreToHtml_ConvertHeaders(mockGUI):
     html.doConvert()
     assert html.result == (
         "<h1 class='title' style='text-align: center; page-break-before: always;'>"
-        "<a name='T0001'></a>Heading One</h1>\n"
+        "<a name='0000000000000:T0001'></a>Heading One</h1>\n"
     )
 
     # Unnumbered
     html._text = "##! Heading Two\n"
     html.tokenizeText()
     html.doConvert()
-    assert html.result == "<h2><a name='T0001'></a>Heading Two</h2>\n"
+    assert html.result == "<h2><a name='0000000000000:T0001'></a>Heading Two</h2>\n"
 
 # END Test testCoreToHtml_ConvertHeaders
 
@@ -140,7 +139,6 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
     html = ToHtml(project)
 
     html._isNovel = True
-    html._isNote = False
     html._isFirst = True
 
     # Paragraphs
@@ -229,7 +227,6 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
 
     # Multiple Keywords
     html._isFirst = False
-    html._noBreak = False
     html.setKeywords(True)
     html._text = "## Chapter\n\n@pov: Bod\n@plot: Main\n@location: Europe\n\n"
     html.tokenizeText()
@@ -247,7 +244,7 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
     # Preview Mode
     # ============
 
-    html.setPreview(True, True)
+    html.setPreview(True)
 
     # Text (HTML4)
     html._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
@@ -269,7 +266,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     html = ToHtml(project)
 
     html._isNovel = True
-    html._isNote = False
+    html._handle = "0000000000000"
     html.setLinkHeadings(True)
 
     # Special Titles
@@ -277,24 +274,24 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     # Title
     html._tokens = [
-        (html.T_TITLE, 1, "A Title", None, html.A_PBB | html.A_CENTRE),
-        (html.T_EMPTY, 1, "", None, html.A_NONE),
+        (html.T_TITLE, 1, "A Title", [], html.A_PBB | html.A_CENTRE),
+        (html.T_EMPTY, 1, "", [], html.A_NONE),
     ]
     html.doConvert()
     assert html.result == (
         "<h1 class='title' style='text-align: center; page-break-before: always;'>"
-        "<a name='T0001'></a>A Title</h1>\n"
+        "<a name='0000000000000:T0001'></a>A Title</h1>\n"
     )
 
     # Unnumbered
     html._tokens = [
-        (html.T_HEAD2, 1, "Prologue", None, html.A_PBB),
-        (html.T_EMPTY, 1, "", None, html.A_NONE),
+        (html.T_HEAD2, 1, "Prologue", [], html.A_PBB),
+        (html.T_EMPTY, 1, "", [], html.A_NONE),
     ]
     html.doConvert()
     assert html.result == (
         "<h1 style='page-break-before: always;'>"
-        "<a name='T0001'></a>Prologue</h1>\n"
+        "<a name='0000000000000:T0001'></a>Prologue</h1>\n"
     )
 
     # Separators
@@ -302,16 +299,16 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     # Separator
     html._tokens = [
-        (html.T_SEP, 1, "* * *", None, html.A_CENTRE),
-        (html.T_EMPTY, 1, "", None, html.A_NONE),
+        (html.T_SEP, 1, "* * *", [], html.A_CENTRE),
+        (html.T_EMPTY, 1, "", [], html.A_NONE),
     ]
     html.doConvert()
     assert html.result == "<p class='sep' style='text-align: center;'>* * *</p>\n"
 
     # Skip
     html._tokens = [
-        (html.T_SKIP, 1, "", None, html.A_NONE),
-        (html.T_EMPTY, 1, "", None, html.A_NONE),
+        (html.T_SKIP, 1, "", [], html.A_NONE),
+        (html.T_EMPTY, 1, "", [], html.A_NONE),
     ]
     html.doConvert()
     assert html.result == "<p class='skip'>&nbsp;</p>\n"
@@ -324,7 +321,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     # Align Left
     html.setStyles(False)
     html._tokens = [
-        (html.T_HEAD1, 1, "A Title", None, html.A_LEFT),
+        (html.T_HEAD1, 1, "A Title", [], html.A_LEFT),
     ]
     html.doConvert()
     assert html.result == (
@@ -335,7 +332,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     # Align Left
     html._tokens = [
-        (html.T_HEAD1, 1, "A Title", None, html.A_LEFT),
+        (html.T_HEAD1, 1, "A Title", [], html.A_LEFT),
     ]
     html.doConvert()
     assert html.result == (
@@ -344,7 +341,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     # Align Right
     html._tokens = [
-        (html.T_HEAD1, 1, "A Title", None, html.A_RIGHT),
+        (html.T_HEAD1, 1, "A Title", [], html.A_RIGHT),
     ]
     html.doConvert()
     assert html.result == (
@@ -353,7 +350,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     # Align Centre
     html._tokens = [
-        (html.T_HEAD1, 1, "A Title", None, html.A_CENTRE),
+        (html.T_HEAD1, 1, "A Title", [], html.A_CENTRE),
     ]
     html.doConvert()
     assert html.result == (
@@ -362,7 +359,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     # Align Justify
     html._tokens = [
-        (html.T_HEAD1, 1, "A Title", None, html.A_JUSTIFY),
+        (html.T_HEAD1, 1, "A Title", [], html.A_JUSTIFY),
     ]
     html.doConvert()
     assert html.result == (
@@ -374,7 +371,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     # Page Break Always
     html._tokens = [
-        (html.T_HEAD1, 1, "A Title", None, html.A_PBB | html.A_PBA),
+        (html.T_HEAD1, 1, "A Title", [], html.A_PBB | html.A_PBA),
     ]
     html.doConvert()
     assert html.result == (
@@ -388,7 +385,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     # Indent Left
     html._tokens = [
         (html.T_TEXT,  1, "Some text ...", [], html.A_IND_L),
-        (html.T_EMPTY, 2, "", None, html.A_NONE),
+        (html.T_EMPTY, 2, "", [], html.A_NONE),
     ]
     html.doConvert()
     assert html.result == (
@@ -398,7 +395,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     # Indent Right
     html._tokens = [
         (html.T_TEXT,  1, "Some text ...", [], html.A_IND_R),
-        (html.T_EMPTY, 2, "", None, html.A_NONE),
+        (html.T_EMPTY, 2, "", [], html.A_NONE),
     ]
     html.doConvert()
     assert html.result == (
@@ -461,7 +458,6 @@ def testCoreToHtml_SpecialCases(mockGUI):
     )
 
     html._isFirst = False
-    html._noBreak = False
     html._text = "## Heading <1>\n"
     html.tokenizeText()
     html.doConvert()
@@ -606,16 +602,6 @@ def testCoreToHtml_Methods(mockGUI):
         "<p>Text with &lt;brackets&gt; &amp; short&ndash;dash, long&mdash;dash &hellip;</p>\n"
     )
 
-    # With Preview
-    html.setPreview(True, True)
-    html._text = docText
-    html.doPreProcessing()
-    html.tokenizeText()
-    html.doConvert()
-    assert html.allMarkdown[-1] == (
-        "Text with <brackets> &amp; short&ndash;dash, long&mdash;dash &hellip;\n\n"
-    )
-
     # Result Size
     assert html.getFullResultSize() == 147
 
@@ -669,7 +655,7 @@ def testCoreToHtml_Format(mockGUI):
     # Preview Mode
     # ============
 
-    html.setPreview(True, True)
+    html.setPreview(True)
 
     assert html._formatSynopsis("synopsis text", True) == (
         "<p class='comment'><span class='synopsis'>Synopsis:</span> synopsis text</p>\n"

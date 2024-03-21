@@ -35,7 +35,6 @@ def testCoreToMarkdown_ConvertHeaders(mockGUI):
     toMD = ToMarkdown(project)
 
     toMD._isNovel = True
-    toMD._isNote = False
     toMD._isFirst = True
 
     # Header 1
@@ -84,7 +83,6 @@ def testCoreToMarkdown_ConvertParagraphs(mockGUI):
     toMD = ToMarkdown(project)
 
     toMD._isNovel = True
-    toMD._isNote = False
     toMD._isFirst = True
 
     # Text for Extended Markdown
@@ -200,15 +198,14 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
     toMD = ToMarkdown(project)
 
     toMD._isNovel = True
-    toMD._isNote = False
 
     # Special Titles
     # ==============
 
     # Title
     toMD._tokens = [
-        (toMD.T_TITLE, 1, "A Title", None, toMD.A_PBB | toMD.A_CENTRE),
-        (toMD.T_EMPTY, 1, "", None, toMD.A_NONE),
+        (toMD.T_TITLE, 1, "A Title", [], toMD.A_PBB | toMD.A_CENTRE),
+        (toMD.T_EMPTY, 1, "", [], toMD.A_NONE),
     ]
     toMD.doConvert()
     assert toMD.result == "# A Title\n\n"
@@ -218,16 +215,16 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
 
     # Separator
     toMD._tokens = [
-        (toMD.T_SEP, 1, "* * *", None, toMD.A_CENTRE),
-        (toMD.T_EMPTY, 1, "", None, toMD.A_NONE),
+        (toMD.T_SEP, 1, "* * *", [], toMD.A_CENTRE),
+        (toMD.T_EMPTY, 1, "", [], toMD.A_NONE),
     ]
     toMD.doConvert()
     assert toMD.result == "* * *\n\n"
 
     # Skip
     toMD._tokens = [
-        (toMD.T_SKIP, 1, "", None, toMD.A_NONE),
-        (toMD.T_EMPTY, 1, "", None, toMD.A_NONE),
+        (toMD.T_SKIP, 1, "", [], toMD.A_NONE),
+        (toMD.T_EMPTY, 1, "", [], toMD.A_NONE),
     ]
     toMD.doConvert()
     assert toMD.result == "\n\n"

@@ -33,7 +33,7 @@ from novelwriter.core.tokenizer import HeadingFormatter, Tokenizer, stripEscape
 
 class BareTokenizer(Tokenizer):
     def doConvert(self):
-        super().doConvert()
+        super().doConvert()  # type: ignore (deliberate check)
 
 
 @pytest.mark.core
@@ -68,7 +68,7 @@ def testCoreToken_Setters(mockGUI):
     assert tokens._hideScene is False
     assert tokens._hideHScene is False
     assert tokens._hideSection is False
-    assert tokens._linkHeaders is False
+    assert tokens._linkHeadings is False
     assert tokens._doBodyText is True
     assert tokens._doSynopsis is False
     assert tokens._doComments is False
@@ -124,7 +124,7 @@ def testCoreToken_Setters(mockGUI):
     assert tokens._hideScene is True
     assert tokens._hideHScene is True
     assert tokens._hideSection is True
-    assert tokens._linkHeaders is True
+    assert tokens._linkHeadings is True
     assert tokens._doBodyText is False
     assert tokens._doSynopsis is True
     assert tokens._doComments is True
@@ -181,34 +181,36 @@ def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
     assert project.saveProject()
 
     # Root Heading
-    assert tokens.addRootHeading("stuff") is False
-    assert tokens.addRootHeading(C.hSceneDoc) is False
+    assert len(tokens._tokens) == 0
+    tokens.addRootHeading("stuff")
+    tokens.addRootHeading(C.hSceneDoc)
+    assert len(tokens._tokens) == 0
 
     # First Page
-    assert tokens.addRootHeading(C.hPlotRoot) is True
-    assert tokens.allMarkdown[-1] == "# Notes: Plot\n\n"
+    tokens.addRootHeading(C.hPlotRoot)
+    assert tokens.allMarkdown[-1] == "#! Notes: Plot\n\n"
     assert tokens._tokens[-1] == (
-        Tokenizer.T_TITLE, 0, "Notes: Plot", [], Tokenizer.A_CENTRE
+        Tokenizer.T_TITLE, 1, "Notes: Plot", [], Tokenizer.A_CENTRE
     )
 
     # Not First Page
-    assert tokens.addRootHeading(C.hPlotRoot) is True
-    assert tokens.allMarkdown[-1] == "# Notes: Plot\n\n"
+    tokens.addRootHeading(C.hPlotRoot)
+    assert tokens.allMarkdown[-1] == "#! Notes: Plot\n\n"
     assert tokens._tokens[-1] == (
-        Tokenizer.T_TITLE, 0, "Notes: Plot", [], Tokenizer.A_CENTRE | Tokenizer.A_PBB
+        Tokenizer.T_TITLE, 1, "Notes: Plot", [], Tokenizer.A_CENTRE | Tokenizer.A_PBB
     )
 
     # Set Text
-    assert tokens.setText("stuff") is False
-    assert tokens.setText(C.hSceneDoc) is True
+    tokens.setText("stuff")
+    assert tokens._text == ""
+
+    tokens.setText(C.hSceneDoc)
     assert tokens._text == docText
 
-    assert tokens.setText(C.hSceneDoc, docText) is True
+    tokens.setText(C.hSceneDoc, docText)
     assert tokens._text == docText
 
-    assert tokens._isNone is False
     assert tokens._isNovel is True
-    assert tokens._isNote is False
 
     # Pre Processing
     tokens.doPreProcessing()
@@ -218,14 +220,14 @@ def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
     savePath = fncPath / "dump.nwd"
     tokens.saveRawMarkdown(savePath)
     assert readFile(savePath) == (
-        "# Notes: Plot\n\n"
-        "# Notes: Plot\n\n"
+        "#! Notes: Plot\n\n"
+        "#! Notes: Plot\n\n"
     )
     tokens.saveRawMarkdownJSON(savePath)
     assert json.loads(readFile(savePath))["text"] == {
         "nwd": [
-            ["# Notes: Plot"],
-            ["# Notes: Plot"]
+            ["#! Notes: Plot"],
+            ["#! Notes: Plot"]
         ]
     }
 
@@ -259,7 +261,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Story File
     tokens._isNovel = True
-    tokens._isNote  = False
     tokens._isFirst = True
     tokens._text = "#! Novel Title\n"
 
@@ -272,7 +273,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Note File
     tokens._isNovel = False
-    tokens._isNote  = True
     tokens._isFirst = True
     tokens._text = "#! Note Title\n"
 
@@ -288,7 +288,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Story File
     tokens._isNovel = True
-    tokens._isNote  = False
     tokens._isFirst = True
     tokens._text = "# Novel Title\n"
 
@@ -301,7 +300,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Note File
     tokens._isNovel = False
-    tokens._isNote  = True
     tokens._isFirst = True
     tokens._text = "# Note Title\n"
 
@@ -317,8 +315,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Story File
     tokens._isNovel = True
-    tokens._isNote  = False
-    tokens._noBreak = False
     tokens._text = "## Chapter One\n"
 
     tokens.tokenizeText()
@@ -330,7 +326,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Note File
     tokens._isNovel = False
-    tokens._isNote  = True
     tokens._text = "## Heading 2\n"
 
     tokens.tokenizeText()
@@ -345,7 +340,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Story File
     tokens._isNovel = True
-    tokens._isNote  = False
     tokens._text = "### Scene One\n"
 
     tokens.tokenizeText()
@@ -357,7 +351,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Note File
     tokens._isNovel = False
-    tokens._isNote  = True
     tokens._text = "### Heading 3\n"
 
     tokens.tokenizeText()
@@ -372,7 +365,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Story File
     tokens._isNovel = True
-    tokens._isNote  = False
     tokens._text = "#### A Section\n"
 
     tokens.tokenizeText()
@@ -384,7 +376,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Note File
     tokens._isNovel = False
-    tokens._isNote  = True
     tokens._text = "#### Heading 4\n"
 
     tokens.tokenizeText()
@@ -399,7 +390,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Story File
     tokens._isNovel = True
-    tokens._isNote  = False
     tokens._isFirst = False
     tokens._text = "#! Title\n"
 
@@ -412,7 +402,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Note File
     tokens._isNovel = False
-    tokens._isNote  = True
     tokens._isFirst = False
     tokens._text = "#! Title\n"
 
@@ -428,7 +417,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Story File
     tokens._isNovel = True
-    tokens._isNote  = False
     tokens._text = "##! Prologue\n"
 
     tokens.tokenizeText()
@@ -440,7 +428,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Note File
     tokens._isNovel = False
-    tokens._isNote  = True
     tokens._text = "##! Prologue\n"
 
     tokens.tokenizeText()
@@ -462,7 +449,6 @@ def testCoreToken_HeaderStyle(mockGUI):
     def processStyle(text: str, first: bool) -> int:
         tokens._text = text
         tokens._isFirst = first
-        tokens._noBreak = first
         tokens.tokenizeText()
         return tokens._tokens[0][4]
 
@@ -479,7 +465,6 @@ def testCoreToken_HeaderStyle(mockGUI):
 
     # Novel Docs
     tokens._isNovel = True
-    tokens._isNote  = False
 
     # First Document is False
     assert processStyle("# Title\n", False) == Tokenizer.A_NONE
@@ -499,7 +484,6 @@ def testCoreToken_HeaderStyle(mockGUI):
 
     # Note Docs
     tokens._isNovel = False
-    tokens._isNote  = True
 
     # First Document is False
     assert processStyle("# Title\n", False) == Tokenizer.A_NONE
@@ -530,7 +514,6 @@ def testCoreToken_HeaderStyle(mockGUI):
 
     # Novel Docs
     tokens._isNovel = True
-    tokens._isNote  = False
 
     # First Document is False
     assert processStyle("# Title\n", False) == Tokenizer.A_CENTRE
@@ -550,7 +533,6 @@ def testCoreToken_HeaderStyle(mockGUI):
 
     # Note Docs
     tokens._isNovel = False
-    tokens._isNote  = True
 
     # First Document is False
     assert processStyle("# Title\n", False) == Tokenizer.A_NONE
@@ -581,7 +563,6 @@ def testCoreToken_HeaderStyle(mockGUI):
 
     # Novel Docs
     tokens._isNovel = True
-    tokens._isNote  = False
 
     # First Document is False
     assert processStyle("# Title\n", False) == Tokenizer.A_PBB
@@ -601,7 +582,6 @@ def testCoreToken_HeaderStyle(mockGUI):
 
     # Note Docs
     tokens._isNovel = False
-    tokens._isNote  = True
 
     # First Document is False
     assert processStyle("# Title\n", False) == Tokenizer.A_NONE
@@ -632,7 +612,6 @@ def testCoreToken_HeaderStyle(mockGUI):
 
     # Novel Docs
     tokens._isNovel = True
-    tokens._isNote  = False
 
     # First Document is False
     assert processStyle("# Title\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
@@ -652,7 +631,6 @@ def testCoreToken_HeaderStyle(mockGUI):
 
     # Note Docs
     tokens._isNovel = False
-    tokens._isNote  = True
 
     # First Document is False
     assert processStyle("# Title\n", False) == Tokenizer.A_NONE
@@ -673,7 +651,6 @@ def testCoreToken_HeaderStyle(mockGUI):
     # Check Separation
     # ================
     tokens._isNovel = True
-    tokens._isNote  = False
 
     # Title Styles
     tokens.setTitleStyle(True, True)
@@ -1310,8 +1287,6 @@ def testCoreToken_ProcessHeaders(mockGUI):
     #  Story Files
     ##
 
-    tokens._isNone  = False
-    tokens._isNote  = False
     tokens._isNovel = True
 
     # Titles
@@ -1524,14 +1499,79 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
 
 @pytest.mark.core
+def testCoreToken_BuildOutline(mockGUI, ipsumText):
+    """Test stats counter of the Tokenizer class."""
+    project = NWProject()
+    project.data.setLanguage("en")
+    project._loadProjectLocalisation()
+    tokens = BareTokenizer(project)
+
+    # Novel
+    tokens._isNovel = True
+    tokens._handle = "0000000000000"
+    tokens._text = (
+        "#! My Novel\n\n"
+        "# Part One\n\n"
+        "## Chapter One\n\n"
+        "### Scene One\n\n"
+        "Text\n\n"
+        "### Scene Two\n\n"
+        "Text\n\n"
+        "## Chapter Two\n\n"
+        "### Scene Three\n\n"
+        "Text\n\n"
+        "###! Scene Four\n\n"
+        "Text\n\n"
+        "#### Section\n\n"
+        "Text\n\n"
+    )
+    tokens.tokenizeText()
+    tokens.buildOutline()
+
+    # Note
+    tokens._isNovel = False
+    tokens._handle = "0000000000001"
+    tokens._text = (
+        "#! My Notes\n\n"
+        "# Header 1\n\n"
+        "Text\n\n"
+        "## Header 2\n\n"
+        "Text\n\n"
+        "### Header 3\n\n"
+        "Text\n\n"
+        "#### Header 4\n\n"
+        "Text\n\n"
+    )
+    tokens.tokenizeText()
+    tokens.buildOutline()
+
+    # Check Outline
+    assert tokens.textOutline == {
+        "0000000000000:T0001": "TT|My Novel",
+        "0000000000000:T0002": "PT|Part One",
+        "0000000000000:T0003": "CH|Chapter One",
+        "0000000000000:T0004": "SC|Scene One",
+        "0000000000000:T0005": "SC|Scene Two",
+        "0000000000000:T0006": "CH|Chapter Two",
+        "0000000000000:T0007": "SC|Scene Three",
+        "0000000000000:T0008": "SC|Scene Four",
+        "0000000000001:T0001": "TT|My Notes",
+        "0000000000001:T0002": "H1|Header 1",
+        "0000000000001:T0003": "H2|Header 2",
+        "0000000000001:T0004": "H3|Header 3",
+    }
+
+
+# END Test testCoreToken_BuildOutline
+
+
+@pytest.mark.core
 def testCoreToken_CountStats(mockGUI, ipsumText):
     """Test stats counter of the Tokenizer class."""
     project = NWProject()
     project.data.setLanguage("en")
     project._loadProjectLocalisation()
     tokens = BareTokenizer(project)
-    tokens._isNone  = False
-    tokens._isNote  = False
     tokens._isNovel = True
 
     # Short Text
@@ -1740,8 +1780,6 @@ def testCoreToken_SceneSeparators(mockGUI):
     project.data.setLanguage("en")
     project._loadProjectLocalisation()
     md = ToMarkdown(project)
-    md._isNone = False
-    md._isNote = False
     md._isNovel = True
 
     # Separator Handling, Titles
@@ -1858,8 +1896,6 @@ def testCoreToken_SceneSeparators(mockGUI):
     # Requires a fresh builder class
     md = ToMarkdown(project)
     md.setExtendedMarkdown()
-    md._isNone = False
-    md._isNote = False
     md._isNovel = True
 
     md._text = (
@@ -1919,8 +1955,6 @@ def testCoreToken_HeaderVisibility(mockGUI):
     # Novel Files
     # ===========
 
-    md._isNone = False
-    md._isNote = False
     md._isNovel = True
 
     # Show All
@@ -1973,8 +2007,6 @@ def testCoreToken_HeaderVisibility(mockGUI):
     # Note Files
     # ==========
 
-    md._isNone = False
-    md._isNote = True
     md._isNovel = False
 
     # Hide All
@@ -2015,8 +2047,6 @@ def testCoreToken_CounterHandling(mockGUI):
     project.data.setLanguage("en")
     project._loadProjectLocalisation()
     md = ToMarkdown(project)
-    md._isNone = False
-    md._isNote = False
     md._isNovel = True
 
     # Counter Handling, Novel Titles

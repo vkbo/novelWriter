@@ -29,7 +29,7 @@ import logging
 from time import time
 from typing import TYPE_CHECKING
 from pathlib import Path
-from collections.abc import Generator
+from collections.abc import Iterable
 
 from novelwriter.error import logException
 from novelwriter.common import formatTimeStamp
@@ -110,7 +110,7 @@ class NWSessionLog:
 
         return True
 
-    def iterRecords(self) -> Generator[dict]:
+    def iterRecords(self) -> Iterable[dict]:
         """Iterate through all records in the log."""
         sessFile = self._project.storage.getMetaFile(nwFiles.SESS_FILE)
         if isinstance(sessFile, Path) and sessFile.is_file():

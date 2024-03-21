@@ -26,11 +26,12 @@ import pytest
 from pathlib import Path
 from pytestqt.qtbot import QtBot
 
+from novelwriter.constants import nwHeadFmt
 from tools import C, buildTestProject
 from mocked import causeOSError
 
 from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QAction, QDialogButtonBox
+from PyQt5.QtWidgets import QAction, QDialogButtonBox, QListWidgetItem
 from PyQt5.QtPrintSupport import QPrintPreviewDialog
 
 from novelwriter import CONFIG, SHARED
@@ -152,10 +153,30 @@ def testManuscript_Builds(qtbot: QtBot, nwGUI: GuiMain, projPath: Path):
 
 
 @pytest.mark.gui
-def testManuscript_Features(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath: Path):
+def testManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     """Test other features of the GuiManuscript dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
+
+    nwGUI.openDocument(C.hTitlePage)
+    nwGUI.docEditor.setPlainText(
+        "#! My Novel\n\n"
+        "# Part One\n\n"
+        "## Chapter One\n\n"
+        "### Scene One\n\n"
+        "Text\n\n"
+        "### Scene Two\n\n"
+        "Text\n\n"
+        "## Chapter Two\n\n"
+        "### Scene Three\n\n"
+        "Text\n\n"
+        "###! Scene Four\n\n"
+        "Text\n\n"
+        "#### Section\n\n"
+        "Text\n\n"
+    )
+    nwGUI.saveDocument()
+    # qtbot.stop()
 
     manus = GuiManuscript(nwGUI)
     manus.show()
@@ -185,6 +206,14 @@ def testManuscript_Features(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath:
             manus.btnPreview.click()
         assert cacheFile.exists() is False
 
+    first = manus.buildList.item(0)
+    assert isinstance(first, QListWidgetItem)
+    build = manus._builds.getBuild(first.data(GuiManuscript.D_KEY))
+    assert isinstance(build, BuildSettings)
+    build.setValue("headings.fmtScene", nwHeadFmt.TITLE)
+    build.setValue("headings.fmtHardScene", nwHeadFmt.TITLE)
+    manus._builds.setBuild(build)
+
     # Preview again, and allow cache file to be created
     manus.buildList.setCurrentRow(0)
     with qtbot.waitSignal(manus.docPreview.document().contentsChanged):
@@ -192,15 +221,45 @@ def testManuscript_Features(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath:
     assert manus.docPreview.toPlainText().strip() != ""
     assert cacheFile.exists() is True
 
+    # Check Outline
+    assert manus.buildOutline._outline == {
+        "000000000000c:T0001": "TT|My Novel",
+        "000000000000c:T0002": "PT|Part One",
+        "000000000000c:T0003": "CH|Chapter One",
+        "000000000000c:T0004": "SC|Scene One",
+        "000000000000c:T0005": "SC|Scene Two",
+        "000000000000c:T0006": "CH|Chapter Two",
+        "000000000000c:T0007": "SC|Scene Three",
+        "000000000000c:T0008": "SC|Scene Four",
+        "000000000000e:T0001": "CH|New Chapter",
+        "000000000000f:T0001": "SC|New Scene",
+    }
+    listView = manus.buildOutline.listView
+    assert listView.topLevelItemCount() == 5
+    keyRole = manus.buildOutline.D_LINE
+
+    assert (item := listView.topLevelItem(0)) and item.data(0, keyRole) == "000000000000c:T0001"
+    assert (item := listView.topLevelItem(1)) and item.data(0, keyRole) == "000000000000c:T0002"
+    assert (item := listView.topLevelItem(2)) and item.data(0, keyRole) == "000000000000c:T0003"
+    assert (item := listView.topLevelItem(3)) and item.data(0, keyRole) == "000000000000c:T0006"
+    assert (item := listView.topLevelItem(4)) and item.data(0, keyRole) == "000000000000e:T0001"
+
+    # Click Outline
+    item = listView.topLevelItem(4)
+    assert item is not None
+    with qtbot.waitSignal(manus.buildOutline.outlineEntryClicked) as signal:
+        manus.buildOutline._onItemClick(item)
+        assert signal.args == ["000000000000e:T0001"]
+
     # Check Preview Stats
     assert manus.docStats.mainStack.currentWidget() == manus.docStats.minWidget
-    assert manus.docStats.minWordCount.text() == "7"
-    assert manus.docStats.minCharCount.text() == "31"
+    assert manus.docStats.minWordCount.text() == "25"
+    assert manus.docStats.minCharCount.text() == "117"
 
     manus.docStats.toggleButton.toggle()
     assert manus.docStats.mainStack.currentWidget() == manus.docStats.maxWidget
-    assert manus.docStats.maxTotalWords.text() == "7"
-    assert manus.docStats.maxTotalChars.text() == "31"
+    assert manus.docStats.maxTotalWords.text() == "25"
+    assert manus.docStats.maxTotalChars.text() == "117"
 
     # Toggle justify
     assert manus.docPreview.document().defaultTextOption().alignment() == Qt.AlignAbsolute
