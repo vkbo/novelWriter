@@ -486,7 +486,7 @@ class GuiIcons:
         "build_excluded", "build_filtered", "build_included", "proj_chapter", "proj_details",
         "proj_document", "proj_folder", "proj_note", "proj_nwx", "proj_section", "proj_scene",
         "proj_stats", "proj_title", "status_idle", "status_lang", "status_lines", "status_stats",
-        "status_time", "view_build", "view_editor", "view_novel", "view_outline",
+        "status_time", "view_build", "view_editor", "view_novel", "view_outline", "view_search",
 
         # Class Icons
         "cls_archive", "cls_character", "cls_custom", "cls_entity", "cls_none", "cls_novel",

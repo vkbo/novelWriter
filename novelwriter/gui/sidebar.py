@@ -67,6 +67,10 @@ class GuiSideBar(QWidget):
         self.tbNovel.setToolTip("{0} [Ctrl+T]".format(self.tr("Novel Tree View")))
         self.tbNovel.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.NOVEL))
 
+        self.tbSearch = NIconToolButton(self, iPx)
+        self.tbSearch.setToolTip("{0} [Ctrl+Shift+F]".format(self.tr("Search Project")))
+        self.tbSearch.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.SEARCH))
+
         self.tbOutline = NIconToolButton(self, iPx)
         self.tbOutline.setToolTip("{0} [Ctrl+Shift+T]".format(self.tr("Novel Outline View")))
         self.tbOutline.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.OUTLINE))
@@ -99,6 +103,7 @@ class GuiSideBar(QWidget):
         self.outerBox = QVBoxLayout()
         self.outerBox.addWidget(self.tbProject)
         self.outerBox.addWidget(self.tbNovel)
+        self.outerBox.addWidget(self.tbSearch)
         self.outerBox.addWidget(self.tbOutline)
         self.outerBox.addWidget(self.tbBuild)
         self.outerBox.addStretch(1)
@@ -128,6 +133,9 @@ class GuiSideBar(QWidget):
 
         self.tbNovel.setIcon(SHARED.theme.getIcon("view_novel"))
         self.tbNovel.setStyleSheet(buttonStyle)
+
+        self.tbSearch.setIcon(SHARED.theme.getIcon("view_search"))
+        self.tbSearch.setStyleSheet(buttonStyle)
 
         self.tbOutline.setIcon(SHARED.theme.getIcon("view_outline"))
         self.tbOutline.setStyleSheet(buttonStyle)
