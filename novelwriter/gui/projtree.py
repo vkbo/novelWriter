@@ -270,7 +270,8 @@ class GuiProjectToolBar(QWidget):
         self.setAutoFillBackground(True)
 
         # Widget Label
-        self.viewLabel = QLabel("<b>%s</b>" % self.tr("Project Content"))
+        self.viewLabel = QLabel(self.tr("Project Content"))
+        self.viewLabel.setFont(SHARED.theme.guiFontB)
         self.viewLabel.setContentsMargins(0, 0, 0, 0)
         self.viewLabel.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 

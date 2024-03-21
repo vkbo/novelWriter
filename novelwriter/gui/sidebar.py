@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 
 class GuiSideBar(QWidget):
 
-    viewChangeRequested = pyqtSignal(nwView)
+    requestViewChange = pyqtSignal(nwView)
 
     def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
@@ -61,19 +61,19 @@ class GuiSideBar(QWidget):
         # Buttons
         self.tbProject = NIconToolButton(self, iPx)
         self.tbProject.setToolTip("{0} [Ctrl+T]".format(self.tr("Project Tree View")))
-        self.tbProject.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.PROJECT))
+        self.tbProject.clicked.connect(lambda: self.requestViewChange.emit(nwView.PROJECT))
 
         self.tbNovel = NIconToolButton(self, iPx)
         self.tbNovel.setToolTip("{0} [Ctrl+T]".format(self.tr("Novel Tree View")))
-        self.tbNovel.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.NOVEL))
+        self.tbNovel.clicked.connect(lambda: self.requestViewChange.emit(nwView.NOVEL))
 
         self.tbSearch = NIconToolButton(self, iPx)
         self.tbSearch.setToolTip("{0} [Ctrl+Shift+F]".format(self.tr("Search Project")))
-        self.tbSearch.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.SEARCH))
+        self.tbSearch.clicked.connect(lambda: self.requestViewChange.emit(nwView.SEARCH))
 
         self.tbOutline = NIconToolButton(self, iPx)
         self.tbOutline.setToolTip("{0} [Ctrl+Shift+T]".format(self.tr("Novel Outline View")))
-        self.tbOutline.clicked.connect(lambda: self.viewChangeRequested.emit(nwView.OUTLINE))
+        self.tbOutline.clicked.connect(lambda: self.requestViewChange.emit(nwView.OUTLINE))
 
         self.tbBuild = NIconToolButton(self, iPx)
         self.tbBuild.setToolTip("{0} [F5]".format(self.tr("Build Manuscript")))

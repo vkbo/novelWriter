@@ -38,32 +38,30 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED, __hexversion__, __version__
+from novelwriter.common import formatFileFilter, formatVersion, hexToInt
 from novelwriter.constants import nwConst
-from novelwriter.gui.theme import GuiTheme
-from novelwriter.gui.sidebar import GuiSideBar
-from novelwriter.gui.outline import GuiOutlineView
-from novelwriter.gui.mainmenu import GuiMainMenu
-from novelwriter.gui.projtree import GuiProjectView
-from novelwriter.gui.doceditor import GuiDocEditor
-from novelwriter.gui.docviewer import GuiDocViewer
-from novelwriter.gui.noveltree import GuiNovelView
-from novelwriter.gui.statusbar import GuiMainStatus
-from novelwriter.gui.itemdetails import GuiItemDetails
-from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
 from novelwriter.dialogs.about import GuiAbout
-from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
-from novelwriter.tools.welcome import GuiWelcome
-from novelwriter.tools.manuscript import GuiManuscript
+from novelwriter.dialogs.wordlist import GuiWordList
+from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemType, nwWidget, nwView
+from novelwriter.gui.doceditor import GuiDocEditor
+from novelwriter.gui.docviewer import GuiDocViewer
+from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
+from novelwriter.gui.itemdetails import GuiItemDetails
+from novelwriter.gui.mainmenu import GuiMainMenu
+from novelwriter.gui.noveltree import GuiNovelView
+from novelwriter.gui.outline import GuiOutlineView
+from novelwriter.gui.projtree import GuiProjectView
+from novelwriter.gui.search import GuiProjectSearch
+from novelwriter.gui.sidebar import GuiSideBar
+from novelwriter.gui.statusbar import GuiMainStatus
+from novelwriter.gui.theme import GuiTheme
 from novelwriter.tools.dictionaries import GuiDictionaries
+from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.noveldetails import GuiNovelDetails
+from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.tools.writingstats import GuiWritingStats
-
-from novelwriter.enum import (
-    nwDocAction, nwDocInsert, nwDocMode, nwItemType, nwWidget, nwView
-)
-from novelwriter.common import formatFileFilter, formatVersion, hexToInt
 
 logger = logging.getLogger(__name__)
 
@@ -123,6 +121,7 @@ class GuiMain(QMainWindow):
         # Main GUI Elements
         self.mainStatus     = GuiMainStatus(self)
         self.projView       = GuiProjectView(self)
+        self.projSearch     = GuiProjectSearch(self)
         self.novelView      = GuiNovelView(self)
         self.docEditor      = GuiDocEditor(self)
         self.docViewer      = GuiDocViewer(self)
@@ -136,6 +135,7 @@ class GuiMain(QMainWindow):
         self.projStack = QStackedWidget(self)
         self.projStack.addWidget(self.projView)
         self.projStack.addWidget(self.novelView)
+        self.projStack.addWidget(self.projSearch)
         self.projStack.currentChanged.connect(self._projStackChanged)
 
         # Project Tree View
@@ -190,6 +190,7 @@ class GuiMain(QMainWindow):
         self.idxOutlineView = self.mainStack.indexOf(self.outlineView)
         self.idxProjView    = self.projStack.indexOf(self.projView)
         self.idxNovelView   = self.projStack.indexOf(self.novelView)
+        self.idxProjSearch  = self.projStack.indexOf(self.projSearch)
 
         # Splitter Behaviour
         self.splitMain.setCollapsible(self.idxTree, False)
@@ -243,8 +244,9 @@ class GuiMain(QMainWindow):
         self.mainMenu.requestDocInsertText.connect(self._passDocumentInsert)
         self.mainMenu.requestDocKeyWordInsert.connect(self.docEditor.insertKeyWord)
         self.mainMenu.requestFocusChange.connect(self.switchFocus)
+        self.mainMenu.requestViewChange.connect(self._changeView)
 
-        self.sideBar.viewChangeRequested.connect(self._changeView)
+        self.sideBar.requestViewChange.connect(self._changeView)
 
         self.projView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
         self.projView.openDocumentRequest.connect(self._openDocument)
@@ -1077,6 +1079,7 @@ class GuiMain(QMainWindow):
             self.sideBar.updateTheme()
             self.projView.updateTheme()
             self.novelView.updateTheme()
+            self.projSearch.updateTheme()
             self.outlineView.updateTheme()
             self.itemDetails.updateTheme()
             self.mainStatus.updateTheme()
@@ -1168,6 +1171,9 @@ class GuiMain(QMainWindow):
         elif view == nwView.NOVEL:
             self.mainStack.setCurrentWidget(self.splitMain)
             self.projStack.setCurrentWidget(self.novelView)
+        elif view == nwView.SEARCH:
+            self.mainStack.setCurrentWidget(self.splitMain)
+            self.projStack.setCurrentWidget(self.projSearch)
         elif view == nwView.OUTLINE:
             self.mainStack.setCurrentWidget(self.outlineView)
         return
