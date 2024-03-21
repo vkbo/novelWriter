@@ -227,7 +227,6 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
 
     # Multiple Keywords
     html._isFirst = False
-    html._noBreak = False
     html.setKeywords(True)
     html._text = "## Chapter\n\n@pov: Bod\n@plot: Main\n@location: Europe\n\n"
     html.tokenizeText()
@@ -275,8 +274,8 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     # Title
     html._tokens = [
-        (html.T_TITLE, 1, "A Title", None, html.A_PBB | html.A_CENTRE),
-        (html.T_EMPTY, 1, "", None, html.A_NONE),
+        (html.T_TITLE, 1, "A Title", [], html.A_PBB | html.A_CENTRE),
+        (html.T_EMPTY, 1, "", [], html.A_NONE),
     ]
     html.doConvert()
     assert html.result == (
@@ -286,8 +285,8 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     # Unnumbered
     html._tokens = [
-        (html.T_HEAD2, 1, "Prologue", None, html.A_PBB),
-        (html.T_EMPTY, 1, "", None, html.A_NONE),
+        (html.T_HEAD2, 1, "Prologue", [], html.A_PBB),
+        (html.T_EMPTY, 1, "", [], html.A_NONE),
     ]
     html.doConvert()
     assert html.result == (
@@ -300,16 +299,16 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     # Separator
     html._tokens = [
-        (html.T_SEP, 1, "* * *", None, html.A_CENTRE),
-        (html.T_EMPTY, 1, "", None, html.A_NONE),
+        (html.T_SEP, 1, "* * *", [], html.A_CENTRE),
+        (html.T_EMPTY, 1, "", [], html.A_NONE),
     ]
     html.doConvert()
     assert html.result == "<p class='sep' style='text-align: center;'>* * *</p>\n"
 
     # Skip
     html._tokens = [
-        (html.T_SKIP, 1, "", None, html.A_NONE),
-        (html.T_EMPTY, 1, "", None, html.A_NONE),
+        (html.T_SKIP, 1, "", [], html.A_NONE),
+        (html.T_EMPTY, 1, "", [], html.A_NONE),
     ]
     html.doConvert()
     assert html.result == "<p class='skip'>&nbsp;</p>\n"
@@ -322,7 +321,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     # Align Left
     html.setStyles(False)
     html._tokens = [
-        (html.T_HEAD1, 1, "A Title", None, html.A_LEFT),
+        (html.T_HEAD1, 1, "A Title", [], html.A_LEFT),
     ]
     html.doConvert()
     assert html.result == (
@@ -333,7 +332,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     # Align Left
     html._tokens = [
-        (html.T_HEAD1, 1, "A Title", None, html.A_LEFT),
+        (html.T_HEAD1, 1, "A Title", [], html.A_LEFT),
     ]
     html.doConvert()
     assert html.result == (
@@ -342,7 +341,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     # Align Right
     html._tokens = [
-        (html.T_HEAD1, 1, "A Title", None, html.A_RIGHT),
+        (html.T_HEAD1, 1, "A Title", [], html.A_RIGHT),
     ]
     html.doConvert()
     assert html.result == (
@@ -351,7 +350,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     # Align Centre
     html._tokens = [
-        (html.T_HEAD1, 1, "A Title", None, html.A_CENTRE),
+        (html.T_HEAD1, 1, "A Title", [], html.A_CENTRE),
     ]
     html.doConvert()
     assert html.result == (
@@ -360,7 +359,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     # Align Justify
     html._tokens = [
-        (html.T_HEAD1, 1, "A Title", None, html.A_JUSTIFY),
+        (html.T_HEAD1, 1, "A Title", [], html.A_JUSTIFY),
     ]
     html.doConvert()
     assert html.result == (
@@ -372,7 +371,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     # Page Break Always
     html._tokens = [
-        (html.T_HEAD1, 1, "A Title", None, html.A_PBB | html.A_PBA),
+        (html.T_HEAD1, 1, "A Title", [], html.A_PBB | html.A_PBA),
     ]
     html.doConvert()
     assert html.result == (
@@ -386,7 +385,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     # Indent Left
     html._tokens = [
         (html.T_TEXT,  1, "Some text ...", [], html.A_IND_L),
-        (html.T_EMPTY, 2, "", None, html.A_NONE),
+        (html.T_EMPTY, 2, "", [], html.A_NONE),
     ]
     html.doConvert()
     assert html.result == (
@@ -396,7 +395,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     # Indent Right
     html._tokens = [
         (html.T_TEXT,  1, "Some text ...", [], html.A_IND_R),
-        (html.T_EMPTY, 2, "", None, html.A_NONE),
+        (html.T_EMPTY, 2, "", [], html.A_NONE),
     ]
     html.doConvert()
     assert html.result == (
@@ -459,7 +458,6 @@ def testCoreToHtml_SpecialCases(mockGUI):
     )
 
     html._isFirst = False
-    html._noBreak = False
     html._text = "## Heading <1>\n"
     html.tokenizeText()
     html.doConvert()

@@ -204,8 +204,8 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
 
     # Title
     toMD._tokens = [
-        (toMD.T_TITLE, 1, "A Title", None, toMD.A_PBB | toMD.A_CENTRE),
-        (toMD.T_EMPTY, 1, "", None, toMD.A_NONE),
+        (toMD.T_TITLE, 1, "A Title", [], toMD.A_PBB | toMD.A_CENTRE),
+        (toMD.T_EMPTY, 1, "", [], toMD.A_NONE),
     ]
     toMD.doConvert()
     assert toMD.result == "# A Title\n\n"
@@ -215,16 +215,16 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
 
     # Separator
     toMD._tokens = [
-        (toMD.T_SEP, 1, "* * *", None, toMD.A_CENTRE),
-        (toMD.T_EMPTY, 1, "", None, toMD.A_NONE),
+        (toMD.T_SEP, 1, "* * *", [], toMD.A_CENTRE),
+        (toMD.T_EMPTY, 1, "", [], toMD.A_NONE),
     ]
     toMD.doConvert()
     assert toMD.result == "* * *\n\n"
 
     # Skip
     toMD._tokens = [
-        (toMD.T_SKIP, 1, "", None, toMD.A_NONE),
-        (toMD.T_EMPTY, 1, "", None, toMD.A_NONE),
+        (toMD.T_SKIP, 1, "", [], toMD.A_NONE),
+        (toMD.T_EMPTY, 1, "", [], toMD.A_NONE),
     ]
     toMD.doConvert()
     assert toMD.result == "\n\n"

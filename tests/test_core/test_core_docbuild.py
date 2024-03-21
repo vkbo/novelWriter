@@ -575,10 +575,10 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
         "By Jane Doe\n\n"
         "## New Chapter\n\n\n"
         "### New Scene\n\n\n"
-        "# Notes: Plot\n\n"
+        "#! Notes: Plot\n\n"
         "# Main Plot\n"
         "**Text**\n\n"
-        "# Notes: Characters\n\n"
+        "#! Notes: Characters\n\n"
         "# Jane Doe\n"
         "~~Text~~\n\n"
     )

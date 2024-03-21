@@ -1194,6 +1194,7 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     # Add a second novel
     mHandle = project.newRoot(nwItemClass.NOVEL)
     uHandle = project.newFile("Title Page", mHandle)
+    assert uHandle is not None
     itemIndex.add(uHandle, project.tree[uHandle])  # type: ignore
     itemIndex.addItemHeading(uHandle, "T0001", "H1", "Novel 2")  # type: ignore
     assert uHandle in itemIndex

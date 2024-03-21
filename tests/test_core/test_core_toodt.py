@@ -652,7 +652,7 @@ def testCoreToOdt_ConvertDirect(mockGUI):
     doc = ToOdt(project, isFlat=True)
     doc._tokens = [
         (doc.T_TEXT, 1, "This is a paragraph", [], doc.A_JUSTIFY),
-        (doc.T_EMPTY, 1, "", None, doc.A_NONE),
+        (doc.T_EMPTY, 1, "", [], doc.A_NONE),
     ]
     doc.initDocument()
     doc.doConvert()
@@ -673,7 +673,7 @@ def testCoreToOdt_ConvertDirect(mockGUI):
     doc = ToOdt(project, isFlat=True)
     doc._tokens = [
         (doc.T_TEXT, 1, "This is a paragraph", [], doc.A_PBA),
-        (doc.T_EMPTY, 1, "", None, doc.A_NONE),
+        (doc.T_EMPTY, 1, "", [], doc.A_NONE),
     ]
     doc.initDocument()
     doc.doConvert()

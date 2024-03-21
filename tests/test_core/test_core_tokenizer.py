@@ -33,7 +33,7 @@ from novelwriter.core.tokenizer import HeadingFormatter, Tokenizer, stripEscape
 
 class BareTokenizer(Tokenizer):
     def doConvert(self):
-        super().doConvert()
+        super().doConvert()  # type: ignore (deliberate check)
 
 
 @pytest.mark.core
@@ -181,21 +181,23 @@ def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
     assert project.saveProject()
 
     # Root Heading
-    assert tokens.addRootHeading("stuff") is False
-    assert tokens.addRootHeading(C.hSceneDoc) is False
+    assert len(tokens._tokens) == 0
+    tokens.addRootHeading("stuff")
+    tokens.addRootHeading(C.hSceneDoc)
+    assert len(tokens._tokens) == 0
 
     # First Page
-    assert tokens.addRootHeading(C.hPlotRoot) is True
-    assert tokens.allMarkdown[-1] == "# Notes: Plot\n\n"
+    tokens.addRootHeading(C.hPlotRoot)
+    assert tokens.allMarkdown[-1] == "#! Notes: Plot\n\n"
     assert tokens._tokens[-1] == (
-        Tokenizer.T_TITLE, 0, "Notes: Plot", [], Tokenizer.A_CENTRE
+        Tokenizer.T_TITLE, 1, "Notes: Plot", [], Tokenizer.A_CENTRE
     )
 
     # Not First Page
-    assert tokens.addRootHeading(C.hPlotRoot) is True
-    assert tokens.allMarkdown[-1] == "# Notes: Plot\n\n"
+    tokens.addRootHeading(C.hPlotRoot)
+    assert tokens.allMarkdown[-1] == "#! Notes: Plot\n\n"
     assert tokens._tokens[-1] == (
-        Tokenizer.T_TITLE, 0, "Notes: Plot", [], Tokenizer.A_CENTRE | Tokenizer.A_PBB
+        Tokenizer.T_TITLE, 1, "Notes: Plot", [], Tokenizer.A_CENTRE | Tokenizer.A_PBB
     )
 
     # Set Text
@@ -218,14 +220,14 @@ def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
     savePath = fncPath / "dump.nwd"
     tokens.saveRawMarkdown(savePath)
     assert readFile(savePath) == (
-        "# Notes: Plot\n\n"
-        "# Notes: Plot\n\n"
+        "#! Notes: Plot\n\n"
+        "#! Notes: Plot\n\n"
     )
     tokens.saveRawMarkdownJSON(savePath)
     assert json.loads(readFile(savePath))["text"] == {
         "nwd": [
-            ["# Notes: Plot"],
-            ["# Notes: Plot"]
+            ["#! Notes: Plot"],
+            ["#! Notes: Plot"]
         ]
     }
 
@@ -313,7 +315,6 @@ def testCoreToken_HeaderFormat(mockGUI):
 
     # Story File
     tokens._isNovel = True
-    tokens._noBreak = False
     tokens._text = "## Chapter One\n"
 
     tokens.tokenizeText()
@@ -448,7 +449,6 @@ def testCoreToken_HeaderStyle(mockGUI):
     def processStyle(text: str, first: bool) -> int:
         tokens._text = text
         tokens._isFirst = first
-        tokens._noBreak = first
         tokens.tokenizeText()
         return tokens._tokens[0][4]
 
