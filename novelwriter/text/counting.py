@@ -120,7 +120,7 @@ def standardCounter(text: str) -> tuple[int, int, int]:
     return cCount, wCount, pCount
 
 
-def bodyTextCounter(text: str | list[str]) -> tuple[int, int, int]:
+def bodyTextCounter(text: str) -> tuple[int, int, int]:
     """A counter that counts body text words, characters, and characters
     without white spaces.
     """

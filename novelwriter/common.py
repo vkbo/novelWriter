@@ -255,7 +255,7 @@ def formatFileFilter(extensions: list[str | tuple[str, str]]) -> str:
     result = []
     for ext in extensions:
         if isinstance(ext, str):
-            result.append(f"{trConst(nwLabels.FILE_FILTERS.get(ext))} ({ext})")
+            result.append(f"{trConst(nwLabels.FILE_FILTERS.get(ext, 'ERR'))} ({ext})")
         elif isinstance(ext, tuple) and len(ext) == 2:
             result.append(f"{ext[0]} ({ext[1]})")
     return ";;".join(result)
