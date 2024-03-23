@@ -304,6 +304,34 @@ class DocDuplicator:
 # END Class DocDuplicator
 
 
+class DocSearch:
+
+    def __init__(self, project: NWProject) -> None:
+        self._project = project
+        return
+
+    def iterSearch(self, search: str) -> Iterable[tuple[NWItem, list[tuple[int, int, str]]]]:
+        """Iteratively search through documents in the project."""
+        num = len(search)
+        cap = min(num+100, 100)
+        storage = self._project.storage
+        for item in self._project.tree:
+            if item.isFileType():
+                text = storage.getDocument(item.itemHandle).readDocument() or ""
+                prev = 0
+                results = []
+                count = 0
+                while (pos := text.find(search, prev)) >= 0 and count < 100:
+                    count += 1
+                    context = text[pos:pos+cap].partition("\n")[0]
+                    results.append((pos, num, context))
+                    prev = pos + num
+                yield item, results
+        return
+
+# END Class DocSearch
+
+
 class ProjectBuilder:
     """A class to build a new project from a set of user-defined
     parameter provided by the New Project Wizard.

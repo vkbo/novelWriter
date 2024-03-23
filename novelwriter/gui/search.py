@@ -25,10 +25,16 @@ from __future__ import annotations
 
 import logging
 
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QPalette
-from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QTreeWidget, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import (
+    QHBoxLayout, QLabel, QLineEdit, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+    QWidget
+)
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.core.coretools import DocSearch
+from novelwriter.core.item import NWItem
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 
@@ -51,13 +57,14 @@ class GuiProjectSearch(QWidget):
         self.viewLabel.setContentsMargins(mPx, mPx, 0, mPx)
 
         # Controls
-        self.searchBox = QLineEdit(self)
-        self.searchBox.setPlaceholderText(self.tr("Search text ..."))
+        self.searchText = QLineEdit(self)
+        self.searchText.setPlaceholderText(self.tr("Search text ..."))
 
         self.searchButton = NIconToolButton(self, iPx)
+        self.searchButton.clicked.connect(self._processSearch)
 
         self.searchBar = QHBoxLayout()
-        self.searchBar.addWidget(self.searchBox)
+        self.searchBar.addWidget(self.searchText)
         self.searchBar.addWidget(self.searchButton)
 
         # Search Result
@@ -94,6 +101,38 @@ class GuiProjectSearch(QWidget):
 
         self.searchButton.setIcon(SHARED.theme.getIcon("search"))
 
+        return
+
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot()
+    def _processSearch(self) -> None:
+        """Perform a search."""
+        self.searchResult.clear()
+        if text := self.searchText.text():
+            search = DocSearch(SHARED.project)
+            for item, results in search.iterSearch(text):
+                self._appendResultSet(item, results)
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _appendResultSet(self, item: NWItem, results: list[tuple[int, int, str]]) -> None:
+        """Populate the result tree."""
+        if results:
+            tItem = QTreeWidgetItem()
+            tItem.setText(0, f"{item.itemName} ({len(results)})")
+            rItems = []
+            for start, end, context in results:
+                rItem = QTreeWidgetItem()
+                rItem.setText(0, context)
+                rItems.append(rItem)
+            tItem.addChildren(rItems)
+            self.searchResult.addTopLevelItem(tItem)
         return
 
 # END Class GuiProjectSearch
