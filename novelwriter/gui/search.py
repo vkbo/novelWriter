@@ -26,7 +26,7 @@ from __future__ import annotations
 import logging
 
 from PyQt5.QtCore import QSize, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QPalette
+from PyQt5.QtGui import QKeyEvent, QPalette
 from PyQt5.QtWidgets import (
     QHBoxLayout, QLabel, QLineEdit, QToolBar, QTreeWidget, QTreeWidgetItem,
     QVBoxLayout, QWidget
@@ -45,7 +45,7 @@ class GuiProjectSearch(QWidget):
     D_HANDLE = Qt.ItemDataRole.UserRole
     D_RESULT = Qt.ItemDataRole.UserRole + 1
 
-    openDocumentSelectRequest = pyqtSignal(str, int, int)
+    openDocumentSelectRequest = pyqtSignal(str, int, int, bool)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -91,6 +91,7 @@ class GuiProjectSearch(QWidget):
         self.searchResult.setIconSize(QSize(iPx, iPx))
         self.searchResult.setIndentation(iPx)
         self.searchResult.itemPressed.connect(self._searchResultSelected)
+        self.searchResult.itemDoubleClicked.connect(self._searchResultDoubleClicked)
 
         # Assemble
         self.headerBox = QHBoxLayout()
@@ -130,9 +131,38 @@ class GuiProjectSearch(QWidget):
         return
 
     def processReturn(self) -> None:
-        """Process a return key press forwarded from main GUI."""
+        """Process a return keypress forwarded from the main GUI."""
         if self.searchText.hasFocus():
             self._processSearch()
+        elif items := self.searchResult.selectedItems():
+            self._searchResultSelected(items[0], 0)
+        return
+
+    ##
+    #  Events
+    ##
+
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+        """Process key press events. This handles up and down arrow key
+        presses to jump between search text box and result tree.
+        """
+        if (
+            event.key() == Qt.Key.Key_Down
+            and self.searchText.hasFocus()
+            and (first := self.searchResult.topLevelItem(0))
+        ):
+            first.setSelected(True)
+            self.searchResult.setFocus()
+        elif (
+            event.key() == Qt.Key.Key_Up
+            and self.searchResult.hasFocus()
+            and (first := self.searchResult.topLevelItem(0))
+            and first.isSelected()
+        ):
+            first.setSelected(False)
+            self.searchText.setFocus()
+        else:
+            super().keyPressEvent(event)
         return
 
     ##
@@ -157,7 +187,16 @@ class GuiProjectSearch(QWidget):
         """Process search result selection."""
         if (data := item.data(0, self.D_RESULT)) and len(data) == 3:
             self.openDocumentSelectRequest.emit(
-                str(data[0]), checkInt(data[1], -1), checkInt(data[2], -1)
+                str(data[0]), checkInt(data[1], -1), checkInt(data[2], -1), False
+            )
+        return
+
+    @pyqtSlot("QTreeWidgetItem*", int)
+    def _searchResultDoubleClicked(self, item: QTreeWidgetItem, column: int) -> None:
+        """Process search result double click."""
+        if (data := item.data(0, self.D_RESULT)) and len(data) == 3:
+            self.openDocumentSelectRequest.emit(
+                str(data[0]), checkInt(data[1], -1), checkInt(data[2], -1), True
             )
         return
 

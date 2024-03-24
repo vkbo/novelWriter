@@ -1152,10 +1152,12 @@ class GuiMain(QMainWindow):
                 self.viewDocument(tHandle=tHandle, sTitle=sTitle)
         return
 
-    @pyqtSlot(str, int, int)
-    def _openDocumentSelection(self, tHandle: str, selStart: int, selLength: int) -> None:
+    @pyqtSlot(str, int, int, bool)
+    def _openDocumentSelection(
+        self, tHandle: str, selStart: int, selLength: int, changeFocus: bool
+    ) -> None:
         """Open a document and select a section of the text."""
-        if self.openDocument(tHandle):
+        if self.openDocument(tHandle, changeFocus=changeFocus):
             self.docEditor.setCursorSelection(selStart, selLength)
         return
 
