@@ -34,7 +34,7 @@ from functools import partial
 from zipfile import ZipFile, is_zipfile
 from collections.abc import Iterable
 
-from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import isHandle, minmax, simplified
@@ -306,8 +306,13 @@ class DocDuplicator:
 
 class DocSearch:
 
-    def __init__(self, project: NWProject) -> None:
+    def __init__(self, project: NWProject, regEx: bool, doCase: bool, wordsOnly: bool) -> None:
         self._project = project
+        self._escape = not regEx
+        self._words = wordsOnly and not regEx
+        self._rxOpts = QRegularExpression.PatternOption.UseUnicodePropertiesOption
+        if not doCase:
+            self._rxOpts |= QRegularExpression.PatternOption.CaseInsensitiveOption
         return
 
     def iterSearch(self, search: str) -> Iterable[tuple[NWItem, list[tuple[int, int, str]]]]:
@@ -315,19 +320,41 @@ class DocSearch:
         num = len(search)
         cap = min(num+100, 100)
         storage = self._project.storage
+        regEx = QRegularExpression(self._buildPattern(search), self._rxOpts)
+        print(regEx.pattern())
         for item in self._project.tree:
             if item.isFileType():
                 text = storage.getDocument(item.itemHandle).readDocument() or ""
-                prev = 0
+                rxItt = regEx.globalMatch(text)
                 results = []
-                count = 0
-                while (pos := text.find(search, prev)) >= 0 and count < 100:
-                    count += 1
+                while rxItt.hasNext():
+                    rxMatch = rxItt.next()
+                    pos = rxMatch.capturedStart()
+                    num = rxMatch.capturedLength()
                     context = text[pos:pos+cap].partition("\n")[0]
                     results.append((pos, num, context))
-                    prev = pos + num
                 yield item, results
         return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _buildPattern(self, search: str) -> str:
+        """Build the search pattern string."""
+        if self._escape:
+            if CONFIG.verQtValue >= 0x050f00:
+                search = QRegularExpression.escape(search)
+            else:
+                # For older Qt versions, we escape manually
+                escaped = ""
+                for c in search:
+                    if c.isalnum() or c == "_":
+                        escaped += c
+                    else:
+                        escaped += f"\\{c}"
+                search = escaped
+        return f"\\b{search}\\b" if self._words else search
 
 # END Class DocSearch
 

@@ -25,18 +25,16 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import QSize, Qt, pyqtSlot
 from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import (
-    QHBoxLayout, QLabel, QLineEdit, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-    QWidget
+    QHBoxLayout, QLabel, QLineEdit, QToolBar, QTreeWidget, QTreeWidgetItem,
+    QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.core.coretools import DocSearch
 from novelwriter.core.item import NWItem
-from novelwriter.extensions.modified import NIconToolButton
-from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 
 logger = logging.getLogger(__name__)
 
@@ -56,28 +54,46 @@ class GuiProjectSearch(QWidget):
         self.viewLabel.setFont(SHARED.theme.guiFontB)
         self.viewLabel.setContentsMargins(mPx, mPx, 0, mPx)
 
+        # Options
+        self.searchOpt = QToolBar(self)
+        self.searchOpt.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.searchOpt.setIconSize(QSize(iPx, iPx))
+        self.searchOpt.setContentsMargins(0, 0, 0, 0)
+
+        self.toggleCase = self.searchOpt.addAction(self.tr("Case Sensitive"))
+        self.toggleCase.setCheckable(True)
+
+        self.toggleWord = self.searchOpt.addAction(self.tr("Whole Words Only"))
+        self.toggleWord.setCheckable(True)
+
+        self.toggleRegEx = self.searchOpt.addAction(self.tr("RegEx Mode"))
+        self.toggleRegEx.setCheckable(True)
+
         # Controls
         self.searchText = QLineEdit(self)
         self.searchText.setPlaceholderText(self.tr("Search text ..."))
-
-        self.searchButton = NIconToolButton(self, iPx)
-        self.searchButton.clicked.connect(self._processSearch)
-
-        self.searchBar = QHBoxLayout()
-        self.searchBar.addWidget(self.searchText)
-        self.searchBar.addWidget(self.searchButton)
+        self.searchText.setClearButtonEnabled(True)
+        self.searchAction = self.searchText.addAction(
+            SHARED.theme.getIcon("search"), QLineEdit.ActionPosition.TrailingPosition
+        )
+        self.searchAction.triggered.connect(self._processSearch)
 
         # Search Result
         self.searchResult = QTreeWidget(self)
         self.searchResult.setHeaderHidden(True)
 
         # Assemble
+        self.headerBox = QHBoxLayout()
+        self.headerBox.addWidget(self.viewLabel, 1)
+        self.headerBox.addWidget(self.searchOpt, 0)
+        self.headerBox.setContentsMargins(0, 0, 0, 0)
+
         self.outerBox = QVBoxLayout()
-        self.outerBox.addWidget(self.viewLabel, 0)
-        self.outerBox.addLayout(self.searchBar, 0)
+        self.outerBox.addLayout(self.headerBox, 0)
+        self.outerBox.addWidget(self.searchText, 0)
         self.outerBox.addWidget(self.searchResult, 1)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
-        self.outerBox.setSpacing(0)
+        self.outerBox.setSpacing(mPx)
 
         self.setLayout(self.outerBox)
         self.updateTheme()
@@ -96,10 +112,10 @@ class GuiProjectSearch(QWidget):
         qPalette.setBrush(QPalette.ColorRole.Window, qPalette.base())
         self.setPalette(qPalette)
 
-        buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
-        self.searchButton.setStyleSheet(buttonStyle)
-
-        self.searchButton.setIcon(SHARED.theme.getIcon("search"))
+        self.searchAction.setIcon(SHARED.theme.getIcon("search"))
+        self.toggleCase.setIcon(SHARED.theme.getIcon("search_case"))
+        self.toggleWord.setIcon(SHARED.theme.getIcon("search_word"))
+        self.toggleRegEx.setIcon(SHARED.theme.getIcon("search_regex"))
 
         return
 
@@ -112,7 +128,10 @@ class GuiProjectSearch(QWidget):
         """Perform a search."""
         self.searchResult.clear()
         if text := self.searchText.text():
-            search = DocSearch(SHARED.project)
+            search = DocSearch(
+                SHARED.project, self.toggleRegEx.isChecked(),
+                self.toggleCase.isChecked(), self.toggleWord.isChecked()
+            )
             for item, results in search.iterSearch(text):
                 self._appendResultSet(item, results)
         return
