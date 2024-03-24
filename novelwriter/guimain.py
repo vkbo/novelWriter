@@ -263,6 +263,8 @@ class GuiMain(QMainWindow):
         self.novelView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
         self.novelView.openDocumentRequest.connect(self._openDocument)
 
+        self.projSearch.openDocumentSelectRequest.connect(self._openDocumentSelection)
+
         self.docEditor.editedStatusChanged.connect(self.mainStatus.updateDocumentStatus)
         self.docEditor.docCountsChanged.connect(self.itemDetails.updateCounts)
         self.docEditor.docCountsChanged.connect(self.projView.updateCounts)
@@ -1150,6 +1152,13 @@ class GuiMain(QMainWindow):
                 self.viewDocument(tHandle=tHandle, sTitle=sTitle)
         return
 
+    @pyqtSlot(str, int, int)
+    def _openDocumentSelection(self, tHandle: str, selStart: int, selLength: int) -> None:
+        """Open a document and select a section of the text."""
+        if self.openDocument(tHandle):
+            self.docEditor.setCursorSelection(selStart, selLength)
+        return
+
     @pyqtSlot()
     def _reloadViewer(self) -> None:
         """Reload the document in the viewer."""
@@ -1263,15 +1272,16 @@ class GuiMain(QMainWindow):
 
     @pyqtSlot()
     def _keyPressReturn(self) -> None:
-        """Forward the return/enter keypress to the function that opens
-        the currently selected item.
-        """
-        self.openSelectedItem()
+        """Process a return or enter keypress in the main window."""
+        if self.projStack.currentWidget() == self.projSearch:
+            self.projSearch.processReturn()
+        else:
+            self.openSelectedItem()
         return
 
     @pyqtSlot()
     def _keyPressEscape(self) -> None:
-        """Process escape keypress in the main window."""
+        """Process an escape keypress in the main window."""
         if self.docEditor.docSearch.isVisible():
             self.docEditor.closeSearch()
         elif SHARED.focusMode:

@@ -237,7 +237,7 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
     selItem = outlineTree.topLevelItem(0)
 
     outlineTree.setCurrentItem(selItem)
-    assert outlineData.titleLabel.text() == "<b>Title</b>"
+    assert outlineData.titleLabel.text() == "Title"
     assert outlineData.titleValue.text() == "Lorem Ipsum"
     assert outlineData.fileValue.text() == "Lorem Ipsum"
     assert outlineData.itemValue.text() == "Finished"
@@ -256,7 +256,7 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
     assert tHandle == "88243afbe5ed8"
     assert sTitle == "T0001"
 
-    assert outlineData.titleLabel.text() == "<b>Scene</b>"
+    assert outlineData.titleLabel.text() == "Scene"
     assert outlineData.titleValue.text() == "Scene One"
     assert outlineData.fileValue.text() == "Scene One"
     assert outlineData.itemValue.text() == "Finished"
@@ -274,7 +274,7 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
     assert tHandle == "88243afbe5ed8"
     assert sTitle == "T0002"
 
-    assert outlineData.titleLabel.text() == "<b>Section</b>"
+    assert outlineData.titleLabel.text() == "Section"
     assert outlineData.titleValue.text() == "Scene One, Section Two"
     assert outlineData.fileValue.text() == "Scene One"
     assert outlineData.itemValue.text() == "Finished"

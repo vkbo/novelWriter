@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtCore import QSize, Qt, pyqtSlot
+from PyQt5.QtCore import QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import (
     QHBoxLayout, QLabel, QLineEdit, QToolBar, QTreeWidget, QTreeWidgetItem,
@@ -33,6 +33,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.common import checkInt
 from novelwriter.core.coretools import DocSearch
 from novelwriter.core.item import NWItem
 
@@ -40,6 +41,11 @@ logger = logging.getLogger(__name__)
 
 
 class GuiProjectSearch(QWidget):
+
+    D_HANDLE = Qt.ItemDataRole.UserRole
+    D_RESULT = Qt.ItemDataRole.UserRole + 1
+
+    openDocumentSelectRequest = pyqtSignal(str, int, int)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -69,10 +75,11 @@ class GuiProjectSearch(QWidget):
         self.toggleRegEx = self.searchOpt.addAction(self.tr("RegEx Mode"))
         self.toggleRegEx.setCheckable(True)
 
-        # Controls
+        # Search Box
         self.searchText = QLineEdit(self)
         self.searchText.setPlaceholderText(self.tr("Search text ..."))
         self.searchText.setClearButtonEnabled(True)
+
         self.searchAction = self.searchText.addAction(
             SHARED.theme.getIcon("search"), QLineEdit.ActionPosition.TrailingPosition
         )
@@ -81,6 +88,9 @@ class GuiProjectSearch(QWidget):
         # Search Result
         self.searchResult = QTreeWidget(self)
         self.searchResult.setHeaderHidden(True)
+        self.searchResult.setIconSize(QSize(iPx, iPx))
+        self.searchResult.setIndentation(iPx)
+        self.searchResult.itemPressed.connect(self._searchResultSelected)
 
         # Assemble
         self.headerBox = QHBoxLayout()
@@ -119,6 +129,12 @@ class GuiProjectSearch(QWidget):
 
         return
 
+    def processReturn(self) -> None:
+        """Process a return key press forwarded from main GUI."""
+        if self.searchText.hasFocus():
+            self._processSearch()
+        return
+
     ##
     #  Private Slots
     ##
@@ -136,21 +152,40 @@ class GuiProjectSearch(QWidget):
                 self._appendResultSet(item, results)
         return
 
+    @pyqtSlot("QTreeWidgetItem*", int)
+    def _searchResultSelected(self, item: QTreeWidgetItem, column: int) -> None:
+        """Process search result selection."""
+        if (data := item.data(0, self.D_RESULT)) and len(data) == 3:
+            self.openDocumentSelectRequest.emit(
+                str(data[0]), checkInt(data[1], -1), checkInt(data[2], -1)
+            )
+        return
+
     ##
     #  Internal Functions
     ##
 
-    def _appendResultSet(self, item: NWItem, results: list[tuple[int, int, str]]) -> None:
+    def _appendResultSet(self, nwItem: NWItem, results: list[tuple[int, int, str]]) -> None:
         """Populate the result tree."""
         if results:
+            tHandle = nwItem.itemHandle
+            docIcon = SHARED.theme.getItemIcon(
+                nwItem.itemType, nwItem.itemClass,
+                nwItem.itemLayout, nwItem.mainHeading
+            )
+
             tItem = QTreeWidgetItem()
-            tItem.setText(0, f"{item.itemName} ({len(results)})")
+            tItem.setText(0, f"{nwItem.itemName} ({len(results)})")
+            tItem.setIcon(0, docIcon)
+            tItem.setData(0, self.D_HANDLE, tHandle)
             rItems = []
-            for start, end, context in results:
+            for start, length, context in results:
                 rItem = QTreeWidgetItem()
                 rItem.setText(0, context)
+                rItem.setData(0, self.D_RESULT, (tHandle, start, length))
                 rItems.append(rItem)
             tItem.addChildren(rItems)
+            tItem.setExpanded(True)
             self.searchResult.addTopLevelItem(tItem)
         return
 

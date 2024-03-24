@@ -306,10 +306,10 @@ class DocDuplicator:
 
 class DocSearch:
 
-    def __init__(self, project: NWProject, regEx: bool, doCase: bool, wordsOnly: bool) -> None:
+    def __init__(self, project: NWProject, regEx: bool, doCase: bool, wholeWords: bool) -> None:
         self._project = project
         self._escape = not regEx
-        self._words = wordsOnly and not regEx
+        self._words = wholeWords
         self._rxOpts = QRegularExpression.PatternOption.UseUnicodePropertiesOption
         if not doCase:
             self._rxOpts |= QRegularExpression.PatternOption.CaseInsensitiveOption
@@ -354,7 +354,10 @@ class DocSearch:
                     else:
                         escaped += f"\\{c}"
                 search = escaped
-        return f"\\b{search}\\b" if self._words else search
+        if self._words:
+            search = search if search.startswith("\\b") else f"\\b{search}"
+            search = search if search.endswith("\\b") else f"{search}\\b"
+        return search
 
 # END Class DocSearch
 

@@ -637,6 +637,14 @@ class GuiDocEditor(QPlainTextEdit):
                 logger.debug("Cursor moved to line %d", line)
         return
 
+    def setCursorSelection(self, selStart: int, selLength: int) -> None:
+        """Make a text selection."""
+        cursor = self.textCursor()
+        cursor.setPosition(selStart, QTextCursor.MoveMode.MoveAnchor)
+        cursor.setPosition(selStart + selLength, QTextCursor.MoveMode.KeepAnchor)
+        self.setTextCursor(cursor)
+        return
+
     ##
     #  Spell Checking
     ##
@@ -791,11 +799,7 @@ class GuiDocEditor(QPlainTextEdit):
 
     def anyFocus(self) -> bool:
         """Check if any widget or child widget has focus."""
-        if self.hasFocus():
-            return True
-        if self.isAncestorOf(qApp.focusWidget()):
-            return True
-        return False
+        return self.hasFocus() or self.isAncestorOf(qApp.focusWidget())
 
     def revealLocation(self) -> None:
         """Tell the user where on the file system the file in the editor
