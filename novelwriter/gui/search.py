@@ -135,8 +135,6 @@ class GuiProjectSearch(QWidget):
         self.setLayout(self.outerBox)
         self.updateTheme()
 
-        SHARED.slowClockTick.connect(self._cacheTimeout)
-
         logger.debug("Ready: GuiProjectSearch")
 
         return
@@ -206,17 +204,6 @@ class GuiProjectSearch(QWidget):
         return
 
     ##
-    #  Public Slots
-    ##
-
-    @pyqtSlot(str)
-    def clearSearchCache(self, tHandle: str) -> None:
-        """Process document content change."""
-        if not self._blocked:
-            self._search.clearTextCache(tHandle)
-        return
-
-    ##
     #  Private Slots
     ##
 
@@ -282,13 +269,6 @@ class GuiProjectSearch(QWidget):
     def _toggleRegEx(self, state: bool) -> None:
         """Enable/disable regular expression search mode."""
         CONFIG.searchProjRegEx = state
-        return
-
-    @pyqtSlot()
-    def _cacheTimeout(self) -> None:
-        """Clear the cache after a period of inactivity."""
-        if not self._blocked and time() - self._time > CACHE_TIMEOUT:
-            self._search.clearTextCache(None)
         return
 
     ##

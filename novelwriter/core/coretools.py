@@ -26,13 +26,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import shutil
 import logging
+import shutil
 
-from pathlib import Path
-from functools import partial
-from zipfile import ZipFile, is_zipfile
 from collections.abc import Iterable
+from functools import partial
+from pathlib import Path
+from time import time
+from zipfile import ZipFile, is_zipfile
 
 from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
@@ -315,6 +316,7 @@ class DocSearch:
 
         # Project Cache
         self._uuid = ""
+        self._time = 0.0
         self._cache: dict[str, str] = {}
 
         return
@@ -341,24 +343,15 @@ class DocSearch:
         self._escape = not state
         return
 
-    def clearTextCache(self, tHandle: str | None) -> None:
-        """Clear text cache for a given item, or all items if None."""
-        if tHandle is None:
-            self._cache = {}
-            logger.debug("Search cache cleared")
-        elif tHandle in self._cache:
-            self._cache.pop(tHandle, None)
-            logger.debug("Search cache cleared for '%s'", tHandle)
-        return
-
     def iterSearch(
         self, project: NWProject, search: str
     ) -> Iterable[tuple[NWItem, list[tuple[int, int, str]], bool]]:
         """Iteratively search through documents in a project."""
-        if project.data.uuid != self._uuid:
-            self.clearTextCache(None)
+        if project.data.uuid != self._uuid or time() - self._time > 20.0:
+            self._cache = {}
 
         self._uuid = project.data.uuid
+        self._time = time()
         self._regEx.setPattern(self._buildPattern(search))
         logger.debug("Searching with pattern '%s'", self._regEx.pattern())
 
@@ -367,8 +360,7 @@ class DocSearch:
         for item in project.tree:
             if item.isFileType():
                 tHandle = item.itemHandle
-                text = self._cache.get(tHandle)
-                if text is None:
+                if (text := self._cache.get(tHandle)) is None:
                     text = storage.getDocument(tHandle).readDocument() or ""
                     self._cache[tHandle] = text
 

@@ -91,7 +91,6 @@ class GuiDocEditor(QPlainTextEdit):
 
     # Custom Signals
     statusMessage = pyqtSignal(str)
-    docTextSaved = pyqtSignal(str)
     docCountsChanged = pyqtSignal(str, int, int, int)
     editedStatusChanged = pyqtSignal(bool)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
@@ -489,7 +488,6 @@ class GuiDocEditor(QPlainTextEdit):
             return False
 
         self.setDocumentChanged(False)
-        self.docTextSaved.emit(tHandle)
 
         oldHeader = self._nwItem.mainHeading
         oldCount = SHARED.project.index.getHandleHeaderCount(tHandle)

@@ -48,7 +48,7 @@ class GuiItemDetails(QWidget):
         logger.debug("Create: GuiItemDetails")
 
         # Internal Variables
-        self._itemHandle  = None
+        self._handle = None
 
         # Sizes
         hSp = CONFIG.pxInt(6)
@@ -194,7 +194,7 @@ class GuiItemDetails(QWidget):
 
     def clearDetails(self) -> None:
         """Clear all the data values."""
-        self._itemHandle = None
+        self._handle = None
         self.labelIcon.clear()
         self.labelData.clear()
         self.statusIcon.clear()
@@ -210,11 +210,11 @@ class GuiItemDetails(QWidget):
 
     def refreshDetails(self) -> None:
         """Reload the content of the details panel."""
-        self.updateViewBox(self._itemHandle)
+        self.updateViewBox(self._handle)
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        self.updateViewBox(self._itemHandle)
+        self.updateViewBox(self._handle)
         return
 
     ##
@@ -233,7 +233,7 @@ class GuiItemDetails(QWidget):
             self.clearDetails()
             return
 
-        self._itemHandle = tHandle
+        self._handle = tHandle
         iPx = int(round(0.8*SHARED.theme.baseIconSize))
 
         # Label
@@ -295,7 +295,7 @@ class GuiItemDetails(QWidget):
         """Update the counts if the handle is the same as the one we're
         already showing. Otherwise, do nothing.
         """
-        if tHandle == self._itemHandle:
+        if tHandle == self._handle:
             self.cCountData.setText(f"{cC:n}")
             self.wCountData.setText(f"{wC:n}")
             self.pCountData.setText(f"{pC:n}")
