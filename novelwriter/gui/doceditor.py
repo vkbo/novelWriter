@@ -54,7 +54,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import minmax, transferCase
-from novelwriter.constants import nwKeyWords, nwShortcode, nwUnicode
+from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwUnicode
 from novelwriter.core.document import NWDocument
 from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwTrinary
 from novelwriter.extensions.eventfilters import WheelEventFilter
@@ -91,6 +91,7 @@ class GuiDocEditor(QPlainTextEdit):
 
     # Custom Signals
     statusMessage = pyqtSignal(str)
+    docTextSaved = pyqtSignal(str)
     docCountsChanged = pyqtSignal(str, int, int, int)
     editedStatusChanged = pyqtSignal(bool)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
@@ -488,6 +489,7 @@ class GuiDocEditor(QPlainTextEdit):
             return False
 
         self.setDocumentChanged(False)
+        self.docTextSaved.emit(tHandle)
 
         oldHeader = self._nwItem.mainHeading
         oldCount = SHARED.project.index.getHandleHeaderCount(tHandle)
@@ -603,13 +605,15 @@ class GuiDocEditor(QPlainTextEdit):
     #  Setters
     ##
 
-    def setDocumentChanged(self, state: bool) -> bool:
+    def setDocumentChanged(self, state: bool) -> None:
         """Keep track of the document changed variable, and emit the
         document change signal.
         """
-        self._docChanged = state
-        self.editedStatusChanged.emit(self._docChanged)
-        return self._docChanged
+        if self._docChanged != state:
+            logger.debug("Document changed status is '%s'", state)
+            self._docChanged = state
+            self.editedStatusChanged.emit(self._docChanged)
+        return
 
     def setCursorPosition(self, position: int) -> None:
         """Move the cursor to a given position in the document."""
@@ -1372,9 +1376,10 @@ class GuiDocEditor(QPlainTextEdit):
         cursor.setPosition(0)
         self.setTextCursor(cursor)
 
-        # Search up to a maximum of 1000, and make sure certain special
-        # searches like a regex search for .* don't loop infinitely
-        while self.find(searchFor, findOpt) and len(resE) <= 1000:
+        # Search up to a maximum of MAX_SEARCH_RESULT, and make sure
+        # certain special searches like a regex search for .* don't loop
+        # infinitely
+        while self.find(searchFor, findOpt) and len(resE) <= nwConst.MAX_SEARCH_RESULT:
             cursor = self.textCursor()
             if cursor.hasSelection():
                 resS.append(cursor.selectionStart())
@@ -2613,8 +2618,10 @@ class GuiDocEditSearch(QFrame):
 
     def setResultCount(self, currRes: int | None, resCount: int | None) -> None:
         """Set the count values for the current search."""
+        lim = nwConst.MAX_SEARCH_RESULT
+        numCount = f"{lim:n}+" if (resCount or 0) > lim else f"{resCount:n}"
         sCurrRes = "?" if currRes is None else str(currRes)
-        sResCount = "?" if resCount is None else "1000+" if resCount > 1000 else str(resCount)
+        sResCount = "?" if resCount is None else numCount
         minWidth = SHARED.theme.getTextWidth(f"{sResCount}//{sResCount}", self.boxFont)
         self.resultLabel.setText(f"{sCurrRes}/{sResCount}")
         self.resultLabel.setMinimumWidth(minWidth)

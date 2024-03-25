@@ -53,6 +53,7 @@ class nwConst:
 
     # Gui Settings
     STATUS_MSG_TIMEOUT = 15000  # milliseconds
+    MAX_SEARCH_RESULT = 1000
 
     # Dialogs
     DLG_FINISHED = 2

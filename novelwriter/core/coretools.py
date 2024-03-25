@@ -306,25 +306,73 @@ class DocDuplicator:
 
 class DocSearch:
 
-    def __init__(self, project: NWProject, regEx: bool, doCase: bool, wholeWords: bool) -> None:
-        self._project = project
-        self._escape = not regEx
-        self._words = wholeWords
-        self._rxOpts = QRegularExpression.PatternOption.UseUnicodePropertiesOption
-        if not doCase:
-            self._rxOpts |= QRegularExpression.PatternOption.CaseInsensitiveOption
+    def __init__(self) -> None:
+        # RegEx Object
+        self._regEx = QRegularExpression()
+        self.setCaseSensitive(False)
+        self._words = False
+        self._escape = True
+
+        # Project Cache
+        self._uuid = ""
+        self._cache: dict[str, str] = {}
+
         return
 
-    def iterSearch(self, search: str) -> Iterable[tuple[NWItem, list[tuple[int, int, str]]]]:
-        """Iteratively search through documents in the project."""
+    ##
+    #  Methods
+    ##
+
+    def setCaseSensitive(self, state: bool) -> None:
+        """Set the case sensitive search flag."""
+        opts = QRegularExpression.PatternOption.UseUnicodePropertiesOption
+        if not state:
+            opts |= QRegularExpression.PatternOption.CaseInsensitiveOption
+        self._regEx.setPatternOptions(opts)
+        return
+
+    def setWholeWords(self, state: bool) -> None:
+        """Set the whole words search flag."""
+        self._words = state
+        return
+
+    def setUserRegEx(self, state: bool) -> None:
+        """Set the escape flag to the opposite state."""
+        self._escape = not state
+        return
+
+    def clearTextCache(self, tHandle: str | None) -> None:
+        """Clear text cache for a given item, or all items if None."""
+        if tHandle is None:
+            self._cache = {}
+            logger.debug("Search cache cleared")
+        elif tHandle in self._cache:
+            self._cache.pop(tHandle, None)
+            logger.debug("Search cache cleared for '%s'", tHandle)
+        return
+
+    def iterSearch(
+        self, project: NWProject, search: str
+    ) -> Iterable[tuple[NWItem, list[tuple[int, int, str]]]]:
+        """Iteratively search through documents in a project."""
+        if project.data.uuid != self._uuid:
+            self.clearTextCache(None)
+
+        self._uuid = project.data.uuid
+        self._regEx.setPattern(self._buildPattern(search))
+        logger.debug("Searching with pattern '%s'", self._regEx.pattern())
+
         num = len(search)
-        storage = self._project.storage
-        regEx = QRegularExpression(self._buildPattern(search), self._rxOpts)
-        logger.debug("Searching with pattern '%s'", regEx.pattern())
-        for item in self._project.tree:
+        storage = project.storage
+        for item in project.tree:
             if item.isFileType():
-                text = storage.getDocument(item.itemHandle).readDocument() or ""
-                rxItt = regEx.globalMatch(text)
+                tHandle = item.itemHandle
+                text = self._cache.get(tHandle)
+                if text is None:
+                    text = storage.getDocument(tHandle).readDocument() or ""
+                    self._cache[tHandle] = text
+
+                rxItt = self._regEx.globalMatch(text)
                 results = []
                 while rxItt.hasNext():
                     rxMatch = rxItt.next()
@@ -332,7 +380,9 @@ class DocSearch:
                     num = rxMatch.capturedLength()
                     context = text[pos:pos+100].partition("\n")[0]
                     results.append((pos, num, context))
+
                 yield item, results
+
         return
 
     ##

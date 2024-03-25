@@ -29,11 +29,12 @@ from PyQt5.QtCore import QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QKeyEvent, QPalette
 from PyQt5.QtWidgets import (
     QHBoxLayout, QLabel, QLineEdit, QToolBar, QTreeWidget, QTreeWidgetItem,
-    QVBoxLayout, QWidget
+    QVBoxLayout, QWidget, qApp
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt
+from novelwriter.constants import nwConst
 from novelwriter.core.coretools import DocSearch
 from novelwriter.core.item import NWItem
 
@@ -54,6 +55,8 @@ class GuiProjectSearch(QWidget):
 
         iPx = SHARED.theme.baseIconSize
         mPx = CONFIG.pxInt(2)
+
+        self._search = DocSearch()
 
         # Header
         self.viewLabel = QLabel(self.tr("Project Search"))
@@ -150,6 +153,12 @@ class GuiProjectSearch(QWidget):
         self.searchText.selectAll()
         return
 
+    def closeProjectTasks(self) -> None:
+        """Run close project tasks."""
+        self.searchText.clear()
+        self.searchResult.clear()
+        return
+
     ##
     #  Events
     ##
@@ -178,6 +187,16 @@ class GuiProjectSearch(QWidget):
         return
 
     ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot(str)
+    def clearSearchCache(self, tHandle: str) -> None:
+        """Process document content change."""
+        self._search.clearTextCache(tHandle)
+        return
+
+    ##
     #  Private Slots
     ##
 
@@ -186,11 +205,10 @@ class GuiProjectSearch(QWidget):
         """Perform a search."""
         self.searchResult.clear()
         if text := self.searchText.text():
-            search = DocSearch(
-                SHARED.project, self.toggleRegEx.isChecked(),
-                self.toggleCase.isChecked(), self.toggleWord.isChecked()
-            )
-            for item, results in search.iterSearch(text):
+            self._search.setUserRegEx(self.toggleRegEx.isChecked())
+            self._search.setCaseSensitive(self.toggleCase.isChecked())
+            self._search.setWholeWords(self.toggleWord.isChecked())
+            for item, results in self._search.iterSearch(SHARED.project, text):
                 self._appendResultSet(item, results)
         return
 
@@ -234,6 +252,10 @@ class GuiProjectSearch(QWidget):
     #  Internal Functions
     ##
 
+    def _initSearch(self) -> None:
+        """Initialise the search."""
+        return
+
     def _appendResultSet(self, nwItem: NWItem, results: list[tuple[int, int, str]]) -> None:
         """Populate the result tree."""
         if results:
@@ -242,20 +264,31 @@ class GuiProjectSearch(QWidget):
                 nwItem.itemType, nwItem.itemClass,
                 nwItem.itemLayout, nwItem.mainHeading
             )
+            lim = nwConst.MAX_SEARCH_RESULT
+            count = len(results)
+            numResult = f"{count:n}"
+            if count > lim:
+                results = results[:lim]
+                numResult = f"{lim:n}+"
 
             tItem = QTreeWidgetItem()
-            tItem.setText(0, f"{nwItem.itemName} ({len(results)})")
+            tItem.setText(0, f"{nwItem.itemName} ({numResult})")
             tItem.setIcon(0, docIcon)
             tItem.setData(0, self.D_HANDLE, tHandle)
+            self.searchResult.addTopLevelItem(tItem)
+
             rItems = []
             for start, length, context in results:
                 rItem = QTreeWidgetItem()
                 rItem.setText(0, context)
                 rItem.setData(0, self.D_RESULT, (tHandle, start, length))
                 rItems.append(rItem)
+
             tItem.addChildren(rItems)
             tItem.setExpanded(True)
-            self.searchResult.addTopLevelItem(tItem)
+
+            qApp.processEvents()
+
         return
 
 # END Class GuiProjectSearch
