@@ -154,6 +154,8 @@ class GuiMain(QMainWindow):
         self.splitView.setHandleWidth(hWd)
         self.splitView.setOpaqueResize(False)
         self.splitView.setSizes(CONFIG.viewPanePos)
+        self.splitView.setCollapsible(0, False)
+        self.splitView.setCollapsible(1, False)
 
         # Splitter : Document Editor / Document Viewer
         self.splitDocs = QSplitter(Qt.Horizontal, self)
@@ -161,6 +163,8 @@ class GuiMain(QMainWindow):
         self.splitDocs.addWidget(self.splitView)
         self.splitDocs.setOpaqueResize(False)
         self.splitDocs.setHandleWidth(hWd)
+        self.splitDocs.setCollapsible(0, False)
+        self.splitDocs.setCollapsible(1, False)
 
         # Splitter : Project Tree / Document Area
         self.splitMain = QSplitter(Qt.Horizontal)
@@ -170,38 +174,16 @@ class GuiMain(QMainWindow):
         self.splitMain.setOpaqueResize(False)
         self.splitMain.setHandleWidth(hWd)
         self.splitMain.setSizes(CONFIG.mainPanePos)
+        self.splitMain.setCollapsible(0, False)
+        self.splitMain.setCollapsible(0, False)
+        self.splitMain.setStretchFactor(1, 0)
+        self.splitMain.setStretchFactor(1, 1)
 
         # Main Stack : Editor / Outline
         self.mainStack = QStackedWidget(self)
         self.mainStack.addWidget(self.splitMain)
         self.mainStack.addWidget(self.outlineView)
         self.mainStack.currentChanged.connect(self._mainStackChanged)
-
-        # Indices of Splitter Widgets
-        self.idxTree         = self.splitMain.indexOf(self.treePane)
-        self.idxMain         = self.splitMain.indexOf(self.splitDocs)
-        self.idxEditor       = self.splitDocs.indexOf(self.docEditor)
-        self.idxViewer       = self.splitDocs.indexOf(self.splitView)
-        self.idxViewDoc      = self.splitView.indexOf(self.docViewer)
-        self.idxViewDocPanel = self.splitView.indexOf(self.docViewerPanel)
-
-        # Indices of Stack Widgets
-        self.idxEditorView  = self.mainStack.indexOf(self.splitMain)
-        self.idxOutlineView = self.mainStack.indexOf(self.outlineView)
-        self.idxProjView    = self.projStack.indexOf(self.projView)
-        self.idxNovelView   = self.projStack.indexOf(self.novelView)
-        self.idxProjSearch  = self.projStack.indexOf(self.projSearch)
-
-        # Splitter Behaviour
-        self.splitMain.setCollapsible(self.idxTree, False)
-        self.splitMain.setCollapsible(self.idxMain, False)
-        self.splitDocs.setCollapsible(self.idxEditor, False)
-        self.splitDocs.setCollapsible(self.idxViewer, False)
-        self.splitView.setCollapsible(self.idxViewDoc, False)
-        self.splitView.setCollapsible(self.idxViewDocPanel, False)
-
-        self.splitMain.setStretchFactor(self.idxTree, 0)
-        self.splitMain.setStretchFactor(self.idxMain, 1)
 
         # Editor / Viewer Default State
         self.splitView.setVisible(False)
@@ -1035,12 +1017,15 @@ class GuiMain(QMainWindow):
                     self.novelView.setTreeFocus()
                 else:
                     self.projView.setTreeFocus()
-            else:
+            elif self.projStack.currentWidget() is self.novelView:
                 if self.novelView.treeHasFocus():
                     self._changeView(nwView.PROJECT)
                     self.projView.setTreeFocus()
                 else:
                     self.novelView.setTreeFocus()
+            else:
+                self._changeView(nwView.PROJECT)
+                self.projView.setTreeFocus()
         elif paneNo == nwWidget.EDITOR:
             self._changeView(nwView.EDITOR)
             self.docEditor.setFocus()
@@ -1185,6 +1170,7 @@ class GuiMain(QMainWindow):
         elif view == nwView.SEARCH:
             self.mainStack.setCurrentWidget(self.splitMain)
             self.projStack.setCurrentWidget(self.projSearch)
+            self.projSearch.beginSearch()
         elif view == nwView.OUTLINE:
             self.mainStack.setCurrentWidget(self.outlineView)
         return
@@ -1293,7 +1279,7 @@ class GuiMain(QMainWindow):
     @pyqtSlot(int)
     def _mainStackChanged(self, index: int) -> None:
         """Process main window tab change."""
-        if index == self.idxOutlineView:
+        if self.mainStack.widget(index) == self.outlineView:
             if SHARED.hasProject:
                 self.outlineView.refreshTree()
         return
@@ -1302,9 +1288,10 @@ class GuiMain(QMainWindow):
     def _projStackChanged(self, index: int) -> None:
         """Process project view tab change."""
         sHandle = None
-        if index == self.idxProjView:
+        widget = self.projStack.widget(index)
+        if widget == self.projView:
             sHandle = self.projView.getSelectedHandle()
-        elif index == self.idxNovelView:
+        elif widget == self.novelView:
             sHandle, _ = self.novelView.getSelectedHandle()
         self.itemDetails.updateViewBox(sHandle)
         return

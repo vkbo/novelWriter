@@ -318,10 +318,9 @@ class DocSearch:
     def iterSearch(self, search: str) -> Iterable[tuple[NWItem, list[tuple[int, int, str]]]]:
         """Iteratively search through documents in the project."""
         num = len(search)
-        cap = min(num+100, 100)
         storage = self._project.storage
         regEx = QRegularExpression(self._buildPattern(search), self._rxOpts)
-        print(regEx.pattern())
+        logger.debug("Searching with pattern '%s'", regEx.pattern())
         for item in self._project.tree:
             if item.isFileType():
                 text = storage.getDocument(item.itemHandle).readDocument() or ""
@@ -331,7 +330,7 @@ class DocSearch:
                     rxMatch = rxItt.next()
                     pos = rxMatch.capturedStart()
                     num = rxMatch.capturedLength()
-                    context = text[pos:pos+cap].partition("\n")[0]
+                    context = text[pos:pos+100].partition("\n")[0]
                     results.append((pos, num, context))
                 yield item, results
         return
