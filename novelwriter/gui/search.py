@@ -68,12 +68,18 @@ class GuiProjectSearch(QWidget):
 
         self.toggleCase = self.searchOpt.addAction(self.tr("Case Sensitive"))
         self.toggleCase.setCheckable(True)
+        self.toggleCase.setChecked(CONFIG.searchProjCase)
+        self.toggleCase.toggled.connect(self._toggleCase)
 
         self.toggleWord = self.searchOpt.addAction(self.tr("Whole Words Only"))
         self.toggleWord.setCheckable(True)
+        self.toggleWord.setChecked(CONFIG.searchProjWord)
+        self.toggleWord.toggled.connect(self._toggleWord)
 
         self.toggleRegEx = self.searchOpt.addAction(self.tr("RegEx Mode"))
         self.toggleRegEx.setCheckable(True)
+        self.toggleRegEx.setChecked(CONFIG.searchProjRegEx)
+        self.toggleRegEx.toggled.connect(self._toggleRegEx)
 
         # Search Box
         self.searchText = QLineEdit(self)
@@ -204,6 +210,24 @@ class GuiProjectSearch(QWidget):
             self.openDocumentSelectRequest.emit(
                 str(data[0]), checkInt(data[1], -1), checkInt(data[2], -1), True
             )
+        return
+
+    @pyqtSlot(bool)
+    def _toggleCase(self, state: bool) -> None:
+        """Enable/disable case sensitive mode."""
+        CONFIG.searchProjCase = state
+        return
+
+    @pyqtSlot(bool)
+    def _toggleWord(self, state: bool) -> None:
+        """Enable/disable whole word search mode."""
+        CONFIG.searchProjWord = state
+        return
+
+    @pyqtSlot(bool)
+    def _toggleRegEx(self, state: bool) -> None:
+        """Enable/disable regular expression search mode."""
+        CONFIG.searchProjRegEx = state
         return
 
     ##
