@@ -220,6 +220,7 @@ class GuiMain(QMainWindow):
         SHARED.indexScannedText.connect(self.itemDetails.updateViewBox)
         SHARED.indexCleared.connect(self.docViewerPanel.indexWasCleared)
         SHARED.indexAvailable.connect(self.docViewerPanel.indexHasAppeared)
+        SHARED.mainClockTick.connect(self._timeTick)
 
         self.mainMenu.requestDocAction.connect(self._passDocumentAction)
         self.mainMenu.requestDocInsert.connect(self._passDocumentInsert)
@@ -286,12 +287,6 @@ class GuiMain(QMainWindow):
         # Set Up Auto-Save Document Timer
         self.asDocTimer = QTimer(self)
         self.asDocTimer.timeout.connect(self._autoSaveDocument)
-
-        # Main Clock
-        self.mainTimer = QTimer(self)
-        self.mainTimer.setInterval(1000)
-        self.mainTimer.timeout.connect(self._timeTick)
-        self.mainTimer.start()
 
         # Shortcuts and Actions
         self._connectMenuActions()
@@ -1212,16 +1207,15 @@ class GuiMain(QMainWindow):
     @pyqtSlot()
     def _timeTick(self) -> None:
         """Process time tick of the main timer."""
-        if not SHARED.hasProject:
-            return
-        currTime = time()
-        editIdle = currTime - self.docEditor.lastActive > CONFIG.userIdleTime
-        userIdle = qApp.applicationState() != Qt.ApplicationActive
-        self.mainStatus.setUserIdle(editIdle or userIdle)
-        SHARED.updateIdleTime(currTime, editIdle or userIdle)
-        self.mainStatus.updateTime(idleTime=SHARED.projectIdleTime)
-        if CONFIG.memInfo and int(currTime) % 5 == 0:  # pragma: no cover
-            self.mainStatus.memInfo()
+        if SHARED.hasProject:
+            currTime = time()
+            editIdle = currTime - self.docEditor.lastActive > CONFIG.userIdleTime
+            userIdle = qApp.applicationState() != Qt.ApplicationActive
+            self.mainStatus.setUserIdle(editIdle or userIdle)
+            SHARED.updateIdleTime(currTime, editIdle or userIdle)
+            self.mainStatus.updateTime(idleTime=SHARED.projectIdleTime)
+            if CONFIG.memInfo and int(currTime) % 5 == 0:  # pragma: no cover
+                self.mainStatus.memInfo()
         return
 
     @pyqtSlot()

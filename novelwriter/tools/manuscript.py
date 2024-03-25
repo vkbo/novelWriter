@@ -794,11 +794,7 @@ class _PreviewWidget(QTextBrowser):
         self._updateDocMargins()
         self._updateBuildAge()
 
-        # Age Timer
-        self.ageTimer = QTimer(self)
-        self.ageTimer.setInterval(10)
-        self.ageTimer.timeout.connect(self._updateBuildAge)
-        self.ageTimer.start()
+        SHARED.slowClockTick.connect(self._updateBuildAge)
 
         return
 

@@ -23,8 +23,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import time
 import logging
+
+from time import time
 
 from PyQt5.QtCore import QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QKeyEvent, QPalette
@@ -40,6 +41,8 @@ from novelwriter.core.item import NWItem
 
 logger = logging.getLogger(__name__)
 
+CACHE_TIMEOUT = 120.0  # 2 minutes
+
 
 class GuiProjectSearch(QWidget):
 
@@ -50,8 +53,8 @@ class GuiProjectSearch(QWidget):
     D_HANDLE = Qt.ItemDataRole.UserRole
     D_RESULT = Qt.ItemDataRole.UserRole + 1
 
-    openDocumentSelectRequest = pyqtSignal(str, int, int, bool)
     selectedItemChanged = pyqtSignal(str)
+    openDocumentSelectRequest = pyqtSignal(str, int, int, bool)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -61,7 +64,9 @@ class GuiProjectSearch(QWidget):
         iPx = SHARED.theme.baseIconSize
         mPx = CONFIG.pxInt(2)
 
+        self._time = time()
         self._search = DocSearch()
+        self._blocked = False
 
         # Header
         self.viewLabel = QLabel(self.tr("Project Search"))
@@ -129,6 +134,8 @@ class GuiProjectSearch(QWidget):
 
         self.setLayout(self.outerBox)
         self.updateTheme()
+
+        SHARED.slowClockTick.connect(self._cacheTimeout)
 
         logger.debug("Ready: GuiProjectSearch")
 
@@ -205,7 +212,8 @@ class GuiProjectSearch(QWidget):
     @pyqtSlot(str)
     def clearSearchCache(self, tHandle: str) -> None:
         """Process document content change."""
-        self._search.clearTextCache(tHandle)
+        if not self._blocked:
+            self._search.clearTextCache(tHandle)
         return
 
     ##
@@ -215,15 +223,19 @@ class GuiProjectSearch(QWidget):
     @pyqtSlot()
     def _processSearch(self) -> None:
         """Perform a search."""
-        start = time.time()
-        self.searchResult.clear()
-        if text := self.searchText.text():
-            self._search.setUserRegEx(self.toggleRegEx.isChecked())
-            self._search.setCaseSensitive(self.toggleCase.isChecked())
-            self._search.setWholeWords(self.toggleWord.isChecked())
-            for item, results, capped in self._search.iterSearch(SHARED.project, text):
-                self._appendResultSet(item, results, capped)
-        logger.debug("Search took %.3f ms", 1000*(time.time() - start))
+        if not self._blocked:
+            start = time()
+            self._blocked = True
+            self.searchResult.clear()
+            if text := self.searchText.text():
+                self._search.setUserRegEx(self.toggleRegEx.isChecked())
+                self._search.setCaseSensitive(self.toggleCase.isChecked())
+                self._search.setWholeWords(self.toggleWord.isChecked())
+                for item, results, capped in self._search.iterSearch(SHARED.project, text):
+                    self._appendResultSet(item, results, capped)
+            logger.debug("Search took %.3f ms", 1000*(time() - start))
+            self._time = time()
+        self._blocked = False
         return
 
     @pyqtSlot()
@@ -270,6 +282,13 @@ class GuiProjectSearch(QWidget):
     def _toggleRegEx(self, state: bool) -> None:
         """Enable/disable regular expression search mode."""
         CONFIG.searchProjRegEx = state
+        return
+
+    @pyqtSlot()
+    def _cacheTimeout(self) -> None:
+        """Clear the cache after a period of inactivity."""
+        if not self._blocked and time() - self._time > CACHE_TIMEOUT:
+            self._search.clearTextCache(None)
         return
 
     ##

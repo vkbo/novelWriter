@@ -30,7 +30,7 @@ from time import time
 from typing import TYPE_CHECKING, TypeVar
 from pathlib import Path
 
-from PyQt5.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal
+from PyQt5.QtCore import QObject, QRunnable, QThreadPool, QTimer, pyqtSignal
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget
 from novelwriter.common import formatFileFilter
 
@@ -62,6 +62,8 @@ class SharedData(QObject):
     indexChangedTags = pyqtSignal(list, list)
     indexCleared = pyqtSignal()
     indexAvailable = pyqtSignal()
+    mainClockTick = pyqtSignal()
+    slowClockTick = pyqtSignal()
 
     def __init__(self) -> None:
         super().__init__()
@@ -78,6 +80,14 @@ class SharedData(QObject):
         self._idleTime = 0.0
         self._idleRefTime = time()
         self._focusMode = False
+
+        self._fClock = QTimer(self)
+        self._fClock.setInterval(1000)
+        self._fClock.timeout.connect(lambda: self.mainClockTick.emit())
+
+        self._sClock = QTimer(self)
+        self._sClock.setInterval(10000)
+        self._sClock.timeout.connect(lambda: self.slowClockTick.emit())
 
         return
 
@@ -158,6 +168,8 @@ class SharedData(QObject):
         soon as the Main GUI is created to ensure the SHARED singleton
         has the properties needed for operation.
         """
+        self._fClock.start()
+        self._sClock.start()
         self._gui = gui
         self._theme = theme
         self._resetProject()
