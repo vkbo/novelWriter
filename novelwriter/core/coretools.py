@@ -38,7 +38,7 @@ from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import isHandle, minmax, simplified
-from novelwriter.constants import nwFiles, nwItemClass
+from novelwriter.constants import nwConst, nwFiles, nwItemClass
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.core.storage import NWStorageCreate
@@ -353,7 +353,7 @@ class DocSearch:
 
     def iterSearch(
         self, project: NWProject, search: str
-    ) -> Iterable[tuple[NWItem, list[tuple[int, int, str]]]]:
+    ) -> Iterable[tuple[NWItem, list[tuple[int, int, str]], bool]]:
         """Iteratively search through documents in a project."""
         if project.data.uuid != self._uuid:
             self.clearTextCache(None)
@@ -373,15 +373,22 @@ class DocSearch:
                     self._cache[tHandle] = text
 
                 rxItt = self._regEx.globalMatch(text)
+                count = 0
+                capped = False
                 results = []
                 while rxItt.hasNext():
                     rxMatch = rxItt.next()
                     pos = rxMatch.capturedStart()
                     num = rxMatch.capturedLength()
                     context = text[pos:pos+100].partition("\n")[0]
-                    results.append((pos, num, context))
+                    if context:
+                        results.append((pos, num, context))
+                        count += 1
+                        if count >= nwConst.MAX_SEARCH_RESULT:
+                            capped = True
+                            break
 
-                yield item, results
+                yield item, results, capped
 
         return
 

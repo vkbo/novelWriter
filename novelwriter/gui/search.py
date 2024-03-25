@@ -23,18 +23,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import time
 import logging
 
 from PyQt5.QtCore import QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QKeyEvent, QPalette
 from PyQt5.QtWidgets import (
-    QHBoxLayout, QLabel, QLineEdit, QToolBar, QTreeWidget, QTreeWidgetItem,
-    QVBoxLayout, QWidget, qApp
+    QHBoxLayout, QHeaderView, QLabel, QLineEdit, QToolBar, QTreeWidget,
+    QTreeWidgetItem, QVBoxLayout, QWidget, qApp
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt
-from novelwriter.constants import nwConst
 from novelwriter.core.coretools import DocSearch
 from novelwriter.core.item import NWItem
 
@@ -43,10 +43,15 @@ logger = logging.getLogger(__name__)
 
 class GuiProjectSearch(QWidget):
 
+    C_NAME   = 0
+    C_RESULT = 0
+    C_COUNT  = 1
+
     D_HANDLE = Qt.ItemDataRole.UserRole
     D_RESULT = Qt.ItemDataRole.UserRole + 1
 
     openDocumentSelectRequest = pyqtSignal(str, int, int, bool)
+    selectedItemChanged = pyqtSignal(str)
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -97,10 +102,17 @@ class GuiProjectSearch(QWidget):
         # Search Result
         self.searchResult = QTreeWidget(self)
         self.searchResult.setHeaderHidden(True)
+        self.searchResult.setColumnCount(2)
         self.searchResult.setIconSize(QSize(iPx, iPx))
         self.searchResult.setIndentation(iPx)
-        self.searchResult.itemPressed.connect(self._searchResultSelected)
+        self.searchResult.itemPressed.connect(self._searchResultPressed)
         self.searchResult.itemDoubleClicked.connect(self._searchResultDoubleClicked)
+        self.searchResult.itemSelectionChanged.connect(self._searchResultSelected)
+
+        treeHeader = self.searchResult.header()
+        treeHeader.setStretchLastSection(False)
+        treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.ResizeMode.Stretch)
+        treeHeader.setSectionResizeMode(self.C_COUNT, QHeaderView.ResizeMode.ResizeToContents)
 
         # Assemble
         self.headerBox = QHBoxLayout()
@@ -144,7 +156,7 @@ class GuiProjectSearch(QWidget):
         if self.searchText.hasFocus():
             self._processSearch()
         elif items := self.searchResult.selectedItems():
-            self._searchResultSelected(items[0], 0)
+            self._searchResultPressed(items[0], 0)
         return
 
     def beginSearch(self) -> None:
@@ -203,18 +215,30 @@ class GuiProjectSearch(QWidget):
     @pyqtSlot()
     def _processSearch(self) -> None:
         """Perform a search."""
+        start = time.time()
         self.searchResult.clear()
         if text := self.searchText.text():
             self._search.setUserRegEx(self.toggleRegEx.isChecked())
             self._search.setCaseSensitive(self.toggleCase.isChecked())
             self._search.setWholeWords(self.toggleWord.isChecked())
-            for item, results in self._search.iterSearch(SHARED.project, text):
-                self._appendResultSet(item, results)
+            for item, results, capped in self._search.iterSearch(SHARED.project, text):
+                self._appendResultSet(item, results, capped)
+        logger.debug("Search took %.3f ms", 1000*(time.time() - start))
+        return
+
+    @pyqtSlot()
+    def _searchResultSelected(self) -> None:
+        """Process search result selection."""
+        if items := self.searchResult.selectedItems():
+            if (data := items[0].data(0, self.D_RESULT)) and len(data) == 3:
+                self.selectedItemChanged.emit(str(data[0]))
+            elif data := items[0].data(0, self.D_HANDLE):
+                self.selectedItemChanged.emit(str(data))
         return
 
     @pyqtSlot("QTreeWidgetItem*", int)
-    def _searchResultSelected(self, item: QTreeWidgetItem, column: int) -> None:
-        """Process search result selection."""
+    def _searchResultPressed(self, item: QTreeWidgetItem, column: int) -> None:
+        """Process search result pressed."""
         if (data := item.data(0, self.D_RESULT)) and len(data) == 3:
             self.openDocumentSelectRequest.emit(
                 str(data[0]), checkInt(data[1], -1), checkInt(data[2], -1), False
@@ -252,11 +276,9 @@ class GuiProjectSearch(QWidget):
     #  Internal Functions
     ##
 
-    def _initSearch(self) -> None:
-        """Initialise the search."""
-        return
-
-    def _appendResultSet(self, nwItem: NWItem, results: list[tuple[int, int, str]]) -> None:
+    def _appendResultSet(
+        self, nwItem: NWItem, results: list[tuple[int, int, str]], capped: bool
+    ) -> None:
         """Populate the result tree."""
         if results:
             tHandle = nwItem.itemHandle
@@ -264,17 +286,15 @@ class GuiProjectSearch(QWidget):
                 nwItem.itemType, nwItem.itemClass,
                 nwItem.itemLayout, nwItem.mainHeading
             )
-            lim = nwConst.MAX_SEARCH_RESULT
-            count = len(results)
-            numResult = f"{count:n}"
-            if count > lim:
-                results = results[:lim]
-                numResult = f"{lim:n}+"
+            ext = "+" if capped else ""
 
             tItem = QTreeWidgetItem()
-            tItem.setText(0, f"{nwItem.itemName} ({numResult})")
-            tItem.setIcon(0, docIcon)
-            tItem.setData(0, self.D_HANDLE, tHandle)
+            tItem.setText(self.C_NAME, nwItem.itemName)
+            tItem.setIcon(self.C_NAME, docIcon)
+            tItem.setData(self.C_NAME, self.D_HANDLE, tHandle)
+            tItem.setText(self.C_COUNT, f"({len(results):n}{ext})")
+            tItem.setTextAlignment(self.C_COUNT, Qt.AlignmentFlag.AlignRight)
+            tItem.setForeground(self.C_COUNT, self.palette().highlight())
             self.searchResult.addTopLevelItem(tItem)
 
             rItems = []
@@ -286,6 +306,10 @@ class GuiProjectSearch(QWidget):
 
             tItem.addChildren(rItems)
             tItem.setExpanded(True)
+
+            parent = self.searchResult.indexFromItem(tItem)
+            for i in range(tItem.childCount()):
+                self.searchResult.setFirstColumnSpanned(i, parent, True)
 
             qApp.processEvents()
 

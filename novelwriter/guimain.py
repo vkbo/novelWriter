@@ -246,6 +246,7 @@ class GuiMain(QMainWindow):
         self.novelView.openDocumentRequest.connect(self._openDocument)
 
         self.projSearch.openDocumentSelectRequest.connect(self._openDocumentSelection)
+        self.projSearch.selectedItemChanged.connect(self.itemDetails.updateViewBox)
 
         self.docEditor.editedStatusChanged.connect(self.mainStatus.updateDocumentStatus)
         self.docEditor.docCountsChanged.connect(self.itemDetails.updateCounts)
