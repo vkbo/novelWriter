@@ -63,7 +63,6 @@ class SharedData(QObject):
     indexCleared = pyqtSignal()
     indexAvailable = pyqtSignal()
     mainClockTick = pyqtSignal()
-    slowClockTick = pyqtSignal()
 
     def __init__(self) -> None:
         super().__init__()
@@ -81,13 +80,9 @@ class SharedData(QObject):
         self._idleRefTime = time()
         self._focusMode = False
 
-        self._fClock = QTimer(self)
-        self._fClock.setInterval(1000)
-        self._fClock.timeout.connect(lambda: self.mainClockTick.emit())
-
-        self._sClock = QTimer(self)
-        self._sClock.setInterval(10000)
-        self._sClock.timeout.connect(lambda: self.slowClockTick.emit())
+        self._clock = QTimer(self)
+        self._clock.setInterval(1000)
+        self._clock.timeout.connect(lambda: self.mainClockTick.emit())
 
         return
 
@@ -168,8 +163,7 @@ class SharedData(QObject):
         soon as the Main GUI is created to ensure the SHARED singleton
         has the properties needed for operation.
         """
-        self._fClock.start()
-        self._sClock.start()
+        self._clock.start()
         self._gui = gui
         self._theme = theme
         self._resetProject()
