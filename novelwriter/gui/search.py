@@ -28,7 +28,7 @@ import logging
 from time import time
 
 from PyQt5.QtCore import QSize, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QKeyEvent, QPalette
+from PyQt5.QtGui import QCursor, QKeyEvent, QPalette
 from PyQt5.QtWidgets import (
     QHBoxLayout, QHeaderView, QLabel, QLineEdit, QToolBar, QTreeWidget,
     QTreeWidgetItem, QVBoxLayout, QWidget, qApp
@@ -110,7 +110,6 @@ class GuiProjectSearch(QWidget):
         self.searchResult.setColumnCount(2)
         self.searchResult.setIconSize(QSize(iPx, iPx))
         self.searchResult.setIndentation(iPx)
-        self.searchResult.itemPressed.connect(self._searchResultPressed)
         self.searchResult.itemDoubleClicked.connect(self._searchResultDoubleClicked)
         self.searchResult.itemSelectionChanged.connect(self._searchResultSelected)
 
@@ -160,8 +159,15 @@ class GuiProjectSearch(QWidget):
         """Process a return keypress forwarded from the main GUI."""
         if self.searchText.hasFocus():
             self._processSearch()
-        elif items := self.searchResult.selectedItems():
-            self._searchResultPressed(items[0], 0)
+        elif (
+            self.searchResult.hasFocus()
+            and (items := self.searchResult.selectedItems())
+            and (data := items[0].data(0, self.D_RESULT))
+            and len(data) == 3
+        ):
+            self.openDocumentSelectRequest.emit(
+                str(data[0]), checkInt(data[1], -1), checkInt(data[2], -1), False
+            )
         return
 
     def beginSearch(self) -> None:
@@ -211,6 +217,7 @@ class GuiProjectSearch(QWidget):
     def _processSearch(self) -> None:
         """Perform a search."""
         if not self._blocked:
+            qApp.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
             start = time()
             self._blocked = True
             self.searchResult.clear()
@@ -222,6 +229,7 @@ class GuiProjectSearch(QWidget):
                     self._appendResultSet(item, results, capped)
             logger.debug("Search took %.3f ms", 1000*(time() - start))
             self._time = time()
+            qApp.restoreOverrideCursor()
         self._blocked = False
         return
 
@@ -233,15 +241,6 @@ class GuiProjectSearch(QWidget):
                 self.selectedItemChanged.emit(str(data[0]))
             elif data := items[0].data(0, self.D_HANDLE):
                 self.selectedItemChanged.emit(str(data))
-        return
-
-    @pyqtSlot("QTreeWidgetItem*", int)
-    def _searchResultPressed(self, item: QTreeWidgetItem, column: int) -> None:
-        """Process search result pressed."""
-        if (data := item.data(0, self.D_RESULT)) and len(data) == 3:
-            self.openDocumentSelectRequest.emit(
-                str(data[0]), checkInt(data[1], -1), checkInt(data[2], -1), False
-            )
         return
 
     @pyqtSlot("QTreeWidgetItem*", int)
