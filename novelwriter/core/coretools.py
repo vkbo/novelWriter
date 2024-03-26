@@ -32,7 +32,6 @@ import shutil
 from collections.abc import Iterable
 from functools import partial
 from pathlib import Path
-from time import time
 from zipfile import ZipFile, is_zipfile
 
 from PyQt5.QtCore import QCoreApplication, QRegularExpression
@@ -102,9 +101,7 @@ class DocMerger:
         if srcItem is None:
             return False
 
-        inDoc = self._project.storage.getDocument(srcHandle)
-        docText = (inDoc.readDocument() or "").rstrip("\n")
-
+        docText = self._project.storage.getDocumentText(srcHandle).rstrip("\n")
         if addComment:
             docInfo = srcItem.describeMe()
             docSt, _ = srcItem.getImportStatus(incIcon=False)
@@ -123,9 +120,8 @@ class DocMerger:
             return False
 
         outDoc = self._project.storage.getDocument(self._targetDoc)
-        docText = (outDoc.readDocument() or "").rstrip("\n")
-        if docText:
-            self._targetText.insert(0, docText)
+        if text := (outDoc.readDocument() or "").rstrip("\n"):
+            self._targetText.insert(0, text)
 
         status = outDoc.writeDocument("\n\n".join(self._targetText) + "\n\n")
         if not status:
@@ -293,11 +289,10 @@ class DocDuplicator:
                     newItem.setParent(hMap[newItem.itemParent])
                     self._project.tree.updateItemData(newItem.itemHandle)
                 if newItem.isFileType():
-                    oldDoc = self._project.storage.getDocument(tHandle)
                     newDoc = self._project.storage.getDocument(newItem.itemHandle)
                     if newDoc.fileExists():
                         return
-                    newDoc.writeDocument(oldDoc.readDocument() or "")
+                    newDoc.writeDocument(self._project.storage.getDocumentText(tHandle))
                 yield newItem.itemHandle, nHandle
                 nHandle = None
         return
@@ -308,17 +303,10 @@ class DocDuplicator:
 class DocSearch:
 
     def __init__(self) -> None:
-        # RegEx Object
         self._regEx = QRegularExpression()
         self.setCaseSensitive(False)
         self._words = False
         self._escape = True
-
-        # Project Cache
-        self._uuid = ""
-        self._time = 0.0
-        self._cache: dict[str, str] = {}
-
         return
 
     ##
@@ -347,11 +335,6 @@ class DocSearch:
         self, project: NWProject, search: str
     ) -> Iterable[tuple[NWItem, list[tuple[int, int, str]], bool]]:
         """Iteratively search through documents in a project."""
-        if project.data.uuid != self._uuid or time() - self._time > 20.0:
-            self._cache = {}
-
-        self._uuid = project.data.uuid
-        self._time = time()
         self._regEx.setPattern(self._buildPattern(search))
         logger.debug("Searching with pattern '%s'", self._regEx.pattern())
 
@@ -359,11 +342,7 @@ class DocSearch:
         storage = project.storage
         for item in project.tree:
             if item.isFileType():
-                tHandle = item.itemHandle
-                if (text := self._cache.get(tHandle)) is None:
-                    text = storage.getDocument(tHandle).readDocument() or ""
-                    self._cache[tHandle] = text
-
+                text = storage.getDocumentText(item.itemHandle)
                 rxItt = self._regEx.globalMatch(text)
                 count = 0
                 capped = False

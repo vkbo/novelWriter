@@ -214,8 +214,7 @@ class GuiDocSplit(QDialog):
 
         spLevel = self.splitLevel.currentData()
         if not self._text:
-            inDoc = SHARED.project.storage.getDocument(sHandle)
-            self._text = (inDoc.readDocument() or "").splitlines()
+            self._text = SHARED.project.storage.getDocumentText(sHandle).splitlines()
 
         for lineNo, aLine in enumerate(self._text):
 

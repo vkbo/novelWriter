@@ -423,9 +423,6 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
     assert result[1] == (C.hChapterDoc, [], False)
     assert result[2] == (C.hSceneDoc, [(8, 5, "Scene")], False)
 
-    # Cache
-    assert list(search._cache.keys()) == [C.hTitlePage, C.hChapterDoc, C.hSceneDoc]
-
     # Patterns
     # ========
 
