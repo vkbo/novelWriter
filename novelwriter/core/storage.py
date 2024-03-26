@@ -289,21 +289,8 @@ class NWStorage:
 
     def getDocumentText(self, tHandle: str) -> str:
         """Return the text of a document in a fast and efficient way."""
-        if (
-            isinstance(self._runtimePath, Path)
-            and (path := self._runtimePath / "content" / f"{tHandle}.nwd").is_file()
-        ):
-            try:
-                with open(path, mode="r", encoding="utf-8") as inFile:
-                    line = ""
-                    for _ in range(10):
-                        if not (line := inFile.readline()).startswith(r"%%~"):
-                            break
-                    return line + inFile.read()
-            except Exception:
-                logger.error("Cannot read document with handle '%s'", tHandle)
-                logException()
-                return ""
+        if isinstance(self._runtimePath, Path):
+            return NWDocument.quickReadText(self._runtimePath / "content", tHandle)
         return ""
 
     def scanContent(self) -> list[str]:

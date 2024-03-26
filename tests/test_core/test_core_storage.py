@@ -64,6 +64,7 @@ def testCoreStorage_CreateNewProject(mockGUI, fncPath):
     assert bool(storage.getDocument(C.hSceneDoc)) is False
     assert storage.getMetaFile("file") is None
     assert storage.scanContent() == []
+    assert storage.getDocumentText(C.hSceneDoc) == ""
 
     # Cannot prepare a non-empty folder
     (fncPath / "foobar.txt").touch()
@@ -159,12 +160,6 @@ def testCoreStorage_InitProjectStorage(monkeypatch, mockGUI, fncPath, mockRnd):
 
     # We can directly access the content of a document
     assert storage.getDocumentText(C.hSceneDoc) == "### New Scene\n\n"
-
-    # Check read text fallback
-    assert storage.getDocumentText(C.hInvalid) == ""
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        assert storage.getDocumentText(C.hSceneDoc) == ""
 
     project.closeProject()
 
