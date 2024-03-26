@@ -42,9 +42,9 @@ __license__    = "GPLv3"
 __author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__version__    = "2.4a4"
-__hexversion__ = "0x020400a4"
-__date__       = "2024-03-17"
+__version__    = "2.4b1"
+__hexversion__ = "0x020400b1"
+__date__       = "2024-03-26"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
 
@@ -195,7 +195,7 @@ def main(sysArgs: list | None = None):
 
     if CONFIG.osDarwin:
         try:
-            from Foundation import NSBundle
+            from Foundation import NSBundle  # type: ignore
             bundle = NSBundle.mainBundle()
             info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
             info["CFBundleName"] = "novelWriter"
@@ -207,7 +207,7 @@ def main(sysArgs: list | None = None):
         try:
             import ctypes
             appID = f"io.novelwriter.{__version__}"
-            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)  # type: ignore
         except Exception:
             logger.error("Failed to set application name")
             logException()
