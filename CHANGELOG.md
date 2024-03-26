@@ -1,5 +1,62 @@
 # novelWriter Changelog
 
+## Version 2.4 Beta 1 [2024-03-26]
+
+### Release Notes
+
+This is a beta release of the next release version, and is intended for testing purposes. Please be
+careful when using this version on live writing projects, and make sure you take frequent backups.
+
+Please check the changelog for an overview of changes. The full release notes will be added to the
+final release.
+
+### Detailed Changelog
+
+**Major Features**
+
+* A global search feature has been added to the main sidebar. The search panel replaces the project
+  and novel tree when activated. PR #1775. Issue #894.
+* A new shortcode to highlight text has been added. PR #1715. Issue #705.
+* A new heading format for hard scene breaks has been added. It uses `###!` heading markup. The
+  only affect this has in the GUI is that these headings can be independently formatted in the
+  Manuscript tool. PR #1753. Issue #1050.
+* The document editor and viewer now have a dropdown menu in the header listing all headings of the
+  current document for quick navigation. The list is capped at 30 entries. PR #1764. issue #1059.
+
+**Build Tool Improvements**
+
+* The Manuscript Build Tool now has a word stats section below the preview that shows a number of
+  word and character counts for the previewed text. PR #1717. Issues #1114 and #1116.
+* The Manuscript Build Tool now shows an outline of the previewed document as a tab next to the
+  build settings list. PR #1768. Issue #1765.
+* Tabs handling in HTML output now has a separate setting from the other format. PR #1723.
+* Hard line breaks can now be excluded from Markdown builds. PR #1723. Issue #944.
+* It is now possible to control the centring and page breaks of partition, chapter and scene
+  headings. PR #1723. Issues #1117 and #1661.
+* Special titles (`#!`) can now be used in notes as well. PR #1723.
+* Meta data categories can be filtered out from the manuscript. PR #1723. issue #1132.
+* Any heading in a novel document can now be hidden in the manuscript. PR #1759. Issue #1756.
+* First line of a paragraph can now be indented in the manuscript. PR #1761. Issue #906.
+* Each meta data entry in HTML builds have a new class assigned to it that matches the tag used in
+  the text. PR #1767. Issue #1134.
+
+**Other Improvements**
+
+* The percentage progress counter in the editor document footer now counts progress per character
+  instead of per line. This is only noticeable on short documents. PR #1725.
+* Some improvements have been made to terms on the GUI and some strings have been simplified in
+  order to be easier to understand and to translate. PR #1727. Issue #1726.
+* Dates are now formatted according to the selected locale, if such a locale is available. If not,
+  it falls back to the local system locale. PR #1755. Issue #1739.
+
+**Code Improvements**
+
+* The tokenization of the novelWriter markup format has been refactored and improved. PR #1724.
+* A way to read project documents fast has been added. It is useful many places in the code where
+  only the text is needed, not the meta data. PR #1777.
+
+----
+
 ## Version 2.3.1 [2024-03-17]
 
 ### Release Notes
