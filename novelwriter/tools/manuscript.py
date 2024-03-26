@@ -796,7 +796,7 @@ class _PreviewWidget(QTextBrowser):
 
         # Age Timer
         self.ageTimer = QTimer(self)
-        self.ageTimer.setInterval(10)
+        self.ageTimer.setInterval(10000)
         self.ageTimer.timeout.connect(self._updateBuildAge)
         self.ageTimer.start()
 

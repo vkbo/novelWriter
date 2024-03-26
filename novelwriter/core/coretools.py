@@ -26,19 +26,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import shutil
 import logging
+import shutil
 
-from pathlib import Path
-from functools import partial
-from zipfile import ZipFile, is_zipfile
 from collections.abc import Iterable
+from functools import partial
+from pathlib import Path
+from time import time
+from zipfile import ZipFile, is_zipfile
 
-from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import isHandle, minmax, simplified
-from novelwriter.constants import nwFiles, nwItemClass
+from novelwriter.constants import nwConst, nwFiles, nwItemClass
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.core.storage import NWStorageCreate
@@ -302,6 +303,111 @@ class DocDuplicator:
         return
 
 # END Class DocDuplicator
+
+
+class DocSearch:
+
+    def __init__(self) -> None:
+        # RegEx Object
+        self._regEx = QRegularExpression()
+        self.setCaseSensitive(False)
+        self._words = False
+        self._escape = True
+
+        # Project Cache
+        self._uuid = ""
+        self._time = 0.0
+        self._cache: dict[str, str] = {}
+
+        return
+
+    ##
+    #  Methods
+    ##
+
+    def setCaseSensitive(self, state: bool) -> None:
+        """Set the case sensitive search flag."""
+        opts = QRegularExpression.PatternOption.UseUnicodePropertiesOption
+        if not state:
+            opts |= QRegularExpression.PatternOption.CaseInsensitiveOption
+        self._regEx.setPatternOptions(opts)
+        return
+
+    def setWholeWords(self, state: bool) -> None:
+        """Set the whole words search flag."""
+        self._words = state
+        return
+
+    def setUserRegEx(self, state: bool) -> None:
+        """Set the escape flag to the opposite state."""
+        self._escape = not state
+        return
+
+    def iterSearch(
+        self, project: NWProject, search: str
+    ) -> Iterable[tuple[NWItem, list[tuple[int, int, str]], bool]]:
+        """Iteratively search through documents in a project."""
+        if project.data.uuid != self._uuid or time() - self._time > 20.0:
+            self._cache = {}
+
+        self._uuid = project.data.uuid
+        self._time = time()
+        self._regEx.setPattern(self._buildPattern(search))
+        logger.debug("Searching with pattern '%s'", self._regEx.pattern())
+
+        num = len(search)
+        storage = project.storage
+        for item in project.tree:
+            if item.isFileType():
+                tHandle = item.itemHandle
+                if (text := self._cache.get(tHandle)) is None:
+                    text = storage.getDocument(tHandle).readDocument() or ""
+                    self._cache[tHandle] = text
+
+                rxItt = self._regEx.globalMatch(text)
+                count = 0
+                capped = False
+                results = []
+                while rxItt.hasNext():
+                    rxMatch = rxItt.next()
+                    pos = rxMatch.capturedStart()
+                    num = rxMatch.capturedLength()
+                    context = text[pos:pos+100].partition("\n")[0]
+                    if context:
+                        results.append((pos, num, context))
+                        count += 1
+                        if count >= nwConst.MAX_SEARCH_RESULT:
+                            capped = True
+                            break
+
+                yield item, results, capped
+
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _buildPattern(self, search: str) -> str:
+        """Build the search pattern string."""
+        if self._escape:
+            if CONFIG.verQtValue >= 0x050f00:
+                search = QRegularExpression.escape(search)
+            else:
+                # For older Qt versions, we escape manually
+                escaped = ""
+                for c in search:
+                    if c.isalnum() or c == "_":
+                        escaped += c
+                    else:
+                        escaped += f"\\{c}"
+                search = escaped
+        if self._words:
+            search = search if search.startswith("\\b") else f"\\b{search}"
+            search = search if search.endswith("\\b") else f"{search}\\b"
+        return search
+
+# END Class DocSearch
 
 
 class ProjectBuilder:

@@ -38,32 +38,30 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED, __hexversion__, __version__
+from novelwriter.common import formatFileFilter, formatVersion, hexToInt
 from novelwriter.constants import nwConst
-from novelwriter.gui.theme import GuiTheme
-from novelwriter.gui.sidebar import GuiSideBar
-from novelwriter.gui.outline import GuiOutlineView
-from novelwriter.gui.mainmenu import GuiMainMenu
-from novelwriter.gui.projtree import GuiProjectView
-from novelwriter.gui.doceditor import GuiDocEditor
-from novelwriter.gui.docviewer import GuiDocViewer
-from novelwriter.gui.noveltree import GuiNovelView
-from novelwriter.gui.statusbar import GuiMainStatus
-from novelwriter.gui.itemdetails import GuiItemDetails
-from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
 from novelwriter.dialogs.about import GuiAbout
-from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
-from novelwriter.tools.welcome import GuiWelcome
-from novelwriter.tools.manuscript import GuiManuscript
+from novelwriter.dialogs.wordlist import GuiWordList
+from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemType, nwWidget, nwView
+from novelwriter.gui.doceditor import GuiDocEditor
+from novelwriter.gui.docviewer import GuiDocViewer
+from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
+from novelwriter.gui.itemdetails import GuiItemDetails
+from novelwriter.gui.mainmenu import GuiMainMenu
+from novelwriter.gui.noveltree import GuiNovelView
+from novelwriter.gui.outline import GuiOutlineView
+from novelwriter.gui.projtree import GuiProjectView
+from novelwriter.gui.search import GuiProjectSearch
+from novelwriter.gui.sidebar import GuiSideBar
+from novelwriter.gui.statusbar import GuiMainStatus
+from novelwriter.gui.theme import GuiTheme
 from novelwriter.tools.dictionaries import GuiDictionaries
+from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.noveldetails import GuiNovelDetails
+from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.tools.writingstats import GuiWritingStats
-
-from novelwriter.enum import (
-    nwDocAction, nwDocInsert, nwDocMode, nwItemType, nwWidget, nwView
-)
-from novelwriter.common import formatFileFilter, formatVersion, hexToInt
 
 logger = logging.getLogger(__name__)
 
@@ -123,6 +121,7 @@ class GuiMain(QMainWindow):
         # Main GUI Elements
         self.mainStatus     = GuiMainStatus(self)
         self.projView       = GuiProjectView(self)
+        self.projSearch     = GuiProjectSearch(self)
         self.novelView      = GuiNovelView(self)
         self.docEditor      = GuiDocEditor(self)
         self.docViewer      = GuiDocViewer(self)
@@ -136,6 +135,7 @@ class GuiMain(QMainWindow):
         self.projStack = QStackedWidget(self)
         self.projStack.addWidget(self.projView)
         self.projStack.addWidget(self.novelView)
+        self.projStack.addWidget(self.projSearch)
         self.projStack.currentChanged.connect(self._projStackChanged)
 
         # Project Tree View
@@ -154,6 +154,8 @@ class GuiMain(QMainWindow):
         self.splitView.setHandleWidth(hWd)
         self.splitView.setOpaqueResize(False)
         self.splitView.setSizes(CONFIG.viewPanePos)
+        self.splitView.setCollapsible(0, False)
+        self.splitView.setCollapsible(1, False)
 
         # Splitter : Document Editor / Document Viewer
         self.splitDocs = QSplitter(Qt.Horizontal, self)
@@ -161,6 +163,8 @@ class GuiMain(QMainWindow):
         self.splitDocs.addWidget(self.splitView)
         self.splitDocs.setOpaqueResize(False)
         self.splitDocs.setHandleWidth(hWd)
+        self.splitDocs.setCollapsible(0, False)
+        self.splitDocs.setCollapsible(1, False)
 
         # Splitter : Project Tree / Document Area
         self.splitMain = QSplitter(Qt.Horizontal)
@@ -170,37 +174,16 @@ class GuiMain(QMainWindow):
         self.splitMain.setOpaqueResize(False)
         self.splitMain.setHandleWidth(hWd)
         self.splitMain.setSizes(CONFIG.mainPanePos)
+        self.splitMain.setCollapsible(0, False)
+        self.splitMain.setCollapsible(0, False)
+        self.splitMain.setStretchFactor(1, 0)
+        self.splitMain.setStretchFactor(1, 1)
 
         # Main Stack : Editor / Outline
         self.mainStack = QStackedWidget(self)
         self.mainStack.addWidget(self.splitMain)
         self.mainStack.addWidget(self.outlineView)
         self.mainStack.currentChanged.connect(self._mainStackChanged)
-
-        # Indices of Splitter Widgets
-        self.idxTree         = self.splitMain.indexOf(self.treePane)
-        self.idxMain         = self.splitMain.indexOf(self.splitDocs)
-        self.idxEditor       = self.splitDocs.indexOf(self.docEditor)
-        self.idxViewer       = self.splitDocs.indexOf(self.splitView)
-        self.idxViewDoc      = self.splitView.indexOf(self.docViewer)
-        self.idxViewDocPanel = self.splitView.indexOf(self.docViewerPanel)
-
-        # Indices of Stack Widgets
-        self.idxEditorView  = self.mainStack.indexOf(self.splitMain)
-        self.idxOutlineView = self.mainStack.indexOf(self.outlineView)
-        self.idxProjView    = self.projStack.indexOf(self.projView)
-        self.idxNovelView   = self.projStack.indexOf(self.novelView)
-
-        # Splitter Behaviour
-        self.splitMain.setCollapsible(self.idxTree, False)
-        self.splitMain.setCollapsible(self.idxMain, False)
-        self.splitDocs.setCollapsible(self.idxEditor, False)
-        self.splitDocs.setCollapsible(self.idxViewer, False)
-        self.splitView.setCollapsible(self.idxViewDoc, False)
-        self.splitView.setCollapsible(self.idxViewDocPanel, False)
-
-        self.splitMain.setStretchFactor(self.idxTree, 0)
-        self.splitMain.setStretchFactor(self.idxMain, 1)
 
         # Editor / Viewer Default State
         self.splitView.setVisible(False)
@@ -237,14 +220,16 @@ class GuiMain(QMainWindow):
         SHARED.indexScannedText.connect(self.itemDetails.updateViewBox)
         SHARED.indexCleared.connect(self.docViewerPanel.indexWasCleared)
         SHARED.indexAvailable.connect(self.docViewerPanel.indexHasAppeared)
+        SHARED.mainClockTick.connect(self._timeTick)
 
         self.mainMenu.requestDocAction.connect(self._passDocumentAction)
         self.mainMenu.requestDocInsert.connect(self._passDocumentInsert)
         self.mainMenu.requestDocInsertText.connect(self._passDocumentInsert)
         self.mainMenu.requestDocKeyWordInsert.connect(self.docEditor.insertKeyWord)
         self.mainMenu.requestFocusChange.connect(self.switchFocus)
+        self.mainMenu.requestViewChange.connect(self._changeView)
 
-        self.sideBar.viewChangeRequested.connect(self._changeView)
+        self.sideBar.requestViewChange.connect(self._changeView)
 
         self.projView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
         self.projView.openDocumentRequest.connect(self._openDocument)
@@ -260,6 +245,9 @@ class GuiMain(QMainWindow):
 
         self.novelView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
         self.novelView.openDocumentRequest.connect(self._openDocument)
+
+        self.projSearch.openDocumentSelectRequest.connect(self._openDocumentSelection)
+        self.projSearch.selectedItemChanged.connect(self.itemDetails.updateViewBox)
 
         self.docEditor.editedStatusChanged.connect(self.mainStatus.updateDocumentStatus)
         self.docEditor.docCountsChanged.connect(self.itemDetails.updateCounts)
@@ -298,12 +286,6 @@ class GuiMain(QMainWindow):
         # Set Up Auto-Save Document Timer
         self.asDocTimer = QTimer(self)
         self.asDocTimer.timeout.connect(self._autoSaveDocument)
-
-        # Main Clock
-        self.mainTimer = QTimer(self)
-        self.mainTimer.setInterval(1000)
-        self.mainTimer.timeout.connect(self._timeTick)
-        self.mainTimer.start()
 
         # Shortcuts and Actions
         self._connectMenuActions()
@@ -408,6 +390,7 @@ class GuiMain(QMainWindow):
             self.outlineView.closeProjectTasks()
             self.novelView.closeProjectTasks()
             self.projView.closeProjectTasks()
+            self.projSearch.closeProjectTasks()
             self.itemDetails.clearDetails()
             self.mainStatus.clearStatus()
 
@@ -1031,12 +1014,15 @@ class GuiMain(QMainWindow):
                     self.novelView.setTreeFocus()
                 else:
                     self.projView.setTreeFocus()
-            else:
+            elif self.projStack.currentWidget() is self.novelView:
                 if self.novelView.treeHasFocus():
                     self._changeView(nwView.PROJECT)
                     self.projView.setTreeFocus()
                 else:
                     self.novelView.setTreeFocus()
+            else:
+                self._changeView(nwView.PROJECT)
+                self.projView.setTreeFocus()
         elif paneNo == nwWidget.EDITOR:
             self._changeView(nwView.EDITOR)
             self.docEditor.setFocus()
@@ -1077,6 +1063,7 @@ class GuiMain(QMainWindow):
             self.sideBar.updateTheme()
             self.projView.updateTheme()
             self.novelView.updateTheme()
+            self.projSearch.updateTheme()
             self.outlineView.updateTheme()
             self.itemDetails.updateTheme()
             self.mainStatus.updateTheme()
@@ -1147,6 +1134,15 @@ class GuiMain(QMainWindow):
                 self.viewDocument(tHandle=tHandle, sTitle=sTitle)
         return
 
+    @pyqtSlot(str, int, int, bool)
+    def _openDocumentSelection(
+        self, tHandle: str, selStart: int, selLength: int, changeFocus: bool
+    ) -> None:
+        """Open a document and select a section of the text."""
+        if self.openDocument(tHandle, changeFocus=changeFocus):
+            self.docEditor.setCursorSelection(selStart, selLength)
+        return
+
     @pyqtSlot()
     def _reloadViewer(self) -> None:
         """Reload the document in the viewer."""
@@ -1168,6 +1164,10 @@ class GuiMain(QMainWindow):
         elif view == nwView.NOVEL:
             self.mainStack.setCurrentWidget(self.splitMain)
             self.projStack.setCurrentWidget(self.novelView)
+        elif view == nwView.SEARCH:
+            self.mainStack.setCurrentWidget(self.splitMain)
+            self.projStack.setCurrentWidget(self.projSearch)
+            self.projSearch.beginSearch()
         elif view == nwView.OUTLINE:
             self.mainStack.setCurrentWidget(self.outlineView)
         return
@@ -1206,16 +1206,15 @@ class GuiMain(QMainWindow):
     @pyqtSlot()
     def _timeTick(self) -> None:
         """Process time tick of the main timer."""
-        if not SHARED.hasProject:
-            return
-        currTime = time()
-        editIdle = currTime - self.docEditor.lastActive > CONFIG.userIdleTime
-        userIdle = qApp.applicationState() != Qt.ApplicationActive
-        self.mainStatus.setUserIdle(editIdle or userIdle)
-        SHARED.updateIdleTime(currTime, editIdle or userIdle)
-        self.mainStatus.updateTime(idleTime=SHARED.projectIdleTime)
-        if CONFIG.memInfo and int(currTime) % 5 == 0:  # pragma: no cover
-            self.mainStatus.memInfo()
+        if SHARED.hasProject:
+            currTime = time()
+            editIdle = currTime - self.docEditor.lastActive > CONFIG.userIdleTime
+            userIdle = qApp.applicationState() != Qt.ApplicationActive
+            self.mainStatus.setUserIdle(editIdle or userIdle)
+            SHARED.updateIdleTime(currTime, editIdle or userIdle)
+            self.mainStatus.updateTime(idleTime=SHARED.projectIdleTime)
+            if CONFIG.memInfo and int(currTime) % 5 == 0:  # pragma: no cover
+                self.mainStatus.memInfo()
         return
 
     @pyqtSlot()
@@ -1257,15 +1256,16 @@ class GuiMain(QMainWindow):
 
     @pyqtSlot()
     def _keyPressReturn(self) -> None:
-        """Forward the return/enter keypress to the function that opens
-        the currently selected item.
-        """
-        self.openSelectedItem()
+        """Process a return or enter keypress in the main window."""
+        if self.projStack.currentWidget() == self.projSearch:
+            self.projSearch.processReturn()
+        else:
+            self.openSelectedItem()
         return
 
     @pyqtSlot()
     def _keyPressEscape(self) -> None:
-        """Process escape keypress in the main window."""
+        """Process an escape keypress in the main window."""
         if self.docEditor.docSearch.isVisible():
             self.docEditor.closeSearch()
         elif SHARED.focusMode:
@@ -1275,7 +1275,7 @@ class GuiMain(QMainWindow):
     @pyqtSlot(int)
     def _mainStackChanged(self, index: int) -> None:
         """Process main window tab change."""
-        if index == self.idxOutlineView:
+        if self.mainStack.widget(index) == self.outlineView:
             if SHARED.hasProject:
                 self.outlineView.refreshTree()
         return
@@ -1284,9 +1284,10 @@ class GuiMain(QMainWindow):
     def _projStackChanged(self, index: int) -> None:
         """Process project view tab change."""
         sHandle = None
-        if index == self.idxProjView:
+        widget = self.projStack.widget(index)
+        if widget == self.projView:
             sHandle = self.projView.getSelectedHandle()
-        elif index == self.idxNovelView:
+        elif widget == self.novelView:
             sHandle, _ = self.novelView.getSelectedHandle()
         self.itemDetails.updateViewBox(sHandle)
         return

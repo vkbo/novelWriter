@@ -85,7 +85,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     novelView.setTreeFocus()
 
-    nwGUI.projStack.setCurrentIndex(nwGUI.idxNovelView)
+    nwGUI.projStack.setCurrentWidget(nwGUI.novelView)
     nwGUI.rebuildIndex()
     novelTree._populateTree(rootHandle=None)
     assert novelTree.topLevelItemCount() == 3

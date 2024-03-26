@@ -798,13 +798,19 @@ class GuiOutlineDetails(QScrollArea):
         hSpace = int(CONFIG.pxInt(10))
         vSpace = int(CONFIG.pxInt(4))
 
+        bFont = SHARED.theme.guiFontB
+
         # Details Area
-        self.titleLabel = QLabel("<b>%s</b>" % self.tr("Title"))
-        self.fileLabel  = QLabel("<b>%s</b>" % self.tr("Document"))
-        self.itemLabel  = QLabel("<b>%s</b>" % self.tr("Status"))
+        self.titleLabel = QLabel(self.tr("Title"))
+        self.fileLabel  = QLabel(self.tr("Document"))
+        self.itemLabel  = QLabel(self.tr("Status"))
         self.titleValue = QLabel("")
         self.fileValue  = QLabel("")
         self.itemValue  = QLabel("")
+
+        self.titleLabel.setFont(bFont)
+        self.fileLabel.setFont(bFont)
+        self.itemLabel.setFont(bFont)
 
         self.titleValue.setMinimumWidth(minTitle)
         self.titleValue.setMaximumWidth(maxTitle)
@@ -814,12 +820,16 @@ class GuiOutlineDetails(QScrollArea):
         self.itemValue.setMaximumWidth(maxTitle)
 
         # Stats Area
-        self.cCLabel = QLabel("<b>%s</b>" % self.tr("Characters"))
-        self.wCLabel = QLabel("<b>%s</b>" % self.tr("Words"))
-        self.pCLabel = QLabel("<b>%s</b>" % self.tr("Paragraphs"))
+        self.cCLabel = QLabel(self.tr("Characters"))
+        self.wCLabel = QLabel(self.tr("Words"))
+        self.pCLabel = QLabel(self.tr("Paragraphs"))
         self.cCValue = QLabel("")
         self.wCValue = QLabel("")
         self.pCValue = QLabel("")
+
+        self.cCLabel.setFont(bFont)
+        self.wCLabel.setFont(bFont)
+        self.pCLabel.setFont(bFont)
 
         self.cCValue.setMinimumWidth(wCount)
         self.wCValue.setMinimumWidth(wCount)
@@ -829,23 +839,36 @@ class GuiOutlineDetails(QScrollArea):
         self.pCValue.setAlignment(Qt.AlignRight)
 
         # Synopsis
-        self.synopLabel = QLabel("<b>%s</b>" % self.tr("Synopsis"))
+        self.synopLabel = QLabel(self.tr("Synopsis"))
+        self.synopLabel.setFont(bFont)
+
         self.synopValue = QLabel("")
-        self.synopLWrap = QHBoxLayout()
         self.synopValue.setWordWrap(True)
         self.synopValue.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+
+        self.synopLWrap = QHBoxLayout()
         self.synopLWrap.addWidget(self.synopValue, 1)
 
         # Tags
-        self.povKeyLabel = QLabel("<b>%s</b>" % trConst(nwLabels.KEY_NAME[nwKeyWords.POV_KEY]))
-        self.focKeyLabel = QLabel("<b>%s</b>" % trConst(nwLabels.KEY_NAME[nwKeyWords.FOCUS_KEY]))
-        self.chrKeyLabel = QLabel("<b>%s</b>" % trConst(nwLabels.KEY_NAME[nwKeyWords.CHAR_KEY]))
-        self.pltKeyLabel = QLabel("<b>%s</b>" % trConst(nwLabels.KEY_NAME[nwKeyWords.PLOT_KEY]))
-        self.timKeyLabel = QLabel("<b>%s</b>" % trConst(nwLabels.KEY_NAME[nwKeyWords.TIME_KEY]))
-        self.wldKeyLabel = QLabel("<b>%s</b>" % trConst(nwLabels.KEY_NAME[nwKeyWords.WORLD_KEY]))
-        self.objKeyLabel = QLabel("<b>%s</b>" % trConst(nwLabels.KEY_NAME[nwKeyWords.OBJECT_KEY]))
-        self.entKeyLabel = QLabel("<b>%s</b>" % trConst(nwLabels.KEY_NAME[nwKeyWords.ENTITY_KEY]))
-        self.cstKeyLabel = QLabel("<b>%s</b>" % trConst(nwLabels.KEY_NAME[nwKeyWords.CUSTOM_KEY]))
+        self.povKeyLabel = QLabel(trConst(nwLabels.KEY_NAME[nwKeyWords.POV_KEY]))
+        self.focKeyLabel = QLabel(trConst(nwLabels.KEY_NAME[nwKeyWords.FOCUS_KEY]))
+        self.chrKeyLabel = QLabel(trConst(nwLabels.KEY_NAME[nwKeyWords.CHAR_KEY]))
+        self.pltKeyLabel = QLabel(trConst(nwLabels.KEY_NAME[nwKeyWords.PLOT_KEY]))
+        self.timKeyLabel = QLabel(trConst(nwLabels.KEY_NAME[nwKeyWords.TIME_KEY]))
+        self.wldKeyLabel = QLabel(trConst(nwLabels.KEY_NAME[nwKeyWords.WORLD_KEY]))
+        self.objKeyLabel = QLabel(trConst(nwLabels.KEY_NAME[nwKeyWords.OBJECT_KEY]))
+        self.entKeyLabel = QLabel(trConst(nwLabels.KEY_NAME[nwKeyWords.ENTITY_KEY]))
+        self.cstKeyLabel = QLabel(trConst(nwLabels.KEY_NAME[nwKeyWords.CUSTOM_KEY]))
+
+        self.povKeyLabel.setFont(bFont)
+        self.focKeyLabel.setFont(bFont)
+        self.chrKeyLabel.setFont(bFont)
+        self.pltKeyLabel.setFont(bFont)
+        self.timKeyLabel.setFont(bFont)
+        self.wldKeyLabel.setFont(bFont)
+        self.objKeyLabel.setFont(bFont)
+        self.entKeyLabel.setFont(bFont)
+        self.cstKeyLabel.setFont(bFont)
 
         self.povKeyLWrap = QHBoxLayout()
         self.focKeyLWrap = QHBoxLayout()
@@ -989,7 +1012,7 @@ class GuiOutlineDetails(QScrollArea):
 
     def clearDetails(self) -> None:
         """Clear all the data labels."""
-        self.titleLabel.setText("<b>%s</b>" % self.tr("Title"))
+        self.titleLabel.setText(self.tr("Title"))
         self.titleValue.setText("")
         self.fileValue.setText("")
         self.itemValue.setText("")
@@ -1023,7 +1046,7 @@ class GuiOutlineDetails(QScrollArea):
         novIdx = pIndex.getItemHeading(tHandle, sTitle)
         novRefs = pIndex.getReferences(tHandle, sTitle)
         if nwItem and novIdx:
-            self.titleLabel.setText("<b>%s</b>" % self.tr(self.LVL_MAP.get(novIdx.level, "H1")))
+            self.titleLabel.setText(self.tr(self.LVL_MAP.get(novIdx.level, "H1")))
             self.titleValue.setText(novIdx.title)
 
             itemStatus, _ = nwItem.getImportStatus(incIcon=False)

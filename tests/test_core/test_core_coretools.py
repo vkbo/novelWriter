@@ -32,9 +32,11 @@ from tools import C, NWD_IGNORE, buildTestProject, cmpFiles, XML_IGNORE
 from mocked import causeOSError
 
 from novelwriter import CONFIG
-from novelwriter.constants import nwFiles, nwItemClass
+from novelwriter.constants import nwConst, nwFiles, nwItemClass
+from novelwriter.core.coretools import (
+    DocDuplicator, DocMerger, DocSearch, DocSplitter, ProjectBuilder
+)
 from novelwriter.core.project import NWProject
-from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSplitter, ProjectBuilder
 
 
 @pytest.mark.core
@@ -399,6 +401,97 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
     assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
 # END Test testCoreTools_DocDuplicator
+
+
+@pytest.mark.core
+def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
+    """Test the DocDuplicator utility."""
+    project = NWProject()
+    mockRnd.reset()
+    buildTestProject(project, fncPath)
+    project.storage.getDocument(C.hSceneDoc).writeDocument(
+        "### New Scene\n\n" + "\n\n".join(ipsumText)
+    )
+
+    search = DocSearch()
+
+    # Defaults
+    # ========
+
+    result = [(i.itemHandle, r, c) for i, r, c in search.iterSearch(project, "Scene")]
+    assert result[0] == (C.hTitlePage, [], False)
+    assert result[1] == (C.hChapterDoc, [], False)
+    assert result[2] == (C.hSceneDoc, [(8, 5, "Scene")], False)
+
+    # Cache
+    assert list(search._cache.keys()) == [C.hTitlePage, C.hChapterDoc, C.hSceneDoc]
+
+    # Patterns
+    # ========
+
+    # Escape Using QRegularExpression
+    with monkeypatch.context() as mp:
+        mp.setattr(CONFIG, "verQtValue", 0x050f00)
+        assert search._buildPattern("[A-Za-z0-9_]+") == r"\[A\-Za\-z0\-9_\]\+"
+
+    # Escape Using Custom Implementation
+    with monkeypatch.context() as mp:
+        mp.setattr(CONFIG, "verQtValue", 0x050d00)
+        assert search._buildPattern("[A-Za-z0-9_]+") == r"\[A\-Za\-z0\-9_\]\+"
+
+    # Whole Words
+    search.setWholeWords(True)
+    search.setUserRegEx(True)
+    assert search._buildPattern("Hi") == r"\bHi\b"
+    assert search._buildPattern(r"\bHi") == r"\bHi\b"
+    assert search._buildPattern(r"Hi\b") == r"\bHi\b"
+    assert search._buildPattern(r"\bHi\b") == r"\bHi\b"
+    search.setWholeWords(False)
+    search.setUserRegEx(False)
+
+    # Test Settings
+    # =============
+
+    def pruneResult(result, index):
+        temp = [(i.itemHandle, r, c) for i, r, c in result][index][1]
+        return [(s, n, c.split()[0]) for s, n, c in temp]
+
+    # Defaults
+    assert pruneResult(search.iterSearch(project, "Lorem"), 2) == [
+        (15, 5, "Lorem"), (754, 5, "lorem"), (2056, 5, "lorem,"), (2209, 5, "lorem"),
+        (2425, 5, "lorem"), (2840, 5, "lorem."), (3399, 5, "lorem"),
+    ]
+
+    # Whole Words
+    search.setWholeWords(True)
+    assert pruneResult(search.iterSearch(project, "Lor"), 2) == []
+    search.setWholeWords(False)
+    assert pruneResult(search.iterSearch(project, "Lor"), 2) == [
+        (15, 3, "Lorem"), (29, 3, "lor"), (754, 3, "lorem"), (2056, 3, "lorem,"),
+        (2209, 3, "lorem"), (2425, 3, "lorem"), (2840, 3, "lorem."), (3328, 3, "lor."),
+        (3399, 3, "lorem"),
+    ]
+
+    # As RegEx
+    search.setWholeWords(False)
+    search.setUserRegEx(True)
+    assert pruneResult(search.iterSearch(project, r"Lor\b"), 2) == [
+        (29, 3, "lor"), (3328, 3, "lor."),
+    ]
+
+    # Max Results
+    with monkeypatch.context() as mp:
+        mp.setattr(nwConst, "MAX_SEARCH_RESULT", 3)
+        assert pruneResult(search.iterSearch(project, "Lorem"), 2) == [
+            (15, 5, "Lorem"), (754, 5, "lorem"), (2056, 5, "lorem,"),
+        ]
+
+    # Case Sensitive
+    search.setCaseSensitive(True)
+    assert pruneResult(search.iterSearch(project, "Lorem"), 2) == [(15, 5, "Lorem")]
+    search.setCaseSensitive(False)
+
+# END Test testCoreTools_DocSearch
 
 
 @pytest.mark.core

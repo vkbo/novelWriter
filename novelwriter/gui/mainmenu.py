@@ -33,9 +33,9 @@ from PyQt5.QtCore import QUrl, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMenuBar, QAction
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwDocAction, nwDocInsert, nwWidget
 from novelwriter.common import openExternalPath
 from novelwriter.constants import nwConst, trConst, nwKeyWords, nwLabels, nwUnicode
+from novelwriter.enum import nwDocAction, nwDocInsert, nwView, nwWidget
 from novelwriter.extensions.eventfilters import StatusTipFilter
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -55,6 +55,7 @@ class GuiMainMenu(QMenuBar):
     requestDocInsertText = pyqtSignal(str)
     requestDocKeyWordInsert = pyqtSignal(str)
     requestFocusChange = pyqtSignal(nwWidget)
+    requestViewChange = pyqtSignal(nwView)
 
     def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
@@ -860,6 +861,14 @@ class GuiMainMenu(QMenuBar):
         self.aReplaceNext = self.srcMenu.addAction(self.tr("Replace Next"))
         self.aReplaceNext.setShortcut("Ctrl+Shift+1")
         self.aReplaceNext.triggered.connect(lambda: self.mainGui.docEditor.replaceNext())
+
+        # Search > Separator
+        self.srcMenu.addSeparator()
+
+        # Search > Find in Project
+        self.aFindProj = self.srcMenu.addAction(self.tr("Find in Project"))
+        self.aFindProj.setShortcut("Ctrl+Shift+F")
+        self.aFindProj.triggered.connect(lambda: self.requestViewChange.emit(nwView.SEARCH))
 
         return
 

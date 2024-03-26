@@ -155,6 +155,7 @@ class nwView(Enum):
     PROJECT = 1
     NOVEL   = 2
     OUTLINE = 3
+    SEARCH  = 4
 
 # END Enum nwView
 
