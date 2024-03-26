@@ -122,9 +122,8 @@ class NWIndex:
         self.clearIndex()
         for nwItem in self._project.tree:
             if nwItem.isFileType():
-                tHandle = nwItem.itemHandle
-                doc = self._project.storage.getDocument(tHandle)
-                self.scanText(tHandle, doc.readDocument() or "", blockSignal=True)
+                text = self._project.storage.getDocumentText(nwItem.itemHandle)
+                self.scanText(nwItem.itemHandle, text, blockSignal=True)
         self._indexBroken = False
         SHARED.indexSignalProxy({"event": "buildIndex"})
         return
@@ -142,17 +141,15 @@ class NWIndex:
         })
         return
 
-    def reIndexHandle(self, tHandle: str | None) -> bool:
+    def reIndexHandle(self, tHandle: str | None) -> None:
         """Put a file back into the index. This is used when files are
         moved from the archive or trash folders back into the active
         project.
         """
         if tHandle and self._project.tree.checkType(tHandle, nwItemType.FILE):
             logger.debug("Re-indexing item '%s'", tHandle)
-            doc = self._project.storage.getDocument(tHandle)
-            self.scanText(tHandle, doc.readDocument() or "")
-            return True
-        return False
+            self.scanText(tHandle, self._project.storage.getDocumentText(tHandle))
+        return
 
     def indexChangedSince(self, checkTime: int | float) -> bool:
         """Check if the index has changed since a given time."""

@@ -47,6 +47,9 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
     assert bool(doc) is False
     assert doc.readDocument() is None
     assert doc.fileExists() is False
+    assert doc.hashError is False
+    assert doc.createdDate == "Unknown"
+    assert doc.updatedDate == "Unknown"
 
     # Non-existent handle
     doc = NWDocument(project, C.hInvalid)
@@ -76,6 +79,7 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
 
     # Try to open a new (non-existent) file
     xHandle = project.newFile("New File", C.hNovelRoot)
+    assert xHandle is not None
     doc = NWDocument(project, xHandle)
     assert bool(doc) is True
     assert repr(doc) == f"<NWDocument handle={xHandle}>"
@@ -93,7 +97,6 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
     # Set handle and save
     text = "### Test File\n\nText ...\n\n"
     doc = NWDocument(project, xHandle)
-    assert doc.readDocument(xHandle) == ""  # type: ignore
     assert doc.writeDocument(text) is True
 
     # Save again to ensure temp file and previous file is handled
@@ -144,6 +147,21 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
     # Saving with no handle
     doc._handle = None
     assert doc.writeDocument(text) is False
+
+    # Quick Read
+    # ==========
+
+    contPath = fncPath / "content"
+    assert NWDocument.quickReadText(contPath, xHandle) == (
+        "### Test File\n\n"
+        "Text ...\n\n"
+    )
+
+    # Check read text fallback
+    assert NWDocument.quickReadText(contPath, "0000000000000") == ""
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert NWDocument.quickReadText(contPath, xHandle) == ""
 
     # Delete Document
     # ===============

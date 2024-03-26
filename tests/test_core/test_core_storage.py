@@ -26,15 +26,15 @@ import pytest
 from pathlib import Path
 from zipfile import ZipFile
 
-from tools import C, buildTestProject
 from mocked import causeOSError
+from tools import C, buildTestProject
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwFiles
-from novelwriter.core.project import NWProject
-from novelwriter.core.storage import NWStorage, NWStorageOpen, NWStorageCreate, _LegacyStorage
 from novelwriter.core.document import NWDocument
+from novelwriter.core.project import NWProject
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
+from novelwriter.core.storage import NWStorage, NWStorageOpen, NWStorageCreate, _LegacyStorage
 
 
 class MockProject:
@@ -64,6 +64,7 @@ def testCoreStorage_CreateNewProject(mockGUI, fncPath):
     assert bool(storage.getDocument(C.hSceneDoc)) is False
     assert storage.getMetaFile("file") is None
     assert storage.scanContent() == []
+    assert storage.getDocumentText(C.hSceneDoc) == ""
 
     # Cannot prepare a non-empty folder
     (fncPath / "foobar.txt").touch()
@@ -85,7 +86,7 @@ def testCoreStorage_CreateNewProject(mockGUI, fncPath):
 
 
 @pytest.mark.core
-def testCoreStorage_InitProjectStorage(mockGUI, fncPath, mockRnd):
+def testCoreStorage_InitProjectStorage(monkeypatch, mockGUI, fncPath, mockRnd):
     """Test initialising a project in a folder."""
     project = NWProject()
 
@@ -156,6 +157,9 @@ def testCoreStorage_InitProjectStorage(mockGUI, fncPath, mockRnd):
     assert isinstance(storage.getXmlWriter(), ProjectXMLWriter)
     assert isinstance(storage.getDocument(C.hSceneDoc), NWDocument)
     assert repr(storage.getDocument(C.hSceneDoc)) == f"<NWDocument handle={C.hSceneDoc}>"
+
+    # We can directly access the content of a document
+    assert storage.getDocumentText(C.hSceneDoc) == "### New Scene\n\n"
 
     project.closeProject()
 

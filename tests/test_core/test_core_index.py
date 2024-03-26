@@ -60,9 +60,8 @@ def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, mockGUI, tstPaths):
         "60bdf227455cc": False,  # World ROOT
     }
     for tItem in project.tree:
-        assert index.reIndexHandle(tItem.itemHandle) is notIndexable.get(tItem.itemHandle, True)
-
-    assert index.reIndexHandle(None) is False
+        index.reIndexHandle(tItem.itemHandle)
+        assert (tItem.itemHandle in index._itemIndex) is notIndexable.get(tItem.itemHandle, True)
 
     # No folder for saving
     with monkeypatch.context() as mp:

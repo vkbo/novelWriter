@@ -31,7 +31,7 @@ from typing import TYPE_CHECKING
 from pathlib import Path
 
 from novelwriter.enum import nwItemLayout, nwItemClass
-from novelwriter.error import formatException
+from novelwriter.error import formatException, logException
 from novelwriter.common import formatTimeStamp, isHandle
 from novelwriter.core.item import NWItem
 
@@ -106,7 +106,28 @@ class NWDocument:
         return self._item
 
     ##
-    #  Class Methods
+    #  Static Methods
+    ##
+
+    @staticmethod
+    def quickReadText(content: Path, tHandle: str) -> str:
+        """Return the text of a document in a fast and efficient way."""
+        if (path := content / f"{tHandle}.nwd").is_file():
+            try:
+                with open(path, mode="r", encoding="utf-8") as inFile:
+                    line = ""
+                    for _ in range(10):
+                        if not (line := inFile.readline()).startswith(r"%%~"):
+                            break
+                    return line + inFile.read()
+            except Exception:
+                logger.error("Cannot read document with handle '%s'", tHandle)
+                logException()
+                return ""
+        return ""
+
+    ##
+    #  Methods
     ##
 
     def fileExists(self) -> bool:
@@ -155,7 +176,7 @@ class NWDocument:
             try:
                 with open(docPath, mode="r", encoding="utf-8") as inFile:
                     # Check the first <= 10 lines for metadata
-                    for i in range(10):
+                    for _ in range(10):
                         line = inFile.readline()
                         if line.startswith(r"%%~"):
                             self._parseMeta(line)

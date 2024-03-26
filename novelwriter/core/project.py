@@ -175,12 +175,10 @@ class NWProject:
         """Write content to a new document after it is created. This
         will not run if the file exists and is not empty.
         """
-        tItem = self._tree[tHandle]
-        if not (tItem and tItem.isFileType()):
+        if not ((tItem := self._tree[tHandle]) and tItem.isFileType()):
             return False
 
-        newDoc = self._storage.getDocument(tHandle)
-        if (newDoc.readDocument() or "").strip():
+        if self._storage.getDocumentText(tHandle).strip():
             return False
 
         indent = "#"*minmax(hLevel, 1, 4)
@@ -191,7 +189,7 @@ class NWProject:
         else:
             tItem.setLayout(nwItemLayout.NOTE)
 
-        newDoc.writeDocument(text)
+        self._storage.getDocument(tHandle).writeDocument(text)
         self._index.scanText(tHandle, text)
 
         return True
@@ -200,21 +198,18 @@ class NWProject:
         """Copy content to a new document after it is created. This
         will not run if the file exists and is not empty.
         """
-        tItem = self._tree[tHandle]
-        if not (tItem and tItem.isFileType()):
+        if not ((tItem := self._tree[tHandle]) and tItem.isFileType()):
             return False
 
-        sItem = self._tree[sHandle]
-        if not (sItem and sItem.isFileType()):
+        if not ((sItem := self._tree[sHandle]) and sItem.isFileType()):
             return False
 
-        newDoc = self._storage.getDocument(tHandle)
-        if (newDoc.readDocument() or "").strip():
+        if self._storage.getDocumentText(tHandle).strip():
             return False
 
         logger.debug("Populating '%s' with text from '%s'", tHandle, sHandle)
-        text = self._storage.getDocument(sHandle).readDocument() or ""
-        newDoc.writeDocument(text)
+        text = self._storage.getDocumentText(sHandle)
+        self._storage.getDocument(tHandle).writeDocument(text)
         sItem.setLayout(tItem.itemLayout)
         self._index.scanText(tHandle, text)
 

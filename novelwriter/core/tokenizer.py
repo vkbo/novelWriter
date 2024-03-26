@@ -429,9 +429,7 @@ class Tokenizer(ABC):
         self._text = ""
         self._handle = None
         if nwItem := self._project.tree[tHandle]:
-            if text is None:
-                text = self._project.storage.getDocument(tHandle).readDocument() or ""
-            self._text = text
+            self._text = text or self._project.storage.getDocumentText(tHandle)
             self._handle = tHandle
             self._isNovel = nwItem.itemLayout == nwItemLayout.DOCUMENT
         return
