@@ -27,18 +27,18 @@ import json
 import logging
 
 from enum import Enum
+from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING
-from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile
 
 from novelwriter import CONFIG
-from novelwriter.error import logException
 from novelwriter.common import isHandle, minmax
 from novelwriter.constants import nwFiles
 from novelwriter.core.document import NWDocument
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
 from novelwriter.core.spellcheck import UserDictionary
+from novelwriter.error import logException
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.project import NWProject
@@ -286,6 +286,25 @@ class NWStorage:
         if isinstance(self._runtimePath, Path) and self._ready:
             return self._runtimePath / "meta" / fileName
         return None
+
+    def getDocumentText(self, tHandle: str) -> str:
+        """Return the text of a document in a fast and efficient way."""
+        if (
+            isinstance(self._runtimePath, Path)
+            and (path := self._runtimePath / "content" / f"{tHandle}.nwd").is_file()
+        ):
+            try:
+                with open(path, mode="r", encoding="utf-8") as inFile:
+                    line = ""
+                    for _ in range(10):
+                        if not (line := inFile.readline()).startswith(r"%%~"):
+                            break
+                    return line + inFile.read()
+            except Exception:
+                logger.error("Cannot read document with handle '%s'", tHandle)
+                logException()
+                return ""
+        return ""
 
     def scanContent(self) -> list[str]:
         """Scan the content folder and return the handle of all files
