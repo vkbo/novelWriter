@@ -38,7 +38,7 @@ from PyQt5.QtGui import (
 from novelwriter import CONFIG
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
-from novelwriter.common import NWConfigParser, minmax
+from novelwriter.common import NWConfigParser, cssCol, minmax
 from novelwriter.constants import nwLabels
 
 logger = logging.getLogger(__name__)
@@ -440,24 +440,24 @@ class GuiTheme:
 
         # Flat Tab Widget and Tab Bar:
         self._styleSheets[STYLES_FLAT_TABS] = (
-            "QTabWidget::pane {{border: 0;}} "
-            "QTabWidget QTabBar::tab {{border: 0; padding: {0}px {1}px;}} "
-            "QTabWidget QTabBar::tab:selected {{color: rgb({2}, {3}, {4});}} "
-        ).format(bPx, dPx, hCol.red(), hCol.green(), hCol.blue())
+            "QTabWidget::pane {border: 0;} "
+            f"QTabWidget QTabBar::tab {{border: 0; padding: {bPx}px {dPx}px;}} "
+            f"QTabWidget QTabBar::tab:selected {{color: {cssCol(hCol)};}} "
+        )
 
         # Minimal Tool Button
         self._styleSheets[STYLES_MIN_TOOLBUTTON] = (
-            "QToolButton {{padding: {0}px; margin: 0; border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({1}, {2}, {3}, 0.2);}} "
-            "QToolButton::menu-indicator {{image: none;}} "
-        ).format(aPx, tCol.red(), tCol.green(), tCol.blue())
+            f"QToolButton {{padding: {aPx}px; margin: 0; border: none; background: transparent;}} "
+            f"QToolButton:hover {{border: none; background: {cssCol(tCol, 48)};}} "
+            "QToolButton::menu-indicator {image: none;} "
+        )
 
         # Big Tool Button
         self._styleSheets[STYLES_BIG_TOOLBUTTON] = (
-            "QToolButton {{padding: {0}px; margin: 0; border: none; background: transparent;}} "
-            "QToolButton:hover {{border: none; background: rgba({1}, {2}, {3}, 0.2);}} "
-            "QToolButton::menu-indicator {{image: none;}} "
-        ).format(cPx, tCol.red(), tCol.green(), tCol.blue())
+            f"QToolButton {{padding: {cPx}px; margin: 0; border: none; background: transparent;}} "
+            f"QToolButton:hover {{border: none; background: {cssCol(tCol, 48)};}} "
+            "QToolButton::menu-indicator {image: none;} "
+        )
 
         return
 

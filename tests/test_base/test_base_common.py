@@ -29,16 +29,16 @@ from xml.etree import ElementTree as ET
 from tools import writeFile
 from mocked import causeOSError
 
-from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtGui import QColor, QDesktopServices
 from PyQt5.QtCore import QUrl
 
 from novelwriter.common import (
     checkBool, checkFloat, checkInt, checkIntTuple, checkPath, checkString,
-    checkStringNone, checkUuid, formatFileFilter, formatInt, formatTime,
-    formatTimeStamp, formatVersion, fuzzyTime, getFileSize, hexToInt, isHandle,
-    isItemClass, isItemLayout, isItemType, isTitleTag, jsonEncode,
-    makeFileNameSafe, minmax, numberToRoman, NWConfigParser, openExternalPath,
-    readTextFile, simplified, transferCase, xmlIndent, yesNo
+    checkStringNone, checkUuid, cssCol, formatFileFilter, formatInt,
+    formatTime, formatTimeStamp, formatVersion, fuzzyTime, getFileSize,
+    hexToInt, isHandle, isItemClass, isItemLayout, isItemType, isTitleTag,
+    jsonEncode, makeFileNameSafe, minmax, numberToRoman, NWConfigParser,
+    openExternalPath, readTextFile, simplified, transferCase, xmlIndent, yesNo
 )
 
 
@@ -492,6 +492,15 @@ def testBaseCommon_numberToRoman():
     assert numberToRoman(999, True) == "cmxcix"
 
 # END Test testBaseCommon_numberToRoman
+
+
+@pytest.mark.base
+def testBaseCommon_cssCol():
+    """Test the cssCol function."""
+    assert cssCol(QColor(0, 0, 0, 0)) == "rgba(0, 0, 0, 0)"
+    assert cssCol(QColor(10, 20, 30, 40)) == "rgba(10, 20, 30, 40)"
+
+# END Test testBaseCommon_cssCol
 
 
 @pytest.mark.base
