@@ -41,8 +41,6 @@ from novelwriter.core.item import NWItem
 
 logger = logging.getLogger(__name__)
 
-CACHE_TIMEOUT = 120.0  # 2 minutes
-
 
 class GuiProjectSearch(QWidget):
 
