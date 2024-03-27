@@ -544,6 +544,9 @@ class GuiIcons:
         self._confName = "icons.conf"
         self._iconPath = CONFIG.assetPath("icons")
 
+        # None Icon
+        self._noIcon = QIcon(str(self._iconPath / "none.svg"))
+
         # Icon Theme Meta
         self.themeName        = ""
         self.themeDescription = ""
@@ -680,7 +683,7 @@ class GuiIcons:
             icon.addPixmap(pOne, QIcon.Mode.Normal, QIcon.State.On)
             icon.addPixmap(pTwo, QIcon.Mode.Normal, QIcon.State.Off)
             return icon
-        return QIcon()
+        return self._noIcon
 
     def getPixmap(self, name: str, size: tuple[int, int]) -> QPixmap:
         """Return an icon from the icon buffer as a QPixmap. If it
@@ -712,7 +715,7 @@ class GuiIcons:
             elif tLayout == nwItemLayout.NOTE:
                 iconName = "proj_note"
         if iconName is None:
-            return QIcon()
+            return self._noIcon
 
         return self.getIcon(iconName)
 
@@ -753,7 +756,7 @@ class GuiIcons:
         """
         if name not in self.ICON_KEYS:
             logger.error("Requested unknown icon name '%s'", name)
-            return QIcon()
+            return self._noIcon
 
         # If we just want the app icons, return right away
         if name == "novelwriter":
@@ -769,7 +772,7 @@ class GuiIcons:
         # If we didn't find one, give up and return an empty icon
         logger.warning("Did not load an icon for '%s'", name)
 
-        return QIcon()
+        return self._noIcon
 
 # END Class GuiIcons
 

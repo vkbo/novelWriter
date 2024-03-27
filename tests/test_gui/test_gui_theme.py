@@ -332,7 +332,7 @@ def testGuiTheme_LoadIcons(qtbot):
     # Load an unknown icon
     qIcon = iconCache.getIcon("stuff")
     assert isinstance(qIcon, QIcon)
-    assert qIcon.isNull() is True
+    assert qIcon == iconCache._noIcon
 
     # Load an icon, it is likely already cached
     qIcon = iconCache.getIcon("add")
@@ -349,17 +349,17 @@ def testGuiTheme_LoadIcons(qtbot):
     # Load app icon
     qIcon = iconCache.getIcon("novelwriter")
     assert isinstance(qIcon, QIcon)
-    assert qIcon.isNull() is False
+    assert qIcon != iconCache._noIcon
 
     # Load mime icon
     qIcon = iconCache.getIcon("proj_nwx")
     assert isinstance(qIcon, QIcon)
-    assert qIcon.isNull() is False
+    assert qIcon != iconCache._noIcon
 
     # Toggle icon
     qIcon = iconCache.getToggleIcon("bullet", (24, 24))
     assert isinstance(qIcon, QIcon)
-    assert qIcon.isNull() is False
+    assert qIcon != iconCache._noIcon
     pOn = qIcon.pixmap(24, 24, QIcon.Mode.Normal, QIcon.State.On)
     pOff = qIcon.pixmap(24, 24, QIcon.Mode.Normal, QIcon.State.Off)
     assert pOn != pOff
@@ -367,7 +367,7 @@ def testGuiTheme_LoadIcons(qtbot):
     # Unknown toggle icon
     qIcon = iconCache.getToggleIcon("stuff", (24, 24))
     assert isinstance(qIcon, QIcon)
-    assert qIcon.isNull() is True
+    assert qIcon == iconCache._noIcon
 
     # Load Item Icons
     # ===============
@@ -420,7 +420,7 @@ def testGuiTheme_LoadIcons(qtbot):
     # No Type -> Null
     assert iconCache.getItemIcon(
         nwItemType.NO_TYPE, nwItemClass.NOVEL, nwItemLayout.DOCUMENT, hLevel="H0"
-    ).isNull() is True
+    ) == iconCache._noIcon
 
     # qtbot.stop()
 
