@@ -68,7 +68,7 @@ class GuiSideBar(QWidget):
         self.tbNovel.clicked.connect(lambda: self.requestViewChange.emit(nwView.NOVEL))
 
         self.tbSearch = NIconToolButton(self, iPx)
-        self.tbSearch.setToolTip("{0} [Ctrl+Shift+F]".format(self.tr("Search Project")))
+        self.tbSearch.setToolTip("{0} [Ctrl+Shift+F]".format(self.tr("Project Search")))
         self.tbSearch.clicked.connect(lambda: self.requestViewChange.emit(nwView.SEARCH))
 
         self.tbOutline = NIconToolButton(self, iPx)
