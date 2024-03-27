@@ -42,7 +42,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemClass
-from novelwriter.common import formatInt, makeFileNameSafe
+from novelwriter.common import cssCol, formatInt, makeFileNameSafe
 from novelwriter.constants import nwFiles
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.extensions.configlayout import NWrappedWidgetBox
@@ -52,7 +52,7 @@ from novelwriter.extensions.versioninfo import VersionInfoWidget
 
 logger = logging.getLogger(__name__)
 
-PANEL_ALPHA = 0.7
+PANEL_ALPHA = 178
 
 
 class GuiWelcome(QDialog):
@@ -306,12 +306,12 @@ class _OpenProjectPage(QWidget):
 
         self._selectFirstItem()
 
-        baseCol = self.palette().base().color()
-        self.setStyleSheet((
-            "QListView {{border: none; background: rgba({r},{g},{b},{a});}} "
-            "QLineEdit {{border: none; background: rgba({r},{g},{b},{a}); padding: {m}px;}} "
-        ).format(r=baseCol.red(), g=baseCol.green(), b=baseCol.blue(),
-                 a=PANEL_ALPHA, m=CONFIG.pxInt(4)))
+        mPx = CONFIG.pxInt(4)
+        baseCol = cssCol(self.palette().base().color(), PANEL_ALPHA)
+        self.setStyleSheet(
+            f"QListView {{border: none; background: {baseCol};}} "
+            f"QLineEdit {{border: none; background: {baseCol}; padding: {mPx}px;}} "
+        )
 
         return
 
@@ -518,11 +518,11 @@ class _NewProjectPage(QWidget):
         # Styles
         # ======
 
-        baseCol = self.palette().base().color()
-        self.setStyleSheet((
-            "QScrollArea {{border: none; background: rgba({r},{g},{b},{a});}} "
-            "_NewProjectForm {{border: none; background: rgba({r},{g},{b},{a});}} "
-        ).format(r=baseCol.red(), g=baseCol.green(), b=baseCol.blue(), a=PANEL_ALPHA))
+        baseCol = cssCol(self.palette().base().color(), PANEL_ALPHA)
+        self.setStyleSheet(
+            f"QScrollArea {{border: none; background: {baseCol};}} "
+            f"_NewProjectForm {{border: none; background: {baseCol};}} "
+        )
 
         return
 

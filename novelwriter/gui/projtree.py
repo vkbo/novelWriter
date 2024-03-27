@@ -565,7 +565,7 @@ class GuiProjectTree(QTreeWidget):
         # Auto Scroll
         self._scrollMargin = SHARED.theme.baseIconSize
         self._scrollDirection = 0
-        self._scrollTimer = QTimer()
+        self._scrollTimer = QTimer(self)
         self._scrollTimer.timeout.connect(self._doAutoScroll)
         self._scrollTimer.setInterval(250)
 

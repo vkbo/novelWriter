@@ -36,7 +36,7 @@ from configparser import ConfigParser
 from urllib.parse import urljoin
 from urllib.request import pathname2url
 
-from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtGui import QColor, QDesktopServices
 from PyQt5.QtCore import QCoreApplication, QUrl
 
 from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
@@ -380,6 +380,11 @@ def numberToRoman(value: int, toLower: bool = False) -> str:
             break
 
     return roman.lower() if toLower else roman
+
+
+def cssCol(col: QColor, alpha: int | None = None) -> str:
+    """Convert a QColor object to an rgba entry to use in CSS."""
+    return f"rgba({col.red()}, {col.green()}, {col.blue()}, {alpha or col.alpha()})"
 
 
 ##

@@ -28,14 +28,14 @@ import logging
 from time import time
 
 from PyQt5.QtCore import QSize, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCursor, QKeyEvent, QPalette
+from PyQt5.QtGui import QCursor, QKeyEvent
 from PyQt5.QtWidgets import (
-    QHBoxLayout, QHeaderView, QLabel, QLineEdit, QToolBar, QTreeWidget,
+    QFrame, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QToolBar, QTreeWidget,
     QTreeWidgetItem, QVBoxLayout, QWidget, qApp
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import checkInt
+from novelwriter.common import checkInt, cssCol
 from novelwriter.core.coretools import DocSearch
 from novelwriter.core.item import NWItem
 
@@ -63,6 +63,7 @@ class GuiProjectSearch(QWidget):
 
         iPx = SHARED.theme.baseIconSize
         mPx = CONFIG.pxInt(2)
+        tPx = CONFIG.pxInt(4)
 
         self._time = time()
         self._search = DocSearch()
@@ -71,7 +72,7 @@ class GuiProjectSearch(QWidget):
         # Header
         self.viewLabel = QLabel(self.tr("Project Search"))
         self.viewLabel.setFont(SHARED.theme.guiFontB)
-        self.viewLabel.setContentsMargins(mPx, mPx, 0, mPx)
+        self.viewLabel.setContentsMargins(mPx, tPx, 0, mPx)
 
         # Options
         self.searchOpt = QToolBar(self)
@@ -96,7 +97,7 @@ class GuiProjectSearch(QWidget):
 
         # Search Box
         self.searchText = QLineEdit(self)
-        self.searchText.setPlaceholderText(self.tr("Search text ..."))
+        self.searchText.setPlaceholderText(self.tr("Search"))
         self.searchText.setClearButtonEnabled(True)
 
         self.searchAction = self.searchText.addAction(
@@ -110,6 +111,9 @@ class GuiProjectSearch(QWidget):
         self.searchResult.setColumnCount(2)
         self.searchResult.setIconSize(QSize(iPx, iPx))
         self.searchResult.setIndentation(iPx)
+        self.searchResult.setFrameStyle(QFrame.Shape.NoFrame)
+        self.searchResult.setUniformRowHeights(True)
+        self.searchResult.setAllColumnsShowFocus(True)
         self.searchResult.itemDoubleClicked.connect(self._searchResultDoubleClicked)
         self.searchResult.itemSelectionChanged.connect(self._searchResultSelected)
 
@@ -121,11 +125,16 @@ class GuiProjectSearch(QWidget):
         # Assemble
         self.headerBox = QHBoxLayout()
         self.headerBox.addWidget(self.viewLabel, 1)
-        self.headerBox.addWidget(self.searchOpt, 0)
+        self.headerBox.addWidget(self.searchOpt, 0, Qt.AlignmentFlag.AlignVCenter)
         self.headerBox.setContentsMargins(0, 0, 0, 0)
+        self.headerBox.setSpacing(0)
+
+        self.headerWidget = QWidget(self)
+        self.headerWidget.setLayout(self.headerBox)
+        self.headerWidget.setContentsMargins(0, 0, 0, 0)
 
         self.outerBox = QVBoxLayout()
-        self.outerBox.addLayout(self.headerBox, 0)
+        self.outerBox.addWidget(self.headerWidget, 0)
         self.outerBox.addWidget(self.searchText, 0)
         self.outerBox.addWidget(self.searchResult, 1)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
@@ -144,9 +153,21 @@ class GuiProjectSearch(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
+        bPx = CONFIG.pxInt(1)
+        mPx = CONFIG.pxInt(2)
+
         qPalette = self.palette()
-        qPalette.setBrush(QPalette.ColorRole.Window, qPalette.base())
-        self.setPalette(qPalette)
+        colBase = cssCol(qPalette.base().color())
+        colFocus = cssCol(qPalette.highlight().color())
+
+        self.headerWidget.setStyleSheet(f"background: {colBase};")
+        self.headerWidget.setAutoFillBackground(True)
+
+        self.setStyleSheet(
+            "QToolBar {padding: 0; background: none;} "
+            f"QLineEdit {{border: {bPx}px solid {colBase}; padding: {mPx}px;}} "
+            f"QLineEdit:focus {{border: {bPx}px solid {colFocus};}} "
+        )
 
         self.searchAction.setIcon(SHARED.theme.getIcon("search"))
         self.toggleCase.setIcon(SHARED.theme.getIcon("search_case"))

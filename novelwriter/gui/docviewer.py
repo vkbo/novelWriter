@@ -41,6 +41,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.common import cssCol
 from novelwriter.constants import nwHeaders, nwUnicode
 from novelwriter.core.tohtml import ToHtml
 from novelwriter.enum import nwItemType, nwDocAction, nwDocMode
@@ -467,35 +468,25 @@ class GuiDocViewer(QTextBrowser):
         """Generate an appropriate style sheet for the document viewer,
         based on the current syntax highlighter theme.
         """
-        colText = SHARED.theme.colText
-        colHead = SHARED.theme.colHead
-        colVals = SHARED.theme.colVal
-        colMark = SHARED.theme.colMark
-        colKeys = SHARED.theme.colKey
-        colHide = SHARED.theme.colHidden
-        colMods = SHARED.theme.colMod
-        colOpts = SHARED.theme.colOpt
-        styleSheet = (
-            "body {{color: rgb({rT}, {gT}, {bT});}}\n"
-            "h1, h2, h3, h4 {{color: rgb({rH}, {gH}, {bH});}}\n"
-            "a {{color: rgb({rA}, {gA}, {bA});}}\n"
-            "mark {{background-color: rgba({rE}, {gE}, {bE}, {aE});}}\n"
-            ".tags {{color: rgb({rK}, {gK}, {bK});}}\n"
-            ".optional {{color: rgb({rO}, {gO}, {bO});}}\n"
-            ".comment {{color: rgb({rC}, {gC}, {bC});}}\n"
-            ".synopsis {{color: rgb({rM}, {gM}, {bM});}}\n"
-            ".title {{text-align: center;}}\n"
-        ).format(
-            rT=colText.red(), gT=colText.green(), bT=colText.blue(),
-            rH=colHead.red(), gH=colHead.green(), bH=colHead.blue(),
-            rA=colVals.red(), gA=colVals.green(), bA=colVals.blue(),
-            rE=colMark.red(), gE=colMark.green(), bE=colMark.blue(), aE=colMark.alpha(),
-            rK=colKeys.red(), gK=colKeys.green(), bK=colKeys.blue(),
-            rC=colHide.red(), gC=colHide.green(), bC=colHide.blue(),
-            rM=colMods.red(), gM=colMods.green(), bM=colMods.blue(),
-            rO=colOpts.red(), gO=colOpts.green(), bO=colOpts.blue(),
+        colText = cssCol(SHARED.theme.colText)
+        colHead = cssCol(SHARED.theme.colHead)
+        colVals = cssCol(SHARED.theme.colVal)
+        colMark = cssCol(SHARED.theme.colMark)
+        colKeys = cssCol(SHARED.theme.colKey)
+        colOpts = cssCol(SHARED.theme.colOpt)
+        colHide = cssCol(SHARED.theme.colHidden)
+        colMods = cssCol(SHARED.theme.colMod)
+        self.document().setDefaultStyleSheet(
+            f"body {{color: {colText};}}\n"
+            f"h1, h2, h3, h4 {{color: {colHead};}}\n"
+            f"a {{color: {colVals};}}\n"
+            f"mark {{background-color: {colMark};}}\n"
+            f".tags {{color: {colKeys};}}\n"
+            f".optional {{color: {colOpts};}}\n"
+            f".comment {{color: {colHide});}}\n"
+            f".synopsis {{color: {colMods};}}\n"
+            ".title {text-align: center;}\n"
         )
-        self.document().setDefaultStyleSheet(styleSheet)
 
         return
 
