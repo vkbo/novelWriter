@@ -125,11 +125,16 @@ class GuiProjectSearch(QWidget):
         # Assemble
         self.headerBox = QHBoxLayout()
         self.headerBox.addWidget(self.viewLabel, 1)
-        self.headerBox.addWidget(self.searchOpt, 0)
+        self.headerBox.addWidget(self.searchOpt, 0, Qt.AlignmentFlag.AlignVCenter)
         self.headerBox.setContentsMargins(0, 0, 0, 0)
+        self.headerBox.setSpacing(0)
+
+        self.headerWidget = QWidget(self)
+        self.headerWidget.setLayout(self.headerBox)
+        self.headerWidget.setContentsMargins(0, 0, 0, 0)
 
         self.outerBox = QVBoxLayout()
-        self.outerBox.addLayout(self.headerBox, 0)
+        self.outerBox.addWidget(self.headerWidget, 0)
         self.outerBox.addWidget(self.searchText, 0)
         self.outerBox.addWidget(self.searchResult, 1)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
@@ -155,9 +160,11 @@ class GuiProjectSearch(QWidget):
         colBase = cssCol(qPalette.base().color())
         colFocus = cssCol(qPalette.highlight().color())
 
+        self.headerWidget.setStyleSheet(f"background: {colBase};")
+        self.headerWidget.setAutoFillBackground(True)
+
         self.setStyleSheet(
-            f"QLabel {{background: {colBase};}} "
-            f"QToolBar {{padding: 0; background: {colBase};}} "
+            "QToolBar {padding: 0; background: none;} "
             f"QLineEdit {{border: {bPx}px solid {colBase}; padding: {mPx}px;}} "
             f"QLineEdit:focus {{border: {bPx}px solid {colFocus};}} "
         )
