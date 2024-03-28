@@ -237,7 +237,7 @@ class GuiProjectSearch(QWidget):
     @pyqtSlot(str, float)
     def textChanged(self, tHandle: str, timeStamp: float) -> None:
         """Update search result for a specific document."""
-        if timeStamp > self._map.get(tHandle, (0, 0.0))[1]:
+        if (entry := self._map.get(tHandle)) and timeStamp > entry[1]:
             start = time()
             results, capped = self._search.searchText(SHARED.mainGui.docEditor.getText())
             self._displayResultSet(SHARED.project.tree[tHandle], results, capped)
