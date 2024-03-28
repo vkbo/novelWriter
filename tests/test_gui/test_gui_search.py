@@ -20,6 +20,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+from time import time
+
 import pytest
 
 from PyQt5.QtCore import Qt
@@ -58,6 +60,7 @@ def testGuiDocSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert result == (handle, 3, 5)
 
     # Move down
+    search.searchText.setFocus()
     qtbot.keyClick(search, Qt.Key.Key_Down)
     assert firstDoc.isSelected() is True
 
@@ -116,6 +119,11 @@ def testGuiDocSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     search.toggleRegEx.setChecked(True)
     search.searchText.setText("(dolor|dolorem)")
     search.searchAction.activate(QAction.ActionEvent.Trigger)
+    assert search.searchResult.topLevelItemCount() == 10
+    assert totalCount() == 34
+
+    # Re-run search should not change the result
+    search.textChanged(handle, time() + 1000.0)
     assert search.searchResult.topLevelItemCount() == 10
     assert totalCount() == 34
 

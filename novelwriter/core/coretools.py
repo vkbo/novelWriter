@@ -337,31 +337,31 @@ class DocSearch:
         """Iteratively search through documents in a project."""
         self._regEx.setPattern(self._buildPattern(search))
         logger.debug("Searching with pattern '%s'", self._regEx.pattern())
-
-        num = len(search)
         storage = project.storage
         for item in project.tree:
             if item.isFileType():
-                text = storage.getDocumentText(item.itemHandle)
-                rxItt = self._regEx.globalMatch(text)
-                count = 0
-                capped = False
-                results = []
-                while rxItt.hasNext():
-                    rxMatch = rxItt.next()
-                    pos = rxMatch.capturedStart()
-                    num = rxMatch.capturedLength()
-                    context = text[pos:pos+100].partition("\n")[0]
-                    if context:
-                        results.append((pos, num, context))
-                        count += 1
-                        if count >= nwConst.MAX_SEARCH_RESULT:
-                            capped = True
-                            break
-
+                results, capped = self.searchText(storage.getDocumentText(item.itemHandle))
                 yield item, results, capped
-
         return
+
+    def searchText(self, text: str) -> tuple[list[tuple[int, int, str]], bool]:
+        """Search a piece of text for RegEx matches."""
+        rxItt = self._regEx.globalMatch(text)
+        count = 0
+        capped = False
+        results = []
+        while rxItt.hasNext():
+            rxMatch = rxItt.next()
+            pos = rxMatch.capturedStart()
+            num = rxMatch.capturedLength()
+            context = text[pos:pos+100].partition("\n")[0]
+            if context:
+                results.append((pos, num, context))
+                count += 1
+                if count >= nwConst.MAX_SEARCH_RESULT:
+                    capped = True
+                    break
+        return results, capped
 
     ##
     #  Internal Functions

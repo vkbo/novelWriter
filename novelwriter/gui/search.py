@@ -66,6 +66,7 @@ class GuiProjectSearch(QWidget):
         self._time = time()
         self._search = DocSearch()
         self._blocked = False
+        self._map: dict[str, tuple[int, float]] = {}
 
         # Header
         self.viewLabel = QLabel(self.tr("Project Search"))
@@ -197,6 +198,7 @@ class GuiProjectSearch(QWidget):
 
     def closeProjectTasks(self) -> None:
         """Run close project tasks."""
+        self._map = {}
         self.searchText.clear()
         self.searchResult.clear()
         return
@@ -229,6 +231,20 @@ class GuiProjectSearch(QWidget):
         return
 
     ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot(str, float)
+    def textChanged(self, tHandle: str, timeStamp: float) -> None:
+        """Update search result for a specific document."""
+        if (entry := self._map.get(tHandle)) and timeStamp > entry[1]:
+            start = time()
+            results, capped = self._search.searchText(SHARED.mainGui.docEditor.getText())
+            self._displayResultSet(SHARED.project.tree[tHandle], results, capped)
+            logger.debug("Updated search for '%s' in %.3f ms", tHandle, 1000*(time() - start))
+        return
+
+    ##
     #  Private Slots
     ##
 
@@ -238,14 +254,16 @@ class GuiProjectSearch(QWidget):
         if not self._blocked:
             qApp.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
             start = time()
+            SHARED.mainGui.saveDocument()
             self._blocked = True
+            self._map = {}
             self.searchResult.clear()
             if text := self.searchText.text():
                 self._search.setUserRegEx(self.toggleRegEx.isChecked())
                 self._search.setCaseSensitive(self.toggleCase.isChecked())
                 self._search.setWholeWords(self.toggleWord.isChecked())
                 for item, results, capped in self._search.iterSearch(SHARED.project, text):
-                    self._appendResultSet(item, results, capped)
+                    self._displayResultSet(item, results, capped)
             logger.debug("Search took %.3f ms", 1000*(time() - start))
             self._time = time()
             qApp.restoreOverrideCursor()
@@ -293,11 +311,11 @@ class GuiProjectSearch(QWidget):
     #  Internal Functions
     ##
 
-    def _appendResultSet(
-        self, nwItem: NWItem, results: list[tuple[int, int, str]], capped: bool
+    def _displayResultSet(
+        self, nwItem: NWItem | None, results: list[tuple[int, int, str]], capped: bool
     ) -> None:
         """Populate the result tree."""
-        if results:
+        if results and nwItem:
             tHandle = nwItem.itemHandle
             docIcon = SHARED.theme.getItemIcon(
                 nwItem.itemType, nwItem.itemClass,
@@ -312,7 +330,11 @@ class GuiProjectSearch(QWidget):
             tItem.setText(self.C_COUNT, f"({len(results):n}{ext})")
             tItem.setTextAlignment(self.C_COUNT, Qt.AlignmentFlag.AlignRight)
             tItem.setForeground(self.C_COUNT, self.palette().highlight())
-            self.searchResult.addTopLevelItem(tItem)
+
+            index = self._map.get(tHandle, (self.searchResult.topLevelItemCount(), 0.0))[0]
+            self.searchResult.takeTopLevelItem(index)
+            self.searchResult.insertTopLevelItem(index, tItem)
+            self._map[tHandle] = (index, time())
 
             rItems = []
             for start, length, context in results:

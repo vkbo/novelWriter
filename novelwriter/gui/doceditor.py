@@ -92,6 +92,7 @@ class GuiDocEditor(QPlainTextEdit):
     # Custom Signals
     statusMessage = pyqtSignal(str)
     docCountsChanged = pyqtSignal(str, int, int, int)
+    docTextChanged = pyqtSignal(str, float)
     editedStatusChanged = pyqtSignal(bool)
     loadDocumentTagRequest = pyqtSignal(str, Enum)
     novelStructureChanged = pyqtSignal()
@@ -1193,17 +1194,18 @@ class GuiDocEditor(QPlainTextEdit):
         if self._docHandle is None:
             return
 
-        if self.wCounterDoc.isRunning():
-            logger.debug("Word counter is busy")
-            return
-
         if time() - self._lastEdit < 25.0:
-            logger.debug("Running word counter")
-            SHARED.runInThreadPool(self.wCounterDoc)
+            logger.debug("Running document tasks")
+            if not self.wCounterDoc.isRunning():
+                SHARED.runInThreadPool(self.wCounterDoc)
+
             self.docHeader.setOutline({
                 block.blockNumber(): block.text()
                 for block in self._qDocument.iterBlockByType(BLOCK_TITLE, maxCount=30)
             })
+
+            if self._docChanged:
+                self.docTextChanged.emit(self._docHandle, self._lastEdit)
 
         return
 
