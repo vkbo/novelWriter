@@ -483,7 +483,7 @@ class GuiDocViewer(QTextBrowser):
             f"mark {{background-color: {colMark};}}\n"
             f".tags {{color: {colKeys};}}\n"
             f".optional {{color: {colOpts};}}\n"
-            f".comment {{color: {colHide});}}\n"
+            f".comment {{color: {colHide};}}\n"
             f".synopsis {{color: {colMods};}}\n"
             ".title {text-align: center;}\n"
         )
