@@ -851,6 +851,7 @@ class GuiDocViewFooter(QWidget):
         iPx = SHARED.theme.baseIconSize
         hSp = CONFIG.pxInt(4)
         mPx = CONFIG.pxInt(4)
+        iconSize = QSize(iPx, iPx)
 
         # Main Widget Settings
         self.setContentsMargins(0, 0, 0, 0)
@@ -867,7 +868,7 @@ class GuiDocViewFooter(QWidget):
         self.showComments.setCheckable(True)
         self.showComments.setChecked(CONFIG.viewComments)
         self.showComments.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
-        self.showComments.setIconSize(QSize(iPx, iPx))
+        self.showComments.setIconSize(iconSize)
         self.showComments.toggled.connect(self._doToggleComments)
         self.showComments.setToolTip(self.tr("Show Comments"))
 
@@ -877,7 +878,7 @@ class GuiDocViewFooter(QWidget):
         self.showSynopsis.setCheckable(True)
         self.showSynopsis.setChecked(CONFIG.viewSynopsis)
         self.showSynopsis.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
-        self.showSynopsis.setIconSize(QSize(iPx, iPx))
+        self.showSynopsis.setIconSize(iconSize)
         self.showSynopsis.toggled.connect(self._doToggleSynopsis)
         self.showSynopsis.setToolTip(self.tr("Show Synopsis Comments"))
 

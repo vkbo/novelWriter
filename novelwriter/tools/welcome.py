@@ -561,6 +561,8 @@ class _NewProjectForm(QWidget):
         iPx = SHARED.theme.baseIconSize
         sPx = CONFIG.pxInt(16)
 
+        iconSize = QSize(iPx, iPx)
+
         # Project Settings
         # ================
 
@@ -581,6 +583,7 @@ class _NewProjectForm(QWidget):
 
         self.browsePath = QToolButton(self)
         self.browsePath.setIcon(SHARED.theme.getIcon("browse"))
+        self.browsePath.setIconSize(iconSize)
         self.browsePath.clicked.connect(self._doBrowse)
 
         self.pathBox = QHBoxLayout()
@@ -592,6 +595,7 @@ class _NewProjectForm(QWidget):
         self.projFill.setReadOnly(True)
 
         self.browseFill = QToolButton(self)
+        self.browseFill.setIconSize(iconSize)
         self.browseFill.setIcon(SHARED.theme.getIcon("add_document"))
 
         self.fillMenu = _PopLeftDirectionMenu(self.browseFill)

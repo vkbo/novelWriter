@@ -206,11 +206,11 @@ class GuiOutlineToolBar(QToolBar):
 
         logger.debug("Create: GuiOutlineToolBar")
 
-        iPx = CONFIG.pxInt(22)
+        bPx = SHARED.theme.baseButtonHeight
         mPx = CONFIG.pxInt(12)
 
         self.setMovable(False)
-        self.setIconSize(QSize(iPx, iPx))
+        self.setIconSize(QSize(bPx, bPx))
         self.setContentsMargins(0, 0, 0, 0)
 
         stretch = QWidget(self)
