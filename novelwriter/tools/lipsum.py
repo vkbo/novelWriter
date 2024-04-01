@@ -53,12 +53,13 @@ class GuiLipsum(QDialog):
 
         self.setWindowTitle(self.tr("Insert Placeholder Text"))
 
+        vSp = CONFIG.pxInt(4)
+        nPx = CONFIG.pxInt(64)
+
         self.innerBox = QHBoxLayout()
         self.innerBox.setSpacing(CONFIG.pxInt(16))
 
         # Icon
-        nPx = CONFIG.pxInt(64)
-        vSp = CONFIG.pxInt(4)
         self.docIcon = QLabel()
         self.docIcon.setPixmap(SHARED.theme.getPixmap("proj_document", (nPx, nPx)))
 
@@ -78,7 +79,7 @@ class GuiLipsum(QDialog):
         self.paraCount.setValue(5)
 
         self.randLabel = QLabel(self.tr("Randomise order"))
-        self.randSwitch = NSwitch()
+        self.randSwitch = NSwitch(self)
 
         self.formBox = QGridLayout()
         self.formBox.addWidget(self.headLabel, 0, 0, 1, 2, Qt.AlignLeft)

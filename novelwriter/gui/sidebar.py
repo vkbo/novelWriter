@@ -54,7 +54,7 @@ class GuiSideBar(QWidget):
 
         self.mainGui = mainGui
 
-        iPx = CONFIG.pxInt(24)
+        iPx = int(1.2*SHARED.theme.baseButtonHeight)
         self.setContentsMargins(0, 0, 0, 0)
         self.installEventFilter(StatusTipFilter(mainGui))
 

@@ -27,20 +27,20 @@ from PyQt5.QtGui import QMouseEvent, QPainter, QPaintEvent, QResizeEvent
 from PyQt5.QtCore import QEvent, QPropertyAnimation, Qt, pyqtProperty
 from PyQt5.QtWidgets import QAbstractButton, QSizePolicy, QWidget
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 
 
 class NSwitch(QAbstractButton):
 
     __slots__ = ("_xW", "_xH", "_xR", "_rB", "_rH", "_rR", "_offset")
 
-    def __init__(self, parent: QWidget | None = None, height: int = 0) -> None:
+    def __init__(self, parent: QWidget, height: int = 0) -> None:
         super().__init__(parent=parent)
 
-        self._xH = height or CONFIG.pxInt(20)
+        self._xH = height or SHARED.theme.baseButtonHeight
         self._xW = 2*self._xH
         self._xR = int(self._xH*0.5)
-        self._rB = int(CONFIG.guiScale*2)
+        self._rB = CONFIG.pxInt(2)
         self._rH = self._xH - 2*self._rB
         self._rR = self._xR - self._rB
 
