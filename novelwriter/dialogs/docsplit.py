@@ -64,7 +64,7 @@ class GuiDocSplit(QDialog):
         )
 
         # Values
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
         hSp = CONFIG.pxInt(12)
         vSp = CONFIG.pxInt(8)
         bSp = CONFIG.pxInt(12)

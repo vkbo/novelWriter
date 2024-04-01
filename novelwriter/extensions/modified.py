@@ -29,6 +29,8 @@ from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QWheelEvent
 from PyQt5.QtWidgets import QComboBox, QDoubleSpinBox, QSpinBox, QToolButton, QWidget
 
+from novelwriter import SHARED
+
 
 class NComboBox(QComboBox):
 
@@ -89,11 +91,40 @@ class NDoubleSpinBox(QDoubleSpinBox):
 
 class NIconToolButton(QToolButton):
 
-    def __init__(self, parent: QWidget, iconSize: int) -> None:
+    def __init__(self, parent: QWidget, iconSize: QSize, icon: str | None = None) -> None:
         super().__init__(parent=parent)
         self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
-        self.setIconSize(QSize(iconSize, iconSize))
+        self.setIconSize(iconSize)
         self.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+        if icon:
+            self.setThemeIcon(icon)
+        return
+
+    def setThemeIcon(self, iconKey: str) -> None:
+        """Set an icon from the current theme."""
+        self.setIcon(SHARED.theme.getIcon(iconKey))
         return
 
 # END Class NIconToolButton
+
+
+class NIconToggleButton(QToolButton):
+
+    def __init__(self, parent: QWidget, iconSize: QSize, icon: str | None = None) -> None:
+        super().__init__(parent=parent)
+        self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.setIconSize(iconSize)
+        self.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+        self.setCheckable(True)
+        self.setStyleSheet("border: none; background: transparent;")
+        if icon:
+            self.setThemeIcon(icon)
+        return
+
+    def setThemeIcon(self, iconKey: str) -> None:
+        """Set an icon from the current theme."""
+        iconSize = self.iconSize()
+        self.setIcon(SHARED.theme.getToggleIcon(iconKey, (iconSize.width(), iconSize.height())))
+        return
+
+# END Class NUnfoldButton

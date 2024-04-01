@@ -36,10 +36,10 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import simplified
-from novelwriter.extensions.switch import NSwitch
-from novelwriter.extensions.modified import NComboBox
 from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrollableForm
+from novelwriter.extensions.modified import NComboBox, NIconToolButton
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
+from novelwriter.extensions.switch import NSwitch
 
 logger = logging.getLogger(__name__)
 
@@ -329,7 +329,9 @@ class _StatusPage(NFixedPage):
         self._colDeleted = []
         self._selColour = QColor(100, 100, 100)
 
-        self.iPx = SHARED.theme.baseIconSize
+        self.iPx = SHARED.theme.baseIconHeight
+        iSz = SHARED.theme.baseIconSize
+        bSz = SHARED.theme.buttonIconSize
 
         # Title
         self.pageTitle = NColourLabel(
@@ -348,16 +350,16 @@ class _StatusPage(NFixedPage):
             self._addItem(key, entry["name"], entry["cols"], entry["count"])
 
         # List Controls
-        self.addButton = QPushButton(SHARED.theme.getIcon("add"), "", self)
+        self.addButton = NIconToolButton(self, iSz, "add")
         self.addButton.clicked.connect(self._newItem)
 
-        self.delButton = QPushButton(SHARED.theme.getIcon("remove"), "", self)
+        self.delButton = NIconToolButton(self, iSz, "remove")
         self.delButton.clicked.connect(self._delItem)
 
-        self.upButton = QPushButton(SHARED.theme.getIcon("up"), "", self)
+        self.upButton = NIconToolButton(self, iSz, "up")
         self.upButton.clicked.connect(lambda: self._moveItem(-1))
 
-        self.dnButton = QPushButton(SHARED.theme.getIcon("down"), "", self)
+        self.dnButton = NIconToolButton(self, iSz, "down")
         self.dnButton.clicked.connect(lambda: self._moveItem(1))
 
         # Edit Form
@@ -368,12 +370,12 @@ class _StatusPage(NFixedPage):
 
         self.colPixmap = QPixmap(self.iPx, self.iPx)
         self.colPixmap.fill(QColor(100, 100, 100))
-        self.colButton = QPushButton(QIcon(self.colPixmap), self.tr("Colour"))
-        self.colButton.setIconSize(self.colPixmap.rect().size())
+        self.colButton = QPushButton(QIcon(self.colPixmap), self.tr("Colour"), self)
+        self.colButton.setIconSize(bSz)
         self.colButton.setEnabled(False)
         self.colButton.clicked.connect(self._selectColour)
 
-        self.saveButton = QPushButton(self.tr("Save"))
+        self.saveButton = QPushButton(self.tr("Save"), self)
         self.saveButton.setEnabled(False)
         self.saveButton.clicked.connect(self._saveItem)
 
@@ -589,6 +591,8 @@ class _ReplacePage(NFixedPage):
 
         self._changed = False
 
+        iSz = SHARED.theme.baseIconSize
+
         wCol0 = CONFIG.pxInt(
             SHARED.project.options.getInt("GuiProjectSettings", "replaceColW", 130)
         )
@@ -614,10 +618,10 @@ class _ReplacePage(NFixedPage):
         self.listBox.setSortingEnabled(True)
 
         # List Controls
-        self.addButton = QPushButton(SHARED.theme.getIcon("add"), "")
+        self.addButton = NIconToolButton(self, iSz, "add")
         self.addButton.clicked.connect(self._addEntry)
 
-        self.delButton = QPushButton(SHARED.theme.getIcon("remove"), "")
+        self.delButton = NIconToolButton(self, iSz, "remove")
         self.delButton.clicked.connect(self._delEntry)
 
         # Edit Form
@@ -630,7 +634,7 @@ class _ReplacePage(NFixedPage):
         self.editValue.setEnabled(False)
         self.editValue.setMaxLength(80)
 
-        self.saveButton = QPushButton(self.tr("Save"))
+        self.saveButton = QPushButton(self.tr("Save"), self)
         self.saveButton.clicked.connect(self._saveEntry)
 
         # Assemble

@@ -32,7 +32,7 @@ from time import time
 from typing import TYPE_CHECKING
 
 from PyQt5.QtGui import QFocusEvent, QFont, QMouseEvent, QPalette, QResizeEvent
-from PyQt5.QtCore import QModelIndex, QPoint, Qt, QSize, pyqtSlot, pyqtSignal
+from PyQt5.QtCore import QModelIndex, QPoint, Qt, pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import (
     QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QHeaderView,
     QInputDialog, QMenu, QSizePolicy, QToolTip, QTreeWidget, QTreeWidgetItem,
@@ -47,6 +47,7 @@ from novelwriter.enum import nwDocMode, nwItemClass, nwOutline
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
+from novelwriter.types import QtAlignRight
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -200,7 +201,7 @@ class GuiNovelToolBar(QWidget):
         self.novelView = novelView
         self.mainGui   = novelView.mainGui
 
-        iPx = SHARED.theme.baseIconSize
+        iSz = SHARED.theme.baseIconSize
         mPx = CONFIG.pxInt(2)
 
         self.setContentsMargins(0, 0, 0, 0)
@@ -217,12 +218,12 @@ class GuiNovelToolBar(QWidget):
         self.novelValue.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.novelValue.novelSelectionChanged.connect(self.setCurrentRoot)
 
-        self.tbNovel = NIconToolButton(self, iPx)
+        self.tbNovel = NIconToolButton(self, iSz)
         self.tbNovel.setToolTip(self.tr("Novel Root"))
         self.tbNovel.clicked.connect(self.novelValue.showPopup)
 
         # Refresh Button
-        self.tbRefresh = NIconToolButton(self, iPx)
+        self.tbRefresh = NIconToolButton(self, iSz)
         self.tbRefresh.setToolTip(self.tr("Refresh"))
         self.tbRefresh.clicked.connect(self._refreshNovelTree)
 
@@ -241,7 +242,7 @@ class GuiNovelToolBar(QWidget):
         self.aLastColSize = self.mLastCol.addAction(self.tr("Column Size"))
         self.aLastColSize.triggered.connect(self._selectLastColumnSize)
 
-        self.tbMore = NIconToolButton(self, iPx)
+        self.tbMore = NIconToolButton(self, iSz)
         self.tbMore.setToolTip(self.tr("More Options"))
         self.tbMore.setMenu(self.mMore)
 
@@ -269,9 +270,9 @@ class GuiNovelToolBar(QWidget):
     def updateTheme(self) -> None:
         """Update theme elements."""
         # Icons
-        self.tbNovel.setIcon(SHARED.theme.getIcon("cls_novel"))
-        self.tbRefresh.setIcon(SHARED.theme.getIcon("refresh"))
-        self.tbMore.setIcon(SHARED.theme.getIcon("menu"))
+        self.tbNovel.setThemeIcon("cls_novel")
+        self.tbRefresh.setThemeIcon("refresh")
+        self.tbMore.setThemeIcon("menu")
 
         qPalette = self.palette()
         qPalette.setBrush(QPalette.ColorRole.Window, qPalette.base())
@@ -391,10 +392,11 @@ class GuiNovelTree(QTreeWidget):
         # Build GUI
         # =========
 
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
+        iSz = SHARED.theme.baseIconSize
         cMg = CONFIG.pxInt(6)
 
-        self.setIconSize(QSize(iPx, iPx))
+        self.setIconSize(iSz)
         self.setFrameStyle(QFrame.Shape.NoFrame)
         self.setUniformRowHeights(True)
         self.setAllColumnsShowFocus(True)
@@ -455,7 +457,7 @@ class GuiNovelTree(QTreeWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
         self._pMore = SHARED.theme.loadDecoration("deco_doc_more", h=iPx)
         return
 
@@ -676,7 +678,7 @@ class GuiNovelTree(QTreeWidget):
             newItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
             newItem.setData(self.C_DATA, self.D_TITLE, sTitle)
             newItem.setData(self.C_DATA, self.D_KEY, tKey)
-            newItem.setTextAlignment(self.C_WORDS, Qt.AlignmentFlag.AlignRight)
+            newItem.setTextAlignment(self.C_WORDS, QtAlignRight)
 
             self._updateTreeItemValues(newItem, novIdx, tHandle, sTitle)
             self._treeMap[tKey] = newItem

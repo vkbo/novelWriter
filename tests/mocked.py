@@ -75,7 +75,7 @@ class MockStatusBar:
 class MockTheme:
 
     def __init__(self):
-        self.baseIconSize = 10
+        self.baseIconHeight = 10
         return
 
     def getPixmap(self, *a):

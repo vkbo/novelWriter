@@ -29,7 +29,7 @@ import logging
 from math import ceil
 from pathlib import Path
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtWidgets import qApp
 from PyQt5.QtGui import (
     QPalette, QColor, QIcon, QFont, QFontMetrics, QFontDatabase, QPixmap
@@ -156,11 +156,17 @@ class GuiTheme:
         self.guiFontB.setBold(True)
 
         qMetric = QFontMetrics(self.guiFont)
+        fHeight = qMetric.height()
+        fAscent = qMetric.ascent()
         self.fontPointSize = self.guiFont.pointSizeF()
-        self.fontPixelSize = int(round(qMetric.height()))
-        self.baseIconSize = int(round(qMetric.ascent()))
+        self.fontPixelSize = int(round(fHeight))
+        self.baseIconHeight = int(round(fAscent))
+        self.baseButtonHeight = int(round(1.35*fAscent))
         self.textNHeight = qMetric.boundingRect("N").height()
         self.textNWidth = qMetric.boundingRect("N").width()
+
+        self.baseIconSize = QSize(self.baseIconHeight, self.baseIconHeight)
+        self.buttonIconSize = QSize(int(0.9*self.baseIconHeight), int(0.9*self.baseIconHeight))
 
         # Monospace Font
         self.guiFontFixed = QFont()
@@ -170,7 +176,8 @@ class GuiTheme:
         logger.debug("GUI Font Family: %s", self.guiFont.family())
         logger.debug("GUI Font Point Size: %.2f", self.fontPointSize)
         logger.debug("GUI Font Pixel Size: %d", self.fontPixelSize)
-        logger.debug("GUI Base Icon Size: %d", self.baseIconSize)
+        logger.debug("GUI Base Icon Height: %d", self.baseIconHeight)
+        logger.debug("GUI Base Button Height: %d", self.baseButtonHeight)
         logger.debug("Text 'N' Height: %d", self.textNHeight)
         logger.debug("Text 'N' Width: %d", self.textNWidth)
 
@@ -677,7 +684,7 @@ class GuiIcons:
     def getToggleIcon(self, name: str, size: tuple[int, int]) -> QIcon:
         """Return a toggle icon from the icon buffer. or load it."""
         if name in self.TOGGLE_ICON_KEYS:
-            pOne  = self.getPixmap(self.TOGGLE_ICON_KEYS[name][0], size)
+            pOne = self.getPixmap(self.TOGGLE_ICON_KEYS[name][0], size)
             pTwo = self.getPixmap(self.TOGGLE_ICON_KEYS[name][1], size)
             icon = QIcon()
             icon.addPixmap(pOne, QIcon.Mode.Normal, QIcon.State.On)
@@ -722,7 +729,7 @@ class GuiIcons:
     def getHeaderDecoration(self, hLevel: int) -> QPixmap:
         """Get the decoration for a specific heading level."""
         if not self._headerDec:
-            iPx = self.mainTheme.baseIconSize
+            iPx = self.mainTheme.baseIconHeight
             self._headerDec = [
                 self.loadDecoration("deco_doc_h0", h=iPx),
                 self.loadDecoration("deco_doc_h1", h=iPx),
@@ -735,7 +742,7 @@ class GuiIcons:
     def getHeaderDecorationNarrow(self, hLevel: int) -> QPixmap:
         """Get the narrow decoration for a specific heading level."""
         if not self._headerDecNarrow:
-            iPx = self.mainTheme.baseIconSize
+            iPx = self.mainTheme.baseIconHeight
             self._headerDecNarrow = [
                 self.loadDecoration("deco_doc_h0_n", h=iPx),
                 self.loadDecoration("deco_doc_h1_n", h=iPx),

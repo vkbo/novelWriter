@@ -36,8 +36,9 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.error import formatException
 from novelwriter.common import formatFileFilter, openExternalPath, formatInt, getFileSize
+from novelwriter.error import formatException
+from novelwriter.extensions.modified import NIconToolButton
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,7 @@ class GuiDictionaries(QDialog):
         self._installPath = None
         self._currDicts = set()
 
+        iSz = SHARED.theme.baseIconSize
         iPx = CONFIG.pxInt(4)
         mPx = CONFIG.pxInt(8)
         sPx = CONFIG.pxInt(16)
@@ -72,8 +74,7 @@ class GuiDictionaries(QDialog):
         self.huInfo.setOpenExternalLinks(True)
         self.huInfo.setWordWrap(True)
         self.huInput = QLineEdit(self)
-        self.huBrowse = QPushButton(self)
-        self.huBrowse.setIcon(SHARED.theme.getIcon("browse"))
+        self.huBrowse = NIconToolButton(self, iSz, "browse")
         self.huBrowse.clicked.connect(self._doBrowseHunspell)
         self.huImport = QPushButton(self.tr("Add Dictionary"), self)
         self.huImport.setIcon(SHARED.theme.getIcon("add"))
@@ -91,8 +92,7 @@ class GuiDictionaries(QDialog):
         self.inInfo = QLabel(self.tr("Dictionary install location"))
         self.inPath = QLineEdit(self)
         self.inPath.setReadOnly(True)
-        self.inBrowse = QPushButton(self)
-        self.inBrowse.setIcon(SHARED.theme.getIcon("browse"))
+        self.inBrowse = NIconToolButton(self, iSz, "browse")
         self.inBrowse.clicked.connect(self._doOpenInstallLocation)
 
         self.inBox = QHBoxLayout()

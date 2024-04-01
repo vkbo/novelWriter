@@ -27,7 +27,7 @@ import math
 import logging
 
 from PyQt5.QtGui import QCloseEvent
-from PyQt5.QtCore import QSize, Qt, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QDialogButtonBox, QFormLayout, QGridLayout,
     QHBoxLayout, QLabel, QSpinBox, QStackedWidget, QTreeWidget,
@@ -37,10 +37,11 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatTime, numberToRoman
 from novelwriter.constants import nwUnicode
-from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrollablePage
-from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.novelselector import NovelSelector
+from novelwriter.extensions.pagedsidebar import NPagedSideBar
+from novelwriter.extensions.switch import NSwitch
+from novelwriter.types import QtAlignRight
 
 logger = logging.getLogger(__name__)
 
@@ -309,7 +310,8 @@ class _ContentsPage(NFixedPage):
         self._data = []
         self._currentRoot = None
 
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
+        iSz = SHARED.theme.baseIconSize
         hPx = CONFIG.pxInt(12)
         vPx = CONFIG.pxInt(4)
         options = SHARED.project.options
@@ -322,7 +324,7 @@ class _ContentsPage(NFixedPage):
 
         # Contents Tree
         self.tocTree = QTreeWidget(self)
-        self.tocTree.setIconSize(QSize(iPx, iPx))
+        self.tocTree.setIconSize(iSz)
         self.tocTree.setIndentation(0)
         self.tocTree.setColumnCount(6)
         self.tocTree.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
@@ -337,10 +339,10 @@ class _ContentsPage(NFixedPage):
 
         treeHeadItem = self.tocTree.headerItem()
         if treeHeadItem:
-            treeHeadItem.setTextAlignment(self.C_WORDS, Qt.AlignmentFlag.AlignRight)
-            treeHeadItem.setTextAlignment(self.C_PAGES, Qt.AlignmentFlag.AlignRight)
-            treeHeadItem.setTextAlignment(self.C_PAGE,  Qt.AlignmentFlag.AlignRight)
-            treeHeadItem.setTextAlignment(self.C_PROG,  Qt.AlignmentFlag.AlignRight)
+            treeHeadItem.setTextAlignment(self.C_WORDS, QtAlignRight)
+            treeHeadItem.setTextAlignment(self.C_PAGES, QtAlignRight)
+            treeHeadItem.setTextAlignment(self.C_PAGE,  QtAlignRight)
+            treeHeadItem.setTextAlignment(self.C_PROG,  QtAlignRight)
 
         treeHeader = self.tocTree.header()
         treeHeader.setStretchLastSection(True)
@@ -490,10 +492,10 @@ class _ContentsPage(NFixedPage):
             newItem.setText(self.C_PAGE,  progPage)
             newItem.setText(self.C_PROG,  progText)
 
-            newItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
-            newItem.setTextAlignment(self.C_PAGES, Qt.AlignRight)
-            newItem.setTextAlignment(self.C_PAGE,  Qt.AlignRight)
-            newItem.setTextAlignment(self.C_PROG,  Qt.AlignRight)
+            newItem.setTextAlignment(self.C_WORDS, QtAlignRight)
+            newItem.setTextAlignment(self.C_PAGES, QtAlignRight)
+            newItem.setTextAlignment(self.C_PAGE,  QtAlignRight)
+            newItem.setTextAlignment(self.C_PROG,  QtAlignRight)
 
             # Make pages and titles/partitions stand out
             if tLevel < 2:

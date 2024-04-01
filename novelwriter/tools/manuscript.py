@@ -31,7 +31,7 @@ from typing import TYPE_CHECKING
 from datetime import datetime
 
 from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
-from PyQt5.QtCore import QSize, QTimer, QUrl, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QTimer, QUrl, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QFormLayout, QGridLayout, QHBoxLayout, QLabel,
     QListWidget, QListWidgetItem, QPushButton, QSizePolicy, QSplitter,
@@ -48,10 +48,13 @@ from novelwriter.core.tohtml import ToHtml
 from novelwriter.core.tokenizer import HeadingFormatter
 from novelwriter.error import logException
 from novelwriter.extensions.circularprogress import NProgressCircle
-from novelwriter.extensions.modified import NIconToolButton
+from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
+from novelwriter.types import (
+    QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignRight, QtAlignTop
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -86,7 +89,7 @@ class GuiManuscript(QDialog):
         self.setMinimumWidth(CONFIG.pxInt(600))
         self.setMinimumHeight(CONFIG.pxInt(500))
 
-        iPx = SHARED.theme.baseIconSize
+        iSz = SHARED.theme.baseIconSize
         wWin = CONFIG.pxInt(900)
         hWin = CONFIG.pxInt(600)
 
@@ -105,20 +108,17 @@ class GuiManuscript(QDialog):
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
 
-        self.tbAdd = NIconToolButton(self, iPx)
-        self.tbAdd.setIcon(SHARED.theme.getIcon("add"))
+        self.tbAdd = NIconToolButton(self, iSz, "add")
         self.tbAdd.setToolTip(self.tr("Add New Build"))
         self.tbAdd.setStyleSheet(buttonStyle)
         self.tbAdd.clicked.connect(self._createNewBuild)
 
-        self.tbDel = NIconToolButton(self, iPx)
-        self.tbDel.setIcon(SHARED.theme.getIcon("remove"))
+        self.tbDel = NIconToolButton(self, iSz, "remove")
         self.tbDel.setToolTip(self.tr("Delete Selected Build"))
         self.tbDel.setStyleSheet(buttonStyle)
         self.tbDel.clicked.connect(self._deleteSelectedBuild)
 
-        self.tbEdit = NIconToolButton(self, iPx)
-        self.tbEdit.setIcon(SHARED.theme.getIcon("edit"))
+        self.tbEdit = NIconToolButton(self, iSz, "edit")
         self.tbEdit.setToolTip(self.tr("Edit Selected Build"))
         self.tbEdit.setStyleSheet(buttonStyle)
         self.tbEdit.clicked.connect(self._editSelectedBuild)
@@ -137,7 +137,7 @@ class GuiManuscript(QDialog):
         # ======
 
         self.buildList = QListWidget(self)
-        self.buildList.setIconSize(QSize(iPx, iPx))
+        self.buildList.setIconSize(iSz)
         self.buildList.doubleClicked.connect(self._editSelectedBuild)
         self.buildList.currentItemChanged.connect(self._updateBuildDetails)
         self.buildList.setSelectionMode(QAbstractItemView.SingleSelection)
@@ -526,7 +526,7 @@ class _DetailsWidget(QWidget):
         # Tree Widget
         self.listView = QTreeWidget(self)
         self.listView.setHeaderLabels([self.tr("Setting"), self.tr("Value")])
-        self.listView.setIndentation(SHARED.theme.baseIconSize)
+        self.listView.setIndentation(SHARED.theme.baseIconHeight)
         self.listView.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
 
         # Assemble
@@ -721,7 +721,9 @@ class _OutlineWidget(QWidget):
                         parent.addChild(item)
                         indent = True
 
-            self.listView.setIndentation(SHARED.theme.baseIconSize if indent else CONFIG.pxInt(4))
+            self.listView.setIndentation(
+                SHARED.theme.baseIconHeight if indent else CONFIG.pxInt(4)
+            )
             self._outline = data
 
         return
@@ -777,7 +779,7 @@ class _PreviewWidget(QTextBrowser):
         self.ageLabel.setFont(aFont)
         self.ageLabel.setPalette(aPalette)
         self.ageLabel.setAutoFillBackground(True)
-        self.ageLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.ageLabel.setAlignment(QtAlignCenter)
         self.ageLabel.setFixedHeight(int(2.1*SHARED.theme.fontPixelSize))
 
         # Progress
@@ -816,9 +818,9 @@ class _PreviewWidget(QTextBrowser):
         """Enable/disable the justify text option."""
         pOptions = self.document().defaultTextOption()
         if state:
-            pOptions.setAlignment(Qt.AlignmentFlag.AlignJustify)
+            pOptions.setAlignment(QtAlignJustify)
         else:
-            pOptions.setAlignment(Qt.AlignmentFlag.AlignAbsolute)
+            pOptions.setAlignment(QtAlignAbsolute)
         self.document().setDefaultTextOption(pOptions)
         return
 
@@ -976,13 +978,7 @@ class _StatsWidget(QWidget):
         self.minWidget = QWidget(self)
         self.maxWidget = QWidget(self)
 
-        iPx = int(0.6*SHARED.theme.baseIconSize)
-        toggleIcon = SHARED.theme.getToggleIcon("unfold", (iPx, iPx))
-
-        self.toggleButton = NIconToolButton(self, iPx)
-        self.toggleButton.setCheckable(True)
-        self.toggleButton.setIcon(toggleIcon)
-        self.toggleButton.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON))
+        self.toggleButton = NIconToggleButton(self, SHARED.theme.baseIconSize, "unfold")
         self.toggleButton.toggled.connect(self._toggleView)
 
         self._buildMinimal()
@@ -993,8 +989,8 @@ class _StatsWidget(QWidget):
         self.mainStack.addWidget(self.maxWidget)
 
         self.outerBox = QHBoxLayout()
-        self.outerBox.addWidget(self.toggleButton, 0, Qt.AlignmentFlag.AlignTop)
-        self.outerBox.addWidget(self.mainStack, 1, Qt.AlignmentFlag.AlignTop)
+        self.outerBox.addWidget(self.toggleButton, 0, QtAlignTop)
+        self.outerBox.addWidget(self.mainStack, 1, QtAlignTop)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(self.outerBox)
@@ -1083,8 +1079,6 @@ class _StatsWidget(QWidget):
         hPx = CONFIG.pxInt(12)
         vPx = CONFIG.pxInt(4)
 
-        alignRight = Qt.AlignmentFlag.AlignRight
-
         # Left Column
         self.maxTotalWords = QLabel(self)
         self.maxHeaderWords = QLabel(self)
@@ -1092,11 +1086,11 @@ class _StatsWidget(QWidget):
         self.maxTitleCount = QLabel(self)
         self.maxParCount = QLabel(self)
 
-        self.maxTotalWords.setAlignment(alignRight)
-        self.maxHeaderWords.setAlignment(alignRight)
-        self.maxTextWords.setAlignment(alignRight)
-        self.maxTitleCount.setAlignment(alignRight)
-        self.maxParCount.setAlignment(alignRight)
+        self.maxTotalWords.setAlignment(QtAlignRight)
+        self.maxHeaderWords.setAlignment(QtAlignRight)
+        self.maxTextWords.setAlignment(QtAlignRight)
+        self.maxTitleCount.setAlignment(QtAlignRight)
+        self.maxParCount.setAlignment(QtAlignRight)
 
         self.leftForm = QFormLayout()
         self.leftForm.addRow(self.tr("Words"), self.maxTotalWords)
@@ -1117,13 +1111,13 @@ class _StatsWidget(QWidget):
         self.maxHeaderWordChars = QLabel(self)
         self.maxTextWordChars = QLabel(self)
 
-        self.maxTotalChars.setAlignment(alignRight)
-        self.maxHeaderChars.setAlignment(alignRight)
-        self.maxTextChars.setAlignment(alignRight)
+        self.maxTotalChars.setAlignment(QtAlignRight)
+        self.maxHeaderChars.setAlignment(QtAlignRight)
+        self.maxTextChars.setAlignment(QtAlignRight)
 
-        self.maxTotalWordChars.setAlignment(alignRight)
-        self.maxHeaderWordChars.setAlignment(alignRight)
-        self.maxTextWordChars.setAlignment(alignRight)
+        self.maxTotalWordChars.setAlignment(QtAlignRight)
+        self.maxHeaderWordChars.setAlignment(QtAlignRight)
+        self.maxTextWordChars.setAlignment(QtAlignRight)
 
         self.rightForm = QFormLayout()
         self.rightForm.addRow(self.tr("Characters"), self.maxTotalChars)

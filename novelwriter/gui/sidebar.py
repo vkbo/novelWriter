@@ -28,7 +28,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from PyQt5.QtGui import QPalette
-from PyQt5.QtCore import QEvent, QPoint, pyqtSignal
+from PyQt5.QtCore import QEvent, QPoint, QSize, pyqtSignal
 from PyQt5.QtWidgets import QMenu, QVBoxLayout, QWidget
 
 from novelwriter import CONFIG, SHARED
@@ -54,41 +54,43 @@ class GuiSideBar(QWidget):
 
         self.mainGui = mainGui
 
-        iPx = CONFIG.pxInt(24)
+        iPx = int(1.2*SHARED.theme.baseButtonHeight)
+        iSz = QSize(iPx, iPx)
+
         self.setContentsMargins(0, 0, 0, 0)
         self.installEventFilter(StatusTipFilter(mainGui))
 
         # Buttons
-        self.tbProject = NIconToolButton(self, iPx)
+        self.tbProject = NIconToolButton(self, iSz)
         self.tbProject.setToolTip("{0} [Ctrl+T]".format(self.tr("Project Tree View")))
         self.tbProject.clicked.connect(lambda: self.requestViewChange.emit(nwView.PROJECT))
 
-        self.tbNovel = NIconToolButton(self, iPx)
+        self.tbNovel = NIconToolButton(self, iSz)
         self.tbNovel.setToolTip("{0} [Ctrl+T]".format(self.tr("Novel Tree View")))
         self.tbNovel.clicked.connect(lambda: self.requestViewChange.emit(nwView.NOVEL))
 
-        self.tbSearch = NIconToolButton(self, iPx)
+        self.tbSearch = NIconToolButton(self, iSz)
         self.tbSearch.setToolTip("{0} [Ctrl+Shift+F]".format(self.tr("Project Search")))
         self.tbSearch.clicked.connect(lambda: self.requestViewChange.emit(nwView.SEARCH))
 
-        self.tbOutline = NIconToolButton(self, iPx)
+        self.tbOutline = NIconToolButton(self, iSz)
         self.tbOutline.setToolTip("{0} [Ctrl+Shift+T]".format(self.tr("Novel Outline View")))
         self.tbOutline.clicked.connect(lambda: self.requestViewChange.emit(nwView.OUTLINE))
 
-        self.tbBuild = NIconToolButton(self, iPx)
+        self.tbBuild = NIconToolButton(self, iSz)
         self.tbBuild.setToolTip("{0} [F5]".format(self.tr("Build Manuscript")))
         self.tbBuild.clicked.connect(self.mainGui.showBuildManuscriptDialog)
 
-        self.tbDetails = NIconToolButton(self, iPx)
+        self.tbDetails = NIconToolButton(self, iSz)
         self.tbDetails.setToolTip("{0} [Shift+F6]".format(self.tr("Novel Details")))
         self.tbDetails.clicked.connect(self.mainGui.showNovelDetailsDialog)
 
-        self.tbStats = NIconToolButton(self, iPx)
+        self.tbStats = NIconToolButton(self, iSz)
         self.tbStats.setToolTip("{0} [F6]".format(self.tr("Writing Statistics")))
         self.tbStats.clicked.connect(self.mainGui.showWritingStatsDialog)
 
         # Settings Menu
-        self.tbSettings = NIconToolButton(self, iPx)
+        self.tbSettings = NIconToolButton(self, iSz)
         self.tbSettings.setToolTip(self.tr("Settings"))
 
         self.mSettings = _PopRightMenu(self.tbSettings)
@@ -128,29 +130,23 @@ class GuiSideBar(QWidget):
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_BIG_TOOLBUTTON)
 
-        self.tbProject.setIcon(SHARED.theme.getIcon("view_editor"))
         self.tbProject.setStyleSheet(buttonStyle)
-
-        self.tbNovel.setIcon(SHARED.theme.getIcon("view_novel"))
         self.tbNovel.setStyleSheet(buttonStyle)
-
-        self.tbSearch.setIcon(SHARED.theme.getIcon("view_search"))
         self.tbSearch.setStyleSheet(buttonStyle)
-
-        self.tbOutline.setIcon(SHARED.theme.getIcon("view_outline"))
         self.tbOutline.setStyleSheet(buttonStyle)
-
-        self.tbBuild.setIcon(SHARED.theme.getIcon("view_build"))
         self.tbBuild.setStyleSheet(buttonStyle)
-
-        self.tbDetails.setIcon(SHARED.theme.getIcon("proj_details"))
         self.tbDetails.setStyleSheet(buttonStyle)
-
-        self.tbStats.setIcon(SHARED.theme.getIcon("proj_stats"))
         self.tbStats.setStyleSheet(buttonStyle)
-
-        self.tbSettings.setIcon(SHARED.theme.getIcon("settings"))
         self.tbSettings.setStyleSheet(buttonStyle)
+
+        self.tbProject.setThemeIcon("view_editor")
+        self.tbNovel.setThemeIcon("view_novel")
+        self.tbSearch.setThemeIcon("view_search")
+        self.tbOutline.setThemeIcon("view_outline")
+        self.tbBuild.setThemeIcon("view_build")
+        self.tbDetails.setThemeIcon("proj_details")
+        self.tbStats.setThemeIcon("proj_stats")
+        self.tbSettings.setThemeIcon("settings")
 
         return
 

@@ -30,7 +30,7 @@ import logging
 
 from enum import Enum
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QPoint, QSize, Qt, QUrl
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, QPoint, Qt, QUrl
 from PyQt5.QtGui import (
     QCursor, QFont, QMouseEvent, QPalette, QResizeEvent, QTextCursor,
     QTextOption
@@ -49,6 +49,7 @@ from novelwriter.error import logException
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
+from novelwriter.types import QtAlignCenterTop, QtAlignJustify
 
 logger = logging.getLogger(__name__)
 
@@ -164,7 +165,7 @@ class GuiDocViewer(QTextBrowser):
         self.document().setDocumentMargin(0)
         options = QTextOption()
         if CONFIG.doJustify:
-            options.setAlignment(Qt.AlignmentFlag.AlignJustify)
+            options.setAlignment(QtAlignJustify)
         self.document().setDefaultTextOption(options)
 
         # Scroll bars
@@ -626,7 +627,8 @@ class GuiDocViewHeader(QWidget):
         self._docHandle = None
         self._docOutline: dict[str, tuple[str, int]] = {}
 
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
+        iSz = SHARED.theme.baseIconSize
         mPx = CONFIG.pxInt(4)
 
         # Main Widget Settings
@@ -639,7 +641,7 @@ class GuiDocViewHeader(QWidget):
         self.itemTitle.setMargin(0)
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
         self.itemTitle.setAutoFillBackground(True)
-        self.itemTitle.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.itemTitle.setAlignment(QtAlignCenterTop)
         self.itemTitle.setFixedHeight(iPx)
 
         lblFont = self.itemTitle.font()
@@ -650,27 +652,27 @@ class GuiDocViewHeader(QWidget):
         self.outlineMenu = QMenu(self)
 
         # Buttons
-        self.outlineButton = NIconToolButton(self, iPx)
+        self.outlineButton = NIconToolButton(self, iSz)
         self.outlineButton.setVisible(False)
         self.outlineButton.setToolTip(self.tr("Outline"))
         self.outlineButton.setMenu(self.outlineMenu)
 
-        self.backButton = NIconToolButton(self, iPx)
+        self.backButton = NIconToolButton(self, iSz)
         self.backButton.setVisible(False)
         self.backButton.setToolTip(self.tr("Go Backward"))
         self.backButton.clicked.connect(self.docViewer.navBackward)
 
-        self.forwardButton = NIconToolButton(self, iPx)
+        self.forwardButton = NIconToolButton(self, iSz)
         self.forwardButton.setVisible(False)
         self.forwardButton.setToolTip(self.tr("Go Forward"))
         self.forwardButton.clicked.connect(self.docViewer.navForward)
 
-        self.refreshButton = NIconToolButton(self, iPx)
+        self.refreshButton = NIconToolButton(self, iSz)
         self.refreshButton.setVisible(False)
         self.refreshButton.setToolTip(self.tr("Reload"))
         self.refreshButton.clicked.connect(self._refreshDocument)
 
-        self.closeButton = NIconToolButton(self, iPx)
+        self.closeButton = NIconToolButton(self, iSz)
         self.closeButton.setVisible(False)
         self.closeButton.setToolTip(self.tr("Close"))
         self.closeButton.clicked.connect(self._closeDocument)
@@ -743,11 +745,11 @@ class GuiDocViewHeader(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        self.outlineButton.setIcon(SHARED.theme.getIcon("list"))
-        self.backButton.setIcon(SHARED.theme.getIcon("backward"))
-        self.forwardButton.setIcon(SHARED.theme.getIcon("forward"))
-        self.refreshButton.setIcon(SHARED.theme.getIcon("refresh"))
-        self.closeButton.setIcon(SHARED.theme.getIcon("close"))
+        self.outlineButton.setThemeIcon("list")
+        self.backButton.setThemeIcon("backward")
+        self.forwardButton.setThemeIcon("forward")
+        self.refreshButton.setThemeIcon("refresh")
+        self.closeButton.setThemeIcon("close")
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.outlineButton.setStyleSheet(buttonStyle)
@@ -848,7 +850,8 @@ class GuiDocViewFooter(QWidget):
         # Internal Variables
         self._docHandle = None
 
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
+        iSz = SHARED.theme.baseIconSize
         hSp = CONFIG.pxInt(4)
         mPx = CONFIG.pxInt(4)
 
@@ -857,7 +860,7 @@ class GuiDocViewFooter(QWidget):
         self.setAutoFillBackground(True)
 
         # Show/Hide Details
-        self.showHide = NIconToolButton(self, iPx)
+        self.showHide = NIconToolButton(self, iSz)
         self.showHide.clicked.connect(lambda: self.docViewer.togglePanelVisibility.emit())
         self.showHide.setToolTip(self.tr("Show/Hide Viewer Panel"))
 
@@ -867,7 +870,7 @@ class GuiDocViewFooter(QWidget):
         self.showComments.setCheckable(True)
         self.showComments.setChecked(CONFIG.viewComments)
         self.showComments.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
-        self.showComments.setIconSize(QSize(iPx, iPx))
+        self.showComments.setIconSize(iSz)
         self.showComments.toggled.connect(self._doToggleComments)
         self.showComments.setToolTip(self.tr("Show Comments"))
 
@@ -877,7 +880,7 @@ class GuiDocViewFooter(QWidget):
         self.showSynopsis.setCheckable(True)
         self.showSynopsis.setChecked(CONFIG.viewSynopsis)
         self.showSynopsis.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
-        self.showSynopsis.setIconSize(QSize(iPx, iPx))
+        self.showSynopsis.setIconSize(iSz)
         self.showSynopsis.toggled.connect(self._doToggleSynopsis)
         self.showSynopsis.setToolTip(self.tr("Show Synopsis Comments"))
 
@@ -918,7 +921,7 @@ class GuiDocViewFooter(QWidget):
         fPx = int(0.9*SHARED.theme.fontPixelSize)
         bulletIcon = SHARED.theme.getToggleIcon("bullet", (fPx, fPx))
 
-        self.showHide.setIcon(SHARED.theme.getIcon("panel"))
+        self.showHide.setThemeIcon("panel")
         self.showComments.setIcon(bulletIcon)
         self.showSynopsis.setIcon(bulletIcon)
 

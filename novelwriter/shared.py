@@ -404,7 +404,7 @@ class _GuiAlert(QMessageBox):
             self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         else:
             self.setStandardButtons(QMessageBox.Ok)
-        pSz = 2*self._theme.baseIconSize
+        pSz = 2*self._theme.baseIconHeight
         if level == self.INFO:
             self.setIconPixmap(self._theme.getPixmap("alert_info", (pSz, pSz)))
             self.setWindowTitle(self.tr("Information"))

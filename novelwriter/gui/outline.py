@@ -33,7 +33,7 @@ import logging
 from time import time
 from enum import Enum
 
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QSize, QT_TRANSLATE_NOOP
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QT_TRANSLATE_NOOP
 from PyQt5.QtWidgets import (
     QAbstractItemView, QAction, QFileDialog, QFrame, QGridLayout, QGroupBox,
     QHBoxLayout, QLabel, QMenu, QScrollArea, QSizePolicy, QSplitter, QToolBar,
@@ -48,6 +48,7 @@ from novelwriter.error import logException
 from novelwriter.common import checkInt, formatFileFilter, makeFileNameSafe
 from novelwriter.constants import nwHeaders, trConst, nwKeyWords, nwLabels
 from novelwriter.extensions.novelselector import NovelSelector
+from novelwriter.types import QtAlignLeftTop, QtAlignRight, QtAlignRightTop
 
 
 logger = logging.getLogger(__name__)
@@ -206,11 +207,11 @@ class GuiOutlineToolBar(QToolBar):
 
         logger.debug("Create: GuiOutlineToolBar")
 
-        iPx = CONFIG.pxInt(22)
+        iSz = SHARED.theme.baseIconSize
         mPx = CONFIG.pxInt(12)
 
         self.setMovable(False)
-        self.setIconSize(QSize(iPx, iPx))
+        self.setIconSize(iSz)
         self.setContentsMargins(0, 0, 0, 0)
 
         stretch = QWidget(self)
@@ -375,8 +376,7 @@ class GuiOutlineTree(QTreeWidget):
         self.itemDoubleClicked.connect(self._treeDoubleClick)
         self.itemSelectionChanged.connect(self._itemSelected)
 
-        iPx = SHARED.theme.baseIconSize
-        self.setIconSize(QSize(iPx, iPx))
+        self.setIconSize(SHARED.theme.baseIconSize)
         self.setIndentation(0)
 
         self.treeHead = self.header()
@@ -675,11 +675,11 @@ class GuiOutlineTree(QTreeWidget):
             headItem = self.headerItem()
             if isinstance(headItem, QTreeWidgetItem):
                 headItem.setTextAlignment(
-                    self._colIdx[nwOutline.CCOUNT], Qt.AlignmentFlag.AlignRight)
+                    self._colIdx[nwOutline.CCOUNT], QtAlignRight)
                 headItem.setTextAlignment(
-                    self._colIdx[nwOutline.WCOUNT], Qt.AlignmentFlag.AlignRight)
+                    self._colIdx[nwOutline.WCOUNT], QtAlignRight)
                 headItem.setTextAlignment(
-                    self._colIdx[nwOutline.PCOUNT], Qt.AlignmentFlag.AlignRight)
+                    self._colIdx[nwOutline.PCOUNT], QtAlignRight)
 
         novStruct = SHARED.project.index.novelStructure(rootHandle=rootHandle, activeOnly=True)
         for _, tHandle, sTitle, novIdx in novStruct:
@@ -705,9 +705,9 @@ class GuiOutlineTree(QTreeWidget):
             trItem.setText(self._colIdx[nwOutline.CCOUNT], f"{novIdx.charCount:n}")
             trItem.setText(self._colIdx[nwOutline.WCOUNT], f"{novIdx.wordCount:n}")
             trItem.setText(self._colIdx[nwOutline.PCOUNT], f"{novIdx.paraCount:n}")
-            trItem.setTextAlignment(self._colIdx[nwOutline.CCOUNT], Qt.AlignmentFlag.AlignRight)
-            trItem.setTextAlignment(self._colIdx[nwOutline.WCOUNT], Qt.AlignmentFlag.AlignRight)
-            trItem.setTextAlignment(self._colIdx[nwOutline.PCOUNT], Qt.AlignmentFlag.AlignRight)
+            trItem.setTextAlignment(self._colIdx[nwOutline.CCOUNT], QtAlignRight)
+            trItem.setTextAlignment(self._colIdx[nwOutline.WCOUNT], QtAlignRight)
+            trItem.setTextAlignment(self._colIdx[nwOutline.PCOUNT], QtAlignRight)
 
             refs = SHARED.project.index.getReferences(tHandle, sTitle)
             trItem.setText(self._colIdx[nwOutline.POV],    ", ".join(refs[nwKeyWords.POV_KEY]))
@@ -834,9 +834,9 @@ class GuiOutlineDetails(QScrollArea):
         self.cCValue.setMinimumWidth(wCount)
         self.wCValue.setMinimumWidth(wCount)
         self.pCValue.setMinimumWidth(wCount)
-        self.cCValue.setAlignment(Qt.AlignRight)
-        self.wCValue.setAlignment(Qt.AlignRight)
-        self.pCValue.setAlignment(Qt.AlignRight)
+        self.cCValue.setAlignment(QtAlignRight)
+        self.wCValue.setAlignment(QtAlignRight)
+        self.pCValue.setAlignment(QtAlignRight)
 
         # Synopsis
         self.synopLabel = QLabel(self.tr("Synopsis"))
@@ -844,7 +844,7 @@ class GuiOutlineDetails(QScrollArea):
 
         self.synopValue = QLabel("")
         self.synopValue.setWordWrap(True)
-        self.synopValue.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.synopValue.setAlignment(QtAlignLeftTop)
 
         self.synopLWrap = QHBoxLayout()
         self.synopLWrap.addWidget(self.synopValue, 1)
@@ -925,23 +925,20 @@ class GuiOutlineDetails(QScrollArea):
         self.mainForm = QGridLayout()
         self.mainGroup.setLayout(self.mainForm)
 
-        topLeft = Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft
-        topRight = Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight
-
-        self.mainForm.addWidget(self.titleLabel,  0, 0, 1, 1, topLeft)
-        self.mainForm.addWidget(self.titleValue,  0, 1, 1, 1, topLeft)
-        self.mainForm.addWidget(self.cCLabel,     0, 2, 1, 1, topLeft)
-        self.mainForm.addWidget(self.cCValue,     0, 3, 1, 1, topRight)
-        self.mainForm.addWidget(self.fileLabel,   1, 0, 1, 1, topLeft)
-        self.mainForm.addWidget(self.fileValue,   1, 1, 1, 1, topLeft)
-        self.mainForm.addWidget(self.wCLabel,     1, 2, 1, 1, topLeft)
-        self.mainForm.addWidget(self.wCValue,     1, 3, 1, 1, topRight)
-        self.mainForm.addWidget(self.itemLabel,   2, 0, 1, 1, topLeft)
-        self.mainForm.addWidget(self.itemValue,   2, 1, 1, 1, topLeft)
-        self.mainForm.addWidget(self.pCLabel,     2, 2, 1, 1, topLeft)
-        self.mainForm.addWidget(self.pCValue,     2, 3, 1, 1, topRight)
-        self.mainForm.addWidget(self.synopLabel,  3, 0, 1, 4, topLeft)
-        self.mainForm.addLayout(self.synopLWrap,  4, 0, 1, 4, topLeft)
+        self.mainForm.addWidget(self.titleLabel,  0, 0, 1, 1, QtAlignLeftTop)
+        self.mainForm.addWidget(self.titleValue,  0, 1, 1, 1, QtAlignLeftTop)
+        self.mainForm.addWidget(self.cCLabel,     0, 2, 1, 1, QtAlignLeftTop)
+        self.mainForm.addWidget(self.cCValue,     0, 3, 1, 1, QtAlignRightTop)
+        self.mainForm.addWidget(self.fileLabel,   1, 0, 1, 1, QtAlignLeftTop)
+        self.mainForm.addWidget(self.fileValue,   1, 1, 1, 1, QtAlignLeftTop)
+        self.mainForm.addWidget(self.wCLabel,     1, 2, 1, 1, QtAlignLeftTop)
+        self.mainForm.addWidget(self.wCValue,     1, 3, 1, 1, QtAlignRightTop)
+        self.mainForm.addWidget(self.itemLabel,   2, 0, 1, 1, QtAlignLeftTop)
+        self.mainForm.addWidget(self.itemValue,   2, 1, 1, 1, QtAlignLeftTop)
+        self.mainForm.addWidget(self.pCLabel,     2, 2, 1, 1, QtAlignLeftTop)
+        self.mainForm.addWidget(self.pCValue,     2, 3, 1, 1, QtAlignRightTop)
+        self.mainForm.addWidget(self.synopLabel,  3, 0, 1, 4, QtAlignLeftTop)
+        self.mainForm.addLayout(self.synopLWrap,  4, 0, 1, 4, QtAlignLeftTop)
 
         self.mainForm.setColumnStretch(1, 1)
         self.mainForm.setRowStretch(4, 1)
@@ -953,24 +950,24 @@ class GuiOutlineDetails(QScrollArea):
         self.tagsForm = QGridLayout()
         self.tagsGroup.setLayout(self.tagsForm)
 
-        self.tagsForm.addWidget(self.povKeyLabel, 0, 0, 1, 1, topLeft)
-        self.tagsForm.addLayout(self.povKeyLWrap, 0, 1, 1, 1, topLeft)
-        self.tagsForm.addWidget(self.focKeyLabel, 1, 0, 1, 1, topLeft)
-        self.tagsForm.addLayout(self.focKeyLWrap, 1, 1, 1, 1, topLeft)
-        self.tagsForm.addWidget(self.chrKeyLabel, 2, 0, 1, 1, topLeft)
-        self.tagsForm.addLayout(self.chrKeyLWrap, 2, 1, 1, 1, topLeft)
-        self.tagsForm.addWidget(self.pltKeyLabel, 3, 0, 1, 1, topLeft)
-        self.tagsForm.addLayout(self.pltKeyLWrap, 3, 1, 1, 1, topLeft)
-        self.tagsForm.addWidget(self.timKeyLabel, 4, 0, 1, 1, topLeft)
-        self.tagsForm.addLayout(self.timKeyLWrap, 4, 1, 1, 1, topLeft)
-        self.tagsForm.addWidget(self.wldKeyLabel, 5, 0, 1, 1, topLeft)
-        self.tagsForm.addLayout(self.wldKeyLWrap, 5, 1, 1, 1, topLeft)
-        self.tagsForm.addWidget(self.objKeyLabel, 6, 0, 1, 1, topLeft)
-        self.tagsForm.addLayout(self.objKeyLWrap, 6, 1, 1, 1, topLeft)
-        self.tagsForm.addWidget(self.entKeyLabel, 7, 0, 1, 1, topLeft)
-        self.tagsForm.addLayout(self.entKeyLWrap, 7, 1, 1, 1, topLeft)
-        self.tagsForm.addWidget(self.cstKeyLabel, 8, 0, 1, 1, topLeft)
-        self.tagsForm.addLayout(self.cstKeyLWrap, 8, 1, 1, 1, topLeft)
+        self.tagsForm.addWidget(self.povKeyLabel, 0, 0, 1, 1, QtAlignLeftTop)
+        self.tagsForm.addLayout(self.povKeyLWrap, 0, 1, 1, 1, QtAlignLeftTop)
+        self.tagsForm.addWidget(self.focKeyLabel, 1, 0, 1, 1, QtAlignLeftTop)
+        self.tagsForm.addLayout(self.focKeyLWrap, 1, 1, 1, 1, QtAlignLeftTop)
+        self.tagsForm.addWidget(self.chrKeyLabel, 2, 0, 1, 1, QtAlignLeftTop)
+        self.tagsForm.addLayout(self.chrKeyLWrap, 2, 1, 1, 1, QtAlignLeftTop)
+        self.tagsForm.addWidget(self.pltKeyLabel, 3, 0, 1, 1, QtAlignLeftTop)
+        self.tagsForm.addLayout(self.pltKeyLWrap, 3, 1, 1, 1, QtAlignLeftTop)
+        self.tagsForm.addWidget(self.timKeyLabel, 4, 0, 1, 1, QtAlignLeftTop)
+        self.tagsForm.addLayout(self.timKeyLWrap, 4, 1, 1, 1, QtAlignLeftTop)
+        self.tagsForm.addWidget(self.wldKeyLabel, 5, 0, 1, 1, QtAlignLeftTop)
+        self.tagsForm.addLayout(self.wldKeyLWrap, 5, 1, 1, 1, QtAlignLeftTop)
+        self.tagsForm.addWidget(self.objKeyLabel, 6, 0, 1, 1, QtAlignLeftTop)
+        self.tagsForm.addLayout(self.objKeyLWrap, 6, 1, 1, 1, QtAlignLeftTop)
+        self.tagsForm.addWidget(self.entKeyLabel, 7, 0, 1, 1, QtAlignLeftTop)
+        self.tagsForm.addLayout(self.entKeyLWrap, 7, 1, 1, 1, QtAlignLeftTop)
+        self.tagsForm.addWidget(self.cstKeyLabel, 8, 0, 1, 1, QtAlignLeftTop)
+        self.tagsForm.addLayout(self.cstKeyLWrap, 8, 1, 1, 1, QtAlignLeftTop)
 
         self.tagsForm.setColumnStretch(1, 1)
         self.tagsForm.setRowStretch(8, 1)

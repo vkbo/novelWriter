@@ -93,8 +93,8 @@ class NWErrorMessage(QDialog):
 
         # Assemble
         self.mainBox = QGridLayout()
-        self.mainBox.addWidget(self.msgIcon, 0, 0, 2, 1, Qt.AlignTop)
-        self.mainBox.addWidget(self.msgHead, 0, 1, 1, 1, Qt.AlignTop)
+        self.mainBox.addWidget(self.msgIcon, 0, 0, 2, 1, Qt.AlignmentFlag.AlignTop)
+        self.mainBox.addWidget(self.msgHead, 0, 1, 1, 1, Qt.AlignmentFlag.AlignTop)
         self.mainBox.addWidget(self.msgBody, 1, 1, 1, 1)
         self.mainBox.addWidget(self.btnBox,  2, 0, 1, 2)
         self.mainBox.setSpacing(16)

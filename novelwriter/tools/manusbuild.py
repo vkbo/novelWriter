@@ -28,7 +28,7 @@ import logging
 from pathlib import Path
 
 from PyQt5.QtGui import QCloseEvent
-from PyQt5.QtCore import QSize, QTimer, Qt, pyqtSlot
+from PyQt5.QtCore import QTimer, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractButton, QAbstractItemView, QDialog, QDialogButtonBox, QFileDialog,
     QGridLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem,
@@ -36,13 +36,15 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwBuildFmt
 from novelwriter.common import makeFileNameSafe, openExternalPath
 from novelwriter.constants import nwLabels
-from novelwriter.core.item import NWItem
-from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.buildsettings import BuildSettings
+from novelwriter.core.docbuild import NWBuildDocument
+from novelwriter.core.item import NWItem
+from novelwriter.enum import nwBuildFmt
+from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.extensions.simpleprogress import NProgressSimple
+from novelwriter.types import QtAlignCenter
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +71,8 @@ class GuiManuscriptBuild(QDialog):
         self.setMinimumWidth(CONFIG.pxInt(500))
         self.setMinimumHeight(CONFIG.pxInt(300))
 
-        iPx = SHARED.theme.baseIconSize
+        iSz = SHARED.theme.baseIconSize
+        bSz = SHARED.theme.buttonIconSize
         sp4 = CONFIG.pxInt(4)
         sp8 = CONFIG.pxInt(8)
         sp16 = CONFIG.pxInt(16)
@@ -87,7 +90,7 @@ class GuiManuscriptBuild(QDialog):
 
         self.lblFormat = QLabel(self.tr("Output Format"))
         self.listFormats = QListWidget()
-        self.listFormats.setIconSize(QSize(iPx, iPx))
+        self.listFormats.setIconSize(iSz)
         current = None
         for key in nwBuildFmt:
             item = QListWidgetItem()
@@ -114,7 +117,7 @@ class GuiManuscriptBuild(QDialog):
         self.lblContent = QLabel(self.tr("Table of Contents"))
 
         self.listContent = QListWidget(self)
-        self.listContent.setIconSize(QSize(iPx, iPx))
+        self.listContent.setIconSize(iSz)
         self.listContent.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
 
         self.contentBox = QVBoxLayout()
@@ -141,7 +144,7 @@ class GuiManuscriptBuild(QDialog):
         # Build Path
         self.lblPath = QLabel(self.tr("Path"))
         self.buildPath = QLineEdit(self)
-        self.btnBrowse = QPushButton(SHARED.theme.getIcon("browse"), "")
+        self.btnBrowse = NIconToolButton(self, iSz, "browse")
 
         self.pathBox = QHBoxLayout()
         self.pathBox.addWidget(self.buildPath)
@@ -151,7 +154,7 @@ class GuiManuscriptBuild(QDialog):
         # Build Name
         self.lblName = QLabel(self.tr("File Name"))
         self.buildName = QLineEdit(self)
-        self.btnReset = QPushButton(SHARED.theme.getIcon("revert"), "")
+        self.btnReset = NIconToolButton(self, iSz, "revert")
         self.btnReset.setToolTip(self.tr("Reset file name to default"))
 
         self.nameBox = QHBoxLayout()
@@ -177,7 +180,10 @@ class GuiManuscriptBuild(QDialog):
 
         # Dialog Buttons
         self.btnOpen = QPushButton(SHARED.theme.getIcon("browse"), self.tr("Open Folder"))
+        self.btnOpen.setIconSize(bSz)
         self.btnBuild = QPushButton(SHARED.theme.getIcon("export"), self.tr("&Build"))
+        self.btnBuild.setIconSize(bSz)
+
         self.dlgButtons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
         self.dlgButtons.addButton(self.btnOpen, QDialogButtonBox.ButtonRole.ActionRole)
         self.dlgButtons.addButton(self.btnBuild, QDialogButtonBox.ButtonRole.ActionRole)
@@ -199,7 +205,7 @@ class GuiManuscriptBuild(QDialog):
         ])
 
         self.outerBox = QVBoxLayout()
-        self.outerBox.addWidget(self.lblMain, 0, Qt.AlignCenter)
+        self.outerBox.addWidget(self.lblMain, 0, QtAlignCenter)
         self.outerBox.addSpacing(sp16)
         self.outerBox.addWidget(self.mainSplit, 1)
         self.outerBox.addSpacing(sp4)

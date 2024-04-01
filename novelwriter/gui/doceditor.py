@@ -40,7 +40,7 @@ from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import (
     pyqtSignal, pyqtSlot, QObject, QPoint, QRegExp, QRegularExpression,
-    QRunnable, QSize, Qt, QTimer
+    QRunnable, Qt, QTimer
 )
 from PyQt5.QtGui import (
     QColor, QCursor, QFont, QKeyEvent, QKeySequence, QMouseEvent, QPalette,
@@ -48,8 +48,7 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtWidgets import (
     QAction, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
-    QPlainTextEdit, QPushButton, QShortcut, QToolBar, QToolButton, QVBoxLayout,
-    QWidget, qApp
+    QPlainTextEdit, QShortcut, QToolBar, QVBoxLayout, QWidget, qApp
 )
 
 from novelwriter import CONFIG, SHARED
@@ -58,12 +57,15 @@ from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwUnicode
 from novelwriter.core.document import NWDocument
 from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwTrinary
 from novelwriter.extensions.eventfilters import WheelEventFilter
-from novelwriter.extensions.modified import NIconToolButton
+from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
 from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE
 from novelwriter.gui.editordocument import GuiTextDocument
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.text.counting import standardCounter
 from novelwriter.tools.lipsum import GuiLipsum
+from novelwriter.types import (
+    QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop, QtAlignRight
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -339,7 +341,7 @@ class GuiDocEditor(QPlainTextEdit):
         options = QTextOption()
 
         if CONFIG.doJustify:
-            options.setAlignment(Qt.AlignmentFlag.AlignJustify)
+            options.setAlignment(QtAlignJustify)
         if CONFIG.showTabsNSpaces:
             options.setFlags(options.flags() | QTextOption.Flag.ShowTabsAndSpaces)
         if CONFIG.showLineEndings:
@@ -2260,79 +2262,68 @@ class GuiDocToolBar(QWidget):
 
         logger.debug("Create: GuiDocToolBar")
 
+        iSz = SHARED.theme.baseIconSize
         cM = CONFIG.pxInt(4)
-        tPx = int(0.8*SHARED.theme.fontPixelSize)
-        iconSize = QSize(tPx, tPx)
         self.setContentsMargins(0, 0, 0, 0)
 
         # General Buttons
         # ===============
 
-        self.tbBoldMD = QToolButton(self)
-        self.tbBoldMD.setIconSize(iconSize)
+        self.tbBoldMD = NIconToolButton(self, iSz)
         self.tbBoldMD.setToolTip(self.tr("Markdown Bold"))
         self.tbBoldMD.clicked.connect(
             lambda: self.requestDocAction.emit(nwDocAction.MD_BOLD)
         )
 
-        self.tbItalicMD = QToolButton(self)
-        self.tbItalicMD.setIconSize(iconSize)
+        self.tbItalicMD = NIconToolButton(self, iSz)
         self.tbItalicMD.setToolTip(self.tr("Markdown Italic"))
         self.tbItalicMD.clicked.connect(
             lambda: self.requestDocAction.emit(nwDocAction.MD_ITALIC)
         )
 
-        self.tbStrikeMD = QToolButton(self)
-        self.tbStrikeMD.setIconSize(iconSize)
+        self.tbStrikeMD = NIconToolButton(self, iSz)
         self.tbStrikeMD.setToolTip(self.tr("Markdown Strikethrough"))
         self.tbStrikeMD.clicked.connect(
             lambda: self.requestDocAction.emit(nwDocAction.MD_STRIKE)
         )
 
-        self.tbBold = QToolButton(self)
-        self.tbBold.setIconSize(iconSize)
+        self.tbBold = NIconToolButton(self, iSz)
         self.tbBold.setToolTip(self.tr("Shortcode Bold"))
         self.tbBold.clicked.connect(
             lambda: self.requestDocAction.emit(nwDocAction.SC_BOLD)
         )
 
-        self.tbItalic = QToolButton(self)
-        self.tbItalic.setIconSize(iconSize)
+        self.tbItalic = NIconToolButton(self, iSz)
         self.tbItalic.setToolTip(self.tr("Shortcode Italic"))
         self.tbItalic.clicked.connect(
             lambda: self.requestDocAction.emit(nwDocAction.SC_ITALIC)
         )
 
-        self.tbStrike = QToolButton(self)
-        self.tbStrike.setIconSize(iconSize)
+        self.tbStrike = NIconToolButton(self, iSz)
         self.tbStrike.setToolTip(self.tr("Shortcode Strikethrough"))
         self.tbStrike.clicked.connect(
             lambda: self.requestDocAction.emit(nwDocAction.SC_STRIKE)
         )
 
-        self.tbUnderline = QToolButton(self)
-        self.tbUnderline.setIconSize(iconSize)
+        self.tbUnderline = NIconToolButton(self, iSz)
         self.tbUnderline.setToolTip(self.tr("Shortcode Underline"))
         self.tbUnderline.clicked.connect(
             lambda: self.requestDocAction.emit(nwDocAction.SC_ULINE)
         )
 
-        self.tbMark = QToolButton(self)
-        self.tbMark.setIconSize(iconSize)
+        self.tbMark = NIconToolButton(self, iSz)
         self.tbMark.setToolTip(self.tr("Shortcode Highlight"))
         self.tbMark.clicked.connect(
             lambda: self.requestDocAction.emit(nwDocAction.SC_MARK)
         )
 
-        self.tbSuperscript = QToolButton(self)
-        self.tbSuperscript.setIconSize(iconSize)
+        self.tbSuperscript = NIconToolButton(self, iSz)
         self.tbSuperscript.setToolTip(self.tr("Shortcode Superscript"))
         self.tbSuperscript.clicked.connect(
             lambda: self.requestDocAction.emit(nwDocAction.SC_SUP)
         )
 
-        self.tbSubscript = QToolButton(self)
-        self.tbSubscript.setIconSize(iconSize)
+        self.tbSubscript = NIconToolButton(self, iSz)
         self.tbSubscript.setToolTip(self.tr("Shortcode Subscript"))
         self.tbSubscript.clicked.connect(
             lambda: self.requestDocAction.emit(nwDocAction.SC_SUB)
@@ -2374,16 +2365,16 @@ class GuiDocToolBar(QWidget):
         palette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
         self.setPalette(palette)
 
-        self.tbBoldMD.setIcon(SHARED.theme.getIcon("fmt_bold-md"))
-        self.tbItalicMD.setIcon(SHARED.theme.getIcon("fmt_italic-md"))
-        self.tbStrikeMD.setIcon(SHARED.theme.getIcon("fmt_strike-md"))
-        self.tbBold.setIcon(SHARED.theme.getIcon("fmt_bold"))
-        self.tbItalic.setIcon(SHARED.theme.getIcon("fmt_italic"))
-        self.tbStrike.setIcon(SHARED.theme.getIcon("fmt_strike"))
-        self.tbUnderline.setIcon(SHARED.theme.getIcon("fmt_underline"))
-        self.tbMark.setIcon(SHARED.theme.getIcon("fmt_mark"))
-        self.tbSuperscript.setIcon(SHARED.theme.getIcon("fmt_superscript"))
-        self.tbSubscript.setIcon(SHARED.theme.getIcon("fmt_subscript"))
+        self.tbBoldMD.setThemeIcon("fmt_bold-md")
+        self.tbItalicMD.setThemeIcon("fmt_italic-md")
+        self.tbStrikeMD.setThemeIcon("fmt_strike-md")
+        self.tbBold.setThemeIcon("fmt_bold")
+        self.tbItalic.setThemeIcon("fmt_italic")
+        self.tbStrike.setThemeIcon("fmt_strike")
+        self.tbUnderline.setThemeIcon("fmt_underline")
+        self.tbMark.setThemeIcon("fmt_mark")
+        self.tbSuperscript.setThemeIcon("fmt_superscript")
+        self.tbSubscript.setThemeIcon("fmt_subscript")
 
         return
 
@@ -2412,8 +2403,9 @@ class GuiDocEditSearch(QFrame):
         self.doNextFile  = CONFIG.searchNextFile
         self.doMatchCap  = CONFIG.searchMatchCap
 
+        iSz = SHARED.theme.baseIconSize
         mPx = CONFIG.pxInt(6)
-        tPx = int(0.8*SHARED.theme.fontPixelSize)
+
         self.boxFont = SHARED.theme.guiFont
         self.boxFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
 
@@ -2439,7 +2431,7 @@ class GuiDocEditSearch(QFrame):
 
         self.searchOpt = QToolBar(self)
         self.searchOpt.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
-        self.searchOpt.setIconSize(QSize(tPx, tPx))
+        self.searchOpt.setIconSize(iSz)
         self.searchOpt.setContentsMargins(0, 0, 0, 0)
 
         self.searchLabel = QLabel(self.tr("Search"))
@@ -2497,25 +2489,19 @@ class GuiDocEditSearch(QFrame):
         # Buttons
         # =======
 
-        bPx = self.searchBox.sizeHint().height()
-
-        self.showReplace = QToolButton(self)
-        self.showReplace.setArrowType(Qt.ArrowType.RightArrow)
-        self.showReplace.setCheckable(True)
+        self.showReplace = NIconToggleButton(self, iSz, "unfold")
         self.showReplace.toggled.connect(self._doToggleReplace)
 
-        self.searchButton = QPushButton("")
-        self.searchButton.setFixedSize(QSize(bPx, bPx))
+        self.searchButton = NIconToolButton(self, iSz)
         self.searchButton.setToolTip(self.tr("Find in current document"))
         self.searchButton.clicked.connect(self._doSearch)
 
-        self.replaceButton = QPushButton("")
-        self.replaceButton.setFixedSize(QSize(bPx, bPx))
+        self.replaceButton = NIconToolButton(self, iSz)
         self.replaceButton.setToolTip(self.tr("Find and replace in current document"))
         self.replaceButton.clicked.connect(self._doReplace)
 
-        self.mainBox.addWidget(self.searchLabel,   0, 0, 1, 2, Qt.AlignmentFlag.AlignLeft)
-        self.mainBox.addWidget(self.searchOpt,     0, 2, 1, 3, Qt.AlignmentFlag.AlignRight)
+        self.mainBox.addWidget(self.searchLabel,   0, 0, 1, 2, QtAlignLeft)
+        self.mainBox.addWidget(self.searchOpt,     0, 2, 1, 3, QtAlignRight)
         self.mainBox.addWidget(self.showReplace,   1, 0, 1, 1)
         self.mainBox.addWidget(self.searchBox,     1, 1, 1, 2)
         self.mainBox.addWidget(self.searchButton,  1, 3, 1, 1)
@@ -2648,8 +2634,8 @@ class GuiDocEditSearch(QFrame):
         self.toggleProject.setIcon(SHARED.theme.getIcon("search_project"))
         self.toggleMatchCap.setIcon(SHARED.theme.getIcon("search_preserve"))
         self.cancelSearch.setIcon(SHARED.theme.getIcon("search_cancel"))
-        self.searchButton.setIcon(SHARED.theme.getIcon("search"))
-        self.replaceButton.setIcon(SHARED.theme.getIcon("search_replace"))
+        self.searchButton.setThemeIcon("search")
+        self.replaceButton.setThemeIcon("search_replace")
 
         # Set stylesheets
         self.searchOpt.setStyleSheet("QToolBar {padding: 0;}")
@@ -2735,10 +2721,6 @@ class GuiDocEditSearch(QFrame):
     @pyqtSlot(bool)
     def _doToggleReplace(self, state: bool) -> None:
         """Toggle the show/hide of the replace box."""
-        if state:
-            self.showReplace.setArrowType(Qt.ArrowType.DownArrow)
-        else:
-            self.showReplace.setArrowType(Qt.ArrowType.RightArrow)
         self.replaceBox.setVisible(state)
         self.replaceButton.setVisible(state)
         self.repVisible = state
@@ -2818,7 +2800,8 @@ class GuiDocEditHeader(QWidget):
         self._docHandle = None
         self._docOutline: dict[int, str] = {}
 
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
+        iSz = SHARED.theme.baseIconSize
         mPx = CONFIG.pxInt(4)
 
         # Main Widget Settings
@@ -2830,7 +2813,7 @@ class GuiDocEditHeader(QWidget):
         self.itemTitle.setMargin(0)
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
         self.itemTitle.setAutoFillBackground(True)
-        self.itemTitle.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.itemTitle.setAlignment(QtAlignCenterTop)
         self.itemTitle.setFixedHeight(iPx)
 
         lblFont = self.itemTitle.font()
@@ -2841,27 +2824,27 @@ class GuiDocEditHeader(QWidget):
         self.outlineMenu = QMenu(self)
 
         # Buttons
-        self.tbButton = NIconToolButton(self, iPx)
+        self.tbButton = NIconToolButton(self, iSz)
         self.tbButton.setVisible(False)
         self.tbButton.setToolTip(self.tr("Toggle Tool Bar"))
         self.tbButton.clicked.connect(lambda: self.toggleToolBarRequest.emit())
 
-        self.outlineButton = NIconToolButton(self, iPx)
+        self.outlineButton = NIconToolButton(self, iSz)
         self.outlineButton.setVisible(False)
         self.outlineButton.setToolTip(self.tr("Outline"))
         self.outlineButton.setMenu(self.outlineMenu)
 
-        self.searchButton = NIconToolButton(self, iPx)
+        self.searchButton = NIconToolButton(self, iSz)
         self.searchButton.setVisible(False)
         self.searchButton.setToolTip(self.tr("Search"))
         self.searchButton.clicked.connect(self.docEditor.toggleSearch)
 
-        self.minmaxButton = NIconToolButton(self, iPx)
+        self.minmaxButton = NIconToolButton(self, iSz)
         self.minmaxButton.setVisible(False)
         self.minmaxButton.setToolTip(self.tr("Toggle Focus Mode"))
         self.minmaxButton.clicked.connect(lambda: self.docEditor.toggleFocusModeRequest.emit())
 
-        self.closeButton = NIconToolButton(self, iPx)
+        self.closeButton = NIconToolButton(self, iSz)
         self.closeButton.setVisible(False)
         self.closeButton.setToolTip(self.tr("Close"))
         self.closeButton.clicked.connect(self._closeDocument)
@@ -2930,11 +2913,11 @@ class GuiDocEditHeader(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        self.tbButton.setIcon(SHARED.theme.getIcon("menu"))
-        self.outlineButton.setIcon(SHARED.theme.getIcon("list"))
-        self.searchButton.setIcon(SHARED.theme.getIcon("search"))
-        self.minmaxButton.setIcon(SHARED.theme.getIcon("maximise"))
-        self.closeButton.setIcon(SHARED.theme.getIcon("close"))
+        self.tbButton.setThemeIcon("menu")
+        self.outlineButton.setThemeIcon("list")
+        self.searchButton.setThemeIcon("search")
+        self.minmaxButton.setThemeIcon("maximise")
+        self.closeButton.setThemeIcon("close")
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.tbButton.setStyleSheet(buttonStyle)
@@ -3002,7 +2985,7 @@ class GuiDocEditHeader(QWidget):
     @pyqtSlot(bool)
     def _focusModeChanged(self, focusMode: bool) -> None:
         """Update minimise/maximise icon of the Focus Mode button."""
-        self.minmaxButton.setIcon(SHARED.theme.getIcon("minimise" if focusMode else "maximise"))
+        self.minmaxButton.setThemeIcon("minimise" if focusMode else "maximise")
         return
 
     ##
@@ -3035,7 +3018,7 @@ class GuiDocEditFooter(QWidget):
         self._tItem = None
         self._docHandle = None
 
-        iPx = round(0.9*SHARED.theme.baseIconSize)
+        iPx = round(0.9*SHARED.theme.baseIconHeight)
         fPx = int(0.9*SHARED.theme.fontPixelSize)
         mPx = CONFIG.pxInt(8)
         bSp = CONFIG.pxInt(4)
@@ -3053,13 +3036,11 @@ class GuiDocEditFooter(QWidget):
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
 
-        alLeftTop = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop
-
         # Status
         self.statusIcon = QLabel("", self)
         self.statusIcon.setContentsMargins(0, 0, 0, 0)
         self.statusIcon.setFixedHeight(iPx)
-        self.statusIcon.setAlignment(alLeftTop)
+        self.statusIcon.setAlignment(QtAlignLeftTop)
 
         self.statusText = QLabel(self.tr("Status"))
         self.statusText.setIndent(0)
@@ -3067,14 +3048,14 @@ class GuiDocEditFooter(QWidget):
         self.statusText.setContentsMargins(0, 0, 0, 0)
         self.statusText.setAutoFillBackground(True)
         self.statusText.setFixedHeight(fPx)
-        self.statusText.setAlignment(alLeftTop)
+        self.statusText.setAlignment(QtAlignLeftTop)
         self.statusText.setFont(lblFont)
 
         # Lines
         self.linesIcon = QLabel("", self)
         self.linesIcon.setContentsMargins(0, 0, 0, 0)
         self.linesIcon.setFixedHeight(iPx)
-        self.linesIcon.setAlignment(alLeftTop)
+        self.linesIcon.setAlignment(QtAlignLeftTop)
 
         self.linesText = QLabel("", self)
         self.linesText.setIndent(0)
@@ -3082,14 +3063,14 @@ class GuiDocEditFooter(QWidget):
         self.linesText.setContentsMargins(0, 0, 0, 0)
         self.linesText.setAutoFillBackground(True)
         self.linesText.setFixedHeight(fPx)
-        self.linesText.setAlignment(alLeftTop)
+        self.linesText.setAlignment(QtAlignLeftTop)
         self.linesText.setFont(lblFont)
 
         # Words
         self.wordsIcon = QLabel("", self)
         self.wordsIcon.setContentsMargins(0, 0, 0, 0)
         self.wordsIcon.setFixedHeight(iPx)
-        self.wordsIcon.setAlignment(alLeftTop)
+        self.wordsIcon.setAlignment(QtAlignLeftTop)
 
         self.wordsText = QLabel("", self)
         self.wordsText.setIndent(0)
@@ -3097,7 +3078,7 @@ class GuiDocEditFooter(QWidget):
         self.wordsText.setContentsMargins(0, 0, 0, 0)
         self.wordsText.setAutoFillBackground(True)
         self.wordsText.setFixedHeight(fPx)
-        self.wordsText.setAlignment(alLeftTop)
+        self.wordsText.setAlignment(QtAlignLeftTop)
         self.wordsText.setFont(lblFont)
 
         # Assemble Layout
@@ -3136,7 +3117,7 @@ class GuiDocEditFooter(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        iPx = round(0.9*SHARED.theme.baseIconSize)
+        iPx = round(0.9*SHARED.theme.baseIconHeight)
         self.linesIcon.setPixmap(SHARED.theme.getPixmap("status_lines", (iPx, iPx)))
         self.wordsIcon.setPixmap(SHARED.theme.getPixmap("status_stats", (iPx, iPx)))
         self.matchColours()
@@ -3178,7 +3159,7 @@ class GuiDocEditFooter(QWidget):
             sIcon = QPixmap()
             sText = ""
         else:
-            iPx = round(0.9*SHARED.theme.baseIconSize)
+            iPx = round(0.9*SHARED.theme.baseIconHeight)
             status, icon = self._tItem.getImportStatus(incIcon=True)
             sIcon = icon.pixmap(iPx, iPx)
             sText = f"{status} / {self._tItem.describeMe()}"

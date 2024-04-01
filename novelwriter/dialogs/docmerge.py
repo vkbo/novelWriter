@@ -27,7 +27,7 @@ from __future__ import annotations
 import logging
 
 from PyQt5.QtGui import QCloseEvent
-from PyQt5.QtCore import Qt, QSize, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QDialogButtonBox, QGridLayout, QLabel,
     QListWidget, QListWidgetItem, QVBoxLayout, QWidget
@@ -59,13 +59,14 @@ class GuiDocMerge(QDialog):
             SHARED.theme.helpText, parent=self, wrap=True
         )
 
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
+        iSz = SHARED.theme.baseIconSize
         hSp = CONFIG.pxInt(12)
         vSp = CONFIG.pxInt(8)
         bSp = CONFIG.pxInt(12)
 
-        self.listBox = QListWidget()
-        self.listBox.setIconSize(QSize(iPx, iPx))
+        self.listBox = QListWidget(self)
+        self.listBox.setIconSize(iSz)
         self.listBox.setMinimumWidth(CONFIG.pxInt(400))
         self.listBox.setMinimumHeight(CONFIG.pxInt(180))
         self.listBox.setSelectionBehavior(QAbstractItemView.SelectRows)

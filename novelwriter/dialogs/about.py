@@ -26,7 +26,6 @@ from __future__ import annotations
 import logging
 
 from PyQt5.QtGui import QCloseEvent, QColor
-from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QTextBrowser, QVBoxLayout,
     QWidget
@@ -36,6 +35,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import readTextFile
 from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.versioninfo import VersionInfoWidget
+from novelwriter.types import QtAlignRightTop
 
 logger = logging.getLogger(__name__)
 
@@ -100,10 +100,8 @@ class GuiAbout(QDialog):
         self.innerBox.addSpacing(hB)
         self.innerBox.addWidget(self.btnBox)
 
-        topRight = Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight
-
         self.outerBox = QHBoxLayout()
-        self.outerBox.addWidget(self.nwLogo, 0, topRight)
+        self.outerBox.addWidget(self.nwLogo, 0, QtAlignRightTop)
         self.outerBox.addLayout(self.innerBox, 1)
 
         self.setLayout(self.outerBox)
