@@ -47,6 +47,7 @@ from novelwriter.enum import nwDocMode, nwItemClass, nwOutline
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
+from novelwriter.types import QtAlignRight
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -676,7 +677,7 @@ class GuiNovelTree(QTreeWidget):
             newItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
             newItem.setData(self.C_DATA, self.D_TITLE, sTitle)
             newItem.setData(self.C_DATA, self.D_KEY, tKey)
-            newItem.setTextAlignment(self.C_WORDS, Qt.AlignmentFlag.AlignRight)
+            newItem.setTextAlignment(self.C_WORDS, QtAlignRight)
 
             self._updateTreeItemValues(newItem, novIdx, tHandle, sTitle)
             self._treeMap[tKey] = newItem

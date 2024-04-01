@@ -32,6 +32,8 @@ from PyQt5.QtWidgets import (
     QStyleOptionToolButton, QToolBar, QToolButton, QWidget
 )
 
+from novelwriter.types import QtAlignLeft
+
 
 class NPagedSideBar(QToolBar):
     """Extensions: Paged Side Bar
@@ -171,7 +173,7 @@ class _NPagedToolButton(QToolButton):
 
         paint.setPen(textCol)
         paint.setOpacity(1.0)
-        paint.drawText(QRectF(self._lM, self._tM, tW, tH), Qt.AlignLeft, self.text())
+        paint.drawText(QRectF(self._lM, self._tM, tW, tH), QtAlignLeft, self.text())
 
         tC = self.height()//2
         tW = self.width() - self._aH - self._lM
@@ -223,7 +225,7 @@ class _NPagedToolLabel(QLabel):
 
         paint.setPen(self._textCol)
         paint.setOpacity(1.0)
-        paint.drawText(QRectF(self._lM, self._tM, tW, tH), Qt.AlignLeft, self.text())
+        paint.drawText(QRectF(self._lM, self._tM, tW, tH), QtAlignLeft, self.text())
 
         return
 

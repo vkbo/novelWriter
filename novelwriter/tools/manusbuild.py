@@ -36,13 +36,14 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwBuildFmt
 from novelwriter.common import makeFileNameSafe, openExternalPath
 from novelwriter.constants import nwLabels
-from novelwriter.core.item import NWItem
-from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.buildsettings import BuildSettings
+from novelwriter.core.docbuild import NWBuildDocument
+from novelwriter.core.item import NWItem
+from novelwriter.enum import nwBuildFmt
 from novelwriter.extensions.simpleprogress import NProgressSimple
+from novelwriter.types import QtAlignCenter
 
 logger = logging.getLogger(__name__)
 
@@ -199,7 +200,7 @@ class GuiManuscriptBuild(QDialog):
         ])
 
         self.outerBox = QVBoxLayout()
-        self.outerBox.addWidget(self.lblMain, 0, Qt.AlignCenter)
+        self.outerBox.addWidget(self.lblMain, 0, QtAlignCenter)
         self.outerBox.addSpacing(sp16)
         self.outerBox.addWidget(self.mainSplit, 1)
         self.outerBox.addSpacing(sp4)

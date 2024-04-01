@@ -35,6 +35,7 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import readTextFile
 from novelwriter.extensions.switch import NSwitch
+from novelwriter.types import QtAlignLeft, QtAlignRight
 
 logger = logging.getLogger(__name__)
 
@@ -82,11 +83,11 @@ class GuiLipsum(QDialog):
         self.randSwitch = NSwitch(self)
 
         self.formBox = QGridLayout()
-        self.formBox.addWidget(self.headLabel, 0, 0, 1, 2, Qt.AlignLeft)
-        self.formBox.addWidget(self.paraLabel, 1, 0, 1, 1, Qt.AlignLeft)
-        self.formBox.addWidget(self.paraCount, 1, 1, 1, 1, Qt.AlignRight)
-        self.formBox.addWidget(self.randLabel, 2, 0, 1, 1, Qt.AlignLeft)
-        self.formBox.addWidget(self.randSwitch, 2, 1, 1, 1, Qt.AlignRight)
+        self.formBox.addWidget(self.headLabel, 0, 0, 1, 2, QtAlignLeft)
+        self.formBox.addWidget(self.paraLabel, 1, 0, 1, 1, QtAlignLeft)
+        self.formBox.addWidget(self.paraCount, 1, 1, 1, 1, QtAlignRight)
+        self.formBox.addWidget(self.randLabel, 2, 0, 1, 1, QtAlignLeft)
+        self.formBox.addWidget(self.randSwitch, 2, 1, 1, 1, QtAlignRight)
         self.formBox.setVerticalSpacing(vSp)
         self.formBox.setRowStretch(3, 1)
         self.innerBox.addLayout(self.formBox)

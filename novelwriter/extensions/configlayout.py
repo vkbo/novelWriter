@@ -37,8 +37,6 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG
 
 DEFAULT_SCALE = 0.9
-RIGHT_TOP = Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignTop
-LEFT_TOP = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop
 
 
 class NFixedPage(QFrame):

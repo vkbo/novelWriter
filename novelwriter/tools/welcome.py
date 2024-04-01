@@ -41,14 +41,15 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwItemClass
 from novelwriter.common import cssCol, formatInt, makeFileNameSafe
 from novelwriter.constants import nwFiles
 from novelwriter.core.coretools import ProjectBuilder
+from novelwriter.enum import nwItemClass
 from novelwriter.extensions.configlayout import NWrappedWidgetBox
-from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.modified import NSpinBox
+from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.versioninfo import VersionInfoWidget
+from novelwriter.types import QtAlignLeft, QtAlignRightTop
 
 logger = logging.getLogger(__name__)
 
@@ -153,10 +154,8 @@ class GuiWelcome(QDialog):
         self.innerBox.addSpacing(hB)
         self.innerBox.addLayout(self.btnBox)
 
-        topRight = Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight
-
         self.outerBox = QHBoxLayout()
-        self.outerBox.addWidget(self.nwLogo, 3, topRight)
+        self.outerBox.addWidget(self.nwLogo, 3, QtAlignRightTop)
         self.outerBox.addLayout(self.innerBox, 9)
         self.outerBox.setContentsMargins(hF, hE, hC, hE)
 
@@ -621,7 +620,7 @@ class _NewProjectForm(QWidget):
 
         # Project Form
         self.projectForm = QFormLayout()
-        self.projectForm.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.projectForm.setAlignment(QtAlignLeft)
         self.projectForm.addRow(self.tr("Project Name"), self.projName)
         self.projectForm.addRow(self.tr("Author"), self.projAuthor)
         self.projectForm.addRow(self.tr("Project Path"), self.pathBox)
@@ -672,7 +671,7 @@ class _NewProjectForm(QWidget):
         self.addNotes.setChecked(False)
 
         self.notesForm = QFormLayout()
-        self.notesForm.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.notesForm.setAlignment(QtAlignLeft)
         self.notesForm.addRow(self.tr("Add a folder for plot notes"), self.addPlot)
         self.notesForm.addRow(self.tr("Add a folder for character notes"), self.addChar)
         self.notesForm.addRow(self.tr("Add a folder for location notes"), self.addWorld)

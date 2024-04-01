@@ -30,13 +30,14 @@ from PyQt5.QtCore import QThreadPool, Qt
 from PyQt5.QtWidgets import QAction, QMenu, qApp
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.constants import nwKeyWords, nwUnicode
+from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import (
     nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwTrinary, nwWidget
 )
-from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.gui.doceditor import GuiDocEditor, GuiDocToolBar
 from novelwriter.text.counting import standardCounter
-from novelwriter.dialogs.editlabel import GuiEditLabel
+from novelwriter.types import QtAlignJustify, QtAlignLeft
 
 KEY_DELAY = 1
 
@@ -53,7 +54,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # Check Defaults
     qDoc = nwGUI.docEditor.document()
-    assert qDoc.defaultTextOption().alignment() == Qt.AlignLeft
+    assert qDoc.defaultTextOption().alignment() == QtAlignLeft
     assert nwGUI.docEditor.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
     assert nwGUI.docEditor.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
     assert nwGUI.docEditor._typPadChar == nwUnicode.U_NBSP
@@ -76,7 +77,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     qDoc = nwGUI.docEditor.document()
     assert CONFIG.textFont == qDoc.defaultFont().family()
-    assert qDoc.defaultTextOption().alignment() == Qt.AlignJustify
+    assert qDoc.defaultTextOption().alignment() == QtAlignJustify
     assert qDoc.defaultTextOption().flags() & QTextOption.ShowTabsAndSpaces
     assert qDoc.defaultTextOption().flags() & QTextOption.ShowLineAndParagraphSeparators
     assert nwGUI.docEditor.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff

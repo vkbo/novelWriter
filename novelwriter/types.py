@@ -1,6 +1,6 @@
 """
-novelWriter – Typings
-=====================
+novelWriter – Types and Flags
+=============================
 
 File History:
 Created: 2024-04-01 [2.4rc1]
@@ -25,8 +25,19 @@ from __future__ import annotations
 
 from PyQt5.QtCore import Qt
 
+# Qt Alignment Flags
+
+QtAlignAbsolute = Qt.AlignmentFlag.AlignAbsolute
+QtAlignCenter = Qt.AlignmentFlag.AlignCenter
+QtAlignCenterTop = Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop
+QtAlignJustify = Qt.AlignmentFlag.AlignJustify
 QtAlignLeft = Qt.AlignmentFlag.AlignLeft
-QtAlignRight = Qt.AlignmentFlag.AlignRight
 QtAlignLeftBase = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignBaseline
+QtAlignLeftMiddle = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+QtAlignLeftTop = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop
+QtAlignMiddle = Qt.AlignmentFlag.AlignVCenter
+QtAlignRight = Qt.AlignmentFlag.AlignRight
 QtAlignRightBase = Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignBaseline
 QtAlignRightMiddle = Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+QtAlignRightTop = Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignTop
+QtAlignTop = Qt.AlignmentFlag.AlignTop

@@ -39,13 +39,14 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
-from novelwriter.extensions.switch import NSwitch
-from novelwriter.extensions.modified import NComboBox, NDoubleSpinBox, NSpinBox
-from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.extensions.configlayout import (
     NColourLabel, NFixedPage, NScrollableForm, NScrollablePage
 )
+from novelwriter.extensions.modified import NComboBox, NDoubleSpinBox, NSpinBox
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
+from novelwriter.extensions.switch import NSwitch
+from novelwriter.extensions.switchbox import NSwitchBox
+from novelwriter.types import QtAlignLeft
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -473,7 +474,7 @@ class _FilterTab(NFixedPage):
             trItem.setData(self.C_DATA, self.D_FILE, isFile)
             trItem.setIcon(self.C_ACTIVE, SHARED.theme.getIcon(iconName))
 
-            trItem.setTextAlignment(self.C_NAME, Qt.AlignLeft)
+            trItem.setTextAlignment(self.C_NAME, QtAlignLeft)
 
             if pHandle is None and nwItem.isRootType():
                 self.optTree.addTopLevelItem(trItem)

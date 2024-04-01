@@ -52,6 +52,9 @@ from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
+from novelwriter.types import (
+    QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignRight, QtAlignTop
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -777,7 +780,7 @@ class _PreviewWidget(QTextBrowser):
         self.ageLabel.setFont(aFont)
         self.ageLabel.setPalette(aPalette)
         self.ageLabel.setAutoFillBackground(True)
-        self.ageLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.ageLabel.setAlignment(QtAlignCenter)
         self.ageLabel.setFixedHeight(int(2.1*SHARED.theme.fontPixelSize))
 
         # Progress
@@ -816,9 +819,9 @@ class _PreviewWidget(QTextBrowser):
         """Enable/disable the justify text option."""
         pOptions = self.document().defaultTextOption()
         if state:
-            pOptions.setAlignment(Qt.AlignmentFlag.AlignJustify)
+            pOptions.setAlignment(QtAlignJustify)
         else:
-            pOptions.setAlignment(Qt.AlignmentFlag.AlignAbsolute)
+            pOptions.setAlignment(QtAlignAbsolute)
         self.document().setDefaultTextOption(pOptions)
         return
 
@@ -993,8 +996,8 @@ class _StatsWidget(QWidget):
         self.mainStack.addWidget(self.maxWidget)
 
         self.outerBox = QHBoxLayout()
-        self.outerBox.addWidget(self.toggleButton, 0, Qt.AlignmentFlag.AlignTop)
-        self.outerBox.addWidget(self.mainStack, 1, Qt.AlignmentFlag.AlignTop)
+        self.outerBox.addWidget(self.toggleButton, 0, QtAlignTop)
+        self.outerBox.addWidget(self.mainStack, 1, QtAlignTop)
         self.outerBox.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(self.outerBox)
@@ -1083,8 +1086,6 @@ class _StatsWidget(QWidget):
         hPx = CONFIG.pxInt(12)
         vPx = CONFIG.pxInt(4)
 
-        alignRight = Qt.AlignmentFlag.AlignRight
-
         # Left Column
         self.maxTotalWords = QLabel(self)
         self.maxHeaderWords = QLabel(self)
@@ -1092,11 +1093,11 @@ class _StatsWidget(QWidget):
         self.maxTitleCount = QLabel(self)
         self.maxParCount = QLabel(self)
 
-        self.maxTotalWords.setAlignment(alignRight)
-        self.maxHeaderWords.setAlignment(alignRight)
-        self.maxTextWords.setAlignment(alignRight)
-        self.maxTitleCount.setAlignment(alignRight)
-        self.maxParCount.setAlignment(alignRight)
+        self.maxTotalWords.setAlignment(QtAlignRight)
+        self.maxHeaderWords.setAlignment(QtAlignRight)
+        self.maxTextWords.setAlignment(QtAlignRight)
+        self.maxTitleCount.setAlignment(QtAlignRight)
+        self.maxParCount.setAlignment(QtAlignRight)
 
         self.leftForm = QFormLayout()
         self.leftForm.addRow(self.tr("Words"), self.maxTotalWords)
@@ -1117,13 +1118,13 @@ class _StatsWidget(QWidget):
         self.maxHeaderWordChars = QLabel(self)
         self.maxTextWordChars = QLabel(self)
 
-        self.maxTotalChars.setAlignment(alignRight)
-        self.maxHeaderChars.setAlignment(alignRight)
-        self.maxTextChars.setAlignment(alignRight)
+        self.maxTotalChars.setAlignment(QtAlignRight)
+        self.maxHeaderChars.setAlignment(QtAlignRight)
+        self.maxTextChars.setAlignment(QtAlignRight)
 
-        self.maxTotalWordChars.setAlignment(alignRight)
-        self.maxHeaderWordChars.setAlignment(alignRight)
-        self.maxTextWordChars.setAlignment(alignRight)
+        self.maxTotalWordChars.setAlignment(QtAlignRight)
+        self.maxHeaderWordChars.setAlignment(QtAlignRight)
+        self.maxTextWordChars.setAlignment(QtAlignRight)
 
         self.rightForm = QFormLayout()
         self.rightForm.addRow(self.tr("Characters"), self.maxTotalChars)

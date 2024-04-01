@@ -20,26 +20,27 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import sys
 import pytest
+import sys
 
 from pathlib import Path
 from pytestqt.qtbot import QtBot
 
-from novelwriter.constants import nwHeadFmt
-from tools import C, buildTestProject
 from mocked import causeOSError
+from tools import C, buildTestProject
 
-from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QAction, QDialogButtonBox, QListWidgetItem
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtPrintSupport import QPrintPreviewDialog
+from PyQt5.QtWidgets import QAction, QDialogButtonBox, QListWidgetItem
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.guimain import GuiMain
+from novelwriter.constants import nwHeadFmt
 from novelwriter.core.buildsettings import BuildSettings
-from novelwriter.tools.manuscript import GuiManuscript
+from novelwriter.guimain import GuiMain
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
+from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.manussettings import GuiBuildSettings
+from novelwriter.types import QtAlignAbsolute, QtAlignJustify
 
 
 @pytest.mark.gui
@@ -262,11 +263,11 @@ def testManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert manus.docStats.maxTotalChars.text() == "117"
 
     # Toggle justify
-    assert manus.docPreview.document().defaultTextOption().alignment() == Qt.AlignAbsolute
+    assert manus.docPreview.document().defaultTextOption().alignment() == QtAlignAbsolute
     manus.docPreview.setJustify(True)
-    assert manus.docPreview.document().defaultTextOption().alignment() == Qt.AlignJustify
+    assert manus.docPreview.document().defaultTextOption().alignment() == QtAlignJustify
     manus.docPreview.setJustify(False)
-    assert manus.docPreview.document().defaultTextOption().alignment() == Qt.AlignAbsolute
+    assert manus.docPreview.document().defaultTextOption().alignment() == QtAlignAbsolute
 
     # Tests are too fast to trigger this one, so we trigger it manually to ensure it isn't failing
     manus.docPreview._hideProgress()

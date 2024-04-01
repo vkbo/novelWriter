@@ -64,6 +64,9 @@ from novelwriter.gui.editordocument import GuiTextDocument
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.text.counting import standardCounter
 from novelwriter.tools.lipsum import GuiLipsum
+from novelwriter.types import (
+    QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop, QtAlignRight
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -339,7 +342,7 @@ class GuiDocEditor(QPlainTextEdit):
         options = QTextOption()
 
         if CONFIG.doJustify:
-            options.setAlignment(Qt.AlignmentFlag.AlignJustify)
+            options.setAlignment(QtAlignJustify)
         if CONFIG.showTabsNSpaces:
             options.setFlags(options.flags() | QTextOption.Flag.ShowTabsAndSpaces)
         if CONFIG.showLineEndings:
@@ -2514,8 +2517,8 @@ class GuiDocEditSearch(QFrame):
         self.replaceButton.setToolTip(self.tr("Find and replace in current document"))
         self.replaceButton.clicked.connect(self._doReplace)
 
-        self.mainBox.addWidget(self.searchLabel,   0, 0, 1, 2, Qt.AlignmentFlag.AlignLeft)
-        self.mainBox.addWidget(self.searchOpt,     0, 2, 1, 3, Qt.AlignmentFlag.AlignRight)
+        self.mainBox.addWidget(self.searchLabel,   0, 0, 1, 2, QtAlignLeft)
+        self.mainBox.addWidget(self.searchOpt,     0, 2, 1, 3, QtAlignRight)
         self.mainBox.addWidget(self.showReplace,   1, 0, 1, 1)
         self.mainBox.addWidget(self.searchBox,     1, 1, 1, 2)
         self.mainBox.addWidget(self.searchButton,  1, 3, 1, 1)
@@ -2830,7 +2833,7 @@ class GuiDocEditHeader(QWidget):
         self.itemTitle.setMargin(0)
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
         self.itemTitle.setAutoFillBackground(True)
-        self.itemTitle.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.itemTitle.setAlignment(QtAlignCenterTop)
         self.itemTitle.setFixedHeight(iPx)
 
         lblFont = self.itemTitle.font()
@@ -3053,13 +3056,11 @@ class GuiDocEditFooter(QWidget):
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
 
-        alLeftTop = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop
-
         # Status
         self.statusIcon = QLabel("", self)
         self.statusIcon.setContentsMargins(0, 0, 0, 0)
         self.statusIcon.setFixedHeight(iPx)
-        self.statusIcon.setAlignment(alLeftTop)
+        self.statusIcon.setAlignment(QtAlignLeftTop)
 
         self.statusText = QLabel(self.tr("Status"))
         self.statusText.setIndent(0)
@@ -3067,14 +3068,14 @@ class GuiDocEditFooter(QWidget):
         self.statusText.setContentsMargins(0, 0, 0, 0)
         self.statusText.setAutoFillBackground(True)
         self.statusText.setFixedHeight(fPx)
-        self.statusText.setAlignment(alLeftTop)
+        self.statusText.setAlignment(QtAlignLeftTop)
         self.statusText.setFont(lblFont)
 
         # Lines
         self.linesIcon = QLabel("", self)
         self.linesIcon.setContentsMargins(0, 0, 0, 0)
         self.linesIcon.setFixedHeight(iPx)
-        self.linesIcon.setAlignment(alLeftTop)
+        self.linesIcon.setAlignment(QtAlignLeftTop)
 
         self.linesText = QLabel("", self)
         self.linesText.setIndent(0)
@@ -3082,14 +3083,14 @@ class GuiDocEditFooter(QWidget):
         self.linesText.setContentsMargins(0, 0, 0, 0)
         self.linesText.setAutoFillBackground(True)
         self.linesText.setFixedHeight(fPx)
-        self.linesText.setAlignment(alLeftTop)
+        self.linesText.setAlignment(QtAlignLeftTop)
         self.linesText.setFont(lblFont)
 
         # Words
         self.wordsIcon = QLabel("", self)
         self.wordsIcon.setContentsMargins(0, 0, 0, 0)
         self.wordsIcon.setFixedHeight(iPx)
-        self.wordsIcon.setAlignment(alLeftTop)
+        self.wordsIcon.setAlignment(QtAlignLeftTop)
 
         self.wordsText = QLabel("", self)
         self.wordsText.setIndent(0)
@@ -3097,7 +3098,7 @@ class GuiDocEditFooter(QWidget):
         self.wordsText.setContentsMargins(0, 0, 0, 0)
         self.wordsText.setAutoFillBackground(True)
         self.wordsText.setFixedHeight(fPx)
-        self.wordsText.setAlignment(alLeftTop)
+        self.wordsText.setAlignment(QtAlignLeftTop)
         self.wordsText.setFont(lblFont)
 
         # Assemble Layout

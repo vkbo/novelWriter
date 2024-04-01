@@ -37,10 +37,11 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatTime, numberToRoman
 from novelwriter.constants import nwUnicode
-from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrollablePage
-from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.novelselector import NovelSelector
+from novelwriter.extensions.pagedsidebar import NPagedSideBar
+from novelwriter.extensions.switch import NSwitch
+from novelwriter.types import QtAlignRight
 
 logger = logging.getLogger(__name__)
 
@@ -337,10 +338,10 @@ class _ContentsPage(NFixedPage):
 
         treeHeadItem = self.tocTree.headerItem()
         if treeHeadItem:
-            treeHeadItem.setTextAlignment(self.C_WORDS, Qt.AlignmentFlag.AlignRight)
-            treeHeadItem.setTextAlignment(self.C_PAGES, Qt.AlignmentFlag.AlignRight)
-            treeHeadItem.setTextAlignment(self.C_PAGE,  Qt.AlignmentFlag.AlignRight)
-            treeHeadItem.setTextAlignment(self.C_PROG,  Qt.AlignmentFlag.AlignRight)
+            treeHeadItem.setTextAlignment(self.C_WORDS, QtAlignRight)
+            treeHeadItem.setTextAlignment(self.C_PAGES, QtAlignRight)
+            treeHeadItem.setTextAlignment(self.C_PAGE,  QtAlignRight)
+            treeHeadItem.setTextAlignment(self.C_PROG,  QtAlignRight)
 
         treeHeader = self.tocTree.header()
         treeHeader.setStretchLastSection(True)
@@ -490,10 +491,10 @@ class _ContentsPage(NFixedPage):
             newItem.setText(self.C_PAGE,  progPage)
             newItem.setText(self.C_PROG,  progText)
 
-            newItem.setTextAlignment(self.C_WORDS, Qt.AlignRight)
-            newItem.setTextAlignment(self.C_PAGES, Qt.AlignRight)
-            newItem.setTextAlignment(self.C_PAGE,  Qt.AlignRight)
-            newItem.setTextAlignment(self.C_PROG,  Qt.AlignRight)
+            newItem.setTextAlignment(self.C_WORDS, QtAlignRight)
+            newItem.setTextAlignment(self.C_PAGES, QtAlignRight)
+            newItem.setTextAlignment(self.C_PAGE,  QtAlignRight)
+            newItem.setTextAlignment(self.C_PROG,  QtAlignRight)
 
             # Make pages and titles/partitions stand out
             if tLevel < 2:

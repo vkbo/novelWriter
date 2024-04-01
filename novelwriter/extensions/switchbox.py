@@ -24,10 +24,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QGridLayout, QLabel, QScrollArea, QSizePolicy, QWidget
 
 from novelwriter.extensions.switch import NSwitch
+from novelwriter.types import QtAlignLeft, QtAlignRight, QtAlignRightMiddle
 
 
 class NSwitchBox(QScrollArea):
@@ -72,7 +73,7 @@ class NSwitchBox(QScrollArea):
         font = label.font()
         font.setBold(True)
         label.setFont(font)
-        self._content.addWidget(label, self._index, 0, 1, 3, Qt.AlignLeft)
+        self._content.addWidget(label, self._index, 0, 1, 3, QtAlignLeft)
         self._widgets.append(label)
         self._bumpIndex()
         return
@@ -80,17 +81,17 @@ class NSwitchBox(QScrollArea):
     def addItem(self, qIcon: QIcon, text: str, identifier: str, default: bool = False) -> None:
         """Add an item to the content box."""
         icon = QLabel("")
-        icon.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        icon.setAlignment(QtAlignRightMiddle)
         icon.setPixmap(qIcon.pixmap(self._sIcon, self._sIcon))
-        self._content.addWidget(icon, self._index, 0, Qt.AlignLeft)
+        self._content.addWidget(icon, self._index, 0, QtAlignLeft)
 
         label = QLabel(text)
-        self._content.addWidget(label, self._index, 1, Qt.AlignLeft)
+        self._content.addWidget(label, self._index, 1, QtAlignLeft)
 
         switch = NSwitch(self, height=self._hSwitch)
         switch.setChecked(default)
         switch.toggled.connect(lambda state: self._emitSwitchSignal(identifier, state))
-        self._content.addWidget(switch, self._index, 2, Qt.AlignRight)
+        self._content.addWidget(switch, self._index, 2, QtAlignRight)
 
         self._widgets.append(switch)
         self._bumpIndex()
@@ -101,7 +102,7 @@ class NSwitchBox(QScrollArea):
         """Add a blank entry in the content box."""
         spacer = QWidget()
         spacer.setFixedHeight(int(0.5*self._sIcon))
-        self._content.addWidget(spacer, self._index, 0, 1, 3, Qt.AlignLeft)
+        self._content.addWidget(spacer, self._index, 0, 1, 3, QtAlignLeft)
         self._widgets.append(spacer)
         self._bumpIndex()
         return

@@ -37,10 +37,11 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.error import formatException
 from novelwriter.common import formatTime, checkInt, checkIntTuple, minmax
 from novelwriter.constants import nwConst
+from novelwriter.error import formatException
 from novelwriter.extensions.switch import NSwitch
+from novelwriter.types import QtAlignLeftMiddle, QtAlignRight, QtAlignRightMiddle
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -116,9 +117,9 @@ class GuiWritingStats(QDialog):
 
         hHeader = self.listBox.headerItem()
         if hHeader is not None:
-            hHeader.setTextAlignment(self.C_LENGTH, Qt.AlignRight)
-            hHeader.setTextAlignment(self.C_IDLE, Qt.AlignRight)
-            hHeader.setTextAlignment(self.C_COUNT, Qt.AlignRight)
+            hHeader.setTextAlignment(self.C_LENGTH, QtAlignRight)
+            hHeader.setTextAlignment(self.C_IDLE, QtAlignRight)
+            hHeader.setTextAlignment(self.C_COUNT, QtAlignRight)
 
         sortCol = minmax(pOptions.getInt("GuiWritingStats", "sortCol", 0), 0, 2)
         sortOrder = checkIntTuple(
@@ -141,27 +142,27 @@ class GuiWritingStats(QDialog):
 
         self.labelTotal = QLabel(formatTime(0))
         self.labelTotal.setFont(SHARED.theme.guiFontFixed)
-        self.labelTotal.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+        self.labelTotal.setAlignment(QtAlignRightMiddle)
 
         self.labelIdleT = QLabel(formatTime(0))
         self.labelIdleT.setFont(SHARED.theme.guiFontFixed)
-        self.labelIdleT.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+        self.labelIdleT.setAlignment(QtAlignRightMiddle)
 
         self.labelFilter = QLabel(formatTime(0))
         self.labelFilter.setFont(SHARED.theme.guiFontFixed)
-        self.labelFilter.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+        self.labelFilter.setAlignment(QtAlignRightMiddle)
 
         self.novelWords = QLabel("0")
         self.novelWords.setFont(SHARED.theme.guiFontFixed)
-        self.novelWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+        self.novelWords.setAlignment(QtAlignRightMiddle)
 
         self.notesWords = QLabel("0")
         self.notesWords.setFont(SHARED.theme.guiFontFixed)
-        self.notesWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+        self.notesWords.setAlignment(QtAlignRightMiddle)
 
         self.totalWords = QLabel("0")
         self.totalWords.setFont(SHARED.theme.guiFontFixed)
-        self.totalWords.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+        self.totalWords.setAlignment(QtAlignRightMiddle)
 
         lblTTime   = QLabel(self.tr("Total Time:"))
         lblITime   = QLabel(self.tr("Idle Time:"))
@@ -593,10 +594,10 @@ class GuiWritingStats(QDialog):
                 )
                 newItem.setData(self.C_BAR, Qt.DecorationRole, wBar)
 
-            newItem.setTextAlignment(self.C_LENGTH, Qt.AlignRight)
-            newItem.setTextAlignment(self.C_IDLE, Qt.AlignRight)
-            newItem.setTextAlignment(self.C_COUNT, Qt.AlignRight)
-            newItem.setTextAlignment(self.C_BAR, Qt.AlignLeft | Qt.AlignVCenter)
+            newItem.setTextAlignment(self.C_LENGTH, QtAlignRight)
+            newItem.setTextAlignment(self.C_IDLE, QtAlignRight)
+            newItem.setTextAlignment(self.C_COUNT, QtAlignRight)
+            newItem.setTextAlignment(self.C_BAR, QtAlignLeftMiddle)
 
             newItem.setFont(self.C_TIME, SHARED.theme.guiFontFixed)
             newItem.setFont(self.C_LENGTH, SHARED.theme.guiFontFixed)

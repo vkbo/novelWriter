@@ -34,6 +34,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG
 from novelwriter.constants import trConst, nwQuotes
+from novelwriter.types import QtAlignCenter, QtAlignTop
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +69,7 @@ class GuiQuoteSelect(QDialog):
         self.previewLabel = QLabel(current)
         self.previewLabel.setFont(lblFont)
         self.previewLabel.setFixedSize(QSize(pxW, pxH))
-        self.previewLabel.setAlignment(Qt.AlignCenter)
+        self.previewLabel.setAlignment(QtAlignCenter)
         self.previewLabel.setFrameStyle(QFrame.Box | QFrame.Plain)
 
         # Quote Symbols
@@ -94,7 +95,7 @@ class GuiQuoteSelect(QDialog):
         self.buttonBox.rejected.connect(self.reject)
 
         # Assemble
-        self.labelBox.addWidget(self.previewLabel, 0, Qt.AlignTop)
+        self.labelBox.addWidget(self.previewLabel, 0, QtAlignTop)
         self.labelBox.addStretch(1)
 
         self.innerBox.addLayout(self.labelBox)

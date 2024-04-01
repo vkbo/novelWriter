@@ -49,6 +49,7 @@ from novelwriter.error import logException
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
+from novelwriter.types import QtAlignCenterTop, QtAlignJustify
 
 logger = logging.getLogger(__name__)
 
@@ -164,7 +165,7 @@ class GuiDocViewer(QTextBrowser):
         self.document().setDocumentMargin(0)
         options = QTextOption()
         if CONFIG.doJustify:
-            options.setAlignment(Qt.AlignmentFlag.AlignJustify)
+            options.setAlignment(QtAlignJustify)
         self.document().setDefaultTextOption(options)
 
         # Scroll bars
@@ -639,7 +640,7 @@ class GuiDocViewHeader(QWidget):
         self.itemTitle.setMargin(0)
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
         self.itemTitle.setAutoFillBackground(True)
-        self.itemTitle.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.itemTitle.setAlignment(QtAlignCenterTop)
         self.itemTitle.setFixedHeight(iPx)
 
         lblFont = self.itemTitle.font()

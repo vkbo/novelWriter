@@ -54,6 +54,7 @@ from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
+from novelwriter.types import QtAlignLeft, QtAlignRight
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -1585,10 +1586,10 @@ class GuiProjectTree(QTreeWidget):
         newItem.setText(self.C_ACTIVE, "")
         newItem.setText(self.C_STATUS, "")
 
-        newItem.setTextAlignment(self.C_NAME, Qt.AlignmentFlag.AlignLeft)
-        newItem.setTextAlignment(self.C_COUNT, Qt.AlignmentFlag.AlignRight)
-        newItem.setTextAlignment(self.C_ACTIVE, Qt.AlignmentFlag.AlignLeft)
-        newItem.setTextAlignment(self.C_STATUS, Qt.AlignmentFlag.AlignLeft)
+        newItem.setTextAlignment(self.C_NAME, QtAlignLeft)
+        newItem.setTextAlignment(self.C_COUNT, QtAlignRight)
+        newItem.setTextAlignment(self.C_ACTIVE, QtAlignLeft)
+        newItem.setTextAlignment(self.C_STATUS, QtAlignLeft)
 
         newItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
         newItem.setData(self.C_DATA, self.D_WORDS, 0)

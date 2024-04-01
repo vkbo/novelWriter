@@ -37,10 +37,11 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwConst, nwUnicode
 from novelwriter.dialogs.quotes import GuiQuoteSelect
-from novelwriter.extensions.switch import NSwitch
-from novelwriter.extensions.modified import NComboBox, NDoubleSpinBox, NSpinBox
 from novelwriter.extensions.configlayout import NColourLabel, NScrollableForm
+from novelwriter.extensions.modified import NComboBox, NDoubleSpinBox, NSpinBox
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
+from novelwriter.extensions.switch import NSwitch
+from novelwriter.types import QtAlignCenter
 
 logger = logging.getLogger(__name__)
 
@@ -679,7 +680,7 @@ class GuiPreferences(QDialog):
         self.quoteSym["SO"].setMaxLength(1)
         self.quoteSym["SO"].setReadOnly(True)
         self.quoteSym["SO"].setFixedWidth(qWidth)
-        self.quoteSym["SO"].setAlignment(Qt.AlignCenter)
+        self.quoteSym["SO"].setAlignment(QtAlignCenter)
         self.quoteSym["SO"].setText(CONFIG.fmtSQuoteOpen)
         self.btnSingleStyleO = QToolButton(self)
         self.btnSingleStyleO.setIcon(mIcon)
@@ -695,7 +696,7 @@ class GuiPreferences(QDialog):
         self.quoteSym["SC"].setMaxLength(1)
         self.quoteSym["SC"].setReadOnly(True)
         self.quoteSym["SC"].setFixedWidth(qWidth)
-        self.quoteSym["SC"].setAlignment(Qt.AlignCenter)
+        self.quoteSym["SC"].setAlignment(QtAlignCenter)
         self.quoteSym["SC"].setText(CONFIG.fmtSQuoteClose)
         self.btnSingleStyleC = QToolButton(self)
         self.btnSingleStyleC.setIcon(mIcon)
@@ -712,7 +713,7 @@ class GuiPreferences(QDialog):
         self.quoteSym["DO"].setMaxLength(1)
         self.quoteSym["DO"].setReadOnly(True)
         self.quoteSym["DO"].setFixedWidth(qWidth)
-        self.quoteSym["DO"].setAlignment(Qt.AlignCenter)
+        self.quoteSym["DO"].setAlignment(QtAlignCenter)
         self.quoteSym["DO"].setText(CONFIG.fmtDQuoteOpen)
         self.btnDoubleStyleO = QToolButton(self)
         self.btnDoubleStyleO.setIcon(mIcon)
@@ -728,7 +729,7 @@ class GuiPreferences(QDialog):
         self.quoteSym["DC"].setMaxLength(1)
         self.quoteSym["DC"].setReadOnly(True)
         self.quoteSym["DC"].setFixedWidth(qWidth)
-        self.quoteSym["DC"].setAlignment(Qt.AlignCenter)
+        self.quoteSym["DC"].setAlignment(QtAlignCenter)
         self.quoteSym["DC"].setText(CONFIG.fmtDQuoteClose)
         self.btnDoubleStyleC = QToolButton(self)
         self.btnDoubleStyleC.setIcon(mIcon)
