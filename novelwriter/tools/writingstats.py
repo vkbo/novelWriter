@@ -188,7 +188,7 @@ class GuiWritingStats(QDialog):
         self.infoForm.setRowStretch(6, 1)
 
         # Filter Options
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
 
         self.filterBox = QGroupBox(self.tr("Filters"), self)
         self.filterForm = QGridLayout(self)

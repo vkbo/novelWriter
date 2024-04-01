@@ -231,7 +231,7 @@ class GuiItemDetails(QWidget):
             return
 
         self._handle = tHandle
-        iPx = int(round(0.9*SHARED.theme.baseIconSize))
+        iPx = int(round(0.9*SHARED.theme.baseIconHeight))
 
         # Label
         # =====

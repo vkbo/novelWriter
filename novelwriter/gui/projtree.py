@@ -35,7 +35,7 @@ from typing import TYPE_CHECKING
 from PyQt5.QtGui import (
     QDragEnterEvent, QDragMoveEvent, QDropEvent, QIcon, QMouseEvent, QPalette
 )
-from PyQt5.QtCore import QPoint, QTimer, Qt, QSize, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QPoint, QTimer, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QAction, QDialog, QFrame, QHBoxLayout, QHeaderView,
     QLabel, QMenu, QShortcut, QSizePolicy, QTreeWidget, QTreeWidgetItem,
@@ -264,7 +264,7 @@ class GuiProjectToolBar(QWidget):
         self.projTree = projView.projTree
         self.mainGui  = projView.mainGui
 
-        iPx = SHARED.theme.baseIconSize
+        iSz = SHARED.theme.baseIconSize
         mPx = CONFIG.pxInt(2)
 
         self.setContentsMargins(0, 0, 0, 0)
@@ -279,17 +279,17 @@ class GuiProjectToolBar(QWidget):
         # Quick Links
         self.mQuick = QMenu(self)
 
-        self.tbQuick = NIconToolButton(self, iPx)
+        self.tbQuick = NIconToolButton(self, iSz)
         self.tbQuick.setToolTip("%s [Ctrl+L]" % self.tr("Quick Links"))
         self.tbQuick.setShortcut("Ctrl+L")
         self.tbQuick.setMenu(self.mQuick)
 
         # Move Buttons
-        self.tbMoveU = NIconToolButton(self, iPx)
+        self.tbMoveU = NIconToolButton(self, iSz)
         self.tbMoveU.setToolTip("%s [Ctrl+Up]" % self.tr("Move Up"))
         self.tbMoveU.clicked.connect(lambda: self.projTree.moveTreeItem(-1))
 
-        self.tbMoveD = NIconToolButton(self, iPx)
+        self.tbMoveD = NIconToolButton(self, iSz)
         self.tbMoveD.setToolTip("%s [Ctrl+Down]" % self.tr("Move Down"))
         self.tbMoveD.clicked.connect(lambda: self.projTree.moveTreeItem(1))
 
@@ -329,7 +329,7 @@ class GuiProjectToolBar(QWidget):
         self.mAddRoot = self.mAdd.addMenu(trConst(nwLabels.ITEM_DESCRIPTION["root"]))
         self._buildRootMenu()
 
-        self.tbAdd = NIconToolButton(self, iPx)
+        self.tbAdd = NIconToolButton(self, iSz)
         self.tbAdd.setToolTip("%s [Ctrl+N]" % self.tr("Add Item"))
         self.tbAdd.setShortcut("Ctrl+N")
         self.tbAdd.setMenu(self.mAdd)
@@ -346,7 +346,7 @@ class GuiProjectToolBar(QWidget):
         self.aEmptyTrash = self.mMore.addAction(self.tr("Empty Trash"))
         self.aEmptyTrash.triggered.connect(lambda: self.projTree.emptyTrash())
 
-        self.tbMore = NIconToolButton(self, iPx)
+        self.tbMore = NIconToolButton(self, iSz)
         self.tbMore.setToolTip(self.tr("More Options"))
         self.tbMore.setMenu(self.mMore)
 
@@ -517,10 +517,10 @@ class GuiProjectTree(QTreeWidget):
         self.customContextMenuRequested.connect(self._openContextMenu)
 
         # Tree Settings
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
         cMg = CONFIG.pxInt(6)
 
-        self.setIconSize(QSize(iPx, iPx))
+        self.setIconSize(SHARED.theme.baseIconSize)
         self.setFrameStyle(QFrame.Shape.NoFrame)
         self.setUniformRowHeights(True)
         self.setAllColumnsShowFocus(True)
@@ -564,7 +564,7 @@ class GuiProjectTree(QTreeWidget):
         self.itemSelectionChanged.connect(self._treeSelectionChange)
 
         # Auto Scroll
-        self._scrollMargin = SHARED.theme.baseIconSize
+        self._scrollMargin = SHARED.theme.baseIconHeight
         self._scrollDirection = 0
         self._scrollTimer = QTimer(self)
         self._scrollTimer.timeout.connect(self._doAutoScroll)

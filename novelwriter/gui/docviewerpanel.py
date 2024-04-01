@@ -27,7 +27,7 @@ import logging
 
 from enum import Enum
 
-from PyQt5.QtCore import QModelIndex, QSize, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QModelIndex, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QFrame, QHeaderView, QMenu, QTabWidget, QToolButton,
     QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
@@ -55,7 +55,7 @@ class GuiDocViewerPanel(QWidget):
 
         self._lastHandle = None
 
-        iPx = int(1.0*SHARED.theme.baseIconSize)
+        iSz = SHARED.theme.baseIconSize
 
         self.tabBackRefs = _ViewPanelBackRefs(self)
 
@@ -66,7 +66,7 @@ class GuiDocViewerPanel(QWidget):
         self.aInactive.toggled.connect(self._toggleHideInactive)
 
         self.optsButton = QToolButton(self)
-        self.optsButton.setIconSize(QSize(iPx, iPx))
+        self.optsButton.setIconSize(iSz)
         self.optsButton.setMenu(self.optsMenu)
         self.optsButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
@@ -240,13 +240,14 @@ class _ViewPanelBackRefs(QTreeWidget):
         self._parent = parent
         self._treeMap: dict[str, QTreeWidgetItem] = {}
 
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
+        iSz = SHARED.theme.baseIconSize
         cMg = CONFIG.pxInt(6)
 
         self.setHeaderLabels([self.tr("Document"), "", "", self.tr("First Heading")])
         self.setIndentation(0)
         self.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
-        self.setIconSize(QSize(iPx, iPx))
+        self.setIconSize(iSz)
         self.setFrameStyle(QFrame.Shape.NoFrame)
 
         # Set Header Sizes
@@ -382,7 +383,8 @@ class _ViewPanelKeyWords(QTreeWidget):
         self._class = itemClass
         self._treeMap: dict[str, QTreeWidgetItem] = {}
 
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
+        iSz = SHARED.theme.baseIconSize
         cMg = CONFIG.pxInt(6)
 
         self.setHeaderLabels([
@@ -390,7 +392,7 @@ class _ViewPanelKeyWords(QTreeWidget):
             self.tr("Heading"), self.tr("Short Description")
         ])
         self.setIndentation(0)
-        self.setIconSize(QSize(iPx, iPx))
+        self.setIconSize(iSz)
         self.setFrameStyle(QFrame.Shape.NoFrame)
         self.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.setExpandsOnDoubleClick(False)

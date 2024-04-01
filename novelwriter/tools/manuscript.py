@@ -31,7 +31,7 @@ from typing import TYPE_CHECKING
 from datetime import datetime
 
 from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
-from PyQt5.QtCore import QSize, QTimer, QUrl, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QTimer, QUrl, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QFormLayout, QGridLayout, QHBoxLayout, QLabel,
     QListWidget, QListWidgetItem, QPushButton, QSizePolicy, QSplitter,
@@ -48,7 +48,7 @@ from novelwriter.core.tohtml import ToHtml
 from novelwriter.core.tokenizer import HeadingFormatter
 from novelwriter.error import logException
 from novelwriter.extensions.circularprogress import NProgressCircle
-from novelwriter.extensions.modified import NIconToolButton
+from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
@@ -89,7 +89,7 @@ class GuiManuscript(QDialog):
         self.setMinimumWidth(CONFIG.pxInt(600))
         self.setMinimumHeight(CONFIG.pxInt(500))
 
-        iPx = SHARED.theme.baseIconSize
+        iSz = SHARED.theme.baseIconSize
         wWin = CONFIG.pxInt(900)
         hWin = CONFIG.pxInt(600)
 
@@ -108,20 +108,17 @@ class GuiManuscript(QDialog):
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
 
-        self.tbAdd = NIconToolButton(self, iPx)
-        self.tbAdd.setIcon(SHARED.theme.getIcon("add"))
+        self.tbAdd = NIconToolButton(self, iSz, "add")
         self.tbAdd.setToolTip(self.tr("Add New Build"))
         self.tbAdd.setStyleSheet(buttonStyle)
         self.tbAdd.clicked.connect(self._createNewBuild)
 
-        self.tbDel = NIconToolButton(self, iPx)
-        self.tbDel.setIcon(SHARED.theme.getIcon("remove"))
+        self.tbDel = NIconToolButton(self, iSz, "remove")
         self.tbDel.setToolTip(self.tr("Delete Selected Build"))
         self.tbDel.setStyleSheet(buttonStyle)
         self.tbDel.clicked.connect(self._deleteSelectedBuild)
 
-        self.tbEdit = NIconToolButton(self, iPx)
-        self.tbEdit.setIcon(SHARED.theme.getIcon("edit"))
+        self.tbEdit = NIconToolButton(self, iSz, "edit")
         self.tbEdit.setToolTip(self.tr("Edit Selected Build"))
         self.tbEdit.setStyleSheet(buttonStyle)
         self.tbEdit.clicked.connect(self._editSelectedBuild)
@@ -140,7 +137,7 @@ class GuiManuscript(QDialog):
         # ======
 
         self.buildList = QListWidget(self)
-        self.buildList.setIconSize(QSize(iPx, iPx))
+        self.buildList.setIconSize(iSz)
         self.buildList.doubleClicked.connect(self._editSelectedBuild)
         self.buildList.currentItemChanged.connect(self._updateBuildDetails)
         self.buildList.setSelectionMode(QAbstractItemView.SingleSelection)
@@ -529,7 +526,7 @@ class _DetailsWidget(QWidget):
         # Tree Widget
         self.listView = QTreeWidget(self)
         self.listView.setHeaderLabels([self.tr("Setting"), self.tr("Value")])
-        self.listView.setIndentation(SHARED.theme.baseIconSize)
+        self.listView.setIndentation(SHARED.theme.baseIconHeight)
         self.listView.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
 
         # Assemble
@@ -724,7 +721,9 @@ class _OutlineWidget(QWidget):
                         parent.addChild(item)
                         indent = True
 
-            self.listView.setIndentation(SHARED.theme.baseIconSize if indent else CONFIG.pxInt(4))
+            self.listView.setIndentation(
+                SHARED.theme.baseIconHeight if indent else CONFIG.pxInt(4)
+            )
             self._outline = data
 
         return
@@ -979,13 +978,7 @@ class _StatsWidget(QWidget):
         self.minWidget = QWidget(self)
         self.maxWidget = QWidget(self)
 
-        iPx = int(0.6*SHARED.theme.baseIconSize)
-        toggleIcon = SHARED.theme.getToggleIcon("unfold", (iPx, iPx))
-
-        self.toggleButton = NIconToolButton(self, iPx)
-        self.toggleButton.setCheckable(True)
-        self.toggleButton.setIcon(toggleIcon)
-        self.toggleButton.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON))
+        self.toggleButton = NIconToggleButton(self, SHARED.theme.baseIconSize, "unfold")
         self.toggleButton.toggled.connect(self._toggleView)
 
         self._buildMinimal()

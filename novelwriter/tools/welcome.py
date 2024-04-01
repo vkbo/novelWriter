@@ -36,8 +36,8 @@ from PyQt5.QtCore import (
 from PyQt5.QtWidgets import (
     QAction, QDialog, QFileDialog, QFormLayout, QHBoxLayout, QLabel, QLineEdit,
     QListView, QMenu, QPushButton, QScrollArea, QShortcut, QStackedWidget,
-    QStyle, QStyleOptionViewItem, QStyledItemDelegate, QToolButton,
-    QVBoxLayout, QWidget, qApp
+    QStyle, QStyleOptionViewItem, QStyledItemDelegate, QVBoxLayout, QWidget,
+    qApp
 )
 
 from novelwriter import CONFIG, SHARED
@@ -46,7 +46,7 @@ from novelwriter.constants import nwFiles
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.enum import nwItemClass
 from novelwriter.extensions.configlayout import NWrappedWidgetBox
-from novelwriter.extensions.modified import NSpinBox
+from novelwriter.extensions.modified import NIconToolButton, NSpinBox
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.versioninfo import VersionInfoWidget
 from novelwriter.types import QtAlignLeft, QtAlignRightTop
@@ -76,8 +76,9 @@ class GuiWelcome(QDialog):
         hD = CONFIG.pxInt(36)
         hE = CONFIG.pxInt(48)
         hF = CONFIG.pxInt(128)
-        self._hPx = CONFIG.pxInt(600)
+        btnIconSize = SHARED.theme.buttonIconSize
 
+        self._hPx = CONFIG.pxInt(600)
         self.resize(*CONFIG.welcomeWinSize)
 
         # Elements
@@ -110,26 +111,32 @@ class GuiWelcome(QDialog):
 
         self.btnList = QPushButton(self.tr("List"), self)
         self.btnList.setIcon(SHARED.theme.getIcon("list"))
+        self.btnList.setIconSize(btnIconSize)
         self.btnList.clicked.connect(self._showOpenProjectPage)
 
         self.btnNew = QPushButton(self.tr("New"), self)
         self.btnNew.setIcon(SHARED.theme.getIcon("add"))
+        self.btnNew.setIconSize(btnIconSize)
         self.btnNew.clicked.connect(self._showNewProjectPage)
 
         self.btnBrowse = QPushButton(self.tr("Browse"), self)
         self.btnBrowse.setIcon(SHARED.theme.getIcon("browse"))
+        self.btnBrowse.setIconSize(btnIconSize)
         self.btnBrowse.clicked.connect(self._browseForProject)
 
         self.btnCancel = QPushButton(self.tr("Cancel"), self)
         self.btnCancel.setIcon(SHARED.theme.getIcon("cross"))
+        self.btnCancel.setIconSize(btnIconSize)
         self.btnCancel.clicked.connect(self.close)
 
         self.btnCreate = QPushButton(self.tr("Create"), self)
         self.btnCreate.setIcon(SHARED.theme.getIcon("star"))
+        self.btnCreate.setIconSize(btnIconSize)
         self.btnCreate.clicked.connect(self.tabNew.createNewProject)
 
         self.btnOpen = QPushButton(self.tr("Open"), self)
         self.btnOpen.setIcon(SHARED.theme.getIcon("open"))
+        self.btnOpen.setIconSize(btnIconSize)
         self.btnOpen.clicked.connect(self._openSelectedItem)
 
         self.btnBox = QHBoxLayout()
@@ -557,10 +564,9 @@ class _NewProjectForm(QWidget):
         self._fillMode = self.FILL_BLANK
         self._copyPath = None
 
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
+        iSz = SHARED.theme.baseIconSize
         sPx = CONFIG.pxInt(16)
-
-        iconSize = QSize(iPx, iPx)
 
         # Project Settings
         # ================
@@ -580,9 +586,7 @@ class _NewProjectForm(QWidget):
         self.projPath = QLineEdit(self)
         self.projPath.setReadOnly(True)
 
-        self.browsePath = QToolButton(self)
-        self.browsePath.setIcon(SHARED.theme.getIcon("browse"))
-        self.browsePath.setIconSize(iconSize)
+        self.browsePath = NIconToolButton(self, iSz, "browse")
         self.browsePath.clicked.connect(self._doBrowse)
 
         self.pathBox = QHBoxLayout()
@@ -593,9 +597,7 @@ class _NewProjectForm(QWidget):
         self.projFill = QLineEdit(self)
         self.projFill.setReadOnly(True)
 
-        self.browseFill = QToolButton(self)
-        self.browseFill.setIconSize(iconSize)
-        self.browseFill.setIcon(SHARED.theme.getIcon("add_document"))
+        self.browseFill = NIconToolButton(self, iSz, "add_document")
 
         self.fillMenu = _PopLeftDirectionMenu(self.browseFill)
 
@@ -612,7 +614,6 @@ class _NewProjectForm(QWidget):
         self.fillCopy.triggered.connect(self._setFillCopy)
 
         self.browseFill.setMenu(self.fillMenu)
-        self.browseFill.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
         self.fillBox = QHBoxLayout()
         self.fillBox.addWidget(self.projFill)

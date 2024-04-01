@@ -32,7 +32,7 @@ from time import time
 from typing import TYPE_CHECKING
 
 from PyQt5.QtGui import QFocusEvent, QFont, QMouseEvent, QPalette, QResizeEvent
-from PyQt5.QtCore import QModelIndex, QPoint, Qt, QSize, pyqtSlot, pyqtSignal
+from PyQt5.QtCore import QModelIndex, QPoint, Qt, pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import (
     QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QHeaderView,
     QInputDialog, QMenu, QSizePolicy, QToolTip, QTreeWidget, QTreeWidgetItem,
@@ -201,7 +201,7 @@ class GuiNovelToolBar(QWidget):
         self.novelView = novelView
         self.mainGui   = novelView.mainGui
 
-        iPx = SHARED.theme.baseIconSize
+        iSz = SHARED.theme.baseIconSize
         mPx = CONFIG.pxInt(2)
 
         self.setContentsMargins(0, 0, 0, 0)
@@ -218,12 +218,12 @@ class GuiNovelToolBar(QWidget):
         self.novelValue.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.novelValue.novelSelectionChanged.connect(self.setCurrentRoot)
 
-        self.tbNovel = NIconToolButton(self, iPx)
+        self.tbNovel = NIconToolButton(self, iSz)
         self.tbNovel.setToolTip(self.tr("Novel Root"))
         self.tbNovel.clicked.connect(self.novelValue.showPopup)
 
         # Refresh Button
-        self.tbRefresh = NIconToolButton(self, iPx)
+        self.tbRefresh = NIconToolButton(self, iSz)
         self.tbRefresh.setToolTip(self.tr("Refresh"))
         self.tbRefresh.clicked.connect(self._refreshNovelTree)
 
@@ -242,7 +242,7 @@ class GuiNovelToolBar(QWidget):
         self.aLastColSize = self.mLastCol.addAction(self.tr("Column Size"))
         self.aLastColSize.triggered.connect(self._selectLastColumnSize)
 
-        self.tbMore = NIconToolButton(self, iPx)
+        self.tbMore = NIconToolButton(self, iSz)
         self.tbMore.setToolTip(self.tr("More Options"))
         self.tbMore.setMenu(self.mMore)
 
@@ -392,10 +392,11 @@ class GuiNovelTree(QTreeWidget):
         # Build GUI
         # =========
 
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
+        iSz = SHARED.theme.baseIconSize
         cMg = CONFIG.pxInt(6)
 
-        self.setIconSize(QSize(iPx, iPx))
+        self.setIconSize(iSz)
         self.setFrameStyle(QFrame.Shape.NoFrame)
         self.setUniformRowHeights(True)
         self.setAllColumnsShowFocus(True)
@@ -456,7 +457,7 @@ class GuiNovelTree(QTreeWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
         self._pMore = SHARED.theme.loadDecoration("deco_doc_more", h=iPx)
         return
 

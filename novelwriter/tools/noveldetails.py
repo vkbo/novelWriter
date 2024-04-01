@@ -27,7 +27,7 @@ import math
 import logging
 
 from PyQt5.QtGui import QCloseEvent
-from PyQt5.QtCore import QSize, Qt, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QDialogButtonBox, QFormLayout, QGridLayout,
     QHBoxLayout, QLabel, QSpinBox, QStackedWidget, QTreeWidget,
@@ -310,7 +310,8 @@ class _ContentsPage(NFixedPage):
         self._data = []
         self._currentRoot = None
 
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
+        iSz = SHARED.theme.baseIconSize
         hPx = CONFIG.pxInt(12)
         vPx = CONFIG.pxInt(4)
         options = SHARED.project.options
@@ -323,7 +324,7 @@ class _ContentsPage(NFixedPage):
 
         # Contents Tree
         self.tocTree = QTreeWidget(self)
-        self.tocTree.setIconSize(QSize(iPx, iPx))
+        self.tocTree.setIconSize(iSz)
         self.tocTree.setIndentation(0)
         self.tocTree.setColumnCount(6)
         self.tocTree.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)

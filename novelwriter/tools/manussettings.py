@@ -28,12 +28,12 @@ import logging
 from typing import TYPE_CHECKING
 
 from PyQt5.QtGui import QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
-from PyQt5.QtCore import QEvent, QSize, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QEvent, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractButton, QAbstractItemView, QDialog, QDialogButtonBox,
     QFontDialog, QFrame, QGridLayout, QHBoxLayout, QHeaderView, QLabel,
     QLineEdit, QMenu, QPlainTextEdit, QPushButton, QSplitter, QStackedWidget,
-    QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -42,7 +42,7 @@ from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.configlayout import (
     NColourLabel, NFixedPage, NScrollableForm, NScrollablePage
 )
-from novelwriter.extensions.modified import NComboBox, NDoubleSpinBox, NSpinBox
+from novelwriter.extensions.modified import NComboBox, NDoubleSpinBox, NIconToolButton, NSpinBox
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
@@ -316,14 +316,13 @@ class _FilterTab(NFixedPage):
         # Project Tree
         # ============
 
-        # Tree Settings
-        iPx = SHARED.theme.baseIconSize
+        iSz = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
         cMg = CONFIG.pxInt(6)
-        iconSize = QSize(iPx, iPx)
 
         # Tree Widget
         self.optTree = QTreeWidget(self)
-        self.optTree.setIconSize(QSize(iPx, iPx))
+        self.optTree.setIconSize(iSz)
         self.optTree.setUniformRowHeights(True)
         self.optTree.setAllColumnsShowFocus(True)
         self.optTree.setHeaderHidden(True)
@@ -346,22 +345,18 @@ class _FilterTab(NFixedPage):
         # Filters
         # =======
 
-        self.includedButton = QToolButton(self)
+        self.includedButton = NIconToolButton(self, iSz)
         self.includedButton.setToolTip(self.tr("Always included"))
         self.includedButton.setIcon(self._statusFlags[self.F_INCLUDED])
-        self.includedButton.setIconSize(iconSize)
         self.includedButton.clicked.connect(lambda: self._setSelectedMode(self.F_INCLUDED))
 
-        self.excludedButton = QToolButton(self)
+        self.excludedButton = NIconToolButton(self, iSz)
         self.excludedButton.setToolTip(self.tr("Always excluded"))
         self.excludedButton.setIcon(self._statusFlags[self.F_EXCLUDED])
-        self.excludedButton.setIconSize(iconSize)
         self.excludedButton.clicked.connect(lambda: self._setSelectedMode(self.F_EXCLUDED))
 
-        self.resetButton = QToolButton(self)
+        self.resetButton = NIconToolButton(self, iSz, "revert")
         self.resetButton.setToolTip(self.tr("Reset to default"))
-        self.resetButton.setIcon(SHARED.theme.getIcon("revert"))
-        self.resetButton.setIconSize(iconSize)
         self.resetButton.clicked.connect(lambda: self._setSelectedMode(self.F_FILTERED))
 
         self.modeBox = QHBoxLayout()
@@ -598,12 +593,11 @@ class _HeadingsTab(NScrollablePage):
         self._build = build
         self._editing = 0
 
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
+        iSz = SHARED.theme.baseIconSize
         sSp = CONFIG.pxInt(16)
         vSp = CONFIG.pxInt(12)
         bSp = CONFIG.pxInt(6)
-        iconSize = QSize(iPx, iPx)
-        editIcon = SHARED.theme.getIcon("edit")
         trHide = self.tr("Hide")
 
         # Format Boxes
@@ -615,9 +609,7 @@ class _HeadingsTab(NScrollablePage):
         self.lblTitle = QLabel(self._build.getLabel("headings.fmtTitle"), self)
         self.fmtTitle = QLineEdit("", self)
         self.fmtTitle.setReadOnly(True)
-        self.btnTitle = QToolButton(self)
-        self.btnTitle.setIcon(editIcon)
-        self.btnTitle.setIconSize(iconSize)
+        self.btnTitle = NIconToolButton(self, iSz, "edit")
         self.btnTitle.clicked.connect(lambda: self._editHeading(self.EDIT_TITLE))
         self.hdeTitle = QLabel(trHide, self)
         self.hdeTitle.setIndent(bSp)
@@ -633,9 +625,7 @@ class _HeadingsTab(NScrollablePage):
         self.lblChapter = QLabel(self._build.getLabel("headings.fmtChapter"), self)
         self.fmtChapter = QLineEdit("", self)
         self.fmtChapter.setReadOnly(True)
-        self.btnChapter = QToolButton(self)
-        self.btnChapter.setIcon(editIcon)
-        self.btnChapter.setIconSize(iconSize)
+        self.btnChapter = NIconToolButton(self, iSz, "edit")
         self.btnChapter.clicked.connect(lambda: self._editHeading(self.EDIT_CHAPTER))
         self.hdeChapter = QLabel(trHide, self)
         self.hdeChapter.setIndent(bSp)
@@ -651,9 +641,7 @@ class _HeadingsTab(NScrollablePage):
         self.lblUnnumbered = QLabel(self._build.getLabel("headings.fmtUnnumbered"), self)
         self.fmtUnnumbered = QLineEdit("", self)
         self.fmtUnnumbered.setReadOnly(True)
-        self.btnUnnumbered = QToolButton(self)
-        self.btnUnnumbered.setIcon(editIcon)
-        self.btnUnnumbered.setIconSize(iconSize)
+        self.btnUnnumbered = NIconToolButton(self, iSz, "edit")
         self.btnUnnumbered.clicked.connect(lambda: self._editHeading(self.EDIT_UNNUM))
         self.hdeUnnumbered = QLabel(trHide, self)
         self.hdeUnnumbered.setIndent(bSp)
@@ -669,9 +657,7 @@ class _HeadingsTab(NScrollablePage):
         self.lblScene = QLabel(self._build.getLabel("headings.fmtScene"), self)
         self.fmtScene = QLineEdit("", self)
         self.fmtScene.setReadOnly(True)
-        self.btnScene = QToolButton(self)
-        self.btnScene.setIcon(editIcon)
-        self.btnScene.setIconSize(iconSize)
+        self.btnScene = NIconToolButton(self, iSz, "edit")
         self.btnScene.clicked.connect(lambda: self._editHeading(self.EDIT_SCENE))
         self.hdeScene = QLabel(trHide, self)
         self.hdeScene.setIndent(bSp)
@@ -687,9 +673,7 @@ class _HeadingsTab(NScrollablePage):
         self.lblHScene = QLabel(self._build.getLabel("headings.fmtHardScene"), self)
         self.fmtHScene = QLineEdit("", self)
         self.fmtHScene.setReadOnly(True)
-        self.btnHScene = QToolButton(self)
-        self.btnHScene.setIcon(editIcon)
-        self.btnHScene.setIconSize(iconSize)
+        self.btnHScene = NIconToolButton(self, iSz, "edit")
         self.btnHScene.clicked.connect(lambda: self._editHeading(self.EDIT_HSCENE))
         self.hdeHScene = QLabel(trHide, self)
         self.hdeHScene.setIndent(bSp)
@@ -705,9 +689,7 @@ class _HeadingsTab(NScrollablePage):
         self.lblSection = QLabel(self._build.getLabel("headings.fmtSection"), self)
         self.fmtSection = QLineEdit("", self)
         self.fmtSection.setReadOnly(True)
-        self.btnSection = QToolButton(self)
-        self.btnSection.setIcon(editIcon)
-        self.btnSection.setIconSize(iconSize)
+        self.btnSection = NIconToolButton(self, iSz, "edit")
         self.btnSection.clicked.connect(lambda: self._editHeading(self.EDIT_SECTION))
         self.hdeSection = QLabel(trHide, self)
         self.hdeSection.setIndent(bSp)
@@ -996,8 +978,8 @@ class _ContentTab(NScrollableForm):
 
         self._build = build
 
-        iPx = SHARED.theme.baseIconSize
-        iconSize = QSize(iPx, iPx)
+        iPx = SHARED.theme.baseIconHeight
+        iSz = SHARED.theme.baseIconSize
 
         # Text Content
         self.incBodyText = NSwitch(self, height=iPx)
@@ -1014,11 +996,8 @@ class _ContentTab(NScrollableForm):
                 lambda keyword=keyword: self._updateIgnoredKeywords(keyword)
             )
 
-        self.ignoredKeywordsButton = QToolButton(self)
-        self.ignoredKeywordsButton.setIcon(SHARED.theme.getIcon("add"))
-        self.ignoredKeywordsButton.setIconSize(iconSize)
+        self.ignoredKeywordsButton = NIconToolButton(self, iSz, "add")
         self.ignoredKeywordsButton.setMenu(self.mnKeywords)
-        self.ignoredKeywordsButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
         self.addGroupLabel(self._build.getLabel("text.grpContent"))
         self.addRow(self._build.getLabel("text.includeBodyText"), self.incBodyText)
@@ -1087,7 +1066,8 @@ class _FormatTab(NScrollableForm):
         self._build = build
         self._unitScale = 1.0
 
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
+        iSz = SHARED.theme.baseIconSize
         spW = 6*SHARED.theme.textNWidth
         dbW = 8*SHARED.theme.textNWidth
 
@@ -1099,8 +1079,7 @@ class _FormatTab(NScrollableForm):
         # Font Family
         self.textFont = QLineEdit(self)
         self.textFont.setReadOnly(True)
-        self.btnTextFont = QPushButton("...")
-        self.btnTextFont.setMaximumWidth(int(2.5*SHARED.theme.getTextWidth("...")))
+        self.btnTextFont = NIconToolButton(self, iSz, "more")
         self.btnTextFont.clicked.connect(self._selectFont)
         self.addRow(
             self._build.getLabel("format.textFont"), self.textFont,
@@ -1353,9 +1332,9 @@ class _OutputTab(NScrollableForm):
 
         self._build = build
 
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
+        iSz = SHARED.theme.baseIconSize
         spW = 6*SHARED.theme.textNWidth
-        iconSize = QSize(iPx, iPx)
 
         # Open Document
         self.addGroupLabel(self._build.getLabel("odt"))
@@ -1365,9 +1344,7 @@ class _OutputTab(NScrollableForm):
 
         self.odtPageHeader = QLineEdit(self)
         self.odtPageHeader.setMinimumWidth(CONFIG.pxInt(200))
-        self.btnPageHeader = QToolButton(self)
-        self.btnPageHeader.setIcon(SHARED.theme.getIcon("revert"))
-        self.btnPageHeader.setIconSize(iconSize)
+        self.btnPageHeader = NIconToolButton(self, iSz, "revert")
         self.btnPageHeader.clicked.connect(self._resetPageHeader)
         self.addRow(
             self._build.getLabel("odt.pageHeader"), self.odtPageHeader,

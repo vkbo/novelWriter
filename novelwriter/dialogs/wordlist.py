@@ -32,13 +32,14 @@ from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QDialogButtonBox, QFileDialog, QHBoxLayout,
-    QLineEdit, QListWidget, QPushButton, QVBoxLayout, qApp
+    QLineEdit, QListWidget, QVBoxLayout, qApp
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatFileFilter
 from novelwriter.core.spellcheck import UserDictionary
 from novelwriter.extensions.configlayout import NColourLabel
+from novelwriter.extensions.modified import NIconToolButton
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -57,6 +58,7 @@ class GuiWordList(QDialog):
         self.setObjectName("GuiWordList")
         self.setWindowTitle(self.tr("Project Word List"))
 
+        iSz = SHARED.theme.baseIconSize
         mS = CONFIG.pxInt(250)
         wW = CONFIG.pxInt(320)
         wH = CONFIG.pxInt(340)
@@ -74,11 +76,11 @@ class GuiWordList(QDialog):
             scale=NColourLabel.HEADER_SCALE
         )
 
-        self.importButton = QPushButton(SHARED.theme.getIcon("import"), "", self)
+        self.importButton = NIconToolButton(self, iSz, "import")
         self.importButton.setToolTip(self.tr("Import words from text file"))
         self.importButton.clicked.connect(self._importWords)
 
-        self.exportButton = QPushButton(SHARED.theme.getIcon("export"), "", self)
+        self.exportButton = NIconToolButton(self, iSz, "export")
         self.exportButton.setToolTip(self.tr("Export words to text file"))
         self.exportButton.clicked.connect(self._exportWords)
 
@@ -96,10 +98,10 @@ class GuiWordList(QDialog):
         # Add/Remove Form
         self.newEntry = QLineEdit(self)
 
-        self.addButton = QPushButton(SHARED.theme.getIcon("add"), "", self)
+        self.addButton = NIconToolButton(self, iSz, "add")
         self.addButton.clicked.connect(self._doAdd)
 
-        self.delButton = QPushButton(SHARED.theme.getIcon("remove"), "", self)
+        self.delButton = NIconToolButton(self, iSz, "remove")
         self.delButton.clicked.connect(self._doDelete)
 
         self.editBox = QHBoxLayout()

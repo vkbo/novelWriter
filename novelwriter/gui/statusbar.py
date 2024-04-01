@@ -58,7 +58,7 @@ class GuiMainStatus(QStatusBar):
         colSaved = SHARED.theme.statSaved
         colUnsaved = SHARED.theme.statUnsaved
 
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
 
         # Permanent Widgets
         # =================
@@ -130,7 +130,7 @@ class GuiMainStatus(QStatusBar):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
         self.langIcon.setPixmap(SHARED.theme.getPixmap("status_lang", (iPx, iPx)))
         self.statsIcon.setPixmap(SHARED.theme.getPixmap("status_stats", (iPx, iPx)))
         self.timePixmap = SHARED.theme.getPixmap("status_time", (iPx, iPx))

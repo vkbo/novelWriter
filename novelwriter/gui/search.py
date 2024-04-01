@@ -27,7 +27,7 @@ import logging
 
 from time import time
 
-from PyQt5.QtCore import QSize, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCursor, QKeyEvent
 from PyQt5.QtWidgets import (
     QFrame, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QToolBar, QTreeWidget,
@@ -60,7 +60,8 @@ class GuiProjectSearch(QWidget):
 
         logger.debug("Create: GuiProjectSearch")
 
-        iPx = SHARED.theme.baseIconSize
+        iPx = SHARED.theme.baseIconHeight
+        iSz = SHARED.theme.baseIconSize
         mPx = CONFIG.pxInt(2)
         tPx = CONFIG.pxInt(4)
 
@@ -77,7 +78,7 @@ class GuiProjectSearch(QWidget):
         # Options
         self.searchOpt = QToolBar(self)
         self.searchOpt.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
-        self.searchOpt.setIconSize(QSize(iPx, iPx))
+        self.searchOpt.setIconSize(iSz)
         self.searchOpt.setContentsMargins(0, 0, 0, 0)
 
         self.toggleCase = self.searchOpt.addAction(self.tr("Case Sensitive"))
@@ -109,7 +110,7 @@ class GuiProjectSearch(QWidget):
         self.searchResult = QTreeWidget(self)
         self.searchResult.setHeaderHidden(True)
         self.searchResult.setColumnCount(2)
-        self.searchResult.setIconSize(QSize(iPx, iPx))
+        self.searchResult.setIconSize(iSz)
         self.searchResult.setIndentation(iPx)
         self.searchResult.setFrameStyle(QFrame.Shape.NoFrame)
         self.searchResult.setUniformRowHeights(True)

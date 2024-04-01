@@ -33,7 +33,7 @@ import logging
 from time import time
 from enum import Enum
 
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QSize, QT_TRANSLATE_NOOP
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QT_TRANSLATE_NOOP
 from PyQt5.QtWidgets import (
     QAbstractItemView, QAction, QFileDialog, QFrame, QGridLayout, QGroupBox,
     QHBoxLayout, QLabel, QMenu, QScrollArea, QSizePolicy, QSplitter, QToolBar,
@@ -207,11 +207,11 @@ class GuiOutlineToolBar(QToolBar):
 
         logger.debug("Create: GuiOutlineToolBar")
 
-        bPx = SHARED.theme.baseButtonHeight
+        iSz = SHARED.theme.baseIconSize
         mPx = CONFIG.pxInt(12)
 
         self.setMovable(False)
-        self.setIconSize(QSize(bPx, bPx))
+        self.setIconSize(iSz)
         self.setContentsMargins(0, 0, 0, 0)
 
         stretch = QWidget(self)
@@ -376,8 +376,7 @@ class GuiOutlineTree(QTreeWidget):
         self.itemDoubleClicked.connect(self._treeDoubleClick)
         self.itemSelectionChanged.connect(self._itemSelected)
 
-        iPx = SHARED.theme.baseIconSize
-        self.setIconSize(QSize(iPx, iPx))
+        self.setIconSize(SHARED.theme.baseIconSize)
         self.setIndentation(0)
 
         self.treeHead = self.header()
