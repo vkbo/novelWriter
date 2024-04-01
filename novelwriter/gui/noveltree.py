@@ -270,9 +270,9 @@ class GuiNovelToolBar(QWidget):
     def updateTheme(self) -> None:
         """Update theme elements."""
         # Icons
-        self.tbNovel.setIcon(SHARED.theme.getIcon("cls_novel"))
-        self.tbRefresh.setIcon(SHARED.theme.getIcon("refresh"))
-        self.tbMore.setIcon(SHARED.theme.getIcon("menu"))
+        self.tbNovel.setThemeIcon("cls_novel")
+        self.tbRefresh.setThemeIcon("refresh")
+        self.tbMore.setThemeIcon("menu")
 
         qPalette = self.palette()
         qPalette.setBrush(QPalette.ColorRole.Window, qPalette.base())

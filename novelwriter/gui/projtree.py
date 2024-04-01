@@ -385,16 +385,17 @@ class GuiProjectToolBar(QWidget):
         self.tbAdd.setStyleSheet(buttonStyle)
         self.tbMore.setStyleSheet(buttonStyle)
 
-        self.tbQuick.setIcon(SHARED.theme.getIcon("bookmark"))
-        self.tbMoveU.setIcon(SHARED.theme.getIcon("up"))
-        self.tbMoveD.setIcon(SHARED.theme.getIcon("down"))
+        self.tbQuick.setThemeIcon("bookmark")
+        self.tbMoveU.setThemeIcon("up")
+        self.tbMoveD.setThemeIcon("down")
+        self.tbAdd.setThemeIcon("add")
+        self.tbMore.setThemeIcon("menu")
+
         self.aAddEmpty.setIcon(SHARED.theme.getIcon("proj_document"))
         self.aAddChap.setIcon(SHARED.theme.getIcon("proj_chapter"))
         self.aAddScene.setIcon(SHARED.theme.getIcon("proj_scene"))
         self.aAddNote.setIcon(SHARED.theme.getIcon("proj_note"))
         self.aAddFolder.setIcon(SHARED.theme.getIcon("proj_folder"))
-        self.tbAdd.setIcon(SHARED.theme.getIcon("add"))
-        self.tbMore.setIcon(SHARED.theme.getIcon("menu"))
 
         self.buildQuickLinksMenu()
         self._buildRootMenu()

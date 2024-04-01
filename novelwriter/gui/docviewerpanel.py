@@ -38,6 +38,7 @@ from novelwriter.common import checkInt
 from novelwriter.constants import nwHeaders, nwLabels, nwLists, trConst
 from novelwriter.core.index import IndexHeading, IndexItem
 from novelwriter.enum import nwDocMode, nwItemClass
+from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 
 logger = logging.getLogger(__name__)
@@ -65,8 +66,7 @@ class GuiDocViewerPanel(QWidget):
         self.aInactive.setCheckable(True)
         self.aInactive.toggled.connect(self._toggleHideInactive)
 
-        self.optsButton = QToolButton(self)
-        self.optsButton.setIconSize(iSz)
+        self.optsButton = NIconToolButton(self, iSz)
         self.optsButton.setMenu(self.optsMenu)
         self.optsButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
@@ -100,7 +100,7 @@ class GuiDocViewerPanel(QWidget):
 
     def updateTheme(self, updateTabs: bool = True) -> None:
         """Update theme elements."""
-        self.optsButton.setIcon(SHARED.theme.getIcon("menu"))
+        self.optsButton.setThemeIcon("menu")
         self.optsButton.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON))
         self.mainTabs.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_FLAT_TABS))
         self.updateHandle(self._lastHandle)

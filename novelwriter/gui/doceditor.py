@@ -2365,16 +2365,16 @@ class GuiDocToolBar(QWidget):
         palette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
         self.setPalette(palette)
 
-        self.tbBoldMD.setIcon(SHARED.theme.getIcon("fmt_bold-md"))
-        self.tbItalicMD.setIcon(SHARED.theme.getIcon("fmt_italic-md"))
-        self.tbStrikeMD.setIcon(SHARED.theme.getIcon("fmt_strike-md"))
-        self.tbBold.setIcon(SHARED.theme.getIcon("fmt_bold"))
-        self.tbItalic.setIcon(SHARED.theme.getIcon("fmt_italic"))
-        self.tbStrike.setIcon(SHARED.theme.getIcon("fmt_strike"))
-        self.tbUnderline.setIcon(SHARED.theme.getIcon("fmt_underline"))
-        self.tbMark.setIcon(SHARED.theme.getIcon("fmt_mark"))
-        self.tbSuperscript.setIcon(SHARED.theme.getIcon("fmt_superscript"))
-        self.tbSubscript.setIcon(SHARED.theme.getIcon("fmt_subscript"))
+        self.tbBoldMD.setThemeIcon("fmt_bold-md")
+        self.tbItalicMD.setThemeIcon("fmt_italic-md")
+        self.tbStrikeMD.setThemeIcon("fmt_strike-md")
+        self.tbBold.setThemeIcon("fmt_bold")
+        self.tbItalic.setThemeIcon("fmt_italic")
+        self.tbStrike.setThemeIcon("fmt_strike")
+        self.tbUnderline.setThemeIcon("fmt_underline")
+        self.tbMark.setThemeIcon("fmt_mark")
+        self.tbSuperscript.setThemeIcon("fmt_superscript")
+        self.tbSubscript.setThemeIcon("fmt_subscript")
 
         return
 
@@ -2634,8 +2634,8 @@ class GuiDocEditSearch(QFrame):
         self.toggleProject.setIcon(SHARED.theme.getIcon("search_project"))
         self.toggleMatchCap.setIcon(SHARED.theme.getIcon("search_preserve"))
         self.cancelSearch.setIcon(SHARED.theme.getIcon("search_cancel"))
-        self.searchButton.setIcon(SHARED.theme.getIcon("search"))
-        self.replaceButton.setIcon(SHARED.theme.getIcon("search_replace"))
+        self.searchButton.setThemeIcon("search")
+        self.replaceButton.setThemeIcon("search_replace")
 
         # Set stylesheets
         self.searchOpt.setStyleSheet("QToolBar {padding: 0;}")
@@ -2913,11 +2913,11 @@ class GuiDocEditHeader(QWidget):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        self.tbButton.setIcon(SHARED.theme.getIcon("menu"))
-        self.outlineButton.setIcon(SHARED.theme.getIcon("list"))
-        self.searchButton.setIcon(SHARED.theme.getIcon("search"))
-        self.minmaxButton.setIcon(SHARED.theme.getIcon("maximise"))
-        self.closeButton.setIcon(SHARED.theme.getIcon("close"))
+        self.tbButton.setThemeIcon("menu")
+        self.outlineButton.setThemeIcon("list")
+        self.searchButton.setThemeIcon("search")
+        self.minmaxButton.setThemeIcon("maximise")
+        self.closeButton.setThemeIcon("close")
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
         self.tbButton.setStyleSheet(buttonStyle)
@@ -2985,7 +2985,7 @@ class GuiDocEditHeader(QWidget):
     @pyqtSlot(bool)
     def _focusModeChanged(self, focusMode: bool) -> None:
         """Update minimise/maximise icon of the Focus Mode button."""
-        self.minmaxButton.setIcon(SHARED.theme.getIcon("minimise" if focusMode else "maximise"))
+        self.minmaxButton.setThemeIcon("minimise" if focusMode else "maximise")
         return
 
     ##
