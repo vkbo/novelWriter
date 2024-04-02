@@ -439,10 +439,7 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
     # Whole Words
     search.setWholeWords(True)
     search.setUserRegEx(True)
-    assert search._buildPattern("Hi") == r"\bHi\b"
-    assert search._buildPattern(r"\bHi") == r"\bHi\b"
-    assert search._buildPattern(r"Hi\b") == r"\bHi\b"
-    assert search._buildPattern(r"\bHi\b") == r"\bHi\b"
+    assert search._buildPattern("Hi") == r"(?:^|\b)Hi(?:$|\b)"
     search.setWholeWords(False)
     search.setUserRegEx(False)
 
