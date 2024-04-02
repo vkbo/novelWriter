@@ -382,8 +382,7 @@ class DocSearch:
                         escaped += f"\\{c}"
                 search = escaped
         if self._words:
-            search = search if search.startswith("\\b") else f"\\b{search}"
-            search = search if search.endswith("\\b") else f"{search}\\b"
+            search = f"(?:^|\\b){search}(?:$|\\b)"
         return search
 
 # END Class DocSearch

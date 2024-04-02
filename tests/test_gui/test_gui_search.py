@@ -117,7 +117,7 @@ def testGuiDocSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # RegEx
     search.toggleRegEx.setChecked(True)
-    search.searchText.setText("(dolor|dolorem)")
+    search.beginSearch("(dolor|dolorem)")
     search.searchAction.activate(QAction.ActionEvent.Trigger)
     assert search.searchResult.topLevelItemCount() == 10
     assert totalCount() == 34

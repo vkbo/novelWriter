@@ -192,10 +192,13 @@ class GuiProjectSearch(QWidget):
             )
         return
 
-    def beginSearch(self) -> None:
+    def beginSearch(self, text: str = "") -> None:
         """Focus the search box and select its text, if any."""
         self.searchText.setFocus()
         self.searchText.selectAll()
+        if text:
+            self.searchText.setText(text.partition("\n")[0])
+            self.searchText.selectAll()
         return
 
     def closeProjectTasks(self) -> None:
