@@ -610,7 +610,6 @@ def makeMinimalPackage(targetOS: int) -> None:
         "CHANGELOG.md",
         "requirements.txt",
         "pkgutils.py",
-        "setup.cfg",
         "pyproject.toml",
     ]
 
@@ -779,11 +778,11 @@ def makeDebianPackage(signKey: str | None = None, sourceBuild: bool = False,
     ))
     print("Wrote:  setup.py")
 
-    setupCfg = readFile("setup.cfg").replace(
-        "file: setup/description_pypi.md", "file: data/description_short.txt"
+    setupCfg = readFile("pyproject.toml").replace(
+        "setup/description_pypi.md", "data/description_short.txt"
     )
-    writeFile(f"{outDir}/setup.cfg", setupCfg)
-    print("Wrote:  setup.cfg")
+    writeFile(f"{outDir}/pyproject.toml", setupCfg)
+    print("Wrote:  pyproject.toml")
 
     # Copy/Write Debian Files
     # =======================
@@ -1051,11 +1050,11 @@ def makeAppImage(sysArgs: list[str]) -> list[str]:
     ))
     print("Wrote:  setup.py")
 
-    setupCfg = readFile("setup.cfg").replace(
-        "file: setup/description_pypi.md", "file: data/description_short.txt"
+    setupCfg = readFile("pyproject.toml").replace(
+        "setup/description_pypi.md", "data/description_short.txt"
     )
-    writeFile(f"{outDir}/setup.cfg", setupCfg)
-    print("Wrote:  setup.cfg")
+    writeFile(f"{outDir}/pyproject.toml", setupCfg)
+    print("Wrote:  pyproject.toml")
 
     # Write Metadata
     # ==============

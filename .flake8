@@ -1,0 +1,4 @@
+[flake8]
+ignore = E133,E221,E226,E228,E241,W503
+max-line-length = 99
+exclude = docs/*

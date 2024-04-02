@@ -1,3 +1,48 @@
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "novelWriter"
+authors = [
+    {name = "Veronica Berglyd Olsen", email = "code@vkbo.net"},
+]
+description = "A markdown-like text editor for planning and writing novels"
+readme = {file = "setup/description_pypi.md", content-type = "text/markdown"}
+license = {text = "GNU General Public License v3"}
+classifiers = [
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Development Status :: 5 - Production/Stable",
+    "Operating System :: OS Independent",
+    "Intended Audience :: End Users/Desktop",
+    "Natural Language :: English",
+    "Topic :: Text Editors",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "pyqt5>=5.10",
+    "pyenchant>=3.0.0",
+]
+dynamic = ["version"]
+
+[tool.setuptools.dynamic]
+version = {attr = "novelwriter.__version__"}
+
+[project.urls]
+Homepage = "https://novelwriter.io"
+Documentation = "https://docs.novelwriter.io"
+Repository = "https://github.com/vkbo/novelWriter"
+Issues = "https://github.com/vkbo/novelWriter/issues"
+
+[tool.setuptools.packages.find]
+include = ["novelwriter*"]
+
+[project.gui-scripts]
+novelwriter = "novelwriter:main"

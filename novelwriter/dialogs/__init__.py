@@ -1,3 +1,0 @@
-"""
-novelWriter – Dialogs Init File
-"""
