@@ -9,7 +9,6 @@ authors = [
 ]
 description = "A markdown-like text editor for planning and writing novels"
 readme = {file = "setup/description_pypi.md", content-type = "text/markdown"}
-requires-python = ">=3.8"
 license = {text = "GNU General Public License v3"}
 classifiers = [
     "Programming Language :: Python :: 3 :: Only",
@@ -26,11 +25,15 @@ classifiers = [
     "Natural Language :: English",
     "Topic :: Text Editors",
 ]
-dynamic = ["version", "dependencies"]
+requires-python = ">=3.8"
+dependencies = [
+    "pyqt5>=5.10",
+    "pyenchant>=3.0.0",
+]
+dynamic = ["version"]
 
 [tool.setuptools.dynamic]
 version = {attr = "novelwriter.__version__"}
-dependencies = {file = ["requirements.txt"]}
 
 [project.urls]
 Homepage = "https://novelwriter.io"
