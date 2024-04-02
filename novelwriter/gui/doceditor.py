@@ -596,6 +596,15 @@ class GuiDocEditor(QPlainTextEdit):
         text = text.replace(nwUnicode.U_PSEP, "\n")  # Paragraph separators
         return text
 
+    def getSelectedText(self) -> str:
+        """Get currently selected text."""
+        if (cursor := self.textCursor()).hasSelection():
+            text = cursor.selectedText()
+            text = text.replace(nwUnicode.U_LSEP, "\n")  # Line separators
+            text = text.replace(nwUnicode.U_PSEP, "\n")  # Paragraph separators
+            return text
+        return ""
+
     def getCursorPosition(self) -> int:
         """Find the cursor position in the document. If the editor has a
         selection, return the position of the end of the selection.
@@ -642,12 +651,13 @@ class GuiDocEditor(QPlainTextEdit):
                 logger.debug("Cursor moved to line %d", line)
         return
 
-    def setCursorSelection(self, selStart: int, selLength: int) -> None:
+    def setCursorSelection(self, start: int, length: int) -> None:
         """Make a text selection."""
-        cursor = self.textCursor()
-        cursor.setPosition(selStart, QTextCursor.MoveMode.MoveAnchor)
-        cursor.setPosition(selStart + selLength, QTextCursor.MoveMode.KeepAnchor)
-        self.setTextCursor(cursor)
+        if start >= 0 and length > 0:
+            cursor = self.textCursor()
+            cursor.setPosition(start, QTextCursor.MoveMode.MoveAnchor)
+            cursor.setPosition(start + length, QTextCursor.MoveMode.KeepAnchor)
+            self.setTextCursor(cursor)
         return
 
     ##
@@ -1280,11 +1290,7 @@ class GuiDocEditor(QPlainTextEdit):
 
     def beginSearch(self) -> None:
         """Set the selected text as the search text."""
-        cursor = self.textCursor()
-        if cursor.hasSelection():
-            self.docSearch.setSearchText(cursor.selectedText())
-        else:
-            self.docSearch.setSearchText(None)
+        self.docSearch.setSearchText(self.getSelectedText() or None)
         resS, _ = self.findAllOccurences()
         self.docSearch.setResultCount(None, len(resS))
         return
@@ -2226,7 +2232,7 @@ class BackgroundWordCounter(QRunnable):
         """
         self._isRunning = True
         if self._forSelection:
-            text = self._docEditor.textCursor().selectedText()
+            text = self._docEditor.getSelectedText()
         else:
             text = self._docEditor.getText()
 
