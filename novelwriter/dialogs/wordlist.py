@@ -40,6 +40,7 @@ from novelwriter.common import formatFileFilter
 from novelwriter.core.spellcheck import UserDictionary
 from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.modified import NIconToolButton
+from novelwriter.types import QtDialogClose, QtDialogSave
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -110,7 +111,7 @@ class GuiWordList(QDialog):
         self.editBox.addWidget(self.delButton, 0)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Close)
+        self.buttonBox = QDialogButtonBox(QtDialogSave | QtDialogClose)
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self.close)
 

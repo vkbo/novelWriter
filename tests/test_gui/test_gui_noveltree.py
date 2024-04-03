@@ -225,7 +225,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     scItem = novelTree.topLevelItem(2)
     scItem.setSelected(True)
     assert scItem.isSelected()
-    novelTree.focusOutEvent(QFocusEvent(QEvent.None_, Qt.MouseFocusReason))
+    novelTree.focusOutEvent(QFocusEvent(QEvent.Type.None_, Qt.MouseFocusReason))
     assert not scItem.isSelected()
 
     # Close

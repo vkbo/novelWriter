@@ -40,7 +40,7 @@ from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrol
 from novelwriter.extensions.modified import NComboBox, NIconToolButton
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtUserRole
+from novelwriter.types import QtDialogCancel, QtDialogSave, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -84,9 +84,7 @@ class GuiProjectSettings(QDialog):
         self.sidebar.buttonClicked.connect(self._sidebarClicked)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(
-            QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel
-        )
+        self.buttonBox = QDialogButtonBox(QtDialogSave | QtDialogCancel)
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self.close)
 

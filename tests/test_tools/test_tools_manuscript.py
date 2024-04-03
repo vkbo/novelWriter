@@ -31,7 +31,7 @@ from tools import C, buildTestProject
 
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtPrintSupport import QPrintPreviewDialog
-from PyQt5.QtWidgets import QAction, QDialogButtonBox, QListWidgetItem
+from PyQt5.QtWidgets import QAction, QListWidgetItem
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwHeadFmt
@@ -40,7 +40,7 @@ from novelwriter.guimain import GuiMain
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.manussettings import GuiBuildSettings
-from novelwriter.types import QtAlignAbsolute, QtAlignJustify
+from novelwriter.types import QtAlignAbsolute, QtAlignJustify, QtDialogApply, QtDialogSave
 
 
 @pytest.mark.gui
@@ -118,7 +118,7 @@ def testManuscript_Builds(qtbot: QtBot, nwGUI: GuiMain, projPath: Path):
 
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        bSettings.buttonBox.button(QDialogButtonBox.Save).click()
+        bSettings.buttonBox.button(QtDialogSave).click()
 
     assert isinstance(build, BuildSettings)
     assert build.name == "Test Build"
@@ -135,7 +135,7 @@ def testManuscript_Builds(qtbot: QtBot, nwGUI: GuiMain, projPath: Path):
 
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        bSettings.buttonBox.button(QDialogButtonBox.Apply).click()  # Should leave the dialog open
+        bSettings.buttonBox.button(QtDialogApply).click()  # Should leave the dialog open
 
     assert isinstance(build, BuildSettings)
     assert build.name == "Test Build"

@@ -104,7 +104,7 @@ class GuiManuscript(QDialog):
         # ==============
 
         qPalette = self.palette()
-        qPalette.setBrush(QPalette.Window, qPalette.base())
+        qPalette.setBrush(QPalette.ColorRole.Window, qPalette.base())
         self.setPalette(qPalette)
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
@@ -751,8 +751,8 @@ class _PreviewWidget(QTextBrowser):
 
         # Document Setup
         dPalette = self.palette()
-        dPalette.setColor(QPalette.Base, QColor(255, 255, 255))
-        dPalette.setColor(QPalette.Text, QColor(0, 0, 0))
+        dPalette.setColor(QPalette.ColorRole.Base, QColor(255, 255, 255))
+        dPalette.setColor(QPalette.ColorRole.Text, QColor(0, 0, 0))
         self.setPalette(dPalette)
 
         self.setMinimumWidth(40*SHARED.theme.textNWidth)
@@ -769,8 +769,8 @@ class _PreviewWidget(QTextBrowser):
 
         # Document Age
         aPalette = self.palette()
-        aPalette.setColor(QPalette.Background, aPalette.toolTipBase().color())
-        aPalette.setColor(QPalette.Foreground, aPalette.toolTipText().color())
+        aPalette.setColor(QPalette.ColorRole.Window, aPalette.toolTipBase().color())
+        aPalette.setColor(QPalette.ColorRole.WindowText, aPalette.toolTipText().color())
 
         aFont = self.font()
         aFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)

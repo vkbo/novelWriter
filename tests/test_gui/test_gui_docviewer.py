@@ -62,7 +62,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Re-select via header click
     button = QtMouseLeft
     modifier = QtModeNone
-    event = QMouseEvent(QEvent.MouseButtonPress, QPoint(), button, button, modifier)
+    event = QMouseEvent(QEvent.Type.MouseButtonPress, QPoint(), button, button, modifier)
     docViewer.docHeader.mousePressEvent(event)
     assert nwGUI.projView.projTree.getSelectedHandle() == "88243afbe5ed8"
 

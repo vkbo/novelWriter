@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import readTextFile
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignLeft, QtAlignRight
+from novelwriter.types import QtAlignLeft, QtAlignRight, QtRoleAction, QtDialogClose
 
 logger = logging.getLogger(__name__)
 
@@ -96,10 +96,10 @@ class GuiLipsum(QDialog):
         self.buttonBox = QDialogButtonBox()
         self.buttonBox.rejected.connect(self.close)
 
-        self.btnClose = self.buttonBox.addButton(QDialogButtonBox.Close)
+        self.btnClose = self.buttonBox.addButton(QtDialogClose)
         self.btnClose.setAutoDefault(False)
 
-        self.btnInsert = self.buttonBox.addButton(self.tr("Insert"), QDialogButtonBox.ActionRole)
+        self.btnInsert = self.buttonBox.addButton(self.tr("Insert"), QtRoleAction)
         self.btnInsert.clicked.connect(self._doInsert)
         self.btnInsert.setAutoDefault(False)
 

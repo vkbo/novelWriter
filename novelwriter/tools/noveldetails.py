@@ -41,7 +41,7 @@ from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrol
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignRight, QtDecoration
+from novelwriter.types import QtAlignRight, QtDecoration, QtDialogClose
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +95,7 @@ class GuiNovelDetails(QDialog):
         self.mainStack.addWidget(self.contentsPage)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
+        self.buttonBox = QDialogButtonBox(QtDialogClose)
         self.buttonBox.rejected.connect(self.close)
 
         # Assemble

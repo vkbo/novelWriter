@@ -35,7 +35,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import readTextFile
 from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.versioninfo import VersionInfoWidget
-from novelwriter.types import QtAlignRightTop
+from novelwriter.types import QtAlignRightTop, QtDialogClose
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +84,7 @@ class GuiAbout(QDialog):
         self.txtCredits.setViewportMargins(0, hA, hA, 0)
 
         # Buttons
-        self.btnBox = QDialogButtonBox(QDialogButtonBox.Close, self)
+        self.btnBox = QDialogButtonBox(QtDialogClose, self)
         self.btnBox.rejected.connect(self.close)
 
         # Assemble

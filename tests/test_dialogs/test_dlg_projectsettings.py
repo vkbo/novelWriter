@@ -44,7 +44,7 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
     """
     # Block the GUI blocking thread
     monkeypatch.setattr(GuiProjectSettings, "exec", lambda *a: None)
-    monkeypatch.setattr(GuiProjectSettings, "result", lambda *a: QDialog.Accepted)
+    monkeypatch.setattr(GuiProjectSettings, "result", lambda *a: QDialog.DialogCode.Accepted)
 
     # Check that we cannot open when there is no project
     nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)

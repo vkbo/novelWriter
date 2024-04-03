@@ -28,6 +28,8 @@ from math import ceil
 from PyQt5.QtGui import QPaintEvent, QPainter
 from PyQt5.QtWidgets import QProgressBar, QWidget
 
+from novelwriter.types import QtPaintAnitAlias
+
 
 class NProgressSimple(QProgressBar):
     """Extension: Simple Progress Widget
@@ -44,7 +46,7 @@ class NProgressSimple(QProgressBar):
         if (value := self.value()) > 0:
             progress = ceil(self.width()*float(value)/self.maximum())
             painter = QPainter(self)
-            painter.setRenderHint(QPainter.Antialiasing, True)
+            painter.setRenderHint(QtPaintAnitAlias, True)
             painter.setPen(self.palette().highlight().color())
             painter.setBrush(self.palette().highlight())
             painter.drawRect(0, 0, progress, self.height())

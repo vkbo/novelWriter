@@ -39,7 +39,7 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, fncPath, projPath):
     buildTestProject(nwGUI, projPath)
 
     monkeypatch.setattr(GuiWordList, "exec", lambda *a: None)
-    monkeypatch.setattr(GuiWordList, "result", lambda *a: QDialog.Accepted)
+    monkeypatch.setattr(GuiWordList, "result", lambda *a: QDialog.DialogCode.Accepted)
     monkeypatch.setattr(GuiWordList, "accept", lambda *a: None)
 
     # Open project

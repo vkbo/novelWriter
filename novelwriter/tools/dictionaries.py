@@ -39,6 +39,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatFileFilter, openExternalPath, formatInt, getFileSize
 from novelwriter.error import formatException
 from novelwriter.extensions.modified import NIconToolButton
+from novelwriter.types import QtDialogClose
 
 logger = logging.getLogger(__name__)
 
@@ -107,7 +108,7 @@ class GuiDictionaries(QDialog):
         self.infoBox.setFrameStyle(QFrame.Shape.NoFrame)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
+        self.buttonBox = QDialogButtonBox(QtDialogClose)
         self.buttonBox.rejected.connect(self._doClose)
 
         # Assemble

@@ -44,7 +44,9 @@ from novelwriter.core.item import NWItem
 from novelwriter.enum import nwBuildFmt
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.extensions.simpleprogress import NProgressSimple
-from novelwriter.types import QtAlignCenter, QtUserRole
+from novelwriter.types import (
+    QtAlignCenter, QtDialogClose, QtRoleAction, QtRoleReject, QtUserRole
+)
 
 logger = logging.getLogger(__name__)
 
@@ -184,9 +186,9 @@ class GuiManuscriptBuild(QDialog):
         self.btnBuild = QPushButton(SHARED.theme.getIcon("export"), self.tr("&Build"))
         self.btnBuild.setIconSize(bSz)
 
-        self.dlgButtons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
-        self.dlgButtons.addButton(self.btnOpen, QDialogButtonBox.ButtonRole.ActionRole)
-        self.dlgButtons.addButton(self.btnBuild, QDialogButtonBox.ButtonRole.ActionRole)
+        self.dlgButtons = QDialogButtonBox(QtDialogClose)
+        self.dlgButtons.addButton(self.btnOpen, QtRoleAction)
+        self.dlgButtons.addButton(self.btnBuild, QtRoleAction)
 
         # Assemble GUI
         # ============
@@ -261,12 +263,12 @@ class GuiManuscriptBuild(QDialog):
     def _dialogButtonClicked(self, button: QAbstractButton):
         """Handle button clicks from the dialog button box."""
         role = self.dlgButtons.buttonRole(button)
-        if role == QDialogButtonBox.ActionRole:
+        if role == QtRoleAction:
             if button == self.btnBuild:
                 self._runBuild()
             elif button == self.btnOpen:
                 self._openOutputFolder()
-        elif role == QDialogButtonBox.RejectRole:
+        elif role == QtRoleReject:
             self.close()
         return
 

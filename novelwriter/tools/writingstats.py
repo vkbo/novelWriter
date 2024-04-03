@@ -42,7 +42,10 @@ from novelwriter.common import formatTime, checkInt, checkIntTuple, minmax
 from novelwriter.constants import nwConst
 from novelwriter.error import formatException
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignLeftMiddle, QtAlignRight, QtAlignRightMiddle, QtDecoration
+from novelwriter.types import (
+    QtAlignLeftMiddle, QtAlignRight, QtAlignRightMiddle, QtDecoration,
+    QtDialogClose, QtRoleAction
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -262,13 +265,13 @@ class GuiWritingStats(QDialog):
         self.optsBox.addWidget(self.histMax, 0)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox()
+        self.buttonBox = QDialogButtonBox(self)
         self.buttonBox.rejected.connect(self._doClose)
 
-        self.btnClose = self.buttonBox.addButton(QDialogButtonBox.Close)
+        self.btnClose = self.buttonBox.addButton(QtDialogClose)
         self.btnClose.setAutoDefault(False)
 
-        self.btnSave = self.buttonBox.addButton(self.tr("Save As"), QDialogButtonBox.ActionRole)
+        self.btnSave = self.buttonBox.addButton(self.tr("Save As"), QtRoleAction)
         self.btnSave.setAutoDefault(False)
 
         self.saveMenu = QMenu(self)

@@ -36,7 +36,7 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.configlayout import NColourLabel
-from novelwriter.types import QtUserRole
+from novelwriter.types import QtDialogCancel, QtDialogOk, QtDialogReset, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -85,11 +85,11 @@ class GuiDocMerge(QDialog):
         self.optBox.setColumnStretch(2, 1)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 
-        self.resetButton = self.buttonBox.addButton(QDialogButtonBox.Reset)
+        self.resetButton = self.buttonBox.addButton(QtDialogReset)
         self.resetButton.clicked.connect(self._resetList)
 
         # Assemble

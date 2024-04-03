@@ -258,7 +258,7 @@ class NColourLabel(QLabel):
         font.setWeight(QFont.Weight.Bold if bold else QFont.Weight.Normal)
         if color:
             colour = self.palette()
-            colour.setColor(QPalette.WindowText, color)
+            colour.setColor(QPalette.ColorRole.WindowText, color)
             self.setPalette(colour)
 
         self.setFont(font)

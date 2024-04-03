@@ -24,13 +24,13 @@ import pytest
 
 from PyQt5.QtGui import QFontDatabase, QKeyEvent
 from PyQt5.QtCore import QEvent, Qt
-from PyQt5.QtWidgets import QAction, QDialogButtonBox, QFileDialog, QFontDialog
+from PyQt5.QtWidgets import QAction, QFileDialog, QFontDialog
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwConst, nwUnicode
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.quotes import GuiQuoteSelect
-from novelwriter.types import QtModeNone
+from novelwriter.types import QtDialogApply, QtDialogClose, QtDialogSave, QtModeNone
 
 KEY_DELAY = 1
 
@@ -122,21 +122,21 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
     # Check Apply Button
     prefs.show()
     with qtbot.waitSignal(prefs.newPreferencesReady) as signal:
-        prefs.buttonBox.button(QDialogButtonBox.StandardButton.Apply).click()
+        prefs.buttonBox.button(QtDialogApply).click()
         assert signal.args == [False, False, False, False]
 
     # Check Save Button
     prefs.show()
     with qtbot.waitSignal(prefs.newPreferencesReady) as signal:
         with qtbot.waitSignal(prefs.finished) as status:
-            prefs.buttonBox.button(QDialogButtonBox.StandardButton.Save).click()
+            prefs.buttonBox.button(QtDialogSave).click()
             assert signal.args == [False, False, False, False]
             assert status.args == [nwConst.DLG_FINISHED]
 
     # Check Close Button
     prefs.show()
     with qtbot.waitSignal(prefs.finished) as status:
-        prefs.buttonBox.button(QDialogButtonBox.StandardButton.Close).click()
+        prefs.buttonBox.button(QtDialogClose).click()
         assert status.args == [nwConst.DLG_FINISHED]
 
     # Close Using Escape Key
@@ -333,7 +333,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     with monkeypatch.context() as mp:
         mp.setattr(QFontDatabase, "families", lambda *a: ["TestFont"])
         with qtbot.waitSignal(prefs.newPreferencesReady) as signal:
-            prefs.buttonBox.button(QDialogButtonBox.StandardButton.Apply).click()
+            prefs.buttonBox.button(QtDialogApply).click()
             assert signal.args == [True, True, True, True]
 
     # Check Settings

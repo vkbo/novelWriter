@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG
 from novelwriter.constants import trConst, nwQuotes
-from novelwriter.types import QtAlignCenter, QtAlignTop, QtUserRole
+from novelwriter.types import QtAlignCenter, QtAlignTop, QtDialogCancel, QtDialogOk, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +90,7 @@ class GuiQuoteSelect(QDialog):
         self.listBox.setMinimumHeight(CONFIG.pxInt(150))
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 

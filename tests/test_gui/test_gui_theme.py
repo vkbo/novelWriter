@@ -106,22 +106,22 @@ def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
     assert mainTheme._parseColour(parser, "Palette", "colour6").getRgb() == (0, 127, 255, 255)
 
     # The palette should load with the parsed values
-    mainTheme._setPalette(parser, "Palette", "colour1", QPalette.Window)
-    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (100, 150, 200, 255)
-    mainTheme._setPalette(parser, "Palette", "colour2", QPalette.Window)
-    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (100, 150, 200, 250)
-    mainTheme._setPalette(parser, "Palette", "colour3", QPalette.Window)
-    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (100, 150, 200, 250)
-    mainTheme._setPalette(parser, "Palette", "colour4", QPalette.Window)
-    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (250, 250, 0, 255)
-    mainTheme._setPalette(parser, "Palette", "colour5", QPalette.Window)
-    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (0, 0, 0, 0)
-    mainTheme._setPalette(parser, "Palette", "colour6", QPalette.Window)
-    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (0, 127, 255, 255)
+    mainTheme._setPalette(parser, "Palette", "colour1", QPalette.ColorRole.Window)
+    assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (100, 150, 200, 255)
+    mainTheme._setPalette(parser, "Palette", "colour2", QPalette.ColorRole.Window)
+    assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (100, 150, 200, 250)
+    mainTheme._setPalette(parser, "Palette", "colour3", QPalette.ColorRole.Window)
+    assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (100, 150, 200, 250)
+    mainTheme._setPalette(parser, "Palette", "colour4", QPalette.ColorRole.Window)
+    assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (250, 250, 0, 255)
+    mainTheme._setPalette(parser, "Palette", "colour5", QPalette.ColorRole.Window)
+    assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (0, 0, 0, 0)
+    mainTheme._setPalette(parser, "Palette", "colour6", QPalette.ColorRole.Window)
+    assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (0, 127, 255, 255)
 
     # Non-existing value should return default colour
-    mainTheme._setPalette(parser, "Palette", "stuff", QPalette.Window)
-    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == (0, 0, 0, 255)
+    mainTheme._setPalette(parser, "Palette", "stuff", QPalette.ColorRole.Window)
+    assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == (0, 0, 0, 255)
 
     # qtbot.stop()
 
@@ -168,15 +168,15 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI):
     # ==================
 
     # Set a mock colour for the window background
-    mainTheme._guiPalette.color(QPalette.Window).setRgb(0, 0, 0, 0)
+    mainTheme._guiPalette.color(QPalette.ColorRole.Window).setRgb(0, 0, 0, 0)
 
     # Load the default theme
     CONFIG.guiTheme = "default"
     assert mainTheme.loadTheme() is True
 
     # This should load a standard palette
-    wCol = QApplication.style().standardPalette().color(QPalette.Window).getRgb()
-    assert mainTheme._guiPalette.color(QPalette.Window).getRgb() == wCol
+    wCol = QApplication.style().standardPalette().color(QPalette.ColorRole.Window).getRgb()
+    assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == wCol
 
     # Load Default Light Theme
     # ========================
@@ -185,10 +185,14 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI):
     assert mainTheme.loadTheme() is True
 
     # Check a few values
-    assert mainTheme._guiPalette.color(QPalette.Window).getRgb()        == (239, 239, 239, 255)
-    assert mainTheme._guiPalette.color(QPalette.WindowText).getRgb()    == (0, 0, 0, 255)
-    assert mainTheme._guiPalette.color(QPalette.Base).getRgb()          == (255, 255, 255, 255)
-    assert mainTheme._guiPalette.color(QPalette.AlternateBase).getRgb() == (239, 239, 239, 255)
+    assert mainTheme._guiPalette.color(
+        QPalette.ColorRole.Window).getRgb()        == (239, 239, 239, 255)
+    assert mainTheme._guiPalette.color(
+        QPalette.ColorRole.WindowText).getRgb()    == (0, 0, 0, 255)
+    assert mainTheme._guiPalette.color(
+        QPalette.ColorRole.Base).getRgb()          == (255, 255, 255, 255)
+    assert mainTheme._guiPalette.color(
+        QPalette.ColorRole.AlternateBase).getRgb() == (239, 239, 239, 255)
 
     # Load Default Dark Theme
     # =======================
@@ -197,10 +201,14 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI):
     assert mainTheme.loadTheme() is True
 
     # Check a few values
-    assert mainTheme._guiPalette.color(QPalette.Window).getRgb()        == (54, 54, 54, 255)
-    assert mainTheme._guiPalette.color(QPalette.WindowText).getRgb()    == (204, 204, 204, 255)
-    assert mainTheme._guiPalette.color(QPalette.Base).getRgb()          == (62, 62, 62, 255)
-    assert mainTheme._guiPalette.color(QPalette.AlternateBase).getRgb() == (78, 78, 78, 255)
+    assert mainTheme._guiPalette.color(
+        QPalette.ColorRole.Window).getRgb()        == (54, 54, 54, 255)
+    assert mainTheme._guiPalette.color(
+        QPalette.ColorRole.WindowText).getRgb()    == (204, 204, 204, 255)
+    assert mainTheme._guiPalette.color(
+        QPalette.ColorRole.Base).getRgb()          == (62, 62, 62, 255)
+    assert mainTheme._guiPalette.color(
+        QPalette.ColorRole.AlternateBase).getRgb() == (78, 78, 78, 255)
 
     # qtbot.stop()
 

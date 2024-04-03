@@ -74,7 +74,9 @@ class NWErrorMessage(QDialog):
         # Widgets
         self.msgIcon = QLabel()
         self.msgIcon.setPixmap(
-            QApplication.style().standardIcon(QStyle.SP_MessageBoxCritical).pixmap(64, 64)
+            QApplication.style().standardIcon(
+                QStyle.StandardPixmap.SP_MessageBoxCritical
+            ).pixmap(64, 64)
         )
         self.msgHead = QLabel()
         self.msgHead.setOpenExternalLinks(True)
@@ -88,7 +90,7 @@ class NWErrorMessage(QDialog):
         self.msgBody.setFont(font)
         self.msgBody.setReadOnly(True)
 
-        self.btnBox = QDialogButtonBox(QDialogButtonBox.Close)
+        self.btnBox = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
         self.btnBox.rejected.connect(self._doClose)
 
         # Assemble

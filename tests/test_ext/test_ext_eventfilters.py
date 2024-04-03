@@ -27,6 +27,7 @@ from PyQt5.QtCore import QEvent, QObject, QPoint, Qt
 from PyQt5.QtWidgets import QWidget
 
 from novelwriter.extensions.eventfilters import WheelEventFilter
+from novelwriter.types import QtModShift
 
 
 class MockWidget(QWidget):
@@ -50,7 +51,7 @@ def testExtEventFilters_WheelEventFilter():
     assert widget.count == 0
 
     # Sending a key event does nothing
-    event = QKeyEvent(QEvent.KeyPress, 1, Qt.ShiftModifier)
+    event = QKeyEvent(QEvent.Type.KeyPress, 1, QtModShift)
     eFilter.eventFilter(obj, event)
     assert widget.count == 0
 

@@ -541,7 +541,7 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd,
 
     monkeypatch.setattr(GuiDocMerge, "__init__", lambda *a: None)
     monkeypatch.setattr(GuiDocMerge, "exec", lambda *a: None)
-    monkeypatch.setattr(GuiDocMerge, "result", lambda *a: QDialog.Accepted)
+    monkeypatch.setattr(GuiDocMerge, "result", lambda *a: QDialog.DialogCode.Accepted)
     monkeypatch.setattr(GuiDocMerge, "getData", lambda *a: mergeData)
 
     buildTestProject(nwGUI, projPath)
@@ -597,7 +597,7 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd,
 
     # User cancels merge
     with monkeypatch.context() as mp:
-        mp.setattr(GuiDocMerge, "result", lambda *a: QDialog.Rejected)
+        mp.setattr(GuiDocMerge, "result", lambda *a: QDialog.DialogCode.Rejected)
         assert projTree._mergeDocuments(hChapter1, True) is False
 
     # The merge goes through
@@ -642,7 +642,7 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRnd, 
 
     monkeypatch.setattr(GuiDocSplit, "__init__", lambda *a: None)
     monkeypatch.setattr(GuiDocSplit, "exec", lambda *a: None)
-    monkeypatch.setattr(GuiDocSplit, "result", lambda *a: QDialog.Accepted)
+    monkeypatch.setattr(GuiDocSplit, "result", lambda *a: QDialog.DialogCode.Accepted)
     monkeypatch.setattr(GuiDocSplit, "getData", lambda *a: (splitData, splitText))
 
     # Create a project
@@ -736,7 +736,7 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRnd, 
 
     # Cancelled by user
     with monkeypatch.context() as mp:
-        mp.setattr(GuiDocSplit, "result", lambda *a: QDialog.Rejected)
+        mp.setattr(GuiDocSplit, "result", lambda *a: QDialog.DialogCode.Rejected)
         assert projTree._splitDocument(hSplitDoc) is False
 
     # qtbot.stop()

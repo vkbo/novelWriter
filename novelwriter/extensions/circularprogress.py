@@ -29,7 +29,9 @@ from PyQt5.QtCore import QRect
 from PyQt5.QtGui import QBrush, QColor, QPaintEvent, QPainter, QPen
 from PyQt5.QtWidgets import QProgressBar, QSizePolicy, QWidget
 
-from novelwriter.types import QtAlignCenter, QtRoundCap, QtSolidLine, QtTransparent
+from novelwriter.types import (
+    QtPaintAnitAlias, QtAlignCenter, QtRoundCap, QtSolidLine, QtTransparent
+)
 
 
 class NProgressCircle(QProgressBar):
@@ -87,7 +89,7 @@ class NProgressCircle(QProgressBar):
         progress = 100.0*self.value()/self.maximum()
         angle = ceil(16*3.6*progress)
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.setRenderHint(QtPaintAnitAlias, True)
         painter.setPen(self._dPen)
         painter.setBrush(self._dBrush)
         painter.drawEllipse(self._dRect)

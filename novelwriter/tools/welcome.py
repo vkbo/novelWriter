@@ -36,8 +36,8 @@ from PyQt5.QtGui import QCloseEvent, QColor, QFont, QPaintEvent, QPainter, QPen
 from PyQt5.QtWidgets import (
     QAction, QApplication, QDialog, QFileDialog, QFormLayout, QHBoxLayout,
     QLabel, QLineEdit, QListView, QMenu, QPushButton, QScrollArea, QShortcut,
-    QStackedWidget, QStyle, QStyleOptionViewItem, QStyledItemDelegate,
-    QVBoxLayout, QWidget
+    QStackedWidget, QStyleOptionViewItem, QStyledItemDelegate, QVBoxLayout,
+    QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -49,7 +49,7 @@ from novelwriter.extensions.configlayout import NWrappedWidgetBox
 from novelwriter.extensions.modified import NIconToolButton, NSpinBox
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.versioninfo import VersionInfoWidget
-from novelwriter.types import QtAlignLeft, QtAlignRightTop
+from novelwriter.types import QtAlignLeft, QtAlignRightTop, QtSelected
 
 logger = logging.getLogger(__name__)
 
@@ -431,7 +431,7 @@ class _ProjectListItem(QStyledItemDelegate):
         ix, iy, x, y1, y2 = self._pPx
 
         painter.save()
-        if opt.state & QStyle.StateFlag.State_Selected == QStyle.StateFlag.State_Selected:
+        if opt.state & QtSelected == QtSelected:
             painter.setOpacity(0.25)
             painter.fillRect(rect, QApplication.palette().highlight())
             painter.setOpacity(1.0)
@@ -813,7 +813,7 @@ class _PopLeftDirectionMenu(QMenu):
 
     def event(self, event: QEvent) -> bool:
         """Overload the show event and move the menu popup location."""
-        if event.type() == QEvent.Show:
+        if event.type() == QEvent.Type.Show:
             if isinstance(parent := self.parent(), QWidget):
                 offset = QPoint(parent.width() - self.width(), parent.height())
                 self.move(parent.mapToGlobal(offset))

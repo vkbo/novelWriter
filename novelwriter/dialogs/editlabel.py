@@ -31,6 +31,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG
+from novelwriter.types import QtDialogCancel, QtDialogOk
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +56,7 @@ class GuiEditLabel(QDialog):
         self.labelValue.selectAll()
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 
@@ -90,7 +91,7 @@ class GuiEditLabel(QDialog):
         cls = GuiEditLabel(parent, text=text)
         cls.exec()
         label = cls.itemLabel
-        accepted = cls.result() == QDialog.Accepted
+        accepted = cls.result() == QDialog.DialogCode.Accepted
         cls.deleteLater()
         return label, accepted
 

@@ -24,7 +24,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QPainter
+from PyQt5.QtWidgets import QDialogButtonBox, QStyle
 
 # Qt Alignment Flags
 
@@ -50,6 +51,9 @@ QtNoBrush = Qt.BrushStyle.NoBrush
 QtNoPen = Qt.PenStyle.NoPen
 QtRoundCap = Qt.PenCapStyle.RoundCap
 QtSolidLine = Qt.PenStyle.SolidLine
+QtPaintAnitAlias = QPainter.RenderHint.Antialiasing
+QtMouseOver = QStyle.StateFlag.State_MouseOver
+QtSelected = QStyle.StateFlag.State_Selected
 
 # Qt Tree and Table Types
 
@@ -63,3 +67,17 @@ QtModeNone = Qt.KeyboardModifier.NoModifier
 QtModShift = Qt.KeyboardModifier.ShiftModifier
 QtMouseLeft = Qt.MouseButton.LeftButton
 QtMouseMiddle = Qt.MouseButton.MiddleButton
+
+# Dialog Button Box Types
+
+QtDialogApply = QDialogButtonBox.StandardButton.Apply
+QtDialogCancel = QDialogButtonBox.StandardButton.Cancel
+QtDialogClose = QDialogButtonBox.StandardButton.Close
+QtDialogOk = QDialogButtonBox.StandardButton.Ok
+QtDialogReset = QDialogButtonBox.StandardButton.Reset
+QtDialogSave = QDialogButtonBox.StandardButton.Save
+
+QtRoleAccept = QDialogButtonBox.ButtonRole.AcceptRole
+QtRoleAction = QDialogButtonBox.ButtonRole.ActionRole
+QtRoleApply = QDialogButtonBox.ButtonRole.ApplyRole
+QtRoleReject = QDialogButtonBox.ButtonRole.RejectRole

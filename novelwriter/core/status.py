@@ -35,6 +35,7 @@ from PyQt5.QtCore import QRectF
 
 from novelwriter import CONFIG
 from novelwriter.common import minmax, simplified
+from novelwriter.types import QtPaintAnitAlias, QtTransparent
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import TypeGuard  # Requires Python 3.10
@@ -248,10 +249,10 @@ class NWStatus:
     def _createIcon(self, red: int, green: int, blue: int) -> QIcon:
         """Generate an icon for a status label."""
         pixmap = QPixmap(self._iPX, self._iPX)
-        pixmap.fill(QColor(0, 0, 0, 0))
+        pixmap.fill(QtTransparent)
 
         painter = QPainter(pixmap)
-        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setRenderHint(QtPaintAnitAlias)
         painter.fillPath(self._iconPath, QColor(red, green, blue))
         painter.end()
 

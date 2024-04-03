@@ -29,7 +29,7 @@ from tools import C, buildTestProject
 
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QDialogButtonBox, QFontDialog
+from PyQt5.QtWidgets import QFontDialog
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.guimain import GuiMain
@@ -38,6 +38,7 @@ from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.tools.manussettings import (
     GuiBuildSettings, _OutputTab, _FormatTab, _ContentTab, _HeadingsTab, _FilterTab
 )
+from novelwriter.types import QtDialogApply, QtDialogClose, QtDialogSave
 
 
 @pytest.mark.gui
@@ -80,7 +81,7 @@ def testBuildSettings_Init(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockRnd
     # Capture Apply button
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        bSettings._dialogButtonClicked(bSettings.buttonBox.button(QDialogButtonBox.Apply))
+        bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogApply))
 
     assert triggered
 
@@ -89,7 +90,7 @@ def testBuildSettings_Init(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockRnd
 
     with qtbot.waitSignal(bSettings.newSettingsReady, timeout=5000):
         bSettings.newSettingsReady.connect(_testNewSettingsReady)
-        bSettings._dialogButtonClicked(bSettings.buttonBox.button(QDialogButtonBox.Save))
+        bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogSave))
 
     assert triggered
 
@@ -106,7 +107,7 @@ def testBuildSettings_Init(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockRnd
     assert triggered
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QDialogButtonBox.Close))
+    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
     # qtbot.stop()
 
 # END Test testBuildSettings_Init
@@ -312,7 +313,7 @@ def testBuildSettings_Filter(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockR
     ]
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QDialogButtonBox.Close))
+    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
     # qtbot.stop()
 
 # END Test testBuildSettings_Filter
@@ -484,7 +485,7 @@ def testBuildSettings_Headings(qtbot: QtBot, nwGUI: GuiMain):
     assert build.getBool("headings.hideSection") is True
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QDialogButtonBox.Close))
+    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
     # qtbot.stop()
 
 # END Test testBuildSettings_Headings
@@ -546,7 +547,7 @@ def testBuildSettings_Content(qtbot: QtBot, nwGUI: GuiMain):
     assert build.getBool("text.addNoteHeadings") is True
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QDialogButtonBox.Close))
+    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
     # qtbot.stop()
 
 # END Test testBuildSettings_Content
@@ -648,7 +649,7 @@ def testBuildSettings_Format(monkeypatch, qtbot: QtBot, nwGUI: GuiMain):
         assert fmtTab.textSize.value() == 10
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QDialogButtonBox.Close))
+    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
     # qtbot.stop()
 
 # END Test testBuildSettings_Format
@@ -707,7 +708,7 @@ def testBuildSettings_Output(qtbot: QtBot, nwGUI: GuiMain):
     assert outTab.odtPageHeader.text() == nwHeadFmt.ODT_AUTO
 
     # Finish
-    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QDialogButtonBox.Close))
+    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
     # qtbot.stop()
 
 # END Test testBuildSettings_Output

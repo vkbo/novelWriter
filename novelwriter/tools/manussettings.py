@@ -46,7 +46,10 @@ from novelwriter.extensions.modified import NComboBox, NDoubleSpinBox, NIconTool
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
-from novelwriter.types import QtAlignLeft, QtUserRole
+from novelwriter.types import (
+    QtAlignLeft, QtDialogApply, QtDialogClose, QtDialogSave, QtRoleAccept,
+    QtRoleApply, QtRoleReject, QtUserRole
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -131,11 +134,7 @@ class GuiBuildSettings(QDialog):
         self.toolStack.addWidget(self.optTabOutput)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(
-            QDialogButtonBox.StandardButton.Apply
-            | QDialogButtonBox.StandardButton.Save
-            | QDialogButtonBox.StandardButton.Close
-        )
+        self.buttonBox = QDialogButtonBox(QtDialogApply | QtDialogSave | QtDialogClose)
         self.buttonBox.clicked.connect(self._dialogButtonClicked)
 
         # Assemble
@@ -226,12 +225,12 @@ class GuiBuildSettings(QDialog):
     def _dialogButtonClicked(self, button: QAbstractButton) -> None:
         """Handle button clicks from the dialog button box."""
         role = self.buttonBox.buttonRole(button)
-        if role == QDialogButtonBox.ApplyRole:
+        if role == QtRoleApply:
             self._emitBuildData()
-        elif role == QDialogButtonBox.AcceptRole:
+        elif role == QtRoleAccept:
             self._emitBuildData()
             self.close()
-        elif role == QDialogButtonBox.RejectRole:
+        elif role == QtRoleReject:
             self.close()
         return
 
