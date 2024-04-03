@@ -129,7 +129,7 @@ def testBaseSharedData_Projects(monkeypatch, caplog, fncPath):
 @pytest.mark.base
 def testBaseSharedData_Alerts(qtbot, monkeypatch, caplog):
     """Test SharedData class alert helper functions."""
-    monkeypatch.setattr(QMessageBox, "exec_", lambda *a: None)
+    monkeypatch.setattr(QMessageBox, "exec", lambda *a: None)
     monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.Yes)
 
     shared = SharedData()

@@ -123,7 +123,7 @@ class GuiQuoteSelect(QDialog):
     def getQuote(cls, parent: QWidget, current: str = "") -> tuple[str, bool]:
         """Pop the dialog and return the result."""
         cls = GuiQuoteSelect(parent, current=current)
-        cls.exec_()
+        cls.exec()
         quote = cls._selected
         accepted = cls.result() == QDialog.DialogCode.Accepted
         cls.deleteLater()

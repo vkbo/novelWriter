@@ -146,7 +146,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     docViewer.setTextCursor(cursor)
     docViewer._makeSelection(QTextCursor.WordUnderCursor)
     with monkeypatch.context() as mp:
-        mp.setattr(QMenu, "exec_", mockExec)
+        mp.setattr(QMenu, "exec", mockExec)
         docViewer._openContextMenu(docViewer.cursorRect().center())
         assert menuOpened
 

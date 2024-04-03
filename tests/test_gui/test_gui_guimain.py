@@ -60,7 +60,7 @@ def testGuiMain_ProjectBlocker(nwGUI):
 @pytest.mark.gui
 def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
     """Test the handling of launch tasks."""
-    monkeypatch.setattr(GuiWelcome, "exec_", lambda *a: None)
+    monkeypatch.setattr(GuiWelcome, "exec", lambda *a: None)
     CONFIG.lastNotes = "0x0"
     buildTestProject(nwGUI, projPath)
 
@@ -511,7 +511,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
         assert "test" in suggest
 
     with monkeypatch.context() as mp:
-        mp.setattr(QMenu, "exec_", lambda *a: None)
+        mp.setattr(QMenu, "exec", lambda *a: None)
         docEditor.setCursorPosition(errPos)
         docEditor._openContextFromCursor()
 

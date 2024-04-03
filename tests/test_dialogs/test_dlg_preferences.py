@@ -38,7 +38,7 @@ KEY_DELAY = 1
 def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
     """Test the preferences dialog loading."""
     monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: [("en", "English [en]")])
-    monkeypatch.setattr(GuiPreferences, "exec_", lambda *a: None)
+    monkeypatch.setattr(GuiPreferences, "exec", lambda *a: None)
 
     # Load GUI with standard values
     nwGUI.mainMenu.aPreferences.activate(QAction.ActionEvent.Trigger)

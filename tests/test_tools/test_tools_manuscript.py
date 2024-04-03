@@ -278,7 +278,7 @@ def testManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     build._changed = True
     manus.buildList.clearSelection()
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.tools.manusbuild.GuiManuscriptBuild.exec_", lambda *a: None)
+        mp.setattr("novelwriter.tools.manusbuild.GuiManuscriptBuild.exec", lambda *a: None)
 
         manus.buildList.setCurrentRow(0)
         manus.btnBuild.click()
@@ -313,7 +313,7 @@ def testManuscript_Print(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath: Pa
     assert manus.docPreview.toPlainText().strip() != ""
 
     with monkeypatch.context() as mp:
-        mp.setattr(QPrintPreviewDialog, "exec_", lambda *a: None)
+        mp.setattr(QPrintPreviewDialog, "exec", lambda *a: None)
         manus.btnPrint.click()
         for obj in manus.children():
             if isinstance(obj, QPrintPreviewDialog):

@@ -142,7 +142,7 @@ def projPath(fncPath):
 @pytest.fixture(scope="function")
 def mockGUI(qtbot, monkeypatch):
     """Create a mock instance of novelWriter's main GUI class."""
-    monkeypatch.setattr(QMessageBox, "exec_", lambda *a: None)
+    monkeypatch.setattr(QMessageBox, "exec", lambda *a: None)
     monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.Yes)
     gui = MockGuiMain()
     theme = MockTheme()
@@ -154,7 +154,7 @@ def mockGUI(qtbot, monkeypatch):
 @pytest.fixture(scope="function")
 def nwGUI(qtbot, monkeypatch, functionFixture):
     """Create an instance of the novelWriter GUI."""
-    monkeypatch.setattr(QMessageBox, "exec_", lambda *a: None)
+    monkeypatch.setattr(QMessageBox, "exec", lambda *a: None)
     monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.Yes)
 
     nwGUI = main(["--testmode", f"--config={_TMP_CONF}", f"--data={_TMP_CONF}"])

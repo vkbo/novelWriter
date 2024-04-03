@@ -32,7 +32,7 @@ from novelwriter.dialogs.editlabel import GuiEditLabel
 @pytest.mark.gui
 def testDlgOther_QuoteSelect(qtbot, monkeypatch, nwGUI):
     """Test the quote symbols dialog."""
-    monkeypatch.setattr(GuiQuoteSelect, "exec_", lambda *a: None)
+    monkeypatch.setattr(GuiQuoteSelect, "exec", lambda *a: None)
 
     nwQuot = GuiQuoteSelect(nwGUI)
     nwQuot.show()
@@ -68,7 +68,7 @@ def testDlgOther_QuoteSelect(qtbot, monkeypatch, nwGUI):
 @pytest.mark.gui
 def testDlgOther_EditLabel(qtbot, monkeypatch):
     """Test the label editor dialog."""
-    monkeypatch.setattr(GuiEditLabel, "exec_", lambda *a: None)
+    monkeypatch.setattr(GuiEditLabel, "exec", lambda *a: None)
 
     with monkeypatch.context() as mp:
         mp.setattr(GuiEditLabel, "result", lambda *a: QDialog.Accepted)

@@ -385,7 +385,7 @@ class GuiManuscript(QDialog):
         build = self._getSelectedBuild()
         if isinstance(build, BuildSettings):
             dlgBuild = GuiManuscriptBuild(self, build)
-            dlgBuild.exec_()
+            dlgBuild.exec()
 
             # After the build is done, save build settings changes
             if build.changed:
@@ -398,7 +398,7 @@ class GuiManuscript(QDialog):
         """Open the print preview dialog."""
         preview = QPrintPreviewDialog(self)
         preview.paintRequested.connect(self.docPreview.printPreview)
-        preview.exec_()
+        preview.exec()
         return
 
     ##

@@ -38,7 +38,7 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, fncPath, projPath):
     """test the word list editor."""
     buildTestProject(nwGUI, projPath)
 
-    monkeypatch.setattr(GuiWordList, "exec_", lambda *a: None)
+    monkeypatch.setattr(GuiWordList, "exec", lambda *a: None)
     monkeypatch.setattr(GuiWordList, "result", lambda *a: QDialog.Accepted)
     monkeypatch.setattr(GuiWordList, "accept", lambda *a: None)
 

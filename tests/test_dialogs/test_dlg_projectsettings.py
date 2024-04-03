@@ -42,7 +42,7 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
     test, but are instead tested in the individual tab tests.
     """
     # Block the GUI blocking thread
-    monkeypatch.setattr(GuiProjectSettings, "exec_", lambda *a: None)
+    monkeypatch.setattr(GuiProjectSettings, "exec", lambda *a: None)
     monkeypatch.setattr(GuiProjectSettings, "result", lambda *a: QDialog.Accepted)
 
     # Check that we cannot open when there is no project

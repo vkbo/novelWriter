@@ -539,7 +539,7 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd,
     mergeData = {}
 
     monkeypatch.setattr(GuiDocMerge, "__init__", lambda *a: None)
-    monkeypatch.setattr(GuiDocMerge, "exec_", lambda *a: None)
+    monkeypatch.setattr(GuiDocMerge, "exec", lambda *a: None)
     monkeypatch.setattr(GuiDocMerge, "result", lambda *a: QDialog.Accepted)
     monkeypatch.setattr(GuiDocMerge, "getData", lambda *a: mergeData)
 
@@ -640,7 +640,7 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRnd, 
     splitText = []
 
     monkeypatch.setattr(GuiDocSplit, "__init__", lambda *a: None)
-    monkeypatch.setattr(GuiDocSplit, "exec_", lambda *a: None)
+    monkeypatch.setattr(GuiDocSplit, "exec", lambda *a: None)
     monkeypatch.setattr(GuiDocSplit, "result", lambda *a: QDialog.Accepted)
     monkeypatch.setattr(GuiDocSplit, "getData", lambda *a: (splitData, splitText))
 
@@ -1162,7 +1162,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Pop the menu
     with monkeypatch.context() as mp:
-        mp.setattr(QMenu, "exec_", lambda *a: None)
+        mp.setattr(QMenu, "exec", lambda *a: None)
         projTree.clearSelection()
 
         # No item under menu

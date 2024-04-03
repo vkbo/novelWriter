@@ -129,7 +129,7 @@ class GuiLipsum(QDialog):
     def getLipsum(cls, parent: QWidget) -> str:
         """Pop the dialog and return the lipsum text."""
         cls = GuiLipsum(parent)
-        cls.exec_()
+        cls.exec()
         text = cls.lipsumText
         cls.deleteLater()
         return text

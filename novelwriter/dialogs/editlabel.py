@@ -88,7 +88,7 @@ class GuiEditLabel(QDialog):
     def getLabel(cls, parent: QWidget, text: str) -> tuple[str, bool]:
         """Pop the dialog and return the result."""
         cls = GuiEditLabel(parent, text=text)
-        cls.exec_()
+        cls.exec()
         label = cls.itemLabel
         accepted = cls.result() == QDialog.Accepted
         cls.deleteLater()

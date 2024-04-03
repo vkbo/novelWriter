@@ -197,7 +197,7 @@ def exceptionHandler(exType: type, exValue: BaseException, exTrace: TracebackTyp
 
         errMsg = NWErrorMessage(nwGUI)
         errMsg.setMessage(exType, exValue, exTrace)
-        errMsg.exec_()
+        errMsg.exec()
 
         try:
             # Try a controlled shutdown

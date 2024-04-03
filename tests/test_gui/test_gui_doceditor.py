@@ -244,7 +244,7 @@ def testGuiEditor_MetaData(qtbot, nwGUI, projPath, mockRnd):
 @pytest.mark.gui
 def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     """Test the editor context menu."""
-    monkeypatch.setattr(QMenu, "exec_", lambda *a: None)
+    monkeypatch.setattr(QMenu, "exec", lambda *a: None)
 
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True

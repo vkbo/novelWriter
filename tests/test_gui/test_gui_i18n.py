@@ -47,8 +47,8 @@ LANG_DATA = CONFIG.listLanguages(CONFIG.LANG_NW)
 @pytest.mark.parametrize("language", [a for a, b in LANG_DATA])
 def testGuiI18n_Localisation(qtbot, monkeypatch, language, nwGUI, projPath):
     """Test loading the gui with a specific language."""
-    monkeypatch.setattr(QDialog, "exec_", lambda *a: None)
-    monkeypatch.setattr(QMessageBox, "exec_", lambda *a: None)
+    monkeypatch.setattr(QDialog, "exec", lambda *a: None)
+    monkeypatch.setattr(QMessageBox, "exec", lambda *a: None)
     monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.Yes)
 
     # Set the test language

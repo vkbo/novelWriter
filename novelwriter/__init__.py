@@ -187,7 +187,7 @@ def main(sysArgs: list | None = None):
         ))
         for errLine in errorData:
             logger.critical(errLine)
-        errApp.exec_()
+        errApp.exec()
         sys.exit(errorCode)
 
     # Finish initialising config
@@ -237,6 +237,6 @@ def main(sysArgs: list | None = None):
         nwGUI = GuiMain()
         nwGUI.postLaunchTasks(cmdOpen)
 
-        sys.exit(nwApp.exec_())
+        sys.exit(nwApp.exec())
 
 # END Function main

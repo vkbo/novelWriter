@@ -768,7 +768,7 @@ class GuiMain(QMainWindow):
         """Open the welcome dialog."""
         dialog = GuiWelcome(self)
         dialog.openProjectRequest.connect(self._openProjectFromWelcome)
-        dialog.exec_()
+        dialog.exec()
         return
 
     @pyqtSlot()
@@ -776,7 +776,7 @@ class GuiMain(QMainWindow):
         """Open the preferences dialog."""
         dialog = GuiPreferences(self)
         dialog.newPreferencesReady.connect(self._processConfigChanges)
-        dialog.exec_()
+        dialog.exec()
         return
 
     @pyqtSlot()
@@ -786,7 +786,7 @@ class GuiMain(QMainWindow):
         if SHARED.hasProject:
             dialog = GuiProjectSettings(self, gotoPage=focusTab)
             dialog.newProjectSettingsReady.connect(self._processProjectSettingsChanges)
-            dialog.exec_()
+            dialog.exec()
         return
 
     @pyqtSlot()
@@ -820,7 +820,7 @@ class GuiMain(QMainWindow):
         if SHARED.hasProject:
             dialog = GuiWordList(self)
             dialog.newWordListReady.connect(self._processWordListChanges)
-            dialog.exec_()
+            dialog.exec()
         return
 
     @pyqtSlot()

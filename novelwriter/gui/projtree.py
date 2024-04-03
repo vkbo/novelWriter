@@ -1230,7 +1230,7 @@ class GuiProjectTree(QTreeWidget):
         else:
             ctxMenu.buildSingleSelectMenu(hasChild)
 
-        ctxMenu.exec_(self.viewport().mapToGlobal(clickPos))
+        ctxMenu.exec(self.viewport().mapToGlobal(clickPos))
         ctxMenu.deleteLater()
 
         return True
@@ -1410,7 +1410,7 @@ class GuiProjectTree(QTreeWidget):
             itemList.remove(tHandle)
 
         dlgMerge = GuiDocMerge(self.mainGui, tHandle, itemList)
-        dlgMerge.exec_()
+        dlgMerge.exec()
 
         if dlgMerge.result() == QDialog.DialogCode.Accepted:
 
@@ -1480,7 +1480,7 @@ class GuiProjectTree(QTreeWidget):
             return False
 
         dlgSplit = GuiDocSplit(self.mainGui, tHandle)
-        dlgSplit.exec_()
+        dlgSplit.exec()
 
         if dlgSplit.result() == QDialog.DialogCode.Accepted:
 

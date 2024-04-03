@@ -377,7 +377,7 @@ class _OpenProjectPage(QWidget):
         action.triggered.connect(self.openSelectedItem)
         action = ctxMenu.addAction(self.tr("Remove Project"))
         action.triggered.connect(self._deleteSelectedItem)
-        ctxMenu.exec_(self.mapToGlobal(pos))
+        ctxMenu.exec(self.mapToGlobal(pos))
         ctxMenu.deleteLater()
         return
 
