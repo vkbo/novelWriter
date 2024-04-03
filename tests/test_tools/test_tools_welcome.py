@@ -26,13 +26,14 @@ from pathlib import Path
 from datetime import datetime
 from pytestqt.qtbot import QtBot
 
-from PyQt5.QtCore import QPoint, Qt
+from PyQt5.QtCore import QPoint
 from PyQt5.QtWidgets import QAction, QFileDialog, QMenu
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemClass
 from novelwriter.constants import nwFiles
 from novelwriter.tools.welcome import GuiWelcome
+from novelwriter.types import QtMouseLeft
 
 
 @pytest.mark.gui
@@ -70,7 +71,7 @@ def testToolWelcome_Main(qtbot: QtBot, monkeypatch, nwGUI, fncPath):
 @pytest.mark.gui
 def testToolWelcome_Open(qtbot: QtBot, monkeypatch, nwGUI, fncPath):
     """Test the open tab in the Welcome window."""
-    monkeypatch.setattr(QMenu, "exec_", lambda *a: None)
+    monkeypatch.setattr(QMenu, "exec", lambda *a: None)
     monkeypatch.setattr(QMenu, "deleteLater", lambda *a: None)
 
     CONFIG.recentProjects.update("/stuff/project_one", "Project One", 12345, 1690000000)
@@ -100,19 +101,19 @@ def testToolWelcome_Open(qtbot: QtBot, monkeypatch, nwGUI, fncPath):
 
     # Single click item
     assert tabOpen.selectedPath.text() == "Path: /stuff/project_two"
-    qtbot.mouseClick(vPort, Qt.MouseButton.LeftButton, pos=posTwo, delay=10)
+    qtbot.mouseClick(vPort, QtMouseLeft, pos=posTwo, delay=10)
     assert tabOpen.selectedPath.text() == "Path: /stuff/project_one"
 
     # Double click item
-    qtbot.mouseClick(vPort, Qt.MouseButton.LeftButton, pos=posTwo, delay=10)
+    qtbot.mouseClick(vPort, QtMouseLeft, pos=posTwo, delay=10)
     with monkeypatch.context() as mp:
         mp.setattr(welcome, "close", lambda *a: None)
         with qtbot.waitSignal(welcome.openProjectRequest, timeout=5000) as signal:
-            qtbot.mouseDClick(vPort, Qt.MouseButton.LeftButton, pos=posTwo, delay=10)
+            qtbot.mouseDClick(vPort, QtMouseLeft, pos=posTwo, delay=10)
         assert signal.args and signal.args[0] == Path("/stuff/project_one")
 
     # Press open button
-    qtbot.mouseClick(vPort, Qt.MouseButton.LeftButton, pos=posTwo, delay=10)
+    qtbot.mouseClick(vPort, QtMouseLeft, pos=posTwo, delay=10)
     with monkeypatch.context() as mp:
         mp.setattr(welcome, "close", lambda *a: None)
         with qtbot.waitSignal(welcome.openProjectRequest, timeout=5000) as signal:
@@ -128,7 +129,7 @@ def testToolWelcome_Open(qtbot: QtBot, monkeypatch, nwGUI, fncPath):
                 return obj
         return None
 
-    qtbot.mouseClick(vPort, Qt.MouseButton.LeftButton, pos=posOne, delay=10)
+    qtbot.mouseClick(vPort, QtMouseLeft, pos=posOne, delay=10)
     ctxMenu = getMenuForPos(posOne)
     assert isinstance(ctxMenu, QMenu)
     assert ctxMenu.actions()[0].text() == "Open Project"

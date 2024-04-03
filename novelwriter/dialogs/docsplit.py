@@ -26,8 +26,8 @@ from __future__ import annotations
 
 import logging
 
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QCloseEvent
-from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QComboBox, QDialog, QDialogButtonBox, QGridLayout,
     QLabel, QListWidget, QListWidgetItem, QVBoxLayout, QWidget
@@ -36,15 +36,16 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.configlayout import NColourLabel
+from novelwriter.types import QtDialogCancel, QtDialogOk, QtUserRole
 
 logger = logging.getLogger(__name__)
 
 
 class GuiDocSplit(QDialog):
 
-    LINE_ROLE  = Qt.ItemDataRole.UserRole
-    LEVEL_ROLE = Qt.ItemDataRole.UserRole + 1
-    LABEL_ROLE = Qt.ItemDataRole.UserRole + 2
+    LINE_ROLE  = QtUserRole
+    LEVEL_ROLE = QtUserRole + 1
+    LABEL_ROLE = QtUserRole + 2
 
     def __init__(self, parent: QWidget, sHandle: str) -> None:
         super().__init__(parent=parent)
@@ -57,7 +58,8 @@ class GuiDocSplit(QDialog):
 
         self.setWindowTitle(self.tr("Split Document"))
 
-        self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Document Headings")))
+        self.headLabel = QLabel(self.tr("Document Headings"), self)
+        self.headLabel.setFont(SHARED.theme.guiFontB)
         self.helpLabel = NColourLabel(
             self.tr("Select the maximum level to split into files."),
             SHARED.theme.helpText, parent=self, wrap=True
@@ -75,8 +77,8 @@ class GuiDocSplit(QDialog):
         docHierarchy = pOptions.getBool("GuiDocSplit", "docHierarchy", True)
 
         # Heading Selection
-        self.listBox = QListWidget()
-        self.listBox.setDragDropMode(QAbstractItemView.NoDragDrop)
+        self.listBox = QListWidget(self)
+        self.listBox.setDragDropMode(QAbstractItemView.DragDropMode.NoDragDrop)
         self.listBox.setMinimumWidth(CONFIG.pxInt(400))
         self.listBox.setMinimumHeight(CONFIG.pxInt(180))
 
@@ -91,15 +93,15 @@ class GuiDocSplit(QDialog):
         self.splitLevel.currentIndexChanged.connect(self._reloadList)
 
         # Split Options
-        self.folderLabel = QLabel(self.tr("Split into a new folder"))
+        self.folderLabel = QLabel(self.tr("Split into a new folder"), self)
         self.folderSwitch = NSwitch(self, height=iPx)
         self.folderSwitch.setChecked(intoFolder)
 
-        self.hierarchyLabel = QLabel(self.tr("Create document hierarchy"))
+        self.hierarchyLabel = QLabel(self.tr("Create document hierarchy"), self)
         self.hierarchySwitch = NSwitch(self, height=iPx)
         self.hierarchySwitch.setChecked(docHierarchy)
 
-        self.trashLabel = QLabel(self.tr("Move split document to Trash"))
+        self.trashLabel = QLabel(self.tr("Move split document to Trash"), self)
         self.trashSwitch = NSwitch(self, height=iPx)
 
         self.optBox = QGridLayout()
@@ -114,7 +116,7 @@ class GuiDocSplit(QDialog):
         self.optBox.setColumnStretch(3, 1)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel, self)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 

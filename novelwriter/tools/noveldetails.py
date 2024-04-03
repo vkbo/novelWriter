@@ -26,8 +26,8 @@ from __future__ import annotations
 import math
 import logging
 
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QCloseEvent
-from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QDialogButtonBox, QFormLayout, QGridLayout,
     QHBoxLayout, QLabel, QSpinBox, QStackedWidget, QTreeWidget,
@@ -41,7 +41,7 @@ from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrol
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignRight
+from novelwriter.types import QtAlignRight, QtDecoration, QtDialogClose
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +95,7 @@ class GuiNovelDetails(QDialog):
         self.mainStack.addWidget(self.contentsPage)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
+        self.buttonBox = QDialogButtonBox(QtDialogClose, self)
         self.buttonBox.rejected.connect(self.close)
 
         # Assemble
@@ -366,7 +366,7 @@ class _ContentsPage(NFixedPage):
         countFrom    = options.getInt("GuiNovelDetails", "countFrom", 1)
         clearDouble  = options.getBool("GuiNovelDetails", "clearDouble", True)
 
-        self.wpLabel = QLabel(self.tr("Words per page"))
+        self.wpLabel = QLabel(self.tr("Words per page"), self)
 
         self.wpValue = QSpinBox(self)
         self.wpValue.setMinimum(10)
@@ -375,7 +375,7 @@ class _ContentsPage(NFixedPage):
         self.wpValue.setValue(wordsPerPage)
         self.wpValue.valueChanged.connect(self._populateTree)
 
-        self.poLabel = QLabel(self.tr("First page offset"))
+        self.poLabel = QLabel(self.tr("First page offset"), self)
 
         self.poValue = QSpinBox(self)
         self.poValue.setMinimum(1)
@@ -384,7 +384,7 @@ class _ContentsPage(NFixedPage):
         self.poValue.setValue(countFrom)
         self.poValue.valueChanged.connect(self._populateTree)
 
-        self.dblLabel = QLabel(self.tr("Chapters on odd pages"))
+        self.dblLabel = QLabel(self.tr("Chapters on odd pages"), self)
 
         self.dblValue = NSwitch(self, height=iPx)
         self.dblValue.setChecked(clearDouble)
@@ -485,7 +485,7 @@ class _ContentsPage(NFixedPage):
             if tTitle.strip() == "":
                 tTitle = self.tr("Untitled")
 
-            newItem.setData(self.C_TITLE, Qt.DecorationRole, hDec)
+            newItem.setData(self.C_TITLE, QtDecoration, hDec)
             newItem.setText(self.C_TITLE, tTitle)
             newItem.setText(self.C_WORDS, f"{wCount:n}")
             newItem.setText(self.C_PAGES, f"{pCount:n}")

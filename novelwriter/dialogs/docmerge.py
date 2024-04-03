@@ -26,8 +26,8 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QDialogButtonBox, QGridLayout, QLabel,
     QListWidget, QListWidgetItem, QVBoxLayout, QWidget
@@ -36,13 +36,14 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.configlayout import NColourLabel
+from novelwriter.types import QtDialogCancel, QtDialogOk, QtDialogReset, QtUserRole
 
 logger = logging.getLogger(__name__)
 
 
 class GuiDocMerge(QDialog):
 
-    D_HANDLE = Qt.ItemDataRole.UserRole
+    D_HANDLE = QtUserRole
 
     def __init__(self, parent: QWidget, sHandle: str, itemList: list[str]) -> None:
         super().__init__(parent=parent)
@@ -53,7 +54,8 @@ class GuiDocMerge(QDialog):
 
         self._data = {}
 
-        self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Documents to Merge")))
+        self.headLabel = QLabel(self.tr("Documents to Merge"), self)
+        self.headLabel.setFont(SHARED.theme.guiFontB)
         self.helpLabel = NColourLabel(
             self.tr("Drag and drop items to change the order, or uncheck to exclude."),
             SHARED.theme.helpText, parent=self, wrap=True
@@ -69,12 +71,12 @@ class GuiDocMerge(QDialog):
         self.listBox.setIconSize(iSz)
         self.listBox.setMinimumWidth(CONFIG.pxInt(400))
         self.listBox.setMinimumHeight(CONFIG.pxInt(180))
-        self.listBox.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.listBox.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.listBox.setDragDropMode(QAbstractItemView.InternalMove)
+        self.listBox.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.listBox.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.listBox.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
 
         # Merge Options
-        self.trashLabel = QLabel(self.tr("Move merged items to Trash"))
+        self.trashLabel = QLabel(self.tr("Move merged items to Trash"), self)
         self.trashSwitch = NSwitch(self, height=iPx)
 
         self.optBox = QGridLayout()
@@ -84,11 +86,11 @@ class GuiDocMerge(QDialog):
         self.optBox.setColumnStretch(2, 1)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel, self)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 
-        self.resetButton = self.buttonBox.addButton(QDialogButtonBox.Reset)
+        self.resetButton = self.buttonBox.addButton(QtDialogReset)
         self.resetButton.clicked.connect(self._resetList)
 
         # Assemble
@@ -120,7 +122,7 @@ class GuiDocMerge(QDialog):
         finalItems = []
         for i in range(self.listBox.count()):
             item = self.listBox.item(i)
-            if item is not None and item.checkState() == Qt.Checked:
+            if item is not None and item.checkState() == Qt.CheckState.Checked:
                 finalItems.append(item.data(self.D_HANDLE))
 
         self._data["moveToTrash"] = self.trashSwitch.isChecked()
@@ -175,7 +177,7 @@ class GuiDocMerge(QDialog):
             newItem.setIcon(itemIcon)
             newItem.setText(nwItem.itemName)
             newItem.setData(self.D_HANDLE, tHandle)
-            newItem.setCheckState(Qt.Checked)
+            newItem.setCheckState(Qt.CheckState.Checked)
 
             self.listBox.addItem(newItem)
 

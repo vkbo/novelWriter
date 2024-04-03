@@ -32,7 +32,7 @@ from PyQt5.QtWidgets import (
     QStyleOptionToolButton, QToolBar, QToolButton, QWidget
 )
 
-from novelwriter.types import QtAlignLeft
+from novelwriter.types import QtPaintAnitAlias, QtAlignLeft, QtMouseOver, QtNoBrush, QtNoPen
 
 
 class NPagedSideBar(QToolBar):
@@ -56,10 +56,10 @@ class NPagedSideBar(QToolBar):
         self._group.buttonClicked.connect(self._buttonClicked)
 
         self.setMovable(False)
-        self.setOrientation(Qt.Vertical)
+        self.setOrientation(Qt.Orientation.Vertical)
 
         stretch = QWidget(self)
-        stretch.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        stretch.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self._stretchAction = self.addWidget(stretch)
 
         return
@@ -119,13 +119,13 @@ class _NPagedToolButton(QToolButton):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.setCheckable(True)
 
         fH = self.fontMetrics().height()
         self._bH = round(fH * 1.7)
         self._tM = (self._bH - fH)//2
-        self._lM = 3*self.style().pixelMetric(QStyle.PM_ButtonMargin)//2
+        self._lM = 3*self.style().pixelMetric(QStyle.PixelMetric.PM_ButtonMargin)//2
         self._cR = self._lM//2
         self._aH = 2*fH//7
         self.setFixedHeight(self._bH)
@@ -145,15 +145,15 @@ class _NPagedToolButton(QToolButton):
         opt.initFrom(self)
 
         paint = QPainter(self)
-        paint.setRenderHint(QPainter.Antialiasing, True)
-        paint.setPen(Qt.NoPen)
-        paint.setBrush(Qt.NoBrush)
+        paint.setRenderHint(QtPaintAnitAlias, True)
+        paint.setPen(QtNoPen)
+        paint.setBrush(QtNoBrush)
 
         width = self.width()
         height = self.height()
         palette = self.palette()
 
-        if opt.state & QStyle.State_MouseOver == QStyle.State_MouseOver:
+        if opt.state & QtMouseOver == QtMouseOver:
             backCol = palette.base()
             paint.setBrush(backCol)
             paint.setOpacity(0.75)
@@ -197,12 +197,12 @@ class _NPagedToolLabel(QLabel):
     def __init__(self, parent: QWidget, textColor: QColor | None = None) -> None:
         super().__init__(parent=parent)
 
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         fH = self.fontMetrics().height()
         self._bH = round(fH * 1.7)
         self._tM = (self._bH - fH)//2
-        self._lM = self.style().pixelMetric(QStyle.PM_ButtonMargin)//2
+        self._lM = self.style().pixelMetric(QStyle.PixelMetric.PM_ButtonMargin)//2
         self.setFixedHeight(self._bH)
 
         self._textCol = textColor or self.palette().text().color()
@@ -214,8 +214,8 @@ class _NPagedToolLabel(QLabel):
         label that matches the button style.
         """
         paint = QPainter(self)
-        paint.setRenderHint(QPainter.Antialiasing, True)
-        paint.setPen(Qt.NoPen)
+        paint.setRenderHint(QtPaintAnitAlias, True)
+        paint.setPen(QtNoPen)
 
         width = self.width()
         height = self.height()

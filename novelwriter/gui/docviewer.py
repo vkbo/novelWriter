@@ -36,8 +36,8 @@ from PyQt5.QtGui import (
     QTextOption
 )
 from PyQt5.QtWidgets import (
-    QAction, QFrame, QHBoxLayout, QLabel, QMenu, QTextBrowser, QToolButton,
-    QWidget, qApp
+    QAction, QApplication, QFrame, QHBoxLayout, QLabel, QMenu, QTextBrowser,
+    QToolButton, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -49,7 +49,9 @@ from novelwriter.error import logException
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
-from novelwriter.types import QtAlignCenterTop, QtAlignJustify
+from novelwriter.types import (
+    QtAlignCenterTop, QtAlignJustify, QtKeepAnchor, QtMouseLeft, QtMoveAnchor
+)
 
 logger = logging.getLogger(__name__)
 
@@ -195,7 +197,7 @@ class GuiDocViewer(QTextBrowser):
             return False
 
         logger.debug("Generating preview for item '%s'", tHandle)
-        qApp.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+        QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
 
         sPos = self.verticalScrollBar().value()
         aDoc = ToHtml(SHARED.project)
@@ -217,7 +219,7 @@ class GuiDocViewer(QTextBrowser):
             logger.error("Failed to generate preview for document with handle '%s'", tHandle)
             logException()
             self.setText(self.tr("An error occurred while generating the preview."))
-            qApp.restoreOverrideCursor()
+            QApplication.restoreOverrideCursor()
             return False
 
         # Refresh the tab stops
@@ -250,7 +252,7 @@ class GuiDocViewer(QTextBrowser):
         # Since we change the content while it may still be rendering, we mark
         # the document dirty again to make sure it's re-rendered properly.
         self.redrawText()
-        qApp.restoreOverrideCursor()
+        QApplication.restoreOverrideCursor()
         self.documentLoaded.emit(tHandle)
 
         return True
@@ -410,7 +412,7 @@ class GuiDocViewer(QTextBrowser):
         ctxMenu.addAction(mnuSelPara)
 
         # Open the context menu
-        ctxMenu.exec_(self.viewport().mapToGlobal(point))
+        ctxMenu.exec(self.viewport().mapToGlobal(point))
         ctxMenu.deleteLater()
 
         return
@@ -452,8 +454,8 @@ class GuiDocViewer(QTextBrowser):
             posE = cursor.selectionEnd()
             selTxt = cursor.selectedText()
             if selTxt.startswith(nwUnicode.U_PSEP):
-                cursor.setPosition(posS+1, QTextCursor.MoveMode.MoveAnchor)
-                cursor.setPosition(posE, QTextCursor.MoveMode.KeepAnchor)
+                cursor.setPosition(posS+1, QtMoveAnchor)
+                cursor.setPosition(posE, QtKeepAnchor)
 
         self.setTextCursor(cursor)
 
@@ -635,7 +637,7 @@ class GuiDocViewHeader(QWidget):
         self.setAutoFillBackground(True)
 
         # Title Label
-        self.itemTitle = QLabel()
+        self.itemTitle = QLabel(self)
         self.itemTitle.setText("")
         self.itemTitle.setIndent(0)
         self.itemTitle.setMargin(0)
@@ -826,7 +828,7 @@ class GuiDocViewHeader(QWidget):
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
-        if event.button() == Qt.MouseButton.LeftButton:
+        if event.button() == QtMouseLeft:
             self.docViewer.requestProjectItemSelected.emit(self._docHandle, True)
         return
 

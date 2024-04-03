@@ -25,11 +25,13 @@ from __future__ import annotations
 
 from math import ceil
 
+from PyQt5.QtCore import QRect
 from PyQt5.QtGui import QBrush, QColor, QPaintEvent, QPainter, QPen
-from PyQt5.QtCore import QRect, Qt
 from PyQt5.QtWidgets import QProgressBar, QSizePolicy, QWidget
 
-from novelwriter.types import QtAlignCenter
+from novelwriter.types import (
+    QtPaintAnitAlias, QtAlignCenter, QtRoundCap, QtSolidLine, QtTransparent
+)
 
 
 class NProgressCircle(QProgressBar):
@@ -50,14 +52,14 @@ class NProgressCircle(QProgressBar):
         self._point = point
         self._dRect = QRect(0, 0, size, size)
         self._cRect = QRect(point, point, size - 2*point, size - 2*point)
-        self._dPen = QPen(Qt.transparent)
-        self._dBrush = QBrush(Qt.transparent)
+        self._dPen = QPen(QtTransparent)
+        self._dBrush = QBrush(QtTransparent)
         self.setColours(
             track=self.palette().alternateBase().color(),
             bar=self.palette().highlight().color(),
             text=self.palette().text().color()
         )
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         self.setFixedWidth(size)
         self.setFixedHeight(size)
         return
@@ -69,9 +71,9 @@ class NProgressCircle(QProgressBar):
             self._dPen = QPen(back)
             self._dBrush = QBrush(back)
         if isinstance(bar, QColor):
-            self._cPen = QPen(QBrush(bar), self._point, Qt.SolidLine, Qt.RoundCap)
+            self._cPen = QPen(QBrush(bar), self._point, QtSolidLine, QtRoundCap)
         if isinstance(track, QColor):
-            self._bPen = QPen(QBrush(track), self._point, Qt.SolidLine, Qt.RoundCap)
+            self._bPen = QPen(QBrush(track), self._point, QtSolidLine, QtRoundCap)
         if isinstance(text, QColor):
             self._tColor = text
         return
@@ -87,7 +89,7 @@ class NProgressCircle(QProgressBar):
         progress = 100.0*self.value()/self.maximum()
         angle = ceil(16*3.6*progress)
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.setRenderHint(QtPaintAnitAlias, True)
         painter.setPen(self._dPen)
         painter.setBrush(self._dBrush)
         painter.drawEllipse(self._dRect)

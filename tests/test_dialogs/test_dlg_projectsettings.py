@@ -24,14 +24,15 @@ import pytest
 
 from tools import C, buildTestProject
 
-from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QDialog, QAction, QColorDialog
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwItemType
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
+from novelwriter.enum import nwItemType
+from novelwriter.types import QtMouseLeft
 
 KEY_DELAY = 1
 
@@ -42,8 +43,8 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
     test, but are instead tested in the individual tab tests.
     """
     # Block the GUI blocking thread
-    monkeypatch.setattr(GuiProjectSettings, "exec_", lambda *a: None)
-    monkeypatch.setattr(GuiProjectSettings, "result", lambda *a: QDialog.Accepted)
+    monkeypatch.setattr(GuiProjectSettings, "exec", lambda *a: None)
+    monkeypatch.setattr(GuiProjectSettings, "result", lambda *a: QDialog.DialogCode.Accepted)
 
     # Check that we cannot open when there is no project
     nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
@@ -188,13 +189,13 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
     # Can't delete the first item (it's in use)
     status.listBox.clearSelection()
     status.listBox.setCurrentItem(status.listBox.topLevelItem(0))
-    qtbot.mouseClick(status.delButton, Qt.LeftButton)
+    qtbot.mouseClick(status.delButton, QtMouseLeft)
     assert status.listBox.topLevelItemCount() == 4
 
     # Can delete the second item
     status.listBox.clearSelection()
     status.listBox.setCurrentItem(status.listBox.topLevelItem(1))
-    qtbot.mouseClick(status.delButton, Qt.LeftButton)
+    qtbot.mouseClick(status.delButton, QtMouseLeft)
     assert status.listBox.topLevelItemCount() == 3
 
     # Add a new item
@@ -270,21 +271,21 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
     # Delete unused entry
     importance.listBox.clearSelection()
     importance.listBox.setCurrentItem(importance.listBox.topLevelItem(1))
-    qtbot.mouseClick(importance.delButton, Qt.LeftButton)
+    qtbot.mouseClick(importance.delButton, QtMouseLeft)
     assert importance.listBox.topLevelItemCount() == 3
 
     # Add a new entry
     with monkeypatch.context() as mp:
         mp.setattr(QColorDialog, "getColor", lambda *a: QColor(20, 30, 40))
-        qtbot.mouseClick(importance.addButton, Qt.LeftButton)
+        qtbot.mouseClick(importance.addButton, QtMouseLeft)
         importance.listBox.clearSelection()
         importance.listBox.setCurrentItem(importance.listBox.topLevelItem(3))
         for _ in range(8):
-            qtbot.keyClick(importance.editName, Qt.Key_Backspace, delay=KEY_DELAY)
+            qtbot.keyClick(importance.editName, Qt.Key.Key_Backspace, delay=KEY_DELAY)
         for c in "Final":
             qtbot.keyClick(importance.editName, c, delay=KEY_DELAY)
-        qtbot.mouseClick(importance.colButton, Qt.LeftButton)
-        qtbot.mouseClick(importance.saveButton, Qt.LeftButton)
+        qtbot.mouseClick(importance.colButton, QtMouseLeft)
+        qtbot.mouseClick(importance.saveButton, QtMouseLeft)
         assert importance.listBox.topLevelItemCount() == 4
 
     assert importance.wasChanged is True
@@ -367,7 +368,7 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert replace.listBox.topLevelItemCount() == 2
 
     # Create a new entry
-    qtbot.mouseClick(replace.addButton, Qt.LeftButton)
+    qtbot.mouseClick(replace.addButton, QtMouseLeft)
     assert replace.listBox.topLevelItemCount() == 3
     assert replace.listBox.topLevelItem(2).text(0) == "<keyword3>"  # type: ignore
     assert replace.listBox.topLevelItem(2).text(1) == ""  # type: ignore
@@ -380,13 +381,13 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     replace.editValue.setText("")
     for c in "With This Stuff ":
         qtbot.keyClick(replace.editValue, c, delay=KEY_DELAY)
-    qtbot.mouseClick(replace.saveButton, Qt.LeftButton)
+    qtbot.mouseClick(replace.saveButton, QtMouseLeft)
     assert replace.listBox.topLevelItem(2).text(0) == "<This>"  # type: ignore
     assert replace.listBox.topLevelItem(2).text(1) == "With This Stuff "  # type: ignore
 
     # Create a new entry again
     replace.listBox.clearSelection()
-    qtbot.mouseClick(replace.addButton, Qt.LeftButton)
+    qtbot.mouseClick(replace.addButton, QtMouseLeft)
     assert replace.listBox.topLevelItemCount() == 4
 
     # The list is sorted, so we must find it
@@ -399,7 +400,7 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Then delete the new item
     replace.listBox.setCurrentItem(replace.listBox.topLevelItem(newIdx))
-    qtbot.mouseClick(replace.delButton, Qt.LeftButton)
+    qtbot.mouseClick(replace.delButton, QtMouseLeft)
     assert replace.listBox.topLevelItemCount() == 3
 
     # Check Project

@@ -23,11 +23,9 @@ from __future__ import annotations
 import sys
 import pytest
 
-from collections.abc import Callable
-
 from tools import buildTestProject
 
-from PyQt5.QtWidgets import QDialog, qApp, QMessageBox
+from PyQt5.QtWidgets import QApplication, QDialog, QMessageBox
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.about import GuiAbout
@@ -49,18 +47,18 @@ LANG_DATA = CONFIG.listLanguages(CONFIG.LANG_NW)
 @pytest.mark.parametrize("language", [a for a, b in LANG_DATA])
 def testGuiI18n_Localisation(qtbot, monkeypatch, language, nwGUI, projPath):
     """Test loading the gui with a specific language."""
-    monkeypatch.setattr(QDialog, "exec_", lambda *a: None)
-    monkeypatch.setattr(QMessageBox, "exec_", lambda *a: None)
+    monkeypatch.setattr(QDialog, "exec", lambda *a: None)
+    monkeypatch.setattr(QMessageBox, "exec", lambda *a: None)
     monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.Yes)
 
     # Set the test language
     CONFIG.guiLocale = language
-    CONFIG.initLocalisation(qApp)
+    CONFIG.initLocalisation(QApplication.instance())  # type: ignore
 
     buildTestProject(nwGUI, projPath)
     nwGUI.show()
 
-    def showDialog(func: Callable, dType: QDialog) -> None:
+    def showDialog(func, dType) -> None:
         func()
         qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(dType) is not None, timeout=1000)
         dialog = SHARED.findTopLevelWidget(dType)

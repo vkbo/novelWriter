@@ -29,11 +29,12 @@ import logging
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from PyQt5.QtGui import QCloseEvent, QPixmap, QCursor
 from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtGui import QCloseEvent, QCursor, QPixmap
 from PyQt5.QtWidgets import (
-    qApp, QDialog, QTreeWidget, QTreeWidgetItem, QDialogButtonBox, QGridLayout,
-    QLabel, QGroupBox, QMenu, QAction, QFileDialog, QSpinBox, QHBoxLayout
+    QAction, QApplication, QDialog, QDialogButtonBox, QFileDialog, QGridLayout,
+    QGroupBox, QHBoxLayout, QLabel, QMenu, QSpinBox, QTreeWidget,
+    QTreeWidgetItem
 )
 
 from novelwriter import CONFIG, SHARED
@@ -41,7 +42,10 @@ from novelwriter.common import formatTime, checkInt, checkIntTuple, minmax
 from novelwriter.constants import nwConst
 from novelwriter.error import formatException
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignLeftMiddle, QtAlignRight, QtAlignRightMiddle
+from novelwriter.types import (
+    QtAlignLeftMiddle, QtAlignRight, QtAlignRightMiddle, QtDecoration,
+    QtDialogClose, QtRoleAction
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -101,7 +105,7 @@ class GuiWritingStats(QDialog):
             pOptions.getInt("GuiWritingStats", "widthCol3", 80)
         )
 
-        self.listBox = QTreeWidget()
+        self.listBox = QTreeWidget(self)
         self.listBox.setHeaderLabels([
             self.tr("Session Start"),
             self.tr("Length"),
@@ -121,10 +125,11 @@ class GuiWritingStats(QDialog):
             hHeader.setTextAlignment(self.C_IDLE, QtAlignRight)
             hHeader.setTextAlignment(self.C_COUNT, QtAlignRight)
 
+        sDec = Qt.SortOrder.DescendingOrder
+        sAsc = Qt.SortOrder.AscendingOrder
         sortCol = minmax(pOptions.getInt("GuiWritingStats", "sortCol", 0), 0, 2)
         sortOrder = checkIntTuple(
-            pOptions.getInt("GuiWritingStats", "sortOrder", Qt.DescendingOrder),
-            (Qt.AscendingOrder, Qt.DescendingOrder), Qt.DescendingOrder
+            pOptions.getInt("GuiWritingStats", "sortOrder", sDec), (sAsc, sDec), sDec
         )
         self.listBox.sortByColumn(sortCol, sortOrder)  # type: ignore
         self.listBox.setSortingEnabled(True)
@@ -140,36 +145,36 @@ class GuiWritingStats(QDialog):
         self.infoForm = QGridLayout(self)
         self.infoBox.setLayout(self.infoForm)
 
-        self.labelTotal = QLabel(formatTime(0))
+        self.labelTotal = QLabel(formatTime(0), self)
         self.labelTotal.setFont(SHARED.theme.guiFontFixed)
         self.labelTotal.setAlignment(QtAlignRightMiddle)
 
-        self.labelIdleT = QLabel(formatTime(0))
+        self.labelIdleT = QLabel(formatTime(0), self)
         self.labelIdleT.setFont(SHARED.theme.guiFontFixed)
         self.labelIdleT.setAlignment(QtAlignRightMiddle)
 
-        self.labelFilter = QLabel(formatTime(0))
+        self.labelFilter = QLabel(formatTime(0), self)
         self.labelFilter.setFont(SHARED.theme.guiFontFixed)
         self.labelFilter.setAlignment(QtAlignRightMiddle)
 
-        self.novelWords = QLabel("0")
+        self.novelWords = QLabel("0", self)
         self.novelWords.setFont(SHARED.theme.guiFontFixed)
         self.novelWords.setAlignment(QtAlignRightMiddle)
 
-        self.notesWords = QLabel("0")
+        self.notesWords = QLabel("0", self)
         self.notesWords.setFont(SHARED.theme.guiFontFixed)
         self.notesWords.setAlignment(QtAlignRightMiddle)
 
-        self.totalWords = QLabel("0")
+        self.totalWords = QLabel("0", self)
         self.totalWords.setFont(SHARED.theme.guiFontFixed)
         self.totalWords.setAlignment(QtAlignRightMiddle)
 
-        lblTTime   = QLabel(self.tr("Total Time:"))
-        lblITime   = QLabel(self.tr("Idle Time:"))
-        lblFTime   = QLabel(self.tr("Filtered Time:"))
-        lblNvCount = QLabel(self.tr("Novel Word Count:"))
-        lblNtCount = QLabel(self.tr("Notes Word Count:"))
-        lblTtCount = QLabel(self.tr("Total Word Count:"))
+        lblTTime   = QLabel(self.tr("Total Time:"), self)
+        lblITime   = QLabel(self.tr("Idle Time:"), self)
+        lblFTime   = QLabel(self.tr("Filtered Time:"), self)
+        lblNvCount = QLabel(self.tr("Novel Word Count:"), self)
+        lblNtCount = QLabel(self.tr("Notes Word Count:"), self)
+        lblTtCount = QLabel(self.tr("Total Word Count:"), self)
 
         self.infoForm.addWidget(lblTTime,   0, 0)
         self.infoForm.addWidget(lblITime,   1, 0)
@@ -230,12 +235,12 @@ class GuiWritingStats(QDialog):
         )
         self.showIdleTime.clicked.connect(self._updateListBox)
 
-        self.filterForm.addWidget(QLabel(self.tr("Count novel files")),        0, 0)
-        self.filterForm.addWidget(QLabel(self.tr("Count note files")),         1, 0)
-        self.filterForm.addWidget(QLabel(self.tr("Hide zero word count")),     2, 0)
-        self.filterForm.addWidget(QLabel(self.tr("Hide negative word count")), 3, 0)
-        self.filterForm.addWidget(QLabel(self.tr("Group entries by day")),     4, 0)
-        self.filterForm.addWidget(QLabel(self.tr("Show idle time")),           5, 0)
+        self.filterForm.addWidget(QLabel(self.tr("Count novel files"), self),        0, 0)
+        self.filterForm.addWidget(QLabel(self.tr("Count note files"), self),         1, 0)
+        self.filterForm.addWidget(QLabel(self.tr("Hide zero word count"), self),     2, 0)
+        self.filterForm.addWidget(QLabel(self.tr("Hide negative word count"), self), 3, 0)
+        self.filterForm.addWidget(QLabel(self.tr("Group entries by day"), self),     4, 0)
+        self.filterForm.addWidget(QLabel(self.tr("Show idle time"), self),           5, 0)
         self.filterForm.addWidget(self.incNovel,     0, 1)
         self.filterForm.addWidget(self.incNotes,     1, 1)
         self.filterForm.addWidget(self.hideZeros,    2, 1)
@@ -256,17 +261,17 @@ class GuiWritingStats(QDialog):
 
         self.optsBox = QHBoxLayout()
         self.optsBox.addStretch(1)
-        self.optsBox.addWidget(QLabel(self.tr("Word count cap for the histogram")), 0)
+        self.optsBox.addWidget(QLabel(self.tr("Word count cap for the histogram"), self), 0)
         self.optsBox.addWidget(self.histMax, 0)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox()
+        self.buttonBox = QDialogButtonBox(self)
         self.buttonBox.rejected.connect(self._doClose)
 
-        self.btnClose = self.buttonBox.addButton(QDialogButtonBox.Close)
+        self.btnClose = self.buttonBox.addButton(QtDialogClose)
         self.btnClose.setAutoDefault(False)
 
-        self.btnSave = self.buttonBox.addButton(self.tr("Save As"), QDialogButtonBox.ActionRole)
+        self.btnSave = self.buttonBox.addButton(self.tr("Save As"), QtRoleAction)
         self.btnSave.setAutoDefault(False)
 
         self.saveMenu = QMenu(self)
@@ -301,10 +306,10 @@ class GuiWritingStats(QDialog):
 
     def populateGUI(self) -> None:
         """Populate list box with data from the log file."""
-        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+        QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         self._loadLogFile()
         self._updateListBox()
-        qApp.restoreOverrideCursor()
+        QApplication.restoreOverrideCursor()
         return
 
     ##
@@ -570,6 +575,8 @@ class GuiWritingStats(QDialog):
             pcTotal = wcTotal
 
         # Populate the list
+        mTrans = Qt.TransformationMode.FastTransformation
+        mAspect = Qt.AspectRatioMode.IgnoreAspectRatio
         showIdleTime = self.showIdleTime.isChecked()
         for _, sStart, sDiff, nWords, _, _, sIdle in self.filterData:
 
@@ -588,11 +595,9 @@ class GuiWritingStats(QDialog):
             if nWords > 0 and listMax > 0:
                 wBar = self.barImage.scaled(
                     int(200*min(nWords, histMax)/listMax),
-                    self.barHeight,
-                    Qt.IgnoreAspectRatio,
-                    Qt.FastTransformation
+                    self.barHeight, mAspect, mTrans
                 )
-                newItem.setData(self.C_BAR, Qt.DecorationRole, wBar)
+                newItem.setData(self.C_BAR, QtDecoration, wBar)
 
             newItem.setTextAlignment(self.C_LENGTH, QtAlignRight)
             newItem.setTextAlignment(self.C_IDLE, QtAlignRight)

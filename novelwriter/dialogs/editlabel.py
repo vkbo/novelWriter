@@ -31,6 +31,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG
+from novelwriter.types import QtDialogCancel, QtDialogOk
 
 logger = logging.getLogger(__name__)
 
@@ -55,13 +56,13 @@ class GuiEditLabel(QDialog):
         self.labelValue.selectAll()
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel, self)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 
         # Assemble
         self.innerBox = QHBoxLayout()
-        self.innerBox.addWidget(QLabel(self.tr("Label")), 0)
+        self.innerBox.addWidget(QLabel(self.tr("Label"), self), 0)
         self.innerBox.addWidget(self.labelValue, 1)
         self.innerBox.setSpacing(mSp)
 
@@ -88,9 +89,9 @@ class GuiEditLabel(QDialog):
     def getLabel(cls, parent: QWidget, text: str) -> tuple[str, bool]:
         """Pop the dialog and return the result."""
         cls = GuiEditLabel(parent, text=text)
-        cls.exec_()
+        cls.exec()
         label = cls.itemLabel
-        accepted = cls.result() == QDialog.Accepted
+        accepted = cls.result() == QDialog.DialogCode.Accepted
         cls.deleteLater()
         return label, accepted
 

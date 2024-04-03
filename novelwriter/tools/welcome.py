@@ -25,19 +25,19 @@ from __future__ import annotations
 
 import logging
 
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
-from PyQt5.QtGui import QCloseEvent, QColor, QFont, QPaintEvent, QPainter, QPen
 from PyQt5.QtCore import (
     QAbstractListModel, QEvent, QModelIndex, QObject, QPoint, QSize, Qt,
     pyqtSignal, pyqtSlot
 )
+from PyQt5.QtGui import QCloseEvent, QColor, QFont, QPaintEvent, QPainter, QPen
 from PyQt5.QtWidgets import (
-    QAction, QDialog, QFileDialog, QFormLayout, QHBoxLayout, QLabel, QLineEdit,
-    QListView, QMenu, QPushButton, QScrollArea, QShortcut, QStackedWidget,
-    QStyle, QStyleOptionViewItem, QStyledItemDelegate, QVBoxLayout, QWidget,
-    qApp
+    QAction, QApplication, QDialog, QFileDialog, QFormLayout, QHBoxLayout,
+    QLabel, QLineEdit, QListView, QMenu, QPushButton, QScrollArea, QShortcut,
+    QStackedWidget, QStyleOptionViewItem, QStyledItemDelegate, QVBoxLayout,
+    QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -49,7 +49,7 @@ from novelwriter.extensions.configlayout import NWrappedWidgetBox
 from novelwriter.extensions.modified import NIconToolButton, NSpinBox
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.versioninfo import VersionInfoWidget
-from novelwriter.types import QtAlignLeft, QtAlignRightTop
+from novelwriter.types import QtAlignLeft, QtAlignRightTop, QtSelected
 
 logger = logging.getLogger(__name__)
 
@@ -377,7 +377,7 @@ class _OpenProjectPage(QWidget):
         action.triggered.connect(self.openSelectedItem)
         action = ctxMenu.addAction(self.tr("Remove Project"))
         action.triggered.connect(self._deleteSelectedItem)
-        ctxMenu.exec_(self.mapToGlobal(pos))
+        ctxMenu.exec(self.mapToGlobal(pos))
         ctxMenu.deleteLater()
         return
 
@@ -411,11 +411,11 @@ class _ProjectListItem(QStyledItemDelegate):
         self._pPx = (mPx//2, 3*mPx//2, iPx + mPx, mPx, mPx + tPx)  # Painter coordinates
         self._hPx = 2*mPx + tPx + fPx  # Fixed height
 
-        self._tFont = qApp.font()
+        self._tFont = QApplication.font()
         self._tFont.setPointSizeF(1.2*fPt)
         self._tFont.setWeight(QFont.Weight.Bold)
 
-        self._dFont = qApp.font()
+        self._dFont = QApplication.font()
         self._dFont.setPointSizeF(fPt)
         self._dPen = QPen(SHARED.theme.helpText)
 
@@ -431,9 +431,9 @@ class _ProjectListItem(QStyledItemDelegate):
         ix, iy, x, y1, y2 = self._pPx
 
         painter.save()
-        if opt.state & QStyle.StateFlag.State_Selected == QStyle.StateFlag.State_Selected:
+        if opt.state & QtSelected == QtSelected:
             painter.setOpacity(0.25)
-            painter.fillRect(rect, qApp.palette().highlight())
+            painter.fillRect(rect, QApplication.palette().highlight())
             painter.setOpacity(1.0)
 
         painter.drawPixmap(ix, rect.top() + iy, self._icon)
@@ -682,10 +682,10 @@ class _NewProjectForm(QWidget):
         # ========
 
         self.extraBox = QVBoxLayout()
-        self.extraBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Chapters and Scenes"))))
+        self.extraBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Chapters and Scenes")), self))
         self.extraBox.addLayout(self.novelForm)
         self.extraBox.addSpacing(sPx)
-        self.extraBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Project Notes"))))
+        self.extraBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Project Notes")), self))
         self.extraBox.addLayout(self.notesForm)
         self.extraBox.setContentsMargins(0, 0, 0, 0)
 
@@ -694,7 +694,7 @@ class _NewProjectForm(QWidget):
         self.extraWidget.setContentsMargins(0, 0, 0, 0)
 
         self.formBox = QVBoxLayout()
-        self.formBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Create New Project"))))
+        self.formBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Create New Project")), self))
         self.formBox.addLayout(self.projectForm)
         self.formBox.addSpacing(sPx)
         self.formBox.addWidget(self.extraWidget)
@@ -738,7 +738,7 @@ class _NewProjectForm(QWidget):
         """Select a project folder."""
         if projDir := QFileDialog.getExistingDirectory(
             self, self.tr("Select Project Folder"),
-            str(self._basePath), options=QFileDialog.ShowDirsOnly
+            str(self._basePath), options=QFileDialog.Option.ShowDirsOnly
         ):
             self._basePath = Path(projDir)
             self._updateProjPath()
@@ -813,7 +813,7 @@ class _PopLeftDirectionMenu(QMenu):
 
     def event(self, event: QEvent) -> bool:
         """Overload the show event and move the menu popup location."""
-        if event.type() == QEvent.Show:
+        if event.type() == QEvent.Type.Show:
             if isinstance(parent := self.parent(), QWidget):
                 offset = QPoint(parent.width() - self.width(), parent.height())
                 self.move(parent.mapToGlobal(offset))

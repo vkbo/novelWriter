@@ -47,8 +47,8 @@ from PyQt5.QtGui import (
     QPixmap, QResizeEvent, QTextBlock, QTextCursor, QTextDocument, QTextOption
 )
 from PyQt5.QtWidgets import (
-    QAction, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
-    QPlainTextEdit, QShortcut, QToolBar, QVBoxLayout, QWidget, qApp
+    QAction, QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit,
+    QMenu, QPlainTextEdit, QShortcut, QToolBar, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -64,7 +64,9 @@ from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.text.counting import standardCounter
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
-    QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop, QtAlignRight
+    QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop,
+    QtAlignRight, QtKeepAnchor, QtModCtrl, QtMouseLeft, QtModeNone, QtModShift,
+    QtMoveAnchor, QtMoveLeft, QtMoveRight
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -181,12 +183,12 @@ class GuiDocEditor(QPlainTextEdit):
         self.keyContext.activated.connect(self._openContextFromCursor)
 
         self.followTag1 = QShortcut(self)
-        self.followTag1.setKey(Qt.Key.Key_Return | Qt.KeyboardModifier.ControlModifier)
+        self.followTag1.setKey(Qt.Key.Key_Return | QtModCtrl)
         self.followTag1.setContext(Qt.ShortcutContext.WidgetShortcut)
         self.followTag1.activated.connect(self._processTag)
 
         self.followTag2 = QShortcut(self)
-        self.followTag2.setKey(Qt.Key.Key_Enter | Qt.KeyboardModifier.ControlModifier)
+        self.followTag2.setKey(Qt.Key.Key_Enter | QtModCtrl)
         self.followTag2.setContext(Qt.ShortcutContext.WidgetShortcut)
         self.followTag2.activated.connect(self._processTag)
 
@@ -393,13 +395,13 @@ class GuiDocEditor(QPlainTextEdit):
             self.clearEditor()
             return False
 
-        qApp.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+        QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         self._docHandle = tHandle
 
         self._allowAutoReplace(False)
         self._qDocument.setTextContent(docText, tHandle)
         self._allowAutoReplace(True)
-        qApp.processEvents()
+        QApplication.processEvents()
 
         self._lastEdit = time()
         self._lastActive = time()
@@ -423,12 +425,12 @@ class GuiDocEditor(QPlainTextEdit):
             self.setPlainText("")
             self.setCursorPosition(0)
 
-        qApp.processEvents()
+        QApplication.processEvents()
         self.setDocumentChanged(False)
         self._qDocument.clearUndoRedoStacks()
         self.docToolBar.setVisible(CONFIG.showEditToolBar)
 
-        qApp.restoreOverrideCursor()
+        QApplication.restoreOverrideCursor()
 
         # Update the status bar
         if self._nwItem is not None:
@@ -445,11 +447,11 @@ class GuiDocEditor(QPlainTextEdit):
         """Replace the text of the current document with the provided
         text. This also clears undo history.
         """
-        qApp.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+        QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         self.setPlainText(text)
         self.updateDocMargins()
         self.setDocumentChanged(True)
-        qApp.restoreOverrideCursor()
+        QApplication.restoreOverrideCursor()
         return
 
     def saveText(self) -> bool:
@@ -536,7 +538,7 @@ class GuiDocEditor(QPlainTextEdit):
             while self.cursorRect().bottom() > vH and count < 100000:
                 vBar.setValue(vBar.value() + 1)
                 count += 1
-        qApp.processEvents()
+        QApplication.processEvents()
         return
 
     def updateDocMargins(self) -> None:
@@ -655,8 +657,8 @@ class GuiDocEditor(QPlainTextEdit):
         """Make a text selection."""
         if start >= 0 and length > 0:
             cursor = self.textCursor()
-            cursor.setPosition(start, QTextCursor.MoveMode.MoveAnchor)
-            cursor.setPosition(start + length, QTextCursor.MoveMode.KeepAnchor)
+            cursor.setPosition(start, QtMoveAnchor)
+            cursor.setPosition(start + length, QtKeepAnchor)
             self.setTextCursor(cursor)
         return
 
@@ -699,9 +701,9 @@ class GuiDocEditor(QPlainTextEdit):
         """
         logger.debug("Running spell checker")
         start = time()
-        qApp.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+        QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         self._qDocument.syntaxHighlighter.rehighlight()
-        qApp.restoreOverrideCursor()
+        QApplication.restoreOverrideCursor()
         logger.debug("Document highlighted in %.3f ms", 1000*(time() - start))
         self.statusMessage.emit(self.tr("Spell check complete"))
         return
@@ -814,7 +816,7 @@ class GuiDocEditor(QPlainTextEdit):
 
     def anyFocus(self) -> bool:
         """Check if any widget or child widget has focus."""
-        return self.hasFocus() or self.isAncestorOf(qApp.focusWidget())
+        return self.hasFocus() or self.isAncestorOf(QApplication.focusWidget())
 
     def revealLocation(self) -> None:
         """Tell the user where on the file system the file in the editor
@@ -962,7 +964,7 @@ class GuiDocEditor(QPlainTextEdit):
             super().keyPressEvent(event)
             nPos = self.cursorRect().topLeft().y()
             kMod = event.modifiers()
-            okMod = kMod in (Qt.KeyboardModifier.NoModifier, Qt.KeyboardModifier.ShiftModifier)
+            okMod = kMod in (QtModeNone, QtModShift)
             okKey = event.key() not in self.MOVE_KEYS
             if nPos != cPos and okMod and okKey:
                 mPos = CONFIG.autoScrollPos*0.01 * self.viewport().height()
@@ -991,7 +993,7 @@ class GuiDocEditor(QPlainTextEdit):
         pressed, check if we're clicking on a tag, and trigger the
         follow tag function.
         """
-        if qApp.keyboardModifiers() == Qt.KeyboardModifier.ControlModifier:
+        if QApplication.keyboardModifiers() == QtModCtrl:
             self._processTag(self.cursorForPosition(event.pos()))
         super().mouseReleaseEvent(event)
         return
@@ -1091,8 +1093,8 @@ class GuiDocEditor(QPlainTextEdit):
         block = cursor.block()
         if block.isValid():
             pos += block.position()
-            cursor.setPosition(pos, QTextCursor.MoveMode.MoveAnchor)
-            cursor.setPosition(pos + length, QTextCursor.MoveMode.KeepAnchor)
+            cursor.setPosition(pos, QtMoveAnchor)
+            cursor.setPosition(pos + length, QtKeepAnchor)
             cursor.insertText(text)
             self._completer.hide()
         return
@@ -1152,9 +1154,7 @@ class GuiDocEditor(QPlainTextEdit):
                 block = pCursor.block()
                 sCursor = self.textCursor()
                 sCursor.setPosition(block.position() + cPos)
-                sCursor.movePosition(
-                    QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, cLen
-                )
+                sCursor.movePosition(QtMoveRight, QtKeepAnchor, cLen)
                 if suggest:
                     ctxMenu.addSeparator()
                     ctxMenu.addAction(self.tr("Spelling Suggestion(s)"))
@@ -1171,7 +1171,7 @@ class GuiDocEditor(QPlainTextEdit):
                 action.triggered.connect(lambda: self._addWord(word, block))
 
         # Execute the context menu
-        ctxMenu.exec_(self.viewport().mapToGlobal(pos))
+        ctxMenu.exec(self.viewport().mapToGlobal(pos))
         ctxMenu.deleteLater()
 
         return
@@ -1350,8 +1350,8 @@ class GuiDocEditor(QPlainTextEdit):
             else:
                 resIdx = 0 if doLoop else maxIdx
 
-        cursor.setPosition(resS[resIdx], QTextCursor.MoveMode.MoveAnchor)
-        cursor.setPosition(resE[resIdx], QTextCursor.MoveMode.KeepAnchor)
+        cursor.setPosition(resS[resIdx], QtMoveAnchor)
+        cursor.setPosition(resE[resIdx], QtKeepAnchor)
         self.setTextCursor(cursor)
 
         self.docSearch.setResultCount(resIdx + 1, len(resS))
@@ -1397,8 +1397,8 @@ class GuiDocEditor(QPlainTextEdit):
                 break
 
         if hasSelection:
-            cursor.setPosition(origA, QTextCursor.MoveMode.MoveAnchor)
-            cursor.setPosition(origB, QTextCursor.MoveMode.KeepAnchor)
+            cursor.setPosition(origA, QtMoveAnchor)
+            cursor.setPosition(origB, QtKeepAnchor)
         else:
             cursor.setPosition(origA)
 
@@ -1501,8 +1501,8 @@ class GuiDocEditor(QPlainTextEdit):
         if blockS != blockE:
             posE = blockS.position() + blockS.length() - 1
             cursor.clearSelection()
-            cursor.setPosition(posS, QTextCursor.MoveMode.MoveAnchor)
-            cursor.setPosition(posE, QTextCursor.MoveMode.KeepAnchor)
+            cursor.setPosition(posS, QtMoveAnchor)
+            cursor.setPosition(posE, QtKeepAnchor)
             self.setTextCursor(cursor)
 
         numB = 0
@@ -1579,8 +1579,8 @@ class GuiDocEditor(QPlainTextEdit):
         if select == _SelectAction.MOVE_AFTER:
             cursor.setPosition(posE + len(before + after))
         elif select == _SelectAction.KEEP_SELECTION:
-            cursor.setPosition(posE + len(before), QTextCursor.MoveMode.MoveAnchor)
-            cursor.setPosition(posS + len(before), QTextCursor.MoveMode.KeepAnchor)
+            cursor.setPosition(posE + len(before), QtMoveAnchor)
+            cursor.setPosition(posS + len(before), QtKeepAnchor)
         elif select == _SelectAction.KEEP_POSITION:
             cursor.setPosition(posO + len(before))
 
@@ -1602,9 +1602,7 @@ class GuiDocEditor(QPlainTextEdit):
         self._allowAutoReplace(False)
         for posC in range(posS, posE+1):
             cursor.setPosition(posC)
-            cursor.movePosition(
-                QTextCursor.MoveOperation.Left, QTextCursor.MoveMode.KeepAnchor, 2
-            )
+            cursor.movePosition(QtMoveLeft, QtKeepAnchor, 2)
             selText = cursor.selectedText()
 
             nS = len(selText)
@@ -1624,16 +1622,12 @@ class GuiDocEditor(QPlainTextEdit):
             cursor.setPosition(posC)
             if pC in closeCheck:
                 cursor.beginEditBlock()
-                cursor.movePosition(
-                    QTextCursor.MoveOperation.Left, QTextCursor.MoveMode.KeepAnchor, 1
-                )
+                cursor.movePosition(QtMoveLeft, QtKeepAnchor, 1)
                 cursor.insertText(oQuote)
                 cursor.endEditBlock()
             else:
                 cursor.beginEditBlock()
-                cursor.movePosition(
-                    QTextCursor.MoveOperation.Left, QTextCursor.MoveMode.KeepAnchor, 1
-                )
+                cursor.movePosition(QtMoveLeft, QtKeepAnchor, 1)
                 cursor.insertText(cQuote)
                 cursor.endEditBlock()
 
@@ -1849,9 +1843,7 @@ class GuiDocEditor(QPlainTextEdit):
         cursor.beginEditBlock()
         cursor.clearSelection()
         cursor.setPosition(rS)
-        cursor.movePosition(
-            QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, rE-rS
-        )
+        cursor.movePosition(QtMoveRight, QtKeepAnchor, rE-rS)
         cursor.insertText(cleanText.rstrip() + "\n")
         cursor.endEditBlock()
 
@@ -1912,7 +1904,7 @@ class GuiDocEditor(QPlainTextEdit):
                 ).format(tag)):
                     itemClass = nwKeyWords.KEY_CLASS.get(tBits[0], nwItemClass.NO_CLASS)
                     self.requestNewNoteCreation.emit(tag, itemClass)
-                    qApp.processEvents()
+                    QApplication.processEvents()
                     self._qDocument.syntaxHighlighter.rehighlightBlock(block)
 
             return nwTrinary.POSITIVE if exist else nwTrinary.NEGATIVE
@@ -2017,9 +2009,7 @@ class GuiDocEditor(QPlainTextEdit):
                 tInsert = tInsert + self._typPadChar
 
         if nDelete > 0:
-            cursor.movePosition(
-                QTextCursor.MoveOperation.Left, QTextCursor.MoveMode.KeepAnchor, nDelete
-            )
+            cursor.movePosition(QtMoveLeft, QtKeepAnchor, nDelete)
             cursor.insertText(tInsert)
 
         return
@@ -2075,8 +2065,8 @@ class GuiDocEditor(QPlainTextEdit):
                 return cursor
 
             cursor.clearSelection()
-            cursor.setPosition(sPos, QTextCursor.MoveMode.MoveAnchor)
-            cursor.setPosition(ePos, QTextCursor.MoveMode.KeepAnchor)
+            cursor.setPosition(sPos, QtMoveAnchor)
+            cursor.setPosition(ePos, QtKeepAnchor)
 
             self.setTextCursor(cursor)
 
@@ -2100,8 +2090,8 @@ class GuiDocEditor(QPlainTextEdit):
             posE = cursor.selectionEnd()
             selTxt = cursor.selectedText()
             if selTxt.startswith(nwUnicode.U_PSEP):
-                cursor.setPosition(posS+1, QTextCursor.MoveMode.MoveAnchor)
-                cursor.setPosition(posE, QTextCursor.MoveMode.KeepAnchor)
+                cursor.setPosition(posS+1, QtMoveAnchor)
+                cursor.setPosition(posE, QtKeepAnchor)
 
         self.setTextCursor(cursor)
 
@@ -2440,11 +2430,11 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.setIconSize(iSz)
         self.searchOpt.setContentsMargins(0, 0, 0, 0)
 
-        self.searchLabel = QLabel(self.tr("Search"))
+        self.searchLabel = QLabel(self.tr("Search"), self)
         self.searchLabel.setFont(self.boxFont)
         self.searchLabel.setIndent(CONFIG.pxInt(6))
 
-        self.resultLabel = QLabel("?/?")
+        self.resultLabel = QLabel("?/?", self)
         self.resultLabel.setFont(self.boxFont)
         self.resultLabel.setMinimumWidth(SHARED.theme.getTextWidth("?/?", self.boxFont))
 
@@ -2627,7 +2617,7 @@ class GuiDocEditSearch(QFrame):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        qPalette = qApp.palette()
+        qPalette = QApplication.palette()
         self.setPalette(qPalette)
         self.searchBox.setPalette(qPalette)
         self.replaceBox.setPalette(qPalette)
@@ -2713,9 +2703,7 @@ class GuiDocEditSearch(QFrame):
     @pyqtSlot()
     def _doSearch(self) -> None:
         """Call the search action function for the document editor."""
-        self.docEditor.findNext(goBack=(
-            qApp.keyboardModifiers() == Qt.KeyboardModifier.ShiftModifier)
-        )
+        self.docEditor.findNext(goBack=(QApplication.keyboardModifiers() == QtModShift))
         return
 
     @pyqtSlot()
@@ -3002,7 +2990,7 @@ class GuiDocEditHeader(QWidget):
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
-        if event.button() == Qt.MouseButton.LeftButton:
+        if event.button() == QtMouseLeft:
             self.docEditor.requestProjectItemSelected.emit(self._docHandle or "", True)
         return
 
@@ -3048,7 +3036,7 @@ class GuiDocEditFooter(QWidget):
         self.statusIcon.setFixedHeight(iPx)
         self.statusIcon.setAlignment(QtAlignLeftTop)
 
-        self.statusText = QLabel(self.tr("Status"))
+        self.statusText = QLabel(self.tr("Status"), self)
         self.statusText.setIndent(0)
         self.statusText.setMargin(0)
         self.statusText.setContentsMargins(0, 0, 0, 0)

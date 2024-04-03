@@ -23,23 +23,24 @@ from __future__ import annotations
 import pytest
 
 from pathlib import Path
-from novelwriter.core.project import NWProject
 
-from tools import C, buildTestProject
 from mocked import causeOSError
+from tools import C, buildTestProject
 
-from PyQt5.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QMouseEvent
 from PyQt5.QtCore import QEvent, QMimeData, QPoint, QTimer, Qt
+from PyQt5.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QMouseEvent
 from PyQt5.QtWidgets import QMessageBox, QMenu, QTreeWidget, QTreeWidgetItem, QDialog
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwItemLayout, nwItemType, nwItemClass, nwWidget
-from novelwriter.guimain import GuiMain
 from novelwriter.core.item import NWItem
-from novelwriter.gui.projtree import GuiProjectTree, GuiProjectView, _TreeContextMenu
+from novelwriter.core.project import NWProject
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
+from novelwriter.enum import nwItemLayout, nwItemType, nwItemClass, nwWidget
+from novelwriter.gui.projtree import GuiProjectTree, GuiProjectView, _TreeContextMenu
+from novelwriter.guimain import GuiMain
+from novelwriter.types import QtMouseLeft, QtMouseMiddle, QtModeNone
 
 
 @pytest.mark.gui
@@ -539,8 +540,8 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd,
     mergeData = {}
 
     monkeypatch.setattr(GuiDocMerge, "__init__", lambda *a: None)
-    monkeypatch.setattr(GuiDocMerge, "exec_", lambda *a: None)
-    monkeypatch.setattr(GuiDocMerge, "result", lambda *a: QDialog.Accepted)
+    monkeypatch.setattr(GuiDocMerge, "exec", lambda *a: None)
+    monkeypatch.setattr(GuiDocMerge, "result", lambda *a: QDialog.DialogCode.Accepted)
     monkeypatch.setattr(GuiDocMerge, "getData", lambda *a: mergeData)
 
     buildTestProject(nwGUI, projPath)
@@ -596,7 +597,7 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd,
 
     # User cancels merge
     with monkeypatch.context() as mp:
-        mp.setattr(GuiDocMerge, "result", lambda *a: QDialog.Rejected)
+        mp.setattr(GuiDocMerge, "result", lambda *a: QDialog.DialogCode.Rejected)
         assert projTree._mergeDocuments(hChapter1, True) is False
 
     # The merge goes through
@@ -640,8 +641,8 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRnd, 
     splitText = []
 
     monkeypatch.setattr(GuiDocSplit, "__init__", lambda *a: None)
-    monkeypatch.setattr(GuiDocSplit, "exec_", lambda *a: None)
-    monkeypatch.setattr(GuiDocSplit, "result", lambda *a: QDialog.Accepted)
+    monkeypatch.setattr(GuiDocSplit, "exec", lambda *a: None)
+    monkeypatch.setattr(GuiDocSplit, "result", lambda *a: QDialog.DialogCode.Accepted)
     monkeypatch.setattr(GuiDocSplit, "getData", lambda *a: (splitData, splitText))
 
     # Create a project
@@ -735,7 +736,7 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRnd, 
 
     # Cancelled by user
     with monkeypatch.context() as mp:
-        mp.setattr(GuiDocSplit, "result", lambda *a: QDialog.Rejected)
+        mp.setattr(GuiDocSplit, "result", lambda *a: QDialog.DialogCode.Rejected)
         assert projTree._splitDocument(hSplitDoc) is False
 
     # qtbot.stop()
@@ -821,8 +822,8 @@ def testGuiProjTree_AutoScroll(qtbot, monkeypatch, nwGUI: GuiMain, projPath, moc
 
     action = Qt.DropAction.MoveAction
     mime = QMimeData()
-    mouse = Qt.MouseButton.LeftButton
-    modifier = Qt.KeyboardModifier.NoModifier
+    mouse = QtMouseLeft
+    modifier = QtModeNone
 
     # Scroll Down
     h = projTree.height()
@@ -880,8 +881,8 @@ def testGuiProjTree_DragAndDrop(qtbot, monkeypatch, caplog, nwGUI: GuiMain, proj
     nPos = projTree.visualItemRect(projTree._getTreeItem(C.hNovelRoot)).bottomLeft()
     action = Qt.DropAction.MoveAction
     mime = QMimeData()
-    mouse = Qt.MouseButton.LeftButton
-    modifier = Qt.KeyboardModifier.NoModifier
+    mouse = QtMouseLeft
+    modifier = QtModeNone
 
     projTree.saveTreeOrder()
     treeOrder = SHARED.project.tree._order
@@ -1082,8 +1083,8 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd)
 
     eType = QEvent.Type.MouseButtonPress
     pos = projTree.visualItemRect(projTree._getTreeItem(C.hChapterDoc)).center()
-    button = Qt.MouseButton.MiddleButton
-    modifier = Qt.KeyboardModifier.NoModifier
+    button = QtMouseMiddle
+    modifier = QtModeNone
 
     # Trigger the viewer
     event = QMouseEvent(eType, pos, button, button, modifier)
@@ -1092,7 +1093,7 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd)
 
     # Trigger the left click clear
     pos = QPoint(5000, 5000)
-    button = Qt.MouseButton.LeftButton
+    button = QtMouseLeft
     event = QMouseEvent(eType, pos, button, button, modifier)
     projTree.setSelectedHandle(C.hChapterDoc)
     projTree.mousePressEvent(event)
@@ -1162,7 +1163,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Pop the menu
     with monkeypatch.context() as mp:
-        mp.setattr(QMenu, "exec_", lambda *a: None)
+        mp.setattr(QMenu, "exec", lambda *a: None)
         projTree.clearSelection()
 
         # No item under menu

@@ -22,12 +22,12 @@ from __future__ import annotations
 
 import pytest
 
-from tools import C, buildTestProject
 from mocked import causeOSError
+from tools import C, buildTestProject
 
-from PyQt5.QtGui import QClipboard, QTextBlock, QTextCursor, QTextOption
 from PyQt5.QtCore import QThreadPool, Qt
-from PyQt5.QtWidgets import QAction, QMenu, qApp
+from PyQt5.QtGui import QClipboard, QTextBlock, QTextCursor, QTextOption
+from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords, nwUnicode
@@ -37,7 +37,7 @@ from novelwriter.enum import (
 )
 from novelwriter.gui.doceditor import GuiDocEditor, GuiDocToolBar
 from novelwriter.text.counting import standardCounter
-from novelwriter.types import QtAlignJustify, QtAlignLeft
+from novelwriter.types import QtAlignJustify, QtAlignLeft, QtKeepAnchor, QtMouseLeft, QtMoveRight
 
 KEY_DELAY = 1
 
@@ -95,7 +95,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # Select item from header
     with qtbot.waitSignal(nwGUI.docEditor.requestProjectItemSelected, timeout=1000) as signal:
-        qtbot.mouseClick(nwGUI.docEditor.docHeader, Qt.MouseButton.LeftButton)
+        qtbot.mouseClick(nwGUI.docEditor.docHeader, QtMouseLeft)
         assert signal.args == [nwGUI.docEditor.docHeader._docHandle, True]
 
     # Close from header
@@ -109,7 +109,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # Select item from header
     with qtbot.waitSignal(nwGUI.docEditor.requestProjectItemSelected, timeout=1000) as signal:
-        qtbot.mouseClick(nwGUI.docEditor.docHeader, Qt.MouseButton.LeftButton)
+        qtbot.mouseClick(nwGUI.docEditor.docHeader, QtMouseLeft)
         assert signal.args == ["", True]
 
     # qtbot.stop()
@@ -244,7 +244,7 @@ def testGuiEditor_MetaData(qtbot, nwGUI, projPath, mockRnd):
 @pytest.mark.gui
 def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     """Test the editor context menu."""
-    monkeypatch.setattr(QMenu, "exec_", lambda *a: None)
+    monkeypatch.setattr(QMenu, "exec", lambda *a: None)
 
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
@@ -361,14 +361,14 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert actions == [
         "Cut", "Copy", "Paste", "Select All", "Select Word", "Select Paragraph"
     ]
-    qApp.clipboard().clear()
+    QApplication.clipboard().clear()
     ctxMenu.actions()[1].trigger()
-    assert qApp.clipboard().text(QClipboard.Mode.Clipboard) == "text"
+    assert QApplication.clipboard().text(QClipboard.Mode.Clipboard) == "text"
 
     # Cut Text
-    qApp.clipboard().clear()
+    QApplication.clipboard().clear()
     ctxMenu.actions()[0].trigger()
-    assert qApp.clipboard().text(QClipboard.Mode.Clipboard) == "text"
+    assert QApplication.clipboard().text(QClipboard.Mode.Clipboard) == "text"
     assert "text" not in docEditor.getText()
 
     # Paste Text
@@ -400,7 +400,7 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # Select/Cut/Copy/Paste/Undo/Redo
     # ===============================
 
-    qApp.clipboard().clear()
+    QApplication.clipboard().clear()
 
     # Select All
     assert nwGUI.docEditor.docAction(nwDocAction.SEL_ALL) is True
@@ -452,7 +452,7 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert newPara[5] == ipsumText[4]
     assert newPara[6] == ipsumText[2]
 
-    qApp.clipboard().clear()
+    QApplication.clipboard().clear()
 
     # Emphasis/Undo/Redo
     # ==================
@@ -1413,7 +1413,7 @@ def testGuiEditor_MultiBlockFormatting(qtbot, nwGUI, projPath, ipsumText, mockRn
     # Toggle Comment
     cursor = nwGUI.docEditor.textCursor()
     cursor.setPosition(50)
-    cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, 2000)
+    cursor.movePosition(QtMoveRight, QtKeepAnchor, 2000)
     nwGUI.docEditor.setTextCursor(cursor)
 
     nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_COM)
@@ -1434,7 +1434,7 @@ def testGuiEditor_MultiBlockFormatting(qtbot, nwGUI, projPath, ipsumText, mockRn
     # Un-toggle all
     cursor = nwGUI.docEditor.textCursor()
     cursor.setPosition(50)
-    cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, 3000)
+    cursor.movePosition(QtMoveRight, QtKeepAnchor, 3000)
     nwGUI.docEditor.setTextCursor(cursor)
 
     nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_COM)
@@ -1445,7 +1445,7 @@ def testGuiEditor_MultiBlockFormatting(qtbot, nwGUI, projPath, ipsumText, mockRn
     # Toggle Ignore Text
     cursor = nwGUI.docEditor.textCursor()
     cursor.setPosition(50)
-    cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, 2000)
+    cursor.movePosition(QtMoveRight, QtKeepAnchor, 2000)
     nwGUI.docEditor.setTextCursor(cursor)
 
     nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_IGN)
@@ -1456,7 +1456,7 @@ def testGuiEditor_MultiBlockFormatting(qtbot, nwGUI, projPath, ipsumText, mockRn
     # Clear all paragraphs
     cursor = nwGUI.docEditor.textCursor()
     cursor.setPosition(50)
-    cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, 3000)
+    cursor.movePosition(QtMoveRight, QtKeepAnchor, 3000)
     nwGUI.docEditor.setTextCursor(cursor)
 
     nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_TXT)
@@ -1788,7 +1788,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert abs(docEditor.getCursorPosition() - 1299) < 3
 
     # Find next by button
-    qtbot.mouseClick(docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
+    qtbot.mouseClick(docSearch.searchButton, QtMouseLeft, delay=KEY_DELAY)
     assert abs(docEditor.getCursorPosition() - 1513) < 3
 
     # Activate loop search
@@ -1806,14 +1806,14 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     docEditor.setCursorPosition(15)
 
     # Toggle search again with header button
-    qtbot.mouseClick(docEditor.docHeader.searchButton, Qt.LeftButton, delay=KEY_DELAY)
+    qtbot.mouseClick(docEditor.docHeader.searchButton, QtMouseLeft, delay=KEY_DELAY)
     docSearch.setSearchText("")
     assert docSearch.isVisible() is True
 
     # Search for non-existing
     docEditor.setCursorPosition(0)
     docSearch.setSearchText("abcdef")
-    qtbot.mouseClick(docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
+    qtbot.mouseClick(docSearch.searchButton, QtMouseLeft, delay=KEY_DELAY)
     assert docEditor.getCursorPosition() < 3  # No result
 
     # Enable RegEx search
@@ -1824,19 +1824,19 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Set invalid RegEx
     docEditor.setCursorPosition(0)
     docSearch.setSearchText(r"\bSus[")
-    qtbot.mouseClick(docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
+    qtbot.mouseClick(docSearch.searchButton, QtMouseLeft, delay=KEY_DELAY)
     assert docEditor.getCursorPosition() < 3  # No result
 
     # Set dangerous RegEx (issue #1015)
     # If this doesn't get caught, the app will hang
     docEditor.setCursorPosition(0)
     docSearch.setSearchText(r".*")
-    qtbot.mouseClick(docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
+    qtbot.mouseClick(docSearch.searchButton, QtMouseLeft, delay=KEY_DELAY)
     assert abs(docEditor.getCursorPosition() - 14) < 3
 
     # Set valid RegEx
     docSearch.setSearchText(r"\bSus")
-    qtbot.mouseClick(docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
+    qtbot.mouseClick(docSearch.searchButton, QtMouseLeft, delay=KEY_DELAY)
     assert abs(docEditor.getCursorPosition() - 223) < 3
 
     # Find next and then prev
@@ -1887,7 +1887,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert abs(docEditor.getCursorPosition() - 223) < 3
 
     # Replace "sus" with "foo" via replace button
-    qtbot.mouseClick(docSearch.replaceButton, Qt.LeftButton, delay=KEY_DELAY)
+    qtbot.mouseClick(docSearch.replaceButton, QtMouseLeft, delay=KEY_DELAY)
     assert docEditor.getText()[220:228] == "foocipit"
 
     # Revert last two replaces

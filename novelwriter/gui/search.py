@@ -30,15 +30,15 @@ from time import time
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCursor, QKeyEvent
 from PyQt5.QtWidgets import (
-    QFrame, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QToolBar, QTreeWidget,
-    QTreeWidgetItem, QVBoxLayout, QWidget, qApp
+    QApplication, QFrame, QHBoxLayout, QHeaderView, QLabel, QLineEdit,
+    QToolBar, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt, cssCol
 from novelwriter.core.coretools import DocSearch
 from novelwriter.core.item import NWItem
-from novelwriter.types import QtAlignMiddle, QtAlignRight
+from novelwriter.types import QtAlignMiddle, QtAlignRight, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -49,8 +49,8 @@ class GuiProjectSearch(QWidget):
     C_RESULT = 0
     C_COUNT  = 1
 
-    D_HANDLE = Qt.ItemDataRole.UserRole
-    D_RESULT = Qt.ItemDataRole.UserRole + 1
+    D_HANDLE = QtUserRole
+    D_RESULT = QtUserRole + 1
 
     selectedItemChanged = pyqtSignal(str)
     openDocumentSelectRequest = pyqtSignal(str, int, int, bool)
@@ -71,7 +71,7 @@ class GuiProjectSearch(QWidget):
         self._map: dict[str, tuple[int, float]] = {}
 
         # Header
-        self.viewLabel = QLabel(self.tr("Project Search"))
+        self.viewLabel = QLabel(self.tr("Project Search"), self)
         self.viewLabel.setFont(SHARED.theme.guiFontB)
         self.viewLabel.setContentsMargins(mPx, tPx, 0, mPx)
 
@@ -257,7 +257,7 @@ class GuiProjectSearch(QWidget):
     def _processSearch(self) -> None:
         """Perform a search."""
         if not self._blocked:
-            qApp.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+            QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
             start = time()
             SHARED.mainGui.saveDocument()
             self._blocked = True
@@ -271,7 +271,7 @@ class GuiProjectSearch(QWidget):
                     self._displayResultSet(item, results, capped)
             logger.debug("Search took %.3f ms", 1000*(time() - start))
             self._time = time()
-            qApp.restoreOverrideCursor()
+            QApplication.restoreOverrideCursor()
         self._blocked = False
         return
 
@@ -355,7 +355,7 @@ class GuiProjectSearch(QWidget):
             for i in range(tItem.childCount()):
                 self.searchResult.setFirstColumnSpanned(i, parent, True)
 
-            qApp.processEvents()
+            QApplication.processEvents()
 
         return
 

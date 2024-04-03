@@ -26,19 +26,19 @@ from __future__ import annotations
 import json
 import logging
 
+from datetime import datetime
 from time import time
 from typing import TYPE_CHECKING
-from datetime import datetime
 
-from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
 from PyQt5.QtCore import QTimer, QUrl, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import (
-    QAbstractItemView, QDialog, QFormLayout, QGridLayout, QHBoxLayout, QLabel,
-    QListWidget, QListWidgetItem, QPushButton, QSizePolicy, QSplitter,
-    QStackedWidget, QTabWidget, QTextBrowser, QTreeWidget, QTreeWidgetItem,
-    QVBoxLayout, QWidget, qApp
-)
+from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
 from PyQt5.QtPrintSupport import QPrintPreviewDialog, QPrinter
+from PyQt5.QtWidgets import (
+    QAbstractItemView, QApplication, QDialog, QFormLayout, QGridLayout,
+    QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton,
+    QSizePolicy, QSplitter, QStackedWidget, QTabWidget, QTextBrowser,
+    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+)
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt, fuzzyTime
@@ -53,7 +53,8 @@ from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
 from novelwriter.types import (
-    QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignRight, QtAlignTop
+    QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignRight, QtAlignTop,
+    QtUserRole
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -70,7 +71,7 @@ class GuiManuscript(QDialog):
     a document directly to disk.
     """
 
-    D_KEY = Qt.ItemDataRole.UserRole
+    D_KEY = QtUserRole
 
     def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
@@ -103,7 +104,7 @@ class GuiManuscript(QDialog):
         # ==============
 
         qPalette = self.palette()
-        qPalette.setBrush(QPalette.Window, qPalette.base())
+        qPalette.setBrush(QPalette.ColorRole.Window, qPalette.base())
         self.setPalette(qPalette)
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_MIN_TOOLBUTTON)
@@ -123,7 +124,7 @@ class GuiManuscript(QDialog):
         self.tbEdit.setStyleSheet(buttonStyle)
         self.tbEdit.clicked.connect(self._editSelectedBuild)
 
-        self.lblBuilds = QLabel("<b>{0}</b>".format(self.tr("Builds")))
+        self.lblBuilds = QLabel("<b>{0}</b>".format(self.tr("Builds")), self)
 
         self.listToolBox = QHBoxLayout()
         self.listToolBox.addWidget(self.lblBuilds)
@@ -140,8 +141,8 @@ class GuiManuscript(QDialog):
         self.buildList.setIconSize(iSz)
         self.buildList.doubleClicked.connect(self._editSelectedBuild)
         self.buildList.currentItemChanged.connect(self._updateBuildDetails)
-        self.buildList.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.buildList.setDragDropMode(QAbstractItemView.InternalMove)
+        self.buildList.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.buildList.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
 
         # Details Tabs
         # ============
@@ -169,16 +170,16 @@ class GuiManuscript(QDialog):
         # Process Controls
         # ================
 
-        self.btnPreview = QPushButton(self.tr("Preview"))
+        self.btnPreview = QPushButton(self.tr("Preview"), self)
         self.btnPreview.clicked.connect(self._generatePreview)
 
-        self.btnPrint = QPushButton(self.tr("Print"))
+        self.btnPrint = QPushButton(self.tr("Print"), self)
         self.btnPrint.clicked.connect(self._printDocument)
 
-        self.btnBuild = QPushButton(self.tr("Build"))
+        self.btnBuild = QPushButton(self.tr("Build"), self)
         self.btnBuild.clicked.connect(self._buildManuscript)
 
-        self.btnClose = QPushButton(self.tr("Close"))
+        self.btnClose = QPushButton(self.tr("Close"), self)
         self.btnClose.clicked.connect(self.close)
 
         self.processBox = QGridLayout()
@@ -210,7 +211,7 @@ class GuiManuscript(QDialog):
         self.optsWidget = QWidget(self)
         self.optsWidget.setLayout(self.controlBox)
 
-        self.mainSplit = QSplitter()
+        self.mainSplit = QSplitter(self)
         self.mainSplit.addWidget(self.optsWidget)
         self.mainSplit.addWidget(self.docWdiget)
         self.mainSplit.setCollapsible(0, False)
@@ -352,7 +353,7 @@ class GuiManuscript(QDialog):
         self.docPreview.beginNewBuild(len(docBuild))
         for step, _ in docBuild.iterBuildHTML(None):
             self.docPreview.buildStep(step + 1)
-            qApp.processEvents()
+            QApplication.processEvents()
 
         buildObj = docBuild.lastBuild
         assert isinstance(buildObj, ToHtml)
@@ -385,7 +386,7 @@ class GuiManuscript(QDialog):
         build = self._getSelectedBuild()
         if isinstance(build, BuildSettings):
             dlgBuild = GuiManuscriptBuild(self, build)
-            dlgBuild.exec_()
+            dlgBuild.exec()
 
             # After the build is done, save build settings changes
             if build.changed:
@@ -398,7 +399,7 @@ class GuiManuscript(QDialog):
         """Open the print preview dialog."""
         preview = QPrintPreviewDialog(self)
         preview.paintRequested.connect(self.docPreview.printPreview)
-        preview.exec_()
+        preview.exec()
         return
 
     ##
@@ -486,7 +487,7 @@ class GuiManuscript(QDialog):
         dlgSettings.setModal(False)
         dlgSettings.show()
         dlgSettings.raise_()
-        qApp.processEvents()
+        QApplication.processEvents()
         dlgSettings.loadContent()
         dlgSettings.newSettingsReady.connect(self._processNewSettings)
 
@@ -661,7 +662,7 @@ class _DetailsWidget(QWidget):
 
 class _OutlineWidget(QWidget):
 
-    D_LINE = Qt.ItemDataRole.UserRole
+    D_LINE = QtUserRole
 
     outlineEntryClicked = pyqtSignal(str)
 
@@ -750,8 +751,8 @@ class _PreviewWidget(QTextBrowser):
 
         # Document Setup
         dPalette = self.palette()
-        dPalette.setColor(QPalette.Base, QColor(255, 255, 255))
-        dPalette.setColor(QPalette.Text, QColor(0, 0, 0))
+        dPalette.setColor(QPalette.ColorRole.Base, QColor(255, 255, 255))
+        dPalette.setColor(QPalette.ColorRole.Text, QColor(0, 0, 0))
         self.setPalette(dPalette)
 
         self.setMinimumWidth(40*SHARED.theme.textNWidth)
@@ -768,8 +769,8 @@ class _PreviewWidget(QTextBrowser):
 
         # Document Age
         aPalette = self.palette()
-        aPalette.setColor(QPalette.Background, aPalette.toolTipBase().color())
-        aPalette.setColor(QPalette.Foreground, aPalette.toolTipText().color())
+        aPalette.setColor(QPalette.ColorRole.Window, aPalette.toolTipBase().color())
+        aPalette.setColor(QPalette.ColorRole.WindowText, aPalette.toolTipText().color())
 
         aFont = self.font()
         aFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
@@ -850,16 +851,16 @@ class _PreviewWidget(QTextBrowser):
     def buildStep(self, value: int) -> None:
         """Update the progress bar value."""
         self.buildProgress.setValue(value)
-        qApp.processEvents()
+        QApplication.processEvents()
         return
 
     def setContent(self, data: dict) -> None:
         """Set the content of the preview widget."""
         sPos = self.verticalScrollBar().value()
-        qApp.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+        QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
 
         self.buildProgress.setCentreText(self.tr("Processing ..."))
-        qApp.processEvents()
+        QApplication.processEvents()
 
         styles = "\n".join(data.get("styles", []))
         self.document().setDefaultStyleSheet(styles)
@@ -867,7 +868,7 @@ class _PreviewWidget(QTextBrowser):
         html = "".join(data.get("html", []))
         html = html.replace("\t", "!!tab!!")
         self.setHtml(html)
-        qApp.processEvents()
+        QApplication.processEvents()
         while self.find("!!tab!!"):
             cursor = self.textCursor()
             cursor.insertText("\t")
@@ -881,8 +882,8 @@ class _PreviewWidget(QTextBrowser):
         self.document().markContentsDirty(0, self.document().characterCount())
 
         self.buildProgress.setCentreText(self.tr("Done"))
-        qApp.restoreOverrideCursor()
-        qApp.processEvents()
+        QApplication.restoreOverrideCursor()
+        QApplication.processEvents()
         QTimer.singleShot(300, self._hideProgress)
 
         return
@@ -904,10 +905,10 @@ class _PreviewWidget(QTextBrowser):
     @pyqtSlot("QPrinter*")
     def printPreview(self, printer: QPrinter) -> None:
         """Connect the print preview painter to the document viewer."""
-        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
-        printer.setOrientation(QPrinter.Portrait)
+        QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+        printer.setOrientation(QPrinter.Orientation.Portrait)
         self.document().print(printer)
-        qApp.restoreOverrideCursor()
+        QApplication.restoreOverrideCursor()
         return
 
     @pyqtSlot(str)
@@ -1053,10 +1054,10 @@ class _StatsWidget(QWidget):
         """Build the minimal stats page."""
         mPx = CONFIG.pxInt(8)
 
-        self.lblWordCount = QLabel(self.tr("Words"))
+        self.lblWordCount = QLabel(self.tr("Words"), self)
         self.minWordCount = QLabel(self)
 
-        self.lblCharCount = QLabel(self.tr("Characters"))
+        self.lblCharCount = QLabel(self.tr("Characters"), self)
         self.minCharCount = QLabel(self)
 
         # Assemble

@@ -26,12 +26,12 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtGui import QCloseEvent, QFont, QKeyEvent, QKeySequence
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QCloseEvent, QFont, QKeyEvent, QKeySequence
 from PyQt5.QtWidgets import (
-    QAbstractButton, QCompleter, QDialog, QDialogButtonBox, QFileDialog,
-    QFontDialog, QHBoxLayout, QLineEdit, QPushButton, QVBoxLayout, QWidget,
-    qApp
+    QAbstractButton, QApplication, QCompleter, QDialog, QDialogButtonBox,
+    QFileDialog, QFontDialog, QHBoxLayout, QLineEdit, QPushButton, QVBoxLayout,
+    QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -41,7 +41,10 @@ from novelwriter.extensions.configlayout import NColourLabel, NScrollableForm
 from novelwriter.extensions.modified import NComboBox, NDoubleSpinBox, NIconToolButton, NSpinBox
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignCenter
+from novelwriter.types import (
+    QtAlignCenter, QtDialogApply, QtDialogClose, QtDialogSave, QtRoleAccept,
+    QtRoleApply, QtRoleReject
+)
 
 logger = logging.getLogger(__name__)
 
@@ -84,11 +87,7 @@ class GuiPreferences(QDialog):
         self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(
-            QDialogButtonBox.StandardButton.Apply
-            | QDialogButtonBox.StandardButton.Save
-            | QDialogButtonBox.StandardButton.Close
-        )
+        self.buttonBox = QDialogButtonBox(QtDialogApply | QtDialogSave | QtDialogClose, self)
         self.buttonBox.clicked.connect(self._dialogButtonClicked)
 
         # Assemble
@@ -742,7 +741,7 @@ class GuiPreferences(QDialog):
         logger.debug("Close: GuiPreferences")
         self._saveWindowSize()
         event.accept()
-        qApp.processEvents()
+        QApplication.processEvents()
         self.done(nwConst.DLG_FINISHED)
         self.deleteLater()
         return
@@ -762,12 +761,12 @@ class GuiPreferences(QDialog):
     def _dialogButtonClicked(self, button: QAbstractButton) -> None:
         """Handle button clicks from the dialog button box."""
         role = self.buttonBox.buttonRole(button)
-        if role == QDialogButtonBox.ButtonRole.ApplyRole:
+        if role == QtRoleApply:
             self._saveValues()
-        elif role == QDialogButtonBox.ButtonRole.AcceptRole:
+        elif role == QtRoleAccept:
             self._saveValues()
             self.close()
-        elif role == QDialogButtonBox.ButtonRole.RejectRole:
+        elif role == QtRoleReject:
             self.close()
         return
 
@@ -812,7 +811,7 @@ class GuiPreferences(QDialog):
         """Open a dialog to select the backup folder."""
         if path := QFileDialog.getExistingDirectory(
             self, self.tr("Backup Directory"), str(self.backupPath) or "",
-            options=QFileDialog.ShowDirsOnly
+            options=QFileDialog.Option.ShowDirsOnly
         ):
             self.backupPath = path
             self.mainForm.setHelpText("backupPath", self.tr("Path: {0}").format(path))

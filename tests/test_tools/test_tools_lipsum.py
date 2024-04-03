@@ -60,7 +60,7 @@ def testToolLipsum_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert nwGUI.openDocument(C.hSceneDoc) is True
     nwGUI.docEditor.setCursorLine(3)
     with monkeypatch.context() as mp:
-        mp.setattr(GuiLipsum, "exec_", lambda *a: None)
+        mp.setattr(GuiLipsum, "exec", lambda *a: None)
         mp.setattr(GuiLipsum, "lipsumText", "FooBar")
         nwGUI.mainMenu.aLipsumText.activate(QAction.Trigger)
         assert nwGUI.docEditor.getText() == "### New Scene\n\nFooBar"

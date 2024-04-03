@@ -70,7 +70,7 @@ def testBaseInit_Launch(caplog, monkeypatch, fncPath):
     monkeypatch.setattr("PyQt5.QtWidgets.QApplication.setApplicationVersion", lambda *a: None)
     monkeypatch.setattr("PyQt5.QtWidgets.QApplication.setWindowIcon", lambda *a: None)
     monkeypatch.setattr("PyQt5.QtWidgets.QApplication.setOrganizationDomain", lambda *a: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.exec_", lambda *a: 0)
+    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.exec", lambda *a: 0)
     with pytest.raises(SystemExit) as ex:
         main([f"--config={fncPath}", f"--data={fncPath}"])
         assert ex.value.code == 0
@@ -148,7 +148,7 @@ def testBaseInit_Imports(caplog, monkeypatch, fncPath):
     """Check import error handling."""
     monkeypatch.setattr("novelwriter.guimain.GuiMain", MockGuiMain)
     monkeypatch.setattr("PyQt5.QtWidgets.QApplication.__init__", lambda *a: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.exec_", lambda *a: 0)
+    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.exec", lambda *a: 0)
     monkeypatch.setattr("PyQt5.QtWidgets.QErrorMessage.__init__", lambda *a: None)
     monkeypatch.setattr("PyQt5.QtWidgets.QErrorMessage.resize", lambda *a: None)
     monkeypatch.setattr("PyQt5.QtWidgets.QErrorMessage.showMessage", lambda *a: None)

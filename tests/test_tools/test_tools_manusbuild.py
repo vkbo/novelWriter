@@ -27,15 +27,16 @@ from pytestqt.qtbot import QtBot
 
 from tools import buildTestProject
 
-from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtCore import QUrl
-from PyQt5.QtWidgets import QDialogButtonBox, QFileDialog, QListWidgetItem, QMessageBox
+from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtWidgets import QFileDialog, QListWidgetItem, QMessageBox
 
+from novelwriter.constants import nwLabels
+from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.enum import nwBuildFmt
 from novelwriter.guimain import GuiMain
-from novelwriter.constants import nwLabels
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
-from novelwriter.core.buildsettings import BuildSettings
+from novelwriter.types import QtDialogClose
 
 
 @pytest.mark.gui
@@ -94,7 +95,7 @@ def testManuscriptBuild_Main(
         assert (fncPath / "TestBuild").with_suffix(nwLabels.BUILD_EXT[fmt]).exists()
         lastFmt = fmt
 
-    manus._dialogButtonClicked(manus.dlgButtons.button(QDialogButtonBox.Close))
+    manus._dialogButtonClicked(manus.dlgButtons.button(QtDialogClose))
     manus.deleteLater()
 
     assert build.lastBuildName == "TestBuild"
@@ -149,7 +150,7 @@ def testManuscriptBuild_Main(
         assert lastUrl.startswith("file://")
 
     # Finish
-    manus._dialogButtonClicked(manus.dlgButtons.button(QDialogButtonBox.Close))
+    manus._dialogButtonClicked(manus.dlgButtons.button(QtDialogClose))
     # qtbot.stop()
 
 # END Test testManuscriptBuild_Main

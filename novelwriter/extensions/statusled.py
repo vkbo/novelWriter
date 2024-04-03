@@ -30,6 +30,8 @@ from typing import Literal
 from PyQt5.QtGui import QColor, QPaintEvent, QPainter
 from PyQt5.QtWidgets import QAbstractButton, QWidget
 
+from novelwriter.types import QtPaintAnitAlias
+
 logger = logging.getLogger(__name__)
 
 
@@ -67,7 +69,7 @@ class StatusLED(QAbstractButton):
     def paintEvent(self, event: QPaintEvent) -> None:
         """Draw the LED."""
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.setRenderHint(QtPaintAnitAlias, True)
         painter.setPen(self.palette().dark().color())
         painter.setBrush(self._theCol)
         painter.setOpacity(1.0)

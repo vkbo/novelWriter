@@ -25,12 +25,12 @@ from __future__ import annotations
 
 import logging
 
+from datetime import datetime
 from time import time
 from typing import TYPE_CHECKING, Literal
-from datetime import datetime
 
 from PyQt5.QtCore import pyqtSlot, QLocale
-from PyQt5.QtWidgets import qApp, QStatusBar, QLabel
+from PyQt5.QtWidgets import QApplication, QStatusBar, QLabel
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatTime
@@ -66,8 +66,8 @@ class GuiMainStatus(QStatusBar):
         xM = CONFIG.pxInt(8)
 
         # The Spell Checker Language
-        self.langIcon = QLabel("")
-        self.langText = QLabel(self.tr("None"))
+        self.langIcon = QLabel("", self)
+        self.langText = QLabel(self.tr("None"), self)
         self.langIcon.setContentsMargins(0, 0, 0, 0)
         self.langText.setContentsMargins(0, 0, xM, 0)
         self.addPermanentWidget(self.langIcon)
@@ -75,7 +75,7 @@ class GuiMainStatus(QStatusBar):
 
         # The Editor Status
         self.docIcon = StatusLED(colNone, colSaved, colUnsaved, iPx, iPx, self)
-        self.docText = QLabel(self.tr("Editor"))
+        self.docText = QLabel(self.tr("Editor"), self)
         self.docIcon.setContentsMargins(0, 0, 0, 0)
         self.docText.setContentsMargins(0, 0, xM, 0)
         self.addPermanentWidget(self.docIcon)
@@ -83,15 +83,15 @@ class GuiMainStatus(QStatusBar):
 
         # The Project Status
         self.projIcon = StatusLED(colNone, colSaved, colUnsaved, iPx, iPx, self)
-        self.projText = QLabel(self.tr("Project"))
+        self.projText = QLabel(self.tr("Project"), self)
         self.projIcon.setContentsMargins(0, 0, 0, 0)
         self.projText.setContentsMargins(0, 0, xM, 0)
         self.addPermanentWidget(self.projIcon)
         self.addPermanentWidget(self.projText)
 
         # The Project and Session Stats
-        self.statsIcon = QLabel()
-        self.statsText = QLabel("")
+        self.statsIcon = QLabel(self)
+        self.statsText = QLabel("", self)
         self.statsIcon.setContentsMargins(0, 0, 0, 0)
         self.statsText.setContentsMargins(0, 0, xM, 0)
         self.addPermanentWidget(self.statsIcon)
@@ -99,8 +99,8 @@ class GuiMainStatus(QStatusBar):
 
         # The Session Clock
         # Set the minimum width so the label doesn't rescale every second
-        self.timeIcon = QLabel()
-        self.timeText = QLabel("")
+        self.timeIcon = QLabel(self)
+        self.timeText = QLabel("", self)
         self.timeText.setToolTip(self.tr("Session Time"))
         self.timeText.setMinimumWidth(SHARED.theme.getTextWidth("00:00:00:"))
         self.timeIcon.setContentsMargins(0, 0, 0, 0)
@@ -198,7 +198,7 @@ class GuiMainStatus(QStatusBar):
     def setStatusMessage(self, message: str) -> None:
         """Set the status bar message to display."""
         self.showMessage(message, nwConst.STATUS_MSG_TIMEOUT)
-        qApp.processEvents()
+        QApplication.processEvents()
         return
 
     @pyqtSlot(str, str)
@@ -240,7 +240,7 @@ class GuiMainStatus(QStatusBar):
         import tracemalloc
         from collections import Counter
 
-        widgets = qApp.allWidgets()
+        widgets = QApplication.allWidgets()
         if not self._debugInfo:
             if tracemalloc.is_tracing():
                 self._traceMallocRef = "Total"

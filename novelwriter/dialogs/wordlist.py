@@ -28,11 +28,11 @@ import logging
 from typing import TYPE_CHECKING
 from pathlib import Path
 
-from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QDialog, QDialogButtonBox, QFileDialog, QHBoxLayout,
-    QLineEdit, QListWidget, QVBoxLayout, qApp
+    QAbstractItemView, QApplication, QDialog, QDialogButtonBox, QFileDialog,
+    QHBoxLayout, QLineEdit, QListWidget, QVBoxLayout
 )
 
 from novelwriter import CONFIG, SHARED
@@ -40,6 +40,7 @@ from novelwriter.common import formatFileFilter
 from novelwriter.core.spellcheck import UserDictionary
 from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.modified import NIconToolButton
+from novelwriter.types import QtDialogClose, QtDialogSave
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -91,7 +92,7 @@ class GuiWordList(QDialog):
 
         # List Box
         self.listBox = QListWidget(self)
-        self.listBox.setDragDropMode(QAbstractItemView.NoDragDrop)
+        self.listBox.setDragDropMode(QAbstractItemView.DragDropMode.NoDragDrop)
         self.listBox.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.listBox.setSortingEnabled(True)
 
@@ -110,7 +111,7 @@ class GuiWordList(QDialog):
         self.editBox.addWidget(self.delButton, 0)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Close)
+        self.buttonBox = QDialogButtonBox(QtDialogSave | QtDialogClose, self)
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self.close)
 
@@ -157,7 +158,7 @@ class GuiWordList(QDialog):
         self.newEntry.setText("")
         self.listBox.clearSelection()
         self._addWord(word)
-        if items := self.listBox.findItems(word, Qt.MatchExactly):
+        if items := self.listBox.findItems(word, Qt.MatchFlag.MatchExactly):
             self.listBox.setCurrentItem(items[0])
             self.listBox.scrollToItem(items[0], QAbstractItemView.ScrollHint.PositionAtCenter)
         return
@@ -177,7 +178,7 @@ class GuiWordList(QDialog):
             userDict.add(word)
         userDict.save()
         self.newWordListReady.emit()
-        qApp.processEvents()
+        QApplication.processEvents()
         self.close()
         return
 
@@ -244,7 +245,7 @@ class GuiWordList(QDialog):
 
     def _addWord(self, word: str) -> None:
         """Add a single word to the list."""
-        if word and not self.listBox.findItems(word, Qt.MatchExactly):
+        if word and not self.listBox.findItems(word, Qt.MatchFlag.MatchExactly):
             self.listBox.addItem(word)
             self._changed = True
         return

@@ -32,10 +32,10 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import readTextFile
+from novelwriter.common import cssCol, readTextFile
 from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.versioninfo import VersionInfoWidget
-from novelwriter.types import QtAlignRightTop
+from novelwriter.types import QtAlignRightTop, QtDialogClose
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +70,7 @@ class GuiAbout(QDialog):
 
         self.nwLicence = QLabel(self.tr("This application is licenced under {0}").format(
             "<a href='https://www.gnu.org/licenses/gpl-3.0.html'>GPL v3.0</a>"
-        ))
+        ), self)
         self.nwLicence.setOpenExternalLinks(True)
 
         # Credits
@@ -84,7 +84,7 @@ class GuiAbout(QDialog):
         self.txtCredits.setViewportMargins(0, hA, hA, 0)
 
         # Buttons
-        self.btnBox = QDialogButtonBox(QDialogButtonBox.Close, self)
+        self.btnBox = QDialogButtonBox(QtDialogClose, self)
         self.btnBox.rejected.connect(self.close)
 
         # Assemble
@@ -147,10 +147,10 @@ class GuiAbout(QDialog):
 
     def _setStyleSheet(self) -> None:
         """Set stylesheet for all browser tabs."""
-        baseCol = self.palette().window().color()
-        self.txtCredits.setStyleSheet((
-            "QTextBrowser {{border: none; background: rgb({r},{g},{b});}} "
-        ).format(r=baseCol.red(), g=baseCol.green(), b=baseCol.blue()))
+        baseCol = cssCol(self.palette().window().color())
+        self.txtCredits.setStyleSheet(
+            f"QTextBrowser {{border: none; background: {baseCol};}} "
+        )
         return
 
 # END Class GuiAbout

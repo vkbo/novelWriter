@@ -26,7 +26,7 @@ from __future__ import annotations
 import logging
 
 from PyQt5.QtGui import QFontMetrics
-from PyQt5.QtCore import QSize, Qt, pyqtSlot
+from PyQt5.QtCore import QSize, pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog, QDialogButtonBox, QFrame, QHBoxLayout, QLabel, QListWidget,
     QListWidgetItem, QVBoxLayout, QWidget
@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG
 from novelwriter.constants import trConst, nwQuotes
-from novelwriter.types import QtAlignCenter, QtAlignTop
+from novelwriter.types import QtAlignCenter, QtAlignTop, QtDialogCancel, QtDialogOk, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ class GuiQuoteSelect(QDialog):
 
     _selected = ""
 
-    D_KEY = Qt.ItemDataRole.UserRole
+    D_KEY = QtUserRole
 
     def __init__(self, parent: QWidget, current: str = '"') -> None:
         super().__init__(parent=parent)
@@ -66,14 +66,14 @@ class GuiQuoteSelect(QDialog):
         lblFont.setPointSizeF(4*lblFont.pointSizeF())
 
         # Preview Label
-        self.previewLabel = QLabel(current)
+        self.previewLabel = QLabel(current, self)
         self.previewLabel.setFont(lblFont)
         self.previewLabel.setFixedSize(QSize(pxW, pxH))
         self.previewLabel.setAlignment(QtAlignCenter)
-        self.previewLabel.setFrameStyle(QFrame.Box | QFrame.Plain)
+        self.previewLabel.setFrameStyle(QFrame.Shape.Box | QFrame.Shadow.Plain)
 
         # Quote Symbols
-        self.listBox = QListWidget()
+        self.listBox = QListWidget(self)
         self.listBox.itemSelectionChanged.connect(self._selectedSymbol)
 
         minSize = 100
@@ -90,7 +90,7 @@ class GuiQuoteSelect(QDialog):
         self.listBox.setMinimumHeight(CONFIG.pxInt(150))
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel, self)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 
@@ -123,7 +123,7 @@ class GuiQuoteSelect(QDialog):
     def getQuote(cls, parent: QWidget, current: str = "") -> tuple[str, bool]:
         """Pop the dialog and return the result."""
         cls = GuiQuoteSelect(parent, current=current)
-        cls.exec_()
+        cls.exec()
         quote = cls._selected
         accepted = cls.result() == QDialog.DialogCode.Accepted
         cls.deleteLater()

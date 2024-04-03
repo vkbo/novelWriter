@@ -26,12 +26,12 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtGui import QCloseEvent, QColor, QIcon, QPixmap
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QCloseEvent, QColor, QIcon, QPixmap
 from PyQt5.QtWidgets import (
-    QColorDialog, QDialog, QDialogButtonBox, QHBoxLayout, QLineEdit,
-    QPushButton, QStackedWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-    QWidget, qApp
+    QApplication, QColorDialog, QDialog, QDialogButtonBox, QHBoxLayout,
+    QLineEdit, QPushButton, QStackedWidget, QTreeWidget, QTreeWidgetItem,
+    QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -40,6 +40,7 @@ from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrol
 from novelwriter.extensions.modified import NComboBox, NIconToolButton
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
+from novelwriter.types import QtDialogCancel, QtDialogSave, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -83,9 +84,7 @@ class GuiProjectSettings(QDialog):
         self.sidebar.buttonClicked.connect(self._sidebarClicked)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(
-            QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel
-        )
+        self.buttonBox = QDialogButtonBox(QtDialogSave | QtDialogCancel, self)
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self.close)
 
@@ -195,7 +194,7 @@ class GuiProjectSettings(QDialog):
             project.data.setAutoReplace(newList)
 
         self.newProjectSettingsReady.emit(rebuildTrees)
-        qApp.processEvents()
+        QApplication.processEvents()
         self.close()
 
         return
@@ -305,9 +304,9 @@ class _StatusPage(NFixedPage):
     COL_LABEL = 0
     COL_USAGE = 1
 
-    KEY_ROLE = Qt.ItemDataRole.UserRole
-    COL_ROLE = Qt.ItemDataRole.UserRole + 1
-    NUM_ROLE = Qt.ItemDataRole.UserRole + 2
+    KEY_ROLE = QtUserRole
+    COL_ROLE = QtUserRole + 1
+    NUM_ROLE = QtUserRole + 2
 
     def __init__(self, parent: QWidget, isStatus: bool) -> None:
         super().__init__(parent=parent)
@@ -604,7 +603,7 @@ class _ReplacePage(NFixedPage):
         )
 
         # List Box
-        self.listBox = QTreeWidget()
+        self.listBox = QTreeWidget(self)
         self.listBox.setHeaderLabels([self.tr("Keyword"), self.tr("Replace With")])
         self.listBox.setColumnWidth(self.COL_KEY, wCol0)
         self.listBox.setIndentation(0)
@@ -614,7 +613,7 @@ class _ReplacePage(NFixedPage):
             newItem = QTreeWidgetItem(["<%s>" % aKey, aVal])
             self.listBox.addTopLevelItem(newItem)
 
-        self.listBox.sortByColumn(self.COL_KEY, Qt.AscendingOrder)
+        self.listBox.sortByColumn(self.COL_KEY, Qt.SortOrder.AscendingOrder)
         self.listBox.setSortingEnabled(True)
 
         # List Controls

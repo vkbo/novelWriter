@@ -28,17 +28,18 @@ import logging
 from pathlib import Path
 from zipfile import ZipFile
 
-from PyQt5.QtGui import QCloseEvent, QTextCursor
 from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtGui import QCloseEvent, QTextCursor
 from PyQt5.QtWidgets import (
-    QDialog, QDialogButtonBox, QFileDialog, QFrame, QHBoxLayout, QLabel,
-    QLineEdit, QPlainTextEdit, QPushButton, QVBoxLayout, QWidget, qApp
+    QApplication, QDialog, QDialogButtonBox, QFileDialog, QFrame, QHBoxLayout,
+    QLabel, QLineEdit, QPlainTextEdit, QPushButton, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatFileFilter, openExternalPath, formatInt, getFileSize
 from novelwriter.error import formatException
 from novelwriter.extensions.modified import NIconToolButton
+from novelwriter.types import QtDialogClose
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +71,7 @@ class GuiDictionaries(QDialog):
             self.tr("Download a dictionary from one of the links, and add it below."),
             f"&nbsp;\u203a <a href='{foUrl}'>{foUrl}</a>",
             f"&nbsp;\u203a <a href='{loUrl}'>{loUrl}</a>",
-        ]))
+        ]), self)
         self.huInfo.setOpenExternalLinks(True)
         self.huInfo.setWordWrap(True)
         self.huInput = QLineEdit(self)
@@ -89,7 +90,7 @@ class GuiDictionaries(QDialog):
         self.huAddBox.addWidget(self.huImport)
 
         # Install Path
-        self.inInfo = QLabel(self.tr("Dictionary install location"))
+        self.inInfo = QLabel(self.tr("Dictionary install location"), self)
         self.inPath = QLineEdit(self)
         self.inPath.setReadOnly(True)
         self.inBrowse = NIconToolButton(self, iSz, "browse")
@@ -107,7 +108,7 @@ class GuiDictionaries(QDialog):
         self.infoBox.setFrameStyle(QFrame.Shape.NoFrame)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Close)
+        self.buttonBox = QDialogButtonBox(QtDialogClose, self)
         self.buttonBox.rejected.connect(self._doClose)
 
         # Assemble
@@ -158,7 +159,7 @@ class GuiDictionaries(QDialog):
                 "Additional dictionaries found: {0}"
             ).format(len(self._currDicts)))
 
-        qApp.processEvents()
+        QApplication.processEvents()
         self.adjustSize()
 
         return True

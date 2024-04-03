@@ -25,13 +25,13 @@ import pytest
 from tools import C, writeFile, buildTestProject
 
 from PyQt5.QtGui import QTextCursor, QTextBlock
-from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwDocAction, nwDocInsert
 from novelwriter.constants import nwKeyWords, nwUnicode
+from novelwriter.enum import nwDocAction, nwDocInsert
 from novelwriter.gui.doceditor import GuiDocEditor
+from novelwriter.types import QtMouseLeft
 
 
 @pytest.mark.gui
@@ -359,7 +359,7 @@ def testGuiMenu_ContextMenus(qtbot, nwGUI, prjLipsum):
     rect = nwGUI.docEditor.cursorRect()
 
     nwGUI.docEditor._openContextMenu(rect.bottomRight())
-    qtbot.mouseClick(nwGUI.docEditor, Qt.LeftButton, pos=rect.topLeft())
+    qtbot.mouseClick(nwGUI.docEditor, QtMouseLeft, pos=rect.topLeft())
 
     nwGUI.docEditor._makePosSelection(QTextCursor.WordUnderCursor, rect.center())
     cursor = nwGUI.docEditor.textCursor()
@@ -386,7 +386,7 @@ def testGuiMenu_ContextMenus(qtbot, nwGUI, prjLipsum):
     rect = nwGUI.docViewer.cursorRect()
 
     nwGUI.docViewer._openContextMenu(rect.bottomRight())
-    qtbot.mouseClick(nwGUI.docViewer, Qt.LeftButton, pos=rect.topLeft())
+    qtbot.mouseClick(nwGUI.docViewer, QtMouseLeft, pos=rect.topLeft())
 
     nwGUI.docViewer._makePosSelection(QTextCursor.WordUnderCursor, rect.center())
     cursor = nwGUI.docViewer.textCursor()
@@ -410,12 +410,12 @@ def testGuiMenu_ContextMenus(qtbot, nwGUI, prjLipsum):
     assert nwGUI.docViewer.docHeader.backButton.isEnabled()
     assert not nwGUI.docViewer.docHeader.forwardButton.isEnabled()
 
-    qtbot.mouseClick(nwGUI.docViewer.docHeader.backButton, Qt.LeftButton)
+    qtbot.mouseClick(nwGUI.docViewer.docHeader.backButton, QtMouseLeft)
     assert nwGUI.docViewer.docHandle == "4c4f28287af27"
     assert not nwGUI.docViewer.docHeader.backButton.isEnabled()
     assert nwGUI.docViewer.docHeader.forwardButton.isEnabled()
 
-    qtbot.mouseClick(nwGUI.docViewer.docHeader.forwardButton, Qt.LeftButton)
+    qtbot.mouseClick(nwGUI.docViewer.docHeader.forwardButton, QtMouseLeft)
     assert nwGUI.docViewer.docHandle == "04468803b92e1"
     assert nwGUI.docViewer.docHeader.backButton.isEnabled()
     assert not nwGUI.docViewer.docHeader.forwardButton.isEnabled()

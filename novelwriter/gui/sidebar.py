@@ -125,7 +125,7 @@ class GuiSideBar(QWidget):
     def updateTheme(self) -> None:
         """Initialise GUI elements that depend on specific settings."""
         qPalette = self.palette()
-        qPalette.setBrush(QPalette.Window, qPalette.base())
+        qPalette.setBrush(QPalette.ColorRole.Window, qPalette.base())
         self.setPalette(qPalette)
 
         buttonStyle = SHARED.theme.getStyleSheet(STYLES_BIG_TOOLBUTTON)
@@ -157,7 +157,7 @@ class _PopRightMenu(QMenu):
 
     def event(self, event: QEvent) -> bool:
         """Overload the show event and move the menu popup location."""
-        if event.type() == QEvent.Show:
+        if event.type() == QEvent.Type.Show:
             if isinstance(parent := self.parent(), QWidget):
                 offset = QPoint(parent.width(), parent.height() - self.height())
                 self.move(parent.mapToGlobal(offset))

@@ -30,11 +30,11 @@ from time import time
 from pathlib import Path
 from datetime import datetime
 
-from PyQt5.QtGui import QCloseEvent, QCursor, QIcon
 from PyQt5.QtCore import Qt, QTimer, pyqtSlot
+from PyQt5.QtGui import QCloseEvent, QCursor, QIcon
 from PyQt5.QtWidgets import (
-    QFileDialog, QHBoxLayout, QMainWindow, QMessageBox, QShortcut, QSplitter,
-    QStackedWidget, QVBoxLayout, QWidget, qApp
+    QApplication, QFileDialog, QHBoxLayout, QMainWindow, QMessageBox, QShortcut, QSplitter,
+    QStackedWidget, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED, __hexversion__, __version__
@@ -109,7 +109,7 @@ class GuiMain(QMainWindow):
         nwIcon = CONFIG.assetPath("icons") / "novelwriter.svg"
         self.nwIcon = QIcon(str(nwIcon)) if nwIcon.is_file() else QIcon()
         self.setWindowIcon(self.nwIcon)
-        qApp.setWindowIcon(self.nwIcon)
+        QApplication.setWindowIcon(self.nwIcon)
 
         # Build the GUI
         # =============
@@ -148,7 +148,7 @@ class GuiMain(QMainWindow):
         self.treePane.setLayout(self.treeBox)
 
         # Splitter : Document Viewer / Document Meta
-        self.splitView = QSplitter(Qt.Vertical, self)
+        self.splitView = QSplitter(Qt.Orientation.Vertical, self)
         self.splitView.addWidget(self.docViewer)
         self.splitView.addWidget(self.docViewerPanel)
         self.splitView.setHandleWidth(hWd)
@@ -158,7 +158,7 @@ class GuiMain(QMainWindow):
         self.splitView.setCollapsible(1, False)
 
         # Splitter : Document Editor / Document Viewer
-        self.splitDocs = QSplitter(Qt.Horizontal, self)
+        self.splitDocs = QSplitter(Qt.Orientation.Horizontal, self)
         self.splitDocs.addWidget(self.docEditor)
         self.splitDocs.addWidget(self.splitView)
         self.splitDocs.setOpaqueResize(False)
@@ -167,7 +167,7 @@ class GuiMain(QMainWindow):
         self.splitDocs.setCollapsible(1, False)
 
         # Splitter : Project Tree / Document Area
-        self.splitMain = QSplitter(Qt.Horizontal)
+        self.splitMain = QSplitter(Qt.Orientation.Horizontal)
         self.splitMain.setContentsMargins(0, 0, 0, 0)
         self.splitMain.addWidget(self.treePane)
         self.splitMain.addWidget(self.splitDocs)
@@ -205,7 +205,7 @@ class GuiMain(QMainWindow):
         self.setMenuBar(self.mainMenu)
         self.setCentralWidget(self.mainWidget)
         self.setStatusBar(self.mainStatus)
-        self.setContextMenuPolicy(Qt.NoContextMenu)  # Issue #1147
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)  # Issue #1147
 
         # Connect Signals
         # ===============
@@ -328,7 +328,7 @@ class GuiMain(QMainWindow):
     def postLaunchTasks(self, cmdOpen: str | None) -> None:
         """Process tasks after the main window has been created."""
         if cmdOpen:
-            qApp.processEvents()
+            QApplication.processEvents()
             logger.info("Command line path: %s", cmdOpen)
             self.openProject(cmdOpen)
 
@@ -474,12 +474,12 @@ class GuiMain(QMainWindow):
                     break
 
         if lastEdited is not None:
-            qApp.processEvents()
+            QApplication.processEvents()
             self.openDocument(lastEdited, doScroll=True)
 
         lastViewed = SHARED.project.data.getLastHandle("viewer")
         if lastViewed is not None:
-            qApp.processEvents()
+            QApplication.processEvents()
             self.viewDocument(lastViewed)
 
         # Check if we need to rebuild the index
@@ -488,7 +488,7 @@ class GuiMain(QMainWindow):
             self.rebuildIndex()
 
         # Make sure the changed status is set to false on things opened
-        qApp.processEvents()
+        QApplication.processEvents()
         self.docEditor.setDocumentChanged(False)
         SHARED.project.setProjectChanged(False)
 
@@ -738,7 +738,7 @@ class GuiMain(QMainWindow):
         """Rebuild the entire index."""
         if SHARED.hasProject:
             logger.info("Rebuilding index ...")
-            qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+            QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
             tStart = time()
 
             self.projView.saveProjectTasks()
@@ -752,7 +752,7 @@ class GuiMain(QMainWindow):
             )
             self.docEditor.updateTagHighLighting()
             self._updateStatusWordCount()
-            qApp.restoreOverrideCursor()
+            QApplication.restoreOverrideCursor()
 
             if not beQuiet:
                 SHARED.info(self.tr("The project index has been successfully rebuilt."))
@@ -768,7 +768,7 @@ class GuiMain(QMainWindow):
         """Open the welcome dialog."""
         dialog = GuiWelcome(self)
         dialog.openProjectRequest.connect(self._openProjectFromWelcome)
-        dialog.exec_()
+        dialog.exec()
         return
 
     @pyqtSlot()
@@ -776,7 +776,7 @@ class GuiMain(QMainWindow):
         """Open the preferences dialog."""
         dialog = GuiPreferences(self)
         dialog.newPreferencesReady.connect(self._processConfigChanges)
-        dialog.exec_()
+        dialog.exec()
         return
 
     @pyqtSlot()
@@ -786,7 +786,7 @@ class GuiMain(QMainWindow):
         if SHARED.hasProject:
             dialog = GuiProjectSettings(self, gotoPage=focusTab)
             dialog.newProjectSettingsReady.connect(self._processProjectSettingsChanges)
-            dialog.exec_()
+            dialog.exec()
         return
 
     @pyqtSlot()
@@ -797,7 +797,7 @@ class GuiMain(QMainWindow):
             dialog.setModal(True)
             dialog.show()
             dialog.raise_()
-            qApp.processEvents()
+            QApplication.processEvents()
             dialog.updateValues()
         return
 
@@ -810,7 +810,7 @@ class GuiMain(QMainWindow):
             dialog.setModal(False)
             dialog.show()
             dialog.raise_()
-            qApp.processEvents()
+            QApplication.processEvents()
             dialog.loadContent()
         return
 
@@ -820,7 +820,7 @@ class GuiMain(QMainWindow):
         if SHARED.hasProject:
             dialog = GuiWordList(self)
             dialog.newWordListReady.connect(self._processWordListChanges)
-            dialog.exec_()
+            dialog.exec()
         return
 
     @pyqtSlot()
@@ -832,7 +832,7 @@ class GuiMain(QMainWindow):
             dialog.setModal(False)
             dialog.show()
             dialog.raise_()
-            qApp.processEvents()
+            QApplication.processEvents()
             dialog.populateGUI()
         return
 
@@ -843,7 +843,7 @@ class GuiMain(QMainWindow):
         dialog.setModal(True)
         dialog.show()
         dialog.raise_()
-        qApp.processEvents()
+        QApplication.processEvents()
         dialog.populateGUI()
         return
 
@@ -861,7 +861,7 @@ class GuiMain(QMainWindow):
         dialog.setModal(True)
         dialog.show()
         dialog.raise_()
-        qApp.processEvents()
+        QApplication.processEvents()
         if not dialog.initDialog():
             dialog.close()
             SHARED.error(self.tr("Could not initialise the dialog."))
@@ -899,7 +899,8 @@ class GuiMain(QMainWindow):
                 CONFIG.setViewPanePos(self.splitView.sizes())
 
         CONFIG.showViewerPanel = self.docViewerPanel.isVisible()
-        if self.windowState() & Qt.WindowFullScreen != Qt.WindowFullScreen:
+        wFull = Qt.WindowState.WindowFullScreen
+        if self.windowState() & wFull != wFull:
             # Ignore window size if in full screen mode
             CONFIG.setMainWinSize(self.width(), self.height())
 
@@ -909,7 +910,7 @@ class GuiMain(QMainWindow):
         CONFIG.saveConfig()
         self.reportConfErr()
 
-        qApp.quit()
+        QApplication.quit()
 
         return True
 
@@ -936,7 +937,7 @@ class GuiMain(QMainWindow):
 
     def toggleFullScreenMode(self) -> None:
         """Toggle full screen mode"""
-        self.setWindowState(self.windowState() ^ Qt.WindowFullScreen)
+        self.setWindowState(self.windowState() ^ Qt.WindowState.WindowFullScreen)
         return
 
     ##
@@ -1056,7 +1057,7 @@ class GuiMain(QMainWindow):
 
         if theme:
             # We are doing this manually instead of connecting to
-            # qApp.paletteChanged since the processing order matters
+            # paletteChanged since the processing order matters
             SHARED.theme.loadTheme()
             self.docEditor.updateTheme()
             self.docViewer.updateTheme()
@@ -1115,7 +1116,7 @@ class GuiMain(QMainWindow):
     @pyqtSlot(Path)
     def _openProjectFromWelcome(self, path: Path) -> None:
         """Handle an open project request from the welcome dialog."""
-        qApp.processEvents()
+        QApplication.processEvents()
         self.openProject(path)
         if not SHARED.hasProject:
             self.showWelcomeDialog()
@@ -1212,7 +1213,7 @@ class GuiMain(QMainWindow):
         if SHARED.hasProject:
             currTime = time()
             editIdle = currTime - self.docEditor.lastActive > CONFIG.userIdleTime
-            userIdle = qApp.applicationState() != Qt.ApplicationActive
+            userIdle = QApplication.applicationState() != Qt.ApplicationState.ApplicationActive
             self.mainStatus.setUserIdle(editIdle or userIdle)
             SHARED.updateIdleTime(currTime, editIdle or userIdle)
             self.mainStatus.updateTime(idleTime=SHARED.projectIdleTime)

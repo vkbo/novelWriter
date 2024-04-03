@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import readTextFile
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignLeft, QtAlignRight
+from novelwriter.types import QtAlignLeft, QtAlignRight, QtRoleAction, QtDialogClose
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +61,7 @@ class GuiLipsum(QDialog):
         self.innerBox.setSpacing(CONFIG.pxInt(16))
 
         # Icon
-        self.docIcon = QLabel()
+        self.docIcon = QLabel(self)
         self.docIcon.setPixmap(SHARED.theme.getPixmap("proj_document", (nPx, nPx)))
 
         self.leftBox = QVBoxLayout()
@@ -71,15 +71,16 @@ class GuiLipsum(QDialog):
         self.innerBox.addLayout(self.leftBox)
 
         # Form
-        self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Insert Lorem Ipsum Text")))
+        self.headLabel = QLabel(self.tr("Insert Lorem Ipsum Text"))
+        self.headLabel.setFont(SHARED.theme.guiFontB)
 
-        self.paraLabel = QLabel(self.tr("Number of paragraphs"))
-        self.paraCount = QSpinBox()
+        self.paraLabel = QLabel(self.tr("Number of paragraphs"), self)
+        self.paraCount = QSpinBox(self)
         self.paraCount.setMinimum(1)
         self.paraCount.setMaximum(100)
         self.paraCount.setValue(5)
 
-        self.randLabel = QLabel(self.tr("Randomise order"))
+        self.randLabel = QLabel(self.tr("Randomise order"), self)
         self.randSwitch = NSwitch(self)
 
         self.formBox = QGridLayout()
@@ -93,13 +94,13 @@ class GuiLipsum(QDialog):
         self.innerBox.addLayout(self.formBox)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox()
+        self.buttonBox = QDialogButtonBox(self)
         self.buttonBox.rejected.connect(self.close)
 
-        self.btnClose = self.buttonBox.addButton(QDialogButtonBox.Close)
+        self.btnClose = self.buttonBox.addButton(QtDialogClose)
         self.btnClose.setAutoDefault(False)
 
-        self.btnInsert = self.buttonBox.addButton(self.tr("Insert"), QDialogButtonBox.ActionRole)
+        self.btnInsert = self.buttonBox.addButton(self.tr("Insert"), QtRoleAction)
         self.btnInsert.clicked.connect(self._doInsert)
         self.btnInsert.setAutoDefault(False)
 
@@ -129,7 +130,7 @@ class GuiLipsum(QDialog):
     def getLipsum(cls, parent: QWidget) -> str:
         """Pop the dialog and return the lipsum text."""
         cls = GuiLipsum(parent)
-        cls.exec_()
+        cls.exec()
         text = cls.lipsumText
         cls.deleteLater()
         return text
