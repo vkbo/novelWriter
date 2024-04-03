@@ -22,12 +22,12 @@ from __future__ import annotations
 
 import pytest
 
-from tools import C, buildTestProject
 from mocked import causeOSError
+from tools import C, buildTestProject
 
-from PyQt5.QtGui import QClipboard, QTextBlock, QTextCursor, QTextOption
 from PyQt5.QtCore import QThreadPool, Qt
-from PyQt5.QtWidgets import QAction, QMenu, qApp
+from PyQt5.QtGui import QClipboard, QTextBlock, QTextCursor, QTextOption
+from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords, nwUnicode
@@ -361,14 +361,14 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert actions == [
         "Cut", "Copy", "Paste", "Select All", "Select Word", "Select Paragraph"
     ]
-    qApp.clipboard().clear()
+    QApplication.clipboard().clear()
     ctxMenu.actions()[1].trigger()
-    assert qApp.clipboard().text(QClipboard.Mode.Clipboard) == "text"
+    assert QApplication.clipboard().text(QClipboard.Mode.Clipboard) == "text"
 
     # Cut Text
-    qApp.clipboard().clear()
+    QApplication.clipboard().clear()
     ctxMenu.actions()[0].trigger()
-    assert qApp.clipboard().text(QClipboard.Mode.Clipboard) == "text"
+    assert QApplication.clipboard().text(QClipboard.Mode.Clipboard) == "text"
     assert "text" not in docEditor.getText()
 
     # Paste Text
@@ -400,7 +400,7 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # Select/Cut/Copy/Paste/Undo/Redo
     # ===============================
 
-    qApp.clipboard().clear()
+    QApplication.clipboard().clear()
 
     # Select All
     assert nwGUI.docEditor.docAction(nwDocAction.SEL_ALL) is True
@@ -452,7 +452,7 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert newPara[5] == ipsumText[4]
     assert newPara[6] == ipsumText[2]
 
-    qApp.clipboard().clear()
+    QApplication.clipboard().clear()
 
     # Emphasis/Undo/Redo
     # ==================

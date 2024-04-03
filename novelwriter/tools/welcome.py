@@ -25,19 +25,19 @@ from __future__ import annotations
 
 import logging
 
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
-from PyQt5.QtGui import QCloseEvent, QColor, QFont, QPaintEvent, QPainter, QPen
 from PyQt5.QtCore import (
     QAbstractListModel, QEvent, QModelIndex, QObject, QPoint, QSize, Qt,
     pyqtSignal, pyqtSlot
 )
+from PyQt5.QtGui import QCloseEvent, QColor, QFont, QPaintEvent, QPainter, QPen
 from PyQt5.QtWidgets import (
-    QAction, QDialog, QFileDialog, QFormLayout, QHBoxLayout, QLabel, QLineEdit,
-    QListView, QMenu, QPushButton, QScrollArea, QShortcut, QStackedWidget,
-    QStyle, QStyleOptionViewItem, QStyledItemDelegate, QVBoxLayout, QWidget,
-    qApp
+    QAction, QApplication, QDialog, QFileDialog, QFormLayout, QHBoxLayout,
+    QLabel, QLineEdit, QListView, QMenu, QPushButton, QScrollArea, QShortcut,
+    QStackedWidget, QStyle, QStyleOptionViewItem, QStyledItemDelegate,
+    QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -411,11 +411,11 @@ class _ProjectListItem(QStyledItemDelegate):
         self._pPx = (mPx//2, 3*mPx//2, iPx + mPx, mPx, mPx + tPx)  # Painter coordinates
         self._hPx = 2*mPx + tPx + fPx  # Fixed height
 
-        self._tFont = qApp.font()
+        self._tFont = QApplication.font()
         self._tFont.setPointSizeF(1.2*fPt)
         self._tFont.setWeight(QFont.Weight.Bold)
 
-        self._dFont = qApp.font()
+        self._dFont = QApplication.font()
         self._dFont.setPointSizeF(fPt)
         self._dPen = QPen(SHARED.theme.helpText)
 
@@ -433,7 +433,7 @@ class _ProjectListItem(QStyledItemDelegate):
         painter.save()
         if opt.state & QStyle.StateFlag.State_Selected == QStyle.StateFlag.State_Selected:
             painter.setOpacity(0.25)
-            painter.fillRect(rect, qApp.palette().highlight())
+            painter.fillRect(rect, QApplication.palette().highlight())
             painter.setOpacity(1.0)
 
         painter.drawPixmap(ix, rect.top() + iy, self._icon)

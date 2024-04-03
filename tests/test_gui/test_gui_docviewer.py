@@ -26,7 +26,7 @@ from mocked import causeException
 
 from PyQt5.QtGui import QMouseEvent, QTextCursor
 from PyQt5.QtCore import QEvent, QPoint, Qt, QUrl
-from PyQt5.QtWidgets import QMenu, qApp, QAction
+from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction
@@ -77,7 +77,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     docViewer.setTextCursor(cursor)
     docViewer._makeSelection(QTextCursor.WordUnderCursor)
 
-    qClip = qApp.clipboard()
+    qClip = QApplication.clipboard()
     qClip.clear()
 
     # Cut

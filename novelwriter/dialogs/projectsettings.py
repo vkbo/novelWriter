@@ -26,12 +26,12 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtGui import QCloseEvent, QColor, QIcon, QPixmap
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QCloseEvent, QColor, QIcon, QPixmap
 from PyQt5.QtWidgets import (
-    QColorDialog, QDialog, QDialogButtonBox, QHBoxLayout, QLineEdit,
-    QPushButton, QStackedWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-    QWidget, qApp
+    QApplication, QColorDialog, QDialog, QDialogButtonBox, QHBoxLayout,
+    QLineEdit, QPushButton, QStackedWidget, QTreeWidget, QTreeWidgetItem,
+    QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -195,7 +195,7 @@ class GuiProjectSettings(QDialog):
             project.data.setAutoReplace(newList)
 
         self.newProjectSettingsReady.emit(rebuildTrees)
-        qApp.processEvents()
+        QApplication.processEvents()
         self.close()
 
         return

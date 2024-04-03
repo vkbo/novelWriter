@@ -30,8 +30,8 @@ from time import time
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCursor, QKeyEvent
 from PyQt5.QtWidgets import (
-    QFrame, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QToolBar, QTreeWidget,
-    QTreeWidgetItem, QVBoxLayout, QWidget, qApp
+    QApplication, QFrame, QHBoxLayout, QHeaderView, QLabel, QLineEdit,
+    QToolBar, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -257,7 +257,7 @@ class GuiProjectSearch(QWidget):
     def _processSearch(self) -> None:
         """Perform a search."""
         if not self._blocked:
-            qApp.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+            QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
             start = time()
             SHARED.mainGui.saveDocument()
             self._blocked = True
@@ -271,7 +271,7 @@ class GuiProjectSearch(QWidget):
                     self._displayResultSet(item, results, capped)
             logger.debug("Search took %.3f ms", 1000*(time() - start))
             self._time = time()
-            qApp.restoreOverrideCursor()
+            QApplication.restoreOverrideCursor()
         self._blocked = False
         return
 
@@ -355,7 +355,7 @@ class GuiProjectSearch(QWidget):
             for i in range(tItem.childCount()):
                 self.searchResult.setFirstColumnSpanned(i, parent, True)
 
-            qApp.processEvents()
+            QApplication.processEvents()
 
         return
 

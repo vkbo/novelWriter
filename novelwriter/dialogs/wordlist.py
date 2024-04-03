@@ -28,11 +28,11 @@ import logging
 from typing import TYPE_CHECKING
 from pathlib import Path
 
-from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QDialog, QDialogButtonBox, QFileDialog, QHBoxLayout,
-    QLineEdit, QListWidget, QVBoxLayout, qApp
+    QAbstractItemView, QApplication, QDialog, QDialogButtonBox, QFileDialog,
+    QHBoxLayout, QLineEdit, QListWidget, QVBoxLayout
 )
 
 from novelwriter import CONFIG, SHARED
@@ -177,7 +177,7 @@ class GuiWordList(QDialog):
             userDict.add(word)
         userDict.save()
         self.newWordListReady.emit()
-        qApp.processEvents()
+        QApplication.processEvents()
         self.close()
         return
 

@@ -25,14 +25,14 @@ from __future__ import annotations
 
 import logging
 
-from time import time
 from collections.abc import Iterable
+from time import time
 
 from PyQt5.QtGui import QTextBlock, QTextCursor, QTextDocument
 from PyQt5.QtCore import QObject, pyqtSlot
-from PyQt5.QtWidgets import QPlainTextDocumentLayout, qApp
-from novelwriter import SHARED
+from PyQt5.QtWidgets import QApplication, QPlainTextDocumentLayout
 
+from novelwriter import SHARED
 from novelwriter.gui.dochighlight import GuiDocHighlighter, TextBlockData
 
 logger = logging.getLogger(__name__)
@@ -86,7 +86,7 @@ class GuiTextDocument(QTextDocument):
         self.setUndoRedoEnabled(True)
         self.blockSignals(False)
         self._syntax.rehighlight()
-        qApp.processEvents()
+        QApplication.processEvents()
 
         tEnd = time()
 

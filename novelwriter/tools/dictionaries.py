@@ -28,11 +28,11 @@ import logging
 from pathlib import Path
 from zipfile import ZipFile
 
-from PyQt5.QtGui import QCloseEvent, QTextCursor
 from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtGui import QCloseEvent, QTextCursor
 from PyQt5.QtWidgets import (
-    QDialog, QDialogButtonBox, QFileDialog, QFrame, QHBoxLayout, QLabel,
-    QLineEdit, QPlainTextEdit, QPushButton, QVBoxLayout, QWidget, qApp
+    QApplication, QDialog, QDialogButtonBox, QFileDialog, QFrame, QHBoxLayout,
+    QLabel, QLineEdit, QPlainTextEdit, QPushButton, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -158,7 +158,7 @@ class GuiDictionaries(QDialog):
                 "Additional dictionaries found: {0}"
             ).format(len(self._currDicts)))
 
-        qApp.processEvents()
+        QApplication.processEvents()
         self.adjustSize()
 
         return True

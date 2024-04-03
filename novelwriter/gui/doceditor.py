@@ -47,8 +47,8 @@ from PyQt5.QtGui import (
     QPixmap, QResizeEvent, QTextBlock, QTextCursor, QTextDocument, QTextOption
 )
 from PyQt5.QtWidgets import (
-    QAction, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMenu,
-    QPlainTextEdit, QShortcut, QToolBar, QVBoxLayout, QWidget, qApp
+    QAction, QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit,
+    QMenu, QPlainTextEdit, QShortcut, QToolBar, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -393,13 +393,13 @@ class GuiDocEditor(QPlainTextEdit):
             self.clearEditor()
             return False
 
-        qApp.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+        QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         self._docHandle = tHandle
 
         self._allowAutoReplace(False)
         self._qDocument.setTextContent(docText, tHandle)
         self._allowAutoReplace(True)
-        qApp.processEvents()
+        QApplication.processEvents()
 
         self._lastEdit = time()
         self._lastActive = time()
@@ -423,12 +423,12 @@ class GuiDocEditor(QPlainTextEdit):
             self.setPlainText("")
             self.setCursorPosition(0)
 
-        qApp.processEvents()
+        QApplication.processEvents()
         self.setDocumentChanged(False)
         self._qDocument.clearUndoRedoStacks()
         self.docToolBar.setVisible(CONFIG.showEditToolBar)
 
-        qApp.restoreOverrideCursor()
+        QApplication.restoreOverrideCursor()
 
         # Update the status bar
         if self._nwItem is not None:
@@ -445,11 +445,11 @@ class GuiDocEditor(QPlainTextEdit):
         """Replace the text of the current document with the provided
         text. This also clears undo history.
         """
-        qApp.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+        QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         self.setPlainText(text)
         self.updateDocMargins()
         self.setDocumentChanged(True)
-        qApp.restoreOverrideCursor()
+        QApplication.restoreOverrideCursor()
         return
 
     def saveText(self) -> bool:
@@ -536,7 +536,7 @@ class GuiDocEditor(QPlainTextEdit):
             while self.cursorRect().bottom() > vH and count < 100000:
                 vBar.setValue(vBar.value() + 1)
                 count += 1
-        qApp.processEvents()
+        QApplication.processEvents()
         return
 
     def updateDocMargins(self) -> None:
@@ -699,9 +699,9 @@ class GuiDocEditor(QPlainTextEdit):
         """
         logger.debug("Running spell checker")
         start = time()
-        qApp.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+        QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         self._qDocument.syntaxHighlighter.rehighlight()
-        qApp.restoreOverrideCursor()
+        QApplication.restoreOverrideCursor()
         logger.debug("Document highlighted in %.3f ms", 1000*(time() - start))
         self.statusMessage.emit(self.tr("Spell check complete"))
         return
@@ -814,7 +814,7 @@ class GuiDocEditor(QPlainTextEdit):
 
     def anyFocus(self) -> bool:
         """Check if any widget or child widget has focus."""
-        return self.hasFocus() or self.isAncestorOf(qApp.focusWidget())
+        return self.hasFocus() or self.isAncestorOf(QApplication.focusWidget())
 
     def revealLocation(self) -> None:
         """Tell the user where on the file system the file in the editor
@@ -991,7 +991,7 @@ class GuiDocEditor(QPlainTextEdit):
         pressed, check if we're clicking on a tag, and trigger the
         follow tag function.
         """
-        if qApp.keyboardModifiers() == Qt.KeyboardModifier.ControlModifier:
+        if QApplication.keyboardModifiers() == Qt.KeyboardModifier.ControlModifier:
             self._processTag(self.cursorForPosition(event.pos()))
         super().mouseReleaseEvent(event)
         return
@@ -1912,7 +1912,7 @@ class GuiDocEditor(QPlainTextEdit):
                 ).format(tag)):
                     itemClass = nwKeyWords.KEY_CLASS.get(tBits[0], nwItemClass.NO_CLASS)
                     self.requestNewNoteCreation.emit(tag, itemClass)
-                    qApp.processEvents()
+                    QApplication.processEvents()
                     self._qDocument.syntaxHighlighter.rehighlightBlock(block)
 
             return nwTrinary.POSITIVE if exist else nwTrinary.NEGATIVE
@@ -2627,7 +2627,7 @@ class GuiDocEditSearch(QFrame):
 
     def updateTheme(self) -> None:
         """Update theme elements."""
-        qPalette = qApp.palette()
+        qPalette = QApplication.palette()
         self.setPalette(qPalette)
         self.searchBox.setPalette(qPalette)
         self.replaceBox.setPalette(qPalette)
@@ -2714,7 +2714,7 @@ class GuiDocEditSearch(QFrame):
     def _doSearch(self) -> None:
         """Call the search action function for the document editor."""
         self.docEditor.findNext(goBack=(
-            qApp.keyboardModifiers() == Qt.KeyboardModifier.ShiftModifier)
+            QApplication.keyboardModifiers() == Qt.KeyboardModifier.ShiftModifier)
         )
         return
 

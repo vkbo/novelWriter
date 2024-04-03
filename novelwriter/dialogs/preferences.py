@@ -26,12 +26,12 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtGui import QCloseEvent, QFont, QKeyEvent, QKeySequence
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QCloseEvent, QFont, QKeyEvent, QKeySequence
 from PyQt5.QtWidgets import (
-    QAbstractButton, QCompleter, QDialog, QDialogButtonBox, QFileDialog,
-    QFontDialog, QHBoxLayout, QLineEdit, QPushButton, QVBoxLayout, QWidget,
-    qApp
+    QAbstractButton, QApplication, QCompleter, QDialog, QDialogButtonBox,
+    QFileDialog, QFontDialog, QHBoxLayout, QLineEdit, QPushButton, QVBoxLayout,
+    QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -742,7 +742,7 @@ class GuiPreferences(QDialog):
         logger.debug("Close: GuiPreferences")
         self._saveWindowSize()
         event.accept()
-        qApp.processEvents()
+        QApplication.processEvents()
         self.done(nwConst.DLG_FINISHED)
         self.deleteLater()
         return

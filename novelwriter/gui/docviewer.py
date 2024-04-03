@@ -36,8 +36,8 @@ from PyQt5.QtGui import (
     QTextOption
 )
 from PyQt5.QtWidgets import (
-    QAction, QFrame, QHBoxLayout, QLabel, QMenu, QTextBrowser, QToolButton,
-    QWidget, qApp
+    QAction, QApplication, QFrame, QHBoxLayout, QLabel, QMenu, QTextBrowser,
+    QToolButton, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -195,7 +195,7 @@ class GuiDocViewer(QTextBrowser):
             return False
 
         logger.debug("Generating preview for item '%s'", tHandle)
-        qApp.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+        QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
 
         sPos = self.verticalScrollBar().value()
         aDoc = ToHtml(SHARED.project)
@@ -217,7 +217,7 @@ class GuiDocViewer(QTextBrowser):
             logger.error("Failed to generate preview for document with handle '%s'", tHandle)
             logException()
             self.setText(self.tr("An error occurred while generating the preview."))
-            qApp.restoreOverrideCursor()
+            QApplication.restoreOverrideCursor()
             return False
 
         # Refresh the tab stops
@@ -250,7 +250,7 @@ class GuiDocViewer(QTextBrowser):
         # Since we change the content while it may still be rendering, we mark
         # the document dirty again to make sure it's re-rendered properly.
         self.redrawText()
-        qApp.restoreOverrideCursor()
+        QApplication.restoreOverrideCursor()
         self.documentLoaded.emit(tHandle)
 
         return True

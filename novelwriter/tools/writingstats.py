@@ -29,11 +29,12 @@ import logging
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from PyQt5.QtGui import QCloseEvent, QPixmap, QCursor
 from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtGui import QCloseEvent, QCursor, QPixmap
 from PyQt5.QtWidgets import (
-    qApp, QDialog, QTreeWidget, QTreeWidgetItem, QDialogButtonBox, QGridLayout,
-    QLabel, QGroupBox, QMenu, QAction, QFileDialog, QSpinBox, QHBoxLayout
+    QAction, QApplication, QDialog, QDialogButtonBox, QFileDialog, QGridLayout,
+    QGroupBox, QHBoxLayout, QLabel, QMenu, QSpinBox, QTreeWidget,
+    QTreeWidgetItem
 )
 
 from novelwriter import CONFIG, SHARED
@@ -301,10 +302,10 @@ class GuiWritingStats(QDialog):
 
     def populateGUI(self) -> None:
         """Populate list box with data from the log file."""
-        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+        QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         self._loadLogFile()
         self._updateListBox()
-        qApp.restoreOverrideCursor()
+        QApplication.restoreOverrideCursor()
         return
 
     ##

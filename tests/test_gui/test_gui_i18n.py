@@ -23,11 +23,9 @@ from __future__ import annotations
 import sys
 import pytest
 
-from collections.abc import Callable
-
 from tools import buildTestProject
 
-from PyQt5.QtWidgets import QDialog, qApp, QMessageBox
+from PyQt5.QtWidgets import QApplication, QDialog, QMessageBox
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.about import GuiAbout
@@ -55,12 +53,12 @@ def testGuiI18n_Localisation(qtbot, monkeypatch, language, nwGUI, projPath):
 
     # Set the test language
     CONFIG.guiLocale = language
-    CONFIG.initLocalisation(qApp)
+    CONFIG.initLocalisation(QApplication.instance())  # type: ignore
 
     buildTestProject(nwGUI, projPath)
     nwGUI.show()
 
-    def showDialog(func: Callable, dType: QDialog) -> None:
+    def showDialog(func, dType) -> None:
         func()
         qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(dType) is not None, timeout=1000)
         dialog = SHARED.findTopLevelWidget(dType)

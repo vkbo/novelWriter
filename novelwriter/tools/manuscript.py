@@ -26,19 +26,19 @@ from __future__ import annotations
 import json
 import logging
 
+from datetime import datetime
 from time import time
 from typing import TYPE_CHECKING
-from datetime import datetime
 
-from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
 from PyQt5.QtCore import QTimer, QUrl, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import (
-    QAbstractItemView, QDialog, QFormLayout, QGridLayout, QHBoxLayout, QLabel,
-    QListWidget, QListWidgetItem, QPushButton, QSizePolicy, QSplitter,
-    QStackedWidget, QTabWidget, QTextBrowser, QTreeWidget, QTreeWidgetItem,
-    QVBoxLayout, QWidget, qApp
-)
+from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
 from PyQt5.QtPrintSupport import QPrintPreviewDialog, QPrinter
+from PyQt5.QtWidgets import (
+    QAbstractItemView, QApplication, QDialog, QFormLayout, QGridLayout,
+    QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton,
+    QSizePolicy, QSplitter, QStackedWidget, QTabWidget, QTextBrowser,
+    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+)
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt, fuzzyTime
@@ -352,7 +352,7 @@ class GuiManuscript(QDialog):
         self.docPreview.beginNewBuild(len(docBuild))
         for step, _ in docBuild.iterBuildHTML(None):
             self.docPreview.buildStep(step + 1)
-            qApp.processEvents()
+            QApplication.processEvents()
 
         buildObj = docBuild.lastBuild
         assert isinstance(buildObj, ToHtml)
@@ -486,7 +486,7 @@ class GuiManuscript(QDialog):
         dlgSettings.setModal(False)
         dlgSettings.show()
         dlgSettings.raise_()
-        qApp.processEvents()
+        QApplication.processEvents()
         dlgSettings.loadContent()
         dlgSettings.newSettingsReady.connect(self._processNewSettings)
 
@@ -850,16 +850,16 @@ class _PreviewWidget(QTextBrowser):
     def buildStep(self, value: int) -> None:
         """Update the progress bar value."""
         self.buildProgress.setValue(value)
-        qApp.processEvents()
+        QApplication.processEvents()
         return
 
     def setContent(self, data: dict) -> None:
         """Set the content of the preview widget."""
         sPos = self.verticalScrollBar().value()
-        qApp.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+        QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
 
         self.buildProgress.setCentreText(self.tr("Processing ..."))
-        qApp.processEvents()
+        QApplication.processEvents()
 
         styles = "\n".join(data.get("styles", []))
         self.document().setDefaultStyleSheet(styles)
@@ -867,7 +867,7 @@ class _PreviewWidget(QTextBrowser):
         html = "".join(data.get("html", []))
         html = html.replace("\t", "!!tab!!")
         self.setHtml(html)
-        qApp.processEvents()
+        QApplication.processEvents()
         while self.find("!!tab!!"):
             cursor = self.textCursor()
             cursor.insertText("\t")
@@ -881,8 +881,8 @@ class _PreviewWidget(QTextBrowser):
         self.document().markContentsDirty(0, self.document().characterCount())
 
         self.buildProgress.setCentreText(self.tr("Done"))
-        qApp.restoreOverrideCursor()
-        qApp.processEvents()
+        QApplication.restoreOverrideCursor()
+        QApplication.processEvents()
         QTimer.singleShot(300, self._hideProgress)
 
         return
@@ -904,10 +904,10 @@ class _PreviewWidget(QTextBrowser):
     @pyqtSlot("QPrinter*")
     def printPreview(self, printer: QPrinter) -> None:
         """Connect the print preview painter to the document viewer."""
-        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+        QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
         printer.setOrientation(QPrinter.Portrait)
         self.document().print(printer)
-        qApp.restoreOverrideCursor()
+        QApplication.restoreOverrideCursor()
         return
 
     @pyqtSlot(str)

@@ -30,16 +30,16 @@ from math import ceil
 from pathlib import Path
 
 from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtWidgets import qApp
 from PyQt5.QtGui import (
     QPalette, QColor, QIcon, QFont, QFontMetrics, QFontDatabase, QPixmap
 )
+from PyQt5.QtWidgets import QApplication
 
 from novelwriter import CONFIG
-from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
-from novelwriter.error import logException
 from novelwriter.common import NWConfigParser, cssCol, minmax
 from novelwriter.constants import nwLabels
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
+from novelwriter.error import logException
 
 logger = logging.getLogger(__name__)
 
@@ -144,15 +144,15 @@ class GuiTheme:
         self.getHeaderDecorationNarrow = self.iconCache.getHeaderDecorationNarrow
 
         # Extract Other Info
-        self.guiDPI = qApp.primaryScreen().logicalDotsPerInchX()
-        self.guiScale = qApp.primaryScreen().logicalDotsPerInchX()/96.0
+        self.guiDPI = QApplication.primaryScreen().logicalDotsPerInchX()
+        self.guiScale = QApplication.primaryScreen().logicalDotsPerInchX()/96.0
         CONFIG.guiScale = self.guiScale
         logger.debug("GUI DPI: %.1f", self.guiDPI)
         logger.debug("GUI Scale: %.2f", self.guiScale)
 
         # Fonts
-        self.guiFont = qApp.font()
-        self.guiFontB = qApp.font()
+        self.guiFont = QApplication.font()
+        self.guiFontB = QApplication.font()
         self.guiFontB.setBold(True)
 
         qMetric = QFontMetrics(self.guiFont)
@@ -255,7 +255,7 @@ class GuiTheme:
             self._setPalette(parser, sec, "link",            QPalette.ColorRole.Link)
             self._setPalette(parser, sec, "linkvisited",     QPalette.ColorRole.LinkVisited)
         else:
-            self._guiPalette = qApp.style().standardPalette()
+            self._guiPalette = QApplication.style().standardPalette()
 
         # GUI
         sec = "GUI"
@@ -284,7 +284,7 @@ class GuiTheme:
         self.iconCache.loadTheme(self.themeIcons or defaultIcons)
 
         # Apply Styles
-        qApp.setPalette(self._guiPalette)
+        QApplication.setPalette(self._guiPalette)
 
         # Reset stylesheets so that they are regenerated
         self._buildStyleSheets(self._guiPalette)
@@ -408,7 +408,7 @@ class GuiTheme:
             font.setFamily(CONFIG.guiFont)
             font.setPointSize(CONFIG.guiFontSize)
 
-        qApp.setFont(font)
+        QApplication.setFont(font)
 
         return
 

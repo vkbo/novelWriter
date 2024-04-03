@@ -25,12 +25,12 @@ from __future__ import annotations
 
 import logging
 
+from datetime import datetime
 from time import time
 from typing import TYPE_CHECKING, Literal
-from datetime import datetime
 
 from PyQt5.QtCore import pyqtSlot, QLocale
-from PyQt5.QtWidgets import qApp, QStatusBar, QLabel
+from PyQt5.QtWidgets import QApplication, QStatusBar, QLabel
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatTime
@@ -198,7 +198,7 @@ class GuiMainStatus(QStatusBar):
     def setStatusMessage(self, message: str) -> None:
         """Set the status bar message to display."""
         self.showMessage(message, nwConst.STATUS_MSG_TIMEOUT)
-        qApp.processEvents()
+        QApplication.processEvents()
         return
 
     @pyqtSlot(str, str)
@@ -240,7 +240,7 @@ class GuiMainStatus(QStatusBar):
         import tracemalloc
         from collections import Counter
 
-        widgets = qApp.allWidgets()
+        widgets = QApplication.allWidgets()
         if not self._debugInfo:
             if tracemalloc.is_tracing():
                 self._traceMallocRef = "Total"
