@@ -148,7 +148,7 @@ class GuiMain(QMainWindow):
         self.treePane.setLayout(self.treeBox)
 
         # Splitter : Document Viewer / Document Meta
-        self.splitView = QSplitter(Qt.Vertical, self)
+        self.splitView = QSplitter(Qt.Orientation.Vertical, self)
         self.splitView.addWidget(self.docViewer)
         self.splitView.addWidget(self.docViewerPanel)
         self.splitView.setHandleWidth(hWd)
@@ -158,7 +158,7 @@ class GuiMain(QMainWindow):
         self.splitView.setCollapsible(1, False)
 
         # Splitter : Document Editor / Document Viewer
-        self.splitDocs = QSplitter(Qt.Horizontal, self)
+        self.splitDocs = QSplitter(Qt.Orientation.Horizontal, self)
         self.splitDocs.addWidget(self.docEditor)
         self.splitDocs.addWidget(self.splitView)
         self.splitDocs.setOpaqueResize(False)
@@ -167,7 +167,7 @@ class GuiMain(QMainWindow):
         self.splitDocs.setCollapsible(1, False)
 
         # Splitter : Project Tree / Document Area
-        self.splitMain = QSplitter(Qt.Horizontal)
+        self.splitMain = QSplitter(Qt.Orientation.Horizontal)
         self.splitMain.setContentsMargins(0, 0, 0, 0)
         self.splitMain.addWidget(self.treePane)
         self.splitMain.addWidget(self.splitDocs)
@@ -205,7 +205,7 @@ class GuiMain(QMainWindow):
         self.setMenuBar(self.mainMenu)
         self.setCentralWidget(self.mainWidget)
         self.setStatusBar(self.mainStatus)
-        self.setContextMenuPolicy(Qt.NoContextMenu)  # Issue #1147
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)  # Issue #1147
 
         # Connect Signals
         # ===============
@@ -738,7 +738,7 @@ class GuiMain(QMainWindow):
         """Rebuild the entire index."""
         if SHARED.hasProject:
             logger.info("Rebuilding index ...")
-            QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+            QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
             tStart = time()
 
             self.projView.saveProjectTasks()
@@ -899,7 +899,8 @@ class GuiMain(QMainWindow):
                 CONFIG.setViewPanePos(self.splitView.sizes())
 
         CONFIG.showViewerPanel = self.docViewerPanel.isVisible()
-        if self.windowState() & Qt.WindowFullScreen != Qt.WindowFullScreen:
+        wFull = Qt.WindowState.WindowFullScreen
+        if self.windowState() & wFull != wFull:
             # Ignore window size if in full screen mode
             CONFIG.setMainWinSize(self.width(), self.height())
 
@@ -936,7 +937,7 @@ class GuiMain(QMainWindow):
 
     def toggleFullScreenMode(self) -> None:
         """Toggle full screen mode"""
-        self.setWindowState(self.windowState() ^ Qt.WindowFullScreen)
+        self.setWindowState(self.windowState() ^ Qt.WindowState.WindowFullScreen)
         return
 
     ##
@@ -1212,7 +1213,7 @@ class GuiMain(QMainWindow):
         if SHARED.hasProject:
             currTime = time()
             editIdle = currTime - self.docEditor.lastActive > CONFIG.userIdleTime
-            userIdle = QApplication.applicationState() != Qt.ApplicationActive
+            userIdle = QApplication.applicationState() != Qt.ApplicationState.ApplicationActive
             self.mainStatus.setUserIdle(editIdle or userIdle)
             SHARED.updateIdleTime(currTime, editIdle or userIdle)
             self.mainStatus.updateTime(idleTime=SHARED.projectIdleTime)

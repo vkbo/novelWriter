@@ -46,7 +46,7 @@ from novelwriter.extensions.modified import NComboBox, NDoubleSpinBox, NIconTool
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
-from novelwriter.types import QtAlignLeft
+from novelwriter.types import QtAlignLeft, QtUserRole
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -289,8 +289,8 @@ class _FilterTab(NFixedPage):
     C_ACTIVE = 1
     C_STATUS = 2
 
-    D_HANDLE = Qt.ItemDataRole.UserRole
-    D_FILE   = Qt.ItemDataRole.UserRole + 1
+    D_HANDLE = QtUserRole
+    D_FILE   = QtUserRole + 1
 
     F_NONE     = 0
     F_FILTERED = 1

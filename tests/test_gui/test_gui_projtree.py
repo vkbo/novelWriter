@@ -23,23 +23,24 @@ from __future__ import annotations
 import pytest
 
 from pathlib import Path
-from novelwriter.core.project import NWProject
 
-from tools import C, buildTestProject
 from mocked import causeOSError
+from tools import C, buildTestProject
 
-from PyQt5.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QMouseEvent
 from PyQt5.QtCore import QEvent, QMimeData, QPoint, QTimer, Qt
+from PyQt5.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QMouseEvent
 from PyQt5.QtWidgets import QMessageBox, QMenu, QTreeWidget, QTreeWidgetItem, QDialog
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwItemLayout, nwItemType, nwItemClass, nwWidget
-from novelwriter.guimain import GuiMain
 from novelwriter.core.item import NWItem
-from novelwriter.gui.projtree import GuiProjectTree, GuiProjectView, _TreeContextMenu
+from novelwriter.core.project import NWProject
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
+from novelwriter.enum import nwItemLayout, nwItemType, nwItemClass, nwWidget
+from novelwriter.gui.projtree import GuiProjectTree, GuiProjectView, _TreeContextMenu
+from novelwriter.guimain import GuiMain
+from novelwriter.types import QtMouseLeft, QtMouseMiddle, QtModeNone
 
 
 @pytest.mark.gui
@@ -821,8 +822,8 @@ def testGuiProjTree_AutoScroll(qtbot, monkeypatch, nwGUI: GuiMain, projPath, moc
 
     action = Qt.DropAction.MoveAction
     mime = QMimeData()
-    mouse = Qt.MouseButton.LeftButton
-    modifier = Qt.KeyboardModifier.NoModifier
+    mouse = QtMouseLeft
+    modifier = QtModeNone
 
     # Scroll Down
     h = projTree.height()
@@ -880,8 +881,8 @@ def testGuiProjTree_DragAndDrop(qtbot, monkeypatch, caplog, nwGUI: GuiMain, proj
     nPos = projTree.visualItemRect(projTree._getTreeItem(C.hNovelRoot)).bottomLeft()
     action = Qt.DropAction.MoveAction
     mime = QMimeData()
-    mouse = Qt.MouseButton.LeftButton
-    modifier = Qt.KeyboardModifier.NoModifier
+    mouse = QtMouseLeft
+    modifier = QtModeNone
 
     projTree.saveTreeOrder()
     treeOrder = SHARED.project.tree._order
@@ -1082,8 +1083,8 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd)
 
     eType = QEvent.Type.MouseButtonPress
     pos = projTree.visualItemRect(projTree._getTreeItem(C.hChapterDoc)).center()
-    button = Qt.MouseButton.MiddleButton
-    modifier = Qt.KeyboardModifier.NoModifier
+    button = QtMouseMiddle
+    modifier = QtModeNone
 
     # Trigger the viewer
     event = QMouseEvent(eType, pos, button, button, modifier)
@@ -1092,7 +1093,7 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd)
 
     # Trigger the left click clear
     pos = QPoint(5000, 5000)
-    button = Qt.MouseButton.LeftButton
+    button = QtMouseLeft
     event = QMouseEvent(eType, pos, button, button, modifier)
     projTree.setSelectedHandle(C.hChapterDoc)
     projTree.mousePressEvent(event)

@@ -26,8 +26,8 @@ from __future__ import annotations
 import math
 import logging
 
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QCloseEvent
-from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialog, QDialogButtonBox, QFormLayout, QGridLayout,
     QHBoxLayout, QLabel, QSpinBox, QStackedWidget, QTreeWidget,
@@ -41,7 +41,7 @@ from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrol
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignRight
+from novelwriter.types import QtAlignRight, QtDecoration
 
 logger = logging.getLogger(__name__)
 
@@ -485,7 +485,7 @@ class _ContentsPage(NFixedPage):
             if tTitle.strip() == "":
                 tTitle = self.tr("Untitled")
 
-            newItem.setData(self.C_TITLE, Qt.DecorationRole, hDec)
+            newItem.setData(self.C_TITLE, QtDecoration, hDec)
             newItem.setText(self.C_TITLE, tTitle)
             newItem.setText(self.C_WORDS, f"{wCount:n}")
             newItem.setText(self.C_PAGES, f"{pCount:n}")

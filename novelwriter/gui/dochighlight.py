@@ -402,16 +402,16 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         if style is not None:
             styles = style.split(",")
             if "bold" in styles:
-                charFormat.setFontWeight(QFont.Bold)
+                charFormat.setFontWeight(QFont.Weight.Bold)
             if "italic" in styles:
                 charFormat.setFontItalic(True)
             if "strike" in styles:
                 charFormat.setFontStrikeOut(True)
             if "errline" in styles:
                 charFormat.setUnderlineColor(SHARED.theme.colError)
-                charFormat.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
+                charFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
             if "background" in styles and color is not None:
-                charFormat.setBackground(QBrush(color, Qt.SolidPattern))
+                charFormat.setBackground(QBrush(color, Qt.BrushStyle.SolidPattern))
 
         if size is not None:
             charFormat.setFontPointSize(int(round(size*CONFIG.textSize)))

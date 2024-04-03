@@ -27,6 +27,7 @@ from tools import buildTestProject, C
 from PyQt5.QtCore import Qt
 
 from novelwriter.dialogs.docmerge import GuiDocMerge
+from novelwriter.types import QtUserRole
 
 
 @pytest.mark.gui
@@ -53,11 +54,11 @@ def testDlgMerge_Main(qtbot, nwGUI, projPath, mockRnd):
     itemOne = nwMerge.listBox.item(0)
     itemTwo = nwMerge.listBox.item(1)
 
-    assert itemOne.data(Qt.ItemDataRole.UserRole) == C.hChapterDoc
-    assert itemTwo.data(Qt.ItemDataRole.UserRole) == C.hSceneDoc
+    assert itemOne.data(QtUserRole) == C.hChapterDoc
+    assert itemTwo.data(QtUserRole) == C.hSceneDoc
 
-    assert itemOne.checkState() == Qt.Checked
-    assert itemTwo.checkState() == Qt.Checked
+    assert itemOne.checkState() == Qt.CheckState.Checked
+    assert itemTwo.checkState() == Qt.CheckState.Checked
 
     data = nwMerge.getData()
     assert data["sHandle"] == C.hChapterDir
@@ -66,7 +67,7 @@ def testDlgMerge_Main(qtbot, nwGUI, projPath, mockRnd):
     assert data["finalItems"] == [C.hChapterDoc, C.hSceneDoc]
 
     # Uncheck second item and toggle trash switch
-    itemTwo.setCheckState(Qt.Unchecked)
+    itemTwo.setCheckState(Qt.CheckState.Unchecked)
     nwMerge.trashSwitch.setChecked(True)
 
     data = nwMerge.getData()

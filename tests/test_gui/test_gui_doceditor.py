@@ -37,7 +37,7 @@ from novelwriter.enum import (
 )
 from novelwriter.gui.doceditor import GuiDocEditor, GuiDocToolBar
 from novelwriter.text.counting import standardCounter
-from novelwriter.types import QtAlignJustify, QtAlignLeft
+from novelwriter.types import QtAlignJustify, QtAlignLeft, QtMouseLeft
 
 KEY_DELAY = 1
 
@@ -95,7 +95,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # Select item from header
     with qtbot.waitSignal(nwGUI.docEditor.requestProjectItemSelected, timeout=1000) as signal:
-        qtbot.mouseClick(nwGUI.docEditor.docHeader, Qt.MouseButton.LeftButton)
+        qtbot.mouseClick(nwGUI.docEditor.docHeader, QtMouseLeft)
         assert signal.args == [nwGUI.docEditor.docHeader._docHandle, True]
 
     # Close from header
@@ -109,7 +109,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # Select item from header
     with qtbot.waitSignal(nwGUI.docEditor.requestProjectItemSelected, timeout=1000) as signal:
-        qtbot.mouseClick(nwGUI.docEditor.docHeader, Qt.MouseButton.LeftButton)
+        qtbot.mouseClick(nwGUI.docEditor.docHeader, QtMouseLeft)
         assert signal.args == ["", True]
 
     # qtbot.stop()
@@ -1788,7 +1788,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert abs(docEditor.getCursorPosition() - 1299) < 3
 
     # Find next by button
-    qtbot.mouseClick(docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
+    qtbot.mouseClick(docSearch.searchButton, QtMouseLeft, delay=KEY_DELAY)
     assert abs(docEditor.getCursorPosition() - 1513) < 3
 
     # Activate loop search
@@ -1806,14 +1806,14 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     docEditor.setCursorPosition(15)
 
     # Toggle search again with header button
-    qtbot.mouseClick(docEditor.docHeader.searchButton, Qt.LeftButton, delay=KEY_DELAY)
+    qtbot.mouseClick(docEditor.docHeader.searchButton, QtMouseLeft, delay=KEY_DELAY)
     docSearch.setSearchText("")
     assert docSearch.isVisible() is True
 
     # Search for non-existing
     docEditor.setCursorPosition(0)
     docSearch.setSearchText("abcdef")
-    qtbot.mouseClick(docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
+    qtbot.mouseClick(docSearch.searchButton, QtMouseLeft, delay=KEY_DELAY)
     assert docEditor.getCursorPosition() < 3  # No result
 
     # Enable RegEx search
@@ -1824,19 +1824,19 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Set invalid RegEx
     docEditor.setCursorPosition(0)
     docSearch.setSearchText(r"\bSus[")
-    qtbot.mouseClick(docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
+    qtbot.mouseClick(docSearch.searchButton, QtMouseLeft, delay=KEY_DELAY)
     assert docEditor.getCursorPosition() < 3  # No result
 
     # Set dangerous RegEx (issue #1015)
     # If this doesn't get caught, the app will hang
     docEditor.setCursorPosition(0)
     docSearch.setSearchText(r".*")
-    qtbot.mouseClick(docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
+    qtbot.mouseClick(docSearch.searchButton, QtMouseLeft, delay=KEY_DELAY)
     assert abs(docEditor.getCursorPosition() - 14) < 3
 
     # Set valid RegEx
     docSearch.setSearchText(r"\bSus")
-    qtbot.mouseClick(docSearch.searchButton, Qt.LeftButton, delay=KEY_DELAY)
+    qtbot.mouseClick(docSearch.searchButton, QtMouseLeft, delay=KEY_DELAY)
     assert abs(docEditor.getCursorPosition() - 223) < 3
 
     # Find next and then prev
@@ -1887,7 +1887,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert abs(docEditor.getCursorPosition() - 223) < 3
 
     # Replace "sus" with "foo" via replace button
-    qtbot.mouseClick(docSearch.replaceButton, Qt.LeftButton, delay=KEY_DELAY)
+    qtbot.mouseClick(docSearch.replaceButton, QtMouseLeft, delay=KEY_DELAY)
     assert docEditor.getText()[220:228] == "foocipit"
 
     # Revert last two replaces

@@ -32,10 +32,10 @@ from enum import Enum
 from time import time
 from typing import TYPE_CHECKING
 
+from PyQt5.QtCore import QPoint, QTimer, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import (
     QDragEnterEvent, QDragMoveEvent, QDropEvent, QIcon, QMouseEvent, QPalette
 )
-from PyQt5.QtCore import QPoint, QTimer, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QAction, QDialog, QFrame, QHBoxLayout, QHeaderView,
     QLabel, QMenu, QShortcut, QSizePolicy, QTreeWidget, QTreeWidgetItem,
@@ -54,7 +54,7 @@ from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
-from novelwriter.types import QtAlignLeft, QtAlignRight
+from novelwriter.types import QtAlignLeft, QtAlignRight, QtMouseLeft, QtMouseMiddle, QtUserRole
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -487,8 +487,8 @@ class GuiProjectTree(QTreeWidget):
     C_ACTIVE = 2
     C_STATUS = 3
 
-    D_HANDLE = Qt.ItemDataRole.UserRole
-    D_WORDS  = Qt.ItemDataRole.UserRole + 1
+    D_HANDLE = QtUserRole
+    D_WORDS  = QtUserRole + 1
 
     itemRefreshed = pyqtSignal(str, NWItem, QIcon)
 
@@ -1256,11 +1256,11 @@ class GuiProjectTree(QTreeWidget):
         for viewing if the user middle-clicked.
         """
         super().mousePressEvent(event)
-        if event.button() == Qt.MouseButton.LeftButton:
+        if event.button() == QtMouseLeft:
             selItem = self.indexAt(event.pos())
             if not selItem.isValid():
                 self.clearSelection()
-        elif event.button() == Qt.MouseButton.MiddleButton:
+        elif event.button() == QtMouseMiddle:
             selItem = self.itemAt(event.pos())
             if selItem:
                 tHandle = selItem.data(self.C_DATA, self.D_HANDLE)
@@ -1268,7 +1268,7 @@ class GuiProjectTree(QTreeWidget):
                     self.projView.openDocumentRequest.emit(tHandle, nwDocMode.VIEW, "", False)
         return
 
-    def startDrag(self, dropAction: Qt.DropActions) -> None:
+    def startDrag(self, dropAction: Qt.DropAction) -> None:
         """Capture the drag and drop handling to pop alerts."""
         super().startDrag(dropAction)
         if self._popAlert:

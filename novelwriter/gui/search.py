@@ -38,7 +38,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt, cssCol
 from novelwriter.core.coretools import DocSearch
 from novelwriter.core.item import NWItem
-from novelwriter.types import QtAlignMiddle, QtAlignRight
+from novelwriter.types import QtAlignMiddle, QtAlignRight, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -49,8 +49,8 @@ class GuiProjectSearch(QWidget):
     C_RESULT = 0
     C_COUNT  = 1
 
-    D_HANDLE = Qt.ItemDataRole.UserRole
-    D_RESULT = Qt.ItemDataRole.UserRole + 1
+    D_HANDLE = QtUserRole
+    D_RESULT = QtUserRole + 1
 
     selectedItemChanged = pyqtSignal(str)
     openDocumentSelectRequest = pyqtSignal(str, int, int, bool)

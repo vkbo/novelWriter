@@ -40,6 +40,7 @@ from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrol
 from novelwriter.extensions.modified import NComboBox, NIconToolButton
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
+from novelwriter.types import QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -305,9 +306,9 @@ class _StatusPage(NFixedPage):
     COL_LABEL = 0
     COL_USAGE = 1
 
-    KEY_ROLE = Qt.ItemDataRole.UserRole
-    COL_ROLE = Qt.ItemDataRole.UserRole + 1
-    NUM_ROLE = Qt.ItemDataRole.UserRole + 2
+    KEY_ROLE = QtUserRole
+    COL_ROLE = QtUserRole + 1
+    NUM_ROLE = QtUserRole + 2
 
     def __init__(self, parent: QWidget, isStatus: bool) -> None:
         super().__init__(parent=parent)
@@ -614,7 +615,7 @@ class _ReplacePage(NFixedPage):
             newItem = QTreeWidgetItem(["<%s>" % aKey, aVal])
             self.listBox.addTopLevelItem(newItem)
 
-        self.listBox.sortByColumn(self.COL_KEY, Qt.AscendingOrder)
+        self.listBox.sortByColumn(self.COL_KEY, Qt.SortOrder.AscendingOrder)
         self.listBox.setSortingEnabled(True)
 
         # List Controls

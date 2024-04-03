@@ -28,6 +28,7 @@ from PyQt5.QtCore import QEvent, QPropertyAnimation, Qt, pyqtProperty
 from PyQt5.QtWidgets import QAbstractButton, QSizePolicy, QWidget
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.types import QtMouseLeft, QtNoPen
 
 
 class NSwitch(QAbstractButton):
@@ -90,7 +91,7 @@ class NSwitch(QAbstractButton):
         """Drawing the switch itself."""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing, True)
-        painter.setPen(Qt.NoPen)
+        painter.setPen(QtNoPen)
 
         palette = self.palette()
         if self.isChecked():
@@ -119,7 +120,7 @@ class NSwitch(QAbstractButton):
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         """Animate the switch on mouse release."""
         super().mouseReleaseEvent(event)
-        if event.button() == Qt.LeftButton:
+        if event.button() == QtMouseLeft:
             anim = QPropertyAnimation(self, b"offset", self)
             anim.setDuration(120)
             anim.setStartValue(self._offset)
@@ -129,7 +130,7 @@ class NSwitch(QAbstractButton):
 
     def enterEvent(self, event: QEvent) -> None:
         """Change the cursor when hovering the button."""
-        self.setCursor(Qt.PointingHandCursor)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
         super().enterEvent(event)
         return
 

@@ -64,7 +64,8 @@ from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.text.counting import standardCounter
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
-    QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop, QtAlignRight
+    QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop,
+    QtAlignRight, QtModCtrl, QtMouseLeft, QtModeNone, QtModShift
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -181,12 +182,12 @@ class GuiDocEditor(QPlainTextEdit):
         self.keyContext.activated.connect(self._openContextFromCursor)
 
         self.followTag1 = QShortcut(self)
-        self.followTag1.setKey(Qt.Key.Key_Return | Qt.KeyboardModifier.ControlModifier)
+        self.followTag1.setKey(Qt.Key.Key_Return | QtModCtrl)
         self.followTag1.setContext(Qt.ShortcutContext.WidgetShortcut)
         self.followTag1.activated.connect(self._processTag)
 
         self.followTag2 = QShortcut(self)
-        self.followTag2.setKey(Qt.Key.Key_Enter | Qt.KeyboardModifier.ControlModifier)
+        self.followTag2.setKey(Qt.Key.Key_Enter | QtModCtrl)
         self.followTag2.setContext(Qt.ShortcutContext.WidgetShortcut)
         self.followTag2.activated.connect(self._processTag)
 
@@ -962,7 +963,7 @@ class GuiDocEditor(QPlainTextEdit):
             super().keyPressEvent(event)
             nPos = self.cursorRect().topLeft().y()
             kMod = event.modifiers()
-            okMod = kMod in (Qt.KeyboardModifier.NoModifier, Qt.KeyboardModifier.ShiftModifier)
+            okMod = kMod in (QtModeNone, QtModShift)
             okKey = event.key() not in self.MOVE_KEYS
             if nPos != cPos and okMod and okKey:
                 mPos = CONFIG.autoScrollPos*0.01 * self.viewport().height()
@@ -991,7 +992,7 @@ class GuiDocEditor(QPlainTextEdit):
         pressed, check if we're clicking on a tag, and trigger the
         follow tag function.
         """
-        if QApplication.keyboardModifiers() == Qt.KeyboardModifier.ControlModifier:
+        if QApplication.keyboardModifiers() == QtModCtrl:
             self._processTag(self.cursorForPosition(event.pos()))
         super().mouseReleaseEvent(event)
         return
@@ -2713,9 +2714,7 @@ class GuiDocEditSearch(QFrame):
     @pyqtSlot()
     def _doSearch(self) -> None:
         """Call the search action function for the document editor."""
-        self.docEditor.findNext(goBack=(
-            QApplication.keyboardModifiers() == Qt.KeyboardModifier.ShiftModifier)
-        )
+        self.docEditor.findNext(goBack=(QApplication.keyboardModifiers() == QtModShift))
         return
 
     @pyqtSlot()
@@ -3002,7 +3001,7 @@ class GuiDocEditHeader(QWidget):
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
-        if event.button() == Qt.MouseButton.LeftButton:
+        if event.button() == QtMouseLeft:
             self.docEditor.requestProjectItemSelected.emit(self._docHandle or "", True)
         return
 

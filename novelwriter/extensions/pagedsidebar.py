@@ -32,7 +32,7 @@ from PyQt5.QtWidgets import (
     QStyleOptionToolButton, QToolBar, QToolButton, QWidget
 )
 
-from novelwriter.types import QtAlignLeft
+from novelwriter.types import QtAlignLeft, QtNoBrush, QtNoPen
 
 
 class NPagedSideBar(QToolBar):
@@ -56,7 +56,7 @@ class NPagedSideBar(QToolBar):
         self._group.buttonClicked.connect(self._buttonClicked)
 
         self.setMovable(False)
-        self.setOrientation(Qt.Vertical)
+        self.setOrientation(Qt.Orientation.Vertical)
 
         stretch = QWidget(self)
         stretch.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -146,8 +146,8 @@ class _NPagedToolButton(QToolButton):
 
         paint = QPainter(self)
         paint.setRenderHint(QPainter.Antialiasing, True)
-        paint.setPen(Qt.NoPen)
-        paint.setBrush(Qt.NoBrush)
+        paint.setPen(QtNoPen)
+        paint.setBrush(QtNoBrush)
 
         width = self.width()
         height = self.height()
@@ -215,7 +215,7 @@ class _NPagedToolLabel(QLabel):
         """
         paint = QPainter(self)
         paint.setRenderHint(QPainter.Antialiasing, True)
-        paint.setPen(Qt.NoPen)
+        paint.setPen(QtNoPen)
 
         width = self.width()
         height = self.height()

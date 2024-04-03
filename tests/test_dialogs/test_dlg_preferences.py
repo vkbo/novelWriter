@@ -30,6 +30,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwConst, nwUnicode
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.quotes import GuiQuoteSelect
+from novelwriter.types import QtModeNone
 
 KEY_DELAY = 1
 
@@ -141,7 +142,7 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
     # Close Using Escape Key
     prefs.show()
     with qtbot.waitSignal(prefs.finished) as status:
-        event = QKeyEvent(QEvent.Type.KeyPress, Qt.Key.Key_Escape, Qt.KeyboardModifier.NoModifier)
+        event = QKeyEvent(QEvent.Type.KeyPress, Qt.Key.Key_Escape, QtModeNone)
         prefs.keyPressEvent(event)
         assert status.args == [nwConst.DLG_FINISHED]
 

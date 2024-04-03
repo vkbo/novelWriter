@@ -40,6 +40,7 @@ from novelwriter.core.index import IndexHeading, IndexItem
 from novelwriter.enum import nwDocMode, nwItemClass
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
+from novelwriter.types import QtDecoration, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -232,7 +233,7 @@ class _ViewPanelBackRefs(QTreeWidget):
     C_VIEW  = 2
     C_TITLE = 3
 
-    D_HANDLE = Qt.ItemDataRole.UserRole
+    D_HANDLE = QtUserRole
 
     def __init__(self, parent: GuiDocViewerPanel) -> None:
         super().__init__(parent=parent)
@@ -349,7 +350,7 @@ class _ViewPanelBackRefs(QTreeWidget):
             trItem.setToolTip(self.C_DOC, nwItem.itemName)
             trItem.setIcon(self.C_EDIT, self._editIcon)
             trItem.setIcon(self.C_VIEW, self._viewIcon)
-            trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
+            trItem.setData(self.C_TITLE, QtDecoration, hDec)
             trItem.setText(self.C_TITLE, hItem.title)
             trItem.setToolTip(self.C_TITLE, hItem.title)
             trItem.setData(self.C_DATA, self.D_HANDLE, tHandle)
@@ -374,7 +375,7 @@ class _ViewPanelKeyWords(QTreeWidget):
     C_TITLE  = 5
     C_SHORT  = 6
 
-    D_TAG = Qt.ItemDataRole.UserRole
+    D_TAG = QtUserRole
 
     def __init__(self, parent: GuiDocViewerPanel, itemClass: nwItemClass) -> None:
         super().__init__(parent=parent)
@@ -468,7 +469,7 @@ class _ViewPanelKeyWords(QTreeWidget):
         trItem.setIcon(self.C_DOC, docIcon)
         trItem.setText(self.C_DOC, nwItem.itemName)
         trItem.setToolTip(self.C_DOC, nwItem.itemName)
-        trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
+        trItem.setData(self.C_TITLE, QtDecoration, hDec)
         trItem.setText(self.C_TITLE, hItem.title)
         trItem.setToolTip(self.C_TITLE, hItem.title)
         trItem.setText(self.C_SHORT, hItem.synopsis)

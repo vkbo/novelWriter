@@ -31,8 +31,8 @@ from enum import Enum
 from time import time
 from typing import TYPE_CHECKING
 
-from PyQt5.QtGui import QFocusEvent, QFont, QMouseEvent, QPalette, QResizeEvent
 from PyQt5.QtCore import QModelIndex, QPoint, Qt, pyqtSlot, pyqtSignal
+from PyQt5.QtGui import QFocusEvent, QFont, QMouseEvent, QPalette, QResizeEvent
 from PyQt5.QtWidgets import (
     QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QHeaderView,
     QInputDialog, QMenu, QSizePolicy, QToolTip, QTreeWidget, QTreeWidgetItem,
@@ -47,7 +47,7 @@ from novelwriter.enum import nwDocMode, nwItemClass, nwOutline
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
-from novelwriter.types import QtAlignRight
+from novelwriter.types import QtAlignRight, QtDecoration, QtMouseLeft, QtMouseMiddle, QtUserRole
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -364,10 +364,10 @@ class GuiNovelTree(QTreeWidget):
     C_EXTRA = 2
     C_MORE  = 3
 
-    D_HANDLE = Qt.ItemDataRole.UserRole
-    D_TITLE  = Qt.ItemDataRole.UserRole + 1
-    D_KEY    = Qt.ItemDataRole.UserRole + 2
-    D_EXTRA  = Qt.ItemDataRole.UserRole + 3
+    D_HANDLE = QtUserRole
+    D_TITLE  = QtUserRole + 1
+    D_KEY    = QtUserRole + 2
+    D_EXTRA  = QtUserRole + 3
 
     def __init__(self, novelView: GuiNovelView) -> None:
         super().__init__(parent=novelView)
@@ -583,12 +583,12 @@ class GuiNovelTree(QTreeWidget):
         """
         super().mousePressEvent(event)
 
-        if event.button() == Qt.MouseButton.LeftButton:
+        if event.button() == QtMouseLeft:
             selItem = self.indexAt(event.pos())
             if not selItem.isValid():
                 self.clearSelection()
 
-        elif event.button() == Qt.MouseButton.MiddleButton:
+        elif event.button() == QtMouseMiddle:
             selItem = self.itemAt(event.pos())
             if not isinstance(selItem, QTreeWidgetItem):
                 return
@@ -697,11 +697,11 @@ class GuiNovelTree(QTreeWidget):
         iLevel = nwHeaders.H_LEVEL.get(idxItem.level, 0)
         hDec = SHARED.theme.getHeaderDecoration(iLevel)
 
-        trItem.setData(self.C_TITLE, Qt.ItemDataRole.DecorationRole, hDec)
+        trItem.setData(self.C_TITLE, QtDecoration, hDec)
         trItem.setText(self.C_TITLE, idxItem.title)
         trItem.setFont(self.C_TITLE, self._hFonts[iLevel])
         trItem.setText(self.C_WORDS, f"{idxItem.wordCount:n}")
-        trItem.setData(self.C_MORE, Qt.ItemDataRole.DecorationRole, self._pMore)
+        trItem.setData(self.C_MORE, QtDecoration, self._pMore)
 
         # Custom column
         mW = int(self._lastColSize * self.viewport().width())

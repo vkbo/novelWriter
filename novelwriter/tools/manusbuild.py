@@ -27,8 +27,8 @@ import logging
 
 from pathlib import Path
 
+from PyQt5.QtCore import QTimer, pyqtSlot
 from PyQt5.QtGui import QCloseEvent
-from PyQt5.QtCore import QTimer, Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractButton, QAbstractItemView, QDialog, QDialogButtonBox, QFileDialog,
     QGridLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem,
@@ -44,7 +44,7 @@ from novelwriter.core.item import NWItem
 from novelwriter.enum import nwBuildFmt
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.extensions.simpleprogress import NProgressSimple
-from novelwriter.types import QtAlignCenter
+from novelwriter.types import QtAlignCenter, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ class GuiManuscriptBuild(QDialog):
     independently of the Manuscript Build Tool.
     """
 
-    D_KEY = Qt.ItemDataRole.UserRole
+    D_KEY = QtUserRole
 
     def __init__(self, parent: QWidget, build: BuildSettings):
         super().__init__(parent=parent)

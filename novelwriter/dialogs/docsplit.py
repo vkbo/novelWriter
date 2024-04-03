@@ -26,8 +26,8 @@ from __future__ import annotations
 
 import logging
 
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QCloseEvent
-from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QComboBox, QDialog, QDialogButtonBox, QGridLayout,
     QLabel, QListWidget, QListWidgetItem, QVBoxLayout, QWidget
@@ -36,15 +36,16 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.configlayout import NColourLabel
+from novelwriter.types import QtUserRole
 
 logger = logging.getLogger(__name__)
 
 
 class GuiDocSplit(QDialog):
 
-    LINE_ROLE  = Qt.ItemDataRole.UserRole
-    LEVEL_ROLE = Qt.ItemDataRole.UserRole + 1
-    LABEL_ROLE = Qt.ItemDataRole.UserRole + 2
+    LINE_ROLE  = QtUserRole
+    LEVEL_ROLE = QtUserRole + 1
+    LABEL_ROLE = QtUserRole + 2
 
     def __init__(self, parent: QWidget, sHandle: str) -> None:
         super().__init__(parent=parent)

@@ -157,7 +157,7 @@ class GuiWordList(QDialog):
         self.newEntry.setText("")
         self.listBox.clearSelection()
         self._addWord(word)
-        if items := self.listBox.findItems(word, Qt.MatchExactly):
+        if items := self.listBox.findItems(word, Qt.MatchFlag.MatchExactly):
             self.listBox.setCurrentItem(items[0])
             self.listBox.scrollToItem(items[0], QAbstractItemView.ScrollHint.PositionAtCenter)
         return
@@ -244,7 +244,7 @@ class GuiWordList(QDialog):
 
     def _addWord(self, word: str) -> None:
         """Add a single word to the list."""
-        if word and not self.listBox.findItems(word, Qt.MatchExactly):
+        if word and not self.listBox.findItems(word, Qt.MatchFlag.MatchExactly):
             self.listBox.addItem(word)
             self._changed = True
         return

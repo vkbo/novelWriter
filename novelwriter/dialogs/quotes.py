@@ -26,7 +26,7 @@ from __future__ import annotations
 import logging
 
 from PyQt5.QtGui import QFontMetrics
-from PyQt5.QtCore import QSize, Qt, pyqtSlot
+from PyQt5.QtCore import QSize, pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog, QDialogButtonBox, QFrame, QHBoxLayout, QLabel, QListWidget,
     QListWidgetItem, QVBoxLayout, QWidget
@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG
 from novelwriter.constants import trConst, nwQuotes
-from novelwriter.types import QtAlignCenter, QtAlignTop
+from novelwriter.types import QtAlignCenter, QtAlignTop, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ class GuiQuoteSelect(QDialog):
 
     _selected = ""
 
-    D_KEY = Qt.ItemDataRole.UserRole
+    D_KEY = QtUserRole
 
     def __init__(self, parent: QWidget, current: str = '"') -> None:
         super().__init__(parent=parent)

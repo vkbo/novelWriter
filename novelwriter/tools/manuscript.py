@@ -53,7 +53,8 @@ from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
 from novelwriter.types import (
-    QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignRight, QtAlignTop
+    QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignRight, QtAlignTop,
+    QtUserRole
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -70,7 +71,7 @@ class GuiManuscript(QDialog):
     a document directly to disk.
     """
 
-    D_KEY = Qt.ItemDataRole.UserRole
+    D_KEY = QtUserRole
 
     def __init__(self, mainGui: GuiMain) -> None:
         super().__init__(parent=mainGui)
@@ -661,7 +662,7 @@ class _DetailsWidget(QWidget):
 
 class _OutlineWidget(QWidget):
 
-    D_LINE = Qt.ItemDataRole.UserRole
+    D_LINE = QtUserRole
 
     outlineEntryClicked = pyqtSignal(str)
 

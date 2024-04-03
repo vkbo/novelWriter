@@ -25,15 +25,15 @@ import pytest
 
 from pathlib import Path
 
-from tools import buildTestProject
 from mocked import causeOSError
+from tools import buildTestProject
 
-from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QFileDialog
 
 from novelwriter import SHARED
 from novelwriter.constants import nwFiles
 from novelwriter.tools.writingstats import GuiWritingStats
+from novelwriter.types import QtMouseLeft
 
 
 @pytest.mark.gui
@@ -97,11 +97,11 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda *a, **k: ("", ""))
     assert not sessLog._saveData(sessLog.FMT_CSV)
     assert not sessLog._saveData(sessLog.FMT_JSON)
-    assert not sessLog._saveData(None)
+    assert not sessLog._saveData(None)  # type: ignore
 
     # Make the save succeed
     monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: (pp, ""))
-    sessLog.listBox.sortByColumn(sessLog.C_TIME, 0)
+    sessLog.listBox.sortByColumn(sessLog.C_TIME, 0)  # type: ignore
 
     assert sessLog.novelWords.text() == "{:n}".format(600)
     assert sessLog.notesWords.text() == "{:n}".format(275)
@@ -156,7 +156,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     # ============
 
     # No Novel Files
-    qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
+    qtbot.mouseClick(sessLog.incNovel, QtMouseLeft)
     assert sessLog._saveData(sessLog.FMT_JSON)
 
     jsonStats = tstPaths.tmpDir / "sessionStats.json"
@@ -201,8 +201,8 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     ]
 
     # No Note Files
-    qtbot.mouseClick(sessLog.incNovel, Qt.LeftButton)
-    qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
+    qtbot.mouseClick(sessLog.incNovel, QtMouseLeft)
+    qtbot.mouseClick(sessLog.incNotes, QtMouseLeft)
     assert sessLog._saveData(sessLog.FMT_JSON)
 
     jsonStats = tstPaths.tmpDir / "sessionStats.json"
@@ -247,8 +247,8 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     ]
 
     # No Negative Entries
-    qtbot.mouseClick(sessLog.incNotes, Qt.LeftButton)
-    qtbot.mouseClick(sessLog.hideNegative, Qt.LeftButton)
+    qtbot.mouseClick(sessLog.incNotes, QtMouseLeft)
+    qtbot.mouseClick(sessLog.hideNegative, QtMouseLeft)
     assert sessLog._saveData(sessLog.FMT_JSON)
 
     # qtbot.stop()
@@ -279,8 +279,8 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     ]
 
     # Un-hide Zero Entries
-    qtbot.mouseClick(sessLog.hideNegative, Qt.LeftButton)
-    qtbot.mouseClick(sessLog.hideZeros, Qt.LeftButton)
+    qtbot.mouseClick(sessLog.hideNegative, QtMouseLeft)
+    qtbot.mouseClick(sessLog.hideZeros, QtMouseLeft)
     assert sessLog._saveData(sessLog.FMT_JSON)
 
     jsonStats = tstPaths.tmpDir / "sessionStats.json"
@@ -333,7 +333,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     ]
 
     # Group by Day
-    qtbot.mouseClick(sessLog.groupByDay, Qt.LeftButton)
+    qtbot.mouseClick(sessLog.groupByDay, QtMouseLeft)
     assert sessLog._saveData(sessLog.FMT_JSON)
 
     jsonStats = tstPaths.tmpDir / "sessionStats.json"

@@ -24,14 +24,15 @@ import pytest
 
 from mocked import causeException
 
-from PyQt5.QtGui import QMouseEvent, QTextCursor
 from PyQt5.QtCore import QEvent, QPoint, Qt, QUrl
+from PyQt5.QtGui import QMouseEvent, QTextCursor
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwDocAction
 from novelwriter.core.tohtml import ToHtml
 from novelwriter.gui.docviewer import GuiDocViewer
+from novelwriter.types import QtMouseLeft, QtModeNone
 
 
 @pytest.mark.gui
@@ -59,8 +60,8 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert nwGUI.projView.projTree.getSelectedHandle() is None
 
     # Re-select via header click
-    button = Qt.MouseButton.LeftButton
-    modifier = Qt.KeyboardModifier.NoModifier
+    button = QtMouseLeft
+    modifier = QtModeNone
     event = QMouseEvent(QEvent.MouseButtonPress, QPoint(), button, button, modifier)
     docViewer.docHeader.mousePressEvent(event)
     assert nwGUI.projView.projTree.getSelectedHandle() == "88243afbe5ed8"
@@ -164,7 +165,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert docViewer.docHandle == "88243afbe5ed8"
     qtbot.mouseClick(docViewer.viewport(), Qt.ForwardButton, pos=rect.center(), delay=100)
     assert docViewer.docHandle == "4c4f28287af27"
-    qtbot.mouseClick(docViewer.viewport(), Qt.LeftButton, pos=rect.center(), delay=100)
+    qtbot.mouseClick(docViewer.viewport(), QtMouseLeft, pos=rect.center(), delay=100)
     assert docViewer.docHandle == "4c4f28287af27"
 
     # Scroll bar default on empty document

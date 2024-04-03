@@ -26,14 +26,15 @@ from pathlib import Path
 
 from tools import C, buildTestProject
 
-from PyQt5.QtGui import QFocusEvent
 from PyQt5.QtCore import QPoint, Qt, QEvent
+from PyQt5.QtGui import QFocusEvent
 from PyQt5.QtWidgets import QInputDialog, QToolTip
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwWidget, nwItemType
 from novelwriter.gui.noveltree import GuiNovelTree, NovelTreeColumn
-from novelwriter.dialogs.editlabel import GuiEditLabel
+from novelwriter.types import QtMouseLeft
 
 
 @pytest.mark.gui
@@ -112,7 +113,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Clear selection with mouse
     vPort = novelTree.viewport()
-    qtbot.mouseClick(vPort, Qt.LeftButton, pos=vPort.rect().center(), delay=10)
+    qtbot.mouseClick(vPort, QtMouseLeft, pos=vPort.rect().center(), delay=10)
     assert not scItem.isSelected()
 
     # Double-click item

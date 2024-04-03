@@ -49,7 +49,7 @@ from novelwriter.error import logException
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
-from novelwriter.types import QtAlignCenterTop, QtAlignJustify
+from novelwriter.types import QtAlignCenterTop, QtAlignJustify, QtMouseLeft
 
 logger = logging.getLogger(__name__)
 
@@ -826,7 +826,7 @@ class GuiDocViewHeader(QWidget):
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
-        if event.button() == Qt.MouseButton.LeftButton:
+        if event.button() == QtMouseLeft:
             self.docViewer.requestProjectItemSelected.emit(self._docHandle, True)
         return
 

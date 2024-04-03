@@ -48,7 +48,9 @@ from novelwriter.error import logException
 from novelwriter.common import checkInt, formatFileFilter, makeFileNameSafe
 from novelwriter.constants import nwHeaders, trConst, nwKeyWords, nwLabels
 from novelwriter.extensions.novelselector import NovelSelector
-from novelwriter.types import QtAlignLeftTop, QtAlignRight, QtAlignRightTop
+from novelwriter.types import (
+    QtAlignLeftTop, QtAlignRight, QtAlignRightTop, QtDecoration, QtUserRole
+)
 
 
 logger = logging.getLogger(__name__)
@@ -68,7 +70,7 @@ class GuiOutlineView(QWidget):
         self.outlineBar = GuiOutlineToolBar(self)
         self.outlineBar.setEnabled(False)
 
-        self.splitOutline = QSplitter(Qt.Vertical)
+        self.splitOutline = QSplitter(Qt.Orientation.Vertical)
         self.splitOutline.addWidget(self.outlineTree)
         self.splitOutline.addWidget(self.outlineData)
         self.splitOutline.setOpaqueResize(False)
@@ -354,8 +356,8 @@ class GuiOutlineTree(QTreeWidget):
         nwOutline.SYNOP:  False,
     }
 
-    D_HANDLE = Qt.ItemDataRole.UserRole
-    D_TITLE  = Qt.ItemDataRole.UserRole + 1
+    D_HANDLE = QtUserRole
+    D_TITLE  = QtUserRole + 1
 
     hiddenStateChanged = pyqtSignal()
     activeItemChanged = pyqtSignal(str, str)
@@ -692,7 +694,7 @@ class GuiOutlineTree(QTreeWidget):
             trItem = QTreeWidgetItem()
             hDec = SHARED.theme.getHeaderDecoration(iLevel)
 
-            trItem.setData(self._colIdx[nwOutline.TITLE], Qt.ItemDataRole.DecorationRole, hDec)
+            trItem.setData(self._colIdx[nwOutline.TITLE], QtDecoration, hDec)
             trItem.setText(self._colIdx[nwOutline.TITLE], novIdx.title)
             trItem.setData(self._colIdx[nwOutline.TITLE], self.D_HANDLE, tHandle)
             trItem.setData(self._colIdx[nwOutline.TITLE], self.D_TITLE, sTitle)

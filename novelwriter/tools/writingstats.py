@@ -42,7 +42,7 @@ from novelwriter.common import formatTime, checkInt, checkIntTuple, minmax
 from novelwriter.constants import nwConst
 from novelwriter.error import formatException
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignLeftMiddle, QtAlignRight, QtAlignRightMiddle
+from novelwriter.types import QtAlignLeftMiddle, QtAlignRight, QtAlignRightMiddle, QtDecoration
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -122,10 +122,11 @@ class GuiWritingStats(QDialog):
             hHeader.setTextAlignment(self.C_IDLE, QtAlignRight)
             hHeader.setTextAlignment(self.C_COUNT, QtAlignRight)
 
+        sDec = Qt.SortOrder.DescendingOrder
+        sAsc = Qt.SortOrder.AscendingOrder
         sortCol = minmax(pOptions.getInt("GuiWritingStats", "sortCol", 0), 0, 2)
         sortOrder = checkIntTuple(
-            pOptions.getInt("GuiWritingStats", "sortOrder", Qt.DescendingOrder),
-            (Qt.AscendingOrder, Qt.DescendingOrder), Qt.DescendingOrder
+            pOptions.getInt("GuiWritingStats", "sortOrder", sDec), (sAsc, sDec), sDec
         )
         self.listBox.sortByColumn(sortCol, sortOrder)  # type: ignore
         self.listBox.setSortingEnabled(True)
@@ -571,6 +572,8 @@ class GuiWritingStats(QDialog):
             pcTotal = wcTotal
 
         # Populate the list
+        mTrans = Qt.TransformationMode.FastTransformation
+        mAspect = Qt.AspectRatioMode.IgnoreAspectRatio
         showIdleTime = self.showIdleTime.isChecked()
         for _, sStart, sDiff, nWords, _, _, sIdle in self.filterData:
 
@@ -589,11 +592,9 @@ class GuiWritingStats(QDialog):
             if nWords > 0 and listMax > 0:
                 wBar = self.barImage.scaled(
                     int(200*min(nWords, histMax)/listMax),
-                    self.barHeight,
-                    Qt.IgnoreAspectRatio,
-                    Qt.FastTransformation
+                    self.barHeight, mAspect, mTrans
                 )
-                newItem.setData(self.C_BAR, Qt.DecorationRole, wBar)
+                newItem.setData(self.C_BAR, QtDecoration, wBar)
 
             newItem.setTextAlignment(self.C_LENGTH, QtAlignRight)
             newItem.setTextAlignment(self.C_IDLE, QtAlignRight)
