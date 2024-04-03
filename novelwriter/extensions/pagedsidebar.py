@@ -59,7 +59,7 @@ class NPagedSideBar(QToolBar):
         self.setOrientation(Qt.Orientation.Vertical)
 
         stretch = QWidget(self)
-        stretch.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        stretch.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self._stretchAction = self.addWidget(stretch)
 
         return
@@ -119,7 +119,7 @@ class _NPagedToolButton(QToolButton):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.setCheckable(True)
 
         fH = self.fontMetrics().height()
@@ -197,7 +197,7 @@ class _NPagedToolLabel(QLabel):
     def __init__(self, parent: QWidget, textColor: QColor | None = None) -> None:
         super().__init__(parent=parent)
 
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         fH = self.fontMetrics().height()
         self._bH = round(fH * 1.7)

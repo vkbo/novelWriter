@@ -87,7 +87,7 @@ class GuiPreferences(QDialog):
         self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogApply | QtDialogSave | QtDialogClose)
+        self.buttonBox = QDialogButtonBox(QtDialogApply | QtDialogSave | QtDialogClose, self)
         self.buttonBox.clicked.connect(self._dialogButtonClicked)
 
         # Assemble
@@ -811,7 +811,7 @@ class GuiPreferences(QDialog):
         """Open a dialog to select the backup folder."""
         if path := QFileDialog.getExistingDirectory(
             self, self.tr("Backup Directory"), str(self.backupPath) or "",
-            options=QFileDialog.ShowDirsOnly
+            options=QFileDialog.Option.ShowDirsOnly
         ):
             self.backupPath = path
             self.mainForm.setHelpText("backupPath", self.tr("Path: {0}").format(path))

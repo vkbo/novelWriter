@@ -58,7 +58,8 @@ class GuiDocSplit(QDialog):
 
         self.setWindowTitle(self.tr("Split Document"))
 
-        self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Document Headings")))
+        self.headLabel = QLabel(self.tr("Document Headings"), self)
+        self.headLabel.setFont(SHARED.theme.guiFontB)
         self.helpLabel = NColourLabel(
             self.tr("Select the maximum level to split into files."),
             SHARED.theme.helpText, parent=self, wrap=True
@@ -76,8 +77,8 @@ class GuiDocSplit(QDialog):
         docHierarchy = pOptions.getBool("GuiDocSplit", "docHierarchy", True)
 
         # Heading Selection
-        self.listBox = QListWidget()
-        self.listBox.setDragDropMode(QAbstractItemView.NoDragDrop)
+        self.listBox = QListWidget(self)
+        self.listBox.setDragDropMode(QAbstractItemView.DragDropMode.NoDragDrop)
         self.listBox.setMinimumWidth(CONFIG.pxInt(400))
         self.listBox.setMinimumHeight(CONFIG.pxInt(180))
 
@@ -92,15 +93,15 @@ class GuiDocSplit(QDialog):
         self.splitLevel.currentIndexChanged.connect(self._reloadList)
 
         # Split Options
-        self.folderLabel = QLabel(self.tr("Split into a new folder"))
+        self.folderLabel = QLabel(self.tr("Split into a new folder"), self)
         self.folderSwitch = NSwitch(self, height=iPx)
         self.folderSwitch.setChecked(intoFolder)
 
-        self.hierarchyLabel = QLabel(self.tr("Create document hierarchy"))
+        self.hierarchyLabel = QLabel(self.tr("Create document hierarchy"), self)
         self.hierarchySwitch = NSwitch(self, height=iPx)
         self.hierarchySwitch.setChecked(docHierarchy)
 
-        self.trashLabel = QLabel(self.tr("Move split document to Trash"))
+        self.trashLabel = QLabel(self.tr("Move split document to Trash"), self)
         self.trashSwitch = NSwitch(self, height=iPx)
 
         self.optBox = QGridLayout()
@@ -115,7 +116,7 @@ class GuiDocSplit(QDialog):
         self.optBox.setColumnStretch(3, 1)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel)
+        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel, self)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 

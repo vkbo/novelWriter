@@ -90,8 +90,8 @@ class GuiManuscriptBuild(QDialog):
         # Output Format
         # =============
 
-        self.lblFormat = QLabel(self.tr("Output Format"))
-        self.listFormats = QListWidget()
+        self.lblFormat = QLabel(self.tr("Output Format"), self)
+        self.listFormats = QListWidget(self)
         self.listFormats.setIconSize(iSz)
         current = None
         for key in nwBuildFmt:
@@ -109,14 +109,14 @@ class GuiManuscriptBuild(QDialog):
         self.formatBox.addWidget(self.listFormats, 1)
         self.formatBox.setContentsMargins(0, 0, 0, 0)
 
-        self.formatWidget = QWidget()
+        self.formatWidget = QWidget(self)
         self.formatWidget.setLayout(self.formatBox)
         self.formatWidget.setContentsMargins(0, 0, 0, 0)
 
         # Table of Contents
         # =================
 
-        self.lblContent = QLabel(self.tr("Table of Contents"))
+        self.lblContent = QLabel(self.tr("Table of Contents"), self)
 
         self.listContent = QListWidget(self)
         self.listContent.setIconSize(iSz)
@@ -127,7 +127,7 @@ class GuiManuscriptBuild(QDialog):
         self.contentBox.addWidget(self.listContent, 0)
         self.contentBox.setContentsMargins(0, 0, 0, 0)
 
-        self.contentWidget = QWidget()
+        self.contentWidget = QWidget(self)
         self.contentWidget.setLayout(self.contentBox)
         self.contentWidget.setContentsMargins(0, 0, 0, 0)
 
@@ -139,12 +139,12 @@ class GuiManuscriptBuild(QDialog):
         font.setUnderline(True)
         font.setPointSizeF(1.5*font.pointSizeF())
 
-        self.lblMain = QLabel(self._build.name)
+        self.lblMain = QLabel(self._build.name, self)
         self.lblMain.setWordWrap(True)
         self.lblMain.setFont(font)
 
         # Build Path
-        self.lblPath = QLabel(self.tr("Path"))
+        self.lblPath = QLabel(self.tr("Path"), self)
         self.buildPath = QLineEdit(self)
         self.btnBrowse = NIconToolButton(self, iSz, "browse")
 
@@ -154,7 +154,7 @@ class GuiManuscriptBuild(QDialog):
         self.pathBox.setSpacing(sp8)
 
         # Build Name
-        self.lblName = QLabel(self.tr("File Name"))
+        self.lblName = QLabel(self.tr("File Name"), self)
         self.buildName = QLineEdit(self)
         self.btnReset = NIconToolButton(self, iSz, "revert")
         self.btnReset.setToolTip(self.tr("Reset file name to default"))
@@ -181,19 +181,19 @@ class GuiManuscriptBuild(QDialog):
         self.buildBox.setVerticalSpacing(sp4)
 
         # Dialog Buttons
-        self.btnOpen = QPushButton(SHARED.theme.getIcon("browse"), self.tr("Open Folder"))
+        self.btnOpen = QPushButton(SHARED.theme.getIcon("browse"), self.tr("Open Folder"), self)
         self.btnOpen.setIconSize(bSz)
-        self.btnBuild = QPushButton(SHARED.theme.getIcon("export"), self.tr("&Build"))
+        self.btnBuild = QPushButton(SHARED.theme.getIcon("export"), self.tr("&Build"), self)
         self.btnBuild.setIconSize(bSz)
 
-        self.dlgButtons = QDialogButtonBox(QtDialogClose)
+        self.dlgButtons = QDialogButtonBox(QtDialogClose, self)
         self.dlgButtons.addButton(self.btnOpen, QtRoleAction)
         self.dlgButtons.addButton(self.btnBuild, QtRoleAction)
 
         # Assemble GUI
         # ============
 
-        self.mainSplit = QSplitter()
+        self.mainSplit = QSplitter(self)
         self.mainSplit.addWidget(self.formatWidget)
         self.mainSplit.addWidget(self.contentWidget)
         self.mainSplit.setHandleWidth(sp16)

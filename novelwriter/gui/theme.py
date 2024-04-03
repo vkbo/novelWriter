@@ -171,7 +171,9 @@ class GuiTheme:
         # Monospace Font
         self.guiFontFixed = QFont()
         self.guiFontFixed.setPointSizeF(0.95*self.fontPointSize)
-        self.guiFontFixed.setFamily(QFontDatabase.systemFont(QFontDatabase.FixedFont).family())
+        self.guiFontFixed.setFamily(
+            QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont).family()
+        )
 
         logger.debug("GUI Font Family: %s", self.guiFont.family())
         logger.debug("GUI Font Point Size: %.2f", self.fontPointSize)
@@ -401,7 +403,7 @@ class GuiTheme:
                 font.setFamily("Arial")
                 font.setPointSize(10)
             else:
-                font = fontDB.systemFont(QFontDatabase.GeneralFont)
+                font = fontDB.systemFont(QFontDatabase.SystemFont.GeneralFont)
             CONFIG.guiFont = font.family()
             CONFIG.guiFontSize = font.pointSize()
         else:

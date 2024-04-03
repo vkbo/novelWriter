@@ -116,7 +116,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         # Cache Spell Error Format
         self._spellErr = QTextCharFormat()
         self._spellErr.setUnderlineColor(SHARED.theme.colSpell)
-        self._spellErr.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
+        self._spellErr.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
 
         # Multiple or Trailing Spaces
         if CONFIG.showMultiSpaces:

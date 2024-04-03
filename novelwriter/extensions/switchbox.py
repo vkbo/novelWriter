@@ -58,8 +58,8 @@ class NSwitchBox(QScrollArea):
         self._content = QGridLayout()
         self._content.setColumnStretch(1, 1)
 
-        self._widget = QWidget()
-        self._widget.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
+        self._widget = QWidget(self)
+        self._widget.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Minimum)
         self._widget.setLayout(self._content)
 
         self.setWidgetResizable(True)
@@ -69,7 +69,7 @@ class NSwitchBox(QScrollArea):
 
     def addLabel(self, text: str) -> None:
         """Add a header label to the content box."""
-        label = QLabel(text)
+        label = QLabel(text, self)
         font = label.font()
         font.setBold(True)
         label.setFont(font)
@@ -80,12 +80,12 @@ class NSwitchBox(QScrollArea):
 
     def addItem(self, qIcon: QIcon, text: str, identifier: str, default: bool = False) -> None:
         """Add an item to the content box."""
-        icon = QLabel("")
+        icon = QLabel("", self)
         icon.setAlignment(QtAlignRightMiddle)
         icon.setPixmap(qIcon.pixmap(self._sIcon, self._sIcon))
         self._content.addWidget(icon, self._index, 0, QtAlignLeft)
 
-        label = QLabel(text)
+        label = QLabel(text, self)
         self._content.addWidget(label, self._index, 1, QtAlignLeft)
 
         switch = NSwitch(self, height=self._hSwitch)
@@ -100,7 +100,7 @@ class NSwitchBox(QScrollArea):
 
     def addSeparator(self) -> None:
         """Add a blank entry in the content box."""
-        spacer = QWidget()
+        spacer = QWidget(self)
         spacer.setFixedHeight(int(0.5*self._sIcon))
         self._content.addWidget(spacer, self._index, 0, 1, 3, QtAlignLeft)
         self._widgets.append(spacer)

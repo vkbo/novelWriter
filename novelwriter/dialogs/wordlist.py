@@ -92,7 +92,7 @@ class GuiWordList(QDialog):
 
         # List Box
         self.listBox = QListWidget(self)
-        self.listBox.setDragDropMode(QAbstractItemView.NoDragDrop)
+        self.listBox.setDragDropMode(QAbstractItemView.DragDropMode.NoDragDrop)
         self.listBox.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.listBox.setSortingEnabled(True)
 
@@ -111,7 +111,7 @@ class GuiWordList(QDialog):
         self.editBox.addWidget(self.delButton, 0)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogSave | QtDialogClose)
+        self.buttonBox = QDialogButtonBox(QtDialogSave | QtDialogClose, self)
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self.close)
 

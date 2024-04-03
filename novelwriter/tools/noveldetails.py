@@ -95,7 +95,7 @@ class GuiNovelDetails(QDialog):
         self.mainStack.addWidget(self.contentsPage)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogClose)
+        self.buttonBox = QDialogButtonBox(QtDialogClose, self)
         self.buttonBox.rejected.connect(self.close)
 
         # Assemble
@@ -366,7 +366,7 @@ class _ContentsPage(NFixedPage):
         countFrom    = options.getInt("GuiNovelDetails", "countFrom", 1)
         clearDouble  = options.getBool("GuiNovelDetails", "clearDouble", True)
 
-        self.wpLabel = QLabel(self.tr("Words per page"))
+        self.wpLabel = QLabel(self.tr("Words per page"), self)
 
         self.wpValue = QSpinBox(self)
         self.wpValue.setMinimum(10)
@@ -375,7 +375,7 @@ class _ContentsPage(NFixedPage):
         self.wpValue.setValue(wordsPerPage)
         self.wpValue.valueChanged.connect(self._populateTree)
 
-        self.poLabel = QLabel(self.tr("First page offset"))
+        self.poLabel = QLabel(self.tr("First page offset"), self)
 
         self.poValue = QSpinBox(self)
         self.poValue.setMinimum(1)
@@ -384,7 +384,7 @@ class _ContentsPage(NFixedPage):
         self.poValue.setValue(countFrom)
         self.poValue.valueChanged.connect(self._populateTree)
 
-        self.dblLabel = QLabel(self.tr("Chapters on odd pages"))
+        self.dblLabel = QLabel(self.tr("Chapters on odd pages"), self)
 
         self.dblValue = NSwitch(self, height=iPx)
         self.dblValue.setChecked(clearDouble)

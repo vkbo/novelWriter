@@ -124,7 +124,7 @@ class GuiManuscript(QDialog):
         self.tbEdit.setStyleSheet(buttonStyle)
         self.tbEdit.clicked.connect(self._editSelectedBuild)
 
-        self.lblBuilds = QLabel("<b>{0}</b>".format(self.tr("Builds")))
+        self.lblBuilds = QLabel("<b>{0}</b>".format(self.tr("Builds")), self)
 
         self.listToolBox = QHBoxLayout()
         self.listToolBox.addWidget(self.lblBuilds)
@@ -141,8 +141,8 @@ class GuiManuscript(QDialog):
         self.buildList.setIconSize(iSz)
         self.buildList.doubleClicked.connect(self._editSelectedBuild)
         self.buildList.currentItemChanged.connect(self._updateBuildDetails)
-        self.buildList.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.buildList.setDragDropMode(QAbstractItemView.InternalMove)
+        self.buildList.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.buildList.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
 
         # Details Tabs
         # ============
@@ -170,16 +170,16 @@ class GuiManuscript(QDialog):
         # Process Controls
         # ================
 
-        self.btnPreview = QPushButton(self.tr("Preview"))
+        self.btnPreview = QPushButton(self.tr("Preview"), self)
         self.btnPreview.clicked.connect(self._generatePreview)
 
-        self.btnPrint = QPushButton(self.tr("Print"))
+        self.btnPrint = QPushButton(self.tr("Print"), self)
         self.btnPrint.clicked.connect(self._printDocument)
 
-        self.btnBuild = QPushButton(self.tr("Build"))
+        self.btnBuild = QPushButton(self.tr("Build"), self)
         self.btnBuild.clicked.connect(self._buildManuscript)
 
-        self.btnClose = QPushButton(self.tr("Close"))
+        self.btnClose = QPushButton(self.tr("Close"), self)
         self.btnClose.clicked.connect(self.close)
 
         self.processBox = QGridLayout()
@@ -211,7 +211,7 @@ class GuiManuscript(QDialog):
         self.optsWidget = QWidget(self)
         self.optsWidget.setLayout(self.controlBox)
 
-        self.mainSplit = QSplitter()
+        self.mainSplit = QSplitter(self)
         self.mainSplit.addWidget(self.optsWidget)
         self.mainSplit.addWidget(self.docWdiget)
         self.mainSplit.setCollapsible(0, False)
@@ -906,7 +906,7 @@ class _PreviewWidget(QTextBrowser):
     def printPreview(self, printer: QPrinter) -> None:
         """Connect the print preview painter to the document viewer."""
         QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
-        printer.setOrientation(QPrinter.Portrait)
+        printer.setOrientation(QPrinter.Orientation.Portrait)
         self.document().print(printer)
         QApplication.restoreOverrideCursor()
         return
@@ -1054,10 +1054,10 @@ class _StatsWidget(QWidget):
         """Build the minimal stats page."""
         mPx = CONFIG.pxInt(8)
 
-        self.lblWordCount = QLabel(self.tr("Words"))
+        self.lblWordCount = QLabel(self.tr("Words"), self)
         self.minWordCount = QLabel(self)
 
-        self.lblCharCount = QLabel(self.tr("Characters"))
+        self.lblCharCount = QLabel(self.tr("Characters"), self)
         self.minCharCount = QLabel(self)
 
         # Assemble

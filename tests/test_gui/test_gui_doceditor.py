@@ -37,7 +37,7 @@ from novelwriter.enum import (
 )
 from novelwriter.gui.doceditor import GuiDocEditor, GuiDocToolBar
 from novelwriter.text.counting import standardCounter
-from novelwriter.types import QtAlignJustify, QtAlignLeft, QtMouseLeft
+from novelwriter.types import QtAlignJustify, QtAlignLeft, QtKeepAnchor, QtMouseLeft, QtMoveRight
 
 KEY_DELAY = 1
 
@@ -1413,7 +1413,7 @@ def testGuiEditor_MultiBlockFormatting(qtbot, nwGUI, projPath, ipsumText, mockRn
     # Toggle Comment
     cursor = nwGUI.docEditor.textCursor()
     cursor.setPosition(50)
-    cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, 2000)
+    cursor.movePosition(QtMoveRight, QtKeepAnchor, 2000)
     nwGUI.docEditor.setTextCursor(cursor)
 
     nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_COM)
@@ -1434,7 +1434,7 @@ def testGuiEditor_MultiBlockFormatting(qtbot, nwGUI, projPath, ipsumText, mockRn
     # Un-toggle all
     cursor = nwGUI.docEditor.textCursor()
     cursor.setPosition(50)
-    cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, 3000)
+    cursor.movePosition(QtMoveRight, QtKeepAnchor, 3000)
     nwGUI.docEditor.setTextCursor(cursor)
 
     nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_COM)
@@ -1445,7 +1445,7 @@ def testGuiEditor_MultiBlockFormatting(qtbot, nwGUI, projPath, ipsumText, mockRn
     # Toggle Ignore Text
     cursor = nwGUI.docEditor.textCursor()
     cursor.setPosition(50)
-    cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, 2000)
+    cursor.movePosition(QtMoveRight, QtKeepAnchor, 2000)
     nwGUI.docEditor.setTextCursor(cursor)
 
     nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_IGN)
@@ -1456,7 +1456,7 @@ def testGuiEditor_MultiBlockFormatting(qtbot, nwGUI, projPath, ipsumText, mockRn
     # Clear all paragraphs
     cursor = nwGUI.docEditor.textCursor()
     cursor.setPosition(50)
-    cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, 3000)
+    cursor.movePosition(QtMoveRight, QtKeepAnchor, 3000)
     nwGUI.docEditor.setTextCursor(cursor)
 
     nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_TXT)

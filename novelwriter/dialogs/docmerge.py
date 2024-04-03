@@ -54,7 +54,8 @@ class GuiDocMerge(QDialog):
 
         self._data = {}
 
-        self.headLabel = QLabel("<b>{0}</b>".format(self.tr("Documents to Merge")))
+        self.headLabel = QLabel(self.tr("Documents to Merge"), self)
+        self.headLabel.setFont(SHARED.theme.guiFontB)
         self.helpLabel = NColourLabel(
             self.tr("Drag and drop items to change the order, or uncheck to exclude."),
             SHARED.theme.helpText, parent=self, wrap=True
@@ -70,12 +71,12 @@ class GuiDocMerge(QDialog):
         self.listBox.setIconSize(iSz)
         self.listBox.setMinimumWidth(CONFIG.pxInt(400))
         self.listBox.setMinimumHeight(CONFIG.pxInt(180))
-        self.listBox.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.listBox.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.listBox.setDragDropMode(QAbstractItemView.InternalMove)
+        self.listBox.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.listBox.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.listBox.setDragDropMode(QAbstractItemView.DragDropMode.InternalMove)
 
         # Merge Options
-        self.trashLabel = QLabel(self.tr("Move merged items to Trash"))
+        self.trashLabel = QLabel(self.tr("Move merged items to Trash"), self)
         self.trashSwitch = NSwitch(self, height=iPx)
 
         self.optBox = QGridLayout()
@@ -85,7 +86,7 @@ class GuiDocMerge(QDialog):
         self.optBox.setColumnStretch(2, 1)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel)
+        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel, self)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 

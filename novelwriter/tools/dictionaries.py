@@ -71,7 +71,7 @@ class GuiDictionaries(QDialog):
             self.tr("Download a dictionary from one of the links, and add it below."),
             f"&nbsp;\u203a <a href='{foUrl}'>{foUrl}</a>",
             f"&nbsp;\u203a <a href='{loUrl}'>{loUrl}</a>",
-        ]))
+        ]), self)
         self.huInfo.setOpenExternalLinks(True)
         self.huInfo.setWordWrap(True)
         self.huInput = QLineEdit(self)
@@ -90,7 +90,7 @@ class GuiDictionaries(QDialog):
         self.huAddBox.addWidget(self.huImport)
 
         # Install Path
-        self.inInfo = QLabel(self.tr("Dictionary install location"))
+        self.inInfo = QLabel(self.tr("Dictionary install location"), self)
         self.inPath = QLineEdit(self)
         self.inPath.setReadOnly(True)
         self.inBrowse = NIconToolButton(self, iSz, "browse")
@@ -108,7 +108,7 @@ class GuiDictionaries(QDialog):
         self.infoBox.setFrameStyle(QFrame.Shape.NoFrame)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogClose)
+        self.buttonBox = QDialogButtonBox(QtDialogClose, self)
         self.buttonBox.rejected.connect(self._doClose)
 
         # Assemble

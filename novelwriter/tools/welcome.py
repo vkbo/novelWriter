@@ -682,10 +682,10 @@ class _NewProjectForm(QWidget):
         # ========
 
         self.extraBox = QVBoxLayout()
-        self.extraBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Chapters and Scenes"))))
+        self.extraBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Chapters and Scenes")), self))
         self.extraBox.addLayout(self.novelForm)
         self.extraBox.addSpacing(sPx)
-        self.extraBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Project Notes"))))
+        self.extraBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Project Notes")), self))
         self.extraBox.addLayout(self.notesForm)
         self.extraBox.setContentsMargins(0, 0, 0, 0)
 
@@ -694,7 +694,7 @@ class _NewProjectForm(QWidget):
         self.extraWidget.setContentsMargins(0, 0, 0, 0)
 
         self.formBox = QVBoxLayout()
-        self.formBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Create New Project"))))
+        self.formBox.addWidget(QLabel("<b>{0}</b>".format(self.tr("Create New Project")), self))
         self.formBox.addLayout(self.projectForm)
         self.formBox.addSpacing(sPx)
         self.formBox.addWidget(self.extraWidget)
@@ -738,7 +738,7 @@ class _NewProjectForm(QWidget):
         """Select a project folder."""
         if projDir := QFileDialog.getExistingDirectory(
             self, self.tr("Select Project Folder"),
-            str(self._basePath), options=QFileDialog.ShowDirsOnly
+            str(self._basePath), options=QFileDialog.Option.ShowDirsOnly
         ):
             self._basePath = Path(projDir)
             self._updateProjPath()

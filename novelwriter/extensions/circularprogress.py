@@ -59,7 +59,7 @@ class NProgressCircle(QProgressBar):
             bar=self.palette().highlight().color(),
             text=self.palette().text().color()
         )
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         self.setFixedWidth(size)
         self.setFixedHeight(size)
         return

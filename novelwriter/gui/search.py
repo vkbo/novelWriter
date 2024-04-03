@@ -71,7 +71,7 @@ class GuiProjectSearch(QWidget):
         self._map: dict[str, tuple[int, float]] = {}
 
         # Header
-        self.viewLabel = QLabel(self.tr("Project Search"))
+        self.viewLabel = QLabel(self.tr("Project Search"), self)
         self.viewLabel.setFont(SHARED.theme.guiFontB)
         self.viewLabel.setContentsMargins(mPx, tPx, 0, mPx)
 

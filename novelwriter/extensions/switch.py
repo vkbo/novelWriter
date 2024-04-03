@@ -46,7 +46,7 @@ class NSwitch(QAbstractButton):
         self._rR = self._xR - self._rB
 
         self.setCheckable(True)
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         self.setFixedWidth(self._xW)
         self.setFixedHeight(self._xH)
         self._offset = self._xR

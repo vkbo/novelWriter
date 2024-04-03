@@ -66,14 +66,14 @@ class GuiQuoteSelect(QDialog):
         lblFont.setPointSizeF(4*lblFont.pointSizeF())
 
         # Preview Label
-        self.previewLabel = QLabel(current)
+        self.previewLabel = QLabel(current, self)
         self.previewLabel.setFont(lblFont)
         self.previewLabel.setFixedSize(QSize(pxW, pxH))
         self.previewLabel.setAlignment(QtAlignCenter)
-        self.previewLabel.setFrameStyle(QFrame.Box | QFrame.Plain)
+        self.previewLabel.setFrameStyle(QFrame.Shape.Box | QFrame.Shadow.Plain)
 
         # Quote Symbols
-        self.listBox = QListWidget()
+        self.listBox = QListWidget(self)
         self.listBox.itemSelectionChanged.connect(self._selectedSymbol)
 
         minSize = 100
@@ -90,7 +90,7 @@ class GuiQuoteSelect(QDialog):
         self.listBox.setMinimumHeight(CONFIG.pxInt(150))
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel)
+        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel, self)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 

@@ -49,7 +49,9 @@ from novelwriter.error import logException
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
-from novelwriter.types import QtAlignCenterTop, QtAlignJustify, QtMouseLeft
+from novelwriter.types import (
+    QtAlignCenterTop, QtAlignJustify, QtKeepAnchor, QtMouseLeft, QtMoveAnchor
+)
 
 logger = logging.getLogger(__name__)
 
@@ -452,8 +454,8 @@ class GuiDocViewer(QTextBrowser):
             posE = cursor.selectionEnd()
             selTxt = cursor.selectedText()
             if selTxt.startswith(nwUnicode.U_PSEP):
-                cursor.setPosition(posS+1, QTextCursor.MoveMode.MoveAnchor)
-                cursor.setPosition(posE, QTextCursor.MoveMode.KeepAnchor)
+                cursor.setPosition(posS+1, QtMoveAnchor)
+                cursor.setPosition(posE, QtKeepAnchor)
 
         self.setTextCursor(cursor)
 
@@ -635,7 +637,7 @@ class GuiDocViewHeader(QWidget):
         self.setAutoFillBackground(True)
 
         # Title Label
-        self.itemTitle = QLabel()
+        self.itemTitle = QLabel(self)
         self.itemTitle.setText("")
         self.itemTitle.setIndent(0)
         self.itemTitle.setMargin(0)

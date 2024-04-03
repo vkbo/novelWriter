@@ -84,7 +84,7 @@ class GuiProjectSettings(QDialog):
         self.sidebar.buttonClicked.connect(self._sidebarClicked)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogSave | QtDialogCancel)
+        self.buttonBox = QDialogButtonBox(QtDialogSave | QtDialogCancel, self)
         self.buttonBox.accepted.connect(self._doSave)
         self.buttonBox.rejected.connect(self.close)
 
@@ -603,7 +603,7 @@ class _ReplacePage(NFixedPage):
         )
 
         # List Box
-        self.listBox = QTreeWidget()
+        self.listBox = QTreeWidget(self)
         self.listBox.setHeaderLabels([self.tr("Keyword"), self.tr("Replace With")])
         self.listBox.setColumnWidth(self.COL_KEY, wCol0)
         self.listBox.setIndentation(0)

@@ -115,25 +115,25 @@ class GuiItemDetails(QWidget):
         self.cCountName.setFont(fntLabel)
         self.cCountName.setAlignment(QtAlignRight)
 
-        self.cCountData = QLabel("")
+        self.cCountData = QLabel("", self)
         self.cCountData.setFont(fntValue)
         self.cCountData.setAlignment(QtAlignRight)
 
         # Word Count
-        self.wCountName = QLabel("  "+self.tr("Words"))
+        self.wCountName = QLabel("  "+self.tr("Words"), self)
         self.wCountName.setFont(fntLabel)
         self.wCountName.setAlignment(QtAlignRight)
 
-        self.wCountData = QLabel("")
+        self.wCountData = QLabel("", self)
         self.wCountData.setFont(fntValue)
         self.wCountData.setAlignment(QtAlignRight)
 
         # Paragraph Count
-        self.pCountName = QLabel("  "+self.tr("Paragraphs"))
+        self.pCountName = QLabel("  "+self.tr("Paragraphs"), self)
         self.pCountName.setFont(fntLabel)
         self.pCountName.setAlignment(QtAlignRight)
 
-        self.pCountData = QLabel("")
+        self.pCountData = QLabel("", self)
         self.pCountData.setFont(fntValue)
         self.pCountData.setAlignment(QtAlignRight)
 

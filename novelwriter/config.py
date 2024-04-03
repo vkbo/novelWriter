@@ -61,8 +61,12 @@ class Config:
         self.appHandle = "novelwriter"
 
         # Set Paths
-        confRoot = Path(QStandardPaths.writableLocation(QStandardPaths.ConfigLocation))
-        dataRoot = Path(QStandardPaths.writableLocation(QStandardPaths.AppDataLocation))
+        confRoot = Path(QStandardPaths.writableLocation(
+            QStandardPaths.StandardLocation.ConfigLocation)
+        )
+        dataRoot = Path(QStandardPaths.writableLocation(
+            QStandardPaths.StandardLocation.AppDataLocation)
+        )
 
         self._confPath = confRoot.absolute() / self.appHandle  # The user config location
         self._dataPath = dataRoot.absolute() / self.appHandle  # The user data location
@@ -83,7 +87,7 @@ class Config:
         # Localisation
         # Note that these paths must be strings
         self._nwLangPath = self._appPath / "assets" / "i18n"
-        self._qtLangPath = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
+        self._qtLangPath = QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath)
 
         hasLocale = (self._nwLangPath / f"nw_{QLocale.system().name()}.qm").exists()
         self._qLocale = QLocale.system() if hasLocale else QLocale("en_GB")
@@ -369,7 +373,7 @@ class Config:
             elif self.osDarwin and "Helvetica" in fontFam:
                 self.textFont = "Helvetica"
             else:
-                self.textFont = fontDB.systemFont(QFontDatabase.GeneralFont).family()
+                self.textFont = fontDB.systemFont(QFontDatabase.SystemFont.GeneralFont).family()
         else:
             self.textFont = family
         return

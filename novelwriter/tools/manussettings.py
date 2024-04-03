@@ -102,7 +102,7 @@ class GuiBuildSettings(QDialog):
         )
 
         # Settings Name
-        self.lblBuildName = QLabel(self.tr("Name"))
+        self.lblBuildName = QLabel(self.tr("Name"), self)
         self.editBuildName = QLineEdit(self)
 
         # SideBar
@@ -134,7 +134,7 @@ class GuiBuildSettings(QDialog):
         self.toolStack.addWidget(self.optTabOutput)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogApply | QtDialogSave | QtDialogClose)
+        self.buttonBox = QDialogButtonBox(QtDialogApply | QtDialogSave | QtDialogClose, self)
         self.buttonBox.clicked.connect(self._dialogButtonClicked)
 
         # Assemble
@@ -331,15 +331,15 @@ class _FilterTab(NFixedPage):
         treeHeader = self.optTree.header()
         treeHeader.setStretchLastSection(False)
         treeHeader.setMinimumSectionSize(iPx + cMg)  # See Issue #1551
-        treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.Stretch)
-        treeHeader.setSectionResizeMode(self.C_ACTIVE, QHeaderView.Fixed)
-        treeHeader.setSectionResizeMode(self.C_STATUS, QHeaderView.Fixed)
+        treeHeader.setSectionResizeMode(self.C_NAME, QHeaderView.ResizeMode.Stretch)
+        treeHeader.setSectionResizeMode(self.C_ACTIVE, QHeaderView.ResizeMode.Fixed)
+        treeHeader.setSectionResizeMode(self.C_STATUS, QHeaderView.ResizeMode.Fixed)
         treeHeader.resizeSection(self.C_ACTIVE, iPx + cMg)
         treeHeader.resizeSection(self.C_STATUS, iPx + cMg)
 
-        self.optTree.setDragDropMode(QAbstractItemView.NoDragDrop)
-        self.optTree.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.optTree.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.optTree.setDragDropMode(QAbstractItemView.DragDropMode.NoDragDrop)
+        self.optTree.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
+        self.optTree.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
 
         # Filters
         # =======
@@ -359,7 +359,7 @@ class _FilterTab(NFixedPage):
         self.resetButton.clicked.connect(lambda: self._setSelectedMode(self.F_FILTERED))
 
         self.modeBox = QHBoxLayout()
-        self.modeBox.addWidget(QLabel(self.tr("Mark selection as")))
+        self.modeBox.addWidget(QLabel(self.tr("Mark selection as"), self))
         self.modeBox.addStretch(1)
         self.modeBox.addWidget(self.includedButton)
         self.modeBox.addWidget(self.excludedButton)
@@ -369,7 +369,7 @@ class _FilterTab(NFixedPage):
         # Filer Options
         self.filterOpt = NSwitchBox(self, iPx)
         self.filterOpt.switchToggled.connect(self._applyFilterSwitch)
-        self.filterOpt.setFrameStyle(QFrame.NoFrame)
+        self.filterOpt.setFrameStyle(QFrame.Shape.NoFrame)
 
         # Assemble GUI
         # ============
@@ -381,10 +381,10 @@ class _FilterTab(NFixedPage):
         self.selectionBox.addLayout(self.modeBox)
         self.selectionBox.setContentsMargins(0, 0, 0, 0)
 
-        self.selectionWidget = QWidget()
+        self.selectionWidget = QWidget(self)
         self.selectionWidget.setLayout(self.selectionBox)
 
-        self.mainSplit = QSplitter()
+        self.mainSplit = QSplitter(self)
         self.mainSplit.addWidget(self.selectionWidget)
         self.mainSplit.addWidget(self.filterOpt)
         self.mainSplit.setCollapsible(0, False)
@@ -703,7 +703,7 @@ class _HeadingsTab(NScrollablePage):
         # Edit Form
         # =========
 
-        self.lblEditForm = QLabel(self.tr("Editing: {0}").format(self.tr("None")))
+        self.lblEditForm = QLabel(self.tr("Editing: {0}").format(self.tr("None")), self)
 
         self.editTextBox = QPlainTextEdit(self)
         self.editTextBox.setFixedHeight(5*iPx)
@@ -759,12 +759,12 @@ class _HeadingsTab(NScrollablePage):
         self.layoutMatrix.addWidget(self.layoutHeading, 0, 0, 1, 5)
 
         # Title Layout
-        self.mtxTitle = QLabel(self._build.getLabel("headings.fmtTitle"))
+        self.mtxTitle = QLabel(self._build.getLabel("headings.fmtTitle"), self)
         self.centerTitle = NSwitch(self, height=iPx)
         self.breakTitle = NSwitch(self, height=iPx)
-        lblCenterT = QLabel(self.tr("Centre"))
+        lblCenterT = QLabel(self.tr("Centre"), self)
         lblCenterT.setIndent(sSp)
-        lblBreakT = QLabel(self.tr("Page Break"))
+        lblBreakT = QLabel(self.tr("Page Break"), self)
         lblBreakT.setIndent(sSp)
 
         self.layoutMatrix.addWidget(self.mtxTitle,    1, 0)
@@ -774,12 +774,12 @@ class _HeadingsTab(NScrollablePage):
         self.layoutMatrix.addWidget(self.breakTitle,  1, 4)
 
         # Chapter Layout
-        self.mtxChapter = QLabel(self._build.getLabel("headings.fmtChapter"))
+        self.mtxChapter = QLabel(self._build.getLabel("headings.fmtChapter"), self)
         self.centerChapter = NSwitch(self, height=iPx)
         self.breakChapter = NSwitch(self, height=iPx)
-        lblCenterC = QLabel(self.tr("Centre"))
+        lblCenterC = QLabel(self.tr("Centre"), self)
         lblCenterC.setIndent(sSp)
-        lblBreakC = QLabel(self.tr("Page Break"))
+        lblBreakC = QLabel(self.tr("Page Break"), self)
         lblBreakC.setIndent(sSp)
 
         self.layoutMatrix.addWidget(self.mtxChapter,    2, 0)
@@ -789,12 +789,12 @@ class _HeadingsTab(NScrollablePage):
         self.layoutMatrix.addWidget(self.breakChapter,  2, 4)
 
         # Scene Layout
-        self.mtxScene = QLabel(self._build.getLabel("headings.fmtScene"))
+        self.mtxScene = QLabel(self._build.getLabel("headings.fmtScene"), self)
         self.centerScene = NSwitch(self, height=iPx)
         self.breakScene = NSwitch(self, height=iPx)
-        lblCenterS = QLabel(self.tr("Centre"))
+        lblCenterS = QLabel(self.tr("Centre"), self)
         lblCenterS.setIndent(sSp)
-        lblBreakS = QLabel(self.tr("Page Break"))
+        lblBreakS = QLabel(self.tr("Page Break"), self)
         lblBreakS.setIndent(sSp)
 
         self.layoutMatrix.addWidget(self.mtxScene,    3, 0)

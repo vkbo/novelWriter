@@ -56,13 +56,13 @@ class GuiEditLabel(QDialog):
         self.labelValue.selectAll()
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel)
+        self.buttonBox = QDialogButtonBox(QtDialogOk | QtDialogCancel, self)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 
         # Assemble
         self.innerBox = QHBoxLayout()
-        self.innerBox.addWidget(QLabel(self.tr("Label")), 0)
+        self.innerBox.addWidget(QLabel(self.tr("Label"), self), 0)
         self.innerBox.addWidget(self.labelValue, 1)
         self.innerBox.setSpacing(mSp)
 

@@ -24,7 +24,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor, QPainter
+from PyQt5.QtGui import QColor, QPainter, QTextCursor
 from PyQt5.QtWidgets import QDialogButtonBox, QStyle
 
 # Qt Alignment Flags
@@ -81,3 +81,10 @@ QtRoleAccept = QDialogButtonBox.ButtonRole.AcceptRole
 QtRoleAction = QDialogButtonBox.ButtonRole.ActionRole
 QtRoleApply = QDialogButtonBox.ButtonRole.ApplyRole
 QtRoleReject = QDialogButtonBox.ButtonRole.RejectRole
+
+# Cursor Types
+
+QtKeepAnchor = QTextCursor.MoveMode.KeepAnchor
+QtMoveAnchor = QTextCursor.MoveMode.MoveAnchor
+QtMoveLeft = QTextCursor.MoveOperation.Left
+QtMoveRight = QTextCursor.MoveOperation.Right
