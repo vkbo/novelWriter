@@ -214,6 +214,10 @@ class GuiDocEditor(QPlainTextEdit):
         self.wheelEventFilter = WheelEventFilter(self)
         self.installEventFilter(self.wheelEventFilter)
 
+        # Function Mapping
+        self.closeSearch = self.docSearch.closeSearch
+        self.searchVisible = self.docSearch.isVisible
+
         # Finalise
         self.updateSyntaxColours()
         self.initEditor()
@@ -925,11 +929,6 @@ class GuiDocEditor(QPlainTextEdit):
 
         return True
 
-    def closeSearch(self) -> bool:
-        """Close the search box."""
-        self.docSearch.closeSearch()
-        return self.docSearch.isVisible()
-
     ##
     #  Document Events and Maintenance
     ##
@@ -985,7 +984,7 @@ class GuiDocEditor(QPlainTextEdit):
         if self.hasFocus():
             return False
         elif self.docSearch.isVisible():
-            return self.docSearch.cycleFocus(next)
+            return self.docSearch.cycleFocus()
         return True
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
@@ -1036,8 +1035,8 @@ class GuiDocEditor(QPlainTextEdit):
     @pyqtSlot()
     def toggleSearch(self) -> None:
         """Toggle the visibility of the search box."""
-        if self.docSearch.isVisible():
-            self.docSearch.closeSearch()
+        if self.searchVisible():
+            self.closeSearch()
         else:
             self.beginSearch()
         return
@@ -1319,9 +1318,9 @@ class GuiDocEditor(QPlainTextEdit):
         if len(resS) == 0 and self._docHandle:
             self.docSearch.setResultCount(0, 0)
             self._lastFind = None
-            if self.docSearch.doNextFile and not goBack:
+            if CONFIG.searchNextFile and not goBack:
                 self.mainGui.openNextDocument(
-                    self._docHandle, wrapAround=self.docSearch.doLoop
+                    self._docHandle, wrapAround=CONFIG.searchLoop
                 )
                 self.beginSearch()
                 self.setFocus()
@@ -1330,7 +1329,7 @@ class GuiDocEditor(QPlainTextEdit):
         cursor = self.textCursor()
         resIdx = bisect.bisect_left(resS, cursor.position())
 
-        doLoop = self.docSearch.doLoop
+        doLoop = CONFIG.searchLoop
         maxIdx = len(resS) - 1
 
         if goBack:
@@ -1340,9 +1339,9 @@ class GuiDocEditor(QPlainTextEdit):
             resIdx = maxIdx if doLoop else 0
 
         if resIdx > maxIdx and self._docHandle:
-            if self.docSearch.doNextFile and not goBack:
+            if CONFIG.searchNextFile and not goBack:
                 self.mainGui.openNextDocument(
-                    self._docHandle, wrapAround=self.docSearch.doLoop
+                    self._docHandle, wrapAround=CONFIG.searchLoop
                 )
                 self.beginSearch()
                 self.setFocus()
@@ -1375,9 +1374,9 @@ class GuiDocEditor(QPlainTextEdit):
             origB = cursor.position()
 
         findOpt = QTextDocument.FindFlag(0)
-        if self.docSearch.isCaseSense:
+        if CONFIG.searchCase:
             findOpt |= QTextDocument.FindFlag.FindCaseSensitively
-        if self.docSearch.isWholeWord:
+        if CONFIG.searchWord:
             findOpt |= QTextDocument.FindFlag.FindWholeWords
 
         searchFor = self.docSearch.getSearchObject()
@@ -1446,7 +1445,7 @@ class GuiDocEditor(QPlainTextEdit):
         searchFor = self.docSearch.searchText
         replWith = self.docSearch.replaceText
 
-        if self.docSearch.doMatchCap:
+        if CONFIG.searchMatchCap:
             replWith = transferCase(cursor.selectedText(), replWith)
 
         # Make sure the selected text was selected by an actual find
@@ -2391,14 +2390,6 @@ class GuiDocEditSearch(QFrame):
 
         self.docEditor = docEditor
 
-        self.repVisible  = False
-        self.isCaseSense = CONFIG.searchCase
-        self.isWholeWord = CONFIG.searchWord
-        self.isRegEx     = CONFIG.searchRegEx
-        self.doLoop      = CONFIG.searchLoop
-        self.doNextFile  = CONFIG.searchNextFile
-        self.doMatchCap  = CONFIG.searchMatchCap
-
         iSz = SHARED.theme.baseIconSize
         mPx = CONFIG.pxInt(6)
 
@@ -2440,31 +2431,31 @@ class GuiDocEditSearch(QFrame):
 
         self.toggleCase = QAction(self.tr("Case Sensitive"), self)
         self.toggleCase.setCheckable(True)
-        self.toggleCase.setChecked(self.isCaseSense)
+        self.toggleCase.setChecked(CONFIG.searchCase)
         self.toggleCase.toggled.connect(self._doToggleCase)
         self.searchOpt.addAction(self.toggleCase)
 
         self.toggleWord = QAction(self.tr("Whole Words Only"), self)
         self.toggleWord.setCheckable(True)
-        self.toggleWord.setChecked(self.isWholeWord)
+        self.toggleWord.setChecked(CONFIG.searchWord)
         self.toggleWord.toggled.connect(self._doToggleWord)
         self.searchOpt.addAction(self.toggleWord)
 
         self.toggleRegEx = QAction(self.tr("RegEx Mode"), self)
         self.toggleRegEx.setCheckable(True)
-        self.toggleRegEx.setChecked(self.isRegEx)
+        self.toggleRegEx.setChecked(CONFIG.searchRegEx)
         self.toggleRegEx.toggled.connect(self._doToggleRegEx)
         self.searchOpt.addAction(self.toggleRegEx)
 
         self.toggleLoop = QAction(self.tr("Loop Search"), self)
         self.toggleLoop.setCheckable(True)
-        self.toggleLoop.setChecked(self.doLoop)
+        self.toggleLoop.setChecked(CONFIG.searchLoop)
         self.toggleLoop.toggled.connect(self._doToggleLoop)
         self.searchOpt.addAction(self.toggleLoop)
 
         self.toggleProject = QAction(self.tr("Search Next File"), self)
         self.toggleProject.setCheckable(True)
-        self.toggleProject.setChecked(self.doNextFile)
+        self.toggleProject.setChecked(CONFIG.searchNextFile)
         self.toggleProject.toggled.connect(self._doToggleProject)
         self.searchOpt.addAction(self.toggleProject)
 
@@ -2472,14 +2463,14 @@ class GuiDocEditSearch(QFrame):
 
         self.toggleMatchCap = QAction(self.tr("Preserve Case"), self)
         self.toggleMatchCap.setCheckable(True)
-        self.toggleMatchCap.setChecked(self.doMatchCap)
+        self.toggleMatchCap.setChecked(CONFIG.searchMatchCap)
         self.toggleMatchCap.toggled.connect(self._doToggleMatchCap)
         self.searchOpt.addAction(self.toggleMatchCap)
 
         self.searchOpt.addSeparator()
 
         self.cancelSearch = QAction(self.tr("Close Search"), self)
-        self.cancelSearch.triggered.connect(self._doClose)
+        self.cancelSearch.triggered.connect(self.closeSearch)
         self.searchOpt.addAction(self.cancelSearch)
 
         # Buttons
@@ -2550,20 +2541,20 @@ class GuiDocEditSearch(QFrame):
         expression object.
         """
         text = self.searchBox.text()
-        if self.isRegEx:
+        if CONFIG.searchRegEx:
             # Using the Unicode-capable QRegularExpression class was
             # only added in Qt 5.13. Otherwise, 5.3 and up supports
             # only the QRegExp class.
             if CONFIG.verQtValue >= 0x050d00:
                 rxOpt = QRegularExpression.PatternOption.UseUnicodePropertiesOption
-                if not self.isCaseSense:
+                if not CONFIG.searchCase:
                     rxOpt |= QRegularExpression.PatternOption.CaseInsensitiveOption
                 regEx = QRegularExpression(text, rxOpt)
                 self._alertSearchValid(regEx.isValid())
                 return regEx
             else:  # pragma: no cover
                 # >= 50300 to < 51300
-                if self.isCaseSense:
+                if CONFIG.searchCase:
                     rxOpt = Qt.CaseSensitivity.CaseSensitive
                 else:
                     rxOpt = Qt.CaseSensitivity.CaseInsensitive
@@ -2587,7 +2578,7 @@ class GuiDocEditSearch(QFrame):
             self.searchBox.setText(text)
         self.searchBox.setFocus()
         self.searchBox.selectAll()
-        if self.isRegEx:
+        if CONFIG.searchRegEx:
             self._alertSearchValid(True)
         return
 
@@ -2657,48 +2648,38 @@ class GuiDocEditSearch(QFrame):
 
         return
 
-    def closeSearch(self) -> None:
-        """Close the search box."""
-        CONFIG.searchCase = self.isCaseSense
-        CONFIG.searchWord = self.isWholeWord
-        CONFIG.searchRegEx = self.isRegEx
-        CONFIG.searchLoop = self.doLoop
-        CONFIG.searchNextFile = self.doNextFile
-        CONFIG.searchMatchCap = self.doMatchCap
-
-        self.showReplace.setChecked(False)
-        self.setVisible(False)
-        self.docEditor.updateDocMargins()
-        self.docEditor.setFocus()
-
-        return
-
-    def cycleFocus(self, next: bool) -> bool:
+    def cycleFocus(self) -> bool:
         """The tab key just alternates focus between the two input
         boxes, if the replace box is visible.
         """
-        if self.replaceBox.isVisible():
-            if self.searchBox.hasFocus():
-                self.replaceBox.setFocus()
-                return True
-            elif self.replaceBox.hasFocus():
-                self.searchBox.setFocus()
-                return True
+        if self.searchBox.hasFocus():
+            self.replaceBox.setFocus()
+            return True
+        elif self.replaceBox.hasFocus():
+            self.searchBox.setFocus()
+            return True
         return False
 
     def anyFocus(self) -> bool:
         """Return True if any of the input boxes have focus."""
-        return self.searchBox.hasFocus() | self.replaceBox.hasFocus()
+        return self.searchBox.hasFocus() or self.replaceBox.hasFocus()
+
+    ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot()
+    def closeSearch(self) -> None:
+        """Close the search box."""
+        self.showReplace.setChecked(False)
+        self.setVisible(False)
+        self.docEditor.updateDocMargins()
+        self.docEditor.setFocus()
+        return
 
     ##
     #  Private Slots
     ##
-
-    @pyqtSlot()
-    def _doClose(self) -> None:
-        """Hide the search/replace bar."""
-        self.closeSearch()
-        return
 
     @pyqtSlot()
     def _doSearch(self) -> None:
@@ -2717,7 +2698,6 @@ class GuiDocEditSearch(QFrame):
         """Toggle the show/hide of the replace box."""
         self.replaceBox.setVisible(state)
         self.replaceButton.setVisible(state)
-        self.repVisible = state
         self.adjustSize()
         self.docEditor.updateDocMargins()
         return
@@ -2725,37 +2705,37 @@ class GuiDocEditSearch(QFrame):
     @pyqtSlot(bool)
     def _doToggleCase(self, state: bool) -> None:
         """Enable/disable case sensitive mode."""
-        self.isCaseSense = state
+        CONFIG.searchCase = state
         return
 
     @pyqtSlot(bool)
     def _doToggleWord(self, state: bool) -> None:
         """Enable/disable whole word search mode."""
-        self.isWholeWord = state
+        CONFIG.searchWord = state
         return
 
     @pyqtSlot(bool)
     def _doToggleRegEx(self, state: bool) -> None:
         """Enable/disable regular expression search mode."""
-        self.isRegEx = state
+        CONFIG.searchRegEx = state
         return
 
     @pyqtSlot(bool)
     def _doToggleLoop(self, state: bool) -> None:
         """Enable/disable looping the search."""
-        self.doLoop = state
+        CONFIG.searchLoop = state
         return
 
     @pyqtSlot(bool)
     def _doToggleProject(self, state: bool) -> None:
         """Enable/disable continuing search in next project file."""
-        self.doNextFile = state
+        CONFIG.searchNextFile = state
         return
 
     @pyqtSlot(bool)
     def _doToggleMatchCap(self, state: bool) -> None:
         """Enable/disable preserving capitalisation when replacing."""
-        self.doMatchCap = state
+        CONFIG.searchMatchCap = state
         return
 
     ##
