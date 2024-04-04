@@ -214,6 +214,10 @@ class GuiDocEditor(QPlainTextEdit):
         self.wheelEventFilter = WheelEventFilter(self)
         self.installEventFilter(self.wheelEventFilter)
 
+        # Function Mapping
+        self.closeSearch = self.docSearch.closeSearch
+        self.searchVisible = self.docSearch.isVisible
+
         # Finalise
         self.updateSyntaxColours()
         self.initEditor()
@@ -925,11 +929,6 @@ class GuiDocEditor(QPlainTextEdit):
 
         return True
 
-    def closeSearch(self) -> bool:
-        """Close the search box."""
-        self.docSearch.closeSearch()
-        return self.docSearch.isVisible()
-
     ##
     #  Document Events and Maintenance
     ##
@@ -985,7 +984,7 @@ class GuiDocEditor(QPlainTextEdit):
         if self.hasFocus():
             return False
         elif self.docSearch.isVisible():
-            return self.docSearch.cycleFocus(next)
+            return self.docSearch.cycleFocus()
         return True
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
@@ -1036,8 +1035,8 @@ class GuiDocEditor(QPlainTextEdit):
     @pyqtSlot()
     def toggleSearch(self) -> None:
         """Toggle the visibility of the search box."""
-        if self.docSearch.isVisible():
-            self.docSearch.closeSearch()
+        if self.searchVisible():
+            self.closeSearch()
         else:
             self.beginSearch()
         return
@@ -2391,8 +2390,6 @@ class GuiDocEditSearch(QFrame):
 
         self.docEditor = docEditor
 
-        self.repVisible  = False
-
         iSz = SHARED.theme.baseIconSize
         mPx = CONFIG.pxInt(6)
 
@@ -2473,7 +2470,7 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.addSeparator()
 
         self.cancelSearch = QAction(self.tr("Close Search"), self)
-        self.cancelSearch.triggered.connect(self._doClose)
+        self.cancelSearch.triggered.connect(self.closeSearch)
         self.searchOpt.addAction(self.cancelSearch)
 
         # Buttons
@@ -2651,41 +2648,38 @@ class GuiDocEditSearch(QFrame):
 
         return
 
+    def cycleFocus(self) -> bool:
+        """The tab key just alternates focus between the two input
+        boxes, if the replace box is visible.
+        """
+        if self.searchBox.hasFocus():
+            self.replaceBox.setFocus()
+            return True
+        elif self.replaceBox.hasFocus():
+            self.searchBox.setFocus()
+            return True
+        return False
+
+    def anyFocus(self) -> bool:
+        """Return True if any of the input boxes have focus."""
+        return self.searchBox.hasFocus() or self.replaceBox.hasFocus()
+
+    ##
+    #  Public Slots
+    ##
+
+    @pyqtSlot()
     def closeSearch(self) -> None:
         """Close the search box."""
         self.showReplace.setChecked(False)
         self.setVisible(False)
         self.docEditor.updateDocMargins()
         self.docEditor.setFocus()
-
         return
-
-    def cycleFocus(self, next: bool) -> bool:
-        """The tab key just alternates focus between the two input
-        boxes, if the replace box is visible.
-        """
-        if self.replaceBox.isVisible():
-            if self.searchBox.hasFocus():
-                self.replaceBox.setFocus()
-                return True
-            elif self.replaceBox.hasFocus():
-                self.searchBox.setFocus()
-                return True
-        return False
-
-    def anyFocus(self) -> bool:
-        """Return True if any of the input boxes have focus."""
-        return self.searchBox.hasFocus() | self.replaceBox.hasFocus()
 
     ##
     #  Private Slots
     ##
-
-    @pyqtSlot()
-    def _doClose(self) -> None:
-        """Hide the search/replace bar."""
-        self.closeSearch()
-        return
 
     @pyqtSlot()
     def _doSearch(self) -> None:
@@ -2704,7 +2698,6 @@ class GuiDocEditSearch(QFrame):
         """Toggle the show/hide of the replace box."""
         self.replaceBox.setVisible(state)
         self.replaceButton.setVisible(state)
-        self.repVisible = state
         self.adjustSize()
         self.docEditor.updateDocMargins()
         return

@@ -1956,21 +1956,21 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
         mp.setattr(docSearch.searchBox, "hasFocus", lambda: False)
         mp.setattr(docSearch.replaceBox, "hasFocus", lambda: False)
         assert docEditor.focusNextPrevChild(True) is False
-        assert docSearch.cycleFocus(True) is False
+        assert docSearch.cycleFocus() is False
 
     with monkeypatch.context() as mp:
         mp.setattr(docEditor, "hasFocus", lambda: False)
         mp.setattr(docSearch.searchBox, "hasFocus", lambda: True)
         mp.setattr(docSearch.replaceBox, "hasFocus", lambda: False)
         assert docEditor.focusNextPrevChild(True) is True
-        assert docSearch.cycleFocus(True) is True
+        assert docSearch.cycleFocus() is True
 
     with monkeypatch.context() as mp:
         mp.setattr(docEditor, "hasFocus", lambda: False)
         mp.setattr(docSearch.searchBox, "hasFocus", lambda: False)
         mp.setattr(docSearch.replaceBox, "hasFocus", lambda: True)
         assert docEditor.focusNextPrevChild(True) is True
-        assert docSearch.cycleFocus(True) is True
+        assert docSearch.cycleFocus() is True
         docSearch.closeSearch()
         assert docSearch.isVisible() is False
         assert docEditor.focusNextPrevChild(True) is True

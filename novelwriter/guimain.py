@@ -1270,7 +1270,7 @@ class GuiMain(QMainWindow):
     @pyqtSlot()
     def _keyPressEscape(self) -> None:
         """Process an escape keypress in the main window."""
-        if self.docEditor.docSearch.isVisible():
+        if self.docEditor.searchVisible():
             self.docEditor.closeSearch()
         elif SHARED.focusMode:
             SHARED.setFocusMode(False)
