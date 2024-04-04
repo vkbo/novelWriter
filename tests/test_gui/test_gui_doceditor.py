@@ -1794,7 +1794,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Activate loop search
     docSearch.toggleLoop.activate(QAction.Trigger)
     assert docSearch.toggleLoop.isChecked()
-    assert docSearch.doLoop is True
+    assert CONFIG.searchLoop is True
 
     # Find next by menu Search > Find Next
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
@@ -1819,7 +1819,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Enable RegEx search
     docSearch.toggleRegEx.activate(QAction.Trigger)
     assert docSearch.toggleRegEx.isChecked()
-    assert docSearch.isRegEx is True
+    assert CONFIG.searchRegEx is True
 
     # Set invalid RegEx
     docEditor.setCursorPosition(0)
@@ -1848,7 +1848,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Make RegEx case sensitive
     docSearch.toggleCase.activate(QAction.Trigger)
     assert docSearch.toggleCase.isChecked()
-    assert docSearch.isCaseSense is True
+    assert CONFIG.searchCase is True
 
     # Find next/prev (one result)
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
@@ -1865,12 +1865,12 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Disable RegEx case sensitive
     docSearch.toggleCase.activate(QAction.Trigger)
     assert docSearch.toggleCase.isChecked() is False
-    assert docSearch.isCaseSense is False
+    assert CONFIG.searchCase is False
 
     # Toggle replace preserve case
     docSearch.toggleMatchCap.activate(QAction.Trigger)
     assert docSearch.toggleMatchCap.isChecked()
-    assert docSearch.doMatchCap is True
+    assert CONFIG.searchMatchCap is True
 
     # Replace "Sus" with "Foo" via menu
     docEditor.setCursorPosition(605)
@@ -1898,7 +1898,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Disable RegEx search
     docSearch.toggleRegEx.activate(QAction.Trigger)
     assert not docSearch.toggleRegEx.isChecked()
-    assert docSearch.isRegEx is False
+    assert CONFIG.searchRegEx is False
 
     # Close search and select "est" again
     docSearch.cancelSearch.activate(QAction.Trigger)
@@ -1915,7 +1915,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Enable full word search
     docSearch.toggleWord.activate(QAction.Trigger)
     assert docSearch.toggleWord.isChecked()
-    assert docSearch.isWholeWord is True
+    assert CONFIG.searchWord is True
 
     # Only one match
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
@@ -1926,7 +1926,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Enable next doc search
     docSearch.toggleProject.activate(QAction.Trigger)
     assert docSearch.toggleProject.isChecked()
-    assert docSearch.doNextFile is True
+    assert CONFIG.searchNextFile is True
 
     # Next match
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
@@ -1937,7 +1937,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
     assert abs(docEditor.getCursorPosition() - 1127) < 3
 
     # Next doc, no match
-    assert docSearch.doNextFile is True
+    assert CONFIG.searchNextFile is True
     docSearch.setSearchText("abcdef")
     nwGUI.mainMenu.aFindNext.activate(QAction.Trigger)
     assert docEditor.docHandle != "2426c6f0ca922"
