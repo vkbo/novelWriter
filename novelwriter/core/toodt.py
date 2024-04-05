@@ -1240,18 +1240,16 @@ class ODTParagraphStyle:
     ##
 
     def checkNew(self, style: ODTParagraphStyle) -> bool:
-        """Check if there are new settings in refStyle that differ from
-        those in the current object.
+        """Check if there are new settings in style that differ from
+        those in this object. Unset styles are ignored as they can be
+        inherited from the parent style.
         """
-        for name, (_, aVal) in style._mAttr.items():
-            if aVal is not None and aVal != self._mAttr[name][1]:
-                return True
-        for name, (_, aVal) in style._pAttr.items():
-            if aVal is not None and aVal != self._pAttr[name][1]:
-                return True
-        for name, (_, aVal) in style._tAttr.items():
-            if aVal is not None and aVal != self._tAttr[name][1]:
-                return True
+        if any(v and v != self._mAttr[m][1] for m, (_, v) in style._mAttr.items()):
+            return True
+        if any(v and v != self._pAttr[m][1] for m, (_, v) in style._pAttr.items()):
+            return True
+        if any(v and v != self._tAttr[m][1] for m, (_, v) in style._tAttr.items()):
+            return True
         return False
 
     def getID(self) -> str:
