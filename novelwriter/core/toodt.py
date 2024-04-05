@@ -60,8 +60,7 @@ for ns, uri in XML_NS.items():
 
 def _mkTag(ns: str, tag: str) -> str:
     """Assemble namespace and tag name."""
-    uri = XML_NS.get(ns, "")
-    if uri:
+    if uri := XML_NS.get(ns, ""):
         return f"{{{uri}}}{tag}"
     logger.warning("Missing xml namespace '%s'", ns)
     return tag
@@ -204,10 +203,9 @@ class ToOdt(Tokenizer):
     def setLanguage(self, language: str | None) -> None:
         """Set language for the document."""
         if language:
-            langBits = language.split("_")
-            self._dLanguage = langBits[0]
-            if len(langBits) > 1:
-                self._dCountry = langBits[1]
+            lang, _, country = language.partition("_")
+            self._dLanguage = lang or self._dLanguage
+            self._dCountry = country or self._dCountry
         return
 
     def setColourHeaders(self, state: bool) -> None:
@@ -574,10 +572,7 @@ class ToOdt(Tokenizer):
 
     def _formatSynopsis(self, text: str, synopsis: bool) -> tuple[str, list[tuple[int, int]]]:
         """Apply formatting to synopsis lines."""
-        if synopsis:
-            name = self._localLookup("Synopsis")
-        else:
-            name = self._localLookup("Short Description")
+        name = self._localLookup("Synopsis" if synopsis else "Short Description")
         rTxt = f"{name}: {text}"
         rFmt = [(0, self.FMT_B_B), (len(name) + 1, self.FMT_B_E)]
         return rTxt, rFmt
@@ -610,8 +605,7 @@ class ToOdt(Tokenizer):
         tFmt: Sequence[tuple[int, int]] = [], isHead: bool = False, oLevel: str | None = None
     ) -> None:
         """Add a text paragraph to the text XML element."""
-        tAttr = {}
-        tAttr[_mkTag("text", "style-name")] = self._paraStyle(styleName, oStyle)
+        tAttr = {_mkTag("text", "style-name"): self._paraStyle(styleName, oStyle)}
         if oLevel is not None:
             tAttr[_mkTag("text", "outline-level")] = oLevel
 
@@ -718,29 +712,29 @@ class ToOdt(Tokenizer):
         if hFmt in self._autoText:
             return self._autoText[hFmt][0]
 
-        newName = "T%d" % (len(self._autoText) + 1)
-        newStyle = ODTTextStyle()
+        name = "T%d" % (len(self._autoText) + 1)
+        style = ODTTextStyle()
         if hFmt & X_BLD:
-            newStyle.setFontWeight("bold")
+            style.setFontWeight("bold")
         if hFmt & X_ITA:
-            newStyle.setFontStyle("italic")
+            style.setFontStyle("italic")
         if hFmt & X_DEL:
-            newStyle.setStrikeStyle("solid")
-            newStyle.setStrikeType("single")
+            style.setStrikeStyle("solid")
+            style.setStrikeType("single")
         if hFmt & X_UND:
-            newStyle.setUnderlineStyle("solid")
-            newStyle.setUnderlineWidth("auto")
-            newStyle.setUnderlineColour("font-color")
+            style.setUnderlineStyle("solid")
+            style.setUnderlineWidth("auto")
+            style.setUnderlineColour("font-color")
         if hFmt & X_MRK:
-            newStyle.setBackgroundColor(self._markText)
+            style.setBackgroundColor(self._markText)
         if hFmt & X_SUP:
-            newStyle.setTextPosition("super")
+            style.setTextPosition("super")
         if hFmt & X_SUB:
-            newStyle.setTextPosition("sub")
+            style.setTextPosition("sub")
 
-        self._autoText[hFmt] = (newName, newStyle)
+        self._autoText[hFmt] = (name, style)
 
-        return newName
+        return name
 
     def _emToCm(self, value: float) -> str:
         """Converts an em value to centimetres."""
@@ -752,298 +746,254 @@ class ToOdt(Tokenizer):
 
     def _pageStyles(self) -> None:
         """Set the default page style."""
-        tAttr = {}
-        tAttr[_mkTag("style", "name")] = "PM1"
-        if self._isFlat:
-            xPage = ET.SubElement(self._xAuto, _mkTag("style", "page-layout"), attrib=tAttr)
-        else:
-            xPage = ET.SubElement(self._xAut2, _mkTag("style", "page-layout"), attrib=tAttr)
-
-        tAttr = {}
-        tAttr[_mkTag("fo", "page-width")]    = self._mDocWidth
-        tAttr[_mkTag("fo", "page-height")]   = self._mDocHeight
-        tAttr[_mkTag("fo", "margin-top")]    = self._mDocTop
-        tAttr[_mkTag("fo", "margin-bottom")] = self._mDocBtm
-        tAttr[_mkTag("fo", "margin-left")]   = self._mDocLeft
-        tAttr[_mkTag("fo", "margin-right")]  = self._mDocRight
-        tAttr[_mkTag("fo", "print-orientation")] = "portrait"
-        ET.SubElement(xPage, _mkTag("style", "page-layout-properties"), attrib=tAttr)
+        xPage = ET.SubElement(
+            self._xAuto if self._isFlat else self._xAut2,
+            _mkTag("style", "page-layout"),
+            attrib={_mkTag("style", "name"): "PM1"}
+        )
+        ET.SubElement(xPage, _mkTag("style", "page-layout-properties"), attrib={
+            _mkTag("fo", "page-width"): self._mDocWidth,
+            _mkTag("fo", "page-height"): self._mDocHeight,
+            _mkTag("fo", "margin-top"): self._mDocTop,
+            _mkTag("fo", "margin-bottom"): self._mDocBtm,
+            _mkTag("fo", "margin-left"): self._mDocLeft,
+            _mkTag("fo", "margin-right"): self._mDocRight,
+            _mkTag("fo", "print-orientation"): "portrait",
+        })
 
         xHead = ET.SubElement(xPage, _mkTag("style", "header-style"))
-
-        tAttr = {}
-        tAttr[_mkTag("fo", "min-height")]    = "0.600cm"
-        tAttr[_mkTag("fo", "margin-left")]   = "0.000cm"
-        tAttr[_mkTag("fo", "margin-right")]  = "0.000cm"
-        tAttr[_mkTag("fo", "margin-bottom")] = "0.500cm"
-        ET.SubElement(xHead, _mkTag("style", "header-footer-properties"), attrib=tAttr)
+        ET.SubElement(xHead, _mkTag("style", "header-footer-properties"), attrib={
+            _mkTag("fo", "min-height"): "0.600cm",
+            _mkTag("fo", "margin-left"): "0.000cm",
+            _mkTag("fo", "margin-right"): "0.000cm",
+            _mkTag("fo", "margin-bottom"): "0.500cm",
+        })
 
         return
 
     def _defaultStyles(self) -> None:
         """Set the default styles."""
         # Add Paragraph Family Style
-        # ==========================
-
-        tAttr = {}
-        tAttr[_mkTag("style", "family")] = "paragraph"
-        xStyl = ET.SubElement(self._xStyl, _mkTag("style", "default-style"), attrib=tAttr)
-
-        tAttr = {}
-        tAttr[_mkTag("style", "line-break")]        = "strict"
-        tAttr[_mkTag("style", "tab-stop-distance")] = "1.251cm"
-        tAttr[_mkTag("style", "writing-mode")]      = "page"
-        ET.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=tAttr)
-
-        tAttr = {}
-        tAttr[_mkTag("style", "font-name")]   = self._textFont
-        tAttr[_mkTag("fo",    "font-family")] = self._fontFamily
-        tAttr[_mkTag("fo",    "font-size")]   = self._fSizeText
-        tAttr[_mkTag("fo",    "language")]    = self._dLanguage
-        tAttr[_mkTag("fo",    "country")]     = self._dCountry
-        ET.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=tAttr)
+        xStyl = ET.SubElement(self._xStyl, _mkTag("style", "default-style"), attrib={
+            _mkTag("style", "family"): "paragraph",
+        })
+        ET.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib={
+            _mkTag("style", "line-break"): "strict",
+            _mkTag("style", "tab-stop-distance"): "1.251cm",
+            _mkTag("style", "writing-mode"): "page",
+        })
+        ET.SubElement(xStyl, _mkTag("style", "text-properties"), attrib={
+            _mkTag("style", "font-name"): self._textFont,
+            _mkTag("fo", "font-family"): self._fontFamily,
+            _mkTag("fo", "font-size"): self._fSizeText,
+            _mkTag("fo", "language"): self._dLanguage,
+            _mkTag("fo", "country"): self._dCountry,
+        })
 
         # Add Standard Paragraph Style
-        # ============================
-
-        tAttr = {}
-        tAttr[_mkTag("style", "name")]   = "Standard"
-        tAttr[_mkTag("style", "family")] = "paragraph"
-        tAttr[_mkTag("style", "class")]  = "text"
-        xStyl = ET.SubElement(self._xStyl, _mkTag("style", "style"), attrib=tAttr)
-
-        tAttr = {}
-        tAttr[_mkTag("style", "font-name")]   = self._textFont
-        tAttr[_mkTag("fo",    "font-family")] = self._fontFamily
-        tAttr[_mkTag("fo",    "font-size")]   = self._fSizeText
-        ET.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=tAttr)
+        xStyl = ET.SubElement(self._xStyl, _mkTag("style", "style"), attrib={
+            _mkTag("style", "name"): "Standard",
+            _mkTag("style", "family"): "paragraph",
+            _mkTag("style", "class"): "text",
+        })
+        ET.SubElement(xStyl, _mkTag("style", "text-properties"), attrib={
+            _mkTag("style", "font-name"): self._textFont,
+            _mkTag("fo", "font-family"): self._fontFamily,
+            _mkTag("fo", "font-size"): self._fSizeText,
+        })
 
         # Add Default Heading Style
-        # =========================
-
-        tAttr = {}
-        tAttr[_mkTag("style", "name")]              = "Heading"
-        tAttr[_mkTag("style", "family")]            = "paragraph"
-        tAttr[_mkTag("style", "parent-style-name")] = "Standard"
-        tAttr[_mkTag("style", "next-style-name")]   = "Text_20_body"
-        tAttr[_mkTag("style", "class")]             = "text"
-        xStyl = ET.SubElement(self._xStyl, _mkTag("style", "style"), attrib=tAttr)
-
-        tAttr = {}
-        tAttr[_mkTag("fo", "margin-top")]     = self._mTopHead
-        tAttr[_mkTag("fo", "margin-bottom")]  = self._mBotHead
-        tAttr[_mkTag("fo", "keep-with-next")] = "always"
-        ET.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib=tAttr)
-
-        tAttr = {}
-        tAttr[_mkTag("style", "font-name")]   = self._textFont
-        tAttr[_mkTag("fo",    "font-family")] = self._fontFamily
-        tAttr[_mkTag("fo",    "font-size")]   = self._fSizeHead
-        ET.SubElement(xStyl, _mkTag("style", "text-properties"), attrib=tAttr)
+        xStyl = ET.SubElement(self._xStyl, _mkTag("style", "style"), attrib={
+            _mkTag("style", "name"): "Heading",
+            _mkTag("style", "family"): "paragraph",
+            _mkTag("style", "parent-style-name"): "Standard",
+            _mkTag("style", "next-style-name"): "Text_20_body",
+            _mkTag("style", "class"): "text",
+        })
+        ET.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib={
+            _mkTag("fo", "margin-top"): self._mTopHead,
+            _mkTag("fo", "margin-bottom"): self._mBotHead,
+            _mkTag("fo", "keep-with-next"): "always",
+        })
+        ET.SubElement(xStyl, _mkTag("style", "text-properties"), attrib={
+            _mkTag("style", "font-name"): self._textFont,
+            _mkTag("fo", "font-family"): self._fontFamily,
+            _mkTag("fo", "font-size"): self._fSizeHead,
+        })
 
         # Add Header and Footer Styles
-        # ============================
-        tAttr = {}
-        tAttr[_mkTag("style", "name")]              = "Header_20_and_20_Footer"
-        tAttr[_mkTag("style", "display-name")]      = "Header and Footer"
-        tAttr[_mkTag("style", "family")]            = "paragraph"
-        tAttr[_mkTag("style", "parent-style-name")] = "Standard"
-        tAttr[_mkTag("style", "class")]             = "extra"
-        ET.SubElement(self._xStyl, _mkTag("style", "style"), attrib=tAttr)
+        ET.SubElement(self._xStyl, _mkTag("style", "style"), attrib={
+            _mkTag("style", "name"): "Header_20_and_20_Footer",
+            _mkTag("style", "display-name"): "Header and Footer",
+            _mkTag("style", "family"): "paragraph",
+            _mkTag("style", "parent-style-name"): "Standard",
+            _mkTag("style", "class"): "extra",
+        })
 
         return
 
     def _useableStyles(self) -> None:
         """Set the usable styles."""
         # Add Text Body Style
-        # ===================
-
-        oStyle = ODTParagraphStyle()
-        oStyle.setDisplayName("Text body")
-        oStyle.setParentStyleName("Standard")
-        oStyle.setClass("text")
-        oStyle.setMarginTop(self._mTopText)
-        oStyle.setMarginBottom(self._mBotText)
-        oStyle.setLineHeight(self._fLineHeight)
-        oStyle.setFontName(self._textFont)
-        oStyle.setFontFamily(self._fontFamily)
-        oStyle.setFontSize(self._fSizeText)
-        oStyle.setTextAlign(self._textAlign)
-        oStyle.packXML(self._xStyl, "Text_20_body")
-
-        self._mainPara["Text_20_body"] = oStyle
+        style = ODTParagraphStyle()
+        style.setClass("text")
+        style.setDisplayName("Text body")
+        style.setFontFamily(self._fontFamily)
+        style.setFontName(self._textFont)
+        style.setFontSize(self._fSizeText)
+        style.setLineHeight(self._fLineHeight)
+        style.setMarginBottom(self._mBotText)
+        style.setMarginTop(self._mTopText)
+        style.setParentStyleName("Standard")
+        style.setTextAlign(self._textAlign)
+        style.packXML(self._xStyl, "Text_20_body")
+        self._mainPara["Text_20_body"] = style
 
         # Add First Line Indent Style
-        # ===========================
-
-        oStyle = ODTParagraphStyle()
-        oStyle.setDisplayName("First line indent")
-        oStyle.setParentStyleName("Text_20_body")
-        oStyle.setClass("text")
-        oStyle.setTextIndent(self._fTextIndent)
-        oStyle.packXML(self._xStyl, "First_20_line_20_indent")
-
-        self._mainPara["First_20_line_20_indent"] = oStyle
+        style = ODTParagraphStyle()
+        style.setClass("text")
+        style.setDisplayName("First line indent")
+        style.setParentStyleName("Text_20_body")
+        style.setTextIndent(self._fTextIndent)
+        style.packXML(self._xStyl, "First_20_line_20_indent")
+        self._mainPara["First_20_line_20_indent"] = style
 
         # Add Text Meta Style
-        # ===================
-
-        oStyle = ODTParagraphStyle()
-        oStyle.setDisplayName("Text Meta")
-        oStyle.setParentStyleName("Standard")
-        oStyle.setClass("text")
-        oStyle.setMarginTop(self._mTopMeta)
-        oStyle.setMarginBottom(self._mBotMeta)
-        oStyle.setLineHeight(self._fLineHeight)
-        oStyle.setFontName(self._textFont)
-        oStyle.setFontFamily(self._fontFamily)
-        oStyle.setFontSize(self._fSizeText)
-        oStyle.setColor(self._colMetaTx)
-        oStyle.setOpacity(self._opaMetaTx)
-        oStyle.packXML(self._xStyl, "Text_20_Meta")
-
-        self._mainPara["Text_20_Meta"] = oStyle
+        style = ODTParagraphStyle()
+        style.setClass("text")
+        style.setColor(self._colMetaTx)
+        style.setDisplayName("Text Meta")
+        style.setFontFamily(self._fontFamily)
+        style.setFontName(self._textFont)
+        style.setFontSize(self._fSizeText)
+        style.setLineHeight(self._fLineHeight)
+        style.setMarginBottom(self._mBotMeta)
+        style.setMarginTop(self._mTopMeta)
+        style.setOpacity(self._opaMetaTx)
+        style.setParentStyleName("Standard")
+        style.packXML(self._xStyl, "Text_20_Meta")
+        self._mainPara["Text_20_Meta"] = style
 
         # Add Title Style
-        # ===============
-
-        oStyle = ODTParagraphStyle()
-        oStyle.setDisplayName("Title")
-        oStyle.setParentStyleName("Heading")
-        oStyle.setNextStyleName("Text_20_body")
-        oStyle.setClass("chapter")
-        oStyle.setTextAlign("center")
-        oStyle.setMarginTop(self._mTopTitle)
-        oStyle.setMarginBottom(self._mBotTitle)
-        oStyle.setFontName(self._textFont)
-        oStyle.setFontFamily(self._fontFamily)
-        oStyle.setFontSize(self._fSizeTitle)
-        oStyle.setFontWeight("bold")
-        oStyle.packXML(self._xStyl, "Title")
-
-        self._mainPara["Title"] = oStyle
+        style = ODTParagraphStyle()
+        style.setClass("chapter")
+        style.setDisplayName("Title")
+        style.setFontFamily(self._fontFamily)
+        style.setFontName(self._textFont)
+        style.setFontSize(self._fSizeTitle)
+        style.setFontWeight("bold")
+        style.setMarginBottom(self._mBotTitle)
+        style.setMarginTop(self._mTopTitle)
+        style.setNextStyleName("Text_20_body")
+        style.setParentStyleName("Heading")
+        style.setTextAlign("center")
+        style.packXML(self._xStyl, "Title")
+        self._mainPara["Title"] = style
 
         # Add Separator Style
-        # ===================
-
-        oStyle = ODTParagraphStyle()
-        oStyle.setDisplayName("Separator")
-        oStyle.setParentStyleName("Standard")
-        oStyle.setNextStyleName("Text_20_body")
-        oStyle.setClass("text")
-        oStyle.setTextAlign("center")
-        oStyle.setMarginTop(self._mTopText)
-        oStyle.setMarginBottom(self._mBotText)
-        oStyle.setLineHeight(self._fLineHeight)
-        oStyle.setFontName(self._textFont)
-        oStyle.setFontFamily(self._fontFamily)
-        oStyle.setFontSize(self._fSizeText)
-        oStyle.packXML(self._xStyl, "Separator")
-
-        self._mainPara["Separator"] = oStyle
+        style = ODTParagraphStyle()
+        style.setClass("text")
+        style.setDisplayName("Separator")
+        style.setFontFamily(self._fontFamily)
+        style.setFontName(self._textFont)
+        style.setFontSize(self._fSizeText)
+        style.setLineHeight(self._fLineHeight)
+        style.setMarginBottom(self._mBotText)
+        style.setMarginTop(self._mTopText)
+        style.setNextStyleName("Text_20_body")
+        style.setParentStyleName("Standard")
+        style.setTextAlign("center")
+        style.packXML(self._xStyl, "Separator")
+        self._mainPara["Separator"] = style
 
         # Add Heading 1 Style
-        # ===================
-
-        oStyle = ODTParagraphStyle()
-        oStyle.setDisplayName("Heading 1")
-        oStyle.setParentStyleName("Heading")
-        oStyle.setNextStyleName("Text_20_body")
-        oStyle.setOutlineLevel("1")
-        oStyle.setClass("text")
-        oStyle.setMarginTop(self._mTopHead1)
-        oStyle.setMarginBottom(self._mBotHead1)
-        oStyle.setFontName(self._textFont)
-        oStyle.setFontFamily(self._fontFamily)
-        oStyle.setFontSize(self._fSizeHead1)
-        oStyle.setColor(self._colHead12)
-        oStyle.setOpacity(self._opaHead12)
-        oStyle.setFontWeight("bold")
-        oStyle.packXML(self._xStyl, "Heading_20_1")
-
-        self._mainPara["Heading_20_1"] = oStyle
+        style = ODTParagraphStyle()
+        style.setClass("text")
+        style.setColor(self._colHead12)
+        style.setDisplayName("Heading 1")
+        style.setFontFamily(self._fontFamily)
+        style.setFontName(self._textFont)
+        style.setFontSize(self._fSizeHead1)
+        style.setFontWeight("bold")
+        style.setMarginBottom(self._mBotHead1)
+        style.setMarginTop(self._mTopHead1)
+        style.setNextStyleName("Text_20_body")
+        style.setOpacity(self._opaHead12)
+        style.setOutlineLevel("1")
+        style.setParentStyleName("Heading")
+        style.packXML(self._xStyl, "Heading_20_1")
+        self._mainPara["Heading_20_1"] = style
 
         # Add Heading 2 Style
-        # ===================
-
-        oStyle = ODTParagraphStyle()
-        oStyle.setDisplayName("Heading 2")
-        oStyle.setParentStyleName("Heading")
-        oStyle.setNextStyleName("Text_20_body")
-        oStyle.setOutlineLevel("2")
-        oStyle.setClass("text")
-        oStyle.setMarginTop(self._mTopHead2)
-        oStyle.setMarginBottom(self._mBotHead2)
-        oStyle.setFontName(self._textFont)
-        oStyle.setFontFamily(self._fontFamily)
-        oStyle.setFontSize(self._fSizeHead2)
-        oStyle.setColor(self._colHead12)
-        oStyle.setOpacity(self._opaHead12)
-        oStyle.setFontWeight("bold")
-        oStyle.packXML(self._xStyl, "Heading_20_2")
-
-        self._mainPara["Heading_20_2"] = oStyle
+        style = ODTParagraphStyle()
+        style.setClass("text")
+        style.setColor(self._colHead12)
+        style.setDisplayName("Heading 2")
+        style.setFontFamily(self._fontFamily)
+        style.setFontName(self._textFont)
+        style.setFontSize(self._fSizeHead2)
+        style.setFontWeight("bold")
+        style.setMarginBottom(self._mBotHead2)
+        style.setMarginTop(self._mTopHead2)
+        style.setNextStyleName("Text_20_body")
+        style.setOpacity(self._opaHead12)
+        style.setOutlineLevel("2")
+        style.setParentStyleName("Heading")
+        style.packXML(self._xStyl, "Heading_20_2")
+        self._mainPara["Heading_20_2"] = style
 
         # Add Heading 3 Style
-        # ===================
-
-        oStyle = ODTParagraphStyle()
-        oStyle.setDisplayName("Heading 3")
-        oStyle.setParentStyleName("Heading")
-        oStyle.setNextStyleName("Text_20_body")
-        oStyle.setOutlineLevel("3")
-        oStyle.setClass("text")
-        oStyle.setMarginTop(self._mTopHead3)
-        oStyle.setMarginBottom(self._mBotHead3)
-        oStyle.setFontName(self._textFont)
-        oStyle.setFontFamily(self._fontFamily)
-        oStyle.setFontSize(self._fSizeHead3)
-        oStyle.setColor(self._colHead34)
-        oStyle.setOpacity(self._opaHead34)
-        oStyle.setFontWeight("bold")
-        oStyle.packXML(self._xStyl, "Heading_20_3")
-
-        self._mainPara["Heading_20_3"] = oStyle
+        style = ODTParagraphStyle()
+        style.setClass("text")
+        style.setColor(self._colHead34)
+        style.setDisplayName("Heading 3")
+        style.setFontFamily(self._fontFamily)
+        style.setFontName(self._textFont)
+        style.setFontSize(self._fSizeHead3)
+        style.setFontWeight("bold")
+        style.setMarginBottom(self._mBotHead3)
+        style.setMarginTop(self._mTopHead3)
+        style.setNextStyleName("Text_20_body")
+        style.setOpacity(self._opaHead34)
+        style.setOutlineLevel("3")
+        style.setParentStyleName("Heading")
+        style.packXML(self._xStyl, "Heading_20_3")
+        self._mainPara["Heading_20_3"] = style
 
         # Add Heading 4 Style
-        # ===================
-
-        oStyle = ODTParagraphStyle()
-        oStyle.setDisplayName("Heading 4")
-        oStyle.setParentStyleName("Heading")
-        oStyle.setNextStyleName("Text_20_body")
-        oStyle.setOutlineLevel("4")
-        oStyle.setClass("text")
-        oStyle.setMarginTop(self._mTopHead4)
-        oStyle.setMarginBottom(self._mBotHead4)
-        oStyle.setFontName(self._textFont)
-        oStyle.setFontFamily(self._fontFamily)
-        oStyle.setFontSize(self._fSizeHead4)
-        oStyle.setColor(self._colHead34)
-        oStyle.setOpacity(self._opaHead34)
-        oStyle.setFontWeight("bold")
-        oStyle.packXML(self._xStyl, "Heading_20_4")
-
-        self._mainPara["Heading_20_4"] = oStyle
+        style = ODTParagraphStyle()
+        style.setClass("text")
+        style.setColor(self._colHead34)
+        style.setDisplayName("Heading 4")
+        style.setFontFamily(self._fontFamily)
+        style.setFontName(self._textFont)
+        style.setFontSize(self._fSizeHead4)
+        style.setFontWeight("bold")
+        style.setMarginBottom(self._mBotHead4)
+        style.setMarginTop(self._mTopHead4)
+        style.setNextStyleName("Text_20_body")
+        style.setOpacity(self._opaHead34)
+        style.setOutlineLevel("4")
+        style.setParentStyleName("Heading")
+        style.packXML(self._xStyl, "Heading_20_4")
+        self._mainPara["Heading_20_4"] = style
 
         # Add Header Style
-        # ================
-        oStyle = ODTParagraphStyle()
-        oStyle.setDisplayName("Header")
-        oStyle.setParentStyleName("Header_20_and_20_Footer")
-        oStyle.setTextAlign("right")
-        oStyle.packXML(self._xStyl, "Header")
-
-        self._mainPara["Header"] = oStyle
+        style = ODTParagraphStyle()
+        style.setDisplayName("Header")
+        style.setParentStyleName("Header_20_and_20_Footer")
+        style.setTextAlign("right")
+        style.packXML(self._xStyl, "Header")
+        self._mainPara["Header"] = style
 
         return
 
     def _writeHeader(self) -> None:
         """Write the header elements."""
-        tAttr = {}
-        tAttr[_mkTag("style", "name")]             = "Standard"
-        tAttr[_mkTag("style", "page-layout-name")] = "PM1"
-        xPage = ET.SubElement(self._xMast, _mkTag("style", "master-page"), attrib=tAttr)
+        xPage = ET.SubElement(self._xMast, _mkTag("style", "master-page"), attrib={
+            _mkTag("style", "name"): "Standard",
+            _mkTag("style", "page-layout-name"): "PM1",
+        })
 
         # Standard Page Header
         if self._headerFormat:
@@ -1060,10 +1010,10 @@ class ToOdt(Tokenizer):
             })
             xPar.text = pre
             if page:
-                attrib = {_mkTag("text", "select-page"): "current"}
+                attr = {_mkTag("text", "select-page"): "current"}
                 if self._pageOffset > 0:
-                    attrib = {_mkTag("text", "page-adjust"): str(0 - self._pageOffset)}
-                xTail = ET.SubElement(xPar, _mkTag("text", "page-number"), attrib=attrib)
+                    attr = {_mkTag("text", "page-adjust"): str(0 - self._pageOffset)}
+                xTail = ET.SubElement(xPar, _mkTag("text", "page-number"), attrib=attr)
                 xTail.text = "2"
                 xTail.tail = post
             else:
@@ -1272,38 +1222,25 @@ class ODTParagraphStyle:
 
     def getID(self) -> str:
         """Generate a unique ID from the settings."""
-        string = (
+        return sha256((
             f"Paragraph:Main:{str(self._mAttr)}:"
             f"Paragraph:Para:{str(self._pAttr)}:"
             f"Paragraph:Text:{str(self._tAttr)}:"
-        )
-        return sha256(string.encode()).hexdigest()
+        ).encode()).hexdigest()
 
     def packXML(self, xParent: ET.Element, name: str) -> None:
         """Pack the content into an xml element."""
-        attr = {}
-        attr[_mkTag("style", "name")] = name
-        attr[_mkTag("style", "family")] = "paragraph"
-        for aName, (aNm, aVal) in self._mAttr.items():
-            if aVal is not None:
-                attr[_mkTag(aNm, aName)] = aVal
-
+        attr = {
+            _mkTag("style", "name"): name,
+            _mkTag("style", "family"): "paragraph",
+        }
+        attr.update({_mkTag(n, m): v for m, (n, v) in self._mAttr.items() if v is not None})
         xEntry = ET.SubElement(xParent, _mkTag("style", "style"), attrib=attr)
 
-        attr = {}
-        for aName, (aNm, aVal) in self._pAttr.items():
-            if aVal is not None:
-                attr[_mkTag(aNm, aName)] = aVal
-
-        if attr:
+        if attr := {_mkTag(n, m): v for m, (n, v) in self._pAttr.items() if v is not None}:
             ET.SubElement(xEntry, _mkTag("style", "paragraph-properties"), attrib=attr)
 
-        attr = {}
-        for aName, (aNm, aVal) in self._tAttr.items():
-            if aVal is not None:
-                attr[_mkTag(aNm, aName)] = aVal
-
-        if attr:
+        if attr := {_mkTag(n, m): v for m, (n, v) in self._tAttr.items() if v is not None}:
             ET.SubElement(xEntry, _mkTag("style", "text-properties"), attrib=attr)
 
         return
@@ -1412,19 +1349,12 @@ class ODTTextStyle:
 
     def packXML(self, xParent: ET.Element, name: str) -> None:
         """Pack the content into an xml element."""
-        attr = {}
-        attr[_mkTag("style", "name")] = name
-        attr[_mkTag("style", "family")] = "text"
-        xEntry = ET.SubElement(xParent, _mkTag("style", "style"), attrib=attr)
-
-        attr = {}
-        for aName, (aNm, aVal) in self._tAttr.items():
-            if aVal is not None:
-                attr[_mkTag(aNm, aName)] = aVal
-
-        if attr:
+        xEntry = ET.SubElement(xParent, _mkTag("style", "style"), attrib={
+            _mkTag("style", "name"): name,
+            _mkTag("style", "family"): "text",
+        })
+        if attr := {_mkTag(n, m): v for m, (n, v) in self._tAttr.items() if v is not None}:
             ET.SubElement(xEntry, _mkTag("style", "text-properties"), attrib=attr)
-
         return
 
 # END Class ODTTextStyle

@@ -136,6 +136,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
     ]
 
     key = "55db6c1d22ff5aba93f0f67c8d4a857a26e2d3813dfbcba1ef7c0d424f501be5"
+    assert key in odt._autoPara
     assert odt._autoPara[key][0] == "P1"
     assert isinstance(odt._autoPara[key][1], ODTParagraphStyle)
 
