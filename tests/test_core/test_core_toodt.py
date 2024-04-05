@@ -118,7 +118,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
 
     # Paragraph Style
     # ===============
-    oStyle = ODTParagraphStyle()
+    oStyle = ODTParagraphStyle("test")
 
     assert odt._paraStyle("stuff", oStyle) == "Standard"
     assert odt._paraStyle("Text_20_body", oStyle) == "Text_20_body"
@@ -136,12 +136,13 @@ def testCoreToOdt_TextFormatting(mockGUI):
     ]
 
     key = "55db6c1d22ff5aba93f0f67c8d4a857a26e2d3813dfbcba1ef7c0d424f501be5"
-    assert odt._autoPara[key][0] == "P1"
-    assert isinstance(odt._autoPara[key][1], ODTParagraphStyle)
+    assert key in odt._autoPara
+    assert isinstance(odt._autoPara[key], ODTParagraphStyle)
+    assert odt._autoPara[key].name == "P1"
 
     # Paragraph Formatting
     # ====================
-    oStyle = ODTParagraphStyle()
+    oStyle = ODTParagraphStyle("test")
 
     # No Text
     odt.initDocument()
@@ -333,9 +334,9 @@ def testCoreToOdt_ConvertParagraphs(mockGUI):
     odt._isNovel = True
 
     def getStyle(styleName):
-        for aSet in odt._autoPara.values():
-            if aSet[0] == styleName:
-                return aSet[1]
+        for style in odt._autoPara.values():
+            if style.name == styleName:
+                return style
         return None
 
     # Nested Markdown Text
@@ -713,6 +714,8 @@ def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
     assert odt._colourHead is True
     odt.setHeaderFormat(nwHeadFmt.ODT_AUTO, 1)
     assert odt._headerFormat == nwHeadFmt.ODT_AUTO
+    odt.setFirstLineIndent(True)
+    assert odt._firstIndent is True
 
     odt.setPageLayout(148, 210, 20, 18, 17, 15)
     assert odt._mDocWidth  == "14.800cm"
@@ -856,7 +859,7 @@ def testCoreToOdt_Format(mockGUI):
 @pytest.mark.core
 def testCoreToOdt_ODTParagraphStyle():
     """Test the ODTParagraphStyle class."""
-    parStyle = ODTParagraphStyle()
+    parStyle = ODTParagraphStyle("test")
 
     # Set Attributes
     # ==============
@@ -1023,7 +1026,7 @@ def testCoreToOdt_ODTParagraphStyle():
     assert parStyle._tAttr["color"]   == ["fo", None]
     assert parStyle._tAttr["opacity"] == ["loext", None]
 
-    parStyle.setColor("#000000")
+    parStyle.setColour("#000000")
     parStyle.setOpacity("1.00")
 
     assert parStyle._tAttr["color"]   == ["fo", "#000000"]
@@ -1032,7 +1035,7 @@ def testCoreToOdt_ODTParagraphStyle():
     # Pack XML
     # ========
     xStyle = ET.Element("test")
-    parStyle.packXML(xStyle, "test")
+    parStyle.packXML(xStyle)
     assert xmlToText(xStyle) == (
         '<test>'
         '<style:style style:name="test" style:family="paragraph" style:display-name="Name" '
@@ -1049,8 +1052,8 @@ def testCoreToOdt_ODTParagraphStyle():
     # Changes
     # =======
 
-    aStyle = ODTParagraphStyle()
-    oStyle = ODTParagraphStyle()
+    aStyle = ODTParagraphStyle("test")
+    oStyle = ODTParagraphStyle("test")
     assert aStyle.checkNew(oStyle) is False
     assert aStyle.getID() == oStyle.getID()
 
@@ -1059,17 +1062,17 @@ def testCoreToOdt_ODTParagraphStyle():
     assert aStyle.checkNew(oStyle) is True
     assert aStyle.getID() != oStyle.getID()
 
-    aStyle = ODTParagraphStyle()
-    oStyle = ODTParagraphStyle()
+    aStyle = ODTParagraphStyle("test")
+    oStyle = ODTParagraphStyle("test")
     aStyle.setMarginTop("0.000cm")
     oStyle.setMarginTop("1.000cm")
     assert aStyle.checkNew(oStyle) is True
     assert aStyle.getID() != oStyle.getID()
 
-    aStyle = ODTParagraphStyle()
-    oStyle = ODTParagraphStyle()
-    aStyle.setColor("#000000")
-    oStyle.setColor("#111111")
+    aStyle = ODTParagraphStyle("test")
+    oStyle = ODTParagraphStyle("test")
+    aStyle.setColour("#000000")
+    oStyle.setColour("#111111")
     assert aStyle.checkNew(oStyle) is True
     assert aStyle.getID() != oStyle.getID()
 
@@ -1079,7 +1082,7 @@ def testCoreToOdt_ODTParagraphStyle():
 @pytest.mark.core
 def testCoreToOdt_ODTTextStyle():
     """Test the ODTTextStyle class."""
-    txtStyle = ODTTextStyle()
+    txtStyle = ODTTextStyle("test")
 
     # Font Weight
     assert txtStyle._tAttr["font-weight"] == ["fo", None]
@@ -1109,13 +1112,13 @@ def testCoreToOdt_ODTTextStyle():
 
     # Background Color
     assert txtStyle._tAttr["background-color"] == ["fo", None]
-    txtStyle.setBackgroundColor("stuff")
+    txtStyle.setBackgroundColour("stuff")
     assert txtStyle._tAttr["background-color"] == ["fo", None]
-    txtStyle.setBackgroundColor("012345")
+    txtStyle.setBackgroundColour("012345")
     assert txtStyle._tAttr["background-color"] == ["fo", None]
-    txtStyle.setBackgroundColor("#012345")
+    txtStyle.setBackgroundColour("#012345")
     assert txtStyle._tAttr["background-color"] == ["fo", "#012345"]
-    txtStyle.setBackgroundColor("stuff")
+    txtStyle.setBackgroundColour("stuff")
     assert txtStyle._tAttr["background-color"] == ["fo", None]
 
     # Text Position
@@ -1190,7 +1193,7 @@ def testCoreToOdt_ODTTextStyle():
     txtStyle.setStrikeStyle("solid")
     txtStyle.setStrikeType("single")
     xStyle = ET.Element("test")
-    txtStyle.packXML(xStyle, "test")
+    txtStyle.packXML(xStyle)
     assert xmlToText(xStyle) == (
         '<test><style:style style:name="test" style:family="text"><style:text-properties '
         'fo:font-weight="bold" fo:font-style="italic" style:text-position="super 58%" '
