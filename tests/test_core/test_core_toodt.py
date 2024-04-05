@@ -118,7 +118,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
 
     # Paragraph Style
     # ===============
-    oStyle = ODTParagraphStyle()
+    oStyle = ODTParagraphStyle("test")
 
     assert odt._paraStyle("stuff", oStyle) == "Standard"
     assert odt._paraStyle("Text_20_body", oStyle) == "Text_20_body"
@@ -142,7 +142,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
 
     # Paragraph Formatting
     # ====================
-    oStyle = ODTParagraphStyle()
+    oStyle = ODTParagraphStyle("test")
 
     # No Text
     odt.initDocument()
@@ -714,6 +714,8 @@ def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
     assert odt._colourHead is True
     odt.setHeaderFormat(nwHeadFmt.ODT_AUTO, 1)
     assert odt._headerFormat == nwHeadFmt.ODT_AUTO
+    odt.setFirstLineIndent(True)
+    assert odt._firstIndent is True
 
     odt.setPageLayout(148, 210, 20, 18, 17, 15)
     assert odt._mDocWidth  == "14.800cm"
@@ -1024,7 +1026,7 @@ def testCoreToOdt_ODTParagraphStyle():
     assert parStyle._tAttr["color"]   == ["fo", None]
     assert parStyle._tAttr["opacity"] == ["loext", None]
 
-    parStyle.setColor("#000000")
+    parStyle.setColour("#000000")
     parStyle.setOpacity("1.00")
 
     assert parStyle._tAttr["color"]   == ["fo", "#000000"]
@@ -1050,8 +1052,8 @@ def testCoreToOdt_ODTParagraphStyle():
     # Changes
     # =======
 
-    aStyle = ODTParagraphStyle()
-    oStyle = ODTParagraphStyle()
+    aStyle = ODTParagraphStyle("test")
+    oStyle = ODTParagraphStyle("test")
     assert aStyle.checkNew(oStyle) is False
     assert aStyle.getID() == oStyle.getID()
 
@@ -1060,17 +1062,17 @@ def testCoreToOdt_ODTParagraphStyle():
     assert aStyle.checkNew(oStyle) is True
     assert aStyle.getID() != oStyle.getID()
 
-    aStyle = ODTParagraphStyle()
-    oStyle = ODTParagraphStyle()
+    aStyle = ODTParagraphStyle("test")
+    oStyle = ODTParagraphStyle("test")
     aStyle.setMarginTop("0.000cm")
     oStyle.setMarginTop("1.000cm")
     assert aStyle.checkNew(oStyle) is True
     assert aStyle.getID() != oStyle.getID()
 
-    aStyle = ODTParagraphStyle()
-    oStyle = ODTParagraphStyle()
-    aStyle.setColor("#000000")
-    oStyle.setColor("#111111")
+    aStyle = ODTParagraphStyle("test")
+    oStyle = ODTParagraphStyle("test")
+    aStyle.setColour("#000000")
+    oStyle.setColour("#111111")
     assert aStyle.checkNew(oStyle) is True
     assert aStyle.getID() != oStyle.getID()
 

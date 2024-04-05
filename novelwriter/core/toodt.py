@@ -406,7 +406,7 @@ class ToOdt(Tokenizer):
         for tType, _, tText, tFormat, tStyle in self._tokens:
 
             # Styles
-            oStyle = ODTParagraphStyle()
+            oStyle = ODTParagraphStyle("New")
             if tStyle is not None:
                 if tStyle & self.A_LEFT:
                     oStyle.setTextAlign("left")
@@ -686,26 +686,27 @@ class ToOdt(Tokenizer):
 
         return
 
-    def _paraStyle(self, parName: str, oStyle: ODTParagraphStyle) -> str:
+    def _paraStyle(self, mainName: str, modStyle: ODTParagraphStyle) -> str:
         """Return a name for a style object."""
-        refStyle = self._mainPara.get(parName, None)
-        if refStyle is None:
-            logger.error("Unknown paragraph style '%s'", parName)
+        if not (refStyle := self._mainPara.get(mainName, None)):
+            logger.error("Unknown main paragraph style '%s'", mainName)
             return "Standard"
 
-        if not refStyle.checkNew(oStyle):
-            return parName
+        if not refStyle.checkNew(modStyle):
+            # The style is unmodified, so we return the main style
+            return mainName
 
-        oStyle.setParentStyleName(parName)
-        pID = oStyle.getID()
-        if pID in self._autoPara:
+        # The style is modified, so we check if there already is an
+        # identical style with the same parent we can use instead
+        modStyle.setParentStyleName(mainName)
+        if (pID := modStyle.getID()) in self._autoPara:
             return self._autoPara[pID].name
 
-        name = f"P{len(self._autoPara)+1:d}"
-        oStyle.setName(name)
-        self._autoPara[pID] = oStyle
+        # If neither of the above hold, we store it as a new style
+        modStyle.setName(f"P{len(self._autoPara)+1:d}")
+        self._autoPara[pID] = modStyle
 
-        return name
+        return modStyle.name
 
     def _textStyle(self, hFmt: int) -> str:
         """Return a text style for a given style code."""
@@ -834,145 +835,145 @@ class ToOdt(Tokenizer):
         """Set the usable styles."""
         # Add Text Body Style
         style = ODTParagraphStyle("Text_20_body")
-        style.setClass("text")
         style.setDisplayName("Text body")
-        style.setFontFamily(self._fontFamily)
-        style.setFontName(self._textFont)
-        style.setFontSize(self._fSizeText)
-        style.setLineHeight(self._fLineHeight)
-        style.setMarginBottom(self._mBotText)
-        style.setMarginTop(self._mTopText)
         style.setParentStyleName("Standard")
+        style.setClass("text")
+        style.setMarginTop(self._mTopText)
+        style.setMarginBottom(self._mBotText)
+        style.setLineHeight(self._fLineHeight)
         style.setTextAlign(self._textAlign)
+        style.setFontName(self._textFont)
+        style.setFontFamily(self._fontFamily)
+        style.setFontSize(self._fSizeText)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
         # Add First Line Indent Style
         style = ODTParagraphStyle("First_20_line_20_indent")
-        style.setClass("text")
         style.setDisplayName("First line indent")
         style.setParentStyleName("Text_20_body")
+        style.setClass("text")
         style.setTextIndent(self._fTextIndent)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
         # Add Text Meta Style
         style = ODTParagraphStyle("Text_20_Meta")
-        style.setClass("text")
-        style.setColor(self._colMetaTx)
         style.setDisplayName("Text Meta")
-        style.setFontFamily(self._fontFamily)
-        style.setFontName(self._textFont)
-        style.setFontSize(self._fSizeText)
-        style.setLineHeight(self._fLineHeight)
-        style.setMarginBottom(self._mBotMeta)
-        style.setMarginTop(self._mTopMeta)
-        style.setOpacity(self._opaMetaTx)
         style.setParentStyleName("Standard")
+        style.setClass("text")
+        style.setMarginTop(self._mTopMeta)
+        style.setMarginBottom(self._mBotMeta)
+        style.setLineHeight(self._fLineHeight)
+        style.setFontName(self._textFont)
+        style.setFontFamily(self._fontFamily)
+        style.setFontSize(self._fSizeText)
+        style.setColour(self._colMetaTx)
+        style.setOpacity(self._opaMetaTx)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
         # Add Title Style
         style = ODTParagraphStyle("Title")
-        style.setClass("chapter")
         style.setDisplayName("Title")
-        style.setFontFamily(self._fontFamily)
+        style.setParentStyleName("Heading")
+        style.setNextStyleName("Text_20_body")
+        style.setClass("chapter")
+        style.setMarginTop(self._mTopTitle)
+        style.setMarginBottom(self._mBotTitle)
+        style.setTextAlign("center")
         style.setFontName(self._textFont)
+        style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeTitle)
         style.setFontWeight("bold")
-        style.setMarginBottom(self._mBotTitle)
-        style.setMarginTop(self._mTopTitle)
-        style.setNextStyleName("Text_20_body")
-        style.setParentStyleName("Heading")
-        style.setTextAlign("center")
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
         # Add Separator Style
         style = ODTParagraphStyle("Separator")
-        style.setClass("text")
         style.setDisplayName("Separator")
-        style.setFontFamily(self._fontFamily)
-        style.setFontName(self._textFont)
-        style.setFontSize(self._fSizeText)
-        style.setLineHeight(self._fLineHeight)
-        style.setMarginBottom(self._mBotText)
-        style.setMarginTop(self._mTopText)
-        style.setNextStyleName("Text_20_body")
         style.setParentStyleName("Standard")
+        style.setNextStyleName("Text_20_body")
+        style.setClass("text")
+        style.setMarginTop(self._mTopText)
+        style.setMarginBottom(self._mBotText)
+        style.setLineHeight(self._fLineHeight)
         style.setTextAlign("center")
+        style.setFontName(self._textFont)
+        style.setFontFamily(self._fontFamily)
+        style.setFontSize(self._fSizeText)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
         # Add Heading 1 Style
         style = ODTParagraphStyle("Heading_20_1")
-        style.setClass("text")
-        style.setColor(self._colHead12)
         style.setDisplayName("Heading 1")
-        style.setFontFamily(self._fontFamily)
+        style.setParentStyleName("Heading")
+        style.setNextStyleName("Text_20_body")
+        style.setOutlineLevel("1")
+        style.setClass("text")
+        style.setMarginTop(self._mTopHead1)
+        style.setMarginBottom(self._mBotHead1)
         style.setFontName(self._textFont)
+        style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead1)
         style.setFontWeight("bold")
-        style.setMarginBottom(self._mBotHead1)
-        style.setMarginTop(self._mTopHead1)
-        style.setNextStyleName("Text_20_body")
+        style.setColour(self._colHead12)
         style.setOpacity(self._opaHead12)
-        style.setOutlineLevel("1")
-        style.setParentStyleName("Heading")
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
         # Add Heading 2 Style
         style = ODTParagraphStyle("Heading_20_2")
-        style.setClass("text")
-        style.setColor(self._colHead12)
         style.setDisplayName("Heading 2")
-        style.setFontFamily(self._fontFamily)
+        style.setParentStyleName("Heading")
+        style.setNextStyleName("Text_20_body")
+        style.setOutlineLevel("2")
+        style.setClass("text")
+        style.setMarginTop(self._mTopHead2)
+        style.setMarginBottom(self._mBotHead2)
         style.setFontName(self._textFont)
+        style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead2)
         style.setFontWeight("bold")
-        style.setMarginBottom(self._mBotHead2)
-        style.setMarginTop(self._mTopHead2)
-        style.setNextStyleName("Text_20_body")
+        style.setColour(self._colHead12)
         style.setOpacity(self._opaHead12)
-        style.setOutlineLevel("2")
-        style.setParentStyleName("Heading")
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
         # Add Heading 3 Style
         style = ODTParagraphStyle("Heading_20_3")
-        style.setClass("text")
-        style.setColor(self._colHead34)
         style.setDisplayName("Heading 3")
-        style.setFontFamily(self._fontFamily)
+        style.setParentStyleName("Heading")
+        style.setNextStyleName("Text_20_body")
+        style.setOutlineLevel("3")
+        style.setClass("text")
+        style.setMarginTop(self._mTopHead3)
+        style.setMarginBottom(self._mBotHead3)
         style.setFontName(self._textFont)
+        style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead3)
         style.setFontWeight("bold")
-        style.setMarginBottom(self._mBotHead3)
-        style.setMarginTop(self._mTopHead3)
-        style.setNextStyleName("Text_20_body")
+        style.setColour(self._colHead34)
         style.setOpacity(self._opaHead34)
-        style.setOutlineLevel("3")
-        style.setParentStyleName("Heading")
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
         # Add Heading 4 Style
         style = ODTParagraphStyle("Heading_20_4")
-        style.setClass("text")
-        style.setColor(self._colHead34)
         style.setDisplayName("Heading 4")
-        style.setFontFamily(self._fontFamily)
+        style.setParentStyleName("Heading")
+        style.setNextStyleName("Text_20_body")
+        style.setOutlineLevel("4")
+        style.setClass("text")
+        style.setMarginTop(self._mTopHead4)
+        style.setMarginBottom(self._mBotHead4)
         style.setFontName(self._textFont)
+        style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead4)
         style.setFontWeight("bold")
-        style.setMarginBottom(self._mBotHead4)
-        style.setMarginTop(self._mTopHead4)
-        style.setNextStyleName("Text_20_body")
+        style.setColour(self._colHead34)
         style.setOpacity(self._opaHead34)
-        style.setOutlineLevel("4")
-        style.setParentStyleName("Heading")
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
@@ -1043,7 +1044,7 @@ class ODTParagraphStyle:
     VALID_CLASS  = ["text", "chapter"]
     VALID_WEIGHT = ["normal", "inherit", "bold"]
 
-    def __init__(self, name: str = "None") -> None:
+    def __init__(self, name: str) -> None:
 
         self._name = name
 
@@ -1109,18 +1110,22 @@ class ODTParagraphStyle:
     ##
 
     def setDisplayName(self, value: str | None) -> None:
+        """Set style display name."""
         self._mAttr["display-name"][1] = value
         return
 
     def setParentStyleName(self, value: str | None) -> None:
+        """Set parent style name."""
         self._mAttr["parent-style-name"][1] = value
         return
 
     def setNextStyleName(self, value: str | None) -> None:
+        """Set next style name."""
         self._mAttr["next-style-name"][1] = value
         return
 
     def setOutlineLevel(self, value: str | None) -> None:
+        """Set paragraph outline level."""
         if value in self.VALID_LEVEL:
             self._mAttr["default-outline-level"][1] = value
         else:
@@ -1128,6 +1133,7 @@ class ODTParagraphStyle:
         return
 
     def setClass(self, value: str | None) -> None:
+        """Set paragraph class."""
         if value in self.VALID_CLASS:
             self._mAttr["class"][1] = value
         else:
@@ -1139,30 +1145,37 @@ class ODTParagraphStyle:
     ##
 
     def setMarginTop(self, value: str | None) -> None:
+        """Set paragraph top margin."""
         self._pAttr["margin-top"][1] = value
         return
 
     def setMarginBottom(self, value: str | None) -> None:
+        """Set paragraph bottom margin."""
         self._pAttr["margin-bottom"][1] = value
         return
 
     def setMarginLeft(self, value: str | None) -> None:
+        """Set paragraph left margin."""
         self._pAttr["margin-left"][1] = value
         return
 
     def setMarginRight(self, value: str | None) -> None:
+        """Set paragraph right margin."""
         self._pAttr["margin-right"][1] = value
         return
 
     def setTextIndent(self, value: str | None) -> None:
+        """Set text indentation."""
         self._pAttr["text-indent"][1] = value
         return
 
     def setLineHeight(self, value: str | None) -> None:
+        """Set line height."""
         self._pAttr["line-height"][1] = value
         return
 
     def setTextAlign(self, value: str | None) -> None:
+        """Set paragraph text alignment."""
         if value in self.VALID_ALIGN:
             self._pAttr["text-align"][1] = value
         else:
@@ -1170,6 +1183,7 @@ class ODTParagraphStyle:
         return
 
     def setBreakBefore(self, value: str | None) -> None:
+        """Set page break before policy."""
         if value in self.VALID_BREAK:
             self._pAttr["break-before"][1] = value
         else:
@@ -1177,6 +1191,7 @@ class ODTParagraphStyle:
         return
 
     def setBreakAfter(self, value: str | None) -> None:
+        """Set page break after policy."""
         if value in self.VALID_BREAK:
             self._pAttr["break-after"][1] = value
         else:
@@ -1188,29 +1203,35 @@ class ODTParagraphStyle:
     ##
 
     def setFontName(self, value: str | None) -> None:
+        """Set font name."""
         self._tAttr["font-name"][1] = value
         return
 
     def setFontFamily(self, value: str | None) -> None:
+        """Set font family."""
         self._tAttr["font-family"][1] = value
         return
 
     def setFontSize(self, value: str | None) -> None:
+        """Set font size."""
         self._tAttr["font-size"][1] = value
         return
 
     def setFontWeight(self, value: str | None) -> None:
+        """Set font weight."""
         if value in self.VALID_WEIGHT:
             self._tAttr["font-weight"][1] = value
         else:
             self._tAttr["font-weight"][1] = None
         return
 
-    def setColor(self, value: str | None) -> None:
+    def setColour(self, value: str | None) -> None:
+        """Set text colour."""
         self._tAttr["color"][1] = value
         return
 
     def setOpacity(self, value: str | None) -> None:
+        """Set text opacity."""
         self._tAttr["opacity"][1] = value
         return
 
