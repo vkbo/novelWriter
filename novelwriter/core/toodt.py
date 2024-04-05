@@ -128,7 +128,7 @@ class ToOdt(Tokenizer):
 
         self._mainPara: dict[str, ODTParagraphStyle] = {}  # User-accessible paragraph styles
         self._autoPara: dict[str, ODTParagraphStyle] = {}  # Auto-generated paragraph styles
-        self._autoText = {}  # Auto-generated text styles
+        self._autoText: dict[int, ODTTextStyle] = {}       # Auto-generated text styles
 
         self._errData = []  # List of errors encountered
 
@@ -513,12 +513,11 @@ class ToOdt(Tokenizer):
         return
 
     def closeDocument(self) -> None:
-        """Pack the styles of the XML document."""
-        # Build the auto-generated styles
+        """Pack the automatic styles of the XML document."""
         for style in self._autoPara.values():
             style.packXML(self._xAuto)
-        for styleName, style in self._autoText.values():
-            style.packXML(self._xAuto, styleName)
+        for style in self._autoText.values():
+            style.packXML(self._xAuto)
         return
 
     def saveFlatXML(self, path: str | Path) -> None:
@@ -711,10 +710,9 @@ class ToOdt(Tokenizer):
     def _textStyle(self, hFmt: int) -> str:
         """Return a text style for a given style code."""
         if hFmt in self._autoText:
-            return self._autoText[hFmt][0]
+            return self._autoText[hFmt].name
 
-        name = "T%d" % (len(self._autoText) + 1)
-        style = ODTTextStyle()
+        style = ODTTextStyle(f"T{len(self._autoText)+1:d}")
         if hFmt & X_BLD:
             style.setFontWeight("bold")
         if hFmt & X_ITA:
@@ -727,15 +725,14 @@ class ToOdt(Tokenizer):
             style.setUnderlineWidth("auto")
             style.setUnderlineColour("font-color")
         if hFmt & X_MRK:
-            style.setBackgroundColor(self._markText)
+            style.setBackgroundColour(self._markText)
         if hFmt & X_SUP:
             style.setTextPosition("super")
         if hFmt & X_SUB:
             style.setTextPosition("sub")
+        self._autoText[hFmt] = style
 
-        self._autoText[hFmt] = (name, style)
-
-        return name
+        return style.name
 
     def _emToCm(self, value: float) -> str:
         """Converts an em value to centimetres."""
@@ -1279,8 +1276,8 @@ class ODTTextStyle:
     VALID_LWIDTH = ["auto"]
     VALID_LCOL   = ["font-color"]
 
-    def __init__(self) -> None:
-        # Text Attributes
+    def __init__(self, name: str) -> None:
+        self._name = name
         self._tAttr = {
             "font-weight":             ["fo",    None],
             "font-style":              ["fo",    None],
@@ -1294,11 +1291,16 @@ class ODTTextStyle:
         }
         return
 
+    @property
+    def name(self) -> str:
+        return self._name
+
     ##
     #  Setters
     ##
 
     def setFontWeight(self, value: str | None) -> None:
+        """Set text font weight."""
         if value in self.VALID_WEIGHT:
             self._tAttr["font-weight"][1] = value
         else:
@@ -1306,13 +1308,15 @@ class ODTTextStyle:
         return
 
     def setFontStyle(self, value: str | None) -> None:
+        """Set text font style."""
         if value in self.VALID_STYLE:
             self._tAttr["font-style"][1] = value
         else:
             self._tAttr["font-style"][1] = None
         return
 
-    def setBackgroundColor(self, value: str | None) -> None:
+    def setBackgroundColour(self, value: str | None) -> None:
+        """Set text background colour."""
         if value and len(value) == 7 and value[0] == "#":
             self._tAttr["background-color"][1] = value
         else:
@@ -1320,6 +1324,7 @@ class ODTTextStyle:
         return
 
     def setTextPosition(self, value: str | None) -> None:
+        """Set text vertical position."""
         if value in self.VALID_POS:
             self._tAttr["text-position"][1] = f"{value} 58%"
         else:
@@ -1327,6 +1332,7 @@ class ODTTextStyle:
         return
 
     def setStrikeStyle(self, value: str | None) -> None:
+        """Set text line-trough style."""
         if value in self.VALID_LSTYLE:
             self._tAttr["text-line-through-style"][1] = value
         else:
@@ -1334,6 +1340,7 @@ class ODTTextStyle:
         return
 
     def setStrikeType(self, value: str | None) -> None:
+        """Set text line-through type."""
         if value in self.VALID_LTYPE:
             self._tAttr["text-line-through-type"][1] = value
         else:
@@ -1341,6 +1348,7 @@ class ODTTextStyle:
         return
 
     def setUnderlineStyle(self, value: str | None) -> None:
+        """Set text underline style."""
         if value in self.VALID_LSTYLE:
             self._tAttr["text-underline-style"][1] = value
         else:
@@ -1348,6 +1356,7 @@ class ODTTextStyle:
         return
 
     def setUnderlineWidth(self, value: str | None) -> None:
+        """Set text underline width."""
         if value in self.VALID_LWIDTH:
             self._tAttr["text-underline-width"][1] = value
         else:
@@ -1355,6 +1364,7 @@ class ODTTextStyle:
         return
 
     def setUnderlineColour(self, value: str | None) -> None:
+        """Set text underline colour."""
         if value in self.VALID_LCOL:
             self._tAttr["text-underline-color"][1] = value
         else:
@@ -1365,10 +1375,10 @@ class ODTTextStyle:
     #  Methods
     ##
 
-    def packXML(self, xParent: ET.Element, name: str) -> None:
+    def packXML(self, xParent: ET.Element) -> None:
         """Pack the content into an xml element."""
         xEntry = ET.SubElement(xParent, _mkTag("style", "style"), attrib={
-            _mkTag("style", "name"): name,
+            _mkTag("style", "name"): self._name,
             _mkTag("style", "family"): "text",
         })
         if attr := {_mkTag(n, m): v for m, (n, v) in self._tAttr.items() if v is not None}:

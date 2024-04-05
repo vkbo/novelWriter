@@ -1080,7 +1080,7 @@ def testCoreToOdt_ODTParagraphStyle():
 @pytest.mark.core
 def testCoreToOdt_ODTTextStyle():
     """Test the ODTTextStyle class."""
-    txtStyle = ODTTextStyle()
+    txtStyle = ODTTextStyle("test")
 
     # Font Weight
     assert txtStyle._tAttr["font-weight"] == ["fo", None]
@@ -1110,13 +1110,13 @@ def testCoreToOdt_ODTTextStyle():
 
     # Background Color
     assert txtStyle._tAttr["background-color"] == ["fo", None]
-    txtStyle.setBackgroundColor("stuff")
+    txtStyle.setBackgroundColour("stuff")
     assert txtStyle._tAttr["background-color"] == ["fo", None]
-    txtStyle.setBackgroundColor("012345")
+    txtStyle.setBackgroundColour("012345")
     assert txtStyle._tAttr["background-color"] == ["fo", None]
-    txtStyle.setBackgroundColor("#012345")
+    txtStyle.setBackgroundColour("#012345")
     assert txtStyle._tAttr["background-color"] == ["fo", "#012345"]
-    txtStyle.setBackgroundColor("stuff")
+    txtStyle.setBackgroundColour("stuff")
     assert txtStyle._tAttr["background-color"] == ["fo", None]
 
     # Text Position
@@ -1191,7 +1191,7 @@ def testCoreToOdt_ODTTextStyle():
     txtStyle.setStrikeStyle("solid")
     txtStyle.setStrikeType("single")
     xStyle = ET.Element("test")
-    txtStyle.packXML(xStyle, "test")
+    txtStyle.packXML(xStyle)
     assert xmlToText(xStyle) == (
         '<test><style:style style:name="test" style:family="text"><style:text-properties '
         'fo:font-weight="bold" fo:font-style="italic" style:text-position="super 58%" '
