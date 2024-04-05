@@ -688,7 +688,7 @@ class ToOdt(Tokenizer):
 
     def _paraStyle(self, mainName: str, modStyle: ODTParagraphStyle) -> str:
         """Return a name for a style object."""
-        if not (refStyle := self._mainPara.get(mainName, None)):
+        if not (refStyle := self._mainPara.get(mainName)):
             logger.error("Unknown main paragraph style '%s'", mainName)
             return "Standard"
 
@@ -1267,14 +1267,14 @@ class ODTParagraphStyle:
             _mkTag("style", "family"): "paragraph",
         }
         attr.update(
-            {_mkTag(n, m): v for m, (n, v) in self._mAttr.items() if v is not None}
+            {_mkTag(n, m): v for m, (n, v) in self._mAttr.items() if v}
         )
         xEntry = ET.SubElement(xParent, _mkTag("style", "style"), attrib=attr)
 
-        if attr := {_mkTag(n, m): v for m, (n, v) in self._pAttr.items() if v is not None}:
+        if attr := {_mkTag(n, m): v for m, (n, v) in self._pAttr.items() if v}:
             ET.SubElement(xEntry, _mkTag("style", "paragraph-properties"), attrib=attr)
 
-        if attr := {_mkTag(n, m): v for m, (n, v) in self._tAttr.items() if v is not None}:
+        if attr := {_mkTag(n, m): v for m, (n, v) in self._tAttr.items() if v}:
             ET.SubElement(xEntry, _mkTag("style", "text-properties"), attrib=attr)
 
         return
@@ -1400,7 +1400,7 @@ class ODTTextStyle:
             _mkTag("style", "name"): self._name,
             _mkTag("style", "family"): "text",
         })
-        if attr := {_mkTag(n, m): v for m, (n, v) in self._tAttr.items() if v is not None}:
+        if attr := {_mkTag(n, m): v for m, (n, v) in self._tAttr.items() if v}:
             ET.SubElement(xEntry, _mkTag("style", "text-properties"), attrib=attr)
         return
 
