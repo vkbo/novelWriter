@@ -137,8 +137,8 @@ def testCoreToOdt_TextFormatting(mockGUI):
 
     key = "55db6c1d22ff5aba93f0f67c8d4a857a26e2d3813dfbcba1ef7c0d424f501be5"
     assert key in odt._autoPara
-    assert odt._autoPara[key][0] == "P1"
-    assert isinstance(odt._autoPara[key][1], ODTParagraphStyle)
+    assert isinstance(odt._autoPara[key], ODTParagraphStyle)
+    assert odt._autoPara[key].name == "P1"
 
     # Paragraph Formatting
     # ====================
@@ -334,9 +334,9 @@ def testCoreToOdt_ConvertParagraphs(mockGUI):
     odt._isNovel = True
 
     def getStyle(styleName):
-        for aSet in odt._autoPara.values():
-            if aSet[0] == styleName:
-                return aSet[1]
+        for style in odt._autoPara.values():
+            if style.name == styleName:
+                return style
         return None
 
     # Nested Markdown Text
@@ -857,7 +857,7 @@ def testCoreToOdt_Format(mockGUI):
 @pytest.mark.core
 def testCoreToOdt_ODTParagraphStyle():
     """Test the ODTParagraphStyle class."""
-    parStyle = ODTParagraphStyle()
+    parStyle = ODTParagraphStyle("test")
 
     # Set Attributes
     # ==============
@@ -1033,7 +1033,7 @@ def testCoreToOdt_ODTParagraphStyle():
     # Pack XML
     # ========
     xStyle = ET.Element("test")
-    parStyle.packXML(xStyle, "test")
+    parStyle.packXML(xStyle)
     assert xmlToText(xStyle) == (
         '<test>'
         '<style:style style:name="test" style:family="paragraph" style:display-name="Name" '

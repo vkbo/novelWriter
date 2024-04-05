@@ -126,8 +126,8 @@ class ToOdt(Tokenizer):
         self._xBody = ET.Element("")  # Office body root
         self._xText = ET.Element("")  # Office text root
 
-        self._mainPara = {}  # User-accessible paragraph styles
-        self._autoPara = {}  # Auto-generated paragraph styles
+        self._mainPara: dict[str, ODTParagraphStyle] = {}  # User-accessible paragraph styles
+        self._autoPara: dict[str, ODTParagraphStyle] = {}  # Auto-generated paragraph styles
         self._autoText = {}  # Auto-generated text styles
 
         self._errData = []  # List of errors encountered
@@ -515,10 +515,10 @@ class ToOdt(Tokenizer):
     def closeDocument(self) -> None:
         """Pack the styles of the XML document."""
         # Build the auto-generated styles
-        for styleName, styleObj in self._autoPara.values():
-            styleObj.packXML(self._xAuto, styleName)
-        for styleName, styleObj in self._autoText.values():
-            styleObj.packXML(self._xAuto, styleName)
+        for style in self._autoPara.values():
+            style.packXML(self._xAuto)
+        for styleName, style in self._autoText.values():
+            style.packXML(self._xAuto, styleName)
         return
 
     def saveFlatXML(self, path: str | Path) -> None:
@@ -700,12 +700,13 @@ class ToOdt(Tokenizer):
         oStyle.setParentStyleName(parName)
         pID = oStyle.getID()
         if pID in self._autoPara:
-            return self._autoPara[pID][0]
+            return self._autoPara[pID].name
 
-        newName = "P%d" % (len(self._autoPara) + 1)
-        self._autoPara[pID] = (newName, oStyle)
+        name = f"P{len(self._autoPara)+1:d}"
+        oStyle.setName(name)
+        self._autoPara[pID] = oStyle
 
-        return newName
+        return name
 
     def _textStyle(self, hFmt: int) -> str:
         """Return a text style for a given style code."""
@@ -835,7 +836,7 @@ class ToOdt(Tokenizer):
     def _useableStyles(self) -> None:
         """Set the usable styles."""
         # Add Text Body Style
-        style = ODTParagraphStyle()
+        style = ODTParagraphStyle("Text_20_body")
         style.setClass("text")
         style.setDisplayName("Text body")
         style.setFontFamily(self._fontFamily)
@@ -846,20 +847,20 @@ class ToOdt(Tokenizer):
         style.setMarginTop(self._mTopText)
         style.setParentStyleName("Standard")
         style.setTextAlign(self._textAlign)
-        style.packXML(self._xStyl, "Text_20_body")
-        self._mainPara["Text_20_body"] = style
+        style.packXML(self._xStyl)
+        self._mainPara[style.name] = style
 
         # Add First Line Indent Style
-        style = ODTParagraphStyle()
+        style = ODTParagraphStyle("First_20_line_20_indent")
         style.setClass("text")
         style.setDisplayName("First line indent")
         style.setParentStyleName("Text_20_body")
         style.setTextIndent(self._fTextIndent)
-        style.packXML(self._xStyl, "First_20_line_20_indent")
-        self._mainPara["First_20_line_20_indent"] = style
+        style.packXML(self._xStyl)
+        self._mainPara[style.name] = style
 
         # Add Text Meta Style
-        style = ODTParagraphStyle()
+        style = ODTParagraphStyle("Text_20_Meta")
         style.setClass("text")
         style.setColor(self._colMetaTx)
         style.setDisplayName("Text Meta")
@@ -871,11 +872,11 @@ class ToOdt(Tokenizer):
         style.setMarginTop(self._mTopMeta)
         style.setOpacity(self._opaMetaTx)
         style.setParentStyleName("Standard")
-        style.packXML(self._xStyl, "Text_20_Meta")
-        self._mainPara["Text_20_Meta"] = style
+        style.packXML(self._xStyl)
+        self._mainPara[style.name] = style
 
         # Add Title Style
-        style = ODTParagraphStyle()
+        style = ODTParagraphStyle("Title")
         style.setClass("chapter")
         style.setDisplayName("Title")
         style.setFontFamily(self._fontFamily)
@@ -887,11 +888,11 @@ class ToOdt(Tokenizer):
         style.setNextStyleName("Text_20_body")
         style.setParentStyleName("Heading")
         style.setTextAlign("center")
-        style.packXML(self._xStyl, "Title")
-        self._mainPara["Title"] = style
+        style.packXML(self._xStyl)
+        self._mainPara[style.name] = style
 
         # Add Separator Style
-        style = ODTParagraphStyle()
+        style = ODTParagraphStyle("Separator")
         style.setClass("text")
         style.setDisplayName("Separator")
         style.setFontFamily(self._fontFamily)
@@ -903,11 +904,11 @@ class ToOdt(Tokenizer):
         style.setNextStyleName("Text_20_body")
         style.setParentStyleName("Standard")
         style.setTextAlign("center")
-        style.packXML(self._xStyl, "Separator")
-        self._mainPara["Separator"] = style
+        style.packXML(self._xStyl)
+        self._mainPara[style.name] = style
 
         # Add Heading 1 Style
-        style = ODTParagraphStyle()
+        style = ODTParagraphStyle("Heading_20_1")
         style.setClass("text")
         style.setColor(self._colHead12)
         style.setDisplayName("Heading 1")
@@ -921,11 +922,11 @@ class ToOdt(Tokenizer):
         style.setOpacity(self._opaHead12)
         style.setOutlineLevel("1")
         style.setParentStyleName("Heading")
-        style.packXML(self._xStyl, "Heading_20_1")
-        self._mainPara["Heading_20_1"] = style
+        style.packXML(self._xStyl)
+        self._mainPara[style.name] = style
 
         # Add Heading 2 Style
-        style = ODTParagraphStyle()
+        style = ODTParagraphStyle("Heading_20_2")
         style.setClass("text")
         style.setColor(self._colHead12)
         style.setDisplayName("Heading 2")
@@ -939,11 +940,11 @@ class ToOdt(Tokenizer):
         style.setOpacity(self._opaHead12)
         style.setOutlineLevel("2")
         style.setParentStyleName("Heading")
-        style.packXML(self._xStyl, "Heading_20_2")
-        self._mainPara["Heading_20_2"] = style
+        style.packXML(self._xStyl)
+        self._mainPara[style.name] = style
 
         # Add Heading 3 Style
-        style = ODTParagraphStyle()
+        style = ODTParagraphStyle("Heading_20_3")
         style.setClass("text")
         style.setColor(self._colHead34)
         style.setDisplayName("Heading 3")
@@ -957,11 +958,11 @@ class ToOdt(Tokenizer):
         style.setOpacity(self._opaHead34)
         style.setOutlineLevel("3")
         style.setParentStyleName("Heading")
-        style.packXML(self._xStyl, "Heading_20_3")
-        self._mainPara["Heading_20_3"] = style
+        style.packXML(self._xStyl)
+        self._mainPara[style.name] = style
 
         # Add Heading 4 Style
-        style = ODTParagraphStyle()
+        style = ODTParagraphStyle("Heading_20_4")
         style.setClass("text")
         style.setColor(self._colHead34)
         style.setDisplayName("Heading 4")
@@ -975,16 +976,16 @@ class ToOdt(Tokenizer):
         style.setOpacity(self._opaHead34)
         style.setOutlineLevel("4")
         style.setParentStyleName("Heading")
-        style.packXML(self._xStyl, "Heading_20_4")
-        self._mainPara["Heading_20_4"] = style
+        style.packXML(self._xStyl)
+        self._mainPara[style.name] = style
 
         # Add Header Style
-        style = ODTParagraphStyle()
+        style = ODTParagraphStyle("Header")
         style.setDisplayName("Header")
         style.setParentStyleName("Header_20_and_20_Footer")
         style.setTextAlign("right")
-        style.packXML(self._xStyl, "Header")
-        self._mainPara["Header"] = style
+        style.packXML(self._xStyl)
+        self._mainPara[style.name] = style
 
         return
 
@@ -1045,7 +1046,9 @@ class ODTParagraphStyle:
     VALID_CLASS  = ["text", "chapter"]
     VALID_WEIGHT = ["normal", "inherit", "bold"]
 
-    def __init__(self) -> None:
+    def __init__(self, name: str = "None") -> None:
+
+        self._name = name
 
         # Attributes
         self._mAttr = {
@@ -1081,6 +1084,10 @@ class ODTParagraphStyle:
 
         return
 
+    @property
+    def name(self) -> str:
+        return self._name
+
     ##
     #  Checkers
     ##
@@ -1090,6 +1097,15 @@ class ODTParagraphStyle:
         return all(
             self._pAttr[n][1] is None for n in ["text-align", "margin-left", "margin-right"]
         )
+
+    ##
+    #  Setters
+    ##
+
+    def setName(self, name: str) -> None:
+        """Set the paragraph style name."""
+        self._name = name
+        return
 
     ##
     #  Attribute Setters
@@ -1228,13 +1244,15 @@ class ODTParagraphStyle:
             f"Paragraph:Text:{str(self._tAttr)}:"
         ).encode()).hexdigest()
 
-    def packXML(self, xParent: ET.Element, name: str) -> None:
+    def packXML(self, xParent: ET.Element) -> None:
         """Pack the content into an xml element."""
         attr = {
-            _mkTag("style", "name"): name,
+            _mkTag("style", "name"): self._name,
             _mkTag("style", "family"): "paragraph",
         }
-        attr.update({_mkTag(n, m): v for m, (n, v) in self._mAttr.items() if v is not None})
+        attr.update(
+            {_mkTag(n, m): v for m, (n, v) in self._mAttr.items() if v is not None}
+        )
         xEntry = ET.SubElement(xParent, _mkTag("style", "style"), attrib=attr)
 
         if attr := {_mkTag(n, m): v for m, (n, v) in self._pAttr.items() if v is not None}:
