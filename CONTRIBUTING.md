@@ -1,15 +1,15 @@
 # Contributing Guide
 
 When contributing to this repository, please first discuss the change you wish to make with the
-owner of this repository> Either via the issue tracker or on the discussions page. Especially if it
-is regarding new features. If you just want to make a minor correction, like fix a typo or similar,
-feel free to just make a pull request directly.
+owner. Either via the issue tracker or on the discussions page. Especially if it is regarding new
+features. If you just want to make a minor correction, like fix a typo or similar, feel free to
+just make a pull request directly.
 
 **The following contributions are welcome:**
 
 * Bugfixes for new or existing bugs. Please also report new bugs in the issue tracker even if you
   also provide a fix. It makes it easier to keep track of what has been fixed and when.
-* Translations via the [Crowdin project page](https://crowdin.com/project/novelwriter).
+* Translations made via the [Crowdin project page](https://crowdin.com/project/novelwriter).
 * Improvements to the documentation. Particularly if the documentation is unclear. Please don't
   make any larger changes to the documentation without discussing if with the maintainer first.
 * Adaptations, installation or packaging features targeting specific operating systems.
@@ -24,11 +24,11 @@ feel free to just make a pull request directly.
 
 As of April 2024, pre-releases and point releases (like 2.x) are made from the `main` branch. The
 `main` branch is the default branch. For general changes, please make a new branch in your own fork
-from the current `main` branch. Do not make pull requests from your own `main` branch.
+from the current `main` branch. Do not make pull requests from your copy of the `main` branch.
 
 If you are submitting a fix to a current release, say 2.4, you must do so from the correct release
-branch. For 2.4 this is `releases/v2.4`. If you make a fix on the `main` branch, **it cannot be
-included in a 2.4.x release**. This also applies to the current documentation published on the
+branch. For 2.4 this is `releases/v2.4`. If you make such a fix on the `main` branch, **it cannot
+be included in a 2.4.x release**. This also applies to the current documentation published on the
 main website.
 
 **Also check the following:**
