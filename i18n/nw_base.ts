@@ -842,14 +842,18 @@
   <context>
     <name>GuiDocEditSearch</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2424" />
       <location filename="../novelwriter/gui/doceditor.py" line="2411" />
-      <source>Search</source>
+      <source>Search for</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/gui/doceditor.py" line="2416" />
-      <source>Replace</source>
+      <source>Replace with</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/gui/doceditor.py" line="2424" />
+      <source>Search</source>
       <translation type="unfinished" />
     </message>
     <message>
@@ -2155,9 +2159,8 @@
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="179" />
       <location filename="../novelwriter/tools/manuscript.py" line="158" />
-      <source>Build</source>
+      <source>Details</source>
       <translation type="unfinished" />
     </message>
     <message>
@@ -2173,6 +2176,11 @@
     <message>
       <location filename="../novelwriter/tools/manuscript.py" line="176" />
       <source>Print</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../novelwriter/tools/manuscript.py" line="179" />
+      <source>Build</source>
       <translation type="unfinished" />
     </message>
     <message>
@@ -3008,7 +3016,7 @@
     </message>
     <message>
       <location filename="../novelwriter/gui/search.py" line="101" />
-      <source>Search</source>
+      <source>Search for</source>
       <translation type="unfinished" />
     </message>
   </context>
@@ -4562,12 +4570,12 @@
     </message>
     <message>
       <location filename="../novelwriter/tools/manuscript.py" line="1098" />
-      <source>Heading Words</source>
+      <source>Words in Headings</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/tools/manuscript.py" line="1099" />
-      <source>Body Text Words</source>
+      <source>Words in Text</source>
       <translation type="unfinished" />
     </message>
     <message>
@@ -4582,12 +4590,12 @@
     </message>
     <message>
       <location filename="../novelwriter/tools/manuscript.py" line="1125" />
-      <source>Heading Characters</source>
+      <source>Characters in Headings</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/tools/manuscript.py" line="1126" />
-      <source>Body Text Characters</source>
+      <source>Characters in Text</source>
       <translation type="unfinished" />
     </message>
     <message>
@@ -4597,12 +4605,12 @@
     </message>
     <message>
       <location filename="../novelwriter/tools/manuscript.py" line="1128" />
-      <source>Heading Characters, No Spaces</source>
+      <source>Characters in Headings, No Spaces</source>
       <translation type="unfinished" />
     </message>
     <message>
       <location filename="../novelwriter/tools/manuscript.py" line="1129" />
-      <source>Body Text Characters, No Spaces</source>
+      <source>Characters in Text, No Spaces</source>
       <translation type="unfinished" />
     </message>
   </context>

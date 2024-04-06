@@ -98,7 +98,7 @@ class GuiProjectSearch(QWidget):
 
         # Search Box
         self.searchText = QLineEdit(self)
-        self.searchText.setPlaceholderText(self.tr("Search"))
+        self.searchText.setPlaceholderText(self.tr("Search for"))
         self.searchText.setClearButtonEnabled(True)
 
         self.searchAction = self.searchText.addAction(
