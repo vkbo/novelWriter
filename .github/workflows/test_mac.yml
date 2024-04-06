@@ -2,13 +2,13 @@ name: macOS
 
 on:
   push:
-    branches: 
+    branches:
       - main
-      - dev
+      - releases/**
   pull_request:
     branches:
       - main
-      - dev
+      - releases/**
 
 jobs:
   testMac:
