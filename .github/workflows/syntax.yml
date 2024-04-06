@@ -5,10 +5,12 @@ on:
     branches:
       - main
       - dev
+      - patch
   pull_request:
     branches:
       - main
       - dev
+      - patch
 
 jobs:
   checkSyntax:

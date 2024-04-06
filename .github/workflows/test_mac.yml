@@ -5,10 +5,12 @@ on:
     branches:
       - main
       - dev
+      - patch
   pull_request:
     branches:
       - main
       - dev
+      - patch
 
 jobs:
   testMac:
@@ -17,7 +19,7 @@ jobs:
       - name: Python Setup
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           architecture: x64
       - name: Install Packages (brew)
         run: |
