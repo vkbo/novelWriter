@@ -49,6 +49,10 @@ code, please also read the full
 
 Project credits are available in [CREDITS.md](https://github.com/vkbo/novelWriter/blob/main/CREDITS.md).
 
+**Note:** As of April 2024, pre-releases and point releases (2.x) are made from the `main` branch.
+Patches are made from `releases/v2.x` branches. So if you're submitting a fix to a current release,
+**including changes to documentation**, they must be made to the correct branch.
+
 ### Translations
 
 New translations are always welcome. This project uses Crowdin to maintain translations, and you
