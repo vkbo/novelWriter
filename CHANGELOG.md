@@ -1,14 +1,51 @@
 # novelWriter Changelog
 
+## Version 2.4 RC 1 [2024-04-06]
+
+### Release Notes
+
+This is a release candidate of the next release version, and is intended for testing purposes.
+Please be careful when using this version on writing projects, and make frequent backups.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* A number of issues GUI icon scaling has been fixed. Icons and buttons are supposed to scale
+  relative to the GUI font size, but several of them were not. Issue #1787. PR #1788.
+* The persistence of button state for the editor search box has been improved. The present state
+  was only saved when the search box was actively closed, and there were several scenarios where
+  this didn't happen. The button states are now tracked in the central config, and will always be
+  preserved. Issue #1794. PR #1795.
+
+**Other Improvements**
+
+* A placeholder icon has been added for cases where users have their own icon theme, and icons are
+  missing. Issue #1780. PR #1781.
+* The project search now refreshes the search results for the currently open document when it's
+  being edited. PR #1782.
+* When activating project search from the editor while text is selected, the search box is
+  populated with this text. Issue #1789. PR #1790.
+
+**Packaging**
+
+* The project has moved from using a `setup.cfg` to only using the `pyproject.toml` meta data file
+  for packaging. This is the preferred file format now. PR #1791.
+
+**Code Improvements**
+
+* The part of the code related to Qt widgets and flags has been updated and refactored in
+  preparation for the eventual move to the Qt6 framework. Part of issue #1142. PR #1792.
+* The Open Document writer class has been refactored and improved. PR #1796.
+
+----
+
 ## Version 2.4 Beta 1 [2024-03-26]
 
 ### Release Notes
 
 This is a beta release of the next release version, and is intended for testing purposes. Please be
 careful when using this version on live writing projects, and make sure you take frequent backups.
-
-Please check the changelog for an overview of changes. The full release notes will be added to the
-final release.
 
 ### Detailed Changelog
 
