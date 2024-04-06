@@ -161,7 +161,7 @@ class GuiProjectSearch(QWidget):
         colBase = cssCol(qPalette.base().color())
         colFocus = cssCol(qPalette.highlight().color())
 
-        self.headerWidget.setStyleSheet(f"background: {colBase};")
+        self.headerWidget.setStyleSheet(f"QWidget {{background: {colBase};}}")
         self.headerWidget.setAutoFillBackground(True)
 
         self.setStyleSheet(
