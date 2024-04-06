@@ -2408,12 +2408,12 @@ class GuiDocEditSearch(QFrame):
 
         self.searchBox = QLineEdit(self)
         self.searchBox.setFont(self.boxFont)
-        self.searchBox.setPlaceholderText(self.tr("Search"))
+        self.searchBox.setPlaceholderText(self.tr("Search for"))
         self.searchBox.returnPressed.connect(self._doSearch)
 
         self.replaceBox = QLineEdit(self)
         self.replaceBox.setFont(self.boxFont)
-        self.replaceBox.setPlaceholderText(self.tr("Replace"))
+        self.replaceBox.setPlaceholderText(self.tr("Replace with"))
         self.replaceBox.returnPressed.connect(self._doReplace)
 
         self.searchOpt = QToolBar(self)

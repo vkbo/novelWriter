@@ -155,7 +155,7 @@ class GuiManuscript(QDialog):
         self.buildOutline = _OutlineWidget(self)
 
         self.detailsTabs = QTabWidget(self)
-        self.detailsTabs.addTab(self.buildDetails, self.tr("Build"))
+        self.detailsTabs.addTab(self.buildDetails, self.tr("Details"))
         self.detailsTabs.addTab(self.buildOutline, self.tr("Outline"))
         self.detailsTabs.setStyleSheet(SHARED.theme.getStyleSheet(STYLES_FLAT_TABS))
 
@@ -1008,7 +1008,7 @@ class _StatsWidget(QWidget):
 
         # Maximal
         self.maxTotalWords.setText("{0:n}".format(data.get("allWords", 0)))
-        self.maxHeaderWords.setText("{0:n}".format(data.get("titleWords", 0)))
+        self.maxHeadWords.setText("{0:n}".format(data.get("titleWords", 0)))
         self.maxTextWords.setText("{0:n}".format(data.get("textWords", 0)))
         self.maxTitleCount.setText("{0:n}".format(data.get("titleCount", 0)))
         self.maxParCount.setText("{0:n}".format(data.get("paragraphCount", 0)))
@@ -1018,7 +1018,7 @@ class _StatsWidget(QWidget):
         self.maxTextChars.setText("{0:n}".format(data.get("textChars", 0)))
 
         self.maxTotalWordChars.setText("{0:n}".format(data.get("allWordChars", 0)))
-        self.maxHeaderWordChars.setText("{0:n}".format(data.get("titleWordChars", 0)))
+        self.maxHeadWordChars.setText("{0:n}".format(data.get("titleWordChars", 0)))
         self.maxTextWordChars.setText("{0:n}".format(data.get("textWordChars", 0)))
 
         return
@@ -1082,21 +1082,21 @@ class _StatsWidget(QWidget):
 
         # Left Column
         self.maxTotalWords = QLabel(self)
-        self.maxHeaderWords = QLabel(self)
+        self.maxHeadWords = QLabel(self)
         self.maxTextWords = QLabel(self)
         self.maxTitleCount = QLabel(self)
         self.maxParCount = QLabel(self)
 
         self.maxTotalWords.setAlignment(QtAlignRight)
-        self.maxHeaderWords.setAlignment(QtAlignRight)
+        self.maxHeadWords.setAlignment(QtAlignRight)
         self.maxTextWords.setAlignment(QtAlignRight)
         self.maxTitleCount.setAlignment(QtAlignRight)
         self.maxParCount.setAlignment(QtAlignRight)
 
         self.leftForm = QFormLayout()
         self.leftForm.addRow(self.tr("Words"), self.maxTotalWords)
-        self.leftForm.addRow(self.tr("Heading Words"), self.maxHeaderWords)
-        self.leftForm.addRow(self.tr("Body Text Words"), self.maxTextWords)
+        self.leftForm.addRow(self.tr("Words in Headings"), self.maxHeadWords)
+        self.leftForm.addRow(self.tr("Words in Text"), self.maxTextWords)
         self.leftForm.addRow("", QLabel(self))
         self.leftForm.addRow(self.tr("Headings"), self.maxTitleCount)
         self.leftForm.addRow(self.tr("Paragraphs"), self.maxParCount)
@@ -1109,7 +1109,7 @@ class _StatsWidget(QWidget):
         self.maxTextChars = QLabel(self)
 
         self.maxTotalWordChars = QLabel(self)
-        self.maxHeaderWordChars = QLabel(self)
+        self.maxHeadWordChars = QLabel(self)
         self.maxTextWordChars = QLabel(self)
 
         self.maxTotalChars.setAlignment(QtAlignRight)
@@ -1117,16 +1117,16 @@ class _StatsWidget(QWidget):
         self.maxTextChars.setAlignment(QtAlignRight)
 
         self.maxTotalWordChars.setAlignment(QtAlignRight)
-        self.maxHeaderWordChars.setAlignment(QtAlignRight)
+        self.maxHeadWordChars.setAlignment(QtAlignRight)
         self.maxTextWordChars.setAlignment(QtAlignRight)
 
         self.rightForm = QFormLayout()
         self.rightForm.addRow(self.tr("Characters"), self.maxTotalChars)
-        self.rightForm.addRow(self.tr("Heading Characters"), self.maxHeaderChars)
-        self.rightForm.addRow(self.tr("Body Text Characters"), self.maxTextChars)
+        self.rightForm.addRow(self.tr("Characters in Headings"), self.maxHeaderChars)
+        self.rightForm.addRow(self.tr("Characters in Text"), self.maxTextChars)
         self.rightForm.addRow(self.tr("Characters, No Spaces"), self.maxTotalWordChars)
-        self.rightForm.addRow(self.tr("Heading Characters, No Spaces"), self.maxHeaderWordChars)
-        self.rightForm.addRow(self.tr("Body Text Characters, No Spaces"), self.maxTextWordChars)
+        self.rightForm.addRow(self.tr("Characters in Headings, No Spaces"), self.maxHeadWordChars)
+        self.rightForm.addRow(self.tr("Characters in Text, No Spaces"), self.maxTextWordChars)
         self.rightForm.setHorizontalSpacing(hPx)
         self.rightForm.setVerticalSpacing(vPx)
 
