@@ -342,11 +342,8 @@ class NWIndex:
 
             elif line.startswith("%"):
                 cStyle, cKey, cText, _, _ = processComment(line)
-                if cTitle != TT_NONE:
-                    if cStyle in (nwComment.SYNOPSIS, nwComment.SHORT):
-                        self._itemIndex.setHeadingSynopsis(tHandle, cTitle, cText)
                 if cStyle in (nwComment.SYNOPSIS, nwComment.SHORT):
-                    self._textIndex.summary.add(f"{tHandle}:{cTitle}", tHandle, cText)
+                    self._itemIndex.setHeadingSynopsis(tHandle, cTitle, cText)
                 elif cStyle == nwComment.FOOTNOTE:
                     self._textIndex.footnotes.add(cKey, tHandle, cText)
 
@@ -1318,17 +1315,17 @@ class TextIndex:
     A wrapper class that holds various global text entries.
     """
 
-    __slots__ = ("_summary", "_footnotes")
+    __slots__ = ("_comments", "_footnotes")
 
     def __init__(self) -> None:
-        self._summary = TextRegistry()
+        self._comments = TextRegistry()
         self._footnotes = TextRegistry()
         return
 
     @property
-    def summary(self) -> TextRegistry:
-        """Return the summary text registry."""
-        return self._summary
+    def comments(self) -> TextRegistry:
+        """Return the comments text registry."""
+        return self._comments
 
     @property
     def footnotes(self) -> TextRegistry:
@@ -1341,13 +1338,13 @@ class TextIndex:
 
     def clear(self) -> None:
         """Clear the index."""
-        self._summary.clear()
+        self._comments.clear()
         self._footnotes.clear()
         return
 
     def removeHandle(self, handle: str) -> None:
         """Remove all entries for a given handle."""
-        self._summary.removeHandle(handle)
+        self._comments.removeHandle(handle)
         self._footnotes.removeHandle(handle)
         return
 
@@ -1358,13 +1355,13 @@ class TextIndex:
     def packData(self) -> dict[str, dict]:
         """Pack all the text comments into a single dictionary."""
         return {
-            "summaries": self._summary.packData(),
+            "comments": self._comments.packData(),
             "footnotes": self._footnotes.packData(),
         }
 
     def unpackData(self, data: dict) -> None:
         """Unpack the text comments index."""
-        self._summary.unpackData(data.get("summaries", {}))
+        self._comments.unpackData(data.get("comments", {}))
         self._footnotes.unpackData(data.get("footnotes", {}))
         return
 
@@ -1475,6 +1472,6 @@ def processComment(text: str) -> tuple[nwComment, str, str, int, int]:
     classifier, _, content = check.partition(":")
     classifier, _, term = classifier.partition(".")
     if content and (clean := classifier.strip().lower()) in CLASSIFIERS:
-        term = "ERR" if term and clean not in TERMS else term.strip().lower()
+        term = "ERR" if term and clean not in TERMS else term.strip()
         return CLASSIFIERS[clean], term, content.strip(), text.find(".") + 1, text.find(":") + 1
     return nwComment.PLAIN, "", check, 0, 0
