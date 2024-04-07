@@ -85,6 +85,7 @@ class NWIndex:
         # Storage and State
         self._tagsIndex = TagsIndex()
         self._itemIndex = ItemIndex(project)
+        self._textIndex = TextIndex()
         self._indexBroken = False
 
         # TimeStamps
@@ -112,6 +113,7 @@ class NWIndex:
         """Clear the index dictionaries and time stamps."""
         self._tagsIndex.clear()
         self._itemIndex.clear()
+        self._textIndex.clear()
         self._indexChange = 0.0
         self._rootChange = {}
         SHARED.indexSignalProxy({"event": "clearIndex"})
@@ -135,6 +137,7 @@ class NWIndex:
         for tTag in delTags:
             del self._tagsIndex[tTag]
         del self._itemIndex[tHandle]
+        self._textIndex.removeHandle(tHandle)
         SHARED.indexSignalProxy({
             "event": "updateTags",
             "deleted": delTags,
@@ -189,6 +192,7 @@ class NWIndex:
             try:
                 self._tagsIndex.unpackData(data["novelWriter.tagsIndex"])
                 self._itemIndex.unpackData(data["novelWriter.itemIndex"])
+                self._textIndex.unpackData(data["novelWriter.textIndex"])
             except Exception:
                 logger.error("The index content is invalid")
                 logException()
@@ -224,10 +228,12 @@ class NWIndex:
         try:
             tagsIndex = jsonEncode(self._tagsIndex.packData(), n=1, nmax=2)
             itemIndex = jsonEncode(self._itemIndex.packData(), n=1, nmax=4)
+            textIndex = jsonEncode(self._textIndex.packData(), n=1, nmax=3)
             with open(indexFile, mode="w+", encoding="utf-8") as outFile:
                 outFile.write("{\n")
                 outFile.write(f'  "novelWriter.tagsIndex": {tagsIndex},\n')
-                outFile.write(f'  "novelWriter.itemIndex": {itemIndex}\n')
+                outFile.write(f'  "novelWriter.itemIndex": {itemIndex},\n')
+                outFile.write(f'  "novelWriter.textIndex": {textIndex}\n')
                 outFile.write("}\n")
 
         except Exception:
@@ -301,9 +307,9 @@ class NWIndex:
 
     def _scanActive(self, tHandle: str, nwItem: NWItem, text: str, tags: dict[str, bool]) -> None:
         """Scan an active document for meta data."""
-        nTitle = 0           # Line Number of the previous title
-        cTitle = TT_NONE     # Tag of the current title
-        pTitle = TT_NONE     # Tag of the previous title
+        nTitle = 0         # Line Number of the previous title
+        cTitle = TT_NONE   # Tag of the current title
+        pTitle = TT_NONE   # Tag of the previous title
         canSetHead = True  # First heading has not yet been set
 
         lines = text.splitlines()
@@ -335,10 +341,14 @@ class NWIndex:
                     self._indexKeyword(tHandle, line, cTitle, nwItem.itemClass, tags)
 
             elif line.startswith("%"):
+                cStyle, cKey, cText, _, _ = processComment(line)
                 if cTitle != TT_NONE:
-                    cStyle, cMod, cText, _, _ = processComment(line)
                     if cStyle in (nwComment.SYNOPSIS, nwComment.SHORT):
                         self._itemIndex.setHeadingSynopsis(tHandle, cTitle, cText)
+                if cStyle in (nwComment.SYNOPSIS, nwComment.SHORT):
+                    self._textIndex.summary.add(f"{tHandle}:{cTitle}", tHandle, cText)
+                elif cStyle == nwComment.FOOTNOTE:
+                    self._textIndex.footnotes.add(cKey, tHandle, cText)
 
         # Count words for remaining text after last heading
         if pTitle != TT_NONE:
@@ -790,7 +800,7 @@ class TagsIndex:
 
         for key, entry in data.items():
             if not isinstance(key, str):
-                raise ValueError("tagsIndex keys must be a string")
+                raise ValueError("tagsIndex key must be a string")
             if not isinstance(entry, dict):
                 raise ValueError("tagsIndex entry is not a dict")
 
@@ -1299,17 +1309,162 @@ class IndexHeading:
 
 
 # =============================================================================================== #
+#  The Text Index Object
+# =============================================================================================== #
+
+class TextIndex:
+    """Core: Text Index Wrapper Class
+
+    A wrapper class that holds various global text entries.
+    """
+
+    __slots__ = ("_summary", "_footnotes")
+
+    def __init__(self) -> None:
+        self._summary = TextRegistry()
+        self._footnotes = TextRegistry()
+        return
+
+    @property
+    def summary(self) -> TextRegistry:
+        """Return the summary text registry."""
+        return self._summary
+
+    @property
+    def footnotes(self) -> TextRegistry:
+        """Return the footnotes text registry."""
+        return self._footnotes
+
+    ##
+    #  Methods
+    ##
+
+    def clear(self) -> None:
+        """Clear the index."""
+        self._summary.clear()
+        self._footnotes.clear()
+        return
+
+    def removeHandle(self, handle: str) -> None:
+        """Remove all entries for a given handle."""
+        self._summary.removeHandle(handle)
+        self._footnotes.removeHandle(handle)
+        return
+
+    ##
+    #  Pack/Unpack
+    ##
+
+    def packData(self) -> dict[str, dict]:
+        """Pack all the text comments into a single dictionary."""
+        return {
+            "summaries": self._summary.packData(),
+            "footnotes": self._footnotes.packData(),
+        }
+
+    def unpackData(self, data: dict) -> None:
+        """Unpack the text comments index."""
+        self._summary.unpackData(data.get("summaries", {}))
+        self._footnotes.unpackData(data.get("footnotes", {}))
+        return
+
+# END Class TextIndex
+
+
+class TextRegistry:
+    """Core: Text Registry Index Wrapper Class
+
+    A wrapper class that holds a category of text entries.
+    """
+
+    __slots__ = ("_map", "_text")
+
+    def __init__(self) -> None:
+        self._map: dict[str, str] = {}
+        self._text: dict[str, str] = {}
+        return
+
+    def __len__(self) -> int:
+        return len(self._text)
+
+    def __getitem__(self, key: str) -> str | None:
+        return self._text.get(key, (0, None))[1]
+
+    def __contains__(self, key: str) -> bool:
+        return key in self._text
+
+    ##
+    #  Methods
+    ##
+
+    def clear(self) -> None:
+        """Clear the index."""
+        self._map.clear()
+        self._text.clear()
+        return
+
+    def add(self, key: str, handle: str, text: str) -> None:
+        """Add a new text entry."""
+        self._map[key] = handle
+        self._text[key] = text
+        return
+
+    def keysForHandle(self, handle: str) -> list[str]:
+        """Return all keys for a given handle."""
+        return [k for k, v in self._map.items() if v == handle]
+
+    def removeHandle(self, handle: str) -> None:
+        """Iterate through the data and remove entries for a handle."""
+        for key in [k for k, v in self._map.items() if v == handle]:
+            del self._text[key]
+        return
+
+    ##
+    #  Pack/Unpack
+    ##
+
+    def packData(self) -> dict[str, dict[str, str]]:
+        """Pack all the text entries into a dictionary."""
+        return {k: {"handle": self._map[k], "text": v} for k, v in self._text.items()}
+
+    def unpackData(self, data: dict) -> None:
+        """Unpack text entries from a dictionary."""
+        self.clear()
+        if not isinstance(data, dict):
+            raise ValueError("textEntry is not a dict")
+
+        for key, entry in data.items():
+            if not isinstance(key, str):
+                raise ValueError("textEntry key must be a string")
+            if not isinstance(entry, dict):
+                raise ValueError("textEntry entry is not a dict")
+
+            handle = entry.get("handle")
+            text = entry.get("text")
+            if not isHandle(handle):
+                raise ValueError("textEntry handle must be a handle")
+            if not isinstance(text, str):
+                raise ValueError("textEntry text is not a string")
+
+            self.add(key, handle, text)
+
+        return
+
+# END Class TextEntry
+
+
+# =============================================================================================== #
 #  Text Processing Functions
 # =============================================================================================== #
 
 CLASSIFIERS = {
     "synopsis": nwComment.SYNOPSIS,
-    "summary":  nwComment.SUMMARY,
     "short":    nwComment.SHORT,
     "note":     nwComment.NOTE,
+    "footnote": nwComment.FOOTNOTE,
 }
 
-TERMS = ["note"]
+TERMS = ["note", "footnote"]
 
 
 def processComment(text: str) -> tuple[nwComment, str, str, int, int]:

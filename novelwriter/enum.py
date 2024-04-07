@@ -66,9 +66,9 @@ class nwComment(Enum):
 
     PLAIN    = 0
     SYNOPSIS = 1
-    SUMMARY  = 2
-    SHORT    = 3
-    NOTE     = 4
+    SHORT    = 2
+    NOTE     = 3
+    FOOTNOTE = 4
 
 # END Enum nwComment
 

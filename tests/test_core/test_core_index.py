@@ -1328,8 +1328,8 @@ def testCoreIndex_processComment():
     assert processComment("% Hi.You:There") == (nwComment.PLAIN, "", "Hi.You:There", 0, 0)
 
     # Check Non-Term
-    assert processComment("%summary: Hi") == (nwComment.SUMMARY, "", "Hi", 0, 9)
-    assert processComment("%summary.term: Hi") == (nwComment.SUMMARY, "ERR", "Hi", 9, 14)
+    assert processComment("%short: Hi") == (nwComment.SHORT, "", "Hi", 0, 7)
+    assert processComment("%short.term: Hi") == (nwComment.SHORT, "ERR", "Hi", 7, 12)
 
     # Check Term
     assert processComment("%note: Hi") == (nwComment.NOTE, "", "Hi", 0, 6)
@@ -1350,7 +1350,7 @@ def testCoreIndex_processComment():
     # Check Classifiers
     assert processComment("%short: Hi") == (nwComment.SHORT, "", "Hi", 0, 7)
     assert processComment("%synopsis: Hi") == (nwComment.SYNOPSIS, "", "Hi", 0, 10)
-    assert processComment("%summary: Hi") == (nwComment.SUMMARY, "", "Hi", 0, 9)
     assert processComment("%note.term: Hi") == (nwComment.NOTE, "term", "Hi", 6, 11)
+    assert processComment("%footnote.term: Hi") == (nwComment.FOOTNOTE, "term", "Hi", 10, 15)
 
 # END Test testCoreIndex_processComment
