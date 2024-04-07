@@ -276,6 +276,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         if self._tHandle is None or not text:
             return
 
+        xOff = 0
         if text.startswith("@"):  # Keywords and commands
             self.setCurrentBlockState(BLOCK_META)
             index = SHARED.project.index
@@ -333,12 +334,20 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         elif text.startswith("%"):  # Comments
             self.setCurrentBlockState(BLOCK_TEXT)
-            cStyle, _, cPos = processComment(text)
-            if cStyle == nwComment.PLAIN:
-                self.setFormat(0, len(text), self._hStyles["hidden"])
+            cStyle, cMod, _, cDot, cPos = processComment(text)
+            cLen = len(text) - cPos
+            xOff = cPos
+            if cMod == "ERR":
+                self.setFormat(0, cPos, self._hStyles["codeinval"])
+            elif cStyle == nwComment.PLAIN:
+                self.setFormat(0, cLen, self._hStyles["hidden"])
+            elif cMod:
+                self.setFormat(0, cDot, self._hStyles["modifier"])
+                self.setFormat(cDot, cPos - cDot, self._hStyles["optional"])
+                self.setFormat(cPos, cLen, self._hStyles["hidden"])
             else:
                 self.setFormat(0, cPos, self._hStyles["modifier"])
-                self.setFormat(cPos, len(text), self._hStyles["hidden"])
+                self.setFormat(cPos, cLen, self._hStyles["hidden"])
 
         else:  # Text Paragraph
 
@@ -377,7 +386,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             self.setCurrentBlockUserData(data)
 
         if self._spellCheck:
-            for xPos, xLen in data.spellCheck(text):
+            for xPos, xLen in data.spellCheck(text, xOff):
                 for x in range(xPos, xPos+xLen):
                     spFmt = self.format(x)
                     spFmt.merge(self._spellErr)
@@ -435,17 +444,19 @@ class TextBlockData(QTextBlockUserData):
         """Return spell error data from last check."""
         return self._spellErrors
 
-    def spellCheck(self, text: str) -> list[tuple[int, int]]:
+    def spellCheck(self, text: str, offset: int) -> list[tuple[int, int]]:
         """Run the spell checker and cache the result, and return the
         list of spell check errors.
         """
         self._spellErrors = []
-        rxSpell = SPELLRX.globalMatch(text.replace("_", " "), 0)
+        rxSpell = SPELLRX.globalMatch(text[offset:].replace("_", " "), 0)
         while rxSpell.hasNext():
             rxMatch = rxSpell.next()
             if not SHARED.spelling.checkWord(rxMatch.captured(0)):
                 if not rxMatch.captured(0).isnumeric() and not rxMatch.captured(0).isupper():
-                    self._spellErrors.append((rxMatch.capturedStart(0), rxMatch.capturedLength(0)))
+                    self._spellErrors.append(
+                        (rxMatch.capturedStart(0) + offset, rxMatch.capturedLength(0))
+                    )
         return self._spellErrors
 
 # END Class TextBlockData

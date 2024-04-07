@@ -336,7 +336,7 @@ class NWIndex:
 
             elif line.startswith("%"):
                 if cTitle != TT_NONE:
-                    cStyle, cText, _ = processComment(line)
+                    cStyle, cMod, cText, _, _ = processComment(line)
                     if cStyle in (nwComment.SYNOPSIS, nwComment.SHORT):
                         self._itemIndex.setHeadingSynopsis(tHandle, cTitle, cText)
 
@@ -1303,17 +1303,23 @@ class IndexHeading:
 # =============================================================================================== #
 
 CLASSIFIERS = {
-    "short": nwComment.SHORT,
     "synopsis": nwComment.SYNOPSIS,
+    "summary":  nwComment.SUMMARY,
+    "short":    nwComment.SHORT,
+    "note":     nwComment.NOTE,
 }
 
+TERMS = ["note"]
 
-def processComment(text: str) -> tuple[nwComment, str, int]:
+
+def processComment(text: str) -> tuple[nwComment, str, str, int, int]:
     """Extract comment style and text. Should only be called on text
     starting with a %.
     """
     check = text[1:].lstrip()
     classifier, _, content = check.partition(":")
+    classifier, _, term = classifier.partition(".")
     if content and (clean := classifier.strip().lower()) in CLASSIFIERS:
-        return CLASSIFIERS[clean], content.strip(), text.find(":") + 1
-    return nwComment.PLAIN, check, 0
+        term = "ERR" if term and clean not in TERMS else term.strip().lower()
+        return CLASSIFIERS[clean], term, content.strip(), text.find(".") + 1, text.find(":") + 1
+    return nwComment.PLAIN, "", check, 0, 0

@@ -1322,26 +1322,35 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
 def testCoreIndex_processComment():
     """Test the comment processing function."""
     # Regular comment
-    assert processComment("%Hi") == (nwComment.PLAIN, "Hi", 0)
-    assert processComment("% Hi") == (nwComment.PLAIN, "Hi", 0)
-    assert processComment("% Hi:You") == (nwComment.PLAIN, "Hi:You", 0)
+    assert processComment("%Hi") == (nwComment.PLAIN, "", "Hi", 0, 0)
+    assert processComment("% Hi") == (nwComment.PLAIN, "", "Hi", 0, 0)
+    assert processComment("% Hi:You") == (nwComment.PLAIN, "", "Hi:You", 0, 0)
+    assert processComment("% Hi.You:There") == (nwComment.PLAIN, "", "Hi.You:There", 0, 0)
 
-    # Synopsis
-    assert processComment("%synopsis:") == (nwComment.PLAIN, "synopsis:", 0)
-    assert processComment("%synopsis: Hi") == (nwComment.SYNOPSIS, "Hi", 10)
-    assert processComment("% synopsis: Hi") == (nwComment.SYNOPSIS, "Hi", 11)
-    assert processComment("%  synopsis : Hi") == (nwComment.SYNOPSIS, "Hi", 13)
-    assert processComment("%   Synopsis  : Hi") == (nwComment.SYNOPSIS, "Hi", 15)
-    assert processComment("% \t  SYNOPSIS  : Hi") == (nwComment.SYNOPSIS, "Hi", 16)
-    assert processComment("% \t  SYNOPSIS  : Hi:You") == (nwComment.SYNOPSIS, "Hi:You", 16)
+    # Check Non-Term
+    assert processComment("%summary: Hi") == (nwComment.SUMMARY, "", "Hi", 0, 9)
+    assert processComment("%summary.term: Hi") == (nwComment.SUMMARY, "ERR", "Hi", 9, 14)
 
-    # Short Description
-    assert processComment("%short:") == (nwComment.PLAIN, "short:", 0)
-    assert processComment("%short: Hi") == (nwComment.SHORT, "Hi", 7)
-    assert processComment("% short: Hi") == (nwComment.SHORT, "Hi", 8)
-    assert processComment("%  short : Hi") == (nwComment.SHORT, "Hi", 10)
-    assert processComment("%   Short  : Hi") == (nwComment.SHORT, "Hi", 12)
-    assert processComment("% \t  SHORT  : Hi") == (nwComment.SHORT, "Hi", 13)
-    assert processComment("% \t  SHORT  : Hi:You") == (nwComment.SHORT, "Hi:You", 13)
+    # Check Term
+    assert processComment("%note: Hi") == (nwComment.NOTE, "", "Hi", 0, 6)
+    assert processComment("%note.term: Hi") == (nwComment.NOTE, "term", "Hi", 6, 11)
+
+    # Check Padding
+    assert processComment("%short: Hi") == (nwComment.SHORT, "", "Hi", 0, 7)
+    assert processComment("% short: Hi") == (nwComment.SHORT, "", "Hi", 0, 8)
+    assert processComment("%  short : Hi") == (nwComment.SHORT, "", "Hi", 0, 10)
+    assert processComment("%   short  : Hi") == (nwComment.SHORT, "", "Hi", 0, 12)
+    assert processComment("% \t  short  : Hi") == (nwComment.SHORT, "", "Hi", 0, 13)
+
+    assert processComment("%note.term: Hi") == (nwComment.NOTE, "term", "Hi", 6, 11)
+    assert processComment("% note.term: Hi") == (nwComment.NOTE, "term", "Hi", 7, 12)
+    assert processComment("%  note . term : Hi") == (nwComment.NOTE, "term", "Hi", 9, 16)
+    assert processComment("%   note  .  term  : Hi") == (nwComment.NOTE, "term", "Hi", 11, 20)
+
+    # Check Classifiers
+    assert processComment("%short: Hi") == (nwComment.SHORT, "", "Hi", 0, 7)
+    assert processComment("%synopsis: Hi") == (nwComment.SYNOPSIS, "", "Hi", 0, 10)
+    assert processComment("%summary: Hi") == (nwComment.SUMMARY, "", "Hi", 0, 9)
+    assert processComment("%note.term: Hi") == (nwComment.NOTE, "term", "Hi", 6, 11)
 
 # END Test testCoreIndex_processComment

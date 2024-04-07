@@ -533,7 +533,7 @@ class Tokenizer(ABC):
                 if aLine.startswith("%~"):
                     continue
 
-                cStyle, cText, _ = processComment(aLine)
+                cStyle, cMod, cText, _, _ = processComment(aLine)
                 if cStyle == nwComment.SYNOPSIS:
                     self._tokens.append((
                         self.T_SYNOPSIS, nHead, cText, [], sAlign
