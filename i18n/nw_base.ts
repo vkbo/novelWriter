@@ -50,7 +50,7 @@
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="113" />
-      <source>Hard Scene Format</source>
+      <source>Alt. Scene Format</source>
       <translation type="unfinished" />
     </message>
     <message>
@@ -1898,7 +1898,7 @@
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="740" />
-      <source>Hard Scene</source>
+      <source>Alternative Scene</source>
       <translation type="unfinished" />
     </message>
     <message>
