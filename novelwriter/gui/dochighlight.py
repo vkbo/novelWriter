@@ -327,7 +327,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 self.setFormat(0, 3, self._hStyles["head2h"])
                 self.setFormat(3, len(text), self._hStyles["header2"])
 
-            elif text.startswith("###! "):  # Hard Scene
+            elif text.startswith("###! "):  # Alternative Scene
                 self.setFormat(0, 4, self._hStyles["head3h"])
                 self.setFormat(4, len(text), self._hStyles["header3"])
 

@@ -639,8 +639,8 @@ class Tokenizer(ABC):
                     tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine.startswith(("### ", "###! ")):
-                # (Hard) Scene Headings
-                # =====================
+                # (Alternative) Scene Headings
+                # ============================
                 # Scene headings in novel documents are treated as centred
                 # separators if the formatting does not change the text. If the
                 # format is empty, the scene can be hidden or a blank paragraph
