@@ -306,8 +306,8 @@ class NWBuildDocument:
             self._build.getBool("headings.hideScene")
         )
         bldObj.setHardSceneFormat(
-            self._build.getStr("headings.fmtHardScene"),
-            self._build.getBool("headings.hideHardScene")
+            self._build.getStr("headings.fmtAltScene"),
+            self._build.getBool("headings.hideAltScene")
         )
         bldObj.setSectionFormat(
             self._build.getStr("headings.fmtSection"),

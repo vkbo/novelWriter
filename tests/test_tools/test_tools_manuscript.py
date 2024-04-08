@@ -212,7 +212,7 @@ def testManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     build = manus._builds.getBuild(first.data(GuiManuscript.D_KEY))
     assert isinstance(build, BuildSettings)
     build.setValue("headings.fmtScene", nwHeadFmt.TITLE)
-    build.setValue("headings.fmtHardScene", nwHeadFmt.TITLE)
+    build.setValue("headings.fmtAltScene", nwHeadFmt.TITLE)
     manus._builds.setBuild(build)
 
     # Preview again, and allow cache file to be created

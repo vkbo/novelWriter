@@ -669,20 +669,20 @@ class _HeadingsTab(NScrollablePage):
         self.formatBox.addWidget(self.swtScene, 3, 4)
 
         # Alt Scene Heading
-        self.lblHScene = QLabel(self._build.getLabel("headings.fmtHardScene"), self)
-        self.fmtHScene = QLineEdit("", self)
-        self.fmtHScene.setReadOnly(True)
-        self.btnHScene = NIconToolButton(self, iSz, "edit")
-        self.btnHScene.clicked.connect(lambda: self._editHeading(self.EDIT_HSCENE))
-        self.hdeHScene = QLabel(trHide, self)
-        self.hdeHScene.setIndent(bSp)
-        self.swtHScene = NSwitch(self, height=iPx)
+        self.lblAScene = QLabel(self._build.getLabel("headings.fmtAltScene"), self)
+        self.fmtAScene = QLineEdit("", self)
+        self.fmtAScene.setReadOnly(True)
+        self.btnAScene = NIconToolButton(self, iSz, "edit")
+        self.btnAScene.clicked.connect(lambda: self._editHeading(self.EDIT_HSCENE))
+        self.hdeAScene = QLabel(trHide, self)
+        self.hdeAScene.setIndent(bSp)
+        self.swtAScene = NSwitch(self, height=iPx)
 
-        self.formatBox.addWidget(self.lblHScene, 4, 0)
-        self.formatBox.addWidget(self.fmtHScene, 4, 1)
-        self.formatBox.addWidget(self.btnHScene, 4, 2)
-        self.formatBox.addWidget(self.hdeHScene, 4, 3)
-        self.formatBox.addWidget(self.swtHScene, 4, 4)
+        self.formatBox.addWidget(self.lblAScene, 4, 0)
+        self.formatBox.addWidget(self.fmtAScene, 4, 1)
+        self.formatBox.addWidget(self.btnAScene, 4, 2)
+        self.formatBox.addWidget(self.hdeAScene, 4, 3)
+        self.formatBox.addWidget(self.swtAScene, 4, 4)
 
         # Section Heading
         self.lblSection = QLabel(self._build.getLabel("headings.fmtSection"), self)
@@ -826,14 +826,14 @@ class _HeadingsTab(NScrollablePage):
         self.fmtChapter.setText(self._build.getStr("headings.fmtChapter"))
         self.fmtUnnumbered.setText(self._build.getStr("headings.fmtUnnumbered"))
         self.fmtScene.setText(self._build.getStr("headings.fmtScene"))
-        self.fmtHScene.setText(self._build.getStr("headings.fmtHardScene"))
+        self.fmtAScene.setText(self._build.getStr("headings.fmtAltScene"))
         self.fmtSection.setText(self._build.getStr("headings.fmtSection"))
 
         self.swtTitle.setChecked(self._build.getBool("headings.hideTitle"))
         self.swtChapter.setChecked(self._build.getBool("headings.hideChapter"))
         self.swtUnnumbered.setChecked(self._build.getBool("headings.hideUnnumbered"))
         self.swtScene.setChecked(self._build.getBool("headings.hideScene"))
-        self.swtHScene.setChecked(self._build.getBool("headings.hideHardScene"))
+        self.swtAScene.setChecked(self._build.getBool("headings.hideAltScene"))
         self.swtSection.setChecked(self._build.getBool("headings.hideSection"))
 
         self.centerTitle.setChecked(self._build.getBool("headings.centerTitle"))
@@ -850,7 +850,7 @@ class _HeadingsTab(NScrollablePage):
         self._build.setValue("headings.hideChapter", self.swtChapter.isChecked())
         self._build.setValue("headings.hideUnnumbered", self.swtUnnumbered.isChecked())
         self._build.setValue("headings.hideScene", self.swtScene.isChecked())
-        self._build.setValue("headings.hideHardScene", self.swtHScene.isChecked())
+        self._build.setValue("headings.hideAltScene", self.swtAScene.isChecked())
         self._build.setValue("headings.hideSection", self.swtSection.isChecked())
 
         self._build.setValue("headings.centerTitle", self.centerTitle.isChecked())
@@ -890,8 +890,8 @@ class _HeadingsTab(NScrollablePage):
             text = self.fmtScene.text()
             label = self._build.getLabel("headings.fmtScene")
         elif heading == self.EDIT_HSCENE:
-            text = self.fmtHScene.text()
-            label = self._build.getLabel("headings.fmtHardScene")
+            text = self.fmtAScene.text()
+            label = self._build.getLabel("headings.fmtAltScene")
         elif heading == self.EDIT_SECTION:
             text = self.fmtSection.text()
             label = self._build.getLabel("headings.fmtSection")
@@ -928,8 +928,8 @@ class _HeadingsTab(NScrollablePage):
             self.fmtScene.setText(text)
             self._build.setValue("headings.fmtScene", text)
         elif heading == self.EDIT_HSCENE:
-            self.fmtHScene.setText(text)
-            self._build.setValue("headings.fmtHardScene", text)
+            self.fmtAScene.setText(text)
+            self._build.setValue("headings.fmtAltScene", text)
         elif heading == self.EDIT_SECTION:
             self.fmtSection.setText(text)
             self._build.setValue("headings.fmtSection", text)

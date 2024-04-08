@@ -627,7 +627,7 @@ class _DetailsWidget(QWidget):
             ("headings.fmtChapter", "headings.hideChapter"),
             ("headings.fmtUnnumbered", "headings.hideUnnumbered"),
             ("headings.fmtScene", "headings.hideScene"),
-            ("headings.fmtHardScene", "headings.hideHardScene"),
+            ("headings.fmtAltScene", "headings.hideAltScene"),
             ("headings.fmtSection", "headings.hideSection"),
         ]:
             sub = QTreeWidgetItem()
