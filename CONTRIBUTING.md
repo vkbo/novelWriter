@@ -22,14 +22,13 @@ just make a pull request directly.
 
 ## Picking the Correct Branch for a Pull Request
 
-As of April 2024, pre-releases and point releases (like 2.x) are made from the `main` branch. The
-`main` branch is the default branch. For general changes, please make a new branch in your own fork
-from the current `main` branch. Do not make pull requests from your copy of the `main` branch.
+The `main` branch is the default branch. For general changes, please make a new branch in your own
+fork from the current `main` branch. Do not make pull requests from your copy of the `main` branch.
 
-If you are submitting a fix to a current release, say 2.4, you must do so from the correct release
-branch. For 2.4 this is `releases/v2.4`. If you make such a fix on the `main` branch, **it cannot
-be included in a 2.4.x release**. This also applies to the current documentation published on the
-main website.
+As of April 2024, releases are made from the `release` branch. If you are submitting a fix to a
+current release you must do so from the `release` branch. If you make such a fix on the `main`
+branch, **it cannot be included in a patch release**. This also applies to the documentation for
+the latest release published on the main website.
 
 **Also check the following:**
 
