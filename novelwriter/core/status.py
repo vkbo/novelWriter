@@ -57,7 +57,7 @@ class NWStatus:
         self._default = None
 
         self._iPX = CONFIG.pxInt(24)
-        self._defaultIcon = self._createIcon(100, 100, 100)
+        self._defaultIcon = self._createIcon(100, 100, 100, nwStatusShape.SQUARE)
 
         if self._type == self.STATUS:
             self._prefix = "s"
@@ -68,7 +68,8 @@ class NWStatus:
 
         return
 
-    def write(self, key: str | None, name: str, col: tuple, count: int | None = None) -> str:
+    def write(self, key: str | None, name: str, col: tuple, shape: nwStatusShape | str,
+              count: int | None = None) -> str:
         """Add or update a status entry. If the key is invalid, a new
         key is generated.
         """
@@ -83,14 +84,21 @@ class NWStatus:
         cG = minmax(col[1], 0, 255)
         cB = minmax(col[2], 0, 255)
         name = simplified(name)
+        if not isinstance(shape, nwStatusShape):
+            if shape in nwStatusShape.__members__:
+                shape = nwStatusShape[shape]
+            else:
+                shape = nwStatusShape.SQUARE
+
         if count is None:
             count = self._store.get(key, {}).get("count", 0)
 
         self._store[key] = {
             "name": name,
-            "icon": self._createIcon(cR, cG, cB),
+            "icon": self._createIcon(cR, cG, cB, shape),
             "cols": (cR, cG, cB),
             "count": count,
+            "shape": shape,
         }
 
         if self._default is None:
@@ -198,18 +206,8 @@ class NWStatus:
                 "red":   str(data["cols"][0]),
                 "green": str(data["cols"][1]),
                 "blue":  str(data["cols"][2]),
+                "shape": data["shape"].name,
             })
-        return
-
-    def unpack(self, data: dict) -> None:
-        """Unpack a data dictionary and set the class values."""
-        self._store = {}
-        self._default = None
-        for key, entry in data.items():
-            label = entry.get("label", "")
-            colour = entry.get("colour", (100, 100, 100))
-            count = entry.get("count", 0)
-            self.write(key, label, colour, count)
         return
 
     ##
@@ -241,16 +239,14 @@ class NWStatus:
                 return False
         return True
 
-    def _createIcon(self, red: int, green: int, blue: int) -> QIcon:
+    def _createIcon(self, red: int, green: int, blue: int, shape: nwStatusShape) -> QIcon:
         """Generate an icon for a status label."""
         pixmap = QPixmap(48, 48)
         pixmap.fill(QtTransparent)
 
-        path = _SHAPES.getShape(nwStatusShape.DIAMOND)
-
         painter = QPainter(pixmap)
         painter.setRenderHint(QtPaintAnitAlias)
-        painter.fillPath(path, QColor(red, green, blue))
+        painter.fillPath(_SHAPES.getShape(shape), QColor(red, green, blue))
         painter.end()
 
         return QIcon(pixmap.scaled(

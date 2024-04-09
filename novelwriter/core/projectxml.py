@@ -46,7 +46,7 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 FILE_VERSION = "1.5"  # The current project file format version
-FILE_REVISION = "3"   # The current project file format revision
+FILE_REVISION = "4"   # The current project file format revision
 HEX_VERSION = 0x0105
 
 NUM_VERSION = {
@@ -109,6 +109,8 @@ class ProjectXMLReader:
         Rev 2: Drops the title node from project and adds the TEMPLATE
                class for items. 2.3 Beta 1.
         Rev 3: Added TEMPLATE class. 2.3.
+        Rev 4: Added shape attribute to status and importance entry
+               nodes. 2.5.
     """
 
     def __init__(self, path: str | Path) -> None:
@@ -436,7 +438,8 @@ class ProjectXMLReader:
                 green = checkInt(xEntry.attrib.get("green", 0), 0)
                 blue  = checkInt(xEntry.attrib.get("blue", 0), 0)
                 count = checkInt(xEntry.attrib.get("count", 0), 0)
-                sObject.write(key, xEntry.text or "", (red, green, blue), count)
+                shape = xEntry.attrib.get("shape", "")
+                sObject.write(key, xEntry.text or "", (red, green, blue), shape, count)
         return
 
     def _parseDictKeyText(self, xItem: ET.Element) -> dict:

@@ -36,7 +36,7 @@ from collections.abc import Iterable
 from PyQt5.QtCore import QCoreApplication
 
 from novelwriter import CONFIG, SHARED, __version__, __hexversion__
-from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
+from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwStatusShape
 from novelwriter.error import logException
 from novelwriter.constants import trConst, nwLabels
 from novelwriter.core.tree import NWTree
@@ -461,14 +461,15 @@ class NWProject:
 
     def setDefaultStatusImport(self) -> None:
         """Set the default status and importance values."""
-        self._data.itemStatus.write(None, self.tr("New"),      (100, 100, 100))
-        self._data.itemStatus.write(None, self.tr("Note"),     (200, 50,  0))
-        self._data.itemStatus.write(None, self.tr("Draft"),    (200, 150, 0))
-        self._data.itemStatus.write(None, self.tr("Finished"), (50,  200, 0))
-        self._data.itemImport.write(None, self.tr("New"),      (100, 100, 100))
-        self._data.itemImport.write(None, self.tr("Minor"),    (200, 50,  0))
-        self._data.itemImport.write(None, self.tr("Major"),    (200, 150, 0))
-        self._data.itemImport.write(None, self.tr("Main"),     (50,  200, 0))
+        square = nwStatusShape.SQUARE
+        self._data.itemStatus.write(None, self.tr("New"),      (100, 100, 100), square)
+        self._data.itemStatus.write(None, self.tr("Note"),     (200, 50,  0),   square)
+        self._data.itemStatus.write(None, self.tr("Draft"),    (200, 150, 0),   square)
+        self._data.itemStatus.write(None, self.tr("Finished"), (50,  200, 0),   square)
+        self._data.itemImport.write(None, self.tr("New"),      (100, 100, 100), square)
+        self._data.itemImport.write(None, self.tr("Minor"),    (200, 50,  0),   square)
+        self._data.itemImport.write(None, self.tr("Major"),    (200, 150, 0),   square)
+        self._data.itemImport.write(None, self.tr("Main"),     (50,  200, 0),   square)
         return
 
     def setProjectLang(self, language: str | None) -> None:
@@ -596,8 +597,9 @@ class NWProject:
             key = entry.get("key", None)
             name = entry.get("name", "")
             cols = entry.get("cols", (100, 100, 100))
+            shape = entry.get("shape", nwStatusShape.SQUARE)
             if name:
-                order.append(target.write(key, name, cols))
+                order.append(target.write(key, name, cols, shape))
 
         for key in delete:
             target.remove(key)
