@@ -54,7 +54,7 @@ def logException() -> None:
     return
 
 
-def formatException(exc) -> str:
+def formatException(exc: BaseException) -> str:
     """Format an exception as a string the same way the default
     exception handler does.
     """

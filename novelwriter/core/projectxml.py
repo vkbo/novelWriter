@@ -449,7 +449,7 @@ class ProjectXMLReader:
                 result[xEntry.attrib["key"]] = checkString(xEntry.text, "")
         return result
 
-    def _parseDictTagText(self, xItem) -> dict:
+    def _parseDictTagText(self, xItem: ET.Element) -> dict:
         """Parse a dictionary stored with key as the tag and the value
         as the text property.
         """

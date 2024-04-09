@@ -190,7 +190,7 @@ class GuiOutlineView(QWidget):
         return
 
     @pyqtSlot(str)
-    def _rootItemChanged(self, tHandle) -> None:
+    def _rootItemChanged(self, tHandle: str) -> None:
         """Handle root novel changed or needs to be refreshed."""
         self.outlineTree.refreshTree(rootHandle=(tHandle or None), overRide=True)
         return
@@ -428,7 +428,7 @@ class GuiOutlineTree(QTreeWidget):
     ##
 
     @property
-    def hiddenColumns(self):
+    def hiddenColumns(self) -> dict[nwOutline, bool]:
         return self._colHidden
 
     ##
@@ -586,7 +586,7 @@ class GuiOutlineTree(QTreeWidget):
     #  Internal Functions
     ##
 
-    def _loadHeaderState(self):
+    def _loadHeaderState(self) -> None:
         """Load the state of the main tree header, that is, column order
         and column width.
         """

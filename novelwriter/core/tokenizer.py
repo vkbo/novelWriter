@@ -49,7 +49,7 @@ ESCAPES = {r"\*": "*", r"\~": "~", r"\_": "_", r"\[": "[", r"\]": "]", r"\ ": ""
 RX_ESC = re.compile("|".join([re.escape(k) for k in ESCAPES.keys()]), flags=re.DOTALL)
 
 
-def stripEscape(text) -> str:
+def stripEscape(text: str) -> str:
     """Strip escaped Markdown characters from paragraph text."""
     if "\\" in text:
         return RX_ESC.sub(lambda x: ESCAPES[x.group(0)], text)

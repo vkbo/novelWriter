@@ -795,7 +795,7 @@ class GuiPreferences(QDialog):
         return
 
     @pyqtSlot()
-    def _selectTextFont(self):
+    def _selectTextFont(self) -> None:
         """Open the QFontDialog and set a font for the font style."""
         current = QFont()
         current.setFamily(CONFIG.textFont)

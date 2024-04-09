@@ -453,7 +453,7 @@ class GuiProjectToolBar(QWidget):
 
     def _buildRootMenu(self) -> None:
         """Build the rood folder menu."""
-        def addClass(itemClass):
+        def addClass(itemClass: nwItemClass) -> None:
             aNew = self.mAddRoot.addAction(trConst(nwLabels.CLASS_NAME[itemClass]))
             aNew.setIcon(SHARED.theme.getIcon(nwLabels.CLASS_ICON[itemClass]))
             aNew.triggered.connect(lambda: self.projTree.newTreeItem(nwItemType.ROOT, itemClass))

@@ -449,7 +449,7 @@ def xmlIndent(tree: ET.Element | ET.ElementTree) -> None:
 
     indentations = ["\n"]
 
-    def indentChildren(elem, level):
+    def indentChildren(elem: ET.Element, level: int) -> None:
         chLevel = level + 1
         try:
             chIndent = indentations[chLevel]
@@ -471,6 +471,8 @@ def xmlIndent(tree: ET.Element | ET.ElementTree) -> None:
         # Dedent the last child
         if last is not None:
             last.tail = indentations[level]
+
+        return
 
     if len(tree):
         indentChildren(tree, 0)
@@ -534,8 +536,9 @@ class NWConfigParser(ConfigParser):
     helper functions, and support for lists.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
+        return
 
     def rdStr(self, section: str, option: str, default: str) -> str:
         """Read string value."""
