@@ -23,15 +23,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import sys
 import getopt
 import logging
+import sys
+
+from typing import TYPE_CHECKING
 
 from PyQt5.QtWidgets import QApplication, QErrorMessage
 
-from novelwriter.error import exceptionHandler, logException
 from novelwriter.config import Config
+from novelwriter.error import exceptionHandler, logException
 from novelwriter.shared import SharedData
+
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.guimain import GuiMain
 
 # Package Meta
 # ============
@@ -60,7 +65,7 @@ CONFIG = Config()
 SHARED = SharedData()
 
 
-def main(sysArgs: list | None = None):
+def main(sysArgs: list | None = None) -> GuiMain | None:
     """Parse command line, set up logging, and launch main GUI."""
     if sysArgs is None:
         sysArgs = sys.argv[1:]
@@ -238,5 +243,7 @@ def main(sysArgs: list | None = None):
         nwGUI.postLaunchTasks(cmdOpen)
 
         sys.exit(nwApp.exec())
+
+    return None
 
 # END Function main

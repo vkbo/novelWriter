@@ -381,7 +381,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         return
 
-    def loadText(self, tHandle: str, tLine=None) -> bool:
+    def loadText(self, tHandle: str, tLine: int | None = None) -> bool:
         """Load text from a document into the editor. If we have an I/O
         error, we must handle this and clear the editor so that we don't
         risk overwriting the file if it exists. This can for instance
@@ -1080,7 +1080,7 @@ class GuiDocEditor(QPlainTextEdit):
         return
 
     @pyqtSlot()
-    def _cursorMoved(self):
+    def _cursorMoved(self) -> None:
         """Triggered when the cursor moved in the editor."""
         self.docFooter.updateLineCount(self.textCursor())
         return
@@ -2186,7 +2186,7 @@ class MetaCompleter(QMenu):
     #  Internal Functions
     ##
 
-    def _emitComplete(self, pos: int, length: int, value: str):
+    def _emitComplete(self, pos: int, length: int, value: str) -> None:
         """Emit the signal to indicate a selection has been made."""
         self.complete.emit(pos, length, value)
         return
@@ -2967,7 +2967,7 @@ class GuiDocEditHeader(QWidget):
     #  Events
     ##
 
-    def mousePressEvent(self, event: QMouseEvent):
+    def mousePressEvent(self, event: QMouseEvent) -> None:
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """

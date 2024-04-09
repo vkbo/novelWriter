@@ -344,7 +344,7 @@ class GuiNovelToolBar(QWidget):
     #  Internal Functions
     ##
 
-    def _addLastColAction(self, colType, actionLabel) -> None:
+    def _addLastColAction(self, colType: NovelTreeColumn, actionLabel: str) -> None:
         """Add a column selection entry to the last column menu."""
         aLast = self.mLastCol.addAction(actionLabel)
         aLast.setCheckable(True)

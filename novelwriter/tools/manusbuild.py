@@ -60,7 +60,7 @@ class GuiManuscriptBuild(QDialog):
 
     D_KEY = QtUserRole
 
-    def __init__(self, parent: QWidget, build: BuildSettings):
+    def __init__(self, parent: QWidget, build: BuildSettings) -> None:
         super().__init__(parent=parent)
 
         logger.debug("Create: GuiManuscriptBuild")
@@ -260,7 +260,7 @@ class GuiManuscriptBuild(QDialog):
     ##
 
     @pyqtSlot("QAbstractButton*")
-    def _dialogButtonClicked(self, button: QAbstractButton):
+    def _dialogButtonClicked(self, button: QAbstractButton) -> None:
         """Handle button clicks from the dialog button box."""
         role = self.dlgButtons.buttonRole(button)
         if role == QtRoleAction:
@@ -273,7 +273,7 @@ class GuiManuscriptBuild(QDialog):
         return
 
     @pyqtSlot()
-    def _doSelectPath(self):
+    def _doSelectPath(self) -> None:
         """Select a folder for output."""
         bPath = Path(self.buildPath.text())
         bPath = bPath if bPath.is_dir() else self._build.lastPath
@@ -285,7 +285,7 @@ class GuiManuscriptBuild(QDialog):
         return
 
     @pyqtSlot()
-    def _doResetBuildName(self):
+    def _doResetBuildName(self) -> None:
         """Generate a default build name."""
         bName = f"{SHARED.project.data.name} - {self._build.name}"
         self.buildName.setText(bName)
@@ -293,7 +293,7 @@ class GuiManuscriptBuild(QDialog):
         return
 
     @pyqtSlot()
-    def _resetProgress(self):
+    def _resetProgress(self) -> None:
         """Set the progress bar back to 0."""
         self.buildProgress.setValue(0)
         return
@@ -350,7 +350,7 @@ class GuiManuscriptBuild(QDialog):
             return items[0].data(self.D_KEY)
         return None
 
-    def _saveSettings(self):
+    def _saveSettings(self) -> None:
         """Save the user GUI settings."""
         winWidth  = CONFIG.rpxInt(self.width())
         winHeight = CONFIG.rpxInt(self.height())
@@ -369,7 +369,7 @@ class GuiManuscriptBuild(QDialog):
 
         return
 
-    def _populateContentList(self):
+    def _populateContentList(self) -> None:
         """Build the content list."""
         rootMap = {}
         filtered = self._build.buildItemFilter(SHARED.project)
@@ -398,7 +398,7 @@ class GuiManuscriptBuild(QDialog):
 
         return
 
-    def _openOutputFolder(self):
+    def _openOutputFolder(self) -> None:
         """Open the build folder in the system's file explorer."""
         openExternalPath(Path(self.buildPath.text()))
         return

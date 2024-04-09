@@ -1312,7 +1312,7 @@ class _FormatTab(NScrollableForm):
         return
 
     @pyqtSlot()
-    def _pageSizeValueChanged(self):
+    def _pageSizeValueChanged(self) -> None:
         """The user has changed the page size spin boxes, so we flip
         the page size box to Custom.
         """

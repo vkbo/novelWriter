@@ -382,7 +382,7 @@ class BuildSettings:
 
         postponed = []
 
-        def allowRoot(rHandle):
+        def allowRoot(rHandle: str | None) -> None:
             if rHandle in postponed and rHandle in result and rHandle is not None:
                 result[rHandle] = (True, FilterMode.ROOT)
                 postponed.remove(rHandle)

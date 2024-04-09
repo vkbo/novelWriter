@@ -548,7 +548,7 @@ class ToOdt(Tokenizer):
         oVers = _mkTag("office", "version")
         xSett = ET.Element(oRoot, attrib={oVers: X_VERS})
 
-        def putInZip(name, xObj, zipObj):
+        def putInZip(name: str, xObj: ET.Element, zipObj: ZipFile) -> None:
             with zipObj.open(name, mode="w") as fObj:
                 xml = ET.ElementTree(xObj)
                 xml.write(fObj, encoding="utf-8", xml_declaration=True)

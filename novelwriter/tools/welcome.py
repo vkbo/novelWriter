@@ -753,7 +753,7 @@ class _NewProjectForm(QWidget):
         return
 
     @pyqtSlot()
-    def _syncSwitches(self):
+    def _syncSwitches(self) -> None:
         """Check if the add notes option should also be switched off."""
         addPlot = self.addPlot.isChecked()
         addChar = self.addChar.isChecked()

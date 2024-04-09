@@ -47,7 +47,7 @@ def extractVersion(beQuiet: bool = False) -> tuple[str, str, str]:
     """Extract the novelWriter version number without having to import
     anything else from the main package.
     """
-    def getValue(text):
+    def getValue(text: str) -> str:
         bits = text.partition("=")
         return bits[2].strip().strip('"')
 
@@ -176,7 +176,7 @@ def cleanBuildDirs() -> None:
     print("Cleaning up build environment ...")
     print("")
 
-    def removeFolder(rmDir):
+    def removeFolder(rmDir: str) -> None:
         if os.path.isdir(rmDir):
             try:
                 shutil.rmtree(rmDir)
@@ -320,7 +320,7 @@ def buildQtI18nTS(sysArgs: list[str]) -> None:
     print("=============================")
 
     try:
-        from PyQt6.lupdate import lupdate
+        from PyQt6.lupdate.lupdate import lupdate
     except ImportError:
         print("ERROR: This command requires lupdate from PyQt6")
         print("On Debian/Ubuntu, install: pyqt6-dev-tools")
@@ -911,7 +911,7 @@ def makeAppImage(sysArgs: list[str]) -> list[str]:
     import argparse
 
     try:
-        import python_appimage  # noqa F401
+        import python_appimage  # noqa: F401 # type: ignore
     except ImportError:
         print(
             "ERROR: Package 'python-appimage' is missing on this system.\n"
@@ -1252,12 +1252,12 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
     # Clean Up Files
     # ==============
 
-    def unlinkIfFound(delFile):
+    def unlinkIfFound(delFile: str) -> None:
         if os.path.isfile(delFile):
             os.unlink(delFile)
             print("Deleted: %s" % delFile)
 
-    def deleteFolder(delPath):
+    def deleteFolder(delPath: str) -> None:
         if os.path.isdir(delPath):
             shutil.rmtree(delPath)
             print("Deleted: %s" % delPath)
@@ -1561,6 +1561,9 @@ def xdgUninstall() -> None:
 
 def winInstall() -> None:
     """Will attempt to install icons and make a launcher for Windows."""
+    if sys.platform != "win32":
+        raise Exception("This method only runs on Windows")
+
     import winreg
     try:
         import win32com.client
@@ -1654,7 +1657,7 @@ def winInstall() -> None:
     print("")
     print("Creating registry keys ...")
 
-    def setKey(kPath, kName, kVal):
+    def setKey(kPath: str, kName: str, kVal: str) -> None:
         winreg.CreateKey(winreg.HKEY_CURRENT_USER, kPath)
         regKey = winreg.OpenKey(winreg.HKEY_CURRENT_USER, kPath, 0, winreg.KEY_WRITE)
         winreg.SetValueEx(regKey, kName, 0, winreg.REG_SZ, kVal)
@@ -1688,6 +1691,9 @@ def winInstall() -> None:
 
 def winUninstall() -> None:
     """Will attempt to uninstall icons previously installed."""
+    if sys.platform != "win32":
+        raise Exception("This method only runs on Windows")
+
     import winreg
     try:
         import win32com.client
