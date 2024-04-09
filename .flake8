@@ -1,4 +1,5 @@
 [flake8]
-ignore = E133,E221,E226,E228,E241,W503
+ignore = E133,E221,E226,E228,E241,W503,ANN101,ANN102,ANN401
+per-file-ignores=tests/*:ANN
 max-line-length = 99
 exclude = docs/*
