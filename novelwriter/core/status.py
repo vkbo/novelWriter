@@ -292,7 +292,7 @@ class _ShapeCache:
             return self._cache[shape]
 
         def circ(r: float, a: float, x: float, y: float) -> QPointF:
-            print(round(x+r*sin(pi*a/180), 2), round(y-r*cos(pi*a/180), 2))
+            # print(round(x+r*sin(pi*a/180), 2), round(y-r*cos(pi*a/180), 2))
             return QPointF(round(x+r*sin(pi*a/180), 2), round(y-r*cos(pi*a/180), 2))
 
         path = QPainterPath()
