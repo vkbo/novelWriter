@@ -205,3 +205,16 @@ class nwBuildFmt(Enum):
     J_NWD  = 7
 
 # END Enum nwBuildFormat
+
+
+class nwStatusShape(Enum):
+
+    SQUARE   = 0
+    CIRCLE   = 1
+    TRIANGLE = 2
+    DIAMOND  = 3
+    PENTAGON = 4
+    STAR     = 5
+    PACMAN   = 6
+
+# END Enum nwStatusShape

@@ -24,17 +24,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import random
 import logging
+import random
 
-from typing import TYPE_CHECKING, Literal
 from collections.abc import ItemsView, Iterable, Iterator, KeysView, ValuesView
+from math import cos, pi, sin
+from typing import TYPE_CHECKING, Literal
 
-from PyQt5.QtGui import QIcon, QPainter, QPainterPath, QPixmap, QColor
-from PyQt5.QtCore import QRectF
+from PyQt5.QtCore import QPointF, Qt
+from PyQt5.QtGui import QIcon, QPainter, QPainterPath, QPixmap, QColor, QPolygonF
 
 from novelwriter import CONFIG
 from novelwriter.common import minmax, simplified
+from novelwriter.enum import nwStatusShape
 from novelwriter.types import QtPaintAnitAlias, QtTransparent
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -55,13 +57,6 @@ class NWStatus:
         self._default = None
 
         self._iPX = CONFIG.pxInt(24)
-
-        pA = CONFIG.pxInt(2)
-        pB = CONFIG.pxInt(20)
-        pR = float(CONFIG.pxInt(4))
-        self._iconPath = QPainterPath()
-        self._iconPath.addRoundedRect(QRectF(pA, pA, pB, pB), pR, pR)
-
         self._defaultIcon = self._createIcon(100, 100, 100)
 
         if self._type == self.STATUS:
@@ -248,15 +243,21 @@ class NWStatus:
 
     def _createIcon(self, red: int, green: int, blue: int) -> QIcon:
         """Generate an icon for a status label."""
-        pixmap = QPixmap(self._iPX, self._iPX)
+        pixmap = QPixmap(48, 48)
         pixmap.fill(QtTransparent)
+
+        path = _SHAPES.getShape(nwStatusShape.DIAMOND)
 
         painter = QPainter(pixmap)
         painter.setRenderHint(QtPaintAnitAlias)
-        painter.fillPath(self._iconPath, QColor(red, green, blue))
+        painter.fillPath(path, QColor(red, green, blue))
         painter.end()
 
-        return QIcon(pixmap)
+        return QIcon(pixmap.scaled(
+            self._iPX, self._iPX,
+            Qt.AspectRatioMode.IgnoreAspectRatio,
+            Qt.TransformationMode.SmoothTransformation
+        ))
 
     ##
     #  Iterator Bits
@@ -281,3 +282,68 @@ class NWStatus:
         return self._store.values()
 
 # END Class NWStatus
+
+
+class _ShapeCache:
+
+    def __init__(self) -> None:
+        self._cache: dict[nwStatusShape, QPainterPath] = {}
+        return
+
+    def getShape(self, shape: nwStatusShape) -> QPainterPath:
+        """Return a painter shape for an icon."""
+        if shape in self._cache:
+            return self._cache[shape]
+
+        def circ(r: float, a: float, x: float, y: float) -> QPointF:
+            print(round(x+r*sin(pi*a/180), 2), round(y-r*cos(pi*a/180), 2))
+            return QPointF(round(x+r*sin(pi*a/180), 2), round(y-r*cos(pi*a/180), 2))
+
+        path = QPainterPath()
+        if shape == nwStatusShape.SQUARE:
+            path.addRoundedRect(2.0, 2.0, 44.0, 44.0, 4.0, 4.0)
+        elif shape == nwStatusShape.CIRCLE:
+            path.addEllipse(2.0, 2.0, 44.0, 44.0)
+        elif shape == nwStatusShape.TRIANGLE:
+            path.addPolygon(QPolygonF([
+                circ(23.0, 0.0, 24.0, 26.0),
+                circ(23.0, 120.0, 24.0, 26.0),
+                circ(23.0, 240.0, 24.0, 26.0),
+            ]))
+        elif shape == nwStatusShape.DIAMOND:
+            path.addPolygon(QPolygonF([
+                circ(22.0, 0.0, 24.0, 24.0),
+                circ(20.0, 90.0, 24.0, 24.0),
+                circ(22.0, 180.0, 24.0, 24.0),
+                circ(20.0, 270.0, 24.0, 24.0),
+            ]))
+        elif shape == nwStatusShape.PENTAGON:
+            path.addPolygon(QPolygonF([
+                circ(23.0, 0.0, 24.0, 24.5),
+                circ(23.0, 72.0, 24.0, 24.5),
+                circ(23.0, 144.0, 24.0, 24.5),
+                circ(23.0, 216.0, 24.0, 24.5),
+                circ(23.0, 288.0, 24.0, 24.5),
+            ]))
+        elif shape == nwStatusShape.STAR:
+            path.addPolygon(QPolygonF([
+                circ(24.0, 0.0, 24.0, 24.5),
+                circ(24.0, 144.0, 24.0, 24.5),
+                circ(24.0, 288.0, 24.0, 24.5),
+                circ(24.0, 72.0, 24.0, 24.5),
+                circ(24.0, 216.0, 24.0, 24.5),
+            ]))
+            path.setFillRule(Qt.FillRule.WindingFill)
+        elif shape == nwStatusShape.PACMAN:
+            path.moveTo(24.0, 24.0)
+            path.arcTo(2.0, 2.0, 44.0, 44.0, 40.0, 280.0)
+
+        self._cache[shape] = path
+
+        return path
+
+# END Class _ShapeCache
+
+
+# Create Singleton
+_SHAPES = _ShapeCache()
