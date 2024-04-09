@@ -880,13 +880,13 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # Wrap Equal
     nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
-    assert nwGUI.docEditor._wrapSelection("=") is True
+    nwGUI.docEditor._wrapSelection("=")
     assert nwGUI.docEditor.getText() == text.replace("consectetur", "=consectetur=")
 
     # Wrap Unequal
     nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
-    assert nwGUI.docEditor._wrapSelection("=", "*") is True
+    nwGUI.docEditor._wrapSelection("=", "*")
     assert nwGUI.docEditor.getText() == text.replace("consectetur", "=consectetur*")
 
     # Past Paragraph
@@ -895,7 +895,7 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     cursor.setPosition(13, QTextCursor.MoveAnchor)
     cursor.setPosition(1000, QTextCursor.KeepAnchor)
     nwGUI.docEditor.setTextCursor(cursor)
-    assert nwGUI.docEditor._wrapSelection("=") is True
+    nwGUI.docEditor._wrapSelection("=")
 
     newText = nwGUI.docEditor.getText()
     newPara = list(filter(str.strip, newText.split("\n")))
@@ -910,14 +910,15 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # Block format repetition
     nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(39)
-    assert nwGUI.docEditor._toggleFormat(1, "=") is True
+    nwGUI.docEditor._toggleFormat(1, "=")
     assert nwGUI.docEditor.getText() == text.replace("amet", "=amet=", 1)
-    assert nwGUI.docEditor._toggleFormat(1, "=") is False
+    nwGUI.docEditor._toggleFormat(1, "=")
+    assert nwGUI.docEditor.getText() == text.replace("amet", "=amet=", 1)
 
     # Wrap Single Equal
     nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
-    assert nwGUI.docEditor._toggleFormat(1, "=") is True
+    nwGUI.docEditor._toggleFormat(1, "=")
     assert nwGUI.docEditor.getText() == text.replace("consectetur", "=consectetur=")
 
     # Past Paragraph
@@ -926,7 +927,7 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     cursor.setPosition(13, QTextCursor.MoveAnchor)
     cursor.setPosition(1000, QTextCursor.KeepAnchor)
     nwGUI.docEditor.setTextCursor(cursor)
-    assert nwGUI.docEditor._toggleFormat(1, "=") is True
+    nwGUI.docEditor._toggleFormat(1, "=")
 
     newText = nwGUI.docEditor.getText()
     newPara = list(filter(str.strip, newText.split("\n")))
@@ -936,30 +937,40 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # Wrap Double Equal
     nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
-    assert nwGUI.docEditor._toggleFormat(2, "=") is True
+    nwGUI.docEditor._toggleFormat(2, "=")
     assert nwGUI.docEditor.getText() == text.replace("consectetur", "==consectetur==")
+
+    # Toggle Double Equal with Selection
+    nwGUI.docEditor.replaceText(text)
+    nwGUI.docEditor.setCursorSelection(41, 11)
+    nwGUI.docEditor._toggleFormat(2, "=")
+    assert nwGUI.docEditor.getText() == text.replace("consectetur", "==consectetur==")
+    assert nwGUI.docEditor.getSelectedText() == "consectetur"
+    nwGUI.docEditor._toggleFormat(2, "=")
+    assert nwGUI.docEditor.getText() == text
+    assert nwGUI.docEditor.getSelectedText() == "consectetur"
 
     # Toggle Double Equal
     nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
-    assert nwGUI.docEditor._toggleFormat(2, "=") is True
-    assert nwGUI.docEditor._toggleFormat(2, "=") is True
+    nwGUI.docEditor._toggleFormat(2, "=")
+    nwGUI.docEditor._toggleFormat(2, "=")
     assert nwGUI.docEditor.getText() == text
 
     # Toggle Triple+Double Equal
     nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
-    assert nwGUI.docEditor._toggleFormat(3, "=") is True
-    assert nwGUI.docEditor._toggleFormat(2, "=") is True
+    nwGUI.docEditor._toggleFormat(3, "=")
+    nwGUI.docEditor._toggleFormat(2, "=")
     assert nwGUI.docEditor.getText() == text.replace("consectetur", "=consectetur=")
 
     # Toggle Unequal
     repText = text.replace("consectetur", "=consectetur==")
     nwGUI.docEditor.replaceText(repText)
     nwGUI.docEditor.setCursorPosition(45)
-    assert nwGUI.docEditor._toggleFormat(1, "=") is True
+    nwGUI.docEditor._toggleFormat(1, "=")
     assert nwGUI.docEditor.getText() == text.replace("consectetur", "consectetur=")
-    assert nwGUI.docEditor._toggleFormat(1, "=") is True
+    nwGUI.docEditor._toggleFormat(1, "=")
     assert nwGUI.docEditor.getText() == repText
 
     # Replace Quotes
@@ -969,7 +980,8 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     text = "### A Scene\n\n%s" % ipsumText[0].replace("consectetur", "=consectetur=")
     nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
-    assert nwGUI.docEditor._replaceQuotes("=", "<", ">") is False
+    nwGUI.docEditor._replaceQuotes("=", "<", ">")
+    assert nwGUI.docEditor.getText() == text
 
     # First Paragraph Selected
     # This should not replace anything in second paragraph
@@ -977,7 +989,7 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
     assert nwGUI.docEditor.docAction(nwDocAction.SEL_PARA)
-    assert nwGUI.docEditor._replaceQuotes("=", "<", ">") is True
+    nwGUI.docEditor._replaceQuotes("=", "<", ">")
 
     newText = nwGUI.docEditor.getText()
     newPara = list(filter(str.strip, newText.split("\n")))
@@ -989,7 +1001,7 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     nwGUI.docEditor.replaceText(text)
     nwGUI.docEditor.setCursorPosition(45)
     assert nwGUI.docEditor.docAction(nwDocAction.SEL_ALL)
-    assert nwGUI.docEditor._replaceQuotes("=", "<", ">") is True
+    nwGUI.docEditor._replaceQuotes("=", "<", ">")
     assert nwGUI.docEditor.getText() == text.replace("=Lorem=", "<Lorem>")
 
     # Remove Line Breaks
