@@ -51,7 +51,7 @@ Project credits are available in [CREDITS.md](https://github.com/vkbo/novelWrite
 
 **Note:** As of April 2024 only pre-releases are made from the `main` branch. Full releases are
 made from the `release` branch. So if you're submitting a fix to a current release, **including
-changes to documentation**, they must be made to the 'release' branch.
+changes to documentation**, they must be made to the `release` branch.
 
 ### Translations
 
