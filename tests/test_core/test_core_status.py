@@ -24,7 +24,7 @@ import pytest
 
 from tools import C
 
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QColor, QIcon
 
 from novelwriter.core.status import NWStatus
 from novelwriter.enum import nwStatusShape
@@ -97,33 +97,14 @@ def testCoreStatus_Iterator(mockRnd):
 
     # Direct access
     entry = nStatus[statusKeys[0]]
-    assert entry["cols"] == (100, 100, 100)
-    assert entry["name"] == "New"
-    assert entry["count"] == 0
-    assert isinstance(entry["icon"], QIcon)
+    assert entry.colour == QColor(100, 100, 100)
+    assert entry.name == "New"
+    assert entry.count == 0
+    assert isinstance(entry.icon, QIcon)
 
-    # Iterate
-    entries = list(nStatus)
-    assert len(entries) == 4
+    # Length
+    assert len(nStatus._store) == 4
     assert len(nStatus) == 4
-
-    # Keys
-    assert list(nStatus.keys()) == statusKeys
-
-    # Items
-    for index, (key, entry) in enumerate(nStatus.items()):
-        assert key == statusKeys[index]
-        assert "cols" in entry
-        assert "name" in entry
-        assert "count" in entry
-        assert "icon" in entry
-
-    # Valuse
-    for entry in nStatus.values():
-        assert "cols" in entry
-        assert "name" in entry
-        assert "count" in entry
-        assert "icon" in entry
 
 # END Test testCoreStatus_Iterator
 
@@ -138,23 +119,23 @@ def testCoreStatus_Entries(mockRnd):
 
     # Have a key
     nStatus.write(statusKeys[0], "Entry 1", (200, 100, 50), nwStatusShape.SQUARE)
-    assert nStatus[statusKeys[0]]["name"] == "Entry 1"
-    assert nStatus[statusKeys[0]]["cols"] == (200, 100, 50)
+    assert nStatus[statusKeys[0]].name == "Entry 1"
+    assert nStatus[statusKeys[0]].colour == QColor(200, 100, 50)
 
     # Don't have a key
     nStatus.write(None, "Entry 2", (210, 110, 60), nwStatusShape.SQUARE)
-    assert nStatus[statusKeys[1]]["name"] == "Entry 2"
-    assert nStatus[statusKeys[1]]["cols"] == (210, 110, 60)
+    assert nStatus[statusKeys[1]].name == "Entry 2"
+    assert nStatus[statusKeys[1]].colour == QColor(210, 110, 60)
 
     # Wrong colour spec
     nStatus.write(None, "Entry 3", "what?", nwStatusShape.SQUARE)  # type: ignore
-    assert nStatus[statusKeys[2]]["name"] == "Entry 3"
-    assert nStatus[statusKeys[2]]["cols"] == (100, 100, 100)
+    assert nStatus[statusKeys[2]].name == "Entry 3"
+    assert nStatus[statusKeys[2]].colour == QColor(100, 100, 100)
 
     # Wrong colour count
-    nStatus.write(None, "Entry 4", (10, 20), nwStatusShape.SQUARE)
-    assert nStatus[statusKeys[3]]["name"] == "Entry 4"
-    assert nStatus[statusKeys[3]]["cols"] == (100, 100, 100)
+    nStatus.write(None, "Entry 4", (10, 20), nwStatusShape.SQUARE)  # type: ignore
+    assert nStatus[statusKeys[3]].name == "Entry 4"
+    assert nStatus[statusKeys[3]].colour == QColor(100, 100, 100)
 
     # Check
     # =====
@@ -178,11 +159,11 @@ def testCoreStatus_Entries(mockRnd):
     # Colour Access
     # =============
 
-    assert nStatus.cols(statusKeys[0]) == (200, 100, 50)
-    assert nStatus.cols(statusKeys[1]) == (210, 110, 60)
-    assert nStatus.cols(statusKeys[2]) == (100, 100, 100)
-    assert nStatus.cols(statusKeys[3]) == (100, 100, 100)
-    assert nStatus.cols("blablabla") == (200, 100, 50)
+    assert nStatus.cols(statusKeys[0]) == QColor(200, 100, 50)
+    assert nStatus.cols(statusKeys[1]) == QColor(210, 110, 60)
+    assert nStatus.cols(statusKeys[2]) == QColor(100, 100, 100)
+    assert nStatus.cols(statusKeys[3]) == QColor(100, 100, 100)
+    assert nStatus.cols("blablabla") == QColor(200, 100, 50)
 
     # Icon Access
     # ===========
@@ -217,7 +198,7 @@ def testCoreStatus_Entries(mockRnd):
     # Reorder
     # =======
 
-    cOrder = list(nStatus.keys())
+    cOrder = list(nStatus._store.keys())
     assert cOrder == statusKeys
 
     # Wrong length
@@ -226,7 +207,7 @@ def testCoreStatus_Entries(mockRnd):
     # No change
     assert nStatus.reorder(cOrder) is False
 
-    # Actual reaorder
+    # Actual re-order
     nOrder = [
         statusKeys[0],
         statusKeys[2],
@@ -234,17 +215,17 @@ def testCoreStatus_Entries(mockRnd):
         statusKeys[3],
     ]
     assert nStatus.reorder(nOrder) is True
-    assert list(nStatus.keys()) == nOrder
+    assert list(nStatus._store.keys()) == nOrder
 
     # Add an unknown key
     wOrder = nOrder.copy()
     wOrder[3] = nStatus._newKey()
     assert nStatus.reorder(wOrder) is False
-    assert list(nStatus.keys()) == nOrder
+    assert list(nStatus._store.keys()) == nOrder
 
     # Put it back
     assert nStatus.reorder(cOrder) is True
-    assert list(nStatus.keys()) == cOrder
+    assert list(nStatus._store.keys()) == cOrder
 
     # Default
     # =======
@@ -254,7 +235,7 @@ def testCoreStatus_Entries(mockRnd):
 
     assert nStatus.check("Entry 5") == ""
     assert nStatus.name("blablabla") == ""
-    assert nStatus.cols("blablabla") == (100, 100, 100)
+    assert nStatus.cols("blablabla") == QColor(100, 100, 100)
     assert nStatus.count("blablabla") == 0
     assert isinstance(nStatus.icon("blablabla"), QIcon)
 

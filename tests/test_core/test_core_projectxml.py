@@ -30,6 +30,8 @@ from novelwriter.constants import nwFiles
 from tools import cmpFiles, writeFile
 from mocked import causeOSError
 
+from PyQt5.QtGui import QColor
+
 from novelwriter.core.item import NWItem
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.core.projectdata import NWProjectData
@@ -167,18 +169,18 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
     assert data.itemImport.name("i2d7a54") == "Major"
     assert data.itemImport.name("i56be10") == "Main"
 
-    assert data.itemStatus.cols("sf12341") == (100, 100, 100)
-    assert data.itemStatus.cols("sf24ce6") == (200, 50, 0)
-    assert data.itemStatus.cols("sc24b8f") == (182, 60, 0)
-    assert data.itemStatus.cols("s90e6c9") == (193, 129, 0)
-    assert data.itemStatus.cols("sd51c5b") == (193, 129, 0)
-    assert data.itemStatus.cols("s8ae72a") == (193, 129, 0)
-    assert data.itemStatus.cols("s78ea90") == (58, 180, 58)
+    assert data.itemStatus.cols("sf12341") == QColor(100, 100, 100)
+    assert data.itemStatus.cols("sf24ce6") == QColor(200, 50, 0)
+    assert data.itemStatus.cols("sc24b8f") == QColor(182, 60, 0)
+    assert data.itemStatus.cols("s90e6c9") == QColor(193, 129, 0)
+    assert data.itemStatus.cols("sd51c5b") == QColor(193, 129, 0)
+    assert data.itemStatus.cols("s8ae72a") == QColor(193, 129, 0)
+    assert data.itemStatus.cols("s78ea90") == QColor(58, 180, 58)
 
-    assert data.itemImport.cols("ia857f0") == (100, 100, 100)
-    assert data.itemImport.cols("icfb3a5") == (0, 122, 188)
-    assert data.itemImport.cols("i2d7a54") == (21, 0, 180)
-    assert data.itemImport.cols("i56be10") == (117, 0, 175)
+    assert data.itemImport.cols("ia857f0") == QColor(100, 100, 100)
+    assert data.itemImport.cols("icfb3a5") == QColor(0, 122, 188)
+    assert data.itemImport.cols("i2d7a54") == QColor(21, 0, 180)
+    assert data.itemImport.cols("i56be10") == QColor(117, 0, 175)
 
     assert data.itemStatus.count("sf12341") == 4
     assert data.itemStatus.count("sf24ce6") == 2
@@ -285,18 +287,18 @@ def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockRnd):
     assert data.itemImport.name("i000009") == "Major"
     assert data.itemImport.name("i00000a") == "Main"
 
-    assert data.itemStatus.cols("s000000") == (100, 100, 100)
-    assert data.itemStatus.cols("s000001") == (200, 50, 0)
-    assert data.itemStatus.cols("s000002") == (182, 60, 0)
-    assert data.itemStatus.cols("s000003") == (193, 129, 0)
-    assert data.itemStatus.cols("s000004") == (193, 129, 0)
-    assert data.itemStatus.cols("s000005") == (193, 129, 0)
-    assert data.itemStatus.cols("s000006") == (58, 180, 58)
+    assert data.itemStatus.cols("s000000") == QColor(100, 100, 100)
+    assert data.itemStatus.cols("s000001") == QColor(200, 50, 0)
+    assert data.itemStatus.cols("s000002") == QColor(182, 60, 0)
+    assert data.itemStatus.cols("s000003") == QColor(193, 129, 0)
+    assert data.itemStatus.cols("s000004") == QColor(193, 129, 0)
+    assert data.itemStatus.cols("s000005") == QColor(193, 129, 0)
+    assert data.itemStatus.cols("s000006") == QColor(58, 180, 58)
 
-    assert data.itemImport.cols("i000007") == (100, 100, 100)
-    assert data.itemImport.cols("i000008") == (0, 122, 188)
-    assert data.itemImport.cols("i000009") == (21, 0, 180)
-    assert data.itemImport.cols("i00000a") == (117, 0, 175)
+    assert data.itemImport.cols("i000007") == QColor(100, 100, 100)
+    assert data.itemImport.cols("i000008") == QColor(0, 122, 188)
+    assert data.itemImport.cols("i000009") == QColor(21, 0, 180)
+    assert data.itemImport.cols("i00000a") == QColor(117, 0, 175)
 
     assert data.itemStatus.count("s000000") == 0
     assert data.itemStatus.count("s000001") == 0
@@ -419,18 +421,18 @@ def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockRnd):
     assert data.itemImport.name("i000009") == "Major"
     assert data.itemImport.name("i00000a") == "Main"
 
-    assert data.itemStatus.cols("s000000") == (100, 100, 100)
-    assert data.itemStatus.cols("s000001") == (200, 50, 0)
-    assert data.itemStatus.cols("s000002") == (182, 60, 0)
-    assert data.itemStatus.cols("s000003") == (193, 129, 0)
-    assert data.itemStatus.cols("s000004") == (193, 129, 0)
-    assert data.itemStatus.cols("s000005") == (193, 129, 0)
-    assert data.itemStatus.cols("s000006") == (58, 180, 58)
+    assert data.itemStatus.cols("s000000") == QColor(100, 100, 100)
+    assert data.itemStatus.cols("s000001") == QColor(200, 50, 0)
+    assert data.itemStatus.cols("s000002") == QColor(182, 60, 0)
+    assert data.itemStatus.cols("s000003") == QColor(193, 129, 0)
+    assert data.itemStatus.cols("s000004") == QColor(193, 129, 0)
+    assert data.itemStatus.cols("s000005") == QColor(193, 129, 0)
+    assert data.itemStatus.cols("s000006") == QColor(58, 180, 58)
 
-    assert data.itemImport.cols("i000007") == (100, 100, 100)
-    assert data.itemImport.cols("i000008") == (0, 122, 188)
-    assert data.itemImport.cols("i000009") == (21, 0, 180)
-    assert data.itemImport.cols("i00000a") == (117, 0, 175)
+    assert data.itemImport.cols("i000007") == QColor(100, 100, 100)
+    assert data.itemImport.cols("i000008") == QColor(0, 122, 188)
+    assert data.itemImport.cols("i000009") == QColor(21, 0, 180)
+    assert data.itemImport.cols("i00000a") == QColor(117, 0, 175)
 
     assert data.itemStatus.count("s000000") == 0
     assert data.itemStatus.count("s000001") == 0
@@ -553,18 +555,18 @@ def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockRnd):
     assert data.itemImport.name("i000009") == "Major"
     assert data.itemImport.name("i00000a") == "Main"
 
-    assert data.itemStatus.cols("s000000") == (100, 100, 100)
-    assert data.itemStatus.cols("s000001") == (200, 50, 0)
-    assert data.itemStatus.cols("s000002") == (182, 60, 0)
-    assert data.itemStatus.cols("s000003") == (193, 129, 0)
-    assert data.itemStatus.cols("s000004") == (193, 129, 0)
-    assert data.itemStatus.cols("s000005") == (193, 129, 0)
-    assert data.itemStatus.cols("s000006") == (58, 180, 58)
+    assert data.itemStatus.cols("s000000") == QColor(100, 100, 100)
+    assert data.itemStatus.cols("s000001") == QColor(200, 50, 0)
+    assert data.itemStatus.cols("s000002") == QColor(182, 60, 0)
+    assert data.itemStatus.cols("s000003") == QColor(193, 129, 0)
+    assert data.itemStatus.cols("s000004") == QColor(193, 129, 0)
+    assert data.itemStatus.cols("s000005") == QColor(193, 129, 0)
+    assert data.itemStatus.cols("s000006") == QColor(58, 180, 58)
 
-    assert data.itemImport.cols("i000007") == (100, 100, 100)
-    assert data.itemImport.cols("i000008") == (0, 122, 188)
-    assert data.itemImport.cols("i000009") == (21, 0, 180)
-    assert data.itemImport.cols("i00000a") == (117, 0, 175)
+    assert data.itemImport.cols("i000007") == QColor(100, 100, 100)
+    assert data.itemImport.cols("i000008") == QColor(0, 122, 188)
+    assert data.itemImport.cols("i000009") == QColor(21, 0, 180)
+    assert data.itemImport.cols("i00000a") == QColor(117, 0, 175)
 
     assert data.itemStatus.count("s000000") == 0
     assert data.itemStatus.count("s000001") == 0
@@ -690,18 +692,18 @@ def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockRnd):
     assert data.itemImport.name("i000009") == "Major"
     assert data.itemImport.name("i00000a") == "Main"
 
-    assert data.itemStatus.cols("s000000") == (100, 100, 100)
-    assert data.itemStatus.cols("s000001") == (200, 50, 0)
-    assert data.itemStatus.cols("s000002") == (182, 60, 0)
-    assert data.itemStatus.cols("s000003") == (193, 129, 0)
-    assert data.itemStatus.cols("s000004") == (193, 129, 0)
-    assert data.itemStatus.cols("s000005") == (193, 129, 0)
-    assert data.itemStatus.cols("s000006") == (58, 180, 58)
+    assert data.itemStatus.cols("s000000") == QColor(100, 100, 100)
+    assert data.itemStatus.cols("s000001") == QColor(200, 50, 0)
+    assert data.itemStatus.cols("s000002") == QColor(182, 60, 0)
+    assert data.itemStatus.cols("s000003") == QColor(193, 129, 0)
+    assert data.itemStatus.cols("s000004") == QColor(193, 129, 0)
+    assert data.itemStatus.cols("s000005") == QColor(193, 129, 0)
+    assert data.itemStatus.cols("s000006") == QColor(58, 180, 58)
 
-    assert data.itemImport.cols("i000007") == (100, 100, 100)
-    assert data.itemImport.cols("i000008") == (0, 122, 188)
-    assert data.itemImport.cols("i000009") == (21, 0, 180)
-    assert data.itemImport.cols("i00000a") == (117, 0, 175)
+    assert data.itemImport.cols("i000007") == QColor(100, 100, 100)
+    assert data.itemImport.cols("i000008") == QColor(0, 122, 188)
+    assert data.itemImport.cols("i000009") == QColor(21, 0, 180)
+    assert data.itemImport.cols("i00000a") == QColor(117, 0, 175)
 
     assert data.itemStatus.count("s000000") == 0
     assert data.itemStatus.count("s000001") == 0
@@ -827,18 +829,18 @@ def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockRnd):
     assert data.itemImport.name("i2d7a54") == "Major"
     assert data.itemImport.name("i56be10") == "Main"
 
-    assert data.itemStatus.cols("sf12341") == (100, 100, 100)
-    assert data.itemStatus.cols("sf24ce6") == (200, 50, 0)
-    assert data.itemStatus.cols("sc24b8f") == (182, 60, 0)
-    assert data.itemStatus.cols("s90e6c9") == (193, 129, 0)
-    assert data.itemStatus.cols("sd51c5b") == (193, 129, 0)
-    assert data.itemStatus.cols("s8ae72a") == (193, 129, 0)
-    assert data.itemStatus.cols("s78ea90") == (58, 180, 58)
+    assert data.itemStatus.cols("sf12341") == QColor(100, 100, 100)
+    assert data.itemStatus.cols("sf24ce6") == QColor(200, 50, 0)
+    assert data.itemStatus.cols("sc24b8f") == QColor(182, 60, 0)
+    assert data.itemStatus.cols("s90e6c9") == QColor(193, 129, 0)
+    assert data.itemStatus.cols("sd51c5b") == QColor(193, 129, 0)
+    assert data.itemStatus.cols("s8ae72a") == QColor(193, 129, 0)
+    assert data.itemStatus.cols("s78ea90") == QColor(58, 180, 58)
 
-    assert data.itemImport.cols("ia857f0") == (100, 100, 100)
-    assert data.itemImport.cols("icfb3a5") == (0, 122, 188)
-    assert data.itemImport.cols("i2d7a54") == (21, 0, 180)
-    assert data.itemImport.cols("i56be10") == (117, 0, 175)
+    assert data.itemImport.cols("ia857f0") == QColor(100, 100, 100)
+    assert data.itemImport.cols("icfb3a5") == QColor(0, 122, 188)
+    assert data.itemImport.cols("i2d7a54") == QColor(21, 0, 180)
+    assert data.itemImport.cols("i56be10") == QColor(117, 0, 175)
 
     assert data.itemStatus.count("sf12341") == 4
     assert data.itemStatus.count("sf24ce6") == 2

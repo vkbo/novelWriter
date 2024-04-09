@@ -494,11 +494,11 @@ def testCoreProject_StatusImport(mockGUI, fncPath, mockRnd):
     # ====================
 
     project.data.itemStatus.resetCounts()
-    for key in list(project.data.itemStatus.keys()):
+    for key in list(project.data.itemStatus._store.keys()):
         assert project.data.itemStatus.remove(key) is True
 
     project.data.itemImport.resetCounts()
-    for key in list(project.data.itemImport.keys()):
+    for key in list(project.data.itemImport._store.keys()):
         assert project.data.itemImport.remove(key) is True
 
     assert len(project.data.itemStatus) == 0
