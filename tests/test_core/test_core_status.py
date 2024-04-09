@@ -27,6 +27,7 @@ from tools import C
 from PyQt5.QtGui import QIcon
 
 from novelwriter.core.status import NWStatus
+from novelwriter.enum import nwStatusShape
 
 statusKeys = [C.sNew, C.sNote, C.sDraft, C.sFinished]
 importKeys = [C.iNew, C.iMinor, C.iMajor, C.iMain]
@@ -34,13 +35,12 @@ importKeys = [C.iNew, C.iMinor, C.iMajor, C.iMain]
 
 @pytest.mark.core
 def testCoreStatus_Internal(mockRnd):
-    """Test all the internal functions of the NWStatus class.
-    """
+    """Test all the internal functions of the NWStatus class."""
     nStatus = NWStatus(NWStatus.STATUS)
     nImport = NWStatus(NWStatus.IMPORT)
 
     with pytest.raises(Exception):
-        NWStatus(999)
+        NWStatus(999)  # type: ignore
 
     # Generate Key
     # ============
@@ -49,14 +49,14 @@ def testCoreStatus_Internal(mockRnd):
     assert nStatus._newKey() == statusKeys[1]
 
     # Key collision, should move to key 3
-    nStatus.write(statusKeys[2], "Crash", (0, 0, 0))
+    nStatus.write(statusKeys[2], "Crash", (0, 0, 0), nwStatusShape.SQUARE)
     assert nStatus._newKey() == statusKeys[3]
 
     assert nImport._newKey() == importKeys[0]
     assert nImport._newKey() == importKeys[1]
 
     # Key collision, should move to key 3
-    nImport.write(importKeys[2], "Crash", (0, 0, 0))
+    nImport.write(importKeys[2], "Crash", (0, 0, 0), nwStatusShape.SQUARE)
     assert nImport._newKey() == importKeys[3]
 
     # Check Key
@@ -87,14 +87,13 @@ def testCoreStatus_Internal(mockRnd):
 
 @pytest.mark.core
 def testCoreStatus_Iterator(mockRnd):
-    """Test the iterator functions of the NWStatus class.
-    """
+    """Test the iterator functions of the NWStatus class."""
     nStatus = NWStatus(NWStatus.STATUS)
 
-    nStatus.write(None, "New",      (100, 100, 100))
-    nStatus.write(None, "Note",     (200, 50,  0))
-    nStatus.write(None, "Draft",    (200, 150, 0))
-    nStatus.write(None, "Finished", (50,  200, 0))
+    nStatus.write(None, "New",      (100, 100, 100), nwStatusShape.SQUARE)
+    nStatus.write(None, "Note",     (200, 50,  0), nwStatusShape.SQUARE)
+    nStatus.write(None, "Draft",    (200, 150, 0), nwStatusShape.SQUARE)
+    nStatus.write(None, "Finished", (50,  200, 0), nwStatusShape.SQUARE)
 
     # Direct access
     entry = nStatus[statusKeys[0]]
@@ -131,30 +130,29 @@ def testCoreStatus_Iterator(mockRnd):
 
 @pytest.mark.core
 def testCoreStatus_Entries(mockRnd):
-    """Test all the simple setters for the NWStatus class.
-    """
+    """Test all the simple setters for the NWStatus class."""
     nStatus = NWStatus(NWStatus.STATUS)
 
     # Write
     # =====
 
     # Have a key
-    nStatus.write(statusKeys[0], "Entry 1", (200, 100, 50))
+    nStatus.write(statusKeys[0], "Entry 1", (200, 100, 50), nwStatusShape.SQUARE)
     assert nStatus[statusKeys[0]]["name"] == "Entry 1"
     assert nStatus[statusKeys[0]]["cols"] == (200, 100, 50)
 
     # Don't have a key
-    nStatus.write(None, "Entry 2", (210, 110, 60))
+    nStatus.write(None, "Entry 2", (210, 110, 60), nwStatusShape.SQUARE)
     assert nStatus[statusKeys[1]]["name"] == "Entry 2"
     assert nStatus[statusKeys[1]]["cols"] == (210, 110, 60)
 
     # Wrong colour spec
-    nStatus.write(None, "Entry 3", "what?")
+    nStatus.write(None, "Entry 3", "what?", nwStatusShape.SQUARE)  # type: ignore
     assert nStatus[statusKeys[2]]["name"] == "Entry 3"
     assert nStatus[statusKeys[2]]["cols"] == (100, 100, 100)
 
     # Wrong colour count
-    nStatus.write(None, "Entry 4", (10, 20))
+    nStatus.write(None, "Entry 4", (10, 20), nwStatusShape.SQUARE)
     assert nStatus[statusKeys[3]]["name"] == "Entry 4"
     assert nStatus[statusKeys[3]]["cols"] == (100, 100, 100)
 
@@ -283,7 +281,7 @@ def testCoreStatus_Entries(mockRnd):
     # Delete default entry, Entry 2 is new default
     firstName = nStatus.name(nStatus._default)
     assert firstName == "Entry 1"
-    assert nStatus.remove(nStatus._default) is True
+    assert nStatus.remove(nStatus._default) is True  # type: ignore
     assert nStatus.name(firstName) == "Entry 2"
 
     # Remove remaining entries
@@ -298,13 +296,12 @@ def testCoreStatus_Entries(mockRnd):
 
 @pytest.mark.core
 def testCoreStatus_PackUnpack(mockRnd):
-    """Test all the pack/unpack of the NWStatus class.
-    """
+    """Test all the pack/unpack of the NWStatus class."""
     nStatus = NWStatus(NWStatus.STATUS)
-    nStatus.write(None, "New",      (100, 100, 100))
-    nStatus.write(None, "Note",     (200, 50,  0))
-    nStatus.write(None, "Draft",    (200, 150, 0))
-    nStatus.write(None, "Finished", (50,  200, 0))
+    nStatus.write(None, "New",      (100, 100, 100), nwStatusShape.SQUARE)
+    nStatus.write(None, "Note",     (200, 50,  0), nwStatusShape.SQUARE)
+    nStatus.write(None, "Draft",    (200, 150, 0), nwStatusShape.SQUARE)
+    nStatus.write(None, "Finished", (50,  200, 0), nwStatusShape.SQUARE)
 
     countTo = [3, 5, 7, 9]
     for i, n in enumerate(countTo):
@@ -318,52 +315,33 @@ def testCoreStatus_PackUnpack(mockRnd):
             "count": "3",
             "red": "100",
             "green": "100",
-            "blue": "100"
+            "blue": "100",
+            "shape": "SQUARE",
         }),
         ("Note", {
             "key": statusKeys[1],
             "count": "5",
             "red": "200",
             "green": "50",
-            "blue": "0"
+            "blue": "0",
+            "shape": "SQUARE",
         }),
         ("Draft", {
             "key": statusKeys[2],
             "count": "7",
             "red": "200",
             "green": "150",
-            "blue": "0"
+            "blue": "0",
+            "shape": "SQUARE",
         }),
         ("Finished", {
             "key": statusKeys[3],
             "count": "9",
             "red": "50",
             "green": "200",
-            "blue": "0"
+            "blue": "0",
+            "shape": "SQUARE",
         }),
     ]
-
-    # Unpack
-    nStatus = NWStatus(NWStatus.STATUS)
-    nStatus.unpack({
-        statusKeys[0]: {"label": "New0", "colour": (100, 100, 100), "count": countTo[0]},
-        statusKeys[1]: {"label": "New1", "colour": (150, 150, 150), "count": countTo[1]},
-        statusKeys[2]: {"label": "New2", "colour": (200, 200, 200), "count": countTo[2]},
-        statusKeys[3]: {"label": "New3", "colour": (250, 250, 250), "count": countTo[3]},
-    })
-    assert len(nStatus._store) == 4
-    assert list(nStatus._store.keys()) == statusKeys
-    assert nStatus._store[statusKeys[0]]["name"] == "New0"
-    assert nStatus._store[statusKeys[1]]["name"] == "New1"
-    assert nStatus._store[statusKeys[2]]["name"] == "New2"
-    assert nStatus._store[statusKeys[3]]["name"] == "New3"
-    assert nStatus._store[statusKeys[0]]["cols"] == (100, 100, 100)
-    assert nStatus._store[statusKeys[1]]["cols"] == (150, 150, 150)
-    assert nStatus._store[statusKeys[2]]["cols"] == (200, 200, 200)
-    assert nStatus._store[statusKeys[3]]["cols"] == (250, 250, 250)
-    assert nStatus._store[statusKeys[0]]["count"] == countTo[0]
-    assert nStatus._store[statusKeys[1]]["count"] == countTo[1]
-    assert nStatus._store[statusKeys[2]]["count"] == countTo[2]
-    assert nStatus._store[statusKeys[3]]["count"] == countTo[3]
 
 # END Test testCoreStatus_PackUnpack

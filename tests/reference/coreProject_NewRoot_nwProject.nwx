@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.3a1" hexVersion="0x020300a1" fileVersion="1.5" fileRevision="2" timeStamp="2024-01-26 22:50:57">
+<novelWriterXML appVersion="2.4rc1" hexVersion="0x020400c1" fileVersion="1.5" fileRevision="4" timeStamp="2024-04-09 22:34:16">
   <project id="d0f3fe10-c6e6-4310-8bfd-181eb4224eed" saveCount="1" autoCount="1" editTime="0">
     <name>New Project</name>
     <author>Jane Doe</author>
@@ -16,16 +16,16 @@
     </lastHandle>
     <autoReplace />
     <status>
-      <entry key="s000000" count="6" red="100" green="100" blue="100">New</entry>
-      <entry key="s000001" count="0" red="200" green="50" blue="0">Note</entry>
-      <entry key="s000002" count="0" red="200" green="150" blue="0">Draft</entry>
-      <entry key="s000003" count="0" red="50" green="200" blue="0">Finished</entry>
+      <entry key="s000000" count="6" red="100" green="100" blue="100" shape="SQUARE">New</entry>
+      <entry key="s000001" count="0" red="200" green="50" blue="0" shape="SQUARE">Note</entry>
+      <entry key="s000002" count="0" red="200" green="150" blue="0" shape="SQUARE">Draft</entry>
+      <entry key="s000003" count="0" red="50" green="200" blue="0" shape="SQUARE">Finished</entry>
     </status>
     <importance>
-      <entry key="i000004" count="10" red="100" green="100" blue="100">New</entry>
-      <entry key="i000005" count="0" red="200" green="50" blue="0">Minor</entry>
-      <entry key="i000006" count="0" red="200" green="150" blue="0">Major</entry>
-      <entry key="i000007" count="0" red="50" green="200" blue="0">Main</entry>
+      <entry key="i000004" count="10" red="100" green="100" blue="100" shape="SQUARE">New</entry>
+      <entry key="i000005" count="0" red="200" green="50" blue="0" shape="SQUARE">Minor</entry>
+      <entry key="i000006" count="0" red="200" green="150" blue="0" shape="SQUARE">Major</entry>
+      <entry key="i000007" count="0" red="50" green="200" blue="0" shape="SQUARE">Main</entry>
     </importance>
   </settings>
   <content items="16" novelWords="9" notesWords="0">

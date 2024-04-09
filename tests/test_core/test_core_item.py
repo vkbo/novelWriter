@@ -553,8 +553,8 @@ def testCoreItem_ClassDefaults(mockGUI):
 def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
     """Test packing and unpacking entries for the NWItem class."""
     project = NWProject()
-    project.data.itemStatus.write(None, "New", (100, 100, 100))
-    project.data.itemImport.write(None, "New", (100, 100, 100))
+    project.data.itemStatus.write(None, "New", (100, 100, 100), "SQUARE")
+    project.data.itemImport.write(None, "New", (100, 100, 100), "SQUARE")
 
     # Invalid
     item = NWItem(project, "0000000000000")
