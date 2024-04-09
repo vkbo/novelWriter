@@ -28,4 +28,6 @@ jobs:
         run: |
           pytest -v --cov=novelwriter --timeout=60
       - name: Upload to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
