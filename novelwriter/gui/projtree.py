@@ -1855,11 +1855,11 @@ class _TreeContextMenu(QMenu):
         if self._item.isNovelLike():
             menu = self.addMenu(self.tr("Set Status to ..."))
             current = self._item.itemStatus
-            for n, (key, entry) in enumerate(SHARED.project.data.itemStatus.items()):
-                name = entry["name"]
+            for n, (key, entry) in enumerate(SHARED.project.data.itemStatus.iterItems()):
+                name = entry.name
                 if not multi and current == key:
                     name += f" ({nwUnicode.U_CHECK})"
-                action = menu.addAction(entry["icon"], name)
+                action = menu.addAction(entry.icon, name)
                 if multi:
                     action.triggered.connect(lambda n, key=key: self._iterSetItemStatus(key))
                 else:
@@ -1872,11 +1872,11 @@ class _TreeContextMenu(QMenu):
         else:
             menu = self.addMenu(self.tr("Set Importance to ..."))
             current = self._item.itemImport
-            for n, (key, entry) in enumerate(SHARED.project.data.itemImport.items()):
-                name = entry["name"]
+            for n, (key, entry) in enumerate(SHARED.project.data.itemImport.iterItems()):
+                name = entry.name
                 if not multi and current == key:
                     name += f" ({nwUnicode.U_CHECK})"
-                action = menu.addAction(entry["icon"], name)
+                action = menu.addAction(entry.icon, name)
                 if multi:
                     action.triggered.connect(lambda n, key=key: self._iterSetItemImport(key))
                 else:

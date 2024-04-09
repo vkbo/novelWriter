@@ -27,7 +27,8 @@ from __future__ import annotations
 import logging
 import random
 
-from collections.abc import ItemsView, Iterable, Iterator, KeysView, ValuesView
+from collections.abc import Iterable
+from dataclasses import dataclass
 from math import cos, pi, sin
 from typing import TYPE_CHECKING, Literal
 
@@ -35,7 +36,7 @@ from PyQt5.QtCore import QPointF, Qt
 from PyQt5.QtGui import QIcon, QPainter, QPainterPath, QPixmap, QColor, QPolygonF
 
 from novelwriter import CONFIG
-from novelwriter.common import minmax, simplified
+from novelwriter.common import simplified
 from novelwriter.enum import nwStatusShape
 from novelwriter.types import QtPaintAnitAlias, QtTransparent
 
@@ -43,6 +44,18 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import TypeGuard  # Requires Python 3.10
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class StatusEntry:
+
+    name: str
+    colour: QColor
+    shape: nwStatusShape
+    icon: QIcon
+    count: int = 0
+
+# END Class StatusEntry
 
 
 class NWStatus:
@@ -53,11 +66,13 @@ class NWStatus:
     def __init__(self, kind: Literal[1, 2]) -> None:
 
         self._type = kind
-        self._store = {}
+        self._store: dict[str, StatusEntry] = {}
         self._default = None
 
         self._iPX = CONFIG.pxInt(24)
-        self._defaultIcon = self._createIcon(100, 100, 100, nwStatusShape.SQUARE)
+        self._defaultIcon = self.createIcon(
+            self._iPX, QColor(100, 100, 100), nwStatusShape.SQUARE
+        )
 
         if self._type == self.STATUS:
             self._prefix = "s"
@@ -68,8 +83,18 @@ class NWStatus:
 
         return
 
-    def write(self, key: str | None, name: str, col: tuple, shape: nwStatusShape | str,
-              count: int | None = None) -> str:
+    def __len__(self) -> int:
+        return len(self._store)
+
+    def __getitem__(self, key: str) -> StatusEntry:
+        return self._store[key]
+
+    ##
+    #  Methods
+    ##
+
+    def write(self, key: str | None, name: str, col: tuple[int, int, int],
+              shape: nwStatusShape | str, count: int | None = None) -> str:
         """Add or update a status entry. If the key is invalid, a new
         key is generated.
         """
@@ -80,26 +105,25 @@ class NWStatus:
         if len(col) != 3:
             col = (100, 100, 100)
 
-        cR = minmax(col[0], 0, 255)
-        cG = minmax(col[1], 0, 255)
-        cB = minmax(col[2], 0, 255)
         name = simplified(name)
+        colour = QColor(*col)
         if not isinstance(shape, nwStatusShape):
             if shape in nwStatusShape.__members__:
                 shape = nwStatusShape[shape]
             else:
                 shape = nwStatusShape.SQUARE
 
-        if count is None:
-            count = self._store.get(key, {}).get("count", 0)
+        icon = self.createIcon(self._iPX, colour, shape)
 
-        self._store[key] = {
-            "name": name,
-            "icon": self._createIcon(cR, cG, cB, shape),
-            "cols": (cR, cG, cB),
-            "count": count,
-            "shape": shape,
-        }
+        if key and key in self._store:
+            entry = self._store[key]
+            entry.name = name
+            entry.colour = colour
+            entry.shape = shape
+            entry.icon = icon
+            entry.count = count or 0
+        else:
+            self._store[key] = StatusEntry(name, colour, shape, icon, count or 0)
 
         if self._default is None:
             self._default = key
@@ -110,7 +134,7 @@ class NWStatus:
         """Remove an entry in the list, except if the count > 0."""
         if key not in self._store:
             return False
-        if self._store[key]["count"] > 0:
+        if self._store[key].count > 0:
             return False
 
         del self._store[key]
@@ -135,33 +159,33 @@ class NWStatus:
     def name(self, key: str | None) -> str:
         """Return the name associated with a given key."""
         if key and key in self._store:
-            return self._store[key]["name"]
+            return self._store[key].name
         elif self._default is not None:
-            return self._store[self._default]["name"]
+            return self._store[self._default].name
         return ""
 
-    def cols(self, key: str | None) -> tuple[int, int, int]:
+    def cols(self, key: str | None) -> QColor:
         """Return the colours associated with a given key."""
         if key and key in self._store:
-            return self._store[key]["cols"]
+            return self._store[key].colour
         elif self._default is not None:
-            return self._store[self._default]["cols"]
-        return 100, 100, 100
+            return self._store[self._default].colour
+        return QColor(100, 100, 100)
 
     def count(self, key: str | None) -> int:
         """Return the count associated with a given key."""
         if key and key in self._store:
-            return self._store[key]["count"]
+            return self._store[key].count
         elif self._default is not None:
-            return self._store[self._default]["count"]
+            return self._store[self._default].count
         return 0
 
     def icon(self, key: str | None) -> QIcon:
         """Return the icon associated with a given key."""
         if key and key in self._store:
-            return self._store[key]["icon"]
+            return self._store[key].icon
         elif self._default is not None:
-            return self._store[self._default]["icon"]
+            return self._store[self._default].icon
         return self._defaultIcon
 
     def reorder(self, order: list[str]) -> bool:
@@ -188,27 +212,48 @@ class NWStatus:
     def resetCounts(self) -> None:
         """Clear the counts of references to the status entries."""
         for key in self._store:
-            self._store[key]["count"] = 0
+            self._store[key].count = 0
         return
 
     def increment(self, key: str | None) -> None:
         """Increment the counter for a given entry."""
         if key and key in self._store:
-            self._store[key]["count"] += 1
+            self._store[key].count += 1
         return
 
     def pack(self) -> Iterable[tuple[str, dict]]:
         """Pack the status entries into a dictionary."""
-        for key, data in self._store.items():
-            yield (data["name"], {
+        for key, entry in self._store.items():
+            yield (entry.name, {
                 "key":   key,
-                "count": str(data["count"]),
-                "red":   str(data["cols"][0]),
-                "green": str(data["cols"][1]),
-                "blue":  str(data["cols"][2]),
-                "shape": data["shape"].name,
+                "count": str(entry.count),
+                "red":   str(entry.colour.red()),
+                "green": str(entry.colour.green()),
+                "blue":  str(entry.colour.blue()),
+                "shape": entry.shape.name,
             })
         return
+
+    def iterItems(self) -> Iterable[tuple[str, StatusEntry]]:
+        """Yield entries from the status icons."""
+        yield from self._store.items()
+
+    @staticmethod
+    def createIcon(height: int, colour: QColor, shape: nwStatusShape) -> QIcon:
+        """Generate an icon for a status label."""
+        pixmap = QPixmap(48, 48)
+        pixmap.fill(QtTransparent)
+
+        painter = QPainter(pixmap)
+        painter.setRenderHint(QtPaintAnitAlias)
+        painter.fillPath(_SHAPES.getShape(shape), colour)
+        painter.end()
+
+        return QIcon(pixmap.scaled(
+            height, height,
+            Qt.AspectRatioMode.IgnoreAspectRatio,
+            Qt.TransformationMode.SmoothTransformation
+        ))
 
     ##
     #  Internal Functions
@@ -238,44 +283,6 @@ class NWStatus:
             if c not in "0123456789abcdef":
                 return False
         return True
-
-    def _createIcon(self, red: int, green: int, blue: int, shape: nwStatusShape) -> QIcon:
-        """Generate an icon for a status label."""
-        pixmap = QPixmap(48, 48)
-        pixmap.fill(QtTransparent)
-
-        painter = QPainter(pixmap)
-        painter.setRenderHint(QtPaintAnitAlias)
-        painter.fillPath(_SHAPES.getShape(shape), QColor(red, green, blue))
-        painter.end()
-
-        return QIcon(pixmap.scaled(
-            self._iPX, self._iPX,
-            Qt.AspectRatioMode.IgnoreAspectRatio,
-            Qt.TransformationMode.SmoothTransformation
-        ))
-
-    ##
-    #  Iterator Bits
-    ##
-
-    def __len__(self) -> int:
-        return len(self._store)
-
-    def __getitem__(self, key: str) -> dict:
-        return self._store[key]
-
-    def __iter__(self) -> Iterator[dict]:
-        return iter(self._store)
-
-    def keys(self) -> KeysView[str]:
-        return self._store.keys()
-
-    def items(self) -> ItemsView[str, dict]:
-        return self._store.items()
-
-    def values(self) -> ValuesView[dict]:
-        return self._store.values()
 
 # END Class NWStatus
 

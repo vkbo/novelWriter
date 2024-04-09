@@ -358,8 +358,8 @@ class ProjectXMLReader:
         logger.debug("Parsing <content> section (legacy format)")
 
         # Create maps to look up name -> key for status and importance
-        statusMap = {entry.get("name"): key for key, entry in data.itemStatus.items()}
-        importMap = {entry.get("name"): key for key, entry in data.itemImport.items()}
+        sMap: dict[str | None, str] = {e.name: k for k, e in data.itemStatus.iterItems()}
+        iMap: dict[str | None, str] = {e.name: k for k, e in data.itemImport.iterItems()}
 
         for xItem in xSection:
             if xItem.tag != "item":
@@ -406,9 +406,9 @@ class ProjectXMLReader:
 
             # Status was split into separate status/import with a key in 1.4
             if item.get("class", "") in ("NOVEL", "ARCHIVE"):
-                name["status"] = statusMap.get(tmpStatus, None)
+                name["status"] = sMap.get(tmpStatus, None)
             else:
-                name["import"] = importMap.get(tmpStatus, None)
+                name["import"] = iMap.get(tmpStatus, None)
 
             # A number of layouts were removed in 1.3
             if item.get("layout", "") in (

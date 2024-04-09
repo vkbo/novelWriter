@@ -36,6 +36,8 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import simplified
+from novelwriter.core.status import NWStatus
+from novelwriter.enum import nwStatusShape
 from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrollableForm
 from novelwriter.extensions.modified import NComboBox, NIconToolButton
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
@@ -301,12 +303,14 @@ class _SettingsPage(NScrollableForm):
 
 class _StatusPage(NFixedPage):
 
-    COL_LABEL = 0
-    COL_USAGE = 1
+    C_DATA  = 0
+    C_LABEL = 0
+    C_USAGE = 1
 
-    KEY_ROLE = QtUserRole
-    COL_ROLE = QtUserRole + 1
-    NUM_ROLE = QtUserRole + 2
+    D_KEY   = QtUserRole
+    D_COLOR = QtUserRole + 1
+    D_SHAPE = QtUserRole + 2
+    D_COUNT = QtUserRole + 3
 
     def __init__(self, parent: QWidget, isStatus: bool) -> None:
         super().__init__(parent=parent)
@@ -332,6 +336,11 @@ class _StatusPage(NFixedPage):
         iSz = SHARED.theme.baseIconSize
         bSz = SHARED.theme.buttonIconSize
 
+        # Labels
+        self.trCountNone = self.tr("Not in use")
+        self.trCountOne  = self.tr("Used once")
+        self.trCountMore = self.tr("Used by {0} items")
+
         # Title
         self.pageTitle = NColourLabel(
             pageLabel, SHARED.theme.helpText, parent=self,
@@ -342,11 +351,11 @@ class _StatusPage(NFixedPage):
         self.listBox = QTreeWidget(self)
         self.listBox.setHeaderLabels([self.tr("Label"), self.tr("Usage")])
         self.listBox.itemSelectionChanged.connect(self._selectedItem)
-        self.listBox.setColumnWidth(self.COL_LABEL, wCol0)
+        self.listBox.setColumnWidth(self.C_LABEL, wCol0)
         self.listBox.setIndentation(0)
 
-        for key, entry in status.items():
-            self._addItem(key, entry["name"], entry["cols"], entry["count"])
+        for key, entry in status.iterItems():
+            self._addItem(key, entry.name, entry.colour, entry.shape, entry.icon, entry.count)
 
         # List Controls
         self.addButton = NIconToolButton(self, iSz, "add")
@@ -424,9 +433,10 @@ class _StatusPage(NFixedPage):
                 item = self.listBox.topLevelItem(n)
                 if item is not None:
                     newList.append({
-                        "key":  item.data(self.COL_LABEL, self.KEY_ROLE),
-                        "name": item.text(self.COL_LABEL),
-                        "cols": item.data(self.COL_LABEL, self.COL_ROLE),
+                        "key": item.data(self.C_DATA, self.D_KEY),
+                        "name": item.text(self.C_DATA),
+                        "cols": item.data(self.C_DATA, self.D_COLOR),
+                        "shape": item.data(self.C_DATA, self.D_SHAPE),
                     })
             return newList, self._colDeleted
         return [], []
@@ -457,7 +467,7 @@ class _StatusPage(NFixedPage):
     @pyqtSlot()
     def _newItem(self) -> None:
         """Create a new status item."""
-        self._addItem(None, self.tr("New Item"), (100, 100, 100), 0)
+        # self._addItem(None, self.tr("New Item"), (100, 100, 100), 0)
         self._changed = True
         return
 
@@ -467,11 +477,11 @@ class _StatusPage(NFixedPage):
         selItem = self._getSelectedItem()
         if isinstance(selItem, QTreeWidgetItem):
             iRow = self.listBox.indexOfTopLevelItem(selItem)
-            if selItem.data(self.COL_LABEL, self.NUM_ROLE) > 0:
+            if selItem.data(self.C_LABEL, self.D_COUNT) > 0:
                 SHARED.error(self.tr("Cannot delete a status item that is in use."))
             else:
                 self.listBox.takeTopLevelItem(iRow)
-                self._colDeleted.append(selItem.data(self.COL_LABEL, self.KEY_ROLE))
+                self._colDeleted.append(selItem.data(self.C_DATA, self.D_KEY))
                 self._changed = True
         return
 
@@ -480,9 +490,9 @@ class _StatusPage(NFixedPage):
         """Save changes made to a status item."""
         selItem = self._getSelectedItem()
         if isinstance(selItem, QTreeWidgetItem):
-            selItem.setText(self.COL_LABEL, simplified(self.editName.text()))
-            selItem.setIcon(self.COL_LABEL, self.colButton.icon())
-            selItem.setData(self.COL_LABEL, self.COL_ROLE, (
+            selItem.setText(self.C_LABEL, simplified(self.editName.text()))
+            selItem.setIcon(self.C_LABEL, self.colButton.icon())
+            selItem.setData(self.C_DATA, self.D_COLOR, (
                 self._selColour.red(), self._selColour.green(), self._selColour.blue()
             ))
             self._changed = True
@@ -495,11 +505,11 @@ class _StatusPage(NFixedPage):
         """
         selItem = self._getSelectedItem()
         if isinstance(selItem, QTreeWidgetItem):
-            cols = selItem.data(self.COL_LABEL, self.COL_ROLE)
-            name = selItem.text(self.COL_LABEL)
+            cols = selItem.data(self.C_DATA, self.D_COLOR)
+            name = selItem.text(self.C_LABEL)
             pixmap = QPixmap(self.iPx, self.iPx)
-            pixmap.fill(QColor(*cols))
-            self._selColour = QColor(*cols)
+            pixmap.fill(cols)
+            self._selColour = cols
             self.editName.setText(name)
             self.colButton.setIcon(QIcon(pixmap))
             self.editName.selectAll()
@@ -522,19 +532,20 @@ class _StatusPage(NFixedPage):
     #  Internal Functions
     ##
 
-    def _addItem(self, key: str | None, name: str,
-                 colour: tuple[int, int, int], count: int) -> None:
+    def _addItem(self, key: str | None, name: str, colour: QColor,
+                 shape: nwStatusShape, icon: QIcon | None, count: int) -> None:
         """Add a status item to the list."""
-        pixmap = QPixmap(self.iPx, self.iPx)
-        pixmap.fill(QColor(*colour))
+        if icon is None:
+            icon = NWStatus.createIcon(SHARED.theme.baseIconHeight, colour, shape)
 
         item = QTreeWidgetItem()
-        item.setText(self.COL_LABEL, name)
-        item.setIcon(self.COL_LABEL, QIcon(pixmap))
-        item.setData(self.COL_LABEL, self.KEY_ROLE, key)
-        item.setData(self.COL_LABEL, self.COL_ROLE, colour)
-        item.setData(self.COL_LABEL, self.NUM_ROLE, count)
-        item.setText(self.COL_USAGE, self._usageString(count))
+        item.setText(self.C_LABEL, name)
+        item.setIcon(self.C_LABEL, icon)
+        item.setText(self.C_USAGE, self._usageString(count))
+        item.setData(self.C_DATA, self.D_KEY, key)
+        item.setData(self.C_DATA, self.D_COLOR, colour)
+        item.setData(self.C_DATA, self.D_SHAPE, shape)
+        item.setData(self.C_DATA, self.D_COUNT, count)
 
         self.listBox.addTopLevelItem(item)
 
@@ -571,11 +582,11 @@ class _StatusPage(NFixedPage):
     def _usageString(self, count: int) -> str:
         """Generate usage string."""
         if count == 0:
-            return self.tr("Not in use")
+            return self.trCountNone
         elif count == 1:
-            return self.tr("Used once")
+            return self.trCountOne
         else:
-            return self.tr("Used by {0} items").format(count)
+            return self.trCountMore.format(count)
 
 # END Class _StatusPage
 
