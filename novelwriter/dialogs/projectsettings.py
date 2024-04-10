@@ -36,7 +36,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import simplified
-from novelwriter.core.status import NWStatus
+from novelwriter.core.status import NWStatus, StatusEntry
 from novelwriter.enum import nwStatusShape
 from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrollableForm
 from novelwriter.extensions.modified import NComboBox, NIconToolButton
@@ -182,18 +182,18 @@ class GuiProjectSettings(QDialog):
         rebuildTrees = False
 
         if self.statusPage.wasChanged:
-            newList, delList = self.statusPage.getNewList()
-            project.setStatusColours(newList, delList)
+            update, remove = self.statusPage.getNewList()
+            project.setStatus(update, remove)
             rebuildTrees = True
 
         if self.importPage.wasChanged:
-            newList, delList = self.importPage.getNewList()
-            project.setImportColours(newList, delList)
+            update, remove = self.importPage.getNewList()
+            project.setImport(update, remove)
             rebuildTrees = True
 
         if self.replacePage.wasChanged:
-            newList = self.replacePage.getNewList()
-            project.data.setAutoReplace(newList)
+            update = self.replacePage.getNewList()
+            project.data.setAutoReplace(update)
 
         self.newProjectSettingsReady.emit(rebuildTrees)
         QApplication.processEvents()
@@ -308,9 +308,7 @@ class _StatusPage(NFixedPage):
     C_USAGE = 1
 
     D_KEY   = QtUserRole
-    D_COLOR = QtUserRole + 1
-    D_SHAPE = QtUserRole + 2
-    D_COUNT = QtUserRole + 3
+    D_ENTRY = QtUserRole + 1
 
     def __init__(self, parent: QWidget, isStatus: bool) -> None:
         super().__init__(parent=parent)
@@ -329,10 +327,10 @@ class _StatusPage(NFixedPage):
         )
 
         self._changed = False
-        self._colDeleted = []
+        self._colDeleted: list[str] = []
         self._selColour = QColor(100, 100, 100)
 
-        self.iPx = SHARED.theme.baseIconHeight
+        self._iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
         bSz = SHARED.theme.buttonIconSize
 
@@ -355,7 +353,7 @@ class _StatusPage(NFixedPage):
         self.listBox.setIndentation(0)
 
         for key, entry in status.iterItems():
-            self._addItem(key, entry.name, entry.colour, entry.shape, entry.icon, entry.count)
+            self._addItem(key, StatusEntry.duplicate(entry))
 
         # List Controls
         self.addButton = NIconToolButton(self, iSz, "add")
@@ -376,7 +374,7 @@ class _StatusPage(NFixedPage):
         self.editName.setPlaceholderText(self.tr("Select item to edit"))
         self.editName.setEnabled(False)
 
-        self.colPixmap = QPixmap(self.iPx, self.iPx)
+        self.colPixmap = QPixmap(self._iPx, self._iPx)
         self.colPixmap.fill(QColor(100, 100, 100))
         self.colButton = QPushButton(QIcon(self.colPixmap), self.tr("Colour"), self)
         self.colButton.setIconSize(bSz)
@@ -425,20 +423,16 @@ class _StatusPage(NFixedPage):
     #  Methods
     ##
 
-    def getNewList(self) -> tuple[list, list]:
+    def getNewList(self) -> tuple[list[tuple[str | None, StatusEntry]], list[str]]:
         """Return list of entries."""
         if self._changed:
-            newList = []
+            update = []
             for n in range(self.listBox.topLevelItemCount()):
-                item = self.listBox.topLevelItem(n)
-                if item is not None:
-                    newList.append({
-                        "key": item.data(self.C_DATA, self.D_KEY),
-                        "name": item.text(self.C_DATA),
-                        "cols": item.data(self.C_DATA, self.D_COLOR),
-                        "shape": item.data(self.C_DATA, self.D_SHAPE),
-                    })
-            return newList, self._colDeleted
+                if item := self.listBox.topLevelItem(n):
+                    key = item.data(self.C_DATA, self.D_KEY)
+                    entry = item.data(self.C_DATA, self.D_ENTRY)
+                    update.append((key, entry))
+            return update, self._colDeleted
         return [], []
 
     def columnWidth(self) -> int:
@@ -458,7 +452,7 @@ class _StatusPage(NFixedPage):
             )
             if newCol.isValid():
                 self._selColour = newCol
-                pixmap = QPixmap(self.iPx, self.iPx)
+                pixmap = QPixmap(self._iPx, self._iPx)
                 pixmap.fill(newCol)
                 self.colButton.setIcon(QIcon(pixmap))
                 self.colButton.setIconSize(pixmap.rect().size())
@@ -467,34 +461,43 @@ class _StatusPage(NFixedPage):
     @pyqtSlot()
     def _newItem(self) -> None:
         """Create a new status item."""
-        # self._addItem(None, self.tr("New Item"), (100, 100, 100), 0)
+        color = QColor(100, 100, 100)
+        shape = nwStatusShape.SQUARE
+        icon = NWStatus.createIcon(self._iPx, color, shape)
+        self._addItem(None, StatusEntry(self.tr("New Item"), color, shape, icon, 0))
         self._changed = True
         return
 
     @pyqtSlot()
     def _delItem(self) -> None:
         """Delete a status item."""
-        selItem = self._getSelectedItem()
-        if isinstance(selItem, QTreeWidgetItem):
-            iRow = self.listBox.indexOfTopLevelItem(selItem)
-            if selItem.data(self.C_LABEL, self.D_COUNT) > 0:
+        if item := self._getSelectedItem():
+            iRow = self.listBox.indexOfTopLevelItem(item)
+            entry: StatusEntry = item.data(self.C_DATA, self.D_ENTRY)
+            if entry.count > 0:
                 SHARED.error(self.tr("Cannot delete a status item that is in use."))
             else:
                 self.listBox.takeTopLevelItem(iRow)
-                self._colDeleted.append(selItem.data(self.C_DATA, self.D_KEY))
+                self._colDeleted.append(item.data(self.C_DATA, self.D_KEY))
                 self._changed = True
         return
 
     @pyqtSlot()
     def _saveItem(self) -> None:
         """Save changes made to a status item."""
-        selItem = self._getSelectedItem()
-        if isinstance(selItem, QTreeWidgetItem):
-            selItem.setText(self.C_LABEL, simplified(self.editName.text()))
-            selItem.setIcon(self.C_LABEL, self.colButton.icon())
-            selItem.setData(self.C_DATA, self.D_COLOR, (
-                self._selColour.red(), self._selColour.green(), self._selColour.blue()
-            ))
+        if item := self._getSelectedItem():
+            entry: StatusEntry = item.data(self.C_DATA, self.D_ENTRY)
+
+            name = simplified(self.editName.text())
+            shape = nwStatusShape.SQUARE
+            icon = NWStatus.createIcon(self._iPx, self._selColour, shape)
+            entry.name = name
+            entry.shape = shape
+            entry.color = self._selColour
+            entry.icon = icon
+
+            item.setText(self.C_LABEL, name)
+            item.setIcon(self.C_LABEL, icon)
             self._changed = True
         return
 
@@ -503,26 +506,21 @@ class _StatusPage(NFixedPage):
         """Extract the info of a selected item and populate the settings
         boxes and button. If no item is selected, clear the form.
         """
-        selItem = self._getSelectedItem()
-        if isinstance(selItem, QTreeWidgetItem):
-            cols = selItem.data(self.C_DATA, self.D_COLOR)
-            name = selItem.text(self.C_LABEL)
-            pixmap = QPixmap(self.iPx, self.iPx)
-            pixmap.fill(cols)
-            self._selColour = cols
-            self.editName.setText(name)
-            self.colButton.setIcon(QIcon(pixmap))
+        if item := self._getSelectedItem():
+            entry: StatusEntry = item.data(self.C_DATA, self.D_ENTRY)
+            self._selColour = entry.color
+            self.editName.setText(entry.name)
+            self.colButton.setIcon(entry.icon)
             self.editName.selectAll()
             self.editName.setFocus()
             self.editName.setEnabled(True)
             self.colButton.setEnabled(True)
             self.saveButton.setEnabled(True)
         else:
-            pixmap = QPixmap(self.iPx, self.iPx)
-            pixmap.fill(QColor(100, 100, 100))
             self._selColour = QColor(100, 100, 100)
+            icon = NWStatus.createIcon(self._iPx, self._selColour, nwStatusShape.SQUARE)
             self.editName.setText("")
-            self.colButton.setIcon(QIcon(pixmap))
+            self.colButton.setIcon(icon)
             self.editName.setEnabled(False)
             self.colButton.setEnabled(False)
             self.saveButton.setEnabled(False)
@@ -532,23 +530,15 @@ class _StatusPage(NFixedPage):
     #  Internal Functions
     ##
 
-    def _addItem(self, key: str | None, name: str, colour: QColor,
-                 shape: nwStatusShape, icon: QIcon | None, count: int) -> None:
+    def _addItem(self, key: str | None, entry: StatusEntry) -> None:
         """Add a status item to the list."""
-        if icon is None:
-            icon = NWStatus.createIcon(SHARED.theme.baseIconHeight, colour, shape)
-
         item = QTreeWidgetItem()
-        item.setText(self.C_LABEL, name)
-        item.setIcon(self.C_LABEL, icon)
-        item.setText(self.C_USAGE, self._usageString(count))
+        item.setText(self.C_LABEL, entry.name)
+        item.setIcon(self.C_LABEL, entry.icon)
+        item.setText(self.C_USAGE, self._usageString(entry.count))
         item.setData(self.C_DATA, self.D_KEY, key)
-        item.setData(self.C_DATA, self.D_COLOR, colour)
-        item.setData(self.C_DATA, self.D_SHAPE, shape)
-        item.setData(self.C_DATA, self.D_COUNT, count)
-
+        item.setData(self.C_DATA, self.D_ENTRY, entry)
         self.listBox.addTopLevelItem(item)
-
         return
 
     def _moveItem(self, step: int) -> None:

@@ -1048,7 +1048,7 @@ class GuiOutlineDetails(QScrollArea):
             self.titleLabel.setText(self.tr(self.LVL_MAP.get(novIdx.level, "H1")))
             self.titleValue.setText(novIdx.title)
 
-            itemStatus, _ = nwItem.getImportStatus(incIcon=False)
+            itemStatus, _ = nwItem.getImportStatus()
 
             self.fileValue.setText(nwItem.itemName)
             self.itemValue.setText(itemStatus)

@@ -36,7 +36,8 @@ from collections.abc import Iterable
 from PyQt5.QtCore import QCoreApplication
 
 from novelwriter import CONFIG, SHARED, __version__, __hexversion__
-from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout, nwStatusShape
+from novelwriter.core.status import StatusEntry
+from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
 from novelwriter.error import logException
 from novelwriter.constants import trConst, nwLabels
 from novelwriter.core.tree import NWTree
@@ -461,15 +462,14 @@ class NWProject:
 
     def setDefaultStatusImport(self) -> None:
         """Set the default status and importance values."""
-        square = nwStatusShape.SQUARE
-        self._data.itemStatus.write(None, self.tr("New"),      (100, 100, 100), square)
-        self._data.itemStatus.write(None, self.tr("Note"),     (200, 50,  0),   square)
-        self._data.itemStatus.write(None, self.tr("Draft"),    (200, 150, 0),   square)
-        self._data.itemStatus.write(None, self.tr("Finished"), (50,  200, 0),   square)
-        self._data.itemImport.write(None, self.tr("New"),      (100, 100, 100), square)
-        self._data.itemImport.write(None, self.tr("Minor"),    (200, 50,  0),   square)
-        self._data.itemImport.write(None, self.tr("Major"),    (200, 150, 0),   square)
-        self._data.itemImport.write(None, self.tr("Main"),     (50,  200, 0),   square)
+        self._data.itemStatus.write(None, self.tr("New"),      (100, 100, 100), "SQUARE")
+        self._data.itemStatus.write(None, self.tr("Note"),     (200, 50,  0),   "SQUARE")
+        self._data.itemStatus.write(None, self.tr("Draft"),    (200, 150, 0),   "SQUARE")
+        self._data.itemStatus.write(None, self.tr("Finished"), (50,  200, 0),   "SQUARE")
+        self._data.itemImport.write(None, self.tr("New"),      (100, 100, 100), "SQUARE")
+        self._data.itemImport.write(None, self.tr("Minor"),    (200, 50,  0),   "SQUARE")
+        self._data.itemImport.write(None, self.tr("Major"),    (200, 150, 0),   "SQUARE")
+        self._data.itemImport.write(None, self.tr("Main"),     (50,  200, 0),   "SQUARE")
         return
 
     def setProjectLang(self, language: str | None) -> None:
@@ -492,13 +492,13 @@ class NWProject:
         self.setProjectChanged(True)
         return
 
-    def setStatusColours(self, new: list[dict], deleted: list[str]) -> bool:
+    def setStatus(self, update: list[tuple[str | None, StatusEntry]], remove: list[str]) -> None:
         """Update the list of novel file status flags."""
-        return self._setStatusImport(new, deleted, self._data.itemStatus)
+        return self._setStatusImport(update, remove, self._data.itemStatus)
 
-    def setImportColours(self, new: list[dict], deleted: list[str]) -> bool:
+    def setImport(self, update: list[tuple[str | None, StatusEntry]], remove: list[str]) -> None:
         """Update the list of note file importance flags."""
-        return self._setStatusImport(new, deleted, self._data.itemImport)
+        return self._setStatusImport(update, remove, self._data.itemImport)
 
     def setProjectChanged(self, status: bool) -> bool:
         """Toggle the project changed flag, and propagate the
@@ -585,28 +585,17 @@ class NWProject:
     #  Internal Functions
     ##
 
-    def _setStatusImport(self, new: list[dict], delete: list[str], target: NWStatus) -> bool:
+    def _setStatusImport(self, update: list[tuple[str | None, StatusEntry]],
+                         remove: list[str], target: NWStatus) -> None:
         """Update the list of novel file status or importance flags, and
         delete those that have been requested deleted.
         """
-        if not (new or delete):
-            return False
-
-        order = []
-        for entry in new:
-            key = entry.get("key", None)
-            name = entry.get("name", "")
-            cols = entry.get("cols", (100, 100, 100))
-            shape = entry.get("shape", nwStatusShape.SQUARE)
-            if name:
-                order.append(target.write(key, name, cols, shape))
-
-        for key in delete:
-            target.remove(key)
-
-        target.reorder(order)
-
-        return True
+        if update or remove:
+            order = [target.write(k, e.name, e.color, e.shape) for k, e in update]
+            for key in remove:
+                target.remove(key)
+            target.reorder(order)
+        return
 
     def _loadProjectLocalisation(self) -> bool:
         """Load the language data for the current project language."""

@@ -24,11 +24,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import dataclasses
 import logging
 import random
 
 from collections.abc import Iterable
-from dataclasses import dataclass
 from math import cos, pi, sin
 from typing import TYPE_CHECKING, Literal
 
@@ -46,16 +46,24 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-@dataclass
+@dataclasses.dataclass
 class StatusEntry:
 
     name: str
-    colour: QColor
+    color: QColor
     shape: nwStatusShape
     icon: QIcon
     count: int = 0
 
+    @classmethod
+    def duplicate(cls, source: StatusEntry) -> StatusEntry:
+        """Create a shallow copy of the source object."""
+        return dataclasses.replace(source)
+
 # END Class StatusEntry
+
+
+NO_ENTRY = StatusEntry("", QColor(0, 0, 0), nwStatusShape.SQUARE, QIcon(), 0)
 
 
 class NWStatus:
@@ -70,9 +78,6 @@ class NWStatus:
         self._default = None
 
         self._iPX = CONFIG.pxInt(24)
-        self._defaultIcon = self.createIcon(
-            self._iPX, QColor(100, 100, 100), nwStatusShape.SQUARE
-        )
 
         if self._type == self.STATUS:
             self._prefix = "s"
@@ -86,44 +91,51 @@ class NWStatus:
     def __len__(self) -> int:
         return len(self._store)
 
-    def __getitem__(self, key: str) -> StatusEntry:
-        return self._store[key]
+    def __getitem__(self, key: str | None) -> StatusEntry:
+        """Return the entry associated with a given key."""
+        if key and key in self._store:
+            return self._store[key]
+        elif self._default is not None:
+            return self._store[self._default]
+        return NO_ENTRY
 
     ##
     #  Methods
     ##
 
-    def write(self, key: str | None, name: str, col: tuple[int, int, int],
-              shape: nwStatusShape | str, count: int | None = None) -> str:
+    def write(self, key: str | None, name: str, color: tuple[int, int, int] | QColor,
+              shape: nwStatusShape | str, count: int = 0) -> str:
         """Add or update a status entry. If the key is invalid, a new
         key is generated.
         """
         if not self._isKey(key):
             key = self._newKey()
-        if not isinstance(col, tuple):
-            col = (100, 100, 100)
-        if len(col) != 3:
-            col = (100, 100, 100)
 
-        name = simplified(name)
-        colour = QColor(*col)
+        if isinstance(color, QColor):
+            qColor = color
+        elif isinstance(color, tuple) and len(color) == 3:
+            qColor = QColor(*color)
+        else:
+            qColor = QColor(100, 100, 100)
+
         if not isinstance(shape, nwStatusShape):
-            if shape in nwStatusShape.__members__:
+            try:
                 shape = nwStatusShape[shape]
-            else:
+            except KeyError:
                 shape = nwStatusShape.SQUARE
 
-        icon = self.createIcon(self._iPX, colour, shape)
+        name = simplified(name)
+        icon = self.createIcon(self._iPX, qColor, shape)
 
         if key and key in self._store:
             entry = self._store[key]
             entry.name = name
-            entry.colour = colour
+            entry.color = qColor
             entry.shape = shape
             entry.icon = icon
-            entry.count = count or 0
+            entry.count = count
         else:
-            self._store[key] = StatusEntry(name, colour, shape, icon, count or 0)
+            self._store[key] = StatusEntry(name, qColor, shape, icon, count)
 
         if self._default is None:
             self._default = key
@@ -155,38 +167,6 @@ class NWStatus:
         elif self._default is not None:
             return self._default
         return ""
-
-    def name(self, key: str | None) -> str:
-        """Return the name associated with a given key."""
-        if key and key in self._store:
-            return self._store[key].name
-        elif self._default is not None:
-            return self._store[self._default].name
-        return ""
-
-    def cols(self, key: str | None) -> QColor:
-        """Return the colours associated with a given key."""
-        if key and key in self._store:
-            return self._store[key].colour
-        elif self._default is not None:
-            return self._store[self._default].colour
-        return QColor(100, 100, 100)
-
-    def count(self, key: str | None) -> int:
-        """Return the count associated with a given key."""
-        if key and key in self._store:
-            return self._store[key].count
-        elif self._default is not None:
-            return self._store[self._default].count
-        return 0
-
-    def icon(self, key: str | None) -> QIcon:
-        """Return the icon associated with a given key."""
-        if key and key in self._store:
-            return self._store[key].icon
-        elif self._default is not None:
-            return self._store[self._default].icon
-        return self._defaultIcon
 
     def reorder(self, order: list[str]) -> bool:
         """Reorder the items according to list."""
@@ -227,9 +207,9 @@ class NWStatus:
             yield (entry.name, {
                 "key":   key,
                 "count": str(entry.count),
-                "red":   str(entry.colour.red()),
-                "green": str(entry.colour.green()),
-                "blue":  str(entry.colour.blue()),
+                "red":   str(entry.color.red()),
+                "green": str(entry.color.green()),
+                "blue":  str(entry.color.blue()),
                 "shape": entry.shape.name,
             })
         return

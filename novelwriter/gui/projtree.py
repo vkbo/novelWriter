@@ -1033,7 +1033,7 @@ class GuiProjectTree(QTreeWidget):
         if trItem is None or nwItem is None:
             return
 
-        itemStatus, statusIcon = nwItem.getImportStatus(incIcon=True)
+        itemStatus, statusIcon = nwItem.getImportStatus()
         hLevel = nwItem.mainHeading
         itemIcon = SHARED.theme.getItemIcon(
             nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
