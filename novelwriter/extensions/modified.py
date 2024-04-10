@@ -25,6 +25,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+from enum import Enum
+
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QWheelEvent
 from PyQt5.QtWidgets import QComboBox, QDoubleSpinBox, QSpinBox, QToolButton, QWidget
@@ -46,7 +48,7 @@ class NComboBox(QComboBox):
             event.ignore()
         return
 
-    def setCurrentData(self, data: str, default: str) -> None:
+    def setCurrentData(self, data: str | Enum, default: str | Enum) -> None:
         """Set the current index from data, with a fallback."""
         idx = self.findData(data)
         self.setCurrentIndex(self.findData(default) if idx < 0 else idx)

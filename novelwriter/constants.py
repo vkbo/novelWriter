@@ -25,7 +25,7 @@ from __future__ import annotations
 
 from PyQt5.QtCore import QCoreApplication, QT_TRANSLATE_NOOP
 
-from novelwriter.enum import nwBuildFmt, nwItemClass, nwItemLayout, nwOutline
+from novelwriter.enum import nwBuildFmt, nwItemClass, nwItemLayout, nwOutline, nwStatusShape
 
 
 def trConst(text: str) -> str:
@@ -267,6 +267,15 @@ class nwLabels:
         nwBuildFmt.EXT_MD: ".md",
         nwBuildFmt.J_HTML: ".json",
         nwBuildFmt.J_NWD:  ".json",
+    }
+    STATUS_SHAPES = {
+        nwStatusShape.SQUARE:   QT_TRANSLATE_NOOP("Constant", "Square"),
+        nwStatusShape.CIRCLE:   QT_TRANSLATE_NOOP("Constant", "Circle"),
+        nwStatusShape.TRIANGLE: QT_TRANSLATE_NOOP("Constant", "Triangle"),
+        nwStatusShape.DIAMOND:  QT_TRANSLATE_NOOP("Constant", "Diamond"),
+        nwStatusShape.PENTAGON: QT_TRANSLATE_NOOP("Constant", "Pentagon"),
+        nwStatusShape.STAR:     QT_TRANSLATE_NOOP("Constant", "Star"),
+        nwStatusShape.PACMAN:   QT_TRANSLATE_NOOP("Constant", "Pacman"),
     }
     FILE_FILTERS = {
         "*.txt": QT_TRANSLATE_NOOP("Constant", "Text files"),
