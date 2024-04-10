@@ -35,7 +35,7 @@ from typing import TYPE_CHECKING, Literal
 from PyQt5.QtCore import QPointF, Qt
 from PyQt5.QtGui import QIcon, QPainter, QPainterPath, QPixmap, QColor, QPolygonF
 
-from novelwriter import CONFIG
+from novelwriter import SHARED
 from novelwriter.common import simplified
 from novelwriter.enum import nwStatusShape
 from novelwriter.types import QtPaintAnitAlias, QtTransparent
@@ -77,7 +77,7 @@ class NWStatus:
         self._store: dict[str, StatusEntry] = {}
         self._default = None
 
-        self._iPX = CONFIG.pxInt(24)
+        self._iPx = SHARED.theme.baseIconHeight
 
         if self._type == self.STATUS:
             self._prefix = "s"
@@ -103,62 +103,42 @@ class NWStatus:
     #  Methods
     ##
 
-    def write(self, key: str | None, name: str, color: tuple[int, int, int] | QColor,
-              shape: nwStatusShape | str, count: int = 0) -> str:
+    def add(self, key: str | None, name: str, color: tuple[int, int, int],
+            shape: str, count: int) -> str:
         """Add or update a status entry. If the key is invalid, a new
         key is generated.
         """
-        if not self._isKey(key):
-            key = self._newKey()
-
-        if isinstance(color, QColor):
-            qColor = color
-        elif isinstance(color, tuple) and len(color) == 3:
+        if isinstance(color, tuple) and len(color) == 3:
             qColor = QColor(*color)
         else:
             qColor = QColor(100, 100, 100)
 
-        if not isinstance(shape, nwStatusShape):
-            try:
-                shape = nwStatusShape[shape]
-            except KeyError:
-                shape = nwStatusShape.SQUARE
+        try:
+            iShape = nwStatusShape[shape]
+        except KeyError:
+            iShape = nwStatusShape.SQUARE
 
+        key = self._checkKey(key)
         name = simplified(name)
-        icon = self.createIcon(self._iPX, qColor, shape)
-
-        if key and key in self._store:
-            entry = self._store[key]
-            entry.name = name
-            entry.color = qColor
-            entry.shape = shape
-            entry.icon = icon
-            entry.count = count
-        else:
-            self._store[key] = StatusEntry(name, qColor, shape, icon, count)
+        icon = self.createIcon(self._iPx, qColor, iShape)
+        self._store[key] = StatusEntry(name, qColor, iShape, icon, count)
 
         if self._default is None:
             self._default = key
 
         return key
 
-    def remove(self, key: str) -> bool:
-        """Remove an entry in the list, except if the count > 0."""
-        if key not in self._store:
-            return False
-        if self._store[key].count > 0:
-            return False
+    def update(self, update: list[tuple[str | None, StatusEntry]]) -> None:
+        """Update the list of statuses, and from removed list."""
+        self._store.clear()
+        for key, entry in update:
+            self._store[self._checkKey(key)] = entry
 
-        del self._store[key]
+        # Check if we need a new default
+        if self._default not in self._store:
+            self._default = next(iter(self._store)) if self._store else None
 
-        keys = list(self._store.keys())
-        if key == self._default:
-            if len(keys) > 0:
-                self._default = keys[0]
-            else:
-                self._default = None
-
-        return True
+        return
 
     def check(self, value: str) -> str:
         """Check the key against the stored status names."""
@@ -167,27 +147,6 @@ class NWStatus:
         elif self._default is not None:
             return self._default
         return ""
-
-    def reorder(self, order: list[str]) -> bool:
-        """Reorder the items according to list."""
-        if len(order) != len(self._store):
-            logger.error("Length mismatch between new and old order")
-            return False
-
-        if order == list(self._store.keys()):
-            return False
-
-        store = {}
-        for key in order:
-            if key in self._store:
-                store[key] = self._store[key]
-            else:
-                logger.error("Unknown key '%s' in order", key)
-                return False
-
-        self._store = store
-
-        return True
 
     def resetCounts(self) -> None:
         """Clear the counts of references to the status entries."""
@@ -263,6 +222,10 @@ class NWStatus:
             if c not in "0123456789abcdef":
                 return False
         return True
+
+    def _checkKey(self, key: str | None) -> str:
+        """Check key is valid, and if not, generate one."""
+        return key if self._isKey(key) else self._newKey()
 
 # END Class NWStatus
 

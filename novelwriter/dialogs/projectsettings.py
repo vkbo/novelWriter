@@ -181,19 +181,16 @@ class GuiProjectSettings(QDialog):
 
         rebuildTrees = False
 
-        if self.statusPage.wasChanged:
-            update, remove = self.statusPage.getNewList()
-            project.setStatus(update, remove)
+        if self.statusPage.changed:
+            project.data.itemStatus.update(self.statusPage.getNewList())
             rebuildTrees = True
 
-        if self.importPage.wasChanged:
-            update, remove = self.importPage.getNewList()
-            project.setImport(update, remove)
+        if self.importPage.changed:
+            project.data.itemImport.update(self.importPage.getNewList())
             rebuildTrees = True
 
-        if self.replacePage.wasChanged:
-            update = self.replacePage.getNewList()
-            project.data.setAutoReplace(update)
+        if self.replacePage.changed:
+            project.data.setAutoReplace(self.replacePage.getNewList())
 
         self.newProjectSettingsReady.emit(rebuildTrees)
         QApplication.processEvents()
@@ -327,7 +324,6 @@ class _StatusPage(NFixedPage):
         )
 
         self._changed = False
-        self._colDeleted: list[str] = []
         self._selColour = QColor(100, 100, 100)
 
         self._iPx = SHARED.theme.baseIconHeight
@@ -415,7 +411,7 @@ class _StatusPage(NFixedPage):
         return
 
     @property
-    def wasChanged(self) -> bool:
+    def changed(self) -> bool:
         """The user changed these settings."""
         return self._changed
 
@@ -423,7 +419,7 @@ class _StatusPage(NFixedPage):
     #  Methods
     ##
 
-    def getNewList(self) -> tuple[list[tuple[str | None, StatusEntry]], list[str]]:
+    def getNewList(self) -> list[tuple[str | None, StatusEntry]]:
         """Return list of entries."""
         if self._changed:
             update = []
@@ -432,8 +428,8 @@ class _StatusPage(NFixedPage):
                     key = item.data(self.C_DATA, self.D_KEY)
                     entry = item.data(self.C_DATA, self.D_ENTRY)
                     update.append((key, entry))
-            return update, self._colDeleted
-        return [], []
+            return update
+        return []
 
     def columnWidth(self) -> int:
         """Return the size of the header column."""
@@ -478,7 +474,6 @@ class _StatusPage(NFixedPage):
                 SHARED.error(self.tr("Cannot delete a status item that is in use."))
             else:
                 self.listBox.takeTopLevelItem(iRow)
-                self._colDeleted.append(item.data(self.C_DATA, self.D_KEY))
                 self._changed = True
         return
 
@@ -543,24 +538,15 @@ class _StatusPage(NFixedPage):
 
     def _moveItem(self, step: int) -> None:
         """Move and item up or down step."""
-        selItem = self._getSelectedItem()
-        if selItem is None:
-            return
-
-        tIndex = self.listBox.indexOfTopLevelItem(selItem)
-        nChild = self.listBox.topLevelItemCount()
-        nIndex = tIndex + step
-        if nIndex < 0 or nIndex >= nChild:
-            return
-
-        cItem = self.listBox.takeTopLevelItem(tIndex)
-        self.listBox.insertTopLevelItem(nIndex, cItem)
-        self.listBox.clearSelection()
-
-        if cItem is not None:
-            cItem.setSelected(True)
-        self._changed = True
-
+        if item := self._getSelectedItem():
+            tIdx = self.listBox.indexOfTopLevelItem(item)
+            nItm = self.listBox.topLevelItemCount()
+            nIdx = tIdx + step
+            if (0 <= nIdx < nItm) and (cItem := self.listBox.takeTopLevelItem(tIdx)):
+                self.listBox.insertTopLevelItem(nIdx, cItem)
+                self.listBox.clearSelection()
+                cItem.setSelected(True)
+                self._changed = True
         return
 
     def _getSelectedItem(self) -> QTreeWidgetItem | None:
@@ -665,7 +651,7 @@ class _ReplacePage(NFixedPage):
         return
 
     @property
-    def wasChanged(self) -> bool:
+    def changed(self) -> bool:
         """The user changed these settings."""
         return self._changed
 
@@ -673,7 +659,7 @@ class _ReplacePage(NFixedPage):
     #  Methods
     ##
 
-    def getNewList(self) -> dict:
+    def getNewList(self) -> dict[str, str]:
         """Extract the list from the widget."""
         new = {}
         for n in range(self.listBox.topLevelItemCount()):

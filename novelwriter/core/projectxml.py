@@ -439,7 +439,7 @@ class ProjectXMLReader:
                 blue  = checkInt(xEntry.attrib.get("blue", 0), 0)
                 count = checkInt(xEntry.attrib.get("count", 0), 0)
                 shape = xEntry.attrib.get("shape", "")
-                sObject.write(key, xEntry.text or "", (red, green, blue), shape, count)
+                sObject.add(key, xEntry.text or "", (red, green, blue), shape, count)
         return
 
     def _parseDictKeyText(self, xItem: ET.Element) -> dict:
