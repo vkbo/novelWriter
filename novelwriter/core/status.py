@@ -153,8 +153,8 @@ class NWStatus:
 
     def resetCounts(self) -> None:
         """Clear the counts of references to the status entries."""
-        for key in self._store:
-            self._store[key].count = 0
+        for entry in self._store.values():
+            entry.count = 0
         return
 
     def increment(self, key: str | None) -> None:
