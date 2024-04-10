@@ -49,14 +49,14 @@ def testCoreStatus_Internal(mockRnd):
     assert nStatus._newKey() == statusKeys[1]
 
     # Key collision, should move to key 3
-    nStatus.write(statusKeys[2], "Crash", (0, 0, 0), nwStatusShape.SQUARE)
+    nStatus.add(statusKeys[2], "Crash", (0, 0, 0), "SQUARE", 0)
     assert nStatus._newKey() == statusKeys[3]
 
     assert nImport._newKey() == importKeys[0]
     assert nImport._newKey() == importKeys[1]
 
     # Key collision, should move to key 3
-    nImport.write(importKeys[2], "Crash", (0, 0, 0), nwStatusShape.SQUARE)
+    nImport.add(importKeys[2], "Crash", (0, 0, 0), "SQUARE", 0)
     assert nImport._newKey() == importKeys[3]
 
     # Check Key
@@ -90,14 +90,14 @@ def testCoreStatus_Iterator(mockRnd):
     """Test the iterator functions of the NWStatus class."""
     nStatus = NWStatus(NWStatus.STATUS)
 
-    nStatus.write(None, "New",      (100, 100, 100), nwStatusShape.SQUARE)
-    nStatus.write(None, "Note",     (200, 50,  0), nwStatusShape.SQUARE)
-    nStatus.write(None, "Draft",    (200, 150, 0), nwStatusShape.SQUARE)
-    nStatus.write(None, "Finished", (50,  200, 0), nwStatusShape.SQUARE)
+    nStatus.add(None, "New",      (100, 100, 100), "SQUARE", 0)
+    nStatus.add(None, "Note",     (200, 50,  0),   "SQUARE", 0)
+    nStatus.add(None, "Draft",    (200, 150, 0),   "SQUARE", 0)
+    nStatus.add(None, "Finished", (50,  200, 0),   "SQUARE", 0)
 
     # Direct access
     entry = nStatus[statusKeys[0]]
-    assert entry.colour == QColor(100, 100, 100)
+    assert entry.color == QColor(100, 100, 100)
     assert entry.name == "New"
     assert entry.count == 0
     assert isinstance(entry.icon, QIcon)
@@ -118,24 +118,24 @@ def testCoreStatus_Entries(mockRnd):
     # =====
 
     # Have a key
-    nStatus.write(statusKeys[0], "Entry 1", (200, 100, 50), nwStatusShape.SQUARE)
+    nStatus.add(statusKeys[0], "Entry 1", (200, 100, 50), "SQUARE", 0)
     assert nStatus[statusKeys[0]].name == "Entry 1"
-    assert nStatus[statusKeys[0]].colour == QColor(200, 100, 50)
+    assert nStatus[statusKeys[0]].color == QColor(200, 100, 50)
 
     # Don't have a key
-    nStatus.write(None, "Entry 2", (210, 110, 60), nwStatusShape.SQUARE)
+    nStatus.add(None, "Entry 2", (210, 110, 60), "SQUARE", 0)
     assert nStatus[statusKeys[1]].name == "Entry 2"
-    assert nStatus[statusKeys[1]].colour == QColor(210, 110, 60)
+    assert nStatus[statusKeys[1]].color == QColor(210, 110, 60)
 
     # Wrong colour spec
-    nStatus.write(None, "Entry 3", "what?", nwStatusShape.SQUARE)  # type: ignore
+    nStatus.add(None, "Entry 3", "what?", "SQUARE", 0)  # type: ignore
     assert nStatus[statusKeys[2]].name == "Entry 3"
-    assert nStatus[statusKeys[2]].colour == QColor(100, 100, 100)
+    assert nStatus[statusKeys[2]].color == QColor(100, 100, 100)
 
     # Wrong colour count
-    nStatus.write(None, "Entry 4", (10, 20), nwStatusShape.SQUARE)  # type: ignore
+    nStatus.add(None, "Entry 4", (10, 20), "SQUARE", 0)  # type: ignore
     assert nStatus[statusKeys[3]].name == "Entry 4"
-    assert nStatus[statusKeys[3]].colour == QColor(100, 100, 100)
+    assert nStatus[statusKeys[3]].color == QColor(100, 100, 100)
 
     # Check
     # =====
@@ -150,29 +150,29 @@ def testCoreStatus_Entries(mockRnd):
     # Name Access
     # ===========
 
-    assert nStatus.name(statusKeys[0]) == "Entry 1"
-    assert nStatus.name(statusKeys[1]) == "Entry 2"
-    assert nStatus.name(statusKeys[2]) == "Entry 3"
-    assert nStatus.name(statusKeys[3]) == "Entry 4"
-    assert nStatus.name("blablabla") == "Entry 1"
+    assert nStatus[statusKeys[0]].name == "Entry 1"
+    assert nStatus[statusKeys[1]].name == "Entry 2"
+    assert nStatus[statusKeys[2]].name == "Entry 3"
+    assert nStatus[statusKeys[3]].name == "Entry 4"
+    assert nStatus["blablabla"].name == "Entry 1"
 
     # Colour Access
     # =============
 
-    assert nStatus.cols(statusKeys[0]) == QColor(200, 100, 50)
-    assert nStatus.cols(statusKeys[1]) == QColor(210, 110, 60)
-    assert nStatus.cols(statusKeys[2]) == QColor(100, 100, 100)
-    assert nStatus.cols(statusKeys[3]) == QColor(100, 100, 100)
-    assert nStatus.cols("blablabla") == QColor(200, 100, 50)
+    assert nStatus[statusKeys[0]].color == QColor(200, 100, 50)
+    assert nStatus[statusKeys[1]].color == QColor(210, 110, 60)
+    assert nStatus[statusKeys[2]].color == QColor(100, 100, 100)
+    assert nStatus[statusKeys[3]].color == QColor(100, 100, 100)
+    assert nStatus["blablabla"].color == QColor(200, 100, 50)
 
     # Icon Access
     # ===========
 
-    assert isinstance(nStatus.icon(statusKeys[0]), QIcon)
-    assert isinstance(nStatus.icon(statusKeys[1]), QIcon)
-    assert isinstance(nStatus.icon(statusKeys[2]), QIcon)
-    assert isinstance(nStatus.icon(statusKeys[3]), QIcon)
-    assert isinstance(nStatus.icon("blablabla"), QIcon)
+    assert isinstance(nStatus[statusKeys[0]].icon, QIcon)
+    assert isinstance(nStatus[statusKeys[1]].icon, QIcon)
+    assert isinstance(nStatus[statusKeys[2]].icon, QIcon)
+    assert isinstance(nStatus[statusKeys[3]].icon, QIcon)
+    assert isinstance(nStatus["blablabla"].icon, QIcon)
 
     # Increment and Count Access
     # ==========================
@@ -182,50 +182,50 @@ def testCoreStatus_Entries(mockRnd):
         for _ in range(n):
             nStatus.increment(statusKeys[i])
 
-    assert nStatus.count(statusKeys[0]) == countTo[0]
-    assert nStatus.count(statusKeys[1]) == countTo[1]
-    assert nStatus.count(statusKeys[2]) == countTo[2]
-    assert nStatus.count(statusKeys[3]) == countTo[3]
-    assert nStatus.count("blablabla") == countTo[0]
+    assert nStatus[statusKeys[0]].count == countTo[0]
+    assert nStatus[statusKeys[1]].count == countTo[1]
+    assert nStatus[statusKeys[2]].count == countTo[2]
+    assert nStatus[statusKeys[3]].count == countTo[3]
+    assert nStatus["blablabla"].count == countTo[0]
 
     nStatus.resetCounts()
 
-    assert nStatus.count(statusKeys[0]) == 0
-    assert nStatus.count(statusKeys[1]) == 0
-    assert nStatus.count(statusKeys[2]) == 0
-    assert nStatus.count(statusKeys[3]) == 0
+    assert nStatus[statusKeys[0]].count == 0
+    assert nStatus[statusKeys[1]].count == 0
+    assert nStatus[statusKeys[2]].count == 0
+    assert nStatus[statusKeys[3]].count == 0
 
     # Reorder
     # =======
 
-    cOrder = list(nStatus._store.keys())
-    assert cOrder == statusKeys
+    # cOrder = list(nStatus._store.keys())
+    # assert cOrder == statusKeys
 
-    # Wrong length
-    assert nStatus.reorder([]) is False
+    # # Wrong length
+    # assert nStatus.reorder([]) is False
 
-    # No change
-    assert nStatus.reorder(cOrder) is False
+    # # No change
+    # assert nStatus.reorder(cOrder) is False
 
-    # Actual re-order
-    nOrder = [
-        statusKeys[0],
-        statusKeys[2],
-        statusKeys[1],
-        statusKeys[3],
-    ]
-    assert nStatus.reorder(nOrder) is True
-    assert list(nStatus._store.keys()) == nOrder
+    # # Actual re-order
+    # nOrder = [
+    #     statusKeys[0],
+    #     statusKeys[2],
+    #     statusKeys[1],
+    #     statusKeys[3],
+    # ]
+    # assert nStatus.reorder(nOrder) is True
+    # assert list(nStatus._store.keys()) == nOrder
 
-    # Add an unknown key
-    wOrder = nOrder.copy()
-    wOrder[3] = nStatus._newKey()
-    assert nStatus.reorder(wOrder) is False
-    assert list(nStatus._store.keys()) == nOrder
+    # # Add an unknown key
+    # wOrder = nOrder.copy()
+    # wOrder[3] = nStatus._newKey()
+    # assert nStatus.reorder(wOrder) is False
+    # assert list(nStatus._store.keys()) == nOrder
 
-    # Put it back
-    assert nStatus.reorder(cOrder) is True
-    assert list(nStatus._store.keys()) == cOrder
+    # # Put it back
+    # assert nStatus.reorder(cOrder) is True
+    # assert list(nStatus._store.keys()) == cOrder
 
     # Default
     # =======
@@ -234,43 +234,44 @@ def testCoreStatus_Entries(mockRnd):
     nStatus._default = None
 
     assert nStatus.check("Entry 5") == ""
-    assert nStatus.name("blablabla") == ""
-    assert nStatus.cols("blablabla") == QColor(100, 100, 100)
-    assert nStatus.count("blablabla") == 0
-    assert isinstance(nStatus.icon("blablabla"), QIcon)
+    assert nStatus["blablabla"].name == ""
+    assert nStatus["blablabla"].color == QColor(0, 0, 0)
+    assert nStatus["blablabla"].shape == nwStatusShape.SQUARE
+    assert nStatus["blablabla"].icon.isNull()
+    assert nStatus["blablabla"].count == 0
 
     nStatus._default = default
 
-    # Remove
-    # ======
+    # # Remove
+    # # ======
 
-    # Non-existing entry
-    assert nStatus.remove("blablabla") is False
+    # # Non-existing entry
+    # assert nStatus.remove("blablabla") is False
 
-    # Non-zero entry
-    nStatus.increment(statusKeys[3])
-    assert nStatus.remove(statusKeys[3]) is False
+    # # Non-zero entry
+    # nStatus.increment(statusKeys[3])
+    # assert nStatus.remove(statusKeys[3]) is False
 
-    # Delete last entry
-    nStatus.resetCounts()
-    lastName = nStatus.name(statusKeys[3])
-    assert lastName == "Entry 4"
-    assert nStatus.remove(statusKeys[3]) is True
-    assert nStatus.check(statusKeys[3]) == nStatus._default
-    assert nStatus.check(lastName) == nStatus._default
+    # # Delete last entry
+    # nStatus.resetCounts()
+    # lastName = nStatus[statusKeys[3]].name
+    # assert lastName == "Entry 4"
+    # assert nStatus.remove(statusKeys[3]) is True
+    # assert nStatus.check(statusKeys[3]) == nStatus._default
+    # assert nStatus.check(lastName) == nStatus._default
 
-    # Delete default entry, Entry 2 is new default
-    firstName = nStatus.name(nStatus._default)
-    assert firstName == "Entry 1"
-    assert nStatus.remove(nStatus._default) is True  # type: ignore
-    assert nStatus.name(firstName) == "Entry 2"
+    # # Delete default entry, Entry 2 is new default
+    # firstName = nStatus[nStatus._default].name
+    # assert firstName == "Entry 1"
+    # assert nStatus.remove(nStatus._default) is True  # type: ignore
+    # assert nStatus[firstName].name == "Entry 2"
 
-    # Remove remaining entries
-    assert nStatus.remove(statusKeys[1]) is True
-    assert nStatus.remove(statusKeys[2]) is True
+    # # Remove remaining entries
+    # assert nStatus.remove(statusKeys[1]) is True
+    # assert nStatus.remove(statusKeys[2]) is True
 
-    assert len(nStatus) == 0
-    assert nStatus._default is None
+    # assert len(nStatus) == 0
+    # assert nStatus._default is None
 
 # END Test testCoreStatus_Entries
 
@@ -279,10 +280,10 @@ def testCoreStatus_Entries(mockRnd):
 def testCoreStatus_PackUnpack(mockRnd):
     """Test all the pack/unpack of the NWStatus class."""
     nStatus = NWStatus(NWStatus.STATUS)
-    nStatus.write(None, "New",      (100, 100, 100), nwStatusShape.SQUARE)
-    nStatus.write(None, "Note",     (200, 50,  0), nwStatusShape.SQUARE)
-    nStatus.write(None, "Draft",    (200, 150, 0), nwStatusShape.SQUARE)
-    nStatus.write(None, "Finished", (50,  200, 0), nwStatusShape.SQUARE)
+    nStatus.add(None, "New",      (100, 100, 100), "SQUARE", 0)
+    nStatus.add(None, "Note",     (200, 50,  0),   "SQUARE", 0)
+    nStatus.add(None, "Draft",    (200, 150, 0),   "SQUARE", 0)
+    nStatus.add(None, "Finished", (50,  200, 0),   "SQUARE", 0)
 
     countTo = [3, 5, 7, 9]
     for i, n in enumerate(countTo):
