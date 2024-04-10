@@ -57,8 +57,11 @@ class StatusEntry:
 
     @classmethod
     def duplicate(cls, source: StatusEntry) -> StatusEntry:
-        """Create a shallow copy of the source object."""
-        return dataclasses.replace(source)
+        """Create a deep copy of the source object."""
+        cls = dataclasses.replace(source)
+        cls.color = QColor(source.color)
+        cls.icon = QIcon(source.icon)
+        return cls
 
 # END Class StatusEntry
 
