@@ -29,7 +29,7 @@ import logging
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QColor
 from PyQt5.QtWidgets import (
-    QApplication, QColorDialog, QDialog, QDialogButtonBox, QHBoxLayout,
+    QAbstractItemView, QApplication, QColorDialog, QDialog, QDialogButtonBox, QHBoxLayout,
     QLineEdit, QMenu, QStackedWidget, QToolButton, QTreeWidget,
     QTreeWidgetItem, QVBoxLayout, QWidget
 )
@@ -358,7 +358,9 @@ class _StatusPage(NFixedPage):
         self.listBox.setHeaderLabels([self.tr("Label"), self.tr("Usage")])
         self.listBox.setColumnWidth(self.C_LABEL, wCol0)
         self.listBox.setIndentation(0)
-        self.listBox.itemSelectionChanged.connect(self._selectedItem)
+        self.listBox.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.listBox.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.listBox.itemSelectionChanged.connect(self._selectionChanged)
 
         for key, entry in status.iterItems():
             self._addItem(key, StatusEntry.duplicate(entry))
@@ -418,7 +420,7 @@ class _StatusPage(NFixedPage):
         self.applyButton.setText(self.tr("Apply"))
         self.applyButton.setSizePolicy(QtSizeMinimum, QtSizeMinimumExpanding)
         self.applyButton.setEnabled(False)
-        self.applyButton.clicked.connect(self._saveItem)
+        self.applyButton.clicked.connect(self._applyChanges)
 
         # Assemble
         self.listControls = QVBoxLayout()
@@ -512,7 +514,7 @@ class _StatusPage(NFixedPage):
         return
 
     @pyqtSlot()
-    def _saveItem(self) -> None:
+    def _applyChanges(self) -> None:
         """Save changes made to a status item."""
         if item := self._getSelectedItem():
             entry: StatusEntry = item.data(self.C_DATA, self.D_ENTRY)
@@ -533,7 +535,7 @@ class _StatusPage(NFixedPage):
         return
 
     @pyqtSlot()
-    def _selectedItem(self) -> None:
+    def _selectionChanged(self) -> None:
         """Extract the info of a selected item and populate the settings
         boxes and button. If no item is selected, clear the form.
         """
@@ -650,7 +652,9 @@ class _ReplacePage(NFixedPage):
         self.listBox.setHeaderLabels([self.tr("Keyword"), self.tr("Replace With")])
         self.listBox.setColumnWidth(self.C_KEY, wCol0)
         self.listBox.setIndentation(0)
-        self.listBox.itemSelectionChanged.connect(self._selectedItem)
+        self.listBox.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.listBox.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.listBox.itemSelectionChanged.connect(self._selectionChanged)
 
         for aKey, aVal in SHARED.project.data.autoReplace.items():
             newItem = QTreeWidgetItem(["<%s>" % aKey, aVal])
@@ -679,7 +683,7 @@ class _ReplacePage(NFixedPage):
         self.applyButton = QToolButton(self)
         self.applyButton.setText(self.tr("Apply"))
         self.applyButton.setSizePolicy(QtSizeMinimum, QtSizeMinimumExpanding)
-        self.applyButton.clicked.connect(self._saveEntry)
+        self.applyButton.clicked.connect(self._applyChanges)
 
         # Assemble
         self.listControls = QVBoxLayout()
@@ -735,7 +739,7 @@ class _ReplacePage(NFixedPage):
     ##
 
     @pyqtSlot()
-    def _selectedItem(self) -> None:
+    def _selectionChanged(self) -> None:
         """Extract the details from the selected item and populate the
         edit form.
         """
@@ -746,10 +750,15 @@ class _ReplacePage(NFixedPage):
             self.editValue.setEnabled(True)
             self.editKey.selectAll()
             self.editKey.setFocus()
+        else:
+            self.editKey.setText("")
+            self.editValue.setText("")
+            self.editKey.setEnabled(False)
+            self.editValue.setEnabled(False)
         return
 
     @pyqtSlot()
-    def _saveEntry(self) -> None:
+    def _applyChanges(self) -> None:
         """Save the form data into the list widget."""
         if item := self._getSelectedItem():
             key = self._stripNotAllowed(self.editKey.text())

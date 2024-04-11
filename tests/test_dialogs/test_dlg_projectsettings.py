@@ -357,7 +357,7 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Nothing to save or delete
     replace.listBox.clearSelection()
-    replace._saveEntry()
+    replace._applyChanges()
     replace._delEntry()
     assert replace.listBox.topLevelItemCount() == 2
 
