@@ -25,7 +25,7 @@ from __future__ import annotations
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QPainter, QTextCursor
-from PyQt5.QtWidgets import QDialogButtonBox, QStyle
+from PyQt5.QtWidgets import QDialogButtonBox, QSizePolicy, QStyle
 
 # Qt Alignment Flags
 
@@ -88,3 +88,11 @@ QtKeepAnchor = QTextCursor.MoveMode.KeepAnchor
 QtMoveAnchor = QTextCursor.MoveMode.MoveAnchor
 QtMoveLeft = QTextCursor.MoveOperation.Left
 QtMoveRight = QTextCursor.MoveOperation.Right
+
+# Size Policy
+
+QtSizeExpanding = QSizePolicy.Policy.Expanding
+QtSizeFixed = QSizePolicy.Policy.Fixed
+QtSizeIgnored = QSizePolicy.Policy.Ignored
+QtSizeMinimum = QSizePolicy.Policy.Minimum
+QtSizeMinimumExpanding = QSizePolicy.Policy.MinimumExpanding

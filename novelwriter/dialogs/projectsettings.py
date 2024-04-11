@@ -30,7 +30,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QColor
 from PyQt5.QtWidgets import (
     QApplication, QColorDialog, QDialog, QDialogButtonBox, QHBoxLayout,
-    QLineEdit, QMenu, QSizePolicy, QStackedWidget, QToolButton, QTreeWidget,
+    QLineEdit, QMenu, QStackedWidget, QToolButton, QTreeWidget,
     QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
@@ -43,7 +43,10 @@ from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrol
 from novelwriter.extensions.modified import NComboBox, NIconToolButton
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtDialogCancel, QtDialogSave, QtUserRole
+from novelwriter.types import (
+    QtDialogCancel, QtDialogSave, QtSizeMinimum, QtSizeMinimumExpanding,
+    QtUserRole
+)
 
 logger = logging.getLogger(__name__)
 
@@ -386,7 +389,7 @@ class _StatusPage(NFixedPage):
 
         self.colorButton = NIconToolButton(self, iSz)
         self.colorButton.setToolTip(self.tr("Colour"))
-        self.colorButton.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        self.colorButton.setSizePolicy(QtSizeMinimum, QtSizeMinimumExpanding)
         self.colorButton.setStyleSheet(buttonStyle)
         self.colorButton.setEnabled(False)
         self.colorButton.clicked.connect(self._selectColour)
@@ -407,13 +410,13 @@ class _StatusPage(NFixedPage):
         self.shapeButton = NIconToolButton(self, iSz)
         self.shapeButton.setMenu(self.shapeMenu)
         self.shapeButton.setToolTip(self.tr("Shape"))
-        self.shapeButton.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        self.shapeButton.setSizePolicy(QtSizeMinimum, QtSizeMinimumExpanding)
         self.shapeButton.setStyleSheet(buttonStyle)
         self.shapeButton.setEnabled(False)
 
         self.applyButton = QToolButton(self)
         self.applyButton.setText(self.tr("Apply"))
-        self.applyButton.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        self.applyButton.setSizePolicy(QtSizeMinimum, QtSizeMinimumExpanding)
         self.applyButton.setEnabled(False)
         self.applyButton.clicked.connect(self._saveItem)
 
@@ -675,7 +678,7 @@ class _ReplacePage(NFixedPage):
 
         self.applyButton = QToolButton(self)
         self.applyButton.setText(self.tr("Apply"))
-        self.applyButton.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        self.applyButton.setSizePolicy(QtSizeMinimum, QtSizeMinimumExpanding)
         self.applyButton.clicked.connect(self._saveEntry)
 
         # Assemble

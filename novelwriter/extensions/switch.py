@@ -25,10 +25,10 @@ from __future__ import annotations
 
 from PyQt5.QtGui import QMouseEvent, QPainter, QPaintEvent, QResizeEvent
 from PyQt5.QtCore import QEvent, QPropertyAnimation, Qt, pyqtProperty
-from PyQt5.QtWidgets import QAbstractButton, QSizePolicy, QWidget
+from PyQt5.QtWidgets import QAbstractButton, QWidget
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.types import QtPaintAnitAlias, QtMouseLeft, QtNoPen
+from novelwriter.types import QtPaintAnitAlias, QtMouseLeft, QtNoPen, QtSizeFixed
 
 
 class NSwitch(QAbstractButton):
@@ -46,7 +46,7 @@ class NSwitch(QAbstractButton):
         self._rR = self._xR - self._rB
 
         self.setCheckable(True)
-        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.setSizePolicy(QtSizeFixed, QtSizeFixed)
         self.setFixedWidth(self._xW)
         self.setFixedHeight(self._xH)
         self._offset = self._xR

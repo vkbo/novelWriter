@@ -28,11 +28,14 @@ from __future__ import annotations
 from PyQt5.QtGui import QColor, QPaintEvent, QPainter, QPolygon
 from PyQt5.QtCore import QPoint, QRectF, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QAbstractButton, QAction, QButtonGroup, QLabel, QSizePolicy, QStyle,
+    QAbstractButton, QAction, QButtonGroup, QLabel, QStyle,
     QStyleOptionToolButton, QToolBar, QToolButton, QWidget
 )
 
-from novelwriter.types import QtPaintAnitAlias, QtAlignLeft, QtMouseOver, QtNoBrush, QtNoPen
+from novelwriter.types import (
+    QtPaintAnitAlias, QtAlignLeft, QtMouseOver, QtNoBrush, QtNoPen,
+    QtSizeExpanding, QtSizeFixed
+)
 
 
 class NPagedSideBar(QToolBar):
@@ -59,7 +62,7 @@ class NPagedSideBar(QToolBar):
         self.setOrientation(Qt.Orientation.Vertical)
 
         stretch = QWidget(self)
-        stretch.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        stretch.setSizePolicy(QtSizeExpanding, QtSizeExpanding)
         self._stretchAction = self.addWidget(stretch)
 
         return
@@ -119,7 +122,7 @@ class _NPagedToolButton(QToolButton):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
-        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.setSizePolicy(QtSizeExpanding, QtSizeFixed)
         self.setCheckable(True)
 
         fH = self.fontMetrics().height()
@@ -197,7 +200,7 @@ class _NPagedToolLabel(QLabel):
     def __init__(self, parent: QWidget, textColor: QColor | None = None) -> None:
         super().__init__(parent=parent)
 
-        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.setSizePolicy(QtSizeExpanding, QtSizeFixed)
 
         fH = self.fontMetrics().height()
         self._bH = round(fH * 1.7)

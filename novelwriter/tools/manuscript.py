@@ -36,8 +36,8 @@ from PyQt5.QtPrintSupport import QPrintPreviewDialog, QPrinter
 from PyQt5.QtWidgets import (
     QAbstractItemView, QApplication, QDialog, QFormLayout, QGridLayout,
     QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton,
-    QSizePolicy, QSplitter, QStackedWidget, QTabWidget, QTextBrowser,
-    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QSplitter, QStackedWidget, QTabWidget, QTextBrowser, QTreeWidget,
+    QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -54,7 +54,7 @@ from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignRight, QtAlignTop,
-    QtUserRole
+    QtSizeExpanding, QtSizeIgnored, QtUserRole
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -1030,16 +1030,14 @@ class _StatsWidget(QWidget):
     @pyqtSlot(bool)
     def _toggleView(self, state: bool) -> None:
         """Toggle minimal or maximal view."""
-        ignored = QSizePolicy.Policy.Ignored
-        expanded = QSizePolicy.Policy.Expanding
         if state:
             self.mainStack.setCurrentWidget(self.maxWidget)
-            self.maxWidget.setSizePolicy(expanded, expanded)
-            self.minWidget.setSizePolicy(ignored, ignored)
+            self.maxWidget.setSizePolicy(QtSizeExpanding, QtSizeExpanding)
+            self.minWidget.setSizePolicy(QtSizeIgnored, QtSizeIgnored)
         else:
             self.mainStack.setCurrentWidget(self.minWidget)
-            self.maxWidget.setSizePolicy(ignored, ignored)
-            self.minWidget.setSizePolicy(expanded, expanded)
+            self.maxWidget.setSizePolicy(QtSizeIgnored, QtSizeIgnored)
+            self.minWidget.setSizePolicy(QtSizeExpanding, QtSizeExpanding)
         self.maxWidget.adjustSize()
         self.minWidget.adjustSize()
         self.mainStack.adjustSize()

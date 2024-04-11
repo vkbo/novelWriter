@@ -27,10 +27,11 @@ from math import ceil
 
 from PyQt5.QtCore import QRect
 from PyQt5.QtGui import QBrush, QColor, QPaintEvent, QPainter, QPen
-from PyQt5.QtWidgets import QProgressBar, QSizePolicy, QWidget
+from PyQt5.QtWidgets import QProgressBar, QWidget
 
 from novelwriter.types import (
-    QtPaintAnitAlias, QtAlignCenter, QtRoundCap, QtSolidLine, QtTransparent
+    QtPaintAnitAlias, QtAlignCenter, QtRoundCap, QtSizeFixed, QtSolidLine,
+    QtTransparent
 )
 
 
@@ -59,7 +60,7 @@ class NProgressCircle(QProgressBar):
             bar=self.palette().highlight().color(),
             text=self.palette().text().color()
         )
-        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.setSizePolicy(QtSizeFixed, QtSizeFixed)
         self.setFixedWidth(size)
         self.setFixedHeight(size)
         return

@@ -38,8 +38,8 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtWidgets import (
     QAbstractItemView, QAction, QDialog, QFrame, QHBoxLayout, QHeaderView,
-    QLabel, QMenu, QShortcut, QSizePolicy, QTreeWidget, QTreeWidgetItem,
-    QVBoxLayout, QWidget
+    QLabel, QMenu, QShortcut, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+    QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -54,7 +54,10 @@ from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
-from novelwriter.types import QtAlignLeft, QtAlignRight, QtMouseLeft, QtMouseMiddle, QtUserRole
+from novelwriter.types import (
+    QtAlignLeft, QtAlignRight, QtMouseLeft, QtMouseMiddle, QtSizeExpanding,
+    QtUserRole,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -274,7 +277,7 @@ class GuiProjectToolBar(QWidget):
         self.viewLabel = QLabel(self.tr("Project Content"), self)
         self.viewLabel.setFont(SHARED.theme.guiFontB)
         self.viewLabel.setContentsMargins(0, 0, 0, 0)
-        self.viewLabel.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.viewLabel.setSizePolicy(QtSizeExpanding, QtSizeExpanding)
 
         # Quick Links
         self.mQuick = QMenu(self)

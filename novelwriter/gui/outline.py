@@ -36,20 +36,19 @@ from enum import Enum
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QT_TRANSLATE_NOOP
 from PyQt5.QtWidgets import (
     QAbstractItemView, QAction, QFileDialog, QFrame, QGridLayout, QGroupBox,
-    QHBoxLayout, QLabel, QMenu, QScrollArea, QSizePolicy, QSplitter, QToolBar,
-    QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QHBoxLayout, QLabel, QMenu, QScrollArea, QSplitter, QToolBar, QToolButton,
+    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import (
-    nwDocMode, nwItemClass, nwItemLayout, nwItemType, nwOutline
-)
+from novelwriter.enum import nwDocMode, nwItemClass, nwItemLayout, nwItemType, nwOutline
 from novelwriter.error import logException
 from novelwriter.common import checkInt, formatFileFilter, makeFileNameSafe
 from novelwriter.constants import nwHeaders, trConst, nwKeyWords, nwLabels
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.types import (
-    QtAlignLeftTop, QtAlignRight, QtAlignRightTop, QtDecoration, QtUserRole
+    QtAlignLeftTop, QtAlignRight, QtAlignRightTop, QtDecoration,
+    QtSizeExpanding, QtUserRole
 )
 
 
@@ -217,7 +216,7 @@ class GuiOutlineToolBar(QToolBar):
         self.setContentsMargins(0, 0, 0, 0)
 
         stretch = QWidget(self)
-        stretch.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        stretch.setSizePolicy(QtSizeExpanding, QtSizeExpanding)
 
         # Novel Selector
         self.novelLabel = QLabel(self.tr("Outline of"), self)
