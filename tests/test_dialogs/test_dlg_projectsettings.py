@@ -188,13 +188,13 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
     # Can't delete the first item (it's in use)
     status.listBox.clearSelection()
     status.listBox.setCurrentItem(status.listBox.topLevelItem(0))
-    qtbot.mouseClick(status.delButton, QtMouseLeft)
+    status.delButton.click()
     assert status.listBox.topLevelItemCount() == 4
 
     # Can delete the second item
     status.listBox.clearSelection()
     status.listBox.setCurrentItem(status.listBox.topLevelItem(1))
-    qtbot.mouseClick(status.delButton, QtMouseLeft)
+    status.delButton.click()
     assert status.listBox.topLevelItemCount() == 3
 
     # Add a new item
@@ -203,8 +203,8 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
         status.addButton.click()
         status.listBox.setCurrentItem(status.listBox.topLevelItem(3))
         status.editName.setText("Final")
-        status.shapeList.setCurrentData(nwStatusShape.CIRCLE, nwStatusShape.SQUARE)
-        status.colButton.click()
+        status.colorButton.click()
+        status._selectShape(nwStatusShape.CIRCLE)
         status.applyButton.click()
         assert status.listBox.topLevelItemCount() == 4
 
@@ -269,19 +269,19 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
     # Delete unused entry
     importance.listBox.clearSelection()
     importance.listBox.setCurrentItem(importance.listBox.topLevelItem(1))
-    qtbot.mouseClick(importance.delButton, QtMouseLeft)
+    importance.delButton.click()
     assert importance.listBox.topLevelItemCount() == 3
 
     # Add a new entry
     with monkeypatch.context() as mp:
         mp.setattr(QColorDialog, "getColor", lambda *a: QColor(20, 30, 40))
-        qtbot.mouseClick(importance.addButton, QtMouseLeft)
+        importance.addButton.click()
         importance.listBox.clearSelection()
         importance.listBox.setCurrentItem(importance.listBox.topLevelItem(3))
         importance.editName.setText("Final")
-        importance.shapeList.setCurrentData(nwStatusShape.TRIANGLE, nwStatusShape.SQUARE)
-        qtbot.mouseClick(importance.colButton, QtMouseLeft)
-        qtbot.mouseClick(importance.applyButton, QtMouseLeft)
+        importance.colorButton.click()
+        importance._selectShape(nwStatusShape.TRIANGLE)
+        importance.applyButton.click()
         assert importance.listBox.topLevelItemCount() == 4
 
     assert importance.changed is True
