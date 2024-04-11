@@ -497,6 +497,7 @@ class GuiDocEditor(QPlainTextEdit):
             return False
 
         self.setDocumentChanged(False)
+        self.docTextChanged.emit(self._docHandle, self._lastEdit)
 
         oldHeader = self._nwItem.mainHeading
         oldCount = SHARED.project.index.getHandleHeaderCount(tHandle)
