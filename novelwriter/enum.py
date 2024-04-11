@@ -209,12 +209,24 @@ class nwBuildFmt(Enum):
 
 class nwStatusShape(Enum):
 
-    SQUARE   = 0
-    CIRCLE   = 1
-    TRIANGLE = 2
-    DIAMOND  = 3
-    PENTAGON = 4
-    STAR     = 5
-    PACMAN   = 6
+    SQUARE     = 0
+    CIRCLE_Q   = 1
+    CIRCLE_H   = 2
+    CIRCLE_T   = 3
+    CIRCLE     = 4
+    TRIANGLE   = 5
+    NABLA      = 6
+    DIAMOND    = 7
+    PENTAGON   = 8
+    STAR       = 9
+    PACMAN     = 10
+    BARS_1     = 11
+    BARS_2     = 12
+    BARS_3     = 13
+    BARS_4     = 14
+    BLOCK_1    = 15
+    BLOCK_2    = 16
+    BLOCK_3    = 17
+    BLOCK_4    = 18
 
 # END Enum nwStatusShape

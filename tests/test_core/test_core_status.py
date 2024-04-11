@@ -374,21 +374,45 @@ def testCoreStatus_ShapeCache():
     shapes = _ShapeCache()
 
     # Generate all shapes
-    square   = shapes.getShape(nwStatusShape.SQUARE)
-    circle   = shapes.getShape(nwStatusShape.CIRCLE)
-    triangle = shapes.getShape(nwStatusShape.TRIANGLE)
-    diamond  = shapes.getShape(nwStatusShape.DIAMOND)
-    pentagon = shapes.getShape(nwStatusShape.PENTAGON)
-    star     = shapes.getShape(nwStatusShape.STAR)
-    pacman   = shapes.getShape(nwStatusShape.PACMAN)
+    square    = shapes.getShape(nwStatusShape.SQUARE)
+    circleQ   = shapes.getShape(nwStatusShape.CIRCLE_Q)
+    circleH   = shapes.getShape(nwStatusShape.CIRCLE_H)
+    circleT   = shapes.getShape(nwStatusShape.CIRCLE_T)
+    circle    = shapes.getShape(nwStatusShape.CIRCLE)
+    triangle  = shapes.getShape(nwStatusShape.TRIANGLE)
+    nabla     = shapes.getShape(nwStatusShape.NABLA)
+    diamond   = shapes.getShape(nwStatusShape.DIAMOND)
+    pentagon  = shapes.getShape(nwStatusShape.PENTAGON)
+    star      = shapes.getShape(nwStatusShape.STAR)
+    pacman    = shapes.getShape(nwStatusShape.PACMAN)
+    bars1     = shapes.getShape(nwStatusShape.BARS_1)
+    bars2     = shapes.getShape(nwStatusShape.BARS_2)
+    bars3     = shapes.getShape(nwStatusShape.BARS_3)
+    bars4     = shapes.getShape(nwStatusShape.BARS_4)
+    block1    = shapes.getShape(nwStatusShape.BLOCK_1)
+    block2    = shapes.getShape(nwStatusShape.BLOCK_2)
+    block3    = shapes.getShape(nwStatusShape.BLOCK_3)
+    block4    = shapes.getShape(nwStatusShape.BLOCK_4)
 
     # Request again should return from cache
     assert shapes.getShape(nwStatusShape.SQUARE) is square
+    assert shapes.getShape(nwStatusShape.CIRCLE_Q) is circleQ
+    assert shapes.getShape(nwStatusShape.CIRCLE_H) is circleH
+    assert shapes.getShape(nwStatusShape.CIRCLE_T) is circleT
     assert shapes.getShape(nwStatusShape.CIRCLE) is circle
     assert shapes.getShape(nwStatusShape.TRIANGLE) is triangle
+    assert shapes.getShape(nwStatusShape.NABLA) is nabla
     assert shapes.getShape(nwStatusShape.DIAMOND) is diamond
     assert shapes.getShape(nwStatusShape.PENTAGON) is pentagon
     assert shapes.getShape(nwStatusShape.STAR) is star
     assert shapes.getShape(nwStatusShape.PACMAN) is pacman
+    assert shapes.getShape(nwStatusShape.BARS_1) is bars1
+    assert shapes.getShape(nwStatusShape.BARS_2) is bars2
+    assert shapes.getShape(nwStatusShape.BARS_3) is bars3
+    assert shapes.getShape(nwStatusShape.BARS_4) is bars4
+    assert shapes.getShape(nwStatusShape.BLOCK_1) is block1
+    assert shapes.getShape(nwStatusShape.BLOCK_2) is block2
+    assert shapes.getShape(nwStatusShape.BLOCK_3) is block3
+    assert shapes.getShape(nwStatusShape.BLOCK_4) is block4
 
 # END Test testCoreStatus_ShapeCache

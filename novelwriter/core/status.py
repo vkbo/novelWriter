@@ -244,48 +244,92 @@ class _ShapeCache:
         if shape in self._cache:
             return self._cache[shape]
 
-        def circ(r: float, a: float, x: float, y: float) -> QPointF:
+        def polar(r: float, a: float, x: float, y: float) -> QPointF:
+            # Converts polar coordinates to cartesian
             # print(round(x+r*sin(pi*a/180), 2), round(y-r*cos(pi*a/180), 2))
-            return QPointF(round(x+r*sin(pi*a/180), 2), round(y-r*cos(pi*a/180), 2))
+            return QPointF(x+r*sin(pi*a/180), y-r*cos(pi*a/180))
 
         path = QPainterPath()
         if shape == nwStatusShape.SQUARE:
             path.addRoundedRect(2.0, 2.0, 44.0, 44.0, 4.0, 4.0)
+        elif shape == nwStatusShape.CIRCLE_Q:
+            path.moveTo(24.0, 24.0)
+            path.arcTo(2.0, 2.0, 44.0, 44.0, 0.0, 90.0)
+        elif shape == nwStatusShape.CIRCLE_H:
+            path.moveTo(24.0, 24.0)
+            path.arcTo(2.0, 2.0, 44.0, 44.0, -90.0, 180.0)
+        elif shape == nwStatusShape.CIRCLE_T:
+            path.moveTo(24.0, 24.0)
+            path.arcTo(2.0, 2.0, 44.0, 44.0, -180.0, 270.0)
         elif shape == nwStatusShape.CIRCLE:
             path.addEllipse(2.0, 2.0, 44.0, 44.0)
         elif shape == nwStatusShape.TRIANGLE:
             path.addPolygon(QPolygonF([
-                circ(23.0, 0.0, 24.0, 26.0),
-                circ(23.0, 120.0, 24.0, 26.0),
-                circ(23.0, 240.0, 24.0, 26.0),
+                polar(23.0, 0.0, 24.0, 26.0),
+                polar(23.0, 120.0, 24.0, 26.0),
+                polar(23.0, 240.0, 24.0, 26.0),
+            ]))
+        elif shape == nwStatusShape.NABLA:
+            path.addPolygon(QPolygonF([
+                polar(23.0, 180.0, 24.0, 26.0),
+                polar(23.0, 300.0, 24.0, 26.0),
+                polar(23.0, 60.0, 24.0, 26.0),
             ]))
         elif shape == nwStatusShape.DIAMOND:
             path.addPolygon(QPolygonF([
-                circ(22.0, 0.0, 24.0, 24.0),
-                circ(20.0, 90.0, 24.0, 24.0),
-                circ(22.0, 180.0, 24.0, 24.0),
-                circ(20.0, 270.0, 24.0, 24.0),
+                polar(22.0, 0.0, 24.0, 24.0),
+                polar(20.0, 90.0, 24.0, 24.0),
+                polar(22.0, 180.0, 24.0, 24.0),
+                polar(20.0, 270.0, 24.0, 24.0),
             ]))
         elif shape == nwStatusShape.PENTAGON:
             path.addPolygon(QPolygonF([
-                circ(23.0, 0.0, 24.0, 24.5),
-                circ(23.0, 72.0, 24.0, 24.5),
-                circ(23.0, 144.0, 24.0, 24.5),
-                circ(23.0, 216.0, 24.0, 24.5),
-                circ(23.0, 288.0, 24.0, 24.5),
+                polar(23.0, 0.0, 24.0, 24.5),
+                polar(23.0, 72.0, 24.0, 24.5),
+                polar(23.0, 144.0, 24.0, 24.5),
+                polar(23.0, 216.0, 24.0, 24.5),
+                polar(23.0, 288.0, 24.0, 24.5),
             ]))
         elif shape == nwStatusShape.STAR:
             path.addPolygon(QPolygonF([
-                circ(24.0, 0.0, 24.0, 24.5),
-                circ(24.0, 144.0, 24.0, 24.5),
-                circ(24.0, 288.0, 24.0, 24.5),
-                circ(24.0, 72.0, 24.0, 24.5),
-                circ(24.0, 216.0, 24.0, 24.5),
+                polar(24.0, 0.0, 24.0, 24.5), polar(12.0, 36.0, 24.0, 24.5),
+                polar(24.0, 72.0, 24.0, 24.5), polar(12.0, 108.0, 24.0, 24.5),
+                polar(24.0, 144.0, 24.0, 24.5), polar(12.0, 180.0, 24.0, 24.5),
+                polar(24.0, 216.0, 24.0, 24.5), polar(12.0, 252.0, 24.0, 24.5),
+                polar(24.0, 288.0, 24.0, 24.5), polar(12.0, 314.0, 24.0, 24.5),
             ]))
             path.setFillRule(Qt.FillRule.WindingFill)
         elif shape == nwStatusShape.PACMAN:
             path.moveTo(24.0, 24.0)
             path.arcTo(2.0, 2.0, 44.0, 44.0, 40.0, 280.0)
+        elif shape == nwStatusShape.BARS_1:
+            path.addRoundedRect(2.0, 2.0, 8.0, 44.0, 4.0, 4.0)
+        elif shape == nwStatusShape.BARS_2:
+            path.addRoundedRect(2.0, 2.0, 8.0, 44.0, 4.0, 4.0)
+            path.addRoundedRect(14.0, 2.0, 8.0, 44.0, 4.0, 4.0)
+        elif shape == nwStatusShape.BARS_3:
+            path.addRoundedRect(2.0, 2.0, 8.0, 44.0, 4.0, 4.0)
+            path.addRoundedRect(14.0, 2.0, 8.0, 44.0, 4.0, 4.0)
+            path.addRoundedRect(26.0, 2.0, 8.0, 44.0, 4.0, 4.0)
+        elif shape == nwStatusShape.BARS_4:
+            path.addRoundedRect(2.0, 2.0, 8.0, 44.0, 4.0, 4.0)
+            path.addRoundedRect(14.0, 2.0, 8.0, 44.0, 4.0, 4.0)
+            path.addRoundedRect(26.0, 2.0, 8.0, 44.0, 4.0, 4.0)
+            path.addRoundedRect(38.0, 2.0, 8.0, 44.0, 4.0, 4.0)
+        elif shape == nwStatusShape.BLOCK_1:
+            path.addRoundedRect(2.0, 2.0, 20.0, 20.0, 4.0, 4.0)
+        elif shape == nwStatusShape.BLOCK_2:
+            path.addRoundedRect(2.0, 2.0, 20.0, 20.0, 4.0, 4.0)
+            path.addRoundedRect(24.0, 2.0, 20.0, 20.0, 4.0, 4.0)
+        elif shape == nwStatusShape.BLOCK_3:
+            path.addRoundedRect(2.0, 2.0, 20.0, 20.0, 4.0, 4.0)
+            path.addRoundedRect(2.0, 24.0, 20.0, 20.0, 4.0, 4.0)
+            path.addRoundedRect(24.0, 2.0, 20.0, 20.0, 4.0, 4.0)
+        elif shape == nwStatusShape.BLOCK_4:
+            path.addRoundedRect(2.0, 2.0, 20.0, 20.0, 4.0, 4.0)
+            path.addRoundedRect(2.0, 24.0, 20.0, 20.0, 4.0, 4.0)
+            path.addRoundedRect(24.0, 2.0, 20.0, 20.0, 4.0, 4.0)
+            path.addRoundedRect(24.0, 24.0, 20.0, 20.0, 4.0, 4.0)
 
         self._cache[shape] = path
 
