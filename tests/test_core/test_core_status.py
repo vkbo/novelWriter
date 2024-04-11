@@ -68,9 +68,6 @@ def testCoreStatus_Internal(mockGUI, mockRnd):
     nStatus = NWStatus(NWStatus.STATUS)
     nImport = NWStatus(NWStatus.IMPORT)
 
-    with pytest.raises(Exception):
-        NWStatus(999)  # type: ignore
-
     # Generate Key
     # ============
 
@@ -383,6 +380,7 @@ def testCoreStatus_ShapeCache():
     nabla     = shapes.getShape(nwStatusShape.NABLA)
     diamond   = shapes.getShape(nwStatusShape.DIAMOND)
     pentagon  = shapes.getShape(nwStatusShape.PENTAGON)
+    hexagon   = shapes.getShape(nwStatusShape.HEXAGON)
     star      = shapes.getShape(nwStatusShape.STAR)
     pacman    = shapes.getShape(nwStatusShape.PACMAN)
     bars1     = shapes.getShape(nwStatusShape.BARS_1)
@@ -404,6 +402,7 @@ def testCoreStatus_ShapeCache():
     assert shapes.getShape(nwStatusShape.NABLA) is nabla
     assert shapes.getShape(nwStatusShape.DIAMOND) is diamond
     assert shapes.getShape(nwStatusShape.PENTAGON) is pentagon
+    assert shapes.getShape(nwStatusShape.HEXAGON) is hexagon
     assert shapes.getShape(nwStatusShape.STAR) is star
     assert shapes.getShape(nwStatusShape.PACMAN) is pacman
     assert shapes.getShape(nwStatusShape.BARS_1) is bars1

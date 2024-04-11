@@ -205,7 +205,7 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
         status.editName.setText("Final")
         status.shapeList.setCurrentData(nwStatusShape.CIRCLE, nwStatusShape.SQUARE)
         status.colButton.click()
-        status.saveButton.click()
+        status.applyButton.click()
         assert status.listBox.topLevelItemCount() == 4
 
     assert status.changed is True
@@ -281,7 +281,7 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
         importance.editName.setText("Final")
         importance.shapeList.setCurrentData(nwStatusShape.TRIANGLE, nwStatusShape.SQUARE)
         qtbot.mouseClick(importance.colButton, QtMouseLeft)
-        qtbot.mouseClick(importance.saveButton, QtMouseLeft)
+        qtbot.mouseClick(importance.applyButton, QtMouseLeft)
         assert importance.listBox.topLevelItemCount() == 4
 
     assert importance.changed is True
@@ -375,7 +375,7 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     replace.editValue.setText("")
     for c in "With This Stuff ":
         qtbot.keyClick(replace.editValue, c, delay=KEY_DELAY)
-    qtbot.mouseClick(replace.saveButton, QtMouseLeft)
+    qtbot.mouseClick(replace.applyButton, QtMouseLeft)
     assert replace.listBox.topLevelItem(2).text(0) == "<This>"  # type: ignore
     assert replace.listBox.topLevelItem(2).text(1) == "With This Stuff "  # type: ignore
 

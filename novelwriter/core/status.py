@@ -29,8 +29,7 @@ import logging
 import random
 
 from collections.abc import Iterable
-from math import cos, pi, sin
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import QPointF, Qt
 from PyQt5.QtGui import QIcon, QPainter, QPainterPath, QPixmap, QColor, QPolygonF
@@ -71,24 +70,16 @@ NO_ENTRY = StatusEntry("", QColor(0, 0, 0), nwStatusShape.SQUARE, QIcon(), 0)
 
 class NWStatus:
 
-    STATUS = 1
-    IMPORT = 2
+    STATUS = "s"
+    IMPORT = "i"
 
-    def __init__(self, kind: Literal[1, 2]) -> None:
+    __slots__ = ("_store", "_default", "_prefix", "_height")
 
-        self._type = kind
+    def __init__(self, prefix: str) -> None:
         self._store: dict[str, StatusEntry] = {}
         self._default = None
-
-        self._iPx = SHARED.theme.baseIconHeight
-
-        if self._type == self.STATUS:
-            self._prefix = "s"
-        elif self._type == self.IMPORT:
-            self._prefix = "i"
-        else:
-            raise Exception("This is a bug!")
-
+        self._prefix = prefix[:1]
+        self._height = SHARED.theme.baseIconHeight
         return
 
     def __len__(self) -> int:
@@ -123,7 +114,7 @@ class NWStatus:
 
         key = self._checkKey(key)
         name = simplified(name)
-        icon = self.createIcon(self._iPx, qColor, iShape)
+        icon = self.createIcon(self._height, qColor, iShape)
         self._store[key] = StatusEntry(name, qColor, iShape, icon, count)
 
         if self._default is None:
@@ -181,14 +172,14 @@ class NWStatus:
         yield from self._store.items()
 
     @staticmethod
-    def createIcon(height: int, colour: QColor, shape: nwStatusShape) -> QIcon:
+    def createIcon(height: int, color: QColor, shape: nwStatusShape) -> QIcon:
         """Generate an icon for a status label."""
         pixmap = QPixmap(48, 48)
         pixmap.fill(QtTransparent)
 
         painter = QPainter(pixmap)
         painter.setRenderHint(QtPaintAnitAlias)
-        painter.fillPath(_SHAPES.getShape(shape), colour)
+        painter.fillPath(_SHAPES.getShape(shape), color)
         painter.end()
 
         return QIcon(pixmap.scaled(
@@ -244,14 +235,56 @@ class _ShapeCache:
         if shape in self._cache:
             return self._cache[shape]
 
-        def polar(r: float, a: float, x: float, y: float) -> QPointF:
-            # Converts polar coordinates to cartesian
-            # print(round(x+r*sin(pi*a/180), 2), round(y-r*cos(pi*a/180), 2))
-            return QPointF(x+r*sin(pi*a/180), y-r*cos(pi*a/180))
-
         path = QPainterPath()
         if shape == nwStatusShape.SQUARE:
             path.addRoundedRect(2.0, 2.0, 44.0, 44.0, 4.0, 4.0)
+        elif shape == nwStatusShape.TRIANGLE:
+            path.addPolygon(QPolygonF([
+                QPointF(24.00, 3.00),
+                QPointF(43.92, 37.50),
+                QPointF(4.08, 37.50),
+            ]))
+        elif shape == nwStatusShape.NABLA:
+            path.addPolygon(QPolygonF([
+                QPointF(24.00, 48.00),
+                QPointF(4.08, 14.50),
+                QPointF(43.92, 14.50),
+            ]))
+        elif shape == nwStatusShape.DIAMOND:
+            path.addPolygon(QPolygonF([
+                QPointF(24.00, 2.00),
+                QPointF(44.00, 24.00),
+                QPointF(24.00, 46.00),
+                QPointF(4.00, 24.00),
+            ]))
+        elif shape == nwStatusShape.PENTAGON:
+            path.addPolygon(QPolygonF([
+                QPointF(24.00, 1.50),
+                QPointF(45.87, 17.39),
+                QPointF(37.52, 43.11),
+                QPointF(10.48, 43.11),
+                QPointF(2.13, 17.39),
+            ]))
+        elif shape == nwStatusShape.HEXAGON:
+            path.addPolygon(QPolygonF([
+                QPointF(24.00, 1.50),
+                QPointF(43.92, 13.00),
+                QPointF(43.92, 36.00),
+                QPointF(24.00, 47.50),
+                QPointF(4.08, 36.00),
+                QPointF(4.08, 13.00),
+            ]))
+        elif shape == nwStatusShape.STAR:
+            path.addPolygon(QPolygonF([
+                QPointF(24.00, 0.50), QPointF(31.05, 14.79),
+                QPointF(46.83, 17.08), QPointF(35.41, 28.21),
+                QPointF(38.11, 43.92), QPointF(24.00, 36.50),
+                QPointF(9.89, 43.92), QPointF(12.59, 28.21),
+                QPointF(1.17, 17.08), QPointF(15.37, 16.16),
+            ]))
+        elif shape == nwStatusShape.PACMAN:
+            path.moveTo(24.0, 24.0)
+            path.arcTo(2.0, 2.0, 44.0, 44.0, 40.0, 280.0)
         elif shape == nwStatusShape.CIRCLE_Q:
             path.moveTo(24.0, 24.0)
             path.arcTo(2.0, 2.0, 44.0, 44.0, 0.0, 90.0)
@@ -263,45 +296,6 @@ class _ShapeCache:
             path.arcTo(2.0, 2.0, 44.0, 44.0, -180.0, 270.0)
         elif shape == nwStatusShape.CIRCLE:
             path.addEllipse(2.0, 2.0, 44.0, 44.0)
-        elif shape == nwStatusShape.TRIANGLE:
-            path.addPolygon(QPolygonF([
-                polar(23.0, 0.0, 24.0, 26.0),
-                polar(23.0, 120.0, 24.0, 26.0),
-                polar(23.0, 240.0, 24.0, 26.0),
-            ]))
-        elif shape == nwStatusShape.NABLA:
-            path.addPolygon(QPolygonF([
-                polar(23.0, 180.0, 24.0, 26.0),
-                polar(23.0, 300.0, 24.0, 26.0),
-                polar(23.0, 60.0, 24.0, 26.0),
-            ]))
-        elif shape == nwStatusShape.DIAMOND:
-            path.addPolygon(QPolygonF([
-                polar(22.0, 0.0, 24.0, 24.0),
-                polar(20.0, 90.0, 24.0, 24.0),
-                polar(22.0, 180.0, 24.0, 24.0),
-                polar(20.0, 270.0, 24.0, 24.0),
-            ]))
-        elif shape == nwStatusShape.PENTAGON:
-            path.addPolygon(QPolygonF([
-                polar(23.0, 0.0, 24.0, 24.5),
-                polar(23.0, 72.0, 24.0, 24.5),
-                polar(23.0, 144.0, 24.0, 24.5),
-                polar(23.0, 216.0, 24.0, 24.5),
-                polar(23.0, 288.0, 24.0, 24.5),
-            ]))
-        elif shape == nwStatusShape.STAR:
-            path.addPolygon(QPolygonF([
-                polar(24.0, 0.0, 24.0, 24.5), polar(12.0, 36.0, 24.0, 24.5),
-                polar(24.0, 72.0, 24.0, 24.5), polar(12.0, 108.0, 24.0, 24.5),
-                polar(24.0, 144.0, 24.0, 24.5), polar(12.0, 180.0, 24.0, 24.5),
-                polar(24.0, 216.0, 24.0, 24.5), polar(12.0, 252.0, 24.0, 24.5),
-                polar(24.0, 288.0, 24.0, 24.5), polar(12.0, 314.0, 24.0, 24.5),
-            ]))
-            path.setFillRule(Qt.FillRule.WindingFill)
-        elif shape == nwStatusShape.PACMAN:
-            path.moveTo(24.0, 24.0)
-            path.arcTo(2.0, 2.0, 44.0, 44.0, 40.0, 280.0)
         elif shape == nwStatusShape.BARS_1:
             path.addRoundedRect(2.0, 2.0, 8.0, 44.0, 4.0, 4.0)
         elif shape == nwStatusShape.BARS_2:

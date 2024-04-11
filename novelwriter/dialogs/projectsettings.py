@@ -334,6 +334,8 @@ class _StatusPage(NFixedPage):
         iSz = SHARED.theme.baseIconSize
         bSz = SHARED.theme.buttonIconSize
 
+        iColor = self.palette().text().color()
+
         # Labels
         self.trCountNone = self.tr("Not in use")
         self.trCountOne  = self.tr("Used once")
@@ -385,13 +387,15 @@ class _StatusPage(NFixedPage):
         self.shapeList = NComboBox(self)
         self.shapeList.setEnabled(False)
         self.shapeList.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        self.shapeList.setMaxVisibleItems(5)
         for shape, label in nwLabels.STATUS_SHAPES.items():
-            self.shapeList.addItem(label, shape)
+            icon = NWStatus.createIcon(self._iPx, iColor, shape)
+            self.shapeList.addItem(icon, label, shape)
 
-        self.saveButton = QPushButton(self.tr("Save"), self)
-        self.saveButton.setEnabled(False)
-        self.saveButton.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
-        self.saveButton.clicked.connect(self._saveItem)
+        self.applyButton = QPushButton(self.tr("Apply"), self)
+        self.applyButton.setEnabled(False)
+        self.applyButton.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        self.applyButton.clicked.connect(self._saveItem)
 
         # Assemble
         self.listControls = QVBoxLayout()
@@ -405,7 +409,7 @@ class _StatusPage(NFixedPage):
         self.editBox.addWidget(self.editName, 1)
         self.editBox.addWidget(self.colButton, 0)
         self.editBox.addWidget(self.shapeList, 0)
-        self.editBox.addWidget(self.saveButton, 0)
+        self.editBox.addWidget(self.applyButton, 0)
 
         self.mainBox = QVBoxLayout()
         self.mainBox.addWidget(self.listBox, 1)
@@ -524,7 +528,7 @@ class _StatusPage(NFixedPage):
             self.editName.setEnabled(True)
             self.colButton.setEnabled(True)
             self.shapeList.setEnabled(True)
-            self.saveButton.setEnabled(True)
+            self.applyButton.setEnabled(True)
 
         else:
             self._color = QColor(100, 100, 100)
@@ -535,7 +539,7 @@ class _StatusPage(NFixedPage):
             self.editName.setEnabled(False)
             self.colButton.setEnabled(False)
             self.shapeList.setEnabled(False)
-            self.saveButton.setEnabled(False)
+            self.applyButton.setEnabled(False)
         return
 
     ##
@@ -645,8 +649,8 @@ class _ReplacePage(NFixedPage):
         self.editValue.setEnabled(False)
         self.editValue.setMaxLength(80)
 
-        self.saveButton = QPushButton(self.tr("Save"), self)
-        self.saveButton.clicked.connect(self._saveEntry)
+        self.applyButton = QPushButton(self.tr("Apply"), self)
+        self.applyButton.clicked.connect(self._saveEntry)
 
         # Assemble
         self.listControls = QVBoxLayout()
@@ -657,7 +661,7 @@ class _ReplacePage(NFixedPage):
         self.editBox = QHBoxLayout()
         self.editBox.addWidget(self.editKey, 4)
         self.editBox.addWidget(self.editValue, 5)
-        self.editBox.addWidget(self.saveButton, 0)
+        self.editBox.addWidget(self.applyButton, 0)
 
         self.mainBox = QVBoxLayout()
         self.mainBox.addWidget(self.listBox)
