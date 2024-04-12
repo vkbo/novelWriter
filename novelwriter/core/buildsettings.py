@@ -178,7 +178,7 @@ class BuildSettings:
     def __init__(self) -> None:
         self._name = ""
         self._uuid = str(uuid.uuid4())
-        self._path = Path.home()
+        self._path = CONFIG.homePath()
         self._build = ""
         self._order = 0
         self._format = nwBuildFmt.ODT
@@ -220,7 +220,7 @@ class BuildSettings:
         """The last used build path."""
         if self._path.is_dir():
             return self._path
-        return Path.home()
+        return CONFIG.homePath()
 
     @property
     def lastBuildName(self) -> str:
@@ -297,7 +297,7 @@ class BuildSettings:
         if isinstance(path, Path) and path.is_dir():
             self._path = path
         else:
-            self._path = Path.home()
+            self._path = CONFIG.homePath()
         self._changed = True
         return
 
