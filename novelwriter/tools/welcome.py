@@ -560,7 +560,7 @@ class _NewProjectForm(QWidget):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
-        self._basePath = CONFIG.lastPath()
+        self._basePath = CONFIG.homePath()
         self._fillMode = self.FILL_BLANK
         self._copyPath = None
 
@@ -638,11 +638,11 @@ class _NewProjectForm(QWidget):
         self.chapterBox = NWrappedWidgetBox(
             self.tr("Add {0} chapter documents"), self.numChapters
         )
-        self.chapterBox.addStretch(0)
+        self.chapterBox.addStretch(1)
 
         self.numScenes = NSpinBox(self)
         self.numScenes.setRange(0, 200)
-        self.numScenes.setValue(3)
+        self.numScenes.setValue(0)
 
         self.sceneBox = NWrappedWidgetBox(
             self.tr("Add {0} scene documents (to each chapter)"), self.numScenes
@@ -742,7 +742,6 @@ class _NewProjectForm(QWidget):
         ):
             self._basePath = Path(projDir)
             self._updateProjPath()
-            CONFIG.setLastPath(self._basePath)
         return
 
     @pyqtSlot()
