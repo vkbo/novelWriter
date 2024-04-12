@@ -632,17 +632,17 @@ class _NewProjectForm(QWidget):
 
         self.numChapters = NSpinBox(self)
         self.numChapters.setRange(0, 200)
-        self.numChapters.setValue(5)
+        self.numChapters.setValue(0)
         self.numChapters.setToolTip(self.tr("Set to 0 to only add scenes"))
 
         self.chapterBox = NWrappedWidgetBox(
             self.tr("Add {0} chapter documents"), self.numChapters
         )
-        self.chapterBox.addStretch(1)
+        self.chapterBox.addStretch(0)
 
         self.numScenes = NSpinBox(self)
         self.numScenes.setRange(0, 200)
-        self.numScenes.setValue(5)
+        self.numScenes.setValue(3)
 
         self.sceneBox = NWrappedWidgetBox(
             self.tr("Add {0} scene documents (to each chapter)"), self.numScenes
