@@ -190,7 +190,7 @@ class GuiWordList(QDialog):
         ))
         ffilter = formatFileFilter(["*.txt", "*"])
         path, _ = QFileDialog.getOpenFileName(
-            self, self.tr("Import File"), str(Path.home()), filter=ffilter
+            self, self.tr("Import File"), str(CONFIG.homePath()), filter=ffilter
         )
         if path:
             try:
@@ -207,7 +207,7 @@ class GuiWordList(QDialog):
     def _exportWords(self) -> None:
         """Export words to file."""
         path, _ = QFileDialog.getSaveFileName(
-            self, self.tr("Export File"), str(Path.home())
+            self, self.tr("Export File"), str(CONFIG.homePath())
         )
         if path:
             try:

@@ -29,7 +29,7 @@ from novelwriter.text.counting import bodyTextCounter, preProcessText, standardC
 def testTextCounting_preProcessText():
     """Test the text preprocessor for counters."""
     # Not Text
-    assert preProcessText(None) == []
+    assert preProcessText(None) == []  # type: ignore
 
     # No Text
     assert preProcessText("") == []
@@ -81,6 +81,10 @@ def testTextCounting_standardCounter():
     assert standardCounter(None) == (0, 0, 0)  # type: ignore
     assert standardCounter(1234) == (0, 0, 0)  # type: ignore
 
+    # Test Corner Cases, Bug #1816
+    assert standardCounter("> ") == (0, 0, 0)
+    assert standardCounter(" <") == (0, 0, 0)
+
     # General Text
     cC, wC, pC = standardCounter((
         "#! Title\n\n"
@@ -88,7 +92,8 @@ def testTextCounting_standardCounter():
         "# Heading One\n"
         "## Heading Two\n"
         "### Heading Three\n"
-        "#### Heading Four\n\n"
+        "###! Heading Four\n"
+        "#### Heading Five\n\n"
         "@tag: value\n\n"
         "% A comment that should not be counted.\n\n"
         "The first paragraph.\n\n"
@@ -96,8 +101,8 @@ def testTextCounting_standardCounter():
         "The third paragraph.\n\n"
         "Dashes\u2013and even longer\u2014dashes."
     ))
-    assert cC == 151
-    assert wC == 24
+    assert cC == 163
+    assert wC == 26
     assert pC == 4
 
     # Text Alignment
@@ -182,7 +187,7 @@ def testTextCounting_standardCounter():
 def testTextCounting_bodyTextCounter():
     """Test the body text counter."""
     # Not Text
-    assert bodyTextCounter(None) == (0, 0, 0)
+    assert bodyTextCounter(None) == (0, 0, 0)  # type: ignore
 
     # General Text
     wC, cC, sC = bodyTextCounter((
