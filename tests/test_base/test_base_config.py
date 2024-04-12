@@ -200,6 +200,9 @@ def testBaseConfig_Methods(fncPath):
     tstConf = Config()
     tstConf.initConfig(confPath=fncPath, dataPath=fncPath)
 
+    # Home Path
+    assert tstConf.homePath() == Path.home().absolute()
+
     # Data Path
     assert tstConf.dataPath() == fncPath
     assert tstConf.dataPath("stuff") == fncPath / "stuff"

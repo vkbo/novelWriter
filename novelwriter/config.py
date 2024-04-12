@@ -390,6 +390,10 @@ class Config:
         """Un-scale fixed gui sizes by the screen scale factor."""
         return int(value/self.guiScale)
 
+    def homePath(self) -> Path:
+        """The user's home folder."""
+        return self._homePath
+
     def dataPath(self, target: str | None = None) -> Path:
         """Return a path in the data folder."""
         if isinstance(target, str):
