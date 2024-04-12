@@ -141,6 +141,12 @@ def testManuscript_Builds(qtbot: QtBot, nwGUI: GuiMain, projPath: Path):
     assert build.name == "Test Build"
     assert manus.buildList.count() == 1
 
+    # Changing language should also update project language
+    manus.buildLanguage.setCurrentData("de_DE", "de_DE")
+    assert SHARED.project.data.language == "de_DE"
+    manus.buildLanguage.setCurrentData("en_GB", "en_GB")
+    assert SHARED.project.data.language == "en_GB"
+
     # Close the dialog should also close the child dialogs
     manus.btnClose.click()
     if isinstance(bSettings, GuiBuildSettings):

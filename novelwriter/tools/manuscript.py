@@ -48,7 +48,7 @@ from novelwriter.core.tohtml import ToHtml
 from novelwriter.core.tokenizer import HeadingFormatter
 from novelwriter.error import logException
 from novelwriter.extensions.circularprogress import NProgressCircle
-from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
+from novelwriter.extensions.modified import NComboBox, NIconToggleButton, NIconToolButton
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
@@ -91,6 +91,8 @@ class GuiManuscript(QDialog):
         self.setMinimumHeight(CONFIG.pxInt(500))
 
         iSz = SHARED.theme.baseIconSize
+        sPx = CONFIG.pxInt(12)
+        bPx = CONFIG.pxInt(4)
         wWin = CONFIG.pxInt(900)
         hWin = CONFIG.pxInt(600)
 
@@ -167,6 +169,22 @@ class GuiManuscript(QDialog):
             CONFIG.pxInt(pOptions.getInt("GuiManuscript", "detailsHeight", 50)),
         ])
 
+        # Build Language
+        # ==============
+
+        projLang = SHARED.project.data.language or CONFIG.guiLocale
+        self.buildLanguage = NComboBox(self)
+        # self.projLang.setMinimumWidth(xW)
+        for tag, language in CONFIG.listLanguages(CONFIG.LANG_PROJ):
+            self.buildLanguage.addItem(language, tag)
+        self.buildLanguage.setCurrentData(projLang, projLang)
+        self.buildLanguage.currentIndexChanged.connect(self._updateBuildLanguage)
+
+        self.languageBox = QHBoxLayout()
+        self.languageBox.addWidget(QLabel(self.tr("Build Language"), self), 0)
+        self.languageBox.addWidget(self.buildLanguage, 1)
+        self.languageBox.setContentsMargins(0, 0, 0, 0)
+
         # Process Controls
         # ================
 
@@ -187,6 +205,7 @@ class GuiManuscript(QDialog):
         self.processBox.addWidget(self.btnPrint,   0, 1)
         self.processBox.addWidget(self.btnBuild,   1, 0)
         self.processBox.addWidget(self.btnClose,   1, 1)
+        self.processBox.setSpacing(bPx)
 
         # Assemble GUI
         # ============
@@ -205,8 +224,10 @@ class GuiManuscript(QDialog):
         self.controlBox = QVBoxLayout()
         self.controlBox.addLayout(self.listToolBox, 0)
         self.controlBox.addWidget(self.buildSplit, 1)
+        self.controlBox.addLayout(self.languageBox, 0)
         self.controlBox.addLayout(self.processBox, 0)
         self.controlBox.setContentsMargins(0, 0, 0, 0)
+        self.controlBox.setSpacing(sPx)
 
         self.optsWidget = QWidget(self)
         self.optsWidget.setLayout(self.controlBox)
@@ -303,28 +324,32 @@ class GuiManuscript(QDialog):
     @pyqtSlot()
     def _editSelectedBuild(self) -> None:
         """Edit the currently selected build settings entry."""
-        build = self._getSelectedBuild()
-        if build is not None:
+        if build := self._getSelectedBuild():
             self._openSettingsDialog(build)
         return
 
     @pyqtSlot("QListWidgetItem*", "QListWidgetItem*")
     def _updateBuildDetails(self, current: QListWidgetItem, previous: QListWidgetItem) -> None:
         """Process change of build selection to update the details."""
-        if isinstance(current, QListWidgetItem):
-            build = self._builds.getBuild(current.data(self.D_KEY))
-            if build is not None:
-                self.buildDetails.updateInfo(build)
+        if current and (build := self._builds.getBuild(current.data(self.D_KEY))):
+            self.buildDetails.updateInfo(build)
         return
 
     @pyqtSlot()
     def _deleteSelectedBuild(self) -> None:
         """Delete the currently selected build settings entry."""
-        build = self._getSelectedBuild()
-        if build is not None:
+        if build := self._getSelectedBuild():
             if SHARED.question(self.tr("Delete build '{0}'?".format(build.name))):
                 self._builds.removeBuild(build.buildID)
                 self._updateBuildsList()
+        return
+
+    @pyqtSlot(int)
+    def _updateBuildLanguage(self, index: int) -> None:
+        """Update the build language on user selection."""
+        SHARED.project.setProjectLang(self.buildLanguage.currentData())
+        if build := self._getSelectedBuild():
+            self.buildDetails.updateInfo(build)
         return
 
     @pyqtSlot(BuildSettings)
@@ -332,8 +357,7 @@ class GuiManuscript(QDialog):
         """Process new build settings from the settings dialog."""
         self._builds.setBuild(build)
         self._updateBuildItem(build)
-        current = self.buildList.currentItem()
-        if isinstance(current, QListWidgetItem) and current.data(self.D_KEY) == build.buildID:
+        if (current := self.buildList.currentItem()) and current.data(self.D_KEY) == build.buildID:
             self._updateBuildDetails(current, current)
         return
 
@@ -342,8 +366,7 @@ class GuiManuscript(QDialog):
         """Run the document builder on the current build settings for
         the preview widget.
         """
-        build = self._getSelectedBuild()
-        if build is None:
+        if not (build := self._getSelectedBuild()):
             return
 
         docBuild = NWBuildDocument(SHARED.project, build)
@@ -383,8 +406,7 @@ class GuiManuscript(QDialog):
     @pyqtSlot()
     def _buildManuscript(self) -> None:
         """Open the build dialog and build the manuscript."""
-        build = self._getSelectedBuild()
-        if isinstance(build, BuildSettings):
+        if build := self._getSelectedBuild():
             dlgBuild = GuiManuscriptBuild(self, build)
             dlgBuild.exec()
 
