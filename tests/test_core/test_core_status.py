@@ -24,23 +24,49 @@ import pytest
 
 from tools import C
 
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QColor, QIcon
 
-from novelwriter.core.status import NWStatus
+from novelwriter.core.status import NWStatus, StatusEntry, _ShapeCache
+from novelwriter.enum import nwStatusShape
 
 statusKeys = [C.sNew, C.sNote, C.sDraft, C.sFinished]
 importKeys = [C.iNew, C.iMinor, C.iMajor, C.iMain]
 
 
 @pytest.mark.core
-def testCoreStatus_Internal(mockRnd):
-    """Test all the internal functions of the NWStatus class.
-    """
+def testCoreStatus_StatusEntry():
+    """Test the StatusEntry class."""
+    color = QColor(255, 0, 0)
+    icon = NWStatus.createIcon(24, color, nwStatusShape.CIRCLE)
+    entry = StatusEntry("Test", color, nwStatusShape.CIRCLE, icon, 42)
+
+    # Check values
+    assert entry.name == "Test"
+    assert entry.color is color
+    assert entry.shape == nwStatusShape.CIRCLE
+    assert entry.icon is icon
+    assert entry.count == 42
+
+    # Make a copy
+    other = StatusEntry.duplicate(entry)
+    assert other is not entry
+
+    # Check copy is not the same
+    assert other.name == "Test"
+    assert other.color is not color  # Not the same object
+    assert other.color == color      # But same colours
+    assert other.shape == nwStatusShape.CIRCLE
+    assert other.icon is not icon    # Not the same icon, but a copy
+    assert other.count == 42
+
+# END Test testCoreStatus_StatusEntry
+
+
+@pytest.mark.core
+def testCoreStatus_Internal(mockGUI, mockRnd):
+    """Test all the internal functions of the NWStatus class."""
     nStatus = NWStatus(NWStatus.STATUS)
     nImport = NWStatus(NWStatus.IMPORT)
-
-    with pytest.raises(Exception):
-        NWStatus(999)
 
     # Generate Key
     # ============
@@ -49,14 +75,14 @@ def testCoreStatus_Internal(mockRnd):
     assert nStatus._newKey() == statusKeys[1]
 
     # Key collision, should move to key 3
-    nStatus.write(statusKeys[2], "Crash", (0, 0, 0))
+    nStatus.add(statusKeys[2], "Crash", (0, 0, 0), "SQUARE", 0)
     assert nStatus._newKey() == statusKeys[3]
 
     assert nImport._newKey() == importKeys[0]
     assert nImport._newKey() == importKeys[1]
 
     # Key collision, should move to key 3
-    nImport.write(importKeys[2], "Crash", (0, 0, 0))
+    nImport.add(importKeys[2], "Crash", (0, 0, 0), "SQUARE", 0)
     assert nImport._newKey() == importKeys[3]
 
     # Check Key
@@ -82,81 +108,94 @@ def testCoreStatus_Internal(mockRnd):
     assert nImport._isKey("i12345F") is False   # Not a lower case hex value
     assert nImport._isKey("i12345f") is True    # Valid hex value
 
+    assert nStatus._checkKey(None) == "s000008"       # Creates next key
+    assert nStatus._checkKey("s654321") == "s654321"  # Status key accepted
+    assert nStatus._checkKey("i123456") == "s000009"  # Import key not accepted
+
+    assert nImport._checkKey(None) == "i00000a"       # Creates next key
+    assert nImport._checkKey("s654321") == "i00000b"  # Status key not accepted
+    assert nImport._checkKey("i123456") == "i123456"  # Import key accepted
+
 # END Test testCoreStatus_Internal
 
 
 @pytest.mark.core
-def testCoreStatus_Iterator(mockRnd):
-    """Test the iterator functions of the NWStatus class.
-    """
+def testCoreStatus_Iterator(mockGUI, mockRnd):
+    """Test the iterator functions of the NWStatus class."""
     nStatus = NWStatus(NWStatus.STATUS)
-
-    nStatus.write(None, "New",      (100, 100, 100))
-    nStatus.write(None, "Note",     (200, 50,  0))
-    nStatus.write(None, "Draft",    (200, 150, 0))
-    nStatus.write(None, "Finished", (50,  200, 0))
+    nStatus.add(None, "New",      (100, 100, 100), "SQUARE", 0)
+    nStatus.add(None, "Note",     (200, 50,  0),   "CIRCLE", 1)
+    nStatus.add(None, "Draft",    (200, 150, 0),   "SQUARE", 2)
+    nStatus.add(None, "Finished", (50,  200, 0),   "CIRCLE", 3)
 
     # Direct access
     entry = nStatus[statusKeys[0]]
-    assert entry["cols"] == (100, 100, 100)
-    assert entry["name"] == "New"
-    assert entry["count"] == 0
-    assert isinstance(entry["icon"], QIcon)
+    assert entry.color == QColor(100, 100, 100)
+    assert entry.name == "New"
+    assert entry.count == 0
+    assert isinstance(entry.icon, QIcon)
 
-    # Iterate
-    entries = list(nStatus)
-    assert len(entries) == 4
+    # Length
+    assert len(nStatus._store) == 4
     assert len(nStatus) == 4
 
-    # Keys
-    assert list(nStatus.keys()) == statusKeys
+    # Content : Keys
+    assert [k for k, _ in nStatus.iterItems()] == [
+        "s000000", "s000001", "s000002", "s000003"
+    ]
 
-    # Items
-    for index, (key, entry) in enumerate(nStatus.items()):
-        assert key == statusKeys[index]
-        assert "cols" in entry
-        assert "name" in entry
-        assert "count" in entry
-        assert "icon" in entry
+    # Content : Names
+    assert [e.name for _, e in nStatus.iterItems()] == [
+        "New", "Note", "Draft", "Finished"
+    ]
 
-    # Valuse
-    for entry in nStatus.values():
-        assert "cols" in entry
-        assert "name" in entry
-        assert "count" in entry
-        assert "icon" in entry
+    # Content : Colours
+    assert [e.color for _, e in nStatus.iterItems()] == [
+        QColor(100, 100, 100), QColor(200, 50,  0), QColor(200, 150, 0), QColor(50,  200, 0)
+    ]
+
+    # Content : Shape
+    assert [e.shape for _, e in nStatus.iterItems()] == [
+        nwStatusShape.SQUARE, nwStatusShape.CIRCLE, nwStatusShape.SQUARE, nwStatusShape.CIRCLE
+    ]
+
+    # Content : Count
+    assert [e.count for _, e in nStatus.iterItems()] == [0, 1, 2, 3]
 
 # END Test testCoreStatus_Iterator
 
 
 @pytest.mark.core
-def testCoreStatus_Entries(mockRnd):
-    """Test all the simple setters for the NWStatus class.
-    """
+def testCoreStatus_Entries(mockGUI, mockRnd):
+    """Test all the simple setters for the NWStatus class."""
     nStatus = NWStatus(NWStatus.STATUS)
 
-    # Write
-    # =====
+    # Add
+    # ===
 
-    # Have a key
-    nStatus.write(statusKeys[0], "Entry 1", (200, 100, 50))
-    assert nStatus[statusKeys[0]]["name"] == "Entry 1"
-    assert nStatus[statusKeys[0]]["cols"] == (200, 100, 50)
+    # Has a key
+    nStatus.add(statusKeys[0], "Entry 1", (200, 100, 50), "SQUARE", 0)
+    assert nStatus[statusKeys[0]].name == "Entry 1"
+    assert nStatus[statusKeys[0]].color == QColor(200, 100, 50)
+    assert nStatus[statusKeys[0]].shape == nwStatusShape.SQUARE
 
-    # Don't have a key
-    nStatus.write(None, "Entry 2", (210, 110, 60))
-    assert nStatus[statusKeys[1]]["name"] == "Entry 2"
-    assert nStatus[statusKeys[1]]["cols"] == (210, 110, 60)
+    # Doesn't have a key
+    nStatus.add(None, "Entry 2", (210, 110, 60), "SQUARE", 0)
+    assert nStatus[statusKeys[1]].name == "Entry 2"
+    assert nStatus[statusKeys[1]].color == QColor(210, 110, 60)
+    assert nStatus[statusKeys[1]].shape == nwStatusShape.SQUARE
 
-    # Wrong colour spec
-    nStatus.write(None, "Entry 3", "what?")
-    assert nStatus[statusKeys[2]]["name"] == "Entry 3"
-    assert nStatus[statusKeys[2]]["cols"] == (100, 100, 100)
+    # Wrong colour spec, unknown shape
+    nStatus.add(None, "Entry 3", "what?", "", 0)  # type: ignore
+    assert nStatus[statusKeys[2]].name == "Entry 3"
+    assert nStatus[statusKeys[2]].color == QColor(100, 100, 100)
+    assert nStatus[statusKeys[2]].shape == nwStatusShape.SQUARE
 
     # Wrong colour count
-    nStatus.write(None, "Entry 4", (10, 20))
-    assert nStatus[statusKeys[3]]["name"] == "Entry 4"
-    assert nStatus[statusKeys[3]]["cols"] == (100, 100, 100)
+    nStatus.add(None, "Entry 4", (10, 20), "CIRCLE", 0)  # type: ignore
+    assert nStatus[statusKeys[3]].name == "Entry 4"
+    assert nStatus[statusKeys[3]].color == QColor(100, 100, 100)
+    assert nStatus[statusKeys[3]].shape == nwStatusShape.CIRCLE
 
     # Check
     # =====
@@ -171,29 +210,38 @@ def testCoreStatus_Entries(mockRnd):
     # Name Access
     # ===========
 
-    assert nStatus.name(statusKeys[0]) == "Entry 1"
-    assert nStatus.name(statusKeys[1]) == "Entry 2"
-    assert nStatus.name(statusKeys[2]) == "Entry 3"
-    assert nStatus.name(statusKeys[3]) == "Entry 4"
-    assert nStatus.name("blablabla") == "Entry 1"
+    assert nStatus[statusKeys[0]].name == "Entry 1"
+    assert nStatus[statusKeys[1]].name == "Entry 2"
+    assert nStatus[statusKeys[2]].name == "Entry 3"
+    assert nStatus[statusKeys[3]].name == "Entry 4"
+    assert nStatus["blablabla"].name == "Entry 1"
 
     # Colour Access
     # =============
 
-    assert nStatus.cols(statusKeys[0]) == (200, 100, 50)
-    assert nStatus.cols(statusKeys[1]) == (210, 110, 60)
-    assert nStatus.cols(statusKeys[2]) == (100, 100, 100)
-    assert nStatus.cols(statusKeys[3]) == (100, 100, 100)
-    assert nStatus.cols("blablabla") == (200, 100, 50)
+    assert nStatus[statusKeys[0]].color == QColor(200, 100, 50)
+    assert nStatus[statusKeys[1]].color == QColor(210, 110, 60)
+    assert nStatus[statusKeys[2]].color == QColor(100, 100, 100)
+    assert nStatus[statusKeys[3]].color == QColor(100, 100, 100)
+    assert nStatus["blablabla"].color == QColor(200, 100, 50)
 
     # Icon Access
     # ===========
 
-    assert isinstance(nStatus.icon(statusKeys[0]), QIcon)
-    assert isinstance(nStatus.icon(statusKeys[1]), QIcon)
-    assert isinstance(nStatus.icon(statusKeys[2]), QIcon)
-    assert isinstance(nStatus.icon(statusKeys[3]), QIcon)
-    assert isinstance(nStatus.icon("blablabla"), QIcon)
+    assert isinstance(nStatus[statusKeys[0]].icon, QIcon)
+    assert isinstance(nStatus[statusKeys[1]].icon, QIcon)
+    assert isinstance(nStatus[statusKeys[2]].icon, QIcon)
+    assert isinstance(nStatus[statusKeys[3]].icon, QIcon)
+    assert isinstance(nStatus["blablabla"].icon, QIcon)
+
+    # Shape Access
+    # ============
+
+    assert nStatus[statusKeys[0]].shape == nwStatusShape.SQUARE
+    assert nStatus[statusKeys[1]].shape == nwStatusShape.SQUARE
+    assert nStatus[statusKeys[2]].shape == nwStatusShape.SQUARE
+    assert nStatus[statusKeys[3]].shape == nwStatusShape.CIRCLE
+    assert nStatus["blablabla"].shape == nwStatusShape.SQUARE
 
     # Increment and Count Access
     # ==========================
@@ -203,50 +251,32 @@ def testCoreStatus_Entries(mockRnd):
         for _ in range(n):
             nStatus.increment(statusKeys[i])
 
-    assert nStatus.count(statusKeys[0]) == countTo[0]
-    assert nStatus.count(statusKeys[1]) == countTo[1]
-    assert nStatus.count(statusKeys[2]) == countTo[2]
-    assert nStatus.count(statusKeys[3]) == countTo[3]
-    assert nStatus.count("blablabla") == countTo[0]
+    assert nStatus[statusKeys[0]].count == countTo[0]
+    assert nStatus[statusKeys[1]].count == countTo[1]
+    assert nStatus[statusKeys[2]].count == countTo[2]
+    assert nStatus[statusKeys[3]].count == countTo[3]
+    assert nStatus["blablabla"].count == countTo[0]
 
     nStatus.resetCounts()
 
-    assert nStatus.count(statusKeys[0]) == 0
-    assert nStatus.count(statusKeys[1]) == 0
-    assert nStatus.count(statusKeys[2]) == 0
-    assert nStatus.count(statusKeys[3]) == 0
+    assert nStatus[statusKeys[0]].count == 0
+    assert nStatus[statusKeys[1]].count == 0
+    assert nStatus[statusKeys[2]].count == 0
+    assert nStatus[statusKeys[3]].count == 0
 
-    # Reorder
-    # =======
+    # Update
+    # ======
 
-    cOrder = list(nStatus.keys())
-    assert cOrder == statusKeys
+    assert list(nStatus._store.keys()) == statusKeys
 
-    # Wrong length
-    assert nStatus.reorder([]) is False
+    # Reverse
+    order: list[tuple[str | None, StatusEntry]] = list(nStatus.iterItems())
+    nStatus.update(list(reversed(order)))
+    assert list(nStatus._store.keys()) == list(reversed(statusKeys))
 
-    # No change
-    assert nStatus.reorder(cOrder) is False
-
-    # Actual reaorder
-    nOrder = [
-        statusKeys[0],
-        statusKeys[2],
-        statusKeys[1],
-        statusKeys[3],
-    ]
-    assert nStatus.reorder(nOrder) is True
-    assert list(nStatus.keys()) == nOrder
-
-    # Add an unknown key
-    wOrder = nOrder.copy()
-    wOrder[3] = nStatus._newKey()
-    assert nStatus.reorder(wOrder) is False
-    assert list(nStatus.keys()) == nOrder
-
-    # Put it back
-    assert nStatus.reorder(cOrder) is True
-    assert list(nStatus.keys()) == cOrder
+    # Restore
+    nStatus.update(order)
+    assert list(nStatus._store.keys()) == statusKeys
 
     # Default
     # =======
@@ -255,56 +285,41 @@ def testCoreStatus_Entries(mockRnd):
     nStatus._default = None
 
     assert nStatus.check("Entry 5") == ""
-    assert nStatus.name("blablabla") == ""
-    assert nStatus.cols("blablabla") == (100, 100, 100)
-    assert nStatus.count("blablabla") == 0
-    assert isinstance(nStatus.icon("blablabla"), QIcon)
+    assert nStatus["blablabla"].name == ""
+    assert nStatus["blablabla"].color == QColor(0, 0, 0)
+    assert nStatus["blablabla"].shape == nwStatusShape.SQUARE
+    assert nStatus["blablabla"].icon.isNull()
+    assert nStatus["blablabla"].count == 0
 
     nStatus._default = default
 
     # Remove
     # ======
+    # This uses update with deleted items
 
-    # Non-existing entry
-    assert nStatus.remove("blablabla") is False
+    order: list[tuple[str | None, StatusEntry]] = list(nStatus.iterItems())
 
-    # Non-zero entry
-    nStatus.increment(statusKeys[3])
-    assert nStatus.remove(statusKeys[3]) is False
+    # Remove Entry 0
+    nStatus.update([order[1], order[3], order[2]])
+    assert list(nStatus._store.keys()) == [statusKeys[1], statusKeys[3], statusKeys[2]]
+    assert nStatus._default == statusKeys[1]
 
-    # Delete last entry
-    nStatus.resetCounts()
-    lastName = nStatus.name(statusKeys[3])
-    assert lastName == "Entry 4"
-    assert nStatus.remove(statusKeys[3]) is True
-    assert nStatus.check(statusKeys[3]) == nStatus._default
-    assert nStatus.check(lastName) == nStatus._default
-
-    # Delete default entry, Entry 2 is new default
-    firstName = nStatus.name(nStatus._default)
-    assert firstName == "Entry 1"
-    assert nStatus.remove(nStatus._default) is True
-    assert nStatus.name(firstName) == "Entry 2"
-
-    # Remove remaining entries
-    assert nStatus.remove(statusKeys[1]) is True
-    assert nStatus.remove(statusKeys[2]) is True
-
-    assert len(nStatus) == 0
-    assert nStatus._default is None
+    # Remove Entry 1
+    nStatus.update([order[3], order[2]])
+    assert list(nStatus._store.keys()) == [statusKeys[3], statusKeys[2]]
+    assert nStatus._default == statusKeys[3]
 
 # END Test testCoreStatus_Entries
 
 
 @pytest.mark.core
-def testCoreStatus_PackUnpack(mockRnd):
-    """Test all the pack/unpack of the NWStatus class.
-    """
+def testCoreStatus_Pack(mockGUI, mockRnd):
+    """Test data packing of the NWStatus class."""
     nStatus = NWStatus(NWStatus.STATUS)
-    nStatus.write(None, "New",      (100, 100, 100))
-    nStatus.write(None, "Note",     (200, 50,  0))
-    nStatus.write(None, "Draft",    (200, 150, 0))
-    nStatus.write(None, "Finished", (50,  200, 0))
+    nStatus.add(None, "New",      (100, 100, 100), "SQUARE", 0)
+    nStatus.add(None, "Note",     (200, 50,  0),   "CIRCLE", 0)
+    nStatus.add(None, "Draft",    (200, 150, 0),   "SQUARE", 0)
+    nStatus.add(None, "Finished", (50,  200, 0),   "SQUARE", 0)
 
     countTo = [3, 5, 7, 9]
     for i, n in enumerate(countTo):
@@ -318,52 +333,85 @@ def testCoreStatus_PackUnpack(mockRnd):
             "count": "3",
             "red": "100",
             "green": "100",
-            "blue": "100"
+            "blue": "100",
+            "shape": "SQUARE",
         }),
         ("Note", {
             "key": statusKeys[1],
             "count": "5",
             "red": "200",
             "green": "50",
-            "blue": "0"
+            "blue": "0",
+            "shape": "CIRCLE",
         }),
         ("Draft", {
             "key": statusKeys[2],
             "count": "7",
             "red": "200",
             "green": "150",
-            "blue": "0"
+            "blue": "0",
+            "shape": "SQUARE",
         }),
         ("Finished", {
             "key": statusKeys[3],
             "count": "9",
             "red": "50",
             "green": "200",
-            "blue": "0"
+            "blue": "0",
+            "shape": "SQUARE",
         }),
     ]
 
-    # Unpack
-    nStatus = NWStatus(NWStatus.STATUS)
-    nStatus.unpack({
-        statusKeys[0]: {"label": "New0", "colour": (100, 100, 100), "count": countTo[0]},
-        statusKeys[1]: {"label": "New1", "colour": (150, 150, 150), "count": countTo[1]},
-        statusKeys[2]: {"label": "New2", "colour": (200, 200, 200), "count": countTo[2]},
-        statusKeys[3]: {"label": "New3", "colour": (250, 250, 250), "count": countTo[3]},
-    })
-    assert len(nStatus._store) == 4
-    assert list(nStatus._store.keys()) == statusKeys
-    assert nStatus._store[statusKeys[0]]["name"] == "New0"
-    assert nStatus._store[statusKeys[1]]["name"] == "New1"
-    assert nStatus._store[statusKeys[2]]["name"] == "New2"
-    assert nStatus._store[statusKeys[3]]["name"] == "New3"
-    assert nStatus._store[statusKeys[0]]["cols"] == (100, 100, 100)
-    assert nStatus._store[statusKeys[1]]["cols"] == (150, 150, 150)
-    assert nStatus._store[statusKeys[2]]["cols"] == (200, 200, 200)
-    assert nStatus._store[statusKeys[3]]["cols"] == (250, 250, 250)
-    assert nStatus._store[statusKeys[0]]["count"] == countTo[0]
-    assert nStatus._store[statusKeys[1]]["count"] == countTo[1]
-    assert nStatus._store[statusKeys[2]]["count"] == countTo[2]
-    assert nStatus._store[statusKeys[3]]["count"] == countTo[3]
+# END Test testCoreStatus_Pack
 
-# END Test testCoreStatus_PackUnpack
+
+@pytest.mark.core
+def testCoreStatus_ShapeCache():
+    """Test the _ShapeCache class."""
+    shapes = _ShapeCache()
+
+    # Generate all shapes
+    square    = shapes.getShape(nwStatusShape.SQUARE)
+    circleQ   = shapes.getShape(nwStatusShape.CIRCLE_Q)
+    circleH   = shapes.getShape(nwStatusShape.CIRCLE_H)
+    circleT   = shapes.getShape(nwStatusShape.CIRCLE_T)
+    circle    = shapes.getShape(nwStatusShape.CIRCLE)
+    triangle  = shapes.getShape(nwStatusShape.TRIANGLE)
+    nabla     = shapes.getShape(nwStatusShape.NABLA)
+    diamond   = shapes.getShape(nwStatusShape.DIAMOND)
+    pentagon  = shapes.getShape(nwStatusShape.PENTAGON)
+    hexagon   = shapes.getShape(nwStatusShape.HEXAGON)
+    star      = shapes.getShape(nwStatusShape.STAR)
+    pacman    = shapes.getShape(nwStatusShape.PACMAN)
+    bars1     = shapes.getShape(nwStatusShape.BARS_1)
+    bars2     = shapes.getShape(nwStatusShape.BARS_2)
+    bars3     = shapes.getShape(nwStatusShape.BARS_3)
+    bars4     = shapes.getShape(nwStatusShape.BARS_4)
+    block1    = shapes.getShape(nwStatusShape.BLOCK_1)
+    block2    = shapes.getShape(nwStatusShape.BLOCK_2)
+    block3    = shapes.getShape(nwStatusShape.BLOCK_3)
+    block4    = shapes.getShape(nwStatusShape.BLOCK_4)
+
+    # Request again should return from cache
+    assert shapes.getShape(nwStatusShape.SQUARE) is square
+    assert shapes.getShape(nwStatusShape.CIRCLE_Q) is circleQ
+    assert shapes.getShape(nwStatusShape.CIRCLE_H) is circleH
+    assert shapes.getShape(nwStatusShape.CIRCLE_T) is circleT
+    assert shapes.getShape(nwStatusShape.CIRCLE) is circle
+    assert shapes.getShape(nwStatusShape.TRIANGLE) is triangle
+    assert shapes.getShape(nwStatusShape.NABLA) is nabla
+    assert shapes.getShape(nwStatusShape.DIAMOND) is diamond
+    assert shapes.getShape(nwStatusShape.PENTAGON) is pentagon
+    assert shapes.getShape(nwStatusShape.HEXAGON) is hexagon
+    assert shapes.getShape(nwStatusShape.STAR) is star
+    assert shapes.getShape(nwStatusShape.PACMAN) is pacman
+    assert shapes.getShape(nwStatusShape.BARS_1) is bars1
+    assert shapes.getShape(nwStatusShape.BARS_2) is bars2
+    assert shapes.getShape(nwStatusShape.BARS_3) is bars3
+    assert shapes.getShape(nwStatusShape.BARS_4) is bars4
+    assert shapes.getShape(nwStatusShape.BLOCK_1) is block1
+    assert shapes.getShape(nwStatusShape.BLOCK_2) is block2
+    assert shapes.getShape(nwStatusShape.BLOCK_3) is block3
+    assert shapes.getShape(nwStatusShape.BLOCK_4) is block4
+
+# END Test testCoreStatus_ShapeCache

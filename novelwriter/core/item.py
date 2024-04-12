@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import logging
 
-from typing import TYPE_CHECKING, Any, Literal, overload
+from typing import TYPE_CHECKING, Any
 
 from PyQt5.QtGui import QIcon
 
@@ -308,25 +308,15 @@ class NWItem:
 
         return trConst(nwLabels.ITEM_DESCRIPTION.get(descKey, ""))
 
-    @overload  # pragma: no cover
-    def getImportStatus(self, incIcon: Literal[True] = True) -> tuple[str, QIcon]:
-        pass
-
-    @overload  # pragma: no cover
-    def getImportStatus(self, incIcon: Literal[False]) -> tuple[str, None]:
-        pass
-
-    def getImportStatus(self, incIcon=True):
+    def getImportStatus(self) -> tuple[str, QIcon]:
         """Return the relevant importance or status label and icon for
         the current item based on its class.
         """
         if self.isNovelLike():
-            stName = self._project.data.itemStatus.name(self._status)
-            stIcon = self._project.data.itemStatus.icon(self._status) if incIcon else None
+            entry = self._project.data.itemStatus[self._status]
         else:
-            stName = self._project.data.itemImport.name(self._import)
-            stIcon = self._project.data.itemImport.icon(self._import) if incIcon else None
-        return stName, stIcon
+            entry = self._project.data.itemImport[self._import]
+        return entry.name, entry.icon
 
     ##
     #  Checker Methods

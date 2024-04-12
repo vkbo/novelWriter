@@ -25,10 +25,13 @@ from __future__ import annotations
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QGridLayout, QLabel, QScrollArea, QSizePolicy, QWidget
+from PyQt5.QtWidgets import QGridLayout, QLabel, QScrollArea, QWidget
 
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignLeft, QtAlignRight, QtAlignRightMiddle
+from novelwriter.types import (
+    QtAlignLeft, QtAlignRight, QtAlignRightMiddle, QtSizeMinimum,
+    QtSizeMinimumExpanding
+)
 
 
 class NSwitchBox(QScrollArea):
@@ -59,7 +62,7 @@ class NSwitchBox(QScrollArea):
         self._content.setColumnStretch(1, 1)
 
         self._widget = QWidget(self)
-        self._widget.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Minimum)
+        self._widget.setSizePolicy(QtSizeMinimumExpanding, QtSizeMinimum)
         self._widget.setLayout(self._content)
 
         self.setWidgetResizable(True)

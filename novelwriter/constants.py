@@ -25,7 +25,7 @@ from __future__ import annotations
 
 from PyQt5.QtCore import QCoreApplication, QT_TRANSLATE_NOOP
 
-from novelwriter.enum import nwBuildFmt, nwItemClass, nwItemLayout, nwOutline
+from novelwriter.enum import nwBuildFmt, nwItemClass, nwItemLayout, nwOutline, nwStatusShape
 
 
 def trConst(text: str) -> str:
@@ -267,6 +267,34 @@ class nwLabels:
         nwBuildFmt.EXT_MD: ".md",
         nwBuildFmt.J_HTML: ".json",
         nwBuildFmt.J_NWD:  ".json",
+    }
+    SHAPES_PLAIN = {
+        nwStatusShape.SQUARE:   QT_TRANSLATE_NOOP("Constant", "Square"),
+        nwStatusShape.TRIANGLE: QT_TRANSLATE_NOOP("Constant", "Triangle"),
+        nwStatusShape.NABLA:    QT_TRANSLATE_NOOP("Constant", "Nabla"),
+        nwStatusShape.DIAMOND:  QT_TRANSLATE_NOOP("Constant", "Diamond"),
+        nwStatusShape.PENTAGON: QT_TRANSLATE_NOOP("Constant", "Pentagon"),
+        nwStatusShape.HEXAGON:  QT_TRANSLATE_NOOP("Constant", "Hexagon"),
+        nwStatusShape.STAR:     QT_TRANSLATE_NOOP("Constant", "Star"),
+        nwStatusShape.PACMAN:   QT_TRANSLATE_NOOP("Constant", "Pacman"),
+    }
+    SHAPES_CIRCLE = {
+        nwStatusShape.CIRCLE_Q: QT_TRANSLATE_NOOP("Constant", "1/4 Circle"),
+        nwStatusShape.CIRCLE_H: QT_TRANSLATE_NOOP("Constant", "Half Circle"),
+        nwStatusShape.CIRCLE_T: QT_TRANSLATE_NOOP("Constant", "3/4 Circle"),
+        nwStatusShape.CIRCLE:   QT_TRANSLATE_NOOP("Constant", "Full Circle"),
+    }
+    SHAPES_BARS = {
+        nwStatusShape.BARS_1: QT_TRANSLATE_NOOP("Constant", "1 Bar"),
+        nwStatusShape.BARS_2: QT_TRANSLATE_NOOP("Constant", "2 Bars"),
+        nwStatusShape.BARS_3: QT_TRANSLATE_NOOP("Constant", "3 Bars"),
+        nwStatusShape.BARS_4: QT_TRANSLATE_NOOP("Constant", "4 Bars"),
+    }
+    SHAPES_BLOCKS = {
+        nwStatusShape.BLOCK_1: QT_TRANSLATE_NOOP("Constant", "1 Block"),
+        nwStatusShape.BLOCK_2: QT_TRANSLATE_NOOP("Constant", "2 Blocks"),
+        nwStatusShape.BLOCK_3: QT_TRANSLATE_NOOP("Constant", "3 Blocks"),
+        nwStatusShape.BLOCK_4: QT_TRANSLATE_NOOP("Constant", "4 Blocks"),
     }
     FILE_FILTERS = {
         "*.txt": QT_TRANSLATE_NOOP("Constant", "Text files"),

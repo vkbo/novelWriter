@@ -104,7 +104,7 @@ class DocMerger:
         docText = self._project.storage.getDocumentText(srcHandle).rstrip("\n")
         if addComment:
             docInfo = srcItem.describeMe()
-            docSt, _ = srcItem.getImportStatus(incIcon=False)
+            docSt, _ = srcItem.getImportStatus()
             cmtLine = f"% {cmtPrefix} {docInfo}: {srcItem.itemName} [{docSt}]\n\n"
             docText = cmtLine + docText
 

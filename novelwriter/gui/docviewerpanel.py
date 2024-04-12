@@ -450,7 +450,7 @@ class _ViewPanelKeyWords(QTreeWidget):
             nwItem.itemType, nwItem.itemClass,
             nwItem.itemLayout, nwItem.mainHeading
         )
-        impLabel, impIcon = nwItem.getImportStatus(incIcon=True)
+        impLabel, impIcon = nwItem.getImportStatus()
         iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0) if nwItem.isDocumentLayout() else 5
         hDec = SHARED.theme.getHeaderDecorationNarrow(iLevel)
 
