@@ -263,17 +263,17 @@ class _SettingsPage(NScrollableForm):
         )
 
         # Project Language
+        projLang = data.language or CONFIG.guiLocale
         self.projLang = NComboBox(self)
         self.projLang.setMinimumWidth(xW)
         for tag, language in CONFIG.listLanguages(CONFIG.LANG_PROJ):
             self.projLang.addItem(language, tag)
+        self.projLang.setCurrentData(projLang, projLang)
         self.addRow(
             self.tr("Project language"), self.projLang,
             self.tr("Only used when building the manuscript."),
             stretch=(3, 2)
         )
-        if (idx := self.projLang.findData(data.language)) != -1:
-            self.projLang.setCurrentIndex(idx)
 
         # Spell Check Language
         self.spellLang = NComboBox(self)
