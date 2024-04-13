@@ -107,7 +107,7 @@ class Config:
 
         # General GUI Settings
         self.guiLocale   = self._qLocale.name()
-        self.guiTheme    = "default"        # GUI theme
+        self.guiTheme    = "default_light"  # GUI theme
         self.guiSyntax   = "default_light"  # Syntax theme
         self.guiFont     = ""               # Defaults to system default font in theme class
         self.guiFontSize = 11               # Is overridden if system default is loaded
