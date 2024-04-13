@@ -36,7 +36,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import simplified
-from novelwriter.constants import nwLabels
+from novelwriter.constants import nwLabels, trConst
 from novelwriter.core.status import NWStatus, StatusEntry
 from novelwriter.enum import nwStatusShape
 from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrollableForm
@@ -399,7 +399,7 @@ class _StatusPage(NFixedPage):
         def buildMenu(menu: QMenu, items: dict[nwStatusShape, str]) -> None:
             for shape, label in items.items():
                 icon = NWStatus.createIcon(self._iPx, iColor, shape)
-                action = menu.addAction(icon, label)
+                action = menu.addAction(icon, trConst(label))
                 action.triggered.connect(lambda _, shape=shape: self._selectShape(shape))
                 self._icons[shape] = icon
 
