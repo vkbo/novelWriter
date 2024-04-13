@@ -122,9 +122,12 @@ The app will remember your column order and size between sessions, and for each 
 Colour Themes
 -------------
 
-By default, novelWriter will use a light colour theme. You can change this colour theme from the
-**Preferences**. If you wish, you *can* create your own colour themes, and even have them added to
-the application. See :ref:`a_custom_theme` for more details.
+By default, novelWriter will use the colour theme provided by the Qt library, which is determined
+by the Fusion_ style setting. You can also choose between a standard dark and light theme that have
+neutral colours from **Preferences**. 
+
+If you wish, you *can* create your own colour themes, and even have them added to the application.
+See :ref:`a_custom_theme` for more details.
 
 Switching the GUI colour theme does not affect the colours of the editor and viewer. They have
 separate colour selectable from the "Document colour theme" setting in **Preferences**. They are
