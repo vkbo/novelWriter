@@ -23,13 +23,14 @@ having it selected. This will open the document in the document editor. The edit
 Markdown-like syntax for some features, and a novelWriter-specific syntax for others. The syntax
 format is described in the :ref:`a_fmt` chapter.
 
-The editor has a maximise button (toggles the :guilabel:`Focus Mode`) and a close button in the
+The editor has a maximise button, which toggles the **Focus Mode**, and a close button in the
 top--right corner. On the top--left side you will find a tools button that opens a toolbar with a
-few buttons for applying text formatting, and a search button to open the search dialog.
+few buttons for applying text formatting, a drop down menu for navigating between headings, and a
+search button to open the search dialog.
 
 Both the document editor and viewer will show the label of the currently open document in the
 header at the top of the edit or view panel. Optionally, the full project path to the document can
-be shown. This can be set in :guilabel:`Preferences`.
+be shown. This can be set in **Preferences**.
 
 .. tip::
    Clicking on the document title bar will select the document in the project tree and thus reveal
@@ -42,10 +43,10 @@ the label and pressing :kbd:`Ctrl+Return`. You can also control-click them with 
 Editor Auto-Completer
 ---------------------
 
-If you type the character ``@`` on a new line, a menu will appear showing the different available
-keywords. The list will shorten as you type. Once a keyword command has been selected or typed, the
-editor may suggest further content based on your project content. See :ref:`a_references_completer`
-for more details.
+If you type the character ``@`` on a new line, a pop-up menu will appear showing the different
+available keywords. The list will shorten as you type. Once a keyword command has been selected or
+typed, the editor may suggest further options based on your project content. See
+:ref:`a_references_completer` for more details.
 
 .. versionadded:: 2.2
 
@@ -60,9 +61,9 @@ Viewing a Document
    A screenshot of the Document Viewer panel.
 
 Any document in the project tree can also be viewed in parallel in a right hand side document
-viewer. To view a document, press :kbd:`Ctrl+R`, or select :guilabel:`View Document` in the menu or
-context menu. If you have a middle mouse button, middle-clicking on the document will also open it
-in the viewer.
+viewer. To view a document, press :kbd:`Ctrl+R`, or select **View Document** in the menu or context
+menu. If you have a middle mouse button, middle-clicking on the document will also open it in the
+viewer.
 
 The document viewed does not have to be the same document as the one currently being edited.
 However, If you *are* viewing the same document, pressing :kbd:`Ctrl+R` again will update the
@@ -75,19 +76,20 @@ content of the viewer with the content of the document the reference points to.
 The document viewer keeps a history of viewed documents, which you can navigate with the arrow
 buttons in the top--left corner of the viewer. If your mouse has backward and forward navigation
 buttons, these can be used as well. They work just like the backward and forward features in a
-browser.
+browser. The left-most button is a dropdown menu for quickly navigation between headings in the
+document.
 
-At the bottom of the view panel there is a :guilabel:`References` panel. (If it is hidden, click
-the button on the left side of the footer area to reveal it.) This panel contains a References tab
-with links to all documents referring back to the one you're currently viewing, if any has been
-defined. If you have created root folders and tags for various story elements like characters and
-plot points, these will appear as additional tabs in this panel.
+At the bottom of the view panel there is a **References** panel. (If it is hidden, click the button
+on the left side of the footer area to reveal it.) This panel contains a References tab with links
+to all documents referring back to the one you're currently viewing, if any has been defined. If
+you have created root folders and tags for various story elements like characters and plot points,
+these will appear as additional tabs in this panel.
 
 .. note::
-   The :guilabel:`References` panel relies on an up-to-date :term:`index<project index>` of the
-   project. The index is maintained automatically. However, if anything is missing, or seems wrong,
-   the index can always be rebuilt by selecting :guilabel:`Rebuild Index` from the
-   :guilabel:`Tools` menu, or by pressing :kbd:`F9`.
+   The **References** panel relies on an up-to-date :term:`index<project index>` of the project.
+   The index is maintained automatically. However, if anything is missing, or seems wrong, the
+   index can always be rebuilt by selecting **Rebuild Index** from the **Tools** menu, or by
+   pressing :kbd:`F9`.
 
 .. versionadded:: 2.2
    The reference panel was redesigned and the additional tabs added.
@@ -131,8 +133,7 @@ Auto-Replace as You Type
 ========================
 
 A few auto-replace features are supported by the editor. You can control every aspect of the
-auto-replace feature from :guilabel:`Preferences`. You can also disable this feature entirely if
-you wish.
+auto-replace feature from **Preferences**. You can also disable this feature entirely if you wish.
 
 .. tip::
    If you don't like auto-replacement, all symbols inserted by this feature are also available in

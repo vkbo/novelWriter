@@ -159,6 +159,5 @@ You can also build a PDF manual from the documentation using the ``pkgutils.py``
    python pkgutils.py manual
 
 This will build the documentation as a PDF using LaTeX. The file will then be copied into the
-assets folder and made available in the :guilabel:`Help` menu in novelWriter. The Sphinx build
-system has a few extra dependencies when building the PDF. Please check the `Sphinx Docs`_ for more
-details.
+assets folder and made available in the **Help** menu in novelWriter. The Sphinx build system has a
+few extra dependencies when building the PDF. Please check the `Sphinx Docs`_ for more details.

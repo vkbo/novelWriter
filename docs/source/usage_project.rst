@@ -8,7 +8,7 @@ This chapter covers in more detail the different project views available in nove
 
 .. figure:: images/fig_project_tree_detailed.png
 
-   The Project Tree as it appears when loading a sample project.
+   The **Project Content** tree as it appears when loading a sample project.
 
 
 .. _a_ui_tree:
@@ -21,33 +21,32 @@ the project, and has four columns.
 
 **Column 1**
    The first column shows the icon and label of each folder, document, or note in your project. The
-   label is not the same as the title you set inside the document. However, the document's label
-   will appear in the header above the document text itself so you know where in the project an
-   open document belongs. The icon is selected based on the type of item, and for novel documents,
-   the level of the first header in the document text.
+   label is not the same as the heading title you set inside the document. However, the document's
+   label will appear in the header above the document text itself so you know where in the project
+   an open document belongs. The icon is selected based on the type of item, and for novel
+   documents, the level of the first heading in the document text.
 
 **Column 2**
    The second column shows the word count of the document, or the sum of words of the child items
    for folders and documents with sub-documents. If the counts seem incorrect, they can be updated
-   by rebuilding the :term:`project index` from the :guilabel:`Tools` menu, or by pressing
-   :kbd:`F9`.
+   by rebuilding the :term:`project index` from the **Tools** menu, or by pressing :kbd:`F9`.
 
 **Column 3**
    The third column indicates whether the document is considered active or inactive in the project.
    You can use this flag to indicate that a document is still in the project, but should not be
-   considered an active part of it. When you run the :guilabel:`Build Manuscript` tool, you can
-   include or exclude documents based on this flag. You can change this value from the
+   considered an active part of it. When you run the **Build Manuscript** tool, you can include or
+   exclude documents based on this flag. You can change this value from the right-click
    :term:`context menu`.
 
 **Column 4**
    The fourth column shows the user-defined status or importance labels you've assigned to each
    project item. See :ref:`a_ui_tree_status` for more details on how to uses these labels. You can
-   change these labels from the :term:`context menu`.
+   select these labels from the :term:`context menu`, and define them in **Project Settings**.
 
 Right-clicking an item in the project tree will open a context menu under the cursor, displaying
 a selection of actions that can be performed on the selected item.
 
-At the top of the tree, you will find a set of buttons.
+At the top of the project tree, you will find a set of buttons.
 
 * The first button is a quick links button that will show you a dropdown menu of all the
   :term:`root folders<root folder>` in your project. Selecting one will move to that position in
@@ -73,10 +72,10 @@ addition to the word count.
 Splitting and Merging Documents
 -------------------------------
 
-Under the :guilabel:`Transform` submenu in the context menu of an item in the project tree, you
-will find several options on how to change a document or folder. This includes changing between
-document and note, but also splitting them into multiple documents, or merging child items into a
-single document.
+Under the **Transform** submenu in the context menu of an item in the project tree, you will find
+several options on how to change a document or folder. This includes changing between document and
+note, but also splitting them into multiple documents, or merging child items into a single
+document.
 
 
 Splitting Documents
@@ -84,12 +83,12 @@ Splitting Documents
 
 .. figure:: images/fig_project_split_tool.png
 
-   The :guilabel:`Split Document` dialog.
+   The **Split Document** dialog.
 
-The :guilabel:`Split Document by Heading` option will open a dialog that allows you to split the
-selected document into multiple new documents based on the headings it contains. You can select at
-which heading level the split is to be performed from the dropdown box. The list box will preview
-which headings will be split into new documents.
+The **Split Document by Headings** option will open a dialog that allows you to split the selected
+document into multiple new documents based on the headings it contains. You can select at which
+heading level the split is to be performed from the dropdown box. The list box will preview which
+headings will be split into new documents.
 
 You are given the option to create a folder for these new documents, and whether or not to create a
 hierarchy of documents. That is, put sections under scenes, and scenes under chapters.
@@ -103,18 +102,18 @@ Merging Documents
 
 .. figure:: images/fig_project_merge_tool.png
 
-   The :guilabel:`Merge Documents` dialog.
+   The **Merge Documents** dialog.
 
 You have two options for merging documents that are child elements of another document. You can
-either :guilabel:`Merge Child Items into Self` and :guilabel:`Merge Child Items into New`. The
-first option will pull all content of child items and merge them into the parent document, while
-the second option will create a new document in the process.
+either **Merge Child Items into Self** and **Merge Child Items into New**. The first option will
+pull all content of child items and merge them into the parent document, while the second option
+will create a new document in the process.
 
 When merging documents in a folder, you only have the latter process is possible, so only the
-choice :guilabel:`Merge Documents in Folder` is available.
+choice **Merge Documents in Folder** is available.
 
-In either case, the :guilabel:`Merge Documents` dialog will let you exclude documents you don't
-want to include, and it also lets you reorder them if you wish.
+In either case, the **Merge Documents** dialog will let you exclude documents you don't want to
+include, and it also lets you reorder them if you wish.
 
 
 .. _a_ui_tree_status:
@@ -124,14 +123,14 @@ Document Importance and Status
 
 Each document or folder in your project can have either a "Status" or "Importance" flag set. These
 are flags that you control and define yourself, and novelWriter doesn't use them for anything. To
-modify the labels, go to their respective tabs in :guilabel:`Project Settings`.
+modify the labels, go to their respective tabs in **Project Settings**.
 
 The "Status" flag is intended to tag a :term:`novel document<novel documents>` as for instance a
 draft or as completed, and the "Importance" flag is intended to tag character notes, or other
 :term:`project notes`, as for instance a main, major, or minor character or story element.
 
 Whether a document uses a "Status" or "Importance" flag depends on which :term:`root folder` it
-lives in. If it's in a Novel type folder, it uses the "Status" flag, otherwise it uses an
+lives in. If it's in a **Novel** type folder, it uses the "Status" flag, otherwise it uses an
 "Importance" flag.
 
 
@@ -142,7 +141,7 @@ Project Tree Drag & Drop
 
 The project tree allows drag & drop to a certain extent to allow you to reorder your documents and
 folders. Moving a document in the project tree will affect the text's position when you assemble
-your manuscript in the :guilabel:`Manuscript Build` tool.
+your manuscript in the **Manuscript Build** tool.
 
 .. versionadded:: 2.2
    You can now select multiple items in the project tree by holding down the :kbd:`Ctrl` or
@@ -150,14 +149,15 @@ your manuscript in the :guilabel:`Manuscript Build` tool.
 
 You can drag and drop documents and regular folders, but not root folders. If you select multiple
 items, they can only be dragged and dropped if they are siblings. That is, they have the same
-parent item in the project. This is due to the way drag and drop is implemented in the user
-interface framework novelWriter is built upon.
+parent item in the project. This limitation is due to the way drag and drop is implemented in the
+user interface framework novelWriter is built upon.
 
-Documents and their folders can be rearranged freely within their root folders. If you move a Novel
-document out of a Novel folder, it will be converted to a project note. Notes can be moved freely
-between all root folders, but keep in mind that if you move a note into a Novel type root folder,
-its "Importance" setting will be switched with a "Status" setting. See :ref:`a_ui_tree_status`. The
-old value will not be overwritten though, and should be restored if you move it back at some point.
+Documents and their folders can be rearranged freely within their root folders. If you move a
+**Novel Document** out of a **Novel** folder, it will be converted to a **Project Note**. Notes can
+be moved freely between all root folders, but keep in mind that if you move a note into a **Novel**
+type root folder, its "Importance" setting will be switched with a "Status" setting. See
+:ref:`a_ui_tree_status`. The old value will not be overwritten though, and should be restored if
+you move it back at some point.
 
 Root folders in the project tree cannot be dragged and dropped at all. If you want to reorder them,
 you can move them up or down with respect to each other from the arrow buttons at the top of the
@@ -175,8 +175,8 @@ The Novel Tree View
 
 An alternative way to view the project structure is the novel view. You can switch to this view by
 selecting the :guilabel:`Novel View` button in the sidebar. This view is a simplified version of
-the view in the :guilabel:`Outline View`. It is convenient when you want to browse the structure
-of the story itself rather than the document files.
+the view in the **Outline View**. It is convenient when you want to browse the structure of the
+story itself rather than the document files.
 
 .. note::
    You cannot reorganise the entries in the novel view, or add any new documents, as that would
@@ -194,14 +194,14 @@ The Novel Outline View
 
    A screenshot of the Novel Outline View.
 
-The project's :guilabel:`Novel Outline View` is available as another view option from the sidebar.
-The outline provides an overview of the novel structure, displaying a tree hierarchy of the
-elements of the novel, that is, the level 1 to 4 headings representing partitions, chapters, scenes
-and sections.
+The project's **Novel Outline View** is available as another view option from the sidebar. The
+outline provides an overview of the novel structure, displaying a tree hierarchy of the elements of
+the novel, that is, the level 1 to 4 headings representing partitions, chapters, scenes and
+sections.
 
 The document containing the heading can also be displayed as a separate column, as well as the line
 number where the heading is defined. Double-clicking an entry will open the corresponding document
-in the editor and switch to :guilabel:`Project Tree View` mode.
+in the editor and switch to **Project Tree View** mode.
 
 You can select which novel folder to display from the dropdown menu. You can optionally also choose
 to show a combination of all novel folders.
@@ -217,7 +217,7 @@ the menu button in the toolbar. The order of the columns can also be rearranged 
 a different position. You column settings are saved between sessions on a per-project basis.
 
 .. note::
-   The :guilabel:`Title` column cannot be disabled or moved.
+   The **Title** column cannot be disabled or moved.
 
 The information viewed in the outline is based on the :term:`project index`. While novelWriter does
 its best to keep the index up to date when contents change, you can always rebuild it manually by
@@ -226,5 +226,5 @@ pressing :kbd:`F9` if something isn't right.
 The outline view itself can be regenerated by pressing the refresh button. By default, the content
 is refreshed each time you switch to this view.
 
-The :guilabel:`Synopsis` column of the outline view takes its information from a specially
-formatted comment. See :ref:`a_fmt_comm`.
+The **Synopsis** column of the outline view takes its information from a specially formatted
+comment. See :ref:`a_fmt_comm`.

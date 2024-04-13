@@ -186,11 +186,11 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI):
 
     # Check a few values
     assert mainTheme._guiPalette.color(
-        QPalette.ColorRole.Window).getRgb()        == (239, 239, 239, 255)
+        QPalette.ColorRole.Window).getRgb() == (239, 239, 239, 255)
     assert mainTheme._guiPalette.color(
-        QPalette.ColorRole.WindowText).getRgb()    == (0, 0, 0, 255)
+        QPalette.ColorRole.WindowText).getRgb() == (0, 0, 0, 255)
     assert mainTheme._guiPalette.color(
-        QPalette.ColorRole.Base).getRgb()          == (255, 255, 255, 255)
+        QPalette.ColorRole.Base).getRgb() == (255, 255, 255, 255)
     assert mainTheme._guiPalette.color(
         QPalette.ColorRole.AlternateBase).getRgb() == (239, 239, 239, 255)
 
