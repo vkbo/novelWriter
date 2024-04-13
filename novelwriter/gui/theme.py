@@ -74,9 +74,9 @@ class GuiTheme:
         self.isLightTheme     = True
 
         # GUI
-        self.statNone    = QColor(120, 120, 120)
-        self.statUnsaved = QColor(200, 15, 39)
-        self.statSaved   = QColor(2, 133, 37)
+        self.statNone    = QColor(0, 0, 0)
+        self.statUnsaved = QColor(0, 0, 0)
+        self.statSaved   = QColor(0, 0, 0)
         self.helpText    = QColor(0, 0, 0)
 
         # Loaded Syntax Settings
@@ -227,6 +227,10 @@ class GuiTheme:
             logException()
             return False
 
+        # Reset Palette
+        self._guiPalette = QApplication.style().standardPalette()
+        self._resetGuiColors()
+
         # Main
         sec = "Main"
         if parser.has_section(sec):
@@ -256,8 +260,6 @@ class GuiTheme:
             self._setPalette(parser, sec, "highlightedtext", QPalette.ColorRole.HighlightedText)
             self._setPalette(parser, sec, "link",            QPalette.ColorRole.Link)
             self._setPalette(parser, sec, "linkvisited",     QPalette.ColorRole.LinkVisited)
-        else:
-            self._guiPalette = QApplication.style().standardPalette()
 
         # GUI
         sec = "GUI"
@@ -392,6 +394,14 @@ class GuiTheme:
     ##
     #  Internal Functions
     ##
+
+    def _resetGuiColors(self) -> None:
+        """Reset GUI colours to default values."""
+        self.statNone    = QColor(120, 120, 120)
+        self.statUnsaved = QColor(200, 15, 39)
+        self.statSaved   = QColor(2, 133, 37)
+        self.helpText    = QColor(0, 0, 0)
+        return
 
     def _setGuiFont(self) -> None:
         """Update the GUI's font style from settings."""
