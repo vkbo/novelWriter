@@ -120,3 +120,8 @@ for normal chapters.
    the first character of the chapter title itself. This feature has been dropped in favour of the
    current format in order to keep level 1 and 2 headers consistent. Please update your chapter
    headings if you've used this syntax.
+
+.. _a_struct_heads_scenes:
+
+Hard and Soft Scene Breaks
+--------------------------
