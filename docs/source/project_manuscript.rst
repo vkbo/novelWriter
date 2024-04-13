@@ -4,9 +4,11 @@
 Building the Manuscript
 ***********************
 
+.. _Pandoc: https://pandoc.org/
+
 You can at any time build a manuscript, an outline of your notes, or any other type of document
-from the text in your project. All of this is handled by the :guilabel:`Manuscript Build` tool.
-You can activate it from the sidebar, the :guilabel:`Tools` menu, or by pressing :kbd:`F5`.
+from the text in your project. All of this is handled by the **Manuscript Build** tool. You can
+activate it from the sidebar, the **Tools** menu, or by pressing :kbd:`F5`.
 
 .. versionadded:: 2.1
    This tool is new for version 2.1. A simpler tool was used for earlier versions. The simpler tool
@@ -20,12 +22,31 @@ The Manuscript Build Tool
 =========================
 
 .. figure:: images/fig_manuscript_build.png
+   :width: 80%
 
-   The :guilabel:`Manuscript Build` tool main window.
+   The **Manuscript Build** tool main window.
 
-The main window of the :guilabel:`Manuscript Build` tool contains a list of all the builds you have
+The main window of the **Manuscript Build** tool contains a list of all the builds you have
 defined, a selection of settings, and a few buttons to generate preview, open the print dialog, or
 run the build to create a manuscript document.
+
+
+Outline and Word Counts
+-----------------------
+
+.. figure:: images/fig_manuscript_build_outline.png
+   :width: 80%
+
+   The **Manuscript Build** tool main window with the **Outline** visible.
+
+The **Outline** tab on the left lets you navigate the headings in the preview document. It will
+show up to scene level headings for novel documents, and level 2 headings for notes.
+
+A collapsible panel of word and character counts are also available below the preview document.
+These are calculated from the text you have included in the document, and are more accurate counts
+than what's available in the project tree since they are counted *after formatting*.
+
+For a detailed description on how they are counted, see :ref:`a_counting`.
 
 
 .. _a_manuscript_settings:
@@ -33,27 +54,28 @@ run the build to create a manuscript document.
 Build Settings
 ==============
 
-Each build definition can be edited by opening it in the :guilabel:`Manuscript Build Settings`
-dialog, either by double-clicking or by selecting it and pressing the edit button in the toolbar.
+Each build definition can be edited by opening it in the **Manuscript Build Settings** dialog,
+either by double-clicking or by selecting it and pressing the edit button in the toolbar.
 
 .. tip::
-   You can keep the :guilabel:`Manuscript Build Settings` dialog open while testing the different
-   options, and just hit the :guilabel:`Apply` button. You can test the result of your settings
-   by pressing the :guilabel:`Preview` button in the main :guilabel:`Manuscript Build` window.
-   When you're happy with the result, you can close the settings.
+   You can keep the **Manuscript Build Settings** dialog open while testing the different options,
+   and just hit the :guilabel:`Apply` button. You can test the result of your settings by pressing
+   the :guilabel:`Preview` button in the main **Manuscript Build** window. When you're happy with
+   the result, you can close the settings.
 
 
 Document Selection
 ------------------
 
 .. figure:: images/fig_build_settings_selections.png
+   :width: 80%
 
-   The :guilabel:`Selections` page of the :guilabel:`Manuscript Build Settings` dialog.
+   The **Selections** page of the **Manuscript Build Settings** dialog.
 
-The :guilabel:`Selections` page of the :guilabel:`Manuscript Build Settings` dialog allows you to
-fine tune which documents are included in the build. They are indicated by a green arrow icon in
-the last column. On the right you have some filter options for selecting content of a specific
-type, and a set of switches for which root folders to include.
+The **Selections** page of the **Manuscript Build Settings** dialog allows you to fine tune which
+documents are included in the build. They are indicated by a green arrow icon in the last column.
+On the right you have some filter options for selecting content of a specific type, and a set of
+switches for which root folders to include.
 
 You can override the result of these filters by marking one or more documents and selecting to
 explicitly include or exclude them by using the buttons below the tree view. The last button can be
@@ -69,13 +91,14 @@ Formatting Headings
 -------------------
 
 .. figure:: images/fig_build_settings_headings.png
+   :width: 80%
 
-   The :guilabel:`Headings` page of the :guilabel:`Manuscript Build Settings` dialog.
+   The **Headings** page of the **Manuscript Build Settings** dialog.
 
-The :guilabel:`Headings` page of the :guilabel:`Manuscript Build Settings` dialog allows you to set
-how the headings in your :term:`Novel Documents` are formatted. By default, the title is just
-copied as-is, indicated by the ``{Title}`` format. You can change this to for instance add chapter
-numbers and scene numbers, or insert character names, like shown in the figure above.
+The **Headings** page of the **Manuscript Build Settings** dialog allows you to set how the
+headings in your :term:`Novel Documents` are formatted. By default, the title is just copied as-is,
+indicated by the ``{Title}`` format. You can change this to for instance add chapter numbers and
+scene numbers, or insert character names, like shown in the figure above.
 
 Clicking the edit button next to a format will copy the formatting string into the edit box where
 it can be modified, and where a syntax highlighter will help indicate which parts are automatically
@@ -86,7 +109,7 @@ Any text you add that isn't highlighted in colours will remain in your formatted
 ``{Title}`` will always be replaced by the text in the heading from your documents.
 
 You can preview the result of these format strings by clicking :guilabel:`Apply`, and then clicking
-:guilabel:`Preview` in the :guilabel:`Manuscript Build` tool main window.
+:guilabel:`Preview` in the **Manuscript Build** tool main window.
 
 
 Scene Separators
@@ -107,10 +130,9 @@ be treated as a separator.
 Hard and Soft Scenes
 ^^^^^^^^^^^^^^^^^^^^
 
-If you wish to distinguish between so-called soft and hard scene breaks, where a hard scene break
-is understood as a scene break that changes point-of-view character, you can use the modified scene
-heading format in your text. You can then give these headings a different formatting in the
-:guilabel:`Headings` settings.
+If you wish to distinguish between so-called soft and hard scene breaks, you can use the
+alternative scene heading format in your text. You can then give these headings a different
+formatting in the **Headings** settings.
 
 See :ref:`a_fmt_head` for more info on how to format headings in your text.
 
@@ -118,10 +140,9 @@ See :ref:`a_fmt_head` for more info on how to format headings in your text.
 Output Settings
 ---------------
 
-The :guilabel:`Content`, :guilabel:`Format` and :guilabel:`Output` pages of the
-:guilabel:`Manuscript Build Settings` dialog control a number of other settings for the output.
-Some of these only apply to specific output formats, which is indicated by the section headings on
-the settings pages.
+The **Content**, **Format** and **Output** pages of the **Manuscript Build Settings** dialog
+control a number of other settings for the output. Some of these only apply to specific output
+formats, which is indicated by the section headings on the settings pages.
 
 
 .. _a_manuscript_build:
@@ -130,12 +151,13 @@ Building Manuscript Documents
 =============================
 
 .. figure:: images/fig_build_build.png
+   :width: 80%
 
-   The :guilabel:`Manuscript Build` dialog used for writing the actual manuscript documents.
+   The **Manuscript Build** dialog used for writing the actual manuscript documents.
 
-When you press the :guilabel:`Build` button on the :guilabel:`Build Manuscript` tool main window, a
-special file dialog opens up. This is where you pick your desired output format and where to write
-the file.
+When you press the :guilabel:`Build` button on the **Build Manuscript** tool main window, a special
+file dialog opens up. This is where you pick your desired output format and where to write the
+file.
 
 On the left side of the dialog is a list of all the available file formats, and on the right, a
 list of the documents which are included based on the build definition you selected. You can choose
@@ -157,7 +179,7 @@ Open Document Format
 
 novelWriter HTML
    The HTML format writes a single ``.htm`` file with minimal style formatting. The HTML document
-   is suitable for further processing by document conversion tools like Pandoc, for importing in
+   is suitable for further processing by document conversion tools like Pandoc_, for importing in
    word processors, or for printing from browser.
 
 novelWriter Markup
@@ -198,4 +220,4 @@ on the print dialog.
 
 .. note::
    The paper format should in all cases default to whatever your system default is. If you want to
-   change it, you have to select it from the :guilabel:`Print Preview` dialog.
+   change it, you have to select it from the **Print Preview** dialog.

@@ -34,10 +34,10 @@ and add dictionaries yourself.
 
 **Install Tool**
 
-A small tool to assist with this can be found under :guilabel:`Tools > Add Dictionaries`. It will
-import spell checking dictionaries from Free Office or Libre Office extensions. The dictionaries
-are then installed in the install location for the Enchant library and should thus work for any
-application that uses Enchant for spell checking.
+A small tool to assist with this can be found under **Tools > Add Dictionaries**. It will import
+spell checking dictionaries from Free Office or Libre Office extensions. The dictionaries are then
+installed in the install location for the Enchant library and should thus work for any application
+that uses Enchant for spell checking.
 
 **Manual Install**
 
@@ -81,14 +81,14 @@ modify it as you like.
   `novelwriter/assets/icons <https://github.com/vkbo/novelWriter/tree/main/novelwriter/assets/icons>`_.
 
 Remember to also change the name of your theme by modifying the ``name`` setting at the top of the
-file, otherwise you may not be able to distinguish them in :guilabel:`Preferences`.
+file, otherwise you may not be able to distinguish them in **Preferences**.
 
 For novelWriter to be able to locate the custom theme files, you must copy them to the
 :ref:`a_locations_data` location in your home or user area. There should be a folder there named
 ``syntax`` for syntax themes, just ``themes`` for GUI themes, and ``icons`` for icon themes. These
 folders are created the first time you start novelWriter.
 
-Once the files are copied there, they should show up in :guilabel:`Preferences` with the label you
+Once the files are copied there, they should show up in **Preferences** with the label you
 set as ``name`` inside the file.
 
 .. versionadded:: 2.0
@@ -190,10 +190,10 @@ Omitted syntax colours default to black, except ``background`` which defaults to
 ``texthighlight`` which defaults to white with half transparency.
 
 .. versionadded:: 2.2
-   The `shortcode` syntax colour entry was added.
+   The ``shortcode`` syntax colour entry was added.
 
 .. versionadded:: 2.3
-   The `optional` syntax colour entry was added.
+   The ``optional`` syntax colour entry was added.
 
 .. versionadded:: 2.4
-   The `texthighlight` syntax colour entry was added.
+   The ``texthighlight`` syntax colour entry was added.

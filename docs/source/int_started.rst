@@ -1,8 +1,8 @@
 .. _a_started:
 
-***************
-Getting Started
-***************
+**********************
+Setup and Installation
+**********************
 
 .. _Enchant: https://abiword.github.io/enchant/
 .. _GitHub: https://github.com/vkbo/novelWriter
@@ -15,8 +15,8 @@ Getting Started
 .. _AppImage: https://appimage.org/
 
 Ready-made packages and installers for novelWriter are available for all major platforms, including
-Linux, Windows and MacOS, from the `Downloads page`_. See below for install instructions for each
-platform.
+Linux, Windows and MacOS, from the `Downloads page`_. See below for install additional instructions
+for each platform.
 
 You can also install novelWriter from the Python Package Index (PyPi_). See :ref:`a_started_pip`.
 Installing from PyPi does not set up icon launchers, so you will either have to do this yourself,
@@ -44,7 +44,7 @@ multiple installations has been known to cause problems.
    The novelWriter installer is not signed because Microsoft doesn't currently provide a way for
    non-profit open source projects to properly sign their installers. The novelWriter project
    doesn't have the funding to pay for commercial software signing certificates. You will therefore
-   see an additional warning about this when you download the installer.
+   see an additional warning about this when you download and run the installer.
 
 
 .. _a_started_linux:
@@ -56,6 +56,7 @@ A Debian package can be downloaded from the `Downloads page`_, or from the Relea
 GitHub_. This package should work on both Debian, Ubuntu and Linux Mint, at least.
 
 If you prefer, you can also add the novelWriter repository on Launchpad to your package manager.
+The Launchpad packages `are signed by the author <https://launchpad.net/~vkbo>`__.
 
 
 Ubuntu

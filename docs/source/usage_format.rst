@@ -10,7 +10,7 @@ values and allowing for some text formatting. The syntax is based on Markdown, b
 (bold) and strike through text, as well as four levels of headings. For some further complex
 formatting needs, a set of shortcodes can be used.
 
-In addition to formatting codes, novelWriter allows for comments, a synopsis tag, and a set of
+In addition to formatting codes, novelWriter allows for comments, a synopsis tag, and a number of
 keyword and value sets used for :term:`tags<tag>` and :term:`references<reference>`. There are also
 some codes that apply to whole paragraphs. See :ref:`a_fmt_text` for more details.
 
@@ -35,7 +35,7 @@ have a distinct colour, and the references themselves will get a colour if they 
 references will get a squiggly error line underneath. The same applies to duplicate tags.
 
 There are a number of syntax highlighter colour themes available, both for light and dark GUIs. You
-can select them from :guilabel:`Preferences`.
+can select them from **Preferences**.
 
 
 .. _a_fmt_head:
@@ -54,6 +54,9 @@ correctly to produce the intended result. See :ref:`a_struct_heads` for more det
 
 ``# Title Text``
    Heading level one. For novel documents, the level indicates the start of a new partition.
+   Partitions are for when you want to split your story into "Part 1", "Part 2", etc. You can also
+   choose to use them for splitting the text up into acts, and then hide these headings in your
+   manuscript.
 
 ``## Title Text``
    Heading level two. For novel documents, the level indicates the start of a new chapter. Chapter
@@ -62,16 +65,17 @@ correctly to produce the intended result. See :ref:`a_struct_heads` for more det
 ``### Title Text``
    Heading level three. For novel documents, the level indicates the start of a new scene. Scene
    numbers or scene separators can be inserted automatically when building the manuscript, so you
-   can use the title field as a working title for your scenes if you wish.
+   can use the title field as a working title for your scenes if you wish, but you must provide a
+   minimal title.
 
 ``#### Title Text``
    Heading level four. For novel documents, the level indicates the start of a new section. Section
    titles can be replaced by separators or ignored completely when building the manuscript.
 
-For headings level one through three, adding a ``!`` modifies its meaning:
+For headings level one through three, adding a ``!`` modifies the meaning of the heading:
 
 ``#! Title Text``
-   This tells the build tool that the level one heading is intended to be used for the novel's or
+   This tells the build tool that the level one heading is intended to be used for the novel or
    notes folder's main title, like for instance on the front page. When building the manuscript,
    this will use a different styling and will exclude the title from, for instance, a Table of
    Contents in Libre Office.
@@ -82,9 +86,10 @@ For headings level one through three, adding a ``!`` modifies its meaning:
    :ref:`a_struct_heads_unnum` for more details.
 
 ``###! Title Text``
-   This is an alternative scene heading that can be formatted differently in the
-   :guilabel:`Manuscript Build` tool. It is intended for separating "soft" and "hard" scene breaks.
-   Otherwise, it behaves identically to a regular scene heading.
+   This is an alternative scene heading that can be formatted differently in the **Manuscript
+   Build** tool. It is intended for separating "soft" and "hard" scene breaks. Aside from this, it
+   behaves identically to a regular scene heading. See :ref:`a_struct_heads_scenes` for more
+   details.
 
 .. note::
    The space after the ``#`` or ``!`` character is mandatory. The syntax highlighter will change
@@ -106,8 +111,8 @@ In addition, the editor supports a few additional types of white spaces:
 * Thin spaces are also supported, and can be inserted with :kbd:`Ctrl+K`, :kbd:`Shift+Space`.
 * Non-breaking thin space can be inserted with :kbd:`Ctrl+K`, :kbd:`Ctrl+Space`.
 
-These are all insert features, and the :guilabel:`Insert` menu has more. The keyboard shortcuts for
-them are also listed in :ref:`a_kb_ins`.
+These are all insert features, and the **Insert** menu has more. The keyboard shortcuts for them
+are also listed in :ref:`a_kb_ins`.
 
 Non-breaking spaces are highlighted by the syntax highlighter with an alternate coloured
 background, depending on the selected theme.
@@ -129,12 +134,12 @@ A minimal set of Markdown text emphasis styles are supported for text paragraphs
    The text is rendered as emphasised text (italicised).
 
 ``**text**``
-   The text is rendered as strongly important text (bold).
+   The text is rendered as strongly emphasised text (bold).
 
 ``~~text~~``
    Strike through text.
 
-In Markdown guides it is often recommended to differentiate between strong importance and emphasis
+In Markdown guides it is often recommended to differentiate between strong emphasis and emphasis
 by using ``**`` for strong and ``_`` for emphasis, although Markdown generally also supports ``__``
 for strong and ``*`` for emphasis. However, since the differentiation makes the highlighting and
 conversion significantly simpler and faster, in novelWriter this is a rule, not just a
@@ -182,14 +187,15 @@ solved with simple Markdown-like formatting codes. Available shortcodes are list
    "``[i]text[/i]``",     "Text is rendered as italicised text."
    "``[s]text[/s]``",     "Text is rendered as strike through text."
    "``[u]text[/u]``",     "Text is rendered as underlined text."
+   "``[m]text[/m]``",     "Text is rendered as highlighted text."
    "``[sup]text[/sup]``", "Text is rendered as superscript text."
    "``[sub]text[/sub]``", "Text is rendered as subscript text."
 
 Unlike Markdown style codes, these can be used anywhere within a paragraph. Even in the middle of a
 word if you need to. You can also freely combine them to form more complex formatting.
 
-The shortcodes are available from the :guilabel:`Format` menu and in the editor toolbar, which can
-be activated by clicking the three dots in the editor header.
+The shortcodes are available from the **Format** menu and in the editor toolbar, which can be
+activated by clicking the left-most icon button in the editor header.
 
 .. versionadded:: 2.2
 
@@ -199,30 +205,39 @@ be activated by clicking the three dots in the editor header.
 Comments and Synopsis
 =====================
 
-In addition to these standard Markdown features, novelWriter also allows for comments in documents.
-The text of a comment is ignored by the word counter. The text can also be filtered out when
-building the manuscript or viewing the document.
+In addition to the above formatting features, novelWriter also allows for comments in documents.
+The text of a comment is always ignored by the word counter. The text can also be filtered out
+when building the manuscript or viewing the document.
 
-If the first word of a comment is ``Synopsis:`` (with the colon included), the comment is treated
-in a special manner and will show up in the :ref:`a_ui_outline` in a dedicated column. The word
-``synopsis`` is not case sensitive. If it is correctly formatted, the syntax highlighter will
-indicate this by altering the colour of the word.
+The first word of a comment, followed by a colon, can be one of a small set of modifiers that
+indicates the comment is intended for a specific purpose. For instance, if the comment starts with
+``Synopsis:``, the comment is treated in a special manner and will show up in the
+:ref:`a_ui_outline` in a dedicated column. The word ``synopsis`` is not case sensitive. If it is
+correctly formatted, the syntax highlighter will indicate this by altering the colour of the word.
 
-``% text ...``
+The different styles of comments are as follows:
+
+``% Comment text ...``
    This is a comment. The text is not rendered by default (this can be overridden), seen in the
-   document viewer, or counted towards word counts.
+   document viewer, or counted towards word counts. It is intended for you to make notes in your
+   text for your own sake, whatever that may be, that isn't part of the story text. This is the
+   general format of a comment.
 
-``%Synopsis: text ...``
+``%Synopsis: Comment text ...``
    This is a synopsis comment. It is generally treated in the same way as a regular comment, except
    that it is also captured by the indexing algorithm and displayed in the :ref:`a_ui_outline`. It
    can also be filtered separately when building the project to for instance generate an outline
    document of the whole project.
 
-``%Short: text ...``
+``%Short: Comment text ...``
    This is a short description comment. It is identical to the synopsis comment (they are
    interchangeable), but is intended to be used for project notes. The text shows up in the
-   Reference panel below the document viewer in the last column labelled
-   :guilabel:`Short Description`.
+   Reference panel below the document viewer in the last column labelled **Short Description**.
+
+``%~ Comment text ...``
+   This can be used to exclude story text from your manuscript without having to delete it from
+   your text. Comments with the ``~`` will *never* be included in the manuscript, even if you have
+   chosen to include comments in it. That is the main difference between these two formats.
 
 .. note::
    Only one comment can be flagged as a synopsis or short comment for each heading. If multiple
@@ -245,14 +260,14 @@ heading. Setting it multiple times under the same heading will just override the
    A tag keyword followed by the tag value, like for instance the name of a character.
 
 References can be set anywhere within a section, and are collected according to their category.
-References are in the form:
+References are on the form:
 
-``@keyword: value``
+``@keyword: value1, value2, ..., valueN``
    A reference keyword followed by a value, or a comma separated list of values.
 
 Tags and references are covered in detail in the :ref:`a_references` chapter. The keywords can be
-inserted at the cursor position in the editor via the :guilabel:`Insert` menu. If you start typing
-an ``@`` on a new line, and auto-complete menu will also pop up suggesting keywords.
+inserted at the cursor position in the editor via the **Insert** menu. If you start typing an ``@``
+on a new line, and auto-complete menu will also pop up suggesting keywords.
 
 
 .. _a_fmt_align:
@@ -260,8 +275,8 @@ an ``@`` on a new line, and auto-complete menu will also pop up suggesting keywo
 Paragraph Alignment and Indentation
 ===================================
 
-All documents have the text by default aligned to the left or justified, depending on your
-settings in :guilabel:`Preferences`.
+All documents have the text by default aligned to the left or justified, depending on your setting
+in **Preferences**.
 
 You can override the default text alignment on individual paragraphs by specifying alignment tags.
 These tags are double angle brackets. Either ``>>`` or ``<<``. You put them either before or after
@@ -296,6 +311,10 @@ Examples:
 Vertical Space and Page Breaks
 ==============================
 
+You can apply page breaks to partition, chapter and scene headings for novel documents from the
+**Manuscript Build** tool. If you need to add a page break or additional vertical spacing in other
+places, there are special codes available for this purpose.
+
 Adding more than one line break between paragraphs will **not** increase the space between those
 paragraphs when building the project. To add additional space between paragraphs, add the text
 ``[vspace]`` on a line of its own, and the build tool will insert a blank paragraph in its place.
@@ -303,13 +322,8 @@ paragraphs when building the project. To add additional space between paragraphs
 If you need multiple blank paragraphs just add a colon and a number to the above code. For
 instance, writing ``[vspace:3]`` will insert three blank paragraphs.
 
-Normally, the manuscript build tool will insert a page break before all headings of level one and
-for all headings of level two for novel documents, i.e. chapters, but not for project notes.
-
-If you need to add a page break somewhere else, put the text ``[new page]`` on a line by itself
-before the text you wish to start on a new page.
-
-If you want page breaks for scenes and sections, you must add them manually.
+If you need to add a page break somewhere, put the text ``[new page]`` on a line by itself before
+the text you wish to start on a new page.
 
 .. note::
    The page break code is applied to the text that follows it. It adds a "page break before" mark
@@ -325,8 +339,8 @@ If you want page breaks for scenes and sections, you must add them manually.
    [vspace:2]
 
    This is another text paragraph, but there will be two empty paragraphs
-   in-between them.
+   between them.
 
    [new page]
 
-   This text will always start on a new page if the build format has pages.
+   This text will start on a new page if the build format has pages.

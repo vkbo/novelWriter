@@ -16,9 +16,9 @@ this chapter hopes to explain in more detail how to use this tags and references
 
 .. tip::
    If you find the Tags and Reference system difficult to follow just from reading this chapter,
-   you can create a new project in the :guilabel:`Welcome` dialog's New project form and select 
-   "Create an example project" from the "Pre-fill project" option. The example project contains
-   several examples of tags and references.
+   you can create a new project in the **Welcome** dialog's New project form and select  "Create an
+   example project" from the "Pre-fill project" option. The example project contains several
+   examples of tags and references.
 
 
 .. _a_references_metadata:
@@ -68,7 +68,7 @@ You can only set **one** tag per heading, and the tag has to be unique across **
 the project.
 
 After a tag has been defined, it can be referenced in novel documents, or cross-referenced in other
-notes. Tags will also show up in the :guilabel:`Outline View` and in the references panel under the
+notes. Tags will also show up in the **Outline View** and in the references panel under the
 document viewer when a document is open in the viewer.
 
 The syntax highlighter will indicate to you that the keyword is correctly used and that the tag is
@@ -79,7 +79,7 @@ that valid tags do.
 The tag is the only part of these notes that novelWriter uses. The rest of the document content is
 there for you to use in whatever way you wish. Of course, the content of the documents can be added
 to the manuscript, or an outline document. If you want to compile a single document of all your
-notes, you can do this from the :guilabel:`Manuscript Build` tool.
+notes, you can do this from the **Manuscript Build** tool.
 
 .. versionadded:: 2.2
    Tags are no longer case sensitive. The tags are by default displayed with the capitalisation you
@@ -117,8 +117,8 @@ How to Use References
 =====================
 
 Each heading of any level in your project can contain references to tags set in project notes. The
-references are gathered by the indexer and used to generate the :guilabel:`Outline View`, among
-other things.
+references are gathered by the indexer and used to generate the **Outline View**, among other
+things.
 
 References are set as a :term:`keyword` and a list of corresponding tags. The valid keywords are
 listed below. The format of a reference line is ``@keyword: value1, [value2] ... [valueN]``. All
@@ -126,70 +126,69 @@ reference keywords allow multiple values.
 
 ``@pov``
    The point-of-view character for the current section. The target must be a note tag in a
-   :guilabel:`Character` type root folder.
+   **Character** type root folder.
 
 ``@focus``
    The character that has the focus for the current section. This can be used in cases where the
-   focus is not a point-of-view character. The target must be a note tag in a :guilabel:`Character`
-   type root folder.
+   focus is not a point-of-view character. The target must be a note tag in a **Character** type
+   root folder.
 
 ``@char``
-   Other characters in the current section. The target must be a note tag in a
-   :guilabel:`Character` type root folder. This should not include the point-of-view or focus
-   character if those references are used.
+   Other characters in the current section. The target must be a note tag in a **Character** type
+   root folder. This should not include the point-of-view or focus character if those references
+   are used.
 
 ``@plot``
-   The plot or subplot advanced in the current section. The target must be a note tag in a
-   :guilabel:`Plot` type root folder.
+   The plot or subplot advanced in the current section. The target must be a note tag in a **Plot**
+   type root folder.
 
 ``@time``
-   The timelines touched by the current section. The target must be a note tag in a
-   :guilabel:`Timeline` type root folder.
+   The timelines touched by the current section. The target must be a note tag in a **Timeline**
+   type root folder.
 
 ``@location``
    The location the current section takes place in. The target must be a note tag in a
-   :guilabel:`Locations` type root folder.
+   **Locations** type root folder.
 
 ``@object``
-   Objects present in the current section. The target must be a note tag in a :guilabel:`Object`
-   type root folder.
+   Objects present in the current section. The target must be a note tag in a **Object** type root
+   folder.
 
 ``@entity``
-   Entities present in the current section. The target must be a note tag in a
-   :guilabel:`Entities` type root folder.
+   Entities present in the current section. The target must be a note tag in an **Entities** type
+   root folder.
 
 ``@custom``
-   Custom references in the current section. The target must be a note tag in a :guilabel:`Custom`
-   type root folder. The custom folder are for any other category of notes you may want to use.
+   Custom references in the current section. The target must be a note tag in a **Custom** type
+   root folder. The custom folder are for any other category of notes you may want to use.
 
 The syntax highlighter will alert the user that the tags and references are used correctly, and
 that the tags referenced exist.
 
 .. note::
    The highlighter may be mistaken if the index of defined tags is out of date. If so, press
-   :kbd:`F9` to regenerate it, or select :guilabel:`Rebuild Index` from the :guilabel:`Tools` menu.
-   In general, the index for a document is regenerated when it is saved, so this shouldn't normally
-   be necessary.
+   :kbd:`F9` to regenerate it, or select **Rebuild Index** from the **Tools** menu. In general, the
+   index for a document is regenerated when it is saved, so this shouldn't normally be necessary.
 
 .. tip::
    If you add a reference in the editor to a tag that doesn't yet exist, you can right-click it and
-   select :guilabel:`Create Note for Tag`. This will generate a new project note automatically with
-   the new tag defined. In order for this to be possible, a root folder for that category of
-   references must already exist.
+   select **Create Note for Tag**. This will generate a new project note automatically with the new
+   tag defined. In order for this to be possible, a root folder for that category of references
+   must already exist.
 
 One note can also reference another note in the same way novel documents do. When the note is
 opened in the document viewer, the references become clickable links, making it easier to follow
 connections in the plot. You can follow links in the document editor by clicking them with the
 mouse while holding down the :kbd:`Ctrl` key. Clicked links are always opened in the view panel.
 
-Project notes don't show up in the :guilabel:`Outline View`, so referencing between notes is only
+Project notes don't show up in the **Outline View**, so referencing between notes is only
 meaningful if you want to be able to click-navigate between them, or of course if you just want to
 highlight that two notes are related.
 
 .. tip::
    If you cross-reference between notes and export your project as an HTML document using the
-   :guilabel:`Manuscript Build` tool, the cross-references become clickable links in the exported
-   HTML document as well.
+   **Manuscript Build** tool, the cross-references become clickable links in the exported HTML
+   document as well.
 
 Example of a novel document with references to characters and plots:
 
@@ -217,7 +216,7 @@ character ``@`` on a new line. It will first suggest tag or reference keywords f
 after the ``:`` has been added, suggest references from the list of tags you have already defined.
 
 You can use the auto-completer to add multiple references with a ``,`` between them, and even type
-new ones. New references can be created by right-clicking on them and selecting
-:guilabel:`Create Note for Tag` from the menu.
+new ones. New references can be created by right-clicking on them and selecting **Create Note for
+Tag** from the menu.
 
 .. versionadded:: 2.2
