@@ -142,6 +142,8 @@ A global search tool is available from the side bar. It allows you to search thr
 project. The tool does not provide a replace feature. There is a search and replace tool available
 in the document editor that acts on the open document.
 
+.. versionadded:: 2.4
+
 
 .. _a_breakdown_project:
 
