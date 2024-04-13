@@ -1,4 +1,4 @@
-name: Build
+name: i18n
 
 on:
   push:
