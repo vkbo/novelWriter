@@ -20,22 +20,22 @@ Main Window Shortcuts
    :header: "Shortcut", "Description"
 
    ":kbd:`F1`",           "Open the online user manual"
-   ":kbd:`F5`",           "Open the :guilabel:`Build Manuscript` tool"
-   ":kbd:`F6`",           "Open the :guilabel:`Writing Statistics` tool"
-   ":kbd:`F8`",           "Toggle :guilabel:`Focus Mode`"
+   ":kbd:`F5`",           "Open the **Build Manuscript** tool"
+   ":kbd:`F6`",           "Open the **Writing Statistics** tool"
+   ":kbd:`F8`",           "Toggle **Focus Mode**"
    ":kbd:`F9`",           "Re-build the project's index"
    ":kbd:`F11`",          "Toggle full screen mode"
-   ":kbd:`Ctrl+,`",       "Open the :guilabel:`Preferences` dialog"
+   ":kbd:`Ctrl+,`",       "Open the **Preferences** dialog"
    ":kbd:`Ctrl+E`",       "Switch focus to the document editor"
    ":kbd:`Ctrl+T`",       "Switch or toggle focus for the project tree or novel view"
    ":kbd:`Ctrl+Q`",       "Exit novelWriter"
-   ":kbd:`Ctrl+Shift+,`", "Open the :guilabel:`Project Settings` dialog"
+   ":kbd:`Ctrl+Shift+,`", "Open the **Project Settings** dialog"
    ":kbd:`Ctrl+Shift+O`", "Open the Welcome dialog to open or create a project"
    ":kbd:`Ctrl+Shift+S`", "Save the current project"
    ":kbd:`Ctrl+Shift+T`", "Switch focus to the outline view"
    ":kbd:`Ctrl+Shift+W`", "Close the current project"
    ":kbd:`Shift+F1`",     "Open the local user manual (PDF) if it is available"
-   ":kbd:`Shift+F6`",     "Open the :guilabel:`Project Details` dialog"
+   ":kbd:`Shift+F6`",     "Open the **Project Details** dialog"
 
 
 .. _a_kb_tree:
@@ -53,8 +53,8 @@ Project Tree Shortcuts
    ":kbd:`Alt+Left`",       "Jump to the parent item in the tree"
    ":kbd:`Alt+Right`",      "Jump to the first child item in the project tree"
    ":kbd:`Ctrl+.`",         "Open the context menu on the selected item"
-   ":kbd:`Ctrl+L`",         "Open the :guilabel:`Quick Links` menu"
-   ":kbd:`Ctrl+N`",         "Open the :guilabel:`Create New Item` menu"
+   ":kbd:`Ctrl+L`",         "Open the **Quick Links** menu"
+   ":kbd:`Ctrl+N`",         "Open the **Create New Item** menu"
    ":kbd:`Ctrl+O`",         "Open the selected document in the editor"
    ":kbd:`Ctrl+R`",         "Open the selected document in the viewer"
    ":kbd:`Ctrl+Up`",        "Move selected item one step up in the tree"
@@ -75,11 +75,12 @@ Text Search Shortcuts
    :header: "Shortcut", "Description"
 
    ":kbd:`F3`",           "Find the next occurrence of the search word"
-   ":kbd:`Ctrl+F`",       "Open the search bar and search for the selected word, if any is selected"
+   ":kbd:`Ctrl+F`",       "Open search and look for the selected word"
    ":kbd:`Ctrl+G`",       "Find the next occurrence of the search word"
-   ":kbd:`Ctrl+H`",       "Open the search tool and populate with the selected word (Mac :kbd:`Cmd+=`)"
-   ":kbd:`Ctrl+Shift+1`", "Replace selected occurrence of the search word, and move to the next"
+   ":kbd:`Ctrl+H`",       "Open replace and look for the selected word (Mac :kbd:`Cmd+=`)"
+   ":kbd:`Ctrl+Shift+1`", "Replace selected occurrence, and move to the next"
    ":kbd:`Ctrl+Shift+G`", "Find the previous occurrence of the search word"
+   ":kbd:`Ctrl+Shift+F`", "Open project search and look for the selected word"
    ":kbd:`Shift+F3`",     "Find the previous occurrence of the search word"
 
 
@@ -91,8 +92,8 @@ Text Formatting Shortcuts
 
    ":kbd:`Ctrl+'`",       "Wrap selected text, or word under cursor, in single quotes"
    ":kbd:`Ctrl+""`",      "Wrap selected text, or word under cursor, in double quotes"
-   ":kbd:`Ctrl+/`",       "Toggle block format as comment for block under cursor, or selected text"
-   ":kbd:`Ctrl+0`",       "Remove block formatting for block under cursor, or selected text"
+   ":kbd:`Ctrl+/`",       "Toggle comment format for block or selected text"
+   ":kbd:`Ctrl+0`",       "Remove format for block or selected text"
    ":kbd:`Ctrl+1`",       "Change block format to heading level 1"
    ":kbd:`Ctrl+2`",       "Change block format to heading level 2"
    ":kbd:`Ctrl+3`",       "Change block format to heading level 3"
@@ -102,11 +103,11 @@ Text Formatting Shortcuts
    ":kbd:`Ctrl+7`",       "Change block alignment to right-aligned"
    ":kbd:`Ctrl+8`",       "Add a left margin to the block"
    ":kbd:`Ctrl+9`",       "Add a right margin to the block"
-   ":kbd:`Ctrl+B`",       "Format selected text, or word under cursor, with strong emphasis (bold)"
+   ":kbd:`Ctrl+B`",       "Format selected text, or word under cursor, with bold"
    ":kbd:`Ctrl+D`",       "Format selected text, or word under cursor, with strike through"
-   ":kbd:`Ctrl+I`",       "Format selected text, or word under cursor, with emphasis (italic)"
-   ":kbd:`Ctrl+Shift+/`", "Remove block formatting for block under cursor, or selected text"
-   ":kbd:`Ctrl+Shift+D`", "Toggle block format as ignored text for block under cursor, or selected text"
+   ":kbd:`Ctrl+I`",       "Format selected text, or word under cursor, with italic"
+   ":kbd:`Ctrl+Shift+/`", "Remove format for block or selected text"
+   ":kbd:`Ctrl+Shift+D`", "Toggle ignored text format for block or selected text"
 
 
 Other Editor Shortcuts

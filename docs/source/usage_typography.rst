@@ -11,7 +11,7 @@ Typographical Notes
 
 novelWriter has some support for typographical symbols that are not usually easily available in
 many text editors. This includes for instance the proper unicode quotation marks, dashes, ellipsis,
-thin spaces, etc. All these symbols are available from the :guilabel:`Insert` menu, and via
+thin spaces, etc. All these symbols are available from the **Insert** menu, and via
 keyboard shortcuts. See :ref:`a_kb_ins`.
 
 This chapter provides some additional information on how novelWriter handles these symbols.
@@ -43,22 +43,22 @@ Single and Double Quotes
 
 All the different quotation marks listed on the `Quotation Mark`_ Wikipedia page are available, and
 can be selected as auto-replaced symbols for straight single and double quote key strokes. The
-settings can be found in :guilabel:`Preferences`.
+settings can be found in **Preferences**.
 
 Ordinarily, text wrapped in quotes are highlighted by the editor. This is meant as a convenience
 for highlighting dialogue between characters. This feature can be disabled in
-:guilabel:`Preferences` if this feature isn't wanted.
+**Preferences** if this feature isn't wanted.
 
 The editor distinguishes between text wrapped in regular straight double quotes and the
 user-selected double quote symbols. This is to help the writer recognise which parts of the text
-are not using the chosen quote symbols. Two convenience functions in the :guilabel:`Format` menu
+are not using the chosen quote symbols. Two convenience functions in the **Format** menu
 can be used to re-format a selected section of text with the correct quote symbols.
 
 
 Single and Double Prime
 ------------------------
 
-Both single and double prime symbols are available in the :guilabel:`Insert` menu. These symbols
+Both single and double prime symbols are available in the **Insert** menu. These symbols
 are the correct symbols to use for unit symbols for feet, inches, minutes, and seconds. The usage
 of these is described in more detail on the Wikipedia Prime_ page. They look very similar to single
 and double straight quotes, and may be rendered similarly by the font, but they have different
@@ -79,7 +79,7 @@ right single quotation marks, depending on the font. There is a Wikipedia articl
 `Modifier letter apostrophe`_ with more details.
 
 .. note::
-   On export with the :guilabel:`Build Manuscript` tool, these apostrophes will be replaced
+   On export with the **Build Manuscript** tool, these apostrophes will be replaced
    automatically with the corresponding right hand single quote symbol as is generally recommended.
    Therefore it doesn't really matter if you only use them to correct syntax highlighting.
 

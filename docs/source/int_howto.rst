@@ -19,9 +19,9 @@ Managing the Project
 .. dropdown:: Merge Multiple Documents Into One
    :animate: fade-in-slide-down
 
-   If you need to merge a set of documents in your project into a single document, you can achieve
-   this by first making a new folder for just that purpose, and drag all the files you want merged
-   into this folder. Then you can right click the folder, select :guilabel:`Transform` and
+   If you need to merge a selection of documents in your project into a single document, you can
+   achieve this by first making a new folder for just that purpose, and drag all the files you want
+   merged into this folder. Then you can right click the folder, select :guilabel:`Transform` and
    :guilabel:`Merge Documents in Folder`.
 
    In the dialog that pops up, the documents will be in the same order as in the folder, but you
@@ -36,7 +36,7 @@ Layout Tricks
 
    The formatting tools available in novelWriter don't allow for complex structures like tables.
    However, the editor does render tabs in a similar way that regular word processors do. You can
-   set the width of a tab in :guilabel:`Preferences`.
+   set the width of a tab in **Preferences**.
 
    The tab key should have the same distance in the editor as in the viewer, so you can align text
    in columns using the tab key, and it should look the same when viewed next to the editor.
@@ -66,18 +66,13 @@ Organising Your Text
    Depending on your writing style, you may need to separate between soft and hard scene breaks
    within chapters. Like for instance if you switch point-of-view character often.
 
-   In such cases you may want to use a scene heading for hard scene breaks and a section heading
-   for soft scene breaks. The :guilabel:`Build Manuscript` tool will let you add separate
-   formatting for the two when you generate your manuscript. You can for instance add the common
-   "``* * *``" for hard breaks and select to hide section breaks, which will just insert an empty
-   paragraph in their place. See :ref:`a_manuscript_settings` for more details.
-
-   Keep in mind that this is not what the section heading is intended for, so the app will not
-   understand the section heading as a scene, but it will be formatted correctly in the manuscript.
+   In such cases you may want to use different scene headings for hard and soft scene breaks. The
+   **Build Manuscript** tool will let you define a different format for scenes using the ``###``
+   and ``###!`` heading codes when you generate your manuscript. You can for instance add the
+   common "``* * *``" for hard breaks and select to soft scene breaks, which will just insert an
+   empty paragraph in their place. See :ref:`a_manuscript_settings` for more details.
 
    .. versionadded:: 2.4
-      You can now distinguish between soft and hard scene breaks with a modified scene header. See
-      :ref:`a_manuscript_settings_head_hard` for more details.
 
 
 Other Tools

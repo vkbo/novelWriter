@@ -8,8 +8,8 @@ This is an overview of how words and other counts of your text are performed. Th
 should be relatively standard, and are compared to Libre Office Writer rules.
 
 The counts provided in the app on the raw text is meant to be approximate. For more accurate
-counts, you need to build your manuscript in the :guilabel:`Manuscript Tool` and check the counts
-on the generated preview.
+counts, you need to build your manuscript in the **Manuscript Tool** and check the counts on the
+generated preview.
 
 
 Text Word Counts and Stats
@@ -31,11 +31,11 @@ After the above preparation of the text, the following counts are available.
 **Character Count**
    The character count is the sum of characters per line, including leading and in-text white space
    characters, but excluding trailing white space characters. Shortcodes in the text are not
-   included, but Markdown codes are. Only headers and text are counted.
+   included, but Markdown codes are. Only headings and text are counted.
 
 **Word Count**
    The words count is the sum of blocks of continuous character per line separated by any number of
-   white space characters or dashes. Only headers and text are counted.
+   white space characters or dashes. Only headings and text are counted.
 
 **Paragraph Count**
    The paragraph count is the number of text blocks separated by one or more empty line. A line
@@ -45,10 +45,10 @@ After the above preparation of the text, the following counts are available.
 Manuscript Counts
 =================
 
-These are the rules for the counts available for a manuscript in the :guilabel:`Manuscript Tool`.
-The rules have been tuned to agree with LibreOffice Writer, but will vary slightly depending on the
-content of your text. LibreOffice Writer also counts the text in the page header, which the
-Manuscript Tool does not.
+These are the rules for the counts available for a manuscript in the **Manuscript Tool**. The rules
+have been tuned to agree with LibreOffice Writer, but will vary slightly depending on the content
+of your text. LibreOffice Writer also counts the text in the page header, which the **Manuscript
+Tool** does not.
 
 The content of each line is counted after all formatting has been processed, so the result will be
 more accurate than the counts for text documents elsewhere in the app. The following rules apply:
@@ -63,36 +63,36 @@ more accurate than the counts for text documents elsewhere in the app. The follo
 
 The following counts are available:
 
-**Header Count**
-   The number of headers in the manuscript.
+**Headings**
+   The number of headings in the manuscript.
 
-**Paragraph Count**
+**Paragraphs**
    The number of body text paragraphs in the manuscript.
 
-**Total Word Count**
+**Words**
    The number of words in the manuscript, including any comments and meta data text.
 
-**Text Word Count**
+**Words in Text**
    The number of words in body text paragraphs, excluding all other text.
 
-**Header Word Count**
-   The number of words in headers, including inserted formatting like chapter numbers, etc.
+**Words in Headings**
+   The number of words in headings, including inserted formatting like chapter numbers, etc.
 
-**Total Character Count**
-   The number of characters on all lines, including any comments and meta data text. Paragraph
+**Characters**
+   The number of characters in all lines, including any comments and meta data text. Paragraph
    breaks are not counted, but in-paragraph hard line breaks are.
 
-**Text Character Count**
+**Character in Text**
    The number of characters in body text paragraphs. Paragraph breaks are not counted, but
    in-paragraph hard line breaks are.
 
-**Header Character Count**
+**Characters in Headings**
    The number of characters in headings.
 
-**Text Words Character Count**
+**Character in Text, No Spaces**
    The number of characters in body text paragraphs considered part of a word or punctuation. That
    is, white space characters are not counted.
 
-**Header Words Character Count**
-   The number of characters in headers considered part of a word or punctuation. That is, white
+**Character in Headings, No Spaces**
+   The number of characters in headings considered part of a word or punctuation. That is, white
    space characters are not counted.
