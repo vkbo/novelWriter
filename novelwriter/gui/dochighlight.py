@@ -44,6 +44,10 @@ logger = logging.getLogger(__name__)
 
 SPELLRX = QRegularExpression(r"\b[^\s\-\+\/–—\[\]:]+\b")
 SPELLRX.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
+SPELLSC = QRegularExpression(nwRegEx.FMT_SC)
+SPELLSC.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
+SPELLSV = QRegularExpression(nwRegEx.FMT_SV)
+SPELLSV.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
 
 BLOCK_NONE  = 0
 BLOCK_TEXT  = 1
@@ -439,6 +443,17 @@ class TextBlockData(QTextBlockUserData):
         """Run the spell checker and cache the result, and return the
         list of spell check errors.
         """
+        if "[" in text:
+            # Strip shortcodes
+            for rX in [SPELLSC, SPELLSV]:
+                rxItt = rX.globalMatch(text, 0)
+                while rxItt.hasNext():
+                    rxMatch = rxItt.next()
+                    xPos = rxMatch.capturedStart(0)
+                    xLen = rxMatch.capturedLength(0)
+                    xEnd = rxMatch.capturedEnd(0)
+                    text = text[:xPos] + " "*xLen + text[xEnd:]
+
         self._spellErrors = []
         rxSpell = SPELLRX.globalMatch(text.replace("_", " "), 0)
         while rxSpell.hasNext():
