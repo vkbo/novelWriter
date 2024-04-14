@@ -514,6 +514,14 @@ class NWIndex:
         name, _, display = text.partition("|")
         return name.rstrip(), display.lstrip()
 
+    def newCommentKey(self, style: nwComment) -> str | None:
+        """Generate a new key for a comment style."""
+        if style == nwComment.FOOTNOTE:
+            return self._textIndex.footnotes.newKey()
+        elif style == nwComment.COMMENT:
+            return self._textIndex.comments.newKey()
+        return None
+
     ##
     #  Extract Data
     ##
@@ -1322,8 +1330,8 @@ class TextIndex:
     __slots__ = ("_comments", "_footnotes")
 
     def __init__(self) -> None:
-        self._comments = TextRegistry("c_")
-        self._footnotes = TextRegistry("f_")
+        self._comments = TextRegistry("c")
+        self._footnotes = TextRegistry("f")
         return
 
     @property

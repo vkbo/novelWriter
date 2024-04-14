@@ -55,7 +55,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwUnicode
 from novelwriter.core.document import NWDocument
-from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwTrinary
+from novelwriter.enum import nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwTrinary
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
 from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE
@@ -884,6 +884,9 @@ class GuiDocEditor(QPlainTextEdit):
                 text = GuiLipsum.getLipsum(self)
                 newBlock = True
                 goAfter = False
+            elif insert == nwDocInsert.FOOTNOTE:
+                text = ""
+                self._insertCommentStructure(nwComment.FOOTNOTE)
             else:
                 return False
         else:
@@ -1847,6 +1850,33 @@ class GuiDocEditor(QPlainTextEdit):
         cursor.movePosition(QtMoveRight, QtKeepAnchor, rE-rS)
         cursor.insertText(cleanText.rstrip() + "\n")
         cursor.endEditBlock()
+
+        return
+
+    def _insertCommentStructure(self, style: nwComment) -> None:
+        """Insert a shortcut/comment combo."""
+        if style == nwComment.FOOTNOTE:
+            key = SHARED.project.index.newCommentKey(style)
+            code = nwShortcode.COMMENT_STYLES[nwComment.FOOTNOTE]
+
+            cursor = self.textCursor()
+            block = cursor.block()
+            text = block.text().rstrip()
+            if not text or text.startswith(("@", "#", "%")):
+                SHARED.error(self.tr("Footnotes can only be inserted in text."))
+                return
+
+            cursor.beginEditBlock()
+            cursor.insertText(code.format(key))
+            cursor.setPosition(block.position() + block.length())
+            cursor.insertBlock()
+            cursor.insertText(f"%Footnote.{key}: ")
+            cursor.insertBlock()
+            cursor.endEditBlock()
+
+            cursor.setPosition(cursor.position() - 1)
+
+            self.setTextCursor(cursor)
 
         return
 

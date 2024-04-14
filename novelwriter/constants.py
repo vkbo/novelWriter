@@ -25,7 +25,9 @@ from __future__ import annotations
 
 from PyQt5.QtCore import QCoreApplication, QT_TRANSLATE_NOOP
 
-from novelwriter.enum import nwBuildFmt, nwItemClass, nwItemLayout, nwOutline, nwStatusShape
+from novelwriter.enum import (
+    nwBuildFmt, nwComment, nwItemClass, nwItemLayout, nwOutline, nwStatusShape
+)
 
 
 def trConst(text: str) -> str:
@@ -67,7 +69,7 @@ class nwRegEx:
     FMT_EB = r"(?<![\w\\])([\*]{2})(?![\s\*])(.+?)(?<![\s\\])(\1)(?!\w)"
     FMT_ST = r"(?<![\w\\])([~]{2})(?![\s~])(.+?)(?<![\s\\])(\1)(?!\w)"
     FMT_SC = r"(?i)(?<!\\)(\[[\/\!]?(?:i|b|s|u|m|sup|sub)\])"
-    FMT_SV = r"(?<!\\)(\[(?i)(?:fn|footnote):)(.+?)(?<!\\)(\])"
+    FMT_SV = r"(?<!\\)(\[(?i)(?:footnote):)(.+?)(?<!\\)(\])"
 
 # END Class nwRegEx
 
@@ -88,6 +90,11 @@ class nwShortcode:
     SUP_C    = "[/sup]"
     SUB_O    = "[sub]"
     SUB_C    = "[/sub]"
+
+    COMMENT_STYLES = {
+        nwComment.FOOTNOTE: "[footnote:{0}]",
+        nwComment.COMMENT:  "[comment:{0}]",
+    }
 
 # END Class nwShortcode
 
