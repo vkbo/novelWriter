@@ -135,7 +135,7 @@ class ToMarkdown(Tokenizer):
         lines = []
         lineSep = "  \n" if self._preserveBreaks else " "
 
-        for tType, _, tText, tFormat, tMarkers, tStyle in self._tokens:
+        for tType, _, tText, tFormat, tStyle in self._tokens:
 
             if tType == self.T_EMPTY:
                 if para:
@@ -171,7 +171,7 @@ class ToMarkdown(Tokenizer):
 
             elif tType == self.T_TEXT:
                 tTemp = tText
-                for pos, fmt in reversed(tFormat):
+                for pos, fmt, _ in reversed(tFormat):
                     tTemp = f"{tTemp[:pos]}{mdTags[fmt]}{tTemp[pos:]}"
                 para.append(tTemp.rstrip())
 

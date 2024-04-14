@@ -171,7 +171,7 @@ class ToHtml(Tokenizer):
 
         tHandle = self._handle
 
-        for tType, nHead, tText, tFormat, tMarkers, tStyle in self._tokens:
+        for tType, nHead, tText, tFormat, tStyle in self._tokens:
 
             # Replace < and > with HTML entities
             if tFormat:
@@ -181,11 +181,11 @@ class ToHtml(Tokenizer):
                 for c in tText:
                     if c == "<":
                         cText.append("&lt;")
-                        tFormat = [[p + 3 if p > i else p, f] for p, f in tFormat]
+                        tFormat = [[p + 3 if p > i else p, f, k] for p, f, k in tFormat]
                         i += 4
                     elif c == ">":
                         cText.append("&gt;")
-                        tFormat = [[p + 3 if p > i else p, f] for p, f in tFormat]
+                        tFormat = [[p + 3 if p > i else p, f, k] for p, f, k in tFormat]
                         i += 4
                     else:
                         cText.append(c)
@@ -278,10 +278,15 @@ class ToHtml(Tokenizer):
                 tTemp = tText
                 if pStyle is None:
                     pStyle = hStyle
-                for pos, fmt in reversed(tFormat):
-                    tTemp = f"{tTemp[:pos]}{htmlTags[fmt]}{tTemp[pos:]}"
-                for pos, fmt, key in reversed(tMarkers):
-                    tTemp = f"{tTemp[:pos]}<sup>[x]</sub>{tTemp[pos:]}"
+                for pos, fmt, key in reversed(tFormat):
+                    if fmt > self.MRK_BOUNDARY:
+                        if key in self._markers:
+                            index = self._markers[key][0]
+                            if fmt == self.MRK_FOOTNOTE:
+                                ref = f"<sup><a href='#footnote_{index}'>[{index+1}]</a></sup>"
+                                tTemp = f"{tTemp[:pos]}{ref}{tTemp[pos:]}"
+                    else:
+                        tTemp = f"{tTemp[:pos]}{htmlTags[fmt]}{tTemp[pos:]}"
                 para.append(stripEscape(tTemp.rstrip()))
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:

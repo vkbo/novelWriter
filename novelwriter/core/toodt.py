@@ -39,7 +39,7 @@ from novelwriter import __version__
 from novelwriter.common import xmlIndent
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels
 from novelwriter.core.project import NWProject
-from novelwriter.core.tokenizer import Tokenizer, stripEscape
+from novelwriter.core.tokenizer import T_Formats, Tokenizer, stripEscape
 
 logger = logging.getLogger(__name__)
 
@@ -399,11 +399,11 @@ class ToOdt(Tokenizer):
         """Convert the list of text tokens into XML elements."""
         self._result = ""  # Not used, but cleared just in case
 
-        pFmt = []
+        pFmt: list[T_Formats] = []
         pText = []
         pStyle = None
         pIndent = True
-        for tType, _, tText, tFormat, tMarkers, tStyle in self._tokens:
+        for tType, _, tText, tFormat, tStyle in self._tokens:
 
             # Styles
             oStyle = ODTParagraphStyle("New")
@@ -444,11 +444,11 @@ class ToOdt(Tokenizer):
 
                 if len(pText) > 0 and pStyle is not None:
                     tTxt = ""
-                    tFmt = []
+                    tFmt: list[tuple[int, int]] = []
                     for nText, nFmt in zip(pText, pFmt):
                         tLen = len(tTxt)
                         tTxt += f"{nText}\n"
-                        tFmt.extend((p+tLen, fmt) for p, fmt in nFmt)
+                        tFmt.extend((p+tLen, fmt) for p, fmt, _ in nFmt)
 
                     # Don't indent a paragraph if it has alignment set
                     tIndent = self._firstIndent and pIndent and pStyle.isUnaligned()
