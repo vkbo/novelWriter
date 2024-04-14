@@ -944,7 +944,7 @@ class GuiMain(QMainWindow):
     #  Events
     ##
 
-    def closeEvent(self, event: QCloseEvent):
+    def closeEvent(self, event: QCloseEvent) -> None:
         """Capture the closing event of the GUI and call the close
         function to handle all the close process steps.
         """
@@ -1201,7 +1201,7 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot()
-    def _toggleViewerPanelVisibility(self):
+    def _toggleViewerPanelVisibility(self) -> None:
         """Toggle the visibility of the document viewer panel."""
         CONFIG.showViewerPanel = not CONFIG.showViewerPanel
         self.docViewerPanel.setVisible(CONFIG.showViewerPanel)

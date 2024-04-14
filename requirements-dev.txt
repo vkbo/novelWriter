@@ -1,2 +1,3 @@
 flake8
 flake8-pep585
+flake8-annotations

@@ -56,13 +56,13 @@ SETTINGS_TEMPLATE = {
     "headings.fmtChapter":     (str, nwHeadFmt.TITLE),
     "headings.fmtUnnumbered":  (str, nwHeadFmt.TITLE),
     "headings.fmtScene":       (str, "* * *"),
-    "headings.fmtHardScene":   (str, ""),
+    "headings.fmtAltScene":    (str, ""),
     "headings.fmtSection":     (str, ""),
     "headings.hideTitle":      (bool, False),
     "headings.hideChapter":    (bool, False),
     "headings.hideUnnumbered": (bool, False),
     "headings.hideScene":      (bool, False),
-    "headings.hideHardScene":  (bool, False),
+    "headings.hideAltScene":   (bool, False),
     "headings.hideSection":    (bool, True),
     "headings.centerTitle":    (bool, True),
     "headings.centerChapter":  (bool, False),
@@ -110,7 +110,7 @@ SETTINGS_LABELS = {
     "headings.fmtChapter":    QT_TRANSLATE_NOOP("Builds", "Chapter Format"),
     "headings.fmtUnnumbered": QT_TRANSLATE_NOOP("Builds", "Unnumbered Format"),
     "headings.fmtScene":      QT_TRANSLATE_NOOP("Builds", "Scene Format"),
-    "headings.fmtHardScene":  QT_TRANSLATE_NOOP("Builds", "Hard Scene Format"),
+    "headings.fmtAltScene":   QT_TRANSLATE_NOOP("Builds", "Alt. Scene Format"),
     "headings.fmtSection":    QT_TRANSLATE_NOOP("Builds", "Section Format"),
 
     "text.grpContent":        QT_TRANSLATE_NOOP("Builds", "Text Content"),
@@ -178,7 +178,7 @@ class BuildSettings:
     def __init__(self) -> None:
         self._name = ""
         self._uuid = str(uuid.uuid4())
-        self._path = Path.home()
+        self._path = CONFIG.homePath()
         self._build = ""
         self._order = 0
         self._format = nwBuildFmt.ODT
@@ -220,7 +220,7 @@ class BuildSettings:
         """The last used build path."""
         if self._path.is_dir():
             return self._path
-        return Path.home()
+        return CONFIG.homePath()
 
     @property
     def lastBuildName(self) -> str:
@@ -297,7 +297,7 @@ class BuildSettings:
         if isinstance(path, Path) and path.is_dir():
             self._path = path
         else:
-            self._path = Path.home()
+            self._path = CONFIG.homePath()
         self._changed = True
         return
 
@@ -382,7 +382,7 @@ class BuildSettings:
 
         postponed = []
 
-        def allowRoot(rHandle):
+        def allowRoot(rHandle: str | None) -> None:
             if rHandle in postponed and rHandle in result and rHandle is not None:
                 result[rHandle] = (True, FilterMode.ROOT)
                 postponed.remove(rHandle)

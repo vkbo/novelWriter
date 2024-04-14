@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-      - releases/**
+      - release
   pull_request:
     branches:
       - main
-      - releases/**
+      - release
 
 jobs:
   testLinux:
@@ -38,4 +38,6 @@ jobs:
           export QT_QPA_PLATFORM=offscreen
           pytest -v --cov=novelwriter --timeout=60
       - name: Upload to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

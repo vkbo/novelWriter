@@ -74,7 +74,7 @@ class NWSpellEnchant:
     #  Setters
     ##
 
-    def setLanguage(self, language: str | None):
+    def setLanguage(self, language: str | None) -> None:
         """Load a dictionary for the language specified in the config.
         If that fails, we load a mock dictionary so that lookups don't
         crash. Note that enchant will allow loading an empty string as
@@ -182,10 +182,10 @@ class FakeEnchant:
     def check(self, word: str) -> bool:
         return True
 
-    def suggest(self, word) -> list[str]:
+    def suggest(self, word: str) -> list[str]:
         return []
 
-    def add_to_session(self, word: str):
+    def add_to_session(self, word: str) -> None:
         return
 
 # END Class FakeEnchant

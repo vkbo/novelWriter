@@ -36,8 +36,8 @@ from PyQt5.QtPrintSupport import QPrintPreviewDialog, QPrinter
 from PyQt5.QtWidgets import (
     QAbstractItemView, QApplication, QDialog, QFormLayout, QGridLayout,
     QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton,
-    QSizePolicy, QSplitter, QStackedWidget, QTabWidget, QTextBrowser,
-    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QSplitter, QStackedWidget, QTabWidget, QTextBrowser, QTreeWidget,
+    QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -54,7 +54,7 @@ from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignRight, QtAlignTop,
-    QtUserRole
+    QtSizeExpanding, QtSizeIgnored, QtUserRole
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -303,25 +303,21 @@ class GuiManuscript(QDialog):
     @pyqtSlot()
     def _editSelectedBuild(self) -> None:
         """Edit the currently selected build settings entry."""
-        build = self._getSelectedBuild()
-        if build is not None:
+        if build := self._getSelectedBuild():
             self._openSettingsDialog(build)
         return
 
     @pyqtSlot("QListWidgetItem*", "QListWidgetItem*")
     def _updateBuildDetails(self, current: QListWidgetItem, previous: QListWidgetItem) -> None:
         """Process change of build selection to update the details."""
-        if isinstance(current, QListWidgetItem):
-            build = self._builds.getBuild(current.data(self.D_KEY))
-            if build is not None:
-                self.buildDetails.updateInfo(build)
+        if current and (build := self._builds.getBuild(current.data(self.D_KEY))):
+            self.buildDetails.updateInfo(build)
         return
 
     @pyqtSlot()
     def _deleteSelectedBuild(self) -> None:
         """Delete the currently selected build settings entry."""
-        build = self._getSelectedBuild()
-        if build is not None:
+        if build := self._getSelectedBuild():
             if SHARED.question(self.tr("Delete build '{0}'?".format(build.name))):
                 self._builds.removeBuild(build.buildID)
                 self._updateBuildsList()
@@ -332,8 +328,7 @@ class GuiManuscript(QDialog):
         """Process new build settings from the settings dialog."""
         self._builds.setBuild(build)
         self._updateBuildItem(build)
-        current = self.buildList.currentItem()
-        if isinstance(current, QListWidgetItem) and current.data(self.D_KEY) == build.buildID:
+        if (current := self.buildList.currentItem()) and current.data(self.D_KEY) == build.buildID:
             self._updateBuildDetails(current, current)
         return
 
@@ -342,8 +337,7 @@ class GuiManuscript(QDialog):
         """Run the document builder on the current build settings for
         the preview widget.
         """
-        build = self._getSelectedBuild()
-        if build is None:
+        if not (build := self._getSelectedBuild()):
             return
 
         docBuild = NWBuildDocument(SHARED.project, build)
@@ -383,8 +377,7 @@ class GuiManuscript(QDialog):
     @pyqtSlot()
     def _buildManuscript(self) -> None:
         """Open the build dialog and build the manuscript."""
-        build = self._getSelectedBuild()
-        if isinstance(build, BuildSettings):
+        if build := self._getSelectedBuild():
             dlgBuild = GuiManuscriptBuild(self, build)
             dlgBuild.exec()
 
@@ -627,7 +620,7 @@ class _DetailsWidget(QWidget):
             ("headings.fmtChapter", "headings.hideChapter"),
             ("headings.fmtUnnumbered", "headings.hideUnnumbered"),
             ("headings.fmtScene", "headings.hideScene"),
-            ("headings.fmtHardScene", "headings.hideHardScene"),
+            ("headings.fmtAltScene", "headings.hideAltScene"),
             ("headings.fmtSection", "headings.hideSection"),
         ]:
             sub = QTreeWidgetItem()
@@ -1030,16 +1023,14 @@ class _StatsWidget(QWidget):
     @pyqtSlot(bool)
     def _toggleView(self, state: bool) -> None:
         """Toggle minimal or maximal view."""
-        ignored = QSizePolicy.Policy.Ignored
-        expanded = QSizePolicy.Policy.Expanding
         if state:
             self.mainStack.setCurrentWidget(self.maxWidget)
-            self.maxWidget.setSizePolicy(expanded, expanded)
-            self.minWidget.setSizePolicy(ignored, ignored)
+            self.maxWidget.setSizePolicy(QtSizeExpanding, QtSizeExpanding)
+            self.minWidget.setSizePolicy(QtSizeIgnored, QtSizeIgnored)
         else:
             self.mainStack.setCurrentWidget(self.minWidget)
-            self.maxWidget.setSizePolicy(ignored, ignored)
-            self.minWidget.setSizePolicy(expanded, expanded)
+            self.maxWidget.setSizePolicy(QtSizeIgnored, QtSizeIgnored)
+            self.minWidget.setSizePolicy(QtSizeExpanding, QtSizeExpanding)
         self.maxWidget.adjustSize()
         self.minWidget.adjustSize()
         self.mainStack.adjustSize()

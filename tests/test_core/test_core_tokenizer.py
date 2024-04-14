@@ -949,6 +949,15 @@ def testCoreToken_ExtractFormats(mockGUI):
         (10, tokens.FMT_B_B), (31, tokens.FMT_I_B), (38, tokens.FMT_B_E), (38, tokens.FMT_I_E)
     ]
 
+    # So does this
+    text, fmt = tokens._extractFormats(
+        "Text with [b]bold and overlapping [i]italics[/b] in[/i] it."
+    )
+    assert text == "Text with bold and overlapping italics in it."
+    assert fmt == [
+        (10, tokens.FMT_B_B), (31, tokens.FMT_I_B), (38, tokens.FMT_B_E), (41, tokens.FMT_I_E)
+    ]
+
 # END Test testCoreToken_ExtractFormats
 
 

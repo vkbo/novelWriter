@@ -26,33 +26,32 @@ from __future__ import annotations
 import json
 import logging
 
+from collections.abc import Iterable
 from enum import Enum
+from functools import partial
+from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING
-from pathlib import Path
-from functools import partial
-from collections.abc import Iterable
 
 from PyQt5.QtCore import QCoreApplication
 
 from novelwriter import CONFIG, SHARED, __version__, __hexversion__
-from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
-from novelwriter.error import logException
-from novelwriter.constants import trConst, nwLabels
-from novelwriter.core.tree import NWTree
-from novelwriter.core.index import NWIndex
-from novelwriter.core.options import OptionState
-from novelwriter.core.storage import NWStorage, NWStorageOpen
-from novelwriter.core.sessions import NWSessionLog
-from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
-from novelwriter.core.projectdata import NWProjectData
 from novelwriter.common import (
     checkStringNone, formatInt, formatTimeStamp, getFileSize, hexToInt, makeFileNameSafe, minmax
 )
+from novelwriter.constants import trConst, nwLabels
+from novelwriter.core.index import NWIndex
+from novelwriter.core.options import OptionState
+from novelwriter.core.projectdata import NWProjectData
+from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
+from novelwriter.core.sessions import NWSessionLog
+from novelwriter.core.storage import NWStorage, NWStorageOpen
+from novelwriter.core.tree import NWTree
+from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
+from novelwriter.error import logException
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.item import NWItem
-    from novelwriter.core.status import NWStatus
 
 logger = logging.getLogger(__name__)
 
@@ -461,14 +460,14 @@ class NWProject:
 
     def setDefaultStatusImport(self) -> None:
         """Set the default status and importance values."""
-        self._data.itemStatus.write(None, self.tr("New"),      (100, 100, 100))
-        self._data.itemStatus.write(None, self.tr("Note"),     (200, 50,  0))
-        self._data.itemStatus.write(None, self.tr("Draft"),    (200, 150, 0))
-        self._data.itemStatus.write(None, self.tr("Finished"), (50,  200, 0))
-        self._data.itemImport.write(None, self.tr("New"),      (100, 100, 100))
-        self._data.itemImport.write(None, self.tr("Minor"),    (200, 50,  0))
-        self._data.itemImport.write(None, self.tr("Major"),    (200, 150, 0))
-        self._data.itemImport.write(None, self.tr("Main"),     (50,  200, 0))
+        self._data.itemStatus.add(None, self.tr("New"),      (100, 100, 100), "SQUARE", 0)
+        self._data.itemStatus.add(None, self.tr("Note"),     (200, 50,  0),   "SQUARE", 0)
+        self._data.itemStatus.add(None, self.tr("Draft"),    (200, 150, 0),   "SQUARE", 0)
+        self._data.itemStatus.add(None, self.tr("Finished"), (50,  200, 0),   "SQUARE", 0)
+        self._data.itemImport.add(None, self.tr("New"),      (100, 100, 100), "SQUARE", 0)
+        self._data.itemImport.add(None, self.tr("Minor"),    (200, 50,  0),   "SQUARE", 0)
+        self._data.itemImport.add(None, self.tr("Major"),    (200, 150, 0),   "SQUARE", 0)
+        self._data.itemImport.add(None, self.tr("Main"),     (50,  200, 0),   "SQUARE", 0)
         return
 
     def setProjectLang(self, language: str | None) -> None:
@@ -490,14 +489,6 @@ class NWProject:
         self._tree.setOrder(order)
         self.setProjectChanged(True)
         return
-
-    def setStatusColours(self, new: list[dict], deleted: list[str]) -> bool:
-        """Update the list of novel file status flags."""
-        return self._setStatusImport(new, deleted, self._data.itemStatus)
-
-    def setImportColours(self, new: list[dict], deleted: list[str]) -> bool:
-        """Update the list of note file importance flags."""
-        return self._setStatusImport(new, deleted, self._data.itemImport)
 
     def setProjectChanged(self, status: bool) -> bool:
         """Toggle the project changed flag, and propagate the
@@ -583,28 +574,6 @@ class NWProject:
     ##
     #  Internal Functions
     ##
-
-    def _setStatusImport(self, new: list[dict], delete: list[str], target: NWStatus) -> bool:
-        """Update the list of novel file status or importance flags, and
-        delete those that have been requested deleted.
-        """
-        if not (new or delete):
-            return False
-
-        order = []
-        for entry in new:
-            key = entry.get("key", None)
-            name = entry.get("name", "")
-            cols = entry.get("cols", (100, 100, 100))
-            if name:
-                order.append(target.write(key, name, cols))
-
-        for key in delete:
-            target.remove(key)
-
-        target.reorder(order)
-
-        return True
 
     def _loadProjectLocalisation(self) -> bool:
         """Load the language data for the current project language."""

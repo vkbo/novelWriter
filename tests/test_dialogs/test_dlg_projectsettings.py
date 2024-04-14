@@ -24,14 +24,13 @@ import pytest
 
 from tools import C, buildTestProject
 
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QDialog, QAction, QColorDialog
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
-from novelwriter.enum import nwItemType
+from novelwriter.enum import nwItemType, nwStatusShape
 from novelwriter.types import QtMouseLeft
 
 KEY_DELAY = 1
@@ -169,8 +168,8 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
     nwGUI.rebuildTrees()
     project.countStatus()
 
-    assert [e["count"] for _, e in project.data.itemStatus.items()] == [2, 0, 2, 1]
-    assert [e["count"] for _, e in project.data.itemImport.items()] == [3, 0, 2, 1]
+    assert [e.count for _, e in project.data.itemStatus.iterItems()] == [2, 0, 2, 1]
+    assert [e.count for _, e in project.data.itemImport.iterItems()] == [3, 0, 2, 1]
 
     # Create Dialog
     projSettings = GuiProjectSettings(nwGUI, GuiProjectSettings.PAGE_STATUS)
@@ -182,20 +181,20 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
 
     status = projSettings.statusPage
 
-    assert status.wasChanged is False
-    assert status.getNewList() == ([], [])
+    assert status.changed is False
+    assert status.getNewList() == []
     assert status.listBox.topLevelItemCount() == 4
 
     # Can't delete the first item (it's in use)
     status.listBox.clearSelection()
     status.listBox.setCurrentItem(status.listBox.topLevelItem(0))
-    qtbot.mouseClick(status.delButton, QtMouseLeft)
+    status.delButton.click()
     assert status.listBox.topLevelItemCount() == 4
 
     # Can delete the second item
     status.listBox.clearSelection()
     status.listBox.setCurrentItem(status.listBox.topLevelItem(1))
-    qtbot.mouseClick(status.delButton, QtMouseLeft)
+    status.delButton.click()
     assert status.listBox.topLevelItemCount() == 3
 
     # Add a new item
@@ -204,39 +203,38 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
         status.addButton.click()
         status.listBox.setCurrentItem(status.listBox.topLevelItem(3))
         status.editName.setText("Final")
-        status.colButton.click()
-        status.saveButton.click()
+        status.colorButton.click()
+        status._selectShape(nwStatusShape.CIRCLE)
+        status.applyButton.click()
         assert status.listBox.topLevelItemCount() == 4
 
-    assert status.wasChanged is True
-    assert status.getNewList() == (
-        [
-            {
-                "key": C.sNew,
-                "name": "New",
-                "cols": (100, 100, 100)
-            }, {
-                "key": C.sDraft,
-                "name": "Draft",
-                "cols": (200, 150, 0)
-            }, {
-                "key": C.sFinished,
-                "name": "Finished",
-                "cols": (50, 200, 0)
-            }, {
-                "key": None,
-                "name": "Final",
-                "cols": (20, 30, 40)
-            }
-        ], [
-            C.sNote  # Deleted item
-        ]
-    )
+    assert status.changed is True
+    update = status.getNewList()
+
+    assert update[0][0] == C.sNew
+    assert update[0][1].name == "New"
+    assert update[0][1].color == QColor(100, 100, 100)
+    assert update[0][1].shape == nwStatusShape.SQUARE
+
+    assert update[1][0] == C.sDraft
+    assert update[1][1].name == "Draft"
+    assert update[1][1].color == QColor(200, 150, 0)
+    assert update[1][1].shape == nwStatusShape.SQUARE
+
+    assert update[2][0] == C.sFinished
+    assert update[2][1].name == "Finished"
+    assert update[2][1].color == QColor(50, 200, 0)
+    assert update[2][1].shape == nwStatusShape.SQUARE
+
+    assert update[3][0] is None
+    assert update[3][1].name == "Final"
+    assert update[3][1].color == QColor(20, 30, 40)
+    assert update[3][1].shape == nwStatusShape.CIRCLE
 
     # Move items, none selected -> no change
     status.listBox.clearSelection()
     status._moveItem(1)
-    assert [x["key"] for x in status.getNewList()[0]] == [
+    assert [x[0] for x in status.getNewList()] == [
         C.sNew, C.sDraft, C.sFinished, None
     ]
 
@@ -244,7 +242,7 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
     status.listBox.clearSelection()
     status.listBox.setCurrentItem(status.listBox.topLevelItem(0))
     status._moveItem(-1)
-    assert [x["key"] for x in status.getNewList()[0]] == [
+    assert [x[0] for x in status.getNewList()] == [
         C.sNew, C.sDraft, C.sFinished, None
     ]
 
@@ -252,13 +250,13 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
     status.listBox.clearSelection()
     status.listBox.setCurrentItem(status.listBox.topLevelItem(3))
     status._moveItem(-1)
-    assert [x["key"] for x in status.getNewList()[0]] == [
+    assert [x[0] for x in status.getNewList()] == [
         C.sNew, C.sDraft, None, C.sFinished
     ]
 
     # Move items, same selected, move down -> allowed
     status._moveItem(1)
-    assert [x["key"] for x in status.getNewList()[0]] == [
+    assert [x[0] for x in status.getNewList()] == [
         C.sNew, C.sDraft, C.sFinished, None
     ]
 
@@ -271,62 +269,58 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
     # Delete unused entry
     importance.listBox.clearSelection()
     importance.listBox.setCurrentItem(importance.listBox.topLevelItem(1))
-    qtbot.mouseClick(importance.delButton, QtMouseLeft)
+    importance.delButton.click()
     assert importance.listBox.topLevelItemCount() == 3
 
     # Add a new entry
     with monkeypatch.context() as mp:
         mp.setattr(QColorDialog, "getColor", lambda *a: QColor(20, 30, 40))
-        qtbot.mouseClick(importance.addButton, QtMouseLeft)
+        importance.addButton.click()
         importance.listBox.clearSelection()
         importance.listBox.setCurrentItem(importance.listBox.topLevelItem(3))
-        for _ in range(8):
-            qtbot.keyClick(importance.editName, Qt.Key.Key_Backspace, delay=KEY_DELAY)
-        for c in "Final":
-            qtbot.keyClick(importance.editName, c, delay=KEY_DELAY)
-        qtbot.mouseClick(importance.colButton, QtMouseLeft)
-        qtbot.mouseClick(importance.saveButton, QtMouseLeft)
+        importance.editName.setText("Final")
+        importance.colorButton.click()
+        importance._selectShape(nwStatusShape.TRIANGLE)
+        importance.applyButton.click()
         assert importance.listBox.topLevelItemCount() == 4
 
-    assert importance.wasChanged is True
-    assert importance.getNewList() == (
-        [
-            {
-                "key": C.iNew,
-                "name": "New",
-                "cols": (100, 100, 100)
-            }, {
-                "key": C.iMajor,
-                "name": "Major",
-                "cols": (200, 150, 0)
-            }, {
-                "key": C.iMain,
-                "name": "Main",
-                "cols": (50, 200, 0)
-            }, {
-                "key": None,
-                "name": "Final",
-                "cols": (20, 30, 40)
-            }
-        ], [
-            C.iMinor  # Deleted item
-        ]
-    )
+    assert importance.changed is True
+    update = importance.getNewList()
+
+    assert update[0][0] == C.iNew
+    assert update[0][1].name == "New"
+    assert update[0][1].color == QColor(100, 100, 100)
+    assert update[0][1].shape == nwStatusShape.SQUARE
+
+    assert update[1][0] == C.iMajor
+    assert update[1][1].name == "Major"
+    assert update[1][1].color == QColor(200, 150, 0)
+    assert update[1][1].shape == nwStatusShape.SQUARE
+
+    assert update[2][0] == C.iMain
+    assert update[2][1].name == "Main"
+    assert update[2][1].color == QColor(50, 200, 0)
+    assert update[2][1].shape == nwStatusShape.SQUARE
+
+    assert update[3][0] is None
+    assert update[3][1].name == "Final"
+    assert update[3][1].color == QColor(20, 30, 40)
+    assert update[3][1].shape == nwStatusShape.TRIANGLE
 
     # Check Project
     projSettings._doSave()
 
-    statusItems = dict(project.data.itemStatus.items())
-    assert statusItems[C.sNew]["name"] == "New"
-    assert statusItems[C.sDraft]["name"] == "Draft"
-    assert statusItems[C.sFinished]["name"] == "Finished"
-    assert statusItems["s000013"]["name"] == "Final"
+    statusItems = dict(project.data.itemStatus.iterItems())
+    assert statusItems[C.sNew].name == "New"
+    assert statusItems[C.sDraft].name == "Draft"
+    assert statusItems[C.sFinished].name == "Finished"
+    assert statusItems["s000013"].name == "Final"
 
-    importItems = dict(project.data.itemImport.items())
-    assert importItems[C.iNew]["name"] == "New"
-    assert importItems[C.iMajor]["name"] == "Major"
-    assert importItems[C.iMain]["name"] == "Main"
-    assert importItems["i000014"]["name"] == "Final"
+    importItems = dict(project.data.itemImport.iterItems())
+    assert importItems[C.iNew].name == "New"
+    assert importItems[C.iMajor].name == "Major"
+    assert importItems[C.iMain].name == "Main"
+    assert importItems["i000014"].name == "Final"
 
     # qtbot.stop()
 
@@ -363,7 +357,7 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Nothing to save or delete
     replace.listBox.clearSelection()
-    replace._saveEntry()
+    replace._applyChanges()
     replace._delEntry()
     assert replace.listBox.topLevelItemCount() == 2
 
@@ -381,7 +375,7 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     replace.editValue.setText("")
     for c in "With This Stuff ":
         qtbot.keyClick(replace.editValue, c, delay=KEY_DELAY)
-    qtbot.mouseClick(replace.saveButton, QtMouseLeft)
+    qtbot.mouseClick(replace.applyButton, QtMouseLeft)
     assert replace.listBox.topLevelItem(2).text(0) == "<This>"  # type: ignore
     assert replace.listBox.topLevelItem(2).text(1) == "With This Stuff "  # type: ignore
 

@@ -560,7 +560,7 @@ class _NewProjectForm(QWidget):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
-        self._basePath = CONFIG.lastPath()
+        self._basePath = CONFIG.homePath()
         self._fillMode = self.FILL_BLANK
         self._copyPath = None
 
@@ -632,7 +632,7 @@ class _NewProjectForm(QWidget):
 
         self.numChapters = NSpinBox(self)
         self.numChapters.setRange(0, 200)
-        self.numChapters.setValue(5)
+        self.numChapters.setValue(0)
         self.numChapters.setToolTip(self.tr("Set to 0 to only add scenes"))
 
         self.chapterBox = NWrappedWidgetBox(
@@ -642,7 +642,7 @@ class _NewProjectForm(QWidget):
 
         self.numScenes = NSpinBox(self)
         self.numScenes.setRange(0, 200)
-        self.numScenes.setValue(5)
+        self.numScenes.setValue(0)
 
         self.sceneBox = NWrappedWidgetBox(
             self.tr("Add {0} scene documents (to each chapter)"), self.numScenes
@@ -742,7 +742,6 @@ class _NewProjectForm(QWidget):
         ):
             self._basePath = Path(projDir)
             self._updateProjPath()
-            CONFIG.setLastPath(self._basePath)
         return
 
     @pyqtSlot()
@@ -753,7 +752,7 @@ class _NewProjectForm(QWidget):
         return
 
     @pyqtSlot()
-    def _syncSwitches(self):
+    def _syncSwitches(self) -> None:
         """Check if the add notes option should also be switched off."""
         addPlot = self.addPlot.isChecked()
         addChar = self.addChar.isChecked()

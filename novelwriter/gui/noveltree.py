@@ -35,8 +35,8 @@ from PyQt5.QtCore import QModelIndex, QPoint, Qt, pyqtSlot, pyqtSignal
 from PyQt5.QtGui import QFocusEvent, QFont, QMouseEvent, QPalette, QResizeEvent
 from PyQt5.QtWidgets import (
     QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QHeaderView,
-    QInputDialog, QMenu, QSizePolicy, QToolTip, QTreeWidget, QTreeWidgetItem,
-    QVBoxLayout, QWidget
+    QInputDialog, QMenu, QToolTip, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+    QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -47,7 +47,10 @@ from novelwriter.enum import nwDocMode, nwItemClass, nwOutline
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
-from novelwriter.types import QtAlignRight, QtDecoration, QtMouseLeft, QtMouseMiddle, QtUserRole
+from novelwriter.types import (
+    QtAlignRight, QtDecoration, QtMouseLeft, QtMouseMiddle, QtSizeExpanding,
+    QtUserRole
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
@@ -215,7 +218,7 @@ class GuiNovelToolBar(QWidget):
         self.novelValue.setFont(selFont)
         self.novelValue.setListFormat(self.tr("Outline of {0}"))
         self.novelValue.setMinimumWidth(CONFIG.pxInt(150))
-        self.novelValue.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.novelValue.setSizePolicy(QtSizeExpanding, QtSizeExpanding)
         self.novelValue.novelSelectionChanged.connect(self.setCurrentRoot)
 
         self.tbNovel = NIconToolButton(self, iSz)
@@ -344,7 +347,7 @@ class GuiNovelToolBar(QWidget):
     #  Internal Functions
     ##
 
-    def _addLastColAction(self, colType, actionLabel) -> None:
+    def _addLastColAction(self, colType: NovelTreeColumn, actionLabel: str) -> None:
         """Add a column selection entry to the last column menu."""
         aLast = self.mLastCol.addAction(actionLabel)
         aLast.setCheckable(True)

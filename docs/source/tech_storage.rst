@@ -55,10 +55,10 @@ string. The documents are saved with a filename assembled from this handle and t
 ``.nwd``.
 
 If you wish to find the file system location of a document in the project, you can either look it
-up in the project XML file, select :guilabel:`Show File Details` from the :guilabel:`Document` menu
-when having the document open in the editor, or look in the ``ToC.txt`` file in the root of the
-project folder. The ``ToC.txt`` file has a list of all documents in the project, referenced by
-their label, and where they are saved.
+up in the project XML file, select **Show File Details** from the **Document** menu when having the
+document open in the editor, or look in the ``ToC.txt`` file in the root of the project folder. The
+``ToC.txt`` file has a list of all documents in the project, referenced by their label, and where
+they are saved.
 
 The reason for this cryptic file naming is to avoid issues with file naming conventions and
 restrictions on different operating systems, and also to have a file name that does not depend on
@@ -109,7 +109,7 @@ The Project Index
 
 Between writing sessions, the project index is saved in a JSON file in ``meta/index.json``.
 This file is not critical. If it is lost, it can be completely rebuilt from within novelWriter from
-the :guilabel:`Tools` menu.
+the **Tools** menu.
 
 The index is maintained and updated whenever a document or note is saved in the editor. It contains
 all references and tags in documents and notes, as well as the location of all headers in the
@@ -125,8 +125,8 @@ the index. If this too fails, you have likely encountered a bug.
 Build Definitions
 -----------------
 
-The build definitions from the :guilabel:`Manuscript Build` tool are kept in the
-``meta/builds.json`` file. If this file is lost, all custom build definitions are lost too.
+The build definitions from the **Manuscript Build** tool are kept in the ``meta/builds.json`` file.
+If this file is lost, all custom build definitions are lost too.
 
 
 Cached GUI Options
@@ -144,17 +144,17 @@ Custom Word List
 ----------------
 
 A file named ``meta/userdict.json`` contains all the custom words you've added to the project for
-spell checking purposes. The content of the file can be edited from the :guilabel:`Tools` menu. If
-you lose this file, all your custom spell check words will be lost too.
+spell checking purposes. The content of the file can be edited from the **Tools** menu. If you lose
+this file, all your custom spell check words will be lost too.
 
 
 Session Stats
 -------------
 
 The writing progress is saved in the ``meta/sessions.jsonl`` file. This file records the length
-and word counts of each writing session on the given project. The file is used by the
-:guilabel:`Writing Statistics` tool. If this file is lost, the history it contains is also lost,
-but it has otherwise no impact on the project.
+and word counts of each writing session on the given project. The file is used by the **Writing
+Statistics** tool. If this file is lost, the history it contains is also lost, but it has otherwise
+no impact on the project.
 
 Each session is recorded as a JSON object on a single line of the file. Each session record is
 appended tot he file.

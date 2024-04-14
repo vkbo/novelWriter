@@ -27,8 +27,11 @@ from shutil import copyfile
 from datetime import datetime
 from novelwriter.constants import nwFiles
 
+from novelwriter.enum import nwStatusShape
 from tools import cmpFiles, writeFile
 from mocked import causeOSError
+
+from PyQt5.QtGui import QColor
 
 from novelwriter.core.item import NWItem
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
@@ -131,7 +134,7 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
     assert xmlReader.state == XMLReadState.PARSED_OK
     assert xmlReader.xmlRoot == "novelWriterXML"
     assert xmlReader.xmlVersion == 0x0105
-    assert xmlReader.xmlRevision == 3
+    assert xmlReader.xmlRevision == 4
     assert xmlReader.appVersion == "2.0-rc1"
     assert xmlReader.hexVersion == 0x020000c1
 
@@ -154,44 +157,57 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
     assert data.getLastHandle("novelTree") == "7031beac91f75"
     assert data.getLastHandle("outline") == "7031beac91f75"
 
-    assert data.itemStatus.name("sf12341") == "New"
-    assert data.itemStatus.name("sf24ce6") == "Notes"
-    assert data.itemStatus.name("sc24b8f") == "Started"
-    assert data.itemStatus.name("s90e6c9") == "1st Draft"
-    assert data.itemStatus.name("sd51c5b") == "2nd Draft"
-    assert data.itemStatus.name("s8ae72a") == "3rd Draft"
-    assert data.itemStatus.name("s78ea90") == "Finished"
+    assert data.itemStatus["sf12341"].name == "New"
+    assert data.itemStatus["sf24ce6"].name == "Notes"
+    assert data.itemStatus["sc24b8f"].name == "Started"
+    assert data.itemStatus["s90e6c9"].name == "1st Draft"
+    assert data.itemStatus["sd51c5b"].name == "2nd Draft"
+    assert data.itemStatus["s8ae72a"].name == "3rd Draft"
+    assert data.itemStatus["s78ea90"].name == "Finished"
 
-    assert data.itemImport.name("ia857f0") == "None"
-    assert data.itemImport.name("icfb3a5") == "Minor"
-    assert data.itemImport.name("i2d7a54") == "Major"
-    assert data.itemImport.name("i56be10") == "Main"
+    assert data.itemImport["ia857f0"].name == "None"
+    assert data.itemImport["icfb3a5"].name == "Minor"
+    assert data.itemImport["i2d7a54"].name == "Major"
+    assert data.itemImport["i56be10"].name == "Main"
 
-    assert data.itemStatus.cols("sf12341") == (100, 100, 100)
-    assert data.itemStatus.cols("sf24ce6") == (200, 50, 0)
-    assert data.itemStatus.cols("sc24b8f") == (182, 60, 0)
-    assert data.itemStatus.cols("s90e6c9") == (193, 129, 0)
-    assert data.itemStatus.cols("sd51c5b") == (193, 129, 0)
-    assert data.itemStatus.cols("s8ae72a") == (193, 129, 0)
-    assert data.itemStatus.cols("s78ea90") == (58, 180, 58)
+    assert data.itemStatus["sf12341"].color == QColor(100, 100, 100)
+    assert data.itemStatus["sf24ce6"].color == QColor(200, 50, 0)
+    assert data.itemStatus["sc24b8f"].color == QColor(182, 60, 0)
+    assert data.itemStatus["s90e6c9"].color == QColor(193, 129, 0)
+    assert data.itemStatus["sd51c5b"].color == QColor(193, 129, 0)
+    assert data.itemStatus["s8ae72a"].color == QColor(193, 129, 0)
+    assert data.itemStatus["s78ea90"].color == QColor(58, 180, 58)
 
-    assert data.itemImport.cols("ia857f0") == (100, 100, 100)
-    assert data.itemImport.cols("icfb3a5") == (0, 122, 188)
-    assert data.itemImport.cols("i2d7a54") == (21, 0, 180)
-    assert data.itemImport.cols("i56be10") == (117, 0, 175)
+    assert data.itemImport["ia857f0"].color == QColor(100, 100, 100)
+    assert data.itemImport["icfb3a5"].color == QColor(0, 122, 188)
+    assert data.itemImport["i2d7a54"].color == QColor(21, 0, 180)
+    assert data.itemImport["i56be10"].color == QColor(117, 0, 175)
 
-    assert data.itemStatus.count("sf12341") == 4
-    assert data.itemStatus.count("sf24ce6") == 2
-    assert data.itemStatus.count("sc24b8f") == 3
-    assert data.itemStatus.count("s90e6c9") == 7
-    assert data.itemStatus.count("sd51c5b") == 0
-    assert data.itemStatus.count("s8ae72a") == 0
-    assert data.itemStatus.count("s78ea90") == 1
+    assert data.itemStatus["sf12341"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["sf24ce6"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["sc24b8f"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s90e6c9"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["sd51c5b"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s8ae72a"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s78ea90"].shape == nwStatusShape.SQUARE
 
-    assert data.itemImport.count("ia857f0") == 5
-    assert data.itemImport.count("icfb3a5") == 2
-    assert data.itemImport.count("i2d7a54") == 2
-    assert data.itemImport.count("i56be10") == 1
+    assert data.itemImport["ia857f0"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["icfb3a5"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["i2d7a54"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["i56be10"].shape == nwStatusShape.SQUARE
+
+    assert data.itemStatus["sf12341"].count == 4
+    assert data.itemStatus["sf24ce6"].count == 2
+    assert data.itemStatus["sc24b8f"].count == 3
+    assert data.itemStatus["s90e6c9"].count == 7
+    assert data.itemStatus["sd51c5b"].count == 0
+    assert data.itemStatus["s8ae72a"].count == 0
+    assert data.itemStatus["s78ea90"].count == 1
+
+    assert data.itemImport["ia857f0"].count == 5
+    assert data.itemImport["icfb3a5"].count == 2
+    assert data.itemImport["i2d7a54"].count == 2
+    assert data.itemImport["i56be10"].count == 1
 
     # Compare content
     dumpFile = tstPaths.outDir / "projectXML_ReadCurrent.json"
@@ -272,44 +288,57 @@ def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockRnd):
     assert data.getLastHandle("novelTree") is None  # Doesn't exist in 1.0
     assert data.getLastHandle("outline") is None  # Doesn't exist in 1.0
 
-    assert data.itemStatus.name("s000000") == "New"
-    assert data.itemStatus.name("s000001") == "Notes"
-    assert data.itemStatus.name("s000002") == "Started"
-    assert data.itemStatus.name("s000003") == "1st Draft"
-    assert data.itemStatus.name("s000004") == "2nd Draft"
-    assert data.itemStatus.name("s000005") == "3rd Draft"
-    assert data.itemStatus.name("s000006") == "Finished"
+    assert data.itemStatus["s000000"].name == "New"
+    assert data.itemStatus["s000001"].name == "Notes"
+    assert data.itemStatus["s000002"].name == "Started"
+    assert data.itemStatus["s000003"].name == "1st Draft"
+    assert data.itemStatus["s000004"].name == "2nd Draft"
+    assert data.itemStatus["s000005"].name == "3rd Draft"
+    assert data.itemStatus["s000006"].name == "Finished"
 
-    assert data.itemImport.name("i000007") == "None"
-    assert data.itemImport.name("i000008") == "Minor"
-    assert data.itemImport.name("i000009") == "Major"
-    assert data.itemImport.name("i00000a") == "Main"
+    assert data.itemImport["i000007"].name == "None"
+    assert data.itemImport["i000008"].name == "Minor"
+    assert data.itemImport["i000009"].name == "Major"
+    assert data.itemImport["i00000a"].name == "Main"
 
-    assert data.itemStatus.cols("s000000") == (100, 100, 100)
-    assert data.itemStatus.cols("s000001") == (200, 50, 0)
-    assert data.itemStatus.cols("s000002") == (182, 60, 0)
-    assert data.itemStatus.cols("s000003") == (193, 129, 0)
-    assert data.itemStatus.cols("s000004") == (193, 129, 0)
-    assert data.itemStatus.cols("s000005") == (193, 129, 0)
-    assert data.itemStatus.cols("s000006") == (58, 180, 58)
+    assert data.itemStatus["s000000"].color == QColor(100, 100, 100)
+    assert data.itemStatus["s000001"].color == QColor(200, 50, 0)
+    assert data.itemStatus["s000002"].color == QColor(182, 60, 0)
+    assert data.itemStatus["s000003"].color == QColor(193, 129, 0)
+    assert data.itemStatus["s000004"].color == QColor(193, 129, 0)
+    assert data.itemStatus["s000005"].color == QColor(193, 129, 0)
+    assert data.itemStatus["s000006"].color == QColor(58, 180, 58)
 
-    assert data.itemImport.cols("i000007") == (100, 100, 100)
-    assert data.itemImport.cols("i000008") == (0, 122, 188)
-    assert data.itemImport.cols("i000009") == (21, 0, 180)
-    assert data.itemImport.cols("i00000a") == (117, 0, 175)
+    assert data.itemImport["i000007"].color == QColor(100, 100, 100)
+    assert data.itemImport["i000008"].color == QColor(0, 122, 188)
+    assert data.itemImport["i000009"].color == QColor(21, 0, 180)
+    assert data.itemImport["i00000a"].color == QColor(117, 0, 175)
 
-    assert data.itemStatus.count("s000000") == 0
-    assert data.itemStatus.count("s000001") == 0
-    assert data.itemStatus.count("s000002") == 0
-    assert data.itemStatus.count("s000003") == 0
-    assert data.itemStatus.count("s000004") == 0
-    assert data.itemStatus.count("s000005") == 0
-    assert data.itemStatus.count("s000006") == 0
+    assert data.itemStatus["s000000"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000001"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000002"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000003"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000004"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000005"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000006"].shape == nwStatusShape.SQUARE
 
-    assert data.itemImport.count("i000007") == 0
-    assert data.itemImport.count("i000008") == 0
-    assert data.itemImport.count("i000009") == 0
-    assert data.itemImport.count("i00000a") == 0
+    assert data.itemImport["i000007"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["i000008"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["i000009"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["i00000a"].shape == nwStatusShape.SQUARE
+
+    assert data.itemStatus["s000000"].count == 0
+    assert data.itemStatus["s000001"].count == 0
+    assert data.itemStatus["s000002"].count == 0
+    assert data.itemStatus["s000003"].count == 0
+    assert data.itemStatus["s000004"].count == 0
+    assert data.itemStatus["s000005"].count == 0
+    assert data.itemStatus["s000006"].count == 0
+
+    assert data.itemImport["i000007"].count == 0
+    assert data.itemImport["i000008"].count == 0
+    assert data.itemImport["i000009"].count == 0
+    assert data.itemImport["i00000a"].count == 0
 
     # Compare content
     dumpFile = tstPaths.outDir / "projectXML_ReadLegacy10.json"
@@ -325,7 +354,7 @@ def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockRnd):
     for entry in content:
         item = NWItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
-        status[item.itemHandle] = item.getImportStatus(incIcon=False)[0]
+        status[item.itemHandle] = item.getImportStatus()[0]
         packedContent.append(item.pack())
 
     assert status == {
@@ -406,44 +435,57 @@ def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockRnd):
     assert data.getLastHandle("novelTree") is None  # Doesn't exist in 1.1
     assert data.getLastHandle("outline") is None  # Doesn't exist in 1.1
 
-    assert data.itemStatus.name("s000000") == "New"
-    assert data.itemStatus.name("s000001") == "Notes"
-    assert data.itemStatus.name("s000002") == "Started"
-    assert data.itemStatus.name("s000003") == "1st Draft"
-    assert data.itemStatus.name("s000004") == "2nd Draft"
-    assert data.itemStatus.name("s000005") == "3rd Draft"
-    assert data.itemStatus.name("s000006") == "Finished"
+    assert data.itemStatus["s000000"].name == "New"
+    assert data.itemStatus["s000001"].name == "Notes"
+    assert data.itemStatus["s000002"].name == "Started"
+    assert data.itemStatus["s000003"].name == "1st Draft"
+    assert data.itemStatus["s000004"].name == "2nd Draft"
+    assert data.itemStatus["s000005"].name == "3rd Draft"
+    assert data.itemStatus["s000006"].name == "Finished"
 
-    assert data.itemImport.name("i000007") == "None"
-    assert data.itemImport.name("i000008") == "Minor"
-    assert data.itemImport.name("i000009") == "Major"
-    assert data.itemImport.name("i00000a") == "Main"
+    assert data.itemImport["i000007"].name == "None"
+    assert data.itemImport["i000008"].name == "Minor"
+    assert data.itemImport["i000009"].name == "Major"
+    assert data.itemImport["i00000a"].name == "Main"
 
-    assert data.itemStatus.cols("s000000") == (100, 100, 100)
-    assert data.itemStatus.cols("s000001") == (200, 50, 0)
-    assert data.itemStatus.cols("s000002") == (182, 60, 0)
-    assert data.itemStatus.cols("s000003") == (193, 129, 0)
-    assert data.itemStatus.cols("s000004") == (193, 129, 0)
-    assert data.itemStatus.cols("s000005") == (193, 129, 0)
-    assert data.itemStatus.cols("s000006") == (58, 180, 58)
+    assert data.itemStatus["s000000"].color == QColor(100, 100, 100)
+    assert data.itemStatus["s000001"].color == QColor(200, 50, 0)
+    assert data.itemStatus["s000002"].color == QColor(182, 60, 0)
+    assert data.itemStatus["s000003"].color == QColor(193, 129, 0)
+    assert data.itemStatus["s000004"].color == QColor(193, 129, 0)
+    assert data.itemStatus["s000005"].color == QColor(193, 129, 0)
+    assert data.itemStatus["s000006"].color == QColor(58, 180, 58)
 
-    assert data.itemImport.cols("i000007") == (100, 100, 100)
-    assert data.itemImport.cols("i000008") == (0, 122, 188)
-    assert data.itemImport.cols("i000009") == (21, 0, 180)
-    assert data.itemImport.cols("i00000a") == (117, 0, 175)
+    assert data.itemImport["i000007"].color == QColor(100, 100, 100)
+    assert data.itemImport["i000008"].color == QColor(0, 122, 188)
+    assert data.itemImport["i000009"].color == QColor(21, 0, 180)
+    assert data.itemImport["i00000a"].color == QColor(117, 0, 175)
 
-    assert data.itemStatus.count("s000000") == 0
-    assert data.itemStatus.count("s000001") == 0
-    assert data.itemStatus.count("s000002") == 0
-    assert data.itemStatus.count("s000003") == 0
-    assert data.itemStatus.count("s000004") == 0
-    assert data.itemStatus.count("s000005") == 0
-    assert data.itemStatus.count("s000006") == 0
+    assert data.itemStatus["s000000"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000001"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000002"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000003"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000004"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000005"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000006"].shape == nwStatusShape.SQUARE
 
-    assert data.itemImport.count("i000007") == 0
-    assert data.itemImport.count("i000008") == 0
-    assert data.itemImport.count("i000009") == 0
-    assert data.itemImport.count("i00000a") == 0
+    assert data.itemImport["i000007"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["i000008"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["i000009"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["i00000a"].shape == nwStatusShape.SQUARE
+
+    assert data.itemStatus["s000000"].count == 0
+    assert data.itemStatus["s000001"].count == 0
+    assert data.itemStatus["s000002"].count == 0
+    assert data.itemStatus["s000003"].count == 0
+    assert data.itemStatus["s000004"].count == 0
+    assert data.itemStatus["s000005"].count == 0
+    assert data.itemStatus["s000006"].count == 0
+
+    assert data.itemImport["i000007"].count == 0
+    assert data.itemImport["i000008"].count == 0
+    assert data.itemImport["i000009"].count == 0
+    assert data.itemImport["i00000a"].count == 0
 
     # Compare content
     dumpFile = tstPaths.outDir / "projectXML_ReadLegacy11.json"
@@ -459,7 +501,7 @@ def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockRnd):
     for entry in content:
         item = NWItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
-        status[item.itemHandle] = item.getImportStatus(incIcon=False)[0]
+        status[item.itemHandle] = item.getImportStatus()[0]
         packedContent.append(item.pack())
 
     assert status == {
@@ -540,44 +582,57 @@ def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockRnd):
     assert data.getLastHandle("novelTree") is None  # Doesn't exist in 1.2
     assert data.getLastHandle("outline") is None  # Doesn't exist in 1.2
 
-    assert data.itemStatus.name("s000000") == "New"
-    assert data.itemStatus.name("s000001") == "Notes"
-    assert data.itemStatus.name("s000002") == "Started"
-    assert data.itemStatus.name("s000003") == "1st Draft"
-    assert data.itemStatus.name("s000004") == "2nd Draft"
-    assert data.itemStatus.name("s000005") == "3rd Draft"
-    assert data.itemStatus.name("s000006") == "Finished"
+    assert data.itemStatus["s000000"].name == "New"
+    assert data.itemStatus["s000001"].name == "Notes"
+    assert data.itemStatus["s000002"].name == "Started"
+    assert data.itemStatus["s000003"].name == "1st Draft"
+    assert data.itemStatus["s000004"].name == "2nd Draft"
+    assert data.itemStatus["s000005"].name == "3rd Draft"
+    assert data.itemStatus["s000006"].name == "Finished"
 
-    assert data.itemImport.name("i000007") == "None"
-    assert data.itemImport.name("i000008") == "Minor"
-    assert data.itemImport.name("i000009") == "Major"
-    assert data.itemImport.name("i00000a") == "Main"
+    assert data.itemImport["i000007"].name == "None"
+    assert data.itemImport["i000008"].name == "Minor"
+    assert data.itemImport["i000009"].name == "Major"
+    assert data.itemImport["i00000a"].name == "Main"
 
-    assert data.itemStatus.cols("s000000") == (100, 100, 100)
-    assert data.itemStatus.cols("s000001") == (200, 50, 0)
-    assert data.itemStatus.cols("s000002") == (182, 60, 0)
-    assert data.itemStatus.cols("s000003") == (193, 129, 0)
-    assert data.itemStatus.cols("s000004") == (193, 129, 0)
-    assert data.itemStatus.cols("s000005") == (193, 129, 0)
-    assert data.itemStatus.cols("s000006") == (58, 180, 58)
+    assert data.itemStatus["s000000"].color == QColor(100, 100, 100)
+    assert data.itemStatus["s000001"].color == QColor(200, 50, 0)
+    assert data.itemStatus["s000002"].color == QColor(182, 60, 0)
+    assert data.itemStatus["s000003"].color == QColor(193, 129, 0)
+    assert data.itemStatus["s000004"].color == QColor(193, 129, 0)
+    assert data.itemStatus["s000005"].color == QColor(193, 129, 0)
+    assert data.itemStatus["s000006"].color == QColor(58, 180, 58)
 
-    assert data.itemImport.cols("i000007") == (100, 100, 100)
-    assert data.itemImport.cols("i000008") == (0, 122, 188)
-    assert data.itemImport.cols("i000009") == (21, 0, 180)
-    assert data.itemImport.cols("i00000a") == (117, 0, 175)
+    assert data.itemImport["i000007"].color == QColor(100, 100, 100)
+    assert data.itemImport["i000008"].color == QColor(0, 122, 188)
+    assert data.itemImport["i000009"].color == QColor(21, 0, 180)
+    assert data.itemImport["i00000a"].color == QColor(117, 0, 175)
 
-    assert data.itemStatus.count("s000000") == 0
-    assert data.itemStatus.count("s000001") == 0
-    assert data.itemStatus.count("s000002") == 0
-    assert data.itemStatus.count("s000003") == 0
-    assert data.itemStatus.count("s000004") == 0
-    assert data.itemStatus.count("s000005") == 0
-    assert data.itemStatus.count("s000006") == 0
+    assert data.itemStatus["s000000"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000001"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000002"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000003"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000004"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000005"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000006"].shape == nwStatusShape.SQUARE
 
-    assert data.itemImport.count("i000007") == 0
-    assert data.itemImport.count("i000008") == 0
-    assert data.itemImport.count("i000009") == 0
-    assert data.itemImport.count("i00000a") == 0
+    assert data.itemImport["i000007"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["i000008"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["i000009"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["i00000a"].shape == nwStatusShape.SQUARE
+
+    assert data.itemStatus["s000000"].count == 0
+    assert data.itemStatus["s000001"].count == 0
+    assert data.itemStatus["s000002"].count == 0
+    assert data.itemStatus["s000003"].count == 0
+    assert data.itemStatus["s000004"].count == 0
+    assert data.itemStatus["s000005"].count == 0
+    assert data.itemStatus["s000006"].count == 0
+
+    assert data.itemImport["i000007"].count == 0
+    assert data.itemImport["i000008"].count == 0
+    assert data.itemImport["i000009"].count == 0
+    assert data.itemImport["i00000a"].count == 0
 
     # Compare content
     dumpFile = tstPaths.outDir / "projectXML_ReadLegacy12.json"
@@ -593,7 +648,7 @@ def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockRnd):
     for entry in content:
         item = NWItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
-        status[item.itemHandle] = item.getImportStatus(incIcon=False)[0]
+        status[item.itemHandle] = item.getImportStatus()[0]
         packedContent.append(item.pack())
 
     assert status == {
@@ -677,44 +732,57 @@ def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockRnd):
     assert data.getLastHandle("novelTree") is None  # Doesn't exist in 1.3
     assert data.getLastHandle("outline") is None  # Doesn't exist in 1.3
 
-    assert data.itemStatus.name("s000000") == "New"
-    assert data.itemStatus.name("s000001") == "Notes"
-    assert data.itemStatus.name("s000002") == "Started"
-    assert data.itemStatus.name("s000003") == "1st Draft"
-    assert data.itemStatus.name("s000004") == "2nd Draft"
-    assert data.itemStatus.name("s000005") == "3rd Draft"
-    assert data.itemStatus.name("s000006") == "Finished"
+    assert data.itemStatus["s000000"].name == "New"
+    assert data.itemStatus["s000001"].name == "Notes"
+    assert data.itemStatus["s000002"].name == "Started"
+    assert data.itemStatus["s000003"].name == "1st Draft"
+    assert data.itemStatus["s000004"].name == "2nd Draft"
+    assert data.itemStatus["s000005"].name == "3rd Draft"
+    assert data.itemStatus["s000006"].name == "Finished"
 
-    assert data.itemImport.name("i000007") == "None"
-    assert data.itemImport.name("i000008") == "Minor"
-    assert data.itemImport.name("i000009") == "Major"
-    assert data.itemImport.name("i00000a") == "Main"
+    assert data.itemImport["i000007"].name == "None"
+    assert data.itemImport["i000008"].name == "Minor"
+    assert data.itemImport["i000009"].name == "Major"
+    assert data.itemImport["i00000a"].name == "Main"
 
-    assert data.itemStatus.cols("s000000") == (100, 100, 100)
-    assert data.itemStatus.cols("s000001") == (200, 50, 0)
-    assert data.itemStatus.cols("s000002") == (182, 60, 0)
-    assert data.itemStatus.cols("s000003") == (193, 129, 0)
-    assert data.itemStatus.cols("s000004") == (193, 129, 0)
-    assert data.itemStatus.cols("s000005") == (193, 129, 0)
-    assert data.itemStatus.cols("s000006") == (58, 180, 58)
+    assert data.itemStatus["s000000"].color == QColor(100, 100, 100)
+    assert data.itemStatus["s000001"].color == QColor(200, 50, 0)
+    assert data.itemStatus["s000002"].color == QColor(182, 60, 0)
+    assert data.itemStatus["s000003"].color == QColor(193, 129, 0)
+    assert data.itemStatus["s000004"].color == QColor(193, 129, 0)
+    assert data.itemStatus["s000005"].color == QColor(193, 129, 0)
+    assert data.itemStatus["s000006"].color == QColor(58, 180, 58)
 
-    assert data.itemImport.cols("i000007") == (100, 100, 100)
-    assert data.itemImport.cols("i000008") == (0, 122, 188)
-    assert data.itemImport.cols("i000009") == (21, 0, 180)
-    assert data.itemImport.cols("i00000a") == (117, 0, 175)
+    assert data.itemImport["i000007"].color == QColor(100, 100, 100)
+    assert data.itemImport["i000008"].color == QColor(0, 122, 188)
+    assert data.itemImport["i000009"].color == QColor(21, 0, 180)
+    assert data.itemImport["i00000a"].color == QColor(117, 0, 175)
 
-    assert data.itemStatus.count("s000000") == 0
-    assert data.itemStatus.count("s000001") == 0
-    assert data.itemStatus.count("s000002") == 0
-    assert data.itemStatus.count("s000003") == 0
-    assert data.itemStatus.count("s000004") == 0
-    assert data.itemStatus.count("s000005") == 0
-    assert data.itemStatus.count("s000006") == 0
+    assert data.itemStatus["s000000"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000001"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000002"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000003"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000004"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000005"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s000006"].shape == nwStatusShape.SQUARE
 
-    assert data.itemImport.count("i000007") == 0
-    assert data.itemImport.count("i000008") == 0
-    assert data.itemImport.count("i000009") == 0
-    assert data.itemImport.count("i00000a") == 0
+    assert data.itemImport["i000007"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["i000008"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["i000009"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["i00000a"].shape == nwStatusShape.SQUARE
+
+    assert data.itemStatus["s000000"].count == 0
+    assert data.itemStatus["s000001"].count == 0
+    assert data.itemStatus["s000002"].count == 0
+    assert data.itemStatus["s000003"].count == 0
+    assert data.itemStatus["s000004"].count == 0
+    assert data.itemStatus["s000005"].count == 0
+    assert data.itemStatus["s000006"].count == 0
+
+    assert data.itemImport["i000007"].count == 0
+    assert data.itemImport["i000008"].count == 0
+    assert data.itemImport["i000009"].count == 0
+    assert data.itemImport["i00000a"].count == 0
 
     # Compare content
     dumpFile = tstPaths.outDir / "projectXML_ReadLegacy13.json"
@@ -730,7 +798,7 @@ def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockRnd):
     for entry in content:
         item = NWItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
-        status[item.itemHandle] = item.getImportStatus(incIcon=False)[0]
+        status[item.itemHandle] = item.getImportStatus()[0]
         packedContent.append(item.pack())
 
     assert status == {
@@ -814,44 +882,56 @@ def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockRnd):
     assert data.getLastHandle("novelTree") is None  # Doesn't exist in 1.3
     assert data.getLastHandle("outline") is None  # Doesn't exist in 1.3
 
-    assert data.itemStatus.name("sf12341") == "New"
-    assert data.itemStatus.name("sf24ce6") == "Notes"
-    assert data.itemStatus.name("sc24b8f") == "Started"
-    assert data.itemStatus.name("s90e6c9") == "1st Draft"
-    assert data.itemStatus.name("sd51c5b") == "2nd Draft"
-    assert data.itemStatus.name("s8ae72a") == "3rd Draft"
-    assert data.itemStatus.name("s78ea90") == "Finished"
+    assert data.itemStatus["sf12341"].name == "New"
+    assert data.itemStatus["sf24ce6"].name == "Notes"
+    assert data.itemStatus["sc24b8f"].name == "Started"
+    assert data.itemStatus["s90e6c9"].name == "1st Draft"
+    assert data.itemStatus["sd51c5b"].name == "2nd Draft"
+    assert data.itemStatus["s8ae72a"].name == "3rd Draft"
+    assert data.itemStatus["s78ea90"].name == "Finished"
 
-    assert data.itemImport.name("ia857f0") == "None"
-    assert data.itemImport.name("icfb3a5") == "Minor"
-    assert data.itemImport.name("i2d7a54") == "Major"
-    assert data.itemImport.name("i56be10") == "Main"
+    assert data.itemImport["ia857f0"].name == "None"
+    assert data.itemImport["icfb3a5"].name == "Minor"
+    assert data.itemImport["i2d7a54"].name == "Major"
+    assert data.itemImport["i56be10"].name == "Main"
 
-    assert data.itemStatus.cols("sf12341") == (100, 100, 100)
-    assert data.itemStatus.cols("sf24ce6") == (200, 50, 0)
-    assert data.itemStatus.cols("sc24b8f") == (182, 60, 0)
-    assert data.itemStatus.cols("s90e6c9") == (193, 129, 0)
-    assert data.itemStatus.cols("sd51c5b") == (193, 129, 0)
-    assert data.itemStatus.cols("s8ae72a") == (193, 129, 0)
-    assert data.itemStatus.cols("s78ea90") == (58, 180, 58)
+    assert data.itemStatus["sf12341"].color == QColor(100, 100, 100)
+    assert data.itemStatus["sf24ce6"].color == QColor(200, 50, 0)
+    assert data.itemStatus["sc24b8f"].color == QColor(182, 60, 0)
+    assert data.itemStatus["s90e6c9"].color == QColor(193, 129, 0)
+    assert data.itemStatus["sd51c5b"].color == QColor(193, 129, 0)
+    assert data.itemStatus["s8ae72a"].color == QColor(193, 129, 0)
+    assert data.itemStatus["s78ea90"].color == QColor(58, 180, 58)
 
-    assert data.itemImport.cols("ia857f0") == (100, 100, 100)
-    assert data.itemImport.cols("icfb3a5") == (0, 122, 188)
-    assert data.itemImport.cols("i2d7a54") == (21, 0, 180)
-    assert data.itemImport.cols("i56be10") == (117, 0, 175)
+    assert data.itemImport["ia857f0"].color == QColor(100, 100, 100)
+    assert data.itemImport["icfb3a5"].color == QColor(0, 122, 188)
+    assert data.itemImport["i2d7a54"].color == QColor(21, 0, 180)
+    assert data.itemImport["i56be10"].color == QColor(117, 0, 175)
 
-    assert data.itemStatus.count("sf12341") == 4
-    assert data.itemStatus.count("sf24ce6") == 2
-    assert data.itemStatus.count("sc24b8f") == 3
-    assert data.itemStatus.count("s90e6c9") == 7
-    assert data.itemStatus.count("sd51c5b") == 0
-    assert data.itemStatus.count("s8ae72a") == 0
-    assert data.itemStatus.count("s78ea90") == 1
+    assert data.itemStatus["sf12341"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["sf24ce6"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["sc24b8f"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s90e6c9"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["sd51c5b"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s8ae72a"].shape == nwStatusShape.SQUARE
+    assert data.itemStatus["s78ea90"].shape == nwStatusShape.SQUARE
 
-    assert data.itemImport.count("ia857f0") == 5
-    assert data.itemImport.count("icfb3a5") == 2
-    assert data.itemImport.count("i2d7a54") == 2
-    assert data.itemImport.count("i56be10") == 1
+    assert data.itemImport["ia857f0"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["icfb3a5"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["i2d7a54"].shape == nwStatusShape.SQUARE
+    assert data.itemImport["i56be10"].shape == nwStatusShape.SQUARE
+
+    assert data.itemStatus["sf12341"].count == 4
+    assert data.itemStatus["sf24ce6"].count == 2
+    assert data.itemStatus["sc24b8f"].count == 3
+    assert data.itemStatus["s90e6c9"].count == 7
+    assert data.itemStatus["sd51c5b"].count == 0
+    assert data.itemStatus["s8ae72a"].count == 0
+    assert data.itemStatus["s78ea90"].count == 1
+    assert data.itemImport["ia857f0"].count == 5
+    assert data.itemImport["icfb3a5"].count == 2
+    assert data.itemImport["i2d7a54"].count == 2
+    assert data.itemImport["i56be10"].count == 1
 
     # Compare content
     dumpFile = tstPaths.outDir / "projectXML_ReadLegacy14.json"
@@ -867,7 +947,7 @@ def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockRnd):
     for entry in content:
         item = NWItem(mockProject, "0000000000000")  # type: ignore
         item.unpack(entry)
-        status[item.itemHandle] = item.getImportStatus(incIcon=False)[0]
+        status[item.itemHandle] = item.getImportStatus()[0]
         packedContent.append(item.pack())
 
     assert status == {

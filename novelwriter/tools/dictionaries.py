@@ -179,7 +179,7 @@ class GuiDictionaries(QDialog):
     ##
 
     @pyqtSlot()
-    def _doBrowseHunspell(self):
+    def _doBrowseHunspell(self) -> None:
         """Browse for a Free/Libre Office dictionary."""
         ffilter = formatFileFilter([
             (self.tr("Free or Libre Office extension"), "*.sox *.oxt"), "*"
@@ -193,7 +193,7 @@ class GuiDictionaries(QDialog):
         return
 
     @pyqtSlot()
-    def _doImportHunspell(self):
+    def _doImportHunspell(self) -> None:
         """Import a hunspell dictionary from .sox or .oxt file."""
         procErr = self.tr("Could not process dictionary file")
         if self._installPath:

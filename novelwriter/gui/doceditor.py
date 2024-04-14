@@ -381,7 +381,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         return
 
-    def loadText(self, tHandle: str, tLine=None) -> bool:
+    def loadText(self, tHandle: str, tLine: int | None = None) -> bool:
         """Load text from a document into the editor. If we have an I/O
         error, we must handle this and clear the editor so that we don't
         risk overwriting the file if it exists. This can for instance
@@ -497,6 +497,7 @@ class GuiDocEditor(QPlainTextEdit):
             return False
 
         self.setDocumentChanged(False)
+        self.docTextChanged.emit(self._docHandle, self._lastEdit)
 
         oldHeader = self._nwItem.mainHeading
         oldCount = SHARED.project.index.getHandleHeaderCount(tHandle)
@@ -1080,7 +1081,7 @@ class GuiDocEditor(QPlainTextEdit):
         return
 
     @pyqtSlot()
-    def _cursorMoved(self):
+    def _cursorMoved(self) -> None:
         """Triggered when the cursor moved in the editor."""
         self.docFooter.updateLineCount(self.textCursor())
         return
@@ -1470,7 +1471,7 @@ class GuiDocEditor(QPlainTextEdit):
     #  Internal Functions : Text Manipulation
     ##
 
-    def _toggleFormat(self, fLen: int, fChar: str) -> bool:
+    def _toggleFormat(self, fLen: int, fChar: str) -> None:
         """Toggle the formatting of a specific type for a piece of text.
         If more than one block is selected, the formatting is applied to
         the first block.
@@ -1488,12 +1489,12 @@ class GuiDocEditor(QPlainTextEdit):
 
         posS = cursor.selectionStart()
         posE = cursor.selectionEnd()
-        if self._qDocument.characterAt(posO - 1) == fChar:
+        if posS == posE and self._qDocument.characterAt(posO - 1) == fChar:
             logger.warning("Format repetition, cancelling action")
             cursor.clearSelection()
             cursor.setPosition(posO)
             self.setTextCursor(cursor)
-            return False
+            return
 
         blockS = self._qDocument.findBlock(posS)
         blockE = self._qDocument.findBlock(posE)
@@ -1519,7 +1520,6 @@ class GuiDocEditor(QPlainTextEdit):
                 break
 
         if fLen == min(numA, numB):
-            cursor.clearSelection()
             cursor.beginEditBlock()
             cursor.setPosition(posS)
             for i in range(fLen):
@@ -1528,17 +1528,19 @@ class GuiDocEditor(QPlainTextEdit):
             for i in range(fLen):
                 cursor.deletePreviousChar()
             cursor.endEditBlock()
-            cursor.clearSelection()
-            cursor.setPosition(posO - fLen)
-            self.setTextCursor(cursor)
+
+            if select != _SelectAction.KEEP_SELECTION:
+                cursor.clearSelection()
+                cursor.setPosition(posO - fLen)
+                self.setTextCursor(cursor)
 
         else:
             self._wrapSelection(fChar*fLen, pos=posO, select=select)
 
-        return True
+        return
 
     def _wrapSelection(self, before: str, after: str | None = None, pos: int | None = None,
-                       select: _SelectAction = _SelectAction.NO_DECISION) -> bool:
+                       select: _SelectAction = _SelectAction.NO_DECISION) -> None:
         """Wrap the selected text in whatever is in tBefore and tAfter.
         If there is no selection, the autoSelect setting decides the
         action. AutoSelect will select the word under the cursor before
@@ -1578,21 +1580,21 @@ class GuiDocEditor(QPlainTextEdit):
         if select == _SelectAction.MOVE_AFTER:
             cursor.setPosition(posE + len(before + after))
         elif select == _SelectAction.KEEP_SELECTION:
-            cursor.setPosition(posE + len(before), QtMoveAnchor)
-            cursor.setPosition(posS + len(before), QtKeepAnchor)
+            cursor.setPosition(posS + len(before), QtMoveAnchor)
+            cursor.setPosition(posE + len(before), QtKeepAnchor)
         elif select == _SelectAction.KEEP_POSITION:
             cursor.setPosition(posO + len(before))
 
         self.setTextCursor(cursor)
 
-        return True
+        return
 
-    def _replaceQuotes(self, sQuote: str, oQuote: str, cQuote: str) -> bool:
+    def _replaceQuotes(self, sQuote: str, oQuote: str, cQuote: str) -> None:
         """Replace all straight quotes in the selected text."""
         cursor = self.textCursor()
         if not cursor.hasSelection():
             SHARED.error(self.tr("Please select some text before calling replace quotes."))
-            return False
+            return
 
         posS = cursor.selectionStart()
         posE = cursor.selectionEnd()
@@ -1632,7 +1634,7 @@ class GuiDocEditor(QPlainTextEdit):
 
         self._allowAutoReplace(True)
 
-        return True
+        return
 
     def _processBlockFormat(
         self, action: nwDocAction, text: str, toggle: bool = True
@@ -2185,7 +2187,7 @@ class MetaCompleter(QMenu):
     #  Internal Functions
     ##
 
-    def _emitComplete(self, pos: int, length: int, value: str):
+    def _emitComplete(self, pos: int, length: int, value: str) -> None:
         """Emit the signal to indicate a selection has been made."""
         self.complete.emit(pos, length, value)
         return
@@ -2966,7 +2968,7 @@ class GuiDocEditHeader(QWidget):
     #  Events
     ##
 
-    def mousePressEvent(self, event: QMouseEvent):
+    def mousePressEvent(self, event: QMouseEvent) -> None:
         """Capture a click on the title and ensure that the item is
         selected in the project tree.
         """
@@ -3134,7 +3136,7 @@ class GuiDocEditFooter(QWidget):
             sText = ""
         else:
             iPx = round(0.9*SHARED.theme.baseIconHeight)
-            status, icon = self._tItem.getImportStatus(incIcon=True)
+            status, icon = self._tItem.getImportStatus()
             sIcon = icon.pixmap(iPx, iPx)
             sText = f"{status} / {self._tItem.describeMe()}"
 

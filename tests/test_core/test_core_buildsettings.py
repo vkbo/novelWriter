@@ -27,6 +27,7 @@ import shutil
 
 from pathlib import Path
 
+from novelwriter import CONFIG
 from tools import C, buildTestProject
 from mocked import causeOSError
 
@@ -58,7 +59,7 @@ def testCoreBuildSettings_ClassAttributes(fncPath: Path):
     build.setName("Test Build")
     assert build.name == "Test Build"
 
-    # Only valid UUIDs are accpeted, anything else generates a new UUID
+    # Only valid UUIDs are accepted, anything else generates a new UUID
     build.setBuildID("5cf45d24-f496-42c9-8733-529a9e52a62b")
     assert build.buildID == "5cf45d24-f496-42c9-8733-529a9e52a62b"
 
@@ -72,14 +73,14 @@ def testCoreBuildSettings_ClassAttributes(fncPath: Path):
 
     # Last path must be valid, if not it defaults to $HOME
     build.setLastPath("/path/to/nowhere")
-    assert build.lastPath == Path.home()
+    assert build.lastPath == CONFIG.homePath()
 
     build.setLastPath(None)
-    assert build.lastPath == Path.home()
+    assert build.lastPath == CONFIG.homePath()
 
     (fncPath / "test.txt").write_text("foobar")
     build.setLastPath(fncPath / "test.txt")  # Can't be a file
-    assert build.lastPath == Path.home()
+    assert build.lastPath == CONFIG.homePath()
 
     build.setLastPath(fncPath)
     assert build.lastPath == fncPath
@@ -93,7 +94,7 @@ def testCoreBuildSettings_ClassAttributes(fncPath: Path):
     build.setLastPath(testDir)
     assert build.lastPath == testDir
     testDir.rmdir()
-    assert build.lastPath == Path.home()
+    assert build.lastPath == CONFIG.homePath()
 
     # Last build name
     build.setLastBuildName(None)  # type: ignore

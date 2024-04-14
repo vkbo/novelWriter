@@ -335,7 +335,7 @@ def testBuildSettings_Headings(qtbot: QtBot, nwGUI: GuiMain):
     build.setValue("headings.fmtChapter", chTitle)
     build.setValue("headings.fmtUnnumbered", unTitle)
     build.setValue("headings.fmtScene", scTitle)
-    build.setValue("headings.fmtHardScene", shTitle)
+    build.setValue("headings.fmtAltScene", shTitle)
     build.setValue("headings.fmtSection", sxTitle)
     build.setValue("headings.hideScene", False)
     build.setValue("headings.hideSection", False)
@@ -354,7 +354,7 @@ def testBuildSettings_Headings(qtbot: QtBot, nwGUI: GuiMain):
     assert headTab.fmtChapter.text() == chTitle
     assert headTab.fmtUnnumbered.text() == unTitle
     assert headTab.fmtScene.text() == scTitle
-    assert headTab.fmtHScene.text() == shTitle
+    assert headTab.fmtAScene.text() == shTitle
     assert headTab.fmtSection.text() == sxTitle
     assert headTab.swtScene.isChecked() is False
     assert headTab.swtSection.isChecked() is False
@@ -401,7 +401,7 @@ def testBuildSettings_Headings(qtbot: QtBot, nwGUI: GuiMain):
     assert headTab.editTextBox.isEnabled() is False
 
     # Hard Scene
-    headTab.btnHScene.click()
+    headTab.btnAScene.click()
     assert headTab._editing == headTab.EDIT_HSCENE
     assert headTab.editTextBox.isEnabled() is True
     assert headTab.editTextBox.toPlainText() == shTitle
@@ -467,10 +467,10 @@ def testBuildSettings_Headings(qtbot: QtBot, nwGUI: GuiMain):
     headTab.btnApply.click()
     assert build.getStr("headings.fmtScene") == nwHeadFmt.TITLE
 
-    headTab.btnHScene.click()
+    headTab.btnAScene.click()
     headTab.editTextBox.setPlainText(nwHeadFmt.TITLE)
     headTab.btnApply.click()
-    assert build.getStr("headings.fmtHardScene") == nwHeadFmt.TITLE
+    assert build.getStr("headings.fmtAltScene") == nwHeadFmt.TITLE
 
     headTab.btnSection.click()
     headTab.editTextBox.setPlainText(nwHeadFmt.TITLE)

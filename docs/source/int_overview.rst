@@ -1,28 +1,22 @@
-.. _a_overview:
+.. _a_reading:
 
-********
-Overview
-********
+******************
+What to Read First
+******************
 
-.. only:: html
+The documentation of novelWriter is quite extensive. There are a lot of features to get used to,
+but you don't need all of them to get started.
 
-   .. image:: images/python_powered.png
-      :align: right
-      :width: 220
+The chapters below labelled "Essential Information" are the ones you need to know to use the
+application correctly. By "correctly", it is meant: in a way so novelWriter understands the basic
+structure of your text. It collects a lot of information from your text and uses it to display the
+structure of it in various ways to help you get an overview of your project.
 
-novelWriter is built as a cross-platform application using `Python 3 <https://www.python.org/>`_ as
-the programming language, and `Qt 5 <https://www.qt.io/>`_ framework for the user interface.
+The chapters labelled "Recommended Reading" includes additional information on how the different
+parts if the application work and what the features do. 
 
-novelWriter is built for Linux first, so this is where it works best. However, it also runs fine
-on Windows and MacOS due to the cross-platform framework it's built on. The author of the
-application doesn't own a Mac, so on-going Mac support is dependent on user feedback and user
-contributions.
-
-Spell checking in novelWriter is provided by a third party library called
-`Enchant <https://abiword.github.io/enchant/>`_. Please see the section on :ref:`a_custom_dict` for
-how to install spell checking languages.
-
-For install instructions for novelWriter, see :ref:`a_started`.
+The "Optional" and "Lookup" chapters contain additional information or lookup tables that are not
+essential for using the application.
 
 
 Using novelWriter
@@ -82,8 +76,8 @@ meta data for it to extract.
    the application interface.
 
 :ref:`a_manuscript` - Recommended Reading
-   This chapter explains how the :guilabel:`Manuscript Build` tool works, how you can control the
-   way chapter titles are formatted, and how scene and section breaks are handled.
+   This chapter explains how the **Manuscript Build** tool works, how you can control the way
+   chapter titles are formatted, and how scene and section breaks are handled.
 
 
 Additional Details & Technical Topics

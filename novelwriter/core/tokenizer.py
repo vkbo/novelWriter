@@ -49,7 +49,7 @@ ESCAPES = {r"\*": "*", r"\~": "~", r"\_": "_", r"\[": "[", r"\]": "]", r"\ ": ""
 RX_ESC = re.compile("|".join([re.escape(k) for k in ESCAPES.keys()]), flags=re.DOTALL)
 
 
-def stripEscape(text) -> str:
+def stripEscape(text: str) -> str:
     """Strip escaped Markdown characters from paragraph text."""
     if "\\" in text:
         return RX_ESC.sub(lambda x: ESCAPES[x.group(0)], text)
@@ -639,8 +639,8 @@ class Tokenizer(ABC):
                     tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine.startswith(("### ", "###! ")):
-                # (Hard) Scene Headings
-                # =====================
+                # (Alternative) Scene Headings
+                # ============================
                 # Scene headings in novel documents are treated as centred
                 # separators if the formatting does not change the text. If the
                 # format is empty, the scene can be hidden or a blank paragraph

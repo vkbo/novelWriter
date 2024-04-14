@@ -23,15 +23,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import sys
 import getopt
 import logging
+import sys
+
+from typing import TYPE_CHECKING
 
 from PyQt5.QtWidgets import QApplication, QErrorMessage
 
-from novelwriter.error import exceptionHandler, logException
 from novelwriter.config import Config
+from novelwriter.error import exceptionHandler, logException
 from novelwriter.shared import SharedData
+
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.guimain import GuiMain
 
 # Package Meta
 # ============
@@ -42,9 +47,9 @@ __license__    = "GPLv3"
 __author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
-__version__    = "2.4rc1"
-__hexversion__ = "0x020400c1"
-__date__       = "2024-04-06"
+__version__    = "2.5a1"
+__hexversion__ = "0x020500a1"
+__date__       = "2024-04-13"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
 
@@ -60,7 +65,7 @@ CONFIG = Config()
 SHARED = SharedData()
 
 
-def main(sysArgs: list | None = None):
+def main(sysArgs: list | None = None) -> GuiMain | None:
     """Parse command line, set up logging, and launch main GUI."""
     if sysArgs is None:
         sysArgs = sys.argv[1:]
@@ -238,5 +243,7 @@ def main(sysArgs: list | None = None):
         nwGUI.postLaunchTasks(cmdOpen)
 
         sys.exit(nwApp.exec())
+
+    return None
 
 # END Function main
