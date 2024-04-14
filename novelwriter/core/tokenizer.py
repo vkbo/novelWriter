@@ -48,6 +48,9 @@ logger = logging.getLogger(__name__)
 ESCAPES = {r"\*": "*", r"\~": "~", r"\_": "_", r"\[": "[", r"\]": "]", r"\ ": ""}
 RX_ESC = re.compile("|".join([re.escape(k) for k in ESCAPES.keys()]), flags=re.DOTALL)
 
+T_Formats = list[tuple[int, int]]
+T_Markers = list[tuple[int, int, str]]
+
 
 def stripEscape(text: str) -> str:
     """Strip escaped Markdown characters from paragraph text."""
@@ -80,6 +83,10 @@ class Tokenizer(ABC):
     FMT_SUP_E = 12  # End superscript
     FMT_SUB_B = 13  # Begin subscript
     FMT_SUB_E = 14  # End subscript
+
+    # Inserted Markers
+    MRK_BOUNDARY = 20  # Marker boundary
+    MRK_FOOTNOTE = 21  # Footnote marker
 
     # Block Type
     T_EMPTY    = 1   # Empty line (new paragraph)
@@ -125,7 +132,8 @@ class Tokenizer(ABC):
         self._allMarkdown  = []     # The result novelWriter markdown of all documents
 
         # Processed Tokens and Meta Data
-        self._tokens: list[tuple[int, int, str, list[tuple[int, int]], int]] = []
+        self._tokens: list[tuple[int, int, str, T_Formats, T_Markers, int]] = []
+        self._markers: dict[str, tuple[int, list[str]]] = {}
         self._counts: dict[str, int] = {}
         self._outline: dict[str, str] = {}
 
@@ -204,6 +212,9 @@ class Tokenizer(ABC):
             nwShortcode.MARK_O:   self.FMT_M_B,   nwShortcode.MARK_C:   self.FMT_M_E,
             nwShortcode.SUP_O:    self.FMT_SUP_B, nwShortcode.SUP_C:    self.FMT_SUP_E,
             nwShortcode.SUB_O:    self.FMT_SUB_B, nwShortcode.SUB_C:    self.FMT_SUB_E,
+        }
+        self._shortCodeVals = {
+            nwShortcode.FOOTNOTE_B: self.MRK_FOOTNOTE,
         }
 
         return
@@ -415,7 +426,7 @@ class Tokenizer(ABC):
             title = f"{trNotes}: {tItem.itemName}"
             self._tokens = []
             self._tokens.append((
-                self.T_TITLE, 1, title, [], textAlign
+                self.T_TITLE, 1, title, [], [], textAlign
             ))
             if self._keepMarkdown:
                 self._allMarkdown.append(f"#! {title}\n\n")
@@ -479,7 +490,7 @@ class Tokenizer(ABC):
             # Check for blank lines
             if len(sLine) == 0:
                 self._tokens.append((
-                    self.T_EMPTY, nHead, "", [], self.A_NONE
+                    self.T_EMPTY, nHead, "", [], [], self.A_NONE
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append("\n")
@@ -508,7 +519,7 @@ class Tokenizer(ABC):
 
                 elif sLine == "[vspace]":
                     self._tokens.append(
-                        (self.T_SKIP, nHead, "", [], sAlign)
+                        (self.T_SKIP, nHead, "", [], [], sAlign)
                     )
                     continue
 
@@ -516,11 +527,11 @@ class Tokenizer(ABC):
                     nSkip = checkInt(sLine[8:-1], 0)
                     if nSkip >= 1:
                         self._tokens.append(
-                            (self.T_SKIP, nHead, "", [], sAlign)
+                            (self.T_SKIP, nHead, "", [], [], sAlign)
                         )
                     if nSkip > 1:
                         self._tokens += (nSkip - 1) * [
-                            (self.T_SKIP, nHead, "", [], self.A_NONE)
+                            (self.T_SKIP, nHead, "", [], [], self.A_NONE)
                         ]
                     continue
 
@@ -536,19 +547,19 @@ class Tokenizer(ABC):
                 cStyle, cMod, cText, _, _ = processComment(aLine)
                 if cStyle == nwComment.SYNOPSIS:
                     self._tokens.append((
-                        self.T_SYNOPSIS, nHead, cText, [], sAlign
+                        self.T_SYNOPSIS, nHead, cText, [], [], sAlign
                     ))
                     if self._doSynopsis and self._keepMarkdown:
                         tmpMarkdown.append(f"{aLine}\n")
                 elif cStyle == nwComment.SHORT:
                     self._tokens.append((
-                        self.T_SHORT, nHead, cText, [], sAlign
+                        self.T_SHORT, nHead, cText, [], [], sAlign
                     ))
                     if self._doSynopsis and self._keepMarkdown:
                         tmpMarkdown.append(f"{aLine}\n")
                 else:
                     self._tokens.append((
-                        self.T_COMMENT, nHead, cText, [], sAlign
+                        self.T_COMMENT, nHead, cText, [], [], sAlign
                     ))
                     if self._doComments and self._keepMarkdown:
                         tmpMarkdown.append(f"{aLine}\n")
@@ -562,7 +573,7 @@ class Tokenizer(ABC):
                 valid, bits, _ = self._project.index.scanThis(aLine)
                 if valid and bits and bits[0] not in self._skipKeywords:
                     self._tokens.append((
-                        self.T_KEYWORD, nHead, aLine[1:].strip(), [], sAlign
+                        self.T_KEYWORD, nHead, aLine[1:].strip(), [], [], sAlign
                     ))
                     if self._doKeywords and self._keepMarkdown:
                         tmpMarkdown.append(f"{aLine}\n")
@@ -598,7 +609,7 @@ class Tokenizer(ABC):
                     self._noSep = True
 
                 self._tokens.append((
-                    tType, nHead, tText, [], tStyle
+                    tType, nHead, tText, [], [], tStyle
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append(f"{aLine}\n")
@@ -633,7 +644,7 @@ class Tokenizer(ABC):
                     self._noSep = True
 
                 self._tokens.append((
-                    tType, nHead, tText, [], tStyle
+                    tType, nHead, tText, [], [], tStyle
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append(f"{aLine}\n")
@@ -674,7 +685,7 @@ class Tokenizer(ABC):
                     self._noSep = False
 
                 self._tokens.append((
-                    tType, nHead, tText, [], tStyle
+                    tType, nHead, tText, [], [], tStyle
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append(f"{aLine}\n")
@@ -704,7 +715,7 @@ class Tokenizer(ABC):
                             tStyle = self.A_CENTRE
 
                 self._tokens.append((
-                    tType, nHead, tText, [], tStyle
+                    tType, nHead, tText, [], [], tStyle
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append(f"{aLine}\n")
@@ -750,9 +761,9 @@ class Tokenizer(ABC):
                     sAlign |= self.A_IND_R
 
                 # Process formats
-                tLine, fmtPos = self._extractFormats(aLine)
+                tLine, fmtPos, insMrk = self._extractFormats(aLine)
                 self._tokens.append((
-                    self.T_TEXT, nHead, tLine, fmtPos, sAlign
+                    self.T_TEXT, nHead, tLine, fmtPos, insMrk, sAlign
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append(f"{aLine}\n")
@@ -763,15 +774,15 @@ class Tokenizer(ABC):
 
             # Make sure the token array doesn't start with a page break
             # on the very first page, adding a blank first page.
-            if self._tokens[0][4] & self.A_PBB:
+            if self._tokens[0][5] & self.A_PBB:
                 token = self._tokens[0]
                 self._tokens[0] = (
-                    token[0], token[1], token[2], token[3], token[4] & ~self.A_PBB
+                    token[0], token[1], token[2], token[3], token[4], token[5] & ~self.A_PBB
                 )
 
         # Always add an empty line at the end of the file
         self._tokens.append((
-            self.T_EMPTY, nHead, "", [], self.A_NONE
+            self.T_EMPTY, nHead, "", [], [], self.A_NONE
         ))
         if self._keepMarkdown:
             tmpMarkdown.append("\n")
@@ -781,8 +792,8 @@ class Tokenizer(ABC):
         # ===========
         # Some items need a second pass
 
-        pToken = (self.T_EMPTY, 0, "", [], self.A_NONE)
-        nToken = (self.T_EMPTY, 0, "", [], self.A_NONE)
+        pToken = (self.T_EMPTY, 0, "", [], [], self.A_NONE)
+        nToken = (self.T_EMPTY, 0, "", [], [], self.A_NONE)
         tCount = len(self._tokens)
         for n, token in enumerate(self._tokens):
 
@@ -792,12 +803,14 @@ class Tokenizer(ABC):
                 nToken = self._tokens[n+1]
 
             if token[0] == self.T_KEYWORD:
-                aStyle = token[4]
+                aStyle = token[5]
                 if pToken[0] == self.T_KEYWORD:
                     aStyle |= self.A_Z_TOPMRG
                 if nToken[0] == self.T_KEYWORD:
                     aStyle |= self.A_Z_BTMMRG
-                self._tokens[n] = (token[0], token[1], token[2], token[3], aStyle)
+                self._tokens[n] = (
+                    token[0], token[1], token[2], token[3], token[4], aStyle
+                )
 
         return
 
@@ -805,7 +818,7 @@ class Tokenizer(ABC):
         """Build an outline of the text up to level 3 headings."""
         tHandle = self._handle or ""
         isNovel = self._isNovel
-        for tType, nHead, tText, _, _ in self._tokens:
+        for tType, nHead, tText, _, _, _ in self._tokens:
             if tType == self.T_TITLE:
                 prefix = "TT"
             elif tType == self.T_HEAD1:
@@ -841,7 +854,7 @@ class Tokenizer(ABC):
         titleWordChars = self._counts.get("titleWordChars", 0)
 
         para = []
-        for tType, _, tText, _, _ in self._tokens:
+        for tType, _, tText, _, _, _ in self._tokens:
             tText = tText.replace(nwUnicode.U_ENDASH, " ")
             tText = tText.replace(nwUnicode.U_EMDASH, " ")
 
@@ -961,9 +974,9 @@ class Tokenizer(ABC):
     #  Internal Functions
     ##
 
-    def _extractFormats(self, text: str) -> tuple[str, list[tuple[int, int]]]:
+    def _extractFormats(self, text: str) -> tuple[str, T_Formats, T_Markers]:
         """Extract format markers from a text paragraph."""
-        temp = []
+        temp: list[tuple[int, int, int, str]] = []
 
         # Match Markdown
         for regEx, fmts in self._rxMarkdown:
@@ -971,7 +984,7 @@ class Tokenizer(ABC):
             while rxItt.hasNext():
                 rxMatch = rxItt.next()
                 temp.extend(
-                    [rxMatch.capturedStart(n), rxMatch.capturedLength(n), fmt]
+                    (rxMatch.capturedStart(n), rxMatch.capturedLength(n), fmt, "")
                     for n, fmt in enumerate(fmts) if fmt > 0
                 )
 
@@ -979,22 +992,39 @@ class Tokenizer(ABC):
         rxItt = self._rxShortCodes.globalMatch(text, 0)
         while rxItt.hasNext():
             rxMatch = rxItt.next()
-            temp.append([
+            temp.append((
                 rxMatch.capturedStart(1),
                 rxMatch.capturedLength(1),
-                self._shortCodeFmt.get(rxMatch.captured(1).lower(), 0)
-            ])
+                self._shortCodeFmt.get(rxMatch.captured(1).lower(), 0),
+                "",
+            ))
+
+        # Match Shortcode w/Values
+        rxItt = self._rxShortCodeVals.globalMatch(text, 0)
+        while rxItt.hasNext():
+            rxMatch = rxItt.next()
+            temp.append((
+                rxMatch.capturedStart(0),
+                rxMatch.capturedLength(0),
+                self._shortCodeVals.get(rxMatch.captured(1).lower(), 0),
+                rxMatch.captured(2),
+            ))
 
         # Post-process text and format markers
         result = text
         formats = []
-        for pos, n, fmt in reversed(sorted(temp, key=lambda x: x[0])):
+        markers = []
+        for pos, n, fmt, key in reversed(sorted(temp, key=lambda x: x[0])):
             if fmt > 0:
                 result = result[:pos] + result[pos+n:]
                 formats = [(p-n, f) for p, f in formats]
-                formats.insert(0, (pos, fmt))
+                markers = [(p-n, f, k) for p, f, k in markers]
+                if fmt > self.MRK_BOUNDARY:
+                    markers.insert(0, (pos, fmt, key))
+                else:
+                    formats.insert(0, (pos, fmt))
 
-        return result, formats
+        return result, formats, markers
 
 # END Class Tokenizer
 

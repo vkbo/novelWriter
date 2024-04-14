@@ -171,7 +171,7 @@ class ToHtml(Tokenizer):
 
         tHandle = self._handle
 
-        for tType, nHead, tText, tFormat, tStyle in self._tokens:
+        for tType, nHead, tText, tFormat, tMarkers, tStyle in self._tokens:
 
             # Replace < and > with HTML entities
             if tFormat:
@@ -280,6 +280,8 @@ class ToHtml(Tokenizer):
                     pStyle = hStyle
                 for pos, fmt in reversed(tFormat):
                     tTemp = f"{tTemp[:pos]}{htmlTags[fmt]}{tTemp[pos:]}"
+                for pos, fmt, key in reversed(tMarkers):
+                    tTemp = f"{tTemp[:pos]}<sup>[x]</sub>{tTemp[pos:]}"
                 para.append(stripEscape(tTemp.rstrip()))
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:

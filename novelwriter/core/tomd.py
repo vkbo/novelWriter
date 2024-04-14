@@ -135,7 +135,7 @@ class ToMarkdown(Tokenizer):
         lines = []
         lineSep = "  \n" if self._preserveBreaks else " "
 
-        for tType, _, tText, tFormat, tStyle in self._tokens:
+        for tType, _, tText, tFormat, tMarkers, tStyle in self._tokens:
 
             if tType == self.T_EMPTY:
                 if para:

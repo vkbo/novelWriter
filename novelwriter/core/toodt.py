@@ -403,7 +403,7 @@ class ToOdt(Tokenizer):
         pText = []
         pStyle = None
         pIndent = True
-        for tType, _, tText, tFormat, tStyle in self._tokens:
+        for tType, _, tText, tFormat, tMarkers, tStyle in self._tokens:
 
             # Styles
             oStyle = ODTParagraphStyle("New")

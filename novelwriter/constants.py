@@ -91,6 +91,8 @@ class nwShortcode:
     SUB_O    = "[sub]"
     SUB_C    = "[/sub]"
 
+    FOOTNOTE_B = "[footnote:"
+
     COMMENT_STYLES = {
         nwComment.FOOTNOTE: "[footnote:{0}]",
         nwComment.COMMENT:  "[comment:{0}]",
