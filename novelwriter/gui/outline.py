@@ -209,11 +209,8 @@ class GuiOutlineToolBar(QToolBar):
 
         logger.debug("Create: GuiOutlineToolBar")
 
-        iSz = SHARED.theme.baseIconSize
-        mPx = CONFIG.pxInt(12)
-
         self.setMovable(False)
-        self.setIconSize(iSz)
+        self.setIconSize(1.4*SHARED.theme.baseIconSize)
         self.setContentsMargins(0, 0, 0, 0)
 
         stretch = QWidget(self)
@@ -221,7 +218,7 @@ class GuiOutlineToolBar(QToolBar):
 
         # Novel Selector
         self.novelLabel = QLabel(self.tr("Outline of"), self)
-        self.novelLabel.setContentsMargins(0, 0, mPx, 0)
+        self.novelLabel.setContentsMargins(0, 0, CONFIG.pxInt(12), 0)
 
         self.novelValue = NovelSelector(self)
         self.novelValue.setIncludeAll(True)
