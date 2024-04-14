@@ -57,7 +57,8 @@ BLOCK_TITLE = 4
 
 class GuiDocHighlighter(QSyntaxHighlighter):
 
-    __slots__ = ("_tItem", "_tHandle", "_spellCheck", "_spellErr", "_hRules", "_hStyles")
+    __slots__ = ("_tHandle", "_isInactive", "_spellCheck", "_spellErr",
+                 "_hRules", "_hStyles", "_rxRules")
 
     def __init__(self, document: QTextDocument) -> None:
         super().__init__(document)
@@ -71,6 +72,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         self._hRules: list[tuple[str, dict]] = []
         self._hStyles: dict[str, QTextCharFormat] = {}
+        self._rxRules: list[tuple[QRegularExpression, dict[str, QTextCharFormat]]] = []
 
         self.initHighlighter()
 
@@ -222,11 +224,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         ))
 
         # Build a QRegExp for each highlight pattern
-        self.rxRules = []
+        self._rxRules = []
         for regEx, regRules in self._hRules:
             hReg = QRegularExpression(regEx)
             hReg.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
-            self.rxRules.append((hReg, regRules))
+            self._rxRules.append((hReg, regRules))
 
         return
 
@@ -362,7 +364,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
             # Regular Text
             self.setCurrentBlockState(BLOCK_TEXT)
-            for rX, xFmt in self.rxRules:
+            for rX, xFmt in self._rxRules:
                 rxItt = rX.globalMatch(text, 0)
                 while rxItt.hasNext():
                     rxMatch = rxItt.next()
