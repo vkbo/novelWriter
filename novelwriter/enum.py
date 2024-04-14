@@ -69,6 +69,8 @@ class nwComment(Enum):
     SHORT    = 2
     NOTE     = 3
     FOOTNOTE = 4
+    COMMENT  = 5
+    STORY    = 6
 
 # END Enum nwComment
 
@@ -147,6 +149,7 @@ class nwDocInsert(Enum):
     VSPACE_S  = 8
     VSPACE_M  = 9
     LIPSUM    = 10
+    FOOTNOTE  = 11
 
 # END Enum nwDocInsert
 

@@ -30,6 +30,7 @@ from __future__ import annotations
 import json
 import logging
 
+from random import randint
 from time import time
 from typing import TYPE_CHECKING
 from pathlib import Path
@@ -1309,6 +1310,9 @@ class IndexHeading:
 #  The Text Index Object
 # =============================================================================================== #
 
+KEY_SOURCE = "0123456789bcdfghjklmnopqrstvwxyz"
+
+
 class TextIndex:
     """Core: Text Index Wrapper Class
 
@@ -1318,8 +1322,8 @@ class TextIndex:
     __slots__ = ("_comments", "_footnotes")
 
     def __init__(self) -> None:
-        self._comments = TextRegistry()
-        self._footnotes = TextRegistry()
+        self._comments = TextRegistry("c_")
+        self._footnotes = TextRegistry("f_")
         return
 
     @property
@@ -1374,11 +1378,12 @@ class TextRegistry:
     A wrapper class that holds a category of text entries.
     """
 
-    __slots__ = ("_map", "_text")
+    __slots__ = ("_map", "_text", "_prefix")
 
-    def __init__(self) -> None:
+    def __init__(self, prefix: str) -> None:
         self._map: dict[str, str] = {}
         self._text: dict[str, str] = {}
+        self._prefix = prefix
         return
 
     def __len__(self) -> int:
@@ -1415,6 +1420,13 @@ class TextRegistry:
         for key in [k for k, v in self._map.items() if v == handle]:
             del self._text[key]
         return
+
+    def newKey(self) -> str:
+        """Generate a new key."""
+        key = self._prefix + "".join([KEY_SOURCE[randint(0, 31)] for _ in range(4)])
+        if key in self._text:
+            key = self.newKey()
+        return key
 
     ##
     #  Pack/Unpack
