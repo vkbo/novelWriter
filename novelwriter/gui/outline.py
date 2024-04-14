@@ -47,6 +47,7 @@ from novelwriter.enum import (
 from novelwriter.error import logException
 from novelwriter.common import checkInt, formatFileFilter, makeFileNameSafe
 from novelwriter.constants import nwHeaders, trConst, nwKeyWords, nwLabels
+from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.types import (
     QtAlignLeftTop, QtAlignRight, QtAlignRightTop, QtDecoration, QtUserRole
@@ -217,7 +218,9 @@ class GuiOutlineToolBar(QToolBar):
         stretch.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
         # Novel Selector
-        self.novelLabel = QLabel(self.tr("Outline of"), self)
+        self.novelLabel = NColourLabel(
+            self.tr("Outline of"), parent=self, scale=NColourLabel.HEADER_SCALE, bold=True
+        )
         self.novelLabel.setContentsMargins(0, 0, CONFIG.pxInt(12), 0)
 
         self.novelValue = NovelSelector(self)
