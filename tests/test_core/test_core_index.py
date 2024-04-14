@@ -127,7 +127,13 @@ def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, mockGUI, tstPaths):
     assert index.indexBroken is True
 
     # Write an index file that passes loading, but is still empty
-    writeFile(projFile, '{"novelWriter.tagsIndex": {}, "novelWriter.itemIndex": {}}')
+    writeFile(projFile, (
+        '{'
+        '"novelWriter.tagsIndex": {}, '
+        '"novelWriter.itemIndex": {}, '
+        '"novelWriter.textIndex": {}'
+        '}'
+    ))
     assert index.loadIndex() is True
     assert index.indexBroken is False
 
