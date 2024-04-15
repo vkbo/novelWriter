@@ -209,6 +209,7 @@ class ToMarkdown(Tokenizer):
             indent = "\n\n"+" "*len(marker)
             text = indent.join(self._formatText(t, f, tags) for t, f in content)
             lines.append(f"{marker}{text}\n")
+        lines.append("\n")
 
         result = "".join(lines)
         self._result += result
