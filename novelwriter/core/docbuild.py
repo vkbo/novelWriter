@@ -191,6 +191,8 @@ class NWBuildDocument:
             else:
                 yield i, False
 
+        makeObj.appendFootnotes()
+
         if not (self._build.getBool("html.preserveTabs") or self._preview):
             makeObj.replaceTabs()
 
@@ -230,6 +232,8 @@ class NWBuildDocument:
                 yield i, self._doBuild(makeObj, tHandle)
             else:
                 yield i, False
+
+        makeObj.appendFootnotes()
 
         self._error = None
         self._cache = makeObj

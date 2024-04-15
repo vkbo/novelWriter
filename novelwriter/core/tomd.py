@@ -29,9 +29,46 @@ from pathlib import Path
 
 from novelwriter.constants import nwHeadFmt, nwLabels, nwUnicode
 from novelwriter.core.project import NWProject
-from novelwriter.core.tokenizer import Tokenizer
+from novelwriter.core.tokenizer import T_Formats, Tokenizer
 
 logger = logging.getLogger(__name__)
+
+
+# Standard Markdown
+STD_MD = {
+    Tokenizer.FMT_B_B: "**",
+    Tokenizer.FMT_B_E: "**",
+    Tokenizer.FMT_I_B: "_",
+    Tokenizer.FMT_I_E: "_",
+    Tokenizer.FMT_D_B: "",
+    Tokenizer.FMT_D_E: "",
+    Tokenizer.FMT_U_B: "",
+    Tokenizer.FMT_U_E: "",
+    Tokenizer.FMT_M_B: "",
+    Tokenizer.FMT_M_E: "",
+    Tokenizer.FMT_SUP_B: "",
+    Tokenizer.FMT_SUP_E: "",
+    Tokenizer.FMT_SUB_B: "",
+    Tokenizer.FMT_SUB_E: "",
+}
+
+# Extended Markdown
+EXT_MD = {
+    Tokenizer.FMT_B_B: "**",
+    Tokenizer.FMT_B_E: "**",
+    Tokenizer.FMT_I_B: "_",
+    Tokenizer.FMT_I_E: "_",
+    Tokenizer.FMT_D_B: "~~",
+    Tokenizer.FMT_D_E: "~~",
+    Tokenizer.FMT_U_B: "",
+    Tokenizer.FMT_U_E: "",
+    Tokenizer.FMT_M_B: "==",
+    Tokenizer.FMT_M_E: "==",
+    Tokenizer.FMT_SUP_B: "^",
+    Tokenizer.FMT_SUP_E: "^",
+    Tokenizer.FMT_SUB_B: "~",
+    Tokenizer.FMT_SUB_E: "~",
+}
 
 
 class ToMarkdown(Tokenizer):
@@ -90,46 +127,14 @@ class ToMarkdown(Tokenizer):
 
     def doConvert(self) -> None:
         """Convert the list of text tokens into a Markdown document."""
+        self._result = ""
+
         if self._genMode == self.M_STD:
-            # Standard Markdown
-            mdTags = {
-                self.FMT_B_B: "**",
-                self.FMT_B_E: "**",
-                self.FMT_I_B: "_",
-                self.FMT_I_E: "_",
-                self.FMT_D_B: "",
-                self.FMT_D_E: "",
-                self.FMT_U_B: "",
-                self.FMT_U_E: "",
-                self.FMT_M_B: "",
-                self.FMT_M_E: "",
-                self.FMT_SUP_B: "",
-                self.FMT_SUP_E: "",
-                self.FMT_SUB_B: "",
-                self.FMT_SUB_E: "",
-            }
+            mTags = STD_MD
             cSkip = ""
         else:
-            # Extended Markdown
-            mdTags = {
-                self.FMT_B_B: "**",
-                self.FMT_B_E: "**",
-                self.FMT_I_B: "_",
-                self.FMT_I_E: "_",
-                self.FMT_D_B: "~~",
-                self.FMT_D_E: "~~",
-                self.FMT_U_B: "",
-                self.FMT_U_E: "",
-                self.FMT_M_B: "==",
-                self.FMT_M_E: "==",
-                self.FMT_SUP_B: "^",
-                self.FMT_SUP_E: "^",
-                self.FMT_SUB_B: "~",
-                self.FMT_SUB_E: "~",
-            }
+            mTags = EXT_MD
             cSkip = nwUnicode.U_MMSP
-
-        self._result = ""
 
         para = []
         lines = []
@@ -170,28 +175,44 @@ class ToMarkdown(Tokenizer):
                 lines.append(f"{cSkip}\n\n")
 
             elif tType == self.T_TEXT:
-                tTemp = tText
-                for pos, fmt, _ in reversed(tFormat):
-                    tTemp = f"{tTemp[:pos]}{mdTags[fmt]}{tTemp[pos:]}"
-                para.append(tTemp.rstrip())
+                para.append(self._formatText(tText, tFormat, mTags).rstrip())
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 label = self._localLookup("Synopsis")
-                lines.append(f"**{label}:** {tText}\n\n")
+                lines.append(f"**{label}:** {self._formatText(tText, tFormat, mTags)}\n\n")
 
             elif tType == self.T_SHORT and self._doSynopsis:
                 label = self._localLookup("Short Description")
-                lines.append(f"**{label}:** {tText}\n\n")
+                lines.append(f"**{label}:** {self._formatText(tText, tFormat, mTags)}\n\n")
 
             elif tType == self.T_COMMENT and self._doComments:
                 label = self._localLookup("Comment")
-                lines.append(f"**{label}:** {tText}\n\n")
+                lines.append(f"**{label}:** {self._formatText(tText, tFormat, mTags)}\n\n")
 
             elif tType == self.T_KEYWORD and self._doKeywords:
                 lines.append(self._formatKeywords(tText, tStyle))
 
         self._result = "".join(lines)
         self._fullMD.append(self._result)
+
+        return
+
+    def appendFootnotes(self) -> None:
+        """Append the footnotes in the buffer."""
+        tags = STD_MD if self._genMode == self.M_STD else EXT_MD
+        footnotes = self._localLookup("Footnotes")
+
+        lines = []
+        lines.append(f"### {footnotes}\n\n")
+        for index, content in self._footnotes.values():
+            marker = f"{index}. "
+            indent = "\n\n"+" "*len(marker)
+            text = indent.join(self._formatText(t, f, tags) for t, f in content)
+            lines.append(f"{marker}{text}\n")
+
+        result = "".join(lines)
+        self._result += result
+        self._fullMD.append(result)
 
         return
 
@@ -213,6 +234,19 @@ class ToMarkdown(Tokenizer):
     ##
     #  Internal Functions
     ##
+
+    def _formatText(self, text: str, tFmt: T_Formats, tags: dict[int, str]) -> str:
+        """Apply formatting tags to text."""
+        temp = text
+        for pos, fmt, data in reversed(tFmt):
+            md = ""
+            if fmt == self.FMT_FNOTE:
+                index = self._footnotes.get(data, (0, ""))[0] or "ERR"
+                md = f"[{index}]"
+            else:
+                md = tags.get(fmt, "")
+            temp = f"{temp[:pos]}{md}{temp[pos:]}"
+        return temp
 
     def _formatKeywords(self, text: str, style: int) -> str:
         """Apply Markdown formatting to keywords."""

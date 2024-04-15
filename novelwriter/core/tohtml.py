@@ -33,9 +33,43 @@ from novelwriter import CONFIG
 from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwHtmlUnicode
 from novelwriter.core.project import NWProject
-from novelwriter.core.tokenizer import Tokenizer, stripEscape
+from novelwriter.core.tokenizer import T_Formats, Tokenizer, stripEscape
 
 logger = logging.getLogger(__name__)
+
+HTML4_TAGS = {
+    Tokenizer.FMT_B_B: "<b>",
+    Tokenizer.FMT_B_E: "</b>",
+    Tokenizer.FMT_I_B: "<i>",
+    Tokenizer.FMT_I_E: "</i>",
+    Tokenizer.FMT_D_B: "<span style='text-decoration: line-through;'>",
+    Tokenizer.FMT_D_E: "</span>",
+    Tokenizer.FMT_U_B: "<u>",
+    Tokenizer.FMT_U_E: "</u>",
+    Tokenizer.FMT_M_B: "<mark>",
+    Tokenizer.FMT_M_E: "</mark>",
+    Tokenizer.FMT_SUP_B: "<sup>",
+    Tokenizer.FMT_SUP_E: "</sup>",
+    Tokenizer.FMT_SUB_B: "<sub>",
+    Tokenizer.FMT_SUB_E: "</sub>",
+}
+
+HTML5_TAGS = {
+    Tokenizer.FMT_B_B: "<strong>",
+    Tokenizer.FMT_B_E: "</strong>",
+    Tokenizer.FMT_I_B: "<em>",
+    Tokenizer.FMT_I_E: "</em>",
+    Tokenizer.FMT_D_B: "<del>",
+    Tokenizer.FMT_D_E: "</del>",
+    Tokenizer.FMT_U_B: "<span style='text-decoration: underline;'>",
+    Tokenizer.FMT_U_E: "</span>",
+    Tokenizer.FMT_M_B: "<mark>",
+    Tokenizer.FMT_M_E: "</mark>",
+    Tokenizer.FMT_SUP_B: "<sup>",
+    Tokenizer.FMT_SUP_E: "</sup>",
+    Tokenizer.FMT_SUB_B: "<sub>",
+    Tokenizer.FMT_SUB_E: "</sub>",
+}
 
 
 class ToHtml(Tokenizer):
@@ -117,38 +151,9 @@ class ToHtml(Tokenizer):
 
     def doConvert(self) -> None:
         """Convert the list of text tokens into an HTML document."""
-        if self._genMode == self.M_PREVIEW:
-            htmlTags = {  # HTML4 + CSS2 (for Qt)
-                self.FMT_B_B: "<b>",
-                self.FMT_B_E: "</b>",
-                self.FMT_I_B: "<i>",
-                self.FMT_I_E: "</i>",
-                self.FMT_D_B: "<span style='text-decoration: line-through;'>",
-                self.FMT_D_E: "</span>",
-                self.FMT_U_B: "<u>",
-                self.FMT_U_E: "</u>",
-                self.FMT_M_B: "<mark>",
-                self.FMT_M_E: "</mark>",
-            }
-        else:
-            htmlTags = {  # HTML5 (for export)
-                self.FMT_B_B: "<strong>",
-                self.FMT_B_E: "</strong>",
-                self.FMT_I_B: "<em>",
-                self.FMT_I_E: "</em>",
-                self.FMT_D_B: "<del>",
-                self.FMT_D_E: "</del>",
-                self.FMT_U_B: "<span style='text-decoration: underline;'>",
-                self.FMT_U_E: "</span>",
-                self.FMT_M_B: "<mark>",
-                self.FMT_M_E: "</mark>",
-            }
+        self._result = ""
 
-        htmlTags[self.FMT_SUP_B] = "<sup>"
-        htmlTags[self.FMT_SUP_E] = "</sup>"
-        htmlTags[self.FMT_SUB_B] = "<sub>"
-        htmlTags[self.FMT_SUB_E] = "</sub>"
-
+        hTags = HTML4_TAGS if self._genMode == self.M_PREVIEW else HTML5_TAGS
         if self._isNovel and self._genMode != self.M_PREVIEW:
             # For story files, we bump the titles one level up
             h1Cl = " class='title'"
@@ -163,12 +168,9 @@ class ToHtml(Tokenizer):
             h3 = "h3"
             h4 = "h4"
 
-        self._result = ""
-
         para = []
-        pStyle = None
         lines = []
-
+        pStyle = None
         tHandle = self._handle
 
         for tType, nHead, tText, tFormat, tStyle in self._tokens:
@@ -181,11 +183,11 @@ class ToHtml(Tokenizer):
                 for c in tText:
                     if c == "<":
                         cText.append("&lt;")
-                        tFormat = [[p + 3 if p > i else p, f, k] for p, f, k in tFormat]
+                        tFormat = [(p + 3 if p > i else p, f, k) for p, f, k in tFormat]
                         i += 4
                     elif c == ">":
                         cText.append("&gt;")
-                        tFormat = [[p + 3 if p > i else p, f, k] for p, f, k in tFormat]
+                        tFormat = [(p + 3 if p > i else p, f, k) for p, f, k in tFormat]
                         i += 4
                     else:
                         cText.append(c)
@@ -275,28 +277,18 @@ class ToHtml(Tokenizer):
                 lines.append(f"<p class='skip'{hStyle}>&nbsp;</p>\n")
 
             elif tType == self.T_TEXT:
-                tTemp = tText
                 if pStyle is None:
                     pStyle = hStyle
-                for pos, fmt, key in reversed(tFormat):
-                    if fmt > self.MRK_BOUNDARY:
-                        if key in self._markers:
-                            index = self._markers[key][0]
-                            if fmt == self.MRK_FOOTNOTE:
-                                ref = f"<sup><a href='#footnote_{index}'>[{index+1}]</a></sup>"
-                                tTemp = f"{tTemp[:pos]}{ref}{tTemp[pos:]}"
-                    else:
-                        tTemp = f"{tTemp[:pos]}{htmlTags[fmt]}{tTemp[pos:]}"
-                para.append(stripEscape(tTemp.rstrip()))
+                para.append(self._formatText(tText, tFormat, hTags).rstrip())
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
-                lines.append(self._formatSynopsis(tText, True))
+                lines.append(self._formatSynopsis(self._formatText(tText, tFormat, hTags), True))
 
             elif tType == self.T_SHORT and self._doSynopsis:
-                lines.append(self._formatSynopsis(tText, False))
+                lines.append(self._formatSynopsis(self._formatText(tText, tFormat, hTags), False))
 
             elif tType == self.T_COMMENT and self._doComments:
-                lines.append(self._formatComments(tText))
+                lines.append(self._formatComments(self._formatText(tText, tFormat, hTags)))
 
             elif tType == self.T_KEYWORD and self._doKeywords:
                 tag, text = self._formatKeywords(tText)
@@ -306,6 +298,25 @@ class ToHtml(Tokenizer):
 
         self._result = "".join(lines)
         self._fullHTML.append(self._result)
+
+        return
+
+    def appendFootnotes(self) -> None:
+        """Append the footnotes in the buffer."""
+        tags = HTML4_TAGS if self._genMode == self.M_PREVIEW else HTML5_TAGS
+        footnotes = self._localLookup("Footnotes")
+
+        lines = []
+        lines.append(f"<h3>{footnotes}</h3>\n")
+        lines.append("<ol>\n")
+        for index, content in self._footnotes.values():
+            text = "</p><p>".join(self._formatText(t, f, tags) for t, f in content)
+            lines.append(f"<li id='footnote_{index}'><p>{text}</p></li>\n")
+        lines.append("</ol>\n")
+
+        result = "".join(lines)
+        self._result += result
+        self._fullHTML.append(result)
 
         return
 
@@ -459,6 +470,19 @@ class ToHtml(Tokenizer):
     ##
     #  Internal Functions
     ##
+
+    def _formatText(self, text: str, tFmt: T_Formats, tags: dict[int, str]) -> str:
+        """Apply formatting tags to text."""
+        temp = text
+        for pos, fmt, data in reversed(tFmt):
+            html = ""
+            if fmt == self.FMT_FNOTE:
+                index = self._footnotes.get(data, (0, ""))[0] or "ERR"
+                html = f"<sup><a href='#footnote_{index}'>[{index}]</a></sup>"
+            else:
+                html = tags.get(fmt, "ERR")
+            temp = f"{temp[:pos]}{html}{temp[pos:]}"
+        return stripEscape(temp)
 
     def _formatSynopsis(self, text: str, synopsis: bool) -> str:
         """Apply HTML formatting to synopsis."""
