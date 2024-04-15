@@ -199,21 +199,22 @@ class ToMarkdown(Tokenizer):
 
     def appendFootnotes(self) -> None:
         """Append the footnotes in the buffer."""
-        tags = STD_MD if self._genMode == self.M_STD else EXT_MD
-        footnotes = self._localLookup("Footnotes")
+        if self._footnotes:
+            tags = STD_MD if self._genMode == self.M_STD else EXT_MD
+            footnotes = self._localLookup("Footnotes")
 
-        lines = []
-        lines.append(f"### {footnotes}\n\n")
-        for index, content in self._footnotes.values():
-            marker = f"{index}. "
-            indent = "\n\n"+" "*len(marker)
-            text = indent.join(self._formatText(t, f, tags) for t, f in content)
-            lines.append(f"{marker}{text}\n")
-        lines.append("\n")
+            lines = []
+            lines.append(f"### {footnotes}\n\n")
+            for index, content in self._footnotes.values():
+                marker = f"{index}. "
+                indent = "\n\n"+" "*len(marker)
+                text = indent.join(self._formatText(t, f, tags) for t, f in content)
+                lines.append(f"{marker}{text}\n")
+            lines.append("\n")
 
-        result = "".join(lines)
-        self._result += result
-        self._fullMD.append(result)
+            result = "".join(lines)
+            self._result += result
+            self._fullMD.append(result)
 
         return
 

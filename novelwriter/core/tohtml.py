@@ -303,20 +303,21 @@ class ToHtml(Tokenizer):
 
     def appendFootnotes(self) -> None:
         """Append the footnotes in the buffer."""
-        tags = HTML4_TAGS if self._genMode == self.M_PREVIEW else HTML5_TAGS
-        footnotes = self._localLookup("Footnotes")
+        if self._footnotes:
+            tags = HTML4_TAGS if self._genMode == self.M_PREVIEW else HTML5_TAGS
+            footnotes = self._localLookup("Footnotes")
 
-        lines = []
-        lines.append(f"<h3>{footnotes}</h3>\n")
-        lines.append("<ol>\n")
-        for index, content in self._footnotes.values():
-            text = "</p><p>".join(self._formatText(t, f, tags) for t, f in content)
-            lines.append(f"<li id='footnote_{index}'><p>{text}</p></li>\n")
-        lines.append("</ol>\n")
+            lines = []
+            lines.append(f"<h3>{footnotes}</h3>\n")
+            lines.append("<ol>\n")
+            for index, content in self._footnotes.values():
+                text = "</p><p>".join(self._formatText(t, f, tags) for t, f in content)
+                lines.append(f"<li id='footnote_{index}'><p>{text}</p></li>\n")
+            lines.append("</ol>\n")
 
-        result = "".join(lines)
-        self._result += result
-        self._fullHTML.append(result)
+            result = "".join(lines)
+            self._result += result
+            self._fullHTML.append(result)
 
         return
 
