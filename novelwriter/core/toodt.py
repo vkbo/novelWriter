@@ -29,11 +29,12 @@ from __future__ import annotations
 import logging
 import xml.etree.ElementTree as ET
 
+from collections.abc import Sequence
+from copy import deepcopy
+from datetime import datetime
 from hashlib import sha256
 from pathlib import Path
 from zipfile import ZipFile
-from datetime import datetime
-from collections.abc import Sequence
 
 from novelwriter import __version__
 from novelwriter.common import xmlIndent
@@ -130,6 +131,10 @@ class ToOdt(Tokenizer):
         self._autoPara: dict[str, ODTParagraphStyle] = {}  # Auto-generated paragraph styles
         self._autoText: dict[int, ODTTextStyle] = {}       # Auto-generated text styles
 
+        # Footnotes
+        self._nNote = 0
+        self._etNotes: dict[str, ET.Element] = {}  # Generated note elements
+
         self._errData = []  # List of errors encountered
 
         # Properties
@@ -151,6 +156,7 @@ class ToOdt(Tokenizer):
         self._fSizeHead4   = "14pt"
         self._fSizeHead    = "14pt"
         self._fSizeText    = "12pt"
+        self._fSizeFoot    = "10pt"
         self._fLineHeight  = "115%"
         self._fBlockIndent = "1.693cm"
         self._fTextIndent  = "0.499cm"
@@ -176,6 +182,9 @@ class ToOdt(Tokenizer):
         self._mBotHead  = "0.212cm"
         self._mBotText  = "0.247cm"
         self._mBotMeta  = "0.106cm"
+
+        self._mBotFoot  = "0.106cm"
+        self._mLeftFoot = "0.600cm"
 
         # Document Size and Margins
         self._mDocWidth  = "21.0cm"
@@ -258,6 +267,7 @@ class ToOdt(Tokenizer):
         self._fSizeHead4 = f"{round(1.15 * self._textSize):d}pt"
         self._fSizeHead  = f"{round(1.15 * self._textSize):d}pt"
         self._fSizeText  = f"{self._textSize:d}pt"
+        self._fSizeFoot  = f"{round(0.8*self._textSize):d}pt"
 
         mScale = self._lineHeight/1.15
 
@@ -279,6 +289,9 @@ class ToOdt(Tokenizer):
         self._mBotText  = self._emToCm(mScale * self._marginText[1])
         self._mBotMeta  = self._emToCm(mScale * self._marginMeta[1])
 
+        self._mLeftFoot = self._emToCm(self._marginFoot[0])
+        self._mBotFoot  = self._emToCm(self._marginFoot[1])
+
         if self._colourHead:
             self._colHead12 = "#2a6099"
             self._opaHead12 = "100%"
@@ -289,6 +302,7 @@ class ToOdt(Tokenizer):
 
         self._fLineHeight  = f"{round(100 * self._lineHeight):d}%"
         self._fBlockIndent = self._emToCm(self._blockIndent)
+        self._fTextIndent  = self._emToCm(self._textIndent)
         self._textAlign    = "justify" if self._doJustify else "left"
 
         # Clear Errors
@@ -398,11 +412,13 @@ class ToOdt(Tokenizer):
     def doConvert(self) -> None:
         """Convert the list of text tokens into XML elements."""
         self._result = ""  # Not used, but cleared just in case
+        self._preProcessNotes()
 
         pFmt: list[T_Formats] = []
         pText = []
         pStyle = None
         pIndent = True
+        xText = self._xText
         for tType, _, tText, tFormat, tStyle in self._tokens:
 
             # Styles
@@ -453,7 +469,7 @@ class ToOdt(Tokenizer):
                     # Don't indent a paragraph if it has alignment set
                     tIndent = self._firstIndent and pIndent and pStyle.isUnaligned()
                     self._addTextPar(
-                        "First_20_line_20_indent" if tIndent else "Text_20_body",
+                        xText, "First_20_line_20_indent" if tIndent else "Text_20_body",
                         pStyle, tTxt.rstrip(), tFmt=tFmt
                     )
                     pIndent = True
@@ -463,30 +479,31 @@ class ToOdt(Tokenizer):
                 pStyle = None
 
             elif tType == self.T_TITLE:
+                # Title must be text:p
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar("Title", oStyle, tHead, isHead=False)  # Title must be text:p
+                self._addTextPar(xText, "Title", oStyle, tHead, isHead=False)
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar("Heading_20_1", oStyle, tHead, isHead=True, oLevel="1")
+                self._addTextPar(xText, "Heading_20_1", oStyle, tHead, isHead=True, oLevel="1")
 
             elif tType == self.T_HEAD2:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar("Heading_20_2", oStyle, tHead, isHead=True, oLevel="2")
+                self._addTextPar(xText, "Heading_20_2", oStyle, tHead, isHead=True, oLevel="2")
 
             elif tType == self.T_HEAD3:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar("Heading_20_3", oStyle, tHead, isHead=True, oLevel="3")
+                self._addTextPar(xText, "Heading_20_3", oStyle, tHead, isHead=True, oLevel="3")
 
             elif tType == self.T_HEAD4:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar("Heading_20_4", oStyle, tHead, isHead=True, oLevel="4")
+                self._addTextPar(xText, "Heading_20_4", oStyle, tHead, isHead=True, oLevel="4")
 
             elif tType == self.T_SEP:
-                self._addTextPar("Separator", oStyle, tText)
+                self._addTextPar(xText, "Separator", oStyle, tText)
 
             elif tType == self.T_SKIP:
-                self._addTextPar("Separator", oStyle, "")
+                self._addTextPar(xText, "Separator", oStyle, "")
 
             elif tType == self.T_TEXT:
                 if pStyle is None:
@@ -496,19 +513,19 @@ class ToOdt(Tokenizer):
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 tTemp, tFmt = self._formatSynopsis(tText, tFormat, True)
-                self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
+                self._addTextPar(xText, "Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
 
             elif tType == self.T_SHORT and self._doSynopsis:
                 tTemp, tFmt = self._formatSynopsis(tText, tFormat, False)
-                self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
+                self._addTextPar(xText, "Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
 
             elif tType == self.T_COMMENT and self._doComments:
                 tTemp, tFmt = self._formatComments(tText, tFormat)
-                self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
+                self._addTextPar(xText, "Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
 
             elif tType == self.T_KEYWORD and self._doKeywords:
                 tTemp, tFmt = self._formatKeywords(tText)
-                self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
+                self._addTextPar(xText, "Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
 
         return
 
@@ -604,7 +621,7 @@ class ToOdt(Tokenizer):
         return rTxt, rFmt
 
     def _addTextPar(
-        self, styleName: str, oStyle: ODTParagraphStyle, tText: str,
+        self, xParent: ET.Element, styleName: str, oStyle: ODTParagraphStyle, tText: str,
         tFmt: Sequence[tuple[int, int, str]] = [], isHead: bool = False, oLevel: str | None = None
     ) -> None:
         """Add a text paragraph to the text XML element."""
@@ -613,7 +630,7 @@ class ToOdt(Tokenizer):
             tAttr[_mkTag("text", "outline-level")] = oLevel
 
         pTag = "h" if isHead else "p"
-        xElem = ET.SubElement(self._xText, _mkTag("text", pTag), attrib=tAttr)
+        xElem = ET.SubElement(xParent, _mkTag("text", pTag), attrib=tAttr)
 
         # It's important to set the initial text field to empty, otherwise
         # xmlIndent will add a line break if the first subelement is a span.
@@ -631,7 +648,7 @@ class ToOdt(Tokenizer):
         xFmt = 0x00
         tFrag = ""
         fLast = 0
-        for fPos, fFmt, _ in tFmt:
+        for fPos, fFmt, fData in tFmt:
 
             # Add the text up to the current fragment
             if tFrag := tText[fLast:fPos]:
@@ -669,6 +686,8 @@ class ToOdt(Tokenizer):
                 xFmt |= X_SUB
             elif fFmt == self.FMT_SUB_E:
                 xFmt &= M_SUB
+            elif fFmt == self.FMT_FNOTE:
+                parProc.appendNode(self._etNotes.get(fData))
             else:
                 pErr += 1
 
@@ -738,6 +757,29 @@ class ToOdt(Tokenizer):
         self._autoText[hFmt] = style
 
         return style.name
+
+    def _preProcessNotes(self) -> None:
+        """Generate XML elements for footnotes."""
+        fStyle = ODTParagraphStyle("New")
+        sStyle = ODTParagraphStyle("New")
+        sStyle.setTextIndent("0.000cm")
+        sStyle.setMarginLeft(self._mLeftFoot)
+        update = [key for key in self._footnotes.keys() if key not in self._etNotes]
+        for key in update:
+            cStyle = fStyle
+            self._nNote += 1
+            xNote = ET.Element(_mkTag("text", "note"), attrib={
+                _mkTag("text", "id"): f"ftn{self._nNote}",
+                _mkTag("text", "note-class"): "footnote",
+            })
+            xCite = ET.SubElement(xNote, _mkTag("text", "note-citation"))
+            xCite.text = str(self._nNote)
+            xBody = ET.SubElement(xNote, _mkTag("text", "note-body"))
+            for text, fmt in self._footnotes[key][1]:
+                self._addTextPar(xBody, "Footnote", cStyle, text, tFmt=fmt)
+                cStyle = sStyle
+            self._etNotes[key] = xNote
+        return
 
     def _emToCm(self, value: float) -> str:
         """Converts an em value to centimetres."""
@@ -989,6 +1031,18 @@ class ToOdt(Tokenizer):
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
+        # Add Footnote Style
+        style = ODTParagraphStyle("Footnote")
+        style.setDisplayName("Footnote")
+        style.setParentStyleName("Standard")
+        style.setClass("extra")
+        style.setMarginLeft(self._mLeftFoot)
+        style.setMarginBottom(self._mBotFoot)
+        style.setTextIndent("-"+self._mLeftFoot)
+        style.setFontSize(self._fSizeFoot)
+        style.packXML(self._xStyl)
+        self._mainPara[style.name] = style
+
         return
 
     def _writeHeader(self) -> None:
@@ -1045,7 +1099,7 @@ class ODTParagraphStyle:
     VALID_ALIGN  = ["start", "center", "end", "justify", "inside", "outside", "left", "right"]
     VALID_BREAK  = ["auto", "column", "page", "even-page", "odd-page", "inherit"]
     VALID_LEVEL  = ["1", "2", "3", "4"]
-    VALID_CLASS  = ["text", "chapter"]
+    VALID_CLASS  = ["text", "chapter", "extra"]
     VALID_WEIGHT = ["normal", "inherit", "bold"]
 
     def __init__(self, name: str) -> None:
@@ -1468,7 +1522,6 @@ class XMLParagraph:
             if c == " ":
                 nSpaces += 1
                 continue
-
             elif nSpaces > 0:
                 self._processSpaces(nSpaces)
                 nSpaces = 0
@@ -1479,26 +1532,22 @@ class XMLParagraph:
                     self._xTail.tail = ""
                     self._nState = X_ROOT_TAIL
                     self._chrPos += 1
-
                 elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
                     self._xSing = ET.SubElement(self._xTail, TAG_BR)
                     self._xSing.tail = ""
                     self._nState = X_SPAN_SING
                     self._chrPos += 1
-
             elif c == "\t":
                 if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
                     self._xTail = ET.SubElement(self._xRoot, TAG_TAB)
                     self._xTail.tail = ""
                     self._nState = X_ROOT_TAIL
                     self._chrPos += 1
-
                 elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
                     self._xSing = ET.SubElement(self._xTail, TAG_TAB)
                     self._xSing.tail = ""
                     self._chrPos += 1
                     self._nState = X_SPAN_SING
-
             else:
                 if self._nState == X_ROOT_TEXT:
                     self._xRoot.text = (self._xRoot.text or "") + c
@@ -1531,6 +1580,23 @@ class XMLParagraph:
         self._nState = X_SPAN_TEXT
         self.appendText(text)
         self._nState = X_ROOT_TAIL
+        return
+
+    def appendNode(self, xNode: ET.Element | None) -> None:
+        """Append an XML node to the paragraph."""
+        if xNode:
+            # We must make a copy in case the node is reused
+            xCopy = deepcopy(xNode)
+            if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
+                self._xRoot.append(xCopy)
+                self._xTail = xCopy
+                self._xTail.tail = ""
+                self._nState = X_ROOT_TAIL
+            elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
+                self._xTail.append(xCopy)
+                self._xSing = xCopy
+                self._xSing.tail = ""
+                self._nState = X_SPAN_SING
         return
 
     def checkError(self) -> tuple[int, str]:
