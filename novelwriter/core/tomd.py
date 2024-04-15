@@ -50,6 +50,7 @@ STD_MD = {
     Tokenizer.FMT_SUP_E: "",
     Tokenizer.FMT_SUB_B: "",
     Tokenizer.FMT_SUB_E: "",
+    Tokenizer.FMT_STRIP: "",
 }
 
 # Extended Markdown
@@ -68,6 +69,7 @@ EXT_MD = {
     Tokenizer.FMT_SUP_E: "^",
     Tokenizer.FMT_SUB_B: "~",
     Tokenizer.FMT_SUB_E: "~",
+    Tokenizer.FMT_STRIP: "",
 }
 
 
@@ -87,6 +89,7 @@ class ToMarkdown(Tokenizer):
         self._genMode = self.M_STD
         self._fullMD: list[str] = []
         self._preserveBreaks = True
+        self._usedNotes = set()
         return
 
     ##
@@ -205,11 +208,12 @@ class ToMarkdown(Tokenizer):
 
             lines = []
             lines.append(f"### {footnotes}\n\n")
-            for index, content in self._footnotes.values():
-                marker = f"{index}. "
-                indent = "\n\n"+" "*len(marker)
-                text = indent.join(self._formatText(t, f, tags) for t, f in content)
-                lines.append(f"{marker}{text}\n")
+            for key, (index, content) in self._footnotes.items():
+                if key in self._usedNotes:
+                    marker = f"{index}. "
+                    indent = "\n\n"+" "*len(marker)
+                    text = indent.join(self._formatText(t, f, tags) for t, f in content)
+                    lines.append(f"{marker}{text}\n")
             lines.append("\n")
 
             result = "".join(lines)
@@ -243,6 +247,7 @@ class ToMarkdown(Tokenizer):
         for pos, fmt, data in reversed(tFmt):
             md = ""
             if fmt == self.FMT_FNOTE:
+                self._usedNotes.add(data)
                 index = self._footnotes.get(data, (0, ""))[0] or "ERR"
                 md = f"[{index}]"
             else:

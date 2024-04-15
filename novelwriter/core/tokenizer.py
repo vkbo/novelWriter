@@ -84,6 +84,7 @@ class Tokenizer(ABC):
     FMT_SUB_B = 13  # Begin subscript
     FMT_SUB_E = 14  # End subscript
     FMT_FNOTE = 15  # Footnote marker
+    FMT_STRIP = 16  # Strip the format code
 
     # Block Type
     T_EMPTY    = 1   # Empty line (new paragraph)
@@ -140,6 +141,7 @@ class Tokenizer(ABC):
         self._textFixed    = False    # Fixed width text
         self._lineHeight   = 1.15     # Line height in units of em
         self._blockIndent  = 4.00     # Block indent in units of em
+        self._textIndent   = 1.40     # First line indent in units of em
         self._doJustify    = False    # Justify text
         self._doBodyText   = True     # Include body text
         self._doSynopsis   = False    # Also process synopsis comments
@@ -155,6 +157,7 @@ class Tokenizer(ABC):
         self._marginHead4 = (0.584, 0.500)
         self._marginText  = (0.000, 0.584)
         self._marginMeta  = (0.000, 0.584)
+        self._marginFoot  = (1.417, 0.467)
 
         # Title Formats
         self._fmtTitle   = nwHeadFmt.TITLE  # Formatting for titles
@@ -542,26 +545,29 @@ class Tokenizer(ABC):
                     continue
 
                 cStyle, cKey, cText, _, _ = processComment(aLine)
-                tLine, fmtPos = self._extractFormats(cText)
                 if cStyle == nwComment.SYNOPSIS:
+                    tLine, tFmt = self._extractFormats(cText)
                     self._tokens.append((
-                        self.T_SYNOPSIS, nHead, tLine, fmtPos, sAlign
+                        self.T_SYNOPSIS, nHead, tLine, tFmt, sAlign
                     ))
                     if self._doSynopsis and self._keepMarkdown:
                         tmpMarkdown.append(f"{aLine}\n")
                 elif cStyle == nwComment.SHORT:
+                    tLine, tFmt = self._extractFormats(cText)
                     self._tokens.append((
-                        self.T_SHORT, nHead, tLine, fmtPos, sAlign
+                        self.T_SHORT, nHead, tLine, tFmt, sAlign
                     ))
                     if self._doSynopsis and self._keepMarkdown:
                         tmpMarkdown.append(f"{aLine}\n")
                 elif cStyle == nwComment.FOOTNOTE:
+                    tLine, tFmt = self._extractFormats(cText, skip=self.FMT_FNOTE)
                     if cKey not in self._footnotes:
                         self._footnotes[cKey] = (len(self._footnotes) + 1, [])
-                    self._footnotes[cKey][1].append((tLine, fmtPos))
+                    self._footnotes[cKey][1].append((tLine, tFmt))
                 else:
+                    tLine, tFmt = self._extractFormats(cText)
                     self._tokens.append((
-                        self.T_COMMENT, nHead, tLine, fmtPos, sAlign
+                        self.T_COMMENT, nHead, tLine, tFmt, sAlign
                     ))
                     if self._doComments and self._keepMarkdown:
                         tmpMarkdown.append(f"{aLine}\n")
@@ -763,9 +769,9 @@ class Tokenizer(ABC):
                     sAlign |= self.A_IND_R
 
                 # Process formats
-                tLine, fmtPos = self._extractFormats(aLine)
+                tLine, tFmt = self._extractFormats(aLine)
                 self._tokens.append((
-                    self.T_TEXT, nHead, tLine, fmtPos, sAlign
+                    self.T_TEXT, nHead, tLine, tFmt, sAlign
                 ))
                 if self._keepMarkdown:
                     tmpMarkdown.append(f"{aLine}\n")
@@ -976,7 +982,7 @@ class Tokenizer(ABC):
     #  Internal Functions
     ##
 
-    def _extractFormats(self, text: str) -> tuple[str, T_Formats]:
+    def _extractFormats(self, text: str, skip: int = 0) -> tuple[str, T_Formats]:
         """Extract format markers from a text paragraph."""
         temp: list[tuple[int, int, int, str]] = []
 
@@ -1005,10 +1011,11 @@ class Tokenizer(ABC):
         rxItt = self._rxShortCodeVals.globalMatch(text, 0)
         while rxItt.hasNext():
             rxMatch = rxItt.next()
+            kind = self._shortCodeVals.get(rxMatch.captured(1).lower(), 0)
             temp.append((
                 rxMatch.capturedStart(0),
                 rxMatch.capturedLength(0),
-                self._shortCodeVals.get(rxMatch.captured(1).lower(), 0),
+                self.FMT_STRIP if kind == skip else kind,
                 rxMatch.captured(2),
             ))
 

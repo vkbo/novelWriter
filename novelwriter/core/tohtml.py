@@ -52,6 +52,7 @@ HTML4_TAGS = {
     Tokenizer.FMT_SUP_E: "</sup>",
     Tokenizer.FMT_SUB_B: "<sub>",
     Tokenizer.FMT_SUB_E: "</sub>",
+    Tokenizer.FMT_STRIP: "",
 }
 
 HTML5_TAGS = {
@@ -69,6 +70,7 @@ HTML5_TAGS = {
     Tokenizer.FMT_SUP_E: "</sup>",
     Tokenizer.FMT_SUB_B: "<sub>",
     Tokenizer.FMT_SUB_E: "</sub>",
+    Tokenizer.FMT_STRIP: "",
 }
 
 
@@ -92,6 +94,7 @@ class ToHtml(Tokenizer):
 
         # Internals
         self._trMap = {}
+        self._usedNotes = set()
         self.setReplaceUnicode(False)
 
         return
@@ -310,9 +313,10 @@ class ToHtml(Tokenizer):
             lines = []
             lines.append(f"<h3>{footnotes}</h3>\n")
             lines.append("<ol>\n")
-            for index, content in self._footnotes.values():
-                text = "</p><p>".join(self._formatText(t, f, tags) for t, f in content)
-                lines.append(f"<li id='footnote_{index}'><p>{text}</p></li>\n")
+            for key, (index, content) in self._footnotes.items():
+                if key in self._usedNotes:
+                    text = "</p><p>".join(self._formatText(t, f, tags) for t, f in content)
+                    lines.append(f"<li id='footnote_{index}'><p>{text}</p></li>\n")
             lines.append("</ol>\n")
 
             result = "".join(lines)
@@ -478,6 +482,7 @@ class ToHtml(Tokenizer):
         for pos, fmt, data in reversed(tFmt):
             html = ""
             if fmt == self.FMT_FNOTE:
+                self._usedNotes.add(data)
                 index = self._footnotes.get(data, (0, ""))[0] or "ERR"
                 html = f"<sup><a href='#footnote_{index}'>[{index}]</a></sup>"
             else:
