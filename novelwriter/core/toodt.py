@@ -444,11 +444,11 @@ class ToOdt(Tokenizer):
 
                 if len(pText) > 0 and pStyle is not None:
                     tTxt = ""
-                    tFmt: list[tuple[int, int]] = []
+                    tFmt: T_Formats = []
                     for nText, nFmt in zip(pText, pFmt):
                         tLen = len(tTxt)
                         tTxt += f"{nText}\n"
-                        tFmt.extend((p+tLen, fmt) for p, fmt, _ in nFmt)
+                        tFmt.extend((p+tLen, fmt, key) for p, fmt, key in nFmt)
 
                     # Don't indent a paragraph if it has alignment set
                     tIndent = self._firstIndent and pIndent and pStyle.isUnaligned()
@@ -495,20 +495,20 @@ class ToOdt(Tokenizer):
                 pFmt.append(tFormat)
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
-                tTemp, fTemp = self._formatSynopsis(tText, True)
-                self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=fTemp)
+                tTemp, tFmt = self._formatSynopsis(tText, tFormat, True)
+                self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
 
             elif tType == self.T_SHORT and self._doSynopsis:
-                tTemp, fTemp = self._formatSynopsis(tText, False)
-                self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=fTemp)
+                tTemp, tFmt = self._formatSynopsis(tText, tFormat, False)
+                self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
 
             elif tType == self.T_COMMENT and self._doComments:
-                tTemp, fTemp = self._formatComments(tText)
-                self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=fTemp)
+                tTemp, tFmt = self._formatComments(tText, tFormat)
+                self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
 
             elif tType == self.T_KEYWORD and self._doKeywords:
-                tTemp, fTemp = self._formatKeywords(tText)
-                self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=fTemp)
+                tTemp, tFmt = self._formatKeywords(tText)
+                self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
 
         return
 
@@ -569,28 +569,32 @@ class ToOdt(Tokenizer):
     #  Internal Functions
     ##
 
-    def _formatSynopsis(self, text: str, synopsis: bool) -> tuple[str, list[tuple[int, int]]]:
+    def _formatSynopsis(self, text: str, fmt: T_Formats, synopsis: bool) -> tuple[str, T_Formats]:
         """Apply formatting to synopsis lines."""
         name = self._localLookup("Synopsis" if synopsis else "Short Description")
+        shift = len(name) + 2
         rTxt = f"{name}: {text}"
-        rFmt = [(0, self.FMT_B_B), (len(name) + 1, self.FMT_B_E)]
+        rFmt: T_Formats = [(0, self.FMT_B_B, ""), (len(name) + 1, self.FMT_B_E, "")]
+        rFmt.extend((p + shift, f, d) for p, f, d in fmt)
         return rTxt, rFmt
 
-    def _formatComments(self, text: str) -> tuple[str, list[tuple[int, int]]]:
+    def _formatComments(self, text: str, fmt: T_Formats) -> tuple[str, T_Formats]:
         """Apply formatting to comments."""
         name = self._localLookup("Comment")
+        shift = len(name) + 2
         rTxt = f"{name}: {text}"
-        rFmt = [(0, self.FMT_B_B), (len(name) + 1, self.FMT_B_E)]
+        rFmt: T_Formats = [(0, self.FMT_B_B, ""), (len(name) + 1, self.FMT_B_E, "")]
+        rFmt.extend((p + shift, f, d) for p, f, d in fmt)
         return rTxt, rFmt
 
-    def _formatKeywords(self, text: str) -> tuple[str, list[tuple[int, int]]]:
+    def _formatKeywords(self, text: str) -> tuple[str, T_Formats]:
         """Apply formatting to keywords."""
         valid, bits, _ = self._project.index.scanThis("@"+text)
         if not valid or not bits or bits[0] not in nwLabels.KEY_NAME:
             return "", []
 
         rTxt = f"{self._localLookup(nwLabels.KEY_NAME[bits[0]])}: "
-        rFmt = [(0, self.FMT_B_B), (len(rTxt) - 1, self.FMT_B_E)]
+        rFmt: T_Formats = [(0, self.FMT_B_B, ""), (len(rTxt) - 1, self.FMT_B_E, "")]
         if len(bits) > 1:
             if bits[0] == nwKeyWords.TAG_KEY:
                 rTxt += bits[1]
@@ -601,7 +605,7 @@ class ToOdt(Tokenizer):
 
     def _addTextPar(
         self, styleName: str, oStyle: ODTParagraphStyle, tText: str,
-        tFmt: Sequence[tuple[int, int]] = [], isHead: bool = False, oLevel: str | None = None
+        tFmt: Sequence[tuple[int, int, str]] = [], isHead: bool = False, oLevel: str | None = None
     ) -> None:
         """Add a text paragraph to the text XML element."""
         tAttr = {_mkTag("text", "style-name"): self._paraStyle(styleName, oStyle)}
@@ -627,7 +631,7 @@ class ToOdt(Tokenizer):
         xFmt = 0x00
         tFrag = ""
         fLast = 0
-        for fPos, fFmt in tFmt:
+        for fPos, fFmt, _ in tFmt:
 
             # Add the text up to the current fragment
             if tFrag := tText[fLast:fPos]:
