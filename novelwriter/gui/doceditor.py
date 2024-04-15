@@ -1862,8 +1862,8 @@ class GuiDocEditor(QPlainTextEdit):
             cursor = self.textCursor()
             block = cursor.block()
             text = block.text().rstrip()
-            if not text or text.startswith(("@", "#", "%")):
-                SHARED.error(self.tr("Footnotes can only be inserted in text."))
+            if not text or text.startswith("@"):
+                logger.error("Invalid footnote location")
                 return
 
             cursor.beginEditBlock()

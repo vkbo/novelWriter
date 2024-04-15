@@ -49,6 +49,7 @@ ESCAPES = {r"\*": "*", r"\~": "~", r"\_": "_", r"\[": "[", r"\]": "]", r"\ ": ""
 RX_ESC = re.compile("|".join([re.escape(k) for k in ESCAPES.keys()]), flags=re.DOTALL)
 
 T_Formats = list[tuple[int, int, str]]
+T_Comment = tuple[int, list[tuple[str, T_Formats]]]
 
 
 def stripEscape(text: str) -> str:
@@ -82,10 +83,7 @@ class Tokenizer(ABC):
     FMT_SUP_E = 12  # End superscript
     FMT_SUB_B = 13  # Begin subscript
     FMT_SUB_E = 14  # End subscript
-
-    # Inserted Markers
-    MRK_BOUNDARY = 20  # Marker boundary
-    MRK_FOOTNOTE = 21  # Footnote marker
+    FMT_FNOTE = 15  # Footnote marker
 
     # Block Type
     T_EMPTY    = 1   # Empty line (new paragraph)
@@ -132,7 +130,7 @@ class Tokenizer(ABC):
 
         # Processed Tokens and Meta Data
         self._tokens: list[tuple[int, int, str, T_Formats, int]] = []
-        self._markers: dict[str, tuple[int, list[str]]] = {}
+        self._footnotes: dict[str, T_Comment] = {}
         self._counts: dict[str, int] = {}
         self._outline: dict[str, str] = {}
 
@@ -213,7 +211,7 @@ class Tokenizer(ABC):
             nwShortcode.SUB_O:    self.FMT_SUB_B, nwShortcode.SUB_C:    self.FMT_SUB_E,
         }
         self._shortCodeVals = {
-            nwShortcode.FOOTNOTE_B: self.MRK_FOOTNOTE,
+            nwShortcode.FOOTNOTE_B: self.FMT_FNOTE,
         }
 
         return
@@ -544,25 +542,26 @@ class Tokenizer(ABC):
                     continue
 
                 cStyle, cKey, cText, _, _ = processComment(aLine)
+                tLine, fmtPos = self._extractFormats(cText)
                 if cStyle == nwComment.SYNOPSIS:
                     self._tokens.append((
-                        self.T_SYNOPSIS, nHead, cText, [], sAlign
+                        self.T_SYNOPSIS, nHead, tLine, fmtPos, sAlign
                     ))
                     if self._doSynopsis and self._keepMarkdown:
                         tmpMarkdown.append(f"{aLine}\n")
                 elif cStyle == nwComment.SHORT:
                     self._tokens.append((
-                        self.T_SHORT, nHead, cText, [], sAlign
+                        self.T_SHORT, nHead, tLine, fmtPos, sAlign
                     ))
                     if self._doSynopsis and self._keepMarkdown:
                         tmpMarkdown.append(f"{aLine}\n")
                 elif cStyle == nwComment.FOOTNOTE:
-                    if cKey not in self._markers:
-                        self._markers[cKey] = (len(self._markers), [])
-                    self._markers[cKey][1].append(cText)
+                    if cKey not in self._footnotes:
+                        self._footnotes[cKey] = (len(self._footnotes) + 1, [])
+                    self._footnotes[cKey][1].append((tLine, fmtPos))
                 else:
                     self._tokens.append((
-                        self.T_COMMENT, nHead, cText, [], sAlign
+                        self.T_COMMENT, nHead, tLine, fmtPos, sAlign
                     ))
                     if self._doComments and self._keepMarkdown:
                         tmpMarkdown.append(f"{aLine}\n")
@@ -815,8 +814,6 @@ class Tokenizer(ABC):
                     token[0], token[1], token[2], token[3], aStyle
                 )
 
-        print(self._markers)
-
         return
 
     def buildOutline(self) -> None:
@@ -1015,7 +1012,7 @@ class Tokenizer(ABC):
                 rxMatch.captured(2),
             ))
 
-        # Post-process text and format markers
+        # Post-process text and format
         result = text
         formats = []
         for pos, n, fmt, key in reversed(sorted(temp, key=lambda x: x[0])):
