@@ -33,6 +33,8 @@ import datetime
 import subprocess
 import email.utils
 
+from pathlib import Path
+
 OS_NONE   = 0
 OS_LINUX  = 1
 OS_WIN    = 2
@@ -54,16 +56,15 @@ def extractVersion(beQuiet: bool = False) -> tuple[str, str, str]:
     numVers = "0"
     hexVers = "0x0"
     relDate = "Unknown"
-    initFile = os.path.join("novelwriter", "__init__.py")
+    initFile = Path("novelwriter") / "__init__.py"
     try:
-        with open(initFile, mode="r", encoding="utf-8") as inFile:
-            for aLine in inFile:
-                if aLine.startswith("__version__"):
-                    numVers = getValue((aLine))
-                if aLine.startswith("__hexversion__"):
-                    hexVers = getValue((aLine))
-                if aLine.startswith("__date__"):
-                    relDate = getValue((aLine))
+        for aLine in initFile.read_text(encoding="utf-8").splitlines():
+            if aLine.startswith("__version__"):
+                numVers = getValue((aLine))
+            if aLine.startswith("__hexversion__"):
+                hexVers = getValue((aLine))
+            if aLine.startswith("__date__"):
+                relDate = getValue((aLine))
     except Exception as exc:
         print("Could not read file: %s" % initFile)
         print(str(exc))
@@ -88,26 +89,23 @@ def stripVersion(version: str) -> str:
 
 def readFile(fileName: str) -> str:
     """Read an entire file and return as a string."""
-    with open(fileName, mode="r", encoding="utf-8") as inFile:
-        return inFile.read()
+    return Path(fileName).read_text(encoding="utf-8")
 
 
-def writeFile(fileName: str, writeText: str) -> None:
+def writeFile(fileName: str, text: str) -> None:
     """Write string to file."""
-    with open(fileName, mode="w+", encoding="utf-8") as outFile:
-        outFile.write(writeText)
+    Path(fileName).write_text(text, encoding="utf-8")
+    return
 
 
-def toUpload(srcPath: str, dstName: str | None = None) -> None:
+def toUpload(srcPath: str | Path, dstName: str | None = None) -> None:
     """Copy a file produced by one of the build functions to the upload
     directory. The file can optionally be given a new name.
     """
-    uplDir = "dist_upload"
-    if not os.path.isdir(uplDir):
-        os.mkdir(uplDir)
-    if dstName is None:
-        dstName = os.path.basename(srcPath)
-    shutil.copyfile(srcPath, os.path.join(uplDir, dstName))
+    uplDir = Path("dist_upload")
+    uplDir.mkdir(exist_ok=True)
+    srcPath = Path(srcPath)
+    shutil.copyfile(srcPath, uplDir / (dstName or srcPath.name))
     return
 
 
@@ -1551,19 +1549,6 @@ if __name__ == "__main__":
 
     sysArgs = sys.argv.copy()
 
-    # Set Target OS
-    if "--target-linux" in sysArgs:
-        sysArgs.remove("--target-linux")
-        targetOS = OS_LINUX
-    elif "--target-darwin" in sysArgs:
-        sysArgs.remove("--target-darwin")
-        targetOS = OS_DARWIN
-    elif "--target-win" in sysArgs:
-        sysArgs.remove("--target-win")
-        targetOS = OS_WIN
-    else:
-        targetOS = hostOS
-
     # Sign package
     if "--sign" in sysArgs:
         sysArgs.remove("--sign")
@@ -1586,10 +1571,6 @@ if __name__ == "__main__":
         "This tool provides setup and build commands for installing or distibuting",
         "novelWriter as a package on Linux, Mac and Windows. The available options",
         "are as follows:",
-        "",
-        "Some of the commands can be targeted towards a different OS than the host OS.",
-        "To target the command, add one of '--target-linux', '--target-darwin' or",
-        "'--target-win'.",
         "",
         "General:",
         "",
