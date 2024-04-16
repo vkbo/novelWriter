@@ -26,7 +26,7 @@ from tools import C, buildTestProject
 
 from PyQt5.QtGui import QIcon
 
-from novelwriter import CONFIG, SHARED
+from novelwriter import SHARED
 from novelwriter.constants import nwLists
 from novelwriter.core.item import NWItem
 from novelwriter.dialogs.editlabel import GuiEditLabel
@@ -151,14 +151,13 @@ def testGuiViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mockRnd
     nwGUI.docEditor._processTag(cursor, create=True)
 
     # Check Panel Tab Visibility
-    if CONFIG.verQtValue >= 0x050f00:
-        assert viewPanel.mainTabs.isTabVisible(viewPanel.idTabs["CHARACTER"]) is True
-        assert viewPanel.mainTabs.isTabVisible(viewPanel.idTabs["PLOT"]) is False
-        assert viewPanel.mainTabs.isTabVisible(viewPanel.idTabs["WORLD"]) is False
-        assert viewPanel.mainTabs.isTabVisible(viewPanel.idTabs["TIMELINE"]) is False
-        assert viewPanel.mainTabs.isTabVisible(viewPanel.idTabs["OBJECT"]) is False
-        assert viewPanel.mainTabs.isTabVisible(viewPanel.idTabs["ENTITY"]) is False
-        assert viewPanel.mainTabs.isTabVisible(viewPanel.idTabs["CUSTOM"]) is False
+    assert viewPanel.mainTabs.isTabVisible(viewPanel.idTabs["CHARACTER"]) is True
+    assert viewPanel.mainTabs.isTabVisible(viewPanel.idTabs["PLOT"]) is False
+    assert viewPanel.mainTabs.isTabVisible(viewPanel.idTabs["WORLD"]) is False
+    assert viewPanel.mainTabs.isTabVisible(viewPanel.idTabs["TIMELINE"]) is False
+    assert viewPanel.mainTabs.isTabVisible(viewPanel.idTabs["OBJECT"]) is False
+    assert viewPanel.mainTabs.isTabVisible(viewPanel.idTabs["ENTITY"]) is False
+    assert viewPanel.mainTabs.isTabVisible(viewPanel.idTabs["CUSTOM"]) is False
 
     # Check Character Tab
     charTab = viewPanel.kwTabs["CHARACTER"]

@@ -427,14 +427,7 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
     # ========
 
     # Escape Using QRegularExpression
-    with monkeypatch.context() as mp:
-        mp.setattr(CONFIG, "verQtValue", 0x050f00)
-        assert search._buildPattern("[A-Za-z0-9_]+") == r"\[A\-Za\-z0\-9_\]\+"
-
-    # Escape Using Custom Implementation
-    with monkeypatch.context() as mp:
-        mp.setattr(CONFIG, "verQtValue", 0x050d00)
-        assert search._buildPattern("[A-Za-z0-9_]+") == r"\[A\-Za\-z0\-9_\]\+"
+    assert search._buildPattern("[A-Za-z0-9_]+") == r"\[A\-Za\-z0\-9_\]\+"
 
     # Whole Words
     search.setWholeWords(True)
