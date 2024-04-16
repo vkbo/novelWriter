@@ -58,8 +58,8 @@ BLOCK_TITLE = 4
 class GuiDocHighlighter(QSyntaxHighlighter):
 
     __slots__ = (
-        "_tHandle", "_isInactive", "_spellCheck", "_spellErr", "_hRules",
-        "_hStyles", "_rxRules"
+        "_tHandle", "_isInactive", "_spellCheck", "_spellErr", "_hStyles",
+        "_txtRules", "_cmnRules",
     )
 
     def __init__(self, document: QTextDocument) -> None:
@@ -72,9 +72,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._spellCheck = False
         self._spellErr = QTextCharFormat()
 
-        self._hRules: list[tuple[str, dict]] = []
         self._hStyles: dict[str, QTextCharFormat] = {}
-        self._rxRules: list[tuple[QRegularExpression, dict[int, QTextCharFormat]]] = []
+        self._txtRules: list[tuple[QRegularExpression, dict[int, QTextCharFormat]]] = []
+        self._cmnRules: list[tuple[QRegularExpression, dict[int, QTextCharFormat]]] = []
 
         self.initHighlighter()
 
@@ -92,54 +92,58 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         colBreak = QColor(SHARED.theme.colEmph)
         colBreak.setAlpha(64)
 
-        self._hRules = []
-        self._hStyles = {
-            "header1":   self._makeFormat(SHARED.theme.colHead, "bold", 1.8),
-            "header2":   self._makeFormat(SHARED.theme.colHead, "bold", 1.6),
-            "header3":   self._makeFormat(SHARED.theme.colHead, "bold", 1.4),
-            "header4":   self._makeFormat(SHARED.theme.colHead, "bold", 1.2),
-            "head1h":    self._makeFormat(SHARED.theme.colHeadH, "bold", 1.8),
-            "head2h":    self._makeFormat(SHARED.theme.colHeadH, "bold", 1.6),
-            "head3h":    self._makeFormat(SHARED.theme.colHeadH, "bold", 1.4),
-            "head4h":    self._makeFormat(SHARED.theme.colHeadH, "bold", 1.2),
-            "bold":      self._makeFormat(colEmph, "bold"),
-            "italic":    self._makeFormat(colEmph, "italic"),
-            "strike":    self._makeFormat(SHARED.theme.colHidden, "strike"),
-            "mspaces":   self._makeFormat(SHARED.theme.colError, "errline"),
-            "nobreak":   self._makeFormat(colBreak, "background"),
-            "dialogue1": self._makeFormat(SHARED.theme.colDialN),
-            "dialogue2": self._makeFormat(SHARED.theme.colDialD),
-            "dialogue3": self._makeFormat(SHARED.theme.colDialS),
-            "replace":   self._makeFormat(SHARED.theme.colRepTag),
-            "hidden":    self._makeFormat(SHARED.theme.colHidden),
-            "code":      self._makeFormat(SHARED.theme.colCode),
-            "keyword":   self._makeFormat(SHARED.theme.colKey),
-            "modifier":  self._makeFormat(SHARED.theme.colMod),
-            "value":     self._makeFormat(SHARED.theme.colVal),
-            "optional":  self._makeFormat(SHARED.theme.colOpt),
-            "codevalue": self._makeFormat(SHARED.theme.colVal),
-            "codeinval": self._makeFormat(None, "errline"),
-        }
+        # Create Character Formats
+        self._addCharFormat("header1",  SHARED.theme.colHead, "bold", 1.8)
+        self._addCharFormat("header2",  SHARED.theme.colHead, "bold", 1.6)
+        self._addCharFormat("header3",  SHARED.theme.colHead, "bold", 1.4)
+        self._addCharFormat("header4",  SHARED.theme.colHead, "bold", 1.2)
+        self._addCharFormat("head1h",   SHARED.theme.colHeadH, "bold", 1.8)
+        self._addCharFormat("head2h",   SHARED.theme.colHeadH, "bold", 1.6)
+        self._addCharFormat("head3h",   SHARED.theme.colHeadH, "bold", 1.4)
+        self._addCharFormat("head4h",   SHARED.theme.colHeadH, "bold", 1.2)
+        self._addCharFormat("bold",     colEmph, "bold")
+        self._addCharFormat("italic",   colEmph, "italic")
+        self._addCharFormat("strike",   SHARED.theme.colHidden, "strike")
+        self._addCharFormat("mspaces",  SHARED.theme.colError, "errline")
+        self._addCharFormat("nobreak",  colBreak, "background")
+        self._addCharFormat("dialog1",  SHARED.theme.colDialN)
+        self._addCharFormat("dialog2",  SHARED.theme.colDialD)
+        self._addCharFormat("dialog3",  SHARED.theme.colDialS)
+        self._addCharFormat("replace",  SHARED.theme.colRepTag)
+        self._addCharFormat("hidden",   SHARED.theme.colHidden)
+        self._addCharFormat("markup",   SHARED.theme.colHidden)
+        self._addCharFormat("code",     SHARED.theme.colCode)
+        self._addCharFormat("keyword",  SHARED.theme.colKey)
+        self._addCharFormat("modifier", SHARED.theme.colMod)
+        self._addCharFormat("value",    SHARED.theme.colVal)
+        self._addCharFormat("optional", SHARED.theme.colOpt)
+        self._addCharFormat("invalid",  None, "errline")
 
         # Cache Spell Error Format
         self._spellErr = QTextCharFormat()
         self._spellErr.setUnderlineColor(SHARED.theme.colSpell)
         self._spellErr.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
 
+        QtUnicode = QRegularExpression.PatternOption.UseUnicodePropertiesOption
+
         # Multiple or Trailing Spaces
         if CONFIG.showMultiSpaces:
-            self._hRules.append((
-                r"[ ]{2,}|[ ]*$", {
-                    0: self._hStyles["mspaces"],
-                }
-            ))
+            rxRule = QRegularExpression(r"[ ]{2,}|[ ]*$")
+            rxRule.setPatternOptions(QtUnicode)
+            hlRule = {
+                0: self._hStyles["mspaces"],
+            }
+            self._txtRules.append((rxRule, hlRule))
+            self._cmnRules.append((rxRule, hlRule))
 
         # Non-Breaking Spaces
-        self._hRules.append((
-            f"[{nwUnicode.U_NBSP}{nwUnicode.U_THNBSP}]+", {
-                0: self._hStyles["nobreak"],
-            }
-        ))
+        rxRule = QRegularExpression(f"[{nwUnicode.U_NBSP}{nwUnicode.U_THNBSP}]+")
+        rxRule.setPatternOptions(QtUnicode)
+        hlRule = {
+            0: self._hStyles["nobreak"],
+        }
+        self._txtRules.append((rxRule, hlRule))
+        self._cmnRules.append((rxRule, hlRule))
 
         # Quoted Strings
         if CONFIG.highlightQuotes:
@@ -149,88 +153,100 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             fmtSngC = CONFIG.fmtSQuoteClose
 
             # Straight Quotes
-            if not (fmtDblO == fmtDblC == "\""):
-                self._hRules.append((
-                    "(\\B\")(.*?)(\"\\B)", {
-                        0: self._hStyles["dialogue1"],
-                    }
-                ))
+            rxRule = QRegularExpression(r'(\B")(.*?)("\B)')
+            rxRule.setPatternOptions(QtUnicode)
+            hlRule = {
+                0: self._hStyles["dialog1"],
+            }
+            self._txtRules.append((rxRule, hlRule))
 
             # Double Quotes
             dblEnd = "|$" if CONFIG.allowOpenDQuote else ""
-            self._hRules.append((
-                f"(\\B{fmtDblO})(.*?)({fmtDblC}\\B{dblEnd})", {
-                    0: self._hStyles["dialogue2"],
-                }
-            ))
+            rxRule = QRegularExpression(f"(\\B{fmtDblO})(.*?)({fmtDblC}\\B{dblEnd})")
+            rxRule.setPatternOptions(QtUnicode)
+            hlRule = {
+                0: self._hStyles["dialog2"],
+            }
+            self._txtRules.append((rxRule, hlRule))
 
             # Single Quotes
             sngEnd = "|$" if CONFIG.allowOpenSQuote else ""
-            self._hRules.append((
-                f"(\\B{fmtSngO})(.*?)({fmtSngC}\\B{sngEnd})", {
-                    0: self._hStyles["dialogue3"],
-                }
-            ))
+            rxRule = QRegularExpression(f"(\\B{fmtSngO})(.*?)({fmtSngC}\\B{sngEnd})")
+            rxRule.setPatternOptions(QtUnicode)
+            hlRule = {
+                0: self._hStyles["dialog3"],
+            }
+            self._txtRules.append((rxRule, hlRule))
 
-        # Markdown Syntax
-        self._hRules.append((
-            nwRegEx.FMT_EI, {
-                1: self._hStyles["hidden"],
-                2: self._hStyles["italic"],
-                3: self._hStyles["hidden"],
-            }
-        ))
-        self._hRules.append((
-            nwRegEx.FMT_EB, {
-                1: self._hStyles["hidden"],
-                2: self._hStyles["bold"],
-                3: self._hStyles["hidden"],
-            }
-        ))
-        self._hRules.append((
-            nwRegEx.FMT_ST, {
-                1: self._hStyles["hidden"],
-                2: self._hStyles["strike"],
-                3: self._hStyles["hidden"],
-            }
-        ))
+        # Markdown Italic
+        rxRule = QRegularExpression(nwRegEx.FMT_EI)
+        rxRule.setPatternOptions(QtUnicode)
+        hlRule = {
+            1: self._hStyles["markup"],
+            2: self._hStyles["italic"],
+            3: self._hStyles["markup"],
+        }
+        self._txtRules.append((rxRule, hlRule))
+        self._cmnRules.append((rxRule, hlRule))
+
+        # Markdown Bold
+        rxRule = QRegularExpression(nwRegEx.FMT_EB)
+        rxRule.setPatternOptions(QtUnicode)
+        hlRule = {
+            1: self._hStyles["markup"],
+            2: self._hStyles["bold"],
+            3: self._hStyles["markup"],
+        }
+        self._txtRules.append((rxRule, hlRule))
+        self._cmnRules.append((rxRule, hlRule))
+
+        # Markdown Strikethrough
+        rxRule = QRegularExpression(nwRegEx.FMT_ST)
+        rxRule.setPatternOptions(QtUnicode)
+        hlRule = {
+            1: self._hStyles["markup"],
+            2: self._hStyles["strike"],
+            3: self._hStyles["markup"],
+        }
+        self._txtRules.append((rxRule, hlRule))
+        self._cmnRules.append((rxRule, hlRule))
 
         # Shortcodes
-        self._hRules.append((
-            nwRegEx.FMT_SC, {
-                1: self._hStyles["code"],
-            }
-        ))
+        rxRule = QRegularExpression(nwRegEx.FMT_SC)
+        rxRule.setPatternOptions(QtUnicode)
+        hlRule = {
+            1: self._hStyles["code"],
+        }
+        self._txtRules.append((rxRule, hlRule))
+        self._cmnRules.append((rxRule, hlRule))
 
         # Shortcodes w/Value
-        self._hRules.append((
-            nwRegEx.FMT_SV, {
-                1: self._hStyles["code"],
-                2: self._hStyles["codevalue"],
-                3: self._hStyles["code"],
-            }
-        ))
+        rxRule = QRegularExpression(nwRegEx.FMT_SV)
+        rxRule.setPatternOptions(QtUnicode)
+        hlRule = {
+            1: self._hStyles["code"],
+            2: self._hStyles["value"],
+            3: self._hStyles["code"],
+        }
+        self._txtRules.append((rxRule, hlRule))
+        self._cmnRules.append((rxRule, hlRule))
 
         # Alignment Tags
-        self._hRules.append((
-            r"(^>{1,2}|<{1,2}$)", {
-                1: self._hStyles["hidden"],
-            }
-        ))
+        rxRule = QRegularExpression(r"(^>{1,2}|<{1,2}$)")
+        rxRule.setPatternOptions(QtUnicode)
+        hlRule = {
+            1: self._hStyles["markup"],
+        }
+        self._txtRules.append((rxRule, hlRule))
 
         # Auto-Replace Tags
-        self._hRules.append((
-            r"<(\S+?)>", {
-                0: self._hStyles["replace"],
-            }
-        ))
-
-        # Build a QRegularExpression for each highlight pattern
-        self._rxRules = []
-        for regEx, regRules in self._hRules:
-            hReg = QRegularExpression(regEx)
-            hReg.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
-            self._rxRules.append((hReg, regRules))
+        rxRule = QRegularExpression(r"<(\S+?)>")
+        rxRule.setPatternOptions(QtUnicode)
+        hlRule = {
+            0: self._hStyles["replace"],
+        }
+        self._txtRules.append((rxRule, hlRule))
+        self._cmnRules.append((rxRule, hlRule))
 
         return
 
@@ -285,6 +301,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             return
 
         xOff = 0
+        hRules = None
         if text.startswith("@"):  # Keywords and commands
             self.setCurrentBlockState(BLOCK_META)
             index = SHARED.project.index
@@ -303,7 +320,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                             yPos = xPos + len(bit) - len(two)
                             self.setFormat(yPos, len(two), self._hStyles["optional"])
                     elif not self._isInactive:
-                        self.setFormat(xPos, xLen, self._hStyles["codeinval"])
+                        self.setFormat(xPos, xLen, self._hStyles["invalid"])
 
             # We never want to run the spell checker on keyword/values,
             # so we force a return here
@@ -346,9 +363,12 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             cLen = len(text) - cPos
             xOff = cPos
             if cMod == "ERR":
-                self.setFormat(0, cPos, self._hStyles["codeinval"])
+                self.setFormat(0, cPos, self._hStyles["invalid"])
             elif cStyle == nwComment.PLAIN:
                 self.setFormat(0, cLen, self._hStyles["hidden"])
+            elif cStyle == nwComment.IGNORE:
+                self.setFormat(0, cLen, self._hStyles["strike"])
+                return  # No more processing for these
             elif cMod:
                 self.setFormat(0, cDot, self._hStyles["modifier"])
                 self.setFormat(cDot, cPos - cDot, self._hStyles["optional"])
@@ -357,36 +377,39 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 self.setFormat(0, cPos, self._hStyles["modifier"])
                 self.setFormat(cPos, cLen, self._hStyles["hidden"])
 
+            hRules = self._cmnRules
+
+        elif text.startswith("["):  # Special Command
+            sText = text.rstrip().lower()
+            if sText in ("[newpage]", "[new page]", "[vspace]"):
+                self.setFormat(0, len(text), self._hStyles["code"])
+                return
+            elif sText.startswith("[vspace:") and sText.endswith("]"):
+                tLen = len(sText)
+                tVal = checkInt(sText[8:-1], 0)
+                cVal = "value" if tVal > 0 else "invalid"
+                self.setFormat(0, 8, self._hStyles["code"])
+                self.setFormat(8, tLen-9, self._hStyles[cVal])
+                self.setFormat(tLen-1, tLen, self._hStyles["code"])
+                return
+
         else:  # Text Paragraph
-
-            if text.startswith("["):  # Special Command
-                sText = text.rstrip().lower()
-                if sText in ("[newpage]", "[new page]", "[vspace]"):
-                    self.setFormat(0, len(text), self._hStyles["code"])
-                    return
-                elif sText.startswith("[vspace:") and sText.endswith("]"):
-                    tLen = len(sText)
-                    tVal = checkInt(sText[8:-1], 0)
-                    cVal = "codevalue" if tVal > 0 else "codeinval"
-                    self.setFormat(0, 8, self._hStyles["code"])
-                    self.setFormat(8, tLen-9, self._hStyles[cVal])
-                    self.setFormat(tLen-1, tLen, self._hStyles["code"])
-                    return
-
-            # Regular Text
             self.setCurrentBlockState(BLOCK_TEXT)
-            for rX, xFmt in self._rxRules:
-                rxItt = rX.globalMatch(text, 0)
+            hRules = self._txtRules
+
+        if hRules:
+            for rX, hRule in hRules:
+                rxItt = rX.globalMatch(text, xOff)
                 while rxItt.hasNext():
                     rxMatch = rxItt.next()
-                    for xM in xFmt:
+                    for xM, hFmt in hRule.items():
                         xPos = rxMatch.capturedStart(xM)
-                        xLen = rxMatch.capturedLength(xM)
-                        for x in range(xPos, xPos+xLen):
-                            spFmt = self.format(x)
-                            if spFmt != self._hStyles["hidden"]:
-                                spFmt.merge(xFmt[xM])
-                                self.setFormat(x, 1, spFmt)
+                        xEnd = rxMatch.capturedEnd(xM)
+                        for x in range(xPos, xEnd):
+                            cFmt = self.format(x)
+                            if cFmt.fontStyleName() != "markup":
+                                cFmt.merge(hFmt)
+                                self.setFormat(x, 1, cFmt)
 
         data = self.currentBlockUserData()
         if not isinstance(data, TextBlockData):
@@ -396,9 +419,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         if self._spellCheck:
             for xPos, xLen in data.spellCheck(text, xOff):
                 for x in range(xPos, xPos+xLen):
-                    spFmt = self.format(x)
-                    spFmt.merge(self._spellErr)
-                    self.setFormat(x, 1, spFmt)
+                    cFmt = self.format(x)
+                    cFmt.merge(self._spellErr)
+                    self.setFormat(x, 1, cFmt)
 
         return
 
@@ -406,17 +429,18 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     #  Internal Functions
     ##
 
-    def _makeFormat(self, color: QColor | None = None, style: str | None = None,
-                    size: float | None = None) -> QTextCharFormat:
-        """Generate a valid character format to be applied to the text
-        that is to be highlighted.
-        """
+    def _addCharFormat(
+        self, name: str, color: QColor | None = None,
+        style: str | None = None, size: float | None = None
+    ) -> None:
+        """Generate a highlighter character format."""
         charFormat = QTextCharFormat()
+        charFormat.setFontStyleName(name)
 
-        if color is not None:
+        if color:
             charFormat.setForeground(color)
 
-        if style is not None:
+        if style:
             styles = style.split(",")
             if "bold" in styles:
                 charFormat.setFontWeight(QFont.Weight.Bold)
@@ -430,10 +454,12 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             if "background" in styles and color is not None:
                 charFormat.setBackground(QBrush(color, Qt.BrushStyle.SolidPattern))
 
-        if size is not None:
-            charFormat.setFontPointSize(int(round(size*CONFIG.textSize)))
+        if size:
+            charFormat.setFontPointSize(round(size*CONFIG.textSize))
 
-        return charFormat
+        self._hStyles[name] = charFormat
+
+        return
 
 # END Class GuiDocHighlighter
 
@@ -459,7 +485,7 @@ class TextBlockData(QTextBlockUserData):
         if "[" in text:
             # Strip shortcodes
             for rX in [SPELLSC, SPELLSV]:
-                rxItt = rX.globalMatch(text, 0)
+                rxItt = rX.globalMatch(text, offset)
                 while rxItt.hasNext():
                     rxMatch = rxItt.next()
                     xPos = rxMatch.capturedStart(0)
@@ -468,13 +494,13 @@ class TextBlockData(QTextBlockUserData):
                     text = text[:xPos] + " "*xLen + text[xEnd:]
 
         self._spellErrors = []
-        rxSpell = SPELLRX.globalMatch(text[offset:].replace("_", " "), 0)
+        rxSpell = SPELLRX.globalMatch(text.replace("_", " "), offset)
         while rxSpell.hasNext():
             rxMatch = rxSpell.next()
             if not SHARED.spelling.checkWord(rxMatch.captured(0)):
                 if not rxMatch.captured(0).isnumeric() and not rxMatch.captured(0).isupper():
                     self._spellErrors.append(
-                        (rxMatch.capturedStart(0) + offset, rxMatch.capturedLength(0))
+                        (rxMatch.capturedStart(0), rxMatch.capturedLength(0))
                     )
         return self._spellErrors
 
