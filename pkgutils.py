@@ -561,43 +561,24 @@ def importI18nUpdates(sysArgs: list[str]) -> None:
 #  Make Minimal Package (minimal-zip)
 ##
 
-def makeMinimalPackage(targetOS: int) -> None:
+def makeWindowsZip() -> None:
     """Pack the core source file in a single zip file."""
     from zipfile import ZipFile, ZIP_DEFLATED
 
     print("")
-    print("Building Minimal ZIP File")
+    print("Building Windows ZIP File")
     print("=========================")
 
     bldDir = "dist_minimal"
     if not os.path.isdir(bldDir):
         os.mkdir(bldDir)
 
-    if targetOS == OS_LINUX:
-        targName = "-linux"
-        print("Target OS: Linux")
-    elif targetOS == OS_DARWIN:
-        targName = "-darwin"
-        print("Target OS: Darwin")
-    elif targetOS == OS_WIN:
-        targName = "-win"
-        print("Target OS: Windows")
-    else:
-        targName = ""
-    print("")
-
-    # Check Additional Assets
-    # =======================
-
     if not checkAssetsExist():
         print("ERROR: Missing build assets")
         sys.exit(1)
 
-    # Build Minimal Zip
-    # =================
-
     pkgVers, _, _ = extractVersion()
-    zipFile = f"novelwriter-{pkgVers}-minimal{targName}.zip"
+    zipFile = f"novelwriter-{pkgVers}-minimal-win.zip"
     outFile = os.path.join(bldDir, zipFile)
     if os.path.isfile(outFile):
         os.unlink(outFile)
@@ -627,22 +608,8 @@ def makeMinimalPackage(targetOS: int) -> None:
                     continue
                 zipObj.write(os.path.join(nRoot, aFile))
 
-        if targetOS == OS_WIN:
-            zipObj.write("novelWriter.py", "novelWriter.pyw")
-            print("Added: novelWriter.pyw")
-
-        else:  # Linux and Mac
-            # Add icons
-            for nRoot, _, nFiles in os.walk(os.path.join("setup", "data")):
-                print("Added: %s/* [Files: %d]" % (nRoot, len(nFiles)))
-                for aFile in nFiles:
-                    zipObj.write(os.path.join(nRoot, aFile))
-
-            zipObj.write(os.path.join("setup", "description_pypi.md"))
-            print("Added: setup/description_pypi.md")
-
-            zipObj.write("novelWriter.py")
-            print("Added: novelWriter.py")
+        zipObj.write("novelWriter.py", "novelWriter.pyw")
+        print("Added: novelWriter.pyw")
 
         for aFile in rootFiles:
             print("Added: %s" % aFile)
@@ -654,14 +621,9 @@ def makeMinimalPackage(targetOS: int) -> None:
     print("")
     print("Created File: %s" % outFile)
 
-    # Create Checksum File
-    # ====================
-
     shaFile = makeCheckSum(zipFile, cwd=bldDir)
-
     toUpload(outFile)
     toUpload(shaFile)
-
     print("")
 
     return
@@ -1649,10 +1611,8 @@ if __name__ == "__main__":
         "Python Packaging:",
         "",
         "    import-i18n    Import updated i18n files from a zip file.",
-        "    minimal-zip    Creates a minimal zip file of the core application without",
-        "                   all the other source files. Defaults to tailor the zip file",
-        "                   for the current OS, but accepts a target OS flag to build",
-        "                   for another OS.",
+        "    windows-zip    Creates a minimal zip file of the core application without",
+        "                   all the other source files. Used for Windows builds.",
         "    build-deb      Build a .deb package for Debian and Ubuntu. Add --sign to ",
         "                   sign package.",
         "    build-ubuntu   Build a .deb packages Launchpad. Add --sign to ",
@@ -1729,9 +1689,9 @@ if __name__ == "__main__":
         importI18nUpdates(sysArgs)
         sys.exit(0)  # Don't continue execution
 
-    if "minimal-zip" in sysArgs:
-        sysArgs.remove("minimal-zip")
-        makeMinimalPackage(targetOS)
+    if "windows-zip" in sysArgs:
+        sysArgs.remove("windows-zip")
+        makeWindowsZip()
 
     if "build-deb" in sysArgs:
         sysArgs.remove("build-deb")
