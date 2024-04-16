@@ -39,11 +39,9 @@ The following Python packages are needed to run all features of novelWriter:
 * ``PyQt5`` – needed for connecting with the Qt5 libraries.
 * ``PyEnchant`` – needed for spell checking (optional).
 
-PyQt/Qt should be at least 5.10, but ideally 5.13 or higher for all features to work. For instance,
-searching using regular expressions with full Unicode support requires 5.13.
-
-If you want spell checking, you must install the ``PyEnchant`` package. The spell check library
-must be at least 3.0 to work with Windows. On Linux, 2.0 also works fine.
+PyQt/Qt must be at least 5.15.0. If you want spell checking, you must install the ``PyEnchant``
+package. The spell check library must be at least 3.0 to work with Windows. On Linux, 2.0 also
+works fine.
 
 If you install from PyPi, these dependencies should be installed automatically. If you install from
 source, dependencies can still be installed from PyPi with:
@@ -55,7 +53,7 @@ source, dependencies can still be installed from PyPi with:
 .. note::
    On Linux distros, the Qt library is usually split up into multiple packages. In some cases,
    secondary dependencies may not be installed automatically. For novelWriter, the library files
-   for renderring the SVG icons may be left out and needs to be installed manually. This is the
+   for rendering the SVG icons may be left out and needs to be installed manually. This is the
    case on for instance Arch Linux.
 
 
