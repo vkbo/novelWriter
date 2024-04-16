@@ -1494,4 +1494,4 @@ def processComment(text: str) -> tuple[nwComment, str, str, int, int]:
     if content and (clean := classifier.strip().lower()) in CLASSIFIERS:
         term = "ERR" if term and clean not in TERMS else term.strip()
         return CLASSIFIERS[clean], term, content.strip(), text.find(".") + 1, text.find(":") + 1
-    return nwComment.PLAIN, "", check, 0, 0
+    return nwComment.IGNORE if text.startswith("%~") else nwComment.PLAIN, "", check, 0, 0

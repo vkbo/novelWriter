@@ -65,12 +65,13 @@ class nwItemLayout(Enum):
 class nwComment(Enum):
 
     PLAIN    = 0
-    SYNOPSIS = 1
-    SHORT    = 2
-    NOTE     = 3
-    FOOTNOTE = 4
-    COMMENT  = 5
-    STORY    = 6
+    IGNORE   = 1
+    SYNOPSIS = 2
+    SHORT    = 3
+    NOTE     = 4
+    FOOTNOTE = 5
+    COMMENT  = 6
+    STORY    = 7
 
 # END Enum nwComment
 

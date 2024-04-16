@@ -49,7 +49,7 @@ ESCAPES = {r"\*": "*", r"\~": "~", r"\_": "_", r"\[": "[", r"\]": "]", r"\ ": ""
 RX_ESC = re.compile("|".join([re.escape(k) for k in ESCAPES.keys()]), flags=re.DOTALL)
 
 T_Formats = list[tuple[int, int, str]]
-T_Comment = tuple[int, list[tuple[str, T_Formats]]]
+T_Comment = tuple[str, T_Formats]
 
 
 def stripEscape(text: str) -> str:
@@ -561,9 +561,7 @@ class Tokenizer(ABC):
                         tmpMarkdown.append(f"{aLine}\n")
                 elif cStyle == nwComment.FOOTNOTE:
                     tLine, tFmt = self._extractFormats(cText, skip=self.FMT_FNOTE)
-                    if cKey not in self._footnotes:
-                        self._footnotes[cKey] = (len(self._footnotes) + 1, [])
-                    self._footnotes[cKey][1].append((tLine, tFmt))
+                    self._footnotes[cKey] = (tLine, tFmt)
                 else:
                     tLine, tFmt = self._extractFormats(cText)
                     self._tokens.append((

@@ -30,7 +30,6 @@ import logging
 import xml.etree.ElementTree as ET
 
 from collections.abc import Sequence
-from copy import deepcopy
 from datetime import datetime
 from hashlib import sha256
 from pathlib import Path
@@ -412,7 +411,6 @@ class ToOdt(Tokenizer):
     def doConvert(self) -> None:
         """Convert the list of text tokens into XML elements."""
         self._result = ""  # Not used, but cleared just in case
-        self._preProcessNotes()
 
         pFmt: list[T_Formats] = []
         pText = []
@@ -687,7 +685,9 @@ class ToOdt(Tokenizer):
             elif fFmt == self.FMT_SUB_E:
                 xFmt &= M_SUB
             elif fFmt == self.FMT_FNOTE:
-                parProc.appendNode(self._etNotes.get(fData))
+                parProc.appendNode(self._generateFootnote(fData))
+            elif fFmt == self.FMT_STRIP:
+                pass
             else:
                 pErr += 1
 
@@ -758,16 +758,11 @@ class ToOdt(Tokenizer):
 
         return style.name
 
-    def _preProcessNotes(self) -> None:
-        """Generate XML elements for footnotes."""
-        fStyle = ODTParagraphStyle("New")
-        sStyle = ODTParagraphStyle("New")
-        sStyle.setTextIndent("0.000cm")
-        sStyle.setMarginLeft(self._mLeftFoot)
-        update = [key for key in self._footnotes.keys() if key not in self._etNotes]
-        for key in update:
-            cStyle = fStyle
+    def _generateFootnote(self, key: str) -> ET.Element | None:
+        """Generate a footnote XML object."""
+        if content := self._footnotes.get(key):
             self._nNote += 1
+            nStyle = ODTParagraphStyle("New")
             xNote = ET.Element(_mkTag("text", "note"), attrib={
                 _mkTag("text", "id"): f"ftn{self._nNote}",
                 _mkTag("text", "note-class"): "footnote",
@@ -775,11 +770,9 @@ class ToOdt(Tokenizer):
             xCite = ET.SubElement(xNote, _mkTag("text", "note-citation"))
             xCite.text = str(self._nNote)
             xBody = ET.SubElement(xNote, _mkTag("text", "note-body"))
-            for text, fmt in self._footnotes[key][1]:
-                self._addTextPar(xBody, "Footnote", cStyle, text, tFmt=fmt)
-                cStyle = sStyle
-            self._etNotes[key] = xNote
-        return
+            self._addTextPar(xBody, "Footnote", nStyle, content[0], tFmt=content[1])
+            return xNote
+        return None
 
     def _emToCm(self, value: float) -> str:
         """Converts an em value to centimetres."""
@@ -1584,16 +1577,14 @@ class XMLParagraph:
     def appendNode(self, xNode: ET.Element | None) -> None:
         """Append an XML node to the paragraph."""
         if xNode:
-            # We must make a copy in case the node is reused
-            xCopy = deepcopy(xNode)
             if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
-                self._xRoot.append(xCopy)
-                self._xTail = xCopy
+                self._xRoot.append(xNode)
+                self._xTail = xNode
                 self._xTail.tail = ""
                 self._nState = X_ROOT_TAIL
             elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
-                self._xTail.append(xCopy)
-                self._xSing = xCopy
+                self._xTail.append(xNode)
+                self._xSing = xNode
                 self._xSing.tail = ""
                 self._nState = X_SPAN_SING
         return

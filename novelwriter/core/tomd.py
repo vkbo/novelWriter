@@ -89,7 +89,7 @@ class ToMarkdown(Tokenizer):
         self._genMode = self.M_STD
         self._fullMD: list[str] = []
         self._preserveBreaks = True
-        self._usedNotes = set()
+        self._usedNotes: dict[str, int] = {}
         return
 
     ##
@@ -208,11 +208,10 @@ class ToMarkdown(Tokenizer):
 
             lines = []
             lines.append(f"### {footnotes}\n\n")
-            for key, (index, content) in self._footnotes.items():
-                if key in self._usedNotes:
+            for key, index in self._usedNotes.items():
+                if content := self._footnotes.get(key):
                     marker = f"{index}. "
-                    indent = "\n\n"+" "*len(marker)
-                    text = indent.join(self._formatText(t, f, tags) for t, f in content)
+                    text = self._formatText(*content, tags)
                     lines.append(f"{marker}{text}\n")
             lines.append("\n")
 
@@ -247,9 +246,12 @@ class ToMarkdown(Tokenizer):
         for pos, fmt, data in reversed(tFmt):
             md = ""
             if fmt == self.FMT_FNOTE:
-                self._usedNotes.add(data)
-                index = self._footnotes.get(data, (0, ""))[0] or "ERR"
-                md = f"[{index}]"
+                if data in self._footnotes:
+                    index = len(self._usedNotes) + 1
+                    self._usedNotes[data] = index
+                    md = f"[{index}]"
+                else:
+                    md = "[ERR]"
             else:
                 md = tags.get(fmt, "")
             temp = f"{temp[:pos]}{md}{temp[pos:]}"

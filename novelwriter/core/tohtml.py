@@ -94,7 +94,7 @@ class ToHtml(Tokenizer):
 
         # Internals
         self._trMap = {}
-        self._usedNotes = set()
+        self._usedNotes: dict[str, int] = {}
         self.setReplaceUnicode(False)
 
         return
@@ -313,9 +313,9 @@ class ToHtml(Tokenizer):
             lines = []
             lines.append(f"<h3>{footnotes}</h3>\n")
             lines.append("<ol>\n")
-            for key, (index, content) in self._footnotes.items():
-                if key in self._usedNotes:
-                    text = "</p><p>".join(self._formatText(t, f, tags) for t, f in content)
+            for key, index in self._usedNotes.items():
+                if content := self._footnotes.get(key):
+                    text = self._formatText(*content, tags)
                     lines.append(f"<li id='footnote_{index}'><p>{text}</p></li>\n")
             lines.append("</ol>\n")
 
@@ -482,9 +482,12 @@ class ToHtml(Tokenizer):
         for pos, fmt, data in reversed(tFmt):
             html = ""
             if fmt == self.FMT_FNOTE:
-                self._usedNotes.add(data)
-                index = self._footnotes.get(data, (0, ""))[0] or "ERR"
-                html = f"<sup><a href='#footnote_{index}'>[{index}]</a></sup>"
+                if data in self._footnotes:
+                    index = len(self._usedNotes) + 1
+                    self._usedNotes[data] = index
+                    html = f"<sup><a href='#footnote_{index}'>{index}</a></sup>"
+                else:
+                    html = "<sup>ERR</sup>"
             else:
                 html = tags.get(fmt, "ERR")
             temp = f"{temp[:pos]}{html}{temp[pos:]}"
