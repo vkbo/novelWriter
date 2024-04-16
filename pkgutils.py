@@ -878,7 +878,6 @@ def makeForLaunchpad(doSign: bool = False, isFirst: bool = False) -> None:
             bldNum = "0"
 
     distLoop = [
-        ("20.04", "focal", True),
         ("22.04", "jammy", True),
         ("23.10", "mantic", False),
         ("24.04", "noble", False),
