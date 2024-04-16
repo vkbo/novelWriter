@@ -780,18 +780,27 @@ def makeDebianPackage(
     ))
     print("Wrote:  setup.py")
 
-    setupCfg = readFile("pyproject.toml").replace(
-        "setup/description_pypi.md", "data/description_short.txt"
-    )
-    writeFile(f"{outDir}/pyproject.toml", setupCfg)
-    print("Wrote:  pyproject.toml")
-
     if oldSetuptools:
+        # This is needed for Ubuntu up to 22.04
         setupCfg = readFile("setup/launchpad_setup.cfg").replace(
             "file: setup/description_pypi.md", "file: data/description_short.txt"
         )
         writeFile(f"{outDir}/setup.cfg", setupCfg)
         print("Wrote:  setup.cfg")
+
+        writeFile(f"{outDir}/pyproject.toml", (
+            "[build-system]\n"
+            "requires = [\"setuptools\"]\n"
+            "build-backend = \"setuptools.build_meta\"\n"
+        ))
+        print("Wrote:  pyproject.toml")
+
+    else:
+        pyProject = readFile("pyproject.toml").replace(
+            "setup/description_pypi.md", "data/description_short.txt"
+        )
+        writeFile(f"{outDir}/pyproject.toml", pyProject)
+        print("Wrote:  pyproject.toml")
 
     # Copy/Write Debian Files
     # =======================
@@ -877,7 +886,7 @@ def makeForLaunchpad(doSign: bool = False, isFirst: bool = False) -> None:
 
     print("Building Ubuntu packages for:")
     print("")
-    for distNum, codeName, oldSetup in distLoop:
+    for distNum, codeName, _ in distLoop:
         print(f" * Ubuntu {distNum} {codeName.title()}")
     print("")
 
