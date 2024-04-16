@@ -370,17 +370,7 @@ class DocSearch:
     def _buildPattern(self, search: str) -> str:
         """Build the search pattern string."""
         if self._escape:
-            if CONFIG.verQtValue >= 0x050f00:
-                search = QRegularExpression.escape(search)
-            else:
-                # For older Qt versions, we escape manually
-                escaped = ""
-                for c in search:
-                    if c.isalnum() or c == "_":
-                        escaped += c
-                    else:
-                        escaped += f"\\{c}"
-                search = escaped
+            search = QRegularExpression.escape(search)
         if self._words:
             search = f"(?:^|\\b){search}(?:$|\\b)"
         return search

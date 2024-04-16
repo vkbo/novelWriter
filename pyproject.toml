@@ -27,7 +27,7 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 dependencies = [
-    "pyqt5>=5.10",
+    "pyqt5>=5.15",
     "pyenchant>=3.0.0",
 ]
 dynamic = ["version"]
