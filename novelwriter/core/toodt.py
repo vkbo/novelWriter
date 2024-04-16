@@ -803,7 +803,6 @@ class ToOdt(Tokenizer):
             _mkTag("fo", "margin-bottom"): self._mDocBtm,
             _mkTag("fo", "margin-left"): self._mDocLeft,
             _mkTag("fo", "margin-right"): self._mDocRight,
-            _mkTag("fo", "print-orientation"): "portrait",
         })
 
         xHead = ET.SubElement(xPage, _mkTag("style", "header-style"))
