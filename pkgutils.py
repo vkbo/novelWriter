@@ -630,10 +630,6 @@ def makeMinimalPackage(targetOS: int) -> None:
         if targetOS == OS_WIN:
             zipObj.write("novelWriter.py", "novelWriter.pyw")
             print("Added: novelWriter.pyw")
-            zipObj.write(os.path.join("setup", "windows_install.bat"), "windows_install.bat")
-            print("Added: windows_install.bat")
-            zipObj.write(os.path.join("setup", "windows_uninstall.bat"), "windows_uninstall.bat")
-            print("Added: windows_uninstall.bat")
 
         else:  # Linux and Mac
             # Add icons
@@ -1573,226 +1569,6 @@ def xdgUninstall() -> None:
     return
 
 
-##
-#  WIN Installation (win-install)
-##
-
-def winInstall() -> None:
-    """Will attempt to install icons and make a launcher for Windows."""
-    if sys.platform != "win32":
-        raise Exception("This method only runs on Windows")
-
-    import winreg
-    try:
-        import win32com.client
-    except ImportError:
-        print(
-            "ERROR: Package 'pywin32' is missing on this system.\n"
-            "       Please run 'pkgutils.py pip' to automatically install\n"
-            "       dependecies, or run 'pip install --user pywin32'."
-        )
-        sys.exit(1)
-
-    print("")
-    print("Windows Install")
-    print("===============")
-    print("")
-
-    numVers, hexVers, _ = extractVersion()
-    nwTesting = not hexVers[-2] == "f"
-    wShell = win32com.client.Dispatch("WScript.Shell")
-
-    if nwTesting:
-        linkName = "novelWriter Testing %s.lnk" % numVers
-    else:
-        linkName = "novelWriter %s.lnk" % numVers
-
-    desktopDir = wShell.SpecialFolders("Desktop")
-    desktopIcon = os.path.join(desktopDir, linkName)
-
-    startMenuDir = wShell.SpecialFolders("StartMenu")
-    startMenuProg = os.path.join(startMenuDir, "Programs", "novelWriter")
-    startMenuIcon = os.path.join(startMenuProg, linkName)
-
-    pythonDir = os.path.dirname(sys.executable)
-    pythonExe = os.path.join(pythonDir, "pythonw.exe")
-
-    targetDir = os.path.abspath(os.path.dirname(__file__))
-    targetPy = os.path.join(targetDir, "novelWriter.pyw")
-    targetIcon = os.path.join(targetDir, "novelwriter", "assets", "icons", "novelwriter.ico")
-
-    if not os.path.isfile(targetPy):
-        shutil.copy2(os.path.join(targetDir, "novelWriter.py"), targetPy)
-
-    print("")
-    print("Collecting Info ...")
-    print("Desktop Folder:    %s" % desktopDir)
-    print("Start Menu Folder: %s" % startMenuDir)
-    print("Python Executable: %s" % pythonExe)
-    print("Target Executable: %s" % targetPy)
-    print("Target Icon:       %s" % targetIcon)
-    print("")
-
-    print("Creating Links ...")
-    if os.path.isfile(desktopIcon):
-        os.unlink(desktopIcon)
-        print("Deleted: %s" % desktopIcon)
-
-    if os.path.isdir(startMenuProg):
-        for oldIcon in os.listdir(startMenuProg):
-            oldPath = os.path.join(startMenuProg, oldIcon)
-            if not oldIcon.startswith("novelWriter"):
-                continue
-
-            isTesting = oldIcon.startswith("novelWriter Testing")
-            if isTesting and nwTesting:
-                os.unlink(oldPath)
-                print("Deleted: %s" % oldPath)
-            if not isTesting and not nwTesting:
-                os.unlink(oldPath)
-                print("Deleted: %s" % oldPath)
-
-    else:
-        os.mkdir(startMenuProg)
-        print("Created: %s" % startMenuProg)
-
-    wShortcut = wShell.CreateShortCut(desktopIcon)
-    wShortcut.TargetPath = targetPy
-    wShortcut.WorkingDirectory = targetDir
-    wShortcut.IconLocation = targetIcon
-    wShortcut.WindowStyle = 1
-    wShortcut.save()
-    print("Created: %s" % desktopIcon)
-
-    wShortcut = wShell.CreateShortCut(startMenuIcon)
-    wShortcut.TargetPath = targetPy
-    wShortcut.WorkingDirectory = targetDir
-    wShortcut.IconLocation = targetIcon
-    wShortcut.WindowStyle = 1
-    wShortcut.save()
-    print("Created: %s" % startMenuIcon)
-
-    print("")
-    print("Creating registry keys ...")
-
-    def setKey(kPath: str, kName: str, kVal: str) -> None:
-        winreg.CreateKey(winreg.HKEY_CURRENT_USER, kPath)
-        regKey = winreg.OpenKey(winreg.HKEY_CURRENT_USER, kPath, 0, winreg.KEY_WRITE)
-        winreg.SetValueEx(regKey, kName, 0, winreg.REG_SZ, kVal)
-        winreg.CloseKey(regKey)
-
-    mimeIcon = os.path.join(
-        targetDir, "novelwriter", "assets", "icons", "x-novelwriter-project.ico"
-    )
-    mimeExec = '"%s" "%s" "%%1"' % (pythonExe, targetPy)
-
-    try:
-        setKey(r"Software\Classes\.nwx\OpenWithProgids", "novelWriterProject.nwx", "")
-        setKey(r"Software\Classes\novelWriterProject.nwx", "", "novelWriter Project File")
-        setKey(r"Software\Classes\novelWriterProject.nwx\DefaultIcon", "", mimeIcon)
-        setKey(r"Software\Classes\novelWriterProject.nwx\shell\open\command", "", mimeExec)
-        setKey(r"Software\Classes\Applications\novelWriter.pyw\SupportedTypes", ".nwx", "")
-    except WindowsError:
-        print("ERROR: Failed to set registry keys.")
-        print("")
-
-    print("")
-    print("Done!")
-    print("")
-
-    return
-
-
-##
-#  WIN Uninstallation (win-uninstall)
-##
-
-def winUninstall() -> None:
-    """Will attempt to uninstall icons previously installed."""
-    if sys.platform != "win32":
-        raise Exception("This method only runs on Windows")
-
-    import winreg
-    try:
-        import win32com.client
-    except ImportError:
-        print(
-            "ERROR: Package 'pywin32' is missing on this system.\n"
-            "       Please run 'pip install --user pywin32' to install it."
-        )
-        sys.exit(1)
-
-    print("")
-    print("Windows Uninstall")
-    print("=================")
-    print("")
-
-    numVers, hexVers, _ = extractVersion()
-    nwTesting = not hexVers[-2] == "f"
-    wShell = win32com.client.Dispatch("WScript.Shell")
-
-    if nwTesting:
-        linkName = "novelWriter Testing %s.lnk" % numVers
-    else:
-        linkName = "novelWriter %s.lnk" % numVers
-
-    desktopDir = wShell.SpecialFolders("Desktop")
-    desktopIcon = os.path.join(desktopDir, linkName)
-
-    startMenuDir = wShell.SpecialFolders("StartMenu")
-    startMenuProg = os.path.join(startMenuDir, "Programs", "novelWriter")
-    startMenuIcon = os.path.join(startMenuProg, linkName)
-
-    print("")
-    print("Deleting Links ...")
-    if os.path.isfile(desktopIcon):
-        os.unlink(desktopIcon)
-        print("Deleted: %s" % desktopIcon)
-    else:
-        print("Not Found: %s" % desktopIcon)
-
-    if os.path.isfile(startMenuIcon):
-        os.unlink(startMenuIcon)
-        print("Deleted: %s" % startMenuIcon)
-    else:
-        print("Not Found: %s" % startMenuIcon)
-
-    if os.path.isdir(startMenuProg):
-        if not os.listdir(startMenuProg):
-            os.rmdir(startMenuProg)
-            print("Deleted: %s" % startMenuProg)
-        else:
-            print("Not Empty: %s" % startMenuProg)
-
-    print("")
-    print("Removing registry keys ...")
-
-    keys = [
-        r"Software\Classes\novelWriterProject.nwx\shell\open\command",
-        r"Software\Classes\novelWriterProject.nwx\shell\open",
-        r"Software\Classes\novelWriterProject.nwx\shell",
-        r"Software\Classes\novelWriterProject.nwx\DefaultIcon",
-        r"Software\Classes\novelWriterProject.nwx",
-        r"Software\Classes\.nwx\OpenWithProgids",
-        r"Software\Classes\.nwx",
-        r"Software\Classes\Applications\novelWriter.pyw\SupportedTypes",
-        r"Software\Classes\Applications\novelWriter.pyw",
-    ]
-
-    for aKey in keys:
-        try:
-            winreg.DeleteKey(winreg.HKEY_CURRENT_USER, aKey)
-            print("Deleted: HKEY_CURRENT_USER\\%s" % aKey)
-        except WindowsError:
-            print("Not Found: HKEY_CURRENT_USER\\%s" % aKey)
-
-    print("")
-    print("Done!")
-    print("")
-
-    return
-
-
 # =============================================================================================== #
 #  Process Command Line
 # =============================================================================================== #
@@ -1888,17 +1664,11 @@ if __name__ == "__main__":
         "",
         "System Install:",
         "",
-        "    install        Deprecated. Use pip or build.",
         "    xdg-install    Install launcher and icons for freedesktop systems. Run as",
         "                   root or with sudo for system-wide install, or as user for",
         "                   single user install.",
         "    xdg-uninstall  Remove the launcher and icons for the current system as",
         "                   installed by the 'xdg-install' command.",
-        "    win-install    Install desktop icon, start menu icon, and registry entries",
-        "                   for file association with .nwx files for Windows systems.",
-        "    win-uninstall  Remove desktop icon, start menu icon, and registry keys,",
-        "                   for the current system. Note that it only removes icons for",
-        "                   the version number of the package the command is run from.",
         "",
     ]
 
@@ -2014,21 +1784,5 @@ if __name__ == "__main__":
             sys.exit(1)
         else:
             xdgUninstall()
-
-    if "win-install" in sysArgs:
-        sysArgs.remove("win-install")
-        if hostOS == OS_WIN:
-            winInstall()
-        else:
-            print("ERROR: Command 'win-install' can only be used on Windows")
-            sys.exit(1)
-
-    if "win-uninstall" in sysArgs:
-        sysArgs.remove("win-uninstall")
-        if hostOS == OS_WIN:
-            winUninstall()
-        else:
-            print("ERROR: Command 'win-uninstall' can only be used on Windows")
-            sys.exit(1)
 
 # END Main
