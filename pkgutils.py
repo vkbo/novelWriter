@@ -675,8 +675,10 @@ def makeMinimalPackage(targetOS: int) -> None:
 #  Make Debian Package (build-deb)
 ##
 
-def makeDebianPackage(signKey: str | None = None, sourceBuild: bool = False,
-                      distName: str = "unstable", buildName: str = "") -> str:
+def makeDebianPackage(
+    signKey: str | None = None, sourceBuild: bool = False,
+    distName: str = "unstable", buildName: str = "", oldSetuptools: bool = False
+) -> str:
     """Build a Debian package."""
     print("")
     print("Build Debian Package")
@@ -778,11 +780,27 @@ def makeDebianPackage(signKey: str | None = None, sourceBuild: bool = False,
     ))
     print("Wrote:  setup.py")
 
-    setupCfg = readFile("pyproject.toml").replace(
-        "setup/description_pypi.md", "data/description_short.txt"
-    )
-    writeFile(f"{outDir}/pyproject.toml", setupCfg)
-    print("Wrote:  pyproject.toml")
+    if oldSetuptools:
+        # This is needed for Ubuntu up to 22.04
+        setupCfg = readFile("setup/launchpad_setup.cfg").replace(
+            "file: setup/description_pypi.md", "file: data/description_short.txt"
+        )
+        writeFile(f"{outDir}/setup.cfg", setupCfg)
+        print("Wrote:  setup.cfg")
+
+        writeFile(f"{outDir}/pyproject.toml", (
+            "[build-system]\n"
+            "requires = [\"setuptools\"]\n"
+            "build-backend = \"setuptools.build_meta\"\n"
+        ))
+        print("Wrote:  pyproject.toml")
+
+    else:
+        pyProject = readFile("pyproject.toml").replace(
+            "setup/description_pypi.md", "data/description_short.txt"
+        )
+        writeFile(f"{outDir}/pyproject.toml", pyProject)
+        print("Wrote:  pyproject.toml")
 
     # Copy/Write Debian Files
     # =======================
@@ -860,15 +878,15 @@ def makeForLaunchpad(doSign: bool = False, isFirst: bool = False) -> None:
             bldNum = "0"
 
     distLoop = [
-        ("20.04", "focal"),
-        ("22.04", "jammy"),
-        ("23.10", "mantic"),
-        ("24.04", "noble"),
+        ("20.04", "focal", True),
+        ("22.04", "jammy", True),
+        ("23.10", "mantic", False),
+        ("24.04", "noble", False),
     ]
 
     print("Building Ubuntu packages for:")
     print("")
-    for distNum, codeName in distLoop:
+    for distNum, codeName, _ in distLoop:
         print(f" * Ubuntu {distNum} {codeName.title()}")
     print("")
 
@@ -881,13 +899,14 @@ def makeForLaunchpad(doSign: bool = False, isFirst: bool = False) -> None:
     print("")
 
     dputCmd = []
-    for distNum, codeName in distLoop:
+    for distNum, codeName, oldSetup in distLoop:
         buildName = f"ubuntu{distNum}.{bldNum}"
         dCmd = makeDebianPackage(
             signKey=signKey,
             sourceBuild=True,
             distName=codeName,
-            buildName=buildName
+            buildName=buildName,
+            oldSetuptools=oldSetup,
         )
         dputCmd.append(dCmd)
 

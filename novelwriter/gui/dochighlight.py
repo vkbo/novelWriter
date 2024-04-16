@@ -44,6 +44,10 @@ logger = logging.getLogger(__name__)
 
 SPELLRX = QRegularExpression(r"\b[^\s\-\+\/–—\[\]:]+\b")
 SPELLRX.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
+SPELLSC = QRegularExpression(nwRegEx.FMT_SC)
+SPELLSC.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
+SPELLSV = QRegularExpression(nwRegEx.FMT_SV)
+SPELLSV.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
 
 BLOCK_NONE  = 0
 BLOCK_TEXT  = 1
@@ -53,7 +57,8 @@ BLOCK_TITLE = 4
 
 class GuiDocHighlighter(QSyntaxHighlighter):
 
-    __slots__ = ("_tItem", "_tHandle", "_spellCheck", "_spellErr", "_hRules", "_hStyles")
+    __slots__ = ("_tHandle", "_isInactive", "_spellCheck", "_spellErr",
+                 "_hRules", "_hStyles", "_rxRules")
 
     def __init__(self, document: QTextDocument) -> None:
         super().__init__(document)
@@ -67,6 +72,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         self._hRules: list[tuple[str, dict]] = []
         self._hStyles: dict[str, QTextCharFormat] = {}
+        self._rxRules: list[tuple[QRegularExpression, dict[str, QTextCharFormat]]] = []
 
         self.initHighlighter()
 
@@ -218,11 +224,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         ))
 
         # Build a QRegExp for each highlight pattern
-        self.rxRules = []
+        self._rxRules = []
         for regEx, regRules in self._hRules:
             hReg = QRegularExpression(regEx)
             hReg.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
-            self.rxRules.append((hReg, regRules))
+            self._rxRules.append((hReg, regRules))
 
         return
 
@@ -358,7 +364,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
             # Regular Text
             self.setCurrentBlockState(BLOCK_TEXT)
-            for rX, xFmt in self.rxRules:
+            for rX, xFmt in self._rxRules:
                 rxItt = rX.globalMatch(text, 0)
                 while rxItt.hasNext():
                     rxMatch = rxItt.next()
@@ -439,6 +445,17 @@ class TextBlockData(QTextBlockUserData):
         """Run the spell checker and cache the result, and return the
         list of spell check errors.
         """
+        if "[" in text:
+            # Strip shortcodes
+            for rX in [SPELLSC, SPELLSV]:
+                rxItt = rX.globalMatch(text, 0)
+                while rxItt.hasNext():
+                    rxMatch = rxItt.next()
+                    xPos = rxMatch.capturedStart(0)
+                    xLen = rxMatch.capturedLength(0)
+                    xEnd = rxMatch.capturedEnd(0)
+                    text = text[:xPos] + " "*xLen + text[xEnd:]
+
         self._spellErrors = []
         rxSpell = SPELLRX.globalMatch(text.replace("_", " "), 0)
         while rxSpell.hasNext():
