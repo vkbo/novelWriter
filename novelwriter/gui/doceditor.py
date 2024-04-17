@@ -39,8 +39,8 @@ from time import time
 from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import (
-    pyqtSignal, pyqtSlot, QObject, QPoint, QRegExp, QRegularExpression,
-    QRunnable, Qt, QTimer
+    pyqtSignal, pyqtSlot, QObject, QPoint, QRegularExpression, QRunnable, Qt,
+    QTimer
 )
 from PyQt5.QtGui import (
     QColor, QCursor, QFont, QKeyEvent, QKeySequence, QMouseEvent, QPalette,
@@ -2568,32 +2568,18 @@ class GuiDocEditSearch(QFrame):
     #  Getters
     ##
 
-    def getSearchObject(self) -> str | QRegularExpression | QRegExp:
+    def getSearchObject(self) -> str | QRegularExpression:
         """Return the current search text either as text or as a regular
         expression object.
         """
         text = self.searchBox.text()
         if CONFIG.searchRegEx:
-            # Using the Unicode-capable QRegularExpression class was
-            # only added in Qt 5.13. Otherwise, 5.3 and up supports
-            # only the QRegExp class.
-            if CONFIG.verQtValue >= 0x050d00:
-                rxOpt = QRegularExpression.PatternOption.UseUnicodePropertiesOption
-                if not CONFIG.searchCase:
-                    rxOpt |= QRegularExpression.PatternOption.CaseInsensitiveOption
-                regEx = QRegularExpression(text, rxOpt)
-                self._alertSearchValid(regEx.isValid())
-                return regEx
-            else:  # pragma: no cover
-                # >= 50300 to < 51300
-                if CONFIG.searchCase:
-                    rxOpt = Qt.CaseSensitivity.CaseSensitive
-                else:
-                    rxOpt = Qt.CaseSensitivity.CaseInsensitive
-                regEx = QRegExp(text, rxOpt)
-                self._alertSearchValid(regEx.isValid())
-                return regEx
-
+            rxOpt = QRegularExpression.PatternOption.UseUnicodePropertiesOption
+            if not CONFIG.searchCase:
+                rxOpt |= QRegularExpression.PatternOption.CaseInsensitiveOption
+            regEx = QRegularExpression(text, rxOpt)
+            self._alertSearchValid(regEx.isValid())
+            return regEx
         return text
 
     ##

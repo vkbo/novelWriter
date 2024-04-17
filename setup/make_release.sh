@@ -22,12 +22,10 @@ python3 pkgutils.py qtlrelease manual sample
 deactivate
 
 echo ""
-echo " Building Minimal Packages"
+echo " Building Windows Source Zip"
 echo "================================================================================"
 echo ""
-python3 pkgutils.py minimal-zip --target-win
-# python3 pkgutils.py minimal-zip --target-linux
-# python3 pkgutils.py minimal-zip --target-darwin
+python3 pkgutils.py windows-zip
 
 echo ""
 echo " Building Linux Packages"

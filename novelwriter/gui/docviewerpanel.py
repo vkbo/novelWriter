@@ -209,9 +209,8 @@ class GuiDocViewerPanel(QWidget):
 
     def _updateTabVisibility(self) -> None:
         """Hide class tabs with no content."""
-        if CONFIG.verQtValue >= 0x050f00:
-            for tClass, cTab in self.kwTabs.items():
-                self.mainTabs.setTabVisible(self.idTabs[tClass], cTab.countEntries() > 0)
+        for tClass, cTab in self.kwTabs.items():
+            self.mainTabs.setTabVisible(self.idTabs[tClass], cTab.countEntries() > 0)
         return
 
     def _loadAllTags(self) -> None:

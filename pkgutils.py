@@ -33,6 +33,8 @@ import datetime
 import subprocess
 import email.utils
 
+from pathlib import Path
+
 OS_NONE   = 0
 OS_LINUX  = 1
 OS_WIN    = 2
@@ -54,16 +56,15 @@ def extractVersion(beQuiet: bool = False) -> tuple[str, str, str]:
     numVers = "0"
     hexVers = "0x0"
     relDate = "Unknown"
-    initFile = os.path.join("novelwriter", "__init__.py")
+    initFile = Path("novelwriter") / "__init__.py"
     try:
-        with open(initFile, mode="r", encoding="utf-8") as inFile:
-            for aLine in inFile:
-                if aLine.startswith("__version__"):
-                    numVers = getValue((aLine))
-                if aLine.startswith("__hexversion__"):
-                    hexVers = getValue((aLine))
-                if aLine.startswith("__date__"):
-                    relDate = getValue((aLine))
+        for aLine in initFile.read_text(encoding="utf-8").splitlines():
+            if aLine.startswith("__version__"):
+                numVers = getValue((aLine))
+            if aLine.startswith("__hexversion__"):
+                hexVers = getValue((aLine))
+            if aLine.startswith("__date__"):
+                relDate = getValue((aLine))
     except Exception as exc:
         print("Could not read file: %s" % initFile)
         print(str(exc))
@@ -88,26 +89,23 @@ def stripVersion(version: str) -> str:
 
 def readFile(fileName: str) -> str:
     """Read an entire file and return as a string."""
-    with open(fileName, mode="r", encoding="utf-8") as inFile:
-        return inFile.read()
+    return Path(fileName).read_text(encoding="utf-8")
 
 
-def writeFile(fileName: str, writeText: str) -> None:
+def writeFile(fileName: str, text: str) -> None:
     """Write string to file."""
-    with open(fileName, mode="w+", encoding="utf-8") as outFile:
-        outFile.write(writeText)
+    Path(fileName).write_text(text, encoding="utf-8")
+    return
 
 
-def toUpload(srcPath: str, dstName: str | None = None) -> None:
+def toUpload(srcPath: str | Path, dstName: str | None = None) -> None:
     """Copy a file produced by one of the build functions to the upload
     directory. The file can optionally be given a new name.
     """
-    uplDir = "dist_upload"
-    if not os.path.isdir(uplDir):
-        os.mkdir(uplDir)
-    if dstName is None:
-        dstName = os.path.basename(srcPath)
-    shutil.copyfile(srcPath, os.path.join(uplDir, dstName))
+    uplDir = Path("dist_upload")
+    uplDir.mkdir(exist_ok=True)
+    srcPath = Path(srcPath)
+    shutil.copyfile(srcPath, uplDir / (dstName or srcPath.name))
     return
 
 
@@ -561,43 +559,24 @@ def importI18nUpdates(sysArgs: list[str]) -> None:
 #  Make Minimal Package (minimal-zip)
 ##
 
-def makeMinimalPackage(targetOS: int) -> None:
+def makeWindowsZip() -> None:
     """Pack the core source file in a single zip file."""
     from zipfile import ZipFile, ZIP_DEFLATED
 
     print("")
-    print("Building Minimal ZIP File")
+    print("Building Windows ZIP File")
     print("=========================")
 
     bldDir = "dist_minimal"
     if not os.path.isdir(bldDir):
         os.mkdir(bldDir)
 
-    if targetOS == OS_LINUX:
-        targName = "-linux"
-        print("Target OS: Linux")
-    elif targetOS == OS_DARWIN:
-        targName = "-darwin"
-        print("Target OS: Darwin")
-    elif targetOS == OS_WIN:
-        targName = "-win"
-        print("Target OS: Windows")
-    else:
-        targName = ""
-    print("")
-
-    # Check Additional Assets
-    # =======================
-
     if not checkAssetsExist():
         print("ERROR: Missing build assets")
         sys.exit(1)
 
-    # Build Minimal Zip
-    # =================
-
     pkgVers, _, _ = extractVersion()
-    zipFile = f"novelwriter-{pkgVers}-minimal{targName}.zip"
+    zipFile = f"novelwriter-{pkgVers}-minimal-win.zip"
     outFile = os.path.join(bldDir, zipFile)
     if os.path.isfile(outFile):
         os.unlink(outFile)
@@ -627,26 +606,8 @@ def makeMinimalPackage(targetOS: int) -> None:
                     continue
                 zipObj.write(os.path.join(nRoot, aFile))
 
-        if targetOS == OS_WIN:
-            zipObj.write("novelWriter.py", "novelWriter.pyw")
-            print("Added: novelWriter.pyw")
-            zipObj.write(os.path.join("setup", "windows_install.bat"), "windows_install.bat")
-            print("Added: windows_install.bat")
-            zipObj.write(os.path.join("setup", "windows_uninstall.bat"), "windows_uninstall.bat")
-            print("Added: windows_uninstall.bat")
-
-        else:  # Linux and Mac
-            # Add icons
-            for nRoot, _, nFiles in os.walk(os.path.join("setup", "data")):
-                print("Added: %s/* [Files: %d]" % (nRoot, len(nFiles)))
-                for aFile in nFiles:
-                    zipObj.write(os.path.join(nRoot, aFile))
-
-            zipObj.write(os.path.join("setup", "description_pypi.md"))
-            print("Added: setup/description_pypi.md")
-
-            zipObj.write("novelWriter.py")
-            print("Added: novelWriter.py")
+        zipObj.write("novelWriter.py", "novelWriter.pyw")
+        print("Added: novelWriter.pyw")
 
         for aFile in rootFiles:
             print("Added: %s" % aFile)
@@ -658,14 +619,9 @@ def makeMinimalPackage(targetOS: int) -> None:
     print("")
     print("Created File: %s" % outFile)
 
-    # Create Checksum File
-    # ====================
-
     shaFile = makeCheckSum(zipFile, cwd=bldDir)
-
     toUpload(outFile)
     toUpload(shaFile)
-
     print("")
 
     return
@@ -675,8 +631,10 @@ def makeMinimalPackage(targetOS: int) -> None:
 #  Make Debian Package (build-deb)
 ##
 
-def makeDebianPackage(signKey: str | None = None, sourceBuild: bool = False,
-                      distName: str = "unstable", buildName: str = "") -> str:
+def makeDebianPackage(
+    signKey: str | None = None, sourceBuild: bool = False,
+    distName: str = "unstable", buildName: str = "", oldSetuptools: bool = False
+) -> str:
     """Build a Debian package."""
     print("")
     print("Build Debian Package")
@@ -778,11 +736,27 @@ def makeDebianPackage(signKey: str | None = None, sourceBuild: bool = False,
     ))
     print("Wrote:  setup.py")
 
-    setupCfg = readFile("pyproject.toml").replace(
-        "setup/description_pypi.md", "data/description_short.txt"
-    )
-    writeFile(f"{outDir}/pyproject.toml", setupCfg)
-    print("Wrote:  pyproject.toml")
+    if oldSetuptools:
+        # This is needed for Ubuntu up to 22.04
+        setupCfg = readFile("setup/launchpad_setup.cfg").replace(
+            "file: setup/description_pypi.md", "file: data/description_short.txt"
+        )
+        writeFile(f"{outDir}/setup.cfg", setupCfg)
+        print("Wrote:  setup.cfg")
+
+        writeFile(f"{outDir}/pyproject.toml", (
+            "[build-system]\n"
+            "requires = [\"setuptools\"]\n"
+            "build-backend = \"setuptools.build_meta\"\n"
+        ))
+        print("Wrote:  pyproject.toml")
+
+    else:
+        pyProject = readFile("pyproject.toml").replace(
+            "setup/description_pypi.md", "data/description_short.txt"
+        )
+        writeFile(f"{outDir}/pyproject.toml", pyProject)
+        print("Wrote:  pyproject.toml")
 
     # Copy/Write Debian Files
     # =======================
@@ -860,15 +834,14 @@ def makeForLaunchpad(doSign: bool = False, isFirst: bool = False) -> None:
             bldNum = "0"
 
     distLoop = [
-        ("20.04", "focal"),
-        ("22.04", "jammy"),
-        ("23.10", "mantic"),
-        ("24.04", "noble"),
+        ("22.04", "jammy", True),
+        ("23.10", "mantic", False),
+        ("24.04", "noble", False),
     ]
 
     print("Building Ubuntu packages for:")
     print("")
-    for distNum, codeName in distLoop:
+    for distNum, codeName, _ in distLoop:
         print(f" * Ubuntu {distNum} {codeName.title()}")
     print("")
 
@@ -881,13 +854,14 @@ def makeForLaunchpad(doSign: bool = False, isFirst: bool = False) -> None:
     print("")
 
     dputCmd = []
-    for distNum, codeName in distLoop:
+    for distNum, codeName, oldSetup in distLoop:
         buildName = f"ubuntu{distNum}.{bldNum}"
         dCmd = makeDebianPackage(
             signKey=signKey,
             sourceBuild=True,
             distName=codeName,
-            buildName=buildName
+            buildName=buildName,
+            oldSetuptools=oldSetup,
         )
         dputCmd.append(dCmd)
 
@@ -1555,226 +1529,6 @@ def xdgUninstall() -> None:
     return
 
 
-##
-#  WIN Installation (win-install)
-##
-
-def winInstall() -> None:
-    """Will attempt to install icons and make a launcher for Windows."""
-    if sys.platform != "win32":
-        raise Exception("This method only runs on Windows")
-
-    import winreg
-    try:
-        import win32com.client
-    except ImportError:
-        print(
-            "ERROR: Package 'pywin32' is missing on this system.\n"
-            "       Please run 'pkgutils.py pip' to automatically install\n"
-            "       dependecies, or run 'pip install --user pywin32'."
-        )
-        sys.exit(1)
-
-    print("")
-    print("Windows Install")
-    print("===============")
-    print("")
-
-    numVers, hexVers, _ = extractVersion()
-    nwTesting = not hexVers[-2] == "f"
-    wShell = win32com.client.Dispatch("WScript.Shell")
-
-    if nwTesting:
-        linkName = "novelWriter Testing %s.lnk" % numVers
-    else:
-        linkName = "novelWriter %s.lnk" % numVers
-
-    desktopDir = wShell.SpecialFolders("Desktop")
-    desktopIcon = os.path.join(desktopDir, linkName)
-
-    startMenuDir = wShell.SpecialFolders("StartMenu")
-    startMenuProg = os.path.join(startMenuDir, "Programs", "novelWriter")
-    startMenuIcon = os.path.join(startMenuProg, linkName)
-
-    pythonDir = os.path.dirname(sys.executable)
-    pythonExe = os.path.join(pythonDir, "pythonw.exe")
-
-    targetDir = os.path.abspath(os.path.dirname(__file__))
-    targetPy = os.path.join(targetDir, "novelWriter.pyw")
-    targetIcon = os.path.join(targetDir, "novelwriter", "assets", "icons", "novelwriter.ico")
-
-    if not os.path.isfile(targetPy):
-        shutil.copy2(os.path.join(targetDir, "novelWriter.py"), targetPy)
-
-    print("")
-    print("Collecting Info ...")
-    print("Desktop Folder:    %s" % desktopDir)
-    print("Start Menu Folder: %s" % startMenuDir)
-    print("Python Executable: %s" % pythonExe)
-    print("Target Executable: %s" % targetPy)
-    print("Target Icon:       %s" % targetIcon)
-    print("")
-
-    print("Creating Links ...")
-    if os.path.isfile(desktopIcon):
-        os.unlink(desktopIcon)
-        print("Deleted: %s" % desktopIcon)
-
-    if os.path.isdir(startMenuProg):
-        for oldIcon in os.listdir(startMenuProg):
-            oldPath = os.path.join(startMenuProg, oldIcon)
-            if not oldIcon.startswith("novelWriter"):
-                continue
-
-            isTesting = oldIcon.startswith("novelWriter Testing")
-            if isTesting and nwTesting:
-                os.unlink(oldPath)
-                print("Deleted: %s" % oldPath)
-            if not isTesting and not nwTesting:
-                os.unlink(oldPath)
-                print("Deleted: %s" % oldPath)
-
-    else:
-        os.mkdir(startMenuProg)
-        print("Created: %s" % startMenuProg)
-
-    wShortcut = wShell.CreateShortCut(desktopIcon)
-    wShortcut.TargetPath = targetPy
-    wShortcut.WorkingDirectory = targetDir
-    wShortcut.IconLocation = targetIcon
-    wShortcut.WindowStyle = 1
-    wShortcut.save()
-    print("Created: %s" % desktopIcon)
-
-    wShortcut = wShell.CreateShortCut(startMenuIcon)
-    wShortcut.TargetPath = targetPy
-    wShortcut.WorkingDirectory = targetDir
-    wShortcut.IconLocation = targetIcon
-    wShortcut.WindowStyle = 1
-    wShortcut.save()
-    print("Created: %s" % startMenuIcon)
-
-    print("")
-    print("Creating registry keys ...")
-
-    def setKey(kPath: str, kName: str, kVal: str) -> None:
-        winreg.CreateKey(winreg.HKEY_CURRENT_USER, kPath)
-        regKey = winreg.OpenKey(winreg.HKEY_CURRENT_USER, kPath, 0, winreg.KEY_WRITE)
-        winreg.SetValueEx(regKey, kName, 0, winreg.REG_SZ, kVal)
-        winreg.CloseKey(regKey)
-
-    mimeIcon = os.path.join(
-        targetDir, "novelwriter", "assets", "icons", "x-novelwriter-project.ico"
-    )
-    mimeExec = '"%s" "%s" "%%1"' % (pythonExe, targetPy)
-
-    try:
-        setKey(r"Software\Classes\.nwx\OpenWithProgids", "novelWriterProject.nwx", "")
-        setKey(r"Software\Classes\novelWriterProject.nwx", "", "novelWriter Project File")
-        setKey(r"Software\Classes\novelWriterProject.nwx\DefaultIcon", "", mimeIcon)
-        setKey(r"Software\Classes\novelWriterProject.nwx\shell\open\command", "", mimeExec)
-        setKey(r"Software\Classes\Applications\novelWriter.pyw\SupportedTypes", ".nwx", "")
-    except WindowsError:
-        print("ERROR: Failed to set registry keys.")
-        print("")
-
-    print("")
-    print("Done!")
-    print("")
-
-    return
-
-
-##
-#  WIN Uninstallation (win-uninstall)
-##
-
-def winUninstall() -> None:
-    """Will attempt to uninstall icons previously installed."""
-    if sys.platform != "win32":
-        raise Exception("This method only runs on Windows")
-
-    import winreg
-    try:
-        import win32com.client
-    except ImportError:
-        print(
-            "ERROR: Package 'pywin32' is missing on this system.\n"
-            "       Please run 'pip install --user pywin32' to install it."
-        )
-        sys.exit(1)
-
-    print("")
-    print("Windows Uninstall")
-    print("=================")
-    print("")
-
-    numVers, hexVers, _ = extractVersion()
-    nwTesting = not hexVers[-2] == "f"
-    wShell = win32com.client.Dispatch("WScript.Shell")
-
-    if nwTesting:
-        linkName = "novelWriter Testing %s.lnk" % numVers
-    else:
-        linkName = "novelWriter %s.lnk" % numVers
-
-    desktopDir = wShell.SpecialFolders("Desktop")
-    desktopIcon = os.path.join(desktopDir, linkName)
-
-    startMenuDir = wShell.SpecialFolders("StartMenu")
-    startMenuProg = os.path.join(startMenuDir, "Programs", "novelWriter")
-    startMenuIcon = os.path.join(startMenuProg, linkName)
-
-    print("")
-    print("Deleting Links ...")
-    if os.path.isfile(desktopIcon):
-        os.unlink(desktopIcon)
-        print("Deleted: %s" % desktopIcon)
-    else:
-        print("Not Found: %s" % desktopIcon)
-
-    if os.path.isfile(startMenuIcon):
-        os.unlink(startMenuIcon)
-        print("Deleted: %s" % startMenuIcon)
-    else:
-        print("Not Found: %s" % startMenuIcon)
-
-    if os.path.isdir(startMenuProg):
-        if not os.listdir(startMenuProg):
-            os.rmdir(startMenuProg)
-            print("Deleted: %s" % startMenuProg)
-        else:
-            print("Not Empty: %s" % startMenuProg)
-
-    print("")
-    print("Removing registry keys ...")
-
-    keys = [
-        r"Software\Classes\novelWriterProject.nwx\shell\open\command",
-        r"Software\Classes\novelWriterProject.nwx\shell\open",
-        r"Software\Classes\novelWriterProject.nwx\shell",
-        r"Software\Classes\novelWriterProject.nwx\DefaultIcon",
-        r"Software\Classes\novelWriterProject.nwx",
-        r"Software\Classes\.nwx\OpenWithProgids",
-        r"Software\Classes\.nwx",
-        r"Software\Classes\Applications\novelWriter.pyw\SupportedTypes",
-        r"Software\Classes\Applications\novelWriter.pyw",
-    ]
-
-    for aKey in keys:
-        try:
-            winreg.DeleteKey(winreg.HKEY_CURRENT_USER, aKey)
-            print("Deleted: HKEY_CURRENT_USER\\%s" % aKey)
-        except WindowsError:
-            print("Not Found: HKEY_CURRENT_USER\\%s" % aKey)
-
-    print("")
-    print("Done!")
-    print("")
-
-    return
-
-
 # =============================================================================================== #
 #  Process Command Line
 # =============================================================================================== #
@@ -1794,19 +1548,6 @@ if __name__ == "__main__":
         hostOS = OS_NONE
 
     sysArgs = sys.argv.copy()
-
-    # Set Target OS
-    if "--target-linux" in sysArgs:
-        sysArgs.remove("--target-linux")
-        targetOS = OS_LINUX
-    elif "--target-darwin" in sysArgs:
-        sysArgs.remove("--target-darwin")
-        targetOS = OS_DARWIN
-    elif "--target-win" in sysArgs:
-        sysArgs.remove("--target-win")
-        targetOS = OS_WIN
-    else:
-        targetOS = hostOS
 
     # Sign package
     if "--sign" in sysArgs:
@@ -1831,10 +1572,6 @@ if __name__ == "__main__":
         "novelWriter as a package on Linux, Mac and Windows. The available options",
         "are as follows:",
         "",
-        "Some of the commands can be targeted towards a different OS than the host OS.",
-        "To target the command, add one of '--target-linux', '--target-darwin' or",
-        "'--target-win'.",
-        "",
         "General:",
         "",
         "    help           Print the help message.",
@@ -1855,10 +1592,8 @@ if __name__ == "__main__":
         "Python Packaging:",
         "",
         "    import-i18n    Import updated i18n files from a zip file.",
-        "    minimal-zip    Creates a minimal zip file of the core application without",
-        "                   all the other source files. Defaults to tailor the zip file",
-        "                   for the current OS, but accepts a target OS flag to build",
-        "                   for another OS.",
+        "    windows-zip    Creates a minimal zip file of the core application without",
+        "                   all the other source files. Used for Windows builds.",
         "    build-deb      Build a .deb package for Debian and Ubuntu. Add --sign to ",
         "                   sign package.",
         "    build-ubuntu   Build a .deb packages Launchpad. Add --sign to ",
@@ -1870,17 +1605,11 @@ if __name__ == "__main__":
         "",
         "System Install:",
         "",
-        "    install        Deprecated. Use pip or build.",
         "    xdg-install    Install launcher and icons for freedesktop systems. Run as",
         "                   root or with sudo for system-wide install, or as user for",
         "                   single user install.",
         "    xdg-uninstall  Remove the launcher and icons for the current system as",
         "                   installed by the 'xdg-install' command.",
-        "    win-install    Install desktop icon, start menu icon, and registry entries",
-        "                   for file association with .nwx files for Windows systems.",
-        "    win-uninstall  Remove desktop icon, start menu icon, and registry keys,",
-        "                   for the current system. Note that it only removes icons for",
-        "                   the version number of the package the command is run from.",
         "",
     ]
 
@@ -1941,9 +1670,9 @@ if __name__ == "__main__":
         importI18nUpdates(sysArgs)
         sys.exit(0)  # Don't continue execution
 
-    if "minimal-zip" in sysArgs:
-        sysArgs.remove("minimal-zip")
-        makeMinimalPackage(targetOS)
+    if "windows-zip" in sysArgs:
+        sysArgs.remove("windows-zip")
+        makeWindowsZip()
 
     if "build-deb" in sysArgs:
         sysArgs.remove("build-deb")
@@ -1996,21 +1725,5 @@ if __name__ == "__main__":
             sys.exit(1)
         else:
             xdgUninstall()
-
-    if "win-install" in sysArgs:
-        sysArgs.remove("win-install")
-        if hostOS == OS_WIN:
-            winInstall()
-        else:
-            print("ERROR: Command 'win-install' can only be used on Windows")
-            sys.exit(1)
-
-    if "win-uninstall" in sysArgs:
-        sysArgs.remove("win-uninstall")
-        if hostOS == OS_WIN:
-            winUninstall()
-        else:
-            print("ERROR: Command 'win-uninstall' can only be used on Windows")
-            sys.exit(1)
 
 # END Main
