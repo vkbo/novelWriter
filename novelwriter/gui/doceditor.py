@@ -1855,8 +1855,9 @@ class GuiDocEditor(QPlainTextEdit):
 
     def _insertCommentStructure(self, style: nwComment) -> None:
         """Insert a shortcut/comment combo."""
-        if style == nwComment.FOOTNOTE:
-            key = SHARED.project.index.newCommentKey(style)
+        if self._docHandle and style == nwComment.FOOTNOTE:
+            self.saveText()  # Index must be up to date
+            key = SHARED.project.index.newCommentKey(self._docHandle, style)
             code = nwShortcode.COMMENT_STYLES[nwComment.FOOTNOTE]
 
             cursor = self.textCursor()
@@ -1868,13 +1869,11 @@ class GuiDocEditor(QPlainTextEdit):
 
             cursor.beginEditBlock()
             cursor.insertText(code.format(key))
-            cursor.setPosition(block.position() + block.length())
+            cursor.setPosition(block.position() + block.length() - 1)
+            cursor.insertBlock()
             cursor.insertBlock()
             cursor.insertText(f"%Footnote.{key}: ")
-            cursor.insertBlock()
             cursor.endEditBlock()
-
-            cursor.setPosition(cursor.position() - 1)
 
             self.setTextCursor(cursor)
 

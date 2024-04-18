@@ -30,17 +30,19 @@ from __future__ import annotations
 import json
 import logging
 
+from collections.abc import ItemsView, Iterable
+from pathlib import Path
 from random import randint
 from time import time
-from typing import TYPE_CHECKING
-from pathlib import Path
-from collections.abc import ItemsView, Iterable
+from typing import TYPE_CHECKING, Literal
 
 from novelwriter import SHARED
+from novelwriter.common import (
+    checkInt, isHandle, isItemClass, isListInstance, isTitleTag, jsonEncode
+)
+from novelwriter.constants import nwFiles, nwKeyWords, nwHeaders
 from novelwriter.enum import nwComment, nwItemClass, nwItemType, nwItemLayout
 from novelwriter.error import logException
-from novelwriter.common import checkInt, isHandle, isItemClass, isTitleTag, jsonEncode
-from novelwriter.constants import nwFiles, nwKeyWords, nwHeaders
 from novelwriter.text.counting import standardCounter
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -49,7 +51,11 @@ if TYPE_CHECKING:  # pragma: no cover
 
 logger = logging.getLogger(__name__)
 
+T_NoteTypes = Literal["footnotes", "comments"]
+
 TT_NONE = "T0000"
+KEY_SOURCE = "0123456789bcdfghjklmnopqrstvwxyz"
+NOTE_TYPES: list[T_NoteTypes] = ["footnotes", "comments"]
 
 
 class NWIndex:
@@ -86,7 +92,6 @@ class NWIndex:
         # Storage and State
         self._tagsIndex = TagsIndex()
         self._itemIndex = ItemIndex(project)
-        self._textIndex = TextIndex()
         self._indexBroken = False
 
         # TimeStamps
@@ -114,7 +119,6 @@ class NWIndex:
         """Clear the index dictionaries and time stamps."""
         self._tagsIndex.clear()
         self._itemIndex.clear()
-        self._textIndex.clear()
         self._indexChange = 0.0
         self._rootChange = {}
         SHARED.indexSignalProxy({"event": "clearIndex"})
@@ -138,7 +142,6 @@ class NWIndex:
         for tTag in delTags:
             del self._tagsIndex[tTag]
         del self._itemIndex[tHandle]
-        self._textIndex.removeHandle(tHandle)
         SHARED.indexSignalProxy({
             "event": "updateTags",
             "deleted": delTags,
@@ -193,7 +196,6 @@ class NWIndex:
             try:
                 self._tagsIndex.unpackData(data["novelWriter.tagsIndex"])
                 self._itemIndex.unpackData(data["novelWriter.itemIndex"])
-                self._textIndex.unpackData(data["novelWriter.textIndex"])
             except Exception:
                 logger.error("The index content is invalid")
                 logException()
@@ -229,12 +231,10 @@ class NWIndex:
         try:
             tagsIndex = jsonEncode(self._tagsIndex.packData(), n=1, nmax=2)
             itemIndex = jsonEncode(self._itemIndex.packData(), n=1, nmax=4)
-            textIndex = jsonEncode(self._textIndex.packData(), n=1, nmax=3)
             with open(indexFile, mode="w+", encoding="utf-8") as outFile:
                 outFile.write("{\n")
                 outFile.write(f'  "novelWriter.tagsIndex": {tagsIndex},\n')
-                outFile.write(f'  "novelWriter.itemIndex": {itemIndex},\n')
-                outFile.write(f'  "novelWriter.textIndex": {textIndex}\n')
+                outFile.write(f'  "novelWriter.itemIndex": {itemIndex}\n')
                 outFile.write("}\n")
 
         except Exception:
@@ -346,7 +346,7 @@ class NWIndex:
                 if cStyle in (nwComment.SYNOPSIS, nwComment.SHORT):
                     self._itemIndex.setHeadingSynopsis(tHandle, cTitle, cText)
                 elif cStyle == nwComment.FOOTNOTE:
-                    self._textIndex.footnotes.add(cKey, tHandle, cText)
+                    self._itemIndex.addNoteKey(tHandle, "footnotes", cKey)
 
         # Count words for remaining text after last heading
         if pTitle != TT_NONE:
@@ -514,13 +514,13 @@ class NWIndex:
         name, _, display = text.partition("|")
         return name.rstrip(), display.lstrip()
 
-    def newCommentKey(self, style: nwComment) -> str | None:
+    def newCommentKey(self, tHandle: str, style: nwComment) -> str:
         """Generate a new key for a comment style."""
         if style == nwComment.FOOTNOTE:
-            return self._textIndex.footnotes.newKey()
+            return self._itemIndex.genNewNoteKey(tHandle, "footnotes")
         elif style == nwComment.COMMENT:
-            return self._textIndex.comments.newKey()
-        return None
+            return self._itemIndex.genNewNoteKey(tHandle, "comments")
+        return "err"
 
     ##
     #  Extract Data
@@ -966,6 +966,25 @@ class ItemIndex:
             self._items[tHandle].addHeadingRef(sTitle, tagKeys, refType)
         return
 
+    def addNoteKey(self, tHandle: str, style: T_NoteTypes, key: str) -> None:
+        """Set notes key for a given item."""
+        if tHandle in self._items:
+            self._items[tHandle].addNoteKey(style, key)
+        return
+
+    def genNewNoteKey(self, tHandle: str, style: T_NoteTypes) -> str:
+        """Set notes key for a given item."""
+        keys = set()
+        for item in self._items.values():
+            keys.update(item.noteKeys(style))
+        if style in NOTE_TYPES and (item := self._items.get(tHandle)):
+            for _ in range(1000):
+                key = style[:1] + "".join([KEY_SOURCE[randint(0, 31)] for _ in range(4)])
+                if key not in keys:
+                    item.addNoteKey(style, key)
+                    return key
+        return "err"
+
     ##
     #  Pack/Unpack
     ##
@@ -1007,12 +1026,13 @@ class IndexItem:
     must be reset each time the item is re-indexed.
     """
 
-    __slots__ = ("_handle", "_item", "_headings", "_count")
+    __slots__ = ("_handle", "_item", "_headings", "_count", "_notes")
 
     def __init__(self, tHandle: str, nwItem: NWItem) -> None:
         self._handle = tHandle
         self._item = nwItem
         self._headings: dict[str, IndexHeading] = {TT_NONE: IndexHeading(TT_NONE)}
+        self._notes: dict[str, set[str]] = {}
         self._count = 0
         return
 
@@ -1080,6 +1100,13 @@ class IndexItem:
                 self._headings[sTitle].addReference(tagKey, refType)
         return
 
+    def addNoteKey(self, style: T_NoteTypes, key: str) -> None:
+        """Add a note key to the index."""
+        if style not in self._notes:
+            self._notes[style] = set()
+        self._notes[style].add(key)
+        return
+
     ##
     #  Data Methods
     ##
@@ -1101,6 +1128,10 @@ class IndexItem:
         self._count += 1
         return f"T{self._count:04d}"
 
+    def noteKeys(self, style: T_NoteTypes) -> set[str]:
+        """Return a set of all note keys."""
+        return self._notes.get(style, set())
+
     ##
     #  Pack/Unpack
     ##
@@ -1119,6 +1150,8 @@ class IndexItem:
         data["headings"] = heads
         if refs:
             data["references"] = refs
+        if self._notes:
+            data["notes"] = {style: list(keys) for style, keys in self._notes.items()}
 
         return data
 
@@ -1132,6 +1165,14 @@ class IndexItem:
             tHeading.unpackData(hData)
             tHeading.unpackReferences(references.get(sTitle, {}))
             self.addHeading(tHeading)
+
+        for style, keys in data.get("notes", {}).items():
+            if style not in NOTE_TYPES:
+                raise ValueError("The notes style is invalid")
+            if not isListInstance(keys, str):
+                raise ValueError("The notes keys must be a list of strings")
+            self._notes[style] = set(keys)
+
         return
 
 # END Class IndexItem
@@ -1312,162 +1353,6 @@ class IndexHeading:
         return
 
 # END Class IndexHeading
-
-
-# =============================================================================================== #
-#  The Text Index Object
-# =============================================================================================== #
-
-KEY_SOURCE = "0123456789bcdfghjklmnopqrstvwxyz"
-
-
-class TextIndex:
-    """Core: Text Index Wrapper Class
-
-    A wrapper class that holds various global text entries.
-    """
-
-    __slots__ = ("_comments", "_footnotes")
-
-    def __init__(self) -> None:
-        self._comments = TextRegistry("c")
-        self._footnotes = TextRegistry("f")
-        return
-
-    @property
-    def comments(self) -> TextRegistry:
-        """Return the comments text registry."""
-        return self._comments
-
-    @property
-    def footnotes(self) -> TextRegistry:
-        """Return the footnotes text registry."""
-        return self._footnotes
-
-    ##
-    #  Methods
-    ##
-
-    def clear(self) -> None:
-        """Clear the index."""
-        self._comments.clear()
-        self._footnotes.clear()
-        return
-
-    def removeHandle(self, handle: str) -> None:
-        """Remove all entries for a given handle."""
-        self._comments.removeHandle(handle)
-        self._footnotes.removeHandle(handle)
-        return
-
-    ##
-    #  Pack/Unpack
-    ##
-
-    def packData(self) -> dict[str, dict]:
-        """Pack all the text comments into a single dictionary."""
-        return {
-            "comments": self._comments.packData(),
-            "footnotes": self._footnotes.packData(),
-        }
-
-    def unpackData(self, data: dict) -> None:
-        """Unpack the text comments index."""
-        self._comments.unpackData(data.get("comments", {}))
-        self._footnotes.unpackData(data.get("footnotes", {}))
-        return
-
-# END Class TextIndex
-
-
-class TextRegistry:
-    """Core: Text Registry Index Wrapper Class
-
-    A wrapper class that holds a category of text entries.
-    """
-
-    __slots__ = ("_map", "_text", "_prefix")
-
-    def __init__(self, prefix: str) -> None:
-        self._map: dict[str, str] = {}
-        self._text: dict[str, str] = {}
-        self._prefix = prefix
-        return
-
-    def __len__(self) -> int:
-        return len(self._text)
-
-    def __getitem__(self, key: str) -> str | None:
-        return self._text.get(key, (0, None))[1]
-
-    def __contains__(self, key: str) -> bool:
-        return key in self._text
-
-    ##
-    #  Methods
-    ##
-
-    def clear(self) -> None:
-        """Clear the index."""
-        self._map.clear()
-        self._text.clear()
-        return
-
-    def add(self, key: str, handle: str, text: str) -> None:
-        """Add a new text entry."""
-        self._map[key] = handle
-        self._text[key] = text
-        return
-
-    def keysForHandle(self, handle: str) -> list[str]:
-        """Return all keys for a given handle."""
-        return [k for k, v in self._map.items() if v == handle]
-
-    def removeHandle(self, handle: str) -> None:
-        """Iterate through the data and remove entries for a handle."""
-        for key in [k for k, v in self._map.items() if v == handle]:
-            del self._text[key]
-        return
-
-    def newKey(self) -> str:
-        """Generate a new key."""
-        key = self._prefix + "".join([KEY_SOURCE[randint(0, 31)] for _ in range(4)])
-        if key in self._text:
-            key = self.newKey()
-        return key
-
-    ##
-    #  Pack/Unpack
-    ##
-
-    def packData(self) -> dict[str, dict[str, str]]:
-        """Pack all the text entries into a dictionary."""
-        return {k: {"handle": self._map[k], "text": v} for k, v in self._text.items()}
-
-    def unpackData(self, data: dict) -> None:
-        """Unpack text entries from a dictionary."""
-        self.clear()
-        if not isinstance(data, dict):
-            raise ValueError("textEntry is not a dict")
-
-        for key, entry in data.items():
-            if not isinstance(key, str):
-                raise ValueError("textEntry key must be a string")
-            if not isinstance(entry, dict):
-                raise ValueError("textEntry entry is not a dict")
-
-            handle = entry.get("handle")
-            text = entry.get("text")
-            if not isHandle(handle):
-                raise ValueError("textEntry handle must be a handle")
-            if not isinstance(text, str):
-                raise ValueError("textEntry text is not a string")
-
-            self.add(key, handle, text)
-
-        return
-
-# END Class TextEntry
 
 
 # =============================================================================================== #

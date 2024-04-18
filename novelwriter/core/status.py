@@ -29,7 +29,7 @@ import logging
 import random
 
 from collections.abc import Iterable
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from PyQt5.QtCore import QPointF, Qt
 from PyQt5.QtGui import QIcon, QPainter, QPainterPath, QPixmap, QColor, QPolygonF
@@ -75,7 +75,7 @@ class NWStatus:
 
     __slots__ = ("_store", "_default", "_prefix", "_height")
 
-    def __init__(self, prefix: str) -> None:
+    def __init__(self, prefix: Literal["s", "i"]) -> None:
         self._store: dict[str, StatusEntry] = {}
         self._default = None
         self._prefix = prefix[:1]

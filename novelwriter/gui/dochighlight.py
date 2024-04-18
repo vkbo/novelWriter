@@ -93,19 +93,19 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         colBreak.setAlpha(64)
 
         # Create Character Formats
-        self._addCharFormat("header1",  SHARED.theme.colHead, "bold", 1.8)
-        self._addCharFormat("header2",  SHARED.theme.colHead, "bold", 1.6)
-        self._addCharFormat("header3",  SHARED.theme.colHead, "bold", 1.4)
-        self._addCharFormat("header4",  SHARED.theme.colHead, "bold", 1.2)
-        self._addCharFormat("head1h",   SHARED.theme.colHeadH, "bold", 1.8)
-        self._addCharFormat("head2h",   SHARED.theme.colHeadH, "bold", 1.6)
-        self._addCharFormat("head3h",   SHARED.theme.colHeadH, "bold", 1.4)
-        self._addCharFormat("head4h",   SHARED.theme.colHeadH, "bold", 1.2)
-        self._addCharFormat("bold",     colEmph, "bold")
-        self._addCharFormat("italic",   colEmph, "italic")
-        self._addCharFormat("strike",   SHARED.theme.colHidden, "strike")
-        self._addCharFormat("mspaces",  SHARED.theme.colError, "errline")
-        self._addCharFormat("nobreak",  colBreak, "background")
+        self._addCharFormat("header1",  SHARED.theme.colHead, "b", 1.8)
+        self._addCharFormat("header2",  SHARED.theme.colHead, "b", 1.6)
+        self._addCharFormat("header3",  SHARED.theme.colHead, "b", 1.4)
+        self._addCharFormat("header4",  SHARED.theme.colHead, "b", 1.2)
+        self._addCharFormat("head1h",   SHARED.theme.colHeadH, "b", 1.8)
+        self._addCharFormat("head2h",   SHARED.theme.colHeadH, "b", 1.6)
+        self._addCharFormat("head3h",   SHARED.theme.colHeadH, "b", 1.4)
+        self._addCharFormat("head4h",   SHARED.theme.colHeadH, "b", 1.2)
+        self._addCharFormat("bold",     colEmph, "b")
+        self._addCharFormat("italic",   colEmph, "i")
+        self._addCharFormat("strike",   SHARED.theme.colHidden, "s")
+        self._addCharFormat("mspaces",  SHARED.theme.colError, "err")
+        self._addCharFormat("nobreak",  colBreak, "bg")
         self._addCharFormat("dialog1",  SHARED.theme.colDialN)
         self._addCharFormat("dialog2",  SHARED.theme.colDialD)
         self._addCharFormat("dialog3",  SHARED.theme.colDialS)
@@ -117,7 +117,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._addCharFormat("modifier", SHARED.theme.colMod)
         self._addCharFormat("value",    SHARED.theme.colVal)
         self._addCharFormat("optional", SHARED.theme.colOpt)
-        self._addCharFormat("invalid",  None, "errline")
+        self._addCharFormat("invalid",  None, "err")
 
         # Cache Spell Error Format
         self._spellErr = QTextCharFormat()
@@ -442,16 +442,16 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         if style:
             styles = style.split(",")
-            if "bold" in styles:
+            if "b" in styles:
                 charFormat.setFontWeight(QFont.Weight.Bold)
-            if "italic" in styles:
+            if "i" in styles:
                 charFormat.setFontItalic(True)
-            if "strike" in styles:
+            if "s" in styles:
                 charFormat.setFontStrikeOut(True)
-            if "errline" in styles:
+            if "err" in styles:
                 charFormat.setUnderlineColor(SHARED.theme.colError)
                 charFormat.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
-            if "background" in styles and color is not None:
+            if "bg" in styles and color is not None:
                 charFormat.setBackground(QBrush(color, Qt.BrushStyle.SolidPattern))
 
         if size:
