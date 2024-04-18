@@ -29,10 +29,10 @@ from __future__ import annotations
 
 import json
 import logging
+import random
 
 from collections.abc import ItemsView, Iterable
 from pathlib import Path
-from random import randint
 from time import time
 from typing import TYPE_CHECKING, Literal
 
@@ -53,8 +53,9 @@ logger = logging.getLogger(__name__)
 
 T_NoteTypes = Literal["footnotes", "comments"]
 
-TT_NONE = "T0000"
-KEY_SOURCE = "0123456789bcdfghjklmnopqrstvwxyz"
+TT_NONE = "T0000"  # Default title key
+MAX_RETRY = 1000  # Key generator recursion limit
+KEY_SOURCE = "0123456789bcdfghjklmnpqrstvwxz"
 NOTE_TYPES: list[T_NoteTypes] = ["footnotes", "comments"]
 
 
@@ -974,12 +975,12 @@ class ItemIndex:
 
     def genNewNoteKey(self, tHandle: str, style: T_NoteTypes) -> str:
         """Set notes key for a given item."""
-        keys = set()
-        for item in self._items.values():
-            keys.update(item.noteKeys(style))
         if style in NOTE_TYPES and (item := self._items.get(tHandle)):
-            for _ in range(1000):
-                key = style[:1] + "".join([KEY_SOURCE[randint(0, 31)] for _ in range(4)])
+            keys = set()
+            for entry in self._items.values():
+                keys.update(entry.noteKeys(style))
+            for _ in range(MAX_RETRY):
+                key = style[:1] + "".join(random.choices(KEY_SOURCE, k=4))
                 if key not in keys:
                     item.addNoteKey(style, key)
                     return key
