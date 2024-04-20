@@ -137,8 +137,8 @@ cp $SRC_DIR/setup/macos/novelwriter.icns novelWriter.app/Contents/Resources/
 # Create entry script
 echo "Creating entry script ..."
 cat > novelWriter.app/Contents/MacOS/novelWriter << EOF
-DIR="\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )" && pwd )"
 #!/bin/bash
+DIR="\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )" && pwd )"
 \$DIR/../Resources/bin/python -sE \$DIR/../Resources/novelWriter/novelWriter.py \$@
 EOF
 
