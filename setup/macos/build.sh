@@ -9,6 +9,10 @@ PYTHON="$1"
 ARCH="$2"
 CONDA="$3"
 
+echo "Python Version: $PYTHON"
+echo "Architecture: $ARCH"
+echo "Miniconda Architecture: $CONDA"
+
 # Use RAM disk if possible
 if [ -d /dev/shm ]; then
     TEMP_BASE=/dev/shm
