@@ -1,5 +1,58 @@
 # novelWriter Changelog
 
+## Version 2.4 [2024-04-20]
+
+### Release Notes
+
+This release adds a new global search feature. The tool is still relatively basic, and will likely
+be extended in later releases.
+
+Among new text editing features is the ability to highlight text using `[m]text[/m]` shortcodes.
+The code `[m]` is for "mark", which is the equivalent code in HTML.
+
+A second feature added for text editing is the ability to add an alternatively formatted scene
+heading by adding a `!` to the markup, like for chapters and main titles. This allows to
+distinguish between two scene formatting styles, `### Title` and `###! Title`, which can for
+instance be used for soft and hard scene breaks.
+
+The **Manuscript Build** tool has also been extended with multiple new formatting options.
+
+See the website for complete [Release Notes](https://novelwriter.io/releases/release_2_4.html).
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed background colour on some widgets on the new Project Search tool. PR #1800.
+* Fixed a bug when using bold/italic/strike through toggle on an existing text selection in the
+  editor. Issue #1807. PR #1808.
+* An index out of bounds error in the word counter has been fixed. It could only be triggered by a
+  single line only containing a ">" character. Issues #1816 and #1825. PR #1817.
+* Fixed an issue where not all theme colours were completely reset before changing theme. PR #1820.
+* Shortcodes are no longer passed to the spell checker. PR #1823.
+
+**Improvements**
+
+* Made placeholder text for search read as "Search for" and "Replace with". PR #1799.
+* The initial count for adding chapter and scenes to new project in the Welcome dialog has been
+  changed to 0. The user must now select to add chapters and scenes. Issue #1811. PR #1815.
+
+**Documentation**
+
+* Updated the documentation for 2.4 features. PR #1818.
+
+**Internationalisation**
+
+* Norwegian and US English translations updated by Veronica Berglyd Olsen (@vkbo).
+  PRs #1799 and #1814.
+* Latin American Spanish translation updated by Tommy Marplatt (@tmarplatt). PR #1814.
+* Italian translation updated by Lou Cyper (loucyper1). PR #1814.
+* Japanese translation updated by @hebekeg. PR #1814.
+* French translation updated by Albert Aribaud (@aaribaud). PR #1821.
+* German translation updated by Myian (@HeyMyian). PR #1821.
+
+----
+
 ## Version 2.4 RC 1 [2024-04-06]
 
 ### Release Notes
