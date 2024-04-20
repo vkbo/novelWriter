@@ -9,7 +9,7 @@ jobs:
       - name: Python Setup
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           architecture: x64
 
       - name: Install Packages (apt)
@@ -42,13 +42,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11"]
+        python-version: ["3.12"]
         linux-tag: ["manylinux_2_24_x86_64", "manylinux_2_28_x86_64"]
     steps:
       - name: Python Setup
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           architecture: x64
 
       - name: Install Packages (pip)
@@ -74,7 +74,7 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  buildMac:
+  buildMac-AMD64:
     needs: buildAssets
     runs-on: macos-12
     steps:
@@ -88,12 +88,36 @@ jobs:
           path: novelwriter/assets
 
       - name: Build App Bundle
-        run: ./setup/macos/build.sh
+        run: ./setup/macos/build.sh amd64
 
       - name: Upload DMG
         uses: actions/upload-artifact@v4
         with:
-          name: MacOS-DMG
+          name: MacOS-AMD64-DMG
+          path: dist_macos
+          if-no-files-found: error
+          retention-days: 1
+
+  buildMac-M1:
+    needs: buildAssets
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: nw-assets
+          path: novelwriter/assets
+
+      - name: Build App Bundle
+        run: ./setup/macos/build.sh arm64
+
+      - name: Upload DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: MacOS-M1-DMG
           path: dist_macos
           if-no-files-found: error
           retention-days: 1

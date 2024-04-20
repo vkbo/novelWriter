@@ -1,5 +1,17 @@
 #! /bin/bash
 
+if [ -z "$1"]; then
+    ARCH="amd64"
+else
+    ARCH="$1"
+fi
+
+if [ $ARCH == "amd64 "]; then
+    CONDA="x86_64"
+else
+    CONDA="$ARCH"
+fi
+
 # Use RAM disk if possible
 if [ -d /dev/shm ]; then
     TEMP_BASE=/dev/shm
@@ -76,9 +88,9 @@ pushd "$BUILD_DIR"/ || exit 1
 # --- Create Miniconda Env ---------------------------------------------------------------------- #
 
 echo "Downloading Miniconda ..."
-curl -LO https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
-bash Miniconda3-latest-MacOSX-x86_64.sh -b -p ~/miniconda -f
-rm Miniconda3-latest-MacOSX-x86_64.sh 
+curl -LO https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-$CONDA.sh
+bash Miniconda3-latest-MacOSX-$CONDA.sh -b -p ~/miniconda -f
+rm Miniconda3-latest-MacOSX-$CONDA.sh 
 export PATH="$HOME/miniconda/bin:$PATH"
 
 echo "Creating Conda env ..."
@@ -123,7 +135,7 @@ cp $SRC_DIR/setup/macos/novelwriter.icns novelWriter.app/Contents/Resources/
 
 # Create entry script
 echo "Creating entry script ..."
-cat > novelWriter.app/Contents/MacOS/novelWriter <<\EOF
+cat > novelWriter.app/Contents/MacOS/novelWriter << EOF
 #!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 $DIR/../Resources/bin/python -sE $DIR/../Resources/novelWriter/novelWriter.py $@
@@ -173,8 +185,8 @@ brew install create-dmg
 create-dmg --volname "novelWriter $VERSION" --volicon $SRC_DIR/setup/macos/novelwriter.icns \
     --window-pos 200 120 --window-size 800 400 --icon-size 100 \
     --icon novelWriter.app 200 190 --hide-extension novelWriter.app \
-    --app-drop-link 600 185 $RLS_DIR/novelWriter-"${VERSION}"-amd64.dmg "$BUILD_DIR"/
+    --app-drop-link 600 185 $RLS_DIR/novelWriter-"${VERSION}"-$ARCH.dmg "$BUILD_DIR"/
 
 pushd $RLS_DIR || exit 1
-shasum -a 256 novelWriter-"${VERSION}"-amd64.dmg | tee novelWriter-"${VERSION}"-amd64.dmg.sha256
+shasum -a 256 novelWriter-"${VERSION}"-$ARCH.dmg | tee novelWriter-"${VERSION}"-$ARCH.dmg.sha256
 popd || exit 1
