@@ -75,7 +75,8 @@ jobs:
 
   buildMac-AMD64:
     needs: buildAssets
-    runs-on: macos-13
+    # Stay on macos-12 due to https://github.com/create-dmg/create-dmg/issues/143
+    runs-on: macos-12
     env:
       PYTHON_VERSION: "3.12"
       ARCHITECTURE: amd64
