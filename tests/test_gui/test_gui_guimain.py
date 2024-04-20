@@ -274,7 +274,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key_Return, delay=KEY_DELAY)
-    for c in "This is a file detailing the main plot.":
+    for c in "This is a file [i]detailing[/i] the main plot.":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key_Return, delay=KEY_DELAY)
 

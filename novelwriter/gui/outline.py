@@ -45,6 +45,7 @@ from novelwriter.enum import nwDocMode, nwItemClass, nwItemLayout, nwItemType, n
 from novelwriter.error import logException
 from novelwriter.common import checkInt, formatFileFilter, makeFileNameSafe
 from novelwriter.constants import nwHeaders, trConst, nwKeyWords, nwLabels
+from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.types import (
     QtAlignLeftTop, QtAlignRight, QtAlignRightTop, QtDecoration,
@@ -208,19 +209,18 @@ class GuiOutlineToolBar(QToolBar):
 
         logger.debug("Create: GuiOutlineToolBar")
 
-        iSz = SHARED.theme.baseIconSize
-        mPx = CONFIG.pxInt(12)
-
         self.setMovable(False)
-        self.setIconSize(iSz)
+        self.setIconSize(1.4*SHARED.theme.baseIconSize)
         self.setContentsMargins(0, 0, 0, 0)
 
         stretch = QWidget(self)
         stretch.setSizePolicy(QtSizeExpanding, QtSizeExpanding)
 
         # Novel Selector
-        self.novelLabel = QLabel(self.tr("Outline of"), self)
-        self.novelLabel.setContentsMargins(0, 0, mPx, 0)
+        self.novelLabel = NColourLabel(
+            self.tr("Outline of"), parent=self, scale=NColourLabel.HEADER_SCALE, bold=True
+        )
+        self.novelLabel.setContentsMargins(0, 0, CONFIG.pxInt(12), 0)
 
         self.novelValue = NovelSelector(self)
         self.novelValue.setIncludeAll(True)

@@ -54,7 +54,7 @@
       <name status="s000000" import="i000004">Plot</name>
     </item>
     <item handle="0000000000011" parent="0000000000009" root="0000000000009" order="0" type="FILE" class="PLOT" layout="NOTE">
-      <meta expanded="no" heading="H1" charCount="48" wordCount="10" paraCount="1" cursorPos="69" />
+      <meta expanded="no" heading="H1" charCount="48" wordCount="10" paraCount="1" cursorPos="76" />
       <name status="s000000" import="i000004" active="yes">New Note</name>
     </item>
     <item handle="000000000000a" parent="None" root="000000000000a" order="2" type="ROOT" class="CHARACTER">
