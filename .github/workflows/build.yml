@@ -48,7 +48,7 @@ jobs:
       - name: Python Setup
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.11"
           architecture: x64
 
       - name: Install Packages (pip)
@@ -76,7 +76,11 @@ jobs:
 
   buildMac-AMD64:
     needs: buildAssets
-    runs-on: macos-12
+    runs-on: macos-13
+    env:
+      PYTHON_VERSION: "3.12"
+      ARCHITECTURE: amd64
+      MINICONDA_ARCH: x86_64
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -88,7 +92,7 @@ jobs:
           path: novelwriter/assets
 
       - name: Build App Bundle
-        run: ./setup/macos/build.sh amd64
+        run: ./setup/macos/build.sh $PYTHON_VERSION $ARCHITECTURE $MINICONDA_ARCH
 
       - name: Upload DMG
         uses: actions/upload-artifact@v4
@@ -101,6 +105,10 @@ jobs:
   buildMac-M1:
     needs: buildAssets
     runs-on: macos-14
+    env:
+      PYTHON_VERSION: "3.12"
+      ARCHITECTURE: arm64
+      MINICONDA_ARCH: arm64
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -112,7 +120,7 @@ jobs:
           path: novelwriter/assets
 
       - name: Build App Bundle
-        run: ./setup/macos/build.sh arm64
+        run: ./setup/macos/build.sh $PYTHON_VERSION $ARCHITECTURE $MINICONDA_ARCH
 
       - name: Upload DMG
         uses: actions/upload-artifact@v4

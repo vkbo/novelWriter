@@ -1,15 +1,21 @@
 #! /bin/bash
 
 if [ -z "$1"]; then
-    ARCH="amd64"
+    PYTHON="3.11"
 else
-    ARCH="$1"
+    PYTHON="$1"
 fi
 
-if [ $ARCH == "amd64 "]; then
+if [ -z "$2"]; then
+    ARCH="amd64"
+else
+    ARCH="$2"
+fi
+
+if [ -z "$3"]; then
     CONDA="x86_64"
 else
-    CONDA="$ARCH"
+    CONDA="$3"
 fi
 
 # Use RAM disk if possible
@@ -94,7 +100,7 @@ rm Miniconda3-latest-MacOSX-$CONDA.sh
 export PATH="$HOME/miniconda/bin:$PATH"
 
 echo "Creating Conda env ..."
-conda create -n novelWriter -c conda-forge python=3.11 --yes
+conda create -n novelWriter -c conda-forge python=$PYTHON --yes
 source activate novelWriter
 
 echo "Installing dictionaries ..."
