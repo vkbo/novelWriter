@@ -4041,32 +4041,32 @@
   <context>
     <name>_DetailsWidget</name>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="529" />
+      <location filename="../novelwriter/tools/manuscript.py" line="522" />
       <source>Setting</source>
       <translation>Opciones</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="529" />
+      <location filename="../novelwriter/tools/manuscript.py" line="522" />
       <source>Value</source>
       <translation>Valores Definidos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="596" />
+      <location filename="../novelwriter/tools/manuscript.py" line="589" />
       <source>Name</source>
       <translation>Nombre</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="602" />
+      <location filename="../novelwriter/tools/manuscript.py" line="595" />
       <source>Selection</source>
       <translation>Selecciones</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="618" />
+      <location filename="../novelwriter/tools/manuscript.py" line="611" />
       <source>Title</source>
       <translation>Título</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="619" />
+      <location filename="../novelwriter/tools/manuscript.py" line="612" />
       <source>Hidden</source>
       <translation>Oculto</translation>
     </message>
@@ -4329,17 +4329,17 @@
       <translation>Escoger la Carpeta del Proyecto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="796" />
+      <location filename="../novelwriter/tools/welcome.py" line="795" />
       <source>Fresh Project</source>
       <translation>Proyecto vacío</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="798" />
+      <location filename="../novelwriter/tools/welcome.py" line="797" />
       <source>Example Project</source>
       <translation>Ejemplo de Proyecto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="800" />
+      <location filename="../novelwriter/tools/welcome.py" line="799" />
       <source>Template: {0}</source>
       <translation>Plantilla: {0}</translation>
     </message>
@@ -4438,27 +4438,27 @@
   <context>
     <name>_PreviewWidget</name>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="764" />
+      <location filename="../novelwriter/tools/manuscript.py" line="757" />
       <source>Press the "Preview" button to generate ...</source>
       <translation>Pulse el botón "Vista Previa" para así generarla...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="862" />
+      <location filename="../novelwriter/tools/manuscript.py" line="855" />
       <source>Processing ...</source>
       <translation>Procesando...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="884" />
+      <location filename="../novelwriter/tools/manuscript.py" line="877" />
       <source>Done</source>
       <translation>Hecho</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="934" />
+      <location filename="../novelwriter/tools/manuscript.py" line="927" />
       <source>Unknown</source>
       <translation>Desconocido</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="935" />
+      <location filename="../novelwriter/tools/manuscript.py" line="928" />
       <source>Built</source>
       <translation>Compilado</translation>
     </message>
@@ -4522,13 +4522,13 @@
       <translation>Autores</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="266" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="268" />
       <location filename="../novelwriter/dialogs/projectsettings.py" line="255" />
       <source>Only used when building the manuscript.</source>
       <translation>Se utiliza solo al compilar el manuscrito.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="265" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="267" />
       <source>Project language</source>
       <translation>Idioma del proyecto</translation>
     </message>
@@ -4557,59 +4557,59 @@
   <context>
     <name>_StatsWidget</name>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1097" />
-      <location filename="../novelwriter/tools/manuscript.py" line="1057" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1090" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1050" />
       <source>Words</source>
       <translation>Palabras</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1124" />
-      <location filename="../novelwriter/tools/manuscript.py" line="1060" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1117" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1053" />
       <source>Characters</source>
       <translation>Caracteres</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1098" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1091" />
       <source>Words in Headings</source>
       <translation>Palabras en Titulos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1099" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1092" />
       <source>Words in Text</source>
       <translation>Palabras en el Texto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1101" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1094" />
       <source>Headings</source>
       <translation>Títulos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1102" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1095" />
       <source>Paragraphs</source>
       <translation>Párrafos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1125" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1118" />
       <source>Characters in Headings</source>
       <translation>Caracteres en los Títulos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1126" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1119" />
       <source>Characters in Text</source>
       <translation>Caracteres en el Texto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1127" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1120" />
       <source>Characters, No Spaces</source>
       <translation>Caracteres, Sin Espacios</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1128" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1121" />
       <source>Characters in Headings, No Spaces</source>
       <translation>Caracteres en los Títulos, Sin Espacios</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1129" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1122" />
       <source>Characters in Text, No Spaces</source>
       <translation>Caracteres en el Texto, Sin Espacios</translation>
     </message>
