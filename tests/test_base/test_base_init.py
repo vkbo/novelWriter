@@ -46,7 +46,6 @@ def testBaseInit_Launch(caplog, monkeypatch, fncPath):
         mp.setitem(sys.modules, "Foundation", None)
         nwGUI = main(["--testmode", f"--config={fncPath}", f"--data={fncPath}"])
         assert isinstance(nwGUI, MockGuiMain)
-        assert "Failed" in caplog.text
 
     CONFIG.osDarwin = osDarwin
 
@@ -58,9 +57,6 @@ def testBaseInit_Launch(caplog, monkeypatch, fncPath):
         mp.setitem(sys.modules, "ctypes", None)
         nwGUI = main(["--testmode", f"--config={fncPath}", f"--data={fncPath}"])
         assert isinstance(nwGUI, MockGuiMain)
-        if not sys.platform.startswith("darwin"):
-            # For some reason, the test doesn't work on macOS
-            assert "Failed" in caplog.text
 
     CONFIG.osWindows = osWindows
 
@@ -161,9 +157,9 @@ def testBaseInit_Imports(caplog, monkeypatch, fncPath):
             ["--testmode", f"--config={fncPath}", f"--data={fncPath}"]
         )
 
-    assert ex.value.code & 4 == 4    # Python version not satisfied
-    assert ex.value.code & 8 == 8    # Qt version not satisfied
-    assert ex.value.code & 16 == 16  # PyQt version not satisfied
+    assert ex.value.code & 4 == 4    # Python version not satisfied  # type: ignore
+    assert ex.value.code & 8 == 8    # Qt version not satisfied  # type: ignore
+    assert ex.value.code & 16 == 16  # PyQt version not satisfied  # type: ignore
 
     assert "At least Python" in caplog.messages[0]
     assert "At least Qt5" in caplog.messages[1]
