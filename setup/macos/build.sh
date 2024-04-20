@@ -123,7 +123,7 @@ cp $SRC_DIR/setup/macos/novelwriter.icns novelWriter.app/Contents/Resources/
 
 # Create entry script
 echo "Creating entry script ..."
-cat > novelWriter.app/Contents/MacOS/novelWriter <<\EOF
+cat > novelWriter.app/Contents/MacOS/novelWriter << EOF
 #!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 $DIR/../Resources/bin/python -sE $DIR/../Resources/novelWriter/novelWriter.py $@
@@ -173,8 +173,8 @@ brew install create-dmg
 create-dmg --volname "novelWriter $VERSION" --volicon $SRC_DIR/setup/macos/novelwriter.icns \
     --window-pos 200 120 --window-size 800 400 --icon-size 100 \
     --icon novelWriter.app 200 190 --hide-extension novelWriter.app \
-    --app-drop-link 600 185 $RLS_DIR/novelWriter-"${VERSION}".dmg "$BUILD_DIR"/
+    --app-drop-link 600 185 $RLS_DIR/novelWriter-"${VERSION}"-amd64.dmg "$BUILD_DIR"/
 
 pushd $RLS_DIR || exit 1
-shasum -a 256 novelWriter-"${VERSION}".dmg | tee novelWriter-"${VERSION}".dmg.sha256
+shasum -a 256 novelWriter-"${VERSION}"-amd64.dmg | tee novelWriter-"${VERSION}"-amd64.dmg.sha256
 popd || exit 1
