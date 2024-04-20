@@ -35,7 +35,7 @@ jobs:
             novelwriter/assets/manual.pdf
             novelwriter/assets/i18n/*.qm
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 14
 
   buildLinux:
     needs: buildAssets
@@ -72,7 +72,7 @@ jobs:
           name: AppImage-${{ matrix.python-version }}-${{ matrix.linux-tag }}
           path: dist_appimage
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 14
 
   buildMac-AMD64:
     needs: buildAssets
@@ -96,7 +96,7 @@ jobs:
           name: MacOS-AMD64-DMG
           path: dist_macos
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 14
 
   buildMac-M1:
     needs: buildAssets
@@ -120,4 +120,4 @@ jobs:
           name: MacOS-M1-DMG
           path: dist_macos
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 14
