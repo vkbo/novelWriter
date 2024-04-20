@@ -40,10 +40,9 @@ jobs:
   buildLinux:
     needs: buildAssets
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.12"]
-        linux-tag: ["manylinux_2_24_x86_64", "manylinux_2_28_x86_64"]
+    env:
+      PYTHON_VERSION: "3.12"
+      LINUX_TAG: "manylinux_2_28_x86_64"
     steps:
       - name: Python Setup
         uses: actions/setup-python@v5
@@ -64,12 +63,12 @@ jobs:
           path: novelwriter/assets
 
       - name: Build AppImage
-        run: python pkgutils.py build-appimage --linux-tag ${{ matrix.linux-tag }} --python-version ${{ matrix.python-version }}
+        run: python pkgutils.py build-appimage --linux-tag $LINUX_TAG --python-version $PYTHON_VERSION
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: AppImage-${{ matrix.python-version }}-${{ matrix.linux-tag }}
+          name: AppImage-$LINUX_TAG-$PYTHON_VERSION
           path: dist_appimage
           if-no-files-found: error
           retention-days: 14

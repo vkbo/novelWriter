@@ -1073,15 +1073,8 @@ def makeAppImage(sysArgs: list[str]) -> list[str]:
         print("")
         sys.exit(1)
 
-    linuxLabel = ""
-    if not linuxTag.startswith("manylinux_2_28"):
-        linuxLabel = "-oldlinux"
-        if not linuxTag.endswith("x86_64"):
-            # manylinux_2_28 only comes in 64 bit, so this one only applies to older images
-            linuxLabel += "-32bit"
-
     bldFile = glob.glob(f"{bldDir}/*.AppImage")[0]
-    outFile = f"{bldDir}/novelWriter-{pkgVers}{linuxLabel}.AppImage"
+    outFile = f"{bldDir}/novelWriter-{pkgVers}.AppImage"
     os.rename(bldFile, outFile)
     shaFile = makeCheckSum(os.path.basename(outFile), cwd=bldDir)
 
