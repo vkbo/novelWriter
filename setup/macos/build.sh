@@ -1,18 +1,18 @@
 #! /bin/bash
 
-if [ -z "$1"]; then
+if [ -z "$1" ]; then
     PYTHON="3.11"
 else
     PYTHON="$1"
 fi
 
-if [ -z "$2"]; then
+if [ -z "$2" ]; then
     ARCH="amd64"
 else
     ARCH="$2"
 fi
 
-if [ -z "$3"]; then
+if [ -z "$3" ]; then
     CONDA="x86_64"
 else
     CONDA="$3"
