@@ -32,7 +32,7 @@ from typing import TYPE_CHECKING
 from PyQt5.QtWidgets import QApplication, QErrorMessage
 
 from novelwriter.config import Config
-from novelwriter.error import exceptionHandler, logException
+from novelwriter.error import exceptionHandler
 from novelwriter.shared import SharedData
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -48,7 +48,7 @@ __author__     = "Veronica Berglyd Olsen"
 __maintainer__ = "Veronica Berglyd Olsen"
 __email__      = "code@vkbo.net"
 __version__    = "2.5a2"
-__hexversion__ = "0x020500a1"
+__hexversion__ = "0x020500a2"
 __date__       = "2024-04-16"
 __status__     = "Stable"
 __domain__     = "novelwriter.io"
@@ -198,24 +198,21 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     # Finish initialising config
     CONFIG.initConfig(confPath, dataPath)
 
-    if CONFIG.osDarwin:
+    if sys.platform == "darwin":
         try:
             from Foundation import NSBundle  # type: ignore
             bundle = NSBundle.mainBundle()
             info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
             info["CFBundleName"] = "novelWriter"
         except Exception:
-            logger.error("Failed to set application name")
-            logException()
-
-    elif CONFIG.osWindows:
+            pass  # Quietly ignore error
+    elif sys.platform == "win32":
         try:
             import ctypes
             appID = f"io.novelwriter.{__version__}"
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appID)  # type: ignore
         except Exception:
-            logger.error("Failed to set application name")
-            logException()
+            pass  # Quietly ignore error
 
     # Import GUI (after dependency checks), and launch
     from novelwriter.guimain import GuiMain
