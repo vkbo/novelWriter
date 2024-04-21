@@ -1,5 +1,18 @@
 #! /bin/bash
 
+if [[ -z "$1" || -z "$2" || -z "$3" ]]; then
+    echo "Not enouch input arguments"
+    exit 1
+fi
+
+PYTHON="$1"
+ARCH="$2"
+CONDA="$3"
+
+echo "Python Version: $PYTHON"
+echo "Architecture: $ARCH"
+echo "Miniconda Architecture: $CONDA"
+
 # Use RAM disk if possible
 if [ -d /dev/shm ]; then
     TEMP_BASE=/dev/shm
@@ -76,13 +89,13 @@ pushd "$BUILD_DIR"/ || exit 1
 # --- Create Miniconda Env ---------------------------------------------------------------------- #
 
 echo "Downloading Miniconda ..."
-curl -LO https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
-bash Miniconda3-latest-MacOSX-x86_64.sh -b -p ~/miniconda -f
-rm Miniconda3-latest-MacOSX-x86_64.sh 
+curl -LO https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-$CONDA.sh
+bash Miniconda3-latest-MacOSX-$CONDA.sh -b -p ~/miniconda -f
+rm Miniconda3-latest-MacOSX-$CONDA.sh 
 export PATH="$HOME/miniconda/bin:$PATH"
 
 echo "Creating Conda env ..."
-conda create -n novelWriter -c conda-forge python=3.11 --yes
+conda create -n novelWriter -c conda-forge python=$PYTHON --yes
 source activate novelWriter
 
 echo "Installing dictionaries ..."
@@ -125,8 +138,8 @@ cp $SRC_DIR/setup/macos/novelwriter.icns novelWriter.app/Contents/Resources/
 echo "Creating entry script ..."
 cat > novelWriter.app/Contents/MacOS/novelWriter << EOF
 #!/bin/bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-$DIR/../Resources/bin/python -sE $DIR/../Resources/novelWriter/novelWriter.py $@
+DIR="\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )" && pwd )"
+\$DIR/../Resources/bin/python -sE \$DIR/../Resources/novelWriter/novelWriter.py \$@
 EOF
 
 # Make it executable
@@ -173,8 +186,8 @@ brew install create-dmg
 create-dmg --volname "novelWriter $VERSION" --volicon $SRC_DIR/setup/macos/novelwriter.icns \
     --window-pos 200 120 --window-size 800 400 --icon-size 100 \
     --icon novelWriter.app 200 190 --hide-extension novelWriter.app \
-    --app-drop-link 600 185 $RLS_DIR/novelWriter-"${VERSION}"-amd64.dmg "$BUILD_DIR"/
+    --app-drop-link 600 185 $RLS_DIR/novelWriter-"${VERSION}"-$ARCH.dmg "$BUILD_DIR"/
 
 pushd $RLS_DIR || exit 1
-shasum -a 256 novelWriter-"${VERSION}"-amd64.dmg | tee novelWriter-"${VERSION}"-amd64.dmg.sha256
+shasum -a 256 novelWriter-"${VERSION}"-$ARCH.dmg | tee novelWriter-"${VERSION}"-$ARCH.dmg.sha256
 popd || exit 1
