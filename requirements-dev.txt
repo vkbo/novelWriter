@@ -1,3 +1,4 @@
 flake8
 flake8-pep585
+flake8-pyproject
 flake8-annotations
