@@ -21,7 +21,7 @@
       <style:text-properties style:font-name="Liberation Serif" fo:font-family="'Liberation Serif'" fo:font-size="12pt" />
     </style:style>
     <style:style style:name="First_20_line_20_indent" style:family="paragraph" style:display-name="First line indent" style:parent-style-name="Text_20_body" style:class="text">
-      <style:paragraph-properties fo:text-indent="0.499cm" />
+      <style:paragraph-properties fo:text-indent="0.593cm" />
     </style:style>
     <style:style style:name="Text_20_Meta" style:family="paragraph" style:display-name="Text Meta" style:parent-style-name="Standard" style:class="text">
       <style:paragraph-properties fo:margin-top="0.000cm" fo:margin-bottom="0.247cm" fo:line-height="115%" />
@@ -54,10 +54,14 @@
     <style:style style:name="Header" style:family="paragraph" style:display-name="Header" style:parent-style-name="Header_20_and_20_Footer">
       <style:paragraph-properties fo:text-align="right" />
     </style:style>
+    <style:style style:name="Footnote" style:family="paragraph" style:display-name="Footnote" style:parent-style-name="Standard" style:class="extra">
+      <style:paragraph-properties fo:margin-bottom="0.198cm" fo:margin-left="0.600cm" fo:text-indent="-0.600cm" />
+      <style:text-properties fo:font-size="10pt" />
+    </style:style>
   </office:styles>
   <office:automatic-styles>
     <style:page-layout style:name="PM1">
-      <style:page-layout-properties fo:page-width="21.0cm" fo:page-height="29.7cm" fo:margin-top="2.000cm" fo:margin-bottom="2.000cm" fo:margin-left="2.000cm" fo:margin-right="2.000cm" fo:print-orientation="portrait" />
+      <style:page-layout-properties fo:page-width="21.0cm" fo:page-height="29.7cm" fo:margin-top="2.000cm" fo:margin-bottom="2.000cm" fo:margin-left="2.000cm" fo:margin-right="2.000cm" />
       <style:header-style>
         <style:header-footer-properties fo:min-height="0.600cm" fo:margin-left="0.000cm" fo:margin-right="0.000cm" fo:margin-bottom="0.500cm" />
       </style:header-style>

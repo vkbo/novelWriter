@@ -20,18 +20,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import pytest
-import zipfile
 import xml.etree.ElementTree as ET
+import zipfile
 
 from shutil import copyfile
 
-from tools import ODT_IGNORE, cmpFiles
+import pytest
 
 from novelwriter.common import xmlIndent
 from novelwriter.constants import nwHeadFmt
-from novelwriter.core.toodt import ToOdt, ODTParagraphStyle, ODTTextStyle, XMLParagraph, _mkTag
 from novelwriter.core.project import NWProject
+from novelwriter.core.toodt import ODTParagraphStyle, ODTTextStyle, ToOdt, XMLParagraph, _mkTag
+
+from tests.tools import ODT_IGNORE, cmpFiles
 
 XML_NS = [
     ' xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"',
@@ -132,7 +133,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
 
     assert list(odt._mainPara.keys()) == [
         "Text_20_body", "First_20_line_20_indent", "Text_20_Meta", "Title", "Separator",
-        "Heading_20_1", "Heading_20_2", "Heading_20_3", "Heading_20_4", "Header",
+        "Heading_20_1", "Heading_20_2", "Heading_20_3", "Heading_20_4", "Header", "Footnote",
     ]
 
     key = "55db6c1d22ff5aba93f0f67c8d4a857a26e2d3813dfbcba1ef7c0d424f501be5"
@@ -145,51 +146,51 @@ def testCoreToOdt_TextFormatting(mockGUI):
     oStyle = ODTParagraphStyle("test")
 
     # No Text
-    odt.initDocument()
-    odt._addTextPar("Standard", oStyle, "")
-    assert xmlToText(odt._xText) == (
+    xTest = ET.Element(_mkTag("office", "text"))
+    odt._addTextPar(xTest, "Standard", oStyle, "")
+    assert xmlToText(xTest) == (
         '<office:text>'
         '<text:p text:style-name="Standard" />'
         '</office:text>'
     )
 
     # No Format
-    odt.initDocument()
-    odt._addTextPar("Standard", oStyle, "Hello World")
+    xTest = ET.Element(_mkTag("office", "text"))
+    odt._addTextPar(xTest, "Standard", oStyle, "Hello World")
     assert odt.errData == []
-    assert xmlToText(odt._xText) == (
+    assert xmlToText(xTest) == (
         '<office:text>'
         '<text:p text:style-name="Standard">Hello World</text:p>'
         '</office:text>'
     )
 
     # Heading Level None
-    odt.initDocument()
-    odt._addTextPar("Standard", oStyle, "Hello World", isHead=True)
+    xTest = ET.Element(_mkTag("office", "text"))
+    odt._addTextPar(xTest, "Standard", oStyle, "Hello World", isHead=True)
     assert odt.errData == []
-    assert xmlToText(odt._xText) == (
+    assert xmlToText(xTest) == (
         '<office:text>'
         '<text:h text:style-name="Standard">Hello World</text:h>'
         '</office:text>'
     )
 
     # Heading Level 1
-    odt.initDocument()
-    odt._addTextPar("Standard", oStyle, "Hello World", isHead=True, oLevel="1")
+    xTest = ET.Element(_mkTag("office", "text"))
+    odt._addTextPar(xTest, "Standard", oStyle, "Hello World", isHead=True, oLevel="1")
     assert odt.errData == []
-    assert xmlToText(odt._xText) == (
+    assert xmlToText(xTest) == (
         '<office:text>'
         '<text:h text:style-name="Standard" text:outline-level="1">Hello World</text:h>'
         '</office:text>'
     )
 
     # Formatted Text
-    odt.initDocument()
     text = "A bold word"
-    fmt = [(2, odt.FMT_B_B), (6, odt.FMT_B_E)]
-    odt._addTextPar("Standard", oStyle, text, tFmt=fmt)
+    fmt = [(2, odt.FMT_B_B, ""), (6, odt.FMT_B_E, "")]
+    xTest = ET.Element(_mkTag("office", "text"))
+    odt._addTextPar(xTest, "Standard", oStyle, text, tFmt=fmt)
     assert odt.errData == []
-    assert xmlToText(odt._xText) == (
+    assert xmlToText(xTest) == (
         '<office:text>'
         '<text:p text:style-name="Standard">A <text:span text:style-name="T1">bold</text:span> '
         'word</text:p>'
@@ -197,25 +198,26 @@ def testCoreToOdt_TextFormatting(mockGUI):
     )
 
     # Incorrectly Formatted Text
-    odt.initDocument()
     text = "A few words"
-    fmt = [(2, odt.FMT_B_B), (5, odt.FMT_B_E), (7, 99999)]
-    odt._addTextPar("Standard", oStyle, text, tFmt=fmt)
+    fmt = [(2, odt.FMT_B_B, ""), (5, odt.FMT_B_E, ""), (7, 99999, "")]
+    xTest = ET.Element(_mkTag("office", "text"))
+    odt._addTextPar(xTest, "Standard", oStyle, text, tFmt=fmt)
     assert odt.errData == ["Unknown format tag encountered"]
-    assert xmlToText(odt._xText) == (
+    assert xmlToText(xTest) == (
         '<office:text>'
         '<text:p text:style-name="Standard">A <text:span text:style-name="T1">few</text:span> '
         'words</text:p>'
         '</office:text>'
     )
+    odt._errData = []
 
     # Unclosed format
-    odt.initDocument()
     text = "A bold word"
-    fmt = [(2, odt.FMT_B_B)]
-    odt._addTextPar("Standard", oStyle, text, tFmt=fmt)
+    fmt = [(2, odt.FMT_B_B, "")]
+    xTest = ET.Element(_mkTag("office", "text"))
+    odt._addTextPar(xTest, "Standard", oStyle, text, tFmt=fmt)
     assert odt.errData == []
-    assert xmlToText(odt._xText) == (
+    assert xmlToText(xTest) == (
         '<office:text>'
         '<text:p text:style-name="Standard">A '
         '<text:span text:style-name="T1">bold word</text:span></text:p>'
@@ -223,12 +225,12 @@ def testCoreToOdt_TextFormatting(mockGUI):
     )
 
     # Tabs and Breaks
-    odt.initDocument()
     text = "Hello\n\tWorld"
     fmt = []
-    odt._addTextPar("Standard", oStyle, text, tFmt=fmt)
+    xTest = ET.Element(_mkTag("office", "text"))
+    odt._addTextPar(xTest, "Standard", oStyle, text, tFmt=fmt)
     assert odt.errData == []
-    assert xmlToText(odt._xText) == (
+    assert xmlToText(xTest) == (
         '<office:text>'
         '<text:p text:style-name="Standard">Hello<text:line-break /><text:tab />World</text:p>'
         '</office:text>'
@@ -835,22 +837,28 @@ def testCoreToOdt_Format(mockGUI):
     project = NWProject()
     odt = ToOdt(project, isFlat=True)
 
-    assert odt._formatSynopsis("synopsis text", True) == (
-        "Synopsis: synopsis text", [(0, ToOdt.FMT_B_B), (9, ToOdt.FMT_B_E)]
+    assert odt._formatSynopsis("synopsis text", [(9, ToOdt.FMT_STRIP, "")], True) == (
+        "Synopsis: synopsis text", [
+            (0, ToOdt.FMT_B_B, ""), (9, ToOdt.FMT_B_E, ""), (19, ToOdt.FMT_STRIP, "")
+        ]
     )
-    assert odt._formatSynopsis("short text", False) == (
-        "Short Description: short text", [(0, ToOdt.FMT_B_B), (18, ToOdt.FMT_B_E)]
+    assert odt._formatSynopsis("short text", [(6, ToOdt.FMT_STRIP, "")], False) == (
+        "Short Description: short text", [
+            (0, ToOdt.FMT_B_B, ""), (18, ToOdt.FMT_B_E, ""), (25, ToOdt.FMT_STRIP, "")
+        ]
     )
-    assert odt._formatComments("comment text") == (
-        "Comment: comment text", [(0, ToOdt.FMT_B_B), (8, ToOdt.FMT_B_E)]
+    assert odt._formatComments("comment text", [(8, ToOdt.FMT_STRIP, "")]) == (
+        "Comment: comment text", [
+            (0, ToOdt.FMT_B_B, ""), (8, ToOdt.FMT_B_E, ""), (17, ToOdt.FMT_STRIP, "")
+        ]
     )
 
     assert odt._formatKeywords("") == ("", [])
     assert odt._formatKeywords("tag: Jane") == (
-        "Tag: Jane", [(0, ToOdt.FMT_B_B), (4, ToOdt.FMT_B_E)]
+        "Tag: Jane", [(0, ToOdt.FMT_B_B, ""), (4, ToOdt.FMT_B_E, "")]
     )
     assert odt._formatKeywords("char: Bod, Jane") == (
-        "Characters: Bod, Jane", [(0, ToOdt.FMT_B_B), (11, ToOdt.FMT_B_E)]
+        "Characters: Bod, Jane", [(0, ToOdt.FMT_B_B, ""), (11, ToOdt.FMT_B_E, "")]
     )
 
 # END Test testCoreToOdt_Format
