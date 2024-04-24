@@ -21,14 +21,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import json
+
 import pytest
 
-from tools import C, buildTestProject, readFile
-
 from novelwriter.constants import nwHeadFmt
-from novelwriter.core.tomd import ToMarkdown
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import HeadingFormatter, Tokenizer, stripEscape
+from novelwriter.core.tomd import ToMarkdown
+
+from tests.tools import C, buildTestProject, readFile
 
 
 class BareTokenizer(Tokenizer):
@@ -2137,7 +2138,7 @@ def testCoreToken_CounterHandling(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_HeadingFormatter(fncPath, mockRnd):
+def testCoreToken_HeadingFormatter(fncPath, mockGUI, mockRnd):
     """Check the HeadingFormatter class."""
     project = NWProject()
     project.setProjectLang("en_GB")

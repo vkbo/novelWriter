@@ -20,16 +20,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import uuid
-import pytest
 import shutil
+import uuid
 
-from shutil import copyfile
 from pathlib import Path
+from shutil import copyfile
 from zipfile import ZipFile
 
-from tools import C, NWD_IGNORE, buildTestProject, cmpFiles, XML_IGNORE
-from mocked import causeOSError
+import pytest
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwConst, nwFiles, nwItemClass
@@ -37,6 +35,9 @@ from novelwriter.core.coretools import (
     DocDuplicator, DocMerger, DocSearch, DocSplitter, ProjectBuilder
 )
 from novelwriter.core.project import NWProject
+
+from tests.mocked import causeOSError
+from tests.tools import NWD_IGNORE, XML_IGNORE, C, buildTestProject, cmpFiles
 
 
 @pytest.mark.core
@@ -512,7 +513,7 @@ def testCoreTools_ProjectBuilderWrapper(monkeypatch, caplog, fncPath, mockGUI):
 
 
 @pytest.mark.core
-def testCoreTools_ProjectBuilderA(monkeypatch, fncPath, tstPaths, mockRnd):
+def testCoreTools_ProjectBuilderA(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
     """Create a new project from a project dictionary, with chapters."""
     monkeypatch.setattr("uuid.uuid4", lambda *a: uuid.UUID("d0f3fe10-c6e6-4310-8bfd-181eb4224eed"))
 
@@ -547,7 +548,7 @@ def testCoreTools_ProjectBuilderA(monkeypatch, fncPath, tstPaths, mockRnd):
 
 
 @pytest.mark.core
-def testCoreTools_ProjectBuilderB(monkeypatch, fncPath, tstPaths, mockRnd):
+def testCoreTools_ProjectBuilderB(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
     """Create a new project from a project dictionary, without chapters."""
     monkeypatch.setattr("uuid.uuid4", lambda *a: uuid.UUID("d0f3fe10-c6e6-4310-8bfd-181eb4224eed"))
 
