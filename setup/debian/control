@@ -2,14 +2,14 @@ Source: novelwriter
 Maintainer: Veronica Berglyd Olsen <code@vkbo.net>
 Section: text
 Priority: optional
-Build-Depends: dh-python, python3-setuptools, python3-all, debhelper (>= 9), python3 (>=3.8), python3-pyqt5 (>= 5.15), python3-enchant (>= 2.0)
+Build-Depends: dh-python, python3-setuptools, python3-all, debhelper (>= 9), python3 (>=3.9), python3-pyqt5 (>= 5.15), python3-enchant (>= 2.0)
 Standards-Version: 4.5.1
 Homepage: https://novelwriter.io
-X-Python3-Version: >= 3.8
+X-Python3-Version: >= 3.9
 
 Package: novelwriter
 Architecture: all
-Depends: ${misc:Depends}, ${python3:Depends}, python3 (>=3.8), python3-pyqt5 (>= 5.15), python3-enchant (>= 2.0)
+Depends: ${misc:Depends}, ${python3:Depends}, python3 (>=3.9), python3-pyqt5 (>= 5.15), python3-enchant (>= 2.0)
 Description: A markdown-like text editor for planning and writing novels
  novelWriter is a plain text editor designed for writing novels assembled from
  many smaller text documents. It uses a minimal formatting syntax inspired by
