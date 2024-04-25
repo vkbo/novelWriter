@@ -21,19 +21,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import json
-import pytest
 
 from shutil import copyfile
 
-from tools import C, buildTestProject, cmpFiles, writeFile
+import pytest
+
 from mocked import causeException
+from tools import C, buildTestProject, cmpFiles, writeFile
 
 from novelwriter import SHARED
-from novelwriter.enum import nwComment, nwItemClass, nwItemLayout
 from novelwriter.constants import nwFiles
-from novelwriter.core.item import NWItem
 from novelwriter.core.index import IndexItem, NWIndex, TagsIndex, processComment
+from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
+from novelwriter.enum import nwComment, nwItemClass, nwItemLayout
 
 
 @pytest.mark.core
@@ -127,13 +128,7 @@ def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, mockGUI, tstPaths):
     assert index.indexBroken is True
 
     # Write an index file that passes loading, but is still empty
-    writeFile(projFile, (
-        '{'
-        '"novelWriter.tagsIndex": {}, '
-        '"novelWriter.itemIndex": {}, '
-        '"novelWriter.textIndex": {}'
-        '}'
-    ))
+    writeFile(projFile, ('{"novelWriter.tagsIndex": {}, "novelWriter.itemIndex": {}}'))
     assert index.loadIndex() is True
     assert index.indexBroken is False
 
