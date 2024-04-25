@@ -24,8 +24,8 @@ import pytest
 
 from tools import readFile
 
-from novelwriter.core.tohtml import ToHtml
 from novelwriter.core.project import NWProject
+from novelwriter.core.tohtml import ToHtml
 
 
 @pytest.mark.core
@@ -453,7 +453,7 @@ def testCoreToHtml_SpecialCases(mockGUI):
     html.doConvert()
     assert html.result == (
         "<p class='comment'>"
-        "<strong>Comment:</strong> Test &gt; text _&lt;**bold**&gt;_ and more."
+        "<strong>Comment:</strong> Test &gt; text <em>&lt;<strong>bold</strong>&gt;</em> and more."
         "</p>\n"
     )
 
