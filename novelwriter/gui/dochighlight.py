@@ -28,26 +28,27 @@ import logging
 
 from time import time
 
-from PyQt5.QtCore import Qt, QRegularExpression
+from PyQt5.QtCore import QRegularExpression, Qt
 from PyQt5.QtGui import (
     QBrush, QColor, QFont, QSyntaxHighlighter, QTextBlockUserData,
     QTextCharFormat, QTextDocument
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwComment
 from novelwriter.common import checkInt
 from novelwriter.constants import nwRegEx, nwUnicode
 from novelwriter.core.index import processComment
+from novelwriter.enum import nwComment
+from novelwriter.types import QRegExUnicode
 
 logger = logging.getLogger(__name__)
 
 SPELLRX = QRegularExpression(r"\b[^\s\-\+\/–—\[\]:]+\b")
-SPELLRX.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
+SPELLRX.setPatternOptions(QRegExUnicode)
 SPELLSC = QRegularExpression(nwRegEx.FMT_SC)
-SPELLSC.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
+SPELLSC.setPatternOptions(QRegExUnicode)
 SPELLSV = QRegularExpression(nwRegEx.FMT_SV)
-SPELLSV.setPatternOptions(QRegularExpression.UseUnicodePropertiesOption)
+SPELLSV.setPatternOptions(QRegExUnicode)
 
 BLOCK_NONE  = 0
 BLOCK_TEXT  = 1
@@ -124,12 +125,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._spellErr.setUnderlineColor(SHARED.theme.colSpell)
         self._spellErr.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
 
-        QtUnicode = QRegularExpression.PatternOption.UseUnicodePropertiesOption
-
         # Multiple or Trailing Spaces
         if CONFIG.showMultiSpaces:
             rxRule = QRegularExpression(r"[ ]{2,}|[ ]*$")
-            rxRule.setPatternOptions(QtUnicode)
+            rxRule.setPatternOptions(QRegExUnicode)
             hlRule = {
                 0: self._hStyles["mspaces"],
             }
@@ -138,7 +137,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Non-Breaking Spaces
         rxRule = QRegularExpression(f"[{nwUnicode.U_NBSP}{nwUnicode.U_THNBSP}]+")
-        rxRule.setPatternOptions(QtUnicode)
+        rxRule.setPatternOptions(QRegExUnicode)
         hlRule = {
             0: self._hStyles["nobreak"],
         }
@@ -154,7 +153,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
             # Straight Quotes
             rxRule = QRegularExpression(r'(\B")(.*?)("\B)')
-            rxRule.setPatternOptions(QtUnicode)
+            rxRule.setPatternOptions(QRegExUnicode)
             hlRule = {
                 0: self._hStyles["dialog1"],
             }
@@ -163,7 +162,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             # Double Quotes
             dblEnd = "|$" if CONFIG.allowOpenDQuote else ""
             rxRule = QRegularExpression(f"(\\B{fmtDblO})(.*?)({fmtDblC}\\B{dblEnd})")
-            rxRule.setPatternOptions(QtUnicode)
+            rxRule.setPatternOptions(QRegExUnicode)
             hlRule = {
                 0: self._hStyles["dialog2"],
             }
@@ -172,7 +171,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             # Single Quotes
             sngEnd = "|$" if CONFIG.allowOpenSQuote else ""
             rxRule = QRegularExpression(f"(\\B{fmtSngO})(.*?)({fmtSngC}\\B{sngEnd})")
-            rxRule.setPatternOptions(QtUnicode)
+            rxRule.setPatternOptions(QRegExUnicode)
             hlRule = {
                 0: self._hStyles["dialog3"],
             }
@@ -180,7 +179,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Markdown Italic
         rxRule = QRegularExpression(nwRegEx.FMT_EI)
-        rxRule.setPatternOptions(QtUnicode)
+        rxRule.setPatternOptions(QRegExUnicode)
         hlRule = {
             1: self._hStyles["markup"],
             2: self._hStyles["italic"],
@@ -191,7 +190,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Markdown Bold
         rxRule = QRegularExpression(nwRegEx.FMT_EB)
-        rxRule.setPatternOptions(QtUnicode)
+        rxRule.setPatternOptions(QRegExUnicode)
         hlRule = {
             1: self._hStyles["markup"],
             2: self._hStyles["bold"],
@@ -202,7 +201,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Markdown Strikethrough
         rxRule = QRegularExpression(nwRegEx.FMT_ST)
-        rxRule.setPatternOptions(QtUnicode)
+        rxRule.setPatternOptions(QRegExUnicode)
         hlRule = {
             1: self._hStyles["markup"],
             2: self._hStyles["strike"],
@@ -213,7 +212,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Shortcodes
         rxRule = QRegularExpression(nwRegEx.FMT_SC)
-        rxRule.setPatternOptions(QtUnicode)
+        rxRule.setPatternOptions(QRegExUnicode)
         hlRule = {
             1: self._hStyles["code"],
         }
@@ -222,7 +221,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Shortcodes w/Value
         rxRule = QRegularExpression(nwRegEx.FMT_SV)
-        rxRule.setPatternOptions(QtUnicode)
+        rxRule.setPatternOptions(QRegExUnicode)
         hlRule = {
             1: self._hStyles["code"],
             2: self._hStyles["value"],
@@ -233,7 +232,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Alignment Tags
         rxRule = QRegularExpression(r"(^>{1,2}|<{1,2}$)")
-        rxRule.setPatternOptions(QtUnicode)
+        rxRule.setPatternOptions(QRegExUnicode)
         hlRule = {
             1: self._hStyles["markup"],
         }
@@ -241,7 +240,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Auto-Replace Tags
         rxRule = QRegularExpression(r"<(\S+?)>")
-        rxRule.setPatternOptions(QtUnicode)
+        rxRule.setPatternOptions(QRegExUnicode)
         hlRule = {
             0: self._hStyles["replace"],
         }
