@@ -40,8 +40,8 @@ from novelwriter import SHARED
 from novelwriter.common import (
     checkInt, isHandle, isItemClass, isListInstance, isTitleTag, jsonEncode
 )
-from novelwriter.constants import nwFiles, nwKeyWords, nwHeaders
-from novelwriter.enum import nwComment, nwItemClass, nwItemType, nwItemLayout
+from novelwriter.constants import nwFiles, nwHeaders, nwKeyWords
+from novelwriter.enum import nwComment, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
 from novelwriter.text.counting import standardCounter
 
@@ -1360,24 +1360,43 @@ class IndexHeading:
 #  Text Processing Functions
 # =============================================================================================== #
 
-CLASSIFIERS = {
+MODIFIERS = {
     "synopsis": nwComment.SYNOPSIS,
     "short":    nwComment.SHORT,
     "note":     nwComment.NOTE,
     "footnote": nwComment.FOOTNOTE,
 }
+KEY_REQ = {
+    "synopsis": 0,  # Key not allowed
+    "short":    0,  # Key not allowed
+    "note":     1,  # Key optional
+    "footnote": 2,  # Key required
+}
 
-TERMS = ["note", "footnote"]
+
+def _checkModKey(modifier: str, key: str) -> bool:
+    """Check if a modifier and key set are ok."""
+    if modifier in MODIFIERS:
+        if key == "":
+            return KEY_REQ[modifier] < 2
+        elif key.replace("_", "").isalnum():
+            return KEY_REQ[modifier] > 0
+    return False
 
 
 def processComment(text: str) -> tuple[nwComment, str, str, int, int]:
-    """Extract comment style and text. Should only be called on text
-    starting with a %.
+    """Extract comment style, key and text. Should only be called on
+    text starting with a %.
     """
-    check = text[1:].lstrip()
-    classifier, _, content = check.partition(":")
-    classifier, _, term = classifier.partition(".")
-    if content and (clean := classifier.strip().lower()) in CLASSIFIERS:
-        term = "ERR" if term and clean not in TERMS else term.strip()
-        return CLASSIFIERS[clean], term, content.strip(), text.find(".") + 1, text.find(":") + 1
-    return nwComment.IGNORE if text.startswith("%~") else nwComment.PLAIN, "", check, 0, 0
+    if text[:2] == "%~":
+        return nwComment.IGNORE, "", text[2:].lstrip(), 0, 0
+
+    check = text[1:].strip()
+    start, _, content = check.partition(":")
+    modifier, _, key = start.rstrip().partition(".")
+    if content and (clean := modifier.lower()) and _checkModKey(clean, key):
+        col = text.find(":") + 1
+        dot = text.find(".", 0, col) + 1
+        return MODIFIERS[clean], key, content.lstrip(), dot, col
+
+    return nwComment.PLAIN, "", check, 0, 0

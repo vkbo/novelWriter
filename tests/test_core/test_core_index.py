@@ -26,15 +26,15 @@ from shutil import copyfile
 
 import pytest
 
-from mocked import causeException
-from tools import C, buildTestProject, cmpFiles, writeFile
-
 from novelwriter import SHARED
 from novelwriter.constants import nwFiles
-from novelwriter.core.index import IndexItem, NWIndex, TagsIndex, processComment
+from novelwriter.core.index import IndexItem, NWIndex, TagsIndex, _checkModKey, processComment
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwComment, nwItemClass, nwItemLayout
+
+from tests.mocked import causeException
+from tests.tools import C, buildTestProject, cmpFiles, writeFile
 
 
 @pytest.mark.core
@@ -1320,38 +1320,87 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
+def testCoreIndex_checkModKey():
+    """Test the _checkModKey function."""
+    # Check Requirements
+
+    # Synopsis
+    assert _checkModKey("synopsis", "") is True
+    assert _checkModKey("synopsis", "a") is False
+
+    # Short
+    assert _checkModKey("short", "") is True
+    assert _checkModKey("short", "a") is False
+
+    # Note
+    assert _checkModKey("note", "") is True
+    assert _checkModKey("note", "a") is True
+
+    # Footnote
+    assert _checkModKey("footnote", "") is False
+    assert _checkModKey("footnote", "a") is True
+
+    # Invalid
+    assert _checkModKey("stuff", "") is False
+    assert _checkModKey("stuff", "a") is False
+
+    # Check Keys
+    assert _checkModKey("note", "a") is True
+    assert _checkModKey("note", "a1") is True
+    assert _checkModKey("note", "a1.2") is False
+    assert _checkModKey("note", "a1_2") is True
+
+# END Test testCoreIndex_checkModKey
+
+
+@pytest.mark.core
 def testCoreIndex_processComment():
     """Test the comment processing function."""
-    # Regular comment
+    # Plain
     assert processComment("%Hi") == (nwComment.PLAIN, "", "Hi", 0, 0)
     assert processComment("% Hi") == (nwComment.PLAIN, "", "Hi", 0, 0)
     assert processComment("% Hi:You") == (nwComment.PLAIN, "", "Hi:You", 0, 0)
     assert processComment("% Hi.You:There") == (nwComment.PLAIN, "", "Hi.You:There", 0, 0)
 
-    # Check Non-Term
+    # Ignore
+    assert processComment("%~Hi") == (nwComment.IGNORE, "", "Hi", 0, 0)
+    assert processComment("%~ Hi") == (nwComment.IGNORE, "", "Hi", 0, 0)
+
+    # Invalid
+    assert processComment("") == (nwComment.PLAIN, "", "", 0, 0)
+
+    # Short : Term not allowed
     assert processComment("%short: Hi") == (nwComment.SHORT, "", "Hi", 0, 7)
-    assert processComment("%short.term: Hi") == (nwComment.SHORT, "ERR", "Hi", 7, 12)
+    assert processComment("%short.a: Hi") == (nwComment.PLAIN, "", "short.a: Hi", 0, 0)
 
-    # Check Term
+    # Synopsis : Term not allowed
+    assert processComment("%synopsis: Hi") == (nwComment.SYNOPSIS, "", "Hi", 0, 10)
+    assert processComment("%synopsis.a: Hi") == (nwComment.PLAIN, "", "synopsis.a: Hi", 0, 0)
+
+    # Note : Term optional
     assert processComment("%note: Hi") == (nwComment.NOTE, "", "Hi", 0, 6)
-    assert processComment("%note.term: Hi") == (nwComment.NOTE, "term", "Hi", 6, 11)
+    assert processComment("%note.a: Hi") == (nwComment.NOTE, "a", "Hi", 6, 8)
 
-    # Check Padding
+    # Footnote : Term required
+    assert processComment("%footnote: Hi") == (nwComment.PLAIN, "", "footnote: Hi", 0, 0)
+    assert processComment("%footnote.a: Hi") == (nwComment.FOOTNOTE, "a", "Hi", 10, 12)
+
+    # Check Case
+    assert processComment("%Footnote.a: Hi") == (nwComment.FOOTNOTE, "a", "Hi", 10, 12)
+    assert processComment("%FOOTNOTE.A: Hi") == (nwComment.FOOTNOTE, "A", "Hi", 10, 12)
+    assert processComment("%FootNote.A_a: Hi") == (nwComment.FOOTNOTE, "A_a", "Hi", 10, 14)
+
+    # Padding without term
     assert processComment("%short: Hi") == (nwComment.SHORT, "", "Hi", 0, 7)
     assert processComment("% short: Hi") == (nwComment.SHORT, "", "Hi", 0, 8)
     assert processComment("%  short : Hi") == (nwComment.SHORT, "", "Hi", 0, 10)
     assert processComment("%   short  : Hi") == (nwComment.SHORT, "", "Hi", 0, 12)
     assert processComment("% \t  short  : Hi") == (nwComment.SHORT, "", "Hi", 0, 13)
 
+    # Padding with term
     assert processComment("%note.term: Hi") == (nwComment.NOTE, "term", "Hi", 6, 11)
     assert processComment("% note.term: Hi") == (nwComment.NOTE, "term", "Hi", 7, 12)
-    assert processComment("%  note . term : Hi") == (nwComment.NOTE, "term", "Hi", 9, 16)
-    assert processComment("%   note  .  term  : Hi") == (nwComment.NOTE, "term", "Hi", 11, 20)
-
-    # Check Classifiers
-    assert processComment("%short: Hi") == (nwComment.SHORT, "", "Hi", 0, 7)
-    assert processComment("%synopsis: Hi") == (nwComment.SYNOPSIS, "", "Hi", 0, 10)
-    assert processComment("%note.term: Hi") == (nwComment.NOTE, "term", "Hi", 6, 11)
-    assert processComment("%footnote.term: Hi") == (nwComment.FOOTNOTE, "term", "Hi", 10, 15)
+    assert processComment("% note. term : Hi") == (nwComment.PLAIN, "", "note. term : Hi", 0, 0)
+    assert processComment("% note . term : Hi") == (nwComment.PLAIN, "", "note . term : Hi", 0, 0)
 
 # END Test testCoreIndex_processComment
