@@ -26,12 +26,12 @@ from __future__ import annotations
 import json
 import logging
 
-from time import time
 from pathlib import Path
+from time import time
 
 from novelwriter import CONFIG
 from novelwriter.common import formatTimeStamp
-from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwHtmlUnicode
+from novelwriter.constants import nwHeadFmt, nwHtmlUnicode, nwKeyWords, nwLabels
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import T_Formats, Tokenizer, stripEscape
 
@@ -306,7 +306,7 @@ class ToHtml(Tokenizer):
 
     def appendFootnotes(self) -> None:
         """Append the footnotes in the buffer."""
-        if self._footnotes:
+        if self._usedNotes:
             tags = HTML4_TAGS if self._genMode == self.M_PREVIEW else HTML5_TAGS
             footnotes = self._localLookup("Footnotes")
 

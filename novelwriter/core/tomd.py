@@ -202,7 +202,7 @@ class ToMarkdown(Tokenizer):
 
     def appendFootnotes(self) -> None:
         """Append the footnotes in the buffer."""
-        if self._footnotes:
+        if self._usedNotes:
             tags = STD_MD if self._genMode == self.M_STD else EXT_MD
             footnotes = self._localLookup("Footnotes")
 
@@ -232,8 +232,8 @@ class ToMarkdown(Tokenizer):
         """Replace tabs with spaces."""
         spaces = spaceChar*nSpaces
         self._fullMD = [p.replace("\t", spaces) for p in self._fullMD]
-        if self._keepMarkdown:
-            self._allMarkdown = [p.replace("\t", spaces) for p in self._allMarkdown]
+        if self._keepMD:
+            self._markdown = [p.replace("\t", spaces) for p in self._markdown]
         return
 
     ##

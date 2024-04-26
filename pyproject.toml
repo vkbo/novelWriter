@@ -47,7 +47,7 @@ version = {attr = "novelwriter.__version__"}
 include = ["novelwriter*"]
 
 [tool.isort]
-py_version="38"
+py_version="310"
 line_length = 99
 wrap_length = 79
 multi_line_output = 5

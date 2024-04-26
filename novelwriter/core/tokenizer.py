@@ -24,18 +24,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import re
 import json
 import logging
+import re
 
 from abc import ABC, abstractmethod
-from time import time
-from pathlib import Path
 from functools import partial
+from pathlib import Path
+from time import time
 
 from PyQt5.QtCore import QCoreApplication, QRegularExpression
 
-from novelwriter.common import formatTimeStamp, numberToRoman, checkInt
+from novelwriter.common import checkInt, formatTimeStamp, numberToRoman
 from novelwriter.constants import (
     nwHeadFmt, nwKeyWords, nwLabels, nwRegEx, nwShortcode, nwUnicode, trConst
 )
@@ -122,18 +122,19 @@ class Tokenizer(ABC):
         self._project = project
 
         # Data Variables
-        self._text   = ""    # The raw text to be tokenized
-        self._handle = None  # The item handle currently being processed
-        self._result = ""    # The result of the last document
+        self._text   = ""     # The raw text to be tokenized
+        self._handle = None   # The item handle currently being processed
+        self._result = ""     # The result of the last document
+        self._keepMD = False  # Whether to keep the markdown text
 
-        self._keepMarkdown = False  # Whether to keep the markdown text
-        self._allMarkdown  = []     # The result novelWriter markdown of all documents
-
-        # Processed Tokens and Meta Data
+        # Tokens and Meta Data (Per Document)
         self._tokens: list[tuple[int, int, str, T_Formats, int]] = []
         self._footnotes: dict[str, T_Comment] = {}
+
+        # Tokens and Meta Data (Per Instance)
         self._counts: dict[str, int] = {}
         self._outline: dict[str, str] = {}
+        self._markdown: list[str] = []
 
         # User Settings
         self._textFont     = "Serif"  # Output text font
@@ -231,7 +232,7 @@ class Tokenizer(ABC):
     @property
     def allMarkdown(self) -> list[str]:
         """The combined novelWriter Markdown text."""
-        return self._allMarkdown
+        return self._markdown
 
     @property
     def textStats(self) -> dict[str, int]:
@@ -398,7 +399,7 @@ class Tokenizer(ABC):
 
     def setKeepMarkdown(self, state: bool) -> None:
         """Keep original markdown during build."""
-        self._keepMarkdown = state
+        self._keepMD = state
         return
 
     ##
@@ -428,8 +429,8 @@ class Tokenizer(ABC):
             self._tokens.append((
                 self.T_TITLE, 1, title, [], textAlign
             ))
-            if self._keepMarkdown:
-                self._allMarkdown.append(f"#! {title}\n\n")
+            if self._keepMD:
+                self._markdown.append(f"#! {title}\n\n")
 
         return
 
@@ -484,6 +485,7 @@ class Tokenizer(ABC):
         nHead = 0
         breakNext = False
         tmpMarkdown = []
+        tHandle = self._handle or ""
         for aLine in self._text.splitlines():
             sLine = aLine.strip().lower()
 
@@ -492,7 +494,7 @@ class Tokenizer(ABC):
                 self._tokens.append((
                     self.T_EMPTY, nHead, "", [], self.A_NONE
                 ))
-                if self._keepMarkdown:
+                if self._keepMD:
                     tmpMarkdown.append("\n")
 
                 continue
@@ -550,24 +552,24 @@ class Tokenizer(ABC):
                     self._tokens.append((
                         self.T_SYNOPSIS, nHead, tLine, tFmt, sAlign
                     ))
-                    if self._doSynopsis and self._keepMarkdown:
+                    if self._doSynopsis and self._keepMD:
                         tmpMarkdown.append(f"{aLine}\n")
                 elif cStyle == nwComment.SHORT:
                     tLine, tFmt = self._extractFormats(cText)
                     self._tokens.append((
                         self.T_SHORT, nHead, tLine, tFmt, sAlign
                     ))
-                    if self._doSynopsis and self._keepMarkdown:
+                    if self._doSynopsis and self._keepMD:
                         tmpMarkdown.append(f"{aLine}\n")
                 elif cStyle == nwComment.FOOTNOTE:
                     tLine, tFmt = self._extractFormats(cText, skip=self.FMT_FNOTE)
-                    self._footnotes[cKey] = (tLine, tFmt)
+                    self._footnotes[f"{tHandle}:{cKey}"] = (tLine, tFmt)
                 else:
                     tLine, tFmt = self._extractFormats(cText)
                     self._tokens.append((
                         self.T_COMMENT, nHead, tLine, tFmt, sAlign
                     ))
-                    if self._doComments and self._keepMarkdown:
+                    if self._doComments and self._keepMD:
                         tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine.startswith("@"):
@@ -581,7 +583,7 @@ class Tokenizer(ABC):
                     self._tokens.append((
                         self.T_KEYWORD, nHead, aLine[1:].strip(), [], sAlign
                     ))
-                    if self._doKeywords and self._keepMarkdown:
+                    if self._doKeywords and self._keepMD:
                         tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine.startswith(("# ", "#! ")):
@@ -617,7 +619,7 @@ class Tokenizer(ABC):
                 self._tokens.append((
                     tType, nHead, tText, [], tStyle
                 ))
-                if self._keepMarkdown:
+                if self._keepMD:
                     tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine.startswith(("## ", "##! ")):
@@ -652,7 +654,7 @@ class Tokenizer(ABC):
                 self._tokens.append((
                     tType, nHead, tText, [], tStyle
                 ))
-                if self._keepMarkdown:
+                if self._keepMD:
                     tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine.startswith(("### ", "###! ")):
@@ -693,7 +695,7 @@ class Tokenizer(ABC):
                 self._tokens.append((
                     tType, nHead, tText, [], tStyle
                 ))
-                if self._keepMarkdown:
+                if self._keepMD:
                     tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine.startswith("#### "):
@@ -723,7 +725,7 @@ class Tokenizer(ABC):
                 self._tokens.append((
                     tType, nHead, tText, [], tStyle
                 ))
-                if self._keepMarkdown:
+                if self._keepMD:
                     tmpMarkdown.append(f"{aLine}\n")
 
             else:
@@ -771,7 +773,7 @@ class Tokenizer(ABC):
                 self._tokens.append((
                     self.T_TEXT, nHead, tLine, tFmt, sAlign
                 ))
-                if self._keepMarkdown:
+                if self._keepMD:
                     tmpMarkdown.append(f"{aLine}\n")
 
         # If we have content, turn off the first page flag
@@ -790,9 +792,9 @@ class Tokenizer(ABC):
         self._tokens.append((
             self.T_EMPTY, nHead, "", [], self.A_NONE
         ))
-        if self._keepMarkdown:
+        if self._keepMD:
             tmpMarkdown.append("\n")
-            self._allMarkdown.append("".join(tmpMarkdown))
+            self._markdown.append("".join(tmpMarkdown))
 
         # Second Pass
         # ===========
@@ -954,7 +956,7 @@ class Tokenizer(ABC):
     def saveRawMarkdown(self, path: str | Path) -> None:
         """Save the raw text to a plain text file."""
         with open(path, mode="w", encoding="utf-8") as outFile:
-            for nwdPage in self._allMarkdown:
+            for nwdPage in self._markdown:
                 outFile.write(nwdPage)
         return
 
@@ -969,7 +971,7 @@ class Tokenizer(ABC):
                 "buildTimeStr": formatTimeStamp(timeStamp),
             },
             "text": {
-                "nwd": [page.rstrip("\n").split("\n") for page in self._allMarkdown],
+                "nwd": [page.rstrip("\n").split("\n") for page in self._markdown],
             }
         }
         with open(path, mode="w", encoding="utf-8") as fObj:
@@ -1007,6 +1009,7 @@ class Tokenizer(ABC):
 
         # Match Shortcode w/Values
         rxItt = self._rxShortCodeVals.globalMatch(text, 0)
+        tHandle = self._handle or ""
         while rxItt.hasNext():
             rxMatch = rxItt.next()
             kind = self._shortCodeVals.get(rxMatch.captured(1).lower(), 0)
@@ -1014,7 +1017,7 @@ class Tokenizer(ABC):
                 rxMatch.capturedStart(0),
                 rxMatch.capturedLength(0),
                 self.FMT_STRIP if kind == skip else kind,
-                rxMatch.captured(2),
+                f"{tHandle}:{rxMatch.captured(2)}",
             ))
 
         # Post-process text and format
