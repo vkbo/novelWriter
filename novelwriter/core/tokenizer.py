@@ -564,6 +564,8 @@ class Tokenizer(ABC):
                 elif cStyle == nwComment.FOOTNOTE:
                     tLine, tFmt = self._extractFormats(cText, skip=self.FMT_FNOTE)
                     self._footnotes[f"{tHandle}:{cKey}"] = (tLine, tFmt)
+                    if self._keepMD:
+                        tmpMarkdown.append(f"{aLine}\n")
                 else:
                     tLine, tFmt = self._extractFormats(cText)
                     self._tokens.append((
