@@ -646,7 +646,13 @@ class ToOdt(Tokenizer):
         xFmt = 0x00
         tFrag = ""
         fLast = 0
+        xNode = None
         for fPos, fFmt, fData in tFmt:
+
+            # Add any extra nodes
+            if xNode:
+                parProc.appendNode(xNode)
+                xNode = None
 
             # Add the text up to the current fragment
             if tFrag := tText[fLast:fPos]:
@@ -685,13 +691,16 @@ class ToOdt(Tokenizer):
             elif fFmt == self.FMT_SUB_E:
                 xFmt &= M_SUB
             elif fFmt == self.FMT_FNOTE:
-                parProc.appendNode(self._generateFootnote(fData))
+                xNode = self._generateFootnote(fData)
             elif fFmt == self.FMT_STRIP:
                 pass
             else:
                 pErr += 1
 
             fLast = fPos
+
+        if xNode:
+            parProc.appendNode(xNode)
 
         if tFrag := tText[fLast:]:
             if xFmt == 0x00:
@@ -1575,18 +1584,16 @@ class XMLParagraph:
         return
 
     def appendNode(self, xNode: ET.Element | None) -> None:
-        """Append an XML node to the paragraph."""
-        if xNode:
-            if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
-                self._xRoot.append(xNode)
-                self._xTail = xNode
-                self._xTail.tail = ""
-                self._nState = X_ROOT_TAIL
-            elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
-                self._xTail.append(xNode)
-                self._xSing = xNode
-                self._xSing.tail = ""
-                self._nState = X_SPAN_SING
+        """Append an XML node to the paragraph. We only check for the
+        X_ROOT_TEXT and X_ROOT_TAIL states. X_SPAN_TEXT is not possible
+        at all, and X_SPAN_SING only happens internally in an appendSpan
+        call, returning us to an X_ROOT_TAIL state.
+        """
+        if xNode and self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
+            self._xRoot.append(xNode)
+            self._xTail = xNode
+            self._xTail.tail = ""
+            self._nState = X_ROOT_TAIL
         return
 
     def checkError(self) -> tuple[int, str]:

@@ -621,6 +621,43 @@ def testCoreToOdt_ConvertParagraphs(mockGUI):
         '</office:text>'
     )
 
+    # Footnotes
+    odt._text = (
+        "Text with one[footnote:fa], **two**[footnote:fd], "
+        "or three[footnote:fb] footnotes.[footnote:fe]\n\n"
+        "%footnote.fa: Footnote text A.[footnote:fc]\n\n"
+        "%footnote.fc: This footnote is skipped.\n\n"
+        "%footnote.fd: Another footnote.\n\n"
+        "%footnote.fe: Again?\n\n"
+    )
+    odt.tokenizeText()
+    odt.initDocument()
+    odt.doConvert()
+    odt.closeDocument()
+    assert xmlToText(odt._xText) == (
+        '<office:text>'
+        '<text:p text:style-name="Text_20_body">Text with one'
+        '<text:note text:id="ftn1" text:note-class="footnote">'
+        '<text:note-citation>1</text:note-citation>'
+        '<text:note-body>'
+        '<text:p text:style-name="Footnote">Footnote text A.</text:p>'
+        '</text:note-body>'
+        '</text:note>, <text:span text:style-name="T9">two</text:span>'
+        '<text:note text:id="ftn2" text:note-class="footnote">'
+        '<text:note-citation>2</text:note-citation>'
+        '<text:note-body>'
+        '<text:p text:style-name="Footnote">Another footnote.</text:p>'
+        '</text:note-body>'
+        '</text:note>, or three footnotes.'
+        '<text:note text:id="ftn3" text:note-class="footnote">'
+        '<text:note-citation>3</text:note-citation>'
+        '<text:note-body>'
+        '<text:p text:style-name="Footnote">Again?</text:p>'
+        '</text:note-body>'
+        '</text:note></text:p>'
+        '</office:text>'
+    )
+
     # Test for issue #1412
     # ====================
     # See: https://github.com/vkbo/novelWriter/issues/1412

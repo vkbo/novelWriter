@@ -21,24 +21,25 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import time
-import pytest
 
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
-from tools import writeFile
-from mocked import causeOSError
+import pytest
 
-from PyQt5.QtGui import QColor, QDesktopServices
+from mocked import causeOSError
 from PyQt5.QtCore import QUrl
+from PyQt5.QtGui import QColor, QDesktopServices
+from tools import writeFile
 
 from novelwriter.common import (
-    checkBool, checkFloat, checkInt, checkIntTuple, checkPath, checkString,
-    checkStringNone, checkUuid, cssCol, formatFileFilter, formatInt,
-    formatTime, formatTimeStamp, formatVersion, fuzzyTime, getFileSize,
-    hexToInt, isHandle, isItemClass, isItemLayout, isItemType, isTitleTag,
-    jsonEncode, makeFileNameSafe, minmax, numberToRoman, NWConfigParser,
-    openExternalPath, readTextFile, simplified, transferCase, xmlIndent, yesNo
+    NWConfigParser, checkBool, checkFloat, checkInt, checkIntTuple, checkPath,
+    checkString, checkStringNone, checkUuid, cssCol, formatFileFilter,
+    formatInt, formatTime, formatTimeStamp, formatVersion, fuzzyTime,
+    getFileSize, hexToInt, isHandle, isItemClass, isItemLayout, isItemType,
+    isListInstance, isTitleTag, jsonEncode, makeFileNameSafe, minmax,
+    numberToRoman, openExternalPath, readTextFile, simplified, transferCase,
+    xmlIndent, yesNo
 )
 
 
@@ -270,6 +271,24 @@ def testBaseCommon_isItemLayout():
     assert isItemLayout("STUFF") is False
 
 # END Test testBaseCommon_isItemLayout
+
+
+@pytest.mark.base
+def testBaseCommon_isListInstance():
+    """Test the isListInstance function."""
+    # String
+    assert isListInstance("stuff", str) is False
+    assert isListInstance(["stuff"], str) is True
+
+    # Int
+    assert isListInstance(1, int) is False
+    assert isListInstance([1], int) is True
+
+    # Mixed
+    assert isListInstance([1], str) is False
+    assert isListInstance(["stuff"], int) is False
+
+# END Test testBaseCommon_isListInstance
 
 
 @pytest.mark.base

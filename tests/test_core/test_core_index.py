@@ -307,7 +307,7 @@ def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
+def testCoreIndex_ScanText(monkeypatch, mockGUI, fncPath, mockRnd):
     """Check the index text scanner."""
     project = NWProject()
     mockRnd.reset()
@@ -377,12 +377,14 @@ def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
         "@char: Jane\n\n"
         "% this is a comment\n\n"
         "This is a story about Jane Smith.\n\n"
-        "Well, not really.\n"
+        "Well, not really.[footnote:key]\n\n"
+        "%Footnote.key: Footnote text.\n\n"
     ))
     assert index._tagsIndex.tagHandle("Jane") == cHandle
     assert index._tagsIndex.tagHeading("Jane") == "T0001"
     assert index._tagsIndex.tagClass("Jane") == "CHARACTER"
     assert index.getItemHeading(nHandle, "T0001").title == "Hello World!"  # type: ignore
+    assert index._itemIndex[nHandle].noteKeys("footnotes") == {"key"}  # type: ignore
 
     # Title Indexing
     # ==============
@@ -547,6 +549,45 @@ def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
     project.closeProject()
 
 # END Test testCoreIndex_ScanText
+
+
+@pytest.mark.core
+def testCoreIndex_CommentKeys(monkeypatch, mockGUI, fncPath, mockRnd):
+    """Check the index comment key generator."""
+    project = NWProject()
+    mockRnd.reset()
+    buildTestProject(project, fncPath)
+    index = project.index
+
+    nKeys = 1000
+
+    # Generate footnote keys
+    keys = set()
+    for _ in range(nKeys):
+        key = index.newCommentKey(C.hSceneDoc, nwComment.FOOTNOTE)
+        assert key not in keys
+        assert key != "err"
+        keys.add(key)
+    assert len(keys) == nKeys
+
+    # Generate comment keys
+    keys = set()
+    for _ in range(nKeys):
+        key = index.newCommentKey(C.hSceneDoc, nwComment.COMMENT)
+        assert key not in keys
+        keys.add(key)
+    assert len(keys) == nKeys
+
+    # Induce collision
+    with monkeypatch.context() as mp:
+        mp.setattr("random.choices", lambda *a, **k: "aaaa")
+        assert index.newCommentKey(C.hSceneDoc, nwComment.FOOTNOTE) == "faaaa"
+        assert index.newCommentKey(C.hSceneDoc, nwComment.FOOTNOTE) == "err"
+
+    # Check invalid comment style
+    assert index.newCommentKey(C.hSceneDoc, None) == "err"  # type: ignore
+
+# END Test testCoreIndex_CommentKeys
 
 
 @pytest.mark.core
@@ -1250,12 +1291,14 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     itemIndex.clear()
 
     # Data must be dictionary
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as exc:
         itemIndex.unpackData("stuff")  # type: ignore
+    assert str(exc.value) == "itemIndex is not a dict"
 
     # Keys must be valid handles
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as exc:
         itemIndex.unpackData({"stuff": "more stuff"})
+    assert str(exc.value) == "itemIndex keys must be handles"
 
     # Unknown keys should be skipped
     itemIndex.unpackData({C.hInvalid: {}})
@@ -1267,8 +1310,9 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     assert itemIndex[nHandle].handle == nHandle  # type: ignore
 
     # Title tags must be valid
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as exc:
         itemIndex.unpackData({cHandle: {"headings": {"TTTTTTT": {}}}})
+    assert str(exc.value) == "The itemIndex contains an invalid title key"
 
     # Reference without a heading should be rejected
     itemIndex.unpackData({
@@ -1282,37 +1326,66 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     itemIndex.clear()
 
     # Tag keys must be strings
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as exc:
         itemIndex.unpackData({
             cHandle: {
                 "headings": {"T0001": {}},
                 "references": {"T0001": {1234: "@pov"}},
+                "notes": {"footnotes": [], "comments": []},
             }
         })
+    assert str(exc.value) == "itemIndex reference key must be a string"
 
     # Type must be strings
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as exc:
         itemIndex.unpackData({
             cHandle: {
                 "headings": {"T0001": {}},
                 "references": {"T0001": {"John": []}},
+                "notes": {"footnotes": [], "comments": []},
             }
         })
+    assert str(exc.value) == "itemIndex reference type must be a string"
 
     # Types must be valid
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as exc:
         itemIndex.unpackData({
             cHandle: {
                 "headings": {"T0001": {}},
                 "references": {"T0001": {"John": "@pov,@char,@stuff"}},
+                "notes": {"footnotes": [], "comments": []},
             }
         })
+    assert str(exc.value) == "The itemIndex contains an invalid reference type"
+
+    # Note type must be valid
+    with pytest.raises(ValueError) as exc:
+        itemIndex.unpackData({
+            cHandle: {
+                "headings": {"T0001": {}},
+                "references": {"T0001": {"John": "@pov,@char"}},
+                "notes": {"stuff": [], "comments": []},
+            }
+        })
+    assert str(exc.value) == "The notes style is invalid"
+
+    # Note keys must be all strings
+    with pytest.raises(ValueError) as exc:
+        itemIndex.unpackData({
+            cHandle: {
+                "headings": {"T0001": {}},
+                "references": {"T0001": {"John": "@pov,@char"}},
+                "notes": {"footnotes": ["fkey", 1], "comments": []},
+            }
+        })
+    assert str(exc.value) == "The notes keys must be a list of strings"
 
     # This should pass
     itemIndex.unpackData({
         cHandle: {
             "headings": {"T0001": {}},
             "references": {"T0001": {"John": "@pov,@char"}},
+            "notes": {"footnotes": ["fkey"], "comments": ["ckey"]},
         }
     })
 
