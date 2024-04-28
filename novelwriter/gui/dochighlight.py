@@ -113,8 +113,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._addCharFormat("replace",  SHARED.theme.colRepTag)
         self._addCharFormat("hidden",   SHARED.theme.colHidden)
         self._addCharFormat("markup",   SHARED.theme.colHidden)
+        self._addCharFormat("note",     SHARED.theme.colNote)
         self._addCharFormat("code",     SHARED.theme.colCode)
         self._addCharFormat("keyword",  SHARED.theme.colKey)
+        self._addCharFormat("tag",      SHARED.theme.colTag)
         self._addCharFormat("modifier", SHARED.theme.colMod)
         self._addCharFormat("value",    SHARED.theme.colVal)
         self._addCharFormat("optional", SHARED.theme.colOpt)
@@ -314,7 +316,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                         self.setFormat(xPos, xLen, self._hStyles["keyword"])
                     elif isGood[n] and not self._isInactive:
                         one, two = index.parseValue(bit)
-                        self.setFormat(xPos, len(one), self._hStyles["value"])
+                        self.setFormat(xPos, len(one), self._hStyles["tag"])
                         if two:
                             yPos = xPos + len(bit) - len(two)
                             self.setFormat(yPos, len(two), self._hStyles["optional"])
@@ -370,11 +372,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 return  # No more processing for these
             elif cMod:
                 self.setFormat(0, cDot, self._hStyles["modifier"])
-                self.setFormat(cDot, cPos - cDot, self._hStyles["optional"])
-                self.setFormat(cPos, cLen, self._hStyles["hidden"])
+                self.setFormat(cDot, cPos - cDot, self._hStyles["value"])
+                self.setFormat(cPos, cLen, self._hStyles["note"])
             else:
                 self.setFormat(0, cPos, self._hStyles["modifier"])
-                self.setFormat(cPos, cLen, self._hStyles["hidden"])
+                self.setFormat(cPos, cLen, self._hStyles["note"])
 
         elif text.startswith("["):  # Special Command
             self.setCurrentBlockState(BLOCK_TEXT)

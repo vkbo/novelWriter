@@ -30,9 +30,7 @@ from math import ceil
 from pathlib import Path
 
 from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtGui import (
-    QPalette, QColor, QIcon, QFont, QFontMetrics, QFontDatabase, QPixmap
-)
+from PyQt5.QtGui import QColor, QFont, QFontDatabase, QFontMetrics, QIcon, QPalette, QPixmap
 from PyQt5.QtWidgets import QApplication
 
 from novelwriter import CONFIG
@@ -102,8 +100,10 @@ class GuiTheme:
         self.colDialD  = QColor(0, 0, 0)
         self.colDialS  = QColor(0, 0, 0)
         self.colHidden = QColor(0, 0, 0)
+        self.colNote   = QColor(0, 0, 0)
         self.colCode   = QColor(0, 0, 0)
         self.colKey    = QColor(0, 0, 0)
+        self.colTag    = QColor(0, 0, 0)
         self.colVal    = QColor(0, 0, 0)
         self.colOpt    = QColor(0, 0, 0)
         self.colSpell  = QColor(0, 0, 0)
@@ -343,8 +343,10 @@ class GuiTheme:
             self.colDialD  = self._parseColour(confParser, cnfSec, "doublequotes")
             self.colDialS  = self._parseColour(confParser, cnfSec, "singlequotes")
             self.colHidden = self._parseColour(confParser, cnfSec, "hidden")
+            self.colNote   = self._parseColour(confParser, cnfSec, "note")
             self.colCode   = self._parseColour(confParser, cnfSec, "shortcode")
             self.colKey    = self._parseColour(confParser, cnfSec, "keyword")
+            self.colTag    = self._parseColour(confParser, cnfSec, "tag")
             self.colVal    = self._parseColour(confParser, cnfSec, "value")
             self.colOpt    = self._parseColour(confParser, cnfSec, "optional")
             self.colSpell  = self._parseColour(confParser, cnfSec, "spellcheckline")

@@ -20,20 +20,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import pytest
-
 from pathlib import Path
 
-from mocked import causeOSError
-from tools import writeFile
+import pytest
 
 from PyQt5.QtGui import QColor, QIcon, QPalette, QPixmap
 from PyQt5.QtWidgets import QApplication
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.common import NWConfigParser
 from novelwriter.constants import nwLabels
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
+
+from tests.mocked import causeOSError
+from tests.tools import writeFile
 
 
 @pytest.mark.gui
@@ -271,9 +271,9 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI):
 
     # Check some values
     assert mainTheme.syntaxName == "Default Dark"
-    assert mainTheme.colBack == QColor(54, 54, 54)
-    assert mainTheme.colText == QColor(199, 207, 208)
-    assert mainTheme.colLink == QColor(184, 200, 0)
+    assert mainTheme.colBack == QColor(42, 42, 42)
+    assert mainTheme.colText == QColor(204, 204, 204)
+    assert mainTheme.colLink == QColor(102, 153, 204)
 
     # qtbot.stop()
 
