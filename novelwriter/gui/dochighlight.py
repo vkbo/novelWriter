@@ -113,6 +113,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._addCharFormat("replace",  SHARED.theme.colRepTag)
         self._addCharFormat("hidden",   SHARED.theme.colHidden)
         self._addCharFormat("markup",   SHARED.theme.colHidden)
+        self._addCharFormat("note",     SHARED.theme.colNote)
         self._addCharFormat("code",     SHARED.theme.colCode)
         self._addCharFormat("keyword",  SHARED.theme.colKey)
         self._addCharFormat("modifier", SHARED.theme.colMod)
@@ -370,11 +371,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 return  # No more processing for these
             elif cMod:
                 self.setFormat(0, cDot, self._hStyles["modifier"])
-                self.setFormat(cDot, cPos - cDot, self._hStyles["optional"])
-                self.setFormat(cPos, cLen, self._hStyles["hidden"])
+                self.setFormat(cDot, cPos - cDot, self._hStyles["value"])
+                self.setFormat(cPos, cLen, self._hStyles["note"])
             else:
                 self.setFormat(0, cPos, self._hStyles["modifier"])
-                self.setFormat(cPos, cLen, self._hStyles["hidden"])
+                self.setFormat(cPos, cLen, self._hStyles["note"])
 
         elif text.startswith("["):  # Special Command
             self.setCurrentBlockState(BLOCK_TEXT)
