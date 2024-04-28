@@ -34,7 +34,7 @@ from novelwriter.core.project import NWProject
 from novelwriter.enum import nwComment, nwItemClass, nwItemLayout
 
 from tests.mocked import causeException
-from tests.tools import C, buildTestProject, cmpFiles, writeFile
+from tests.tools import C, buildTestProject, cmpFiles
 
 
 @pytest.mark.core
@@ -123,12 +123,14 @@ def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, mockGUI, tstPaths):
     assert cmpFiles(testFile, compFile)
 
     # Write an empty index file and load it
-    writeFile(projFile, "{}")
+    projFile.write_text("{}", encoding="utf-8")
     assert index.loadIndex() is False
     assert index.indexBroken is True
 
     # Write an index file that passes loading, but is still empty
-    writeFile(projFile, ('{"novelWriter.tagsIndex": {}, "novelWriter.itemIndex": {}}'))
+    projFile.write_text(
+        '{"novelWriter.tagsIndex": {}, "novelWriter.itemIndex": {}}', encoding="utf-8"
+    )
     assert index.loadIndex() is True
     assert index.indexBroken is False
 
