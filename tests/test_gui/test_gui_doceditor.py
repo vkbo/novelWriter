@@ -22,11 +22,8 @@ from __future__ import annotations
 
 import pytest
 
-from mocked import causeOSError
-from tools import C, buildTestProject
-
-from PyQt5.QtCore import QThreadPool, Qt
-from PyQt5.QtGui import QClipboard, QTextBlock, QTextCursor, QTextOption
+from PyQt5.QtCore import QEvent, Qt, QThreadPool
+from PyQt5.QtGui import QClipboard, QMouseEvent, QTextBlock, QTextCursor, QTextOption
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
 from novelwriter import CONFIG, SHARED
@@ -35,11 +32,33 @@ from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import (
     nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwTrinary, nwWidget
 )
-from novelwriter.gui.doceditor import GuiDocEditor, GuiDocToolBar
+from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.text.counting import standardCounter
-from novelwriter.types import QtAlignJustify, QtAlignLeft, QtKeepAnchor, QtMouseLeft, QtMoveRight
+from novelwriter.types import (
+    QtAlignJustify, QtAlignLeft, QtKeepAnchor, QtModCtrl, QtMouseLeft,
+    QtMoveRight
+)
+
+from tests.mocked import causeOSError
+from tests.tools import C, buildTestProject
 
 KEY_DELAY = 1
+
+
+def getMenuForPos(editor: GuiDocEditor, pos: int, select: bool = False) -> QMenu | None:
+    """Create a context menu for a text position and return the menu
+    object.
+    """
+    cursor = editor.textCursor()
+    cursor.setPosition(pos)
+    if select:
+        cursor.select(QTextCursor.SelectionType.WordUnderCursor)
+    editor.setTextCursor(cursor)
+    editor._openContextMenu(editor.cursorRect().center())
+    for obj in editor.children():
+        if isinstance(obj, QMenu) and obj.objectName() == "ContextMenu":
+            return obj
+    return None
 
 
 @pytest.mark.gui
@@ -48,20 +67,21 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # Open project
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc)
+    docEditor = nwGUI.docEditor
 
-    nwGUI.docEditor.setPlainText("### Lorem Ipsum\n\n%s" % ipsumText[0])
+    docEditor.setPlainText("### Lorem Ipsum\n\n%s" % ipsumText[0])
     nwGUI.saveDocument()
 
     # Check Defaults
-    qDoc = nwGUI.docEditor.document()
+    qDoc = docEditor.document()
     assert qDoc.defaultTextOption().alignment() == QtAlignLeft
-    assert nwGUI.docEditor.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
-    assert nwGUI.docEditor.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
-    assert nwGUI.docEditor._typPadChar == nwUnicode.U_NBSP
-    assert nwGUI.docEditor.docHeader.itemTitle.text() == (
+    assert docEditor.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
+    assert docEditor.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
+    assert docEditor._typPadChar == nwUnicode.U_NBSP
+    assert docEditor.docHeader.itemTitle.text() == (
         "Novel  \u203a  New Chapter  \u203a  New Scene"
     )
-    assert nwGUI.docEditor.docHeader._docOutline == {0: "### New Scene"}
+    assert docEditor.docHeader._docOutline == {0: "### New Scene"}
 
     # Check that editor handles settings
     CONFIG.textFont = ""
@@ -73,43 +93,43 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     CONFIG.fmtPadThin = True
     CONFIG.showFullPath = False
 
-    nwGUI.docEditor.initEditor()
+    docEditor.initEditor()
 
-    qDoc = nwGUI.docEditor.document()
+    qDoc = docEditor.document()
     assert CONFIG.textFont == qDoc.defaultFont().family()
     assert qDoc.defaultTextOption().alignment() == QtAlignJustify
     assert qDoc.defaultTextOption().flags() & QTextOption.ShowTabsAndSpaces
     assert qDoc.defaultTextOption().flags() & QTextOption.ShowLineAndParagraphSeparators
-    assert nwGUI.docEditor.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
-    assert nwGUI.docEditor.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
-    assert nwGUI.docEditor._typPadChar == nwUnicode.U_THNBSP
-    assert nwGUI.docEditor.docHeader.itemTitle.text() == "New Scene"
+    assert docEditor.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
+    assert docEditor.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
+    assert docEditor._typPadChar == nwUnicode.U_THNBSP
+    assert docEditor.docHeader.itemTitle.text() == "New Scene"
 
     # Header
     # ======
 
     # Go to outline
-    nwGUI.docEditor.setCursorLine(3)
-    nwGUI.docEditor.docHeader.outlineMenu.actions()[0].trigger()
-    assert nwGUI.docEditor.getCursorPosition() == 0
+    docEditor.setCursorLine(3)
+    docEditor.docHeader.outlineMenu.actions()[0].trigger()
+    assert docEditor.getCursorPosition() == 0
 
     # Select item from header
-    with qtbot.waitSignal(nwGUI.docEditor.requestProjectItemSelected, timeout=1000) as signal:
-        qtbot.mouseClick(nwGUI.docEditor.docHeader, QtMouseLeft)
-        assert signal.args == [nwGUI.docEditor.docHeader._docHandle, True]
+    with qtbot.waitSignal(docEditor.requestProjectItemSelected, timeout=1000) as signal:
+        qtbot.mouseClick(docEditor.docHeader, QtMouseLeft)
+        assert signal.args == [docEditor.docHeader._docHandle, True]
 
     # Close from header
-    with qtbot.waitSignal(nwGUI.docEditor.docHeader.closeDocumentRequest, timeout=1000):
-        nwGUI.docEditor.docHeader.closeButton.click()
+    with qtbot.waitSignal(docEditor.docHeader.closeDocumentRequest, timeout=1000):
+        docEditor.docHeader.closeButton.click()
 
-    assert nwGUI.docEditor.docHeader.tbButton.isVisible() is False
-    assert nwGUI.docEditor.docHeader.searchButton.isVisible() is False
-    assert nwGUI.docEditor.docHeader.closeButton.isVisible() is False
-    assert nwGUI.docEditor.docHeader.minmaxButton.isVisible() is False
+    assert docEditor.docHeader.tbButton.isVisible() is False
+    assert docEditor.docHeader.searchButton.isVisible() is False
+    assert docEditor.docHeader.closeButton.isVisible() is False
+    assert docEditor.docHeader.minmaxButton.isVisible() is False
 
     # Select item from header
-    with qtbot.waitSignal(nwGUI.docEditor.requestProjectItemSelected, timeout=1000) as signal:
-        qtbot.mouseClick(nwGUI.docEditor.docHeader, QtMouseLeft)
+    with qtbot.waitSignal(docEditor.requestProjectItemSelected, timeout=1000) as signal:
+        qtbot.mouseClick(docEditor.docHeader, QtMouseLeft)
         assert signal.args == ["", True]
 
     # qtbot.stop()
@@ -122,28 +142,29 @@ def testGuiEditor_LoadText(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     """Test loading text into the editor."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
+    docEditor = nwGUI.docEditor
 
     longText = "### Lorem Ipsum\n\n%s" % "\n\n".join(ipsumText*20)
-    nwGUI.docEditor.replaceText(longText)
+    docEditor.replaceText(longText)
     nwGUI.saveDocument()
     nwGUI.closeDocument()
 
     # Invalid handle
-    assert nwGUI.docEditor.loadText("abcdefghijklm") is False
+    assert docEditor.loadText("abcdefghijklm") is False
 
     # Regular open
-    assert nwGUI.docEditor.loadText(C.hSceneDoc) is True
+    assert docEditor.loadText(C.hSceneDoc) is True
 
     # Regular open, with line number (1 indexed)
-    assert nwGUI.docEditor.loadText(C.hSceneDoc, tLine=4) is True
-    cursPos = nwGUI.docEditor.getCursorPosition()
-    assert nwGUI.docEditor.document().findBlock(cursPos).blockNumber() == 3
+    assert docEditor.loadText(C.hSceneDoc, tLine=4) is True
+    cursPos = docEditor.getCursorPosition()
+    assert docEditor.document().findBlock(cursPos).blockNumber() == 3
 
     # Load empty document
-    nwGUI.docEditor.replaceText("")
+    docEditor.replaceText("")
     nwGUI.saveDocument()
-    assert nwGUI.docEditor.loadText(C.hSceneDoc) is True
-    assert nwGUI.docEditor.toPlainText() == ""
+    assert docEditor.loadText(C.hSceneDoc) is True
+    assert docEditor.toPlainText() == ""
 
     # qtbot.stop()
 
@@ -155,35 +176,36 @@ def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumTex
     """Test saving text from the editor."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
+    docEditor = nwGUI.docEditor
 
     longText = "### Lorem Ipsum\n\n%s" % "\n\n".join(ipsumText)
-    nwGUI.docEditor.replaceText(longText)
+    docEditor.replaceText(longText)
 
     # Missing item
-    nwItem = nwGUI.docEditor._nwItem
-    nwGUI.docEditor._nwItem = None
-    assert nwGUI.docEditor.saveText() is False
-    nwGUI.docEditor._nwItem = nwItem
+    nwItem = docEditor._nwItem
+    docEditor._nwItem = None
+    assert docEditor.saveText() is False
+    docEditor._nwItem = nwItem
 
     # Unknown handle
-    nwGUI.docEditor._docHandle = "0123456789abcdef"
-    assert nwGUI.docEditor.saveText() is False
-    nwGUI.docEditor._docHandle = C.hSceneDoc
+    docEditor._docHandle = "0123456789abcdef"
+    assert docEditor.saveText() is False
+    docEditor._docHandle = C.hSceneDoc
 
     # Cause error when saving
     with monkeypatch.context() as mp:
         mp.setattr("builtins.open", causeOSError)
-        assert nwGUI.docEditor.saveText() is False
+        assert docEditor.saveText() is False
         assert "Could not save document." in caplog.text
 
     # Change header level
     assert SHARED.project.tree[C.hSceneDoc].itemLayout == nwItemLayout.DOCUMENT  # type: ignore
-    nwGUI.docEditor.replaceText(longText[1:])
-    assert nwGUI.docEditor.saveText() is True
+    docEditor.replaceText(longText[1:])
+    assert docEditor.saveText() is True
     assert SHARED.project.tree[C.hSceneDoc].itemLayout == nwItemLayout.DOCUMENT  # type: ignore
 
     # Regular save
-    assert nwGUI.docEditor.saveText() is True
+    assert docEditor.saveText() is True
 
     # qtbot.stop()
 
@@ -195,6 +217,7 @@ def testGuiEditor_MetaData(qtbot, nwGUI, projPath, mockRnd):
     """Test extracting various meta data and other values."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
+    docEditor = nwGUI.docEditor
 
     # Get Text
     # This should replace line and paragraph separators, but preserve
@@ -204,8 +227,8 @@ def testGuiEditor_MetaData(qtbot, nwGUI, projPath, mockRnd):
         "Some\u2028text.\u2029"
         "More\u00a0text.\u2029"
     )
-    nwGUI.docEditor.replaceText(newText)
-    assert nwGUI.docEditor.getText() == (
+    docEditor.replaceText(newText)
+    assert docEditor.getText() == (
         "### New Scene\n\n"
         "Some\n"
         "text.\n"
@@ -213,28 +236,28 @@ def testGuiEditor_MetaData(qtbot, nwGUI, projPath, mockRnd):
     )
 
     # Check Properties
-    assert nwGUI.docEditor.docChanged is True
-    assert nwGUI.docEditor.docHandle == C.hSceneDoc
-    assert nwGUI.docEditor.lastActive > 0.0
-    assert nwGUI.docEditor.isEmpty is False
+    assert docEditor.docChanged is True
+    assert docEditor.docHandle == C.hSceneDoc
+    assert docEditor.lastActive > 0.0
+    assert docEditor.isEmpty is False
 
     # Cursor Position
-    nwGUI.docEditor.setCursorPosition(10)
-    assert nwGUI.docEditor.getCursorPosition() == 10
+    docEditor.setCursorPosition(10)
+    assert docEditor.getCursorPosition() == 10
     assert SHARED.project.tree[C.hSceneDoc].cursorPos != 10  # type: ignore
-    nwGUI.docEditor.saveCursorPosition()
+    docEditor.saveCursorPosition()
     assert SHARED.project.tree[C.hSceneDoc].cursorPos == 10  # type: ignore
 
-    nwGUI.docEditor.setCursorLine(None)
-    assert nwGUI.docEditor.getCursorPosition() == 10
-    nwGUI.docEditor.setCursorLine(3)
-    assert nwGUI.docEditor.getCursorPosition() == 15
+    docEditor.setCursorLine(None)
+    assert docEditor.getCursorPosition() == 10
+    docEditor.setCursorLine(3)
+    assert docEditor.getCursorPosition() == 15
 
     # Document Changed Signal
-    nwGUI.docEditor._docChanged = False
-    with qtbot.waitSignal(nwGUI.docEditor.editedStatusChanged, raising=True, timeout=100):
-        nwGUI.docEditor.setDocumentChanged(True)
-    assert nwGUI.docEditor._docChanged is True
+    docEditor._docChanged = False
+    with qtbot.waitSignal(docEditor.editedStatusChanged, raising=True, timeout=100):
+        docEditor.setDocumentChanged(True)
+    assert docEditor._docChanged is True
 
     # qtbot.stop()
 
@@ -252,19 +275,6 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     sceneItem = SHARED.project.tree[C.hSceneDoc]
     assert sceneItem is not None
 
-    def getMenuForPos(pos: int, select: bool = False) -> QMenu | None:
-        nonlocal docEditor
-        cursor = docEditor.textCursor()
-        cursor.setPosition(pos)
-        if select:
-            cursor.select(QTextCursor.SelectionType.WordUnderCursor)
-        docEditor.setTextCursor(cursor)
-        docEditor._openContextMenu(docEditor.cursorRect().center())
-        for obj in docEditor.children():
-            if isinstance(obj, QMenu) and obj.objectName() == "ContextMenu":
-                return obj
-        return None
-
     docText = (
         "### A Scene\n\n"
         "@pov: Jane\n"
@@ -274,7 +284,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert docEditor.getText() == docText
 
     # Rename Item from Heading
-    ctxMenu = getMenuForPos(1)
+    ctxMenu = getMenuForPos(docEditor, 1)
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
@@ -290,7 +300,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     ctxMenu.deleteLater()
 
     # Create Character
-    ctxMenu = getMenuForPos(21)
+    ctxMenu = getMenuForPos(docEditor, 21)
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
@@ -305,7 +315,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     ctxMenu.deleteLater()
 
     # Follow Character Tag
-    ctxMenu = getMenuForPos(21)
+    ctxMenu = getMenuForPos(docEditor, 21)
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
@@ -318,7 +328,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     ctxMenu.deleteLater()
 
     # Select Word
-    ctxMenu = getMenuForPos(31)
+    ctxMenu = getMenuForPos(docEditor, 31)
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
@@ -330,7 +340,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     ctxMenu.deleteLater()
 
     # Select Paragraph
-    ctxMenu = getMenuForPos(31)
+    ctxMenu = getMenuForPos(docEditor, 31)
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
@@ -342,7 +352,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     ctxMenu.deleteLater()
 
     # Select All
-    ctxMenu = getMenuForPos(31)
+    ctxMenu = getMenuForPos(docEditor, 31)
     assert ctxMenu is not None
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
     assert actions == [
@@ -354,7 +364,7 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     ctxMenu.deleteLater()
 
     # Copy Text
-    ctxMenu = getMenuForPos(31, True)
+    ctxMenu = getMenuForPos(docEditor, 31, True)
     assert ctxMenu is not None
     assert docEditor.textCursor().selectedText() == "text"
     actions = [x.text() for x in ctxMenu.actions() if x.text()]
@@ -384,6 +394,90 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
 
 
 @pytest.mark.gui
+def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
+    """Test the document spell checker."""
+    monkeypatch.setattr(QMenu, "exec", lambda *a: None)
+
+    buildTestProject(nwGUI, projPath)
+    assert nwGUI.openDocument(C.hSceneDoc) is True
+    docEditor = nwGUI.docEditor
+
+    text = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
+    docEditor.replaceText(text)
+
+    # Toggle State
+    # ============
+
+    # No language set
+    SHARED.spelling._language = None
+    SHARED.project.data.setSpellCheck(False)
+    docEditor.toggleSpellCheck(True)
+    assert SHARED.project.data.spellCheck is False
+
+    # No spell checker available
+    SHARED.spelling._language = "en"
+    docEditor.toggleSpellCheck(True)
+    assert SHARED.project.data.spellCheck is True
+
+    CONFIG.hasEnchant = False
+    docEditor.toggleSpellCheck(True)
+    assert SHARED.project.data.spellCheck is False
+    CONFIG.hasEnchant = True
+    docEditor.toggleSpellCheck(True)
+    assert SHARED.project.data.spellCheck is True
+
+    # Plain Toggle
+    docEditor.toggleSpellCheck(None)
+    assert SHARED.project.data.spellCheck is False
+
+    # Run SpellCheck
+    # ==============
+    SHARED.project.data.setSpellCheck(True)
+
+    # With Suggestion
+    with monkeypatch.context() as mp:
+        mp.setattr(docEditor._qDocument, "spellErrorAtPos", lambda *a: ("Lorem", 0, 5, ["Lorax"]))
+        ctxMenu = getMenuForPos(docEditor, 16)
+        assert ctxMenu is not None
+        actions = [x.text() for x in ctxMenu.actions() if x.text()]
+        assert "Spelling Suggestion(s)" in actions
+        assert f"{nwUnicode.U_ENDASH} Lorax" in actions
+        ctxMenu.actions()[7].trigger()
+        QApplication.processEvents()
+        assert docEditor.getText() == text.replace("Lorem", "Lorax", 1)
+        ctxMenu.setObjectName("")
+        ctxMenu.deleteLater()
+
+    # Without Suggestion
+    with monkeypatch.context() as mp:
+        mp.setattr(docEditor._qDocument, "spellErrorAtPos", lambda *a: ("Lorax", 0, 5, []))
+        ctxMenu = getMenuForPos(docEditor, 16)
+        assert ctxMenu is not None
+        actions = [x.text() for x in ctxMenu.actions() if x.text()]
+        assert f"{nwUnicode.U_ENDASH} No Suggestions" in actions
+        assert docEditor.getText() == text.replace("Lorem", "Lorax", 1)
+        ctxMenu.setObjectName("")
+        ctxMenu.deleteLater()
+
+    # Add to Dictionary
+    with monkeypatch.context() as mp:
+        mp.setattr(docEditor._qDocument, "spellErrorAtPos", lambda *a: ("Lorax", 0, 5, []))
+        ctxMenu = getMenuForPos(docEditor, 16)
+        assert ctxMenu is not None
+        actions = [x.text() for x in ctxMenu.actions() if x.text()]
+        assert "Add Word to Dictionary" in actions
+        assert "Lorax" not in SHARED.spelling._userDict
+        ctxMenu.actions()[7].trigger()
+        assert "Lorax" in SHARED.spelling._userDict
+        ctxMenu.setObjectName("")
+        ctxMenu.deleteLater()
+
+    # qtbot.stop()
+
+# END Test testGuiEditor_SpellChecking
+
+
+@pytest.mark.gui
 def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     """Test the document actions. This is not an extensive test of the
     action features, just that the actions are actually called. The
@@ -392,10 +486,11 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     """
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
+    docEditor = nwGUI.docEditor
 
     text = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
-    nwGUI.docEditor.replaceText(text)
-    doc = nwGUI.docEditor.document()
+    docEditor.replaceText(text)
+    doc = docEditor.document()
 
     # Select/Cut/Copy/Paste/Undo/Redo
     # ===============================
@@ -403,26 +498,26 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     QApplication.clipboard().clear()
 
     # Select All
-    assert nwGUI.docEditor.docAction(nwDocAction.SEL_ALL) is True
-    cursor = nwGUI.docEditor.textCursor()
+    assert docEditor.docAction(nwDocAction.SEL_ALL) is True
+    cursor = docEditor.textCursor()
     assert cursor.hasSelection() is True
     assert cursor.selectedText() == text.replace("\n", "\u2029")
     cursor.clearSelection()
 
     # Select Paragraph
-    nwGUI.docEditor.setCursorPosition(1000)
-    assert nwGUI.docEditor.getCursorPosition() == 1000
-    assert nwGUI.docEditor.docAction(nwDocAction.SEL_PARA) is True
-    cursor = nwGUI.docEditor.textCursor()
+    docEditor.setCursorPosition(1000)
+    assert docEditor.getCursorPosition() == 1000
+    assert docEditor.docAction(nwDocAction.SEL_PARA) is True
+    cursor = docEditor.textCursor()
     assert cursor.selectedText() == ipsumText[1]
 
     # Cut Selected Text
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(1000)
-    assert nwGUI.docEditor.docAction(nwDocAction.SEL_PARA) is True
-    assert nwGUI.docEditor.docAction(nwDocAction.CUT) is True
+    docEditor.replaceText(text)
+    docEditor.setCursorPosition(1000)
+    assert docEditor.docAction(nwDocAction.SEL_PARA) is True
+    assert docEditor.docAction(nwDocAction.CUT) is True
 
-    newText = nwGUI.docEditor.getText()
+    newText = docEditor.getText()
     newPara = list(filter(str.strip, newText.split("\n")))
     assert newPara[0] == "### A Scene"
     assert newPara[1] == ipsumText[0]
@@ -431,23 +526,23 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert newPara[4] == ipsumText[4]
 
     # Paste Back In
-    assert nwGUI.docEditor.docAction(nwDocAction.PASTE) is True
-    assert nwGUI.docEditor.getText() == text
+    assert docEditor.docAction(nwDocAction.PASTE) is True
+    assert docEditor.getText() == text
 
     # Copy Next Paragraph
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(1500)
-    assert nwGUI.docEditor.docAction(nwDocAction.SEL_PARA) is True
-    assert nwGUI.docEditor.docAction(nwDocAction.COPY) is True
+    docEditor.replaceText(text)
+    docEditor.setCursorPosition(1500)
+    assert docEditor.docAction(nwDocAction.SEL_PARA) is True
+    assert docEditor.docAction(nwDocAction.COPY) is True
 
     # Paste at End
-    nwGUI.docEditor.setCursorPosition(doc.characterCount())
-    cursor = nwGUI.docEditor.textCursor()
+    docEditor.setCursorPosition(doc.characterCount())
+    cursor = docEditor.textCursor()
     cursor.insertBlock()
     cursor.insertBlock()
 
-    assert nwGUI.docEditor.docAction(nwDocAction.PASTE) is True
-    newText = nwGUI.docEditor.getText()
+    assert docEditor.docAction(nwDocAction.PASTE) is True
+    newText = docEditor.getText()
     newPara = list(filter(str.strip, newText.split("\n")))
     assert newPara[5] == ipsumText[4]
     assert newPara[6] == ipsumText[2]
@@ -458,217 +553,217 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # ==================
 
     text = "### A Scene\n\n%s" % ipsumText[0]
-    nwGUI.docEditor.replaceText(text)
+    docEditor.replaceText(text)
 
     # Emphasis
-    nwGUI.docEditor.setCursorPosition(50)
-    assert nwGUI.docEditor.docAction(nwDocAction.MD_ITALIC) is True
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "_consectetur_")
-    assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
-    assert nwGUI.docEditor.getText() == text
+    docEditor.setCursorPosition(50)
+    assert docEditor.docAction(nwDocAction.MD_ITALIC) is True
+    assert docEditor.getText() == text.replace("consectetur", "_consectetur_")
+    assert docEditor.docAction(nwDocAction.UNDO) is True
+    assert docEditor.getText() == text
 
     # Strong
-    nwGUI.docEditor.setCursorPosition(50)
-    assert nwGUI.docEditor.docAction(nwDocAction.MD_BOLD) is True
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "**consectetur**")
-    assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
-    assert nwGUI.docEditor.getText() == text
+    docEditor.setCursorPosition(50)
+    assert docEditor.docAction(nwDocAction.MD_BOLD) is True
+    assert docEditor.getText() == text.replace("consectetur", "**consectetur**")
+    assert docEditor.docAction(nwDocAction.UNDO) is True
+    assert docEditor.getText() == text
 
     # Strikeout
-    nwGUI.docEditor.setCursorPosition(50)
-    assert nwGUI.docEditor.docAction(nwDocAction.MD_STRIKE) is True
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "~~consectetur~~")
-    assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
-    assert nwGUI.docEditor.getText() == text
+    docEditor.setCursorPosition(50)
+    assert docEditor.docAction(nwDocAction.MD_STRIKE) is True
+    assert docEditor.getText() == text.replace("consectetur", "~~consectetur~~")
+    assert docEditor.docAction(nwDocAction.UNDO) is True
+    assert docEditor.getText() == text
 
     # Redo
-    assert nwGUI.docEditor.docAction(nwDocAction.REDO) is True
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "~~consectetur~~")
-    assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
-    assert nwGUI.docEditor.getText() == text
+    assert docEditor.docAction(nwDocAction.REDO) is True
+    assert docEditor.getText() == text.replace("consectetur", "~~consectetur~~")
+    assert docEditor.docAction(nwDocAction.UNDO) is True
+    assert docEditor.getText() == text
 
     # Shortcodes
     # ==========
 
     text = "### A Scene\n\n%s" % ipsumText[0]
-    nwGUI.docEditor.replaceText(text)
+    docEditor.replaceText(text)
 
     # Italic
-    nwGUI.docEditor.setCursorPosition(46)
-    assert nwGUI.docEditor.docAction(nwDocAction.SC_ITALIC) is True
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "[i]consectetur[/i]")
-    assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
-    assert nwGUI.docEditor.getText() == text
+    docEditor.setCursorPosition(46)
+    assert docEditor.docAction(nwDocAction.SC_ITALIC) is True
+    assert docEditor.getText() == text.replace("consectetur", "[i]consectetur[/i]")
+    assert docEditor.docAction(nwDocAction.UNDO) is True
+    assert docEditor.getText() == text
 
     # Bold
-    nwGUI.docEditor.setCursorPosition(46)
-    assert nwGUI.docEditor.docAction(nwDocAction.SC_BOLD) is True
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "[b]consectetur[/b]")
-    assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
-    assert nwGUI.docEditor.getText() == text
+    docEditor.setCursorPosition(46)
+    assert docEditor.docAction(nwDocAction.SC_BOLD) is True
+    assert docEditor.getText() == text.replace("consectetur", "[b]consectetur[/b]")
+    assert docEditor.docAction(nwDocAction.UNDO) is True
+    assert docEditor.getText() == text
 
     # Strikethrough
-    nwGUI.docEditor.setCursorPosition(46)
-    assert nwGUI.docEditor.docAction(nwDocAction.SC_STRIKE) is True
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "[s]consectetur[/s]")
-    assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
-    assert nwGUI.docEditor.getText() == text
+    docEditor.setCursorPosition(46)
+    assert docEditor.docAction(nwDocAction.SC_STRIKE) is True
+    assert docEditor.getText() == text.replace("consectetur", "[s]consectetur[/s]")
+    assert docEditor.docAction(nwDocAction.UNDO) is True
+    assert docEditor.getText() == text
 
     # Underline
-    nwGUI.docEditor.setCursorPosition(46)
-    assert nwGUI.docEditor.docAction(nwDocAction.SC_ULINE) is True
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "[u]consectetur[/u]")
-    assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
-    assert nwGUI.docEditor.getText() == text
+    docEditor.setCursorPosition(46)
+    assert docEditor.docAction(nwDocAction.SC_ULINE) is True
+    assert docEditor.getText() == text.replace("consectetur", "[u]consectetur[/u]")
+    assert docEditor.docAction(nwDocAction.UNDO) is True
+    assert docEditor.getText() == text
 
     # Mark
-    nwGUI.docEditor.setCursorPosition(46)
-    assert nwGUI.docEditor.docAction(nwDocAction.SC_MARK) is True
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "[m]consectetur[/m]")
-    assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
-    assert nwGUI.docEditor.getText() == text
+    docEditor.setCursorPosition(46)
+    assert docEditor.docAction(nwDocAction.SC_MARK) is True
+    assert docEditor.getText() == text.replace("consectetur", "[m]consectetur[/m]")
+    assert docEditor.docAction(nwDocAction.UNDO) is True
+    assert docEditor.getText() == text
 
     # Superscript
-    nwGUI.docEditor.setCursorPosition(46)
-    assert nwGUI.docEditor.docAction(nwDocAction.SC_SUP) is True
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "[sup]consectetur[/sup]")
-    assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
-    assert nwGUI.docEditor.getText() == text
+    docEditor.setCursorPosition(46)
+    assert docEditor.docAction(nwDocAction.SC_SUP) is True
+    assert docEditor.getText() == text.replace("consectetur", "[sup]consectetur[/sup]")
+    assert docEditor.docAction(nwDocAction.UNDO) is True
+    assert docEditor.getText() == text
 
     # Subscript
-    nwGUI.docEditor.setCursorPosition(46)
-    assert nwGUI.docEditor.docAction(nwDocAction.SC_SUB) is True
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "[sub]consectetur[/sub]")
-    assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
-    assert nwGUI.docEditor.getText() == text
+    docEditor.setCursorPosition(46)
+    assert docEditor.docAction(nwDocAction.SC_SUB) is True
+    assert docEditor.getText() == text.replace("consectetur", "[sub]consectetur[/sub]")
+    assert docEditor.docAction(nwDocAction.UNDO) is True
+    assert docEditor.getText() == text
 
     # Quotes
     # ======
 
     text = "### A Scene\n\n%s" % ipsumText[0]
-    nwGUI.docEditor.replaceText(text)
+    docEditor.replaceText(text)
 
     # Add Single Quotes
-    nwGUI.docEditor.setCursorPosition(50)
-    assert nwGUI.docEditor.docAction(nwDocAction.S_QUOTE) is True
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "\u2018consectetur\u2019")
-    assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
-    assert nwGUI.docEditor.getText() == text
+    docEditor.setCursorPosition(50)
+    assert docEditor.docAction(nwDocAction.S_QUOTE) is True
+    assert docEditor.getText() == text.replace("consectetur", "\u2018consectetur\u2019")
+    assert docEditor.docAction(nwDocAction.UNDO) is True
+    assert docEditor.getText() == text
 
     # Add Double Quotes
-    nwGUI.docEditor.setCursorPosition(50)
-    assert nwGUI.docEditor.docAction(nwDocAction.D_QUOTE) is True
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "\u201cconsectetur\u201d")
-    assert nwGUI.docEditor.docAction(nwDocAction.UNDO) is True
-    assert nwGUI.docEditor.getText() == text
+    docEditor.setCursorPosition(50)
+    assert docEditor.docAction(nwDocAction.D_QUOTE) is True
+    assert docEditor.getText() == text.replace("consectetur", "\u201cconsectetur\u201d")
+    assert docEditor.docAction(nwDocAction.UNDO) is True
+    assert docEditor.getText() == text
 
     # Replace Single Quotes
     repText = text.replace("consectetur", "'consectetur'")
-    nwGUI.docEditor.replaceText(repText)
-    assert nwGUI.docEditor.docAction(nwDocAction.SEL_ALL) is True
-    assert nwGUI.docEditor.docAction(nwDocAction.REPL_SNG) is True
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "\u2018consectetur\u2019")
+    docEditor.replaceText(repText)
+    assert docEditor.docAction(nwDocAction.SEL_ALL) is True
+    assert docEditor.docAction(nwDocAction.REPL_SNG) is True
+    assert docEditor.getText() == text.replace("consectetur", "\u2018consectetur\u2019")
 
     # Replace Double Quotes
     repText = text.replace("consectetur", "\"consectetur\"")
-    nwGUI.docEditor.replaceText(repText)
-    assert nwGUI.docEditor.docAction(nwDocAction.SEL_ALL) is True
-    assert nwGUI.docEditor.docAction(nwDocAction.REPL_DBL) is True
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "\u201cconsectetur\u201d")
+    docEditor.replaceText(repText)
+    assert docEditor.docAction(nwDocAction.SEL_ALL) is True
+    assert docEditor.docAction(nwDocAction.REPL_DBL) is True
+    assert docEditor.getText() == text.replace("consectetur", "\u201cconsectetur\u201d")
 
     # Remove Line Breaks
     # ==================
 
     text = "### A Scene\n\n%s" % ipsumText[0]
     repText = text[:100] + text[100:].replace(" ", "\n", 3)
-    nwGUI.docEditor.replaceText(repText)
-    assert nwGUI.docEditor.docAction(nwDocAction.RM_BREAKS) is True
-    assert nwGUI.docEditor.getText().strip() == text.strip()
+    docEditor.replaceText(repText)
+    assert docEditor.docAction(nwDocAction.RM_BREAKS) is True
+    assert docEditor.getText().strip() == text.strip()
 
     # Format Block
     # ============
 
     text = "## Scene Title\n\nScene text.\n\n"
-    nwGUI.docEditor.replaceText(text)
+    docEditor.replaceText(text)
 
     # Header 1
-    nwGUI.docEditor.setCursorPosition(0)
-    assert nwGUI.docEditor.docAction(nwDocAction.BLOCK_H1) is True
-    assert nwGUI.docEditor.getText() == "# Scene Title\n\nScene text.\n\n"
+    docEditor.setCursorPosition(0)
+    assert docEditor.docAction(nwDocAction.BLOCK_H1) is True
+    assert docEditor.getText() == "# Scene Title\n\nScene text.\n\n"
 
     # Header 2
-    nwGUI.docEditor.setCursorPosition(0)
-    assert nwGUI.docEditor.docAction(nwDocAction.BLOCK_H2) is True
-    assert nwGUI.docEditor.getText() == "## Scene Title\n\nScene text.\n\n"
+    docEditor.setCursorPosition(0)
+    assert docEditor.docAction(nwDocAction.BLOCK_H2) is True
+    assert docEditor.getText() == "## Scene Title\n\nScene text.\n\n"
 
     # Header 3
-    nwGUI.docEditor.setCursorPosition(0)
-    assert nwGUI.docEditor.docAction(nwDocAction.BLOCK_H3) is True
-    assert nwGUI.docEditor.getText() == "### Scene Title\n\nScene text.\n\n"
+    docEditor.setCursorPosition(0)
+    assert docEditor.docAction(nwDocAction.BLOCK_H3) is True
+    assert docEditor.getText() == "### Scene Title\n\nScene text.\n\n"
 
     # Header 4
-    nwGUI.docEditor.setCursorPosition(0)
-    assert nwGUI.docEditor.docAction(nwDocAction.BLOCK_H4) is True
-    assert nwGUI.docEditor.getText() == "#### Scene Title\n\nScene text.\n\n"
+    docEditor.setCursorPosition(0)
+    assert docEditor.docAction(nwDocAction.BLOCK_H4) is True
+    assert docEditor.getText() == "#### Scene Title\n\nScene text.\n\n"
 
     # Comment
-    nwGUI.docEditor.setCursorPosition(20)
-    assert nwGUI.docEditor.docAction(nwDocAction.BLOCK_COM) is True
-    assert nwGUI.docEditor.getText() == "#### Scene Title\n\n% Scene text.\n\n"
+    docEditor.setCursorPosition(20)
+    assert docEditor.docAction(nwDocAction.BLOCK_COM) is True
+    assert docEditor.getText() == "#### Scene Title\n\n% Scene text.\n\n"
 
     # Ignore Text
-    nwGUI.docEditor.setCursorPosition(20)
-    assert nwGUI.docEditor.docAction(nwDocAction.BLOCK_IGN) is True
-    assert nwGUI.docEditor.getText() == "#### Scene Title\n\n%~ Scene text.\n\n"
+    docEditor.setCursorPosition(20)
+    assert docEditor.docAction(nwDocAction.BLOCK_IGN) is True
+    assert docEditor.getText() == "#### Scene Title\n\n%~ Scene text.\n\n"
 
     # Text
-    nwGUI.docEditor.setCursorPosition(20)
-    assert nwGUI.docEditor.docAction(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "#### Scene Title\n\nScene text.\n\n"
+    docEditor.setCursorPosition(20)
+    assert docEditor.docAction(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "#### Scene Title\n\nScene text.\n\n"
 
     # Align Left
-    nwGUI.docEditor.setCursorPosition(20)
-    assert nwGUI.docEditor.docAction(nwDocAction.ALIGN_L) is True
-    assert nwGUI.docEditor.getText() == "#### Scene Title\n\nScene text. <<\n\n"
+    docEditor.setCursorPosition(20)
+    assert docEditor.docAction(nwDocAction.ALIGN_L) is True
+    assert docEditor.getText() == "#### Scene Title\n\nScene text. <<\n\n"
 
     # Align Right
-    nwGUI.docEditor.setCursorPosition(20)
-    assert nwGUI.docEditor.docAction(nwDocAction.ALIGN_R) is True
-    assert nwGUI.docEditor.getText() == "#### Scene Title\n\n>> Scene text.\n\n"
+    docEditor.setCursorPosition(20)
+    assert docEditor.docAction(nwDocAction.ALIGN_R) is True
+    assert docEditor.getText() == "#### Scene Title\n\n>> Scene text.\n\n"
 
     # Align Centre
-    nwGUI.docEditor.setCursorPosition(20)
-    assert nwGUI.docEditor.docAction(nwDocAction.ALIGN_C) is True
-    assert nwGUI.docEditor.getText() == "#### Scene Title\n\n>> Scene text. <<\n\n"
+    docEditor.setCursorPosition(20)
+    assert docEditor.docAction(nwDocAction.ALIGN_C) is True
+    assert docEditor.getText() == "#### Scene Title\n\n>> Scene text. <<\n\n"
 
     # Indent Left
-    nwGUI.docEditor.setCursorPosition(20)
-    assert nwGUI.docEditor.docAction(nwDocAction.INDENT_L) is True
-    assert nwGUI.docEditor.getText() == "#### Scene Title\n\n> Scene text.\n\n"
+    docEditor.setCursorPosition(20)
+    assert docEditor.docAction(nwDocAction.INDENT_L) is True
+    assert docEditor.getText() == "#### Scene Title\n\n> Scene text.\n\n"
 
     # Indent Right
-    nwGUI.docEditor.setCursorPosition(20)
-    assert nwGUI.docEditor.docAction(nwDocAction.INDENT_R) is True
-    assert nwGUI.docEditor.getText() == "#### Scene Title\n\n> Scene text. <\n\n"
+    docEditor.setCursorPosition(20)
+    assert docEditor.docAction(nwDocAction.INDENT_R) is True
+    assert docEditor.getText() == "#### Scene Title\n\n> Scene text. <\n\n"
 
     # Text (Reset)
-    nwGUI.docEditor.setCursorPosition(20)
-    assert nwGUI.docEditor.docAction(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "#### Scene Title\n\nScene text.\n\n"
+    docEditor.setCursorPosition(20)
+    assert docEditor.docAction(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "#### Scene Title\n\nScene text.\n\n"
 
     # Invalid Actions
     # ===============
 
     # No Document Handle
-    nwGUI.docEditor._docHandle = None
-    assert nwGUI.docEditor.docAction(nwDocAction.BLOCK_TXT) is False
-    nwGUI.docEditor._docHandle = C.hSceneDoc
+    docEditor._docHandle = None
+    assert docEditor.docAction(nwDocAction.BLOCK_TXT) is False
+    docEditor._docHandle = C.hSceneDoc
 
     # Wrong Action Type
-    assert nwGUI.docEditor.docAction(None) is False
+    assert docEditor.docAction(None) is False
 
     # Unknown Action
-    assert nwGUI.docEditor.docAction(nwDocAction.NO_ACTION) is False
+    assert docEditor.docAction(nwDocAction.NO_ACTION) is False
 
     # qtbot.stop()
 
@@ -685,8 +780,8 @@ def testGuiEditor_ToolBar(qtbot, nwGUI, projPath, mockRnd):
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
-    docEditor: GuiDocEditor = nwGUI.docEditor
-    docToolBar: GuiDocToolBar = docEditor.docToolBar
+    docEditor = nwGUI.docEditor
+    docToolBar = docEditor.docToolBar
 
     text = (
         "### A Scene\n\n"
@@ -784,75 +879,96 @@ def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd
     """Test the document insert functions."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
-
-    text = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
-    nwGUI.docEditor.replaceText(text)
+    docEditor = nwGUI.docEditor
+    text = "### A Scene\n\n%s" % ipsumText[0]
 
     # Insert Text
     # ===========
 
-    text = "### A Scene\n\n%s" % ipsumText[0]
-    nwGUI.docEditor.replaceText(text)
-
     # No Document Handle
-    nwGUI.docEditor._docHandle = None
-    nwGUI.docEditor.setCursorPosition(24)
-    assert nwGUI.docEditor.insertText("Stuff") is False
-    nwGUI.docEditor._docHandle = C.hSceneDoc
+    docEditor.replaceText(text)
+    docEditor._docHandle = None
+    docEditor.setCursorPosition(24)
+    docEditor.insertText("Stuff")
+    assert docEditor.getText() == text
+    docEditor._docHandle = C.hSceneDoc
 
     # Insert String
-    nwGUI.docEditor.setCursorPosition(24)
-    assert nwGUI.docEditor.insertText(", ipsumer,") is True
-    assert nwGUI.docEditor.getText() == text[:24] + ", ipsumer," + text[24:]
+    docEditor.replaceText(text)
+    docEditor.setCursorPosition(24)
+    docEditor.insertText(", ipsumer,")
+    assert docEditor.getText() == text[:24] + ", ipsumer," + text[24:]
 
     # Single Quotes
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(41)
-    assert nwGUI.docEditor.insertText(nwDocInsert.QUOTE_LS) is True
-    nwGUI.docEditor.setCursorPosition(53)
-    assert nwGUI.docEditor.insertText(nwDocInsert.QUOTE_RS) is True
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "\u2018consectetur\u2019")
+    docEditor.replaceText(text)
+    docEditor.setCursorPosition(41)
+    docEditor.insertText(nwDocInsert.QUOTE_LS)
+    docEditor.setCursorPosition(53)
+    docEditor.insertText(nwDocInsert.QUOTE_RS)
+    assert docEditor.getText() == text.replace("consectetur", "\u2018consectetur\u2019")
 
     # Double Quotes
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(41)
-    assert nwGUI.docEditor.insertText(nwDocInsert.QUOTE_LD) is True
-    nwGUI.docEditor.setCursorPosition(53)
-    assert nwGUI.docEditor.insertText(nwDocInsert.QUOTE_RD) is True
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "\u201cconsectetur\u201d")
+    docEditor.replaceText(text)
+    docEditor.setCursorPosition(41)
+    docEditor.insertText(nwDocInsert.QUOTE_LD)
+    docEditor.setCursorPosition(53)
+    docEditor.insertText(nwDocInsert.QUOTE_RD)
+    assert docEditor.getText() == text.replace("consectetur", "\u201cconsectetur\u201d")
 
     # Invalid Inserts
-    assert nwGUI.docEditor.insertText(nwDocInsert.NO_INSERT) is False
-    assert nwGUI.docEditor.insertText(123) is False
+    docEditor.replaceText(text)
+    docEditor.insertText(nwDocInsert.NO_INSERT)
+    assert docEditor.getText() == text
+    docEditor.insertText(123)
+    assert docEditor.getText() == text
+
+    # Insert Comments
+    # ===============
+
+    docEditor.replaceText(text)
+    count = docEditor.document().characterCount()
+
+    # Invalid Position
+    docEditor.setCursorPosition(12)
+    docEditor.insertText(nwDocInsert.FOOTNOTE)
+    assert docEditor.getText() == text
+
+    # Valid Position
+    docEditor.setCursorPosition(count)
+    docEditor.insertText(nwDocInsert.FOOTNOTE)
+    assert "[footnote:" in docEditor.getText()
+    assert "%Footnote." in docEditor.getText()
+    assert docEditor.getCursorPosition() > count
 
     # Insert KeyWords
     # ===============
 
     text = "### A Scene\n\n\n%s" % ipsumText[0]
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorLine(3)
+    docEditor.replaceText(text)
+    docEditor.setCursorLine(3)
 
     # Invalid Keyword
-    assert nwGUI.docEditor.insertKeyWord("stuff") is False
-    assert nwGUI.docEditor.getText() == text
-
-    # Valid Keyword
-    assert nwGUI.docEditor.insertKeyWord(nwKeyWords.POV_KEY) is True
-    assert nwGUI.docEditor.insertText("Jane\n")
-    assert nwGUI.docEditor.getText() == text.replace(
-        "\n\n\n", "\n\n@pov: Jane\n\n", 1
-    )
+    docEditor.insertKeyWord("stuff")
+    assert docEditor.getText() == text
 
     # Invalid Block
     with monkeypatch.context() as mp:
         mp.setattr(QTextBlock, "isValid", lambda *a, **k: False)
-        assert nwGUI.docEditor.insertKeyWord(nwKeyWords.POV_KEY) is False
+        docEditor.insertKeyWord(nwKeyWords.POV_KEY)
+        assert docEditor.getText() == text
+
+    # Valid Keyword
+    docEditor.insertKeyWord(nwKeyWords.POV_KEY)
+    docEditor.insertText("Jane\n")
+    assert docEditor.getText() == text.replace(
+        "\n\n\n", "\n\n@pov: Jane\n\n", 1
+    )
 
     # Insert In-Block
-    nwGUI.docEditor.setCursorPosition(20)
-    assert nwGUI.docEditor.insertKeyWord(nwKeyWords.CHAR_KEY) is True
-    assert nwGUI.docEditor.insertText("John")
-    assert nwGUI.docEditor.getText() == text.replace(
+    docEditor.setCursorPosition(20)
+    docEditor.insertKeyWord(nwKeyWords.CHAR_KEY)
+    docEditor.insertText("John")
+    assert docEditor.getText() == text.replace(
         "\n\n\n", "\n\n@pov: Jane\n@char: John\n\n", 1
     )
 
@@ -866,38 +982,39 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     """Test the text manipulation functions."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
+    docEditor = nwGUI.docEditor
 
     text = "### A Scene\n\n%s" % "\n\n".join(ipsumText)
-    nwGUI.docEditor.replaceText(text)
+    docEditor.replaceText(text)
 
     # Wrap Selection
     # ==============
 
     text = "### A Scene\n\n%s" % "\n\n".join(ipsumText[0:2])
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(45)
+    docEditor.replaceText(text)
+    docEditor.setCursorPosition(45)
 
     # Wrap Equal
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(45)
-    nwGUI.docEditor._wrapSelection("=")
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "=consectetur=")
+    docEditor.replaceText(text)
+    docEditor.setCursorPosition(45)
+    docEditor._wrapSelection("=")
+    assert docEditor.getText() == text.replace("consectetur", "=consectetur=")
 
     # Wrap Unequal
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(45)
-    nwGUI.docEditor._wrapSelection("=", "*")
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "=consectetur*")
+    docEditor.replaceText(text)
+    docEditor.setCursorPosition(45)
+    docEditor._wrapSelection("=", "*")
+    assert docEditor.getText() == text.replace("consectetur", "=consectetur*")
 
     # Past Paragraph
-    nwGUI.docEditor.replaceText(text)
-    cursor = nwGUI.docEditor.textCursor()
+    docEditor.replaceText(text)
+    cursor = docEditor.textCursor()
     cursor.setPosition(13, QTextCursor.MoveAnchor)
     cursor.setPosition(1000, QTextCursor.KeepAnchor)
-    nwGUI.docEditor.setTextCursor(cursor)
-    nwGUI.docEditor._wrapSelection("=")
+    docEditor.setTextCursor(cursor)
+    docEditor._wrapSelection("=")
 
-    newText = nwGUI.docEditor.getText()
+    newText = docEditor.getText()
     newPara = list(filter(str.strip, newText.split("\n")))
     assert newPara[1] == "="+ipsumText[0]+"="
     assert newPara[2] == ipsumText[1]
@@ -908,101 +1025,101 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     text = "### A Scene\n\n%s" % "\n\n".join(ipsumText[0:2])
 
     # Block format repetition
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(39)
-    nwGUI.docEditor._toggleFormat(1, "=")
-    assert nwGUI.docEditor.getText() == text.replace("amet", "=amet=", 1)
-    nwGUI.docEditor._toggleFormat(1, "=")
-    assert nwGUI.docEditor.getText() == text.replace("amet", "=amet=", 1)
+    docEditor.replaceText(text)
+    docEditor.setCursorPosition(39)
+    docEditor._toggleFormat(1, "=")
+    assert docEditor.getText() == text.replace("amet", "=amet=", 1)
+    docEditor._toggleFormat(1, "=")
+    assert docEditor.getText() == text.replace("amet", "=amet=", 1)
 
     # Wrap Single Equal
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(45)
-    nwGUI.docEditor._toggleFormat(1, "=")
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "=consectetur=")
+    docEditor.replaceText(text)
+    docEditor.setCursorPosition(45)
+    docEditor._toggleFormat(1, "=")
+    assert docEditor.getText() == text.replace("consectetur", "=consectetur=")
 
     # Past Paragraph
-    nwGUI.docEditor.replaceText(text)
-    cursor = nwGUI.docEditor.textCursor()
+    docEditor.replaceText(text)
+    cursor = docEditor.textCursor()
     cursor.setPosition(13, QTextCursor.MoveAnchor)
     cursor.setPosition(1000, QTextCursor.KeepAnchor)
-    nwGUI.docEditor.setTextCursor(cursor)
-    nwGUI.docEditor._toggleFormat(1, "=")
+    docEditor.setTextCursor(cursor)
+    docEditor._toggleFormat(1, "=")
 
-    newText = nwGUI.docEditor.getText()
+    newText = docEditor.getText()
     newPara = list(filter(str.strip, newText.split("\n")))
     assert newPara[1] == "="+ipsumText[0]+"="
     assert newPara[2] == ipsumText[1]
 
     # Wrap Double Equal
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(45)
-    nwGUI.docEditor._toggleFormat(2, "=")
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "==consectetur==")
+    docEditor.replaceText(text)
+    docEditor.setCursorPosition(45)
+    docEditor._toggleFormat(2, "=")
+    assert docEditor.getText() == text.replace("consectetur", "==consectetur==")
 
     # Toggle Double Equal with Selection
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorSelection(41, 11)
-    nwGUI.docEditor._toggleFormat(2, "=")
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "==consectetur==")
-    assert nwGUI.docEditor.getSelectedText() == "consectetur"
-    nwGUI.docEditor._toggleFormat(2, "=")
-    assert nwGUI.docEditor.getText() == text
-    assert nwGUI.docEditor.getSelectedText() == "consectetur"
+    docEditor.replaceText(text)
+    docEditor.setCursorSelection(41, 11)
+    docEditor._toggleFormat(2, "=")
+    assert docEditor.getText() == text.replace("consectetur", "==consectetur==")
+    assert docEditor.getSelectedText() == "consectetur"
+    docEditor._toggleFormat(2, "=")
+    assert docEditor.getText() == text
+    assert docEditor.getSelectedText() == "consectetur"
 
     # Toggle Double Equal
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(45)
-    nwGUI.docEditor._toggleFormat(2, "=")
-    nwGUI.docEditor._toggleFormat(2, "=")
-    assert nwGUI.docEditor.getText() == text
+    docEditor.replaceText(text)
+    docEditor.setCursorPosition(45)
+    docEditor._toggleFormat(2, "=")
+    docEditor._toggleFormat(2, "=")
+    assert docEditor.getText() == text
 
     # Toggle Triple+Double Equal
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(45)
-    nwGUI.docEditor._toggleFormat(3, "=")
-    nwGUI.docEditor._toggleFormat(2, "=")
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "=consectetur=")
+    docEditor.replaceText(text)
+    docEditor.setCursorPosition(45)
+    docEditor._toggleFormat(3, "=")
+    docEditor._toggleFormat(2, "=")
+    assert docEditor.getText() == text.replace("consectetur", "=consectetur=")
 
     # Toggle Unequal
     repText = text.replace("consectetur", "=consectetur==")
-    nwGUI.docEditor.replaceText(repText)
-    nwGUI.docEditor.setCursorPosition(45)
-    nwGUI.docEditor._toggleFormat(1, "=")
-    assert nwGUI.docEditor.getText() == text.replace("consectetur", "consectetur=")
-    nwGUI.docEditor._toggleFormat(1, "=")
-    assert nwGUI.docEditor.getText() == repText
+    docEditor.replaceText(repText)
+    docEditor.setCursorPosition(45)
+    docEditor._toggleFormat(1, "=")
+    assert docEditor.getText() == text.replace("consectetur", "consectetur=")
+    docEditor._toggleFormat(1, "=")
+    assert docEditor.getText() == repText
 
     # Replace Quotes
     # ==============
 
     # No Selection
     text = "### A Scene\n\n%s" % ipsumText[0].replace("consectetur", "=consectetur=")
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(45)
-    nwGUI.docEditor._replaceQuotes("=", "<", ">")
-    assert nwGUI.docEditor.getText() == text
+    docEditor.replaceText(text)
+    docEditor.setCursorPosition(45)
+    docEditor._replaceQuotes("=", "<", ">")
+    assert docEditor.getText() == text
 
     # First Paragraph Selected
     # This should not replace anything in second paragraph
     text = "### A Scene\n\n%s" % "\n\n".join(ipsumText[0:2]).replace("ipsum", "=ipsum=")
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(45)
-    assert nwGUI.docEditor.docAction(nwDocAction.SEL_PARA)
-    nwGUI.docEditor._replaceQuotes("=", "<", ">")
+    docEditor.replaceText(text)
+    docEditor.setCursorPosition(45)
+    assert docEditor.docAction(nwDocAction.SEL_PARA)
+    docEditor._replaceQuotes("=", "<", ">")
 
-    newText = nwGUI.docEditor.getText()
+    newText = docEditor.getText()
     newPara = list(filter(str.strip, newText.split("\n")))
     assert newPara[1] == ipsumText[0].replace("ipsum", "<ipsum>")
     assert newPara[2] == ipsumText[1].replace("ipsum", "=ipsum=")
 
     # Edge of Document
     text = ipsumText[0].replace("Lorem", "=Lorem=")
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(45)
-    assert nwGUI.docEditor.docAction(nwDocAction.SEL_ALL)
-    nwGUI.docEditor._replaceQuotes("=", "<", ">")
-    assert nwGUI.docEditor.getText() == text.replace("=Lorem=", "<Lorem>")
+    docEditor.replaceText(text)
+    docEditor.setCursorPosition(45)
+    assert docEditor.docAction(nwDocAction.SEL_ALL)
+    docEditor._replaceQuotes("=", "<", ">")
+    assert docEditor.getText() == text.replace("=Lorem=", "<Lorem>")
 
     # Remove Line Breaks
     # ==================
@@ -1011,34 +1128,34 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     parTwo = ipsumText[1].replace(" ", "\n", 5)
 
     # Check Blocks
-    cursor = nwGUI.docEditor.textCursor()
+    cursor = docEditor.textCursor()
     cursor.clearSelection()
     text = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(45)
-    assert len(nwGUI.docEditor._selectedBlocks(cursor)) == 0
+    docEditor.replaceText(text)
+    docEditor.setCursorPosition(45)
+    assert len(docEditor._selectedBlocks(cursor)) == 0
 
     cursor.select(QTextCursor.SelectionType.Document)
-    assert len(nwGUI.docEditor._selectedBlocks(cursor)) == 15
+    assert len(docEditor._selectedBlocks(cursor)) == 15
 
     # Remove All
     text = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
-    nwGUI.docEditor.replaceText(text)
-    nwGUI.docEditor.setCursorPosition(45)
-    nwGUI.docEditor._removeInParLineBreaks()
-    assert nwGUI.docEditor.getText() == "### A Scene\n\n%s\n" % "\n\n".join(ipsumText[0:2])
+    docEditor.replaceText(text)
+    docEditor.setCursorPosition(45)
+    docEditor._removeInParLineBreaks()
+    assert docEditor.getText() == "### A Scene\n\n%s\n" % "\n\n".join(ipsumText[0:2])
 
     # Remove in First Paragraph
     # Second paragraphs should remain unchanged
     text = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
-    nwGUI.docEditor.replaceText(text)
-    cursor = nwGUI.docEditor.textCursor()
+    docEditor.replaceText(text)
+    cursor = docEditor.textCursor()
     cursor.setPosition(16, QTextCursor.MoveAnchor)
     cursor.setPosition(680, QTextCursor.KeepAnchor)
-    nwGUI.docEditor.setTextCursor(cursor)
-    nwGUI.docEditor._removeInParLineBreaks()
+    docEditor.setTextCursor(cursor)
+    docEditor._removeInParLineBreaks()
 
-    newText = nwGUI.docEditor.getText()
+    newText = docEditor.getText()
     newPara = list(filter(str.strip, newText.split("\n")))
     twoBits = parTwo.split()
     assert newPara[1] == ipsumText[0]
@@ -1052,21 +1169,21 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # Key Press Events
     # ================
     text = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
-    nwGUI.docEditor.replaceText(text)
-    assert nwGUI.docEditor.getText() == text
+    docEditor.replaceText(text)
+    assert docEditor.getText() == text
 
     # Select All
-    qtbot.keyClick(nwGUI.docEditor, Qt.Key_A, modifier=Qt.ControlModifier, delay=KEY_DELAY)
-    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Delete, delay=KEY_DELAY)
-    assert nwGUI.docEditor.getText() == ""
+    qtbot.keyClick(docEditor, Qt.Key_A, modifier=Qt.ControlModifier, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key_Delete, delay=KEY_DELAY)
+    assert docEditor.getText() == ""
 
     # Undo
-    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Z, modifier=Qt.ControlModifier, delay=KEY_DELAY)
-    assert nwGUI.docEditor.getText() == text
+    qtbot.keyClick(docEditor, Qt.Key_Z, modifier=Qt.ControlModifier, delay=KEY_DELAY)
+    assert docEditor.getText() == text
 
     # Redo
-    qtbot.keyClick(nwGUI.docEditor, Qt.Key_Y, modifier=Qt.ControlModifier, delay=KEY_DELAY)
-    assert nwGUI.docEditor.getText() == ""
+    qtbot.keyClick(docEditor, Qt.Key_Y, modifier=Qt.ControlModifier, delay=KEY_DELAY)
+    assert docEditor.getText() == ""
 
     # qtbot.stop()
 
@@ -1078,332 +1195,333 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, projPath, ipsumText
     """Test the block formatting function."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
+    docEditor = nwGUI.docEditor
 
     # Invalid and Generic
     # ===================
 
     text = "### A Scene\n\n%s" % ipsumText[0]
-    nwGUI.docEditor.replaceText(text)
+    docEditor.replaceText(text)
 
     # Invalid Block
-    nwGUI.docEditor.setCursorPosition(0)
+    docEditor.setCursorPosition(0)
     with monkeypatch.context() as mp:
         mp.setattr(QTextBlock, "isValid", lambda *a, **k: False)
-        assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is False
+        assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is False
 
     # Keyword
-    nwGUI.docEditor.replaceText("@pov: Jane\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is False
-    assert nwGUI.docEditor.getText() == "@pov: Jane\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 5
+    docEditor.replaceText("@pov: Jane\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is False
+    assert docEditor.getText() == "@pov: Jane\n\n"
+    assert docEditor.getCursorPosition() == 5
 
     # Unsupported Format
-    nwGUI.docEditor.replaceText("% Comment\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.NO_ACTION) is False
+    docEditor.replaceText("% Comment\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.NO_ACTION) is False
 
     # Block Stripping : Left Side
     # ===========================
 
     # Strip Comment w/Space
-    nwGUI.docEditor.replaceText("% Comment\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Comment\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 3
+    docEditor.replaceText("% Comment\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Comment\n\n"
+    assert docEditor.getCursorPosition() == 3
 
     # Strip Comment wo/Space
-    nwGUI.docEditor.replaceText("%Comment\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Comment\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 4
+    docEditor.replaceText("%Comment\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Comment\n\n"
+    assert docEditor.getCursorPosition() == 4
 
     # Strip Header 1
-    nwGUI.docEditor.replaceText("# Title\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Title\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 3
+    docEditor.replaceText("# Title\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Title\n\n"
+    assert docEditor.getCursorPosition() == 3
 
     # Strip Header 2
-    nwGUI.docEditor.replaceText("## Title\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Title\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 2
+    docEditor.replaceText("## Title\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Title\n\n"
+    assert docEditor.getCursorPosition() == 2
 
     # Strip Header 3
-    nwGUI.docEditor.replaceText("### Title\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Title\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 1
+    docEditor.replaceText("### Title\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Title\n\n"
+    assert docEditor.getCursorPosition() == 1
 
     # Strip Header 4
-    nwGUI.docEditor.replaceText("#### Title\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Title\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 0
+    docEditor.replaceText("#### Title\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Title\n\n"
+    assert docEditor.getCursorPosition() == 0
 
     # Strip Novel Title
-    nwGUI.docEditor.replaceText("#! Title\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Title\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 2
+    docEditor.replaceText("#! Title\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Title\n\n"
+    assert docEditor.getCursorPosition() == 2
 
     # Strip Unnumbered Chapter
-    nwGUI.docEditor.replaceText("##! Title\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Title\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 1
+    docEditor.replaceText("##! Title\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Title\n\n"
+    assert docEditor.getCursorPosition() == 1
 
     # Strip Hard Scene
-    nwGUI.docEditor.replaceText("###! Title\n\n")
-    nwGUI.docEditor.setCursorPosition(6)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Title\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 1
+    docEditor.replaceText("###! Title\n\n")
+    docEditor.setCursorPosition(6)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Title\n\n"
+    assert docEditor.getCursorPosition() == 1
 
     # Strip Text
-    nwGUI.docEditor.replaceText("Generic text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Generic text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 5
+    docEditor.replaceText("Generic text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Generic text\n\n"
+    assert docEditor.getCursorPosition() == 5
 
     # Strip Left Angle Brackets : Double w/Space
-    nwGUI.docEditor.replaceText(">> Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 2
+    docEditor.replaceText(">> Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Some text\n\n"
+    assert docEditor.getCursorPosition() == 2
 
     # Strip Left Angle Brackets : Single w/Space
-    nwGUI.docEditor.replaceText("> Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 3
+    docEditor.replaceText("> Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Some text\n\n"
+    assert docEditor.getCursorPosition() == 3
 
     # Strip Left Angle Brackets : Double wo/Space
-    nwGUI.docEditor.replaceText(">>Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 3
+    docEditor.replaceText(">>Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Some text\n\n"
+    assert docEditor.getCursorPosition() == 3
 
     # Strip Left Angle Brackets : Single wo/Space
-    nwGUI.docEditor.replaceText(">Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 4
+    docEditor.replaceText(">Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Some text\n\n"
+    assert docEditor.getCursorPosition() == 4
 
     # Block Stripping : Right Side
     # ============================
 
     # Strip Right Angle Brackets : Double w/Space
-    nwGUI.docEditor.replaceText("Some text <<\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 5
+    docEditor.replaceText("Some text <<\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Some text\n\n"
+    assert docEditor.getCursorPosition() == 5
 
     # Strip Right Angle Brackets : Single w/Space
-    nwGUI.docEditor.replaceText("Some text <\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 5
+    docEditor.replaceText("Some text <\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Some text\n\n"
+    assert docEditor.getCursorPosition() == 5
 
     # Strip Right Angle Brackets : Double wo/Space
-    nwGUI.docEditor.replaceText("Some text<<\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 5
+    docEditor.replaceText("Some text<<\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Some text\n\n"
+    assert docEditor.getCursorPosition() == 5
 
     # Strip Right Angle Brackets : Single wo/Space
-    nwGUI.docEditor.replaceText("Some text<\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 5
+    docEditor.replaceText("Some text<\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Some text\n\n"
+    assert docEditor.getCursorPosition() == 5
 
     # Block Stripping : Both Sides
     # ============================
 
-    nwGUI.docEditor.replaceText(">> Some text <<\n\n")
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Some text\n\n"
+    docEditor.replaceText(">> Some text <<\n\n")
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Some text\n\n"
 
-    nwGUI.docEditor.replaceText(">Some text <<\n\n")
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Some text\n\n"
+    docEditor.replaceText(">Some text <<\n\n")
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Some text\n\n"
 
-    nwGUI.docEditor.replaceText(">Some text<\n\n")
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Some text\n\n"
+    docEditor.replaceText(">Some text<\n\n")
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Some text\n\n"
 
     # New Formats
     # ===========
 
     # Comment
-    nwGUI.docEditor.replaceText("Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_COM) is True
-    assert nwGUI.docEditor.getText() == "% Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 7
+    docEditor.replaceText("Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_COM) is True
+    assert docEditor.getText() == "% Some text\n\n"
+    assert docEditor.getCursorPosition() == 7
 
     # Toggle Comment w/Space
-    nwGUI.docEditor.replaceText("% Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_COM) is True
-    assert nwGUI.docEditor.getText() == "Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 3
+    docEditor.replaceText("% Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_COM) is True
+    assert docEditor.getText() == "Some text\n\n"
+    assert docEditor.getCursorPosition() == 3
 
     # Toggle Comment wo/Space
-    nwGUI.docEditor.replaceText("%Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_COM) is True
-    assert nwGUI.docEditor.getText() == "Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 4
+    docEditor.replaceText("%Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_COM) is True
+    assert docEditor.getText() == "Some text\n\n"
+    assert docEditor.getCursorPosition() == 4
 
     # Toggle Ignore Text w/Space
-    nwGUI.docEditor.replaceText("%~ Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_IGN) is True
-    assert nwGUI.docEditor.getText() == "Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 2
+    docEditor.replaceText("%~ Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_IGN) is True
+    assert docEditor.getText() == "Some text\n\n"
+    assert docEditor.getCursorPosition() == 2
 
     # Toggle Ignore Text wo/Space
-    nwGUI.docEditor.replaceText("%~Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_IGN) is True
-    assert nwGUI.docEditor.getText() == "Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 3
+    docEditor.replaceText("%~Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_IGN) is True
+    assert docEditor.getText() == "Some text\n\n"
+    assert docEditor.getCursorPosition() == 3
 
     # Header 1
-    nwGUI.docEditor.replaceText("Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_H1) is True
-    assert nwGUI.docEditor.getText() == "# Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 7
+    docEditor.replaceText("Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_H1) is True
+    assert docEditor.getText() == "# Some text\n\n"
+    assert docEditor.getCursorPosition() == 7
 
     # Header 2
-    nwGUI.docEditor.replaceText("Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_H2) is True
-    assert nwGUI.docEditor.getText() == "## Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 8
+    docEditor.replaceText("Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_H2) is True
+    assert docEditor.getText() == "## Some text\n\n"
+    assert docEditor.getCursorPosition() == 8
 
     # Header 3
-    nwGUI.docEditor.replaceText("Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_H3) is True
-    assert nwGUI.docEditor.getText() == "### Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 9
+    docEditor.replaceText("Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_H3) is True
+    assert docEditor.getText() == "### Some text\n\n"
+    assert docEditor.getCursorPosition() == 9
 
     # Header 4
-    nwGUI.docEditor.replaceText("Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_H4) is True
-    assert nwGUI.docEditor.getText() == "#### Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 10
+    docEditor.replaceText("Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_H4) is True
+    assert docEditor.getText() == "#### Some text\n\n"
+    assert docEditor.getCursorPosition() == 10
 
     # Novel Title
-    nwGUI.docEditor.replaceText("Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TTL) is True
-    assert nwGUI.docEditor.getText() == "#! Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 8
+    docEditor.replaceText("Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TTL) is True
+    assert docEditor.getText() == "#! Some text\n\n"
+    assert docEditor.getCursorPosition() == 8
 
     # Unnumbered Chapter
-    nwGUI.docEditor.replaceText("Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_UNN) is True
-    assert nwGUI.docEditor.getText() == "##! Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 9
+    docEditor.replaceText("Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_UNN) is True
+    assert docEditor.getText() == "##! Some text\n\n"
+    assert docEditor.getCursorPosition() == 9
 
     # Hard Scene
-    nwGUI.docEditor.replaceText("Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_HSC) is True
-    assert nwGUI.docEditor.getText() == "###! Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 10
+    docEditor.replaceText("Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_HSC) is True
+    assert docEditor.getText() == "###! Some text\n\n"
+    assert docEditor.getCursorPosition() == 10
 
     # Left Indent
-    nwGUI.docEditor.replaceText("Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.INDENT_L) is True
-    assert nwGUI.docEditor.getText() == "> Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 7
+    docEditor.replaceText("Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.INDENT_L) is True
+    assert docEditor.getText() == "> Some text\n\n"
+    assert docEditor.getCursorPosition() == 7
 
     # Right Indent
-    nwGUI.docEditor.replaceText("Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.INDENT_R) is True
-    assert nwGUI.docEditor.getText() == "Some text <\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 5
+    docEditor.replaceText("Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.INDENT_R) is True
+    assert docEditor.getText() == "Some text <\n\n"
+    assert docEditor.getCursorPosition() == 5
 
     # Right/Left Indent
-    nwGUI.docEditor.replaceText("Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.INDENT_L) is True
-    assert nwGUI.docEditor._formatBlock(nwDocAction.INDENT_R) is True
-    assert nwGUI.docEditor.getText() == "> Some text <\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 7
+    docEditor.replaceText("Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.INDENT_L) is True
+    assert docEditor._formatBlock(nwDocAction.INDENT_R) is True
+    assert docEditor.getText() == "> Some text <\n\n"
+    assert docEditor.getCursorPosition() == 7
 
     # Left Align
-    nwGUI.docEditor.replaceText("Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.ALIGN_L) is True
-    assert nwGUI.docEditor.getText() == "Some text <<\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 5
+    docEditor.replaceText("Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.ALIGN_L) is True
+    assert docEditor.getText() == "Some text <<\n\n"
+    assert docEditor.getCursorPosition() == 5
 
     # Right Align
-    nwGUI.docEditor.replaceText("Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.ALIGN_R) is True
-    assert nwGUI.docEditor.getText() == ">> Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 8
+    docEditor.replaceText("Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.ALIGN_R) is True
+    assert docEditor.getText() == ">> Some text\n\n"
+    assert docEditor.getCursorPosition() == 8
 
     # Centre Align
-    nwGUI.docEditor.replaceText("Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.ALIGN_C) is True
-    assert nwGUI.docEditor.getText() == ">> Some text <<\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 8
+    docEditor.replaceText("Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.ALIGN_C) is True
+    assert docEditor.getText() == ">> Some text <<\n\n"
+    assert docEditor.getCursorPosition() == 8
 
     # Left/Right Align (Overrides)
-    nwGUI.docEditor.replaceText("Some text\n\n")
-    nwGUI.docEditor.setCursorPosition(5)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.ALIGN_L) is True
-    assert nwGUI.docEditor._formatBlock(nwDocAction.ALIGN_R) is True
-    assert nwGUI.docEditor.getText() == ">> Some text\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 8
+    docEditor.replaceText("Some text\n\n")
+    docEditor.setCursorPosition(5)
+    assert docEditor._formatBlock(nwDocAction.ALIGN_L) is True
+    assert docEditor._formatBlock(nwDocAction.ALIGN_R) is True
+    assert docEditor.getText() == ">> Some text\n\n"
+    assert docEditor.getCursorPosition() == 8
 
     # Other Checks
     # ============
 
     # Final Cursor Position Out of Range
-    nwGUI.docEditor.replaceText("#### Title\n\n")
-    nwGUI.docEditor.setCursorPosition(3)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
-    assert nwGUI.docEditor.getText() == "Title\n\n"
-    assert nwGUI.docEditor.getCursorPosition() == 5
+    docEditor.replaceText("#### Title\n\n")
+    docEditor.setCursorPosition(3)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_TXT) is True
+    assert docEditor.getText() == "Title\n\n"
+    assert docEditor.getCursorPosition() == 5
 
     # Third Line
     # This also needs to add a new block
-    nwGUI.docEditor.replaceText("#### Title\n\nThe Text\n\n")
-    nwGUI.docEditor.setCursorLine(3)
-    assert nwGUI.docEditor._formatBlock(nwDocAction.BLOCK_COM) is True
-    assert nwGUI.docEditor.getText() == "#### Title\n\n% The Text\n\n"
+    docEditor.replaceText("#### Title\n\nThe Text\n\n")
+    docEditor.setCursorLine(3)
+    assert docEditor._formatBlock(nwDocAction.BLOCK_COM) is True
+    assert docEditor.getText() == "#### Title\n\n% The Text\n\n"
 
     # qtbot.stop()
 
@@ -1415,69 +1533,70 @@ def testGuiEditor_MultiBlockFormatting(qtbot, nwGUI, projPath, ipsumText, mockRn
     """Test the block formatting function."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
+    docEditor = nwGUI.docEditor
 
     text = "### A Scene\n\n@char: Jane, John\n\n" + "\n\n".join(ipsumText) + "\n\n"
-    nwGUI.docEditor.replaceText(text)
-    assert [x[:5] for x in nwGUI.docEditor.getText().splitlines()] == [
+    docEditor.replaceText(text)
+    assert [x[:5] for x in docEditor.getText().splitlines()] == [
         "### A", "", "@char", "", "Lorem", "", "Nulla", "", "Nulla", "", "Pelle", "", "Integ", ""
     ]
 
     # Toggle Comment
-    cursor = nwGUI.docEditor.textCursor()
+    cursor = docEditor.textCursor()
     cursor.setPosition(50)
     cursor.movePosition(QtMoveRight, QtKeepAnchor, 2000)
-    nwGUI.docEditor.setTextCursor(cursor)
+    docEditor.setTextCursor(cursor)
 
-    nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_COM)
-    assert [x[:5] for x in nwGUI.docEditor.getText().splitlines()] == [
+    docEditor._iterFormatBlocks(nwDocAction.BLOCK_COM)
+    assert [x[:5] for x in docEditor.getText().splitlines()] == [
         "### A", "", "@char", "", "% Lor", "", "% Nul", "", "% Nul", "", "% Pel", "", "Integ", ""
     ]
 
     # Un-toggle the second
-    cursor = nwGUI.docEditor.textCursor()
+    cursor = docEditor.textCursor()
     cursor.setPosition(800)
-    nwGUI.docEditor.setTextCursor(cursor)
+    docEditor.setTextCursor(cursor)
 
-    nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_COM)
-    assert [x[:5] for x in nwGUI.docEditor.getText().splitlines()] == [
+    docEditor._iterFormatBlocks(nwDocAction.BLOCK_COM)
+    assert [x[:5] for x in docEditor.getText().splitlines()] == [
         "### A", "", "@char", "", "% Lor", "", "Nulla", "", "% Nul", "", "% Pel", "", "Integ", ""
     ]
 
     # Un-toggle all
-    cursor = nwGUI.docEditor.textCursor()
+    cursor = docEditor.textCursor()
     cursor.setPosition(50)
     cursor.movePosition(QtMoveRight, QtKeepAnchor, 3000)
-    nwGUI.docEditor.setTextCursor(cursor)
+    docEditor.setTextCursor(cursor)
 
-    nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_COM)
-    assert [x[:5] for x in nwGUI.docEditor.getText().splitlines()] == [
+    docEditor._iterFormatBlocks(nwDocAction.BLOCK_COM)
+    assert [x[:5] for x in docEditor.getText().splitlines()] == [
         "### A", "", "@char", "", "Lorem", "", "Nulla", "", "Nulla", "", "Pelle", "", "Integ", ""
     ]
 
     # Toggle Ignore Text
-    cursor = nwGUI.docEditor.textCursor()
+    cursor = docEditor.textCursor()
     cursor.setPosition(50)
     cursor.movePosition(QtMoveRight, QtKeepAnchor, 2000)
-    nwGUI.docEditor.setTextCursor(cursor)
+    docEditor.setTextCursor(cursor)
 
-    nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_IGN)
-    assert [x[:5] for x in nwGUI.docEditor.getText().splitlines()] == [
+    docEditor._iterFormatBlocks(nwDocAction.BLOCK_IGN)
+    assert [x[:5] for x in docEditor.getText().splitlines()] == [
         "### A", "", "@char", "", "%~ Lo", "", "%~ Nu", "", "%~ Nu", "", "%~ Pe", "", "Integ", ""
     ]
 
     # Clear all paragraphs
-    cursor = nwGUI.docEditor.textCursor()
+    cursor = docEditor.textCursor()
     cursor.setPosition(50)
     cursor.movePosition(QtMoveRight, QtKeepAnchor, 3000)
-    nwGUI.docEditor.setTextCursor(cursor)
+    docEditor.setTextCursor(cursor)
 
-    nwGUI.docEditor._iterFormatBlocks(nwDocAction.BLOCK_TXT)
-    assert [x[:5] for x in nwGUI.docEditor.getText().splitlines()] == [
+    docEditor._iterFormatBlocks(nwDocAction.BLOCK_TXT)
+    assert [x[:5] for x in docEditor.getText().splitlines()] == [
         "### A", "", "@char", "", "Lorem", "", "Nulla", "", "Nulla", "", "Pelle", "", "Integ", ""
     ]
 
     # Final text should be identical to initial text
-    assert nwGUI.docEditor.getText() == text
+    assert docEditor.getText() == text
 
     # qtbot.stop()
 
@@ -1489,59 +1608,64 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     """Test the document editor tags functionality."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
+    docEditor = nwGUI.docEditor
 
     # Create Scene
     text = "### A Scene\n\n@char: Jane, John\n\n@object: Gun\n\n@:\n\n" + ipsumText[0] + "\n\n"
-    nwGUI.docEditor.replaceText(text)
+    docEditor.replaceText(text)
 
     # Create Character
     text = "### Jane Doe\n\n@tag: Jane\n\n" + ipsumText[1] + "\n\n"
     cHandle = SHARED.project.newFile("Jane Doe", C.hCharRoot)
     assert nwGUI.openDocument(cHandle) is True
-    nwGUI.docEditor.replaceText(text)
+    docEditor.replaceText(text)
     nwGUI.saveDocument()
     assert nwGUI.projView.projTree.revealNewTreeItem(cHandle)
-    nwGUI.docEditor.updateTagHighLighting()
+    docEditor.updateTagHighLighting()
 
     # Follow Tag
     # ==========
     assert nwGUI.openDocument(C.hSceneDoc) is True
 
     # Empty Block
-    nwGUI.docEditor.setCursorLine(2)
-    assert nwGUI.docEditor._processTag() is nwTrinary.NEUTRAL
+    docEditor.setCursorLine(2)
+    assert docEditor._processTag() is nwTrinary.NEUTRAL
 
     # Not On Tag
-    nwGUI.docEditor.setCursorLine(1)
-    assert nwGUI.docEditor._processTag() is nwTrinary.NEUTRAL
+    docEditor.setCursorLine(1)
+    assert docEditor._processTag() is nwTrinary.NEUTRAL
 
     # On Tag Keyword
-    nwGUI.docEditor.setCursorPosition(15)
-    assert nwGUI.docEditor._processTag() is nwTrinary.NEUTRAL
+    docEditor.setCursorPosition(15)
+    assert docEditor._processTag() is nwTrinary.NEUTRAL
 
     # On Known Tag, No Follow
-    nwGUI.docEditor.setCursorPosition(22)
-    assert nwGUI.docEditor._processTag(follow=False) is nwTrinary.POSITIVE
+    docEditor.setCursorPosition(22)
+    assert docEditor._processTag(follow=False) is nwTrinary.POSITIVE
     assert nwGUI.docViewer._docHandle is None
 
     # On Known Tag, Follow
-    nwGUI.docEditor.setCursorPosition(22)
+    docEditor.setCursorPosition(22)
+    position = docEditor.cursorRect().center()
+    event = QMouseEvent(
+        QEvent.Type.MouseButtonPress, position, QtMouseLeft, QtMouseLeft, QtModCtrl
+    )
     assert nwGUI.docViewer._docHandle is None
-    assert nwGUI.docEditor._processTag(follow=True) is nwTrinary.POSITIVE
+    docEditor.mouseReleaseEvent(event)
     assert nwGUI.docViewer._docHandle == cHandle
     assert nwGUI.closeViewerPanel() is True
     assert nwGUI.docViewer._docHandle is None
 
     # On Unknown Tag, Create It
     assert "0000000000011" not in SHARED.project.tree
-    nwGUI.docEditor.setCursorPosition(28)
-    assert nwGUI.docEditor._processTag(create=True) is nwTrinary.NEGATIVE
+    docEditor.setCursorPosition(28)
+    assert docEditor._processTag(create=True) is nwTrinary.NEGATIVE
     assert "0000000000011" in SHARED.project.tree
 
     # On Unknown Tag, Missing Root
     assert "0000000000012" not in SHARED.project.tree
-    nwGUI.docEditor.setCursorPosition(42)
-    assert nwGUI.docEditor._processTag(create=True) is nwTrinary.NEGATIVE
+    docEditor.setCursorPosition(42)
+    assert docEditor._processTag(create=True) is nwTrinary.NEGATIVE
     oHandle = SHARED.project.tree.findRoot(nwItemClass.OBJECT)
     assert oHandle == "0000000000012"
 
@@ -1549,8 +1673,8 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert oItem is not None
     assert oItem.itemParent == "0000000000012"
 
-    nwGUI.docEditor.setCursorPosition(47)
-    assert nwGUI.docEditor._processTag() is nwTrinary.NEUTRAL
+    docEditor.setCursorPosition(47)
+    assert docEditor._processTag() is nwTrinary.NEUTRAL
 
     # qtbot.stop()
 
@@ -1562,6 +1686,7 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     """Test the document editor meta completer functionality."""
     buildTestProject(nwGUI, projPath)
     assert nwGUI.openDocument(C.hSceneDoc) is True
+    docEditor = nwGUI.docEditor
 
     # Create Character
     text = (
@@ -1572,11 +1697,10 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     )
     cHandle = SHARED.project.newFile("People", C.hCharRoot)
     assert nwGUI.openDocument(cHandle) is True
-    nwGUI.docEditor.replaceText(text)
+    docEditor.replaceText(text)
     nwGUI.saveDocument()
     assert nwGUI.projView.projTree.revealNewTreeItem(cHandle)
 
-    docEditor = nwGUI.docEditor
     docEditor.replaceText("")
     completer = docEditor._completer
 
@@ -1699,6 +1823,8 @@ def testGuiEditor_CursorVisibility(qtbot, monkeypatch, nwGUI, projPath, mockRnd)
 @pytest.mark.gui
 def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
     """Test the word counter."""
+    docEditor = nwGUI.docEditor
+
     class MockThreadPool:
 
         def __init__(self):
@@ -1712,21 +1838,21 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
 
     threadPool = MockThreadPool()
     monkeypatch.setattr(QThreadPool, "globalInstance", lambda *a: threadPool)
-    nwGUI.docEditor.timerDoc.blockSignals(True)
-    nwGUI.docEditor.timerSel.blockSignals(True)
+    docEditor.timerDoc.blockSignals(True)
+    docEditor.timerSel.blockSignals(True)
 
     buildTestProject(nwGUI, projPath)
 
     # Run on an empty document
-    nwGUI.docEditor._runDocumentTasks()
-    assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
-    nwGUI.docEditor._updateDocCounts(0, 0, 0)
-    assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
+    docEditor._runDocumentTasks()
+    assert docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
+    docEditor._updateDocCounts(0, 0, 0)
+    assert docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
-    nwGUI.docEditor._runSelCounter()
-    assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
-    nwGUI.docEditor._updateSelCounts(0, 0, 0)
-    assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
+    docEditor._runSelCounter()
+    assert docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
+    docEditor._updateSelCounts(0, 0, 0)
+    assert docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
     # Open a document and populate it
     SHARED.project.tree[C.hSceneDoc]._initCount = 0  # type: ignore
@@ -1735,37 +1861,37 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
 
     text = "\n\n".join(ipsumText)
     cC, wC, pC = standardCounter(text)
-    nwGUI.docEditor.replaceText(text)
+    docEditor.replaceText(text)
 
     # Check that a busy counter is blocked
     with monkeypatch.context() as mp:
-        mp.setattr(nwGUI.docEditor.wCounterDoc, "isRunning", lambda *a: True)
-        nwGUI.docEditor._runDocumentTasks()
-        assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
+        mp.setattr(docEditor.wCounterDoc, "isRunning", lambda *a: True)
+        docEditor._runDocumentTasks()
+        assert docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
     with monkeypatch.context() as mp:
-        mp.setattr(nwGUI.docEditor.wCounterSel, "isRunning", lambda *a: True)
-        nwGUI.docEditor._runSelCounter()
-        assert nwGUI.docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
+        mp.setattr(docEditor.wCounterSel, "isRunning", lambda *a: True)
+        docEditor._runSelCounter()
+        assert docEditor.docFooter.wordsText.text() == "Words: 0 (+0)"
 
     # Run the full word counter
-    nwGUI.docEditor._runDocumentTasks()
-    assert threadPool.objectID() == id(nwGUI.docEditor.wCounterDoc)
+    docEditor._runDocumentTasks()
+    assert threadPool.objectID() == id(docEditor.wCounterDoc)
 
-    nwGUI.docEditor.wCounterDoc.run()
-    # nwGUI.docEditor._updateDocCounts(cC, wC, pC)
+    docEditor.wCounterDoc.run()
+    # docEditor._updateDocCounts(cC, wC, pC)
     assert SHARED.project.tree[C.hSceneDoc]._charCount == cC  # type: ignore
     assert SHARED.project.tree[C.hSceneDoc]._wordCount == wC  # type: ignore
     assert SHARED.project.tree[C.hSceneDoc]._paraCount == pC  # type: ignore
-    assert nwGUI.docEditor.docFooter.wordsText.text() == f"Words: {wC} (+{wC})"
+    assert docEditor.docFooter.wordsText.text() == f"Words: {wC} (+{wC})"
 
     # Select all text and run the selection word counter
-    nwGUI.docEditor.docAction(nwDocAction.SEL_ALL)
-    nwGUI.docEditor._runSelCounter()
-    assert threadPool.objectID() == id(nwGUI.docEditor.wCounterSel)
+    docEditor.docAction(nwDocAction.SEL_ALL)
+    docEditor._runSelCounter()
+    assert threadPool.objectID() == id(docEditor.wCounterSel)
 
-    nwGUI.docEditor.wCounterSel.run()
-    assert nwGUI.docEditor.docFooter.wordsText.text() == f"Words: {wC} selected"
+    docEditor.wCounterSel.run()
+    assert docEditor.docFooter.wordsText.text() == f"Words: {wC} selected"
 
     # qtbot.stop()
 

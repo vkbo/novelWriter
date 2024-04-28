@@ -358,12 +358,12 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         elif text.startswith("%"):  # Comments
             self.setCurrentBlockState(BLOCK_TEXT)
+            hRules = self._cmnRules
+
             cStyle, cMod, _, cDot, cPos = processComment(text)
             cLen = len(text) - cPos
             xOff = cPos
-            if cMod == "ERR":
-                self.setFormat(0, cPos, self._hStyles["invalid"])
-            elif cStyle == nwComment.PLAIN:
+            if cStyle == nwComment.PLAIN:
                 self.setFormat(0, cLen, self._hStyles["hidden"])
             elif cStyle == nwComment.IGNORE:
                 self.setFormat(0, cLen, self._hStyles["strike"])
@@ -376,9 +376,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 self.setFormat(0, cPos, self._hStyles["modifier"])
                 self.setFormat(cPos, cLen, self._hStyles["hidden"])
 
-            hRules = self._cmnRules
-
         elif text.startswith("["):  # Special Command
+            self.setCurrentBlockState(BLOCK_TEXT)
+            hRules = self._txtRules
+
             sText = text.rstrip().lower()
             if sText in ("[newpage]", "[new page]", "[vspace]"):
                 self.setFormat(0, len(text), self._hStyles["code"])

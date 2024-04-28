@@ -22,10 +22,9 @@ from __future__ import annotations
 
 import pytest
 
-from tools import C, writeFile, buildTestProject
-
-from PyQt5.QtGui import QTextCursor, QTextBlock
+from PyQt5.QtGui import QTextBlock, QTextCursor
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
+from tools import C, buildTestProject, writeFile
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords, nwUnicode
@@ -146,7 +145,7 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Check comment with no space before text
     nwGUI.docEditor.setCursorPosition(54)
-    assert nwGUI.docEditor.insertText("%")
+    nwGUI.docEditor.insertText("%")
     fmtStr = "%Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[54:102] == fmtStr
 
@@ -435,14 +434,14 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     nwGUI.docEditor.clear()
 
     # Test Faulty Inserts
-    assert nwGUI.docEditor.insertText("hello world")
+    nwGUI.docEditor.insertText("hello world")
     assert nwGUI.docEditor.getText() == "hello world"
     nwGUI.docEditor.clear()
 
-    assert nwGUI.docEditor.insertText(nwDocInsert.NO_INSERT) is False
+    nwGUI.docEditor.insertText(nwDocInsert.NO_INSERT)
     assert nwGUI.docEditor.isEmpty
 
-    assert nwGUI.docEditor.insertText(None) is False
+    nwGUI.docEditor.insertText(None)
     assert nwGUI.docEditor.isEmpty
 
     # qtbot.stop()
