@@ -40,7 +40,7 @@ from PyQt5.QtCore import QCoreApplication, QUrl
 from PyQt5.QtGui import QColor, QDesktopServices
 
 from novelwriter.constants import nwConst, nwLabels, nwUnicode, trConst
-from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -277,6 +277,13 @@ def simplified(text: str) -> str:
     replace all occurrences of (multiple) whitespaces with a 0x20 space.
     """
     return " ".join(str(text).strip().split())
+
+
+def elide(text: str, length: int) -> str:
+    """Elide a piece of text to a maximum length."""
+    if len(text) > (cut := max(4, length)):
+        return f"{text[:cut-4].rstrip()} ..."
+    return text
 
 
 def yesNo(value: int | bool | None) -> Literal["yes", "no"]:

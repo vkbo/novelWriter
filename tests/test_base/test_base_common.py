@@ -27,20 +27,21 @@ from xml.etree import ElementTree as ET
 
 import pytest
 
-from mocked import causeOSError
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QColor, QDesktopServices
-from tools import writeFile
 
 from novelwriter.common import (
     NWConfigParser, checkBool, checkFloat, checkInt, checkIntTuple, checkPath,
-    checkString, checkStringNone, checkUuid, cssCol, formatFileFilter,
+    checkString, checkStringNone, checkUuid, cssCol, elide, formatFileFilter,
     formatInt, formatTime, formatTimeStamp, formatVersion, fuzzyTime,
     getFileSize, hexToInt, isHandle, isItemClass, isItemLayout, isItemType,
     isListInstance, isTitleTag, jsonEncode, makeFileNameSafe, minmax,
     numberToRoman, openExternalPath, readTextFile, simplified, transferCase,
     xmlIndent, yesNo
 )
+
+from tests.mocked import causeOSError
+from tests.tools import writeFile
 
 
 @pytest.mark.base
@@ -385,6 +386,26 @@ def testBaseCommon_simplified():
     assert simplified("\tHello\n\r\tWorld") == "Hello World"
 
 # END Test testBaseCommon_simplified
+
+
+@pytest.mark.base
+def testBaseCommon_elide():
+    """Test the elide function."""
+    assert elide("Hello World!", 12) == "Hello World!"
+    assert elide("Hello World!", 11) == "Hello W ..."
+    assert elide("Hello World!", 10) == "Hello ..."
+    assert elide("Hello World!",  9) == "Hello ..."
+    assert elide("Hello World!",  8) == "Hell ..."
+    assert elide("Hello World!",  7) == "Hel ..."
+    assert elide("Hello World!",  6) == "He ..."
+    assert elide("Hello World!",  5) == "H ..."
+    assert elide("Hello World!",  4) == " ..."
+    assert elide("Hello World!",  3) == " ..."
+    assert elide("Hello World!",  2) == " ..."
+    assert elide("Hello World!",  1) == " ..."
+    assert elide("Hello World!",  0) == " ..."
+
+# END Test testBaseCommon_elide
 
 
 @pytest.mark.base
