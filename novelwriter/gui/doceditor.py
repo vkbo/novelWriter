@@ -39,8 +39,8 @@ from time import time
 from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import (
-    pyqtSignal, pyqtSlot, QObject, QPoint, QRegularExpression, QRunnable, Qt,
-    QTimer
+    QObject, QPoint, QRegularExpression, QRunnable, Qt, QTimer, pyqtSignal,
+    pyqtSlot
 )
 from PyQt5.QtGui import (
     QColor, QCursor, QFont, QKeyEvent, QKeySequence, QMouseEvent, QPalette,
@@ -55,7 +55,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwUnicode
 from novelwriter.core.document import NWDocument
-from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwTrinary
+from novelwriter.enum import nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwTrinary
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
 from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE
@@ -65,7 +65,7 @@ from novelwriter.text.counting import standardCounter
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
     QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop,
-    QtAlignRight, QtKeepAnchor, QtModCtrl, QtMouseLeft, QtModeNone, QtModShift,
+    QtAlignRight, QtKeepAnchor, QtModCtrl, QtModeNone, QtModShift, QtMouseLeft,
     QtMoveAnchor, QtMoveLeft, QtMoveRight
 )
 
@@ -840,14 +840,15 @@ class GuiDocEditor(QPlainTextEdit):
             )
         return
 
-    def insertText(self, insert: str | nwDocInsert) -> bool:
+    def insertText(self, insert: str | nwDocInsert) -> None:
         """Insert a specific type of text at the cursor position."""
         if self._docHandle is None:
             logger.error("No document open")
-            return False
+            return
 
-        newBlock = False
-        goAfter = False
+        text = ""
+        block = False
+        after = False
 
         if isinstance(insert, str):
             text = insert
@@ -862,43 +863,41 @@ class GuiDocEditor(QPlainTextEdit):
                 text = self._typDQuoteC
             elif insert == nwDocInsert.SYNOPSIS:
                 text = "%Synopsis: "
-                newBlock = True
-                goAfter = True
+                block = True
+                after = True
             elif insert == nwDocInsert.SHORT:
                 text = "%Short: "
-                newBlock = True
-                goAfter = True
+                block = True
+                after = True
             elif insert == nwDocInsert.NEW_PAGE:
                 text = "[newpage]"
-                newBlock = True
-                goAfter = False
+                block = True
+                after = False
             elif insert == nwDocInsert.VSPACE_S:
                 text = "[vspace]"
-                newBlock = True
-                goAfter = False
+                block = True
+                after = False
             elif insert == nwDocInsert.VSPACE_M:
                 text = "[vspace:2]"
-                newBlock = True
-                goAfter = False
+                block = True
+                after = False
             elif insert == nwDocInsert.LIPSUM:
                 text = GuiLipsum.getLipsum(self)
-                newBlock = True
-                goAfter = False
-            else:
-                return False
-        else:
-            return False
+                block = True
+                after = False
+            elif insert == nwDocInsert.FOOTNOTE:
+                self._insertCommentStructure(nwComment.FOOTNOTE)
 
         if text:
-            if newBlock:
-                self.insertNewBlock(text, defaultAfter=goAfter)
+            if block:
+                self.insertNewBlock(text, defaultAfter=after)
             else:
                 cursor = self.textCursor()
                 cursor.beginEditBlock()
                 cursor.insertText(text)
                 cursor.endEditBlock()
 
-        return True
+        return
 
     def insertNewBlock(self, text: str, defaultAfter: bool = True) -> bool:
         """Insert a piece of text on a blank line."""
@@ -1164,7 +1163,8 @@ class GuiDocEditor(QPlainTextEdit):
                             lambda _, option=option: self._correctWord(sCursor, option)
                         )
                 else:
-                    ctxMenu.addAction("%s %s" % (nwUnicode.U_ENDASH, self.tr("No Suggestions")))
+                    trNone = self.tr("No Suggestions")
+                    ctxMenu.addAction(f"{nwUnicode.U_ENDASH} {trNone}")
 
                 ctxMenu.addSeparator()
                 action = ctxMenu.addAction(self.tr("Add Word to Dictionary"))
@@ -1847,6 +1847,32 @@ class GuiDocEditor(QPlainTextEdit):
         cursor.movePosition(QtMoveRight, QtKeepAnchor, rE-rS)
         cursor.insertText(cleanText.rstrip() + "\n")
         cursor.endEditBlock()
+
+        return
+
+    def _insertCommentStructure(self, style: nwComment) -> None:
+        """Insert a shortcut/comment combo."""
+        if self._docHandle and style == nwComment.FOOTNOTE:
+            self.saveText()  # Index must be up to date
+            key = SHARED.project.index.newCommentKey(self._docHandle, style)
+            code = nwShortcode.COMMENT_STYLES[nwComment.FOOTNOTE]
+
+            cursor = self.textCursor()
+            block = cursor.block()
+            text = block.text().rstrip()
+            if not text or text.startswith("@"):
+                logger.error("Invalid footnote location")
+                return
+
+            cursor.beginEditBlock()
+            cursor.insertText(code.format(key))
+            cursor.setPosition(block.position() + block.length() - 1)
+            cursor.insertBlock()
+            cursor.insertBlock()
+            cursor.insertText(f"%Footnote.{key}: ")
+            cursor.endEditBlock()
+
+            self.setTextCursor(cursor)
 
         return
 

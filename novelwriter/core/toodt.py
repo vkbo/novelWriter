@@ -29,17 +29,17 @@ from __future__ import annotations
 import logging
 import xml.etree.ElementTree as ET
 
+from collections.abc import Sequence
+from datetime import datetime
 from hashlib import sha256
 from pathlib import Path
 from zipfile import ZipFile
-from datetime import datetime
-from collections.abc import Sequence
 
 from novelwriter import __version__
 from novelwriter.common import xmlIndent
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels
 from novelwriter.core.project import NWProject
-from novelwriter.core.tokenizer import Tokenizer, stripEscape
+from novelwriter.core.tokenizer import T_Formats, Tokenizer, stripEscape
 
 logger = logging.getLogger(__name__)
 
@@ -130,6 +130,10 @@ class ToOdt(Tokenizer):
         self._autoPara: dict[str, ODTParagraphStyle] = {}  # Auto-generated paragraph styles
         self._autoText: dict[int, ODTTextStyle] = {}       # Auto-generated text styles
 
+        # Footnotes
+        self._nNote = 0
+        self._etNotes: dict[str, ET.Element] = {}  # Generated note elements
+
         self._errData = []  # List of errors encountered
 
         # Properties
@@ -151,6 +155,7 @@ class ToOdt(Tokenizer):
         self._fSizeHead4   = "14pt"
         self._fSizeHead    = "14pt"
         self._fSizeText    = "12pt"
+        self._fSizeFoot    = "10pt"
         self._fLineHeight  = "115%"
         self._fBlockIndent = "1.693cm"
         self._fTextIndent  = "0.499cm"
@@ -176,6 +181,9 @@ class ToOdt(Tokenizer):
         self._mBotHead  = "0.212cm"
         self._mBotText  = "0.247cm"
         self._mBotMeta  = "0.106cm"
+
+        self._mBotFoot  = "0.106cm"
+        self._mLeftFoot = "0.600cm"
 
         # Document Size and Margins
         self._mDocWidth  = "21.0cm"
@@ -258,6 +266,7 @@ class ToOdt(Tokenizer):
         self._fSizeHead4 = f"{round(1.15 * self._textSize):d}pt"
         self._fSizeHead  = f"{round(1.15 * self._textSize):d}pt"
         self._fSizeText  = f"{self._textSize:d}pt"
+        self._fSizeFoot  = f"{round(0.8*self._textSize):d}pt"
 
         mScale = self._lineHeight/1.15
 
@@ -279,6 +288,9 @@ class ToOdt(Tokenizer):
         self._mBotText  = self._emToCm(mScale * self._marginText[1])
         self._mBotMeta  = self._emToCm(mScale * self._marginMeta[1])
 
+        self._mLeftFoot = self._emToCm(self._marginFoot[0])
+        self._mBotFoot  = self._emToCm(self._marginFoot[1])
+
         if self._colourHead:
             self._colHead12 = "#2a6099"
             self._opaHead12 = "100%"
@@ -289,6 +301,7 @@ class ToOdt(Tokenizer):
 
         self._fLineHeight  = f"{round(100 * self._lineHeight):d}%"
         self._fBlockIndent = self._emToCm(self._blockIndent)
+        self._fTextIndent  = self._emToCm(self._textIndent)
         self._textAlign    = "justify" if self._doJustify else "left"
 
         # Clear Errors
@@ -399,10 +412,11 @@ class ToOdt(Tokenizer):
         """Convert the list of text tokens into XML elements."""
         self._result = ""  # Not used, but cleared just in case
 
-        pFmt = []
+        pFmt: list[T_Formats] = []
         pText = []
         pStyle = None
         pIndent = True
+        xText = self._xText
         for tType, _, tText, tFormat, tStyle in self._tokens:
 
             # Styles
@@ -444,16 +458,16 @@ class ToOdt(Tokenizer):
 
                 if len(pText) > 0 and pStyle is not None:
                     tTxt = ""
-                    tFmt = []
+                    tFmt: T_Formats = []
                     for nText, nFmt in zip(pText, pFmt):
                         tLen = len(tTxt)
                         tTxt += f"{nText}\n"
-                        tFmt.extend((p+tLen, fmt) for p, fmt in nFmt)
+                        tFmt.extend((p+tLen, fmt, key) for p, fmt, key in nFmt)
 
                     # Don't indent a paragraph if it has alignment set
                     tIndent = self._firstIndent and pIndent and pStyle.isUnaligned()
                     self._addTextPar(
-                        "First_20_line_20_indent" if tIndent else "Text_20_body",
+                        xText, "First_20_line_20_indent" if tIndent else "Text_20_body",
                         pStyle, tTxt.rstrip(), tFmt=tFmt
                     )
                     pIndent = True
@@ -463,30 +477,31 @@ class ToOdt(Tokenizer):
                 pStyle = None
 
             elif tType == self.T_TITLE:
+                # Title must be text:p
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar("Title", oStyle, tHead, isHead=False)  # Title must be text:p
+                self._addTextPar(xText, "Title", oStyle, tHead, isHead=False)
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar("Heading_20_1", oStyle, tHead, isHead=True, oLevel="1")
+                self._addTextPar(xText, "Heading_20_1", oStyle, tHead, isHead=True, oLevel="1")
 
             elif tType == self.T_HEAD2:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar("Heading_20_2", oStyle, tHead, isHead=True, oLevel="2")
+                self._addTextPar(xText, "Heading_20_2", oStyle, tHead, isHead=True, oLevel="2")
 
             elif tType == self.T_HEAD3:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar("Heading_20_3", oStyle, tHead, isHead=True, oLevel="3")
+                self._addTextPar(xText, "Heading_20_3", oStyle, tHead, isHead=True, oLevel="3")
 
             elif tType == self.T_HEAD4:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar("Heading_20_4", oStyle, tHead, isHead=True, oLevel="4")
+                self._addTextPar(xText, "Heading_20_4", oStyle, tHead, isHead=True, oLevel="4")
 
             elif tType == self.T_SEP:
-                self._addTextPar("Separator", oStyle, tText)
+                self._addTextPar(xText, "Separator", oStyle, tText)
 
             elif tType == self.T_SKIP:
-                self._addTextPar("Separator", oStyle, "")
+                self._addTextPar(xText, "Separator", oStyle, "")
 
             elif tType == self.T_TEXT:
                 if pStyle is None:
@@ -495,20 +510,20 @@ class ToOdt(Tokenizer):
                 pFmt.append(tFormat)
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
-                tTemp, fTemp = self._formatSynopsis(tText, True)
-                self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=fTemp)
+                tTemp, tFmt = self._formatSynopsis(tText, tFormat, True)
+                self._addTextPar(xText, "Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
 
             elif tType == self.T_SHORT and self._doSynopsis:
-                tTemp, fTemp = self._formatSynopsis(tText, False)
-                self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=fTemp)
+                tTemp, tFmt = self._formatSynopsis(tText, tFormat, False)
+                self._addTextPar(xText, "Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
 
             elif tType == self.T_COMMENT and self._doComments:
-                tTemp, fTemp = self._formatComments(tText)
-                self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=fTemp)
+                tTemp, tFmt = self._formatComments(tText, tFormat)
+                self._addTextPar(xText, "Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
 
             elif tType == self.T_KEYWORD and self._doKeywords:
-                tTemp, fTemp = self._formatKeywords(tText)
-                self._addTextPar("Text_20_Meta", oStyle, tTemp, tFmt=fTemp)
+                tTemp, tFmt = self._formatKeywords(tText)
+                self._addTextPar(xText, "Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
 
         return
 
@@ -569,28 +584,32 @@ class ToOdt(Tokenizer):
     #  Internal Functions
     ##
 
-    def _formatSynopsis(self, text: str, synopsis: bool) -> tuple[str, list[tuple[int, int]]]:
+    def _formatSynopsis(self, text: str, fmt: T_Formats, synopsis: bool) -> tuple[str, T_Formats]:
         """Apply formatting to synopsis lines."""
         name = self._localLookup("Synopsis" if synopsis else "Short Description")
+        shift = len(name) + 2
         rTxt = f"{name}: {text}"
-        rFmt = [(0, self.FMT_B_B), (len(name) + 1, self.FMT_B_E)]
+        rFmt: T_Formats = [(0, self.FMT_B_B, ""), (len(name) + 1, self.FMT_B_E, "")]
+        rFmt.extend((p + shift, f, d) for p, f, d in fmt)
         return rTxt, rFmt
 
-    def _formatComments(self, text: str) -> tuple[str, list[tuple[int, int]]]:
+    def _formatComments(self, text: str, fmt: T_Formats) -> tuple[str, T_Formats]:
         """Apply formatting to comments."""
         name = self._localLookup("Comment")
+        shift = len(name) + 2
         rTxt = f"{name}: {text}"
-        rFmt = [(0, self.FMT_B_B), (len(name) + 1, self.FMT_B_E)]
+        rFmt: T_Formats = [(0, self.FMT_B_B, ""), (len(name) + 1, self.FMT_B_E, "")]
+        rFmt.extend((p + shift, f, d) for p, f, d in fmt)
         return rTxt, rFmt
 
-    def _formatKeywords(self, text: str) -> tuple[str, list[tuple[int, int]]]:
+    def _formatKeywords(self, text: str) -> tuple[str, T_Formats]:
         """Apply formatting to keywords."""
         valid, bits, _ = self._project.index.scanThis("@"+text)
         if not valid or not bits or bits[0] not in nwLabels.KEY_NAME:
             return "", []
 
         rTxt = f"{self._localLookup(nwLabels.KEY_NAME[bits[0]])}: "
-        rFmt = [(0, self.FMT_B_B), (len(rTxt) - 1, self.FMT_B_E)]
+        rFmt: T_Formats = [(0, self.FMT_B_B, ""), (len(rTxt) - 1, self.FMT_B_E, "")]
         if len(bits) > 1:
             if bits[0] == nwKeyWords.TAG_KEY:
                 rTxt += bits[1]
@@ -600,8 +619,8 @@ class ToOdt(Tokenizer):
         return rTxt, rFmt
 
     def _addTextPar(
-        self, styleName: str, oStyle: ODTParagraphStyle, tText: str,
-        tFmt: Sequence[tuple[int, int]] = [], isHead: bool = False, oLevel: str | None = None
+        self, xParent: ET.Element, styleName: str, oStyle: ODTParagraphStyle, tText: str,
+        tFmt: Sequence[tuple[int, int, str]] = [], isHead: bool = False, oLevel: str | None = None
     ) -> None:
         """Add a text paragraph to the text XML element."""
         tAttr = {_mkTag("text", "style-name"): self._paraStyle(styleName, oStyle)}
@@ -609,7 +628,7 @@ class ToOdt(Tokenizer):
             tAttr[_mkTag("text", "outline-level")] = oLevel
 
         pTag = "h" if isHead else "p"
-        xElem = ET.SubElement(self._xText, _mkTag("text", pTag), attrib=tAttr)
+        xElem = ET.SubElement(xParent, _mkTag("text", pTag), attrib=tAttr)
 
         # It's important to set the initial text field to empty, otherwise
         # xmlIndent will add a line break if the first subelement is a span.
@@ -627,7 +646,13 @@ class ToOdt(Tokenizer):
         xFmt = 0x00
         tFrag = ""
         fLast = 0
-        for fPos, fFmt in tFmt:
+        xNode = None
+        for fPos, fFmt, fData in tFmt:
+
+            # Add any extra nodes
+            if xNode is not None:
+                parProc.appendNode(xNode)
+                xNode = None
 
             # Add the text up to the current fragment
             if tFrag := tText[fLast:fPos]:
@@ -665,10 +690,17 @@ class ToOdt(Tokenizer):
                 xFmt |= X_SUB
             elif fFmt == self.FMT_SUB_E:
                 xFmt &= M_SUB
+            elif fFmt == self.FMT_FNOTE:
+                xNode = self._generateFootnote(fData)
+            elif fFmt == self.FMT_STRIP:
+                pass
             else:
                 pErr += 1
 
             fLast = fPos
+
+        if xNode is not None:
+            parProc.appendNode(xNode)
 
         if tFrag := tText[fLast:]:
             if xFmt == 0x00:
@@ -735,6 +767,22 @@ class ToOdt(Tokenizer):
 
         return style.name
 
+    def _generateFootnote(self, key: str) -> ET.Element | None:
+        """Generate a footnote XML object."""
+        if content := self._footnotes.get(key):
+            self._nNote += 1
+            nStyle = ODTParagraphStyle("New")
+            xNote = ET.Element(_mkTag("text", "note"), attrib={
+                _mkTag("text", "id"): f"ftn{self._nNote}",
+                _mkTag("text", "note-class"): "footnote",
+            })
+            xCite = ET.SubElement(xNote, _mkTag("text", "note-citation"))
+            xCite.text = str(self._nNote)
+            xBody = ET.SubElement(xNote, _mkTag("text", "note-body"))
+            self._addTextPar(xBody, "Footnote", nStyle, content[0], tFmt=content[1])
+            return xNote
+        return None
+
     def _emToCm(self, value: float) -> str:
         """Converts an em value to centimetres."""
         return f"{value*2.54/72*self._textSize:.3f}cm"
@@ -757,7 +805,6 @@ class ToOdt(Tokenizer):
             _mkTag("fo", "margin-bottom"): self._mDocBtm,
             _mkTag("fo", "margin-left"): self._mDocLeft,
             _mkTag("fo", "margin-right"): self._mDocRight,
-            _mkTag("fo", "print-orientation"): "portrait",
         })
 
         xHead = ET.SubElement(xPage, _mkTag("style", "header-style"))
@@ -985,6 +1032,18 @@ class ToOdt(Tokenizer):
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
+        # Add Footnote Style
+        style = ODTParagraphStyle("Footnote")
+        style.setDisplayName("Footnote")
+        style.setParentStyleName("Standard")
+        style.setClass("extra")
+        style.setMarginLeft(self._mLeftFoot)
+        style.setMarginBottom(self._mBotFoot)
+        style.setTextIndent("-"+self._mLeftFoot)
+        style.setFontSize(self._fSizeFoot)
+        style.packXML(self._xStyl)
+        self._mainPara[style.name] = style
+
         return
 
     def _writeHeader(self) -> None:
@@ -1041,7 +1100,7 @@ class ODTParagraphStyle:
     VALID_ALIGN  = ["start", "center", "end", "justify", "inside", "outside", "left", "right"]
     VALID_BREAK  = ["auto", "column", "page", "even-page", "odd-page", "inherit"]
     VALID_LEVEL  = ["1", "2", "3", "4"]
-    VALID_CLASS  = ["text", "chapter"]
+    VALID_CLASS  = ["text", "chapter", "extra"]
     VALID_WEIGHT = ["normal", "inherit", "bold"]
 
     def __init__(self, name: str) -> None:
@@ -1464,7 +1523,6 @@ class XMLParagraph:
             if c == " ":
                 nSpaces += 1
                 continue
-
             elif nSpaces > 0:
                 self._processSpaces(nSpaces)
                 nSpaces = 0
@@ -1475,26 +1533,22 @@ class XMLParagraph:
                     self._xTail.tail = ""
                     self._nState = X_ROOT_TAIL
                     self._chrPos += 1
-
                 elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
                     self._xSing = ET.SubElement(self._xTail, TAG_BR)
                     self._xSing.tail = ""
                     self._nState = X_SPAN_SING
                     self._chrPos += 1
-
             elif c == "\t":
                 if self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
                     self._xTail = ET.SubElement(self._xRoot, TAG_TAB)
                     self._xTail.tail = ""
                     self._nState = X_ROOT_TAIL
                     self._chrPos += 1
-
                 elif self._nState in (X_SPAN_TEXT, X_SPAN_SING):
                     self._xSing = ET.SubElement(self._xTail, TAG_TAB)
                     self._xSing.tail = ""
                     self._chrPos += 1
                     self._nState = X_SPAN_SING
-
             else:
                 if self._nState == X_ROOT_TEXT:
                     self._xRoot.text = (self._xRoot.text or "") + c
@@ -1527,6 +1581,19 @@ class XMLParagraph:
         self._nState = X_SPAN_TEXT
         self.appendText(text)
         self._nState = X_ROOT_TAIL
+        return
+
+    def appendNode(self, xNode: ET.Element | None) -> None:
+        """Append an XML node to the paragraph. We only check for the
+        X_ROOT_TEXT and X_ROOT_TAIL states. X_SPAN_TEXT is not possible
+        at all, and X_SPAN_SING only happens internally in an appendSpan
+        call, returning us to an X_ROOT_TAIL state.
+        """
+        if xNode is not None and self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
+            self._xRoot.append(xNode)
+            self._xTail = xNode
+            self._xTail.tail = ""
+            self._nState = X_ROOT_TAIL
         return
 
     def checkError(self) -> tuple[int, str]:

@@ -29,17 +29,20 @@ from __future__ import annotations
 
 import json
 import logging
+import random
 
-from time import time
-from typing import TYPE_CHECKING
-from pathlib import Path
 from collections.abc import ItemsView, Iterable
+from pathlib import Path
+from time import time
+from typing import TYPE_CHECKING, Literal
 
 from novelwriter import SHARED
-from novelwriter.enum import nwComment, nwItemClass, nwItemType, nwItemLayout
+from novelwriter.common import (
+    checkInt, isHandle, isItemClass, isListInstance, isTitleTag, jsonEncode
+)
+from novelwriter.constants import nwFiles, nwHeaders, nwKeyWords
+from novelwriter.enum import nwComment, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
-from novelwriter.common import checkInt, isHandle, isItemClass, isTitleTag, jsonEncode
-from novelwriter.constants import nwFiles, nwKeyWords, nwHeaders
 from novelwriter.text.counting import standardCounter
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -48,7 +51,12 @@ if TYPE_CHECKING:  # pragma: no cover
 
 logger = logging.getLogger(__name__)
 
-TT_NONE = "T0000"
+T_NoteTypes = Literal["footnotes", "comments"]
+
+TT_NONE = "T0000"  # Default title key
+MAX_RETRY = 1000  # Key generator recursion limit
+KEY_SOURCE = "0123456789bcdfghjklmnpqrstvwxz"
+NOTE_TYPES: list[T_NoteTypes] = ["footnotes", "comments"]
 
 
 class NWIndex:
@@ -301,9 +309,9 @@ class NWIndex:
 
     def _scanActive(self, tHandle: str, nwItem: NWItem, text: str, tags: dict[str, bool]) -> None:
         """Scan an active document for meta data."""
-        nTitle = 0           # Line Number of the previous title
-        cTitle = TT_NONE     # Tag of the current title
-        pTitle = TT_NONE     # Tag of the previous title
+        nTitle = 0         # Line Number of the previous title
+        cTitle = TT_NONE   # Tag of the current title
+        pTitle = TT_NONE   # Tag of the previous title
         canSetHead = True  # First heading has not yet been set
 
         lines = text.splitlines()
@@ -335,10 +343,11 @@ class NWIndex:
                     self._indexKeyword(tHandle, line, cTitle, nwItem.itemClass, tags)
 
             elif line.startswith("%"):
-                if cTitle != TT_NONE:
-                    cStyle, cText, _ = processComment(line)
-                    if cStyle in (nwComment.SYNOPSIS, nwComment.SHORT):
-                        self._itemIndex.setHeadingSynopsis(tHandle, cTitle, cText)
+                cStyle, cKey, cText, _, _ = processComment(line)
+                if cStyle in (nwComment.SYNOPSIS, nwComment.SHORT):
+                    self._itemIndex.setHeadingSynopsis(tHandle, cTitle, cText)
+                elif cStyle == nwComment.FOOTNOTE:
+                    self._itemIndex.addNoteKey(tHandle, "footnotes", cKey)
 
         # Count words for remaining text after last heading
         if pTitle != TT_NONE:
@@ -505,6 +514,14 @@ class NWIndex:
         """Parse a single value into a name and display part."""
         name, _, display = text.partition("|")
         return name.rstrip(), display.lstrip()
+
+    def newCommentKey(self, tHandle: str, style: nwComment) -> str:
+        """Generate a new key for a comment style."""
+        if style == nwComment.FOOTNOTE:
+            return self._itemIndex.genNewNoteKey(tHandle, "footnotes")
+        elif style == nwComment.COMMENT:
+            return self._itemIndex.genNewNoteKey(tHandle, "comments")
+        return "err"
 
     ##
     #  Extract Data
@@ -790,7 +807,7 @@ class TagsIndex:
 
         for key, entry in data.items():
             if not isinstance(key, str):
-                raise ValueError("tagsIndex keys must be a string")
+                raise ValueError("tagsIndex key must be a string")
             if not isinstance(entry, dict):
                 raise ValueError("tagsIndex entry is not a dict")
 
@@ -950,6 +967,25 @@ class ItemIndex:
             self._items[tHandle].addHeadingRef(sTitle, tagKeys, refType)
         return
 
+    def addNoteKey(self, tHandle: str, style: T_NoteTypes, key: str) -> None:
+        """Set notes key for a given item."""
+        if tHandle in self._items:
+            self._items[tHandle].addNoteKey(style, key)
+        return
+
+    def genNewNoteKey(self, tHandle: str, style: T_NoteTypes) -> str:
+        """Set notes key for a given item."""
+        if style in NOTE_TYPES and (item := self._items.get(tHandle)):
+            keys = set()
+            for entry in self._items.values():
+                keys.update(entry.noteKeys(style))
+            for _ in range(MAX_RETRY):
+                key = style[:1] + "".join(random.choices(KEY_SOURCE, k=4))
+                if key not in keys:
+                    item.addNoteKey(style, key)
+                    return key
+        return "err"
+
     ##
     #  Pack/Unpack
     ##
@@ -991,12 +1027,13 @@ class IndexItem:
     must be reset each time the item is re-indexed.
     """
 
-    __slots__ = ("_handle", "_item", "_headings", "_count")
+    __slots__ = ("_handle", "_item", "_headings", "_count", "_notes")
 
     def __init__(self, tHandle: str, nwItem: NWItem) -> None:
         self._handle = tHandle
         self._item = nwItem
         self._headings: dict[str, IndexHeading] = {TT_NONE: IndexHeading(TT_NONE)}
+        self._notes: dict[str, set[str]] = {}
         self._count = 0
         return
 
@@ -1064,6 +1101,13 @@ class IndexItem:
                 self._headings[sTitle].addReference(tagKey, refType)
         return
 
+    def addNoteKey(self, style: T_NoteTypes, key: str) -> None:
+        """Add a note key to the index."""
+        if style not in self._notes:
+            self._notes[style] = set()
+        self._notes[style].add(key)
+        return
+
     ##
     #  Data Methods
     ##
@@ -1085,6 +1129,10 @@ class IndexItem:
         self._count += 1
         return f"T{self._count:04d}"
 
+    def noteKeys(self, style: T_NoteTypes) -> set[str]:
+        """Return a set of all note keys."""
+        return self._notes.get(style, set())
+
     ##
     #  Pack/Unpack
     ##
@@ -1103,6 +1151,8 @@ class IndexItem:
         data["headings"] = heads
         if refs:
             data["references"] = refs
+        if self._notes:
+            data["notes"] = {style: list(keys) for style, keys in self._notes.items()}
 
         return data
 
@@ -1116,6 +1166,14 @@ class IndexItem:
             tHeading.unpackData(hData)
             tHeading.unpackReferences(references.get(sTitle, {}))
             self.addHeading(tHeading)
+
+        for style, keys in data.get("notes", {}).items():
+            if style not in NOTE_TYPES:
+                raise ValueError("The notes style is invalid")
+            if not isListInstance(keys, str):
+                raise ValueError("The notes keys must be a list of strings")
+            self._notes[style] = set(keys)
+
         return
 
 # END Class IndexItem
@@ -1302,18 +1360,43 @@ class IndexHeading:
 #  Text Processing Functions
 # =============================================================================================== #
 
-CLASSIFIERS = {
-    "short": nwComment.SHORT,
+MODIFIERS = {
     "synopsis": nwComment.SYNOPSIS,
+    "short":    nwComment.SHORT,
+    "note":     nwComment.NOTE,
+    "footnote": nwComment.FOOTNOTE,
+}
+KEY_REQ = {
+    "synopsis": 0,  # Key not allowed
+    "short":    0,  # Key not allowed
+    "note":     1,  # Key optional
+    "footnote": 2,  # Key required
 }
 
 
-def processComment(text: str) -> tuple[nwComment, str, int]:
-    """Extract comment style and text. Should only be called on text
-    starting with a %.
+def _checkModKey(modifier: str, key: str) -> bool:
+    """Check if a modifier and key set are ok."""
+    if modifier in MODIFIERS:
+        if key == "":
+            return KEY_REQ[modifier] < 2
+        elif key.replace("_", "").isalnum():
+            return KEY_REQ[modifier] > 0
+    return False
+
+
+def processComment(text: str) -> tuple[nwComment, str, str, int, int]:
+    """Extract comment style, key and text. Should only be called on
+    text starting with a %.
     """
-    check = text[1:].lstrip()
-    classifier, _, content = check.partition(":")
-    if content and (clean := classifier.strip().lower()) in CLASSIFIERS:
-        return CLASSIFIERS[clean], content.strip(), text.find(":") + 1
-    return nwComment.PLAIN, check, 0
+    if text[:2] == "%~":
+        return nwComment.IGNORE, "", text[2:].lstrip(), 0, 0
+
+    check = text[1:].strip()
+    start, _, content = check.partition(":")
+    modifier, _, key = start.rstrip().partition(".")
+    if content and (clean := modifier.lower()) and _checkModKey(clean, key):
+        col = text.find(":") + 1
+        dot = text.find(".", 0, col) + 1
+        return MODIFIERS[clean], key, content.lstrip(), dot, col
+
+    return nwComment.PLAIN, "", check, 0, 0

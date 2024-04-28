@@ -1,8 +1,8 @@
 %%~name: Making a Scene
 %%~path: 6a2d6d5f4f401/636b6aa9b697b
 %%~kind: NOVEL/DOCUMENT
-%%~hash: e1c58699b05b512306a534da70c2952aafc60e8b
-%%~date: Unknown/2024-02-25 16:33:40
+%%~hash: c7e664867218b3a9aac5c12119ef0ec63da2e5cc
+%%~date: Unknown/2024-04-18 17:56:30
 ### Making a Scene
 
 @pov: Jane
@@ -21,7 +21,9 @@ If you have the need for it, you can also add text that can be automatically rep
 
 The editor also supports non breaking spaces, and the spell checker accepts long dashes—like this—as valid word separators. Regular dashes are also supported – and can be automatically inserted when typing two hyphens.
 
-Thin spaces and thin non-breaking spaces are also supported from the Insert menu, and can be used to separate numbers from their units, like: 25 kg.
+Thin spaces and thin non-breaking spaces are also supported from the Insert menu, and can be used to separate numbers from their units, like: 25 kg.[footnote:f4xr5]
+
+%Footnote.f4xr5: Using a non-breaking space is the correct way to separate a number from its unit. This ensures that line wrapping does not split the two.
 
 #### Some Section Here
 

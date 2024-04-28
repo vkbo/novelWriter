@@ -16,7 +16,7 @@ The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for t
 
 **Synopsis:** Explanation from the lipsum.com website.
 
-_Lorem Ipsum_ is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+_Lorem Ipsum_ is simply dummy text[1] of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
 
 # Title: Act One
 
@@ -180,4 +180,8 @@ Vivamus sodales risus ac accumsan posuere. Vestibulum ante ipsum primis in fauci
 Aenean semper turpis quis varius rhoncus. Vivamus ac mi eget felis euismod vulputate. Nam eu tempus velit. Etiam ut est porta, finibus erat sit amet, consectetur felis. Nullam consequat felis ut lacus pharetra, in lobortis urna mollis. Nulla varius eros nec lorem rhoncus, sed venenatis risus ultrices. Phasellus pellentesque laoreet neque, ut ultricies lacus vulputate quis. In malesuada dui sit amet est interdum, eget consectetur mi gravida. Cras vel bibendum purus. Quisque commodo tempor arcu, non lacinia sem blandit eleifend. Quisque at neque gravida, porttitor metus a, suscipit diam. Quisque convallis sodales lacus et condimentum. Donec a suscipit diam. Pellentesque eget cursus neque.
 
 Nunc ullamcorper magna quis elit condimentum rhoncus. Aenean dictum pulvinar dolor suscipit interdum. Aliquam elit massa, elementum nec cursus eu, maximus nec ipsum. Donec ullamcorper iaculis dolor eu commodo. Nunc eget tortor quis turpis consectetur varius. Vestibulum nec justo vel tellus venenatis condimentum. Duis auctor iaculis massa. Nunc risus magna, rutrum vitae eros non, tristique mollis enim.
+
+### Footnotes
+
+1. _Lorem ipsum_ is typically a corrupted version of De finibus bonorum et malorum, a 1st-century BC text by the Roman statesman and philosopher Cicero, with words altered, added, and removed to make it nonsensical and improper Latin. (Source: Wikipedia)
 

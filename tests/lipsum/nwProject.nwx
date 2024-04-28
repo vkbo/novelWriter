@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.3a3" hexVersion="0x020300a3" fileVersion="1.5" fileRevision="2" timeStamp="2024-01-30 21:37:01">
-  <project id="5ac0df12-8b8b-476b-9905-21d33685687c" saveCount="44" autoCount="25" editTime="2039">
+<novelWriterXML appVersion="2.5a2" hexVersion="0x020500a2" fileVersion="1.5" fileRevision="4" timeStamp="2024-04-27 16:40:24">
+  <project id="5ac0df12-8b8b-476b-9905-21d33685687c" saveCount="45" autoCount="26" editTime="2168">
     <name>Lorem Ipsum</name>
     <author>lipsum.com</author>
   </project>
@@ -9,7 +9,7 @@
     <language>en_GB</language>
     <spellChecking auto="no">None</spellChecking>
     <lastHandle>
-      <entry key="editor">7a992350f3eb6</entry>
+      <entry key="editor">88d59a277361b</entry>
       <entry key="viewer">None</entry>
       <entry key="novelTree">b3643d0f92e32</entry>
       <entry key="outline">None</entry>
@@ -19,16 +19,16 @@
       <entry key="Rep2">Replace Text 2</entry>
     </autoReplace>
     <status>
-      <entry key="sbaa94f" count="3" red="100" green="100" blue="100">New</entry>
-      <entry key="s27bf7c" count="0" red="200" green="50" blue="0">Note</entry>
-      <entry key="s92a87b" count="5" red="200" green="150" blue="0">Draft</entry>
-      <entry key="sedd043" count="7" red="50" green="200" blue="0">Finished</entry>
+      <entry key="sbaa94f" count="3" red="100" green="100" blue="100" shape="SQUARE">New</entry>
+      <entry key="s27bf7c" count="0" red="200" green="50" blue="0" shape="SQUARE">Note</entry>
+      <entry key="s92a87b" count="5" red="200" green="150" blue="0" shape="SQUARE">Draft</entry>
+      <entry key="sedd043" count="7" red="50" green="200" blue="0" shape="SQUARE">Finished</entry>
     </status>
     <importance>
-      <entry key="i613591" count="6" red="100" green="100" blue="100">New</entry>
-      <entry key="i560cbf" count="0" red="200" green="50" blue="0">Minor</entry>
-      <entry key="i37861c" count="0" red="200" green="150" blue="0">Major</entry>
-      <entry key="id6b1d0" count="0" red="50" green="200" blue="0">Main</entry>
+      <entry key="i613591" count="6" red="100" green="100" blue="100" shape="SQUARE">New</entry>
+      <entry key="i560cbf" count="0" red="200" green="50" blue="0" shape="SQUARE">Minor</entry>
+      <entry key="i37861c" count="0" red="200" green="150" blue="0" shape="SQUARE">Major</entry>
+      <entry key="id6b1d0" count="0" red="50" green="200" blue="0" shape="SQUARE">Main</entry>
     </importance>
   </settings>
   <content items="21" novelWords="3109" notesWords="738">
@@ -45,7 +45,7 @@
       <name status="sedd043" import="i613591" active="yes">Front Matter</name>
     </item>
     <item handle="88d59a277361b" parent="b3643d0f92e32" root="b3643d0f92e32" order="2" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H2" charCount="584" wordCount="92" paraCount="1" cursorPos="16" />
+      <meta expanded="no" heading="H2" charCount="600" wordCount="92" paraCount="1" cursorPos="931" />
       <name status="s92a87b" import="i613591" active="yes">Prologue</name>
     </item>
     <item handle="db7e733775d4d" parent="b3643d0f92e32" root="b3643d0f92e32" order="3" type="FILE" class="NOVEL" layout="DOCUMENT">

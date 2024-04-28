@@ -21,19 +21,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import json
-import pytest
 
 from shutil import copyfile
 
-from tools import C, buildTestProject, cmpFiles, writeFile
-from mocked import causeException
+import pytest
 
 from novelwriter import SHARED
-from novelwriter.enum import nwComment, nwItemClass, nwItemLayout
 from novelwriter.constants import nwFiles
+from novelwriter.core.index import IndexItem, NWIndex, TagsIndex, _checkModKey, processComment
 from novelwriter.core.item import NWItem
-from novelwriter.core.index import IndexItem, NWIndex, TagsIndex, processComment
 from novelwriter.core.project import NWProject
+from novelwriter.enum import nwComment, nwItemClass, nwItemLayout
+
+from tests.mocked import causeException
+from tests.tools import C, buildTestProject, cmpFiles
 
 
 @pytest.mark.core
@@ -122,12 +123,14 @@ def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, mockGUI, tstPaths):
     assert cmpFiles(testFile, compFile)
 
     # Write an empty index file and load it
-    writeFile(projFile, "{}")
+    projFile.write_text("{}", encoding="utf-8")
     assert index.loadIndex() is False
     assert index.indexBroken is True
 
     # Write an index file that passes loading, but is still empty
-    writeFile(projFile, '{"novelWriter.tagsIndex": {}, "novelWriter.itemIndex": {}}')
+    projFile.write_text(
+        '{"novelWriter.tagsIndex": {}, "novelWriter.itemIndex": {}}', encoding="utf-8"
+    )
     assert index.loadIndex() is True
     assert index.indexBroken is False
 
@@ -306,7 +309,7 @@ def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
+def testCoreIndex_ScanText(monkeypatch, mockGUI, fncPath, mockRnd):
     """Check the index text scanner."""
     project = NWProject()
     mockRnd.reset()
@@ -376,12 +379,14 @@ def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
         "@char: Jane\n\n"
         "% this is a comment\n\n"
         "This is a story about Jane Smith.\n\n"
-        "Well, not really.\n"
+        "Well, not really.[footnote:key]\n\n"
+        "%Footnote.key: Footnote text.\n\n"
     ))
     assert index._tagsIndex.tagHandle("Jane") == cHandle
     assert index._tagsIndex.tagHeading("Jane") == "T0001"
     assert index._tagsIndex.tagClass("Jane") == "CHARACTER"
     assert index.getItemHeading(nHandle, "T0001").title == "Hello World!"  # type: ignore
+    assert index._itemIndex[nHandle].noteKeys("footnotes") == {"key"}  # type: ignore
 
     # Title Indexing
     # ==============
@@ -546,6 +551,45 @@ def testCoreIndex_ScanText(mockGUI, fncPath, mockRnd):
     project.closeProject()
 
 # END Test testCoreIndex_ScanText
+
+
+@pytest.mark.core
+def testCoreIndex_CommentKeys(monkeypatch, mockGUI, fncPath, mockRnd):
+    """Check the index comment key generator."""
+    project = NWProject()
+    mockRnd.reset()
+    buildTestProject(project, fncPath)
+    index = project.index
+
+    nKeys = 1000
+
+    # Generate footnote keys
+    keys = set()
+    for _ in range(nKeys):
+        key = index.newCommentKey(C.hSceneDoc, nwComment.FOOTNOTE)
+        assert key not in keys
+        assert key != "err"
+        keys.add(key)
+    assert len(keys) == nKeys
+
+    # Generate comment keys
+    keys = set()
+    for _ in range(nKeys):
+        key = index.newCommentKey(C.hSceneDoc, nwComment.COMMENT)
+        assert key not in keys
+        keys.add(key)
+    assert len(keys) == nKeys
+
+    # Induce collision
+    with monkeypatch.context() as mp:
+        mp.setattr("random.choices", lambda *a, **k: "aaaa")
+        assert index.newCommentKey(C.hSceneDoc, nwComment.FOOTNOTE) == "faaaa"
+        assert index.newCommentKey(C.hSceneDoc, nwComment.FOOTNOTE) == "err"
+
+    # Check invalid comment style
+    assert index.newCommentKey(C.hSceneDoc, None) == "err"  # type: ignore
+
+# END Test testCoreIndex_CommentKeys
 
 
 @pytest.mark.core
@@ -1249,12 +1293,14 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     itemIndex.clear()
 
     # Data must be dictionary
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as exc:
         itemIndex.unpackData("stuff")  # type: ignore
+    assert str(exc.value) == "itemIndex is not a dict"
 
     # Keys must be valid handles
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as exc:
         itemIndex.unpackData({"stuff": "more stuff"})
+    assert str(exc.value) == "itemIndex keys must be handles"
 
     # Unknown keys should be skipped
     itemIndex.unpackData({C.hInvalid: {}})
@@ -1266,8 +1312,9 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     assert itemIndex[nHandle].handle == nHandle  # type: ignore
 
     # Title tags must be valid
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as exc:
         itemIndex.unpackData({cHandle: {"headings": {"TTTTTTT": {}}}})
+    assert str(exc.value) == "The itemIndex contains an invalid title key"
 
     # Reference without a heading should be rejected
     itemIndex.unpackData({
@@ -1281,37 +1328,66 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
     itemIndex.clear()
 
     # Tag keys must be strings
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as exc:
         itemIndex.unpackData({
             cHandle: {
                 "headings": {"T0001": {}},
                 "references": {"T0001": {1234: "@pov"}},
+                "notes": {"footnotes": [], "comments": []},
             }
         })
+    assert str(exc.value) == "itemIndex reference key must be a string"
 
     # Type must be strings
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as exc:
         itemIndex.unpackData({
             cHandle: {
                 "headings": {"T0001": {}},
                 "references": {"T0001": {"John": []}},
+                "notes": {"footnotes": [], "comments": []},
             }
         })
+    assert str(exc.value) == "itemIndex reference type must be a string"
 
     # Types must be valid
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as exc:
         itemIndex.unpackData({
             cHandle: {
                 "headings": {"T0001": {}},
                 "references": {"T0001": {"John": "@pov,@char,@stuff"}},
+                "notes": {"footnotes": [], "comments": []},
             }
         })
+    assert str(exc.value) == "The itemIndex contains an invalid reference type"
+
+    # Note type must be valid
+    with pytest.raises(ValueError) as exc:
+        itemIndex.unpackData({
+            cHandle: {
+                "headings": {"T0001": {}},
+                "references": {"T0001": {"John": "@pov,@char"}},
+                "notes": {"stuff": [], "comments": []},
+            }
+        })
+    assert str(exc.value) == "The notes style is invalid"
+
+    # Note keys must be all strings
+    with pytest.raises(ValueError) as exc:
+        itemIndex.unpackData({
+            cHandle: {
+                "headings": {"T0001": {}},
+                "references": {"T0001": {"John": "@pov,@char"}},
+                "notes": {"footnotes": ["fkey", 1], "comments": []},
+            }
+        })
+    assert str(exc.value) == "The notes keys must be a list of strings"
 
     # This should pass
     itemIndex.unpackData({
         cHandle: {
             "headings": {"T0001": {}},
             "references": {"T0001": {"John": "@pov,@char"}},
+            "notes": {"footnotes": ["fkey"], "comments": ["ckey"]},
         }
     })
 
@@ -1319,29 +1395,87 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreIndex_processComment():
-    """Test the comment processing function."""
-    # Regular comment
-    assert processComment("%Hi") == (nwComment.PLAIN, "Hi", 0)
-    assert processComment("% Hi") == (nwComment.PLAIN, "Hi", 0)
-    assert processComment("% Hi:You") == (nwComment.PLAIN, "Hi:You", 0)
+def testCoreIndex_checkModKey():
+    """Test the _checkModKey function."""
+    # Check Requirements
 
     # Synopsis
-    assert processComment("%synopsis:") == (nwComment.PLAIN, "synopsis:", 0)
-    assert processComment("%synopsis: Hi") == (nwComment.SYNOPSIS, "Hi", 10)
-    assert processComment("% synopsis: Hi") == (nwComment.SYNOPSIS, "Hi", 11)
-    assert processComment("%  synopsis : Hi") == (nwComment.SYNOPSIS, "Hi", 13)
-    assert processComment("%   Synopsis  : Hi") == (nwComment.SYNOPSIS, "Hi", 15)
-    assert processComment("% \t  SYNOPSIS  : Hi") == (nwComment.SYNOPSIS, "Hi", 16)
-    assert processComment("% \t  SYNOPSIS  : Hi:You") == (nwComment.SYNOPSIS, "Hi:You", 16)
+    assert _checkModKey("synopsis", "") is True
+    assert _checkModKey("synopsis", "a") is False
 
-    # Short Description
-    assert processComment("%short:") == (nwComment.PLAIN, "short:", 0)
-    assert processComment("%short: Hi") == (nwComment.SHORT, "Hi", 7)
-    assert processComment("% short: Hi") == (nwComment.SHORT, "Hi", 8)
-    assert processComment("%  short : Hi") == (nwComment.SHORT, "Hi", 10)
-    assert processComment("%   Short  : Hi") == (nwComment.SHORT, "Hi", 12)
-    assert processComment("% \t  SHORT  : Hi") == (nwComment.SHORT, "Hi", 13)
-    assert processComment("% \t  SHORT  : Hi:You") == (nwComment.SHORT, "Hi:You", 13)
+    # Short
+    assert _checkModKey("short", "") is True
+    assert _checkModKey("short", "a") is False
+
+    # Note
+    assert _checkModKey("note", "") is True
+    assert _checkModKey("note", "a") is True
+
+    # Footnote
+    assert _checkModKey("footnote", "") is False
+    assert _checkModKey("footnote", "a") is True
+
+    # Invalid
+    assert _checkModKey("stuff", "") is False
+    assert _checkModKey("stuff", "a") is False
+
+    # Check Keys
+    assert _checkModKey("note", "a") is True
+    assert _checkModKey("note", "a1") is True
+    assert _checkModKey("note", "a1.2") is False
+    assert _checkModKey("note", "a1_2") is True
+
+# END Test testCoreIndex_checkModKey
+
+
+@pytest.mark.core
+def testCoreIndex_processComment():
+    """Test the comment processing function."""
+    # Plain
+    assert processComment("%Hi") == (nwComment.PLAIN, "", "Hi", 0, 0)
+    assert processComment("% Hi") == (nwComment.PLAIN, "", "Hi", 0, 0)
+    assert processComment("% Hi:You") == (nwComment.PLAIN, "", "Hi:You", 0, 0)
+    assert processComment("% Hi.You:There") == (nwComment.PLAIN, "", "Hi.You:There", 0, 0)
+
+    # Ignore
+    assert processComment("%~Hi") == (nwComment.IGNORE, "", "Hi", 0, 0)
+    assert processComment("%~ Hi") == (nwComment.IGNORE, "", "Hi", 0, 0)
+
+    # Invalid
+    assert processComment("") == (nwComment.PLAIN, "", "", 0, 0)
+
+    # Short : Term not allowed
+    assert processComment("%short: Hi") == (nwComment.SHORT, "", "Hi", 0, 7)
+    assert processComment("%short.a: Hi") == (nwComment.PLAIN, "", "short.a: Hi", 0, 0)
+
+    # Synopsis : Term not allowed
+    assert processComment("%synopsis: Hi") == (nwComment.SYNOPSIS, "", "Hi", 0, 10)
+    assert processComment("%synopsis.a: Hi") == (nwComment.PLAIN, "", "synopsis.a: Hi", 0, 0)
+
+    # Note : Term optional
+    assert processComment("%note: Hi") == (nwComment.NOTE, "", "Hi", 0, 6)
+    assert processComment("%note.a: Hi") == (nwComment.NOTE, "a", "Hi", 6, 8)
+
+    # Footnote : Term required
+    assert processComment("%footnote: Hi") == (nwComment.PLAIN, "", "footnote: Hi", 0, 0)
+    assert processComment("%footnote.a: Hi") == (nwComment.FOOTNOTE, "a", "Hi", 10, 12)
+
+    # Check Case
+    assert processComment("%Footnote.a: Hi") == (nwComment.FOOTNOTE, "a", "Hi", 10, 12)
+    assert processComment("%FOOTNOTE.A: Hi") == (nwComment.FOOTNOTE, "A", "Hi", 10, 12)
+    assert processComment("%FootNote.A_a: Hi") == (nwComment.FOOTNOTE, "A_a", "Hi", 10, 14)
+
+    # Padding without term
+    assert processComment("%short: Hi") == (nwComment.SHORT, "", "Hi", 0, 7)
+    assert processComment("% short: Hi") == (nwComment.SHORT, "", "Hi", 0, 8)
+    assert processComment("%  short : Hi") == (nwComment.SHORT, "", "Hi", 0, 10)
+    assert processComment("%   short  : Hi") == (nwComment.SHORT, "", "Hi", 0, 12)
+    assert processComment("% \t  short  : Hi") == (nwComment.SHORT, "", "Hi", 0, 13)
+
+    # Padding with term
+    assert processComment("%note.term: Hi") == (nwComment.NOTE, "term", "Hi", 6, 11)
+    assert processComment("% note.term: Hi") == (nwComment.NOTE, "term", "Hi", 7, 12)
+    assert processComment("% note. term : Hi") == (nwComment.PLAIN, "", "note. term : Hi", 0, 0)
+    assert processComment("% note . term : Hi") == (nwComment.PLAIN, "", "note . term : Hi", 0, 0)
 
 # END Test testCoreIndex_processComment

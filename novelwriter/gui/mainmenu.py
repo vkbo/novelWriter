@@ -597,6 +597,12 @@ class GuiMainMenu(QMenuBar):
             lambda: self.requestDocInsert.emit(nwDocInsert.LIPSUM)
         )
 
+        # Insert > Footnote
+        self.aFootnote = self.insMenu.addAction(self.tr("Footnote"))
+        self.aFootnote.triggered.connect(
+            lambda: self.requestDocInsert.emit(nwDocInsert.FOOTNOTE)
+        )
+
         return
 
     def _buildFormatMenu(self) -> None:

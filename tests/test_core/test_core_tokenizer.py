@@ -21,14 +21,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import json
+
 import pytest
 
-from tools import C, buildTestProject, readFile
-
 from novelwriter.constants import nwHeadFmt
-from novelwriter.core.tomd import ToMarkdown
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import HeadingFormatter, Tokenizer, stripEscape
+from novelwriter.core.tomd import ToMarkdown
+
+from tests.tools import C, buildTestProject, readFile
 
 
 class BareTokenizer(Tokenizer):
@@ -869,30 +870,31 @@ def testCoreToken_ExtractFormats(mockGUI):
     # Plain bold
     text, fmt = tokens._extractFormats("Text with **bold** in it.")
     assert text == "Text with bold in it."
-    assert fmt == [(10, tokens.FMT_B_B), (14, tokens.FMT_B_E)]
+    assert fmt == [(10, tokens.FMT_B_B, ""), (14, tokens.FMT_B_E, "")]
 
     # Plain italics
     text, fmt = tokens._extractFormats("Text with _italics_ in it.")
     assert text == "Text with italics in it."
-    assert fmt == [(10, tokens.FMT_I_B), (17, tokens.FMT_I_E)]
+    assert fmt == [(10, tokens.FMT_I_B, ""), (17, tokens.FMT_I_E, "")]
 
     # Plain strikethrough
     text, fmt = tokens._extractFormats("Text with ~~strikethrough~~ in it.")
     assert text == "Text with strikethrough in it."
-    assert fmt == [(10, tokens.FMT_D_B), (23, tokens.FMT_D_E)]
+    assert fmt == [(10, tokens.FMT_D_B, ""), (23, tokens.FMT_D_E, "")]
 
     # Nested bold/italics
     text, fmt = tokens._extractFormats("Text with **bold and _italics_** in it.")
     assert text == "Text with bold and italics in it."
     assert fmt == [
-        (10, tokens.FMT_B_B), (19, tokens.FMT_I_B), (26, tokens.FMT_I_E), (26, tokens.FMT_B_E)
+        (10, tokens.FMT_B_B, ""), (19, tokens.FMT_I_B, ""),
+        (26, tokens.FMT_I_E, ""), (26, tokens.FMT_B_E, ""),
     ]
 
     # Bold with overlapping italics
     # Here, bold is ignored because it is not on word boundary
     text, fmt = tokens._extractFormats("Text with **bold and overlapping _italics**_ in it.")
     assert text == "Text with **bold and overlapping italics** in it."
-    assert fmt == [(33, tokens.FMT_I_B), (42, tokens.FMT_I_E)]
+    assert fmt == [(33, tokens.FMT_I_B, ""), (42, tokens.FMT_I_E, "")]
 
     # Shortcodes
     # ==========
@@ -900,43 +902,44 @@ def testCoreToken_ExtractFormats(mockGUI):
     # Plain bold
     text, fmt = tokens._extractFormats("Text with [b]bold[/b] in it.")
     assert text == "Text with bold in it."
-    assert fmt == [(10, tokens.FMT_B_B), (14, tokens.FMT_B_E)]
+    assert fmt == [(10, tokens.FMT_B_B, ""), (14, tokens.FMT_B_E, "")]
 
     # Plain italics
     text, fmt = tokens._extractFormats("Text with [i]italics[/i] in it.")
     assert text == "Text with italics in it."
-    assert fmt == [(10, tokens.FMT_I_B), (17, tokens.FMT_I_E)]
+    assert fmt == [(10, tokens.FMT_I_B, ""), (17, tokens.FMT_I_E, "")]
 
     # Plain strikethrough
     text, fmt = tokens._extractFormats("Text with [s]strikethrough[/s] in it.")
     assert text == "Text with strikethrough in it."
-    assert fmt == [(10, tokens.FMT_D_B), (23, tokens.FMT_D_E)]
+    assert fmt == [(10, tokens.FMT_D_B, ""), (23, tokens.FMT_D_E, "")]
 
     # Plain underline
     text, fmt = tokens._extractFormats("Text with [u]underline[/u] in it.")
     assert text == "Text with underline in it."
-    assert fmt == [(10, tokens.FMT_U_B), (19, tokens.FMT_U_E)]
+    assert fmt == [(10, tokens.FMT_U_B, ""), (19, tokens.FMT_U_E, "")]
 
     # Plain mark
     text, fmt = tokens._extractFormats("Text with [m]highlight[/m] in it.")
     assert text == "Text with highlight in it."
-    assert fmt == [(10, tokens.FMT_M_B), (19, tokens.FMT_M_E)]
+    assert fmt == [(10, tokens.FMT_M_B, ""), (19, tokens.FMT_M_E, "")]
 
     # Plain superscript
     text, fmt = tokens._extractFormats("Text with super[sup]script[/sup] in it.")
     assert text == "Text with superscript in it."
-    assert fmt == [(15, tokens.FMT_SUP_B), (21, tokens.FMT_SUP_E)]
+    assert fmt == [(15, tokens.FMT_SUP_B, ""), (21, tokens.FMT_SUP_E, "")]
 
     # Plain subscript
     text, fmt = tokens._extractFormats("Text with sub[sub]script[/sub] in it.")
     assert text == "Text with subscript in it."
-    assert fmt == [(13, tokens.FMT_SUB_B), (19, tokens.FMT_SUB_E)]
+    assert fmt == [(13, tokens.FMT_SUB_B, ""), (19, tokens.FMT_SUB_E, "")]
 
     # Nested bold/italics
     text, fmt = tokens._extractFormats("Text with [b]bold and [i]italics[/i][/b] in it.")
     assert text == "Text with bold and italics in it."
     assert fmt == [
-        (10, tokens.FMT_B_B), (19, tokens.FMT_I_B), (26, tokens.FMT_I_E), (26, tokens.FMT_B_E)
+        (10, tokens.FMT_B_B, ""), (19, tokens.FMT_I_B, ""),
+        (26, tokens.FMT_I_E, ""), (26, tokens.FMT_B_E, ""),
     ]
 
     # Bold with overlapping italics
@@ -946,7 +949,8 @@ def testCoreToken_ExtractFormats(mockGUI):
     )
     assert text == "Text with bold and overlapping italics in it."
     assert fmt == [
-        (10, tokens.FMT_B_B), (31, tokens.FMT_I_B), (38, tokens.FMT_B_E), (38, tokens.FMT_I_E)
+        (10, tokens.FMT_B_B, ""), (31, tokens.FMT_I_B, ""),
+        (38, tokens.FMT_B_E, ""), (38, tokens.FMT_I_E, ""),
     ]
 
     # So does this
@@ -955,7 +959,8 @@ def testCoreToken_ExtractFormats(mockGUI):
     )
     assert text == "Text with bold and overlapping italics in it."
     assert fmt == [
-        (10, tokens.FMT_B_B), (31, tokens.FMT_I_B), (38, tokens.FMT_B_E), (41, tokens.FMT_I_E)
+        (10, tokens.FMT_B_B, ""), (31, tokens.FMT_I_B, ""),
+        (38, tokens.FMT_B_E, ""), (41, tokens.FMT_I_E, ""),
     ]
 
 # END Test testCoreToken_ExtractFormats
@@ -998,8 +1003,8 @@ def testCoreToken_TextFormat(mockGUI):
             Tokenizer.T_TEXT, 0,
             "Some bolded text on this lines",
             [
-                (5,  Tokenizer.FMT_B_B),
-                (16, Tokenizer.FMT_B_E),
+                (5,  Tokenizer.FMT_B_B, ""),
+                (16, Tokenizer.FMT_B_E, ""),
             ],
             Tokenizer.A_NONE
         ),
@@ -1014,8 +1019,8 @@ def testCoreToken_TextFormat(mockGUI):
             Tokenizer.T_TEXT, 0,
             "Some italic text on this lines",
             [
-                (5,  Tokenizer.FMT_I_B),
-                (16, Tokenizer.FMT_I_E),
+                (5,  Tokenizer.FMT_I_B, ""),
+                (16, Tokenizer.FMT_I_E, ""),
             ],
             Tokenizer.A_NONE
         ),
@@ -1030,10 +1035,10 @@ def testCoreToken_TextFormat(mockGUI):
             Tokenizer.T_TEXT, 0,
             "Some bold italic text on this lines",
             [
-                (5,  Tokenizer.FMT_B_B),
-                (5,  Tokenizer.FMT_I_B),
-                (21, Tokenizer.FMT_I_E),
-                (21, Tokenizer.FMT_B_E),
+                (5,  Tokenizer.FMT_B_B, ""),
+                (5,  Tokenizer.FMT_I_B, ""),
+                (21, Tokenizer.FMT_I_E, ""),
+                (21, Tokenizer.FMT_B_E, ""),
             ],
             Tokenizer.A_NONE
         ),
@@ -1048,8 +1053,8 @@ def testCoreToken_TextFormat(mockGUI):
             Tokenizer.T_TEXT, 0,
             "Some strikethrough text on this lines",
             [
-                (5,  Tokenizer.FMT_D_B),
-                (23, Tokenizer.FMT_D_E),
+                (5,  Tokenizer.FMT_D_B, ""),
+                (23, Tokenizer.FMT_D_E, ""),
             ],
             Tokenizer.A_NONE
         ),
@@ -1064,12 +1069,12 @@ def testCoreToken_TextFormat(mockGUI):
             Tokenizer.T_TEXT, 0,
             "Some nested bold and italic and strikethrough text here",
             [
-                (5,  Tokenizer.FMT_B_B),
-                (21, Tokenizer.FMT_I_B),
-                (27, Tokenizer.FMT_I_E),
-                (32, Tokenizer.FMT_D_B),
-                (45, Tokenizer.FMT_D_E),
-                (50, Tokenizer.FMT_B_E),
+                (5,  Tokenizer.FMT_B_B, ""),
+                (21, Tokenizer.FMT_I_B, ""),
+                (27, Tokenizer.FMT_I_E, ""),
+                (32, Tokenizer.FMT_D_B, ""),
+                (45, Tokenizer.FMT_D_E, ""),
+                (50, Tokenizer.FMT_B_E, ""),
             ],
             Tokenizer.A_NONE
         ),
@@ -2137,7 +2142,7 @@ def testCoreToken_CounterHandling(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_HeadingFormatter(fncPath, mockRnd):
+def testCoreToken_HeadingFormatter(fncPath, mockGUI, mockRnd):
     """Check the HeadingFormatter class."""
     project = NWProject()
     project.setProjectLang("en_GB")

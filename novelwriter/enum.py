@@ -65,8 +65,13 @@ class nwItemLayout(Enum):
 class nwComment(Enum):
 
     PLAIN    = 0
-    SYNOPSIS = 1
-    SHORT    = 2
+    IGNORE   = 1
+    SYNOPSIS = 2
+    SHORT    = 3
+    NOTE     = 4
+    FOOTNOTE = 5
+    COMMENT  = 6
+    STORY    = 7
 
 # END Enum nwComment
 
@@ -145,6 +150,7 @@ class nwDocInsert(Enum):
     VSPACE_S  = 8
     VSPACE_M  = 9
     LIPSUM    = 10
+    FOOTNOTE  = 11
 
 # END Enum nwDocInsert
 

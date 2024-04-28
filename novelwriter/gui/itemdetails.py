@@ -26,12 +26,14 @@ from __future__ import annotations
 import logging
 
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
+from PyQt5.QtWidgets import QGridLayout, QLabel, QWidget
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.constants import trConst, nwLabels
+from novelwriter.common import elide
+from novelwriter.constants import nwLabels, trConst
 from novelwriter.types import (
-    QtAlignLeft, QtAlignLeftBase, QtAlignRight, QtAlignRightBase, QtAlignRightMiddle
+    QtAlignLeft, QtAlignLeftBase, QtAlignRight, QtAlignRightBase,
+    QtAlignRightMiddle
 )
 
 logger = logging.getLogger(__name__)
@@ -236,10 +238,6 @@ class GuiItemDetails(QWidget):
         # Label
         # =====
 
-        label = nwItem.itemName
-        if len(label) > 100:
-            label = label[:96].rstrip()+" ..."
-
         if nwItem.isFileType():
             if nwItem.isActive:
                 self.labelIcon.setPixmap(SHARED.theme.getPixmap("checked", (iPx, iPx)))
@@ -248,7 +246,7 @@ class GuiItemDetails(QWidget):
         else:
             self.labelIcon.setPixmap(SHARED.theme.getPixmap("noncheckable", (iPx, iPx)))
 
-        self.labelData.setText(label)
+        self.labelData.setText(elide(nwItem.itemName, 100))
 
         # Status
         # ======

@@ -24,29 +24,31 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import json
-import uuid
 import logging
 import unicodedata
+import uuid
 import xml.etree.ElementTree as ET
 
-from typing import TYPE_CHECKING, Any, Literal
-from pathlib import Path
-from datetime import datetime
 from configparser import ConfigParser
+from datetime import datetime
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Literal, TypeVar
 from urllib.parse import urljoin
 from urllib.request import pathname2url
 
-from PyQt5.QtGui import QColor, QDesktopServices
 from PyQt5.QtCore import QCoreApplication, QUrl
+from PyQt5.QtGui import QColor, QDesktopServices
 
-from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
-from novelwriter.error import logException
 from novelwriter.constants import nwConst, nwLabels, nwUnicode, trConst
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
+from novelwriter.error import logException
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import TypeGuard  # Requires Python 3.10
 
 logger = logging.getLogger(__name__)
+
+_Type = TypeVar("_Type")
 
 
 ##
@@ -172,6 +174,11 @@ def isItemLayout(value: Any) -> TypeGuard[str]:
     return isinstance(value, str) and value in nwItemLayout.__members__
 
 
+def isListInstance(data: Any, check: type[_Type]) -> TypeGuard[list[_Type]]:
+    """Check that all items of a list is of a given type."""
+    return isinstance(data, list) and all(isinstance(item, check) for item in data)
+
+
 def hexToInt(value: Any, default: int = 0) -> int:
     """Convert a hex string to an integer."""
     if isinstance(value, str):
@@ -270,6 +277,13 @@ def simplified(text: str) -> str:
     replace all occurrences of (multiple) whitespaces with a 0x20 space.
     """
     return " ".join(str(text).strip().split())
+
+
+def elide(text: str, length: int) -> str:
+    """Elide a piece of text to a maximum length."""
+    if len(text) > (cut := max(4, length)):
+        return f"{text[:cut-4].rstrip()} ..."
+    return text
 
 
 def yesNo(value: int | bool | None) -> Literal["yes", "no"]:

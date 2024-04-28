@@ -20,12 +20,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import json
+
 import pytest
 
-from tools import readFile
-
-from novelwriter.core.tohtml import ToHtml
 from novelwriter.core.project import NWProject
+from novelwriter.core.tohtml import ToHtml
 
 
 @pytest.mark.core
@@ -225,6 +225,22 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
         "<a href='#tag_Bod'>Bod</a>, <a href='#tag_Jane'>Jane</a></p>\n"
     )
 
+    # Tags
+    html._text = "@tag: Bod\n"
+    html.tokenizeText()
+    html.doConvert()
+    assert html.result == (
+        "<p class='meta meta-tag'><span class='tags'>Tag:</span> <a name='tag_Bod'>Bod</a></p>\n"
+    )
+
+    html._text = "@tag: Bod | Nobody Owens\n"
+    html.tokenizeText()
+    html.doConvert()
+    assert html.result == (
+        "<p class='meta meta-tag'><span class='tags'>Tag:</span> <a name='tag_Bod'>Bod</a> "
+        "| <span class='optional'>Nobody Owens</a></p>\n"
+    )
+
     # Multiple Keywords
     html._isFirst = False
     html.setKeywords(True)
@@ -239,6 +255,30 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
         "<span class='tags'>Plot:</span> <a href='#tag_Main'>Main</a></p>\n"
         "<p class='meta meta-location' style='margin-top: 0;'>"
         "<span class='tags'>Locations:</span> <a href='#tag_Europe'>Europe</a></p>\n"
+    )
+
+    # Footnotes
+    # =========
+
+    html._text = (
+        "Text with one[footnote:fa] or two[footnote:fb] footnotes.\n\n"
+        "%footnote.fa: Footnote text A.\n\n"
+    )
+    html.tokenizeText()
+    html.doConvert()
+    assert html.result == (
+        "<p>Text with one<sup><a href='#footnote_1'>1</a></sup> "
+        "or two<sup>ERR</sup> footnotes.</p>\n"
+    )
+
+    html.appendFootnotes()
+    assert html.result == (
+        "<p>Text with one<sup><a href='#footnote_1'>1</a></sup> "
+        "or two<sup>ERR</sup> footnotes.</p>\n"
+        "<h3>Footnotes</h3>\n"
+        "<ol>\n"
+        "<li id='footnote_1'><p>Footnote text A.</p></li>\n"
+        "</ol>\n"
     )
 
     # Preview Mode
@@ -453,7 +493,7 @@ def testCoreToHtml_SpecialCases(mockGUI):
     html.doConvert()
     assert html.result == (
         "<p class='comment'>"
-        "<strong>Comment:</strong> Test &gt; text _&lt;**bold**&gt;_ and more."
+        "<strong>Comment:</strong> Test &gt; text <em>&lt;<strong>bold</strong>&gt;</em> and more."
         "</p>\n"
     )
 
@@ -480,7 +520,7 @@ def testCoreToHtml_SpecialCases(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToHtml_Complex(mockGUI, fncPath):
+def testCoreToHtml_Save(mockGUI, fncPath):
     """Test the save method of the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
@@ -498,36 +538,28 @@ def testCoreToHtml_Complex(mockGUI, fncPath):
         "### Scene 2\n\nThe text of scene two.\n",
         "#### A Section\n\n\tMore text in scene two.\n",
     ]
-    resText = [
-        (
-            "<h1 class='title' style='text-align: center;'>My Novel</h1>\n"
-            "<p><strong>By Jane Doh</strong></p>\n"
-        ),
-        (
-            "<h1 style='page-break-before: always;'>Chapter 1</h1>\n"
-            "<p>The text of chapter one.</p>\n"
-        ),
-        (
-            "<h2>Scene 1</h2>\n"
-            "<p>The text of scene one.</p>\n"
-        ),
-        (
-            "<h3>A Section</h3>\n"
-            "<p>More text in scene one.</p>\n"
-        ),
-        (
-            "<h1 style='page-break-before: always;'>Chapter 2</h1>\n"
-            "<p>The text of chapter two.</p>\n"
-        ),
-        (
-            "<h2>Scene 2</h2>\n"
-            "<p>The text of scene two.</p>\n"
-        ),
-        (
-            "<h3>A Section</h3>\n"
-            "<p>\tMore text in scene two.</p>\n"
-        ),
-    ]
+    resText = [(
+        "<h1 class='title' style='text-align: center;'>My Novel</h1>\n"
+        "<p><strong>By Jane Doh</strong></p>\n"
+    ), (
+        "<h1 style='page-break-before: always;'>Chapter 1</h1>\n"
+        "<p>The text of chapter one.</p>\n"
+    ), (
+        "<h2>Scene 1</h2>\n"
+        "<p>The text of scene one.</p>\n"
+    ), (
+        "<h3>A Section</h3>\n"
+        "<p>More text in scene one.</p>\n"
+    ), (
+        "<h1 style='page-break-before: always;'>Chapter 2</h1>\n"
+        "<p>The text of chapter two.</p>\n"
+    ),  (
+        "<h2>Scene 2</h2>\n"
+        "<p>The text of scene two.</p>\n"
+    ),  (
+        "<h3>A Section</h3>\n"
+        "<p>\tMore text in scene two.</p>\n"
+    )]
 
     for i in range(len(docText)):
         html._text = docText[i]
@@ -541,9 +573,10 @@ def testCoreToHtml_Complex(mockGUI, fncPath):
     html.replaceTabs(nSpaces=2, spaceChar="&nbsp;")
     resText[6] = "<h3>A Section</h3>\n<p>&nbsp;&nbsp;More text in scene two.</p>\n"
 
-    # Check File
-    # ==========
+    # Check Files
+    # ===========
 
+    # HTML
     hStyle = html.getStyleSheet()
     htmlDoc = (
         "<!DOCTYPE html>\n"
@@ -568,9 +601,20 @@ def testCoreToHtml_Complex(mockGUI, fncPath):
 
     saveFile = fncPath / "outFile.htm"
     html.saveHtml5(saveFile)
-    assert readFile(saveFile) == htmlDoc
+    assert saveFile.read_text(encoding="utf-8") == htmlDoc
 
-# END Test testCoreToHtml_Complex
+    # JSON + HTML
+    saveFile = fncPath / "outFile.json"
+    html.saveHtmlJson(saveFile)
+    data = json.loads(saveFile.read_text(encoding="utf-8"))
+    assert data["meta"]["projectName"] == ""
+    assert data["meta"]["novelAuthor"] == ""
+    assert data["meta"]["buildTime"] > 0
+    assert data["meta"]["buildTimeStr"] != ""
+    assert data["text"]["css"] == hStyle
+    assert len(data["text"]["html"]) == len(resText)
+
+# END Test testCoreToHtml_Save
 
 
 @pytest.mark.core

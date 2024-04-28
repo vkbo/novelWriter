@@ -50,7 +50,7 @@ def testGuiDocSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     search.searchText.setText("Lorem")
     search.searchAction.activate(QAction.ActionEvent.Trigger)
     assert search.searchResult.topLevelItemCount() == 14
-    assert totalCount() == 42
+    assert totalCount() == 43
 
     firstDoc = search.searchResult.topLevelItem(0)
     firstResult = firstDoc.child(0)
@@ -98,7 +98,7 @@ def testGuiDocSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     search.toggleCase.setChecked(True)
     search.searchAction.activate(QAction.ActionEvent.Trigger)
     assert search.searchResult.topLevelItemCount() == 7
-    assert totalCount() == 17
+    assert totalCount() == 18
     search.toggleCase.setChecked(False)
 
     # Whole Words

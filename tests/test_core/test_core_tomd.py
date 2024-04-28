@@ -22,10 +22,8 @@ from __future__ import annotations
 
 import pytest
 
-from tools import readFile
-
-from novelwriter.core.tomd import ToMarkdown
 from novelwriter.core.project import NWProject
+from novelwriter.core.tomd import ToMarkdown
 
 
 @pytest.mark.core
@@ -134,6 +132,13 @@ def testCoreToMarkdown_ConvertParagraphs(mockGUI):
     toMD.doConvert()
     assert toMD.result == "Line one  \nLine two  \nLine three\n\n"
 
+    # Text wo/Hard Break
+    toMD._text = "Line one  \nLine two  \nLine three\n"
+    toMD.setPreserveBreaks(False)
+    toMD.tokenizeText()
+    toMD.doConvert()
+    assert toMD.result == "Line one Line two Line three\n\n"
+
     # Synopsis, Short
     toMD._text = "%synopsis: The synopsis ...\n"
     toMD.tokenizeText()
@@ -188,6 +193,22 @@ def testCoreToMarkdown_ConvertParagraphs(mockGUI):
         "**Locations:** Europe\n\n"
     )
 
+    # Footnotes
+    toMD._text = (
+        "Text with one[footnote:fa] or two[footnote:fb] footnotes.\n\n"
+        "%footnote.fa: Footnote text A.\n\n"
+    )
+    toMD.tokenizeText()
+    toMD.doConvert()
+    assert toMD.result == "Text with one[1] or two[ERR] footnotes.\n\n"
+
+    toMD.appendFootnotes()
+    assert toMD.result == (
+        "Text with one[1] or two[ERR] footnotes.\n\n"
+        "### Footnotes\n\n"
+        "1. Footnote text A.\n\n"
+    )
+
 # END Test testCoreToMarkdown_ConvertParagraphs
 
 
@@ -233,17 +254,18 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToMarkdown_Complex(mockGUI, fncPath):
+def testCoreToMarkdown_Save(mockGUI, fncPath):
     """Test the save method of the ToMarkdown class."""
     project = NWProject()
     toMD = ToMarkdown(project)
+    toMD.setKeepMarkdown(True)
     toMD._isNovel = True
 
     # Build Project
     # =============
 
     docText = [
-        "# My Novel\n**By Jane Doh**\n",
+        "# My Novel\n\n**By Jane Doh**\n",
         "## Chapter 1\n\nThe text of chapter one.\n",
         "### Scene 1\n\nThe text of scene one.\n",
         "#### A Section\n\nMore text in scene one.\n",
@@ -273,15 +295,16 @@ def testCoreToMarkdown_Complex(mockGUI, fncPath):
 
     toMD.replaceTabs(nSpaces=4, spaceChar=" ")
     resText[6] = "#### A Section\n\n    More text in scene two.\n\n"
+    assert toMD.allMarkdown == resText
 
     # Check File
     # ==========
 
     saveFile = fncPath / "outFile.md"
     toMD.saveMarkdown(saveFile)
-    assert readFile(saveFile) == "".join(resText)
+    assert saveFile.read_text(encoding="utf-8") == "".join(resText)
 
-# END Test testCoreToHtml_Complex
+# END Test testCoreToMarkdown_Save
 
 
 @pytest.mark.core

@@ -1,10 +1,12 @@
 %%~name: Prologue
 %%~path: b3643d0f92e32/88d59a277361b
 %%~kind: NOVEL/DOCUMENT
-%%~hash: 5f965566ba82bbb83b8aa24f3ab7efde0c5e61cf
-%%~date: Unknown/2024-01-30 21:36:00
+%%~hash: 605a96ba35297cd7d49b753b3bda9a20b9b29d93
+%%~date: Unknown/2024-04-27 16:40:18
 ##! Prologue
 
 % Synopsis: Explanation from the lipsum.com website.
 
-_Lorem Ipsum_ is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+_Lorem Ipsum_ is simply dummy text[footnote:f9kgf] of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+
+%Footnote.f9kgf: _Lorem ipsum_ is typically a corrupted version of De finibus bonorum et malorum, a 1st-century BC text by the Roman statesman and philosopher Cicero, with words altered, added, and removed to make it nonsensical and improper Latin. (Source: Wikipedia)

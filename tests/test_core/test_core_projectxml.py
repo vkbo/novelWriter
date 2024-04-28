@@ -21,21 +21,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import json
-import pytest
 
-from shutil import copyfile
 from datetime import datetime
-from novelwriter.constants import nwFiles
+from shutil import copyfile
 
-from novelwriter.enum import nwStatusShape
-from tools import cmpFiles, writeFile
-from mocked import causeOSError
+import pytest
 
 from PyQt5.QtGui import QColor
 
+from novelwriter.constants import nwFiles
 from novelwriter.core.item import NWItem
-from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
 from novelwriter.core.projectdata import NWProjectData
+from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
+from novelwriter.enum import nwStatusShape
+
+from tests.mocked import causeOSError
+from tests.tools import cmpFiles, writeFile
 
 
 class MockProject:
@@ -55,7 +56,7 @@ def mockVersion(monkeypatch):
 
 
 @pytest.mark.core
-def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
+def testCoreProjectXML_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
     """Test reading the current XML file format."""
     refFile = tstPaths.filesDir / "nwProject-1.5.nwx"
     tstFile = tstPaths.outDir / "ProjectXML_ReadCurrent.nwx"
@@ -249,7 +250,7 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, tstPaths, fncPath):
 
 
 @pytest.mark.core
-def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockRnd):
+def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockGUI, mockRnd):
     """Test reading the version 1.0 XML file format."""
     refFile = tstPaths.filesDir / "nwProject-1.0.nwx"
     xmlFile = fncPath / "nwProject-1.0.nwx"
@@ -396,7 +397,7 @@ def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockRnd):
+def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockGUI, mockRnd):
     """Test reading the version 1.1 XML file format."""
     refFile = tstPaths.filesDir / "nwProject-1.1.nwx"
     xmlFile = fncPath / "nwProject-1.1.nwx"
@@ -543,7 +544,7 @@ def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockRnd):
+def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockGUI, mockRnd):
     """Test reading the version 1.2 XML file format."""
     refFile = tstPaths.filesDir / "nwProject-1.2.nwx"
     xmlFile = fncPath / "nwProject-1.2.nwx"
@@ -693,7 +694,7 @@ def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockRnd):
+def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockGUI, mockRnd):
     """Test reading the version 1.3 XML file format."""
     refFile = tstPaths.filesDir / "nwProject-1.3.nwx"
     xmlFile = fncPath / "nwProject-1.3.nwx"
@@ -843,7 +844,7 @@ def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockRnd):
 
 
 @pytest.mark.core
-def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockRnd):
+def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockGUI, mockRnd):
     """Test reading the version 1.4 XML file format."""
     refFile = tstPaths.filesDir / "nwProject-1.4.nwx"
     xmlFile = fncPath / "nwProject-1.4.nwx"
