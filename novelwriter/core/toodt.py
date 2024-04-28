@@ -1589,7 +1589,7 @@ class XMLParagraph:
         at all, and X_SPAN_SING only happens internally in an appendSpan
         call, returning us to an X_ROOT_TAIL state.
         """
-        if xNode and self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
+        if xNode is not None and self._nState in (X_ROOT_TEXT, X_ROOT_TAIL):
             self._xRoot.append(xNode)
             self._xTail = xNode
             self._xTail.tail = ""
