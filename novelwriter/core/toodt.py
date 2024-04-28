@@ -650,7 +650,7 @@ class ToOdt(Tokenizer):
         for fPos, fFmt, fData in tFmt:
 
             # Add any extra nodes
-            if xNode:
+            if xNode is not None:
                 parProc.appendNode(xNode)
                 xNode = None
 
@@ -699,7 +699,7 @@ class ToOdt(Tokenizer):
 
             fLast = fPos
 
-        if xNode:
+        if xNode is not None:
             parProc.appendNode(xNode)
 
         if tFrag := tText[fLast:]:
