@@ -472,21 +472,21 @@ class GuiDocViewer(QTextBrowser):
         """Generate an appropriate style sheet for the document viewer,
         based on the current syntax highlighter theme.
         """
-        colText = cssCol(SHARED.theme.colText)
         colHead = cssCol(SHARED.theme.colHead)
-        colVals = cssCol(SHARED.theme.colVal)
-        colMark = cssCol(SHARED.theme.colMark)
-        colKeys = cssCol(SHARED.theme.colKey)
-        colOpts = cssCol(SHARED.theme.colOpt)
         colHide = cssCol(SHARED.theme.colHidden)
-        colNote = cssCol(SHARED.theme.colNote)
+        colKeys = cssCol(SHARED.theme.colKey)
+        colMark = cssCol(SHARED.theme.colMark)
         colMods = cssCol(SHARED.theme.colMod)
+        colNote = cssCol(SHARED.theme.colNote)
+        colOpts = cssCol(SHARED.theme.colOpt)
+        colTags = cssCol(SHARED.theme.colTag)
+        colText = cssCol(SHARED.theme.colText)
         self.document().setDefaultStyleSheet(
             f"body {{color: {colText};}}\n"
             f"h1, h2, h3, h4 {{color: {colHead};}}\n"
-            f"a {{color: {colVals};}}\n"
             f"mark {{background-color: {colMark};}}\n"
-            f".tags {{color: {colKeys};}}\n"
+            f".keyword {{color: {colKeys};}}\n"
+            f".tag {{color: {colTags};}}\n"
             f".optional {{color: {colOpts};}}\n"
             f".comment {{color: {colHide};}}\n"
             f".note {{color: {colNote};}}\n"

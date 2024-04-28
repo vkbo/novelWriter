@@ -465,7 +465,7 @@ class ToHtml(Tokenizer):
 
         styles.append("a {color: rgb(66, 113, 174);}")
         styles.append("mark {background: rgb(255, 255, 166);}")
-        styles.append(".tags {color: rgb(245, 135, 31); font-weight: bold;}")
+        styles.append(".keyword {color: rgb(245, 135, 31); font-weight: bold;}")
         styles.append(".break {text-align: left;}")
         styles.append(".synopsis {font-style: italic;}")
         styles.append(".comment {font-style: italic; color: rgb(100, 100, 100);}")
@@ -518,18 +518,22 @@ class ToHtml(Tokenizer):
         if not valid or not bits or bits[0] not in nwLabels.KEY_NAME:
             return "", ""
 
-        result = f"<span class='tags'>{self._localLookup(nwLabels.KEY_NAME[bits[0]])}:</span> "
+        result = f"<span class='keyword'>{self._localLookup(nwLabels.KEY_NAME[bits[0]])}:</span> "
         if len(bits) > 1:
             if bits[0] == nwKeyWords.TAG_KEY:
                 one, two = self._project.index.parseValue(bits[1])
-                result += f"<a name='tag_{one}'>{one}</a>"
+                result += f"<a class='tag' name='tag_{one}'>{one}</a>"
                 if two:
                     result += f" | <span class='optional'>{two}</a>"
             else:
                 if self._genMode == self.M_PREVIEW:
-                    result += ", ".join(f"<a href='#{bits[0][1:]}={t}'>{t}</a>" for t in bits[1:])
+                    result += ", ".join(
+                        f"<a class='tag' href='#{bits[0][1:]}={t}'>{t}</a>" for t in bits[1:]
+                    )
                 else:
-                    result += ", ".join(f"<a href='#tag_{t}'>{t}</a>" for t in bits[1:])
+                    result += ", ".join(
+                        f"<a class='tag' href='#tag_{t}'>{t}</a>" for t in bits[1:]
+                    )
 
         return bits[0][1:], result
 

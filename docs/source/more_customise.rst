@@ -175,6 +175,7 @@ A syntax theme ``.conf`` file consists of the following settings:
    hidden         =   0,   0,   0
    shortcode      =   0,   0,   0
    keyword        =   0,   0,   0
+   tag            =   0,   0,   0
    value          =   0,   0,   0
    optional       =   0,   0,   0
    spellcheckline =   0,   0,   0
@@ -200,4 +201,4 @@ Omitted syntax colours default to black, except ``background`` which defaults to
    The ``texthighlight`` syntax colour entry was added.
 
 .. versionadded:: 2.5
-   The ``note`` syntax colour entry was added.
+   The ``note`` and ``tag`` syntax colour entries were added.

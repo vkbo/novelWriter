@@ -221,8 +221,9 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='meta meta-char'><span class='tags'>Characters:</span> "
-        "<a href='#tag_Bod'>Bod</a>, <a href='#tag_Jane'>Jane</a></p>\n"
+        "<p class='meta meta-char'><span class='keyword'>Characters:</span> "
+        "<a class='tag' href='#tag_Bod'>Bod</a>, "
+        "<a class='tag' href='#tag_Jane'>Jane</a></p>\n"
     )
 
     # Tags
@@ -230,15 +231,16 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='meta meta-tag'><span class='tags'>Tag:</span> <a name='tag_Bod'>Bod</a></p>\n"
+        "<p class='meta meta-tag'><span class='keyword'>Tag:</span> "
+        "<a class='tag' name='tag_Bod'>Bod</a></p>\n"
     )
 
     html._text = "@tag: Bod | Nobody Owens\n"
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='meta meta-tag'><span class='tags'>Tag:</span> <a name='tag_Bod'>Bod</a> "
-        "| <span class='optional'>Nobody Owens</a></p>\n"
+        "<p class='meta meta-tag'><span class='keyword'>Tag:</span> "
+        "<a class='tag' name='tag_Bod'>Bod</a> | <span class='optional'>Nobody Owens</a></p>\n"
     )
 
     # Multiple Keywords
@@ -250,11 +252,14 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
     assert html.result == (
         "<h1 style='page-break-before: always;'>Chapter</h1>\n"
         "<p class='meta meta-pov' style='margin-bottom: 0;'>"
-        "<span class='tags'>Point of View:</span> <a href='#tag_Bod'>Bod</a></p>\n"
+        "<span class='keyword'>Point of View:</span> "
+        "<a class='tag' href='#tag_Bod'>Bod</a></p>\n"
         "<p class='meta meta-plot' style='margin-bottom: 0; margin-top: 0;'>"
-        "<span class='tags'>Plot:</span> <a href='#tag_Main'>Main</a></p>\n"
+        "<span class='keyword'>Plot:</span> "
+        "<a class='tag' href='#tag_Main'>Main</a></p>\n"
         "<p class='meta meta-location' style='margin-top: 0;'>"
-        "<span class='tags'>Locations:</span> <a href='#tag_Europe'>Europe</a></p>\n"
+        "<span class='keyword'>Locations:</span> "
+        "<a class='tag' href='#tag_Europe'>Europe</a></p>\n"
     )
 
     # Footnotes
@@ -687,13 +692,13 @@ def testCoreToHtml_Format(mockGUI):
 
     assert html._formatKeywords("") == ("", "")
     assert html._formatKeywords("tag: Jane") == (
-        "tag", "<span class='tags'>Tag:</span> <a name='tag_Jane'>Jane</a>"
+        "tag", "<span class='keyword'>Tag:</span> <a class='tag' name='tag_Jane'>Jane</a>"
     )
     assert html._formatKeywords("char: Bod, Jane") == (
         "char",
-        "<span class='tags'>Characters:</span> "
-        "<a href='#tag_Bod'>Bod</a>, "
-        "<a href='#tag_Jane'>Jane</a>"
+        "<span class='keyword'>Characters:</span> "
+        "<a class='tag' href='#tag_Bod'>Bod</a>, "
+        "<a class='tag' href='#tag_Jane'>Jane</a>"
     )
 
     # Preview Mode
@@ -713,13 +718,13 @@ def testCoreToHtml_Format(mockGUI):
 
     assert html._formatKeywords("") == ("", "")
     assert html._formatKeywords("tag: Jane") == (
-        "tag", "<span class='tags'>Tag:</span> <a name='tag_Jane'>Jane</a>"
+        "tag", "<span class='keyword'>Tag:</span> <a class='tag' name='tag_Jane'>Jane</a>"
     )
     assert html._formatKeywords("char: Bod, Jane") == (
         "char",
-        "<span class='tags'>Characters:</span> "
-        "<a href='#char=Bod'>Bod</a>, "
-        "<a href='#char=Jane'>Jane</a>"
+        "<span class='keyword'>Characters:</span> "
+        "<a class='tag' href='#char=Bod'>Bod</a>, "
+        "<a class='tag' href='#char=Jane'>Jane</a>"
     )
 
 # END Test testCoreToHtml_Format
