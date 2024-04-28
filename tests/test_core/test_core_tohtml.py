@@ -702,10 +702,10 @@ def testCoreToHtml_Format(mockGUI):
     html.setPreview(True)
 
     assert html._formatSynopsis("synopsis text", True) == (
-        "<p class='comment'><span class='synopsis'>Synopsis:</span> synopsis text</p>\n"
+        "<p class='note'><span class='modifier'>Synopsis:</span> synopsis text</p>\n"
     )
     assert html._formatSynopsis("short text", False) == (
-        "<p class='comment'><span class='synopsis'>Short Description:</span> short text</p>\n"
+        "<p class='note'><span class='modifier'>Short Description:</span> short text</p>\n"
     )
     assert html._formatComments("comment text") == (
         "<p class='comment'>comment text</p>\n"

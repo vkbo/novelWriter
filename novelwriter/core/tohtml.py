@@ -500,7 +500,7 @@ class ToHtml(Tokenizer):
         else:
             sSynop = self._localLookup("Short Description")
         if self._genMode == self.M_PREVIEW:
-            return f"<p class='comment'><span class='synopsis'>{sSynop}:</span> {text}</p>\n"
+            return f"<p class='note'><span class='modifier'>{sSynop}:</span> {text}</p>\n"
         else:
             return f"<p class='synopsis'><strong>{sSynop}:</strong> {text}</p>\n"
 

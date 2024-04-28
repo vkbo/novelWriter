@@ -30,7 +30,7 @@ import logging
 
 from enum import Enum
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QPoint, Qt, QUrl
+from PyQt5.QtCore import QPoint, Qt, QUrl, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import (
     QCursor, QFont, QMouseEvent, QPalette, QResizeEvent, QTextCursor,
     QTextOption
@@ -44,7 +44,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import cssCol
 from novelwriter.constants import nwHeaders, nwUnicode
 from novelwriter.core.tohtml import ToHtml
-from novelwriter.enum import nwItemType, nwDocAction, nwDocMode
+from novelwriter.enum import nwDocAction, nwDocMode, nwItemType
 from novelwriter.error import logException
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToolButton
@@ -479,6 +479,7 @@ class GuiDocViewer(QTextBrowser):
         colKeys = cssCol(SHARED.theme.colKey)
         colOpts = cssCol(SHARED.theme.colOpt)
         colHide = cssCol(SHARED.theme.colHidden)
+        colNote = cssCol(SHARED.theme.colNote)
         colMods = cssCol(SHARED.theme.colMod)
         self.document().setDefaultStyleSheet(
             f"body {{color: {colText};}}\n"
@@ -488,7 +489,8 @@ class GuiDocViewer(QTextBrowser):
             f".tags {{color: {colKeys};}}\n"
             f".optional {{color: {colOpts};}}\n"
             f".comment {{color: {colHide};}}\n"
-            f".synopsis {{color: {colMods};}}\n"
+            f".note {{color: {colNote};}}\n"
+            f".modifier {{color: {colMods};}}\n"
             ".title {text-align: center;}\n"
         )
 
