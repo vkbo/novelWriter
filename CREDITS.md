@@ -55,6 +55,9 @@ Some of the assets bundled with novelWriter were adapted from the following sour
 * [Tomorrow](https://github.com/chriskempson/base16) syntax themes by Chris Kempson (MIT License)
 * [Owl](https://github.com/sdras/night-owl-vscode-theme) syntax themes by Sarah Drasner (MIT License)
 * [Solarized](https://github.com/altercation/solarized) themes by Ethan Schoonover (MIT License)
+* [Cyberpunk Night](https://github.com/alemvigh) theme by Anders Lemvigh (CC BY-SA 4.0)
+* [Dracula](https://draculatheme.com) theme by Zeno Rocha (MIT License)
+* [Snazzy Light](https://github.com/loilo/vscode-snazzy-light) theme by Florian Reuschel (MIT License)
 
 ## Fonts
 
