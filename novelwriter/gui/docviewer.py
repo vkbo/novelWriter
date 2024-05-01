@@ -30,7 +30,7 @@ import logging
 
 from enum import Enum
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QPoint, Qt, QUrl
+from PyQt5.QtCore import QPoint, Qt, QUrl, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import (
     QCursor, QFont, QMouseEvent, QPalette, QResizeEvent, QTextCursor,
     QTextOption
@@ -44,7 +44,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import cssCol
 from novelwriter.constants import nwHeaders, nwUnicode
 from novelwriter.core.tohtml import ToHtml
-from novelwriter.enum import nwItemType, nwDocAction, nwDocMode
+from novelwriter.enum import nwDocAction, nwDocMode, nwItemType
 from novelwriter.error import logException
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToolButton
@@ -146,7 +146,7 @@ class GuiDocViewer(QTextBrowser):
         font = QFont()
         font.setFamily(CONFIG.textFont)
         font.setPointSize(CONFIG.textSize)
-        self.setFont(font)
+        self.document().setDefaultFont(font)
 
         # Set the widget colours to match syntax theme
         mainPalette = self.palette()
