@@ -98,7 +98,14 @@ def testManuscript_Builds(qtbot: QtBot, nwGUI: GuiMain, projPath: Path):
     manus.show()
     manus.loadContent()
 
-    # Delete the default build
+    # Delete the default build, while it is open
+    manus.buildList.clearSelection()
+    manus.buildList.setCurrentRow(0)
+    with qtbot.waitSignal(manus.tbEdit.clicked, timeout=5000):
+        manus.tbEdit.click()
+
+    manus._editSelectedBuild()
+
     manus.buildList.clearSelection()
     manus.buildList.setCurrentRow(0)
     manus.tbDel.click()

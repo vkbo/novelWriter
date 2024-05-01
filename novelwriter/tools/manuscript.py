@@ -311,6 +311,8 @@ class GuiManuscript(NToolDialog):
         """Delete the currently selected build settings entry."""
         if build := self._getSelectedBuild():
             if SHARED.question(self.tr("Delete build '{0}'?".format(build.name))):
+                if dialog := self._findSettingsDialog(build.buildID):
+                    dialog.close()
                 self._builds.removeBuild(build.buildID)
                 self._updateBuildsList()
         return
@@ -459,13 +461,9 @@ class GuiManuscript(NToolDialog):
 
     def _openSettingsDialog(self, build: BuildSettings) -> None:
         """Open the build settings dialog."""
-        for obj in SHARED.mainGui.children():
-            # Don't open a second dialog if one exists
-            if isinstance(obj, GuiBuildSettings):
-                if obj.buildID == build.buildID:
-                    logger.debug("Found instance of GuiBuildSettings")
-                    obj.activateDialog()
-                    return
+        if dialog := self._findSettingsDialog(build.buildID):
+            dialog.activateDialog()
+            return
 
         dialog = GuiBuildSettings(SHARED.mainGui, build)
         dialog.activateDialog()
@@ -494,6 +492,15 @@ class GuiManuscript(NToolDialog):
         else:  # Probably a new item
             self._updateBuildsList()
         return
+
+    def _findSettingsDialog(self, buildID: str) -> GuiBuildSettings | None:
+        """Return an open build settings dialog for a given build, if
+        one exists.
+        """
+        for obj in SHARED.mainGui.children():
+            if isinstance(obj, GuiBuildSettings) and obj.buildID == buildID:
+                return obj
+        return None
 
 # END Class GuiManuscript
 
