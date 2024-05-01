@@ -39,8 +39,8 @@ from time import time
 from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import (
-    pyqtSignal, pyqtSlot, QObject, QPoint, QRegExp, QRegularExpression,
-    QRunnable, Qt, QTimer
+    QObject, QPoint, QRegExp, QRegularExpression, QRunnable, Qt, QTimer,
+    pyqtSignal, pyqtSlot
 )
 from PyQt5.QtGui import (
     QColor, QCursor, QFont, QKeyEvent, QKeySequence, QMouseEvent, QPalette,
@@ -65,7 +65,7 @@ from novelwriter.text.counting import standardCounter
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
     QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop,
-    QtAlignRight, QtKeepAnchor, QtModCtrl, QtMouseLeft, QtModeNone, QtModShift,
+    QtAlignRight, QtKeepAnchor, QtModCtrl, QtModeNone, QtModShift, QtMouseLeft,
     QtMoveAnchor, QtMoveLeft, QtMoveRight
 )
 
@@ -334,7 +334,7 @@ class GuiDocEditor(QPlainTextEdit):
         font = QFont()
         font.setFamily(CONFIG.textFont)
         font.setPointSize(CONFIG.textSize)
-        self.setFont(font)
+        self._qDocument.setDefaultFont(font)
 
         # Set default text margins
         # Due to cursor visibility, a part of the margin must be

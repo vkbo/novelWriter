@@ -27,13 +27,13 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt5.QtGui import QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from PyQt5.QtCore import QEvent, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from PyQt5.QtWidgets import (
-    QAbstractButton, QAbstractItemView, QDialog, QDialogButtonBox,
-    QFontDialog, QFrame, QGridLayout, QHBoxLayout, QHeaderView, QLabel,
-    QLineEdit, QMenu, QPlainTextEdit, QPushButton, QSplitter, QStackedWidget,
-    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QAbstractButton, QAbstractItemView, QDialog, QDialogButtonBox, QFontDialog,
+    QFrame, QGridLayout, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu,
+    QPlainTextEdit, QPushButton, QSplitter, QStackedWidget, QTreeWidget,
+    QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -1059,8 +1059,6 @@ class _FormatTab(NScrollableForm):
 
     def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
         super().__init__(parent=buildMain)
-
-        self.buildMain = buildMain
 
         self._build = build
         self._unitScale = 1.0
