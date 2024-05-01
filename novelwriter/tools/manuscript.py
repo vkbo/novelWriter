@@ -30,9 +30,9 @@ from datetime import datetime
 from time import time
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import QTimer, QUrl, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt, QTimer, QUrl, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
-from PyQt5.QtPrintSupport import QPrintPreviewDialog, QPrinter
+from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtWidgets import (
     QAbstractItemView, QApplication, QDialog, QFormLayout, QGridLayout,
     QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton,
@@ -319,6 +319,8 @@ class GuiManuscript(QDialog):
         """Delete the currently selected build settings entry."""
         if build := self._getSelectedBuild():
             if SHARED.question(self.tr("Delete build '{0}'?".format(build.name))):
+                if dialog := self._findSettingsDialog(build.buildID):
+                    dialog.close()
                 self._builds.removeBuild(build.buildID)
                 self._updateBuildsList()
         return
@@ -467,14 +469,10 @@ class GuiManuscript(QDialog):
 
     def _openSettingsDialog(self, build: BuildSettings) -> None:
         """Open the build settings dialog."""
-        for obj in self.mainGui.children():
-            # Don't open a second dialog if one exists
-            if isinstance(obj, GuiBuildSettings):
-                if obj.buildID == build.buildID:
-                    logger.debug("Found instance of GuiBuildSettings")
-                    obj.show()
-                    obj.raise_()
-                    return
+        if dialog := self._findSettingsDialog(build.buildID):
+            dialog.show()
+            dialog.raise_()
+            return
 
         dlgSettings = GuiBuildSettings(self.mainGui, build)
         dlgSettings.setModal(False)
@@ -489,6 +487,7 @@ class GuiManuscript(QDialog):
     def _updateBuildsList(self) -> None:
         """Update the list of available builds."""
         self.buildList.clear()
+        self._buildMap.clear()
         for key, name in self._builds.builds():
             bItem = QListWidgetItem()
             bItem.setText(name)
@@ -506,6 +505,15 @@ class GuiManuscript(QDialog):
         else:  # Probably a new item
             self._updateBuildsList()
         return
+
+    def _findSettingsDialog(self, buildID: str) -> GuiBuildSettings | None:
+        """Return an open build settings dialog for a given build, if
+        one exists.
+        """
+        for obj in SHARED.mainGui.children():
+            if isinstance(obj, GuiBuildSettings) and obj.buildID == buildID:
+                return obj
+        return None
 
 # END Class GuiManuscript
 
