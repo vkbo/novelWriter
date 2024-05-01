@@ -334,7 +334,7 @@ class GuiDocEditor(QPlainTextEdit):
         font = QFont()
         font.setFamily(CONFIG.textFont)
         font.setPointSize(CONFIG.textSize)
-        self.setFont(font)
+        self._qDocument.setDefaultFont(font)
 
         # Set default text margins
         # Due to cursor visibility, a part of the margin must be

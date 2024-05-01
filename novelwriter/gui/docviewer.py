@@ -146,7 +146,7 @@ class GuiDocViewer(QTextBrowser):
         font = QFont()
         font.setFamily(CONFIG.textFont)
         font.setPointSize(CONFIG.textSize)
-        self.setFont(font)
+        self.document().setDefaultFont(font)
 
         # Set the widget colours to match syntax theme
         mainPalette = self.palette()
