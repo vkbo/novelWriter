@@ -752,6 +752,7 @@ class _PreviewWidget(QTextBrowser):
 
         self._docTime = 0
         self._buildName = ""
+        self._scrollPos = 0
 
         # Document Setup
         dPalette = self.palette()
@@ -848,6 +849,7 @@ class _PreviewWidget(QTextBrowser):
         self.buildProgress.setValue(0)
         self.buildProgress.setCentreText(None)
         self.buildProgress.setVisible(True)
+        self._scrollPos = self.verticalScrollBar().value()
         self.setPlaceholderText("")
         self.clear()
         return
@@ -860,7 +862,6 @@ class _PreviewWidget(QTextBrowser):
 
     def setContent(self, data: dict) -> None:
         """Set the content of the preview widget."""
-        sPos = self.verticalScrollBar().value()
         QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
 
         self.buildProgress.setCentreText(self.tr("Processing ..."))
@@ -877,7 +878,6 @@ class _PreviewWidget(QTextBrowser):
             cursor = self.textCursor()
             cursor.insertText("\t")
 
-        self.verticalScrollBar().setValue(sPos)
         self._docTime = checkInt(data.get("time"), 0)
         self._updateBuildAge()
 
@@ -888,7 +888,7 @@ class _PreviewWidget(QTextBrowser):
         self.buildProgress.setCentreText(self.tr("Done"))
         QApplication.restoreOverrideCursor()
         QApplication.processEvents()
-        QTimer.singleShot(300, self._hideProgress)
+        QTimer.singleShot(300, self._postUpdate)
 
         return
 
@@ -943,9 +943,10 @@ class _PreviewWidget(QTextBrowser):
         return
 
     @pyqtSlot()
-    def _hideProgress(self) -> None:
-        """Clean up the build progress bar."""
+    def _postUpdate(self) -> None:
+        """Run tasks after content update."""
         self.buildProgress.setVisible(False)
+        self.verticalScrollBar().setValue(self._scrollPos)
         return
 
     ##
