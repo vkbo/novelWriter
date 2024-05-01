@@ -32,15 +32,16 @@ from typing import TYPE_CHECKING
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QCursor, QPixmap
 from PyQt5.QtWidgets import (
-    QAction, QApplication, QDialog, QDialogButtonBox, QFileDialog, QGridLayout,
+    QAction, QApplication, QDialogButtonBox, QFileDialog, QGridLayout,
     QGroupBox, QHBoxLayout, QLabel, QMenu, QSpinBox, QTreeWidget,
     QTreeWidgetItem
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import formatTime, checkInt, checkIntTuple, minmax
+from novelwriter.common import checkInt, checkIntTuple, formatTime, minmax
 from novelwriter.constants import nwConst
 from novelwriter.error import formatException
+from novelwriter.extensions.modified import NToolDialog
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.types import (
     QtAlignLeftMiddle, QtAlignRight, QtAlignRightMiddle, QtDecoration,
@@ -53,7 +54,7 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-class GuiWritingStats(QDialog):
+class GuiWritingStats(NToolDialog):
     """GUI Tools: Writing Statistics
 
     Displays data from the NWSessionLog object.
@@ -73,8 +74,6 @@ class GuiWritingStats(QDialog):
 
         logger.debug("Create: GuiWritingStats")
         self.setObjectName("GuiWritingStats")
-        if CONFIG.osDarwin:
-            self.setWindowFlag(Qt.WindowType.Tool)
 
         self.logData    = []
         self.filterData = []

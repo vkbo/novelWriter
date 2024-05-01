@@ -6,6 +6,8 @@ File History:
 Created: 2024-02-01 [2.3b1] NComboBox
 Created: 2024-02-01 [2.3b1] NSpinBox
 Created: 2024-02-01 [2.3b1] NDoubleSpinBox
+Created: 2024-05-01 [2.5b1] NToolDialog
+Created: 2024-05-01 [2.5b1] NNonBlockingDialog
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen
@@ -29,9 +31,52 @@ from enum import Enum
 
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QWheelEvent
-from PyQt5.QtWidgets import QComboBox, QDoubleSpinBox, QSpinBox, QToolButton, QWidget
+from PyQt5.QtWidgets import (
+    QApplication, QComboBox, QDialog, QDoubleSpinBox, QSpinBox, QToolButton,
+    QWidget
+)
 
-from novelwriter import SHARED
+from novelwriter import CONFIG, SHARED
+
+
+class NToolDialog(QDialog):
+
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(parent=parent)
+        self.setModal(False)
+        if CONFIG.osDarwin:
+            self.setWindowFlag(Qt.WindowType.Tool)
+        return
+
+    def activateDialog(self) -> None:
+        """Helper function to activate dialog on various systems."""
+        self.show()
+        if CONFIG.osWindows:
+            self.activateWindow()
+        self.raise_()
+        QApplication.processEvents()
+        return
+
+# END Class NToolDialog
+
+
+class NNonBlockingDialog(QDialog):
+
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(parent=parent)
+        self.setModal(True)
+        return
+
+    def activateDialog(self) -> None:
+        """Helper function to activate dialog on various systems."""
+        self.show()
+        if CONFIG.osWindows:
+            self.activateWindow()
+        self.raise_()
+        QApplication.processEvents()
+        return
+
+# END Class NNonBlockingDialog
 
 
 class NComboBox(QComboBox):

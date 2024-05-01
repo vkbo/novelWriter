@@ -31,20 +31,20 @@ from zipfile import ZipFile
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QTextCursor
 from PyQt5.QtWidgets import (
-    QApplication, QDialog, QDialogButtonBox, QFileDialog, QFrame, QHBoxLayout,
-    QLabel, QLineEdit, QPlainTextEdit, QPushButton, QVBoxLayout, QWidget
+    QApplication, QDialogButtonBox, QFileDialog, QFrame, QHBoxLayout, QLabel,
+    QLineEdit, QPlainTextEdit, QPushButton, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import formatFileFilter, openExternalPath, formatInt, getFileSize
+from novelwriter.common import formatFileFilter, formatInt, getFileSize, openExternalPath
 from novelwriter.error import formatException
-from novelwriter.extensions.modified import NIconToolButton
+from novelwriter.extensions.modified import NIconToolButton, NNonBlockingDialog
 from novelwriter.types import QtDialogClose
 
 logger = logging.getLogger(__name__)
 
 
-class GuiDictionaries(QDialog):
+class GuiDictionaries(NNonBlockingDialog):
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)

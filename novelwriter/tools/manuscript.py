@@ -33,8 +33,8 @@ from PyQt5.QtCore import Qt, QTimer, QUrl, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
 from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QApplication, QDialog, QFormLayout, QGridLayout,
-    QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton, QSplitter,
+    QAbstractItemView, QApplication, QFormLayout, QGridLayout, QHBoxLayout,
+    QLabel, QListWidget, QListWidgetItem, QPushButton, QSplitter,
     QStackedWidget, QTabWidget, QTextBrowser, QTreeWidget, QTreeWidgetItem,
     QVBoxLayout, QWidget
 )
@@ -47,7 +47,7 @@ from novelwriter.core.tohtml import ToHtml
 from novelwriter.core.tokenizer import HeadingFormatter
 from novelwriter.error import logException
 from novelwriter.extensions.circularprogress import NProgressCircle
-from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
+from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton, NToolDialog
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
@@ -59,7 +59,7 @@ from novelwriter.types import (
 logger = logging.getLogger(__name__)
 
 
-class GuiManuscript(QDialog):
+class GuiManuscript(NToolDialog):
     """GUI Tools: Manuscript Tool
 
     The dialog displays all the users build definitions, a preview panel
@@ -74,8 +74,6 @@ class GuiManuscript(QDialog):
 
         logger.debug("Create: GuiManuscript")
         self.setObjectName("GuiManuscript")
-        if CONFIG.osDarwin:
-            self.setWindowFlag(Qt.WindowType.Tool)
 
         self._builds = BuildCollection(SHARED.project)
         self._buildMap: dict[str, QListWidgetItem] = {}
@@ -466,17 +464,13 @@ class GuiManuscript(QDialog):
             if isinstance(obj, GuiBuildSettings):
                 if obj.buildID == build.buildID:
                     logger.debug("Found instance of GuiBuildSettings")
-                    obj.show()
-                    obj.raise_()
+                    obj.activateDialog()
                     return
 
-        dlgSettings = GuiBuildSettings(SHARED.mainGui, build)
-        dlgSettings.setModal(False)
-        dlgSettings.show()
-        dlgSettings.raise_()
-        QApplication.processEvents()
-        dlgSettings.loadContent()
-        dlgSettings.newSettingsReady.connect(self._processNewSettings)
+        dialog = GuiBuildSettings(SHARED.mainGui, build)
+        dialog.activateDialog()
+        dialog.loadContent()
+        dialog.newSettingsReady.connect(self._processNewSettings)
 
         return
 
