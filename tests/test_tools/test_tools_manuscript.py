@@ -270,7 +270,7 @@ def testManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert manus.docPreview.document().defaultTextOption().alignment() == QtAlignAbsolute
 
     # Tests are too fast to trigger this one, so we trigger it manually to ensure it isn't failing
-    manus.docPreview._hideProgress()
+    manus.docPreview._postUpdate()
 
     # Builds
     # ======
