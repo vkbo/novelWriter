@@ -44,9 +44,7 @@ from novelwriter.core.item import NWItem
 from novelwriter.enum import nwBuildFmt
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.extensions.simpleprogress import NProgressSimple
-from novelwriter.types import (
-    QtAlignCenter, QtDialogClose, QtRoleAction, QtRoleReject, QtUserRole
-)
+from novelwriter.types import QtAlignCenter, QtDialogClose, QtRoleAction, QtRoleReject, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -327,6 +325,9 @@ class GuiManuscriptBuild(QDialog):
                 self.tr("The file already exists. Do you want to overwrite it?")
             ):
                 return False
+
+        # Make sure editor content is saved before we start
+        SHARED.mainGui.saveDocument()
 
         docBuild = NWBuildDocument(SHARED.project, self._build)
         docBuild.queueAll()

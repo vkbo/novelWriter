@@ -342,6 +342,9 @@ class GuiManuscript(QDialog):
         if not (build := self._getSelectedBuild()):
             return
 
+        # Make sure editor content is saved before we start
+        SHARED.mainGui.saveDocument()
+
         docBuild = NWBuildDocument(SHARED.project, build)
         docBuild.setPreviewMode(True)
         docBuild.queueAll()
