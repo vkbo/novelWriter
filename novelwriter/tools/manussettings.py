@@ -25,8 +25,6 @@ from __future__ import annotations
 
 import logging
 
-from typing import TYPE_CHECKING
-
 from PyQt5.QtCore import QEvent, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from PyQt5.QtWidgets import (
@@ -51,9 +49,6 @@ from novelwriter.types import (
     QtRoleApply, QtRoleReject, QtUserRole
 )
 
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
-
 logger = logging.getLogger(__name__)
 
 
@@ -72,8 +67,8 @@ class GuiBuildSettings(QDialog):
 
     newSettingsReady = pyqtSignal(BuildSettings)
 
-    def __init__(self, mainGui: GuiMain, build: BuildSettings) -> None:
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: QWidget, build: BuildSettings) -> None:
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiBuildSettings")
         self.setObjectName("GuiBuildSettings")
@@ -296,8 +291,8 @@ class _FilterTab(NFixedPage):
     F_INCLUDED = 2
     F_EXCLUDED = 3
 
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
-        super().__init__(parent=buildMain)
+    def __init__(self, parent: QWidget, build: BuildSettings) -> None:
+        super().__init__(parent=parent)
 
         self._treeMap: dict[str, QTreeWidgetItem] = {}
         self._build = build
@@ -586,8 +581,8 @@ class _HeadingsTab(NScrollablePage):
     EDIT_HSCENE  = 5
     EDIT_SECTION = 6
 
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
-        super().__init__(parent=buildMain)
+    def __init__(self, parent: QWidget, build: BuildSettings) -> None:
+        super().__init__(parent=parent)
 
         self._build = build
         self._editing = 0
@@ -972,8 +967,8 @@ class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
 
 class _ContentTab(NScrollableForm):
 
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
-        super().__init__(parent=buildMain)
+    def __init__(self, parent: QWidget, build: BuildSettings) -> None:
+        super().__init__(parent=parent)
 
         self._build = build
 
@@ -1057,8 +1052,8 @@ class _ContentTab(NScrollableForm):
 
 class _FormatTab(NScrollableForm):
 
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
-        super().__init__(parent=buildMain)
+    def __init__(self, parent: QWidget, build: BuildSettings) -> None:
+        super().__init__(parent=parent)
 
         self._build = build
         self._unitScale = 1.0
@@ -1324,8 +1319,8 @@ class _FormatTab(NScrollableForm):
 
 class _OutputTab(NScrollableForm):
 
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
-        super().__init__(parent=buildMain)
+    def __init__(self, parent: QWidget, build: BuildSettings) -> None:
+        super().__init__(parent=parent)
 
         self._build = build
 

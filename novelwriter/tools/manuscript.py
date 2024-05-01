@@ -28,16 +28,15 @@ import logging
 
 from datetime import datetime
 from time import time
-from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import QTimer, QUrl, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt, QTimer, QUrl, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
-from PyQt5.QtPrintSupport import QPrintPreviewDialog, QPrinter
+from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtWidgets import (
     QAbstractItemView, QApplication, QDialog, QFormLayout, QGridLayout,
-    QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton,
-    QSplitter, QStackedWidget, QTabWidget, QTextBrowser, QTreeWidget,
-    QTreeWidgetItem, QVBoxLayout, QWidget
+    QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton, QSplitter,
+    QStackedWidget, QTabWidget, QTextBrowser, QTreeWidget, QTreeWidgetItem,
+    QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -57,9 +56,6 @@ from novelwriter.types import (
     QtSizeExpanding, QtSizeIgnored, QtUserRole
 )
 
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
-
 logger = logging.getLogger(__name__)
 
 
@@ -73,15 +69,13 @@ class GuiManuscript(QDialog):
 
     D_KEY = QtUserRole
 
-    def __init__(self, mainGui: GuiMain) -> None:
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiManuscript")
         self.setObjectName("GuiManuscript")
         if CONFIG.osDarwin:
             self.setWindowFlag(Qt.WindowType.Tool)
-
-        self.mainGui = mainGui
 
         self._builds = BuildCollection(SHARED.project)
         self._buildMap: dict[str, QListWidgetItem] = {}
@@ -280,7 +274,7 @@ class GuiManuscript(QDialog):
         dialog open.
         """
         self._saveSettings()
-        for obj in self.mainGui.children():
+        for obj in SHARED.mainGui.children():
             # Make sure we don't have any settings windows open
             if isinstance(obj, GuiBuildSettings) and obj.isVisible():
                 obj.close()
@@ -467,7 +461,7 @@ class GuiManuscript(QDialog):
 
     def _openSettingsDialog(self, build: BuildSettings) -> None:
         """Open the build settings dialog."""
-        for obj in self.mainGui.children():
+        for obj in SHARED.mainGui.children():
             # Don't open a second dialog if one exists
             if isinstance(obj, GuiBuildSettings):
                 if obj.buildID == build.buildID:
@@ -476,7 +470,7 @@ class GuiManuscript(QDialog):
                     obj.raise_()
                     return
 
-        dlgSettings = GuiBuildSettings(self.mainGui, build)
+        dlgSettings = GuiBuildSettings(SHARED.mainGui, build)
         dlgSettings.setModal(False)
         dlgSettings.show()
         dlgSettings.raise_()
