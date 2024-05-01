@@ -487,6 +487,7 @@ class GuiManuscript(QDialog):
     def _updateBuildsList(self) -> None:
         """Update the list of available builds."""
         self.buildList.clear()
+        self._buildMap.clear()
         for key, name in self._builds.builds():
             bItem = QListWidgetItem()
             bItem.setText(name)
