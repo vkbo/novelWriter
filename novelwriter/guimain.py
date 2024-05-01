@@ -23,18 +23,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import sys
 import logging
+import sys
 
-from time import time
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+from time import time
 
 from PyQt5.QtCore import Qt, QTimer, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QCursor, QIcon
 from PyQt5.QtWidgets import (
-    QApplication, QFileDialog, QHBoxLayout, QMainWindow, QMessageBox, QShortcut, QSplitter,
-    QStackedWidget, QVBoxLayout, QWidget
+    QApplication, QFileDialog, QHBoxLayout, QMainWindow, QMessageBox,
+    QShortcut, QSplitter, QStackedWidget, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED, __hexversion__, __version__
@@ -44,7 +44,7 @@ from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.dialogs.wordlist import GuiWordList
-from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemType, nwWidget, nwView
+from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemType, nwView, nwWidget
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.docviewer import GuiDocViewer
 from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
@@ -794,10 +794,7 @@ class GuiMain(QMainWindow):
         """Open the novel details dialog."""
         if SHARED.hasProject:
             dialog = GuiNovelDetails(self)
-            dialog.setModal(True)
-            dialog.show()
-            dialog.raise_()
-            QApplication.processEvents()
+            dialog.activateDialog()
             dialog.updateValues()
         return
 
@@ -807,10 +804,7 @@ class GuiMain(QMainWindow):
         if SHARED.hasProject:
             if (dialog := SHARED.findTopLevelWidget(GuiManuscript)) is None:
                 dialog = GuiManuscript(self)
-            dialog.setModal(False)
-            dialog.show()
-            dialog.raise_()
-            QApplication.processEvents()
+            dialog.activateDialog()
             dialog.loadContent()
         return
 
@@ -829,10 +823,7 @@ class GuiMain(QMainWindow):
         if SHARED.hasProject:
             if (dialog := SHARED.findTopLevelWidget(GuiWritingStats)) is None:
                 dialog = GuiWritingStats(self)
-            dialog.setModal(False)
-            dialog.show()
-            dialog.raise_()
-            QApplication.processEvents()
+            dialog.activateDialog()
             dialog.populateGUI()
         return
 
@@ -840,10 +831,7 @@ class GuiMain(QMainWindow):
     def showAboutNWDialog(self) -> None:
         """Show the novelWriter about dialog."""
         dialog = GuiAbout(self)
-        dialog.setModal(True)
-        dialog.show()
-        dialog.raise_()
-        QApplication.processEvents()
+        dialog.activateDialog()
         dialog.populateGUI()
         return
 
@@ -858,10 +846,7 @@ class GuiMain(QMainWindow):
     def showDictionariesDialog(self) -> None:
         """Show the download dictionaries dialog."""
         dialog = GuiDictionaries(self)
-        dialog.setModal(True)
-        dialog.show()
-        dialog.raise_()
-        QApplication.processEvents()
+        dialog.activateDialog()
         if not dialog.initDialog():
             dialog.close()
             SHARED.error(self.tr("Could not initialise the dialog."))

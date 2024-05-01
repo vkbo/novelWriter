@@ -20,18 +20,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import pytest
 import sys
 
 from pathlib import Path
-from pytestqt.qtbot import QtBot
+
+import pytest
 
 from mocked import causeOSError
-from tools import C, buildTestProject
-
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtPrintSupport import QPrintPreviewDialog
 from PyQt5.QtWidgets import QAction, QListWidgetItem
+from pytestqt.qtbot import QtBot
+from tools import C, buildTestProject
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwHeadFmt
@@ -98,7 +98,14 @@ def testManuscript_Builds(qtbot: QtBot, nwGUI: GuiMain, projPath: Path):
     manus.show()
     manus.loadContent()
 
-    # Delete the default build
+    # Delete the default build, while it is open
+    manus.buildList.clearSelection()
+    manus.buildList.setCurrentRow(0)
+    with qtbot.waitSignal(manus.tbEdit.clicked, timeout=5000):
+        manus.tbEdit.click()
+
+    manus._editSelectedBuild()
+
     manus.buildList.clearSelection()
     manus.buildList.setCurrentRow(0)
     manus.tbDel.click()
@@ -127,8 +134,10 @@ def testManuscript_Builds(qtbot: QtBot, nwGUI: GuiMain, projPath: Path):
     # Edit the new build
     manus.buildList.clearSelection()
     manus.buildList.setCurrentRow(0)
-    manus.tbEdit.click()
+    with qtbot.waitSignal(manus.tbEdit.clicked, timeout=5000):
+        manus.tbEdit.click()
 
+    manus._editSelectedBuild()
     bSettings = SHARED.findTopLevelWidget(GuiBuildSettings)
     assert isinstance(bSettings, GuiBuildSettings)
     build = None
@@ -147,7 +156,6 @@ def testManuscript_Builds(qtbot: QtBot, nwGUI: GuiMain, projPath: Path):
         # May have been garbage collected, but if it isn't, it should be hidden
         assert bSettings.isVisible() is False
 
-    # Finish
     # qtbot.stop()
 
 # END Test testManuscript_Builds

@@ -28,16 +28,15 @@ import logging
 
 from datetime import datetime
 from time import time
-from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import QTimer, QUrl, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt, QTimer, QUrl, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
-from PyQt5.QtPrintSupport import QPrintPreviewDialog, QPrinter
+from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QApplication, QDialog, QFormLayout, QGridLayout,
-    QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton,
-    QSplitter, QStackedWidget, QTabWidget, QTextBrowser, QTreeWidget,
-    QTreeWidgetItem, QVBoxLayout, QWidget
+    QAbstractItemView, QApplication, QFormLayout, QGridLayout, QHBoxLayout,
+    QLabel, QListWidget, QListWidgetItem, QPushButton, QSplitter,
+    QStackedWidget, QTabWidget, QTextBrowser, QTreeWidget, QTreeWidgetItem,
+    QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -48,7 +47,7 @@ from novelwriter.core.tohtml import ToHtml
 from novelwriter.core.tokenizer import HeadingFormatter
 from novelwriter.error import logException
 from novelwriter.extensions.circularprogress import NProgressCircle
-from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
+from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton, NToolDialog
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
@@ -57,13 +56,10 @@ from novelwriter.types import (
     QtSizeExpanding, QtSizeIgnored, QtUserRole
 )
 
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
-
 logger = logging.getLogger(__name__)
 
 
-class GuiManuscript(QDialog):
+class GuiManuscript(NToolDialog):
     """GUI Tools: Manuscript Tool
 
     The dialog displays all the users build definitions, a preview panel
@@ -73,15 +69,11 @@ class GuiManuscript(QDialog):
 
     D_KEY = QtUserRole
 
-    def __init__(self, mainGui: GuiMain) -> None:
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiManuscript")
         self.setObjectName("GuiManuscript")
-        if CONFIG.osDarwin:
-            self.setWindowFlag(Qt.WindowType.Tool)
-
-        self.mainGui = mainGui
 
         self._builds = BuildCollection(SHARED.project)
         self._buildMap: dict[str, QListWidgetItem] = {}
@@ -280,7 +272,7 @@ class GuiManuscript(QDialog):
         dialog open.
         """
         self._saveSettings()
-        for obj in self.mainGui.children():
+        for obj in SHARED.mainGui.children():
             # Make sure we don't have any settings windows open
             if isinstance(obj, GuiBuildSettings) and obj.isVisible():
                 obj.close()
@@ -319,6 +311,8 @@ class GuiManuscript(QDialog):
         """Delete the currently selected build settings entry."""
         if build := self._getSelectedBuild():
             if SHARED.question(self.tr("Delete build '{0}'?".format(build.name))):
+                if dialog := self._findSettingsDialog(build.buildID):
+                    dialog.close()
                 self._builds.removeBuild(build.buildID)
                 self._updateBuildsList()
         return
@@ -467,22 +461,14 @@ class GuiManuscript(QDialog):
 
     def _openSettingsDialog(self, build: BuildSettings) -> None:
         """Open the build settings dialog."""
-        for obj in self.mainGui.children():
-            # Don't open a second dialog if one exists
-            if isinstance(obj, GuiBuildSettings):
-                if obj.buildID == build.buildID:
-                    logger.debug("Found instance of GuiBuildSettings")
-                    obj.show()
-                    obj.raise_()
-                    return
+        if dialog := self._findSettingsDialog(build.buildID):
+            dialog.activateDialog()
+            return
 
-        dlgSettings = GuiBuildSettings(self.mainGui, build)
-        dlgSettings.setModal(False)
-        dlgSettings.show()
-        dlgSettings.raise_()
-        QApplication.processEvents()
-        dlgSettings.loadContent()
-        dlgSettings.newSettingsReady.connect(self._processNewSettings)
+        dialog = GuiBuildSettings(SHARED.mainGui, build)
+        dialog.activateDialog()
+        dialog.loadContent()
+        dialog.newSettingsReady.connect(self._processNewSettings)
 
         return
 
@@ -506,6 +492,15 @@ class GuiManuscript(QDialog):
         else:  # Probably a new item
             self._updateBuildsList()
         return
+
+    def _findSettingsDialog(self, buildID: str) -> GuiBuildSettings | None:
+        """Return an open build settings dialog for a given build, if
+        one exists.
+        """
+        for obj in SHARED.mainGui.children():
+            if isinstance(obj, GuiBuildSettings) and obj.buildID == buildID:
+                return obj
+        return None
 
 # END Class GuiManuscript
 

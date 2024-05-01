@@ -23,21 +23,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import math
 import logging
+import math
 
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QDialog, QDialogButtonBox, QFormLayout, QGridLayout,
-    QHBoxLayout, QLabel, QSpinBox, QStackedWidget, QTreeWidget,
-    QTreeWidgetItem, QVBoxLayout, QWidget
+    QAbstractItemView, QDialogButtonBox, QFormLayout, QGridLayout, QHBoxLayout,
+    QLabel, QSpinBox, QStackedWidget, QTreeWidget, QTreeWidgetItem,
+    QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatTime, numberToRoman
 from novelwriter.constants import nwUnicode
 from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrollablePage
+from novelwriter.extensions.modified import NNonBlockingDialog
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
@@ -46,7 +47,7 @@ from novelwriter.types import QtAlignRight, QtDecoration, QtDialogClose
 logger = logging.getLogger(__name__)
 
 
-class GuiNovelDetails(QDialog):
+class GuiNovelDetails(NNonBlockingDialog):
 
     PAGE_OVERVIEW = 1
     PAGE_CONTENTS = 2

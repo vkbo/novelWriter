@@ -27,20 +27,20 @@ import logging
 
 from PyQt5.QtGui import QCloseEvent, QColor
 from PyQt5.QtWidgets import (
-    QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QTextBrowser, QVBoxLayout,
-    QWidget
+    QDialogButtonBox, QHBoxLayout, QLabel, QTextBrowser, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import cssCol, readTextFile
 from novelwriter.extensions.configlayout import NColourLabel
+from novelwriter.extensions.modified import NNonBlockingDialog
 from novelwriter.extensions.versioninfo import VersionInfoWidget
 from novelwriter.types import QtAlignRightTop, QtDialogClose
 
 logger = logging.getLogger(__name__)
 
 
-class GuiAbout(QDialog):
+class GuiAbout(NNonBlockingDialog):
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)

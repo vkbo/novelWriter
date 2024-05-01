@@ -25,13 +25,11 @@ from __future__ import annotations
 
 import logging
 
-from typing import TYPE_CHECKING
-
-from PyQt5.QtCore import QEvent, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QEvent, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from PyQt5.QtWidgets import (
-    QAbstractButton, QAbstractItemView, QDialog, QDialogButtonBox, QFontDialog,
-    QFrame, QGridLayout, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu,
+    QAbstractButton, QAbstractItemView, QDialogButtonBox, QFontDialog, QFrame,
+    QGridLayout, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu,
     QPlainTextEdit, QPushButton, QSplitter, QStackedWidget, QTreeWidget,
     QTreeWidgetItem, QVBoxLayout, QWidget
 )
@@ -42,7 +40,9 @@ from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.configlayout import (
     NColourLabel, NFixedPage, NScrollableForm, NScrollablePage
 )
-from novelwriter.extensions.modified import NComboBox, NDoubleSpinBox, NIconToolButton, NSpinBox
+from novelwriter.extensions.modified import (
+    NComboBox, NDoubleSpinBox, NIconToolButton, NSpinBox, NToolDialog
+)
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
@@ -51,13 +51,10 @@ from novelwriter.types import (
     QtRoleApply, QtRoleReject, QtUserRole
 )
 
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
-
 logger = logging.getLogger(__name__)
 
 
-class GuiBuildSettings(QDialog):
+class GuiBuildSettings(NToolDialog):
     """GUI Tools: Manuscript Build Settings Dialog
 
     The main tool for configuring manuscript builds. It's a GUI tool for
@@ -72,13 +69,11 @@ class GuiBuildSettings(QDialog):
 
     newSettingsReady = pyqtSignal(BuildSettings)
 
-    def __init__(self, mainGui: GuiMain, build: BuildSettings) -> None:
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: QWidget, build: BuildSettings) -> None:
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiBuildSettings")
         self.setObjectName("GuiBuildSettings")
-        if CONFIG.osDarwin:
-            self.setWindowFlag(Qt.WindowType.Tool)
 
         self._build = build
 
@@ -296,8 +291,8 @@ class _FilterTab(NFixedPage):
     F_INCLUDED = 2
     F_EXCLUDED = 3
 
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
-        super().__init__(parent=buildMain)
+    def __init__(self, parent: QWidget, build: BuildSettings) -> None:
+        super().__init__(parent=parent)
 
         self._treeMap: dict[str, QTreeWidgetItem] = {}
         self._build = build
@@ -586,8 +581,8 @@ class _HeadingsTab(NScrollablePage):
     EDIT_HSCENE  = 5
     EDIT_SECTION = 6
 
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
-        super().__init__(parent=buildMain)
+    def __init__(self, parent: QWidget, build: BuildSettings) -> None:
+        super().__init__(parent=parent)
 
         self._build = build
         self._editing = 0
@@ -972,8 +967,8 @@ class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
 
 class _ContentTab(NScrollableForm):
 
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
-        super().__init__(parent=buildMain)
+    def __init__(self, parent: QWidget, build: BuildSettings) -> None:
+        super().__init__(parent=parent)
 
         self._build = build
 
@@ -1057,8 +1052,8 @@ class _ContentTab(NScrollableForm):
 
 class _FormatTab(NScrollableForm):
 
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
-        super().__init__(parent=buildMain)
+    def __init__(self, parent: QWidget, build: BuildSettings) -> None:
+        super().__init__(parent=parent)
 
         self._build = build
         self._unitScale = 1.0
@@ -1324,8 +1319,8 @@ class _FormatTab(NScrollableForm):
 
 class _OutputTab(NScrollableForm):
 
-    def __init__(self, buildMain: GuiBuildSettings, build: BuildSettings) -> None:
-        super().__init__(parent=buildMain)
+    def __init__(self, parent: QWidget, build: BuildSettings) -> None:
+        super().__init__(parent=parent)
 
         self._build = build
 
