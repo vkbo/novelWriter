@@ -47,19 +47,3 @@ QT_TRANSLATE_NOOP("QPlatformTheme", "Help")
 QT_TRANSLATE_NOOP("QPlatformTheme", "Apply")
 QT_TRANSLATE_NOOP("QPlatformTheme", "Reset")
 QT_TRANSLATE_NOOP("QPlatformTheme", "Restore Defaults")
-
-# QWizard
-# =======
-
-QT_TRANSLATE_NOOP("QWizard", "Go Back")
-QT_TRANSLATE_NOOP("QWizard", "< &Back")
-QT_TRANSLATE_NOOP("QWizard", "Continue")
-QT_TRANSLATE_NOOP("QWizard", "&Next")
-QT_TRANSLATE_NOOP("QWizard", "&Next >")
-QT_TRANSLATE_NOOP("QWizard", "Commit")
-QT_TRANSLATE_NOOP("QWizard", "Done")
-QT_TRANSLATE_NOOP("QWizard", "&Finish")
-QT_TRANSLATE_NOOP("QWizard", "Cancel")
-QT_TRANSLATE_NOOP("QWizard", "Cancel")
-QT_TRANSLATE_NOOP("QWizard", "Help")
-QT_TRANSLATE_NOOP("QWizard", "&Help")
