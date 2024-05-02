@@ -26,12 +26,10 @@ from pathlib import Path
 
 import pytest
 
-from mocked import causeOSError
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtPrintSupport import QPrintPreviewDialog
 from PyQt5.QtWidgets import QAction, QListWidgetItem
 from pytestqt.qtbot import QtBot
-from tools import C, buildTestProject
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwHeadFmt
@@ -41,6 +39,9 @@ from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.manussettings import GuiBuildSettings
 from novelwriter.types import QtAlignAbsolute, QtAlignJustify, QtDialogApply, QtDialogSave
+
+from tests.mocked import causeOSError
+from tests.tools import C, buildTestProject
 
 
 @pytest.mark.gui
