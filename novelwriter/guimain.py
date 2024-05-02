@@ -575,12 +575,18 @@ class GuiMain(QMainWindow):
                 self.openDocument(fHandle, tLine=1, doScroll=True)
         return
 
-    @pyqtSlot()
-    def saveDocument(self) -> None:
+    def saveDocument(self, force: bool = False) -> None:
         """Save the current documents."""
-        self.docEditor.saveCursorPosition()
-        if SHARED.hasProject and self.docEditor.docChanged:
-            self.docEditor.saveText()
+        if SHARED.hasProject:
+            self.docEditor.saveCursorPosition()
+            if force or self.docEditor.docChanged:
+                self.docEditor.saveText()
+        return
+
+    @pyqtSlot()
+    def forceSaveDocument(self) -> None:
+        """Save document even of it has not changed."""
+        self.saveDocument(force=True)
         return
 
     def viewDocument(self, tHandle: str | None = None, sTitle: str | None = None) -> bool:

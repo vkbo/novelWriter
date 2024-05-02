@@ -25,16 +25,16 @@ from __future__ import annotations
 
 import logging
 
-from typing import TYPE_CHECKING
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtCore import QUrl, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QMenuBar, QAction
+from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtWidgets import QAction, QMenuBar
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import openExternalPath
-from novelwriter.constants import nwConst, trConst, nwKeyWords, nwLabels, nwUnicode
+from novelwriter.constants import nwConst, nwKeyWords, nwLabels, nwUnicode, trConst
 from novelwriter.enum import nwDocAction, nwDocInsert, nwView, nwWidget
 from novelwriter.extensions.eventfilters import StatusTipFilter
 
@@ -202,7 +202,7 @@ class GuiMainMenu(QMenuBar):
         # Document > Save
         self.aSaveDoc = self.docuMenu.addAction(self.tr("Save Document"))
         self.aSaveDoc.setShortcut("Ctrl+S")
-        self.aSaveDoc.triggered.connect(self.mainGui.saveDocument)
+        self.aSaveDoc.triggered.connect(self.mainGui.forceSaveDocument)
 
         # Document > Close
         self.aCloseDoc = self.docuMenu.addAction(self.tr("Close Document"))

@@ -522,6 +522,8 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     assert docEditor.docChanged
     nwGUI.saveDocument()
     assert docEditor.docChanged is False
+    nwGUI.forceSaveDocument()
+    assert docEditor.docChanged is False
     nwGUI.rebuildIndex()
 
     # Open and view the edited document
