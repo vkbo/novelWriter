@@ -477,7 +477,6 @@ class GuiDocEditor(QPlainTextEdit):
         cC, wC, pC = standardCounter(docText)
         self._updateDocCounts(cC, wC, pC)
 
-        self.saveCursorPosition()
         if not self._nwDocument.writeDocument(docText):
             saveOk = False
             if self._nwDocument.hashError:

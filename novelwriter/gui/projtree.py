@@ -32,10 +32,8 @@ from enum import Enum
 from time import time
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import QPoint, QTimer, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import (
-    QDragEnterEvent, QDragMoveEvent, QDropEvent, QIcon, QMouseEvent, QPalette
-)
+from PyQt5.QtCore import QPoint, Qt, QTimer, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QIcon, QMouseEvent, QPalette
 from PyQt5.QtWidgets import (
     QAbstractItemView, QAction, QDialog, QFrame, QHBoxLayout, QHeaderView,
     QLabel, QMenu, QShortcut, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
@@ -44,19 +42,19 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import minmax
-from novelwriter.constants import nwHeaders, nwUnicode, trConst, nwLabels
+from novelwriter.constants import nwHeaders, nwLabels, nwUnicode, trConst
 from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSplitter
 from novelwriter.core.item import NWItem
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
-from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout
+from novelwriter.enum import nwDocMode, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import (
     QtAlignLeft, QtAlignRight, QtMouseLeft, QtMouseMiddle, QtSizeExpanding,
-    QtUserRole,
+    QtUserRole
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -1424,7 +1422,7 @@ class GuiProjectTree(QTreeWidget):
                 return False
 
             # Save the open document first, in case it's part of merge
-            self.mainGui.saveDocument()
+            SHARED.saveDocument()
 
             # Create merge object, and append docs
             docMerger = DocMerger(SHARED.project)

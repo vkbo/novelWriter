@@ -369,9 +369,7 @@ class GuiMain(QMainWindow):
             if not msgYes:
                 return False
 
-        if self.docEditor.docChanged:
-            self.saveDocument()
-
+        self.saveDocument()
         saveOK = self.saveProject()
         doBackup = False
         if SHARED.project.data.doBackup and CONFIG.backupOnClose:
@@ -514,9 +512,7 @@ class GuiMain(QMainWindow):
             # Disable focus mode if it is active
             if SHARED.focusMode:
                 SHARED.setFocusMode(False)
-            self.docEditor.saveCursorPosition()
-            if self.docEditor.docChanged:
-                self.saveDocument()
+            self.saveDocument()
             self.docEditor.clearEditor()
             if not beforeOpen:
                 self.novelView.setActiveHandle(None)
@@ -587,7 +583,8 @@ class GuiMain(QMainWindow):
     @pyqtSlot()
     def saveDocument(self) -> None:
         """Save the current documents."""
-        if SHARED.hasProject:
+        self.docEditor.saveCursorPosition()
+        if SHARED.hasProject and self.docEditor.docChanged:
             self.docEditor.saveText()
         return
 
@@ -1133,7 +1130,7 @@ class GuiMain(QMainWindow):
     @pyqtSlot()
     def _reloadViewer(self) -> None:
         """Reload the document in the viewer."""
-        if self.docEditor.docChanged and self.docEditor.docHandle == self.docViewer.docHandle:
+        if self.docEditor.docHandle == self.docViewer.docHandle:
             # If the two panels have the same document, save any changes in the editor
             self.saveDocument()
         self.docViewer.reloadText()
@@ -1213,7 +1210,7 @@ class GuiMain(QMainWindow):
         doSave &= SHARED.project.projChanged
         doSave &= SHARED.project.storage.isOpen()
         if doSave:
-            logger.debug("Autosaving project")
+            logger.debug("Auto-saving project")
             self.saveProject(autoSave=True)
         return
 
@@ -1221,7 +1218,7 @@ class GuiMain(QMainWindow):
     def _autoSaveDocument(self) -> None:
         """Autosave of the document. This is a timer-activated slot."""
         if SHARED.hasProject and self.docEditor.docChanged:
-            logger.debug("Autosaving document")
+            logger.debug("Auto-saving document")
             self.saveDocument()
         return
 

@@ -171,6 +171,11 @@ class SharedData(QObject):
         logger.debug("Thread Pool Max Count: %d", QThreadPool.globalInstance().maxThreadCount())
         return
 
+    def saveDocument(self) -> None:
+        """Forward save document call to main GUI."""
+        self.mainGui.saveDocument()
+        return
+
     def openProject(self, path: str | Path, clearLock: bool = False) -> bool:
         """Open a project."""
         if self.project.isValid:
