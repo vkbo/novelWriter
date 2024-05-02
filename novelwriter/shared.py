@@ -171,6 +171,17 @@ class SharedData(QObject):
         logger.debug("Thread Pool Max Count: %d", QThreadPool.globalInstance().maxThreadCount())
         return
 
+    def closeDocument(self, tHandle: str | None = None) -> None:
+        """Close the document editor, optionally a specific document."""
+        if tHandle is None or tHandle == self.mainGui.docEditor.docHandle:
+            self.mainGui.closeDocument()
+        return
+
+    def saveDocument(self) -> None:
+        """Forward save document call to main GUI."""
+        self.mainGui.saveDocument()
+        return
+
     def openProject(self, path: str | Path, clearLock: bool = False) -> bool:
         """Open a project."""
         if self.project.isValid:
@@ -198,7 +209,7 @@ class SharedData(QObject):
 
     def closeProject(self) -> None:
         """Close the current project."""
-        self._closeDialogs()
+        self._closeToolDialogs()
         self.project.closeProject(self._idleTime)
         self._resetProject()
         self._resetIdleTimer()
@@ -357,15 +368,12 @@ class SharedData(QObject):
         self._idleTime = 0.0
         return
 
-    def _closeDialogs(self) -> None:
-        """Close non-modal dialogs."""
-        from novelwriter.tools.manuscript import GuiManuscript
-        from novelwriter.tools.writingstats import GuiWritingStats
-
+    def _closeToolDialogs(self) -> None:
+        """Close all open tool dialogs."""
+        from novelwriter.extensions.modified import NToolDialog
         for widget in self.mainGui.children():
-            if isinstance(widget, (GuiManuscript, GuiWritingStats)):
+            if isinstance(widget, NToolDialog):
                 widget.close()
-
         return
 
 # END Class SharedData

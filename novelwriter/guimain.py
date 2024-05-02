@@ -263,6 +263,7 @@ class GuiMain(QMainWindow):
         self.docEditor.requestProjectItemRenamed.connect(self.projView.renameTreeItem)
         self.docEditor.requestNewNoteCreation.connect(self.projView.createNewNote)
         self.docEditor.docTextChanged.connect(self.projSearch.textChanged)
+        self.docEditor.requestNextDocument.connect(self.openNextDocument)
 
         self.docViewer.documentLoaded.connect(self.docViewerPanel.updateHandle)
         self.docViewer.loadDocumentTagRequest.connect(self._followTag)
@@ -369,9 +370,7 @@ class GuiMain(QMainWindow):
             if not msgYes:
                 return False
 
-        if self.docEditor.docChanged:
-            self.saveDocument()
-
+        self.saveDocument()
         saveOK = self.saveProject()
         doBackup = False
         if SHARED.project.data.doBackup and CONFIG.backupOnClose:
@@ -514,9 +513,7 @@ class GuiMain(QMainWindow):
             # Disable focus mode if it is active
             if SHARED.focusMode:
                 SHARED.setFocusMode(False)
-            self.docEditor.saveCursorPosition()
-            if self.docEditor.docChanged:
-                self.saveDocument()
+            self.saveDocument()
             self.docEditor.clearEditor()
             if not beforeOpen:
                 self.novelView.setActiveHandle(None)
@@ -553,42 +550,43 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def openNextDocument(self, tHandle: str, wrapAround: bool = False) -> bool:
+    @pyqtSlot(str, bool)
+    def openNextDocument(self, tHandle: str, wrapAround: bool) -> None:
         """Open the next document in the project tree, following the
         document with the given handle. Stop when reaching the end.
         """
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
+        if SHARED.hasProject:
+            nHandle = None   # The next handle after tHandle
+            fHandle = None   # The first file handle we encounter
+            foundIt = False  # We've found tHandle, pick the next we see
+            for tItem in SHARED.project.tree:
+                if not tItem.isFileType():
+                    continue
+                if fHandle is None:
+                    fHandle = tItem.itemHandle
+                if tItem.itemHandle == tHandle:
+                    foundIt = True
+                elif foundIt:
+                    nHandle = tItem.itemHandle
+                    break
+            if nHandle is not None:
+                self.openDocument(nHandle, tLine=1, doScroll=True)
+            elif wrapAround:
+                self.openDocument(fHandle, tLine=1, doScroll=True)
+        return
 
-        nHandle = None   # The next handle after tHandle
-        fHandle = None   # The first file handle we encounter
-        foundIt = False  # We've found tHandle, pick the next we see
-        for tItem in SHARED.project.tree:
-            if not tItem.isFileType():
-                continue
-            if fHandle is None:
-                fHandle = tItem.itemHandle
-            if tItem.itemHandle == tHandle:
-                foundIt = True
-            elif foundIt:
-                nHandle = tItem.itemHandle
-                break
-
-        if nHandle is not None:
-            self.openDocument(nHandle, tLine=1, doScroll=True)
-            return True
-        elif wrapAround:
-            self.openDocument(fHandle, tLine=1, doScroll=True)
-            return False
-
-        return False
-
-    @pyqtSlot()
-    def saveDocument(self) -> None:
+    def saveDocument(self, force: bool = False) -> None:
         """Save the current documents."""
         if SHARED.hasProject:
-            self.docEditor.saveText()
+            self.docEditor.saveCursorPosition()
+            if force or self.docEditor.docChanged:
+                self.docEditor.saveText()
+        return
+
+    @pyqtSlot()
+    def forceSaveDocument(self) -> None:
+        """Save document even of it has not changed."""
+        self.saveDocument(force=True)
         return
 
     def viewDocument(self, tHandle: str | None = None, sTitle: str | None = None) -> bool:
@@ -1133,7 +1131,7 @@ class GuiMain(QMainWindow):
     @pyqtSlot()
     def _reloadViewer(self) -> None:
         """Reload the document in the viewer."""
-        if self.docEditor.docChanged and self.docEditor.docHandle == self.docViewer.docHandle:
+        if self.docEditor.docHandle == self.docViewer.docHandle:
             # If the two panels have the same document, save any changes in the editor
             self.saveDocument()
         self.docViewer.reloadText()
@@ -1213,7 +1211,7 @@ class GuiMain(QMainWindow):
         doSave &= SHARED.project.projChanged
         doSave &= SHARED.project.storage.isOpen()
         if doSave:
-            logger.debug("Autosaving project")
+            logger.debug("Auto-saving project")
             self.saveProject(autoSave=True)
         return
 
@@ -1221,7 +1219,7 @@ class GuiMain(QMainWindow):
     def _autoSaveDocument(self) -> None:
         """Autosave of the document. This is a timer-activated slot."""
         if SHARED.hasProject and self.docEditor.docChanged:
-            logger.debug("Autosaving document")
+            logger.debug("Auto-saving document")
             self.saveDocument()
         return
 

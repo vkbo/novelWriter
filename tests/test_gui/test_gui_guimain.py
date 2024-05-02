@@ -21,24 +21,25 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import sys
-import pytest
 
 from shutil import copyfile
 
-from tools import C, NWD_IGNORE, cmpFiles, buildTestProject, XML_IGNORE
+import pytest
 
-from PyQt5.QtGui import QPalette
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMenu, QInputDialog
+from PyQt5.QtGui import QPalette
+from PyQt5.QtWidgets import QInputDialog, QMenu
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwItemType, nwView, nwWidget
-from novelwriter.gui.outline import GuiOutlineView
-from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.noveltree import GuiNovelView
+from novelwriter.gui.outline import GuiOutlineView
+from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.tools.welcome import GuiWelcome
-from novelwriter.dialogs.editlabel import GuiEditLabel
+
+from tests.tools import NWD_IGNORE, XML_IGNORE, C, buildTestProject, cmpFiles
 
 KEY_DELAY = 1
 
@@ -50,7 +51,6 @@ def testGuiMain_ProjectBlocker(nwGUI):
     assert nwGUI.closeProject() is True
     assert nwGUI.saveProject() is False
     assert nwGUI.openDocument(None) is False
-    assert nwGUI.openNextDocument(None) is False
     assert nwGUI.viewDocument(None) is False
     assert nwGUI.importDocument() is False
 
@@ -84,7 +84,7 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
     nwGUI.closeProject()
 
     # Check that latest release info updated
-    CONFIG.lastNotes != "0x0"
+    assert CONFIG.lastNotes != "0x0"
 
     # Check that project open dialog launches
     nwGUI.postLaunchTasks(None)
@@ -521,6 +521,8 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     # Save the document
     assert docEditor.docChanged
     nwGUI.saveDocument()
+    assert docEditor.docChanged is False
+    nwGUI.forceSaveDocument()
     assert docEditor.docChanged is False
     nwGUI.rebuildIndex()
 

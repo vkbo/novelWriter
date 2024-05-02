@@ -27,8 +27,8 @@ import logging
 
 from typing import TYPE_CHECKING
 
-from PyQt5.QtGui import QPalette
 from PyQt5.QtCore import QEvent, QPoint, QSize, pyqtSignal
+from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import QMenu, QVBoxLayout, QWidget
 
 from novelwriter import CONFIG, SHARED
@@ -58,7 +58,7 @@ class GuiSideBar(QWidget):
         iSz = QSize(iPx, iPx)
 
         self.setContentsMargins(0, 0, 0, 0)
-        self.installEventFilter(StatusTipFilter(mainGui))
+        self.installEventFilter(StatusTipFilter(self.mainGui))
 
         # Buttons
         self.tbProject = NIconToolButton(self, iSz)

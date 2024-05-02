@@ -28,6 +28,7 @@ import logging
 
 from datetime import datetime
 from time import time
+from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import Qt, QTimer, QUrl, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
@@ -56,6 +57,9 @@ from novelwriter.types import (
     QtSizeExpanding, QtSizeIgnored, QtUserRole
 )
 
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.guimain import GuiMain
+
 logger = logging.getLogger(__name__)
 
 
@@ -69,7 +73,7 @@ class GuiManuscript(NToolDialog):
 
     D_KEY = QtUserRole
 
-    def __init__(self, parent: QWidget) -> None:
+    def __init__(self, parent: GuiMain) -> None:
         super().__init__(parent=parent)
 
         logger.debug("Create: GuiManuscript")
@@ -335,7 +339,7 @@ class GuiManuscript(NToolDialog):
             return
 
         # Make sure editor content is saved before we start
-        SHARED.mainGui.saveDocument()
+        SHARED.saveDocument()
 
         docBuild = NWBuildDocument(SHARED.project, build)
         docBuild.setPreviewMode(True)

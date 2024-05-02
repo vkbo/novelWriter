@@ -36,7 +36,6 @@ import logging
 
 from enum import Enum
 from time import time
-from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import (
     QObject, QPoint, QRegularExpression, QRunnable, Qt, QTimer, pyqtSignal,
@@ -68,9 +67,6 @@ from novelwriter.types import (
     QtAlignRight, QtKeepAnchor, QtModCtrl, QtModeNone, QtModShift, QtMouseLeft,
     QtMoveAnchor, QtMoveLeft, QtMoveRight
 )
-
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
@@ -107,15 +103,14 @@ class GuiDocEditor(QPlainTextEdit):
     requestProjectItemSelected = pyqtSignal(str, bool)
     requestProjectItemRenamed = pyqtSignal(str, str)
     requestNewNoteCreation = pyqtSignal(str, nwItemClass)
+    requestNextDocument = pyqtSignal(str, bool)
 
-    def __init__(self, mainGui: GuiMain) -> None:
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiDocEditor")
 
         # Class Variables
-        self.mainGui = mainGui
-
         self._nwDocument = None
         self._nwItem     = None
 
@@ -477,7 +472,6 @@ class GuiDocEditor(QPlainTextEdit):
         cC, wC, pC = standardCounter(docText)
         self._updateDocCounts(cC, wC, pC)
 
-        self.saveCursorPosition()
         if not self._nwDocument.writeDocument(docText):
             saveOk = False
             if self._nwDocument.hashError:
@@ -1320,9 +1314,8 @@ class GuiDocEditor(QPlainTextEdit):
             self.docSearch.setResultCount(0, 0)
             self._lastFind = None
             if CONFIG.searchNextFile and not goBack:
-                self.mainGui.openNextDocument(
-                    self._docHandle, wrapAround=CONFIG.searchLoop
-                )
+                self.requestNextDocument.emit(self._docHandle, CONFIG.searchLoop)
+                QApplication.processEvents()
                 self.beginSearch()
                 self.setFocus()
             return
@@ -1341,9 +1334,8 @@ class GuiDocEditor(QPlainTextEdit):
 
         if resIdx > maxIdx and self._docHandle:
             if CONFIG.searchNextFile and not goBack:
-                self.mainGui.openNextDocument(
-                    self._docHandle, wrapAround=CONFIG.searchLoop
-                )
+                self.requestNextDocument.emit(self._docHandle, CONFIG.searchLoop)
+                QApplication.processEvents()
                 self.beginSearch()
                 self.setFocus()
                 return
