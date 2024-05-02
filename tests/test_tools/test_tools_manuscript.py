@@ -20,18 +20,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import pytest
 import sys
 
 from pathlib import Path
-from pytestqt.qtbot import QtBot
+
+import pytest
 
 from mocked import causeOSError
-from tools import C, buildTestProject
-
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtPrintSupport import QPrintPreviewDialog
 from PyQt5.QtWidgets import QAction, QListWidgetItem
+from pytestqt.qtbot import QtBot
+from tools import C, buildTestProject
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwHeadFmt
@@ -81,7 +81,9 @@ def testManuscript_Init(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath: Pat
         manus.show()
         manus.loadContent()
         assert manus.docPreview.toPlainText().strip() == ""
-        manus.close()
+
+    nwGUI.closeProject()  # This should auto-close the manuscript tool
+    assert manus.isHidden()
 
     # qtbot.stop()
 
