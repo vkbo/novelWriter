@@ -28,6 +28,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 from enum import Enum
+from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QWheelEvent
@@ -38,10 +39,13 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.guimain import GuiMain
+
 
 class NToolDialog(QDialog):
 
-    def __init__(self, parent: QWidget | None = None) -> None:
+    def __init__(self, parent: GuiMain) -> None:
         super().__init__(parent=parent)
         self.setModal(False)
         if CONFIG.osDarwin:

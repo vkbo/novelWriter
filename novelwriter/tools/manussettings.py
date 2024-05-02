@@ -25,6 +25,8 @@ from __future__ import annotations
 
 import logging
 
+from typing import TYPE_CHECKING
+
 from PyQt5.QtCore import QEvent, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from PyQt5.QtWidgets import (
@@ -51,6 +53,9 @@ from novelwriter.types import (
     QtRoleApply, QtRoleReject, QtUserRole
 )
 
+if TYPE_CHECKING:  # pragma: no cover
+    from novelwriter.guimain import GuiMain
+
 logger = logging.getLogger(__name__)
 
 
@@ -69,7 +74,7 @@ class GuiBuildSettings(NToolDialog):
 
     newSettingsReady = pyqtSignal(BuildSettings)
 
-    def __init__(self, parent: QWidget, build: BuildSettings) -> None:
+    def __init__(self, parent: GuiMain, build: BuildSettings) -> None:
         super().__init__(parent=parent)
 
         logger.debug("Create: GuiBuildSettings")
