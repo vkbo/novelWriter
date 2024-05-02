@@ -29,9 +29,8 @@ import logging
 
 from enum import Enum
 from time import time
-from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import QModelIndex, QPoint, Qt, pyqtSlot, pyqtSignal
+from PyQt5.QtCore import QModelIndex, QPoint, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QFocusEvent, QFont, QMouseEvent, QPalette, QResizeEvent
 from PyQt5.QtWidgets import (
     QAbstractItemView, QActionGroup, QFrame, QHBoxLayout, QHeaderView,
@@ -52,9 +51,6 @@ from novelwriter.types import (
     QtUserRole
 )
 
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
-
 logger = logging.getLogger(__name__)
 
 
@@ -74,10 +70,8 @@ class GuiNovelView(QWidget):
     selectedItemChanged = pyqtSignal(str)
     openDocumentRequest = pyqtSignal(str, Enum, str, bool)
 
-    def __init__(self, mainGui: GuiMain) -> None:
-        super().__init__(parent=mainGui)
-
-        self.mainGui = mainGui
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
 
         # Build GUI
         self.novelTree = GuiNovelTree(self)
@@ -202,7 +196,6 @@ class GuiNovelToolBar(QWidget):
         logger.debug("Create: GuiNovelToolBar")
 
         self.novelView = novelView
-        self.mainGui   = novelView.mainGui
 
         iSz = SHARED.theme.baseIconSize
         mPx = CONFIG.pxInt(2)
@@ -378,7 +371,6 @@ class GuiNovelTree(QTreeWidget):
         logger.debug("Create: GuiNovelTree")
 
         self.novelView = novelView
-        self.mainGui   = novelView.mainGui
 
         # Internal Variables
         self._treeMap     = {}
@@ -493,7 +485,7 @@ class GuiNovelTree(QTreeWidget):
         if rootHandle is None:
             rootHandle = SHARED.project.tree.findRoot(nwItemClass.NOVEL)
 
-        treeChanged = self.mainGui.projView.changedSince(self._lastBuild)
+        treeChanged = SHARED.mainGui.projView.changedSince(self._lastBuild)
         indexChanged = SHARED.project.index.rootChangedSince(rootHandle, self._lastBuild)
         if not (treeChanged or indexChanged or overRide):
             logger.debug("No changes have been made to the novel index")

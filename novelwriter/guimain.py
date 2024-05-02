@@ -263,6 +263,7 @@ class GuiMain(QMainWindow):
         self.docEditor.requestProjectItemRenamed.connect(self.projView.renameTreeItem)
         self.docEditor.requestNewNoteCreation.connect(self.projView.createNewNote)
         self.docEditor.docTextChanged.connect(self.projSearch.textChanged)
+        self.docEditor.requestNextDocument.connect(self.openNextDocument)
 
         self.docViewer.documentLoaded.connect(self.docViewerPanel.updateHandle)
         self.docViewer.loadDocumentTagRequest.connect(self._followTag)
@@ -549,36 +550,30 @@ class GuiMain(QMainWindow):
 
         return True
 
-    def openNextDocument(self, tHandle: str, wrapAround: bool = False) -> bool:
+    @pyqtSlot(str, bool)
+    def openNextDocument(self, tHandle: str, wrapAround: bool) -> None:
         """Open the next document in the project tree, following the
         document with the given handle. Stop when reaching the end.
         """
-        if not SHARED.hasProject:
-            logger.error("No project open")
-            return False
-
-        nHandle = None   # The next handle after tHandle
-        fHandle = None   # The first file handle we encounter
-        foundIt = False  # We've found tHandle, pick the next we see
-        for tItem in SHARED.project.tree:
-            if not tItem.isFileType():
-                continue
-            if fHandle is None:
-                fHandle = tItem.itemHandle
-            if tItem.itemHandle == tHandle:
-                foundIt = True
-            elif foundIt:
-                nHandle = tItem.itemHandle
-                break
-
-        if nHandle is not None:
-            self.openDocument(nHandle, tLine=1, doScroll=True)
-            return True
-        elif wrapAround:
-            self.openDocument(fHandle, tLine=1, doScroll=True)
-            return False
-
-        return False
+        if SHARED.hasProject:
+            nHandle = None   # The next handle after tHandle
+            fHandle = None   # The first file handle we encounter
+            foundIt = False  # We've found tHandle, pick the next we see
+            for tItem in SHARED.project.tree:
+                if not tItem.isFileType():
+                    continue
+                if fHandle is None:
+                    fHandle = tItem.itemHandle
+                if tItem.itemHandle == tHandle:
+                    foundIt = True
+                elif foundIt:
+                    nHandle = tItem.itemHandle
+                    break
+            if nHandle is not None:
+                self.openDocument(nHandle, tLine=1, doScroll=True)
+            elif wrapAround:
+                self.openDocument(fHandle, tLine=1, doScroll=True)
+        return
 
     @pyqtSlot()
     def saveDocument(self) -> None:

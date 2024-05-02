@@ -25,14 +25,13 @@ from __future__ import annotations
 
 import logging
 
-from typing import TYPE_CHECKING
 from pathlib import Path
 
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import (
     QAbstractItemView, QApplication, QDialog, QDialogButtonBox, QFileDialog,
-    QHBoxLayout, QLineEdit, QListWidget, QVBoxLayout
+    QHBoxLayout, QLineEdit, QListWidget, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -42,9 +41,6 @@ from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.types import QtDialogClose, QtDialogSave
 
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
-
 logger = logging.getLogger(__name__)
 
 
@@ -52,8 +48,8 @@ class GuiWordList(QDialog):
 
     newWordListReady = pyqtSignal()
 
-    def __init__(self, mainGui: GuiMain) -> None:
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiWordList")
         self.setObjectName("GuiWordList")

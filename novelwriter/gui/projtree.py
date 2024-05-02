@@ -30,7 +30,6 @@ import logging
 
 from enum import Enum
 from time import time
-from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import QPoint, Qt, QTimer, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QIcon, QMouseEvent, QPalette
@@ -57,9 +56,6 @@ from novelwriter.types import (
     QtUserRole
 )
 
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
-
 logger = logging.getLogger(__name__)
 
 
@@ -81,10 +77,8 @@ class GuiProjectView(QWidget):
     # Requests for the main GUI
     projectSettingsRequest = pyqtSignal(int)
 
-    def __init__(self, mainGui: GuiMain) -> None:
-        super().__init__(parent=mainGui)
-
-        self.mainGui = mainGui
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
 
         # Build GUI
         self.projTree = GuiProjectTree(self)
@@ -263,7 +257,6 @@ class GuiProjectToolBar(QWidget):
 
         self.projView = projView
         self.projTree = projView.projTree
-        self.mainGui  = projView.mainGui
 
         iSz = SHARED.theme.baseIconSize
         mPx = CONFIG.pxInt(2)
@@ -499,7 +492,6 @@ class GuiProjectTree(QTreeWidget):
         logger.debug("Create: GuiProjectTree")
 
         self.projView = projView
-        self.mainGui  = projView.mainGui
 
         # Internal Variables
         self._treeMap: dict[str, QTreeWidgetItem] = {}
@@ -1010,8 +1002,7 @@ class GuiProjectTree(QTreeWidget):
             trItemP.takeChild(tIndex)
 
             for dHandle in reversed(self.getTreeFromHandle(tHandle)):
-                if self.mainGui.docEditor.docHandle == dHandle:
-                    self.mainGui.closeDocument()
+                SHARED.closeDocument(dHandle)
                 SHARED.project.removeItem(dHandle)
                 self._treeMap.pop(dHandle, None)
 
@@ -1410,7 +1401,7 @@ class GuiProjectTree(QTreeWidget):
         if not newFile:
             itemList.remove(tHandle)
 
-        dlgMerge = GuiDocMerge(self.mainGui, tHandle, itemList)
+        dlgMerge = GuiDocMerge(SHARED.mainGui, tHandle, itemList)
         dlgMerge.exec()
 
         if dlgMerge.result() == QDialog.DialogCode.Accepted:
@@ -1451,7 +1442,8 @@ class GuiProjectTree(QTreeWidget):
             if newFile:
                 self.revealNewTreeItem(mHandle, nHandle=tHandle, wordCount=True)
 
-            self.mainGui.openDocument(mHandle, doScroll=True)
+            self.projView.openDocumentRequest.emit(mHandle, nwDocMode.EDIT, "", False)
+            self.projView.setSelectedHandle(mHandle, doScroll=True)
 
             if mrgData.get("moveToTrash", False):
                 for sHandle in reversed(mrgData.get("finalItems", [])):
@@ -1480,7 +1472,7 @@ class GuiProjectTree(QTreeWidget):
             logger.error("Only valid document items can be split")
             return False
 
-        dlgSplit = GuiDocSplit(self.mainGui, tHandle)
+        dlgSplit = GuiDocSplit(SHARED.mainGui, tHandle)
         dlgSplit.exec()
 
         if dlgSplit.result() == QDialog.DialogCode.Accepted:

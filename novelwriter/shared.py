@@ -171,6 +171,12 @@ class SharedData(QObject):
         logger.debug("Thread Pool Max Count: %d", QThreadPool.globalInstance().maxThreadCount())
         return
 
+    def closeDocument(self, tHandle: str | None = None) -> None:
+        """Close the document editor, optionally a specific document."""
+        if tHandle is None or tHandle == self.mainGui.docEditor.docHandle:
+            self.mainGui.closeDocument()
+        return
+
     def saveDocument(self) -> None:
         """Forward save document call to main GUI."""
         self.mainGui.saveDocument()

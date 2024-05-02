@@ -27,26 +27,23 @@ import logging
 
 from datetime import datetime
 from time import time
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 
-from PyQt5.QtCore import pyqtSlot, QLocale
-from PyQt5.QtWidgets import QApplication, QStatusBar, QLabel
+from PyQt5.QtCore import QLocale, pyqtSlot
+from PyQt5.QtWidgets import QApplication, QLabel, QStatusBar, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatTime
 from novelwriter.constants import nwConst
 from novelwriter.extensions.statusled import StatusLED
 
-if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
-
 logger = logging.getLogger(__name__)
 
 
 class GuiMainStatus(QStatusBar):
 
-    def __init__(self, mainGui: GuiMain) -> None:
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiMainStatus")
 
@@ -238,6 +235,7 @@ class GuiMainStatus(QStatusBar):
         before starting novelWriter.
         """
         import tracemalloc
+
         from collections import Counter
 
         widgets = QApplication.allWidgets()

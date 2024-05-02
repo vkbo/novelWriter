@@ -69,8 +69,8 @@ class GuiWritingStats(NToolDialog):
     FMT_JSON = 0
     FMT_CSV  = 1
 
-    def __init__(self, mainGui: GuiMain) -> None:
-        super().__init__(parent=mainGui)
+    def __init__(self, parent: GuiMain) -> None:
+        super().__init__(parent=parent)
 
         logger.debug("Create: GuiWritingStats")
         self.setObjectName("GuiWritingStats")
