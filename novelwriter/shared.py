@@ -26,21 +26,21 @@ from __future__ import annotations
 
 import logging
 
+from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING, TypeVar
-from pathlib import Path
 
 from PyQt5.QtCore import QObject, QRunnable, QThreadPool, QTimer, pyqtSignal
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget
-from novelwriter.common import formatFileFilter
 
+from novelwriter.common import formatFileFilter
 from novelwriter.constants import nwFiles
 from novelwriter.core.spellcheck import NWSpellEnchant
 
 if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.guimain import GuiMain
-    from novelwriter.gui.theme import GuiTheme
     from novelwriter.core.project import NWProject
+    from novelwriter.gui.theme import GuiTheme
+    from novelwriter.guimain import GuiMain
 
 logger = logging.getLogger(__name__)
 
@@ -198,6 +198,7 @@ class SharedData(QObject):
 
     def closeProject(self) -> None:
         """Close the current project."""
+        self._closeDialogs()
         self.project.closeProject(self._idleTime)
         self._resetProject()
         self._resetIdleTimer()
@@ -354,6 +355,17 @@ class SharedData(QObject):
         """Reset the timer data for the idle timer."""
         self._idleRefTime = time()
         self._idleTime = 0.0
+        return
+
+    def _closeDialogs(self) -> None:
+        """Close non-modal dialogs."""
+        from novelwriter.tools.manuscript import GuiManuscript
+        from novelwriter.tools.writingstats import GuiWritingStats
+
+        for widget in self.mainGui.children():
+            if isinstance(widget, (GuiManuscript, GuiWritingStats)):
+                widget.close()
+
         return
 
 # END Class SharedData

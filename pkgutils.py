@@ -25,13 +25,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import os
-import sys
-import shutil
-import zipfile
 import datetime
-import subprocess
 import email.utils
+import os
+import shutil
+import subprocess
+import sys
+import zipfile
 
 from pathlib import Path
 
@@ -328,59 +328,59 @@ def buildQtI18nTS(sysArgs: list[str]) -> None:
     print("Scanning Source Tree:")
     print("")
 
-    srcList = [os.path.join("i18n", "qtbase.py")]
-    for nRoot, _, nFiles in os.walk("novelwriter"):
-        if os.path.isdir(nRoot):
-            for aFile in nFiles:
-                aPath = os.path.join(nRoot, aFile)
-                if os.path.isfile(aPath) and aFile.endswith(".py"):
-                    srcList.append(aPath)
+    sources = [os.path.join("i18n", "qtbase.py")]
+    for root, _, files in os.walk("novelwriter"):
+        if os.path.isdir(root):
+            for file in files:
+                source = os.path.join(root, file)
+                if os.path.isfile(source) and file.endswith(".py"):
+                    sources.append(source)
 
-    for aSource in srcList:
-        print(aSource)
+    for source in sources:
+        print(source)
 
     print("")
     print("TS Files to Update:")
     print("")
 
-    tsList = []
+    translations = []
     if len(sysArgs) >= 2:
-        for anArg in sysArgs[1:]:
-            if not (anArg.startswith("i18n") and anArg.endswith(".ts")):
+        for arg in sysArgs[1:]:
+            if not (arg.startswith("i18n") and arg.endswith(".ts")):
                 continue
 
-            fName = os.path.basename(anArg)
-            if not fName.startswith("nw_") and len(fName) > 6:
-                print("Skipping non-novelWriter TS file %s" % fName)
+            file = os.path.basename(arg)
+            if not file.startswith("nw_") and len(file) > 6:
+                print("Skipping non-novelWriter TS file %s" % file)
                 continue
 
-            if os.path.isfile(anArg):
-                tsList.append(anArg)
-            elif os.path.exists(anArg):
+            if os.path.isfile(arg):
+                translations.append(arg)
+            elif os.path.exists(arg):
                 pass
             else:  # Create an empty new language file
-                lCode = fName[3:-3]
-                writeFile(anArg, (
+                langCode = file[3:-3]
+                writeFile(arg, (
                     "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                     "<!DOCTYPE TS>\n"
-                    f"<TS version=\"2.0\" language=\"{lCode}\" sourcelanguage=\"en_GB\"/>\n"
+                    f"<TS version=\"2.0\" language=\"{langCode}\" sourcelanguage=\"en_GB\"/>\n"
                 ))
-                tsList.append(anArg)
+                translations.append(arg)
 
     else:
         print("No translation files selected for update ...")
         print("")
         return
 
-    for aTS in tsList:
-        print(aTS)
+    for translation in translations:
+        print(translation)
 
     print("")
     print("Updating Language Files:")
     print("")
 
     # Using the pylupdate tool from PyQt6 as it supports TS file format 2.1.
-    lupdate(srcList, tsList, no_obsolete=True, no_summary=False)
+    lupdate(sources, translations, no_obsolete=True, no_summary=False)
 
     print("")
 
@@ -561,7 +561,7 @@ def importI18nUpdates(sysArgs: list[str]) -> None:
 
 def makeWindowsZip() -> None:
     """Pack the core source file in a single zip file."""
-    from zipfile import ZipFile, ZIP_DEFLATED
+    from zipfile import ZIP_DEFLATED, ZipFile
 
     print("")
     print("Building Windows ZIP File")
@@ -881,8 +881,8 @@ def makeForLaunchpad(doSign: bool = False, isFirst: bool = False) -> None:
 
 def makeAppImage(sysArgs: list[str]) -> list[str]:
     """Build an AppImage."""
-    import glob
     import argparse
+    import glob
 
     try:
         import python_appimage  # noqa: F401 # type: ignore
@@ -1092,9 +1092,9 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
     """Set up a package with embedded Python and dependencies for
     Windows installation.
     """
+    import compileall
     import urllib.request
     import zipfile
-    import compileall
 
     print("")
     print("Build Standalone Windows Package")

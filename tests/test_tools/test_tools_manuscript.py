@@ -22,29 +22,26 @@ from __future__ import annotations
 
 import sys
 
-from pathlib import Path
-
 import pytest
 
-from mocked import causeOSError
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtPrintSupport import QPrintPreviewDialog
 from PyQt5.QtWidgets import QAction, QListWidgetItem
-from pytestqt.qtbot import QtBot
-from tools import C, buildTestProject
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.buildsettings import BuildSettings
-from novelwriter.guimain import GuiMain
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.manussettings import GuiBuildSettings
 from novelwriter.types import QtAlignAbsolute, QtAlignJustify, QtDialogApply, QtDialogSave
 
+from tests.mocked import causeOSError
+from tests.tools import C, buildTestProject
+
 
 @pytest.mark.gui
-def testManuscript_Init(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockRnd):
+def testManuscript_Init(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     """Test the init/main functionality of the GuiManuscript dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
@@ -81,7 +78,9 @@ def testManuscript_Init(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath: Pat
         manus.show()
         manus.loadContent()
         assert manus.docPreview.toPlainText().strip() == ""
-        manus.close()
+
+    nwGUI.closeProject()  # This should auto-close the manuscript tool
+    assert manus.isHidden()
 
     # qtbot.stop()
 
@@ -89,7 +88,7 @@ def testManuscript_Init(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath: Pat
 
 
 @pytest.mark.gui
-def testManuscript_Builds(qtbot: QtBot, nwGUI: GuiMain, projPath: Path):
+def testManuscript_Builds(qtbot, nwGUI, projPath):
     """Test the handling of builds in the GuiManuscript dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
@@ -278,7 +277,7 @@ def testManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert manus.docPreview.document().defaultTextOption().alignment() == QtAlignAbsolute
 
     # Tests are too fast to trigger this one, so we trigger it manually to ensure it isn't failing
-    manus.docPreview._hideProgress()
+    manus.docPreview._postUpdate()
 
     # Builds
     # ======
@@ -306,7 +305,7 @@ def testManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
 
 @pytest.mark.gui
 @pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Not running on Darwin")
-def testManuscript_Print(monkeypatch, qtbot: QtBot, nwGUI: GuiMain, projPath: Path):
+def testManuscript_Print(monkeypatch, qtbot, nwGUI, projPath):
     """Test the print feature of the GuiManuscript dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
