@@ -97,6 +97,7 @@ SETTINGS_TEMPLATE = {
     "md.preserveBreaks":       (bool, True),
     "html.addStyles":          (bool, True),
     "html.preserveTabs":       (bool, False),
+    "html.textIndent":         (float, 0.0),
 }
 
 SETTINGS_LABELS = {
@@ -152,6 +153,7 @@ SETTINGS_LABELS = {
     "html":                   QT_TRANSLATE_NOOP("Builds", "HTML (.html)"),
     "html.addStyles":         QT_TRANSLATE_NOOP("Builds", "Add CSS Styles"),
     "html.preserveTabs":      QT_TRANSLATE_NOOP("Builds", "Preserve Tab Characters"),
+    "html.textIndent":        QT_TRANSLATE_NOOP("Builds", "Frist Line Indent"),
 }
 
 

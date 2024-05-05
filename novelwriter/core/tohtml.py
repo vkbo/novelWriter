@@ -123,6 +123,12 @@ class ToHtml(Tokenizer):
         self._cssStyles = cssStyles
         return
 
+    def setTextIndent(self, textIndent: float) -> None:
+        """Set css text-indent value."""
+
+        self._textIndent = textIndent
+        return
+
     def setReplaceUnicode(self, doReplace: bool) -> None:
         """Set the translation map to either minimal or full unicode for
         html entities replacement.
@@ -396,13 +402,15 @@ class ToHtml(Tokenizer):
         styles.append((
             "p {{"
             "text-align: {0}; line-height: {1:d}%; "
-            "margin-top: {2:.2f}em; margin-bottom: {3:.2f}em;"
+            "margin-top: {2:.2f}em; margin-bottom: {3:.2f}em; "
+            "text-indent: {4:.1f}em;"
             "}}"
         ).format(
             "justify" if self._doJustify else "left",
             round(100 * self._lineHeight),
             mScale * self._marginText[0],
             mScale * self._marginText[1],
+            self._textIndent
         ))
         styles.append((
             "h1 {{"

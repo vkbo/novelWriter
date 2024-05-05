@@ -1364,6 +1364,14 @@ class _OutputTab(NScrollableForm):
         self.htmlAddStyles = NSwitch(self, height=iPx)
         self.addRow(self._build.getLabel("html.addStyles"), self.htmlAddStyles)
 
+        self.htmlTextIndent = NDoubleSpinBox(self)
+        self.htmlTextIndent.setFixedWidth(spW)
+        self.htmlTextIndent.setMinimum(0.0)
+        self.htmlTextIndent.setMaximum(8.0)
+        self.htmlTextIndent.setSingleStep(0.5)
+        self.htmlTextIndent.setDecimals(1)
+        self.addRow(self._build.getLabel("html.textIndent"), self.htmlTextIndent, unit="em")
+
         self.htmlPreserveTabs = NSwitch(self, height=iPx)
         self.addRow(self._build.getLabel("html.preserveTabs"), self.htmlPreserveTabs)
 
@@ -1386,6 +1394,7 @@ class _OutputTab(NScrollableForm):
         self.odtFirstLineIndent.setChecked(self._build.getBool("odt.firstLineIndent"))
         self.htmlAddStyles.setChecked(self._build.getBool("html.addStyles"))
         self.htmlPreserveTabs.setChecked(self._build.getBool("html.preserveTabs"))
+        self.htmlTextIndent.setValue(self._build.getFloat("html.textIndent"))
         self.mdPreserveBreaks.setChecked(self._build.getBool("md.preserveBreaks"))
         self.odtPageHeader.setCursorPosition(0)
         return
@@ -1398,6 +1407,7 @@ class _OutputTab(NScrollableForm):
         self._build.setValue("odt.firstLineIndent", self.odtFirstLineIndent.isChecked())
         self._build.setValue("html.addStyles", self.htmlAddStyles.isChecked())
         self._build.setValue("html.preserveTabs", self.htmlPreserveTabs.isChecked())
+        self._build.setValue("html.textIndent", self.htmlTextIndent.value())
         self._build.setValue("md.preserveBreaks", self.mdPreserveBreaks.isChecked())
         return
 

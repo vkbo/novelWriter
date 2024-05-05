@@ -342,6 +342,7 @@ class NWBuildDocument:
 
         if isinstance(bldObj, ToHtml):
             bldObj.setStyles(self._build.getBool("html.addStyles"))
+            bldObj.setTextIndent(self._build.getFloat("html.textIndent"))
             bldObj.setReplaceUnicode(self._build.getBool("format.stripUnicode"))
 
         if isinstance(bldObj, ToOdt):
