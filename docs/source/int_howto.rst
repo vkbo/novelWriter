@@ -16,13 +16,21 @@ This is a list of hopefully helpful little tips on how to get the most out of no
 Managing the Project
 ====================
 
+.. dropdown:: Create a Project from a Template
+   :animate: fade-in-slide-down
+
+   On the Welcome dialog's **Create New Project** form, you can select to "Prefill Project" from
+   the content of a different project. This feature is most useful if you copy a project you have
+   dedicated to be a template project. If you have a structure and settings you want to use for
+   every new project, this is the best solution.
+
 .. dropdown:: Merge Multiple Documents Into One
    :animate: fade-in-slide-down
 
    If you need to merge a selection of documents in your project into a single document, you can
-   achieve this by first making a new folder for just that purpose, and drag all the files you want
-   merged into this folder. Then you can right click the folder, select :guilabel:`Transform` and
-   :guilabel:`Merge Documents in Folder`.
+   achieve this by first making a new folder for just that purpose, and drag all the documents you
+   want merged into this folder. Then you can right click the folder, select :guilabel:`Transform`
+   and :guilabel:`Merge Documents in Folder`.
 
    In the dialog that pops up, the documents will be in the same order as in the folder, but you
    can rearrange them here of you wish. See :ref:`a_ui_tree_split_merge` for more details.
@@ -57,8 +65,6 @@ Organising Your Text
    If you add separate files for chapters and scenes, the chapter file is the perfect place to add
    such text. Separating chapter and scene files also allows you to make scene files child
    documents of the chapter.
-
-   .. versionadded:: 2.0
 
 .. dropdown:: Distinguishing Soft and Hard Scene Breaks
    :animate: fade-in-slide-down

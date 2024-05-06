@@ -1,8 +1,17 @@
 .. _a_proj:
 
-**************
-Novel Projects
-**************
+*****************
+Managing Projects
+*****************
+
+Your text in novelWriter is organised into projects. Each project is meant to contain one novel
+and associated notes. If you have multiple novels in a series, with the same characters and shared
+notes, it is also possible to keep all of them in the same project.
+
+.. _a_proj_new:
+
+Creating Project
+================
 
 New projects can be created from the **Project** menu by selecting **Create or Open Project**. This
 will open the **Welcome** dialog, where you can select the :guilabel:`New` button that will assist
@@ -27,10 +36,19 @@ and page counts, is available through the **Novel Details** dialog. Statistics a
 is also available in the **Manuscript Build** tool.
 
 
+Template Projects
+-----------------
+
+From the Welcome dialog you can also create a new from another existing project. If you have a
+specific structure you want to use for all your new projects, you can create a dedicated project to
+be used as a template, and select to copy an existing project from the :guilabel:"Prefill Project"
+option from the **New Project** form.
+
+
 .. _a_proj_roots:
 
-Project Roots
-=============
+Project Structure
+=================
 
 Projects are structured into a set of top level folders called "Root Folders". They are visible in
 the project tree at the left side of the main window.

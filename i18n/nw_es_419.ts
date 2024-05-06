@@ -2198,57 +2198,57 @@
   <context>
     <name>GuiManuscriptBuild</name>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="72" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="70" />
       <source>Build Manuscript</source>
       <translation>Compilar el Manuscrito</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="93" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="91" />
       <source>Output Format</source>
       <translation>Grabar al Siguiente Formato</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="119" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="117" />
       <source>Table of Contents</source>
       <translation>Tabla de Contenidos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="147" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="145" />
       <source>Path</source>
       <translation>Ruta</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="157" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="155" />
       <source>File Name</source>
       <translation>Nombre del Archivo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="160" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="158" />
       <source>Reset file name to default</source>
       <translation>Restablecer al Nombre de Archivo Por Defecto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="184" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="182" />
       <source>Open Folder</source>
       <translation>Abrir la Carpeta</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="186" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="184" />
       <source>&amp;Build</source>
       <translation>C&amp;ompilar</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="281" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="279" />
       <source>Select Folder</source>
       <translation>Seleccionar una Carpeta</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="319" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="317" />
       <source>Output folder does not exist.</source>
       <translation>La carpeta destino no existe en la ruta definida.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="327" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="325" />
       <source>The file already exists. Do you want to overwrite it?</source>
       <translation>El archivo ya existe. ¿Desea sobrescribirlo?</translation>
     </message>
@@ -2415,7 +2415,7 @@
   <context>
     <name>GuiOutlineToolBar</name>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="223" />
+      <location filename="../novelwriter/gui/outline.py" line="222" />
       <source>Outline of</source>
       <translation>Estructura de</translation>
     </message>
@@ -3861,78 +3861,19 @@
     </message>
   </context>
   <context>
-    <name>QWizard</name>
-    <message>
-      <location filename="qtbase.py" line="54" />
-      <source>Go Back</source>
-      <translation>Volver</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="55" />
-      <source>&lt; &amp;Back</source>
-      <translation>&lt; &amp;Volver</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="56" />
-      <source>Continue</source>
-      <translation>Continuar</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="57" />
-      <source>&amp;Next</source>
-      <translation>&amp;Siguiente</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="58" />
-      <source>&amp;Next &gt;</source>
-      <translation>Seguir &gt;</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="59" />
-      <source>Commit</source>
-      <translation>Confirmar</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="60" />
-      <source>Done</source>
-      <translation>Listo</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="61" />
-      <source>&amp;Finish</source>
-      <translation>&amp;Finalizar</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="63" />
-      <location filename="qtbase.py" line="62" />
-      <source>Cancel</source>
-      <translation>Cancelar</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="64" />
-      <source>Help</source>
-      <translation>Ayuda</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="65" />
-      <source>&amp;Help</source>
-      <translation>&amp;Ayuda</translation>
-    </message>
-  </context>
-  <context>
     <name>SharedData</name>
     <message>
-      <location filename="../novelwriter/shared.py" line="249" />
+      <location filename="../novelwriter/shared.py" line="250" />
       <source>novelWriter Project File or Zip File</source>
       <translation>Archivo de proyecto de novelWriter o archivo Zip</translation>
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="250" />
+      <location filename="../novelwriter/shared.py" line="251" />
       <source>novelWriter Project File</source>
       <translation>Archivo de Proyecto de novelWriter</translation>
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="254" />
+      <location filename="../novelwriter/shared.py" line="255" />
       <source>Open Project</source>
       <translation>Abrir un Proyecto</translation>
     </message>
@@ -4041,32 +3982,32 @@
   <context>
     <name>_DetailsWidget</name>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="522" />
+      <location filename="../novelwriter/tools/manuscript.py" line="533" />
       <source>Setting</source>
       <translation>Opciones</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="522" />
+      <location filename="../novelwriter/tools/manuscript.py" line="533" />
       <source>Value</source>
       <translation>Valores Definidos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="589" />
+      <location filename="../novelwriter/tools/manuscript.py" line="600" />
       <source>Name</source>
       <translation>Nombre</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="595" />
+      <location filename="../novelwriter/tools/manuscript.py" line="606" />
       <source>Selection</source>
       <translation>Selecciones</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="611" />
+      <location filename="../novelwriter/tools/manuscript.py" line="622" />
       <source>Title</source>
       <translation>Título</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="612" />
+      <location filename="../novelwriter/tools/manuscript.py" line="623" />
       <source>Hidden</source>
       <translation>Oculto</translation>
     </message>
@@ -4112,22 +4053,22 @@
   <context>
     <name>_GuiAlert</name>
     <message>
-      <location filename="../novelwriter/shared.py" line="410" />
+      <location filename="../novelwriter/shared.py" line="422" />
       <source>Information</source>
       <translation>Información</translation>
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="413" />
+      <location filename="../novelwriter/shared.py" line="425" />
       <source>Warning</source>
       <translation>Advertencia</translation>
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="416" />
+      <location filename="../novelwriter/shared.py" line="428" />
       <source>Error</source>
       <translation>Error</translation>
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="419" />
+      <location filename="../novelwriter/shared.py" line="431" />
       <source>Question</source>
       <translation>Pregunta</translation>
     </message>
@@ -4438,27 +4379,27 @@
   <context>
     <name>_PreviewWidget</name>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="757" />
+      <location filename="../novelwriter/tools/manuscript.py" line="769" />
       <source>Press the "Preview" button to generate ...</source>
       <translation>Pulse el botón "Vista Previa" para así generarla...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="855" />
+      <location filename="../novelwriter/tools/manuscript.py" line="867" />
       <source>Processing ...</source>
       <translation>Procesando...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="877" />
+      <location filename="../novelwriter/tools/manuscript.py" line="888" />
       <source>Done</source>
       <translation>Hecho</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="927" />
+      <location filename="../novelwriter/tools/manuscript.py" line="938" />
       <source>Unknown</source>
       <translation>Desconocido</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="928" />
+      <location filename="../novelwriter/tools/manuscript.py" line="939" />
       <source>Built</source>
       <translation>Compilado</translation>
     </message>
@@ -4557,59 +4498,59 @@
   <context>
     <name>_StatsWidget</name>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1090" />
-      <location filename="../novelwriter/tools/manuscript.py" line="1050" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1102" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1062" />
       <source>Words</source>
       <translation>Palabras</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1117" />
-      <location filename="../novelwriter/tools/manuscript.py" line="1053" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1129" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1065" />
       <source>Characters</source>
       <translation>Caracteres</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1091" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1103" />
       <source>Words in Headings</source>
       <translation>Palabras en Titulos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1092" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1104" />
       <source>Words in Text</source>
       <translation>Palabras en el Texto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1094" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1106" />
       <source>Headings</source>
       <translation>Títulos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1095" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1107" />
       <source>Paragraphs</source>
       <translation>Párrafos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1118" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1130" />
       <source>Characters in Headings</source>
       <translation>Caracteres en los Títulos</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1119" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1131" />
       <source>Characters in Text</source>
       <translation>Caracteres en el Texto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1120" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1132" />
       <source>Characters, No Spaces</source>
       <translation>Caracteres, Sin Espacios</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1121" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1133" />
       <source>Characters in Headings, No Spaces</source>
       <translation>Caracteres en los Títulos, Sin Espacios</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1122" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1134" />
       <source>Characters in Text, No Spaces</source>
       <translation>Caracteres en el Texto, Sin Espacios</translation>
     </message>

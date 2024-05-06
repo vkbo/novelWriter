@@ -1,5 +1,38 @@
 # novelWriter Changelog
 
+## Version 2.4.1 [2024-05-06]
+
+### Release Notes
+
+This is a patch release that fixes a number of minor issues with the Manuscript Build tool. The
+only critical fix is related to a potential crash when deleting a build entry when its settings
+dialog is still open.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue that could crash novelWriter if a build settings entry was deleted from the
+  Manuscript tool while its settings window was open. PR #1845.
+
+**Improvements**
+
+* Changed the font used for the document editor and viewer header and footer from the one used for
+  the document text to the one used for the user interface. Issue #1842. PR #1843.
+* Added a save document step in the editor before running a manuscript build or a preview job. This
+  ensures that the text in the editor is included in the manuscript. Issue #1835. PR #1846.
+* Restore preview panel scroll bar position after updating the preview on the Manuscript tool.
+  Issue #1837. PR #1846.
+* Close all non-modal dialogs when a project is closed. PR #1848.
+
+**Code Improvements**
+
+* Fixed an issue with the Build Settings dialog that blocks the garbage collector from deleting the
+  dialog after it's been closed. PR #1843.
+* Remove some deprecated translation entries from the translation files. PR #1850.
+
+----
+
 ## Version 2.4 [2024-04-20]
 
 ### Release Notes
