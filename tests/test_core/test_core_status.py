@@ -22,12 +22,12 @@ from __future__ import annotations
 
 import pytest
 
-from tools import C
-
 from PyQt5.QtGui import QColor, QIcon
 
 from novelwriter.core.status import NWStatus, StatusEntry, _ShapeCache
 from novelwriter.enum import nwStatusShape
+
+from tests.tools import C
 
 statusKeys = [C.sNew, C.sNote, C.sDraft, C.sFinished]
 importKeys = [C.iNew, C.iMinor, C.iMajor, C.iMain]
@@ -58,8 +58,6 @@ def testCoreStatus_StatusEntry():
     assert other.shape == nwStatusShape.CIRCLE
     assert other.icon is not icon    # Not the same icon, but a copy
     assert other.count == 42
-
-# END Test testCoreStatus_StatusEntry
 
 
 @pytest.mark.core
@@ -116,8 +114,6 @@ def testCoreStatus_Internal(mockGUI, mockRnd):
     assert nImport._checkKey("s654321") == "i00000b"  # Status key not accepted
     assert nImport._checkKey("i123456") == "i123456"  # Import key accepted
 
-# END Test testCoreStatus_Internal
-
 
 @pytest.mark.core
 def testCoreStatus_Iterator(mockGUI, mockRnd):
@@ -161,8 +157,6 @@ def testCoreStatus_Iterator(mockGUI, mockRnd):
 
     # Content : Count
     assert [e.count for _, e in nStatus.iterItems()] == [0, 1, 2, 3]
-
-# END Test testCoreStatus_Iterator
 
 
 @pytest.mark.core
@@ -309,8 +303,6 @@ def testCoreStatus_Entries(mockGUI, mockRnd):
     assert list(nStatus._store.keys()) == [statusKeys[3], statusKeys[2]]
     assert nStatus._default == statusKeys[3]
 
-# END Test testCoreStatus_Entries
-
 
 @pytest.mark.core
 def testCoreStatus_Pack(mockGUI, mockRnd):
@@ -362,8 +354,6 @@ def testCoreStatus_Pack(mockGUI, mockRnd):
         }),
     ]
 
-# END Test testCoreStatus_Pack
-
 
 @pytest.mark.core
 def testCoreStatus_ShapeCache():
@@ -413,5 +403,3 @@ def testCoreStatus_ShapeCache():
     assert shapes.getShape(nwStatusShape.BLOCK_2) is block2
     assert shapes.getShape(nwStatusShape.BLOCK_3) is block3
     assert shapes.getShape(nwStatusShape.BLOCK_4) is block4
-
-# END Test testCoreStatus_ShapeCache

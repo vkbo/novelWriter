@@ -134,8 +134,6 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # qtbot.stop()
 
-# END Test testGuiEditor_Init
-
 
 @pytest.mark.gui
 def testGuiEditor_LoadText(qtbot, nwGUI, projPath, ipsumText, mockRnd):
@@ -167,8 +165,6 @@ def testGuiEditor_LoadText(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.toPlainText() == ""
 
     # qtbot.stop()
-
-# END Test testGuiEditor_LoadText
 
 
 @pytest.mark.gui
@@ -208,8 +204,6 @@ def testGuiEditor_SaveText(qtbot, monkeypatch, caplog, nwGUI, projPath, ipsumTex
     assert docEditor.saveText() is True
 
     # qtbot.stop()
-
-# END Test testGuiEditor_SaveText
 
 
 @pytest.mark.gui
@@ -260,8 +254,6 @@ def testGuiEditor_MetaData(qtbot, nwGUI, projPath, mockRnd):
     assert docEditor._docChanged is True
 
     # qtbot.stop()
-
-# END Test testGuiEditor_MetaData
 
 
 @pytest.mark.gui
@@ -390,8 +382,6 @@ def testGuiEditor_ContextMenu(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
 
     # qtbot.stop()
 
-# END Test testGuiEditor_ContextMenu
-
 
 @pytest.mark.gui
 def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
@@ -473,8 +463,6 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
         ctxMenu.deleteLater()
 
     # qtbot.stop()
-
-# END Test testGuiEditor_SpellChecking
 
 
 @pytest.mark.gui
@@ -767,8 +755,6 @@ def testGuiEditor_Actions(qtbot, nwGUI, projPath, ipsumText, mockRnd):
 
     # qtbot.stop()
 
-# END Test testGuiEditor_Actions
-
 
 @pytest.mark.gui
 def testGuiEditor_ToolBar(qtbot, nwGUI, projPath, mockRnd):
@@ -871,8 +857,6 @@ def testGuiEditor_ToolBar(qtbot, nwGUI, projPath, mockRnd):
 
     # qtbot.stop()
 
-# END Test testGuiEditor_ToolBar
-
 
 @pytest.mark.gui
 def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd):
@@ -973,8 +957,6 @@ def testGuiEditor_Insert(qtbot, monkeypatch, nwGUI, projPath, ipsumText, mockRnd
     )
 
     # qtbot.stop()
-
-# END Test testGuiEditor_Insert
 
 
 @pytest.mark.gui
@@ -1186,8 +1168,6 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.getText() == ""
 
     # qtbot.stop()
-
-# END Test testGuiEditor_TextManipulation
 
 
 @pytest.mark.gui
@@ -1525,8 +1505,6 @@ def testGuiEditor_BlockFormatting(qtbot, monkeypatch, nwGUI, projPath, ipsumText
 
     # qtbot.stop()
 
-# END Test testGuiEditor_BlockFormatting
-
 
 @pytest.mark.gui
 def testGuiEditor_MultiBlockFormatting(qtbot, nwGUI, projPath, ipsumText, mockRnd):
@@ -1599,8 +1577,6 @@ def testGuiEditor_MultiBlockFormatting(qtbot, nwGUI, projPath, ipsumText, mockRn
     assert docEditor.getText() == text
 
     # qtbot.stop()
-
-# END Test testGuiEditor_MultiBlockFormatting
 
 
 @pytest.mark.gui
@@ -1677,8 +1653,6 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor._processTag() is nwTrinary.NEUTRAL
 
     # qtbot.stop()
-
-# END Test testGuiEditor_Tags
 
 
 @pytest.mark.gui
@@ -1779,8 +1753,6 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
 
     # qtbot.stop()
 
-# END Test testGuiEditor_Completer
-
 
 @pytest.mark.gui
 def testGuiEditor_CursorVisibility(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
@@ -1816,8 +1788,6 @@ def testGuiEditor_CursorVisibility(qtbot, monkeypatch, nwGUI, projPath, mockRnd)
     assert docEditor.cursorIsVisible() is True
 
     # qtbot.stop()
-
-# END Test testGuiEditor_CursorVisibility
 
 
 @pytest.mark.gui
@@ -1894,8 +1864,6 @@ def testGuiEditor_WordCounters(qtbot, monkeypatch, nwGUI, projPath, ipsumText, m
     assert docEditor.docFooter.wordsText.text() == f"Words: {wC} selected"
 
     # qtbot.stop()
-
-# END Test testGuiEditor_WordCounters
 
 
 @pytest.mark.gui
@@ -2175,8 +2143,6 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # qtbot.stop()
 
-# END Test testGuiEditor_Search
-
 
 @pytest.mark.gui
 def testGuiEditor_StaticMethods():
@@ -2200,5 +2166,3 @@ def testGuiEditor_StaticMethods():
     assert GuiDocEditor._allowSpaceBeforeColon("%  Synopsis:", ":") is False
     assert GuiDocEditor._allowSpaceBeforeColon("%synopsis :", ":") is True
     assert GuiDocEditor._allowSpaceBeforeColon("%Synopsis :", ":") is True
-
-# END Test testGuiEditor_StaticMethods

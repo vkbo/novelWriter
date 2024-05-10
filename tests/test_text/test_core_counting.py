@@ -71,8 +71,6 @@ def testTextCounting_preProcessText():
         "Dashes and even longer dashes.", ""
     ]
 
-# END Test testTextCounting_preProcessText
-
 
 @pytest.mark.core
 def testTextCounting_standardCounter():
@@ -180,8 +178,6 @@ def testTextCounting_standardCounter():
     assert wC == 14
     assert pC == 2
 
-# END Test testTextCounting_standardCounter
-
 
 @pytest.mark.core
 def testTextCounting_bodyTextCounter():
@@ -207,5 +203,3 @@ def testTextCounting_bodyTextCounter():
     assert wC == 14
     assert cC == 91
     assert sC == 81
-
-# END Test testTextCounting_bodyTextCounter

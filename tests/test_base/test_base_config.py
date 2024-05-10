@@ -21,17 +21,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import sys
-import pytest
 
-from shutil import copyfile
 from pathlib import Path
+from shutil import copyfile
 
-from mocked import causeOSError, MockApp
-from tools import cmpFiles, writeFile
+import pytest
 
 from novelwriter import CONFIG
 from novelwriter.config import Config, RecentProjects
 from novelwriter.constants import nwFiles
+
+from tests.mocked import MockApp, causeOSError
+from tests.tools import cmpFiles, writeFile
 
 
 @pytest.mark.base
@@ -87,8 +88,6 @@ def testBaseConfig_Constructor(monkeypatch):
         mp.setattr("pathlib.Path.is_file", lambda *a: True)
         tstConf = Config()
         assert tstConf._appPath == tstConf._appRoot
-
-# END Test testBaseConfig_Constructor
 
 
 @pytest.mark.base
@@ -153,8 +152,6 @@ def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
     assert newConf.doReplaceDQuote is False
     assert newConf.doReplaceSQuote is False
 
-# END Test testBaseConfig_InitLoadSave
-
 
 @pytest.mark.base
 def testBaseConfig_Localisation(fncPath, tstPaths):
@@ -190,8 +187,6 @@ def testBaseConfig_Localisation(fncPath, tstPaths):
 
     languages = tstConf.listLanguages(tstConf.LANG_NW)
     assert languages == [("en_GB", "British English"), ("fr", "Français")]
-
-# END Test testBaseConfig_Localisation
 
 
 @pytest.mark.base
@@ -236,8 +231,6 @@ def testBaseConfig_Methods(fncPath):
 
     # Recent Projects
     assert isinstance(tstConf.recentProjects, RecentProjects)
-
-# END Test testBaseConfig_Methods
 
 
 @pytest.mark.base
@@ -361,8 +354,6 @@ def testBaseConfig_SettersGetters(fncPath):
     assert tstConf.getTextMargin() == 80
     assert tstConf.getTabWidth() == 80
 
-# END Test testBaseConfig_SettersGetters
-
 
 @pytest.mark.base
 def testBaseConfig_Internal(monkeypatch, fncPath):
@@ -382,8 +373,6 @@ def testBaseConfig_Internal(monkeypatch, fncPath):
         mp.setitem(sys.modules, "enchant", None)
         tstConf._checkOptionalPackages()
         assert tstConf.hasEnchant is False
-
-# END Test testBaseConfig_Internal
 
 
 @pytest.mark.base
@@ -446,5 +435,3 @@ def testBaseConfig_RecentCache(monkeypatch, tstPaths):
     assert recent.listEntries() == [
         (str(pathOne), "Proj One", 100, 1600002000),
     ]
-
-# END Test testBaseConfig_RecentCache

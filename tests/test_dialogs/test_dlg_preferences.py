@@ -22,8 +22,8 @@ from __future__ import annotations
 
 import pytest
 
-from PyQt5.QtGui import QFontDatabase, QKeyEvent
 from PyQt5.QtCore import QEvent, Qt
+from PyQt5.QtGui import QFontDatabase, QKeyEvent
 from PyQt5.QtWidgets import QAction, QFileDialog, QFontDialog
 
 from novelwriter import CONFIG, SHARED
@@ -86,8 +86,6 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
 
     # qtbot.stop()
 
-# END Test testDlgPreferences_Main
-
 
 @pytest.mark.gui
 def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
@@ -147,8 +145,6 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
         assert status.args == [nwConst.DLG_FINISHED]
 
     # qtbot.stop()
-
-# END Test testDlgPreferences_Actions
 
 
 @pytest.mark.gui
@@ -411,5 +407,3 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     assert CONFIG.fmtDQuoteClose == nwUnicode.U_RAQUO
 
     # qtbot.stop()
-
-# END Test testDlgPreferences_Settings

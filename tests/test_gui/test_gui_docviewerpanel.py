@@ -22,14 +22,14 @@ from __future__ import annotations
 
 import pytest
 
-from tools import C, buildTestProject
-
 from PyQt5.QtGui import QIcon
 
 from novelwriter import SHARED
 from novelwriter.constants import nwLists
 from novelwriter.core.item import NWItem
 from novelwriter.dialogs.editlabel import GuiEditLabel
+
+from tests.tools import C, buildTestProject
 
 
 @pytest.mark.gui
@@ -119,8 +119,6 @@ def testGuiViewerPanel_BackRefs(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert nwGUI.docViewer.docHandle == C.hSceneDoc
 
     # qtbot.stop()
-
-# END Test testGuiViewerPanel_BackRefs
 
 
 @pytest.mark.gui
@@ -228,5 +226,3 @@ def testGuiViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mockRnd
     assert charTab.topLevelItemCount() == 1
 
     # qtbot.stop()
-
-# END Test testGuiViewerPanel_Tags

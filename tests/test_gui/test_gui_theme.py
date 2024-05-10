@@ -125,8 +125,6 @@ def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
 
     # qtbot.stop()
 
-# END Test testGuiTheme_Main
-
 
 @pytest.mark.gui
 def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI):
@@ -212,8 +210,6 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI):
 
     # qtbot.stop()
 
-# END Test testGuiTheme_Theme
-
 
 @pytest.mark.gui
 def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI):
@@ -277,8 +273,6 @@ def testGuiTheme_Syntax(qtbot, monkeypatch, nwGUI):
 
     # qtbot.stop()
 
-# END Test testGuiTheme_Syntax
-
 
 @pytest.mark.gui
 def testGuiTheme_IconThemes(qtbot, caplog, monkeypatch, tstPaths):
@@ -324,8 +318,6 @@ def testGuiTheme_IconThemes(qtbot, caplog, monkeypatch, tstPaths):
     assert "add" in iconCache._themeMap
 
     # qtbot.stop()
-
-# END Test testGuiTheme_IconThemes
 
 
 @pytest.mark.gui
@@ -432,8 +424,6 @@ def testGuiTheme_LoadIcons(qtbot):
 
     # qtbot.stop()
 
-# END Test testGuiTheme_LoadIcons
-
 
 @pytest.mark.gui
 def testGuiTheme_LoadDecorations(qtbot, monkeypatch):
@@ -498,5 +488,3 @@ def testGuiTheme_LoadDecorations(qtbot, monkeypatch):
     assert iconCache.getHeaderDecorationNarrow(6)  == iconCache._headerDecNarrow[5]
 
     # qtbot.stop()
-
-# END Test testGuiTheme_LoadDecorations

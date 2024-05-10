@@ -129,8 +129,6 @@ def testCoreToHtml_ConvertHeaders(mockGUI):
     html.doConvert()
     assert html.result == "<h2><a name='0000000000000:T0001'></a>Heading Two</h2>\n"
 
-# END Test testCoreToHtml_ConvertHeaders
-
 
 @pytest.mark.core
 def testCoreToHtml_ConvertParagraphs(mockGUI):
@@ -301,8 +299,6 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
         "text</b> here</p>\n"
     )
 
-# END Test testCoreToHtml_ConvertParagraphs
-
 
 @pytest.mark.core
 def testCoreToHtml_ConvertDirect(mockGUI):
@@ -447,8 +443,6 @@ def testCoreToHtml_ConvertDirect(mockGUI):
         "<p style='margin-right: 40px;'>Some text ...</p>\n"
     )
 
-# END Test testCoreToHtml_ConvertDirect
-
 
 @pytest.mark.core
 def testCoreToHtml_SpecialCases(mockGUI):
@@ -520,8 +514,6 @@ def testCoreToHtml_SpecialCases(mockGUI):
     assert html.result == (
         "<p>Test text **<em>bold</em>** and more.</p>\n"
     )
-
-# END Test testCoreToHtml_SpecialCases
 
 
 @pytest.mark.core
@@ -619,8 +611,6 @@ def testCoreToHtml_Save(mockGUI, fncPath):
     assert data["text"]["css"] == hStyle
     assert len(data["text"]["html"]) == len(resText)
 
-# END Test testCoreToHtml_Save
-
 
 @pytest.mark.core
 def testCoreToHtml_Methods(mockGUI):
@@ -667,8 +657,6 @@ def testCoreToHtml_Methods(mockGUI):
 
     html.setStyles(False)
     assert html.getStyleSheet() == []
-
-# END Test testCoreToHtml_Methods
 
 
 @pytest.mark.core
@@ -726,5 +714,3 @@ def testCoreToHtml_Format(mockGUI):
         "<a class='tag' href='#char=Bod'>Bod</a>, "
         "<a class='tag' href='#char=Jane'>Jane</a>"
     )
-
-# END Test testCoreToHtml_Format

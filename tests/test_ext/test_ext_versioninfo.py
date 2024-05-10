@@ -20,17 +20,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import pytest
-
 from urllib.error import HTTPError
 
-from tools import SimpleDialog
+import pytest
 
 from PyQt5.QtCore import QUrl
 
 from novelwriter import SHARED
 from novelwriter.constants import nwConst
 from novelwriter.extensions.versioninfo import VersionInfoWidget, _Retriever, _RetrieverSignal
+
+from tests.tools import SimpleDialog
 
 
 class MockRetriever:
@@ -120,8 +120,6 @@ def testExtVersionInfo_Main(qtbot, monkeypatch):
     dialog.close()
     # qtbot.stop()
 
-# END Test testExtVersionInfo_Main
-
 
 @pytest.mark.gui
 def testExtVersionInfo_Retriever(qtbot, monkeypatch):
@@ -151,5 +149,3 @@ def testExtVersionInfo_Retriever(qtbot, monkeypatch):
         with qtbot.waitSignal(task.signals.dataReady) as signal:
             task.run()
             assert signal.args == ["", "Oh noes!"]
-
-# END Test testExtVersionInfo_Retriever

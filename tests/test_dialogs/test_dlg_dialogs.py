@@ -23,10 +23,10 @@ from __future__ import annotations
 import pytest
 
 from PyQt5.QtCore import QItemSelectionModel
-from PyQt5.QtWidgets import QListWidgetItem, QDialog
+from PyQt5.QtWidgets import QDialog, QListWidgetItem
 
-from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.dialogs.editlabel import GuiEditLabel
+from novelwriter.dialogs.quotes import GuiQuoteSelect
 
 
 @pytest.mark.gui
@@ -62,8 +62,6 @@ def testDlgOther_QuoteSelect(qtbot, monkeypatch, nwGUI):
 
     # qtbot.stop()
 
-# END Test testDlgOther_QuoteSelect
-
 
 @pytest.mark.gui
 def testDlgOther_EditLabel(qtbot, monkeypatch):
@@ -81,5 +79,3 @@ def testDlgOther_EditLabel(qtbot, monkeypatch):
         newLabel, dlgOk = GuiEditLabel.getLabel(None, text="Hello World")  # type: ignore
         assert dlgOk is False
         assert newLabel == "Hello World"
-
-# END Test testDlgOther_EditLabel

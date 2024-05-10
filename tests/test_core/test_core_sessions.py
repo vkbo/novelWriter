@@ -20,17 +20,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import pytest
-
-from time import sleep
 from pathlib import Path
+from time import sleep
 
-from tools import buildTestProject
-from mocked import causeOSError
+import pytest
 
 from novelwriter.constants import nwFiles
 from novelwriter.core.project import NWProject
 from novelwriter.core.sessions import NWSessionLog
+
+from tests.mocked import causeOSError
+from tests.tools import buildTestProject
 
 
 @pytest.mark.core
@@ -111,5 +111,3 @@ def testCoreSessions_Main(monkeypatch, mockGUI, fncPath):
     with monkeypatch.context() as mp:
         mp.setattr("novelwriter.core.storage.NWStorage.getMetaFile", lambda *a: None)
         assert len(list(sessLog.iterRecords())) == 0
-
-# END Test testCoreSessions_Main

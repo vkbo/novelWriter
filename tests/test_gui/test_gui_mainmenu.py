@@ -24,13 +24,14 @@ import pytest
 
 from PyQt5.QtGui import QTextBlock, QTextCursor
 from PyQt5.QtWidgets import QAction, QFileDialog, QMessageBox
-from tools import C, buildTestProject, writeFile
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.enum import nwDocAction, nwDocInsert
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.types import QtMouseLeft
+
+from tests.tools import C, buildTestProject, writeFile
 
 
 @pytest.mark.gui
@@ -342,8 +343,6 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # qtbot.stop()
 
-# END Test testGuiMenu_EditFormat
-
 
 @pytest.mark.gui
 def testGuiMenu_ContextMenus(qtbot, nwGUI, prjLipsum):
@@ -420,8 +419,6 @@ def testGuiMenu_ContextMenus(qtbot, nwGUI, prjLipsum):
     assert not nwGUI.docViewer.docHeader.forwardButton.isEnabled()
 
     # qtbot.stop()
-
-# END Test testGuiMenu_ContextMenus
 
 
 @pytest.mark.gui
@@ -664,5 +661,3 @@ def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     assert SHARED.lastAlert.endswith(f"File Location: {path}")
 
     # qtbot.stop()
-
-# END Test testGuiMenu_Insert

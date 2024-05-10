@@ -21,12 +21,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import time
-import pytest
 
-from tools import C, buildTestProject
+import pytest
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.extensions.statusled import StatusLED
+
+from tests.tools import C, buildTestProject
 
 
 @pytest.mark.gui
@@ -93,5 +94,3 @@ def testGuiStatusBar_Main(qtbot, nwGUI, projPath, mockRnd):
     assert nwGUI.mainStatus.statsText.text() == "Words: 11 (+11)"
 
     # qtbot.stop()
-
-# END Test testGuiStatusBar_Init

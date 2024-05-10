@@ -20,9 +20,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import pytest
-
 from pathlib import Path
+
+import pytest
 
 from PyQt5.QtWidgets import QAction, QMessageBox
 
@@ -49,8 +49,6 @@ def testDlgAbout_NWDialog(qtbot, monkeypatch, nwGUI):
 
     msgAbout.close()
 
-# END Test testDlgAbout_NWDialog
-
 
 @pytest.mark.gui
 def testDlgAbout_QtDialog(monkeypatch, nwGUI):
@@ -61,5 +59,3 @@ def testDlgAbout_QtDialog(monkeypatch, nwGUI):
     # All it can do is check against a crash
     nwGUI.showAboutQtDialog()
     nwGUI.mainMenu.aAboutQt.activate(QAction.Trigger)
-
-# END Test testDlgAbout_QtDialog

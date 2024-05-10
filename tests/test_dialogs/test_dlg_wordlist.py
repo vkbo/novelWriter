@@ -23,14 +23,14 @@ from __future__ import annotations
 import pytest
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog, QAction, QFileDialog
-
-from tools import buildTestProject
-from mocked import causeOSError
+from PyQt5.QtWidgets import QAction, QDialog, QFileDialog
 
 from novelwriter import SHARED
 from novelwriter.core.spellcheck import UserDictionary
 from novelwriter.dialogs.wordlist import GuiWordList
+
+from tests.mocked import causeOSError
+from tests.tools import buildTestProject
 
 
 @pytest.mark.gui
@@ -161,5 +161,3 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, fncPath, projPath):
     assert "word_i" in userDict
 
     # qtbot.stop()
-
-# END Test testDlgWordList_Dialog

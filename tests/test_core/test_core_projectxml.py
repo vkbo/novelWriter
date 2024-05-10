@@ -246,8 +246,6 @@ def testCoreProjectXML_ReadCurrent(monkeypatch, mockGUI, tstPaths, fncPath):
     copyfile(outFile, tstFile)
     assert cmpFiles(tstFile, refFile)
 
-# END Test testCoreProjectXML_ReadCurrent
-
 
 @pytest.mark.core
 def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockGUI, mockRnd):
@@ -393,8 +391,6 @@ def testCoreProjectXML_ReadLegacy10(tstPaths, fncPath, mockGUI, mockRnd):
     copyfile(outFile, testFile)
     assert cmpFiles(testFile, compFile)
 
-# END Test testCoreProjectXML_ReadLegacy10
-
 
 @pytest.mark.core
 def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockGUI, mockRnd):
@@ -539,8 +535,6 @@ def testCoreProjectXML_ReadLegacy11(tstPaths, fncPath, mockGUI, mockRnd):
     compFile = tstPaths.refDir / "projectXML_ReadLegacy11.nwx"
     copyfile(outFile, testFile)
     assert cmpFiles(testFile, compFile)
-
-# END Test testCoreProjectXML_ReadLegacy11
 
 
 @pytest.mark.core
@@ -690,8 +684,6 @@ def testCoreProjectXML_ReadLegacy12(tstPaths, fncPath, mockGUI, mockRnd):
     copyfile(outFile, testFile)
     assert cmpFiles(testFile, compFile)
 
-# END Test testCoreProjectXML_ReadLegacy12
-
 
 @pytest.mark.core
 def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockGUI, mockRnd):
@@ -839,8 +831,6 @@ def testCoreProjectXML_ReadLegacy13(tstPaths, fncPath, mockGUI, mockRnd):
     compFile = tstPaths.refDir / "projectXML_ReadLegacy13.nwx"
     copyfile(outFile, testFile)
     assert cmpFiles(testFile, compFile)
-
-# END Test testCoreProjectXML_ReadLegacy13
 
 
 @pytest.mark.core
@@ -990,5 +980,3 @@ def testCoreProjectXML_ReadLegacy14(tstPaths, fncPath, mockGUI, mockRnd):
     compFile = tstPaths.refDir / "projectXML_ReadLegacy14.nwx"
     copyfile(outFile, testFile)
     assert cmpFiles(testFile, compFile)
-
-# END Test testCoreProjectXML_ReadLegacy14

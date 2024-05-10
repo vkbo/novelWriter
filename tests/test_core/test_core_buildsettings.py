@@ -21,20 +21,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import json
-import uuid
-import pytest
 import shutil
+import uuid
 
 from pathlib import Path
 
-from novelwriter import CONFIG
-from tools import C, buildTestProject
-from mocked import causeOSError
+import pytest
 
-from novelwriter.enum import nwBuildFmt, nwItemClass
+from novelwriter import CONFIG
 from novelwriter.constants import nwFiles
-from novelwriter.core.project import NWProject
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings, FilterMode
+from novelwriter.core.project import NWProject
+from novelwriter.enum import nwBuildFmt, nwItemClass
+
+from tests.mocked import causeOSError
+from tests.tools import C, buildTestProject
 
 
 def isUUID(value):
@@ -140,8 +141,6 @@ def testCoreBuildSettings_ClassAttributes(fncPath: Path):
     assert more["build"] == "Build Name"
     assert more["format"] == nwBuildFmt.HTML.name
 
-# END Test testCoreBuildSettings_ClassAttributes
-
 
 @pytest.mark.core
 def testCoreBuildSettings_BuildValues():
@@ -215,8 +214,6 @@ def testCoreBuildSettings_BuildValues():
     assert more["settings"][intSetting] == 42
     assert more["settings"][boolSetting] is True
     assert more["settings"][floatSetting] == 2.5
-
-# END Test testCoreBuildSettings_BuildValues
 
 
 @pytest.mark.core
@@ -364,8 +361,6 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
     # No valid project provided
     assert build.buildItemFilter(None) == {}  # type: ignore
 
-# END Test testCoreBuildSettings_Filters
-
 
 @pytest.mark.core
 def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRnd):
@@ -471,5 +466,3 @@ def testCoreBuildSettings_Collection(monkeypatch, mockGUI, fncPath: Path, mockRn
     ]
     assert another.lastBuild == buildIDOne
     assert another.defaultBuild == buildIDTwo
-
-# END Test testCoreBuildSettings_Collection

@@ -84,8 +84,6 @@ def testManuscript_Init(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
 
     # qtbot.stop()
 
-# END Test testManuscript_Init
-
 
 @pytest.mark.gui
 def testManuscript_Builds(qtbot, nwGUI, projPath):
@@ -156,8 +154,6 @@ def testManuscript_Builds(qtbot, nwGUI, projPath):
         assert bSettings.isVisible() is False
 
     # qtbot.stop()
-
-# END Test testManuscript_Builds
 
 
 @pytest.mark.gui
@@ -300,8 +296,6 @@ def testManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     manus.close()
     # qtbot.stop()
 
-# END Test testManuscript_Features
-
 
 @pytest.mark.gui
 @pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Not running on Darwin")
@@ -333,5 +327,3 @@ def testManuscript_Print(monkeypatch, qtbot, nwGUI, projPath):
     # Finish
     manus.close()
     # qtbot.stop()
-
-# END Test testManuscript_Print

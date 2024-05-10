@@ -129,5 +129,3 @@ def testGuiDocSearch_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # qtbot.stop()
     nwGUI.closeProject()
-
-# END Test testGuiDocSearch_Main

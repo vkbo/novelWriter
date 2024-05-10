@@ -107,8 +107,6 @@ def testBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
     bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
     # qtbot.stop()
 
-# END Test testBuildSettings_Init
-
 
 @pytest.mark.gui
 def testBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
@@ -313,8 +311,6 @@ def testBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
     # qtbot.stop()
 
-# END Test testBuildSettings_Filter
-
 
 @pytest.mark.gui
 def testBuildSettings_Headings(qtbot, nwGUI):
@@ -485,8 +481,6 @@ def testBuildSettings_Headings(qtbot, nwGUI):
     bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
     # qtbot.stop()
 
-# END Test testBuildSettings_Headings
-
 
 @pytest.mark.gui
 def testBuildSettings_Content(qtbot, nwGUI):
@@ -546,8 +540,6 @@ def testBuildSettings_Content(qtbot, nwGUI):
     # Finish
     bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
     # qtbot.stop()
-
-# END Test testBuildSettings_Content
 
 
 @pytest.mark.gui
@@ -661,8 +653,6 @@ def testBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
     # qtbot.stop()
 
-# END Test testBuildSettings_Format
-
 
 @pytest.mark.gui
 def testBuildSettings_Output(qtbot, nwGUI):
@@ -716,5 +706,3 @@ def testBuildSettings_Output(qtbot, nwGUI):
     # Finish
     bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
     # qtbot.stop()
-
-# END Test testBuildSettings_Output

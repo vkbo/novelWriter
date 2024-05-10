@@ -22,12 +22,12 @@ from __future__ import annotations
 
 import pytest
 
-from tools import C, buildTestProject
-
 from PyQt5.QtWidgets import QAction
 
 from novelwriter import SHARED
 from novelwriter.tools.lipsum import GuiLipsum
+
+from tests.tools import C, buildTestProject
 
 
 @pytest.mark.gui
@@ -66,5 +66,3 @@ def testToolLipsum_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         assert nwGUI.docEditor.getText() == "### New Scene\n\nFooBar"
 
     # qtbot.stop()
-
-# END Test testToolLipsum_Main

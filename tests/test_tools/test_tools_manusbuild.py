@@ -20,16 +20,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import pytest
-
 from pathlib import Path
-from pytestqt.qtbot import QtBot
 
-from tools import buildTestProject
+import pytest
 
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QFileDialog, QListWidgetItem, QMessageBox
+from pytestqt.qtbot import QtBot
 
 from novelwriter.constants import nwLabels
 from novelwriter.core.buildsettings import BuildSettings
@@ -37,6 +35,8 @@ from novelwriter.enum import nwBuildFmt
 from novelwriter.guimain import GuiMain
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.types import QtDialogClose
+
+from tests.tools import buildTestProject
 
 
 @pytest.mark.gui
@@ -152,5 +152,3 @@ def testManuscriptBuild_Main(
     # Finish
     manus._dialogButtonClicked(manus.dlgButtons.button(QtDialogClose))
     # qtbot.stop()
-
-# END Test testManuscriptBuild_Main

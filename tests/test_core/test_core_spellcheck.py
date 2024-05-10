@@ -21,17 +21,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import sys
-import pytest
-import enchant
 
 from pathlib import Path
 
-from tools import buildTestProject
-from mocked import causeOSError
+import enchant
+import pytest
 
 from novelwriter.constants import nwFiles
 from novelwriter.core.project import NWProject
 from novelwriter.core.spellcheck import FakeEnchant, NWSpellEnchant, UserDictionary
+
+from tests.mocked import causeOSError
+from tests.tools import buildTestProject
 
 
 @pytest.mark.core
@@ -102,8 +103,6 @@ def testCoreSpell_UserDictionary(monkeypatch, mockGUI, fncPath):
     userDict.load()
     assert sorted(userDict) == ["bar", "foo"]
 
-# END Test testCoreSpell_UserDictionary
-
 
 @pytest.mark.core
 def testCoreSpell_FakeEnchant(monkeypatch, mockGUI, fncPath):
@@ -136,8 +135,6 @@ def testCoreSpell_FakeEnchant(monkeypatch, mockGUI, fncPath):
     assert fkChk.check("whatchamajig") is True
     assert fkChk.suggest("whatchamajig") == []
     assert fkChk.add_to_session("whatchamajig") is None
-
-# END Test testCoreSpell_FakeEnchant
 
 
 @pytest.mark.core
@@ -189,5 +186,3 @@ def testCoreSpell_Enchant(monkeypatch, mockGUI, fncPath):
         mp.setattr("enchant.Broker.request_dict", lambda *a: None)
         spChk.setLanguage("en_US")
         assert isinstance(spChk._enchant, FakeEnchant)
-
-# END Test testCoreSpell_Enchant

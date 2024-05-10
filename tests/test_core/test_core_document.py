@@ -22,12 +22,12 @@ from __future__ import annotations
 
 import pytest
 
-from tools import C, MOCK_TIME, buildTestProject, readFile, writeFile
-from mocked import causeOSError
-
-from novelwriter.enum import nwItemClass, nwItemLayout
-from novelwriter.core.project import NWProject
 from novelwriter.core.document import NWDocument
+from novelwriter.core.project import NWProject
+from novelwriter.enum import nwItemClass, nwItemLayout
+
+from tests.mocked import causeOSError
+from tests.tools import MOCK_TIME, C, buildTestProject, readFile, writeFile
 
 
 @pytest.mark.core
@@ -189,8 +189,6 @@ def testCoreDocument_LoadSave(monkeypatch, mockGUI, fncPath, mockRnd):
     assert doc.deleteDocument() is True
     assert not docPath.exists()
 
-# END Test testCoreDocument_Load
-
 
 @pytest.mark.core
 def testCoreDocument_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
@@ -234,5 +232,3 @@ def testCoreDocument_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     )
 
     assert doc.readDocument() == "### Test File\n\nText ...\n\n"
-
-# END Test testCoreDocument_Methods

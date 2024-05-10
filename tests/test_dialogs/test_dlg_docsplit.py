@@ -22,11 +22,11 @@ from __future__ import annotations
 
 import pytest
 
-from tools import C, buildTestProject
-
 from novelwriter import SHARED
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
+
+from tests.tools import C, buildTestProject
 
 
 @pytest.mark.gui
@@ -98,5 +98,3 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     nwSplit.reject()
     # qtbot.stop()
-
-# END Test testDlgSplit_Main

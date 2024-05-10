@@ -22,9 +22,9 @@ from __future__ import annotations
 
 import pytest
 
-from mocked import causeException
-
 from novelwriter.error import NWErrorMessage, exceptionHandler
+
+from tests.mocked import causeException
 
 
 @pytest.mark.base
@@ -61,8 +61,6 @@ def testBaseError_Dialog(qtbot, monkeypatch, nwGUI):
     nwErr.close()
     nwGUI.closeMain()
 
-# END Test testBaseError_Dialog
-
 
 @pytest.mark.base
 def testBaseError_Handler(qtbot, monkeypatch, nwGUI):
@@ -98,5 +96,3 @@ def testBaseError_Handler(qtbot, monkeypatch, nwGUI):
         exceptionHandler(Exception, "Error Message", None)  # type: ignore
 
     nwGUI.closeMain()
-
-# END Test testBaseError_Handler

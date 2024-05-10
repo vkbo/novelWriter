@@ -20,25 +20,25 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import pytest
-
 from shutil import copyfile
 from zipfile import ZipFile
 
-from mocked import causeOSError
-from tools import C, cmpFiles, buildTestProject, XML_IGNORE
+import pytest
 
 from PyQt5.QtWidgets import QMessageBox
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwItemClass
 from novelwriter.constants import nwFiles
-from novelwriter.core.item import NWItem
-from novelwriter.core.tree import NWTree
 from novelwriter.core.index import NWIndex
-from novelwriter.core.project import NWProject, NWProjectState
+from novelwriter.core.item import NWItem
 from novelwriter.core.options import OptionState
+from novelwriter.core.project import NWProject, NWProjectState
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLReadState
+from novelwriter.core.tree import NWTree
+from novelwriter.enum import nwItemClass
+
+from tests.mocked import causeOSError
+from tests.tools import XML_IGNORE, C, buildTestProject, cmpFiles
 
 
 @pytest.mark.core
@@ -87,8 +87,6 @@ def testCoreProject_NewRoot(fncPath, tstPaths, mockGUI, mockRnd):
     assert "0000000000015" not in project.tree
     assert "0000000000016" not in project.tree
     assert "0000000000017" not in project.tree
-
-# END Test testCoreProject_NewRoot
 
 
 @pytest.mark.core
@@ -191,8 +189,6 @@ def testCoreProject_NewFileFolder(monkeypatch, fncPath, tstPaths, mockGUI, mockR
     assert dHandle not in project.tree
 
     project.closeProject()
-
-# END Test testCoreProject_NewFileFolder
 
 
 @pytest.mark.core
@@ -302,8 +298,6 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
 
     project.closeProject()
 
-# END Test testCoreProject_Open
-
 
 @pytest.mark.core
 def testCoreProject_Save(monkeypatch, mockGUI, mockRnd, fncPath):
@@ -330,8 +324,6 @@ def testCoreProject_Save(monkeypatch, mockGUI, mockRnd, fncPath):
     assert project.saveProject(autoSave=False) is True
     assert project.saveProject(autoSave=True) is True
     project.closeProject()
-
-# END Test testCoreProject_Save
 
 
 @pytest.mark.core
@@ -396,8 +388,6 @@ def testCoreProject_AccessItems(mockGUI, fncPath, mockRnd):
         C.hSceneDoc,
     ]
     assert nItem.itemParent is None
-
-# END Test testCoreProject_AccessItems
 
 
 @pytest.mark.core
@@ -507,8 +497,6 @@ def testCoreProject_Methods(monkeypatch, mockGUI, fncPath, mockRnd):
     project.setTreeOrder(oldOrder)
     assert project.tree.handles() == oldOrder
 
-# END Test testCoreProject_Methods
-
 
 @pytest.mark.core
 def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tstPaths):
@@ -566,5 +554,3 @@ def testCoreProject_Backup(monkeypatch, mockGUI, fncPath, tstPaths):
         fncPath / "nwProject.nwx",
         tstPaths.tmpDir / "extract" / "nwProject.nwx"
     )
-
-# END Test testCoreProject_Backup

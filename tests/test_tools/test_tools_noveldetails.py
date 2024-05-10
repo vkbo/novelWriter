@@ -130,5 +130,3 @@ def testToolNovelDetails_Main(qtbot, nwGUI, prjLipsum, ipsumText):
 
     # qtbot.stop()
     details.close()
-
-# END Test testToolNovelDetails_Main

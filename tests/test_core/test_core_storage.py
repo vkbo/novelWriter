@@ -21,20 +21,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import json
-import pytest
 
 from pathlib import Path
 from zipfile import ZipFile
 
-from mocked import causeOSError
-from tools import C, buildTestProject
+import pytest
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwFiles
 from novelwriter.core.document import NWDocument
 from novelwriter.core.project import NWProject
 from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter
-from novelwriter.core.storage import NWStorage, NWStorageOpen, NWStorageCreate, _LegacyStorage
+from novelwriter.core.storage import NWStorage, NWStorageCreate, NWStorageOpen, _LegacyStorage
+
+from tests.mocked import causeOSError
+from tests.tools import C, buildTestProject
 
 
 class MockProject:
@@ -81,8 +82,6 @@ def testCoreStorage_CreateNewProject(mockGUI, fncPath):
     assert isinstance(storage.exc, FileNotFoundError)
 
     project.closeProject()
-
-# END Test testCoreStorage_CreateNewProject
 
 
 @pytest.mark.core
@@ -163,8 +162,6 @@ def testCoreStorage_InitProjectStorage(monkeypatch, mockGUI, fncPath, mockRnd):
 
     project.closeProject()
 
-# END Test testCoreStorage_InitProjectStorage
-
 
 @pytest.mark.core
 def testCoreStorage_InitProjectStorage_Invalid(mockGUI, fncPath):
@@ -201,8 +198,6 @@ def testCoreStorage_InitProjectStorage_Invalid(mockGUI, fncPath):
     assert storage.initProjectStorage(fncPath) == NWStorageOpen.FAILED
 
     project.closeProject()
-
-# END Test testCoreStorage_InitProjectStorage_Invalid
 
 
 @pytest.mark.core
@@ -265,8 +260,6 @@ def testCoreStorage_LockFile(monkeypatch, fncPath):
     assert storage._clearLockFile() is True
     assert not lockFilePath.exists()
 
-# END Test testCoreStorage_LockFile
-
 
 @pytest.mark.core
 def testCoreStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
@@ -300,8 +293,6 @@ def testCoreStorage_ZipIt(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd):
         assert f"content/{C.hSceneDoc}.nwd" in names
 
     project.closeProject()
-
-# END Test testCoreStorage_ZipIt
 
 
 @pytest.mark.core
@@ -369,8 +360,6 @@ def testCoreStorage_LegacyDataFolder(monkeypatch, fncPath):
     for c in "0123456789abcdef":
         assert (fncPath / "content" / f"{c}00000000000{c}.nwd").exists()
 
-# END Test testCoreStorage_LegacyDataFolder
-
 
 @pytest.mark.core
 def testCoreStorage_DeprecatedFiles(monkeypatch, fncPath):
@@ -411,8 +400,6 @@ def testCoreStorage_DeprecatedFiles(monkeypatch, fncPath):
     legacy.deprecatedFiles(fncPath)
     for depFile in remove:
         assert not depFile.exists()
-
-# END Test testCoreStorage_DeprecatedFiles
 
 
 @pytest.mark.core
@@ -529,5 +516,3 @@ def testCoreStorage_OldFormatConvert(monkeypatch, mockGUI, fncPath):
         "LABEL": [False, 267],
         "LINE": [True, 40]
     }
-
-# END Test testCoreStorage_OldFormatConvert
