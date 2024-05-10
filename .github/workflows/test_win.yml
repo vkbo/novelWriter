@@ -26,7 +26,7 @@ jobs:
           pip install -U -r requirements.txt -r tests/requirements.txt
       - name: Run Tests
         run: |
-          pytest -v --cov=novelwriter --timeout=60
+          python -m pytest -v --cov=novelwriter --timeout=60
       - name: Upload to Codecov
         uses: codecov/codecov-action@v4
         env:

@@ -30,12 +30,12 @@ import pytest
 
 from PyQt5.QtWidgets import QMessageBox
 
-from tests.mocked import MockGuiMain, MockTheme
-from tests.tools import cleanProject
-
 sys.path.insert(1, str(Path(__file__).parent.parent.absolute()))
 
 from novelwriter import CONFIG, SHARED, main  # noqa: E402
+
+from tests.mocked import MockGuiMain, MockTheme  # noqa: E402
+from tests.tools import cleanProject  # noqa: E402
 
 _TST_ROOT = Path(__file__).parent
 _TMP_ROOT = _TST_ROOT / "temp"
