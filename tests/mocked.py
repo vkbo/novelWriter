@@ -23,10 +23,10 @@ from __future__ import annotations
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget
 
-
 # =========================================================================== #
 #  Mock GUI
 # =========================================================================== #
+
 
 class MockGuiMain(QWidget):
 
@@ -55,8 +55,6 @@ class MockGuiMain(QWidget):
     def close(self):
         return "close"
 
-# END Class MockGuiMain
-
 
 class MockStatusBar:
 
@@ -69,8 +67,6 @@ class MockStatusBar:
     def updateProjectStatus(self, status):
         return
 
-# END Class MockStatusBar
-
 
 class MockTheme:
 
@@ -81,8 +77,6 @@ class MockTheme:
     def getPixmap(self, *a):
         return QPixmap()
 
-# END Class MockTheme
-
 
 class MockApp:
 
@@ -91,8 +85,6 @@ class MockApp:
 
     def installTranslator(self, language):
         return
-
-# END Class MockApp
 
 
 # =========================================================================== #

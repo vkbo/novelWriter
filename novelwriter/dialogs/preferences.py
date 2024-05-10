@@ -962,5 +962,3 @@ class GuiPreferences(QDialog):
         self.newPreferencesReady.emit(needsRestart, refreshTree, updateTheme, updateSyntax)
 
         return
-
-# END Class GuiPreferences

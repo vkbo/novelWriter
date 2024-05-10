@@ -60,8 +60,6 @@ class nwConst:
     # Dialogs
     DLG_FINISHED = 2
 
-# END Class nwConst
-
 
 class nwRegEx:
 
@@ -70,8 +68,6 @@ class nwRegEx:
     FMT_ST = r"(?<![\w\\])([~]{2})(?![\s~])(.+?)(?<![\s\\])(\1)(?!\w)"
     FMT_SC = r"(?i)(?<!\\)(\[[\/\!]?(?:i|b|s|u|m|sup|sub)\])"
     FMT_SV = r"(?<!\\)(\[(?i)(?:footnote):)(.+?)(?<!\\)(\])"
-
-# END Class nwRegEx
 
 
 class nwShortcode:
@@ -98,15 +94,11 @@ class nwShortcode:
         nwComment.COMMENT:  "[comment:{0}]",
     }
 
-# END Class nwShortcode
-
 
 class nwHeaders:
 
     H_VALID = ("H0", "H1", "H2", "H3", "H4")
     H_LEVEL = {"H0": 0, "H1": 1, "H2": 2, "H3": 3, "H4": 4}
-
-# END Class nwHeaders
 
 
 class nwFiles:
@@ -126,8 +118,6 @@ class nwFiles:
     OPTS_FILE   = "options.json"
     DICT_FILE   = "userdict.json"
     SESS_FILE   = "sessions.jsonl"
-
-# END Class nwFiles
 
 
 class nwKeyWords:
@@ -162,8 +152,6 @@ class nwKeyWords:
         CUSTOM_KEY: nwItemClass.CUSTOM,
     }
 
-# END Class nwKeyWords
-
 
 class nwLists:
 
@@ -176,8 +164,6 @@ class nwLists:
         nwItemClass.ENTITY,
         nwItemClass.CUSTOM,
     ]
-
-# END Class nwLists
 
 
 class nwLabels:
@@ -339,8 +325,6 @@ class nwLabels:
         "Custom": (-1.0, -1.0),
     }
 
-# END Class nwLabels
-
 
 class nwHeadFmt:
 
@@ -365,8 +349,6 @@ class nwHeadFmt:
     ODT_AUTHOR = "{Author}"
     ODT_PAGE = "{Page}"
     ODT_AUTO = "{Project} / {Author} / {Page}"
-
-# END Class nwHeadFmt
 
 
 class nwQuotes:
@@ -397,8 +379,6 @@ class nwQuotes:
         "\u300e": QT_TRANSLATE_NOOP("Constant", "Left white corner bracket"),
         "\u300f": QT_TRANSLATE_NOOP("Constant", "Right white corner bracket"),
     }
-
-# END Class nwQuotes
 
 
 class nwUnicode:
@@ -534,8 +514,6 @@ class nwUnicode:
     H_LTRI   = "&#9664;"
     H_LTRIS  = "&#9666;"
 
-# END Class nwUnicode
-
 
 class nwHtmlUnicode():
 
@@ -591,5 +569,3 @@ class nwHtmlUnicode():
         nwUnicode.U_TIMES:  nwUnicode.H_TIMES,
         nwUnicode.U_DIVIDE: nwUnicode.H_DIVIDE,
     }
-
-# END Class nwHtmlUnicode

@@ -264,5 +264,3 @@ class GuiDictionaries(NNonBlockingDialog):
         cursor.deleteChar()
         self.infoBox.setTextCursor(cursor)
         return
-
-# END Class GuiDictionaries

@@ -24,8 +24,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtGui import QStatusTipEvent, QWheelEvent
 from PyQt5.QtCore import QEvent, QObject
+from PyQt5.QtGui import QStatusTipEvent, QWheelEvent
 from PyQt5.QtWidgets import QWidget
 
 
@@ -63,13 +63,9 @@ class WheelEventFilter(QObject):
             self._locked = False
         return False
 
-# END Class WheelEventFilter
-
 
 class StatusTipFilter(QObject):
 
     def eventFilter(self, obj: QObject, event: QEvent) -> bool:
         """Filter out status tip events on menus."""
         return True if isinstance(event, QStatusTipEvent) else super().eventFilter(obj, event)
-
-# END Class StatusTipFilter

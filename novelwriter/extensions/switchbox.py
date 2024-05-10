@@ -23,8 +23,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QGridLayout, QLabel, QScrollArea, QWidget
 
 from novelwriter.extensions.switch import NSwitch
@@ -127,5 +127,3 @@ class NSwitchBox(QScrollArea):
         self._content.setRowStretch(self._index + 1, 1)
         self._index += 1
         return
-
-# END Class NSwitchBox

@@ -23,8 +23,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import uuid
 import logging
+import uuid
 
 from typing import TYPE_CHECKING, Any
 
@@ -322,5 +322,3 @@ class NWProjectData:
                     self._autoReplace[key] = simplified(entry)
             self._project.setProjectChanged(True)
         return
-
-# END Class NWProjectData

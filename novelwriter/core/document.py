@@ -26,14 +26,14 @@ from __future__ import annotations
 import hashlib
 import logging
 
+from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING
-from pathlib import Path
 
-from novelwriter.enum import nwItemLayout, nwItemClass
-from novelwriter.error import formatException, logException
 from novelwriter.common import formatTimeStamp, isHandle
 from novelwriter.core.item import NWItem
+from novelwriter.enum import nwItemClass, nwItemLayout
+from novelwriter.error import formatException, logException
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.project import NWProject
@@ -359,5 +359,3 @@ class NWDocument:
             logger.debug("Unknown meta data: '%s'", metaLine.strip())
 
         return
-
-# END Class NWDocument

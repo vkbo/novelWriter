@@ -32,7 +32,7 @@ from collections.abc import Iterable
 from typing import TYPE_CHECKING, Literal
 
 from PyQt5.QtCore import QPointF, Qt
-from PyQt5.QtGui import QIcon, QPainter, QPainterPath, QPixmap, QColor, QPolygonF
+from PyQt5.QtGui import QColor, QIcon, QPainter, QPainterPath, QPixmap, QPolygonF
 
 from novelwriter import SHARED
 from novelwriter.common import simplified
@@ -61,8 +61,6 @@ class StatusEntry:
         cls.color = QColor(source.color)
         cls.icon = QIcon(source.icon)
         return cls
-
-# END Class StatusEntry
 
 
 NO_ENTRY = StatusEntry("", QColor(0, 0, 0), nwStatusShape.SQUARE, QIcon(), 0)
@@ -221,8 +219,6 @@ class NWStatus:
         """Check key is valid, and if not, generate one."""
         return key if self._isKey(key) else self._newKey()
 
-# END Class NWStatus
-
 
 class _ShapeCache:
 
@@ -328,8 +324,6 @@ class _ShapeCache:
         self._cache[shape] = path
 
         return path
-
-# END Class _ShapeCache
 
 
 # Create Singleton

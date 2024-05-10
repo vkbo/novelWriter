@@ -1045,8 +1045,6 @@ class Tokenizer(ABC):
 
         return result, formats
 
-# END Class Tokenizer
-
 
 class HeadingFormatter:
 
@@ -1116,5 +1114,3 @@ class HeadingFormatter:
             hFormat = hFormat.replace(nwHeadFmt.CHAR_FOCUS, fText)
 
         return hFormat
-
-# END Class HeadingFormatter

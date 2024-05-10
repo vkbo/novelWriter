@@ -152,5 +152,3 @@ class GuiAbout(NNonBlockingDialog):
             f"QTextBrowser {{border: none; background: {baseCol};}} "
         )
         return
-
-# END Class GuiAbout

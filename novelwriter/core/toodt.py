@@ -1079,8 +1079,6 @@ class ToOdt(Tokenizer):
 
         return
 
-# END Class ToOdt
-
 
 # =============================================================================================== #
 #  Auto-Style Classes
@@ -1332,8 +1330,6 @@ class ODTParagraphStyle:
 
         return
 
-# END Class ODTParagraphStyle
-
 
 class ODTTextStyle:
     """Wrapper class for the text style setting used by the exporter.
@@ -1457,13 +1453,10 @@ class ODTTextStyle:
             ET.SubElement(xEntry, _mkTag("style", "text-properties"), attrib=attr)
         return
 
-# END Class ODTTextStyle
-
 
 # =============================================================================================== #
 #  XML Complex Element Helper Class
 # =============================================================================================== #
-
 X_ROOT_TEXT = 0
 X_ROOT_TAIL = 1
 X_SPAN_TEXT = 2
@@ -1661,5 +1654,3 @@ class XMLParagraph:
                 self._chrPos += nSpaces - 1
 
         return
-
-# END Class XMLParagraph

@@ -403,5 +403,3 @@ class GuiManuscriptBuild(QDialog):
         """Open the build folder in the system's file explorer."""
         openExternalPath(Path(self.buildPath.text()))
         return
-
-# END Class GuiManuscriptBuild

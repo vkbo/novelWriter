@@ -27,7 +27,7 @@ import logging
 
 from typing import Literal
 
-from PyQt5.QtGui import QColor, QPaintEvent, QPainter
+from PyQt5.QtGui import QColor, QPainter, QPaintEvent
 from PyQt5.QtWidgets import QAbstractButton, QWidget
 
 from novelwriter.types import QtPaintAnitAlias
@@ -75,5 +75,3 @@ class StatusLED(QAbstractButton):
         painter.setOpacity(1.0)
         painter.drawEllipse(1, 1, self.width() - 2, self.height() - 2)
         return
-
-# END Class StatusLED

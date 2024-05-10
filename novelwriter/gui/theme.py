@@ -795,8 +795,6 @@ class GuiIcons:
 
         return self._noIcon
 
-# END Class GuiIcons
-
 
 # =============================================================================================== #
 #  Module Functions

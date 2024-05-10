@@ -405,5 +405,3 @@ class NWBuildDocument:
                 return False
 
         return True
-
-# END Class NWBuildDocument

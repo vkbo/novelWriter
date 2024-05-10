@@ -34,8 +34,8 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.configlayout import NColourLabel
+from novelwriter.extensions.switch import NSwitch
 from novelwriter.types import QtDialogCancel, QtDialogOk, QtDialogReset, QtUserRole
 
 logger = logging.getLogger(__name__)
@@ -182,5 +182,3 @@ class GuiDocMerge(QDialog):
             self.listBox.addItem(newItem)
 
         return
-
-# END Class GuiDocMerge

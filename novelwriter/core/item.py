@@ -29,11 +29,12 @@ from typing import TYPE_CHECKING, Any
 
 from PyQt5.QtGui import QIcon
 
-from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
 from novelwriter.common import (
-    checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified, yesNo
+    checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified,
+    yesNo
 )
 from novelwriter.constants import nwHeaders, nwLabels, trConst
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.project import NWProject
@@ -557,5 +558,3 @@ class NWItem:
         """Save the initial word count."""
         self._initCount = self._wordCount
         return
-
-# END Class NWItem

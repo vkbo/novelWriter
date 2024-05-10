@@ -221,8 +221,6 @@ class GuiDocViewerPanel(QWidget):
                 self.kwTabs[tClass].addUpdateEntry(key, name, iItem, hItem)
         return
 
-# END Class GuiDocViewerPanel
-
 
 class _ViewPanelBackRefs(QTreeWidget):
 
@@ -359,8 +357,6 @@ class _ViewPanelBackRefs(QTreeWidget):
                 self._treeMap[tKey] = trItem
 
         return
-
-# END Class _ViewPanelBackRefs
 
 
 class _ViewPanelKeyWords(QTreeWidget):
@@ -528,5 +524,3 @@ class _ViewPanelKeyWords(QTreeWidget):
         if index.column() not in (self.C_EDIT, self.C_VIEW):
             self._parent.loadDocumentTagRequest.emit(tag, nwDocMode.VIEW)
         return
-
-# END Class _ViewPanelKeyWords

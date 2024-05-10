@@ -27,8 +27,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtGui import QColor, QFont, QPalette
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QColor, QFont, QPalette
 from PyQt5.QtWidgets import (
     QAbstractButton, QFrame, QHBoxLayout, QLabel, QLayout, QScrollArea,
     QVBoxLayout, QWidget
@@ -64,8 +64,6 @@ class NFixedPage(QFrame):
         self.setLayout(layout)
         return
 
-# END Class NFixedPage
-
 
 class NScrollablePage(QScrollArea):
     """Extension: Scrollable Page Widget
@@ -88,8 +86,6 @@ class NScrollablePage(QScrollArea):
         """Set the central layout of the scroll page."""
         self._widget.setLayout(layout)
         return
-
-# END Class NScrollablePage
 
 
 class NScrollableForm(QScrollArea):
@@ -235,8 +231,6 @@ class NScrollableForm(QScrollArea):
         self._layout.addStretch(1)
         return
 
-# END Class NScrollableForm
-
 
 class NColourLabel(QLabel):
     """Extension: A Coloured Label
@@ -267,8 +261,6 @@ class NColourLabel(QLabel):
 
         return
 
-# END Class NColourLabel
-
 
 class NWrappedWidgetBox(QHBoxLayout):
     """Extension: A Text-Wrapped Widget Box
@@ -287,5 +279,3 @@ class NWrappedWidgetBox(QHBoxLayout):
         if after:
             self.addWidget(QLabel(after.lstrip()))
         return
-
-# END Class NWrappedWidgetBox

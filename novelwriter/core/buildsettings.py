@@ -488,8 +488,6 @@ class BuildSettings:
 
         return
 
-# END Class BuildSettings
-
 
 class BuildCollection:
     """Core: Build Collection Class
@@ -637,5 +635,3 @@ class BuildCollection:
             return False
 
         return True
-
-# END Class BuildCollection

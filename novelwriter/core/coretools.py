@@ -129,8 +129,6 @@ class DocMerger:
 
         return status
 
-# END Class DocMerger
-
 
 class DocSplitter:
     """Document tool for splitting a document into a set of new
@@ -257,8 +255,6 @@ class DocSplitter:
 
         return
 
-# END Class DocSplitter
-
 
 class DocDuplicator:
     """A class that will duplicate all documents and folders starting
@@ -296,8 +292,6 @@ class DocDuplicator:
                 yield newItem.itemHandle, nHandle
                 nHandle = None
         return
-
-# END Class DocDuplicator
 
 
 class DocSearch:
@@ -374,8 +368,6 @@ class DocSearch:
         if self._words:
             search = f"(?:^|\\b){search}(?:$|\\b)"
         return search
-
-# END Class DocSearch
 
 
 class ProjectBuilder:
@@ -609,5 +601,3 @@ class ProjectBuilder:
             return False
 
         return True
-
-# END Class ProjectBuilder

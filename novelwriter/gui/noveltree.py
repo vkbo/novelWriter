@@ -185,8 +185,6 @@ class GuiNovelView(QWidget):
         self.novelTree.refreshHandle(tHandle)
         return
 
-# END Class GuiNovelView
-
 
 class GuiNovelToolBar(QWidget):
 
@@ -348,8 +346,6 @@ class GuiNovelToolBar(QWidget):
         aLast.triggered.connect(lambda: self.setLastColType(colType))
         self.aLastCol[colType] = aLast
         return
-
-# END Class GuiNovelToolBar
 
 
 class GuiNovelTree(QTreeWidget):
@@ -778,5 +774,3 @@ class GuiNovelTree(QTreeWidget):
         if tags:
             lines.append(f"<b>{trConst(nwLabels.KEY_NAME[key])}</b>: {tags}")
         return lines
-
-# END Class GuiNovelTree

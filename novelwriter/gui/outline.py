@@ -30,10 +30,10 @@ from __future__ import annotations
 import csv
 import logging
 
-from time import time
 from enum import Enum
+from time import time
 
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QT_TRANSLATE_NOOP
+from PyQt5.QtCore import QT_TRANSLATE_NOOP, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QAbstractItemView, QAction, QFileDialog, QFrame, QGridLayout, QGroupBox,
     QHBoxLayout, QLabel, QMenu, QScrollArea, QSplitter, QToolBar, QToolButton,
@@ -41,17 +41,16 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.common import checkInt, formatFileFilter, makeFileNameSafe
+from novelwriter.constants import nwHeaders, nwKeyWords, nwLabels, trConst
 from novelwriter.enum import nwDocMode, nwItemClass, nwItemLayout, nwItemType, nwOutline
 from novelwriter.error import logException
-from novelwriter.common import checkInt, formatFileFilter, makeFileNameSafe
-from novelwriter.constants import nwHeaders, trConst, nwKeyWords, nwLabels
 from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.types import (
     QtAlignLeftTop, QtAlignRight, QtAlignRightTop, QtDecoration,
     QtSizeExpanding, QtUserRole
 )
-
 
 logger = logging.getLogger(__name__)
 
@@ -195,8 +194,6 @@ class GuiOutlineView(QWidget):
         self.outlineTree.refreshTree(rootHandle=(tHandle or None), overRide=True)
         return
 
-# END Class GuiOutlineView
-
 
 class GuiOutlineToolBar(QToolBar):
 
@@ -309,8 +306,6 @@ class GuiOutlineToolBar(QToolBar):
         """Emit a signal that an export of the outline was requested."""
         self.outlineExportRequest.emit()
         return
-
-# END Class GuiOutlineToolBar
 
 
 class GuiOutlineTree(QTreeWidget):
@@ -727,8 +722,6 @@ class GuiOutlineTree(QTreeWidget):
 
         return
 
-# END Class GuiOutlineTree
-
 
 class GuiOutlineHeaderMenu(QMenu):
 
@@ -770,8 +763,6 @@ class GuiOutlineHeaderMenu(QMenu):
         self.acceptToggle = True
 
         return
-
-# END Class GuiOutlineHeaderMenu
 
 
 class GuiOutlineDetails(QScrollArea):
@@ -1103,5 +1094,3 @@ class GuiOutlineDetails(QScrollArea):
         return ", ".join(
             [f"<a href='{tag}'>{tag}</a>" for tag in refs.get(key, [])]
         )
-
-# END Class GuiOutlineDetails

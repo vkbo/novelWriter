@@ -23,12 +23,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtGui import QMouseEvent, QPainter, QPaintEvent, QResizeEvent
 from PyQt5.QtCore import QEvent, QPropertyAnimation, Qt, pyqtProperty
+from PyQt5.QtGui import QMouseEvent, QPainter, QPaintEvent, QResizeEvent
 from PyQt5.QtWidgets import QAbstractButton, QWidget
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.types import QtPaintAnitAlias, QtMouseLeft, QtNoPen, QtSizeFixed
+from novelwriter.types import QtMouseLeft, QtNoPen, QtPaintAnitAlias, QtSizeFixed
 
 
 class NSwitch(QAbstractButton):
@@ -133,5 +133,3 @@ class NSwitch(QAbstractButton):
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         super().enterEvent(event)
         return
-
-# END Class NSwitch

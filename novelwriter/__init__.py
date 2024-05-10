@@ -242,5 +242,3 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         sys.exit(nwApp.exec())
 
     return None
-
-# END Function main

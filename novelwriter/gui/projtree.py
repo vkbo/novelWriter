@@ -243,8 +243,6 @@ class GuiProjectView(QWidget):
         self.projTree.createNewNote(tag, itemClass)
         return
 
-# END Class GuiProjectView
-
 
 class GuiProjectToolBar(QWidget):
 
@@ -469,8 +467,6 @@ class GuiProjectToolBar(QWidget):
         addClass(nwItemClass.TEMPLATE)
 
         return
-
-# END Class GuiProjectToolBar
 
 
 class GuiProjectTree(QTreeWidget):
@@ -1651,8 +1647,6 @@ class GuiProjectTree(QTreeWidget):
 
         return
 
-# END Class GuiProjectTree
-
 
 class _UpdatableMenu(QMenu):
 
@@ -1715,8 +1709,6 @@ class _UpdatableMenu(QMenu):
         """Translate the menu trigger into an item trigger."""
         self.menuItemTriggered.emit(str(action.data()))
         return
-
-# END Class _UpdatableMenu
 
 
 class _TreeContextMenu(QMenu):
@@ -2069,5 +2061,3 @@ class _TreeContextMenu(QMenu):
             else:
                 logger.info("Folder conversion cancelled")
         return
-
-# END Class _TreeContextMenu

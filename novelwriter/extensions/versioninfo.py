@@ -26,16 +26,16 @@ from __future__ import annotations
 import json
 import logging
 
-from time import sleep
 from datetime import datetime
+from time import sleep
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
-from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtCore import QObject, QRunnable, QUrl, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
 
-from novelwriter import CONFIG, SHARED, __version__, __date__, __domain__
+from novelwriter import CONFIG, SHARED, __date__, __domain__, __version__
 from novelwriter.common import formatVersion
 from novelwriter.constants import nwConst
 
@@ -111,8 +111,6 @@ class VersionInfoWidget(QWidget):
             self._lblRelease.setText(self._trLatest.format(reason or self.tr("Failed")))
         return
 
-# END Class VersionInfoWidget
-
 
 class _Retriever(QRunnable):
 
@@ -144,10 +142,6 @@ class _Retriever(QRunnable):
             self.signals.dataReady.emit("", str(e))
         return
 
-# END Class _Retriever
-
 
 class _RetrieverSignal(QObject):
     dataReady = pyqtSignal(str, str)
-
-# END Class _RetrieverSignal

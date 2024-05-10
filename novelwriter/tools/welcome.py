@@ -32,11 +32,11 @@ from PyQt5.QtCore import (
     QAbstractListModel, QEvent, QModelIndex, QObject, QPoint, QSize, Qt,
     pyqtSignal, pyqtSlot
 )
-from PyQt5.QtGui import QCloseEvent, QColor, QFont, QPaintEvent, QPainter, QPen
+from PyQt5.QtGui import QCloseEvent, QColor, QFont, QPainter, QPaintEvent, QPen
 from PyQt5.QtWidgets import (
     QAction, QApplication, QDialog, QFileDialog, QFormLayout, QHBoxLayout,
     QLabel, QLineEdit, QListView, QMenu, QPushButton, QScrollArea, QShortcut,
-    QStackedWidget, QStyleOptionViewItem, QStyledItemDelegate, QVBoxLayout,
+    QStackedWidget, QStyledItemDelegate, QStyleOptionViewItem, QVBoxLayout,
     QWidget
 )
 
@@ -267,8 +267,6 @@ class GuiWelcome(QDialog):
             self.btnCreate.setFocus()
         return
 
-# END Class GuiWelcome
-
 
 class _OpenProjectPage(QWidget):
 
@@ -392,8 +390,6 @@ class _OpenProjectPage(QWidget):
         self._projectClicked(index)
         return
 
-# END Class _OpenProjectPage
-
 
 class _ProjectListItem(QStyledItemDelegate):
 
@@ -450,8 +446,6 @@ class _ProjectListItem(QStyledItemDelegate):
         """Set the size hint to fixed height."""
         return QSize(opt.rect.width(), self._hPx)
 
-# END Class _ProjectListItem
-
 
 class _ProjectListModel(QAbstractListModel):
 
@@ -490,8 +484,6 @@ class _ProjectListModel(QAbstractListModel):
             CONFIG.recentProjects.remove(path)
             return True
         return False
-
-# END Class _ProjectListModel
 
 
 class _NewProjectPage(QWidget):
@@ -547,8 +539,6 @@ class _NewProjectPage(QWidget):
         if builder.buildProject(data) and (path := builder.projPath):
             self.openProjectRequest.emit(path)
         return
-
-# END Class _NewProjectPage
 
 
 class _NewProjectForm(QWidget):
@@ -805,8 +795,6 @@ class _NewProjectForm(QWidget):
 
         return
 
-# END Class _NewProjectForm
-
 
 class _PopLeftDirectionMenu(QMenu):
 
@@ -817,5 +805,3 @@ class _PopLeftDirectionMenu(QMenu):
                 offset = QPoint(parent.width() - self.width(), parent.height())
                 self.move(parent.mapToGlobal(offset))
         return super(_PopLeftDirectionMenu, self).event(event)
-
-# END Class _PopLeftDirectionMenu

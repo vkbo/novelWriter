@@ -25,15 +25,15 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtGui import QFontMetrics
 from PyQt5.QtCore import QSize, pyqtSlot
+from PyQt5.QtGui import QFontMetrics
 from PyQt5.QtWidgets import (
     QDialog, QDialogButtonBox, QFrame, QHBoxLayout, QLabel, QListWidget,
     QListWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG
-from novelwriter.constants import trConst, nwQuotes
+from novelwriter.constants import nwQuotes, trConst
 from novelwriter.types import QtAlignCenter, QtAlignTop, QtDialogCancel, QtDialogOk, QtUserRole
 
 logger = logging.getLogger(__name__)
@@ -141,5 +141,3 @@ class GuiQuoteSelect(QDialog):
             self.previewLabel.setText(quote)
             self._selected = quote
         return
-
-# END Class GuiQuoteSelect

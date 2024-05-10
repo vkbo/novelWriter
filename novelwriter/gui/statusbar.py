@@ -262,5 +262,3 @@ class GuiMainStatus(QStatusBar):
             f" \u2013 Peak: {mem[1]:n}"
         ), 6000)
         return
-
-# END Class GuiMainStatus

@@ -78,9 +78,7 @@ class _SelectAction(Enum):
     KEEP_POSITION  = 2
     MOVE_AFTER     = 3
 
-# END Class _SelectAction
-
-
+    
 class GuiDocEditor(QPlainTextEdit):
     """Gui Widget: Main Document Editor"""
 
@@ -2131,7 +2129,7 @@ class GuiDocEditor(QPlainTextEdit):
             self._doReplace = False
         return
 
-# END Class GuiDocEditor
+    
 
 
 class MetaCompleter(QMenu):
@@ -2210,7 +2208,7 @@ class MetaCompleter(QMenu):
         self.complete.emit(pos, length, value)
         return
 
-# END Class MetaCompleter
+    
 
 
 # =============================================================================================== #
@@ -2251,7 +2249,7 @@ class BackgroundWordCounter(QRunnable):
 
         return
 
-# END Class BackgroundWordCounter
+    
 
 
 class BackgroundWordCounterSignals(QObject):
@@ -2260,7 +2258,7 @@ class BackgroundWordCounterSignals(QObject):
     """
     countsReady = pyqtSignal(int, int, int)
 
-# END Class BackgroundWordCounterSignals
+    
 
 
 # =============================================================================================== #
@@ -2393,7 +2391,7 @@ class GuiDocToolBar(QWidget):
 
         return
 
-# END Class GuiDocToolBar
+    
 
 
 # =============================================================================================== #
@@ -2757,7 +2755,7 @@ class GuiDocEditSearch(QFrame):
         self.searchBox.setPalette(qPalette)
         return
 
-# END Class GuiDocEditSearch
+    
 
 
 # =============================================================================================== #
@@ -2980,7 +2978,7 @@ class GuiDocEditHeader(QWidget):
             self.docEditor.requestProjectItemSelected.emit(self._docHandle or "", True)
         return
 
-# END Class GuiDocEditHeader
+    
 
 
 # =============================================================================================== #
@@ -3172,4 +3170,4 @@ class GuiDocEditFooter(QWidget):
         self.wordsText.setText(wText)
         return
 
-# END Class GuiDocEditFooter
+    

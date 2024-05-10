@@ -496,8 +496,6 @@ class GuiDocViewer(QTextBrowser):
 
         return
 
-# END Class GuiDocViewer
-
 
 class GuiDocViewHistory:
 
@@ -610,8 +608,6 @@ class GuiDocViewHistory:
                     )
                 )
         return
-
-# END Class GuiDocViewHistory
 
 
 # =============================================================================================== #
@@ -835,8 +831,6 @@ class GuiDocViewHeader(QWidget):
             self.docViewer.requestProjectItemSelected.emit(self._docHandle, True)
         return
 
-# END Class GuiDocViewHeader
-
 
 # =============================================================================================== #
 #  The Embedded Document Footer
@@ -967,5 +961,3 @@ class GuiDocViewFooter(QWidget):
         CONFIG.viewSynopsis = state
         self.docViewer.reloadText()
         return
-
-# END Class GuiDocViewFooter

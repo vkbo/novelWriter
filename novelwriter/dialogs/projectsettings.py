@@ -29,8 +29,8 @@ import logging
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QColor
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QApplication, QColorDialog, QDialog, QDialogButtonBox, QHBoxLayout,
-    QLineEdit, QMenu, QStackedWidget, QToolButton, QTreeWidget,
+    QAbstractItemView, QApplication, QColorDialog, QDialog, QDialogButtonBox,
+    QHBoxLayout, QLineEdit, QMenu, QStackedWidget, QToolButton, QTreeWidget,
     QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
@@ -227,8 +227,6 @@ class GuiProjectSettings(QDialog):
 
         return
 
-# END Class GuiProjectSettings
-
 
 class _SettingsPage(NScrollableForm):
 
@@ -301,8 +299,6 @@ class _SettingsPage(NScrollableForm):
         self.finalise()
 
         return
-
-# END Class _SettingsPage
 
 
 class _StatusPage(NFixedPage):
@@ -622,8 +618,6 @@ class _StatusPage(NFixedPage):
         self.shapeButton.setIcon(self._icons[self._shape])
         return
 
-# END Class _StatusPage
-
 
 class _ReplacePage(NFixedPage):
 
@@ -797,5 +791,3 @@ class _ReplacePage(NFixedPage):
     def _stripNotAllowed(self, key: str) -> str:
         """Clean up the replace key string."""
         return "".join(c for c in key if c.isalnum())
-
-# END Class _ReplacePage

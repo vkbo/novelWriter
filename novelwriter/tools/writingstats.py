@@ -614,5 +614,3 @@ class GuiWritingStats(NToolDialog):
         self.labelFilter.setText(formatTime(round(self.timeFilter)))
 
         return
-
-# END Class GuiWritingStats

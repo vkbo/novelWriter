@@ -391,8 +391,6 @@ class NWStorage:
         self._lockedBy = None
         return True
 
-# END Class NWStorage
-
 
 class _LegacyStorage:
     """Core: Legacy Storage Converter Utils
@@ -590,5 +588,3 @@ class _LegacyStorage:
             logException()
 
         return
-
-# END Class _LegacyStorage
