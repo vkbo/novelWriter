@@ -22,27 +22,24 @@ from __future__ import annotations
 
 import pytest
 
-from pathlib import Path
-from pytestqt.qtbot import QtBot
-
-from tools import C, buildTestProject
-
-from PyQt5.QtGui import QFont
 from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QFontDialog
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.guimain import GuiMain
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.tools.manussettings import (
-    GuiBuildSettings, _OutputTab, _FormatTab, _ContentTab, _HeadingsTab, _FilterTab
+    GuiBuildSettings, _ContentTab, _FilterTab, _FormatTab, _HeadingsTab,
+    _OutputTab
 )
 from novelwriter.types import QtDialogApply, QtDialogClose, QtDialogSave
 
+from tests.tools import C, buildTestProject
+
 
 @pytest.mark.gui
-def testBuildSettings_Init(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockRnd):
+def testBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
     """Test the initialisation of the GuiBuildSettings dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
@@ -114,7 +111,7 @@ def testBuildSettings_Init(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockRnd
 
 
 @pytest.mark.gui
-def testBuildSettings_Filter(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockRnd):
+def testBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     """Test the Filter Tab of the GuiBuildSettings dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
@@ -320,7 +317,7 @@ def testBuildSettings_Filter(qtbot: QtBot, nwGUI: GuiMain, projPath: Path, mockR
 
 
 @pytest.mark.gui
-def testBuildSettings_Headings(qtbot: QtBot, nwGUI: GuiMain):
+def testBuildSettings_Headings(qtbot, nwGUI):
     """Test the Headings Tab of the GuiBuildSettings dialog."""
     build = BuildSettings()
 
@@ -492,7 +489,7 @@ def testBuildSettings_Headings(qtbot: QtBot, nwGUI: GuiMain):
 
 
 @pytest.mark.gui
-def testBuildSettings_Content(qtbot: QtBot, nwGUI: GuiMain):
+def testBuildSettings_Content(qtbot, nwGUI):
     """Test the Content Tab of the GuiBuildSettings dialog."""
     build = BuildSettings()
 
@@ -554,7 +551,7 @@ def testBuildSettings_Content(qtbot: QtBot, nwGUI: GuiMain):
 
 
 @pytest.mark.gui
-def testBuildSettings_Format(monkeypatch, qtbot: QtBot, nwGUI: GuiMain):
+def testBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     """Test the Format Tab of the GuiBuildSettings dialog."""
     build = BuildSettings()
 
@@ -596,6 +593,10 @@ def testBuildSettings_Format(monkeypatch, qtbot: QtBot, nwGUI: GuiMain):
     assert fmtTab.stripUnicode.isChecked() is False
     assert fmtTab.replaceTabs.isChecked() is False
 
+    assert fmtTab.firstIndent.isChecked() is False
+    assert fmtTab.indentWidth.value() == 1.4
+    assert fmtTab.indentFirstPar.isChecked() is False
+
     assert fmtTab.pageUnit.currentData() == "mm"
     assert fmtTab.pageSize.currentData() == "Custom"
     assert fmtTab.pageWidth.value() == 180.0
@@ -614,6 +615,10 @@ def testBuildSettings_Format(monkeypatch, qtbot: QtBot, nwGUI: GuiMain):
     fmtTab.stripUnicode.setChecked(True)
     fmtTab.replaceTabs.setChecked(True)
 
+    fmtTab.firstIndent.setChecked(True)
+    fmtTab.indentWidth.setValue(2.0)
+    fmtTab.indentFirstPar.setChecked(True)
+
     fmtTab.pageUnit.setCurrentIndex(fmtTab.pageUnit.findData("cm"))
     fmtTab.pageSize.setCurrentIndex(fmtTab.pageSize.findData("A4"))
 
@@ -627,6 +632,10 @@ def testBuildSettings_Format(monkeypatch, qtbot: QtBot, nwGUI: GuiMain):
     assert build.getBool("format.justifyText") is True
     assert build.getBool("format.stripUnicode") is True
     assert build.getBool("format.replaceTabs") is True
+
+    assert build.getBool("format.firstLineIndent") is True
+    assert build.getFloat("format.firstIndentWidth") == 2.0
+    assert build.getBool("format.indentFirstPar") is True
 
     assert fmtTab.pageUnit.currentData() == "cm"
     assert fmtTab.pageSize.currentData() == "A4"
@@ -656,7 +665,7 @@ def testBuildSettings_Format(monkeypatch, qtbot: QtBot, nwGUI: GuiMain):
 
 
 @pytest.mark.gui
-def testBuildSettings_Output(qtbot: QtBot, nwGUI: GuiMain):
+def testBuildSettings_Output(qtbot, nwGUI):
     """Test the Output Tab of the GuiBuildSettings dialog."""
     build = BuildSettings()
 
@@ -676,14 +685,12 @@ def testBuildSettings_Output(qtbot: QtBot, nwGUI: GuiMain):
     assert outTab.odtAddColours.isChecked() is False
     assert outTab.odtPageHeader.text() == nwHeadFmt.ODT_AUTO
     assert outTab.odtPageCountOffset.value() == 0
-    assert outTab.odtFirstLineIndent.isChecked() is False
     assert outTab.htmlAddStyles.isChecked() is False
     assert outTab.htmlPreserveTabs.isChecked() is False
     assert outTab.mdPreserveBreaks.isChecked() is True
 
     # Toggle all
     outTab.odtAddColours.setChecked(True)
-    outTab.odtFirstLineIndent.setChecked(True)
     outTab.htmlAddStyles.setChecked(True)
     outTab.htmlPreserveTabs.setChecked(True)
     outTab.mdPreserveBreaks.setChecked(False)
@@ -698,7 +705,6 @@ def testBuildSettings_Output(qtbot: QtBot, nwGUI: GuiMain):
     assert build.getBool("odt.addColours") is True
     assert build.getStr("odt.pageHeader") == "Stuff"
     assert build.getInt("odt.pageCountOffset") == 1
-    assert build.getBool("odt.firstLineIndent") is True
     assert build.getBool("html.addStyles") is True
     assert build.getBool("html.preserveTabs") is True
     assert build.getBool("md.preserveBreaks") is False

@@ -753,8 +753,10 @@ def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
     assert odt._colourHead is True
     odt.setHeaderFormat(nwHeadFmt.ODT_AUTO, 1)
     assert odt._headerFormat == nwHeadFmt.ODT_AUTO
-    odt.setFirstLineIndent(True)
+    odt.setFirstLineIndent(True, 1.4, False)
     assert odt._firstIndent is True
+    assert odt._fTextIndent == "0.499cm"
+    assert odt._indentFirst is False
 
     odt.setPageLayout(148, 210, 20, 18, 17, 15)
     assert odt._mDocWidth  == "14.800cm"
