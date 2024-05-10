@@ -56,6 +56,7 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     )
 
     hSplitDoc = project.newFile("Split Doc", C.hNovelRoot)
+    assert hSplitDoc is not None
     project.writeNewFile(hSplitDoc, 1, True, docText)
     projTree.revealNewTreeItem(hSplitDoc, nHandle=C.hNovelRoot, wordCount=True)
 

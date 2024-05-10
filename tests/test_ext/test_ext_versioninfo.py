@@ -48,7 +48,8 @@ class MockDesktopServices:
 
 
 class MockData:
-    pass
+    def decode(self, *a):
+        return '{"tag_name": "v1.0"}'
 
 
 class MockPayload:
@@ -61,14 +62,13 @@ class MockPayload:
 
     def read(self):
         data = MockData()
-        data.decode = lambda *a: '{"tag_name": "v1.0"}'
         return data
 
 
 class MockHTTPError:
 
     def __enter__(self):
-        raise HTTPError("http://example.com", 403, "Rate limit", None, None)
+        raise HTTPError("http://example.com", 403, "Rate limit", None, None)  # type: ignore
 
     def __exit__(self, *args):
         return
@@ -86,7 +86,7 @@ class MockException:
 @pytest.mark.gui
 def testExtVersionInfo_Main(qtbot, monkeypatch):
     """Test the VersionInfoWidget class."""
-    version = VersionInfoWidget(None)
+    version = VersionInfoWidget(None)  # type: ignore
     dialog = SimpleDialog(version)
     dialog.show()
 
@@ -134,7 +134,7 @@ def testExtVersionInfo_Retriever(qtbot, monkeypatch):
             assert signal.args == ["v1.0", ""]
 
     def httpErr():
-        raise HTTPError("http://example.com", 403, "Rate limit")
+        raise HTTPError("http://example.com", 403, "Rate limit")  # type: ignore
 
     # HTTP Error
     with monkeypatch.context() as mp:
