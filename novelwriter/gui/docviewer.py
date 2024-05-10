@@ -610,12 +610,12 @@ class GuiDocViewHistory:
         return
 
 
-# =============================================================================================== #
-#  The Embedded Document Header
-#  Only used by DocViewer, and is at a fixed position in the QTextBrowser's viewport
-# =============================================================================================== #
-
 class GuiDocViewHeader(QWidget):
+    """The Embedded Document Header
+
+    Only used by DocViewer, and is at a fixed position in the
+    QTextBrowser's viewport.
+    """
 
     def __init__(self, docViewer: GuiDocViewer) -> None:
         super().__init__(parent=docViewer)
@@ -832,12 +832,12 @@ class GuiDocViewHeader(QWidget):
         return
 
 
-# =============================================================================================== #
-#  The Embedded Document Footer
-#  Only used by DocViewer, and is at a fixed position in the QTextBrowser's viewport
-# =============================================================================================== #
-
 class GuiDocViewFooter(QWidget):
+    """The Embedded Document Footer
+
+    Only used by DocViewer, and is at a fixed position in the
+    QTextBrowser's viewport.
+    """
 
     def __init__(self, docViewer: GuiDocViewer) -> None:
         super().__init__(parent=docViewer)

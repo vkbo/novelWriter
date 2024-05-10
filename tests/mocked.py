@@ -23,10 +23,6 @@ from __future__ import annotations
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget
 
-# =========================================================================== #
-#  Mock GUI
-# =========================================================================== #
-
 
 class MockGuiMain(QWidget):
 
@@ -87,10 +83,9 @@ class MockApp:
         return
 
 
-# =========================================================================== #
-#  Error Functions
-#  Mock functions that will raise errors instead.
-# =========================================================================== #
+# Error Functions
+# ===============
+# Mock functions that will raise errors instead.
 
 def causeOSError(*args, **kwargs):
     raise OSError("Mock OSError")

@@ -46,12 +46,11 @@ STYLES_MIN_TOOLBUTTON = "minimalToolButton"
 STYLES_BIG_TOOLBUTTON = "bigToolButton"
 
 
-# =============================================================================================== #
-#  Gui Theme Class
-#  Handles the look and feel of novelWriter
-# =============================================================================================== #
-
 class GuiTheme:
+    """Gui Theme Class
+
+    Handles the look and feel of novelWriter.
+    """
 
     def __init__(self) -> None:
 
@@ -482,12 +481,6 @@ class GuiTheme:
 
         return
 
-# End Class GuiTheme
-
-
-# =============================================================================================== #
-#  Icons Class
-# =============================================================================================== #
 
 class GuiIcons:
     """The icon class manages the content of the assets/icons folder,
@@ -796,9 +789,8 @@ class GuiIcons:
         return self._noIcon
 
 
-# =============================================================================================== #
-#  Module Functions
-# =============================================================================================== #
+# Module Functions
+# ================
 
 
 def _sortTheme(data: tuple[str, str]) -> str:

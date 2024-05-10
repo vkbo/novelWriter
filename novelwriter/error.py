@@ -42,10 +42,6 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-# =============================================================================================== #
-#  Utility Functions
-# =============================================================================================== #
-
 def logException() -> None:
     """Log the content of an exception message."""
     exType, exValue, _ = sys.exc_info()
@@ -60,10 +56,6 @@ def formatException(exc: BaseException) -> str:
     """
     return f"{type(exc).__name__}: {str(exc)}"
 
-
-# =============================================================================================== #
-#  Error Handler
-# =============================================================================================== #
 
 class NWErrorMessage(QDialog):
 

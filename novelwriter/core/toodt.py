@@ -1080,9 +1080,8 @@ class ToOdt(Tokenizer):
         return
 
 
-# =============================================================================================== #
-#  Auto-Style Classes
-# =============================================================================================== #
+# Auto-Style Classes
+# ==================
 
 class ODTParagraphStyle:
     """Wrapper class for the paragraph style setting used by the
@@ -1454,9 +1453,9 @@ class ODTTextStyle:
         return
 
 
-# =============================================================================================== #
-#  XML Complex Element Helper Class
-# =============================================================================================== #
+# XML Complex Element Helper Class
+# ================================
+
 X_ROOT_TEXT = 0
 X_ROOT_TAIL = 1
 X_SPAN_TEXT = 2
