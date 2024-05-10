@@ -61,8 +61,6 @@ class NovelTreeColumn(Enum):
     FOCUS  = 2
     PLOT   = 3
 
-# END Enum NovelTreeColumn
-
 
 class GuiNovelView(QWidget):
 

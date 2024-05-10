@@ -64,8 +64,6 @@ class NWProjectState(Enum):
     RECOVERY = 2
     READY    = 3
 
-# END Enum NWProjectState
-
 
 class NWProject:
 

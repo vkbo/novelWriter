@@ -172,8 +172,6 @@ class FilterMode(Enum):
     SKIPPED  = 4
     ROOT     = 5
 
-# END Enum FilterMode
-
 
 class BuildSettings:
     """Core: Build Settings Class
