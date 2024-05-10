@@ -20,18 +20,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import pytest
-
-from pathlib import Path
 from datetime import datetime
-from pytestqt.qtbot import QtBot
+from pathlib import Path
+
+import pytest
 
 from PyQt5.QtCore import QPoint
 from PyQt5.QtWidgets import QAction, QFileDialog, QMenu
+from pytestqt.qtbot import QtBot
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwItemClass
 from novelwriter.constants import nwFiles
+from novelwriter.enum import nwItemClass
 from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.types import QtMouseLeft
 
@@ -64,8 +64,6 @@ def testToolWelcome_Main(qtbot: QtBot, monkeypatch, nwGUI, fncPath):
 
     # qtbot.stop()
     welcome.close()
-
-# END Test testToolWelcome_Main
 
 
 @pytest.mark.gui
@@ -164,8 +162,6 @@ def testToolWelcome_Open(qtbot: QtBot, monkeypatch, nwGUI, fncPath):
     # qtbot.stop()
     welcome.close()
 
-# END Test testToolWelcome_Open
-
 
 @pytest.mark.gui
 def testToolWelcome_New(qtbot: QtBot, caplog, monkeypatch, nwGUI, fncPath):
@@ -252,5 +248,3 @@ def testToolWelcome_New(qtbot: QtBot, caplog, monkeypatch, nwGUI, fncPath):
 
     # qtbot.stop()
     welcome.close()
-
-# END Test testToolWelcome_New

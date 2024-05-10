@@ -20,18 +20,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import pytest
-import enchant
-
 from zipfile import ZipFile
 
-from mocked import causeException
+import enchant
+import pytest
 
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QFileDialog
 
 from novelwriter import SHARED
 from novelwriter.tools.dictionaries import GuiDictionaries
+
+from tests.mocked import causeException
 
 
 @pytest.mark.gui
@@ -153,5 +153,3 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
     # Close
     nwDicts._doClose()
     # qtbot.stop()
-
-# END Test testToolDictionaries_Main

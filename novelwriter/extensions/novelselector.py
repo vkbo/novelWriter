@@ -29,8 +29,8 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QComboBox, QWidget
 
 from novelwriter import SHARED
-from novelwriter.enum import nwItemClass
 from novelwriter.constants import nwLabels
+from novelwriter.enum import nwItemClass
 
 logger = logging.getLogger(__name__)
 
@@ -126,5 +126,3 @@ class NovelSelector(QComboBox):
         if not self._blockSignal:
             self.novelSelectionChanged.emit(self.currentData())
         return
-
-# END Class NovelSelector

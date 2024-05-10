@@ -22,13 +22,13 @@ from __future__ import annotations
 
 import pytest
 
-from tools import buildTestProject
-from mocked import MockGuiMain, MockTheme
-
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget
 
-from novelwriter.shared import SharedData
 from novelwriter.core.project import NWProject
+from novelwriter.shared import SharedData
+
+from tests.mocked import MockGuiMain, MockTheme
+from tests.tools import buildTestProject
 
 
 @pytest.mark.base
@@ -61,8 +61,6 @@ def testBaseSharedData_Init():
     assert shared.hasProject is False
     assert shared.projectIdleTime == 0.0
     assert shared.projectLock is None
-
-# END Test testBaseSharedData_Init
 
 
 @pytest.mark.base
@@ -123,8 +121,6 @@ def testBaseSharedData_Projects(monkeypatch, caplog, fncPath):
         mp.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (a[2], ""))
         assert shared.getProjectPath(QWidget(), fncPath, allowZip=True) == fncPath
 
-# END Test testBaseSharedData_Projects
-
 
 @pytest.mark.base
 def testBaseSharedData_Alerts(qtbot, monkeypatch, caplog):
@@ -171,5 +167,3 @@ def testBaseSharedData_Alerts(qtbot, monkeypatch, caplog):
     # Question box
     assert shared.question("Why?") is True
     assert shared.lastAlert == "Why?"
-
-# END Test testBaseSharedData_Alerts

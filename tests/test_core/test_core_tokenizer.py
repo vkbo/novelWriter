@@ -148,8 +148,6 @@ def testCoreToken_Setters(mockGUI):
     tokens.setBlockIndent(60.0)
     assert tokens._blockIndent == 10.0
 
-# END Test testCoreToken_Setters
-
 
 @pytest.mark.core
 def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
@@ -236,8 +234,6 @@ def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
     with pytest.raises(NotImplementedError):
         tokens.doConvert()
 
-# END Test testCoreToken_TextOps
-
 
 @pytest.mark.core
 def testCoreToken_StripEscape():
@@ -246,8 +242,6 @@ def testCoreToken_StripEscape():
     text2 = "This is text with escapes: ** ~~ __"
     assert stripEscape(text1) == "This is text with escapes: ** ~~ __"
     assert stripEscape(text2) == "This is text with escapes: ** ~~ __"
-
-# END Test testCoreToken_StripEscape
 
 
 @pytest.mark.core
@@ -437,8 +431,6 @@ def testCoreToken_HeaderFormat(mockGUI):
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
     ]
     assert tokens.allMarkdown[-1] == "##! Prologue\n\n"
-
-# END Test testCoreToken_HeaderFormat
 
 
 @pytest.mark.core
@@ -701,8 +693,6 @@ def testCoreToken_HeaderStyle(mockGUI):
     assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
     assert processStyle("##! Prologue\n", False) == Tokenizer.A_NONE
 
-# END Test testCoreToken_HeaderStyle
-
 
 @pytest.mark.core
 def testCoreToken_MetaFormat(mockGUI):
@@ -800,8 +790,6 @@ def testCoreToken_MetaFormat(mockGUI):
         (Tokenizer.T_EMPTY, 0, "", [], Tokenizer.A_NONE),
     ]
 
-# END Test testCoreToken_MetaFormat
-
 
 @pytest.mark.core
 def testCoreToken_MarginFormat(mockGUI):
@@ -853,8 +841,6 @@ def testCoreToken_MarginFormat(mockGUI):
         "Double-indented block\n\n"
         "Right-indent, right-aligned\n\n\n"
     )
-
-# END Test testCoreToken_MarginFormat
 
 
 @pytest.mark.core
@@ -962,8 +948,6 @@ def testCoreToken_ExtractFormats(mockGUI):
         (10, tokens.FMT_B_B, ""), (31, tokens.FMT_I_B, ""),
         (38, tokens.FMT_B_E, ""), (41, tokens.FMT_I_E, ""),
     ]
-
-# END Test testCoreToken_ExtractFormats
 
 
 @pytest.mark.core
@@ -1083,8 +1067,6 @@ def testCoreToken_TextFormat(mockGUI):
     assert tokens.allMarkdown[-1] == (
         "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n\n"
     )
-
-# END Test testCoreToken_TextFormat
 
 
 @pytest.mark.core
@@ -1285,8 +1267,6 @@ def testCoreToken_SpecialFormat(mockGUI):
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 1, "", [], Tokenizer.A_NONE),
     ]
-
-# END Test testCoreToken_SpecialFormat
 
 
 @pytest.mark.core
@@ -1509,8 +1489,6 @@ def testCoreToken_ProcessHeaders(mockGUI):
     tokens.tokenizeText()
     assert tokens._noSep is False
 
-# END Test testCoreToken_ProcessHeaders
-
 
 @pytest.mark.core
 def testCoreToken_BuildOutline(mockGUI, ipsumText):
@@ -1574,9 +1552,6 @@ def testCoreToken_BuildOutline(mockGUI, ipsumText):
         "0000000000001:T0003": "H2|Header 2",
         "0000000000001:T0004": "H3|Header 3",
     }
-
-
-# END Test testCoreToken_BuildOutline
 
 
 @pytest.mark.core
@@ -1784,8 +1759,6 @@ def testCoreToken_CountStats(mockGUI, ipsumText):
         "allWordChars": 3289, "textWordChars": 2990, "titleWordChars": 38
     }
 
-# END Test testCoreToken_CountStats
-
 
 @pytest.mark.core
 def testCoreToken_SceneSeparators(mockGUI):
@@ -1937,8 +1910,6 @@ def testCoreToken_SceneSeparators(mockGUI):
         "Text\n\n"
     )
 
-# END Test testCoreToken_SceneSeparators
-
 
 @pytest.mark.core
 def testCoreToken_HeaderVisibility(mockGUI):
@@ -2051,8 +2022,6 @@ def testCoreToken_HeaderVisibility(mockGUI):
         "Text\n\n"
     )
 
-# END Test testCoreToken_HeaderVisibility
-
 
 @pytest.mark.core
 def testCoreToken_CounterHandling(mockGUI):
@@ -2137,8 +2106,6 @@ def testCoreToken_CounterHandling(mockGUI):
         "### H 2.2 (4): Scene Four\n\n"
         "Text\n\n"
     )
-
-# END Test testCoreToken_CounterHandling
 
 
 @pytest.mark.core
@@ -2245,5 +2212,3 @@ def testCoreToken_HeadingFormatter(fncPath, mockGUI, mockRnd):
     # Chapter w/Fallback Focus
     cFormat = f"Chapter {nwHeadFmt.CH_NUM}, Scene {nwHeadFmt.SC_NUM} - {nwHeadFmt.CHAR_FOCUS}"
     assert formatter.apply(cFormat, "Hi Bob", 0) == "Chapter 2, Scene 3 - Focus"
-
-# END Test testCoreToken_HeadingFormatter

@@ -1399,5 +1399,3 @@ class GuiMain(QMainWindow):
             ))
             return None, None
         return tHandle, sTitle
-
-# END Class GuiMain

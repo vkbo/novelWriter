@@ -27,14 +27,14 @@ from __future__ import annotations
 import json
 import logging
 
-from typing import TYPE_CHECKING
-from pathlib import Path
 from collections.abc import Iterator
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import QLocale
 
-from novelwriter.error import logException
 from novelwriter.constants import nwFiles
+from novelwriter.error import logException
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.project import NWProject
@@ -164,11 +164,10 @@ class NWSpellEnchant:
             name = ""
         return tag, name
 
-# END Class NWSpellEnchant
-
 
 class FakeEnchant:
     """Fallback for when Enchant is selected, but not installed."""
+
     def __init__(self) -> None:
 
         class FakeProvider:
@@ -187,8 +186,6 @@ class FakeEnchant:
 
     def add_to_session(self, word: str) -> None:
         return
-
-# END Class FakeEnchant
 
 
 class UserDictionary:
@@ -240,5 +237,3 @@ class UserDictionary:
                 logger.error("Failed to save user dictionary")
                 logException()
         return
-
-# END Class UserDictionary

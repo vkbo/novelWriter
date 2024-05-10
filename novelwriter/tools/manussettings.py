@@ -278,8 +278,6 @@ class GuiBuildSettings(NToolDialog):
         self._build.resetChangedState()
         return
 
-# END Class GuiBuildSettings
-
 
 class _FilterTab(NFixedPage):
 
@@ -573,8 +571,6 @@ class _FilterTab(NFixedPage):
             for i in range(item.childCount()):
                 self._scanChildren(item.child(i), items)
         return items
-
-# END Class _FilterTab
 
 
 class _HeadingsTab(NScrollablePage):
@@ -941,8 +937,6 @@ class _HeadingsTab(NScrollablePage):
 
         return
 
-# END Class _HeadingsTab
-
 
 class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
 
@@ -966,8 +960,6 @@ class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
                 if ddots > 0:
                     self.setFormat(pos + ddots, 1, self._fmtSymbol)
         return
-
-# END Class _HeadingSyntaxHighlighter
 
 
 class _ContentTab(NScrollableForm):
@@ -1051,8 +1043,6 @@ class _ContentTab(NScrollableForm):
         verified = set(x for x in current if x in nwKeyWords.VALID_KEYS)
         self.ignoredKeywords.setText(", ".join(verified))
         return
-
-# END Class _ContentTab
 
 
 class _FormatTab(NScrollableForm):
@@ -1346,8 +1336,6 @@ class _FormatTab(NScrollableForm):
             self.pageSize.setCurrentIndex(index)
         return
 
-# END Class _FormatTab
-
 
 class _OutputTab(NScrollableForm):
 
@@ -1432,5 +1420,3 @@ class _OutputTab(NScrollableForm):
         self.odtPageHeader.setText(nwHeadFmt.ODT_AUTO)
         self.odtPageHeader.setCursorPosition(0)
         return
-
-# END Class _OutputTab

@@ -22,12 +22,12 @@ from __future__ import annotations
 
 import pytest
 
-from tools import SimpleDialog
-
-from PyQt5.QtGui import QWheelEvent
 from PyQt5.QtCore import QPoint, QPointF, Qt
+from PyQt5.QtGui import QWheelEvent
 
 from novelwriter.extensions.modified import NComboBox, NDoubleSpinBox, NSpinBox
+
+from tests.tools import SimpleDialog
 
 
 class MockWheelEvent(QWheelEvent):
@@ -45,8 +45,6 @@ class MockWheelEvent(QWheelEvent):
         super().ignore()
         self.ignored = True
         return
-
-# END Class MockWheelEvent
 
 
 @pytest.mark.gui
@@ -72,8 +70,6 @@ def testExtModified_NComboBox(qtbot, monkeypatch):
         assert event.ignored is True
 
     # qtbot.stop()
-
-# END Test testExtModified_NComboBox
 
 
 @pytest.mark.gui
@@ -101,8 +97,6 @@ def testExtModified_NSpinBox(qtbot, monkeypatch):
 
     # qtbot.stop()
 
-# END Test testExtModified_NSpinBox
-
 
 @pytest.mark.gui
 def testExtModified_NDoubleSpinBox(qtbot, monkeypatch):
@@ -128,5 +122,3 @@ def testExtModified_NDoubleSpinBox(qtbot, monkeypatch):
         assert event.ignored is True
 
     # qtbot.stop()
-
-# END Test testExtModified_NDoubleSpinBox

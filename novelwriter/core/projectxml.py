@@ -29,19 +29,19 @@ import logging
 import xml.etree.ElementTree as ET
 
 from enum import Enum
+from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING
-from pathlib import Path
 
-from novelwriter import __version__, __hexversion__
+from novelwriter import __hexversion__, __version__
 from novelwriter.common import (
     checkBool, checkInt, checkString, checkStringNone, formatTimeStamp,
     hexToInt, simplified, xmlIndent, yesNo
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from novelwriter.core.status import NWStatus
     from novelwriter.core.projectdata import NWProjectData
+    from novelwriter.core.status import NWStatus
 
 logger = logging.getLogger(__name__)
 
@@ -69,8 +69,6 @@ class XMLReadState(Enum):
     UNKNOWN_VERSION = 4
     PARSED_OK       = 5
     WAS_LEGACY      = 6
-
-# END Class XMLReadState
 
 
 class ProjectXMLReader:
@@ -458,8 +456,6 @@ class ProjectXMLReader:
         """
         return {xNode.tag: checkString(xNode.text, "") for xNode in xItem}
 
-# END Class ProjectXMLReader
-
 
 class ProjectXMLWriter:
     """Core: Project XML Writer
@@ -579,5 +575,3 @@ class ProjectXMLWriter:
                 xEntry = ET.SubElement(xItem, "entry", attrib={"key": key})
                 xEntry.text = str(value) or ""
         return
-
-# END Class ProjectXMLWriter

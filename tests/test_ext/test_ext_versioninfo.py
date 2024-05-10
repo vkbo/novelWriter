@@ -20,17 +20,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import pytest
-
 from urllib.error import HTTPError
 
-from tools import SimpleDialog
+import pytest
 
 from PyQt5.QtCore import QUrl
 
 from novelwriter import SHARED
 from novelwriter.constants import nwConst
 from novelwriter.extensions.versioninfo import VersionInfoWidget, _Retriever, _RetrieverSignal
+
+from tests.tools import SimpleDialog
 
 
 class MockRetriever:
@@ -48,7 +48,8 @@ class MockDesktopServices:
 
 
 class MockData:
-    pass
+    def decode(self, *a):
+        return '{"tag_name": "v1.0"}'
 
 
 class MockPayload:
@@ -61,14 +62,13 @@ class MockPayload:
 
     def read(self):
         data = MockData()
-        data.decode = lambda *a: '{"tag_name": "v1.0"}'
         return data
 
 
 class MockHTTPError:
 
     def __enter__(self):
-        raise HTTPError("http://example.com", 403, "Rate limit", None, None)
+        raise HTTPError("http://example.com", 403, "Rate limit", None, None)  # type: ignore
 
     def __exit__(self, *args):
         return
@@ -86,7 +86,7 @@ class MockException:
 @pytest.mark.gui
 def testExtVersionInfo_Main(qtbot, monkeypatch):
     """Test the VersionInfoWidget class."""
-    version = VersionInfoWidget(None)
+    version = VersionInfoWidget(None)  # type: ignore
     dialog = SimpleDialog(version)
     dialog.show()
 
@@ -120,8 +120,6 @@ def testExtVersionInfo_Main(qtbot, monkeypatch):
     dialog.close()
     # qtbot.stop()
 
-# END Test testExtVersionInfo_Main
-
 
 @pytest.mark.gui
 def testExtVersionInfo_Retriever(qtbot, monkeypatch):
@@ -136,7 +134,7 @@ def testExtVersionInfo_Retriever(qtbot, monkeypatch):
             assert signal.args == ["v1.0", ""]
 
     def httpErr():
-        raise HTTPError("http://example.com", 403, "Rate limit")
+        raise HTTPError("http://example.com", 403, "Rate limit")  # type: ignore
 
     # HTTP Error
     with monkeypatch.context() as mp:
@@ -151,5 +149,3 @@ def testExtVersionInfo_Retriever(qtbot, monkeypatch):
         with qtbot.waitSignal(task.signals.dataReady) as signal:
             task.run()
             assert signal.args == ["", "Oh noes!"]
-
-# END Test testExtVersionInfo_Retriever

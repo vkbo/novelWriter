@@ -26,11 +26,11 @@ from __future__ import annotations
 from math import ceil
 
 from PyQt5.QtCore import QRect
-from PyQt5.QtGui import QBrush, QColor, QPaintEvent, QPainter, QPen
+from PyQt5.QtGui import QBrush, QColor, QPainter, QPaintEvent, QPen
 from PyQt5.QtWidgets import QProgressBar, QWidget
 
 from novelwriter.types import (
-    QtPaintAnitAlias, QtAlignCenter, QtRoundCap, QtSizeFixed, QtSolidLine,
+    QtAlignCenter, QtPaintAnitAlias, QtRoundCap, QtSizeFixed, QtSolidLine,
     QtTransparent
 )
 
@@ -101,5 +101,3 @@ class NProgressCircle(QProgressBar):
         painter.setPen(self._tColor)
         painter.drawText(self._cRect, QtAlignCenter, self._text or f"{progress:.1f} %")
         return
-
-# END Class NProgressCircle

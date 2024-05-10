@@ -25,7 +25,7 @@ from __future__ import annotations
 
 from math import ceil
 
-from PyQt5.QtGui import QPaintEvent, QPainter
+from PyQt5.QtGui import QPainter, QPaintEvent
 from PyQt5.QtWidgets import QProgressBar, QWidget
 
 from novelwriter.types import QtPaintAnitAlias
@@ -51,5 +51,3 @@ class NProgressSimple(QProgressBar):
             painter.setBrush(self.palette().highlight())
             painter.drawRect(0, 0, progress, self.height())
         return
-
-# END Class NProgressSimple

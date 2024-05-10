@@ -22,16 +22,16 @@ from __future__ import annotations
 
 import pytest
 
-from tools import C, buildTestProject
-
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QDialog, QAction, QColorDialog
+from PyQt5.QtWidgets import QAction, QColorDialog, QDialog
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.enum import nwItemType, nwStatusShape
 from novelwriter.types import QtMouseLeft
+
+from tests.tools import C, buildTestProject
 
 KEY_DELAY = 1
 
@@ -80,8 +80,6 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
     # Clean Up
     projSettings.close()
     # qtbot.stop()
-
-# END Test testDlgProjSettings_Dialog
 
 
 @pytest.mark.gui
@@ -134,8 +132,6 @@ def testDlgProjSettings_SettingsPage(qtbot, monkeypatch, nwGUI, fncPath, projPat
     assert nwGUI.windowTitle() == "novelWriter - Project Name"
 
     # qtbot.stop()
-
-# END Test testDlgProjSettings_SettingsPage
 
 
 @pytest.mark.gui
@@ -324,8 +320,6 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
 
     # qtbot.stop()
 
-# END Test testDlgProjSettings_StatusImport
-
 
 @pytest.mark.gui
 def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
@@ -404,5 +398,3 @@ def testDlgProjSettings_Replace(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     }
 
     # qtbot.stop()
-
-# END Test testDlgProjSettings_Replace

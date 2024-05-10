@@ -172,8 +172,6 @@ class FilterMode(Enum):
     SKIPPED  = 4
     ROOT     = 5
 
-# END Enum FilterMode
-
 
 class BuildSettings:
     """Core: Build Settings Class
@@ -488,8 +486,6 @@ class BuildSettings:
 
         return
 
-# END Class BuildSettings
-
 
 class BuildCollection:
     """Core: Build Collection Class
@@ -637,5 +633,3 @@ class BuildCollection:
             return False
 
         return True
-
-# END Class BuildCollection

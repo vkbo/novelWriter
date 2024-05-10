@@ -26,14 +26,14 @@ from __future__ import annotations
 import json
 import logging
 
+from collections.abc import Iterable
+from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING
-from pathlib import Path
-from collections.abc import Iterable
 
-from novelwriter.error import logException
 from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwFiles
+from novelwriter.error import logException
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.project import NWProject
@@ -135,5 +135,3 @@ class NWSessionLog:
             "novel": novel, "notes": notes, "idle": idle,
         })
         return f"{data}\n"
-
-# END Class NWSessionLog

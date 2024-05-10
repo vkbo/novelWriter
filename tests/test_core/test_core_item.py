@@ -21,15 +21,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import copy
+
 import pytest
 
 from PyQt5.QtGui import QIcon
 
-from tools import C, buildTestProject
-
-from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
+
+from tests.tools import C, buildTestProject
 
 
 @pytest.mark.core
@@ -180,8 +181,6 @@ def testCoreItem_Setters(mockGUI, mockRnd, fncPath):
     item.saveInitialCount()
     assert item.initCount == 234
 
-# END Test testCoreItem_Setters
-
 
 @pytest.mark.core
 def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
@@ -326,8 +325,6 @@ def testCoreItem_Methods(mockGUI, mockRnd, fncPath):
     del scItem
     assert cpItem.pack() == cpData
 
-# END Test testCoreItem_Methods
-
 
 @pytest.mark.core
 def testCoreItem_TypeSetter(mockGUI):
@@ -354,8 +351,6 @@ def testCoreItem_TypeSetter(mockGUI):
     # Alternative
     item.setType(nwItemType.ROOT)
     assert item.itemType == nwItemType.ROOT
-
-# END Test testCoreItem_TypeSetter
 
 
 @pytest.mark.core
@@ -461,8 +456,6 @@ def testCoreItem_ClassSetter(mockGUI):
     item.setClass(nwItemClass.NOVEL)
     assert item.itemClass == nwItemClass.NOVEL
 
-# END Test testCoreItem_ClassSetter
-
 
 @pytest.mark.core
 def testCoreItem_LayoutSetter(mockGUI):
@@ -489,8 +482,6 @@ def testCoreItem_LayoutSetter(mockGUI):
     # Alternative
     item.setLayout(nwItemLayout.NOTE)
     assert item.itemLayout == nwItemLayout.NOTE
-
-# END Test testCoreItem_LayoutSetter
 
 
 @pytest.mark.core
@@ -545,8 +536,6 @@ def testCoreItem_ClassDefaults(mockGUI):
     # In all cases, status and importance should no longer be None
     assert item.itemStatus is not None
     assert item.itemImport is not None
-
-# END Test testCoreItem_ClassDefaults
 
 
 @pytest.mark.core
@@ -761,5 +750,3 @@ def testCoreItem_PackUnpack(mockGUI, caplog, mockRnd):
             "import": "i000001",
         }
     }
-
-# END Test testCoreItem_PackUnpack

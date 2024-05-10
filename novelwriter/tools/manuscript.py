@@ -510,8 +510,6 @@ class GuiManuscript(NToolDialog):
                 return obj
         return None
 
-# END Class GuiManuscript
-
 
 class _DetailsWidget(QWidget):
 
@@ -653,8 +651,6 @@ class _DetailsWidget(QWidget):
 
         return
 
-# END Class _DetailsWidget
-
 
 class _OutlineWidget(QWidget):
 
@@ -733,8 +729,6 @@ class _OutlineWidget(QWidget):
         """Process tree item click."""
         self.outlineEntryClicked.emit(str(item.data(0, self.D_LINE)))
         return
-
-# END Class _OutlineWidget
 
 
 class _PreviewWidget(QTextBrowser):
@@ -961,8 +955,6 @@ class _PreviewWidget(QTextBrowser):
         self.buildProgress.move((vW-pS)//2, (vH-pS)//2)
         return
 
-# END Class _PreviewWidget
-
 
 class _StatsWidget(QWidget):
 
@@ -1136,5 +1128,3 @@ class _StatsWidget(QWidget):
         self.maxWidget.setLayout(self.maxLayout)
 
         return
-
-# END Class _StatsWidget

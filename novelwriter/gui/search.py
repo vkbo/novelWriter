@@ -358,5 +358,3 @@ class GuiProjectSearch(QWidget):
             QApplication.processEvents()
 
         return
-
-# END Class GuiProjectSearch

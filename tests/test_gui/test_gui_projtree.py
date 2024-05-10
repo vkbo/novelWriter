@@ -20,16 +20,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import pytest
-
 from pathlib import Path
 
-from mocked import causeOSError
-from tools import C, buildTestProject
+import pytest
 
-from PyQt5.QtCore import QEvent, QMimeData, QPoint, QTimer, Qt
+from PyQt5.QtCore import QEvent, QMimeData, QPoint, Qt, QTimer
 from PyQt5.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QMouseEvent
-from PyQt5.QtWidgets import QMessageBox, QMenu, QTreeWidget, QTreeWidgetItem, QDialog
+from PyQt5.QtWidgets import QDialog, QMenu, QMessageBox, QTreeWidget, QTreeWidgetItem
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.core.item import NWItem
@@ -37,10 +34,13 @@ from novelwriter.core.project import NWProject
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.enum import nwItemLayout, nwItemType, nwItemClass, nwWidget
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwWidget
 from novelwriter.gui.projtree import GuiProjectTree, GuiProjectView, _TreeContextMenu
 from novelwriter.guimain import GuiMain
-from novelwriter.types import QtMouseLeft, QtMouseMiddle, QtModeNone
+from novelwriter.types import QtModeNone, QtMouseLeft, QtMouseMiddle
+
+from tests.mocked import causeOSError
+from tests.tools import C, buildTestProject
 
 
 @pytest.mark.gui
@@ -190,8 +190,6 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
     # qtbot.stop()
     nwGUI.closeProject()
 
-# END Test testGuiProjTree_NewItems
-
 
 @pytest.mark.gui
 def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
@@ -294,8 +292,6 @@ def testGuiProjTree_MoveItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # qtbot.stop()
     nwGUI.closeProject()
 
-# END Test testGuiProjTree_MoveItems
-
 
 @pytest.mark.gui
 def testGuiProjTree_RequestDeleteItem(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRnd):
@@ -376,8 +372,6 @@ def testGuiProjTree_RequestDeleteItem(qtbot, caplog, monkeypatch, nwGUI, projPat
 
     nwGUI.closeProject()
 
-# END Test testGuiProjTree_RequestDeleteItem
-
 
 @pytest.mark.gui
 def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRnd):
@@ -428,8 +422,6 @@ def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, projPath,
 
     nwGUI.closeProject()
 
-# END Test testGuiProjTree_MoveItemToTrash
-
 
 @pytest.mark.gui
 def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRnd):
@@ -478,8 +470,6 @@ def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, pro
     assert C.hSceneDoc not in project.tree
 
     nwGUI.closeProject()
-
-# END Test testGuiProjTree_PermanentlyDeleteItem
 
 
 @pytest.mark.gui
@@ -530,8 +520,6 @@ def testGuiProjTree_EmptyTrash(qtbot, caplog, monkeypatch, nwGUI, projPath, mock
     assert projTree.emptyTrash() is False
 
     nwGUI.closeProject()
-
-# END Test testGuiProjTree_EmptyTrash
 
 
 @pytest.mark.gui
@@ -630,8 +618,6 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd,
     assert project.tree.isTrash(hSceneOne13)  # type: ignore
 
     # qtbot.stop()
-
-# END Test testGuiProjTree_MergeDocuments
 
 
 @pytest.mark.gui
@@ -741,8 +727,6 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRnd, 
 
     # qtbot.stop()
 
-# END Test testGuiProjTree_SplitDocument
-
 
 @pytest.mark.gui
 def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd):
@@ -797,8 +781,6 @@ def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mock
     assert len(SHARED.project.tree) == 22
 
     # qtbot.stop()
-
-# END Test testGuiProjTree_Duplicate
 
 
 @pytest.mark.gui
@@ -863,8 +845,6 @@ def testGuiProjTree_AutoScroll(qtbot, monkeypatch, nwGUI: GuiMain, projPath, moc
     assert projTree._scrollDirection == 0
 
     # qtbot.stop()
-
-# END Test testGuiProjTree_AutoScroll
 
 
 @pytest.mark.gui
@@ -953,8 +933,6 @@ def testGuiProjTree_DragAndDrop(qtbot, monkeypatch, caplog, nwGUI: GuiMain, proj
         assert projTree._popAlert is None
 
     # qtbot.stop()
-
-# END Test testGuiProjTree_DragAndDrop
 
 
 @pytest.mark.gui
@@ -1119,8 +1097,6 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd)
     projTree._postItemMove("dfghj")  # This should exit cleanly
 
     # qtbot.stop()
-
-# END Test testGuiProjTree_Other
 
 
 @pytest.mark.gui
@@ -1421,8 +1397,6 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # qtbot.stop()
 
-# END Test testGuiProjTree_ContextMenu
-
 
 @pytest.mark.gui
 def testGuiProjTree_Templates(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
@@ -1515,5 +1489,3 @@ def testGuiProjTree_Templates(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
         assert projBar.mTemplates.menuAction().isVisible() is False
 
     # qtbot.stop()
-
-# END Test testGuiProjTree_Templates

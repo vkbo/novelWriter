@@ -21,17 +21,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import time
-import pytest
 
 from shutil import copyfile
 
-from tools import buildTestProject, cmpFiles, writeFile
+import pytest
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QFileDialog, QWidget, QAction
+from PyQt5.QtWidgets import QAction, QFileDialog, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemClass, nwOutline, nwView
+
+from tests.tools import buildTestProject, cmpFiles, writeFile
 
 
 @pytest.mark.gui
@@ -173,8 +174,6 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, projPath):
 
     # qtbot.stop()
 
-# END Test testGuiOutline_Main
-
 
 @pytest.mark.gui
 def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPaths):
@@ -296,5 +295,3 @@ def testGuiOutline_Content(qtbot, monkeypatch, nwGUI, prjLipsum, fncPath, tstPat
     assert cmpFiles(testFile, compFile)
 
     # qtbot.stop()
-
-# END Test testGuiOutline_Content

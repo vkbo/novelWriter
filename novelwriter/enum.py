@@ -32,8 +32,6 @@ class nwItemType(Enum):
     FOLDER  = 2
     FILE    = 3
 
-# END Enum nwItemType
-
 
 class nwItemClass(Enum):
 
@@ -50,16 +48,12 @@ class nwItemClass(Enum):
     TEMPLATE  = 10
     TRASH     = 11
 
-# END Enum nwItemClass
-
 
 class nwItemLayout(Enum):
 
     NO_LAYOUT = 0
     DOCUMENT  = 1
     NOTE      = 2
-
-# END Enum nwItemLayout
 
 
 class nwComment(Enum):
@@ -73,8 +67,6 @@ class nwComment(Enum):
     COMMENT  = 6
     STORY    = 7
 
-# END Enum nwComment
-
 
 class nwTrinary(Enum):
 
@@ -82,15 +74,11 @@ class nwTrinary(Enum):
     NEUTRAL  = 0
     POSITIVE = 1
 
-# END Enum nwTrinary
-
 
 class nwDocMode(Enum):
 
     VIEW = 0
     EDIT = 1
-
-# END Enum nwDocMode
 
 
 class nwDocAction(Enum):
@@ -134,8 +122,6 @@ class nwDocAction(Enum):
     SC_SUP    = 36
     SC_SUB    = 37
 
-# END Enum nwDocAction
-
 
 class nwDocInsert(Enum):
 
@@ -152,8 +138,6 @@ class nwDocInsert(Enum):
     LIPSUM    = 10
     FOOTNOTE  = 11
 
-# END Enum nwDocInsert
-
 
 class nwView(Enum):
 
@@ -163,8 +147,6 @@ class nwView(Enum):
     OUTLINE = 3
     SEARCH  = 4
 
-# END Enum nwView
-
 
 class nwWidget(Enum):
 
@@ -172,8 +154,6 @@ class nwWidget(Enum):
     EDITOR  = 2
     VIEWER  = 3
     OUTLINE = 4
-
-# END Enum nwWidget
 
 
 class nwOutline(Enum):
@@ -196,8 +176,6 @@ class nwOutline(Enum):
     CUSTOM = 15
     SYNOP  = 16
 
-# END Enum nwOutline
-
 
 class nwBuildFmt(Enum):
 
@@ -209,8 +187,6 @@ class nwBuildFmt(Enum):
     EXT_MD = 5
     J_HTML = 6
     J_NWD  = 7
-
-# END Enum nwBuildFormat
 
 
 class nwStatusShape(Enum):
@@ -235,5 +211,3 @@ class nwStatusShape(Enum):
     BLOCK_2  = 17
     BLOCK_3  = 18
     BLOCK_4  = 19
-
-# END Enum nwStatusShape

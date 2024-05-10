@@ -272,5 +272,3 @@ class ToMarkdown(Tokenizer):
         result += "  \n" if style & self.A_Z_BTMMRG else "\n\n"
 
         return result
-
-# END Class ToMarkdown

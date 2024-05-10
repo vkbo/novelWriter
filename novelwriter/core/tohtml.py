@@ -536,5 +536,3 @@ class ToHtml(Tokenizer):
                     )
 
         return bits[0][1:], result
-
-# END Class ToHtml

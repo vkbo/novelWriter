@@ -21,22 +21,23 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import sys
-import pytest
 
-from tools import buildTestProject
+import pytest
 
 from PyQt5.QtWidgets import QApplication, QDialog, QMessageBox
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.about import GuiAbout
-from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
-from novelwriter.tools.welcome import GuiWelcome
-from novelwriter.tools.manuscript import GuiManuscript
+from novelwriter.dialogs.wordlist import GuiWordList
 from novelwriter.tools.dictionaries import GuiDictionaries
+from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.noveldetails import GuiNovelDetails
+from novelwriter.tools.welcome import GuiWelcome
 from novelwriter.tools.writingstats import GuiWritingStats
+
+from tests.tools import buildTestProject
 
 LANG_DATA = CONFIG.listLanguages(CONFIG.LANG_NW)
 
@@ -79,5 +80,3 @@ def testGuiI18n_Localisation(qtbot, monkeypatch, language, nwGUI, projPath):
 
     qtbot.wait(20)
     nwGUI.closeMain()
-
-# END Test testGuiI18n_Localisation

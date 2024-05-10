@@ -105,9 +105,6 @@ def testCoreToOdt_Init(mockGUI):
     assert odt._xText.tag == _mkTag("office", "text")
 
 
-# END Test testCoreToOdt_Init
-
-
 @pytest.mark.core
 def testCoreToOdt_TextFormatting(mockGUI):
     """Test formatting of paragraphs."""
@@ -236,8 +233,6 @@ def testCoreToOdt_TextFormatting(mockGUI):
         '</office:text>'
     )
 
-# END Test testCoreToOdt_TextFormatting
-
 
 @pytest.mark.core
 def testCoreToOdt_ConvertHeaders(mockGUI):
@@ -324,8 +319,6 @@ def testCoreToOdt_ConvertHeaders(mockGUI):
         '<text:h text:style-name="P2" text:outline-level="2">Prologue</text:h>'
         '</office:text>'
     )
-
-# END Test testCoreToOdt_ConvertHeaders
 
 
 @pytest.mark.core
@@ -675,8 +668,6 @@ def testCoreToOdt_ConvertParagraphs(mockGUI):
         '</office:text>'
     )
 
-# END Test testCoreToOdt_ConvertParagraphs
-
 
 @pytest.mark.core
 def testCoreToOdt_ConvertDirect(mockGUI):
@@ -729,8 +720,6 @@ def testCoreToOdt_ConvertDirect(mockGUI):
         '<text:p text:style-name="P1">This is a paragraph</text:p>'
         '</office:text>'
     )
-
-# END Test testCoreToOdt_ConvertDirect
 
 
 @pytest.mark.core
@@ -786,8 +775,6 @@ def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
 
     copyfile(flatFile, testFile)
     assert cmpFiles(testFile, compFile, ignoreStart=ODT_IGNORE)
-
-# END Test testCoreToOdt_SaveFlat
 
 
 @pytest.mark.core
@@ -867,8 +854,6 @@ def testCoreToOdt_SaveFull(mockGUI, fncPath, tstPaths):
     assert cmpFiles(metaFile, metaComp, ignoreStart=ODT_IGNORE)
     assert cmpFiles(stylFile, stylComp)
 
-# END Test testCoreToOdt_SaveFull
-
 
 @pytest.mark.core
 def testCoreToOdt_Format(mockGUI):
@@ -899,8 +884,6 @@ def testCoreToOdt_Format(mockGUI):
     assert odt._formatKeywords("char: Bod, Jane") == (
         "Characters: Bod, Jane", [(0, ToOdt.FMT_B_B, ""), (11, ToOdt.FMT_B_E, "")]
     )
-
-# END Test testCoreToOdt_Format
 
 
 @pytest.mark.core
@@ -1123,8 +1106,6 @@ def testCoreToOdt_ODTParagraphStyle():
     assert aStyle.checkNew(oStyle) is True
     assert aStyle.getID() != oStyle.getID()
 
-# END Test testCoreToOdt_ODTParagraphStyle
-
 
 @pytest.mark.core
 def testCoreToOdt_ODTTextStyle():
@@ -1247,8 +1228,6 @@ def testCoreToOdt_ODTTextStyle():
         'style:text-line-through-style="solid" style:text-line-through-type="single" />'
         '</style:style></test>'
     )
-
-# END Test testCoreToOdt_ODTTextStyle
 
 
 @pytest.mark.core
@@ -1439,8 +1418,6 @@ def testCoreToOdt_XMLParagraph():
 
     assert xmlPar.checkError() == (1, "1 char(s) were not written: 'AB'")
 
-# END Test testCoreToOdt_XMLParagraph
-
 
 @pytest.mark.core
 def testCoreToOdt_MkTag():
@@ -1448,5 +1425,3 @@ def testCoreToOdt_MkTag():
     assert _mkTag("office", "text") == "{urn:oasis:names:tc:opendocument:xmlns:office:1.0}text"
     assert _mkTag("style", "text") == "{urn:oasis:names:tc:opendocument:xmlns:style:1.0}text"
     assert _mkTag("blabla", "text") == "text"
-
-# END Test testCoreToOdt_MkTag

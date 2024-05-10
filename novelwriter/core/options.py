@@ -28,12 +28,12 @@ import json
 import logging
 
 from enum import Enum
-from typing import TYPE_CHECKING, Any, TypeVar
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, TypeVar
 
-from novelwriter.error import logException
 from novelwriter.common import checkBool, checkFloat, checkInt, checkString, jsonEncode
 from novelwriter.constants import nwFiles
+from novelwriter.error import logException
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.project import NWProject
@@ -218,5 +218,3 @@ class OptionState:
                     if value in lookup.__members__:
                         return lookup[value]
         return default
-
-# END Class OptionState

@@ -295,5 +295,3 @@ class GuiItemDetails(QWidget):
             self.wCountData.setText(f"{wC:n}")
             self.pCountData.setText(f"{pC:n}")
         return
-
-# END Class GuiItemDetails

@@ -20,13 +20,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import sys
-import pytest
 import logging
+import sys
 
-from mocked import MockGuiMain
+import pytest
 
-from novelwriter import CONFIG, main, logger
+from novelwriter import CONFIG, logger, main
+
+from tests.mocked import MockGuiMain
 
 
 @pytest.mark.base
@@ -70,8 +71,6 @@ def testBaseInit_Launch(caplog, monkeypatch, fncPath):
     with pytest.raises(SystemExit) as ex:
         main([f"--config={fncPath}", f"--data={fncPath}"])
         assert ex.value.code == 0
-
-# END Test testBaseInit_Launch
 
 
 @pytest.mark.base
@@ -136,8 +135,6 @@ def testBaseInit_Options(monkeypatch, fncPath):
     )
     assert nwGUI.closeMain() == "closeMain"
 
-# END Test testBaseInit_Options
-
 
 @pytest.mark.base
 def testBaseInit_Imports(caplog, monkeypatch, fncPath):
@@ -164,5 +161,3 @@ def testBaseInit_Imports(caplog, monkeypatch, fncPath):
     assert "At least Python" in caplog.messages[0]
     assert "At least Qt5" in caplog.messages[1]
     assert "At least PyQt5" in caplog.messages[2]
-
-# END Test testBaseInit_Imports

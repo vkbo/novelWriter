@@ -54,8 +54,6 @@ def testGuiMain_ProjectBlocker(nwGUI):
     assert nwGUI.viewDocument(None) is False
     assert nwGUI.importDocument() is False
 
-# END Test testGuiMain_ProjectBlocker
-
 
 @pytest.mark.gui
 def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
@@ -94,8 +92,6 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
     welcome.close()
 
     # qtbot.stop()
-
-# END Test testGuiMain_Launch
 
 
 @pytest.mark.gui
@@ -145,8 +141,6 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # qtbot.stop()
 
-# END Test testGuiMain_ProjectTreeItems
-
 
 @pytest.mark.gui
 def testGuiMain_UpdateTheme(qtbot, nwGUI):
@@ -166,8 +160,6 @@ def testGuiMain_UpdateTheme(qtbot, nwGUI):
     assert nwGUI.docViewer.docHeader.palette().color(QPalette.ColorRole.Window) == syntaxBack
 
     # qtbot.stop()
-
-# END Test testGuiMain_UpdateTheme
 
 
 @pytest.mark.gui
@@ -566,8 +558,6 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
 
     # qtbot.stop()
 
-# END Test testGuiMain_Editing
-
 
 @pytest.mark.gui
 def testGuiMain_Features(qtbot, nwGUI, projPath, mockRnd):
@@ -622,5 +612,3 @@ def testGuiMain_Features(qtbot, nwGUI, projPath, mockRnd):
     nwGUI.sideBar.mSettings.hide()
 
     # qtbot.stop()
-
-# END Test testGuiMain_Features

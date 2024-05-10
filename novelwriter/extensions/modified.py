@@ -61,8 +61,6 @@ class NToolDialog(QDialog):
         QApplication.processEvents()
         return
 
-# END Class NToolDialog
-
 
 class NNonBlockingDialog(QDialog):
 
@@ -79,8 +77,6 @@ class NNonBlockingDialog(QDialog):
         self.raise_()
         QApplication.processEvents()
         return
-
-# END Class NNonBlockingDialog
 
 
 class NComboBox(QComboBox):
@@ -103,8 +99,6 @@ class NComboBox(QComboBox):
         self.setCurrentIndex(self.findData(default) if idx < 0 else idx)
         return
 
-# END Class NComboBox
-
 
 class NSpinBox(QSpinBox):
 
@@ -120,8 +114,6 @@ class NSpinBox(QSpinBox):
             event.ignore()
         return
 
-# END Class NSpinBox
-
 
 class NDoubleSpinBox(QDoubleSpinBox):
 
@@ -136,8 +128,6 @@ class NDoubleSpinBox(QDoubleSpinBox):
         else:
             event.ignore()
         return
-
-# END Class NDoubleSpinBox
 
 
 class NIconToolButton(QToolButton):
@@ -155,8 +145,6 @@ class NIconToolButton(QToolButton):
         """Set an icon from the current theme."""
         self.setIcon(SHARED.theme.getIcon(iconKey))
         return
-
-# END Class NIconToolButton
 
 
 class NIconToggleButton(QToolButton):
@@ -177,5 +165,3 @@ class NIconToggleButton(QToolButton):
         iconSize = self.iconSize()
         self.setIcon(SHARED.theme.getToggleIcon(iconKey, (iconSize.width(), iconSize.height())))
         return
-
-# END Class NUnfoldButton

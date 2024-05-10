@@ -78,8 +78,6 @@ class _SelectAction(Enum):
     KEEP_POSITION  = 2
     MOVE_AFTER     = 3
 
-# END Class _SelectAction
-
 
 class GuiDocEditor(QPlainTextEdit):
     """Gui Widget: Main Document Editor"""
@@ -2131,8 +2129,6 @@ class GuiDocEditor(QPlainTextEdit):
             self._doReplace = False
         return
 
-# END Class GuiDocEditor
-
 
 class MetaCompleter(QMenu):
     """GuiWidget: Meta Completer Menu
@@ -2210,15 +2206,13 @@ class MetaCompleter(QMenu):
         self.complete.emit(pos, length, value)
         return
 
-# END Class MetaCompleter
-
-
-# =============================================================================================== #
-#  The Off-GUI Thread Word Counter
-#  A runnable for the word counter to be run in the thread pool off the main GUI thread.
-# =============================================================================================== #
 
 class BackgroundWordCounter(QRunnable):
+    """The Off-GUI Thread Word Counter
+
+    A runnable for the word counter to be run in the thread pool off the
+    main GUI thread.
+    """
 
     def __init__(self, docEditor: GuiDocEditor, forSelection: bool = False) -> None:
         super().__init__()
@@ -2251,8 +2245,6 @@ class BackgroundWordCounter(QRunnable):
 
         return
 
-# END Class BackgroundWordCounter
-
 
 class BackgroundWordCounterSignals(QObject):
     """The QRunnable cannot emit a signal, so we need a simple QObject
@@ -2260,15 +2252,13 @@ class BackgroundWordCounterSignals(QObject):
     """
     countsReady = pyqtSignal(int, int, int)
 
-# END Class BackgroundWordCounterSignals
-
-
-# =============================================================================================== #
-#  The Formatting and Options Fold Out Menu
-#  Only used by DocEditor, and is opened by the first button in the header
-# =============================================================================================== #
 
 class GuiDocToolBar(QWidget):
+    """The Formatting and Options Fold Out Menu
+
+    Only used by DocEditor, and is opened by the first button in the
+    header.
+    """
 
     requestDocAction = pyqtSignal(nwDocAction)
 
@@ -2393,15 +2383,13 @@ class GuiDocToolBar(QWidget):
 
         return
 
-# END Class GuiDocToolBar
-
-
-# =============================================================================================== #
-#  The Embedded Document Search/Replace Feature
-#  Only used by DocEditor, and is at a fixed position in the QTextEdit's viewport
-# =============================================================================================== #
 
 class GuiDocEditSearch(QFrame):
+    """The Embedded Document Search/Replace Feature
+
+    Only used by DocEditor, and is at a fixed position in the
+    QTextEdit's viewport.
+    """
 
     def __init__(self, docEditor: GuiDocEditor) -> None:
         super().__init__(parent=docEditor)
@@ -2757,15 +2745,13 @@ class GuiDocEditSearch(QFrame):
         self.searchBox.setPalette(qPalette)
         return
 
-# END Class GuiDocEditSearch
-
-
-# =============================================================================================== #
-#  The Embedded Document Header
-#  Only used by DocEditor, and is at a fixed position in the QTextEdit's viewport
-# =============================================================================================== #
 
 class GuiDocEditHeader(QWidget):
+    """The Embedded Document Header
+
+    Only used by DocEditor, and is at a fixed position in the
+    QTextEdit's viewport.
+    """
 
     closeDocumentRequest = pyqtSignal()
     toggleToolBarRequest = pyqtSignal()
@@ -2980,15 +2966,13 @@ class GuiDocEditHeader(QWidget):
             self.docEditor.requestProjectItemSelected.emit(self._docHandle or "", True)
         return
 
-# END Class GuiDocEditHeader
-
-
-# =============================================================================================== #
-#  The Embedded Document Footer
-#  Only used by DocEditor, and is at a fixed position in the QTextEdit's viewport
-# =============================================================================================== #
 
 class GuiDocEditFooter(QWidget):
+    """The Embedded Document Footer
+
+    Only used by DocEditor, and is at a fixed position in the
+    QTextEdit's viewport.
+    """
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -3171,5 +3155,3 @@ class GuiDocEditFooter(QWidget):
             wText = self._trWordCount.format("0", "+0")
         self.wordsText.setText(wText)
         return
-
-# END Class GuiDocEditFooter

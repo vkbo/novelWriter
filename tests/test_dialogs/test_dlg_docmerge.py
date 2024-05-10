@@ -22,12 +22,12 @@ from __future__ import annotations
 
 import pytest
 
-from tools import buildTestProject, C
-
 from PyQt5.QtCore import Qt
 
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.types import QtUserRole
+
+from tests.tools import C, buildTestProject
 
 
 @pytest.mark.gui
@@ -86,5 +86,3 @@ def testDlgMerge_Main(qtbot, nwGUI, projPath, mockRnd):
     assert data["finalItems"] == [C.hChapterDoc, C.hSceneDoc]
 
     # qtbot.stop()
-
-# END Test testDlgMerge_Main

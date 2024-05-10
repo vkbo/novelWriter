@@ -22,17 +22,17 @@ from __future__ import annotations
 
 import pytest
 
-from mocked import causeException
-
 from PyQt5.QtCore import QEvent, QPoint, Qt, QUrl
 from PyQt5.QtGui import QMouseEvent, QTextCursor
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.enum import nwDocAction
 from novelwriter.core.tohtml import ToHtml
+from novelwriter.enum import nwDocAction
 from novelwriter.gui.docviewer import GuiDocViewer
-from novelwriter.types import QtMouseLeft, QtModeNone
+from novelwriter.types import QtModeNone, QtMouseLeft
+
+from tests.mocked import causeException
 
 
 @pytest.mark.gui
@@ -217,5 +217,3 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     docViewer.updateTheme()
 
     # qtbot.stop()
-
-# END Test testGuiViewer_Main

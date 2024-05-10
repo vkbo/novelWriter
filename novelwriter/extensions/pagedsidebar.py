@@ -25,15 +25,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtGui import QColor, QPaintEvent, QPainter, QPolygon
 from PyQt5.QtCore import QPoint, QRectF, QSize, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QColor, QPainter, QPaintEvent, QPolygon
 from PyQt5.QtWidgets import (
     QAbstractButton, QAction, QButtonGroup, QLabel, QStyle,
     QStyleOptionToolButton, QToolBar, QToolButton, QWidget
 )
 
 from novelwriter.types import (
-    QtPaintAnitAlias, QtAlignLeft, QtMouseOver, QtNoBrush, QtNoPen,
+    QtAlignLeft, QtMouseOver, QtNoBrush, QtNoPen, QtPaintAnitAlias,
     QtSizeExpanding, QtSizeFixed
 )
 
@@ -112,8 +112,6 @@ class NPagedSideBar(QToolBar):
             self.buttonClicked.emit(buttonId)
         return
 
-# END Class NPagedSideBar
-
 
 class _NPagedToolButton(QToolButton):
 
@@ -190,8 +188,6 @@ class _NPagedToolButton(QToolButton):
 
         return
 
-# END Class _NPagedToolButton
-
 
 class _NPagedToolLabel(QLabel):
 
@@ -231,5 +227,3 @@ class _NPagedToolLabel(QLabel):
         paint.drawText(QRectF(self._lM, self._tM, tW, tH), QtAlignLeft, self.text())
 
         return
-
-# END Class _NPagedToolLabel

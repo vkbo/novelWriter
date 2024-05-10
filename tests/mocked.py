@@ -24,10 +24,6 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget
 
 
-# =========================================================================== #
-#  Mock GUI
-# =========================================================================== #
-
 class MockGuiMain(QWidget):
 
     def __init__(self):
@@ -55,8 +51,6 @@ class MockGuiMain(QWidget):
     def close(self):
         return "close"
 
-# END Class MockGuiMain
-
 
 class MockStatusBar:
 
@@ -69,8 +63,6 @@ class MockStatusBar:
     def updateProjectStatus(self, status):
         return
 
-# END Class MockStatusBar
-
 
 class MockTheme:
 
@@ -81,8 +73,6 @@ class MockTheme:
     def getPixmap(self, *a):
         return QPixmap()
 
-# END Class MockTheme
-
 
 class MockApp:
 
@@ -92,13 +82,10 @@ class MockApp:
     def installTranslator(self, language):
         return
 
-# END Class MockApp
 
-
-# =========================================================================== #
-#  Error Functions
-#  Mock functions that will raise errors instead.
-# =========================================================================== #
+# Error Functions
+# ===============
+# Mock functions that will raise errors instead.
 
 def causeOSError(*args, **kwargs):
     raise OSError("Mock OSError")

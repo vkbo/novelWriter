@@ -156,8 +156,6 @@ def testCoreIndex_LoadSave(qtbot, monkeypatch, prjLipsum, mockGUI, tstPaths):
         # Regression test for issue #1718
         project.closeProject()
 
-# END Test testCoreIndex_LoadSave
-
 
 @pytest.mark.core
 def testCoreIndex_ScanThis(mockGUI):
@@ -213,8 +211,6 @@ def testCoreIndex_ScanThis(mockGUI):
     assert pos  == [0, 6, 12, 14]
 
     project.closeProject()
-
-# END Test testCoreIndex_ScanThis
 
 
 @pytest.mark.core
@@ -304,8 +300,6 @@ def testCoreIndex_CheckThese(mockGUI, fncPath, mockRnd):
     assert index.checkThese(["@tag", "Jane | Jane Smith"], nHandle) == [True, False]
 
     project.closeProject()
-
-# END Test testCoreIndex_CheckThese
 
 
 @pytest.mark.core
@@ -550,8 +544,6 @@ def testCoreIndex_ScanText(monkeypatch, mockGUI, fncPath, mockRnd):
 
     project.closeProject()
 
-# END Test testCoreIndex_ScanText
-
 
 @pytest.mark.core
 def testCoreIndex_CommentKeys(monkeypatch, mockGUI, fncPath, mockRnd):
@@ -588,8 +580,6 @@ def testCoreIndex_CommentKeys(monkeypatch, mockGUI, fncPath, mockRnd):
 
     # Check invalid comment style
     assert index.newCommentKey(C.hSceneDoc, None) == "err"  # type: ignore
-
-# END Test testCoreIndex_CommentKeys
 
 
 @pytest.mark.core
@@ -931,8 +921,6 @@ def testCoreIndex_ExtractData(mockGUI, fncPath, mockRnd):
     assert project.saveProject() is True
     project.closeProject()
 
-# END Test testCoreIndex_ExtractData
-
 
 @pytest.mark.core
 def testCoreIndex_TagsIndex():
@@ -1118,8 +1106,6 @@ def testCoreIndex_TagsIndex():
                 "class": "STUFF",
             }
         })
-
-# END Test testCoreIndex_TagsIndex
 
 
 @pytest.mark.core
@@ -1391,8 +1377,6 @@ def testCoreIndex_ItemIndex(mockGUI, fncPath, mockRnd):
         }
     })
 
-# END Test testCoreIndex_ItemIndex
-
 
 @pytest.mark.core
 def testCoreIndex_checkModKey():
@@ -1424,8 +1408,6 @@ def testCoreIndex_checkModKey():
     assert _checkModKey("note", "a1") is True
     assert _checkModKey("note", "a1.2") is False
     assert _checkModKey("note", "a1_2") is True
-
-# END Test testCoreIndex_checkModKey
 
 
 @pytest.mark.core
@@ -1477,5 +1459,3 @@ def testCoreIndex_processComment():
     assert processComment("% note.term: Hi") == (nwComment.NOTE, "term", "Hi", 7, 12)
     assert processComment("% note. term : Hi") == (nwComment.PLAIN, "", "note. term : Hi", 0, 0)
     assert processComment("% note . term : Hi") == (nwComment.PLAIN, "", "note . term : Hi", 0, 0)
-
-# END Test testCoreIndex_processComment

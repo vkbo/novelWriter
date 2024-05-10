@@ -28,8 +28,8 @@ import logging
 from collections.abc import Iterable
 from time import time
 
-from PyQt5.QtGui import QTextBlock, QTextCursor, QTextDocument
 from PyQt5.QtCore import QObject, pyqtSlot
+from PyQt5.QtGui import QTextBlock, QTextCursor, QTextDocument
 from PyQt5.QtWidgets import QApplication, QPlainTextDocumentLayout
 
 from novelwriter import SHARED
@@ -133,5 +133,3 @@ class GuiTextDocument(QTextDocument):
         """Set the spell check state of the syntax highlighter."""
         self._syntax.setSpellCheck(state)
         return
-
-# END Class GuiTextDocument

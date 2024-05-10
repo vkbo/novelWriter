@@ -376,8 +376,6 @@ class SharedData(QObject):
                 widget.close()
         return
 
-# END Class SharedData
-
 
 class _GuiAlert(QMessageBox):
 
@@ -438,5 +436,3 @@ class _GuiAlert(QMessageBox):
             self.setIconPixmap(self._theme.getPixmap("alert_question", (pSz, pSz)))
             self.setWindowTitle(self.tr("Question"))
         return
-
-# END Class _GuiAlert

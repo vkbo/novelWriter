@@ -35,11 +35,12 @@ from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import QCoreApplication
 
-from novelwriter import CONFIG, SHARED, __version__, __hexversion__
+from novelwriter import CONFIG, SHARED, __hexversion__, __version__
 from novelwriter.common import (
-    checkStringNone, formatInt, formatTimeStamp, getFileSize, hexToInt, makeFileNameSafe, minmax
+    checkStringNone, formatInt, formatTimeStamp, getFileSize, hexToInt,
+    makeFileNameSafe, minmax
 )
-from novelwriter.constants import trConst, nwLabels
+from novelwriter.constants import nwLabels, trConst
 from novelwriter.core.index import NWIndex
 from novelwriter.core.options import OptionState
 from novelwriter.core.projectdata import NWProjectData
@@ -47,7 +48,7 @@ from novelwriter.core.projectxml import ProjectXMLReader, ProjectXMLWriter, XMLR
 from novelwriter.core.sessions import NWSessionLog
 from novelwriter.core.storage import NWStorage, NWStorageOpen
 from novelwriter.core.tree import NWTree
-from novelwriter.enum import nwItemType, nwItemClass, nwItemLayout
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -62,8 +63,6 @@ class NWProjectState(Enum):
     LOCKED   = 1
     RECOVERY = 2
     READY    = 3
-
-# END Enum NWProjectState
 
 
 class NWProject:
@@ -595,5 +594,3 @@ class NWProject:
             return False
 
         return True
-
-# END Class NWProject

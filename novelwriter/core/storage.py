@@ -54,16 +54,12 @@ class NWStorageOpen(Enum):
     FAILED    = 3
     READY     = 4
 
-# END Enum NWStorageOpen
-
 
 class NWStorageCreate(Enum):
 
     NOT_EMPTY = 0
     OS_ERROR  = 1
     READY     = 2
-
-# END Enum NWStorageCreate
 
 
 class NWStorage:
@@ -391,8 +387,6 @@ class NWStorage:
         self._lockedBy = None
         return True
 
-# END Class NWStorage
-
 
 class _LegacyStorage:
     """Core: Legacy Storage Converter Utils
@@ -590,5 +584,3 @@ class _LegacyStorage:
             logException()
 
         return
-
-# END Class _LegacyStorage

@@ -253,5 +253,3 @@ class GuiWordList(QDialog):
             if (item := self.listBox.item(i)) and (word := item.text().strip()):
                 result.append(word)
         return result
-
-# END Class GuiWordList

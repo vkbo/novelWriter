@@ -23,8 +23,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import random
 import logging
+import random
 
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import readTextFile
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtAlignLeft, QtAlignRight, QtRoleAction, QtDialogClose
+from novelwriter.types import QtAlignLeft, QtAlignRight, QtDialogClose, QtRoleAction
 
 logger = logging.getLogger(__name__)
 
@@ -150,5 +150,3 @@ class GuiLipsum(QDialog):
         self._lipsumText = "\n\n".join(lipsumText[0:pCount]) + "\n\n"
         self.close()
         return
-
-# END Class GuiLipsum

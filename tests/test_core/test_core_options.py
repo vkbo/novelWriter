@@ -21,14 +21,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import json
-import pytest
 
-from mocked import causeOSError
+import pytest
 
 from novelwriter.constants import nwFiles
 from novelwriter.core.options import OptionState
 from novelwriter.core.project import NWProject
 from novelwriter.gui.noveltree import NovelTreeColumn
+
+from tests.mocked import causeOSError
 
 
 @pytest.mark.core
@@ -102,8 +103,6 @@ def testCoreOptions_LoadSave(monkeypatch, mockGUI, fncPath):
         },
     }
 
-# END Test testCoreOptions_LoadSave
-
 
 @pytest.mark.core
 def testCoreOptions_SetGet(mockGUI):
@@ -151,5 +150,3 @@ def testCoreOptions_SetGet(mockGUI):
     assert options.getFloat("SomeGroup", "mockItem", None) is None  # type: ignore
     assert options.getBool("SomeGroup", "mockItem", None) is None  # type: ignore
     assert options.getEnum("SomeGroup", "mockItem", NovelTreeColumn, None) is None  # type: ignore
-
-# END Test testCoreOptions_SetGet

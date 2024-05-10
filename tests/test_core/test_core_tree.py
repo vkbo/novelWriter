@@ -20,20 +20,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import pytest
 import random
 
 from pathlib import Path
 
-from tools import C, buildTestProject
-from mocked import causeOSError
+import pytest
 
-from novelwriter.enum import nwItemClass, nwItemType, nwItemLayout
 from novelwriter.common import isHandle
 from novelwriter.constants import nwFiles
 from novelwriter.core.item import NWItem
-from novelwriter.core.tree import NWTree
 from novelwriter.core.project import NWProject
+from novelwriter.core.tree import NWTree
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
+
+from tests.mocked import causeOSError
+from tests.tools import C, buildTestProject
 
 
 @pytest.fixture(scope="function")
@@ -263,8 +264,6 @@ def testCoreTree_BuildTree(mockGUI, mockItems):
     assert "a000000000003" not in tree
     assert tree.trashRoot is None
 
-# END Test testCoreTree_BuildTree
-
 
 @pytest.mark.core
 def testCoreTree_PackUnpack(mockGUI, mockItems):
@@ -291,8 +290,6 @@ def testCoreTree_PackUnpack(mockGUI, mockItems):
     assert tree.handles() == []
     tree.unpack(packed)
     assert tree.handles() == aHandles
-
-# END Test testCoreTree_PackUnpack
 
 
 @pytest.mark.core
@@ -360,8 +357,6 @@ def testCoreTree_CheckConsistency(caplog: pytest.LogCaptureFixture, mockGUI, fnc
     assert len(project.tree) == 5
     nHandle = project.tree.findRoot(nwItemClass.NOVEL)
     assert project.tree[nHandle].itemName == "Recovered"  # type: ignore
-
-# END Test testCoreTree_CheckConsistency
 
 
 @pytest.mark.core
@@ -442,8 +437,6 @@ def testCoreTree_Methods(monkeypatch, mockGUI, mockItems):
         "c000000000001", "b000000000001", "a000000000001"
     ]
 
-# END Test testCoreTree_Methods
-
 
 @pytest.mark.core
 def testCoreTree_MakeHandles(mockGUI):
@@ -471,8 +464,6 @@ def testCoreTree_MakeHandles(mockGUI):
     tHandle = tree._makeHandle()
     assert tHandle == handles[3]
 
-# END Test testCoreTree_MakeHandles
-
 
 @pytest.mark.core
 def testCoreTree_Stats(mockGUI, mockItems):
@@ -490,8 +481,6 @@ def testCoreTree_Stats(mockGUI, mockItems):
     novelWords, noteWords = tree.sumWords()
     assert novelWords == 550
     assert noteWords == 400
-
-# END Test testCoreTree_Stats
 
 
 @pytest.mark.core
@@ -525,8 +514,6 @@ def testCoreTree_Reorder(caplog, mockGUI, mockItems):
     tree.setOrder(bHandle)
     assert tree.handles() == bHandle
     assert "Handle 'stuff' in old tree order is not in new order" in caplog.text
-
-# END Test testCoreTree_Reorder
 
 
 @pytest.mark.core
@@ -582,5 +569,3 @@ def testCoreTree_ToCFile(monkeypatch, fncPath, mockGUI, mockItems):
         f"{pathB}  NOVEL      DOCUMENT  Scene One\n"
         f"{pathC}  CHARACTER  NOTE      Jane Doe\n"
     )
-
-# END Test testCoreTree_ToCFile

@@ -94,5 +94,3 @@ class GuiEditLabel(QDialog):
         accepted = cls.result() == QDialog.DialogCode.Accepted
         cls.deleteLater()
         return label, accepted
-
-# END Class GuiEditLabel

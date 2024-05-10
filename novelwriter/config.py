@@ -24,24 +24,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import sys
 import json
 import logging
+import sys
 
-from time import time
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+from time import time
 
-from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtCore import (
     PYQT_VERSION, PYQT_VERSION_STR, QT_VERSION, QT_VERSION_STR, QLibraryInfo,
     QLocale, QStandardPaths, QSysInfo, QTranslator
 )
+from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtWidgets import QApplication
 
-from novelwriter.error import formatException, logException
 from novelwriter.common import NWConfigParser, checkInt, checkPath, formatTimeStamp
 from novelwriter.constants import nwFiles, nwUnicode
+from novelwriter.error import formatException, logException
 
 logger = logging.getLogger(__name__)
 
@@ -787,8 +787,6 @@ class Config:
             logger.debug("Checking package 'pyenchant': OK")
         return
 
-# END Class Config
-
 
 class RecentProjects:
 
@@ -857,5 +855,3 @@ class RecentProjects:
             logger.debug("Removed recent: %s", path)
             self.saveCache()
         return
-
-# END Class RecentProjects

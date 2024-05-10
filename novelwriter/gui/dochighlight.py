@@ -463,8 +463,6 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         return
 
-# END Class GuiDocHighlighter
-
 
 class TextBlockData(QTextBlockUserData):
 
@@ -505,5 +503,3 @@ class TextBlockData(QTextBlockUserData):
                         (rxMatch.capturedStart(0), rxMatch.capturedLength(0))
                     )
         return self._spellErrors
-
-# END Class TextBlockData

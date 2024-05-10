@@ -125,8 +125,6 @@ def testCoreTools_DocMerger(monkeypatch, mockGUI, fncPath, tstPaths, mockRnd, ip
     # Just for debugging
     docMerger.writeTargetDoc()
 
-# END Test testCoreTools_DocMerger
-
 
 @pytest.mark.core
 def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
@@ -264,8 +262,6 @@ def testCoreTools_DocSplitter(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText)
 
     project.saveProject()
 
-# END Test testCoreTools_DocSplitter
-
 
 @pytest.mark.core
 def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
@@ -401,8 +397,6 @@ def testCoreTools_DocDuplicator(mockGUI, fncPath, tstPaths, mockRnd):
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
-# END Test testCoreTools_DocDuplicator
-
 
 @pytest.mark.core
 def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
@@ -479,8 +473,6 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
     assert pruneResult(search.iterSearch(project, "Lorem"), 2) == [(15, 5, "Lorem")]
     search.setCaseSensitive(False)
 
-# END Test testCoreTools_DocSearch
-
 
 @pytest.mark.core
 def testCoreTools_ProjectBuilderWrapper(monkeypatch, caplog, fncPath, mockGUI):
@@ -508,8 +500,6 @@ def testCoreTools_ProjectBuilderWrapper(monkeypatch, caplog, fncPath, mockGUI):
     caplog.clear()
     assert builder.buildProject({"path": fncPath}) is False
     assert "The target folder is not empty." in caplog.text
-
-# END Test testCoreTools_ProjectBuilderWrapper
 
 
 @pytest.mark.core
@@ -544,8 +534,6 @@ def testCoreTools_ProjectBuilderA(monkeypatch, fncPath, tstPaths, mockGUI, mockR
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
 
-# END Test testCoreTools_ProjectBuilderA
-
 
 @pytest.mark.core
 def testCoreTools_ProjectBuilderB(monkeypatch, fncPath, tstPaths, mockGUI, mockRnd):
@@ -578,8 +566,6 @@ def testCoreTools_ProjectBuilderB(monkeypatch, fncPath, tstPaths, mockGUI, mockR
 
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, ignoreStart=XML_IGNORE)
-
-# END Test testCoreTools_ProjectBuilderB
 
 
 @pytest.mark.core
@@ -644,8 +630,6 @@ def testCoreTools_ProjectBuilderCopyPlain(monkeypatch, caplog, mockGUI, prjLipsu
     assert dstProject.data.saveCount < 5
     assert dstProject.data.autoCount < 5
     assert dstProject.data.editTime < 10
-
-# END Test testCoreTools_ProjectBuilderCopyPlain
 
 
 @pytest.mark.core
@@ -723,8 +707,6 @@ def testCoreTools_ProjectBuilderCopyZipped(monkeypatch, caplog, mockGUI, fncPath
     assert dstProject.data.autoCount < 5
     assert dstProject.data.editTime < 10
 
-# END Test testCoreTools_ProjectBuilderCopyZipped
-
 
 @pytest.mark.core
 def testCoreTools_ProjectBuilderSample(monkeypatch, mockGUI, fncPath, tstPaths):
@@ -769,5 +751,3 @@ def testCoreTools_ProjectBuilderSample(monkeypatch, mockGUI, fncPath, tstPaths):
     # Can't create to the same target again
     assert builder.buildProject(data) is False
     dstSample.unlink()
-
-# END Test testCoreTools_ProjectBuilderSample

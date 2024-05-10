@@ -182,8 +182,6 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
             "Build: Failed to build '04468803b92e1'",
         ]
 
-# END Test testCoreDocBuild_OpenDocument
-
 
 @pytest.mark.core
 def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
@@ -251,8 +249,6 @@ def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
 
         assert docBuild.error == "OSError: Mock OSError"
         assert not docFile.is_file()
-
-# END Test testCoreDocBuild_HTML
 
 
 @pytest.mark.core
@@ -322,8 +318,6 @@ def testCoreDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths
         assert docBuild.error == "OSError: Mock OSError"
         assert not docFile.is_file()
 
-# END Test testCoreDocBuild_Markdown
-
 
 @pytest.mark.core
 def testCoreDocBuild_NWD(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
@@ -392,8 +386,6 @@ def testCoreDocBuild_NWD(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
         assert docBuild.error == "OSError: Mock OSError"
         assert not docFile.is_file()
 
-# END Test testCoreDocBuild_NWD
-
 
 @pytest.mark.core
 def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
@@ -456,8 +448,6 @@ def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
         "### New Scene\n\n\n"
     )
     docFile.unlink()
-
-# END Test testCoreDocBuild_Custom
 
 
 @pytest.mark.core
@@ -600,5 +590,3 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     assert "meta" in data
     assert "text" in data
     docFile.unlink()
-
-# END Test testCoreDocBuild_IterBuild

@@ -22,8 +22,8 @@ from __future__ import annotations
 
 import shutil
 
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QWidget
 
@@ -56,8 +56,6 @@ class C:
     hChapterDir = "000000000000d"
     hChapterDoc = "000000000000e"
     hSceneDoc   = "000000000000f"
-
-# END Class C
 
 
 def cmpFiles(
@@ -148,9 +146,9 @@ def buildTestProject(obj: object, projPath: Path) -> None:
     """Build a standard test project in projPath using the project
     object as the parent.
     """
+    from novelwriter.core.project import NWProject
     from novelwriter.enum import nwItemClass
     from novelwriter.guimain import GuiMain
-    from novelwriter.core.project import NWProject
 
     if isinstance(obj, NWProject):
         nwGUI = None
@@ -220,5 +218,3 @@ class SimpleDialog(QDialog):
     @property
     def widget(self) -> QWidget:
         return self._widget
-
-# END Class TestDialog

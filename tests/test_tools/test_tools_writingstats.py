@@ -21,12 +21,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import json
-import pytest
 
 from pathlib import Path
 
-from mocked import causeOSError
-from tools import buildTestProject
+import pytest
 
 from PyQt5.QtWidgets import QAction, QFileDialog
 
@@ -34,6 +32,9 @@ from novelwriter import SHARED
 from novelwriter.constants import nwFiles
 from novelwriter.tools.writingstats import GuiWritingStats
 from novelwriter.types import QtMouseLeft
+
+from tests.mocked import causeOSError
+from tests.tools import buildTestProject
 
 
 @pytest.mark.gui
@@ -388,5 +389,3 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
 
     sessLog._doClose()
     assert nwGUI.closeProject() is True
-
-# END Test testToolWritingStats_Main

@@ -54,8 +54,6 @@ def testBaseCommon_checkStringNone():
     assert checkStringNone(1.0, "NotNone") == "NotNone"
     assert checkStringNone(True, "NotNone") == "NotNone"
 
-# END Test testBaseCommon_checkStringNone
-
 
 @pytest.mark.base
 def testBaseCommon_checkString():
@@ -68,8 +66,6 @@ def testBaseCommon_checkString():
     assert checkString(1, "default") == "default"
     assert checkString(1.0, "default") == "default"
     assert checkString(True, "default") == "default"
-
-# END Test testBaseCommon_checkString
 
 
 @pytest.mark.base
@@ -85,8 +81,6 @@ def testBaseCommon_checkInt():
     assert checkInt("1", 3) == 1
     assert checkInt("1.0", 3) == 3
 
-# END Test testBaseCommon_checkInt
-
 
 @pytest.mark.base
 def testBaseCommon_checkFloat():
@@ -100,8 +94,6 @@ def testBaseCommon_checkFloat():
     assert checkFloat(None, 3.0) == 3.0
     assert checkFloat("1", 3.0) == 1.0
     assert checkFloat("1.0", 3.0) == 1.0
-
-# END Test testBaseCommon_checkFloat
 
 
 @pytest.mark.base
@@ -150,8 +142,6 @@ def testBaseCommon_checkBool():
     assert checkBool(2.0, True) is True
     assert checkBool(2.0, False) is False
 
-# END Test testBaseCommon_checkBool
-
 
 @pytest.mark.base
 def testBaseCommon_checkUuid():
@@ -163,8 +153,6 @@ def testBaseCommon_checkUuid():
     assert checkUuid("e2be99af-f9bf-4403-857a-c3d1ac25abeaa", None) is None  # type: ignore
     assert checkUuid(testUuid, None) == testUuid  # type: ignore
 
-# END Test testBaseCommon_checkUuid
-
 
 @pytest.mark.base
 def testBaseCommon_checkPath():
@@ -174,8 +162,6 @@ def testBaseCommon_checkPath():
     assert checkPath(None, None) is None  # type: ignore
     assert checkPath("", None) is None  # type: ignore
     assert checkPath("   ", None) is None  # type: ignore
-
-# END Test testBaseCommon_checkPath
 
 
 @pytest.mark.base
@@ -187,8 +173,6 @@ def testBaseCommon_isHandle():
     assert isHandle("None") is False
     assert isHandle(None) is False
     assert isHandle("STUFF") is False
-
-# END Test testBaseCommon_isHandle
 
 
 @pytest.mark.base
@@ -204,8 +188,6 @@ def testBaseCommon_isTitleTag():
     assert isTitleTag("None") is False
     assert isTitleTag(None) is False
     assert isTitleTag("STUFF") is False
-
-# END Test testBaseCommon_isTitleTag
 
 
 @pytest.mark.base
@@ -228,8 +210,6 @@ def testBaseCommon_isItemClass():
     assert isItemClass(None) is False
     assert isItemClass("STUFF") is False
 
-# END Test testBaseCommon_isItemClass
-
 
 @pytest.mark.base
 def testBaseCommon_isItemType():
@@ -246,8 +226,6 @@ def testBaseCommon_isItemType():
     assert isItemType("None") is False
     assert isItemType(None) is False  # type: ignore
     assert isItemType("STUFF") is False
-
-# END Test testBaseCommon_isItemType
 
 
 @pytest.mark.base
@@ -271,8 +249,6 @@ def testBaseCommon_isItemLayout():
     assert isItemLayout(None) is False  # type: ignore
     assert isItemLayout("STUFF") is False
 
-# END Test testBaseCommon_isItemLayout
-
 
 @pytest.mark.base
 def testBaseCommon_isListInstance():
@@ -289,8 +265,6 @@ def testBaseCommon_isListInstance():
     assert isListInstance([1], str) is False
     assert isListInstance(["stuff"], int) is False
 
-# END Test testBaseCommon_isListInstance
-
 
 @pytest.mark.base
 def testBaseCommon_hexToInt():
@@ -302,16 +276,12 @@ def testBaseCommon_hexToInt():
     assert hexToInt("0xffffq") == 0
     assert hexToInt("0xffffq", 12) == 12
 
-# END Test testBaseCommon_hexToInt
-
 
 @pytest.mark.base
 def testBaseCommon_minmax():
     """Test the minmax function."""
     for i in range(-5, 15):
         assert 0 <= minmax(i, 0, 10) <= 10
-
-# END Test testBaseCommon_minmax
 
 
 @pytest.mark.base
@@ -320,8 +290,6 @@ def testBaseCommon_checkIntTuple():
     assert checkIntTuple(0, (0, 1, 2), 3) == 0
     assert checkIntTuple(5, (0, 1, 2), 3) == 3
 
-# END Test testBaseCommon_checkIntTuple
-
 
 @pytest.mark.base
 def testBaseCommon_formatTimeStamp():
@@ -329,8 +297,6 @@ def testBaseCommon_formatTimeStamp():
     tTime = time.mktime(time.gmtime(0))
     assert formatTimeStamp(tTime, False) == "1970-01-01 00:00:00"
     assert formatTimeStamp(tTime, True) == "1970-01-01 00.00.00"
-
-# END Test testBaseCommon_formatTimeStamp
 
 
 @pytest.mark.base
@@ -352,8 +318,6 @@ def testBaseCommon_formatTime():
     assert formatTime(86400) == "1-00:00:00"
     assert formatTime(360000) == "4-04:00:00"
 
-# END Test testBaseCommon_formatTime
-
 
 @pytest.mark.base
 def testBaseCommon_formatVersion():
@@ -362,8 +326,6 @@ def testBaseCommon_formatVersion():
     assert formatVersion("1.2a1") == "1.2 Alpha 1"
     assert formatVersion("1.2b2") == "1.2 Beta 2"
     assert formatVersion("1.2rc3") == "1.2 RC 3"
-
-# END Test testBaseCommon_formatVersion
 
 
 @pytest.mark.base
@@ -375,8 +337,6 @@ def testBaseCommon_formatFileFilter():
         "Stuff (*.stuff);;Text files (*.txt);;All files (*)"
     )
 
-# END Test testBaseCommon_formatFileFilter
-
 
 @pytest.mark.base
 def testBaseCommon_simplified():
@@ -384,8 +344,6 @@ def testBaseCommon_simplified():
     assert simplified("Hello World") == "Hello World"
     assert simplified("  Hello    World   ") == "Hello World"
     assert simplified("\tHello\n\r\tWorld") == "Hello World"
-
-# END Test testBaseCommon_simplified
 
 
 @pytest.mark.base
@@ -404,8 +362,6 @@ def testBaseCommon_elide():
     assert elide("Hello World!",  2) == " ..."
     assert elide("Hello World!",  1) == " ..."
     assert elide("Hello World!",  0) == " ..."
-
-# END Test testBaseCommon_elide
 
 
 @pytest.mark.base
@@ -432,8 +388,6 @@ def testBaseCommon_yesNo():
     assert yesNo(1.0) == "yes"  # type: ignore
     assert yesNo(2.0) == "yes"  # type: ignore
 
-# END Test testBaseCommon_yesNo
-
 
 @pytest.mark.base
 def testBaseCommon_formatInt():
@@ -455,8 +409,6 @@ def testBaseCommon_formatInt():
     assert formatInt(None) == "ERR"  # type: ignore
     assert formatInt("42") == "ERR"  # type: ignore
 
-# END Test testBaseCommon_formatInt
-
 
 @pytest.mark.base
 def testBaseCommon_transferCase():
@@ -468,8 +420,6 @@ def testBaseCommon_transferCase():
     assert transferCase("Source", "target") == "Target"
     assert transferCase("SOURCE", "target") == "TARGET"
     assert transferCase("source", "TARGET") == "target"
-
-# END Test testBaseCommon_transferCase
 
 
 @pytest.mark.base
@@ -504,8 +454,6 @@ def testBaseCommon_fuzzyTime():
     assert fuzzyTime(47336399) == "a year ago"
     assert fuzzyTime(47336400) == "2 years ago"
 
-# END Test testBaseCommon_fuzzyTime
-
 
 @pytest.mark.core
 def testBaseCommon_numberToRoman():
@@ -531,16 +479,12 @@ def testBaseCommon_numberToRoman():
     assert numberToRoman(2010, False) == "MMX"
     assert numberToRoman(999, True) == "cmxcix"
 
-# END Test testBaseCommon_numberToRoman
-
 
 @pytest.mark.base
 def testBaseCommon_cssCol():
     """Test the cssCol function."""
     assert cssCol(QColor(0, 0, 0, 0)) == "rgba(0, 0, 0, 0)"
     assert cssCol(QColor(10, 20, 30, 40)) == "rgba(10, 20, 30, 40)"
-
-# END Test testBaseCommon_cssCol
 
 
 @pytest.mark.base
@@ -623,8 +567,6 @@ def testBaseCommon_jsonEncode():
         '}'
     )
 
-# END Test testBaseCommon_jsonEncode
-
 
 @pytest.mark.base
 def testBaseCommon_xmlIndent():
@@ -650,8 +592,6 @@ def testBaseCommon_xmlIndent():
     xmlIndent(data)  # type: ignore
     assert data == "foobar"
 
-# END Test testBaseCommon_xmlIndent
-
 
 @pytest.mark.base
 def testBaseCommon_readTextFile(monkeypatch, fncPath, ipsumText):
@@ -667,8 +607,6 @@ def testBaseCommon_readTextFile(monkeypatch, fncPath, ipsumText):
         mp.setattr("pathlib.Path.read_text", causeOSError)
         assert readTextFile(testFile) == ""
 
-# END Test testBaseCommon_readTextFile
-
 
 @pytest.mark.base
 def testBaseCommon_makeFileNameSafe():
@@ -680,8 +618,6 @@ def testBaseCommon_makeFileNameSafe():
     assert makeFileNameSafe("æøå") == "æøå"
     assert makeFileNameSafe("Stuff œﬁ2⁵") == "Stuff œfi25"
 
-# END Test testBaseCommon_makeFileNameSafe
-
 
 @pytest.mark.base
 def testBaseCommon_getFileSize(fncPath):
@@ -692,8 +628,6 @@ def testBaseCommon_getFileSize(fncPath):
     assert getFileSize(fncPath / "nope.txt") == -1
     assert getFileSize(fncPath / "one.txt") == 6
     assert getFileSize(fncPath / "two.txt") == 0
-
-# END Test testBaseCommon_getFileSize
 
 
 @pytest.mark.base
@@ -710,8 +644,6 @@ def testBaseCommon_openExternalPath(monkeypatch, tstPaths):
     assert openExternalPath(Path("/foo/bar")) is False
     assert openExternalPath(tstPaths.tmpDir) is True
     assert lastUrl.startswith("file://")
-
-# END Test testBaseCommon_openExternalPath
 
 
 @pytest.mark.base
@@ -801,5 +733,3 @@ def testBaseCommon_NWConfigParser(fncPath):
 
     assert cfgParser.rdIntList("nope", "list2", [1]) == [1]
     assert cfgParser.rdIntList("main", "blabla", [1]) == [1]
-
-# END Test testBaseCommon_NWConfigParser

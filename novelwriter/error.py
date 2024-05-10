@@ -23,17 +23,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import sys
-import random
 import logging
+import random
+import sys
 
 from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QFont, QFontDatabase
 from PyQt5.QtWidgets import (
-    QApplication, QWidget, QDialog, QGridLayout, QStyle, QPlainTextEdit,
-    QLabel, QDialogButtonBox
+    QApplication, QDialog, QDialogButtonBox, QGridLayout, QLabel,
+    QPlainTextEdit, QStyle, QWidget
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -41,10 +41,6 @@ if TYPE_CHECKING:  # pragma: no cover
 
 logger = logging.getLogger(__name__)
 
-
-# =============================================================================================== #
-#  Utility Functions
-# =============================================================================================== #
 
 def logException() -> None:
     """Log the content of an exception message."""
@@ -60,10 +56,6 @@ def formatException(exc: BaseException) -> str:
     """
     return f"{type(exc).__name__}: {str(exc)}"
 
-
-# =============================================================================================== #
-#  Error Handler
-# =============================================================================================== #
 
 class NWErrorMessage(QDialog):
 
@@ -125,9 +117,11 @@ class NWErrorMessage(QDialog):
         error traceback.
         """
         from traceback import format_tb
+
+        from PyQt5.QtCore import PYQT_VERSION_STR, QT_VERSION_STR, QSysInfo
+
         from novelwriter import __version__
         from novelwriter.constants import nwConst
-        from PyQt5.QtCore import QT_VERSION_STR, PYQT_VERSION_STR, QSysInfo
 
         self.msgHead.setText(
             "<p>An unhandled error has been encountered.</p>"
@@ -175,12 +169,11 @@ class NWErrorMessage(QDialog):
         self.close()
         return
 
-# END Class NWErrorMessage
-
 
 def exceptionHandler(exType: type, exValue: BaseException, exTrace: TracebackType) -> None:
     """Function to catch unhandled global exceptions."""
     from traceback import print_tb
+
     from PyQt5.QtWidgets import QApplication
 
     logger.critical("%s: %s", exType.__name__, str(exValue))

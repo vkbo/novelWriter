@@ -71,8 +71,6 @@ def testCoreToMarkdown_ConvertHeaders(mockGUI):
     toMD.doConvert()
     assert toMD.result == "## Prologue\n\n"
 
-# END Test testCoreToMarkdown_ConvertHeaders
-
 
 @pytest.mark.core
 def testCoreToMarkdown_ConvertParagraphs(mockGUI):
@@ -209,8 +207,6 @@ def testCoreToMarkdown_ConvertParagraphs(mockGUI):
         "1. Footnote text A.\n\n"
     )
 
-# END Test testCoreToMarkdown_ConvertParagraphs
-
 
 @pytest.mark.core
 def testCoreToMarkdown_ConvertDirect(mockGUI):
@@ -249,8 +245,6 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
     ]
     toMD.doConvert()
     assert toMD.result == "\n\n"
-
-# END Test testCoreToMarkdown_ConvertDirect
 
 
 @pytest.mark.core
@@ -304,8 +298,6 @@ def testCoreToMarkdown_Save(mockGUI, fncPath):
     toMD.saveMarkdown(saveFile)
     assert saveFile.read_text(encoding="utf-8") == "".join(resText)
 
-# END Test testCoreToMarkdown_Save
-
 
 @pytest.mark.core
 def testCoreToMarkdown_Format(mockGUI):
@@ -317,5 +309,3 @@ def testCoreToMarkdown_Format(mockGUI):
     assert toMD._formatKeywords("tag: Jane", toMD.A_NONE) == "**Tag:** Jane\n\n"
     assert toMD._formatKeywords("tag: Jane, John", toMD.A_NONE) == "**Tag:** Jane, John\n\n"
     assert toMD._formatKeywords("tag: Jane", toMD.A_Z_BTMMRG) == "**Tag:** Jane  \n"
-
-# END Test testCoreToMarkdown_Format

@@ -603,5 +603,3 @@ class NWConfigParser(ConfigParser):
             for i in range(min(len(data), len(result))):
                 result[i] = checkInt(data[i].strip(), result[i])
         return result
-
-# END Class NWConfigParser

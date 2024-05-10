@@ -991,5 +991,3 @@ class GuiMainMenu(QMenuBar):
         self.aWebsite.triggered.connect(lambda: self._openWebsite(nwConst.URL_WEB))
 
         return
-
-# END Class GuiMainMenu

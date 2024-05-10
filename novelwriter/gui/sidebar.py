@@ -150,8 +150,6 @@ class GuiSideBar(QWidget):
 
         return
 
-# END Class GuiSideBar
-
 
 class _PopRightMenu(QMenu):
 
@@ -162,5 +160,3 @@ class _PopRightMenu(QMenu):
                 offset = QPoint(parent.width(), parent.height() - self.height())
                 self.move(parent.mapToGlobal(offset))
         return super(_PopRightMenu, self).event(event)
-
-# END Class _PopRightMenu

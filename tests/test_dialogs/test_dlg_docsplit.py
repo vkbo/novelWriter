@@ -22,11 +22,11 @@ from __future__ import annotations
 
 import pytest
 
-from tools import C, buildTestProject
-
 from novelwriter import SHARED
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
+
+from tests.tools import C, buildTestProject
 
 
 @pytest.mark.gui
@@ -56,6 +56,7 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     )
 
     hSplitDoc = project.newFile("Split Doc", C.hNovelRoot)
+    assert hSplitDoc is not None
     project.writeNewFile(hSplitDoc, 1, True, docText)
     projTree.revealNewTreeItem(hSplitDoc, nHandle=C.hNovelRoot, wordCount=True)
 
@@ -98,5 +99,3 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     nwSplit.reject()
     # qtbot.stop()
-
-# END Test testDlgSplit_Main

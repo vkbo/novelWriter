@@ -20,21 +20,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import sys
-import pytest
-import shutil
 import logging
+import shutil
+import sys
 
 from pathlib import Path
 
-from tools import cleanProject
-from mocked import MockGuiMain, MockTheme
+import pytest
 
 from PyQt5.QtWidgets import QMessageBox
 
 sys.path.insert(1, str(Path(__file__).parent.parent.absolute()))
 
 from novelwriter import CONFIG, SHARED, main  # noqa: E402
+
+from tests.mocked import MockGuiMain, MockTheme  # noqa: E402
+from tests.tools import cleanProject  # noqa: E402
 
 _TST_ROOT = Path(__file__).parent
 _TMP_ROOT = _TST_ROOT / "temp"

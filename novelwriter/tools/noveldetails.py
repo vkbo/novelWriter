@@ -186,8 +186,6 @@ class GuiNovelDetails(NNonBlockingDialog):
 
         return
 
-# END Class GuiNovelDetails
-
 
 class _OverviewPage(NScrollablePage):
 
@@ -293,8 +291,6 @@ class _OverviewPage(NScrollablePage):
         self.novelScenes.setText(f"{hCounts[3]:n}")
 
         return
-
-# END Class _OverviewPage
 
 
 class _ContentsPage(NFixedPage):
@@ -524,5 +520,3 @@ class _ContentsPage(NFixedPage):
         self._data = SHARED.project.index.getTableOfContents(rootHandle, 2)
         self._data.append(("", 0, self.tr("END"), 0))
         return
-
-# END Class _ContentsPage

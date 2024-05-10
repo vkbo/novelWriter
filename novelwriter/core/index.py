@@ -707,12 +707,9 @@ class NWIndex:
             return tName, tClass, iItem, None if iItem is None else iItem[tHeading]
         return "", "", None, None
 
-# END Class NWIndex
 
-
-# =============================================================================================== #
-#  The Tags Index Object
-# =============================================================================================== #
+# The Tags Index Object
+# =====================
 
 class TagsIndex:
     """Core: Tags Index Wrapper Class
@@ -832,12 +829,9 @@ class TagsIndex:
 
         return
 
-# END Class TagsIndex
 
-
-# =============================================================================================== #
-#  The Item Index Objects
-# =============================================================================================== #
+# The Item Index Objects
+# ======================
 
 class ItemIndex:
     """Core: Item Index Wrapper Class
@@ -1014,8 +1008,6 @@ class ItemIndex:
 
         return
 
-# END Class ItemIndex
-
 
 class IndexItem:
     """Core: Single Index Item Class
@@ -1175,8 +1167,6 @@ class IndexItem:
             self._notes[style] = set(keys)
 
         return
-
-# END Class IndexItem
 
 
 class IndexHeading:
@@ -1353,12 +1343,9 @@ class IndexHeading:
                     raise ValueError("The itemIndex contains an invalid reference type")
         return
 
-# END Class IndexHeading
 
-
-# =============================================================================================== #
-#  Text Processing Functions
-# =============================================================================================== #
+# Text Processing Functions
+# =========================
 
 MODIFIERS = {
     "synopsis": nwComment.SYNOPSIS,

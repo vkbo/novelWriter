@@ -20,21 +20,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import pytest
-
 from pathlib import Path
 
-from tools import C, buildTestProject
+import pytest
 
-from PyQt5.QtCore import QPoint, Qt, QEvent
+from PyQt5.QtCore import QEvent, QPoint, Qt
 from PyQt5.QtGui import QFocusEvent
 from PyQt5.QtWidgets import QInputDialog, QToolTip
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.enum import nwWidget, nwItemType
+from novelwriter.enum import nwItemType, nwWidget
 from novelwriter.gui.noveltree import GuiNovelTree, NovelTreeColumn
 from novelwriter.types import QtMouseLeft
+
+from tests.tools import C, buildTestProject
 
 
 @pytest.mark.gui
@@ -233,5 +233,3 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # qtbot.stop()
     nwGUI.closeProject()
-
-# END Test testGuiNovelTree_TreeItems

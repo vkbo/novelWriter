@@ -23,18 +23,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import random
 import logging
+import random
 
-from typing import TYPE_CHECKING, Literal, overload
-from pathlib import Path
 from collections.abc import Iterable, Iterator
+from pathlib import Path
+from typing import TYPE_CHECKING, Literal, overload
 
-from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
-from novelwriter.error import logException
 from novelwriter.common import isHandle
 from novelwriter.constants import nwFiles
 from novelwriter.core.item import NWItem
+from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
+from novelwriter.error import logException
 
 if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.core.project import NWProject
@@ -520,5 +520,3 @@ class NWTree:
             handle = self._makeHandle()
 
         return handle
-
-# END Class NWTree
