@@ -1113,6 +1113,25 @@ class _FormatTab(NScrollableForm):
         self.addRow(self._build.getLabel("format.stripUnicode"), self.stripUnicode)
         self.addRow(self._build.getLabel("format.replaceTabs"), self.replaceTabs)
 
+        # First Line Indent
+        # =================
+
+        self.addGroupLabel(self._build.getLabel("format.grpParIndent"))
+
+        self.firstIndent = NSwitch(self, height=iPx)
+        self.indentFirstPar = NSwitch(self, height=iPx)
+
+        self.indentWidth = NDoubleSpinBox(self)
+        self.indentWidth.setFixedWidth(spW)
+        self.indentWidth.setMinimum(0.1)
+        self.indentWidth.setMaximum(9.9)
+        self.indentWidth.setSingleStep(0.1)
+        self.indentWidth.setDecimals(1)
+
+        self.addRow(self._build.getLabel("format.firstLineIndent"), self.firstIndent)
+        self.addRow(self._build.getLabel("format.firstIndentWidth"), self.indentWidth, unit="em")
+        self.addRow(self._build.getLabel("format.indentFirstPar"), self.indentFirstPar)
+
         # Page Layout
         # ===========
 
@@ -1176,6 +1195,10 @@ class _FormatTab(NScrollableForm):
         self.stripUnicode.setChecked(self._build.getBool("format.stripUnicode"))
         self.replaceTabs.setChecked(self._build.getBool("format.replaceTabs"))
 
+        self.firstIndent.setChecked(self._build.getBool("format.firstLineIndent"))
+        self.indentWidth.setValue(self._build.getFloat("format.firstIndentWidth"))
+        self.indentFirstPar.setChecked(self._build.getBool("format.indentFirstPar"))
+
         pageUnit = self._build.getStr("format.pageUnit")
         index = self.pageUnit.findData(pageUnit)
         if index >= 0:
@@ -1210,6 +1233,10 @@ class _FormatTab(NScrollableForm):
         self._build.setValue("format.justifyText", self.justifyText.isChecked())
         self._build.setValue("format.stripUnicode", self.stripUnicode.isChecked())
         self._build.setValue("format.replaceTabs", self.replaceTabs.isChecked())
+
+        self._build.setValue("format.firstLineIndent", self.firstIndent.isChecked())
+        self._build.setValue("format.firstIndentWidth", self.indentWidth.value())
+        self._build.setValue("format.indentFirstPar", self.indentFirstPar.isChecked())
 
         self._build.setValue("format.pageUnit", str(self.pageUnit.currentData()))
         self._build.setValue("format.pageSize", str(self.pageSize.currentData()))
@@ -1355,9 +1382,6 @@ class _OutputTab(NScrollableForm):
         self.odtPageCountOffset.setMinimumWidth(spW)
         self.addRow(self._build.getLabel("odt.pageCountOffset"), self.odtPageCountOffset)
 
-        self.odtFirstLineIndent = NSwitch(self, height=iPx)
-        self.addRow(self._build.getLabel("odt.firstLineIndent"), self.odtFirstLineIndent)
-
         # HTML Document
         self.addGroupLabel(self._build.getLabel("html"))
 
@@ -1383,7 +1407,6 @@ class _OutputTab(NScrollableForm):
         self.odtAddColours.setChecked(self._build.getBool("odt.addColours"))
         self.odtPageHeader.setText(self._build.getStr("odt.pageHeader"))
         self.odtPageCountOffset.setValue(self._build.getInt("odt.pageCountOffset"))
-        self.odtFirstLineIndent.setChecked(self._build.getBool("odt.firstLineIndent"))
         self.htmlAddStyles.setChecked(self._build.getBool("html.addStyles"))
         self.htmlPreserveTabs.setChecked(self._build.getBool("html.preserveTabs"))
         self.mdPreserveBreaks.setChecked(self._build.getBool("md.preserveBreaks"))
@@ -1395,7 +1418,6 @@ class _OutputTab(NScrollableForm):
         self._build.setValue("odt.addColours", self.odtAddColours.isChecked())
         self._build.setValue("odt.pageHeader", self.odtPageHeader.text())
         self._build.setValue("odt.pageCountOffset", self.odtPageCountOffset.value())
-        self._build.setValue("odt.firstLineIndent", self.odtFirstLineIndent.isChecked())
         self._build.setValue("html.addStyles", self.htmlAddStyles.isChecked())
         self._build.setValue("html.preserveTabs", self.htmlPreserveTabs.isChecked())
         self._build.setValue("md.preserveBreaks", self.mdPreserveBreaks.isChecked())

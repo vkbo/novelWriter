@@ -21,21 +21,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import json
+
+from pathlib import Path
+from shutil import copyfile
+
 import pytest
 
-from shutil import copyfile
-from pathlib import Path
-
-from tools import C, ODT_IGNORE, buildTestProject, cmpFiles
-from mocked import causeException, causeOSError
-
-from novelwriter.enum import nwBuildFmt
+from novelwriter.core.buildsettings import BuildSettings
+from novelwriter.core.docbuild import NWBuildDocument
+from novelwriter.core.project import NWProject
+from novelwriter.core.tohtml import ToHtml
 from novelwriter.core.tomd import ToMarkdown
 from novelwriter.core.toodt import ToOdt
-from novelwriter.core.tohtml import ToHtml
-from novelwriter.core.project import NWProject
-from novelwriter.core.docbuild import NWBuildDocument
-from novelwriter.core.buildsettings import BuildSettings
+from novelwriter.enum import nwBuildFmt
+
+from tests.mocked import causeException, causeOSError
+from tests.tools import ODT_IGNORE, C, buildTestProject, cmpFiles
 
 BUILD_CONF = {
     "name": "Test Build",
@@ -63,8 +64,8 @@ BUILD_CONF = {
         "format.justifyText": True,
         "format.stripUnicode": False,
         "format.replaceTabs": True,
+        "format.firstLineIndent": True,
         "odt.addColours": True,
-        "odt.firstLineIndent": True,
         "html.addStyles": True,
     },
     "content": {
