@@ -116,6 +116,7 @@ class Tokenizer(ABC):
 
     # Lookups
     L_HEADINGS = [T_TITLE, T_HEAD1, T_HEAD2, T_HEAD3, T_HEAD4]
+    L_SKIP_INDENT = [T_TITLE, T_HEAD1, T_HEAD2, T_HEAD2, T_HEAD3, T_HEAD4, T_SEP, T_SKIP]
 
     def __init__(self, project: NWProject) -> None:
 
@@ -142,7 +143,9 @@ class Tokenizer(ABC):
         self._textFixed    = False    # Fixed width text
         self._lineHeight   = 1.15     # Line height in units of em
         self._blockIndent  = 4.00     # Block indent in units of em
-        self._textIndent   = 1.40     # First line indent in units of em
+        self._firstIndent  = False    # Enable first line indent
+        self._firstWidth   = 1.40     # First line indent in units of em
+        self._indentFirst  = False    # Indent first paragraph
         self._doJustify    = False    # Justify text
         self._doBodyText   = True     # Include body text
         self._doSynopsis   = False    # Also process synopsis comments
@@ -325,6 +328,15 @@ class Tokenizer(ABC):
     def setBlockIndent(self, indent: float) -> None:
         """Set the block indent between 0.0 and 10.0."""
         self._blockIndent = min(max(float(indent), 0.0), 10.0)
+        return
+
+    def setFirstLineIndent(self, state: bool, indent: float, first: bool) -> None:
+        """Set first line indent and whether to also indent first
+        paragraph after a heading.
+        """
+        self._firstIndent = state
+        self._firstWidth = indent
+        self._indentFirst = first
         return
 
     def setJustify(self, state: bool) -> None:

@@ -25,21 +25,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import json
-import uuid
 import logging
+import uuid
 
+from collections.abc import Iterable
 from enum import Enum
 from pathlib import Path
-from collections.abc import Iterable
 
 from PyQt5.QtCore import QT_TRANSLATE_NOOP, QCoreApplication
 
 from novelwriter import CONFIG
-from novelwriter.enum import nwBuildFmt
-from novelwriter.error import logException
 from novelwriter.common import checkUuid, isHandle, jsonEncode
 from novelwriter.constants import nwFiles, nwHeadFmt
 from novelwriter.core.project import NWProject
+from novelwriter.enum import nwBuildFmt
+from novelwriter.error import logException
 
 logger = logging.getLogger(__name__)
 
@@ -82,6 +82,9 @@ SETTINGS_TEMPLATE = {
     "format.justifyText":      (bool, False),
     "format.stripUnicode":     (bool, False),
     "format.replaceTabs":      (bool, False),
+    "format.firstLineIndent":  (bool, False),
+    "format.firstIndentWidth": (float, 1.4),
+    "format.indentFirstPar":   (bool, False),
     "format.pageUnit":         (str, "cm"),
     "format.pageSize":         (str, "A4"),
     "format.pageWidth":        (float, 21.0),
@@ -93,65 +96,69 @@ SETTINGS_TEMPLATE = {
     "odt.addColours":          (bool, True),
     "odt.pageHeader":          (str, nwHeadFmt.ODT_AUTO),
     "odt.pageCountOffset":     (int, 0),
-    "odt.firstLineIndent":     (bool, False),
     "md.preserveBreaks":       (bool, True),
     "html.addStyles":          (bool, True),
     "html.preserveTabs":       (bool, False),
 }
 
 SETTINGS_LABELS = {
-    "filter":                 QT_TRANSLATE_NOOP("Builds", "Document Filters"),
-    "filter.includeNovel":    QT_TRANSLATE_NOOP("Builds", "Novel Documents"),
-    "filter.includeNotes":    QT_TRANSLATE_NOOP("Builds", "Project Notes"),
-    "filter.includeInactive": QT_TRANSLATE_NOOP("Builds", "Inactive Documents"),
+    "filter":                  QT_TRANSLATE_NOOP("Builds", "Document Filters"),
+    "filter.includeNovel":     QT_TRANSLATE_NOOP("Builds", "Novel Documents"),
+    "filter.includeNotes":     QT_TRANSLATE_NOOP("Builds", "Project Notes"),
+    "filter.includeInactive":  QT_TRANSLATE_NOOP("Builds", "Inactive Documents"),
 
-    "headings":               QT_TRANSLATE_NOOP("Builds", "Headings"),
-    "headings.fmtTitle":      QT_TRANSLATE_NOOP("Builds", "Partition Format"),
-    "headings.fmtChapter":    QT_TRANSLATE_NOOP("Builds", "Chapter Format"),
-    "headings.fmtUnnumbered": QT_TRANSLATE_NOOP("Builds", "Unnumbered Format"),
-    "headings.fmtScene":      QT_TRANSLATE_NOOP("Builds", "Scene Format"),
-    "headings.fmtAltScene":   QT_TRANSLATE_NOOP("Builds", "Alt. Scene Format"),
-    "headings.fmtSection":    QT_TRANSLATE_NOOP("Builds", "Section Format"),
+    "headings":                QT_TRANSLATE_NOOP("Builds", "Headings"),
+    "headings.fmtTitle":       QT_TRANSLATE_NOOP("Builds", "Partition Format"),
+    "headings.fmtChapter":     QT_TRANSLATE_NOOP("Builds", "Chapter Format"),
+    "headings.fmtUnnumbered":  QT_TRANSLATE_NOOP("Builds", "Unnumbered Format"),
+    "headings.fmtScene":       QT_TRANSLATE_NOOP("Builds", "Scene Format"),
+    "headings.fmtAltScene":    QT_TRANSLATE_NOOP("Builds", "Alt. Scene Format"),
+    "headings.fmtSection":     QT_TRANSLATE_NOOP("Builds", "Section Format"),
 
-    "text.grpContent":        QT_TRANSLATE_NOOP("Builds", "Text Content"),
-    "text.includeSynopsis":   QT_TRANSLATE_NOOP("Builds", "Include Synopsis"),
-    "text.includeComments":   QT_TRANSLATE_NOOP("Builds", "Include Comments"),
-    "text.includeKeywords":   QT_TRANSLATE_NOOP("Builds", "Include Keywords"),
-    "text.includeBodyText":   QT_TRANSLATE_NOOP("Builds", "Include Body Text"),
-    "text.ignoredKeywords":   QT_TRANSLATE_NOOP("Builds", "Ignore These Keywords"),
-    "text.grpInsert":         QT_TRANSLATE_NOOP("Builds", "Insert Content"),
-    "text.addNoteHeadings":   QT_TRANSLATE_NOOP("Builds", "Add Titles for Notes"),
+    "text.grpContent":         QT_TRANSLATE_NOOP("Builds", "Text Content"),
+    "text.includeSynopsis":    QT_TRANSLATE_NOOP("Builds", "Include Synopsis"),
+    "text.includeComments":    QT_TRANSLATE_NOOP("Builds", "Include Comments"),
+    "text.includeKeywords":    QT_TRANSLATE_NOOP("Builds", "Include Keywords"),
+    "text.includeBodyText":    QT_TRANSLATE_NOOP("Builds", "Include Body Text"),
+    "text.ignoredKeywords":    QT_TRANSLATE_NOOP("Builds", "Ignore These Keywords"),
+    "text.grpInsert":          QT_TRANSLATE_NOOP("Builds", "Insert Content"),
+    "text.addNoteHeadings":    QT_TRANSLATE_NOOP("Builds", "Add Titles for Notes"),
 
-    "format.grpFormat":       QT_TRANSLATE_NOOP("Builds", "Text Format"),
-    "format.textFont":        QT_TRANSLATE_NOOP("Builds", "Font Family"),
-    "format.textSize":        QT_TRANSLATE_NOOP("Builds", "Font Size"),
-    "format.lineHeight":      QT_TRANSLATE_NOOP("Builds", "Line Height"),
-    "format.grpOptions":      QT_TRANSLATE_NOOP("Builds", "Text Options"),
-    "format.justifyText":     QT_TRANSLATE_NOOP("Builds", "Justify Text Margins"),
-    "format.stripUnicode":    QT_TRANSLATE_NOOP("Builds", "Replace Unicode Characters"),
-    "format.replaceTabs":     QT_TRANSLATE_NOOP("Builds", "Replace Tabs with Spaces"),
-    "format.grpPage":         QT_TRANSLATE_NOOP("Builds", "Page Layout"),
-    "format.pageUnit":        QT_TRANSLATE_NOOP("Builds", "Unit"),
-    "format.pageSize":        QT_TRANSLATE_NOOP("Builds", "Page Size"),
-    "format.pageWidth":       QT_TRANSLATE_NOOP("Builds", "Page Width"),
-    "format.pageHeight":      QT_TRANSLATE_NOOP("Builds", "Page Height"),
-    "format.topMargin":       QT_TRANSLATE_NOOP("Builds", "Top Margin"),
-    "format.bottomMargin":    QT_TRANSLATE_NOOP("Builds", "Bottom Margin"),
-    "format.leftMargin":      QT_TRANSLATE_NOOP("Builds", "Left Margin"),
-    "format.rightMargin":     QT_TRANSLATE_NOOP("Builds", "Right Margin"),
+    "format.grpFormat":        QT_TRANSLATE_NOOP("Builds", "Text Format"),
+    "format.textFont":         QT_TRANSLATE_NOOP("Builds", "Font Family"),
+    "format.textSize":         QT_TRANSLATE_NOOP("Builds", "Font Size"),
+    "format.lineHeight":       QT_TRANSLATE_NOOP("Builds", "Line Height"),
+    "format.grpOptions":       QT_TRANSLATE_NOOP("Builds", "Text Options"),
+    "format.justifyText":      QT_TRANSLATE_NOOP("Builds", "Justify Text Margins"),
+    "format.stripUnicode":     QT_TRANSLATE_NOOP("Builds", "Replace Unicode Characters"),
+    "format.replaceTabs":      QT_TRANSLATE_NOOP("Builds", "Replace Tabs with Spaces"),
 
-    "odt":                    QT_TRANSLATE_NOOP("Builds", "Open Document (.odt)"),
-    "odt.addColours":         QT_TRANSLATE_NOOP("Builds", "Add Highlight Colours"),
-    "odt.pageHeader":         QT_TRANSLATE_NOOP("Builds", "Page Header"),
-    "odt.pageCountOffset":    QT_TRANSLATE_NOOP("Builds", "Page Counter Offset"),
-    "odt.firstLineIndent":    QT_TRANSLATE_NOOP("Builds", "First Line Indent"),
+    "format.grpParIndent":     QT_TRANSLATE_NOOP("Builds", "First Line Indent"),
+    "format.firstLineIndent":  QT_TRANSLATE_NOOP("Builds", "Enable Indent"),
+    "format.firstIndentWidth": QT_TRANSLATE_NOOP("Builds", "Indent Width"),
+    "format.indentFirstPar":   QT_TRANSLATE_NOOP("Builds", "Indent First Paragraph"),
 
-    "md":                     QT_TRANSLATE_NOOP("Builds", "Markdown (.md)"),
-    "md.preserveBreaks":      QT_TRANSLATE_NOOP("Builds", "Preserve Hard Line Breaks"),
+    "format.grpPage":          QT_TRANSLATE_NOOP("Builds", "Page Layout"),
+    "format.pageUnit":         QT_TRANSLATE_NOOP("Builds", "Unit"),
+    "format.pageSize":         QT_TRANSLATE_NOOP("Builds", "Page Size"),
+    "format.pageWidth":        QT_TRANSLATE_NOOP("Builds", "Page Width"),
+    "format.pageHeight":       QT_TRANSLATE_NOOP("Builds", "Page Height"),
+    "format.topMargin":        QT_TRANSLATE_NOOP("Builds", "Top Margin"),
+    "format.bottomMargin":     QT_TRANSLATE_NOOP("Builds", "Bottom Margin"),
+    "format.leftMargin":       QT_TRANSLATE_NOOP("Builds", "Left Margin"),
+    "format.rightMargin":      QT_TRANSLATE_NOOP("Builds", "Right Margin"),
 
-    "html":                   QT_TRANSLATE_NOOP("Builds", "HTML (.html)"),
-    "html.addStyles":         QT_TRANSLATE_NOOP("Builds", "Add CSS Styles"),
-    "html.preserveTabs":      QT_TRANSLATE_NOOP("Builds", "Preserve Tab Characters"),
+    "odt":                     QT_TRANSLATE_NOOP("Builds", "Open Document (.odt)"),
+    "odt.addColours":          QT_TRANSLATE_NOOP("Builds", "Add Highlight Colours"),
+    "odt.pageHeader":          QT_TRANSLATE_NOOP("Builds", "Page Header"),
+    "odt.pageCountOffset":     QT_TRANSLATE_NOOP("Builds", "Page Counter Offset"),
+
+    "md":                      QT_TRANSLATE_NOOP("Builds", "Markdown (.md)"),
+    "md.preserveBreaks":       QT_TRANSLATE_NOOP("Builds", "Preserve Hard Line Breaks"),
+
+    "html":                    QT_TRANSLATE_NOOP("Builds", "HTML (.html)"),
+    "html.addStyles":          QT_TRANSLATE_NOOP("Builds", "Add CSS Styles"),
+    "html.preserveTabs":       QT_TRANSLATE_NOOP("Builds", "Preserve Tab Characters"),
 }
 
 

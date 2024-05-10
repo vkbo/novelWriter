@@ -25,22 +25,22 @@ from __future__ import annotations
 
 import logging
 
-from pathlib import Path
 from collections.abc import Iterable
+from pathlib import Path
 
 from PyQt5.QtGui import QFont, QFontInfo
 
 from novelwriter import CONFIG
-from novelwriter.enum import nwBuildFmt
-from novelwriter.error import formatException, logException
 from novelwriter.constants import nwLabels
+from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.core.item import NWItem
+from novelwriter.core.project import NWProject
+from novelwriter.core.tohtml import ToHtml
+from novelwriter.core.tokenizer import Tokenizer
 from novelwriter.core.tomd import ToMarkdown
 from novelwriter.core.toodt import ToOdt
-from novelwriter.core.tohtml import ToHtml
-from novelwriter.core.project import NWProject
-from novelwriter.core.tokenizer import Tokenizer
-from novelwriter.core.buildsettings import BuildSettings
+from novelwriter.enum import nwBuildFmt
+from novelwriter.error import formatException, logException
 
 logger = logging.getLogger(__name__)
 
@@ -333,6 +333,11 @@ class NWBuildDocument:
         bldObj.setFont(fontFamily, textSize, textFixed)
         bldObj.setJustify(self._build.getBool("format.justifyText"))
         bldObj.setLineHeight(self._build.getFloat("format.lineHeight"))
+        bldObj.setFirstLineIndent(
+            self._build.getBool("format.firstLineIndent"),
+            self._build.getFloat("format.firstIndentWidth"),
+            self._build.getBool("format.indentFirstPar"),
+        )
 
         bldObj.setBodyText(self._build.getBool("text.includeBodyText"))
         bldObj.setSynopsis(self._build.getBool("text.includeSynopsis"))
@@ -350,7 +355,6 @@ class NWBuildDocument:
             bldObj.setHeaderFormat(
                 self._build.getStr("odt.pageHeader"), self._build.getInt("odt.pageCountOffset")
             )
-            bldObj.setFirstLineIndent(self._build.getBool("odt.firstLineIndent"))
 
             scale = nwLabels.UNIT_SCALE.get(self._build.getStr("format.pageUnit"), 1.0)
             pW, pH = nwLabels.PAPER_SIZE.get(self._build.getStr("format.pageSize"), (-1.0, -1.0))

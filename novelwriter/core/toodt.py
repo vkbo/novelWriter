@@ -141,7 +141,6 @@ class ToOdt(Tokenizer):
         self._textSize     = 12
         self._textFixed    = False
         self._colourHead   = False
-        self._firstIndent  = False
         self._headerFormat = ""
         self._pageOffset   = 0
 
@@ -240,11 +239,6 @@ class ToOdt(Tokenizer):
         self._pageOffset = offset
         return
 
-    def setFirstLineIndent(self, state: bool) -> None:
-        """Enable or disable first line indent."""
-        self._firstIndent = state
-        return
-
     ##
     #  Class Methods
     ##
@@ -301,7 +295,7 @@ class ToOdt(Tokenizer):
 
         self._fLineHeight  = f"{round(100 * self._lineHeight):d}%"
         self._fBlockIndent = self._emToCm(self._blockIndent)
-        self._fTextIndent  = self._emToCm(self._textIndent)
+        self._fTextIndent  = self._emToCm(self._firstWidth)
         self._textAlign    = "justify" if self._doJustify else "left"
 
         # Clear Errors
@@ -447,7 +441,7 @@ class ToOdt(Tokenizer):
                 if tStyle & self.A_IND_R:
                     oStyle.setMarginRight(self._fBlockIndent)
 
-            if tType not in (self.T_EMPTY, self.T_TEXT):
+            if not self._indentFirst and tType in self.L_SKIP_INDENT:
                 pIndent = False
 
             # Process Text Types
