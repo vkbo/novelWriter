@@ -168,9 +168,8 @@ A syntax theme ``.conf`` file consists of the following settings:
    headertext     =   0,   0,   0
    headertag      =   0,   0,   0
    emphasis       =   0,   0,   0
-   straightquotes =   0,   0,   0
-   doublequotes   =   0,   0,   0
-   singlequotes   =   0,   0,   0
+   dialog         =   0,   0,   0
+   altdialog      =   0,   0,   0
    note           =   0,   0,   0
    hidden         =   0,   0,   0
    shortcode      =   0,   0,   0
@@ -201,4 +200,5 @@ Omitted syntax colours default to black, except ``background`` which defaults to
    The ``texthighlight`` syntax colour entry was added.
 
 .. versionadded:: 2.5
-   The ``note`` and ``tag`` syntax colour entries were added.
+   The ``dialog``, ``altdialog``, ``note`` and ``tag`` syntax colour entries were added.
+   ``straightquotes``, ``doublequotes`` and ``singlequotes`` were removed.
