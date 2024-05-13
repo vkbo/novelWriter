@@ -150,13 +150,13 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._cmnRules.append((rxRule, hlRule))
 
         # Dialogue
-        if CONFIG.dialogueStyle > 0:
+        if CONFIG.dialogStyle > 0:
             symO = ""
             symC = ""
-            if CONFIG.dialogueStyle in (1, 3):
+            if CONFIG.dialogStyle in (1, 3):
                 symO += CONFIG.fmtSQuoteOpen
                 symC += CONFIG.fmtSQuoteClose
-            if CONFIG.dialogueStyle in (2, 3):
+            if CONFIG.dialogStyle in (2, 3):
                 symO += CONFIG.fmtDQuoteOpen
                 symC += CONFIG.fmtDQuoteClose
 
@@ -168,7 +168,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             }
             self._txtRules.append((rxRule, hlRule))
 
-        if sym := CONFIG.dialogueLine:
+        if sym := CONFIG.dialogLine:
             rxRule = QRegularExpression(f"^{sym}.*?$")
             rxRule.setPatternOptions(QRegExUnicode)
             hlRule = {
@@ -181,6 +181,16 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             rxRule.setPatternOptions(QRegExUnicode)
             hlRule = {
                 0: self._hStyles["text"],
+            }
+            self._txtRules.append((rxRule, hlRule))
+
+        if CONFIG.altDialogOpen and CONFIG.altDialogClose:
+            symO = QRegularExpression.escape(CONFIG.altDialogOpen)
+            symC = QRegularExpression.escape(CONFIG.altDialogClose)
+            rxRule = QRegularExpression(f"\\B{symO}.*?{symC}\\B")
+            rxRule.setPatternOptions(QRegExUnicode)
+            hlRule = {
+                0: self._hStyles["altdialog"],
             }
             self._txtRules.append((rxRule, hlRule))
 

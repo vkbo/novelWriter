@@ -539,14 +539,14 @@ class GuiPreferences(QDialog):
         self.sidebar.addButton(title, section)
         self.mainForm.addGroupLabel(title, section)
 
-        self.dialogueStyle = NComboBox(self)
-        self.dialogueStyle.addItem(self.tr("None"), 0)
-        self.dialogueStyle.addItem(self.tr("Single Quotes"), 1)
-        self.dialogueStyle.addItem(self.tr("Double Quotes"), 2)
-        self.dialogueStyle.addItem(self.tr("Both"), 3)
-        self.dialogueStyle.setCurrentData(CONFIG.dialogueStyle, 2)
+        self.dialogStyle = NComboBox(self)
+        self.dialogStyle.addItem(self.tr("None"), 0)
+        self.dialogStyle.addItem(self.tr("Single Quotes"), 1)
+        self.dialogStyle.addItem(self.tr("Double Quotes"), 2)
+        self.dialogStyle.addItem(self.tr("Both"), 3)
+        self.dialogStyle.setCurrentData(CONFIG.dialogStyle, 2)
         self.mainForm.addRow(
-            self.tr("Highlight dialogue"), self.dialogueStyle,
+            self.tr("Highlight dialogue"), self.dialogStyle,
             self.tr("Applies to the selected quote styles.")
         )
 
@@ -567,14 +567,39 @@ class GuiPreferences(QDialog):
             self.tr("Symbol to indicate injected narrator break.")
         )
 
-        self.dialogueLine = QLineEdit(self)
-        self.dialogueLine.setMaxLength(1)
-        self.dialogueLine.setFixedWidth(boxFixed)
-        self.dialogueLine.setAlignment(QtAlignCenter)
-        self.dialogueLine.setText(CONFIG.dialogueLine)
+        self.dialogLine = QLineEdit(self)
+        self.dialogLine.setMaxLength(1)
+        self.dialogLine.setFixedWidth(boxFixed)
+        self.dialogLine.setAlignment(QtAlignCenter)
+        self.dialogLine.setText(CONFIG.dialogLine)
         self.mainForm.addRow(
-            self.tr("Dialogue line symbol"), self.dialogueLine,
+            self.tr("Dialogue line symbol"), self.dialogLine,
             self.tr("Lines starting with this symbol are dialogue.")
+        )
+
+        self.altDialogOpen = QLineEdit(self)
+        self.altDialogOpen.setMaxLength(4)
+        self.altDialogOpen.setFixedWidth(boxFixed)
+        self.altDialogOpen.setAlignment(QtAlignCenter)
+        self.altDialogOpen.setText(CONFIG.altDialogOpen)
+
+        self.altDialogClose = QLineEdit(self)
+        self.altDialogClose.setMaxLength(4)
+        self.altDialogClose.setFixedWidth(boxFixed)
+        self.altDialogClose.setAlignment(QtAlignCenter)
+        self.altDialogClose.setText(CONFIG.altDialogClose)
+
+        self.altDialogBox = QHBoxLayout()
+        self.altDialogBox.addWidget(self.altDialogOpen)
+        self.altDialogBox.addWidget(self.altDialogClose)
+        self.altDialogBox.setContentsMargins(0, 0, 0, 0)
+
+        self.altDialog = QWidget(self)
+        self.altDialog.setLayout(self.altDialogBox)
+
+        self.mainForm.addRow(
+            self.tr("Alternative dialog symbols"), self.altDialog,
+            self.tr("Custom highlighting of dialog text.")
         )
 
         self.highlightEmph = NSwitch(self)
@@ -936,24 +961,30 @@ class GuiPreferences(QDialog):
         CONFIG.scrollPastEnd = self.scrollPastEnd.isChecked()
 
         # Text Highlighting
-        dialogueStyle   = self.dialogueStyle.currentData()
+        dialogueStyle   = self.dialogStyle.currentData()
         allowOpenDial   = self.allowOpenDial.isChecked()
         narratorBreak   = self.narratorBreak.text()
-        dialogueLine    = self.dialogueLine.text()
+        dialogueLine    = self.dialogLine.text()
+        altDialogOpen   = self.altDialogOpen.text()
+        altDialogClose  = self.altDialogClose.text()
         highlightEmph   = self.highlightEmph.isChecked()
         showMultiSpaces = self.showMultiSpaces.isChecked()
 
-        updateSyntax |= CONFIG.dialogueStyle != dialogueStyle
+        updateSyntax |= CONFIG.dialogStyle != dialogueStyle
         updateSyntax |= CONFIG.allowOpenDial != allowOpenDial
         updateSyntax |= CONFIG.narratorBreak != narratorBreak
-        updateSyntax |= CONFIG.dialogueLine != dialogueLine
+        updateSyntax |= CONFIG.dialogLine != dialogueLine
+        updateSyntax |= CONFIG.altDialogOpen != altDialogOpen
+        updateSyntax |= CONFIG.altDialogClose != altDialogClose
         updateSyntax |= CONFIG.highlightEmph != highlightEmph
         updateSyntax |= CONFIG.showMultiSpaces != showMultiSpaces
 
-        CONFIG.dialogueStyle   = dialogueStyle
+        CONFIG.dialogStyle     = dialogueStyle
         CONFIG.allowOpenDial   = allowOpenDial
         CONFIG.narratorBreak   = narratorBreak
-        CONFIG.dialogueLine    = dialogueLine
+        CONFIG.dialogLine      = dialogueLine
+        CONFIG.altDialogOpen   = altDialogOpen
+        CONFIG.altDialogClose  = altDialogClose
         CONFIG.highlightEmph   = highlightEmph
         CONFIG.showMultiSpaces = showMultiSpaces
 
