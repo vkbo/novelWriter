@@ -168,7 +168,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             }
             self._txtRules.append((rxRule, hlRule))
 
-        if sym := CONFIG.dialogLine:
+        if CONFIG.dialogLine:
+            sym = QRegularExpression.escape(CONFIG.dialogLine)
             rxRule = QRegularExpression(f"^{sym}.*?$")
             rxRule.setPatternOptions(QRegExUnicode)
             hlRule = {
@@ -176,7 +177,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             }
             self._txtRules.append((rxRule, hlRule))
 
-        if sym := CONFIG.narratorBreak:
+        if CONFIG.narratorBreak:
+            sym = QRegularExpression.escape(CONFIG.narratorBreak)
             rxRule = QRegularExpression(f"({sym}\\b)(.*?)(\\b{sym})")
             rxRule.setPatternOptions(QRegExUnicode)
             hlRule = {

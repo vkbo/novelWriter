@@ -231,7 +231,15 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     # Text Editor
     # ===========
 
-    docEditor: GuiDocEditor = nwGUI.docEditor
+    # Syntax Highlighting
+    CONFIG.dialogStyle = 3
+    CONFIG.dialogLine = "–"
+    CONFIG.narratorBreak = "–"
+    CONFIG.altDialogOpen = "<|"
+    CONFIG.altDialogClose = "|>"
+
+    docEditor = nwGUI.docEditor
+    docEditor._qDocument.syntaxHighlighter.initHighlighter()
 
     # Type something into the document
     nwGUI.switchFocus(nwWidget.EDITOR)
