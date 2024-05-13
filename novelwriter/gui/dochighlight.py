@@ -94,6 +94,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         colBreak.setAlpha(64)
 
         # Create Character Formats
+        self._addCharFormat("text",     SHARED.theme.colText)
         self._addCharFormat("header1",  SHARED.theme.colHead, "b", 1.8)
         self._addCharFormat("header2",  SHARED.theme.colHead, "b", 1.6)
         self._addCharFormat("header3",  SHARED.theme.colHead, "b", 1.4)
@@ -107,9 +108,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._addCharFormat("strike",   SHARED.theme.colHidden, "s")
         self._addCharFormat("mspaces",  SHARED.theme.colError, "err")
         self._addCharFormat("nobreak",  colBreak, "bg")
-        self._addCharFormat("dialog1",  SHARED.theme.colDialN)
-        self._addCharFormat("dialog2",  SHARED.theme.colDialD)
-        self._addCharFormat("dialog3",  SHARED.theme.colDialS)
+        self._addCharFormat("dialog",   SHARED.theme.colDialog)
         self._addCharFormat("replace",  SHARED.theme.colRepTag)
         self._addCharFormat("hidden",   SHARED.theme.colHidden)
         self._addCharFormat("markup",   SHARED.theme.colHidden)
@@ -126,6 +125,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._spellErr = QTextCharFormat()
         self._spellErr.setUnderlineColor(SHARED.theme.colSpell)
         self._spellErr.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
+
+        self._txtRules.clear()
+        self._cmnRules.clear()
 
         # Multiple or Trailing Spaces
         if CONFIG.showMultiSpaces:
@@ -146,36 +148,38 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._txtRules.append((rxRule, hlRule))
         self._cmnRules.append((rxRule, hlRule))
 
-        # Quoted Strings
-        if CONFIG.highlightQuotes:
-            fmtDblO = CONFIG.fmtDQuoteOpen
-            fmtDblC = CONFIG.fmtDQuoteClose
-            fmtSngO = CONFIG.fmtSQuoteOpen
-            fmtSngC = CONFIG.fmtSQuoteClose
+        # Dialogue
+        if CONFIG.dialogueStyle > 0:
+            symO = ""
+            symC = ""
+            if CONFIG.dialogueStyle in (1, 3):
+                symO += CONFIG.fmtSQuoteOpen
+                symC += CONFIG.fmtSQuoteClose
+            if CONFIG.dialogueStyle in (2, 3):
+                symO += CONFIG.fmtDQuoteOpen
+                symC += CONFIG.fmtDQuoteClose
 
-            # Straight Quotes
-            rxRule = QRegularExpression(r'(\B")(.*?)("\B)')
+            rxEnd = "|$" if CONFIG.allowOpenDial else ""
+            rxRule = QRegularExpression(f"(\\B[{symO}])(.*?)([{symC}]\\B{rxEnd})")
             rxRule.setPatternOptions(QRegExUnicode)
             hlRule = {
-                0: self._hStyles["dialog1"],
+                0: self._hStyles["dialog"],
             }
             self._txtRules.append((rxRule, hlRule))
 
-            # Double Quotes
-            dblEnd = "|$" if CONFIG.allowOpenDQuote else ""
-            rxRule = QRegularExpression(f"(\\B{fmtDblO})(.*?)({fmtDblC}\\B{dblEnd})")
+        if sym := CONFIG.dialogueLine:
+            rxRule = QRegularExpression(f"^{sym}.*?$")
             rxRule.setPatternOptions(QRegExUnicode)
             hlRule = {
-                0: self._hStyles["dialog2"],
+                0: self._hStyles["dialog"],
             }
             self._txtRules.append((rxRule, hlRule))
 
-            # Single Quotes
-            sngEnd = "|$" if CONFIG.allowOpenSQuote else ""
-            rxRule = QRegularExpression(f"(\\B{fmtSngO})(.*?)({fmtSngC}\\B{sngEnd})")
+        if sym := CONFIG.narratorBreak:
+            rxRule = QRegularExpression(f"({sym}\\b)(.*?)(\\b{sym})")
             rxRule.setPatternOptions(QRegExUnicode)
             hlRule = {
-                0: self._hStyles["dialog3"],
+                0: self._hStyles["text"],
             }
             self._txtRules.append((rxRule, hlRule))
 

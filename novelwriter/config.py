@@ -158,9 +158,10 @@ class Config:
         self.autoScrollPos   = 30     # Start point for typewriter-like scrolling
         self.scrollPastEnd   = True   # Scroll past end of document, and centre cursor
 
-        self.highlightQuotes = True   # Highlight text in quotes
-        self.allowOpenSQuote = False  # Allow open-ended single quotes
-        self.allowOpenDQuote = True   # Allow open-ended double quotes
+        self.dialogueStyle   = 2      # Quote type to use for dialogue
+        self.allowOpenDial   = True   # Allow open-ended dialogue quotes
+        self.narratorBreak   = ""     # Symbol to use for narrator break
+        self.dialogueLine    = ""     # Symbol to use for dialogue line
         self.highlightEmph   = True   # Add colour to text emphasis
 
         self.stopWhenIdle    = True   # Stop the status bar clock when the user is idle
@@ -618,9 +619,10 @@ class Config:
         self.showMultiSpaces = conf.rdBool(sec, "showmultispaces", self.showMultiSpaces)
         self.incNotesWCount  = conf.rdBool(sec, "incnoteswcount", self.incNotesWCount)
         self.showFullPath    = conf.rdBool(sec, "showfullpath", self.showFullPath)
-        self.highlightQuotes = conf.rdBool(sec, "highlightquotes", self.highlightQuotes)
-        self.allowOpenSQuote = conf.rdBool(sec, "allowopensquote", self.allowOpenSQuote)
-        self.allowOpenDQuote = conf.rdBool(sec, "allowopendquote", self.allowOpenDQuote)
+        self.dialogueStyle   = conf.rdInt(sec, "dialoguestyle", self.dialogueStyle)
+        self.allowOpenDial   = conf.rdBool(sec, "allowopendial", self.allowOpenDial)
+        self.narratorBreak   = conf.rdStr(sec, "narratorbreak", self.narratorBreak)
+        self.dialogueLine    = conf.rdStr(sec, "dialogueline", self.dialogueLine)
         self.highlightEmph   = conf.rdBool(sec, "highlightemph", self.highlightEmph)
         self.stopWhenIdle    = conf.rdBool(sec, "stopwhenidle", self.stopWhenIdle)
         self.userIdleTime    = conf.rdInt(sec, "useridletime", self.userIdleTime)
@@ -726,9 +728,10 @@ class Config:
             "showmultispaces": str(self.showMultiSpaces),
             "incnoteswcount":  str(self.incNotesWCount),
             "showfullpath":    str(self.showFullPath),
-            "highlightquotes": str(self.highlightQuotes),
-            "allowopensquote": str(self.allowOpenSQuote),
-            "allowopendquote": str(self.allowOpenDQuote),
+            "dialoguestyle":   str(self.dialogueStyle),
+            "allowopendial":   str(self.allowOpenDial),
+            "narratorbreak":   str(self.narratorBreak),
+            "dialogueline":    str(self.dialogueLine),
             "highlightemph":   str(self.highlightEmph),
             "stopwhenidle":    str(self.stopWhenIdle),
             "useridletime":    str(self.userIdleTime),
