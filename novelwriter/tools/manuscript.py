@@ -822,7 +822,7 @@ class _PreviewWidget(QTextBrowser):
             font = QFont()
             font.setFamily(family)
             font.setPointSize(size)
-            self.setFont(font)
+            self.document().setDefaultFont(font)
         return
 
     ##
