@@ -266,18 +266,21 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     assert CONFIG.autoScrollPos == 30
 
     # Text Highlighting
-    prefs.allowOpenSQuote.setChecked(True)
-    prefs.allowOpenDQuote.setChecked(False)
-    prefs.highlightQuotes.setChecked(False)
+    prefs.dialogStyle.setCurrentData(3, 0)
+    prefs.allowOpenDial.setChecked(False)
+    prefs.narratorBreak.setText("–")
+    prefs.dialogLine.setText("–")
+    prefs.altDialogOpen.setText("<")
+    prefs.altDialogClose.setText(">")
     prefs.highlightEmph.setChecked(False)
     prefs.showMultiSpaces.setChecked(False)
 
-    assert prefs.allowOpenSQuote.isEnabled() is False
-    assert prefs.allowOpenDQuote.isEnabled() is False
-
-    assert CONFIG.highlightQuotes is True
-    assert CONFIG.allowOpenSQuote is False
-    assert CONFIG.allowOpenDQuote is True
+    assert CONFIG.dialogStyle == 2
+    assert CONFIG.allowOpenDial is True
+    assert CONFIG.narratorBreak == ""
+    assert CONFIG.dialogLine == ""
+    assert CONFIG.altDialogOpen == ""
+    assert CONFIG.altDialogClose == ""
     assert CONFIG.highlightEmph is True
     assert CONFIG.showMultiSpaces is True
 
@@ -384,9 +387,12 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     assert CONFIG.autoScrollPos == 31
 
     # Text Highlighting
-    assert CONFIG.highlightQuotes is False
-    assert CONFIG.allowOpenSQuote is True
-    assert CONFIG.allowOpenDQuote is False
+    assert CONFIG.dialogStyle == 3
+    assert CONFIG.allowOpenDial is False
+    assert CONFIG.narratorBreak == "–"
+    assert CONFIG.dialogLine == "–"
+    assert CONFIG.altDialogOpen == "<"
+    assert CONFIG.altDialogClose == ">"
     assert CONFIG.highlightEmph is False
     assert CONFIG.showMultiSpaces is False
 

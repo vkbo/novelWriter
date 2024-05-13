@@ -93,7 +93,7 @@ class NComboBox(QComboBox):
             event.ignore()
         return
 
-    def setCurrentData(self, data: str | Enum, default: str | Enum) -> None:
+    def setCurrentData(self, data: str | int | Enum, default: str | int | Enum) -> None:
         """Set the current index from data, with a fallback."""
         idx = self.findData(data)
         self.setCurrentIndex(self.findData(default) if idx < 0 else idx)

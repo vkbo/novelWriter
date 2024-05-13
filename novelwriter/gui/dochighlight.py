@@ -94,38 +94,41 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         colBreak.setAlpha(64)
 
         # Create Character Formats
-        self._addCharFormat("header1",  SHARED.theme.colHead, "b", 1.8)
-        self._addCharFormat("header2",  SHARED.theme.colHead, "b", 1.6)
-        self._addCharFormat("header3",  SHARED.theme.colHead, "b", 1.4)
-        self._addCharFormat("header4",  SHARED.theme.colHead, "b", 1.2)
-        self._addCharFormat("head1h",   SHARED.theme.colHeadH, "b", 1.8)
-        self._addCharFormat("head2h",   SHARED.theme.colHeadH, "b", 1.6)
-        self._addCharFormat("head3h",   SHARED.theme.colHeadH, "b", 1.4)
-        self._addCharFormat("head4h",   SHARED.theme.colHeadH, "b", 1.2)
-        self._addCharFormat("bold",     colEmph, "b")
-        self._addCharFormat("italic",   colEmph, "i")
-        self._addCharFormat("strike",   SHARED.theme.colHidden, "s")
-        self._addCharFormat("mspaces",  SHARED.theme.colError, "err")
-        self._addCharFormat("nobreak",  colBreak, "bg")
-        self._addCharFormat("dialog1",  SHARED.theme.colDialN)
-        self._addCharFormat("dialog2",  SHARED.theme.colDialD)
-        self._addCharFormat("dialog3",  SHARED.theme.colDialS)
-        self._addCharFormat("replace",  SHARED.theme.colRepTag)
-        self._addCharFormat("hidden",   SHARED.theme.colHidden)
-        self._addCharFormat("markup",   SHARED.theme.colHidden)
-        self._addCharFormat("note",     SHARED.theme.colNote)
-        self._addCharFormat("code",     SHARED.theme.colCode)
-        self._addCharFormat("keyword",  SHARED.theme.colKey)
-        self._addCharFormat("tag",      SHARED.theme.colTag)
-        self._addCharFormat("modifier", SHARED.theme.colMod)
-        self._addCharFormat("value",    SHARED.theme.colVal)
-        self._addCharFormat("optional", SHARED.theme.colOpt)
-        self._addCharFormat("invalid",  None, "err")
+        self._addCharFormat("text",      SHARED.theme.colText)
+        self._addCharFormat("header1",   SHARED.theme.colHead, "b", 1.8)
+        self._addCharFormat("header2",   SHARED.theme.colHead, "b", 1.6)
+        self._addCharFormat("header3",   SHARED.theme.colHead, "b", 1.4)
+        self._addCharFormat("header4",   SHARED.theme.colHead, "b", 1.2)
+        self._addCharFormat("head1h",    SHARED.theme.colHeadH, "b", 1.8)
+        self._addCharFormat("head2h",    SHARED.theme.colHeadH, "b", 1.6)
+        self._addCharFormat("head3h",    SHARED.theme.colHeadH, "b", 1.4)
+        self._addCharFormat("head4h",    SHARED.theme.colHeadH, "b", 1.2)
+        self._addCharFormat("bold",      colEmph, "b")
+        self._addCharFormat("italic",    colEmph, "i")
+        self._addCharFormat("strike",    SHARED.theme.colHidden, "s")
+        self._addCharFormat("mspaces",   SHARED.theme.colError, "err")
+        self._addCharFormat("nobreak",   colBreak, "bg")
+        self._addCharFormat("altdialog", SHARED.theme.colDialA)
+        self._addCharFormat("dialog",    SHARED.theme.colDialN)
+        self._addCharFormat("replace",   SHARED.theme.colRepTag)
+        self._addCharFormat("hidden",    SHARED.theme.colHidden)
+        self._addCharFormat("markup",    SHARED.theme.colHidden)
+        self._addCharFormat("note",      SHARED.theme.colNote)
+        self._addCharFormat("code",      SHARED.theme.colCode)
+        self._addCharFormat("keyword",   SHARED.theme.colKey)
+        self._addCharFormat("tag",       SHARED.theme.colTag)
+        self._addCharFormat("modifier",  SHARED.theme.colMod)
+        self._addCharFormat("value",     SHARED.theme.colVal)
+        self._addCharFormat("optional",  SHARED.theme.colOpt)
+        self._addCharFormat("invalid",   None, "err")
 
         # Cache Spell Error Format
         self._spellErr = QTextCharFormat()
         self._spellErr.setUnderlineColor(SHARED.theme.colSpell)
         self._spellErr.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
+
+        self._txtRules.clear()
+        self._cmnRules.clear()
 
         # Multiple or Trailing Spaces
         if CONFIG.showMultiSpaces:
@@ -146,36 +149,50 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._txtRules.append((rxRule, hlRule))
         self._cmnRules.append((rxRule, hlRule))
 
-        # Quoted Strings
-        if CONFIG.highlightQuotes:
-            fmtDblO = CONFIG.fmtDQuoteOpen
-            fmtDblC = CONFIG.fmtDQuoteClose
-            fmtSngO = CONFIG.fmtSQuoteOpen
-            fmtSngC = CONFIG.fmtSQuoteClose
+        # Dialogue
+        if CONFIG.dialogStyle > 0:
+            symO = ""
+            symC = ""
+            if CONFIG.dialogStyle in (1, 3):
+                symO += CONFIG.fmtSQuoteOpen
+                symC += CONFIG.fmtSQuoteClose
+            if CONFIG.dialogStyle in (2, 3):
+                symO += CONFIG.fmtDQuoteOpen
+                symC += CONFIG.fmtDQuoteClose
 
-            # Straight Quotes
-            rxRule = QRegularExpression(r'(\B")(.*?)("\B)')
+            rxEnd = "|$" if CONFIG.allowOpenDial else ""
+            rxRule = QRegularExpression(f"\\B[{symO}].*?[{symC}]\\B{rxEnd}")
             rxRule.setPatternOptions(QRegExUnicode)
             hlRule = {
-                0: self._hStyles["dialog1"],
+                0: self._hStyles["dialog"],
             }
             self._txtRules.append((rxRule, hlRule))
 
-            # Double Quotes
-            dblEnd = "|$" if CONFIG.allowOpenDQuote else ""
-            rxRule = QRegularExpression(f"(\\B{fmtDblO})(.*?)({fmtDblC}\\B{dblEnd})")
+        if CONFIG.dialogLine:
+            sym = QRegularExpression.escape(CONFIG.dialogLine)
+            rxRule = QRegularExpression(f"^{sym}.*?$")
             rxRule.setPatternOptions(QRegExUnicode)
             hlRule = {
-                0: self._hStyles["dialog2"],
+                0: self._hStyles["dialog"],
             }
             self._txtRules.append((rxRule, hlRule))
 
-            # Single Quotes
-            sngEnd = "|$" if CONFIG.allowOpenSQuote else ""
-            rxRule = QRegularExpression(f"(\\B{fmtSngO})(.*?)({fmtSngC}\\B{sngEnd})")
+        if CONFIG.narratorBreak:
+            sym = QRegularExpression.escape(CONFIG.narratorBreak)
+            rxRule = QRegularExpression(f"({sym}\\b)(.*?)(\\b{sym})")
             rxRule.setPatternOptions(QRegExUnicode)
             hlRule = {
-                0: self._hStyles["dialog3"],
+                0: self._hStyles["text"],
+            }
+            self._txtRules.append((rxRule, hlRule))
+
+        if CONFIG.altDialogOpen and CONFIG.altDialogClose:
+            symO = QRegularExpression.escape(CONFIG.altDialogOpen)
+            symC = QRegularExpression.escape(CONFIG.altDialogClose)
+            rxRule = QRegularExpression(f"\\B{symO}.*?{symC}\\B")
+            rxRule.setPatternOptions(QRegExUnicode)
+            hlRule = {
+                0: self._hStyles["altdialog"],
             }
             self._txtRules.append((rxRule, hlRule))
 
