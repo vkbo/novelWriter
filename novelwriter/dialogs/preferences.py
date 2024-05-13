@@ -133,6 +133,7 @@ class GuiPreferences(QDialog):
         """Build the settings form."""
         section = 0
         iSz = SHARED.theme.baseIconSize
+        boxFixed = 5*SHARED.theme.textNWidth
         minWidth = CONFIG.pxInt(200)
 
         # Label
@@ -538,26 +539,42 @@ class GuiPreferences(QDialog):
         self.sidebar.addButton(title, section)
         self.mainForm.addGroupLabel(title, section)
 
-        self.highlightQuotes = NSwitch(self)
-        self.highlightQuotes.setChecked(CONFIG.highlightQuotes)
-        self.highlightQuotes.toggled.connect(self._toggleHighlightQuotes)
+        self.dialogueStyle = NComboBox(self)
+        self.dialogueStyle.addItem(self.tr("None"), 0)
+        self.dialogueStyle.addItem(self.tr("Single Quotes"), 1)
+        self.dialogueStyle.addItem(self.tr("Double Quotes"), 2)
+        self.dialogueStyle.addItem(self.tr("Both"), 3)
+        self.dialogueStyle.setCurrentData(CONFIG.dialogueStyle, 2)
         self.mainForm.addRow(
-            self.tr("Highlight text wrapped in quotes"), self.highlightQuotes,
-            self.tr("Applies to the document editor only.")
+            self.tr("Highlight dialogue"), self.dialogueStyle,
+            self.tr("Applies to the selected quote styles.")
         )
 
-        self.allowOpenSQuote = NSwitch(self)
-        self.allowOpenSQuote.setChecked(CONFIG.allowOpenSQuote)
+        self.allowOpenDial = NSwitch(self)
+        self.allowOpenDial.setChecked(CONFIG.allowOpenDial)
         self.mainForm.addRow(
-            self.tr("Allow open-ended single quotes"), self.allowOpenSQuote,
-            self.tr("Highlight single-quoted line with no closing quote.")
+            self.tr("Allow open-ended sialogue"), self.allowOpenDial,
+            self.tr("Highlight dialogue line with no closing quote.")
         )
 
-        self.allowOpenDQuote = NSwitch(self)
-        self.allowOpenDQuote.setChecked(CONFIG.allowOpenDQuote)
+        self.narratorBreak = QLineEdit(self)
+        self.narratorBreak.setMaxLength(1)
+        self.narratorBreak.setFixedWidth(boxFixed)
+        self.narratorBreak.setAlignment(QtAlignCenter)
+        self.narratorBreak.setText(CONFIG.narratorBreak)
         self.mainForm.addRow(
-            self.tr("Allow open-ended double quotes"), self.allowOpenDQuote,
-            self.tr("Highlight double-quoted line with no closing quote.")
+            self.tr("Dialogue narrator break symbol"), self.narratorBreak,
+            self.tr("Symbol to indicate injected narrator break.")
+        )
+
+        self.dialogueLine = QLineEdit(self)
+        self.dialogueLine.setMaxLength(1)
+        self.dialogueLine.setFixedWidth(boxFixed)
+        self.dialogueLine.setAlignment(QtAlignCenter)
+        self.dialogueLine.setText(CONFIG.dialogueLine)
+        self.mainForm.addRow(
+            self.tr("Dialogue line symbol"), self.dialogueLine,
+            self.tr("Lines starting with this symbol are dialogue.")
         )
 
         self.highlightEmph = NSwitch(self)
@@ -667,13 +684,12 @@ class GuiPreferences(QDialog):
         self.mainForm.addGroupLabel(title, section)
 
         self.quoteSym = {}
-        qWidth = CONFIG.pxInt(40)
 
         # Single Quote Style
         self.quoteSym["SO"] = QLineEdit(self)
         self.quoteSym["SO"].setMaxLength(1)
         self.quoteSym["SO"].setReadOnly(True)
-        self.quoteSym["SO"].setFixedWidth(qWidth)
+        self.quoteSym["SO"].setFixedWidth(boxFixed)
         self.quoteSym["SO"].setAlignment(QtAlignCenter)
         self.quoteSym["SO"].setText(CONFIG.fmtSQuoteOpen)
         self.btnSingleStyleO = NIconToolButton(self, iSz, "more")
@@ -687,7 +703,7 @@ class GuiPreferences(QDialog):
         self.quoteSym["SC"] = QLineEdit(self)
         self.quoteSym["SC"].setMaxLength(1)
         self.quoteSym["SC"].setReadOnly(True)
-        self.quoteSym["SC"].setFixedWidth(qWidth)
+        self.quoteSym["SC"].setFixedWidth(boxFixed)
         self.quoteSym["SC"].setAlignment(QtAlignCenter)
         self.quoteSym["SC"].setText(CONFIG.fmtSQuoteClose)
         self.btnSingleStyleC = NIconToolButton(self, iSz, "more")
@@ -702,7 +718,7 @@ class GuiPreferences(QDialog):
         self.quoteSym["DO"] = QLineEdit(self)
         self.quoteSym["DO"].setMaxLength(1)
         self.quoteSym["DO"].setReadOnly(True)
-        self.quoteSym["DO"].setFixedWidth(qWidth)
+        self.quoteSym["DO"].setFixedWidth(boxFixed)
         self.quoteSym["DO"].setAlignment(QtAlignCenter)
         self.quoteSym["DO"].setText(CONFIG.fmtDQuoteOpen)
         self.btnDoubleStyleO = NIconToolButton(self, iSz, "more")
@@ -716,7 +732,7 @@ class GuiPreferences(QDialog):
         self.quoteSym["DC"] = QLineEdit(self)
         self.quoteSym["DC"].setMaxLength(1)
         self.quoteSym["DC"].setReadOnly(True)
-        self.quoteSym["DC"].setFixedWidth(qWidth)
+        self.quoteSym["DC"].setFixedWidth(boxFixed)
         self.quoteSym["DC"].setAlignment(QtAlignCenter)
         self.quoteSym["DC"].setText(CONFIG.fmtDQuoteClose)
         self.btnDoubleStyleC = NIconToolButton(self, iSz, "more")
@@ -824,13 +840,6 @@ class GuiPreferences(QDialog):
         return
 
     @pyqtSlot(bool)
-    def _toggleHighlightQuotes(self, state: bool) -> None:
-        """Toggle switches controlled by the highlight quotes switch."""
-        self.allowOpenSQuote.setEnabled(state)
-        self.allowOpenDQuote.setEnabled(state)
-        return
-
-    @pyqtSlot(bool)
     def _toggleAutoReplaceMain(self, state: bool) -> None:
         """Toggle switches controlled by the auto replace switch."""
         self.doReplaceSQuote.setEnabled(state)
@@ -927,19 +936,26 @@ class GuiPreferences(QDialog):
         CONFIG.scrollPastEnd = self.scrollPastEnd.isChecked()
 
         # Text Highlighting
-        highlightQuotes = self.highlightQuotes.isChecked()
+        dialogueStyle   = self.dialogueStyle.currentData()
+        allowOpenDial   = self.allowOpenDial.isChecked()
+        narratorBreak   = self.narratorBreak.text()
+        dialogueLine    = self.dialogueLine.text()
         highlightEmph   = self.highlightEmph.isChecked()
         showMultiSpaces = self.showMultiSpaces.isChecked()
 
-        updateSyntax |= CONFIG.highlightQuotes != highlightQuotes
+        updateSyntax |= CONFIG.dialogueStyle != dialogueStyle
+        updateSyntax |= CONFIG.allowOpenDial != allowOpenDial
+        updateSyntax |= CONFIG.narratorBreak != narratorBreak
+        updateSyntax |= CONFIG.dialogueLine != dialogueLine
         updateSyntax |= CONFIG.highlightEmph != highlightEmph
         updateSyntax |= CONFIG.showMultiSpaces != showMultiSpaces
 
-        CONFIG.highlightQuotes = highlightQuotes
+        CONFIG.dialogueStyle   = dialogueStyle
+        CONFIG.allowOpenDial   = allowOpenDial
+        CONFIG.narratorBreak   = narratorBreak
+        CONFIG.dialogueLine    = dialogueLine
         CONFIG.highlightEmph   = highlightEmph
         CONFIG.showMultiSpaces = showMultiSpaces
-        CONFIG.allowOpenSQuote = self.allowOpenSQuote.isChecked()
-        CONFIG.allowOpenDQuote = self.allowOpenDQuote.isChecked()
 
         # Text Automation
         CONFIG.doReplace       = self.doReplace.isChecked()
