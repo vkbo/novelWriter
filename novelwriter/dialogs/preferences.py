@@ -589,16 +589,8 @@ class GuiPreferences(QDialog):
         self.altDialogClose.setAlignment(QtAlignCenter)
         self.altDialogClose.setText(CONFIG.altDialogClose)
 
-        self.altDialogBox = QHBoxLayout()
-        self.altDialogBox.addWidget(self.altDialogOpen)
-        self.altDialogBox.addWidget(self.altDialogClose)
-        self.altDialogBox.setContentsMargins(0, 0, 0, 0)
-
-        self.altDialog = QWidget(self)
-        self.altDialog.setLayout(self.altDialogBox)
-
         self.mainForm.addRow(
-            self.tr("Alternative dialog symbols"), self.altDialog,
+            self.tr("Alternative dialog symbols"), [self.altDialogOpen, self.altDialogClose],
             self.tr("Custom highlighting of dialog text.")
         )
 
