@@ -294,8 +294,6 @@ class GuiDocEditor(QPlainTextEdit):
         self.docHeader.matchColours()
         self.docFooter.matchColours()
 
-        self._qDocument.syntaxHighlighter.initHighlighter()
-
         return
 
     def initEditor(self) -> None:
@@ -328,6 +326,9 @@ class GuiDocEditor(QPlainTextEdit):
         font.setFamily(CONFIG.textFont)
         font.setPointSize(CONFIG.textSize)
         self._qDocument.setDefaultFont(font)
+
+        # Update highlighter settings
+        self._qDocument.syntaxHighlighter.initHighlighter()
 
         # Set default text margins
         # Due to cursor visibility, a part of the margin must be
