@@ -1,5 +1,29 @@
 # novelWriter Changelog
 
+## Version 2.4.2 [2024-05-18]
+
+### Release Notes
+
+This is a patch release that fixes two minor font issues and updates the Dutch and Chinese
+translations.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Change the preview widget in the Manuscript Build tool to use the document font only for the
+  document itself, not the yellow heading stating the age of the previewed text. PR #1863.
+* Fixes the syntax highlighter so that it is re-initialised when the document editor is
+  re-initialised, so that changes to document font size regenerates the heading font sizes as well.
+  Issue #1865. PR #1866.
+
+**Internationalisation**
+
+* Dutch translation updated by Martijn van der Kleijn (@mvdkleijn). PR #1872.
+* Chinese translation updated by @longqzh. PR #1872.
+
+----
+
 ## Version 2.4.1 [2024-05-06]
 
 ### Release Notes
