@@ -31,32 +31,32 @@
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="109" />
       <source>Partition Format</source>
-      <translation type="unfinished" />
+      <translation>Partitie indeling</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="110" />
       <source>Chapter Format</source>
-      <translation type="unfinished" />
+      <translation>Hoofdstuk indeling</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="111" />
       <source>Unnumbered Format</source>
-      <translation type="unfinished" />
+      <translation>Ongenummerde indeling</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="112" />
       <source>Scene Format</source>
-      <translation type="unfinished" />
+      <translation>Scène indeling</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="113" />
       <source>Alt. Scene Format</source>
-      <translation type="unfinished" />
+      <translation>Alt. Scène Formaat</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="114" />
       <source>Section Format</source>
-      <translation type="unfinished" />
+      <translation>Sectie indeling</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="116" />
@@ -86,7 +86,7 @@
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="121" />
       <source>Ignore These Keywords</source>
-      <translation type="unfinished" />
+      <translation>Negeer deze sleutelwoorden</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="122" />
@@ -206,17 +206,17 @@
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="147" />
       <source>First Line Indent</source>
-      <translation type="unfinished" />
+      <translation>Eerste regel inspringen</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="149" />
       <source>Markdown (.md)</source>
-      <translation type="unfinished" />
+      <translation>Markdown (.md)</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="150" />
       <source>Preserve Hard Line Breaks</source>
-      <translation type="unfinished" />
+      <translation>Behoud harde regel afbrekingen</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="152" />
@@ -231,7 +231,7 @@
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="154" />
       <source>Preserve Tab Characters</source>
-      <translation type="unfinished" />
+      <translation>Tab tekens behouden</translation>
     </message>
   </context>
   <context>
@@ -791,22 +791,22 @@
   <context>
     <name>GuiDocEditFooter</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3007" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3008" />
       <source>Line: {0} ({1})</source>
       <translation>Regel: {0} ({1})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3008" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3009" />
       <source>Words: {0} ({1})</source>
       <translation>Woorden: {0} ({1})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3009" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3010" />
       <source>Words: {0} selected</source>
       <translation>Woorden: {0} geselecteerd</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3021" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3022" />
       <source>Status</source>
       <translation>Status</translation>
     </message>
@@ -814,27 +814,27 @@
   <context>
     <name>GuiDocEditHeader</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2805" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2806" />
       <source>Toggle Tool Bar</source>
       <translation>Toon/verberg werkbalk</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2810" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2811" />
       <source>Outline</source>
-      <translation type="unfinished" />
+      <translation>Samenvatting</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2815" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2816" />
       <source>Search</source>
       <translation>Zoek</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2820" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2821" />
       <source>Toggle Focus Mode</source>
       <translation>Schakel focus modus in/uit</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2825" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2826" />
       <source>Close</source>
       <translation>Sluiten</translation>
     </message>
@@ -842,62 +842,62 @@
   <context>
     <name>GuiDocEditSearch</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2413" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2414" />
       <source>Search for</source>
-      <translation type="unfinished" />
+      <translation>Zoek naar</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2418" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2419" />
       <source>Replace with</source>
-      <translation type="unfinished" />
+      <translation>Vervang door</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2426" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2427" />
       <source>Search</source>
       <translation>Zoek</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2434" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2435" />
       <source>Case Sensitive</source>
       <translation>Hoofdlettergevoelig</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2440" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2441" />
       <source>Whole Words Only</source>
       <translation>Alleen hele woorden</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2446" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2447" />
       <source>RegEx Mode</source>
       <translation>RegEx modus</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2452" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2453" />
       <source>Loop Search</source>
       <translation>Zoekopdracht lus</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2458" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2459" />
       <source>Search Next File</source>
       <translation>Doorzoek volgend bestand</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2466" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2467" />
       <source>Preserve Case</source>
       <translation>Behoud hoofd/kleine letters</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2474" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2475" />
       <source>Close Search</source>
       <translation>Zoekopdracht afsluiten</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2485" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2486" />
       <source>Find in current document</source>
       <translation>Zoeken in huidige document</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2489" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2490" />
       <source>Find and replace in current document</source>
       <translation>Zoek en vervang in huidig document</translation>
     </message>
@@ -905,122 +905,122 @@
   <context>
     <name>GuiDocEditor</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="441" />
+      <location filename="../novelwriter/gui/doceditor.py" line="442" />
       <source>Opened Document: {0}</source>
       <translation>Geopend document: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="484" />
+      <location filename="../novelwriter/gui/doceditor.py" line="485" />
       <source>This document has been changed outside of novelWriter while it was open. Overwrite the file on disk?</source>
       <translation>Dit document is gewijzigd buiten de openstaande novelWriter instantie. Het bestand op de schijf overschrijven?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="493" />
+      <location filename="../novelwriter/gui/doceditor.py" line="494" />
       <source>Could not save document.</source>
       <translation>Kon document niet opslaan.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="518" />
+      <location filename="../novelwriter/gui/doceditor.py" line="519" />
       <source>Saved Document: {0}</source>
       <translation>Document opgeslagen: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="687" />
+      <location filename="../novelwriter/gui/doceditor.py" line="688" />
       <source>Spell checking requires the package PyEnchant. It does not appear to be installed.</source>
       <translation>Spellingscontrole vereist het pakket PyEnchant. Het lijkt niet geïnstalleerd te zijn.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="713" />
+      <location filename="../novelwriter/gui/doceditor.py" line="714" />
       <source>Spell check complete</source>
       <translation>Spellingscontrole compleet</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="833" />
+      <location filename="../novelwriter/gui/doceditor.py" line="834" />
       <source>Document Details</source>
       <translation>Document details</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="835" />
+      <location filename="../novelwriter/gui/doceditor.py" line="836" />
       <source>Created: {0}</source>
       <translation>Aangemaakt: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="836" />
+      <location filename="../novelwriter/gui/doceditor.py" line="837" />
       <source>Updated: {0}</source>
       <translation>Bijgewerkt: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="838" />
+      <location filename="../novelwriter/gui/doceditor.py" line="839" />
       <source>File Location: {0}</source>
       <translation>Bestandslocatie: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1112" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1113" />
       <source>Set as Document Name</source>
       <translation>Instellen als documentnaam</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1118" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1119" />
       <source>Follow Tag</source>
       <translation>Volg label</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1122" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1123" />
       <source>Create Note for Tag</source>
       <translation>Creëer notitie voor label</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1128" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1129" />
       <source>Cut</source>
       <translation>Knippen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1130" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1131" />
       <source>Copy</source>
       <translation>Kopiëren</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1133" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1134" />
       <source>Paste</source>
       <translation>Plakken</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1138" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1139" />
       <source>Select All</source>
       <translation>Selecteer alles</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1140" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1141" />
       <source>Select Word</source>
       <translation>Selecteer woord</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1144" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1145" />
       <source>Select Paragraph</source>
       <translation>Selecteer paragraaf</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1160" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1161" />
       <source>Spelling Suggestion(s)</source>
       <translation>Spelling suggestie(s)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1167" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1168" />
       <source>No Suggestions</source>
       <translation>Geen suggesties</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1170" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1171" />
       <source>Add Word to Dictionary</source>
       <translation>Woord toevoegen aan woordenboek</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1596" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1597" />
       <source>Please select some text before calling replace quotes.</source>
       <translation>Selecteer a.u.b. een tekst voordat u vervang aanhalingstekens aanroept.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1903" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1904" />
       <source>Do you want to create a new project note for the tag '{0}'?</source>
       <translation>Wilt u een nieuwe project notitie maken voor het label '{0}'?</translation>
     </message>
@@ -1058,7 +1058,7 @@
     <message>
       <location filename="../novelwriter/dialogs/docsplit.py" line="61" />
       <source>Document Headings</source>
-      <translation type="unfinished" />
+      <translation>Document koppen</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/docsplit.py" line="64" />
@@ -1068,22 +1068,22 @@
     <message>
       <location filename="../novelwriter/dialogs/docsplit.py" line="86" />
       <source>Split on Heading Level 1 (Partition)</source>
-      <translation type="unfinished" />
+      <translation>Splits op kop niveau 1 (Partitie)</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/docsplit.py" line="87" />
       <source>Split up to Heading Level 2 (Chapter)</source>
-      <translation type="unfinished" />
+      <translation>Opsplitsen tot kop niveau 2 (Hoofdstuk)</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/docsplit.py" line="88" />
       <source>Split up to Heading Level 3 (Scene)</source>
-      <translation type="unfinished" />
+      <translation>Opsplitsen tot kop niveau 3 (Scène)</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/docsplit.py" line="89" />
       <source>Split up to Heading Level 4 (Section)</source>
-      <translation type="unfinished" />
+      <translation>Opsplitsen tot kop niveau 4 (Sectie)</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/docsplit.py" line="96" />
@@ -1104,52 +1104,52 @@
   <context>
     <name>GuiDocToolBar</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2270" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2271" />
       <source>Markdown Bold</source>
       <translation>Markdown vet</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2276" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2277" />
       <source>Markdown Italic</source>
       <translation>Markdown cursief</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2282" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2283" />
       <source>Markdown Strikethrough</source>
       <translation>Markdown doorstrepen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2288" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2289" />
       <source>Shortcode Bold</source>
       <translation>Korte code vet</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2294" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2295" />
       <source>Shortcode Italic</source>
       <translation>Korte code cursief</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2300" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2301" />
       <source>Shortcode Strikethrough</source>
       <translation>Korte code doorstrepen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2306" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2307" />
       <source>Shortcode Underline</source>
       <translation>Korte code onderstrepen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2312" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2313" />
       <source>Shortcode Highlight</source>
-      <translation type="unfinished" />
+      <translation>Snelkoppeling accentuering</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2318" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2319" />
       <source>Shortcode Superscript</source>
       <translation>Korte code superscript</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2324" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2325" />
       <source>Shortcode Subscript</source>
       <translation>Korte code subscript</translation>
     </message>
@@ -1187,7 +1187,7 @@
     <message>
       <location filename="../novelwriter/gui/docviewer.py" line="659" />
       <source>Outline</source>
-      <translation type="unfinished" />
+      <translation>Samenvatting</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/docviewer.py" line="664" />
@@ -1854,7 +1854,7 @@
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="676" />
       <source>Highlight</source>
-      <translation type="unfinished" />
+      <translation>Markeren</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="682" />
@@ -1869,22 +1869,22 @@
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="697" />
       <source>Heading 1 (Partition)</source>
-      <translation type="unfinished" />
+      <translation>Kop 1 (Partitie)</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="704" />
       <source>Heading 2 (Chapter)</source>
-      <translation type="unfinished" />
+      <translation>Kop 2 (Hoofdstuk)</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="711" />
       <source>Heading 3 (Scene)</source>
-      <translation type="unfinished" />
+      <translation>Kop 3 (Scène)</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="718" />
       <source>Heading 4 (Section)</source>
-      <translation type="unfinished" />
+      <translation>Kop 4 (Sectie)</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="728" />
@@ -1899,7 +1899,7 @@
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="740" />
       <source>Alternative Scene</source>
-      <translation type="unfinished" />
+      <translation>Alternatieve scène</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="749" />
@@ -1944,12 +1944,12 @@
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="814" />
       <source>Replace Straight Single Quotes</source>
-      <translation type="unfinished" />
+      <translation>Vervang rechte enkele aanhalingstekens</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="820" />
       <source>Replace Straight Double Quotes</source>
-      <translation type="unfinished" />
+      <translation>Vervang rechte dubbele aanhalingstekens</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="826" />
@@ -1989,7 +1989,7 @@
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="869" />
       <source>Find in Project</source>
-      <translation type="unfinished" />
+      <translation>Zoek in project</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="878" />
@@ -2161,12 +2161,12 @@
     <message>
       <location filename="../novelwriter/tools/manuscript.py" line="158" />
       <source>Details</source>
-      <translation type="unfinished" />
+      <translation>Details</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manuscript.py" line="159" />
       <source>Outline</source>
-      <translation type="unfinished" />
+      <translation>Samenvatting</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manuscript.py" line="173" />
@@ -2198,57 +2198,57 @@
   <context>
     <name>GuiManuscriptBuild</name>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="72" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="70" />
       <source>Build Manuscript</source>
       <translation>Bouw manuscript</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="93" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="91" />
       <source>Output Format</source>
       <translation>Uitvoerformaat</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="119" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="117" />
       <source>Table of Contents</source>
       <translation>Inhoudsopgave</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="147" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="145" />
       <source>Path</source>
       <translation>Pad</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="157" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="155" />
       <source>File Name</source>
       <translation>Bestandsnaam</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="160" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="158" />
       <source>Reset file name to default</source>
       <translation>Herstel bestandsnaam naar standaard</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="184" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="182" />
       <source>Open Folder</source>
       <translation>Map openen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="186" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="184" />
       <source>&amp;Build</source>
       <translation>&amp;Bouwen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="281" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="279" />
       <source>Select Folder</source>
       <translation>Selecteer map</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="319" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="317" />
       <source>Output folder does not exist.</source>
       <translation>Uitvoermap bestaat niet.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manusbuild.py" line="327" />
+      <location filename="../novelwriter/tools/manusbuild.py" line="325" />
       <source>The file already exists. Do you want to overwrite it?</source>
       <translation>Het bestand bestaat al. Wil je het overschrijven?</translation>
     </message>
@@ -2415,7 +2415,7 @@
   <context>
     <name>GuiOutlineToolBar</name>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="223" />
+      <location filename="../novelwriter/gui/outline.py" line="222" />
       <source>Outline of</source>
       <translation>Omlijning van</translation>
     </message>
@@ -2997,27 +2997,27 @@
     <message>
       <location filename="../novelwriter/gui/search.py" line="74" />
       <source>Project Search</source>
-      <translation type="unfinished" />
+      <translation>Project zoeken</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/search.py" line="84" />
       <source>Case Sensitive</source>
-      <translation type="unfinished">Hoofdlettergevoelig</translation>
+      <translation>Hoofdlettergevoelig</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/search.py" line="89" />
       <source>Whole Words Only</source>
-      <translation type="unfinished">Alleen hele woorden</translation>
+      <translation>Alleen hele woorden</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/search.py" line="94" />
       <source>RegEx Mode</source>
-      <translation type="unfinished">RegEx modus</translation>
+      <translation>RegEx modus</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/search.py" line="101" />
       <source>Search for</source>
-      <translation type="unfinished" />
+      <translation>Zoek naar</translation>
     </message>
   </context>
   <context>
@@ -3231,7 +3231,7 @@
     <message>
       <location filename="../novelwriter/gui/sidebar.py" line="73" />
       <source>Project Search</source>
-      <translation type="unfinished" />
+      <translation>Project zoeken</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/sidebar.py" line="77" />
@@ -3861,78 +3861,19 @@
     </message>
   </context>
   <context>
-    <name>QWizard</name>
-    <message>
-      <location filename="qtbase.py" line="54" />
-      <source>Go Back</source>
-      <translation>Ga terug</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="55" />
-      <source>&lt; &amp;Back</source>
-      <translation>&lt; &amp;Terug</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="56" />
-      <source>Continue</source>
-      <translation>Doorgaan</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="57" />
-      <source>&amp;Next</source>
-      <translation>&amp;Volgende</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="58" />
-      <source>&amp;Next &gt;</source>
-      <translation>&amp;Volgende &gt;</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="59" />
-      <source>Commit</source>
-      <translation>Vastleggen</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="60" />
-      <source>Done</source>
-      <translation>Gereed</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="61" />
-      <source>&amp;Finish</source>
-      <translation>Vol&amp;tooien</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="63" />
-      <location filename="qtbase.py" line="62" />
-      <source>Cancel</source>
-      <translation>Annuleer</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="64" />
-      <source>Help</source>
-      <translation>Help</translation>
-    </message>
-    <message>
-      <location filename="qtbase.py" line="65" />
-      <source>&amp;Help</source>
-      <translation>&amp;Help</translation>
-    </message>
-  </context>
-  <context>
     <name>SharedData</name>
     <message>
-      <location filename="../novelwriter/shared.py" line="249" />
+      <location filename="../novelwriter/shared.py" line="250" />
       <source>novelWriter Project File or Zip File</source>
       <translation>novelWriter project- of zip bestand</translation>
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="250" />
+      <location filename="../novelwriter/shared.py" line="251" />
       <source>novelWriter Project File</source>
       <translation>novelWriter Projectbestand</translation>
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="254" />
+      <location filename="../novelwriter/shared.py" line="255" />
       <source>Open Project</source>
       <translation>Project openen</translation>
     </message>
@@ -4041,34 +3982,34 @@
   <context>
     <name>_DetailsWidget</name>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="522" />
+      <location filename="../novelwriter/tools/manuscript.py" line="533" />
       <source>Setting</source>
       <translation>Instelling</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="522" />
+      <location filename="../novelwriter/tools/manuscript.py" line="533" />
       <source>Value</source>
       <translation>Waarde</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="589" />
+      <location filename="../novelwriter/tools/manuscript.py" line="600" />
       <source>Name</source>
       <translation>Naam</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="595" />
+      <location filename="../novelwriter/tools/manuscript.py" line="606" />
       <source>Selection</source>
       <translation>Selectie</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="611" />
+      <location filename="../novelwriter/tools/manuscript.py" line="622" />
       <source>Title</source>
       <translation>Titel</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="612" />
+      <location filename="../novelwriter/tools/manuscript.py" line="623" />
       <source>Hidden</source>
-      <translation type="unfinished">Verborgen</translation>
+      <translation>Verborgen</translation>
     </message>
   </context>
   <context>
@@ -4112,22 +4053,22 @@
   <context>
     <name>_GuiAlert</name>
     <message>
-      <location filename="../novelwriter/shared.py" line="410" />
+      <location filename="../novelwriter/shared.py" line="422" />
       <source>Information</source>
       <translation>Informatie</translation>
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="413" />
+      <location filename="../novelwriter/shared.py" line="425" />
       <source>Warning</source>
       <translation>Waarschuwing</translation>
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="416" />
+      <location filename="../novelwriter/shared.py" line="428" />
       <source>Error</source>
       <translation>Foutmelding</translation>
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="419" />
+      <location filename="../novelwriter/shared.py" line="431" />
       <source>Question</source>
       <translation>Vraag</translation>
     </message>
@@ -4209,21 +4150,21 @@
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="758" />
       <source>Additional Styling</source>
-      <translation type="unfinished" />
+      <translation>Extra opmaak</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="795" />
       <location filename="../novelwriter/tools/manussettings.py" line="780" />
       <location filename="../novelwriter/tools/manussettings.py" line="765" />
       <source>Centre</source>
-      <translation type="unfinished" />
+      <translation>Midden</translation>
     </message>
     <message>
       <location filename="../novelwriter/tools/manussettings.py" line="797" />
       <location filename="../novelwriter/tools/manussettings.py" line="782" />
       <location filename="../novelwriter/tools/manussettings.py" line="767" />
       <source>Page Break</source>
-      <translation type="unfinished">Nieuwe pagina</translation>
+      <translation>Nieuwe pagina</translation>
     </message>
   </context>
   <context>
@@ -4438,27 +4379,27 @@
   <context>
     <name>_PreviewWidget</name>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="757" />
+      <location filename="../novelwriter/tools/manuscript.py" line="769" />
       <source>Press the "Preview" button to generate ...</source>
       <translation>Druk op de knop "Preview" om te genereren...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="855" />
+      <location filename="../novelwriter/tools/manuscript.py" line="867" />
       <source>Processing ...</source>
       <translation>Wordt verwerkt...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="877" />
+      <location filename="../novelwriter/tools/manuscript.py" line="888" />
       <source>Done</source>
       <translation>Gereed</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="927" />
+      <location filename="../novelwriter/tools/manuscript.py" line="938" />
       <source>Unknown</source>
       <translation>Onbekend</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="928" />
+      <location filename="../novelwriter/tools/manuscript.py" line="939" />
       <source>Built</source>
       <translation>Gebouwd</translation>
     </message>
@@ -4557,61 +4498,61 @@
   <context>
     <name>_StatsWidget</name>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1090" />
-      <location filename="../novelwriter/tools/manuscript.py" line="1050" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1102" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1062" />
       <source>Words</source>
-      <translation type="unfinished">Woorden</translation>
+      <translation>Woorden</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1117" />
-      <location filename="../novelwriter/tools/manuscript.py" line="1053" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1129" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1065" />
       <source>Characters</source>
-      <translation type="unfinished">Tekens</translation>
+      <translation>Tekens</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1091" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1103" />
       <source>Words in Headings</source>
-      <translation type="unfinished" />
+      <translation>Woorden in koppen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1092" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1104" />
       <source>Words in Text</source>
-      <translation type="unfinished" />
+      <translation>Woorden in tekst</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1094" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1106" />
       <source>Headings</source>
-      <translation type="unfinished">Koppen</translation>
+      <translation>Koppen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1095" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1107" />
       <source>Paragraphs</source>
-      <translation type="unfinished">Paragrafen</translation>
+      <translation>Paragrafen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1118" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1130" />
       <source>Characters in Headings</source>
-      <translation type="unfinished" />
+      <translation>Tekens in koppen</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1119" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1131" />
       <source>Characters in Text</source>
-      <translation type="unfinished" />
+      <translation>Tekens in tekst</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1120" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1132" />
       <source>Characters, No Spaces</source>
-      <translation type="unfinished" />
+      <translation>Tekens, geen spaties</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1121" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1133" />
       <source>Characters in Headings, No Spaces</source>
-      <translation type="unfinished" />
+      <translation>Tekens in koppen, geen spaties</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1122" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1134" />
       <source>Characters in Text, No Spaces</source>
-      <translation type="unfinished" />
+      <translation>Tekens in tekst, geen spaties</translation>
     </message>
   </context>
   <context>
@@ -4771,7 +4712,7 @@
     <message>
       <location filename="../novelwriter/gui/projtree.py" line="1932" />
       <source>Split Document by Headings</source>
-      <translation type="unfinished" />
+      <translation>Document splitsen op koppen</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/projtree.py" line="1942" />
@@ -4786,7 +4727,7 @@
     <message>
       <location filename="../novelwriter/gui/projtree.py" line="1947" />
       <source>Duplicate</source>
-      <translation type="unfinished" />
+      <translation>Dupliceren</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/projtree.py" line="1963" />

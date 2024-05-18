@@ -791,22 +791,22 @@
   <context>
     <name>GuiDocEditFooter</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3007" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3008" />
       <source>Line: {0} ({1})</source>
       <translation>Línea: {0} ({1})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3008" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3009" />
       <source>Words: {0} ({1})</source>
       <translation>Palabras: {0} ({1})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3009" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3010" />
       <source>Words: {0} selected</source>
       <translation>Palabras: {0} seleccionadas</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3021" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3022" />
       <source>Status</source>
       <translation>Estado</translation>
     </message>
@@ -814,27 +814,27 @@
   <context>
     <name>GuiDocEditHeader</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2805" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2806" />
       <source>Toggle Tool Bar</source>
       <translation>Alternar Barra de Herramientas</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2810" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2811" />
       <source>Outline</source>
       <translation>Estructura</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2815" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2816" />
       <source>Search</source>
       <translation>Buscar</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2820" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2821" />
       <source>Toggle Focus Mode</source>
       <translation>Alternar el Modo Enfocado</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2825" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2826" />
       <source>Close</source>
       <translation>Cerrar</translation>
     </message>
@@ -842,62 +842,62 @@
   <context>
     <name>GuiDocEditSearch</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2413" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2414" />
       <source>Search for</source>
       <translation>Buscar</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2418" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2419" />
       <source>Replace with</source>
       <translation>Reemplazar con</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2426" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2427" />
       <source>Search</source>
       <translation>Buscar</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2434" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2435" />
       <source>Case Sensitive</source>
       <translation>Sensibilidad a Mayúsculas y Minúsculas</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2440" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2441" />
       <source>Whole Words Only</source>
       <translation>Sólo Palabras Enteras</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2446" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2447" />
       <source>RegEx Mode</source>
       <translation>Modo ExReg</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2452" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2453" />
       <source>Loop Search</source>
       <translation>Reiniciar la Búsqueda</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2458" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2459" />
       <source>Search Next File</source>
       <translation>Buscar en el Siguiente Archivo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2466" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2467" />
       <source>Preserve Case</source>
       <translation>Conservar Mayúsculas y Minúsculas</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2474" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2475" />
       <source>Close Search</source>
       <translation>Cerrar la Búsqueda</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2485" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2486" />
       <source>Find in current document</source>
       <translation>Buscar en el documento actual</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2489" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2490" />
       <source>Find and replace in current document</source>
       <translation>Buscar y reemplazar en el documento actual</translation>
     </message>
@@ -905,122 +905,122 @@
   <context>
     <name>GuiDocEditor</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="441" />
+      <location filename="../novelwriter/gui/doceditor.py" line="442" />
       <source>Opened Document: {0}</source>
       <translation>Se Abrió el Documento: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="484" />
+      <location filename="../novelwriter/gui/doceditor.py" line="485" />
       <source>This document has been changed outside of novelWriter while it was open. Overwrite the file on disk?</source>
       <translation>Este documento ha cambiado por fuera de novelWriter estando abierto. ¿Sobreescribir en el disco?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="493" />
+      <location filename="../novelwriter/gui/doceditor.py" line="494" />
       <source>Could not save document.</source>
       <translation>No se puedo guardar el documento.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="518" />
+      <location filename="../novelwriter/gui/doceditor.py" line="519" />
       <source>Saved Document: {0}</source>
       <translation>Documento Guardado: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="687" />
+      <location filename="../novelwriter/gui/doceditor.py" line="688" />
       <source>Spell checking requires the package PyEnchant. It does not appear to be installed.</source>
       <translation>Para la corrección ortográfica se requiere del paquete PyEnchant. Parece que no se encuentra instalado.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="713" />
+      <location filename="../novelwriter/gui/doceditor.py" line="714" />
       <source>Spell check complete</source>
       <translation>Se completó la comprobación ortográfica</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="833" />
+      <location filename="../novelwriter/gui/doceditor.py" line="834" />
       <source>Document Details</source>
       <translation>Detalles del Documento</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="835" />
+      <location filename="../novelwriter/gui/doceditor.py" line="836" />
       <source>Created: {0}</source>
       <translation>Creación: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="836" />
+      <location filename="../novelwriter/gui/doceditor.py" line="837" />
       <source>Updated: {0}</source>
       <translation>Actualizado en: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="838" />
+      <location filename="../novelwriter/gui/doceditor.py" line="839" />
       <source>File Location: {0}</source>
       <translation>Ubicación del Archivo: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1112" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1113" />
       <source>Set as Document Name</source>
       <translation>Elegir como Nombre del Documento</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1118" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1119" />
       <source>Follow Tag</source>
       <translation>Continuar a Etiqueta</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1122" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1123" />
       <source>Create Note for Tag</source>
       <translation>Crear Nota para la Etiqueta</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1128" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1129" />
       <source>Cut</source>
       <translation>Cortar</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1130" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1131" />
       <source>Copy</source>
       <translation>Copiar</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1133" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1134" />
       <source>Paste</source>
       <translation>Pegar</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1138" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1139" />
       <source>Select All</source>
       <translation>Seleccionar Todo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1140" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1141" />
       <source>Select Word</source>
       <translation>Seleccionar Palabra</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1144" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1145" />
       <source>Select Paragraph</source>
       <translation>Seleccionar Párrafo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1160" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1161" />
       <source>Spelling Suggestion(s)</source>
       <translation>Sugerencia(s) de Ortografía</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1167" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1168" />
       <source>No Suggestions</source>
       <translation>No Hay Sugerencias</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1170" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1171" />
       <source>Add Word to Dictionary</source>
       <translation>Añadir Palabra al Diccionario</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1596" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1597" />
       <source>Please select some text before calling replace quotes.</source>
       <translation>Por favor seleccione algo del texto antes de intentar reemplazar las comillas.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1903" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1904" />
       <source>Do you want to create a new project note for the tag '{0}'?</source>
       <translation>¿Desea crear una nueva nota del proyecto para la etiqueta '{0}'?</translation>
     </message>
@@ -1104,52 +1104,52 @@
   <context>
     <name>GuiDocToolBar</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2270" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2271" />
       <source>Markdown Bold</source>
       <translation>Negrita (de Markdown)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2276" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2277" />
       <source>Markdown Italic</source>
       <translation>Cursiva (de Markdown)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2282" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2283" />
       <source>Markdown Strikethrough</source>
       <translation>Tachado (de Markdown)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2288" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2289" />
       <source>Shortcode Bold</source>
       <translation>Negrita (en código)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2294" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2295" />
       <source>Shortcode Italic</source>
       <translation>Cursiva (en código)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2300" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2301" />
       <source>Shortcode Strikethrough</source>
       <translation>Tachado (en código)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2306" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2307" />
       <source>Shortcode Underline</source>
       <translation>Subrayado (en código)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2312" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2313" />
       <source>Shortcode Highlight</source>
       <translation>Resaltado (en código)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2318" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2319" />
       <source>Shortcode Superscript</source>
       <translation>Superíndice (en código)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2324" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2325" />
       <source>Shortcode Subscript</source>
       <translation>Subíndice (en código)</translation>
     </message>
