@@ -20,12 +20,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import pytest
-import enchant
-
 from zipfile import ZipFile
 
-from mocked import causeException
+import enchant
+import pytest
 
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QFileDialog
@@ -33,11 +31,15 @@ from PyQt5.QtWidgets import QFileDialog
 from novelwriter import SHARED
 from novelwriter.tools.dictionaries import GuiDictionaries
 
+from tests.mocked import causeException
+
 
 @pytest.mark.gui
 def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
     """Test the Dictionaries downloader tool."""
-    monkeypatch.setattr(enchant, "get_user_config_dir", lambda *a: str(fncPath))
+    # Must also create the enchant folder, see issue #1874
+    enchPath = fncPath / "enchant"
+    monkeypatch.setattr(enchant, "get_user_config_dir", lambda *a: str(enchPath))
 
     # Fail to open
     with monkeypatch.context() as mp:
@@ -52,7 +54,7 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
     nwDicts = SHARED.findTopLevelWidget(GuiDictionaries)
     assert isinstance(nwDicts, GuiDictionaries)
     assert nwDicts.isVisible()
-    assert nwDicts.inPath.text() == str(fncPath)
+    assert nwDicts.inPath.text() == str(enchPath)
 
     # Allow Open Dir
     SHARED._lastAlert = ""
@@ -98,9 +100,9 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
         nwDicts._doBrowseHunspell()
         assert nwDicts.huInput.text() == str(foDict)
         nwDicts._doImportHunspell()
-        assert (fncPath / "hunspell").is_dir()
-        assert (fncPath / "hunspell" / "en_GB.aff").is_file()
-        assert (fncPath / "hunspell" / "en_GB.dic").is_file()
+        assert (enchPath / "hunspell").is_dir()
+        assert (enchPath / "hunspell" / "en_GB.aff").is_file()
+        assert (enchPath / "hunspell" / "en_GB.dic").is_file()
         assert nwDicts.infoBox.blockCount() == 3
 
     # Import Libre Office Dictionary
@@ -109,9 +111,9 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
         nwDicts._doBrowseHunspell()
         assert nwDicts.huInput.text() == str(loDict)
         nwDicts._doImportHunspell()
-        assert (fncPath / "hunspell").is_dir()
-        assert (fncPath / "hunspell" / "en_US.aff").is_file()
-        assert (fncPath / "hunspell" / "en_US.dic").is_file()
+        assert (enchPath / "hunspell").is_dir()
+        assert (enchPath / "hunspell" / "en_US.aff").is_file()
+        assert (enchPath / "hunspell" / "en_US.dic").is_file()
         assert nwDicts.infoBox.blockCount() == 5
 
     # Handle Unreadable File
