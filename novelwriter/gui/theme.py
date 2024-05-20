@@ -284,6 +284,10 @@ class GuiTheme:
             else:
                 helpLCol = backLNess + 0.65*(textLNess - backLNess)
             self.helpText = QColor.fromHsl(0, 0, int(255*helpLCol))
+            logger.debug(
+                "Computed help text colour: rgb(%d, %d, %d)",
+                self.helpText.red(), self.helpText.green(), self.helpText.blue()
+            )
 
         # Icons
         defaultIcons = "typicons_light" if backLNess >= 0.5 else "typicons_dark"
