@@ -241,5 +241,3 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         nwGUI.postLaunchTasks(cmdOpen)
 
         sys.exit(nwApp.exec())
-
-    return None

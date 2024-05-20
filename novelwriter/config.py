@@ -39,7 +39,7 @@ from PyQt5.QtCore import (
 from PyQt5.QtGui import QFont, QFontDatabase
 from PyQt5.QtWidgets import QApplication
 
-from novelwriter.common import NWConfigParser, checkInt, checkPath, formatTimeStamp
+from novelwriter.common import NWConfigParser, checkInt, checkPath, describeFont, formatTimeStamp
 from novelwriter.constants import nwFiles, nwUnicode
 from novelwriter.error import formatException, logException
 
@@ -109,7 +109,7 @@ class Config:
         self.guiLocale    = self._qLocale.name()
         self.guiTheme     = "default"        # GUI theme
         self.guiSyntax    = "default_light"  # Syntax theme
-        self.guiFont      = QFont()          # Defaults to system default font in theme class
+        self.guiFont      = QFont()          # Main GUI font
         self.guiScale     = 1.0              # Set automatically by Theme class
         self.hideVScroll  = False            # Hide vertical scroll bars on main widgets
         self.hideHScroll  = False            # Hide horizontal scroll bars on main widgets
@@ -377,6 +377,7 @@ class Config:
             else:
                 font = fontDB.systemFont(QFontDatabase.SystemFont.GeneralFont)
             self.guiFont = font
+            logger.debug("GUI font set to: %s", describeFont(font))
 
         QApplication.setFont(self.guiFont)
 
@@ -405,6 +406,7 @@ class Config:
             else:
                 font = fontDB.systemFont(QFontDatabase.SystemFont.GeneralFont)
             self.textFont = font
+            logger.debug("Text font set to: %s", describeFont(font))
         return
 
     ##
@@ -571,8 +573,9 @@ class Config:
 
         if not cnfPath.exists():
             # Initial file, so we just create one from defaults
-            self.saveConfig()
             self.setGuiFont(None)
+            self.setTextFont(None)
+            self.saveConfig()
             return True
 
         try:
