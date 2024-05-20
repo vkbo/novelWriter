@@ -31,10 +31,7 @@ import logging
 from enum import Enum
 
 from PyQt5.QtCore import QPoint, Qt, QUrl, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import (
-    QCursor, QFont, QMouseEvent, QPalette, QResizeEvent, QTextCursor,
-    QTextOption
-)
+from PyQt5.QtGui import QCursor, QMouseEvent, QPalette, QResizeEvent, QTextCursor, QTextOption
 from PyQt5.QtWidgets import (
     QAction, QApplication, QFrame, QHBoxLayout, QLabel, QMenu, QTextBrowser,
     QToolButton, QWidget
@@ -141,12 +138,7 @@ class GuiDocViewer(QTextBrowser):
     def initViewer(self) -> None:
         """Set editor settings from main config."""
         self._makeStyleSheet()
-
-        # Set Font
-        font = QFont()
-        font.setFamily(CONFIG.textFont)
-        font.setPointSize(CONFIG.textSize)
-        self.document().setDefaultFont(font)
+        self.initFont()
 
         # Set the widget colours to match syntax theme
         mainPalette = self.palette()
@@ -186,6 +178,22 @@ class GuiDocViewer(QTextBrowser):
 
         # If we have a document open, we should reload it in case the font changed
         self.reloadText()
+
+        return
+
+    def initFont(self) -> None:
+        """Set the font of the main widget and sub-widgets. This needs
+        special attention since there appears to be a bug in Qt 5.15.3.
+        See issues #1862 and #1875.
+        """
+        font = self.font()
+        font.setFamily(CONFIG.textFont)
+        font.setPointSize(CONFIG.textSize)
+        self.setFont(font)
+
+        # Reset sub-widget font to GUI font
+        self.docHeader.updateFont()
+        self.docFooter.updateFont()
 
         return
 
@@ -646,10 +654,6 @@ class GuiDocViewHeader(QWidget):
         self.itemTitle.setAlignment(QtAlignCenterTop)
         self.itemTitle.setFixedHeight(iPx)
 
-        lblFont = self.itemTitle.font()
-        lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
-        self.itemTitle.setFont(lblFont)
-
         # Other Widgets
         self.outlineMenu = QMenu(self)
 
@@ -700,7 +704,7 @@ class GuiDocViewHeader(QWidget):
         self.outerBox.setContentsMargins(mPx, mPx, mPx, mPx)
         self.setMinimumHeight(iPx + 2*mPx)
 
-        # Fix the Colours
+        self.updateFont()
         self.updateTheme()
 
         logger.debug("Ready: GuiDocViewHeader")
@@ -743,6 +747,12 @@ class GuiDocViewHeader(QWidget):
                     lambda _, title=title: self.docViewer.navigateTo(f"#{tHandle}:{title}")
                 )
             self._docOutline = data
+        return
+
+    def updateFont(self) -> None:
+        """Update the font settings."""
+        self.setFont(SHARED.theme.guiFont)
+        self.itemTitle.setFont(SHARED.theme.guiFontSmall)
         return
 
     def updateTheme(self) -> None:
@@ -886,11 +896,6 @@ class GuiDocViewFooter(QWidget):
         self.showSynopsis.toggled.connect(self._doToggleSynopsis)
         self.showSynopsis.setToolTip(self.tr("Show Synopsis Comments"))
 
-        lblFont = self.font()
-        lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
-        self.showComments.setFont(lblFont)
-        self.showSynopsis.setFont(lblFont)
-
         # Assemble Layout
         self.outerBox = QHBoxLayout()
         self.outerBox.addWidget(self.showHide, 0)
@@ -906,7 +911,7 @@ class GuiDocViewFooter(QWidget):
         self.outerBox.setContentsMargins(mPx, mPx, mPx, mPx)
         self.setMinimumHeight(iPx + 2*mPx)
 
-        # Fix the Colours
+        self.updateFont()
         self.updateTheme()
 
         logger.debug("Ready: GuiDocViewFooter")
@@ -916,6 +921,13 @@ class GuiDocViewFooter(QWidget):
     ##
     #  Methods
     ##
+
+    def updateFont(self) -> None:
+        """Update the font settings."""
+        self.setFont(SHARED.theme.guiFont)
+        self.showComments.setFont(SHARED.theme.guiFontSmall)
+        self.showSynopsis.setFont(SHARED.theme.guiFontSmall)
+        return
 
     def updateTheme(self) -> None:
         """Update theme elements."""

@@ -43,8 +43,8 @@ from PyQt5.QtCore import (
     pyqtSignal, pyqtSlot
 )
 from PyQt5.QtGui import (
-    QColor, QCursor, QFont, QKeyEvent, QKeySequence, QMouseEvent, QPalette,
-    QPixmap, QResizeEvent, QTextBlock, QTextCursor, QTextDocument, QTextOption
+    QColor, QCursor, QKeyEvent, QKeySequence, QMouseEvent, QPalette, QPixmap,
+    QResizeEvent, QTextBlock, QTextCursor, QTextDocument, QTextOption
 )
 from PyQt5.QtWidgets import (
     QAction, QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit,
@@ -329,10 +329,7 @@ class GuiDocEditor(QPlainTextEdit):
         SHARED.updateSpellCheckLanguage()
 
         # Set font
-        font = QFont()
-        font.setFamily(CONFIG.textFont)
-        font.setPointSize(CONFIG.textSize)
-        self._qDocument.setDefaultFont(font)
+        self.initFont()
 
         # Update highlighter settings
         self._qDocument.syntaxHighlighter.initHighlighter()
@@ -379,6 +376,23 @@ class GuiDocEditor(QPlainTextEdit):
             self.docHeader.setHandle(self._docHandle)
         else:
             self.clearEditor()
+
+        return
+
+    def initFont(self) -> None:
+        """Set the font of the main widget and sub-widgets. This needs
+        special attention since there appears to be a bug in Qt 5.15.3.
+        See issues #1862 and #1875.
+        """
+        font = self.font()
+        font.setFamily(CONFIG.textFont)
+        font.setPointSize(CONFIG.textSize)
+        self.setFont(font)
+
+        # Reset sub-widget font to GUI font
+        self.docHeader.updateFont()
+        self.docFooter.updateFont()
+        self.docSearch.updateFont()
 
         return
 
@@ -2396,9 +2410,6 @@ class GuiDocEditSearch(QFrame):
         iSz = SHARED.theme.baseIconSize
         mPx = CONFIG.pxInt(6)
 
-        self.boxFont = SHARED.theme.guiFont
-        self.boxFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
-
         self.setContentsMargins(0, 0, 0, 0)
         self.setAutoFillBackground(True)
         self.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Plain)
@@ -2410,12 +2421,10 @@ class GuiDocEditSearch(QFrame):
         # ==========
 
         self.searchBox = QLineEdit(self)
-        self.searchBox.setFont(self.boxFont)
         self.searchBox.setPlaceholderText(self.tr("Search for"))
         self.searchBox.returnPressed.connect(self._doSearch)
 
         self.replaceBox = QLineEdit(self)
-        self.replaceBox.setFont(self.boxFont)
         self.replaceBox.setPlaceholderText(self.tr("Replace with"))
         self.replaceBox.returnPressed.connect(self._doReplace)
 
@@ -2425,12 +2434,9 @@ class GuiDocEditSearch(QFrame):
         self.searchOpt.setContentsMargins(0, 0, 0, 0)
 
         self.searchLabel = QLabel(self.tr("Search"), self)
-        self.searchLabel.setFont(self.boxFont)
         self.searchLabel.setIndent(CONFIG.pxInt(6))
 
         self.resultLabel = QLabel("?/?", self)
-        self.resultLabel.setFont(self.boxFont)
-        self.resultLabel.setMinimumWidth(SHARED.theme.getTextWidth("?/?", self.boxFont))
 
         self.toggleCase = QAction(self.tr("Case Sensitive"), self)
         self.toggleCase.setCheckable(True)
@@ -2515,6 +2521,7 @@ class GuiDocEditSearch(QFrame):
         self.replaceButton.setVisible(False)
         self.adjustSize()
 
+        self.updateFont()
         self.updateTheme()
 
         logger.debug("Ready: GuiDocEditSearch")
@@ -2598,7 +2605,9 @@ class GuiDocEditSearch(QFrame):
         numCount = f"{lim:n}+" if (resCount or 0) > lim else f"{resCount:n}"
         sCurrRes = "?" if currRes is None else str(currRes)
         sResCount = "?" if resCount is None else numCount
-        minWidth = SHARED.theme.getTextWidth(f"{sResCount}//{sResCount}", self.boxFont)
+        minWidth = SHARED.theme.getTextWidth(
+            f"{sResCount}//{sResCount}", SHARED.theme.guiFontSmall
+        )
         self.resultLabel.setText(f"{sCurrRes}/{sResCount}")
         self.resultLabel.setMinimumWidth(minWidth)
         self.adjustSize()
@@ -2608,6 +2617,18 @@ class GuiDocEditSearch(QFrame):
     ##
     #  Methods
     ##
+
+    def updateFont(self) -> None:
+        """Update the font settings."""
+        self.setFont(SHARED.theme.guiFont)
+        self.searchBox.setFont(SHARED.theme.guiFontSmall)
+        self.replaceBox.setFont(SHARED.theme.guiFontSmall)
+        self.searchLabel.setFont(SHARED.theme.guiFontSmall)
+        self.resultLabel.setFont(SHARED.theme.guiFontSmall)
+        self.resultLabel.setMinimumWidth(
+            SHARED.theme.getTextWidth("?/?", SHARED.theme.guiFontSmall)
+        )
+        return
 
     def updateTheme(self) -> None:
         """Update theme elements."""
@@ -2793,10 +2814,6 @@ class GuiDocEditHeader(QWidget):
         self.itemTitle.setAlignment(QtAlignCenterTop)
         self.itemTitle.setFixedHeight(iPx)
 
-        lblFont = self.itemTitle.font()
-        lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
-        self.itemTitle.setFont(lblFont)
-
         # Other Widgets
         self.outlineMenu = QMenu(self)
 
@@ -2850,6 +2867,7 @@ class GuiDocEditHeader(QWidget):
         self.setContentsMargins(0, 0, 0, 0)
         self.setMinimumHeight(iPx + 2*mPx)
 
+        self.updateFont()
         self.updateTheme()
 
         logger.debug("Ready: GuiDocEditHeader")
@@ -2886,6 +2904,12 @@ class GuiDocEditHeader(QWidget):
                 )
             self._docOutline = data
             logger.debug("Document outline updated in %.3f ms", 1000*(time() - tStart))
+        return
+
+    def updateFont(self) -> None:
+        """Update the font settings."""
+        self.setFont(SHARED.theme.guiFont)
+        self.itemTitle.setFont(SHARED.theme.guiFontSmall)
         return
 
     def updateTheme(self) -> None:
@@ -3001,9 +3025,6 @@ class GuiDocEditFooter(QWidget):
         bSp = CONFIG.pxInt(4)
         hSp = CONFIG.pxInt(6)
 
-        lblFont = self.font()
-        lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
-
         # Cached Translations
         self._trLineCount = self.tr("Line: {0} ({1})")
         self._trWordCount = self.tr("Words: {0} ({1})")
@@ -3026,7 +3047,6 @@ class GuiDocEditFooter(QWidget):
         self.statusText.setAutoFillBackground(True)
         self.statusText.setFixedHeight(fPx)
         self.statusText.setAlignment(QtAlignLeftTop)
-        self.statusText.setFont(lblFont)
 
         # Lines
         self.linesIcon = QLabel("", self)
@@ -3041,7 +3061,6 @@ class GuiDocEditFooter(QWidget):
         self.linesText.setAutoFillBackground(True)
         self.linesText.setFixedHeight(fPx)
         self.linesText.setAlignment(QtAlignLeftTop)
-        self.linesText.setFont(lblFont)
 
         # Words
         self.wordsIcon = QLabel("", self)
@@ -3056,7 +3075,6 @@ class GuiDocEditFooter(QWidget):
         self.wordsText.setAutoFillBackground(True)
         self.wordsText.setFixedHeight(fPx)
         self.wordsText.setAlignment(QtAlignLeftTop)
-        self.wordsText.setFont(lblFont)
 
         # Assemble Layout
         self.outerBox = QHBoxLayout()
@@ -3079,6 +3097,7 @@ class GuiDocEditFooter(QWidget):
         self.setMinimumHeight(fPx + 2*mPx)
 
         # Fix the Colours
+        self.updateFont()
         self.updateTheme()
 
         # Initialise Info
@@ -3091,6 +3110,14 @@ class GuiDocEditFooter(QWidget):
     ##
     #  Methods
     ##
+
+    def updateFont(self) -> None:
+        """Update the font settings."""
+        self.setFont(SHARED.theme.guiFont)
+        self.statusText.setFont(SHARED.theme.guiFontSmall)
+        self.linesText.setFont(SHARED.theme.guiFontSmall)
+        self.wordsText.setFont(SHARED.theme.guiFontSmall)
+        return
 
     def updateTheme(self) -> None:
         """Update theme elements."""
