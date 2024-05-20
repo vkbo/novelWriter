@@ -31,10 +31,7 @@ import logging
 from enum import Enum
 
 from PyQt5.QtCore import QPoint, Qt, QUrl, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import (
-    QCursor, QFont, QMouseEvent, QPalette, QResizeEvent, QTextCursor,
-    QTextOption
-)
+from PyQt5.QtGui import QCursor, QMouseEvent, QPalette, QResizeEvent, QTextCursor, QTextOption
 from PyQt5.QtWidgets import (
     QAction, QApplication, QFrame, QHBoxLayout, QLabel, QMenu, QTextBrowser,
     QToolButton, QWidget
@@ -141,12 +138,7 @@ class GuiDocViewer(QTextBrowser):
     def initViewer(self) -> None:
         """Set editor settings from main config."""
         self._makeStyleSheet()
-
-        # Set Font
-        font = QFont()
-        font.setFamily(CONFIG.textFont)
-        font.setPointSize(CONFIG.textSize)
-        self.document().setDefaultFont(font)
+        self.initFont()
 
         # Set the widget colours to match syntax theme
         mainPalette = self.palette()
@@ -186,6 +178,22 @@ class GuiDocViewer(QTextBrowser):
 
         # If we have a document open, we should reload it in case the font changed
         self.reloadText()
+
+        return
+
+    def initFont(self) -> None:
+        """Set the font of the main widget and sub-widgets. This needs
+        special attention since there appears to be a bug in Qt 5.15.3.
+        See issues #1862 and #1875.
+        """
+        font = self.font()
+        font.setFamily(CONFIG.textFont)
+        font.setPointSize(CONFIG.textSize)
+        self.setFont(font)
+
+        # Reset sub-widget font to GUI font
+        self.docHeader.setFont(SHARED.theme.guiFont)
+        self.docFooter.setFont(SHARED.theme.guiFont)
 
         return
 

@@ -380,20 +380,14 @@ class GuiDocEditor(QPlainTextEdit):
         return
 
     def initFont(self) -> None:
-        """Set the font of the widget and document. This needs special
-        attention since there appears to be a bug in Qt 5.15.3. See
-        issues #1862 and #1875.
+        """Set the font of the main widget and sub-widgets. This needs
+        special attention since there appears to be a bug in Qt 5.15.3.
+        See issues #1862 and #1875.
         """
-        wFont = self.font()
-        wFont.setFamily(CONFIG.textFont)
-        wFont.setPointSize(CONFIG.textSize)
-
-        dFont = self._qDocument.defaultFont()
-        dFont.setFamily(CONFIG.textFont)
-        dFont.setPointSize(CONFIG.textSize)
-
-        self.setFont(wFont)
-        self._qDocument.setDefaultFont(dFont)
+        font = self.font()
+        font.setFamily(CONFIG.textFont)
+        font.setPointSize(CONFIG.textSize)
+        self.setFont(font)
 
         # Reset sub-widget font to GUI font
         self.docHeader.setFont(SHARED.theme.guiFont)
