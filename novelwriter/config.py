@@ -392,13 +392,14 @@ class Config:
             self.textFont = QFont()
             self.textFont.fromString(value)
         else:
-            font = QFont()
             fontDB = QFontDatabase()
             fontFam = fontDB.families()
             if self.osWindows and "Arial" in fontFam:
+                font = QFont()
                 font.setFamily("Arial")
                 font.setPointSize(12)
             elif self.osDarwin and "Helvetica" in fontFam:
+                font = QFont()
                 font.setFamily("Helvetica")
                 font.setPointSize(12)
             else:
@@ -587,21 +588,14 @@ class Config:
 
         # Main
         sec = "Main"
-        self.guiTheme     = conf.rdStr(sec, "theme", self.guiTheme)
-        self.guiSyntax    = conf.rdStr(sec, "syntax", self.guiSyntax)
-        guiFont           = conf.rdStr(sec, "font", "")
-        self.guiLocale    = conf.rdStr(sec, "localisation", self.guiLocale)
-        self.hideVScroll  = conf.rdBool(sec, "hidevscroll", self.hideVScroll)
-        self.hideHScroll  = conf.rdBool(sec, "hidehscroll", self.hideHScroll)
-        self.lastNotes    = conf.rdStr(sec, "lastnotes", self.lastNotes)
-        self._lastPath    = conf.rdPath(sec, "lastpath", self._lastPath)
-
-        # If we have an old config file, we have an explicit font size,
-        # in which case we convert the old settings.
-        if fontSize := conf.rdInt(sec, "fontsize", 0):
-            guiFont = f"{guiFont},{fontSize}"
-
-        self.setGuiFont(guiFont)
+        self.setGuiFont(conf.rdStr(sec, "font", ""))
+        self.guiTheme    = conf.rdStr(sec, "theme", self.guiTheme)
+        self.guiSyntax   = conf.rdStr(sec, "syntax", self.guiSyntax)
+        self.guiLocale   = conf.rdStr(sec, "localisation", self.guiLocale)
+        self.hideVScroll = conf.rdBool(sec, "hidevscroll", self.hideVScroll)
+        self.hideHScroll = conf.rdBool(sec, "hidehscroll", self.hideHScroll)
+        self.lastNotes   = conf.rdStr(sec, "lastnotes", self.lastNotes)
+        self._lastPath   = conf.rdPath(sec, "lastpath", self._lastPath)
 
         # Sizes
         sec = "Sizes"
@@ -623,7 +617,7 @@ class Config:
 
         # Editor
         sec = "Editor"
-        textFont             = conf.rdStr(sec, "textfont", "")
+        self.setTextFont(conf.rdStr(sec, "textfont", ""))
         self.textWidth       = conf.rdInt(sec, "width", self.textWidth)
         self.textMargin      = conf.rdInt(sec, "margin", self.textMargin)
         self.tabWidth        = conf.rdInt(sec, "tabwidth", self.tabWidth)
@@ -661,13 +655,6 @@ class Config:
         self.highlightEmph   = conf.rdBool(sec, "highlightemph", self.highlightEmph)
         self.stopWhenIdle    = conf.rdBool(sec, "stopwhenidle", self.stopWhenIdle)
         self.userIdleTime    = conf.rdInt(sec, "useridletime", self.userIdleTime)
-
-        # If we have an old config file, we have an explicit font size,
-        # in which case we convert the old settings.
-        if textSize := conf.rdInt(sec, "textsize", 0):
-            textFont = f"{textFont},{textSize}"
-
-        self.setTextFont(textFont)
 
         # State
         sec = "State"
@@ -710,9 +697,9 @@ class Config:
         }
 
         conf["Main"] = {
+            "font":         self.guiFont.toString(),
             "theme":        str(self.guiTheme),
             "syntax":       str(self.guiSyntax),
-            "guifont":      str(self.guiFont.toString()),
             "localisation": str(self.guiLocale),
             "hidevscroll":  str(self.hideVScroll),
             "hidehscroll":  str(self.hideHScroll),
@@ -739,7 +726,7 @@ class Config:
         }
 
         conf["Editor"] = {
-            "textfont":        str(self.textFont.toString()),
+            "textfont":        self.textFont.toString(),
             "width":           str(self.textWidth),
             "margin":          str(self.textMargin),
             "tabwidth":        str(self.tabWidth),

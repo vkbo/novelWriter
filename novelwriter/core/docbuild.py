@@ -288,7 +288,7 @@ class NWBuildDocument:
         textFont = self._build.getStr("format.textFont")
         textSize = self._build.getInt("format.textSize")
 
-        fontFamily = textFont or CONFIG.textFont
+        fontFamily = textFont or CONFIG.textFont.family()
         bldFont = QFont(fontFamily, textSize)
         fontInfo = QFontInfo(bldFont)
         textFixed = fontInfo.fixedPitch()

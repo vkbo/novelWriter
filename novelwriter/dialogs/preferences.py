@@ -881,9 +881,9 @@ class GuiPreferences(QDialog):
 
         CONFIG.guiLocale   = guiLocale
         CONFIG.guiTheme    = guiTheme
-        CONFIG.guiFont     = self._guiFont
         CONFIG.hideVScroll = self.hideVScroll.isChecked()
         CONFIG.hideHScroll = self.hideHScroll.isChecked()
+        CONFIG.setGuiFont(self._guiFont)
 
         # Document Style
         guiSyntax  = self.guiSyntax.currentData()
@@ -896,7 +896,7 @@ class GuiPreferences(QDialog):
         CONFIG.emphLabels     = emphLabels
         CONFIG.showFullPath   = self.showFullPath.isChecked()
         CONFIG.incNotesWCount = self.incNotesWCount.isChecked()
-        CONFIG.textFont       = self._textFont
+        CONFIG.setTextFont(self._textFont)
 
         # Auto Save
         CONFIG.autoSaveDoc  = self.autoSaveDoc.value()

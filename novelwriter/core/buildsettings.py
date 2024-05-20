@@ -76,7 +76,7 @@ SETTINGS_TEMPLATE = {
     "text.includeBodyText":    (bool, True),
     "text.ignoredKeywords":    (str, ""),
     "text.addNoteHeadings":    (bool, True),
-    "format.textFont":         (str, CONFIG.textFont),
+    "format.textFont":         (str, CONFIG.textFont.family()),
     "format.textSize":         (int, 12),
     "format.lineHeight":       (float, 1.15, 0.75, 3.0),
     "format.justifyText":      (bool, False),

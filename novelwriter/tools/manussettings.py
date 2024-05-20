@@ -1175,7 +1175,7 @@ class _FormatTab(NScrollableForm):
         """Populate the widgets."""
         textFont = self._build.getStr("format.textFont")
         if not textFont:
-            textFont = str(CONFIG.textFont)
+            textFont = str(CONFIG.textFont.family())
 
         self.textFont.setText(textFont)
         self.textSize.setValue(self._build.getInt("format.textSize"))
