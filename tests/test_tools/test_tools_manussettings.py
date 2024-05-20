@@ -547,7 +547,7 @@ def testBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     """Test the Format Tab of the GuiBuildSettings dialog."""
     build = BuildSettings()
 
-    textFont = str(CONFIG.textFont)
+    textFont = str(CONFIG.textFont.family())
 
     build.setValue("format.buildLang", "en_US")
     build.setValue("format.textFont", "")  # Will fall back to config value

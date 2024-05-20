@@ -23,7 +23,7 @@ from __future__ import annotations
 import pytest
 
 from PyQt5.QtCore import QEvent, Qt
-from PyQt5.QtGui import QFontDatabase, QKeyEvent
+from PyQt5.QtGui import QFont, QFontDatabase, QKeyEvent
 from PyQt5.QtWidgets import QAction, QFileDialog, QFontDialog
 
 from novelwriter import CONFIG, SHARED
@@ -173,32 +173,28 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     prefs.guiLocale.setCurrentIndex(prefs.guiLocale.findData("en_US"))
     prefs.guiTheme.setCurrentIndex(prefs.guiTheme.findData("default_dark"))
     with monkeypatch.context() as mp:
-        mp.setattr(QFontDialog, "getFont", lambda *a: (MockFont(), True))
+        mp.setattr(QFontDialog, "getFont", lambda *a: (QFont(), True))
         prefs.guiFontButton.click()
-    prefs.guiFontSize.stepDown()  # Should change it to 41
     prefs.hideVScroll.setChecked(True)
     prefs.hideHScroll.setChecked(True)
 
     assert CONFIG.guiLocale != "en_US"
     assert CONFIG.guiTheme != "default_dark"
-    assert CONFIG.guiFont != "TestFont"
-    assert CONFIG.guiFontSize < 42
+    assert CONFIG.guiFont.family() != ""
     assert CONFIG.hideVScroll is False
     assert CONFIG.hideHScroll is False
 
     # Document Style
     prefs.guiSyntax.setCurrentIndex(prefs.guiSyntax.findData("default_dark"))
     with monkeypatch.context() as mp:
-        mp.setattr(QFontDialog, "getFont", lambda *a: (MockFont(), True))
+        mp.setattr(QFontDialog, "getFont", lambda *a: (QFont(), True))
         prefs.textFontButton.click()
-    prefs.textSize.stepDown()  # Should change it to 41
     prefs.emphLabels.setChecked(False)
     prefs.showFullPath.setChecked(False)
     prefs.incNotesWCount.setChecked(False)
 
     assert CONFIG.guiSyntax != "default_dark"
-    assert CONFIG.textFont != "testFont"
-    assert CONFIG.textSize < 42
+    assert CONFIG.textFont.family() != ""
     assert CONFIG.emphLabels is True
     assert CONFIG.showFullPath is True
     assert CONFIG.incNotesWCount is True
@@ -341,15 +337,13 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     # Appearance
     assert CONFIG.guiLocale == "en_US"
     assert CONFIG.guiTheme == "default_dark"
-    assert CONFIG.guiFont == "TestFont"
-    assert CONFIG.guiFontSize == 41
+    assert CONFIG.guiFont == QFont()
     assert CONFIG.hideVScroll is True
     assert CONFIG.hideHScroll is True
 
     # Document Style
     assert CONFIG.guiSyntax == "default_dark"
-    assert CONFIG.textFont == "TestFont"
-    assert CONFIG.textSize == 41
+    assert CONFIG.textFont == QFont()
     assert CONFIG.emphLabels is False
     assert CONFIG.showFullPath is False
     assert CONFIG.incNotesWCount is False

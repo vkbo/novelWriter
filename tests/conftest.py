@@ -52,6 +52,7 @@ def resetConfigVars():
     """
     CONFIG.setLastPath(_TMP_ROOT)
     CONFIG.setBackupPath(_TMP_ROOT)
+    CONFIG.setGuiFont(None)
     CONFIG.setTextFont(None)
     CONFIG._homePath = _TMP_ROOT
     CONFIG.guiLocale = "en_GB"

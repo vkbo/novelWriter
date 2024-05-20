@@ -103,15 +103,19 @@ def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
     if confFile.is_file():
         confFile.unlink()
 
-    # Running init against a new oath should write a new config file
+    # Running init + load against a new path should write a new config file
     tstConf.initConfig(confPath=fncPath, dataPath=fncPath)
     assert tstConf._confPath == fncPath
     assert tstConf._dataPath == fncPath
+    tstConf.loadConfig()
     assert confFile.exists()
 
     # Check that we have a default file
     copyfile(confFile, testFile)
-    ignore = ("timestamp", "lastnotes", "localisation", "lastpath", "backuppath")
+    ignore = (
+        "timestamp", "lastnotes", "localisation",
+        "lastpath", "backuppath", "font", "textfont"
+    )
     assert cmpFiles(testFile, compFile, ignoreStart=ignore)
     tstConf.errorText()  # This clears the error cache
 
@@ -136,6 +140,7 @@ def testBaseConfig_InitLoadSave(monkeypatch, fncPath, tstPaths):
 
     newConf = Config()
     newConf.initConfig(confPath=fncPath, dataPath=fncPath)
+    newConf.loadConfig()
     assert newConf.guiTheme == "foo"
     assert newConf.guiSyntax == "bar"
 

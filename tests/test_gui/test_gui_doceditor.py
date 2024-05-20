@@ -23,7 +23,7 @@ from __future__ import annotations
 import pytest
 
 from PyQt5.QtCore import QEvent, Qt, QThreadPool
-from PyQt5.QtGui import QClipboard, QMouseEvent, QTextBlock, QTextCursor, QTextOption
+from PyQt5.QtGui import QClipboard, QFont, QMouseEvent, QTextBlock, QTextCursor, QTextOption
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
 from novelwriter import CONFIG, SHARED
@@ -84,7 +84,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.docHeader._docOutline == {0: "### New Scene"}
 
     # Check that editor handles settings
-    CONFIG.textFont = ""
+    CONFIG.textFont = QFont()
     CONFIG.doJustify = True
     CONFIG.showTabsNSpaces = True
     CONFIG.showLineEndings = True
@@ -96,7 +96,7 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     docEditor.initEditor()
 
     qDoc = docEditor.document()
-    assert CONFIG.textFont == qDoc.defaultFont().family()
+    assert CONFIG.textFont == qDoc.defaultFont()
     assert qDoc.defaultTextOption().alignment() == QtAlignJustify
     assert qDoc.defaultTextOption().flags() & QTextOption.ShowTabsAndSpaces
     assert qDoc.defaultTextOption().flags() & QTextOption.ShowLineAndParagraphSeparators
