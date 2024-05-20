@@ -43,8 +43,8 @@ from PyQt5.QtCore import (
     pyqtSignal, pyqtSlot
 )
 from PyQt5.QtGui import (
-    QColor, QCursor, QFont, QKeyEvent, QKeySequence, QMouseEvent, QPalette,
-    QPixmap, QResizeEvent, QTextBlock, QTextCursor, QTextDocument, QTextOption
+    QColor, QCursor, QKeyEvent, QKeySequence, QMouseEvent, QPalette, QPixmap,
+    QResizeEvent, QTextBlock, QTextCursor, QTextDocument, QTextOption
 )
 from PyQt5.QtWidgets import (
     QAction, QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QLineEdit,
@@ -329,10 +329,7 @@ class GuiDocEditor(QPlainTextEdit):
         SHARED.updateSpellCheckLanguage()
 
         # Set font
-        font = QFont()
-        font.setFamily(CONFIG.textFont)
-        font.setPointSize(CONFIG.textSize)
-        self._qDocument.setDefaultFont(font)
+        self.initFont()
 
         # Update highlighter settings
         self._qDocument.syntaxHighlighter.initHighlighter()
@@ -379,6 +376,29 @@ class GuiDocEditor(QPlainTextEdit):
             self.docHeader.setHandle(self._docHandle)
         else:
             self.clearEditor()
+
+        return
+
+    def initFont(self) -> None:
+        """Set the font of the widget and document. This needs special
+        attention since there appears to be a bug in Qt 5.15.3. See
+        issues #1862 and #1875.
+        """
+        wFont = self.font()
+        wFont.setFamily(CONFIG.textFont)
+        wFont.setPointSize(CONFIG.textSize)
+
+        dFont = self._qDocument.defaultFont()
+        dFont.setFamily(CONFIG.textFont)
+        dFont.setPointSize(CONFIG.textSize)
+
+        self.setFont(wFont)
+        self._qDocument.setDefaultFont(dFont)
+
+        # Reset sub-widget font to GUI font
+        self.docHeader.setFont(SHARED.theme.guiFont)
+        self.docFooter.setFont(SHARED.theme.guiFont)
+        self.docSearch.setFont(SHARED.theme.guiFont)
 
         return
 
