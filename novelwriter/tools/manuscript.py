@@ -31,7 +31,7 @@ from time import time
 from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import Qt, QTimer, QUrl, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
+from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QPalette, QResizeEvent
 from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtWidgets import (
     QAbstractItemView, QApplication, QFormLayout, QGridLayout, QHBoxLayout,
@@ -747,7 +747,6 @@ class _PreviewWidget(QTextBrowser):
         self.setPalette(dPalette)
 
         self.setMinimumWidth(40*SHARED.theme.textNWidth)
-        self.setTextFont(CONFIG.textFont, CONFIG.textSize)
         self.setTabStopDistance(CONFIG.getTabWidth())
         self.setOpenExternalLinks(False)
 
@@ -788,6 +787,8 @@ class _PreviewWidget(QTextBrowser):
         self._updateDocMargins()
         self._updateBuildAge()
 
+        self.setTextFont(CONFIG.textFont, CONFIG.textSize)
+
         # Age Timer
         self.ageTimer = QTimer(self)
         self.ageTimer.setInterval(10000)
@@ -817,12 +818,17 @@ class _PreviewWidget(QTextBrowser):
         return
 
     def setTextFont(self, family: str, size: int) -> None:
-        """Set the text font properties."""
-        if family:
-            font = QFont()
+        """Set the text font properties and then reset for sub-widgets.
+        This needs special attention since there appears to be a bug in
+        Qt 5.15.3. See issues #1862 and #1875.
+        """
+        if family and size > 4:
+            font = self.font()
             font.setFamily(family)
             font.setPointSize(size)
-            self.document().setDefaultFont(font)
+            self.setFont(font)
+            self.buildProgress.setFont(SHARED.theme.guiFont)
+            self.ageLabel.setFont(SHARED.theme.guiFontSmall)
         return
 
     ##

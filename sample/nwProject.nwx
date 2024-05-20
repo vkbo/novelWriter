@@ -58,7 +58,11 @@
       <name status="sf24ce6" import="ia857f0" active="yes">Chapter One</name>
     </item>
     <item handle="636b6aa9b697b" parent="6a2d6d5f4f401" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
+<<<<<<< HEAD
       <meta expanded="no" heading="H3" charCount="2953" wordCount="520" paraCount="15" cursorPos="19" />
+=======
+      <meta expanded="no" heading="H3" charCount="2937" wordCount="520" paraCount="15" cursorPos="19" />
+>>>>>>> release
       <name status="s90e6c9" import="ia857f0" active="yes">Making a Scene</name>
     </item>
     <item handle="bc0cbd2a407f3" parent="6a2d6d5f4f401" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">

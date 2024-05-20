@@ -143,11 +143,12 @@ class GuiDictionaries(NNonBlockingDialog):
         try:
             import enchant
             path = Path(enchant.get_user_config_dir())
+            self._installPath = Path(path).resolve()
+            self._installPath.mkdir(exist_ok=True, parents=True)
         except Exception:
             logger.error("Could not get enchant path")
             return False
 
-        self._installPath = Path(path).resolve()
         if path.is_dir():
             self.inPath.setText(str(path))
             hunspell = path / "hunspell"
@@ -199,9 +200,9 @@ class GuiDictionaries(NNonBlockingDialog):
         if self._installPath:
             temp = self.huInput.text()
             if temp and (path := Path(temp)).is_file():
-                hunspell = self._installPath / "hunspell"
-                hunspell.mkdir(exist_ok=True)
                 try:
+                    hunspell = self._installPath / "hunspell"
+                    hunspell.mkdir(exist_ok=True)
                     nAff, nDic = self._extractDicts(path, hunspell)
                     if nAff == 0 or nDic == 0:
                         self._appendLog(procErr, err=True)

@@ -152,6 +152,8 @@ class GuiTheme:
         self.guiFont = QApplication.font()
         self.guiFontB = QApplication.font()
         self.guiFontB.setBold(True)
+        self.guiFontSmall = QApplication.font()
+        self.guiFontSmall.setPointSizeF(0.9*self.guiFont.pointSizeF())
 
         qMetric = QFontMetrics(self.guiFont)
         fHeight = qMetric.height()
