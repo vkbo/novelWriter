@@ -474,7 +474,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
                 charFormat.setBackground(QBrush(color, Qt.BrushStyle.SolidPattern))
 
         if size:
-            charFormat.setFontPointSize(round(size*CONFIG.textSize))
+            charFormat.setFontPointSize(round(size*CONFIG.textFont.pointSize()))
 
         self._hStyles[name] = charFormat
 

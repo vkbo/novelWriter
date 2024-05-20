@@ -27,7 +27,7 @@ from __future__ import annotations
 import logging
 
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QFont, QKeyEvent, QKeySequence
+from PyQt5.QtGui import QCloseEvent, QKeyEvent, QKeySequence
 from PyQt5.QtWidgets import (
     QAbstractButton, QApplication, QCompleter, QDialog, QDialogButtonBox,
     QFileDialog, QFontDialog, QHBoxLayout, QLineEdit, QPushButton, QVBoxLayout,
@@ -140,6 +140,7 @@ class GuiPreferences(QDialog):
 
         # Temporary Variables
         self._guiFont = CONFIG.guiFont
+        self._textFont = CONFIG.textFont
 
         # Label
         self.sidebar.addLabel(self.tr("General"))
@@ -230,24 +231,14 @@ class GuiPreferences(QDialog):
         self.textFont = QLineEdit(self)
         self.textFont.setReadOnly(True)
         self.textFont.setMinimumWidth(fontWidth)
-        self.textFont.setText(CONFIG.textFont)
+        self.textFont.setText(describeFont(CONFIG.textFont))
+        self.textFont.setCursorPosition(0)
         self.textFontButton = NIconToolButton(self, iSz, "more")
         self.textFontButton.clicked.connect(self._selectTextFont)
         self.mainForm.addRow(
-            self.tr("Document font family"), self.textFont,
+            self.tr("Document font"), self.textFont,
             self.tr("Applies to both document editor and viewer."), stretch=(3, 2),
             button=self.textFontButton
-        )
-
-        # Document Font Size
-        self.textSize = NSpinBox(self)
-        self.textSize.setMinimum(8)
-        self.textSize.setMaximum(60)
-        self.textSize.setSingleStep(1)
-        self.textSize.setValue(CONFIG.textSize)
-        self.mainForm.addRow(
-            self.tr("Document font size"), self.textSize,
-            self.tr("Applies to both document editor and viewer."), unit=self.tr("pt")
         )
 
         # Emphasise Labels
@@ -823,13 +814,11 @@ class GuiPreferences(QDialog):
     @pyqtSlot()
     def _selectTextFont(self) -> None:
         """Open the QFontDialog and set a font for the font style."""
-        current = QFont()
-        current.setFamily(CONFIG.textFont)
-        current.setPointSize(CONFIG.textSize)
-        font, status = QFontDialog.getFont(current, self)
+        font, status = QFontDialog.getFont(CONFIG.textFont, self)
         if status:
-            self.textFont.setText(font.family())
-            self.textSize.setValue(font.pointSize())
+            self.textFont.setText(describeFont(font))
+            self.textFont.setCursorPosition(0)
+            self._textFont = font
         return
 
     @pyqtSlot()
@@ -907,7 +896,7 @@ class GuiPreferences(QDialog):
         CONFIG.emphLabels     = emphLabels
         CONFIG.showFullPath   = self.showFullPath.isChecked()
         CONFIG.incNotesWCount = self.incNotesWCount.isChecked()
-        CONFIG.setTextFont(self.textFont.text(), self.textSize.value())
+        CONFIG.textFont       = self._textFont
 
         # Auto Save
         CONFIG.autoSaveDoc  = self.autoSaveDoc.value()

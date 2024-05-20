@@ -131,43 +131,42 @@ class Config:
         self.askBeforeBackup = True   # Flag for asking before running automatic backup
 
         # Text Editor Settings
-        self.textFont        = ""     # Editor font
-        self.textSize        = 12     # Editor font size
-        self.textWidth       = 700    # Editor text width
-        self.textMargin      = 40     # Editor/viewer text margin
-        self.tabWidth        = 40     # Editor tabulator width
+        self.textFont        = QFont()  # Editor font
+        self.textWidth       = 700      # Editor text width
+        self.textMargin      = 40       # Editor/viewer text margin
+        self.tabWidth        = 40       # Editor tabulator width
 
-        self.focusWidth      = 800    # Focus Mode text width
-        self.hideFocusFooter = False  # Hide document footer in Focus Mode
-        self.showFullPath    = True   # Show full document path in editor header
-        self.autoSelect      = True   # Auto-select word when applying format with no selection
+        self.focusWidth      = 800      # Focus Mode text width
+        self.hideFocusFooter = False    # Hide document footer in Focus Mode
+        self.showFullPath    = True     # Show full document path in editor header
+        self.autoSelect      = True     # Auto-select word when applying format with no selection
 
-        self.doJustify       = False  # Justify text
-        self.showTabsNSpaces = False  # Show tabs and spaces in editor
-        self.showLineEndings = False  # Show line endings in editor
-        self.showMultiSpaces = True   # Highlight multiple spaces in the text
+        self.doJustify       = False    # Justify text
+        self.showTabsNSpaces = False    # Show tabs and spaces in editor
+        self.showLineEndings = False    # Show line endings in editor
+        self.showMultiSpaces = True     # Highlight multiple spaces in the text
 
-        self.doReplace       = True   # Enable auto-replace as you type
-        self.doReplaceSQuote = True   # Smart single quotes
-        self.doReplaceDQuote = True   # Smart double quotes
-        self.doReplaceDash   = True   # Replace multiple hyphens with dashes
-        self.doReplaceDots   = True   # Replace three dots with ellipsis
+        self.doReplace       = True     # Enable auto-replace as you type
+        self.doReplaceSQuote = True     # Smart single quotes
+        self.doReplaceDQuote = True     # Smart double quotes
+        self.doReplaceDash   = True     # Replace multiple hyphens with dashes
+        self.doReplaceDots   = True     # Replace three dots with ellipsis
 
-        self.autoScroll      = False  # Typewriter-like scrolling
-        self.autoScrollPos   = 30     # Start point for typewriter-like scrolling
-        self.scrollPastEnd   = True   # Scroll past end of document, and centre cursor
+        self.autoScroll      = False    # Typewriter-like scrolling
+        self.autoScrollPos   = 30       # Start point for typewriter-like scrolling
+        self.scrollPastEnd   = True     # Scroll past end of document, and centre cursor
 
-        self.dialogStyle     = 2      # Quote type to use for dialogue
-        self.allowOpenDial   = True   # Allow open-ended dialogue quotes
-        self.narratorBreak   = ""     # Symbol to use for narrator break
-        self.dialogLine      = ""     # Symbol to use for dialogue line
-        self.altDialogOpen   = ""     # Alternative dialog symbol, open
-        self.altDialogClose  = ""     # Alternative dialog symbol, close
-        self.highlightEmph   = True   # Add colour to text emphasis
+        self.dialogStyle     = 2        # Quote type to use for dialogue
+        self.allowOpenDial   = True     # Allow open-ended dialogue quotes
+        self.narratorBreak   = ""       # Symbol to use for narrator break
+        self.dialogLine      = ""       # Symbol to use for dialogue line
+        self.altDialogOpen   = ""       # Alternative dialog symbol, open
+        self.altDialogClose  = ""       # Alternative dialog symbol, close
+        self.highlightEmph   = True     # Add colour to text emphasis
 
-        self.stopWhenIdle    = True   # Stop the status bar clock when the user is idle
-        self.userIdleTime    = 300    # Time of inactivity to consider user idle
-        self.incNotesWCount  = True   # The status bar word count includes notes
+        self.stopWhenIdle    = True     # Stop the status bar clock when the user is idle
+        self.userIdleTime    = 300      # Time of inactivity to consider user idle
+        self.incNotesWCount  = True     # The status bar word count includes notes
 
         # User-Selected Symbol Settings
         self.fmtApostrophe   = nwUnicode.U_RSQUO
@@ -383,23 +382,28 @@ class Config:
 
         return
 
-    def setTextFont(self, family: str | None, pointSize: int = 12) -> None:
+    def setTextFont(self, value: QFont | str | None) -> None:
         """Set the text font if it exists. If it doesn't, or is None,
         set to default font.
         """
-        fontDB = QFontDatabase()
-        fontFam = fontDB.families()
-        self.textSize = pointSize
-        if family is None or family not in fontFam:
-            logger.warning("Unknown font '%s'", family)
-            if self.osWindows and "Arial" in fontFam:
-                self.textFont = "Arial"
-            elif self.osDarwin and "Helvetica" in fontFam:
-                self.textFont = "Helvetica"
-            else:
-                self.textFont = fontDB.systemFont(QFontDatabase.SystemFont.GeneralFont).family()
+        if isinstance(value, QFont):
+            self.textFont = value
+        elif value and isinstance(value, str):
+            self.textFont = QFont()
+            self.textFont.fromString(value)
         else:
-            self.textFont = family
+            font = QFont()
+            fontDB = QFontDatabase()
+            fontFam = fontDB.families()
+            if self.osWindows and "Arial" in fontFam:
+                font.setFamily("Arial")
+                font.setPointSize(12)
+            elif self.osDarwin and "Helvetica" in fontFam:
+                font.setFamily("Helvetica")
+                font.setPointSize(12)
+            else:
+                font = fontDB.systemFont(QFontDatabase.SystemFont.GeneralFont)
+            self.textFont = font
         return
 
     ##
@@ -585,19 +589,17 @@ class Config:
         sec = "Main"
         self.guiTheme     = conf.rdStr(sec, "theme", self.guiTheme)
         self.guiSyntax    = conf.rdStr(sec, "syntax", self.guiSyntax)
-        guiFont           = conf.rdStr(sec, "guifont", "")
+        guiFont           = conf.rdStr(sec, "font", "")
         self.guiLocale    = conf.rdStr(sec, "localisation", self.guiLocale)
         self.hideVScroll  = conf.rdBool(sec, "hidevscroll", self.hideVScroll)
         self.hideHScroll  = conf.rdBool(sec, "hidehscroll", self.hideHScroll)
         self.lastNotes    = conf.rdStr(sec, "lastnotes", self.lastNotes)
         self._lastPath    = conf.rdPath(sec, "lastpath", self._lastPath)
 
-        # If we have an old config file with the following settings, use those instead
-        legacyFont = conf.rdStr(sec, "font", "")
-        legacySize = conf.rdInt(sec, "fontsize", 11)
-        if legacyFont:
-            guiFont = QFont()
-            guiFont.fromString(f"{legacyFont},{legacySize}")
+        # If we have an old config file, we have an explicit font size,
+        # in which case we convert the old settings.
+        if fontSize := conf.rdInt(sec, "fontsize", 0):
+            guiFont = f"{guiFont},{fontSize}"
 
         self.setGuiFont(guiFont)
 
@@ -621,8 +623,7 @@ class Config:
 
         # Editor
         sec = "Editor"
-        self.textFont        = conf.rdStr(sec, "textfont", self.textFont)
-        self.textSize        = conf.rdInt(sec, "textsize", self.textSize)
+        textFont             = conf.rdStr(sec, "textfont", "")
         self.textWidth       = conf.rdInt(sec, "width", self.textWidth)
         self.textMargin      = conf.rdInt(sec, "margin", self.textMargin)
         self.tabWidth        = conf.rdInt(sec, "tabwidth", self.tabWidth)
@@ -660,6 +661,13 @@ class Config:
         self.highlightEmph   = conf.rdBool(sec, "highlightemph", self.highlightEmph)
         self.stopWhenIdle    = conf.rdBool(sec, "stopwhenidle", self.stopWhenIdle)
         self.userIdleTime    = conf.rdInt(sec, "useridletime", self.userIdleTime)
+
+        # If we have an old config file, we have an explicit font size,
+        # in which case we convert the old settings.
+        if textSize := conf.rdInt(sec, "textsize", 0):
+            textFont = f"{textFont},{textSize}"
+
+        self.setTextFont(textFont)
 
         # State
         sec = "State"
@@ -731,8 +739,7 @@ class Config:
         }
 
         conf["Editor"] = {
-            "textfont":        str(self.textFont),
-            "textsize":        str(self.textSize),
+            "textfont":        str(self.textFont.toString()),
             "width":           str(self.textWidth),
             "margin":          str(self.textMargin),
             "tabwidth":        str(self.tabWidth),

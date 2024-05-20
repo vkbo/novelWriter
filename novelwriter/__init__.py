@@ -235,7 +235,6 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         # Run Config steps that require the QApplication
         CONFIG.loadConfig()
         CONFIG.initLocalisation(nwApp)
-        CONFIG.setTextFont(CONFIG.textFont, CONFIG.textSize)  # Makes sure these are valid
 
         # Launch main GUI
         nwGUI = GuiMain()

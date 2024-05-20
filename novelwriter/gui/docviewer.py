@@ -186,15 +186,9 @@ class GuiDocViewer(QTextBrowser):
         special attention since there appears to be a bug in Qt 5.15.3.
         See issues #1862 and #1875.
         """
-        font = self.font()
-        font.setFamily(CONFIG.textFont)
-        font.setPointSize(CONFIG.textSize)
-        self.setFont(font)
-
-        # Reset sub-widget font to GUI font
+        self.setFont(CONFIG.textFont)
         self.docHeader.updateFont()
         self.docFooter.updateFont()
-
         return
 
     def loadText(self, tHandle: str, updateHistory: bool = True) -> bool:
