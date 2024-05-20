@@ -761,7 +761,6 @@ class _PreviewWidget(QTextBrowser):
         self.setPalette(dPalette)
 
         self.setMinimumWidth(40*SHARED.theme.textNWidth)
-        self.setTextFont(CONFIG.textFont, CONFIG.textSize)
         self.setTabStopDistance(CONFIG.getTabWidth())
         self.setOpenExternalLinks(False)
 
@@ -802,6 +801,8 @@ class _PreviewWidget(QTextBrowser):
         self._updateDocMargins()
         self._updateBuildAge()
 
+        self.setTextFont(CONFIG.textFont, CONFIG.textSize)
+
         # Age Timer
         self.ageTimer = QTimer(self)
         self.ageTimer.setInterval(10000)
@@ -840,8 +841,8 @@ class _PreviewWidget(QTextBrowser):
             font.setFamily(family)
             font.setPointSize(size)
             self.setFont(font)
-            self.ageLabel.setFont(SHARED.theme.guiFont)
             self.buildProgress.setFont(SHARED.theme.guiFont)
+            self.ageLabel.setFont(SHARED.theme.guiFontSmall)
         return
 
     ##

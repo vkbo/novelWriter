@@ -30,9 +30,7 @@ from math import ceil
 from pathlib import Path
 
 from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtGui import (
-    QPalette, QColor, QIcon, QFont, QFontMetrics, QFontDatabase, QPixmap
-)
+from PyQt5.QtGui import QColor, QFont, QFontDatabase, QFontMetrics, QIcon, QPalette, QPixmap
 from PyQt5.QtWidgets import QApplication
 
 from novelwriter import CONFIG
@@ -154,6 +152,8 @@ class GuiTheme:
         self.guiFont = QApplication.font()
         self.guiFontB = QApplication.font()
         self.guiFontB.setBold(True)
+        self.guiFontSmall = QApplication.font()
+        self.guiFontSmall.setPointSizeF(0.9*self.guiFont.pointSizeF())
 
         qMetric = QFontMetrics(self.guiFont)
         fHeight = qMetric.height()

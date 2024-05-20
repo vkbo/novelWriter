@@ -192,8 +192,8 @@ class GuiDocViewer(QTextBrowser):
         self.setFont(font)
 
         # Reset sub-widget font to GUI font
-        self.docHeader.setFont(SHARED.theme.guiFont)
-        self.docFooter.setFont(SHARED.theme.guiFont)
+        self.docHeader.updateFont()
+        self.docFooter.updateFont()
 
         return
 
@@ -654,10 +654,6 @@ class GuiDocViewHeader(QWidget):
         self.itemTitle.setAlignment(QtAlignCenterTop)
         self.itemTitle.setFixedHeight(iPx)
 
-        lblFont = self.itemTitle.font()
-        lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
-        self.itemTitle.setFont(lblFont)
-
         # Other Widgets
         self.outlineMenu = QMenu(self)
 
@@ -708,7 +704,7 @@ class GuiDocViewHeader(QWidget):
         self.outerBox.setContentsMargins(mPx, mPx, mPx, mPx)
         self.setMinimumHeight(iPx + 2*mPx)
 
-        # Fix the Colours
+        self.updateFont()
         self.updateTheme()
 
         logger.debug("Ready: GuiDocViewHeader")
@@ -751,6 +747,12 @@ class GuiDocViewHeader(QWidget):
                     lambda _, title=title: self.docViewer.navigateTo(f"#{tHandle}:{title}")
                 )
             self._docOutline = data
+        return
+
+    def updateFont(self) -> None:
+        """Update the font settings."""
+        self.setFont(SHARED.theme.guiFont)
+        self.itemTitle.setFont(SHARED.theme.guiFontSmall)
         return
 
     def updateTheme(self) -> None:
@@ -894,11 +896,6 @@ class GuiDocViewFooter(QWidget):
         self.showSynopsis.toggled.connect(self._doToggleSynopsis)
         self.showSynopsis.setToolTip(self.tr("Show Synopsis Comments"))
 
-        lblFont = self.font()
-        lblFont.setPointSizeF(0.9*SHARED.theme.fontPointSize)
-        self.showComments.setFont(lblFont)
-        self.showSynopsis.setFont(lblFont)
-
         # Assemble Layout
         self.outerBox = QHBoxLayout()
         self.outerBox.addWidget(self.showHide, 0)
@@ -914,7 +911,7 @@ class GuiDocViewFooter(QWidget):
         self.outerBox.setContentsMargins(mPx, mPx, mPx, mPx)
         self.setMinimumHeight(iPx + 2*mPx)
 
-        # Fix the Colours
+        self.updateFont()
         self.updateTheme()
 
         logger.debug("Ready: GuiDocViewFooter")
@@ -924,6 +921,13 @@ class GuiDocViewFooter(QWidget):
     ##
     #  Methods
     ##
+
+    def updateFont(self) -> None:
+        """Update the font settings."""
+        self.setFont(SHARED.theme.guiFont)
+        self.showComments.setFont(SHARED.theme.guiFontSmall)
+        self.showSynopsis.setFont(SHARED.theme.guiFontSmall)
+        return
 
     def updateTheme(self) -> None:
         """Update theme elements."""
