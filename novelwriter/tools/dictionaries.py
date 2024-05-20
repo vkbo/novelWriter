@@ -36,7 +36,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import formatFileFilter, formatInt, getFileSize, openExternalPath
+from novelwriter.common import cssCol, formatFileFilter, formatInt, getFileSize, openExternalPath
 from novelwriter.error import formatException
 from novelwriter.extensions.modified import NIconToolButton, NNonBlockingDialog
 from novelwriter.types import QtDialogClose
@@ -186,7 +186,7 @@ class GuiDictionaries(NNonBlockingDialog):
             (self.tr("Free or Libre Office extension"), "*.sox *.oxt"), "*"
         ])
         soxFile, _ = QFileDialog.getOpenFileName(
-            self, self.tr("Browse Files"), "", filter=ffilter
+            self, self.tr("Browse Files"), str(CONFIG.homePath()), filter=ffilter
         )
         if soxFile:
             path = Path(soxFile).absolute()
@@ -257,10 +257,8 @@ class GuiDictionaries(NNonBlockingDialog):
         cursor.movePosition(QTextCursor.MoveOperation.End)
         if cursor.position() > 0:
             cursor.insertText("\n")
-        if err:
-            cursor.insertHtml(f"<font color='red'>{text}</font>")
-        else:
-            cursor.insertText(text)
+        textCol = cssCol(SHARED.theme.errorText if err else self.palette().text().color())
+        cursor.insertHtml(f"<font style='color: {textCol}'>{text}</font>")
         cursor.movePosition(QTextCursor.MoveOperation.End)
         cursor.deleteChar()
         self.infoBox.setTextCursor(cursor)
