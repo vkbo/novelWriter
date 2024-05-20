@@ -75,6 +75,7 @@ class GuiTheme:
         self.statUnsaved = QColor(0, 0, 0)
         self.statSaved   = QColor(0, 0, 0)
         self.helpText    = QColor(0, 0, 0)
+        self.errorText   = QColor(255, 0, 0)
 
         # Loaded Syntax Settings
         # ======================
@@ -265,6 +266,7 @@ class GuiTheme:
         sec = "GUI"
         if parser.has_section(sec):
             self.helpText    = self._parseColour(parser, sec, "helptext")
+            self.errorText   = self._parseColour(parser, sec, "errortext")
             self.statNone    = self._parseColour(parser, sec, "statusnone")
             self.statUnsaved = self._parseColour(parser, sec, "statusunsaved")
             self.statSaved   = self._parseColour(parser, sec, "statussaved")
@@ -282,6 +284,10 @@ class GuiTheme:
             else:
                 helpLCol = backLNess + 0.65*(textLNess - backLNess)
             self.helpText = QColor.fromHsl(0, 0, int(255*helpLCol))
+            logger.debug(
+                "Computed help text colour: rgb(%d, %d, %d)",
+                self.helpText.red(), self.helpText.green(), self.helpText.blue()
+            )
 
         # Icons
         defaultIcons = "typicons_light" if backLNess >= 0.5 else "typicons_dark"
@@ -402,6 +408,7 @@ class GuiTheme:
         self.statUnsaved = QColor(200, 15, 39)
         self.statSaved   = QColor(2, 133, 37)
         self.helpText    = QColor(0, 0, 0)
+        self.errorText   = QColor(255, 0, 0)
         return
 
     def _setGuiFont(self) -> None:

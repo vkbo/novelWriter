@@ -131,9 +131,11 @@ A GUI theme ``.conf`` file consists of the following settings:
    linkvisited     = 100, 100, 100
 
    [GUI]
-   statusnone      = 100, 100, 100
-   statussaved     = 100, 100, 100
-   statusunsaved   = 100, 100, 100
+   helptext        =   0,   0,   0
+   errortext       = 255,   0,   0
+   statusnone      = 120, 120, 120
+   statussaved     =   2, 133,  37
+   statusunsaved   = 200,  15,  39
 
 In the Main section you must at least define the ``name`` and ``icontheme`` settings. The
 ``icontheme`` settings should correspond to one of the internal icon themes, either
@@ -143,7 +145,11 @@ setting must match the icon theme's folder name.
 The Palette values correspond to the Qt enum values for ``QPalette::ColorRole``, see the
 `Qt documentation <https://doc.qt.io/qt-5.15/qpalette.html#ColorRole-enum>`_ for more details. The
 colour values are RGB numbers on the format ``r, g, b`` where each is an integer from ``0`` to
-``255``. Omitted values are not loaded and will use default values.
+``255``. Omitted values are not loaded and will use default values. If the ``helptext`` colour is
+not defined, it is computed as a colour between the ``window`` and ``windowtext`` colour.
+
+.. versionadded:: 2.5
+   The ``errortext`` theme colour entry was added.
 
 
 Custom Syntax Theme
