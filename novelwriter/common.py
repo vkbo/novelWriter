@@ -37,7 +37,7 @@ from urllib.parse import urljoin
 from urllib.request import pathname2url
 
 from PyQt5.QtCore import QCoreApplication, QUrl
-from PyQt5.QtGui import QColor, QDesktopServices
+from PyQt5.QtGui import QColor, QDesktopServices, QFont, QFontInfo
 
 from novelwriter.constants import nwConst, nwLabels, nwUnicode, trConst
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
@@ -399,6 +399,14 @@ def numberToRoman(value: int, toLower: bool = False) -> str:
 def cssCol(col: QColor, alpha: int | None = None) -> str:
     """Convert a QColor object to an rgba entry to use in CSS."""
     return f"rgba({col.red()}, {col.green()}, {col.blue()}, {alpha or col.alpha()})"
+
+
+def describeFont(font: QFont) -> str:
+    """Describe a font in a way that can be displayed on the GUI."""
+    if isinstance(font, QFont):
+        info = QFontInfo(font)
+        return f"{font.family()} {info.styleName()} @ {font.pointSize()} pt"
+    return "Error"
 
 
 ##

@@ -36,7 +36,7 @@ from PyQt5.QtCore import (
     PYQT_VERSION, PYQT_VERSION_STR, QT_VERSION, QT_VERSION_STR, QLibraryInfo,
     QLocale, QStandardPaths, QSysInfo, QTranslator
 )
-from PyQt5.QtGui import QFontDatabase
+from PyQt5.QtGui import QFont, QFontDatabase
 from PyQt5.QtWidgets import QApplication
 
 from novelwriter.common import NWConfigParser, checkInt, checkPath, formatTimeStamp
@@ -106,15 +106,14 @@ class Config:
         self._recentObj = RecentProjects(self)
 
         # General GUI Settings
-        self.guiLocale   = self._qLocale.name()
-        self.guiTheme    = "default"        # GUI theme
-        self.guiSyntax   = "default_light"  # Syntax theme
-        self.guiFont     = ""               # Defaults to system default font in theme class
-        self.guiFontSize = 11               # Is overridden if system default is loaded
-        self.guiScale    = 1.0              # Set automatically by Theme class
-        self.hideVScroll = False            # Hide vertical scroll bars on main widgets
-        self.hideHScroll = False            # Hide horizontal scroll bars on main widgets
-        self.lastNotes   = "0x0"            # The latest release notes that have been shown
+        self.guiLocale    = self._qLocale.name()
+        self.guiTheme     = "default"        # GUI theme
+        self.guiSyntax    = "default_light"  # Syntax theme
+        self.guiFont      = QFont()          # Defaults to system default font in theme class
+        self.guiScale     = 1.0              # Set automatically by Theme class
+        self.hideVScroll  = False            # Hide vertical scroll bars on main widgets
+        self.hideHScroll  = False            # Hide horizontal scroll bars on main widgets
+        self.lastNotes    = "0x0"            # The latest release notes that have been shown
 
         # Size Settings
         self._mainWinSize  = [1200, 650]     # Last size of the main GUI window
@@ -362,6 +361,28 @@ class Config:
         self._backupPath = checkPath(path, self._backPath)
         return
 
+    def setGuiFont(self, value: QFont | str | None) -> None:
+        """Update the GUI's font style from settings."""
+        if isinstance(value, QFont):
+            self.guiFont = value
+        elif value and isinstance(value, str):
+            self.guiFont = QFont()
+            self.guiFont.fromString(value)
+        else:
+            font = QFont()
+            fontDB = QFontDatabase()
+            if self.osWindows and "Arial" in fontDB.families():
+                # On Windows we default to Arial if possible
+                font.setFamily("Arial")
+                font.setPointSize(10)
+            else:
+                font = fontDB.systemFont(QFontDatabase.SystemFont.GeneralFont)
+            self.guiFont = font
+
+        QApplication.setFont(self.guiFont)
+
+        return
+
     def setTextFont(self, family: str | None, pointSize: int = 12) -> None:
         """Set the text font if it exists. If it doesn't, or is None,
         set to default font.
@@ -502,12 +523,6 @@ class Config:
             (self._dataPath / "syntax").mkdir(exist_ok=True)
             (self._dataPath / "themes").mkdir(exist_ok=True)
 
-        # Check if config file exists, and load it. If not, we save defaults
-        if (self._confPath / nwFiles.CONF_FILE).is_file():
-            self.loadConfig()
-        else:
-            self.saveConfig()
-
         self._recentObj.loadCache()
         self._checkOptionalPackages()
 
@@ -548,6 +563,13 @@ class Config:
 
         conf = NWConfigParser()
         cnfPath = self._confPath / nwFiles.CONF_FILE
+
+        if not cnfPath.exists():
+            # Initial file, so we just create one from defaults
+            self.saveConfig()
+            self.setGuiFont(None)
+            return True
+
         try:
             with open(cnfPath, mode="r", encoding="utf-8") as inFile:
                 conf.read_file(inFile)
@@ -561,15 +583,23 @@ class Config:
 
         # Main
         sec = "Main"
-        self.guiTheme    = conf.rdStr(sec, "theme", self.guiTheme)
-        self.guiSyntax   = conf.rdStr(sec, "syntax", self.guiSyntax)
-        self.guiFont     = conf.rdStr(sec, "font", self.guiFont)
-        self.guiFontSize = conf.rdInt(sec, "fontsize", self.guiFontSize)
-        self.guiLocale   = conf.rdStr(sec, "localisation", self.guiLocale)
-        self.hideVScroll = conf.rdBool(sec, "hidevscroll", self.hideVScroll)
-        self.hideHScroll = conf.rdBool(sec, "hidehscroll", self.hideHScroll)
-        self.lastNotes   = conf.rdStr(sec, "lastnotes", self.lastNotes)
-        self._lastPath   = conf.rdPath(sec, "lastpath", self._lastPath)
+        self.guiTheme     = conf.rdStr(sec, "theme", self.guiTheme)
+        self.guiSyntax    = conf.rdStr(sec, "syntax", self.guiSyntax)
+        guiFont           = conf.rdStr(sec, "guifont", "")
+        self.guiLocale    = conf.rdStr(sec, "localisation", self.guiLocale)
+        self.hideVScroll  = conf.rdBool(sec, "hidevscroll", self.hideVScroll)
+        self.hideHScroll  = conf.rdBool(sec, "hidehscroll", self.hideHScroll)
+        self.lastNotes    = conf.rdStr(sec, "lastnotes", self.lastNotes)
+        self._lastPath    = conf.rdPath(sec, "lastpath", self._lastPath)
+
+        # If we have an old config file with the following settings, use those instead
+        legacyFont = conf.rdStr(sec, "font", "")
+        legacySize = conf.rdInt(sec, "fontsize", 11)
+        if legacyFont:
+            guiFont = QFont()
+            guiFont.fromString(f"{legacyFont},{legacySize}")
+
+        self.setGuiFont(guiFont)
 
         # Sizes
         sec = "Sizes"
@@ -674,8 +704,7 @@ class Config:
         conf["Main"] = {
             "theme":        str(self.guiTheme),
             "syntax":       str(self.guiSyntax),
-            "font":         str(self.guiFont),
-            "fontsize":     str(self.guiFontSize),
+            "guifont":      str(self.guiFont.toString()),
             "localisation": str(self.guiLocale),
             "hidevscroll":  str(self.hideVScroll),
             "hidehscroll":  str(self.hideHScroll),

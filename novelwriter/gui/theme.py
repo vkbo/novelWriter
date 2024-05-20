@@ -114,9 +114,6 @@ class GuiTheme:
         # Class Setup
         # ===========
 
-        # Init GUI Font
-        self._setGuiFont()
-
         # Load Themes
         self._guiPalette = QPalette()
         self._themeList: list[tuple[str, str]] = []
@@ -409,27 +406,6 @@ class GuiTheme:
         self.statSaved   = QColor(2, 133, 37)
         self.helpText    = QColor(0, 0, 0)
         self.errorText   = QColor(255, 0, 0)
-        return
-
-    def _setGuiFont(self) -> None:
-        """Update the GUI's font style from settings."""
-        font = QFont()
-        fontDB = QFontDatabase()
-        if CONFIG.guiFont not in fontDB.families():
-            if CONFIG.osWindows and "Arial" in fontDB.families():
-                # On Windows we default to Arial if possible
-                font.setFamily("Arial")
-                font.setPointSize(10)
-            else:
-                font = fontDB.systemFont(QFontDatabase.SystemFont.GeneralFont)
-            CONFIG.guiFont = font.family()
-            CONFIG.guiFontSize = font.pointSize()
-        else:
-            font.setFamily(CONFIG.guiFont)
-            font.setPointSize(CONFIG.guiFontSize)
-
-        QApplication.setFont(font)
-
         return
 
     def _listConf(self, targetDict: dict, checkDir: Path) -> bool:

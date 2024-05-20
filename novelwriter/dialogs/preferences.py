@@ -35,6 +35,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.common import describeFont
 from novelwriter.constants import nwConst, nwUnicode
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.configlayout import NColourLabel, NScrollableForm
@@ -135,6 +136,10 @@ class GuiPreferences(QDialog):
         iSz = SHARED.theme.baseIconSize
         boxFixed = 5*SHARED.theme.textNWidth
         minWidth = CONFIG.pxInt(200)
+        fontWidth = CONFIG.pxInt(162)
+
+        # Temporary Variables
+        self._guiFont = CONFIG.guiFont
 
         # Label
         self.sidebar.addLabel(self.tr("General"))
@@ -174,25 +179,15 @@ class GuiPreferences(QDialog):
         # Application Font Family
         self.guiFont = QLineEdit(self)
         self.guiFont.setReadOnly(True)
-        self.guiFont.setMinimumWidth(CONFIG.pxInt(162))
-        self.guiFont.setText(CONFIG.guiFont)
+        self.guiFont.setMinimumWidth(fontWidth)
+        self.guiFont.setText(describeFont(self._guiFont))
+        self.guiFont.setCursorPosition(0)
         self.guiFontButton = NIconToolButton(self, iSz, "more")
         self.guiFontButton.clicked.connect(self._selectGuiFont)
         self.mainForm.addRow(
-            self.tr("Application font family"), self.guiFont,
+            self.tr("Application font"), self.guiFont,
             self.tr("Requires restart to take effect."), stretch=(3, 2),
             button=self.guiFontButton
-        )
-
-        # Application Font Size
-        self.guiFontSize = NSpinBox(self)
-        self.guiFontSize.setMinimum(8)
-        self.guiFontSize.setMaximum(60)
-        self.guiFontSize.setSingleStep(1)
-        self.guiFontSize.setValue(CONFIG.guiFontSize)
-        self.mainForm.addRow(
-            self.tr("Application font size"), self.guiFontSize,
-            self.tr("Requires restart to take effect."), unit=self.tr("pt")
         )
 
         # Vertical Scrollbars
@@ -234,7 +229,7 @@ class GuiPreferences(QDialog):
         # Document Font Family
         self.textFont = QLineEdit(self)
         self.textFont.setReadOnly(True)
-        self.textFont.setMinimumWidth(CONFIG.pxInt(162))
+        self.textFont.setMinimumWidth(fontWidth)
         self.textFont.setText(CONFIG.textFont)
         self.textFontButton = NIconToolButton(self, iSz, "more")
         self.textFontButton.clicked.connect(self._selectTextFont)
@@ -818,13 +813,11 @@ class GuiPreferences(QDialog):
     @pyqtSlot()
     def _selectGuiFont(self) -> None:
         """Open the QFontDialog and set a font for the font style."""
-        current = QFont()
-        current.setFamily(CONFIG.guiFont)
-        current.setPointSize(CONFIG.guiFontSize)
-        font, status = QFontDialog.getFont(current, self)
+        font, status = QFontDialog.getFont(self._guiFont, self)
         if status:
-            self.guiFont.setText(font.family())
-            self.guiFontSize.setValue(font.pointSize())
+            self.guiFont.setText(describeFont(font))
+            self.guiFont.setCursorPosition(0)
+            self._guiFont = font
         return
 
     @pyqtSlot()
@@ -892,18 +885,14 @@ class GuiPreferences(QDialog):
         # Appearance
         guiLocale   = self.guiLocale.currentData()
         guiTheme    = self.guiTheme.currentData()
-        guiFont     = self.guiFont.text()
-        guiFontSize = self.guiFontSize.value()
 
         updateTheme  |= CONFIG.guiTheme != guiTheme
         needsRestart |= CONFIG.guiLocale != guiLocale
-        needsRestart |= CONFIG.guiFont != guiFont
-        needsRestart |= CONFIG.guiFontSize != guiFontSize
+        needsRestart |= CONFIG.guiFont != self._guiFont
 
         CONFIG.guiLocale   = guiLocale
         CONFIG.guiTheme    = guiTheme
-        CONFIG.guiFont     = guiFont
-        CONFIG.guiFontSize = guiFontSize
+        CONFIG.guiFont     = self._guiFont
         CONFIG.hideVScroll = self.hideVScroll.isChecked()
         CONFIG.hideHScroll = self.hideHScroll.isChecked()
 

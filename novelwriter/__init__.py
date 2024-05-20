@@ -217,6 +217,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
     # Import GUI (after dependency checks), and launch
     from novelwriter.guimain import GuiMain
     if testMode:
+        CONFIG.loadConfig()
         nwGUI = GuiMain()
         return nwGUI
 
@@ -232,6 +233,7 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
         sys.excepthook = exceptionHandler
 
         # Run Config steps that require the QApplication
+        CONFIG.loadConfig()
         CONFIG.initLocalisation(nwApp)
         CONFIG.setTextFont(CONFIG.textFont, CONFIG.textSize)  # Makes sure these are valid
 
