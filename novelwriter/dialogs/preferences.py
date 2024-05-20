@@ -27,7 +27,7 @@ from __future__ import annotations
 import logging
 
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QFont, QKeyEvent, QKeySequence
+from PyQt5.QtGui import QCloseEvent, QKeyEvent, QKeySequence
 from PyQt5.QtWidgets import (
     QAbstractButton, QApplication, QCompleter, QDialog, QDialogButtonBox,
     QFileDialog, QFontDialog, QHBoxLayout, QLineEdit, QPushButton, QVBoxLayout,
@@ -35,6 +35,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.common import describeFont
 from novelwriter.constants import nwConst, nwUnicode
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.configlayout import NColourLabel, NScrollableForm
@@ -135,6 +136,11 @@ class GuiPreferences(QDialog):
         iSz = SHARED.theme.baseIconSize
         boxFixed = 5*SHARED.theme.textNWidth
         minWidth = CONFIG.pxInt(200)
+        fontWidth = CONFIG.pxInt(162)
+
+        # Temporary Variables
+        self._guiFont = CONFIG.guiFont
+        self._textFont = CONFIG.textFont
 
         # Label
         self.sidebar.addLabel(self.tr("General"))
@@ -174,25 +180,15 @@ class GuiPreferences(QDialog):
         # Application Font Family
         self.guiFont = QLineEdit(self)
         self.guiFont.setReadOnly(True)
-        self.guiFont.setMinimumWidth(CONFIG.pxInt(162))
-        self.guiFont.setText(CONFIG.guiFont)
+        self.guiFont.setMinimumWidth(fontWidth)
+        self.guiFont.setText(describeFont(self._guiFont))
+        self.guiFont.setCursorPosition(0)
         self.guiFontButton = NIconToolButton(self, iSz, "more")
         self.guiFontButton.clicked.connect(self._selectGuiFont)
         self.mainForm.addRow(
-            self.tr("Application font family"), self.guiFont,
+            self.tr("Application font"), self.guiFont,
             self.tr("Requires restart to take effect."), stretch=(3, 2),
             button=self.guiFontButton
-        )
-
-        # Application Font Size
-        self.guiFontSize = NSpinBox(self)
-        self.guiFontSize.setMinimum(8)
-        self.guiFontSize.setMaximum(60)
-        self.guiFontSize.setSingleStep(1)
-        self.guiFontSize.setValue(CONFIG.guiFontSize)
-        self.mainForm.addRow(
-            self.tr("Application font size"), self.guiFontSize,
-            self.tr("Requires restart to take effect."), unit=self.tr("pt")
         )
 
         # Vertical Scrollbars
@@ -234,25 +230,15 @@ class GuiPreferences(QDialog):
         # Document Font Family
         self.textFont = QLineEdit(self)
         self.textFont.setReadOnly(True)
-        self.textFont.setMinimumWidth(CONFIG.pxInt(162))
-        self.textFont.setText(CONFIG.textFont)
+        self.textFont.setMinimumWidth(fontWidth)
+        self.textFont.setText(describeFont(CONFIG.textFont))
+        self.textFont.setCursorPosition(0)
         self.textFontButton = NIconToolButton(self, iSz, "more")
         self.textFontButton.clicked.connect(self._selectTextFont)
         self.mainForm.addRow(
-            self.tr("Document font family"), self.textFont,
+            self.tr("Document font"), self.textFont,
             self.tr("Applies to both document editor and viewer."), stretch=(3, 2),
             button=self.textFontButton
-        )
-
-        # Document Font Size
-        self.textSize = NSpinBox(self)
-        self.textSize.setMinimum(8)
-        self.textSize.setMaximum(60)
-        self.textSize.setSingleStep(1)
-        self.textSize.setValue(CONFIG.textSize)
-        self.mainForm.addRow(
-            self.tr("Document font size"), self.textSize,
-            self.tr("Applies to both document editor and viewer."), unit=self.tr("pt")
         )
 
         # Emphasise Labels
@@ -818,25 +804,21 @@ class GuiPreferences(QDialog):
     @pyqtSlot()
     def _selectGuiFont(self) -> None:
         """Open the QFontDialog and set a font for the font style."""
-        current = QFont()
-        current.setFamily(CONFIG.guiFont)
-        current.setPointSize(CONFIG.guiFontSize)
-        font, status = QFontDialog.getFont(current, self)
+        font, status = QFontDialog.getFont(self._guiFont, self)
         if status:
-            self.guiFont.setText(font.family())
-            self.guiFontSize.setValue(font.pointSize())
+            self.guiFont.setText(describeFont(font))
+            self.guiFont.setCursorPosition(0)
+            self._guiFont = font
         return
 
     @pyqtSlot()
     def _selectTextFont(self) -> None:
         """Open the QFontDialog and set a font for the font style."""
-        current = QFont()
-        current.setFamily(CONFIG.textFont)
-        current.setPointSize(CONFIG.textSize)
-        font, status = QFontDialog.getFont(current, self)
+        font, status = QFontDialog.getFont(CONFIG.textFont, self)
         if status:
-            self.textFont.setText(font.family())
-            self.textSize.setValue(font.pointSize())
+            self.textFont.setText(describeFont(font))
+            self.textFont.setCursorPosition(0)
+            self._textFont = font
         return
 
     @pyqtSlot()
@@ -892,20 +874,16 @@ class GuiPreferences(QDialog):
         # Appearance
         guiLocale   = self.guiLocale.currentData()
         guiTheme    = self.guiTheme.currentData()
-        guiFont     = self.guiFont.text()
-        guiFontSize = self.guiFontSize.value()
 
         updateTheme  |= CONFIG.guiTheme != guiTheme
         needsRestart |= CONFIG.guiLocale != guiLocale
-        needsRestart |= CONFIG.guiFont != guiFont
-        needsRestart |= CONFIG.guiFontSize != guiFontSize
+        needsRestart |= CONFIG.guiFont != self._guiFont
 
         CONFIG.guiLocale   = guiLocale
         CONFIG.guiTheme    = guiTheme
-        CONFIG.guiFont     = guiFont
-        CONFIG.guiFontSize = guiFontSize
         CONFIG.hideVScroll = self.hideVScroll.isChecked()
         CONFIG.hideHScroll = self.hideHScroll.isChecked()
+        CONFIG.setGuiFont(self._guiFont)
 
         # Document Style
         guiSyntax  = self.guiSyntax.currentData()
@@ -918,7 +896,7 @@ class GuiPreferences(QDialog):
         CONFIG.emphLabels     = emphLabels
         CONFIG.showFullPath   = self.showFullPath.isChecked()
         CONFIG.incNotesWCount = self.incNotesWCount.isChecked()
-        CONFIG.setTextFont(self.textFont.text(), self.textSize.value())
+        CONFIG.setTextFont(self._textFont)
 
         # Auto Save
         CONFIG.autoSaveDoc  = self.autoSaveDoc.value()

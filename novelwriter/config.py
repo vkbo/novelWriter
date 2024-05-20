@@ -36,10 +36,10 @@ from PyQt5.QtCore import (
     PYQT_VERSION, PYQT_VERSION_STR, QT_VERSION, QT_VERSION_STR, QLibraryInfo,
     QLocale, QStandardPaths, QSysInfo, QTranslator
 )
-from PyQt5.QtGui import QFontDatabase
+from PyQt5.QtGui import QFont, QFontDatabase
 from PyQt5.QtWidgets import QApplication
 
-from novelwriter.common import NWConfigParser, checkInt, checkPath, formatTimeStamp
+from novelwriter.common import NWConfigParser, checkInt, checkPath, describeFont, formatTimeStamp
 from novelwriter.constants import nwFiles, nwUnicode
 from novelwriter.error import formatException, logException
 
@@ -106,15 +106,14 @@ class Config:
         self._recentObj = RecentProjects(self)
 
         # General GUI Settings
-        self.guiLocale   = self._qLocale.name()
-        self.guiTheme    = "default"        # GUI theme
-        self.guiSyntax   = "default_light"  # Syntax theme
-        self.guiFont     = ""               # Defaults to system default font in theme class
-        self.guiFontSize = 11               # Is overridden if system default is loaded
-        self.guiScale    = 1.0              # Set automatically by Theme class
-        self.hideVScroll = False            # Hide vertical scroll bars on main widgets
-        self.hideHScroll = False            # Hide horizontal scroll bars on main widgets
-        self.lastNotes   = "0x0"            # The latest release notes that have been shown
+        self.guiLocale    = self._qLocale.name()
+        self.guiTheme     = "default"        # GUI theme
+        self.guiSyntax    = "default_light"  # Syntax theme
+        self.guiFont      = QFont()          # Main GUI font
+        self.guiScale     = 1.0              # Set automatically by Theme class
+        self.hideVScroll  = False            # Hide vertical scroll bars on main widgets
+        self.hideHScroll  = False            # Hide horizontal scroll bars on main widgets
+        self.lastNotes    = "0x0"            # The latest release notes that have been shown
 
         # Size Settings
         self._mainWinSize  = [1200, 650]     # Last size of the main GUI window
@@ -132,43 +131,42 @@ class Config:
         self.askBeforeBackup = True   # Flag for asking before running automatic backup
 
         # Text Editor Settings
-        self.textFont        = ""     # Editor font
-        self.textSize        = 12     # Editor font size
-        self.textWidth       = 700    # Editor text width
-        self.textMargin      = 40     # Editor/viewer text margin
-        self.tabWidth        = 40     # Editor tabulator width
+        self.textFont        = QFont()  # Editor font
+        self.textWidth       = 700      # Editor text width
+        self.textMargin      = 40       # Editor/viewer text margin
+        self.tabWidth        = 40       # Editor tabulator width
 
-        self.focusWidth      = 800    # Focus Mode text width
-        self.hideFocusFooter = False  # Hide document footer in Focus Mode
-        self.showFullPath    = True   # Show full document path in editor header
-        self.autoSelect      = True   # Auto-select word when applying format with no selection
+        self.focusWidth      = 800      # Focus Mode text width
+        self.hideFocusFooter = False    # Hide document footer in Focus Mode
+        self.showFullPath    = True     # Show full document path in editor header
+        self.autoSelect      = True     # Auto-select word when applying format with no selection
 
-        self.doJustify       = False  # Justify text
-        self.showTabsNSpaces = False  # Show tabs and spaces in editor
-        self.showLineEndings = False  # Show line endings in editor
-        self.showMultiSpaces = True   # Highlight multiple spaces in the text
+        self.doJustify       = False    # Justify text
+        self.showTabsNSpaces = False    # Show tabs and spaces in editor
+        self.showLineEndings = False    # Show line endings in editor
+        self.showMultiSpaces = True     # Highlight multiple spaces in the text
 
-        self.doReplace       = True   # Enable auto-replace as you type
-        self.doReplaceSQuote = True   # Smart single quotes
-        self.doReplaceDQuote = True   # Smart double quotes
-        self.doReplaceDash   = True   # Replace multiple hyphens with dashes
-        self.doReplaceDots   = True   # Replace three dots with ellipsis
+        self.doReplace       = True     # Enable auto-replace as you type
+        self.doReplaceSQuote = True     # Smart single quotes
+        self.doReplaceDQuote = True     # Smart double quotes
+        self.doReplaceDash   = True     # Replace multiple hyphens with dashes
+        self.doReplaceDots   = True     # Replace three dots with ellipsis
 
-        self.autoScroll      = False  # Typewriter-like scrolling
-        self.autoScrollPos   = 30     # Start point for typewriter-like scrolling
-        self.scrollPastEnd   = True   # Scroll past end of document, and centre cursor
+        self.autoScroll      = False    # Typewriter-like scrolling
+        self.autoScrollPos   = 30       # Start point for typewriter-like scrolling
+        self.scrollPastEnd   = True     # Scroll past end of document, and centre cursor
 
-        self.dialogStyle     = 2      # Quote type to use for dialogue
-        self.allowOpenDial   = True   # Allow open-ended dialogue quotes
-        self.narratorBreak   = ""     # Symbol to use for narrator break
-        self.dialogLine      = ""     # Symbol to use for dialogue line
-        self.altDialogOpen   = ""     # Alternative dialog symbol, open
-        self.altDialogClose  = ""     # Alternative dialog symbol, close
-        self.highlightEmph   = True   # Add colour to text emphasis
+        self.dialogStyle     = 2        # Quote type to use for dialogue
+        self.allowOpenDial   = True     # Allow open-ended dialogue quotes
+        self.narratorBreak   = ""       # Symbol to use for narrator break
+        self.dialogLine      = ""       # Symbol to use for dialogue line
+        self.altDialogOpen   = ""       # Alternative dialog symbol, open
+        self.altDialogClose  = ""       # Alternative dialog symbol, close
+        self.highlightEmph   = True     # Add colour to text emphasis
 
-        self.stopWhenIdle    = True   # Stop the status bar clock when the user is idle
-        self.userIdleTime    = 300    # Time of inactivity to consider user idle
-        self.incNotesWCount  = True   # The status bar word count includes notes
+        self.stopWhenIdle    = True     # Stop the status bar clock when the user is idle
+        self.userIdleTime    = 300      # Time of inactivity to consider user idle
+        self.incNotesWCount  = True     # The status bar word count includes notes
 
         # User-Selected Symbol Settings
         self.fmtApostrophe   = nwUnicode.U_RSQUO
@@ -362,23 +360,53 @@ class Config:
         self._backupPath = checkPath(path, self._backPath)
         return
 
-    def setTextFont(self, family: str | None, pointSize: int = 12) -> None:
+    def setGuiFont(self, value: QFont | str | None) -> None:
+        """Update the GUI's font style from settings."""
+        if isinstance(value, QFont):
+            self.guiFont = value
+        elif value and isinstance(value, str):
+            self.guiFont = QFont()
+            self.guiFont.fromString(value)
+        else:
+            font = QFont()
+            fontDB = QFontDatabase()
+            if self.osWindows and "Arial" in fontDB.families():
+                # On Windows we default to Arial if possible
+                font.setFamily("Arial")
+                font.setPointSize(10)
+            else:
+                font = fontDB.systemFont(QFontDatabase.SystemFont.GeneralFont)
+            self.guiFont = font
+            logger.debug("GUI font set to: %s", describeFont(font))
+
+        QApplication.setFont(self.guiFont)
+
+        return
+
+    def setTextFont(self, value: QFont | str | None) -> None:
         """Set the text font if it exists. If it doesn't, or is None,
         set to default font.
         """
-        fontDB = QFontDatabase()
-        fontFam = fontDB.families()
-        self.textSize = pointSize
-        if family is None or family not in fontFam:
-            logger.warning("Unknown font '%s'", family)
-            if self.osWindows and "Arial" in fontFam:
-                self.textFont = "Arial"
-            elif self.osDarwin and "Helvetica" in fontFam:
-                self.textFont = "Helvetica"
-            else:
-                self.textFont = fontDB.systemFont(QFontDatabase.SystemFont.GeneralFont).family()
+        if isinstance(value, QFont):
+            self.textFont = value
+        elif value and isinstance(value, str):
+            self.textFont = QFont()
+            self.textFont.fromString(value)
         else:
-            self.textFont = family
+            fontDB = QFontDatabase()
+            fontFam = fontDB.families()
+            if self.osWindows and "Arial" in fontFam:
+                font = QFont()
+                font.setFamily("Arial")
+                font.setPointSize(12)
+            elif self.osDarwin and "Helvetica" in fontFam:
+                font = QFont()
+                font.setFamily("Helvetica")
+                font.setPointSize(12)
+            else:
+                font = fontDB.systemFont(QFontDatabase.SystemFont.GeneralFont)
+            self.textFont = font
+            logger.debug("Text font set to: %s", describeFont(font))
         return
 
     ##
@@ -502,12 +530,6 @@ class Config:
             (self._dataPath / "syntax").mkdir(exist_ok=True)
             (self._dataPath / "themes").mkdir(exist_ok=True)
 
-        # Check if config file exists, and load it. If not, we save defaults
-        if (self._confPath / nwFiles.CONF_FILE).is_file():
-            self.loadConfig()
-        else:
-            self.saveConfig()
-
         self._recentObj.loadCache()
         self._checkOptionalPackages()
 
@@ -548,6 +570,14 @@ class Config:
 
         conf = NWConfigParser()
         cnfPath = self._confPath / nwFiles.CONF_FILE
+
+        if not cnfPath.exists():
+            # Initial file, so we just create one from defaults
+            self.setGuiFont(None)
+            self.setTextFont(None)
+            self.saveConfig()
+            return True
+
         try:
             with open(cnfPath, mode="r", encoding="utf-8") as inFile:
                 conf.read_file(inFile)
@@ -561,10 +591,9 @@ class Config:
 
         # Main
         sec = "Main"
+        self.setGuiFont(conf.rdStr(sec, "font", ""))
         self.guiTheme    = conf.rdStr(sec, "theme", self.guiTheme)
         self.guiSyntax   = conf.rdStr(sec, "syntax", self.guiSyntax)
-        self.guiFont     = conf.rdStr(sec, "font", self.guiFont)
-        self.guiFontSize = conf.rdInt(sec, "fontsize", self.guiFontSize)
         self.guiLocale   = conf.rdStr(sec, "localisation", self.guiLocale)
         self.hideVScroll = conf.rdBool(sec, "hidevscroll", self.hideVScroll)
         self.hideHScroll = conf.rdBool(sec, "hidehscroll", self.hideHScroll)
@@ -591,8 +620,7 @@ class Config:
 
         # Editor
         sec = "Editor"
-        self.textFont        = conf.rdStr(sec, "textfont", self.textFont)
-        self.textSize        = conf.rdInt(sec, "textsize", self.textSize)
+        self.setTextFont(conf.rdStr(sec, "textfont", ""))
         self.textWidth       = conf.rdInt(sec, "width", self.textWidth)
         self.textMargin      = conf.rdInt(sec, "margin", self.textMargin)
         self.tabWidth        = conf.rdInt(sec, "tabwidth", self.tabWidth)
@@ -672,10 +700,9 @@ class Config:
         }
 
         conf["Main"] = {
+            "font":         self.guiFont.toString(),
             "theme":        str(self.guiTheme),
             "syntax":       str(self.guiSyntax),
-            "font":         str(self.guiFont),
-            "fontsize":     str(self.guiFontSize),
             "localisation": str(self.guiLocale),
             "hidevscroll":  str(self.hideVScroll),
             "hidehscroll":  str(self.hideHScroll),
@@ -702,8 +729,7 @@ class Config:
         }
 
         conf["Editor"] = {
-            "textfont":        str(self.textFont),
-            "textsize":        str(self.textSize),
+            "textfont":        self.textFont.toString(),
             "width":           str(self.textWidth),
             "margin":          str(self.textMargin),
             "tabwidth":        str(self.tabWidth),

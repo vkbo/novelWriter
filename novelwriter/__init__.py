@@ -216,29 +216,28 @@ def main(sysArgs: list | None = None) -> GuiMain | None:
 
     # Import GUI (after dependency checks), and launch
     from novelwriter.guimain import GuiMain
+
     if testMode:
-        nwGUI = GuiMain()
-        return nwGUI
+        # Only used for testing where the test framework creates the app
+        CONFIG.loadConfig()
+        return GuiMain()
 
-    else:
-        nwApp = QApplication([CONFIG.appName, (f"-style={qtStyle}")])
-        nwApp.setApplicationName(CONFIG.appName)
-        nwApp.setApplicationVersion(__version__)
-        nwApp.setOrganizationDomain(__domain__)
-        nwApp.setOrganizationName(__domain__)
-        nwApp.setDesktopFileName(CONFIG.appName)
+    app = QApplication([CONFIG.appName, (f"-style={qtStyle}")])
+    app.setApplicationName(CONFIG.appName)
+    app.setApplicationVersion(__version__)
+    app.setOrganizationDomain(__domain__)
+    app.setOrganizationName(__domain__)
+    app.setDesktopFileName(CONFIG.appName)
 
-        # Connect the exception handler before making the main GUI
-        sys.excepthook = exceptionHandler
+    # Connect the exception handler before making the main GUI
+    sys.excepthook = exceptionHandler
 
-        # Run Config steps that require the QApplication
-        CONFIG.initLocalisation(nwApp)
-        CONFIG.setTextFont(CONFIG.textFont, CONFIG.textSize)  # Makes sure these are valid
+    # Run Config steps that require the QApplication
+    CONFIG.loadConfig()
+    CONFIG.initLocalisation(app)
 
-        # Launch main GUI
-        nwGUI = GuiMain()
-        nwGUI.postLaunchTasks(cmdOpen)
+    # Launch main GUI
+    nwGUI = GuiMain()
+    nwGUI.postLaunchTasks(cmdOpen)
 
-        sys.exit(nwApp.exec())
-
-    return None
+    sys.exit(app.exec())

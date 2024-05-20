@@ -28,16 +28,16 @@ from xml.etree import ElementTree as ET
 import pytest
 
 from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QColor, QDesktopServices
+from PyQt5.QtGui import QColor, QDesktopServices, QFontDatabase
 
 from novelwriter.common import (
     NWConfigParser, checkBool, checkFloat, checkInt, checkIntTuple, checkPath,
-    checkString, checkStringNone, checkUuid, cssCol, elide, formatFileFilter,
-    formatInt, formatTime, formatTimeStamp, formatVersion, fuzzyTime,
-    getFileSize, hexToInt, isHandle, isItemClass, isItemLayout, isItemType,
-    isListInstance, isTitleTag, jsonEncode, makeFileNameSafe, minmax,
-    numberToRoman, openExternalPath, readTextFile, simplified, transferCase,
-    xmlIndent, yesNo
+    checkString, checkStringNone, checkUuid, cssCol, describeFont, elide,
+    formatFileFilter, formatInt, formatTime, formatTimeStamp, formatVersion,
+    fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass, isItemLayout,
+    isItemType, isListInstance, isTitleTag, jsonEncode, makeFileNameSafe,
+    minmax, numberToRoman, openExternalPath, readTextFile, simplified,
+    transferCase, xmlIndent, yesNo
 )
 
 from tests.mocked import causeOSError
@@ -485,6 +485,15 @@ def testBaseCommon_cssCol():
     """Test the cssCol function."""
     assert cssCol(QColor(0, 0, 0, 0)) == "rgba(0, 0, 0, 0)"
     assert cssCol(QColor(10, 20, 30, 40)) == "rgba(10, 20, 30, 40)"
+
+
+@pytest.mark.base
+def testBaseCommon_describeFont():
+    """Test the describeFont function."""
+    fontDB = QFontDatabase()
+    font = fontDB.systemFont(QFontDatabase.SystemFont.GeneralFont)
+    assert font.family() in describeFont(font)
+    assert describeFont(None) == "Error"  # type: ignore
 
 
 @pytest.mark.base

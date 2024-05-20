@@ -787,7 +787,7 @@ class _PreviewWidget(QTextBrowser):
         self._updateDocMargins()
         self._updateBuildAge()
 
-        self.setTextFont(CONFIG.textFont, CONFIG.textSize)
+        self.setTextFont(CONFIG.textFont.family(), CONFIG.textFont.pointSize())
 
         # Age Timer
         self.ageTimer = QTimer(self)

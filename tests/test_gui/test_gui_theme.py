@@ -48,27 +48,6 @@ def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
     assert mSize > 0
     assert mainTheme.getTextWidth("m", mainTheme.guiFont) == mSize
 
-    # Init Fonts
-    # ==========
-
-    # The defaults should be set
-    defaultFont = CONFIG.guiFont
-    defaultSize = CONFIG.guiFontSize
-
-    # CHange them to nonsense values
-    CONFIG.guiFont = "notafont"
-    CONFIG.guiFontSize = 99
-
-    # Let the theme class set them back to default
-    mainTheme._setGuiFont()
-    assert CONFIG.guiFont == defaultFont
-    assert CONFIG.guiFontSize == defaultSize
-
-    # A second call should just restore the defaults again
-    mainTheme._setGuiFont()
-    assert CONFIG.guiFont == defaultFont
-    assert CONFIG.guiFontSize == defaultSize
-
     # Scan for Themes
     # ===============
 
