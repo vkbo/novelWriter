@@ -152,6 +152,7 @@ class Tokenizer(ABC):
         self._doComments   = False    # Also process comments
         self._doKeywords   = False    # Also process keywords like tags and references
         self._skipKeywords = set()    # Keywords to ignore
+        self._keepBreaks   = True     # Keep line breaks in paragraphs
 
         # Margins
         self._marginTitle = (1.000, 0.500)
@@ -409,6 +410,11 @@ class Tokenizer(ABC):
         self._skipKeywords = set(x.lower().strip() for x in keywords.split(","))
         return
 
+    def setKeepLineBreaks(self, state: bool) -> None:
+        """Keep line breaks in paragraphs."""
+        self._keepBreaks = state
+        return
+
     def setKeepMarkdown(self, state: bool) -> None:
         """Keep original markdown during build."""
         self._keepMD = state
@@ -490,7 +496,6 @@ class Tokenizer(ABC):
           4: The internal formatting map of the text, self.FMT_*
           5: The style of the block, self.A_*
         """
-        self._tokens = []
         if self._isNovel:
             self._hFormatter.setHandle(self._handle)
 
@@ -498,12 +503,13 @@ class Tokenizer(ABC):
         breakNext = False
         tmpMarkdown = []
         tHandle = self._handle or ""
+        tokens = []
         for aLine in self._text.splitlines():
             sLine = aLine.strip().lower()
 
             # Check for blank lines
             if len(sLine) == 0:
-                self._tokens.append((
+                tokens.append((
                     self.T_EMPTY, nHead, "", [], self.A_NONE
                 ))
                 if self._keepMD:
@@ -532,7 +538,7 @@ class Tokenizer(ABC):
                     continue
 
                 elif sLine == "[vspace]":
-                    self._tokens.append(
+                    tokens.append(
                         (self.T_SKIP, nHead, "", [], sAlign)
                     )
                     continue
@@ -540,11 +546,11 @@ class Tokenizer(ABC):
                 elif sLine.startswith("[vspace:") and sLine.endswith("]"):
                     nSkip = checkInt(sLine[8:-1], 0)
                     if nSkip >= 1:
-                        self._tokens.append(
+                        tokens.append(
                             (self.T_SKIP, nHead, "", [], sAlign)
                         )
                     if nSkip > 1:
-                        self._tokens += (nSkip - 1) * [
+                        tokens += (nSkip - 1) * [
                             (self.T_SKIP, nHead, "", [], self.A_NONE)
                         ]
                     continue
@@ -561,14 +567,14 @@ class Tokenizer(ABC):
                 cStyle, cKey, cText, _, _ = processComment(aLine)
                 if cStyle == nwComment.SYNOPSIS:
                     tLine, tFmt = self._extractFormats(cText)
-                    self._tokens.append((
+                    tokens.append((
                         self.T_SYNOPSIS, nHead, tLine, tFmt, sAlign
                     ))
                     if self._doSynopsis and self._keepMD:
                         tmpMarkdown.append(f"{aLine}\n")
                 elif cStyle == nwComment.SHORT:
                     tLine, tFmt = self._extractFormats(cText)
-                    self._tokens.append((
+                    tokens.append((
                         self.T_SHORT, nHead, tLine, tFmt, sAlign
                     ))
                     if self._doSynopsis and self._keepMD:
@@ -580,7 +586,7 @@ class Tokenizer(ABC):
                         tmpMarkdown.append(f"{aLine}\n")
                 else:
                     tLine, tFmt = self._extractFormats(cText)
-                    self._tokens.append((
+                    tokens.append((
                         self.T_COMMENT, nHead, tLine, tFmt, sAlign
                     ))
                     if self._doComments and self._keepMD:
@@ -594,7 +600,7 @@ class Tokenizer(ABC):
 
                 valid, bits, _ = self._project.index.scanThis(aLine)
                 if valid and bits and bits[0] not in self._skipKeywords:
-                    self._tokens.append((
+                    tokens.append((
                         self.T_KEYWORD, nHead, aLine[1:].strip(), [], sAlign
                     ))
                     if self._doKeywords and self._keepMD:
@@ -630,7 +636,7 @@ class Tokenizer(ABC):
                         self._hFormatter.resetAll()
                     self._noSep = True
 
-                self._tokens.append((
+                tokens.append((
                     tType, nHead, tText, [], tStyle
                 ))
                 if self._keepMD:
@@ -665,7 +671,7 @@ class Tokenizer(ABC):
                     self._hFormatter.resetScene()
                     self._noSep = True
 
-                self._tokens.append((
+                tokens.append((
                     tType, nHead, tText, [], tStyle
                 ))
                 if self._keepMD:
@@ -706,7 +712,7 @@ class Tokenizer(ABC):
                             tStyle = self.A_NONE if self._noSep else self.A_CENTRE
                     self._noSep = False
 
-                self._tokens.append((
+                tokens.append((
                     tType, nHead, tText, [], tStyle
                 ))
                 if self._keepMD:
@@ -736,7 +742,7 @@ class Tokenizer(ABC):
                             tType = self.T_SEP
                             tStyle = self.A_CENTRE
 
-                self._tokens.append((
+                tokens.append((
                     tType, nHead, tText, [], tStyle
                 ))
                 if self._keepMD:
@@ -784,26 +790,26 @@ class Tokenizer(ABC):
 
                 # Process formats
                 tLine, tFmt = self._extractFormats(aLine)
-                self._tokens.append((
+                tokens.append((
                     self.T_TEXT, nHead, tLine, tFmt, sAlign
                 ))
                 if self._keepMD:
                     tmpMarkdown.append(f"{aLine}\n")
 
         # If we have content, turn off the first page flag
-        if self._isFirst and self._tokens:
+        if self._isFirst and tokens:
             self._isFirst = False  # First document has been processed
 
             # Make sure the token array doesn't start with a page break
             # on the very first page, adding a blank first page.
-            if self._tokens[0][4] & self.A_PBB:
-                token = self._tokens[0]
-                self._tokens[0] = (
+            if tokens[0][4] & self.A_PBB:
+                token = tokens[0]
+                tokens[0] = (
                     token[0], token[1], token[2], token[3], token[4] & ~self.A_PBB
                 )
 
         # Always add an empty line at the end of the file
-        self._tokens.append((
+        tokens.append((
             self.T_EMPTY, nHead, "", [], self.A_NONE
         ))
         if self._keepMD:
@@ -814,25 +820,36 @@ class Tokenizer(ABC):
         # ===========
         # Some items need a second pass
 
+        self._tokens = []
         pToken = (self.T_EMPTY, 0, "", [], self.A_NONE)
         nToken = (self.T_EMPTY, 0, "", [], self.A_NONE)
-        tCount = len(self._tokens)
-        for n, token in enumerate(self._tokens):
+
+        tCount = len(tokens)
+        for n, token in enumerate(tokens):
 
             if n > 0:
-                pToken = self._tokens[n-1]
+                pToken = tokens[n-1]  # Look behind
             if n < tCount - 1:
-                nToken = self._tokens[n+1]
+                nToken = tokens[n+1]  # Look ahead
 
-            if token[0] == self.T_KEYWORD:
+            if token[0] == self.T_EMPTY:
+                # Strip multiple empty
+                if pToken[0] != self.T_EMPTY:
+                    self._tokens.append(token)
+
+            elif token[0] == self.T_KEYWORD:
+                # Adjust margins for lines in a list of keyword lines
                 aStyle = token[4]
                 if pToken[0] == self.T_KEYWORD:
                     aStyle |= self.A_Z_TOPMRG
                 if nToken[0] == self.T_KEYWORD:
                     aStyle |= self.A_Z_BTMMRG
-                self._tokens[n] = (
+                self._tokens.append((
                     token[0], token[1], token[2], token[3], aStyle
-                )
+                ))
+
+            else:
+                self._tokens.append(token)
 
         return
 
