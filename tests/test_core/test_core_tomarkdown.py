@@ -23,7 +23,7 @@ from __future__ import annotations
 import pytest
 
 from novelwriter.core.project import NWProject
-from novelwriter.core.tomd import ToMarkdown
+from novelwriter.core.tomarkdown import ToMarkdown
 
 
 @pytest.mark.core

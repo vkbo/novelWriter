@@ -27,7 +27,7 @@ import pytest
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import HeadingFormatter, Tokenizer, stripEscape
-from novelwriter.core.tomd import ToMarkdown
+from novelwriter.core.tomarkdown import ToMarkdown
 
 from tests.tools import C, buildTestProject, readFile
 

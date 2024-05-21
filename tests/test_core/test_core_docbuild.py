@@ -31,7 +31,7 @@ from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.project import NWProject
 from novelwriter.core.tohtml import ToHtml
-from novelwriter.core.tomd import ToMarkdown
+from novelwriter.core.tomarkdown import ToMarkdown
 from novelwriter.core.toodt import ToOdt
 from novelwriter.enum import nwBuildFmt
 
