@@ -40,7 +40,7 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import cssCol
 from novelwriter.constants import nwHeaders, nwUnicode
-from novelwriter.core.tohtml import ToHtml
+from novelwriter.core.toqdocument import ToQTextDocument
 from novelwriter.enum import nwDocAction, nwDocMode, nwItemType
 from novelwriter.error import logException
 from novelwriter.extensions.eventfilters import WheelEventFilter
@@ -202,22 +202,22 @@ class GuiDocViewer(QTextBrowser):
         QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
 
         sPos = self.verticalScrollBar().value()
-        aDoc = ToHtml(SHARED.project)
-        aDoc.setPreview(True)
-        aDoc.setKeywords(True)
-        aDoc.setComments(CONFIG.viewComments)
-        aDoc.setSynopsis(CONFIG.viewSynopsis)
-        aDoc.setLinkHeadings(True)
+        qDoc = ToQTextDocument(SHARED.project)
+        qDoc.initDocument(CONFIG.textFont)
+        qDoc.setKeywords(True)
+        qDoc.setComments(CONFIG.viewComments)
+        qDoc.setSynopsis(CONFIG.viewSynopsis)
+        qDoc.setLinkHeadings(True)
 
         # Be extra careful here to prevent crashes when first opening a
         # project as a crash here leaves no way of recovering.
         # See issue #298
         try:
-            aDoc.setText(tHandle)
-            aDoc.doPreProcessing()
-            aDoc.tokenizeText()
-            aDoc.doConvert()
-            aDoc.appendFootnotes()
+            qDoc.setText(tHandle)
+            qDoc.doPreProcessing()
+            qDoc.tokenizeText()
+            qDoc.doConvert()
+            qDoc.appendFootnotes()
         except Exception:
             logger.error("Failed to generate preview for document with handle '%s'", tHandle)
             logException()
@@ -235,9 +235,10 @@ class GuiDocViewer(QTextBrowser):
         self.setDocumentTitle(tHandle)
 
         # Replace tabs before setting the HTML, and then put them back in
-        self.setHtml(aDoc.result.replace("\t", "!!tab!!"))
-        while self.find("!!tab!!"):
-            self.textCursor().insertText("\t")
+        # self.setHtml(qDoc.result.replace("\t", "!!tab!!"))
+        # while self.find("!!tab!!"):
+        #     self.textCursor().insertText("\t")
+        self.setDocument(qDoc.document)
 
         if self._docHandle == tHandle:
             # This is a refresh, so we set the scrollbar back to where it was

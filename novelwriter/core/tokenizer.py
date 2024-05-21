@@ -152,6 +152,7 @@ class Tokenizer(ABC):
         self._doComments   = False    # Also process comments
         self._doKeywords   = False    # Also process keywords like tags and references
         self._skipKeywords = set()    # Keywords to ignore
+        self._keepBreaks   = True     # Keep line breaks in paragraphs
 
         # Margins
         self._marginTitle = (1.000, 0.500)
