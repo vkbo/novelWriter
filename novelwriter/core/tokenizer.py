@@ -926,21 +926,7 @@ class Tokenizer(ABC):
             nChars = len(tText)
             nWChars = len("".join(tWords))
 
-            if tType in self.L_HEADINGS:
-                titleCount += 1
-                allWords += nWords
-                titleWords += nWords
-                allChars += nChars
-                allWordChars += nWChars
-                titleChars += nChars
-                titleWordChars += nWChars
-
-            elif tType == self.T_SEP:
-                allWords += nWords
-                allChars += nChars
-                allWordChars += nWChars
-
-            elif tType == self.T_TEXT:
+            if tType == self.T_TEXT:
                 tPWords = tText.split()
                 nPWords = len(tPWords)
                 nPChars = len(tText)
@@ -953,6 +939,20 @@ class Tokenizer(ABC):
                 textChars += nPChars
                 allWordChars += nPWChars
                 textWordChars += nPWChars
+
+            elif tType in self.L_HEADINGS:
+                titleCount += 1
+                allWords += nWords
+                titleWords += nWords
+                allChars += nChars
+                allWordChars += nWChars
+                titleChars += nChars
+                titleWordChars += nWChars
+
+            elif tType == self.T_SEP:
+                allWords += nWords
+                allChars += nChars
+                allWordChars += nWChars
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 text = "{0}: {1}".format(self._localLookup("Synopsis"), tText)
