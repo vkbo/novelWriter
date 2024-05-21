@@ -165,11 +165,11 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
     )
 
     # Text w/Hard Break
-    html._text = "Line one  \nLine two  \nLine three\n"
+    html._text = "Line one\nLine two\nLine three\n"
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='break'>Line one<br/>Line two<br/>Line three</p>\n"
+        "<p>Line one<br>Line two<br>Line three</p>\n"
     )
 
     # Synopsis, Short

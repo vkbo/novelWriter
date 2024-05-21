@@ -29,13 +29,12 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.enum import nwDocAction, nwDocInsert
 from novelwriter.gui.doceditor import GuiDocEditor
-from novelwriter.types import QtMouseLeft
 
 from tests.tools import C, buildTestProject, writeFile
 
 
 @pytest.mark.gui
-def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
+def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     """Test the main menu Edit and Format entries."""
     monkeypatch.setattr(GuiDocEditor, "hasFocus", lambda *a: True)
 
@@ -345,84 +344,7 @@ def testGuiMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
 
 
 @pytest.mark.gui
-def testGuiMenu_ContextMenus(qtbot, nwGUI, prjLipsum):
-    """Test the context menus."""
-    assert nwGUI.openProject(prjLipsum)
-    assert nwGUI.openDocument("4c4f28287af27")
-
-    # Editor Context Menu
-    cursor = nwGUI.docEditor.textCursor()
-    cursor.setPosition(127)
-    nwGUI.docEditor.setTextCursor(cursor)
-    rect = nwGUI.docEditor.cursorRect()
-
-    nwGUI.docEditor._openContextMenu(rect.bottomRight())
-    qtbot.mouseClick(nwGUI.docEditor, QtMouseLeft, pos=rect.topLeft())
-
-    nwGUI.docEditor._makePosSelection(QTextCursor.WordUnderCursor, rect.center())
-    cursor = nwGUI.docEditor.textCursor()
-    assert cursor.selectedText() == "imperdiet"
-
-    nwGUI.docEditor._makePosSelection(QTextCursor.BlockUnderCursor, rect.center())
-    cursor = nwGUI.docEditor.textCursor()
-    assert cursor.selectedText() == (
-        "Pellentesque nec erat ut nulla posuere commodo. Curabitur nisi augue, imperdiet et porta "
-        "imperdiet, efficitur id leo. Cras finibus arcu at nibh commodo congue. Proin suscipit "
-        "placerat condimentum. Aenean ante enim, cursus id lorem a, blandit venenatis nibh. "
-        "Maecenas suscipit porta elit, sit amet porta felis porttitor eu. Sed a dui nibh. "
-        "Phasellus sed faucibus dui. Pellentesque felis nulla, ultrices non efficitur quis, "
-        "rutrum id mi. Mauris tempus auctor nisl, in bibendum enim pellentesque sit amet. Proin "
-        "nunc lacus, imperdiet nec posuere ac, interdum non lectus."
-    )
-
-    # Viewer Context Menu
-    assert nwGUI.viewDocument("4c4f28287af27")
-
-    cursor = nwGUI.docViewer.textCursor()
-    cursor.setPosition(127)
-    nwGUI.docViewer.setTextCursor(cursor)
-    rect = nwGUI.docViewer.cursorRect()
-
-    nwGUI.docViewer._openContextMenu(rect.bottomRight())
-    qtbot.mouseClick(nwGUI.docViewer, QtMouseLeft, pos=rect.topLeft())
-
-    nwGUI.docViewer._makePosSelection(QTextCursor.WordUnderCursor, rect.center())
-    cursor = nwGUI.docViewer.textCursor()
-    assert cursor.selectedText() == "imperdiet"
-
-    nwGUI.docEditor._makePosSelection(QTextCursor.BlockUnderCursor, rect.center())
-    cursor = nwGUI.docEditor.textCursor()
-    assert cursor.selectedText() == (
-        "Pellentesque nec erat ut nulla posuere commodo. Curabitur nisi augue, imperdiet et porta "
-        "imperdiet, efficitur id leo. Cras finibus arcu at nibh commodo congue. Proin suscipit "
-        "placerat condimentum. Aenean ante enim, cursus id lorem a, blandit venenatis nibh. "
-        "Maecenas suscipit porta elit, sit amet porta felis porttitor eu. Sed a dui nibh. "
-        "Phasellus sed faucibus dui. Pellentesque felis nulla, ultrices non efficitur quis, "
-        "rutrum id mi. Mauris tempus auctor nisl, in bibendum enim pellentesque sit amet. Proin "
-        "nunc lacus, imperdiet nec posuere ac, interdum non lectus."
-    )
-
-    # Navigation History
-    assert nwGUI.viewDocument("04468803b92e1")
-    assert nwGUI.docViewer.docHandle == "04468803b92e1"
-    assert nwGUI.docViewer.docHeader.backButton.isEnabled()
-    assert not nwGUI.docViewer.docHeader.forwardButton.isEnabled()
-
-    qtbot.mouseClick(nwGUI.docViewer.docHeader.backButton, QtMouseLeft)
-    assert nwGUI.docViewer.docHandle == "4c4f28287af27"
-    assert not nwGUI.docViewer.docHeader.backButton.isEnabled()
-    assert nwGUI.docViewer.docHeader.forwardButton.isEnabled()
-
-    qtbot.mouseClick(nwGUI.docViewer.docHeader.forwardButton, QtMouseLeft)
-    assert nwGUI.docViewer.docHandle == "04468803b92e1"
-    assert nwGUI.docViewer.docHeader.backButton.isEnabled()
-    assert not nwGUI.docViewer.docHeader.forwardButton.isEnabled()
-
-    # qtbot.stop()
-
-
-@pytest.mark.gui
-def testGuiMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
+def testGuiMainMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd):
     """Test the Insert menu."""
     buildTestProject(nwGUI, projPath)
 

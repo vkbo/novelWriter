@@ -96,6 +96,18 @@ M_MRK = ~X_MRK
 M_SUP = ~X_SUP
 M_SUB = ~X_SUB
 
+# ODT Styles
+S_TITLE = "Title"
+S_HEAD1 = "Heading_20_1"
+S_HEAD2 = "Heading_20_2"
+S_HEAD3 = "Heading_20_3"
+S_HEAD4 = "Heading_20_4"
+S_SEP   = "Separator"
+S_FIND  = "First_20_line_20_indent"
+S_TEXT  = "Text_20_body"
+S_META  = "Text_20_Meta"
+S_HNF   = "Header_20_and_20_Footer"
+
 
 class ToOdt(Tokenizer):
     """Core: Open Document Writer
@@ -406,11 +418,8 @@ class ToOdt(Tokenizer):
         """Convert the list of text tokens into XML elements."""
         self._result = ""  # Not used, but cleared just in case
 
-        pFmt: list[T_Formats] = []
-        pText = []
-        pStyle = None
-        pIndent = True
         xText = self._xText
+        pIndent = True
         for tType, _, tText, tFormat, tStyle in self._tokens:
 
             # Styles
@@ -445,79 +454,55 @@ class ToOdt(Tokenizer):
                 pIndent = False
 
             # Process Text Types
-            if tType == self.T_EMPTY:
-                if len(pText) > 1 and pStyle is not None:
-                    if self._doJustify:
-                        pStyle.setTextAlign("left")
-
-                if len(pText) > 0 and pStyle is not None:
-                    tTxt = ""
-                    tFmt: T_Formats = []
-                    for nText, nFmt in zip(pText, pFmt):
-                        tLen = len(tTxt)
-                        tTxt += f"{nText}\n"
-                        tFmt.extend((p+tLen, fmt, key) for p, fmt, key in nFmt)
-
-                    # Don't indent a paragraph if it has alignment set
-                    tIndent = self._firstIndent and pIndent and pStyle.isUnaligned()
-                    self._addTextPar(
-                        xText, "First_20_line_20_indent" if tIndent else "Text_20_body",
-                        pStyle, tTxt.rstrip(), tFmt=tFmt
-                    )
-                    pIndent = True
-
-                pFmt = []
-                pText = []
-                pStyle = None
+            if tType == self.T_TEXT:
+                if self._firstIndent and pIndent and oStyle.isUnaligned():
+                    self._addTextPar(xText, S_FIND, oStyle, tText, tFmt=tFormat)
+                else:
+                    self._addTextPar(xText, S_TEXT, oStyle, tText, tFmt=tFormat)
+                pIndent = True
 
             elif tType == self.T_TITLE:
                 # Title must be text:p
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar(xText, "Title", oStyle, tHead, isHead=False)
+                self._addTextPar(xText, S_TITLE, oStyle, tHead, isHead=False)
 
             elif tType == self.T_HEAD1:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar(xText, "Heading_20_1", oStyle, tHead, isHead=True, oLevel="1")
+                self._addTextPar(xText, S_HEAD1, oStyle, tHead, isHead=True, oLevel="1")
 
             elif tType == self.T_HEAD2:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar(xText, "Heading_20_2", oStyle, tHead, isHead=True, oLevel="2")
+                self._addTextPar(xText, S_HEAD2, oStyle, tHead, isHead=True, oLevel="2")
 
             elif tType == self.T_HEAD3:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar(xText, "Heading_20_3", oStyle, tHead, isHead=True, oLevel="3")
+                self._addTextPar(xText, S_HEAD3, oStyle, tHead, isHead=True, oLevel="3")
 
             elif tType == self.T_HEAD4:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar(xText, "Heading_20_4", oStyle, tHead, isHead=True, oLevel="4")
+                self._addTextPar(xText, S_HEAD4, oStyle, tHead, isHead=True, oLevel="4")
 
             elif tType == self.T_SEP:
-                self._addTextPar(xText, "Separator", oStyle, tText)
+                self._addTextPar(xText, S_SEP, oStyle, tText)
 
             elif tType == self.T_SKIP:
-                self._addTextPar(xText, "Separator", oStyle, "")
-
-            elif tType == self.T_TEXT:
-                if pStyle is None:
-                    pStyle = oStyle
-                pText.append(tText)
-                pFmt.append(tFormat)
+                self._addTextPar(xText, S_SEP, oStyle, "")
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 tTemp, tFmt = self._formatSynopsis(tText, tFormat, True)
-                self._addTextPar(xText, "Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
+                self._addTextPar(xText, S_META, oStyle, tTemp, tFmt=tFmt)
 
             elif tType == self.T_SHORT and self._doSynopsis:
                 tTemp, tFmt = self._formatSynopsis(tText, tFormat, False)
-                self._addTextPar(xText, "Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
+                self._addTextPar(xText, S_META, oStyle, tTemp, tFmt=tFmt)
 
             elif tType == self.T_COMMENT and self._doComments:
                 tTemp, tFmt = self._formatComments(tText, tFormat)
-                self._addTextPar(xText, "Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
+                self._addTextPar(xText, S_META, oStyle, tTemp, tFmt=tFmt)
 
             elif tType == self.T_KEYWORD and self._doKeywords:
                 tTemp, tFmt = self._formatKeywords(tText)
-                self._addTextPar(xText, "Text_20_Meta", oStyle, tTemp, tFmt=tFmt)
+                self._addTextPar(xText, S_META, oStyle, tTemp, tFmt=tFmt)
 
         return
 
@@ -847,7 +832,7 @@ class ToOdt(Tokenizer):
             _mkTag("style", "name"): "Heading",
             _mkTag("style", "family"): "paragraph",
             _mkTag("style", "parent-style-name"): "Standard",
-            _mkTag("style", "next-style-name"): "Text_20_body",
+            _mkTag("style", "next-style-name"): S_TEXT,
             _mkTag("style", "class"): "text",
         })
         ET.SubElement(xStyl, _mkTag("style", "paragraph-properties"), attrib={
@@ -863,7 +848,7 @@ class ToOdt(Tokenizer):
 
         # Add Header and Footer Styles
         ET.SubElement(self._xStyl, _mkTag("style", "style"), attrib={
-            _mkTag("style", "name"): "Header_20_and_20_Footer",
+            _mkTag("style", "name"): S_HNF,
             _mkTag("style", "display-name"): "Header and Footer",
             _mkTag("style", "family"): "paragraph",
             _mkTag("style", "parent-style-name"): "Standard",
@@ -875,7 +860,7 @@ class ToOdt(Tokenizer):
     def _useableStyles(self) -> None:
         """Set the usable styles."""
         # Add Text Body Style
-        style = ODTParagraphStyle("Text_20_body")
+        style = ODTParagraphStyle(S_TEXT)
         style.setDisplayName("Text body")
         style.setParentStyleName("Standard")
         style.setClass("text")
@@ -890,16 +875,16 @@ class ToOdt(Tokenizer):
         self._mainPara[style.name] = style
 
         # Add First Line Indent Style
-        style = ODTParagraphStyle("First_20_line_20_indent")
+        style = ODTParagraphStyle(S_FIND)
         style.setDisplayName("First line indent")
-        style.setParentStyleName("Text_20_body")
+        style.setParentStyleName(S_TEXT)
         style.setClass("text")
         style.setTextIndent(self._fTextIndent)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
         # Add Text Meta Style
-        style = ODTParagraphStyle("Text_20_Meta")
+        style = ODTParagraphStyle(S_META)
         style.setDisplayName("Text Meta")
         style.setParentStyleName("Standard")
         style.setClass("text")
@@ -915,10 +900,10 @@ class ToOdt(Tokenizer):
         self._mainPara[style.name] = style
 
         # Add Title Style
-        style = ODTParagraphStyle("Title")
+        style = ODTParagraphStyle(S_TITLE)
         style.setDisplayName("Title")
         style.setParentStyleName("Heading")
-        style.setNextStyleName("Text_20_body")
+        style.setNextStyleName(S_TEXT)
         style.setClass("chapter")
         style.setMarginTop(self._mTopTitle)
         style.setMarginBottom(self._mBotTitle)
@@ -931,10 +916,10 @@ class ToOdt(Tokenizer):
         self._mainPara[style.name] = style
 
         # Add Separator Style
-        style = ODTParagraphStyle("Separator")
+        style = ODTParagraphStyle(S_SEP)
         style.setDisplayName("Separator")
         style.setParentStyleName("Standard")
-        style.setNextStyleName("Text_20_body")
+        style.setNextStyleName(S_TEXT)
         style.setClass("text")
         style.setMarginTop(self._mTopText)
         style.setMarginBottom(self._mBotText)
@@ -947,10 +932,10 @@ class ToOdt(Tokenizer):
         self._mainPara[style.name] = style
 
         # Add Heading 1 Style
-        style = ODTParagraphStyle("Heading_20_1")
+        style = ODTParagraphStyle(S_HEAD1)
         style.setDisplayName("Heading 1")
         style.setParentStyleName("Heading")
-        style.setNextStyleName("Text_20_body")
+        style.setNextStyleName(S_TEXT)
         style.setOutlineLevel("1")
         style.setClass("text")
         style.setMarginTop(self._mTopHead1)
@@ -965,10 +950,10 @@ class ToOdt(Tokenizer):
         self._mainPara[style.name] = style
 
         # Add Heading 2 Style
-        style = ODTParagraphStyle("Heading_20_2")
+        style = ODTParagraphStyle(S_HEAD2)
         style.setDisplayName("Heading 2")
         style.setParentStyleName("Heading")
-        style.setNextStyleName("Text_20_body")
+        style.setNextStyleName(S_TEXT)
         style.setOutlineLevel("2")
         style.setClass("text")
         style.setMarginTop(self._mTopHead2)
@@ -983,10 +968,10 @@ class ToOdt(Tokenizer):
         self._mainPara[style.name] = style
 
         # Add Heading 3 Style
-        style = ODTParagraphStyle("Heading_20_3")
+        style = ODTParagraphStyle(S_HEAD3)
         style.setDisplayName("Heading 3")
         style.setParentStyleName("Heading")
-        style.setNextStyleName("Text_20_body")
+        style.setNextStyleName(S_TEXT)
         style.setOutlineLevel("3")
         style.setClass("text")
         style.setMarginTop(self._mTopHead3)
@@ -1001,10 +986,10 @@ class ToOdt(Tokenizer):
         self._mainPara[style.name] = style
 
         # Add Heading 4 Style
-        style = ODTParagraphStyle("Heading_20_4")
+        style = ODTParagraphStyle(S_HEAD4)
         style.setDisplayName("Heading 4")
         style.setParentStyleName("Heading")
-        style.setNextStyleName("Text_20_body")
+        style.setNextStyleName(S_TEXT)
         style.setOutlineLevel("4")
         style.setClass("text")
         style.setMarginTop(self._mTopHead4)
@@ -1021,7 +1006,7 @@ class ToOdt(Tokenizer):
         # Add Header Style
         style = ODTParagraphStyle("Header")
         style.setDisplayName("Header")
-        style.setParentStyleName("Header_20_and_20_Footer")
+        style.setParentStyleName(S_HNF)
         style.setTextAlign("right")
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style

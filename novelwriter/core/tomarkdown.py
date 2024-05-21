@@ -139,17 +139,12 @@ class ToMarkdown(Tokenizer):
             mTags = EXT_MD
             cSkip = nwUnicode.U_MMSP
 
-        para = []
         lines = []
-        lineSep = "  \n" if self._preserveBreaks else " "
-
         for tType, _, tText, tFormat, tStyle in self._tokens:
 
-            if tType == self.T_EMPTY:
-                if para:
-                    tTemp = (lineSep.join(para)).rstrip(" ")
-                    lines.append(f"{tTemp}\n\n")
-                para = []
+            if tType == self.T_TEXT:
+                tTemp = self._formatText(tText, tFormat, mTags).replace("\n", "  \n")
+                lines.append(f"{tTemp}\n\n")
 
             elif tType == self.T_TITLE:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
@@ -176,9 +171,6 @@ class ToMarkdown(Tokenizer):
 
             elif tType == self.T_SKIP:
                 lines.append(f"{cSkip}\n\n")
-
-            elif tType == self.T_TEXT:
-                para.append(self._formatText(tText, tFormat, mTags).rstrip())
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 label = self._localLookup("Synopsis")

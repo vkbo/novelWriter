@@ -37,7 +37,7 @@ from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.core.tohtml import ToHtml
 from novelwriter.core.tokenizer import Tokenizer
-from novelwriter.core.tomd import ToMarkdown
+from novelwriter.core.tomarkdown import ToMarkdown
 from novelwriter.core.toodt import ToOdt
 from novelwriter.enum import nwBuildFmt
 from novelwriter.error import formatException, logException
