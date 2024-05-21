@@ -454,8 +454,12 @@ class ToOdt(Tokenizer):
                 pIndent = False
 
             # Process Text Types
-            if tType == self.T_EMPTY:
-                pass
+            if tType == self.T_TEXT:
+                if self._firstIndent and pIndent and oStyle.isUnaligned():
+                    self._addTextPar(xText, S_FIND, oStyle, tText, tFmt=tFormat)
+                else:
+                    self._addTextPar(xText, S_TEXT, oStyle, tText, tFmt=tFormat)
+                pIndent = True
 
             elif tType == self.T_TITLE:
                 # Title must be text:p
@@ -483,13 +487,6 @@ class ToOdt(Tokenizer):
 
             elif tType == self.T_SKIP:
                 self._addTextPar(xText, S_SEP, oStyle, "")
-
-            elif tType == self.T_TEXT:
-                if self._firstIndent and pIndent and oStyle.isUnaligned():
-                    self._addTextPar(xText, S_FIND, oStyle, tText, tFmt=tFormat)
-                else:
-                    self._addTextPar(xText, S_TEXT, oStyle, tText, tFmt=tFormat)
-                pIndent = True
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 tTemp, tFmt = self._formatSynopsis(tText, tFormat, True)

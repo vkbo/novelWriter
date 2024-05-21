@@ -840,9 +840,8 @@ class Tokenizer(ABC):
                 nToken = tokens[n+1]  # Look ahead
 
             if cToken[0] == self.T_EMPTY:
-                # Strip multiple empty
-                if pToken[0] != self.T_EMPTY:
-                    self._tokens.append(cToken)
+                # We don't need to keep the empty lines after this pass
+                pass
 
             elif cToken[0] == self.T_KEYWORD:
                 # Adjust margins for lines in a list of keyword lines
@@ -918,7 +917,6 @@ class Tokenizer(ABC):
         textWordChars = self._counts.get("textWordChars", 0)
         titleWordChars = self._counts.get("titleWordChars", 0)
 
-        para = []
         for tType, _, tText, _, _ in self._tokens:
             tText = tText.replace(nwUnicode.U_ENDASH, " ")
             tText = tText.replace(nwUnicode.U_EMDASH, " ")
@@ -928,24 +926,7 @@ class Tokenizer(ABC):
             nChars = len(tText)
             nWChars = len("".join(tWords))
 
-            if tType == self.T_EMPTY:
-                if len(para) > 0:
-                    tTemp = "\n".join(para)
-                    tPWords = tTemp.split()
-                    nPWords = len(tPWords)
-                    nPChars = len(tTemp)
-                    nPWChars = len("".join(tPWords))
-
-                    paragraphCount += 1
-                    allWords += nPWords
-                    textWords += nPWords
-                    allChars += nPChars
-                    textChars += nPChars
-                    allWordChars += nPWChars
-                    textWordChars += nPWChars
-                para = []
-
-            elif tType in self.L_HEADINGS:
+            if tType in self.L_HEADINGS:
                 titleCount += 1
                 allWords += nWords
                 titleWords += nWords
@@ -960,7 +941,18 @@ class Tokenizer(ABC):
                 allWordChars += nWChars
 
             elif tType == self.T_TEXT:
-                para.append(tText.rstrip())
+                tPWords = tText.split()
+                nPWords = len(tPWords)
+                nPChars = len(tText)
+                nPWChars = len("".join(tPWords))
+
+                paragraphCount += 1
+                allWords += nPWords
+                textWords += nPWords
+                allChars += nPChars
+                textChars += nPChars
+                allWordChars += nPWChars
+                textWordChars += nPWChars
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 text = "{0}: {1}".format(self._localLookup("Synopsis"), tText)

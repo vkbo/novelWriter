@@ -238,8 +238,8 @@ class ToHtml(Tokenizer):
                 aNm = ""
 
             # Process Text Type
-            if tType == self.T_EMPTY:
-                pass
+            if tType == self.T_TEXT:
+                lines.append(f"<p{hStyle}>{self._formatText(tText, tFormat, hTags)}</p>\n")
 
             elif tType == self.T_TITLE:
                 tHead = tText.replace(nwHeadFmt.BR, "<br>")
@@ -266,9 +266,6 @@ class ToHtml(Tokenizer):
 
             elif tType == self.T_SKIP:
                 lines.append(f"<p class='skip'{hStyle}>&nbsp;</p>\n")
-
-            elif tType == self.T_TEXT:
-                lines.append(f"<p{hStyle}>{self._formatText(tText, tFormat, hTags)}</p>\n")
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 lines.append(self._formatSynopsis(self._formatText(tText, tFormat, hTags), True))
