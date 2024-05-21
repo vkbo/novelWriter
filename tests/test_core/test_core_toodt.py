@@ -587,7 +587,7 @@ def testCoreToOdt_ConvertParagraphs(mockGUI):
         '<office:text>'
         '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
         '<text:p text:style-name="Text_20_body">Regular paragraph</text:p>'
-        '<text:p text:style-name="P7">with<text:line-break />break</text:p>'
+        '<text:p text:style-name="Text_20_body">with<text:line-break />break</text:p>'
         '<text:p text:style-name="P7">Left Align</text:p>'
         '</office:text>'
     )

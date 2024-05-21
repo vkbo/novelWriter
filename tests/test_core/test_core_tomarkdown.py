@@ -125,14 +125,14 @@ def testCoreToMarkdown_ConvertParagraphs(mockGUI):
     )
 
     # Text w/Hard Break
-    toMD._text = "Line one  \nLine two  \nLine three\n"
+    toMD._text = "Line one\nLine two\nLine three\n"
     toMD.tokenizeText()
     toMD.doConvert()
     assert toMD.result == "Line one  \nLine two  \nLine three\n\n"
 
     # Text wo/Hard Break
-    toMD._text = "Line one  \nLine two  \nLine three\n"
-    toMD.setPreserveBreaks(False)
+    toMD._text = "Line one\nLine two\nLine three\n"
+    toMD.setKeepLineBreaks(False)
     toMD.tokenizeText()
     toMD.doConvert()
     assert toMD.result == "Line one Line two Line three\n\n"
