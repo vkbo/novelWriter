@@ -171,9 +171,7 @@ class ToHtml(Tokenizer):
             h3 = "h3"
             h4 = "h4"
 
-        para = []
         lines = []
-        pStyle = None
         tHandle = self._handle
 
         for tType, nHead, tText, tFormat, tStyle in self._tokens:
@@ -241,36 +239,26 @@ class ToHtml(Tokenizer):
 
             # Process Text Type
             if tType == self.T_EMPTY:
-                if pStyle is None:
-                    pStyle = ""
-                if len(para) > 1 and self._cssStyles:
-                    pClass = " class='break'"
-                else:
-                    pClass = ""
-                if len(para) > 0:
-                    tTemp = "<br/>".join(para)
-                    lines.append(f"<p{pClass+pStyle}>{tTemp.rstrip()}</p>\n")
-                para = []
-                pStyle = None
+                pass
 
             elif tType == self.T_TITLE:
-                tHead = tText.replace(nwHeadFmt.BR, "<br/>")
+                tHead = tText.replace(nwHeadFmt.BR, "<br>")
                 lines.append(f"<h1 class='title'{hStyle}>{aNm}{tHead}</h1>\n")
 
             elif tType == self.T_HEAD1:
-                tHead = tText.replace(nwHeadFmt.BR, "<br/>")
+                tHead = tText.replace(nwHeadFmt.BR, "<br>")
                 lines.append(f"<{h1}{h1Cl}{hStyle}>{aNm}{tHead}</{h1}>\n")
 
             elif tType == self.T_HEAD2:
-                tHead = tText.replace(nwHeadFmt.BR, "<br/>")
+                tHead = tText.replace(nwHeadFmt.BR, "<br>")
                 lines.append(f"<{h2}{hStyle}>{aNm}{tHead}</{h2}>\n")
 
             elif tType == self.T_HEAD3:
-                tHead = tText.replace(nwHeadFmt.BR, "<br/>")
+                tHead = tText.replace(nwHeadFmt.BR, "<br>")
                 lines.append(f"<{h3}{hStyle}>{aNm}{tHead}</{h3}>\n")
 
             elif tType == self.T_HEAD4:
-                tHead = tText.replace(nwHeadFmt.BR, "<br/>")
+                tHead = tText.replace(nwHeadFmt.BR, "<br>")
                 lines.append(f"<{h4}{hStyle}>{aNm}{tHead}</{h4}>\n")
 
             elif tType == self.T_SEP:
@@ -280,9 +268,7 @@ class ToHtml(Tokenizer):
                 lines.append(f"<p class='skip'{hStyle}>&nbsp;</p>\n")
 
             elif tType == self.T_TEXT:
-                if pStyle is None:
-                    pStyle = hStyle
-                para.append(self._formatText(tText, tFormat, hTags).rstrip())
+                lines.append(f"<p{hStyle}>{self._formatText(tText, tFormat, hTags)}</p>\n")
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 lines.append(self._formatSynopsis(self._formatText(tText, tFormat, hTags), True))
@@ -491,6 +477,7 @@ class ToHtml(Tokenizer):
             else:
                 html = tags.get(fmt, "ERR")
             temp = f"{temp[:pos]}{html}{temp[pos:]}"
+        temp = temp.replace("\n", "<br>")
         return stripEscape(temp)
 
     def _formatSynopsis(self, text: str, synopsis: bool) -> str:
