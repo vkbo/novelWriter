@@ -50,6 +50,7 @@ RX_ESC = re.compile("|".join([re.escape(k) for k in ESCAPES.keys()]), flags=re.D
 
 T_Formats = list[tuple[int, int, str]]
 T_Comment = tuple[str, T_Formats]
+T_Token = tuple[int, int, str, T_Formats, int]
 
 
 def stripEscape(text: str) -> str:
@@ -129,7 +130,7 @@ class Tokenizer(ABC):
         self._keepMD = False  # Whether to keep the markdown text
 
         # Tokens and Meta Data (Per Document)
-        self._tokens: list[tuple[int, int, str, T_Formats, int]] = []
+        self._tokens: list[T_Token] = []
         self._footnotes: dict[str, T_Comment] = {}
 
         # Tokens and Meta Data (Per Instance)
@@ -503,7 +504,7 @@ class Tokenizer(ABC):
         breakNext = False
         tmpMarkdown = []
         tHandle = self._handle or ""
-        tokens = []
+        tokens: list[T_Token] = []
         for aLine in self._text.splitlines():
             sLine = aLine.strip().lower()
 
@@ -803,9 +804,9 @@ class Tokenizer(ABC):
             # Make sure the token array doesn't start with a page break
             # on the very first page, adding a blank first page.
             if tokens[0][4] & self.A_PBB:
-                token = tokens[0]
+                cToken = tokens[0]
                 tokens[0] = (
-                    token[0], token[1], token[2], token[3], token[4] & ~self.A_PBB
+                    cToken[0], cToken[1], cToken[2], cToken[3], cToken[4] & ~self.A_PBB
                 )
 
         # Always add an empty line at the end of the file
@@ -818,38 +819,63 @@ class Tokenizer(ABC):
 
         # Second Pass
         # ===========
-        # Some items need a second pass
+        # This second pass strips away consecutive blank lines, and
+        # combines consecutive text lines into the same paragraph.
+        # It also ensures that there isn't paragraph spacing between
+        # meta data lines for formats that has spacing.
 
         self._tokens = []
-        pToken = (self.T_EMPTY, 0, "", [], self.A_NONE)
-        nToken = (self.T_EMPTY, 0, "", [], self.A_NONE)
+        pToken: T_Token = (self.T_EMPTY, 0, "", [], self.A_NONE)
+        nToken: T_Token = (self.T_EMPTY, 0, "", [], self.A_NONE)
+
+        lineSep = "\n" if self._keepBreaks else " "
+        pLines: list[T_Token] = []
 
         tCount = len(tokens)
-        for n, token in enumerate(tokens):
+        for n, cToken in enumerate(tokens):
 
             if n > 0:
                 pToken = tokens[n-1]  # Look behind
             if n < tCount - 1:
                 nToken = tokens[n+1]  # Look ahead
 
-            if token[0] == self.T_EMPTY:
+            if cToken[0] == self.T_EMPTY:
                 # Strip multiple empty
                 if pToken[0] != self.T_EMPTY:
-                    self._tokens.append(token)
+                    self._tokens.append(cToken)
 
-            elif token[0] == self.T_KEYWORD:
+            elif cToken[0] == self.T_KEYWORD:
                 # Adjust margins for lines in a list of keyword lines
-                aStyle = token[4]
+                aStyle = cToken[4]
                 if pToken[0] == self.T_KEYWORD:
                     aStyle |= self.A_Z_TOPMRG
                 if nToken[0] == self.T_KEYWORD:
                     aStyle |= self.A_Z_BTMMRG
                 self._tokens.append((
-                    token[0], token[1], token[2], token[3], aStyle
+                    cToken[0], cToken[1], cToken[2], cToken[3], aStyle
                 ))
 
+            elif cToken[0] == self.T_TEXT:
+                # Combine lines from the same paragraph
+                pLines.append(cToken)
+                if nToken[0] != self.T_TEXT:
+                    nLines = len(pLines)
+                    if nLines == 1:
+                        self._tokens.append(pLines[0])
+                    elif nLines > 1:
+                        tTxt = ""
+                        tFmt: T_Formats = []
+                        for aToken in pLines:
+                            tLen = len(tTxt)
+                            tTxt += f"{aToken[2]}{lineSep}"
+                            tFmt.extend((p+tLen, fmt, key) for p, fmt, key in aToken[3])
+                        self._tokens.append((
+                            self.T_TEXT, pLines[0][1], tTxt[:-1], tFmt, pLines[0][4]
+                        ))
+                    pLines = []
+
             else:
-                self._tokens.append(token)
+                self._tokens.append(cToken)
 
         return
 

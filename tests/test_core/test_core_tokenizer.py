@@ -964,6 +964,67 @@ def testCoreToken_Paragraphs(mockGUI):
         (Tokenizer.T_EMPTY, 0, "", [], Tokenizer.A_NONE),
     ]
 
+    # Combine multi-line paragraphs, keep breaks
+    tokens._text = "This is text\nspanning multiple\nlines"
+    tokens.setKeepLineBreaks(True)
+    tokens.tokenizeText()
+    assert tokens._tokens == [
+        (Tokenizer.T_TEXT, 0, "This is text\nspanning multiple\nlines", [], Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 0, "", [], Tokenizer.A_NONE),
+    ]
+
+    # Combine multi-line paragraphs, remove breaks
+    tokens._text = "This is text\nspanning multiple\nlines"
+    tokens.setKeepLineBreaks(False)
+    tokens.tokenizeText()
+    assert tokens._tokens == [
+        (Tokenizer.T_TEXT, 0, "This is text spanning multiple lines", [], Tokenizer.A_NONE),
+        (Tokenizer.T_EMPTY, 0, "", [], Tokenizer.A_NONE),
+    ]
+
+    # Combine multi-line paragraphs, remove breaks, with formatting
+    tokens._text = "This **is text**\nspanning _multiple_\nlines"
+    tokens.setKeepLineBreaks(False)
+    tokens.tokenizeText()
+    assert tokens._tokens == [
+        (
+            Tokenizer.T_TEXT, 0,
+            "This is text spanning multiple lines",
+            [
+                (5,  Tokenizer.FMT_B_B, ""),
+                (12, Tokenizer.FMT_B_E, ""),
+                (22, Tokenizer.FMT_I_B, ""),
+                (30, Tokenizer.FMT_I_E, ""),
+            ],
+            Tokenizer.A_NONE
+        ),
+        (Tokenizer.T_EMPTY, 0, "", [], Tokenizer.A_NONE),
+    ]
+
+    # Make sure titles break a paragraph
+    tokens._text = "# Title\nText _on_\ntwo lines.\n## Chapter\nMore **text**\n_here_.\n\n\n"
+    tokens.setKeepLineBreaks(False)
+    tokens.tokenizeText()
+    assert tokens._tokens == [
+        (Tokenizer.T_HEAD1, 1, "Title", [], Tokenizer.A_NONE),
+        (
+            Tokenizer.T_TEXT, 1, "Text on two lines.", [
+                (5, Tokenizer.FMT_I_B, ""),
+                (7, Tokenizer.FMT_I_E, ""),
+            ], Tokenizer.A_NONE
+        ),
+        (Tokenizer.T_HEAD2, 2, "Chapter", [], Tokenizer.A_NONE),
+        (
+            Tokenizer.T_TEXT, 2, "More text here.", [
+                (5,  Tokenizer.FMT_B_B, ""),
+                (9,  Tokenizer.FMT_B_E, ""),
+                (10, Tokenizer.FMT_I_B, ""),
+                (14, Tokenizer.FMT_I_E, ""),
+            ], Tokenizer.A_NONE
+        ),
+        (Tokenizer.T_EMPTY, 2, "", [], Tokenizer.A_NONE),
+    ]
+
 
 @pytest.mark.core
 def testCoreToken_TextFormat(mockGUI):
@@ -976,8 +1037,7 @@ def testCoreToken_TextFormat(mockGUI):
     tokens._text = "Some plain text\non two lines\n\n\n"
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_TEXT, 0, "Some plain text", [], Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT, 0, "on two lines", [], Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT, 0, "Some plain text\non two lines", [], Tokenizer.A_NONE),
         (Tokenizer.T_EMPTY, 0, "", [], Tokenizer.A_NONE),
     ]
     assert tokens.allMarkdown[-1] == "Some plain text\non two lines\n\n\n\n"
