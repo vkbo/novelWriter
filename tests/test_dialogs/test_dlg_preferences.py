@@ -173,7 +173,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     prefs.guiLocale.setCurrentIndex(prefs.guiLocale.findData("en_US"))
     prefs.guiTheme.setCurrentIndex(prefs.guiTheme.findData("default_dark"))
     with monkeypatch.context() as mp:
-        mp.setattr(QFontDialog, "getFont", lambda *a: (QFont(), True))
+        mp.setattr(QFontDialog, "getFont", lambda *a, **k: (QFont(), True))
         prefs.guiFontButton.click()
     prefs.hideVScroll.setChecked(True)
     prefs.hideHScroll.setChecked(True)
@@ -187,7 +187,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     # Document Style
     prefs.guiSyntax.setCurrentIndex(prefs.guiSyntax.findData("default_dark"))
     with monkeypatch.context() as mp:
-        mp.setattr(QFontDialog, "getFont", lambda *a: (QFont(), True))
+        mp.setattr(QFontDialog, "getFont", lambda *a, **k: (QFont(), True))
         prefs.textFontButton.click()
     prefs.emphLabels.setChecked(False)
     prefs.showFullPath.setChecked(False)

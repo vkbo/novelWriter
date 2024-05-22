@@ -640,7 +640,7 @@ def testBuildSettings_Format(monkeypatch, qtbot, nwGUI):
         font = QFont()
         font.setFamily("Times")
         font.setPointSize(10)
-        mp.setattr(QFontDialog, "getFont", lambda *a: (font, True))
+        mp.setattr(QFontDialog, "getFont", lambda *a, **k: (font, True))
 
         fmtTab.btnTextFont.click()
         assert fmtTab._textFont == font
