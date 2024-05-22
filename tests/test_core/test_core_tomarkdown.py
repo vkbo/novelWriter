@@ -82,7 +82,7 @@ def testCoreToMarkdown_ConvertParagraphs(mockGUI):
     toMD._isFirst = True
 
     # Text for Extended Markdown
-    toMD.setExtendedMarkdown()
+    toMD.setExtendedMarkdown(True)
     toMD._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
     toMD.tokenizeText()
     toMD.doConvert()
@@ -91,7 +91,7 @@ def testCoreToMarkdown_ConvertParagraphs(mockGUI):
     )
 
     # Text for Standard Markdown
-    toMD.setStandardMarkdown()
+    toMD.setExtendedMarkdown(False)
     toMD._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
     toMD.tokenizeText()
     toMD.doConvert()
@@ -100,7 +100,7 @@ def testCoreToMarkdown_ConvertParagraphs(mockGUI):
     )
 
     # Shortcodes for Extended Markdown
-    toMD.setExtendedMarkdown()
+    toMD.setExtendedMarkdown(True)
     toMD._text = (
         "Some [b]bold[/b], [i]italic[/i], [s]strike[/s], [u]underline[/u], [m]mark[/m], "
         "super[sup]script[/sup], sub[sub]script[/sub] here\n"
@@ -113,7 +113,7 @@ def testCoreToMarkdown_ConvertParagraphs(mockGUI):
     )
 
     # Shortcodes for Standard Markdown
-    toMD.setStandardMarkdown()
+    toMD.setExtendedMarkdown(False)
     toMD._text = (
         "Some [b]bold[/b], [i]italic[/i], [s]strike[/s], [u]underline[/u], [m]mark[/m], "
         "super[sup]script[/sup], sub[sub]script[/sub] here\n"
@@ -215,6 +215,7 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
     toMD = ToMarkdown(project)
 
     toMD._isNovel = True
+    toMD.setExtendedMarkdown(False)
 
     # Special Titles
     # ==============
@@ -222,7 +223,6 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
     # Title
     toMD._tokens = [
         (toMD.T_TITLE, 1, "A Title", [], toMD.A_PBB | toMD.A_CENTRE),
-        (toMD.T_EMPTY, 1, "", [], toMD.A_NONE),
     ]
     toMD.doConvert()
     assert toMD.result == "# A Title\n\n"
@@ -233,7 +233,6 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
     # Separator
     toMD._tokens = [
         (toMD.T_SEP, 1, "* * *", [], toMD.A_CENTRE),
-        (toMD.T_EMPTY, 1, "", [], toMD.A_NONE),
     ]
     toMD.doConvert()
     assert toMD.result == "* * *\n\n"
@@ -241,7 +240,6 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
     # Skip
     toMD._tokens = [
         (toMD.T_SKIP, 1, "", [], toMD.A_NONE),
-        (toMD.T_EMPTY, 1, "", [], toMD.A_NONE),
     ]
     toMD.doConvert()
     assert toMD.result == "\n\n"

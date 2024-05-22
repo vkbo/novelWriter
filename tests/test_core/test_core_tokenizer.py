@@ -1835,7 +1835,7 @@ def testCoreToken_SceneSeparators(mockGUI):
     # ===========================
     # Requires a fresh builder class
     md = ToMarkdown(project)
-    md.setExtendedMarkdown()
+    md.setExtendedMarkdown(True)
     md._isNovel = True
 
     md._text = (

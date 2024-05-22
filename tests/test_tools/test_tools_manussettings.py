@@ -677,13 +677,11 @@ def testBuildSettings_Output(qtbot, nwGUI):
     assert outTab.odtPageCountOffset.value() == 0
     assert outTab.htmlAddStyles.isChecked() is False
     assert outTab.htmlPreserveTabs.isChecked() is False
-    assert outTab.mdPreserveBreaks.isChecked() is True
 
     # Toggle all
     outTab.odtAddColours.setChecked(True)
     outTab.htmlAddStyles.setChecked(True)
     outTab.htmlPreserveTabs.setChecked(True)
-    outTab.mdPreserveBreaks.setChecked(False)
 
     # Change Values
     outTab.odtPageCountOffset.setValue(1)
@@ -697,7 +695,6 @@ def testBuildSettings_Output(qtbot, nwGUI):
     assert build.getInt("odt.pageCountOffset") == 1
     assert build.getBool("html.addStyles") is True
     assert build.getBool("html.preserveTabs") is True
-    assert build.getBool("md.preserveBreaks") is False
 
     # Reset header format
     outTab.btnPageHeader.click()

@@ -1383,12 +1383,6 @@ class _OutputTab(NScrollableForm):
         self.htmlPreserveTabs = NSwitch(self, height=iPx)
         self.addRow(self._build.getLabel("html.preserveTabs"), self.htmlPreserveTabs)
 
-        # Markdown Document
-        self.addGroupLabel(self._build.getLabel("md"))
-
-        self.mdPreserveBreaks = NSwitch(self, height=iPx)
-        self.addRow(self._build.getLabel("md.preserveBreaks"), self.mdPreserveBreaks)
-
         # Finalise
         self.finalise()
 
@@ -1401,7 +1395,6 @@ class _OutputTab(NScrollableForm):
         self.odtPageCountOffset.setValue(self._build.getInt("odt.pageCountOffset"))
         self.htmlAddStyles.setChecked(self._build.getBool("html.addStyles"))
         self.htmlPreserveTabs.setChecked(self._build.getBool("html.preserveTabs"))
-        self.mdPreserveBreaks.setChecked(self._build.getBool("md.preserveBreaks"))
         self.odtPageHeader.setCursorPosition(0)
         return
 
@@ -1412,7 +1405,6 @@ class _OutputTab(NScrollableForm):
         self._build.setValue("odt.pageCountOffset", self.odtPageCountOffset.value())
         self._build.setValue("html.addStyles", self.htmlAddStyles.isChecked())
         self._build.setValue("html.preserveTabs", self.htmlPreserveTabs.isChecked())
-        self._build.setValue("md.preserveBreaks", self.mdPreserveBreaks.isChecked())
         return
 
     ##

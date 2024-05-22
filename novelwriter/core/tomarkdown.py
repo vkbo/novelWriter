@@ -81,15 +81,11 @@ class ToMarkdown(Tokenizer):
     supports concatenating novelWriter markup files.
     """
 
-    M_STD = 0  # Standard Markdown
-    M_EXT = 1  # Extended Markdown
-
     def __init__(self, project: NWProject) -> None:
         super().__init__(project)
-        self._genMode = self.M_STD
         self._fullMD: list[str] = []
-        self._preserveBreaks = True
         self._usedNotes: dict[str, int] = {}
+        self._extended = True
         return
 
     ##
@@ -105,19 +101,9 @@ class ToMarkdown(Tokenizer):
     #  Setters
     ##
 
-    def setStandardMarkdown(self) -> None:
-        """Set the converter to use standard Markdown formatting."""
-        self._genMode = self.M_STD
-        return
-
-    def setExtendedMarkdown(self) -> None:
+    def setExtendedMarkdown(self, state: bool) -> None:
         """Set the converter to use Extended Markdown formatting."""
-        self._genMode = self.M_EXT
-        return
-
-    def setPreserveBreaks(self, state: bool) -> None:
-        """Preserve line breaks in paragraphs."""
-        self._preserveBreaks = state
+        self._extended = state
         return
 
     ##
@@ -132,12 +118,12 @@ class ToMarkdown(Tokenizer):
         """Convert the list of text tokens into a Markdown document."""
         self._result = ""
 
-        if self._genMode == self.M_STD:
-            mTags = STD_MD
-            cSkip = ""
-        else:
+        if self._extended:
             mTags = EXT_MD
             cSkip = nwUnicode.U_MMSP
+        else:
+            mTags = STD_MD
+            cSkip = ""
 
         lines = []
         for tType, _, tText, tFormat, tStyle in self._tokens:
@@ -195,7 +181,7 @@ class ToMarkdown(Tokenizer):
     def appendFootnotes(self) -> None:
         """Append the footnotes in the buffer."""
         if self._usedNotes:
-            tags = STD_MD if self._genMode == self.M_STD else EXT_MD
+            tags = EXT_MD if self._extended else STD_MD
             footnotes = self._localLookup("Footnotes")
 
             lines = []

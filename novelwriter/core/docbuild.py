@@ -216,15 +216,9 @@ class NWBuildDocument:
         makeObj = ToMarkdown(self._project)
         filtered = self._setupBuild(makeObj)
 
-        if extendedMd:
-            makeObj.setExtendedMarkdown()
-        else:
-            makeObj.setStandardMarkdown()
-
+        makeObj.setExtendedMarkdown(extendedMd)
         if self._build.getBool("format.replaceTabs"):
             makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
-
-        makeObj.setPreserveBreaks(self._build.getBool("md.preserveBreaks"))
 
         for i, tHandle in enumerate(self._queue):
             self._error = None
@@ -333,6 +327,7 @@ class NWBuildDocument:
         bldObj.setFont(fontFamily, textSize, textFixed)
         bldObj.setJustify(self._build.getBool("format.justifyText"))
         bldObj.setLineHeight(self._build.getFloat("format.lineHeight"))
+        bldObj.setKeepLineBreaks(self._build.getBool("format.keepBreaks"))
         bldObj.setFirstLineIndent(
             self._build.getBool("format.firstLineIndent"),
             self._build.getFloat("format.firstIndentWidth"),
