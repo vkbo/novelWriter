@@ -120,19 +120,6 @@ FONT_WEIGHTS: dict[int, int] = {
     QFont.Weight.Black:      900,
 }
 
-FONT_STRETCH: dict[int, str] = {
-    QFont.AnyStretch:     "normal",
-    QFont.UltraCondensed: "ultra-condensed",
-    QFont.ExtraCondensed: "extra-condensed",
-    QFont.Condensed:      "condensed",
-    QFont.SemiCondensed:  "semi-condensed",
-    QFont.Unstretched:    "normal",
-    QFont.SemiExpanded:   "semi-expanded",
-    QFont.Expanded:       "expanded",
-    QFont.ExtraExpanded:  "extra-expanded",
-    QFont.UltraExpanded:  "ultra-expanded",
-}
-
 FONT_STYLE: dict[int, str] = {
     QFont.Style.StyleNormal:  "normal",
     QFont.Style.StyleItalic:  "italic",

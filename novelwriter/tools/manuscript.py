@@ -402,11 +402,11 @@ class GuiManuscript(NToolDialog):
 
     def _updatePreview(self, data: dict, build: BuildSettings) -> None:
         """Update the preview widget and set relevant values."""
-        self.docPreview.setContent(data)
-        self.docPreview.setBuildName(build.name)
-
         textFont = QFont()
         textFont.fromString(build.getStr("format.textFont"))
+
+        self.docPreview.setContent(data)
+        self.docPreview.setBuildName(build.name)
         self.docPreview.setTextFont(textFont)
         self.docPreview.setJustify(
             build.getBool("format.justifyText")

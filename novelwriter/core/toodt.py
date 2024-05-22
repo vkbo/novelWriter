@@ -42,7 +42,7 @@ from novelwriter.common import xmlIndent
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import T_Formats, Tokenizer, stripEscape
-from novelwriter.types import FONT_WEIGHTS
+from novelwriter.types import FONT_STYLE, FONT_WEIGHTS
 
 logger = logging.getLogger(__name__)
 
@@ -165,6 +165,7 @@ class ToOdt(Tokenizer):
         self._fontFamily   = "Liberation Serif"
         self._fontSize     = 12
         self._fontWeight   = "normal"
+        self._fontStyle    = "normal"
         self._fontPitch    = "variable"
         self._fontBold     = "bold"
         self._fSizeTitle   = "30pt"
@@ -272,11 +273,12 @@ class ToOdt(Tokenizer):
         fontWeight = str(intWeight)
         fontBold = str(min(intWeight + 300, 900))
 
-        self._fontFamily = self._textFont.family()
-        self._fontSize   = self._textFont.pointSize()
-        self._fontWeight = FONT_WEIGHT_MAP.get(fontWeight, fontWeight)
-        self._fontPitch  = "fixed" if self._textFont.fixedPitch() else "variable"
-        self._fontBold   = FONT_WEIGHT_MAP.get(fontBold, fontBold)
+        self._fontFamily  = self._textFont.family()
+        self._fontSize    = self._textFont.pointSize()
+        self._fontWeight  = FONT_WEIGHT_MAP.get(fontWeight, fontWeight)
+        self._fontStyle   = FONT_STYLE.get(self._textFont.style(), "normal")
+        self._fontPitch   = "fixed" if self._textFont.fixedPitch() else "variable"
+        self._fontBold    = FONT_WEIGHT_MAP.get(fontBold, fontBold)
 
         self._fSizeTitle = f"{round(2.50 * self._fontSize):d}pt"
         self._fSizeHead1 = f"{round(2.00 * self._fontSize):d}pt"
@@ -335,7 +337,6 @@ class ToOdt(Tokenizer):
         fAttr = {}
         fAttr[_mkTag("style", "name")] = self._fontFamily
         fAttr[_mkTag("style", "font-pitch")] = self._fontPitch
-        fAttr[_mkTag("style", "font-weight")] = self._fontWeight
 
         if self._isFlat:
 
@@ -825,6 +826,7 @@ class ToOdt(Tokenizer):
             _mkTag("style", "font-name"): self._fontFamily,
             _mkTag("fo", "font-family"): self._fontFamily,
             _mkTag("fo", "font-weight"): self._fontWeight,
+            _mkTag("fo", "font-style"): self._fontStyle,
             _mkTag("fo", "font-size"): self._fSizeText,
             _mkTag("fo", "language"): self._dLanguage,
             _mkTag("fo", "country"): self._dCountry,
@@ -840,6 +842,7 @@ class ToOdt(Tokenizer):
             _mkTag("style", "font-name"): self._fontFamily,
             _mkTag("fo", "font-family"): self._fontFamily,
             _mkTag("fo", "font-weight"): self._fontWeight,
+            _mkTag("fo", "font-style"): self._fontStyle,
             _mkTag("fo", "font-size"): self._fSizeText,
         })
 
@@ -860,6 +863,7 @@ class ToOdt(Tokenizer):
             _mkTag("style", "font-name"): self._fontFamily,
             _mkTag("fo", "font-family"): self._fontFamily,
             _mkTag("fo", "font-weight"): self._fontWeight,
+            _mkTag("fo", "font-style"): self._fontStyle,
             _mkTag("fo", "font-size"): self._fSizeHead,
         })
 

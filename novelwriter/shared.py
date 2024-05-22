@@ -31,7 +31,8 @@ from time import time
 from typing import TYPE_CHECKING, TypeVar
 
 from PyQt5.QtCore import QObject, QRunnable, QThreadPool, QTimer, pyqtSignal
-from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QFileDialog, QFontDialog, QMessageBox, QWidget
 
 from novelwriter.common import formatFileFilter
 from novelwriter.constants import nwFiles
@@ -266,6 +267,18 @@ class SharedData(QObject):
             parent, self.tr("Open Project"), str(path or ""), filter=ffilter
         )
         return Path(selected) if selected else None
+
+    def getFont(self, current: QFont, native: bool) -> tuple[QFont, bool]:
+        """Open the font dialog and select a font."""
+        if native:
+            font, status = QFontDialog.getFont(current, self.mainGui)
+        else:
+            options = QFontDialog.FontDialogOption.DontUseNativeDialog
+            font, status = QFontDialog.getFont(current, self.mainGui, options=options)
+        font.setOverline(False)
+        font.setStrikeOut(False)
+        font.setUnderline(False)
+        return font, status
 
     def findTopLevelWidget(self, kind: type[NWWidget]) -> NWWidget | None:
         """Find a top level widget."""

@@ -30,8 +30,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QKeyEvent, QKeySequence
 from PyQt5.QtWidgets import (
     QAbstractButton, QApplication, QCompleter, QDialog, QDialogButtonBox,
-    QFileDialog, QFontDialog, QHBoxLayout, QLineEdit, QPushButton, QVBoxLayout,
-    QWidget
+    QFileDialog, QHBoxLayout, QLineEdit, QPushButton, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -804,7 +803,7 @@ class GuiPreferences(QDialog):
     @pyqtSlot()
     def _selectGuiFont(self) -> None:
         """Open the QFontDialog and set a font for the font style."""
-        font, status = QFontDialog.getFont(self._guiFont, self)
+        font, status = SHARED.getFont(self._guiFont, CONFIG.nativeFont)
         if status:
             self.guiFont.setText(describeFont(font))
             self.guiFont.setCursorPosition(0)
@@ -814,7 +813,7 @@ class GuiPreferences(QDialog):
     @pyqtSlot()
     def _selectTextFont(self) -> None:
         """Open the QFontDialog and set a font for the font style."""
-        font, status = QFontDialog.getFont(CONFIG.textFont, self)
+        font, status = SHARED.getFont(self._textFont, CONFIG.nativeFont)
         if status:
             self.textFont.setText(describeFont(font))
             self.textFont.setCursorPosition(0)

@@ -30,10 +30,10 @@ from typing import TYPE_CHECKING
 from PyQt5.QtCore import QEvent, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from PyQt5.QtWidgets import (
-    QAbstractButton, QAbstractItemView, QDialogButtonBox, QFontDialog, QFrame,
-    QGridLayout, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu,
-    QPlainTextEdit, QPushButton, QSplitter, QStackedWidget, QTreeWidget,
-    QTreeWidgetItem, QVBoxLayout, QWidget
+    QAbstractButton, QAbstractItemView, QDialogButtonBox, QFrame, QGridLayout,
+    QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu, QPlainTextEdit,
+    QPushButton, QSplitter, QStackedWidget, QTreeWidget, QTreeWidgetItem,
+    QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -1241,7 +1241,7 @@ class _FormatTab(NScrollableForm):
     @pyqtSlot()
     def _selectFont(self) -> None:
         """Open the QFontDialog and set a font for the font style."""
-        font, status = QFontDialog.getFont(self._textFont, self)
+        font, status = SHARED.getFont(self._textFont, CONFIG.nativeFont)
         if status:
             self.textFont.setText(describeFont(font))
             self.textFont.setCursorPosition(0)

@@ -34,7 +34,7 @@ from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwHeadFmt, nwHtmlUnicode, nwKeyWords, nwLabels
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import T_Formats, Tokenizer, stripEscape
-from novelwriter.types import FONT_STRETCH, FONT_STYLE, FONT_WEIGHTS
+from novelwriter.types import FONT_STYLE, FONT_WEIGHTS
 
 logger = logging.getLogger(__name__)
 
@@ -377,13 +377,12 @@ class ToHtml(Tokenizer):
         font = self._textFont
         styles.append((
             "body {{"
-            "font-family: '{0:s}'; font-size: {1:d}pt; font-weight: {2:d}; "
-            "font-stretch: {3:s}; font-style: {4:s};"
+            "font-family: '{0:s}'; font-size: {1:d}pt; "
+            "font-weight: {2:d}; font-style: {3:s};"
             "}}"
         ).format(
             font.family(), font.pointSize(),
             FONT_WEIGHTS.get(font.weight(), 400),
-            FONT_STRETCH.get(font.stretch(), "normal"),
             FONT_STYLE.get(font.style(), "normal"),
         ))
         styles.append((

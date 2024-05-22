@@ -114,6 +114,7 @@ class Config:
         self.hideVScroll  = False            # Hide vertical scroll bars on main widgets
         self.hideHScroll  = False            # Hide horizontal scroll bars on main widgets
         self.lastNotes    = "0x0"            # The latest release notes that have been shown
+        self.nativeFont   = False            # Use native font dialog
 
         # Size Settings
         self._mainWinSize  = [1200, 650]     # Last size of the main GUI window
