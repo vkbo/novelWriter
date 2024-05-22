@@ -492,7 +492,8 @@ def testBaseCommon_describeFont():
     """Test the describeFont function."""
     fontDB = QFontDatabase()
     font = fontDB.systemFont(QFontDatabase.SystemFont.GeneralFont)
-    assert font.family() in describeFont(font)
+    font.setPointSize(12)
+    assert describeFont(font).startswith("12 pt")
     assert describeFont(None) == "Error"  # type: ignore
 
 
