@@ -82,6 +82,7 @@ SETTINGS_TEMPLATE = {
     "format.justifyText":      (bool, False),
     "format.stripUnicode":     (bool, False),
     "format.replaceTabs":      (bool, False),
+    "format.keepBreaks":       (bool, True),
     "format.firstLineIndent":  (bool, False),
     "format.firstIndentWidth": (float, 1.4),
     "format.indentFirstPar":   (bool, False),
@@ -132,6 +133,7 @@ SETTINGS_LABELS = {
     "format.justifyText":      QT_TRANSLATE_NOOP("Builds", "Justify Text Margins"),
     "format.stripUnicode":     QT_TRANSLATE_NOOP("Builds", "Replace Unicode Characters"),
     "format.replaceTabs":      QT_TRANSLATE_NOOP("Builds", "Replace Tabs with Spaces"),
+    "format.keepBreaks":       QT_TRANSLATE_NOOP("Builds", "Preserve Hard Line Breaks"),
 
     "format.grpParIndent":     QT_TRANSLATE_NOOP("Builds", "First Line Indent"),
     "format.firstLineIndent":  QT_TRANSLATE_NOOP("Builds", "Enable Indent"),
