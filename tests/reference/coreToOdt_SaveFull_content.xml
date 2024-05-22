@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <office:document-content xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" office:version="1.3">
   <office:font-face-decls>
-    <style:font-face style:name="Liberation Serif" style:font-pitch="variable" />
+    <style:font-face style:name="Liberation Serif" style:font-pitch="variable" style:font-weight="normal" />
   </office:font-face-decls>
   <office:automatic-styles>
     <style:style style:name="P1" style:family="paragraph" style:parent-style-name="Heading_20_2">

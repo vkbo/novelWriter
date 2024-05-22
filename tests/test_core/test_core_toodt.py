@@ -1043,10 +1043,26 @@ def testCoreToOdt_ODTParagraphStyle():
     assert parStyle._tAttr["font-weight"] == ["fo", None]
     parStyle.setFontWeight("normal")
     assert parStyle._tAttr["font-weight"] == ["fo", "normal"]
-    parStyle.setFontWeight("inherit")
-    assert parStyle._tAttr["font-weight"] == ["fo", "inherit"]
     parStyle.setFontWeight("bold")
     assert parStyle._tAttr["font-weight"] == ["fo", "bold"]
+    parStyle.setFontWeight("100")
+    assert parStyle._tAttr["font-weight"] == ["fo", "100"]
+    parStyle.setFontWeight("200")
+    assert parStyle._tAttr["font-weight"] == ["fo", "200"]
+    parStyle.setFontWeight("300")
+    assert parStyle._tAttr["font-weight"] == ["fo", "300"]
+    parStyle.setFontWeight("400")
+    assert parStyle._tAttr["font-weight"] == ["fo", "400"]
+    parStyle.setFontWeight("500")
+    assert parStyle._tAttr["font-weight"] == ["fo", "500"]
+    parStyle.setFontWeight("600")
+    assert parStyle._tAttr["font-weight"] == ["fo", "600"]
+    parStyle.setFontWeight("700")
+    assert parStyle._tAttr["font-weight"] == ["fo", "700"]
+    parStyle.setFontWeight("800")
+    assert parStyle._tAttr["font-weight"] == ["fo", "800"]
+    parStyle.setFontWeight("900")
+    assert parStyle._tAttr["font-weight"] == ["fo", "900"]
     parStyle.setFontWeight("stuff")
     assert parStyle._tAttr["font-weight"] == ["fo", None]
 
@@ -1116,10 +1132,26 @@ def testCoreToOdt_ODTTextStyle():
     assert txtStyle._tAttr["font-weight"] == ["fo", None]
     txtStyle.setFontWeight("normal")
     assert txtStyle._tAttr["font-weight"] == ["fo", "normal"]
-    txtStyle.setFontWeight("inherit")
-    assert txtStyle._tAttr["font-weight"] == ["fo", "inherit"]
     txtStyle.setFontWeight("bold")
     assert txtStyle._tAttr["font-weight"] == ["fo", "bold"]
+    txtStyle.setFontWeight("100")
+    assert txtStyle._tAttr["font-weight"] == ["fo", "100"]
+    txtStyle.setFontWeight("200")
+    assert txtStyle._tAttr["font-weight"] == ["fo", "200"]
+    txtStyle.setFontWeight("300")
+    assert txtStyle._tAttr["font-weight"] == ["fo", "300"]
+    txtStyle.setFontWeight("400")
+    assert txtStyle._tAttr["font-weight"] == ["fo", "400"]
+    txtStyle.setFontWeight("500")
+    assert txtStyle._tAttr["font-weight"] == ["fo", "500"]
+    txtStyle.setFontWeight("600")
+    assert txtStyle._tAttr["font-weight"] == ["fo", "600"]
+    txtStyle.setFontWeight("700")
+    assert txtStyle._tAttr["font-weight"] == ["fo", "700"]
+    txtStyle.setFontWeight("800")
+    assert txtStyle._tAttr["font-weight"] == ["fo", "800"]
+    txtStyle.setFontWeight("900")
+    assert txtStyle._tAttr["font-weight"] == ["fo", "900"]
     txtStyle.setFontWeight("stuff")
     assert txtStyle._tAttr["font-weight"] == ["fo", None]
 
@@ -1129,10 +1161,10 @@ def testCoreToOdt_ODTTextStyle():
     assert txtStyle._tAttr["font-style"] == ["fo", None]
     txtStyle.setFontStyle("normal")
     assert txtStyle._tAttr["font-style"] == ["fo", "normal"]
-    txtStyle.setFontStyle("inherit")
-    assert txtStyle._tAttr["font-style"] == ["fo", "inherit"]
     txtStyle.setFontStyle("italic")
     assert txtStyle._tAttr["font-style"] == ["fo", "italic"]
+    txtStyle.setFontStyle("oblique")
+    assert txtStyle._tAttr["font-style"] == ["fo", "oblique"]
     txtStyle.setFontStyle("stuff")
     assert txtStyle._tAttr["font-style"] == ["fo", None]
 

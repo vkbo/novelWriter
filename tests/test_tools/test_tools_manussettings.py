@@ -27,6 +27,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QFontDialog
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.common import describeFont
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.tools.manussettings import (
@@ -547,11 +548,8 @@ def testBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     """Test the Format Tab of the GuiBuildSettings dialog."""
     build = BuildSettings()
 
-    textFont = str(CONFIG.textFont.family())
-
     build.setValue("format.buildLang", "en_US")
     build.setValue("format.textFont", "")  # Will fall back to config value
-    build.setValue("format.textSize", 12)
     build.setValue("format.lineHeight", 1.2)
 
     build.setValue("format.justifyText", False)
@@ -577,8 +575,7 @@ def testBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     assert bSettings.toolStack.currentWidget() is fmtTab
 
     # Check initial values
-    assert fmtTab.textFont.text() == textFont
-    assert fmtTab.textSize.value() == 12
+    assert fmtTab._textFont == CONFIG.textFont
     assert fmtTab.lineHeight.value() == 1.2
 
     assert fmtTab.justifyText.isChecked() is False
@@ -599,8 +596,9 @@ def testBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     assert fmtTab.rightMargin.value() == 15.0
 
     # Change values
-    fmtTab.textFont.setText("Arial")
-    fmtTab.textSize.setValue(11)
+    testFont = QFont("Arial", 11)
+    fmtTab._textFont = testFont
+    fmtTab.textFont.setText(describeFont(testFont))
     fmtTab.lineHeight.setValue(1.15)
 
     fmtTab.justifyText.setChecked(True)
@@ -617,8 +615,7 @@ def testBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     # Save values
     fmtTab.saveContent()
 
-    assert build.getStr("format.textFont") == "Arial"
-    assert build.getInt("format.textSize") == 11
+    assert build.getStr("format.textFont") == testFont.toString()
     assert build.getFloat("format.lineHeight") == 1.15
 
     assert build.getBool("format.justifyText") is True
@@ -646,8 +643,7 @@ def testBuildSettings_Format(monkeypatch, qtbot, nwGUI):
         mp.setattr(QFontDialog, "getFont", lambda *a: (font, True))
 
         fmtTab.btnTextFont.click()
-        assert fmtTab.textFont.text() == "Times"
-        assert fmtTab.textSize.value() == 10
+        assert fmtTab._textFont == font
 
     # Finish
     bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
