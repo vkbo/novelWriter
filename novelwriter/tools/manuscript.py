@@ -31,7 +31,7 @@ from time import time
 from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import Qt, QTimer, QUrl, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QPalette, QResizeEvent
+from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
 from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtWidgets import (
     QAbstractItemView, QApplication, QFormLayout, QGridLayout, QHBoxLayout,
@@ -404,10 +404,10 @@ class GuiManuscript(NToolDialog):
         """Update the preview widget and set relevant values."""
         self.docPreview.setContent(data)
         self.docPreview.setBuildName(build.name)
-        self.docPreview.setTextFont(
-            build.getStr("format.textFont"),
-            build.getInt("format.textSize")
-        )
+
+        textFont = QFont()
+        textFont.fromString(build.getStr("format.textFont"))
+        self.docPreview.setTextFont(textFont)
         self.docPreview.setJustify(
             build.getBool("format.justifyText")
         )
@@ -787,7 +787,7 @@ class _PreviewWidget(QTextBrowser):
         self._updateDocMargins()
         self._updateBuildAge()
 
-        self.setTextFont(CONFIG.textFont.family(), CONFIG.textFont.pointSize())
+        self.setTextFont(CONFIG.textFont)
 
         # Age Timer
         self.ageTimer = QTimer(self)
@@ -817,18 +817,14 @@ class _PreviewWidget(QTextBrowser):
         self.document().setDefaultTextOption(pOptions)
         return
 
-    def setTextFont(self, family: str, size: int) -> None:
+    def setTextFont(self, font: QFont) -> None:
         """Set the text font properties and then reset for sub-widgets.
         This needs special attention since there appears to be a bug in
         Qt 5.15.3. See issues #1862 and #1875.
         """
-        if family and size > 4:
-            font = self.font()
-            font.setFamily(family)
-            font.setPointSize(size)
-            self.setFont(font)
-            self.buildProgress.setFont(SHARED.theme.guiFont)
-            self.ageLabel.setFont(SHARED.theme.guiFontSmall)
+        self.setFont(font)
+        self.buildProgress.setFont(SHARED.theme.guiFont)
+        self.ageLabel.setFont(SHARED.theme.guiFontSmall)
         return
 
     ##

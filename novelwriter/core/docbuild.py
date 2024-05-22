@@ -28,7 +28,7 @@ import logging
 from collections.abc import Iterable
 from pathlib import Path
 
-from PyQt5.QtGui import QFont, QFontInfo
+from PyQt5.QtGui import QFont
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwLabels
@@ -279,13 +279,9 @@ class NWBuildDocument:
     def _setupBuild(self, bldObj: Tokenizer) -> dict:
         """Configure the build object."""
         # Get Settings
-        textFont = self._build.getStr("format.textFont")
-        textSize = self._build.getInt("format.textSize")
-
-        fontFamily = textFont or CONFIG.textFont.family()
-        bldFont = QFont(fontFamily, textSize)
-        fontInfo = QFontInfo(bldFont)
-        textFixed = fontInfo.fixedPitch()
+        textFont = QFont(CONFIG.textFont)
+        textFont.fromString(self._build.getStr("format.textFont"))
+        bldObj.setFont(textFont)
 
         bldObj.setTitleFormat(
             self._build.getStr("headings.fmtTitle"),
@@ -324,7 +320,6 @@ class NWBuildDocument:
             self._build.getBool("headings.breakScene")
         )
 
-        bldObj.setFont(fontFamily, textSize, textFixed)
         bldObj.setJustify(self._build.getBool("format.justifyText"))
         bldObj.setLineHeight(self._build.getFloat("format.lineHeight"))
         bldObj.setKeepLineBreaks(self._build.getBool("format.keepBreaks"))

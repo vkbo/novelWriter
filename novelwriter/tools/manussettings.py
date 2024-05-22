@@ -37,6 +37,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.common import describeFont
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.configlayout import (
@@ -1052,6 +1053,7 @@ class _FormatTab(NScrollableForm):
 
         self._build = build
         self._unitScale = 1.0
+        self._textFont = QFont(CONFIG.textFont)
 
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
@@ -1063,23 +1065,15 @@ class _FormatTab(NScrollableForm):
 
         self.addGroupLabel(self._build.getLabel("format.grpFormat"))
 
-        # Font Family
+        # Text Font
         self.textFont = QLineEdit(self)
         self.textFont.setReadOnly(True)
-        self.btnTextFont = NIconToolButton(self, iSz, "more")
+        self.btnTextFont = NIconToolButton(self, iSz, "font")
         self.btnTextFont.clicked.connect(self._selectFont)
         self.addRow(
             self._build.getLabel("format.textFont"), self.textFont,
-            button=self.btnTextFont, stretch=(3, 2)
+            button=self.btnTextFont, stretch=(1, 1)
         )
-
-        # Font Size
-        self.textSize = NSpinBox(self)
-        self.textSize.setMinimum(8)
-        self.textSize.setMaximum(60)
-        self.textSize.setSingleStep(1)
-        self.textSize.setMinimumWidth(spW)
-        self.addRow(self._build.getLabel("format.textSize"), self.textSize, unit="pt")
 
         # Line Height
         self.lineHeight = NDoubleSpinBox(self)
@@ -1175,14 +1169,13 @@ class _FormatTab(NScrollableForm):
 
     def loadContent(self) -> None:
         """Populate the widgets."""
-        textFont = self._build.getStr("format.textFont")
-        if not textFont:
-            textFont = str(CONFIG.textFont.family())
+        self._textFont = QFont()
+        self._textFont.fromString(self._build.getStr("format.textFont"))
 
-        self.textFont.setText(textFont)
-        self.textSize.setValue(self._build.getInt("format.textSize"))
+        self.textFont.setText(describeFont(self._textFont))
+        self.textFont.setCursorPosition(0)
+
         self.lineHeight.setValue(self._build.getFloat("format.lineHeight"))
-
         self.justifyText.setChecked(self._build.getBool("format.justifyText"))
         self.stripUnicode.setChecked(self._build.getBool("format.stripUnicode"))
         self.replaceTabs.setChecked(self._build.getBool("format.replaceTabs"))
@@ -1219,8 +1212,7 @@ class _FormatTab(NScrollableForm):
 
     def saveContent(self) -> None:
         """Save choices back into build object."""
-        self._build.setValue("format.textFont", self.textFont.text())
-        self._build.setValue("format.textSize", self.textSize.value())
+        self._build.setValue("format.textFont", self._textFont.toString())
         self._build.setValue("format.lineHeight", self.lineHeight.value())
 
         self._build.setValue("format.justifyText", self.justifyText.isChecked())
@@ -1249,13 +1241,11 @@ class _FormatTab(NScrollableForm):
     @pyqtSlot()
     def _selectFont(self) -> None:
         """Open the QFontDialog and set a font for the font style."""
-        currFont = QFont()
-        currFont.setFamily(self.textFont.text())
-        currFont.setPointSize(self.textSize.value())
-        newFont, status = QFontDialog.getFont(currFont, self)
+        font, status = QFontDialog.getFont(self._textFont, self)
         if status:
-            self.textFont.setText(newFont.family())
-            self.textSize.setValue(newFont.pointSize())
+            self.textFont.setText(describeFont(font))
+            self.textFont.setCursorPosition(0)
+            self._textFont = font
         return
 
     @pyqtSlot(int)
