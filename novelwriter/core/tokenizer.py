@@ -36,7 +36,6 @@ from time import time
 from PyQt5.QtCore import QCoreApplication, QRegularExpression
 from PyQt5.QtGui import QFont
 
-from novelwriter import CONFIG
 from novelwriter.common import checkInt, formatTimeStamp, numberToRoman
 from novelwriter.constants import (
     nwHeadFmt, nwKeyWords, nwLabels, nwRegEx, nwShortcode, nwUnicode, trConst
@@ -141,7 +140,7 @@ class Tokenizer(ABC):
         self._markdown: list[str] = []
 
         # User Settings
-        self._textFont     = CONFIG.textFont  # Output text font
+        self._textFont     = QFont("Serif", 11)  # Output text font
         self._lineHeight   = 1.15     # Line height in units of em
         self._blockIndent  = 4.00     # Block indent in units of em
         self._firstIndent  = False    # Enable first line indent
