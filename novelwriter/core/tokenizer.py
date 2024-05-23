@@ -597,7 +597,10 @@ class Tokenizer(ABC):
                 # are automatically skipped.
 
                 valid, bits, _ = self._project.index.scanThis(aLine)
-                if valid and bits and bits[0] not in self._skipKeywords:
+                if (
+                    valid and bits and bits[0] in nwLabels.KEY_NAME
+                    and bits[0] not in self._skipKeywords
+                ):
                     tokens.append((
                         self.T_KEYWORD, nHead, aLine[1:].strip(), [], sAlign
                     ))
