@@ -114,6 +114,7 @@ class Config:
         self.hideVScroll  = False            # Hide vertical scroll bars on main widgets
         self.hideHScroll  = False            # Hide horizontal scroll bars on main widgets
         self.lastNotes    = "0x0"            # The latest release notes that have been shown
+        self.nativeFont   = True             # Use native font dialog
 
         # Size Settings
         self._mainWinSize  = [1200, 650]     # Last size of the main GUI window
@@ -598,6 +599,7 @@ class Config:
         self.hideVScroll = conf.rdBool(sec, "hidevscroll", self.hideVScroll)
         self.hideHScroll = conf.rdBool(sec, "hidehscroll", self.hideHScroll)
         self.lastNotes   = conf.rdStr(sec, "lastnotes", self.lastNotes)
+        self.nativeFont  = conf.rdBool(sec, "nativefont", self.nativeFont)
         self._lastPath   = conf.rdPath(sec, "lastpath", self._lastPath)
 
         # Sizes
@@ -707,6 +709,7 @@ class Config:
             "hidevscroll":  str(self.hideVScroll),
             "hidehscroll":  str(self.hideHScroll),
             "lastnotes":    str(self.lastNotes),
+            "nativefont":   str(self.nativeFont),
             "lastpath":     str(self._lastPath),
         }
 

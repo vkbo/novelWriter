@@ -26,7 +26,8 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QFontDialog
 
-from novelwriter import CONFIG, SHARED
+from novelwriter import SHARED
+from novelwriter.common import describeFont
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.tools.manussettings import (
@@ -547,11 +548,8 @@ def testBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     """Test the Format Tab of the GuiBuildSettings dialog."""
     build = BuildSettings()
 
-    textFont = str(CONFIG.textFont.family())
-
     build.setValue("format.buildLang", "en_US")
     build.setValue("format.textFont", "")  # Will fall back to config value
-    build.setValue("format.textSize", 12)
     build.setValue("format.lineHeight", 1.2)
 
     build.setValue("format.justifyText", False)
@@ -577,8 +575,6 @@ def testBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     assert bSettings.toolStack.currentWidget() is fmtTab
 
     # Check initial values
-    assert fmtTab.textFont.text() == textFont
-    assert fmtTab.textSize.value() == 12
     assert fmtTab.lineHeight.value() == 1.2
 
     assert fmtTab.justifyText.isChecked() is False
@@ -599,8 +595,9 @@ def testBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     assert fmtTab.rightMargin.value() == 15.0
 
     # Change values
-    fmtTab.textFont.setText("Arial")
-    fmtTab.textSize.setValue(11)
+    testFont = QFont("Arial", 11)
+    fmtTab._textFont = testFont
+    fmtTab.textFont.setText(describeFont(testFont))
     fmtTab.lineHeight.setValue(1.15)
 
     fmtTab.justifyText.setChecked(True)
@@ -617,8 +614,7 @@ def testBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     # Save values
     fmtTab.saveContent()
 
-    assert build.getStr("format.textFont") == "Arial"
-    assert build.getInt("format.textSize") == 11
+    assert build.getStr("format.textFont") == testFont.toString()
     assert build.getFloat("format.lineHeight") == 1.15
 
     assert build.getBool("format.justifyText") is True
@@ -643,11 +639,10 @@ def testBuildSettings_Format(monkeypatch, qtbot, nwGUI):
         font = QFont()
         font.setFamily("Times")
         font.setPointSize(10)
-        mp.setattr(QFontDialog, "getFont", lambda *a: (font, True))
+        mp.setattr(QFontDialog, "getFont", lambda *a, **k: (font, True))
 
         fmtTab.btnTextFont.click()
-        assert fmtTab.textFont.text() == "Times"
-        assert fmtTab.textSize.value() == 10
+        assert fmtTab._textFont == font
 
     # Finish
     bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
@@ -677,13 +672,11 @@ def testBuildSettings_Output(qtbot, nwGUI):
     assert outTab.odtPageCountOffset.value() == 0
     assert outTab.htmlAddStyles.isChecked() is False
     assert outTab.htmlPreserveTabs.isChecked() is False
-    assert outTab.mdPreserveBreaks.isChecked() is True
 
     # Toggle all
     outTab.odtAddColours.setChecked(True)
     outTab.htmlAddStyles.setChecked(True)
     outTab.htmlPreserveTabs.setChecked(True)
-    outTab.mdPreserveBreaks.setChecked(False)
 
     # Change Values
     outTab.odtPageCountOffset.setValue(1)
@@ -697,7 +690,6 @@ def testBuildSettings_Output(qtbot, nwGUI):
     assert build.getInt("odt.pageCountOffset") == 1
     assert build.getBool("html.addStyles") is True
     assert build.getBool("html.preserveTabs") is True
-    assert build.getBool("md.preserveBreaks") is False
 
     # Reset header format
     outTab.btnPageHeader.click()

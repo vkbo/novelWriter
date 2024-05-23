@@ -501,9 +501,9 @@ class GuiIcons:
 
         # General Button Icons
         "add", "add_document", "backward", "bookmark", "browse", "checked", "close", "cross",
-        "document", "down", "edit", "export", "forward", "import", "list", "maximise", "menu",
-        "minimise", "more", "noncheckable", "open", "panel", "refresh", "remove", "revert",
-        "search_replace", "search", "settings", "star", "unchecked", "up", "view",
+        "document", "down", "edit", "export", "font", "forward", "import", "list", "maximise",
+        "menu", "minimise", "more", "noncheckable", "open", "panel", "quote", "refresh", "remove",
+        "revert", "search_replace", "search", "settings", "star", "unchecked", "up", "view",
 
         # Switches
         "sticky-on", "sticky-off",

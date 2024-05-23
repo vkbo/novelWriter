@@ -35,11 +35,14 @@ from hashlib import sha256
 from pathlib import Path
 from zipfile import ZipFile
 
+from PyQt5.QtGui import QFont
+
 from novelwriter import __version__
 from novelwriter.common import xmlIndent
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import T_Formats, Tokenizer, stripEscape
+from novelwriter.types import FONT_STYLE, FONT_WEIGHTS
 
 logger = logging.getLogger(__name__)
 
@@ -108,6 +111,10 @@ S_TEXT  = "Text_20_body"
 S_META  = "Text_20_Meta"
 S_HNF   = "Header_20_and_20_Footer"
 
+# Font Data
+FONT_WEIGHT_NUM = ["100", "200", "300", "400", "500", "600", "700", "800", "900"]
+FONT_WEIGHT_MAP = {"400": "normal", "700": "bold"}
+
 
 class ToOdt(Tokenizer):
     """Core: Open Document Writer
@@ -149,16 +156,18 @@ class ToOdt(Tokenizer):
         self._errData = []  # List of errors encountered
 
         # Properties
-        self._textFont     = "Liberation Serif"
-        self._textSize     = 12
-        self._textFixed    = False
+        self._textFont     = QFont("Liberation Serif", 12)
         self._colourHead   = False
         self._headerFormat = ""
         self._pageOffset   = 0
 
         # Internal
-        self._fontFamily   = "&apos;Liberation Serif&apos;"
+        self._fontFamily   = "Liberation Serif"
+        self._fontSize     = 12
+        self._fontWeight   = "normal"
+        self._fontStyle    = "normal"
         self._fontPitch    = "variable"
+        self._fontBold     = "bold"
         self._fSizeTitle   = "30pt"
         self._fSizeHead1   = "24pt"
         self._fSizeHead2   = "20pt"
@@ -260,19 +269,25 @@ class ToOdt(Tokenizer):
         # Initialise Variables
         # ====================
 
-        self._fontFamily = self._textFont
-        if len(self._textFont.split()) > 1:
-            self._fontFamily = f"'{self._textFont}'"
-        self._fontPitch = "fixed" if self._textFixed else "variable"
+        intWeight = FONT_WEIGHTS.get(self._textFont.weight(), 400)
+        fontWeight = str(intWeight)
+        fontBold = str(min(intWeight + 300, 900))
 
-        self._fSizeTitle = f"{round(2.50 * self._textSize):d}pt"
-        self._fSizeHead1 = f"{round(2.00 * self._textSize):d}pt"
-        self._fSizeHead2 = f"{round(1.60 * self._textSize):d}pt"
-        self._fSizeHead3 = f"{round(1.30 * self._textSize):d}pt"
-        self._fSizeHead4 = f"{round(1.15 * self._textSize):d}pt"
-        self._fSizeHead  = f"{round(1.15 * self._textSize):d}pt"
-        self._fSizeText  = f"{self._textSize:d}pt"
-        self._fSizeFoot  = f"{round(0.8*self._textSize):d}pt"
+        self._fontFamily = self._textFont.family()
+        self._fontSize   = self._textFont.pointSize()
+        self._fontWeight = FONT_WEIGHT_MAP.get(fontWeight, fontWeight)
+        self._fontStyle  = FONT_STYLE.get(self._textFont.style(), "normal")
+        self._fontPitch  = "fixed" if self._textFont.fixedPitch() else "variable"
+        self._fontBold   = FONT_WEIGHT_MAP.get(fontBold, fontBold)
+
+        self._fSizeTitle = f"{round(2.50 * self._fontSize):d}pt"
+        self._fSizeHead1 = f"{round(2.00 * self._fontSize):d}pt"
+        self._fSizeHead2 = f"{round(1.60 * self._fontSize):d}pt"
+        self._fSizeHead3 = f"{round(1.30 * self._fontSize):d}pt"
+        self._fSizeHead4 = f"{round(1.15 * self._fontSize):d}pt"
+        self._fSizeHead  = f"{round(1.15 * self._fontSize):d}pt"
+        self._fSizeText  = f"{self._fontSize:d}pt"
+        self._fSizeFoot  = f"{round(0.8*self._fontSize):d}pt"
 
         mScale = self._lineHeight/1.15
 
@@ -320,7 +335,7 @@ class ToOdt(Tokenizer):
         tAttr[_mkTag("office", "version")] = X_VERS
 
         fAttr = {}
-        fAttr[_mkTag("style", "name")] = self._textFont
+        fAttr[_mkTag("style", "name")] = self._fontFamily
         fAttr[_mkTag("style", "font-pitch")] = self._fontPitch
 
         if self._isFlat:
@@ -726,7 +741,7 @@ class ToOdt(Tokenizer):
 
         style = ODTTextStyle(f"T{len(self._autoText)+1:d}")
         if hFmt & X_BLD:
-            style.setFontWeight("bold")
+            style.setFontWeight(self._fontBold)
         if hFmt & X_ITA:
             style.setFontStyle("italic")
         if hFmt & X_DEL:
@@ -764,7 +779,7 @@ class ToOdt(Tokenizer):
 
     def _emToCm(self, value: float) -> str:
         """Converts an em value to centimetres."""
-        return f"{value*2.54/72*self._textSize:.3f}cm"
+        return f"{value*2.54/72*self._fontSize:.3f}cm"
 
     ##
     #  Style Elements
@@ -808,8 +823,10 @@ class ToOdt(Tokenizer):
             _mkTag("style", "writing-mode"): "page",
         })
         ET.SubElement(xStyl, _mkTag("style", "text-properties"), attrib={
-            _mkTag("style", "font-name"): self._textFont,
+            _mkTag("style", "font-name"): self._fontFamily,
             _mkTag("fo", "font-family"): self._fontFamily,
+            _mkTag("fo", "font-weight"): self._fontWeight,
+            _mkTag("fo", "font-style"): self._fontStyle,
             _mkTag("fo", "font-size"): self._fSizeText,
             _mkTag("fo", "language"): self._dLanguage,
             _mkTag("fo", "country"): self._dCountry,
@@ -822,8 +839,10 @@ class ToOdt(Tokenizer):
             _mkTag("style", "class"): "text",
         })
         ET.SubElement(xStyl, _mkTag("style", "text-properties"), attrib={
-            _mkTag("style", "font-name"): self._textFont,
+            _mkTag("style", "font-name"): self._fontFamily,
             _mkTag("fo", "font-family"): self._fontFamily,
+            _mkTag("fo", "font-weight"): self._fontWeight,
+            _mkTag("fo", "font-style"): self._fontStyle,
             _mkTag("fo", "font-size"): self._fSizeText,
         })
 
@@ -841,8 +860,10 @@ class ToOdt(Tokenizer):
             _mkTag("fo", "keep-with-next"): "always",
         })
         ET.SubElement(xStyl, _mkTag("style", "text-properties"), attrib={
-            _mkTag("style", "font-name"): self._textFont,
+            _mkTag("style", "font-name"): self._fontFamily,
             _mkTag("fo", "font-family"): self._fontFamily,
+            _mkTag("fo", "font-weight"): self._fontWeight,
+            _mkTag("fo", "font-style"): self._fontStyle,
             _mkTag("fo", "font-size"): self._fSizeHead,
         })
 
@@ -868,9 +889,10 @@ class ToOdt(Tokenizer):
         style.setMarginBottom(self._mBotText)
         style.setLineHeight(self._fLineHeight)
         style.setTextAlign(self._textAlign)
-        style.setFontName(self._textFont)
+        style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeText)
+        style.setFontWeight(self._fontWeight)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
@@ -891,9 +913,10 @@ class ToOdt(Tokenizer):
         style.setMarginTop(self._mTopMeta)
         style.setMarginBottom(self._mBotMeta)
         style.setLineHeight(self._fLineHeight)
-        style.setFontName(self._textFont)
+        style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeText)
+        style.setFontWeight(self._fontWeight)
         style.setColour(self._colMetaTx)
         style.setOpacity(self._opaMetaTx)
         style.packXML(self._xStyl)
@@ -908,10 +931,10 @@ class ToOdt(Tokenizer):
         style.setMarginTop(self._mTopTitle)
         style.setMarginBottom(self._mBotTitle)
         style.setTextAlign("center")
-        style.setFontName(self._textFont)
+        style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeTitle)
-        style.setFontWeight("bold")
+        style.setFontWeight(self._fontBold)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
@@ -925,9 +948,10 @@ class ToOdt(Tokenizer):
         style.setMarginBottom(self._mBotText)
         style.setLineHeight(self._fLineHeight)
         style.setTextAlign("center")
-        style.setFontName(self._textFont)
+        style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeText)
+        style.setFontWeight(self._fontWeight)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
@@ -940,10 +964,10 @@ class ToOdt(Tokenizer):
         style.setClass("text")
         style.setMarginTop(self._mTopHead1)
         style.setMarginBottom(self._mBotHead1)
-        style.setFontName(self._textFont)
+        style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead1)
-        style.setFontWeight("bold")
+        style.setFontWeight(self._fontBold)
         style.setColour(self._colHead12)
         style.setOpacity(self._opaHead12)
         style.packXML(self._xStyl)
@@ -958,10 +982,10 @@ class ToOdt(Tokenizer):
         style.setClass("text")
         style.setMarginTop(self._mTopHead2)
         style.setMarginBottom(self._mBotHead2)
-        style.setFontName(self._textFont)
+        style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead2)
-        style.setFontWeight("bold")
+        style.setFontWeight(self._fontBold)
         style.setColour(self._colHead12)
         style.setOpacity(self._opaHead12)
         style.packXML(self._xStyl)
@@ -976,10 +1000,10 @@ class ToOdt(Tokenizer):
         style.setClass("text")
         style.setMarginTop(self._mTopHead3)
         style.setMarginBottom(self._mBotHead3)
-        style.setFontName(self._textFont)
+        style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead3)
-        style.setFontWeight("bold")
+        style.setFontWeight(self._fontBold)
         style.setColour(self._colHead34)
         style.setOpacity(self._opaHead34)
         style.packXML(self._xStyl)
@@ -994,10 +1018,10 @@ class ToOdt(Tokenizer):
         style.setClass("text")
         style.setMarginTop(self._mTopHead4)
         style.setMarginBottom(self._mBotHead4)
-        style.setFontName(self._textFont)
+        style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead4)
-        style.setFontWeight("bold")
+        style.setFontWeight(self._fontBold)
         style.setColour(self._colHead34)
         style.setOpacity(self._opaHead34)
         style.packXML(self._xStyl)
@@ -1077,7 +1101,7 @@ class ODTParagraphStyle:
     VALID_BREAK  = ["auto", "column", "page", "even-page", "odd-page", "inherit"]
     VALID_LEVEL  = ["1", "2", "3", "4"]
     VALID_CLASS  = ["text", "chapter", "extra"]
-    VALID_WEIGHT = ["normal", "inherit", "bold"]
+    VALID_WEIGHT = ["normal", "bold"] + FONT_WEIGHT_NUM
 
     def __init__(self, name: str) -> None:
 
@@ -1320,8 +1344,8 @@ class ODTTextStyle:
     Only the used settings are exposed here to keep the class minimal
     and fast.
     """
-    VALID_WEIGHT = ["normal", "inherit", "bold"]
-    VALID_STYLE  = ["normal", "inherit", "italic"]
+    VALID_WEIGHT = ["normal", "bold"] + FONT_WEIGHT_NUM
+    VALID_STYLE  = ["normal", "italic", "oblique"]
     VALID_POS    = ["super", "sub"]
     VALID_LSTYLE = ["none", "solid"]
     VALID_LTYPE  = ["single", "double"]

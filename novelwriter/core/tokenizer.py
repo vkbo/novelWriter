@@ -34,6 +34,7 @@ from pathlib import Path
 from time import time
 
 from PyQt5.QtCore import QCoreApplication, QRegularExpression
+from PyQt5.QtGui import QFont
 
 from novelwriter.common import checkInt, formatTimeStamp, numberToRoman
 from novelwriter.constants import (
@@ -139,9 +140,7 @@ class Tokenizer(ABC):
         self._markdown: list[str] = []
 
         # User Settings
-        self._textFont     = "Serif"  # Output text font
-        self._textSize     = 11       # Output text size
-        self._textFixed    = False    # Fixed width text
+        self._textFont     = QFont("Serif", 11)  # Output text font
         self._lineHeight   = 1.15     # Line height in units of em
         self._blockIndent  = 4.00     # Block indent in units of em
         self._firstIndent  = False    # Enable first line indent
@@ -315,11 +314,9 @@ class Tokenizer(ABC):
         )
         return
 
-    def setFont(self, family: str, size: int, isFixed: bool = False) -> None:
+    def setFont(self, font: QFont) -> None:
         """Set the build font."""
-        self._textFont = family
-        self._textSize = round(int(size))
-        self._textFixed = isFixed
+        self._textFont = font
         return
 
     def setLineHeight(self, height: float) -> None:

@@ -30,8 +30,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QKeyEvent, QKeySequence
 from PyQt5.QtWidgets import (
     QAbstractButton, QApplication, QCompleter, QDialog, QDialogButtonBox,
-    QFileDialog, QFontDialog, QHBoxLayout, QLineEdit, QPushButton, QVBoxLayout,
-    QWidget
+    QFileDialog, QHBoxLayout, QLineEdit, QPushButton, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -183,7 +182,7 @@ class GuiPreferences(QDialog):
         self.guiFont.setMinimumWidth(fontWidth)
         self.guiFont.setText(describeFont(self._guiFont))
         self.guiFont.setCursorPosition(0)
-        self.guiFontButton = NIconToolButton(self, iSz, "more")
+        self.guiFontButton = NIconToolButton(self, iSz, "font")
         self.guiFontButton.clicked.connect(self._selectGuiFont)
         self.mainForm.addRow(
             self.tr("Application font"), self.guiFont,
@@ -205,6 +204,14 @@ class GuiPreferences(QDialog):
         self.mainForm.addRow(
             self.tr("Hide horizontal scroll bars in main windows"), self.hideHScroll,
             self.tr("Scrolling available with mouse wheel and keys only.")
+        )
+
+        # Native Font Dialog
+        self.nativeFont = NSwitch(self)
+        self.nativeFont.setChecked(CONFIG.nativeFont)
+        self.mainForm.addRow(
+            self.tr("Use the system's font selection dialog"), self.nativeFont,
+            self.tr("Turn off to use the Qt font dialog, which may have more options.")
         )
 
         # Document Style
@@ -233,7 +240,7 @@ class GuiPreferences(QDialog):
         self.textFont.setMinimumWidth(fontWidth)
         self.textFont.setText(describeFont(CONFIG.textFont))
         self.textFont.setCursorPosition(0)
-        self.textFontButton = NIconToolButton(self, iSz, "more")
+        self.textFontButton = NIconToolButton(self, iSz, "font")
         self.textFontButton.clicked.connect(self._selectTextFont)
         self.mainForm.addRow(
             self.tr("Document font"), self.textFont,
@@ -695,7 +702,7 @@ class GuiPreferences(QDialog):
         self.quoteSym["SO"].setFixedWidth(boxFixed)
         self.quoteSym["SO"].setAlignment(QtAlignCenter)
         self.quoteSym["SO"].setText(CONFIG.fmtSQuoteOpen)
-        self.btnSingleStyleO = NIconToolButton(self, iSz, "more")
+        self.btnSingleStyleO = NIconToolButton(self, iSz, "quote")
         self.btnSingleStyleO.clicked.connect(lambda: self._getQuote("SO"))
         self.mainForm.addRow(
             self.tr("Single quote open style"), self.quoteSym["SO"],
@@ -709,7 +716,7 @@ class GuiPreferences(QDialog):
         self.quoteSym["SC"].setFixedWidth(boxFixed)
         self.quoteSym["SC"].setAlignment(QtAlignCenter)
         self.quoteSym["SC"].setText(CONFIG.fmtSQuoteClose)
-        self.btnSingleStyleC = NIconToolButton(self, iSz, "more")
+        self.btnSingleStyleC = NIconToolButton(self, iSz, "quote")
         self.btnSingleStyleC.clicked.connect(lambda: self._getQuote("SC"))
         self.mainForm.addRow(
             self.tr("Single quote close style"), self.quoteSym["SC"],
@@ -724,7 +731,7 @@ class GuiPreferences(QDialog):
         self.quoteSym["DO"].setFixedWidth(boxFixed)
         self.quoteSym["DO"].setAlignment(QtAlignCenter)
         self.quoteSym["DO"].setText(CONFIG.fmtDQuoteOpen)
-        self.btnDoubleStyleO = NIconToolButton(self, iSz, "more")
+        self.btnDoubleStyleO = NIconToolButton(self, iSz, "quote")
         self.btnDoubleStyleO.clicked.connect(lambda: self._getQuote("DO"))
         self.mainForm.addRow(
             self.tr("Double quote open style"), self.quoteSym["DO"],
@@ -738,7 +745,7 @@ class GuiPreferences(QDialog):
         self.quoteSym["DC"].setFixedWidth(boxFixed)
         self.quoteSym["DC"].setAlignment(QtAlignCenter)
         self.quoteSym["DC"].setText(CONFIG.fmtDQuoteClose)
-        self.btnDoubleStyleC = NIconToolButton(self, iSz, "more")
+        self.btnDoubleStyleC = NIconToolButton(self, iSz, "quote")
         self.btnDoubleStyleC.clicked.connect(lambda: self._getQuote("DC"))
         self.mainForm.addRow(
             self.tr("Double quote close style"), self.quoteSym["DC"],
@@ -804,7 +811,7 @@ class GuiPreferences(QDialog):
     @pyqtSlot()
     def _selectGuiFont(self) -> None:
         """Open the QFontDialog and set a font for the font style."""
-        font, status = QFontDialog.getFont(self._guiFont, self)
+        font, status = SHARED.getFont(self._guiFont, self.nativeFont.isChecked())
         if status:
             self.guiFont.setText(describeFont(font))
             self.guiFont.setCursorPosition(0)
@@ -814,7 +821,7 @@ class GuiPreferences(QDialog):
     @pyqtSlot()
     def _selectTextFont(self) -> None:
         """Open the QFontDialog and set a font for the font style."""
-        font, status = QFontDialog.getFont(CONFIG.textFont, self)
+        font, status = SHARED.getFont(self._textFont, self.nativeFont.isChecked())
         if status:
             self.textFont.setText(describeFont(font))
             self.textFont.setCursorPosition(0)
@@ -883,6 +890,7 @@ class GuiPreferences(QDialog):
         CONFIG.guiTheme    = guiTheme
         CONFIG.hideVScroll = self.hideVScroll.isChecked()
         CONFIG.hideHScroll = self.hideHScroll.isChecked()
+        CONFIG.nativeFont  = self.nativeFont.isChecked()
         CONFIG.setGuiFont(self._guiFont)
 
         # Document Style
