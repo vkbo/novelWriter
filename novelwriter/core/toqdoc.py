@@ -45,6 +45,13 @@ logger = logging.getLogger(__name__)
 T_TextStyle = tuple[QTextBlockFormat, QTextCharFormat]
 
 
+def newBlock(cursor: QTextCursor, bFmt: QTextBlockFormat) -> None:
+    if cursor.position() > 0:
+        cursor.insertBlock(bFmt)
+    else:
+        cursor.setBlockFormat(bFmt)
+
+
 class ToQTextDocument(Tokenizer):
     """Core: QTextDocument Writer
 
@@ -66,8 +73,10 @@ class ToQTextDocument(Tokenizer):
 
         return
 
-    def initDocument(self) -> None:
+    def initDocument(self, font: QFont) -> None:
         """Initialise all computed values of the document."""
+        self._textFont = font
+
         self._document.setUndoRedoEnabled(False)
         self._document.blockSignals(True)
         self._document.clear()
@@ -96,6 +105,8 @@ class ToQTextDocument(Tokenizer):
         self._mText = (mScale * self._marginText[0], mScale * self._marginText[1])
         self._mMeta = (mScale * self._marginMeta[0], mScale * self._marginMeta[1])
 
+        self._mIndent = mScale * 2.0
+
         self._defaultChar = QTextCharFormat()
         self._defaultChar.setForeground(SHARED.theme.colText)
 
@@ -104,6 +115,9 @@ class ToQTextDocument(Tokenizer):
 
         self._noteChar = QTextCharFormat()
         self._noteChar.setForeground(SHARED.theme.colNote)
+
+        self._codeChar = QTextCharFormat()
+        self._codeChar.setForeground(SHARED.theme.colCode)
 
         self._modChar = QTextCharFormat()
         self._modChar.setForeground(SHARED.theme.colMod)
@@ -138,11 +152,6 @@ class ToQTextDocument(Tokenizer):
     #  Class Methods
     ##
 
-    def clearDocument(self) -> None:
-        """Clear the document so the class can be reused."""
-        self._document.clear()
-        return
-
     def doConvert(self) -> None:
         """Write text tokens into the document."""
         if not self._init:
@@ -150,12 +159,6 @@ class ToQTextDocument(Tokenizer):
 
         self._document.blockSignals(True)
         cursor = QTextCursor(self._document)
-
-        def newBlock(bFmt: QTextBlockFormat) -> None:
-            if cursor.position() > 0:
-                cursor.insertBlock(bFmt)
-            else:
-                cursor.setBlockFormat(bFmt)
 
         for tType, nHead, tText, tFormat, tStyle in self._tokens:
 
@@ -182,70 +185,69 @@ class ToQTextDocument(Tokenizer):
                     bFmt.setTopMargin(0.0)
 
                 if tStyle & self.A_IND_L:
-                    bFmt.setLeftMargin(self._blockIndent)
+                    bFmt.setLeftMargin(self._mIndent)
                 if tStyle & self.A_IND_R:
-                    bFmt.setRightMargin(self._blockIndent)
+                    bFmt.setRightMargin(self._mIndent)
 
             if tType == self.T_TEXT:
-                newBlock(bFmt)
+                newBlock(cursor, bFmt)
                 self._insertFragments(tText, tFormat, cursor, self._defaultChar)
 
             elif tType in self.L_HEADINGS:
                 bFmt, cFmt = self._genHeadStyle(tType, nHead, bFmt)
-                newBlock(bFmt)
+                newBlock(cursor, bFmt)
                 cursor.insertText(tText.replace(nwHeadFmt.BR, "\n"), cFmt)
 
             elif tType == self.T_SEP:
-                newBlock(bFmt)
+                newBlock(cursor, bFmt)
                 cursor.insertText(tText, self._defaultChar)
 
             elif tType == self.T_SKIP:
-                newBlock(bFmt)
+                newBlock(cursor, bFmt)
                 cursor.insertText(nwUnicode.U_NBSP, self._defaultChar)
 
-            elif tType == self.T_SYNOPSIS and self._doSynopsis:
-                newBlock(bFmt)
-                prefix = self._localLookup("Synopsis")
-                cursor.insertText(f"{prefix}: ", self._modChar)
-                self._insertFragments(tText, tFormat, cursor, self._noteChar)
-
-            elif tType == self.T_SHORT and self._doSynopsis:
-                newBlock(bFmt)
-                prefix = self._localLookup("Short Description")
+            elif tType in self.L_SUMMARY and self._doSynopsis:
+                newBlock(cursor, bFmt)
+                prefix = self._localLookup(
+                    "Short Description" if tType == self.T_SHORT else "Synopsis"
+                )
                 cursor.insertText(f"{prefix}: ", self._modChar)
                 self._insertFragments(tText, tFormat, cursor, self._noteChar)
 
             elif tType == self.T_COMMENT and self._doComments:
-                newBlock(bFmt)
+                newBlock(cursor, bFmt)
                 self._insertFragments(tText, tFormat, cursor, self._comChar)
 
             elif tType == self.T_KEYWORD and self._doKeywords:
-                newBlock(bFmt)
+                newBlock(cursor, bFmt)
                 self._insertKeywords(tText, cursor)
 
         self._document.blockSignals(False)
-        print(self._document.toHtml())
 
         return
 
     def appendFootnotes(self) -> None:
         """Append the footnotes in the buffer."""
-        # if self._usedNotes:
-        #     tags = STD_MD if self._genMode == self.M_STD else EXT_MD
-        #     footnotes = self._localLookup("Footnotes")
+        if self._usedNotes:
+            self._document.blockSignals(True)
 
-        #     lines = []
-        #     lines.append(f"### {footnotes}\n\n")
-        #     for key, index in self._usedNotes.items():
-        #         if content := self._footnotes.get(key):
-        #             marker = f"{index}. "
-        #             text = self._formatText(*content, tags)
-        #             lines.append(f"{marker}{text}\n")
-        #     lines.append("\n")
+            cursor = QTextCursor(self._document)
+            cursor.movePosition(QTextCursor.MoveOperation.End)
 
-        #     result = "".join(lines)
-        #     self._result += result
-        #     self._fullMD.append(result)
+            bFmt, cFmt = self._genHeadStyle(self.T_HEAD3, -1, self._defaultBlock)
+            newBlock(cursor, bFmt)
+            cursor.insertText(self._localLookup("Footnotes"), cFmt)
+
+            for key, index in self._usedNotes.items():
+                if content := self._footnotes.get(key):
+                    cFmt = QTextCharFormat(self._codeChar)
+                    cFmt.setAnchor(True)
+                    cFmt.setAnchorNames([f"footnote_{index}"])
+                    newBlock(cursor, self._defaultBlock)
+                    cursor.insertText(f"{index}. ", cFmt)
+                    self._insertFragments(*content, cursor, self._defaultChar)
+
+            self._document.blockSignals(False)
 
         return
 
@@ -295,14 +297,17 @@ class ToQTextDocument(Tokenizer):
             elif fmt == self.FMT_SUB_E:
                 cFmt.setVerticalAlignment(QtVAlignNormal)
             elif fmt == self.FMT_FNOTE:
-                cFmt.setVerticalAlignment(QtVAlignSuper)
+                xFmt = QTextCharFormat(self._codeChar)
+                xFmt.setVerticalAlignment(QtVAlignSuper)
                 if data in self._footnotes:
                     index = len(self._usedNotes) + 1
                     self._usedNotes[data] = index
-                    cursor.insertText(f"[{index}]", cFmt)
+                    xFmt.setAnchor(True)
+                    xFmt.setAnchorHref(f"#footnote_{index}")
+                    xFmt.setFontUnderline(True)
+                    cursor.insertText(f"[{index}]", xFmt)
                 else:
                     cursor.insertText("[ERR]", cFmt)
-                cFmt.setVerticalAlignment(QtVAlignNormal)
 
             # Move pos for next pass
             start = pos
@@ -348,7 +353,8 @@ class ToQTextDocument(Tokenizer):
         cFmt.setForeground(SHARED.theme.colHead)
         cFmt.setFontWeight(QFont.Weight.Bold)
         cFmt.setFontPointSize(self._sHead.get(level, 1.0))
-        cFmt.setAnchorNames([f"{self._handle}:T{nHead:04d}"])
-        cFmt.setAnchor(True)
+        if nHead >= 0:
+            cFmt.setAnchorNames([f"{self._handle}:T{nHead:04d}"])
+            cFmt.setAnchor(True)
 
         return bFmt, cFmt

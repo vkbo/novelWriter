@@ -119,6 +119,7 @@ class Tokenizer(ABC):
     # Lookups
     L_HEADINGS = [T_TITLE, T_HEAD1, T_HEAD2, T_HEAD3, T_HEAD4]
     L_SKIP_INDENT = [T_TITLE, T_HEAD1, T_HEAD2, T_HEAD2, T_HEAD3, T_HEAD4, T_SEP, T_SKIP]
+    L_SUMMARY = [T_SYNOPSIS, T_SHORT]
 
     def __init__(self, project: NWProject) -> None:
 

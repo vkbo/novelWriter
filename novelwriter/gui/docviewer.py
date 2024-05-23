@@ -203,8 +203,7 @@ class GuiDocViewer(QTextBrowser):
 
         sPos = self.verticalScrollBar().value()
         qDoc = ToQTextDocument(SHARED.project)
-        qDoc.setFont(CONFIG.textFont)
-        qDoc.initDocument()
+        qDoc.initDocument(CONFIG.textFont)
         qDoc.setKeywords(True)
         qDoc.setComments(CONFIG.viewComments)
         qDoc.setSynopsis(CONFIG.viewSynopsis)
