@@ -42,6 +42,7 @@ from novelwriter.types import (
 logger = logging.getLogger(__name__)
 
 T_TextStyle = tuple[QTextBlockFormat, QTextCharFormat]
+T_TextParFormat = tuple[str, QTextCharFormat]
 
 
 class ToQTextDocument(Tokenizer):
@@ -61,21 +62,16 @@ class ToQTextDocument(Tokenizer):
 
         return
 
-    def initDocument(self, font: QFont | None = None) -> None:
+    def initDocument(self) -> None:
         """Initialise all computed values of the document."""
-        if not font:
-            font = QFont()
-            font.setFamily(self._textFont)
-            font.setPointSize(self._textSize)
-
         self._document.setUndoRedoEnabled(False)
         self._document.blockSignals(True)
         self._document.clear()
-        self._document.setDefaultFont(font)
+        self._document.setDefaultFont(self._textFont)
 
-        qMetric = QFontMetrics(font)
+        qMetric = QFontMetrics(self._textFont)
         mScale = qMetric.height()
-        fPt = font.pointSizeF()
+        fPt = self._textFont.pointSizeF()
 
         self._mHead = {
             self.T_TITLE: (mScale * self._marginTitle[0], mScale * self._marginTitle[1]),
@@ -139,10 +135,6 @@ class ToQTextDocument(Tokenizer):
             else:
                 cursor.setBlockFormat(bFmt)
 
-        pText = []
-        pFmt = None
-        lineSep = "\n" if self._keepBreaks else " "
-
         for tType, _, tText, tFormat, tStyle in self._tokens:
 
             # Styles
@@ -172,13 +164,10 @@ class ToQTextDocument(Tokenizer):
                 if tStyle & self.A_IND_R:
                     bFmt.setRightMargin(self._blockIndent)
 
-            if tType == self.T_EMPTY:
-                if pText and pFmt is not None:
-                    tTemp = (lineSep.join(pText)).rstrip(" ")
-                    newBlock(pFmt)
-                    cursor.insertText(tTemp, self._defaultChar)
-                pText = []
-                pFmt = None
+            if tType == self.T_TEXT:
+                newBlock(bFmt)
+                tTemp, cFmt = self._formatText(tText, tFormat, self._defaultChar)
+                cursor.insertText(tTemp, cFmt)
 
             elif tType in self.L_HEADINGS:
                 bFmt, cFmt = self._genHeadStyle(tType, bFmt)
@@ -187,15 +176,10 @@ class ToQTextDocument(Tokenizer):
 
             elif tType == self.T_SEP:
                 newBlock(bFmt)
-                cursor.insertText(tTemp, self._defaultChar)
+                cursor.insertText(tText, self._defaultChar)
 
             elif tType == self.T_SKIP:
                 newBlock(bFmt)
-
-            elif tType == self.T_TEXT:
-                if pFmt is None:
-                    pFmt = bFmt
-                pText.append(self._formatText(tText, tFormat).rstrip())
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 pass
@@ -238,9 +222,10 @@ class ToQTextDocument(Tokenizer):
     #  Internal Functions
     ##
 
-    def _formatText(self, text: str, tFmt: T_Formats) -> str:
+    def _formatText(self, text: str, tFmt: T_Formats, dFmt: QTextCharFormat) -> T_TextParFormat:
         """Apply formatting tags to text."""
         temp = text
+        fmt = QTextCharFormat(dFmt)
         # for pos, fmt, data in reversed(tFmt):
         #     md = ""
         #     if fmt == self.FMT_FNOTE:
@@ -253,7 +238,7 @@ class ToQTextDocument(Tokenizer):
         #     else:
         #         md = tags.get(fmt, "")
         #     temp = f"{temp[:pos]}{md}{temp[pos:]}"
-        return temp
+        return temp, fmt
 
     def _formatKeywords(self, text: str, style: int) -> str:
         """Apply Markdown formatting to keywords."""
