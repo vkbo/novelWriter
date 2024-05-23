@@ -273,12 +273,12 @@ class ToOdt(Tokenizer):
         fontWeight = str(intWeight)
         fontBold = str(min(intWeight + 300, 900))
 
-        self._fontFamily  = self._textFont.family()
-        self._fontSize    = self._textFont.pointSize()
-        self._fontWeight  = FONT_WEIGHT_MAP.get(fontWeight, fontWeight)
-        self._fontStyle   = FONT_STYLE.get(self._textFont.style(), "normal")
-        self._fontPitch   = "fixed" if self._textFont.fixedPitch() else "variable"
-        self._fontBold    = FONT_WEIGHT_MAP.get(fontBold, fontBold)
+        self._fontFamily = self._textFont.family()
+        self._fontSize   = self._textFont.pointSize()
+        self._fontWeight = FONT_WEIGHT_MAP.get(fontWeight, fontWeight)
+        self._fontStyle  = FONT_STYLE.get(self._textFont.style(), "normal")
+        self._fontPitch  = "fixed" if self._textFont.fixedPitch() else "variable"
+        self._fontBold   = FONT_WEIGHT_MAP.get(fontBold, fontBold)
 
         self._fSizeTitle = f"{round(2.50 * self._fontSize):d}pt"
         self._fSizeHead1 = f"{round(2.00 * self._fontSize):d}pt"

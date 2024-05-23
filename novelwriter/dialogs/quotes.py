@@ -50,6 +50,7 @@ class GuiQuoteSelect(QDialog):
 
         logger.debug("Create: GuiQuoteSelect")
         self.setObjectName("GuiQuoteSelect")
+        self.setWindowTitle(self.tr("Select Quote Style"))
 
         self.outerBox = QVBoxLayout()
         self.innerBox = QHBoxLayout()

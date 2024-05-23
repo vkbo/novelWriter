@@ -206,6 +206,14 @@ class GuiPreferences(QDialog):
             self.tr("Scrolling available with mouse wheel and keys only.")
         )
 
+        # Native Font Dialog
+        self.nativeFont = NSwitch(self)
+        self.nativeFont.setChecked(CONFIG.nativeFont)
+        self.mainForm.addRow(
+            self.tr("Use the system's font selection dialog"), self.nativeFont,
+            self.tr("Turn off to use the Qt font dialog, which may have more options.")
+        )
+
         # Document Style
         # ==============
 
@@ -803,7 +811,7 @@ class GuiPreferences(QDialog):
     @pyqtSlot()
     def _selectGuiFont(self) -> None:
         """Open the QFontDialog and set a font for the font style."""
-        font, status = SHARED.getFont(self._guiFont, CONFIG.nativeFont)
+        font, status = SHARED.getFont(self._guiFont, self.nativeFont.isChecked())
         if status:
             self.guiFont.setText(describeFont(font))
             self.guiFont.setCursorPosition(0)
@@ -813,7 +821,7 @@ class GuiPreferences(QDialog):
     @pyqtSlot()
     def _selectTextFont(self) -> None:
         """Open the QFontDialog and set a font for the font style."""
-        font, status = SHARED.getFont(self._textFont, CONFIG.nativeFont)
+        font, status = SHARED.getFont(self._textFont, self.nativeFont.isChecked())
         if status:
             self.textFont.setText(describeFont(font))
             self.textFont.setCursorPosition(0)
@@ -882,6 +890,7 @@ class GuiPreferences(QDialog):
         CONFIG.guiTheme    = guiTheme
         CONFIG.hideVScroll = self.hideVScroll.isChecked()
         CONFIG.hideHScroll = self.hideHScroll.isChecked()
+        CONFIG.nativeFont  = self.nativeFont.isChecked()
         CONFIG.setGuiFont(self._guiFont)
 
         # Document Style

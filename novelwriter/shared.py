@@ -256,8 +256,11 @@ class SharedData(QObject):
         QThreadPool.globalInstance().start(runnable, priority=priority)
         return
 
-    def getProjectPath(self, parent: QWidget, path: str | Path | None = None,
-                       allowZip: bool = False) -> Path | None:
+    def getProjectPath(
+        self, parent: QWidget,
+        path: str | Path | None = None,
+        allowZip: bool = False
+    ) -> Path | None:
         """Open the file dialog and select a novelWriter project file."""
         label = (self.tr("novelWriter Project File or Zip File")
                  if allowZip else self.tr("novelWriter Project File"))
@@ -270,15 +273,10 @@ class SharedData(QObject):
 
     def getFont(self, current: QFont, native: bool) -> tuple[QFont, bool]:
         """Open the font dialog and select a font."""
-        if native:
-            font, status = QFontDialog.getFont(current, self.mainGui)
-        else:
-            options = QFontDialog.FontDialogOption.DontUseNativeDialog
-            font, status = QFontDialog.getFont(current, self.mainGui, options=options)
-        font.setOverline(False)
-        font.setStrikeOut(False)
-        font.setUnderline(False)
-        return font, status
+        kwargs = {}
+        if not native:
+            kwargs["options"] = QFontDialog.FontDialogOption.DontUseNativeDialog
+        return QFontDialog.getFont(current, self.mainGui, self.tr("Select Font"), **kwargs)
 
     def findTopLevelWidget(self, kind: type[NWWidget]) -> NWWidget | None:
         """Find a top level widget."""

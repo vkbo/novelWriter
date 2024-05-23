@@ -160,20 +160,12 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     prefs = GuiPreferences(nwGUI)
     prefs.show()
 
-    # Mock Font
-    class MockFont:
-
-        def family(self):
-            return "TestFont"
-
-        def pointSize(self):
-            return 42
-
     # Appearance
     prefs.guiLocale.setCurrentIndex(prefs.guiLocale.findData("en_US"))
     prefs.guiTheme.setCurrentIndex(prefs.guiTheme.findData("default_dark"))
     with monkeypatch.context() as mp:
         mp.setattr(QFontDialog, "getFont", lambda *a, **k: (QFont(), True))
+        prefs.nativeFont.setChecked(True)  # Use OS font dialog
         prefs.guiFontButton.click()
     prefs.hideVScroll.setChecked(True)
     prefs.hideHScroll.setChecked(True)
@@ -188,6 +180,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     prefs.guiSyntax.setCurrentIndex(prefs.guiSyntax.findData("default_dark"))
     with monkeypatch.context() as mp:
         mp.setattr(QFontDialog, "getFont", lambda *a, **k: (QFont(), True))
+        prefs.nativeFont.setChecked(False)  # Use Qt font dialog
         prefs.textFontButton.click()
     prefs.emphLabels.setChecked(False)
     prefs.showFullPath.setChecked(False)

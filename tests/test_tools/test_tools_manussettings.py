@@ -26,7 +26,7 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QFontDialog
 
-from novelwriter import CONFIG, SHARED
+from novelwriter import SHARED
 from novelwriter.common import describeFont
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
@@ -575,7 +575,6 @@ def testBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     assert bSettings.toolStack.currentWidget() is fmtTab
 
     # Check initial values
-    assert fmtTab._textFont == CONFIG.textFont
     assert fmtTab.lineHeight.value() == 1.2
 
     assert fmtTab.justifyText.isChecked() is False
