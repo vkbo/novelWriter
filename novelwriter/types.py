@@ -24,7 +24,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 from PyQt5.QtCore import QRegularExpression, Qt
-from PyQt5.QtGui import QColor, QPainter, QTextCursor, QTextFormat
+from PyQt5.QtGui import QColor, QFont, QPainter, QTextCursor, QTextFormat
 from PyQt5.QtWidgets import QDialogButtonBox, QSizePolicy, QStyle
 
 # Qt Alignment Flags
@@ -105,3 +105,23 @@ QtSizeMinimumExpanding = QSizePolicy.Policy.MinimumExpanding
 # Other
 
 QRegExUnicode = QRegularExpression.PatternOption.UseUnicodePropertiesOption
+
+# Maps
+
+FONT_WEIGHTS: dict[int, int] = {
+    QFont.Weight.Thin:       100,
+    QFont.Weight.ExtraLight: 200,
+    QFont.Weight.Light:      300,
+    QFont.Weight.Normal:     400,
+    QFont.Weight.Medium:     500,
+    QFont.Weight.DemiBold:   600,
+    QFont.Weight.Bold:       700,
+    QFont.Weight.ExtraBold:  800,
+    QFont.Weight.Black:      900,
+}
+
+FONT_STYLE: dict[int, str] = {
+    QFont.Style.StyleNormal:  "normal",
+    QFont.Style.StyleItalic:  "italic",
+    QFont.Style.StyleOblique: "oblique",
+}

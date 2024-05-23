@@ -405,7 +405,9 @@ def describeFont(font: QFont) -> str:
     """Describe a font in a way that can be displayed on the GUI."""
     if isinstance(font, QFont):
         info = QFontInfo(font)
-        return f"{font.family()} {info.styleName()} @ {font.pointSize()} pt"
+        family = info.family()
+        styles = [v for v in info.styleName().split() if v not in family]
+        return " ".join([f"{info.pointSize()} pt", family] + styles)
     return "Error"
 
 

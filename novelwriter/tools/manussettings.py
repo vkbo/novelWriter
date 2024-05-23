@@ -30,13 +30,14 @@ from typing import TYPE_CHECKING
 from PyQt5.QtCore import QEvent, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from PyQt5.QtWidgets import (
-    QAbstractButton, QAbstractItemView, QDialogButtonBox, QFontDialog, QFrame,
-    QGridLayout, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu,
-    QPlainTextEdit, QPushButton, QSplitter, QStackedWidget, QTreeWidget,
-    QTreeWidgetItem, QVBoxLayout, QWidget
+    QAbstractButton, QAbstractItemView, QDialogButtonBox, QFrame, QGridLayout,
+    QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu, QPlainTextEdit,
+    QPushButton, QSplitter, QStackedWidget, QTreeWidget, QTreeWidgetItem,
+    QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
+from novelwriter.common import describeFont
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.configlayout import (
@@ -1052,6 +1053,7 @@ class _FormatTab(NScrollableForm):
 
         self._build = build
         self._unitScale = 1.0
+        self._textFont = QFont(CONFIG.textFont)
 
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
@@ -1063,23 +1065,15 @@ class _FormatTab(NScrollableForm):
 
         self.addGroupLabel(self._build.getLabel("format.grpFormat"))
 
-        # Font Family
+        # Text Font
         self.textFont = QLineEdit(self)
         self.textFont.setReadOnly(True)
-        self.btnTextFont = NIconToolButton(self, iSz, "more")
+        self.btnTextFont = NIconToolButton(self, iSz, "font")
         self.btnTextFont.clicked.connect(self._selectFont)
         self.addRow(
             self._build.getLabel("format.textFont"), self.textFont,
-            button=self.btnTextFont, stretch=(3, 2)
+            button=self.btnTextFont, stretch=(1, 1)
         )
-
-        # Font Size
-        self.textSize = NSpinBox(self)
-        self.textSize.setMinimum(8)
-        self.textSize.setMaximum(60)
-        self.textSize.setSingleStep(1)
-        self.textSize.setMinimumWidth(spW)
-        self.addRow(self._build.getLabel("format.textSize"), self.textSize, unit="pt")
 
         # Line Height
         self.lineHeight = NDoubleSpinBox(self)
@@ -1098,10 +1092,12 @@ class _FormatTab(NScrollableForm):
         self.justifyText = NSwitch(self, height=iPx)
         self.stripUnicode = NSwitch(self, height=iPx)
         self.replaceTabs = NSwitch(self, height=iPx)
+        self.keepBreaks = NSwitch(self, height=iPx)
 
         self.addRow(self._build.getLabel("format.justifyText"), self.justifyText)
         self.addRow(self._build.getLabel("format.stripUnicode"), self.stripUnicode)
         self.addRow(self._build.getLabel("format.replaceTabs"), self.replaceTabs)
+        self.addRow(self._build.getLabel("format.keepBreaks"), self.keepBreaks)
 
         # First Line Indent
         # =================
@@ -1173,17 +1169,17 @@ class _FormatTab(NScrollableForm):
 
     def loadContent(self) -> None:
         """Populate the widgets."""
-        textFont = self._build.getStr("format.textFont")
-        if not textFont:
-            textFont = str(CONFIG.textFont.family())
+        self._textFont = QFont()
+        self._textFont.fromString(self._build.getStr("format.textFont"))
 
-        self.textFont.setText(textFont)
-        self.textSize.setValue(self._build.getInt("format.textSize"))
+        self.textFont.setText(describeFont(self._textFont))
+        self.textFont.setCursorPosition(0)
+
         self.lineHeight.setValue(self._build.getFloat("format.lineHeight"))
-
         self.justifyText.setChecked(self._build.getBool("format.justifyText"))
         self.stripUnicode.setChecked(self._build.getBool("format.stripUnicode"))
         self.replaceTabs.setChecked(self._build.getBool("format.replaceTabs"))
+        self.keepBreaks.setChecked(self._build.getBool("format.keepBreaks"))
 
         self.firstIndent.setChecked(self._build.getBool("format.firstLineIndent"))
         self.indentWidth.setValue(self._build.getFloat("format.firstIndentWidth"))
@@ -1216,13 +1212,13 @@ class _FormatTab(NScrollableForm):
 
     def saveContent(self) -> None:
         """Save choices back into build object."""
-        self._build.setValue("format.textFont", self.textFont.text())
-        self._build.setValue("format.textSize", self.textSize.value())
+        self._build.setValue("format.textFont", self._textFont.toString())
         self._build.setValue("format.lineHeight", self.lineHeight.value())
 
         self._build.setValue("format.justifyText", self.justifyText.isChecked())
         self._build.setValue("format.stripUnicode", self.stripUnicode.isChecked())
         self._build.setValue("format.replaceTabs", self.replaceTabs.isChecked())
+        self._build.setValue("format.keepBreaks", self.keepBreaks.isChecked())
 
         self._build.setValue("format.firstLineIndent", self.firstIndent.isChecked())
         self._build.setValue("format.firstIndentWidth", self.indentWidth.value())
@@ -1245,13 +1241,11 @@ class _FormatTab(NScrollableForm):
     @pyqtSlot()
     def _selectFont(self) -> None:
         """Open the QFontDialog and set a font for the font style."""
-        currFont = QFont()
-        currFont.setFamily(self.textFont.text())
-        currFont.setPointSize(self.textSize.value())
-        newFont, status = QFontDialog.getFont(currFont, self)
+        font, status = SHARED.getFont(self._textFont, CONFIG.nativeFont)
         if status:
-            self.textFont.setText(newFont.family())
-            self.textSize.setValue(newFont.pointSize())
+            self.textFont.setText(describeFont(font))
+            self.textFont.setCursorPosition(0)
+            self._textFont = font
         return
 
     @pyqtSlot(int)
@@ -1379,12 +1373,6 @@ class _OutputTab(NScrollableForm):
         self.htmlPreserveTabs = NSwitch(self, height=iPx)
         self.addRow(self._build.getLabel("html.preserveTabs"), self.htmlPreserveTabs)
 
-        # Markdown Document
-        self.addGroupLabel(self._build.getLabel("md"))
-
-        self.mdPreserveBreaks = NSwitch(self, height=iPx)
-        self.addRow(self._build.getLabel("md.preserveBreaks"), self.mdPreserveBreaks)
-
         # Finalise
         self.finalise()
 
@@ -1397,7 +1385,6 @@ class _OutputTab(NScrollableForm):
         self.odtPageCountOffset.setValue(self._build.getInt("odt.pageCountOffset"))
         self.htmlAddStyles.setChecked(self._build.getBool("html.addStyles"))
         self.htmlPreserveTabs.setChecked(self._build.getBool("html.preserveTabs"))
-        self.mdPreserveBreaks.setChecked(self._build.getBool("md.preserveBreaks"))
         self.odtPageHeader.setCursorPosition(0)
         return
 
@@ -1408,7 +1395,6 @@ class _OutputTab(NScrollableForm):
         self._build.setValue("odt.pageCountOffset", self.odtPageCountOffset.value())
         self._build.setValue("html.addStyles", self.htmlAddStyles.isChecked())
         self._build.setValue("html.preserveTabs", self.htmlPreserveTabs.isChecked())
-        self._build.setValue("md.preserveBreaks", self.mdPreserveBreaks.isChecked())
         return
 
     ##

@@ -76,12 +76,12 @@ SETTINGS_TEMPLATE = {
     "text.includeBodyText":    (bool, True),
     "text.ignoredKeywords":    (str, ""),
     "text.addNoteHeadings":    (bool, True),
-    "format.textFont":         (str, CONFIG.textFont.family()),
-    "format.textSize":         (int, 12),
+    "format.textFont":         (str, CONFIG.textFont.toString()),
     "format.lineHeight":       (float, 1.15, 0.75, 3.0),
     "format.justifyText":      (bool, False),
     "format.stripUnicode":     (bool, False),
     "format.replaceTabs":      (bool, False),
+    "format.keepBreaks":       (bool, True),
     "format.firstLineIndent":  (bool, False),
     "format.firstIndentWidth": (float, 1.4),
     "format.indentFirstPar":   (bool, False),
@@ -96,7 +96,6 @@ SETTINGS_TEMPLATE = {
     "odt.addColours":          (bool, True),
     "odt.pageHeader":          (str, nwHeadFmt.ODT_AUTO),
     "odt.pageCountOffset":     (int, 0),
-    "md.preserveBreaks":       (bool, True),
     "html.addStyles":          (bool, True),
     "html.preserveTabs":       (bool, False),
 }
@@ -125,13 +124,13 @@ SETTINGS_LABELS = {
     "text.addNoteHeadings":    QT_TRANSLATE_NOOP("Builds", "Add Titles for Notes"),
 
     "format.grpFormat":        QT_TRANSLATE_NOOP("Builds", "Text Format"),
-    "format.textFont":         QT_TRANSLATE_NOOP("Builds", "Font Family"),
-    "format.textSize":         QT_TRANSLATE_NOOP("Builds", "Font Size"),
+    "format.textFont":         QT_TRANSLATE_NOOP("Builds", "Text Font"),
     "format.lineHeight":       QT_TRANSLATE_NOOP("Builds", "Line Height"),
     "format.grpOptions":       QT_TRANSLATE_NOOP("Builds", "Text Options"),
     "format.justifyText":      QT_TRANSLATE_NOOP("Builds", "Justify Text Margins"),
     "format.stripUnicode":     QT_TRANSLATE_NOOP("Builds", "Replace Unicode Characters"),
     "format.replaceTabs":      QT_TRANSLATE_NOOP("Builds", "Replace Tabs with Spaces"),
+    "format.keepBreaks":       QT_TRANSLATE_NOOP("Builds", "Preserve Hard Line Breaks"),
 
     "format.grpParIndent":     QT_TRANSLATE_NOOP("Builds", "First Line Indent"),
     "format.firstLineIndent":  QT_TRANSLATE_NOOP("Builds", "Enable Indent"),
@@ -152,9 +151,6 @@ SETTINGS_LABELS = {
     "odt.addColours":          QT_TRANSLATE_NOOP("Builds", "Add Highlight Colours"),
     "odt.pageHeader":          QT_TRANSLATE_NOOP("Builds", "Page Header"),
     "odt.pageCountOffset":     QT_TRANSLATE_NOOP("Builds", "Page Counter Offset"),
-
-    "md":                      QT_TRANSLATE_NOOP("Builds", "Markdown (.md)"),
-    "md.preserveBreaks":       QT_TRANSLATE_NOOP("Builds", "Preserve Hard Line Breaks"),
 
     "html":                    QT_TRANSLATE_NOOP("Builds", "HTML (.html)"),
     "html.addStyles":          QT_TRANSLATE_NOOP("Builds", "Add CSS Styles"),

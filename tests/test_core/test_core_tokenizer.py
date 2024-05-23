@@ -24,6 +24,8 @@ import json
 
 import pytest
 
+from PyQt5.QtGui import QFont
+
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import HeadingFormatter, Tokenizer, stripEscape
@@ -50,9 +52,7 @@ def testCoreToken_Setters(mockGUI):
     assert tokens._fmtScene == nwHeadFmt.TITLE
     assert tokens._fmtHScene == nwHeadFmt.TITLE
     assert tokens._fmtSection == nwHeadFmt.TITLE
-    assert tokens._textFont == "Serif"
-    assert tokens._textSize == 11
-    assert tokens._textFixed is False
+    assert tokens._textFont == QFont("Serif", 11)
     assert tokens._lineHeight == 1.15
     assert tokens._blockIndent == 4.0
     assert tokens._doJustify is False
@@ -82,7 +82,7 @@ def testCoreToken_Setters(mockGUI):
     tokens.setSceneFormat(f"S: {nwHeadFmt.TITLE}", True)
     tokens.setHardSceneFormat(f"H: {nwHeadFmt.TITLE}", True)
     tokens.setSectionFormat(f"X: {nwHeadFmt.TITLE}", True)
-    tokens.setFont("Monospace", 10, True)
+    tokens.setFont(QFont("Monospace", 10))
     tokens.setLineHeight(2.0)
     tokens.setBlockIndent(6.0)
     tokens.setJustify(True)
@@ -106,9 +106,7 @@ def testCoreToken_Setters(mockGUI):
     assert tokens._fmtScene == f"S: {nwHeadFmt.TITLE}"
     assert tokens._fmtHScene == f"H: {nwHeadFmt.TITLE}"
     assert tokens._fmtSection == f"X: {nwHeadFmt.TITLE}"
-    assert tokens._textFont == "Monospace"
-    assert tokens._textSize == 10
-    assert tokens._textFixed is True
+    assert tokens._textFont == QFont("Monospace", 10)
     assert tokens._lineHeight == 2.0
     assert tokens._blockIndent == 6.0
     assert tokens._doJustify is True
@@ -1835,7 +1833,7 @@ def testCoreToken_SceneSeparators(mockGUI):
     # ===========================
     # Requires a fresh builder class
     md = ToMarkdown(project)
-    md.setExtendedMarkdown()
+    md.setExtendedMarkdown(True)
     md._isNovel = True
 
     md._text = (

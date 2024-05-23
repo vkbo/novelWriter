@@ -316,7 +316,6 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     # Title
     html._tokens = [
         (html.T_TITLE, 1, "A Title", [], html.A_PBB | html.A_CENTRE),
-        (html.T_EMPTY, 1, "", [], html.A_NONE),
     ]
     html.doConvert()
     assert html.result == (
@@ -327,7 +326,6 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     # Unnumbered
     html._tokens = [
         (html.T_HEAD2, 1, "Prologue", [], html.A_PBB),
-        (html.T_EMPTY, 1, "", [], html.A_NONE),
     ]
     html.doConvert()
     assert html.result == (
@@ -341,7 +339,6 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     # Separator
     html._tokens = [
         (html.T_SEP, 1, "* * *", [], html.A_CENTRE),
-        (html.T_EMPTY, 1, "", [], html.A_NONE),
     ]
     html.doConvert()
     assert html.result == "<p class='sep' style='text-align: center;'>* * *</p>\n"
@@ -349,7 +346,6 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     # Skip
     html._tokens = [
         (html.T_SKIP, 1, "", [], html.A_NONE),
-        (html.T_EMPTY, 1, "", [], html.A_NONE),
     ]
     html.doConvert()
     assert html.result == "<p class='skip'>&nbsp;</p>\n"
@@ -425,8 +421,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     # Indent Left
     html._tokens = [
-        (html.T_TEXT,  1, "Some text ...", [], html.A_IND_L),
-        (html.T_EMPTY, 2, "", [], html.A_NONE),
+        (html.T_TEXT, 1, "Some text ...", [], html.A_IND_L),
     ]
     html.doConvert()
     assert html.result == (
@@ -435,8 +430,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
     # Indent Right
     html._tokens = [
-        (html.T_TEXT,  1, "Some text ...", [], html.A_IND_R),
-        (html.T_EMPTY, 2, "", [], html.A_NONE),
+        (html.T_TEXT, 1, "Some text ...", [], html.A_IND_R),
     ]
     html.doConvert()
     assert html.result == (
