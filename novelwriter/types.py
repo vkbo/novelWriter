@@ -24,7 +24,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 from PyQt5.QtCore import QRegularExpression, Qt
-from PyQt5.QtGui import QColor, QFont, QPainter, QTextCursor, QTextFormat
+from PyQt5.QtGui import QColor, QFont, QPainter, QTextCharFormat, QTextCursor, QTextFormat
 from PyQt5.QtWidgets import QDialogButtonBox, QSizePolicy, QStyle
 
 # Qt Alignment Flags
@@ -43,6 +43,10 @@ QtAlignRightBase = Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignBaseline
 QtAlignRightMiddle = Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
 QtAlignRightTop = Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignTop
 QtAlignTop = Qt.AlignmentFlag.AlignTop
+
+QtVAlignNormal = QTextCharFormat.VerticalAlignment.AlignNormal
+QtVAlignSub = QTextCharFormat.VerticalAlignment.AlignSubScript
+QtVAlignSuper = QTextCharFormat.VerticalAlignment.AlignSuperScript
 
 # Qt Page Break
 

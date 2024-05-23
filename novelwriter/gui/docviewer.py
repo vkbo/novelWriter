@@ -40,7 +40,7 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import cssCol
 from novelwriter.constants import nwHeaders, nwUnicode
-from novelwriter.core.toqdocument import ToQTextDocument
+from novelwriter.core.toqdoc import ToQTextDocument
 from novelwriter.enum import nwDocAction, nwDocMode, nwItemType
 from novelwriter.error import logException
 from novelwriter.extensions.eventfilters import WheelEventFilter

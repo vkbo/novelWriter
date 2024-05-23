@@ -26,8 +26,8 @@ from __future__ import annotations
 import logging
 
 from PyQt5.QtGui import (
-    QFont, QFontMetrics, QTextBlockFormat, QTextCharFormat, QTextCursor,
-    QTextDocument
+    QColor, QFont, QFontMetrics, QTextBlockFormat, QTextCharFormat,
+    QTextCursor, QTextDocument
 )
 
 from novelwriter import SHARED
@@ -36,13 +36,13 @@ from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import T_Formats, Tokenizer
 from novelwriter.types import (
     QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight, QtPageBreakAfter,
-    QtPageBreakBefore
+    QtPageBreakBefore, QtTransparent, QtVAlignNormal, QtVAlignSub,
+    QtVAlignSuper
 )
 
 logger = logging.getLogger(__name__)
 
 T_TextStyle = tuple[QTextBlockFormat, QTextCharFormat]
-T_TextParFormat = tuple[str, QTextCharFormat]
 
 
 class ToQTextDocument(Tokenizer):
@@ -58,7 +58,11 @@ class ToQTextDocument(Tokenizer):
         self._document.setUndoRedoEnabled(False)
 
         self._styles: dict[int, T_TextStyle] = {}
+        self._usedNotes: dict[str, int] = {}
+
         self._init = False
+        self._bold = QFont.Weight.Bold
+        self._normal = QFont.Weight.Normal
 
         return
 
@@ -166,8 +170,7 @@ class ToQTextDocument(Tokenizer):
 
             if tType == self.T_TEXT:
                 newBlock(bFmt)
-                tTemp, cFmt = self._formatText(tText, tFormat, self._defaultChar)
-                cursor.insertText(tTemp, cFmt)
+                self._insertFragments(tText, tFormat, cursor, self._defaultChar)
 
             elif tType in self.L_HEADINGS:
                 bFmt, cFmt = self._genHeadStyle(tType, bFmt)
@@ -222,23 +225,64 @@ class ToQTextDocument(Tokenizer):
     #  Internal Functions
     ##
 
-    def _formatText(self, text: str, tFmt: T_Formats, dFmt: QTextCharFormat) -> T_TextParFormat:
+    def _insertFragments(
+        self, text: str, tFmt: T_Formats, cursor: QTextCursor,
+        dFmt: QTextCharFormat, bgCol: QColor = QtTransparent
+    ) -> None:
         """Apply formatting tags to text."""
-        temp = text
-        fmt = QTextCharFormat(dFmt)
-        # for pos, fmt, data in reversed(tFmt):
-        #     md = ""
-        #     if fmt == self.FMT_FNOTE:
-        #         if data in self._footnotes:
-        #             index = len(self._usedNotes) + 1
-        #             self._usedNotes[data] = index
-        #             md = f"[{index}]"
-        #         else:
-        #             md = "[ERR]"
-        #     else:
-        #         md = tags.get(fmt, "")
-        #     temp = f"{temp[:pos]}{md}{temp[pos:]}"
-        return temp, fmt
+        cFmt = QTextCharFormat(dFmt)
+        start = 0
+        for pos, fmt, data in tFmt:
+
+            # Insert buffer with previous format
+            cursor.insertText(text[start:pos], cFmt)
+
+            # Construct next format
+            if fmt == self.FMT_B_B:
+                cFmt.setFontWeight(self._bold)
+            elif fmt == self.FMT_B_E:
+                cFmt.setFontWeight(self._normal)
+            elif fmt == self.FMT_I_B:
+                cFmt.setFontItalic(True)
+            elif fmt == self.FMT_I_E:
+                cFmt.setFontItalic(False)
+            elif fmt == self.FMT_D_B:
+                cFmt.setFontStrikeOut(True)
+            elif fmt == self.FMT_D_E:
+                cFmt.setFontStrikeOut(False)
+            elif fmt == self.FMT_U_B:
+                cFmt.setFontUnderline(True)
+            elif fmt == self.FMT_U_E:
+                cFmt.setFontUnderline(False)
+            elif fmt == self.FMT_M_B:
+                cFmt.setBackground(SHARED.theme.colMark)
+            elif fmt == self.FMT_M_E:
+                cFmt.setBackground(bgCol)
+            elif fmt == self.FMT_SUP_B:
+                cFmt.setVerticalAlignment(QtVAlignSuper)
+            elif fmt == self.FMT_SUP_E:
+                cFmt.setVerticalAlignment(QtVAlignNormal)
+            elif fmt == self.FMT_SUB_B:
+                cFmt.setVerticalAlignment(QtVAlignSub)
+            elif fmt == self.FMT_SUB_E:
+                cFmt.setVerticalAlignment(QtVAlignNormal)
+            elif fmt == self.FMT_FNOTE:
+                cFmt.setVerticalAlignment(QtVAlignSuper)
+                if data in self._footnotes:
+                    index = len(self._usedNotes) + 1
+                    self._usedNotes[data] = index
+                    cursor.insertText(f"[{index}]", cFmt)
+                else:
+                    cursor.insertText("[ERR]", cFmt)
+                cFmt.setVerticalAlignment(QtVAlignNormal)
+
+            # Move pos for next pass
+            start = pos
+
+        # Insert whatever is left in the buffer
+        cursor.insertText(text[start:], cFmt)
+
+        return
 
     def _formatKeywords(self, text: str, style: int) -> str:
         """Apply Markdown formatting to keywords."""
