@@ -122,6 +122,7 @@ class ToQTextDocument(Tokenizer):
 
         self._mText = (mScale * self._marginText[0], mScale * self._marginText[1])
         self._mMeta = (mScale * self._marginMeta[0], mScale * self._marginMeta[1])
+        self._mSep  = (mScale * self._marginSep[0], mScale * self._marginSep[1])
 
         self._mIndent = mScale * 2.0
 
@@ -233,7 +234,10 @@ class ToQTextDocument(Tokenizer):
                 cursor.insertText(tText.replace(nwHeadFmt.BR, "\n"), cFmt)
 
             elif tType == self.T_SEP:
-                newBlock(cursor, bFmt)
+                sFmt = QTextBlockFormat(bFmt)
+                sFmt.setTopMargin(self._mSep[0])
+                sFmt.setBottomMargin(self._mSep[1])
+                newBlock(cursor, sFmt)
                 cursor.insertText(tText, self._cText)
 
             elif tType == self.T_SKIP:
@@ -270,7 +274,7 @@ class ToQTextDocument(Tokenizer):
             cursor = QTextCursor(self._document)
             cursor.movePosition(QTextCursor.MoveOperation.End)
 
-            bFmt, cFmt = self._genHeadStyle(self.T_HEAD3, -1, self._blockFmt)
+            bFmt, cFmt = self._genHeadStyle(self.T_HEAD4, -1, self._blockFmt)
             newBlock(cursor, bFmt)
             cursor.insertText(self._localLookup("Footnotes"), cFmt)
 
@@ -362,7 +366,10 @@ class ToQTextDocument(Tokenizer):
             if (num := len(bits)) > 1:
                 if bits[0] == nwKeyWords.TAG_KEY:
                     one, two = self._project.index.parseValue(bits[1])
-                    cursor.insertText(one, self._cTag)
+                    cFmt = QTextCharFormat(self._cTag)
+                    cFmt.setAnchor(True)
+                    cFmt.setAnchorNames([f"tag_{one}".lower()])
+                    cursor.insertText(one, cFmt)
                     if two:
                         cursor.insertText(" | ", self._cText)
                         cursor.insertText(two, self._cOptional)
@@ -371,7 +378,7 @@ class ToQTextDocument(Tokenizer):
                         cFmt = QTextCharFormat(self._cTag)
                         cFmt.setFontUnderline(True)
                         cFmt.setAnchor(True)
-                        cFmt.setAnchorHref(f"#{bits[0][1:]}={bit}")
+                        cFmt.setAnchorHref(f"#tag_{bit}".lower())
                         cursor.insertText(bit, cFmt)
                         if n < num:
                             cursor.insertText(", ", self._cText)

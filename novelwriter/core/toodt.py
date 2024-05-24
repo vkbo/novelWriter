@@ -192,6 +192,7 @@ class ToOdt(Tokenizer):
         self._mTopHead  = "0.423cm"
         self._mTopText  = "0.000cm"
         self._mTopMeta  = "0.000cm"
+        self._mTopSep   = "0.247cm"
 
         self._mBotTitle = "0.212cm"
         self._mBotHead1 = "0.212cm"
@@ -201,6 +202,7 @@ class ToOdt(Tokenizer):
         self._mBotHead  = "0.212cm"
         self._mBotText  = "0.247cm"
         self._mBotMeta  = "0.106cm"
+        self._mBotSep   = "0.247cm"
 
         self._mBotFoot  = "0.106cm"
         self._mLeftFoot = "0.600cm"
@@ -299,6 +301,7 @@ class ToOdt(Tokenizer):
         self._mTopHead  = self._emToCm(mScale * self._marginHead4[0])
         self._mTopText  = self._emToCm(mScale * self._marginText[0])
         self._mTopMeta  = self._emToCm(mScale * self._marginMeta[0])
+        self._mTopSep   = self._emToCm(mScale * self._marginSep[0])
 
         self._mBotTitle = self._emToCm(mScale * self._marginTitle[1])
         self._mBotHead1 = self._emToCm(mScale * self._marginHead1[1])
@@ -308,6 +311,7 @@ class ToOdt(Tokenizer):
         self._mBotHead  = self._emToCm(mScale * self._marginHead4[1])
         self._mBotText  = self._emToCm(mScale * self._marginText[1])
         self._mBotMeta  = self._emToCm(mScale * self._marginMeta[1])
+        self._mBotSep   = self._emToCm(mScale * self._marginSep[1])
 
         self._mLeftFoot = self._emToCm(self._marginFoot[0])
         self._mBotFoot  = self._emToCm(self._marginFoot[1])
@@ -501,7 +505,7 @@ class ToOdt(Tokenizer):
                 self._addTextPar(xText, S_SEP, oStyle, tText)
 
             elif tType == self.T_SKIP:
-                self._addTextPar(xText, S_SEP, oStyle, "")
+                self._addTextPar(xText, S_TEXT, oStyle, "")
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
                 tTemp, tFmt = self._formatSynopsis(tText, tFormat, True)
@@ -944,8 +948,8 @@ class ToOdt(Tokenizer):
         style.setParentStyleName("Standard")
         style.setNextStyleName(S_TEXT)
         style.setClass("text")
-        style.setMarginTop(self._mTopText)
-        style.setMarginBottom(self._mBotText)
+        style.setMarginTop(self._mTopSep)
+        style.setMarginBottom(self._mBotSep)
         style.setLineHeight(self._fLineHeight)
         style.setTextAlign("center")
         style.setFontName(self._fontFamily)

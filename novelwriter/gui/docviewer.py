@@ -151,6 +151,8 @@ class GuiDocViewer(QTextBrowser):
         docPalette.setColor(QPalette.ColorRole.Base, SHARED.theme.colBack)
         docPalette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
         self.viewport().setPalette(docPalette)
+        self.docHeader.matchColours()
+        self.docFooter.matchColours()
 
         # Update theme colours
         self._docTheme.text      = SHARED.theme.colText
@@ -163,9 +165,6 @@ class GuiDocViewer(QTextBrowser):
         self._docTheme.keyword   = SHARED.theme.colKey
         self._docTheme.tag       = SHARED.theme.colTag
         self._docTheme.optional  = SHARED.theme.colOpt
-
-        self.docHeader.matchColours()
-        self.docFooter.matchColours()
 
         # Set default text margins
         self.document().setDocumentMargin(0)
@@ -369,12 +368,10 @@ class GuiDocViewer(QTextBrowser):
     @pyqtSlot("QUrl")
     def _linkClicked(self, url: QUrl) -> None:
         """Process a clicked link in the document."""
-        link = url.url()
-        logger.debug("Clicked link: '%s'", link)
-        if len(link) > 0:
-            bits = link.split("=")
-            if len(bits) == 2:
-                self.loadDocumentTagRequest.emit(bits[1], nwDocMode.VIEW)
+        if link := url.url():
+            logger.debug("Clicked link: '%s'", link)
+            if (bits := link.partition("_")) and bits[2]:
+                self.loadDocumentTagRequest.emit(bits[2], nwDocMode.VIEW)
         return
 
     @pyqtSlot("QPoint")

@@ -157,7 +157,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     docViewer.setTextCursor(cursor)
     docViewer._makeSelection(QTextCursor.WordUnderCursor)
     rect = docViewer.cursorRect()
-    docViewer._linkClicked(QUrl("#char=Bod"))
+    docViewer._linkClicked(QUrl("#tag_bod"))
     assert docViewer.docHandle == "4c4f28287af27"
 
     # Click mouse nav buttons

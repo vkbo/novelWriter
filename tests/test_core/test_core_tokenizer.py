@@ -56,13 +56,14 @@ def testCoreToken_Setters(mockGUI):
     assert tokens._lineHeight == 1.15
     assert tokens._blockIndent == 4.0
     assert tokens._doJustify is False
-    assert tokens._marginTitle == (1.000, 0.500)
-    assert tokens._marginHead1 == (1.000, 0.500)
-    assert tokens._marginHead2 == (0.834, 0.500)
-    assert tokens._marginHead3 == (0.584, 0.500)
-    assert tokens._marginHead4 == (0.584, 0.500)
+    assert tokens._marginTitle == (1.417, 0.500)
+    assert tokens._marginHead1 == (1.417, 0.500)
+    assert tokens._marginHead2 == (1.668, 0.500)
+    assert tokens._marginHead3 == (1.168, 0.500)
+    assert tokens._marginHead4 == (1.168, 0.500)
     assert tokens._marginText == (0.000, 0.584)
     assert tokens._marginMeta == (0.000, 0.584)
+    assert tokens._marginSep == (1.168, 1.168)
     assert tokens._hideTitle is False
     assert tokens._hideChapter is False
     assert tokens._hideUnNum is False
@@ -93,6 +94,7 @@ def testCoreToken_Setters(mockGUI):
     tokens.setHead4Margins(2.0, 2.0)
     tokens.setTextMargins(2.0, 2.0)
     tokens.setMetaMargins(2.0, 2.0)
+    tokens.setSeparatorMargins(2.0, 2.0)
     tokens.setLinkHeadings(True)
     tokens.setBodyText(False)
     tokens.setSynopsis(True)
@@ -117,6 +119,7 @@ def testCoreToken_Setters(mockGUI):
     assert tokens._marginHead4 == (2.0, 2.0)
     assert tokens._marginText == (2.0, 2.0)
     assert tokens._marginMeta == (2.0, 2.0)
+    assert tokens._marginSep == (2.0, 2.0)
     assert tokens._hideTitle is True
     assert tokens._hideChapter is True
     assert tokens._hideUnNum is True
