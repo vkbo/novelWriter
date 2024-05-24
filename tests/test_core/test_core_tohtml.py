@@ -284,21 +284,6 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
         "</ol>\n"
     )
 
-    # Preview Mode
-    # ============
-
-    html.setPreview(True)
-
-    # Text (HTML4)
-    html._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
-    html.tokenizeText()
-    html.doConvert()
-    assert html.result == (
-        "<p>Some <b>nested bold and <i>italic</i> and "
-        "<span style='text-decoration: line-through;'>strikethrough</span> "
-        "text</b> here</p>\n"
-    )
-
 
 @pytest.mark.core
 def testCoreToHtml_ConvertDirect(mockGUI):
@@ -681,30 +666,4 @@ def testCoreToHtml_Format(mockGUI):
         "<span class='keyword'>Characters:</span> "
         "<a class='tag' href='#tag_Bod'>Bod</a>, "
         "<a class='tag' href='#tag_Jane'>Jane</a>"
-    )
-
-    # Preview Mode
-    # ============
-
-    html.setPreview(True)
-
-    assert html._formatSynopsis("synopsis text", True) == (
-        "<p class='note'><span class='modifier'>Synopsis:</span> synopsis text</p>\n"
-    )
-    assert html._formatSynopsis("short text", False) == (
-        "<p class='note'><span class='modifier'>Short Description:</span> short text</p>\n"
-    )
-    assert html._formatComments("comment text") == (
-        "<p class='comment'>comment text</p>\n"
-    )
-
-    assert html._formatKeywords("") == ("", "")
-    assert html._formatKeywords("tag: Jane") == (
-        "tag", "<span class='keyword'>Tag:</span> <a class='tag' name='tag_Jane'>Jane</a>"
-    )
-    assert html._formatKeywords("char: Bod, Jane") == (
-        "char",
-        "<span class='keyword'>Characters:</span> "
-        "<a class='tag' href='#char=Bod'>Bod</a>, "
-        "<a class='tag' href='#char=Jane'>Jane</a>"
     )

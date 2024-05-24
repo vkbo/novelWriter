@@ -23,10 +23,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import json
 import logging
 
-from datetime import datetime
 from time import time
 from typing import TYPE_CHECKING
 
@@ -41,12 +39,11 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import checkInt, fuzzyTime
+from novelwriter.common import fuzzyTime
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.tokenizer import HeadingFormatter
 from novelwriter.core.toqdoc import TextDocumentTheme, ToQTextDocument
-from novelwriter.error import logException
 from novelwriter.extensions.circularprogress import NProgressCircle
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton, NToolDialog
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
@@ -250,20 +247,6 @@ class GuiManuscript(NToolDialog):
         if selected in self._buildMap:
             self.buildList.setCurrentItem(self._buildMap[selected])
 
-        # logger.debug("Loading build cache")
-        # cache = CONFIG.dataPath("cache") / f"build_{SHARED.project.data.uuid}.json"
-        # if cache.is_file():
-        #     try:
-        #         with open(cache, mode="r", encoding="utf-8") as fObj:
-        #             data = json.load(fObj)
-        #         build = self._builds.getBuild(data.get("uuid", ""))
-        #         if isinstance(build, BuildSettings):
-        #             self._updatePreview(data, build)
-        #     except Exception:
-        #         logger.error("Failed to load build cache")
-        #         logException()
-        #         return
-
         return
 
     ##
@@ -342,7 +325,6 @@ class GuiManuscript(NToolDialog):
         SHARED.saveDocument()
 
         docBuild = NWBuildDocument(SHARED.project, build)
-        docBuild.setPreviewMode(True)
         docBuild.queueAll()
 
         theme = TextDocumentTheme()
@@ -364,23 +346,17 @@ class GuiManuscript(NToolDialog):
 
         buildObj = docBuild.lastBuild
         assert isinstance(buildObj, ToQTextDocument)
-        data = {
-            "uuid": build.buildID,
-            "time": int(time()),
-            "stats": buildObj.textStats,
-            "outline": buildObj.textOutline,
-        }
-        self._updatePreview(data, build, buildObj.document)
 
-        logger.debug("Saving build cache")
-        cache = CONFIG.dataPath("cache") / f"build_{SHARED.project.data.uuid}.json"
-        try:
-            with open(cache, mode="w+", encoding="utf-8") as outFile:
-                outFile.write(json.dumps(data, indent=2))
-        except Exception:
-            logger.error("Failed to save build cache")
-            logException()
-            return
+        font = QFont()
+        font.fromString(build.getStr("format.textFont"))
+
+        self.docPreview.setTextFont(font)
+        self.docPreview.setContent(buildObj.document)
+        self.docPreview.setBuildName(build.name)
+        self.docPreview.setJustify(build.getBool("format.justifyText"))
+
+        self.docStats.updateStats(buildObj.textStats)
+        self.buildOutline.updateOutline(buildObj.textOutline)
 
         return
 
@@ -408,18 +384,6 @@ class GuiManuscript(NToolDialog):
     ##
     #  Internal Functions
     ##
-
-    def _updatePreview(self, data: dict, build: BuildSettings, document: QTextDocument) -> None:
-        """Update the preview widget and set relevant values."""
-        font = QFont()
-        font.fromString(build.getStr("format.textFont"))
-        self.docPreview.setTextFont(font)
-        self.docPreview.setContent(data, document)
-        self.docPreview.setBuildName(build.name)
-        self.docPreview.setJustify(build.getBool("format.justifyText"))
-        self.docStats.updateStats(data.get("stats", {}))
-        self.buildOutline.updateOutline(data.get("outline", {}))
-        return
 
     def _getSelectedBuild(self) -> BuildSettings | None:
         """Get the currently selected build. If none are selected,
@@ -854,22 +818,18 @@ class _PreviewWidget(QTextBrowser):
         QApplication.processEvents()
         return
 
-    def setContent(self, data: dict, doc: QTextDocument) -> None:
+    def setContent(self, document: QTextDocument) -> None:
         """Set the content of the preview widget."""
         QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
 
         self.buildProgress.setCentreText(self.tr("Processing ..."))
         QApplication.processEvents()
 
-        doc.setDocumentMargin(CONFIG.getTextMargin())
-        self.setDocument(doc)
+        document.setDocumentMargin(CONFIG.getTextMargin())
+        self.setDocument(document)
 
-        self._docTime = checkInt(data.get("time"), 0)
+        self._docTime = int(time())
         self._updateBuildAge()
-
-        # Since we change the content while it may still be rendering, we mark
-        # the document as dirty again to make sure it's re-rendered properly.
-        # self.document().markContentsDirty(0, self.document().characterCount())
 
         self.buildProgress.setCentreText(self.tr("Done"))
         QApplication.restoreOverrideCursor()
@@ -915,17 +875,14 @@ class _PreviewWidget(QTextBrowser):
     @pyqtSlot()
     def _updateBuildAge(self) -> None:
         """Update the build time and the fuzzy age."""
-        if self._docTime > 0:
-            strBuildTime = "%s (%s)" % (
-                CONFIG.localDateTime(datetime.fromtimestamp(self._docTime)),
-                fuzzyTime(int(time()) - self._docTime)
-            )
+        if self._buildName and self._docTime > 0:
+            self.ageLabel.setText("<b>{0}</b><br>{1}: {2}".format(
+                self._buildName,
+                self.tr("Built"),
+                fuzzyTime(int(time()) - self._docTime),
+            ))
         else:
-            strBuildTime = self.tr("Unknown")
-        text = "{0}: {1}".format(self.tr("Built"), strBuildTime)
-        if self._buildName:
-            text = "<b>{0}</b><br>{1}".format(self._buildName, text)
-        self.ageLabel.setText(text)
+            self.ageLabel.setText("<b>{0}</b>".format(self.tr("No Preview")))
         return
 
     @pyqtSlot()
