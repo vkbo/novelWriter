@@ -40,7 +40,7 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import cssCol
 from novelwriter.constants import nwHeaders, nwUnicode
-from novelwriter.core.toqdoc import ToQTextDocument
+from novelwriter.core.toqdoc import TextDocumentTheme, ToQTextDocument
 from novelwriter.enum import nwDocAction, nwDocMode, nwItemType
 from novelwriter.error import logException
 from novelwriter.extensions.eventfilters import WheelEventFilter
@@ -69,6 +69,7 @@ class GuiDocViewer(QTextBrowser):
 
         # Internal Variables
         self._docHandle = None
+        self._docTheme = TextDocumentTheme()
 
         # Settings
         self.setMinimumWidth(CONFIG.pxInt(300))
@@ -152,6 +153,17 @@ class GuiDocViewer(QTextBrowser):
         docPalette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
         self.viewport().setPalette(docPalette)
 
+        self._docTheme.text      = SHARED.theme.colText
+        self._docTheme.highlight = SHARED.theme.colMark
+        self._docTheme.head      = SHARED.theme.colHead
+        self._docTheme.comment   = SHARED.theme.colHidden
+        self._docTheme.note      = SHARED.theme.colNote
+        self._docTheme.code      = SHARED.theme.colCode
+        self._docTheme.modifier  = SHARED.theme.colMod
+        self._docTheme.keyword   = SHARED.theme.colKey
+        self._docTheme.tag       = SHARED.theme.colTag
+        self._docTheme.optional  = SHARED.theme.colOpt
+
         self.docHeader.matchColours()
         self.docFooter.matchColours()
 
@@ -203,11 +215,10 @@ class GuiDocViewer(QTextBrowser):
 
         sPos = self.verticalScrollBar().value()
         qDoc = ToQTextDocument(SHARED.project)
-        qDoc.initDocument(CONFIG.textFont)
+        qDoc.initDocument(CONFIG.textFont, self._docTheme)
         qDoc.setKeywords(True)
         qDoc.setComments(CONFIG.viewComments)
         qDoc.setSynopsis(CONFIG.viewSynopsis)
-        qDoc.setLinkHeadings(True)
 
         # Be extra careful here to prevent crashes when first opening a
         # project as a crash here leaves no way of recovering.

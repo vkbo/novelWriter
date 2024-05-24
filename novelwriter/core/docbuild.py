@@ -39,6 +39,7 @@ from novelwriter.core.tohtml import ToHtml
 from novelwriter.core.tokenizer import Tokenizer
 from novelwriter.core.tomarkdown import ToMarkdown
 from novelwriter.core.toodt import ToOdt
+from novelwriter.core.toqdoc import TextDocumentTheme, ToQTextDocument
 from novelwriter.enum import nwBuildFmt
 from novelwriter.error import formatException, logException
 
@@ -132,6 +133,30 @@ class NWBuildDocument:
         for item in self._project.tree:
             if filtered.get(item.itemHandle, False):
                 self._queue.append(item.itemHandle)
+        return
+
+    def iterBuildPreview(self, theme: TextDocumentTheme) -> Iterable[tuple[int, bool]]:
+        """Build a preview QTextDocument."""
+        makeObj = ToQTextDocument(self._project)
+        filtered = self._setupBuild(makeObj)
+
+        font = QFont()
+        font.fromString(self._build.getStr("format.textFont"))
+
+        makeObj.setLinkHeadings(self._preview)
+        makeObj.initDocument(font, theme)
+        for i, tHandle in enumerate(self._queue):
+            self._error = None
+            if filtered.get(tHandle, (False, 0))[0]:
+                yield i, self._doBuild(makeObj, tHandle)
+            else:
+                yield i, False
+
+        makeObj.appendFootnotes()
+
+        self._error = None
+        self._cache = makeObj
+
         return
 
     def iterBuild(self, path: Path, bFormat: nwBuildFmt) -> Iterable[tuple[int, bool]]:

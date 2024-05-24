@@ -31,7 +31,7 @@ from time import time
 from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import Qt, QTimer, QUrl, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
+from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent, QTextDocument
 from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtWidgets import (
     QAbstractItemView, QApplication, QFormLayout, QGridLayout, QHBoxLayout,
@@ -44,8 +44,8 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt, fuzzyTime
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings
 from novelwriter.core.docbuild import NWBuildDocument
-from novelwriter.core.tohtml import ToHtml
 from novelwriter.core.tokenizer import HeadingFormatter
+from novelwriter.core.toqdoc import TextDocumentTheme, ToQTextDocument
 from novelwriter.error import logException
 from novelwriter.extensions.circularprogress import NProgressCircle
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton, NToolDialog
@@ -250,19 +250,19 @@ class GuiManuscript(NToolDialog):
         if selected in self._buildMap:
             self.buildList.setCurrentItem(self._buildMap[selected])
 
-        logger.debug("Loading build cache")
-        cache = CONFIG.dataPath("cache") / f"build_{SHARED.project.data.uuid}.json"
-        if cache.is_file():
-            try:
-                with open(cache, mode="r", encoding="utf-8") as fObj:
-                    data = json.load(fObj)
-                build = self._builds.getBuild(data.get("uuid", ""))
-                if isinstance(build, BuildSettings):
-                    self._updatePreview(data, build)
-            except Exception:
-                logger.error("Failed to load build cache")
-                logException()
-                return
+        # logger.debug("Loading build cache")
+        # cache = CONFIG.dataPath("cache") / f"build_{SHARED.project.data.uuid}.json"
+        # if cache.is_file():
+        #     try:
+        #         with open(cache, mode="r", encoding="utf-8") as fObj:
+        #             data = json.load(fObj)
+        #         build = self._builds.getBuild(data.get("uuid", ""))
+        #         if isinstance(build, BuildSettings):
+        #             self._updatePreview(data, build)
+        #     except Exception:
+        #         logger.error("Failed to load build cache")
+        #         logException()
+        #         return
 
         return
 
@@ -345,29 +345,38 @@ class GuiManuscript(NToolDialog):
         docBuild.setPreviewMode(True)
         docBuild.queueAll()
 
+        theme = TextDocumentTheme()
+        theme.text      = QColor(0, 0, 0)
+        theme.highlight = QColor(255, 255, 166)
+        theme.head      = QColor(66, 113, 174)
+        theme.comment   = QColor(100, 100, 100)
+        theme.note      = QColor(129, 55, 9)
+        theme.code      = QColor(66, 113, 174)
+        theme.modifier  = QColor(129, 55, 9)
+        theme.keyword   = QColor(245, 135, 31)
+        theme.tag       = QColor(66, 113, 174)
+        theme.optional  = QColor(66, 113, 174)
+
         self.docPreview.beginNewBuild(len(docBuild))
-        for step, _ in docBuild.iterBuildHTML(None):
+        for step, _ in docBuild.iterBuildPreview(theme):
             self.docPreview.buildStep(step + 1)
             QApplication.processEvents()
 
         buildObj = docBuild.lastBuild
-        assert isinstance(buildObj, ToHtml)
-        result = {
+        assert isinstance(buildObj, ToQTextDocument)
+        data = {
             "uuid": build.buildID,
             "time": int(time()),
             "stats": buildObj.textStats,
             "outline": buildObj.textOutline,
-            "styles": buildObj.getStyleSheet(),
-            "html": buildObj.fullHTML,
         }
-
-        self._updatePreview(result, build)
+        self._updatePreview(data, build, buildObj.document)
 
         logger.debug("Saving build cache")
         cache = CONFIG.dataPath("cache") / f"build_{SHARED.project.data.uuid}.json"
         try:
             with open(cache, mode="w+", encoding="utf-8") as outFile:
-                outFile.write(json.dumps(result, indent=2))
+                outFile.write(json.dumps(data, indent=2))
         except Exception:
             logger.error("Failed to save build cache")
             logException()
@@ -400,17 +409,14 @@ class GuiManuscript(NToolDialog):
     #  Internal Functions
     ##
 
-    def _updatePreview(self, data: dict, build: BuildSettings) -> None:
+    def _updatePreview(self, data: dict, build: BuildSettings, document: QTextDocument) -> None:
         """Update the preview widget and set relevant values."""
-        textFont = QFont()
-        textFont.fromString(build.getStr("format.textFont"))
-
-        self.docPreview.setContent(data)
+        font = QFont()
+        font.fromString(build.getStr("format.textFont"))
+        self.docPreview.setTextFont(font)
+        self.docPreview.setContent(data, document)
         self.docPreview.setBuildName(build.name)
-        self.docPreview.setTextFont(textFont)
-        self.docPreview.setJustify(
-            build.getBool("format.justifyText")
-        )
+        self.docPreview.setJustify(build.getBool("format.justifyText"))
         self.docStats.updateStats(data.get("stats", {}))
         self.buildOutline.updateOutline(data.get("outline", {}))
         return
@@ -848,30 +854,22 @@ class _PreviewWidget(QTextBrowser):
         QApplication.processEvents()
         return
 
-    def setContent(self, data: dict) -> None:
+    def setContent(self, data: dict, doc: QTextDocument) -> None:
         """Set the content of the preview widget."""
         QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
 
         self.buildProgress.setCentreText(self.tr("Processing ..."))
         QApplication.processEvents()
 
-        styles = "\n".join(data.get("styles", []))
-        self.document().setDefaultStyleSheet(styles)
-
-        html = "".join(data.get("html", []))
-        html = html.replace("\t", "!!tab!!")
-        self.setHtml(html)
-        QApplication.processEvents()
-        while self.find("!!tab!!"):
-            cursor = self.textCursor()
-            cursor.insertText("\t")
+        doc.setDocumentMargin(CONFIG.getTextMargin())
+        self.setDocument(doc)
 
         self._docTime = checkInt(data.get("time"), 0)
         self._updateBuildAge()
 
         # Since we change the content while it may still be rendering, we mark
         # the document as dirty again to make sure it's re-rendered properly.
-        self.document().markContentsDirty(0, self.document().characterCount())
+        # self.document().markContentsDirty(0, self.document().characterCount())
 
         self.buildProgress.setCentreText(self.tr("Done"))
         QApplication.restoreOverrideCursor()
