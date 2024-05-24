@@ -50,8 +50,8 @@ from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
 from novelwriter.types import (
-    QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignRight, QtAlignTop,
-    QtSizeExpanding, QtSizeIgnored, QtUserRole
+    QtAlignCenter, QtAlignRight, QtAlignTop, QtSizeExpanding, QtSizeIgnored,
+    QtUserRole
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -353,7 +353,6 @@ class GuiManuscript(NToolDialog):
         self.docPreview.setTextFont(font)
         self.docPreview.setContent(buildObj.document)
         self.docPreview.setBuildName(build.name)
-        self.docPreview.setJustify(build.getBool("format.justifyText"))
 
         self.docStats.updateStats(buildObj.textStats)
         self.buildOutline.updateOutline(buildObj.textOutline)
@@ -775,16 +774,6 @@ class _PreviewWidget(QTextBrowser):
         """Set the build name for the document label."""
         self._buildName = name
         self._updateBuildAge()
-        return
-
-    def setJustify(self, state: bool) -> None:
-        """Enable/disable the justify text option."""
-        pOptions = self.document().defaultTextOption()
-        if state:
-            pOptions.setAlignment(QtAlignJustify)
-        else:
-            pOptions.setAlignment(QtAlignAbsolute)
-        self.document().setDefaultTextOption(pOptions)
         return
 
     def setTextFont(self, font: QFont) -> None:

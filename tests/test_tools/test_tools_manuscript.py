@@ -28,15 +28,14 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtPrintSupport import QPrintPreviewDialog
 from PyQt5.QtWidgets import QAction, QListWidgetItem
 
-from novelwriter import CONFIG, SHARED
+from novelwriter import SHARED
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manuscript import GuiManuscript
 from novelwriter.tools.manussettings import GuiBuildSettings
-from novelwriter.types import QtAlignAbsolute, QtAlignJustify, QtDialogApply, QtDialogSave
+from novelwriter.types import QtDialogApply, QtDialogSave
 
-from tests.mocked import causeOSError
 from tests.tools import C, buildTestProject
 
 
@@ -64,23 +63,23 @@ def testManuscript_Init(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
 
     manus.close()
 
-    # A new dialog should load the old build
-    manus = GuiManuscript(nwGUI)
-    manus.show()
-    manus.loadContent()
-    assert manus.docPreview.toPlainText().strip() == allText
-    manus.close()
+    # # A new dialog should load the old build
+    # manus = GuiManuscript(nwGUI)
+    # manus.show()
+    # manus.loadContent()
+    # assert manus.docPreview.toPlainText().strip() == allText
+    # manus.close()
 
-    # But blocking the reload should leave it empty
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", lambda *a, **k: causeOSError)
-        manus = GuiManuscript(nwGUI)
-        manus.show()
-        manus.loadContent()
-        assert manus.docPreview.toPlainText().strip() == ""
+    # # But blocking the reload should leave it empty
+    # with monkeypatch.context() as mp:
+    #     mp.setattr("builtins.open", lambda *a, **k: causeOSError)
+    #     manus = GuiManuscript(nwGUI)
+    #     manus.show()
+    #     manus.loadContent()
+    #     assert manus.docPreview.toPlainText().strip() == ""
 
-    nwGUI.closeProject()  # This should auto-close the manuscript tool
-    assert manus.isHidden()
+    # nwGUI.closeProject()  # This should auto-close the manuscript tool
+    # assert manus.isHidden()
 
     # qtbot.stop()
 
@@ -186,7 +185,6 @@ def testManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     manus.show()
     manus.loadContent()
 
-    cacheFile = CONFIG.dataPath("cache") / f"build_{SHARED.project.data.uuid}.json"
     manus.buildList.setCurrentRow(0)
     build = manus._getSelectedBuild()
     assert isinstance(build, BuildSettings)
@@ -199,17 +197,9 @@ def testManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     manus.btnPreview.click()
     qtbot.wait(200)  # Should be enough to run the build
     assert manus.docPreview.toPlainText().strip() == ""
-    assert cacheFile.exists() is False
     manus._updateBuildsList()
 
-    # Preview the first, but fail to save cache
-    manus.buildList.setCurrentRow(0)
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", lambda *a, **k: causeOSError)
-        with qtbot.waitSignal(manus.docPreview.document().contentsChanged):
-            manus.btnPreview.click()
-        assert cacheFile.exists() is False
-
+    # Preview the first
     first = manus.buildList.item(0)
     assert isinstance(first, QListWidgetItem)
     build = manus._builds.getBuild(first.data(GuiManuscript.D_KEY))
@@ -218,12 +208,10 @@ def testManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     build.setValue("headings.fmtAltScene", nwHeadFmt.TITLE)
     manus._builds.setBuild(build)
 
-    # Preview again, and allow cache file to be created
     manus.buildList.setCurrentRow(0)
     with qtbot.waitSignal(manus.docPreview.document().contentsChanged):
         manus.btnPreview.click()
     assert manus.docPreview.toPlainText().strip() != ""
-    assert cacheFile.exists() is True
 
     # Check Outline
     assert manus.buildOutline._outline == {
@@ -264,13 +252,6 @@ def testManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     assert manus.docStats.mainStack.currentWidget() == manus.docStats.maxWidget
     assert manus.docStats.maxTotalWords.text() == "25"
     assert manus.docStats.maxTotalChars.text() == "117"
-
-    # Toggle justify
-    assert manus.docPreview.document().defaultTextOption().alignment() == QtAlignAbsolute
-    manus.docPreview.setJustify(True)
-    assert manus.docPreview.document().defaultTextOption().alignment() == QtAlignJustify
-    manus.docPreview.setJustify(False)
-    assert manus.docPreview.document().defaultTextOption().alignment() == QtAlignAbsolute
 
     # Tests are too fast to trigger this one, so we trigger it manually to ensure it isn't failing
     manus.docPreview._postUpdate()

@@ -34,9 +34,9 @@ from novelwriter.constants import nwHeaders, nwHeadFmt, nwKeyWords, nwLabels, nw
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import T_Formats, Tokenizer
 from novelwriter.types import (
-    QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight, QtBlack,
-    QtPageBreakAfter, QtPageBreakBefore, QtTransparent, QtVAlignNormal,
-    QtVAlignSub, QtVAlignSuper
+    QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
+    QtBlack, QtPageBreakAfter, QtPageBreakBefore, QtTransparent,
+    QtVAlignNormal, QtVAlignSub, QtVAlignSuper
 )
 
 logger = logging.getLogger(__name__)
@@ -75,6 +75,7 @@ class ToQTextDocument(Tokenizer):
         super().__init__(project)
         self._document = QTextDocument()
         self._document.setUndoRedoEnabled(False)
+        self._document.setDocumentMargin(0)
 
         self._theme = TextDocumentTheme()
         self._styles: dict[int, T_TextStyle] = {}
@@ -100,6 +101,9 @@ class ToQTextDocument(Tokenizer):
         mScale = qMetric.height()
         fPt = self._textFont.pointSizeF()
 
+        # Scaled Sizes
+        # ============
+
         self._mHead = {
             self.T_TITLE: (mScale * self._marginTitle[0], mScale * self._marginTitle[1]),
             self.T_HEAD1: (mScale * self._marginHead1[0], mScale * self._marginHead1[1]),
@@ -120,6 +124,17 @@ class ToQTextDocument(Tokenizer):
         self._mMeta = (mScale * self._marginMeta[0], mScale * self._marginMeta[1])
 
         self._mIndent = mScale * 2.0
+
+        # Block Format
+        # ============
+
+        self._blockFmt = QTextBlockFormat()
+        self._blockFmt.setTopMargin(self._mText[0])
+        self._blockFmt.setBottomMargin(self._mText[1])
+        self._blockFmt.setAlignment(QtAlignJustify if self._doJustify else QtAlignAbsolute)
+
+        # Character Formats
+        # =================
 
         self._cText = QTextCharFormat()
         self._cText.setForeground(self._theme.text)
@@ -152,10 +167,6 @@ class ToQTextDocument(Tokenizer):
 
         self._cOptional = QTextCharFormat()
         self._cOptional.setForeground(self._theme.optional)
-
-        self._blockFmt = QTextBlockFormat()
-        self._blockFmt.setTopMargin(self._mText[0])
-        self._blockFmt.setBottomMargin(self._mText[1])
 
         self._init = True
 

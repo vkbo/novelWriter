@@ -202,7 +202,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Document footer show/hide comments
     assert nwGUI.viewDocument("846352075de7d") is True
-    assert len(docViewer.toPlainText()) == 674
+    assert len(docViewer.toPlainText()) == 683
     docViewer.docFooter._doToggleComments(False)
     assert len(docViewer.toPlainText()) == 634
 

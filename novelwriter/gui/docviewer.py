@@ -31,14 +31,13 @@ import logging
 from enum import Enum
 
 from PyQt5.QtCore import QPoint, Qt, QUrl, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCursor, QMouseEvent, QPalette, QResizeEvent, QTextCursor, QTextOption
+from PyQt5.QtGui import QCursor, QMouseEvent, QPalette, QResizeEvent, QTextCursor
 from PyQt5.QtWidgets import (
     QAction, QApplication, QFrame, QHBoxLayout, QLabel, QMenu, QTextBrowser,
     QToolButton, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import cssCol
 from novelwriter.constants import nwHeaders, nwUnicode
 from novelwriter.core.toqdoc import TextDocumentTheme, ToQTextDocument
 from novelwriter.enum import nwDocAction, nwDocMode, nwItemType
@@ -46,9 +45,7 @@ from novelwriter.error import logException
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
-from novelwriter.types import (
-    QtAlignCenterTop, QtAlignJustify, QtKeepAnchor, QtMouseLeft, QtMoveAnchor
-)
+from novelwriter.types import QtAlignCenterTop, QtKeepAnchor, QtMouseLeft, QtMoveAnchor
 
 logger = logging.getLogger(__name__)
 
@@ -138,8 +135,10 @@ class GuiDocViewer(QTextBrowser):
 
     def initViewer(self) -> None:
         """Set editor settings from main config."""
-        self._makeStyleSheet()
-        self.initFont()
+        # Set the font. See issues #1862 and #1875.
+        self.setFont(CONFIG.textFont)
+        self.docHeader.updateFont()
+        self.docFooter.updateFont()
 
         # Set the widget colours to match syntax theme
         mainPalette = self.palette()
@@ -153,6 +152,7 @@ class GuiDocViewer(QTextBrowser):
         docPalette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
         self.viewport().setPalette(docPalette)
 
+        # Update theme colours
         self._docTheme.text      = SHARED.theme.colText
         self._docTheme.highlight = SHARED.theme.colMark
         self._docTheme.head      = SHARED.theme.colHead
@@ -169,10 +169,6 @@ class GuiDocViewer(QTextBrowser):
 
         # Set default text margins
         self.document().setDocumentMargin(0)
-        options = QTextOption()
-        if CONFIG.doJustify:
-            options.setAlignment(QtAlignJustify)
-        self.document().setDefaultTextOption(options)
 
         # Scroll bars
         if CONFIG.hideVScroll:
@@ -193,16 +189,6 @@ class GuiDocViewer(QTextBrowser):
 
         return
 
-    def initFont(self) -> None:
-        """Set the font of the main widget and sub-widgets. This needs
-        special attention since there appears to be a bug in Qt 5.15.3.
-        See issues #1862 and #1875.
-        """
-        self.setFont(CONFIG.textFont)
-        self.docHeader.updateFont()
-        self.docFooter.updateFont()
-        return
-
     def loadText(self, tHandle: str, updateHistory: bool = True) -> bool:
         """Load text into the viewer from an item handle."""
         if not SHARED.project.tree.checkType(tHandle, nwItemType.FILE):
@@ -215,6 +201,7 @@ class GuiDocViewer(QTextBrowser):
 
         sPos = self.verticalScrollBar().value()
         qDoc = ToQTextDocument(SHARED.project)
+        qDoc.setJustify(CONFIG.doJustify)
         qDoc.initDocument(CONFIG.textFont, self._docTheme)
         qDoc.setKeywords(True)
         qDoc.setComments(CONFIG.viewComments)
@@ -244,11 +231,6 @@ class GuiDocViewer(QTextBrowser):
             self.docHistory.append(tHandle)
 
         self.setDocumentTitle(tHandle)
-
-        # Replace tabs before setting the HTML, and then put them back in
-        # self.setHtml(qDoc.result.replace("\t", "!!tab!!"))
-        # while self.find("!!tab!!"):
-        #     self.textCursor().insertText("\t")
         self.setDocument(qDoc.document)
 
         if self._docHandle == tHandle:
@@ -480,34 +462,6 @@ class GuiDocViewer(QTextBrowser):
         """Handle text selection at a given location."""
         self.setTextCursor(self.cursorForPosition(pos))
         self._makeSelection(selType)
-        return
-
-    def _makeStyleSheet(self) -> None:
-        """Generate an appropriate style sheet for the document viewer,
-        based on the current syntax highlighter theme.
-        """
-        colHead = cssCol(SHARED.theme.colHead)
-        colHide = cssCol(SHARED.theme.colHidden)
-        colKeys = cssCol(SHARED.theme.colKey)
-        colMark = cssCol(SHARED.theme.colMark)
-        colMods = cssCol(SHARED.theme.colMod)
-        colNote = cssCol(SHARED.theme.colNote)
-        colOpts = cssCol(SHARED.theme.colOpt)
-        colTags = cssCol(SHARED.theme.colTag)
-        colText = cssCol(SHARED.theme.colText)
-        self.document().setDefaultStyleSheet(
-            f"body {{color: {colText};}}\n"
-            f"h1, h2, h3, h4 {{color: {colHead};}}\n"
-            f"mark {{background-color: {colMark};}}\n"
-            f".keyword {{color: {colKeys};}}\n"
-            f".tag {{color: {colTags};}}\n"
-            f".optional {{color: {colOpts};}}\n"
-            f".comment {{color: {colHide};}}\n"
-            f".note {{color: {colNote};}}\n"
-            f".modifier {{color: {colMods};}}\n"
-            ".title {text-align: center;}\n"
-        )
-
         return
 
 
