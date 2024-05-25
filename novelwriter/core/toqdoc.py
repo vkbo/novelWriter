@@ -138,35 +138,36 @@ class ToQTextDocument(Tokenizer):
         # =================
 
         self._cText = QTextCharFormat()
+        self._cText.setBackground(QtTransparent)
         self._cText.setForeground(self._theme.text)
 
-        self._cHead = QTextCharFormat()
+        self._cHead = QTextCharFormat(self._cText)
         self._cHead.setForeground(self._theme.head)
 
-        self._cComment = QTextCharFormat()
+        self._cComment = QTextCharFormat(self._cText)
         self._cComment.setForeground(self._theme.comment)
 
-        self._cCommentMod = QTextCharFormat()
+        self._cCommentMod = QTextCharFormat(self._cText)
         self._cCommentMod.setForeground(self._theme.comment)
         self._cCommentMod.setFontWeight(self._bold)
 
-        self._cNote = QTextCharFormat()
+        self._cNote = QTextCharFormat(self._cText)
         self._cNote.setForeground(self._theme.note)
 
-        self._cCode = QTextCharFormat()
+        self._cCode = QTextCharFormat(self._cText)
         self._cCode.setForeground(self._theme.code)
 
-        self._cModifier = QTextCharFormat()
+        self._cModifier = QTextCharFormat(self._cText)
         self._cModifier.setForeground(self._theme.modifier)
         self._cModifier.setFontWeight(self._bold)
 
-        self._cKeyword = QTextCharFormat()
+        self._cKeyword = QTextCharFormat(self._cText)
         self._cKeyword.setForeground(self._theme.keyword)
 
-        self._cTag = QTextCharFormat()
+        self._cTag = QTextCharFormat(self._cText)
         self._cTag.setForeground(self._theme.tag)
 
-        self._cOptional = QTextCharFormat()
+        self._cOptional = QTextCharFormat(self._cText)
         self._cOptional.setForeground(self._theme.optional)
 
         self._init = True
