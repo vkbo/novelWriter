@@ -119,6 +119,7 @@ class Tokenizer(ABC):
     # Lookups
     L_HEADINGS = [T_TITLE, T_HEAD1, T_HEAD2, T_HEAD3, T_HEAD4]
     L_SKIP_INDENT = [T_TITLE, T_HEAD1, T_HEAD2, T_HEAD2, T_HEAD3, T_HEAD4, T_SEP, T_SKIP]
+    L_SUMMARY = [T_SYNOPSIS, T_SHORT]
 
     def __init__(self, project: NWProject) -> None:
 
@@ -155,14 +156,15 @@ class Tokenizer(ABC):
         self._keepBreaks   = True     # Keep line breaks in paragraphs
 
         # Margins
-        self._marginTitle = (1.000, 0.500)
-        self._marginHead1 = (1.000, 0.500)
-        self._marginHead2 = (0.834, 0.500)
-        self._marginHead3 = (0.584, 0.500)
-        self._marginHead4 = (0.584, 0.500)
+        self._marginTitle = (1.417, 0.500)
+        self._marginHead1 = (1.417, 0.500)
+        self._marginHead2 = (1.668, 0.500)
+        self._marginHead3 = (1.168, 0.500)
+        self._marginHead4 = (1.168, 0.500)
         self._marginText  = (0.000, 0.584)
         self._marginMeta  = (0.000, 0.584)
         self._marginFoot  = (1.417, 0.467)
+        self._marginSep   = (1.168, 1.168)
 
         # Title Formats
         self._fmtTitle   = nwHeadFmt.TITLE  # Formatting for titles
@@ -376,6 +378,11 @@ class Tokenizer(ABC):
     def setMetaMargins(self, upper: float, lower: float) -> None:
         """Set the upper and lower meta text margin."""
         self._marginMeta = (float(upper), float(lower))
+        return
+
+    def setSeparatorMargins(self, upper: float, lower: float) -> None:
+        """Set the upper and lower meta text margin."""
+        self._marginSep = (float(upper), float(lower))
         return
 
     def setLinkHeadings(self, state: bool) -> None:
@@ -597,7 +604,10 @@ class Tokenizer(ABC):
                 # are automatically skipped.
 
                 valid, bits, _ = self._project.index.scanThis(aLine)
-                if valid and bits and bits[0] not in self._skipKeywords:
+                if (
+                    valid and bits and bits[0] in nwLabels.KEY_NAME
+                    and bits[0] not in self._skipKeywords
+                ):
                     tokens.append((
                         self.T_KEYWORD, nHead, aLine[1:].strip(), [], sAlign
                     ))

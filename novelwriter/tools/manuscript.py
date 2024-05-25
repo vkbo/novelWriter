@@ -23,15 +23,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import json
 import logging
 
-from datetime import datetime
 from time import time
 from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import Qt, QTimer, QUrl, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent
+from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QFont, QPalette, QResizeEvent, QTextDocument
 from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtWidgets import (
     QAbstractItemView, QApplication, QFormLayout, QGridLayout, QHBoxLayout,
@@ -41,20 +39,19 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import checkInt, fuzzyTime
+from novelwriter.common import fuzzyTime
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings
 from novelwriter.core.docbuild import NWBuildDocument
-from novelwriter.core.tohtml import ToHtml
 from novelwriter.core.tokenizer import HeadingFormatter
-from novelwriter.error import logException
+from novelwriter.core.toqdoc import TextDocumentTheme, ToQTextDocument
 from novelwriter.extensions.circularprogress import NProgressCircle
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton, NToolDialog
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
 from novelwriter.types import (
-    QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignRight, QtAlignTop,
-    QtSizeExpanding, QtSizeIgnored, QtUserRole
+    QtAlignCenter, QtAlignRight, QtAlignTop, QtSizeExpanding, QtSizeIgnored,
+    QtUserRole
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -249,20 +246,7 @@ class GuiManuscript(NToolDialog):
         self._updateBuildsList()
         if selected in self._buildMap:
             self.buildList.setCurrentItem(self._buildMap[selected])
-
-        logger.debug("Loading build cache")
-        cache = CONFIG.dataPath("cache") / f"build_{SHARED.project.data.uuid}.json"
-        if cache.is_file():
-            try:
-                with open(cache, mode="r", encoding="utf-8") as fObj:
-                    data = json.load(fObj)
-                build = self._builds.getBuild(data.get("uuid", ""))
-                if isinstance(build, BuildSettings):
-                    self._updatePreview(data, build)
-            except Exception:
-                logger.error("Failed to load build cache")
-                logException()
-                return
+            QTimer.singleShot(200, self._generatePreview)
 
         return
 
@@ -342,36 +326,37 @@ class GuiManuscript(NToolDialog):
         SHARED.saveDocument()
 
         docBuild = NWBuildDocument(SHARED.project, build)
-        docBuild.setPreviewMode(True)
         docBuild.queueAll()
 
+        theme = TextDocumentTheme()
+        theme.text      = QColor(0, 0, 0)
+        theme.highlight = QColor(255, 255, 166)
+        theme.head      = QColor(66, 113, 174)
+        theme.comment   = QColor(100, 100, 100)
+        theme.note      = QColor(129, 55, 9)
+        theme.code      = QColor(66, 113, 174)
+        theme.modifier  = QColor(129, 55, 9)
+        theme.keyword   = QColor(245, 135, 31)
+        theme.tag       = QColor(66, 113, 174)
+        theme.optional  = QColor(66, 113, 174)
+
         self.docPreview.beginNewBuild(len(docBuild))
-        for step, _ in docBuild.iterBuildHTML(None):
+        for step, _ in docBuild.iterBuildPreview(theme):
             self.docPreview.buildStep(step + 1)
             QApplication.processEvents()
 
         buildObj = docBuild.lastBuild
-        assert isinstance(buildObj, ToHtml)
-        result = {
-            "uuid": build.buildID,
-            "time": int(time()),
-            "stats": buildObj.textStats,
-            "outline": buildObj.textOutline,
-            "styles": buildObj.getStyleSheet(),
-            "html": buildObj.fullHTML,
-        }
+        assert isinstance(buildObj, ToQTextDocument)
 
-        self._updatePreview(result, build)
+        font = QFont()
+        font.fromString(build.getStr("format.textFont"))
 
-        logger.debug("Saving build cache")
-        cache = CONFIG.dataPath("cache") / f"build_{SHARED.project.data.uuid}.json"
-        try:
-            with open(cache, mode="w+", encoding="utf-8") as outFile:
-                outFile.write(json.dumps(result, indent=2))
-        except Exception:
-            logger.error("Failed to save build cache")
-            logException()
-            return
+        self.docPreview.setTextFont(font)
+        self.docPreview.setContent(buildObj.document)
+        self.docPreview.setBuildName(build.name)
+
+        self.docStats.updateStats(buildObj.textStats)
+        self.buildOutline.updateOutline(buildObj.textOutline)
 
         return
 
@@ -379,8 +364,8 @@ class GuiManuscript(NToolDialog):
     def _buildManuscript(self) -> None:
         """Open the build dialog and build the manuscript."""
         if build := self._getSelectedBuild():
-            dlgBuild = GuiManuscriptBuild(self, build)
-            dlgBuild.exec()
+            dialog = GuiManuscriptBuild(self, build)
+            dialog.exec()
 
             # After the build is done, save build settings changes
             if build.changed:
@@ -399,21 +384,6 @@ class GuiManuscript(NToolDialog):
     ##
     #  Internal Functions
     ##
-
-    def _updatePreview(self, data: dict, build: BuildSettings) -> None:
-        """Update the preview widget and set relevant values."""
-        textFont = QFont()
-        textFont.fromString(build.getStr("format.textFont"))
-
-        self.docPreview.setContent(data)
-        self.docPreview.setBuildName(build.name)
-        self.docPreview.setTextFont(textFont)
-        self.docPreview.setJustify(
-            build.getBool("format.justifyText")
-        )
-        self.docStats.updateStats(data.get("stats", {}))
-        self.buildOutline.updateOutline(data.get("outline", {}))
-        return
 
     def _getSelectedBuild(self) -> BuildSettings | None:
         """Get the currently selected build. If none are selected,
@@ -807,16 +777,6 @@ class _PreviewWidget(QTextBrowser):
         self._updateBuildAge()
         return
 
-    def setJustify(self, state: bool) -> None:
-        """Enable/disable the justify text option."""
-        pOptions = self.document().defaultTextOption()
-        if state:
-            pOptions.setAlignment(QtAlignJustify)
-        else:
-            pOptions.setAlignment(QtAlignAbsolute)
-        self.document().setDefaultTextOption(pOptions)
-        return
-
     def setTextFont(self, font: QFont) -> None:
         """Set the text font properties and then reset for sub-widgets.
         This needs special attention since there appears to be a bug in
@@ -848,30 +808,18 @@ class _PreviewWidget(QTextBrowser):
         QApplication.processEvents()
         return
 
-    def setContent(self, data: dict) -> None:
+    def setContent(self, document: QTextDocument) -> None:
         """Set the content of the preview widget."""
         QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
 
         self.buildProgress.setCentreText(self.tr("Processing ..."))
         QApplication.processEvents()
 
-        styles = "\n".join(data.get("styles", []))
-        self.document().setDefaultStyleSheet(styles)
+        document.setDocumentMargin(CONFIG.getTextMargin())
+        self.setDocument(document)
 
-        html = "".join(data.get("html", []))
-        html = html.replace("\t", "!!tab!!")
-        self.setHtml(html)
-        QApplication.processEvents()
-        while self.find("!!tab!!"):
-            cursor = self.textCursor()
-            cursor.insertText("\t")
-
-        self._docTime = checkInt(data.get("time"), 0)
+        self._docTime = int(time())
         self._updateBuildAge()
-
-        # Since we change the content while it may still be rendering, we mark
-        # the document as dirty again to make sure it's re-rendered properly.
-        self.document().markContentsDirty(0, self.document().characterCount())
 
         self.buildProgress.setCentreText(self.tr("Done"))
         QApplication.restoreOverrideCursor()
@@ -917,17 +865,14 @@ class _PreviewWidget(QTextBrowser):
     @pyqtSlot()
     def _updateBuildAge(self) -> None:
         """Update the build time and the fuzzy age."""
-        if self._docTime > 0:
-            strBuildTime = "%s (%s)" % (
-                CONFIG.localDateTime(datetime.fromtimestamp(self._docTime)),
-                fuzzyTime(int(time()) - self._docTime)
-            )
+        if self._buildName and self._docTime > 0:
+            self.ageLabel.setText("<b>{0}</b><br>{1}: {2}".format(
+                self._buildName,
+                self.tr("Built"),
+                fuzzyTime(int(time()) - self._docTime),
+            ))
         else:
-            strBuildTime = self.tr("Unknown")
-        text = "{0}: {1}".format(self.tr("Built"), strBuildTime)
-        if self._buildName:
-            text = "<b>{0}</b><br>{1}".format(self._buildName, text)
-        self.ageLabel.setText(text)
+            self.ageLabel.setText("<b>{0}</b>".format(self.tr("No Preview")))
         return
 
     @pyqtSlot()

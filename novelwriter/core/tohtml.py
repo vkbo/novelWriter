@@ -38,24 +38,6 @@ from novelwriter.types import FONT_STYLE, FONT_WEIGHTS
 
 logger = logging.getLogger(__name__)
 
-HTML4_TAGS = {
-    Tokenizer.FMT_B_B: "<b>",
-    Tokenizer.FMT_B_E: "</b>",
-    Tokenizer.FMT_I_B: "<i>",
-    Tokenizer.FMT_I_E: "</i>",
-    Tokenizer.FMT_D_B: "<span style='text-decoration: line-through;'>",
-    Tokenizer.FMT_D_E: "</span>",
-    Tokenizer.FMT_U_B: "<u>",
-    Tokenizer.FMT_U_E: "</u>",
-    Tokenizer.FMT_M_B: "<mark>",
-    Tokenizer.FMT_M_E: "</mark>",
-    Tokenizer.FMT_SUP_B: "<sup>",
-    Tokenizer.FMT_SUP_E: "</sup>",
-    Tokenizer.FMT_SUB_B: "<sub>",
-    Tokenizer.FMT_SUB_E: "</sub>",
-    Tokenizer.FMT_STRIP: "",
-}
-
 HTML5_TAGS = {
     Tokenizer.FMT_B_B: "<strong>",
     Tokenizer.FMT_B_E: "</strong>",
@@ -82,14 +64,9 @@ class ToHtml(Tokenizer):
     also used by the Document Viewer, and Manuscript Build Preview.
     """
 
-    M_PREVIEW = 0  # Tweak output for the DocViewer
-    M_EXPORT  = 1  # Tweak output for saving to HTML or printing
-    M_EBOOK   = 2  # Tweak output for converting to epub
-
     def __init__(self, project: NWProject) -> None:
         super().__init__(project)
 
-        self._genMode = self.M_EXPORT
         self._cssStyles = True
         self._fullHTML: list[str] = []
 
@@ -111,11 +88,6 @@ class ToHtml(Tokenizer):
     ##
     #  Setters
     ##
-
-    def setPreview(self, state: bool) -> None:
-        """Set to preview generator mode."""
-        self._genMode = self.M_PREVIEW if state else self.M_EXPORT
-        return
 
     def setStyles(self, cssStyles: bool) -> None:
         """Enable or disable CSS styling. Some elements may still have
@@ -157,8 +129,7 @@ class ToHtml(Tokenizer):
         """Convert the list of text tokens into an HTML document."""
         self._result = ""
 
-        hTags = HTML4_TAGS if self._genMode == self.M_PREVIEW else HTML5_TAGS
-        if self._isNovel and self._genMode != self.M_PREVIEW:
+        if self._isNovel:
             # For story files, we bump the titles one level up
             h1Cl = " class='title'"
             h1 = "h1"
@@ -240,7 +211,7 @@ class ToHtml(Tokenizer):
 
             # Process Text Type
             if tType == self.T_TEXT:
-                lines.append(f"<p{hStyle}>{self._formatText(tText, tFormat, hTags)}</p>\n")
+                lines.append(f"<p{hStyle}>{self._formatText(tText, tFormat)}</p>\n")
 
             elif tType == self.T_TITLE:
                 tHead = tText.replace(nwHeadFmt.BR, "<br>")
@@ -269,13 +240,13 @@ class ToHtml(Tokenizer):
                 lines.append(f"<p class='skip'{hStyle}>&nbsp;</p>\n")
 
             elif tType == self.T_SYNOPSIS and self._doSynopsis:
-                lines.append(self._formatSynopsis(self._formatText(tText, tFormat, hTags), True))
+                lines.append(self._formatSynopsis(self._formatText(tText, tFormat), True))
 
             elif tType == self.T_SHORT and self._doSynopsis:
-                lines.append(self._formatSynopsis(self._formatText(tText, tFormat, hTags), False))
+                lines.append(self._formatSynopsis(self._formatText(tText, tFormat), False))
 
             elif tType == self.T_COMMENT and self._doComments:
-                lines.append(self._formatComments(self._formatText(tText, tFormat, hTags)))
+                lines.append(self._formatComments(self._formatText(tText, tFormat)))
 
             elif tType == self.T_KEYWORD and self._doKeywords:
                 tag, text = self._formatKeywords(tText)
@@ -291,7 +262,6 @@ class ToHtml(Tokenizer):
     def appendFootnotes(self) -> None:
         """Append the footnotes in the buffer."""
         if self._usedNotes:
-            tags = HTML4_TAGS if self._genMode == self.M_PREVIEW else HTML5_TAGS
             footnotes = self._localLookup("Footnotes")
 
             lines = []
@@ -299,7 +269,7 @@ class ToHtml(Tokenizer):
             lines.append("<ol>\n")
             for key, index in self._usedNotes.items():
                 if content := self._footnotes.get(key):
-                    text = self._formatText(*content, tags)
+                    text = self._formatText(*content)
                     lines.append(f"<li id='footnote_{index}'><p>{text}</p></li>\n")
             lines.append("</ol>\n")
 
@@ -468,7 +438,7 @@ class ToHtml(Tokenizer):
     #  Internal Functions
     ##
 
-    def _formatText(self, text: str, tFmt: T_Formats, tags: dict[int, str]) -> str:
+    def _formatText(self, text: str, tFmt: T_Formats) -> str:
         """Apply formatting tags to text."""
         temp = text
         for pos, fmt, data in reversed(tFmt):
@@ -481,7 +451,7 @@ class ToHtml(Tokenizer):
                 else:
                     html = "<sup>ERR</sup>"
             else:
-                html = tags.get(fmt, "ERR")
+                html = HTML5_TAGS.get(fmt, "ERR")
             temp = f"{temp[:pos]}{html}{temp[pos:]}"
         temp = temp.replace("\n", "<br>")
         return stripEscape(temp)
@@ -492,18 +462,12 @@ class ToHtml(Tokenizer):
             sSynop = self._localLookup("Synopsis")
         else:
             sSynop = self._localLookup("Short Description")
-        if self._genMode == self.M_PREVIEW:
-            return f"<p class='note'><span class='modifier'>{sSynop}:</span> {text}</p>\n"
-        else:
-            return f"<p class='synopsis'><strong>{sSynop}:</strong> {text}</p>\n"
+        return f"<p class='synopsis'><strong>{sSynop}:</strong> {text}</p>\n"
 
     def _formatComments(self, text: str) -> str:
         """Apply HTML formatting to comments."""
-        if self._genMode == self.M_PREVIEW:
-            return f"<p class='comment'>{text}</p>\n"
-        else:
-            sComm = self._localLookup("Comment")
-            return f"<p class='comment'><strong>{sComm}:</strong> {text}</p>\n"
+        sComm = self._localLookup("Comment")
+        return f"<p class='comment'><strong>{sComm}:</strong> {text}</p>\n"
 
     def _formatKeywords(self, text: str) -> tuple[str, str]:
         """Apply HTML formatting to keywords."""
@@ -519,13 +483,8 @@ class ToHtml(Tokenizer):
                 if two:
                     result += f" | <span class='optional'>{two}</a>"
             else:
-                if self._genMode == self.M_PREVIEW:
-                    result += ", ".join(
-                        f"<a class='tag' href='#{bits[0][1:]}={t}'>{t}</a>" for t in bits[1:]
-                    )
-                else:
-                    result += ", ".join(
-                        f"<a class='tag' href='#tag_{t}'>{t}</a>" for t in bits[1:]
-                    )
+                result += ", ".join(
+                    f"<a class='tag' href='#tag_{t}'>{t}</a>" for t in bits[1:]
+                )
 
         return bits[0][1:], result

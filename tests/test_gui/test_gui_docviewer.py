@@ -27,7 +27,7 @@ from PyQt5.QtGui import QMouseEvent, QTextCursor
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.core.tohtml import ToHtml
+from novelwriter.core.toqdoc import ToQTextDocument
 from novelwriter.enum import nwDocAction
 from novelwriter.gui.docviewer import GuiDocViewer
 from novelwriter.types import QtModeNone, QtMouseLeft
@@ -119,7 +119,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     # Select All
     assert docViewer.docAction(nwDocAction.SEL_ALL) is True
     cursor = docViewer.textCursor()
-    assert len(cursor.selectedText()) == 3061
+    assert len(cursor.selectedText()) == 3060
 
     # Other actions
     assert docViewer.docAction(nwDocAction.NO_ACTION) is False
@@ -157,7 +157,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     docViewer.setTextCursor(cursor)
     docViewer._makeSelection(QTextCursor.WordUnderCursor)
     rect = docViewer.cursorRect()
-    docViewer._linkClicked(QUrl("#char=Bod"))
+    docViewer._linkClicked(QUrl("#tag_bod"))
     assert docViewer.docHandle == "4c4f28287af27"
 
     # Click mouse nav buttons
@@ -196,19 +196,19 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Document footer show/hide synopsis
     assert nwGUI.viewDocument("f96ec11c6a3da") is True
-    assert len(docViewer.toPlainText()) == 4315
+    assert len(docViewer.toPlainText()) == 4314
     docViewer.docFooter._doToggleSynopsis(False)
-    assert len(docViewer.toPlainText()) == 4099
+    assert len(docViewer.toPlainText()) == 4098
 
     # Document footer show/hide comments
     assert nwGUI.viewDocument("846352075de7d") is True
-    assert len(docViewer.toPlainText()) == 675
+    assert len(docViewer.toPlainText()) == 683
     docViewer.docFooter._doToggleComments(False)
-    assert len(docViewer.toPlainText()) == 635
+    assert len(docViewer.toPlainText()) == 634
 
     # Crash the HTML rendering
     with monkeypatch.context() as mp:
-        mp.setattr(ToHtml, "doConvert", causeException)
+        mp.setattr(ToQTextDocument, "doConvert", causeException)
         assert docViewer.loadText("846352075de7d") is False
         assert docViewer.toPlainText() == "An error occurred while generating the preview."
 

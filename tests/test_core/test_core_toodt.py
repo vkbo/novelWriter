@@ -520,9 +520,9 @@ def testCoreToOdt_ConvertParagraphs(mockGUI):
     assert odt.errData == []
     assert xmlToText(odt._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Separator" />'
+        '<text:p text:style-name="Text_20_body" />'
         '<text:p text:style-name="Text_20_body">Text</text:p>'
-        '<text:p text:style-name="Separator" />'
+        '<text:p text:style-name="Text_20_body" />'
         '<text:p text:style-name="Text_20_body">Text</text:p>'
         '</office:text>'
     )

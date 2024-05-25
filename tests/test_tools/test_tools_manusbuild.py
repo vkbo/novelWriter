@@ -40,7 +40,7 @@ from tests.tools import buildTestProject
 
 
 @pytest.mark.gui
-def testManuscriptBuild_Main(
+def testToolManuscriptBuild_Main(
     monkeypatch, qtbot: QtBot, nwGUI: GuiMain, fncPath: Path, projPath: Path, mockRnd
 ):
     """Test the GuiManuscriptBuild dialog."""

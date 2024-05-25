@@ -31,24 +31,21 @@ import logging
 from enum import Enum
 
 from PyQt5.QtCore import QPoint, Qt, QUrl, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCursor, QMouseEvent, QPalette, QResizeEvent, QTextCursor, QTextOption
+from PyQt5.QtGui import QCursor, QMouseEvent, QPalette, QResizeEvent, QTextCursor
 from PyQt5.QtWidgets import (
     QAction, QApplication, QFrame, QHBoxLayout, QLabel, QMenu, QTextBrowser,
     QToolButton, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import cssCol
 from novelwriter.constants import nwHeaders, nwUnicode
-from novelwriter.core.tohtml import ToHtml
+from novelwriter.core.toqdoc import TextDocumentTheme, ToQTextDocument
 from novelwriter.enum import nwDocAction, nwDocMode, nwItemType
 from novelwriter.error import logException
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
-from novelwriter.types import (
-    QtAlignCenterTop, QtAlignJustify, QtKeepAnchor, QtMouseLeft, QtMoveAnchor
-)
+from novelwriter.types import QtAlignCenterTop, QtKeepAnchor, QtMouseLeft, QtMoveAnchor
 
 logger = logging.getLogger(__name__)
 
@@ -69,6 +66,7 @@ class GuiDocViewer(QTextBrowser):
 
         # Internal Variables
         self._docHandle = None
+        self._docTheme = TextDocumentTheme()
 
         # Settings
         self.setMinimumWidth(CONFIG.pxInt(300))
@@ -137,8 +135,10 @@ class GuiDocViewer(QTextBrowser):
 
     def initViewer(self) -> None:
         """Set editor settings from main config."""
-        self._makeStyleSheet()
-        self.initFont()
+        # Set the font. See issues #1862 and #1875.
+        self.setFont(CONFIG.textFont)
+        self.docHeader.updateFont()
+        self.docFooter.updateFont()
 
         # Set the widget colours to match syntax theme
         mainPalette = self.palette()
@@ -151,16 +151,23 @@ class GuiDocViewer(QTextBrowser):
         docPalette.setColor(QPalette.ColorRole.Base, SHARED.theme.colBack)
         docPalette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
         self.viewport().setPalette(docPalette)
-
         self.docHeader.matchColours()
         self.docFooter.matchColours()
 
+        # Update theme colours
+        self._docTheme.text      = SHARED.theme.colText
+        self._docTheme.highlight = SHARED.theme.colMark
+        self._docTheme.head      = SHARED.theme.colHead
+        self._docTheme.comment   = SHARED.theme.colHidden
+        self._docTheme.note      = SHARED.theme.colNote
+        self._docTheme.code      = SHARED.theme.colCode
+        self._docTheme.modifier  = SHARED.theme.colMod
+        self._docTheme.keyword   = SHARED.theme.colKey
+        self._docTheme.tag       = SHARED.theme.colTag
+        self._docTheme.optional  = SHARED.theme.colOpt
+
         # Set default text margins
         self.document().setDocumentMargin(0)
-        options = QTextOption()
-        if CONFIG.doJustify:
-            options.setAlignment(QtAlignJustify)
-        self.document().setDefaultTextOption(options)
 
         # Scroll bars
         if CONFIG.hideVScroll:
@@ -181,16 +188,6 @@ class GuiDocViewer(QTextBrowser):
 
         return
 
-    def initFont(self) -> None:
-        """Set the font of the main widget and sub-widgets. This needs
-        special attention since there appears to be a bug in Qt 5.15.3.
-        See issues #1862 and #1875.
-        """
-        self.setFont(CONFIG.textFont)
-        self.docHeader.updateFont()
-        self.docFooter.updateFont()
-        return
-
     def loadText(self, tHandle: str, updateHistory: bool = True) -> bool:
         """Load text into the viewer from an item handle."""
         if not SHARED.project.tree.checkType(tHandle, nwItemType.FILE):
@@ -202,22 +199,22 @@ class GuiDocViewer(QTextBrowser):
         QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
 
         sPos = self.verticalScrollBar().value()
-        aDoc = ToHtml(SHARED.project)
-        aDoc.setPreview(True)
-        aDoc.setKeywords(True)
-        aDoc.setComments(CONFIG.viewComments)
-        aDoc.setSynopsis(CONFIG.viewSynopsis)
-        aDoc.setLinkHeadings(True)
+        qDoc = ToQTextDocument(SHARED.project)
+        qDoc.setJustify(CONFIG.doJustify)
+        qDoc.initDocument(CONFIG.textFont, self._docTheme)
+        qDoc.setKeywords(True)
+        qDoc.setComments(CONFIG.viewComments)
+        qDoc.setSynopsis(CONFIG.viewSynopsis)
 
         # Be extra careful here to prevent crashes when first opening a
         # project as a crash here leaves no way of recovering.
         # See issue #298
         try:
-            aDoc.setText(tHandle)
-            aDoc.doPreProcessing()
-            aDoc.tokenizeText()
-            aDoc.doConvert()
-            aDoc.appendFootnotes()
+            qDoc.setText(tHandle)
+            qDoc.doPreProcessing()
+            qDoc.tokenizeText()
+            qDoc.doConvert()
+            qDoc.appendFootnotes()
         except Exception:
             logger.error("Failed to generate preview for document with handle '%s'", tHandle)
             logException()
@@ -233,11 +230,7 @@ class GuiDocViewer(QTextBrowser):
             self.docHistory.append(tHandle)
 
         self.setDocumentTitle(tHandle)
-
-        # Replace tabs before setting the HTML, and then put them back in
-        self.setHtml(aDoc.result.replace("\t", "!!tab!!"))
-        while self.find("!!tab!!"):
-            self.textCursor().insertText("\t")
+        self.setDocument(qDoc.document)
 
         if self._docHandle == tHandle:
             # This is a refresh, so we set the scrollbar back to where it was
@@ -375,12 +368,10 @@ class GuiDocViewer(QTextBrowser):
     @pyqtSlot("QUrl")
     def _linkClicked(self, url: QUrl) -> None:
         """Process a clicked link in the document."""
-        link = url.url()
-        logger.debug("Clicked link: '%s'", link)
-        if len(link) > 0:
-            bits = link.split("=")
-            if len(bits) == 2:
-                self.loadDocumentTagRequest.emit(bits[1], nwDocMode.VIEW)
+        if link := url.url():
+            logger.debug("Clicked link: '%s'", link)
+            if (bits := link.partition("_")) and bits[2]:
+                self.loadDocumentTagRequest.emit(bits[2], nwDocMode.VIEW)
         return
 
     @pyqtSlot("QPoint")
@@ -468,34 +459,6 @@ class GuiDocViewer(QTextBrowser):
         """Handle text selection at a given location."""
         self.setTextCursor(self.cursorForPosition(pos))
         self._makeSelection(selType)
-        return
-
-    def _makeStyleSheet(self) -> None:
-        """Generate an appropriate style sheet for the document viewer,
-        based on the current syntax highlighter theme.
-        """
-        colHead = cssCol(SHARED.theme.colHead)
-        colHide = cssCol(SHARED.theme.colHidden)
-        colKeys = cssCol(SHARED.theme.colKey)
-        colMark = cssCol(SHARED.theme.colMark)
-        colMods = cssCol(SHARED.theme.colMod)
-        colNote = cssCol(SHARED.theme.colNote)
-        colOpts = cssCol(SHARED.theme.colOpt)
-        colTags = cssCol(SHARED.theme.colTag)
-        colText = cssCol(SHARED.theme.colText)
-        self.document().setDefaultStyleSheet(
-            f"body {{color: {colText};}}\n"
-            f"h1, h2, h3, h4 {{color: {colHead};}}\n"
-            f"mark {{background-color: {colMark};}}\n"
-            f".keyword {{color: {colKeys};}}\n"
-            f".tag {{color: {colTags};}}\n"
-            f".optional {{color: {colOpts};}}\n"
-            f".comment {{color: {colHide};}}\n"
-            f".note {{color: {colNote};}}\n"
-            f".modifier {{color: {colMods};}}\n"
-            ".title {text-align: center;}\n"
-        )
-
         return
 
 

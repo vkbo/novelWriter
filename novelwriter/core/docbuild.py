@@ -39,6 +39,7 @@ from novelwriter.core.tohtml import ToHtml
 from novelwriter.core.tokenizer import Tokenizer
 from novelwriter.core.tomarkdown import ToMarkdown
 from novelwriter.core.toodt import ToOdt
+from novelwriter.core.toqdoc import TextDocumentTheme, ToQTextDocument
 from novelwriter.enum import nwBuildFmt
 from novelwriter.error import formatException, logException
 
@@ -54,7 +55,7 @@ class NWBuildDocument:
 
     __slots__ = (
         "_project", "_build", "_queue", "_error", "_cache", "_count",
-        "_outline", "_preview"
+        "_outline",
     )
 
     def __init__(self, project: NWProject, build: BuildSettings) -> None:
@@ -65,7 +66,6 @@ class NWBuildDocument:
         self._cache = None
         self._count = False
         self._outline = False
-        self._preview = False
         return
 
     ##
@@ -99,15 +99,6 @@ class NWBuildDocument:
         self._outline = state
         return
 
-    def setPreviewMode(self, state: bool) -> None:
-        """Set the preview mode of the build. This also enables stats
-        count and outline mode.
-        """
-        self._preview = state
-        self._outline = state
-        self._count = state
-        return
-
     ##
     #  Special Methods
     ##
@@ -132,6 +123,32 @@ class NWBuildDocument:
         for item in self._project.tree:
             if filtered.get(item.itemHandle, False):
                 self._queue.append(item.itemHandle)
+        return
+
+    def iterBuildPreview(self, theme: TextDocumentTheme) -> Iterable[tuple[int, bool]]:
+        """Build a preview QTextDocument."""
+        makeObj = ToQTextDocument(self._project)
+        filtered = self._setupBuild(makeObj)
+
+        self._outline = True
+        self._count = True
+
+        font = QFont()
+        font.fromString(self._build.getStr("format.textFont"))
+
+        makeObj.initDocument(font, theme)
+        for i, tHandle in enumerate(self._queue):
+            self._error = None
+            if filtered.get(tHandle, (False, 0))[0]:
+                yield i, self._doBuild(makeObj, tHandle)
+            else:
+                yield i, False
+
+        makeObj.appendFootnotes()
+
+        self._error = None
+        self._cache = makeObj
+
         return
 
     def iterBuild(self, path: Path, bFormat: nwBuildFmt) -> Iterable[tuple[int, bool]]:
@@ -182,8 +199,6 @@ class NWBuildDocument:
         makeObj = ToHtml(self._project)
         filtered = self._setupBuild(makeObj)
 
-        makeObj.setPreview(self._preview)
-        makeObj.setLinkHeadings(self._preview)
         for i, tHandle in enumerate(self._queue):
             self._error = None
             if filtered.get(tHandle, (False, 0))[0]:
@@ -193,7 +208,7 @@ class NWBuildDocument:
 
         makeObj.appendFootnotes()
 
-        if not (self._build.getBool("html.preserveTabs") or self._preview):
+        if not self._build.getBool("html.preserveTabs"):
             makeObj.replaceTabs()
 
         self._error = None
