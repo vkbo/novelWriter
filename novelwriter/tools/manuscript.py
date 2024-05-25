@@ -246,6 +246,7 @@ class GuiManuscript(NToolDialog):
         self._updateBuildsList()
         if selected in self._buildMap:
             self.buildList.setCurrentItem(self._buildMap[selected])
+            QTimer.singleShot(200, self._generatePreview)
 
         return
 
@@ -363,8 +364,8 @@ class GuiManuscript(NToolDialog):
     def _buildManuscript(self) -> None:
         """Open the build dialog and build the manuscript."""
         if build := self._getSelectedBuild():
-            dlgBuild = GuiManuscriptBuild(self, build)
-            dlgBuild.exec()
+            dialog = GuiManuscriptBuild(self, build)
+            dialog.exec()
 
             # After the build is done, save build settings changes
             if build.changed:
