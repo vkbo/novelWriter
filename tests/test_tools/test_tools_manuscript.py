@@ -40,7 +40,7 @@ from tests.tools import C, buildTestProject
 
 
 @pytest.mark.gui
-def testManuscript_Init(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
+def testToolManuscript_Init(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     """Test the init/main functionality of the GuiManuscript dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
@@ -54,38 +54,27 @@ def testManuscript_Init(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     manus.show()
     assert manus.docPreview.toPlainText().strip() == ""
 
-    # Run the default build
+    # First load should have create a default build
+    assert manus.buildList.count() == 1
+
+    # Loading again should not add a new build
+    manus.loadContent()
+    assert manus.buildList.count() == 1
+
+    # Build a preview
     manus.buildList.clearSelection()
     manus.buildList.setCurrentRow(0)
     with qtbot.waitSignal(manus.docPreview.document().contentsChanged):
         manus.btnPreview.click()
     assert manus.docPreview.toPlainText().strip() == allText
 
-    manus.close()
-
-    # # A new dialog should load the old build
-    # manus = GuiManuscript(nwGUI)
-    # manus.show()
-    # manus.loadContent()
-    # assert manus.docPreview.toPlainText().strip() == allText
-    # manus.close()
-
-    # # But blocking the reload should leave it empty
-    # with monkeypatch.context() as mp:
-    #     mp.setattr("builtins.open", lambda *a, **k: causeOSError)
-    #     manus = GuiManuscript(nwGUI)
-    #     manus.show()
-    #     manus.loadContent()
-    #     assert manus.docPreview.toPlainText().strip() == ""
-
-    # nwGUI.closeProject()  # This should auto-close the manuscript tool
-    # assert manus.isHidden()
+    nwGUI.closeProject()  # This should auto-close the manuscript tool
 
     # qtbot.stop()
 
 
 @pytest.mark.gui
-def testManuscript_Builds(qtbot, nwGUI, projPath):
+def testToolManuscript_Builds(qtbot, nwGUI, projPath):
     """Test the handling of builds in the GuiManuscript dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
@@ -156,7 +145,7 @@ def testManuscript_Builds(qtbot, nwGUI, projPath):
 
 
 @pytest.mark.gui
-def testManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
+def testToolManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     """Test other features of the GuiManuscript dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
@@ -280,7 +269,7 @@ def testManuscript_Features(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
 
 @pytest.mark.gui
 @pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Not running on Darwin")
-def testManuscript_Print(monkeypatch, qtbot, nwGUI, projPath):
+def testToolManuscript_Print(monkeypatch, qtbot, nwGUI, projPath):
     """Test the print feature of the GuiManuscript dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)

@@ -40,7 +40,7 @@ from tests.tools import C, buildTestProject
 
 
 @pytest.mark.gui
-def testBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
+def testToolBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
     """Test the initialisation of the GuiBuildSettings dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
@@ -110,7 +110,7 @@ def testBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
 
 
 @pytest.mark.gui
-def testBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
+def testToolBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
     """Test the Filter Tab of the GuiBuildSettings dialog."""
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
@@ -314,7 +314,7 @@ def testBuildSettings_Filter(qtbot, nwGUI, projPath, mockRnd):
 
 
 @pytest.mark.gui
-def testBuildSettings_Headings(qtbot, nwGUI):
+def testToolBuildSettings_Headings(qtbot, nwGUI):
     """Test the Headings Tab of the GuiBuildSettings dialog."""
     build = BuildSettings()
 
@@ -484,7 +484,7 @@ def testBuildSettings_Headings(qtbot, nwGUI):
 
 
 @pytest.mark.gui
-def testBuildSettings_Content(qtbot, nwGUI):
+def testToolBuildSettings_Content(qtbot, nwGUI):
     """Test the Content Tab of the GuiBuildSettings dialog."""
     build = BuildSettings()
 
@@ -544,7 +544,7 @@ def testBuildSettings_Content(qtbot, nwGUI):
 
 
 @pytest.mark.gui
-def testBuildSettings_Format(monkeypatch, qtbot, nwGUI):
+def testToolBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     """Test the Format Tab of the GuiBuildSettings dialog."""
     build = BuildSettings()
 
@@ -650,7 +650,7 @@ def testBuildSettings_Format(monkeypatch, qtbot, nwGUI):
 
 
 @pytest.mark.gui
-def testBuildSettings_Output(qtbot, nwGUI):
+def testToolBuildSettings_Output(qtbot, nwGUI):
     """Test the Output Tab of the GuiBuildSettings dialog."""
     build = BuildSettings()
 
