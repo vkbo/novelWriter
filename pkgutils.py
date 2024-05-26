@@ -632,8 +632,8 @@ def makeWindowsZip() -> None:
 ##
 
 def makeDebianPackage(
-    signKey: str | None = None, sourceBuild: bool = False,
-    distName: str = "unstable", buildName: str = "", oldSetuptools: bool = False
+    signKey: str | None = None, sourceBuild: bool = False, distName: str = "unstable",
+    buildName: str = "", oldSetuptools: bool = False, forLaunchpad: bool = False
 ) -> str:
     """Build a Debian package."""
     print("")
@@ -651,7 +651,10 @@ def makeDebianPackage(
     pkgDate = email.utils.format_datetime(relDate.replace(hour=12, tzinfo=None))
     print("")
 
-    pkgVers = numVers.replace("a", "~a").replace("b", "~b").replace("rc", "~rc")
+    if forLaunchpad:
+        pkgVers = numVers.replace("a", "~a").replace("b", "~b").replace("rc", "~rc")
+    else:
+        pkgVers = numVers
     pkgVers = f"{pkgVers}+{buildName}" if buildName else pkgVers
 
     # Set Up Folder
@@ -862,6 +865,7 @@ def makeForLaunchpad(doSign: bool = False, isFirst: bool = False) -> None:
             distName=codeName,
             buildName=buildName,
             oldSetuptools=oldSetup,
+            forLaunchpad=True,
         )
         dputCmd.append(dCmd)
 
