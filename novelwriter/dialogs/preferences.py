@@ -546,7 +546,7 @@ class GuiPreferences(QDialog):
         self.allowOpenDial = NSwitch(self)
         self.allowOpenDial.setChecked(CONFIG.allowOpenDial)
         self.mainForm.addRow(
-            self.tr("Allow open-ended sialogue"), self.allowOpenDial,
+            self.tr("Allow open-ended dialogue"), self.allowOpenDial,
             self.tr("Highlight dialogue line with no closing quote.")
         )
 
@@ -583,8 +583,8 @@ class GuiPreferences(QDialog):
         self.altDialogClose.setText(CONFIG.altDialogClose)
 
         self.mainForm.addRow(
-            self.tr("Alternative dialog symbols"), [self.altDialogOpen, self.altDialogClose],
-            self.tr("Custom highlighting of dialog text.")
+            self.tr("Alternative dialogue symbols"), [self.altDialogOpen, self.altDialogClose],
+            self.tr("Custom highlighting of dialogue text.")
         )
 
         self.highlightEmph = NSwitch(self)
