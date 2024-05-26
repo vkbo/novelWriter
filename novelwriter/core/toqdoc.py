@@ -125,6 +125,7 @@ class ToQTextDocument(Tokenizer):
         self._mSep  = (mScale * self._marginSep[0], mScale * self._marginSep[1])
 
         self._mIndent = mScale * 2.0
+        self._tIndent = mScale * self._firstWidth
 
         # Block Format
         # ============
@@ -224,6 +225,8 @@ class ToQTextDocument(Tokenizer):
                     bFmt.setLeftMargin(self._mIndent)
                 if tStyle & self.A_IND_R:
                     bFmt.setRightMargin(self._mIndent)
+                if tStyle & self.A_IND_T:
+                    bFmt.setTextIndent(self._tIndent)
 
             if tType == self.T_TEXT:
                 newBlock(cursor, bFmt)
