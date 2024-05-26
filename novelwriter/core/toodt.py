@@ -438,7 +438,6 @@ class ToOdt(Tokenizer):
         self._result = ""  # Not used, but cleared just in case
 
         xText = self._xText
-        pIndent = True
         for tType, _, tText, tFormat, tStyle in self._tokens:
 
             # Styles
@@ -455,7 +454,6 @@ class ToOdt(Tokenizer):
 
                 if tStyle & self.A_PBB:
                     oStyle.setBreakBefore("page")
-
                 if tStyle & self.A_PBA:
                     oStyle.setBreakAfter("page")
 
@@ -469,16 +467,12 @@ class ToOdt(Tokenizer):
                 if tStyle & self.A_IND_R:
                     oStyle.setMarginRight(self._fBlockIndent)
 
-            if not self._indentFirst and tType in self.L_SKIP_INDENT:
-                pIndent = False
-
             # Process Text Types
             if tType == self.T_TEXT:
-                if self._firstIndent and pIndent and oStyle.isUnaligned():
+                if tStyle & self.A_IND_T:
                     self._addTextPar(xText, S_FIND, oStyle, tText, tFmt=tFormat)
                 else:
                     self._addTextPar(xText, S_TEXT, oStyle, tText, tFmt=tFormat)
-                pIndent = True
 
             elif tType == self.T_TITLE:
                 # Title must be text:p

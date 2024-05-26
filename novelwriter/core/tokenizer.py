@@ -115,6 +115,10 @@ class Tokenizer(ABC):
     A_Z_BTMMRG = 0x0080  # Zero bottom margin
     A_IND_L    = 0x0100  # Left indentation
     A_IND_R    = 0x0200  # Right indentation
+    A_IND_T    = 0x0400  # Text indentation
+
+    # Masks
+    M_ALIGNED = A_LEFT | A_RIGHT | A_CENTRE | A_JUSTIFY
 
     # Lookups
     L_HEADINGS = [T_TITLE, T_HEAD1, T_HEAD2, T_HEAD3, T_HEAD4]
@@ -839,12 +843,16 @@ class Tokenizer(ABC):
         pLines: list[T_Token] = []
 
         tCount = len(tokens)
+        pIndent = True
         for n, cToken in enumerate(tokens):
 
             if n > 0:
                 pToken = tokens[n-1]  # Look behind
             if n < tCount - 1:
                 nToken = tokens[n+1]  # Look ahead
+
+            if not self._indentFirst and cToken[0] in self.L_SKIP_INDENT:
+                pIndent = False
 
             if cToken[0] == self.T_EMPTY:
                 # We don't need to keep the empty lines after this pass
@@ -866,8 +874,13 @@ class Tokenizer(ABC):
                 pLines.append(cToken)
                 if nToken[0] != self.T_TEXT:
                     nLines = len(pLines)
+                    cStyle = pLines[0][4]
+                    if self._firstIndent and pIndent and not cStyle & self.M_ALIGNED:
+                        cStyle |= self.A_IND_T
                     if nLines == 1:
-                        self._tokens.append(pLines[0])
+                        self._tokens.append((
+                            self.T_TEXT, pLines[0][1], pLines[0][2], pLines[0][3], cStyle
+                        ))
                     elif nLines > 1:
                         tTxt = ""
                         tFmt: T_Formats = []
@@ -876,9 +889,10 @@ class Tokenizer(ABC):
                             tTxt += f"{aToken[2]}{lineSep}"
                             tFmt.extend((p+tLen, fmt, key) for p, fmt, key in aToken[3])
                         self._tokens.append((
-                            self.T_TEXT, pLines[0][1], tTxt[:-1], tFmt, pLines[0][4]
+                            self.T_TEXT, pLines[0][1], tTxt[:-1], tFmt, cStyle
                         ))
                     pLines = []
+                    pIndent = True
 
             else:
                 self._tokens.append(cToken)
