@@ -1,5 +1,103 @@
 # novelWriter Changelog
 
+## Version 2.5 Beta 1 [2024-05-26]
+
+### Release Notes
+
+This is a beta release of the next release version, and is intended for testing purposes. Please be
+careful when using this version on live writing projects, and make sure you take frequent backups.
+
+### Detailed Changelog
+
+**General Changes**
+
+* novelWriter now requires Python 3.9 and Qt 5.15 as a minimum. That means Ubuntu 20.04 and older
+  are no longer supported for the Debian packages. Users on Ubuntu 20.04 and equivalent Linux
+  distros must use the AppImage. PRs #1826 and #1833.
+
+**Major Features**
+
+* Status and Importance icons can now be assigned a shape in addition to a colour. Issue #1786.
+  PRs #1810 and #1819.
+* Footnotes have been added. They use a modified comment format for specifying the footnote text,
+  and a shortcode for inserting the footnote into the text. They are linked via a key. If the
+  footnote is inserted via the **Insert** menu, a unique key is generated. Issue #342. PR #1832.
+* Comments in general now support formatting, so format tags work just like in regular text. This
+  was needed for footnotes, but has been expanded to include all comments. PR #1832.
+* Two new themes have been added. Dracula is available as a set for both the GUI and the editor.
+  Snazzy Light is available for syntax only, but works well with the default light GUI theme.
+  PR #1840.
+* Character dialogue highlighting has been completely redesigned. The highlighting rule now
+  specifically relates to dialogue, and not just quoted text in general. To that effect, more rules
+  for detecting what is and isn't dialogue has been added. This is designed to support difference
+  between dialogue conventions in different languages. Issues #1770 and #1771. PR #1864.
+* The font settings in Preferences now considers the full range of font options, in particular font
+  style and weight. The changes include the font size in these settings, so the additional setting
+  for font size has been removed. Use the font dialog to pick size as well. Due to this removal,
+  the font size has been reset to default and must be set again by the user. Issue #1733. PR #1881.
+* The document viewer and the manuscript preview now uses a completely new class to generate the
+  formatted text. The old method used an outdated HTML format as the go-between, which restricted
+  what formatting could be applied. The main noticeable change to users at the moment should be the
+  size of headings, that now match the size in the editor. Issue #1882. PR #1892.
+
+**Improvements**
+
+* The default dark theme has been redesigned to match the GUI theme a little better, and is now
+  also consistent with the default light themes. PRs #1836 and #1840.
+* Special comments now have a different text colour than plain comments. PR #1836.
+* The various Tomorrow themes are now a little more consistent in what colours are used for which
+  components. More variation has also been added. PR #1840.
+* The Tango theme has been updated. PR #1840.
+* The last cursor position is now always saved when a document is closed in the editor, even if the
+  content has not been changed. PR #1849.
+* The settings for first line indent have now been extended to allow setting how deep the indents
+  are and whether or not to indent the first paragraph after a heading or break. The settings have
+  also moved from being Open Document specific to the general formatting tab for manuscripts.
+  PR #1857.
+* Preserving in-paragraph line breaks is now a general Manuscript setting that applies to all
+  output formats. PR #1891.
+* The Manuscript builds now also uses the full font settings of the selected output font, not just
+  the font family and size option. Since the size option has been merged into the general font
+  choice, the separate font size setting has been dropped and users must set it again. PR #1891.
+* It is now possible to disable the usage of the font selection dialog from your operating system.
+  At least on Linux Gnome desktops, the system's font dialog lacks a lot of the selection options
+  available in the font dialog provided with Qt. PR #1891.
+
+**Bugfixes**
+
+* Fixed an issue where Manuscript dialogs would be left open if the project was closed. PR #1844.
+* First line indents are no longer reset after a comment. Issue #1852. PR #1857.
+
+**Packaging**
+
+* Minimal zip file release packages can no longer be built from the package utility script. The zip
+  file needed for building the Windows installer is still available. PR #1826.
+* Added build packages for AARCH64 on MacOS. It seems some dependencies still prevents it from
+  being installed cleanly without requiring some virtualisation feature, but it works. PR #1829.
+* AppImages are now released with Python 3.12. PR #1829.
+
+**Other Changes**
+
+* A new GUI theme setting for error text has been added. It is used when error messages need to be
+  displayed on the GUI. PR #1880.
+
+**Code Improvements**
+
+* The behaviour of dialogs across various platforms has been unified and improved a little to
+  ensure more consistent behaviour. It is mostly related to modality and z-order. There are still
+  limitations due to platform restrictions, like non-modal dialogs being stuck on top on Linux
+  Wayland. PR #1844.
+* Some GUI components have been improved and refactored to rely more on signals and slots rather
+  than reaching into each other's classes and calling methods. This is a little more robust.
+  PR #1849.
+* The text tokenizer used to parse the formatting codes in novelWriter has been refactored and
+  improved. In particular, multi-line paragraphs are now processed during the second pass of
+  tokenization rather than when the final format is applied. This allows a much more compact format
+  of the token data, and avoid potential inconsistencies between the various output formats.
+  PR #1885.
+
+----
+
 ## Version 2.4.3 [2024-05-20]
 
 ### Release Notes
