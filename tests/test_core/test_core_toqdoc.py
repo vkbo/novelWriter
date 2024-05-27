@@ -334,6 +334,7 @@ def testCoreToQTextDocument_TextBlockFormats(mockGUI):
     """Test text block formats in the ToQTextDocument class."""
     project = NWProject()
     qdoc = ToQTextDocument(project)
+    qdoc.setFirstLineIndent(True, 2.0, False)
     qdoc.initDocument(CONFIG.textFont, THEME)
 
     qdoc._isNovel = True
@@ -351,10 +352,11 @@ def testCoreToQTextDocument_TextBlockFormats(mockGUI):
         "> Left Indent\n\n"
         "Right Indent <\n\n"
         "> Double Indent <\n\n"
+        "Text Indent\n\n"
     )
     qdoc.tokenizeText()
     qdoc.doConvert()
-    assert qdoc.document.blockCount() == 7
+    assert qdoc.document.blockCount() == 8
 
     # 0: Scene
     block = qdoc.document.findBlockByNumber(0)
@@ -401,6 +403,15 @@ def testCoreToQTextDocument_TextBlockFormats(mockGUI):
     assert bFmt.alignment() == QtAlignAbsolute
     assert bFmt.leftMargin() == qdoc._mIndent
     assert bFmt.rightMargin() == qdoc._mIndent
+
+    # 7: Text Indent
+    block = qdoc.document.findBlockByNumber(7)
+    assert block.text() == "Text Indent"
+    bFmt = block.blockFormat()
+    assert bFmt.alignment() == QtAlignAbsolute
+    assert bFmt.textIndent() == qdoc._tIndent
+    assert bFmt.leftMargin() == 0.0
+    assert bFmt.rightMargin() == 0.0
 
     # Unreachable
     # ===========
