@@ -23,10 +23,11 @@ from __future__ import annotations
 import pytest
 
 from PyQt5.QtCore import QItemSelectionModel
-from PyQt5.QtWidgets import QDialog, QListWidgetItem
+from PyQt5.QtWidgets import QListWidgetItem
 
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.quotes import GuiQuoteSelect
+from novelwriter.types import QtAccepted, QtRejected
 
 
 @pytest.mark.gui
@@ -47,17 +48,17 @@ def testDlgOther_QuoteSelect(qtbot, monkeypatch, nwGUI):
         assert nwQuot.previewLabel.text() == lastItem
 
     nwQuot.accept()
-    assert nwQuot.result() == QDialog.DialogCode.Accepted
+    assert nwQuot.result() == QtAccepted
     assert nwQuot.selectedQuote == lastItem
     nwQuot.close()
 
     # Test Class Method
     with monkeypatch.context() as mp:
-        mp.setattr(GuiQuoteSelect, "result", lambda *a: QDialog.DialogCode.Accepted)
+        mp.setattr(GuiQuoteSelect, "result", lambda *a: QtAccepted)
         assert GuiQuoteSelect.getQuote(nwGUI, current="X") == ("X", True)
 
     with monkeypatch.context() as mp:
-        mp.setattr(GuiQuoteSelect, "result", lambda *a: QDialog.DialogCode.Rejected)
+        mp.setattr(GuiQuoteSelect, "result", lambda *a: QtRejected)
         assert GuiQuoteSelect.getQuote(nwGUI, current="X") == ("X", False)
 
     # qtbot.stop()
@@ -69,13 +70,13 @@ def testDlgOther_EditLabel(qtbot, monkeypatch):
     monkeypatch.setattr(GuiEditLabel, "exec", lambda *a: None)
 
     with monkeypatch.context() as mp:
-        mp.setattr(GuiEditLabel, "result", lambda *a: QDialog.DialogCode.Accepted)
+        mp.setattr(GuiEditLabel, "result", lambda *a: QtAccepted)
         newLabel, dlgOk = GuiEditLabel.getLabel(None, text="Hello World")  # type: ignore
         assert dlgOk is True
         assert newLabel == "Hello World"
 
     with monkeypatch.context() as mp:
-        mp.setattr(GuiEditLabel, "result", lambda *a: QDialog.DialogCode.Rejected)
+        mp.setattr(GuiEditLabel, "result", lambda *a: QtRejected)
         newLabel, dlgOk = GuiEditLabel.getLabel(None, text="Hello World")  # type: ignore
         assert dlgOk is False
         assert newLabel == "Hello World"

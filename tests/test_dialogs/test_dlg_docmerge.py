@@ -25,16 +25,15 @@ import pytest
 from PyQt5.QtCore import Qt
 
 from novelwriter.dialogs.docmerge import GuiDocMerge
-from novelwriter.types import QtUserRole
+from novelwriter.types import QtAccepted, QtRejected, QtUserRole
 
 from tests.tools import C, buildTestProject
 
 
 @pytest.mark.gui
-def testDlgMerge_Main(qtbot, nwGUI, projPath, mockRnd):
-    """Test the merge documents tool.
-    """
-    # Create a new project
+def testDlgMerge_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test the merge documents tool."""
+    monkeypatch.setattr(GuiDocMerge, "exec", lambda *a: None)
     buildTestProject(nwGUI, projPath)
 
     # Check that the dialog kan handle invalid items
@@ -54,13 +53,16 @@ def testDlgMerge_Main(qtbot, nwGUI, projPath, mockRnd):
     itemOne = nwMerge.listBox.item(0)
     itemTwo = nwMerge.listBox.item(1)
 
+    assert itemOne is not None
+    assert itemTwo is not None
+
     assert itemOne.data(QtUserRole) == C.hChapterDoc
     assert itemTwo.data(QtUserRole) == C.hSceneDoc
 
     assert itemOne.checkState() == Qt.CheckState.Checked
     assert itemTwo.checkState() == Qt.CheckState.Checked
 
-    data = nwMerge.getData()
+    data = nwMerge.data()
     assert data["sHandle"] == C.hChapterDir
     assert data["origItems"] == [C.hChapterDir, C.hChapterDoc, C.hSceneDoc]
     assert data["moveToTrash"] is False
@@ -70,7 +72,7 @@ def testDlgMerge_Main(qtbot, nwGUI, projPath, mockRnd):
     itemTwo.setCheckState(Qt.CheckState.Unchecked)
     nwMerge.trashSwitch.setChecked(True)
 
-    data = nwMerge.getData()
+    data = nwMerge.data()
     assert data["sHandle"] == C.hChapterDir
     assert data["origItems"] == [C.hChapterDir, C.hChapterDoc, C.hSceneDoc]
     assert data["moveToTrash"] is True
@@ -79,10 +81,27 @@ def testDlgMerge_Main(qtbot, nwGUI, projPath, mockRnd):
     # Restore default values
     nwMerge._resetList()
 
-    data = nwMerge.getData()
+    data = nwMerge.data()
     assert data["sHandle"] == C.hChapterDir
     assert data["origItems"] == [C.hChapterDir, C.hChapterDoc, C.hSceneDoc]
     assert data["moveToTrash"] is True
     assert data["finalItems"] == [C.hChapterDoc, C.hSceneDoc]
+
+    # Test Class Method
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiDocMerge, "result", lambda *a: QtAccepted)
+        data, status = GuiDocMerge.getData(
+            nwGUI, C.hChapterDir, [C.hChapterDir, C.hChapterDoc, C.hSceneDoc]
+        )
+        assert data["sHandle"] == C.hChapterDir
+        assert status is True
+
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiDocMerge, "result", lambda *a: QtRejected)
+        data, status = GuiDocMerge.getData(
+            nwGUI, C.hChapterDir, [C.hChapterDir, C.hChapterDoc, C.hSceneDoc]
+        )
+        assert data["sHandle"] == C.hChapterDir
+        assert status is False
 
     # qtbot.stop()

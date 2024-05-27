@@ -23,11 +23,12 @@ from __future__ import annotations
 import pytest
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QAction, QDialog, QFileDialog
+from PyQt5.QtWidgets import QAction, QFileDialog
 
 from novelwriter import SHARED
 from novelwriter.core.spellcheck import UserDictionary
 from novelwriter.dialogs.wordlist import GuiWordList
+from novelwriter.types import QtAccepted
 
 from tests.mocked import causeOSError
 from tests.tools import buildTestProject
@@ -39,7 +40,7 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, fncPath, projPath):
     buildTestProject(nwGUI, projPath)
 
     monkeypatch.setattr(GuiWordList, "exec", lambda *a: None)
-    monkeypatch.setattr(GuiWordList, "result", lambda *a: QDialog.DialogCode.Accepted)
+    monkeypatch.setattr(GuiWordList, "result", lambda *a: QtAccepted)
     monkeypatch.setattr(GuiWordList, "accept", lambda *a: None)
 
     # Open project
