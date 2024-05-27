@@ -469,6 +469,8 @@ class ToOdt(Tokenizer):
 
             # Process Text Types
             if tType == self.T_TEXT:
+                # Text indentation is processed here because there is a
+                # dedicated pre-defined style for it
                 if tStyle & self.A_IND_T:
                     self._addTextPar(xText, S_FIND, oStyle, tText, tFmt=tFormat)
                 else:
