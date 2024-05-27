@@ -27,7 +27,6 @@ from __future__ import annotations
 import logging
 
 from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import (
     QAbstractItemView, QDialogButtonBox, QGridLayout, QLabel, QListWidget,
     QListWidgetItem, QVBoxLayout, QWidget
@@ -37,7 +36,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.modified import NDialog
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtDialogCancel, QtDialogOk, QtDialogReset, QtUserRole
+from novelwriter.types import QtAccepted, QtDialogCancel, QtDialogOk, QtDialogReset, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -118,7 +117,7 @@ class GuiDocMerge(NDialog):
         logger.debug("Delete: GuiDocMerge")
         return
 
-    def getData(self) -> dict:
+    def data(self) -> dict:
         """Return the user's choices."""
         finalItems = []
         for i in range(self.listBox.count()):
@@ -131,15 +130,15 @@ class GuiDocMerge(NDialog):
 
         return self._data
 
-    ##
-    #  Events
-    ##
-
-    def closeEvent(self, event: QCloseEvent) -> None:
-        """Capture the close event and perform cleanup."""
-        event.accept()
-        self.deleteLater()
-        return
+    @classmethod
+    def getData(cls, parent: QWidget, handle: str, items: list[str]) -> tuple[dict, bool]:
+        """Pop the dialog and return the result."""
+        cls = GuiDocMerge(parent, handle, items)
+        cls.exec()
+        data = cls.data()
+        accepted = cls.result() == QtAccepted
+        cls.deleteLater()
+        return data, accepted
 
     ##
     #  Private Slots

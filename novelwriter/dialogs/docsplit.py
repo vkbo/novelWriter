@@ -27,7 +27,6 @@ from __future__ import annotations
 import logging
 
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import (
     QAbstractItemView, QComboBox, QDialogButtonBox, QGridLayout, QLabel,
     QListWidget, QListWidgetItem, QVBoxLayout, QWidget
@@ -37,7 +36,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.modified import NDialog
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import QtDialogCancel, QtDialogOk, QtUserRole
+from novelwriter.types import QtAccepted, QtDialogCancel, QtDialogOk, QtUserRole
 
 logger = logging.getLogger(__name__)
 
@@ -146,7 +145,7 @@ class GuiDocSplit(NDialog):
         logger.debug("Delete: GuiDocSplit")
         return
 
-    def getData(self) -> tuple[dict, list]:
+    def data(self) -> tuple[dict, list[str]]:
         """Return the user's choices. Also save the users options for
         the next time the dialog is used.
         """
@@ -179,15 +178,15 @@ class GuiDocSplit(NDialog):
 
         return self._data, self._text
 
-    ##
-    #  Events
-    ##
-
-    def closeEvent(self, event: QCloseEvent) -> None:
-        """Capture the close event and perform cleanup."""
-        event.accept()
-        self.deleteLater()
-        return
+    @classmethod
+    def getData(cls, parent: QWidget, handle: str) -> tuple[dict, list[str], bool]:
+        """Pop the dialog and return the result."""
+        cls = GuiDocSplit(parent, handle)
+        cls.exec()
+        data, text = cls.data()
+        accepted = cls.result() == QtAccepted
+        cls.deleteLater()
+        return data, text, accepted
 
     ##
     #  Private Slots
