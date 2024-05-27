@@ -27,10 +27,10 @@ from __future__ import annotations
 import logging
 
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QKeyEvent, QKeySequence
+from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import (
-    QAbstractButton, QApplication, QCompleter, QDialog, QDialogButtonBox,
-    QFileDialog, QHBoxLayout, QLineEdit, QPushButton, QVBoxLayout, QWidget
+    QAbstractButton, QApplication, QCompleter, QDialogButtonBox, QFileDialog,
+    QHBoxLayout, QLineEdit, QPushButton, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -38,7 +38,9 @@ from novelwriter.common import describeFont
 from novelwriter.constants import nwConst, nwUnicode
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.configlayout import NColourLabel, NScrollableForm
-from novelwriter.extensions.modified import NComboBox, NDoubleSpinBox, NIconToolButton, NSpinBox
+from novelwriter.extensions.modified import (
+    NComboBox, NDialog, NDoubleSpinBox, NIconToolButton, NSpinBox
+)
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.types import (
@@ -49,7 +51,7 @@ from novelwriter.types import (
 logger = logging.getLogger(__name__)
 
 
-class GuiPreferences(QDialog):
+class GuiPreferences(NDialog):
 
     newPreferencesReady = pyqtSignal(bool, bool, bool, bool)
 
@@ -770,13 +772,6 @@ class GuiPreferences(QDialog):
         QApplication.processEvents()
         self.done(nwConst.DLG_FINISHED)
         self.deleteLater()
-        return
-
-    def keyPressEvent(self, event: QKeyEvent) -> None:
-        """Overload keyPressEvent to block enter key to save."""
-        if event.matches(QKeySequence.StandardKey.Cancel):
-            self.close()
-        event.ignore()
         return
 
     ##

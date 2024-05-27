@@ -31,7 +31,7 @@ from enum import Enum
 from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtGui import QWheelEvent
+from PyQt5.QtGui import QKeyEvent, QKeySequence, QWheelEvent
 from PyQt5.QtWidgets import (
     QApplication, QComboBox, QDialog, QDoubleSpinBox, QSpinBox, QToolButton,
     QWidget
@@ -43,7 +43,17 @@ if TYPE_CHECKING:  # pragma: no cover
     from novelwriter.guimain import GuiMain
 
 
-class NToolDialog(QDialog):
+class NDialog(QDialog):
+
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+        """Overload keyPressEvent and forward escape to close."""
+        if event.matches(QKeySequence.StandardKey.Cancel):
+            self.close()
+        event.ignore()
+        return
+
+
+class NToolDialog(NDialog):
 
     def __init__(self, parent: GuiMain) -> None:
         super().__init__(parent=parent)
@@ -62,7 +72,7 @@ class NToolDialog(QDialog):
         return
 
 
-class NNonBlockingDialog(QDialog):
+class NNonBlockingDialog(NDialog):
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent=parent)

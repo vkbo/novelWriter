@@ -29,19 +29,20 @@ import logging
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QDialog, QDialogButtonBox, QGridLayout, QLabel,
-    QListWidget, QListWidgetItem, QVBoxLayout, QWidget
+    QAbstractItemView, QDialogButtonBox, QGridLayout, QLabel, QListWidget,
+    QListWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.extensions.configlayout import NColourLabel
+from novelwriter.extensions.modified import NDialog
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.types import QtDialogCancel, QtDialogOk, QtDialogReset, QtUserRole
 
 logger = logging.getLogger(__name__)
 
 
-class GuiDocMerge(QDialog):
+class GuiDocMerge(NDialog):
 
     D_HANDLE = QtUserRole
 

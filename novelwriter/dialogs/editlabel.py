@@ -31,12 +31,13 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG
+from novelwriter.extensions.modified import NDialog
 from novelwriter.types import QtDialogCancel, QtDialogOk
 
 logger = logging.getLogger(__name__)
 
 
-class GuiEditLabel(QDialog):
+class GuiEditLabel(NDialog):
 
     def __init__(self, parent: QWidget, text: str = "") -> None:
         super().__init__(parent=parent)

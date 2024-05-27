@@ -34,12 +34,13 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwQuotes, trConst
+from novelwriter.extensions.modified import NDialog
 from novelwriter.types import QtAlignCenter, QtAlignTop, QtDialogCancel, QtDialogOk, QtUserRole
 
 logger = logging.getLogger(__name__)
 
 
-class GuiQuoteSelect(QDialog):
+class GuiQuoteSelect(NDialog):
 
     _selected = ""
 

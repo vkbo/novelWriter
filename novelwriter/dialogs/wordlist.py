@@ -30,7 +30,7 @@ from pathlib import Path
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QApplication, QDialog, QDialogButtonBox, QFileDialog,
+    QAbstractItemView, QApplication, QDialogButtonBox, QFileDialog,
     QHBoxLayout, QLineEdit, QListWidget, QVBoxLayout, QWidget
 )
 
@@ -38,13 +38,13 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatFileFilter
 from novelwriter.core.spellcheck import UserDictionary
 from novelwriter.extensions.configlayout import NColourLabel
-from novelwriter.extensions.modified import NIconToolButton
+from novelwriter.extensions.modified import NDialog, NIconToolButton
 from novelwriter.types import QtDialogClose, QtDialogSave
 
 logger = logging.getLogger(__name__)
 
 
-class GuiWordList(QDialog):
+class GuiWordList(NDialog):
 
     newWordListReady = pyqtSignal()
 
