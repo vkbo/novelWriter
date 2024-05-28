@@ -133,7 +133,7 @@ class GuiLipsum(NDialog):
         cls = GuiLipsum(parent)
         cls.exec()
         text = cls.lipsumText
-        cls.deleteLater()
+        cls.softDelete()
         return text
 
     ##

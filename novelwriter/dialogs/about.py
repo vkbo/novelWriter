@@ -125,7 +125,7 @@ class GuiAbout(NDialog):
     def closeEvent(self, event: QCloseEvent) -> None:
         """Capture the close event and perform cleanup."""
         event.accept()
-        self.deleteLater()
+        self.softDelete()
         return
 
     ##

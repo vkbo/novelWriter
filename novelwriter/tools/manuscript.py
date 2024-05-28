@@ -265,7 +265,7 @@ class GuiManuscript(NToolDialog):
             if isinstance(obj, GuiBuildSettings) and obj.isVisible():
                 obj.close()
         event.accept()
-        self.deleteLater()
+        self.softDelete()
         return
 
     ##

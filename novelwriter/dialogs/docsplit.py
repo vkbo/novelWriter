@@ -185,7 +185,7 @@ class GuiDocSplit(NDialog):
         cls.exec()
         data, text = cls.data()
         accepted = cls.result() == QtAccepted
-        cls.deleteLater()
+        cls.softDelete()
         return data, text, accepted
 
     ##

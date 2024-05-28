@@ -131,7 +131,7 @@ class GuiQuoteSelect(NDialog):
         cls.exec()
         quote = cls._selected
         accepted = cls.result() == QtAccepted
-        cls.deleteLater()
+        cls.softDelete()
         return quote, accepted
 
     ##

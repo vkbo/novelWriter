@@ -250,7 +250,7 @@ class GuiManuscriptBuild(NDialog):
         """
         self._saveSettings()
         event.accept()
-        self.deleteLater()
+        self.softDelete()
         return
 
     ##

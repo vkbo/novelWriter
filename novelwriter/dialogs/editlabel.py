@@ -90,5 +90,5 @@ class GuiEditLabel(NDialog):
         cls.exec()
         label = cls.itemLabel
         accepted = cls.result() == QtAccepted
-        cls.deleteLater()
+        cls.softDelete()
         return label, accepted

@@ -140,7 +140,7 @@ class GuiWordList(NDialog):
         """Capture the close event and perform cleanup."""
         self._saveGuiSettings()
         event.accept()
-        self.deleteLater()
+        self.softDelete()
         return
 
     ##

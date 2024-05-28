@@ -172,7 +172,7 @@ class GuiDictionaries(NNonBlockingDialog):
     def closeEvent(self, event: QCloseEvent) -> None:
         """Capture the user closing the window."""
         event.accept()
-        self.deleteLater()
+        self.softDelete()
         return
 
     ##

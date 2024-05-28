@@ -200,7 +200,7 @@ class GuiBuildSettings(NToolDialog):
         self._askToSaveBuild()
         self._saveSettings()
         event.accept()
-        self.deleteLater()
+        self.softDelete()
         return
 
     ##

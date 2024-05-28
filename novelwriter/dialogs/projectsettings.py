@@ -147,7 +147,7 @@ class GuiProjectSettings(NDialog):
         """Capture the user closing the window and save settings."""
         self._saveSettings()
         event.accept()
-        self.deleteLater()
+        self.softDelete()
         return
 
     ##

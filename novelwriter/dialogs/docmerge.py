@@ -137,7 +137,7 @@ class GuiDocMerge(NDialog):
         cls.exec()
         data = cls.data()
         accepted = cls.result() == QtAccepted
-        cls.deleteLater()
+        cls.softDelete()
         return data, accepted
 
     ##

@@ -771,7 +771,7 @@ class GuiPreferences(NDialog):
         event.accept()
         QApplication.processEvents()
         self.done(nwConst.DLG_FINISHED)
-        self.deleteLater()
+        self.softDelete()
         return
 
     ##
