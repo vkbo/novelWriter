@@ -25,6 +25,7 @@ import pytest
 from novelwriter import SHARED
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
+from novelwriter.types import QtAccepted, QtRejected
 
 from tests.tools import C, buildTestProject
 
@@ -33,8 +34,7 @@ from tests.tools import C, buildTestProject
 def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the split document tool."""
     monkeypatch.setattr(GuiEditLabel, "getLabel", lambda *a, text: (text, True))
-
-    # Create a new project
+    monkeypatch.setattr(GuiDocSplit, "exec", lambda *a: None)
     buildTestProject(nwGUI, projPath)
 
     project = SHARED.project
@@ -74,7 +74,7 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwSplit.splitLevel.setCurrentIndex(3)
     assert nwSplit.listBox.count() == 12
 
-    data, text = nwSplit.getData()
+    data, text = nwSplit.data()
     assert text == docText.splitlines()
     assert data["sHandle"] == hSplitDoc
     assert data["spLevel"] == 4
@@ -97,5 +97,19 @@ def testDlgSplit_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     nwSplit._loadContent(C.hNovelRoot)
     assert nwSplit.listBox.count() == 0
 
-    nwSplit.reject()
+    # Test Class Method
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiDocSplit, "result", lambda *a: QtAccepted)
+        data, text, status = GuiDocSplit.getData(nwGUI, hSplitDoc)
+        assert data["sHandle"] == hSplitDoc
+        assert text == docText.splitlines()
+        assert status is True
+
+    with monkeypatch.context() as mp:
+        mp.setattr(GuiDocSplit, "result", lambda *a: QtRejected)
+        data, text, status = GuiDocSplit.getData(nwGUI, hSplitDoc)
+        assert data["sHandle"] == hSplitDoc
+        assert text == docText.splitlines()
+        assert status is False
+
     # qtbot.stop()

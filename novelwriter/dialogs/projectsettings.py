@@ -29,7 +29,7 @@ import logging
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QColor
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QApplication, QColorDialog, QDialog, QDialogButtonBox,
+    QAbstractItemView, QApplication, QColorDialog, QDialogButtonBox,
     QHBoxLayout, QLineEdit, QMenu, QStackedWidget, QToolButton, QTreeWidget,
     QTreeWidgetItem, QVBoxLayout, QWidget
 )
@@ -40,7 +40,7 @@ from novelwriter.constants import nwLabels, trConst
 from novelwriter.core.status import NWStatus, StatusEntry
 from novelwriter.enum import nwStatusShape
 from novelwriter.extensions.configlayout import NColourLabel, NFixedPage, NScrollableForm
-from novelwriter.extensions.modified import NComboBox, NIconToolButton
+from novelwriter.extensions.modified import NComboBox, NDialog, NIconToolButton
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.types import (
@@ -51,7 +51,7 @@ from novelwriter.types import (
 logger = logging.getLogger(__name__)
 
 
-class GuiProjectSettings(QDialog):
+class GuiProjectSettings(NDialog):
 
     PAGE_SETTINGS = 0
     PAGE_STATUS   = 1
@@ -147,7 +147,7 @@ class GuiProjectSettings(QDialog):
         """Capture the user closing the window and save settings."""
         self._saveSettings()
         event.accept()
-        self.deleteLater()
+        self.softDelete()
         return
 
     ##

@@ -316,7 +316,6 @@ class SharedData(QObject):
         if log:
             logger.info(self._lastAlert, stacklevel=2)
         alert.exec()
-        alert.deleteLater()
         return
 
     def warn(self, text: str, info: str = "", details: str = "", log: bool = True) -> None:
@@ -328,7 +327,6 @@ class SharedData(QObject):
         if log:
             logger.warning(self._lastAlert, stacklevel=2)
         alert.exec()
-        alert.deleteLater()
         return
 
     def error(self, text: str, info: str = "", details: str = "", log: bool = True,
@@ -343,7 +341,6 @@ class SharedData(QObject):
         if log:
             logger.error(self._lastAlert, stacklevel=2)
         alert.exec()
-        alert.deleteLater()
         return
 
     def question(self, text: str, info: str = "", details: str = "", warn: bool = False) -> bool:
@@ -354,7 +351,6 @@ class SharedData(QObject):
         self._lastAlert = alert.logMessage
         alert.exec()
         isYes = alert.result() == QMessageBox.StandardButton.Yes
-        alert.deleteLater()
         return isYes
 
     ##

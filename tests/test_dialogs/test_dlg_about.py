@@ -33,9 +33,9 @@ from novelwriter.dialogs.about import GuiAbout
 @pytest.mark.gui
 def testDlgAbout_NWDialog(qtbot, monkeypatch, nwGUI):
     """Test the novelWriter about dialogs."""
-    # NW About
-    nwGUI.showAboutNWDialog()
+    monkeypatch.setattr(GuiAbout, "exec", lambda *a: None)
 
+    nwGUI.showAboutNWDialog()
     qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiAbout) is not None, timeout=1000)
     msgAbout = SHARED.findTopLevelWidget(GuiAbout)
     assert isinstance(msgAbout, GuiAbout)

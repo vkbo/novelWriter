@@ -34,8 +34,8 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtGui import QCloseEvent, QColor, QFont, QPainter, QPaintEvent, QPen
 from PyQt5.QtWidgets import (
-    QAction, QApplication, QDialog, QFileDialog, QFormLayout, QHBoxLayout,
-    QLabel, QLineEdit, QListView, QMenu, QPushButton, QScrollArea, QShortcut,
+    QAction, QApplication, QFileDialog, QFormLayout, QHBoxLayout, QLabel,
+    QLineEdit, QListView, QMenu, QPushButton, QScrollArea, QShortcut,
     QStackedWidget, QStyledItemDelegate, QStyleOptionViewItem, QVBoxLayout,
     QWidget
 )
@@ -46,7 +46,7 @@ from novelwriter.constants import nwFiles
 from novelwriter.core.coretools import ProjectBuilder
 from novelwriter.enum import nwItemClass
 from novelwriter.extensions.configlayout import NWrappedWidgetBox
-from novelwriter.extensions.modified import NIconToolButton, NSpinBox
+from novelwriter.extensions.modified import NDialog, NIconToolButton, NSpinBox
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.versioninfo import VersionInfoWidget
 from novelwriter.types import QtAlignLeft, QtAlignRightTop, QtSelected
@@ -56,7 +56,7 @@ logger = logging.getLogger(__name__)
 PANEL_ALPHA = 178
 
 
-class GuiWelcome(QDialog):
+class GuiWelcome(NDialog):
 
     openProjectRequest = pyqtSignal(Path)
 
@@ -196,7 +196,7 @@ class GuiWelcome(QDialog):
         """Capture the user closing the window and save settings."""
         self._saveSettings()
         event.accept()
-        self.deleteLater()
+        self.softDelete()
         return
 
     ##
