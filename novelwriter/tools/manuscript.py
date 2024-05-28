@@ -891,9 +891,8 @@ class _PreviewWidget(QTextBrowser):
         document within the viewport.
         """
         vBar = self.verticalScrollBar()
-        sW = vBar.width() if vBar.isVisible() else 0
         tB = self.frameWidth()
-        vW = self.width() - 2*tB - sW
+        vW = self.width() - 2*tB - vBar.width()
         vH = self.height() - 2*tB
         tH = self.ageLabel.height()
         pS = self.buildProgress.width()
