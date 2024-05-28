@@ -322,6 +322,8 @@ class GuiManuscript(NToolDialog):
         if not (build := self._getSelectedBuild()):
             return
 
+        start = time()
+
         # Make sure editor content is saved before we start
         SHARED.saveDocument()
 
@@ -357,6 +359,8 @@ class GuiManuscript(NToolDialog):
 
         self.docStats.updateStats(buildObj.textStats)
         self.buildOutline.updateOutline(buildObj.textOutline)
+
+        logger.debug("Build completed in %.3f ms", 1000*(time()-start))
 
         return
 

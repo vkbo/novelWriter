@@ -29,7 +29,6 @@ import logging
 from pathlib import Path
 from time import time
 
-from novelwriter import CONFIG
 from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwHeadFmt, nwHtmlUnicode, nwKeyWords, nwLabels
 from novelwriter.core.project import NWProject
@@ -184,7 +183,6 @@ class ToHtml(Tokenizer):
 
                 if tStyle & self.A_PBB:
                     aStyle.append("page-break-before: always;")
-
                 if tStyle & self.A_PBA:
                     aStyle.append("page-break-after: always;")
 
@@ -194,11 +192,13 @@ class ToHtml(Tokenizer):
                     aStyle.append("margin-top: 0;")
 
                 if tStyle & self.A_IND_L:
-                    aStyle.append(f"margin-left: {CONFIG.tabWidth:d}px;")
+                    aStyle.append(f"margin-left: {self._blockIndent:.2f}em;")
                 if tStyle & self.A_IND_R:
-                    aStyle.append(f"margin-right: {CONFIG.tabWidth:d}px;")
+                    aStyle.append(f"margin-right: {self._blockIndent:.2f}em;")
+                if tStyle & self.A_IND_T:
+                    aStyle.append(f"text-indent: {self._firstWidth:.2f}em;")
 
-            if len(aStyle) > 0:
+            if aStyle:
                 stVals = " ".join(aStyle)
                 hStyle = f" style='{stVals}'"
             else:

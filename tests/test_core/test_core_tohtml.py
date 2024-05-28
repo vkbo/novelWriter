@@ -410,7 +410,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     ]
     html.doConvert()
     assert html.result == (
-        "<p style='margin-left: 40px;'>Some text ...</p>\n"
+        "<p style='margin-left: 4.00em;'>Some text ...</p>\n"
     )
 
     # Indent Right
@@ -419,7 +419,16 @@ def testCoreToHtml_ConvertDirect(mockGUI):
     ]
     html.doConvert()
     assert html.result == (
-        "<p style='margin-right: 40px;'>Some text ...</p>\n"
+        "<p style='margin-right: 4.00em;'>Some text ...</p>\n"
+    )
+
+    # Text Indent
+    html._tokens = [
+        (html.T_TEXT, 1, "Some text ...", [], html.A_IND_T),
+    ]
+    html.doConvert()
+    assert html.result == (
+        "<p style='text-indent: 1.40em;'>Some text ...</p>\n"
     )
 
 

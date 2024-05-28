@@ -106,7 +106,7 @@ def testGuiTheme_Main(qtbot, nwGUI, tstPaths):
 
 
 @pytest.mark.gui
-def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI):
+def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI, tstPaths):
     """Test the theme part of the class."""
     mainTheme = SHARED.theme
 
@@ -154,6 +154,28 @@ def testGuiTheme_Theme(qtbot, monkeypatch, nwGUI):
     # This should load a standard palette
     wCol = QApplication.style().standardPalette().color(QPalette.ColorRole.Window).getRgb()
     assert mainTheme._guiPalette.color(QPalette.ColorRole.Window).getRgb() == wCol
+
+    # Mock Dark Theme
+    # ===============
+
+    mockTheme: Path = tstPaths.cnfDir / "themes" / "test.conf"
+    mockTheme.write_text(
+        "[Main]\n"
+        "name = Test\n"
+        "\n"
+        "[Palette]\n"
+        "window = 0, 0, 0\n"
+        "windowtext = 255, 255, 255\n"
+        "\n"
+        "[GUI]\n"
+        "helptext = 0, 0, 0\n"
+    )
+    mainTheme._availThemes["test"] = mockTheme
+
+    CONFIG.guiTheme = "test"
+    assert mainTheme.loadTheme() is True
+    assert mainTheme.isLightTheme is False
+    assert mainTheme.helpText.getRgb() == (165, 165, 165, 255)
 
     # Load Default Light Theme
     # ========================

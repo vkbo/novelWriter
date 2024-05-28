@@ -115,6 +115,10 @@ class Tokenizer(ABC):
     A_Z_BTMMRG = 0x0080  # Zero bottom margin
     A_IND_L    = 0x0100  # Left indentation
     A_IND_R    = 0x0200  # Right indentation
+    A_IND_T    = 0x0400  # Text indentation
+
+    # Masks
+    M_ALIGNED = A_LEFT | A_RIGHT | A_CENTRE | A_JUSTIFY
 
     # Lookups
     L_HEADINGS = [T_TITLE, T_HEAD1, T_HEAD2, T_HEAD3, T_HEAD4]
@@ -839,12 +843,19 @@ class Tokenizer(ABC):
         pLines: list[T_Token] = []
 
         tCount = len(tokens)
+        pIndent = True
         for n, cToken in enumerate(tokens):
 
             if n > 0:
                 pToken = tokens[n-1]  # Look behind
             if n < tCount - 1:
                 nToken = tokens[n+1]  # Look ahead
+
+            if not self._indentFirst and cToken[0] in self.L_SKIP_INDENT:
+                # Unless the indentFirst flag is set, we set up the next
+                # paragraph to not be indented if we see a block of a
+                # specific type
+                pIndent = False
 
             if cToken[0] == self.T_EMPTY:
                 # We don't need to keep the empty lines after this pass
@@ -864,11 +875,27 @@ class Tokenizer(ABC):
             elif cToken[0] == self.T_TEXT:
                 # Combine lines from the same paragraph
                 pLines.append(cToken)
+
                 if nToken[0] != self.T_TEXT:
+                    # Next token is not text, so we add the buffer to tokens
                     nLines = len(pLines)
+                    cStyle = pLines[0][4]
+                    if self._firstIndent and pIndent and not cStyle & self.M_ALIGNED:
+                        # If paragraph indentation is enabled, not temporarily
+                        # turned off, and the block is not aligned, we add the
+                        # text indentation flag
+                        cStyle |= self.A_IND_T
+
                     if nLines == 1:
-                        self._tokens.append(pLines[0])
+                        # The paragraph contains a single line, so we just
+                        # save that directly to the token list
+                        self._tokens.append((
+                            self.T_TEXT, pLines[0][1], pLines[0][2], pLines[0][3], cStyle
+                        ))
                     elif nLines > 1:
+                        # The paragraph contains multiple lines, so we need to
+                        # join them according to the line break policy, and
+                        # recompute all the formatting markers
                         tTxt = ""
                         tFmt: T_Formats = []
                         for aToken in pLines:
@@ -876,9 +903,12 @@ class Tokenizer(ABC):
                             tTxt += f"{aToken[2]}{lineSep}"
                             tFmt.extend((p+tLen, fmt, key) for p, fmt, key in aToken[3])
                         self._tokens.append((
-                            self.T_TEXT, pLines[0][1], tTxt[:-1], tFmt, pLines[0][4]
+                            self.T_TEXT, pLines[0][1], tTxt[:-1], tFmt, cStyle
                         ))
+
+                    # Reset buffer and make sure text indent is on for next pass
                     pLines = []
+                    pIndent = True
 
             else:
                 self._tokens.append(cToken)
