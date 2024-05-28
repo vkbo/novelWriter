@@ -25,7 +25,7 @@ from __future__ import annotations
 
 from PyQt5.QtCore import QRegularExpression, Qt
 from PyQt5.QtGui import QColor, QFont, QPainter, QTextCharFormat, QTextCursor, QTextFormat
-from PyQt5.QtWidgets import QDialogButtonBox, QSizePolicy, QStyle
+from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QSizePolicy, QStyle
 
 # Qt Alignment Flags
 
@@ -79,6 +79,9 @@ QtMouseLeft = Qt.MouseButton.LeftButton
 QtMouseMiddle = Qt.MouseButton.MiddleButton
 
 # Dialog Button Box Types
+
+QtAccepted = QDialog.DialogCode.Accepted
+QtRejected = QDialog.DialogCode.Rejected
 
 QtDialogApply = QDialogButtonBox.StandardButton.Apply
 QtDialogCancel = QDialogButtonBox.StandardButton.Cancel

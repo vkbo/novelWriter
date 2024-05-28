@@ -28,19 +28,20 @@ import random
 
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
-    QDialog, QDialogButtonBox, QGridLayout, QHBoxLayout, QLabel, QSpinBox,
-    QVBoxLayout, QWidget
+    QDialogButtonBox, QGridLayout, QHBoxLayout, QLabel, QSpinBox, QVBoxLayout,
+    QWidget
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import readTextFile
+from novelwriter.extensions.modified import NDialog
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.types import QtAlignLeft, QtAlignRight, QtDialogClose, QtRoleAction
 
 logger = logging.getLogger(__name__)
 
 
-class GuiLipsum(QDialog):
+class GuiLipsum(NDialog):
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -132,7 +133,7 @@ class GuiLipsum(QDialog):
         cls = GuiLipsum(parent)
         cls.exec()
         text = cls.lipsumText
-        cls.deleteLater()
+        cls.softDelete()
         return text
 
     ##

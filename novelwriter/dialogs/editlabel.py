@@ -25,18 +25,16 @@ from __future__ import annotations
 
 import logging
 
-from PyQt5.QtWidgets import (
-    QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QLineEdit, QVBoxLayout,
-    QWidget
-)
+from PyQt5.QtWidgets import QDialogButtonBox, QHBoxLayout, QLabel, QLineEdit, QVBoxLayout, QWidget
 
 from novelwriter import CONFIG
-from novelwriter.types import QtDialogCancel, QtDialogOk
+from novelwriter.extensions.modified import NDialog
+from novelwriter.types import QtAccepted, QtDialogCancel, QtDialogOk
 
 logger = logging.getLogger(__name__)
 
 
-class GuiEditLabel(QDialog):
+class GuiEditLabel(NDialog):
 
     def __init__(self, parent: QWidget, text: str = "") -> None:
         super().__init__(parent=parent)
@@ -91,6 +89,6 @@ class GuiEditLabel(QDialog):
         cls = GuiEditLabel(parent, text=text)
         cls.exec()
         label = cls.itemLabel
-        accepted = cls.result() == QDialog.DialogCode.Accepted
-        cls.deleteLater()
+        accepted = cls.result() == QtAccepted
+        cls.softDelete()
         return label, accepted

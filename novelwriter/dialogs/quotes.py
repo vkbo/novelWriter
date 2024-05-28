@@ -28,18 +28,22 @@ import logging
 from PyQt5.QtCore import QSize, pyqtSlot
 from PyQt5.QtGui import QFontMetrics
 from PyQt5.QtWidgets import (
-    QDialog, QDialogButtonBox, QFrame, QHBoxLayout, QLabel, QListWidget,
+    QDialogButtonBox, QFrame, QHBoxLayout, QLabel, QListWidget,
     QListWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwQuotes, trConst
-from novelwriter.types import QtAlignCenter, QtAlignTop, QtDialogCancel, QtDialogOk, QtUserRole
+from novelwriter.extensions.modified import NDialog
+from novelwriter.types import (
+    QtAccepted, QtAlignCenter, QtAlignTop, QtDialogCancel, QtDialogOk,
+    QtUserRole
+)
 
 logger = logging.getLogger(__name__)
 
 
-class GuiQuoteSelect(QDialog):
+class GuiQuoteSelect(NDialog):
 
     _selected = ""
 
@@ -126,8 +130,8 @@ class GuiQuoteSelect(QDialog):
         cls = GuiQuoteSelect(parent, current=current)
         cls.exec()
         quote = cls._selected
-        accepted = cls.result() == QDialog.DialogCode.Accepted
-        cls.deleteLater()
+        accepted = cls.result() == QtAccepted
+        cls.softDelete()
         return quote, accepted
 
     ##

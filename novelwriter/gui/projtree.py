@@ -34,9 +34,8 @@ from time import time
 from PyQt5.QtCore import QPoint, Qt, QTimer, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QIcon, QMouseEvent, QPalette
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QAction, QDialog, QFrame, QHBoxLayout, QHeaderView,
-    QLabel, QMenu, QShortcut, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-    QWidget
+    QAbstractItemView, QAction, QFrame, QHBoxLayout, QHeaderView, QLabel,
+    QMenu, QShortcut, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -1397,14 +1396,10 @@ class GuiProjectTree(QTreeWidget):
         if not newFile:
             itemList.remove(tHandle)
 
-        dlgMerge = GuiDocMerge(SHARED.mainGui, tHandle, itemList)
-        dlgMerge.exec()
-
-        if dlgMerge.result() == QDialog.DialogCode.Accepted:
-
-            mrgData = dlgMerge.getData()
-            mrgList = mrgData.get("finalItems", [])
-            if not mrgList:
+        data, status = GuiDocMerge.getData(SHARED.mainGui, tHandle, itemList)
+        if status:
+            items = data.get("finalItems", [])
+            if not items:
                 SHARED.info(self.tr("No documents selected for merging."))
                 return False
 
@@ -1424,7 +1419,7 @@ class GuiProjectTree(QTreeWidget):
             else:
                 return False
 
-            for sHandle in mrgList:
+            for sHandle in items:
                 docMerger.appendText(sHandle, True, mLabel)
 
             if not docMerger.writeTargetDoc():
@@ -1441,8 +1436,8 @@ class GuiProjectTree(QTreeWidget):
             self.projView.openDocumentRequest.emit(mHandle, nwDocMode.EDIT, "", False)
             self.projView.setSelectedHandle(mHandle, doScroll=True)
 
-            if mrgData.get("moveToTrash", False):
-                for sHandle in reversed(mrgData.get("finalItems", [])):
+            if data.get("moveToTrash", False):
+                for sHandle in reversed(data.get("finalItems", [])):
                     trItem = self._getTreeItem(sHandle)
                     if isinstance(trItem, QTreeWidgetItem) and trItem.childCount() == 0:
                         self.moveItemToTrash(sHandle, askFirst=False, flush=False)
@@ -1468,16 +1463,11 @@ class GuiProjectTree(QTreeWidget):
             logger.error("Only valid document items can be split")
             return False
 
-        dlgSplit = GuiDocSplit(SHARED.mainGui, tHandle)
-        dlgSplit.exec()
-
-        if dlgSplit.result() == QDialog.DialogCode.Accepted:
-
-            splitData, splitText = dlgSplit.getData()
-
-            headerList = splitData.get("headerList", [])
-            intoFolder = splitData.get("intoFolder", False)
-            docHierarchy = splitData.get("docHierarchy", False)
+        data, text, status = GuiDocSplit.getData(SHARED.mainGui, tHandle)
+        if status:
+            headerList = data.get("headerList", [])
+            intoFolder = data.get("intoFolder", False)
+            docHierarchy = data.get("docHierarchy", False)
 
             docSplit = DocSplitter(SHARED.project, tHandle)
             if intoFolder:
@@ -1487,7 +1477,7 @@ class GuiProjectTree(QTreeWidget):
             else:
                 docSplit.setParentItem(tItem.itemParent)
 
-            docSplit.splitDocument(headerList, splitText)
+            docSplit.splitDocument(headerList, text)
             for writeOk, dHandle, nHandle in docSplit.writeDocuments(docHierarchy):
                 SHARED.project.index.reIndexHandle(dHandle)
                 self.revealNewTreeItem(dHandle, nHandle=nHandle, wordCount=True)
@@ -1498,7 +1488,7 @@ class GuiProjectTree(QTreeWidget):
                         info=docSplit.getError()
                     )
 
-            if splitData.get("moveToTrash", False):
+            if data.get("moveToTrash", False):
                 self.moveItemToTrash(tHandle, askFirst=False, flush=True)
 
             self.saveTreeOrder()

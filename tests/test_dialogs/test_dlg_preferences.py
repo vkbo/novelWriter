@@ -91,7 +91,6 @@ def testDlgPreferences_Main(qtbot, monkeypatch, nwGUI, tstPaths):
 def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
     """Test the preferences dialog actions."""
     monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: [("en", "English [en]")])
-    monkeypatch.setattr(GuiPreferences, "deleteLater", lambda *a: None)
     prefs = GuiPreferences(nwGUI)
     prefs.show()
 
@@ -155,7 +154,6 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
 
     monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: spelling)
     monkeypatch.setattr(CONFIG, "listLanguages", lambda *a: languages)
-    monkeypatch.setattr(GuiPreferences, "deleteLater", lambda *a: None)
 
     prefs = GuiPreferences(nwGUI)
     prefs.show()

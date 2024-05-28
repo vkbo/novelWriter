@@ -23,13 +23,13 @@ from __future__ import annotations
 import pytest
 
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QAction, QColorDialog, QDialog
+from PyQt5.QtWidgets import QAction, QColorDialog
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.enum import nwItemType, nwStatusShape
-from novelwriter.types import QtMouseLeft
+from novelwriter.types import QtAccepted, QtMouseLeft
 
 from tests.tools import C, buildTestProject
 
@@ -43,7 +43,7 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
     """
     # Block the GUI blocking thread
     monkeypatch.setattr(GuiProjectSettings, "exec", lambda *a: None)
-    monkeypatch.setattr(GuiProjectSettings, "result", lambda *a: QDialog.DialogCode.Accepted)
+    monkeypatch.setattr(GuiProjectSettings, "result", lambda *a: QtAccepted)
 
     # Check that we cannot open when there is no project
     nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)

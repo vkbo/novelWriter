@@ -30,7 +30,7 @@ from pathlib import Path
 from PyQt5.QtCore import QTimer, pyqtSlot
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import (
-    QAbstractButton, QAbstractItemView, QDialog, QDialogButtonBox, QFileDialog,
+    QAbstractButton, QAbstractItemView, QDialogButtonBox, QFileDialog,
     QGridLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem,
     QPushButton, QSplitter, QVBoxLayout, QWidget
 )
@@ -42,14 +42,14 @@ from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.item import NWItem
 from novelwriter.enum import nwBuildFmt
-from novelwriter.extensions.modified import NIconToolButton
+from novelwriter.extensions.modified import NDialog, NIconToolButton
 from novelwriter.extensions.simpleprogress import NProgressSimple
 from novelwriter.types import QtAlignCenter, QtDialogClose, QtRoleAction, QtRoleReject, QtUserRole
 
 logger = logging.getLogger(__name__)
 
 
-class GuiManuscriptBuild(QDialog):
+class GuiManuscriptBuild(NDialog):
     """GUI Tools: Manuscript Build Dialog
 
     This is the tool for running the build itself. It can be accessed
@@ -250,7 +250,7 @@ class GuiManuscriptBuild(QDialog):
         """
         self._saveSettings()
         event.accept()
-        self.deleteLater()
+        self.softDelete()
         return
 
     ##

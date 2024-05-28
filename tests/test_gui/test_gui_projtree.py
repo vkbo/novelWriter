@@ -26,7 +26,7 @@ import pytest
 
 from PyQt5.QtCore import QEvent, QMimeData, QPoint, Qt, QTimer
 from PyQt5.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QMouseEvent
-from PyQt5.QtWidgets import QDialog, QMenu, QMessageBox, QTreeWidget, QTreeWidgetItem
+from PyQt5.QtWidgets import QMenu, QMessageBox, QTreeWidget, QTreeWidgetItem
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.core.item import NWItem
@@ -37,7 +37,7 @@ from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwWidget
 from novelwriter.gui.projtree import GuiProjectTree, GuiProjectView, _TreeContextMenu
 from novelwriter.guimain import GuiMain
-from novelwriter.types import QtModeNone, QtMouseLeft, QtMouseMiddle
+from novelwriter.types import QtAccepted, QtModeNone, QtMouseLeft, QtMouseMiddle, QtRejected
 
 from tests.mocked import causeOSError
 from tests.tools import C, buildTestProject
@@ -529,8 +529,9 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd,
 
     monkeypatch.setattr(GuiDocMerge, "__init__", lambda *a: None)
     monkeypatch.setattr(GuiDocMerge, "exec", lambda *a: None)
-    monkeypatch.setattr(GuiDocMerge, "result", lambda *a: QDialog.DialogCode.Accepted)
-    monkeypatch.setattr(GuiDocMerge, "getData", lambda *a: mergeData)
+    monkeypatch.setattr(GuiDocMerge, "softDelete", lambda *a: None)
+    monkeypatch.setattr(GuiDocMerge, "result", lambda *a: QtAccepted)
+    monkeypatch.setattr(GuiDocMerge, "data", lambda *a: mergeData)
 
     buildTestProject(nwGUI, projPath)
 
@@ -585,7 +586,7 @@ def testGuiProjTree_MergeDocuments(qtbot, monkeypatch, nwGUI, projPath, mockRnd,
 
     # User cancels merge
     with monkeypatch.context() as mp:
-        mp.setattr(GuiDocMerge, "result", lambda *a: QDialog.DialogCode.Rejected)
+        mp.setattr(GuiDocMerge, "result", lambda *a: QtRejected)
         assert projTree._mergeDocuments(hChapter1, True) is False
 
     # The merge goes through
@@ -628,8 +629,9 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRnd, 
 
     monkeypatch.setattr(GuiDocSplit, "__init__", lambda *a: None)
     monkeypatch.setattr(GuiDocSplit, "exec", lambda *a: None)
-    monkeypatch.setattr(GuiDocSplit, "result", lambda *a: QDialog.DialogCode.Accepted)
-    monkeypatch.setattr(GuiDocSplit, "getData", lambda *a: (splitData, splitText))
+    monkeypatch.setattr(GuiDocSplit, "softDelete", lambda *a: None)
+    monkeypatch.setattr(GuiDocSplit, "result", lambda *a: QtAccepted)
+    monkeypatch.setattr(GuiDocSplit, "data", lambda *a: (splitData, splitText))
 
     # Create a project
     buildTestProject(nwGUI, projPath)
@@ -722,7 +724,7 @@ def testGuiProjTree_SplitDocument(qtbot, monkeypatch, nwGUI, projPath, mockRnd, 
 
     # Cancelled by user
     with monkeypatch.context() as mp:
-        mp.setattr(GuiDocSplit, "result", lambda *a: QDialog.DialogCode.Rejected)
+        mp.setattr(GuiDocSplit, "result", lambda *a: QtRejected)
         assert projTree._splitDocument(hSplitDoc) is False
 
     # qtbot.stop()
