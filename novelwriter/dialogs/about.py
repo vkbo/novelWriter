@@ -33,14 +33,14 @@ from PyQt5.QtWidgets import (
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import cssCol, readTextFile
 from novelwriter.extensions.configlayout import NColourLabel
-from novelwriter.extensions.modified import NNonBlockingDialog
+from novelwriter.extensions.modified import NDialog
 from novelwriter.extensions.versioninfo import VersionInfoWidget
 from novelwriter.types import QtAlignRightTop, QtDialogClose
 
 logger = logging.getLogger(__name__)
 
 
-class GuiAbout(NNonBlockingDialog):
+class GuiAbout(NDialog):
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
@@ -106,7 +106,9 @@ class GuiAbout(NNonBlockingDialog):
 
         self.setLayout(self.outerBox)
         self.setSizeGripEnabled(True)
+
         self._setStyleSheet()
+        self._fillCreditsPage()
 
         logger.debug("Ready: GuiAbout")
 
@@ -114,11 +116,6 @@ class GuiAbout(NNonBlockingDialog):
 
     def __del__(self) -> None:  # pragma: no cover
         logger.debug("Delete: GuiAbout")
-        return
-
-    def populateGUI(self) -> None:
-        """Populate tabs with text."""
-        self._fillCreditsPage()
         return
 
     ##
@@ -137,16 +134,14 @@ class GuiAbout(NNonBlockingDialog):
 
     def _fillCreditsPage(self) -> None:
         """Load the content for the Credits page."""
-        docPath = CONFIG.assetPath("text") / "credits_en.htm"
-        docText = readTextFile(docPath)
-        if docText:
-            self.txtCredits.setHtml(docText)
+        if html := readTextFile(CONFIG.assetPath("text") / "credits_en.htm"):
+            self.txtCredits.setHtml(html)
         else:
             self.txtCredits.setHtml("Error loading credits text ...")
         return
 
     def _setStyleSheet(self) -> None:
-        """Set stylesheet for all browser tabs."""
+        """Set stylesheet text document."""
         baseCol = cssCol(self.palette().window().color())
         self.txtCredits.setStyleSheet(
             f"QTextBrowser {{border: none; background: {baseCol};}} "

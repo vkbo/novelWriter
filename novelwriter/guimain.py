@@ -827,8 +827,7 @@ class GuiMain(QMainWindow):
     def showAboutNWDialog(self) -> None:
         """Show the novelWriter about dialog."""
         dialog = GuiAbout(self)
-        dialog.activateDialog()
-        dialog.populateGUI()
+        dialog.exec()
         return
 
     @pyqtSlot()
