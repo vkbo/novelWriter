@@ -84,12 +84,20 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
     # Check that latest release info updated
     assert CONFIG.lastNotes != "0x0"
 
+    # Set some config error
+    CONFIG._hasError = True
+    CONFIG._errData.append("Foo")
+
     # Check that project open dialog launches
     nwGUI.postLaunchTasks(None)
     qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiWelcome) is not None, timeout=1000)
     assert isinstance(welcome := SHARED.findTopLevelWidget(GuiWelcome), GuiWelcome)
     welcome.show()
     welcome.close()
+
+    # Config errors should be cleared
+    assert SHARED.lastAlert == "Foo"
+    assert CONFIG._hasError is False
 
     # qtbot.stop()
 
@@ -563,6 +571,67 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     compFile = tstPaths.refDir / "guiEditor_Main_Final_0000000000012.nwd"
     copyfile(projFile, testFile)
     assert cmpFiles(testFile, compFile, ignoreStart=NWD_IGNORE)
+
+    # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiMain_Viewing(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test the document viewer."""
+    buildTestProject(nwGUI, projPath)
+    nwGUI.closeProject()
+
+    # View before a project is open does nothing
+    assert nwGUI.splitView.isVisible() is False
+    assert nwGUI.viewDocument(None) is False
+    assert nwGUI.splitView.isVisible() is False
+
+    # Open project requires a path
+    assert nwGUI.openProject(None) is False
+    assert SHARED.hasProject is False
+
+    # Open the test project, properly
+    nwGUI.openProject(projPath)
+    assert nwGUI.docEditor.docHandle == C.hTitlePage
+
+    # If editor has focus, open that document
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docEditor, "hasFocus", lambda *a: True)
+        nwGUI.viewDocument(None)
+        assert nwGUI.docViewer.docHandle == C.hTitlePage
+    nwGUI.closeDocViewer()
+
+    # If editor does not have focus, open selected handle
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docEditor, "hasFocus", lambda *a: False)
+        nwGUI.projView.projTree.setSelectedHandle(C.hSceneDoc)
+        nwGUI.viewDocument(None)
+        assert nwGUI.docViewer.docHandle == C.hSceneDoc
+
+    # If there is no selection, get last selected
+    SHARED.project.data.setLastHandle(C.hChapterDoc, "viewer")
+    assert SHARED.project.data.getLastHandle("viewer") == C.hChapterDoc
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docEditor, "hasFocus", lambda *a: False)
+        nwGUI.projView.projTree.clearSelection()
+        nwGUI.viewDocument(None)
+        assert nwGUI.docViewer.docHandle == C.hChapterDoc
+
+    # If all fails, don't open anything
+    SHARED.project.data.setLastHandle(None, "viewer")
+    assert SHARED.project.data.getLastHandle("viewer") is None
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docEditor, "hasFocus", lambda *a: False)
+        nwGUI.projView.projTree.clearSelection()
+        assert nwGUI.viewDocument(None) is False
+
+    # If editor doc was edited and requested for the viewer, save it first
+    nwGUI.openDocument(C.hSceneDoc)
+    nwGUI.docEditor.setPlainText("### New Scene\n\nWith some stuff in it!\n\n")
+    assert nwGUI.docEditor.docChanged is True
+
+    nwGUI.viewDocument(C.hSceneDoc)
+    assert nwGUI.docViewer.toPlainText() == "New Scene\nWith some stuff in it!"
 
     # qtbot.stop()
 

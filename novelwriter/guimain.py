@@ -304,9 +304,6 @@ class GuiMain(QMainWindow):
         self.keyEscape.setKey(Qt.Key.Key_Escape)
         self.keyEscape.activated.connect(self._keyPressEscape)
 
-        # Check that config loaded fine
-        self.reportConfErr()
-
         # Initialise Main GUI
         self.initMain()
         self.asProjTimer.start()
@@ -328,6 +325,10 @@ class GuiMain(QMainWindow):
 
     def postLaunchTasks(self, cmdOpen: str | None) -> None:
         """Process tasks after the main window has been created."""
+        # Check that config loaded fine
+        if CONFIG.hasError:
+            SHARED.error(CONFIG.errorText())
+
         if cmdOpen:
             QApplication.processEvents()
             logger.info("Command line path: %s", cmdOpen)
@@ -616,6 +617,10 @@ class GuiMain(QMainWindow):
         # Make sure main tab is in Editor view
         self._changeView(nwView.EDITOR)
 
+        # If we're loading the document in the editor, it may need to be saved
+        if tHandle == self.docEditor.docHandle and self.docEditor.docChanged:
+            self.saveDocument()
+
         logger.debug("Viewing document with handle '%s'", tHandle)
         updateHistory = tHandle != self.docViewer.docHandle
         if self.docViewer.loadText(tHandle, updateHistory=updateHistory):
@@ -717,14 +722,6 @@ class GuiMain(QMainWindow):
             if tHandle:
                 self.openDocument(tHandle, tLine=tLine, changeFocus=False, doScroll=False)
 
-        return
-
-    def editItemLabel(self, tHandle: str | None = None) -> None:
-        """Open the edit item dialog."""
-        if SHARED.hasProject:
-            if tHandle is None and (self.docEditor.anyFocus() or SHARED.focusMode):
-                tHandle = self.docEditor.docHandle
-            self.projView.renameTreeItem(tHandle)
         return
 
     def rebuildTrees(self) -> None:
@@ -847,15 +844,6 @@ class GuiMain(QMainWindow):
             SHARED.error(self.tr("Could not initialise the dialog."))
         return
 
-    def reportConfErr(self) -> None:
-        """Checks if the Config module has any errors to report, and let
-        the user know if this is the case. The Config module caches
-        errors since it is initialised before the GUI itself.
-        """
-        if CONFIG.hasError:
-            SHARED.error(CONFIG.errorText())
-        return
-
     ##
     #  Main Window Actions
     ##
@@ -886,9 +874,7 @@ class GuiMain(QMainWindow):
 
         if SHARED.hasProject:
             self.closeProject(True)
-
         CONFIG.saveConfig()
-        self.reportConfErr()
 
         QApplication.quit()
 
