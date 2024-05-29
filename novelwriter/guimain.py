@@ -616,6 +616,10 @@ class GuiMain(QMainWindow):
         # Make sure main tab is in Editor view
         self._changeView(nwView.EDITOR)
 
+        # If we're loading the document in the editor, it may need to be saved
+        if tHandle == self.docEditor.docHandle and self.docEditor.docChanged:
+            self.saveDocument()
+
         logger.debug("Viewing document with handle '%s'", tHandle)
         updateHistory = tHandle != self.docViewer.docHandle
         if self.docViewer.loadText(tHandle, updateHistory=updateHistory):

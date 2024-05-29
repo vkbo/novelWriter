@@ -245,9 +245,6 @@ class GuiDocViewer(QTextBrowser):
         })
         self.updateDocMargins()
 
-        # Since we change the content while it may still be rendering, we mark
-        # the document dirty again to make sure it's re-rendered properly.
-        self.redrawText()
         QApplication.restoreOverrideCursor()
         self.documentLoaded.emit(tHandle)
 
@@ -257,12 +254,6 @@ class GuiDocViewer(QTextBrowser):
         """Reload the text in the current document."""
         if self._docHandle:
             self.loadText(self._docHandle, updateHistory=False)
-        return
-
-    def redrawText(self) -> None:
-        """Redraw the text by marking the content as "dirty"."""
-        self.document().markContentsDirty(0, self.document().characterCount())
-        self.updateDocMargins()
         return
 
     def docAction(self, action: nwDocAction) -> bool:
