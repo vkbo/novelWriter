@@ -723,14 +723,6 @@ class GuiMain(QMainWindow):
 
         return
 
-    def editItemLabel(self, tHandle: str | None = None) -> None:
-        """Open the edit item dialog."""
-        if SHARED.hasProject:
-            if tHandle is None and (self.docEditor.anyFocus() or SHARED.focusMode):
-                tHandle = self.docEditor.docHandle
-            self.projView.renameTreeItem(tHandle)
-        return
-
     def rebuildTrees(self) -> None:
         """Rebuild the project tree."""
         self.projView.populateTree()

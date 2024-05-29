@@ -568,6 +568,63 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
 
 
 @pytest.mark.gui
+def testGuiMain_Viewing(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test the document viewer."""
+    buildTestProject(nwGUI, projPath)
+    nwGUI.closeProject()
+
+    # View before a project is open does nothing
+    assert nwGUI.splitView.isVisible() is False
+    assert nwGUI.viewDocument(None) is False
+    assert nwGUI.splitView.isVisible() is False
+
+    # Open the test project
+    nwGUI.openProject(projPath)
+    assert nwGUI.docEditor.docHandle == C.hTitlePage
+
+    # If editor has focus, open that document
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docEditor, "hasFocus", lambda *a: True)
+        nwGUI.viewDocument(None)
+        assert nwGUI.docViewer.docHandle == C.hTitlePage
+    nwGUI.closeDocViewer()
+
+    # If editor does not have focus, open selected handle
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docEditor, "hasFocus", lambda *a: False)
+        nwGUI.projView.projTree.setSelectedHandle(C.hSceneDoc)
+        nwGUI.viewDocument(None)
+        assert nwGUI.docViewer.docHandle == C.hSceneDoc
+
+    # If there is no selection, get last selected
+    SHARED.project.data.setLastHandle(C.hChapterDoc, "viewer")
+    assert SHARED.project.data.getLastHandle("viewer") == C.hChapterDoc
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docEditor, "hasFocus", lambda *a: False)
+        nwGUI.projView.projTree.clearSelection()
+        nwGUI.viewDocument(None)
+        assert nwGUI.docViewer.docHandle == C.hChapterDoc
+
+    # If all fails, don't open anything
+    SHARED.project.data.setLastHandle(None, "viewer")
+    assert SHARED.project.data.getLastHandle("viewer") is None
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docEditor, "hasFocus", lambda *a: False)
+        nwGUI.projView.projTree.clearSelection()
+        assert nwGUI.viewDocument(None) is False
+
+    # If editor doc was edited and requested for the viewer, save it first
+    nwGUI.openDocument(C.hSceneDoc)
+    nwGUI.docEditor.setPlainText("### New Scene\n\nWith some stuff in it!\n\n")
+    assert nwGUI.docEditor.docChanged is True
+
+    nwGUI.viewDocument(C.hSceneDoc)
+    assert nwGUI.docViewer.toPlainText() == "New Scene\nWith some stuff in it!"
+
+    # qtbot.stop()
+
+
+@pytest.mark.gui
 def testGuiMain_Features(qtbot, nwGUI, projPath, mockRnd):
     """Test various features of the main window."""
     buildTestProject(nwGUI, projPath)

@@ -167,7 +167,7 @@ class GuiMainMenu(QMenuBar):
         # Project > Edit
         self.aEditItem = self.projMenu.addAction(self.tr("Rename Item"))
         self.aEditItem.setShortcut("F2")
-        self.aEditItem.triggered.connect(lambda: self.mainGui.editItemLabel(None))
+        self.aEditItem.triggered.connect(lambda: self.mainGui.projView.renameTreeItem(None))
 
         # Project > Delete
         self.aDeleteItem = self.projMenu.addAction(self.tr("Delete Item"))
