@@ -84,12 +84,20 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
     # Check that latest release info updated
     assert CONFIG.lastNotes != "0x0"
 
+    # Set some config error
+    CONFIG._hasError = True
+    CONFIG._errData.append("Foo")
+
     # Check that project open dialog launches
     nwGUI.postLaunchTasks(None)
     qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiWelcome) is not None, timeout=1000)
     assert isinstance(welcome := SHARED.findTopLevelWidget(GuiWelcome), GuiWelcome)
     welcome.show()
     welcome.close()
+
+    # Config errors should be cleared
+    assert SHARED.lastAlert == "Foo"
+    assert CONFIG._hasError is False
 
     # qtbot.stop()
 
@@ -578,7 +586,11 @@ def testGuiMain_Viewing(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     assert nwGUI.viewDocument(None) is False
     assert nwGUI.splitView.isVisible() is False
 
-    # Open the test project
+    # Open project requires a path
+    assert nwGUI.openProject(None) is False
+    assert SHARED.hasProject is False
+
+    # Open the test project, properly
     nwGUI.openProject(projPath)
     assert nwGUI.docEditor.docHandle == C.hTitlePage
 
