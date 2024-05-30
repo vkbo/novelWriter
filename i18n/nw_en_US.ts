@@ -763,27 +763,27 @@
       <translation>Dictionary install location</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/dictionaries.py" line="158" />
+      <location filename="../novelwriter/tools/dictionaries.py" line="159" />
       <source>Additional dictionaries found: {0}</source>
       <translation>Additional dictionaries found: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/dictionaries.py" line="185" />
+      <location filename="../novelwriter/tools/dictionaries.py" line="186" />
       <source>Free or Libre Office extension</source>
       <translation>Free or Libre Office extension</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/dictionaries.py" line="188" />
+      <location filename="../novelwriter/tools/dictionaries.py" line="189" />
       <source>Browse Files</source>
       <translation>Browse Files</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/dictionaries.py" line="198" />
+      <location filename="../novelwriter/tools/dictionaries.py" line="199" />
       <source>Could not process dictionary file</source>
       <translation>Could not process dictionary file</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/dictionaries.py" line="248" />
+      <location filename="../novelwriter/tools/dictionaries.py" line="249" />
       <source>Added: {0} [{1}B]</source>
       <translation>Added: {0} [{1}B]</translation>
     </message>
@@ -791,22 +791,22 @@
   <context>
     <name>GuiDocEditFooter</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3008" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3029" />
       <source>Line: {0} ({1})</source>
       <translation>Line: {0} ({1})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3009" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3030" />
       <source>Words: {0} ({1})</source>
       <translation>Words: {0} ({1})</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3010" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3031" />
       <source>Words: {0} selected</source>
       <translation>Words: {0} selected</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="3022" />
+      <location filename="../novelwriter/gui/doceditor.py" line="3043" />
       <source>Status</source>
       <translation>Status</translation>
     </message>
@@ -814,27 +814,27 @@
   <context>
     <name>GuiDocEditHeader</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2806" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2823" />
       <source>Toggle Tool Bar</source>
       <translation>Toggle Tool Bar</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2811" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2828" />
       <source>Outline</source>
       <translation>Outline</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2816" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2833" />
       <source>Search</source>
       <translation>Search</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2821" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2838" />
       <source>Toggle Focus Mode</source>
       <translation>Toggle Focus Mode</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2826" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2843" />
       <source>Close</source>
       <translation>Close</translation>
     </message>
@@ -842,62 +842,62 @@
   <context>
     <name>GuiDocEditSearch</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2414" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2424" />
       <source>Search for</source>
       <translation>Search for</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2419" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2428" />
       <source>Replace with</source>
       <translation>Replace with</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2427" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2436" />
       <source>Search</source>
       <translation>Search</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2435" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2441" />
       <source>Case Sensitive</source>
       <translation>Case Sensitive</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2441" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2447" />
       <source>Whole Words Only</source>
       <translation>Whole Words Only</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2447" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2453" />
       <source>RegEx Mode</source>
       <translation>RegEx Mode</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2453" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2459" />
       <source>Loop Search</source>
       <translation>Loop Search</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2459" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2465" />
       <source>Search Next File</source>
       <translation>Search Next File</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2467" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2473" />
       <source>Preserve Case</source>
       <translation>Preserve Case</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2475" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2481" />
       <source>Close Search</source>
       <translation>Close Search</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2486" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2492" />
       <source>Find in current document</source>
       <translation>Find in current document</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2490" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2496" />
       <source>Find and replace in current document</source>
       <translation>Find and replace in current document</translation>
     </message>
@@ -905,122 +905,122 @@
   <context>
     <name>GuiDocEditor</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="442" />
+      <location filename="../novelwriter/gui/doceditor.py" line="456" />
       <source>Opened Document: {0}</source>
       <translation>Opened Document: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="485" />
+      <location filename="../novelwriter/gui/doceditor.py" line="499" />
       <source>This document has been changed outside of novelWriter while it was open. Overwrite the file on disk?</source>
       <translation>This document has been changed outside of novelWriter while it was open. Overwrite the file on disk?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="494" />
+      <location filename="../novelwriter/gui/doceditor.py" line="508" />
       <source>Could not save document.</source>
       <translation>Could not save document.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="519" />
+      <location filename="../novelwriter/gui/doceditor.py" line="533" />
       <source>Saved Document: {0}</source>
       <translation>Saved Document: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="688" />
+      <location filename="../novelwriter/gui/doceditor.py" line="702" />
       <source>Spell checking requires the package PyEnchant. It does not appear to be installed.</source>
       <translation>Spell checking requires the package PyEnchant. It does not appear to be installed.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="714" />
+      <location filename="../novelwriter/gui/doceditor.py" line="728" />
       <source>Spell check complete</source>
       <translation>Spell check complete</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="834" />
+      <location filename="../novelwriter/gui/doceditor.py" line="848" />
       <source>Document Details</source>
       <translation>Document Details</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="836" />
+      <location filename="../novelwriter/gui/doceditor.py" line="850" />
       <source>Created: {0}</source>
       <translation>Created: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="837" />
+      <location filename="../novelwriter/gui/doceditor.py" line="851" />
       <source>Updated: {0}</source>
       <translation>Updated: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="839" />
+      <location filename="../novelwriter/gui/doceditor.py" line="853" />
       <source>File Location: {0}</source>
       <translation>File Location: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1113" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1127" />
       <source>Set as Document Name</source>
       <translation>Set as Document Name</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1119" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1133" />
       <source>Follow Tag</source>
       <translation>Follow Tag</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1123" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1137" />
       <source>Create Note for Tag</source>
       <translation>Create Note for Tag</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1129" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1143" />
       <source>Cut</source>
       <translation>Cut</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1131" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1145" />
       <source>Copy</source>
       <translation>Copy</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1134" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1148" />
       <source>Paste</source>
       <translation>Paste</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1139" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1153" />
       <source>Select All</source>
       <translation>Select All</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1141" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1155" />
       <source>Select Word</source>
       <translation>Select Word</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1145" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1159" />
       <source>Select Paragraph</source>
       <translation>Select Paragraph</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1161" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1175" />
       <source>Spelling Suggestion(s)</source>
       <translation>Spelling Suggestion(s)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1168" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1182" />
       <source>No Suggestions</source>
       <translation>No Suggestions</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1171" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1185" />
       <source>Add Word to Dictionary</source>
       <translation>Add Word to Dictionary</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1597" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1611" />
       <source>Please select some text before calling replace quotes.</source>
       <translation>Please select some text before calling replace quotes.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="1904" />
+      <location filename="../novelwriter/gui/doceditor.py" line="1918" />
       <source>Do you want to create a new project note for the tag '{0}'?</source>
       <translation>Do you want to create a new project note for the tag '{0}'?</translation>
     </message>
@@ -1104,52 +1104,52 @@
   <context>
     <name>GuiDocToolBar</name>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2271" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2285" />
       <source>Markdown Bold</source>
       <translation>Markdown Bold</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2277" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2291" />
       <source>Markdown Italic</source>
       <translation>Markdown Italic</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2283" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2297" />
       <source>Markdown Strikethrough</source>
       <translation>Markdown Strikethrough</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2289" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2303" />
       <source>Shortcode Bold</source>
       <translation>Shortcode Bold</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2295" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2309" />
       <source>Shortcode Italic</source>
       <translation>Shortcode Italic</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2301" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2315" />
       <source>Shortcode Strikethrough</source>
       <translation>Shortcode Strikethrough</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2307" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2321" />
       <source>Shortcode Underline</source>
       <translation>Shortcode Underline</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2313" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2327" />
       <source>Shortcode Highlight</source>
       <translation>Shortcode Highlight</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2319" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2333" />
       <source>Shortcode Superscript</source>
       <translation>Shortcode Superscript</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/doceditor.py" line="2325" />
+      <location filename="../novelwriter/gui/doceditor.py" line="2339" />
       <source>Shortcode Subscript</source>
       <translation>Shortcode Subscript</translation>
     </message>
@@ -1157,27 +1157,27 @@
   <context>
     <name>GuiDocViewFooter</name>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="867" />
+      <location filename="../novelwriter/gui/docviewer.py" line="877" />
       <source>Show/Hide Viewer Panel</source>
       <translation>Show/Hide Viewer Panel</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="871" />
+      <location filename="../novelwriter/gui/docviewer.py" line="881" />
       <source>Comments</source>
       <translation>Comments</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="877" />
+      <location filename="../novelwriter/gui/docviewer.py" line="887" />
       <source>Show Comments</source>
       <translation>Show Comments</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="881" />
+      <location filename="../novelwriter/gui/docviewer.py" line="891" />
       <source>Synopsis</source>
       <translation>Synopsis</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="887" />
+      <location filename="../novelwriter/gui/docviewer.py" line="897" />
       <source>Show Synopsis Comments</source>
       <translation>Show Synopsis Comments</translation>
     </message>
@@ -1185,27 +1185,27 @@
   <context>
     <name>GuiDocViewHeader</name>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="659" />
+      <location filename="../novelwriter/gui/docviewer.py" line="663" />
       <source>Outline</source>
       <translation>Outline</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="664" />
+      <location filename="../novelwriter/gui/docviewer.py" line="668" />
       <source>Go Backward</source>
       <translation>Go Backward</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="669" />
+      <location filename="../novelwriter/gui/docviewer.py" line="673" />
       <source>Go Forward</source>
       <translation>Go Forward</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="674" />
+      <location filename="../novelwriter/gui/docviewer.py" line="678" />
       <source>Reload</source>
       <translation>Reload</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="679" />
+      <location filename="../novelwriter/gui/docviewer.py" line="683" />
       <source>Close</source>
       <translation>Close</translation>
     </message>
@@ -1213,27 +1213,27 @@
   <context>
     <name>GuiDocViewer</name>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="221" />
+      <location filename="../novelwriter/gui/docviewer.py" line="229" />
       <source>An error occurred while generating the preview.</source>
       <translation>An error occurred while generating the preview.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="392" />
+      <location filename="../novelwriter/gui/docviewer.py" line="400" />
       <source>Copy</source>
       <translation>Copy</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="398" />
+      <location filename="../novelwriter/gui/docviewer.py" line="406" />
       <source>Select All</source>
       <translation>Select All</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="402" />
+      <location filename="../novelwriter/gui/docviewer.py" line="410" />
       <source>Select Word</source>
       <translation>Select Word</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="408" />
+      <location filename="../novelwriter/gui/docviewer.py" line="416" />
       <source>Select Paragraph</source>
       <translation>Select Paragraph</translation>
     </message>
@@ -4379,27 +4379,27 @@
   <context>
     <name>_PreviewWidget</name>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="769" />
+      <location filename="../novelwriter/tools/manuscript.py" line="768" />
       <source>Press the "Preview" button to generate ...</source>
       <translation>Press the "Preview" button to generate ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="867" />
+      <location filename="../novelwriter/tools/manuscript.py" line="873" />
       <source>Processing ...</source>
       <translation>Processing ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="888" />
+      <location filename="../novelwriter/tools/manuscript.py" line="894" />
       <source>Done</source>
       <translation>Done</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="938" />
+      <location filename="../novelwriter/tools/manuscript.py" line="944" />
       <source>Unknown</source>
       <translation>Unknown</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="939" />
+      <location filename="../novelwriter/tools/manuscript.py" line="945" />
       <source>Built</source>
       <translation>Built</translation>
     </message>
@@ -4498,59 +4498,59 @@
   <context>
     <name>_StatsWidget</name>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1102" />
-      <location filename="../novelwriter/tools/manuscript.py" line="1062" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1108" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1068" />
       <source>Words</source>
       <translation>Words</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1129" />
-      <location filename="../novelwriter/tools/manuscript.py" line="1065" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1135" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1071" />
       <source>Characters</source>
       <translation>Characters</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1103" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1109" />
       <source>Words in Headings</source>
       <translation>Words in Headings</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1104" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1110" />
       <source>Words in Text</source>
       <translation>Words in Text</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1106" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1112" />
       <source>Headings</source>
       <translation>Headings</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1107" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1113" />
       <source>Paragraphs</source>
       <translation>Paragraphs</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1130" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1136" />
       <source>Characters in Headings</source>
       <translation>Characters in Headings</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1131" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1137" />
       <source>Characters in Text</source>
       <translation>Characters in Text</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1132" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1138" />
       <source>Characters, No Spaces</source>
       <translation>Characters, No Spaces</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1133" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1139" />
       <source>Characters in Headings, No Spaces</source>
       <translation>Characters in Headings, No Spaces</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/manuscript.py" line="1134" />
+      <location filename="../novelwriter/tools/manuscript.py" line="1140" />
       <source>Characters in Text, No Spaces</source>
       <translation>Characters in Text, No Spaces</translation>
     </message>
