@@ -25,7 +25,7 @@ import time
 import pytest
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.extensions.statusled import StatusLED
+from novelwriter.enum import nwTrinary
 
 from tests.tools import C, buildTestProject
 
@@ -46,20 +46,20 @@ def testGuiStatusBar_Main(qtbot, nwGUI, projPath, mockRnd):
     assert nwGUI.mainStatus._refTime == refTime
 
     # Project Status
-    nwGUI.mainStatus.setProjectStatus(StatusLED.S_NONE)
-    assert nwGUI.mainStatus.projIcon._theCol == nwGUI.mainStatus.projIcon._colNone
-    nwGUI.mainStatus.setProjectStatus(StatusLED.S_BAD)
-    assert nwGUI.mainStatus.projIcon._theCol == nwGUI.mainStatus.projIcon._colBad
-    nwGUI.mainStatus.setProjectStatus(StatusLED.S_GOOD)
-    assert nwGUI.mainStatus.projIcon._theCol == nwGUI.mainStatus.projIcon._colGood
+    nwGUI.mainStatus.setProjectStatus(nwTrinary.NEUTRAL)
+    assert nwGUI.mainStatus.projIcon.state == nwTrinary.NEUTRAL
+    nwGUI.mainStatus.setProjectStatus(nwTrinary.NEGATIVE)
+    assert nwGUI.mainStatus.projIcon.state == nwTrinary.NEGATIVE
+    nwGUI.mainStatus.setProjectStatus(nwTrinary.POSITIVE)
+    assert nwGUI.mainStatus.projIcon.state == nwTrinary.POSITIVE
 
     # Document Status
-    nwGUI.mainStatus.setDocumentStatus(StatusLED.S_NONE)
-    assert nwGUI.mainStatus.docIcon._theCol == nwGUI.mainStatus.docIcon._colNone
-    nwGUI.mainStatus.setDocumentStatus(StatusLED.S_BAD)
-    assert nwGUI.mainStatus.docIcon._theCol == nwGUI.mainStatus.docIcon._colBad
-    nwGUI.mainStatus.setDocumentStatus(StatusLED.S_GOOD)
-    assert nwGUI.mainStatus.docIcon._theCol == nwGUI.mainStatus.docIcon._colGood
+    nwGUI.mainStatus.setDocumentStatus(nwTrinary.NEUTRAL)
+    assert nwGUI.mainStatus.docIcon.state == nwTrinary.NEUTRAL
+    nwGUI.mainStatus.setDocumentStatus(nwTrinary.NEGATIVE)
+    assert nwGUI.mainStatus.docIcon.state == nwTrinary.NEGATIVE
+    nwGUI.mainStatus.setDocumentStatus(nwTrinary.POSITIVE)
+    assert nwGUI.mainStatus.docIcon.state == nwTrinary.POSITIVE
 
     # Idle Status
     CONFIG.stopWhenIdle = False

@@ -25,44 +25,50 @@ from __future__ import annotations
 
 import logging
 
-from typing import Literal
-
 from PyQt5.QtGui import QColor, QPainter, QPaintEvent
 from PyQt5.QtWidgets import QAbstractButton, QWidget
 
-from novelwriter.types import QtPaintAnitAlias
+from novelwriter.enum import nwTrinary
+from novelwriter.types import QtBlack, QtPaintAnitAlias
 
 logger = logging.getLogger(__name__)
 
 
 class StatusLED(QAbstractButton):
 
-    S_NONE = 0
-    S_BAD  = 1
-    S_GOOD = 2
-
-    def __init__(self, colNone: QColor, colGood: QColor, colBad: QColor,
-                 sW: int, sH: int, parent: QWidget | None = None) -> None:
+    def __init__(self, sW: int, sH: int, parent: QWidget | None = None) -> None:
         super().__init__(parent=parent)
-
-        self._colNone = colNone
-        self._colGood = colGood
-        self._colBad = colBad
-        self._theCol = colNone
-
+        self._neutral = QtBlack
+        self._postitve = QtBlack
+        self._negative = QtBlack
+        self._color = QtBlack
+        self._state = nwTrinary.NEUTRAL
         self.setFixedWidth(sW)
         self.setFixedHeight(sH)
-
         return
 
-    def setState(self, state: Literal[0, 1, 2]) -> None:
+    @property
+    def state(self) -> nwTrinary:
+        """The current state of the LED."""
+        return self._state
+
+    def setColors(self, neutral: QColor, positive: QColor, negative: QColor) -> None:
+        """Set the three colours for the status values."""
+        self._neutral = neutral
+        self._postitve = positive
+        self._negative = negative
+        self.setState(self._state)
+        return
+
+    def setState(self, state: nwTrinary) -> None:
         """Set the colour state."""
-        if state == self.S_GOOD:
-            self._theCol = self._colGood
-        elif state == self.S_BAD:
-            self._theCol = self._colBad
+        if state == nwTrinary.POSITIVE:
+            self._color = self._postitve
+        elif state == nwTrinary.NEGATIVE:
+            self._color = self._negative
         else:
-            self._theCol = self._colNone
+            self._color = self._neutral
+        self._state = state
         self.update()
         return
 
@@ -71,7 +77,7 @@ class StatusLED(QAbstractButton):
         painter = QPainter(self)
         painter.setRenderHint(QtPaintAnitAlias, True)
         painter.setPen(self.palette().dark().color())
-        painter.setBrush(self._theCol)
+        painter.setBrush(self._color)
         painter.setOpacity(1.0)
         painter.drawEllipse(1, 1, self.width() - 2, self.height() - 2)
         return

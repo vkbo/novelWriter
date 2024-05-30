@@ -27,7 +27,6 @@ import logging
 
 from datetime import datetime
 from time import time
-from typing import Literal
 
 from PyQt5.QtCore import QLocale, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QLabel, QStatusBar, QWidget
@@ -35,6 +34,7 @@ from PyQt5.QtWidgets import QApplication, QLabel, QStatusBar, QWidget
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import formatTime
 from novelwriter.constants import nwConst
+from novelwriter.enum import nwTrinary
 from novelwriter.extensions.statusled import StatusLED
 
 logger = logging.getLogger(__name__)
@@ -50,10 +50,6 @@ class GuiMainStatus(QStatusBar):
         self._refTime = -1.0
         self._userIdle = False
         self._debugInfo = False
-
-        colNone = SHARED.theme.statNone
-        colSaved = SHARED.theme.statSaved
-        colUnsaved = SHARED.theme.statUnsaved
 
         iPx = SHARED.theme.baseIconHeight
 
@@ -71,7 +67,7 @@ class GuiMainStatus(QStatusBar):
         self.addPermanentWidget(self.langText)
 
         # The Editor Status
-        self.docIcon = StatusLED(colNone, colSaved, colUnsaved, iPx, iPx, self)
+        self.docIcon = StatusLED(iPx, iPx, self)
         self.docText = QLabel(self.tr("Editor"), self)
         self.docIcon.setContentsMargins(0, 0, 0, 0)
         self.docText.setContentsMargins(0, 0, xM, 0)
@@ -79,7 +75,7 @@ class GuiMainStatus(QStatusBar):
         self.addPermanentWidget(self.docText)
 
         # The Project Status
-        self.projIcon = StatusLED(colNone, colSaved, colUnsaved, iPx, iPx, self)
+        self.projIcon = StatusLED(iPx, iPx, self)
         self.projText = QLabel(self.tr("Project"), self)
         self.projIcon.setContentsMargins(0, 0, 0, 0)
         self.projText.setContentsMargins(0, 0, xM, 0)
@@ -120,8 +116,8 @@ class GuiMainStatus(QStatusBar):
         self.setRefTime(-1.0)
         self.setLanguage(*SHARED.spelling.describeDict())
         self.setProjectStats(0, 0)
-        self.setProjectStatus(StatusLED.S_NONE)
-        self.setDocumentStatus(StatusLED.S_NONE)
+        self.setProjectStatus(nwTrinary.NEUTRAL)
+        self.setDocumentStatus(nwTrinary.NEUTRAL)
         self.updateTime()
         return
 
@@ -133,6 +129,13 @@ class GuiMainStatus(QStatusBar):
         self.timePixmap = SHARED.theme.getPixmap("status_time", (iPx, iPx))
         self.idlePixmap = SHARED.theme.getPixmap("status_idle", (iPx, iPx))
         self.timeIcon.setPixmap(self.timePixmap)
+
+        colNone = SHARED.theme.statNone
+        colSaved = SHARED.theme.statSaved
+        colUnsaved = SHARED.theme.statUnsaved
+        self.docIcon.setColors(colNone, colSaved, colUnsaved)
+        self.projIcon.setColors(colNone, colSaved, colUnsaved)
+
         return
 
     ##
@@ -144,12 +147,12 @@ class GuiMainStatus(QStatusBar):
         self._refTime = refTime
         return
 
-    def setProjectStatus(self, state: Literal[0, 1, 2]) -> None:
+    def setProjectStatus(self, state: nwTrinary) -> None:
         """Set the project status colour icon."""
         self.projIcon.setState(state)
         return
 
-    def setDocumentStatus(self, state: Literal[0, 1, 2]) -> None:
+    def setDocumentStatus(self, state: nwTrinary) -> None:
         """Set the document status colour icon."""
         self.docIcon.setState(state)
         return
@@ -212,13 +215,13 @@ class GuiMainStatus(QStatusBar):
     @pyqtSlot(bool)
     def updateProjectStatus(self, status: bool) -> None:
         """Update the project status."""
-        self.setProjectStatus(StatusLED.S_BAD if status else StatusLED.S_GOOD)
+        self.setProjectStatus(nwTrinary.NEGATIVE if status else nwTrinary.POSITIVE)
         return
 
     @pyqtSlot(bool)
     def updateDocumentStatus(self, status: bool) -> None:
         """Update the document status."""
-        self.setDocumentStatus(StatusLED.S_BAD if status else StatusLED.S_GOOD)
+        self.setDocumentStatus(nwTrinary.NEGATIVE if status else nwTrinary.POSITIVE)
         return
 
     ##
