@@ -27,9 +27,21 @@ from __future__ import annotations
 
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QWheelEvent
-from PyQt5.QtWidgets import QComboBox, QDoubleSpinBox, QSpinBox, QToolButton, QWidget
+from PyQt5.QtWidgets import QComboBox, QDialog, QDoubleSpinBox, QSpinBox, QToolButton, QWidget
 
 from novelwriter import SHARED
+
+
+class NDialog(QDialog):
+
+    def softDelete(self) -> None:
+        """Since calling deleteLater is sometimes not safe from Python,
+        as the C++ object can be deleted before the Python process is
+        done with the object, we instead set the dialog's parent to None
+        so that it gets garbage collected when it runs out of scope.
+        """
+        self.setParent(None)  # type: ignore
+        return
 
 
 class NComboBox(QComboBox):

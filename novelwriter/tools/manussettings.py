@@ -30,8 +30,8 @@ from typing import TYPE_CHECKING
 from PyQt5.QtCore import QEvent, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QFont, QIcon, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from PyQt5.QtWidgets import (
-    QAbstractButton, QAbstractItemView, QDialog, QDialogButtonBox, QFontDialog,
-    QFrame, QGridLayout, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu,
+    QAbstractButton, QAbstractItemView, QDialogButtonBox, QFontDialog, QFrame,
+    QGridLayout, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu,
     QPlainTextEdit, QPushButton, QSplitter, QStackedWidget, QTreeWidget,
     QTreeWidgetItem, QVBoxLayout, QWidget
 )
@@ -42,7 +42,9 @@ from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.configlayout import (
     NColourLabel, NFixedPage, NScrollableForm, NScrollablePage
 )
-from novelwriter.extensions.modified import NComboBox, NDoubleSpinBox, NIconToolButton, NSpinBox
+from novelwriter.extensions.modified import (
+    NComboBox, NDialog, NDoubleSpinBox, NIconToolButton, NSpinBox
+)
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
@@ -57,7 +59,7 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-class GuiBuildSettings(QDialog):
+class GuiBuildSettings(NDialog):
     """GUI Tools: Manuscript Build Settings Dialog
 
     The main tool for configuring manuscript builds. It's a GUI tool for
@@ -199,7 +201,7 @@ class GuiBuildSettings(QDialog):
         self._askToSaveBuild()
         self._saveSettings()
         event.accept()
-        self.deleteLater()
+        self.softDelete()
         return
 
     ##

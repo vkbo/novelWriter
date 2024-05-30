@@ -34,10 +34,10 @@ from PyQt5.QtCore import Qt, QTimer, QUrl, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QColor, QCursor, QPalette, QResizeEvent
 from PyQt5.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QApplication, QDialog, QFormLayout, QGridLayout,
-    QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton,
-    QSizePolicy, QSplitter, QStackedWidget, QTabWidget, QTextBrowser,
-    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget
+    QAbstractItemView, QApplication, QFormLayout, QGridLayout, QHBoxLayout,
+    QLabel, QListWidget, QListWidgetItem, QPushButton, QSizePolicy, QSplitter,
+    QStackedWidget, QTabWidget, QTextBrowser, QTreeWidget, QTreeWidgetItem,
+    QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -48,7 +48,7 @@ from novelwriter.core.tohtml import ToHtml
 from novelwriter.core.tokenizer import HeadingFormatter
 from novelwriter.error import logException
 from novelwriter.extensions.circularprogress import NProgressCircle
-from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
+from novelwriter.extensions.modified import NDialog, NIconToggleButton, NIconToolButton
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
@@ -63,7 +63,7 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-class GuiManuscript(QDialog):
+class GuiManuscript(NDialog):
     """GUI Tools: Manuscript Tool
 
     The dialog displays all the users build definitions, a preview panel
@@ -285,7 +285,7 @@ class GuiManuscript(QDialog):
             if isinstance(obj, GuiBuildSettings) and obj.isVisible():
                 obj.close()
         event.accept()
-        self.deleteLater()
+        self.softDelete()
         return
 
     ##
