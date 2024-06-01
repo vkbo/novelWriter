@@ -96,7 +96,7 @@ class RegExPatterns:
     def narratorBreak(self) -> QRegularExpression:
         """Dialogue narrator break rule based on user settings."""
         sym = QRegularExpression.escape(CONFIG.narratorBreak)
-        rxRule = QRegularExpression(f"({sym}\\b)(.*?)(\\b{sym})")
+        rxRule = QRegularExpression(f"{sym}\\b.*?\\b{sym}")
         rxRule.setPatternOptions(QRegExUnicode)
         return rxRule
 
