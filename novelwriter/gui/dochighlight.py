@@ -59,8 +59,8 @@ BLOCK_TITLE = 4
 class GuiDocHighlighter(QSyntaxHighlighter):
 
     __slots__ = (
-        "_tHandle", "_isInactive", "_spellCheck", "_spellErr", "_hStyles",
-        "_txtRules", "_cmnRules",
+        "_tHandle", "_isNovel", "_isInactive", "_spellCheck", "_spellErr",
+        "_hStyles", "_minRules", "_txtRules", "_cmnRules",
     )
 
     def __init__(self, document: QTextDocument) -> None:
@@ -69,11 +69,13 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         logger.debug("Create: GuiDocHighlighter")
 
         self._tHandle = None
+        self._isNovel = False
         self._isInactive = False
         self._spellCheck = False
         self._spellErr = QTextCharFormat()
 
         self._hStyles: dict[str, QTextCharFormat] = {}
+        self._minRules: list[tuple[QRegularExpression, dict[int, QTextCharFormat]]] = []
         self._txtRules: list[tuple[QRegularExpression, dict[int, QTextCharFormat]]] = []
         self._cmnRules: list[tuple[QRegularExpression, dict[int, QTextCharFormat]]] = []
 
@@ -137,6 +139,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             hlRule = {
                 0: self._hStyles["mspaces"],
             }
+            self._minRules.append((rxRule, hlRule))
             self._txtRules.append((rxRule, hlRule))
             self._cmnRules.append((rxRule, hlRule))
 
@@ -146,6 +149,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         hlRule = {
             0: self._hStyles["nobreak"],
         }
+        self._minRules.append((rxRule, hlRule))
         self._txtRules.append((rxRule, hlRule))
         self._cmnRules.append((rxRule, hlRule))
 
@@ -204,6 +208,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             2: self._hStyles["italic"],
             3: self._hStyles["markup"],
         }
+        self._minRules.append((rxRule, hlRule))
         self._txtRules.append((rxRule, hlRule))
         self._cmnRules.append((rxRule, hlRule))
 
@@ -215,6 +220,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             2: self._hStyles["bold"],
             3: self._hStyles["markup"],
         }
+        self._minRules.append((rxRule, hlRule))
         self._txtRules.append((rxRule, hlRule))
         self._cmnRules.append((rxRule, hlRule))
 
@@ -226,6 +232,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             2: self._hStyles["strike"],
             3: self._hStyles["markup"],
         }
+        self._minRules.append((rxRule, hlRule))
         self._txtRules.append((rxRule, hlRule))
         self._cmnRules.append((rxRule, hlRule))
 
@@ -235,6 +242,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         hlRule = {
             1: self._hStyles["code"],
         }
+        self._minRules.append((rxRule, hlRule))
         self._txtRules.append((rxRule, hlRule))
         self._cmnRules.append((rxRule, hlRule))
 
@@ -246,6 +254,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             2: self._hStyles["value"],
             3: self._hStyles["code"],
         }
+        self._minRules.append((rxRule, hlRule))
         self._txtRules.append((rxRule, hlRule))
         self._cmnRules.append((rxRule, hlRule))
 
@@ -255,6 +264,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         hlRule = {
             1: self._hStyles["markup"],
         }
+        self._minRules.append((rxRule, hlRule))
         self._txtRules.append((rxRule, hlRule))
 
         # Auto-Replace Tags
@@ -263,6 +273,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         hlRule = {
             0: self._hStyles["replace"],
         }
+        self._minRules.append((rxRule, hlRule))
         self._txtRules.append((rxRule, hlRule))
         self._cmnRules.append((rxRule, hlRule))
 
@@ -280,9 +291,11 @@ class GuiDocHighlighter(QSyntaxHighlighter):
     def setHandle(self, tHandle: str) -> None:
         """Set the handle of the currently highlighted document."""
         self._tHandle = tHandle
-        self._isInactive = (
-            item.isInactiveClass() if (item := SHARED.project.tree[tHandle]) else False
-        )
+        self._isNovel = False
+        self._isInactive = False
+        if item := SHARED.project.tree[tHandle]:
+            self._isNovel = item.isDocumentLayout()
+            self._isInactive = item.isInactiveClass()
         logger.debug("Syntax highlighter enabled for item '%s'", tHandle)
         return
 
@@ -397,7 +410,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         elif text.startswith("["):  # Special Command
             self.setCurrentBlockState(BLOCK_TEXT)
-            hRules = self._txtRules
+            hRules = self._txtRules if self._isNovel else self._minRules
 
             sText = text.rstrip().lower()
             if sText in ("[newpage]", "[new page]", "[vspace]"):
@@ -414,7 +427,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         else:  # Text Paragraph
             self.setCurrentBlockState(BLOCK_TEXT)
-            hRules = self._txtRules
+            hRules = self._txtRules if self._isNovel else self._minRules
 
         if hRules:
             for rX, hRule in hRules:
