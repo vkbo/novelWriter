@@ -39,6 +39,7 @@ from novelwriter.common import checkInt
 from novelwriter.constants import nwHeaders, nwRegEx, nwUnicode
 from novelwriter.core.index import processComment
 from novelwriter.enum import nwComment
+from novelwriter.text.patterns import REGEX_PATTERNS
 from novelwriter.types import QRegExUnicode
 
 logger = logging.getLogger(__name__)
@@ -155,54 +156,35 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Dialogue
         if CONFIG.dialogStyle > 0:
-            symO = ""
-            symC = ""
-            if CONFIG.dialogStyle in (1, 3):
-                symO += CONFIG.fmtSQuoteOpen
-                symC += CONFIG.fmtSQuoteClose
-            if CONFIG.dialogStyle in (2, 3):
-                symO += CONFIG.fmtDQuoteOpen
-                symC += CONFIG.fmtDQuoteClose
-
-            rxEnd = "|$" if CONFIG.allowOpenDial else ""
-            rxRule = QRegularExpression(f"\\B[{symO}].*?[{symC}]\\B{rxEnd}")
-            rxRule.setPatternOptions(QRegExUnicode)
+            rxRule = REGEX_PATTERNS.dialogStyle
             hlRule = {
                 0: self._hStyles["dialog"],
             }
             self._txtRules.append((rxRule, hlRule))
 
         if CONFIG.dialogLine:
-            sym = QRegularExpression.escape(CONFIG.dialogLine)
-            rxRule = QRegularExpression(f"^{sym}.*?$")
-            rxRule.setPatternOptions(QRegExUnicode)
+            rxRule = REGEX_PATTERNS.dialogLine
             hlRule = {
                 0: self._hStyles["dialog"],
             }
             self._txtRules.append((rxRule, hlRule))
 
         if CONFIG.narratorBreak:
-            sym = QRegularExpression.escape(CONFIG.narratorBreak)
-            rxRule = QRegularExpression(f"({sym}\\b)(.*?)(\\b{sym})")
-            rxRule.setPatternOptions(QRegExUnicode)
+            rxRule = REGEX_PATTERNS.narratorBreak
             hlRule = {
                 0: self._hStyles["text"],
             }
             self._txtRules.append((rxRule, hlRule))
 
         if CONFIG.altDialogOpen and CONFIG.altDialogClose:
-            symO = QRegularExpression.escape(CONFIG.altDialogOpen)
-            symC = QRegularExpression.escape(CONFIG.altDialogClose)
-            rxRule = QRegularExpression(f"\\B{symO}.*?{symC}\\B")
-            rxRule.setPatternOptions(QRegExUnicode)
+            rxRule = REGEX_PATTERNS.altDialogStyle
             hlRule = {
                 0: self._hStyles["altdialog"],
             }
             self._txtRules.append((rxRule, hlRule))
 
         # Markdown Italic
-        rxRule = QRegularExpression(nwRegEx.FMT_EI)
-        rxRule.setPatternOptions(QRegExUnicode)
+        rxRule = REGEX_PATTERNS.markdownItalic
         hlRule = {
             1: self._hStyles["markup"],
             2: self._hStyles["italic"],
@@ -213,8 +195,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._cmnRules.append((rxRule, hlRule))
 
         # Markdown Bold
-        rxRule = QRegularExpression(nwRegEx.FMT_EB)
-        rxRule.setPatternOptions(QRegExUnicode)
+        rxRule = REGEX_PATTERNS.markdownBold
         hlRule = {
             1: self._hStyles["markup"],
             2: self._hStyles["bold"],
@@ -225,8 +206,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._cmnRules.append((rxRule, hlRule))
 
         # Markdown Strikethrough
-        rxRule = QRegularExpression(nwRegEx.FMT_ST)
-        rxRule.setPatternOptions(QRegExUnicode)
+        rxRule = REGEX_PATTERNS.markdownStrike
         hlRule = {
             1: self._hStyles["markup"],
             2: self._hStyles["strike"],
@@ -237,8 +217,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._cmnRules.append((rxRule, hlRule))
 
         # Shortcodes
-        rxRule = QRegularExpression(nwRegEx.FMT_SC)
-        rxRule.setPatternOptions(QRegExUnicode)
+        rxRule = REGEX_PATTERNS.shortcodePlain
         hlRule = {
             1: self._hStyles["code"],
         }
@@ -247,8 +226,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._cmnRules.append((rxRule, hlRule))
 
         # Shortcodes w/Value
-        rxRule = QRegularExpression(nwRegEx.FMT_SV)
-        rxRule.setPatternOptions(QRegExUnicode)
+        rxRule = REGEX_PATTERNS.shortcodeValue
         hlRule = {
             1: self._hStyles["code"],
             2: self._hStyles["value"],
