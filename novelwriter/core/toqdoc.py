@@ -45,16 +45,18 @@ T_TextStyle = tuple[QTextBlockFormat, QTextCharFormat]
 
 
 class TextDocumentTheme:
-    text: QColor = QtBlack
+    text:      QColor = QtBlack
     highlight: QColor = QtTransparent
-    head: QColor = QtBlack
-    comment: QColor = QtBlack
-    note: QColor = QtBlack
-    code: QColor = QtBlack
-    modifier: QColor = QtBlack
-    keyword: QColor = QtBlack
-    tag: QColor = QtBlack
-    optional: QColor = QtBlack
+    head:      QColor = QtBlack
+    comment:   QColor = QtBlack
+    note:      QColor = QtBlack
+    code:      QColor = QtBlack
+    modifier:  QColor = QtBlack
+    keyword:   QColor = QtBlack
+    tag:       QColor = QtBlack
+    optional:  QColor = QtBlack
+    dialog:    QColor = QtBlack
+    altdialog: QColor = QtBlack
 
 
 def newBlock(cursor: QTextCursor, bFmt: QTextBlockFormat) -> None:
@@ -340,6 +342,14 @@ class ToQTextDocument(Tokenizer):
                 cFmt.setVerticalAlignment(QtVAlignSub)
             elif fmt == self.FMT_SUB_E:
                 cFmt.setVerticalAlignment(QtVAlignNormal)
+            elif fmt == self.FMT_DL_B:
+                cFmt.setForeground(self._theme.dialog)
+            elif fmt == self.FMT_DL_E:
+                cFmt.setForeground(self._theme.text)
+            elif fmt == self.FMT_ADL_B:
+                cFmt.setForeground(self._theme.altdialog)
+            elif fmt == self.FMT_ADL_E:
+                cFmt.setForeground(self._theme.text)
             elif fmt == self.FMT_FNOTE:
                 xFmt = QTextCharFormat(self._cCode)
                 xFmt.setVerticalAlignment(QtVAlignSuper)

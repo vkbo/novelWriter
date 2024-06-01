@@ -165,6 +165,8 @@ class GuiDocViewer(QTextBrowser):
         self._docTheme.keyword   = SHARED.theme.colKey
         self._docTheme.tag       = SHARED.theme.colTag
         self._docTheme.optional  = SHARED.theme.colOpt
+        self._docTheme.dialog    = SHARED.theme.colDialN
+        self._docTheme.altdialog = SHARED.theme.colDialA
 
         # Set default text margins
         self.document().setDocumentMargin(0)
@@ -201,6 +203,7 @@ class GuiDocViewer(QTextBrowser):
         sPos = self.verticalScrollBar().value()
         qDoc = ToQTextDocument(SHARED.project)
         qDoc.setJustify(CONFIG.doJustify)
+        qDoc.setDialogueHighlight(True)
         qDoc.initDocument(CONFIG.textFont, self._docTheme)
         qDoc.setKeywords(True)
         qDoc.setComments(CONFIG.viewComments)
