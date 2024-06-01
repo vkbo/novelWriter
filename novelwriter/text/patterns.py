@@ -80,7 +80,7 @@ class RegExPatterns:
             symC += CONFIG.fmtDQuoteClose
 
         rxEnd = "|$" if CONFIG.allowOpenDial else ""
-        rxRule = QRegularExpression(f"\\B[{symO}].*?[{symC}]\\B{rxEnd}")
+        rxRule = QRegularExpression(f"\\B[{symO}].*?(?:[{symC}]\\B{rxEnd})")
         rxRule.setPatternOptions(QRegExUnicode)
         return rxRule
 
