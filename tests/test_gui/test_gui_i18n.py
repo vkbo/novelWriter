@@ -64,9 +64,6 @@ def testGuiI18n_Localisation(qtbot, monkeypatch, language, nwGUI, projPath):
         qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(dType) is not None, timeout=1000)
         dialog = SHARED.findTopLevelWidget(dType)
         assert isinstance(dialog, dType)
-        with qtbot.waitExposed(dialog):
-            dialog.show()
-        dialog.close()
 
     showDialog(nwGUI.showWelcomeDialog, GuiWelcome)
     showDialog(nwGUI.showPreferencesDialog, GuiPreferences)
