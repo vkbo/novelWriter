@@ -2030,6 +2030,9 @@ class GuiDocEditor(QPlainTextEdit):
             cursor.movePosition(QtMoveLeft, QtKeepAnchor, nDelete)
             cursor.insertText(tInsert)
 
+        # Re-highlight, since the auto-replace sometimes interferes with it
+        self._qDocument.syntaxHighlighter.rehighlightBlock(cursor.block())
+
         return
 
     @staticmethod
