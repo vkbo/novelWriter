@@ -160,6 +160,11 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
     docViewer._linkClicked(QUrl("#tag_bod"))
     assert docViewer.docHandle == "4c4f28287af27"
 
+    # Other links should just trigger a navigate call
+    with qtbot.waitSignal(docViewer.sourceChanged, timeout=1000) as signal:
+        docViewer._linkClicked(QUrl("#somewhere_else"))
+        assert signal.args[0].url() == "#somewhere_else"
+
     # Click mouse nav buttons
     qtbot.mouseClick(docViewer.viewport(), Qt.BackButton, pos=rect.center(), delay=100)
     assert docViewer.docHandle == "88243afbe5ed8"

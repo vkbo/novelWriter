@@ -364,8 +364,10 @@ class GuiDocViewer(QTextBrowser):
         """Process a clicked link in the document."""
         if link := url.url():
             logger.debug("Clicked link: '%s'", link)
-            if (bits := link.partition("_")) and bits[2]:
+            if (bits := link.partition("_")) and bits[0] == "#tag" and bits[2]:
                 self.loadDocumentTagRequest.emit(bits[2], nwDocMode.VIEW)
+            else:
+                self.navigateTo(link)
         return
 
     @pyqtSlot("QPoint")
