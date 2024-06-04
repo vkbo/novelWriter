@@ -1361,10 +1361,7 @@ class GuiMain(QMainWindow):
 
     def _updateWindowTitle(self, projName: str | None = None) -> None:
         """Set the window title and add the project's name."""
-        winTitle = CONFIG.appName
-        if projName is not None:
-            winTitle += " - %s" % projName
-        self.setWindowTitle(winTitle)
+        self.setWindowTitle(" - ".join(filter(None, [projName, CONFIG.appName])))
         return
 
     def _getTagSource(self, tag: str) -> tuple[str | None, str | None]:
