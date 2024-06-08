@@ -411,7 +411,7 @@ class nwUnicode:
     U_EMDASH = "\u2014"  # Long dash
     U_HBAR   = "\u2015"  # Horizontal bar
     U_HELLIP = "\u2026"  # Ellipsis
-    U_MAPOSS = "\u02bc"  # Modifier letter single apostrophe
+    U_MAPOS  = "\u02bc"  # Modifier letter single apostrophe
     U_PRIME  = "\u2032"  # Prime
     U_DPRIME = "\u2033"  # Double prime
 
@@ -478,7 +478,7 @@ class nwUnicode:
     H_EMDASH = "&mdash;"
     H_HBAR   = "&#8213;"
     H_HELLIP = "&hellip;"
-    H_MAPOSS = "&#700;"
+    H_MAPOS  = "&#700;"
     H_PRIME  = "&prime;"
     H_DPRIME = "&#8243;"
 
@@ -543,7 +543,7 @@ class nwHtmlUnicode():
         nwUnicode.U_EMDASH: nwUnicode.H_EMDASH,
         nwUnicode.U_HBAR:   nwUnicode.H_HBAR,
         nwUnicode.U_HELLIP: nwUnicode.H_HELLIP,
-        nwUnicode.U_MAPOSS: nwUnicode.H_MAPOSS,
+        nwUnicode.U_MAPOS:  nwUnicode.H_MAPOS,
         nwUnicode.U_PRIME:  nwUnicode.H_PRIME,
         nwUnicode.U_DPRIME: nwUnicode.H_DPRIME,
 
