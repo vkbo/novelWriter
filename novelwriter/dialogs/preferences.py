@@ -29,13 +29,13 @@ import logging
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import (
-    QAbstractButton, QApplication, QCompleter, QDialogButtonBox, QFileDialog,
-    QHBoxLayout, QLineEdit, QPushButton, QVBoxLayout, QWidget
+    QAbstractButton, QCompleter, QDialogButtonBox, QFileDialog, QHBoxLayout,
+    QLineEdit, QPushButton, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import describeFont
-from novelwriter.constants import nwConst, nwUnicode
+from novelwriter.constants import nwUnicode
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.configlayout import NColourLabel, NScrollableForm
 from novelwriter.extensions.modified import (
@@ -767,8 +767,6 @@ class GuiPreferences(NDialog):
         logger.debug("Close: GuiPreferences")
         self._saveWindowSize()
         event.accept()
-        QApplication.processEvents()
-        self.done(nwConst.DLG_FINISHED)
         self.softDelete()
         return
 

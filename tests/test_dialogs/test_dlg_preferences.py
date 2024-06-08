@@ -27,7 +27,7 @@ from PyQt5.QtGui import QFont, QFontDatabase, QKeyEvent
 from PyQt5.QtWidgets import QAction, QFileDialog, QFontDialog
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.constants import nwConst, nwUnicode
+from novelwriter.constants import nwUnicode
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.types import QtDialogApply, QtDialogClose, QtDialogSave, QtModNone
@@ -125,23 +125,19 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
     # Check Save Button
     prefs.show()
     with qtbot.waitSignal(prefs.newPreferencesReady) as signal:
-        with qtbot.waitSignal(prefs.finished) as status:
-            prefs.buttonBox.button(QtDialogSave).click()
-            assert signal.args == [False, False, False, False]
-            assert status.args == [nwConst.DLG_FINISHED]
+        prefs.buttonBox.button(QtDialogSave).click()
+        assert signal.args == [False, False, False, False]
 
     # Check Close Button
     prefs.show()
-    with qtbot.waitSignal(prefs.finished) as status:
-        prefs.buttonBox.button(QtDialogClose).click()
-        assert status.args == [nwConst.DLG_FINISHED]
+    prefs.buttonBox.button(QtDialogClose).click()
+    assert prefs.isHidden() is True
 
     # Close Using Escape Key
     prefs.show()
-    with qtbot.waitSignal(prefs.finished) as status:
-        event = QKeyEvent(QEvent.Type.KeyPress, Qt.Key.Key_Escape, QtModNone)
-        prefs.keyPressEvent(event)
-        assert status.args == [nwConst.DLG_FINISHED]
+    event = QKeyEvent(QEvent.Type.KeyPress, Qt.Key.Key_Escape, QtModNone)
+    prefs.keyPressEvent(event)
+    assert prefs.isHidden() is True
 
     # qtbot.stop()
 
