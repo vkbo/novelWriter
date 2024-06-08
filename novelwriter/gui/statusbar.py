@@ -239,9 +239,7 @@ class GuiMainStatus(QStatusBar):
         """
         import tracemalloc
 
-        from collections import Counter
-
-        widgets = QApplication.allWidgets()
+        count = len(QApplication.allWidgets())
         if not self._debugInfo:
             if tracemalloc.is_tracing():
                 self._traceMallocRef = "Total"
@@ -249,19 +247,14 @@ class GuiMainStatus(QStatusBar):
                 self._traceMallocRef = "Relative"
                 tracemalloc.start()
             self._debugInfo = True
-            self._wCounts = Counter([type(x).__name__ for x in widgets])
 
-        if hasattr(self, "_wCounts"):
-            diff = Counter([type(x).__name__ for x in widgets]) - self._wCounts
-            for name, count in diff.items():
-                logger.debug("Widget '%s': +%d", name, count)
-
-        mem = tracemalloc.get_traced_memory()
+        current, peak = tracemalloc.get_traced_memory()
         stamp = datetime.now().strftime("%H:%M:%S")
-        self.showMessage((
-            f"Debug [{stamp}]"
-            f" \u2013 Widgets: {len(widgets)}"
-            f" \u2013 {self._traceMallocRef} Memory: {mem[0]:n}"
-            f" \u2013 Peak: {mem[1]:n}"
-        ), 6000)
+        message = (
+            f"Widgets: {count} \u2013 "
+            f"{self._traceMallocRef} Memory: {current/1024:,.2f} kiB \u2013 "
+            f"Peak: {peak/1024:,.2f} kiB"
+        )
+        self.showMessage(f"Debug [{stamp}] {message}", 6000)
+        logger.debug("[MEMINFO] %s", message)
         return

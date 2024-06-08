@@ -485,7 +485,7 @@ class Tokenizer(ABC):
             self._text = xRep.sub(lambda x: repDict[x.group(0)], self._text)
 
         # Process the character translation map
-        trDict = {nwUnicode.U_MAPOSS: nwUnicode.U_RSQUO}
+        trDict = {nwUnicode.U_MAPOS: nwUnicode.U_RSQUO}
         self._text = self._text.translate(str.maketrans(trDict))
 
         return

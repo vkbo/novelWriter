@@ -37,7 +37,7 @@ from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwWidget
 from novelwriter.gui.projtree import GuiProjectTree, GuiProjectView, _TreeContextMenu
 from novelwriter.guimain import GuiMain
-from novelwriter.types import QtAccepted, QtModeNone, QtMouseLeft, QtMouseMiddle, QtRejected
+from novelwriter.types import QtAccepted, QtModNone, QtMouseLeft, QtMouseMiddle, QtRejected
 
 from tests.mocked import causeOSError
 from tests.tools import C, buildTestProject
@@ -807,7 +807,7 @@ def testGuiProjTree_AutoScroll(qtbot, monkeypatch, nwGUI: GuiMain, projPath, moc
     action = Qt.DropAction.MoveAction
     mime = QMimeData()
     mouse = QtMouseLeft
-    modifier = QtModeNone
+    modifier = QtModNone
 
     # Scroll Down
     h = projTree.height()
@@ -864,7 +864,7 @@ def testGuiProjTree_DragAndDrop(qtbot, monkeypatch, caplog, nwGUI: GuiMain, proj
     action = Qt.DropAction.MoveAction
     mime = QMimeData()
     mouse = QtMouseLeft
-    modifier = QtModeNone
+    modifier = QtModNone
 
     projTree.saveTreeOrder()
     treeOrder = SHARED.project.tree._order
@@ -1064,7 +1064,7 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd)
     eType = QEvent.Type.MouseButtonPress
     pos = projTree.visualItemRect(projTree._getTreeItem(C.hChapterDoc)).center()
     button = QtMouseMiddle
-    modifier = QtModeNone
+    modifier = QtModNone
 
     # Trigger the viewer
     event = QMouseEvent(eType, pos, button, button, modifier)
