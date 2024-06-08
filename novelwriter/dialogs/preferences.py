@@ -895,8 +895,8 @@ class GuiPreferences(NDialog):
         refreshTree  = False
 
         # Appearance
-        guiLocale   = self.guiLocale.currentData()
-        guiTheme    = self.guiTheme.currentData()
+        guiLocale = self.guiLocale.currentData()
+        guiTheme  = self.guiTheme.currentData()
 
         updateTheme  |= CONFIG.guiTheme != guiTheme
         needsRestart |= CONFIG.guiLocale != guiLocale
