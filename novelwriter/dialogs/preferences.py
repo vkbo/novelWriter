@@ -29,13 +29,13 @@ import logging
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import (
-    QAbstractButton, QApplication, QCompleter, QDialogButtonBox, QFileDialog,
-    QHBoxLayout, QLineEdit, QPushButton, QVBoxLayout, QWidget
+    QAbstractButton, QCompleter, QDialogButtonBox, QFileDialog, QHBoxLayout,
+    QLineEdit, QPushButton, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import describeFont
-from novelwriter.constants import nwConst, nwUnicode
+from novelwriter.constants import nwUnicode
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.configlayout import NColourLabel, NScrollableForm
 from novelwriter.extensions.modified import (
@@ -695,64 +695,62 @@ class GuiPreferences(NDialog):
         self.sidebar.addButton(title, section)
         self.mainForm.addGroupLabel(title, section)
 
-        self.quoteSym = {}
-
         # Single Quote Style
-        self.quoteSym["SO"] = QLineEdit(self)
-        self.quoteSym["SO"].setMaxLength(1)
-        self.quoteSym["SO"].setReadOnly(True)
-        self.quoteSym["SO"].setFixedWidth(boxFixed)
-        self.quoteSym["SO"].setAlignment(QtAlignCenter)
-        self.quoteSym["SO"].setText(CONFIG.fmtSQuoteOpen)
-        self.btnSingleStyleO = NIconToolButton(self, iSz, "quote")
-        self.btnSingleStyleO.clicked.connect(lambda: self._getQuote("SO"))
+        self.fmtSQuoteOpen = QLineEdit(self)
+        self.fmtSQuoteOpen.setMaxLength(1)
+        self.fmtSQuoteOpen.setReadOnly(True)
+        self.fmtSQuoteOpen.setFixedWidth(boxFixed)
+        self.fmtSQuoteOpen.setAlignment(QtAlignCenter)
+        self.fmtSQuoteOpen.setText(CONFIG.fmtSQuoteOpen)
+        self.btnSQuoteOpen = NIconToolButton(self, iSz, "quote")
+        self.btnSQuoteOpen.clicked.connect(self._changeSingleQuoteOpen)
         self.mainForm.addRow(
-            self.tr("Single quote open style"), self.quoteSym["SO"],
+            self.tr("Single quote open style"), self.fmtSQuoteOpen,
             self.tr("The symbol to use for a leading single quote."),
-            button=self.btnSingleStyleO
+            button=self.btnSQuoteOpen
         )
 
-        self.quoteSym["SC"] = QLineEdit(self)
-        self.quoteSym["SC"].setMaxLength(1)
-        self.quoteSym["SC"].setReadOnly(True)
-        self.quoteSym["SC"].setFixedWidth(boxFixed)
-        self.quoteSym["SC"].setAlignment(QtAlignCenter)
-        self.quoteSym["SC"].setText(CONFIG.fmtSQuoteClose)
-        self.btnSingleStyleC = NIconToolButton(self, iSz, "quote")
-        self.btnSingleStyleC.clicked.connect(lambda: self._getQuote("SC"))
+        self.fmtSQuoteClose = QLineEdit(self)
+        self.fmtSQuoteClose.setMaxLength(1)
+        self.fmtSQuoteClose.setReadOnly(True)
+        self.fmtSQuoteClose.setFixedWidth(boxFixed)
+        self.fmtSQuoteClose.setAlignment(QtAlignCenter)
+        self.fmtSQuoteClose.setText(CONFIG.fmtSQuoteClose)
+        self.btnSQuoteClose = NIconToolButton(self, iSz, "quote")
+        self.btnSQuoteClose.clicked.connect(self._changeSingleQuoteClose)
         self.mainForm.addRow(
-            self.tr("Single quote close style"), self.quoteSym["SC"],
+            self.tr("Single quote close style"), self.fmtSQuoteClose,
             self.tr("The symbol to use for a trailing single quote."),
-            button=self.btnSingleStyleC
+            button=self.btnSQuoteClose
         )
 
         # Double Quote Style
-        self.quoteSym["DO"] = QLineEdit(self)
-        self.quoteSym["DO"].setMaxLength(1)
-        self.quoteSym["DO"].setReadOnly(True)
-        self.quoteSym["DO"].setFixedWidth(boxFixed)
-        self.quoteSym["DO"].setAlignment(QtAlignCenter)
-        self.quoteSym["DO"].setText(CONFIG.fmtDQuoteOpen)
-        self.btnDoubleStyleO = NIconToolButton(self, iSz, "quote")
-        self.btnDoubleStyleO.clicked.connect(lambda: self._getQuote("DO"))
+        self.fmtDQuoteOpen = QLineEdit(self)
+        self.fmtDQuoteOpen.setMaxLength(1)
+        self.fmtDQuoteOpen.setReadOnly(True)
+        self.fmtDQuoteOpen.setFixedWidth(boxFixed)
+        self.fmtDQuoteOpen.setAlignment(QtAlignCenter)
+        self.fmtDQuoteOpen.setText(CONFIG.fmtDQuoteOpen)
+        self.btnDQuoteOpen = NIconToolButton(self, iSz, "quote")
+        self.btnDQuoteOpen.clicked.connect(self._changeDoubleQuoteOpen)
         self.mainForm.addRow(
-            self.tr("Double quote open style"), self.quoteSym["DO"],
+            self.tr("Double quote open style"), self.fmtDQuoteOpen,
             self.tr("The symbol to use for a leading double quote."),
-            button=self.btnDoubleStyleO
+            button=self.btnDQuoteOpen
         )
 
-        self.quoteSym["DC"] = QLineEdit(self)
-        self.quoteSym["DC"].setMaxLength(1)
-        self.quoteSym["DC"].setReadOnly(True)
-        self.quoteSym["DC"].setFixedWidth(boxFixed)
-        self.quoteSym["DC"].setAlignment(QtAlignCenter)
-        self.quoteSym["DC"].setText(CONFIG.fmtDQuoteClose)
-        self.btnDoubleStyleC = NIconToolButton(self, iSz, "quote")
-        self.btnDoubleStyleC.clicked.connect(lambda: self._getQuote("DC"))
+        self.fmtDQuoteClose = QLineEdit(self)
+        self.fmtDQuoteClose.setMaxLength(1)
+        self.fmtDQuoteClose.setReadOnly(True)
+        self.fmtDQuoteClose.setFixedWidth(boxFixed)
+        self.fmtDQuoteClose.setAlignment(QtAlignCenter)
+        self.fmtDQuoteClose.setText(CONFIG.fmtDQuoteClose)
+        self.btnDQuoteClose = NIconToolButton(self, iSz, "quote")
+        self.btnDQuoteClose.clicked.connect(self._changeDoubleQuoteClose)
         self.mainForm.addRow(
-            self.tr("Double quote close style"), self.quoteSym["DC"],
+            self.tr("Double quote close style"), self.fmtDQuoteClose,
             self.tr("The symbol to use for a trailing double quote."),
-            button=self.btnDoubleStyleC
+            button=self.btnDQuoteClose
         )
 
         self.mainForm.finalise()
@@ -769,8 +767,6 @@ class GuiPreferences(NDialog):
         logger.debug("Close: GuiPreferences")
         self._saveWindowSize()
         event.accept()
-        QApplication.processEvents()
-        self.done(nwConst.DLG_FINISHED)
         self.softDelete()
         return
 
@@ -850,11 +846,36 @@ class GuiPreferences(NDialog):
         self.fmtPadThin.setEnabled(state)
         return
 
-    def _getQuote(self, qType: str) -> None:
-        """Dialog for single quote open."""
-        quote, status = GuiQuoteSelect.getQuote(self, current=self.quoteSym[qType].text())
+    @pyqtSlot()
+    def _changeSingleQuoteOpen(self) -> None:
+        """Change single quote open style."""
+        quote, status = GuiQuoteSelect.getQuote(self, current=self.fmtSQuoteOpen.text())
         if status:
-            self.quoteSym[qType].setText(quote)
+            self.fmtSQuoteOpen.setText(quote)
+        return
+
+    @pyqtSlot()
+    def _changeSingleQuoteClose(self) -> None:
+        """Change single quote close style."""
+        quote, status = GuiQuoteSelect.getQuote(self, current=self.fmtSQuoteClose.text())
+        if status:
+            self.fmtSQuoteClose.setText(quote)
+        return
+
+    @pyqtSlot()
+    def _changeDoubleQuoteOpen(self) -> None:
+        """Change double quote open style."""
+        quote, status = GuiQuoteSelect.getQuote(self, current=self.fmtDQuoteOpen.text())
+        if status:
+            self.fmtDQuoteOpen.setText(quote)
+        return
+
+    @pyqtSlot()
+    def _changeDoubleQuoteClose(self) -> None:
+        """Change double quote close style."""
+        quote, status = GuiQuoteSelect.getQuote(self, current=self.fmtDQuoteClose.text())
+        if status:
+            self.fmtDQuoteClose.setText(quote)
         return
 
     ##
@@ -874,8 +895,8 @@ class GuiPreferences(NDialog):
         refreshTree  = False
 
         # Appearance
-        guiLocale   = self.guiLocale.currentData()
-        guiTheme    = self.guiTheme.currentData()
+        guiLocale = self.guiLocale.currentData()
+        guiTheme  = self.guiTheme.currentData()
 
         updateTheme  |= CONFIG.guiTheme != guiTheme
         needsRestart |= CONFIG.guiLocale != guiLocale
@@ -972,10 +993,10 @@ class GuiPreferences(NDialog):
         CONFIG.fmtPadThin      = self.fmtPadThin.isChecked()
 
         # Quotation Style
-        CONFIG.fmtSQuoteOpen  = self.quoteSym["SO"].text()
-        CONFIG.fmtSQuoteClose = self.quoteSym["SC"].text()
-        CONFIG.fmtDQuoteOpen  = self.quoteSym["DO"].text()
-        CONFIG.fmtDQuoteClose = self.quoteSym["DC"].text()
+        CONFIG.fmtSQuoteOpen  = self.fmtSQuoteOpen.text()
+        CONFIG.fmtSQuoteClose = self.fmtSQuoteClose.text()
+        CONFIG.fmtDQuoteOpen  = self.fmtDQuoteOpen.text()
+        CONFIG.fmtDQuoteClose = self.fmtDQuoteClose.text()
 
         # Finalise
         CONFIG.saveConfig()
