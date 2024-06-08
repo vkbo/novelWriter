@@ -64,7 +64,7 @@ from novelwriter.text.counting import standardCounter
 from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
     QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop,
-    QtAlignRight, QtKeepAnchor, QtModCtrl, QtModeNone, QtModShift, QtMouseLeft,
+    QtAlignRight, QtKeepAnchor, QtModCtrl, QtModNone, QtModShift, QtMouseLeft,
     QtMoveAnchor, QtMoveLeft, QtMoveRight
 )
 
@@ -956,7 +956,7 @@ class GuiDocEditor(QPlainTextEdit):
             super().keyPressEvent(event)
             nPos = self.cursorRect().topLeft().y()
             kMod = event.modifiers()
-            okMod = kMod in (QtModeNone, QtModShift)
+            okMod = kMod in (QtModNone, QtModShift)
             okKey = event.key() not in self.MOVE_KEYS
             if nPos != cPos and okMod and okKey:
                 mPos = CONFIG.autoScrollPos*0.01 * self.viewport().height()

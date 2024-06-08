@@ -73,7 +73,7 @@ QtUserRole = Qt.ItemDataRole.UserRole
 # Keyboard and Mouse Buttons
 
 QtModCtrl = Qt.KeyboardModifier.ControlModifier
-QtModeNone = Qt.KeyboardModifier.NoModifier
+QtModNone = Qt.KeyboardModifier.NoModifier
 QtModShift = Qt.KeyboardModifier.ShiftModifier
 QtMouseLeft = Qt.MouseButton.LeftButton
 QtMouseMiddle = Qt.MouseButton.MiddleButton
