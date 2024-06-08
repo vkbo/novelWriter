@@ -400,7 +400,7 @@ def testGuiMainMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsMSApos.activate(QAction.Trigger)
-    assert nwGUI.docEditor.getText() == nwUnicode.U_MAPOSS
+    assert nwGUI.docEditor.getText() == nwUnicode.U_MAPOS
     nwGUI.docEditor.clear()
 
     nwGUI.mainMenu.aInsEllipsis.activate(QAction.Trigger)

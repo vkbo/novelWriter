@@ -422,7 +422,7 @@ class GuiMainMenu(QMenuBar):
         self.aInsMSApos = self.mInsQuotes.addAction(self.tr("Alternative Apostrophe"))
         self.aInsMSApos.setShortcut("Ctrl+K, '")
         self.aInsMSApos.triggered.connect(
-            lambda: self.requestDocInsertText.emit(nwUnicode.U_MAPOSS)
+            lambda: self.requestDocInsertText.emit(nwUnicode.U_MAPOS)
         )
 
         # Insert > Symbols
