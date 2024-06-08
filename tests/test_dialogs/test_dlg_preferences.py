@@ -30,7 +30,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwConst, nwUnicode
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.quotes import GuiQuoteSelect
-from novelwriter.types import QtDialogApply, QtDialogClose, QtDialogSave, QtModeNone
+from novelwriter.types import QtDialogApply, QtDialogClose, QtDialogSave, QtModNone
 
 KEY_DELAY = 1
 
@@ -139,7 +139,7 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
     # Close Using Escape Key
     prefs.show()
     with qtbot.waitSignal(prefs.finished) as status:
-        event = QKeyEvent(QEvent.Type.KeyPress, Qt.Key.Key_Escape, QtModeNone)
+        event = QKeyEvent(QEvent.Type.KeyPress, Qt.Key.Key_Escape, QtModNone)
         prefs.keyPressEvent(event)
         assert status.args == [nwConst.DLG_FINISHED]
 
@@ -299,16 +299,16 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     # Quotation Style
     with monkeypatch.context() as mp:
         mp.setattr(GuiQuoteSelect, "getQuote", lambda *a, **k: (nwUnicode.U_LSAQUO, True))
-        prefs.btnSingleStyleO.click()
+        prefs.btnSQuoteOpen.click()
     with monkeypatch.context() as mp:
         mp.setattr(GuiQuoteSelect, "getQuote", lambda *a, **k: (nwUnicode.U_RSAQUO, True))
-        prefs.btnSingleStyleC.click()
+        prefs.btnSQuoteClose.click()
     with monkeypatch.context() as mp:
         mp.setattr(GuiQuoteSelect, "getQuote", lambda *a, **k: (nwUnicode.U_LAQUO, True))
-        prefs.btnDoubleStyleO.click()
+        prefs.btnDQuoteOpen.click()
     with monkeypatch.context() as mp:
         mp.setattr(GuiQuoteSelect, "getQuote", lambda *a, **k: (nwUnicode.U_RAQUO, True))
-        prefs.btnDoubleStyleC.click()
+        prefs.btnDQuoteClose.click()
 
     assert CONFIG.fmtSQuoteOpen == nwUnicode.U_LSQUO
     assert CONFIG.fmtSQuoteClose == nwUnicode.U_RSQUO
