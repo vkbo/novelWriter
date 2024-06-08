@@ -30,7 +30,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.core.toqdoc import ToQTextDocument
 from novelwriter.enum import nwDocAction
 from novelwriter.gui.docviewer import GuiDocViewer
-from novelwriter.types import QtModeNone, QtMouseLeft
+from novelwriter.types import QtModNone, QtMouseLeft
 
 from tests.mocked import causeException
 
@@ -61,7 +61,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Re-select via header click
     button = QtMouseLeft
-    modifier = QtModeNone
+    modifier = QtModNone
     event = QMouseEvent(QEvent.Type.MouseButtonPress, QPoint(), button, button, modifier)
     docViewer.docHeader.mousePressEvent(event)
     assert nwGUI.projView.projTree.getSelectedHandle() == "88243afbe5ed8"
