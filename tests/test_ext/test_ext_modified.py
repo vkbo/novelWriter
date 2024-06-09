@@ -22,10 +22,12 @@ from __future__ import annotations
 
 import pytest
 
-from PyQt5.QtCore import QPoint, QPointF, Qt
-from PyQt5.QtGui import QWheelEvent
+from PyQt5.QtCore import QEvent, QPoint, QPointF, Qt
+from PyQt5.QtGui import QKeyEvent, QWheelEvent
+from PyQt5.QtWidgets import QWidget
 
-from novelwriter.extensions.modified import NComboBox, NDoubleSpinBox, NSpinBox
+from novelwriter.extensions.modified import NComboBox, NDialog, NDoubleSpinBox, NSpinBox
+from novelwriter.types import QtModNone, QtRejected
 
 from tests.tools import SimpleDialog
 
@@ -45,6 +47,21 @@ class MockWheelEvent(QWheelEvent):
         super().ignore()
         self.ignored = True
         return
+
+
+@pytest.mark.gui
+def testExtModified_NDialog(qtbot, monkeypatch):
+    """Test the QDialog class."""
+    widget = QWidget()
+    dialog = NDialog(widget)
+    assert dialog.parent() is widget
+
+    dialog.softDelete()
+    assert dialog.parent() is None
+
+    with qtbot.waitSignal(dialog.rejected, timeout=1000):
+        dialog.keyPressEvent(QKeyEvent(QEvent.Type.KeyPress, Qt.Key.Key_Escape, QtModNone))
+        assert dialog.result() == QtRejected
 
 
 @pytest.mark.gui
