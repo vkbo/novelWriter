@@ -27,7 +27,7 @@ from __future__ import annotations
 import logging
 
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCloseEvent
+from PyQt5.QtGui import QCloseEvent, QKeyEvent, QKeySequence
 from PyQt5.QtWidgets import (
     QAbstractButton, QCompleter, QDialogButtonBox, QFileDialog, QHBoxLayout,
     QLineEdit, QPushButton, QVBoxLayout, QWidget
@@ -768,6 +768,16 @@ class GuiPreferences(NDialog):
         self._saveWindowSize()
         event.accept()
         self.softDelete()
+        return
+
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+        """Overload keyPressEvent and only accept escape. The main
+        purpose here is to prevent Enter/Return from closing the dialog
+        as it is used for the search box.
+        """
+        if event.matches(QKeySequence.StandardKey.Cancel):
+            self.close()
+        event.ignore()
         return
 
     ##
