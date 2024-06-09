@@ -51,7 +51,7 @@ class MockWheelEvent(QWheelEvent):
 
 @pytest.mark.gui
 def testExtModified_NDialog(qtbot, monkeypatch):
-    """Test the QDialog class."""
+    """Test the NDialog class."""
     widget = QWidget()
     dialog = NDialog(widget)
     assert dialog.parent() is widget
