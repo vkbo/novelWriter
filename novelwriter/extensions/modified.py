@@ -30,8 +30,8 @@ from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtGui import QKeyEvent, QKeySequence, QWheelEvent
+from PyQt5.QtCore import QSize, Qt, pyqtSlot
+from PyQt5.QtGui import QWheelEvent
 from PyQt5.QtWidgets import (
     QApplication, QComboBox, QDialog, QDoubleSpinBox, QSpinBox, QToolButton,
     QWidget
@@ -54,11 +54,11 @@ class NDialog(QDialog):
         self.setParent(None)  # type: ignore
         return
 
-    def keyPressEvent(self, event: QKeyEvent) -> None:
-        """Overload keyPressEvent and forward escape to close."""
-        if event.matches(QKeySequence.StandardKey.Cancel):
-            self.close()
-        event.ignore()
+    @pyqtSlot()
+    def reject(self) -> None:
+        """Overload the reject slot and also call close."""
+        super().reject()
+        self.close()
         return
 
 
