@@ -85,7 +85,7 @@ class GuiAbout(NDialog):
 
         # Buttons
         self.btnBox = QDialogButtonBox(QtDialogClose, self)
-        self.btnBox.rejected.connect(self.close)
+        self.btnBox.rejected.connect(self.reject)
 
         # Assemble
         self.innerBox = QVBoxLayout()

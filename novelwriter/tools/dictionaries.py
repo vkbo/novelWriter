@@ -109,7 +109,7 @@ class GuiDictionaries(NNonBlockingDialog):
 
         # Buttons
         self.buttonBox = QDialogButtonBox(QtDialogClose, self)
-        self.buttonBox.rejected.connect(self._doClose)
+        self.buttonBox.rejected.connect(self.reject)
 
         # Assemble
         self.innerBox = QVBoxLayout()
@@ -218,12 +218,6 @@ class GuiDictionaries(NNonBlockingDialog):
         """Open the dictionary folder."""
         if not openExternalPath(Path(self.inPath.text())):
             SHARED.error("Path not found.")
-        return
-
-    @pyqtSlot()
-    def _doClose(self) -> None:
-        """Close the dialog."""
-        self.close()
         return
 
     ##
