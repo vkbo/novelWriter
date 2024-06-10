@@ -25,6 +25,7 @@ import pytest
 from PyQt5.QtWidgets import QAction
 
 from novelwriter import SHARED
+from novelwriter.enum import nwDocInsert
 from novelwriter.tools.lipsum import GuiLipsum
 
 from tests.tools import C, buildTestProject
@@ -62,7 +63,8 @@ def testToolLipsum_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     with monkeypatch.context() as mp:
         mp.setattr(GuiLipsum, "exec", lambda *a: None)
         mp.setattr(GuiLipsum, "lipsumText", "FooBar")
-        nwGUI.mainMenu.aLipsumText.activate(QAction.Trigger)
+        with qtbot.waitSignal(nwGUI.docEditor.textChanged):
+            nwGUI.docEditor.insertText(nwDocInsert.LIPSUM)
         assert nwGUI.docEditor.getText() == "### New Scene\n\nFooBar"
 
     # qtbot.stop()

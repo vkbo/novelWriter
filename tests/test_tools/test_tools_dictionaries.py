@@ -152,6 +152,4 @@ def testToolDictionaries_Main(qtbot, monkeypatch, nwGUI, fncPath):
         "Additional dictionaries found: 2"
     )
 
-    # Close
-    nwDicts._doClose()
     # qtbot.stop()
