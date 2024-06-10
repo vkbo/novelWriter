@@ -555,6 +555,12 @@ def testToolBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     build.setValue("format.justifyText", False)
     build.setValue("format.stripUnicode", False)
     build.setValue("format.replaceTabs", False)
+    build.setValue("format.keepBreaks", True)
+    build.setValue("format.showDialogue", False)
+
+    build.setValue("format.firstLineIndent", False)
+    build.setValue("format.firstIndentWidth", 1.4)
+    build.setValue("format.indentFirstPar", False)
 
     build.setValue("format.pageUnit", "mm")
     build.setValue("format.pageSize", "Custom")
@@ -580,6 +586,8 @@ def testToolBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     assert fmtTab.justifyText.isChecked() is False
     assert fmtTab.stripUnicode.isChecked() is False
     assert fmtTab.replaceTabs.isChecked() is False
+    assert fmtTab.keepBreaks.isChecked() is True
+    assert fmtTab.showDialogue.isChecked() is False
 
     assert fmtTab.firstIndent.isChecked() is False
     assert fmtTab.indentWidth.value() == 1.4
@@ -603,6 +611,8 @@ def testToolBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     fmtTab.justifyText.setChecked(True)
     fmtTab.stripUnicode.setChecked(True)
     fmtTab.replaceTabs.setChecked(True)
+    fmtTab.keepBreaks.setChecked(False)
+    fmtTab.showDialogue.setChecked(True)
 
     fmtTab.firstIndent.setChecked(True)
     fmtTab.indentWidth.setValue(2.0)
@@ -620,6 +630,8 @@ def testToolBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     assert build.getBool("format.justifyText") is True
     assert build.getBool("format.stripUnicode") is True
     assert build.getBool("format.replaceTabs") is True
+    assert build.getBool("format.keepBreaks") is False
+    assert build.getBool("format.showDialogue") is True
 
     assert build.getBool("format.firstLineIndent") is True
     assert build.getFloat("format.firstIndentWidth") == 2.0

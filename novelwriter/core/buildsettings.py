@@ -82,6 +82,7 @@ SETTINGS_TEMPLATE = {
     "format.stripUnicode":     (bool, False),
     "format.replaceTabs":      (bool, False),
     "format.keepBreaks":       (bool, True),
+    "format.showDialogue":     (bool, False),
     "format.firstLineIndent":  (bool, False),
     "format.firstIndentWidth": (float, 1.4),
     "format.indentFirstPar":   (bool, False),
@@ -131,6 +132,7 @@ SETTINGS_LABELS = {
     "format.stripUnicode":     QT_TRANSLATE_NOOP("Builds", "Replace Unicode Characters"),
     "format.replaceTabs":      QT_TRANSLATE_NOOP("Builds", "Replace Tabs with Spaces"),
     "format.keepBreaks":       QT_TRANSLATE_NOOP("Builds", "Preserve Hard Line Breaks"),
+    "format.showDialogue":     QT_TRANSLATE_NOOP("Builds", "Apply Dialogue Highlighting"),
 
     "format.grpParIndent":     QT_TRANSLATE_NOOP("Builds", "First Line Indent"),
     "format.firstLineIndent":  QT_TRANSLATE_NOOP("Builds", "Enable Indent"),
