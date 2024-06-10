@@ -1139,7 +1139,9 @@ class Tokenizer(ABC):
         # Match Dialogue
         if self._rxDialogue:
             for regEx, fmtB, fmtE in self._rxDialogue:
-                if (rxMatch := regEx.match(text, 0)).hasMatch():
+                rxItt = regEx.globalMatch(text, 0)
+                while rxItt.hasNext():
+                    rxMatch = rxItt.next()
                     temp.append((rxMatch.capturedStart(0), 0, fmtB, ""))
                     temp.append((rxMatch.capturedEnd(0), 0, fmtE, ""))
 

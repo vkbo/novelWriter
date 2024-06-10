@@ -457,7 +457,7 @@ class ToHtml(Tokenizer):
                 else:
                     html = "<sup>ERR</sup>"
             else:
-                html = HTML5_TAGS.get(fmt, "ERR")
+                html = HTML5_TAGS.get(fmt, "")
             temp = f"{temp[:pos]}{html}{temp[pos:]}"
         temp = temp.replace("\n", "<br>")
         return stripEscape(temp)
