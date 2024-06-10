@@ -197,7 +197,8 @@ class Tokenizer(ABC):
 
         # Instance Variables
         self._hFormatter = HeadingFormatter(self._project)
-        self._noSep      = True  # Flag to indicate that we don't want a scene separator
+        self._noSep      = True   # Flag to indicate that we don't want a scene separator
+        self._showDialog = False  # Flag for dialogue highlighting
 
         # This File
         self._isNovel = False  # Document is a novel document
@@ -358,6 +359,7 @@ class Tokenizer(ABC):
     def setDialogueHighlight(self, state: bool) -> None:
         """Enable or disable dialogue highlighting."""
         self._rxDialogue = []
+        self._showDialog = state
         if state:
             if CONFIG.dialogStyle > 0:
                 self._rxDialogue.append((
