@@ -44,6 +44,8 @@ THEME.modifier  = QColor(129, 55, 9)
 THEME.keyword   = QColor(245, 135, 31)
 THEME.tag       = QColor(66, 113, 174)
 THEME.optional  = QColor(66, 113, 174)
+THEME.dialog    = QColor(113, 140, 0)
+THEME.altdialog = QColor(234, 183, 0)
 
 
 def charFmtInBlock(block: QTextBlock, pos: int) -> QTextCharFormat:
@@ -441,11 +443,17 @@ def testCoreToQTextDocument_TextBlockFormats(mockGUI):
 @pytest.mark.core
 def testCoreToQTextDocument_TextCharFormats(mockGUI):
     """Test text char formats in the ToQTextDocument class."""
+    CONFIG.fmtDQuoteOpen  = nwUnicode.U_LDQUO
+    CONFIG.fmtDQuoteClose = nwUnicode.U_RDQUO
+    CONFIG.altDialogOpen = "|<"
+    CONFIG.altDialogClose = ">|"
+
     project = NWProject()
     qdoc = ToQTextDocument(project)
 
     # Convert before init
     qdoc._text = "Blabla"
+    qdoc.setDialogueHighlight(True)
     qdoc.doConvert()
     qdoc.tokenizeText()
     assert qdoc.document.toPlainText() == ""
@@ -465,10 +473,12 @@ def testCoreToQTextDocument_TextCharFormats(mockGUI):
         "With [m]highlighted[/m] text\n\n"
         "With super[sup]script[/sup] text\n\n"
         "With sub[sub]script[/sub] text\n\n"
+        "With \u201cdialog\u201d text\n\n"
+        "With |<alternative dialog>| text\n\n"
     )
     qdoc.tokenizeText()
     qdoc.doConvert()
-    assert qdoc.document.blockCount() == 8
+    assert qdoc.document.blockCount() == 10
 
     # 0: Scene
     block = qdoc.document.findBlockByNumber(0)
@@ -543,6 +553,26 @@ def testCoreToQTextDocument_TextCharFormats(mockGUI):
     assert cFmt.verticalAlignment() == QtVAlignSub
     cFmt = charFmtInBlock(block, 15)
     assert cFmt.verticalAlignment() == QtVAlignNormal
+
+    # 8: Dialogue
+    block = qdoc.document.findBlockByNumber(8)
+    assert block.text() == "With \u201cdialog\u201d text"
+    cFmt = charFmtInBlock(block, 1)
+    assert cFmt.foreground() == THEME.text
+    cFmt = charFmtInBlock(block, 6)
+    assert cFmt.foreground() == THEME.dialog
+    cFmt = charFmtInBlock(block, 14)
+    assert cFmt.foreground() == THEME.text
+
+    # 9: Alt. Dialogue
+    block = qdoc.document.findBlockByNumber(9)
+    assert block.text() == "With |<alternative dialog>| text"
+    cFmt = charFmtInBlock(block, 1)
+    assert cFmt.foreground() == THEME.text
+    cFmt = charFmtInBlock(block, 6)
+    assert cFmt.foreground() == THEME.altdialog
+    cFmt = charFmtInBlock(block, 28)
+    assert cFmt.foreground() == THEME.text
 
 
 @pytest.mark.core

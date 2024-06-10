@@ -1093,11 +1093,13 @@ class _FormatTab(NScrollableForm):
         self.stripUnicode = NSwitch(self, height=iPx)
         self.replaceTabs = NSwitch(self, height=iPx)
         self.keepBreaks = NSwitch(self, height=iPx)
+        self.showDialogue = NSwitch(self, height=iPx)
 
         self.addRow(self._build.getLabel("format.justifyText"), self.justifyText)
         self.addRow(self._build.getLabel("format.stripUnicode"), self.stripUnicode)
         self.addRow(self._build.getLabel("format.replaceTabs"), self.replaceTabs)
         self.addRow(self._build.getLabel("format.keepBreaks"), self.keepBreaks)
+        self.addRow(self._build.getLabel("format.showDialogue"), self.showDialogue)
 
         # First Line Indent
         # =================
@@ -1180,6 +1182,7 @@ class _FormatTab(NScrollableForm):
         self.stripUnicode.setChecked(self._build.getBool("format.stripUnicode"))
         self.replaceTabs.setChecked(self._build.getBool("format.replaceTabs"))
         self.keepBreaks.setChecked(self._build.getBool("format.keepBreaks"))
+        self.showDialogue.setChecked(self._build.getBool("format.showDialogue"))
 
         self.firstIndent.setChecked(self._build.getBool("format.firstLineIndent"))
         self.indentWidth.setValue(self._build.getFloat("format.firstIndentWidth"))
@@ -1219,6 +1222,7 @@ class _FormatTab(NScrollableForm):
         self._build.setValue("format.stripUnicode", self.stripUnicode.isChecked())
         self._build.setValue("format.replaceTabs", self.replaceTabs.isChecked())
         self._build.setValue("format.keepBreaks", self.keepBreaks.isChecked())
+        self._build.setValue("format.showDialogue", self.showDialogue.isChecked())
 
         self._build.setValue("format.firstLineIndent", self.firstIndent.isChecked())
         self._build.setValue("format.firstIndentWidth", self.indentWidth.value())

@@ -235,6 +235,42 @@ def testCoreToOdt_TextFormatting(mockGUI):
 
 
 @pytest.mark.core
+def testCoreToOdt_DialogueFormatting(mockGUI):
+    """Test formatting of dialogue."""
+    project = NWProject()
+    odt = ToOdt(project, isFlat=True)
+    odt.setDialogueHighlight(True)
+    odt.initDocument()
+    oStyle = ODTParagraphStyle("test")
+
+    # Regular dialogue
+    text = "Text with 'dialogue in it.'"
+    fmt = [(10, odt.FMT_DL_B, ""), (27, odt.FMT_DL_E, "")]
+    xTest = ET.Element(_mkTag("office", "text"))
+    odt._addTextPar(xTest, "Standard", oStyle, text, tFmt=fmt)
+    assert odt.errData == []
+    assert xmlToText(xTest) == (
+        '<office:text>'
+        '<text:p text:style-name="Standard">Text with '
+        '<text:span text:style-name="T1">\'dialogue in it.\'</text:span></text:p>'
+        '</office:text>'
+    )
+
+    # Alternative dialogue
+    text = "Text with ::dialogue in it.::"
+    fmt = [(10, odt.FMT_ADL_B, ""), (29, odt.FMT_ADL_E, "")]
+    xTest = ET.Element(_mkTag("office", "text"))
+    odt._addTextPar(xTest, "Standard", oStyle, text, tFmt=fmt)
+    assert odt.errData == []
+    assert xmlToText(xTest) == (
+        '<office:text>'
+        '<text:p text:style-name="Standard">Text with '
+        '<text:span text:style-name="T2">::dialogue in it.::</text:span></text:p>'
+        '</office:text>'
+    )
+
+
+@pytest.mark.core
 def testCoreToOdt_ConvertHeaders(mockGUI):
     """Test the converter of the ToOdt class."""
     project = NWProject()
@@ -854,8 +890,8 @@ def testCoreToOdt_SaveFull(mockGUI, fncPath, tstPaths):
 
 
 @pytest.mark.core
-def testCoreToOdt_Format(mockGUI):
-    """Test the formatters for the ToOdt class."""
+def testCoreToOdt_SpecialFormats(mockGUI):
+    """Test the special formatters for the ToOdt class."""
     project = NWProject()
     odt = ToOdt(project, isFlat=True)
 
@@ -1167,6 +1203,17 @@ def testCoreToOdt_ODTTextStyle():
     assert txtStyle._tAttr["font-style"] == ["fo", "oblique"]
     txtStyle.setFontStyle("stuff")
     assert txtStyle._tAttr["font-style"] == ["fo", None]
+
+    # Text Color
+    assert txtStyle._tAttr["color"] == ["fo", None]
+    txtStyle.setColour("stuff")
+    assert txtStyle._tAttr["color"] == ["fo", None]
+    txtStyle.setColour("012345")
+    assert txtStyle._tAttr["color"] == ["fo", None]
+    txtStyle.setColour("#012345")
+    assert txtStyle._tAttr["color"] == ["fo", "#012345"]
+    txtStyle.setColour("stuff")
+    assert txtStyle._tAttr["color"] == ["fo", None]
 
     # Background Color
     assert txtStyle._tAttr["background-color"] == ["fo", None]

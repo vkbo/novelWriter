@@ -26,6 +26,7 @@ import pytest
 
 from PyQt5.QtGui import QFont
 
+from novelwriter import CONFIG
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.project import NWProject
 from novelwriter.core.tokenizer import HeadingFormatter, Tokenizer, stripEscape
@@ -1016,86 +1017,149 @@ def testCoreToken_TextFormat(mockGUI):
     # Text Emphasis
     tokens._text = "Some **bolded text** on this lines\n"
     tokens.tokenizeText()
-    assert tokens._tokens == [
-        (
-            Tokenizer.T_TEXT, 0,
-            "Some bolded text on this lines",
-            [
-                (5,  Tokenizer.FMT_B_B, ""),
-                (16, Tokenizer.FMT_B_E, ""),
-            ],
-            Tokenizer.A_NONE
-        ),
-    ]
+    assert tokens._tokens == [(
+        Tokenizer.T_TEXT, 0, "Some bolded text on this lines",
+        [
+            (5,  Tokenizer.FMT_B_B, ""),
+            (16, Tokenizer.FMT_B_E, ""),
+        ],
+        Tokenizer.A_NONE
+    )]
     assert tokens.allMarkdown[-1] == "Some **bolded text** on this lines\n\n"
 
     tokens._text = "Some _italic text_ on this lines\n"
     tokens.tokenizeText()
-    assert tokens._tokens == [
-        (
-            Tokenizer.T_TEXT, 0,
-            "Some italic text on this lines",
-            [
-                (5,  Tokenizer.FMT_I_B, ""),
-                (16, Tokenizer.FMT_I_E, ""),
-            ],
-            Tokenizer.A_NONE
-        ),
-    ]
+    assert tokens._tokens == [(
+        Tokenizer.T_TEXT, 0, "Some italic text on this lines",
+        [
+            (5,  Tokenizer.FMT_I_B, ""),
+            (16, Tokenizer.FMT_I_E, ""),
+        ],
+        Tokenizer.A_NONE
+    )]
     assert tokens.allMarkdown[-1] == "Some _italic text_ on this lines\n\n"
 
     tokens._text = "Some **_bold italic text_** on this lines\n"
     tokens.tokenizeText()
-    assert tokens._tokens == [
-        (
-            Tokenizer.T_TEXT, 0,
-            "Some bold italic text on this lines",
-            [
-                (5,  Tokenizer.FMT_B_B, ""),
-                (5,  Tokenizer.FMT_I_B, ""),
-                (21, Tokenizer.FMT_I_E, ""),
-                (21, Tokenizer.FMT_B_E, ""),
-            ],
-            Tokenizer.A_NONE
-        ),
-    ]
+    assert tokens._tokens == [(
+        Tokenizer.T_TEXT, 0, "Some bold italic text on this lines",
+        [
+            (5,  Tokenizer.FMT_B_B, ""),
+            (5,  Tokenizer.FMT_I_B, ""),
+            (21, Tokenizer.FMT_I_E, ""),
+            (21, Tokenizer.FMT_B_E, ""),
+        ],
+        Tokenizer.A_NONE
+    )]
     assert tokens.allMarkdown[-1] == "Some **_bold italic text_** on this lines\n\n"
 
     tokens._text = "Some ~~strikethrough text~~ on this lines\n"
     tokens.tokenizeText()
-    assert tokens._tokens == [
-        (
-            Tokenizer.T_TEXT, 0,
-            "Some strikethrough text on this lines",
-            [
-                (5,  Tokenizer.FMT_D_B, ""),
-                (23, Tokenizer.FMT_D_E, ""),
-            ],
-            Tokenizer.A_NONE
-        ),
-    ]
+    assert tokens._tokens == [(
+        Tokenizer.T_TEXT, 0, "Some strikethrough text on this lines",
+        [
+            (5,  Tokenizer.FMT_D_B, ""),
+            (23, Tokenizer.FMT_D_E, ""),
+        ],
+        Tokenizer.A_NONE
+    )]
     assert tokens.allMarkdown[-1] == "Some ~~strikethrough text~~ on this lines\n\n"
 
     tokens._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
     tokens.tokenizeText()
-    assert tokens._tokens == [
-        (
-            Tokenizer.T_TEXT, 0,
-            "Some nested bold and italic and strikethrough text here",
-            [
-                (5,  Tokenizer.FMT_B_B, ""),
-                (21, Tokenizer.FMT_I_B, ""),
-                (27, Tokenizer.FMT_I_E, ""),
-                (32, Tokenizer.FMT_D_B, ""),
-                (45, Tokenizer.FMT_D_E, ""),
-                (50, Tokenizer.FMT_B_E, ""),
-            ],
-            Tokenizer.A_NONE
-        ),
-    ]
+    assert tokens._tokens == [(
+        Tokenizer.T_TEXT, 0, "Some nested bold and italic and strikethrough text here",
+        [
+            (5,  Tokenizer.FMT_B_B, ""),
+            (21, Tokenizer.FMT_I_B, ""),
+            (27, Tokenizer.FMT_I_E, ""),
+            (32, Tokenizer.FMT_D_B, ""),
+            (45, Tokenizer.FMT_D_E, ""),
+            (50, Tokenizer.FMT_B_E, ""),
+        ],
+        Tokenizer.A_NONE
+    )]
     assert tokens.allMarkdown[-1] == (
         "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n\n"
     )
+
+
+@pytest.mark.core
+def testCoreToken_Dialogue(mockGUI):
+    """Test the tokenization of dialogue in the Tokenizer class."""
+    CONFIG.fmtDQuoteOpen  = "\u201c"
+    CONFIG.fmtDQuoteClose = "\u201d"
+    CONFIG.fmtSQuoteOpen  = "\u2018"
+    CONFIG.fmtSQuoteClose = "\u2019"
+    CONFIG.dialogStyle    = 3
+    CONFIG.altDialogOpen  = "::"
+    CONFIG.altDialogClose = "::"
+    CONFIG.dialogLine     = "\u2013"
+    CONFIG.narratorBreak  = "\u2013"
+
+    project = NWProject()
+    tokens = BareTokenizer(project)
+    tokens.setDialogueHighlight(True)
+
+    # Single quotes
+    tokens._text = "Text with \u2018dialogue one,\u2019 and \u2018dialogue two.\u2019\n"
+    tokens.tokenizeText()
+    assert tokens._tokens == [(
+        Tokenizer.T_TEXT, 0,
+        "Text with \u2018dialogue one,\u2019 and \u2018dialogue two.\u2019",
+        [
+            (10, Tokenizer.FMT_DL_B, ""),
+            (25, Tokenizer.FMT_DL_E, ""),
+            (30, Tokenizer.FMT_DL_B, ""),
+            (45, Tokenizer.FMT_DL_E, ""),
+        ],
+        Tokenizer.A_NONE
+    )]
+
+    # Double quotes
+    tokens._text = "Text with \u201cdialogue one,\u201d and \u201cdialogue two.\u201d\n"
+    tokens.tokenizeText()
+    assert tokens._tokens == [(
+        Tokenizer.T_TEXT, 0,
+        "Text with \u201cdialogue one,\u201d and \u201cdialogue two.\u201d",
+        [
+            (10, Tokenizer.FMT_DL_B, ""),
+            (25, Tokenizer.FMT_DL_E, ""),
+            (30, Tokenizer.FMT_DL_B, ""),
+            (45, Tokenizer.FMT_DL_E, ""),
+        ],
+        Tokenizer.A_NONE
+    )]
+
+    # Alt quotes
+    tokens._text = "Text with ::dialogue one,:: and ::dialogue two.::\n"
+    tokens.tokenizeText()
+    assert tokens._tokens == [(
+        Tokenizer.T_TEXT, 0,
+        "Text with ::dialogue one,:: and ::dialogue two.::",
+        [
+            (10, Tokenizer.FMT_ADL_B, ""),
+            (27, Tokenizer.FMT_ADL_E, ""),
+            (32, Tokenizer.FMT_ADL_B, ""),
+            (49, Tokenizer.FMT_ADL_E, ""),
+        ],
+        Tokenizer.A_NONE
+    )]
+
+    # Dialogue line with narrator break
+    tokens._text = "\u2013 Dialogue with a narrator break, \u2013he said,\u2013 see?\n"
+    tokens.tokenizeText()
+    assert tokens._tokens == [(
+        Tokenizer.T_TEXT, 0,
+        "\u2013 Dialogue with a narrator break, \u2013he said,\u2013 see?",
+        [
+            (0,  Tokenizer.FMT_DL_B, ""),
+            (34, Tokenizer.FMT_DL_E, ""),
+            (44, Tokenizer.FMT_DL_B, ""),
+            (49, Tokenizer.FMT_DL_E, ""),
+        ],
+        Tokenizer.A_NONE
+    )]
 
 
 @pytest.mark.core
@@ -1267,11 +1331,6 @@ def testCoreToken_ProcessHeaders(mockGUI):
     project.data.setLanguage("en")
     project._loadProjectLocalisation()
     tokens = BareTokenizer(project)
-
-    ##
-    #  Story Files
-    ##
-
     tokens._isNovel = True
 
     # Titles

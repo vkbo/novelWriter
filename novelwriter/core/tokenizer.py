@@ -36,13 +36,13 @@ from time import time
 from PyQt5.QtCore import QCoreApplication, QRegularExpression
 from PyQt5.QtGui import QFont
 
+from novelwriter import CONFIG
 from novelwriter.common import checkInt, formatTimeStamp, numberToRoman
-from novelwriter.constants import (
-    nwHeadFmt, nwKeyWords, nwLabels, nwRegEx, nwShortcode, nwUnicode, trConst
-)
+from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwShortcode, nwUnicode, trConst
 from novelwriter.core.index import processComment
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwComment, nwItemLayout
+from novelwriter.text.patterns import REGEX_PATTERNS
 
 logger = logging.getLogger(__name__)
 
@@ -85,8 +85,12 @@ class Tokenizer(ABC):
     FMT_SUP_E = 12  # End superscript
     FMT_SUB_B = 13  # Begin subscript
     FMT_SUB_E = 14  # End subscript
-    FMT_FNOTE = 15  # Footnote marker
-    FMT_STRIP = 16  # Strip the format code
+    FMT_DL_B  = 15  # Begin dialogue
+    FMT_DL_E  = 16  # End dialogue
+    FMT_ADL_B = 17  # Begin alt dialogue
+    FMT_ADL_E = 18  # End alt dialogue
+    FMT_FNOTE = 19  # Footnote marker
+    FMT_STRIP = 20  # Strip the format code
 
     # Block Type
     T_EMPTY    = 1   # Empty line (new paragraph)
@@ -193,7 +197,8 @@ class Tokenizer(ABC):
 
         # Instance Variables
         self._hFormatter = HeadingFormatter(self._project)
-        self._noSep      = True  # Flag to indicate that we don't want a scene separator
+        self._noSep      = True   # Flag to indicate that we don't want a scene separator
+        self._showDialog = False  # Flag for dialogue highlighting
 
         # This File
         self._isNovel = False  # Document is a novel document
@@ -208,12 +213,12 @@ class Tokenizer(ABC):
 
         # Format RegEx
         self._rxMarkdown = [
-            (QRegularExpression(nwRegEx.FMT_EI), [0, self.FMT_I_B, 0, self.FMT_I_E]),
-            (QRegularExpression(nwRegEx.FMT_EB), [0, self.FMT_B_B, 0, self.FMT_B_E]),
-            (QRegularExpression(nwRegEx.FMT_ST), [0, self.FMT_D_B, 0, self.FMT_D_E]),
+            (REGEX_PATTERNS.markdownItalic, [0, self.FMT_I_B, 0, self.FMT_I_E]),
+            (REGEX_PATTERNS.markdownBold,   [0, self.FMT_B_B, 0, self.FMT_B_E]),
+            (REGEX_PATTERNS.markdownStrike, [0, self.FMT_D_B, 0, self.FMT_D_E]),
         ]
-        self._rxShortCodes = QRegularExpression(nwRegEx.FMT_SC)
-        self._rxShortCodeVals = QRegularExpression(nwRegEx.FMT_SV)
+        self._rxShortCodes = REGEX_PATTERNS.shortcodePlain
+        self._rxShortCodeVals = REGEX_PATTERNS.shortcodeValue
 
         self._shortCodeFmt = {
             nwShortcode.ITALIC_O: self.FMT_I_B,   nwShortcode.ITALIC_C: self.FMT_I_E,
@@ -227,6 +232,8 @@ class Tokenizer(ABC):
         self._shortCodeVals = {
             nwShortcode.FOOTNOTE_B: self.FMT_FNOTE,
         }
+
+        self._rxDialogue: list[tuple[QRegularExpression, int, int]] = []
 
         return
 
@@ -347,6 +354,29 @@ class Tokenizer(ABC):
     def setJustify(self, state: bool) -> None:
         """Enable or disable text justification."""
         self._doJustify = state
+        return
+
+    def setDialogueHighlight(self, state: bool) -> None:
+        """Enable or disable dialogue highlighting."""
+        self._rxDialogue = []
+        self._showDialog = state
+        if state:
+            if CONFIG.dialogStyle > 0:
+                self._rxDialogue.append((
+                    REGEX_PATTERNS.dialogStyle, self.FMT_DL_B, self.FMT_DL_E
+                ))
+            if CONFIG.dialogLine:
+                self._rxDialogue.append((
+                    REGEX_PATTERNS.dialogLine, self.FMT_DL_B, self.FMT_DL_E
+                ))
+            if CONFIG.narratorBreak:
+                self._rxDialogue.append((
+                    REGEX_PATTERNS.narratorBreak, self.FMT_DL_E, self.FMT_DL_B
+                ))
+            if CONFIG.altDialogOpen and CONFIG.altDialogClose:
+                self._rxDialogue.append((
+                    REGEX_PATTERNS.altDialogStyle, self.FMT_ADL_B, self.FMT_ADL_E
+                ))
         return
 
     def setTitleMargins(self, upper: float, lower: float) -> None:
@@ -1105,6 +1135,15 @@ class Tokenizer(ABC):
                 self.FMT_STRIP if kind == skip else kind,
                 f"{tHandle}:{rxMatch.captured(2)}",
             ))
+
+        # Match Dialogue
+        if self._rxDialogue:
+            for regEx, fmtB, fmtE in self._rxDialogue:
+                rxItt = regEx.globalMatch(text, 0)
+                while rxItt.hasNext():
+                    rxMatch = rxItt.next()
+                    temp.append((rxMatch.capturedStart(0), 0, fmtB, ""))
+                    temp.append((rxMatch.capturedEnd(0), 0, fmtE, ""))
 
         # Post-process text and format
         result = text

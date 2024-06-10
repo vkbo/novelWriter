@@ -82,13 +82,15 @@ TAG_SPAN = _mkTag("text", "span")
 TAG_STNM = _mkTag("text", "style-name")
 
 # Formatting Codes
-X_BLD = 0x01  # Bold format
-X_ITA = 0x02  # Italic format
-X_DEL = 0x04  # Strikethrough format
-X_UND = 0x08  # Underline format
-X_MRK = 0x10  # Marked format
-X_SUP = 0x20  # Superscript
-X_SUB = 0x40  # Subscript
+X_BLD = 0x001  # Bold format
+X_ITA = 0x002  # Italic format
+X_DEL = 0x004  # Strikethrough format
+X_UND = 0x008  # Underline format
+X_MRK = 0x010  # Marked format
+X_SUP = 0x020  # Superscript
+X_SUB = 0x040  # Subscript
+X_DLG = 0x080  # Dialogue
+X_DLA = 0x100  # Alt. Dialogue
 
 # Formatting Masks
 M_BLD = ~X_BLD
@@ -98,6 +100,8 @@ M_UND = ~X_UND
 M_MRK = ~X_MRK
 M_SUP = ~X_SUP
 M_SUB = ~X_SUB
+M_DLG = ~X_DLG
+M_DLA = ~X_DLA
 
 # ODT Styles
 S_TITLE = "Title"
@@ -216,13 +220,15 @@ class ToOdt(Tokenizer):
         self._mDocRight  = "2.000cm"
 
         # Colour
-        self._colHead12 = None
-        self._opaHead12 = None
-        self._colHead34 = None
-        self._opaHead34 = None
-        self._colMetaTx = None
-        self._opaMetaTx = None
-        self._markText  = "#ffffa6"
+        self._colHead12  = None
+        self._opaHead12  = None
+        self._colHead34  = None
+        self._opaHead34  = None
+        self._colMetaTx  = None
+        self._opaMetaTx  = None
+        self._colDialogM = None
+        self._colDialogA = None
+        self._markText   = "#ffffa6"
 
         return
 
@@ -323,6 +329,10 @@ class ToOdt(Tokenizer):
             self._opaHead34 = "100%"
             self._colMetaTx = "#813709"
             self._opaMetaTx = "100%"
+
+        if self._showDialog:
+            self._colDialogM = "#2a6099"
+            self._colDialogA = "#813709"
 
         self._fLineHeight  = f"{round(100 * self._lineHeight):d}%"
         self._fBlockIndent = self._emToCm(self._blockIndent)
@@ -684,6 +694,14 @@ class ToOdt(Tokenizer):
                 xFmt |= X_SUB
             elif fFmt == self.FMT_SUB_E:
                 xFmt &= M_SUB
+            elif fFmt == self.FMT_DL_B:
+                xFmt |= X_DLG
+            elif fFmt == self.FMT_DL_E:
+                xFmt &= M_DLG
+            elif fFmt == self.FMT_ADL_B:
+                xFmt |= X_DLA
+            elif fFmt == self.FMT_ADL_E:
+                xFmt &= M_DLA
             elif fFmt == self.FMT_FNOTE:
                 xNode = self._generateFootnote(fData)
             elif fFmt == self.FMT_STRIP:
@@ -757,6 +775,10 @@ class ToOdt(Tokenizer):
             style.setTextPosition("super")
         if hFmt & X_SUB:
             style.setTextPosition("sub")
+        if hFmt & X_DLG:
+            style.setColour(self._colDialogM)
+        if hFmt & X_DLA:
+            style.setColour(self._colDialogA)
         self._autoText[hFmt] = style
 
         return style.name
@@ -1357,6 +1379,7 @@ class ODTTextStyle:
         self._tAttr = {
             "font-weight":             ["fo",    None],
             "font-style":              ["fo",    None],
+            "color":                   ["fo",    None],
             "background-color":        ["fo",    None],
             "text-position":           ["style", None],
             "text-line-through-style": ["style", None],
@@ -1389,6 +1412,14 @@ class ODTTextStyle:
             self._tAttr["font-style"][1] = value
         else:
             self._tAttr["font-style"][1] = None
+        return
+
+    def setColour(self, value: str | None) -> None:
+        """Set text colour."""
+        if value and len(value) == 7 and value[0] == "#":
+            self._tAttr["color"][1] = value
+        else:
+            self._tAttr["color"][1] = None
         return
 
     def setBackgroundColour(self, value: str | None) -> None:
