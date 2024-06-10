@@ -62,7 +62,8 @@ def testToolLipsum_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     with monkeypatch.context() as mp:
         mp.setattr(GuiLipsum, "exec", lambda *a: None)
         mp.setattr(GuiLipsum, "lipsumText", "FooBar")
-        nwGUI.mainMenu.aLipsumText.activate(QAction.Trigger)
+        with qtbot.waitSignal(nwGUI.docEditor.textChanged):
+            nwGUI.mainMenu.aLipsumText.activate(QAction.Trigger)
         assert nwGUI.docEditor.getText() == "### New Scene\n\nFooBar"
 
     # qtbot.stop()
