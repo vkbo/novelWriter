@@ -109,7 +109,7 @@ class GuiWordList(NDialog):
         # Buttons
         self.buttonBox = QDialogButtonBox(QtDialogSave | QtDialogClose, self)
         self.buttonBox.accepted.connect(self._doSave)
-        self.buttonBox.rejected.connect(self.close)
+        self.buttonBox.rejected.connect(self.reject)
 
         # Assemble
         self.outerBox = QVBoxLayout()

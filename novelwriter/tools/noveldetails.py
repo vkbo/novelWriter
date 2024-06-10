@@ -97,7 +97,7 @@ class GuiNovelDetails(NNonBlockingDialog):
 
         # Buttons
         self.buttonBox = QDialogButtonBox(QtDialogClose, self)
-        self.buttonBox.rejected.connect(self.close)
+        self.buttonBox.rejected.connect(self.reject)
 
         # Assemble
         self.topBox = QHBoxLayout()

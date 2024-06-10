@@ -26,7 +26,7 @@ from __future__ import annotations
 import logging
 import random
 
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import (
     QDialogButtonBox, QGridLayout, QHBoxLayout, QLabel, QSpinBox, QVBoxLayout,
     QWidget
@@ -48,12 +48,9 @@ class GuiLipsum(NDialog):
 
         logger.debug("Create: GuiLipsum")
         self.setObjectName("GuiLipsum")
-        if CONFIG.osDarwin:
-            self.setWindowFlag(Qt.WindowType.Tool)
+        self.setWindowTitle(self.tr("Insert Placeholder Text"))
 
         self._lipsumText = ""
-
-        self.setWindowTitle(self.tr("Insert Placeholder Text"))
 
         vSp = CONFIG.pxInt(4)
         nPx = CONFIG.pxInt(64)
@@ -96,7 +93,7 @@ class GuiLipsum(NDialog):
 
         # Buttons
         self.buttonBox = QDialogButtonBox(self)
-        self.buttonBox.rejected.connect(self.close)
+        self.buttonBox.rejected.connect(self.reject)
 
         self.btnClose = self.buttonBox.addButton(QtDialogClose)
         self.btnClose.setAutoDefault(False)
@@ -104,8 +101,6 @@ class GuiLipsum(NDialog):
         self.btnInsert = self.buttonBox.addButton(self.tr("Insert"), QtRoleAction)
         self.btnInsert.clicked.connect(self._doInsert)
         self.btnInsert.setAutoDefault(False)
-
-        self.rejected.connect(self.close)
 
         # Assemble
         self.outerBox = QVBoxLayout()

@@ -92,7 +92,7 @@ class GuiProjectSettings(NDialog):
         # Buttons
         self.buttonBox = QDialogButtonBox(QtDialogSave | QtDialogCancel, self)
         self.buttonBox.accepted.connect(self._doSave)
-        self.buttonBox.rejected.connect(self.close)
+        self.buttonBox.rejected.connect(self.reject)
 
         # Content
         SHARED.project.countStatus()
