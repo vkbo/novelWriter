@@ -435,8 +435,8 @@ class ToHtml(Tokenizer):
         styles.append(".break {text-align: left;}")
         styles.append(".synopsis {font-style: italic;}")
         styles.append(".comment {font-style: italic; color: rgb(100, 100, 100);}")
-        styles.append(".dialog {color: rgb(174, 0, 0);}")
-        styles.append(".altdialog {color: rgb(66, 113, 174);}")
+        styles.append(".dialog {color: rgb(66, 113, 174);}")
+        styles.append(".altdialog {color: rgb(129, 55, 9);}")
 
         return styles
 

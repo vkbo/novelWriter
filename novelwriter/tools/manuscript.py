@@ -341,8 +341,8 @@ class GuiManuscript(NToolDialog):
         theme.keyword   = QColor(245, 135, 31)
         theme.tag       = QColor(66, 113, 174)
         theme.optional  = QColor(66, 113, 174)
-        theme.dialog    = QColor(174, 0, 0)
-        theme.altdialog = QColor(66, 113, 174)
+        theme.dialog    = QColor(66, 113, 174)
+        theme.altdialog = QColor(129, 55, 9)
 
         self.docPreview.beginNewBuild(len(docBuild))
         for step, _ in docBuild.iterBuildPreview(theme):
