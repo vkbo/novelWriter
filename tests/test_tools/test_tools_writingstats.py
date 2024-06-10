@@ -22,8 +22,6 @@ from __future__ import annotations
 
 import json
 
-from pathlib import Path
-
 import pytest
 
 from PyQt5.QtWidgets import QAction, QFileDialog
@@ -43,10 +41,8 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     # Create a project to work on
     buildTestProject(nwGUI, projPath)
     project = SHARED.project
-
-    qtbot.wait(100)
     assert nwGUI.saveProject()
-    sessFile: Path = projPath / "meta" / nwFiles.SESS_FILE
+    sessFile = projPath / "meta" / nwFiles.SESS_FILE
 
     # Open the Writing Stats dialog
     nwGUI.mainMenu.aWritingStats.activate(QAction.Trigger)
@@ -62,6 +58,16 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     assert not sessFile.is_file()
     assert list(project.session.iterRecords()) == []
 
+    # Make an invalid logfile
+    data = (
+        '{"type": "initial", "offset": 123}\n'
+        '{"type": "record", "start": "foo", "end": "bar", "novel": 840, "notes": 376, "idle": 394}'
+    )
+    sessFile.write_text(data, encoding="utf-8")
+    sessLog._loadLogFile()
+    assert sessLog.wordOffset == 123
+    assert len(sessLog.logData) == 0
+
     # Make a test log file
     data = [
         project.session.createInitial(123),
@@ -75,8 +81,17 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     assert sessLog.wordOffset == 123
     assert len(sessLog.logData) == 4
 
-    # Test Exporting
-    # ==============
+
+@pytest.mark.gui
+def testToolWritingStats_Export(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
+    """Test the export feature."""
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: (pp, ""))
+
+    buildTestProject(nwGUI, projPath)
+    project = SHARED.project
+    assert nwGUI.saveProject()
+    sessFile = projPath / "meta" / nwFiles.SESS_FILE
+    sessLog = GuiWritingStats(nwGUI)
 
     data = [
         project.session.createInitial(1075),
@@ -95,13 +110,13 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     sessLog.populateGUI()
 
     # Make the saving fail
-    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda *a, **k: ("", ""))
-    assert not sessLog._saveData(sessLog.FMT_CSV)
-    assert not sessLog._saveData(sessLog.FMT_JSON)
-    assert not sessLog._saveData(None)  # type: ignore
+    with monkeypatch.context() as mp:
+        mp.setattr(QFileDialog, "getSaveFileName", lambda *a, **k: ("", ""))
+        assert not sessLog._saveData(sessLog.FMT_CSV)
+        assert not sessLog._saveData(sessLog.FMT_JSON)
+        assert not sessLog._saveData(None)  # type: ignore
 
-    # Make the save succeed
-    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: (pp, ""))
+    # Sort by time
     sessLog.listBox.sortByColumn(sessLog.C_TIME, 0)  # type: ignore
 
     assert sessLog.novelWords.text() == "{:n}".format(600)
@@ -153,8 +168,49 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
         }
     ]
 
-    # Test Filters
-    # ============
+    # I/O Error
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert not sessLog._loadLogFile()
+        assert not sessLog._saveData(sessLog.FMT_CSV)
+
+
+@pytest.mark.gui
+def testToolWritingStats_Filters(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
+    """Test the filters."""
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda ss, tt, pp, options: (pp, ""))
+
+    buildTestProject(nwGUI, projPath)
+    project = SHARED.project
+    assert nwGUI.saveProject()
+    sessFile = projPath / "meta" / nwFiles.SESS_FILE
+    sessLog = GuiWritingStats(nwGUI)
+
+    data = [
+        project.session.createInitial(1075),
+        project.session.createRecord("2021-01-31 19:00:00", "2021-01-31 19:30:00", 700, 375, 0),
+        project.session.createRecord("2021-02-01 19:00:00", "2021-02-01 19:30:00", 700, 375, 10),
+        project.session.createRecord("2021-02-01 20:00:00", "2021-02-01 20:30:00", 600, 275, 20),
+        project.session.createRecord("2021-02-02 19:00:00", "2021-02-02 19:30:00", 750, 425, 30),
+        project.session.createRecord("2021-02-02 20:00:00", "2021-02-02 20:30:00", 690, 365, 40),
+        project.session.createRecord("2021-02-03 19:00:00", "2021-02-03 19:30:00", 680, 355, 50),
+        project.session.createRecord("2021-02-04 19:00:00", "2021-02-04 19:30:00", 700, 375, 60),
+        project.session.createRecord("2021-02-05 19:00:00", "2021-02-05 19:30:00", 500, 175, 70),
+        project.session.createRecord("2021-02-06 19:00:00", "2021-02-06 19:30:00", 600, 275, 80),
+        project.session.createRecord("2021-02-07 19:00:00", "2021-02-07 19:30:00", 600, 275, 90),
+    ]
+    sessFile.write_text("".join(data), encoding="utf-8")
+    sessLog.populateGUI()
+    sessLog.listBox.sortByColumn(sessLog.C_TIME, 0)  # type: ignore
+
+    assert sessLog.listBox.topLevelItem(0).text(sessLog.C_COUNT) == "{:n}".format(1)
+    assert sessLog.listBox.topLevelItem(1).text(sessLog.C_COUNT) == "{:n}".format(-200)
+    assert sessLog.listBox.topLevelItem(2).text(sessLog.C_COUNT) == "{:n}".format(300)
+    assert sessLog.listBox.topLevelItem(3).text(sessLog.C_COUNT) == "{:n}".format(-120)
+    assert sessLog.listBox.topLevelItem(4).text(sessLog.C_COUNT) == "{:n}".format(-20)
+    assert sessLog.listBox.topLevelItem(5).text(sessLog.C_COUNT) == "{:n}".format(40)
+    assert sessLog.listBox.topLevelItem(6).text(sessLog.C_COUNT) == "{:n}".format(-400)
+    assert sessLog.listBox.topLevelItem(7).text(sessLog.C_COUNT) == "{:n}".format(200)
 
     # No Novel Files
     qtbot.mouseClick(sessLog.incNovel, QtMouseLeft)
@@ -252,8 +308,6 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     qtbot.mouseClick(sessLog.hideNegative, QtMouseLeft)
     assert sessLog._saveData(sessLog.FMT_JSON)
 
-    # qtbot.stop()
-
     jsonStats = tstPaths.tmpDir / "sessionStats.json"
     with open(jsonStats, mode="r", encoding="utf-8") as inFile:
         jsonData = json.load(inFile)
@@ -333,6 +387,11 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
         }
     ]
 
+    # Toggle Idle Time
+    assert sessLog.listBox.topLevelItem(7).text(sessLog.C_IDLE) == "4 %"
+    qtbot.mouseClick(sessLog.showIdleTime, QtMouseLeft)
+    assert sessLog.listBox.topLevelItem(7).text(sessLog.C_IDLE) == "00:01:10"
+
     # Group by Day
     qtbot.mouseClick(sessLog.groupByDay, QtMouseLeft)
     assert sessLog._saveData(sessLog.FMT_JSON)
@@ -378,14 +437,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
         }
     ]
 
-    # IOError
-    # =======
-    with monkeypatch.context() as mp:
-        mp.setattr("builtins.open", causeOSError)
-        assert not sessLog._loadLogFile()
-        assert not sessLog._saveData(sessLog.FMT_CSV)
-
     # qtbot.stop()
 
     sessLog._doClose()
-    assert nwGUI.closeProject() is True
+    nwGUI.closeProject()
