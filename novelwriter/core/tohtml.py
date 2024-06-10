@@ -52,6 +52,10 @@ HTML5_TAGS = {
     Tokenizer.FMT_SUP_E: "</sup>",
     Tokenizer.FMT_SUB_B: "<sub>",
     Tokenizer.FMT_SUB_E: "</sub>",
+    Tokenizer.FMT_DL_B: "<span class='dialog'>",
+    Tokenizer.FMT_DL_E: "</span>",
+    Tokenizer.FMT_ADL_B: "<span class='altdialog'>",
+    Tokenizer.FMT_ADL_E: "</span>",
     Tokenizer.FMT_STRIP: "",
 }
 
@@ -431,6 +435,8 @@ class ToHtml(Tokenizer):
         styles.append(".break {text-align: left;}")
         styles.append(".synopsis {font-style: italic;}")
         styles.append(".comment {font-style: italic; color: rgb(100, 100, 100);}")
+        styles.append(".dialog {color: rgb(174, 0, 0);}")
+        styles.append(".altdialog {color: rgb(66, 113, 174);}")
 
         return styles
 

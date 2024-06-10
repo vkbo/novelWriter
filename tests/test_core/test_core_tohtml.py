@@ -24,6 +24,7 @@ import json
 
 import pytest
 
+from novelwriter import CONFIG
 from novelwriter.core.project import NWProject
 from novelwriter.core.tohtml import ToHtml
 
@@ -258,6 +259,28 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
         "<p class='meta meta-location' style='margin-top: 0;'>"
         "<span class='keyword'>Locations:</span> "
         "<a class='tag' href='#tag_Europe'>Europe</a></p>\n"
+    )
+
+    # Dialogue
+    html.setDialogueHighlight(True)
+    html._text = "## Chapter\n\nThis text \u201chas dialogue\u201d in it.\n\n"
+    html.tokenizeText()
+    html.doConvert()
+    assert html.result == (
+        "<h1 style='page-break-before: always;'>Chapter</h1>\n"
+        "<p>This text <span class='dialog'>\u201chas dialogue\u201d</span> in it.</p>\n"
+    )
+
+    # Alt. Dialogue
+    CONFIG.altDialogOpen = "::"
+    CONFIG.altDialogClose = "::"
+    html.setDialogueHighlight(True)
+    html._text = "## Chapter\n\nThis text :: has alt dialogue :: in it.\n\n"
+    html.tokenizeText()
+    html.doConvert()
+    assert html.result == (
+        "<h1 style='page-break-before: always;'>Chapter</h1>\n"
+        "<p>This text <span class='altdialog'>:: has alt dialogue ::</span> in it.</p>\n"
     )
 
     # Footnotes

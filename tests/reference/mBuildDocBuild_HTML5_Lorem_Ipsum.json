@@ -2,8 +2,8 @@
   "meta": {
     "projectName": "Lorem Ipsum",
     "novelAuthor": "lipsum.com",
-    "buildTime": 1716803284,
-    "buildTimeStr": "2024-05-27 11:48:04"
+    "buildTime": 1718032228,
+    "buildTimeStr": "2024-06-10 17:10:28"
   },
   "text": {
     "css": [
@@ -20,7 +20,9 @@
       ".keyword {color: rgb(245, 135, 31); font-weight: bold;}",
       ".break {text-align: left;}",
       ".synopsis {font-style: italic;}",
-      ".comment {font-style: italic; color: rgb(100, 100, 100);}"
+      ".comment {font-style: italic; color: rgb(100, 100, 100);}",
+      ".dialog {color: rgb(174, 0, 0);}",
+      ".altdialog {color: rgb(66, 113, 174);}"
     ],
     "html": [
       [
