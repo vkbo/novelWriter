@@ -621,12 +621,39 @@ def testBaseCommon_readTextFile(monkeypatch, fncPath, ipsumText):
 @pytest.mark.base
 def testBaseCommon_makeFileNameSafe():
     """Test the makeFileNameSafe function."""
-    assert makeFileNameSafe(" aaaa ") == "aaaa"
-    assert makeFileNameSafe("aaaa,bbbb") == "aaaabbbb"
-    assert makeFileNameSafe("aaaa\tbbbb") == "aaaabbbb"
-    assert makeFileNameSafe("aaaa bbbb") == "aaaa bbbb"
-    assert makeFileNameSafe("æøå") == "æøå"
+    # Trim edges
+    assert makeFileNameSafe(" Name ") == "Name"
+
+    # Normalise Unicode
     assert makeFileNameSafe("Stuff œﬁ2⁵") == "Stuff œfi25"
+
+    # No control characters
+    assert makeFileNameSafe("One\tTwo") == "OneTwo"
+    assert makeFileNameSafe("One\nTwo") == "OneTwo"
+    assert makeFileNameSafe("One\rTwo") == "OneTwo"
+
+    # Invalid special characters
+    assert makeFileNameSafe("One\\Two") == "OneTwo"
+    assert makeFileNameSafe("One/Two") == "OneTwo"
+    assert makeFileNameSafe("One:Two") == "OneTwo"
+    assert makeFileNameSafe("One*Two") == "OneTwo"
+    assert makeFileNameSafe("One?Two") == "OneTwo"
+    assert makeFileNameSafe('One"Two') == "OneTwo"
+    assert makeFileNameSafe("One<Two") == "OneTwo"
+    assert makeFileNameSafe("One>Two") == "OneTwo"
+    assert makeFileNameSafe("One|Two") == "OneTwo"
+
+    # Names that are valid
+    assert makeFileNameSafe("One Two") == "One Two"
+    assert makeFileNameSafe("One,Two") == "One,Two"
+    assert makeFileNameSafe("One-Two") == "One-Two"
+    assert makeFileNameSafe("One–Two") == "One–Two"
+    assert makeFileNameSafe("One—Two") == "One—Two"
+    assert makeFileNameSafe("Bob's Story") == "Bob's Story"
+
+    # Unicode
+    assert makeFileNameSafe("æøå") == "æøå"
+    assert makeFileNameSafe("ßÜ") == "ßÜ"
 
 
 @pytest.mark.base

@@ -523,12 +523,11 @@ def readTextFile(path: str | Path) -> str:
 
 
 def makeFileNameSafe(text: str) -> str:
-    """Return a filename safe string.
+    """Return a filename-safe string.
     See: https://unicode.org/reports/tr15/#Norm_Forms
     """
     text = unicodedata.normalize("NFKC", text).strip()
-    allowed = (" ", ".", "-", "_")
-    return "".join(c for c in text if c.isalnum() or c in allowed)
+    return "".join(c for c in text if c.isprintable() and c not in r'\/:*?"<>|')
 
 
 def getFileSize(path: Path) -> int:
