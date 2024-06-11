@@ -32,10 +32,8 @@ from enum import Enum
 from time import time
 from typing import TYPE_CHECKING
 
-from PyQt5.QtCore import QPoint, QTimer, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import (
-    QDragEnterEvent, QDragMoveEvent, QDropEvent, QIcon, QMouseEvent, QPalette
-)
+from PyQt5.QtCore import QPoint, Qt, QTimer, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QIcon, QMouseEvent, QPalette
 from PyQt5.QtWidgets import (
     QAbstractItemView, QAction, QDialog, QFrame, QHBoxLayout, QHeaderView,
     QLabel, QMenu, QShortcut, QSizePolicy, QTreeWidget, QTreeWidgetItem,
@@ -44,14 +42,14 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import minmax
-from novelwriter.constants import nwHeaders, nwUnicode, trConst, nwLabels
+from novelwriter.constants import nwHeaders, nwLabels, nwUnicode, trConst
 from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSplitter
 from novelwriter.core.item import NWItem
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
-from novelwriter.enum import nwDocMode, nwItemType, nwItemClass, nwItemLayout
+from novelwriter.enum import nwDocMode, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import QtAlignLeft, QtAlignRight, QtMouseLeft, QtMouseMiddle, QtUserRole
@@ -1830,6 +1828,7 @@ class _TreeContextMenu(QMenu):
 
     def _itemHeader(self) -> None:
         """Check if there is a header that can be used for rename."""
+        SHARED.ensureEditorSaved(self._handle)
         if hItem := SHARED.project.index.getItemHeading(self._handle, "T0001"):
             action = self.addAction(self.tr("Rename to Heading"))
             action.triggered.connect(
