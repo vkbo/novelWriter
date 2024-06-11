@@ -343,7 +343,7 @@ class GuiManuscript(NDialog):
             return
 
         # Make sure editor content is saved before we start
-        SHARED.mainGui.saveDocument()
+        SHARED.ensureEditorSaved(None)
 
         docBuild = NWBuildDocument(SHARED.project, build)
         docBuild.setPreviewMode(True)

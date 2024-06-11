@@ -204,6 +204,19 @@ class SharedData(QObject):
         self._resetIdleTimer()
         return
 
+    def ensureEditorSaved(self, tHandle: str | None) -> None:
+        """Ensure that the editor content is saved. Optionally, only if
+        it is a specific handle.
+        """
+        docEditor = self.mainGui.docEditor
+        if (
+            self.hasProject and docEditor.docHandle
+            and (tHandle is None or tHandle == docEditor.docHandle)
+        ):
+            logger.debug("Saving editor document before action")
+            docEditor.saveText()
+        return
+
     def updateSpellCheckLanguage(self, reload: bool = False) -> None:
         """Update the active spell check language from settings."""
         from novelwriter import CONFIG
