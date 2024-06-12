@@ -1,5 +1,31 @@
 # novelWriter Changelog
 
+## Version 2.4.4 [2024-06-12]
+
+### Release Notes
+
+This is a patch release that fixes a usage issue when setting document label from an unsaved
+document, fixes a rare chance of a crash when closing the Manuscript tool, and updates the
+Portuguese translation.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Backported some memory improvements from the upcoming 2.5 release. This also fixes a potential,
+  but low probability crash in the Manuscript tool. If the tool is closed during the milliseconds
+  long window when the clock on the yellow label is updated, the app can crash with a segmentation
+  fault. PRs #1903 and #1905.
+* Fixed an issue where changing a document's label to match the document heading would suggest the
+  wrong title if the document was open in the editor, but in an unsaved state. An easy condition to
+  encounter when creating a new document and setting the heading first. Issue #1914. PR #1923.
+
+**Internationalisation**
+
+* Portuguese translation updated by Oli Maia. PR #1904.
+
+----
+
 ## Version 2.4.3 [2024-05-20]
 
 ### Release Notes
@@ -12,14 +38,14 @@ the spell check dictionary install tool.
 
 **Bugfixes**
 
-* Fix a crash in the dictionaries install tool on Windows if the config folder reported by the
+* Fixed a crash in the dictionaries install tool on Windows if the config folder reported by the
   third party Enchant spell checker tool didn't already exist prior to adding new dictionaries.
   The folder is now created when the tool is opened if it doesn't exist. Issue #1874. PR #1876.
-* Fix issues setting a different text font for the editor and viewer, and related issues with the
-  preview in the Manuscript Build tool, on certain platforms. Changing the font and setting
-  non-standard font sizes produced unexpected results when reloading. The issue seems to be related
-  to Qt 5.15.3, but that is not fully confirmed. However, the only place so far where the issue is
-  observed is on Mint 21.3. Issues #1862 and #1875. PR #1877.
+* Fixed issues when setting a different text font for the editor and viewer, and related issues
+  with the preview in the Manuscript Build tool, on certain platforms. Changing the font and
+  setting non-standard font sizes produced unexpected results when reloading. The issue seems to be
+  related to Qt 5.15.3, but that is not fully confirmed. However, the only place so far where the
+  issue is observed is on Mint 21.3. Issues #1862 and #1875. PR #1877.
 
 ----
 
