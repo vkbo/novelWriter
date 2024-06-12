@@ -1805,6 +1805,7 @@ class _TreeContextMenu(QMenu):
 
     def _itemHeader(self) -> None:
         """Check if there is a header that can be used for rename."""
+        SHARED.ensureEditorSaved(self._handle)
         if hItem := SHARED.project.index.getItemHeading(self._handle, "T0001"):
             action = self.addAction(self.tr("Rename to Heading"))
             action.triggered.connect(

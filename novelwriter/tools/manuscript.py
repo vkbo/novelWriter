@@ -325,7 +325,7 @@ class GuiManuscript(NToolDialog):
         start = time()
 
         # Make sure editor content is saved before we start
-        SHARED.saveDocument()
+        SHARED.ensureEditorSaved(None)
 
         docBuild = NWBuildDocument(SHARED.project, build)
         docBuild.queueAll()
