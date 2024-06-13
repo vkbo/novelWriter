@@ -275,12 +275,12 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
     CONFIG.altDialogOpen = "::"
     CONFIG.altDialogClose = "::"
     html.setDialogueHighlight(True)
-    html._text = "## Chapter\n\nThis text :: has alt dialogue :: in it.\n\n"
+    html._text = "## Chapter\n\nThis text ::has alt dialogue:: in it.\n\n"
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
         "<h1 style='page-break-before: always;'>Chapter</h1>\n"
-        "<p>This text <span class='altdialog'>:: has alt dialogue ::</span> in it.</p>\n"
+        "<p>This text <span class='altdialog'>::has alt dialogue::</span> in it.</p>\n"
     )
 
     # Footnotes
@@ -305,6 +305,42 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
         "<ol>\n"
         "<li id='footnote_1'><p>Footnote text A.</p></li>\n"
         "</ol>\n"
+    )
+
+
+@pytest.mark.core
+def testCoreToHtml_CloseTags(mockGUI):
+    """Test automatic closing of HTML tags for shortcodes."""
+    project = NWProject()
+    html = ToHtml(project)
+
+    html._isNovel = True
+    html._isFirst = True
+
+    # Unclosed Shortcodes
+    html._text = "Text [b][i][s][u][m][sup][sub]text text text.\n"
+    html.tokenizeText()
+    html.doConvert()
+    assert html.result == (
+        "<p>Text <strong><em><del><span style='text-decoration: underline;'><mark><sup><sub>"
+        "text text text.</strong></em></del></span></mark></sup></sub></p>\n"
+    )
+
+    # Double Shortcodes
+    html._text = "Text [b][i][s][u][m][sup][sub]text [b][i][s][u][m][sup][sub]text text.\n"
+    html.tokenizeText()
+    html.doConvert()
+    assert html.result == (
+        "<p>Text <strong><em><del><span style='text-decoration: underline;'><mark><sup><sub>"
+        "text text text.</strong></em></del></span></mark></sup></sub></p>\n"
+    )
+
+    # Redundant Close Shortcodes
+    html._text = "Text text [/b][/i][/s][/u][/m][/sup][/sub]text text.\n"
+    html.tokenizeText()
+    html.doConvert()
+    assert html.result == (
+        "<p>Text text text text.</p>\n"
     )
 
 
