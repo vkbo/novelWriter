@@ -37,27 +37,34 @@ from novelwriter.types import FONT_STYLE, FONT_WEIGHTS
 
 logger = logging.getLogger(__name__)
 
-HTML5_TAGS = {
-    Tokenizer.FMT_B_B: "<strong>",
-    Tokenizer.FMT_B_E: "</strong>",
-    Tokenizer.FMT_I_B: "<em>",
-    Tokenizer.FMT_I_E: "</em>",
-    Tokenizer.FMT_D_B: "<del>",
-    Tokenizer.FMT_D_E: "</del>",
-    Tokenizer.FMT_U_B: "<span style='text-decoration: underline;'>",
-    Tokenizer.FMT_U_E: "</span>",
-    Tokenizer.FMT_M_B: "<mark>",
-    Tokenizer.FMT_M_E: "</mark>",
-    Tokenizer.FMT_SUP_B: "<sup>",
-    Tokenizer.FMT_SUP_E: "</sup>",
-    Tokenizer.FMT_SUB_B: "<sub>",
-    Tokenizer.FMT_SUB_E: "</sub>",
-    Tokenizer.FMT_DL_B: "<span class='dialog'>",
-    Tokenizer.FMT_DL_E: "</span>",
-    Tokenizer.FMT_ADL_B: "<span class='altdialog'>",
-    Tokenizer.FMT_ADL_E: "</span>",
-    Tokenizer.FMT_STRIP: "",
+# Each opener tag, with the id of its corresponding closer and tag format
+HTML_OPENER: dict[int, tuple[int, str]] = {
+    Tokenizer.FMT_B_B:   (Tokenizer.FMT_B_E,   "<strong>"),
+    Tokenizer.FMT_I_B:   (Tokenizer.FMT_I_E,   "<em>"),
+    Tokenizer.FMT_D_B:   (Tokenizer.FMT_D_E,   "<del>"),
+    Tokenizer.FMT_U_B:   (Tokenizer.FMT_U_E,   "<span style='text-decoration: underline;'>"),
+    Tokenizer.FMT_M_B:   (Tokenizer.FMT_M_E,   "<mark>"),
+    Tokenizer.FMT_SUP_B: (Tokenizer.FMT_SUP_E, "<sup>"),
+    Tokenizer.FMT_SUB_B: (Tokenizer.FMT_SUB_E, "<sub>"),
+    Tokenizer.FMT_DL_B:  (Tokenizer.FMT_DL_E,  "<span class='dialog'>"),
+    Tokenizer.FMT_ADL_B: (Tokenizer.FMT_ADL_E, "<span class='altdialog'>"),
 }
+
+# Each closer tag, with the id of its corresponding opener and tag format
+HTML_CLOSER: dict[int, tuple[int, str]] = {
+    Tokenizer.FMT_B_E:   (Tokenizer.FMT_B_B,   "</strong>"),
+    Tokenizer.FMT_I_E:   (Tokenizer.FMT_I_B,   "</em>"),
+    Tokenizer.FMT_D_E:   (Tokenizer.FMT_D_B,   "</del>"),
+    Tokenizer.FMT_U_E:   (Tokenizer.FMT_U_B,   "</span>"),
+    Tokenizer.FMT_M_E:   (Tokenizer.FMT_M_B,   "</mark>"),
+    Tokenizer.FMT_SUP_E: (Tokenizer.FMT_SUP_B, "</sup>"),
+    Tokenizer.FMT_SUB_E: (Tokenizer.FMT_SUB_B, "</sub>"),
+    Tokenizer.FMT_DL_E:  (Tokenizer.FMT_DL_B,  "</span>"),
+    Tokenizer.FMT_ADL_E: (Tokenizer.FMT_ADL_B, "</span>"),
+}
+
+# Empty HTML tag record
+HTML_NONE = (0, "")
 
 
 class ToHtml(Tokenizer):
@@ -447,19 +454,46 @@ class ToHtml(Tokenizer):
     def _formatText(self, text: str, tFmt: T_Formats) -> str:
         """Apply formatting tags to text."""
         temp = text
-        for pos, fmt, data in reversed(tFmt):
-            html = ""
-            if fmt == self.FMT_FNOTE:
+
+        # Build a list of all html tags that need to be inserted in the text.
+        # This is done in the forward direction, and a tag is only opened if it
+        # isn't already open, and only closed if it has previously been opened.
+        tags: list[tuple[int, str]] = []
+        state = dict.fromkeys(HTML_OPENER, False)
+        for pos, fmt, data in tFmt:
+            if m := HTML_OPENER.get(fmt):
+                if not state.get(fmt, True):
+                    tags.append((pos, m[1]))
+                    state[fmt] = True
+            elif m := HTML_CLOSER.get(fmt):
+                if state.get(m[0], False):
+                    tags.append((pos, m[1]))
+                    state[m[0]] = False
+            elif fmt == self.FMT_FNOTE:
                 if data in self._footnotes:
                     index = len(self._usedNotes) + 1
                     self._usedNotes[data] = index
-                    html = f"<sup><a href='#footnote_{index}'>{index}</a></sup>"
+                    tags.append((pos, f"<sup><a href='#footnote_{index}'>{index}</a></sup>"))
                 else:
-                    html = "<sup>ERR</sup>"
-            else:
-                html = HTML5_TAGS.get(fmt, "")
-            temp = f"{temp[:pos]}{html}{temp[pos:]}"
+                    tags.append((pos, "<sup>ERR</sup>"))
+
+        # Check all format types and close any tag that is still open. This
+        # ensures that unclosed tags don't spill over to the next paragraph.
+        end = len(text)
+        for opener, active in state.items():
+            if active:
+                closer = HTML_OPENER.get(opener, HTML_NONE)[0]
+                tags.append((end, HTML_CLOSER.get(closer, HTML_NONE)[1]))
+
+        # Insert all tags at their correct position, starting from the back.
+        # The reverse order ensures that the positions are not shifted while we
+        # insert tags.
+        for pos, tag in reversed(tags):
+            temp = f"{temp[:pos]}{tag}{temp[pos:]}"
+
+        # Replace all line breaks with proper HTML break tags
         temp = temp.replace("\n", "<br>")
+
         return stripEscape(temp)
 
     def _formatSynopsis(self, text: str, synopsis: bool) -> str:
