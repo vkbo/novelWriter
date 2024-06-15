@@ -213,21 +213,21 @@ def testBaseConfig_Methods(fncPath):
     assert tstConf.assetPath("stuff") == appPath / "assets" / "stuff"
 
     # Last Path
-    assert tstConf.lastPath() == Path.home().absolute()
+    assert tstConf.lastPath("project") == Path.home().absolute()
 
     tmpStuff = fncPath / "stuff"
     tmpStuff.mkdir()
-    tstConf.setLastPath(tmpStuff)
-    assert tstConf.lastPath() == tmpStuff
+    tstConf.setLastPath("project", tmpStuff)
+    assert tstConf.lastPath("project") == tmpStuff
 
     fileStuff = tmpStuff / "more_stuff.txt"
     fileStuff.write_text("Stuff")
-    tstConf.setLastPath(fileStuff)
-    assert tstConf.lastPath() == tmpStuff
+    tstConf.setLastPath("project", fileStuff)
+    assert tstConf.lastPath("project") == tmpStuff
 
     fileStuff.unlink()
     tmpStuff.rmdir()
-    assert tstConf.lastPath() == Path.home().absolute()
+    assert tstConf.lastPath("project") == Path.home().absolute()
 
     # Backup Path
     assert tstConf.backupPath() == tstConf._backPath

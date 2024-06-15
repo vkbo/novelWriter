@@ -181,7 +181,6 @@ class Config:
         self.fmtPadThin      = False
 
         # User Paths
-        self._lastPath   = self._homePath  # The user's last used path
         self._backupPath = self._backPath  # Backup path to use, can be none
 
         # Spell Checking Settings
@@ -518,7 +517,6 @@ class Config:
         logger.debug("Data Path: %s", self._dataPath)
         logger.debug("App Root: %s", self._appRoot)
         logger.debug("App Path: %s", self._appPath)
-        logger.debug("Last Path: %s", self._lastPath)
         logger.debug("PDF Manual: %s", self.pdfDocs)
 
         # If the config and data folders don't exist, create them
@@ -603,7 +601,6 @@ class Config:
         self.hideHScroll = conf.rdBool(sec, "hidehscroll", self.hideHScroll)
         self.lastNotes   = conf.rdStr(sec, "lastnotes", self.lastNotes)
         self.nativeFont  = conf.rdBool(sec, "nativefont", self.nativeFont)
-        self._lastPath   = conf.rdPath(sec, "lastpath", self._lastPath)
 
         # Sizes
         sec = "Sizes"
@@ -713,7 +710,6 @@ class Config:
             "hidehscroll":  str(self.hideHScroll),
             "lastnotes":    str(self.lastNotes),
             "nativefont":   str(self.nativeFont),
-            "lastpath":     str(self._lastPath),
         }
 
         conf["Sizes"] = {
