@@ -904,7 +904,7 @@ class RecentPaths:
         return
 
     def setPath(self, key: str, path: Path | str) -> None:
-        """Set a path for a given key."""
+        """Set a path for a given key, and save the cache."""
         if key in self.KEYS:
             self._data[key] = str(path)
         self.saveCache()
@@ -915,7 +915,7 @@ class RecentPaths:
         return self._data.get(key)
 
     def loadCache(self) -> bool:
-        """Load the cache file for recent projects."""
+        """Load the cache file for recent paths."""
         self._data = {}
         cacheFile = self._conf.dataPath(nwFiles.RECENT_PATH)
         if cacheFile.is_file():
@@ -933,7 +933,7 @@ class RecentPaths:
         return True
 
     def saveCache(self) -> bool:
-        """Save the cache dictionary of recent projects."""
+        """Save the cache dictionary of recent paths."""
         cacheFile = self._conf.dataPath(nwFiles.RECENT_PATH)
         cacheTemp = cacheFile.with_suffix(".tmp")
         try:
