@@ -104,6 +104,7 @@ class nwFiles:
     # Config Files
     CONF_FILE   = "novelwriter.conf"
     RECENT_FILE = "recentProjects.json"
+    RECENT_PATH = "recentPaths.json"
 
     # Project Root Files
     PROJ_FILE   = "nwProject.nwx"

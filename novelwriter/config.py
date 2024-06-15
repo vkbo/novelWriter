@@ -103,7 +103,8 @@ class Config:
         # User Settings
         # =============
 
-        self._recentObj = RecentProjects(self)
+        self._recentProjects = RecentProjects(self)
+        self._recentPaths = RecentPaths(self)
 
         # General GUI Settings
         self.guiLocale    = self._qLocale.name()
@@ -253,7 +254,7 @@ class Config:
 
     @property
     def recentProjects(self) -> RecentProjects:
-        return self._recentObj
+        return self._recentProjects
 
     @property
     def mainWinSize(self) -> list[int]:
@@ -343,7 +344,7 @@ class Config:
         self._outlnPanePos = [int(x/self.guiScale) for x in pos]
         return
 
-    def setLastPath(self, path: str | Path) -> None:
+    def setLastPath(self, path: str | Path, key: str | None = None) -> None:
         """Set the last used path. Only the folder is saved, so if the
         path is not a folder, the parent of the path is used instead.
         """
@@ -352,8 +353,8 @@ class Config:
             if not path.is_dir():
                 path = path.parent
             if path.is_dir():
-                self._lastPath = path
-                logger.debug("Last path updated: %s" % self._lastPath)
+                self._recentPaths.setPath(key or "default", path)
+                self._recentPaths.saveCache()
         return
 
     def setBackupPath(self, path: Path | str) -> None:
@@ -438,11 +439,12 @@ class Config:
             return self._appPath / "assets" / target
         return self._appPath / "assets"
 
-    def lastPath(self) -> Path:
+    def lastPath(self, key: str | None = None) -> Path:
         """Return the last path used by the user, if it exists."""
-        if isinstance(self._lastPath, Path):
-            if self._lastPath.is_dir():
-                return self._lastPath
+        if path := self._recentPaths.getPath(key or "default"):
+            asPath = Path(path)
+            if asPath.is_dir():
+                return asPath
         return self._homePath
 
     def backupPath(self) -> Path:
@@ -531,7 +533,8 @@ class Config:
             (self._dataPath / "syntax").mkdir(exist_ok=True)
             (self._dataPath / "themes").mkdir(exist_ok=True)
 
-        self._recentObj.loadCache()
+        self._recentPaths.loadCache()
+        self._recentProjects.loadCache()
         self._checkOptionalPackages()
 
         logger.debug("Config instance initialised")
@@ -811,7 +814,7 @@ class Config:
         """Pack a list of items into a comma-separated string for saving
         to the config file.
         """
-        return ", ".join([str(inVal) for inVal in data])
+        return ", ".join(str(inVal) for inVal in data)
 
     def _checkOptionalPackages(self) -> None:
         """Check optional packages used by some features."""
@@ -893,3 +896,56 @@ class RecentProjects:
             logger.debug("Removed recent: %s", path)
             self.saveCache()
         return
+
+
+class RecentPaths:
+
+    KEYS = ["default", "project", "import", "outline", "stats"]
+
+    def __init__(self, config: Config) -> None:
+        self._conf = config
+        self._data = {}
+        return
+
+    def setPath(self, key: str, path: Path | str) -> None:
+        """Set a path for a given key."""
+        if key in self.KEYS:
+            self._data[key] = str(path)
+
+    def getPath(self, key: str) -> str | None:
+        """Get a path for a given key, or return None."""
+        return self._data.get(key)
+
+    def loadCache(self) -> bool:
+        """Load the cache file for recent projects."""
+        self._data = {}
+
+        cacheFile = self._conf.dataPath(nwFiles.RECENT_PATH)
+        if cacheFile.is_file():
+            try:
+                with open(cacheFile, mode="r", encoding="utf-8") as inFile:
+                    data = json.load(inFile)
+                for key, path in data.items():
+                    if isinstance(path, str) and key in self.KEYS:
+                        data[key] = path
+            except Exception:
+                logger.error("Could not load recent paths cache")
+                logException()
+                return False
+
+        return True
+
+    def saveCache(self) -> bool:
+        """Save the cache dictionary of recent projects."""
+        cacheFile = self._conf.dataPath(nwFiles.RECENT_PATH)
+        cacheTemp = cacheFile.with_suffix(".tmp")
+        try:
+            with open(cacheTemp, mode="w+", encoding="utf-8") as outFile:
+                json.dump(self._data, outFile, indent=2)
+            cacheTemp.replace(cacheFile)
+        except Exception:
+            logger.error("Could not save recent paths cache")
+            logException()
+            return False
+
+        return True
