@@ -20,6 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import json
 import sys
 
 from pathlib import Path
@@ -28,7 +29,7 @@ from shutil import copyfile
 import pytest
 
 from novelwriter import CONFIG
-from novelwriter.config import Config, RecentProjects
+from novelwriter.config import Config, RecentPaths, RecentProjects
 from novelwriter.constants import nwFiles
 
 from tests.mocked import MockApp, causeOSError
@@ -440,3 +441,58 @@ def testBaseConfig_RecentCache(monkeypatch, tstPaths):
     assert recent.listEntries() == [
         (str(pathOne), "Proj One", 100, 1600002000),
     ]
+
+
+@pytest.mark.base
+def testBaseConfig_RecentPaths(monkeypatch, tstPaths):
+    """Test recent paths file."""
+    cacheFile = tstPaths.cnfDir / nwFiles.RECENT_PATH
+    recent = RecentPaths(CONFIG)
+
+    # Load when there is no file should pass, but load nothing
+    assert not cacheFile.exists()
+    assert recent.loadCache() is True
+    assert recent._data == {}
+
+    # Set valid paths
+    recent.setPath("default", tstPaths.cnfDir / "default")
+    recent.setPath("project", tstPaths.cnfDir / "project")
+    recent.setPath("import", tstPaths.cnfDir / "import")
+    recent.setPath("outline", tstPaths.cnfDir / "outline")
+    recent.setPath("stats", tstPaths.cnfDir / "stats")
+
+    # Set invalid path
+    recent.setPath("foobar", tstPaths.cnfDir / "foobar")
+
+    # Check valid paths
+    assert recent.getPath("default") == str(tstPaths.cnfDir / "default")
+    assert recent.getPath("project") == str(tstPaths.cnfDir / "project")
+    assert recent.getPath("import")  == str(tstPaths.cnfDir / "import")
+    assert recent.getPath("outline") == str(tstPaths.cnfDir / "outline")
+    assert recent.getPath("stats")   == str(tstPaths.cnfDir / "stats")
+
+    # Check invalid path
+    assert recent.getPath("foobar") is None
+
+    # Check file
+    expected = {
+        "default": str(tstPaths.cnfDir / "default"),
+        "project": str(tstPaths.cnfDir / "project"),
+        "import":  str(tstPaths.cnfDir / "import"),
+        "outline": str(tstPaths.cnfDir / "outline"),
+        "stats":   str(tstPaths.cnfDir / "stats"),
+    }
+
+    assert cacheFile.exists()
+    assert json.loads(cacheFile.read_text()) == expected
+
+    # Clear and reload
+    recent._data = {}
+    recent.loadCache()
+    assert recent._data == expected
+
+    # Check error handling
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert recent.saveCache() is False
+        assert recent.loadCache() is False

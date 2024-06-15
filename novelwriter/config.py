@@ -353,7 +353,6 @@ class Config:
                 path = path.parent
             if path.is_dir():
                 self._recentPaths.setPath(key, path)
-                self._recentPaths.saveCache()
         return
 
     def setBackupPath(self, path: Path | str) -> None:
@@ -907,6 +906,8 @@ class RecentPaths:
         """Set a path for a given key."""
         if key in self.KEYS:
             self._data[key] = str(path)
+        self.saveCache()
+        return
 
     def getPath(self, key: str) -> str | None:
         """Get a path for a given key, or return None."""
@@ -928,7 +929,6 @@ class RecentPaths:
                 logger.error("Could not load recent paths cache")
                 logException()
                 return False
-
         return True
 
     def saveCache(self) -> bool:
@@ -943,5 +943,4 @@ class RecentPaths:
             logger.error("Could not save recent paths cache")
             logException()
             return False
-
         return True
