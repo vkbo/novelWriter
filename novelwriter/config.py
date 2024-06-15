@@ -5,6 +5,7 @@ novelWriter – Config Class
 File History:
 Created: 2018-09-22 [0.0.1]  Config
 Created: 2022-11-09 [2.0rc2] RecentProjects
+Created: 2024-06-16 [2.5rc1] RecentPaths
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen
