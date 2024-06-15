@@ -384,14 +384,14 @@ class GuiWritingStats(NToolDialog):
             return False
 
         # Generate the file name
-        savePath = CONFIG.lastPath() / f"sessionStats.{fileExt}"
+        savePath = CONFIG.lastPath("stats") / f"sessionStats.{fileExt}"
         savePath, _ = QFileDialog.getSaveFileName(
             self, self.tr("Save Data As"), str(savePath), f"{textFmt} (*.{fileExt})"
         )
         if not savePath:
             return False
 
-        CONFIG.setLastPath(savePath)
+        CONFIG.setLastPath("stats", savePath)
 
         # Do the actual writing
         wSuccess = False

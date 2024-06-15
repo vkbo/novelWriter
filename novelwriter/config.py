@@ -344,7 +344,7 @@ class Config:
         self._outlnPanePos = [int(x/self.guiScale) for x in pos]
         return
 
-    def setLastPath(self, path: str | Path, key: str | None = None) -> None:
+    def setLastPath(self, key: str, path: str | Path) -> None:
         """Set the last used path. Only the folder is saved, so if the
         path is not a folder, the parent of the path is used instead.
         """
@@ -353,7 +353,7 @@ class Config:
             if not path.is_dir():
                 path = path.parent
             if path.is_dir():
-                self._recentPaths.setPath(key or "default", path)
+                self._recentPaths.setPath(key, path)
                 self._recentPaths.saveCache()
         return
 

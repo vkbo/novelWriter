@@ -523,12 +523,12 @@ class GuiOutlineTree(QTreeWidget):
     @pyqtSlot()
     def exportOutline(self) -> None:
         """Export the outline as a CSV file."""
-        path = CONFIG.lastPath() / f"{makeFileNameSafe(SHARED.project.data.name)}.csv"
+        path = CONFIG.lastPath("outline") / f"{makeFileNameSafe(SHARED.project.data.name)}.csv"
         path, _ = QFileDialog.getSaveFileName(
             self, self.tr("Save Outline As"), str(path), formatFileFilter(["*.csv", "*"])
         )
         if path:
-            CONFIG.setLastPath(path)
+            CONFIG.setLastPath("outline", path)
             logger.info("Writing CSV file: %s", path)
             cols = [col for col in self._treeOrder if not self._colHidden[col]]
             order = [self._colIdx[col] for col in cols]
