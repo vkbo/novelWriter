@@ -919,15 +919,15 @@ class RecentPaths:
     def loadCache(self) -> bool:
         """Load the cache file for recent projects."""
         self._data = {}
-
         cacheFile = self._conf.dataPath(nwFiles.RECENT_PATH)
         if cacheFile.is_file():
             try:
                 with open(cacheFile, mode="r", encoding="utf-8") as inFile:
                     data = json.load(inFile)
-                for key, path in data.items():
-                    if isinstance(path, str) and key in self.KEYS:
-                        data[key] = path
+                if isinstance(data, dict):
+                    for key, path in data.items():
+                        if key in self.KEYS and isinstance(path, str):
+                            self._data[key] = path
             except Exception:
                 logger.error("Could not load recent paths cache")
                 logException()
