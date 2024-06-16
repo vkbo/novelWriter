@@ -652,7 +652,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        lastPath = CONFIG.lastPath()
+        lastPath = CONFIG.lastPath("import")
         ffilter = formatFileFilter(["*.txt", "*.md", "*.nwd", "*"])
         loadFile, _ = QFileDialog.getOpenFileName(
             self, self.tr("Import File"), str(lastPath), filter=ffilter
@@ -667,7 +667,7 @@ class GuiMain(QMainWindow):
         try:
             with open(loadFile, mode="rt", encoding="utf-8") as inFile:
                 text = inFile.read()
-            CONFIG.setLastPath(loadFile)
+            CONFIG.setLastPath("import", loadFile)
         except Exception as exc:
             SHARED.error(self.tr(
                 "Could not read file. The file must be an existing text file."

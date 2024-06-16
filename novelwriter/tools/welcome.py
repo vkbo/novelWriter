@@ -220,8 +220,7 @@ class GuiWelcome(NDialog):
     @pyqtSlot()
     def _browseForProject(self) -> None:
         """Browse for a project to open."""
-        if path := SHARED.getProjectPath(self, path=CONFIG.lastPath(), allowZip=False):
-            CONFIG.setLastPath(path)
+        if path := SHARED.getProjectPath(self, path=CONFIG.homePath(), allowZip=False):
             self._openProjectPath(path)
         return
 
@@ -550,7 +549,7 @@ class _NewProjectForm(QWidget):
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
-        self._basePath = CONFIG.homePath()
+        self._basePath = CONFIG.lastPath("project")
         self._fillMode = self.FILL_BLANK
         self._copyPath = None
 
@@ -726,12 +725,13 @@ class _NewProjectForm(QWidget):
     @pyqtSlot()
     def _doBrowse(self) -> None:
         """Select a project folder."""
-        if projDir := QFileDialog.getExistingDirectory(
+        if path := QFileDialog.getExistingDirectory(
             self, self.tr("Select Project Folder"),
             str(self._basePath), options=QFileDialog.Option.ShowDirsOnly
         ):
-            self._basePath = Path(projDir)
+            self._basePath = Path(path)
             self._updateProjPath()
+            CONFIG.setLastPath("project", path)
         return
 
     @pyqtSlot()
