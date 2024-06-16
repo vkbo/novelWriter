@@ -44,8 +44,8 @@ from novelwriter.core.buildsettings import BuildCollection, BuildSettings
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.tokenizer import HeadingFormatter
 from novelwriter.core.toqdoc import TextDocumentTheme, ToQTextDocument
-from novelwriter.extensions.circularprogress import NProgressCircle
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton, NToolDialog
+from novelwriter.extensions.progressbars import NProgressCircle
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
