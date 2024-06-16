@@ -436,11 +436,6 @@ class GuiDocEditor(QPlainTextEdit):
 
         return True
 
-    def updateTagHighLighting(self) -> None:
-        """Rerun the syntax highlighter on all meta data lines."""
-        self._qDocument.syntaxHighlighter.rehighlightByType(BLOCK_META)
-        return
-
     def replaceText(self, text: str) -> None:
         """Replace the text of the current document with the provided
         text. This also clears undo history.
@@ -1032,6 +1027,13 @@ class GuiDocEditor(QPlainTextEdit):
             self.closeSearch()
         else:
             self.beginSearch()
+        return
+
+    @pyqtSlot(list, list)
+    def updateChangedTags(self, updated: list[str], deleted: list[str]) -> None:
+        """Tags have changed, so just in case we rehighlight them."""
+        if updated or deleted:
+            self._qDocument.syntaxHighlighter.rehighlightByType(BLOCK_META)
         return
 
     ##
@@ -1922,8 +1924,6 @@ class GuiDocEditor(QPlainTextEdit):
                 ).format(tag)):
                     itemClass = nwKeyWords.KEY_CLASS.get(tBits[0], nwItemClass.NO_CLASS)
                     self.requestNewNoteCreation.emit(tag, itemClass)
-                    QApplication.processEvents()
-                    self._qDocument.syntaxHighlighter.rehighlightBlock(block)
 
             return nwTrinary.POSITIVE if exist else nwTrinary.NEGATIVE
 
