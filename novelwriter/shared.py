@@ -172,15 +172,21 @@ class SharedData(QObject):
         logger.debug("Thread Pool Max Count: %d", QThreadPool.globalInstance().maxThreadCount())
         return
 
-    def closeDocument(self, tHandle: str | None = None) -> None:
+    def closeEditor(self, tHandle: str | None = None) -> None:
         """Close the document editor, optionally a specific document."""
         if tHandle is None or tHandle == self.mainGui.docEditor.docHandle:
             self.mainGui.closeDocument()
         return
 
-    def saveDocument(self) -> None:
-        """Forward save document call to main GUI."""
-        self.mainGui.saveDocument()
+    def saveEditor(self, tHandle: str | None = None) -> None:
+        """Save editor content, optionally a specific document."""
+        docEditor = self.mainGui.docEditor
+        if (
+            self.hasProject and docEditor.docHandle
+            and (tHandle is None or tHandle == docEditor.docHandle)
+        ):
+            logger.debug("Saving editor document before action")
+            docEditor.saveText()
         return
 
     def openProject(self, path: str | Path, clearLock: bool = False) -> bool:
@@ -214,19 +220,6 @@ class SharedData(QObject):
         self.project.closeProject(self._idleTime)
         self._resetProject()
         self._resetIdleTimer()
-        return
-
-    def ensureEditorSaved(self, tHandle: str | None) -> None:
-        """Ensure that the editor content is saved. Optionally, only if
-        it is a specific handle.
-        """
-        docEditor = self.mainGui.docEditor
-        if (
-            self.hasProject and docEditor.docHandle
-            and (tHandle is None or tHandle == docEditor.docHandle)
-        ):
-            logger.debug("Saving editor document before action")
-            docEditor.saveText()
         return
 
     def updateSpellCheckLanguage(self, reload: bool = False) -> None:

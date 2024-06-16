@@ -327,7 +327,7 @@ class GuiManuscriptBuild(NDialog):
                 return False
 
         # Make sure editor content is saved before we start
-        SHARED.saveDocument()
+        SHARED.saveEditor()
 
         docBuild = NWBuildDocument(SHARED.project, self._build)
         docBuild.queueAll()

@@ -259,7 +259,7 @@ class GuiProjectSearch(QWidget):
         if not self._blocked:
             QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
             start = time()
-            SHARED.saveDocument()
+            SHARED.saveEditor()
             self._blocked = True
             self._map = {}
             self.searchResult.clear()
