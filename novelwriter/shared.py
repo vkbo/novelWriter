@@ -179,7 +179,7 @@ class SharedData(QObject):
         return
 
     def saveEditor(self, tHandle: str | None = None) -> None:
-        """Save editor content, optionally a specific document."""
+        """Save the editor content, optionally a specific document."""
         docEditor = self.mainGui.docEditor
         if (
             self.hasProject and docEditor.docHandle
