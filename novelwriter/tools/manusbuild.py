@@ -43,7 +43,7 @@ from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.item import NWItem
 from novelwriter.enum import nwBuildFmt
 from novelwriter.extensions.modified import NDialog, NIconToolButton
-from novelwriter.extensions.simpleprogress import NProgressSimple
+from novelwriter.extensions.progressbars import NProgressSimple
 from novelwriter.types import QtAlignCenter, QtDialogClose, QtRoleAction, QtRoleReject, QtUserRole
 
 logger = logging.getLogger(__name__)

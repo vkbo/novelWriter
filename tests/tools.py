@@ -204,17 +204,21 @@ def buildTestProject(obj: object, projPath: Path) -> None:
 
 class SimpleDialog(QDialog):
 
-    def __init__(self, widget: QWidget) -> None:
+    def __init__(self, widget: QWidget | None = None) -> None:
         super().__init__()
         self._widget = widget
-
         layout = QVBoxLayout()
-        layout.addWidget(widget)
         layout.setContentsMargins(40, 40, 40, 40)
         self.setLayout(layout)
-
+        if widget:
+            layout.addWidget(widget)
         return
 
     @property
-    def widget(self) -> QWidget:
+    def widget(self) -> QWidget | None:
         return self._widget
+
+    def addWidget(self, widget: QWidget) -> None:
+        self._widget = widget
+        self.layout().addWidget(widget)
+        return

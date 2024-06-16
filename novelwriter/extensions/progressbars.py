@@ -1,9 +1,10 @@
 """
-novelWriter – Custom Widget: Progress Circle
-============================================
+novelWriter – Custom Widget: Progress Bars
+==========================================
 
 File History:
-Created: 2023-06-07 [2.1b1]
+Created: 2023-06-07 [2.1b1] NProgressCircle
+Created: 2023-06-09 [2.1b1] NProgressSimple
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen
@@ -100,4 +101,26 @@ class NProgressCircle(QProgressBar):
         painter.drawArc(self._cRect, 90*16, -angle)
         painter.setPen(self._tColor)
         painter.drawText(self._cRect, QtAlignCenter, self._text or f"{progress:.1f} %")
+        return
+
+
+class NProgressSimple(QProgressBar):
+    """Extension: Simple Progress Widget
+
+    A custom widget that paints a plain bar with no other styling.
+    """
+
+    def __init__(self, parent: QWidget) -> None:
+        super().__init__(parent=parent)
+        return
+
+    def paintEvent(self, event: QPaintEvent) -> None:
+        """Custom painter for the progress bar."""
+        if (value := self.value()) > 0:
+            progress = ceil(self.width()*float(value)/self.maximum())
+            painter = QPainter(self)
+            painter.setRenderHint(QtPaintAnitAlias, True)
+            painter.setPen(self.palette().highlight().color())
+            painter.setBrush(self.palette().highlight())
+            painter.drawRect(0, 0, progress, self.height())
         return
