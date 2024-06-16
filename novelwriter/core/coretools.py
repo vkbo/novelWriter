@@ -348,7 +348,9 @@ class DocSearch:
             rxMatch = rxItt.next()
             pos = rxMatch.capturedStart()
             num = rxMatch.capturedLength()
-            context = text[pos:pos+100].partition("\n")[0]
+            lim = text[:pos].rfind("\n") + 1
+            cut = text[lim:pos].rfind(" ") + lim + 1
+            context = text[cut:cut+100].partition("\n")[0]
             if context:
                 results.append((pos, num, context))
                 count += 1

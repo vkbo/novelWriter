@@ -449,8 +449,8 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
     assert pruneResult(search.iterSearch(project, "Lor"), 2) == []
     search.setWholeWords(False)
     assert pruneResult(search.iterSearch(project, "Lor"), 2) == [
-        (15, 3, "Lorem"), (29, 3, "lor"), (754, 3, "lorem"), (2056, 3, "lorem,"),
-        (2209, 3, "lorem"), (2425, 3, "lorem"), (2840, 3, "lorem."), (3328, 3, "lor."),
+        (15, 3, "Lorem"), (29, 3, "dolor"), (754, 3, "lorem"), (2056, 3, "lorem,"),
+        (2209, 3, "lorem"), (2425, 3, "lorem"), (2840, 3, "lorem."), (3328, 3, "dolor."),
         (3399, 3, "lorem"),
     ]
 
@@ -458,7 +458,7 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
     search.setWholeWords(False)
     search.setUserRegEx(True)
     assert pruneResult(search.iterSearch(project, r"Lor\b"), 2) == [
-        (29, 3, "lor"), (3328, 3, "lor."),
+        (29, 3, "dolor"), (3328, 3, "dolor."),
     ]
 
     # Max Results
