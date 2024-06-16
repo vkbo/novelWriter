@@ -1597,7 +1597,6 @@ def testGuiEditor_Tags(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     docEditor.replaceText(text)
     nwGUI.saveDocument()
     assert nwGUI.projView.projTree.revealNewTreeItem(cHandle)
-    docEditor.updateTagHighLighting()
 
     # Follow Tag
     # ==========

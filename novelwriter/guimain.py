@@ -215,6 +215,7 @@ class GuiMain(QMainWindow):
         SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
         SHARED.focusModeChanged.connect(self._focusModeChanged)
         SHARED.indexChangedTags.connect(self.docViewerPanel.updateChangedTags)
+        SHARED.indexChangedTags.connect(self.docEditor.updateChangedTags)
         SHARED.indexScannedText.connect(self.docViewerPanel.projectItemChanged)
         SHARED.indexScannedText.connect(self.projView.updateItemValues)
         SHARED.indexScannedText.connect(self.itemDetails.updateViewBox)
@@ -745,7 +746,6 @@ class GuiMain(QMainWindow):
             self.mainStatus.setStatusMessage(
                 self.tr("Indexing completed in {0} ms").format(f"{(tEnd - tStart)*1000.0:.1f}")
             )
-            self.docEditor.updateTagHighLighting()
             self._updateStatusWordCount()
             QApplication.restoreOverrideCursor()
 
