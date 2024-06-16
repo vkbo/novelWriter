@@ -1924,8 +1924,6 @@ class GuiDocEditor(QPlainTextEdit):
                 ).format(tag)):
                     itemClass = nwKeyWords.KEY_CLASS.get(tBits[0], nwItemClass.NO_CLASS)
                     self.requestNewNoteCreation.emit(tag, itemClass)
-                    QApplication.processEvents()
-                    self._qDocument.syntaxHighlighter.rehighlightBlock(block)
 
             return nwTrinary.POSITIVE if exist else nwTrinary.NEGATIVE
 
