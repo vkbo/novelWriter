@@ -438,9 +438,9 @@ class Config:
             return self._appPath / "assets" / target
         return self._appPath / "assets"
 
-    def lastPath(self, key: str | None = None) -> Path:
+    def lastPath(self, key: str) -> Path:
         """Return the last path used by the user, if it exists."""
-        if path := self._recentPaths.getPath(key or "default"):
+        if path := self._recentPaths.getPath(key):
             asPath = Path(path)
             if asPath.is_dir():
                 return asPath

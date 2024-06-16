@@ -50,7 +50,6 @@ def resetConfigVars():
     """Reset the CONFIG object and set various values for testing to
     prevent interfering with local OS.
     """
-    # CONFIG.setLastPath(_TMP_ROOT)
     CONFIG.setBackupPath(_TMP_ROOT)
     CONFIG.setGuiFont(None)
     CONFIG.setTextFont(None)

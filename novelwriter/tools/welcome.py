@@ -220,7 +220,7 @@ class GuiWelcome(NDialog):
     @pyqtSlot()
     def _browseForProject(self) -> None:
         """Browse for a project to open."""
-        if path := SHARED.getProjectPath(self, path=CONFIG.lastPath("project"), allowZip=False):
+        if path := SHARED.getProjectPath(self, path=CONFIG.homePath(), allowZip=False):
             self._openProjectPath(path)
         return
 
