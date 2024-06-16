@@ -47,7 +47,7 @@ def testToolManuscriptBuild_Main(
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
     build = BuildSettings()
-    build.setLastPath(fncPath)
+    build.setLastBuildPath(fncPath)
 
     manus = GuiManuscriptBuild(nwGUI, build)
     manus.show()
@@ -100,7 +100,7 @@ def testToolManuscriptBuild_Main(
 
     assert build.lastBuildName == "TestBuild"
     assert build.lastFormat == lastFmt
-    assert build.lastPath == fncPath
+    assert build.lastBuildPath == fncPath
 
     # Error Handling
     # ==============

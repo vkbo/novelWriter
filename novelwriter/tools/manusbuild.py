@@ -220,7 +220,7 @@ class GuiManuscriptBuild(NDialog):
 
         self.btnBuild.setFocus()
         self._populateContentList()
-        self.buildPath.setText(str(self._build.lastPath))
+        self.buildPath.setText(str(self._build.lastBuildPath))
         if self._build.lastBuildName:
             self.buildName.setText(self._build.lastBuildName)
         else:
@@ -274,7 +274,7 @@ class GuiManuscriptBuild(NDialog):
     def _doSelectPath(self) -> None:
         """Select a folder for output."""
         bPath = Path(self.buildPath.text())
-        bPath = bPath if bPath.is_dir() else self._build.lastPath
+        bPath = bPath if bPath.is_dir() else self._build.lastBuildPath
         savePath = QFileDialog.getExistingDirectory(
             self, self.tr("Select Folder"), str(bPath)
         )
@@ -336,7 +336,7 @@ class GuiManuscriptBuild(NDialog):
         for i, _ in docBuild.iterBuild(buildPath, bFormat):
             self.buildProgress.setValue(i+1)
 
-        self._build.setLastPath(bPath)
+        self._build.setLastBuildPath(bPath)
         self._build.setLastBuildName(bName)
         self._build.setLastFormat(bFormat)
 

@@ -219,7 +219,7 @@ class BuildSettings:
         return self._order
 
     @property
-    def lastPath(self) -> Path:
+    def lastBuildPath(self) -> Path:
         """The last used build path."""
         if self._path.is_dir():
             return self._path
@@ -293,7 +293,7 @@ class BuildSettings:
             self._order = value
         return
 
-    def setLastPath(self, path: Path | str | None) -> None:
+    def setLastBuildPath(self, path: Path | str | None) -> None:
         """Set the last used build path."""
         if isinstance(path, str):
             path = Path(path)
@@ -461,7 +461,7 @@ class BuildSettings:
         self.setName(data.get("name", ""))
         self.setBuildID(data.get("uuid", ""))
         self.setOrder(data.get("order", 0))
-        self.setLastPath(data.get("path", None))
+        self.setLastBuildPath(data.get("path", None))
         self.setLastBuildName(data.get("build", ""))
 
         buildFmt = str(data.get("format", ""))
