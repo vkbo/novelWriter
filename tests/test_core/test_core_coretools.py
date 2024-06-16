@@ -439,7 +439,6 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
         return [(s, n, c.split()[0]) for s, n, c in temp]
 
     # Defaults
-    # assert list(search.iterSearch(project, "Lorem")) == []
     assert pruneResult(search.iterSearch(project, "Lorem"), 2) == [
         (15, 5, "Lorem"), (754, 5, "lorem"), (2056, 5, "lorem,"), (2209, 5, "lorem"),
         (2425, 5, "lorem"), (2840, 5, "lorem."), (3399, 5, "lorem"),
