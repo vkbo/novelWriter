@@ -75,6 +75,7 @@ class GuiTheme:
         self.statUnsaved = QColor(0, 0, 0)
         self.statSaved   = QColor(0, 0, 0)
         self.helpText    = QColor(0, 0, 0)
+        self.fadedText   = QColor(0, 0, 0)
         self.errorText   = QColor(255, 0, 0)
 
         # Loaded Syntax Settings
@@ -263,6 +264,7 @@ class GuiTheme:
         sec = "GUI"
         if parser.has_section(sec):
             self.helpText    = self._parseColour(parser, sec, "helptext")
+            self.fadedText   = self._parseColour(parser, sec, "fadedtext")
             self.errorText   = self._parseColour(parser, sec, "errortext")
             self.statNone    = self._parseColour(parser, sec, "statusnone")
             self.statUnsaved = self._parseColour(parser, sec, "statusunsaved")
@@ -405,6 +407,7 @@ class GuiTheme:
         self.statUnsaved = QColor(200, 15, 39)
         self.statSaved   = QColor(2, 133, 37)
         self.helpText    = QColor(0, 0, 0)
+        self.fadedText   = QColor(128, 128, 128)
         self.errorText   = QColor(255, 0, 0)
         return
 
