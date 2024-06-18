@@ -113,7 +113,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Project Tree has focus
     nwGUI._changeView(nwView.PROJECT)
-    nwGUI.switchFocus(nwWidget.TREE)
+    nwGUI._switchFocus(nwWidget.TREE)
     nwGUI.projStack.setCurrentIndex(0)
     with monkeypatch.context() as mp:
         mp.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
@@ -137,7 +137,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Project Outline has focus
     nwGUI._changeView(nwView.OUTLINE)
-    nwGUI.switchFocus(nwWidget.OUTLINE)
+    nwGUI._switchFocus(nwWidget.OUTLINE)
     with monkeypatch.context() as mp:
         mp.setattr(GuiOutlineView, "treeHasFocus", lambda *a: True)
         assert nwGUI.docEditor.docHandle is None
@@ -230,7 +230,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     CONFIG.autoScroll = True
 
     # Add a Character File
-    nwGUI.switchFocus(nwWidget.TREE)
+    nwGUI._switchFocus(nwWidget.TREE)
     nwGUI.projView.projTree.clearSelection()
     nwGUI.projView.projTree._getTreeItem(C.hCharRoot).setSelected(True)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
@@ -250,7 +250,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     docEditor._qDocument.syntaxHighlighter.initHighlighter()
 
     # Type something into the document
-    nwGUI.switchFocus(nwWidget.EDITOR)
+    nwGUI._switchFocus(nwWidget.EDITOR)
     qtbot.keyClick(docEditor, "a", modifier=Qt.ControlModifier, delay=KEY_DELAY)
     for c in "# Jane Doe":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
@@ -265,14 +265,14 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     qtbot.keyClick(docEditor, Qt.Key_Return, delay=KEY_DELAY)
 
     # Add a Plot File
-    nwGUI.switchFocus(nwWidget.TREE)
+    nwGUI._switchFocus(nwWidget.TREE)
     nwGUI.projView.projTree.clearSelection()
     nwGUI.projView.projTree._getTreeItem(C.hPlotRoot).setSelected(True)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
     nwGUI.openSelectedItem()
 
     # Type something into the document
-    nwGUI.switchFocus(nwWidget.EDITOR)
+    nwGUI._switchFocus(nwWidget.EDITOR)
     qtbot.keyClick(docEditor, "a", modifier=Qt.ControlModifier, delay=KEY_DELAY)
     for c in "# Main Plot":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
@@ -287,7 +287,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     qtbot.keyClick(docEditor, Qt.Key_Return, delay=KEY_DELAY)
 
     # Add a World File
-    nwGUI.switchFocus(nwWidget.TREE)
+    nwGUI._switchFocus(nwWidget.TREE)
     nwGUI.projView.projTree.clearSelection()
     nwGUI.projView.projTree._getTreeItem(C.hWorldRoot).setSelected(True)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
@@ -299,7 +299,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     docEditor.replaceText("")
 
     # Type something into the document
-    nwGUI.switchFocus(nwWidget.EDITOR)
+    nwGUI._switchFocus(nwWidget.EDITOR)
     qtbot.keyClick(docEditor, "a", modifier=Qt.ControlModifier, delay=KEY_DELAY)
     for c in "# Main Location":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
@@ -318,7 +318,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     nwGUI._autoSaveProject()
 
     # Select the 'New Scene' file
-    nwGUI.switchFocus(nwWidget.TREE)
+    nwGUI._switchFocus(nwWidget.TREE)
     nwGUI.projView.projTree.clearSelection()
     nwGUI.projView.projTree._getTreeItem(C.hNovelRoot).setExpanded(True)
     nwGUI.projView.projTree._getTreeItem(C.hChapterDir).setExpanded(True)
@@ -326,7 +326,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     nwGUI.openSelectedItem()
 
     # Type something into the document
-    nwGUI.switchFocus(nwWidget.EDITOR)
+    nwGUI._switchFocus(nwWidget.EDITOR)
     qtbot.keyClick(docEditor, "a", modifier=Qt.ControlModifier, delay=KEY_DELAY)
     for c in "# Novel":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
@@ -535,7 +535,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     nwGUI.rebuildIndex()
 
     # Open and view the edited document
-    nwGUI.switchFocus(nwWidget.VIEWER)
+    nwGUI._switchFocus(nwWidget.VIEWER)
     assert nwGUI.openDocument(C.hSceneDoc)
     assert nwGUI.viewDocument(C.hSceneDoc)
     assert nwGUI.saveProject()

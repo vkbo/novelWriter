@@ -227,7 +227,7 @@ class GuiMain(QMainWindow):
         self.mainMenu.requestDocInsert.connect(self._passDocumentInsert)
         self.mainMenu.requestDocInsertText.connect(self._passDocumentInsert)
         self.mainMenu.requestDocKeyWordInsert.connect(self.docEditor.insertKeyWord)
-        self.mainMenu.requestFocusChange.connect(self.switchFocus)
+        self.mainMenu.requestFocusChange.connect(self._switchFocus)
         self.mainMenu.requestViewChange.connect(self._changeView)
 
         self.sideBar.requestViewChange.connect(self._changeView)
@@ -944,14 +944,18 @@ class GuiMain(QMainWindow):
             SHARED.setFocusMode(not SHARED.focusMode)
         return
 
+    ##
+    #  Private Slots
+    ##
+
     @pyqtSlot(bool)
     def _focusModeChanged(self, focusMode: bool) -> None:
-        """Handle change of focus mode. The Main GUI Focus Mode hides tree,
-        view, statusbar and menu.
+        """Handle change of focus mode. The Main GUI Focus Mode hides
+        tree, view, statusbar and menu.
         """
         if focusMode:
             logger.debug("Activating Focus Mode")
-            self.switchFocus(nwWidget.EDITOR)
+            self._switchFocus(nwWidget.EDITOR)
         else:
             logger.debug("Deactivating Focus Mode")
 
@@ -975,7 +979,7 @@ class GuiMain(QMainWindow):
         return
 
     @pyqtSlot(nwWidget)
-    def switchFocus(self, paneNo: nwWidget) -> None:
+    def _switchFocus(self, paneNo: nwWidget) -> None:
         """Switch focus between main GUI views."""
         if paneNo == nwWidget.TREE:
             if self.projStack.currentWidget() is self.projView:
@@ -1003,10 +1007,6 @@ class GuiMain(QMainWindow):
             self._changeView(nwView.OUTLINE)
             self.outlineView.setTreeFocus()
         return
-
-    ##
-    #  Private Slots
-    ##
 
     @pyqtSlot(bool, bool, bool, bool)
     def _processConfigChanges(self, restart: bool, tree: bool, theme: bool, syntax: bool) -> None:

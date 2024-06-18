@@ -44,7 +44,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     buildTestProject(nwGUI, projPath)
 
-    nwGUI.switchFocus(nwWidget.TREE)
+    nwGUI._switchFocus(nwWidget.TREE)
     nwGUI.projView.projTree.clearSelection()
     nwGUI.projView.projTree._getTreeItem(C.hCharRoot).setSelected(True)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE)

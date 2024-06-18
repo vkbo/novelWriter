@@ -1111,7 +1111,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Create a project
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
-    nwGUI.switchFocus(nwWidget.TREE)
+    nwGUI._switchFocus(nwWidget.TREE)
 
     # Handles for new objects
     hCharNote     = "0000000000011"
@@ -1408,7 +1408,7 @@ def testGuiProjTree_Templates(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Create a project
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
-    nwGUI.switchFocus(nwWidget.TREE)
+    nwGUI._switchFocus(nwWidget.TREE)
     nwGUI.show()
 
     project = SHARED.project

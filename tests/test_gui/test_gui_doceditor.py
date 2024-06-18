@@ -1678,7 +1678,7 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     completer = docEditor._completer
 
     # Create Scene
-    nwGUI.switchFocus(nwWidget.EDITOR)
+    nwGUI._switchFocus(nwWidget.EDITOR)
     for c in "### Scene One":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key_Return, delay=KEY_DELAY)
