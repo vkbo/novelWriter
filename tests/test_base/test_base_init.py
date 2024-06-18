@@ -62,15 +62,17 @@ def testBaseInit_Launch(caplog, monkeypatch, fncPath):
     CONFIG.osWindows = osWindows
 
     # Normal Launch
-    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.__init__", lambda *a: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.setApplicationName", lambda *a: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.setApplicationVersion", lambda *a: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.setWindowIcon", lambda *a: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.setOrganizationDomain", lambda *a: None)
-    monkeypatch.setattr("PyQt5.QtWidgets.QApplication.exec", lambda *a: 0)
-    with pytest.raises(SystemExit) as ex:
-        main([f"--config={fncPath}", f"--data={fncPath}"])
-        assert ex.value.code == 0
+    with monkeypatch.context() as mp:
+        mp.setattr("PyQt5.QtWidgets.QApplication.__init__", lambda *a: None)
+        mp.setattr("PyQt5.QtWidgets.QApplication.setApplicationName", lambda *a: None)
+        mp.setattr("PyQt5.QtWidgets.QApplication.setApplicationVersion", lambda *a: None)
+        mp.setattr("PyQt5.QtWidgets.QApplication.setWindowIcon", lambda *a: None)
+        mp.setattr("PyQt5.QtWidgets.QApplication.setOrganizationDomain", lambda *a: None)
+        mp.setattr("PyQt5.QtWidgets.QApplication.exec", lambda *a: 0)
+        # mp.setattr("PyQt5.QtWidgets.QApplication.focusChange.connect", lambda *a: None)
+        with pytest.raises(SystemExit) as ex:
+            main([f"--config={fncPath}", f"--data={fncPath}"])
+            assert ex.value.code == 0
 
 
 @pytest.mark.base

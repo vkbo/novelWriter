@@ -55,6 +55,7 @@ from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwUnicode
 from novelwriter.core.document import NWDocument
 from novelwriter.enum import nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwTrinary
+from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
 from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE
@@ -210,6 +211,7 @@ class GuiDocEditor(QPlainTextEdit):
         # Function Mapping
         self.closeSearch = self.docSearch.closeSearch
         self.searchVisible = self.docSearch.isVisible
+        self.changeFocusState = self.docHeader.changeFocusState
 
         # Finalise
         self.updateSyntaxColours()
@@ -2785,8 +2787,7 @@ class GuiDocEditHeader(QWidget):
         self.setAutoFillBackground(True)
 
         # Title Label
-        self.itemTitle = QLabel("", self)
-        self.itemTitle.setIndent(0)
+        self.itemTitle = NColourLabel("", self, faded=SHARED.theme.fadedText)
         self.itemTitle.setMargin(0)
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
         self.itemTitle.setAutoFillBackground(True)
@@ -2922,6 +2923,11 @@ class GuiDocEditHeader(QWidget):
         self.setPalette(palette)
         self.itemTitle.setPalette(palette)
 
+        return
+
+    def changeFocusState(self, state: bool) -> None:
+        """Toggle focus state."""
+        self.itemTitle.setColorState(state)
         return
 
     def setHandle(self, tHandle: str) -> None:

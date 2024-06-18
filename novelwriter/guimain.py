@@ -326,6 +326,11 @@ class GuiMain(QMainWindow):
 
     def postLaunchTasks(self, cmdOpen: str | None) -> None:
         """Process tasks after the main window has been created."""
+        QApplication.processEvents()
+        app = QApplication.instance()
+        if isinstance(app, QApplication):
+            app.focusChanged.connect(self._appFocusChanged)
+
         # Check that config loaded fine
         if CONFIG.hasError:
             SHARED.error(CONFIG.errorText())
@@ -947,6 +952,24 @@ class GuiMain(QMainWindow):
     ##
     #  Private Slots
     ##
+
+    @pyqtSlot("QWidget*", "QWidget*")
+    def _appFocusChanged(self, old: QWidget, new: QWidget) -> None:
+        """Alert main widgets that they have received or lost focus."""
+        if isinstance(new, QWidget):
+            docEditor = False
+            docViewer = False
+            if self.docEditor.isAncestorOf(new):
+                docEditor = True
+            elif self.docViewer.isAncestorOf(new):
+                docViewer = True
+
+            self.docEditor.changeFocusState(docEditor)
+            self.docViewer.changeFocusState(docViewer)
+
+            logger.debug("Main focus switched to: %s", type(new).__name__)
+
+        return
 
     @pyqtSlot(bool)
     def _focusModeChanged(self, focusMode: bool) -> None:
