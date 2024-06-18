@@ -69,7 +69,7 @@ class GuiWordList(NDialog):
 
         # Header
         self.headLabel = NColourLabel(
-            self.tr("Project Word List"), SHARED.theme.helpText, parent=self,
+            self.tr("Project Word List"), self, color=SHARED.theme.helpText,
             scale=NColourLabel.HEADER_SCALE
         )
 

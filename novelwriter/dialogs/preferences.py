@@ -66,8 +66,8 @@ class GuiPreferences(NDialog):
 
         # Title
         self.titleLabel = NColourLabel(
-            self.tr("Preferences"), SHARED.theme.helpText,
-            parent=self, scale=NColourLabel.HEADER_SCALE, indent=CONFIG.pxInt(4)
+            self.tr("Preferences"), self, color=SHARED.theme.helpText,
+            scale=NColourLabel.HEADER_SCALE, indent=CONFIG.pxInt(4)
         )
 
         # Search Box

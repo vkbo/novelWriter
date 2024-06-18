@@ -203,7 +203,7 @@ class NScrollableForm(QScrollArea):
 
         if helpText:
             qHelp = NColourLabel(
-                str(helpText), color=self._helpCol, parent=self,
+                str(helpText), self, color=self._helpCol,
                 scale=self._fontScale, wrap=True, indent=self._indent
             )
             labelBox = QVBoxLayout()
@@ -252,10 +252,19 @@ class NColourLabel(QLabel):
     HELP_SCALE = DEFAULT_SCALE
     HEADER_SCALE = 1.25
 
-    def __init__(self, text: str, color: QColor | None = None, parent: QWidget | None = None,
-                 scale: float = HELP_SCALE, wrap: bool = False, indent: int = 0,
-                 bold: bool = False) -> None:
+    _state = None
+
+    def __init__(
+        self, text: str, parent: QWidget, *,
+        color: QColor | None = None, faded: QColor | None = None,
+        scale: float = HELP_SCALE, wrap: bool = False, indent: int = 0,
+        bold: bool = False
+    ) -> None:
         super().__init__(text, parent=parent)
+
+        default = self.palette().windowText().color()
+        self._color = color or default
+        self._faded = faded or default
 
         font = self.font()
         font.setPointSizeF(scale*font.pointSizeF())
@@ -268,7 +277,18 @@ class NColourLabel(QLabel):
         self.setFont(font)
         self.setIndent(indent)
         self.setWordWrap(wrap)
+        self.setColorState(True)
 
+        return
+
+    def setColorState(self, state: bool) -> None:
+        """Change the colour state."""
+        if self._state is not state:
+            self._state = state
+            print("State:", state, type(self.parent()).__name__)
+            colour = self.palette()
+            colour.setColor(QPalette.ColorRole.WindowText, self._color if state else self._faded)
+            self.setPalette(colour)
         return
 
 

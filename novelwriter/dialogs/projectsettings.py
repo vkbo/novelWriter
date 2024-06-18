@@ -76,8 +76,8 @@ class GuiProjectSettings(NDialog):
 
         # Title
         self.titleLabel = NColourLabel(
-            self.tr("Project Settings"), SHARED.theme.helpText,
-            parent=self, scale=NColourLabel.HEADER_SCALE, indent=CONFIG.pxInt(4)
+            self.tr("Project Settings"), self, color=SHARED.theme.helpText,
+            scale=NColourLabel.HEADER_SCALE, indent=CONFIG.pxInt(4)
         )
 
         # SideBar
@@ -345,7 +345,7 @@ class _StatusPage(NFixedPage):
 
         # Title
         self.pageTitle = NColourLabel(
-            pageLabel, SHARED.theme.helpText, parent=self,
+            pageLabel, self, color=SHARED.theme.helpText,
             scale=NColourLabel.HEADER_SCALE
         )
 
@@ -637,8 +637,8 @@ class _ReplacePage(NFixedPage):
 
         # Title
         self.pageTitle = NColourLabel(
-            self.tr("Text Auto-Replace for Preview and Build"),
-            SHARED.theme.helpText, parent=self, scale=NColourLabel.HEADER_SCALE
+            self.tr("Text Auto-Replace for Preview and Build"), self,
+            color=SHARED.theme.helpText, scale=NColourLabel.HEADER_SCALE
         )
 
         # List Box
