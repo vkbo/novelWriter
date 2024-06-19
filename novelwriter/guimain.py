@@ -44,7 +44,7 @@ from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.dialogs.wordlist import GuiWordList
-from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemType, nwView, nwWidget
+from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwItemType, nwView
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.docviewer import GuiDocViewer
 from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
@@ -978,7 +978,8 @@ class GuiMain(QMainWindow):
         """
         if focusMode:
             logger.debug("Activating Focus Mode")
-            self._switchFocus(nwWidget.EDITOR)
+            self._changeView(nwView.EDITOR)
+            self.docEditor.setFocus()
         else:
             logger.debug("Deactivating Focus Mode")
 
@@ -1001,10 +1002,10 @@ class GuiMain(QMainWindow):
             self.docEditor.ensureCursorVisibleNoCentre()
         return
 
-    @pyqtSlot(nwWidget)
-    def _switchFocus(self, paneNo: nwWidget) -> None:
+    @pyqtSlot(nwFocus)
+    def _switchFocus(self, paneNo: nwFocus) -> None:
         """Switch focus between main GUI views."""
-        if paneNo == nwWidget.TREE:
+        if paneNo == nwFocus.TREE:
             if self.projStack.currentWidget() is self.projView:
                 if self.projView.treeHasFocus():
                     self._changeView(nwView.NOVEL)
@@ -1020,13 +1021,15 @@ class GuiMain(QMainWindow):
             else:
                 self._changeView(nwView.PROJECT)
                 self.projView.setTreeFocus()
-        elif paneNo == nwWidget.EDITOR:
+        elif paneNo == nwFocus.DOCUMENT:
             self._changeView(nwView.EDITOR)
-            self.docEditor.setFocus()
-        elif paneNo == nwWidget.VIEWER:
-            self._changeView(nwView.EDITOR)
-            self.docViewer.setFocus()
-        elif paneNo == nwWidget.OUTLINE:
+            if self.docEditor.anyFocus():
+                self.docViewer.setFocus()
+            elif self.docViewer.anyFocus():
+                self.docEditor.setFocus()
+            else:
+                self.docEditor.setFocus()
+        elif paneNo == nwFocus.OUTLINE:
             self._changeView(nwView.OUTLINE)
             self.outlineView.setTreeFocus()
         return

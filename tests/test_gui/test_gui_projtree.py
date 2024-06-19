@@ -34,7 +34,7 @@ from novelwriter.core.project import NWProject
 from novelwriter.dialogs.docmerge import GuiDocMerge
 from novelwriter.dialogs.docsplit import GuiDocSplit
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType, nwWidget
+from novelwriter.enum import nwFocus, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.gui.projtree import GuiProjectTree, GuiProjectView, _TreeContextMenu
 from novelwriter.guimain import GuiMain
 from novelwriter.types import QtAccepted, QtModNone, QtMouseLeft, QtMouseMiddle, QtRejected
@@ -1111,7 +1111,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Create a project
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
-    nwGUI._switchFocus(nwWidget.TREE)
+    nwGUI._switchFocus(nwFocus.TREE)
 
     # Handles for new objects
     hCharNote     = "0000000000011"
@@ -1408,7 +1408,7 @@ def testGuiProjTree_Templates(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     # Create a project
     buildTestProject(nwGUI, projPath)
     nwGUI.openProject(projPath)
-    nwGUI._switchFocus(nwWidget.TREE)
+    nwGUI._switchFocus(nwFocus.TREE)
     nwGUI.show()
 
     project = SHARED.project

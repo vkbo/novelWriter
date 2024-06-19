@@ -30,7 +30,7 @@ from PyQt5.QtWidgets import QInputDialog, QToolTip
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.enum import nwItemType, nwWidget
+from novelwriter.enum import nwFocus, nwItemType
 from novelwriter.gui.noveltree import GuiNovelTree, NovelTreeColumn
 from novelwriter.types import QtMouseLeft
 
@@ -44,7 +44,7 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     buildTestProject(nwGUI, projPath)
 
-    nwGUI._switchFocus(nwWidget.TREE)
+    nwGUI._switchFocus(nwFocus.TREE)
     nwGUI.projView.projTree.clearSelection()
     nwGUI.projView.projTree._getTreeItem(C.hCharRoot).setSelected(True)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE)
