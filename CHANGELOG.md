@@ -39,6 +39,10 @@ backups.
   PR #1936.
 * When a new note is created from a reference tag in the editor, the syntax highlighting is
   properly updated to indicate the tag is now valid. Issue #1916. PR #1938.
+* The `Ctrl+E` shortcut now toggles focus between editor and viewer instead of just going to the
+  editor. The header text colour changes to indicate which panel has focus. This should make it
+  easier to scroll the content of the viewer without having to click it with the mouse first.
+  Issue #1387. PR #1940.
 
 **Code Improvements**
 
