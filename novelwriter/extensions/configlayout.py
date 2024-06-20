@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QWidget
 )
 
-from novelwriter import CONFIG, SHARED
+from novelwriter import CONFIG
 
 DEFAULT_SCALE = 0.9
 
@@ -266,7 +266,7 @@ class NColourLabel(QLabel):
         self._color = color or default
         self._faded = faded or default
 
-        font = SHARED.theme.guiFont
+        font = self.font()
         font.setPointSizeF(scale*font.pointSizeF())
         font.setWeight(QFont.Weight.Bold if bold else QFont.Weight.Normal)
         if color:
