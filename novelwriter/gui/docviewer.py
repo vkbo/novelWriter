@@ -33,7 +33,7 @@ from enum import Enum
 from PyQt5.QtCore import QPoint, Qt, QUrl, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCursor, QMouseEvent, QPalette, QResizeEvent, QTextCursor
 from PyQt5.QtWidgets import (
-    QAction, QApplication, QFrame, QHBoxLayout, QLabel, QMenu, QTextBrowser,
+    QAction, QApplication, QFrame, QHBoxLayout, QMenu, QTextBrowser,
     QToolButton, QWidget
 )
 
@@ -42,6 +42,7 @@ from novelwriter.constants import nwHeaders, nwUnicode
 from novelwriter.core.toqdoc import TextDocumentTheme, ToQTextDocument
 from novelwriter.enum import nwDocAction, nwDocMode, nwItemType
 from novelwriter.error import logException
+from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
@@ -91,6 +92,9 @@ class GuiDocViewer(QTextBrowser):
         # Context Menu
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self._openContextMenu)
+
+        # Function Mapping
+        self.changeFocusState = self.docHeader.changeFocusState
 
         self.initViewer()
 
@@ -277,6 +281,10 @@ class GuiDocViewer(QTextBrowser):
             logger.debug("Unknown or unsupported document action '%s'", str(action))
             return False
         return True
+
+    def anyFocus(self) -> bool:
+        """Check if any widget or child widget has focus."""
+        return self.hasFocus() or self.isAncestorOf(QApplication.focusWidget())
 
     def clearNavHistory(self) -> None:
         """Clear the navigation history."""
@@ -597,9 +605,7 @@ class GuiDocViewHeader(QWidget):
         self.setAutoFillBackground(True)
 
         # Title Label
-        self.itemTitle = QLabel(self)
-        self.itemTitle.setText("")
-        self.itemTitle.setIndent(0)
+        self.itemTitle = NColourLabel("", self, faded=SHARED.theme.fadedText)
         self.itemTitle.setMargin(0)
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
         self.itemTitle.setAutoFillBackground(True)
@@ -736,6 +742,11 @@ class GuiDocViewHeader(QWidget):
         palette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
         self.setPalette(palette)
         self.itemTitle.setPalette(palette)
+        return
+
+    def changeFocusState(self, state: bool) -> None:
+        """Toggle focus state."""
+        self.itemTitle.setColorState(state)
         return
 
     def setHandle(self, tHandle: str) -> None:

@@ -215,7 +215,7 @@ class GuiOutlineToolBar(QToolBar):
 
         # Novel Selector
         self.novelLabel = NColourLabel(
-            self.tr("Outline of"), parent=self, scale=NColourLabel.HEADER_SCALE, bold=True
+            self.tr("Outline of"), self, scale=NColourLabel.HEADER_SCALE, bold=True
         )
         self.novelLabel.setContentsMargins(0, 0, CONFIG.pxInt(12), 0)
 

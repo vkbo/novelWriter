@@ -44,7 +44,7 @@ from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.dialogs.wordlist import GuiWordList
-from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemType, nwView, nwWidget
+from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwItemType, nwView
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.docviewer import GuiDocViewer
 from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
@@ -227,7 +227,7 @@ class GuiMain(QMainWindow):
         self.mainMenu.requestDocInsert.connect(self._passDocumentInsert)
         self.mainMenu.requestDocInsertText.connect(self._passDocumentInsert)
         self.mainMenu.requestDocKeyWordInsert.connect(self.docEditor.insertKeyWord)
-        self.mainMenu.requestFocusChange.connect(self.switchFocus)
+        self.mainMenu.requestFocusChange.connect(self._switchFocus)
         self.mainMenu.requestViewChange.connect(self._changeView)
 
         self.sideBar.requestViewChange.connect(self._changeView)
@@ -326,6 +326,11 @@ class GuiMain(QMainWindow):
 
     def postLaunchTasks(self, cmdOpen: str | None) -> None:
         """Process tasks after the main window has been created."""
+        QApplication.processEvents()
+        app = QApplication.instance()
+        if isinstance(app, QApplication):
+            app.focusChanged.connect(self._appFocusChanged)
+
         # Check that config loaded fine
         if CONFIG.hasError:
             SHARED.error(CONFIG.errorText())
@@ -944,14 +949,37 @@ class GuiMain(QMainWindow):
             SHARED.setFocusMode(not SHARED.focusMode)
         return
 
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot("QWidget*", "QWidget*")
+    def _appFocusChanged(self, old: QWidget, new: QWidget) -> None:
+        """Alert main widgets that they have received or lost focus."""
+        if isinstance(new, QWidget):
+            docEditor = False
+            docViewer = False
+            if self.docEditor.isAncestorOf(new):
+                docEditor = True
+            elif self.docViewer.isAncestorOf(new):
+                docViewer = True
+
+            self.docEditor.changeFocusState(docEditor)
+            self.docViewer.changeFocusState(docViewer)
+
+            logger.debug("Main focus switched to: %s", type(new).__name__)
+
+        return
+
     @pyqtSlot(bool)
     def _focusModeChanged(self, focusMode: bool) -> None:
-        """Handle change of focus mode. The Main GUI Focus Mode hides tree,
-        view, statusbar and menu.
+        """Handle change of focus mode. The Main GUI Focus Mode hides
+        tree, view, statusbar and menu.
         """
         if focusMode:
             logger.debug("Activating Focus Mode")
-            self.switchFocus(nwWidget.EDITOR)
+            self._changeView(nwView.EDITOR)
+            self.docEditor.setFocus()
         else:
             logger.debug("Deactivating Focus Mode")
 
@@ -974,10 +1002,10 @@ class GuiMain(QMainWindow):
             self.docEditor.ensureCursorVisibleNoCentre()
         return
 
-    @pyqtSlot(nwWidget)
-    def switchFocus(self, paneNo: nwWidget) -> None:
+    @pyqtSlot(nwFocus)
+    def _switchFocus(self, paneNo: nwFocus) -> None:
         """Switch focus between main GUI views."""
-        if paneNo == nwWidget.TREE:
+        if paneNo == nwFocus.TREE:
             if self.projStack.currentWidget() is self.projView:
                 if self.projView.treeHasFocus():
                     self._changeView(nwView.NOVEL)
@@ -993,20 +1021,18 @@ class GuiMain(QMainWindow):
             else:
                 self._changeView(nwView.PROJECT)
                 self.projView.setTreeFocus()
-        elif paneNo == nwWidget.EDITOR:
+        elif paneNo == nwFocus.DOCUMENT:
             self._changeView(nwView.EDITOR)
-            self.docEditor.setFocus()
-        elif paneNo == nwWidget.VIEWER:
-            self._changeView(nwView.EDITOR)
-            self.docViewer.setFocus()
-        elif paneNo == nwWidget.OUTLINE:
+            if self.docEditor.anyFocus():
+                self.docViewer.setFocus()
+            elif self.docViewer.anyFocus():
+                self.docEditor.setFocus()
+            else:
+                self.docEditor.setFocus()
+        elif paneNo == nwFocus.OUTLINE:
             self._changeView(nwView.OUTLINE)
             self.outlineView.setTreeFocus()
         return
-
-    ##
-    #  Private Slots
-    ##
 
     @pyqtSlot(bool, bool, bool, bool)
     def _processConfigChanges(self, restart: bool, tree: bool, theme: bool, syntax: bool) -> None:
@@ -1146,16 +1172,13 @@ class GuiMain(QMainWindow):
 
     @pyqtSlot(nwDocAction)
     def _passDocumentAction(self, action: nwDocAction) -> None:
-        """Pass on a document action to the document viewer if it has
-        focus, or pass it to the document editor if it or any of its
-        child widgets have focus. If neither has focus, ignore it.
+        """Pass on a document action to the editor or viewer based on
+        which one has focus, or if neither has focus, ignore it.
         """
-        if self.docViewer.hasFocus():
-            self.docViewer.docAction(action)
-        elif self.docEditor.hasFocus():
+        if self.docEditor.hasFocus():
             self.docEditor.docAction(action)
-        else:
-            logger.debug("Action cancelled as neither editor nor viewer has focus")
+        elif self.docViewer.hasFocus():
+            self.docViewer.docAction(action)
         return
 
     @pyqtSlot(str)
