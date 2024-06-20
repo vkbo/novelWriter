@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QWidget
 )
 
-from novelwriter import CONFIG
+from novelwriter import CONFIG, SHARED
 
 DEFAULT_SCALE = 0.9
 
@@ -203,7 +203,7 @@ class NScrollableForm(QScrollArea):
 
         if helpText:
             qHelp = NColourLabel(
-                str(helpText), color=self._helpCol, parent=self,
+                str(helpText), self, color=self._helpCol,
                 scale=self._fontScale, wrap=True, indent=self._indent
             )
             labelBox = QVBoxLayout()
@@ -252,12 +252,21 @@ class NColourLabel(QLabel):
     HELP_SCALE = DEFAULT_SCALE
     HEADER_SCALE = 1.25
 
-    def __init__(self, text: str, color: QColor | None = None, parent: QWidget | None = None,
-                 scale: float = HELP_SCALE, wrap: bool = False, indent: int = 0,
-                 bold: bool = False) -> None:
+    _state = None
+
+    def __init__(
+        self, text: str, parent: QWidget, *,
+        color: QColor | None = None, faded: QColor | None = None,
+        scale: float = HELP_SCALE, wrap: bool = False, indent: int = 0,
+        bold: bool = False
+    ) -> None:
         super().__init__(text, parent=parent)
 
-        font = self.font()
+        default = self.palette().windowText().color()
+        self._color = color or default
+        self._faded = faded or default
+
+        font = SHARED.theme.guiFont
         font.setPointSizeF(scale*font.pointSizeF())
         font.setWeight(QFont.Weight.Bold if bold else QFont.Weight.Normal)
         if color:
@@ -268,7 +277,17 @@ class NColourLabel(QLabel):
         self.setFont(font)
         self.setIndent(indent)
         self.setWordWrap(wrap)
+        self.setColorState(True)
 
+        return
+
+    def setColorState(self, state: bool) -> None:
+        """Change the colour state."""
+        if self._state is not state:
+            self._state = state
+            colour = self.palette()
+            colour.setColor(QPalette.ColorRole.WindowText, self._color if state else self._faded)
+            self.setPalette(colour)
         return
 
 

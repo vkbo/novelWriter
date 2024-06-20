@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import QAction, QMenuBar
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import openExternalPath
 from novelwriter.constants import nwConst, nwKeyWords, nwLabels, nwUnicode, trConst
-from novelwriter.enum import nwDocAction, nwDocInsert, nwView, nwWidget
+from novelwriter.enum import nwDocAction, nwDocInsert, nwFocus, nwView
 from novelwriter.extensions.eventfilters import StatusTipFilter
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -54,7 +54,7 @@ class GuiMainMenu(QMenuBar):
     requestDocInsert = pyqtSignal(nwDocInsert)
     requestDocInsertText = pyqtSignal(str)
     requestDocKeyWordInsert = pyqtSignal(str)
-    requestFocusChange = pyqtSignal(nwWidget)
+    requestFocusChange = pyqtSignal(nwFocus)
     requestViewChange = pyqtSignal(nwView)
 
     def __init__(self, mainGui: GuiMain) -> None:
@@ -303,24 +303,24 @@ class GuiMainMenu(QMenuBar):
         self.viewMenu = self.addMenu(self.tr("&View"))
 
         # View > TreeView
-        self.aFocusTree = self.viewMenu.addAction(self.tr("Go to Project Tree"))
+        self.aFocusTree = self.viewMenu.addAction(self.tr("Go to Tree View"))
         self.aFocusTree.setShortcut("Ctrl+T")
         self.aFocusTree.triggered.connect(
-            lambda: self.requestFocusChange.emit(nwWidget.TREE)
+            lambda: self.requestFocusChange.emit(nwFocus.TREE)
         )
 
         # View > Document Editor
-        self.aFocusEditor = self.viewMenu.addAction(self.tr("Go to Document Editor"))
-        self.aFocusEditor.setShortcut("Ctrl+E")
-        self.aFocusEditor.triggered.connect(
-            lambda: self.requestFocusChange.emit(nwWidget.EDITOR)
+        self.aFocusDocument = self.viewMenu.addAction(self.tr("Go to Document"))
+        self.aFocusDocument.setShortcut("Ctrl+E")
+        self.aFocusDocument.triggered.connect(
+            lambda: self.requestFocusChange.emit(nwFocus.DOCUMENT)
         )
 
         # View > Outline
         self.aFocusOutline = self.viewMenu.addAction(self.tr("Go to Outline"))
         self.aFocusOutline.setShortcut("Ctrl+Shift+T")
         self.aFocusOutline.triggered.connect(
-            lambda: self.requestFocusChange.emit(nwWidget.OUTLINE)
+            lambda: self.requestFocusChange.emit(nwFocus.OUTLINE)
         )
 
         # View > Separator

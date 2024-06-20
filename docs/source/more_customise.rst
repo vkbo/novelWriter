@@ -132,6 +132,7 @@ A GUI theme ``.conf`` file consists of the following settings:
 
    [GUI]
    helptext        =   0,   0,   0
+   fadedtext       = 128, 128, 128
    errortext       = 255,   0,   0
    statusnone      = 120, 120, 120
    statussaved     =   2, 133,  37
@@ -149,7 +150,7 @@ colour values are RGB numbers on the format ``r, g, b`` where each is an integer
 not defined, it is computed as a colour between the ``window`` and ``windowtext`` colour.
 
 .. versionadded:: 2.5
-   The ``errortext`` theme colour entry was added.
+   The ``fadedtext`` and ``errortext`` theme colour entries were added.
 
 
 Custom Syntax Theme

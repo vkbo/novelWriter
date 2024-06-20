@@ -62,7 +62,7 @@ class GuiDocSplit(NDialog):
         self.headLabel.setFont(SHARED.theme.guiFontB)
         self.helpLabel = NColourLabel(
             self.tr("Select the maximum level to split into files."),
-            SHARED.theme.helpText, parent=self, wrap=True
+            self, color=SHARED.theme.helpText, wrap=True
         )
 
         # Values

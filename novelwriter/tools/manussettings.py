@@ -98,8 +98,8 @@ class GuiBuildSettings(NToolDialog):
 
         # Title
         self.titleLabel = NColourLabel(
-            self.tr("Manuscript Build Settings"), SHARED.theme.helpText,
-            parent=self, scale=NColourLabel.HEADER_SCALE, indent=CONFIG.pxInt(4)
+            self.tr("Manuscript Build Settings"), self, color=SHARED.theme.helpText,
+            scale=NColourLabel.HEADER_SCALE, indent=CONFIG.pxInt(4)
         )
 
         # Settings Name

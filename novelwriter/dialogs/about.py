@@ -75,7 +75,7 @@ class GuiAbout(NDialog):
 
         # Credits
         self.lblCredits = NColourLabel(
-            self.tr("Credits"), scale=1.6, parent=self, bold=True
+            self.tr("Credits"), self, scale=1.6, bold=True
         )
 
         self.txtCredits = QTextBrowser(self)

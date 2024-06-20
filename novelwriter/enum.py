@@ -148,12 +148,11 @@ class nwView(Enum):
     SEARCH  = 4
 
 
-class nwWidget(Enum):
+class nwFocus(Enum):
 
-    TREE    = 1
-    EDITOR  = 2
-    VIEWER  = 3
-    OUTLINE = 4
+    TREE     = 1
+    DOCUMENT = 2
+    OUTLINE  = 3
 
 
 class nwOutline(Enum):

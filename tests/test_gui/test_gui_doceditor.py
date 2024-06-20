@@ -29,9 +29,7 @@ from PyQt5.QtWidgets import QAction, QApplication, QMenu
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.enum import (
-    nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwTrinary, nwWidget
-)
+from novelwriter.enum import nwDocAction, nwDocInsert, nwItemClass, nwItemLayout, nwTrinary
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.text.counting import standardCounter
 from novelwriter.types import (
@@ -1678,7 +1676,7 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     completer = docEditor._completer
 
     # Create Scene
-    nwGUI.switchFocus(nwWidget.EDITOR)
+    nwGUI.docEditor.setFocus()
     for c in "### Scene One":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, Qt.Key_Return, delay=KEY_DELAY)
