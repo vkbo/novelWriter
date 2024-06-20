@@ -1172,16 +1172,13 @@ class GuiMain(QMainWindow):
 
     @pyqtSlot(nwDocAction)
     def _passDocumentAction(self, action: nwDocAction) -> None:
-        """Pass on a document action to the document viewer if it has
-        focus, or pass it to the document editor if it or any of its
-        child widgets have focus. If neither has focus, ignore it.
+        """Pass on a document action to the editor or viewer based on
+        which one has focus, or if neither has focus, ignore it.
         """
-        if self.docViewer.hasFocus():
-            self.docViewer.docAction(action)
-        elif self.docEditor.hasFocus():
+        if self.docEditor.hasFocus():
             self.docEditor.docAction(action)
-        else:
-            logger.debug("Action cancelled as neither editor nor viewer has focus")
+        elif self.docViewer.hasFocus():
+            self.docViewer.docAction(action)
         return
 
     @pyqtSlot(str)
