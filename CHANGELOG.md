@@ -1,5 +1,70 @@
 # novelWriter Changelog
 
+## Version 2.5 RC 1 [2024-06-22]
+
+### Release Notes
+
+This is a release candidate of the next release version, and is intended for testing purposes.
+Please be careful when using this version on live writing projects, and make sure you take frequent
+backups.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* The Status bar LEDs are now properly updated when the theme changes. Issue #1893. PR #1906.
+* All HTML tags are now properly closed at the end of each paragraph in HTML output. After
+  shortcodes were introduced, it was possible to leave formatting tags open. Issue #1919. PR #1926.
+
+**Improvements**
+
+* Move the first line indent setting from being an Open Document feature to a general build
+  settings feature that also applies to HTML, and make it visible in the Manuscript build tool
+  preview. Issue #1839 and #1858. PR #1898.
+* Make sure the document in the editor is saved before the same document is opened in the viewer.
+  Issue #1884. PR #1902.
+* The project name now appears before "novelWriter" in the main window title, which improves the
+  task bar label on at least Linux Mint Cinnamon, and Windows. Issue #1910. PR #1911.
+* Dialogue highlighting now only applies to novel documents, not notes. It is also possible to
+  apply it to HTML and ODT manuscripts, and it also shows up in the preview and in the document
+  viewer. Issue #1774. PR #1908.
+* The Welcome dialog and other tools that use the project name to generate files of folder names
+  are now less restrictive on what characters it allows in the file or folder names. Issue #1917.
+  PR #1922.
+* Last used folder paths are now remembered individually for each tool or feature that requires
+  path input from the user. Issues #1930 and #1933. PR #1934.
+* The Manuscript preview will now show line height as set in build settings. Issue #1920. PR #1935.
+* Global search now refreshes if any of the search option buttons are toggled, and the search
+  result will show the complete word if the search term only matches part of a word. Issue #1830.
+  PR #1936.
+* When a new note is created from a reference tag in the editor, the syntax highlighting is
+  properly updated to indicate the tag is now valid. Issue #1916. PR #1938.
+* The `Ctrl+E` shortcut now toggles focus between editor and viewer instead of just going to the
+  editor. The header text colour changes to indicate which panel has focus. This should make it
+  easier to scroll the content of the viewer without having to click it with the mouse first.
+  Issue #1387. PRs #1940 and #1941.
+
+**Code Improvements**
+
+* Change how dialogs are handled in memory, and drop the calls to deleteLater for the underlying Qt
+  object as it caused problems in some cases. Instead, the dialog is disconnected from the parent
+  object, which seems to let the Python and Qt garbage collectors to kick in.
+  PRs #1899. #1913 and #1921.
+* Overload the reject call for dialogs rather to call close, which the default implementation does
+  not. This simplifies the logic when closing dialogs, as reject() is also a slot, which close() is
+  not. Issue #1915. PR #1918.
+* Processing of dialogue highlighting has been added to the Tokenizer class, and the RegEx handling
+  moved to a separate factory class. PR #1908.
+* The progress bar widgets have been moved to a single module, and test coverage added. PR #1937.
+
+**Packaging**
+
+* The Windows installer is now built with Inno Setup 6.3, and uses zip compression rather than
+  lzma. It also properly sets the undelete icon, and the undelete process is better at cleaning up
+  files. PR #1932.
+
+----
+
 ## Version 2.5 Beta 1 [2024-05-26]
 
 ### Release Notes
