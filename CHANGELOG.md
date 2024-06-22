@@ -1,6 +1,6 @@
 # novelWriter Changelog
 
-## Version 2.5 RC 1 [2024-06-18]
+## Version 2.5 RC 1 [2024-06-22]
 
 ### Release Notes
 
@@ -42,7 +42,7 @@ backups.
 * The `Ctrl+E` shortcut now toggles focus between editor and viewer instead of just going to the
   editor. The header text colour changes to indicate which panel has focus. This should make it
   easier to scroll the content of the viewer without having to click it with the mouse first.
-  Issue #1387. PR #1940.
+  Issue #1387. PRs #1940 and #1941.
 
 **Code Improvements**
 
