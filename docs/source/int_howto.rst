@@ -39,6 +39,23 @@ Managing the Project
 Layout Tricks
 =============
 
+.. dropdown:: Align Paragraphs with Line Breaks
+   :animate: fade-in-slide-down
+
+   If you have line breaks in you paragraphs, and also want to apply additional text alignment or
+   indentation, you must apply the alignment tags to the first line.
+
+   For example, this will centre the two lines.
+
+   .. code-block:: md
+
+      >> Line one is centred. <<
+      Line two is also centred.
+
+      This text is not centred, because it is a new paragraph.
+
+   See :ref:`a_fmt_align` for more details.
+
 .. dropdown:: Create a Simple Table
    :animate: fade-in-slide-down
 
@@ -51,6 +68,15 @@ Layout Tricks
 
    This is most suitable for your notes, as the result in exported documents cannot be guaranteed
    to match. Especially if you don't use the same font in your manuscript as in the editor.
+
+.. dropdown:: Turn Off First Line Indent for a Paragraph
+   :animate: fade-in-slide-down
+
+   If you have first line indent enabled, but have a specific paragraph that you don't want
+   indented, you can disable the indentation by explicitly add text alignment. Aligned paragraphs
+   are not indented. For instance by adding ``<<`` to the end to left-align it,
+
+   See :ref:`a_fmt_align` for more details.
 
 
 Organising Your Text
