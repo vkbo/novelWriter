@@ -30,7 +30,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwUnicode
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.quotes import GuiQuoteSelect
-from novelwriter.types import QtDialogApply, QtDialogClose, QtDialogSave, QtModNone
+from novelwriter.types import QtDialogCancel, QtDialogSave, QtModNone
 
 KEY_DELAY = 1
 
@@ -116,12 +116,6 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
         prefs._gotoSearch()
         assert value.args[0] < old
 
-    # Check Apply Button
-    prefs.show()
-    with qtbot.waitSignal(prefs.newPreferencesReady) as signal:
-        prefs.buttonBox.button(QtDialogApply).click()
-        assert signal.args == [False, False, False, False]
-
     # Check Save Button
     prefs.show()
     with qtbot.waitSignal(prefs.newPreferencesReady) as signal:
@@ -130,7 +124,7 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
 
     # Check Close Button
     prefs.show()
-    prefs.buttonBox.button(QtDialogClose).click()
+    prefs.buttonBox.button(QtDialogCancel).click()
     assert prefs.isHidden() is True
 
     # Close Using Escape Key
@@ -315,7 +309,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     with monkeypatch.context() as mp:
         mp.setattr(QFontDatabase, "families", lambda *a: ["TestFont"])
         with qtbot.waitSignal(prefs.newPreferencesReady) as signal:
-            prefs.buttonBox.button(QtDialogApply).click()
+            prefs.buttonBox.button(QtDialogSave).click()
             assert signal.args == [True, True, True, True]
 
     # Check Settings
