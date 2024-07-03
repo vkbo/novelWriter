@@ -1006,32 +1006,48 @@ class GuiMain(QMainWindow):
     def _switchFocus(self, paneNo: nwFocus) -> None:
         """Switch focus between main GUI views."""
         if paneNo == nwFocus.TREE:
-            if self.projStack.currentWidget() is self.projView:
-                if self.projView.treeHasFocus():
-                    self._changeView(nwView.NOVEL)
-                    self.novelView.setTreeFocus()
-                else:
-                    self.projView.setTreeFocus()
-            elif self.projStack.currentWidget() is self.novelView:
-                if self.novelView.treeHasFocus():
-                    self._changeView(nwView.PROJECT)
-                    self.projView.setTreeFocus()
-                else:
-                    self.novelView.setTreeFocus()
+            # Decision Matrix
+            #  vM | vP | fP | vN | fN | Focus
+            # ----|----|----|----|----|---------
+            #  T  | T  | T  | F  | F  | Novel
+            #  T  | T  | F  | F  | F  | Project
+            #  T  | F  | F  | T  | T  | Project
+            #  T  | F  | F  | T  | F  | Novel
+            #  T  | F  | F  | F  | F  | Project
+            #  F  | T  | T  | F  | F  | Project
+            #  F  | T  | F  | F  | F  | Project
+            #  F  | F  | F  | T  | T  | Novel
+            #  F  | F  | F  | T  | F  | Novel
+            #  F  | F  | F  | F  | F  | Project
+
+            vM = self.mainStack.currentWidget() is self.splitMain
+            vP = self.projStack.currentWidget() is self.projView
+            vN = self.projStack.currentWidget() is self.novelView
+            fP = self.projView.treeHasFocus()
+            fN = self.novelView.treeHasFocus()
+
+            self._changeView(nwView.EDITOR)
+            if (vM and (vP and fP or vN and not fN)) or (not vM and vN):
+                self._changeView(nwView.NOVEL)
+                self.novelView.setTreeFocus()
             else:
                 self._changeView(nwView.PROJECT)
                 self.projView.setTreeFocus()
+
         elif paneNo == nwFocus.DOCUMENT:
             self._changeView(nwView.EDITOR)
-            if self.docEditor.anyFocus():
+            hasViewer = self.splitView.isVisible()
+            if hasViewer and self.docEditor.anyFocus():
                 self.docViewer.setFocus()
-            elif self.docViewer.anyFocus():
+            elif hasViewer and self.docViewer.anyFocus():
                 self.docEditor.setFocus()
             else:
                 self.docEditor.setFocus()
+
         elif paneNo == nwFocus.OUTLINE:
             self._changeView(nwView.OUTLINE)
             self.outlineView.setTreeFocus()
+
         return
 
     @pyqtSlot(bool, bool, bool, bool)

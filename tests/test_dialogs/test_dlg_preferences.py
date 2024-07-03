@@ -30,7 +30,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwUnicode
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.quotes import GuiQuoteSelect
-from novelwriter.types import QtDialogApply, QtDialogClose, QtDialogSave, QtModNone
+from novelwriter.types import QtDialogCancel, QtDialogSave, QtModNone
 
 KEY_DELAY = 1
 
@@ -92,7 +92,8 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
     """Test the preferences dialog actions."""
     monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: [("en", "English [en]")])
     prefs = GuiPreferences(nwGUI)
-    prefs.show()
+    with qtbot.waitExposed(prefs):
+        prefs.show()
 
     # Check Navigation
     vBar = prefs.mainForm.verticalScrollBar()
@@ -116,12 +117,6 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
         prefs._gotoSearch()
         assert value.args[0] < old
 
-    # Check Apply Button
-    prefs.show()
-    with qtbot.waitSignal(prefs.newPreferencesReady) as signal:
-        prefs.buttonBox.button(QtDialogApply).click()
-        assert signal.args == [False, False, False, False]
-
     # Check Save Button
     prefs.show()
     with qtbot.waitSignal(prefs.newPreferencesReady) as signal:
@@ -130,7 +125,7 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
 
     # Check Close Button
     prefs.show()
-    prefs.buttonBox.button(QtDialogClose).click()
+    prefs.buttonBox.button(QtDialogCancel).click()
     assert prefs.isHidden() is True
 
     # Close Using Escape Key
@@ -152,7 +147,8 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     monkeypatch.setattr(CONFIG, "listLanguages", lambda *a: languages)
 
     prefs = GuiPreferences(nwGUI)
-    prefs.show()
+    with qtbot.waitExposed(prefs):
+        prefs.show()
 
     # Appearance
     prefs.guiLocale.setCurrentIndex(prefs.guiLocale.findData("en_US"))
@@ -315,7 +311,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     with monkeypatch.context() as mp:
         mp.setattr(QFontDatabase, "families", lambda *a: ["TestFont"])
         with qtbot.waitSignal(prefs.newPreferencesReady) as signal:
-            prefs.buttonBox.button(QtDialogApply).click()
+            prefs.buttonBox.button(QtDialogSave).click()
             assert signal.args == [True, True, True, True]
 
     # Check Settings
