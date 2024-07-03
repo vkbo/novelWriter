@@ -1023,9 +1023,10 @@ class GuiMain(QMainWindow):
                 self.projView.setTreeFocus()
         elif paneNo == nwFocus.DOCUMENT:
             self._changeView(nwView.EDITOR)
-            if self.docEditor.anyFocus():
+            hasViewer = self.splitView.isVisible()
+            if hasViewer and self.docEditor.anyFocus():
                 self.docViewer.setFocus()
-            elif self.docViewer.anyFocus():
+            elif hasViewer and self.docViewer.anyFocus():
                 self.docEditor.setFocus()
             else:
                 self.docEditor.setFocus()
