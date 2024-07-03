@@ -92,7 +92,8 @@ def testDlgPreferences_Actions(qtbot, monkeypatch, nwGUI):
     """Test the preferences dialog actions."""
     monkeypatch.setattr(SHARED._spelling, "listDictionaries", lambda: [("en", "English [en]")])
     prefs = GuiPreferences(nwGUI)
-    prefs.show()
+    with qtbot.waitExposed(prefs):
+        prefs.show()
 
     # Check Navigation
     vBar = prefs.mainForm.verticalScrollBar()
@@ -146,7 +147,8 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     monkeypatch.setattr(CONFIG, "listLanguages", lambda *a: languages)
 
     prefs = GuiPreferences(nwGUI)
-    prefs.show()
+    with qtbot.waitExposed(prefs):
+        prefs.show()
 
     # Appearance
     prefs.guiLocale.setCurrentIndex(prefs.guiLocale.findData("en_US"))
