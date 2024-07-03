@@ -281,13 +281,28 @@ class NColourLabel(QLabel):
 
         return
 
+    def setTextColors(self, *, color: QColor | None = None, faded: QColor | None = None) -> None:
+        """Set or update the text colours."""
+        self._color = color or self._color
+        self._faded = faded or self._faded
+        self._refeshTextColor()
+        return
+
     def setColorState(self, state: bool) -> None:
         """Change the colour state."""
         if self._state is not state:
             self._state = state
-            colour = self.palette()
-            colour.setColor(QPalette.ColorRole.WindowText, self._color if state else self._faded)
-            self.setPalette(colour)
+            self._refeshTextColor()
+        return
+
+    def _refeshTextColor(self) -> None:
+        """Refresh the colour of the text on the label."""
+        palette = self.palette()
+        palette.setColor(
+            QPalette.ColorRole.WindowText,
+            self._color if self._state else self._faded,
+        )
+        self.setPalette(palette)
         return
 
 
