@@ -33,7 +33,9 @@ jobs:
         run: |
           pip install -U -r requirements.txt -r tests/requirements.txt
       - name: Run Build Commands
-        run: python pkgutils.py qtlrelease sample
+        run: |
+          python pkgutils.py qtlrelease
+          python pkgutils.py sample
       - name: Run Tests
         run: |
           export QT_QPA_PLATFORM=offscreen

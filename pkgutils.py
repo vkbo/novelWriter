@@ -25,9 +25,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import argparse
 import datetime
 import email.utils
-import os
 import shutil
 import subprocess
 import sys
@@ -35,10 +35,13 @@ import zipfile
 
 from pathlib import Path
 
-OS_NONE   = 0
-OS_LINUX  = 1
-OS_WIN    = 2
-OS_DARWIN = 3
+CURR_DIR = Path(__file__).parent
+SETUP_DIR = CURR_DIR / "setup"
+SIGN_KEY = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
+
+OS_LINUX = sys.platform.startswith("linux")
+OS_DARWIN = sys.platform.startswith("darwin")
+OS_WIN = sys.platform.startswith("win32")
 
 
 # =============================================================================================== #
@@ -109,22 +112,46 @@ def toUpload(srcPath: str | Path, dstName: str | None = None) -> None:
     return
 
 
-def makeCheckSum(sumFile: str, cwd: str | None = None) -> str:
+def makeCheckSum(sumFile: str, cwd: Path | None = None) -> str:
     """Create a SHA256 checksum file."""
     try:
         if cwd is None:
-            shaFile = sumFile+".sha256"
+            shaFile = f"{sumFile}.sha256"
         else:
-            shaFile = os.path.join(cwd, sumFile+".sha256")
+            shaFile = cwd / f"{sumFile}.sha256"
         with open(shaFile, mode="w") as fOut:
             subprocess.call(["shasum", "-a", "256", sumFile], stdout=fOut, cwd=cwd)
-        print("SHA256 Sum: %s" % shaFile)
+        print(f"SHA256 Sum: {shaFile}")
     except Exception as exc:
         print("Could not generate sha256 file")
         print(str(exc))
         return ""
 
-    return shaFile
+    return str(shaFile)
+
+
+def checkAssetsExist() -> bool:
+    """Check that the necessary assets exist ahead of a build."""
+    hasSample = False
+    hasManual = False
+    hasQmData = False
+
+    sampleZip = CURR_DIR / "novelwriter" / "assets" / "sample.zip"
+    if sampleZip.is_file():
+        print(f"Found: {sampleZip}")
+        hasSample = True
+
+    pdfManual = CURR_DIR / "novelwriter" / "assets" / "manual.pdf"
+    if pdfManual.is_file():
+        print(f"Found: {pdfManual}")
+        hasManual = True
+
+    i18nAssets = CURR_DIR / "novelwriter" / "assets" / "i18n"
+    if len(list(i18nAssets.glob("*.qm"))) > 0:
+        print(f"Found: {i18nAssets}/*.qm")
+        hasQmData = True
+
+    return hasSample and hasManual and hasQmData
 
 
 # =============================================================================================== #
@@ -132,10 +159,20 @@ def makeCheckSum(sumFile: str, cwd: str | None = None) -> str:
 # =============================================================================================== #
 
 ##
+#  Print Version
+##
+
+def printVersion(args: argparse.Namespace) -> None:
+    """Print the novelWriter version and exit."""
+    print(extractVersion(beQuiet=True)[0], end=None)
+    return
+
+
+##
 # Package Installer (pip)
 ##
 
-def installPackages(hostOS: int) -> None:
+def installPackages(args: argparse.Namespace) -> None:
     """Install package dependencies both for this script and for running
     novelWriter itself.
     """
@@ -145,9 +182,9 @@ def installPackages(hostOS: int) -> None:
     print("")
 
     installQueue = ["pip", "-r requirements.txt"]
-    if hostOS == OS_DARWIN:
+    if args.mac:
         installQueue.append("pyobjc")
-    elif hostOS == OS_WIN:
+    elif args.win:
         installQueue.append("pywin32")
 
     pyCmd = [sys.executable, "-m"]
@@ -168,28 +205,30 @@ def installPackages(hostOS: int) -> None:
 #  Clean Build and Dist Folders (build-clean)
 ##
 
-def cleanBuildDirs() -> None:
+def cleanBuildDirs(args: argparse.Namespace) -> None:
     """Recursively delete the 'build' and 'dist' folders."""
     print("")
     print("Cleaning up build environment ...")
     print("")
 
-    def removeFolder(rmDir: str) -> None:
-        if os.path.isdir(rmDir):
-            try:
-                shutil.rmtree(rmDir)
-                print("Deleted: %s" % rmDir)
-            except OSError:
-                print("Failed:  %s" % rmDir)
-        else:
-            print("Missing: %s" % rmDir)
+    folders = [
+        CURR_DIR / "build",
+        CURR_DIR / "dist",
+        CURR_DIR / "dist_deb",
+        CURR_DIR / "dist_minimal",
+        CURR_DIR / "dist_appimage",
+        CURR_DIR / "novelWriter.egg-info",
+    ]
 
-    removeFolder("build")
-    removeFolder("dist")
-    removeFolder("dist_deb")
-    removeFolder("dist_minimal")
-    removeFolder("dist_appimage")
-    removeFolder("novelWriter.egg-info")
+    for folder in folders:
+        if folder.is_dir():
+            try:
+                shutil.rmtree(folder)
+                print("Deleted: %s" % folder)
+            except OSError:
+                print("Failed:  %s" % folder)
+        else:
+            print("Missing: %s" % folder)
 
     print("")
 
@@ -204,28 +243,23 @@ def cleanBuildDirs() -> None:
 #  Build PDF Manual (manual)
 ##
 
-def buildPdfManual() -> None:
+def buildPdfManual(args: argparse.Namespace | None = None) -> None:
     """This function will build the documentation as manual.pdf."""
     print("")
     print("Building PDF Manual")
     print("===================")
     print("")
 
-    buildFile = os.path.join("docs", "build", "latex", "manual.pdf")
-    finalFile = os.path.join("novelwriter", "assets", "manual.pdf")
-
-    if os.path.isfile(finalFile):
-        # Make sure a new file is always generated
-        os.unlink(finalFile)
+    buildFile = CURR_DIR / "docs" / "build" / "latex" / "manual.pdf"
+    finalFile = CURR_DIR / "novelwriter" / "assets" / "manual.pdf"
+    finalFile.unlink(missing_ok=True)
 
     try:
         subprocess.call(["make", "clean"], cwd="docs")
         exCode = subprocess.call(["make", "latexpdf"], cwd="docs")
         if exCode == 0:
-            if os.path.isfile(finalFile):
-                os.unlink(finalFile)
             print("")
-            os.rename(buildFile, finalFile)
+            buildFile.rename(finalFile)
         else:
             raise Exception(f"Build returned error code {exCode}")
 
@@ -246,7 +280,7 @@ def buildPdfManual() -> None:
         print("")
         sys.exit(1)
 
-    if not os.path.isfile(finalFile):
+    if not finalFile.is_file():
         print("No output file was found!")
         print("")
         sys.exit(1)
@@ -255,170 +289,10 @@ def buildPdfManual() -> None:
 
 
 ##
-#  Qt Linguist QM Builder (qtlrelease)
-##
-
-def buildQtI18n() -> None:
-    """Build the lang.qm files for Qt Linguist."""
-    print("")
-    print("Building Qt Localisation Files")
-    print("==============================")
-
-    print("")
-    print("TS Files to Build:")
-    print("")
-
-    tsList = []
-    for aFile in os.listdir("i18n"):
-        aPath = os.path.join("i18n", aFile)
-        if os.path.isfile(aPath) and aFile.endswith(".ts") and aFile != "nw_base.ts":
-            tsList.append(aPath)
-            print(aPath)
-
-    print("")
-    print("Building Translation Files:")
-    print("")
-
-    try:
-        subprocess.call(["lrelease", "-verbose", *tsList])
-    except Exception as exc:
-        print("Qt5 Linguist tools seem to be missing")
-        print("On Debian/Ubuntu, install: qttools5-dev-tools pyqt5-dev-tools")
-        print(str(exc))
-        sys.exit(1)
-
-    print("")
-    print("Moving QM Files to Assets")
-    print("")
-
-    langDir = os.path.join("novelwriter", "assets", "i18n")
-    for langFile in os.listdir("i18n"):
-        langPath = os.path.join("i18n", langFile)
-        if not os.path.isfile(langPath):
-            continue
-
-        if langFile.endswith(".qm"):
-            destPath = os.path.join(langDir, langFile)
-            os.rename(langPath, destPath)
-            print("Moved: %s -> %s" % (langPath, destPath))
-
-    print("")
-
-    return
-
-
-##
-#  Qt Linguist TS Builder (qtlupdate)
-##
-
-def buildQtI18nTS(sysArgs: list[str]) -> None:
-    """Build the lang.ts files for Qt Linguist."""
-    print("")
-    print("Building Qt Translation Files")
-    print("=============================")
-
-    try:
-        from PyQt6.lupdate.lupdate import lupdate
-    except ImportError:
-        print("ERROR: This command requires lupdate from PyQt6")
-        print("On Debian/Ubuntu, install: pyqt6-dev-tools")
-        sys.exit(1)
-
-    print("")
-    print("Scanning Source Tree:")
-    print("")
-
-    sources = [os.path.join("i18n", "qtbase.py")]
-    for root, _, files in os.walk("novelwriter"):
-        if os.path.isdir(root):
-            for file in files:
-                source = os.path.join(root, file)
-                if os.path.isfile(source) and file.endswith(".py"):
-                    sources.append(source)
-
-    for source in sources:
-        print(source)
-
-    print("")
-    print("TS Files to Update:")
-    print("")
-
-    translations = []
-    if len(sysArgs) >= 2:
-        for arg in sysArgs[1:]:
-            if not (arg.startswith("i18n") and arg.endswith(".ts")):
-                continue
-
-            file = os.path.basename(arg)
-            if not file.startswith("nw_") and len(file) > 6:
-                print("Skipping non-novelWriter TS file %s" % file)
-                continue
-
-            if os.path.isfile(arg):
-                translations.append(arg)
-            elif os.path.exists(arg):
-                pass
-            else:  # Create an empty new language file
-                langCode = file[3:-3]
-                writeFile(arg, (
-                    "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-                    "<!DOCTYPE TS>\n"
-                    f"<TS version=\"2.0\" language=\"{langCode}\" sourcelanguage=\"en_GB\"/>\n"
-                ))
-                translations.append(arg)
-
-    else:
-        print("No translation files selected for update ...")
-        print("")
-        return
-
-    for translation in translations:
-        print(translation)
-
-    print("")
-    print("Updating Language Files:")
-    print("")
-
-    # Using the pylupdate tool from PyQt6 as it supports TS file format 2.1.
-    lupdate(sources, translations, no_obsolete=True, no_summary=False)
-
-    print("")
-
-    return
-
-
-##
-#  Generate MacOS PList
-##
-
-def genMacOSPlist() -> None:
-    """Set necessary values for .plist file for MacOS build."""
-    outDir = "setup/macos"
-    numVers = stripVersion(extractVersion()[0])
-    copyrightYear = datetime.datetime.now().year
-
-    # These keys are no longer used but are present for compatibility
-    pkgVersMaj, pkgVersMin = numVers.split(".")[:2]
-
-    plistXML = readFile(f"{outDir}/Info.plist.template").format(
-        macosBundleSVers=numVers,
-        macosBundleVers=numVers,
-        macosBundleVersMajor=pkgVersMaj,
-        macosBundleVersMinor=pkgVersMin,
-        macosBundleCopyright=f"Copyright 2018–{copyrightYear}, Veronica Berglyd Olsen",
-    )
-
-    print(f"Writing Info.plist to {outDir}/Info.plist")
-    writeFile(f"{outDir}/Info.plist", plistXML)
-
-    return
-
-
-##
 #  Sample Project ZIP File Builder (sample)
 ##
 
-def buildSampleZip() -> None:
+def buildSampleZip(args: argparse.Namespace | None = None) -> None:
     """Bundle the sample project into a single zip file to be saved into
     the novelwriter/assets folder for further bundling into builds.
     """
@@ -427,22 +301,17 @@ def buildSampleZip() -> None:
     print("========================")
     print("")
 
-    srcSample = "sample"
-    dstSample = os.path.join("novelwriter", "assets", "sample.zip")
+    srcSample = CURR_DIR / "sample"
+    dstSample = CURR_DIR / "novelwriter" / "assets" / "sample.zip"
 
-    if os.path.isdir(srcSample):
-        if os.path.isfile(dstSample):
-            os.unlink(dstSample)
-
-        from zipfile import ZipFile
-
-        with ZipFile(dstSample, "w") as zipObj:
+    if srcSample.is_dir():
+        dstSample.unlink(missing_ok=True)
+        with zipfile.ZipFile(dstSample, "w") as zipObj:
             print("Compressing: nwProject.nwx")
-            zipObj.write(os.path.join(srcSample, "nwProject.nwx"), "nwProject.nwx")
-            for docFile in os.listdir(os.path.join(srcSample, "content")):
-                print("Compressing: content/%s" % docFile)
-                srcDoc = os.path.join(srcSample, "content", docFile)
-                zipObj.write(srcDoc, "content/"+docFile)
+            zipObj.write(srcSample / "nwProject.nwx", "nwProject.nwx")
+            for doc in (srcSample / "content").iterdir():
+                print(f"Compressing: content/{doc.name}")
+                zipObj.write(doc, f"content/{doc.name}")
 
     else:
         print("Error: Could not find sample project source directory.")
@@ -455,60 +324,197 @@ def buildSampleZip() -> None:
     return
 
 
-def cleanBuiltAssets() -> None:
-    """Remove assets built by this script."""
+##
+#  Import Translations (import-i18n)
+##
+
+def importI18nUpdates(args: argparse.Namespace) -> None:
+    """Import new translation files from a zip file."""
     print("")
-    print("Removing Built Assets")
-    print("=====================")
+    print("Import Updated Translations")
+    print("===========================")
     print("")
 
-    sampleZip = os.path.join("novelwriter", "assets", "sample.zip")
-    if os.path.isfile(sampleZip):
-        print(f"Deleted: {sampleZip}")
-        os.unlink(sampleZip)
+    fileName = Path(args.file).absolute()
+    if not fileName.is_file():
+        print("File not found ...")
+        sys.exit(1)
 
-    pdfManual = os.path.join("novelwriter", "assets", "manual.pdf")
-    if os.path.isfile(pdfManual):
-        print(f"Deleted: {pdfManual}")
-        os.unlink(pdfManual)
+    dstPath = CURR_DIR / "novelwriter" / "assets" / "i18n"
+    srcPath = CURR_DIR / "i18n"
 
-    i18nAssets = os.path.join("novelwriter", "assets", "i18n")
-    for i18nItem in os.listdir(i18nAssets):
-        i18nPath = os.path.join(i18nAssets, i18nItem)
-        if os.path.isfile(i18nPath) and i18nPath.endswith(".qm"):
-            print(f"Deleted: {i18nPath}")
-            os.unlink(i18nPath)
+    print(f"Loading file: {fileName}")
+    with zipfile.ZipFile(fileName) as zipObj:
+        for item in zipObj.namelist():
+            if item.startswith("nw_") and item.endswith(".ts"):
+                zipObj.extract(item, srcPath)
+                print(f"Extracted: {item} > {srcPath / item}")
+            elif item.startswith("project_") and item.endswith(".json"):
+                zipObj.extract(item, dstPath)
+                print(f"Extracted: {item} > {dstPath / item}")
+            else:
+                print(f"Skipped: {item}")
 
     print("")
 
     return
 
 
-def checkAssetsExist() -> bool:
-    """Check that the necessary compiled assets exist ahead of a build.
-    """
-    hasSample = False
-    hasManual = False
-    hasQmData = False
+##
+#  Qt Linguist TS Builder (qtlupdate)
+##
 
-    sampleZip = os.path.join("novelwriter", "assets", "sample.zip")
-    if os.path.isfile(sampleZip):
-        print(f"Found: {sampleZip}")
-        hasSample = True
+def updateTranslationSources(args: argparse.Namespace) -> None:
+    """Build the lang.ts files for Qt Linguist."""
+    print("")
+    print("Building Qt Translation Files")
+    print("=============================")
 
-    pdfManual = os.path.join("novelwriter", "assets", "manual.pdf")
-    if os.path.isfile(pdfManual):
-        print(f"Found: {pdfManual}")
-        hasManual = True
+    try:
+        # Using the pylupdate tool from PyQt6 as it supports TS file format 2.1.
+        from PyQt6.lupdate.lupdate import lupdate
+    except ImportError:
+        print("ERROR: This command requires lupdate from PyQt6")
+        print("On Debian/Ubuntu, install: pyqt6-dev-tools")
+        sys.exit(1)
 
-    i18nAssets = os.path.join("novelwriter", "assets", "i18n")
-    for i18nItem in os.listdir(i18nAssets):
-        i18nPath = os.path.join(i18nAssets, i18nItem)
-        if os.path.isfile(i18nPath) and i18nPath.endswith(".qm"):
-            print(f"Found: {i18nPath}")
-            hasQmData = True
+    print("")
+    print("Scanning Source Tree:")
+    print("")
 
-    return hasSample and hasManual and hasQmData
+    sources = list((CURR_DIR / "novelwriter").glob("**/*.py"))
+    sources.insert(0, CURR_DIR / "i18n" / "qtbase.py")
+    for source in sources:
+        print(source.relative_to(CURR_DIR))
+
+    print("")
+    print("TS Files to Update:")
+    print("")
+
+    translations = []
+    for item in [Path(str(f)).absolute() for f in args.files]:
+        if not (item.name.startswith("nw_") and item.suffix == ".ts"):
+            print(f"Skipped: {item}")
+            continue
+
+        if item.is_file():
+            translations.append(item)
+            print(f"Added: {item}")
+        elif item.exists():
+            continue
+        else:  # Create an empty new language file
+            langCode = item.name[3:-3]
+            item.write_text(
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                "<!DOCTYPE TS>\n"
+                f"<TS version=\"2.0\" language=\"{langCode}\" sourcelanguage=\"en_GB\"/>\n"
+            )
+            translations.append(item)
+            print(f"Created: {item}")
+
+    print("")
+    print("Updating Language Files:")
+    print("")
+
+    lupdate(
+        sources=[str(f) for f in sources],
+        translation_files=[str(f) for f in translations],
+        no_obsolete=True,
+        no_summary=False,
+    )
+
+    print("")
+
+    return
+
+
+##
+#  Qt Linguist QM Builder (qtlrelease)
+##
+
+def buildTranslationAssets(args: argparse.Namespace | None = None) -> None:
+    """Build the lang.qm files for Qt Linguist."""
+    print("")
+    print("Building Qt Localisation Files")
+    print("==============================")
+
+    print("")
+    print("TS Files to Build:")
+    print("")
+
+    srcDir = CURR_DIR / "i18n"
+    dstDir = CURR_DIR / "novelwriter" / "assets" / "i18n"
+
+    srcList = []
+    for item in srcDir.iterdir():
+        if item.is_file() and item.suffix == ".ts" and item.name != "nw_base.ts":
+            srcList.append(item)
+            print(item)
+
+    print("")
+    print("Building Translation Files:")
+    print("")
+
+    try:
+        subprocess.call(["lrelease", "-verbose", *srcList])
+    except Exception as exc:
+        print("Qt5 Linguist tools seem to be missing")
+        print("On Debian/Ubuntu, install: qttools5-dev-tools pyqt5-dev-tools")
+        print(str(exc))
+        sys.exit(1)
+
+    print("")
+    print("Moving QM Files to Assets")
+    print("")
+
+    dstRel = dstDir.relative_to(CURR_DIR)
+    for item in srcDir.iterdir():
+        if item.is_file() and item.suffix == ".qm":
+            item.rename(dstDir / item.name)
+            print("Moved: %s -> %s" % (item.relative_to(CURR_DIR), dstRel / item.name))
+
+    print("")
+
+    return
+
+
+##
+#  Clean Assets (clean-assets)
+##
+
+def cleanBuiltAssets(args: argparse.Namespace | None = None) -> None:
+    """Remove assets built by this script."""
+    print("")
+    print("Removing Built Assets")
+    print("=====================")
+    print("")
+
+    assets = [
+        CURR_DIR / "novelwriter" / "assets" / "sample.zip",
+        CURR_DIR / "novelwriter" / "assets" / "manual.pdf",
+    ]
+    assets.extend((CURR_DIR / "novelwriter" / "assets" / "i18n").glob("*.qm"))
+    for asset in assets:
+        if asset.is_file():
+            asset.unlink()
+            print(f"Deleted: {asset.relative_to(CURR_DIR)}")
+
+    print("")
+
+    return
+
+
+##
+#  Build Assets (build-assets)
+##
+
+def buildAllAssets(args: argparse.Namespace) -> None:
+    """Build all assets."""
+    cleanBuiltAssets()
+    buildPdfManual()
+    buildSampleZip()
+    buildTranslationAssets()
+    return
 
 
 # =============================================================================================== #
@@ -516,119 +522,78 @@ def checkAssetsExist() -> bool:
 # =============================================================================================== #
 
 ##
-#  Import Translations (import-i18n)
+#  Copy Source
 ##
 
-def importI18nUpdates(sysArgs: list[str]) -> None:
-    """Import new translation files from a zip file."""
-    print("")
-    print("Import Updated Translations")
-    print("===========================")
-    print("")
+def copySourceCode(dst: Path) -> None:
+    """Copy the novelwriter source tree to path."""
+    src = CURR_DIR / "novelwriter"
+    for item in src.glob("**/*"):
+        relSrc = item.relative_to(CURR_DIR)
+        if item.suffix in (".pyc", ".pyo"):
+            print(f"Ignore: {relSrc}")
+            continue
+        if item.parent.is_dir() and item.parent.name != "__pycache__":
+            dstDir = dst / relSrc.parent
+            if not dstDir.exists():
+                dstDir.mkdir(parents=True)
+                print(f"Folder: {dstDir}")
+        if item.is_file():
+            shutil.copyfile(item, dst / relSrc)
+            print(f"Copied: {dst / relSrc}")
+    return
 
-    fileName = None
-    if len(sysArgs) >= 2:
-        if os.path.isfile(sysArgs[1]):
-            fileName = sysArgs[1]
 
-    if fileName is None:
-        print("File not found ...")
-        sys.exit(1)
+##
+#  Copy Package Files
+##
 
-    projPath = os.path.join("novelwriter", "assets", "i18n")
-    mainPath = "i18n"
+def copyPackageFiles(dst: Path, setupPy: bool = False, useCfg: bool = False) -> None:
+    """Copy files needed for packaging."""
 
-    print("Loading file: %s" % fileName)
-    with zipfile.ZipFile(fileName) as zipObj:
-        for archFile in zipObj.namelist():
-            if archFile.startswith("nw_") and archFile.endswith(".ts"):
-                zipObj.extract(archFile, mainPath)
-                print("Extracted: %s > %s" % (archFile, os.path.join(mainPath, archFile)))
-            elif archFile.startswith("project_") and archFile.endswith(".json"):
-                zipObj.extract(archFile, projPath)
-                print("Extracted: %s > %s" % (archFile, os.path.join(projPath, archFile)))
-            else:
-                print("Skipped: %s" % archFile)
+    copyFiles = ["LICENSE.md", "CREDITS.md", "pyproject.toml"]
+    for copyFile in copyFiles:
+        shutil.copyfile(copyFile, dst / copyFile)
+        print("Copied: %s" % copyFile)
 
-    print("")
+    (dst / "MANIFEST.in").write_text(
+        "include LICENSE.md\n"
+        "include CREDITS.md\n"
+        "recursive-include novelwriter/assets *\n"
+    )
+    print("Wrote:  MANIFEST.in")
+
+    if setupPy:
+        (dst / "setup.py").write_text(
+            "import setuptools\n"
+            "setuptools.setup()\n"
+        )
+        print("Wrote:  setup.py")
+
+    if useCfg:
+        # This is needed for Ubuntu up to 22.04
+        text = (SETUP_DIR / "launchpad_setup.cfg").read_text()
+        text = text.replace("setup/description_pypi.md", "data/description_short.txt")
+        (dst / "setup.cfg").write_text(text)
+        print("Wrote:  setup.cfg")
+
+        (dst / "pyproject.toml").write_text(
+            "[build-system]\n"
+            "requires = [\"setuptools\"]\n"
+            "build-backend = \"setuptools.build_meta\"\n"
+        )
+        print("Wrote:  pyproject.toml")
+    else:
+        text = (CURR_DIR / "pyproject.toml").read_text()
+        text = text.replace("setup/description_pypi.md", "data/description_short.txt")
+        (dst / "pyproject.toml").write_text(text)
+        print("Wrote:  pyproject.toml")
 
     return
 
 
 ##
-#  Make Minimal Package (minimal-zip)
-##
-
-def makeWindowsZip() -> None:
-    """Pack the core source file in a single zip file."""
-    from zipfile import ZIP_DEFLATED, ZipFile
-
-    print("")
-    print("Building Windows ZIP File")
-    print("=========================")
-
-    bldDir = "dist_minimal"
-    if not os.path.isdir(bldDir):
-        os.mkdir(bldDir)
-
-    if not checkAssetsExist():
-        print("ERROR: Missing build assets")
-        sys.exit(1)
-
-    pkgVers, _, _ = extractVersion()
-    zipFile = f"novelwriter-{pkgVers}-minimal-win.zip"
-    outFile = os.path.join(bldDir, zipFile)
-    if os.path.isfile(outFile):
-        os.unlink(outFile)
-    print("")
-
-    rootFiles = [
-        "README.md",
-        "LICENSE.md",
-        "CREDITS.md",
-        "CHANGELOG.md",
-        "requirements.txt",
-        "pkgutils.py",
-        "pyproject.toml",
-    ]
-
-    with ZipFile(outFile, "w", compression=ZIP_DEFLATED, compresslevel=9) as zipObj:
-
-        for nRoot, _, nFiles in os.walk("novelwriter"):
-            if nRoot.endswith("__pycache__"):
-                print("Skipped: %s" % nRoot)
-                continue
-
-            print("Added: %s/* [Files: %d]" % (nRoot, len(nFiles)))
-            for aFile in nFiles:
-                if aFile.endswith(".pyc"):
-                    print("Skipping File: %s" % aFile)
-                    continue
-                zipObj.write(os.path.join(nRoot, aFile))
-
-        zipObj.write("novelWriter.py", "novelWriter.pyw")
-        print("Added: novelWriter.pyw")
-
-        for aFile in rootFiles:
-            print("Added: %s" % aFile)
-            zipObj.write(aFile)
-
-        zipObj.write(os.path.join("novelwriter", "assets", "manual.pdf"), "UserManual.pdf")
-        print("Added: UserManual.pdf")
-
-    print("")
-    print("Created File: %s" % outFile)
-
-    shaFile = makeCheckSum(zipFile, cwd=bldDir)
-    toUpload(outFile)
-    toUpload(shaFile)
-    print("")
-
-    return
-
-
-##
-#  Make Debian Package (build-deb)
+#  Make Debian Package
 ##
 
 def makeDebianPackage(
@@ -660,21 +625,19 @@ def makeDebianPackage(
     # Set Up Folder
     # =============
 
-    bldDir = "dist_deb"
+    bldDir = CURR_DIR / "dist_deb"
     bldPkg = f"novelwriter_{pkgVers}"
-    outDir = f"{bldDir}/{bldPkg}"
-    debDir = f"{outDir}/debian"
-    datDir = f"{outDir}/data"
+    outDir = bldDir / bldPkg
+    debDir = outDir / "debian"
+    datDir = outDir / "data"
 
-    if not os.path.isdir(bldDir):
-        os.mkdir(bldDir)
-
-    if os.path.isdir(outDir):
+    bldDir.mkdir(exist_ok=True)
+    if outDir.exists():
         print("Removing old build files ...")
         print("")
         shutil.rmtree(outDir)
 
-    os.mkdir(outDir)
+    outDir.mkdir(exist_ok=False)
 
     # Check Additional Assets
     # =======================
@@ -689,98 +652,34 @@ def makeDebianPackage(
     print("Copying novelWriter source ...")
     print("")
 
-    for nPath, _, nFiles in os.walk("novelwriter"):
-        if nPath.endswith("__pycache__"):
-            print("Skipped: %s" % nPath)
-            continue
-
-        pPath = f"{outDir}/{nPath}"
-        if not os.path.isdir(pPath):
-            os.mkdir(pPath)
-
-        fCount = 0
-        for fFile in nFiles:
-            nFile = f"{nPath}/{fFile}"
-            pFile = f"{pPath}/{fFile}"
-
-            if fFile.endswith(".pyc"):
-                print("Skipped: %s" % nFile)
-                continue
-
-            shutil.copyfile(nFile, pFile)
-            fCount += 1
-
-        print("Copied: %s/*  [Files: %d]" % (nPath, fCount))
+    copySourceCode(outDir)
 
     print("")
     print("Copying or generating additional files ...")
     print("")
 
-    # Copy/Write Root Files
-    # =====================
-
-    copyFiles = ["LICENSE.md", "CREDITS.md", "CHANGELOG.md", "pyproject.toml"]
-    for copyFile in copyFiles:
-        shutil.copyfile(copyFile, f"{outDir}/{copyFile}")
-        print("Copied: %s" % copyFile)
-
-    writeFile(f"{outDir}/MANIFEST.in", (
-        "include LICENSE.md\n"
-        "include CREDITS.md\n"
-        "include CHANGELOG.md\n"
-        "include data/*\n"
-        "recursive-include novelwriter/assets *\n"
-    ))
-    print("Wrote:  MANIFEST.in")
-
-    writeFile(f"{outDir}/setup.py", (
-        "import setuptools\n"
-        "setuptools.setup()\n"
-    ))
-    print("Wrote:  setup.py")
-
-    if oldSetuptools:
-        # This is needed for Ubuntu up to 22.04
-        setupCfg = readFile("setup/launchpad_setup.cfg").replace(
-            "file: setup/description_pypi.md", "file: data/description_short.txt"
-        )
-        writeFile(f"{outDir}/setup.cfg", setupCfg)
-        print("Wrote:  setup.cfg")
-
-        writeFile(f"{outDir}/pyproject.toml", (
-            "[build-system]\n"
-            "requires = [\"setuptools\"]\n"
-            "build-backend = \"setuptools.build_meta\"\n"
-        ))
-        print("Wrote:  pyproject.toml")
-
-    else:
-        pyProject = readFile("pyproject.toml").replace(
-            "setup/description_pypi.md", "data/description_short.txt"
-        )
-        writeFile(f"{outDir}/pyproject.toml", pyProject)
-        print("Wrote:  pyproject.toml")
+    copyPackageFiles(outDir, setupPy=True, useCfg=oldSetuptools)
 
     # Copy/Write Debian Files
     # =======================
 
-    shutil.copytree("setup/debian", debDir)
+    shutil.copytree(SETUP_DIR / "debian", debDir)
     print("Copied: debian/*")
 
-    writeFile(f"{debDir}/changelog", (
+    (debDir / "changelog").write_text(
         f"novelwriter ({pkgVers}) {distName}; urgency=low\n\n"
         f"  * Update to version {pkgVers}\n\n"
         f" -- Veronica Berglyd Olsen <code@vkbo.net>  {pkgDate}\n"
-    ))
+    )
     print("Wrote:  debian/changelog")
 
     # Copy/Write Data Files
     # =====================
 
-    shutil.copytree("setup/data", datDir)
+    shutil.copytree(SETUP_DIR / "data", datDir)
     print("Copied: data/*")
 
-    shutil.copyfile("setup/description_short.txt", f"{outDir}/data/description_short.txt")
+    shutil.copyfile(SETUP_DIR / "description_short.txt", outDir / "data" / "description_short.txt")
     print("Copied: data/description_short.txt")
 
     # Build Package
@@ -797,13 +696,12 @@ def makeDebianPackage(
 
     if sourceBuild:
         subprocess.call(["debuild", "-S"] + signArgs, cwd=outDir)
-        toUpload(f"{bldDir}/{bldPkg}.tar.xz")
+        toUpload(bldDir / f"{bldPkg}.tar.xz")
     else:
         subprocess.call(["dpkg-buildpackage"] + signArgs, cwd=outDir)
-        shutil.copyfile(f"{bldDir}/{bldPkg}.tar.xz", f"{bldDir}/{bldPkg}.debian.tar.xz")
-        toUpload(f"{bldDir}/{bldPkg}.debian.tar.xz")
-        toUpload(f"{bldDir}/{bldPkg}_all.deb")
-
+        shutil.copyfile(bldDir / f"{bldPkg}.tar.xz", bldDir / f"{bldPkg}.debian.tar.xz")
+        toUpload(bldDir / f"{bldPkg}.debian.tar.xz")
+        toUpload(bldDir / f"{bldPkg}_all.deb")
         toUpload(makeCheckSum(f"{bldPkg}.debian.tar.xz", cwd=bldDir))
         toUpload(makeCheckSum(f"{bldPkg}_all.deb", cwd=bldDir))
 
@@ -819,17 +717,35 @@ def makeDebianPackage(
 
 
 ##
-#  Make Launchpad Package (build-ubuntu)
+#  Build Debian Package (build-deb)
 ##
 
-def makeForLaunchpad(doSign: bool = False, isFirst: bool = False) -> None:
+def buildDebianPackage(args: argparse.Namespace) -> None:
+    """Build a .deb package"""
+    if not OS_LINUX:
+        print("ERROR: Command 'build-deb' can only be used on Linux")
+        sys.exit(1)
+    signKey = SIGN_KEY if args.sign else None
+    makeDebianPackage(signKey)
+    return
+
+
+##
+#  Build Launchpad Packages (build-ubuntu)
+##
+
+def buildForLaunchpad(args: argparse.Namespace) -> None:
     """Wrapper for building Debian packages for Launchpad."""
+    if not OS_LINUX:
+        print("ERROR: Command 'build-ubuntu' can only be used on Linux")
+        sys.exit(1)
+
     print("")
     print("Launchpad Packages")
     print("==================")
     print("")
 
-    if isFirst:
+    if args.first:
         bldNum = "0"
     else:
         bldNum = input("Build number [0]: ")
@@ -848,10 +764,7 @@ def makeForLaunchpad(doSign: bool = False, isFirst: bool = False) -> None:
         print(f" * Ubuntu {distNum} {codeName.title()}")
     print("")
 
-    if doSign:
-        signKey = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
-    else:
-        signKey = None
+    signKey = SIGN_KEY if args.sign else None
 
     print(f"Sign Key: {str(signKey)}")
     print("")
@@ -880,14 +793,11 @@ def makeForLaunchpad(doSign: bool = False, isFirst: bool = False) -> None:
 
 
 ##
-#  Make AppImage (build-appimage)
+#  Build AppImage (build-appimage)
 ##
 
-def makeAppImage(sysArgs: list[str]) -> list[str]:
+def buildAppImage(args: argparse.Namespace) -> None:
     """Build an AppImage."""
-    import argparse
-    import glob
-
     try:
         import python_appimage  # noqa: F401 # type: ignore
     except ImportError:
@@ -897,31 +807,14 @@ def makeAppImage(sysArgs: list[str]) -> list[str]:
         )
         sys.exit(1)
 
+    if not OS_LINUX:
+        print("ERROR: Command 'build-ubuntu' can only be used on Linux")
+        sys.exit(1)
+
     print("")
     print("Build AppImage")
     print("==============")
     print("")
-
-    parser = argparse.ArgumentParser(
-        prog="build_appimage",
-        description="Build an AppImage",
-        epilog="see https://appimage.org/ for more details",
-    )
-    parser.add_argument(
-        "--linux-tag",
-        nargs="?",
-        default="manylinux_2_28_x86_64",
-        help=(
-            "Linux compatibility tag (e.g. manylinux_2_28_x86_64)\n"
-            "see https://python-appimage.readthedocs.io/en/latest/#available-python-appimages \n"
-            "and https://github.com/pypa/manylinux for a list of valid tags"
-        ),
-    )
-    parser.add_argument(
-        "--python-version", nargs="?", default="3.11", help="Python version (e.g. 3.11)"
-    )
-
-    args, unparsedArgs = parser.parse_known_args(sysArgs)
 
     linuxTag = args.linux_tag
     pythonVer = args.python_version
@@ -936,41 +829,36 @@ def makeAppImage(sysArgs: list[str]) -> list[str]:
     # Set Up Folder
     # =============
 
-    bldDir = "dist_appimage"
+    bldDir = CURR_DIR / "dist_appimage"
     bldPkg = f"novelwriter_{pkgVers}"
-    outDir = f"{bldDir}/{bldPkg}"
-    imageDir = f"{bldDir}/appimage"
+    outDir = bldDir / bldPkg
+    imgDir = bldDir / "appimage"
 
     # Set Up Folders
     # ==============
 
-    if not os.path.isdir(bldDir):
-        os.mkdir(bldDir)
+    bldDir.mkdir(exist_ok=True)
 
-    if os.path.isdir(outDir):
+    if outDir.exists():
         print("Removing old build files ...")
         print("")
         shutil.rmtree(outDir)
 
-    os.mkdir(outDir)
+    outDir.mkdir()
 
-    if os.path.isdir(imageDir):
+    if imgDir.exists():
         print("Removing old build metadata files ...")
         print("")
-        shutil.rmtree(imageDir)
+        shutil.rmtree(imgDir)
 
-    os.mkdir(imageDir)
+    imgDir.mkdir()
 
     # Remove old AppImages
-    outFiles = glob.glob(f"{bldDir}/*.AppImage")
-    if outFiles:
+    if images := bldDir.glob("*.AppImage"):
         print("Removing old AppImages")
         print("")
-        for image in outFiles:
-            try:
-                os.remove(image)
-            except OSError:
-                print("Error while deleting file : ", image)
+        for image in images:
+            image.unlink()
 
     # Copy novelWriter Source
     # =======================
@@ -978,87 +866,41 @@ def makeAppImage(sysArgs: list[str]) -> list[str]:
     print("Copying novelWriter source ...")
     print("")
 
-    for nPath, _, nFiles in os.walk("novelwriter"):
-        if nPath.endswith("__pycache__"):
-            print("Skipped: %s" % nPath)
-            continue
-
-        pPath = f"{outDir}/{nPath}"
-        if not os.path.isdir(pPath):
-            os.mkdir(pPath)
-
-        fCount = 0
-        for fFile in nFiles:
-            nFile = f"{nPath}/{fFile}"
-            pFile = f"{pPath}/{fFile}"
-
-            if fFile.endswith(".pyc"):
-                print("Skipped: %s" % nFile)
-                continue
-
-            shutil.copyfile(nFile, pFile)
-            fCount += 1
-
-        print("Copied: %s/*  [Files: %d]" % (nPath, fCount))
+    copySourceCode(outDir)
 
     print("")
     print("Copying or generating additional files ...")
     print("")
 
-    # Copy/Write Root Files
-    # =====================
-
-    copyFiles = ["LICENSE.md", "CREDITS.md", "CHANGELOG.md", "pyproject.toml"]
-    for copyFile in copyFiles:
-        shutil.copyfile(copyFile, f"{outDir}/{copyFile}")
-        print("Copied: %s" % copyFile)
-
-    writeFile(f"{outDir}/MANIFEST.in", (
-        "include LICENSE.md\n"
-        "include CREDITS.md\n"
-        "include CHANGELOG.md\n"
-        "include data/*\n"
-        "recursive-include novelwriter/assets *\n"
-    ))
-    print("Wrote:  MANIFEST.in")
-
-    writeFile(f"{outDir}/setup.py", (
-        "import setuptools\n"
-        "setuptools.setup()\n"
-    ))
-    print("Wrote:  setup.py")
-
-    setupCfg = readFile("pyproject.toml").replace(
-        "setup/description_pypi.md", "data/description_short.txt"
-    )
-    writeFile(f"{outDir}/pyproject.toml", setupCfg)
-    print("Wrote:  pyproject.toml")
+    copyPackageFiles(outDir)
 
     # Write Metadata
     # ==============
 
-    appDescription = readFile("setup/description_short.txt")
-    appdataXML = readFile("setup/novelwriter.appdata.xml").format(description=appDescription)
-    writeFile(f"{imageDir}/novelwriter.appdata.xml", appdataXML)
+    appDescription = (SETUP_DIR / "description_short.txt").read_text()
+    appdataXML = (SETUP_DIR / "novelwriter.appdata.xml").read_text()
+    appdataXML = appdataXML.format(description=appDescription)
+    (imgDir / "novelwriter.appdata.xml").write_text(appdataXML)
     print("Wrote:  novelwriter.appdata.xml")
 
-    writeFile(f"{imageDir}/entrypoint.sh", (
+    (imgDir / "entrypoint.sh").write_text(
         '#! /bin/bash \n'
         '{{ python-executable }} -sE ${APPDIR}/opt/python{{ python-version }}/bin/novelwriter "$@"'
-    ))
+    )
     print("Wrote:  entrypoint.sh")
 
-    writeFile(f"{imageDir}/requirements.txt", os.path.abspath(outDir))
+    (imgDir / "requirements.txt").write_text(str(outDir))
     print("Wrote:  requirements.txt")
 
-    shutil.copyfile("setup/data/novelwriter.desktop", f"{imageDir}/novelwriter.desktop")
+    shutil.copyfile(SETUP_DIR / "data" / "novelwriter.desktop", imgDir / "novelwriter.desktop")
     print("Copied: novelwriter.desktop")
 
-    shutil.copyfile("setup/icons/novelwriter.svg", f"{imageDir}/novelwriter.svg")
+    shutil.copyfile(SETUP_DIR / "icons" / "novelwriter.svg", imgDir / "novelwriter.svg")
     print("Copied: novelwriter.svg")
 
     shutil.copyfile(
-        "setup/data/hicolor/256x256/apps/novelwriter.png", f"{imageDir}/novelwriter.png"
+        SETUP_DIR / "data" / "hicolor" / "256x256" / "apps" / "novelwriter.png",
+        imgDir / "novelwriter.png"
     )
     print("Copied: novelwriter.png")
 
@@ -1077,22 +919,22 @@ def makeAppImage(sysArgs: list[str]) -> list[str]:
         print("")
         sys.exit(1)
 
-    bldFile = glob.glob(f"{bldDir}/*.AppImage")[0]
-    outFile = f"{bldDir}/novelWriter-{pkgVers}.AppImage"
-    os.rename(bldFile, outFile)
-    shaFile = makeCheckSum(os.path.basename(outFile), cwd=bldDir)
+    bldFile = list(bldDir.glob("*.AppImage"))[0]
+    outFile = bldDir / f"novelWriter-{pkgVers}.AppImage"
+    bldFile.rename(outFile)
+    shaFile = makeCheckSum(outFile.name, cwd=bldDir)
 
     toUpload(outFile)
     toUpload(shaFile)
 
-    return unparsedArgs
+    return
 
 
 ##
 #  Make Windows Setup EXE (build-win-exe)
 ##
 
-def makeWindowsEmbedded(sysArgs: list[str]) -> None:
+def makeWindowsEmbedded(args: argparse.Namespace) -> None:
     """Set up a package with embedded Python and dependencies for
     Windows installation.
     """
@@ -1105,46 +947,43 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
     print("================================")
     print("")
 
-    minimalZip = None
-    packVersion = "none"
-    if len(sysArgs) >= 2:
-        if os.path.isfile(sysArgs[1]):
-            minimalZip = sysArgs[1]
-
-    if minimalZip is None:
-        print("Please provide the path to the minimal win package as an argument")
-        sys.exit(1)
-
-    packVersion = os.path.basename(minimalZip).split("-")[1]
-    print("Version: %s" % packVersion)
+    numVers, _, _ = extractVersion()
+    print("Version: %s" % numVers)
 
     # Set Up Folder
     # =============
 
-    if not os.path.isdir("dist"):
-        os.mkdir("dist")
-
-    outDir = os.path.join("dist", "novelWriter")
-    libDir = os.path.join(outDir, "lib")
-    if os.path.isdir(outDir):
+    bldDir = CURR_DIR / "dist"
+    outDir = bldDir / "novelWriter"
+    libDir = outDir / "lib"
+    if outDir.exists():
         shutil.rmtree(outDir)
 
-    os.mkdir(outDir)
-    os.mkdir(libDir)
+    bldDir.mkdir(exist_ok=True)
+    outDir.mkdir()
+    libDir.mkdir()
 
-    # Extract Source Files
-    # ====================
+    # Copy novelWriter Source
+    # =======================
 
-    print("Extracting source files ...")
-    with zipfile.ZipFile(minimalZip, "r") as inFile:
-        inFile.extractall(outDir)
+    print("Copying and compiling novelWriter source ...")
+    print("")
 
-    shutil.copyfile(
-        os.path.join(outDir, "novelwriter", "assets", "icons", "novelwriter.ico"),
-        os.path.join(outDir, "novelwriter.ico")
-    )
+    copySourceCode(outDir)
 
-    compileall.compile_dir(os.path.join(outDir, "novelwriter"))
+    files = [
+        CURR_DIR / "CREDITS.md",
+        CURR_DIR / "LICENSE.md",
+        CURR_DIR / "requirements.txt",
+        SETUP_DIR / "icons" / "novelwriter.ico",
+        SETUP_DIR / "iss_license.txt",
+
+    ]
+    for item in files:
+        shutil.copyfile(item, outDir / item.name)
+        print(f"Copied: {item} > {outDir / item.name}")
+
+    compileall.compile_dir(outDir / "novelwriter")
 
     print("Done")
     print("")
@@ -1155,9 +994,9 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
     print("Adding Python embeddable ...")
 
     pyVers = "%d.%d.%d" % (sys.version_info[:3])
-    zipFile = "python-%s-embed-amd64.zip" % pyVers
-    pyZip = os.path.join("dist", zipFile)
-    if not os.path.isfile(pyZip):
+    zipFile = f"python-{pyVers}-embed-amd64.zip"
+    pyZip = bldDir / zipFile
+    if not pyZip.is_file():
         pyUrl = f"https://www.python.org/ftp/python/{pyVers}/{zipFile}"
         print("Downloading: %s" % pyUrl)
         urllib.request.urlretrieve(pyUrl, pyZip)
@@ -1169,28 +1008,16 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
     print("Done")
     print("")
 
-    # Sort Out Licence Files
-    # ======================
-
-    os.rename(
-        os.path.join(outDir, "LICENSE.txt"),
-        os.path.join(outDir, "PYTHON-LICENSE.txt")
-    )
-    shutil.copyfile(
-        os.path.join("setup", "iss_license.txt"),
-        os.path.join(outDir, "LICENSES.txt")
-    )
-
     # Install Dependencies
     # ====================
 
     print("Install dependencies ...")
 
-    sysCmd  = [sys.executable]
-    sysCmd += "-m pip install -r requirements.txt --target".split()
-    sysCmd += [libDir]
     try:
-        subprocess.call(sysCmd)
+        subprocess.call([
+            sys.executable, "-m",
+            "pip", "install", "-r", "requirements.txt", "--target", str(libDir)
+        ])
     except Exception as exc:
         print("Failed with error:")
         print(str(exc))
@@ -1204,7 +1031,7 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
 
     print("Updating starting script ...")
 
-    writeFile(os.path.join(outDir, "novelWriter.pyw"), (
+    (outDir / "novelWriter.pyw").write_text(
         "#!/usr/bin/env python3\n"
         "import os\n"
         "import sys\n"
@@ -1215,7 +1042,7 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
         "if __name__ == \"__main__\":\n"
         "    import novelwriter\n"
         "    novelwriter.main(sys.argv[1:])\n"
-    ))
+    )
 
     print("Done")
     print("")
@@ -1223,35 +1050,35 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
     # Clean Up Files
     # ==============
 
-    def unlinkIfFound(delFile: str) -> None:
-        if os.path.isfile(delFile):
-            os.unlink(delFile)
-            print("Deleted: %s" % delFile)
+    def unlinkIfFound(file: Path) -> None:
+        if file.is_file():
+            file.unlink()
+            print(f"Deleted: {file}")
 
-    def deleteFolder(delPath: str) -> None:
-        if os.path.isdir(delPath):
-            shutil.rmtree(delPath)
-            print("Deleted: %s" % delPath)
+    def deleteFolder(folder: Path) -> None:
+        if folder.is_dir():
+            shutil.rmtree(folder)
+            print(f"Deleted: {folder}")
 
     print("Deleting Redundant Files")
     print("========================")
     print("")
 
-    pyQt5Dir = os.path.join(libDir, "PyQt5")
-    bindDir  = os.path.join(pyQt5Dir, "bindings")
-    qt5Dir   = os.path.join(pyQt5Dir, "Qt5")
-    binDir   = os.path.join(qt5Dir, "bin")
-    plugDir  = os.path.join(qt5Dir, "plugins")
-    qmDir    = os.path.join(qt5Dir, "translations")
-    dictDir  = os.path.join(libDir, "enchant", "data", "mingw64", "share", "enchant", "hunspell")
+    pyQt5Dir = libDir / "PyQt5"
+    bindDir  = pyQt5Dir / "bindings"
+    qt5Dir   = pyQt5Dir / "Qt5"
+    binDir   = qt5Dir / "bin"
+    plugDir  = qt5Dir / "plugins"
+    qmDir    = qt5Dir / "translations"
+    dictDir  = libDir / "enchant" / "data" / "mingw64" / "share" / "enchant" / "hunspell"
 
-    for dictFile in os.listdir(dictDir):
-        if not dictFile.startswith(("en_GB", "en_US")):
-            unlinkIfFound(os.path.join(dictDir, dictFile))
+    for item in dictDir.iterdir():
+        if not item.name.startswith(("en_GB", "en_US")):
+            unlinkIfFound(item)
 
-    for qmFile in os.listdir(qmDir):
-        if not qmFile.startswith("qtbase"):
-            unlinkIfFound(os.path.join(qmDir, qmFile))
+    for item in qmDir.iterdir():
+        if not item.name.startswith("qtbase"):
+            unlinkIfFound(item)
 
     delQt5 = [
         "Qt5Bluetooth", "Qt5DBus", "Qt5Designer", "Qt5Designer", "Qt5Help", "Qt5Location",
@@ -1263,30 +1090,28 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
         "Qt5SerialPort", "Qt5Sql", "Qt5Test", "Qt5TextToSpeech", "Qt5WebChannel", "Qt5WebSockets",
         "Qt5WebView", "Qt5Xml", "Qt5XmlPatterns"
     ]
-    for qt5Item in delQt5:
-        qtItem = qt5Item.replace("Qt5", "Qt")
-        unlinkIfFound(os.path.join(binDir, qt5Item+".dll"))
-        unlinkIfFound(os.path.join(pyQt5Dir, qtItem+".pyd"))
-        unlinkIfFound(os.path.join(pyQt5Dir, qtItem+".pyi"))
-        deleteFolder(os.path.join(bindDir, qtItem))
+    for item in delQt5:
+        qtItem = item.replace("Qt5", "Qt")
+        unlinkIfFound(binDir / f"{item}.dll")
+        unlinkIfFound(pyQt5Dir / f"{qtItem}.pyd")
+        unlinkIfFound(pyQt5Dir / f"{qtItem}.pyi")
+        deleteFolder(bindDir / qtItem)
 
     delList = [
-        os.path.join(binDir, "opengl32sw.dll"),
-        os.path.join(qt5Dir, "qml"),
-        os.path.join(plugDir, "geoservices"),
-        os.path.join(plugDir, "playlistformats"),
-        os.path.join(plugDir, "renderers"),
-        os.path.join(plugDir, "sensorgestures"),
-        os.path.join(plugDir, "sensors"),
-        os.path.join(plugDir, "sqldrivers"),
-        os.path.join(plugDir, "texttospeech"),
-        os.path.join(plugDir, "webview"),
+        binDir / "opengl32sw.dll",
+        qt5Dir / "qml",
+        plugDir / "geoservices",
+        plugDir / "playlistformats",
+        plugDir / "renderers",
+        plugDir / "sensorgestures",
+        plugDir / "sensors",
+        plugDir / "sqldrivers",
+        plugDir / "texttospeech",
+        plugDir / "webview",
     ]
-    for delItem in delList:
-        if os.path.isfile(delItem):
-            unlinkIfFound(delItem)
-        elif os.path.isdir(delItem):
-            deleteFolder(delItem)
+    for item in delList:
+        unlinkIfFound(item)
+        deleteFolder(item)
 
     print("Done")
     print("")
@@ -1296,10 +1121,10 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
     print("")
 
     # Read the iss template
-    issData = readFile(os.path.join("setup", "win_setup_embed.iss"))
-    issData = issData.replace(r"%%version%%", packVersion)
-    issData = issData.replace(r"%%dir%%", os.getcwd())
-    writeFile("setup.iss", issData)
+    issData = (SETUP_DIR / "win_setup_embed.iss").read_text()
+    issData = issData.replace(r"%%version%%", numVers)
+    issData = issData.replace(r"%%dist%%", str(bldDir))
+    (CURR_DIR / "setup.iss").write_text(issData)
     print("")
 
     try:
@@ -1316,6 +1141,33 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
     return
 
 
+##
+#  Generate MacOS PList
+##
+
+def genMacOSPlist(args: argparse.Namespace) -> None:
+    """Set necessary values for .plist file for MacOS build."""
+    outDir = SETUP_DIR / "macos"
+    numVers = stripVersion(extractVersion()[0])
+    copyrightYear = datetime.datetime.now().year
+
+    # These keys are no longer used but are present for compatibility
+    pkgVersMaj, pkgVersMin = numVers.split(".")[:2]
+
+    plistXML = (outDir / "Info.plist.template").read_text().format(
+        macosBundleSVers=numVers,
+        macosBundleVers=numVers,
+        macosBundleVersMajor=pkgVersMaj,
+        macosBundleVersMinor=pkgVersMin,
+        macosBundleCopyright=f"Copyright 2018–{copyrightYear}, Veronica Berglyd Olsen",
+    )
+
+    print(f"Writing Info.plist to {outDir}/Info.plist")
+    (outDir / "Info.plist").write_text(plistXML)
+
+    return
+
+
 # =============================================================================================== #
 #  General Installers
 # =============================================================================================== #
@@ -1324,7 +1176,7 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
 #  XDG Installation (xdg-install)
 ##
 
-def xdgInstall() -> None:
+def xdgInstall(args: argparse.Namespace) -> None:
     """Will attempt to install icons and make a launcher."""
     print("")
     print("XDG Install")
@@ -1344,9 +1196,9 @@ def xdgInstall() -> None:
     if testExec is not None:
         exOpts.append(testExec)
 
-    testExec = os.path.join(os.getcwd(), "novelWriter.py")
-    if os.path.isfile(testExec):
-        exOpts.append(testExec)
+    testExec = CURR_DIR / "novelWriter.py"
+    if testExec.is_file():
+        exOpts.append(str(testExec))
 
     useExec = ""
     nOpts = len(exOpts)
@@ -1377,9 +1229,10 @@ def xdgInstall() -> None:
     # ===========================
 
     # Generate launcher
-    desktopData = readFile(os.path.join("setup", "data", "novelwriter.desktop"))
+    desktopFile = CURR_DIR / "novelwriter.desktop"
+    desktopData = (SETUP_DIR / "data" / "novelwriter.desktop").read_text()
     desktopData = desktopData.replace("Exec=novelwriter", f"Exec={useExec}")
-    writeFile("novelwriter.desktop", desktopData)
+    desktopFile.write_text(desktopData)
 
     # Remove old desktop icon
     exCode = subprocess.call(
@@ -1446,8 +1299,7 @@ def xdgInstall() -> None:
         print(f"Error {exCode}: Could not update icon cache")
 
     # Clean up
-    if os.path.isfile("./novelwriter.desktop"):
-        os.unlink("./novelwriter.desktop")
+    desktopFile.unlink(missing_ok=True)
 
     print("")
     print("Done!")
@@ -1460,7 +1312,7 @@ def xdgInstall() -> None:
 #  XDG Uninstallation (xdg-uninstall)
 ##
 
-def xdgUninstall() -> None:
+def xdgUninstall(args: argparse.Namespace) -> None:
     """Will attempt to uninstall icons and the launcher."""
     print("")
     print("XDG Uninstall")
@@ -1532,193 +1384,170 @@ def xdgUninstall() -> None:
 
 if __name__ == "__main__":
     """Parse command line options and run the commands."""
-    # Detect OS
-    if sys.platform.startswith("linux"):
-        hostOS = OS_LINUX
-    elif sys.platform.startswith("darwin"):
-        hostOS = OS_DARWIN
-    elif sys.platform.startswith("win32"):
-        hostOS = OS_WIN
-    elif sys.platform.startswith("cygwin"):
-        hostOS = OS_WIN
-    else:
-        hostOS = OS_NONE
+    parser = argparse.ArgumentParser(
+        usage="pkgutils.py [command] [--flags]",
+        description=(
+            "This tool provides setup and build commands for installing or distibuting "
+            "novelWriter as a package on Linux, Mac and Windows, as well as developer tools "
+            "for internationalisation."
+        )
+    )
+    parsers = parser.add_subparsers()
 
-    sysArgs = sys.argv.copy()
-
-    # Sign package
-    if "--sign" in sysArgs:
-        sysArgs.remove("--sign")
-        doSign = True
-    else:
-        doSign = False
-
-    # First build
-    if "--first" in sysArgs:
-        sysArgs.remove("--first")
-        isFirstBuild = True
-    else:
-        isFirstBuild = False
-
-    helpMsg = [
-        "",
-        "novelWriter Setup Tool",
-        "======================",
-        "",
-        "This tool provides setup and build commands for installing or distibuting",
-        "novelWriter as a package on Linux, Mac and Windows. The available options",
-        "are as follows:",
-        "",
-        "General:",
-        "",
-        "    help           Print the help message.",
-        "    pip            Install all package dependencies for novelWriter using pip.",
-        "    version        Print the novelWriter version.",
-        "    build-clean    Will attempt to delete 'build' and 'dist' folders.",
-        "",
-        "Additional Builds:",
-        "",
-        "    manual         Build the help documentation as PDF (requires LaTeX).",
-        "    sample         Build the sample project zip file and add it to assets.",
-        "    qtlupdate      Update translation files for internationalisation.",
-        "                   The files to be updated must be provided as arguments.",
-        "    qtlrelease     Build the language files for internationalisation.",
-        "    clean-assets   Delete assets built by manual, sample and qtlrelease.",
-        "    gen-plist      Generates an Info.plist for use in a MacOS Bundle",
-        "",
-        "Python Packaging:",
-        "",
-        "    import-i18n    Import updated i18n files from a zip file.",
-        "    windows-zip    Creates a minimal zip file of the core application without",
-        "                   all the other source files. Used for Windows builds.",
-        "    build-deb      Build a .deb package for Debian and Ubuntu. Add --sign to ",
-        "                   sign package.",
-        "    build-ubuntu   Build a .deb packages Launchpad. Add --sign to ",
-        "                   sign package. Add --first to set build number to 0.",
-        "    build-win-exe  Build a setup.exe file with Python embedded for Windows.",
-        "                   The package must be built from a minimal windows zip file.",
-        "    build-appimage Build an AppImage. Argument --linux-tag defaults to",
-        "                   manylinux_2_28_x86_64, and --python-version to 3.11.",
-        "",
-        "System Install:",
-        "",
-        "    xdg-install    Install launcher and icons for freedesktop systems. Run as",
-        "                   root or with sudo for system-wide install, or as user for",
-        "                   single user install.",
-        "    xdg-uninstall  Remove the launcher and icons for the current system as",
-        "                   installed by the 'xdg-install' command.",
-        "",
-    ]
+    # Version
+    cmdVersion = parsers.add_parser(
+        "version", help="Print the novelWriter version."
+    )
+    cmdVersion.set_defaults(func=printVersion)
 
     # General
     # =======
 
-    if "help" in sysArgs:
-        sysArgs.remove("help")
-        print("\n".join(helpMsg))
-        sys.exit(0)
+    # Pip Install
+    cmdPipInstall = parsers.add_parser(
+        "pip", help="Install all package dependencies for novelWriter using pip."
+    )
+    cmdPipInstall.add_argument("--linux", action="store_true", help="For Linux.", default=OS_LINUX)
+    cmdPipInstall.add_argument("--mac", action="store_true", help="For MacOS.", default=OS_DARWIN)
+    cmdPipInstall.add_argument("--win", action="store_true", help="For Windows.", default=OS_WIN)
+    cmdPipInstall.set_defaults(func=installPackages)
 
-    if "version" in sysArgs:
-        sysArgs.remove("version")
-        print(extractVersion(beQuiet=True)[0], end=None)
-        sys.exit(0)
-
-    if "pip" in sysArgs:
-        sysArgs.remove("pip")
-        installPackages(hostOS)
-
-    if "build-clean" in sysArgs:
-        sysArgs.remove("build-clean")
-        cleanBuildDirs()
+    # Build Clean
+    cmdBuildClean = parsers.add_parser(
+        "build-clean", help="Recursively delete all build folders."
+    )
+    cmdBuildClean.set_defaults(func=cleanBuildDirs)
 
     # Additional Builds
     # =================
 
-    if "manual" in sysArgs:
-        sysArgs.remove("manual")
-        buildPdfManual()
+    # Import Translations
+    cmdImportTS = parsers.add_parser(
+        "qtlimport", help="Import updated i18n files from a zip file."
+    )
+    cmdImportTS.add_argument("file", help="Path to zip file from Crowdin")
+    cmdImportTS.set_defaults(func=importI18nUpdates)
 
-    if "qtlrelease" in sysArgs:
-        sysArgs.remove("qtlrelease")
-        buildQtI18n()
+    # Update i18n Sources
+    cmdUpdateTS = parsers.add_parser(
+        "qtlupdate", help=(
+            "Update translation files for internationalisation. "
+            "The files to be updated must be provided as arguments. "
+            "New files can be created by giving a 'nw_<lang>.ts' file name "
+            "where <lang> is a valid language code."
+        )
+    )
+    cmdUpdateTS.add_argument("files", nargs="+")
+    cmdUpdateTS.set_defaults(func=updateTranslationSources)
 
-    if "qtlupdate" in sysArgs:
-        sysArgs.remove("qtlupdate")
-        buildQtI18nTS(sysArgs)
-        sys.exit(0)  # Don't continue execution
+    # Build i18n Files
+    cmdBuildQM = parsers.add_parser(
+        "qtlrelease", help="Build the language files for internationalisation."
+    )
+    cmdBuildQM.set_defaults(func=buildTranslationAssets)
 
-    if "sample" in sysArgs:
-        sysArgs.remove("sample")
-        buildSampleZip()
+    # Build Manual
+    cmdBuildManual = parsers.add_parser(
+        "manual", help="Build the help documentation as a PDF (requires LaTeX)."
+    )
+    cmdBuildManual.set_defaults(func=buildPdfManual)
 
-    if "clean-assets" in sysArgs:
-        sysArgs.remove("clean-assets")
-        cleanBuiltAssets()
+    # Build Sample
+    cmdBuildSample = parsers.add_parser(
+        "sample", help="Build the sample project zip file and add it to assets."
+    )
+    cmdBuildSample.set_defaults(func=buildSampleZip)
 
-    if "gen-plist" in sysArgs:
-        sysArgs.remove("gen-plist")
-        genMacOSPlist()
+    # Clean Assets
+    cmdCleanAssets = parsers.add_parser(
+        "clean-assets", help="Delete assets built by manual, sample and qtlrelease."
+    )
+    cmdCleanAssets.set_defaults(func=cleanBuiltAssets)
+
+    # Build Assets
+    cmdBuildAssets = parsers.add_parser(
+        "build-assets", help="Build all assets. Includes manual, sample and qtlrelease."
+    )
+    cmdBuildAssets.set_defaults(func=buildAllAssets)
 
     # Python Packaging
     # ================
 
-    if "import-i18n" in sysArgs:
-        sysArgs.remove("import-i18n")
-        importI18nUpdates(sysArgs)
-        sys.exit(0)  # Don't continue execution
+    # Build Debian Package
+    cmdBuildDeb = parsers.add_parser(
+        "build-deb", help=(
+            "Build a .deb package for Debian and Ubuntu. "
+            "Add --sign to sign package."
+        )
+    )
+    cmdBuildDeb.add_argument("--sign", action="store_true", help="Sign the package.")
+    cmdBuildDeb.set_defaults(func=buildDebianPackage)
 
-    if "windows-zip" in sysArgs:
-        sysArgs.remove("windows-zip")
-        makeWindowsZip()
+    # Build Ubuntu Packages
+    cmdBuildUbuntu = parsers.add_parser(
+        "build-ubuntu", help=(
+            "Build a .deb package for Debian and Ubuntu. "
+            "Add --sign to sign package. "
+            "Add --first to set build number to 0."
+        )
+    )
+    cmdBuildUbuntu.add_argument("--sign", action="store_true", help="Sign the package.")
+    cmdBuildUbuntu.add_argument("--first", action="store_true", help="Set build number to 0.")
+    cmdBuildUbuntu.set_defaults(func=buildForLaunchpad)
 
-    if "build-deb" in sysArgs:
-        sysArgs.remove("build-deb")
-        if hostOS == OS_LINUX:
-            if doSign:
-                signKey = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
-            else:
-                signKey = None
-            makeDebianPackage(signKey=signKey)
-        else:
-            print("ERROR: Command 'build-deb' can only be used on Linux")
-            sys.exit(1)
+    # Build AppImage
+    cmdBuildAppImage = parsers.add_parser(
+        "build-appimage", help=(
+            "Build an AppImage. "
+            "Argument --linux-tag defaults manylinux_2_28_x86_64, and --python-version to 3.11."
+        )
+    )
+    cmdBuildAppImage.add_argument(
+        "--linux-tag",
+        default="manylinux_2_28_x86_64",
+        help=(
+            "Linux compatibility tag (e.g. manylinux_2_28_x86_64) "
+            "see https://python-appimage.readthedocs.io/en/latest/#available-python-appimages "
+            "and https://github.com/pypa/manylinux for a list of valid tags."
+        ),
+    )
+    cmdBuildAppImage.add_argument(
+        "--python-version", default="3.11", help="Python version (e.g. 3.11)"
+    )
+    cmdBuildAppImage.set_defaults(func=buildAppImage)
 
-    if "build-ubuntu" in sysArgs:
-        sysArgs.remove("build-ubuntu")
-        if hostOS == OS_LINUX:
-            makeForLaunchpad(doSign=doSign, isFirst=isFirstBuild)
-        else:
-            print("ERROR: Command 'build-ubuntu' can only be used on Linux")
-            sys.exit(1)
+    # Build Windows Inno Setup Installer
+    cmdBuildSetupExe = parsers.add_parser(
+        "build-win-exe", help="Build a setup.exe file with Python embedded for Windows."
+    )
+    cmdBuildSetupExe.set_defaults(func=makeWindowsEmbedded)
 
-    if "build-win-exe" in sysArgs:
-        sysArgs.remove("build-win-exe")
-        makeWindowsEmbedded(sysArgs)
-        sys.exit(0)  # Don't continue execution
-
-    if "build-appimage" in sysArgs:
-        sysArgs.remove("build-appimage")
-        if hostOS == OS_LINUX:
-            sysArgs = makeAppImage(sysArgs)
-        else:
-            print("ERROR: Command 'build-appimage' can only be used on Linux")
-            sys.exit(1)
+    # Generate MacOS PList File
+    cmdBuildMacOSPlist = parsers.add_parser(
+        "gen-plist", help="Generate an Info.plist for use in a MacOS Bundle."
+    )
+    cmdBuildMacOSPlist.set_defaults(func=genMacOSPlist)
 
     # General Installers
     # ==================
 
-    if "xdg-install" in sysArgs:
-        sysArgs.remove("xdg-install")
-        if hostOS == OS_WIN:
-            print("ERROR: Command 'xdg-install' cannot be used on Windows")
-            sys.exit(1)
-        else:
-            xdgInstall()
+    # Linux XDG Install
+    cmdXDGInstall = parsers.add_parser(
+        "xdg-install", help=(
+            "Install launcher and icons for freedesktop systems. Run as root or with sudo for "
+            "system-wide install, or as user for single user install."
+        )
+    )
+    cmdXDGInstall.set_defaults(func=xdgInstall)
 
-    if "xdg-uninstall" in sysArgs:
-        sysArgs.remove("xdg-uninstall")
-        if hostOS == OS_WIN:
-            print("ERROR: Command 'xdg-uninstall' cannot be used on Windows")
-            sys.exit(1)
-        else:
-            xdgUninstall()
+    # Linux XDG Uninstall
+    cmdXDGUninstall = parsers.add_parser(
+        "xdg-uninstall", help=(
+            "Remove the launcher and icons for the current system "
+            "as installed by the 'xdg-install' command."
+        )
+    )
+    cmdXDGUninstall.set_defaults(func=xdgUninstall)
+
+    args = parser.parse_args()
+    args.func(args)

@@ -1,6 +1,6 @@
 ; Script for building setup.exe installer with Inno Setup
 
-#define nwAppDir "%%dir%%\dist"
+#define nwAppDir "%%dist%%"
 #define nwAppName "novelWriter"
 #define nwAppVersion "%%version%%"
 #define nwAppPublisher "novelWriter"
