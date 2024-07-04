@@ -25,6 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import argparse
 import datetime
 import email.utils
 import os
@@ -39,6 +40,8 @@ OS_NONE   = 0
 OS_LINUX  = 1
 OS_WIN    = 2
 OS_DARWIN = 3
+
+CURR_DIR = Path(__file__).parent
 
 
 # =============================================================================================== #
@@ -132,10 +135,20 @@ def makeCheckSum(sumFile: str, cwd: str | None = None) -> str:
 # =============================================================================================== #
 
 ##
+#  Print Version
+##
+
+def printVersion(args: argparse.Namespace) -> None:
+    """Print the novelWriter version and exit."""
+    print(extractVersion(beQuiet=True)[0], end=None)
+    return
+
+
+##
 # Package Installer (pip)
 ##
 
-def installPackages(hostOS: int) -> None:
+def installPackages(args: argparse.Namespace) -> None:
     """Install package dependencies both for this script and for running
     novelWriter itself.
     """
@@ -145,9 +158,9 @@ def installPackages(hostOS: int) -> None:
     print("")
 
     installQueue = ["pip", "-r requirements.txt"]
-    if hostOS == OS_DARWIN:
+    if args.mac:
         installQueue.append("pyobjc")
-    elif hostOS == OS_WIN:
+    elif args.win:
         installQueue.append("pywin32")
 
     pyCmd = [sys.executable, "-m"]
@@ -168,28 +181,30 @@ def installPackages(hostOS: int) -> None:
 #  Clean Build and Dist Folders (build-clean)
 ##
 
-def cleanBuildDirs() -> None:
+def cleanBuildDirs(args: argparse.Namespace) -> None:
     """Recursively delete the 'build' and 'dist' folders."""
     print("")
     print("Cleaning up build environment ...")
     print("")
 
-    def removeFolder(rmDir: str) -> None:
-        if os.path.isdir(rmDir):
-            try:
-                shutil.rmtree(rmDir)
-                print("Deleted: %s" % rmDir)
-            except OSError:
-                print("Failed:  %s" % rmDir)
-        else:
-            print("Missing: %s" % rmDir)
+    folders = [
+        CURR_DIR / "build",
+        CURR_DIR / "dist",
+        CURR_DIR / "dist_deb",
+        CURR_DIR / "dist_minimal",
+        CURR_DIR / "dist_appimage",
+        CURR_DIR / "novelWriter.egg-info",
+    ]
 
-    removeFolder("build")
-    removeFolder("dist")
-    removeFolder("dist_deb")
-    removeFolder("dist_minimal")
-    removeFolder("dist_appimage")
-    removeFolder("novelWriter.egg-info")
+    for folder in folders:
+        if folder.is_dir():
+            try:
+                shutil.rmtree(folder)
+                print("Deleted: %s" % folder)
+            except OSError:
+                print("Failed:  %s" % folder)
+        else:
+            print("Missing: %s" % folder)
 
     print("")
 
@@ -204,28 +219,23 @@ def cleanBuildDirs() -> None:
 #  Build PDF Manual (manual)
 ##
 
-def buildPdfManual() -> None:
+def buildPdfManual(args: argparse.Namespace | None = None) -> None:
     """This function will build the documentation as manual.pdf."""
     print("")
     print("Building PDF Manual")
     print("===================")
     print("")
 
-    buildFile = os.path.join("docs", "build", "latex", "manual.pdf")
-    finalFile = os.path.join("novelwriter", "assets", "manual.pdf")
-
-    if os.path.isfile(finalFile):
-        # Make sure a new file is always generated
-        os.unlink(finalFile)
+    buildFile = CURR_DIR / "docs" / "build" / "latex" / "manual.pdf"
+    finalFile = CURR_DIR / "novelwriter" / "assets" / "manual.pdf"
+    finalFile.unlink(missing_ok=True)
 
     try:
         subprocess.call(["make", "clean"], cwd="docs")
         exCode = subprocess.call(["make", "latexpdf"], cwd="docs")
         if exCode == 0:
-            if os.path.isfile(finalFile):
-                os.unlink(finalFile)
             print("")
-            os.rename(buildFile, finalFile)
+            buildFile.rename(finalFile)
         else:
             raise Exception(f"Build returned error code {exCode}")
 
@@ -255,53 +265,36 @@ def buildPdfManual() -> None:
 
 
 ##
-#  Qt Linguist QM Builder (qtlrelease)
+#  Sample Project ZIP File Builder (sample)
 ##
 
-def buildQtI18n() -> None:
-    """Build the lang.qm files for Qt Linguist."""
+def buildSampleZip(args: argparse.Namespace | None = None) -> None:
+    """Bundle the sample project into a single zip file to be saved into
+    the novelwriter/assets folder for further bundling into builds.
+    """
     print("")
-    print("Building Qt Localisation Files")
-    print("==============================")
-
-    print("")
-    print("TS Files to Build:")
-    print("")
-
-    tsList = []
-    for aFile in os.listdir("i18n"):
-        aPath = os.path.join("i18n", aFile)
-        if os.path.isfile(aPath) and aFile.endswith(".ts") and aFile != "nw_base.ts":
-            tsList.append(aPath)
-            print(aPath)
-
-    print("")
-    print("Building Translation Files:")
+    print("Building Sample ZIP File")
+    print("========================")
     print("")
 
-    try:
-        subprocess.call(["lrelease", "-verbose", *tsList])
-    except Exception as exc:
-        print("Qt5 Linguist tools seem to be missing")
-        print("On Debian/Ubuntu, install: qttools5-dev-tools pyqt5-dev-tools")
-        print(str(exc))
+    srcSample = CURR_DIR / "sample"
+    dstSample = CURR_DIR / "novelwriter" / "assets" / "sample.zip"
+
+    if srcSample.is_dir():
+        dstSample.unlink(missing_ok=True)
+        with zipfile.ZipFile(dstSample, "w") as zipObj:
+            print("Compressing: nwProject.nwx")
+            zipObj.write(srcSample / "nwProject.nwx", "nwProject.nwx")
+            for doc in (srcSample / "content").iterdir():
+                print(f"Compressing: content/{doc.name}")
+                zipObj.write(doc, f"content/{doc.name}")
+
+    else:
+        print("Error: Could not find sample project source directory.")
         sys.exit(1)
 
     print("")
-    print("Moving QM Files to Assets")
-    print("")
-
-    langDir = os.path.join("novelwriter", "assets", "i18n")
-    for langFile in os.listdir("i18n"):
-        langPath = os.path.join("i18n", langFile)
-        if not os.path.isfile(langPath):
-            continue
-
-        if langFile.endswith(".qm"):
-            destPath = os.path.join(langDir, langFile)
-            os.rename(langPath, destPath)
-            print("Moved: %s -> %s" % (langPath, destPath))
-
+    print("Built file: %s" % dstSample)
     print("")
 
     return
@@ -311,13 +304,14 @@ def buildQtI18n() -> None:
 #  Qt Linguist TS Builder (qtlupdate)
 ##
 
-def buildQtI18nTS(sysArgs: list[str]) -> None:
+def updateTranslationSources(args: argparse.Namespace) -> None:
     """Build the lang.ts files for Qt Linguist."""
     print("")
     print("Building Qt Translation Files")
     print("=============================")
 
     try:
+        # Using the pylupdate tool from PyQt6 as it supports TS file format 2.1.
         from PyQt6.lupdate.lupdate import lupdate
     except ImportError:
         print("ERROR: This command requires lupdate from PyQt6")
@@ -328,62 +322,138 @@ def buildQtI18nTS(sysArgs: list[str]) -> None:
     print("Scanning Source Tree:")
     print("")
 
-    sources = [os.path.join("i18n", "qtbase.py")]
-    for root, _, files in os.walk("novelwriter"):
-        if os.path.isdir(root):
-            for file in files:
-                source = os.path.join(root, file)
-                if os.path.isfile(source) and file.endswith(".py"):
-                    sources.append(source)
-
+    sources = list((CURR_DIR / "novelwriter").glob("**/*.py"))
+    sources.insert(0, CURR_DIR / "i18n" / "qtbase.py")
     for source in sources:
-        print(source)
+        print(source.relative_to(CURR_DIR))
 
     print("")
     print("TS Files to Update:")
     print("")
 
     translations = []
-    if len(sysArgs) >= 2:
-        for arg in sysArgs[1:]:
-            if not (arg.startswith("i18n") and arg.endswith(".ts")):
-                continue
+    for item in [Path(str(f)).absolute() for f in args.files]:
+        if not (item.name.startswith("nw_") and item.suffix == ".ts"):
+            print(f"Skipped: {item}")
+            continue
 
-            file = os.path.basename(arg)
-            if not file.startswith("nw_") and len(file) > 6:
-                print("Skipping non-novelWriter TS file %s" % file)
-                continue
-
-            if os.path.isfile(arg):
-                translations.append(arg)
-            elif os.path.exists(arg):
-                pass
-            else:  # Create an empty new language file
-                langCode = file[3:-3]
-                writeFile(arg, (
-                    "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-                    "<!DOCTYPE TS>\n"
-                    f"<TS version=\"2.0\" language=\"{langCode}\" sourcelanguage=\"en_GB\"/>\n"
-                ))
-                translations.append(arg)
-
-    else:
-        print("No translation files selected for update ...")
-        print("")
-        return
-
-    for translation in translations:
-        print(translation)
+        if item.is_file():
+            translations.append(item)
+            print(f"Added: {item}")
+        elif item.exists():
+            continue
+        else:  # Create an empty new language file
+            langCode = item.name[3:-3]
+            item.write_text(
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                "<!DOCTYPE TS>\n"
+                f"<TS version=\"2.0\" language=\"{langCode}\" sourcelanguage=\"en_GB\"/>\n"
+            )
+            translations.append(item)
+            print(f"Created: {item}")
 
     print("")
     print("Updating Language Files:")
     print("")
 
-    # Using the pylupdate tool from PyQt6 as it supports TS file format 2.1.
-    lupdate(sources, translations, no_obsolete=True, no_summary=False)
+    lupdate(
+        sources=[str(f) for f in sources],
+        translation_files=[str(f) for f in translations],
+        no_obsolete=True,
+        no_summary=False,
+    )
 
     print("")
 
+    return
+
+
+##
+#  Qt Linguist QM Builder (qtlrelease)
+##
+
+def buildTranslationAssets(args: argparse.Namespace | None = None) -> None:
+    """Build the lang.qm files for Qt Linguist."""
+    print("")
+    print("Building Qt Localisation Files")
+    print("==============================")
+
+    print("")
+    print("TS Files to Build:")
+    print("")
+
+    srcDir = CURR_DIR / "i18n"
+    dstDir = CURR_DIR / "novelwriter" / "assets" / "i18n"
+
+    srcList = []
+    for item in srcDir.iterdir():
+        if item.is_file() and item.suffix == ".ts" and item.name != "nw_base.ts":
+            srcList.append(item)
+            print(item)
+
+    print("")
+    print("Building Translation Files:")
+    print("")
+
+    try:
+        subprocess.call(["lrelease", "-verbose", *srcList])
+    except Exception as exc:
+        print("Qt5 Linguist tools seem to be missing")
+        print("On Debian/Ubuntu, install: qttools5-dev-tools pyqt5-dev-tools")
+        print(str(exc))
+        sys.exit(1)
+
+    print("")
+    print("Moving QM Files to Assets")
+    print("")
+
+    dstRel = dstDir.relative_to(CURR_DIR)
+    for item in srcDir.iterdir():
+        if item.is_file() and item.suffix == ".qm":
+            item.rename(dstDir / item.name)
+            print("Moved: %s -> %s" % (item.relative_to(CURR_DIR), dstRel / item.name))
+
+    print("")
+
+    return
+
+
+##
+#  Clean Assets (clean-assets)
+##
+
+def cleanBuiltAssets(args: argparse.Namespace | None = None) -> None:
+    """Remove assets built by this script."""
+    print("")
+    print("Removing Built Assets")
+    print("=====================")
+    print("")
+
+    assets = [
+        CURR_DIR / "novelwriter" / "assets" / "sample.zip",
+        CURR_DIR / "novelwriter" / "assets" / "manual.pdf",
+    ]
+    assets.extend((CURR_DIR / "novelwriter" / "assets" / "i18n").glob("*.qm"))
+    for asset in assets:
+        if asset.is_file():
+            asset.unlink()
+            print(f"Deleted: {asset.relative_to(CURR_DIR)}")
+
+    print("")
+
+    return
+
+
+##
+#  Build Assets (build-assets)
+##
+
+def buildAllAssets(args: argparse.Namespace) -> None:
+    """Build all assets."""
+    cleanBuiltAssets()
+    buildPdfManual()
+    buildSampleZip()
+    buildTranslationAssets()
     return
 
 
@@ -410,76 +480,6 @@ def genMacOSPlist() -> None:
 
     print(f"Writing Info.plist to {outDir}/Info.plist")
     writeFile(f"{outDir}/Info.plist", plistXML)
-
-    return
-
-
-##
-#  Sample Project ZIP File Builder (sample)
-##
-
-def buildSampleZip() -> None:
-    """Bundle the sample project into a single zip file to be saved into
-    the novelwriter/assets folder for further bundling into builds.
-    """
-    print("")
-    print("Building Sample ZIP File")
-    print("========================")
-    print("")
-
-    srcSample = "sample"
-    dstSample = os.path.join("novelwriter", "assets", "sample.zip")
-
-    if os.path.isdir(srcSample):
-        if os.path.isfile(dstSample):
-            os.unlink(dstSample)
-
-        from zipfile import ZipFile
-
-        with ZipFile(dstSample, "w") as zipObj:
-            print("Compressing: nwProject.nwx")
-            zipObj.write(os.path.join(srcSample, "nwProject.nwx"), "nwProject.nwx")
-            for docFile in os.listdir(os.path.join(srcSample, "content")):
-                print("Compressing: content/%s" % docFile)
-                srcDoc = os.path.join(srcSample, "content", docFile)
-                zipObj.write(srcDoc, "content/"+docFile)
-
-    else:
-        print("Error: Could not find sample project source directory.")
-        sys.exit(1)
-
-    print("")
-    print("Built file: %s" % dstSample)
-    print("")
-
-    return
-
-
-def cleanBuiltAssets() -> None:
-    """Remove assets built by this script."""
-    print("")
-    print("Removing Built Assets")
-    print("=====================")
-    print("")
-
-    sampleZip = os.path.join("novelwriter", "assets", "sample.zip")
-    if os.path.isfile(sampleZip):
-        print(f"Deleted: {sampleZip}")
-        os.unlink(sampleZip)
-
-    pdfManual = os.path.join("novelwriter", "assets", "manual.pdf")
-    if os.path.isfile(pdfManual):
-        print(f"Deleted: {pdfManual}")
-        os.unlink(pdfManual)
-
-    i18nAssets = os.path.join("novelwriter", "assets", "i18n")
-    for i18nItem in os.listdir(i18nAssets):
-        i18nPath = os.path.join(i18nAssets, i18nItem)
-        if os.path.isfile(i18nPath) and i18nPath.endswith(".qm"):
-            print(f"Deleted: {i18nPath}")
-            os.unlink(i18nPath)
-
-    print("")
 
     return
 
@@ -1533,6 +1533,10 @@ def xdgUninstall() -> None:
 if __name__ == "__main__":
     """Parse command line options and run the commands."""
     # Detect OS
+    isLinux = sys.platform.startswith("linux")
+    isMacOS = sys.platform.startswith("darwin")
+    isWin = sys.platform.startswith("win32")
+
     if sys.platform.startswith("linux"):
         hostOS = OS_LINUX
     elif sys.platform.startswith("darwin"):
@@ -1545,6 +1549,9 @@ if __name__ == "__main__":
         hostOS = OS_NONE
 
     sysArgs = sys.argv.copy()
+
+    parser = argparse.ArgumentParser()
+    parsers = parser.add_subparsers()
 
     # Sign package
     if "--sign" in sysArgs:
@@ -1610,115 +1617,142 @@ if __name__ == "__main__":
         "",
     ]
 
+    # Version
+    cmdVersion = parsers.add_parser(
+        "version", help="Print the novelWriter version."
+    )
+    cmdVersion.set_defaults(func=printVersion)
+
     # General
     # =======
 
-    if "help" in sysArgs:
-        sysArgs.remove("help")
-        print("\n".join(helpMsg))
-        sys.exit(0)
+    # Pip Install
+    cmdPipInstall = parsers.add_parser(
+        "pip", help="Install all package dependencies for novelWriter using pip."
+    )
+    cmdPipInstall.add_argument("--linux", action="store_true", help="For Linux.", default=isLinux)
+    cmdPipInstall.add_argument("--mac", action="store_true", help="For MacOS.", default=isMacOS)
+    cmdPipInstall.add_argument("--win", action="store_true", help="For Windows.", default=isWin)
+    cmdPipInstall.set_defaults(func=installPackages)
 
-    if "version" in sysArgs:
-        sysArgs.remove("version")
-        print(extractVersion(beQuiet=True)[0], end=None)
-        sys.exit(0)
-
-    if "pip" in sysArgs:
-        sysArgs.remove("pip")
-        installPackages(hostOS)
-
-    if "build-clean" in sysArgs:
-        sysArgs.remove("build-clean")
-        cleanBuildDirs()
+    # Build Clean
+    cmdBuildClean = parsers.add_parser(
+        "build-clean", help="Recursively delete all build folders."
+    )
+    cmdBuildClean.set_defaults(func=cleanBuildDirs)
 
     # Additional Builds
     # =================
 
-    if "manual" in sysArgs:
-        sysArgs.remove("manual")
-        buildPdfManual()
+    # Build Manual
+    cmdBuildManual = parsers.add_parser(
+        "manual", help="Build the help documentation as a PDF (requires LaTeX)."
+    )
+    cmdBuildManual.set_defaults(func=buildPdfManual)
 
-    if "qtlrelease" in sysArgs:
-        sysArgs.remove("qtlrelease")
-        buildQtI18n()
+    # Build Sample
+    cmdBuildSample = parsers.add_parser(
+        "sample", help="Build the sample project zip file and add it to assets."
+    )
+    cmdBuildSample.set_defaults(func=buildSampleZip)
 
-    if "qtlupdate" in sysArgs:
-        sysArgs.remove("qtlupdate")
-        buildQtI18nTS(sysArgs)
-        sys.exit(0)  # Don't continue execution
+    # Update i18n Sources
+    cmdUpdateTS = parsers.add_parser(
+        "qtlupdate", help=(
+            "Update translation files for internationalisation. "
+            "The files to be updated must be provided as arguments. "
+            "New files can be created by giving a 'nw_<lang>.ts' file name "
+            "where <lang> is a valid language code."
+        )
+    )
+    cmdUpdateTS.add_argument("files", nargs="+")
+    cmdUpdateTS.set_defaults(func=updateTranslationSources)
 
-    if "sample" in sysArgs:
-        sysArgs.remove("sample")
-        buildSampleZip()
+    # Build i18n Files
+    cmdBuildQM = parsers.add_parser(
+        "qtlrelease", help="Build the language files for internationalisation."
+    )
+    cmdBuildQM.set_defaults(func=buildTranslationAssets)
 
-    if "clean-assets" in sysArgs:
-        sysArgs.remove("clean-assets")
-        cleanBuiltAssets()
+    # Clean Assets
+    cmdCleanAssets = parsers.add_parser(
+        "clean-assets", help="Delete assets built by manual, sample and qtlrelease."
+    )
+    cmdCleanAssets.set_defaults(func=cleanBuiltAssets)
 
-    if "gen-plist" in sysArgs:
-        sysArgs.remove("gen-plist")
-        genMacOSPlist()
+    # Build Assets
+    cmdBuildAssets = parsers.add_parser(
+        "build-assets", help="Build all assets. Includes manual, sample and qtlrelease."
+    )
+    cmdBuildAssets.set_defaults(func=buildAllAssets)
 
-    # Python Packaging
-    # ================
+    # if "gen-plist" in sysArgs:
+    #     sysArgs.remove("gen-plist")
+    #     genMacOSPlist()
 
-    if "import-i18n" in sysArgs:
-        sysArgs.remove("import-i18n")
-        importI18nUpdates(sysArgs)
-        sys.exit(0)  # Don't continue execution
+    # # Python Packaging
+    # # ================
 
-    if "windows-zip" in sysArgs:
-        sysArgs.remove("windows-zip")
-        makeWindowsZip()
+    # if "import-i18n" in sysArgs:
+    #     sysArgs.remove("import-i18n")
+    #     importI18nUpdates(sysArgs)
+    #     sys.exit(0)  # Don't continue execution
 
-    if "build-deb" in sysArgs:
-        sysArgs.remove("build-deb")
-        if hostOS == OS_LINUX:
-            if doSign:
-                signKey = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
-            else:
-                signKey = None
-            makeDebianPackage(signKey=signKey)
-        else:
-            print("ERROR: Command 'build-deb' can only be used on Linux")
-            sys.exit(1)
+    # if "windows-zip" in sysArgs:
+    #     sysArgs.remove("windows-zip")
+    #     makeWindowsZip()
 
-    if "build-ubuntu" in sysArgs:
-        sysArgs.remove("build-ubuntu")
-        if hostOS == OS_LINUX:
-            makeForLaunchpad(doSign=doSign, isFirst=isFirstBuild)
-        else:
-            print("ERROR: Command 'build-ubuntu' can only be used on Linux")
-            sys.exit(1)
+    # if "build-deb" in sysArgs:
+    #     sysArgs.remove("build-deb")
+    #     if hostOS == OS_LINUX:
+    #         if doSign:
+    #             signKey = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
+    #         else:
+    #             signKey = None
+    #         makeDebianPackage(signKey=signKey)
+    #     else:
+    #         print("ERROR: Command 'build-deb' can only be used on Linux")
+    #         sys.exit(1)
 
-    if "build-win-exe" in sysArgs:
-        sysArgs.remove("build-win-exe")
-        makeWindowsEmbedded(sysArgs)
-        sys.exit(0)  # Don't continue execution
+    # if "build-ubuntu" in sysArgs:
+    #     sysArgs.remove("build-ubuntu")
+    #     if hostOS == OS_LINUX:
+    #         makeForLaunchpad(doSign=doSign, isFirst=isFirstBuild)
+    #     else:
+    #         print("ERROR: Command 'build-ubuntu' can only be used on Linux")
+    #         sys.exit(1)
 
-    if "build-appimage" in sysArgs:
-        sysArgs.remove("build-appimage")
-        if hostOS == OS_LINUX:
-            sysArgs = makeAppImage(sysArgs)
-        else:
-            print("ERROR: Command 'build-appimage' can only be used on Linux")
-            sys.exit(1)
+    # if "build-win-exe" in sysArgs:
+    #     sysArgs.remove("build-win-exe")
+    #     makeWindowsEmbedded(sysArgs)
+    #     sys.exit(0)  # Don't continue execution
 
-    # General Installers
-    # ==================
+    # if "build-appimage" in sysArgs:
+    #     sysArgs.remove("build-appimage")
+    #     if hostOS == OS_LINUX:
+    #         sysArgs = makeAppImage(sysArgs)
+    #     else:
+    #         print("ERROR: Command 'build-appimage' can only be used on Linux")
+    #         sys.exit(1)
 
-    if "xdg-install" in sysArgs:
-        sysArgs.remove("xdg-install")
-        if hostOS == OS_WIN:
-            print("ERROR: Command 'xdg-install' cannot be used on Windows")
-            sys.exit(1)
-        else:
-            xdgInstall()
+    # # General Installers
+    # # ==================
 
-    if "xdg-uninstall" in sysArgs:
-        sysArgs.remove("xdg-uninstall")
-        if hostOS == OS_WIN:
-            print("ERROR: Command 'xdg-uninstall' cannot be used on Windows")
-            sys.exit(1)
-        else:
-            xdgUninstall()
+    # if "xdg-install" in sysArgs:
+    #     sysArgs.remove("xdg-install")
+    #     if hostOS == OS_WIN:
+    #         print("ERROR: Command 'xdg-install' cannot be used on Windows")
+    #         sys.exit(1)
+    #     else:
+    #         xdgInstall()
+
+    # if "xdg-uninstall" in sysArgs:
+    #     sysArgs.remove("xdg-uninstall")
+    #     if hostOS == OS_WIN:
+    #         print("ERROR: Command 'xdg-uninstall' cannot be used on Windows")
+    #         sys.exit(1)
+    #     else:
+    #         xdgUninstall()
+
+    args = parser.parse_args()
+    args.func(args)

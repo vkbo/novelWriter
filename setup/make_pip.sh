@@ -18,7 +18,7 @@ if [ ! -d $ENVPATH ]; then
 fi
 source $ENVPATH/bin/activate
 pip3 install -r docs/source/requirements.txt
-python3 pkgutils.py qtlrelease manual sample
+python3 pkgutils.py build-assets
 deactivate
 
 echo ""

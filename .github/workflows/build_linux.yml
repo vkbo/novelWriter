@@ -6,7 +6,7 @@ jobs:
   buildAssets:
     uses: ./.github/workflows/build_assets.yml
 
-  buildLinux:
+  buildLinux-AppImage:
     needs: buildAssets
     runs-on: ubuntu-latest
     env:
