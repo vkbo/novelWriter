@@ -520,33 +520,6 @@ def buildAllAssets(args: argparse.Namespace) -> None:
     return
 
 
-##
-#  Generate MacOS PList
-##
-
-def genMacOSPlist() -> None:
-    """Set necessary values for .plist file for MacOS build."""
-    outDir = "setup/macos"
-    numVers = stripVersion(extractVersion()[0])
-    copyrightYear = datetime.datetime.now().year
-
-    # These keys are no longer used but are present for compatibility
-    pkgVersMaj, pkgVersMin = numVers.split(".")[:2]
-
-    plistXML = readFile(f"{outDir}/Info.plist.template").format(
-        macosBundleSVers=numVers,
-        macosBundleVers=numVers,
-        macosBundleVersMajor=pkgVersMaj,
-        macosBundleVersMinor=pkgVersMin,
-        macosBundleCopyright=f"Copyright 2018–{copyrightYear}, Veronica Berglyd Olsen",
-    )
-
-    print(f"Writing Info.plist to {outDir}/Info.plist")
-    writeFile(f"{outDir}/Info.plist", plistXML)
-
-    return
-
-
 # =============================================================================================== #
 #  Python Packaging
 # =============================================================================================== #
@@ -971,7 +944,7 @@ def makeWindowsEmbedded(args: argparse.Namespace) -> None:
     print("================================")
     print("")
 
-    numVers, hexVers, relDate = extractVersion()
+    numVers, _, _ = extractVersion()
     print("Version: %s" % numVers)
 
     # Set Up Folder
@@ -1006,7 +979,7 @@ def makeWindowsEmbedded(args: argparse.Namespace) -> None:
 
     ]
     for item in files:
-        shutil.copyfile(item, outDir)
+        shutil.copyfile(item, outDir / item.name)
         print(f"Copied: {item} > {outDir / item.name}")
 
     compileall.compile_dir(outDir / "novelwriter")
@@ -1163,6 +1136,33 @@ def makeWindowsEmbedded(args: argparse.Namespace) -> None:
     print("")
     print("Done")
     print("")
+
+    return
+
+
+##
+#  Generate MacOS PList
+##
+
+def genMacOSPlist(args: argparse.Namespace) -> None:
+    """Set necessary values for .plist file for MacOS build."""
+    outDir = SETUP_DIR / "macos"
+    numVers = stripVersion(extractVersion()[0])
+    copyrightYear = datetime.datetime.now().year
+
+    # These keys are no longer used but are present for compatibility
+    pkgVersMaj, pkgVersMin = numVers.split(".")[:2]
+
+    plistXML = (outDir / "Info.plist.template").read_text().format(
+        macosBundleSVers=numVers,
+        macosBundleVers=numVers,
+        macosBundleVersMajor=pkgVersMaj,
+        macosBundleVersMinor=pkgVersMin,
+        macosBundleCopyright=f"Copyright 2018–{copyrightYear}, Veronica Berglyd Olsen",
+    )
+
+    print(f"Writing Info.plist to {outDir}/Info.plist")
+    (outDir / "Info.plist").write_text(plistXML)
 
     return
 
@@ -1564,9 +1564,11 @@ if __name__ == "__main__":
     )
     cmdBuildSetupExe.set_defaults(func=makeWindowsEmbedded)
 
-    # if "gen-plist" in sysArgs:
-    #     sysArgs.remove("gen-plist")
-    #     genMacOSPlist()
+    # Generate MacOS PList File
+    cmdBuildMacOSPlist = parsers.add_parser(
+        "gen-plist", help="Generate an Info.plist for use in a MacOS Bundle."
+    )
+    cmdBuildMacOSPlist.set_defaults(func=genMacOSPlist)
 
     # # General Installers
     # # ==================
