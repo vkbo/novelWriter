@@ -106,7 +106,7 @@
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="128" />
       <source>Text Font</source>
-      <translation type="unfinished" />
+      <translation>Text Font</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="129" />
@@ -141,7 +141,7 @@
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="135" />
       <source>Apply Dialogue Highlighting</source>
-      <translation type="unfinished" />
+      <translation>Apply Dialog Highlighting</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="137" />
@@ -151,17 +151,17 @@
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="138" />
       <source>Enable Indent</source>
-      <translation type="unfinished" />
+      <translation>Enable Indent</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="139" />
       <source>Indent Width</source>
-      <translation type="unfinished" />
+      <translation>Indent Width</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="140" />
       <source>Indent First Paragraph</source>
-      <translation type="unfinished" />
+      <translation>Indent First Paragraph</translation>
     </message>
     <message>
       <location filename="../novelwriter/core/buildsettings.py" line="142" />
@@ -535,102 +535,102 @@
     <message>
       <location filename="../novelwriter/constants.py" line="266" />
       <source>Square</source>
-      <translation type="unfinished" />
+      <translation>Square</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="267" />
       <source>Triangle</source>
-      <translation type="unfinished" />
+      <translation>Triangle</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="268" />
       <source>Nabla</source>
-      <translation type="unfinished" />
+      <translation>Nabla</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="269" />
       <source>Diamond</source>
-      <translation type="unfinished" />
+      <translation>Diamond</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="270" />
       <source>Pentagon</source>
-      <translation type="unfinished" />
+      <translation>Pentagon</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="271" />
       <source>Hexagon</source>
-      <translation type="unfinished" />
+      <translation>Hexagon</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="272" />
       <source>Star</source>
-      <translation type="unfinished" />
+      <translation>Star</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="273" />
       <source>Pacman</source>
-      <translation type="unfinished" />
+      <translation>Pacman</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="276" />
       <source>1/4 Circle</source>
-      <translation type="unfinished" />
+      <translation>1/4 Circle</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="277" />
       <source>Half Circle</source>
-      <translation type="unfinished" />
+      <translation>Half Circle</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="278" />
       <source>3/4 Circle</source>
-      <translation type="unfinished" />
+      <translation>3/4 Circle</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="279" />
       <source>Full Circle</source>
-      <translation type="unfinished" />
+      <translation>Full Circle</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="282" />
       <source>1 Bar</source>
-      <translation type="unfinished" />
+      <translation>1 Bar</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="283" />
       <source>2 Bars</source>
-      <translation type="unfinished" />
+      <translation>2 Bars</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="284" />
       <source>3 Bars</source>
-      <translation type="unfinished" />
+      <translation>3 Bars</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="285" />
       <source>4 Bars</source>
-      <translation type="unfinished" />
+      <translation>4 Bars</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="288" />
       <source>1 Block</source>
-      <translation type="unfinished" />
+      <translation>1 Block</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="289" />
       <source>2 Blocks</source>
-      <translation type="unfinished" />
+      <translation>2 Blocks</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="290" />
       <source>3 Blocks</source>
-      <translation type="unfinished" />
+      <translation>3 Blocks</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="291" />
       <source>4 Blocks</source>
-      <translation type="unfinished" />
+      <translation>4 Blocks</translation>
     </message>
     <message>
       <location filename="../novelwriter/constants.py" line="294" />
@@ -1267,27 +1267,27 @@
   <context>
     <name>GuiDocViewFooter</name>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="838" />
+      <location filename="../novelwriter/gui/docviewer.py" line="840" />
       <source>Show/Hide Viewer Panel</source>
       <translation>Show/Hide Viewer Panel</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="842" />
+      <location filename="../novelwriter/gui/docviewer.py" line="844" />
       <source>Comments</source>
       <translation>Comments</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="848" />
+      <location filename="../novelwriter/gui/docviewer.py" line="850" />
       <source>Show Comments</source>
       <translation>Show Comments</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="852" />
+      <location filename="../novelwriter/gui/docviewer.py" line="854" />
       <source>Synopsis</source>
       <translation>Synopsis</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewer.py" line="858" />
+      <location filename="../novelwriter/gui/docviewer.py" line="860" />
       <source>Show Synopsis Comments</source>
       <translation>Show Synopsis Comments</translation>
     </message>
@@ -1534,12 +1534,12 @@
       <translation>Do you want to exit novelWriter?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="1045" />
+      <location filename="../novelwriter/guimain.py" line="1061" />
       <source>Some changes will not be applied until novelWriter has been restarted.</source>
       <translation>Some changes will not be applied until novelWriter has been restarted.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="1398" />
+      <location filename="../novelwriter/guimain.py" line="1414" />
       <source>Could not find the reference for tag '{0}'. It either doesn't exist, or the index is out of date. The index can be updated from the Tools menu, or by pressing {1}.</source>
       <translation>Could not find the reference for tag '{0}'. It either doesn't exist, or the index is out of date. The index can be updated from the Tools menu, or by pressing {1}.</translation>
     </message>
@@ -1684,12 +1684,12 @@
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="306" />
       <source>Go to Tree View</source>
-      <translation type="unfinished" />
+      <translation>Go to Tree View</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="313" />
       <source>Go to Document</source>
-      <translation type="unfinished" />
+      <translation>Go to Document</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="320" />
@@ -1909,7 +1909,7 @@
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="601" />
       <source>Footnote</source>
-      <translation type="unfinished" />
+      <translation>Footnote</translation>
     </message>
     <message>
       <location filename="../novelwriter/gui/mainmenu.py" line="611" />
@@ -2457,64 +2457,64 @@
   <context>
     <name>GuiOutlineDetails</name>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="1004" />
-      <location filename="../novelwriter/gui/outline.py" line="796" />
-      <location filename="../novelwriter/gui/outline.py" line="771" />
+      <location filename="../novelwriter/gui/outline.py" line="1005" />
+      <location filename="../novelwriter/gui/outline.py" line="797" />
+      <location filename="../novelwriter/gui/outline.py" line="772" />
       <source>Title</source>
       <translation>Title</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="772" />
+      <location filename="../novelwriter/gui/outline.py" line="773" />
       <source>Chapter</source>
       <translation>Chapter</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="773" />
+      <location filename="../novelwriter/gui/outline.py" line="774" />
       <source>Scene</source>
       <translation>Scene</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="774" />
+      <location filename="../novelwriter/gui/outline.py" line="775" />
       <source>Section</source>
       <translation>Section</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="797" />
+      <location filename="../novelwriter/gui/outline.py" line="798" />
       <source>Document</source>
       <translation>Document</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="798" />
+      <location filename="../novelwriter/gui/outline.py" line="799" />
       <source>Status</source>
       <translation>Status</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="815" />
+      <location filename="../novelwriter/gui/outline.py" line="816" />
       <source>Characters</source>
       <translation>Characters</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="816" />
+      <location filename="../novelwriter/gui/outline.py" line="817" />
       <source>Words</source>
       <translation>Words</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="817" />
+      <location filename="../novelwriter/gui/outline.py" line="818" />
       <source>Paragraphs</source>
       <translation>Paragraphs</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="834" />
+      <location filename="../novelwriter/gui/outline.py" line="835" />
       <source>Synopsis</source>
       <translation>Synopsis</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="916" />
+      <location filename="../novelwriter/gui/outline.py" line="917" />
       <source>Title Details</source>
       <translation>Title Details</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="941" />
+      <location filename="../novelwriter/gui/outline.py" line="942" />
       <source>Reference Tags</source>
       <translation>Reference Tags</translation>
     </message>
@@ -2522,7 +2522,7 @@
   <context>
     <name>GuiOutlineHeaderMenu</name>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="735" />
+      <location filename="../novelwriter/gui/outline.py" line="736" />
       <source>Select Columns</source>
       <translation>Select Columns</translation>
     </message>
@@ -2548,7 +2548,7 @@
   <context>
     <name>GuiOutlineTree</name>
     <message>
-      <location filename="../novelwriter/gui/outline.py" line="528" />
+      <location filename="../novelwriter/gui/outline.py" line="529" />
       <source>Save Outline As</source>
       <translation>Save Outline As</translation>
     </message>
@@ -2556,589 +2556,589 @@
   <context>
     <name>GuiPreferences</name>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="69" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="63" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="66" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="60" />
       <source>Preferences</source>
       <translation>Preferences</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="75" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="72" />
       <source>Search</source>
       <translation>Search</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="147" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="145" />
       <source>General</source>
       <translation>General</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="152" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="150" />
       <source>Appearance</source>
       <translation>Appearance</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="165" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="163" />
       <source>Display language</source>
       <translation>Display language</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="191" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="166" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="189" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="164" />
       <source>Requires restart to take effect.</source>
       <translation>Requires restart to take effect.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="177" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="175" />
       <source>Colour theme</source>
       <translation>Color theme</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="178" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="176" />
       <source>General colour theme and icons.</source>
       <translation>General color theme and icons.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="190" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="188" />
       <source>Application font</source>
-      <translation type="unfinished" />
+      <translation>Application font</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="199" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="197" />
       <source>Hide vertical scroll bars in main windows</source>
       <translation>Hide vertical scroll bars in main windows</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="208" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="200" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="206" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="198" />
       <source>Scrolling available with mouse wheel and keys only.</source>
       <translation>Scrolling available with mouse wheel and keys only.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="207" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="205" />
       <source>Hide horizontal scroll bars in main windows</source>
       <translation>Hide horizontal scroll bars in main windows</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="215" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="213" />
       <source>Use the system's font selection dialog</source>
-      <translation type="unfinished" />
+      <translation>Use the system's font selection dialog</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="216" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="214" />
       <source>Turn off to use the Qt font dialog, which may have more options.</source>
-      <translation type="unfinished" />
+      <translation>Turn off to use the Qt font dialog, which may have more options.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="222" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="220" />
       <source>Document Style</source>
       <translation>Document Style</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="235" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="233" />
       <source>Document colour theme</source>
       <translation>Document color theme</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="236" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="234" />
       <source>Colour theme for the editor and viewer.</source>
       <translation>Color theme for the editor and viewer.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="248" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="246" />
       <source>Document font</source>
-      <translation type="unfinished" />
+      <translation>Document font</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="429" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="418" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="249" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="427" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="416" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="247" />
       <source>Applies to both document editor and viewer.</source>
       <translation>Applies to both document editor and viewer.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="257" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="255" />
       <source>Emphasise partition and chapter labels</source>
       <translation>Emphasize partition and chapter labels</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="258" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="256" />
       <source>Makes them stand out in the project tree.</source>
       <translation>Makes them stand out in the project tree.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="265" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="263" />
       <source>Show full path in document header</source>
       <translation>Show full path in document header</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="266" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="264" />
       <source>Add the parent folder names to the header.</source>
       <translation>Add the parent folder names to the header.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="273" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="271" />
       <source>Include project notes in status bar word count</source>
       <translation>Include project notes in status bar word count</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="279" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="277" />
       <source>Auto Save</source>
       <translation>Auto Save</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="291" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="289" />
       <source>Save document interval</source>
       <translation>Save document interval</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="292" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="290" />
       <source>How often the document is automatically saved.</source>
       <translation>How often the document is automatically saved.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="303" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="292" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="301" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="290" />
       <source>seconds</source>
       <translation>seconds</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="302" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="300" />
       <source>Save project interval</source>
       <translation>Save project interval</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="303" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="301" />
       <source>How often the project is automatically saved.</source>
       <translation>How often the project is automatically saved.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="309" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="307" />
       <source>Project Backup</source>
       <translation>Project Backup</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="316" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="314" />
       <source>Browse</source>
       <translation>Browse</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="320" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="318" />
       <source>Backup storage location</source>
       <translation>Backup storage location</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="840" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="321" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="825" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="319" />
       <source>Path: {0}</source>
       <translation>Path: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="329" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="327" />
       <source>Run backup when the project is closed</source>
       <translation>Run backup when the project is closed</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="330" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="328" />
       <source>Can be overridden for individual projects in Project Settings.</source>
       <translation>Can be overridden for individual projects in Project Settings.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="339" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="337" />
       <source>Ask before running backup</source>
       <translation>Ask before running backup</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="340" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="338" />
       <source>If off, backups will run in the background.</source>
       <translation>If off, backups will run in the background.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="346" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="344" />
       <source>Session Timer</source>
       <translation>Session Timer</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="355" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="353" />
       <source>Pause the session timer when not writing</source>
       <translation>Pause the session timer when not writing</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="356" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="354" />
       <source>Also pauses when the application window does not have focus.</source>
       <translation>Also pauses when the application window does not have focus.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="367" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="365" />
       <source>Editor inactive time before pausing timer</source>
       <translation>Editor inactive time before pausing timer</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="368" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="366" />
       <source>User activity includes typing and changing the content.</source>
       <translation>User activity includes typing and changing the content.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="369" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="367" />
       <source>minutes</source>
       <translation>minutes</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="373" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="371" />
       <source>Writing</source>
       <translation>Writing</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="378" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="376" />
       <source>Text Flow</source>
       <translation>Text Flow</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="390" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="388" />
       <source>Maximum text width in "Normal Mode"</source>
       <translation>Maximum text width in "Normal Mode"</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="391" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="389" />
       <source>Set to 0 to disable this feature.</source>
       <translation>Set to 0 to disable this feature.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="442" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="430" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="402" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="391" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="440" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="428" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="400" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="389" />
       <source>px</source>
       <translation>px</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="401" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="399" />
       <source>Maximum text width in "Focus Mode"</source>
       <translation>Maximum text width in "Focus Mode"</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="402" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="400" />
       <source>The maximum width cannot be disabled.</source>
       <translation>The maximum width cannot be disabled.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="409" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="407" />
       <source>Hide document footer in "Focus Mode"</source>
       <translation>Hide document footer in "Focus Mode"</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="410" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="408" />
       <source>Hide the information bar in the document editor.</source>
       <translation>Hide the information bar in the document editor.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="417" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="415" />
       <source>Justify the text margins</source>
       <translation>Justify the text margins</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="428" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="426" />
       <source>Minimum text margin</source>
       <translation>Minimum text margin</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="440" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="438" />
       <source>Tab width</source>
       <translation>Tab width</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="441" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="439" />
       <source>The width of a tab key press in the editor and viewer.</source>
       <translation>The width of a tab key press in the editor and viewer.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="448" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="446" />
       <source>Text Editing</source>
       <translation>Text Editing</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="468" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="466" />
       <source>Spell check language</source>
       <translation>Spell check language</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="469" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="467" />
       <source>Available languages are determined by your system.</source>
       <translation>Available languages are determined by your system.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="476" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="474" />
       <source>Auto-select word under cursor</source>
       <translation>Auto-select word under cursor</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="477" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="475" />
       <source>Apply formatting to word under cursor if no selection is made.</source>
       <translation>Apply formatting to word under cursor if no selection is made.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="484" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="482" />
       <source>Show tabs and spaces</source>
       <translation>Show tabs and spaces</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="491" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="489" />
       <source>Show line endings</source>
       <translation>Show line endings</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="497" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="495" />
       <source>Editor Scrolling</source>
       <translation>Editor Scrolling</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="506" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="504" />
       <source>Scroll past end of the document</source>
       <translation>Scroll past end of the document</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="507" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="505" />
       <source>Also centres the cursor when scrolling.</source>
       <translation>Also centers the cursor when scrolling.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="514" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="512" />
       <source>Typewriter style scrolling when you type</source>
       <translation>Typewriter style scrolling when you type</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="515" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="513" />
       <source>Keeps the cursor at a fixed vertical position.</source>
       <translation>Keeps the cursor at a fixed vertical position.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="525" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="523" />
       <source>Minimum position for Typewriter scrolling</source>
       <translation>Minimum position for Typewriter scrolling</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="526" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="524" />
       <source>Percentage of the editor height from the top.</source>
       <translation>Percentage of the editor height from the top.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="532" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="530" />
       <source>Text Highlighting</source>
       <translation>Text Highlighting</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="538" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="536" />
       <source>None</source>
-      <translation type="unfinished">None</translation>
+      <translation>None</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/dialogs/preferences.py" line="537" />
+      <source>Single Quotes</source>
+      <translation>Single Quotes</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/dialogs/preferences.py" line="538" />
+      <source>Double Quotes</source>
+      <translation>Double Quotes</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/preferences.py" line="539" />
-      <source>Single Quotes</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="540" />
-      <source>Double Quotes</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="541" />
       <source>Both</source>
-      <translation type="unfinished" />
+      <translation>Both</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="544" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="542" />
       <source>Highlight dialogue</source>
-      <translation type="unfinished" />
+      <translation>Highlight dialog</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="545" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="543" />
       <source>Applies to the selected quote styles.</source>
-      <translation type="unfinished" />
+      <translation>Applies to the selected quote styles.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="551" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="549" />
       <source>Allow open-ended dialogue</source>
-      <translation type="unfinished" />
+      <translation>Allow open-ended dialog</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="552" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="550" />
       <source>Highlight dialogue line with no closing quote.</source>
-      <translation type="unfinished" />
+      <translation>Highlight dialog line with no closing quote.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="561" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="559" />
       <source>Dialogue narrator break symbol</source>
-      <translation type="unfinished" />
+      <translation>Dialog narrator break symbol</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="562" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="560" />
       <source>Symbol to indicate injected narrator break.</source>
-      <translation type="unfinished" />
+      <translation>Symbol to indicate injected narrator break.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="571" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="569" />
       <source>Dialogue line symbol</source>
-      <translation type="unfinished" />
+      <translation>Dialog line symbol</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="572" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="570" />
       <source>Lines starting with this symbol are dialogue.</source>
-      <translation type="unfinished" />
+      <translation>Lines starting with this symbol are dialog.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="588" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="586" />
       <source>Alternative dialogue symbols</source>
-      <translation type="unfinished" />
+      <translation>Alternative dialog symbols</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="589" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="587" />
       <source>Custom highlighting of dialogue text.</source>
-      <translation type="unfinished" />
+      <translation>Custom highlighting of dialog text.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="595" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="593" />
       <source>Add highlight colour to emphasised text</source>
       <translation>Add highlight color to emphasised text</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="603" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="596" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="601" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="594" />
       <source>Applies to the document editor only.</source>
       <translation>Applies to the document editor only.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="602" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="600" />
       <source>Highlight multiple or trailing spaces</source>
       <translation>Highlight multiple or trailing spaces</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="609" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="607" />
       <source>Text Automation</source>
       <translation>Text Automation</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="621" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="619" />
       <source>Auto-replace text as you type</source>
       <translation>Auto-replace text as you type</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="622" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="620" />
       <source>Allow the editor to replace symbols as you type.</source>
       <translation>Allow the editor to replace symbols as you type.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="630" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="628" />
       <source>Auto-replace single quotes</source>
       <translation>Auto-replace single quotes</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="640" />
-      <location filename="../novelwriter/dialogs/preferences.py" line="631" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="638" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="629" />
       <source>Try to guess which is an opening or a closing quote.</source>
       <translation>Try to guess which is an opening or a closing quote.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="639" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="637" />
       <source>Auto-replace double quotes</source>
       <translation>Auto-replace double quotes</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="648" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="646" />
       <source>Auto-replace dashes</source>
       <translation>Auto-replace dashes</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="649" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="647" />
       <source>Double and triple hyphens become short and long dashes.</source>
       <translation>Double and triple hyphens become short and long dashes.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="657" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="655" />
       <source>Auto-replace dots</source>
       <translation>Auto-replace dots</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="658" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="656" />
       <source>Three consecutive dots become ellipsis.</source>
       <translation>Three consecutive dots become ellipsis.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="667" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="665" />
       <source>Insert non-breaking space before</source>
       <translation>Insert non-breaking space before</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="668" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="666" />
       <source>Automatically add space before any of these symbols.</source>
       <translation>Automatically add space before any of these symbols.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="677" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="675" />
       <source>Insert non-breaking space after</source>
       <translation>Insert non-breaking space after</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="678" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="676" />
       <source>Automatically add space after any of these symbols.</source>
       <translation>Automatically add space after any of these symbols.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="686" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="684" />
       <source>Use thin space instead</source>
       <translation>Use thin space instead</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="687" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="685" />
       <source>Inserts a thin space instead of a regular space.</source>
       <translation>Inserts a thin space instead of a regular space.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="693" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="691" />
       <source>Quotation Style</source>
       <translation>Quotation Style</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="708" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="706" />
       <source>Single quote open style</source>
       <translation>Single quote open style</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="709" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="707" />
       <source>The symbol to use for a leading single quote.</source>
       <translation>The symbol to use for a leading single quote.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="722" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="720" />
       <source>Single quote close style</source>
       <translation>Single quote close style</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="723" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="721" />
       <source>The symbol to use for a trailing single quote.</source>
       <translation>The symbol to use for a trailing single quote.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="737" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="735" />
       <source>Double quote open style</source>
       <translation>Double quote open style</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="738" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="736" />
       <source>The symbol to use for a leading double quote.</source>
       <translation>The symbol to use for a leading double quote.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="751" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="749" />
       <source>Double quote close style</source>
       <translation>Double quote close style</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="752" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="750" />
       <source>The symbol to use for a trailing double quote.</source>
       <translation>The symbol to use for a trailing double quote.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/preferences.py" line="836" />
+      <location filename="../novelwriter/dialogs/preferences.py" line="821" />
       <source>Backup Directory</source>
       <translation>Backup Directory</translation>
     </message>
@@ -3372,7 +3372,7 @@
     <message>
       <location filename="../novelwriter/dialogs/quotes.py" line="57" />
       <source>Select Quote Style</source>
-      <translation type="unfinished" />
+      <translation>Select Quote Style</translation>
     </message>
   </context>
   <context>
@@ -4039,7 +4039,7 @@
     <message>
       <location filename="../novelwriter/shared.py" line="285" />
       <source>Select Font</source>
-      <translation type="unfinished" />
+      <translation>Select Font</translation>
     </message>
   </context>
   <context>
@@ -4565,7 +4565,7 @@
     <message>
       <location filename="../novelwriter/tools/manuscript.py" line="881" />
       <source>No Preview</source>
-      <translation type="unfinished" />
+      <translation>No Preview</translation>
     </message>
   </context>
   <context>
@@ -4606,7 +4606,7 @@
     <message>
       <location filename="../novelwriter/dialogs/projectsettings.py" line="678" />
       <source>Apply</source>
-      <translation type="unfinished">Apply</translation>
+      <translation>Apply</translation>
     </message>
   </context>
   <context>
@@ -4774,27 +4774,27 @@
     <message>
       <location filename="../novelwriter/dialogs/projectsettings.py" line="404" />
       <source>Circles ...</source>
-      <translation type="unfinished" />
+      <translation>Circles ...</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/projectsettings.py" line="405" />
       <source>Bars ...</source>
-      <translation type="unfinished" />
+      <translation>Bars ...</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/projectsettings.py" line="406" />
       <source>Blocks ...</source>
-      <translation type="unfinished" />
+      <translation>Blocks ...</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/projectsettings.py" line="410" />
       <source>Shape</source>
-      <translation type="unfinished" />
+      <translation>Shape</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/projectsettings.py" line="416" />
       <source>Apply</source>
-      <translation type="unfinished">Apply</translation>
+      <translation>Apply</translation>
     </message>
     <message>
       <location filename="../novelwriter/dialogs/projectsettings.py" line="495" />
