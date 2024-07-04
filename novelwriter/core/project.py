@@ -254,13 +254,23 @@ class NWProject:
         status = self._storage.initProjectStorage(projPath, clearLock)
         if status != NWStorageOpen.READY:
             if status == NWStorageOpen.UNKOWN:
-                SHARED.error(self.tr("Not a known project file format."))
+                SHARED.error(
+                    self.tr("Not a known project file format."),
+                    info=self.tr("Path: {0}").format(str(projPath))
+                )
             elif status == NWStorageOpen.NOT_FOUND:
-                SHARED.error(self.tr("Project file not found."))
+                SHARED.error(
+                    self.tr("Project file not found."),
+                    info=self.tr("Path: {0}").format(str(projPath))
+                )
+            elif status == NWStorageOpen.FAILED:
+                SHARED.error(
+                    self.tr("Failed to open project."),
+                    info=self.tr("Path: {0}").format(str(projPath)),
+                    exc=self._storage.exc
+                )
             elif status == NWStorageOpen.LOCKED:
                 self._state = NWProjectState.LOCKED
-            elif status == NWStorageOpen.FAILED:
-                SHARED.error(self.tr("Failed to open project."), exc=self._storage.exc)
             return False
 
         # Read Project XML
