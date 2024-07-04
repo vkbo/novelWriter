@@ -28,7 +28,6 @@ from __future__ import annotations
 import argparse
 import datetime
 import email.utils
-import os
 import shutil
 import subprocess
 import sys
@@ -113,22 +112,22 @@ def toUpload(srcPath: str | Path, dstName: str | None = None) -> None:
     return
 
 
-def makeCheckSum(sumFile: str, cwd: Path | str | None = None) -> str:
+def makeCheckSum(sumFile: str, cwd: Path | None = None) -> str:
     """Create a SHA256 checksum file."""
     try:
         if cwd is None:
-            shaFile = sumFile+".sha256"
+            shaFile = f"{sumFile}.sha256"
         else:
-            shaFile = os.path.join(cwd, sumFile+".sha256")
+            shaFile = cwd / f"{sumFile}.sha256"
         with open(shaFile, mode="w") as fOut:
             subprocess.call(["shasum", "-a", "256", sumFile], stdout=fOut, cwd=cwd)
-        print("SHA256 Sum: %s" % shaFile)
+        print(f"SHA256 Sum: {shaFile}")
     except Exception as exc:
         print("Could not generate sha256 file")
         print(str(exc))
         return ""
 
-    return shaFile
+    return str(shaFile)
 
 
 def checkAssetsExist() -> bool:
@@ -137,22 +136,20 @@ def checkAssetsExist() -> bool:
     hasManual = False
     hasQmData = False
 
-    sampleZip = os.path.join("novelwriter", "assets", "sample.zip")
-    if os.path.isfile(sampleZip):
+    sampleZip = CURR_DIR / "novelwriter" / "assets" / "sample.zip"
+    if sampleZip.is_file():
         print(f"Found: {sampleZip}")
         hasSample = True
 
-    pdfManual = os.path.join("novelwriter", "assets", "manual.pdf")
-    if os.path.isfile(pdfManual):
+    pdfManual = CURR_DIR / "novelwriter" / "assets" / "manual.pdf"
+    if pdfManual.is_file():
         print(f"Found: {pdfManual}")
         hasManual = True
 
-    i18nAssets = os.path.join("novelwriter", "assets", "i18n")
-    for i18nItem in os.listdir(i18nAssets):
-        i18nPath = os.path.join(i18nAssets, i18nItem)
-        if os.path.isfile(i18nPath) and i18nPath.endswith(".qm"):
-            print(f"Found: {i18nPath}")
-            hasQmData = True
+    i18nAssets = CURR_DIR / "novelwriter" / "assets" / "i18n"
+    if len(list(i18nAssets.glob("*.qm"))) > 0:
+        print(f"Found: {i18nAssets}/*.qm")
+        hasQmData = True
 
     return hasSample and hasManual and hasQmData
 
@@ -283,7 +280,7 @@ def buildPdfManual(args: argparse.Namespace | None = None) -> None:
         print("")
         sys.exit(1)
 
-    if not os.path.isfile(finalFile):
+    if not finalFile.is_file():
         print("No output file was found!")
         print("")
         sys.exit(1)
@@ -551,7 +548,7 @@ def copySourceCode(dst: Path) -> None:
 #  Copy Package Files
 ##
 
-def copyPackageFiles(dst: Path, useCfg: bool = False) -> None:
+def copyPackageFiles(dst: Path, setupPy: bool = False, useCfg: bool = False) -> None:
     """Copy files needed for packaging."""
 
     copyFiles = ["LICENSE.md", "CREDITS.md", "pyproject.toml"]
@@ -562,10 +559,16 @@ def copyPackageFiles(dst: Path, useCfg: bool = False) -> None:
     (dst / "MANIFEST.in").write_text(
         "include LICENSE.md\n"
         "include CREDITS.md\n"
-        # "include data/*\n"
         "recursive-include novelwriter/assets *\n"
     )
     print("Wrote:  MANIFEST.in")
+
+    if setupPy:
+        (dst / "setup.py").write_text(
+            "import setuptools\n"
+            "setuptools.setup()\n"
+        )
+        print("Wrote:  setup.py")
 
     if useCfg:
         # This is needed for Ubuntu up to 22.04
@@ -655,7 +658,7 @@ def makeDebianPackage(
     print("Copying or generating additional files ...")
     print("")
 
-    copyPackageFiles(outDir, oldSetuptools)
+    copyPackageFiles(outDir, setupPy=True, useCfg=oldSetuptools)
 
     # Copy/Write Debian Files
     # =======================
@@ -950,15 +953,13 @@ def makeWindowsEmbedded(args: argparse.Namespace) -> None:
     # Set Up Folder
     # =============
 
-    if not os.path.isdir("dist"):
-        os.mkdir("dist")
-
     bldDir = CURR_DIR / "dist"
     outDir = bldDir / "novelWriter"
     libDir = outDir / "lib"
     if outDir.exists:
         shutil.rmtree(outDir)
 
+    bldDir.mkdir(exist_ok=True)
     outDir.mkdir()
     libDir.mkdir()
 
@@ -993,9 +994,9 @@ def makeWindowsEmbedded(args: argparse.Namespace) -> None:
     print("Adding Python embeddable ...")
 
     pyVers = "%d.%d.%d" % (sys.version_info[:3])
-    zipFile = "python-%s-embed-amd64.zip" % pyVers
-    pyZip = os.path.join("dist", zipFile)
-    if not os.path.isfile(pyZip):
+    zipFile = f"python-{pyVers}-embed-amd64.zip"
+    pyZip = bldDir / zipFile
+    if not pyZip.is_file():
         pyUrl = f"https://www.python.org/ftp/python/{pyVers}/{zipFile}"
         print("Downloading: %s" % pyUrl)
         urllib.request.urlretrieve(pyUrl, pyZip)
@@ -1175,7 +1176,7 @@ def genMacOSPlist(args: argparse.Namespace) -> None:
 #  XDG Installation (xdg-install)
 ##
 
-def xdgInstall() -> None:
+def xdgInstall(args: argparse.Namespace) -> None:
     """Will attempt to install icons and make a launcher."""
     print("")
     print("XDG Install")
@@ -1195,9 +1196,9 @@ def xdgInstall() -> None:
     if testExec is not None:
         exOpts.append(testExec)
 
-    testExec = os.path.join(os.getcwd(), "novelWriter.py")
-    if os.path.isfile(testExec):
-        exOpts.append(testExec)
+    testExec = CURR_DIR / "novelWriter.py"
+    if testExec.is_file():
+        exOpts.append(str(testExec))
 
     useExec = ""
     nOpts = len(exOpts)
@@ -1228,9 +1229,10 @@ def xdgInstall() -> None:
     # ===========================
 
     # Generate launcher
-    desktopData = readFile(os.path.join("setup", "data", "novelwriter.desktop"))
+    desktopFile = CURR_DIR / "novelwriter.desktop"
+    desktopData = (SETUP_DIR / "data" / "novelwriter.desktop").read_text()
     desktopData = desktopData.replace("Exec=novelwriter", f"Exec={useExec}")
-    writeFile("novelwriter.desktop", desktopData)
+    desktopFile.write_text(desktopData)
 
     # Remove old desktop icon
     exCode = subprocess.call(
@@ -1297,8 +1299,7 @@ def xdgInstall() -> None:
         print(f"Error {exCode}: Could not update icon cache")
 
     # Clean up
-    if os.path.isfile("./novelwriter.desktop"):
-        os.unlink("./novelwriter.desktop")
+    desktopFile.unlink(missing_ok=True)
 
     print("")
     print("Done!")
@@ -1311,7 +1312,7 @@ def xdgInstall() -> None:
 #  XDG Uninstallation (xdg-uninstall)
 ##
 
-def xdgUninstall() -> None:
+def xdgUninstall(args: argparse.Namespace) -> None:
     """Will attempt to uninstall icons and the launcher."""
     print("")
     print("XDG Uninstall")
@@ -1385,56 +1386,6 @@ if __name__ == "__main__":
     """Parse command line options and run the commands."""
     parser = argparse.ArgumentParser()
     parsers = parser.add_subparsers()
-
-    helpMsg = [
-        "",
-        "novelWriter Setup Tool",
-        "======================",
-        "",
-        "This tool provides setup and build commands for installing or distibuting",
-        "novelWriter as a package on Linux, Mac and Windows. The available options",
-        "are as follows:",
-        "",
-        "General:",
-        "",
-        "    help           Print the help message.",
-        "    pip            Install all package dependencies for novelWriter using pip.",
-        "    version        Print the novelWriter version.",
-        "    build-clean    Will attempt to delete 'build' and 'dist' folders.",
-        "",
-        "Additional Builds:",
-        "",
-        "    manual         Build the help documentation as PDF (requires LaTeX).",
-        "    sample         Build the sample project zip file and add it to assets.",
-        "    qtlupdate      Update translation files for internationalisation.",
-        "                   The files to be updated must be provided as arguments.",
-        "    qtlrelease     Build the language files for internationalisation.",
-        "    clean-assets   Delete assets built by manual, sample and qtlrelease.",
-        "    gen-plist      Generates an Info.plist for use in a MacOS Bundle",
-        "",
-        "Python Packaging:",
-        "",
-        "    import-i18n    Import updated i18n files from a zip file.",
-        "    windows-zip    Creates a minimal zip file of the core application without",
-        "                   all the other source files. Used for Windows builds.",
-        "    build-deb      Build a .deb package for Debian and Ubuntu. Add --sign to ",
-        "                   sign package.",
-        "    build-ubuntu   Build a .deb packages Launchpad. Add --sign to ",
-        "                   sign package. Add --first to set build number to 0.",
-        "    build-win-exe  Build a setup.exe file with Python embedded for Windows.",
-        "                   The package must be built from a minimal windows zip file.",
-        "    build-appimage Build an AppImage. Argument --linux-tag defaults to",
-        "                   manylinux_2_28_x86_64, and --python-version to 3.11.",
-        "",
-        "System Install:",
-        "",
-        "    xdg-install    Install launcher and icons for freedesktop systems. Run as",
-        "                   root or with sudo for system-wide install, or as user for",
-        "                   single user install.",
-        "    xdg-uninstall  Remove the launcher and icons for the current system as",
-        "                   installed by the 'xdg-install' command.",
-        "",
-    ]
 
     # Version
     cmdVersion = parsers.add_parser(
@@ -1570,24 +1521,26 @@ if __name__ == "__main__":
     )
     cmdBuildMacOSPlist.set_defaults(func=genMacOSPlist)
 
-    # # General Installers
-    # # ==================
+    # General Installers
+    # ==================
 
-    # if "xdg-install" in sysArgs:
-    #     sysArgs.remove("xdg-install")
-    #     if hostOS == OS_WIN:
-    #         print("ERROR: Command 'xdg-install' cannot be used on Windows")
-    #         sys.exit(1)
-    #     else:
-    #         xdgInstall()
+    # Linux XDG Install
+    cmdXDGInstall = parsers.add_parser(
+        "xdg-install", help=(
+            "Install launcher and icons for freedesktop systems. Run as root or with sudo for "
+            "system-wide install, or as user for single user install."
+        )
+    )
+    cmdXDGInstall.set_defaults(func=xdgInstall)
 
-    # if "xdg-uninstall" in sysArgs:
-    #     sysArgs.remove("xdg-uninstall")
-    #     if hostOS == OS_WIN:
-    #         print("ERROR: Command 'xdg-uninstall' cannot be used on Windows")
-    #         sys.exit(1)
-    #     else:
-    #         xdgUninstall()
+    # Linux XDG Uninstall
+    cmdXDGUninstall = parsers.add_parser(
+        "xdg-uninstall", help=(
+            "Remove the launcher and icons for the current system "
+            "as installed by the 'xdg-install' command."
+        )
+    )
+    cmdXDGUninstall.set_defaults(func=xdgUninstall)
 
     args = parser.parse_args()
     args.func(args)
