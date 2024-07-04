@@ -37,6 +37,7 @@ import zipfile
 from pathlib import Path
 
 CURR_DIR = Path(__file__).parent
+SETUP_DIR = CURR_DIR / "setup"
 SIGN_KEY = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
 
 OS_LINUX = sys.platform.startswith("linux")
@@ -88,27 +89,6 @@ def stripVersion(version: str) -> str:
         return version.partition("rc")[0]
     else:
         return version
-
-
-def copySourceCode(dst: Path) -> None:
-    """Copy the novelwriter source tree to path."""
-    src = CURR_DIR / "novelwriter"
-    for item in src.glob("**/*"):
-        relSrc = item.relative_to(CURR_DIR)
-        if item.suffix in (".pyc", ".pyo"):
-            print(f"Ignore: {relSrc}")
-            continue
-
-        if item.parent.is_dir() and item.parent.name != "__pycache__":
-            dstDir = dst / relSrc.parent
-            if not dstDir.exists():
-                dstDir.mkdir(parents=True)
-                print(f"Folder: {dstDir}")
-
-        if item.is_file():
-            shutil.copyfile(item, dst / relSrc)
-            print(f"Copied: {dst / relSrc}")
-    return
 
 
 def readFile(fileName: str) -> str:
@@ -348,6 +328,42 @@ def buildSampleZip(args: argparse.Namespace | None = None) -> None:
 
 
 ##
+#  Import Translations (import-i18n)
+##
+
+def importI18nUpdates(args: argparse.Namespace) -> None:
+    """Import new translation files from a zip file."""
+    print("")
+    print("Import Updated Translations")
+    print("===========================")
+    print("")
+
+    fileName = Path(args.file).absolute()
+    if not fileName.is_file():
+        print("File not found ...")
+        sys.exit(1)
+
+    dstPath = CURR_DIR / "novelwriter" / "assets" / "i18n"
+    srcPath = CURR_DIR / "i18n"
+
+    print(f"Loading file: {fileName}")
+    with zipfile.ZipFile(fileName) as zipObj:
+        for item in zipObj.namelist():
+            if item.startswith("nw_") and item.endswith(".ts"):
+                zipObj.extract(item, srcPath)
+                print(f"Extracted: {item} > {srcPath / item}")
+            elif item.startswith("project_") and item.endswith(".json"):
+                zipObj.extract(item, dstPath)
+                print(f"Extracted: {item} > {dstPath / item}")
+            else:
+                print(f"Skipped: {item}")
+
+    print("")
+
+    return
+
+
+##
 #  Qt Linguist TS Builder (qtlupdate)
 ##
 
@@ -536,37 +552,66 @@ def genMacOSPlist() -> None:
 # =============================================================================================== #
 
 ##
-#  Import Translations (import-i18n)
+#  Copy Source
 ##
 
-def importI18nUpdates(args: argparse.Namespace) -> None:
-    """Import new translation files from a zip file."""
-    print("")
-    print("Import Updated Translations")
-    print("===========================")
-    print("")
+def copySourceCode(dst: Path) -> None:
+    """Copy the novelwriter source tree to path."""
+    src = CURR_DIR / "novelwriter"
+    for item in src.glob("**/*"):
+        relSrc = item.relative_to(CURR_DIR)
+        if item.suffix in (".pyc", ".pyo"):
+            print(f"Ignore: {relSrc}")
+            continue
+        if item.parent.is_dir() and item.parent.name != "__pycache__":
+            dstDir = dst / relSrc.parent
+            if not dstDir.exists():
+                dstDir.mkdir(parents=True)
+                print(f"Folder: {dstDir}")
+        if item.is_file():
+            shutil.copyfile(item, dst / relSrc)
+            print(f"Copied: {dst / relSrc}")
+    return
 
-    fileName = Path(args.file).absolute()
-    if not fileName.is_file():
-        print("File not found ...")
-        sys.exit(1)
 
-    dstPath = CURR_DIR / "novelwriter" / "assets" / "i18n"
-    srcPath = CURR_DIR / "i18n"
+##
+#  Copy Package Files
+##
 
-    print(f"Loading file: {fileName}")
-    with zipfile.ZipFile(fileName) as zipObj:
-        for item in zipObj.namelist():
-            if item.startswith("nw_") and item.endswith(".ts"):
-                zipObj.extract(item, srcPath)
-                print(f"Extracted: {item} > {srcPath / item}")
-            elif item.startswith("project_") and item.endswith(".json"):
-                zipObj.extract(item, dstPath)
-                print(f"Extracted: {item} > {dstPath / item}")
-            else:
-                print(f"Skipped: {item}")
+def copyPackageFiles(dst: Path, useCfg: bool = False) -> None:
+    """Copy files needed for packaging."""
 
-    print("")
+    copyFiles = ["LICENSE.md", "CREDITS.md", "pyproject.toml"]
+    for copyFile in copyFiles:
+        shutil.copyfile(copyFile, dst / copyFile)
+        print("Copied: %s" % copyFile)
+
+    (dst / "MANIFEST.in").write_text(
+        "include LICENSE.md\n"
+        "include CREDITS.md\n"
+        # "include data/*\n"
+        "recursive-include novelwriter/assets *\n"
+    )
+    print("Wrote:  MANIFEST.in")
+
+    if useCfg:
+        # This is needed for Ubuntu up to 22.04
+        text = (SETUP_DIR / "launchpad_setup.cfg").read_text()
+        text = text.replace("setup/description_pypi.md", "data/description_short.txt")
+        (dst / "setup.cfg").write_text(text)
+        print("Wrote:  setup.cfg")
+
+        (dst / "pyproject.toml").write_text(
+            "[build-system]\n"
+            "requires = [\"setuptools\"]\n"
+            "build-backend = \"setuptools.build_meta\"\n"
+        )
+        print("Wrote:  pyproject.toml")
+    else:
+        text = (CURR_DIR / "pyproject.toml").read_text()
+        text = text.replace("setup/description_pypi.md", "data/description_short.txt")
+        (dst / "pyproject.toml").write_text(text)
+        print("Wrote:  pyproject.toml")
 
     return
 
@@ -676,7 +721,6 @@ def makeDebianPackage(
     # Set Up Folder
     # =============
 
-    refDir = CURR_DIR / "setup"
     bldDir = CURR_DIR / "dist_deb"
     bldPkg = f"novelwriter_{pkgVers}"
     outDir = bldDir / bldPkg
@@ -703,58 +747,19 @@ def makeDebianPackage(
 
     print("Copying novelWriter source ...")
     print("")
+
     copySourceCode(outDir)
 
     print("")
     print("Copying or generating additional files ...")
     print("")
 
-    # Copy/Write Root Files
-    # =====================
-
-    copyFiles = ["LICENSE.md", "CREDITS.md", "CHANGELOG.md", "pyproject.toml"]
-    for copyFile in copyFiles:
-        shutil.copyfile(copyFile, f"{outDir}/{copyFile}")
-        print("Copied: %s" % copyFile)
-
-    (outDir / "MANIFEST.in").write_text(
-        "include LICENSE.md\n"
-        "include CREDITS.md\n"
-        "include CHANGELOG.md\n"
-        "include data/*\n"
-        "recursive-include novelwriter/assets *\n"
-    )
-    print("Wrote:  MANIFEST.in")
-
-    (outDir / "setup.py").write_text(
-        "import setuptools\n"
-        "setuptools.setup()\n"
-    )
-    print("Wrote:  setup.py")
-
-    if oldSetuptools:
-        # This is needed for Ubuntu up to 22.04
-        text = (CURR_DIR / "setup" / "launchpad_setup.cfg").read_text()
-        text.replace("setup/description_pypi.md", "data/description_short.txt")
-        (outDir / "setup.cfg").write_text(text)
-        print("Wrote:  setup.cfg")
-
-        (outDir / "pyproject.toml").write_text(
-            "[build-system]\n"
-            "requires = [\"setuptools\"]\n"
-            "build-backend = \"setuptools.build_meta\"\n"
-        )
-        print("Wrote:  pyproject.toml")
-    else:
-        text = (CURR_DIR / "pyproject.toml").read_text()
-        text.replace("setup/description_pypi.md", "data/description_short.txt")
-        (outDir / "pyproject.toml").write_text(text)
-        print("Wrote:  pyproject.toml")
+    copyPackageFiles(outDir, oldSetuptools)
 
     # Copy/Write Debian Files
     # =======================
 
-    shutil.copytree(refDir / "debian", debDir)
+    shutil.copytree(SETUP_DIR / "debian", debDir)
     print("Copied: debian/*")
 
     (debDir / "changelog").write_text(
@@ -767,10 +772,10 @@ def makeDebianPackage(
     # Copy/Write Data Files
     # =====================
 
-    shutil.copytree(refDir / "data", datDir)
+    shutil.copytree(SETUP_DIR / "data", datDir)
     print("Copied: data/*")
 
-    shutil.copyfile(refDir / "description_short.txt", outDir / "data" / "description_short.txt")
+    shutil.copyfile(SETUP_DIR / "description_short.txt", outDir / "data" / "description_short.txt")
     print("Copied: data/description_short.txt")
 
     # Build Package
@@ -884,14 +889,11 @@ def buildForLaunchpad(args: argparse.Namespace) -> None:
 
 
 ##
-#  Make AppImage (build-appimage)
+#  Build AppImage (build-appimage)
 ##
 
-def makeAppImage(sysArgs: list[str]) -> list[str]:
+def buildAppImage(args: argparse.Namespace) -> None:
     """Build an AppImage."""
-    import argparse
-    import glob
-
     try:
         import python_appimage  # noqa: F401 # type: ignore
     except ImportError:
@@ -901,31 +903,14 @@ def makeAppImage(sysArgs: list[str]) -> list[str]:
         )
         sys.exit(1)
 
+    if not OS_LINUX:
+        print("ERROR: Command 'build-ubuntu' can only be used on Linux")
+        sys.exit(1)
+
     print("")
     print("Build AppImage")
     print("==============")
     print("")
-
-    parser = argparse.ArgumentParser(
-        prog="build_appimage",
-        description="Build an AppImage",
-        epilog="see https://appimage.org/ for more details",
-    )
-    parser.add_argument(
-        "--linux-tag",
-        nargs="?",
-        default="manylinux_2_28_x86_64",
-        help=(
-            "Linux compatibility tag (e.g. manylinux_2_28_x86_64)\n"
-            "see https://python-appimage.readthedocs.io/en/latest/#available-python-appimages \n"
-            "and https://github.com/pypa/manylinux for a list of valid tags"
-        ),
-    )
-    parser.add_argument(
-        "--python-version", nargs="?", default="3.11", help="Python version (e.g. 3.11)"
-    )
-
-    args, unparsedArgs = parser.parse_known_args(sysArgs)
 
     linuxTag = args.linux_tag
     pythonVer = args.python_version
@@ -940,129 +925,77 @@ def makeAppImage(sysArgs: list[str]) -> list[str]:
     # Set Up Folder
     # =============
 
-    bldDir = "dist_appimage"
+    bldDir = CURR_DIR / "dist_appimage"
     bldPkg = f"novelwriter_{pkgVers}"
-    outDir = f"{bldDir}/{bldPkg}"
-    imageDir = f"{bldDir}/appimage"
+    outDir = bldDir / bldPkg
+    imgDir = bldDir / "appimage"
 
     # Set Up Folders
     # ==============
 
-    if not os.path.isdir(bldDir):
-        os.mkdir(bldDir)
+    bldDir.mkdir(exist_ok=True)
 
-    if os.path.isdir(outDir):
+    if outDir.exists():
         print("Removing old build files ...")
         print("")
         shutil.rmtree(outDir)
 
-    os.mkdir(outDir)
+    outDir.mkdir()
 
-    if os.path.isdir(imageDir):
+    if imgDir.exists():
         print("Removing old build metadata files ...")
         print("")
-        shutil.rmtree(imageDir)
+        shutil.rmtree(imgDir)
 
-    os.mkdir(imageDir)
+    imgDir.mkdir()
 
     # Remove old AppImages
-    outFiles = glob.glob(f"{bldDir}/*.AppImage")
-    if outFiles:
+    if images := bldDir.glob("*.AppImage"):
         print("Removing old AppImages")
         print("")
-        for image in outFiles:
-            try:
-                os.remove(image)
-            except OSError:
-                print("Error while deleting file : ", image)
+        for image in images:
+            image.unlink()
 
     # Copy novelWriter Source
     # =======================
 
     print("Copying novelWriter source ...")
     print("")
-
-    for nPath, _, nFiles in os.walk("novelwriter"):
-        if nPath.endswith("__pycache__"):
-            print("Skipped: %s" % nPath)
-            continue
-
-        pPath = f"{outDir}/{nPath}"
-        if not os.path.isdir(pPath):
-            os.mkdir(pPath)
-
-        fCount = 0
-        for fFile in nFiles:
-            nFile = f"{nPath}/{fFile}"
-            pFile = f"{pPath}/{fFile}"
-
-            if fFile.endswith(".pyc"):
-                print("Skipped: %s" % nFile)
-                continue
-
-            shutil.copyfile(nFile, pFile)
-            fCount += 1
-
-        print("Copied: %s/*  [Files: %d]" % (nPath, fCount))
+    copySourceCode(outDir)
 
     print("")
     print("Copying or generating additional files ...")
     print("")
 
-    # Copy/Write Root Files
-    # =====================
-
-    copyFiles = ["LICENSE.md", "CREDITS.md", "CHANGELOG.md", "pyproject.toml"]
-    for copyFile in copyFiles:
-        shutil.copyfile(copyFile, f"{outDir}/{copyFile}")
-        print("Copied: %s" % copyFile)
-
-    writeFile(f"{outDir}/MANIFEST.in", (
-        "include LICENSE.md\n"
-        "include CREDITS.md\n"
-        "include CHANGELOG.md\n"
-        "include data/*\n"
-        "recursive-include novelwriter/assets *\n"
-    ))
-    print("Wrote:  MANIFEST.in")
-
-    writeFile(f"{outDir}/setup.py", (
-        "import setuptools\n"
-        "setuptools.setup()\n"
-    ))
-    print("Wrote:  setup.py")
-
-    setupCfg = readFile("pyproject.toml").replace(
-        "setup/description_pypi.md", "data/description_short.txt"
-    )
-    writeFile(f"{outDir}/pyproject.toml", setupCfg)
-    print("Wrote:  pyproject.toml")
+    copyPackageFiles(outDir)
 
     # Write Metadata
     # ==============
 
-    appDescription = readFile("setup/description_short.txt")
-    appdataXML = readFile("setup/novelwriter.appdata.xml").format(description=appDescription)
-    writeFile(f"{imageDir}/novelwriter.appdata.xml", appdataXML)
+    appDescription = (SETUP_DIR / "description_short.txt").read_text()
+    appdataXML = (SETUP_DIR / "novelwriter.appdata.xml").read_text()
+    appdataXML = appdataXML.format(description=appDescription)
+    (imgDir / "novelwriter.appdata.xml").write_text(appdataXML)
     print("Wrote:  novelwriter.appdata.xml")
 
-    writeFile(f"{imageDir}/entrypoint.sh", (
+    (imgDir / "entrypoint.sh").write_text(
         '#! /bin/bash \n'
         '{{ python-executable }} -sE ${APPDIR}/opt/python{{ python-version }}/bin/novelwriter "$@"'
-    ))
+    )
     print("Wrote:  entrypoint.sh")
 
-    writeFile(f"{imageDir}/requirements.txt", os.path.abspath(outDir))
+    (imgDir / "requirements.txt").write_text(str(outDir))
     print("Wrote:  requirements.txt")
 
-    shutil.copyfile("setup/data/novelwriter.desktop", f"{imageDir}/novelwriter.desktop")
+    shutil.copyfile(SETUP_DIR / "data" / "novelwriter.desktop", imgDir / "novelwriter.desktop")
     print("Copied: novelwriter.desktop")
 
-    shutil.copyfile("setup/icons/novelwriter.svg", f"{imageDir}/novelwriter.svg")
+    shutil.copyfile(SETUP_DIR / "icons" / "novelwriter.svg", imgDir / "novelwriter.svg")
     print("Copied: novelwriter.svg")
 
     shutil.copyfile(
-        "setup/data/hicolor/256x256/apps/novelwriter.png", f"{imageDir}/novelwriter.png"
+        SETUP_DIR / "data" / "hicolor" / "256x256" / "apps" / "novelwriter.png",
+        imgDir / "novelwriter.png"
     )
     print("Copied: novelwriter.png")
 
@@ -1081,15 +1014,15 @@ def makeAppImage(sysArgs: list[str]) -> list[str]:
         print("")
         sys.exit(1)
 
-    bldFile = glob.glob(f"{bldDir}/*.AppImage")[0]
-    outFile = f"{bldDir}/novelWriter-{pkgVers}.AppImage"
-    os.rename(bldFile, outFile)
-    shaFile = makeCheckSum(os.path.basename(outFile), cwd=bldDir)
+    bldFile = list(bldDir.glob("*.AppImage"))[0]
+    outFile = bldDir / f"novelWriter-{pkgVers}.AppImage"
+    bldFile.rename(outFile)
+    shaFile = makeCheckSum(outFile.name, cwd=bldDir)
 
     toUpload(outFile)
     toUpload(shaFile)
 
-    return unparsedArgs
+    return
 
 
 ##
@@ -1689,6 +1622,27 @@ if __name__ == "__main__":
     cmdBuildUbuntu.add_argument("--sign", action="store_true", help="Sign the package.")
     cmdBuildUbuntu.add_argument("--first", action="store_true", help="Set build number to 0.")
     cmdBuildUbuntu.set_defaults(func=buildForLaunchpad)
+
+    # Build AppImage
+    cmdBuildAppImage = parsers.add_parser(
+        "build-appimage", help=(
+            "Build an AppImage. "
+            "Argument --linux-tag defaults manylinux_2_28_x86_64, and --python-version to 3.11."
+        )
+    )
+    cmdBuildAppImage.add_argument(
+        "--linux-tag",
+        default="manylinux_2_28_x86_64",
+        help=(
+            "Linux compatibility tag (e.g. manylinux_2_28_x86_64) "
+            "see https://python-appimage.readthedocs.io/en/latest/#available-python-appimages "
+            "and https://github.com/pypa/manylinux for a list of valid tags."
+        ),
+    )
+    cmdBuildAppImage.add_argument(
+        "--python-version", default="3.11", help="Python version (e.g. 3.11)"
+    )
+    cmdBuildAppImage.set_defaults(func=buildAppImage)
 
     # if "gen-plist" in sysArgs:
     #     sysArgs.remove("gen-plist")
