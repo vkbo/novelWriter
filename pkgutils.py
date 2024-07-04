@@ -1384,7 +1384,14 @@ def xdgUninstall(args: argparse.Namespace) -> None:
 
 if __name__ == "__main__":
     """Parse command line options and run the commands."""
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        usage="pkgutils.py [command] [--flags]",
+        description=(
+            "This tool provides setup and build commands for installing or distibuting "
+            "novelWriter as a package on Linux, Mac and Windows, as well as developer tools "
+            "for internationalisation."
+        )
+    )
     parsers = parser.add_subparsers()
 
     # Version
