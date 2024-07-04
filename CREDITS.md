@@ -2,72 +2,74 @@
 
 ## Main Developer
 
-* Veronica Berglyd Olsen (@vkbo)
+* Veronica Berglyd Olsen
 
 ## Contributors
 
-* Concept: Marian Lückhof (@Number042)
-* Internationalisation: Bruno Meneguello (@bkmeneguello)
-* Setup and Packaging: Rachel Powers (@Ryex)
+* Early Concept: Marian Lückhof
+* Internationalisation: Bruno Meneguello
+* Setup and Packaging: Rachel Powers
 
 For other contributions, see the project's [Contributors](https://github.com/vkbo/novelWriter/graphs/contributors) page.
 
 ## Artwork
 
-The artwork on the Welcome dialog was created by [Louis Durrant](https://louisdurrant.art).
+The artwork on the Welcome dialog was created by Louis Durrant.
 
 ## Translations
 
 The default language is English (UK) with English (US) as an option. These are the original
 translators for the languages currently available:
 
-* Dutch: Martijn van der Kleijn (@mvdkleijn)
-* French: Jan Lüdke (@jyhelle)
-* German: Myian (@heymyian)
-* Italian: Riccardo Mangili
-* Japanese: hebekeg (@hebekeg)
-* Latin American Spanish: Tommy Marplatt (@tmarplatt)
-* Norwegian: Veronica Berglyd Olsen (@vkbo)
-* Portuguese: Bruno Meneguello (@bkmeneguello)
-* Simplified Chinese: Qianzhi Long (@longqzh)
+* **Dutch:** Martijn van der Kleijn (mvdkleijn)
+* **French:** Jan Lüdke (jyhelle)
+* **German:** Myian (HeyMyian)
+* **Italian:** Riccardo Mangili
+* **Japanese:** hebekeg
+* **Latin American Spanish:** Tommy Marplatt (tmarplatt)
+* **Norwegian:** Veronica Berglyd Olsen (vkbo)
+* **Polish:** Anna Maria Polak (Nauthiz)
+* **Portuguese:** Bruno Meneguello (bkmeneguello)
+* **Simplified Chinese:** Qianzhi Long (longqzh)
 
 Additional larger translation contributions:
 
-* French: Albert Aribaud (@aaribaud)
+* **French:** Albert Aribaud (aaribaud)
+* **Portuguese:** Oli Maia (olimaia)
 
 Translations are managed on [Crowdin](https://crowdin.com/project/novelwriter), and more
-contributions are listed on the project's [Members](https://crowdin.com/project/novelwriter/members) page.
+contributions are listed on the project's Members page.
 
 ## Libraries
 
 The following libraries are dependencies of novelWriter:
 
-* [Qt5](https://www.qt.io) by Qt Company
-* [PyQt5](https://www.riverbankcomputing.com/software/pyqt) by Riverbank Computing
-* [Enchant](https://abiword.github.io/enchant) by Dom Lachowicz
-* [PyEnchant](https://pyenchant.github.io/pyenchant) by Dimitri Merejkowsky
+* **Qt5** by Qt Company
+* **PyQt5** by Riverbank Computing
+* **Enchant** by Dom Lachowicz
+* **PyEnchant** by Dimitri Merejkowsky
 
 ## Assets
 
 Some of the assets bundled with novelWriter were adapted from the following sources:
 
-* [Typicons](https://github.com/stephenhutchings/typicons.font) icons by Stephen Hutchings (CC BY-SA 4.0)
-* [Tomorrow](https://github.com/chriskempson/base16) syntax themes by Chris Kempson (MIT License)
-* [Owl](https://github.com/sdras/night-owl-vscode-theme) syntax themes by Sarah Drasner (MIT License)
-* [Solarized](https://github.com/altercation/solarized) themes by Ethan Schoonover (MIT License)
-* [Cyberpunk Night](https://github.com/alemvigh) theme by Anders Lemvigh (CC BY-SA 4.0)
-* [Dracula](https://draculatheme.com) theme by Zeno Rocha (MIT License)
-* [Snazzy Light](https://github.com/loilo/vscode-snazzy-light) theme by Florian Reuschel (MIT License)
+* **Typicons** icons by Stephen Hutchings (CC BY-SA 4.0)
+* **Tomorrow** syntax themes by Chris Kempson (MIT License)
+* **Owl** syntax themes by Sarah Drasner (MIT License)
+* **Solarized** themes by Ethan Schoonover (MIT License)
+* **Cyberpunk Night** theme by Anders Lemvigh (CC BY-SA 4.0)
+* **Dracula** theme by Zeno Rocha (MIT License)
+* **Snazzy Light** theme by Florian Reuschel (MIT License)
 
 ## Fonts
 
 The font used for the main novelWriter logo, mimetype and text banners is Pridi. Other fonts are
 used on buttons and icons.
 
-* Pridi by Cadson Demak (Open Font License, Version 1.1)
-* Source Sans Pro by Paul D. Hunt (SIL Open Font License)
+* **Pridi** by Cadson Demak (Open Font License, Version 1.1)
+* **Source Sans Pro** by Paul D. Hunt (SIL Open Font License)
 
 ## Special Mentions
 
-Additional thanks to @johnblommers who was an early user and who has provided a lot of very useful
+Additional thanks to John Blommers who was an early user and who has provided a lot of very useful
 feedback over the years.

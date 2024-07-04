@@ -29,8 +29,8 @@ import logging
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QKeyEvent, QKeySequence
 from PyQt5.QtWidgets import (
-    QAbstractButton, QCompleter, QDialogButtonBox, QFileDialog, QHBoxLayout,
-    QLineEdit, QPushButton, QVBoxLayout, QWidget
+    QCompleter, QDialogButtonBox, QFileDialog, QHBoxLayout, QLineEdit,
+    QPushButton, QVBoxLayout, QWidget
 )
 
 from novelwriter import CONFIG, SHARED
@@ -43,10 +43,7 @@ from novelwriter.extensions.modified import (
 )
 from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
-from novelwriter.types import (
-    QtAlignCenter, QtDialogApply, QtDialogClose, QtDialogSave, QtRoleAccept,
-    QtRoleApply, QtRoleReject
-)
+from novelwriter.types import QtAlignCenter, QtDialogCancel, QtDialogSave
 
 logger = logging.getLogger(__name__)
 
@@ -89,8 +86,9 @@ class GuiPreferences(NDialog):
         self.mainForm.setHelpTextStyle(SHARED.theme.helpText)
 
         # Buttons
-        self.buttonBox = QDialogButtonBox(QtDialogApply | QtDialogSave | QtDialogClose, self)
-        self.buttonBox.clicked.connect(self._dialogButtonClicked)
+        self.buttonBox = QDialogButtonBox(QtDialogSave | QtDialogCancel, self)
+        self.buttonBox.accepted.connect(self._doSave)
+        self.buttonBox.rejected.connect(self.reject)
 
         # Assemble
         self.searchBox = QHBoxLayout()
@@ -784,19 +782,6 @@ class GuiPreferences(NDialog):
     #  Private Slots
     ##
 
-    @pyqtSlot("QAbstractButton*")
-    def _dialogButtonClicked(self, button: QAbstractButton) -> None:
-        """Handle button clicks from the dialog button box."""
-        role = self.buttonBox.buttonRole(button)
-        if role == QtRoleApply:
-            self._saveValues()
-        elif role == QtRoleAccept:
-            self._saveValues()
-            self.close()
-        elif role == QtRoleReject:
-            self.close()
-        return
-
     @pyqtSlot(int)
     def _sidebarClicked(self, section: int) -> None:
         """Process a user request to switch page."""
@@ -897,7 +882,7 @@ class GuiPreferences(NDialog):
         CONFIG.setPreferencesWinSize(self.width(), self.height())
         return
 
-    def _saveValues(self) -> None:
+    def _doSave(self) -> None:
         """Save the values set in the form."""
         updateTheme  = False
         needsRestart = False
@@ -1011,5 +996,7 @@ class GuiPreferences(NDialog):
         # Finalise
         CONFIG.saveConfig()
         self.newPreferencesReady.emit(needsRestart, refreshTree, updateTheme, updateSyntax)
+
+        self.close()
 
         return

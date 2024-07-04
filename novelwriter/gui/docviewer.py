@@ -741,7 +741,9 @@ class GuiDocViewHeader(QWidget):
         palette.setColor(QPalette.ColorRole.WindowText, SHARED.theme.colText)
         palette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
         self.setPalette(palette)
-        self.itemTitle.setPalette(palette)
+        self.itemTitle.setTextColors(
+            color=palette.windowText().color(), faded=SHARED.theme.fadedText
+        )
         return
 
     def changeFocusState(self, state: bool) -> None:
