@@ -1411,18 +1411,12 @@ if __name__ == "__main__":
     cmdPipInstall.add_argument("--win", action="store_true", help="For Windows.", default=OS_WIN)
     cmdPipInstall.set_defaults(func=installPackages)
 
-    # Build Clean
-    cmdBuildClean = parsers.add_parser(
-        "build-clean", help="Recursively delete all build folders."
-    )
-    cmdBuildClean.set_defaults(func=cleanBuildDirs)
-
     # Additional Builds
     # =================
 
     # Import Translations
     cmdImportTS = parsers.add_parser(
-        "qtlimport", help="Import updated i18n files from a zip file."
+        "qtlimport", help="Import updated i18n files from a Crowdin zip file."
     )
     cmdImportTS.add_argument("file", help="Path to zip file from Crowdin")
     cmdImportTS.set_defaults(func=importI18nUpdates)
@@ -1520,6 +1514,12 @@ if __name__ == "__main__":
         "build-win-exe", help="Build a setup.exe file with Python embedded for Windows."
     )
     cmdBuildSetupExe.set_defaults(func=makeWindowsEmbedded)
+
+    # Build Clean
+    cmdBuildClean = parsers.add_parser(
+        "build-clean", help="Recursively delete all build folders."
+    )
+    cmdBuildClean.set_defaults(func=cleanBuildDirs)
 
     # Generate MacOS PList File
     cmdBuildMacOSPlist = parsers.add_parser(
