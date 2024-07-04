@@ -617,78 +617,6 @@ def copyPackageFiles(dst: Path, useCfg: bool = False) -> None:
 
 
 ##
-#  Make Minimal Package (minimal-zip)
-##
-
-def makeWindowsZip() -> None:
-    """Pack the core source file in a single zip file."""
-    from zipfile import ZIP_DEFLATED, ZipFile
-
-    print("")
-    print("Building Windows ZIP File")
-    print("=========================")
-
-    bldDir = "dist_minimal"
-    if not os.path.isdir(bldDir):
-        os.mkdir(bldDir)
-
-    if not checkAssetsExist():
-        print("ERROR: Missing build assets")
-        sys.exit(1)
-
-    pkgVers, _, _ = extractVersion()
-    zipFile = f"novelwriter-{pkgVers}-minimal-win.zip"
-    outFile = os.path.join(bldDir, zipFile)
-    if os.path.isfile(outFile):
-        os.unlink(outFile)
-    print("")
-
-    rootFiles = [
-        "README.md",
-        "LICENSE.md",
-        "CREDITS.md",
-        "CHANGELOG.md",
-        "requirements.txt",
-        "pkgutils.py",
-        "pyproject.toml",
-    ]
-
-    with ZipFile(outFile, "w", compression=ZIP_DEFLATED, compresslevel=9) as zipObj:
-
-        for nRoot, _, nFiles in os.walk("novelwriter"):
-            if nRoot.endswith("__pycache__"):
-                print("Skipped: %s" % nRoot)
-                continue
-
-            print("Added: %s/* [Files: %d]" % (nRoot, len(nFiles)))
-            for aFile in nFiles:
-                if aFile.endswith(".pyc"):
-                    print("Skipping File: %s" % aFile)
-                    continue
-                zipObj.write(os.path.join(nRoot, aFile))
-
-        zipObj.write("novelWriter.py", "novelWriter.pyw")
-        print("Added: novelWriter.pyw")
-
-        for aFile in rootFiles:
-            print("Added: %s" % aFile)
-            zipObj.write(aFile)
-
-        zipObj.write(os.path.join("novelwriter", "assets", "manual.pdf"), "UserManual.pdf")
-        print("Added: UserManual.pdf")
-
-    print("")
-    print("Created File: %s" % outFile)
-
-    shaFile = makeCheckSum(zipFile, cwd=bldDir)
-    toUpload(outFile)
-    toUpload(shaFile)
-    print("")
-
-    return
-
-
-##
 #  Make Debian Package
 ##
 
@@ -961,6 +889,7 @@ def buildAppImage(args: argparse.Namespace) -> None:
 
     print("Copying novelWriter source ...")
     print("")
+
     copySourceCode(outDir)
 
     print("")
@@ -1029,7 +958,7 @@ def buildAppImage(args: argparse.Namespace) -> None:
 #  Make Windows Setup EXE (build-win-exe)
 ##
 
-def makeWindowsEmbedded(sysArgs: list[str]) -> None:
+def makeWindowsEmbedded(args: argparse.Namespace) -> None:
     """Set up a package with embedded Python and dependencies for
     Windows installation.
     """
@@ -1042,18 +971,8 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
     print("================================")
     print("")
 
-    minimalZip = None
-    packVersion = "none"
-    if len(sysArgs) >= 2:
-        if os.path.isfile(sysArgs[1]):
-            minimalZip = sysArgs[1]
-
-    if minimalZip is None:
-        print("Please provide the path to the minimal win package as an argument")
-        sys.exit(1)
-
-    packVersion = os.path.basename(minimalZip).split("-")[1]
-    print("Version: %s" % packVersion)
+    numVers, hexVers, relDate = extractVersion()
+    print("Version: %s" % numVers)
 
     # Set Up Folder
     # =============
@@ -1061,27 +980,36 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
     if not os.path.isdir("dist"):
         os.mkdir("dist")
 
-    outDir = os.path.join("dist", "novelWriter")
-    libDir = os.path.join(outDir, "lib")
-    if os.path.isdir(outDir):
+    bldDir = CURR_DIR / "dist"
+    outDir = bldDir / "novelWriter"
+    libDir = outDir / "lib"
+    if outDir.exists:
         shutil.rmtree(outDir)
 
-    os.mkdir(outDir)
-    os.mkdir(libDir)
+    outDir.mkdir()
+    libDir.mkdir()
 
-    # Extract Source Files
-    # ====================
+    # Copy novelWriter Source
+    # =======================
 
-    print("Extracting source files ...")
-    with zipfile.ZipFile(minimalZip, "r") as inFile:
-        inFile.extractall(outDir)
+    print("Copying and compiling novelWriter source ...")
+    print("")
 
-    shutil.copyfile(
-        os.path.join(outDir, "novelwriter", "assets", "icons", "novelwriter.ico"),
-        os.path.join(outDir, "novelwriter.ico")
-    )
+    copySourceCode(outDir)
 
-    compileall.compile_dir(os.path.join(outDir, "novelwriter"))
+    files = [
+        CURR_DIR / "CREDITS.md",
+        CURR_DIR / "LICENSE.md",
+        CURR_DIR / "requirements.txt",
+        SETUP_DIR / "icons" / "novelwriter.ico",
+        SETUP_DIR / "iss_license.txt",
+
+    ]
+    for item in files:
+        shutil.copyfile(item, outDir)
+        print(f"Copied: {item} > {outDir / item.name}")
+
+    compileall.compile_dir(outDir / "novelwriter")
 
     print("Done")
     print("")
@@ -1106,28 +1034,16 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
     print("Done")
     print("")
 
-    # Sort Out Licence Files
-    # ======================
-
-    os.rename(
-        os.path.join(outDir, "LICENSE.txt"),
-        os.path.join(outDir, "PYTHON-LICENSE.txt")
-    )
-    shutil.copyfile(
-        os.path.join("setup", "iss_license.txt"),
-        os.path.join(outDir, "LICENSES.txt")
-    )
-
     # Install Dependencies
     # ====================
 
     print("Install dependencies ...")
 
-    sysCmd  = [sys.executable]
-    sysCmd += "-m pip install -r requirements.txt --target".split()
-    sysCmd += [libDir]
     try:
-        subprocess.call(sysCmd)
+        subprocess.call([
+            sys.executable, "-m",
+            "pip", "install", "-r", "requirements.txt", "--target", str(libDir)
+        ])
     except Exception as exc:
         print("Failed with error:")
         print(str(exc))
@@ -1141,7 +1057,7 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
 
     print("Updating starting script ...")
 
-    writeFile(os.path.join(outDir, "novelWriter.pyw"), (
+    (outDir / "novelWriter.pyw").write_text(
         "#!/usr/bin/env python3\n"
         "import os\n"
         "import sys\n"
@@ -1152,7 +1068,7 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
         "if __name__ == \"__main__\":\n"
         "    import novelwriter\n"
         "    novelwriter.main(sys.argv[1:])\n"
-    ))
+    )
 
     print("Done")
     print("")
@@ -1160,35 +1076,35 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
     # Clean Up Files
     # ==============
 
-    def unlinkIfFound(delFile: str) -> None:
-        if os.path.isfile(delFile):
-            os.unlink(delFile)
-            print("Deleted: %s" % delFile)
+    def unlinkIfFound(file: Path) -> None:
+        if file.is_file():
+            file.unlink()
+            print(f"Deleted: {file}")
 
-    def deleteFolder(delPath: str) -> None:
-        if os.path.isdir(delPath):
-            shutil.rmtree(delPath)
-            print("Deleted: %s" % delPath)
+    def deleteFolder(folder: Path) -> None:
+        if folder.is_dir():
+            shutil.rmtree(folder)
+            print(f"Deleted: {folder}")
 
     print("Deleting Redundant Files")
     print("========================")
     print("")
 
-    pyQt5Dir = os.path.join(libDir, "PyQt5")
-    bindDir  = os.path.join(pyQt5Dir, "bindings")
-    qt5Dir   = os.path.join(pyQt5Dir, "Qt5")
-    binDir   = os.path.join(qt5Dir, "bin")
-    plugDir  = os.path.join(qt5Dir, "plugins")
-    qmDir    = os.path.join(qt5Dir, "translations")
-    dictDir  = os.path.join(libDir, "enchant", "data", "mingw64", "share", "enchant", "hunspell")
+    pyQt5Dir = libDir / "PyQt5"
+    bindDir  = pyQt5Dir / "bindings"
+    qt5Dir   = pyQt5Dir / "Qt5"
+    binDir   = qt5Dir / "bin"
+    plugDir  = qt5Dir / "plugins"
+    qmDir    = qt5Dir / "translations"
+    dictDir  = libDir / "enchant" / "data" / "mingw64" / "share" / "enchant" / "hunspell"
 
-    for dictFile in os.listdir(dictDir):
-        if not dictFile.startswith(("en_GB", "en_US")):
-            unlinkIfFound(os.path.join(dictDir, dictFile))
+    for item in dictDir.iterdir():
+        if not item.name.startswith(("en_GB", "en_US")):
+            unlinkIfFound(item)
 
-    for qmFile in os.listdir(qmDir):
-        if not qmFile.startswith("qtbase"):
-            unlinkIfFound(os.path.join(qmDir, qmFile))
+    for item in qmDir.iterdir():
+        if not item.name.startswith("qtbase"):
+            unlinkIfFound(item)
 
     delQt5 = [
         "Qt5Bluetooth", "Qt5DBus", "Qt5Designer", "Qt5Designer", "Qt5Help", "Qt5Location",
@@ -1200,30 +1116,28 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
         "Qt5SerialPort", "Qt5Sql", "Qt5Test", "Qt5TextToSpeech", "Qt5WebChannel", "Qt5WebSockets",
         "Qt5WebView", "Qt5Xml", "Qt5XmlPatterns"
     ]
-    for qt5Item in delQt5:
-        qtItem = qt5Item.replace("Qt5", "Qt")
-        unlinkIfFound(os.path.join(binDir, qt5Item+".dll"))
-        unlinkIfFound(os.path.join(pyQt5Dir, qtItem+".pyd"))
-        unlinkIfFound(os.path.join(pyQt5Dir, qtItem+".pyi"))
-        deleteFolder(os.path.join(bindDir, qtItem))
+    for item in delQt5:
+        qtItem = item.replace("Qt5", "Qt")
+        unlinkIfFound(binDir / f"{item}.dll")
+        unlinkIfFound(pyQt5Dir / f"{qtItem}.pyd")
+        unlinkIfFound(pyQt5Dir / f"{qtItem}.pyi")
+        deleteFolder(bindDir / qtItem)
 
     delList = [
-        os.path.join(binDir, "opengl32sw.dll"),
-        os.path.join(qt5Dir, "qml"),
-        os.path.join(plugDir, "geoservices"),
-        os.path.join(plugDir, "playlistformats"),
-        os.path.join(plugDir, "renderers"),
-        os.path.join(plugDir, "sensorgestures"),
-        os.path.join(plugDir, "sensors"),
-        os.path.join(plugDir, "sqldrivers"),
-        os.path.join(plugDir, "texttospeech"),
-        os.path.join(plugDir, "webview"),
+        binDir / "opengl32sw.dll",
+        qt5Dir / "qml",
+        plugDir / "geoservices",
+        plugDir / "playlistformats",
+        plugDir / "renderers",
+        plugDir / "sensorgestures",
+        plugDir / "sensors",
+        plugDir / "sqldrivers",
+        plugDir / "texttospeech",
+        plugDir / "webview",
     ]
-    for delItem in delList:
-        if os.path.isfile(delItem):
-            unlinkIfFound(delItem)
-        elif os.path.isdir(delItem):
-            deleteFolder(delItem)
+    for item in delList:
+        unlinkIfFound(item)
+        deleteFolder(item)
 
     print("Done")
     print("")
@@ -1233,10 +1147,10 @@ def makeWindowsEmbedded(sysArgs: list[str]) -> None:
     print("")
 
     # Read the iss template
-    issData = readFile(os.path.join("setup", "win_setup_embed.iss"))
-    issData = issData.replace(r"%%version%%", packVersion)
-    issData = issData.replace(r"%%dir%%", os.getcwd())
-    writeFile("setup.iss", issData)
+    issData = (SETUP_DIR / "win_setup_embed.iss").read_text()
+    issData = issData.replace(r"%%version%%", numVers)
+    issData = issData.replace(r"%%dist%%", str(bldDir))
+    (CURR_DIR / "setup.iss").write_text(issData)
     print("")
 
     try:
@@ -1644,26 +1558,15 @@ if __name__ == "__main__":
     )
     cmdBuildAppImage.set_defaults(func=buildAppImage)
 
+    # Build Windows Inno Setup Installer
+    cmdBuildSetupExe = parsers.add_parser(
+        "build-win-exe", help="Build a setup.exe file with Python embedded for Windows."
+    )
+    cmdBuildSetupExe.set_defaults(func=makeWindowsEmbedded)
+
     # if "gen-plist" in sysArgs:
     #     sysArgs.remove("gen-plist")
     #     genMacOSPlist()
-
-    # if "windows-zip" in sysArgs:
-    #     sysArgs.remove("windows-zip")
-    #     makeWindowsZip()
-
-    # if "build-win-exe" in sysArgs:
-    #     sysArgs.remove("build-win-exe")
-    #     makeWindowsEmbedded(sysArgs)
-    #     sys.exit(0)  # Don't continue execution
-
-    # if "build-appimage" in sysArgs:
-    #     sysArgs.remove("build-appimage")
-    #     if hostOS == OS_LINUX:
-    #         sysArgs = makeAppImage(sysArgs)
-    #     else:
-    #         print("ERROR: Command 'build-appimage' can only be used on Linux")
-    #         sys.exit(1)
 
     # # General Installers
     # # ==================
