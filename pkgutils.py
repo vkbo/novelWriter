@@ -36,12 +36,12 @@ import zipfile
 
 from pathlib import Path
 
-OS_NONE   = 0
-OS_LINUX  = 1
-OS_WIN    = 2
-OS_DARWIN = 3
-
 CURR_DIR = Path(__file__).parent
+SIGN_KEY = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
+
+OS_LINUX = sys.platform.startswith("linux")
+OS_DARWIN = sys.platform.startswith("darwin")
+OS_WIN = sys.platform.startswith("win32")
 
 
 # =============================================================================================== #
@@ -90,6 +90,27 @@ def stripVersion(version: str) -> str:
         return version
 
 
+def copySourceCode(dst: Path) -> None:
+    """Copy the novelwriter source tree to path."""
+    src = CURR_DIR / "novelwriter"
+    for item in src.glob("**/*"):
+        relSrc = item.relative_to(CURR_DIR)
+        if item.suffix in (".pyc", ".pyo"):
+            print(f"Ignore: {relSrc}")
+            continue
+
+        if item.parent.is_dir() and item.parent.name != "__pycache__":
+            dstDir = dst / relSrc.parent
+            if not dstDir.exists():
+                dstDir.mkdir(parents=True)
+                print(f"Folder: {dstDir}")
+
+        if item.is_file():
+            shutil.copyfile(item, dst / relSrc)
+            print(f"Copied: {dst / relSrc}")
+    return
+
+
 def readFile(fileName: str) -> str:
     """Read an entire file and return as a string."""
     return Path(fileName).read_text(encoding="utf-8")
@@ -112,7 +133,7 @@ def toUpload(srcPath: str | Path, dstName: str | None = None) -> None:
     return
 
 
-def makeCheckSum(sumFile: str, cwd: str | None = None) -> str:
+def makeCheckSum(sumFile: str, cwd: Path | str | None = None) -> str:
     """Create a SHA256 checksum file."""
     try:
         if cwd is None:
@@ -128,6 +149,32 @@ def makeCheckSum(sumFile: str, cwd: str | None = None) -> str:
         return ""
 
     return shaFile
+
+
+def checkAssetsExist() -> bool:
+    """Check that the necessary assets exist ahead of a build."""
+    hasSample = False
+    hasManual = False
+    hasQmData = False
+
+    sampleZip = os.path.join("novelwriter", "assets", "sample.zip")
+    if os.path.isfile(sampleZip):
+        print(f"Found: {sampleZip}")
+        hasSample = True
+
+    pdfManual = os.path.join("novelwriter", "assets", "manual.pdf")
+    if os.path.isfile(pdfManual):
+        print(f"Found: {pdfManual}")
+        hasManual = True
+
+    i18nAssets = os.path.join("novelwriter", "assets", "i18n")
+    for i18nItem in os.listdir(i18nAssets):
+        i18nPath = os.path.join(i18nAssets, i18nItem)
+        if os.path.isfile(i18nPath) and i18nPath.endswith(".qm"):
+            print(f"Found: {i18nPath}")
+            hasQmData = True
+
+    return hasSample and hasManual and hasQmData
 
 
 # =============================================================================================== #
@@ -484,33 +531,6 @@ def genMacOSPlist() -> None:
     return
 
 
-def checkAssetsExist() -> bool:
-    """Check that the necessary compiled assets exist ahead of a build.
-    """
-    hasSample = False
-    hasManual = False
-    hasQmData = False
-
-    sampleZip = os.path.join("novelwriter", "assets", "sample.zip")
-    if os.path.isfile(sampleZip):
-        print(f"Found: {sampleZip}")
-        hasSample = True
-
-    pdfManual = os.path.join("novelwriter", "assets", "manual.pdf")
-    if os.path.isfile(pdfManual):
-        print(f"Found: {pdfManual}")
-        hasManual = True
-
-    i18nAssets = os.path.join("novelwriter", "assets", "i18n")
-    for i18nItem in os.listdir(i18nAssets):
-        i18nPath = os.path.join(i18nAssets, i18nItem)
-        if os.path.isfile(i18nPath) and i18nPath.endswith(".qm"):
-            print(f"Found: {i18nPath}")
-            hasQmData = True
-
-    return hasSample and hasManual and hasQmData
-
-
 # =============================================================================================== #
 #  Python Packaging
 # =============================================================================================== #
@@ -519,36 +539,32 @@ def checkAssetsExist() -> bool:
 #  Import Translations (import-i18n)
 ##
 
-def importI18nUpdates(sysArgs: list[str]) -> None:
+def importI18nUpdates(args: argparse.Namespace) -> None:
     """Import new translation files from a zip file."""
     print("")
     print("Import Updated Translations")
     print("===========================")
     print("")
 
-    fileName = None
-    if len(sysArgs) >= 2:
-        if os.path.isfile(sysArgs[1]):
-            fileName = sysArgs[1]
-
-    if fileName is None:
+    fileName = Path(args.file).absolute()
+    if not fileName.is_file():
         print("File not found ...")
         sys.exit(1)
 
-    projPath = os.path.join("novelwriter", "assets", "i18n")
-    mainPath = "i18n"
+    dstPath = CURR_DIR / "novelwriter" / "assets" / "i18n"
+    srcPath = CURR_DIR / "i18n"
 
-    print("Loading file: %s" % fileName)
+    print(f"Loading file: {fileName}")
     with zipfile.ZipFile(fileName) as zipObj:
-        for archFile in zipObj.namelist():
-            if archFile.startswith("nw_") and archFile.endswith(".ts"):
-                zipObj.extract(archFile, mainPath)
-                print("Extracted: %s > %s" % (archFile, os.path.join(mainPath, archFile)))
-            elif archFile.startswith("project_") and archFile.endswith(".json"):
-                zipObj.extract(archFile, projPath)
-                print("Extracted: %s > %s" % (archFile, os.path.join(projPath, archFile)))
+        for item in zipObj.namelist():
+            if item.startswith("nw_") and item.endswith(".ts"):
+                zipObj.extract(item, srcPath)
+                print(f"Extracted: {item} > {srcPath / item}")
+            elif item.startswith("project_") and item.endswith(".json"):
+                zipObj.extract(item, dstPath)
+                print(f"Extracted: {item} > {dstPath / item}")
             else:
-                print("Skipped: %s" % archFile)
+                print(f"Skipped: {item}")
 
     print("")
 
@@ -628,7 +644,7 @@ def makeWindowsZip() -> None:
 
 
 ##
-#  Make Debian Package (build-deb)
+#  Make Debian Package
 ##
 
 def makeDebianPackage(
@@ -660,21 +676,20 @@ def makeDebianPackage(
     # Set Up Folder
     # =============
 
-    bldDir = "dist_deb"
+    refDir = CURR_DIR / "setup"
+    bldDir = CURR_DIR / "dist_deb"
     bldPkg = f"novelwriter_{pkgVers}"
-    outDir = f"{bldDir}/{bldPkg}"
-    debDir = f"{outDir}/debian"
-    datDir = f"{outDir}/data"
+    outDir = bldDir / bldPkg
+    debDir = outDir / "debian"
+    datDir = outDir / "data"
 
-    if not os.path.isdir(bldDir):
-        os.mkdir(bldDir)
-
-    if os.path.isdir(outDir):
+    bldDir.mkdir(exist_ok=True)
+    if outDir.exists():
         print("Removing old build files ...")
         print("")
         shutil.rmtree(outDir)
 
-    os.mkdir(outDir)
+    outDir.mkdir(exist_ok=False)
 
     # Check Additional Assets
     # =======================
@@ -688,29 +703,7 @@ def makeDebianPackage(
 
     print("Copying novelWriter source ...")
     print("")
-
-    for nPath, _, nFiles in os.walk("novelwriter"):
-        if nPath.endswith("__pycache__"):
-            print("Skipped: %s" % nPath)
-            continue
-
-        pPath = f"{outDir}/{nPath}"
-        if not os.path.isdir(pPath):
-            os.mkdir(pPath)
-
-        fCount = 0
-        for fFile in nFiles:
-            nFile = f"{nPath}/{fFile}"
-            pFile = f"{pPath}/{fFile}"
-
-            if fFile.endswith(".pyc"):
-                print("Skipped: %s" % nFile)
-                continue
-
-            shutil.copyfile(nFile, pFile)
-            fCount += 1
-
-        print("Copied: %s/*  [Files: %d]" % (nPath, fCount))
+    copySourceCode(outDir)
 
     print("")
     print("Copying or generating additional files ...")
@@ -724,63 +717,60 @@ def makeDebianPackage(
         shutil.copyfile(copyFile, f"{outDir}/{copyFile}")
         print("Copied: %s" % copyFile)
 
-    writeFile(f"{outDir}/MANIFEST.in", (
+    (outDir / "MANIFEST.in").write_text(
         "include LICENSE.md\n"
         "include CREDITS.md\n"
         "include CHANGELOG.md\n"
         "include data/*\n"
         "recursive-include novelwriter/assets *\n"
-    ))
+    )
     print("Wrote:  MANIFEST.in")
 
-    writeFile(f"{outDir}/setup.py", (
+    (outDir / "setup.py").write_text(
         "import setuptools\n"
         "setuptools.setup()\n"
-    ))
+    )
     print("Wrote:  setup.py")
 
     if oldSetuptools:
         # This is needed for Ubuntu up to 22.04
-        setupCfg = readFile("setup/launchpad_setup.cfg").replace(
-            "file: setup/description_pypi.md", "file: data/description_short.txt"
-        )
-        writeFile(f"{outDir}/setup.cfg", setupCfg)
+        text = (CURR_DIR / "setup" / "launchpad_setup.cfg").read_text()
+        text.replace("setup/description_pypi.md", "data/description_short.txt")
+        (outDir / "setup.cfg").write_text(text)
         print("Wrote:  setup.cfg")
 
-        writeFile(f"{outDir}/pyproject.toml", (
+        (outDir / "pyproject.toml").write_text(
             "[build-system]\n"
             "requires = [\"setuptools\"]\n"
             "build-backend = \"setuptools.build_meta\"\n"
-        ))
-        print("Wrote:  pyproject.toml")
-
-    else:
-        pyProject = readFile("pyproject.toml").replace(
-            "setup/description_pypi.md", "data/description_short.txt"
         )
-        writeFile(f"{outDir}/pyproject.toml", pyProject)
+        print("Wrote:  pyproject.toml")
+    else:
+        text = (CURR_DIR / "pyproject.toml").read_text()
+        text.replace("setup/description_pypi.md", "data/description_short.txt")
+        (outDir / "pyproject.toml").write_text(text)
         print("Wrote:  pyproject.toml")
 
     # Copy/Write Debian Files
     # =======================
 
-    shutil.copytree("setup/debian", debDir)
+    shutil.copytree(refDir / "debian", debDir)
     print("Copied: debian/*")
 
-    writeFile(f"{debDir}/changelog", (
+    (debDir / "changelog").write_text(
         f"novelwriter ({pkgVers}) {distName}; urgency=low\n\n"
         f"  * Update to version {pkgVers}\n\n"
         f" -- Veronica Berglyd Olsen <code@vkbo.net>  {pkgDate}\n"
-    ))
+    )
     print("Wrote:  debian/changelog")
 
     # Copy/Write Data Files
     # =====================
 
-    shutil.copytree("setup/data", datDir)
+    shutil.copytree(refDir / "data", datDir)
     print("Copied: data/*")
 
-    shutil.copyfile("setup/description_short.txt", f"{outDir}/data/description_short.txt")
+    shutil.copyfile(refDir / "description_short.txt", outDir / "data" / "description_short.txt")
     print("Copied: data/description_short.txt")
 
     # Build Package
@@ -797,13 +787,12 @@ def makeDebianPackage(
 
     if sourceBuild:
         subprocess.call(["debuild", "-S"] + signArgs, cwd=outDir)
-        toUpload(f"{bldDir}/{bldPkg}.tar.xz")
+        toUpload(bldDir / f"{bldPkg}.tar.xz")
     else:
         subprocess.call(["dpkg-buildpackage"] + signArgs, cwd=outDir)
-        shutil.copyfile(f"{bldDir}/{bldPkg}.tar.xz", f"{bldDir}/{bldPkg}.debian.tar.xz")
-        toUpload(f"{bldDir}/{bldPkg}.debian.tar.xz")
-        toUpload(f"{bldDir}/{bldPkg}_all.deb")
-
+        shutil.copyfile(bldDir / f"{bldPkg}.tar.xz", bldDir / f"{bldPkg}.debian.tar.xz")
+        toUpload(bldDir / f"{bldPkg}.debian.tar.xz")
+        toUpload(bldDir / f"{bldPkg}_all.deb")
         toUpload(makeCheckSum(f"{bldPkg}.debian.tar.xz", cwd=bldDir))
         toUpload(makeCheckSum(f"{bldPkg}_all.deb", cwd=bldDir))
 
@@ -819,17 +808,35 @@ def makeDebianPackage(
 
 
 ##
-#  Make Launchpad Package (build-ubuntu)
+#  Build Debian Package (build-deb)
 ##
 
-def makeForLaunchpad(doSign: bool = False, isFirst: bool = False) -> None:
+def buildDebianPackage(args: argparse.Namespace) -> None:
+    """Build a .deb package"""
+    if not OS_LINUX:
+        print("ERROR: Command 'build-deb' can only be used on Linux")
+        sys.exit(1)
+    signKey = SIGN_KEY if args.sign else None
+    makeDebianPackage(signKey)
+    return
+
+
+##
+#  Build Launchpad Packages (build-ubuntu)
+##
+
+def buildForLaunchpad(args: argparse.Namespace) -> None:
     """Wrapper for building Debian packages for Launchpad."""
+    if not OS_LINUX:
+        print("ERROR: Command 'build-ubuntu' can only be used on Linux")
+        sys.exit(1)
+
     print("")
     print("Launchpad Packages")
     print("==================")
     print("")
 
-    if isFirst:
+    if args.first:
         bldNum = "0"
     else:
         bldNum = input("Build number [0]: ")
@@ -848,10 +855,7 @@ def makeForLaunchpad(doSign: bool = False, isFirst: bool = False) -> None:
         print(f" * Ubuntu {distNum} {codeName.title()}")
     print("")
 
-    if doSign:
-        signKey = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
-    else:
-        signKey = None
+    signKey = SIGN_KEY if args.sign else None
 
     print(f"Sign Key: {str(signKey)}")
     print("")
@@ -1532,40 +1536,8 @@ def xdgUninstall() -> None:
 
 if __name__ == "__main__":
     """Parse command line options and run the commands."""
-    # Detect OS
-    isLinux = sys.platform.startswith("linux")
-    isMacOS = sys.platform.startswith("darwin")
-    isWin = sys.platform.startswith("win32")
-
-    if sys.platform.startswith("linux"):
-        hostOS = OS_LINUX
-    elif sys.platform.startswith("darwin"):
-        hostOS = OS_DARWIN
-    elif sys.platform.startswith("win32"):
-        hostOS = OS_WIN
-    elif sys.platform.startswith("cygwin"):
-        hostOS = OS_WIN
-    else:
-        hostOS = OS_NONE
-
-    sysArgs = sys.argv.copy()
-
     parser = argparse.ArgumentParser()
     parsers = parser.add_subparsers()
-
-    # Sign package
-    if "--sign" in sysArgs:
-        sysArgs.remove("--sign")
-        doSign = True
-    else:
-        doSign = False
-
-    # First build
-    if "--first" in sysArgs:
-        sysArgs.remove("--first")
-        isFirstBuild = True
-    else:
-        isFirstBuild = False
 
     helpMsg = [
         "",
@@ -1630,9 +1602,9 @@ if __name__ == "__main__":
     cmdPipInstall = parsers.add_parser(
         "pip", help="Install all package dependencies for novelWriter using pip."
     )
-    cmdPipInstall.add_argument("--linux", action="store_true", help="For Linux.", default=isLinux)
-    cmdPipInstall.add_argument("--mac", action="store_true", help="For MacOS.", default=isMacOS)
-    cmdPipInstall.add_argument("--win", action="store_true", help="For Windows.", default=isWin)
+    cmdPipInstall.add_argument("--linux", action="store_true", help="For Linux.", default=OS_LINUX)
+    cmdPipInstall.add_argument("--mac", action="store_true", help="For MacOS.", default=OS_DARWIN)
+    cmdPipInstall.add_argument("--win", action="store_true", help="For Windows.", default=OS_WIN)
     cmdPipInstall.set_defaults(func=installPackages)
 
     # Build Clean
@@ -1644,17 +1616,12 @@ if __name__ == "__main__":
     # Additional Builds
     # =================
 
-    # Build Manual
-    cmdBuildManual = parsers.add_parser(
-        "manual", help="Build the help documentation as a PDF (requires LaTeX)."
+    # Import Translations
+    cmdImportTS = parsers.add_parser(
+        "qtlimport", help="Import updated i18n files from a zip file."
     )
-    cmdBuildManual.set_defaults(func=buildPdfManual)
-
-    # Build Sample
-    cmdBuildSample = parsers.add_parser(
-        "sample", help="Build the sample project zip file and add it to assets."
-    )
-    cmdBuildSample.set_defaults(func=buildSampleZip)
+    cmdImportTS.add_argument("file", help="Path to zip file from Crowdin")
+    cmdImportTS.set_defaults(func=importI18nUpdates)
 
     # Update i18n Sources
     cmdUpdateTS = parsers.add_parser(
@@ -1674,6 +1641,18 @@ if __name__ == "__main__":
     )
     cmdBuildQM.set_defaults(func=buildTranslationAssets)
 
+    # Build Manual
+    cmdBuildManual = parsers.add_parser(
+        "manual", help="Build the help documentation as a PDF (requires LaTeX)."
+    )
+    cmdBuildManual.set_defaults(func=buildPdfManual)
+
+    # Build Sample
+    cmdBuildSample = parsers.add_parser(
+        "sample", help="Build the sample project zip file and add it to assets."
+    )
+    cmdBuildSample.set_defaults(func=buildSampleZip)
+
     # Clean Assets
     cmdCleanAssets = parsers.add_parser(
         "clean-assets", help="Delete assets built by manual, sample and qtlrelease."
@@ -1686,41 +1665,38 @@ if __name__ == "__main__":
     )
     cmdBuildAssets.set_defaults(func=buildAllAssets)
 
+    # Python Packaging
+    # ================
+
+    # Build Debian Package
+    cmdBuildDeb = parsers.add_parser(
+        "build-deb", help=(
+            "Build a .deb package for Debian and Ubuntu. "
+            "Add --sign to sign package."
+        )
+    )
+    cmdBuildDeb.add_argument("--sign", action="store_true", help="Sign the package.")
+    cmdBuildDeb.set_defaults(func=buildDebianPackage)
+
+    # Build Ubuntu Packages
+    cmdBuildUbuntu = parsers.add_parser(
+        "build-ubuntu", help=(
+            "Build a .deb package for Debian and Ubuntu. "
+            "Add --sign to sign package. "
+            "Add --first to set build number to 0."
+        )
+    )
+    cmdBuildUbuntu.add_argument("--sign", action="store_true", help="Sign the package.")
+    cmdBuildUbuntu.add_argument("--first", action="store_true", help="Set build number to 0.")
+    cmdBuildUbuntu.set_defaults(func=buildForLaunchpad)
+
     # if "gen-plist" in sysArgs:
     #     sysArgs.remove("gen-plist")
     #     genMacOSPlist()
 
-    # # Python Packaging
-    # # ================
-
-    # if "import-i18n" in sysArgs:
-    #     sysArgs.remove("import-i18n")
-    #     importI18nUpdates(sysArgs)
-    #     sys.exit(0)  # Don't continue execution
-
     # if "windows-zip" in sysArgs:
     #     sysArgs.remove("windows-zip")
     #     makeWindowsZip()
-
-    # if "build-deb" in sysArgs:
-    #     sysArgs.remove("build-deb")
-    #     if hostOS == OS_LINUX:
-    #         if doSign:
-    #             signKey = "D6A9F6B8F227CF7C6F6D1EE84DBBE4B734B0BD08"
-    #         else:
-    #             signKey = None
-    #         makeDebianPackage(signKey=signKey)
-    #     else:
-    #         print("ERROR: Command 'build-deb' can only be used on Linux")
-    #         sys.exit(1)
-
-    # if "build-ubuntu" in sysArgs:
-    #     sysArgs.remove("build-ubuntu")
-    #     if hostOS == OS_LINUX:
-    #         makeForLaunchpad(doSign=doSign, isFirst=isFirstBuild)
-    #     else:
-    #         print("ERROR: Command 'build-ubuntu' can only be used on Linux")
-    #         sys.exit(1)
 
     # if "build-win-exe" in sysArgs:
     #     sysArgs.remove("build-win-exe")
