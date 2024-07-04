@@ -956,7 +956,7 @@ def makeWindowsEmbedded(args: argparse.Namespace) -> None:
     bldDir = CURR_DIR / "dist"
     outDir = bldDir / "novelWriter"
     libDir = outDir / "lib"
-    if outDir.exists:
+    if outDir.exists():
         shutil.rmtree(outDir)
 
     bldDir.mkdir(exist_ok=True)
