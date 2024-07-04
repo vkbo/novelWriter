@@ -21,12 +21,6 @@ python3 pkgutils.py build-assets
 deactivate
 
 echo ""
-echo " Building Windows Source Zip"
-echo "================================================================================"
-echo ""
-python3 pkgutils.py windows-zip
-
-echo ""
 echo " Building Linux Packages"
 echo "================================================================================"
 echo ""
