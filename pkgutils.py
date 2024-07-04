@@ -90,15 +90,14 @@ def stripVersion(version: str) -> str:
         return version
 
 
-def readFile(fileName: str) -> str:
+def readFile(file: Path) -> str:
     """Read an entire file and return as a string."""
-    return Path(fileName).read_text(encoding="utf-8")
+    return file.read_text(encoding="utf-8")
 
 
-def writeFile(fileName: str, text: str) -> None:
+def writeFile(file: Path, text: str) -> int:
     """Write string to file."""
-    Path(fileName).write_text(text, encoding="utf-8")
-    return
+    return file.write_text(text, encoding="utf-8")
 
 
 def toUpload(srcPath: str | Path, dstName: str | None = None) -> None:
@@ -404,11 +403,11 @@ def updateTranslationSources(args: argparse.Namespace) -> None:
             continue
         else:  # Create an empty new language file
             langCode = item.name[3:-3]
-            item.write_text(
+            writeFile(item, (
                 "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                 "<!DOCTYPE TS>\n"
                 f"<TS version=\"2.0\" language=\"{langCode}\" sourcelanguage=\"en_GB\"/>\n"
-            )
+            ))
             translations.append(item)
             print(f"Created: {item}")
 
@@ -556,37 +555,37 @@ def copyPackageFiles(dst: Path, setupPy: bool = False, useCfg: bool = False) -> 
         shutil.copyfile(copyFile, dst / copyFile)
         print("Copied: %s" % copyFile)
 
-    (dst / "MANIFEST.in").write_text(
+    writeFile(dst / "MANIFEST.in", (
         "include LICENSE.md\n"
         "include CREDITS.md\n"
         "recursive-include novelwriter/assets *\n"
-    )
+    ))
     print("Wrote:  MANIFEST.in")
 
     if setupPy:
-        (dst / "setup.py").write_text(
+        writeFile(dst / "setup.py", (
             "import setuptools\n"
             "setuptools.setup()\n"
-        )
+        ))
         print("Wrote:  setup.py")
 
     if useCfg:
         # This is needed for Ubuntu up to 22.04
-        text = (SETUP_DIR / "launchpad_setup.cfg").read_text()
+        text = readFile(SETUP_DIR / "launchpad_setup.cfg")
         text = text.replace("setup/description_pypi.md", "data/description_short.txt")
-        (dst / "setup.cfg").write_text(text)
+        writeFile(dst / "setup.cfg", text)
         print("Wrote:  setup.cfg")
 
-        (dst / "pyproject.toml").write_text(
+        writeFile(dst / "pyproject.toml", (
             "[build-system]\n"
             "requires = [\"setuptools\"]\n"
             "build-backend = \"setuptools.build_meta\"\n"
-        )
+        ))
         print("Wrote:  pyproject.toml")
     else:
-        text = (CURR_DIR / "pyproject.toml").read_text()
+        text = readFile(CURR_DIR / "pyproject.toml")
         text = text.replace("setup/description_pypi.md", "data/description_short.txt")
-        (dst / "pyproject.toml").write_text(text)
+        writeFile(dst / "pyproject.toml", text)
         print("Wrote:  pyproject.toml")
 
     return
@@ -666,11 +665,11 @@ def makeDebianPackage(
     shutil.copytree(SETUP_DIR / "debian", debDir)
     print("Copied: debian/*")
 
-    (debDir / "changelog").write_text(
+    writeFile(debDir / "changelog", (
         f"novelwriter ({pkgVers}) {distName}; urgency=low\n\n"
         f"  * Update to version {pkgVers}\n\n"
         f" -- Veronica Berglyd Olsen <code@vkbo.net>  {pkgDate}\n"
-    )
+    ))
     print("Wrote:  debian/changelog")
 
     # Copy/Write Data Files
@@ -877,19 +876,19 @@ def buildAppImage(args: argparse.Namespace) -> None:
     # Write Metadata
     # ==============
 
-    appDescription = (SETUP_DIR / "description_short.txt").read_text()
-    appdataXML = (SETUP_DIR / "novelwriter.appdata.xml").read_text()
+    appDescription = readFile(SETUP_DIR / "description_short.txt")
+    appdataXML = readFile(SETUP_DIR / "novelwriter.appdata.xml")
     appdataXML = appdataXML.format(description=appDescription)
-    (imgDir / "novelwriter.appdata.xml").write_text(appdataXML)
+    writeFile(imgDir / "novelwriter.appdata.xml", appdataXML)
     print("Wrote:  novelwriter.appdata.xml")
 
-    (imgDir / "entrypoint.sh").write_text(
+    writeFile(imgDir / "entrypoint.sh", (
         '#! /bin/bash \n'
         '{{ python-executable }} -sE ${APPDIR}/opt/python{{ python-version }}/bin/novelwriter "$@"'
-    )
+    ))
     print("Wrote:  entrypoint.sh")
 
-    (imgDir / "requirements.txt").write_text(str(outDir))
+    writeFile(imgDir / "requirements.txt", str(outDir))
     print("Wrote:  requirements.txt")
 
     shutil.copyfile(SETUP_DIR / "data" / "novelwriter.desktop", imgDir / "novelwriter.desktop")
@@ -1031,7 +1030,7 @@ def makeWindowsEmbedded(args: argparse.Namespace) -> None:
 
     print("Updating starting script ...")
 
-    (outDir / "novelWriter.pyw").write_text(
+    writeFile(outDir / "novelWriter.pyw", (
         "#!/usr/bin/env python3\n"
         "import os\n"
         "import sys\n"
@@ -1042,7 +1041,7 @@ def makeWindowsEmbedded(args: argparse.Namespace) -> None:
         "if __name__ == \"__main__\":\n"
         "    import novelwriter\n"
         "    novelwriter.main(sys.argv[1:])\n"
-    )
+    ))
 
     print("Done")
     print("")
@@ -1121,10 +1120,10 @@ def makeWindowsEmbedded(args: argparse.Namespace) -> None:
     print("")
 
     # Read the iss template
-    issData = (SETUP_DIR / "win_setup_embed.iss").read_text()
+    issData = readFile(SETUP_DIR / "win_setup_embed.iss")
     issData = issData.replace(r"%%version%%", numVers)
     issData = issData.replace(r"%%dist%%", str(bldDir))
-    (CURR_DIR / "setup.iss").write_text(issData)
+    writeFile(CURR_DIR / "setup.iss", issData)
     print("")
 
     try:
@@ -1154,7 +1153,7 @@ def genMacOSPlist(args: argparse.Namespace) -> None:
     # These keys are no longer used but are present for compatibility
     pkgVersMaj, pkgVersMin = numVers.split(".")[:2]
 
-    plistXML = (outDir / "Info.plist.template").read_text().format(
+    plistXML = readFile(outDir / "Info.plist.template").format(
         macosBundleSVers=numVers,
         macosBundleVers=numVers,
         macosBundleVersMajor=pkgVersMaj,
@@ -1163,7 +1162,7 @@ def genMacOSPlist(args: argparse.Namespace) -> None:
     )
 
     print(f"Writing Info.plist to {outDir}/Info.plist")
-    (outDir / "Info.plist").write_text(plistXML)
+    writeFile(outDir / "Info.plist", plistXML)
 
     return
 
@@ -1230,9 +1229,9 @@ def xdgInstall(args: argparse.Namespace) -> None:
 
     # Generate launcher
     desktopFile = CURR_DIR / "novelwriter.desktop"
-    desktopData = (SETUP_DIR / "data" / "novelwriter.desktop").read_text()
+    desktopData = readFile(SETUP_DIR / "data" / "novelwriter.desktop")
     desktopData = desktopData.replace("Exec=novelwriter", f"Exec={useExec}")
-    desktopFile.write_text(desktopData)
+    writeFile(desktopFile, desktopData)
 
     # Remove old desktop icon
     exCode = subprocess.call(
@@ -1412,18 +1411,12 @@ if __name__ == "__main__":
     cmdPipInstall.add_argument("--win", action="store_true", help="For Windows.", default=OS_WIN)
     cmdPipInstall.set_defaults(func=installPackages)
 
-    # Build Clean
-    cmdBuildClean = parsers.add_parser(
-        "build-clean", help="Recursively delete all build folders."
-    )
-    cmdBuildClean.set_defaults(func=cleanBuildDirs)
-
     # Additional Builds
     # =================
 
     # Import Translations
     cmdImportTS = parsers.add_parser(
-        "qtlimport", help="Import updated i18n files from a zip file."
+        "qtlimport", help="Import updated i18n files from a Crowdin zip file."
     )
     cmdImportTS.add_argument("file", help="Path to zip file from Crowdin")
     cmdImportTS.set_defaults(func=importI18nUpdates)
@@ -1521,6 +1514,12 @@ if __name__ == "__main__":
         "build-win-exe", help="Build a setup.exe file with Python embedded for Windows."
     )
     cmdBuildSetupExe.set_defaults(func=makeWindowsEmbedded)
+
+    # Build Clean
+    cmdBuildClean = parsers.add_parser(
+        "build-clean", help="Recursively delete all build folders."
+    )
+    cmdBuildClean.set_defaults(func=cleanBuildDirs)
 
     # Generate MacOS PList File
     cmdBuildMacOSPlist = parsers.add_parser(
