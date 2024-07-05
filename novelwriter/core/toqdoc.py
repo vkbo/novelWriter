@@ -26,7 +26,7 @@ from __future__ import annotations
 import logging
 
 from PyQt5.QtGui import (
-    QColor, QFont, QFontMetrics, QTextBlockFormat, QTextCharFormat,
+    QColor, QFont, QFontMetricsF, QTextBlockFormat, QTextCharFormat,
     QTextCursor, QTextDocument
 )
 
@@ -99,8 +99,8 @@ class ToQTextDocument(Tokenizer):
         self._document.clear()
         self._document.setDefaultFont(self._textFont)
 
-        qMetric = QFontMetrics(self._textFont)
-        mScale = qMetric.height()
+        qMetric = QFontMetricsF(self._textFont)
+        mScale = qMetric.ascent()
         fPt = self._textFont.pointSizeF()
 
         # Scaled Sizes
