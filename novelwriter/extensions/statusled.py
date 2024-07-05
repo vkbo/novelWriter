@@ -28,6 +28,7 @@ import logging
 from PyQt5.QtGui import QColor, QPainter, QPaintEvent
 from PyQt5.QtWidgets import QAbstractButton, QWidget
 
+from novelwriter import CONFIG
 from novelwriter.enum import nwTrinary
 from novelwriter.types import QtBlack, QtPaintAnitAlias
 
@@ -36,6 +37,10 @@ logger = logging.getLogger(__name__)
 
 class StatusLED(QAbstractButton):
 
+    __slots__ = (
+        "_neutral", "_postitve", "_negative", "_color", "_state", "_bPx"
+    )
+
     def __init__(self, sW: int, sH: int, parent: QWidget | None = None) -> None:
         super().__init__(parent=parent)
         self._neutral = QtBlack
@@ -43,6 +48,7 @@ class StatusLED(QAbstractButton):
         self._negative = QtBlack
         self._color = QtBlack
         self._state = nwTrinary.NEUTRAL
+        self._bPx = CONFIG.pxInt(1)
         self.setFixedWidth(sW)
         self.setFixedHeight(sH)
         return
@@ -76,8 +82,12 @@ class StatusLED(QAbstractButton):
         """Draw the LED."""
         painter = QPainter(self)
         painter.setRenderHint(QtPaintAnitAlias, True)
-        painter.setPen(self.palette().dark().color())
+        painter.setPen(self.palette().mid().color())
         painter.setBrush(self._color)
         painter.setOpacity(1.0)
-        painter.drawEllipse(1, 1, self.width() - 2, self.height() - 2)
+        painter.drawEllipse(
+            self._bPx, self._bPx,
+            self.width() - 2*self._bPx,
+            self.height() - 2*self._bPx
+        )
         return
