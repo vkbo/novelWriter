@@ -100,18 +100,18 @@ class ToQTextDocument(Tokenizer):
         self._document.setDefaultFont(self._textFont)
 
         qMetric = QFontMetricsF(self._textFont)
-        mScale = qMetric.ascent()
+        mPx = qMetric.ascent()  # 1 em in pixels
         fPt = self._textFont.pointSizeF()
 
         # Scaled Sizes
         # ============
 
         self._mHead = {
-            self.T_TITLE: (mScale * self._marginTitle[0], mScale * self._marginTitle[1]),
-            self.T_HEAD1: (mScale * self._marginHead1[0], mScale * self._marginHead1[1]),
-            self.T_HEAD2: (mScale * self._marginHead2[0], mScale * self._marginHead2[1]),
-            self.T_HEAD3: (mScale * self._marginHead3[0], mScale * self._marginHead3[1]),
-            self.T_HEAD4: (mScale * self._marginHead4[0], mScale * self._marginHead4[1]),
+            self.T_TITLE: (mPx * self._marginTitle[0], mPx * self._marginTitle[1]),
+            self.T_HEAD1: (mPx * self._marginHead1[0], mPx * self._marginHead1[1]),
+            self.T_HEAD2: (mPx * self._marginHead2[0], mPx * self._marginHead2[1]),
+            self.T_HEAD3: (mPx * self._marginHead3[0], mPx * self._marginHead3[1]),
+            self.T_HEAD4: (mPx * self._marginHead4[0], mPx * self._marginHead4[1]),
         }
 
         self._sHead = {
@@ -122,12 +122,12 @@ class ToQTextDocument(Tokenizer):
             self.T_HEAD4: nwHeaders.H_SIZES.get(4, 1.0) * fPt,
         }
 
-        self._mText = (mScale * self._marginText[0], mScale * self._marginText[1])
-        self._mMeta = (mScale * self._marginMeta[0], mScale * self._marginMeta[1])
-        self._mSep  = (mScale * self._marginSep[0], mScale * self._marginSep[1])
+        self._mText = (mPx * self._marginText[0], mPx * self._marginText[1])
+        self._mMeta = (mPx * self._marginMeta[0], mPx * self._marginMeta[1])
+        self._mSep  = (mPx * self._marginSep[0], mPx * self._marginSep[1])
 
-        self._mIndent = mScale * 2.0
-        self._tIndent = mScale * self._firstWidth
+        self._mIndent = mPx * 2.0
+        self._tIndent = mPx * self._firstWidth
 
         # Block Format
         # ============
