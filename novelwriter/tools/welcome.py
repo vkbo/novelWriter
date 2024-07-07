@@ -208,6 +208,7 @@ class GuiWelcome(NDialog):
         """Show the create new project page."""
         self.mainStack.setCurrentWidget(self.tabNew)
         self._setButtonVisibility()
+        self.tabNew.enterForm()
         return
 
     @pyqtSlot()
@@ -503,6 +504,8 @@ class _NewProjectPage(QWidget):
         self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
+        self.enterForm = self.projectForm.enterForm
+
         # Assemble
         # ========
 
@@ -694,6 +697,12 @@ class _NewProjectForm(QWidget):
         self._updateProjPath()
         self._updateFillInfo()
 
+        return
+
+    def enterForm(self) -> None:
+        """Focus the project name field when entering the form."""
+        self.projName.setFocus()
+        self.projName.selectAll()
         return
 
     def getProjectData(self) -> dict:
