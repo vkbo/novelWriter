@@ -1325,6 +1325,89 @@ def testCoreToken_SpecialFormat(mockGUI):
 
 
 @pytest.mark.core
+def testCoreToken_TextIndent(mockGUI):
+    """Test the handling of text indent in the Tokenizer class."""
+    project = NWProject()
+    tokens = BareTokenizer(project)
+
+    # No First Indent
+    tokens.setFirstLineIndent(True, 1.0, False)
+
+    assert tokens._noIndent is False
+    assert tokens._firstIndent is True
+    assert tokens._firstWidth == 1.0
+    assert tokens._indentFirst is False
+
+    # Page One
+    # Two paragraphs in the same scene
+    tokens._text = (
+        "# Title One\n\n"
+        "### Scene One\n\n"
+        "First paragraph.\n\n"
+        "Second paragraph.\n\n"
+    )
+    tokens.tokenizeText()
+    assert tokens._tokens == [
+        (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_NONE),
+        (Tokenizer.T_HEAD3, 2, "Scene One", [], Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  2, "First paragraph.", [], Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  2, "Second paragraph.", [], Tokenizer.A_IND_T),
+    ]
+    assert tokens._noIndent is False
+
+    # Page Two
+    # New scene with only a synopsis
+    tokens._text = (
+        "### Scene Two\n\n"
+        "%Synopsis: Stuff happens.\n\n"
+    )
+    tokens.tokenizeText()
+    assert tokens._tokens == [
+        (Tokenizer.T_HEAD3,    1, "Scene Two", [], Tokenizer.A_NONE),
+        (Tokenizer.T_SYNOPSIS, 1, "Stuff happens.", [], Tokenizer.A_NONE),
+    ]
+    assert tokens._noIndent is True
+
+    # Page Three
+    # Two paragraphs for the scene on the previous page
+    tokens._text = (
+        "First paragraph.\n\n"
+        "Second paragraph.\n\n"
+    )
+    tokens.tokenizeText()
+    assert tokens._tokens == [
+        (Tokenizer.T_TEXT, 0, "First paragraph.", [], Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT, 0, "Second paragraph.", [], Tokenizer.A_IND_T),
+    ]
+    assert tokens._noIndent is False
+
+    # First Indent
+    tokens.setFirstLineIndent(True, 1.0, True)
+
+    assert tokens._noIndent is False
+    assert tokens._firstIndent is True
+    assert tokens._firstWidth == 1.0
+    assert tokens._indentFirst is True
+
+    # Page Four
+    # Two paragraphs in the same scene
+    tokens._text = (
+        "# Title One\n\n"
+        "### Scene One\n\n"
+        "First paragraph.\n\n"
+        "Second paragraph.\n\n"
+    )
+    tokens.tokenizeText()
+    assert tokens._tokens == [
+        (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_NONE),
+        (Tokenizer.T_HEAD3, 2, "Scene One", [], Tokenizer.A_NONE),
+        (Tokenizer.T_TEXT,  2, "First paragraph.", [], Tokenizer.A_IND_T),
+        (Tokenizer.T_TEXT,  2, "Second paragraph.", [], Tokenizer.A_IND_T),
+    ]
+    assert tokens._noIndent is False
+
+
+@pytest.mark.core
 def testCoreToken_ProcessHeaders(mockGUI):
     """Test the header and page parser of the Tokenizer class."""
     project = NWProject()
