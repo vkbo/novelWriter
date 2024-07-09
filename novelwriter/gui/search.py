@@ -208,6 +208,12 @@ class GuiProjectSearch(QWidget):
         self.searchResult.clear()
         return
 
+    def refreshCurrentSearch(self) -> None:
+        """Refresh the search if there is one."""
+        if self.searchResult.topLevelItemCount() > 0:
+            self._processSearch()
+        return
+
     ##
     #  Events
     ##
@@ -259,7 +265,7 @@ class GuiProjectSearch(QWidget):
         if not self._blocked:
             QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
             start = time()
-            SHARED.saveDocument()
+            SHARED.saveEditor()
             self._blocked = True
             self._map = {}
             self.searchResult.clear()
@@ -298,18 +304,21 @@ class GuiProjectSearch(QWidget):
     def _toggleCase(self, state: bool) -> None:
         """Enable/disable case sensitive mode."""
         CONFIG.searchProjCase = state
+        self.refreshCurrentSearch()
         return
 
     @pyqtSlot(bool)
     def _toggleWord(self, state: bool) -> None:
         """Enable/disable whole word search mode."""
         CONFIG.searchProjWord = state
+        self.refreshCurrentSearch()
         return
 
     @pyqtSlot(bool)
     def _toggleRegEx(self, state: bool) -> None:
         """Enable/disable regular expression search mode."""
         CONFIG.searchProjRegEx = state
+        self.refreshCurrentSearch()
         return
 
     ##

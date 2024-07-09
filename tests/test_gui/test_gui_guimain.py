@@ -32,7 +32,7 @@ from PyQt5.QtWidgets import QInputDialog, QMenu
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.editlabel import GuiEditLabel
-from novelwriter.enum import nwItemType, nwView, nwWidget
+from novelwriter.enum import nwDocAction, nwFocus, nwItemType, nwView
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.noveltree import GuiNovelView
 from novelwriter.gui.outline import GuiOutlineView
@@ -64,7 +64,21 @@ def testGuiMain_Launch(qtbot, monkeypatch, nwGUI, projPath):
 
     # Open Lipsum project
     nwGUI.postLaunchTasks(projPath)
+    assert SHARED.hasProject is True
     nwGUI.closeProject()
+    assert SHARED.hasProject is False
+
+    # Open as if called from Welcome
+    nwGUI._openProjectFromWelcome(projPath)
+    assert SHARED.hasProject is True
+    nwGUI.closeProject()
+    assert SHARED.hasProject is False
+
+    # Open as if called from Welcome, invalid path
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI, "showWelcomeDialog", lambda *a: None)
+        nwGUI._openProjectFromWelcome(None)
+        assert SHARED.hasProject is False
 
     # Project open fails
     with monkeypatch.context() as mp:
@@ -113,7 +127,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Project Tree has focus
     nwGUI._changeView(nwView.PROJECT)
-    nwGUI.switchFocus(nwWidget.TREE)
+    nwGUI._switchFocus(nwFocus.TREE)
     nwGUI.projStack.setCurrentIndex(0)
     with monkeypatch.context() as mp:
         mp.setattr(GuiProjectTree, "hasFocus", lambda *a: True)
@@ -137,7 +151,7 @@ def testGuiMain_ProjectTreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Project Outline has focus
     nwGUI._changeView(nwView.OUTLINE)
-    nwGUI.switchFocus(nwWidget.OUTLINE)
+    nwGUI._switchFocus(nwFocus.OUTLINE)
     with monkeypatch.context() as mp:
         mp.setattr(GuiOutlineView, "treeHasFocus", lambda *a: True)
         assert nwGUI.docEditor.docHandle is None
@@ -230,7 +244,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     CONFIG.autoScroll = True
 
     # Add a Character File
-    nwGUI.switchFocus(nwWidget.TREE)
+    nwGUI._switchFocus(nwFocus.TREE)
     nwGUI.projView.projTree.clearSelection()
     nwGUI.projView.projTree._getTreeItem(C.hCharRoot).setSelected(True)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
@@ -250,7 +264,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     docEditor._qDocument.syntaxHighlighter.initHighlighter()
 
     # Type something into the document
-    nwGUI.switchFocus(nwWidget.EDITOR)
+    nwGUI.docEditor.setFocus()
     qtbot.keyClick(docEditor, "a", modifier=Qt.ControlModifier, delay=KEY_DELAY)
     for c in "# Jane Doe":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
@@ -265,14 +279,14 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     qtbot.keyClick(docEditor, Qt.Key_Return, delay=KEY_DELAY)
 
     # Add a Plot File
-    nwGUI.switchFocus(nwWidget.TREE)
+    nwGUI._switchFocus(nwFocus.TREE)
     nwGUI.projView.projTree.clearSelection()
     nwGUI.projView.projTree._getTreeItem(C.hPlotRoot).setSelected(True)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
     nwGUI.openSelectedItem()
 
     # Type something into the document
-    nwGUI.switchFocus(nwWidget.EDITOR)
+    nwGUI.docEditor.setFocus()
     qtbot.keyClick(docEditor, "a", modifier=Qt.ControlModifier, delay=KEY_DELAY)
     for c in "# Main Plot":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
@@ -287,7 +301,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     qtbot.keyClick(docEditor, Qt.Key_Return, delay=KEY_DELAY)
 
     # Add a World File
-    nwGUI.switchFocus(nwWidget.TREE)
+    nwGUI._switchFocus(nwFocus.TREE)
     nwGUI.projView.projTree.clearSelection()
     nwGUI.projView.projTree._getTreeItem(C.hWorldRoot).setSelected(True)
     nwGUI.projView.projTree.newTreeItem(nwItemType.FILE, None, isNote=True)
@@ -299,7 +313,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     docEditor.replaceText("")
 
     # Type something into the document
-    nwGUI.switchFocus(nwWidget.EDITOR)
+    nwGUI.docEditor.setFocus()
     qtbot.keyClick(docEditor, "a", modifier=Qt.ControlModifier, delay=KEY_DELAY)
     for c in "# Main Location":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
@@ -318,7 +332,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     nwGUI._autoSaveProject()
 
     # Select the 'New Scene' file
-    nwGUI.switchFocus(nwWidget.TREE)
+    nwGUI._switchFocus(nwFocus.TREE)
     nwGUI.projView.projTree.clearSelection()
     nwGUI.projView.projTree._getTreeItem(C.hNovelRoot).setExpanded(True)
     nwGUI.projView.projTree._getTreeItem(C.hChapterDir).setExpanded(True)
@@ -326,7 +340,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     nwGUI.openSelectedItem()
 
     # Type something into the document
-    nwGUI.switchFocus(nwWidget.EDITOR)
+    nwGUI.docEditor.setFocus()
     qtbot.keyClick(docEditor, "a", modifier=Qt.ControlModifier, delay=KEY_DELAY)
     for c in "# Novel":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
@@ -535,7 +549,7 @@ def testGuiMain_Editing(qtbot, monkeypatch, nwGUI, projPath, tstPaths, mockRnd):
     nwGUI.rebuildIndex()
 
     # Open and view the edited document
-    nwGUI.switchFocus(nwWidget.VIEWER)
+    nwGUI.docViewer.setFocus()
     assert nwGUI.openDocument(C.hSceneDoc)
     assert nwGUI.viewDocument(C.hSceneDoc)
     assert nwGUI.saveProject()
@@ -687,5 +701,120 @@ def testGuiMain_Features(qtbot, nwGUI, projPath, mockRnd):
     # Just make sure the custom event handler executes and doesn't fail
     nwGUI.sideBar.mSettings.show()
     nwGUI.sideBar.mSettings.hide()
+
+    # qtbot.stop()
+
+
+@pytest.mark.gui
+def testGuiMain_FocusView(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
+    """Test switching focus and view of the main window."""
+    buildTestProject(nwGUI, projPath)
+
+    nwGUI.openDocument(C.hSceneDoc)
+    nwGUI.viewDocument(C.hSceneDoc)
+
+    # Toggle Focus
+    # ============
+    nwGUI.docEditor.setFocus()
+    assert nwGUI.docEditor.anyFocus()
+
+    # Simulate focus change to viewer
+    nwGUI._appFocusChanged(None, nwGUI.docViewer)
+    assert nwGUI.docEditor.docHeader.itemTitle._state is False
+    assert nwGUI.docViewer.docHeader.itemTitle._state is True
+
+    # Simulate focus change to editor
+    nwGUI._appFocusChanged(None, nwGUI.docEditor)
+    assert nwGUI.docEditor.docHeader.itemTitle._state is True
+    assert nwGUI.docViewer.docHeader.itemTitle._state is False
+
+    # Focus Tree
+    # ==========
+    assert nwGUI.projStack.currentWidget() == nwGUI.projView
+
+    # Switch from editor to project tree
+    nwGUI.docEditor.setFocus()
+    nwGUI._switchFocus(nwFocus.TREE)
+    assert nwGUI.projStack.currentWidget() == nwGUI.projView
+
+    # Triggering again should switch to novel view
+    nwGUI._switchFocus(nwFocus.TREE)
+    assert nwGUI.projStack.currentWidget() == nwGUI.novelView
+
+    # Switch from editor to novel view
+    nwGUI.docEditor.setFocus()
+    nwGUI._switchFocus(nwFocus.TREE)
+    assert nwGUI.projStack.currentWidget() == nwGUI.novelView
+
+    # Triggering again should switch back to project tree
+    nwGUI._switchFocus(nwFocus.TREE)
+    assert nwGUI.projStack.currentWidget() == nwGUI.projView
+
+    # If in search mode, should default to project tree
+    nwGUI._changeView(nwView.SEARCH)
+    nwGUI._switchFocus(nwFocus.TREE)
+    assert nwGUI.projStack.currentWidget() == nwGUI.projView
+
+    # Focus Document
+    # ==============
+    nwGUI._switchFocus(nwFocus.TREE)
+
+    def mockEmitEditorFocus(*a):
+        nwGUI._appFocusChanged(None, nwGUI.docEditor)
+
+    def mockEmitViewerFocus(*a):
+        nwGUI._appFocusChanged(None, nwGUI.docViewer)
+
+    # Switch to viewer
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docEditor, "hasFocus", lambda *a: True)
+        mp.setattr(nwGUI.docViewer, "hasFocus", lambda *a: False)
+        mp.setattr(nwGUI.docEditor, "setFocus", mockEmitEditorFocus)
+        mp.setattr(nwGUI.docViewer, "setFocus", mockEmitViewerFocus)
+        nwGUI._switchFocus(nwFocus.DOCUMENT)
+        assert nwGUI.docEditor.docHeader.itemTitle._state is False
+        assert nwGUI.docViewer.docHeader.itemTitle._state is True
+
+    # Call again to switch to editor
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docEditor, "hasFocus", lambda *a: False)
+        mp.setattr(nwGUI.docViewer, "hasFocus", lambda *a: True)
+        mp.setattr(nwGUI.docEditor, "setFocus", mockEmitEditorFocus)
+        mp.setattr(nwGUI.docViewer, "setFocus", mockEmitViewerFocus)
+        nwGUI._switchFocus(nwFocus.DOCUMENT)
+        assert nwGUI.docEditor.docHeader.itemTitle._state is True
+        assert nwGUI.docViewer.docHeader.itemTitle._state is False
+
+    # Default to editor
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docEditor, "hasFocus", lambda *a: False)
+        mp.setattr(nwGUI.docViewer, "hasFocus", lambda *a: False)
+        mp.setattr(nwGUI.docEditor, "setFocus", mockEmitEditorFocus)
+        mp.setattr(nwGUI.docViewer, "setFocus", mockEmitViewerFocus)
+        nwGUI._switchFocus(nwFocus.DOCUMENT)
+        assert nwGUI.docEditor.docHeader.itemTitle._state is True
+        assert nwGUI.docViewer.docHeader.itemTitle._state is False
+
+    # Focus Outline
+    # =============
+    nwGUI._switchFocus(nwFocus.OUTLINE)
+    assert nwGUI.mainStack.currentWidget() == nwGUI.outlineView
+
+    # Pass Actions
+    # ============
+
+    # Pass to editor
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docEditor, "hasFocus", lambda *a: True)
+        mp.setattr(nwGUI.docViewer, "hasFocus", lambda *a: False)
+        nwGUI._passDocumentAction(nwDocAction.SEL_ALL)
+        assert nwGUI.docEditor.textCursor().hasSelection() is True
+
+    # Pass to viewer
+    with monkeypatch.context() as mp:
+        mp.setattr(nwGUI.docEditor, "hasFocus", lambda *a: False)
+        mp.setattr(nwGUI.docViewer, "hasFocus", lambda *a: True)
+        nwGUI._passDocumentAction(nwDocAction.SEL_ALL)
+        assert nwGUI.docViewer.textCursor().hasSelection() is True
 
     # qtbot.stop()

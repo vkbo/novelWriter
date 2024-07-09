@@ -73,29 +73,29 @@ def testCoreBuildSettings_ClassAttributes(fncPath: Path):
     assert isUUID(build.buildID)
 
     # Last path must be valid, if not it defaults to $HOME
-    build.setLastPath("/path/to/nowhere")
-    assert build.lastPath == CONFIG.homePath()
+    build.setLastBuildPath("/path/to/nowhere")
+    assert build.lastBuildPath == CONFIG.homePath()
 
-    build.setLastPath(None)
-    assert build.lastPath == CONFIG.homePath()
+    build.setLastBuildPath(None)
+    assert build.lastBuildPath == CONFIG.homePath()
 
     (fncPath / "test.txt").write_text("foobar")
-    build.setLastPath(fncPath / "test.txt")  # Can't be a file
-    assert build.lastPath == CONFIG.homePath()
+    build.setLastBuildPath(fncPath / "test.txt")  # Can't be a file
+    assert build.lastBuildPath == CONFIG.homePath()
 
-    build.setLastPath(fncPath)
-    assert build.lastPath == fncPath
+    build.setLastBuildPath(fncPath)
+    assert build.lastBuildPath == fncPath
 
-    build.setLastPath(str(fncPath))  # String paths are also ok
-    assert build.lastPath == fncPath
+    build.setLastBuildPath(str(fncPath))  # String paths are also ok
+    assert build.lastBuildPath == fncPath
 
     # Last path no longer exists -> fallback to $HOME
     testDir = fncPath / "test_dir"
     testDir.mkdir()
-    build.setLastPath(testDir)
-    assert build.lastPath == testDir
+    build.setLastBuildPath(testDir)
+    assert build.lastBuildPath == testDir
     testDir.rmdir()
-    assert build.lastPath == CONFIG.homePath()
+    assert build.lastBuildPath == CONFIG.homePath()
 
     # Last build name
     build.setLastBuildName(None)  # type: ignore
@@ -119,7 +119,7 @@ def testCoreBuildSettings_ClassAttributes(fncPath: Path):
     # Set some sensible values
     build.setName("Test Build")
     build.setBuildID("5cf45d24-f496-42c9-8733-529a9e52a62b")
-    build.setLastPath(fncPath)
+    build.setLastBuildPath(fncPath)
     build.setLastBuildName("Build Name")
     build.setLastFormat(nwBuildFmt.HTML)
 

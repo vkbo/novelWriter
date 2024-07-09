@@ -58,7 +58,7 @@ class GuiDocMerge(NDialog):
         self.headLabel.setFont(SHARED.theme.guiFontB)
         self.helpLabel = NColourLabel(
             self.tr("Drag and drop items to change the order, or uncheck to exclude."),
-            SHARED.theme.helpText, parent=self, wrap=True
+            self, color=SHARED.theme.helpText, wrap=True
         )
 
         iPx = SHARED.theme.baseIconHeight

@@ -215,7 +215,7 @@ class GuiOutlineToolBar(QToolBar):
 
         # Novel Selector
         self.novelLabel = NColourLabel(
-            self.tr("Outline of"), parent=self, scale=NColourLabel.HEADER_SCALE, bold=True
+            self.tr("Outline of"), self, scale=NColourLabel.HEADER_SCALE, bold=True
         )
         self.novelLabel.setContentsMargins(0, 0, CONFIG.pxInt(12), 0)
 
@@ -268,6 +268,7 @@ class GuiOutlineToolBar(QToolBar):
         self.aExport.setIcon(SHARED.theme.getIcon("export"))
         self.tbColumns.setIcon(SHARED.theme.getIcon("menu"))
         self.tbColumns.setStyleSheet("QToolButton::menu-indicator {image: none;}")
+        self.novelLabel.setTextColors(color=self.palette().windowText().color())
         return
 
     def populateNovelList(self) -> None:
@@ -523,12 +524,12 @@ class GuiOutlineTree(QTreeWidget):
     @pyqtSlot()
     def exportOutline(self) -> None:
         """Export the outline as a CSV file."""
-        path = CONFIG.lastPath() / f"{makeFileNameSafe(SHARED.project.data.name)}.csv"
+        path = CONFIG.lastPath("outline") / f"{makeFileNameSafe(SHARED.project.data.name)}.csv"
         path, _ = QFileDialog.getSaveFileName(
             self, self.tr("Save Outline As"), str(path), formatFileFilter(["*.csv", "*"])
         )
         if path:
-            CONFIG.setLastPath(path)
+            CONFIG.setLastPath("outline", path)
             logger.info("Writing CSV file: %s", path)
             cols = [col for col in self._treeOrder if not self._colHidden[col]]
             order = [self._colIdx[col] for col in cols]

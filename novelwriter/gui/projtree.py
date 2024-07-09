@@ -997,7 +997,7 @@ class GuiProjectTree(QTreeWidget):
             trItemP.takeChild(tIndex)
 
             for dHandle in reversed(self.getTreeFromHandle(tHandle)):
-                SHARED.closeDocument(dHandle)
+                SHARED.closeEditor(dHandle)
                 SHARED.project.removeItem(dHandle)
                 self._treeMap.pop(dHandle, None)
 
@@ -1404,7 +1404,7 @@ class GuiProjectTree(QTreeWidget):
                 return False
 
             # Save the open document first, in case it's part of merge
-            SHARED.saveDocument()
+            SHARED.saveEditor()
 
             # Create merge object, and append docs
             docMerger = DocMerger(SHARED.project)
@@ -1805,7 +1805,7 @@ class _TreeContextMenu(QMenu):
 
     def _itemHeader(self) -> None:
         """Check if there is a header that can be used for rename."""
-        SHARED.ensureEditorSaved(self._handle)
+        SHARED.saveEditor()
         if hItem := SHARED.project.index.getItemHeading(self._handle, "T0001"):
             action = self.addAction(self.tr("Rename to Heading"))
             action.triggered.connect(

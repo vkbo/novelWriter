@@ -1,0 +1,37 @@
+name: BuildWindows
+
+on: workflow_dispatch
+
+jobs:
+  buildAssets:
+    uses: ./.github/workflows/build_assets.yml
+
+  buildWin64:
+    needs: buildAssets
+    runs-on: windows-latest
+    steps:
+      - name: Python Setup
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          architecture: x64
+
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: nw-assets
+          path: novelwriter/assets
+
+      - name: Build Setup Installer
+        run: python pkgutils.py build-win-exe
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Win-Setup
+          path: dist/*.exe
+          if-no-files-found: error
+          retention-days: 14

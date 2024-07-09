@@ -198,6 +198,7 @@ class Tokenizer(ABC):
         # Instance Variables
         self._hFormatter = HeadingFormatter(self._project)
         self._noSep      = True   # Flag to indicate that we don't want a scene separator
+        self._noIndent   = False  # Flag to disable text indent on next paragraph
         self._showDialog = False  # Flag for dialogue highlighting
 
         # This File
@@ -873,7 +874,6 @@ class Tokenizer(ABC):
         pLines: list[T_Token] = []
 
         tCount = len(tokens)
-        pIndent = True
         for n, cToken in enumerate(tokens):
 
             if n > 0:
@@ -881,11 +881,11 @@ class Tokenizer(ABC):
             if n < tCount - 1:
                 nToken = tokens[n+1]  # Look ahead
 
-            if not self._indentFirst and cToken[0] in self.L_SKIP_INDENT:
+            if cToken[0] in self.L_SKIP_INDENT and not self._indentFirst:
                 # Unless the indentFirst flag is set, we set up the next
                 # paragraph to not be indented if we see a block of a
                 # specific type
-                pIndent = False
+                self._noIndent = True
 
             if cToken[0] == self.T_EMPTY:
                 # We don't need to keep the empty lines after this pass
@@ -910,7 +910,7 @@ class Tokenizer(ABC):
                     # Next token is not text, so we add the buffer to tokens
                     nLines = len(pLines)
                     cStyle = pLines[0][4]
-                    if self._firstIndent and pIndent and not cStyle & self.M_ALIGNED:
+                    if self._firstIndent and not (self._noIndent or cStyle & self.M_ALIGNED):
                         # If paragraph indentation is enabled, not temporarily
                         # turned off, and the block is not aligned, we add the
                         # text indentation flag
@@ -938,7 +938,7 @@ class Tokenizer(ABC):
 
                     # Reset buffer and make sure text indent is on for next pass
                     pLines = []
-                    pIndent = True
+                    self._noIndent = False
 
             else:
                 self._tokens.append(cToken)

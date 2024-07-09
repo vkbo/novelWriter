@@ -203,7 +203,7 @@ class NScrollableForm(QScrollArea):
 
         if helpText:
             qHelp = NColourLabel(
-                str(helpText), color=self._helpCol, parent=self,
+                str(helpText), self, color=self._helpCol,
                 scale=self._fontScale, wrap=True, indent=self._indent
             )
             labelBox = QVBoxLayout()
@@ -252,10 +252,19 @@ class NColourLabel(QLabel):
     HELP_SCALE = DEFAULT_SCALE
     HEADER_SCALE = 1.25
 
-    def __init__(self, text: str, color: QColor | None = None, parent: QWidget | None = None,
-                 scale: float = HELP_SCALE, wrap: bool = False, indent: int = 0,
-                 bold: bool = False) -> None:
+    _state = None
+
+    def __init__(
+        self, text: str, parent: QWidget, *,
+        color: QColor | None = None, faded: QColor | None = None,
+        scale: float = HELP_SCALE, wrap: bool = False, indent: int = 0,
+        bold: bool = False
+    ) -> None:
         super().__init__(text, parent=parent)
+
+        default = self.palette().windowText().color()
+        self._color = color or default
+        self._faded = faded or default
 
         font = self.font()
         font.setPointSizeF(scale*font.pointSizeF())
@@ -268,7 +277,32 @@ class NColourLabel(QLabel):
         self.setFont(font)
         self.setIndent(indent)
         self.setWordWrap(wrap)
+        self.setColorState(True)
 
+        return
+
+    def setTextColors(self, *, color: QColor | None = None, faded: QColor | None = None) -> None:
+        """Set or update the text colours."""
+        self._color = color or self._color
+        self._faded = faded or self._faded
+        self._refeshTextColor()
+        return
+
+    def setColorState(self, state: bool) -> None:
+        """Change the colour state."""
+        if self._state is not state:
+            self._state = state
+            self._refeshTextColor()
+        return
+
+    def _refeshTextColor(self) -> None:
+        """Refresh the colour of the text on the label."""
+        palette = self.palette()
+        palette.setColor(
+            QPalette.ColorRole.WindowText,
+            self._color if self._state else self._faded,
+        )
+        self.setPalette(palette)
         return
 
 

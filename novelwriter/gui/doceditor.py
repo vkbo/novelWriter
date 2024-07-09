@@ -55,6 +55,7 @@ from novelwriter.common import minmax, transferCase
 from novelwriter.constants import nwConst, nwKeyWords, nwShortcode, nwUnicode
 from novelwriter.core.document import NWDocument
 from novelwriter.enum import nwComment, nwDocAction, nwDocInsert, nwDocMode, nwItemClass, nwTrinary
+from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton
 from novelwriter.gui.dochighlight import BLOCK_META, BLOCK_TITLE
@@ -210,6 +211,7 @@ class GuiDocEditor(QPlainTextEdit):
         # Function Mapping
         self.closeSearch = self.docSearch.closeSearch
         self.searchVisible = self.docSearch.isVisible
+        self.changeFocusState = self.docHeader.changeFocusState
 
         # Finalise
         self.updateSyntaxColours()
@@ -435,11 +437,6 @@ class GuiDocEditor(QPlainTextEdit):
             self.statusMessage.emit(self.tr("Opened Document: {0}").format(self._nwItem.itemName))
 
         return True
-
-    def updateTagHighLighting(self) -> None:
-        """Rerun the syntax highlighter on all meta data lines."""
-        self._qDocument.syntaxHighlighter.rehighlightByType(BLOCK_META)
-        return
 
     def replaceText(self, text: str) -> None:
         """Replace the text of the current document with the provided
@@ -1032,6 +1029,13 @@ class GuiDocEditor(QPlainTextEdit):
             self.closeSearch()
         else:
             self.beginSearch()
+        return
+
+    @pyqtSlot(list, list)
+    def updateChangedTags(self, updated: list[str], deleted: list[str]) -> None:
+        """Tags have changed, so just in case we rehighlight them."""
+        if updated or deleted:
+            self._qDocument.syntaxHighlighter.rehighlightByType(BLOCK_META)
         return
 
     ##
@@ -1922,8 +1926,6 @@ class GuiDocEditor(QPlainTextEdit):
                 ).format(tag)):
                     itemClass = nwKeyWords.KEY_CLASS.get(tBits[0], nwItemClass.NO_CLASS)
                     self.requestNewNoteCreation.emit(tag, itemClass)
-                    QApplication.processEvents()
-                    self._qDocument.syntaxHighlighter.rehighlightBlock(block)
 
             return nwTrinary.POSITIVE if exist else nwTrinary.NEGATIVE
 
@@ -2785,8 +2787,7 @@ class GuiDocEditHeader(QWidget):
         self.setAutoFillBackground(True)
 
         # Title Label
-        self.itemTitle = QLabel("", self)
-        self.itemTitle.setIndent(0)
+        self.itemTitle = NColourLabel("", self, faded=SHARED.theme.fadedText)
         self.itemTitle.setMargin(0)
         self.itemTitle.setContentsMargins(0, 0, 0, 0)
         self.itemTitle.setAutoFillBackground(True)
@@ -2918,10 +2919,15 @@ class GuiDocEditHeader(QWidget):
         palette.setColor(QPalette.ColorRole.Window, SHARED.theme.colBack)
         palette.setColor(QPalette.ColorRole.WindowText, SHARED.theme.colText)
         palette.setColor(QPalette.ColorRole.Text, SHARED.theme.colText)
-
         self.setPalette(palette)
-        self.itemTitle.setPalette(palette)
+        self.itemTitle.setTextColors(
+            color=palette.windowText().color(), faded=SHARED.theme.fadedText
+        )
+        return
 
+    def changeFocusState(self, state: bool) -> None:
+        """Toggle focus state."""
+        self.itemTitle.setColorState(state)
         return
 
     def setHandle(self, tHandle: str) -> None:

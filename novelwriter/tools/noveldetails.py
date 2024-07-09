@@ -68,8 +68,8 @@ class GuiNovelDetails(NNonBlockingDialog):
 
         # Title
         self.titleLabel = NColourLabel(
-            self.tr("Novel Details"), SHARED.theme.helpText,
-            parent=self, scale=NColourLabel.HEADER_SCALE, indent=CONFIG.pxInt(4)
+            self.tr("Novel Details"), self, color=SHARED.theme.helpText,
+            scale=NColourLabel.HEADER_SCALE, indent=CONFIG.pxInt(4)
         )
 
         # Novel Selector
@@ -199,8 +199,8 @@ class _OverviewPage(NScrollablePage):
 
         # Project Info
         self.projLabel = NColourLabel(
-            self.tr("Project"), SHARED.theme.helpText,
-            parent=self, scale=NColourLabel.HEADER_SCALE
+            self.tr("Project"), self, color=SHARED.theme.helpText,
+            scale=NColourLabel.HEADER_SCALE
         )
 
         self.projName = QLabel("", self)
@@ -223,8 +223,8 @@ class _OverviewPage(NScrollablePage):
 
         # Novel Info
         self.novelLabel = NColourLabel(
-            self.tr("Selected Novel"), SHARED.theme.helpText,
-            parent=self, scale=NColourLabel.HEADER_SCALE
+            self.tr("Selected Novel"), self, color=SHARED.theme.helpText,
+            scale=NColourLabel.HEADER_SCALE
         )
 
         self.novelName = QLabel("", self)
@@ -315,8 +315,8 @@ class _ContentsPage(NFixedPage):
 
         # Title
         self.contentLabel = NColourLabel(
-            self.tr("Table of Contents"), SHARED.theme.helpText,
-            parent=self, scale=NColourLabel.HEADER_SCALE
+            self.tr("Table of Contents"), self, color=SHARED.theme.helpText,
+            scale=NColourLabel.HEADER_SCALE
         )
 
         # Contents Tree

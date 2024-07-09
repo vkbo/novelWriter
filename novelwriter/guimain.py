@@ -44,7 +44,7 @@ from novelwriter.dialogs.about import GuiAbout
 from novelwriter.dialogs.preferences import GuiPreferences
 from novelwriter.dialogs.projectsettings import GuiProjectSettings
 from novelwriter.dialogs.wordlist import GuiWordList
-from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwItemType, nwView, nwWidget
+from novelwriter.enum import nwDocAction, nwDocInsert, nwDocMode, nwFocus, nwItemType, nwView
 from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.gui.docviewer import GuiDocViewer
 from novelwriter.gui.docviewerpanel import GuiDocViewerPanel
@@ -210,67 +210,68 @@ class GuiMain(QMainWindow):
         # Connect Signals
         # ===============
 
+        SHARED.focusModeChanged.connect(self._focusModeChanged)
+        SHARED.indexAvailable.connect(self.docViewerPanel.indexHasAppeared)
+        SHARED.indexChangedTags.connect(self.docEditor.updateChangedTags)
+        SHARED.indexChangedTags.connect(self.docViewerPanel.updateChangedTags)
+        SHARED.indexCleared.connect(self.docViewerPanel.indexWasCleared)
+        SHARED.indexScannedText.connect(self.docViewerPanel.projectItemChanged)
+        SHARED.indexScannedText.connect(self.itemDetails.updateViewBox)
+        SHARED.indexScannedText.connect(self.projView.updateItemValues)
+        SHARED.mainClockTick.connect(self._timeTick)
         SHARED.projectStatusChanged.connect(self.mainStatus.updateProjectStatus)
         SHARED.projectStatusMessage.connect(self.mainStatus.setStatusMessage)
         SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
-        SHARED.focusModeChanged.connect(self._focusModeChanged)
-        SHARED.indexChangedTags.connect(self.docViewerPanel.updateChangedTags)
-        SHARED.indexScannedText.connect(self.docViewerPanel.projectItemChanged)
-        SHARED.indexScannedText.connect(self.projView.updateItemValues)
-        SHARED.indexScannedText.connect(self.itemDetails.updateViewBox)
-        SHARED.indexCleared.connect(self.docViewerPanel.indexWasCleared)
-        SHARED.indexAvailable.connect(self.docViewerPanel.indexHasAppeared)
-        SHARED.mainClockTick.connect(self._timeTick)
 
         self.mainMenu.requestDocAction.connect(self._passDocumentAction)
         self.mainMenu.requestDocInsert.connect(self._passDocumentInsert)
         self.mainMenu.requestDocInsertText.connect(self._passDocumentInsert)
         self.mainMenu.requestDocKeyWordInsert.connect(self.docEditor.insertKeyWord)
-        self.mainMenu.requestFocusChange.connect(self.switchFocus)
+        self.mainMenu.requestFocusChange.connect(self._switchFocus)
         self.mainMenu.requestViewChange.connect(self._changeView)
 
         self.sideBar.requestViewChange.connect(self._changeView)
 
-        self.projView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
         self.projView.openDocumentRequest.connect(self._openDocument)
-        self.projView.wordCountsChanged.connect(self._updateStatusWordCount)
+        self.projView.projectSettingsRequest.connect(self.showProjectSettingsDialog)
+        self.projView.rootFolderChanged.connect(self.novelView.updateRootItem)
+        self.projView.rootFolderChanged.connect(self.outlineView.updateRootItem)
+        self.projView.rootFolderChanged.connect(self.projView.updateRootItem)
+        self.projView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
         self.projView.treeItemChanged.connect(self.docEditor.updateDocInfo)
         self.projView.treeItemChanged.connect(self.docViewer.updateDocInfo)
-        self.projView.treeItemChanged.connect(self.itemDetails.updateViewBox)
         self.projView.treeItemChanged.connect(self.docViewerPanel.projectItemChanged)
-        self.projView.rootFolderChanged.connect(self.outlineView.updateRootItem)
-        self.projView.rootFolderChanged.connect(self.novelView.updateRootItem)
-        self.projView.rootFolderChanged.connect(self.projView.updateRootItem)
-        self.projView.projectSettingsRequest.connect(self.showProjectSettingsDialog)
+        self.projView.treeItemChanged.connect(self.itemDetails.updateViewBox)
+        self.projView.wordCountsChanged.connect(self._updateStatusWordCount)
 
-        self.novelView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
         self.novelView.openDocumentRequest.connect(self._openDocument)
+        self.novelView.selectedItemChanged.connect(self.itemDetails.updateViewBox)
 
         self.projSearch.openDocumentSelectRequest.connect(self._openDocumentSelection)
         self.projSearch.selectedItemChanged.connect(self.itemDetails.updateViewBox)
 
-        self.docEditor.editedStatusChanged.connect(self.mainStatus.updateDocumentStatus)
+        self.docEditor.closeDocumentRequest.connect(self.closeDocEditor)
         self.docEditor.docCountsChanged.connect(self.itemDetails.updateCounts)
         self.docEditor.docCountsChanged.connect(self.projView.updateCounts)
-        self.docEditor.loadDocumentTagRequest.connect(self._followTag)
-        self.docEditor.novelStructureChanged.connect(self.novelView.refreshTree)
-        self.docEditor.novelItemMetaChanged.connect(self.novelView.updateNovelItemMeta)
-        self.docEditor.statusMessage.connect(self.mainStatus.setStatusMessage)
-        self.docEditor.spellCheckStateChanged.connect(self.mainMenu.setSpellCheckState)
-        self.docEditor.closeDocumentRequest.connect(self.closeDocEditor)
-        self.docEditor.toggleFocusModeRequest.connect(self.toggleFocusMode)
-        self.docEditor.requestProjectItemSelected.connect(self.projView.setSelectedHandle)
-        self.docEditor.requestProjectItemRenamed.connect(self.projView.renameTreeItem)
-        self.docEditor.requestNewNoteCreation.connect(self.projView.createNewNote)
         self.docEditor.docTextChanged.connect(self.projSearch.textChanged)
+        self.docEditor.editedStatusChanged.connect(self.mainStatus.updateDocumentStatus)
+        self.docEditor.loadDocumentTagRequest.connect(self._followTag)
+        self.docEditor.novelItemMetaChanged.connect(self.novelView.updateNovelItemMeta)
+        self.docEditor.novelStructureChanged.connect(self.novelView.refreshTree)
+        self.docEditor.requestNewNoteCreation.connect(self.projView.createNewNote)
         self.docEditor.requestNextDocument.connect(self.openNextDocument)
+        self.docEditor.requestProjectItemRenamed.connect(self.projView.renameTreeItem)
+        self.docEditor.requestProjectItemSelected.connect(self.projView.setSelectedHandle)
+        self.docEditor.spellCheckStateChanged.connect(self.mainMenu.setSpellCheckState)
+        self.docEditor.statusMessage.connect(self.mainStatus.setStatusMessage)
+        self.docEditor.toggleFocusModeRequest.connect(self.toggleFocusMode)
 
+        self.docViewer.closeDocumentRequest.connect(self.closeDocViewer)
         self.docViewer.documentLoaded.connect(self.docViewerPanel.updateHandle)
         self.docViewer.loadDocumentTagRequest.connect(self._followTag)
-        self.docViewer.closeDocumentRequest.connect(self.closeDocViewer)
         self.docViewer.reloadDocumentRequest.connect(self._reloadViewer)
-        self.docViewer.togglePanelVisibility.connect(self._toggleViewerPanelVisibility)
         self.docViewer.requestProjectItemSelected.connect(self.projView.setSelectedHandle)
+        self.docViewer.togglePanelVisibility.connect(self._toggleViewerPanelVisibility)
 
         self.docViewerPanel.loadDocumentTagRequest.connect(self._followTag)
         self.docViewerPanel.openDocumentRequest.connect(self._openDocument)
@@ -325,6 +326,11 @@ class GuiMain(QMainWindow):
 
     def postLaunchTasks(self, cmdOpen: str | None) -> None:
         """Process tasks after the main window has been created."""
+        QApplication.processEvents()
+        app = QApplication.instance()
+        if isinstance(app, QApplication):
+            app.focusChanged.connect(self._appFocusChanged)
+
         # Check that config loaded fine
         if CONFIG.hasError:
             SHARED.error(CONFIG.errorText())
@@ -652,7 +658,7 @@ class GuiMain(QMainWindow):
             logger.error("No project open")
             return False
 
-        lastPath = CONFIG.lastPath()
+        lastPath = CONFIG.lastPath("import")
         ffilter = formatFileFilter(["*.txt", "*.md", "*.nwd", "*"])
         loadFile, _ = QFileDialog.getOpenFileName(
             self, self.tr("Import File"), str(lastPath), filter=ffilter
@@ -667,7 +673,7 @@ class GuiMain(QMainWindow):
         try:
             with open(loadFile, mode="rt", encoding="utf-8") as inFile:
                 text = inFile.read()
-            CONFIG.setLastPath(loadFile)
+            CONFIG.setLastPath("import", loadFile)
         except Exception as exc:
             SHARED.error(self.tr(
                 "Could not read file. The file must be an existing text file."
@@ -745,7 +751,6 @@ class GuiMain(QMainWindow):
             self.mainStatus.setStatusMessage(
                 self.tr("Indexing completed in {0} ms").format(f"{(tEnd - tStart)*1000.0:.1f}")
             )
-            self.docEditor.updateTagHighLighting()
             self._updateStatusWordCount()
             QApplication.restoreOverrideCursor()
 
@@ -944,14 +949,37 @@ class GuiMain(QMainWindow):
             SHARED.setFocusMode(not SHARED.focusMode)
         return
 
+    ##
+    #  Private Slots
+    ##
+
+    @pyqtSlot("QWidget*", "QWidget*")
+    def _appFocusChanged(self, old: QWidget, new: QWidget) -> None:
+        """Alert main widgets that they have received or lost focus."""
+        if isinstance(new, QWidget):
+            docEditor = False
+            docViewer = False
+            if self.docEditor.isAncestorOf(new):
+                docEditor = True
+            elif self.docViewer.isAncestorOf(new):
+                docViewer = True
+
+            self.docEditor.changeFocusState(docEditor)
+            self.docViewer.changeFocusState(docViewer)
+
+            logger.debug("Main focus switched to: %s", type(new).__name__)
+
+        return
+
     @pyqtSlot(bool)
     def _focusModeChanged(self, focusMode: bool) -> None:
-        """Handle change of focus mode. The Main GUI Focus Mode hides tree,
-        view, statusbar and menu.
+        """Handle change of focus mode. The Main GUI Focus Mode hides
+        tree, view, statusbar and menu.
         """
         if focusMode:
             logger.debug("Activating Focus Mode")
-            self.switchFocus(nwWidget.EDITOR)
+            self._changeView(nwView.EDITOR)
+            self.docEditor.setFocus()
         else:
             logger.debug("Deactivating Focus Mode")
 
@@ -974,39 +1002,53 @@ class GuiMain(QMainWindow):
             self.docEditor.ensureCursorVisibleNoCentre()
         return
 
-    @pyqtSlot(nwWidget)
-    def switchFocus(self, paneNo: nwWidget) -> None:
+    @pyqtSlot(nwFocus)
+    def _switchFocus(self, paneNo: nwFocus) -> None:
         """Switch focus between main GUI views."""
-        if paneNo == nwWidget.TREE:
-            if self.projStack.currentWidget() is self.projView:
-                if self.projView.treeHasFocus():
-                    self._changeView(nwView.NOVEL)
-                    self.novelView.setTreeFocus()
-                else:
-                    self.projView.setTreeFocus()
-            elif self.projStack.currentWidget() is self.novelView:
-                if self.novelView.treeHasFocus():
-                    self._changeView(nwView.PROJECT)
-                    self.projView.setTreeFocus()
-                else:
-                    self.novelView.setTreeFocus()
+        if paneNo == nwFocus.TREE:
+            # Decision Matrix
+            #  vM | vP | fP | vN | fN | Focus
+            # ----|----|----|----|----|---------
+            #  T  | T  | T  | F  | F  | Novel
+            #  T  | T  | F  | F  | F  | Project
+            #  T  | F  | F  | T  | T  | Project
+            #  T  | F  | F  | T  | F  | Novel
+            #  T  | F  | F  | F  | F  | Project
+            #  F  | T  | T  | F  | F  | Project
+            #  F  | T  | F  | F  | F  | Project
+            #  F  | F  | F  | T  | T  | Novel
+            #  F  | F  | F  | T  | F  | Novel
+            #  F  | F  | F  | F  | F  | Project
+
+            vM = self.mainStack.currentWidget() is self.splitMain
+            vP = self.projStack.currentWidget() is self.projView
+            vN = self.projStack.currentWidget() is self.novelView
+            fP = self.projView.treeHasFocus()
+            fN = self.novelView.treeHasFocus()
+
+            self._changeView(nwView.EDITOR)
+            if (vM and (vP and fP or vN and not fN)) or (not vM and vN):
+                self._changeView(nwView.NOVEL)
+                self.novelView.setTreeFocus()
             else:
                 self._changeView(nwView.PROJECT)
                 self.projView.setTreeFocus()
-        elif paneNo == nwWidget.EDITOR:
+
+        elif paneNo == nwFocus.DOCUMENT:
             self._changeView(nwView.EDITOR)
-            self.docEditor.setFocus()
-        elif paneNo == nwWidget.VIEWER:
-            self._changeView(nwView.EDITOR)
-            self.docViewer.setFocus()
-        elif paneNo == nwWidget.OUTLINE:
+            hasViewer = self.splitView.isVisible()
+            if hasViewer and self.docEditor.anyFocus():
+                self.docViewer.setFocus()
+            elif hasViewer and self.docViewer.anyFocus():
+                self.docEditor.setFocus()
+            else:
+                self.docEditor.setFocus()
+
+        elif paneNo == nwFocus.OUTLINE:
             self._changeView(nwView.OUTLINE)
             self.outlineView.setTreeFocus()
-        return
 
-    ##
-    #  Private Slots
-    ##
+        return
 
     @pyqtSlot(bool, bool, bool, bool)
     def _processConfigChanges(self, restart: bool, tree: bool, theme: bool, syntax: bool) -> None:
@@ -1146,16 +1188,13 @@ class GuiMain(QMainWindow):
 
     @pyqtSlot(nwDocAction)
     def _passDocumentAction(self, action: nwDocAction) -> None:
-        """Pass on a document action to the document viewer if it has
-        focus, or pass it to the document editor if it or any of its
-        child widgets have focus. If neither has focus, ignore it.
+        """Pass on a document action to the editor or viewer based on
+        which one has focus, or if neither has focus, ignore it.
         """
-        if self.docViewer.hasFocus():
-            self.docViewer.docAction(action)
-        elif self.docEditor.hasFocus():
+        if self.docEditor.hasFocus():
             self.docEditor.docAction(action)
-        else:
-            logger.debug("Action cancelled as neither editor nor viewer has focus")
+        elif self.docViewer.hasFocus():
+            self.docViewer.docAction(action)
         return
 
     @pyqtSlot(str)
