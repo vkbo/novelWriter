@@ -10,7 +10,7 @@ but you don't need all of them to get started.
 The chapters below labelled "Essential Information" are the ones you need to know to use the
 application correctly. By "correctly", it is meant: in a way so novelWriter understands the basic
 structure of your text. It collects a lot of information from your text and uses it to display the
-structure of it in various ways to help you get an overview of your project.
+structure of it in various ways to help you get an overview of your writing.
 
 The chapters labelled "Recommended Reading" includes additional information on how the different
 parts if the application work and what the features do. 

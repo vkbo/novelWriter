@@ -306,7 +306,8 @@ Status and Importance Tabs
 --------------------------
 
 Each document or folder of type **Novel** can be given a "Status" label accompanied by a coloured
-icon, and each document or folder of the remaining types can be given an "Importance" label.
+icon with an optional shape selected from a list of pre-defined shapes. Each document or folder of
+the remaining types can be given an "Importance" label with the same customisation options.
 
 These labels are there purely for your convenience, and you are not required to use them for any
 other features to work. No other part of novelWriter accesses this information. The intention is to

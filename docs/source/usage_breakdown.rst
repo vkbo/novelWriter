@@ -43,8 +43,8 @@ project-related tools and quick access to settings at the bottom.
 
 .. versionadded:: 2.2
    A number of new formatting options were added in 2.2 to allow for some special formatting cases.
-   At the same time, a small formatting toolbar was added in the editor. It is hidden by default,
-   but can be opened by pressing the icon button in the top right corner.
+   At the same time, a small formatting toolbar was added to the editor. It is hidden by default,
+   but can be opened by pressing the button in the top right corner of the editor header.
 
 
 Project Tree and Editor View
@@ -146,6 +146,20 @@ project. The tool does not provide a replace feature. There is a search and repl
 in the document editor that acts on the open document.
 
 .. versionadded:: 2.4
+
+
+Switching Focus
+---------------
+
+If the project or novel view does not have focus, pressing :kbd:`Ctrl+T` switches focus to
+whichever of the two is visible. If one of them already has focus, the key press will switch
+between them instead.
+
+Likewise, pressing :kbd:`Ctrl+E` with switch focus to the document editor or viewer, or if any of
+them already have focus, it will switch focus between them,
+
+These two shortcuts makes it possible to jump between all these GUI elements without having to
+reach for the mouse or touchpad.
 
 
 .. _a_breakdown_project:
