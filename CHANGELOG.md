@@ -1,5 +1,61 @@
 # novelWriter Changelog
 
+## Version 2.5 [2024-07-10]
+
+### Release Notes
+
+The 2.5 release fixes a number of minor issues from the RC 1 pre-release, and updates most
+translation files. Polish has also been added.
+
+See the website for complete [Release Notes](https://novelwriter.io/releases/release_2_5.html).
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fix an issue with unresponsiveness when switching from Outline View to Tree View with a keyboard
+  shortcut. Issue #1949. PR #1954.
+* Fix an issue with switching focus between editor and viewer when the viewer is hidden.
+  Issue #1950. PR #1954.
+* Fix an issue with first line indentation where it would sometimes indent first paragraph when it
+  should not. Issue #1965. PR #1971.
+
+**Usability**
+
+* Remove the "Apply" button from Preferences as changing theme does not updated the Preferences
+  dialog, which is unexpected behaviour. The Preferences dialog is now also consistent with other
+  settings dialogs. Issue #1951. PR #1954.
+* Improved the error messages when opening a project fails. Issue #1944. PR #1956.
+* Make sure the Project Name is selected and in focus when switching to the New Project Form on the
+  Welcome dialog. Issue #1967. PR #1968.
+
+**Improvements**
+
+* Add first line indentation to Manuscript previews. Issue #1961. PR #1962.
+
+**Internationalisation**
+
+* Norwegian and US English translations updated by @vkbo. PR #1955.
+* German translation updated by Myian (@HeyMyian). PR #1955.
+* Italian translation updated by Lou Cyper (loucyper1). PR #1955.
+* Dutch translation updated by Martijn van der Kleijn (mvdkleijn). PR #1955.
+* Chinese translation updated by @longqzh. PR #1955.
+* Portuguese translation updated by Oli Maia. PR #1955.
+* Japanese translation updated by @hebekeg. PR #1955.
+* French translation updated by Albert Aribaud (@aaribaud). PR #1955.
+* Polish translation added by Anna Maria Polak (@Nauthiz). PR #1955.
+
+**Packaging**
+
+* Rewrote the packaging utilities script. Windows builds are now created in GitHub actions, which
+  is needed for signed packages when this is enabled. PRs #1958 and #1959.
+
+**Documentation**
+
+* Updated the documentation for 2.5. PR #1928.
+
+----
+
 ## Version 2.5 RC 1 [2024-06-22]
 
 ### Release Notes
