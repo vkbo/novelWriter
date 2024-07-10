@@ -54,7 +54,8 @@ At the top of the project tree, you will find a set of buttons.
 * The next two buttons can be used to move items up and down in the project tree. This is the only
   way to move root folders.
 * The next button opens a dropdown menu for adding new items to the tree. This includes root
-  folders. You can also activate this dropdown menu by pressing :kbd:`Ctrl+N`.
+  folders and template documents. You can also activate this dropdown menu by pressing
+  :kbd:`Ctrl+N`.
 * The last button is a menu of further actions you can apply to the project tree.
 
 Below the project tree you will find a small details panel showing the full information of the

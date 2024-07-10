@@ -26,7 +26,7 @@ Main Window Shortcuts
    ":kbd:`F9`",           "Re-build the project's index"
    ":kbd:`F11`",          "Toggle full screen mode"
    ":kbd:`Ctrl+,`",       "Open the **Preferences** dialog"
-   ":kbd:`Ctrl+E`",       "Switch focus to the document editor"
+   ":kbd:`Ctrl+E`",       "Switch or toggle focus for the editor or viewer"
    ":kbd:`Ctrl+T`",       "Switch or toggle focus for the project tree or novel view"
    ":kbd:`Ctrl+Q`",       "Exit novelWriter"
    ":kbd:`Ctrl+Shift+,`", "Open the **Project Settings** dialog"

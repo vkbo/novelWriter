@@ -125,8 +125,8 @@ background, depending on the selected theme.
 
 .. _a_fmt_emph:
 
-Text Emphasis
-=============
+Text Emphasis with Markdown
+===========================
 
 A minimal set of Markdown text emphasis styles are supported for text paragraphs.
 
@@ -156,7 +156,7 @@ In addition, the following rules apply:
    outside, they violate rule 2.
 4. Text emphasis does not span past line breaks. If you need to add emphasis to multiple lines or
    paragraphs, you must apply it to each of them in turn.
-5. Text emphasis can only be used in plain paragraphs. Comments, titles, and meta data tags don't
+5. Text emphasis can only be used in comments and paragraphs. Headings and meta data tags don't
    allow for formatting, and any formatting markup will be rendered as-is.
 
 .. tip::
@@ -168,8 +168,8 @@ In addition, the following rules apply:
 
 .. _a_fmt_shortcodes:
 
-Extended Formatting with Shortcodes
-===================================
+Formatting with Shortcodes
+==========================
 
 For additional formatting options, you can use shortcodes. Shortcodes is a form of in-line codes
 that can be used to change the format of the text that follows and opening code, and last until
@@ -197,6 +197,13 @@ word if you need to. You can also freely combine them to form more complex forma
 The shortcodes are available from the **Format** menu and in the editor toolbar, which can be
 activated by clicking the left-most icon button in the editor header.
 
+.. note::
+
+   Shortcodes are not processed until you generate a preview or generate a manuscript document. So
+   there is no highlighting of the text between the formatting markers. There is also no check that
+   your markers make sense. You must ensure that you have both the opening and closing formatting
+   markers where you want them.
+
 .. versionadded:: 2.2
 
 
@@ -217,32 +224,88 @@ correctly formatted, the syntax highlighter will indicate this by altering the c
 
 The different styles of comments are as follows:
 
-``% Comment text ...``
+``% Your comment text ...``
    This is a comment. The text is not rendered by default (this can be overridden), seen in the
    document viewer, or counted towards word counts. It is intended for you to make notes in your
    text for your own sake, whatever that may be, that isn't part of the story text. This is the
    general format of a comment.
 
-``%Synopsis: Comment text ...``
+``%Synopsis: Your synopsis text ...``
    This is a synopsis comment. It is generally treated in the same way as a regular comment, except
    that it is also captured by the indexing algorithm and displayed in the :ref:`a_ui_outline`. It
    can also be filtered separately when building the project to for instance generate an outline
    document of the whole project.
 
-``%Short: Comment text ...``
+``%Short: Your short description ...``
    This is a short description comment. It is identical to the synopsis comment (they are
    interchangeable), but is intended to be used for project notes. The text shows up in the
    Reference panel below the document viewer in the last column labelled **Short Description**.
 
-``%~ Comment text ...``
-   This can be used to exclude story text from your manuscript without having to delete it from
-   your text. Comments with the ``~`` will *never* be included in the manuscript, even if you have
-   chosen to include comments in it. That is the main difference between these two formats.
+``%Footnote.<key>: Your footnote text ...``
+   This is a special comment assigned to a footnote marker. See :ref:`a_fmt_footnote` for how to
+   use them in your text.
 
 .. note::
    Only one comment can be flagged as a synopsis or short comment for each heading. If multiple
    comments are flagged as synopsis or short comments, the last one will be used and the rest
    ignored.
+
+
+.. _a_fmt_footnote:
+
+Footnotes
+=========
+
+Footnotes are added with a shortcode, paired with a matching comment for the actual footnote text.
+The matching is done with a key that links the two. If you insert a footnote from the **Insert**
+menu, a unique key is generated for you.
+
+The insert feature will add the footnote shortcode marker at the position of your cursor in the
+text, and create the associated footnote comment right after the paragraph, and move the cursor
+there so you can immediately start typing the footnote text.
+
+The footnote comment can be anywhere in the document, so if you wish to move them to, say, the
+bottom of the text, you are free to do so.
+
+Footnote keys are only required to be unique within a document, so if you copy, move or merge text,
+you must make sure the keys are not duplicated. If you use the automatically generated keys from
+the **Insert** menu, they are unique among all indexed documents. They are not guaranteed to be
+unique against footnotes in the Archive or Trash folder though, but the chance of accidentally
+generating the same key twice in a project is relatively small in the first place (1 in 810 000).
+
+This is what a footnote inserted into a paragraph may look like when completed:
+
+.. code-block:: md
+
+   This is a text paragraph with a footnote[footnote:fn1] in the middle.
+
+   %Footnote.fn1: This is the text of the footnote.
+
+.. versionadded:: 2.5
+
+
+.. _a_fmt_ignore:
+
+Ignored Text
+============
+
+If you want to completely ignore some of the text in your documents, but are not ready to delete
+it, you can add ``%~`` before the text paragraph or line. This will cause novelWriter to skip the
+text entirely when generating previews or building manuscripts.
+
+This is a better way of removing text than converting them to regular comments, as you may want to
+include regular comments in your previews or draft manuscript.
+
+You can toggle the ignored text feature on and off for a paragraph by pressing :kbd:`Ctrl+Shift+D`
+on your keyboard with your cursor somewhere in the paragraph.
+
+Example:
+
+.. code-block:: md
+
+   %~ This text is ignored.
+
+   This text is a regular paragraph.
 
 
 .. _a_fmt_tags:
@@ -251,10 +314,11 @@ Tags and References
 ===================
 
 The document editor supports a set of keywords used for setting tags, and making references between
-documents.
+documents based on those tags.
 
-Tags use the keyword ``@tag:`` to define a tag. The tag can be set once per section defined by a
-heading. Setting it multiple times under the same heading will just override the previous setting.
+You must use the keyword ``@tag:`` to define a tag. The tag can be set once per section defined by
+a heading. Setting it multiple times under the same heading will just override the previous
+setting.
 
 ``@tag: value``
    A tag keyword followed by the tag value, like for instance the name of a character.
@@ -304,6 +368,40 @@ Examples:
    The text editor will not show the alignment and indentation live. But the viewer will show them
    when you open the document there. It will of course also be reflected in the document generated
    from the manuscript build tool as long as the format supports paragraph alignment.
+
+
+Alignment with Line Breaks
+--------------------------
+
+If you have line breaks in the paragraph, like for instance when you are writing verses, the
+alignment markers must be applied to the first line. Markers on the other lines are ignored. The
+markers for the first line are used for all the other lines.
+
+For the following text, all lines will be centred, not just the first:
+
+.. code-block:: md
+
+   >> I am the very model of a modern Major-General <<
+   I've information vegetable, animal, and mineral
+   I know the kings of England, and I quote the fights historical
+   From Marathon to Waterloo, in order categorical
+
+
+Alignment with First Line Indent
+--------------------------------
+
+If you have first line indent enabled in your Manuscript build settings, you probably want to
+disable it for text in verses. Adding any alignment tags will cause the first line indent to be
+switched off for that paragraph.
+
+The following text will always be aligned against the left margin:
+
+.. code-block:: md
+
+   I am the very model of a modern Major-General <<
+   I've information vegetable, animal, and mineral
+   I know the kings of England, and I quote the fights historical
+   From Marathon to Waterloo, in order categorical
 
 
 .. _a_fmt_break:
