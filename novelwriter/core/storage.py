@@ -235,7 +235,6 @@ class NWStorage:
             if child.is_dir() and child.name.startswith("data_"):
                 legacy.legacyDataFolder(basePath, child)
 
-        self._writeLockFile()
         self._ready = True
 
         return NWStorageOpen.READY
@@ -248,6 +247,12 @@ class NWStorage:
             # Nothing to do, so we just return
             return True
         return True
+
+    def lockSession(self) -> None:
+        """Lock the session when the project is successfully opened."""
+        if self._ready:
+            self._writeLockFile()
+        return
 
     def closeSession(self) -> None:
         """Run tasks related to closing the session."""
