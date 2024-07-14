@@ -356,6 +356,7 @@ class NWProject:
         self.setProjectChanged(False)
         self._valid = True
         self._state = NWProjectState.READY
+        self._storage.lockSession()  # Lock only after a successful open. See issue #1977.
 
         SHARED.newStatusMessage(self.tr("Opened Project: {0}").format(self._data.name))
 
