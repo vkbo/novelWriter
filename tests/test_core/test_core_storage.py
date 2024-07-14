@@ -142,7 +142,9 @@ def testCoreStorage_InitProjectStorage(monkeypatch, mockGUI, fncPath, mockRnd):
     storage.clear()
 
     # Open twice, where second should fail due to lockfile
+    # Note that locking is only possible after a successful open
     assert storage.initProjectStorage(fncPath) == NWStorageOpen.READY
+    storage.lockSession()
     assert storage.initProjectStorage(fncPath) == NWStorageOpen.LOCKED
     assert isinstance(storage.lockStatus, list)
     assert len(storage.lockStatus) == 4
