@@ -39,6 +39,7 @@ from novelwriter.gui.outline import GuiOutlineView
 from novelwriter.gui.projtree import GuiProjectTree
 from novelwriter.tools.welcome import GuiWelcome
 
+from tests.mocked import causeOSError
 from tests.tools import NWD_IGNORE, XML_IGNORE, C, buildTestProject, cmpFiles
 
 KEY_DELAY = 1
@@ -651,7 +652,7 @@ def testGuiMain_Viewing(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
 
 @pytest.mark.gui
-def testGuiMain_Features(qtbot, nwGUI, projPath, mockRnd):
+def testGuiMain_Features(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test various features of the main window."""
     buildTestProject(nwGUI, projPath)
     assert SHARED.focusMode is False
@@ -672,6 +673,7 @@ def testGuiMain_Features(qtbot, nwGUI, projPath, mockRnd):
 
     # Enable focus mode
     nwGUI.toggleFocusMode()
+    assert SHARED.focusMode is True
     assert nwGUI.treePane.isVisible() is False
     assert nwGUI.mainStatus.isVisible() is False
     assert nwGUI.mainMenu.isVisible() is False
@@ -680,11 +682,18 @@ def testGuiMain_Features(qtbot, nwGUI, projPath, mockRnd):
 
     # Disable focus mode
     nwGUI.toggleFocusMode()
+    assert SHARED.focusMode is False
     assert nwGUI.treePane.isVisible() is True
     assert nwGUI.mainStatus.isVisible() is True
     assert nwGUI.mainMenu.isVisible() is True
     assert nwGUI.sideBar.isVisible() is True
     assert nwGUI.splitView.isVisible() is True
+
+    # Closing editor disables focus mode
+    nwGUI.toggleFocusMode()
+    assert SHARED.focusMode is True
+    nwGUI.closeDocument()
+    assert SHARED.focusMode is False
 
     # Full Screen Mode
     # ================
@@ -701,6 +710,17 @@ def testGuiMain_Features(qtbot, nwGUI, projPath, mockRnd):
     # Just make sure the custom event handler executes and doesn't fail
     nwGUI.sideBar.mSettings.show()
     nwGUI.sideBar.mSettings.hide()
+
+    # Document Open Errors
+    # ====================
+
+    # Cannot edit a folder
+    assert nwGUI.openDocument(C.hChapterDir) is False
+
+    # Handle I/O error
+    with monkeypatch.context() as mp:
+        mp.setattr("builtins.open", causeOSError)
+        assert nwGUI.openDocument(C.hChapterDoc) is False
 
     # qtbot.stop()
 
