@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.5" hexVersion="0x020500f0" fileVersion="1.5" fileRevision="4" timeStamp="2024-07-10 16:23:02">
-  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="1950" autoCount="277" editTime="90880">
+<novelWriterXML appVersion="2.5.1" hexVersion="0x020501f0" fileVersion="1.5" fileRevision="4" timeStamp="2024-07-21 20:05:31">
+  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="1955" autoCount="277" editTime="90998">
     <name>Sample Project</name>
     <author>Jane Smith</author>
   </project>
@@ -118,7 +118,7 @@
       <name status="sf12341" import="i2d7a54" active="yes">Earth</name>
     </item>
     <item handle="f1471bef9f2ae" parent="15c4492bd5107" root="15c4492bd5107" order="1" type="FILE" class="WORLD" layout="NOTE">
-      <meta expanded="no" heading="H1" charCount="115" wordCount="24" paraCount="1" cursorPos="135" />
+      <meta expanded="no" heading="H1" charCount="115" wordCount="24" paraCount="1" cursorPos="0" />
       <name status="sf12341" import="i4a1d39" active="yes">Space</name>
     </item>
     <item handle="5eaea4e8cdee8" parent="15c4492bd5107" root="15c4492bd5107" order="2" type="FILE" class="WORLD" layout="NOTE">
