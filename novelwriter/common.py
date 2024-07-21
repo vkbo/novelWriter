@@ -279,6 +279,16 @@ def simplified(text: str) -> str:
     return " ".join(str(text).strip().split())
 
 
+def compact(text: str) -> str:
+    """Compact a string by removing spaces."""
+    return "".join(str(text).split())
+
+
+def uniqueCompact(text: str) -> str:
+    """Return a unique, compact and sorted string."""
+    return "".join(sorted(set(compact(text))))
+
+
 def elide(text: str, length: int) -> str:
     """Elide a piece of text to a maximum length."""
     if len(text) > (cut := max(4, length)):

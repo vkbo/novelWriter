@@ -32,12 +32,12 @@ from PyQt5.QtGui import QColor, QDesktopServices, QFontDatabase
 
 from novelwriter.common import (
     NWConfigParser, checkBool, checkFloat, checkInt, checkIntTuple, checkPath,
-    checkString, checkStringNone, checkUuid, cssCol, describeFont, elide,
-    formatFileFilter, formatInt, formatTime, formatTimeStamp, formatVersion,
-    fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass, isItemLayout,
-    isItemType, isListInstance, isTitleTag, jsonEncode, makeFileNameSafe,
-    minmax, numberToRoman, openExternalPath, readTextFile, simplified,
-    transferCase, xmlIndent, yesNo
+    checkString, checkStringNone, checkUuid, compact, cssCol, describeFont,
+    elide, formatFileFilter, formatInt, formatTime, formatTimeStamp,
+    formatVersion, fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass,
+    isItemLayout, isItemType, isListInstance, isTitleTag, jsonEncode,
+    makeFileNameSafe, minmax, numberToRoman, openExternalPath, readTextFile,
+    simplified, transferCase, uniqueCompact, xmlIndent, yesNo
 )
 
 from tests.mocked import causeOSError
@@ -344,6 +344,27 @@ def testBaseCommon_simplified():
     assert simplified("Hello World") == "Hello World"
     assert simplified("  Hello    World   ") == "Hello World"
     assert simplified("\tHello\n\r\tWorld") == "Hello World"
+
+
+@pytest.mark.base
+def testBaseCommon_compact():
+    """Test the compact function."""
+    assert compact("! ! !") == "!!!"
+    assert compact("1\t2\t3") == "123"
+    assert compact("1\n2\n3") == "123"
+    assert compact("1\r2\r3") == "123"
+    assert compact("1\u00a02\u00a03") == "123"
+
+
+@pytest.mark.base
+def testBaseCommon_uniqueCompact():
+    """Test the uniqueCompact function."""
+    assert uniqueCompact("! ! !") == "!"
+    assert uniqueCompact("1\t2\t3") == "123"
+    assert uniqueCompact("1\n2\n3") == "123"
+    assert uniqueCompact("1\r2\r3") == "123"
+    assert uniqueCompact("1\u00a02\u00a03") == "123"
+    assert uniqueCompact("3 2 1") == "123"
 
 
 @pytest.mark.base
