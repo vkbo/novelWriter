@@ -526,8 +526,14 @@ class GuiMain(QMainWindow):
                 self.novelView.setActiveHandle(None)
         return
 
-    def openDocument(self, tHandle: str | None, tLine: int | None = None,
-                     changeFocus: bool = True, doScroll: bool = False) -> bool:
+    def openDocument(
+        self,
+        tHandle: str | None,
+        tLine: int | None = None,
+        sTitle: str | None = None,
+        changeFocus: bool = True,
+        doScroll: bool = False
+    ) -> bool:
         """Open a specific document, optionally at a given line."""
         if not SHARED.hasProject:
             logger.error("No project open")
@@ -537,9 +543,12 @@ class GuiMain(QMainWindow):
             logger.debug("Requested item '%s' is not a document", tHandle)
             return False
 
+        if sTitle and tLine is None:
+            if hItem := SHARED.project.index.getItemHeading(tHandle, sTitle):
+                tLine = hItem.line
+
         self._changeView(nwView.EDITOR)
-        cHandle = self.docEditor.docHandle
-        if cHandle == tHandle:
+        if tHandle == self.docEditor.docHandle:
             self.docEditor.setCursorLine(tLine)
             if changeFocus:
                 self.docEditor.setFocus()
@@ -711,7 +720,6 @@ class GuiMain(QMainWindow):
         if SHARED.hasProject:
             tHandle = None
             sTitle = None
-            tLine = None
             if self.projView.treeHasFocus():
                 tHandle = self.projView.getSelectedHandle()
             elif self.novelView.treeHasFocus():
@@ -722,11 +730,8 @@ class GuiMain(QMainWindow):
                 logger.warning("No item selected")
                 return
 
-            if tHandle and sTitle:
-                if hItem := SHARED.project.index.getItemHeading(tHandle, sTitle):
-                    tLine = hItem.line
             if tHandle:
-                self.openDocument(tHandle, tLine=tLine, changeFocus=False, doScroll=False)
+                self.openDocument(tHandle, sTitle=sTitle, changeFocus=False, doScroll=False)
 
         return
 
@@ -1118,7 +1123,7 @@ class GuiMain(QMainWindow):
         tHandle, sTitle = self._getTagSource(tag)
         if tHandle is not None:
             if mode == nwDocMode.EDIT:
-                self.openDocument(tHandle)
+                self.openDocument(tHandle, sTitle=sTitle)
             elif mode == nwDocMode.VIEW:
                 self.viewDocument(tHandle=tHandle, sTitle=sTitle)
         return
@@ -1137,11 +1142,7 @@ class GuiMain(QMainWindow):
         """Handle an open document request."""
         if tHandle is not None:
             if mode == nwDocMode.EDIT:
-                tLine = None
-                hItem = SHARED.project.index.getItemHeading(tHandle, sTitle)
-                if hItem is not None:
-                    tLine = hItem.line
-                self.openDocument(tHandle, tLine=tLine, changeFocus=setFocus)
+                self.openDocument(tHandle, sTitle=sTitle, changeFocus=setFocus)
             elif mode == nwDocMode.VIEW:
                 self.viewDocument(tHandle=tHandle, sTitle=sTitle)
         return
