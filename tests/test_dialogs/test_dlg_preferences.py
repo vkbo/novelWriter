@@ -379,7 +379,7 @@ def testDlgPreferences_Settings(qtbot, monkeypatch, nwGUI, tstPaths):
     assert CONFIG.doReplaceDQuote is False
     assert CONFIG.doReplaceDash is False
     assert CONFIG.doReplaceDots is False
-    assert CONFIG.fmtPadBefore == "!?:"
+    assert CONFIG.fmtPadBefore == "!:?"
     assert CONFIG.fmtPadAfter == "¡¿"
     assert CONFIG.fmtPadThin is True
 
