@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.common import describeFont
+from novelwriter.common import describeFont, uniqueCompact
 from novelwriter.constants import nwUnicode
 from novelwriter.dialogs.quotes import GuiQuoteSelect
 from novelwriter.extensions.configlayout import NColourLabel, NScrollableForm
@@ -952,8 +952,8 @@ class GuiPreferences(NDialog):
         # Text Highlighting
         dialogueStyle   = self.dialogStyle.currentData()
         allowOpenDial   = self.allowOpenDial.isChecked()
-        narratorBreak   = self.narratorBreak.text()
-        dialogueLine    = self.dialogLine.text()
+        narratorBreak   = self.narratorBreak.text().strip()
+        dialogueLine    = self.dialogLine.text().strip()
         altDialogOpen   = self.altDialogOpen.text()
         altDialogClose  = self.altDialogClose.text()
         highlightEmph   = self.highlightEmph.isChecked()
@@ -983,8 +983,8 @@ class GuiPreferences(NDialog):
         CONFIG.doReplaceDQuote = self.doReplaceDQuote.isChecked()
         CONFIG.doReplaceDash   = self.doReplaceDash.isChecked()
         CONFIG.doReplaceDots   = self.doReplaceDots.isChecked()
-        CONFIG.fmtPadBefore    = self.fmtPadBefore.text().strip()
-        CONFIG.fmtPadAfter     = self.fmtPadAfter.text().strip()
+        CONFIG.fmtPadBefore    = uniqueCompact(self.fmtPadBefore.text())
+        CONFIG.fmtPadAfter     = uniqueCompact(self.fmtPadAfter.text())
         CONFIG.fmtPadThin      = self.fmtPadThin.isChecked()
 
         # Quotation Style
