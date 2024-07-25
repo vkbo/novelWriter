@@ -213,7 +213,8 @@ class GuiProjectView(QWidget):
     @pyqtSlot(str)
     def updateItemValues(self, tHandle: str) -> None:
         """Update tree item."""
-        self.projTree.setTreeItemValues(tHandle)
+        if nwItem := SHARED.project.tree[tHandle]:
+            self.projTree.setTreeItemValues(nwItem)
         return
 
     @pyqtSlot(str)
@@ -240,6 +241,12 @@ class GuiProjectView(QWidget):
     def createNewNote(self, tag: str, itemClass: nwItemClass) -> None:
         """Process new not request."""
         self.projTree.createNewNote(tag, itemClass)
+        return
+
+    @pyqtSlot(str)
+    def refreshUserLabels(self, kind: str) -> None:
+        """Refresh status or importance labels."""
+        self.projTree.refreshUserLabels(kind)
         return
 
 
@@ -792,11 +799,11 @@ class GuiProjectTree(QTreeWidget):
 
     def renameTreeItem(self, tHandle: str, name: str = "") -> None:
         """Open a dialog to edit the label of an item."""
-        if tItem := SHARED.project.tree[tHandle]:
-            newLabel, dlgOk = GuiEditLabel.getLabel(self, text=name or tItem.itemName)
+        if nwItem := SHARED.project.tree[tHandle]:
+            newLabel, dlgOk = GuiEditLabel.getLabel(self, text=name or nwItem.itemName)
             if dlgOk:
-                tItem.setName(newLabel)
-                self.setTreeItemValues(tHandle)
+                nwItem.setName(newLabel)
+                self.setTreeItemValues(nwItem)
                 self._alertTreeChange(tHandle, flush=False)
         return
 
@@ -1010,44 +1017,52 @@ class GuiProjectTree(QTreeWidget):
 
         return True
 
-    def setTreeItemValues(self, tHandle: str) -> None:
-        """Set the name and flag values for a tree item from a handle in
-        the project tree. Does not trigger a tree change as the data is
-        already coming from the project tree.
+    def refreshUserLabels(self, kind: str) -> None:
+        """Refresh status or importance labels."""
+        if kind == "s":
+            for nwItem in SHARED.project.tree:
+                if nwItem.isNovelLike():
+                    self.setTreeItemValues(nwItem)
+        elif kind == "i":
+            for nwItem in SHARED.project.tree:
+                if not nwItem.isNovelLike():
+                    self.setTreeItemValues(nwItem)
+        return
+
+    def setTreeItemValues(self, nwItem: NWItem | None) -> None:
+        """Set the name and flag values for a tree item in the project
+        tree. Does not trigger a tree change as the data is already
+        coming from project data.
         """
-        trItem = self._getTreeItem(tHandle)
-        nwItem = SHARED.project.tree[tHandle]
-        if trItem is None or nwItem is None:
-            return
+        if isinstance(nwItem, NWItem) and (trItem := self._getTreeItem(nwItem.itemHandle)):
+            itemStatus, statusIcon = nwItem.getImportStatus()
+            hLevel = nwItem.mainHeading
+            itemIcon = SHARED.theme.getItemIcon(
+                nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
+            )
 
-        itemStatus, statusIcon = nwItem.getImportStatus()
-        hLevel = nwItem.mainHeading
-        itemIcon = SHARED.theme.getItemIcon(
-            nwItem.itemType, nwItem.itemClass, nwItem.itemLayout, hLevel
-        )
+            trItem.setIcon(self.C_NAME, itemIcon)
+            trItem.setText(self.C_NAME, nwItem.itemName)
+            trItem.setIcon(self.C_STATUS, statusIcon)
+            trItem.setToolTip(self.C_STATUS, itemStatus)
 
-        trItem.setIcon(self.C_NAME, itemIcon)
-        trItem.setText(self.C_NAME, nwItem.itemName)
-        trItem.setIcon(self.C_STATUS, statusIcon)
-        trItem.setToolTip(self.C_STATUS, itemStatus)
+            if nwItem.isFileType():
+                iconName = "checked" if nwItem.isActive else "unchecked"
+                toolTip = self.trActive if nwItem.isActive else self.trInactive
+                trItem.setToolTip(self.C_ACTIVE, toolTip)
+            else:
+                iconName = "noncheckable"
 
-        if nwItem.isFileType():
-            iconName = "checked" if nwItem.isActive else "unchecked"
-            toolTip = self.trActive if nwItem.isActive else self.trInactive
-            trItem.setToolTip(self.C_ACTIVE, toolTip)
-        else:
-            iconName = "noncheckable"
+            trItem.setIcon(self.C_ACTIVE, SHARED.theme.getIcon(iconName))
 
-        trItem.setIcon(self.C_ACTIVE, SHARED.theme.getIcon(iconName))
+            if CONFIG.emphLabels and nwItem.isDocumentLayout():
+                trFont = trItem.font(self.C_NAME)
+                trFont.setBold(hLevel == "H1" or hLevel == "H2")
+                trFont.setUnderline(hLevel == "H1")
+                trItem.setFont(self.C_NAME, trFont)
 
-        if CONFIG.emphLabels and nwItem.isDocumentLayout():
-            trFont = trItem.font(self.C_NAME)
-            trFont.setBold(hLevel == "H1" or hLevel == "H2")
-            trFont.setUnderline(hLevel == "H1")
-            trItem.setFont(self.C_NAME, trFont)
-
-        # Emit Refresh Signal
-        self.itemRefreshed.emit(tHandle, nwItem, itemIcon)
+            # Emit Refresh Signal
+            self.itemRefreshed.emit(nwItem.itemHandle, nwItem, itemIcon)
 
         return
 
@@ -1353,7 +1368,8 @@ class GuiProjectTree(QTreeWidget):
                 SHARED.project.index.deleteHandle(mHandle)
             else:
                 SHARED.project.index.reIndexHandle(mHandle)
-            self.setTreeItemValues(mHandle)
+            if mItem := SHARED.project.tree[mHandle]:
+                self.setTreeItemValues(mItem)
 
         # Update word count
         self.propagateCount(tHandle, nwItemS.wordCount, countChildren=True)
@@ -1594,7 +1610,7 @@ class GuiProjectTree(QTreeWidget):
 
         self._treeMap[tHandle] = newItem
         self.propagateCount(tHandle, nwItem.wordCount, countChildren=True)
-        self.setTreeItemValues(tHandle)
+        self.setTreeItemValues(nwItem)
         newItem.setExpanded(nwItem.isExpanded)
 
         return newItem
@@ -1971,7 +1987,7 @@ class _TreeContextMenu(QMenu):
     def _toggleItemActive(self) -> None:
         """Toggle the active status of an item."""
         self._item.setActive(not self._item.isActive)
-        self.projTree.setTreeItemValues(self._handle)
+        self.projTree.setTreeItemValues(self._item)
         self.projTree._alertTreeChange(self._handle, flush=False)
         return
 
@@ -1984,14 +2000,14 @@ class _TreeContextMenu(QMenu):
         for tItem in self._items:
             if tItem and tItem.isFileType():
                 tItem.setActive(isActive)
-                self.projTree.setTreeItemValues(tItem.itemHandle)
+                self.projTree.setTreeItemValues(tItem)
                 self.projTree._alertTreeChange(tItem.itemHandle, flush=False)
         return
 
     def _changeItemStatus(self, key: str) -> None:
         """Set a new status value of an item."""
         self._item.setStatus(key)
-        self.projTree.setTreeItemValues(self._handle)
+        self.projTree.setTreeItemValues(self._item)
         self.projTree._alertTreeChange(self._handle, flush=False)
         return
 
@@ -2000,14 +2016,14 @@ class _TreeContextMenu(QMenu):
         for tItem in self._items:
             if tItem and tItem.isNovelLike():
                 tItem.setStatus(key)
-                self.projTree.setTreeItemValues(tItem.itemHandle)
+                self.projTree.setTreeItemValues(tItem)
                 self.projTree._alertTreeChange(tItem.itemHandle, flush=False)
         return
 
     def _changeItemImport(self, key: str) -> None:
         """Set a new importance value of an item."""
         self._item.setImport(key)
-        self.projTree.setTreeItemValues(self._handle)
+        self.projTree.setTreeItemValues(self._item)
         self.projTree._alertTreeChange(self._handle, flush=False)
         return
 
@@ -2016,7 +2032,7 @@ class _TreeContextMenu(QMenu):
         for tItem in self._items:
             if tItem and not tItem.isNovelLike():
                 tItem.setImport(key)
-                self.projTree.setTreeItemValues(tItem.itemHandle)
+                self.projTree.setTreeItemValues(tItem)
                 self.projTree._alertTreeChange(tItem.itemHandle, flush=False)
         return
 
@@ -2024,11 +2040,11 @@ class _TreeContextMenu(QMenu):
         """Set a new item layout value of an item."""
         if itemLayout == nwItemLayout.DOCUMENT and self._item.documentAllowed():
             self._item.setLayout(nwItemLayout.DOCUMENT)
-            self.projTree.setTreeItemValues(self._handle)
+            self.projTree.setTreeItemValues(self._item)
             self.projTree._alertTreeChange(self._handle, flush=False)
         elif itemLayout == nwItemLayout.NOTE:
             self._item.setLayout(nwItemLayout.NOTE)
-            self.projTree.setTreeItemValues(self._handle)
+            self.projTree.setTreeItemValues(self._item)
             self.projTree._alertTreeChange(self._handle, flush=False)
         return
 
@@ -2042,12 +2058,12 @@ class _TreeContextMenu(QMenu):
             if msgYes and itemLayout == nwItemLayout.DOCUMENT and self._item.documentAllowed():
                 self._item.setType(nwItemType.FILE)
                 self._item.setLayout(nwItemLayout.DOCUMENT)
-                self.projTree.setTreeItemValues(self._handle)
+                self.projTree.setTreeItemValues(self._item)
                 self.projTree._alertTreeChange(self._handle, flush=False)
             elif msgYes and itemLayout == nwItemLayout.NOTE:
                 self._item.setType(nwItemType.FILE)
                 self._item.setLayout(nwItemLayout.NOTE)
-                self.projTree.setTreeItemValues(self._handle)
+                self.projTree.setTreeItemValues(self._item)
                 self.projTree._alertTreeChange(self._handle, flush=False)
             else:
                 logger.info("Folder conversion cancelled")

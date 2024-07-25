@@ -221,7 +221,7 @@ def testGuiViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mockRnd
     nwJohn = SHARED.project.tree[hJohn]
     assert isinstance(nwJohn, NWItem)
     nwJohn.setActive(False)
-    projTree.setTreeItemValues(hJohn)
+    projTree.setTreeItemValues(nwJohn)
     projTree._alertTreeChange(hJohn, flush=False)
     assert charTab.topLevelItemCount() == 1
 

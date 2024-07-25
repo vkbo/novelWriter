@@ -223,6 +223,7 @@ class GuiMain(QMainWindow):
         SHARED.projectStatusMessage.connect(self.mainStatus.setStatusMessage)
         SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
         SHARED.statusLabelsChanged.connect(self.docViewerPanel.updateStatusLabels)
+        SHARED.statusLabelsChanged.connect(self.projView.refreshUserLabels)
 
         self.mainMenu.requestDocAction.connect(self._passDocumentAction)
         self.mainMenu.requestDocInsert.connect(self._passDocumentInsert)
@@ -1099,15 +1100,13 @@ class GuiMain(QMainWindow):
 
         return
 
-    @pyqtSlot(bool)
-    def _processProjectSettingsChanges(self, rebuildTrees: bool) -> None:
+    @pyqtSlot()
+    def _processProjectSettingsChanges(self) -> None:
         """Refresh data dependent on project settings."""
         logger.debug("Applying new project settings")
         SHARED.updateSpellCheckLanguage()
         self.itemDetails.refreshDetails()
         self._updateWindowTitle(SHARED.project.data.name)
-        if rebuildTrees:
-            self.rebuildTrees()
         return
 
     @pyqtSlot()
