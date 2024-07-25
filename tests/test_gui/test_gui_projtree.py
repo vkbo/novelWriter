@@ -186,6 +186,10 @@ def testGuiProjTree_NewItems(qtbot, caplog, monkeypatch, nwGUI, projPath, mockRn
     # Adding an invalid item directly to the tree should also fail
     assert projTree._addTreeItem(None) is None
 
+    # Setting values for a non-existing tree item should be handled
+    projTree.setTreeItemValues(None)
+    projTree.setTreeItemValues(C.hInvalid)  # The function used to take handles
+
     # Clean up
     # qtbot.stop()
     nwGUI.closeProject()

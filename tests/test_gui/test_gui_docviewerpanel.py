@@ -221,8 +221,14 @@ def testGuiViewerPanel_Tags(qtbot, monkeypatch, caplog, nwGUI, projPath, mockRnd
     nwJohn = SHARED.project.tree[hJohn]
     assert isinstance(nwJohn, NWItem)
     nwJohn.setActive(False)
-    projTree.setTreeItemValues(hJohn)
+    projTree.setTreeItemValues(nwJohn)
     projTree._alertTreeChange(hJohn, flush=False)
     assert charTab.topLevelItemCount() == 1
+
+    # Update Labels
+    assert charTab.topLevelItem(0).text(charTab.C_IMPORT) == "New"
+    SHARED.project.data.itemImport.add(C.iNew, "Stuff", (100, 100, 100), "SQUARE", 0)
+    viewPanel.updateStatusLabels("i")
+    assert charTab.topLevelItem(0).text(charTab.C_IMPORT) == "Stuff"
 
     # qtbot.stop()

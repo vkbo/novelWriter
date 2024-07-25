@@ -113,13 +113,13 @@ def testDlgProjSettings_SettingsPage(qtbot, monkeypatch, nwGUI, fncPath, projPat
     assert settings.projAuthor.text() == "Jane Smith"
     assert settings.projLang.currentData() == "en"
     assert settings.spellLang.currentData() == "en"
-    assert settings.doBackup.isChecked() is False
+    assert settings.noBackup.isChecked() is False
 
     settings.projName.setText("Project Name")
     settings.projAuthor.setText("Jane Doe")
     settings.projLang.setCurrentIndex(settings.projLang.findData("de"))
     settings.spellLang.setCurrentIndex(settings.spellLang.findData("de"))
-    settings.doBackup.setChecked(True)
+    settings.noBackup.setChecked(True)
 
     projSettings._doSave()
     assert project.data.name == "Project Name"
@@ -128,7 +128,7 @@ def testDlgProjSettings_SettingsPage(qtbot, monkeypatch, nwGUI, fncPath, projPat
     assert project.data.spellLang == "de"
     assert project.data.doBackup is False
 
-    nwGUI._processProjectSettingsChanges(False)
+    nwGUI._processProjectSettingsChanges()
     assert nwGUI.windowTitle() == "Project Name - novelWriter"
 
     # qtbot.stop()
@@ -161,7 +161,7 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
     project.tree[hCharNote].setImport(C.iMajor)  # type: ignore
     project.tree[hWorldNote].setImport(C.iMain)  # type: ignore
 
-    nwGUI.rebuildTrees()
+    nwGUI.projView.populateTree()
     project.countStatus()
 
     assert [e.count for _, e in project.data.itemStatus.iterItems()] == [2, 0, 2, 1]
