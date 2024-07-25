@@ -64,6 +64,7 @@ class SharedData(QObject):
     indexCleared = pyqtSignal()
     indexAvailable = pyqtSignal()
     mainClockTick = pyqtSignal()
+    statusLabelsChanged = pyqtSignal(str)
 
     def __init__(self) -> None:
         super().__init__()
@@ -307,6 +308,14 @@ class SharedData(QObject):
             self.indexCleared.emit()
         elif event == "buildIndex":
             self.indexAvailable.emit()
+        return
+
+    def projectSingalProxy(self, data: dict) -> None:
+        """Emit signals on project data change."""
+        event = data.get("event")
+        logger.debug("Received '%s' event from project data", event)
+        if event == "statusLabels":
+            self.statusLabelsChanged.emit(data.get("kind", ""))
         return
 
     ##
