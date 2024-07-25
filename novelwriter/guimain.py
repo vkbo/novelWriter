@@ -189,9 +189,6 @@ class GuiMain(QMainWindow):
         self.splitView.setVisible(False)
         self.docEditor.closeSearch()
 
-        # Initialise the Project Tree
-        self.rebuildTrees()
-
         # Assemble Main Window Elements
         self.mainBox = QHBoxLayout()
         self.mainBox.addWidget(self.sideBar)
@@ -463,7 +460,6 @@ class GuiMain(QMainWindow):
 
         # Update GUI
         self._updateWindowTitle(SHARED.project.data.name)
-        self.rebuildTrees()
         self.docEditor.toggleSpellCheck(SHARED.project.data.spellCheck)
         self.mainStatus.setRefTime(SHARED.project.projOpened)
         self.projView.openProjectTasks()
@@ -735,11 +731,6 @@ class GuiMain(QMainWindow):
             if tHandle:
                 self.openDocument(tHandle, sTitle=sTitle, changeFocus=False, doScroll=False)
 
-        return
-
-    def rebuildTrees(self) -> None:
-        """Rebuild the project tree."""
-        self.projView.populateTree()
         return
 
     def rebuildIndex(self, beQuiet: bool = False) -> None:

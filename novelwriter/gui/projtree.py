@@ -166,6 +166,7 @@ class GuiProjectView(QWidget):
 
     def openProjectTasks(self) -> None:
         """Run open project tasks."""
+        self.populateTree()
         self.projBar.buildQuickLinksMenu()
         self.projBar.setEnabled(True)
         return

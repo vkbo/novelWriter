@@ -161,7 +161,7 @@ def testDlgProjSettings_StatusImport(qtbot, monkeypatch, nwGUI, projPath, mockRn
     project.tree[hCharNote].setImport(C.iMajor)  # type: ignore
     project.tree[hWorldNote].setImport(C.iMain)  # type: ignore
 
-    nwGUI.rebuildTrees()
+    nwGUI.projView.populateTree()
     project.countStatus()
 
     assert [e.count for _, e in project.data.itemStatus.iterItems()] == [2, 0, 2, 1]
