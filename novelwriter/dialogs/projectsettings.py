@@ -58,7 +58,7 @@ class GuiProjectSettings(NDialog):
     PAGE_IMPORT   = 2
     PAGE_REPLACE  = 3
 
-    newProjectSettingsReady = pyqtSignal(bool)
+    newProjectSettingsReady = pyqtSignal()
 
     def __init__(self, parent: QWidget, gotoPage: int = PAGE_SETTINGS) -> None:
         super().__init__(parent=parent)
@@ -175,7 +175,7 @@ class GuiProjectSettings(NDialog):
         projAuthor = self.settingsPage.projAuthor.text()
         projLang   = self.settingsPage.projLang.currentData()
         spellLang  = self.settingsPage.spellLang.currentData()
-        doBackup   = not self.settingsPage.doBackup.isChecked()
+        doBackup   = not self.settingsPage.noBackup.isChecked()
 
         project.data.setName(projName)
         project.data.setAuthor(projAuthor)
@@ -183,23 +183,19 @@ class GuiProjectSettings(NDialog):
         project.data.setSpellLang(spellLang)
         project.setProjectLang(projLang)
 
-        rebuildTrees = False
-
         if self.statusPage.changed:
             logger.debug("Updating status labels")
             project.data.itemStatus.update(self.statusPage.getNewList())
-            rebuildTrees = True
 
         if self.importPage.changed:
             logger.debug("Updating importance labels")
             project.data.itemImport.update(self.importPage.getNewList())
-            rebuildTrees = True
 
         if self.replacePage.changed:
             logger.debug("Updating auto-replace settings")
             project.data.setAutoReplace(self.replacePage.getNewList())
 
-        self.newProjectSettingsReady.emit(rebuildTrees)
+        self.newProjectSettingsReady.emit()
         QApplication.processEvents()
         self.close()
 
@@ -289,10 +285,10 @@ class _SettingsPage(NScrollableForm):
             self.spellLang.setCurrentIndex(idx)
 
         # Backup on Close
-        self.doBackup = NSwitch(self)
-        self.doBackup.setChecked(not data.doBackup)
+        self.noBackup = NSwitch(self)
+        self.noBackup.setChecked(not data.doBackup)
         self.addRow(
-            self.tr("Disable backup on close"), self.doBackup,
+            self.tr("Disable backup on close"), self.noBackup,
             self.tr("Overrides main preferences.")
         )
 

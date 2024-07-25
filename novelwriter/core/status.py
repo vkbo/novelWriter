@@ -121,7 +121,7 @@ class NWStatus:
         return key
 
     def update(self, update: list[tuple[str | None, StatusEntry]]) -> None:
-        """Update the list of statuses, and from removed list."""
+        """Update the list of statuses."""
         self._store.clear()
         for key, entry in update:
             self._store[self._checkKey(key)] = entry
@@ -129,6 +129,9 @@ class NWStatus:
         # Check if we need a new default
         if self._default not in self._store:
             self._default = next(iter(self._store)) if self._store else None
+
+        # Emit the change signal
+        SHARED.projectSingalProxy({"event": "statusLabels", "kind": self._prefix})
 
         return
 

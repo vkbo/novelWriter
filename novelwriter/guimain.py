@@ -189,9 +189,6 @@ class GuiMain(QMainWindow):
         self.splitView.setVisible(False)
         self.docEditor.closeSearch()
 
-        # Initialise the Project Tree
-        self.rebuildTrees()
-
         # Assemble Main Window Elements
         self.mainBox = QHBoxLayout()
         self.mainBox.addWidget(self.sideBar)
@@ -222,6 +219,8 @@ class GuiMain(QMainWindow):
         SHARED.projectStatusChanged.connect(self.mainStatus.updateProjectStatus)
         SHARED.projectStatusMessage.connect(self.mainStatus.setStatusMessage)
         SHARED.spellLanguageChanged.connect(self.mainStatus.setLanguage)
+        SHARED.statusLabelsChanged.connect(self.docViewerPanel.updateStatusLabels)
+        SHARED.statusLabelsChanged.connect(self.projView.refreshUserLabels)
 
         self.mainMenu.requestDocAction.connect(self._passDocumentAction)
         self.mainMenu.requestDocInsert.connect(self._passDocumentInsert)
@@ -461,7 +460,6 @@ class GuiMain(QMainWindow):
 
         # Update GUI
         self._updateWindowTitle(SHARED.project.data.name)
-        self.rebuildTrees()
         self.docEditor.toggleSpellCheck(SHARED.project.data.spellCheck)
         self.mainStatus.setRefTime(SHARED.project.projOpened)
         self.projView.openProjectTasks()
@@ -733,11 +731,6 @@ class GuiMain(QMainWindow):
             if tHandle:
                 self.openDocument(tHandle, sTitle=sTitle, changeFocus=False, doScroll=False)
 
-        return
-
-    def rebuildTrees(self) -> None:
-        """Rebuild the project tree."""
-        self.projView.populateTree()
         return
 
     def rebuildIndex(self, beQuiet: bool = False) -> None:
@@ -1098,15 +1091,13 @@ class GuiMain(QMainWindow):
 
         return
 
-    @pyqtSlot(bool)
-    def _processProjectSettingsChanges(self, rebuildTrees: bool) -> None:
+    @pyqtSlot()
+    def _processProjectSettingsChanges(self) -> None:
         """Refresh data dependent on project settings."""
         logger.debug("Applying new project settings")
         SHARED.updateSpellCheckLanguage()
         self.itemDetails.refreshDetails()
         self._updateWindowTitle(SHARED.project.data.name)
-        if rebuildTrees:
-            self.rebuildTrees()
         return
 
     @pyqtSlot()

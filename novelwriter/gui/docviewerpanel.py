@@ -189,6 +189,13 @@ class GuiDocViewerPanel(QWidget):
         self._updateTabVisibility()
         return
 
+    @pyqtSlot(str)
+    def updateStatusLabels(self, kind: str) -> None:
+        """Update the importance labels."""
+        if kind == "i":
+            self._loadAllTags()
+        return
+
     ##
     #  Private Slots
     ##
