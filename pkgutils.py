@@ -753,8 +753,8 @@ def buildForLaunchpad(args: argparse.Namespace) -> None:
 
     distLoop = [
         ("22.04", "jammy", True),
-        ("23.10", "mantic", False),
         ("24.04", "noble", False),
+        ("24.10", "oracular", False),
     ]
 
     print("Building Ubuntu packages for:")
