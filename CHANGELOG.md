@@ -30,6 +30,10 @@ an issue with the Importance labels not being updated in the tabs for tags.
 * When selecting to edit a tag or reference from the panel below the Document Viewer, the editor
   now scrolls to the relevant heading as it does in the viewer. Issue #1983. PR #1987.
 
+**Internationalisation**
+
+* Latin American Spanish translation updated by Tommy Marplatt (@tmarplatt). PR #1989.
+
 ----
 
 ## Version 2.5 [2024-07-10]
