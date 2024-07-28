@@ -1,5 +1,41 @@
 # novelWriter Changelog
 
+## Version 2.5.1 [2024-07-28]
+
+### Release Notes
+
+This is a patch release that fixes an issue with the lock file being left in the project when the
+project open is cancelled, a few issues with custom input boxes in Preferences, and a usability
+issue when selecting to edit a tag or reference from the Tags and References panel as well as fixed
+an issue with the Importance labels not being updated in the tabs for tags.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixes an issue where the project lock file was created before certain checks where the user could
+  cancel the project open process, leaving a lock file in the project folder behind. Issue #1977.
+  PR #1978.
+* Fixes an issue where the user could add spaces to the pad before and after Preference settings,
+  which would pad every space entered into the text. The Preferences settings no longer accept any
+  white spaces in these boxes (they are removed on save) and also strips duplicate character
+  entries. Issue #1985. PR #1986.
+* The narrator break and dialog symbol Preference text boxes will now be cleared if the settings is
+  a white space. PR #1986.
+* Fixed an issue where Importance labels were not updated in the viewer panel's tags tabs when they
+  where changed in Project Settings. Issue #1992. PR #1993.
+
+**Usability**
+
+* When selecting to edit a tag or reference from the panel below the Document Viewer, the editor
+  now scrolls to the relevant heading as it does in the viewer. Issue #1983. PR #1987.
+
+**Internationalisation**
+
+* Latin American Spanish translation updated by Tommy Marplatt (@tmarplatt). PR #1989.
+
+----
+
 ## Version 2.5 [2024-07-10]
 
 ### Release Notes

@@ -247,72 +247,72 @@
   <context>
     <name>Common</name>
     <message>
-      <location filename="../novelwriter/common.py" line="319" />
+      <location filename="../novelwriter/common.py" line="329" />
       <source>in the future</source>
       <translation>in futuro</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="323" />
+      <location filename="../novelwriter/common.py" line="333" />
       <source>just now</source>
       <translation>ora</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="327" />
+      <location filename="../novelwriter/common.py" line="337" />
       <source>a minute ago</source>
       <translation>un minuto fa</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="331" />
+      <location filename="../novelwriter/common.py" line="341" />
       <source>{0} minutes ago</source>
       <translation>{0} minuti fa</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="335" />
+      <location filename="../novelwriter/common.py" line="345" />
       <source>an hour ago</source>
       <translation>un ora fa</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="339" />
+      <location filename="../novelwriter/common.py" line="349" />
       <source>{0} hours ago</source>
       <translation>{0} ore fa</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="343" />
+      <location filename="../novelwriter/common.py" line="353" />
       <source>a day ago</source>
       <translation>un giorno fa</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="347" />
+      <location filename="../novelwriter/common.py" line="357" />
       <source>{0} days ago</source>
       <translation>{0} giorni fa</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="351" />
+      <location filename="../novelwriter/common.py" line="361" />
       <source>a week ago</source>
       <translation>una settimana fa</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="355" />
+      <location filename="../novelwriter/common.py" line="365" />
       <source>{0} weeks ago</source>
       <translation>{0} settimane fa</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="359" />
+      <location filename="../novelwriter/common.py" line="369" />
       <source>a month ago</source>
       <translation>un mese fa</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="363" />
+      <location filename="../novelwriter/common.py" line="373" />
       <source>{0} months ago</source>
       <translation>{0} mesi fa</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="367" />
+      <location filename="../novelwriter/common.py" line="377" />
       <source>a year ago</source>
       <translation>un anno fa</translation>
     </message>
     <message>
-      <location filename="../novelwriter/common.py" line="371" />
+      <location filename="../novelwriter/common.py" line="381" />
       <source>{0} years ago</source>
       <translation>{0} anni fa</translation>
     </message>
@@ -1443,103 +1443,103 @@
   <context>
     <name>GuiMain</name>
     <message>
-      <location filename="../novelwriter/guimain.py" line="317" />
+      <location filename="../novelwriter/guimain.py" line="316" />
       <source>novelWriter is ready ...</source>
       <translation>novelWriter è pronto...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="349" />
+      <location filename="../novelwriter/guimain.py" line="348" />
       <source>You are now running novelWriter version {0}.</source>
       <translation>Stai ora eseguendo la versione {0} di novelWriter.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="352" />
+      <location filename="../novelwriter/guimain.py" line="351" />
       <source>Please check the {0}release notes{1} for further details.</source>
       <translation>Per favore controlla le {0}note di rilascio{1} per ulteriori dettagli.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="374" />
+      <location filename="../novelwriter/guimain.py" line="373" />
       <source>Close the current project?</source>
       <translation>Chiudere il progetto attuale?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="863" />
-      <location filename="../novelwriter/guimain.py" line="375" />
+      <location filename="../novelwriter/guimain.py" line="861" />
+      <location filename="../novelwriter/guimain.py" line="374" />
       <source>Changes are saved automatically.</source>
       <translation>Le modifiche vengono salvate automaticamente.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="386" />
+      <location filename="../novelwriter/guimain.py" line="385" />
       <source>Backup the current project?</source>
       <translation>Eseguire il backup del progetto corrente?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="433" />
+      <location filename="../novelwriter/guimain.py" line="432" />
       <source>The project is already open by another instance of novelWriter, and is therefore locked. Override lock and continue anyway?</source>
       <translation>Il progetto è già aperto da un'altra istanza di novelWriter, ed è quindi bloccato. Scavalcare il blocco e continuare comunque?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="438" />
+      <location filename="../novelwriter/guimain.py" line="437" />
       <source>Note: If the program or the computer previously crashed, the lock can safely be overridden. However, overriding it is not recommended if the project is open in another instance of novelWriter. Doing so may corrupt the project.</source>
       <translation>Nota: Se il programma o il computer in precedenza si è bloccato, il blocco può essere superato in modo sicuro. Tuttavia, non è consigliabile sovrascrivere se il progetto è aperto in un'altra istanza di novelWriter. Facendolo si potrebbe danneggiare il progetto.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="446" />
+      <location filename="../novelwriter/guimain.py" line="445" />
       <source>The project was locked by the computer '{0}' ({1} {2}), last active on {3}.</source>
       <translation>Il progetto è stato bloccato dal computer '{0}' ({1} {2}), ultimo attivo su {3}.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="493" />
+      <location filename="../novelwriter/guimain.py" line="491" />
       <source>The project index is outdated or broken. Rebuilding index.</source>
       <translation>L'indice del progetto è obsoleto o rotto. Ricostruzione dell'indice.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="664" />
+      <location filename="../novelwriter/guimain.py" line="671" />
       <source>Import File</source>
       <translation>Importa file</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="678" />
+      <location filename="../novelwriter/guimain.py" line="685" />
       <source>Could not read file. The file must be an existing text file.</source>
       <translation>Impossibile leggere il file. Il file deve essere un file di testo esistente.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="684" />
+      <location filename="../novelwriter/guimain.py" line="691" />
       <source>Please open a document to import the text file into.</source>
       <translation>Si prega di aprire un documento in cui importare il file di testo.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="690" />
+      <location filename="../novelwriter/guimain.py" line="697" />
       <source>Importing the file will overwrite the current content of the document. Do you want to proceed?</source>
       <translation>L'importazione del file sovrascriverà il contenuto corrente del documento. Vuoi procedere?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="752" />
+      <location filename="../novelwriter/guimain.py" line="750" />
       <source>Indexing completed in {0} ms</source>
       <translation>Indicizzazione completata in {0} ms</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="758" />
+      <location filename="../novelwriter/guimain.py" line="756" />
       <source>The project index has been successfully rebuilt.</source>
       <translation>L'indice del progetto è stato ricostruito con successo.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="851" />
+      <location filename="../novelwriter/guimain.py" line="849" />
       <source>Could not initialise the dialog.</source>
       <translation>Impossibile inizializzare il dialogo.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="862" />
+      <location filename="../novelwriter/guimain.py" line="860" />
       <source>Do you want to exit novelWriter?</source>
       <translation>Vuoi uscire da novelWriter?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="1061" />
+      <location filename="../novelwriter/guimain.py" line="1059" />
       <source>Some changes will not be applied until novelWriter has been restarted.</source>
       <translation>Alcune modifiche non saranno applicate fino al riavvio di novelWriter.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/guimain.py" line="1414" />
+      <location filename="../novelwriter/guimain.py" line="1406" />
       <source>Could not find the reference for tag '{0}'. It either doesn't exist, or the index is out of date. The index can be updated from the Tools menu, or by pressing {1}.</source>
       <translation>Impossibile trovare il riferimento per il tag '{0}'. O non esiste, o l'indice è obsoleto. L'indice può essere aggiornato dal menu Strumenti, o premendo {1}.</translation>
     </message>
@@ -3203,47 +3203,47 @@
   <context>
     <name>GuiProjectToolBar</name>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="265" />
+      <location filename="../novelwriter/gui/projtree.py" line="273" />
       <source>Project Content</source>
       <translation>Contenuto del progetto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="274" />
+      <location filename="../novelwriter/gui/projtree.py" line="282" />
       <source>Quick Links</source>
       <translation>Collegamenti rapidi</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="280" />
+      <location filename="../novelwriter/gui/projtree.py" line="288" />
       <source>Move Up</source>
       <translation>Sposta su</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="284" />
+      <location filename="../novelwriter/gui/projtree.py" line="292" />
       <source>Move Down</source>
       <translation>Sposta giù</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="324" />
+      <location filename="../novelwriter/gui/projtree.py" line="332" />
       <source>Add Item</source>
       <translation>Aggiungi elemento</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="331" />
+      <location filename="../novelwriter/gui/projtree.py" line="339" />
       <source>Expand All</source>
       <translation>Espandi tutto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="334" />
+      <location filename="../novelwriter/gui/projtree.py" line="342" />
       <source>Collapse All</source>
       <translation>Collassa tutto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="337" />
+      <location filename="../novelwriter/gui/projtree.py" line="345" />
       <source>Empty Trash</source>
       <translation>Svuota il cestino</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="341" />
+      <location filename="../novelwriter/gui/projtree.py" line="349" />
       <source>More Options</source>
       <translation>Altre opzioni</translation>
     </message>
@@ -3251,118 +3251,118 @@
   <context>
     <name>GuiProjectTree</name>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="497" />
+      <location filename="../novelwriter/gui/projtree.py" line="505" />
       <source>Active</source>
       <translation>Attivo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="498" />
+      <location filename="../novelwriter/gui/projtree.py" line="506" />
       <source>Inactive</source>
       <translation>Inattivo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="499" />
+      <location filename="../novelwriter/gui/projtree.py" line="507" />
       <source>Permanently delete {0} file(s) from Trash?</source>
       <translation>Eliminare definitivamente {0} file(s) dal cestino?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="632" />
+      <location filename="../novelwriter/gui/projtree.py" line="640" />
       <source>Did not find anywhere to add the file or folder!</source>
       <translation>Non è stato trovato alcun posto dove aggiungere il file o la cartella!</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="641" />
+      <location filename="../novelwriter/gui/projtree.py" line="649" />
       <source>Cannot add new files or folders to the Trash folder.</source>
       <translation>Impossibile aggiungere nuovi file o cartelle alla cartella Cestino.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="651" />
+      <location filename="../novelwriter/gui/projtree.py" line="659" />
       <source>New Note</source>
       <translation>Nuova nota</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="654" />
+      <location filename="../novelwriter/gui/projtree.py" line="662" />
       <source>New Chapter</source>
       <translation>Nuovo capitolo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="657" />
+      <location filename="../novelwriter/gui/projtree.py" line="665" />
       <source>New Scene</source>
       <translation>Nuova scena</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="660" />
+      <location filename="../novelwriter/gui/projtree.py" line="668" />
       <source>New Document</source>
       <translation>Nuovo documento</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="663" />
+      <location filename="../novelwriter/gui/projtree.py" line="671" />
       <source>New Folder</source>
       <translation>Nuova cartella</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="878" />
+      <location filename="../novelwriter/gui/projtree.py" line="886" />
       <source>There is currently no Trash folder in this project.</source>
       <translation>Al momento non c'è una cartella Cestino in questo progetto.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="887" />
+      <location filename="../novelwriter/gui/projtree.py" line="895" />
       <source>The Trash folder is already empty.</source>
       <translation>La cartella Cestino è già vuota.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="934" />
+      <location filename="../novelwriter/gui/projtree.py" line="942" />
       <source>Move '{0}' to Trash?</source>
       <translation>Spostare '{0}' nel Cestino?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="966" />
+      <location filename="../novelwriter/gui/projtree.py" line="974" />
       <source>Root folders can only be deleted when they are empty.</source>
       <translation>Le cartelle radice possono essere eliminate solo quando sono vuote.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="985" />
+      <location filename="../novelwriter/gui/projtree.py" line="993" />
       <source>Permanently delete '{0}'?</source>
       <translation>Eliminare definitivamente '{0}'?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1275" />
+      <location filename="../novelwriter/gui/projtree.py" line="1291" />
       <source>Drag and drop is only allowed for single items, non-root items, or multiple items with the same parent.</source>
       <translation>Il trascinamento è consentito solo per singoli oggetti, oggetti non radice, o più oggetti con lo stesso genitore.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1403" />
+      <location filename="../novelwriter/gui/projtree.py" line="1420" />
       <source>No documents selected for merging.</source>
       <translation>Nessun documento selezionato per la fusione.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1411" />
+      <location filename="../novelwriter/gui/projtree.py" line="1428" />
       <source>Merged</source>
       <translation>Uniti</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1487" />
-      <location filename="../novelwriter/gui/projtree.py" line="1427" />
+      <location filename="../novelwriter/gui/projtree.py" line="1504" />
+      <location filename="../novelwriter/gui/projtree.py" line="1444" />
       <source>Could not write document content.</source>
       <translation>Impossibile scrivere il contenuto del documento.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1509" />
+      <location filename="../novelwriter/gui/projtree.py" line="1526" />
       <source>Do you want to duplicate this document?</source>
       <translation>Vuoi duplicare questo documento?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1511" />
+      <location filename="../novelwriter/gui/projtree.py" line="1528" />
       <source>Do you want to duplicate this item and all child items?</source>
       <translation>Vuoi duplicare questo elemento e tutti gli elementi figli?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1525" />
+      <location filename="../novelwriter/gui/projtree.py" line="1542" />
       <source>Could not duplicate all items.</source>
       <translation>Impossibile duplicare tutti gli elementi.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1582" />
+      <location filename="../novelwriter/gui/projtree.py" line="1599" />
       <source>There is nowhere to add item with name '{0}'.</source>
       <translation>Non c'è nessun posto dove aggiungere un elemento con il nome '{0}.</translation>
     </message>
@@ -3646,148 +3646,151 @@
       <translation>Impossibile eliminare il file del documento.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="257" />
+      <location filename="../novelwriter/core/project.py" line="258" />
       <source>Not a known project file format.</source>
       <translation>Non è un formato conosciuto di file di progetto.</translation>
     </message>
     <message>
+      <location filename="../novelwriter/core/project.py" line="457" />
+      <location filename="../novelwriter/core/project.py" line="269" />
+      <location filename="../novelwriter/core/project.py" line="264" />
       <location filename="../novelwriter/core/project.py" line="259" />
-      <source>Project file not found.</source>
-      <translation>File di progetto non trovato.</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/project.py" line="263" />
-      <source>Failed to open project.</source>
-      <translation>Impossibile aprire il progetto.</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/project.py" line="276" />
-      <source>Unknown</source>
-      <translation>Sconosciuto</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/project.py" line="279" />
-      <source>Project file does not appear to be a novelWriterXML file.</source>
-      <translation>Il file del progetto non sembra essere un file novelWriterXML.</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/project.py" line="283" />
-      <source>Unknown or unsupported novelWriter project file format. The project cannot be opened by this version of novelWriter. The file was saved with novelWriter version {0}.</source>
-      <translation>Formato file di progetto di novelWriter sconosciuto o non supportato. Il progetto non può essere aperto da questa versione di novelWriter. Il file è stato salvato con la versione {0} di novelWriter.</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/project.py" line="289" />
-      <source>Failed to parse project xml.</source>
-      <translation>Impossibile analizzare il progetto xml.</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/project.py" line="296" />
-      <source>The file format of your project is about to be updated. If you proceed, older versions of novelWriter will no longer be able to open this project. Continue?</source>
-      <translation>Il formato del file del tuo progetto sta per essere aggiornato. Scegliendo di procedere, le versioni più vecchie di novelWriter non saranno più in grado di aprire questo progetto. Continuare?</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/project.py" line="308" />
-      <source>This project was saved by a newer version of novelWriter, version {0}. This is version {1}. If you continue to open the project, some attributes and settings may not be preserved, but the overall project should be fine. Continue opening the project?</source>
-      <translation>Questo progetto è stato salvato da una versione più recente di novelWriter, versione {0}. Questa è la versione {1}. Se si continua ad aprire il progetto, alcuni attributi e impostazioni potrebbero non essere preservati, ma il progetto complessivo dovrebbe andare bene. Continuare ad aprire il progetto?</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/project.py" line="333" />
-      <source>Recovered</source>
-      <translation>Ripristinato</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/project.py" line="335" />
-      <source>Found {0} orphaned file(s) in the project. {1} file(s) were recovered.</source>
-      <translation>Trovati {0} file orfani nel progetto. {1} file sono stati recuperati ...</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/project.py" line="350" />
-      <source>Opened Project: {0}</source>
-      <translation>Progetto aperto: {0}</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/project.py" line="361" />
-      <source>There is no project open.</source>
-      <translation>Non c'è nessun progetto aperto.</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/project.py" line="384" />
-      <source>Failed to save project.</source>
-      <translation>Salvataggio del progetto non riuscito.</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/project.py" line="398" />
-      <source>Saved Project: {0}</source>
-      <translation>Progetto salvato: {0}</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/project.py" line="421" />
-      <source>Backing up project ...</source>
-      <translation>Crea una copia di backup ...</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/project.py" line="424" />
-      <source>Cannot backup project because no project name is set. Please set a Project Name in Project Settings.</source>
-      <translation>Impossibile eseguire il backup del progetto perché nessun nome del progetto è impostato. Si prega di impostare un nome del progetto nelle impostazioni del progetto.</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/project.py" line="436" />
-      <source>Could not create backup folder.</source>
-      <translation>Impossibile creare la cartella di backup.</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/project.py" line="445" />
-      <source>Created a backup of your project of size {0}B.</source>
-      <translation>Creato un backup del progetto di dimensione {0}B.</translation>
-    </message>
-    <message>
-      <location filename="../novelwriter/core/project.py" line="446" />
       <source>Path: {0}</source>
       <translation>Percorso: {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="449" />
+      <location filename="../novelwriter/core/project.py" line="263" />
+      <source>Project file not found.</source>
+      <translation>File di progetto non trovato.</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="268" />
+      <source>Failed to open project.</source>
+      <translation>Impossibile aprire il progetto.</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="286" />
+      <source>Unknown</source>
+      <translation>Sconosciuto</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="289" />
+      <source>Project file does not appear to be a novelWriterXML file.</source>
+      <translation>Il file del progetto non sembra essere un file novelWriterXML.</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="293" />
+      <source>Unknown or unsupported novelWriter project file format. The project cannot be opened by this version of novelWriter. The file was saved with novelWriter version {0}.</source>
+      <translation>Formato file di progetto di novelWriter sconosciuto o non supportato. Il progetto non può essere aperto da questa versione di novelWriter. Il file è stato salvato con la versione {0} di novelWriter.</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="299" />
+      <source>Failed to parse project xml.</source>
+      <translation>Impossibile analizzare il progetto xml.</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="306" />
+      <source>The file format of your project is about to be updated. If you proceed, older versions of novelWriter will no longer be able to open this project. Continue?</source>
+      <translation>Il formato del file del tuo progetto sta per essere aggiornato. Scegliendo di procedere, le versioni più vecchie di novelWriter non saranno più in grado di aprire questo progetto. Continuare?</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="318" />
+      <source>This project was saved by a newer version of novelWriter, version {0}. This is version {1}. If you continue to open the project, some attributes and settings may not be preserved, but the overall project should be fine. Continue opening the project?</source>
+      <translation>Questo progetto è stato salvato da una versione più recente di novelWriter, versione {0}. Questa è la versione {1}. Se si continua ad aprire il progetto, alcuni attributi e impostazioni potrebbero non essere preservati, ma il progetto complessivo dovrebbe andare bene. Continuare ad aprire il progetto?</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="343" />
+      <source>Recovered</source>
+      <translation>Ripristinato</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="345" />
+      <source>Found {0} orphaned file(s) in the project. {1} file(s) were recovered.</source>
+      <translation>Trovati {0} file orfani nel progetto. {1} file sono stati recuperati ...</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="361" />
+      <source>Opened Project: {0}</source>
+      <translation>Progetto aperto: {0}</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="372" />
+      <source>There is no project open.</source>
+      <translation>Non c'è nessun progetto aperto.</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="395" />
+      <source>Failed to save project.</source>
+      <translation>Salvataggio del progetto non riuscito.</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="409" />
+      <source>Saved Project: {0}</source>
+      <translation>Progetto salvato: {0}</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="432" />
+      <source>Backing up project ...</source>
+      <translation>Crea una copia di backup ...</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="435" />
+      <source>Cannot backup project because no project name is set. Please set a Project Name in Project Settings.</source>
+      <translation>Impossibile eseguire il backup del progetto perché nessun nome del progetto è impostato. Si prega di impostare un nome del progetto nelle impostazioni del progetto.</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="447" />
+      <source>Could not create backup folder.</source>
+      <translation>Impossibile creare la cartella di backup.</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="456" />
+      <source>Created a backup of your project of size {0}B.</source>
+      <translation>Creato un backup del progetto di dimensione {0}B.</translation>
+    </message>
+    <message>
+      <location filename="../novelwriter/core/project.py" line="460" />
       <source>Could not write backup archive.</source>
       <translation>Impossibile scrivere l'archivio di backup.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="452" />
+      <location filename="../novelwriter/core/project.py" line="463" />
       <source>Project backed up to '{0}'</source>
       <translation>Eseguito il backup del progetto su '{0}'</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="466" />
-      <location filename="../novelwriter/core/project.py" line="462" />
+      <location filename="../novelwriter/core/project.py" line="477" />
+      <location filename="../novelwriter/core/project.py" line="473" />
       <source>New</source>
       <translation>Nuovo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="463" />
+      <location filename="../novelwriter/core/project.py" line="474" />
       <source>Note</source>
       <translation>Nota</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="464" />
+      <location filename="../novelwriter/core/project.py" line="475" />
       <source>Draft</source>
       <translation>Bozza</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="465" />
+      <location filename="../novelwriter/core/project.py" line="476" />
       <source>Finished</source>
       <translation>Finito</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="467" />
+      <location filename="../novelwriter/core/project.py" line="478" />
       <source>Minor</source>
       <translation>Minore</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="468" />
+      <location filename="../novelwriter/core/project.py" line="479" />
       <source>Major</source>
       <translation>Maggiore</translation>
     </message>
     <message>
-      <location filename="../novelwriter/core/project.py" line="469" />
+      <location filename="../novelwriter/core/project.py" line="480" />
       <source>Main</source>
       <translation>Principale</translation>
     </message>
@@ -4022,22 +4025,22 @@
   <context>
     <name>SharedData</name>
     <message>
-      <location filename="../novelwriter/shared.py" line="271" />
+      <location filename="../novelwriter/shared.py" line="272" />
       <source>novelWriter Project File or Zip File</source>
       <translation>File di progetto di novelWriter o file Zip</translation>
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="272" />
+      <location filename="../novelwriter/shared.py" line="273" />
       <source>novelWriter Project File</source>
       <translation>File di progetto di novelWriter</translation>
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="276" />
+      <location filename="../novelwriter/shared.py" line="277" />
       <source>Open Project</source>
       <translation>Apri progetto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="285" />
+      <location filename="../novelwriter/shared.py" line="286" />
       <source>Select Font</source>
       <translation>Seleziona il tipo di carattere</translation>
     </message>
@@ -4217,22 +4220,22 @@
   <context>
     <name>_GuiAlert</name>
     <message>
-      <location filename="../novelwriter/shared.py" line="441" />
+      <location filename="../novelwriter/shared.py" line="450" />
       <source>Information</source>
       <translation>Informazioni</translation>
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="444" />
+      <location filename="../novelwriter/shared.py" line="453" />
       <source>Warning</source>
       <translation>Attenzione</translation>
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="447" />
+      <location filename="../novelwriter/shared.py" line="456" />
       <source>Error</source>
       <translation>Errore</translation>
     </message>
     <message>
-      <location filename="../novelwriter/shared.py" line="450" />
+      <location filename="../novelwriter/shared.py" line="459" />
       <source>Question</source>
       <translation>Domanda</translation>
     </message>
@@ -4334,117 +4337,117 @@
   <context>
     <name>_NewProjectForm</name>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="566" />
+      <location filename="../novelwriter/tools/welcome.py" line="569" />
       <source>Required</source>
       <translation>Necessario</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="572" />
+      <location filename="../novelwriter/tools/welcome.py" line="575" />
       <source>Optional</source>
       <translation>Facoltativo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="593" />
+      <location filename="../novelwriter/tools/welcome.py" line="596" />
       <source>Create a fresh project</source>
       <translation>Crea un nuovo progetto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="597" />
+      <location filename="../novelwriter/tools/welcome.py" line="600" />
       <source>Create an example project</source>
       <translation>Crea un progetto di esempio</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="601" />
+      <location filename="../novelwriter/tools/welcome.py" line="604" />
       <source>Copy an existing project</source>
       <translation>Copia un progetto esistente</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="614" />
+      <location filename="../novelwriter/tools/welcome.py" line="617" />
       <source>Project Name</source>
       <translation>Nome del progetto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="615" />
+      <location filename="../novelwriter/tools/welcome.py" line="618" />
       <source>Author</source>
       <translation>Autore</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="616" />
+      <location filename="../novelwriter/tools/welcome.py" line="619" />
       <source>Project Path</source>
       <translation>Percorso del progetto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="617" />
+      <location filename="../novelwriter/tools/welcome.py" line="620" />
       <source>Prefill Project</source>
       <translation>Tipo di progetto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="625" />
+      <location filename="../novelwriter/tools/welcome.py" line="628" />
       <source>Set to 0 to only add scenes</source>
       <translation>Imposta a 0 per aggiungere solo scene</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="628" />
+      <location filename="../novelwriter/tools/welcome.py" line="631" />
       <source>Add {0} chapter documents</source>
       <translation>Aggiungi {0} capitoli come documenti</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="637" />
+      <location filename="../novelwriter/tools/welcome.py" line="640" />
       <source>Add {0} scene documents (to each chapter)</source>
       <translation>Aggiungi {0} scene come documenti (a ogni capitolo)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="665" />
+      <location filename="../novelwriter/tools/welcome.py" line="668" />
       <source>Add a folder for plot notes</source>
       <translation>Aggiungi una cartella per le note sulla trama</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="666" />
+      <location filename="../novelwriter/tools/welcome.py" line="669" />
       <source>Add a folder for character notes</source>
       <translation>Aggiungi una cartella per le note sui personaggi</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="667" />
+      <location filename="../novelwriter/tools/welcome.py" line="670" />
       <source>Add a folder for location notes</source>
       <translation>Aggiungi una cartella per le note sulle località</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="668" />
+      <location filename="../novelwriter/tools/welcome.py" line="671" />
       <source>Add example notes to the above</source>
       <translation>Aggiungi note di esempio alle precedenti</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="674" />
+      <location filename="../novelwriter/tools/welcome.py" line="677" />
       <source>Chapters and Scenes</source>
       <translation>Capitoli e scene</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="677" />
+      <location filename="../novelwriter/tools/welcome.py" line="680" />
       <source>Project Notes</source>
       <translation>Note del progetto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="686" />
+      <location filename="../novelwriter/tools/welcome.py" line="689" />
       <source>Create New Project</source>
       <translation>Crea un nuovo progetto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="729" />
+      <location filename="../novelwriter/tools/welcome.py" line="738" />
       <source>Select Project Folder</source>
       <translation>Seleziona la cartella del progetto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="785" />
+      <location filename="../novelwriter/tools/welcome.py" line="794" />
       <source>Fresh Project</source>
       <translation>Nuovo progetto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="787" />
+      <location filename="../novelwriter/tools/welcome.py" line="796" />
       <source>Example Project</source>
       <translation>Progetto di esempio</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="789" />
+      <location filename="../novelwriter/tools/welcome.py" line="798" />
       <source>Template: {0}</source>
       <translation>Modello: {0}</translation>
     </message>
@@ -4452,7 +4455,7 @@
   <context>
     <name>_NewProjectPage</name>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="535" />
+      <location filename="../novelwriter/tools/welcome.py" line="538" />
       <source>A project name is required.</source>
       <translation>È richiesto un nome di progetto.</translation>
     </message>
@@ -4460,27 +4463,27 @@
   <context>
     <name>_OpenProjectPage</name>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="292" />
+      <location filename="../novelwriter/tools/welcome.py" line="293" />
       <source>The project path is not reachable.</source>
       <translation>Il percorso del progetto non è raggiungibile.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="339" />
+      <location filename="../novelwriter/tools/welcome.py" line="340" />
       <source>Path</source>
       <translation>Percorso</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="359" />
+      <location filename="../novelwriter/tools/welcome.py" line="360" />
       <source>Remove '{0}' from the recent projects list? The project files will not be deleted.</source>
       <translation>Rimuovere '{0}' dalla lista dei progetti recenti? I file del progetto non verranno eliminati.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="373" />
+      <location filename="../novelwriter/tools/welcome.py" line="374" />
       <source>Open Project</source>
       <translation>Apri il progetto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="375" />
+      <location filename="../novelwriter/tools/welcome.py" line="376" />
       <source>Remove Project</source>
       <translation>Rimuovi il progetto</translation>
     </message>
@@ -4571,12 +4574,12 @@
   <context>
     <name>_ProjectListModel</name>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="454" />
+      <location filename="../novelwriter/tools/welcome.py" line="455" />
       <source>Word Count</source>
       <translation>Conteggio delle parole</translation>
     </message>
     <message>
-      <location filename="../novelwriter/tools/welcome.py" line="455" />
+      <location filename="../novelwriter/tools/welcome.py" line="456" />
       <source>Last Opened</source>
       <translation>Ultima apertura</translation>
     </message>
@@ -4584,27 +4587,27 @@
   <context>
     <name>_ReplacePage</name>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="640" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="636" />
       <source>Text Auto-Replace for Preview and Build</source>
       <translation>Sostituzione automatica del testo per l'anteprima e la generazione</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="646" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="642" />
       <source>Keyword</source>
       <translation>Parola chiave</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="646" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="642" />
       <source>Replace With</source>
       <translation>Sostituisci con</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="669" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="665" />
       <source>Select item to edit</source>
       <translation>Seleziona elemento da modificare</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="678" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="674" />
       <source>Apply</source>
       <translation>Applica</translation>
     </message>
@@ -4612,49 +4615,49 @@
   <context>
     <name>_SettingsPage</name>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="247" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="243" />
       <source>Project name</source>
       <translation>Nome del progetto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="248" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="244" />
       <source>Changing this will affect the backup path.</source>
       <translation>Questo cambiamento influirà sul percorso di backup.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="258" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="254" />
       <source>Author(s)</source>
       <translation>Autore(i)</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="272" />
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="259" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="268" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="255" />
       <source>Only used when building the manuscript.</source>
       <translation>Usato solo durante la costruzione del manoscritto.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="271" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="267" />
       <source>Project language</source>
       <translation>Lingua del progetto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="279" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="275" />
       <source>Default</source>
       <translation>Predefinita</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="284" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="280" />
       <source>Spell check language</source>
       <translation>Lingua per il controllo ortografico</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="296" />
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="285" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="292" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="281" />
       <source>Overrides main preferences.</source>
       <translation>Sovrascrive i valori predefiniti.</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="295" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="291" />
       <source>Disable backup on close</source>
       <translation>Disabilita il backup alla chiusura</translation>
     </message>
@@ -4722,87 +4725,87 @@
   <context>
     <name>_StatusPage</name>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="318" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="314" />
       <source>Novel Document Status Levels</source>
       <translation>Livelli di avanzamento dei file del romanzo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="322" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="318" />
       <source>Project Note Importance Levels</source>
       <translation>Livelli d'importanza dei file delle note</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="341" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="337" />
       <source>Not in use</source>
       <translation>Non utilizzato</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="342" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="338" />
       <source>Used once</source>
       <translation>Usato una volta</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="343" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="339" />
       <source>Used by {0} items</source>
       <translation>Usato da {0} elementi</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="344" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="340" />
       <source>Select Colour</source>
       <translation>Seleziona colore</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="354" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="350" />
       <source>Label</source>
       <translation>Etichetta</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="354" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="350" />
       <source>Usage</source>
       <translation>Utilizzo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="380" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="376" />
       <source>Select item to edit</source>
       <translation>Seleziona elemento da modificare</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="389" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="385" />
       <source>Colour</source>
       <translation>Colore</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="404" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="400" />
       <source>Circles ...</source>
       <translation>Cerchi...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="405" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="401" />
       <source>Bars ...</source>
       <translation>Barre ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="406" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="402" />
       <source>Blocks ...</source>
       <translation>Blocchi ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="410" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="406" />
       <source>Shape</source>
       <translation>Forma</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="416" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="412" />
       <source>Apply</source>
       <translation>Applica</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="495" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="491" />
       <source>New Item</source>
       <translation>Nuovo elemento</translation>
     </message>
     <message>
-      <location filename="../novelwriter/dialogs/projectsettings.py" line="506" />
+      <location filename="../novelwriter/dialogs/projectsettings.py" line="502" />
       <source>Cannot delete a status item that is in use.</source>
       <translation>Impossibile eliminare un elemento di stato in uso.</translation>
     </message>
@@ -4810,128 +4813,128 @@
   <context>
     <name>_TreeContextMenu</name>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1730" />
+      <location filename="../novelwriter/gui/projtree.py" line="1747" />
       <source>Empty Trash</source>
       <translation>Svuota il cestino</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1750" />
+      <location filename="../novelwriter/gui/projtree.py" line="1767" />
       <source>Rename</source>
       <translation>Rinomina</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1786" />
+      <location filename="../novelwriter/gui/projtree.py" line="1803" />
       <source>Open Document</source>
       <translation>Apri documento</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1790" />
+      <location filename="../novelwriter/gui/projtree.py" line="1807" />
       <source>View Document</source>
       <translation>Visualizza documento</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1798" />
+      <location filename="../novelwriter/gui/projtree.py" line="1815" />
       <source>Create New ...</source>
       <translation>Crea nuovo ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1810" />
+      <location filename="../novelwriter/gui/projtree.py" line="1827" />
       <source>Rename to Heading</source>
       <translation>Rinomina nell'intestazione</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1819" />
+      <location filename="../novelwriter/gui/projtree.py" line="1836" />
       <source>Set Active to ...</source>
       <translation>Imposta attività su ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1825" />
+      <location filename="../novelwriter/gui/projtree.py" line="1842" />
       <source>Toggle Active</source>
       <translation>Commuta Attiva/Disattiva</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1832" />
+      <location filename="../novelwriter/gui/projtree.py" line="1849" />
       <source>Set Status to ...</source>
       <translation>Imposta lo stato su ...</translation>
     </message>
     <message>
+      <location filename="../novelwriter/gui/projtree.py" line="1878" />
       <location filename="../novelwriter/gui/projtree.py" line="1861" />
-      <location filename="../novelwriter/gui/projtree.py" line="1844" />
       <source>Manage Labels ...</source>
       <translation>Gestisci Etichette ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1849" />
+      <location filename="../novelwriter/gui/projtree.py" line="1866" />
       <source>Set Importance to ...</source>
       <translation>Imposta l'importanza su ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1869" />
+      <location filename="../novelwriter/gui/projtree.py" line="1886" />
       <source>Transform ...</source>
       <translation>Trasforma ...</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1894" />
-      <location filename="../novelwriter/gui/projtree.py" line="1890" />
-      <location filename="../novelwriter/gui/projtree.py" line="1886" />
-      <location filename="../novelwriter/gui/projtree.py" line="1882" />
+      <location filename="../novelwriter/gui/projtree.py" line="1911" />
+      <location filename="../novelwriter/gui/projtree.py" line="1907" />
+      <location filename="../novelwriter/gui/projtree.py" line="1903" />
+      <location filename="../novelwriter/gui/projtree.py" line="1899" />
       <source>Convert to {0}</source>
       <translation>Converti in {0}</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1898" />
+      <location filename="../novelwriter/gui/projtree.py" line="1915" />
       <source>Merge Child Items into Self</source>
       <translation>Fondi elementi figli</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1900" />
+      <location filename="../novelwriter/gui/projtree.py" line="1917" />
       <source>Merge Child Items into New</source>
       <translation>Fondi elementi figli in uno nuovo</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1904" />
+      <location filename="../novelwriter/gui/projtree.py" line="1921" />
       <source>Merge Documents in Folder</source>
       <translation>Fondi i documenti nella cartella</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1908" />
+      <location filename="../novelwriter/gui/projtree.py" line="1925" />
       <source>Split Document by Headings</source>
       <translation>Dividi il documento alle intestazioni</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1918" />
+      <location filename="../novelwriter/gui/projtree.py" line="1935" />
       <source>Expand All</source>
       <translation>Espandi tutto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1920" />
+      <location filename="../novelwriter/gui/projtree.py" line="1937" />
       <source>Collapse All</source>
       <translation>Collassa tutto</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1923" />
+      <location filename="../novelwriter/gui/projtree.py" line="1940" />
       <source>Duplicate</source>
       <translation>Duplica</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1939" />
-      <location filename="../novelwriter/gui/projtree.py" line="1927" />
+      <location filename="../novelwriter/gui/projtree.py" line="1956" />
+      <location filename="../novelwriter/gui/projtree.py" line="1944" />
       <source>Delete Permanently</source>
       <translation>Elimina definitivamente</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1942" />
-      <location filename="../novelwriter/gui/projtree.py" line="1930" />
+      <location filename="../novelwriter/gui/projtree.py" line="1959" />
+      <location filename="../novelwriter/gui/projtree.py" line="1947" />
       <source>Move to Trash</source>
       <translation>Sposta nel cestino</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1953" />
+      <location filename="../novelwriter/gui/projtree.py" line="1970" />
       <source>Move {0} items to Trash?</source>
       <translation>Spostare {0} elementi nel cestino?</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="2038" />
+      <location filename="../novelwriter/gui/projtree.py" line="2055" />
       <source>Do you want to convert the folder to a {0}? This action cannot be reversed.</source>
       <translation>Vuoi convertire la cartella in un {0}? Questa azione non può essere annullata.</translation>
     </message>
@@ -4939,7 +4942,7 @@
   <context>
     <name>_UpdatableMenu</name>
     <message>
-      <location filename="../novelwriter/gui/projtree.py" line="1648" />
+      <location filename="../novelwriter/gui/projtree.py" line="1665" />
       <source>From Template</source>
       <translation>Dal modello</translation>
     </message>
@@ -4947,12 +4950,12 @@
   <context>
     <name>_ViewPanelBackRefs</name>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="245" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="252" />
       <source>Document</source>
       <translation>Documento</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="245" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="252" />
       <source>First Heading</source>
       <translation>Prima intestazione</translation>
     </message>
@@ -4960,27 +4963,27 @@
   <context>
     <name>_ViewPanelKeyWords</name>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="387" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="394" />
       <source>Tag</source>
       <translation>Etichetta</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="387" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="394" />
       <source>Importance</source>
       <translation>Importanza</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="387" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="394" />
       <source>Document</source>
       <translation>Documento</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="388" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="395" />
       <source>Heading</source>
       <translation>Intestazione</translation>
     </message>
     <message>
-      <location filename="../novelwriter/gui/docviewerpanel.py" line="388" />
+      <location filename="../novelwriter/gui/docviewerpanel.py" line="395" />
       <source>Short Description</source>
       <translation>Breve descrizione</translation>
     </message>
