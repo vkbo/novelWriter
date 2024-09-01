@@ -1100,6 +1100,7 @@ def testCoreToken_Dialogue(mockGUI):
     project = NWProject()
     tokens = BareTokenizer(project)
     tokens.setDialogueHighlight(True)
+    tokens._isNovel = True
 
     # Single quotes
     tokens._text = "Text with \u2018dialogue one,\u2019 and \u2018dialogue two.\u2019\n"
