@@ -823,6 +823,7 @@ class _PreviewWidget(QTextBrowser):
 
         document.setDocumentMargin(CONFIG.getTextMargin())
         self.setDocument(document)
+        self.setTabStopDistance(CONFIG.getTabWidth())
 
         self._docTime = int(time())
         self._updateBuildAge()

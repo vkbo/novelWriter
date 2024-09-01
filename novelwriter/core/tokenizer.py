@@ -832,7 +832,7 @@ class Tokenizer(ABC):
                     sAlign |= self.A_IND_R
 
                 # Process formats
-                tLine, tFmt = self._extractFormats(aLine)
+                tLine, tFmt = self._extractFormats(aLine, hDialog=self._isNovel)
                 tokens.append((
                     self.T_TEXT, nHead, tLine, tFmt, sAlign
                 ))
@@ -1098,8 +1098,13 @@ class Tokenizer(ABC):
     #  Internal Functions
     ##
 
-    def _extractFormats(self, text: str, skip: int = 0) -> tuple[str, T_Formats]:
-        """Extract format markers from a text paragraph."""
+    def _extractFormats(
+        self, text: str, skip: int = 0, hDialog: bool = False
+    ) -> tuple[str, T_Formats]:
+        """Extract format markers from a text paragraph. In order to
+        also process dialogue highlighting, the hDialog flag must be set
+        to True. See issues #2011 and #2013.
+        """
         temp: list[tuple[int, int, int, str]] = []
 
         # Match Markdown
@@ -1137,7 +1142,7 @@ class Tokenizer(ABC):
             ))
 
         # Match Dialogue
-        if self._rxDialogue:
+        if self._rxDialogue and hDialog:
             for regEx, fmtB, fmtE in self._rxDialogue:
                 rxItt = regEx.globalMatch(text, 0)
                 while rxItt.hasNext():
@@ -1150,8 +1155,9 @@ class Tokenizer(ABC):
         formats = []
         for pos, n, fmt, key in reversed(sorted(temp, key=lambda x: x[0])):
             if fmt > 0:
-                result = result[:pos] + result[pos+n:]
-                formats = [(p-n, f, k) for p, f, k in formats]
+                if n > 0:
+                    result = result[:pos] + result[pos+n:]
+                    formats = [(p-n if p > pos else p, f, k) for p, f, k in formats]
                 formats.insert(0, (pos, fmt, key))
 
         return result, formats
