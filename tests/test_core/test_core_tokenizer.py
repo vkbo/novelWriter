@@ -1100,6 +1100,7 @@ def testCoreToken_Dialogue(mockGUI):
     project = NWProject()
     tokens = BareTokenizer(project)
     tokens.setDialogueHighlight(True)
+    tokens._isNovel = True
 
     # Single quotes
     tokens._text = "Text with \u2018dialogue one,\u2019 and \u2018dialogue two.\u2019\n"
@@ -1157,6 +1158,24 @@ def testCoreToken_Dialogue(mockGUI):
             (34, Tokenizer.FMT_DL_E, ""),
             (44, Tokenizer.FMT_DL_B, ""),
             (49, Tokenizer.FMT_DL_E, ""),
+        ],
+        Tokenizer.A_NONE
+    )]
+
+    # Special Cases
+    # =============
+
+    # Dialogue + formatting on same index (Issue #2012)
+    tokens._text = "[i]\u201cDialogue text.\u201d[/i]\n"
+    tokens.tokenizeText()
+    assert tokens._tokens == [(
+        Tokenizer.T_TEXT, 0,
+        "\u201cDialogue text.\u201d",
+        [
+            (0,  Tokenizer.FMT_I_B, ""),
+            (0,  Tokenizer.FMT_DL_B, ""),
+            (16, Tokenizer.FMT_I_E, ""),
+            (16, Tokenizer.FMT_DL_E, ""),
         ],
         Tokenizer.A_NONE
     )]
