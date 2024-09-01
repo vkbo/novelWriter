@@ -229,15 +229,13 @@ class GuiDocViewer(QTextBrowser):
             QApplication.restoreOverrideCursor()
             return False
 
-        # Refresh the tab stops
-        self.setTabStopDistance(CONFIG.getTabWidth())
-
-        # Must be before setHtml
+        # Must be before setDocument
         if updateHistory:
             self.docHistory.append(tHandle)
 
         self.setDocumentTitle(tHandle)
         self.setDocument(qDoc.document)
+        self.setTabStopDistance(CONFIG.getTabWidth())
 
         if self._docHandle == tHandle:
             # This is a refresh, so we set the scrollbar back to where it was
