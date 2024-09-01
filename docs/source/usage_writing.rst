@@ -48,14 +48,14 @@ spell checking can be found in the **Tools** menu. You can also set spell checki
 **Project Settings**.
 
 This spell checking library comes with support for custom words that you can add by selecting
-"Add Word to Dictionary" from the context menu. The custom words are managed on a per-project
-basis, and can the list of words can be edited from the **Project Word List** tool available from
-the **Tools** menu.
+"Add Word to Dictionary" from the context menu when a word is highlighted by the spell checker as
+misspelled. The custom words are managed on a per-project basis, and can the list of words can be
+edited from the **Project Word List** tool available from the **Tools** menu.
 
 .. note::
 
-   Generally, spell check languages are collected from your operating system, but on Windows they
-   are not. See :ref:`a_custom_dict` for how to add spell check languages on Windows.
+   Generally, spell checking dictionaries are collected from your operating system, but on Windows
+   they are not. See :ref:`a_custom_dict` for how to add spell checking dictionaries on Windows.
 
 
 Editor Auto-Completer
