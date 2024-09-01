@@ -1161,6 +1161,24 @@ def testCoreToken_Dialogue(mockGUI):
         Tokenizer.A_NONE
     )]
 
+    # Special Cases
+    # =============
+
+    # Dialogue + formatting on same index (Issue #2012)
+    tokens._text = "[i]\u201cDialogue text.\u201d[/i]\n"
+    tokens.tokenizeText()
+    assert tokens._tokens == [(
+        Tokenizer.T_TEXT, 0,
+        "\u201cDialogue text.\u201d",
+        [
+            (0,  Tokenizer.FMT_I_B, ""),
+            (0,  Tokenizer.FMT_DL_B, ""),
+            (16, Tokenizer.FMT_I_E, ""),
+            (16, Tokenizer.FMT_DL_E, ""),
+        ],
+        Tokenizer.A_NONE
+    )]
+
 
 @pytest.mark.core
 def testCoreToken_SpecialFormat(mockGUI):

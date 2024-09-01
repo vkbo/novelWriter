@@ -1150,8 +1150,9 @@ class Tokenizer(ABC):
         formats = []
         for pos, n, fmt, key in reversed(sorted(temp, key=lambda x: x[0])):
             if fmt > 0:
-                result = result[:pos] + result[pos+n:]
-                formats = [(p-n, f, k) for p, f, k in formats]
+                if n > 0:
+                    result = result[:pos] + result[pos+n:]
+                    formats = [(p-n if p > pos else p, f, k) for p, f, k in formats]
                 formats.insert(0, (pos, fmt, key))
 
         return result, formats
