@@ -40,6 +40,24 @@ Any :term:`references<reference>` in the editor can be opened in the viewer by m
 the label and pressing :kbd:`Ctrl+Return`. You can also control-click them with your mouse.
 
 
+Spell Checking
+--------------
+
+A third party library called Enchant is used for spell checking in the editor. The controls for
+spell checking can be found in the **Tools** menu. You can also set spell checking language in
+**Project Settings**.
+
+This spell checking library comes with support for custom words that you can add by selecting
+"Add Word to Dictionary" from the context menu when a word is highlighted by the spell checker as
+misspelled. The custom words are managed on a per-project basis, and can the list of words can be
+edited from the **Project Word List** tool available from the **Tools** menu.
+
+.. note::
+
+   Generally, spell checking dictionaries are collected from your operating system, but on Windows
+   they are not. See :ref:`a_custom_dict` for how to add spell checking dictionaries on Windows.
+
+
 Editor Auto-Completer
 ---------------------
 
