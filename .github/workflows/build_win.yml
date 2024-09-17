@@ -28,7 +28,27 @@ jobs:
       - name: Build Setup Installer
         run: python pkgutils.py build-win-exe
 
-      - name: Upload Artifacts
+      - name: Upload Unsigned Artifacts
+        id: upload-unsigned-artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Win-Setup
+          path: dist/*.exe
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Submit Signing Request
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
+          organization-id: "0471e52c-66fa-4e9a-bfb9-36167095ca3f"
+          project-slug: "novelWriter"
+          signing-policy-slug: "release-signing"
+          github-artifact-id: "${{ steps.upload-unsigned-artifact.outputs.artifact-id }}"
+          wait-for-completion: true
+          output-artifact-directory: "dist/"
+
+      - name: Upload Signed Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Win-Setup

@@ -1,5 +1,35 @@
 # novelWriter Changelog
 
+## Version 2.5.2 [2024-09-17]
+
+### Release Notes
+
+This is a patch release that fixes a series of issues mostly affecting dialogue highlighting in the
+document viewer. The way the text is formatted in the viewer changed a lot in 2.5, and there were a
+few issues with the new implementation. The tab stop distance setting was also ignored, but has now
+been fixed as well.
+
+### Detailed Changelog
+
+**Bugfixes**
+
+* Fixed an issue where the tab stop distance setting was being ignored in the document viewer. It
+  must be set again every time a document is loaded. Issue #1996. PR #2014.
+* Fixed an issue with overlapping formatting markers when processing text into new formats. This
+  issues was introduced when dialogue highlighting was added to the document viewer and manuscript
+  build. It arises because start and end of dialogue can occur on the same character as other
+  formatting, and then the order these markers are processed matters. This was not properly handled
+  in the code. Issue #2012. PR #2014.
+* Dialogue highlighting is now only applied to plain text paragraphs, not comments, headings, and
+  other places where there should be no dialogue. Issue #2013. PR #2014.
+* Note documents no longer get dialogue highlighting. Issue #2011. PR #2014.
+
+**Documentation**
+
+* Added a section about spell checking in the documentation. PR #2015.
+
+----
+
 ## Version 2.5.1 [2024-07-28]
 
 ### Release Notes
