@@ -177,12 +177,12 @@ class GuiDocEditor(QPlainTextEdit):
         self.keyContext.activated.connect(self._openContextFromCursor)
 
         self.followTag1 = QShortcut(self)
-        self.followTag1.setKey(Qt.Key.Key_Return | QtModCtrl)
+        self.followTag1.setKey("Ctrl+Return")
         self.followTag1.setContext(Qt.ShortcutContext.WidgetShortcut)
         self.followTag1.activated.connect(self._processTag)
 
         self.followTag2 = QShortcut(self)
-        self.followTag2.setKey(Qt.Key.Key_Enter | QtModCtrl)
+        self.followTag2.setKey("Ctrl+Enter")
         self.followTag2.setContext(Qt.ShortcutContext.WidgetShortcut)
         self.followTag2.activated.connect(self._processTag)
 

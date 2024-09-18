@@ -297,7 +297,7 @@ class _OpenProjectPage(QWidget):
         self.selectedPath.addAction(self.aMissing, QLineEdit.ActionPosition.TrailingPosition)
 
         self.keyDelete = QShortcut(self)
-        self.keyDelete.setKey(Qt.Key.Key_Delete)
+        self.keyDelete.setKey("Del")
         self.keyDelete.activated.connect(self._deleteSelectedItem)
 
         # Assemble
