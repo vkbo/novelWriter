@@ -35,7 +35,7 @@ from tests.tools import C, buildTestProject
 def testToolLipsum_Main(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     """Test the Lorem Ipsum tool."""
     # Check that we cannot open when there is no project
-    nwGUI.mainMenu.aLipsumText.activate(QAction.Trigger)
+    nwGUI.mainMenu.aLipsumText.activate(QAction.ActionEvent.Trigger)
     assert SHARED.findTopLevelWidget(GuiLipsum) is None
 
     buildTestProject(nwGUI, projPath)

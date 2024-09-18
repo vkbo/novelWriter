@@ -58,4 +58,4 @@ def testDlgAbout_QtDialog(monkeypatch, nwGUI):
     # Open About
     # All it can do is check against a crash
     nwGUI.showAboutQtDialog()
-    nwGUI.mainMenu.aAboutQt.activate(QAction.Trigger)
+    nwGUI.mainMenu.aAboutQt.activate(QAction.ActionEvent.Trigger)

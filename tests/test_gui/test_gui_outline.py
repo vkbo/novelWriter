@@ -152,7 +152,7 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, projPath):
     # Trigger the menu entry for all hidden columns
     for hItem in nwOutline:
         if outlineTree.DEF_HIDDEN[hItem]:
-            outlineMenu.actionMap[hItem].activate(QAction.Trigger)
+            outlineMenu.actionMap[hItem].activate(QAction.ActionEvent.Trigger)
 
     # Now no columns should be hidden
     outlineTree._saveHeaderState()

@@ -45,7 +45,7 @@ def testToolWritingStats_Main(qtbot, monkeypatch, nwGUI, projPath, tstPaths):
     sessFile = projPath / "meta" / nwFiles.SESS_FILE
 
     # Open the Writing Stats dialog
-    nwGUI.mainMenu.aWritingStats.activate(QAction.Trigger)
+    nwGUI.mainMenu.aWritingStats.activate(QAction.ActionEvent.Trigger)
     qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiWritingStats) is not None, timeout=1000)
 
     sessLog = SHARED.findTopLevelWidget(GuiWritingStats)

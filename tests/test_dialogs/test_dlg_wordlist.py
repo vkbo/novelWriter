@@ -47,7 +47,7 @@ def testDlgWordList_Dialog(qtbot, monkeypatch, nwGUI, fncPath, projPath):
     nwGUI.openProject(projPath)
 
     # Load the dialog
-    nwGUI.mainMenu.aEditWordList.activate(QAction.Trigger)
+    nwGUI.mainMenu.aEditWordList.activate(QAction.ActionEvent.Trigger)
     qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiWordList) is not None, timeout=1000)
 
     wList = SHARED.findTopLevelWidget(GuiWordList)
