@@ -26,7 +26,7 @@ jobs:
           path: novelwriter/assets
 
       - name: Build Setup Installer
-        id: build-installer
+        id: build
         run: |
           echo "BUILD_VERSION=$(python pkgutils.py version)" >> $Env:GITHUB_OUTPUT
           python pkgutils.py build-win-exe
@@ -35,7 +35,7 @@ jobs:
         id: upload-unsigned-artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Win-Setup-Unsigned
+          name: novelWriter-${{ steps.build.outputs.BUILD_VERSION }}-Win-Setup
           path: dist/*.exe
           if-no-files-found: error
           retention-days: 14
@@ -51,12 +51,12 @@ jobs:
           wait-for-completion: true
           output-artifact-directory: "dist/"
           parameters: |
-            version: "${{ steps.build-installer.outputs.BUILD_VERSION }}"
+            version: "${{ steps.build.outputs.BUILD_VERSION }}"
 
       - name: Upload Signed Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Win-Setup-Signed
+          name: novelWriter-${{ steps.build.outputs.BUILD_VERSION }}-Win-Setup-Signed
           path: dist/*.exe
           if-no-files-found: error
           retention-days: 14

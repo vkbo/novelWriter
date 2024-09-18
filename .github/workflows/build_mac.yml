@@ -25,13 +25,16 @@ jobs:
           path: novelwriter/assets
 
       - name: Build App Bundle
-        run: ./setup/macos/build.sh $PYTHON_VERSION $PACKAGE_ARCH $MINICONDA_ARCH
+        id: build
+        run: |
+          echo "BUILD_VERSION=$(python pkgutils.py version)" >> $GITHUB_OUTPUT
+          ./setup/macos/build.sh $PYTHON_VERSION $PACKAGE_ARCH $MINICONDA_ARCH
 
       - name: Upload DMG
         uses: actions/upload-artifact@v4
         with:
-          name: MacOS-AMD64-DMG
-          path: dist_macos
+          name: novelWriter-${{ steps.build.outputs.BUILD_VERSION }}-MacOS-AMD64-DMG
+          path: dist_macos/*.dmg*
           if-no-files-found: error
           retention-days: 14
 
@@ -53,12 +56,15 @@ jobs:
           path: novelwriter/assets
 
       - name: Build App Bundle
-        run: ./setup/macos/build.sh $PYTHON_VERSION $PACKAGE_ARCH $MINICONDA_ARCH
+        id: build
+        run: |
+          echo "BUILD_VERSION=$(python pkgutils.py version)" >> $GITHUB_OUTPUT
+          ./setup/macos/build.sh $PYTHON_VERSION $PACKAGE_ARCH $MINICONDA_ARCH
 
       - name: Upload DMG
         uses: actions/upload-artifact@v4
         with:
-          name: MacOS-M1-DMG
-          path: dist_macos
+          name: novelWriter-${{ steps.build.outputs.BUILD_VERSION }}-MacOS-M1-DMG
+          path: dist_macos/*.dmg*
           if-no-files-found: error
           retention-days: 14
