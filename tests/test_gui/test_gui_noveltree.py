@@ -32,7 +32,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwFocus, nwItemType
 from novelwriter.gui.noveltree import GuiNovelTree, NovelTreeColumn
-from novelwriter.types import QtMouseLeft
+from novelwriter.types import QtMouseLeft, QtMouseMiddle
 
 from tests.tools import C, buildTestProject
 
@@ -127,17 +127,17 @@ def testGuiNovelTree_TreeItems(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
     scItem.setSelected(True)
     assert scItem.isSelected()
     assert nwGUI.docViewer.docHandle is None
-    qtbot.mouseClick(vPort, Qt.MiddleButton, pos=vPort.rect().center(), delay=10)
+    qtbot.mouseClick(vPort, QtMouseMiddle, pos=vPort.rect().center(), delay=10)
     assert nwGUI.docViewer.docHandle is None
 
     scRect = novelTree.visualItemRect(scItem)
     oldData = scItem.data(novelTree.C_TITLE, novelTree.D_HANDLE)
     scItem.setData(novelTree.C_TITLE, novelTree.D_HANDLE, None)
-    qtbot.mouseClick(vPort, Qt.MiddleButton, pos=scRect.center(), delay=10)
+    qtbot.mouseClick(vPort, QtMouseMiddle, pos=scRect.center(), delay=10)
     assert nwGUI.docViewer.docHandle is None
 
     scItem.setData(novelTree.C_TITLE, novelTree.D_HANDLE, oldData)
-    qtbot.mouseClick(vPort, Qt.MiddleButton, pos=scRect.center(), delay=10)
+    qtbot.mouseClick(vPort, QtMouseMiddle, pos=scRect.center(), delay=10)
     assert nwGUI.docViewer.docHandle == C.hSceneDoc
 
     # Last Column

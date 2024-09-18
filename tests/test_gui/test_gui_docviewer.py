@@ -133,7 +133,7 @@ def testGuiViewer_Main(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Open again via menu
     assert nwGUI.projView.projTree.setSelectedHandle("88243afbe5ed8")
-    nwGUI.mainMenu.aViewDoc.activate(QAction.Trigger)
+    nwGUI.mainMenu.aViewDoc.activate(QAction.ActionEvent.Trigger)
 
     # Open context menu
     menuOpened = False

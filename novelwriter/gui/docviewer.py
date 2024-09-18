@@ -46,7 +46,10 @@ from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
-from novelwriter.types import QtAlignCenterTop, QtKeepAnchor, QtMouseLeft, QtMoveAnchor
+from novelwriter.types import (
+    QtAlignCenterTop, QtKeepAnchor, QtMouseLeft, QtMoveAnchor,
+    QtScrollAlwaysOff, QtScrollAsNeeded
+)
 
 logger = logging.getLogger(__name__)
 
@@ -177,14 +180,14 @@ class GuiDocViewer(QTextBrowser):
 
         # Scroll bars
         if CONFIG.hideVScroll:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            self.setVerticalScrollBarPolicy(QtScrollAlwaysOff)
         else:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+            self.setVerticalScrollBarPolicy(QtScrollAsNeeded)
 
         if CONFIG.hideHScroll:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            self.setHorizontalScrollBarPolicy(QtScrollAlwaysOff)
         else:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+            self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
 
         # Refresh the tab stops
         self.setTabStopDistance(CONFIG.getTabWidth())

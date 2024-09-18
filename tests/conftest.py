@@ -144,7 +144,7 @@ def projPath(fncPath):
 def mockGUI(qtbot, monkeypatch):
     """Create a mock instance of novelWriter's main GUI class."""
     monkeypatch.setattr(QMessageBox, "exec", lambda *a: None)
-    monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.Yes)
     gui = MockGuiMain()
     theme = MockTheme()
     monkeypatch.setattr(SHARED, "_gui", gui)
@@ -156,7 +156,7 @@ def mockGUI(qtbot, monkeypatch):
 def nwGUI(qtbot, monkeypatch, functionFixture):
     """Create an instance of the novelWriter GUI."""
     monkeypatch.setattr(QMessageBox, "exec", lambda *a: None)
-    monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.Yes)
 
     nwGUI = main(["--testmode", f"--config={_TMP_CONF}", f"--data={_TMP_CONF}"])
     qtbot.addWidget(nwGUI)

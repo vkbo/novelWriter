@@ -46,7 +46,7 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
     monkeypatch.setattr(GuiProjectSettings, "result", lambda *a: QtAccepted)
 
     # Check that we cannot open when there is no project
-    nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
+    nwGUI.mainMenu.aProjectSettings.activate(QAction.ActionEvent.Trigger)
     assert SHARED.findTopLevelWidget(GuiProjectSettings) is None
 
     # Pretend we have a project
@@ -54,7 +54,7 @@ def testDlgProjSettings_Dialog(qtbot, monkeypatch, nwGUI):
     SHARED.project.data.setSpellLang("en")
 
     # Get the dialog object
-    nwGUI.mainMenu.aProjectSettings.activate(QAction.Trigger)
+    nwGUI.mainMenu.aProjectSettings.activate(QAction.ActionEvent.Trigger)
     qtbot.waitUntil(
         lambda: SHARED.findTopLevelWidget(GuiProjectSettings) is not None, timeout=1000
     )

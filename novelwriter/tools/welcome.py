@@ -49,7 +49,7 @@ from novelwriter.extensions.configlayout import NWrappedWidgetBox
 from novelwriter.extensions.modified import NDialog, NIconToolButton, NSpinBox
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.versioninfo import VersionInfoWidget
-from novelwriter.types import QtAlignLeft, QtAlignRightTop, QtSelected
+from novelwriter.types import QtAlignLeft, QtAlignRightTop, QtScrollAsNeeded, QtSelected
 
 logger = logging.getLogger(__name__)
 
@@ -297,7 +297,7 @@ class _OpenProjectPage(QWidget):
         self.selectedPath.addAction(self.aMissing, QLineEdit.ActionPosition.TrailingPosition)
 
         self.keyDelete = QShortcut(self)
-        self.keyDelete.setKey(Qt.Key.Key_Delete)
+        self.keyDelete.setKey("Del")
         self.keyDelete.activated.connect(self._deleteSelectedItem)
 
         # Assemble
@@ -501,8 +501,8 @@ class _NewProjectPage(QWidget):
         self.scrollArea = QScrollArea(self)
         self.scrollArea.setWidget(self.projectForm)
         self.scrollArea.setWidgetResizable(True)
-        self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.scrollArea.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
+        self.scrollArea.setVerticalScrollBarPolicy(QtScrollAsNeeded)
 
         self.enterForm = self.projectForm.enterForm
 

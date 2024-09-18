@@ -66,7 +66,7 @@ from novelwriter.tools.lipsum import GuiLipsum
 from novelwriter.types import (
     QtAlignCenterTop, QtAlignJustify, QtAlignLeft, QtAlignLeftTop,
     QtAlignRight, QtKeepAnchor, QtModCtrl, QtModNone, QtModShift, QtMouseLeft,
-    QtMoveAnchor, QtMoveLeft, QtMoveRight
+    QtMoveAnchor, QtMoveLeft, QtMoveRight, QtScrollAlwaysOff, QtScrollAsNeeded
 )
 
 logger = logging.getLogger(__name__)
@@ -177,12 +177,12 @@ class GuiDocEditor(QPlainTextEdit):
         self.keyContext.activated.connect(self._openContextFromCursor)
 
         self.followTag1 = QShortcut(self)
-        self.followTag1.setKey(Qt.Key.Key_Return | QtModCtrl)
+        self.followTag1.setKey("Ctrl+Return")
         self.followTag1.setContext(Qt.ShortcutContext.WidgetShortcut)
         self.followTag1.activated.connect(self._processTag)
 
         self.followTag2 = QShortcut(self)
-        self.followTag2.setKey(Qt.Key.Key_Enter | QtModCtrl)
+        self.followTag2.setKey("Ctrl+Enter")
         self.followTag2.setContext(Qt.ShortcutContext.WidgetShortcut)
         self.followTag2.activated.connect(self._processTag)
 
@@ -354,14 +354,14 @@ class GuiDocEditor(QPlainTextEdit):
         # Scrolling
         self.setCenterOnScroll(CONFIG.scrollPastEnd)
         if CONFIG.hideVScroll:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            self.setVerticalScrollBarPolicy(QtScrollAlwaysOff)
         else:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+            self.setVerticalScrollBarPolicy(QtScrollAsNeeded)
 
         if CONFIG.hideHScroll:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            self.setHorizontalScrollBarPolicy(QtScrollAlwaysOff)
         else:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+            self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
 
         # Refresh the tab stops
         self.setTabStopDistance(CONFIG.getTabWidth())

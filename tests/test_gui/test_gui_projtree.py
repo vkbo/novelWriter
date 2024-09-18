@@ -37,7 +37,10 @@ from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwFocus, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.gui.projtree import GuiProjectTree, GuiProjectView, _TreeContextMenu
 from novelwriter.guimain import GuiMain
-from novelwriter.types import QtAccepted, QtModNone, QtMouseLeft, QtMouseMiddle, QtRejected
+from novelwriter.types import (
+    QtAccepted, QtModNone, QtMouseLeft, QtMouseMiddle, QtRejected,
+    QtScrollAlwaysOff, QtScrollAsNeeded
+)
 
 from tests.mocked import causeOSError
 from tests.tools import C, buildTestProject
@@ -411,7 +414,7 @@ def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, projPath,
 
     # User cancels action
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
         assert projTree.moveItemToTrash(C.hTitlePage) is False
         assert project.tree.isTrash(C.hTitlePage) is False
 
@@ -456,7 +459,7 @@ def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, pro
 
     # User cancels action
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
         assert projTree.permDeleteItem(C.hTitlePage) is False
         assert C.hTitlePage in project.tree
 
@@ -506,7 +509,7 @@ def testGuiProjTree_EmptyTrash(qtbot, caplog, monkeypatch, nwGUI, projPath, mock
 
     # User cancels
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
         assert projTree.emptyTrash() is False
         assert C.hTitlePage in project.tree
         assert C.hChapterDir in project.tree
@@ -751,7 +754,7 @@ def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mock
 
     # Duplicate title page, but select no
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
         assert projTree._duplicateFromHandle(C.hTitlePage) is False
         assert len(SHARED.project.tree) == 8
 
@@ -957,14 +960,14 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd)
     CONFIG.hideVScroll = True
     CONFIG.hideHScroll = True
     projView.initSettings()
-    assert projTree.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
-    assert projTree.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
+    assert projTree.verticalScrollBarPolicy() == QtScrollAlwaysOff
+    assert projTree.horizontalScrollBarPolicy() == QtScrollAlwaysOff
 
     CONFIG.hideVScroll = False
     CONFIG.hideHScroll = False
     projView.initSettings()
-    assert projTree.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
-    assert projTree.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
+    assert projTree.verticalScrollBarPolicy() == QtScrollAsNeeded
+    assert projTree.horizontalScrollBarPolicy() == QtScrollAsNeeded
 
     # Method: revealNewTreeItem
     # =========================
@@ -1313,7 +1316,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Click no on the dialog
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
         ctxMenu._covertFolderToFile(nwItemLayout.DOCUMENT)
         assert SHARED.project.tree[hNewFolderOne].isFolderType()  # type: ignore
 

@@ -50,7 +50,7 @@ def testGuiI18n_Localisation(qtbot, monkeypatch, language, nwGUI, projPath):
     """Test loading the gui with a specific language."""
     monkeypatch.setattr(QDialog, "exec", lambda *a: None)
     monkeypatch.setattr(QMessageBox, "exec", lambda *a: None)
-    monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.Yes)
 
     # Set the test language
     CONFIG.guiLocale = language

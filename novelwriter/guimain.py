@@ -293,15 +293,15 @@ class GuiMain(QMainWindow):
         self._connectMenuActions()
 
         self.keyReturn = QShortcut(self)
-        self.keyReturn.setKey(Qt.Key.Key_Return)
+        self.keyReturn.setKey("Return")
         self.keyReturn.activated.connect(self._keyPressReturn)
 
         self.keyEnter = QShortcut(self)
-        self.keyEnter.setKey(Qt.Key.Key_Enter)
+        self.keyEnter.setKey("Enter")
         self.keyEnter.activated.connect(self._keyPressReturn)
 
         self.keyEscape = QShortcut(self)
-        self.keyEscape.setKey(Qt.Key.Key_Escape)
+        self.keyEscape.setKey("Esc")
         self.keyEscape.activated.connect(self._keyPressEscape)
 
         # Initialise Main GUI

@@ -47,7 +47,7 @@ def testToolManuscript_Init(monkeypatch, qtbot, nwGUI, projPath, mockRnd):
     SHARED.project.storage.getDocument(C.hChapterDoc).writeDocument("## A Chapter\n\n\t\tHi")
     allText = "New Novel\nBy Jane Doe\nA Chapter\n\t\tHi"
 
-    nwGUI.mainMenu.aBuildManuscript.activate(QAction.Trigger)
+    nwGUI.mainMenu.aBuildManuscript.activate(QAction.ActionEvent.Trigger)
     qtbot.waitUntil(lambda: SHARED.findTopLevelWidget(GuiManuscript) is not None, timeout=1000)
     manus = SHARED.findTopLevelWidget(GuiManuscript)
     assert isinstance(manus, GuiManuscript)

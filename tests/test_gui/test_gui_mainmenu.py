@@ -29,6 +29,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.enum import nwDocAction, nwDocInsert
 from novelwriter.gui.doceditor import GuiDocEditor
+from novelwriter.types import QtKeepAnchor, QtMoveRight
 
 from tests.tools import C, buildTestProject, writeFile
 
@@ -49,45 +50,45 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     cleanText = nwGUI.docEditor.getText()[54:101]
 
     # Bold
-    nwGUI.mainMenu.aFmtBold.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtBold.activate(QAction.ActionEvent.Trigger)
     fmtStr = "**Pellentesque** nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[54:105] == fmtStr
-    nwGUI.mainMenu.aFmtBold.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtBold.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText()[54:101] == cleanText
 
     # Italic
-    nwGUI.mainMenu.aFmtItalic.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtItalic.activate(QAction.ActionEvent.Trigger)
     fmtStr = "_Pellentesque_ nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[54:103] == fmtStr
-    nwGUI.mainMenu.aFmtItalic.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtItalic.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText()[54:101] == cleanText
 
     # Strikethrough
-    nwGUI.mainMenu.aFmtStrike.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtStrike.activate(QAction.ActionEvent.Trigger)
     fmtStr = "~~Pellentesque~~ nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[54:105] == fmtStr
-    nwGUI.mainMenu.aFmtStrike.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtStrike.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText()[54:101] == cleanText
 
     # Should get us back to plain
-    nwGUI.mainMenu.aFmtBold.activate(QAction.Trigger)
-    nwGUI.mainMenu.aFmtItalic.activate(QAction.Trigger)
-    nwGUI.mainMenu.aFmtItalic.activate(QAction.Trigger)
-    nwGUI.mainMenu.aFmtBold.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtBold.activate(QAction.ActionEvent.Trigger)
+    nwGUI.mainMenu.aFmtItalic.activate(QAction.ActionEvent.Trigger)
+    nwGUI.mainMenu.aFmtItalic.activate(QAction.ActionEvent.Trigger)
+    nwGUI.mainMenu.aFmtBold.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText()[54:101] == cleanText
 
     # Double Quotes
-    nwGUI.mainMenu.aFmtDQuote.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtDQuote.activate(QAction.ActionEvent.Trigger)
     fmtStr = "“Pellentesque” nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[54:103] == fmtStr
-    nwGUI.mainMenu.aEditUndo.activate(QAction.Trigger)
+    nwGUI.mainMenu.aEditUndo.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText()[54:101] == cleanText
 
     # Single Quotes
-    nwGUI.mainMenu.aFmtSQuote.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtSQuote.activate(QAction.ActionEvent.Trigger)
     fmtStr = "‘Pellentesque’ nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[54:103] == fmtStr
-    nwGUI.mainMenu.aEditUndo.activate(QAction.Trigger)
+    nwGUI.mainMenu.aEditUndo.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText()[54:101] == cleanText
 
     # Block Formats
@@ -96,51 +97,51 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     nwGUI.docEditor.setCursorPosition(57)
 
     # Header 1
-    nwGUI.mainMenu.aFmtHead1.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtHead1.activate(QAction.ActionEvent.Trigger)
     fmtStr = "# Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[54:103] == fmtStr
 
     # Header 2
-    nwGUI.mainMenu.aFmtHead2.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtHead2.activate(QAction.ActionEvent.Trigger)
     fmtStr = "## Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[54:104] == fmtStr
 
     # Header 3
-    nwGUI.mainMenu.aFmtHead3.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtHead3.activate(QAction.ActionEvent.Trigger)
     fmtStr = "### Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[54:105] == fmtStr
 
     # Header 4
-    nwGUI.mainMenu.aFmtHead4.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtHead4.activate(QAction.ActionEvent.Trigger)
     fmtStr = "#### Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[54:106] == fmtStr
 
     # Title Format
-    nwGUI.mainMenu.aFmtTitle.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtTitle.activate(QAction.ActionEvent.Trigger)
     fmtStr = "#! Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[54:104] == fmtStr
 
     # Unnumbered Chapter
-    nwGUI.mainMenu.aFmtUnNum.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtUnNum.activate(QAction.ActionEvent.Trigger)
     fmtStr = "##! Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[54:105] == fmtStr
 
     # Hard Scene
-    nwGUI.mainMenu.aFmtHardSc.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtHardSc.activate(QAction.ActionEvent.Trigger)
     fmtStr = "###! Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[54:106] == fmtStr
 
     # Clear Format
-    nwGUI.mainMenu.aFmtNoFormat.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtNoFormat.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText()[54:101] == cleanText
 
     # Comment On
-    nwGUI.mainMenu.aFmtComment.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtComment.activate(QAction.ActionEvent.Trigger)
     fmtStr = "% Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[54:103] == fmtStr
 
     # Comment Off
-    nwGUI.mainMenu.aFmtComment.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtComment.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText()[54:101] == cleanText
 
     # Check comment with no space before text
@@ -149,26 +150,26 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     fmtStr = "%Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[54:102] == fmtStr
 
-    nwGUI.mainMenu.aFmtNoFormat.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtNoFormat.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText()[54:101] == cleanText
 
     # Undo/Redo
-    nwGUI.mainMenu.aEditUndo.activate(QAction.Trigger)
+    nwGUI.mainMenu.aEditUndo.activate(QAction.ActionEvent.Trigger)
     fmtStr = "%Pellentesque nec erat ut nulla posuere commodo."
     assert nwGUI.docEditor.getText()[54:102] == fmtStr
-    nwGUI.mainMenu.aEditRedo.activate(QAction.Trigger)
+    nwGUI.mainMenu.aEditRedo.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText()[54:101] == cleanText
 
     # Cut, Copy and Paste
     nwGUI.docEditor.setCursorPosition(54)
     nwGUI.docEditor._makeSelection(QTextCursor.WordUnderCursor)
 
-    nwGUI.mainMenu.aEditCut.activate(QAction.Trigger)
+    nwGUI.mainMenu.aEditCut.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText()[54:104] == (
         " nec erat ut nulla posuere commodo. Curabitur nisi"
     )
 
-    nwGUI.mainMenu.aEditPaste.activate(QAction.Trigger)
+    nwGUI.mainMenu.aEditPaste.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText()[54:104] == (
         "Pellentesque nec erat ut nulla posuere commodo. Cu"
     )
@@ -176,21 +177,21 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     nwGUI.docEditor.setCursorPosition(54)
     nwGUI.docEditor._makeSelection(QTextCursor.WordUnderCursor)
 
-    nwGUI.mainMenu.aEditCopy.activate(QAction.Trigger)
+    nwGUI.mainMenu.aEditCopy.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText()[54:104] == (
         "Pellentesque nec erat ut nulla posuere commodo. Cu"
     )
 
     nwGUI.docEditor.setCursorPosition(54)
-    nwGUI.mainMenu.aEditPaste.activate(QAction.Trigger)
+    nwGUI.mainMenu.aEditPaste.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText()[54:104] == (
         "PellentesquePellentesque nec erat ut nulla posuere"
     )
-    nwGUI.mainMenu.aEditUndo.activate(QAction.Trigger)
+    nwGUI.mainMenu.aEditUndo.activate(QAction.ActionEvent.Trigger)
 
     # Select Paragraph/All
     nwGUI.docEditor.setCursorPosition(57)
-    nwGUI.mainMenu.aSelectPar.activate(QAction.Trigger)
+    nwGUI.mainMenu.aSelectPar.activate(QAction.ActionEvent.Trigger)
     cursor = nwGUI.docEditor.textCursor()
     assert cursor.selectedText() == (
         "Pellentesque nec erat ut nulla posuere commodo. Curabitur nisi augue, imperdiet et porta "
@@ -203,7 +204,7 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     )
 
     nwGUI.docEditor.setCursorPosition(57)
-    nwGUI.mainMenu.aSelectAll.activate(QAction.Trigger)
+    nwGUI.mainMenu.aSelectAll.activate(QAction.ActionEvent.Trigger)
     cursor = nwGUI.docEditor.textCursor()
     assert len(cursor.selectedText()) == 1910
 
@@ -219,32 +220,32 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     nwGUI.docEditor.setCursorPosition(0)
 
     # Left Align
-    nwGUI.mainMenu.aFmtAlignLeft.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtAlignLeft.activate(QAction.ActionEvent.Trigger)
     fmtStr = "A single, short paragraph. <<"
     assert nwGUI.docEditor.getText()[:29] == fmtStr
 
     # Right Align
-    nwGUI.mainMenu.aFmtAlignRight.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtAlignRight.activate(QAction.ActionEvent.Trigger)
     fmtStr = ">> A single, short paragraph."
     assert nwGUI.docEditor.getText()[:29] == fmtStr
 
     # Centre Align
-    nwGUI.mainMenu.aFmtAlignCentre.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtAlignCentre.activate(QAction.ActionEvent.Trigger)
     fmtStr = ">> A single, short paragraph. <<"
     assert nwGUI.docEditor.getText()[:32] == fmtStr
 
     # Left Indent
-    nwGUI.mainMenu.aFmtIndentLeft.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtIndentLeft.activate(QAction.ActionEvent.Trigger)
     fmtStr = "> A single, short paragraph."
     assert nwGUI.docEditor.getText()[:28] == fmtStr
 
     # Right Indent
-    nwGUI.mainMenu.aFmtIndentRight.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtIndentRight.activate(QAction.ActionEvent.Trigger)
     fmtStr = "> A single, short paragraph. <"
     assert nwGUI.docEditor.getText()[:30] == fmtStr
 
     # No Format
-    nwGUI.mainMenu.aFmtNoFormat.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtNoFormat.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText()[:30] == cleanText
 
     # Other Checks
@@ -256,16 +257,16 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
         "Also text with \"double\" quotes which are \"less tricky\".\n\n"
     ))
 
-    nwGUI.mainMenu.aSelectAll.activate(QAction.Trigger)
-    nwGUI.mainMenu.aFmtReplSng.activate(QAction.Trigger)
+    nwGUI.mainMenu.aSelectAll.activate(QAction.ActionEvent.Trigger)
+    nwGUI.mainMenu.aFmtReplSng.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == (
         "### New Text\n\n"
         "Text with ‘single’ quotes and ‘tricky stuff’s’.\n\n"
         "Also text with \"double\" quotes which are \"less tricky\".\n\n"
     )
 
-    nwGUI.mainMenu.aSelectAll.activate(QAction.Trigger)
-    nwGUI.mainMenu.aFmtReplDbl.activate(QAction.Trigger)
+    nwGUI.mainMenu.aSelectAll.activate(QAction.ActionEvent.Trigger)
+    nwGUI.mainMenu.aFmtReplDbl.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == (
         "### New Text\n\n"
         "Text with ‘single’ quotes and ‘tricky stuff’s’.\n\n"
@@ -281,7 +282,7 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
         "Here is some text\non multiple\nlines.\n\n"
         "With another paragraph\nhere."
     ))
-    nwGUI.mainMenu.aFmtRmBreaks.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtRmBreaks.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == (
         "### New Text\n\n"
         "@char: Someone\n"
@@ -301,9 +302,9 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     ))
     cursor = nwGUI.docEditor.textCursor()
     cursor.setPosition(74)
-    cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, 29)
+    cursor.movePosition(QtMoveRight, QtKeepAnchor, 29)
     nwGUI.docEditor.setTextCursor(cursor)
-    nwGUI.mainMenu.aFmtRmBreaks.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFmtRmBreaks.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == (
         "### New Text\n\n"
         "@char: Someone\n"
@@ -367,95 +368,95 @@ def testGuiMainMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd
     nwGUI.docEditor.clear()
 
     # Check Menu Entries
-    nwGUI.mainMenu.aInsENDash.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsENDash.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_ENDASH
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsEMDash.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsEMDash.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_EMDASH
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsHorBar.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsHorBar.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_HBAR
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsFigDash.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsFigDash.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_FGDASH
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsQuoteLS.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsQuoteLS.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == CONFIG.fmtSQuoteOpen
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsQuoteRS.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsQuoteRS.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == CONFIG.fmtSQuoteClose
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsQuoteLD.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsQuoteLD.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == CONFIG.fmtDQuoteOpen
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsQuoteRD.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsQuoteRD.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == CONFIG.fmtDQuoteClose
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsMSApos.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsMSApos.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_MAPOS
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsEllipsis.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsEllipsis.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_HELLIP
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsPrime.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsPrime.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_PRIME
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsDPrime.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsDPrime.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_DPRIME
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsBullet.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsBullet.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_BULL
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsHyBull.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsHyBull.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_HYBULL
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsFlower.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsFlower.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_FLOWER
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsPerMille.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsPerMille.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_PERMIL
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsDegree.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsDegree.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_DEGREE
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsMinus.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsMinus.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_MINUS
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsTimes.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsTimes.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_TIMES
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsDivide.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsDivide.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_DIVIDE
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsNBSpace.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsNBSpace.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_NBSP
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsThinSpace.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsThinSpace.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_THSP
     nwGUI.docEditor.clear()
 
-    nwGUI.mainMenu.aInsThinNBSpace.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsThinNBSpace.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == nwUnicode.U_THNBSP
     nwGUI.docEditor.clear()
 
@@ -463,43 +464,43 @@ def testGuiMainMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd
     # ===============
 
     nwGUI.docEditor.setPlainText("Stuff")
-    nwGUI.mainMenu.mInsKWItems[nwKeyWords.TAG_KEY][0].activate(QAction.Trigger)
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.TAG_KEY][0].activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.TAG_KEY
 
     nwGUI.docEditor.setPlainText("Stuff")
-    nwGUI.mainMenu.mInsKWItems[nwKeyWords.POV_KEY][0].activate(QAction.Trigger)
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.POV_KEY][0].activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.POV_KEY
 
     nwGUI.docEditor.setPlainText("Stuff")
-    nwGUI.mainMenu.mInsKWItems[nwKeyWords.FOCUS_KEY][0].activate(QAction.Trigger)
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.FOCUS_KEY][0].activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.FOCUS_KEY
 
     nwGUI.docEditor.setPlainText("Stuff")
-    nwGUI.mainMenu.mInsKWItems[nwKeyWords.CHAR_KEY][0].activate(QAction.Trigger)
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.CHAR_KEY][0].activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.CHAR_KEY
 
     nwGUI.docEditor.setPlainText("Stuff")
-    nwGUI.mainMenu.mInsKWItems[nwKeyWords.PLOT_KEY][0].activate(QAction.Trigger)
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.PLOT_KEY][0].activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.PLOT_KEY
 
     nwGUI.docEditor.setPlainText("Stuff")
-    nwGUI.mainMenu.mInsKWItems[nwKeyWords.TIME_KEY][0].activate(QAction.Trigger)
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.TIME_KEY][0].activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.TIME_KEY
 
     nwGUI.docEditor.setPlainText("Stuff")
-    nwGUI.mainMenu.mInsKWItems[nwKeyWords.WORLD_KEY][0].activate(QAction.Trigger)
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.WORLD_KEY][0].activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.WORLD_KEY
 
     nwGUI.docEditor.setPlainText("Stuff")
-    nwGUI.mainMenu.mInsKWItems[nwKeyWords.OBJECT_KEY][0].activate(QAction.Trigger)
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.OBJECT_KEY][0].activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.OBJECT_KEY
 
     nwGUI.docEditor.setPlainText("Stuff")
-    nwGUI.mainMenu.mInsKWItems[nwKeyWords.ENTITY_KEY][0].activate(QAction.Trigger)
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.ENTITY_KEY][0].activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.ENTITY_KEY
 
     nwGUI.docEditor.setPlainText("Stuff")
-    nwGUI.mainMenu.mInsKWItems[nwKeyWords.CUSTOM_KEY][0].activate(QAction.Trigger)
+    nwGUI.mainMenu.mInsKWItems[nwKeyWords.CUSTOM_KEY][0].activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == "Stuff\n%s: " % nwKeyWords.CUSTOM_KEY
 
     # Faulty Keyword Inserts
@@ -514,26 +515,26 @@ def testGuiMainMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd
     # =======================
 
     nwGUI.docEditor.setPlainText("Stuff\n")
-    nwGUI.mainMenu.aInsSynopsis.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsSynopsis.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == "Stuff\n%Synopsis: \n"
 
     nwGUI.docEditor.setPlainText("Stuff\n")
-    nwGUI.mainMenu.aInsShort.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsShort.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == "Stuff\n%Short: \n"
 
     # Insert Break or Space
     # =====================
 
     nwGUI.docEditor.setPlainText("### Stuff\n")
-    nwGUI.mainMenu.aInsNewPage.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsNewPage.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == "[newpage]\n### Stuff\n"
 
     nwGUI.docEditor.setPlainText("### Stuff\n")
-    nwGUI.mainMenu.aInsVSpaceS.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsVSpaceS.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == "[vspace]\n### Stuff\n"
 
     nwGUI.docEditor.setPlainText("### Stuff\n")
-    nwGUI.mainMenu.aInsVSpaceM.activate(QAction.Trigger)
+    nwGUI.mainMenu.aInsVSpaceM.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == "[vspace:2]\n### Stuff\n"
 
     nwGUI.docEditor.clear()
@@ -567,18 +568,18 @@ def testGuiMainMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd
 
     # The document isn't empty, so the message box should pop
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a, **k: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a, **k: QMessageBox.StandardButton.No)
         assert not nwGUI.importDocument()
         assert nwGUI.docEditor.getText() == "Bar"
 
     # Finally, accept the replaced text, this time we use the menu entry to trigger it
-    nwGUI.mainMenu.aImportFile.activate(QAction.Trigger)
+    nwGUI.mainMenu.aImportFile.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == "Foo"
 
     # Reveal File Location
     # ====================
 
-    nwGUI.mainMenu.aFileDetails.activate(QAction.Trigger)
+    nwGUI.mainMenu.aFileDetails.activate(QAction.ActionEvent.Trigger)
     path = str(projPath / "content" / "000000000000f.nwd")
     assert SHARED.lastAlert.endswith(f"File Location: {path}")
 
