@@ -1153,16 +1153,16 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert docEditor.getText() == text
 
     # Select All
-    qtbot.keyClick(docEditor, Qt.Key_A, modifier=Qt.ControlModifier, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key_Delete, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_A, modifier=QtModCtrl, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Delete, delay=KEY_DELAY)
     assert docEditor.getText() == ""
 
     # Undo
-    qtbot.keyClick(docEditor, Qt.Key_Z, modifier=Qt.ControlModifier, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Z, modifier=QtModCtrl, delay=KEY_DELAY)
     assert docEditor.getText() == text
 
     # Redo
-    qtbot.keyClick(docEditor, Qt.Key_Y, modifier=Qt.ControlModifier, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Y, modifier=QtModCtrl, delay=KEY_DELAY)
     assert docEditor.getText() == ""
 
     # qtbot.stop()
@@ -1679,8 +1679,8 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     nwGUI.docEditor.setFocus()
     for c in "### Scene One":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
 
     # Type Keyword @
     qtbot.keyClick(docEditor, "@", delay=KEY_DELAY)
@@ -1695,7 +1695,7 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     assert len(completer.actions()) == 0
 
     # Delete character and go select @char
-    qtbot.keyClick(docEditor, Qt.Key_Backspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
     assert len(completer.actions()) == 2
     completer.actions()[0].trigger()
     assert docEditor.getText() == (
@@ -1712,13 +1712,13 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     assert [a.text() for a in completer.actions()] == []
 
     # Deleting it and typing "a", should leave "Jane"
-    qtbot.keyClick(docEditor, Qt.Key_Backspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
     qtbot.keyClick(docEditor, "a", delay=KEY_DELAY)
     assert [a.text() for a in completer.actions()] == ["Jane"]
 
     # Selecting "Jane" should insert it
     completer.actions()[0].trigger()
-    qtbot.keyClick(docEditor, Qt.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Return, delay=KEY_DELAY)
     assert docEditor.getText() == (
         "### Scene One\n\n"
         "@char: Jane\n"
@@ -1727,21 +1727,21 @@ def testGuiEditor_Completer(qtbot, nwGUI, projPath, mockRnd):
     # Start a new line with a nonsense keyword, which should be handled
     for c in "@: ":
         qtbot.keyClick(docEditor, c, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key_Backspace, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key_Backspace, delay=KEY_DELAY)
-    qtbot.keyClick(docEditor, Qt.Key_Backspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
+    qtbot.keyClick(docEditor, Qt.Key.Key_Backspace, delay=KEY_DELAY)
 
     # Send keypresses to the completer object
     qtbot.keyClick(docEditor, "@", delay=KEY_DELAY)
     assert len(completer.actions()) == len(nwKeyWords.VALID_KEYS)
     qtbot.keyClick(completer, "f", delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key_Down, delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
     qtbot.keyClick(completer, " ", delay=KEY_DELAY)
     qtbot.keyClick(completer, "h", delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key_Down, delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key_Return, delay=KEY_DELAY)
-    qtbot.keyClick(completer, Qt.Key_Escape, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Down, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(completer, Qt.Key.Key_Escape, delay=KEY_DELAY)
     assert docEditor.getText() == (
         "### Scene One\n\n"
         "@char: Jane\n"
@@ -1887,7 +1887,7 @@ def testGuiEditor_Search(qtbot, monkeypatch, nwGUI, prjLipsum):
 
     # Find next by enter key
     monkeypatch.setattr(docSearch.searchBox, "hasFocus", lambda: True)
-    qtbot.keyClick(docSearch.searchBox, Qt.Key_Return, delay=KEY_DELAY)
+    qtbot.keyClick(docSearch.searchBox, Qt.Key.Key_Return, delay=KEY_DELAY)
     assert abs(docEditor.getCursorPosition() - 1299) < 3
 
     # Find next by button

@@ -27,7 +27,7 @@ from PyQt5.QtGui import QKeyEvent, QWheelEvent
 from PyQt5.QtWidgets import QWidget
 
 from novelwriter.extensions.eventfilters import WheelEventFilter
-from novelwriter.types import QtModShift
+from novelwriter.types import QtModNone, QtModShift
 
 
 class MockWidget(QWidget):
@@ -57,7 +57,11 @@ def testExtEventFilters_WheelEventFilter():
 
     # Sending a mouse wheel event forwards it
     pos = QPoint(0, 0)
-    event = QWheelEvent(pos, pos, pos, pos, Qt.NoButton, Qt.NoModifier, Qt.NoScrollPhase, False)
+    event = QWheelEvent(
+        pos, pos, pos, pos,
+        Qt.MouseButton.NoButton, QtModNone, Qt.ScrollMomentum.NoScrollPhase,
+        False,
+    )
     eFilter.eventFilter(obj, event)
     assert widget.count == 1
 
