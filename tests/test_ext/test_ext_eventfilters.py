@@ -59,8 +59,8 @@ def testExtEventFilters_WheelEventFilter():
     pos = QPoint(0, 0)
     event = QWheelEvent(
         pos, pos, pos, pos,
-        Qt.MouseButton.NoButton, QtModNone, Qt.ScrollMomentum.NoScrollPhase,
-        False,
+        Qt.MouseButton.NoButton, QtModNone,
+        Qt.ScrollPhase.NoScrollPhase, False,
     )
     eFilter.eventFilter(obj, event)
     assert widget.count == 1
