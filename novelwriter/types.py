@@ -133,7 +133,7 @@ FONT_WEIGHTS: dict[int, int] = {
     QFont.Weight.Black:      900,
 }
 
-FONT_STYLE: dict[int, str] = {
+FONT_STYLE: dict[QFont.Style, str] = {
     QFont.Style.StyleNormal:  "normal",
     QFont.Style.StyleItalic:  "italic",
     QFont.Style.StyleOblique: "oblique",
