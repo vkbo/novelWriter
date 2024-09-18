@@ -31,7 +31,7 @@ documentation.
 
 ## Sponsors
 
-<img align="left" style="height: 20px; margin: 0 10px 0 0;" src="https://raw.githubusercontent.com/vkbo/novelWriter/main/setup/signpath_logo.png">
+<img align="left" style="height: 25px;" src="https://raw.githubusercontent.com/vkbo/novelWriter/main/setup/signpath_logo.png">
 
 Free code signing on Windows provided by [SignPath.io](https://about.signpath.io/),
 certificate by [SignPath Foundation](https://signpath.org/).
