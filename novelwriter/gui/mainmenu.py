@@ -184,7 +184,7 @@ class GuiMainMenu(QMenuBar):
         # Project > Exit
         self.aExitNW = self.projMenu.addAction(self.tr("Exit"))
         self.aExitNW.setShortcut("Ctrl+Q")
-        self.aExitNW.setMenuRole(QAction.QuitRole)
+        self.aExitNW.setMenuRole(QAction.MenuRole.QuitRole)
         self.aExitNW.triggered.connect(lambda: self.mainGui.closeMain())
 
         return
@@ -941,7 +941,7 @@ class GuiMainMenu(QMenuBar):
         # Tools > Preferences
         self.aPreferences = self.toolsMenu.addAction(self.tr("Preferences"))
         self.aPreferences.setShortcut("Ctrl+,")
-        self.aPreferences.setMenuRole(QAction.PreferencesRole)
+        self.aPreferences.setMenuRole(QAction.MenuRole.PreferencesRole)
         self.aPreferences.triggered.connect(self.mainGui.showPreferencesDialog)
 
         return
@@ -953,12 +953,12 @@ class GuiMainMenu(QMenuBar):
 
         # Help > About
         self.aAboutNW = self.helpMenu.addAction(self.tr("About novelWriter"))
-        self.aAboutNW.setMenuRole(QAction.AboutRole)
+        self.aAboutNW.setMenuRole(QAction.MenuRole.AboutRole)
         self.aAboutNW.triggered.connect(self.mainGui.showAboutNWDialog)
 
         # Help > About Qt5
         self.aAboutQt = self.helpMenu.addAction(self.tr("About Qt5"))
-        self.aAboutQt.setMenuRole(QAction.AboutQtRole)
+        self.aAboutQt.setMenuRole(QAction.MenuRole.AboutQtRole)
         self.aAboutQt.triggered.connect(self.mainGui.showAboutQtDialog)
 
         # Help > Separator
