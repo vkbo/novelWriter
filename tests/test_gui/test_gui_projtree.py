@@ -37,7 +37,10 @@ from novelwriter.dialogs.editlabel import GuiEditLabel
 from novelwriter.enum import nwFocus, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.gui.projtree import GuiProjectTree, GuiProjectView, _TreeContextMenu
 from novelwriter.guimain import GuiMain
-from novelwriter.types import QtAccepted, QtModNone, QtMouseLeft, QtMouseMiddle, QtRejected
+from novelwriter.types import (
+    QtAccepted, QtModNone, QtMouseLeft, QtMouseMiddle, QtRejected,
+    QtScrollAlwaysOff, QtScrollAsNeeded
+)
 
 from tests.mocked import causeOSError
 from tests.tools import C, buildTestProject
@@ -957,14 +960,14 @@ def testGuiProjTree_Other(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mockRnd)
     CONFIG.hideVScroll = True
     CONFIG.hideHScroll = True
     projView.initSettings()
-    assert projTree.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
-    assert projTree.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
+    assert projTree.verticalScrollBarPolicy() == QtScrollAlwaysOff
+    assert projTree.horizontalScrollBarPolicy() == QtScrollAlwaysOff
 
     CONFIG.hideVScroll = False
     CONFIG.hideHScroll = False
     projView.initSettings()
-    assert projTree.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
-    assert projTree.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
+    assert projTree.verticalScrollBarPolicy() == QtScrollAsNeeded
+    assert projTree.horizontalScrollBarPolicy() == QtScrollAsNeeded
 
     # Method: revealNewTreeItem
     # =========================

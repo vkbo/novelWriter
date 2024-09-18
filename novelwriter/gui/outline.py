@@ -49,7 +49,7 @@ from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.novelselector import NovelSelector
 from novelwriter.types import (
     QtAlignLeftTop, QtAlignRight, QtAlignRightTop, QtDecoration,
-    QtSizeExpanding, QtUserRole
+    QtScrollAlwaysOff, QtScrollAsNeeded, QtSizeExpanding, QtUserRole
 )
 
 logger = logging.getLogger(__name__)
@@ -433,13 +433,13 @@ class GuiOutlineTree(QTreeWidget):
     def initSettings(self) -> None:
         """Set or update outline settings."""
         if CONFIG.hideVScroll:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            self.setVerticalScrollBarPolicy(QtScrollAlwaysOff)
         else:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+            self.setVerticalScrollBarPolicy(QtScrollAsNeeded)
         if CONFIG.hideHScroll:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            self.setHorizontalScrollBarPolicy(QtScrollAlwaysOff)
         else:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+            self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
         return
 
     def clearContent(self) -> None:
@@ -976,8 +976,8 @@ class GuiOutlineDetails(QScrollArea):
         self.outerWidget.setLayout(self.outerBox)
         self.setWidget(self.outerWidget)
 
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
+        self.setVerticalScrollBarPolicy(QtScrollAsNeeded)
         self.setWidgetResizable(True)
         self.setFrameStyle(QFrame.Shape.NoFrame)
 
@@ -990,13 +990,13 @@ class GuiOutlineDetails(QScrollArea):
     def initSettings(self) -> None:
         """Set or update outline settings."""
         if CONFIG.hideVScroll:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            self.setVerticalScrollBarPolicy(QtScrollAlwaysOff)
         else:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+            self.setVerticalScrollBarPolicy(QtScrollAsNeeded)
         if CONFIG.hideHScroll:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            self.setHorizontalScrollBarPolicy(QtScrollAlwaysOff)
         else:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+            self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
         self.updateClasses()
         return
 

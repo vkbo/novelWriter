@@ -51,8 +51,8 @@ from novelwriter.enum import nwDocMode, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.extensions.modified import NIconToolButton
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import (
-    QtAlignLeft, QtAlignRight, QtMouseLeft, QtMouseMiddle, QtSizeExpanding,
-    QtUserRole
+    QtAlignLeft, QtAlignRight, QtMouseLeft, QtMouseMiddle, QtScrollAlwaysOff,
+    QtScrollAsNeeded, QtSizeExpanding, QtUserRole
 )
 
 logger = logging.getLogger(__name__)
@@ -578,13 +578,13 @@ class GuiProjectTree(QTreeWidget):
         """Set or update tree widget settings."""
         # Scroll bars
         if CONFIG.hideVScroll:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            self.setVerticalScrollBarPolicy(QtScrollAlwaysOff)
         else:
-            self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+            self.setVerticalScrollBarPolicy(QtScrollAsNeeded)
         if CONFIG.hideHScroll:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            self.setHorizontalScrollBarPolicy(QtScrollAlwaysOff)
         else:
-            self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+            self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
         return
 
     ##

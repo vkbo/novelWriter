@@ -110,6 +110,11 @@ QtSizeIgnored = QSizePolicy.Policy.Ignored
 QtSizeMinimum = QSizePolicy.Policy.Minimum
 QtSizeMinimumExpanding = QSizePolicy.Policy.MinimumExpanding
 
+# Scroll Bar Policy
+
+QtScrollAlwaysOff = Qt.ScrollBarPolicy.ScrollBarAlwaysOff
+QtScrollAsNeeded = Qt.ScrollBarPolicy.ScrollBarAsNeeded
+
 # Other
 
 QRegExUnicode = QRegularExpression.PatternOption.UseUnicodePropertiesOption

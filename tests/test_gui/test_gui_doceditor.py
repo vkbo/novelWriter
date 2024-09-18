@@ -34,7 +34,7 @@ from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.text.counting import standardCounter
 from novelwriter.types import (
     QtAlignJustify, QtAlignLeft, QtKeepAnchor, QtModCtrl, QtMouseLeft,
-    QtMoveAnchor, QtMoveRight
+    QtMoveAnchor, QtMoveRight, QtScrollAlwaysOff, QtScrollAsNeeded
 )
 
 from tests.mocked import causeOSError
@@ -73,8 +73,8 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # Check Defaults
     qDoc = docEditor.document()
     assert qDoc.defaultTextOption().alignment() == QtAlignLeft
-    assert docEditor.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
-    assert docEditor.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
+    assert docEditor.verticalScrollBarPolicy() == QtScrollAsNeeded
+    assert docEditor.horizontalScrollBarPolicy() == QtScrollAsNeeded
     assert docEditor._typPadChar == nwUnicode.U_NBSP
     assert docEditor.docHeader.itemTitle.text() == (
         "Novel  \u203a  New Chapter  \u203a  New Scene"
@@ -98,8 +98,8 @@ def testGuiEditor_Init(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     assert qDoc.defaultTextOption().alignment() == QtAlignJustify
     assert qDoc.defaultTextOption().flags() & QTextOption.ShowTabsAndSpaces
     assert qDoc.defaultTextOption().flags() & QTextOption.ShowLineAndParagraphSeparators
-    assert docEditor.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
-    assert docEditor.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
+    assert docEditor.verticalScrollBarPolicy() == QtScrollAlwaysOff
+    assert docEditor.horizontalScrollBarPolicy() == QtScrollAlwaysOff
     assert docEditor._typPadChar == nwUnicode.U_THNBSP
     assert docEditor.docHeader.itemTitle.text() == "New Scene"
 

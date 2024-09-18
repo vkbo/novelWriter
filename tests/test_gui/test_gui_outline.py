@@ -26,11 +26,11 @@ from shutil import copyfile
 
 import pytest
 
-from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QFileDialog, QWidget
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.enum import nwItemClass, nwOutline, nwView
+from novelwriter.types import QtScrollAlwaysOff, QtScrollAsNeeded
 
 from tests.tools import buildTestProject, cmpFiles, writeFile
 
@@ -53,18 +53,18 @@ def testGuiOutline_Main(qtbot, monkeypatch, nwGUI, projPath):
     CONFIG.hideVScroll = True
     CONFIG.hideHScroll = True
     outlineView.initSettings()
-    assert outlineTree.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
-    assert outlineTree.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
-    assert outlineData.verticalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
-    assert outlineData.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
+    assert outlineTree.verticalScrollBarPolicy() == QtScrollAlwaysOff
+    assert outlineTree.horizontalScrollBarPolicy() == QtScrollAlwaysOff
+    assert outlineData.verticalScrollBarPolicy() == QtScrollAlwaysOff
+    assert outlineData.horizontalScrollBarPolicy() == QtScrollAlwaysOff
 
     CONFIG.hideVScroll = False
     CONFIG.hideHScroll = False
     outlineView.initSettings()
-    assert outlineTree.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
-    assert outlineTree.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
-    assert outlineData.verticalScrollBarPolicy() == Qt.ScrollBarAsNeeded
-    assert outlineData.horizontalScrollBarPolicy() == Qt.ScrollBarAsNeeded
+    assert outlineTree.verticalScrollBarPolicy() == QtScrollAsNeeded
+    assert outlineTree.horizontalScrollBarPolicy() == QtScrollAsNeeded
+    assert outlineData.verticalScrollBarPolicy() == QtScrollAsNeeded
+    assert outlineData.horizontalScrollBarPolicy() == QtScrollAsNeeded
 
     # Check focus
     with monkeypatch.context() as mp:

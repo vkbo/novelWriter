@@ -27,7 +27,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QFont, QPalette
 from PyQt5.QtWidgets import (
     QAbstractButton, QFrame, QHBoxLayout, QLabel, QLayout, QScrollArea,
@@ -35,6 +34,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG
+from novelwriter.types import QtScrollAsNeeded
 
 DEFAULT_SCALE = 0.9
 
@@ -76,8 +76,8 @@ class NScrollablePage(QScrollArea):
         self._widget = QWidget(self)
         self.setWidget(self._widget)
         self.setWidgetResizable(True)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
+        self.setVerticalScrollBarPolicy(QtScrollAsNeeded)
         self.setFrameShadow(QFrame.Shadow.Sunken)
         self.setFrameShape(QFrame.Shape.StyledPanel)
         return
@@ -113,8 +113,8 @@ class NScrollableForm(QScrollArea):
 
         self.setWidget(self._widget)
         self.setWidgetResizable(True)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.setHorizontalScrollBarPolicy(QtScrollAsNeeded)
+        self.setVerticalScrollBarPolicy(QtScrollAsNeeded)
         self.setFrameShadow(QFrame.Shadow.Sunken)
         self.setFrameShape(QFrame.Shape.StyledPanel)
 
