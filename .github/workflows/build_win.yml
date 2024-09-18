@@ -26,7 +26,9 @@ jobs:
           path: novelwriter/assets
 
       - name: Build Setup Installer
-        run: python pkgutils.py build-win-exe
+        run: |
+          BUILD_VERSION="$(python pkgutils.py version)"
+          python pkgutils.py build-win-exe
 
       - name: Upload Unsigned Artifacts
         id: upload-unsigned-artifact
@@ -47,6 +49,8 @@ jobs:
           github-artifact-id: "${{ steps.upload-unsigned-artifact.outputs.artifact-id }}"
           wait-for-completion: true
           output-artifact-directory: "dist/"
+          parameters: |
+            version: "${{ steps.vars.output.BUILD_VERSION }}"
 
       - name: Upload Signed Artifacts
         uses: actions/upload-artifact@v4
