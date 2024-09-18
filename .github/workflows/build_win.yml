@@ -46,7 +46,7 @@ jobs:
           api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
           organization-id: "0471e52c-66fa-4e9a-bfb9-36167095ca3f"
           project-slug: "novelWriter"
-          signing-policy-slug: "test-signing"
+          signing-policy-slug: "release-signing "
           github-artifact-id: "${{ steps.upload-unsigned-artifact.outputs.artifact-id }}"
           wait-for-completion: true
           output-artifact-directory: "dist/"
