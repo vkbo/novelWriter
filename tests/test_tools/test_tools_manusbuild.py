@@ -133,7 +133,7 @@ def testToolManuscriptBuild_Main(
     manus.buildPath.setText(str(fncPath))
     manus.buildName.setText("TestBuild")
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
         assert manus._runBuild() is False
 
     # Test that the open button works

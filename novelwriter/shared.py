@@ -441,9 +441,9 @@ class _GuiAlert(QMessageBox):
         Yes/No buttons or just an Ok button.
         """
         if isYesNo:
-            self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            self.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         else:
-            self.setStandardButtons(QMessageBox.Ok)
+            self.setStandardButtons(QMessageBox.StandardButton.Ok)
         pSz = 2*self._theme.baseIconHeight
         if level == self.INFO:
             self.setIconPixmap(self._theme.getPixmap("alert_info", (pSz, pSz)))

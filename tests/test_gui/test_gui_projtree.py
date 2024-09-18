@@ -411,7 +411,7 @@ def testGuiProjTree_MoveItemToTrash(qtbot, caplog, monkeypatch, nwGUI, projPath,
 
     # User cancels action
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
         assert projTree.moveItemToTrash(C.hTitlePage) is False
         assert project.tree.isTrash(C.hTitlePage) is False
 
@@ -456,7 +456,7 @@ def testGuiProjTree_PermanentlyDeleteItem(qtbot, caplog, monkeypatch, nwGUI, pro
 
     # User cancels action
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
         assert projTree.permDeleteItem(C.hTitlePage) is False
         assert C.hTitlePage in project.tree
 
@@ -506,7 +506,7 @@ def testGuiProjTree_EmptyTrash(qtbot, caplog, monkeypatch, nwGUI, projPath, mock
 
     # User cancels
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
         assert projTree.emptyTrash() is False
         assert C.hTitlePage in project.tree
         assert C.hChapterDir in project.tree
@@ -751,7 +751,7 @@ def testGuiProjTree_Duplicate(qtbot, monkeypatch, nwGUI: GuiMain, projPath, mock
 
     # Duplicate title page, but select no
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
         assert projTree._duplicateFromHandle(C.hTitlePage) is False
         assert len(SHARED.project.tree) == 8
 
@@ -1313,7 +1313,7 @@ def testGuiProjTree_ContextMenu(qtbot, monkeypatch, nwGUI, projPath, mockRnd):
 
     # Click no on the dialog
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
         ctxMenu._covertFolderToFile(nwItemLayout.DOCUMENT)
         assert SHARED.project.tree[hNewFolderOne].isFolderType()  # type: ignore
 

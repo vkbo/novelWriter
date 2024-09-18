@@ -126,7 +126,7 @@ def testBaseSharedData_Projects(monkeypatch, caplog, fncPath):
 def testBaseSharedData_Alerts(qtbot, monkeypatch, caplog):
     """Test SharedData class alert helper functions."""
     monkeypatch.setattr(QMessageBox, "exec", lambda *a: None)
-    monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.Yes)
 
     shared = SharedData()
 

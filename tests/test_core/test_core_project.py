@@ -271,14 +271,14 @@ def testCoreProject_Open(monkeypatch, caplog, mockGUI, fncPath, mockRnd):
     # Won't convert legacy file
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "state", property(lambda *a: XMLReadState.WAS_LEGACY))
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
         assert project.openProject(fncPath, clearLock=True) is False
         assert "The file format of your project is about to be" in SHARED.lastAlert
 
     # Won't open project from newer version
     with monkeypatch.context() as mp:
         mp.setattr(ProjectXMLReader, "hexVersion", property(lambda *a: 0x99999999))
-        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a: QMessageBox.StandardButton.No)
         assert project.openProject(fncPath, clearLock=True) is False
         assert "This project was saved by a newer version" in SHARED.lastAlert
 

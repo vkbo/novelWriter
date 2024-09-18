@@ -29,6 +29,7 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwKeyWords, nwUnicode
 from novelwriter.enum import nwDocAction, nwDocInsert
 from novelwriter.gui.doceditor import GuiDocEditor
+from novelwriter.types import QtKeepAnchor, QtMoveRight
 
 from tests.tools import C, buildTestProject, writeFile
 
@@ -301,7 +302,7 @@ def testGuiMainMenu_EditFormat(qtbot, monkeypatch, nwGUI, prjLipsum):
     ))
     cursor = nwGUI.docEditor.textCursor()
     cursor.setPosition(74)
-    cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, 29)
+    cursor.movePosition(QtMoveRight, QtKeepAnchor, 29)
     nwGUI.docEditor.setTextCursor(cursor)
     nwGUI.mainMenu.aFmtRmBreaks.activate(QAction.ActionEvent.Trigger)
     assert nwGUI.docEditor.getText() == (
@@ -567,7 +568,7 @@ def testGuiMainMenu_Insert(qtbot, monkeypatch, nwGUI, fncPath, projPath, mockRnd
 
     # The document isn't empty, so the message box should pop
     with monkeypatch.context() as mp:
-        mp.setattr(QMessageBox, "result", lambda *a, **k: QMessageBox.No)
+        mp.setattr(QMessageBox, "result", lambda *a, **k: QMessageBox.StandardButton.No)
         assert not nwGUI.importDocument()
         assert nwGUI.docEditor.getText() == "Bar"
 

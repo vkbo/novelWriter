@@ -34,7 +34,7 @@ from novelwriter.gui.doceditor import GuiDocEditor
 from novelwriter.text.counting import standardCounter
 from novelwriter.types import (
     QtAlignJustify, QtAlignLeft, QtKeepAnchor, QtModCtrl, QtMouseLeft,
-    QtMoveRight
+    QtMoveAnchor, QtMoveRight
 )
 
 from tests.mocked import causeOSError
@@ -989,8 +989,8 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # Past Paragraph
     docEditor.replaceText(text)
     cursor = docEditor.textCursor()
-    cursor.setPosition(13, QTextCursor.MoveAnchor)
-    cursor.setPosition(1000, QTextCursor.KeepAnchor)
+    cursor.setPosition(13, QtMoveAnchor)
+    cursor.setPosition(1000, QtKeepAnchor)
     docEditor.setTextCursor(cursor)
     docEditor._wrapSelection("=")
 
@@ -1021,8 +1021,8 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     # Past Paragraph
     docEditor.replaceText(text)
     cursor = docEditor.textCursor()
-    cursor.setPosition(13, QTextCursor.MoveAnchor)
-    cursor.setPosition(1000, QTextCursor.KeepAnchor)
+    cursor.setPosition(13, QtMoveAnchor)
+    cursor.setPosition(1000, QtKeepAnchor)
     docEditor.setTextCursor(cursor)
     docEditor._toggleFormat(1, "=")
 
@@ -1130,8 +1130,8 @@ def testGuiEditor_TextManipulation(qtbot, nwGUI, projPath, ipsumText, mockRnd):
     text = "### A Scene\n\n%s\n\n%s" % (parOne, parTwo)
     docEditor.replaceText(text)
     cursor = docEditor.textCursor()
-    cursor.setPosition(16, QTextCursor.MoveAnchor)
-    cursor.setPosition(680, QTextCursor.KeepAnchor)
+    cursor.setPosition(16, QtMoveAnchor)
+    cursor.setPosition(680, QtKeepAnchor)
     docEditor.setTextCursor(cursor)
     docEditor._removeInParLineBreaks()
 
