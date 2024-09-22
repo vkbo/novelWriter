@@ -32,11 +32,17 @@ from novelwriter.constants import nwRegEx
 class RegExPatterns:
 
     # Static RegExes
+    _rxWords   = re.compile(nwRegEx.WORDS, re.UNICODE)
     _rxItalic  = re.compile(nwRegEx.FMT_EI, re.UNICODE)
     _rxBold    = re.compile(nwRegEx.FMT_EB, re.UNICODE)
     _rxStrike  = re.compile(nwRegEx.FMT_ST, re.UNICODE)
     _rxSCPlain = re.compile(nwRegEx.FMT_SC, re.UNICODE)
     _rxSCValue = re.compile(nwRegEx.FMT_SV, re.UNICODE)
+
+    @property
+    def wordSplit(self) -> re.Pattern:
+        """Split text into words."""
+        return self._rxWords
 
     @property
     def markdownItalic(self) -> re.Pattern:

@@ -37,12 +37,16 @@ from PyQt5.QtGui import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt
-from novelwriter.constants import nwHeaders, nwRegEx, nwUnicode
+from novelwriter.constants import nwHeaders, nwUnicode
 from novelwriter.core.index import processComment
 from novelwriter.enum import nwComment
 from novelwriter.text.patterns import REGEX_PATTERNS
 
 logger = logging.getLogger(__name__)
+
+RX_WORDS = REGEX_PATTERNS.wordSplit
+RX_FMT_SC = REGEX_PATTERNS.shortcodePlain
+RX_FMT_SV = REGEX_PATTERNS.shortcodeValue
 
 BLOCK_NONE  = 0
 BLOCK_TEXT  = 1
@@ -479,7 +483,7 @@ class TextBlockData(QTextBlockUserData):
         """
         if "[" in text:
             # Strip shortcodes
-            for rX in [nwRegEx.RX_FMT_SC, nwRegEx.RX_FMT_SV]:
+            for rX in [RX_FMT_SC, RX_FMT_SV]:
                 for match in re.finditer(rX, text[offset:]):
                     iS = match.start(0) + offset
                     iE = match.end(0) + offset
@@ -488,7 +492,7 @@ class TextBlockData(QTextBlockUserData):
 
         self._spellErrors = []
         checker = SHARED.spelling
-        for match in re.finditer(nwRegEx.RX_WORDS, text[offset:].replace("_", " ")):
+        for match in re.finditer(RX_WORDS, text[offset:].replace("_", " ")):
             if (
                 (word := match.group(0))
                 and not (word.isnumeric() or word.isupper() or checker.checkWord(word))

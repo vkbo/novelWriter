@@ -41,6 +41,52 @@ def allMatches(regEx: re.Pattern, text: str) -> list[list[str]]:
 
 
 @pytest.mark.core
+def testTextPatterns_Words():
+    """Test the word split regex."""
+    regEx = REGEX_PATTERNS.wordSplit
+
+    # Spaces
+    assert allMatches(regEx, "one two three") == [
+        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
+    ]
+
+    # Hyphens
+    assert allMatches(regEx, "one-two-three") == [
+        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
+    ]
+
+    # Em Dashes
+    assert allMatches(regEx, "one\u2014two\u2014three") == [
+        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
+    ]
+
+    # Em Dashes
+    assert allMatches(regEx, "one\u2014two\u2014three") == [
+        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
+    ]
+
+    # Plus
+    assert allMatches(regEx, "one+two+three") == [
+        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
+    ]
+
+    # Slash
+    assert allMatches(regEx, "one/two/three") == [
+        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
+    ]
+
+    # Brackets
+    assert allMatches(regEx, "one[two]three") == [
+        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
+    ]
+
+    # Colon
+    assert allMatches(regEx, "one:two:three") == [
+        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
+    ]
+
+
+@pytest.mark.core
 def testTextPatterns_Markdown():
     """Test the markdown pattern regexes."""
     # Bold

@@ -23,8 +23,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from re import UNICODE, compile
-
 from PyQt5.QtCore import QT_TRANSLATE_NOOP, QCoreApplication
 
 from novelwriter.enum import (
@@ -62,15 +60,12 @@ class nwConst:
 
 class nwRegEx:
 
+    WORDS  = r"\b[^\s\-\+\/–—\[\]:]+\b"
     FMT_EI = r"(?<![\w\\])(_)(?![\s_])(.+?)(?<![\s\\])(\1)(?!\w)"
     FMT_EB = r"(?<![\w\\])(\*{2})(?![\s\*])(.+?)(?<![\s\\])(\1)(?!\w)"
     FMT_ST = r"(?<![\w\\])(~{2})(?![\s~])(.+?)(?<![\s\\])(\1)(?!\w)"
     FMT_SC = r"(?i)(?<!\\)(\[[\/\!]?(?:b|i|s|u|m|sup|sub)\])"
     FMT_SV = r"(?i)(?<!\\)(\[(?:footnote):)(.+?)(?<!\\)(\])"
-
-    RX_WORDS = compile(r"\b[^\s\-\+\/–—\[\]:]+\b", UNICODE)
-    RX_FMT_SC = compile(r"(?i)(?<!\\)(\[[\/\!]?(?:b|i|s|u|m|sup|sub)\])", UNICODE)
-    RX_FMT_SV = compile(r"(?i)(?<!\\)(\[(?:footnote):)(.+?)(?<!\\)(\])", UNICODE)
 
 
 class nwShortcode:
