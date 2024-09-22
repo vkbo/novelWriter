@@ -1111,14 +1111,14 @@ class Tokenizer(ABC):
         for regEx, fmts in self._rxMarkdown:
             for match in re.finditer(regEx, text):
                 temp.extend(
-                    (match.start(n), len(match.group(n)), fmt, "")
+                    (match.start(n), match.end(n), fmt, "")
                     for n, fmt in enumerate(fmts) if fmt > 0
                 )
 
         # Match Shortcodes
         for match in re.finditer(REGEX_PATTERNS.shortcodePlain, text):
             temp.append((
-                match.start(1), len(match.group(1)),
+                match.start(1), match.end(1),
                 self._shortCodeFmt.get(match.group(1).lower(), 0),
                 "",
             ))
@@ -1128,7 +1128,7 @@ class Tokenizer(ABC):
         for match in re.finditer(REGEX_PATTERNS.shortcodeValue, text):
             kind = self._shortCodeVals.get(match.group(1).lower(), 0)
             temp.append((
-                match.start(0), len(match.group(0)),
+                match.start(0), match.end(0),
                 self.FMT_STRIP if kind == skip else kind,
                 f"{tHandle}:{match.group(2)}",
             ))
@@ -1143,11 +1143,11 @@ class Tokenizer(ABC):
         # Post-process text and format
         result = text
         formats = []
-        for pos, n, fmt, key in reversed(sorted(temp, key=lambda x: x[0])):
+        for pos, end, fmt, key in reversed(sorted(temp, key=lambda x: x[0])):
             if fmt > 0:
-                if n > 0:
-                    result = result[:pos] + result[pos+n:]
-                    formats = [(p-n if p > pos else p, f, k) for p, f, k in formats]
+                if end > pos:
+                    result = result[:pos] + result[end:]
+                    formats = [(p+pos-end if p > pos else p, f, k) for p, f, k in formats]
                 formats.insert(0, (pos, fmt, key))
 
         return result, formats
