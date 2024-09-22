@@ -29,7 +29,7 @@ import re
 
 from time import time
 
-from PyQt5.QtCore import QRegularExpression, Qt
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import (
     QBrush, QColor, QFont, QSyntaxHighlighter, QTextBlockUserData,
     QTextCharFormat, QTextDocument
@@ -398,29 +398,15 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         if hRules:
             for rX, hRule in hRules:
-                if isinstance(rX, QRegularExpression):
-                    rxItt = rX.globalMatch(text, xOff)
-                    while rxItt.hasNext():
-                        rxMatch = rxItt.next()
-                        for xM, hFmt in hRule.items():
-                            xPos = rxMatch.capturedStart(xM)
-                            xEnd = rxMatch.capturedEnd(xM)
-                            for x in range(xPos, xEnd):
-                                cFmt = self.format(x)
-                                if cFmt.fontStyleName() != "markup":
-                                    cFmt.merge(hFmt)
-                                    self.setFormat(x, 1, cFmt)
-                else:
-                    for match in re.finditer(rX, text[xOff:]):
-                        for xM, hFmt in hRule.items():
-                            # print(f"'{match.group(xM)}'", match.start(xM), match.end(xM))
-                            xPos = match.start(xM) + xOff
-                            xEnd = match.end(xM) + xOff
-                            for x in range(xPos, xEnd):
-                                cFmt = self.format(x)
-                                if cFmt.fontStyleName() != "markup":
-                                    cFmt.merge(hFmt)
-                                    self.setFormat(x, 1, cFmt)
+                for match in re.finditer(rX, text[xOff:]):
+                    for xM, hFmt in hRule.items():
+                        xPos = match.start(xM) + xOff
+                        xEnd = match.end(xM) + xOff
+                        for x in range(xPos, xEnd):
+                            cFmt = self.format(x)
+                            if cFmt.fontStyleName() != "markup":
+                                cFmt.merge(hFmt)
+                                self.setFormat(x, 1, cFmt)
 
         data = self.currentBlockUserData()
         if not isinstance(data, TextBlockData):

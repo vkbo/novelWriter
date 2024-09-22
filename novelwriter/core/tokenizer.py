@@ -33,7 +33,7 @@ from functools import partial
 from pathlib import Path
 from time import time
 
-from PyQt5.QtCore import QCoreApplication, QRegularExpression
+from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QFont
 
 from novelwriter import CONFIG
@@ -234,7 +234,7 @@ class Tokenizer(ABC):
             nwShortcode.FOOTNOTE_B: self.FMT_FNOTE,
         }
 
-        self._rxDialogue: list[tuple[QRegularExpression, int, int]] = []
+        self._rxDialogue: list[tuple[re.Pattern, int, int]] = []
 
         return
 
@@ -1136,11 +1136,9 @@ class Tokenizer(ABC):
         # Match Dialogue
         if self._rxDialogue and hDialog:
             for regEx, fmtB, fmtE in self._rxDialogue:
-                rxItt = regEx.globalMatch(text, 0)
-                while rxItt.hasNext():
-                    rxMatch = rxItt.next()
-                    temp.append((rxMatch.capturedStart(0), 0, fmtB, ""))
-                    temp.append((rxMatch.capturedEnd(0), 0, fmtE, ""))
+                for match in re.finditer(regEx, text):
+                    temp.append((match.start(0), 0, fmtB, ""))
+                    temp.append((match.end(0), 0, fmtE, ""))
 
         # Post-process text and format
         result = text

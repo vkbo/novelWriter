@@ -25,11 +25,8 @@ from __future__ import annotations
 
 import re
 
-from PyQt5.QtCore import QRegularExpression
-
 from novelwriter import CONFIG
 from novelwriter.constants import nwRegEx
-from novelwriter.types import QRegExUnicode
 
 
 class RegExPatterns:
@@ -67,7 +64,7 @@ class RegExPatterns:
         return self._rxSCValue
 
     @property
-    def dialogStyle(self) -> QRegularExpression:
+    def dialogStyle(self) -> re.Pattern:
         """Dialogue detection rule based on user settings."""
         symO = ""
         symC = ""
@@ -79,34 +76,26 @@ class RegExPatterns:
             symC += CONFIG.fmtDQuoteClose
 
         rxEnd = "|$" if CONFIG.allowOpenDial else ""
-        rxRule = QRegularExpression(f"\\B[{symO}].*?(?:[{symC}]\\B{rxEnd})")
-        rxRule.setPatternOptions(QRegExUnicode)
-        return rxRule
+        return re.compile(f"\\B[{symO}].*?(?:[{symC}]\\B{rxEnd})", re.UNICODE)
 
     @property
-    def dialogLine(self) -> QRegularExpression:
+    def dialogLine(self) -> re.Pattern:
         """Dialogue line rule based on user settings."""
-        sym = QRegularExpression.escape(CONFIG.dialogLine)
-        rxRule = QRegularExpression(f"^{sym}.*?$")
-        rxRule.setPatternOptions(QRegExUnicode)
-        return rxRule
+        sym = re.escape(CONFIG.dialogLine)
+        return re.compile(f"^{sym}.*?$", re.UNICODE)
 
     @property
-    def narratorBreak(self) -> QRegularExpression:
+    def narratorBreak(self) -> re.Pattern:
         """Dialogue narrator break rule based on user settings."""
-        sym = QRegularExpression.escape(CONFIG.narratorBreak)
-        rxRule = QRegularExpression(f"\\B{sym}\\S.*?\\S{sym}\\B")
-        rxRule.setPatternOptions(QRegExUnicode)
-        return rxRule
+        sym = re.escape(CONFIG.narratorBreak)
+        return re.compile(f"\\B{sym}\\S.*?\\S{sym}\\B", re.UNICODE)
 
     @property
-    def altDialogStyle(self) -> QRegularExpression:
+    def altDialogStyle(self) -> re.Pattern:
         """Dialogue alternative rule based on user settings."""
-        symO = QRegularExpression.escape(CONFIG.altDialogOpen)
-        symC = QRegularExpression.escape(CONFIG.altDialogClose)
-        rxRule = QRegularExpression(f"\\B{symO}.*?{symC}\\B")
-        rxRule.setPatternOptions(QRegExUnicode)
-        return rxRule
+        symO = re.escape(CONFIG.altDialogOpen)
+        symC = re.escape(CONFIG.altDialogClose)
+        return re.compile(f"\\B{symO}.*?{symC}\\B", re.UNICODE)
 
 
 REGEX_PATTERNS = RegExPatterns()
