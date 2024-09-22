@@ -27,6 +27,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import logging
+import re
 import shutil
 
 from collections.abc import Iterable
@@ -34,7 +35,7 @@ from functools import partial
 from pathlib import Path
 from zipfile import ZipFile, is_zipfile
 
-from PyQt5.QtCore import QCoreApplication, QRegularExpression
+from PyQt5.QtCore import QCoreApplication
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import isHandle, minmax, simplified
@@ -297,8 +298,8 @@ class DocDuplicator:
 class DocSearch:
 
     def __init__(self) -> None:
-        self._regEx = QRegularExpression()
-        self.setCaseSensitive(False)
+        self._regEx = re.compile("")
+        self._opts = re.UNICODE | re.IGNORECASE
         self._words = False
         self._escape = True
         return
@@ -309,10 +310,9 @@ class DocSearch:
 
     def setCaseSensitive(self, state: bool) -> None:
         """Set the case sensitive search flag."""
-        opts = QRegularExpression.PatternOption.UseUnicodePropertiesOption
+        self._opts = re.UNICODE
         if not state:
-            opts |= QRegularExpression.PatternOption.CaseInsensitiveOption
-        self._regEx.setPatternOptions(opts)
+            self._opts |= re.IGNORECASE
         return
 
     def setWholeWords(self, state: bool) -> None:
@@ -329,8 +329,8 @@ class DocSearch:
         self, project: NWProject, search: str
     ) -> Iterable[tuple[NWItem, list[tuple[int, int, str]], bool]]:
         """Iteratively search through documents in a project."""
-        self._regEx.setPattern(self._buildPattern(search))
-        logger.debug("Searching with pattern '%s'", self._regEx.pattern())
+        self._regEx = re.compile(self._buildPattern(search), self._opts)
+        logger.debug("Searching with pattern '%s'", self._regEx.pattern)
         storage = project.storage
         for item in project.tree:
             if item.isFileType():
@@ -340,14 +340,12 @@ class DocSearch:
 
     def searchText(self, text: str) -> tuple[list[tuple[int, int, str]], bool]:
         """Search a piece of text for RegEx matches."""
-        rxItt = self._regEx.globalMatch(text)
         count = 0
         capped = False
         results = []
-        while rxItt.hasNext():
-            rxMatch = rxItt.next()
-            pos = rxMatch.capturedStart()
-            num = rxMatch.capturedLength()
+        for match in re.finditer(self._regEx, text):
+            pos = match.start(0)
+            num = len(match.group(0))
             lim = text[:pos].rfind("\n") + 1
             cut = text[lim:pos].rfind(" ") + lim + 1
             context = text[cut:cut+100].partition("\n")[0]
@@ -366,7 +364,7 @@ class DocSearch:
     def _buildPattern(self, search: str) -> str:
         """Build the search pattern string."""
         if self._escape:
-            search = QRegularExpression.escape(search)
+            search = re.escape(search)
         if self._words:
             search = f"(?:^|\\b){search}(?:$|\\b)"
         return search

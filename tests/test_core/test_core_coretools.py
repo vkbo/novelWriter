@@ -421,7 +421,7 @@ def testCoreTools_DocSearch(monkeypatch, mockGUI, fncPath, mockRnd, ipsumText):
     # Patterns
     # ========
 
-    # Escape Using QRegularExpression
+    # Escape
     assert search._buildPattern("[A-Za-z0-9_]+") == r"\[A\-Za\-z0\-9_\]\+"
 
     # Whole Words

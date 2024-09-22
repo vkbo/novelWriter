@@ -23,7 +23,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtCore import QRegularExpression, Qt
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QFont, QPainter, QTextCharFormat, QTextCursor, QTextFormat
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QSizePolicy, QStyle
 
@@ -114,10 +114,6 @@ QtSizeMinimumExpanding = QSizePolicy.Policy.MinimumExpanding
 
 QtScrollAlwaysOff = Qt.ScrollBarPolicy.ScrollBarAlwaysOff
 QtScrollAsNeeded = Qt.ScrollBarPolicy.ScrollBarAsNeeded
-
-# Other
-
-QRegExUnicode = QRegularExpression.PatternOption.UseUnicodePropertiesOption
 
 # Maps
 
