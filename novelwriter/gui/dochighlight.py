@@ -25,6 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import logging
+import re
 
 from time import time
 
@@ -43,13 +44,6 @@ from novelwriter.text.patterns import REGEX_PATTERNS
 from novelwriter.types import QRegExUnicode
 
 logger = logging.getLogger(__name__)
-
-SPELLRX = QRegularExpression(r"\b[^\s\-\+\/–—\[\]:]+\b")
-SPELLRX.setPatternOptions(QRegExUnicode)
-SPELLSC = QRegularExpression(nwRegEx.FMT_SC)
-SPELLSC.setPatternOptions(QRegExUnicode)
-SPELLSV = QRegularExpression(nwRegEx.FMT_SV)
-SPELLSV.setPatternOptions(QRegExUnicode)
 
 BLOCK_NONE  = 0
 BLOCK_TEXT  = 1
@@ -427,8 +421,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             self.setCurrentBlockUserData(data)
 
         if self._spellCheck:
-            for xPos, xLen in data.spellCheck(text, xOff):
-                for x in range(xPos, xPos+xLen):
+            for xPos, xEnd in data.spellCheck(text, xOff):
+                for x in range(xPos, xEnd):
                     cFmt = self.format(x)
                     cFmt.merge(self._spellErr)
                     self.setFormat(x, 1, cFmt)
@@ -492,22 +486,22 @@ class TextBlockData(QTextBlockUserData):
         """
         if "[" in text:
             # Strip shortcodes
-            for rX in [SPELLSC, SPELLSV]:
-                rxItt = rX.globalMatch(text, offset)
-                while rxItt.hasNext():
-                    rxMatch = rxItt.next()
-                    xPos = rxMatch.capturedStart(0)
-                    xLen = rxMatch.capturedLength(0)
-                    xEnd = rxMatch.capturedEnd(0)
-                    text = text[:xPos] + " "*xLen + text[xEnd:]
+            for rX in [nwRegEx.RX_FMT_SC, nwRegEx.RX_FMT_SV]:
+                for match in re.finditer(rX, text[offset:]):
+                    iS = match.start(0) + offset
+                    iE = match.end(0) + offset
+                    if iS >= 0 and iE >= 0:
+                        text = text[:iS] + " "*(iE - iS) + text[iE:]
 
         self._spellErrors = []
-        rxSpell = SPELLRX.globalMatch(text.replace("_", " "), offset)
-        while rxSpell.hasNext():
-            rxMatch = rxSpell.next()
-            if not SHARED.spelling.checkWord(rxMatch.captured(0)):
-                if not rxMatch.captured(0).isnumeric() and not rxMatch.captured(0).isupper():
-                    self._spellErrors.append(
-                        (rxMatch.capturedStart(0), rxMatch.capturedLength(0))
-                    )
+        checker = SHARED.spelling
+        for match in re.finditer(nwRegEx.RX_WORDS, text[offset:].replace("_", " ")):
+            if (
+                (word := match.group(0))
+                and (iS := match.start(0)) >= 0
+                and (iE := match.end(0)) >= 0
+                and not (word.isnumeric() or word.isupper() or checker.checkWord(word))
+            ):
+                self._spellErrors.append((iS + offset, iE + offset))
+
         return self._spellErrors
