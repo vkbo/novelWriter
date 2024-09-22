@@ -1116,27 +1116,21 @@ class Tokenizer(ABC):
                 )
 
         # Match Shortcodes
-        rxItt = self._rxShortCodes.globalMatch(text, 0)
-        while rxItt.hasNext():
-            rxMatch = rxItt.next()
+        for match in re.finditer(REGEX_PATTERNS.shortcodePlain, text):
             temp.append((
-                rxMatch.capturedStart(1),
-                rxMatch.capturedLength(1),
-                self._shortCodeFmt.get(rxMatch.captured(1).lower(), 0),
+                match.start(1), len(match.group(1)),
+                self._shortCodeFmt.get(match.group(1).lower(), 0),
                 "",
             ))
 
         # Match Shortcode w/Values
-        rxItt = self._rxShortCodeVals.globalMatch(text, 0)
         tHandle = self._handle or ""
-        while rxItt.hasNext():
-            rxMatch = rxItt.next()
-            kind = self._shortCodeVals.get(rxMatch.captured(1).lower(), 0)
+        for match in re.finditer(REGEX_PATTERNS.shortcodeValue, text):
+            kind = self._shortCodeVals.get(match.group(1).lower(), 0)
             temp.append((
-                rxMatch.capturedStart(0),
-                rxMatch.capturedLength(0),
+                match.start(0), len(match.group(0)),
                 self.FMT_STRIP if kind == skip else kind,
-                f"{tHandle}:{rxMatch.captured(2)}",
+                f"{tHandle}:{match.group(2)}",
             ))
 
         # Match Dialogue

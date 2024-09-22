@@ -34,34 +34,37 @@ from novelwriter.types import QRegExUnicode
 
 class RegExPatterns:
 
+    # Static RegExes
+    _rxItalic  = re.compile(nwRegEx.FMT_EI, re.UNICODE)
+    _rxBold    = re.compile(nwRegEx.FMT_EB, re.UNICODE)
+    _rxStrike  = re.compile(nwRegEx.FMT_ST, re.UNICODE)
+    _rxSCPlain = re.compile(nwRegEx.FMT_SC, re.UNICODE)
+    _rxSCValue = re.compile(nwRegEx.FMT_SV, re.UNICODE)
+
     @property
     def markdownItalic(self) -> re.Pattern:
         """Markdown italic style."""
-        return re.compile(nwRegEx.FMT_EI, re.UNICODE)
+        return self._rxItalic
 
     @property
     def markdownBold(self) -> re.Pattern:
         """Markdown bold style."""
-        return re.compile(nwRegEx.FMT_EB, re.UNICODE)
+        return self._rxBold
 
     @property
     def markdownStrike(self) -> re.Pattern:
         """Markdown strikethrough style."""
-        return re.compile(nwRegEx.FMT_ST, re.UNICODE)
+        return self._rxStrike
 
     @property
-    def shortcodePlain(self) -> QRegularExpression:
+    def shortcodePlain(self) -> re.Pattern:
         """Plain shortcode style."""
-        rxRule = QRegularExpression(nwRegEx.FMT_SC)
-        rxRule.setPatternOptions(QRegExUnicode)
-        return rxRule
+        return self._rxSCPlain
 
     @property
-    def shortcodeValue(self) -> QRegularExpression:
+    def shortcodeValue(self) -> re.Pattern:
         """Plain shortcode style."""
-        rxRule = QRegularExpression(nwRegEx.FMT_SV)
-        rxRule.setPatternOptions(QRegExUnicode)
-        return rxRule
+        return self._rxSCValue
 
     @property
     def dialogStyle(self) -> QRegularExpression:
