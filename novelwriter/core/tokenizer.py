@@ -1109,11 +1109,9 @@ class Tokenizer(ABC):
 
         # Match Markdown
         for regEx, fmts in self._rxMarkdown:
-            rxItt = regEx.globalMatch(text, 0)
-            while rxItt.hasNext():
-                rxMatch = rxItt.next()
+            for match in re.finditer(regEx, text):
                 temp.extend(
-                    (rxMatch.capturedStart(n), rxMatch.capturedLength(n), fmt, "")
+                    (match.start(n), len(match.group(n)), fmt, "")
                     for n, fmt in enumerate(fmts) if fmt > 0
                 )
 

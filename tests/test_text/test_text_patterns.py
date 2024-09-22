@@ -20,6 +20,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import re
+
 import pytest
 
 from PyQt5.QtCore import QRegularExpression
@@ -32,13 +34,20 @@ from novelwriter.text.patterns import REGEX_PATTERNS
 def allMatches(regEx: QRegularExpression, text: str) -> list[list[str]]:
     """Get all matches for a regex."""
     result = []
-    itt = regEx.globalMatch(text, 0)
-    while itt.hasNext():
-        match = itt.next()
-        result.append([
-            (match.captured(n), match.capturedStart(n), match.capturedEnd(n))
-            for n in range(match.lastCapturedIndex() + 1)
-        ])
+    if isinstance(regEx, QRegularExpression):
+        itt = regEx.globalMatch(text, 0)
+        while itt.hasNext():
+            match = itt.next()
+            result.append([
+                (match.captured(n), match.capturedStart(n), match.capturedEnd(n))
+                for n in range(match.lastCapturedIndex() + 1)
+            ])
+    else:
+        for match in re.finditer(regEx, text):
+            result.append([
+                (match.group(n), match.start(n), match.end(n))
+                for n in range((match.lastindex or -1) + 1)
+            ])
     return result
 
 

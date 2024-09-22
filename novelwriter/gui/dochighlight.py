@@ -41,7 +41,6 @@ from novelwriter.constants import nwHeaders, nwRegEx, nwUnicode
 from novelwriter.core.index import processComment
 from novelwriter.enum import nwComment
 from novelwriter.text.patterns import REGEX_PATTERNS
-from novelwriter.types import QRegExUnicode
 
 logger = logging.getLogger(__name__)
 

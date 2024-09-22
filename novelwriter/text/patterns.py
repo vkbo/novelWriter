@@ -23,6 +23,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import re
+
 from PyQt5.QtCore import QRegularExpression
 
 from novelwriter import CONFIG
@@ -33,25 +35,19 @@ from novelwriter.types import QRegExUnicode
 class RegExPatterns:
 
     @property
-    def markdownItalic(self) -> QRegularExpression:
+    def markdownItalic(self) -> re.Pattern:
         """Markdown italic style."""
-        rxRule = QRegularExpression(nwRegEx.FMT_EI)
-        rxRule.setPatternOptions(QRegExUnicode)
-        return rxRule
+        return re.compile(nwRegEx.FMT_EI, re.UNICODE)
 
     @property
-    def markdownBold(self) -> QRegularExpression:
+    def markdownBold(self) -> re.Pattern:
         """Markdown bold style."""
-        rxRule = QRegularExpression(nwRegEx.FMT_EB)
-        rxRule.setPatternOptions(QRegExUnicode)
-        return rxRule
+        return re.compile(nwRegEx.FMT_EB, re.UNICODE)
 
     @property
-    def markdownStrike(self) -> QRegularExpression:
+    def markdownStrike(self) -> re.Pattern:
         """Markdown strikethrough style."""
-        rxRule = QRegularExpression(nwRegEx.FMT_ST)
-        rxRule.setPatternOptions(QRegExUnicode)
-        return rxRule
+        return re.compile(nwRegEx.FMT_ST, re.UNICODE)
 
     @property
     def shortcodePlain(self) -> QRegularExpression:
