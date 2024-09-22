@@ -33,7 +33,7 @@ from functools import partial
 from pathlib import Path
 from time import time
 
-from PyQt5.QtCore import QCoreApplication, QRegularExpression
+from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QFont
 
 from novelwriter import CONFIG
@@ -234,7 +234,7 @@ class Tokenizer(ABC):
             nwShortcode.FOOTNOTE_B: self.FMT_FNOTE,
         }
 
-        self._rxDialogue: list[tuple[QRegularExpression, int, int]] = []
+        self._rxDialogue: list[tuple[re.Pattern, int, int]] = []
 
         return
 
@@ -1109,55 +1109,45 @@ class Tokenizer(ABC):
 
         # Match Markdown
         for regEx, fmts in self._rxMarkdown:
-            rxItt = regEx.globalMatch(text, 0)
-            while rxItt.hasNext():
-                rxMatch = rxItt.next()
+            for match in re.finditer(regEx, text):
                 temp.extend(
-                    (rxMatch.capturedStart(n), rxMatch.capturedLength(n), fmt, "")
+                    (match.start(n), match.end(n), fmt, "")
                     for n, fmt in enumerate(fmts) if fmt > 0
                 )
 
         # Match Shortcodes
-        rxItt = self._rxShortCodes.globalMatch(text, 0)
-        while rxItt.hasNext():
-            rxMatch = rxItt.next()
+        for match in re.finditer(REGEX_PATTERNS.shortcodePlain, text):
             temp.append((
-                rxMatch.capturedStart(1),
-                rxMatch.capturedLength(1),
-                self._shortCodeFmt.get(rxMatch.captured(1).lower(), 0),
+                match.start(1), match.end(1),
+                self._shortCodeFmt.get(match.group(1).lower(), 0),
                 "",
             ))
 
         # Match Shortcode w/Values
-        rxItt = self._rxShortCodeVals.globalMatch(text, 0)
         tHandle = self._handle or ""
-        while rxItt.hasNext():
-            rxMatch = rxItt.next()
-            kind = self._shortCodeVals.get(rxMatch.captured(1).lower(), 0)
+        for match in re.finditer(REGEX_PATTERNS.shortcodeValue, text):
+            kind = self._shortCodeVals.get(match.group(1).lower(), 0)
             temp.append((
-                rxMatch.capturedStart(0),
-                rxMatch.capturedLength(0),
+                match.start(0), match.end(0),
                 self.FMT_STRIP if kind == skip else kind,
-                f"{tHandle}:{rxMatch.captured(2)}",
+                f"{tHandle}:{match.group(2)}",
             ))
 
         # Match Dialogue
         if self._rxDialogue and hDialog:
             for regEx, fmtB, fmtE in self._rxDialogue:
-                rxItt = regEx.globalMatch(text, 0)
-                while rxItt.hasNext():
-                    rxMatch = rxItt.next()
-                    temp.append((rxMatch.capturedStart(0), 0, fmtB, ""))
-                    temp.append((rxMatch.capturedEnd(0), 0, fmtE, ""))
+                for match in re.finditer(regEx, text):
+                    temp.append((match.start(0), 0, fmtB, ""))
+                    temp.append((match.end(0), 0, fmtE, ""))
 
         # Post-process text and format
         result = text
         formats = []
-        for pos, n, fmt, key in reversed(sorted(temp, key=lambda x: x[0])):
+        for pos, end, fmt, key in reversed(sorted(temp, key=lambda x: x[0])):
             if fmt > 0:
-                if n > 0:
-                    result = result[:pos] + result[pos+n:]
-                    formats = [(p-n if p > pos else p, f, k) for p, f, k in formats]
+                if end > pos:
+                    result = result[:pos] + result[end:]
+                    formats = [(p+pos-end if p > pos else p, f, k) for p, f, k in formats]
                 formats.insert(0, (pos, fmt, key))
 
         return result, formats

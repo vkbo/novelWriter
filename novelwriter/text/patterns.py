@@ -23,52 +23,54 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-from PyQt5.QtCore import QRegularExpression
+import re
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwRegEx
-from novelwriter.types import QRegExUnicode
 
 
 class RegExPatterns:
 
+    # Static RegExes
+    _rxWords   = re.compile(nwRegEx.WORDS, re.UNICODE)
+    _rxItalic  = re.compile(nwRegEx.FMT_EI, re.UNICODE)
+    _rxBold    = re.compile(nwRegEx.FMT_EB, re.UNICODE)
+    _rxStrike  = re.compile(nwRegEx.FMT_ST, re.UNICODE)
+    _rxSCPlain = re.compile(nwRegEx.FMT_SC, re.UNICODE)
+    _rxSCValue = re.compile(nwRegEx.FMT_SV, re.UNICODE)
+
     @property
-    def markdownItalic(self) -> QRegularExpression:
+    def wordSplit(self) -> re.Pattern:
+        """Split text into words."""
+        return self._rxWords
+
+    @property
+    def markdownItalic(self) -> re.Pattern:
         """Markdown italic style."""
-        rxRule = QRegularExpression(nwRegEx.FMT_EI)
-        rxRule.setPatternOptions(QRegExUnicode)
-        return rxRule
+        return self._rxItalic
 
     @property
-    def markdownBold(self) -> QRegularExpression:
+    def markdownBold(self) -> re.Pattern:
         """Markdown bold style."""
-        rxRule = QRegularExpression(nwRegEx.FMT_EB)
-        rxRule.setPatternOptions(QRegExUnicode)
-        return rxRule
+        return self._rxBold
 
     @property
-    def markdownStrike(self) -> QRegularExpression:
+    def markdownStrike(self) -> re.Pattern:
         """Markdown strikethrough style."""
-        rxRule = QRegularExpression(nwRegEx.FMT_ST)
-        rxRule.setPatternOptions(QRegExUnicode)
-        return rxRule
+        return self._rxStrike
 
     @property
-    def shortcodePlain(self) -> QRegularExpression:
+    def shortcodePlain(self) -> re.Pattern:
         """Plain shortcode style."""
-        rxRule = QRegularExpression(nwRegEx.FMT_SC)
-        rxRule.setPatternOptions(QRegExUnicode)
-        return rxRule
+        return self._rxSCPlain
 
     @property
-    def shortcodeValue(self) -> QRegularExpression:
+    def shortcodeValue(self) -> re.Pattern:
         """Plain shortcode style."""
-        rxRule = QRegularExpression(nwRegEx.FMT_SV)
-        rxRule.setPatternOptions(QRegExUnicode)
-        return rxRule
+        return self._rxSCValue
 
     @property
-    def dialogStyle(self) -> QRegularExpression:
+    def dialogStyle(self) -> re.Pattern:
         """Dialogue detection rule based on user settings."""
         symO = ""
         symC = ""
@@ -80,34 +82,26 @@ class RegExPatterns:
             symC += CONFIG.fmtDQuoteClose
 
         rxEnd = "|$" if CONFIG.allowOpenDial else ""
-        rxRule = QRegularExpression(f"\\B[{symO}].*?(?:[{symC}]\\B{rxEnd})")
-        rxRule.setPatternOptions(QRegExUnicode)
-        return rxRule
+        return re.compile(f"\\B[{symO}].*?(?:[{symC}]\\B{rxEnd})", re.UNICODE)
 
     @property
-    def dialogLine(self) -> QRegularExpression:
+    def dialogLine(self) -> re.Pattern:
         """Dialogue line rule based on user settings."""
-        sym = QRegularExpression.escape(CONFIG.dialogLine)
-        rxRule = QRegularExpression(f"^{sym}.*?$")
-        rxRule.setPatternOptions(QRegExUnicode)
-        return rxRule
+        sym = re.escape(CONFIG.dialogLine)
+        return re.compile(f"^{sym}.*?$", re.UNICODE)
 
     @property
-    def narratorBreak(self) -> QRegularExpression:
+    def narratorBreak(self) -> re.Pattern:
         """Dialogue narrator break rule based on user settings."""
-        sym = QRegularExpression.escape(CONFIG.narratorBreak)
-        rxRule = QRegularExpression(f"\\B{sym}\\S.*?\\S{sym}\\B")
-        rxRule.setPatternOptions(QRegExUnicode)
-        return rxRule
+        sym = re.escape(CONFIG.narratorBreak)
+        return re.compile(f"\\B{sym}\\S.*?\\S{sym}\\B", re.UNICODE)
 
     @property
-    def altDialogStyle(self) -> QRegularExpression:
+    def altDialogStyle(self) -> re.Pattern:
         """Dialogue alternative rule based on user settings."""
-        symO = QRegularExpression.escape(CONFIG.altDialogOpen)
-        symC = QRegularExpression.escape(CONFIG.altDialogClose)
-        rxRule = QRegularExpression(f"\\B{symO}.*?{symC}\\B")
-        rxRule.setPatternOptions(QRegExUnicode)
-        return rxRule
+        symO = re.escape(CONFIG.altDialogOpen)
+        symC = re.escape(CONFIG.altDialogClose)
+        return re.compile(f"\\B{symO}.*?{symC}\\B", re.UNICODE)
 
 
 REGEX_PATTERNS = RegExPatterns()

@@ -25,10 +25,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import logging
+import re
 
 from time import time
 
-from PyQt5.QtCore import QRegularExpression, Qt
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import (
     QBrush, QColor, QFont, QSyntaxHighlighter, QTextBlockUserData,
     QTextCharFormat, QTextDocument
@@ -36,20 +37,16 @@ from PyQt5.QtGui import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt
-from novelwriter.constants import nwHeaders, nwRegEx, nwUnicode
+from novelwriter.constants import nwHeaders, nwUnicode
 from novelwriter.core.index import processComment
 from novelwriter.enum import nwComment
 from novelwriter.text.patterns import REGEX_PATTERNS
-from novelwriter.types import QRegExUnicode
 
 logger = logging.getLogger(__name__)
 
-SPELLRX = QRegularExpression(r"\b[^\s\-\+\/–—\[\]:]+\b")
-SPELLRX.setPatternOptions(QRegExUnicode)
-SPELLSC = QRegularExpression(nwRegEx.FMT_SC)
-SPELLSC.setPatternOptions(QRegExUnicode)
-SPELLSV = QRegularExpression(nwRegEx.FMT_SV)
-SPELLSV.setPatternOptions(QRegExUnicode)
+RX_WORDS = REGEX_PATTERNS.wordSplit
+RX_FMT_SC = REGEX_PATTERNS.shortcodePlain
+RX_FMT_SV = REGEX_PATTERNS.shortcodeValue
 
 BLOCK_NONE  = 0
 BLOCK_TEXT  = 1
@@ -76,9 +73,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._spellErr = QTextCharFormat()
 
         self._hStyles: dict[str, QTextCharFormat] = {}
-        self._minRules: list[tuple[QRegularExpression, dict[int, QTextCharFormat]]] = []
-        self._txtRules: list[tuple[QRegularExpression, dict[int, QTextCharFormat]]] = []
-        self._cmnRules: list[tuple[QRegularExpression, dict[int, QTextCharFormat]]] = []
+        self._minRules: list[tuple[re.Pattern, dict[int, QTextCharFormat]]] = []
+        self._txtRules: list[tuple[re.Pattern, dict[int, QTextCharFormat]]] = []
+        self._cmnRules: list[tuple[re.Pattern, dict[int, QTextCharFormat]]] = []
 
         self.initHighlighter()
 
@@ -135,8 +132,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Multiple or Trailing Spaces
         if CONFIG.showMultiSpaces:
-            rxRule = QRegularExpression(r"[ ]{2,}|[ ]*$")
-            rxRule.setPatternOptions(QRegExUnicode)
+            rxRule = re.compile(r"[ ]{2,}|[ ]*$", re.UNICODE)
             hlRule = {
                 0: self._hStyles["mspaces"],
             }
@@ -145,8 +141,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             self._cmnRules.append((rxRule, hlRule))
 
         # Non-Breaking Spaces
-        rxRule = QRegularExpression(f"[{nwUnicode.U_NBSP}{nwUnicode.U_THNBSP}]+")
-        rxRule.setPatternOptions(QRegExUnicode)
+        rxRule = re.compile(f"[{nwUnicode.U_NBSP}{nwUnicode.U_THNBSP}]+", re.UNICODE)
         hlRule = {
             0: self._hStyles["nobreak"],
         }
@@ -237,8 +232,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._cmnRules.append((rxRule, hlRule))
 
         # Alignment Tags
-        rxRule = QRegularExpression(r"(^>{1,2}|<{1,2}$)")
-        rxRule.setPatternOptions(QRegExUnicode)
+        rxRule = re.compile(r"(^>{1,2}|<{1,2}$)", re.UNICODE)
         hlRule = {
             1: self._hStyles["markup"],
         }
@@ -246,8 +240,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._txtRules.append((rxRule, hlRule))
 
         # Auto-Replace Tags
-        rxRule = QRegularExpression(r"<(\S+?)>")
-        rxRule.setPatternOptions(QRegExUnicode)
+        rxRule = re.compile(r"<(\S+?)>", re.UNICODE)
         hlRule = {
             0: self._hStyles["replace"],
         }
@@ -409,12 +402,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         if hRules:
             for rX, hRule in hRules:
-                rxItt = rX.globalMatch(text, xOff)
-                while rxItt.hasNext():
-                    rxMatch = rxItt.next()
+                for match in re.finditer(rX, text[xOff:]):
                     for xM, hFmt in hRule.items():
-                        xPos = rxMatch.capturedStart(xM)
-                        xEnd = rxMatch.capturedEnd(xM)
+                        xPos = match.start(xM) + xOff
+                        xEnd = match.end(xM) + xOff
                         for x in range(xPos, xEnd):
                             cFmt = self.format(x)
                             if cFmt.fontStyleName() != "markup":
@@ -427,8 +418,8 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             self.setCurrentBlockUserData(data)
 
         if self._spellCheck:
-            for xPos, xLen in data.spellCheck(text, xOff):
-                for x in range(xPos, xPos+xLen):
+            for xPos, xEnd in data.spellCheck(text, xOff):
+                for x in range(xPos, xEnd):
                     cFmt = self.format(x)
                     cFmt.merge(self._spellErr)
                     self.setFormat(x, 1, cFmt)
@@ -492,22 +483,20 @@ class TextBlockData(QTextBlockUserData):
         """
         if "[" in text:
             # Strip shortcodes
-            for rX in [SPELLSC, SPELLSV]:
-                rxItt = rX.globalMatch(text, offset)
-                while rxItt.hasNext():
-                    rxMatch = rxItt.next()
-                    xPos = rxMatch.capturedStart(0)
-                    xLen = rxMatch.capturedLength(0)
-                    xEnd = rxMatch.capturedEnd(0)
-                    text = text[:xPos] + " "*xLen + text[xEnd:]
+            for rX in [RX_FMT_SC, RX_FMT_SV]:
+                for match in re.finditer(rX, text[offset:]):
+                    iS = match.start(0) + offset
+                    iE = match.end(0) + offset
+                    if iS >= 0 and iE >= 0:
+                        text = text[:iS] + " "*(iE - iS) + text[iE:]
 
         self._spellErrors = []
-        rxSpell = SPELLRX.globalMatch(text.replace("_", " "), offset)
-        while rxSpell.hasNext():
-            rxMatch = rxSpell.next()
-            if not SHARED.spelling.checkWord(rxMatch.captured(0)):
-                if not rxMatch.captured(0).isnumeric() and not rxMatch.captured(0).isupper():
-                    self._spellErrors.append(
-                        (rxMatch.capturedStart(0), rxMatch.capturedLength(0))
-                    )
+        checker = SHARED.spelling
+        for match in re.finditer(RX_WORDS, text[offset:].replace("_", " ")):
+            if (
+                (word := match.group(0))
+                and not (word.isnumeric() or word.isupper() or checker.checkWord(word))
+            ):
+                self._spellErrors.append((match.start(0) + offset, match.end(0) + offset))
+
         return self._spellErrors

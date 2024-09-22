@@ -107,8 +107,8 @@ class GuiTextDocument(QTextDocument):
             text = block.text()
             check = pos - block.position()
             if check >= 0:
-                for cPos, cLen in data.spellErrors:
-                    cEnd = cPos + cLen
+                for cPos, cEnd in data.spellErrors:
+                    cLen = cEnd - cPos
                     if cPos <= check <= cEnd:
                         word = text[cPos:cEnd]
                         return word, cPos, cLen, SHARED.spelling.suggestWords(word)

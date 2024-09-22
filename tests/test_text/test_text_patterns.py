@@ -20,26 +20,70 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import pytest
+import re
 
-from PyQt5.QtCore import QRegularExpression
+import pytest
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwUnicode
 from novelwriter.text.patterns import REGEX_PATTERNS
 
 
-def allMatches(regEx: QRegularExpression, text: str) -> list[list[str]]:
+def allMatches(regEx: re.Pattern, text: str) -> list[list[str]]:
     """Get all matches for a regex."""
     result = []
-    itt = regEx.globalMatch(text, 0)
-    while itt.hasNext():
-        match = itt.next()
+    for match in re.finditer(regEx, text):
         result.append([
-            (match.captured(n), match.capturedStart(n), match.capturedEnd(n))
-            for n in range(match.lastCapturedIndex() + 1)
+            (match.group(n), match.start(n), match.end(n))
+            for n in range((match.lastindex or 0) + 1)
         ])
     return result
+
+
+@pytest.mark.core
+def testTextPatterns_Words():
+    """Test the word split regex."""
+    regEx = REGEX_PATTERNS.wordSplit
+
+    # Spaces
+    assert allMatches(regEx, "one two three") == [
+        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
+    ]
+
+    # Hyphens
+    assert allMatches(regEx, "one-two-three") == [
+        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
+    ]
+
+    # Em Dashes
+    assert allMatches(regEx, "one\u2014two\u2014three") == [
+        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
+    ]
+
+    # Em Dashes
+    assert allMatches(regEx, "one\u2014two\u2014three") == [
+        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
+    ]
+
+    # Plus
+    assert allMatches(regEx, "one+two+three") == [
+        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
+    ]
+
+    # Slash
+    assert allMatches(regEx, "one/two/three") == [
+        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
+    ]
+
+    # Brackets
+    assert allMatches(regEx, "one[two]three") == [
+        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
+    ]
+
+    # Colon
+    assert allMatches(regEx, "one:two:three") == [
+        [("one", 0, 3)], [("two", 4, 7)], [("three", 8, 13)]
+    ]
 
 
 @pytest.mark.core
