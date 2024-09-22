@@ -70,9 +70,9 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._spellErr = QTextCharFormat()
 
         self._hStyles: dict[str, QTextCharFormat] = {}
-        self._minRules: list[tuple[QRegularExpression, dict[int, QTextCharFormat]]] = []
-        self._txtRules: list[tuple[QRegularExpression, dict[int, QTextCharFormat]]] = []
-        self._cmnRules: list[tuple[QRegularExpression, dict[int, QTextCharFormat]]] = []
+        self._minRules: list[tuple[re.Pattern, dict[int, QTextCharFormat]]] = []
+        self._txtRules: list[tuple[re.Pattern, dict[int, QTextCharFormat]]] = []
+        self._cmnRules: list[tuple[re.Pattern, dict[int, QTextCharFormat]]] = []
 
         self.initHighlighter()
 
@@ -129,8 +129,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Multiple or Trailing Spaces
         if CONFIG.showMultiSpaces:
-            rxRule = QRegularExpression(r"[ ]{2,}|[ ]*$")
-            rxRule.setPatternOptions(QRegExUnicode)
+            rxRule = re.compile(r"[ ]{2,}|[ ]*$", re.UNICODE)
             hlRule = {
                 0: self._hStyles["mspaces"],
             }
@@ -139,8 +138,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
             self._cmnRules.append((rxRule, hlRule))
 
         # Non-Breaking Spaces
-        rxRule = QRegularExpression(f"[{nwUnicode.U_NBSP}{nwUnicode.U_THNBSP}]+")
-        rxRule.setPatternOptions(QRegExUnicode)
+        rxRule = re.compile(f"[{nwUnicode.U_NBSP}{nwUnicode.U_THNBSP}]+", re.UNICODE)
         hlRule = {
             0: self._hStyles["nobreak"],
         }
@@ -231,8 +229,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._cmnRules.append((rxRule, hlRule))
 
         # Alignment Tags
-        rxRule = QRegularExpression(r"(^>{1,2}|<{1,2}$)")
-        rxRule.setPatternOptions(QRegExUnicode)
+        rxRule = re.compile(r"(^>{1,2}|<{1,2}$)", re.UNICODE)
         hlRule = {
             1: self._hStyles["markup"],
         }
@@ -240,8 +237,7 @@ class GuiDocHighlighter(QSyntaxHighlighter):
         self._txtRules.append((rxRule, hlRule))
 
         # Auto-Replace Tags
-        rxRule = QRegularExpression(r"<(\S+?)>")
-        rxRule.setPatternOptions(QRegExUnicode)
+        rxRule = re.compile(r"<(\S+?)>", re.UNICODE)
         hlRule = {
             0: self._hStyles["replace"],
         }
@@ -403,17 +399,29 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         if hRules:
             for rX, hRule in hRules:
-                rxItt = rX.globalMatch(text, xOff)
-                while rxItt.hasNext():
-                    rxMatch = rxItt.next()
-                    for xM, hFmt in hRule.items():
-                        xPos = rxMatch.capturedStart(xM)
-                        xEnd = rxMatch.capturedEnd(xM)
-                        for x in range(xPos, xEnd):
-                            cFmt = self.format(x)
-                            if cFmt.fontStyleName() != "markup":
-                                cFmt.merge(hFmt)
-                                self.setFormat(x, 1, cFmt)
+                if isinstance(rX, QRegularExpression):
+                    rxItt = rX.globalMatch(text, xOff)
+                    while rxItt.hasNext():
+                        rxMatch = rxItt.next()
+                        for xM, hFmt in hRule.items():
+                            xPos = rxMatch.capturedStart(xM)
+                            xEnd = rxMatch.capturedEnd(xM)
+                            for x in range(xPos, xEnd):
+                                cFmt = self.format(x)
+                                if cFmt.fontStyleName() != "markup":
+                                    cFmt.merge(hFmt)
+                                    self.setFormat(x, 1, cFmt)
+                else:
+                    for match in re.finditer(rX, text[xOff:]):
+                        for xM, hFmt in hRule.items():
+                            # print(f"'{match.group(xM)}'", match.start(xM), match.end(xM))
+                            xPos = match.start(xM) + xOff
+                            xEnd = match.end(xM) + xOff
+                            for x in range(xPos, xEnd):
+                                cFmt = self.format(x)
+                                if cFmt.fontStyleName() != "markup":
+                                    cFmt.merge(hFmt)
+                                    self.setFormat(x, 1, cFmt)
 
         data = self.currentBlockUserData()
         if not isinstance(data, TextBlockData):
@@ -498,10 +506,8 @@ class TextBlockData(QTextBlockUserData):
         for match in re.finditer(nwRegEx.RX_WORDS, text[offset:].replace("_", " ")):
             if (
                 (word := match.group(0))
-                and (iS := match.start(0)) >= 0
-                and (iE := match.end(0)) >= 0
                 and not (word.isnumeric() or word.isupper() or checker.checkWord(word))
             ):
-                self._spellErrors.append((iS + offset, iE + offset))
+                self._spellErrors.append((match.start(0) + offset, match.end(0) + offset))
 
         return self._spellErrors

@@ -68,7 +68,7 @@ class nwRegEx:
     FMT_SC = r"(?i)(?<!\\)(\[[\/\!]?(?:b|i|s|u|m|sup|sub)\])"
     FMT_SV = r"(?i)(?<!\\)(\[(?:footnote):)(.+?)(?<!\\)(\])"
 
-    RX_WORDS = compile(r"\b([^\s\-\+\/–—\[\]:]+)\b", UNICODE)
+    RX_WORDS = compile(r"\b[^\s\-\+\/–—\[\]:]+\b", UNICODE)
     RX_FMT_SC = compile(r"(?i)(?<!\\)(\[[\/\!]?(?:b|i|s|u|m|sup|sub)\])", UNICODE)
     RX_FMT_SV = compile(r"(?i)(?<!\\)(\[(?:footnote):)(.+?)(?<!\\)(\])", UNICODE)
 
