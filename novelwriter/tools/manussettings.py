@@ -67,11 +67,9 @@ class GuiBuildSettings(NToolDialog):
     editing JSON build definitions, wrapped as a BuildSettings object.
     """
 
-    OPT_FILTERS  = 1
-    OPT_HEADINGS = 2
-    OPT_CONTENT  = 3
-    OPT_FORMAT   = 4
-    OPT_OUTPUT   = 5
+    OPT_FILTERS    = 1
+    OPT_HEADINGS   = 2
+    OPT_FORMATTING = 10
 
     newSettingsReady = pyqtSignal(BuildSettings)
 
@@ -86,7 +84,6 @@ class GuiBuildSettings(NToolDialog):
         self.setWindowTitle(self.tr("Manuscript Build Settings"))
         self.setMinimumSize(CONFIG.pxInt(700), CONFIG.pxInt(400))
 
-        mPx = CONFIG.pxInt(150)
         wWin = CONFIG.pxInt(750)
         hWin = CONFIG.pxInt(550)
 
@@ -108,31 +105,24 @@ class GuiBuildSettings(NToolDialog):
 
         # SideBar
         self.sidebar = NPagedSideBar(self)
-        self.sidebar.setMinimumWidth(mPx)
-        self.sidebar.setMaximumWidth(mPx)
         self.sidebar.setLabelColor(SHARED.theme.helpText)
 
+        self.sidebar.addLabel(self.tr("General"))
         self.sidebar.addButton(self.tr("Selection"), self.OPT_FILTERS)
         self.sidebar.addButton(self.tr("Headings"), self.OPT_HEADINGS)
-        self.sidebar.addButton(self.tr("Content"), self.OPT_CONTENT)
-        self.sidebar.addButton(self.tr("Format"), self.OPT_FORMAT)
-        self.sidebar.addButton(self.tr("Output"), self.OPT_OUTPUT)
+        self.sidebar.addLabel(self.tr("Formatting"))
 
         self.sidebar.buttonClicked.connect(self._stackPageSelected)
 
         # Content
         self.optTabSelect = _FilterTab(self, self._build)
         self.optTabHeadings = _HeadingsTab(self, self._build)
-        self.optTabContent = _ContentTab(self, self._build)
-        self.optTabFormat = _FormatTab(self, self._build)
-        self.optTabOutput = _OutputTab(self, self._build)
+        self.optTabFormatting = _FormattingTab(self, self._build, self.sidebar)
 
         self.toolStack = QStackedWidget(self)
         self.toolStack.addWidget(self.optTabSelect)
         self.toolStack.addWidget(self.optTabHeadings)
-        self.toolStack.addWidget(self.optTabFormat)
-        self.toolStack.addWidget(self.optTabContent)
-        self.toolStack.addWidget(self.optTabOutput)
+        self.toolStack.addWidget(self.optTabFormatting)
 
         # Buttons
         self.buttonBox = QDialogButtonBox(QtDialogApply | QtDialogSave | QtDialogClose, self)
@@ -174,9 +164,7 @@ class GuiBuildSettings(NToolDialog):
         self.editBuildName.setText(self._build.name)
         self.optTabSelect.loadContent()
         self.optTabHeadings.loadContent()
-        self.optTabContent.loadContent()
-        self.optTabFormat.loadContent()
-        self.optTabOutput.loadContent()
+        self.optTabFormatting.loadContent()
         return
 
     ##
@@ -214,12 +202,9 @@ class GuiBuildSettings(NToolDialog):
             self.toolStack.setCurrentWidget(self.optTabSelect)
         elif pageId == self.OPT_HEADINGS:
             self.toolStack.setCurrentWidget(self.optTabHeadings)
-        elif pageId == self.OPT_CONTENT:
-            self.toolStack.setCurrentWidget(self.optTabContent)
-        elif pageId == self.OPT_FORMAT:
-            self.toolStack.setCurrentWidget(self.optTabFormat)
-        elif pageId == self.OPT_OUTPUT:
-            self.toolStack.setCurrentWidget(self.optTabOutput)
+        elif pageId >= self.OPT_FORMATTING:
+            self.toolStack.setCurrentWidget(self.optTabFormatting)
+            self.optTabFormatting.scrollToSection(pageId)
         return
 
     @pyqtSlot("QAbstractButton*")
@@ -272,9 +257,7 @@ class GuiBuildSettings(NToolDialog):
         """Assemble the build data and emit the signal."""
         self._build.setName(self.editBuildName.text())
         self.optTabHeadings.saveContent()
-        self.optTabContent.saveContent()
-        self.optTabFormat.saveContent()
-        self.optTabOutput.saveContent()
+        self.optTabFormatting.saveContent()
         self.newSettingsReady.emit(self._build)
         self._build.resetChangedState()
         return
@@ -963,22 +946,48 @@ class _HeadingSyntaxHighlighter(QSyntaxHighlighter):
         return
 
 
-class _ContentTab(NScrollableForm):
+class _FormattingTab(NScrollableForm):
 
-    def __init__(self, parent: QWidget, build: BuildSettings) -> None:
+    def __init__(self, parent: QWidget, build: BuildSettings, sidebar: NPagedSideBar) -> None:
         super().__init__(parent=parent)
 
         self._build = build
+        self._sidebar = sidebar
+
+        self.setHelpTextStyle(SHARED.theme.helpText)
+        self.buildForm()
+
+        return
+
+    def buildForm(self) -> None:
+        """Build the formatting form."""
+        section = 10
 
         iPx = SHARED.theme.baseIconHeight
         iSz = SHARED.theme.baseIconSize
+        spW = 6*SHARED.theme.textNWidth
+        dbW = 8*SHARED.theme.textNWidth
 
         # Text Content
+        # ============
+
+        title = self._build.getLabel("text.grpContent")
+        section += 1
+        self._sidebar.addButton(title, section)
+        self.addGroupLabel(title, section)
+
+        # Text Inclusion
         self.incBodyText = NSwitch(self, height=iPx)
         self.incSynopsis = NSwitch(self, height=iPx)
         self.incComments = NSwitch(self, height=iPx)
         self.incKeywords = NSwitch(self, height=iPx)
 
+        self.addRow(self._build.getLabel("text.includeBodyText"), self.incBodyText)
+        self.addRow(self._build.getLabel("text.includeSynopsis"), self.incSynopsis)
+        self.addRow(self._build.getLabel("text.includeComments"), self.incComments)
+        self.addRow(self._build.getLabel("text.includeKeywords"), self.incKeywords)
+
+        # Ignored Keywords
         self.ignoredKeywords = QLineEdit(self)
 
         self.mnKeywords = QMenu(self)
@@ -990,80 +999,23 @@ class _ContentTab(NScrollableForm):
 
         self.ignoredKeywordsButton = NIconToolButton(self, iSz, "add")
         self.ignoredKeywordsButton.setMenu(self.mnKeywords)
+        self.addRow(
+            self._build.getLabel("text.ignoredKeywords"), self.ignoredKeywords,
+            button=self.ignoredKeywordsButton, stretch=(1, 1)
+        )
 
-        self.addGroupLabel(self._build.getLabel("text.grpContent"))
-        self.addRow(self._build.getLabel("text.includeBodyText"), self.incBodyText)
-        self.addRow(self._build.getLabel("text.includeSynopsis"), self.incSynopsis)
-        self.addRow(self._build.getLabel("text.includeComments"), self.incComments)
-        self.addRow(self._build.getLabel("text.includeKeywords"), self.incKeywords)
-        self.addRow(self._build.getLabel("text.ignoredKeywords"), self.ignoredKeywords,
-                    button=self.ignoredKeywordsButton, stretch=(1, 1))
-
-        # Insert Content
+        # Note Headings
         self.addNoteHead = NSwitch(self, height=iPx)
 
-        self.addGroupLabel(self._build.getLabel("text.grpInsert"))
         self.addRow(self._build.getLabel("text.addNoteHeadings"), self.addNoteHead)
-
-        # Finalise
-        self.finalise()
-
-        return
-
-    def loadContent(self) -> None:
-        """Populate the widgets."""
-        self.incBodyText.setChecked(self._build.getBool("text.includeBodyText"))
-        self.incSynopsis.setChecked(self._build.getBool("text.includeSynopsis"))
-        self.incComments.setChecked(self._build.getBool("text.includeComments"))
-        self.incKeywords.setChecked(self._build.getBool("text.includeKeywords"))
-        self.ignoredKeywords.setText(self._build.getStr("text.ignoredKeywords"))
-        self.addNoteHead.setChecked(self._build.getBool("text.addNoteHeadings"))
-        self._updateIgnoredKeywords()
-        return
-
-    def saveContent(self) -> None:
-        """Save choices back into build object."""
-        self._updateIgnoredKeywords()
-        self._build.setValue("text.includeBodyText", self.incBodyText.isChecked())
-        self._build.setValue("text.includeSynopsis", self.incSynopsis.isChecked())
-        self._build.setValue("text.includeComments", self.incComments.isChecked())
-        self._build.setValue("text.includeKeywords", self.incKeywords.isChecked())
-        self._build.setValue("text.ignoredKeywords", self.ignoredKeywords.text())
-        self._build.setValue("text.addNoteHeadings", self.addNoteHead.isChecked())
-        return
-
-    ##
-    #  Internal Functions
-    ##
-
-    def _updateIgnoredKeywords(self, keyword: str | None = None) -> None:
-        """Update the ignored keywords list."""
-        current = [x.lower().strip() for x in self.ignoredKeywords.text().split(",")]
-        if keyword:
-            current.append(keyword)
-        verified = set(x for x in current if x in nwKeyWords.VALID_KEYS)
-        self.ignoredKeywords.setText(", ".join(verified))
-        return
-
-
-class _FormatTab(NScrollableForm):
-
-    def __init__(self, parent: QWidget, build: BuildSettings) -> None:
-        super().__init__(parent=parent)
-
-        self._build = build
-        self._unitScale = 1.0
-        self._textFont = QFont(CONFIG.textFont)
-
-        iPx = SHARED.theme.baseIconHeight
-        iSz = SHARED.theme.baseIconSize
-        spW = 6*SHARED.theme.textNWidth
-        dbW = 8*SHARED.theme.textNWidth
 
         # Text Format
         # ===========
 
-        self.addGroupLabel(self._build.getLabel("format.grpFormat"))
+        title = self._build.getLabel("format.grpFormat")
+        section += 1
+        self._sidebar.addButton(title, section)
+        self.addGroupLabel(title, section)
 
         # Text Font
         self.textFont = QLineEdit(self)
@@ -1085,10 +1037,6 @@ class _FormatTab(NScrollableForm):
         self.addRow(self._build.getLabel("format.lineHeight"), self.lineHeight, unit="em")
 
         # Text Options
-        # ============
-
-        self.addGroupLabel(self._build.getLabel("format.grpOptions"))
-
         self.justifyText = NSwitch(self, height=iPx)
         self.stripUnicode = NSwitch(self, height=iPx)
         self.replaceTabs = NSwitch(self, height=iPx)
@@ -1104,7 +1052,10 @@ class _FormatTab(NScrollableForm):
         # First Line Indent
         # =================
 
-        self.addGroupLabel(self._build.getLabel("format.grpParIndent"))
+        title = self._build.getLabel("format.grpParIndent")
+        section += 1
+        self._sidebar.addButton(title, section)
+        self.addGroupLabel(title, section)
 
         self.firstIndent = NSwitch(self, height=iPx)
         self.indentFirstPar = NSwitch(self, height=iPx)
@@ -1123,7 +1074,10 @@ class _FormatTab(NScrollableForm):
         # Page Layout
         # ===========
 
-        self.addGroupLabel(self._build.getLabel("format.grpPage"))
+        title = self._build.getLabel("format.grpPage")
+        section += 1
+        self._sidebar.addButton(title, section)
+        self.addGroupLabel(title, section)
 
         self.pageUnit = NComboBox(self)
         for key, name in nwLabels.UNIT_NAME.items():
@@ -1164,6 +1118,47 @@ class _FormatTab(NScrollableForm):
         self.addRow(self._build.getLabel("format.leftMargin"), self.leftMargin)
         self.addRow(self._build.getLabel("format.rightMargin"), self.rightMargin)
 
+        # Open Document
+        # =============
+
+        title = self._build.getLabel("odt")
+        section += 1
+        self._sidebar.addButton(title, section)
+        self.addGroupLabel(title, section)
+
+        self.odtAddColours = NSwitch(self, height=iPx)
+        self.addRow(self._build.getLabel("odt.addColours"), self.odtAddColours)
+
+        self.odtPageHeader = QLineEdit(self)
+        self.odtPageHeader.setMinimumWidth(CONFIG.pxInt(200))
+        self.btnPageHeader = NIconToolButton(self, iSz, "revert")
+        self.btnPageHeader.clicked.connect(self._resetPageHeader)
+        self.addRow(
+            self._build.getLabel("odt.pageHeader"), self.odtPageHeader,
+            button=self.btnPageHeader, stretch=(1, 1)
+        )
+
+        self.odtPageCountOffset = NSpinBox(self)
+        self.odtPageCountOffset.setMinimum(0)
+        self.odtPageCountOffset.setMaximum(999)
+        self.odtPageCountOffset.setSingleStep(1)
+        self.odtPageCountOffset.setMinimumWidth(spW)
+        self.addRow(self._build.getLabel("odt.pageCountOffset"), self.odtPageCountOffset)
+
+        # HTML Document
+        # =============
+
+        title = self._build.getLabel("html")
+        section += 1
+        self._sidebar.addButton(title, section)
+        self.addGroupLabel(title, section)
+
+        self.htmlAddStyles = NSwitch(self, height=iPx)
+        self.addRow(self._build.getLabel("html.addStyles"), self.htmlAddStyles)
+
+        self.htmlPreserveTabs = NSwitch(self, height=iPx)
+        self.addRow(self._build.getLabel("html.preserveTabs"), self.htmlPreserveTabs)
+
         # Finalise
         self.finalise()
 
@@ -1171,6 +1166,20 @@ class _FormatTab(NScrollableForm):
 
     def loadContent(self) -> None:
         """Populate the widgets."""
+        # Text Content
+        # ============
+
+        self.incBodyText.setChecked(self._build.getBool("text.includeBodyText"))
+        self.incSynopsis.setChecked(self._build.getBool("text.includeSynopsis"))
+        self.incComments.setChecked(self._build.getBool("text.includeComments"))
+        self.incKeywords.setChecked(self._build.getBool("text.includeKeywords"))
+        self.ignoredKeywords.setText(self._build.getStr("text.ignoredKeywords"))
+        self.addNoteHead.setChecked(self._build.getBool("text.addNoteHeadings"))
+        self._updateIgnoredKeywords()
+
+        # Text Format
+        # ===========
+
         self._textFont = QFont()
         self._textFont.fromString(self._build.getStr("format.textFont"))
 
@@ -1184,9 +1193,15 @@ class _FormatTab(NScrollableForm):
         self.keepBreaks.setChecked(self._build.getBool("format.keepBreaks"))
         self.showDialogue.setChecked(self._build.getBool("format.showDialogue"))
 
+        # First Line Indent
+        # =================
+
         self.firstIndent.setChecked(self._build.getBool("format.firstLineIndent"))
         self.indentWidth.setValue(self._build.getFloat("format.firstIndentWidth"))
         self.indentFirstPar.setChecked(self._build.getBool("format.indentFirstPar"))
+
+        # Page Layout
+        # ===========
 
         pageUnit = self._build.getStr("format.pageUnit")
         index = self.pageUnit.findData(pageUnit)
@@ -1211,10 +1226,34 @@ class _FormatTab(NScrollableForm):
         self.pageUnit.currentIndexChanged.connect(self._changeUnit)
         self.pageSize.currentIndexChanged.connect(self._changePageSize)
 
+        # ODT Document
+        # ============
+
+        self.odtAddColours.setChecked(self._build.getBool("odt.addColours"))
+        self.odtPageHeader.setText(self._build.getStr("odt.pageHeader"))
+        self.odtPageCountOffset.setValue(self._build.getInt("odt.pageCountOffset"))
+        self.odtPageHeader.setCursorPosition(0)
+
+        # HTML Document
+        # =============
+
+        self.htmlAddStyles.setChecked(self._build.getBool("html.addStyles"))
+        self.htmlPreserveTabs.setChecked(self._build.getBool("html.preserveTabs"))
+
         return
 
     def saveContent(self) -> None:
         """Save choices back into build object."""
+        # Text Content
+        self._updateIgnoredKeywords()
+        self._build.setValue("text.includeBodyText", self.incBodyText.isChecked())
+        self._build.setValue("text.includeSynopsis", self.incSynopsis.isChecked())
+        self._build.setValue("text.includeComments", self.incComments.isChecked())
+        self._build.setValue("text.includeKeywords", self.incKeywords.isChecked())
+        self._build.setValue("text.ignoredKeywords", self.ignoredKeywords.text())
+        self._build.setValue("text.addNoteHeadings", self.addNoteHead.isChecked())
+
+        # Text Format
         self._build.setValue("format.textFont", self._textFont.toString())
         self._build.setValue("format.lineHeight", self.lineHeight.value())
 
@@ -1224,10 +1263,12 @@ class _FormatTab(NScrollableForm):
         self._build.setValue("format.keepBreaks", self.keepBreaks.isChecked())
         self._build.setValue("format.showDialogue", self.showDialogue.isChecked())
 
+        # First Line Indent
         self._build.setValue("format.firstLineIndent", self.firstIndent.isChecked())
         self._build.setValue("format.firstIndentWidth", self.indentWidth.value())
         self._build.setValue("format.indentFirstPar", self.indentFirstPar.isChecked())
 
+        # Page Layout
         self._build.setValue("format.pageUnit", str(self.pageUnit.currentData()))
         self._build.setValue("format.pageSize", str(self.pageSize.currentData()))
         self._build.setValue("format.pageWidth", self.pageWidth.value())
@@ -1236,6 +1277,16 @@ class _FormatTab(NScrollableForm):
         self._build.setValue("format.bottomMargin", self.bottomMargin.value())
         self._build.setValue("format.leftMargin", self.leftMargin.value())
         self._build.setValue("format.rightMargin", self.rightMargin.value())
+
+        # ODT Document
+        self._build.setValue("odt.addColours", self.odtAddColours.isChecked())
+        self._build.setValue("odt.pageHeader", self.odtPageHeader.text())
+        self._build.setValue("odt.pageCountOffset", self.odtPageCountOffset.value())
+
+        # HTML Document
+        self._build.setValue("html.addStyles", self.htmlAddStyles.isChecked())
+        self._build.setValue("html.preserveTabs", self.htmlPreserveTabs.isChecked())
+
         return
 
     ##
@@ -1334,79 +1385,21 @@ class _FormatTab(NScrollableForm):
             self.pageSize.setCurrentIndex(index)
         return
 
-
-class _OutputTab(NScrollableForm):
-
-    def __init__(self, parent: QWidget, build: BuildSettings) -> None:
-        super().__init__(parent=parent)
-
-        self._build = build
-
-        iPx = SHARED.theme.baseIconHeight
-        iSz = SHARED.theme.baseIconSize
-        spW = 6*SHARED.theme.textNWidth
-
-        # Open Document
-        self.addGroupLabel(self._build.getLabel("odt"))
-
-        self.odtAddColours = NSwitch(self, height=iPx)
-        self.addRow(self._build.getLabel("odt.addColours"), self.odtAddColours)
-
-        self.odtPageHeader = QLineEdit(self)
-        self.odtPageHeader.setMinimumWidth(CONFIG.pxInt(200))
-        self.btnPageHeader = NIconToolButton(self, iSz, "revert")
-        self.btnPageHeader.clicked.connect(self._resetPageHeader)
-        self.addRow(
-            self._build.getLabel("odt.pageHeader"), self.odtPageHeader,
-            button=self.btnPageHeader, stretch=(1, 1)
-        )
-
-        self.odtPageCountOffset = NSpinBox(self)
-        self.odtPageCountOffset.setMinimum(0)
-        self.odtPageCountOffset.setMaximum(999)
-        self.odtPageCountOffset.setSingleStep(1)
-        self.odtPageCountOffset.setMinimumWidth(spW)
-        self.addRow(self._build.getLabel("odt.pageCountOffset"), self.odtPageCountOffset)
-
-        # HTML Document
-        self.addGroupLabel(self._build.getLabel("html"))
-
-        self.htmlAddStyles = NSwitch(self, height=iPx)
-        self.addRow(self._build.getLabel("html.addStyles"), self.htmlAddStyles)
-
-        self.htmlPreserveTabs = NSwitch(self, height=iPx)
-        self.addRow(self._build.getLabel("html.preserveTabs"), self.htmlPreserveTabs)
-
-        # Finalise
-        self.finalise()
-
-        return
-
-    def loadContent(self) -> None:
-        """Populate the widgets."""
-        self.odtAddColours.setChecked(self._build.getBool("odt.addColours"))
-        self.odtPageHeader.setText(self._build.getStr("odt.pageHeader"))
-        self.odtPageCountOffset.setValue(self._build.getInt("odt.pageCountOffset"))
-        self.htmlAddStyles.setChecked(self._build.getBool("html.addStyles"))
-        self.htmlPreserveTabs.setChecked(self._build.getBool("html.preserveTabs"))
-        self.odtPageHeader.setCursorPosition(0)
-        return
-
-    def saveContent(self) -> None:
-        """Save choices back into build object."""
-        self._build.setValue("odt.addColours", self.odtAddColours.isChecked())
-        self._build.setValue("odt.pageHeader", self.odtPageHeader.text())
-        self._build.setValue("odt.pageCountOffset", self.odtPageCountOffset.value())
-        self._build.setValue("html.addStyles", self.htmlAddStyles.isChecked())
-        self._build.setValue("html.preserveTabs", self.htmlPreserveTabs.isChecked())
-        return
-
-    ##
-    #  Private Slots
-    ##
-
     def _resetPageHeader(self) -> None:
         """Reset the ODT header format to default."""
         self.odtPageHeader.setText(nwHeadFmt.ODT_AUTO)
         self.odtPageHeader.setCursorPosition(0)
+        return
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _updateIgnoredKeywords(self, keyword: str | None = None) -> None:
+        """Update the ignored keywords list."""
+        current = [x.lower().strip() for x in self.ignoredKeywords.text().split(",")]
+        if keyword:
+            current.append(keyword)
+        verified = set(x for x in current if x in nwKeyWords.VALID_KEYS)
+        self.ignoredKeywords.setText(", ".join(verified))
         return

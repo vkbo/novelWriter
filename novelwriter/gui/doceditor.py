@@ -1095,6 +1095,12 @@ class GuiDocEditor(QPlainTextEdit):
             self._completer.hide()
         return
 
+    @pyqtSlot()
+    def _openContextFromCursor(self) -> None:
+        """Open the spell check context menu at the cursor."""
+        self._openContextMenu(self.cursorRect().center())
+        return
+
     @pyqtSlot("QPoint")
     def _openContextMenu(self, pos: QPoint) -> None:
         """Open the editor context menu at a given coordinate."""
@@ -1936,11 +1942,6 @@ class GuiDocEditor(QPlainTextEdit):
         if self._docHandle:
             text = block.text().lstrip("#").lstrip("!").strip()
             self.requestProjectItemRenamed.emit(self._docHandle, text)
-        return
-
-    def _openContextFromCursor(self) -> None:
-        """Open the spell check context menu at the cursor."""
-        self._openContextMenu(self.cursorRect().center())
         return
 
     def _docAutoReplace(self, text: str) -> None:

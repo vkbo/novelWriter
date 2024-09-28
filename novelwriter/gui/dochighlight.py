@@ -491,7 +491,7 @@ class TextBlockData(QTextBlockUserData):
 
         self._spellErrors = []
         checker = SHARED.spelling
-        for match in RX_WORDS.finditer(text.replace("_", " ")):
+        for match in RX_WORDS.finditer(text.replace("_", " "), offset):
             if (
                 (word := match.group(0))
                 and not (word.isnumeric() or word.isupper() or checker.checkWord(word))

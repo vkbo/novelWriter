@@ -121,13 +121,11 @@ SETTINGS_LABELS = {
     "text.includeKeywords":    QT_TRANSLATE_NOOP("Builds", "Include Keywords"),
     "text.includeBodyText":    QT_TRANSLATE_NOOP("Builds", "Include Body Text"),
     "text.ignoredKeywords":    QT_TRANSLATE_NOOP("Builds", "Ignore These Keywords"),
-    "text.grpInsert":          QT_TRANSLATE_NOOP("Builds", "Insert Content"),
     "text.addNoteHeadings":    QT_TRANSLATE_NOOP("Builds", "Add Titles for Notes"),
 
     "format.grpFormat":        QT_TRANSLATE_NOOP("Builds", "Text Format"),
     "format.textFont":         QT_TRANSLATE_NOOP("Builds", "Text Font"),
     "format.lineHeight":       QT_TRANSLATE_NOOP("Builds", "Line Height"),
-    "format.grpOptions":       QT_TRANSLATE_NOOP("Builds", "Text Options"),
     "format.justifyText":      QT_TRANSLATE_NOOP("Builds", "Justify Text Margins"),
     "format.stripUnicode":     QT_TRANSLATE_NOOP("Builds", "Replace Unicode Characters"),
     "format.replaceTabs":      QT_TRANSLATE_NOOP("Builds", "Replace Tabs with Spaces"),
@@ -149,12 +147,12 @@ SETTINGS_LABELS = {
     "format.leftMargin":       QT_TRANSLATE_NOOP("Builds", "Left Margin"),
     "format.rightMargin":      QT_TRANSLATE_NOOP("Builds", "Right Margin"),
 
-    "odt":                     QT_TRANSLATE_NOOP("Builds", "Open Document (.odt)"),
+    "odt":                     QT_TRANSLATE_NOOP("Builds", "ODT Documents"),
     "odt.addColours":          QT_TRANSLATE_NOOP("Builds", "Add Highlight Colours"),
     "odt.pageHeader":          QT_TRANSLATE_NOOP("Builds", "Page Header"),
     "odt.pageCountOffset":     QT_TRANSLATE_NOOP("Builds", "Page Counter Offset"),
 
-    "html":                    QT_TRANSLATE_NOOP("Builds", "HTML (.html)"),
+    "html":                    QT_TRANSLATE_NOOP("Builds", "HTML Document"),
     "html.addStyles":          QT_TRANSLATE_NOOP("Builds", "Add CSS Styles"),
     "html.preserveTabs":       QT_TRANSLATE_NOOP("Builds", "Preserve Tab Characters"),
 }
