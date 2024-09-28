@@ -483,20 +483,19 @@ class TextBlockData(QTextBlockUserData):
         """
         if "[" in text:
             # Strip shortcodes
-            for rX in [RX_FMT_SC, RX_FMT_SV]:
-                for match in re.finditer(rX, text[offset:]):
-                    iS = match.start(0) + offset
-                    iE = match.end(0) + offset
-                    if iS >= 0 and iE >= 0:
-                        text = text[:iS] + " "*(iE - iS) + text[iE:]
+            for regEx in [RX_FMT_SC, RX_FMT_SV]:
+                for match in regEx.finditer(text, offset):
+                    if (s := match.start(0)) >= 0 and (e := match.end(0)) >= 0:
+                        pad = " "*(e - s)
+                        text = f"{text[:s]}{pad}{text[e:]}"
 
         self._spellErrors = []
         checker = SHARED.spelling
-        for match in re.finditer(RX_WORDS, text[offset:].replace("_", " ")):
+        for match in RX_WORDS.finditer(text.replace("_", " ")):
             if (
                 (word := match.group(0))
                 and not (word.isnumeric() or word.isupper() or checker.checkWord(word))
             ):
-                self._spellErrors.append((match.start(0) + offset, match.end(0) + offset))
+                self._spellErrors.append((match.start(0), match.end(0)))
 
         return self._spellErrors

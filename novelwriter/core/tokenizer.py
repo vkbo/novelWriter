@@ -1109,14 +1109,14 @@ class Tokenizer(ABC):
 
         # Match Markdown
         for regEx, fmts in self._rxMarkdown:
-            for match in re.finditer(regEx, text):
+            for match in regEx.finditer(text):
                 temp.extend(
                     (match.start(n), match.end(n), fmt, "")
                     for n, fmt in enumerate(fmts) if fmt > 0
                 )
 
         # Match Shortcodes
-        for match in re.finditer(REGEX_PATTERNS.shortcodePlain, text):
+        for match in REGEX_PATTERNS.shortcodePlain.finditer(text):
             temp.append((
                 match.start(1), match.end(1),
                 self._shortCodeFmt.get(match.group(1).lower(), 0),
@@ -1125,7 +1125,7 @@ class Tokenizer(ABC):
 
         # Match Shortcode w/Values
         tHandle = self._handle or ""
-        for match in re.finditer(REGEX_PATTERNS.shortcodeValue, text):
+        for match in REGEX_PATTERNS.shortcodeValue.finditer(text):
             kind = self._shortCodeVals.get(match.group(1).lower(), 0)
             temp.append((
                 match.start(0), match.end(0),
@@ -1136,7 +1136,7 @@ class Tokenizer(ABC):
         # Match Dialogue
         if self._rxDialogue and hDialog:
             for regEx, fmtB, fmtE in self._rxDialogue:
-                for match in re.finditer(regEx, text):
+                for match in regEx.finditer(text):
                     temp.append((match.start(0), 0, fmtB, ""))
                     temp.append((match.end(0), 0, fmtE, ""))
 

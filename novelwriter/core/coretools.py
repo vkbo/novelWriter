@@ -343,7 +343,7 @@ class DocSearch:
         count = 0
         capped = False
         results = []
-        for match in re.finditer(self._regEx, text):
+        for match in self._regEx.finditer(text):
             pos = match.start(0)
             num = len(match.group(0))
             lim = text[:pos].rfind("\n") + 1
