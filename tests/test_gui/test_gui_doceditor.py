@@ -453,9 +453,13 @@ def testGuiEditor_SpellChecking(qtbot, monkeypatch, nwGUI, projPath, ipsumText, 
         ctxMenu = getMenuForPos(docEditor, 16)
         assert ctxMenu is not None
         actions = [x.text() for x in ctxMenu.actions() if x.text()]
+        assert "Ignore Word" in actions
         assert "Add Word to Dictionary" in actions
+
         assert "Lorax" not in SHARED.spelling._userDict
-        ctxMenu.actions()[7].trigger()
+        ctxMenu.actions()[7].trigger()  # Ignore
+        assert "Lorax" not in SHARED.spelling._userDict
+        ctxMenu.actions()[8].trigger()  # Add
         assert "Lorax" in SHARED.spelling._userDict
         ctxMenu.setObjectName("")
         ctxMenu.deleteLater()

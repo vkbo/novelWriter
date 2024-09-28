@@ -158,15 +158,21 @@ def testCoreSpell_Enchant(monkeypatch, mockGUI, fncPath):
         assert isinstance(spChk._enchant, FakeEnchant)
         assert spChk.checkWord("word") is True
         assert spChk.suggestWords("word") == []
-        assert spChk.addWord("word") is True
+        spChk.addWord("word")
+        assert "word" in spChk._userDict
 
     # Set the dict to None, and check enchant error handling
     spChk = NWSpellEnchant(project)
     spChk._enchant = None  # type: ignore
     assert spChk.checkWord("word") is True
     assert spChk.suggestWords("word") == []
-    assert spChk.addWord("word") is False
-    assert spChk.addWord("\n\t ") is False
+
+    spChk.addWord("word")
+    assert "word" not in spChk._userDict
+
+    spChk.addWord("\n\t ")
+    assert "\n\t " not in spChk._userDict
+
     assert spChk.describeDict() == ("", "")
 
     # Load the proper enchant package (twice)

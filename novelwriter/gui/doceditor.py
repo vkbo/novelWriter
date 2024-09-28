@@ -1164,37 +1164,15 @@ class GuiDocEditor(QPlainTextEdit):
                     ctxMenu.addAction(f"{nwUnicode.U_ENDASH} {trNone}")
 
                 ctxMenu.addSeparator()
+                action = ctxMenu.addAction(self.tr("Ignore Word"))
+                action.triggered.connect(lambda: self._addWord(word, block, False))
                 action = ctxMenu.addAction(self.tr("Add Word to Dictionary"))
-                action.triggered.connect(lambda: self._addWord(word, block))
+                action.triggered.connect(lambda: self._addWord(word, block, True))
 
         # Execute the context menu
         ctxMenu.exec(self.viewport().mapToGlobal(pos))
         ctxMenu.deleteLater()
 
-        return
-
-    @pyqtSlot("QTextCursor", str)
-    def _correctWord(self, cursor: QTextCursor, word: str) -> None:
-        """Slot for the spell check context menu triggering the
-        replacement of a word with the word from the dictionary.
-        """
-        pos = cursor.selectionStart()
-        cursor.beginEditBlock()
-        cursor.removeSelectedText()
-        cursor.insertText(word)
-        cursor.endEditBlock()
-        cursor.setPosition(pos)
-        self.setTextCursor(cursor)
-        return
-
-    @pyqtSlot(str, "QTextBlock")
-    def _addWord(self, word: str, block: QTextBlock) -> None:
-        """Slot for the spell check context menu triggered when the user
-        wants to add a word to the project dictionary.
-        """
-        logger.debug("Added '%s' to project dictionary", word)
-        SHARED.spelling.addWord(word)
-        self._qDocument.syntaxHighlighter.rehighlightBlock(block)
         return
 
     @pyqtSlot()
@@ -1874,6 +1852,28 @@ class GuiDocEditor(QPlainTextEdit):
     ##
     #  Internal Functions
     ##
+
+    def _correctWord(self, cursor: QTextCursor, word: str) -> None:
+        """Slot for the spell check context menu triggering the
+        replacement of a word with the word from the dictionary.
+        """
+        pos = cursor.selectionStart()
+        cursor.beginEditBlock()
+        cursor.removeSelectedText()
+        cursor.insertText(word)
+        cursor.endEditBlock()
+        cursor.setPosition(pos)
+        self.setTextCursor(cursor)
+        return
+
+    def _addWord(self, word: str, block: QTextBlock, save: bool) -> None:
+        """Slot for the spell check context menu triggered when the user
+        wants to add a word to the project dictionary.
+        """
+        logger.debug("Added '%s' to project dictionary, %s", word, "saved" if save else "unsaved")
+        SHARED.spelling.addWord(word, save=save)
+        self._qDocument.syntaxHighlighter.rehighlightBlock(block)
+        return
 
     def _processTag(self, cursor: QTextCursor | None = None,
                     follow: bool = True, create: bool = False) -> nwTrinary:
