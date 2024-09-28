@@ -31,8 +31,7 @@ from novelwriter.common import describeFont
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.tools.manussettings import (
-    GuiBuildSettings, _ContentTab, _FilterTab, _FormatTab, _HeadingsTab,
-    _OutputTab
+    GuiBuildSettings, _FilterTab, _FormattingTab, _HeadingsTab
 )
 from novelwriter.types import QtDialogApply, QtDialogClose, QtDialogSave
 
@@ -52,14 +51,8 @@ def testToolBuildSettings_Init(qtbot, nwGUI, projPath, mockRnd):
     bSettings.loadContent()
 
     # Flip through pages
-    bSettings.sidebar._group.button(bSettings.OPT_OUTPUT).click()
-    assert isinstance(bSettings.toolStack.currentWidget(), _OutputTab)
-
-    bSettings.sidebar._group.button(bSettings.OPT_FORMAT).click()
-    assert isinstance(bSettings.toolStack.currentWidget(), _FormatTab)
-
-    bSettings.sidebar._group.button(bSettings.OPT_CONTENT).click()
-    assert isinstance(bSettings.toolStack.currentWidget(), _ContentTab)
+    bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 1).click()
+    assert isinstance(bSettings.toolStack.currentWidget(), _FormattingTab)
 
     bSettings.sidebar._group.button(bSettings.OPT_HEADINGS).click()
     assert isinstance(bSettings.toolStack.currentWidget(), _HeadingsTab)
@@ -484,8 +477,8 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
 
 
 @pytest.mark.gui
-def testToolBuildSettings_Content(qtbot, nwGUI):
-    """Test the Content Tab of the GuiBuildSettings dialog."""
+def testToolBuildSettings_FormatTextContent(qtbot, nwGUI):
+    """Test the Text Content settings."""
     build = BuildSettings()
 
     build.setValue("text.includeBodyText", False)
@@ -501,34 +494,34 @@ def testToolBuildSettings_Content(qtbot, nwGUI):
     bSettings.show()
     bSettings.loadContent()
 
-    contTab = bSettings.optTabContent
-    bSettings.sidebar._group.button(bSettings.OPT_CONTENT).click()
-    assert bSettings.toolStack.currentWidget() is contTab
+    fmtTab = bSettings.optTabFormatting
+    bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 1).click()
+    assert bSettings.toolStack.currentWidget() is fmtTab
 
     # Check initial values
-    assert contTab.incBodyText.isChecked() is False
-    assert contTab.incSynopsis.isChecked() is False
-    assert contTab.incComments.isChecked() is False
-    assert contTab.incKeywords.isChecked() is False
-    assert contTab.ignoredKeywords.text() == ""
+    assert fmtTab.incBodyText.isChecked() is False
+    assert fmtTab.incSynopsis.isChecked() is False
+    assert fmtTab.incComments.isChecked() is False
+    assert fmtTab.incKeywords.isChecked() is False
+    assert fmtTab.ignoredKeywords.text() == ""
 
-    assert contTab.addNoteHead.isChecked() is False
+    assert fmtTab.addNoteHead.isChecked() is False
 
     # Toggle switches
-    contTab.incBodyText.setChecked(True)
-    contTab.incSynopsis.setChecked(True)
-    contTab.incComments.setChecked(True)
-    contTab.incKeywords.setChecked(True)
+    fmtTab.incBodyText.setChecked(True)
+    fmtTab.incSynopsis.setChecked(True)
+    fmtTab.incComments.setChecked(True)
+    fmtTab.incKeywords.setChecked(True)
 
-    contTab.addNoteHead.setChecked(True)
+    fmtTab.addNoteHead.setChecked(True)
 
     # Test cleanup of ignored keywords
-    contTab.ignoredKeywords.setText("@stuff, @pizza, @object")  # First two are invalid
-    contTab._updateIgnoredKeywords("@custom")  # Adding a new should trigger cleanup
-    assert contTab.ignoredKeywords.text() in ("@custom, @object", "@object, @custom")
+    fmtTab.ignoredKeywords.setText("@stuff, @pizza, @object")  # First two are invalid
+    fmtTab._updateIgnoredKeywords("@custom")  # Adding a new should trigger cleanup
+    assert fmtTab.ignoredKeywords.text() in ("@custom, @object", "@object, @custom")
 
     # Save values
-    contTab.saveContent()
+    fmtTab.saveContent()
 
     assert build.getBool("text.includeBodyText") is True
     assert build.getBool("text.includeSynopsis") is True
@@ -544,8 +537,8 @@ def testToolBuildSettings_Content(qtbot, nwGUI):
 
 
 @pytest.mark.gui
-def testToolBuildSettings_Format(monkeypatch, qtbot, nwGUI):
-    """Test the Format Tab of the GuiBuildSettings dialog."""
+def testToolBuildSettings_FormatTextFormat(monkeypatch, qtbot, nwGUI):
+    """Test the Text Format settings."""
     build = BuildSettings()
 
     build.setValue("format.buildLang", "en_US")
@@ -558,26 +551,13 @@ def testToolBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     build.setValue("format.keepBreaks", True)
     build.setValue("format.showDialogue", False)
 
-    build.setValue("format.firstLineIndent", False)
-    build.setValue("format.firstIndentWidth", 1.4)
-    build.setValue("format.indentFirstPar", False)
-
-    build.setValue("format.pageUnit", "mm")
-    build.setValue("format.pageSize", "Custom")
-    build.setValue("format.pageWidth", 180.0)
-    build.setValue("format.pageHeight", 250.0)
-    build.setValue("format.topMargin", 25.0)
-    build.setValue("format.bottomMargin", 25.0)
-    build.setValue("format.leftMargin", 15.0)
-    build.setValue("format.rightMargin", 15.0)
-
     # Create the dialog and populate it
     bSettings = GuiBuildSettings(nwGUI, build)
     bSettings.show()
     bSettings.loadContent()
 
-    fmtTab = bSettings.optTabFormat
-    bSettings.sidebar._group.button(bSettings.OPT_FORMAT).click()
+    fmtTab = bSettings.optTabFormatting
+    bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 2).click()
     assert bSettings.toolStack.currentWidget() is fmtTab
 
     # Check initial values
@@ -588,19 +568,6 @@ def testToolBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     assert fmtTab.replaceTabs.isChecked() is False
     assert fmtTab.keepBreaks.isChecked() is True
     assert fmtTab.showDialogue.isChecked() is False
-
-    assert fmtTab.firstIndent.isChecked() is False
-    assert fmtTab.indentWidth.value() == 1.4
-    assert fmtTab.indentFirstPar.isChecked() is False
-
-    assert fmtTab.pageUnit.currentData() == "mm"
-    assert fmtTab.pageSize.currentData() == "Custom"
-    assert fmtTab.pageWidth.value() == 180.0
-    assert fmtTab.pageHeight.value() == 250.0
-    assert fmtTab.topMargin.value() == 25.0
-    assert fmtTab.bottomMargin.value() == 25.0
-    assert fmtTab.leftMargin.value() == 15.0
-    assert fmtTab.rightMargin.value() == 15.0
 
     # Change values
     testFont = QFont("Arial", 11)
@@ -614,13 +581,6 @@ def testToolBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     fmtTab.keepBreaks.setChecked(False)
     fmtTab.showDialogue.setChecked(True)
 
-    fmtTab.firstIndent.setChecked(True)
-    fmtTab.indentWidth.setValue(2.0)
-    fmtTab.indentFirstPar.setChecked(True)
-
-    fmtTab.pageUnit.setCurrentIndex(fmtTab.pageUnit.findData("cm"))
-    fmtTab.pageSize.setCurrentIndex(fmtTab.pageSize.findData("A4"))
-
     # Save values
     fmtTab.saveContent()
 
@@ -632,19 +592,6 @@ def testToolBuildSettings_Format(monkeypatch, qtbot, nwGUI):
     assert build.getBool("format.replaceTabs") is True
     assert build.getBool("format.keepBreaks") is False
     assert build.getBool("format.showDialogue") is True
-
-    assert build.getBool("format.firstLineIndent") is True
-    assert build.getFloat("format.firstIndentWidth") == 2.0
-    assert build.getBool("format.indentFirstPar") is True
-
-    assert fmtTab.pageUnit.currentData() == "cm"
-    assert fmtTab.pageSize.currentData() == "A4"
-    assert fmtTab.pageWidth.value() == 21.0
-    assert fmtTab.pageHeight.value() == 29.7
-    assert fmtTab.topMargin.value() == 2.5
-    assert fmtTab.bottomMargin.value() == 2.5
-    assert fmtTab.leftMargin.value() == 1.5
-    assert fmtTab.rightMargin.value() == 1.5
 
     # Check that the font dialog doesn't fail
     with monkeypatch.context() as mp:
@@ -662,50 +609,150 @@ def testToolBuildSettings_Format(monkeypatch, qtbot, nwGUI):
 
 
 @pytest.mark.gui
-def testToolBuildSettings_Output(qtbot, nwGUI):
-    """Test the Output Tab of the GuiBuildSettings dialog."""
+def testToolBuildSettings_FormatFirstLineIndent(monkeypatch, qtbot, nwGUI):
+    """Test the First Line Indent settings."""
     build = BuildSettings()
 
-    build.setValue("odt.addColours", False)
-    build.setValue("html.addStyles", False)
+    build.setValue("format.firstLineIndent", False)
+    build.setValue("format.firstIndentWidth", 1.4)
+    build.setValue("format.indentFirstPar", False)
 
     # Create the dialog and populate it
     bSettings = GuiBuildSettings(nwGUI, build)
     bSettings.show()
     bSettings.loadContent()
 
-    outTab = bSettings.optTabOutput
-    bSettings.sidebar._group.button(bSettings.OPT_OUTPUT).click()
-    assert bSettings.toolStack.currentWidget() is outTab
+    fmtTab = bSettings.optTabFormatting
+    bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 3).click()
+    assert bSettings.toolStack.currentWidget() is fmtTab
 
     # Check initial values
-    assert outTab.odtAddColours.isChecked() is False
-    assert outTab.odtPageHeader.text() == nwHeadFmt.ODT_AUTO
-    assert outTab.odtPageCountOffset.value() == 0
-    assert outTab.htmlAddStyles.isChecked() is False
-    assert outTab.htmlPreserveTabs.isChecked() is False
+    assert fmtTab.firstIndent.isChecked() is False
+    assert fmtTab.indentWidth.value() == 1.4
+    assert fmtTab.indentFirstPar.isChecked() is False
 
-    # Toggle all
-    outTab.odtAddColours.setChecked(True)
-    outTab.htmlAddStyles.setChecked(True)
-    outTab.htmlPreserveTabs.setChecked(True)
-
-    # Change Values
-    outTab.odtPageCountOffset.setValue(1)
-    outTab.odtPageHeader.setText("Stuff")
+    # Change values
+    fmtTab.firstIndent.setChecked(True)
+    fmtTab.indentWidth.setValue(2.0)
+    fmtTab.indentFirstPar.setChecked(True)
 
     # Save values
-    outTab.saveContent()
+    fmtTab.saveContent()
+
+    assert build.getBool("format.firstLineIndent") is True
+    assert build.getFloat("format.firstIndentWidth") == 2.0
+    assert build.getBool("format.indentFirstPar") is True
+
+    # Finish
+    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
+    # qtbot.stop()
+
+
+@pytest.mark.gui
+def testToolBuildSettings_FormatPageLayout(monkeypatch, qtbot, nwGUI):
+    """Test the First Line Indent settings."""
+    build = BuildSettings()
+
+    build.setValue("format.pageUnit", "mm")
+    build.setValue("format.pageSize", "Custom")
+    build.setValue("format.pageWidth", 180.0)
+    build.setValue("format.pageHeight", 250.0)
+    build.setValue("format.topMargin", 25.0)
+    build.setValue("format.bottomMargin", 25.0)
+    build.setValue("format.leftMargin", 15.0)
+    build.setValue("format.rightMargin", 15.0)
+
+    # Create the dialog and populate it
+    bSettings = GuiBuildSettings(nwGUI, build)
+    bSettings.show()
+    bSettings.loadContent()
+
+    fmtTab = bSettings.optTabFormatting
+    bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 4).click()
+    assert bSettings.toolStack.currentWidget() is fmtTab
+
+    # Check initial values
+    assert fmtTab.pageUnit.currentData() == "mm"
+    assert fmtTab.pageSize.currentData() == "Custom"
+    assert fmtTab.pageWidth.value() == 180.0
+    assert fmtTab.pageHeight.value() == 250.0
+    assert fmtTab.topMargin.value() == 25.0
+    assert fmtTab.bottomMargin.value() == 25.0
+    assert fmtTab.leftMargin.value() == 15.0
+    assert fmtTab.rightMargin.value() == 15.0
+
+    # Change values
+    fmtTab.pageUnit.setCurrentIndex(fmtTab.pageUnit.findData("cm"))
+    fmtTab.pageSize.setCurrentIndex(fmtTab.pageSize.findData("A4"))
+
+    # Save values
+    fmtTab.saveContent()
+
+    assert fmtTab.pageUnit.currentData() == "cm"
+    assert fmtTab.pageSize.currentData() == "A4"
+    assert fmtTab.pageWidth.value() == 21.0
+    assert fmtTab.pageHeight.value() == 29.7
+    assert fmtTab.topMargin.value() == 2.5
+    assert fmtTab.bottomMargin.value() == 2.5
+    assert fmtTab.leftMargin.value() == 1.5
+    assert fmtTab.rightMargin.value() == 1.5
+
+    # Finish
+    bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
+    # qtbot.stop()
+
+
+@pytest.mark.gui
+def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
+    """Test the format-specific settings."""
+    build = BuildSettings()
+
+    build.setValue("odt.addColours", False)
+    build.setValue("odt.pageHeader", nwHeadFmt.ODT_AUTO)
+    build.setValue("odt.pageCountOffset", 0)
+
+    build.setValue("html.addStyles", False)
+    build.setValue("html.preserveTabs", False)
+
+    # Create the dialog and populate it
+    bSettings = GuiBuildSettings(nwGUI, build)
+    bSettings.show()
+    bSettings.loadContent()
+
+    fmtTab = bSettings.optTabFormatting
+    bSettings.sidebar._group.button(bSettings.OPT_FORMATTING + 5).click()
+    assert bSettings.toolStack.currentWidget() is fmtTab
+
+    # Check initial values
+    assert fmtTab.odtAddColours.isChecked() is False
+    assert fmtTab.odtPageHeader.text() == nwHeadFmt.ODT_AUTO
+    assert fmtTab.odtPageCountOffset.value() == 0
+
+    assert fmtTab.htmlAddStyles.isChecked() is False
+    assert fmtTab.htmlPreserveTabs.isChecked() is False
+
+    # Toggle all
+    fmtTab.odtAddColours.setChecked(True)
+    fmtTab.htmlAddStyles.setChecked(True)
+    fmtTab.htmlPreserveTabs.setChecked(True)
+
+    # Change Values
+    fmtTab.odtPageCountOffset.setValue(1)
+    fmtTab.odtPageHeader.setText("Stuff")
+
+    # Save values
+    fmtTab.saveContent()
 
     assert build.getBool("odt.addColours") is True
     assert build.getStr("odt.pageHeader") == "Stuff"
     assert build.getInt("odt.pageCountOffset") == 1
+
     assert build.getBool("html.addStyles") is True
     assert build.getBool("html.preserveTabs") is True
 
     # Reset header format
-    outTab.btnPageHeader.click()
-    assert outTab.odtPageHeader.text() == nwHeadFmt.ODT_AUTO
+    fmtTab.btnPageHeader.click()
+    assert fmtTab.odtPageHeader.text() == nwHeadFmt.ODT_AUTO
 
     # Finish
     bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))
