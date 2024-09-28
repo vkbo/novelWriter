@@ -125,21 +125,16 @@ class NWSpellEnchant:
         except Exception:
             return []
 
-    def addWord(self, word: str) -> bool:
+    def addWord(self, word: str, save: bool = True) -> None:
         """Add a word to the project dictionary."""
-        word = word.strip()
-        if not word:
-            return False
-        try:
-            self._enchant.add_to_session(word)
-        except Exception:
-            return False
-
-        added = self._userDict.add(word)
-        if added:
-            self._userDict.save()
-
-        return added
+        if word := word.strip():
+            try:
+                self._enchant.add_to_session(word)
+            except Exception:
+                return
+            if save and self._userDict.add(word):
+                self._userDict.save()
+        return
 
     def listDictionaries(self) -> list[tuple[str, str]]:
         """List available dictionaries."""
