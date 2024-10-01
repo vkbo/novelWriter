@@ -50,8 +50,8 @@ from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.types import (
-    QtAlignLeft, QtDialogApply, QtDialogClose, QtDialogSave, QtRoleAccept,
-    QtRoleApply, QtRoleReject, QtUserRole
+    QtAlignCenter, QtAlignLeft, QtDialogApply, QtDialogClose, QtDialogSave,
+    QtRoleAccept, QtRoleApply, QtRoleReject, QtUserRole
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -734,56 +734,46 @@ class _HeadingsTab(NScrollablePage):
         self.layoutMatrix.setVerticalSpacing(vSp)
         self.layoutMatrix.setHorizontalSpacing(vSp)
 
-        # Heading
-        self.layoutHeading = QLabel("<b>{0}</b>".format(self.tr("Additional Styling")), self)
-        self.layoutMatrix.addWidget(self.layoutHeading, 0, 0, 1, 5)
+        self.layoutMatrix.addWidget(QLabel(self.tr("Centre"), self), 0, 1)
+        self.layoutMatrix.addWidget(QLabel(self.tr("Page Break"), self), 0, 2)
+
+        # Title Layout
+        self.lblTitle = QLabel(self._build.getLabel("headings.styleTitle"), self)
+        self.centerTitle = NSwitch(self, height=iPx)
+        self.breakTitle = NSwitch(self, height=iPx)
+
+        self.layoutMatrix.addWidget(self.lblTitle,    1, 0)
+        self.layoutMatrix.addWidget(self.centerTitle, 1, 1, QtAlignCenter)
+        self.layoutMatrix.addWidget(self.breakTitle,  1, 2, QtAlignCenter)
 
         # Partition Layout
-        self.mtxTitle = QLabel(self._build.getLabel("headings.fmtPart"), self)
+        self.lblPart = QLabel(self._build.getLabel("headings.stylePart"), self)
         self.centerPart = NSwitch(self, height=iPx)
         self.breakPart = NSwitch(self, height=iPx)
-        lblCenterT = QLabel(self.tr("Centre"), self)
-        lblCenterT.setIndent(sSp)
-        lblBreakT = QLabel(self.tr("Page Break"), self)
-        lblBreakT.setIndent(sSp)
 
-        self.layoutMatrix.addWidget(self.mtxTitle,    1, 0)
-        self.layoutMatrix.addWidget(lblCenterT,       1, 1)
-        self.layoutMatrix.addWidget(self.centerPart, 1, 2)
-        self.layoutMatrix.addWidget(lblBreakT,        1, 3)
-        self.layoutMatrix.addWidget(self.breakPart,  1, 4)
+        self.layoutMatrix.addWidget(self.lblPart,    2, 0)
+        self.layoutMatrix.addWidget(self.centerPart, 2, 1, QtAlignCenter)
+        self.layoutMatrix.addWidget(self.breakPart,  2, 2, QtAlignCenter)
 
         # Chapter Layout
-        self.mtxChapter = QLabel(self._build.getLabel("headings.fmtChapter"), self)
+        self.lblChapter = QLabel(self._build.getLabel("headings.styleChapter"), self)
         self.centerChapter = NSwitch(self, height=iPx)
         self.breakChapter = NSwitch(self, height=iPx)
-        lblCenterC = QLabel(self.tr("Centre"), self)
-        lblCenterC.setIndent(sSp)
-        lblBreakC = QLabel(self.tr("Page Break"), self)
-        lblBreakC.setIndent(sSp)
 
-        self.layoutMatrix.addWidget(self.mtxChapter,    2, 0)
-        self.layoutMatrix.addWidget(lblCenterC,         2, 1)
-        self.layoutMatrix.addWidget(self.centerChapter, 2, 2)
-        self.layoutMatrix.addWidget(lblBreakC,          2, 3)
-        self.layoutMatrix.addWidget(self.breakChapter,  2, 4)
+        self.layoutMatrix.addWidget(self.lblChapter,    3, 0)
+        self.layoutMatrix.addWidget(self.centerChapter, 3, 1, QtAlignCenter)
+        self.layoutMatrix.addWidget(self.breakChapter,  3, 2, QtAlignCenter)
 
         # Scene Layout
-        self.mtxScene = QLabel(self._build.getLabel("headings.fmtScene"), self)
+        self.lblScene = QLabel(self._build.getLabel("headings.styleScene"), self)
         self.centerScene = NSwitch(self, height=iPx)
         self.breakScene = NSwitch(self, height=iPx)
-        lblCenterS = QLabel(self.tr("Centre"), self)
-        lblCenterS.setIndent(sSp)
-        lblBreakS = QLabel(self.tr("Page Break"), self)
-        lblBreakS.setIndent(sSp)
 
-        self.layoutMatrix.addWidget(self.mtxScene,    3, 0)
-        self.layoutMatrix.addWidget(lblCenterS,       3, 1)
-        self.layoutMatrix.addWidget(self.centerScene, 3, 2)
-        self.layoutMatrix.addWidget(lblBreakS,        3, 3)
-        self.layoutMatrix.addWidget(self.breakScene,  3, 4)
+        self.layoutMatrix.addWidget(self.lblScene,    4, 0)
+        self.layoutMatrix.addWidget(self.centerScene, 4, 1, QtAlignCenter)
+        self.layoutMatrix.addWidget(self.breakScene,  4, 2, QtAlignCenter)
 
-        self.layoutMatrix.setColumnStretch(5, 1)
+        self.layoutMatrix.setColumnStretch(3, 1)
 
         # Assemble
         # ========
@@ -816,9 +806,11 @@ class _HeadingsTab(NScrollablePage):
         self.swtAScene.setChecked(self._build.getBool("headings.hideAltScene"))
         self.swtSection.setChecked(self._build.getBool("headings.hideSection"))
 
+        self.centerTitle.setChecked(self._build.getBool("headings.centerTitle"))
         self.centerPart.setChecked(self._build.getBool("headings.centerPart"))
         self.centerChapter.setChecked(self._build.getBool("headings.centerChapter"))
         self.centerScene.setChecked(self._build.getBool("headings.centerScene"))
+        self.breakTitle.setChecked(self._build.getBool("headings.breakTitle"))
         self.breakPart.setChecked(self._build.getBool("headings.breakPart"))
         self.breakChapter.setChecked(self._build.getBool("headings.breakChapter"))
         self.breakScene.setChecked(self._build.getBool("headings.breakScene"))
@@ -833,9 +825,11 @@ class _HeadingsTab(NScrollablePage):
         self._build.setValue("headings.hideAltScene", self.swtAScene.isChecked())
         self._build.setValue("headings.hideSection", self.swtSection.isChecked())
 
+        self._build.setValue("headings.centerTitle", self.centerTitle.isChecked())
         self._build.setValue("headings.centerPart", self.centerPart.isChecked())
         self._build.setValue("headings.centerChapter", self.centerChapter.isChecked())
         self._build.setValue("headings.centerScene", self.centerScene.isChecked())
+        self._build.setValue("headings.breakTitle", self.breakTitle.isChecked())
         self._build.setValue("headings.breakPart", self.breakPart.isChecked())
         self._build.setValue("headings.breakChapter", self.breakChapter.isChecked())
         self._build.setValue("headings.breakScene", self.breakScene.isChecked())
