@@ -532,11 +532,20 @@ class ToOdt(Tokenizer):
         return
 
     def closeDocument(self) -> None:
-        """Pack the automatic styles of the XML document."""
+        """Add additional collected information to the XML."""
         for style in self._autoPara.values():
             style.packXML(self._xAuto)
         for style in self._autoText.values():
             style.packXML(self._xAuto)
+        if self._counts:
+            xFields = ET.Element(_mkTag("text", "user-field-decls"))
+            for key, value in self._counts.items():
+                ET.SubElement(xFields, _mkTag("text", "user-field-decl"), attrib={
+                    _mkTag("office", "value-type"): "float",
+                    _mkTag("office", "value"): str(value),
+                    _mkTag("text", "name"): f"Manuscript{key[:1].upper()}{key[1:]}",
+                })
+            self._xText.insert(0, xFields)
         return
 
     def saveFlatXML(self, path: str | Path) -> None:

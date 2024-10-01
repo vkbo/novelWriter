@@ -89,11 +89,6 @@ class NWBuildDocument:
     #  Setters
     ##
 
-    def setCountEnabled(self, state: bool) -> None:
-        """Turn on/off stats for builds."""
-        self._count = state
-        return
-
     def setBuildOutline(self, state: bool) -> None:
         """Turn on/off outline for builds."""
         self._outline = state
@@ -130,8 +125,8 @@ class NWBuildDocument:
         makeObj = ToQTextDocument(self._project)
         filtered = self._setupBuild(makeObj)
 
-        self._outline = True
         self._count = True
+        self._outline = True
 
         font = QFont()
         font.fromString(self._build.getStr("format.textFont"))
@@ -169,6 +164,7 @@ class NWBuildDocument:
         filtered = self._setupBuild(makeObj)
         makeObj.initDocument()
 
+        self._count = True
         for i, tHandle in enumerate(self._queue):
             self._error = None
             if filtered.get(tHandle, (False, 0))[0]:
@@ -199,6 +195,7 @@ class NWBuildDocument:
         makeObj = ToHtml(self._project)
         filtered = self._setupBuild(makeObj)
 
+        self._count = False
         for i, tHandle in enumerate(self._queue):
             self._error = None
             if filtered.get(tHandle, (False, 0))[0]:
@@ -235,6 +232,7 @@ class NWBuildDocument:
         if self._build.getBool("format.replaceTabs"):
             makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
 
+        self._count = False
         for i, tHandle in enumerate(self._queue):
             self._error = None
             if filtered.get(tHandle, (False, 0))[0]:
@@ -262,6 +260,7 @@ class NWBuildDocument:
 
         makeObj.setKeepMarkdown(True)
 
+        self._count = False
         for i, tHandle in enumerate(self._queue):
             self._error = None
             if filtered.get(tHandle, (False, 0))[0]:
