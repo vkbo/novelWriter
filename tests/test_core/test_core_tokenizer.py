@@ -47,7 +47,7 @@ def testCoreToken_Setters(mockGUI):
     tokens = BareTokenizer(project)
 
     # Verify defaults
-    assert tokens._fmtTitle == nwHeadFmt.TITLE
+    assert tokens._fmtPart == nwHeadFmt.TITLE
     assert tokens._fmtChapter == nwHeadFmt.TITLE
     assert tokens._fmtUnNum == nwHeadFmt.TITLE
     assert tokens._fmtScene == nwHeadFmt.TITLE
@@ -65,7 +65,7 @@ def testCoreToken_Setters(mockGUI):
     assert tokens._marginText == (0.000, 0.584)
     assert tokens._marginMeta == (0.000, 0.584)
     assert tokens._marginSep == (1.168, 1.168)
-    assert tokens._hideTitle is False
+    assert tokens._hidePart is False
     assert tokens._hideChapter is False
     assert tokens._hideUnNum is False
     assert tokens._hideScene is False
@@ -78,7 +78,7 @@ def testCoreToken_Setters(mockGUI):
     assert tokens._doKeywords is False
 
     # Set new values
-    tokens.setTitleFormat(f"T: {nwHeadFmt.TITLE}", True)
+    tokens.setPartitionFormat(f"T: {nwHeadFmt.TITLE}", True)
     tokens.setChapterFormat(f"C: {nwHeadFmt.TITLE}", True)
     tokens.setUnNumberedFormat(f"U: {nwHeadFmt.TITLE}", True)
     tokens.setSceneFormat(f"S: {nwHeadFmt.TITLE}", True)
@@ -103,7 +103,7 @@ def testCoreToken_Setters(mockGUI):
     tokens.setKeywords(True)
 
     # Check new values
-    assert tokens._fmtTitle == f"T: {nwHeadFmt.TITLE}"
+    assert tokens._fmtPart == f"T: {nwHeadFmt.TITLE}"
     assert tokens._fmtChapter == f"C: {nwHeadFmt.TITLE}"
     assert tokens._fmtUnNum == f"U: {nwHeadFmt.TITLE}"
     assert tokens._fmtScene == f"S: {nwHeadFmt.TITLE}"
@@ -121,7 +121,7 @@ def testCoreToken_Setters(mockGUI):
     assert tokens._marginText == (2.0, 2.0)
     assert tokens._marginMeta == (2.0, 2.0)
     assert tokens._marginSep == (2.0, 2.0)
-    assert tokens._hideTitle is True
+    assert tokens._hidePart is True
     assert tokens._hideChapter is True
     assert tokens._hideUnNum is True
     assert tokens._hideScene is True
@@ -436,11 +436,11 @@ def testCoreToken_HeaderStyle(mockGUI):
     # No Styles
     # =========
 
-    tokens.setTitleStyle(False, False)
+    tokens.setPartitionStyle(False, False)
     tokens.setChapterStyle(False, False)
     tokens.setSceneStyle(False, False)
 
-    assert tokens._titleStyle == Tokenizer.A_NONE
+    assert tokens._partStyle == Tokenizer.A_NONE
     assert tokens._chapterStyle == Tokenizer.A_NONE
     assert tokens._sceneStyle == Tokenizer.A_NONE
 
@@ -485,11 +485,11 @@ def testCoreToken_HeaderStyle(mockGUI):
     # Center Headers
     # ==============
 
-    tokens.setTitleStyle(True, False)
+    tokens.setPartitionStyle(True, False)
     tokens.setChapterStyle(True, False)
     tokens.setSceneStyle(True, False)
 
-    assert tokens._titleStyle == Tokenizer.A_CENTRE
+    assert tokens._partStyle == Tokenizer.A_CENTRE
     assert tokens._chapterStyle == Tokenizer.A_CENTRE
     assert tokens._sceneStyle == Tokenizer.A_CENTRE
 
@@ -534,11 +534,11 @@ def testCoreToken_HeaderStyle(mockGUI):
     # Page Break Headers
     # ==================
 
-    tokens.setTitleStyle(False, True)
+    tokens.setPartitionStyle(False, True)
     tokens.setChapterStyle(False, True)
     tokens.setSceneStyle(False, True)
 
-    assert tokens._titleStyle == Tokenizer.A_PBB
+    assert tokens._partStyle == Tokenizer.A_PBB
     assert tokens._chapterStyle == Tokenizer.A_PBB
     assert tokens._sceneStyle == Tokenizer.A_PBB
 
@@ -583,11 +583,11 @@ def testCoreToken_HeaderStyle(mockGUI):
     # Page Break and Centre Headers
     # =============================
 
-    tokens.setTitleStyle(True, True)
+    tokens.setPartitionStyle(True, True)
     tokens.setChapterStyle(True, True)
     tokens.setSceneStyle(True, True)
 
-    assert tokens._titleStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert tokens._partStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
     assert tokens._chapterStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
     assert tokens._sceneStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
 
@@ -634,11 +634,11 @@ def testCoreToken_HeaderStyle(mockGUI):
     tokens._isNovel = True
 
     # Title Styles
-    tokens.setTitleStyle(True, True)
+    tokens.setPartitionStyle(True, True)
     tokens.setChapterStyle(False, False)
     tokens.setSceneStyle(False, False)
 
-    assert tokens._titleStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert tokens._partStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
     assert tokens._chapterStyle == Tokenizer.A_NONE
     assert tokens._sceneStyle == Tokenizer.A_NONE
 
@@ -650,11 +650,11 @@ def testCoreToken_HeaderStyle(mockGUI):
     assert processStyle("##! Prologue\n", False) == Tokenizer.A_NONE
 
     # Chapter Styles
-    tokens.setTitleStyle(False, False)
+    tokens.setPartitionStyle(False, False)
     tokens.setChapterStyle(True, True)
     tokens.setSceneStyle(False, False)
 
-    assert tokens._titleStyle == Tokenizer.A_NONE
+    assert tokens._partStyle == Tokenizer.A_NONE
     assert tokens._chapterStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
     assert tokens._sceneStyle == Tokenizer.A_NONE
 
@@ -666,11 +666,11 @@ def testCoreToken_HeaderStyle(mockGUI):
     assert processStyle("##! Prologue\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
 
     # Scene Styles
-    tokens.setTitleStyle(False, False)
+    tokens.setPartitionStyle(False, False)
     tokens.setChapterStyle(False, False)
     tokens.setSceneStyle(True, True)
 
-    assert tokens._titleStyle == Tokenizer.A_NONE
+    assert tokens._partStyle == Tokenizer.A_NONE
     assert tokens._chapterStyle == Tokenizer.A_NONE
     assert tokens._sceneStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
 
@@ -1441,7 +1441,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     # H1: Title, First Page
     assert tokens._isFirst is True
     tokens._text = "# Part One\n"
-    tokens.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
+    tokens.setPartitionFormat(f"T: {nwHeadFmt.TITLE}")
     tokens.tokenizeText()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "T: Part One", [], Tokenizer.A_CENTRE),
@@ -1450,7 +1450,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
     # H1: Title, Not First Page
     assert tokens._isFirst is False
     tokens._text = "# Part One\n"
-    tokens.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
+    tokens.setPartitionFormat(f"T: {nwHeadFmt.TITLE}")
     tokens.tokenizeText()
     assert tokens._tokens == [
         (Tokenizer.T_HEAD1, 1, "T: Part One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
@@ -1858,7 +1858,7 @@ def testCoreToken_CountStats(mockGUI, ipsumText):
     )
     tokens._counts = {}
 
-    tokens.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
+    tokens.setPartitionFormat(f"T: {nwHeadFmt.TITLE}")
     tokens.setChapterFormat(f"C {nwHeadFmt.CH_NUM}: {nwHeadFmt.TITLE}")
     tokens.setSceneFormat("* * *", False)
     tokens.setSynopsis(True)
@@ -1899,7 +1899,7 @@ def testCoreToken_SceneSeparators(mockGUI):
         "###! Scene Four\n\n"
         "Text\n\n"
     )
-    md.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
+    md.setPartitionFormat(f"T: {nwHeadFmt.TITLE}")
     md.setChapterFormat(f"C: {nwHeadFmt.TITLE}")
     md.setSectionFormat("", True)
 
@@ -1953,7 +1953,7 @@ def testCoreToken_SceneSeparators(mockGUI):
         "###! Scene Four\n\n"
         "Text\n\n"
     )
-    md.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
+    md.setPartitionFormat(f"T: {nwHeadFmt.TITLE}")
     md.setChapterFormat(f"C: {nwHeadFmt.TITLE}")
     md.setSectionFormat("", True)
 
@@ -2058,7 +2058,7 @@ def testCoreToken_HeaderVisibility(mockGUI):
     md._isNovel = True
 
     # Show All
-    md.setTitleFormat(nwHeadFmt.TITLE, False)
+    md.setPartitionFormat(nwHeadFmt.TITLE, False)
     md.setChapterFormat(nwHeadFmt.TITLE, False)
     md.setUnNumberedFormat(nwHeadFmt.TITLE, False)
     md.setSceneFormat(nwHeadFmt.TITLE, False)
@@ -2086,7 +2086,7 @@ def testCoreToken_HeaderVisibility(mockGUI):
     )
 
     # Hide All
-    md.setTitleFormat(nwHeadFmt.TITLE, True)
+    md.setPartitionFormat(nwHeadFmt.TITLE, True)
     md.setChapterFormat(nwHeadFmt.TITLE, True)
     md.setUnNumberedFormat(nwHeadFmt.TITLE, True)
     md.setSceneFormat(nwHeadFmt.TITLE, True)
@@ -2110,7 +2110,7 @@ def testCoreToken_HeaderVisibility(mockGUI):
     md._isNovel = False
 
     # Hide All
-    md.setTitleFormat(nwHeadFmt.TITLE, True)
+    md.setPartitionFormat(nwHeadFmt.TITLE, True)
     md.setChapterFormat(nwHeadFmt.TITLE, True)
     md.setUnNumberedFormat(nwHeadFmt.TITLE, True)
     md.setSceneFormat(nwHeadFmt.TITLE, True)
@@ -2179,7 +2179,7 @@ def testCoreToken_CounterHandling(mockGUI):
         "###! Scene Four\n\n"
         "Text\n\n"
     )
-    md.setTitleFormat(f"T: {nwHeadFmt.TITLE}")
+    md.setPartitionFormat(f"T: {nwHeadFmt.TITLE}")
     md.setChapterFormat(f"C {nwHeadFmt.CH_NUM}: {nwHeadFmt.TITLE}")
     md.setUnNumberedFormat(f"U: {nwHeadFmt.TITLE}")
     md.setSceneFormat(

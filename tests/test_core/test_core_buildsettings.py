@@ -147,7 +147,7 @@ def testCoreBuildSettings_BuildValues():
     """Test BuildSettings get/set of build values."""
     build = BuildSettings()
 
-    strSetting = "headings.fmtTitle"
+    strSetting = "headings.fmtPart"
     intSetting = "odt.pageCountOffset"
     boolSetting = "filter.includeNovel"
     floatSetting = "format.lineHeight"

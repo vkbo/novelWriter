@@ -45,7 +45,7 @@ BUILD_CONF = {
         "filter.includeNovel": True,
         "filter.includeNotes": True,
         "filter.includeInactive": True,
-        "headings.fmtTitle": "Title: {Title}",
+        "headings.fmtPart": "Part: {Title}",
         "headings.fmtChapter": "Chapter: {Title}",
         "headings.fmtUnnumbered": "{Title}",
         "headings.fmtScene": "Scene: {Title}",

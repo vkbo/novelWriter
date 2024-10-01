@@ -318,7 +318,7 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
     shTitle = f"Hard Scene: {nwHeadFmt.TITLE}"
     sxTitle = f"Section: {nwHeadFmt.TITLE}"
 
-    build.setValue("headings.fmtTitle", ttTitle)
+    build.setValue("headings.fmtPart", ttTitle)
     build.setValue("headings.fmtChapter", chTitle)
     build.setValue("headings.fmtUnnumbered", unTitle)
     build.setValue("headings.fmtScene", scTitle)
@@ -337,7 +337,7 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
     assert bSettings.toolStack.currentWidget() is headTab
 
     # Check initial values
-    assert headTab.fmtTitle.text() == ttTitle
+    assert headTab.fmtPart.text() == ttTitle
     assert headTab.fmtChapter.text() == chTitle
     assert headTab.fmtUnnumbered.text() == unTitle
     assert headTab.fmtScene.text() == scTitle
@@ -356,7 +356,7 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
     assert headTab.editTextBox.isEnabled() is False
 
     # Title
-    headTab.btnTitle.click()
+    headTab.btnPart.click()
     assert headTab._editing == headTab.EDIT_TITLE
     assert headTab.editTextBox.isEnabled() is True
     assert headTab.editTextBox.toPlainText() == ttTitle
@@ -434,10 +434,10 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
     )
 
     # Set all to plain title
-    headTab.btnTitle.click()
+    headTab.btnPart.click()
     headTab.editTextBox.setPlainText(nwHeadFmt.TITLE)
     headTab.btnApply.click()
-    assert build.getStr("headings.fmtTitle") == nwHeadFmt.TITLE
+    assert build.getStr("headings.fmtPart") == nwHeadFmt.TITLE
 
     headTab.btnChapter.click()
     headTab.editTextBox.setPlainText(nwHeadFmt.TITLE)
