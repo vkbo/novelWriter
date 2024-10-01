@@ -593,7 +593,7 @@ class _DetailsWidget(QWidget):
         item.setText(1, "")
         self.listView.addTopLevelItem(item)
         for hFormat, hHide in [
-            ("headings.fmtTitle", "headings.hideTitle"),
+            ("headings.fmtPart", "headings.hidePart"),
             ("headings.fmtChapter", "headings.hideChapter"),
             ("headings.fmtUnnumbered", "headings.hideUnnumbered"),
             ("headings.fmtScene", "headings.hideScene"),

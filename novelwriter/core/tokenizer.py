@@ -175,14 +175,14 @@ class Tokenizer(ABC):
         self._marginSep   = (1.168, 1.168)
 
         # Title Formats
-        self._fmtTitle   = nwHeadFmt.TITLE  # Formatting for titles
+        self._fmtPart    = nwHeadFmt.TITLE  # Formatting for partitions
         self._fmtChapter = nwHeadFmt.TITLE  # Formatting for numbered chapters
         self._fmtUnNum   = nwHeadFmt.TITLE  # Formatting for unnumbered chapters
         self._fmtScene   = nwHeadFmt.TITLE  # Formatting for scenes
         self._fmtHScene  = nwHeadFmt.TITLE  # Formatting for hard scenes
         self._fmtSection = nwHeadFmt.TITLE  # Formatting for sections
 
-        self._hideTitle   = False  # Do not include title headings
+        self._hidePart    = False  # Do not include partition headings
         self._hideChapter = False  # Do not include chapter headings
         self._hideUnNum   = False  # Do not include unnumbered headings
         self._hideScene   = False  # Do not include scene headings
@@ -191,7 +191,7 @@ class Tokenizer(ABC):
 
         self._linkHeadings = False  # Add an anchor before headings
 
-        self._titleStyle   = self.A_CENTRE | self.A_PBB
+        self._partStyle    = self.A_CENTRE | self.A_PBB
         self._chapterStyle = self.A_PBB
         self._sceneStyle   = self.A_NONE
 
@@ -271,10 +271,10 @@ class Tokenizer(ABC):
     #  Setters
     ##
 
-    def setTitleFormat(self, hFormat: str, hide: bool = False) -> None:
-        """Set the title format pattern."""
-        self._fmtTitle = hFormat.strip()
-        self._hideTitle = hide
+    def setPartitionFormat(self, hFormat: str, hide: bool = False) -> None:
+        """Set the partition format pattern."""
+        self._fmtPart = hFormat.strip()
+        self._hidePart = hide
         return
 
     def setChapterFormat(self, hFormat: str, hide: bool = False) -> None:
@@ -307,9 +307,9 @@ class Tokenizer(ABC):
         self._hideSection = hide
         return
 
-    def setTitleStyle(self, center: bool, pageBreak: bool) -> None:
-        """Set the title heading style."""
-        self._titleStyle = (
+    def setPartitionStyle(self, center: bool, pageBreak: bool) -> None:
+        """Set the partition heading style."""
+        self._partStyle = (
             (self.A_CENTRE if center else self.A_NONE) | (self.A_PBB if pageBreak else self.A_NONE)
         )
         return
@@ -664,15 +664,15 @@ class Tokenizer(ABC):
                 tText = aLine[2:].strip()
                 tType = self.T_HEAD1 if isPlain else self.T_TITLE
                 tStyle = self.A_NONE if isPlain else (self.A_PBB | self.A_CENTRE)
-                sHide = self._hideTitle if isPlain else False
+                sHide = self._hidePart if isPlain else False
                 if self._isNovel:
                     if sHide:
                         tText = ""
                         tType = self.T_EMPTY
                         tStyle = self.A_NONE
                     elif isPlain:
-                        tText = self._hFormatter.apply(self._fmtTitle, tText, nHead)
-                        tStyle = self._titleStyle
+                        tText = self._hFormatter.apply(self._fmtPart, tText, nHead)
+                        tStyle = self._partStyle
                     if isPlain:
                         self._hFormatter.resetScene()
                     else:

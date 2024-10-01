@@ -585,20 +585,20 @@ class _HeadingsTab(NScrollablePage):
         self.formatBox.setHorizontalSpacing(bSp)
 
         # Title Heading
-        self.lblTitle = QLabel(self._build.getLabel("headings.fmtTitle"), self)
-        self.fmtTitle = QLineEdit("", self)
-        self.fmtTitle.setReadOnly(True)
-        self.btnTitle = NIconToolButton(self, iSz, "edit")
-        self.btnTitle.clicked.connect(lambda: self._editHeading(self.EDIT_TITLE))
-        self.hdeTitle = QLabel(trHide, self)
-        self.hdeTitle.setIndent(bSp)
-        self.swtTitle = NSwitch(self, height=iPx)
+        self.lblPart = QLabel(self._build.getLabel("headings.fmtPart"), self)
+        self.fmtPart = QLineEdit("", self)
+        self.fmtPart.setReadOnly(True)
+        self.btnPart = NIconToolButton(self, iSz, "edit")
+        self.btnPart.clicked.connect(lambda: self._editHeading(self.EDIT_TITLE))
+        self.hdePart = QLabel(trHide, self)
+        self.hdePart.setIndent(bSp)
+        self.swtPart = NSwitch(self, height=iPx)
 
-        self.formatBox.addWidget(self.lblTitle, 0, 0)
-        self.formatBox.addWidget(self.fmtTitle, 0, 1)
-        self.formatBox.addWidget(self.btnTitle, 0, 2)
-        self.formatBox.addWidget(self.hdeTitle, 0, 3)
-        self.formatBox.addWidget(self.swtTitle, 0, 4)
+        self.formatBox.addWidget(self.lblPart, 0, 0)
+        self.formatBox.addWidget(self.fmtPart, 0, 1)
+        self.formatBox.addWidget(self.btnPart, 0, 2)
+        self.formatBox.addWidget(self.hdePart, 0, 3)
+        self.formatBox.addWidget(self.swtPart, 0, 4)
 
         # Chapter Heading
         self.lblChapter = QLabel(self._build.getLabel("headings.fmtChapter"), self)
@@ -738,10 +738,10 @@ class _HeadingsTab(NScrollablePage):
         self.layoutHeading = QLabel("<b>{0}</b>".format(self.tr("Additional Styling")), self)
         self.layoutMatrix.addWidget(self.layoutHeading, 0, 0, 1, 5)
 
-        # Title Layout
-        self.mtxTitle = QLabel(self._build.getLabel("headings.fmtTitle"), self)
-        self.centerTitle = NSwitch(self, height=iPx)
-        self.breakTitle = NSwitch(self, height=iPx)
+        # Partition Layout
+        self.mtxTitle = QLabel(self._build.getLabel("headings.fmtPart"), self)
+        self.centerPart = NSwitch(self, height=iPx)
+        self.breakPart = NSwitch(self, height=iPx)
         lblCenterT = QLabel(self.tr("Centre"), self)
         lblCenterT.setIndent(sSp)
         lblBreakT = QLabel(self.tr("Page Break"), self)
@@ -749,9 +749,9 @@ class _HeadingsTab(NScrollablePage):
 
         self.layoutMatrix.addWidget(self.mtxTitle,    1, 0)
         self.layoutMatrix.addWidget(lblCenterT,       1, 1)
-        self.layoutMatrix.addWidget(self.centerTitle, 1, 2)
+        self.layoutMatrix.addWidget(self.centerPart, 1, 2)
         self.layoutMatrix.addWidget(lblBreakT,        1, 3)
-        self.layoutMatrix.addWidget(self.breakTitle,  1, 4)
+        self.layoutMatrix.addWidget(self.breakPart,  1, 4)
 
         # Chapter Layout
         self.mtxChapter = QLabel(self._build.getLabel("headings.fmtChapter"), self)
@@ -802,41 +802,41 @@ class _HeadingsTab(NScrollablePage):
 
     def loadContent(self) -> None:
         """Populate the widgets."""
-        self.fmtTitle.setText(self._build.getStr("headings.fmtTitle"))
+        self.fmtPart.setText(self._build.getStr("headings.fmtPart"))
         self.fmtChapter.setText(self._build.getStr("headings.fmtChapter"))
         self.fmtUnnumbered.setText(self._build.getStr("headings.fmtUnnumbered"))
         self.fmtScene.setText(self._build.getStr("headings.fmtScene"))
         self.fmtAScene.setText(self._build.getStr("headings.fmtAltScene"))
         self.fmtSection.setText(self._build.getStr("headings.fmtSection"))
 
-        self.swtTitle.setChecked(self._build.getBool("headings.hideTitle"))
+        self.swtPart.setChecked(self._build.getBool("headings.hidePart"))
         self.swtChapter.setChecked(self._build.getBool("headings.hideChapter"))
         self.swtUnnumbered.setChecked(self._build.getBool("headings.hideUnnumbered"))
         self.swtScene.setChecked(self._build.getBool("headings.hideScene"))
         self.swtAScene.setChecked(self._build.getBool("headings.hideAltScene"))
         self.swtSection.setChecked(self._build.getBool("headings.hideSection"))
 
-        self.centerTitle.setChecked(self._build.getBool("headings.centerTitle"))
+        self.centerPart.setChecked(self._build.getBool("headings.centerPart"))
         self.centerChapter.setChecked(self._build.getBool("headings.centerChapter"))
         self.centerScene.setChecked(self._build.getBool("headings.centerScene"))
-        self.breakTitle.setChecked(self._build.getBool("headings.breakTitle"))
+        self.breakPart.setChecked(self._build.getBool("headings.breakPart"))
         self.breakChapter.setChecked(self._build.getBool("headings.breakChapter"))
         self.breakScene.setChecked(self._build.getBool("headings.breakScene"))
         return
 
     def saveContent(self) -> None:
         """Save choices back into build object."""
-        self._build.setValue("headings.hideTitle", self.swtTitle.isChecked())
+        self._build.setValue("headings.hidePart", self.swtPart.isChecked())
         self._build.setValue("headings.hideChapter", self.swtChapter.isChecked())
         self._build.setValue("headings.hideUnnumbered", self.swtUnnumbered.isChecked())
         self._build.setValue("headings.hideScene", self.swtScene.isChecked())
         self._build.setValue("headings.hideAltScene", self.swtAScene.isChecked())
         self._build.setValue("headings.hideSection", self.swtSection.isChecked())
 
-        self._build.setValue("headings.centerTitle", self.centerTitle.isChecked())
+        self._build.setValue("headings.centerPart", self.centerPart.isChecked())
         self._build.setValue("headings.centerChapter", self.centerChapter.isChecked())
         self._build.setValue("headings.centerScene", self.centerScene.isChecked())
-        self._build.setValue("headings.breakTitle", self.breakTitle.isChecked())
+        self._build.setValue("headings.breakPart", self.breakPart.isChecked())
         self._build.setValue("headings.breakChapter", self.breakChapter.isChecked())
         self._build.setValue("headings.breakScene", self.breakScene.isChecked())
         return
@@ -858,8 +858,8 @@ class _HeadingsTab(NScrollablePage):
         self._editing = heading
         self.editTextBox.setEnabled(True)
         if heading == self.EDIT_TITLE:
-            text = self.fmtTitle.text()
-            label = self._build.getLabel("headings.fmtTitle")
+            text = self.fmtPart.text()
+            label = self._build.getLabel("headings.fmtPart")
         elif heading == self.EDIT_CHAPTER:
             text = self.fmtChapter.text()
             label = self._build.getLabel("headings.fmtChapter")
@@ -896,8 +896,8 @@ class _HeadingsTab(NScrollablePage):
         heading = self._editing
         text = self.editTextBox.toPlainText().strip().replace("\n", nwHeadFmt.BR)
         if heading == self.EDIT_TITLE:
-            self.fmtTitle.setText(text)
-            self._build.setValue("headings.fmtTitle", text)
+            self.fmtPart.setText(text)
+            self._build.setValue("headings.fmtPart", text)
         elif heading == self.EDIT_CHAPTER:
             self.fmtChapter.setText(text)
             self._build.setValue("headings.fmtChapter", text)
