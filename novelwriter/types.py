@@ -27,6 +27,10 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QFont, QPainter, QTextCharFormat, QTextCursor, QTextFormat
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QSizePolicy, QStyle
 
+# Type Aliases
+
+T_Basic = str | int | float | bool
+
 # Qt Alignment Flags
 
 QtAlignAbsolute = Qt.AlignmentFlag.AlignAbsolute

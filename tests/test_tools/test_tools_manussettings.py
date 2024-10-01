@@ -311,7 +311,7 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
     """Test the Headings Tab of the GuiBuildSettings dialog."""
     build = BuildSettings()
 
-    ttTitle = f"Title: {nwHeadFmt.TITLE}"
+    ttTitle = f"Part: {nwHeadFmt.TITLE}"
     chTitle = f"Chapter: {nwHeadFmt.TITLE}"
     unTitle = f"Interlude: {nwHeadFmt.TITLE}"
     scTitle = f"Scene: {nwHeadFmt.TITLE}"
