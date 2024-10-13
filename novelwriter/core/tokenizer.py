@@ -1117,36 +1117,36 @@ class Tokenizer(ABC):
 
         # Match Markdown
         for regEx, fmts in self._rxMarkdown:
-            for match in regEx.finditer(text):
+            for res in regEx.finditer(text):
                 temp.extend(
-                    (match.start(n), match.end(n), fmt, "")
+                    (res.start(n), res.end(n), fmt, "")
                     for n, fmt in enumerate(fmts) if fmt > 0
                 )
 
         # Match Shortcodes
-        for match in REGEX_PATTERNS.shortcodePlain.finditer(text):
+        for res in REGEX_PATTERNS.shortcodePlain.finditer(text):
             temp.append((
-                match.start(1), match.end(1),
-                self._shortCodeFmt.get(match.group(1).lower(), 0),
+                res.start(1), res.end(1),
+                self._shortCodeFmt.get(res.group(1).lower(), 0),
                 "",
             ))
 
         # Match Shortcode w/Values
         tHandle = self._handle or ""
-        for match in REGEX_PATTERNS.shortcodeValue.finditer(text):
-            kind = self._shortCodeVals.get(match.group(1).lower(), 0)
+        for res in REGEX_PATTERNS.shortcodeValue.finditer(text):
+            kind = self._shortCodeVals.get(res.group(1).lower(), 0)
             temp.append((
-                match.start(0), match.end(0),
+                res.start(0), res.end(0),
                 self.FMT_STRIP if kind == skip else kind,
-                f"{tHandle}:{match.group(2)}",
+                f"{tHandle}:{res.group(2)}",
             ))
 
         # Match Dialogue
         if self._rxDialogue and hDialog:
             for regEx, fmtB, fmtE in self._rxDialogue:
-                for match in regEx.finditer(text):
-                    temp.append((match.start(0), 0, fmtB, ""))
-                    temp.append((match.end(0), 0, fmtE, ""))
+                for res in regEx.finditer(text):
+                    temp.append((res.start(0), 0, fmtB, ""))
+                    temp.append((res.end(0), 0, fmtE, ""))
 
         # Post-process text and format
         result = text

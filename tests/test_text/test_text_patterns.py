@@ -32,10 +32,10 @@ from novelwriter.text.patterns import REGEX_PATTERNS
 def allMatches(regEx: re.Pattern, text: str) -> list[list[str]]:
     """Get all matches for a regex."""
     result = []
-    for match in regEx.finditer(text):
+    for res in regEx.finditer(text):
         result.append([
-            (match.group(n), match.start(n), match.end(n))
-            for n in range((match.lastindex or 0) + 1)
+            (res.group(n), res.start(n), res.end(n))
+            for n in range((res.lastindex or 0) + 1)
         ])
     return result
 
