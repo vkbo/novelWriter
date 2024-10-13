@@ -191,6 +191,7 @@ class Tokenizer(ABC):
 
         self._linkHeadings = False  # Add an anchor before headings
 
+        self._titleStyle   = self.A_CENTRE | self.A_PBB
         self._partStyle    = self.A_CENTRE | self.A_PBB
         self._chapterStyle = self.A_PBB
         self._sceneStyle   = self.A_NONE
@@ -305,6 +306,13 @@ class Tokenizer(ABC):
         """Set the section format pattern and hidden status."""
         self._fmtSection = hFormat.strip()
         self._hideSection = hide
+        return
+
+    def setTitleStyle(self, center: bool, pageBreak: bool) -> None:
+        """Set the title heading style."""
+        self._titleStyle = (
+            (self.A_CENTRE if center else self.A_NONE) | (self.A_PBB if pageBreak else self.A_NONE)
+        )
         return
 
     def setPartitionStyle(self, center: bool, pageBreak: bool) -> None:
@@ -663,7 +671,7 @@ class Tokenizer(ABC):
                 nHead += 1
                 tText = aLine[2:].strip()
                 tType = self.T_HEAD1 if isPlain else self.T_TITLE
-                tStyle = self.A_NONE if isPlain else (self.A_PBB | self.A_CENTRE)
+                tStyle = self.A_NONE if isPlain else self._titleStyle
                 sHide = self._hidePart if isPlain else False
                 if self._isNovel:
                     if sHide:

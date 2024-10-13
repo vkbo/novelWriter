@@ -734,55 +734,46 @@ class _HeadingsTab(NScrollablePage):
         self.layoutMatrix.setVerticalSpacing(vSp)
         self.layoutMatrix.setHorizontalSpacing(vSp)
 
-        self.layoutMatrix.addWidget(QLabel(self.tr("Plain Text"), self), 0, 1)
-        self.layoutMatrix.addWidget(QLabel(self.tr("Centre"), self), 0, 2)
-        self.layoutMatrix.addWidget(QLabel(self.tr("Page Break"), self), 0, 3)
+        self.layoutMatrix.addWidget(QLabel(self.tr("Centre"), self), 0, 1)
+        self.layoutMatrix.addWidget(QLabel(self.tr("Page Break"), self), 0, 2)
 
         # Title Layout
         self.lblTitle = QLabel(self._build.getLabel("headings.styleTitle"), self)
-        self.plainTitle = NSwitch(self, height=iPx)
         self.centerTitle = NSwitch(self, height=iPx)
         self.breakTitle = NSwitch(self, height=iPx)
 
         self.layoutMatrix.addWidget(self.lblTitle,    1, 0)
-        self.layoutMatrix.addWidget(self.plainTitle,  1, 1, QtAlignCenter)
-        self.layoutMatrix.addWidget(self.centerTitle, 1, 2, QtAlignCenter)
-        self.layoutMatrix.addWidget(self.breakTitle,  1, 3, QtAlignCenter)
+        self.layoutMatrix.addWidget(self.centerTitle, 1, 1, QtAlignCenter)
+        self.layoutMatrix.addWidget(self.breakTitle,  1, 2, QtAlignCenter)
 
         # Partition Layout
         self.lblPart = QLabel(self._build.getLabel("headings.stylePart"), self)
-        self.plainPart = NSwitch(self, height=iPx)
         self.centerPart = NSwitch(self, height=iPx)
         self.breakPart = NSwitch(self, height=iPx)
 
         self.layoutMatrix.addWidget(self.lblPart,    2, 0)
-        self.layoutMatrix.addWidget(self.plainPart,  2, 1, QtAlignCenter)
-        self.layoutMatrix.addWidget(self.centerPart, 2, 2, QtAlignCenter)
-        self.layoutMatrix.addWidget(self.breakPart,  2, 3, QtAlignCenter)
+        self.layoutMatrix.addWidget(self.centerPart, 2, 1, QtAlignCenter)
+        self.layoutMatrix.addWidget(self.breakPart,  2, 2, QtAlignCenter)
 
         # Chapter Layout
         self.lblChapter = QLabel(self._build.getLabel("headings.styleChapter"), self)
-        self.plainChapter = NSwitch(self, height=iPx)
         self.centerChapter = NSwitch(self, height=iPx)
         self.breakChapter = NSwitch(self, height=iPx)
 
         self.layoutMatrix.addWidget(self.lblChapter,    3, 0)
-        self.layoutMatrix.addWidget(self.plainChapter,  3, 1, QtAlignCenter)
-        self.layoutMatrix.addWidget(self.centerChapter, 3, 2, QtAlignCenter)
-        self.layoutMatrix.addWidget(self.breakChapter,  3, 3, QtAlignCenter)
+        self.layoutMatrix.addWidget(self.centerChapter, 3, 1, QtAlignCenter)
+        self.layoutMatrix.addWidget(self.breakChapter,  3, 2, QtAlignCenter)
 
         # Scene Layout
         self.lblScene = QLabel(self._build.getLabel("headings.styleScene"), self)
-        self.plainScene = NSwitch(self, height=iPx)
         self.centerScene = NSwitch(self, height=iPx)
         self.breakScene = NSwitch(self, height=iPx)
 
         self.layoutMatrix.addWidget(self.lblScene,    4, 0)
-        self.layoutMatrix.addWidget(self.plainScene,  4, 1, QtAlignCenter)
-        self.layoutMatrix.addWidget(self.centerScene, 4, 2, QtAlignCenter)
-        self.layoutMatrix.addWidget(self.breakScene,  4, 3, QtAlignCenter)
+        self.layoutMatrix.addWidget(self.centerScene, 4, 1, QtAlignCenter)
+        self.layoutMatrix.addWidget(self.breakScene,  4, 2, QtAlignCenter)
 
-        self.layoutMatrix.setColumnStretch(4, 1)
+        self.layoutMatrix.setColumnStretch(3, 1)
 
         # Assemble
         # ========
@@ -815,11 +806,6 @@ class _HeadingsTab(NScrollablePage):
         self.swtAScene.setChecked(self._build.getBool("headings.hideAltScene"))
         self.swtSection.setChecked(self._build.getBool("headings.hideSection"))
 
-        self.plainTitle.setChecked(self._build.getBool("headings.plainTitle"))
-        self.plainPart.setChecked(self._build.getBool("headings.plainPart"))
-        self.plainChapter.setChecked(self._build.getBool("headings.plainChapter"))
-        self.plainScene.setChecked(self._build.getBool("headings.plainScene"))
-
         self.centerTitle.setChecked(self._build.getBool("headings.centerTitle"))
         self.centerPart.setChecked(self._build.getBool("headings.centerPart"))
         self.centerChapter.setChecked(self._build.getBool("headings.centerChapter"))
@@ -839,11 +825,6 @@ class _HeadingsTab(NScrollablePage):
         self._build.setValue("headings.hideScene", self.swtScene.isChecked())
         self._build.setValue("headings.hideAltScene", self.swtAScene.isChecked())
         self._build.setValue("headings.hideSection", self.swtSection.isChecked())
-
-        self._build.setValue("headings.plainTitle", self.plainTitle.isChecked())
-        self._build.setValue("headings.plainPart", self.plainPart.isChecked())
-        self._build.setValue("headings.plainChapter", self.plainChapter.isChecked())
-        self._build.setValue("headings.plainScene", self.plainScene.isChecked())
 
         self._build.setValue("headings.centerTitle", self.centerTitle.isChecked())
         self._build.setValue("headings.centerPart", self.centerPart.isChecked())
