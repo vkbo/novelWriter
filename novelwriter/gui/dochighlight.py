@@ -402,10 +402,10 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         if hRules:
             for rX, hRule in hRules:
-                for match in re.finditer(rX, text[xOff:]):
+                for res in re.finditer(rX, text[xOff:]):
                     for xM, hFmt in hRule.items():
-                        xPos = match.start(xM) + xOff
-                        xEnd = match.end(xM) + xOff
+                        xPos = res.start(xM) + xOff
+                        xEnd = res.end(xM) + xOff
                         for x in range(xPos, xEnd):
                             cFmt = self.format(x)
                             if cFmt.fontStyleName() != "markup":
@@ -484,18 +484,18 @@ class TextBlockData(QTextBlockUserData):
         if "[" in text:
             # Strip shortcodes
             for regEx in [RX_FMT_SC, RX_FMT_SV]:
-                for match in regEx.finditer(text, offset):
-                    if (s := match.start(0)) >= 0 and (e := match.end(0)) >= 0:
+                for res in regEx.finditer(text, offset):
+                    if (s := res.start(0)) >= 0 and (e := res.end(0)) >= 0:
                         pad = " "*(e - s)
                         text = f"{text[:s]}{pad}{text[e:]}"
 
         self._spellErrors = []
         checker = SHARED.spelling
-        for match in RX_WORDS.finditer(text.replace("_", " "), offset):
+        for res in RX_WORDS.finditer(text.replace("_", " "), offset):
             if (
-                (word := match.group(0))
+                (word := res.group(0))
                 and not (word.isnumeric() or word.isupper() or checker.checkWord(word))
             ):
-                self._spellErrors.append((match.start(0), match.end(0)))
+                self._spellErrors.append((res.start(0), res.end(0)))
 
         return self._spellErrors

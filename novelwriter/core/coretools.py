@@ -343,9 +343,9 @@ class DocSearch:
         count = 0
         capped = False
         results = []
-        for match in self._regEx.finditer(text):
-            pos = match.start(0)
-            num = len(match.group(0))
+        for res in self._regEx.finditer(text):
+            pos = res.start(0)
+            num = len(res.group(0))
             lim = text[:pos].rfind("\n") + 1
             cut = text[lim:pos].rfind(" ") + lim + 1
             context = text[cut:cut+100].partition("\n")[0]
