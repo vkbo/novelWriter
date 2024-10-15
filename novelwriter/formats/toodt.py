@@ -543,46 +543,44 @@ class ToOdt(Tokenizer):
             self._xText.insert(0, xFields)
         return
 
-    def saveFlatXML(self, path: str | Path) -> None:
-        """Save the data to an .fodt file."""
-        with open(path, mode="wb") as fObj:
-            xml = ET.ElementTree(self._dFlat)
-            xmlIndent(xml)
-            xml.write(fObj, encoding="utf-8", xml_declaration=True)
-        logger.info("Wrote file: %s", path)
-        return
-
-    def saveOpenDocText(self, path: str | Path) -> None:
-        """Save the data to an .odt file."""
-        mMani = _mkTag("manifest", "manifest")
-        mVers = _mkTag("manifest", "version")
-        mPath = _mkTag("manifest", "full-path")
-        mType = _mkTag("manifest", "media-type")
-        mFile = _mkTag("manifest", "file-entry")
-
-        xMani = ET.Element(mMani, attrib={mVers: X_VERS})
-        ET.SubElement(xMani, mFile, attrib={mPath: "/", mVers: X_VERS, mType: X_MIME})
-        ET.SubElement(xMani, mFile, attrib={mPath: "settings.xml", mType: "text/xml"})
-        ET.SubElement(xMani, mFile, attrib={mPath: "content.xml", mType: "text/xml"})
-        ET.SubElement(xMani, mFile, attrib={mPath: "meta.xml", mType: "text/xml"})
-        ET.SubElement(xMani, mFile, attrib={mPath: "styles.xml", mType: "text/xml"})
-
-        oRoot = _mkTag("office", "document-settings")
-        oVers = _mkTag("office", "version")
-        xSett = ET.Element(oRoot, attrib={oVers: X_VERS})
-
-        def putInZip(name: str, xObj: ET.Element, zipObj: ZipFile) -> None:
-            with zipObj.open(name, mode="w") as fObj:
-                xml = ET.ElementTree(xObj)
+    def saveDocument(self, path: str | Path) -> None:
+        """Save the data to an .fodt or .odt file."""
+        if self._isFlat:
+            with open(path, mode="wb") as fObj:
+                xml = ET.ElementTree(self._dFlat)
+                xmlIndent(xml)
                 xml.write(fObj, encoding="utf-8", xml_declaration=True)
 
-        with ZipFile(path, mode="w") as outZip:
-            outZip.writestr("mimetype", X_MIME)
-            putInZip("META-INF/manifest.xml", xMani, outZip)
-            putInZip("settings.xml", xSett, outZip)
-            putInZip("content.xml", self._dCont, outZip)
-            putInZip("meta.xml", self._dMeta, outZip)
-            putInZip("styles.xml", self._dStyl, outZip)
+        else:
+            mMani = _mkTag("manifest", "manifest")
+            mVers = _mkTag("manifest", "version")
+            mPath = _mkTag("manifest", "full-path")
+            mType = _mkTag("manifest", "media-type")
+            mFile = _mkTag("manifest", "file-entry")
+
+            xMani = ET.Element(mMani, attrib={mVers: X_VERS})
+            ET.SubElement(xMani, mFile, attrib={mPath: "/", mVers: X_VERS, mType: X_MIME})
+            ET.SubElement(xMani, mFile, attrib={mPath: "settings.xml", mType: "text/xml"})
+            ET.SubElement(xMani, mFile, attrib={mPath: "content.xml", mType: "text/xml"})
+            ET.SubElement(xMani, mFile, attrib={mPath: "meta.xml", mType: "text/xml"})
+            ET.SubElement(xMani, mFile, attrib={mPath: "styles.xml", mType: "text/xml"})
+
+            oRoot = _mkTag("office", "document-settings")
+            oVers = _mkTag("office", "version")
+            xSett = ET.Element(oRoot, attrib={oVers: X_VERS})
+
+            def putInZip(name: str, xObj: ET.Element, zipObj: ZipFile) -> None:
+                with zipObj.open(name, mode="w") as fObj:
+                    xml = ET.ElementTree(xObj)
+                    xml.write(fObj, encoding="utf-8", xml_declaration=True)
+
+            with ZipFile(path, mode="w") as outZip:
+                outZip.writestr("mimetype", X_MIME)
+                putInZip("META-INF/manifest.xml", xMani, outZip)
+                putInZip("settings.xml", xSett, outZip)
+                putInZip("content.xml", self._dCont, outZip)
+                putInZip("meta.xml", self._dMeta, outZip)
+                putInZip("styles.xml", self._dStyl, outZip)
 
         logger.info("Wrote file: %s", path)
 

@@ -199,7 +199,7 @@ class ToMarkdown(Tokenizer):
 
         return
 
-    def saveMarkdown(self, path: str | Path) -> None:
+    def saveDocument(self, path: str | Path) -> None:
         """Save the data to a plain text file."""
         with open(path, mode="w", encoding="utf-8") as outFile:
             outFile.write("".join(self._fullMD))

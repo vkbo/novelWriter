@@ -25,6 +25,8 @@ from __future__ import annotations
 
 import logging
 
+from pathlib import Path
+
 from PyQt5.QtGui import (
     QColor, QFont, QFontMetricsF, QTextBlockFormat, QTextCharFormat,
     QTextCursor, QTextDocument
@@ -271,6 +273,10 @@ class ToQTextDocument(Tokenizer):
 
         self._document.blockSignals(False)
 
+        return
+
+    def saveDocument(self, path: str | Path) -> None:
+        """Not implemented."""
         return
 
     def appendFootnotes(self) -> None:

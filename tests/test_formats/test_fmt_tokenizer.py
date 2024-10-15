@@ -39,6 +39,9 @@ class BareTokenizer(Tokenizer):
     def doConvert(self):
         super().doConvert()  # type: ignore (deliberate check)
 
+    def saveDocument(self, path) -> None:
+        super().saveDocument(path)  # type: ignore (deliberate check)
+
 
 @pytest.mark.core
 def testFmtToken_Setters(mockGUI):
@@ -219,12 +222,12 @@ def testFmtToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
 
     # Save File
     savePath = fncPath / "dump.nwd"
-    tokens.saveRawMarkdown(savePath)
+    tokens.saveRawDocument(savePath, asJson=False)
     assert readFile(savePath) == (
         "#! Notes: Plot\n\n"
         "#! Notes: Plot\n\n"
     )
-    tokens.saveRawMarkdownJSON(savePath)
+    tokens.saveRawDocument(savePath, asJson=True)
     assert json.loads(readFile(savePath))["text"] == {
         "nwd": [
             ["#! Notes: Plot"],
@@ -232,9 +235,12 @@ def testFmtToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
         ]
     }
 
-    # Check abstract method
+    # Check abstract methods
     with pytest.raises(NotImplementedError):
         tokens.doConvert()
+
+    with pytest.raises(NotImplementedError):
+        tokens.saveDocument(fncPath)
 
 
 @pytest.mark.core

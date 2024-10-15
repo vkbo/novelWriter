@@ -61,6 +61,7 @@ def testFmtToQTextDocument_ConvertHeaders(mockGUI):
     project = NWProject()
     qdoc = ToQTextDocument(project)
     qdoc.initDocument(CONFIG.textFont, THEME)
+    qdoc.saveDocument("")  # Doesn't do anything for this format
 
     qdoc._isNovel = True
     qdoc._isFirst = True

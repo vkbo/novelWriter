@@ -178,10 +178,7 @@ class NWBuildDocument:
         self._cache = makeObj
 
         try:
-            if isFlat:
-                makeObj.saveFlatXML(path)
-            else:
-                makeObj.saveOpenDocText(path)
+            makeObj.saveDocument(path)
         except Exception as exc:
             logException()
             self._error = formatException(exc)
@@ -213,10 +210,7 @@ class NWBuildDocument:
 
         if isinstance(path, Path):
             try:
-                if asJson:
-                    makeObj.saveHtmlJson(path)
-                else:
-                    makeObj.saveHtml5(path)
+                makeObj.saveDocument(path, asJson=asJson)
             except Exception as exc:
                 logException()
                 self._error = formatException(exc)
@@ -246,7 +240,7 @@ class NWBuildDocument:
         self._cache = makeObj
 
         try:
-            makeObj.saveMarkdown(path)
+            makeObj.saveDocument(path)
         except Exception as exc:
             logException()
             self._error = formatException(exc)
@@ -276,10 +270,7 @@ class NWBuildDocument:
 
         if isinstance(path, Path):
             try:
-                if asJson:
-                    makeObj.saveRawMarkdownJSON(path)
-                else:
-                    makeObj.saveRawMarkdown(path)
+                makeObj.saveRawDocument(path, asJson=asJson)
             except Exception as exc:
                 logException()
                 self._error = formatException(exc)

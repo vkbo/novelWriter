@@ -293,7 +293,7 @@ def testFmtToMarkdown_Save(mockGUI, fncPath):
     # ==========
 
     saveFile = fncPath / "outFile.md"
-    toMD.saveMarkdown(saveFile)
+    toMD.saveDocument(saveFile)
     assert saveFile.read_text(encoding="utf-8") == "".join(resText)
 
 

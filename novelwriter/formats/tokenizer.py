@@ -486,6 +486,10 @@ class Tokenizer(ABC):
     def doConvert(self) -> None:
         raise NotImplementedError
 
+    @abstractmethod
+    def saveDocument(self, path: str | Path) -> None:
+        raise NotImplementedError
+
     def addRootHeading(self, tHandle: str) -> None:
         """Add a heading at the start of a new root folder."""
         self._text = ""
@@ -1087,29 +1091,31 @@ class Tokenizer(ABC):
 
         return
 
-    def saveRawMarkdown(self, path: str | Path) -> None:
+    def saveRawDocument(self, path: str | Path, asJson: bool = False) -> None:
         """Save the raw text to a plain text file."""
-        with open(path, mode="w", encoding="utf-8") as outFile:
-            for nwdPage in self._markdown:
-                outFile.write(nwdPage)
-        return
-
-    def saveRawMarkdownJSON(self, path: str | Path) -> None:
-        """Save the raw text to a JSON file."""
-        timeStamp = time()
-        data = {
-            "meta": {
-                "projectName": self._project.data.name,
-                "novelAuthor": self._project.data.author,
-                "buildTime": int(timeStamp),
-                "buildTimeStr": formatTimeStamp(timeStamp),
-            },
-            "text": {
-                "nwd": [page.rstrip("\n").split("\n") for page in self._markdown],
+        if asJson:
+            ts = time()
+            data = {
+                "meta": {
+                    "projectName": self._project.data.name,
+                    "novelAuthor": self._project.data.author,
+                    "buildTime": int(ts),
+                    "buildTimeStr": formatTimeStamp(ts),
+                },
+                "text": {
+                    "nwd": [page.rstrip("\n").split("\n") for page in self._markdown],
+                }
             }
-        }
-        with open(path, mode="w", encoding="utf-8") as fObj:
-            json.dump(data, fObj, indent=2)
+            with open(path, mode="w", encoding="utf-8") as fObj:
+                json.dump(data, fObj, indent=2)
+
+        else:
+            with open(path, mode="w", encoding="utf-8") as outFile:
+                for nwdPage in self._markdown:
+                    outFile.write(nwdPage)
+
+        logger.info("Wrote file: %s", path)
+
         return
 
     ##

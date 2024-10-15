@@ -802,7 +802,7 @@ def testFmtToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
     testFile = tstPaths.outDir / "coreToOdt_SaveFlat_document.fodt"
     compFile = tstPaths.refDir / "coreToOdt_SaveFlat_document.fodt"
 
-    odt.saveFlatXML(flatFile)
+    odt.saveDocument(flatFile)
     assert flatFile.exists()
 
     copyfile(flatFile, testFile)
@@ -837,7 +837,7 @@ def testFmtToOdt_SaveFull(mockGUI, fncPath, tstPaths):
 
     fullFile = fncPath / "document.odt"
 
-    odt.saveOpenDocText(fullFile)
+    odt.saveDocument(fullFile)
     assert fullFile.exists()
     assert zipfile.is_zipfile(fullFile)
 

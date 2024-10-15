@@ -644,12 +644,12 @@ def testFmtToHtml_Save(mockGUI, fncPath):
     )
 
     saveFile = fncPath / "outFile.htm"
-    html.saveHtml5(saveFile)
+    html.saveDocument(saveFile, asJson=False)
     assert saveFile.read_text(encoding="utf-8") == htmlDoc
 
     # JSON + HTML
     saveFile = fncPath / "outFile.json"
-    html.saveHtmlJson(saveFile)
+    html.saveDocument(saveFile, asJson=True)
     data = json.loads(saveFile.read_text(encoding="utf-8"))
     assert data["meta"]["projectName"] == ""
     assert data["meta"]["novelAuthor"] == ""
