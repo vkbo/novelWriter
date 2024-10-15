@@ -199,7 +199,7 @@ class ToMarkdown(Tokenizer):
 
         return
 
-    def saveDocument(self, path: str | Path) -> None:
+    def saveDocument(self, path: Path) -> None:
         """Save the data to a plain text file."""
         with open(path, mode="w", encoding="utf-8") as outFile:
             outFile.write("".join(self._fullMD))
@@ -210,8 +210,6 @@ class ToMarkdown(Tokenizer):
         """Replace tabs with spaces."""
         spaces = spaceChar*nSpaces
         self._fullMD = [p.replace("\t", spaces) for p in self._fullMD]
-        if self._keepMD:
-            self._markdown = [p.replace("\t", spaces) for p in self._markdown]
         return
 
     ##

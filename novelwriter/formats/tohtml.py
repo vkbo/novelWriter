@@ -290,9 +290,9 @@ class ToHtml(Tokenizer):
 
         return
 
-    def saveDocument(self, path: str | Path, asJson: bool = False) -> None:
+    def saveDocument(self, path: Path) -> None:
         """Save the data to an HTML file."""
-        if asJson:
+        if path.suffix.lower() == ".json":
             ts = time()
             data = {
                 "meta": {

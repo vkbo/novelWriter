@@ -250,7 +250,6 @@ def testFmtToMarkdown_Save(mockGUI, fncPath):
     """Test the save method of the ToMarkdown class."""
     project = NWProject()
     toMD = ToMarkdown(project)
-    toMD.setKeepMarkdown(True)
     toMD._isNovel = True
 
     # Build Project
@@ -287,7 +286,7 @@ def testFmtToMarkdown_Save(mockGUI, fncPath):
 
     toMD.replaceTabs(nSpaces=4, spaceChar=" ")
     resText[6] = "#### A Section\n\n    More text in scene two.\n\n"
-    assert toMD.allMarkdown == resText
+    assert toMD.fullMD == resText
 
     # Check File
     # ==========

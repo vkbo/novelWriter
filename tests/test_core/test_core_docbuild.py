@@ -32,9 +32,9 @@ from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt
 from novelwriter.formats.tohtml import ToHtml
-from novelwriter.formats.tokenizer import ToRaw
 from novelwriter.formats.tomarkdown import ToMarkdown
 from novelwriter.formats.toodt import ToOdt
+from novelwriter.formats.toraw import ToRaw
 
 from tests.mocked import causeException, causeOSError
 from tests.tools import ODT_IGNORE, C, buildTestProject, cmpFiles
@@ -102,7 +102,7 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
 
     count = 0
     error = []
-    for _, success in docBuild.iterBuild(docFile, nwBuildFmt.FODT):
+    for _, success in docBuild.iterBuildDocument(docFile, nwBuildFmt.FODT):
         count += 1 if success else 0
         if docBuild.error:
             error.append(docBuild.error)
@@ -120,7 +120,7 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
 
     count = 0
     error = []
-    for _, success in docBuild.iterBuild(docFile, nwBuildFmt.ODT):
+    for _, success in docBuild.iterBuildDocument(docFile, nwBuildFmt.ODT):
         count += 1 if success else 0
         if docBuild.error:
             error.append(docBuild.error)
@@ -137,7 +137,7 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
         mp.setattr("builtins.open", causeOSError)
 
         docFile = fncPath / "Lorem Ipsum Err.fodt"
-        for _ in docBuild.iterBuild(docFile, nwBuildFmt.FODT):
+        for _ in docBuild.iterBuildDocument(docFile, nwBuildFmt.FODT):
             pass
 
         assert docBuild.error == "OSError: Mock OSError"
@@ -153,7 +153,7 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
         count = 0
         error = []
         docFile = fncPath / "Lorem Ipsum Err.fodt"
-        for _, success in docBuild.iterBuild(docFile, nwBuildFmt.FODT):
+        for _, success in docBuild.iterBuildDocument(docFile, nwBuildFmt.FODT):
             count += 1 if success else 0
             if not success and docBuild.error:
                 error.append(docBuild.error)
@@ -204,7 +204,7 @@ def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
 
     count = 0
     error = []
-    for _, success in docBuild.iterBuild(docFile, nwBuildFmt.HTML):
+    for _, success in docBuild.iterBuildDocument(docFile, nwBuildFmt.HTML):
         count += 1 if success else 0
         if docBuild.error:
             error.append(docBuild.error)
@@ -224,7 +224,7 @@ def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
 
     count = 0
     error = []
-    for _, success in docBuild.iterBuild(docFile, nwBuildFmt.J_HTML):
+    for _, success in docBuild.iterBuildDocument(docFile, nwBuildFmt.J_HTML):
         count += 1 if success else 0
         if docBuild.error:
             error.append(docBuild.error)
@@ -242,7 +242,7 @@ def testCoreDocBuild_HTML(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
         mp.setattr("builtins.open", causeOSError)
 
         docFile = fncPath / "Lorem Ipsum Err.htm"
-        for _ in docBuild.iterBuild(docFile, nwBuildFmt.HTML):
+        for _ in docBuild.iterBuildDocument(docFile, nwBuildFmt.HTML):
             pass
 
         assert docBuild.error == "OSError: Mock OSError"
@@ -272,7 +272,7 @@ def testCoreDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths
 
     count = 0
     error = []
-    for _, success in docBuild.iterBuild(docFile, nwBuildFmt.STD_MD):
+    for _, success in docBuild.iterBuildDocument(docFile, nwBuildFmt.STD_MD):
         count += 1 if success else 0
         if docBuild.error:
             error.append(docBuild.error)
@@ -292,7 +292,7 @@ def testCoreDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths
 
     count = 0
     error = []
-    for _, success in docBuild.iterBuild(docFile, nwBuildFmt.EXT_MD):
+    for _, success in docBuild.iterBuildDocument(docFile, nwBuildFmt.EXT_MD):
         count += 1 if success else 0
         if docBuild.error:
             error.append(docBuild.error)
@@ -310,7 +310,7 @@ def testCoreDocBuild_Markdown(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths
         mp.setattr("builtins.open", causeOSError)
 
         docFile = fncPath / "Lorem Ipsum Err.md"
-        for _ in docBuild.iterBuild(docFile, nwBuildFmt.STD_MD):
+        for _ in docBuild.iterBuildDocument(docFile, nwBuildFmt.STD_MD):
             pass
 
         assert docBuild.error == "OSError: Mock OSError"
@@ -340,7 +340,7 @@ def testCoreDocBuild_NWD(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
 
     count = 0
     error = []
-    for _, success in docBuild.iterBuild(docFile, nwBuildFmt.NWD):
+    for _, success in docBuild.iterBuildDocument(docFile, nwBuildFmt.NWD):
         count += 1 if success else 0
         if docBuild.error:
             error.append(docBuild.error)
@@ -360,7 +360,7 @@ def testCoreDocBuild_NWD(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
 
     count = 0
     error = []
-    for _, success in docBuild.iterBuild(docFile, nwBuildFmt.J_NWD):
+    for _, success in docBuild.iterBuildDocument(docFile, nwBuildFmt.J_NWD):
         count += 1 if success else 0
         if docBuild.error:
             error.append(docBuild.error)
@@ -378,7 +378,7 @@ def testCoreDocBuild_NWD(monkeypatch, mockGUI, prjLipsum, fncPath, tstPaths):
         mp.setattr("builtins.open", causeOSError)
 
         docFile = fncPath / "Lorem Ipsum Err.md"
-        for _ in docBuild.iterBuild(docFile, nwBuildFmt.NWD):
+        for _ in docBuild.iterBuildDocument(docFile, nwBuildFmt.NWD):
             pass
 
         assert docBuild.error == "OSError: Mock OSError"
@@ -402,7 +402,7 @@ def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
     count = 0
     error = []
     docFile = fncPath / "Minimal.txt"
-    for _, success in docBuild.iterBuild(docFile, nwBuildFmt.NWD):
+    for _, success in docBuild.iterBuildDocument(docFile, nwBuildFmt.NWD):
         count += 1 if success else 0
         if docBuild.error:
             error.append(docBuild.error)
@@ -432,7 +432,7 @@ def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
     count = 0
     error = []
     docFile = fncPath / "Minimal.txt"
-    for _, success in docBuild.iterBuild(docFile, nwBuildFmt.NWD):
+    for _, success in docBuild.iterBuildDocument(docFile, nwBuildFmt.NWD):
         count += 1 if success else 0
         if docBuild.error:
             error.append(docBuild.error)
@@ -474,7 +474,7 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
 
     # ODT Format
     docFile = fncPath / "Minimal.odt"
-    assert list(docBuild.iterBuild(docFile, nwBuildFmt.ODT)) == [
+    assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.ODT)) == [
         (0, True), (1, True), (2, False), (3, True), (4, True),
         (5, True), (6, True), (7, True), (8, True), (9, False),
     ]
@@ -484,7 +484,7 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
 
     # FODT Format
     docFile = fncPath / "Minimal.fodt"
-    assert list(docBuild.iterBuild(docFile, nwBuildFmt.FODT)) == [
+    assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.FODT)) == [
         (0, True), (1, True), (2, False), (3, True), (4, True),
         (5, True), (6, True), (7, True), (8, True), (9, False),
     ]
@@ -494,7 +494,7 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
 
     # HTML Format
     docFile = fncPath / "Minimal.html"
-    assert list(docBuild.iterBuild(docFile, nwBuildFmt.HTML)) == [
+    assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.HTML)) == [
         (0, True), (1, True), (2, False), (3, True), (4, True),
         (5, True), (6, True), (7, True), (8, True), (9, False),
     ]
@@ -504,7 +504,7 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
 
     # JSON HTML Format
     docFile = fncPath / "Minimal.json"
-    assert list(docBuild.iterBuild(docFile, nwBuildFmt.J_HTML)) == [
+    assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.J_HTML)) == [
         (0, True), (1, True), (2, False), (3, True), (4, True),
         (5, True), (6, True), (7, True), (8, True), (9, False),
     ]
@@ -516,7 +516,7 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
 
     # Standard Markdown Format
     docFile = fncPath / "Minimal.md"
-    assert list(docBuild.iterBuild(docFile, nwBuildFmt.STD_MD)) == [
+    assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.STD_MD)) == [
         (0, True), (1, True), (2, False), (3, True), (4, True),
         (5, True), (6, True), (7, True), (8, True), (9, False),
     ]
@@ -537,7 +537,7 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
 
     # Extended Markdown Format
     docFile = fncPath / "Minimal.md"
-    assert list(docBuild.iterBuild(docFile, nwBuildFmt.EXT_MD)) == [
+    assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.EXT_MD)) == [
         (0, True), (1, True), (2, False), (3, True), (4, True),
         (5, True), (6, True), (7, True), (8, True), (9, False),
     ]
@@ -558,7 +558,7 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
 
     # NWD Format
     docFile = fncPath / "Minimal.txt"
-    assert list(docBuild.iterBuild(docFile, nwBuildFmt.NWD)) == [
+    assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.NWD)) == [
         (0, True), (1, True), (2, False), (3, True), (4, True),
         (5, True), (6, True), (7, True), (8, True), (9, False),
     ]
@@ -579,7 +579,7 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
 
     # JSON NWD Format
     docFile = fncPath / "Minimal.json"
-    assert list(docBuild.iterBuild(docFile, nwBuildFmt.J_NWD)) == [
+    assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.J_NWD)) == [
         (0, True), (1, True), (2, False), (3, True), (4, True),
         (5, True), (6, True), (7, True), (8, True), (9, False),
     ]

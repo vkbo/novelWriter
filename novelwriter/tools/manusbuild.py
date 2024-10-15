@@ -333,7 +333,7 @@ class GuiManuscriptBuild(NDialog):
         docBuild.queueAll()
 
         self.buildProgress.setMaximum(len(docBuild))
-        for i, _ in docBuild.iterBuild(buildPath, bFormat):
+        for i, _ in docBuild.iterBuildDocument(buildPath, bFormat):
             self.buildProgress.setValue(i+1)
 
         self._build.setLastBuildPath(bPath)

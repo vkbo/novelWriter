@@ -38,10 +38,11 @@ from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt
 from novelwriter.error import formatException, logException
 from novelwriter.formats.tohtml import ToHtml
-from novelwriter.formats.tokenizer import Tokenizer, ToRaw
+from novelwriter.formats.tokenizer import Tokenizer
 from novelwriter.formats.tomarkdown import ToMarkdown
 from novelwriter.formats.toodt import ToOdt
 from novelwriter.formats.toqdoc import TextDocumentTheme, ToQTextDocument
+from novelwriter.formats.toraw import ToRaw
 
 logger = logging.getLogger(__name__)
 
@@ -146,12 +147,10 @@ class NWBuildDocument:
 
         return
 
-    def iterBuild(self, path: Path, bFormat: nwBuildFmt) -> Iterable[tuple[int, bool]]:
+    def iterBuildDocument(self, path: Path, bFormat: nwBuildFmt) -> Iterable[tuple[int, bool]]:
         """Wrapper for builders based on format."""
-        asJson = False
-
         if bFormat in (nwBuildFmt.ODT, nwBuildFmt.FODT):
-            makeObj = ToOdt(self._project, isFlat=(bFormat == nwBuildFmt.FODT))
+            makeObj = ToOdt(self._project, bFormat == nwBuildFmt.FODT)
             filtered = self._setupBuild(makeObj)
             makeObj.initDocument()
             yield from self._iterBuild(makeObj, filtered)
@@ -164,7 +163,6 @@ class NWBuildDocument:
             makeObj.appendFootnotes()
             if not self._build.getBool("html.preserveTabs"):
                 makeObj.replaceTabs()
-            asJson = (bFormat == nwBuildFmt.J_HTML)
 
         elif bFormat in (nwBuildFmt.STD_MD, nwBuildFmt.EXT_MD):
             makeObj = ToMarkdown(self._project)
@@ -177,20 +175,16 @@ class NWBuildDocument:
 
         elif bFormat in (nwBuildFmt.NWD, nwBuildFmt.J_NWD):
             makeObj = ToRaw(self._project)
-            makeObj.setKeepMarkdown(True)
             filtered = self._setupBuild(makeObj)
             yield from self._iterBuild(makeObj, filtered)
-
-            asJson = (bFormat == nwBuildFmt.J_NWD)
+            if self._build.getBool("format.replaceTabs"):
+                makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
 
         self._error = None
         self._cache = makeObj
 
         try:
-            if isinstance(makeObj, ToHtml | ToRaw):
-                makeObj.saveDocument(path, asJson=asJson)
-            else:
-                makeObj.saveDocument(path)
+            makeObj.saveDocument(path)
         except Exception as exc:
             logException()
             self._error = formatException(exc)

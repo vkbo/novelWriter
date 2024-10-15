@@ -543,7 +543,7 @@ class ToOdt(Tokenizer):
             self._xText.insert(0, xFields)
         return
 
-    def saveDocument(self, path: str | Path) -> None:
+    def saveDocument(self, path: Path) -> None:
         """Save the data to an .fodt or .odt file."""
         if self._isFlat:
             with open(path, mode="wb") as fObj:

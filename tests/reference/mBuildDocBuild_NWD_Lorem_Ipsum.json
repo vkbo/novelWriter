@@ -2,8 +2,8 @@
   "meta": {
     "projectName": "Lorem Ipsum",
     "novelAuthor": "lipsum.com",
-    "buildTime": 1729027593,
-    "buildTimeStr": "2024-10-15 23:26:33"
+    "buildTime": 1729029144,
+    "buildTimeStr": "2024-10-15 23:52:24"
   },
   "text": {
     "nwd": [
@@ -96,11 +96,11 @@
         "",
         "% Exctracted from the lipsum.com website.",
         "",
-        "\tIt is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.",
+        "    It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.",
         "",
-        "\tThe point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.",
+        "    The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.",
         "",
-        "\tMany desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like)."
+        "    Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like)."
       ],
       [
         "## Chapter Two",
