@@ -32,7 +32,7 @@ from PyQt5.QtGui import (
 
 from novelwriter.constants import nwHeaders, nwHeadFmt, nwKeyWords, nwLabels, nwUnicode
 from novelwriter.core.project import NWProject
-from novelwriter.core.tokenizer import T_Formats, Tokenizer
+from novelwriter.formats.tokenizer import T_Formats, Tokenizer
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
     QtBlack, QtPageBreakAfter, QtPageBreakBefore, QtTransparent,

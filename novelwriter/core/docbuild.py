@@ -35,13 +35,13 @@ from novelwriter.constants import nwLabels
 from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
-from novelwriter.core.tohtml import ToHtml
-from novelwriter.core.tokenizer import Tokenizer
-from novelwriter.core.tomarkdown import ToMarkdown
-from novelwriter.core.toodt import ToOdt
-from novelwriter.core.toqdoc import TextDocumentTheme, ToQTextDocument
 from novelwriter.enum import nwBuildFmt
 from novelwriter.error import formatException, logException
+from novelwriter.formats.tohtml import ToHtml
+from novelwriter.formats.tokenizer import Tokenizer
+from novelwriter.formats.tomarkdown import ToMarkdown
+from novelwriter.formats.toodt import ToOdt
+from novelwriter.formats.toqdoc import TextDocumentTheme, ToQTextDocument
 
 logger = logging.getLogger(__name__)
 

@@ -29,7 +29,7 @@ from pathlib import Path
 
 from novelwriter.constants import nwHeadFmt, nwLabels, nwUnicode
 from novelwriter.core.project import NWProject
-from novelwriter.core.tokenizer import T_Formats, Tokenizer
+from novelwriter.formats.tokenizer import T_Formats, Tokenizer
 
 logger = logging.getLogger(__name__)
 

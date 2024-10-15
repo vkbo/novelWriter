@@ -27,8 +27,8 @@ from PyQt5.QtGui import QMouseEvent, QTextCursor
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.core.toqdoc import ToQTextDocument
 from novelwriter.enum import nwDocAction
+from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.gui.docviewer import GuiDocViewer
 from novelwriter.types import QtModNone, QtMouseLeft
 

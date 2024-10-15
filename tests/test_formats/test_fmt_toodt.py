@@ -30,7 +30,7 @@ import pytest
 from novelwriter.common import xmlIndent
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.project import NWProject
-from novelwriter.core.toodt import ODTParagraphStyle, ODTTextStyle, ToOdt, XMLParagraph, _mkTag
+from novelwriter.formats.toodt import ODTParagraphStyle, ODTTextStyle, ToOdt, XMLParagraph, _mkTag
 
 from tests.tools import ODT_IGNORE, cmpFiles
 
@@ -54,7 +54,7 @@ def xmlToText(xElem):
 
 
 @pytest.mark.core
-def testCoreToOdt_Init(mockGUI):
+def testFmtToOdt_Init(mockGUI):
     """Test initialisation of the ODT document."""
     project = NWProject()
 
@@ -106,7 +106,7 @@ def testCoreToOdt_Init(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToOdt_TextFormatting(mockGUI):
+def testFmtToOdt_TextFormatting(mockGUI):
     """Test formatting of paragraphs."""
     project = NWProject()
     odt = ToOdt(project, isFlat=True)
@@ -235,7 +235,7 @@ def testCoreToOdt_TextFormatting(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToOdt_DialogueFormatting(mockGUI):
+def testFmtToOdt_DialogueFormatting(mockGUI):
     """Test formatting of dialogue."""
     project = NWProject()
     odt = ToOdt(project, isFlat=True)
@@ -271,7 +271,7 @@ def testCoreToOdt_DialogueFormatting(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToOdt_ConvertHeaders(mockGUI):
+def testFmtToOdt_ConvertHeaders(mockGUI):
     """Test the converter of the ToOdt class."""
     project = NWProject()
     odt = ToOdt(project, isFlat=True)
@@ -358,7 +358,7 @@ def testCoreToOdt_ConvertHeaders(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToOdt_ConvertParagraphs(mockGUI):
+def testFmtToOdt_ConvertParagraphs(mockGUI):
     """Test the converter of the ToOdt class."""
     project = NWProject()
     odt = ToOdt(project, isFlat=True)
@@ -706,7 +706,7 @@ def testCoreToOdt_ConvertParagraphs(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToOdt_ConvertDirect(mockGUI):
+def testFmtToOdt_ConvertDirect(mockGUI):
     """Test the converter directly using the ToOdt class to reach some
     otherwise hard to reach conditions.
     """
@@ -757,7 +757,7 @@ def testCoreToOdt_ConvertDirect(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
+def testFmtToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
     """Test the document save functions."""
     project = NWProject()
     project.data.setAuthor("Jane Smith")
@@ -812,7 +812,7 @@ def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
 
 
 @pytest.mark.core
-def testCoreToOdt_SaveFull(mockGUI, fncPath, tstPaths):
+def testFmtToOdt_SaveFull(mockGUI, fncPath, tstPaths):
     """Test the document save functions."""
     project = NWProject()
     project.data.setAuthor("Jane Smith")
@@ -890,7 +890,7 @@ def testCoreToOdt_SaveFull(mockGUI, fncPath, tstPaths):
 
 
 @pytest.mark.core
-def testCoreToOdt_SpecialFormats(mockGUI):
+def testFmtToOdt_SpecialFormats(mockGUI):
     """Test the special formatters for the ToOdt class."""
     project = NWProject()
     odt = ToOdt(project, isFlat=True)
@@ -921,7 +921,7 @@ def testCoreToOdt_SpecialFormats(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToOdt_ODTParagraphStyle():
+def testFmtToOdt_ODTParagraphStyle():
     """Test the ODTParagraphStyle class."""
     parStyle = ODTParagraphStyle("test")
 
@@ -1158,7 +1158,7 @@ def testCoreToOdt_ODTParagraphStyle():
 
 
 @pytest.mark.core
-def testCoreToOdt_ODTTextStyle():
+def testFmtToOdt_ODTTextStyle():
     """Test the ODTTextStyle class."""
     txtStyle = ODTTextStyle("test")
 
@@ -1308,7 +1308,7 @@ def testCoreToOdt_ODTTextStyle():
 
 
 @pytest.mark.core
-def testCoreToOdt_XMLParagraph():
+def testFmtToOdt_XMLParagraph():
     """Test XML encoding of paragraph."""
     # Stage 1 : Text
     # ==============
@@ -1497,7 +1497,7 @@ def testCoreToOdt_XMLParagraph():
 
 
 @pytest.mark.core
-def testCoreToOdt_MkTag():
+def testFmtToOdt_MkTag():
     """Test the tag maker function."""
     assert _mkTag("office", "text") == "{urn:oasis:names:tc:opendocument:xmlns:office:1.0}text"
     assert _mkTag("style", "text") == "{urn:oasis:names:tc:opendocument:xmlns:style:1.0}text"

@@ -26,11 +26,11 @@ import pytest
 
 from novelwriter import CONFIG
 from novelwriter.core.project import NWProject
-from novelwriter.core.tohtml import ToHtml
+from novelwriter.formats.tohtml import ToHtml
 
 
 @pytest.mark.core
-def testCoreToHtml_ConvertHeaders(mockGUI):
+def testFmtToHtml_ConvertHeaders(mockGUI):
     """Test header formats in the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
@@ -132,7 +132,7 @@ def testCoreToHtml_ConvertHeaders(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToHtml_ConvertParagraphs(mockGUI):
+def testFmtToHtml_ConvertParagraphs(mockGUI):
     """Test paragraph formats in the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
@@ -309,7 +309,7 @@ def testCoreToHtml_ConvertParagraphs(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToHtml_CloseTags(mockGUI):
+def testFmtToHtml_CloseTags(mockGUI):
     """Test automatic closing of HTML tags for shortcodes."""
     project = NWProject()
     html = ToHtml(project)
@@ -345,7 +345,7 @@ def testCoreToHtml_CloseTags(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToHtml_ConvertDirect(mockGUI):
+def testFmtToHtml_ConvertDirect(mockGUI):
     """Test the converter directly using the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
@@ -492,7 +492,7 @@ def testCoreToHtml_ConvertDirect(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToHtml_SpecialCases(mockGUI):
+def testFmtToHtml_SpecialCases(mockGUI):
     """Test some special cases that have caused errors in the past."""
     project = NWProject()
     html = ToHtml(project)
@@ -564,7 +564,7 @@ def testCoreToHtml_SpecialCases(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToHtml_Save(mockGUI, fncPath):
+def testFmtToHtml_Save(mockGUI, fncPath):
     """Test the save method of the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
@@ -660,7 +660,7 @@ def testCoreToHtml_Save(mockGUI, fncPath):
 
 
 @pytest.mark.core
-def testCoreToHtml_Methods(mockGUI):
+def testFmtToHtml_Methods(mockGUI):
     """Test all the other methods of the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
@@ -707,7 +707,7 @@ def testCoreToHtml_Methods(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToHtml_Format(mockGUI):
+def testFmtToHtml_Format(mockGUI):
     """Test all the formatters for the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)

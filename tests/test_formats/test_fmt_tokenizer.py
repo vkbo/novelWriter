@@ -29,8 +29,8 @@ from PyQt5.QtGui import QFont
 from novelwriter import CONFIG
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.project import NWProject
-from novelwriter.core.tokenizer import HeadingFormatter, Tokenizer, stripEscape
-from novelwriter.core.tomarkdown import ToMarkdown
+from novelwriter.formats.tokenizer import HeadingFormatter, Tokenizer, stripEscape
+from novelwriter.formats.tomarkdown import ToMarkdown
 
 from tests.tools import C, buildTestProject, readFile
 
@@ -41,7 +41,7 @@ class BareTokenizer(Tokenizer):
 
 
 @pytest.mark.core
-def testCoreToken_Setters(mockGUI):
+def testFmtToken_Setters(mockGUI):
     """Test all the setters for the Tokenizer class."""
     project = NWProject()
     tokens = BareTokenizer(project)
@@ -152,7 +152,7 @@ def testCoreToken_Setters(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
+def testFmtToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
     """Test handling files and text in the Tokenizer class."""
     project = NWProject()
     mockRnd.reset()
@@ -238,7 +238,7 @@ def testCoreToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
 
 
 @pytest.mark.core
-def testCoreToken_StripEscape():
+def testFmtToken_StripEscape():
     """Test the stripEscape helper function."""
     text1 = "This is text with escapes: \\** \\~~ \\__"
     text2 = "This is text with escapes: ** ~~ __"
@@ -247,7 +247,7 @@ def testCoreToken_StripEscape():
 
 
 @pytest.mark.core
-def testCoreToken_HeaderFormat(mockGUI):
+def testFmtToken_HeaderFormat(mockGUI):
     """Test the tokenization of header formats in the Tokenizer class."""
     project = NWProject()
     tokens = BareTokenizer(project)
@@ -422,7 +422,7 @@ def testCoreToken_HeaderFormat(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_HeaderStyle(mockGUI):
+def testFmtToken_HeaderStyle(mockGUI):
     """Test the styling of headers in the Tokenizer class."""
     project = NWProject()
     tokens = BareTokenizer(project)
@@ -683,7 +683,7 @@ def testCoreToken_HeaderStyle(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_MetaFormat(mockGUI):
+def testFmtToken_MetaFormat(mockGUI):
     """Test the tokenization of meta formats in the Tokenizer class."""
     project = NWProject()
     tokens = BareTokenizer(project)
@@ -771,7 +771,7 @@ def testCoreToken_MetaFormat(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_MarginFormat(mockGUI):
+def testFmtToken_MarginFormat(mockGUI):
     """Test the tokenization of margin formats in the Tokenizer class."""
     project = NWProject()
     tokens = BareTokenizer(project)
@@ -814,7 +814,7 @@ def testCoreToken_MarginFormat(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_ExtractFormats(mockGUI):
+def testFmtToken_ExtractFormats(mockGUI):
     """Test the extraction of formats in the Tokenizer class."""
     project = NWProject()
     tokens = BareTokenizer(project)
@@ -921,7 +921,7 @@ def testCoreToken_ExtractFormats(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_Paragraphs(mockGUI):
+def testFmtToken_Paragraphs(mockGUI):
     """Test the splitting of paragraphs."""
     project = NWProject()
     tokens = BareTokenizer(project)
@@ -994,7 +994,7 @@ def testCoreToken_Paragraphs(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_TextFormat(mockGUI):
+def testFmtToken_TextFormat(mockGUI):
     """Test the tokenization of text formats in the Tokenizer class."""
     project = NWProject()
     tokens = BareTokenizer(project)
@@ -1085,7 +1085,7 @@ def testCoreToken_TextFormat(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_Dialogue(mockGUI):
+def testFmtToken_Dialogue(mockGUI):
     """Test the tokenization of dialogue in the Tokenizer class."""
     CONFIG.fmtDQuoteOpen  = "\u201c"
     CONFIG.fmtDQuoteClose = "\u201d"
@@ -1182,7 +1182,7 @@ def testCoreToken_Dialogue(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_SpecialFormat(mockGUI):
+def testFmtToken_SpecialFormat(mockGUI):
     """Test the tokenization of special formats in the Tokenizer class."""
     project = NWProject()
     tokens = BareTokenizer(project)
@@ -1344,7 +1344,7 @@ def testCoreToken_SpecialFormat(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_TextIndent(mockGUI):
+def testFmtToken_TextIndent(mockGUI):
     """Test the handling of text indent in the Tokenizer class."""
     project = NWProject()
     tokens = BareTokenizer(project)
@@ -1427,7 +1427,7 @@ def testCoreToken_TextIndent(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_ProcessHeaders(mockGUI):
+def testFmtToken_ProcessHeaders(mockGUI):
     """Test the header and page parser of the Tokenizer class."""
     project = NWProject()
     project.data.setLanguage("en")
@@ -1616,7 +1616,7 @@ def testCoreToken_ProcessHeaders(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_BuildOutline(mockGUI, ipsumText):
+def testFmtToken_BuildOutline(mockGUI, ipsumText):
     """Test stats counter of the Tokenizer class."""
     project = NWProject()
     project.data.setLanguage("en")
@@ -1680,7 +1680,7 @@ def testCoreToken_BuildOutline(mockGUI, ipsumText):
 
 
 @pytest.mark.core
-def testCoreToken_CountStats(mockGUI, ipsumText):
+def testFmtToken_CountStats(mockGUI, ipsumText):
     """Test stats counter of the Tokenizer class."""
     project = NWProject()
     project.data.setLanguage("en")
@@ -1876,7 +1876,7 @@ def testCoreToken_CountStats(mockGUI, ipsumText):
 
 
 @pytest.mark.core
-def testCoreToken_SceneSeparators(mockGUI):
+def testFmtToken_SceneSeparators(mockGUI):
     """Test the section and scene separators of the Tokenizer class."""
     project = NWProject()
     project.data.setLanguage("en")
@@ -2027,7 +2027,7 @@ def testCoreToken_SceneSeparators(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_HeaderVisibility(mockGUI):
+def testFmtToken_HeaderVisibility(mockGUI):
     """Test the heading visibility settings of the Tokenizer class."""
     project = NWProject()
     project.data.setLanguage("en")
@@ -2139,7 +2139,7 @@ def testCoreToken_HeaderVisibility(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_CounterHandling(mockGUI):
+def testFmtToken_CounterHandling(mockGUI):
     """Test the heading counter of the Tokenizer class."""
     project = NWProject()
     project.data.setLanguage("en")
@@ -2224,7 +2224,7 @@ def testCoreToken_CounterHandling(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToken_HeadingFormatter(fncPath, mockGUI, mockRnd):
+def testFmtToken_HeadingFormatter(fncPath, mockGUI, mockRnd):
     """Check the HeadingFormatter class."""
     project = NWProject()
     project.setProjectLang("en_GB")

@@ -30,10 +30,10 @@ import pytest
 from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.project import NWProject
-from novelwriter.core.tohtml import ToHtml
-from novelwriter.core.tomarkdown import ToMarkdown
-from novelwriter.core.toodt import ToOdt
 from novelwriter.enum import nwBuildFmt
+from novelwriter.formats.tohtml import ToHtml
+from novelwriter.formats.tomarkdown import ToMarkdown
+from novelwriter.formats.toodt import ToOdt
 
 from tests.mocked import causeException, causeOSError
 from tests.tools import ODT_IGNORE, C, buildTestProject, cmpFiles
@@ -146,7 +146,7 @@ def testCoreDocBuild_OpenDocument(monkeypatch, mockGUI, prjLipsum, fncPath, tstP
     # ==================
 
     with monkeypatch.context() as mp:
-        mp.setattr("novelwriter.core.toodt.ToOdt.doConvert", causeException)
+        mp.setattr("novelwriter.formats.toodt.ToOdt.doConvert", causeException)
         assert len(docBuild) == 21
 
         count = 0

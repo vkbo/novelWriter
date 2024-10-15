@@ -42,10 +42,10 @@ from novelwriter import CONFIG, SHARED
 from novelwriter.common import fuzzyTime
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings
 from novelwriter.core.docbuild import NWBuildDocument
-from novelwriter.core.tokenizer import HeadingFormatter
-from novelwriter.core.toqdoc import TextDocumentTheme, ToQTextDocument
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton, NToolDialog
 from novelwriter.extensions.progressbars import NProgressCircle
+from novelwriter.formats.tokenizer import HeadingFormatter
+from novelwriter.formats.toqdoc import TextDocumentTheme, ToQTextDocument
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings

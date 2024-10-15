@@ -23,11 +23,11 @@ from __future__ import annotations
 import pytest
 
 from novelwriter.core.project import NWProject
-from novelwriter.core.tomarkdown import ToMarkdown
+from novelwriter.formats.tomarkdown import ToMarkdown
 
 
 @pytest.mark.core
-def testCoreToMarkdown_ConvertHeaders(mockGUI):
+def testFmtToMarkdown_ConvertHeaders(mockGUI):
     """Test header formats in the ToMarkdown class."""
     project = NWProject()
     toMD = ToMarkdown(project)
@@ -73,7 +73,7 @@ def testCoreToMarkdown_ConvertHeaders(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToMarkdown_ConvertParagraphs(mockGUI):
+def testFmtToMarkdown_ConvertParagraphs(mockGUI):
     """Test paragraph formats in the ToMarkdown class."""
     project = NWProject()
     toMD = ToMarkdown(project)
@@ -209,7 +209,7 @@ def testCoreToMarkdown_ConvertParagraphs(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToMarkdown_ConvertDirect(mockGUI):
+def testFmtToMarkdown_ConvertDirect(mockGUI):
     """Test the converter directly using the ToMarkdown class."""
     project = NWProject()
     toMD = ToMarkdown(project)
@@ -246,7 +246,7 @@ def testCoreToMarkdown_ConvertDirect(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToMarkdown_Save(mockGUI, fncPath):
+def testFmtToMarkdown_Save(mockGUI, fncPath):
     """Test the save method of the ToMarkdown class."""
     project = NWProject()
     toMD = ToMarkdown(project)
@@ -298,7 +298,7 @@ def testCoreToMarkdown_Save(mockGUI, fncPath):
 
 
 @pytest.mark.core
-def testCoreToMarkdown_Format(mockGUI):
+def testFmtToMarkdown_Format(mockGUI):
     """Test all the formatters for the ToMarkdown class."""
     project = NWProject()
     toMD = ToMarkdown(project)

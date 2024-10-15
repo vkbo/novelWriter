@@ -32,7 +32,7 @@ from time import time
 from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwHeadFmt, nwHtmlUnicode, nwKeyWords, nwLabels
 from novelwriter.core.project import NWProject
-from novelwriter.core.tokenizer import T_Formats, Tokenizer, stripEscape
+from novelwriter.formats.tokenizer import T_Formats, Tokenizer, stripEscape
 from novelwriter.types import FONT_STYLE, FONT_WEIGHTS
 
 logger = logging.getLogger(__name__)

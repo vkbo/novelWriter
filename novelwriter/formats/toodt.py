@@ -41,7 +41,7 @@ from novelwriter import __version__
 from novelwriter.common import xmlIndent
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels
 from novelwriter.core.project import NWProject
-from novelwriter.core.tokenizer import T_Formats, Tokenizer, stripEscape
+from novelwriter.formats.tokenizer import T_Formats, Tokenizer, stripEscape
 from novelwriter.types import FONT_STYLE, FONT_WEIGHTS
 
 logger = logging.getLogger(__name__)
