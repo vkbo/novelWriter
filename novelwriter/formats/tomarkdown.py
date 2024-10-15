@@ -29,7 +29,7 @@ from pathlib import Path
 
 from novelwriter.constants import nwHeadFmt, nwLabels, nwUnicode
 from novelwriter.core.project import NWProject
-from novelwriter.core.tokenizer import T_Formats, Tokenizer
+from novelwriter.formats.tokenizer import T_Formats, Tokenizer
 
 logger = logging.getLogger(__name__)
 
@@ -199,7 +199,7 @@ class ToMarkdown(Tokenizer):
 
         return
 
-    def saveMarkdown(self, path: str | Path) -> None:
+    def saveDocument(self, path: str | Path) -> None:
         """Save the data to a plain text file."""
         with open(path, mode="w", encoding="utf-8") as outFile:
             outFile.write("".join(self._fullMD))

@@ -29,7 +29,7 @@ from pathlib import Path
 import pytest
 
 from novelwriter import CONFIG
-from novelwriter.constants import nwFiles
+from novelwriter.constants import nwFiles, nwHeadFmt
 from novelwriter.core.buildsettings import BuildCollection, BuildSettings, FilterMode
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt, nwItemClass
@@ -147,49 +147,48 @@ def testCoreBuildSettings_BuildValues():
     """Test BuildSettings get/set of build values."""
     build = BuildSettings()
 
-    strSetting = "headings.fmtTitle"
+    strSetting = "headings.fmtPart"
     intSetting = "odt.pageCountOffset"
     boolSetting = "filter.includeNovel"
     floatSetting = "format.lineHeight"
 
     # Invalid setting
-    assert build.setValue("foo", "bar") is False
+    build.setValue("foo", "bar")
+    assert build.getStr("foo") == "None"
 
     # Value must be correct type
-    assert build.setValue(strSetting, 15) is False
-    assert build.setValue(intSetting, 15.0) is False
-    assert build.setValue(boolSetting, "string") is False
-    assert build.setValue(floatSetting, 15) is False
-
-    # Check min/max range
-    assert build.setValue(floatSetting, 200.0) is True
-    assert build.getFloat(floatSetting) == 3.0
-    assert build.setValue(floatSetting, 0.0) is True
-    assert build.getFloat(floatSetting) == 0.75
+    build.setValue(strSetting, 15)
+    assert build.getStr(strSetting) == nwHeadFmt.TITLE
+    build.setValue(intSetting, 15.0)
+    assert build.getInt(intSetting) == 0
+    build.setValue(floatSetting, 15)
+    assert build.getFloat(floatSetting) == 1.15
+    build.setValue(boolSetting, "string")
+    assert build.getBool(boolSetting) is True
 
     # Check string values
-    assert build.setValue(strSetting, "foobar") is True
+    build.setValue(strSetting, "foobar")
     assert build.getStr(strSetting) == "foobar"
     assert build.getInt(strSetting) == 0
     assert build.getBool(strSetting) is True
     assert build.getFloat(strSetting) == 0.0
 
     # Check int values
-    assert build.setValue(intSetting, 42) is True
+    build.setValue(intSetting, 42)
     assert build.getStr(intSetting) == "42"
     assert build.getInt(intSetting) == 42
     assert build.getBool(intSetting) is True
     assert build.getFloat(intSetting) == 42.0
 
     # Check bool values
-    assert build.setValue(boolSetting, True) is True
+    build.setValue(boolSetting, True)
     assert build.getStr(boolSetting) == "True"
     assert build.getInt(boolSetting) == 1
     assert build.getBool(boolSetting) is True
     assert build.getFloat(boolSetting) == 1.0
 
     # Check float values
-    assert build.setValue(floatSetting, 2.5) is True
+    build.setValue(floatSetting, 2.5)
     assert build.getStr(floatSetting) == "2.5"
     assert build.getInt(floatSetting) == 2
     assert build.getBool(floatSetting) is True
@@ -334,7 +333,7 @@ def testCoreBuildSettings_Filters(mockGUI, fncPath: Path, mockRnd):
         hCharDoc:      (True,  FilterMode.INCLUDED),
     }
 
-    # Set everything back to filered
+    # Set everything back to filtered
     build.setValue("filter.includeNotes", False)
     build.setAllowRoot(C.hPlotRoot, False)
     build.setAllowRoot(C.hCharRoot, True)

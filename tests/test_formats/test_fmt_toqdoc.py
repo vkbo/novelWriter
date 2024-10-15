@@ -27,7 +27,7 @@ from PyQt5.QtGui import QColor, QTextBlock, QTextCharFormat, QTextCursor
 from novelwriter import CONFIG
 from novelwriter.constants import nwUnicode
 from novelwriter.core.project import NWProject
-from novelwriter.core.toqdoc import TextDocumentTheme, ToQTextDocument
+from novelwriter.formats.toqdoc import TextDocumentTheme, ToQTextDocument
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
     QtPageBreakAfter, QtTransparent, QtVAlignNormal, QtVAlignSub, QtVAlignSuper
@@ -56,11 +56,12 @@ def charFmtInBlock(block: QTextBlock, pos: int) -> QTextCharFormat:
 
 
 @pytest.mark.core
-def testCoreToQTextDocument_ConvertHeaders(mockGUI):
+def testFmtToQTextDocument_ConvertHeaders(mockGUI):
     """Test header formats in the ToQTextDocument class."""
     project = NWProject()
     qdoc = ToQTextDocument(project)
     qdoc.initDocument(CONFIG.textFont, THEME)
+    qdoc.saveDocument("")  # Doesn't do anything for this format
 
     qdoc._isNovel = True
     qdoc._isFirst = True
@@ -132,7 +133,7 @@ def testCoreToQTextDocument_ConvertHeaders(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToQTextDocument_SeparatorSkip(mockGUI):
+def testFmtToQTextDocument_SeparatorSkip(mockGUI):
     """Test separator and skip in the ToQTextDocument class."""
     project = NWProject()
     qdoc = ToQTextDocument(project)
@@ -198,7 +199,7 @@ def testCoreToQTextDocument_SeparatorSkip(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToQTextDocument_NovelMeta(mockGUI):
+def testFmtToQTextDocument_NovelMeta(mockGUI):
     """Test novel meta formats in the ToQTextDocument class."""
     project = NWProject()
     qdoc = ToQTextDocument(project)
@@ -275,7 +276,7 @@ def testCoreToQTextDocument_NovelMeta(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToQTextDocument_NoteMeta(mockGUI):
+def testFmtToQTextDocument_NoteMeta(mockGUI):
     """Test note meta formats in the ToQTextDocument class."""
     project = NWProject()
     qdoc = ToQTextDocument(project)
@@ -332,7 +333,7 @@ def testCoreToQTextDocument_NoteMeta(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToQTextDocument_TextBlockFormats(mockGUI):
+def testFmtToQTextDocument_TextBlockFormats(mockGUI):
     """Test text block formats in the ToQTextDocument class."""
     project = NWProject()
     qdoc = ToQTextDocument(project)
@@ -441,7 +442,7 @@ def testCoreToQTextDocument_TextBlockFormats(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToQTextDocument_TextCharFormats(mockGUI):
+def testFmtToQTextDocument_TextCharFormats(mockGUI):
     """Test text char formats in the ToQTextDocument class."""
     CONFIG.fmtDQuoteOpen  = nwUnicode.U_LDQUO
     CONFIG.fmtDQuoteClose = nwUnicode.U_RDQUO
@@ -576,7 +577,7 @@ def testCoreToQTextDocument_TextCharFormats(mockGUI):
 
 
 @pytest.mark.core
-def testCoreToQTextDocument_Footnotes(mockGUI):
+def testFmtToQTextDocument_Footnotes(mockGUI):
     """Test footnotes in the ToQTextDocument class."""
     project = NWProject()
     qdoc = ToQTextDocument(project)

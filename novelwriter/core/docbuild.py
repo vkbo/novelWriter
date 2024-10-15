@@ -35,13 +35,13 @@ from novelwriter.constants import nwLabels
 from novelwriter.core.buildsettings import BuildSettings
 from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
-from novelwriter.core.tohtml import ToHtml
-from novelwriter.core.tokenizer import Tokenizer
-from novelwriter.core.tomarkdown import ToMarkdown
-from novelwriter.core.toodt import ToOdt
-from novelwriter.core.toqdoc import TextDocumentTheme, ToQTextDocument
 from novelwriter.enum import nwBuildFmt
 from novelwriter.error import formatException, logException
+from novelwriter.formats.tohtml import ToHtml
+from novelwriter.formats.tokenizer import Tokenizer
+from novelwriter.formats.tomarkdown import ToMarkdown
+from novelwriter.formats.toodt import ToOdt
+from novelwriter.formats.toqdoc import TextDocumentTheme, ToQTextDocument
 
 logger = logging.getLogger(__name__)
 
@@ -178,10 +178,7 @@ class NWBuildDocument:
         self._cache = makeObj
 
         try:
-            if isFlat:
-                makeObj.saveFlatXML(path)
-            else:
-                makeObj.saveOpenDocText(path)
+            makeObj.saveDocument(path)
         except Exception as exc:
             logException()
             self._error = formatException(exc)
@@ -213,10 +210,7 @@ class NWBuildDocument:
 
         if isinstance(path, Path):
             try:
-                if asJson:
-                    makeObj.saveHtmlJson(path)
-                else:
-                    makeObj.saveHtml5(path)
+                makeObj.saveDocument(path, asJson=asJson)
             except Exception as exc:
                 logException()
                 self._error = formatException(exc)
@@ -246,7 +240,7 @@ class NWBuildDocument:
         self._cache = makeObj
 
         try:
-            makeObj.saveMarkdown(path)
+            makeObj.saveDocument(path)
         except Exception as exc:
             logException()
             self._error = formatException(exc)
@@ -276,10 +270,7 @@ class NWBuildDocument:
 
         if isinstance(path, Path):
             try:
-                if asJson:
-                    makeObj.saveRawMarkdownJSON(path)
-                else:
-                    makeObj.saveRawMarkdown(path)
+                makeObj.saveRawDocument(path, asJson=asJson)
             except Exception as exc:
                 logException()
                 self._error = formatException(exc)
@@ -297,9 +288,9 @@ class NWBuildDocument:
         textFont.fromString(self._build.getStr("format.textFont"))
         bldObj.setFont(textFont)
 
-        bldObj.setTitleFormat(
-            self._build.getStr("headings.fmtTitle"),
-            self._build.getBool("headings.hideTitle")
+        bldObj.setPartitionFormat(
+            self._build.getStr("headings.fmtPart"),
+            self._build.getBool("headings.hidePart")
         )
         bldObj.setChapterFormat(
             self._build.getStr("headings.fmtChapter"),
@@ -322,8 +313,12 @@ class NWBuildDocument:
             self._build.getBool("headings.hideSection")
         )
         bldObj.setTitleStyle(
-            self._build.getBool("headings.centerTitle"),
-            self._build.getBool("headings.breakTitle")
+            self._build.getBool("headings.centerPart"),
+            self._build.getBool("headings.breakPart")
+        )
+        bldObj.setPartitionStyle(
+            self._build.getBool("headings.centerPart"),
+            self._build.getBool("headings.breakPart")
         )
         bldObj.setChapterStyle(
             self._build.getBool("headings.centerChapter"),
@@ -343,6 +338,11 @@ class NWBuildDocument:
             self._build.getFloat("format.firstIndentWidth"),
             self._build.getBool("format.indentFirstPar"),
         )
+        bldObj.setHeadingStyles(
+            self._build.getBool("odt.colorHeadings"),
+            self._build.getBool("odt.scaleHeadings"),
+            self._build.getBool("odt.boldHeadings"),
+        )
 
         bldObj.setBodyText(self._build.getBool("text.includeBodyText"))
         bldObj.setSynopsis(self._build.getBool("text.includeSynopsis"))
@@ -355,10 +355,10 @@ class NWBuildDocument:
             bldObj.setReplaceUnicode(self._build.getBool("format.stripUnicode"))
 
         if isinstance(bldObj, ToOdt):
-            bldObj.setColourHeaders(self._build.getBool("odt.addColours"))
             bldObj.setLanguage(self._project.data.language)
             bldObj.setHeaderFormat(
-                self._build.getStr("odt.pageHeader"), self._build.getInt("odt.pageCountOffset")
+                self._build.getStr("odt.pageHeader"),
+                self._build.getInt("odt.pageCountOffset"),
             )
 
             scale = nwLabels.UNIT_SCALE.get(self._build.getStr("format.pageUnit"), 1.0)

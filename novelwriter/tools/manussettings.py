@@ -50,8 +50,8 @@ from novelwriter.extensions.pagedsidebar import NPagedSideBar
 from novelwriter.extensions.switch import NSwitch
 from novelwriter.extensions.switchbox import NSwitchBox
 from novelwriter.types import (
-    QtAlignLeft, QtDialogApply, QtDialogClose, QtDialogSave, QtRoleAccept,
-    QtRoleApply, QtRoleReject, QtUserRole
+    QtAlignCenter, QtAlignLeft, QtDialogApply, QtDialogClose, QtDialogSave,
+    QtRoleAccept, QtRoleApply, QtRoleReject, QtUserRole
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -585,20 +585,20 @@ class _HeadingsTab(NScrollablePage):
         self.formatBox.setHorizontalSpacing(bSp)
 
         # Title Heading
-        self.lblTitle = QLabel(self._build.getLabel("headings.fmtTitle"), self)
-        self.fmtTitle = QLineEdit("", self)
-        self.fmtTitle.setReadOnly(True)
-        self.btnTitle = NIconToolButton(self, iSz, "edit")
-        self.btnTitle.clicked.connect(lambda: self._editHeading(self.EDIT_TITLE))
-        self.hdeTitle = QLabel(trHide, self)
-        self.hdeTitle.setIndent(bSp)
-        self.swtTitle = NSwitch(self, height=iPx)
+        self.lblPart = QLabel(self._build.getLabel("headings.fmtPart"), self)
+        self.fmtPart = QLineEdit("", self)
+        self.fmtPart.setReadOnly(True)
+        self.btnPart = NIconToolButton(self, iSz, "edit")
+        self.btnPart.clicked.connect(lambda: self._editHeading(self.EDIT_TITLE))
+        self.hdePart = QLabel(trHide, self)
+        self.hdePart.setIndent(bSp)
+        self.swtPart = NSwitch(self, height=iPx)
 
-        self.formatBox.addWidget(self.lblTitle, 0, 0)
-        self.formatBox.addWidget(self.fmtTitle, 0, 1)
-        self.formatBox.addWidget(self.btnTitle, 0, 2)
-        self.formatBox.addWidget(self.hdeTitle, 0, 3)
-        self.formatBox.addWidget(self.swtTitle, 0, 4)
+        self.formatBox.addWidget(self.lblPart, 0, 0)
+        self.formatBox.addWidget(self.fmtPart, 0, 1)
+        self.formatBox.addWidget(self.btnPart, 0, 2)
+        self.formatBox.addWidget(self.hdePart, 0, 3)
+        self.formatBox.addWidget(self.swtPart, 0, 4)
 
         # Chapter Heading
         self.lblChapter = QLabel(self._build.getLabel("headings.fmtChapter"), self)
@@ -734,56 +734,46 @@ class _HeadingsTab(NScrollablePage):
         self.layoutMatrix.setVerticalSpacing(vSp)
         self.layoutMatrix.setHorizontalSpacing(vSp)
 
-        # Heading
-        self.layoutHeading = QLabel("<b>{0}</b>".format(self.tr("Additional Styling")), self)
-        self.layoutMatrix.addWidget(self.layoutHeading, 0, 0, 1, 5)
+        self.layoutMatrix.addWidget(QLabel(self.tr("Centre"), self), 0, 1)
+        self.layoutMatrix.addWidget(QLabel(self.tr("Page Break"), self), 0, 2)
 
         # Title Layout
-        self.mtxTitle = QLabel(self._build.getLabel("headings.fmtTitle"), self)
+        self.lblTitle = QLabel(self._build.getLabel("headings.styleTitle"), self)
         self.centerTitle = NSwitch(self, height=iPx)
         self.breakTitle = NSwitch(self, height=iPx)
-        lblCenterT = QLabel(self.tr("Centre"), self)
-        lblCenterT.setIndent(sSp)
-        lblBreakT = QLabel(self.tr("Page Break"), self)
-        lblBreakT.setIndent(sSp)
 
-        self.layoutMatrix.addWidget(self.mtxTitle,    1, 0)
-        self.layoutMatrix.addWidget(lblCenterT,       1, 1)
-        self.layoutMatrix.addWidget(self.centerTitle, 1, 2)
-        self.layoutMatrix.addWidget(lblBreakT,        1, 3)
-        self.layoutMatrix.addWidget(self.breakTitle,  1, 4)
+        self.layoutMatrix.addWidget(self.lblTitle,    1, 0)
+        self.layoutMatrix.addWidget(self.centerTitle, 1, 1, QtAlignCenter)
+        self.layoutMatrix.addWidget(self.breakTitle,  1, 2, QtAlignCenter)
+
+        # Partition Layout
+        self.lblPart = QLabel(self._build.getLabel("headings.stylePart"), self)
+        self.centerPart = NSwitch(self, height=iPx)
+        self.breakPart = NSwitch(self, height=iPx)
+
+        self.layoutMatrix.addWidget(self.lblPart,    2, 0)
+        self.layoutMatrix.addWidget(self.centerPart, 2, 1, QtAlignCenter)
+        self.layoutMatrix.addWidget(self.breakPart,  2, 2, QtAlignCenter)
 
         # Chapter Layout
-        self.mtxChapter = QLabel(self._build.getLabel("headings.fmtChapter"), self)
+        self.lblChapter = QLabel(self._build.getLabel("headings.styleChapter"), self)
         self.centerChapter = NSwitch(self, height=iPx)
         self.breakChapter = NSwitch(self, height=iPx)
-        lblCenterC = QLabel(self.tr("Centre"), self)
-        lblCenterC.setIndent(sSp)
-        lblBreakC = QLabel(self.tr("Page Break"), self)
-        lblBreakC.setIndent(sSp)
 
-        self.layoutMatrix.addWidget(self.mtxChapter,    2, 0)
-        self.layoutMatrix.addWidget(lblCenterC,         2, 1)
-        self.layoutMatrix.addWidget(self.centerChapter, 2, 2)
-        self.layoutMatrix.addWidget(lblBreakC,          2, 3)
-        self.layoutMatrix.addWidget(self.breakChapter,  2, 4)
+        self.layoutMatrix.addWidget(self.lblChapter,    3, 0)
+        self.layoutMatrix.addWidget(self.centerChapter, 3, 1, QtAlignCenter)
+        self.layoutMatrix.addWidget(self.breakChapter,  3, 2, QtAlignCenter)
 
         # Scene Layout
-        self.mtxScene = QLabel(self._build.getLabel("headings.fmtScene"), self)
+        self.lblScene = QLabel(self._build.getLabel("headings.styleScene"), self)
         self.centerScene = NSwitch(self, height=iPx)
         self.breakScene = NSwitch(self, height=iPx)
-        lblCenterS = QLabel(self.tr("Centre"), self)
-        lblCenterS.setIndent(sSp)
-        lblBreakS = QLabel(self.tr("Page Break"), self)
-        lblBreakS.setIndent(sSp)
 
-        self.layoutMatrix.addWidget(self.mtxScene,    3, 0)
-        self.layoutMatrix.addWidget(lblCenterS,       3, 1)
-        self.layoutMatrix.addWidget(self.centerScene, 3, 2)
-        self.layoutMatrix.addWidget(lblBreakS,        3, 3)
-        self.layoutMatrix.addWidget(self.breakScene,  3, 4)
+        self.layoutMatrix.addWidget(self.lblScene,    4, 0)
+        self.layoutMatrix.addWidget(self.centerScene, 4, 1, QtAlignCenter)
+        self.layoutMatrix.addWidget(self.breakScene,  4, 2, QtAlignCenter)
 
-        self.layoutMatrix.setColumnStretch(5, 1)
+        self.layoutMatrix.setColumnStretch(3, 1)
 
         # Assemble
         # ========
@@ -802,14 +792,14 @@ class _HeadingsTab(NScrollablePage):
 
     def loadContent(self) -> None:
         """Populate the widgets."""
-        self.fmtTitle.setText(self._build.getStr("headings.fmtTitle"))
+        self.fmtPart.setText(self._build.getStr("headings.fmtPart"))
         self.fmtChapter.setText(self._build.getStr("headings.fmtChapter"))
         self.fmtUnnumbered.setText(self._build.getStr("headings.fmtUnnumbered"))
         self.fmtScene.setText(self._build.getStr("headings.fmtScene"))
         self.fmtAScene.setText(self._build.getStr("headings.fmtAltScene"))
         self.fmtSection.setText(self._build.getStr("headings.fmtSection"))
 
-        self.swtTitle.setChecked(self._build.getBool("headings.hideTitle"))
+        self.swtPart.setChecked(self._build.getBool("headings.hidePart"))
         self.swtChapter.setChecked(self._build.getBool("headings.hideChapter"))
         self.swtUnnumbered.setChecked(self._build.getBool("headings.hideUnnumbered"))
         self.swtScene.setChecked(self._build.getBool("headings.hideScene"))
@@ -817,16 +807,19 @@ class _HeadingsTab(NScrollablePage):
         self.swtSection.setChecked(self._build.getBool("headings.hideSection"))
 
         self.centerTitle.setChecked(self._build.getBool("headings.centerTitle"))
+        self.centerPart.setChecked(self._build.getBool("headings.centerPart"))
         self.centerChapter.setChecked(self._build.getBool("headings.centerChapter"))
         self.centerScene.setChecked(self._build.getBool("headings.centerScene"))
+
         self.breakTitle.setChecked(self._build.getBool("headings.breakTitle"))
+        self.breakPart.setChecked(self._build.getBool("headings.breakPart"))
         self.breakChapter.setChecked(self._build.getBool("headings.breakChapter"))
         self.breakScene.setChecked(self._build.getBool("headings.breakScene"))
         return
 
     def saveContent(self) -> None:
         """Save choices back into build object."""
-        self._build.setValue("headings.hideTitle", self.swtTitle.isChecked())
+        self._build.setValue("headings.hidePart", self.swtPart.isChecked())
         self._build.setValue("headings.hideChapter", self.swtChapter.isChecked())
         self._build.setValue("headings.hideUnnumbered", self.swtUnnumbered.isChecked())
         self._build.setValue("headings.hideScene", self.swtScene.isChecked())
@@ -834,9 +827,12 @@ class _HeadingsTab(NScrollablePage):
         self._build.setValue("headings.hideSection", self.swtSection.isChecked())
 
         self._build.setValue("headings.centerTitle", self.centerTitle.isChecked())
+        self._build.setValue("headings.centerPart", self.centerPart.isChecked())
         self._build.setValue("headings.centerChapter", self.centerChapter.isChecked())
         self._build.setValue("headings.centerScene", self.centerScene.isChecked())
+
         self._build.setValue("headings.breakTitle", self.breakTitle.isChecked())
+        self._build.setValue("headings.breakPart", self.breakPart.isChecked())
         self._build.setValue("headings.breakChapter", self.breakChapter.isChecked())
         self._build.setValue("headings.breakScene", self.breakScene.isChecked())
         return
@@ -858,8 +854,8 @@ class _HeadingsTab(NScrollablePage):
         self._editing = heading
         self.editTextBox.setEnabled(True)
         if heading == self.EDIT_TITLE:
-            text = self.fmtTitle.text()
-            label = self._build.getLabel("headings.fmtTitle")
+            text = self.fmtPart.text()
+            label = self._build.getLabel("headings.fmtPart")
         elif heading == self.EDIT_CHAPTER:
             text = self.fmtChapter.text()
             label = self._build.getLabel("headings.fmtChapter")
@@ -896,8 +892,8 @@ class _HeadingsTab(NScrollablePage):
         heading = self._editing
         text = self.editTextBox.toPlainText().strip().replace("\n", nwHeadFmt.BR)
         if heading == self.EDIT_TITLE:
-            self.fmtTitle.setText(text)
-            self._build.setValue("headings.fmtTitle", text)
+            self.fmtPart.setText(text)
+            self._build.setValue("headings.fmtPart", text)
         elif heading == self.EDIT_CHAPTER:
             self.fmtChapter.setText(text)
             self._build.setValue("headings.fmtChapter", text)
@@ -1126,9 +1122,7 @@ class _FormattingTab(NScrollableForm):
         self._sidebar.addButton(title, section)
         self.addGroupLabel(title, section)
 
-        self.odtAddColours = NSwitch(self, height=iPx)
-        self.addRow(self._build.getLabel("odt.addColours"), self.odtAddColours)
-
+        # Header
         self.odtPageHeader = QLineEdit(self)
         self.odtPageHeader.setMinimumWidth(CONFIG.pxInt(200))
         self.btnPageHeader = NIconToolButton(self, iSz, "revert")
@@ -1144,6 +1138,15 @@ class _FormattingTab(NScrollableForm):
         self.odtPageCountOffset.setSingleStep(1)
         self.odtPageCountOffset.setMinimumWidth(spW)
         self.addRow(self._build.getLabel("odt.pageCountOffset"), self.odtPageCountOffset)
+
+        # Headings
+        self.colorHeadings = NSwitch(self, height=iPx)
+        self.scaleHeadings = NSwitch(self, height=iPx)
+        self.boldHeadings = NSwitch(self, height=iPx)
+
+        self.addRow(self._build.getLabel("odt.colorHeadings"), self.colorHeadings)
+        self.addRow(self._build.getLabel("odt.scaleHeadings"), self.scaleHeadings)
+        self.addRow(self._build.getLabel("odt.boldHeadings"), self.boldHeadings)
 
         # HTML Document
         # =============
@@ -1229,7 +1232,9 @@ class _FormattingTab(NScrollableForm):
         # ODT Document
         # ============
 
-        self.odtAddColours.setChecked(self._build.getBool("odt.addColours"))
+        self.colorHeadings.setChecked(self._build.getBool("odt.colorHeadings"))
+        self.scaleHeadings.setChecked(self._build.getBool("odt.scaleHeadings"))
+        self.boldHeadings.setChecked(self._build.getBool("odt.boldHeadings"))
         self.odtPageHeader.setText(self._build.getStr("odt.pageHeader"))
         self.odtPageCountOffset.setValue(self._build.getInt("odt.pageCountOffset"))
         self.odtPageHeader.setCursorPosition(0)
@@ -1279,7 +1284,9 @@ class _FormattingTab(NScrollableForm):
         self._build.setValue("format.rightMargin", self.rightMargin.value())
 
         # ODT Document
-        self._build.setValue("odt.addColours", self.odtAddColours.isChecked())
+        self._build.setValue("odt.colorHeadings", self.colorHeadings.isChecked())
+        self._build.setValue("odt.scaleHeadings", self.scaleHeadings.isChecked())
+        self._build.setValue("odt.boldHeadings", self.boldHeadings.isChecked())
         self._build.setValue("odt.pageHeader", self.odtPageHeader.text())
         self._build.setValue("odt.pageCountOffset", self.odtPageCountOffset.value())
 

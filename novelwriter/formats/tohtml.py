@@ -32,7 +32,7 @@ from time import time
 from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwHeadFmt, nwHtmlUnicode, nwKeyWords, nwLabels
 from novelwriter.core.project import NWProject
-from novelwriter.core.tokenizer import T_Formats, Tokenizer, stripEscape
+from novelwriter.formats.tokenizer import T_Formats, Tokenizer, stripEscape
 from novelwriter.types import FONT_STYLE, FONT_WEIGHTS
 
 logger = logging.getLogger(__name__)
@@ -290,51 +290,51 @@ class ToHtml(Tokenizer):
 
         return
 
-    def saveHtml5(self, path: str | Path) -> None:
+    def saveDocument(self, path: str | Path, asJson: bool = False) -> None:
         """Save the data to an HTML file."""
-        with open(path, mode="w", encoding="utf-8") as fObj:
-            fObj.write((
-                "<!DOCTYPE html>\n"
-                "<html>\n"
-                "<head>\n"
-                "<meta charset='utf-8'>\n"
-                "<title>{title:s}</title>\n"
-                "</head>\n"
-                "<style>\n"
-                "{style:s}\n"
-                "</style>\n"
-                "<body>\n"
-                "<article>\n"
-                "{body:s}\n"
-                "</article>\n"
-                "</body>\n"
-                "</html>\n"
-            ).format(
-                title=self._project.data.name,
-                style="\n".join(self.getStyleSheet()),
-                body=("".join(self._fullHTML)).replace("\t", "&#09;").rstrip(),
-            ))
-        logger.info("Wrote file: %s", path)
-        return
-
-    def saveHtmlJson(self, path: str | Path) -> None:
-        """Save the data to a JSON file."""
-        timeStamp = time()
-        data = {
-            "meta": {
-                "projectName": self._project.data.name,
-                "novelAuthor": self._project.data.author,
-                "buildTime": int(timeStamp),
-                "buildTimeStr": formatTimeStamp(timeStamp),
-            },
-            "text": {
-                "css": self.getStyleSheet(),
-                "html": [t.replace("\t", "&#09;").rstrip().split("\n") for t in self.fullHTML],
+        if asJson:
+            ts = time()
+            data = {
+                "meta": {
+                    "projectName": self._project.data.name,
+                    "novelAuthor": self._project.data.author,
+                    "buildTime": int(ts),
+                    "buildTimeStr": formatTimeStamp(ts),
+                },
+                "text": {
+                    "css": self.getStyleSheet(),
+                    "html": [t.replace("\t", "&#09;").rstrip().split("\n") for t in self.fullHTML],
+                }
             }
-        }
-        with open(path, mode="w", encoding="utf-8") as fObj:
-            json.dump(data, fObj, indent=2)
+            with open(path, mode="w", encoding="utf-8") as fObj:
+                json.dump(data, fObj, indent=2)
+
+        else:
+            with open(path, mode="w", encoding="utf-8") as fObj:
+                fObj.write((
+                    "<!DOCTYPE html>\n"
+                    "<html>\n"
+                    "<head>\n"
+                    "<meta charset='utf-8'>\n"
+                    "<title>{title:s}</title>\n"
+                    "</head>\n"
+                    "<style>\n"
+                    "{style:s}\n"
+                    "</style>\n"
+                    "<body>\n"
+                    "<article>\n"
+                    "{body:s}\n"
+                    "</article>\n"
+                    "</body>\n"
+                    "</html>\n"
+                ).format(
+                    title=self._project.data.name,
+                    style="\n".join(self.getStyleSheet()),
+                    body=("".join(self._fullHTML)).replace("\t", "&#09;").rstrip(),
+                ))
+
         logger.info("Wrote file: %s", path)
+
         return
 
     def replaceTabs(self, nSpaces: int = 8, spaceChar: str = "&nbsp;") -> None:

@@ -39,12 +39,12 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.constants import nwHeaders, nwUnicode
-from novelwriter.core.toqdoc import TextDocumentTheme, ToQTextDocument
 from novelwriter.enum import nwDocAction, nwDocMode, nwItemType
 from novelwriter.error import logException
 from novelwriter.extensions.configlayout import NColourLabel
 from novelwriter.extensions.eventfilters import WheelEventFilter
 from novelwriter.extensions.modified import NIconToolButton
+from novelwriter.formats.toqdoc import TextDocumentTheme, ToQTextDocument
 from novelwriter.gui.theme import STYLES_MIN_TOOLBUTTON
 from novelwriter.types import (
     QtAlignCenterTop, QtKeepAnchor, QtMouseLeft, QtMoveAnchor,

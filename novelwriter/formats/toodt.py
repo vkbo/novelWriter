@@ -41,7 +41,7 @@ from novelwriter import __version__
 from novelwriter.common import xmlIndent
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels
 from novelwriter.core.project import NWProject
-from novelwriter.core.tokenizer import T_Formats, Tokenizer, stripEscape
+from novelwriter.formats.tokenizer import T_Formats, Tokenizer, stripEscape
 from novelwriter.types import FONT_STYLE, FONT_WEIGHTS
 
 logger = logging.getLogger(__name__)
@@ -161,7 +161,7 @@ class ToOdt(Tokenizer):
 
         # Properties
         self._textFont     = QFont("Liberation Serif", 12)
-        self._colourHead   = False
+        self._headWeight   = "bold"
         self._headerFormat = ""
         self._pageOffset   = 0
 
@@ -224,10 +224,10 @@ class ToOdt(Tokenizer):
         self._opaHead12  = None
         self._colHead34  = None
         self._opaHead34  = None
-        self._colMetaTx  = None
-        self._opaMetaTx  = None
         self._colDialogM = None
         self._colDialogA = None
+        self._colMetaTx  = "#813709"
+        self._opaMetaTx  = "100%"
         self._markText   = "#ffffa6"
 
         return
@@ -242,11 +242,6 @@ class ToOdt(Tokenizer):
             lang, _, country = language.partition("_")
             self._dLanguage = lang or self._dLanguage
             self._dCountry = country or self._dCountry
-        return
-
-    def setColourHeaders(self, state: bool) -> None:
-        """Enable/disable coloured headings and comments."""
-        self._colourHead = state
         return
 
     def setPageLayout(
@@ -287,13 +282,15 @@ class ToOdt(Tokenizer):
         self._fontStyle  = FONT_STYLE.get(self._textFont.style(), "normal")
         self._fontPitch  = "fixed" if self._textFont.fixedPitch() else "variable"
         self._fontBold   = FONT_WEIGHT_MAP.get(fontBold, fontBold)
+        self._headWeight = self._fontBold if self._boldHeads else None
 
-        self._fSizeTitle = f"{round(2.50 * self._fontSize):d}pt"
-        self._fSizeHead1 = f"{round(2.00 * self._fontSize):d}pt"
-        self._fSizeHead2 = f"{round(1.60 * self._fontSize):d}pt"
-        self._fSizeHead3 = f"{round(1.30 * self._fontSize):d}pt"
-        self._fSizeHead4 = f"{round(1.15 * self._fontSize):d}pt"
-        self._fSizeHead  = f"{round(1.15 * self._fontSize):d}pt"
+        hScale = self._scaleHeads
+        self._fSizeTitle = f"{round((2.50 if hScale else 1.0) * self._fontSize):d}pt"
+        self._fSizeHead1 = f"{round((2.00 if hScale else 1.0) * self._fontSize):d}pt"
+        self._fSizeHead2 = f"{round((1.60 if hScale else 1.0) * self._fontSize):d}pt"
+        self._fSizeHead3 = f"{round((1.30 if hScale else 1.0) * self._fontSize):d}pt"
+        self._fSizeHead4 = f"{round((1.15 if hScale else 1.0) * self._fontSize):d}pt"
+        self._fSizeHead  = f"{round((1.15 if hScale else 1.0) * self._fontSize):d}pt"
         self._fSizeText  = f"{self._fontSize:d}pt"
         self._fSizeFoot  = f"{round(0.8*self._fontSize):d}pt"
 
@@ -322,13 +319,11 @@ class ToOdt(Tokenizer):
         self._mLeftFoot = self._emToCm(self._marginFoot[0])
         self._mBotFoot  = self._emToCm(self._marginFoot[1])
 
-        if self._colourHead:
+        if self._colorHeads:
             self._colHead12 = "#2a6099"
             self._opaHead12 = "100%"
             self._colHead34 = "#444444"
             self._opaHead34 = "100%"
-            self._colMetaTx = "#813709"
-            self._opaMetaTx = "100%"
 
         if self._showDialog:
             self._colDialogM = "#2a6099"
@@ -548,46 +543,44 @@ class ToOdt(Tokenizer):
             self._xText.insert(0, xFields)
         return
 
-    def saveFlatXML(self, path: str | Path) -> None:
-        """Save the data to an .fodt file."""
-        with open(path, mode="wb") as fObj:
-            xml = ET.ElementTree(self._dFlat)
-            xmlIndent(xml)
-            xml.write(fObj, encoding="utf-8", xml_declaration=True)
-        logger.info("Wrote file: %s", path)
-        return
-
-    def saveOpenDocText(self, path: str | Path) -> None:
-        """Save the data to an .odt file."""
-        mMani = _mkTag("manifest", "manifest")
-        mVers = _mkTag("manifest", "version")
-        mPath = _mkTag("manifest", "full-path")
-        mType = _mkTag("manifest", "media-type")
-        mFile = _mkTag("manifest", "file-entry")
-
-        xMani = ET.Element(mMani, attrib={mVers: X_VERS})
-        ET.SubElement(xMani, mFile, attrib={mPath: "/", mVers: X_VERS, mType: X_MIME})
-        ET.SubElement(xMani, mFile, attrib={mPath: "settings.xml", mType: "text/xml"})
-        ET.SubElement(xMani, mFile, attrib={mPath: "content.xml", mType: "text/xml"})
-        ET.SubElement(xMani, mFile, attrib={mPath: "meta.xml", mType: "text/xml"})
-        ET.SubElement(xMani, mFile, attrib={mPath: "styles.xml", mType: "text/xml"})
-
-        oRoot = _mkTag("office", "document-settings")
-        oVers = _mkTag("office", "version")
-        xSett = ET.Element(oRoot, attrib={oVers: X_VERS})
-
-        def putInZip(name: str, xObj: ET.Element, zipObj: ZipFile) -> None:
-            with zipObj.open(name, mode="w") as fObj:
-                xml = ET.ElementTree(xObj)
+    def saveDocument(self, path: str | Path) -> None:
+        """Save the data to an .fodt or .odt file."""
+        if self._isFlat:
+            with open(path, mode="wb") as fObj:
+                xml = ET.ElementTree(self._dFlat)
+                xmlIndent(xml)
                 xml.write(fObj, encoding="utf-8", xml_declaration=True)
 
-        with ZipFile(path, mode="w") as outZip:
-            outZip.writestr("mimetype", X_MIME)
-            putInZip("META-INF/manifest.xml", xMani, outZip)
-            putInZip("settings.xml", xSett, outZip)
-            putInZip("content.xml", self._dCont, outZip)
-            putInZip("meta.xml", self._dMeta, outZip)
-            putInZip("styles.xml", self._dStyl, outZip)
+        else:
+            mMani = _mkTag("manifest", "manifest")
+            mVers = _mkTag("manifest", "version")
+            mPath = _mkTag("manifest", "full-path")
+            mType = _mkTag("manifest", "media-type")
+            mFile = _mkTag("manifest", "file-entry")
+
+            xMani = ET.Element(mMani, attrib={mVers: X_VERS})
+            ET.SubElement(xMani, mFile, attrib={mPath: "/", mVers: X_VERS, mType: X_MIME})
+            ET.SubElement(xMani, mFile, attrib={mPath: "settings.xml", mType: "text/xml"})
+            ET.SubElement(xMani, mFile, attrib={mPath: "content.xml", mType: "text/xml"})
+            ET.SubElement(xMani, mFile, attrib={mPath: "meta.xml", mType: "text/xml"})
+            ET.SubElement(xMani, mFile, attrib={mPath: "styles.xml", mType: "text/xml"})
+
+            oRoot = _mkTag("office", "document-settings")
+            oVers = _mkTag("office", "version")
+            xSett = ET.Element(oRoot, attrib={oVers: X_VERS})
+
+            def putInZip(name: str, xObj: ET.Element, zipObj: ZipFile) -> None:
+                with zipObj.open(name, mode="w") as fObj:
+                    xml = ET.ElementTree(xObj)
+                    xml.write(fObj, encoding="utf-8", xml_declaration=True)
+
+            with ZipFile(path, mode="w") as outZip:
+                outZip.writestr("mimetype", X_MIME)
+                putInZip("META-INF/manifest.xml", xMani, outZip)
+                putInZip("settings.xml", xSett, outZip)
+                putInZip("content.xml", self._dCont, outZip)
+                putInZip("meta.xml", self._dMeta, outZip)
+                putInZip("styles.xml", self._dStyl, outZip)
 
         logger.info("Wrote file: %s", path)
 
@@ -965,7 +958,7 @@ class ToOdt(Tokenizer):
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeTitle)
-        style.setFontWeight(self._fontBold)
+        style.setFontWeight(self._headWeight)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
@@ -998,7 +991,7 @@ class ToOdt(Tokenizer):
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead1)
-        style.setFontWeight(self._fontBold)
+        style.setFontWeight(self._headWeight)
         style.setColour(self._colHead12)
         style.setOpacity(self._opaHead12)
         style.packXML(self._xStyl)
@@ -1016,7 +1009,7 @@ class ToOdt(Tokenizer):
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead2)
-        style.setFontWeight(self._fontBold)
+        style.setFontWeight(self._headWeight)
         style.setColour(self._colHead12)
         style.setOpacity(self._opaHead12)
         style.packXML(self._xStyl)
@@ -1034,7 +1027,7 @@ class ToOdt(Tokenizer):
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead3)
-        style.setFontWeight(self._fontBold)
+        style.setFontWeight(self._headWeight)
         style.setColour(self._colHead34)
         style.setOpacity(self._opaHead34)
         style.packXML(self._xStyl)
@@ -1052,7 +1045,7 @@ class ToOdt(Tokenizer):
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead4)
-        style.setFontWeight(self._fontBold)
+        style.setFontWeight(self._headWeight)
         style.setColour(self._colHead34)
         style.setOpacity(self._opaHead34)
         style.packXML(self._xStyl)

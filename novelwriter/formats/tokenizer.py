@@ -150,18 +150,21 @@ class Tokenizer(ABC):
 
         # User Settings
         self._textFont     = QFont("Serif", 11)  # Output text font
-        self._lineHeight   = 1.15     # Line height in units of em
-        self._blockIndent  = 4.00     # Block indent in units of em
-        self._firstIndent  = False    # Enable first line indent
-        self._firstWidth   = 1.40     # First line indent in units of em
-        self._indentFirst  = False    # Indent first paragraph
-        self._doJustify    = False    # Justify text
-        self._doBodyText   = True     # Include body text
-        self._doSynopsis   = False    # Also process synopsis comments
-        self._doComments   = False    # Also process comments
-        self._doKeywords   = False    # Also process keywords like tags and references
-        self._skipKeywords = set()    # Keywords to ignore
-        self._keepBreaks   = True     # Keep line breaks in paragraphs
+        self._lineHeight   = 1.15   # Line height in units of em
+        self._colorHeads   = True   # Colourise headings
+        self._scaleHeads   = True   # Scale headings to larger font size
+        self._boldHeads    = True   # Bold headings
+        self._blockIndent  = 4.00   # Block indent in units of em
+        self._firstIndent  = False  # Enable first line indent
+        self._firstWidth   = 1.40   # First line indent in units of em
+        self._indentFirst  = False  # Indent first paragraph
+        self._doJustify    = False  # Justify text
+        self._doBodyText   = True   # Include body text
+        self._doSynopsis   = False  # Also process synopsis comments
+        self._doComments   = False  # Also process comments
+        self._doKeywords   = False  # Also process keywords like tags and references
+        self._skipKeywords = set()  # Keywords to ignore
+        self._keepBreaks   = True   # Keep line breaks in paragraphs
 
         # Margins
         self._marginTitle = (1.417, 0.500)
@@ -175,14 +178,14 @@ class Tokenizer(ABC):
         self._marginSep   = (1.168, 1.168)
 
         # Title Formats
-        self._fmtTitle   = nwHeadFmt.TITLE  # Formatting for titles
+        self._fmtPart    = nwHeadFmt.TITLE  # Formatting for partitions
         self._fmtChapter = nwHeadFmt.TITLE  # Formatting for numbered chapters
         self._fmtUnNum   = nwHeadFmt.TITLE  # Formatting for unnumbered chapters
         self._fmtScene   = nwHeadFmt.TITLE  # Formatting for scenes
         self._fmtHScene  = nwHeadFmt.TITLE  # Formatting for hard scenes
         self._fmtSection = nwHeadFmt.TITLE  # Formatting for sections
 
-        self._hideTitle   = False  # Do not include title headings
+        self._hidePart    = False  # Do not include partition headings
         self._hideChapter = False  # Do not include chapter headings
         self._hideUnNum   = False  # Do not include unnumbered headings
         self._hideScene   = False  # Do not include scene headings
@@ -192,6 +195,7 @@ class Tokenizer(ABC):
         self._linkHeadings = False  # Add an anchor before headings
 
         self._titleStyle   = self.A_CENTRE | self.A_PBB
+        self._partStyle    = self.A_CENTRE | self.A_PBB
         self._chapterStyle = self.A_PBB
         self._sceneStyle   = self.A_NONE
 
@@ -271,10 +275,10 @@ class Tokenizer(ABC):
     #  Setters
     ##
 
-    def setTitleFormat(self, hFormat: str, hide: bool = False) -> None:
-        """Set the title format pattern."""
-        self._fmtTitle = hFormat.strip()
-        self._hideTitle = hide
+    def setPartitionFormat(self, hFormat: str, hide: bool = False) -> None:
+        """Set the partition format pattern."""
+        self._fmtPart = hFormat.strip()
+        self._hidePart = hide
         return
 
     def setChapterFormat(self, hFormat: str, hide: bool = False) -> None:
@@ -314,6 +318,13 @@ class Tokenizer(ABC):
         )
         return
 
+    def setPartitionStyle(self, center: bool, pageBreak: bool) -> None:
+        """Set the partition heading style."""
+        self._partStyle = (
+            (self.A_CENTRE if center else self.A_NONE) | (self.A_PBB if pageBreak else self.A_NONE)
+        )
+        return
+
     def setChapterStyle(self, center: bool, pageBreak: bool) -> None:
         """Set the chapter heading style."""
         self._chapterStyle = (
@@ -336,6 +347,13 @@ class Tokenizer(ABC):
     def setLineHeight(self, height: float) -> None:
         """Set the line height between 0.5 and 5.0."""
         self._lineHeight = min(max(float(height), 0.5), 5.0)
+        return
+
+    def setHeadingStyles(self, color: bool, scale: bool, bold: bool) -> None:
+        """Set text style for headings."""
+        self._colorHeads = color
+        self._scaleHeads = scale
+        self._boldHeads = bold
         return
 
     def setBlockIndent(self, indent: float) -> None:
@@ -466,6 +484,10 @@ class Tokenizer(ABC):
 
     @abstractmethod
     def doConvert(self) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def saveDocument(self, path: str | Path) -> None:
         raise NotImplementedError
 
     def addRootHeading(self, tHandle: str) -> None:
@@ -663,16 +685,16 @@ class Tokenizer(ABC):
                 nHead += 1
                 tText = aLine[2:].strip()
                 tType = self.T_HEAD1 if isPlain else self.T_TITLE
-                tStyle = self.A_NONE if isPlain else (self.A_PBB | self.A_CENTRE)
-                sHide = self._hideTitle if isPlain else False
+                tStyle = self.A_NONE if isPlain else self._titleStyle
+                sHide = self._hidePart if isPlain else False
                 if self._isNovel:
                     if sHide:
                         tText = ""
                         tType = self.T_EMPTY
                         tStyle = self.A_NONE
                     elif isPlain:
-                        tText = self._hFormatter.apply(self._fmtTitle, tText, nHead)
-                        tStyle = self._titleStyle
+                        tText = self._hFormatter.apply(self._fmtPart, tText, nHead)
+                        tStyle = self._partStyle
                     if isPlain:
                         self._hFormatter.resetScene()
                     else:
@@ -1069,29 +1091,31 @@ class Tokenizer(ABC):
 
         return
 
-    def saveRawMarkdown(self, path: str | Path) -> None:
+    def saveRawDocument(self, path: str | Path, asJson: bool = False) -> None:
         """Save the raw text to a plain text file."""
-        with open(path, mode="w", encoding="utf-8") as outFile:
-            for nwdPage in self._markdown:
-                outFile.write(nwdPage)
-        return
-
-    def saveRawMarkdownJSON(self, path: str | Path) -> None:
-        """Save the raw text to a JSON file."""
-        timeStamp = time()
-        data = {
-            "meta": {
-                "projectName": self._project.data.name,
-                "novelAuthor": self._project.data.author,
-                "buildTime": int(timeStamp),
-                "buildTimeStr": formatTimeStamp(timeStamp),
-            },
-            "text": {
-                "nwd": [page.rstrip("\n").split("\n") for page in self._markdown],
+        if asJson:
+            ts = time()
+            data = {
+                "meta": {
+                    "projectName": self._project.data.name,
+                    "novelAuthor": self._project.data.author,
+                    "buildTime": int(ts),
+                    "buildTimeStr": formatTimeStamp(ts),
+                },
+                "text": {
+                    "nwd": [page.rstrip("\n").split("\n") for page in self._markdown],
+                }
             }
-        }
-        with open(path, mode="w", encoding="utf-8") as fObj:
-            json.dump(data, fObj, indent=2)
+            with open(path, mode="w", encoding="utf-8") as fObj:
+                json.dump(data, fObj, indent=2)
+
+        else:
+            with open(path, mode="w", encoding="utf-8") as outFile:
+                for nwdPage in self._markdown:
+                    outFile.write(nwdPage)
+
+        logger.info("Wrote file: %s", path)
+
         return
 
     ##

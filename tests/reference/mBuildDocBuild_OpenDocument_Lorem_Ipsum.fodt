@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
 <office:document xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" office:version="1.3" office:mimetype="application/vnd.oasis.opendocument.text">
   <office:meta>
-    <meta:creation-date>2024-09-30T14:08:16</meta:creation-date>
+    <meta:creation-date>2024-10-01T12:11:50</meta:creation-date>
     <meta:generator>novelWriter/2.6a0</meta:generator>
     <meta:initial-creator>lipsum.com</meta:initial-creator>
     <meta:editing-cycles>45</meta:editing-cycles>
     <meta:editing-duration>P0DT0H36M8S</meta:editing-duration>
     <dc:title>Lorem Ipsum</dc:title>
-    <dc:date>2024-09-30T14:08:16</dc:date>
+    <dc:date>2024-10-01T12:11:50</dc:date>
     <dc:creator>lipsum.com</dc:creator>
   </office:meta>
   <office:font-face-decls>
@@ -122,12 +122,12 @@
         <text:user-field-decl office:value-type="float" office:value="4163" text:name="ManuscriptAllWords" />
         <text:user-field-decl office:value-type="float" office:value="3809" text:name="ManuscriptTextWords" />
         <text:user-field-decl office:value-type="float" office:value="54" text:name="ManuscriptTitleWords" />
-        <text:user-field-decl office:value-type="float" office:value="27849" text:name="ManuscriptAllChars" />
+        <text:user-field-decl office:value-type="float" office:value="27848" text:name="ManuscriptAllChars" />
         <text:user-field-decl office:value-type="float" office:value="25528" text:name="ManuscriptTextChars" />
-        <text:user-field-decl office:value-type="float" office:value="311" text:name="ManuscriptTitleChars" />
-        <text:user-field-decl office:value-type="float" office:value="23782" text:name="ManuscriptAllWordChars" />
+        <text:user-field-decl office:value-type="float" office:value="310" text:name="ManuscriptTitleChars" />
+        <text:user-field-decl office:value-type="float" office:value="23781" text:name="ManuscriptAllWordChars" />
         <text:user-field-decl office:value-type="float" office:value="21761" text:name="ManuscriptTextWordChars" />
-        <text:user-field-decl office:value-type="float" office:value="276" text:name="ManuscriptTitleWordChars" />
+        <text:user-field-decl office:value-type="float" office:value="275" text:name="ManuscriptTitleWordChars" />
       </text:user-field-decls>
       <text:p text:style-name="Title">Lorem Ipsum</text:p>
       <text:p text:style-name="P1"><text:span text:style-name="T1">By lipsum.com</text:span></text:p>
@@ -144,7 +144,7 @@
             <text:p text:style-name="Footnote"><text:span text:style-name="T2">Lorem ipsum</text:span> is typically a corrupted version of De finibus bonorum et malorum, a 1st-century BC text by the Roman statesman and philosopher Cicero, with words altered, added, and removed to make it nonsensical and improper Latin. (Source: Wikipedia)</text:p>
           </text:note-body>
         </text:note> of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</text:p>
-      <text:h text:style-name="P4" text:outline-level="1">Title: Act One</text:h>
+      <text:h text:style-name="P4" text:outline-level="1">Part: Act One</text:h>
       <text:p text:style-name="P1">“Fusce maximus felis libero”</text:p>
       <text:h text:style-name="P3" text:outline-level="2">Chapter: Chapter One</text:h>
       <text:p text:style-name="P5"><text:span text:style-name="T1">Point of View:</text:span> Bod</text:p>

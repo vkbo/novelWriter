@@ -25,6 +25,8 @@ from __future__ import annotations
 
 import logging
 
+from pathlib import Path
+
 from PyQt5.QtGui import (
     QColor, QFont, QFontMetricsF, QTextBlockFormat, QTextCharFormat,
     QTextCursor, QTextDocument
@@ -32,7 +34,7 @@ from PyQt5.QtGui import (
 
 from novelwriter.constants import nwHeaders, nwHeadFmt, nwKeyWords, nwLabels, nwUnicode
 from novelwriter.core.project import NWProject
-from novelwriter.core.tokenizer import T_Formats, Tokenizer
+from novelwriter.formats.tokenizer import T_Formats, Tokenizer
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
     QtBlack, QtPageBreakAfter, QtPageBreakBefore, QtTransparent,
@@ -114,12 +116,13 @@ class ToQTextDocument(Tokenizer):
             self.T_HEAD4: (mPx * self._marginHead4[0], mPx * self._marginHead4[1]),
         }
 
+        hScale = self._scaleHeads
         self._sHead = {
-            self.T_TITLE: nwHeaders.H_SIZES.get(0, 1.0) * fPt,
-            self.T_HEAD1: nwHeaders.H_SIZES.get(1, 1.0) * fPt,
-            self.T_HEAD2: nwHeaders.H_SIZES.get(2, 1.0) * fPt,
-            self.T_HEAD3: nwHeaders.H_SIZES.get(3, 1.0) * fPt,
-            self.T_HEAD4: nwHeaders.H_SIZES.get(4, 1.0) * fPt,
+            self.T_TITLE: (nwHeaders.H_SIZES.get(0, 1.0) * fPt) if hScale else fPt,
+            self.T_HEAD1: (nwHeaders.H_SIZES.get(1, 1.0) * fPt) if hScale else fPt,
+            self.T_HEAD2: (nwHeaders.H_SIZES.get(2, 1.0) * fPt) if hScale else fPt,
+            self.T_HEAD3: (nwHeaders.H_SIZES.get(3, 1.0) * fPt) if hScale else fPt,
+            self.T_HEAD4: (nwHeaders.H_SIZES.get(4, 1.0) * fPt) if hScale else fPt,
         }
 
         self._mText = (mPx * self._marginText[0], mPx * self._marginText[1])
@@ -146,9 +149,6 @@ class ToQTextDocument(Tokenizer):
         self._cText = QTextCharFormat()
         self._cText.setBackground(QtTransparent)
         self._cText.setForeground(self._theme.text)
-
-        self._cHead = QTextCharFormat(self._cText)
-        self._cHead.setForeground(self._theme.head)
 
         self._cComment = QTextCharFormat(self._cText)
         self._cComment.setForeground(self._theme.comment)
@@ -273,6 +273,10 @@ class ToQTextDocument(Tokenizer):
 
         self._document.blockSignals(False)
 
+        return
+
+    def saveDocument(self, path: str | Path) -> None:
+        """Not implemented."""
         return
 
     def appendFootnotes(self) -> None:
@@ -409,8 +413,13 @@ class ToQTextDocument(Tokenizer):
         bFmt.setTopMargin(mTop)
         bFmt.setBottomMargin(mBottom)
 
-        cFmt = QTextCharFormat(self._cText if hType == self.T_TITLE else self._cHead)
-        cFmt.setFontWeight(self._bold)
+        self._cTitle = QTextCharFormat(self._cText)
+        self._cTitle.setFontWeight(self._bold if self._boldHeads else self._normal)
+
+        hCol = self._colorHeads and hType != self.T_TITLE
+        cFmt = QTextCharFormat(self._cText)
+        cFmt.setForeground(self._theme.head if hCol else self._theme.text)
+        cFmt.setFontWeight(self._bold if self._boldHeads else self._normal)
         cFmt.setFontPointSize(self._sHead.get(hType, 1.0))
         if nHead >= 0:
             cFmt.setAnchorNames([f"{self._handle}:T{nHead:04d}"])

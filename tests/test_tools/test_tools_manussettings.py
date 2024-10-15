@@ -311,14 +311,14 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
     """Test the Headings Tab of the GuiBuildSettings dialog."""
     build = BuildSettings()
 
-    ttTitle = f"Title: {nwHeadFmt.TITLE}"
+    ttTitle = f"Part: {nwHeadFmt.TITLE}"
     chTitle = f"Chapter: {nwHeadFmt.TITLE}"
     unTitle = f"Interlude: {nwHeadFmt.TITLE}"
     scTitle = f"Scene: {nwHeadFmt.TITLE}"
     shTitle = f"Hard Scene: {nwHeadFmt.TITLE}"
     sxTitle = f"Section: {nwHeadFmt.TITLE}"
 
-    build.setValue("headings.fmtTitle", ttTitle)
+    build.setValue("headings.fmtPart", ttTitle)
     build.setValue("headings.fmtChapter", chTitle)
     build.setValue("headings.fmtUnnumbered", unTitle)
     build.setValue("headings.fmtScene", scTitle)
@@ -337,7 +337,7 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
     assert bSettings.toolStack.currentWidget() is headTab
 
     # Check initial values
-    assert headTab.fmtTitle.text() == ttTitle
+    assert headTab.fmtPart.text() == ttTitle
     assert headTab.fmtChapter.text() == chTitle
     assert headTab.fmtUnnumbered.text() == unTitle
     assert headTab.fmtScene.text() == scTitle
@@ -356,7 +356,7 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
     assert headTab.editTextBox.isEnabled() is False
 
     # Title
-    headTab.btnTitle.click()
+    headTab.btnPart.click()
     assert headTab._editing == headTab.EDIT_TITLE
     assert headTab.editTextBox.isEnabled() is True
     assert headTab.editTextBox.toPlainText() == ttTitle
@@ -434,10 +434,10 @@ def testToolBuildSettings_Headings(qtbot, nwGUI):
     )
 
     # Set all to plain title
-    headTab.btnTitle.click()
+    headTab.btnPart.click()
     headTab.editTextBox.setPlainText(nwHeadFmt.TITLE)
     headTab.btnApply.click()
-    assert build.getStr("headings.fmtTitle") == nwHeadFmt.TITLE
+    assert build.getStr("headings.fmtPart") == nwHeadFmt.TITLE
 
     headTab.btnChapter.click()
     headTab.editTextBox.setPlainText(nwHeadFmt.TITLE)
@@ -707,9 +707,11 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     """Test the format-specific settings."""
     build = BuildSettings()
 
-    build.setValue("odt.addColours", False)
     build.setValue("odt.pageHeader", nwHeadFmt.ODT_AUTO)
     build.setValue("odt.pageCountOffset", 0)
+    build.setValue("odt.colorHeadings", True)
+    build.setValue("odt.scaleHeadings", True)
+    build.setValue("odt.boldHeadings", True)
 
     build.setValue("html.addStyles", False)
     build.setValue("html.preserveTabs", False)
@@ -724,28 +726,34 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     assert bSettings.toolStack.currentWidget() is fmtTab
 
     # Check initial values
-    assert fmtTab.odtAddColours.isChecked() is False
     assert fmtTab.odtPageHeader.text() == nwHeadFmt.ODT_AUTO
     assert fmtTab.odtPageCountOffset.value() == 0
+    assert fmtTab.colorHeadings.isChecked() is True
+    assert fmtTab.scaleHeadings.isChecked() is True
+    assert fmtTab.boldHeadings.isChecked() is True
 
     assert fmtTab.htmlAddStyles.isChecked() is False
     assert fmtTab.htmlPreserveTabs.isChecked() is False
-
-    # Toggle all
-    fmtTab.odtAddColours.setChecked(True)
-    fmtTab.htmlAddStyles.setChecked(True)
-    fmtTab.htmlPreserveTabs.setChecked(True)
 
     # Change Values
     fmtTab.odtPageCountOffset.setValue(1)
     fmtTab.odtPageHeader.setText("Stuff")
 
+    # Toggle all
+    fmtTab.colorHeadings.setChecked(False)
+    fmtTab.scaleHeadings.setChecked(False)
+    fmtTab.boldHeadings.setChecked(False)
+    fmtTab.htmlAddStyles.setChecked(True)
+    fmtTab.htmlPreserveTabs.setChecked(True)
+
     # Save values
     fmtTab.saveContent()
 
-    assert build.getBool("odt.addColours") is True
     assert build.getStr("odt.pageHeader") == "Stuff"
     assert build.getInt("odt.pageCountOffset") == 1
+    assert build.getBool("odt.colorHeadings") is False
+    assert build.getBool("odt.scaleHeadings") is False
+    assert build.getBool("odt.boldHeadings") is False
 
     assert build.getBool("html.addStyles") is True
     assert build.getBool("html.preserveTabs") is True

@@ -45,29 +45,30 @@ logger = logging.getLogger(__name__)
 
 # The Settings Template
 # =====================
-# Each entry contains a tuple on the form:
-# (type, default, [min value, max value])
+# Each entry contains a tuple on the form: (type, default)
 
-SETTINGS_TEMPLATE = {
+SETTINGS_TEMPLATE: dict[str, tuple[type, str | int | float | bool]] = {
     "filter.includeNovel":     (bool, True),
     "filter.includeNotes":     (bool, False),
     "filter.includeInactive":  (bool, False),
-    "headings.fmtTitle":       (str, nwHeadFmt.TITLE),
+    "headings.fmtPart":        (str, nwHeadFmt.TITLE),
     "headings.fmtChapter":     (str, nwHeadFmt.TITLE),
     "headings.fmtUnnumbered":  (str, nwHeadFmt.TITLE),
     "headings.fmtScene":       (str, "* * *"),
     "headings.fmtAltScene":    (str, ""),
     "headings.fmtSection":     (str, ""),
-    "headings.hideTitle":      (bool, False),
+    "headings.hidePart":       (bool, False),
     "headings.hideChapter":    (bool, False),
     "headings.hideUnnumbered": (bool, False),
     "headings.hideScene":      (bool, False),
     "headings.hideAltScene":   (bool, False),
     "headings.hideSection":    (bool, True),
     "headings.centerTitle":    (bool, True),
+    "headings.centerPart":     (bool, True),
     "headings.centerChapter":  (bool, False),
     "headings.centerScene":    (bool, False),
     "headings.breakTitle":     (bool, True),
+    "headings.breakPart":      (bool, True),
     "headings.breakChapter":   (bool, True),
     "headings.breakScene":     (bool, False),
     "text.includeSynopsis":    (bool, False),
@@ -77,7 +78,7 @@ SETTINGS_TEMPLATE = {
     "text.ignoredKeywords":    (str, ""),
     "text.addNoteHeadings":    (bool, True),
     "format.textFont":         (str, CONFIG.textFont.toString()),
-    "format.lineHeight":       (float, 1.15, 0.75, 3.0),
+    "format.lineHeight":       (float, 1.15),
     "format.justifyText":      (bool, False),
     "format.stripUnicode":     (bool, False),
     "format.replaceTabs":      (bool, False),
@@ -94,9 +95,11 @@ SETTINGS_TEMPLATE = {
     "format.bottomMargin":     (float, 2.0),
     "format.leftMargin":       (float, 2.0),
     "format.rightMargin":      (float, 2.0),
-    "odt.addColours":          (bool, True),
     "odt.pageHeader":          (str, nwHeadFmt.ODT_AUTO),
     "odt.pageCountOffset":     (int, 0),
+    "odt.colorHeadings":       (bool, True),
+    "odt.scaleHeadings":       (bool, True),
+    "odt.boldHeadings":        (bool, True),
     "html.addStyles":          (bool, True),
     "html.preserveTabs":       (bool, False),
 }
@@ -108,12 +111,16 @@ SETTINGS_LABELS = {
     "filter.includeInactive":  QT_TRANSLATE_NOOP("Builds", "Inactive Documents"),
 
     "headings":                QT_TRANSLATE_NOOP("Builds", "Headings"),
-    "headings.fmtTitle":       QT_TRANSLATE_NOOP("Builds", "Partition Format"),
+    "headings.fmtPart":        QT_TRANSLATE_NOOP("Builds", "Partition Format"),
     "headings.fmtChapter":     QT_TRANSLATE_NOOP("Builds", "Chapter Format"),
     "headings.fmtUnnumbered":  QT_TRANSLATE_NOOP("Builds", "Unnumbered Format"),
     "headings.fmtScene":       QT_TRANSLATE_NOOP("Builds", "Scene Format"),
     "headings.fmtAltScene":    QT_TRANSLATE_NOOP("Builds", "Alt. Scene Format"),
     "headings.fmtSection":     QT_TRANSLATE_NOOP("Builds", "Section Format"),
+    "headings.styleTitle":     QT_TRANSLATE_NOOP("Builds", "Title Styling"),
+    "headings.stylePart":      QT_TRANSLATE_NOOP("Builds", "Partition Styling"),
+    "headings.styleChapter":   QT_TRANSLATE_NOOP("Builds", "Chapter Styling"),
+    "headings.styleScene":     QT_TRANSLATE_NOOP("Builds", "Scene Styling"),
 
     "text.grpContent":         QT_TRANSLATE_NOOP("Builds", "Text Content"),
     "text.includeSynopsis":    QT_TRANSLATE_NOOP("Builds", "Include Synopsis"),
@@ -147,12 +154,14 @@ SETTINGS_LABELS = {
     "format.leftMargin":       QT_TRANSLATE_NOOP("Builds", "Left Margin"),
     "format.rightMargin":      QT_TRANSLATE_NOOP("Builds", "Right Margin"),
 
-    "odt":                     QT_TRANSLATE_NOOP("Builds", "ODT Documents"),
-    "odt.addColours":          QT_TRANSLATE_NOOP("Builds", "Add Highlight Colours"),
+    "odt":                     QT_TRANSLATE_NOOP("Builds", "Document Options"),
     "odt.pageHeader":          QT_TRANSLATE_NOOP("Builds", "Page Header"),
     "odt.pageCountOffset":     QT_TRANSLATE_NOOP("Builds", "Page Counter Offset"),
+    "odt.colorHeadings":       QT_TRANSLATE_NOOP("Builds", "Add Colours to Headings"),
+    "odt.scaleHeadings":       QT_TRANSLATE_NOOP("Builds", "Increase Size of Headings"),
+    "odt.boldHeadings":        QT_TRANSLATE_NOOP("Builds", "Bold Headings"),
 
-    "html":                    QT_TRANSLATE_NOOP("Builds", "HTML Document"),
+    "html":                    QT_TRANSLATE_NOOP("Builds", "HTML Options"),
     "html.addStyles":          QT_TRANSLATE_NOOP("Builds", "Add CSS Styles"),
     "html.preserveTabs":       QT_TRANSLATE_NOOP("Builds", "Preserve Tab Characters"),
 }
@@ -346,18 +355,12 @@ class BuildSettings:
             self._changed = True
         return
 
-    def setValue(self, key: str, value: str | int | bool | float) -> bool:
+    def setValue(self, key: str, value: str | int | float | bool) -> None:
         """Set a specific value for a build setting."""
-        if key not in SETTINGS_TEMPLATE:
-            return False
-        definition = SETTINGS_TEMPLATE[key]
-        if not isinstance(value, definition[0]):
-            return False
-        if len(definition) == 4 and isinstance(value, (int, float)):
-            value = min(max(value, definition[2]), definition[3])
-        self._changed = value != self._settings[key]
-        self._settings[key] = value
-        return True
+        if (d := SETTINGS_TEMPLATE.get(key)) and len(d) == 2 and isinstance(value, d[0]):
+            self._changed = value != self._settings[key]
+            self._settings[key] = value
+        return
 
     ##
     #  Methods
