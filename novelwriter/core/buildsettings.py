@@ -40,7 +40,6 @@ from novelwriter.constants import nwFiles, nwHeadFmt
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt
 from novelwriter.error import logException
-from novelwriter.types import T_Basic
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +47,7 @@ logger = logging.getLogger(__name__)
 # =====================
 # Each entry contains a tuple on the form: (type, default)
 
-SETTINGS_TEMPLATE: dict[str, tuple[type, T_Basic]] = {
+SETTINGS_TEMPLATE: dict[str, tuple[type, str | int | float | bool]] = {
     "filter.includeNovel":     (bool, True),
     "filter.includeNotes":     (bool, False),
     "filter.includeInactive":  (bool, False),
@@ -356,7 +355,7 @@ class BuildSettings:
             self._changed = True
         return
 
-    def setValue(self, key: str, value: T_Basic) -> None:
+    def setValue(self, key: str, value: str | int | float | bool) -> None:
         """Set a specific value for a build setting."""
         if (d := SETTINGS_TEMPLATE.get(key)) and len(d) == 2 and isinstance(value, d[0]):
             self._changed = value != self._settings[key]
