@@ -161,8 +161,6 @@ class ToOdt(Tokenizer):
 
         # Properties
         self._textFont     = QFont("Liberation Serif", 12)
-        self._addColours   = False
-        self._scaleHeads   = True
         self._headWeight   = "bold"
         self._headerFormat = ""
         self._pageOffset   = 0
@@ -226,10 +224,10 @@ class ToOdt(Tokenizer):
         self._opaHead12  = None
         self._colHead34  = None
         self._opaHead34  = None
-        self._colMetaTx  = None
-        self._opaMetaTx  = None
         self._colDialogM = None
         self._colDialogA = None
+        self._colMetaTx  = "#813709"
+        self._opaMetaTx  = "100%"
         self._markText   = "#ffffa6"
 
         return
@@ -244,17 +242,6 @@ class ToOdt(Tokenizer):
             lang, _, country = language.partition("_")
             self._dLanguage = lang or self._dLanguage
             self._dCountry = country or self._dCountry
-        return
-
-    def setHeadingStyles(self, scale: bool, bold: bool) -> None:
-        """Set plain text style for headings."""
-        self._scaleHeads = scale
-        self._headWeight = self._fontBold if bold else None
-        return
-
-    def setColoursEnabled(self, state: bool) -> None:
-        """Enable/disable coloured headings and comments."""
-        self._addColours = state
         return
 
     def setPageLayout(
@@ -295,6 +282,7 @@ class ToOdt(Tokenizer):
         self._fontStyle  = FONT_STYLE.get(self._textFont.style(), "normal")
         self._fontPitch  = "fixed" if self._textFont.fixedPitch() else "variable"
         self._fontBold   = FONT_WEIGHT_MAP.get(fontBold, fontBold)
+        self._headWeight = self._fontBold if self._boldHeads else None
 
         hScale = self._scaleHeads
         self._fSizeTitle = f"{round((2.50 if hScale else 1.0) * self._fontSize):d}pt"
@@ -331,13 +319,11 @@ class ToOdt(Tokenizer):
         self._mLeftFoot = self._emToCm(self._marginFoot[0])
         self._mBotFoot  = self._emToCm(self._marginFoot[1])
 
-        if self._addColours:
+        if self._colorHeads:
             self._colHead12 = "#2a6099"
             self._opaHead12 = "100%"
             self._colHead34 = "#444444"
             self._opaHead34 = "100%"
-            self._colMetaTx = "#813709"
-            self._opaMetaTx = "100%"
 
         if self._showDialog:
             self._colDialogM = "#2a6099"

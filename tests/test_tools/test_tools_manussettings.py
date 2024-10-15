@@ -707,11 +707,11 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     """Test the format-specific settings."""
     build = BuildSettings()
 
-    build.setValue("odt.addColours", True)
-    build.setValue("odt.scaleHeadings", True)
-    build.setValue("odt.boldHeadings", True)
     build.setValue("odt.pageHeader", nwHeadFmt.ODT_AUTO)
     build.setValue("odt.pageCountOffset", 0)
+    build.setValue("odt.colorHeadings", True)
+    build.setValue("odt.scaleHeadings", True)
+    build.setValue("odt.boldHeadings", True)
 
     build.setValue("html.addStyles", False)
     build.setValue("html.preserveTabs", False)
@@ -726,34 +726,34 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     assert bSettings.toolStack.currentWidget() is fmtTab
 
     # Check initial values
-    assert fmtTab.odtAddColours.isChecked() is True
-    assert fmtTab.scaleHeadings.isChecked() is True
-    assert fmtTab.boldHeadings.isChecked() is True
     assert fmtTab.odtPageHeader.text() == nwHeadFmt.ODT_AUTO
     assert fmtTab.odtPageCountOffset.value() == 0
+    assert fmtTab.colorHeadings.isChecked() is True
+    assert fmtTab.scaleHeadings.isChecked() is True
+    assert fmtTab.boldHeadings.isChecked() is True
 
     assert fmtTab.htmlAddStyles.isChecked() is False
     assert fmtTab.htmlPreserveTabs.isChecked() is False
-
-    # Toggle all
-    fmtTab.odtAddColours.setChecked(False)
-    fmtTab.scaleHeadings.setChecked(False)
-    fmtTab.boldHeadings.setChecked(False)
-    fmtTab.htmlAddStyles.setChecked(True)
-    fmtTab.htmlPreserveTabs.setChecked(True)
 
     # Change Values
     fmtTab.odtPageCountOffset.setValue(1)
     fmtTab.odtPageHeader.setText("Stuff")
 
+    # Toggle all
+    fmtTab.colorHeadings.setChecked(False)
+    fmtTab.scaleHeadings.setChecked(False)
+    fmtTab.boldHeadings.setChecked(False)
+    fmtTab.htmlAddStyles.setChecked(True)
+    fmtTab.htmlPreserveTabs.setChecked(True)
+
     # Save values
     fmtTab.saveContent()
 
-    assert build.getBool("odt.addColours") is False
-    assert build.getBool("odt.scaleHeadings") is False
-    assert build.getBool("odt.boldHeadings") is False
     assert build.getStr("odt.pageHeader") == "Stuff"
     assert build.getInt("odt.pageCountOffset") == 1
+    assert build.getBool("odt.colorHeadings") is False
+    assert build.getBool("odt.scaleHeadings") is False
+    assert build.getBool("odt.boldHeadings") is False
 
     assert build.getBool("html.addStyles") is True
     assert build.getBool("html.preserveTabs") is True

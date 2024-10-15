@@ -1122,14 +1122,7 @@ class _FormattingTab(NScrollableForm):
         self._sidebar.addButton(title, section)
         self.addGroupLabel(title, section)
 
-        self.odtAddColours = NSwitch(self, height=iPx)
-        self.scaleHeadings = NSwitch(self, height=iPx)
-        self.boldHeadings = NSwitch(self, height=iPx)
-
-        self.addRow(self._build.getLabel("odt.addColours"), self.odtAddColours)
-        self.addRow(self._build.getLabel("odt.scaleHeadings"), self.scaleHeadings)
-        self.addRow(self._build.getLabel("odt.boldHeadings"), self.boldHeadings)
-
+        # Header
         self.odtPageHeader = QLineEdit(self)
         self.odtPageHeader.setMinimumWidth(CONFIG.pxInt(200))
         self.btnPageHeader = NIconToolButton(self, iSz, "revert")
@@ -1145,6 +1138,15 @@ class _FormattingTab(NScrollableForm):
         self.odtPageCountOffset.setSingleStep(1)
         self.odtPageCountOffset.setMinimumWidth(spW)
         self.addRow(self._build.getLabel("odt.pageCountOffset"), self.odtPageCountOffset)
+
+        # Headings
+        self.colorHeadings = NSwitch(self, height=iPx)
+        self.scaleHeadings = NSwitch(self, height=iPx)
+        self.boldHeadings = NSwitch(self, height=iPx)
+
+        self.addRow(self._build.getLabel("odt.colorHeadings"), self.colorHeadings)
+        self.addRow(self._build.getLabel("odt.scaleHeadings"), self.scaleHeadings)
+        self.addRow(self._build.getLabel("odt.boldHeadings"), self.boldHeadings)
 
         # HTML Document
         # =============
@@ -1230,7 +1232,7 @@ class _FormattingTab(NScrollableForm):
         # ODT Document
         # ============
 
-        self.odtAddColours.setChecked(self._build.getBool("odt.addColours"))
+        self.colorHeadings.setChecked(self._build.getBool("odt.colorHeadings"))
         self.scaleHeadings.setChecked(self._build.getBool("odt.scaleHeadings"))
         self.boldHeadings.setChecked(self._build.getBool("odt.boldHeadings"))
         self.odtPageHeader.setText(self._build.getStr("odt.pageHeader"))
@@ -1282,7 +1284,7 @@ class _FormattingTab(NScrollableForm):
         self._build.setValue("format.rightMargin", self.rightMargin.value())
 
         # ODT Document
-        self._build.setValue("odt.addColours", self.odtAddColours.isChecked())
+        self._build.setValue("odt.colorHeadings", self.colorHeadings.isChecked())
         self._build.setValue("odt.scaleHeadings", self.scaleHeadings.isChecked())
         self._build.setValue("odt.boldHeadings", self.boldHeadings.isChecked())
         self._build.setValue("odt.pageHeader", self.odtPageHeader.text())

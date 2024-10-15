@@ -347,6 +347,11 @@ class NWBuildDocument:
             self._build.getFloat("format.firstIndentWidth"),
             self._build.getBool("format.indentFirstPar"),
         )
+        bldObj.setHeadingStyles(
+            self._build.getBool("odt.colorHeadings"),
+            self._build.getBool("odt.scaleHeadings"),
+            self._build.getBool("odt.boldHeadings"),
+        )
 
         bldObj.setBodyText(self._build.getBool("text.includeBodyText"))
         bldObj.setSynopsis(self._build.getBool("text.includeSynopsis"))
@@ -359,11 +364,6 @@ class NWBuildDocument:
             bldObj.setReplaceUnicode(self._build.getBool("format.stripUnicode"))
 
         if isinstance(bldObj, ToOdt):
-            bldObj.setColoursEnabled(self._build.getBool("odt.addColours"))
-            bldObj.setHeadingStyles(
-                self._build.getBool("odt.scaleHeadings"),
-                self._build.getBool("odt.boldHeadings"),
-            )
             bldObj.setLanguage(self._project.data.language)
             bldObj.setHeaderFormat(
                 self._build.getStr("odt.pageHeader"),
