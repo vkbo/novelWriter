@@ -1245,3 +1245,41 @@ class HeadingFormatter:
             hFormat = hFormat.replace(nwHeadFmt.CHAR_FOCUS, fText)
 
         return hFormat
+
+
+class ToRaw(Tokenizer):
+
+    def __init__(self, project: NWProject) -> None:
+        super().__init__(project)
+        self._keepMD = True
+        return
+
+    def doConvert(self) -> None:
+        return
+
+    def saveDocument(self, path: str | Path, asJson: bool = False) -> None:
+        """Save the raw text to a plain text file."""
+        if asJson:
+            ts = time()
+            data = {
+                "meta": {
+                    "projectName": self._project.data.name,
+                    "novelAuthor": self._project.data.author,
+                    "buildTime": int(ts),
+                    "buildTimeStr": formatTimeStamp(ts),
+                },
+                "text": {
+                    "nwd": [page.rstrip("\n").split("\n") for page in self._markdown],
+                }
+            }
+            with open(path, mode="w", encoding="utf-8") as fObj:
+                json.dump(data, fObj, indent=2)
+
+        else:
+            with open(path, mode="w", encoding="utf-8") as outFile:
+                for nwdPage in self._markdown:
+                    outFile.write(nwdPage)
+
+        logger.info("Wrote file: %s", path)
+
+        return

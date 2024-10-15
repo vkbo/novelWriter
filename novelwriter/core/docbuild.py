@@ -38,7 +38,7 @@ from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt
 from novelwriter.error import formatException, logException
 from novelwriter.formats.tohtml import ToHtml
-from novelwriter.formats.tokenizer import Tokenizer
+from novelwriter.formats.tokenizer import Tokenizer, ToRaw
 from novelwriter.formats.tomarkdown import ToMarkdown
 from novelwriter.formats.toodt import ToOdt
 from novelwriter.formats.toqdoc import TextDocumentTheme, ToQTextDocument
@@ -148,22 +148,61 @@ class NWBuildDocument:
 
     def iterBuild(self, path: Path, bFormat: nwBuildFmt) -> Iterable[tuple[int, bool]]:
         """Wrapper for builders based on format."""
+        asJson = False
+
         if bFormat in (nwBuildFmt.ODT, nwBuildFmt.FODT):
-            yield from self.iterBuildOpenDocument(path, bFormat == nwBuildFmt.FODT)
+            makeObj = ToOdt(self._project, isFlat=(bFormat == nwBuildFmt.FODT))
+            filtered = self._setupBuild(makeObj)
+            makeObj.initDocument()
+            yield from self._iterBuild(makeObj, filtered)
+            makeObj.closeDocument()
+
         elif bFormat in (nwBuildFmt.HTML, nwBuildFmt.J_HTML):
-            yield from self.iterBuildHTML(path, asJson=bFormat == nwBuildFmt.J_HTML)
+            makeObj = ToHtml(self._project)
+            filtered = self._setupBuild(makeObj)
+            yield from self._iterBuild(makeObj, filtered)
+            makeObj.appendFootnotes()
+            if not self._build.getBool("html.preserveTabs"):
+                makeObj.replaceTabs()
+            asJson = (bFormat == nwBuildFmt.J_HTML)
+
         elif bFormat in (nwBuildFmt.STD_MD, nwBuildFmt.EXT_MD):
-            yield from self.iterBuildMarkdown(path, bFormat == nwBuildFmt.EXT_MD)
+            makeObj = ToMarkdown(self._project)
+            makeObj.setExtendedMarkdown(bFormat == nwBuildFmt.EXT_MD)
+            filtered = self._setupBuild(makeObj)
+            yield from self._iterBuild(makeObj, filtered)
+            makeObj.appendFootnotes()
+            if self._build.getBool("format.replaceTabs"):
+                makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
+
         elif bFormat in (nwBuildFmt.NWD, nwBuildFmt.J_NWD):
-            yield from self.iterBuildNWD(path, asJson=bFormat == nwBuildFmt.J_NWD)
+            makeObj = ToRaw(self._project)
+            makeObj.setKeepMarkdown(True)
+            filtered = self._setupBuild(makeObj)
+            yield from self._iterBuild(makeObj, filtered)
+
+            asJson = (bFormat == nwBuildFmt.J_NWD)
+
+        self._error = None
+        self._cache = makeObj
+
+        try:
+            if isinstance(makeObj, ToHtml | ToRaw):
+                makeObj.saveDocument(path, asJson=asJson)
+            else:
+                makeObj.saveDocument(path)
+        except Exception as exc:
+            logException()
+            self._error = formatException(exc)
+
         return
 
-    def iterBuildOpenDocument(self, path: Path, isFlat: bool) -> Iterable[tuple[int, bool]]:
-        """Build an Open Document file."""
-        makeObj = ToOdt(self._project, isFlat=isFlat)
-        filtered = self._setupBuild(makeObj)
-        makeObj.initDocument()
+    ##
+    #  Internal Functions
+    ##
 
+    def _iterBuild(self, makeObj: Tokenizer, filtered: dict) -> Iterable[tuple[int, bool]]:
+        """Iterate over buildable documents."""
         self._count = True
         for i, tHandle in enumerate(self._queue):
             self._error = None
@@ -171,115 +210,7 @@ class NWBuildDocument:
                 yield i, self._doBuild(makeObj, tHandle)
             else:
                 yield i, False
-
-        makeObj.closeDocument()
-
-        self._error = None
-        self._cache = makeObj
-
-        try:
-            makeObj.saveDocument(path)
-        except Exception as exc:
-            logException()
-            self._error = formatException(exc)
-
         return
-
-    def iterBuildHTML(self, path: Path | None, asJson: bool = False) -> Iterable[tuple[int, bool]]:
-        """Build an HTML file. If path is None, no file is saved. This
-        is used for generating build previews.
-        """
-        makeObj = ToHtml(self._project)
-        filtered = self._setupBuild(makeObj)
-
-        self._count = False
-        for i, tHandle in enumerate(self._queue):
-            self._error = None
-            if filtered.get(tHandle, (False, 0))[0]:
-                yield i, self._doBuild(makeObj, tHandle)
-            else:
-                yield i, False
-
-        makeObj.appendFootnotes()
-
-        if not self._build.getBool("html.preserveTabs"):
-            makeObj.replaceTabs()
-
-        self._error = None
-        self._cache = makeObj
-
-        if isinstance(path, Path):
-            try:
-                makeObj.saveDocument(path, asJson=asJson)
-            except Exception as exc:
-                logException()
-                self._error = formatException(exc)
-
-        return
-
-    def iterBuildMarkdown(self, path: Path, extendedMd: bool) -> Iterable[tuple[int, bool]]:
-        """Build a Markdown file."""
-        makeObj = ToMarkdown(self._project)
-        filtered = self._setupBuild(makeObj)
-
-        makeObj.setExtendedMarkdown(extendedMd)
-        if self._build.getBool("format.replaceTabs"):
-            makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
-
-        self._count = False
-        for i, tHandle in enumerate(self._queue):
-            self._error = None
-            if filtered.get(tHandle, (False, 0))[0]:
-                yield i, self._doBuild(makeObj, tHandle)
-            else:
-                yield i, False
-
-        makeObj.appendFootnotes()
-
-        self._error = None
-        self._cache = makeObj
-
-        try:
-            makeObj.saveDocument(path)
-        except Exception as exc:
-            logException()
-            self._error = formatException(exc)
-
-        return
-
-    def iterBuildNWD(self, path: Path | None, asJson: bool = False) -> Iterable[tuple[int, bool]]:
-        """Build a novelWriter Markdown file."""
-        makeObj = ToMarkdown(self._project)
-        filtered = self._setupBuild(makeObj)
-
-        makeObj.setKeepMarkdown(True)
-
-        self._count = False
-        for i, tHandle in enumerate(self._queue):
-            self._error = None
-            if filtered.get(tHandle, (False, 0))[0]:
-                yield i, self._doBuild(makeObj, tHandle, convert=False)
-            else:
-                yield i, False
-
-        if self._build.getBool("format.replaceTabs"):
-            makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
-
-        self._error = None
-        self._cache = makeObj
-
-        if isinstance(path, Path):
-            try:
-                makeObj.saveRawDocument(path, asJson=asJson)
-            except Exception as exc:
-                logException()
-                self._error = formatException(exc)
-
-        return
-
-    ##
-    #  Internal Functions
-    ##
 
     def _setupBuild(self, bldObj: Tokenizer) -> dict:
         """Configure the build object."""
