@@ -161,7 +161,9 @@ class ToOdt(Tokenizer):
 
         # Properties
         self._textFont     = QFont("Liberation Serif", 12)
-        self._colourHead   = False
+        self._addColours   = False
+        self._scaleHeads   = True
+        self._headWeight   = "bold"
         self._headerFormat = ""
         self._pageOffset   = 0
 
@@ -244,9 +246,15 @@ class ToOdt(Tokenizer):
             self._dCountry = country or self._dCountry
         return
 
-    def setColourHeaders(self, state: bool) -> None:
+    def setHeadingStyles(self, scale: bool, bold: bool) -> None:
+        """Set plain text style for headings."""
+        self._scaleHeads = scale
+        self._headWeight = self._fontBold if bold else None
+        return
+
+    def setColoursEnabled(self, state: bool) -> None:
         """Enable/disable coloured headings and comments."""
-        self._colourHead = state
+        self._addColours = state
         return
 
     def setPageLayout(
@@ -288,12 +296,13 @@ class ToOdt(Tokenizer):
         self._fontPitch  = "fixed" if self._textFont.fixedPitch() else "variable"
         self._fontBold   = FONT_WEIGHT_MAP.get(fontBold, fontBold)
 
-        self._fSizeTitle = f"{round(2.50 * self._fontSize):d}pt"
-        self._fSizeHead1 = f"{round(2.00 * self._fontSize):d}pt"
-        self._fSizeHead2 = f"{round(1.60 * self._fontSize):d}pt"
-        self._fSizeHead3 = f"{round(1.30 * self._fontSize):d}pt"
-        self._fSizeHead4 = f"{round(1.15 * self._fontSize):d}pt"
-        self._fSizeHead  = f"{round(1.15 * self._fontSize):d}pt"
+        hScale = self._scaleHeads
+        self._fSizeTitle = f"{round((2.50 if hScale else 1.0) * self._fontSize):d}pt"
+        self._fSizeHead1 = f"{round((2.00 if hScale else 1.0) * self._fontSize):d}pt"
+        self._fSizeHead2 = f"{round((1.60 if hScale else 1.0) * self._fontSize):d}pt"
+        self._fSizeHead3 = f"{round((1.30 if hScale else 1.0) * self._fontSize):d}pt"
+        self._fSizeHead4 = f"{round((1.15 if hScale else 1.0) * self._fontSize):d}pt"
+        self._fSizeHead  = f"{round((1.15 if hScale else 1.0) * self._fontSize):d}pt"
         self._fSizeText  = f"{self._fontSize:d}pt"
         self._fSizeFoot  = f"{round(0.8*self._fontSize):d}pt"
 
@@ -322,7 +331,7 @@ class ToOdt(Tokenizer):
         self._mLeftFoot = self._emToCm(self._marginFoot[0])
         self._mBotFoot  = self._emToCm(self._marginFoot[1])
 
-        if self._colourHead:
+        if self._addColours:
             self._colHead12 = "#2a6099"
             self._opaHead12 = "100%"
             self._colHead34 = "#444444"
@@ -965,7 +974,7 @@ class ToOdt(Tokenizer):
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeTitle)
-        style.setFontWeight(self._fontBold)
+        style.setFontWeight(self._headWeight)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
@@ -998,7 +1007,7 @@ class ToOdt(Tokenizer):
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead1)
-        style.setFontWeight(self._fontBold)
+        style.setFontWeight(self._headWeight)
         style.setColour(self._colHead12)
         style.setOpacity(self._opaHead12)
         style.packXML(self._xStyl)
@@ -1016,7 +1025,7 @@ class ToOdt(Tokenizer):
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead2)
-        style.setFontWeight(self._fontBold)
+        style.setFontWeight(self._headWeight)
         style.setColour(self._colHead12)
         style.setOpacity(self._opaHead12)
         style.packXML(self._xStyl)
@@ -1034,7 +1043,7 @@ class ToOdt(Tokenizer):
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead3)
-        style.setFontWeight(self._fontBold)
+        style.setFontWeight(self._headWeight)
         style.setColour(self._colHead34)
         style.setOpacity(self._opaHead34)
         style.packXML(self._xStyl)
@@ -1052,7 +1061,7 @@ class ToOdt(Tokenizer):
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead4)
-        style.setFontWeight(self._fontBold)
+        style.setFontWeight(self._headWeight)
         style.setColour(self._colHead34)
         style.setOpacity(self._opaHead34)
         style.packXML(self._xStyl)

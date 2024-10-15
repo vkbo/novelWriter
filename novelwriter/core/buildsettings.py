@@ -97,6 +97,8 @@ SETTINGS_TEMPLATE: dict[str, tuple[type, T_Basic]] = {
     "format.leftMargin":       (float, 2.0),
     "format.rightMargin":      (float, 2.0),
     "odt.addColours":          (bool, True),
+    "odt.scaleHeadings":       (bool, True),
+    "odt.boldHeadings":        (bool, True),
     "odt.pageHeader":          (str, nwHeadFmt.ODT_AUTO),
     "odt.pageCountOffset":     (int, 0),
     "html.addStyles":          (bool, True),
@@ -155,6 +157,8 @@ SETTINGS_LABELS = {
 
     "odt":                     QT_TRANSLATE_NOOP("Builds", "ODT Options"),
     "odt.addColours":          QT_TRANSLATE_NOOP("Builds", "Add Highlight Colours"),
+    "odt.scaleHeadings":       QT_TRANSLATE_NOOP("Builds", "Increase Size of Headings"),
+    "odt.boldHeadings":        QT_TRANSLATE_NOOP("Builds", "Bold Headings"),
     "odt.pageHeader":          QT_TRANSLATE_NOOP("Builds", "Page Header"),
     "odt.pageCountOffset":     QT_TRANSLATE_NOOP("Builds", "Page Counter Offset"),
 

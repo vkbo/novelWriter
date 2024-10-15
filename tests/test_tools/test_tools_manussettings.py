@@ -707,7 +707,9 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     """Test the format-specific settings."""
     build = BuildSettings()
 
-    build.setValue("odt.addColours", False)
+    build.setValue("odt.addColours", True)
+    build.setValue("odt.scaleHeadings", True)
+    build.setValue("odt.boldHeadings", True)
     build.setValue("odt.pageHeader", nwHeadFmt.ODT_AUTO)
     build.setValue("odt.pageCountOffset", 0)
 
@@ -724,7 +726,9 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     assert bSettings.toolStack.currentWidget() is fmtTab
 
     # Check initial values
-    assert fmtTab.odtAddColours.isChecked() is False
+    assert fmtTab.odtAddColours.isChecked() is True
+    assert fmtTab.scaleHeadings.isChecked() is True
+    assert fmtTab.boldHeadings.isChecked() is True
     assert fmtTab.odtPageHeader.text() == nwHeadFmt.ODT_AUTO
     assert fmtTab.odtPageCountOffset.value() == 0
 
@@ -732,7 +736,9 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     assert fmtTab.htmlPreserveTabs.isChecked() is False
 
     # Toggle all
-    fmtTab.odtAddColours.setChecked(True)
+    fmtTab.odtAddColours.setChecked(False)
+    fmtTab.scaleHeadings.setChecked(False)
+    fmtTab.boldHeadings.setChecked(False)
     fmtTab.htmlAddStyles.setChecked(True)
     fmtTab.htmlPreserveTabs.setChecked(True)
 
@@ -743,7 +749,9 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     # Save values
     fmtTab.saveContent()
 
-    assert build.getBool("odt.addColours") is True
+    assert build.getBool("odt.addColours") is False
+    assert build.getBool("odt.scaleHeadings") is False
+    assert build.getBool("odt.boldHeadings") is False
     assert build.getStr("odt.pageHeader") == "Stuff"
     assert build.getInt("odt.pageCountOffset") == 1
 

@@ -772,8 +772,8 @@ def testCoreToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
     assert odt._dLanguage == ""
     odt.setLanguage("nb_NO")
     assert odt._dLanguage == "nb"
-    odt.setColourHeaders(True)
-    assert odt._colourHead is True
+    odt.setColoursEnabled(True)
+    assert odt._addColours is True
     odt.setHeaderFormat(nwHeadFmt.ODT_AUTO, 1)
     assert odt._headerFormat == nwHeadFmt.ODT_AUTO
     odt.setFirstLineIndent(True, 1.4, False)

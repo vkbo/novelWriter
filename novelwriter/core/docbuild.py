@@ -359,10 +359,15 @@ class NWBuildDocument:
             bldObj.setReplaceUnicode(self._build.getBool("format.stripUnicode"))
 
         if isinstance(bldObj, ToOdt):
-            bldObj.setColourHeaders(self._build.getBool("odt.addColours"))
+            bldObj.setColoursEnabled(self._build.getBool("odt.addColours"))
+            bldObj.setHeadingStyles(
+                self._build.getBool("odt.scaleHeadings"),
+                self._build.getBool("odt.boldHeadings"),
+            )
             bldObj.setLanguage(self._project.data.language)
             bldObj.setHeaderFormat(
-                self._build.getStr("odt.pageHeader"), self._build.getInt("odt.pageCountOffset")
+                self._build.getStr("odt.pageHeader"),
+                self._build.getInt("odt.pageCountOffset"),
             )
 
             scale = nwLabels.UNIT_SCALE.get(self._build.getStr("format.pageUnit"), 1.0)

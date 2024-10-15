@@ -1123,7 +1123,12 @@ class _FormattingTab(NScrollableForm):
         self.addGroupLabel(title, section)
 
         self.odtAddColours = NSwitch(self, height=iPx)
+        self.scaleHeadings = NSwitch(self, height=iPx)
+        self.boldHeadings = NSwitch(self, height=iPx)
+
         self.addRow(self._build.getLabel("odt.addColours"), self.odtAddColours)
+        self.addRow(self._build.getLabel("odt.scaleHeadings"), self.scaleHeadings)
+        self.addRow(self._build.getLabel("odt.boldHeadings"), self.boldHeadings)
 
         self.odtPageHeader = QLineEdit(self)
         self.odtPageHeader.setMinimumWidth(CONFIG.pxInt(200))
@@ -1226,6 +1231,8 @@ class _FormattingTab(NScrollableForm):
         # ============
 
         self.odtAddColours.setChecked(self._build.getBool("odt.addColours"))
+        self.scaleHeadings.setChecked(self._build.getBool("odt.scaleHeadings"))
+        self.boldHeadings.setChecked(self._build.getBool("odt.boldHeadings"))
         self.odtPageHeader.setText(self._build.getStr("odt.pageHeader"))
         self.odtPageCountOffset.setValue(self._build.getInt("odt.pageCountOffset"))
         self.odtPageHeader.setCursorPosition(0)
@@ -1276,6 +1283,8 @@ class _FormattingTab(NScrollableForm):
 
         # ODT Document
         self._build.setValue("odt.addColours", self.odtAddColours.isChecked())
+        self._build.setValue("odt.scaleHeadings", self.scaleHeadings.isChecked())
+        self._build.setValue("odt.boldHeadings", self.boldHeadings.isChecked())
         self._build.setValue("odt.pageHeader", self.odtPageHeader.text())
         self._build.setValue("odt.pageCountOffset", self.odtPageCountOffset.value())
 
