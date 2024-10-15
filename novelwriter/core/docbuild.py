@@ -149,26 +149,35 @@ class NWBuildDocument:
 
     def iterBuildDocument(self, path: Path, bFormat: nwBuildFmt) -> Iterable[tuple[int, bool]]:
         """Wrapper for builders based on format."""
+        if bFormat in (nwBuildFmt.J_HTML, nwBuildFmt.J_NWD):
+            # Ensure that JSON output has the correct extension
+            path = path.with_suffix(".json")
+
         if bFormat in (nwBuildFmt.ODT, nwBuildFmt.FODT):
             makeObj = ToOdt(self._project, bFormat == nwBuildFmt.FODT)
             filtered = self._setupBuild(makeObj)
             makeObj.initDocument()
+
             yield from self._iterBuild(makeObj, filtered)
+
             makeObj.closeDocument()
 
         elif bFormat in (nwBuildFmt.HTML, nwBuildFmt.J_HTML):
             makeObj = ToHtml(self._project)
             filtered = self._setupBuild(makeObj)
+
             yield from self._iterBuild(makeObj, filtered)
+
             makeObj.appendFootnotes()
             if not self._build.getBool("html.preserveTabs"):
                 makeObj.replaceTabs()
 
         elif bFormat in (nwBuildFmt.STD_MD, nwBuildFmt.EXT_MD):
-            makeObj = ToMarkdown(self._project)
-            makeObj.setExtendedMarkdown(bFormat == nwBuildFmt.EXT_MD)
+            makeObj = ToMarkdown(self._project, bFormat == nwBuildFmt.EXT_MD)
             filtered = self._setupBuild(makeObj)
+
             yield from self._iterBuild(makeObj, filtered)
+
             makeObj.appendFootnotes()
             if self._build.getBool("format.replaceTabs"):
                 makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
@@ -176,7 +185,9 @@ class NWBuildDocument:
         elif bFormat in (nwBuildFmt.NWD, nwBuildFmt.J_NWD):
             makeObj = ToRaw(self._project)
             filtered = self._setupBuild(makeObj)
+
             yield from self._iterBuild(makeObj, filtered)
+
             if self._build.getBool("format.replaceTabs"):
                 makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
 

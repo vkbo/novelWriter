@@ -81,11 +81,11 @@ class ToMarkdown(Tokenizer):
     supports concatenating novelWriter markup files.
     """
 
-    def __init__(self, project: NWProject) -> None:
+    def __init__(self, project: NWProject, extended: bool) -> None:
         super().__init__(project)
         self._fullMD: list[str] = []
         self._usedNotes: dict[str, int] = {}
-        self._extended = True
+        self._extended = extended
         return
 
     ##
@@ -96,15 +96,6 @@ class ToMarkdown(Tokenizer):
     def fullMD(self) -> list[str]:
         """Return the markdown as a list."""
         return self._fullMD
-
-    ##
-    #  Setters
-    ##
-
-    def setExtendedMarkdown(self, state: bool) -> None:
-        """Set the converter to use Extended Markdown formatting."""
-        self._extended = state
-        return
 
     ##
     #  Class Methods

@@ -30,7 +30,7 @@ from novelwriter.formats.tomarkdown import ToMarkdown
 def testFmtToMarkdown_ConvertHeaders(mockGUI):
     """Test header formats in the ToMarkdown class."""
     project = NWProject()
-    toMD = ToMarkdown(project)
+    toMD = ToMarkdown(project, False)
 
     toMD._isNovel = True
     toMD._isFirst = True
@@ -76,13 +76,13 @@ def testFmtToMarkdown_ConvertHeaders(mockGUI):
 def testFmtToMarkdown_ConvertParagraphs(mockGUI):
     """Test paragraph formats in the ToMarkdown class."""
     project = NWProject()
-    toMD = ToMarkdown(project)
+    toMD = ToMarkdown(project, False)
 
     toMD._isNovel = True
     toMD._isFirst = True
 
     # Text for Extended Markdown
-    toMD.setExtendedMarkdown(True)
+    toMD._extended = True
     toMD._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
     toMD.tokenizeText()
     toMD.doConvert()
@@ -91,7 +91,7 @@ def testFmtToMarkdown_ConvertParagraphs(mockGUI):
     )
 
     # Text for Standard Markdown
-    toMD.setExtendedMarkdown(False)
+    toMD._extended = False
     toMD._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
     toMD.tokenizeText()
     toMD.doConvert()
@@ -100,7 +100,7 @@ def testFmtToMarkdown_ConvertParagraphs(mockGUI):
     )
 
     # Shortcodes for Extended Markdown
-    toMD.setExtendedMarkdown(True)
+    toMD._extended = True
     toMD._text = (
         "Some [b]bold[/b], [i]italic[/i], [s]strike[/s], [u]underline[/u], [m]mark[/m], "
         "super[sup]script[/sup], sub[sub]script[/sub] here\n"
@@ -113,7 +113,7 @@ def testFmtToMarkdown_ConvertParagraphs(mockGUI):
     )
 
     # Shortcodes for Standard Markdown
-    toMD.setExtendedMarkdown(False)
+    toMD._extended = False
     toMD._text = (
         "Some [b]bold[/b], [i]italic[/i], [s]strike[/s], [u]underline[/u], [m]mark[/m], "
         "super[sup]script[/sup], sub[sub]script[/sub] here\n"
@@ -212,10 +212,8 @@ def testFmtToMarkdown_ConvertParagraphs(mockGUI):
 def testFmtToMarkdown_ConvertDirect(mockGUI):
     """Test the converter directly using the ToMarkdown class."""
     project = NWProject()
-    toMD = ToMarkdown(project)
-
+    toMD = ToMarkdown(project, False)
     toMD._isNovel = True
-    toMD.setExtendedMarkdown(False)
 
     # Special Titles
     # ==============
@@ -249,7 +247,7 @@ def testFmtToMarkdown_ConvertDirect(mockGUI):
 def testFmtToMarkdown_Save(mockGUI, fncPath):
     """Test the save method of the ToMarkdown class."""
     project = NWProject()
-    toMD = ToMarkdown(project)
+    toMD = ToMarkdown(project, False)
     toMD._isNovel = True
 
     # Build Project
@@ -300,7 +298,7 @@ def testFmtToMarkdown_Save(mockGUI, fncPath):
 def testFmtToMarkdown_Format(mockGUI):
     """Test all the formatters for the ToMarkdown class."""
     project = NWProject()
-    toMD = ToMarkdown(project)
+    toMD = ToMarkdown(project, False)
 
     assert toMD._formatKeywords("", toMD.A_NONE) == ""
     assert toMD._formatKeywords("tag: Jane", toMD.A_NONE) == "**Tag:** Jane\n\n"

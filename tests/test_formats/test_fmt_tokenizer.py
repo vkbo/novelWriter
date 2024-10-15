@@ -1887,7 +1887,7 @@ def testFmtToken_SceneSeparators(mockGUI):
     project = NWProject()
     project.data.setLanguage("en")
     project._loadProjectLocalisation()
-    md = ToMarkdown(project)
+    md = ToMarkdown(project, False)
     md._isNovel = True
 
     # Separator Handling, Titles
@@ -2002,8 +2002,7 @@ def testFmtToken_SceneSeparators(mockGUI):
     # Separators with Scenes Only
     # ===========================
     # Requires a fresh builder class
-    md = ToMarkdown(project)
-    md.setExtendedMarkdown(True)
+    md = ToMarkdown(project, True)
     md._isNovel = True
 
     md._text = (
@@ -2038,7 +2037,7 @@ def testFmtToken_HeaderVisibility(mockGUI):
     project = NWProject()
     project.data.setLanguage("en")
     project._loadProjectLocalisation()
-    md = ToMarkdown(project)
+    md = ToMarkdown(project, False)
 
     md._text = (
         "#! Novel\n\n"
@@ -2150,7 +2149,7 @@ def testFmtToken_CounterHandling(mockGUI):
     project = NWProject()
     project.data.setLanguage("en")
     project._loadProjectLocalisation()
-    md = ToMarkdown(project)
+    md = ToMarkdown(project, False)
     md._isNovel = True
 
     # Counter Handling, Novel Titles
