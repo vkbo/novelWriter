@@ -275,7 +275,7 @@ class ToQTextDocument(Tokenizer):
 
         return
 
-    def saveDocument(self, path: str | Path) -> None:
+    def saveDocument(self, path: Path) -> None:
         """Not implemented."""
         return
 

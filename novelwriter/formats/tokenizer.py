@@ -134,10 +134,10 @@ class Tokenizer(ABC):
         self._project = project
 
         # Data Variables
-        self._text   = ""     # The raw text to be tokenized
-        self._handle = None   # The item handle currently being processed
-        self._result = ""     # The result of the last document
-        self._keepMD = False  # Whether to keep the markdown text
+        self._text    = ""     # The raw text to be tokenized
+        self._handle  = None   # The item handle currently being processed
+        self._result  = ""     # The result of the last document
+        self._keepRaw = False  # Whether to keep the raw text, used by ToRaw
 
         # Tokens and Meta Data (Per Document)
         self._tokens: list[T_Token] = []
@@ -473,11 +473,6 @@ class Tokenizer(ABC):
         self._keepBreaks = state
         return
 
-    def setKeepMarkdown(self, state: bool) -> None:
-        """Keep original markdown during build."""
-        self._keepMD = state
-        return
-
     ##
     #  Class Methods
     ##
@@ -487,7 +482,7 @@ class Tokenizer(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def saveDocument(self, path: str | Path) -> None:
+    def saveDocument(self, path: Path) -> None:
         raise NotImplementedError
 
     def addRootHeading(self, tHandle: str) -> None:
@@ -509,7 +504,7 @@ class Tokenizer(ABC):
             self._tokens.append((
                 self.T_TITLE, 1, title, [], textAlign
             ))
-            if self._keepMD:
+            if self._keepRaw:
                 self._markdown.append(f"#! {title}\n\n")
 
         return
@@ -574,7 +569,7 @@ class Tokenizer(ABC):
                 tokens.append((
                     self.T_EMPTY, nHead, "", [], self.A_NONE
                 ))
-                if self._keepMD:
+                if self._keepRaw:
                     tmpMarkdown.append("\n")
 
                 continue
@@ -632,26 +627,26 @@ class Tokenizer(ABC):
                     tokens.append((
                         self.T_SYNOPSIS, nHead, tLine, tFmt, sAlign
                     ))
-                    if self._doSynopsis and self._keepMD:
+                    if self._doSynopsis and self._keepRaw:
                         tmpMarkdown.append(f"{aLine}\n")
                 elif cStyle == nwComment.SHORT:
                     tLine, tFmt = self._extractFormats(cText)
                     tokens.append((
                         self.T_SHORT, nHead, tLine, tFmt, sAlign
                     ))
-                    if self._doSynopsis and self._keepMD:
+                    if self._doSynopsis and self._keepRaw:
                         tmpMarkdown.append(f"{aLine}\n")
                 elif cStyle == nwComment.FOOTNOTE:
                     tLine, tFmt = self._extractFormats(cText, skip=self.FMT_FNOTE)
                     self._footnotes[f"{tHandle}:{cKey}"] = (tLine, tFmt)
-                    if self._keepMD:
+                    if self._keepRaw:
                         tmpMarkdown.append(f"{aLine}\n")
                 else:
                     tLine, tFmt = self._extractFormats(cText)
                     tokens.append((
                         self.T_COMMENT, nHead, tLine, tFmt, sAlign
                     ))
-                    if self._doComments and self._keepMD:
+                    if self._doComments and self._keepRaw:
                         tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine.startswith("@"):
@@ -668,7 +663,7 @@ class Tokenizer(ABC):
                     tokens.append((
                         self.T_KEYWORD, nHead, aLine[1:].strip(), [], sAlign
                     ))
-                    if self._doKeywords and self._keepMD:
+                    if self._doKeywords and self._keepRaw:
                         tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine.startswith(("# ", "#! ")):
@@ -704,7 +699,7 @@ class Tokenizer(ABC):
                 tokens.append((
                     tType, nHead, tText, [], tStyle
                 ))
-                if self._keepMD:
+                if self._keepRaw:
                     tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine.startswith(("## ", "##! ")):
@@ -739,7 +734,7 @@ class Tokenizer(ABC):
                 tokens.append((
                     tType, nHead, tText, [], tStyle
                 ))
-                if self._keepMD:
+                if self._keepRaw:
                     tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine.startswith(("### ", "###! ")):
@@ -780,7 +775,7 @@ class Tokenizer(ABC):
                 tokens.append((
                     tType, nHead, tText, [], tStyle
                 ))
-                if self._keepMD:
+                if self._keepRaw:
                     tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine.startswith("#### "):
@@ -810,7 +805,7 @@ class Tokenizer(ABC):
                 tokens.append((
                     tType, nHead, tText, [], tStyle
                 ))
-                if self._keepMD:
+                if self._keepRaw:
                     tmpMarkdown.append(f"{aLine}\n")
 
             else:
@@ -858,7 +853,7 @@ class Tokenizer(ABC):
                 tokens.append((
                     self.T_TEXT, nHead, tLine, tFmt, sAlign
                 ))
-                if self._keepMD:
+                if self._keepRaw:
                     tmpMarkdown.append(f"{aLine}\n")
 
         # If we have content, turn off the first page flag
@@ -877,7 +872,7 @@ class Tokenizer(ABC):
         tokens.append((
             self.T_EMPTY, nHead, "", [], self.A_NONE
         ))
-        if self._keepMD:
+        if self._keepRaw:
             tmpMarkdown.append("\n")
             self._markdown.append("".join(tmpMarkdown))
 

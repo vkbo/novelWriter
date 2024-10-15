@@ -644,12 +644,12 @@ def testFmtToHtml_Save(mockGUI, fncPath):
     )
 
     saveFile = fncPath / "outFile.htm"
-    html.saveDocument(saveFile, asJson=False)
+    html.saveDocument(saveFile)
     assert saveFile.read_text(encoding="utf-8") == htmlDoc
 
     # JSON + HTML
     saveFile = fncPath / "outFile.json"
-    html.saveDocument(saveFile, asJson=True)
+    html.saveDocument(saveFile)
     data = json.loads(saveFile.read_text(encoding="utf-8"))
     assert data["meta"]["projectName"] == ""
     assert data["meta"]["novelAuthor"] == ""
@@ -664,7 +664,6 @@ def testFmtToHtml_Methods(mockGUI):
     """Test all the other methods of the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
-    html.setKeepMarkdown(True)
 
     # Auto-Replace, keep Unicode
     docText = "Text with <brackets> & short–dash, long—dash …\n"

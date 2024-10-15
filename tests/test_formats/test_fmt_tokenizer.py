@@ -31,6 +31,7 @@ from novelwriter.constants import nwHeadFmt
 from novelwriter.core.project import NWProject
 from novelwriter.formats.tokenizer import HeadingFormatter, Tokenizer, stripEscape
 from novelwriter.formats.tomarkdown import ToMarkdown
+from novelwriter.formats.toraw import ToRaw
 
 from tests.tools import C, buildTestProject, readFile
 
@@ -41,6 +42,19 @@ class BareTokenizer(Tokenizer):
 
     def saveDocument(self, path) -> None:
         super().saveDocument(path)  # type: ignore (deliberate check)
+
+
+@pytest.mark.core
+def testFmtToken_Abstracts(mockGUI, tstPaths):
+    """Test all the abstract methods of the Tokenizer class."""
+    project = NWProject()
+    tokens = BareTokenizer(project)
+
+    with pytest.raises(NotImplementedError):
+        tokens.doConvert()
+
+    with pytest.raises(NotImplementedError):
+        tokens.saveDocument(tstPaths)
 
 
 @pytest.mark.core
@@ -164,8 +178,7 @@ def testFmtToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
     project.data.setLanguage("en")
     project._loadProjectLocalisation()
 
-    tokens = BareTokenizer(project)
-    tokens.setKeepMarkdown(True)
+    tokens = ToRaw(project)
 
     # Set some content to work with
     docText = (
@@ -235,13 +248,6 @@ def testFmtToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
         ]
     }
 
-    # Check abstract methods
-    with pytest.raises(NotImplementedError):
-        tokens.doConvert()
-
-    with pytest.raises(NotImplementedError):
-        tokens.saveDocument(fncPath)
-
 
 @pytest.mark.core
 def testFmtToken_StripEscape():
@@ -256,8 +262,7 @@ def testFmtToken_StripEscape():
 def testFmtToken_HeaderFormat(mockGUI):
     """Test the tokenization of header formats in the Tokenizer class."""
     project = NWProject()
-    tokens = BareTokenizer(project)
-    tokens.setKeepMarkdown(True)
+    tokens = ToRaw(project)
 
     # Title
     # =====
@@ -692,8 +697,7 @@ def testFmtToken_HeaderStyle(mockGUI):
 def testFmtToken_MetaFormat(mockGUI):
     """Test the tokenization of meta formats in the Tokenizer class."""
     project = NWProject()
-    tokens = BareTokenizer(project)
-    tokens.setKeepMarkdown(True)
+    tokens = ToRaw(project)
 
     # Comment
     tokens._text = "% A comment\n"
@@ -780,8 +784,7 @@ def testFmtToken_MetaFormat(mockGUI):
 def testFmtToken_MarginFormat(mockGUI):
     """Test the tokenization of margin formats in the Tokenizer class."""
     project = NWProject()
-    tokens = BareTokenizer(project)
-    tokens.setKeepMarkdown(True)
+    tokens = ToRaw(project)
 
     # Alignment and Indentation
     dblIndent = Tokenizer.A_IND_L | Tokenizer.A_IND_R
@@ -824,7 +827,6 @@ def testFmtToken_ExtractFormats(mockGUI):
     """Test the extraction of formats in the Tokenizer class."""
     project = NWProject()
     tokens = BareTokenizer(project)
-    tokens.setKeepMarkdown(True)
 
     # Markdown
     # ========
@@ -931,7 +933,6 @@ def testFmtToken_Paragraphs(mockGUI):
     """Test the splitting of paragraphs."""
     project = NWProject()
     tokens = BareTokenizer(project)
-    tokens.setKeepMarkdown(True)
 
     # Collapse empty lines
     tokens._text = "First paragraph\n\n\nSecond paragraph\n\n\n"
@@ -1003,8 +1004,7 @@ def testFmtToken_Paragraphs(mockGUI):
 def testFmtToken_TextFormat(mockGUI):
     """Test the tokenization of text formats in the Tokenizer class."""
     project = NWProject()
-    tokens = BareTokenizer(project)
-    tokens.setKeepMarkdown(True)
+    tokens = ToRaw(project)
 
     # Text
     tokens._text = "Some plain text\non two lines\n\n\n"
@@ -1887,7 +1887,7 @@ def testFmtToken_SceneSeparators(mockGUI):
     project = NWProject()
     project.data.setLanguage("en")
     project._loadProjectLocalisation()
-    md = ToMarkdown(project)
+    md = ToMarkdown(project, False)
     md._isNovel = True
 
     # Separator Handling, Titles
@@ -2002,8 +2002,7 @@ def testFmtToken_SceneSeparators(mockGUI):
     # Separators with Scenes Only
     # ===========================
     # Requires a fresh builder class
-    md = ToMarkdown(project)
-    md.setExtendedMarkdown(True)
+    md = ToMarkdown(project, True)
     md._isNovel = True
 
     md._text = (
@@ -2038,7 +2037,7 @@ def testFmtToken_HeaderVisibility(mockGUI):
     project = NWProject()
     project.data.setLanguage("en")
     project._loadProjectLocalisation()
-    md = ToMarkdown(project)
+    md = ToMarkdown(project, False)
 
     md._text = (
         "#! Novel\n\n"
@@ -2150,7 +2149,7 @@ def testFmtToken_CounterHandling(mockGUI):
     project = NWProject()
     project.data.setLanguage("en")
     project._loadProjectLocalisation()
-    md = ToMarkdown(project)
+    md = ToMarkdown(project, False)
     md._isNovel = True
 
     # Counter Handling, Novel Titles
