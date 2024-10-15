@@ -61,7 +61,7 @@ def testFmtToken_Abstracts(mockGUI, tstPaths):
 def testFmtToken_Setters(mockGUI):
     """Test all the setters for the Tokenizer class."""
     project = NWProject()
-    tokens = ToRaw(project)
+    tokens = BareTokenizer(project)
 
     # Verify defaults
     assert tokens._fmtPart == nwHeadFmt.TITLE
@@ -436,7 +436,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 def testFmtToken_HeaderStyle(mockGUI):
     """Test the styling of headers in the Tokenizer class."""
     project = NWProject()
-    tokens = ToRaw(project)
+    tokens = BareTokenizer(project)
 
     def processStyle(text: str, first: bool) -> int:
         tokens._text = text
@@ -826,7 +826,7 @@ def testFmtToken_MarginFormat(mockGUI):
 def testFmtToken_ExtractFormats(mockGUI):
     """Test the extraction of formats in the Tokenizer class."""
     project = NWProject()
-    tokens = ToRaw(project)
+    tokens = BareTokenizer(project)
 
     # Markdown
     # ========
@@ -932,7 +932,7 @@ def testFmtToken_ExtractFormats(mockGUI):
 def testFmtToken_Paragraphs(mockGUI):
     """Test the splitting of paragraphs."""
     project = NWProject()
-    tokens = ToRaw(project)
+    tokens = BareTokenizer(project)
 
     # Collapse empty lines
     tokens._text = "First paragraph\n\n\nSecond paragraph\n\n\n"
@@ -1104,7 +1104,7 @@ def testFmtToken_Dialogue(mockGUI):
     CONFIG.narratorBreak  = "\u2013"
 
     project = NWProject()
-    tokens = ToRaw(project)
+    tokens = BareTokenizer(project)
     tokens.setDialogueHighlight(True)
     tokens._isNovel = True
 
@@ -1191,7 +1191,7 @@ def testFmtToken_Dialogue(mockGUI):
 def testFmtToken_SpecialFormat(mockGUI):
     """Test the tokenization of special formats in the Tokenizer class."""
     project = NWProject()
-    tokens = ToRaw(project)
+    tokens = BareTokenizer(project)
 
     tokens._isNovel = True
 
@@ -1353,7 +1353,7 @@ def testFmtToken_SpecialFormat(mockGUI):
 def testFmtToken_TextIndent(mockGUI):
     """Test the handling of text indent in the Tokenizer class."""
     project = NWProject()
-    tokens = ToRaw(project)
+    tokens = BareTokenizer(project)
 
     # No First Indent
     tokens.setFirstLineIndent(True, 1.0, False)
@@ -1438,7 +1438,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     project = NWProject()
     project.data.setLanguage("en")
     project._loadProjectLocalisation()
-    tokens = ToRaw(project)
+    tokens = BareTokenizer(project)
     tokens._isNovel = True
 
     # Titles
@@ -1627,7 +1627,7 @@ def testFmtToken_BuildOutline(mockGUI, ipsumText):
     project = NWProject()
     project.data.setLanguage("en")
     project._loadProjectLocalisation()
-    tokens = ToRaw(project)
+    tokens = BareTokenizer(project)
 
     # Novel
     tokens._isNovel = True
@@ -1691,7 +1691,7 @@ def testFmtToken_CountStats(mockGUI, ipsumText):
     project = NWProject()
     project.data.setLanguage("en")
     project._loadProjectLocalisation()
-    tokens = ToRaw(project)
+    tokens = BareTokenizer(project)
     tokens._isNovel = True
 
     # Short Text
