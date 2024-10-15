@@ -148,10 +148,6 @@ class ToQTextDocument(Tokenizer):
         self._cText.setBackground(QtTransparent)
         self._cText.setForeground(self._theme.text)
 
-        self._cHead = QTextCharFormat(self._cText)
-        self._cHead.setForeground(self._theme.head if self._colorHeads else self._theme.text)
-        self._cHead.setFontWeight(self._bold if self._boldHeads else self._normal)
-
         self._cComment = QTextCharFormat(self._cText)
         self._cComment.setForeground(self._theme.comment)
 
@@ -411,7 +407,13 @@ class ToQTextDocument(Tokenizer):
         bFmt.setTopMargin(mTop)
         bFmt.setBottomMargin(mBottom)
 
-        cFmt = QTextCharFormat(self._cText if hType == self.T_TITLE else self._cHead)
+        self._cTitle = QTextCharFormat(self._cText)
+        self._cTitle.setFontWeight(self._bold if self._boldHeads else self._normal)
+
+        hCol = self._colorHeads and hType != self.T_TITLE
+        cFmt = QTextCharFormat(self._cText)
+        cFmt.setForeground(self._theme.head if hCol else self._theme.text)
+        cFmt.setFontWeight(self._bold if self._boldHeads else self._normal)
         cFmt.setFontPointSize(self._sHead.get(hType, 1.0))
         if nHead >= 0:
             cFmt.setAnchorNames([f"{self._handle}:T{nHead:04d}"])
