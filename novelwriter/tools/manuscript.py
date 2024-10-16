@@ -45,7 +45,7 @@ from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.extensions.modified import NIconToggleButton, NIconToolButton, NToolDialog
 from novelwriter.extensions.progressbars import NProgressCircle
 from novelwriter.formats.tokenizer import HeadingFormatter
-from novelwriter.formats.toqdoc import TextDocumentTheme, ToQTextDocument
+from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.gui.theme import STYLES_FLAT_TABS, STYLES_MIN_TOOLBUTTON
 from novelwriter.tools.manusbuild import GuiManuscriptBuild
 from novelwriter.tools.manussettings import GuiBuildSettings
@@ -330,22 +330,8 @@ class GuiManuscript(NToolDialog):
         docBuild = NWBuildDocument(SHARED.project, build)
         docBuild.queueAll()
 
-        theme = TextDocumentTheme()
-        theme.text      = QColor(0, 0, 0)
-        theme.highlight = QColor(255, 255, 166)
-        theme.head      = QColor(66, 113, 174)
-        theme.comment   = QColor(100, 100, 100)
-        theme.note      = QColor(129, 55, 9)
-        theme.code      = QColor(66, 113, 174)
-        theme.modifier  = QColor(129, 55, 9)
-        theme.keyword   = QColor(245, 135, 31)
-        theme.tag       = QColor(66, 113, 174)
-        theme.optional  = QColor(66, 113, 174)
-        theme.dialog    = QColor(66, 113, 174)
-        theme.altdialog = QColor(129, 55, 9)
-
         self.docPreview.beginNewBuild(len(docBuild))
-        for step, _ in docBuild.iterBuildPreview(theme):
+        for step, _ in docBuild.iterBuildPreview():
             self.docPreview.buildStep(step + 1)
             QApplication.processEvents()
 

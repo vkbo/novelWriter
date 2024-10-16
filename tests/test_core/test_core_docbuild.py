@@ -34,6 +34,7 @@ from novelwriter.enum import nwBuildFmt
 from novelwriter.formats.tohtml import ToHtml
 from novelwriter.formats.tomarkdown import ToMarkdown
 from novelwriter.formats.toodt import ToOdt
+from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.formats.toraw import ToRaw
 
 from tests.mocked import causeException, causeOSError
@@ -588,3 +589,17 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     assert "meta" in data
     assert "text" in data
     docFile.unlink()
+
+    # PDF Format
+    docFile = fncPath / "Minimal.pdf"
+    assert list(docBuild.iterBuildDocument(docFile, nwBuildFmt.PDF)) == [
+        (0, True), (1, True), (2, False), (3, True), (4, True),
+        (5, True), (6, True), (7, True), (8, True), (9, False),
+    ]
+    assert isinstance(docBuild.lastBuild, ToQTextDocument)
+    assert docFile.is_file()
+    docFile.unlink()
+
+    # Invalid Format
+    assert list(docBuild.iterBuildDocument(docFile, None)) == []  # type: ignore
+    assert docBuild.lastBuild is None

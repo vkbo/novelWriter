@@ -250,6 +250,7 @@ class nwLabels:
         nwBuildFmt.NWD:    QT_TRANSLATE_NOOP("Constant", "novelWriter Markup (.txt)"),
         nwBuildFmt.STD_MD: QT_TRANSLATE_NOOP("Constant", "Standard Markdown (.md)"),
         nwBuildFmt.EXT_MD: QT_TRANSLATE_NOOP("Constant", "Extended Markdown (.md)"),
+        nwBuildFmt.PDF:    QT_TRANSLATE_NOOP("Constant", "Portable Document Format (.pdf)"),
         nwBuildFmt.J_HTML: QT_TRANSLATE_NOOP("Constant", "JSON + novelWriter HTML (.json)"),
         nwBuildFmt.J_NWD:  QT_TRANSLATE_NOOP("Constant", "JSON + novelWriter Markup (.json)"),
     }
@@ -260,6 +261,7 @@ class nwLabels:
         nwBuildFmt.NWD:    ".txt",
         nwBuildFmt.STD_MD: ".md",
         nwBuildFmt.EXT_MD: ".md",
+        nwBuildFmt.PDF:    ".pdf",
         nwBuildFmt.J_HTML: ".json",
         nwBuildFmt.J_NWD:  ".json",
     }

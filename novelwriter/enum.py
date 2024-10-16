@@ -184,8 +184,9 @@ class nwBuildFmt(Enum):
     NWD    = 3
     STD_MD = 4
     EXT_MD = 5
-    J_HTML = 6
-    J_NWD  = 7
+    PDF    = 6
+    J_HTML = 7
+    J_NWD  = 8
 
 
 class nwStatusShape(Enum):

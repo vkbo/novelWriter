@@ -41,7 +41,7 @@ from novelwriter.formats.tohtml import ToHtml
 from novelwriter.formats.tokenizer import Tokenizer
 from novelwriter.formats.tomarkdown import ToMarkdown
 from novelwriter.formats.toodt import ToOdt
-from novelwriter.formats.toqdoc import TextDocumentTheme, ToQTextDocument
+from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.formats.toraw import ToRaw
 
 logger = logging.getLogger(__name__)
@@ -121,24 +121,15 @@ class NWBuildDocument:
                 self._queue.append(item.itemHandle)
         return
 
-    def iterBuildPreview(self, theme: TextDocumentTheme) -> Iterable[tuple[int, bool]]:
+    def iterBuildPreview(self) -> Iterable[tuple[int, bool]]:
         """Build a preview QTextDocument."""
         makeObj = ToQTextDocument(self._project)
         filtered = self._setupBuild(makeObj)
+        makeObj.initDocument()
 
-        self._count = True
         self._outline = True
 
-        font = QFont()
-        font.fromString(self._build.getStr("format.textFont"))
-
-        makeObj.initDocument(font, theme)
-        for i, tHandle in enumerate(self._queue):
-            self._error = None
-            if filtered.get(tHandle, (False, 0))[0]:
-                yield i, self._doBuild(makeObj, tHandle)
-            else:
-                yield i, False
+        yield from self._iterBuild(makeObj, filtered)
 
         makeObj.appendFootnotes()
 
@@ -149,6 +140,9 @@ class NWBuildDocument:
 
     def iterBuildDocument(self, path: Path, bFormat: nwBuildFmt) -> Iterable[tuple[int, bool]]:
         """Wrapper for builders based on format."""
+        self._error = None
+        self._cache = None
+
         if bFormat in (nwBuildFmt.J_HTML, nwBuildFmt.J_NWD):
             # Ensure that JSON output has the correct extension
             path = path.with_suffix(".json")
@@ -190,6 +184,19 @@ class NWBuildDocument:
 
             if self._build.getBool("format.replaceTabs"):
                 makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
+
+        elif bFormat == nwBuildFmt.PDF:
+            makeObj = ToQTextDocument(self._project)
+            filtered = self._setupBuild(makeObj)
+            makeObj.initDocument()
+
+            yield from self._iterBuild(makeObj, filtered)
+
+            makeObj.appendFootnotes()
+
+        else:
+            logger.error("Unsupported document format")
+            return
 
         self._error = None
         self._cache = makeObj
@@ -297,6 +304,7 @@ class NWBuildDocument:
                 self._build.getInt("odt.pageCountOffset"),
             )
 
+        if isinstance(bldObj, (ToOdt, ToQTextDocument)):
             scale = nwLabels.UNIT_SCALE.get(self._build.getStr("format.pageUnit"), 1.0)
             pW, pH = nwLabels.PAPER_SIZE.get(self._build.getStr("format.pageSize"), (-1.0, -1.0))
             bldObj.setPageLayout(
