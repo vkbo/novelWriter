@@ -27,8 +27,9 @@ import logging
 
 from pathlib import Path
 
+from PyQt5.QtCore import QMarginsF, QSizeF
 from PyQt5.QtGui import (
-    QColor, QFont, QFontMetricsF, QTextBlockFormat, QTextCharFormat,
+    QColor, QFont, QFontMetricsF, QPageSize, QTextBlockFormat, QTextCharFormat,
     QTextCursor, QTextDocument
 )
 from PyQt5.QtPrintSupport import QPrinter
@@ -90,7 +91,19 @@ class ToQTextDocument(Tokenizer):
         self._bold = QFont.Weight.Bold
         self._normal = QFont.Weight.Normal
 
+        self._pageSize = QPageSize(QPageSize.PageSizeId.A4)
+        self._pageMargins = QMarginsF(20.0, 20.0, 20.0, 20.0)
+
         return
+
+    ##
+    #  Properties
+    ##
+
+    @property
+    def document(self) -> QTextDocument:
+        """Return the document."""
+        return self._document
 
     ##
     #  Setters
@@ -99,6 +112,14 @@ class ToQTextDocument(Tokenizer):
     def setTheme(self, theme: TextDocumentTheme) -> None:
         """Set the document colour theme."""
         self._theme = theme
+        return
+
+    def setPageLayout(
+        self, width: float, height: float, top: float, bottom: float, left: float, right: float
+    ) -> None:
+        """Set the document page size and margins in millimetres."""
+        self._pageSize = QPageSize(QSizeF(width, height), QPageSize.Unit.Millimeter)
+        self._pageMargins = QMarginsF(left, top, right, bottom)
         return
 
     ##
@@ -191,19 +212,6 @@ class ToQTextDocument(Tokenizer):
 
         return
 
-    ##
-    #  Properties
-    ##
-
-    @property
-    def document(self) -> QTextDocument:
-        """Return the document."""
-        return self._document
-
-    ##
-    #  Class Methods
-    ##
-
     def doConvert(self) -> None:
         """Write text tokens into the document."""
         if not self._init:
@@ -288,11 +296,17 @@ class ToQTextDocument(Tokenizer):
 
     def saveDocument(self, path: Path) -> None:
         """Save the document to a PDF file."""
+        m = self._pageMargins
+
         printer = QPrinter(QPrinter.PrinterMode.PrinterResolution)
         printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
-        printer.setPaperSize(QPrinter.PageSize.A4)
+        printer.setPageSize(self._pageSize)
+        printer.setPageMargins(m.left(), m.top(), m.right(), m.bottom(), QPrinter.Unit.Millimeter)
         printer.setOutputFileName(str(path))
+
+        self._document.setPageSize(self._pageSize.size(QPageSize.Unit.Point))
         self._document.print(printer)
+
         return
 
     def appendFootnotes(self) -> None:

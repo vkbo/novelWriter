@@ -301,6 +301,7 @@ class NWBuildDocument:
                 self._build.getInt("odt.pageCountOffset"),
             )
 
+        if isinstance(bldObj, (ToOdt, ToQTextDocument)):
             scale = nwLabels.UNIT_SCALE.get(self._build.getStr("format.pageUnit"), 1.0)
             pW, pH = nwLabels.PAPER_SIZE.get(self._build.getStr("format.pageSize"), (-1.0, -1.0))
             bldObj.setPageLayout(
@@ -311,9 +312,6 @@ class NWBuildDocument:
                 scale*self._build.getFloat("format.leftMargin"),
                 scale*self._build.getFloat("format.rightMargin"),
             )
-
-        if isinstance(bldObj, ToQTextDocument):
-            pass
 
         filtered = self._build.buildItemFilter(
             self._project, withRoots=self._build.getBool("text.addNoteHeadings")
