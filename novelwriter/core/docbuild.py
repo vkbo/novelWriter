@@ -140,6 +140,9 @@ class NWBuildDocument:
 
     def iterBuildDocument(self, path: Path, bFormat: nwBuildFmt) -> Iterable[tuple[int, bool]]:
         """Wrapper for builders based on format."""
+        self._error = None
+        self._cache = None
+
         if bFormat in (nwBuildFmt.J_HTML, nwBuildFmt.J_NWD):
             # Ensure that JSON output has the correct extension
             path = path.with_suffix(".json")
