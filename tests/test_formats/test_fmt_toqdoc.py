@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import pytest
 
-from PyQt5.QtGui import QColor, QTextBlock, QTextCharFormat, QTextCursor
+from PyQt5.QtGui import QTextBlock, QTextCharFormat, QTextCursor
 
 from novelwriter import CONFIG
 from novelwriter.constants import nwUnicode
@@ -34,18 +34,6 @@ from novelwriter.types import (
 )
 
 THEME = TextDocumentTheme()
-THEME.text      = QColor(0, 0, 0)
-THEME.highlight = QColor(255, 255, 166)
-THEME.head      = QColor(66, 113, 174)
-THEME.comment   = QColor(100, 100, 100)
-THEME.note      = QColor(129, 55, 9)
-THEME.code      = QColor(66, 113, 174)
-THEME.modifier  = QColor(129, 55, 9)
-THEME.keyword   = QColor(245, 135, 31)
-THEME.tag       = QColor(66, 113, 174)
-THEME.optional  = QColor(66, 113, 174)
-THEME.dialog    = QColor(113, 140, 0)
-THEME.altdialog = QColor(234, 183, 0)
 
 
 def charFmtInBlock(block: QTextBlock, pos: int) -> QTextCharFormat:
@@ -60,8 +48,8 @@ def testFmtToQTextDocument_ConvertHeaders(mockGUI):
     """Test header formats in the ToQTextDocument class."""
     project = NWProject()
     qdoc = ToQTextDocument(project)
-    qdoc.initDocument(CONFIG.textFont, THEME)
-    qdoc.saveDocument("")  # Doesn't do anything for this format
+    qdoc.initDocument()
+    # qdoc.saveDocument("")  # Doesn't do anything for this format
 
     qdoc._isNovel = True
     qdoc._isFirst = True
@@ -137,7 +125,7 @@ def testFmtToQTextDocument_SeparatorSkip(mockGUI):
     """Test separator and skip in the ToQTextDocument class."""
     project = NWProject()
     qdoc = ToQTextDocument(project)
-    qdoc.initDocument(CONFIG.textFont, THEME)
+    qdoc.initDocument()
 
     qdoc._isNovel = True
     qdoc._isFirst = True
@@ -203,7 +191,7 @@ def testFmtToQTextDocument_NovelMeta(mockGUI):
     """Test novel meta formats in the ToQTextDocument class."""
     project = NWProject()
     qdoc = ToQTextDocument(project)
-    qdoc.initDocument(CONFIG.textFont, THEME)
+    qdoc.initDocument()
 
     qdoc._isNovel = True
     qdoc._isFirst = True
@@ -280,7 +268,7 @@ def testFmtToQTextDocument_NoteMeta(mockGUI):
     """Test note meta formats in the ToQTextDocument class."""
     project = NWProject()
     qdoc = ToQTextDocument(project)
-    qdoc.initDocument(CONFIG.textFont, THEME)
+    qdoc.initDocument()
 
     qdoc._isNovel = False
     qdoc._isFirst = True
@@ -338,7 +326,7 @@ def testFmtToQTextDocument_TextBlockFormats(mockGUI):
     project = NWProject()
     qdoc = ToQTextDocument(project)
     qdoc.setFirstLineIndent(True, 2.0, False)
-    qdoc.initDocument(CONFIG.textFont, THEME)
+    qdoc.initDocument()
 
     qdoc._isNovel = True
     qdoc._isFirst = True
@@ -460,7 +448,7 @@ def testFmtToQTextDocument_TextCharFormats(mockGUI):
     assert qdoc.document.toPlainText() == ""
 
     # Init
-    qdoc.initDocument(CONFIG.textFont, THEME)
+    qdoc.initDocument()
 
     qdoc._isNovel = True
     qdoc._isFirst = True
@@ -581,7 +569,7 @@ def testFmtToQTextDocument_Footnotes(mockGUI):
     """Test footnotes in the ToQTextDocument class."""
     project = NWProject()
     qdoc = ToQTextDocument(project)
-    qdoc.initDocument(CONFIG.textFont, THEME)
+    qdoc.initDocument()
 
     qdoc._isNovel = True
     qdoc._isFirst = True

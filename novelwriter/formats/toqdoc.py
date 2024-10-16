@@ -31,14 +31,15 @@ from PyQt5.QtGui import (
     QColor, QFont, QFontMetricsF, QTextBlockFormat, QTextCharFormat,
     QTextCursor, QTextDocument
 )
+from PyQt5.QtPrintSupport import QPrinter
 
 from novelwriter.constants import nwHeaders, nwHeadFmt, nwKeyWords, nwLabels, nwUnicode
 from novelwriter.core.project import NWProject
 from novelwriter.formats.tokenizer import T_Formats, Tokenizer
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
-    QtBlack, QtPageBreakAfter, QtPageBreakBefore, QtTransparent,
-    QtVAlignNormal, QtVAlignSub, QtVAlignSuper
+    QtPageBreakAfter, QtPageBreakBefore, QtTransparent, QtVAlignNormal,
+    QtVAlignSub, QtVAlignSuper
 )
 
 logger = logging.getLogger(__name__)
@@ -47,18 +48,18 @@ T_TextStyle = tuple[QTextBlockFormat, QTextCharFormat]
 
 
 class TextDocumentTheme:
-    text:      QColor = QtBlack
-    highlight: QColor = QtTransparent
-    head:      QColor = QtBlack
-    comment:   QColor = QtBlack
-    note:      QColor = QtBlack
-    code:      QColor = QtBlack
-    modifier:  QColor = QtBlack
-    keyword:   QColor = QtBlack
-    tag:       QColor = QtBlack
-    optional:  QColor = QtBlack
-    dialog:    QColor = QtBlack
-    altdialog: QColor = QtBlack
+    text:      QColor = QColor(0, 0, 0)
+    highlight: QColor = QColor(255, 255, 166)
+    head:      QColor = QColor(66, 113, 174)
+    comment:   QColor = QColor(100, 100, 100)
+    note:      QColor = QColor(129, 55, 9)
+    code:      QColor = QColor(66, 113, 174)
+    modifier:  QColor = QColor(129, 55, 9)
+    keyword:   QColor = QColor(245, 135, 31)
+    tag:       QColor = QColor(66, 113, 174)
+    optional:  QColor = QColor(66, 113, 174)
+    dialog:    QColor = QColor(66, 113, 174)
+    altdialog: QColor = QColor(129, 55, 9)
 
 
 def newBlock(cursor: QTextCursor, bFmt: QTextBlockFormat) -> None:
@@ -91,11 +92,21 @@ class ToQTextDocument(Tokenizer):
 
         return
 
-    def initDocument(self, font: QFont, theme: TextDocumentTheme) -> None:
-        """Initialise all computed values of the document."""
-        self._textFont = font
-        self._theme = theme
+    ##
+    #  Setters
+    ##
 
+    def setTheme(self, theme: TextDocumentTheme) -> None:
+        """Set the document colour theme."""
+        self._theme = theme
+        return
+
+    ##
+    #  Class Methods
+    ##
+
+    def initDocument(self) -> None:
+        """Initialise all computed values of the document."""
         self._document.setUndoRedoEnabled(False)
         self._document.blockSignals(True)
         self._document.clear()
@@ -276,7 +287,12 @@ class ToQTextDocument(Tokenizer):
         return
 
     def saveDocument(self, path: Path) -> None:
-        """Not implemented."""
+        """Save the document to a PDF file."""
+        printer = QPrinter(QPrinter.PrinterMode.PrinterResolution)
+        printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
+        printer.setPaperSize(QPrinter.PageSize.A4)
+        printer.setOutputFileName(str(path))
+        self._document.print(printer)
         return
 
     def appendFootnotes(self) -> None:

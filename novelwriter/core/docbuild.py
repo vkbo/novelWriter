@@ -41,7 +41,7 @@ from novelwriter.formats.tohtml import ToHtml
 from novelwriter.formats.tokenizer import Tokenizer
 from novelwriter.formats.tomarkdown import ToMarkdown
 from novelwriter.formats.toodt import ToOdt
-from novelwriter.formats.toqdoc import TextDocumentTheme, ToQTextDocument
+from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.formats.toraw import ToRaw
 
 logger = logging.getLogger(__name__)
@@ -121,24 +121,15 @@ class NWBuildDocument:
                 self._queue.append(item.itemHandle)
         return
 
-    def iterBuildPreview(self, theme: TextDocumentTheme) -> Iterable[tuple[int, bool]]:
+    def iterBuildPreview(self) -> Iterable[tuple[int, bool]]:
         """Build a preview QTextDocument."""
         makeObj = ToQTextDocument(self._project)
         filtered = self._setupBuild(makeObj)
+        makeObj.initDocument()
 
-        self._count = True
         self._outline = True
 
-        font = QFont()
-        font.fromString(self._build.getStr("format.textFont"))
-
-        makeObj.initDocument(font, theme)
-        for i, tHandle in enumerate(self._queue):
-            self._error = None
-            if filtered.get(tHandle, (False, 0))[0]:
-                yield i, self._doBuild(makeObj, tHandle)
-            else:
-                yield i, False
+        yield from self._iterBuild(makeObj, filtered)
 
         makeObj.appendFootnotes()
 
@@ -190,6 +181,19 @@ class NWBuildDocument:
 
             if self._build.getBool("format.replaceTabs"):
                 makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
+
+        elif bFormat == nwBuildFmt.PDF:
+            makeObj = ToQTextDocument(self._project)
+            filtered = self._setupBuild(makeObj)
+            makeObj.initDocument()
+
+            yield from self._iterBuild(makeObj, filtered)
+
+            makeObj.appendFootnotes()
+
+        else:
+            logger.error("Unsupported document format")
+            return
 
         self._error = None
         self._cache = makeObj
@@ -307,6 +311,9 @@ class NWBuildDocument:
                 scale*self._build.getFloat("format.leftMargin"),
                 scale*self._build.getFloat("format.rightMargin"),
             )
+
+        if isinstance(bldObj, ToQTextDocument):
+            pass
 
         filtered = self._build.buildItemFilter(
             self._project, withRoots=self._build.getBool("text.addNoteHeadings")
