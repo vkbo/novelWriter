@@ -287,6 +287,35 @@ class NWBuildDocument:
             self._build.getBool("odt.boldHeadings"),
         )
 
+        bldObj.setTitleMargins(
+            self._build.getFloat("format.titleMarginT"),
+            self._build.getFloat("format.titleMarginB"),
+        )
+        bldObj.setHead1Margins(
+            self._build.getFloat("format.h1MarginT"),
+            self._build.getFloat("format.h1MarginB"),
+        )
+        bldObj.setHead2Margins(
+            self._build.getFloat("format.h2MarginT"),
+            self._build.getFloat("format.h2MarginB"),
+        )
+        bldObj.setHead3Margins(
+            self._build.getFloat("format.h3MarginT"),
+            self._build.getFloat("format.h3MarginB"),
+        )
+        bldObj.setHead4Margins(
+            self._build.getFloat("format.h4MarginT"),
+            self._build.getFloat("format.h4MarginB"),
+        )
+        bldObj.setTextMargins(
+            self._build.getFloat("format.textMarginT"),
+            self._build.getFloat("format.textMarginB"),
+        )
+        bldObj.setSeparatorMargins(
+            self._build.getFloat("format.sepMarginT"),
+            self._build.getFloat("format.sepMarginB"),
+        )
+
         bldObj.setBodyText(self._build.getBool("text.includeBodyText"))
         bldObj.setSynopsis(self._build.getBool("text.includeSynopsis"))
         bldObj.setComments(self._build.getBool("text.includeComments"))

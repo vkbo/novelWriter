@@ -93,11 +93,32 @@ class nwShortcode:
     }
 
 
-class nwHeaders:
+class nwStyles:
 
     H_VALID = ("H0", "H1", "H2", "H3", "H4")
     H_LEVEL = {"H0": 0, "H1": 1, "H2": 2, "H3": 3, "H4": 4}
     H_SIZES = {0: 2.50, 1: 2.00, 2: 1.75, 3: 1.50, 4: 1.25}
+
+    T_LABEL = {
+        "H0": QT_TRANSLATE_NOOP("Constant", "Title"),
+        "H1": QT_TRANSLATE_NOOP("Constant", "Heading 1 (Partition)"),
+        "H2": QT_TRANSLATE_NOOP("Constant", "Heading 2 (Chapter)"),
+        "H3": QT_TRANSLATE_NOOP("Constant", "Heading 3 (Scene)"),
+        "H4": QT_TRANSLATE_NOOP("Constant", "Heading 4 (Section)"),
+        "TT": QT_TRANSLATE_NOOP("Constant", "Text Paragraph"),
+        "SP": QT_TRANSLATE_NOOP("Constant", "Scene Separator"),
+    }
+    T_MARGIN = {
+        "H0": (1.42, 0.50),  # Title margins
+        "H1": (1.42, 0.50),  # Heading 1 margins
+        "H2": (1.67, 0.50),  # Heading 2 margins
+        "H3": (1.17, 0.50),  # Heading 3 margins
+        "H4": (1.17, 0.50),  # Heading 4 margins
+        "TT": (0.00, 0.58),  # Text margins
+        "SP": (1.17, 1.17),  # Separator margins
+        "MT": (0.00, 0.58),  # Meta margins
+        "FT": (1.42, 0.47),  # Footnote margins
+    }
 
 
 class nwFiles:

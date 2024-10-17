@@ -33,7 +33,7 @@ from novelwriter.common import (
     checkInt, isHandle, isItemClass, isItemLayout, isItemType, simplified,
     yesNo
 )
-from novelwriter.constants import nwHeaders, nwLabels, trConst
+from novelwriter.constants import nwLabels, nwStyles, trConst
 from novelwriter.enum import nwItemClass, nwItemLayout, nwItemType
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -518,7 +518,7 @@ class NWItem:
 
     def setMainHeading(self, value: str) -> None:
         """Set the main heading level."""
-        if value in nwHeaders.H_LEVEL:
+        if value in nwStyles.H_LEVEL:
             self._heading = value
         return
 

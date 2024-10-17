@@ -42,7 +42,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt, formatFileFilter, makeFileNameSafe
-from novelwriter.constants import nwHeaders, nwKeyWords, nwLabels, trConst
+from novelwriter.constants import nwKeyWords, nwLabels, nwStyles, trConst
 from novelwriter.enum import nwDocMode, nwItemClass, nwItemLayout, nwItemType, nwOutline
 from novelwriter.error import logException
 from novelwriter.extensions.configlayout import NColourLabel
@@ -681,7 +681,7 @@ class GuiOutlineTree(QTreeWidget):
         novStruct = SHARED.project.index.novelStructure(rootHandle=rootHandle, activeOnly=True)
         for _, tHandle, sTitle, novIdx in novStruct:
 
-            iLevel = nwHeaders.H_LEVEL.get(novIdx.level, 0)
+            iLevel = nwStyles.H_LEVEL.get(novIdx.level, 0)
             nwItem = SHARED.project.tree[tHandle]
             if iLevel == 0 or nwItem is None:
                 continue

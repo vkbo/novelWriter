@@ -40,7 +40,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import minmax
-from novelwriter.constants import nwHeaders, nwLabels, nwUnicode, trConst
+from novelwriter.constants import nwLabels, nwStyles, nwUnicode, trConst
 from novelwriter.core.coretools import DocDuplicator, DocMerger, DocSplitter
 from novelwriter.core.item import NWItem
 from novelwriter.dialogs.docmerge import GuiDocMerge
@@ -642,7 +642,7 @@ class GuiProjectTree(QTreeWidget):
 
             # Collect some information about the selected item
             qItem = self._getTreeItem(sHandle)
-            sLevel = nwHeaders.H_LEVEL.get(pItem.mainHeading, 0)
+            sLevel = nwStyles.H_LEVEL.get(pItem.mainHeading, 0)
             sIsParent = False if qItem is None else qItem.childCount() > 0
 
             if SHARED.project.tree.isTrash(sHandle):

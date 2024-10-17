@@ -40,7 +40,7 @@ from novelwriter import SHARED
 from novelwriter.common import (
     checkInt, isHandle, isItemClass, isListInstance, isTitleTag, jsonEncode
 )
-from novelwriter.constants import nwFiles, nwHeaders, nwKeyWords
+from novelwriter.constants import nwFiles, nwKeyWords, nwStyles
 from novelwriter.enum import nwComment, nwItemClass, nwItemLayout, nwItemType
 from novelwriter.error import logException
 from novelwriter.text.counting import standardCounter
@@ -569,7 +569,7 @@ class NWIndex:
         for _, _, hItem in self._itemIndex.iterNovelStructure(
             rHandle=rootHandle, activeOnly=activeOnly
         ):
-            iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0)
+            iLevel = nwStyles.H_LEVEL.get(hItem.level, 0)
             hCount[iLevel] += 1
         return hCount
 
@@ -591,7 +591,7 @@ class NWIndex:
             rHandle=rHandle, activeOnly=activeOnly
         ):
             tKey = f"{tHandle}:{sTitle}"
-            iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0)
+            iLevel = nwStyles.H_LEVEL.get(hItem.level, 0)
             if iLevel > maxDepth:
                 if pKey in tData:
                     tData[pKey]["words"] += hItem.wordCount
@@ -1251,7 +1251,7 @@ class IndexHeading:
 
     def setLevel(self, level: str) -> None:
         """Set the level of the heading if it's a valid value."""
-        if level in nwHeaders.H_VALID:
+        if level in nwStyles.H_VALID:
             self._level = level
         return
 

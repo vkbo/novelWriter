@@ -36,7 +36,7 @@ from PyQt5.QtCore import QT_TRANSLATE_NOOP, QCoreApplication
 
 from novelwriter import CONFIG
 from novelwriter.common import checkUuid, isHandle, jsonEncode
-from novelwriter.constants import nwFiles, nwHeadFmt
+from novelwriter.constants import nwFiles, nwHeadFmt, nwStyles
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt
 from novelwriter.error import logException
@@ -87,6 +87,20 @@ SETTINGS_TEMPLATE: dict[str, tuple[type, str | int | float | bool]] = {
     "format.firstLineIndent":  (bool, False),
     "format.firstIndentWidth": (float, 1.4),
     "format.indentFirstPar":   (bool, False),
+    "format.titleMarginT":     (float, nwStyles.T_MARGIN["H0"][0]),
+    "format.titleMarginB":     (float, nwStyles.T_MARGIN["H0"][1]),
+    "format.h1MarginT":        (float, nwStyles.T_MARGIN["H1"][0]),
+    "format.h1MarginB":        (float, nwStyles.T_MARGIN["H1"][1]),
+    "format.h2MarginT":        (float, nwStyles.T_MARGIN["H2"][0]),
+    "format.h2MarginB":        (float, nwStyles.T_MARGIN["H2"][1]),
+    "format.h3MarginT":        (float, nwStyles.T_MARGIN["H3"][0]),
+    "format.h3MarginB":        (float, nwStyles.T_MARGIN["H3"][1]),
+    "format.h4MarginT":        (float, nwStyles.T_MARGIN["H4"][0]),
+    "format.h4MarginB":        (float, nwStyles.T_MARGIN["H4"][1]),
+    "format.textMarginT":      (float, nwStyles.T_MARGIN["TT"][0]),
+    "format.textMarginB":      (float, nwStyles.T_MARGIN["TT"][1]),
+    "format.sepMarginT":       (float, nwStyles.T_MARGIN["SP"][0]),
+    "format.sepMarginB":       (float, nwStyles.T_MARGIN["SP"][1]),
     "format.pageUnit":         (str, "cm"),
     "format.pageSize":         (str, "A4"),
     "format.pageWidth":        (float, 21.0),
@@ -144,15 +158,12 @@ SETTINGS_LABELS = {
     "format.firstIndentWidth": QT_TRANSLATE_NOOP("Builds", "Indent Width"),
     "format.indentFirstPar":   QT_TRANSLATE_NOOP("Builds", "Indent First Paragraph"),
 
+    "format.grpMargins":       QT_TRANSLATE_NOOP("Builds", "Text Margins"),
+
     "format.grpPage":          QT_TRANSLATE_NOOP("Builds", "Page Layout"),
     "format.pageUnit":         QT_TRANSLATE_NOOP("Builds", "Unit"),
     "format.pageSize":         QT_TRANSLATE_NOOP("Builds", "Page Size"),
-    "format.pageWidth":        QT_TRANSLATE_NOOP("Builds", "Page Width"),
-    "format.pageHeight":       QT_TRANSLATE_NOOP("Builds", "Page Height"),
-    "format.topMargin":        QT_TRANSLATE_NOOP("Builds", "Top Margin"),
-    "format.bottomMargin":     QT_TRANSLATE_NOOP("Builds", "Bottom Margin"),
-    "format.leftMargin":       QT_TRANSLATE_NOOP("Builds", "Left Margin"),
-    "format.rightMargin":      QT_TRANSLATE_NOOP("Builds", "Right Margin"),
+    "format.pageMargins":      QT_TRANSLATE_NOOP("Builds", "Page Margins"),
 
     "odt":                     QT_TRANSLATE_NOOP("Builds", "Document Options"),
     "odt.pageHeader":          QT_TRANSLATE_NOOP("Builds", "Page Header"),

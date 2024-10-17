@@ -40,7 +40,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import minmax
-from novelwriter.constants import nwHeaders, nwKeyWords, nwLabels, trConst
+from novelwriter.constants import nwKeyWords, nwLabels, nwStyles, trConst
 from novelwriter.core.index import IndexHeading
 from novelwriter.enum import nwDocMode, nwItemClass, nwOutline
 from novelwriter.extensions.modified import NIconToolButton
@@ -683,7 +683,7 @@ class GuiNovelTree(QTreeWidget):
     def _updateTreeItemValues(self, trItem: QTreeWidgetItem, idxItem: IndexHeading,
                               tHandle: str, sTitle: str) -> None:
         """Set the tree item values from the index entry."""
-        iLevel = nwHeaders.H_LEVEL.get(idxItem.level, 0)
+        iLevel = nwStyles.H_LEVEL.get(idxItem.level, 0)
         hDec = SHARED.theme.getHeaderDecoration(iLevel)
 
         trItem.setData(self.C_TITLE, QtDecoration, hDec)

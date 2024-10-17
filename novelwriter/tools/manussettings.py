@@ -38,7 +38,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import describeFont
-from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, trConst
+from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.configlayout import (
     NColourLabel, NFixedPage, NScrollableForm, NScrollablePage
@@ -964,6 +964,15 @@ class _FormattingTab(NScrollableForm):
         spW = 6*SHARED.theme.textNWidth
         dbW = 8*SHARED.theme.textNWidth
 
+        # Common Translations
+
+        trW = self.tr("W:")  # Width
+        trH = self.tr("H:")  # Height
+        trT = self.tr("T:")  # Top
+        trB = self.tr("B:")  # Bottom
+        trL = self.tr("L:")  # Left
+        trR = self.tr("R:")  # Right
+
         # Text Content
         # ============
 
@@ -1067,6 +1076,98 @@ class _FormattingTab(NScrollableForm):
         self.addRow(self._build.getLabel("format.firstIndentWidth"), self.indentWidth, unit="em")
         self.addRow(self._build.getLabel("format.indentFirstPar"), self.indentFirstPar)
 
+        # Text Margins
+        # ============
+
+        title = self._build.getLabel("format.grpMargins")
+        section += 1
+        self._sidebar.addButton(title, section)
+        self.addGroupLabel(title, section)
+
+        # Title
+        self.titleMarginT = NDoubleSpinBox(self)
+        self.titleMarginT.setFixedWidth(dbW)
+
+        self.titleMarginB = NDoubleSpinBox(self)
+        self.titleMarginB.setFixedWidth(dbW)
+
+        self.addRow(
+            trConst(nwStyles.T_LABEL["H0"]),
+            [trT, self.titleMarginT, 6, trB, self.titleMarginB],
+        )
+
+        # Heading 1
+        self.h1MarginT = NDoubleSpinBox(self)
+        self.h1MarginT.setFixedWidth(dbW)
+
+        self.h1MarginB = NDoubleSpinBox(self)
+        self.h1MarginB.setFixedWidth(dbW)
+
+        self.addRow(
+            trConst(nwStyles.T_LABEL["H1"]),
+            [trT, self.h1MarginT, 6, trB, self.h1MarginB],
+        )
+
+        # Heading 2
+        self.h2MarginT = NDoubleSpinBox(self)
+        self.h2MarginT.setFixedWidth(dbW)
+
+        self.h2MarginB = NDoubleSpinBox(self)
+        self.h2MarginB.setFixedWidth(dbW)
+
+        self.addRow(
+            trConst(nwStyles.T_LABEL["H2"]),
+            [trT, self.h2MarginT, 6, trB, self.h2MarginB],
+        )
+
+        # Heading 3
+        self.h3MarginT = NDoubleSpinBox(self)
+        self.h3MarginT.setFixedWidth(dbW)
+
+        self.h3MarginB = NDoubleSpinBox(self)
+        self.h3MarginB.setFixedWidth(dbW)
+
+        self.addRow(
+            trConst(nwStyles.T_LABEL["H3"]),
+            [trT, self.h3MarginT, 6, trB, self.h3MarginB],
+        )
+
+        # Heading 4
+        self.h4MarginT = NDoubleSpinBox(self)
+        self.h4MarginT.setFixedWidth(dbW)
+
+        self.h4MarginB = NDoubleSpinBox(self)
+        self.h4MarginB.setFixedWidth(dbW)
+
+        self.addRow(
+            trConst(nwStyles.T_LABEL["H4"]),
+            [trT, self.h4MarginT, 6, trB, self.h4MarginB],
+        )
+
+        # Text
+        self.textMarginT = NDoubleSpinBox(self)
+        self.textMarginT.setFixedWidth(dbW)
+
+        self.textMarginB = NDoubleSpinBox(self)
+        self.textMarginB.setFixedWidth(dbW)
+
+        self.addRow(
+            trConst(nwStyles.T_LABEL["TT"]),
+            [trT, self.textMarginT, 6, trB, self.textMarginB],
+        )
+
+        # Separator
+        self.sepMarginT = NDoubleSpinBox(self)
+        self.sepMarginT.setFixedWidth(dbW)
+
+        self.sepMarginB = NDoubleSpinBox(self)
+        self.sepMarginB.setFixedWidth(dbW)
+
+        self.addRow(
+            trConst(nwStyles.T_LABEL["SP"]),
+            [trT, self.sepMarginT, 6, trB, self.sepMarginB],
+        )
+
         # Page Layout
         # ===========
 
@@ -1075,24 +1176,32 @@ class _FormattingTab(NScrollableForm):
         self._sidebar.addButton(title, section)
         self.addGroupLabel(title, section)
 
+        # Unit
         self.pageUnit = NComboBox(self)
         for key, name in nwLabels.UNIT_NAME.items():
             self.pageUnit.addItem(trConst(name), key)
 
+        self.addRow(self._build.getLabel("format.pageUnit"), self.pageUnit)
+
+        # Page Size
         self.pageSize = NComboBox(self)
         for key, name in nwLabels.PAPER_NAME.items():
             self.pageSize.addItem(trConst(name), key)
 
-        self.pageWidth = NDoubleSpinBox(self)
+        self.pageWidth = NDoubleSpinBox(self, max=500.0)
         self.pageWidth.setFixedWidth(dbW)
-        self.pageWidth.setMaximum(500.0)
         self.pageWidth.valueChanged.connect(self._pageSizeValueChanged)
 
-        self.pageHeight = NDoubleSpinBox(self)
+        self.pageHeight = NDoubleSpinBox(self, max=500.0)
         self.pageHeight.setFixedWidth(dbW)
-        self.pageHeight.setMaximum(500.0)
         self.pageHeight.valueChanged.connect(self._pageSizeValueChanged)
 
+        self.addRow(
+            self._build.getLabel("format.pageSize"),
+            [self.pageSize, 6, trW, self.pageWidth, 6, trH, self.pageHeight],
+        )
+
+        # Page Margins
         self.topMargin = NDoubleSpinBox(self)
         self.topMargin.setFixedWidth(dbW)
 
@@ -1105,14 +1214,14 @@ class _FormattingTab(NScrollableForm):
         self.rightMargin = NDoubleSpinBox(self)
         self.rightMargin.setFixedWidth(dbW)
 
-        self.addRow(self._build.getLabel("format.pageUnit"), self.pageUnit)
-        self.addRow(self._build.getLabel("format.pageSize"), self.pageSize)
-        self.addRow(self._build.getLabel("format.pageWidth"), self.pageWidth)
-        self.addRow(self._build.getLabel("format.pageHeight"), self.pageHeight)
-        self.addRow(self._build.getLabel("format.topMargin"), self.topMargin)
-        self.addRow(self._build.getLabel("format.bottomMargin"), self.bottomMargin)
-        self.addRow(self._build.getLabel("format.leftMargin"), self.leftMargin)
-        self.addRow(self._build.getLabel("format.rightMargin"), self.rightMargin)
+        self.addRow(
+            self._build.getLabel("format.pageMargins"),
+            [trT, self.topMargin, 6, trB, self.bottomMargin],
+        )
+        self.addRow(
+            "",
+            [trL, self.leftMargin, 6, trR, self.rightMargin],
+        )
 
         # Open Document
         # =============
@@ -1203,6 +1312,24 @@ class _FormattingTab(NScrollableForm):
         self.indentWidth.setValue(self._build.getFloat("format.firstIndentWidth"))
         self.indentFirstPar.setChecked(self._build.getBool("format.indentFirstPar"))
 
+        # Text Margins
+        # ============
+
+        self.titleMarginT.setValue(self._build.getFloat("format.titleMarginT"))
+        self.titleMarginB.setValue(self._build.getFloat("format.titleMarginB"))
+        self.h1MarginT.setValue(self._build.getFloat("format.h1MarginT"))
+        self.h1MarginB.setValue(self._build.getFloat("format.h1MarginB"))
+        self.h2MarginT.setValue(self._build.getFloat("format.h2MarginT"))
+        self.h2MarginB.setValue(self._build.getFloat("format.h2MarginB"))
+        self.h3MarginT.setValue(self._build.getFloat("format.h3MarginT"))
+        self.h3MarginB.setValue(self._build.getFloat("format.h3MarginB"))
+        self.h4MarginT.setValue(self._build.getFloat("format.h4MarginT"))
+        self.h4MarginB.setValue(self._build.getFloat("format.h4MarginB"))
+        self.textMarginT.setValue(self._build.getFloat("format.textMarginT"))
+        self.textMarginB.setValue(self._build.getFloat("format.textMarginB"))
+        self.sepMarginT.setValue(self._build.getFloat("format.sepMarginT"))
+        self.sepMarginB.setValue(self._build.getFloat("format.sepMarginB"))
+
         # Page Layout
         # ===========
 
@@ -1272,6 +1399,22 @@ class _FormattingTab(NScrollableForm):
         self._build.setValue("format.firstLineIndent", self.firstIndent.isChecked())
         self._build.setValue("format.firstIndentWidth", self.indentWidth.value())
         self._build.setValue("format.indentFirstPar", self.indentFirstPar.isChecked())
+
+        # Text Margins
+        self._build.setValue("format.titleMarginT", self.titleMarginT.value())
+        self._build.setValue("format.titleMarginB", self.titleMarginB.value())
+        self._build.setValue("format.h1MarginT", self.h1MarginT.value())
+        self._build.setValue("format.h1MarginB", self.h1MarginB.value())
+        self._build.setValue("format.h2MarginT", self.h2MarginT.value())
+        self._build.setValue("format.h2MarginB", self.h2MarginB.value())
+        self._build.setValue("format.h3MarginT", self.h3MarginT.value())
+        self._build.setValue("format.h3MarginB", self.h3MarginB.value())
+        self._build.setValue("format.h4MarginT", self.h4MarginT.value())
+        self._build.setValue("format.h4MarginB", self.h4MarginB.value())
+        self._build.setValue("format.textMarginT", self.textMarginT.value())
+        self._build.setValue("format.textMarginB", self.textMarginB.value())
+        self._build.setValue("format.sepMarginT", self.sepMarginT.value())
+        self._build.setValue("format.sepMarginB", self.sepMarginB.value())
 
         # Page Layout
         self._build.setValue("format.pageUnit", str(self.pageUnit.currentData()))

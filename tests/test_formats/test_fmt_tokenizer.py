@@ -27,7 +27,7 @@ import pytest
 from PyQt5.QtGui import QFont
 
 from novelwriter import CONFIG
-from novelwriter.constants import nwHeadFmt
+from novelwriter.constants import nwHeadFmt, nwStyles
 from novelwriter.core.project import NWProject
 from novelwriter.formats.tokenizer import HeadingFormatter, Tokenizer, stripEscape
 from novelwriter.formats.tomarkdown import ToMarkdown
@@ -74,14 +74,14 @@ def testFmtToken_Setters(mockGUI):
     assert tokens._lineHeight == 1.15
     assert tokens._blockIndent == 4.0
     assert tokens._doJustify is False
-    assert tokens._marginTitle == (1.417, 0.500)
-    assert tokens._marginHead1 == (1.417, 0.500)
-    assert tokens._marginHead2 == (1.668, 0.500)
-    assert tokens._marginHead3 == (1.168, 0.500)
-    assert tokens._marginHead4 == (1.168, 0.500)
-    assert tokens._marginText == (0.000, 0.584)
-    assert tokens._marginMeta == (0.000, 0.584)
-    assert tokens._marginSep == (1.168, 1.168)
+    assert tokens._marginTitle == nwStyles.T_MARGIN["H0"]
+    assert tokens._marginHead1 == nwStyles.T_MARGIN["H1"]
+    assert tokens._marginHead2 == nwStyles.T_MARGIN["H2"]
+    assert tokens._marginHead3 == nwStyles.T_MARGIN["H3"]
+    assert tokens._marginHead4 == nwStyles.T_MARGIN["H4"]
+    assert tokens._marginSep == nwStyles.T_MARGIN["SP"]
+    assert tokens._marginText == nwStyles.T_MARGIN["TT"]
+    assert tokens._marginMeta == nwStyles.T_MARGIN["MT"]
     assert tokens._hidePart is False
     assert tokens._hideChapter is False
     assert tokens._hideUnNum is False
