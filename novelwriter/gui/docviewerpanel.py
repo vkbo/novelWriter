@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt
-from novelwriter.constants import nwHeaders, nwLabels, nwLists, trConst
+from novelwriter.constants import nwLabels, nwLists, nwStyles, trConst
 from novelwriter.core.index import IndexHeading, IndexItem
 from novelwriter.enum import nwDocMode, nwItemClass
 from novelwriter.extensions.modified import NIconToolButton
@@ -343,7 +343,7 @@ class _ViewPanelBackRefs(QTreeWidget):
                 nwItem.itemType, nwItem.itemClass,
                 nwItem.itemLayout, nwItem.mainHeading
             )
-            iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0) if nwItem.isDocumentLayout() else 5
+            iLevel = nwStyles.H_LEVEL.get(hItem.level, 0) if nwItem.isDocumentLayout() else 5
             hDec = SHARED.theme.getHeaderDecorationNarrow(iLevel)
 
             tKey = f"{tHandle}:{sTitle}"
@@ -453,7 +453,7 @@ class _ViewPanelKeyWords(QTreeWidget):
             nwItem.itemLayout, nwItem.mainHeading
         )
         impLabel, impIcon = nwItem.getImportStatus()
-        iLevel = nwHeaders.H_LEVEL.get(hItem.level, 0) if nwItem.isDocumentLayout() else 5
+        iLevel = nwStyles.H_LEVEL.get(hItem.level, 0) if nwItem.isDocumentLayout() else 5
         hDec = SHARED.theme.getHeaderDecorationNarrow(iLevel)
 
         # This can not use a get call to the dictionary as that would create an

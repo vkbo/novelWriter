@@ -39,7 +39,7 @@ from PyQt5.QtGui import QFont
 
 from novelwriter import __version__
 from novelwriter.common import xmlIndent
-from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels
+from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles
 from novelwriter.core.project import NWProject
 from novelwriter.formats.tokenizer import T_Formats, Tokenizer, stripEscape
 from novelwriter.types import FONT_STYLE, FONT_WEIGHTS
@@ -285,14 +285,14 @@ class ToOdt(Tokenizer):
         self._headWeight = self._fontBold if self._boldHeads else None
 
         hScale = self._scaleHeads
-        self._fSizeTitle = f"{round((2.50 if hScale else 1.0) * self._fontSize):d}pt"
-        self._fSizeHead1 = f"{round((2.00 if hScale else 1.0) * self._fontSize):d}pt"
-        self._fSizeHead2 = f"{round((1.60 if hScale else 1.0) * self._fontSize):d}pt"
-        self._fSizeHead3 = f"{round((1.30 if hScale else 1.0) * self._fontSize):d}pt"
-        self._fSizeHead4 = f"{round((1.15 if hScale else 1.0) * self._fontSize):d}pt"
-        self._fSizeHead  = f"{round((1.15 if hScale else 1.0) * self._fontSize):d}pt"
-        self._fSizeText  = f"{self._fontSize:d}pt"
-        self._fSizeFoot  = f"{round(0.8*self._fontSize):d}pt"
+        self._fSizeTitle = self._emToPt(nwStyles.H_SIZES[0] if hScale else 1.0)  # Was 2.50
+        self._fSizeHead1 = self._emToPt(nwStyles.H_SIZES[1] if hScale else 1.0)  # Was 2.00
+        self._fSizeHead2 = self._emToPt(nwStyles.H_SIZES[2] if hScale else 1.0)  # Was 1.60
+        self._fSizeHead3 = self._emToPt(nwStyles.H_SIZES[3] if hScale else 1.0)  # Was 1.30
+        self._fSizeHead4 = self._emToPt(nwStyles.H_SIZES[4] if hScale else 1.0)  # Was 1.15
+        self._fSizeHead  = self._emToPt(nwStyles.H_SIZES[4] if hScale else 1.0)  # Was 1.15
+        self._fSizeText  = self._emToPt(1.0)
+        self._fSizeFoot  = self._emToPt(0.8)
 
         mScale = self._lineHeight/1.15
 
@@ -804,6 +804,10 @@ class ToOdt(Tokenizer):
     def _emToCm(self, value: float) -> str:
         """Converts an em value to centimetres."""
         return f"{value*2.54/72*self._fontSize:.3f}cm"
+
+    def _emToPt(self, scale: float) -> str:
+        """Compute relative font size in points."""
+        return f"{round(scale * self._fontSize):d}pt"
 
     ##
     #  Style Elements

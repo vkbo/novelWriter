@@ -38,7 +38,7 @@ from PyQt5.QtWidgets import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import describeFont
-from novelwriter.constants import nwHeaders, nwHeadFmt, nwKeyWords, nwLabels, trConst
+from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles, trConst
 from novelwriter.core.buildsettings import BuildSettings, FilterMode
 from novelwriter.extensions.configlayout import (
     NColourLabel, NFixedPage, NScrollableForm, NScrollablePage
@@ -1092,7 +1092,7 @@ class _FormattingTab(NScrollableForm):
         self.titleMarginB.setFixedWidth(dbW)
 
         self.addRow(
-            trConst(nwHeaders.H_LABEL["H0"]),
+            trConst(nwStyles.T_LABEL["H0"]),
             [trT, self.titleMarginT, 6, trB, self.titleMarginB],
         )
 
@@ -1104,7 +1104,7 @@ class _FormattingTab(NScrollableForm):
         self.h1MarginB.setFixedWidth(dbW)
 
         self.addRow(
-            trConst(nwHeaders.H_LABEL["H1"]),
+            trConst(nwStyles.T_LABEL["H1"]),
             [trT, self.h1MarginT, 6, trB, self.h1MarginB],
         )
 
@@ -1116,7 +1116,7 @@ class _FormattingTab(NScrollableForm):
         self.h2MarginB.setFixedWidth(dbW)
 
         self.addRow(
-            trConst(nwHeaders.H_LABEL["H2"]),
+            trConst(nwStyles.T_LABEL["H2"]),
             [trT, self.h2MarginT, 6, trB, self.h2MarginB],
         )
 
@@ -1128,7 +1128,7 @@ class _FormattingTab(NScrollableForm):
         self.h3MarginB.setFixedWidth(dbW)
 
         self.addRow(
-            trConst(nwHeaders.H_LABEL["H3"]),
+            trConst(nwStyles.T_LABEL["H3"]),
             [trT, self.h3MarginT, 6, trB, self.h3MarginB],
         )
 
@@ -1140,7 +1140,7 @@ class _FormattingTab(NScrollableForm):
         self.h4MarginB.setFixedWidth(dbW)
 
         self.addRow(
-            trConst(nwHeaders.H_LABEL["H4"]),
+            trConst(nwStyles.T_LABEL["H4"]),
             [trT, self.h4MarginT, 6, trB, self.h4MarginB],
         )
 
@@ -1152,7 +1152,7 @@ class _FormattingTab(NScrollableForm):
         self.textMarginB.setFixedWidth(dbW)
 
         self.addRow(
-            self._build.getLabel("format.textMargin"),
+            trConst(nwStyles.T_LABEL["TT"]),
             [trT, self.textMarginT, 6, trB, self.textMarginB],
         )
 
@@ -1164,7 +1164,7 @@ class _FormattingTab(NScrollableForm):
         self.sepMarginB.setFixedWidth(dbW)
 
         self.addRow(
-            self._build.getLabel("format.sepMargin"),
+            trConst(nwStyles.T_LABEL["SP"]),
             [trT, self.sepMarginT, 6, trB, self.sepMarginB],
         )
 

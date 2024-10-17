@@ -34,7 +34,7 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtPrintSupport import QPrinter
 
-from novelwriter.constants import nwHeaders, nwHeadFmt, nwKeyWords, nwLabels, nwUnicode
+from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles, nwUnicode
 from novelwriter.core.project import NWProject
 from novelwriter.formats.tokenizer import T_Formats, Tokenizer
 from novelwriter.types import (
@@ -150,11 +150,11 @@ class ToQTextDocument(Tokenizer):
 
         hScale = self._scaleHeads
         self._sHead = {
-            self.T_TITLE: (nwHeaders.H_SIZES.get(0, 1.0) * fPt) if hScale else fPt,
-            self.T_HEAD1: (nwHeaders.H_SIZES.get(1, 1.0) * fPt) if hScale else fPt,
-            self.T_HEAD2: (nwHeaders.H_SIZES.get(2, 1.0) * fPt) if hScale else fPt,
-            self.T_HEAD3: (nwHeaders.H_SIZES.get(3, 1.0) * fPt) if hScale else fPt,
-            self.T_HEAD4: (nwHeaders.H_SIZES.get(4, 1.0) * fPt) if hScale else fPt,
+            self.T_TITLE: (nwStyles.H_SIZES.get(0, 1.0) * fPt) if hScale else fPt,
+            self.T_HEAD1: (nwStyles.H_SIZES.get(1, 1.0) * fPt) if hScale else fPt,
+            self.T_HEAD2: (nwStyles.H_SIZES.get(2, 1.0) * fPt) if hScale else fPt,
+            self.T_HEAD3: (nwStyles.H_SIZES.get(3, 1.0) * fPt) if hScale else fPt,
+            self.T_HEAD4: (nwStyles.H_SIZES.get(4, 1.0) * fPt) if hScale else fPt,
         }
 
         self._mText = (mPx * self._marginText[0], mPx * self._marginText[1])

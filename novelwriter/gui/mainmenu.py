@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import QAction, QMenuBar
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import openExternalPath
-from novelwriter.constants import nwConst, nwHeaders, nwKeyWords, nwLabels, nwUnicode, trConst
+from novelwriter.constants import nwConst, nwKeyWords, nwLabels, nwStyles, nwUnicode, trConst
 from novelwriter.enum import nwDocAction, nwDocInsert, nwFocus, nwView
 from novelwriter.extensions.eventfilters import StatusTipFilter
 
@@ -700,28 +700,28 @@ class GuiMainMenu(QMenuBar):
         self.fmtMenu.addSeparator()
 
         # Format > Heading 1 (Partition)
-        self.aFmtHead1 = self.fmtMenu.addAction(trConst(nwHeaders.H_LABEL["H1"]))
+        self.aFmtHead1 = self.fmtMenu.addAction(trConst(nwStyles.T_LABEL["H1"]))
         self.aFmtHead1.setShortcut("Ctrl+1")
         self.aFmtHead1.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H1)
         )
 
         # Format > Heading 2 (Chapter)
-        self.aFmtHead2 = self.fmtMenu.addAction(trConst(nwHeaders.H_LABEL["H2"]))
+        self.aFmtHead2 = self.fmtMenu.addAction(trConst(nwStyles.T_LABEL["H2"]))
         self.aFmtHead2.setShortcut("Ctrl+2")
         self.aFmtHead2.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H2)
         )
 
         # Format > Heading 3 (Scene)
-        self.aFmtHead3 = self.fmtMenu.addAction(trConst(nwHeaders.H_LABEL["H3"]))
+        self.aFmtHead3 = self.fmtMenu.addAction(trConst(nwStyles.T_LABEL["H3"]))
         self.aFmtHead3.setShortcut("Ctrl+3")
         self.aFmtHead3.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H3)
         )
 
         # Format > Heading 4 (Section)
-        self.aFmtHead4 = self.fmtMenu.addAction(trConst(nwHeaders.H_LABEL["H4"]))
+        self.aFmtHead4 = self.fmtMenu.addAction(trConst(nwStyles.T_LABEL["H4"]))
         self.aFmtHead4.setShortcut("Ctrl+4")
         self.aFmtHead4.triggered.connect(
             lambda: self.requestDocAction.emit(nwDocAction.BLOCK_H4)

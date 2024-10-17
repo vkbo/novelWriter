@@ -38,7 +38,7 @@ from PyQt5.QtWidgets import (
 )
 
 from novelwriter import CONFIG, SHARED
-from novelwriter.constants import nwHeaders, nwUnicode
+from novelwriter.constants import nwStyles, nwUnicode
 from novelwriter.enum import nwDocAction, nwDocMode, nwItemType
 from novelwriter.error import logException
 from novelwriter.extensions.configlayout import NColourLabel
@@ -250,7 +250,7 @@ class GuiDocViewer(QTextBrowser):
         SHARED.project.data.setLastHandle(tHandle, "viewer")
         self.docHeader.setHandle(tHandle)
         self.docHeader.setOutline({
-            sTitle: (hItem.title, nwHeaders.H_LEVEL.get(hItem.level, 0))
+            sTitle: (hItem.title, nwStyles.H_LEVEL.get(hItem.level, 0))
             for sTitle, hItem in SHARED.project.index.iterItemHeadings(tHandle)
         })
         self.updateDocMargins()

@@ -38,7 +38,9 @@ from PyQt5.QtGui import QFont
 
 from novelwriter import CONFIG
 from novelwriter.common import checkInt, formatTimeStamp, numberToRoman
-from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwShortcode, nwUnicode, trConst
+from novelwriter.constants import (
+    nwHeadFmt, nwKeyWords, nwLabels, nwShortcode, nwStyles, nwUnicode, trConst
+)
 from novelwriter.core.index import processComment
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwComment, nwItemLayout
@@ -167,15 +169,15 @@ class Tokenizer(ABC):
         self._keepBreaks   = True   # Keep line breaks in paragraphs
 
         # Margins
-        self._marginTitle = (1.417, 0.500)
-        self._marginHead1 = (1.417, 0.500)
-        self._marginHead2 = (1.668, 0.500)
-        self._marginHead3 = (1.168, 0.500)
-        self._marginHead4 = (1.168, 0.500)
-        self._marginText  = (0.000, 0.584)
-        self._marginMeta  = (0.000, 0.584)
-        self._marginFoot  = (1.417, 0.467)
-        self._marginSep   = (1.168, 1.168)
+        self._marginTitle = nwStyles.T_MARGIN["H0"]
+        self._marginHead1 = nwStyles.T_MARGIN["H1"]
+        self._marginHead2 = nwStyles.T_MARGIN["H2"]
+        self._marginHead3 = nwStyles.T_MARGIN["H3"]
+        self._marginHead4 = nwStyles.T_MARGIN["H4"]
+        self._marginText  = nwStyles.T_MARGIN["TT"]
+        self._marginMeta  = nwStyles.T_MARGIN["MT"]
+        self._marginFoot  = nwStyles.T_MARGIN["FT"]
+        self._marginSep   = nwStyles.T_MARGIN["SP"]
 
         # Title Formats
         self._fmtPart    = nwHeadFmt.TITLE  # Formatting for partitions

@@ -37,7 +37,7 @@ from PyQt5.QtGui import (
 
 from novelwriter import CONFIG, SHARED
 from novelwriter.common import checkInt
-from novelwriter.constants import nwHeaders, nwUnicode
+from novelwriter.constants import nwStyles, nwUnicode
 from novelwriter.core.index import processComment
 from novelwriter.enum import nwComment
 from novelwriter.text.patterns import REGEX_PATTERNS
@@ -95,14 +95,14 @@ class GuiDocHighlighter(QSyntaxHighlighter):
 
         # Create Character Formats
         self._addCharFormat("text",      SHARED.theme.colText)
-        self._addCharFormat("header1",   SHARED.theme.colHead, "b", nwHeaders.H_SIZES[1])
-        self._addCharFormat("header2",   SHARED.theme.colHead, "b", nwHeaders.H_SIZES[2])
-        self._addCharFormat("header3",   SHARED.theme.colHead, "b", nwHeaders.H_SIZES[3])
-        self._addCharFormat("header4",   SHARED.theme.colHead, "b", nwHeaders.H_SIZES[4])
-        self._addCharFormat("head1h",    SHARED.theme.colHeadH, "b", nwHeaders.H_SIZES[1])
-        self._addCharFormat("head2h",    SHARED.theme.colHeadH, "b", nwHeaders.H_SIZES[2])
-        self._addCharFormat("head3h",    SHARED.theme.colHeadH, "b", nwHeaders.H_SIZES[3])
-        self._addCharFormat("head4h",    SHARED.theme.colHeadH, "b", nwHeaders.H_SIZES[4])
+        self._addCharFormat("header1",   SHARED.theme.colHead, "b", nwStyles.H_SIZES[1])
+        self._addCharFormat("header2",   SHARED.theme.colHead, "b", nwStyles.H_SIZES[2])
+        self._addCharFormat("header3",   SHARED.theme.colHead, "b", nwStyles.H_SIZES[3])
+        self._addCharFormat("header4",   SHARED.theme.colHead, "b", nwStyles.H_SIZES[4])
+        self._addCharFormat("head1h",    SHARED.theme.colHeadH, "b", nwStyles.H_SIZES[1])
+        self._addCharFormat("head2h",    SHARED.theme.colHeadH, "b", nwStyles.H_SIZES[2])
+        self._addCharFormat("head3h",    SHARED.theme.colHeadH, "b", nwStyles.H_SIZES[3])
+        self._addCharFormat("head4h",    SHARED.theme.colHeadH, "b", nwStyles.H_SIZES[4])
         self._addCharFormat("bold",      colEmph, "b")
         self._addCharFormat("italic",    colEmph, "i")
         self._addCharFormat("strike",    SHARED.theme.colHidden, "s")
