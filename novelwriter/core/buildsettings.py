@@ -147,12 +147,7 @@ SETTINGS_LABELS = {
     "format.grpPage":          QT_TRANSLATE_NOOP("Builds", "Page Layout"),
     "format.pageUnit":         QT_TRANSLATE_NOOP("Builds", "Unit"),
     "format.pageSize":         QT_TRANSLATE_NOOP("Builds", "Page Size"),
-    "format.pageWidth":        QT_TRANSLATE_NOOP("Builds", "Page Width"),
-    "format.pageHeight":       QT_TRANSLATE_NOOP("Builds", "Page Height"),
-    "format.topMargin":        QT_TRANSLATE_NOOP("Builds", "Top Margin"),
-    "format.bottomMargin":     QT_TRANSLATE_NOOP("Builds", "Bottom Margin"),
-    "format.leftMargin":       QT_TRANSLATE_NOOP("Builds", "Left Margin"),
-    "format.rightMargin":      QT_TRANSLATE_NOOP("Builds", "Right Margin"),
+    "format.pageMargins":      QT_TRANSLATE_NOOP("Builds", "Page Margins"),
 
     "odt":                     QT_TRANSLATE_NOOP("Builds", "Document Options"),
     "odt.pageHeader":          QT_TRANSLATE_NOOP("Builds", "Page Header"),

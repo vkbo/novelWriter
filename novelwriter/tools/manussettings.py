@@ -964,6 +964,15 @@ class _FormattingTab(NScrollableForm):
         spW = 6*SHARED.theme.textNWidth
         dbW = 8*SHARED.theme.textNWidth
 
+        # Common Translations
+
+        trW = self.tr("W:")  # Width
+        trH = self.tr("H:")  # Height
+        trT = self.tr("T:")  # Top
+        trB = self.tr("B:")  # Bottom
+        trL = self.tr("L:")  # Left
+        trR = self.tr("R:")  # Right
+
         # Text Content
         # ============
 
@@ -1075,24 +1084,32 @@ class _FormattingTab(NScrollableForm):
         self._sidebar.addButton(title, section)
         self.addGroupLabel(title, section)
 
+        # Unit
         self.pageUnit = NComboBox(self)
         for key, name in nwLabels.UNIT_NAME.items():
             self.pageUnit.addItem(trConst(name), key)
 
+        self.addRow(self._build.getLabel("format.pageUnit"), self.pageUnit)
+
+        # Page Size
         self.pageSize = NComboBox(self)
         for key, name in nwLabels.PAPER_NAME.items():
             self.pageSize.addItem(trConst(name), key)
 
-        self.pageWidth = NDoubleSpinBox(self)
+        self.pageWidth = NDoubleSpinBox(self, max=500.0)
         self.pageWidth.setFixedWidth(dbW)
-        self.pageWidth.setMaximum(500.0)
         self.pageWidth.valueChanged.connect(self._pageSizeValueChanged)
 
-        self.pageHeight = NDoubleSpinBox(self)
+        self.pageHeight = NDoubleSpinBox(self, max=500.0)
         self.pageHeight.setFixedWidth(dbW)
-        self.pageHeight.setMaximum(500.0)
         self.pageHeight.valueChanged.connect(self._pageSizeValueChanged)
 
+        self.addRow(
+            self._build.getLabel("format.pageSize"),
+            [self.pageSize, 8, trW, self.pageWidth, trH, self.pageHeight],
+        )
+
+        # Page Margins
         self.topMargin = NDoubleSpinBox(self)
         self.topMargin.setFixedWidth(dbW)
 
@@ -1105,14 +1122,14 @@ class _FormattingTab(NScrollableForm):
         self.rightMargin = NDoubleSpinBox(self)
         self.rightMargin.setFixedWidth(dbW)
 
-        self.addRow(self._build.getLabel("format.pageUnit"), self.pageUnit)
-        self.addRow(self._build.getLabel("format.pageSize"), self.pageSize)
-        self.addRow(self._build.getLabel("format.pageWidth"), self.pageWidth)
-        self.addRow(self._build.getLabel("format.pageHeight"), self.pageHeight)
-        self.addRow(self._build.getLabel("format.topMargin"), self.topMargin)
-        self.addRow(self._build.getLabel("format.bottomMargin"), self.bottomMargin)
-        self.addRow(self._build.getLabel("format.leftMargin"), self.leftMargin)
-        self.addRow(self._build.getLabel("format.rightMargin"), self.rightMargin)
+        self.addRow(
+            self._build.getLabel("format.pageMargins"),
+            [trT, self.topMargin, trB, self.bottomMargin],
+        )
+        self.addRow(
+            "",
+            [trL, self.leftMargin, trR, self.rightMargin],
+        )
 
         # Open Document
         # =============

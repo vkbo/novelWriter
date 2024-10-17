@@ -180,9 +180,16 @@ class NScrollableForm(QScrollArea):
             self._sections[identifier] = qLabel
         return
 
-    def addRow(self, label: str, widget: QWidget | list[QWidget], helpText: str = "",
-               unit: str | None = None, button: QWidget | None = None, editable: str | None = None,
-               stretch: tuple[int, int] = (1, 0)) -> None:
+    def addRow(
+        self,
+        label: str | None,
+        widget: QWidget | list[QWidget | str | int],
+        helpText: str = "",
+        unit: str | None = None,
+        button: QWidget | None = None,
+        editable: str | None = None,
+        stretch: tuple[int, int] = (1, 0),
+    ) -> None:
         """Add a label and a widget as a new row of the form."""
         row = QHBoxLayout()
         row.setSpacing(CONFIG.pxInt(12))
@@ -191,13 +198,18 @@ class NScrollableForm(QScrollArea):
             wBox = QHBoxLayout()
             wBox.setContentsMargins(0, 0, 0, 0)
             for item in widget:
-                wBox.addWidget(item)
+                if isinstance(item, QWidget):
+                    wBox.addWidget(item)
+                elif isinstance(item, str):
+                    wBox.addWidget(QLabel(item, self))
+                elif isinstance(item, int):
+                    wBox.addSpacing(CONFIG.pxInt(item))
             qWidget = QWidget(self)
             qWidget.setLayout(wBox)
         else:
             qWidget = widget
 
-        qLabel = QLabel(label, self)
+        qLabel = QLabel(label or "", self)
         qLabel.setIndent(self._indent)
         qLabel.setBuddy(qWidget)
 
@@ -230,7 +242,8 @@ class NScrollableForm(QScrollArea):
             row.addWidget(qWidget, stretch[1])
 
         self._layout.addLayout(row)
-        self._index[label.strip()] = qWidget
+        if label:
+            self._index[label.strip()] = qWidget
         self._first = False
 
         return
