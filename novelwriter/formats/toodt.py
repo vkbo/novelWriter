@@ -237,8 +237,8 @@ class ToOdt(Tokenizer):
         self._opaHead12  = None
         self._colHead34  = None
         self._opaHead34  = None
-        self._colDialogM = None
-        self._colDialogA = None
+        self._colDialogM = "#2a6099"
+        self._colDialogA = "#813709"
         self._colMetaTx  = "#813709"
         self._opaMetaTx  = "100%"
         self._markText   = "#ffffa6"
@@ -336,10 +336,6 @@ class ToOdt(Tokenizer):
             self._opaHead12 = "100%"
             self._colHead34 = "#444444"
             self._opaHead34 = "100%"
-
-        if self._showDialog:
-            self._colDialogM = "#2a6099"
-            self._colDialogA = "#813709"
 
         self._fLineHeight  = f"{round(100 * self._lineHeight):d}%"
         self._fBlockIndent = self._emToCm(self._blockIndent)
@@ -625,8 +621,13 @@ class ToOdt(Tokenizer):
         return rTxt, rFmt
 
     def _addTextPar(
-        self, xParent: ET.Element, styleName: str, oStyle: ODTParagraphStyle, tText: str,
-        tFmt: Sequence[tuple[int, int, str]] = [], isHead: bool = False, oLevel: str | None = None
+        self,
+        xParent: ET.Element,
+        styleName: str, oStyle: ODTParagraphStyle,
+        tText: str,
+        tFmt: Sequence[tuple[int, int, str]] | None = None,
+        isHead: bool = False,
+        oLevel: str | None = None,
     ) -> None:
         """Add a text paragraph to the text XML element."""
         tAttr = {_mkTag("text", "style-name"): self._paraStyle(styleName, oStyle)}
@@ -653,7 +654,7 @@ class ToOdt(Tokenizer):
         tFrag = ""
         fLast = 0
         xNode = None
-        for fPos, fFmt, fData in tFmt:
+        for fPos, fFmt, fData in tFmt or []:
 
             # Add any extra nodes
             if xNode is not None:

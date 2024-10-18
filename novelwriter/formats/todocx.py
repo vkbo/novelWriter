@@ -1,9 +1,9 @@
 """
-novelWriter – DOCX Text Converter
+novelWriter – DocX Text Converter
 =================================
 
 File History:
-Created: 2024-10-15 [2.6b1] ToRaw
+Created: 2024-10-18 [2.6b1] ToDocX
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen
@@ -32,7 +32,7 @@ from zipfile import ZipFile
 
 from novelwriter import __version__
 from novelwriter.common import xmlIndent
-from novelwriter.constants import nwHeadFmt, nwStyles
+from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles
 from novelwriter.core.project import NWProject
 from novelwriter.formats.tokenizer import T_Formats, Tokenizer
 
@@ -108,6 +108,15 @@ M_SUP = ~X_SUP
 M_SUB = ~X_SUB
 M_DLG = ~X_DLG
 M_DLA = ~X_DLA
+
+
+# Colours
+COL_HEAD_L12 = "2a6099"
+COL_HEAD_L34 = "444444"
+COL_DIALOG_M = "2a6099"
+COL_DIALOG_A = "813709"
+COL_META_TXT = "813709"
+COL_MARK_TXT = "ffffa6"
 
 
 class ToDocX(Tokenizer):
@@ -243,27 +252,27 @@ class ToDocX(Tokenizer):
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._addFragments(par, "Heading4", tHead, tFormat)
 
-        #     elif tType == self.T_SEP:
-        #         self._addTextPar(xText, S_SEP, oStyle, tText)
+            elif tType == self.T_SEP:
+                self._addFragments(par, "Separator", tText)
 
-        #     elif tType == self.T_SKIP:
-        #         self._addTextPar(xText, S_TEXT, oStyle, "")
+            elif tType == self.T_SKIP:
+                self._addFragments(par, "Normal", "")
 
-        #     elif tType == self.T_SYNOPSIS and self._doSynopsis:
-        #         tTemp, tFmt = self._formatSynopsis(tText, tFormat, True)
-        #         self._addTextPar(xText, S_META, oStyle, tTemp, tFmt=tFmt)
+            elif tType == self.T_SYNOPSIS and self._doSynopsis:
+                tTemp, tFmt = self._formatSynopsis(tText, tFormat, True)
+                self._addFragments(par, "TextMeta", tTemp, tFmt)
 
-        #     elif tType == self.T_SHORT and self._doSynopsis:
-        #         tTemp, tFmt = self._formatSynopsis(tText, tFormat, False)
-        #         self._addTextPar(xText, S_META, oStyle, tTemp, tFmt=tFmt)
+            elif tType == self.T_SHORT and self._doSynopsis:
+                tTemp, tFmt = self._formatSynopsis(tText, tFormat, False)
+                self._addFragments(par, "TextMeta", tTemp, tFmt)
 
-        #     elif tType == self.T_COMMENT and self._doComments:
-        #         tTemp, tFmt = self._formatComments(tText, tFormat)
-        #         self._addTextPar(xText, S_META, oStyle, tTemp, tFmt=tFmt)
+            elif tType == self.T_COMMENT and self._doComments:
+                tTemp, tFmt = self._formatComments(tText, tFormat)
+                self._addFragments(par, "TextMeta", tTemp, tFmt)
 
-        #     elif tType == self.T_KEYWORD and self._doKeywords:
-        #         tTemp, tFmt = self._formatKeywords(tText)
-        #         self._addTextPar(xText, S_META, oStyle, tTemp, tFmt=tFmt)
+            elif tType == self.T_KEYWORD and self._doKeywords:
+                tTemp, tFmt = self._formatKeywords(tText)
+                self._addFragments(par, "TextMeta", tTemp, tFmt)
 
             par.finalise(self._xBody)
 
@@ -370,12 +379,48 @@ class ToDocX(Tokenizer):
     #  Internal Functions
     ##
 
-    def _addFragments(self, par: DocXParagraph, pStyle: str, text: str, tFmt: T_Formats) -> None:
+    def _formatSynopsis(self, text: str, fmt: T_Formats, synopsis: bool) -> tuple[str, T_Formats]:
+        """Apply formatting to synopsis lines."""
+        name = self._localLookup("Synopsis" if synopsis else "Short Description")
+        shift = len(name) + 2
+        rTxt = f"{name}: {text}"
+        rFmt: T_Formats = [(0, self.FMT_B_B, ""), (len(name) + 1, self.FMT_B_E, "")]
+        rFmt.extend((p + shift, f, d) for p, f, d in fmt)
+        return rTxt, rFmt
+
+    def _formatComments(self, text: str, fmt: T_Formats) -> tuple[str, T_Formats]:
+        """Apply formatting to comments."""
+        name = self._localLookup("Comment")
+        shift = len(name) + 2
+        rTxt = f"{name}: {text}"
+        rFmt: T_Formats = [(0, self.FMT_B_B, ""), (len(name) + 1, self.FMT_B_E, "")]
+        rFmt.extend((p + shift, f, d) for p, f, d in fmt)
+        return rTxt, rFmt
+
+    def _formatKeywords(self, text: str) -> tuple[str, T_Formats]:
+        """Apply formatting to keywords."""
+        valid, bits, _ = self._project.index.scanThis("@"+text)
+        if not valid or not bits or bits[0] not in nwLabels.KEY_NAME:
+            return "", []
+
+        rTxt = f"{self._localLookup(nwLabels.KEY_NAME[bits[0]])}: "
+        rFmt: T_Formats = [(0, self.FMT_B_B, ""), (len(rTxt) - 1, self.FMT_B_E, "")]
+        if len(bits) > 1:
+            if bits[0] == nwKeyWords.TAG_KEY:
+                rTxt += bits[1]
+            else:
+                rTxt += ", ".join(bits[1:])
+
+        return rTxt, rFmt
+
+    def _addFragments(
+        self, par: DocXParagraph, pStyle: str, text: str, tFmt: T_Formats | None = None
+    ) -> None:
         """Apply formatting tags to text."""
         par.setStyle(pStyle)
         xFmt = 0x00
         fStart = 0
-        for fPos, fFmt, fData in tFmt:
+        for fPos, fFmt, fData in tFmt or []:
 
             run = DocXRun(text[fStart:fPos], xFmt)
             par.addRun(run)
@@ -456,12 +501,12 @@ class ToDocX(Tokenizer):
     def _useableStyles(self) -> None:
         """Set the usable styles."""
         hScale = self._scaleHeads
+        hColor = self._colorHeads
 
         # Add Normal Style
         self._addParStyle(
             name="Normal",
             styleId="Normal",
-            size=1.0,
             default=True,
             margins=self._marginText,
         )
@@ -486,6 +531,7 @@ class ToDocX(Tokenizer):
             nextStyle="Normal",
             margins=self._marginHead1,
             level=0,
+            color=COL_HEAD_L12 if hColor else None,
         )
 
         # Add Heading 2
@@ -497,6 +543,7 @@ class ToDocX(Tokenizer):
             nextStyle="Normal",
             margins=self._marginHead2,
             level=1,
+            color=COL_HEAD_L12 if hColor else None,
         )
 
         # Add Heading 3
@@ -508,6 +555,7 @@ class ToDocX(Tokenizer):
             nextStyle="Normal",
             margins=self._marginHead3,
             level=1,
+            color=COL_HEAD_L34 if hColor else None,
         )
 
         # Add Heading 4
@@ -519,6 +567,27 @@ class ToDocX(Tokenizer):
             nextStyle="Normal",
             margins=self._marginHead4,
             level=1,
+            color=COL_HEAD_L34 if hColor else None,
+        )
+
+        # Add Separator
+        self._addParStyle(
+            name="Separator",
+            styleId="Separator",
+            basedOn="Normal",
+            nextStyle="Normal",
+            margins=self._marginSep,
+            align="center",
+        )
+
+        # Add Text Meta Style
+        self._addParStyle(
+            name="Text Meta",
+            styleId="TextMeta",
+            basedOn="Normal",
+            nextStyle="Normal",
+            margins=self._marginMeta,
+            color=COL_META_TXT,
         )
 
         return
@@ -527,12 +596,14 @@ class ToDocX(Tokenizer):
         self, *,
         name: str,
         styleId: str,
-        size: float,
+        size: float = 1.0,
         basedOn: str | None = None,
         nextStyle: str | None = None,
         margins: tuple[float, float] | None = None,
+        align: str | None = None,
         default: bool = False,
         level: int | None = None,
+        color: str | None = None,
     ) -> None:
         """Add a paragraph style."""
         sAttr = {}
@@ -553,17 +624,21 @@ class ToDocX(Tokenizer):
         if level is not None:
             ET.SubElement(xStyl, _wTag("outlineLvl"), attrib={_wTag("val"): str(level)})
 
-        xPPr = ET.SubElement(xStyl, _wTag("pPr"))
+        pPr = ET.SubElement(xStyl, _wTag("pPr"))
         if margins:
-            ET.SubElement(xPPr, _wTag("spacing"), attrib={
+            ET.SubElement(pPr, _wTag("spacing"), attrib={
                 _wTag("before"): str(int(20.0 * margins[0] * self._fontSize)),
                 _wTag("after"): str(int(20.0 * margins[1] * self._fontSize)),
                 _wTag("line"): ln,
             })
+        if align:
+            ET.SubElement(pPr, _wTag("jc"), attrib={_wTag("val"): align})
 
-        xRPr = ET.SubElement(xStyl, _wTag("rPr"))
-        ET.SubElement(xRPr, _wTag("sz"), attrib={_wTag("val"): sz})
-        ET.SubElement(xRPr, _wTag("szCs"), attrib={_wTag("val"): sz})
+        rPr = ET.SubElement(xStyl, _wTag("rPr"))
+        ET.SubElement(rPr, _wTag("sz"), attrib={_wTag("val"): sz})
+        ET.SubElement(rPr, _wTag("szCs"), attrib={_wTag("val"): sz})
+        if color:
+            ET.SubElement(rPr, _wTag("color"), attrib={_wTag("val"): color})
 
         return
 
@@ -630,9 +705,9 @@ class DocXParagraph:
 
         # Values
         spacing = {}
-        if self._topMargin:
+        if self._topMargin is not None:
             spacing["before"] = str(self._topMargin)
-        if self._bottomMargin:
+        if self._bottomMargin is not None:
             spacing["after"] = str(self._bottomMargin)
 
         # Paragraph
@@ -672,12 +747,20 @@ class DocXRun:
                 ET.SubElement(rPr, _wTag("i"))
             if fmt & X_UND == X_UND:
                 ET.SubElement(rPr, _wTag("u"), attrib={_wTag("val"): "single"})
+            if fmt & X_MRK == X_MRK:
+                ET.SubElement(rPr, _wTag("shd"), attrib={
+                    _wTag("fill"): COL_MARK_TXT, _wTag("val"): "clear",
+                })
             if fmt & X_DEL == X_DEL:
                 ET.SubElement(rPr, _wTag("strike"))
             if fmt & X_SUP == X_SUP:
                 ET.SubElement(rPr, _wTag("vertAlign"), attrib={_wTag("val"): "superscript"})
             if fmt & X_SUB == X_SUB:
                 ET.SubElement(rPr, _wTag("vertAlign"), attrib={_wTag("val"): "subscript"})
+            if fmt & X_DLG == X_DLG:
+                ET.SubElement(rPr, _wTag("color"), attrib={_wTag("val"): COL_DIALOG_M})
+            if fmt & X_DLA == X_DLA:
+                ET.SubElement(rPr, _wTag("color"), attrib={_wTag("val"): COL_DIALOG_A})
 
             temp = text
             while (parts := temp.partition("\n"))[0]:
