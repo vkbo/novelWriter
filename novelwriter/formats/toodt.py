@@ -69,6 +69,19 @@ def _mkTag(ns: str, tag: str) -> str:
     return tag
 
 
+def _addSingle(
+    parent: ET.Element,
+    tag: str,
+    text: str | int | None = None,
+    attrib: dict | None = None
+) -> None:
+    """Add a single value to a parent element."""
+    xSub = ET.SubElement(parent, tag, attrib=attrib or {})
+    if text is not None:
+        xSub.text = str(text)
+    return
+
+
 # Mimetype and Version
 X_MIME = "application/vnd.oasis.opendocument.text"
 X_VERS = "1.3"
@@ -403,33 +416,21 @@ class ToOdt(Tokenizer):
         timeStamp = datetime.now().isoformat(sep="T", timespec="seconds")
 
         # Office Meta Data
-        xMeta = ET.SubElement(self._xMeta, _mkTag("meta", "creation-date"))
-        xMeta.text = timeStamp
-
-        xMeta = ET.SubElement(self._xMeta, _mkTag("meta", "generator"))
-        xMeta.text = f"novelWriter/{__version__}"
-
-        xMeta = ET.SubElement(self._xMeta, _mkTag("meta", "initial-creator"))
-        xMeta.text = self._project.data.author
-
-        xMeta = ET.SubElement(self._xMeta, _mkTag("meta", "editing-cycles"))
-        xMeta.text = str(self._project.data.saveCount)
+        _addSingle(self._xMeta, _mkTag("meta", "creation-date"), timeStamp)
+        _addSingle(self._xMeta, _mkTag("meta", "generator"), f"novelWriter/{__version__}")
+        _addSingle(self._xMeta, _mkTag("meta", "initial-creator"), self._project.data.author)
+        _addSingle(self._xMeta, _mkTag("meta", "editing-cycles"), self._project.data.saveCount)
 
         # Format is: PnYnMnDTnHnMnS
         # https://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#duration
         eT = self._project.data.editTime
-        xMeta = ET.SubElement(self._xMeta, _mkTag("meta", "editing-duration"))
-        xMeta.text = f"P{eT//86400:d}DT{eT%86400//3600:d}H{eT%3600//60:d}M{eT%60:d}S"
+        fT = f"P{eT//86400:d}DT{eT%86400//3600:d}H{eT%3600//60:d}M{eT%60:d}S"
+        _addSingle(self._xMeta, _mkTag("meta", "editing-duration"), fT)
 
         # Dublin Core Meta Data
-        xMeta = ET.SubElement(self._xMeta, _mkTag("dc", "title"))
-        xMeta.text = self._project.data.name
-
-        xMeta = ET.SubElement(self._xMeta, _mkTag("dc", "date"))
-        xMeta.text = timeStamp
-
-        xMeta = ET.SubElement(self._xMeta, _mkTag("dc", "creator"))
-        xMeta.text = self._project.data.author
+        _addSingle(self._xMeta, _mkTag("dc", "title"), self._project.data.name)
+        _addSingle(self._xMeta, _mkTag("dc", "date"), timeStamp)
+        _addSingle(self._xMeta, _mkTag("dc", "creator"), self._project.data.author)
 
         self._pageStyles()
         self._defaultStyles()
@@ -569,18 +570,18 @@ class ToOdt(Tokenizer):
             oVers = _mkTag("office", "version")
             xSett = ET.Element(oRoot, attrib={oVers: X_VERS})
 
-            def putInZip(name: str, xObj: ET.Element, zipObj: ZipFile) -> None:
+            def xmlToZip(name: str, xObj: ET.Element, zipObj: ZipFile) -> None:
                 with zipObj.open(name, mode="w") as fObj:
                     xml = ET.ElementTree(xObj)
                     xml.write(fObj, encoding="utf-8", xml_declaration=True)
 
             with ZipFile(path, mode="w") as outZip:
                 outZip.writestr("mimetype", X_MIME)
-                putInZip("META-INF/manifest.xml", xMani, outZip)
-                putInZip("settings.xml", xSett, outZip)
-                putInZip("content.xml", self._dCont, outZip)
-                putInZip("meta.xml", self._dMeta, outZip)
-                putInZip("styles.xml", self._dStyl, outZip)
+                xmlToZip("META-INF/manifest.xml", xMani, outZip)
+                xmlToZip("settings.xml", xSett, outZip)
+                xmlToZip("content.xml", self._dCont, outZip)
+                xmlToZip("meta.xml", self._dMeta, outZip)
+                xmlToZip("styles.xml", self._dStyl, outZip)
 
         logger.info("Wrote file: %s", path)
 
@@ -794,8 +795,7 @@ class ToOdt(Tokenizer):
                 _mkTag("text", "id"): f"ftn{self._nNote}",
                 _mkTag("text", "note-class"): "footnote",
             })
-            xCite = ET.SubElement(xNote, _mkTag("text", "note-citation"))
-            xCite.text = str(self._nNote)
+            _addSingle(xNote, _mkTag("text", "note-citation"), self._nNote)
             xBody = ET.SubElement(xNote, _mkTag("text", "note-body"))
             self._addTextPar(xBody, "Footnote", nStyle, content[0], tFmt=content[1])
             return xNote
