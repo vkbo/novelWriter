@@ -37,6 +37,7 @@ from novelwriter.core.item import NWItem
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt
 from novelwriter.error import formatException, logException
+from novelwriter.formats.todocx import ToDocX
 from novelwriter.formats.tohtml import ToHtml
 from novelwriter.formats.tokenizer import Tokenizer
 from novelwriter.formats.tomarkdown import ToMarkdown
@@ -184,6 +185,13 @@ class NWBuildDocument:
 
             if self._build.getBool("format.replaceTabs"):
                 makeObj.replaceTabs(nSpaces=4, spaceChar=" ")
+
+        elif bFormat == nwBuildFmt.DOCX:
+            makeObj = ToDocX(self._project)
+            filtered = self._setupBuild(makeObj)
+            makeObj.initDocument()
+
+            yield from self._iterBuild(makeObj, filtered)
 
         elif bFormat == nwBuildFmt.PDF:
             makeObj = ToQTextDocument(self._project)

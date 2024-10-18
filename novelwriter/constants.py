@@ -267,6 +267,7 @@ class nwLabels:
     BUILD_FMT = {
         nwBuildFmt.ODT:    QT_TRANSLATE_NOOP("Constant", "Open Document (.odt)"),
         nwBuildFmt.FODT:   QT_TRANSLATE_NOOP("Constant", "Flat Open Document (.fodt)"),
+        nwBuildFmt.DOCX:   QT_TRANSLATE_NOOP("Constant", "Microsoft Word Document (.docx)"),
         nwBuildFmt.HTML:   QT_TRANSLATE_NOOP("Constant", "novelWriter HTML (.html)"),
         nwBuildFmt.NWD:    QT_TRANSLATE_NOOP("Constant", "novelWriter Markup (.txt)"),
         nwBuildFmt.STD_MD: QT_TRANSLATE_NOOP("Constant", "Standard Markdown (.md)"),
@@ -278,6 +279,7 @@ class nwLabels:
     BUILD_EXT = {
         nwBuildFmt.ODT:    ".odt",
         nwBuildFmt.FODT:   ".fodt",
+        nwBuildFmt.DOCX:   ".docx",
         nwBuildFmt.HTML:   ".html",
         nwBuildFmt.NWD:    ".txt",
         nwBuildFmt.STD_MD: ".md",
