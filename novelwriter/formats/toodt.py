@@ -258,8 +258,7 @@ class ToOdt(Tokenizer):
         return
 
     def setPageLayout(
-        self, width: int | float, height: int | float,
-        top: int | float, bottom: int | float, left: int | float, right: int | float
+        self, width: float, height: float, top: float, bottom: float, left: float, right: float
     ) -> None:
         """Set the document page size and margins in millimetres."""
         self._mDocWidth  = f"{width/10.0:.3f}cm"
