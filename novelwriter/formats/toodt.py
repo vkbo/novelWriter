@@ -38,7 +38,7 @@ from zipfile import ZipFile
 from PyQt5.QtGui import QFont
 
 from novelwriter import __version__
-from novelwriter.common import xmlIndent
+from novelwriter.common import xmlIndent, xmlSubElem
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles
 from novelwriter.core.project import NWProject
 from novelwriter.formats.tokenizer import T_Formats, Tokenizer, stripEscape
@@ -67,19 +67,6 @@ def _mkTag(ns: str, tag: str) -> str:
         return f"{{{uri}}}{tag}"
     logger.warning("Missing xml namespace '%s'", ns)
     return tag
-
-
-def _addSingle(
-    parent: ET.Element,
-    tag: str,
-    text: str | int | None = None,
-    attrib: dict | None = None
-) -> None:
-    """Add a single value to a parent element."""
-    xSub = ET.SubElement(parent, tag, attrib=attrib or {})
-    if text is not None:
-        xSub.text = str(text)
-    return
 
 
 # Mimetype and Version
@@ -411,21 +398,21 @@ class ToOdt(Tokenizer):
         timeStamp = datetime.now().isoformat(sep="T", timespec="seconds")
 
         # Office Meta Data
-        _addSingle(self._xMeta, _mkTag("meta", "creation-date"), timeStamp)
-        _addSingle(self._xMeta, _mkTag("meta", "generator"), f"novelWriter/{__version__}")
-        _addSingle(self._xMeta, _mkTag("meta", "initial-creator"), self._project.data.author)
-        _addSingle(self._xMeta, _mkTag("meta", "editing-cycles"), self._project.data.saveCount)
+        xmlSubElem(self._xMeta, _mkTag("meta", "creation-date"), timeStamp)
+        xmlSubElem(self._xMeta, _mkTag("meta", "generator"), f"novelWriter/{__version__}")
+        xmlSubElem(self._xMeta, _mkTag("meta", "initial-creator"), self._project.data.author)
+        xmlSubElem(self._xMeta, _mkTag("meta", "editing-cycles"), self._project.data.saveCount)
 
         # Format is: PnYnMnDTnHnMnS
         # https://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#duration
         eT = self._project.data.editTime
         fT = f"P{eT//86400:d}DT{eT%86400//3600:d}H{eT%3600//60:d}M{eT%60:d}S"
-        _addSingle(self._xMeta, _mkTag("meta", "editing-duration"), fT)
+        xmlSubElem(self._xMeta, _mkTag("meta", "editing-duration"), fT)
 
         # Dublin Core Meta Data
-        _addSingle(self._xMeta, _mkTag("dc", "title"), self._project.data.name)
-        _addSingle(self._xMeta, _mkTag("dc", "date"), timeStamp)
-        _addSingle(self._xMeta, _mkTag("dc", "creator"), self._project.data.author)
+        xmlSubElem(self._xMeta, _mkTag("dc", "title"), self._project.data.name)
+        xmlSubElem(self._xMeta, _mkTag("dc", "date"), timeStamp)
+        xmlSubElem(self._xMeta, _mkTag("dc", "creator"), self._project.data.author)
 
         self._pageStyles()
         self._defaultStyles()
@@ -795,7 +782,7 @@ class ToOdt(Tokenizer):
                 _mkTag("text", "id"): f"ftn{self._nNote}",
                 _mkTag("text", "note-class"): "footnote",
             })
-            _addSingle(xNote, _mkTag("text", "note-citation"), self._nNote)
+            xmlSubElem(xNote, _mkTag("text", "note-citation"), self._nNote)
             xBody = ET.SubElement(xNote, _mkTag("text", "note-body"))
             self._addTextPar(xBody, "Footnote", nStyle, content[0], tFmt=content[1])
             return xNote
