@@ -152,21 +152,22 @@ class Tokenizer(ABC):
 
         # User Settings
         self._textFont     = QFont("Serif", 11)  # Output text font
-        self._lineHeight   = 1.15   # Line height in units of em
-        self._colorHeads   = True   # Colourise headings
-        self._scaleHeads   = True   # Scale headings to larger font size
-        self._boldHeads    = True   # Bold headings
-        self._blockIndent  = 4.00   # Block indent in units of em
-        self._firstIndent  = False  # Enable first line indent
-        self._firstWidth   = 1.40   # First line indent in units of em
-        self._indentFirst  = False  # Indent first paragraph
-        self._doJustify    = False  # Justify text
-        self._doBodyText   = True   # Include body text
-        self._doSynopsis   = False  # Also process synopsis comments
-        self._doComments   = False  # Also process comments
-        self._doKeywords   = False  # Also process keywords like tags and references
-        self._skipKeywords = set()  # Keywords to ignore
-        self._keepBreaks   = True   # Keep line breaks in paragraphs
+        self._lineHeight   = 1.15    # Line height in units of em
+        self._colorHeads   = True    # Colourise headings
+        self._scaleHeads   = True    # Scale headings to larger font size
+        self._boldHeads    = True    # Bold headings
+        self._blockIndent  = 4.00    # Block indent in units of em
+        self._firstIndent  = False   # Enable first line indent
+        self._firstWidth   = 1.40    # First line indent in units of em
+        self._indentFirst  = False   # Indent first paragraph
+        self._doJustify    = False   # Justify text
+        self._doBodyText   = True    # Include body text
+        self._doSynopsis   = False   # Also process synopsis comments
+        self._doComments   = False   # Also process comments
+        self._doKeywords   = False   # Also process keywords like tags and references
+        self._skipKeywords = set()   # Keywords to ignore
+        self._keepBreaks   = True    # Keep line breaks in paragraphs
+        self._defaultAlign = "left"  # The default text alignment
 
         # Margins
         self._marginTitle = nwStyles.T_MARGIN["H0"]

@@ -623,7 +623,7 @@ def testFmtToOdt_ConvertParagraphs(mockGUI):
         '<office:text>'
         '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
         '<text:p text:style-name="Text_20_body">Regular paragraph</text:p>'
-        '<text:p text:style-name="Text_20_body">with<text:line-break />break</text:p>'
+        '<text:p text:style-name="P7">with<text:line-break />break</text:p>'
         '<text:p text:style-name="P7">Left Align</text:p>'
         '</office:text>'
     )
@@ -1126,6 +1126,22 @@ def testFmtToOdt_ODTParagraphStyle():
         '</style:style>'
         '</test>'
     )
+
+    # Override Justify
+    # ================
+
+    aStyle = ODTParagraphStyle("test")
+
+    # When not set, override is possible
+    assert aStyle._pAttr["text-align"][1] is None
+    aStyle.overrideJustify("left")
+    assert aStyle._pAttr["text-align"][1] == "left"
+
+    # When explicitly set, not override
+    aStyle.setTextAlign("right")
+    assert aStyle._pAttr["text-align"][1] == "right"
+    aStyle.overrideJustify("left")
+    assert aStyle._pAttr["text-align"][1] == "right"
 
     # Changes
     # =======

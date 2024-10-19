@@ -110,7 +110,6 @@ S_HEAD2 = "Heading2"
 S_HEAD3 = "Heading3"
 S_HEAD4 = "Heading4"
 S_SEP   = "Separator"
-S_FIND  = "FirstLineIndent"
 S_META  = "TextMeta"
 
 # Colours
@@ -132,10 +131,12 @@ class DocXParStyle(NamedTuple):
     before: float | None = None
     after: float | None = None
     line: float | None = None
+    indentFirst: float | None = None
     align: str | None = None
     default: bool = False
     level: int | None = None
     color: str | None = None
+    bold: bool = False
 
 
 class ToDocX(Tokenizer):
@@ -217,7 +218,8 @@ class ToDocX(Tokenizer):
         """Convert the list of text tokens into XML elements."""
         self._result = ""  # Not used, but cleared just in case
 
-        # xText = self._xText
+        bIndent = self._fontSize * self._blockIndent
+
         for tType, _, tText, tFormat, tStyle in self._tokens:
 
             # Create Paragraph
@@ -232,8 +234,8 @@ class ToDocX(Tokenizer):
                     par.setAlignment("right")
                 elif tStyle & self.A_CENTRE:
                     par.setAlignment("center")
-                # elif tStyle & self.A_JUSTIFY:
-                #     oStyle.setTextAlign("justify")
+                elif tStyle & self.A_JUSTIFY:
+                    par.setAlignment("both")
 
                 if tStyle & self.A_PBB:
                     par.setPageBreakBefore(True)
@@ -245,17 +247,17 @@ class ToDocX(Tokenizer):
                 if tStyle & self.A_Z_TOPMRG:
                     par.setMarginTop(0.0)
 
-        #         if tStyle & self.A_IND_L:
-        #             oStyle.setMarginLeft(self._fBlockIndent)
-        #         if tStyle & self.A_IND_R:
-        #             oStyle.setMarginRight(self._fBlockIndent)
+                if tStyle & self.A_IND_T:
+                    par.setIndentFirst(True)
+                if tStyle & self.A_IND_L:
+                    par.setLeftMargin(bIndent)
+                if tStyle & self.A_IND_R:
+                    par.setRightMargin(bIndent)
 
             # Process Text Types
             if tType == self.T_TEXT:
-                # Text indentation is processed here because there is a
-                # dedicated pre-defined style for it
-                # if tStyle & self.A_IND_T:
-                # else:
+                if self._doJustify and "\n" in tText:
+                    par.overrideJustify(self._defaultAlign)
                 self._processFragments(par, S_NORM, tText, tFormat)
 
             elif tType == self.T_TITLE:
@@ -595,6 +597,7 @@ class ToDocX(Tokenizer):
         fSz2 = (nwStyles.H_SIZES[2] * fSz) if hScale else fSz
         fSz3 = (nwStyles.H_SIZES[3] * fSz) if hScale else fSz
         fSz4 = (nwStyles.H_SIZES[4] * fSz) if hScale else fSz
+        align = "both" if self._doJustify else "left"
 
         # Add Normal Style
         self._addParStyle(DocXParStyle(
@@ -605,6 +608,8 @@ class ToDocX(Tokenizer):
             before=fSz * self._marginText[0],
             after=fSz * self._marginText[1],
             line=fSz * self._lineHeight,
+            indentFirst=fSz * self._firstWidth,
+            align=align,
         ))
 
         # Add Title
@@ -618,6 +623,7 @@ class ToDocX(Tokenizer):
             after=fSz * self._marginTitle[1],
             line=fSz0 * self._lineHeight,
             level=0,
+            bold=self._boldHeads,
         ))
 
         # Add Heading 1
@@ -632,6 +638,7 @@ class ToDocX(Tokenizer):
             line=fSz1 * self._lineHeight,
             level=0,
             color=COL_HEAD_L12 if hColor else None,
+            bold=self._boldHeads,
         ))
 
         # Add Heading 2
@@ -646,6 +653,7 @@ class ToDocX(Tokenizer):
             line=fSz2 * self._lineHeight,
             level=1,
             color=COL_HEAD_L12 if hColor else None,
+            bold=self._boldHeads,
         ))
 
         # Add Heading 3
@@ -660,6 +668,7 @@ class ToDocX(Tokenizer):
             line=fSz3 * self._lineHeight,
             level=1,
             color=COL_HEAD_L34 if hColor else None,
+            bold=self._boldHeads,
         ))
 
         # Add Heading 4
@@ -674,6 +683,7 @@ class ToDocX(Tokenizer):
             line=fSz4 * self._lineHeight,
             level=1,
             color=COL_HEAD_L34 if hColor else None,
+            bold=self._boldHeads,
         ))
 
         # Add Separator
@@ -737,6 +747,8 @@ class ToDocX(Tokenizer):
         xmlSubElem(rPr, _wTag("szCs"), attrib={_wTag("val"): str(int(2.0 * size))})
         if style.color:
             xmlSubElem(rPr, _wTag("color"), attrib={_wTag("val"): style.color})
+        if style.bold:
+            xmlSubElem(rPr, _wTag("b"))
 
         self._styles[style.styleId] = style
 
@@ -746,8 +758,9 @@ class ToDocX(Tokenizer):
 class DocXParagraph:
 
     __slots__ = (
-        "_content", "_style", "_textAlign", "_topMargin", "_bottomMargin",
-        "_breakBefore", "_breakAfter",
+        "_content", "_style", "_textAlign",
+        "_topMargin", "_bottomMargin", "_leftMargin", "_rightMargin",
+        "_indentFirst", "_breakBefore", "_breakAfter",
     )
 
     def __init__(self) -> None:
@@ -756,6 +769,9 @@ class DocXParagraph:
         self._textAlign: str | None = None
         self._topMargin: float | None = None
         self._bottomMargin: float | None = None
+        self._leftMargin: float | None = None
+        self._rightMargin: float | None = None
+        self._indentFirst = False
         self._breakBefore = False
         self._breakAfter = False
         return
@@ -785,7 +801,7 @@ class DocXParagraph:
 
     def setAlignment(self, value: str) -> None:
         """Set paragraph alignment."""
-        if value in ("left", "center", "right"):
+        if value in ("left", "center", "right", "both"):
             self._textAlign = value
         return
 
@@ -797,6 +813,21 @@ class DocXParagraph:
     def setMarginBottom(self, value: float) -> None:
         """Set margin below in pt."""
         self._bottomMargin = value
+        return
+
+    def setLeftMargin(self, value: float) -> None:
+        """Set left indent."""
+        self._leftMargin = value
+        return
+
+    def setRightMargin(self, value: float) -> None:
+        """Set right line indent."""
+        self._rightMargin = value
+        return
+
+    def setIndentFirst(self, state: bool) -> None:
+        """Set first line indent."""
+        self._indentFirst = state
         return
 
     def setPageBreakBefore(self, state: bool) -> None:
@@ -813,6 +844,12 @@ class DocXParagraph:
     #  Methods
     ##
 
+    def overrideJustify(self, default: str) -> None:
+        """Override inherited justify setting if None is set."""
+        if self._textAlign is None:
+            self.setAlignment(default)
+        return
+
     def addContent(self, run: ET.Element) -> None:
         """Add a run segment to the paragraph."""
         self._content.append(run)
@@ -822,6 +859,15 @@ class DocXParagraph:
         """Called after all content is set."""
         if style := self._style:
             par = xmlSubElem(body, _wTag("p"))
+
+            # Values
+            indent = {}
+            if self._indentFirst and style.indentFirst is not None:
+                indent[_wTag("firstLine")] = str(int(20.0 * style.indentFirst))
+            if self._leftMargin is not None:
+                indent[_wTag("left")] = str(int(20.0 * self._leftMargin))
+            if self._rightMargin is not None:
+                indent[_wTag("right")] = str(int(20.0 * self._rightMargin))
 
             # Paragraph
             pPr = xmlSubElem(par, _wTag("pPr"))
@@ -834,6 +880,8 @@ class DocXParagraph:
                 })
             if self._textAlign:
                 xmlSubElem(pPr, _wTag("jc"), attrib={_wTag("val"): self._textAlign})
+            if indent:
+                xmlSubElem(pPr, _wTag("ind"), attrib=indent)
 
             # Text
             if self._breakBefore:
