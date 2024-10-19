@@ -193,6 +193,8 @@ class NWBuildDocument:
 
             yield from self._iterBuild(makeObj, filtered)
 
+            makeObj.closeDocument()
+
         elif bFormat == nwBuildFmt.PDF:
             makeObj = ToQTextDocument(self._project)
             filtered = self._setupBuild(makeObj)

@@ -25,6 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import logging
+import re
 import xml.etree.ElementTree as ET
 
 from datetime import datetime
@@ -39,6 +40,9 @@ from novelwriter.core.project import NWProject
 from novelwriter.formats.tokenizer import T_Formats, Tokenizer
 
 logger = logging.getLogger(__name__)
+
+# RegEx
+RX_TEXT = re.compile(r"([\n\t])", re.UNICODE)
 
 # Types and Relationships
 WORD_BASE = "application/vnd.openxmlformats-officedocument"
@@ -158,8 +162,9 @@ class ToDocX(Tokenizer):
         self._fontSize   = 12.0
         self._dLanguage  = "en-GB"
 
-        # Maps
+        # Data Variables
         self._styles: dict[str, DocXParStyle] = {}
+        self._pars: list[DocXParagraph] = []
 
         return
 
@@ -215,8 +220,11 @@ class ToDocX(Tokenizer):
         # xText = self._xText
         for tType, _, tText, tFormat, tStyle in self._tokens:
 
-            # Styles
+            # Create Paragraph
             par = DocXParagraph()
+            self._pars.append(par)
+
+            # Styles
             if tStyle is not None:
                 if tStyle & self.A_LEFT:
                     par.setAlignment("left")
@@ -292,7 +300,29 @@ class ToDocX(Tokenizer):
                 tTemp, tFmt = self._formatKeywords(tText)
                 self._processFragments(par, S_META, tTemp, tFmt)
 
-            par.finalise(self._xBody)
+        return
+
+    def closeDocument(self) -> None:
+        """Finalise document."""
+        # Map all Page Break Before to After where possible
+        pars: list[DocXParagraph] = []
+        for i, par in enumerate(self._pars):
+            if i > 0 and par.pageBreakBefore:
+                prev = self._pars[i-1]
+                if prev.pageBreakAfter:
+                    # We already have a break, so we inject a new paragraph instead
+                    empty = DocXParagraph()
+                    empty.setStyle(self._styles.get(S_NORM))
+                    empty.setPageBreakAfter(True)
+                    pars.append(empty)
+                else:
+                    par.setPageBreakBefore(False)
+                    prev.setPageBreakAfter(True)
+
+            pars.append(par)
+
+        for par in pars:
+            par.toXml(self._xBody)
 
         return
 
@@ -486,8 +516,8 @@ class ToDocX(Tokenizer):
             # Move pos for next pass
             fStart = fPos
 
-        if rest := text[fStart:]:
-            par.addContent(self._textRunToXml(rest, xFmt))
+        if temp := text[fStart:]:
+            par.addContent(self._textRunToXml(temp, xFmt))
 
         return
 
@@ -516,16 +546,15 @@ class ToDocX(Tokenizer):
         if fmt & X_DLA == X_DLA:
             xmlSubElem(rPr, _wTag("color"), attrib={_wTag("val"): COL_DIALOG_A})
 
-        remaining = text
-        while (parts := remaining.partition("\n"))[0]:
-            segment = parts[0]
-            attr = {}
-            if len(segment) != len(segment.strip()):
-                attr[_mkTag("xml", "space")] = "preserve"
-            xmlSubElem(run, _wTag("t"), segment, attrib=attr)
-            if parts[1]:
+        for segment in RX_TEXT.split(text):
+            if segment == "\n":
                 xmlSubElem(run, _wTag("br"))
-            remaining = parts[2]
+            elif segment == "\t":
+                xmlSubElem(run, _wTag("tab"))
+            elif len(segment) != len(segment.strip()):
+                xmlSubElem(run, _wTag("t"), segment, attrib={_mkTag("xml", "space"): "preserve"})
+            elif segment:
+                xmlSubElem(run, _wTag("t"), segment)
 
         return run
 
@@ -716,6 +745,11 @@ class ToDocX(Tokenizer):
 
 class DocXParagraph:
 
+    __slots__ = (
+        "_content", "_style", "_textAlign", "_topMargin", "_bottomMargin",
+        "_breakBefore", "_breakAfter",
+    )
+
     def __init__(self) -> None:
         self._content: list[ET.Element] = []
         self._style: DocXParStyle | None = None
@@ -725,6 +759,20 @@ class DocXParagraph:
         self._breakBefore = False
         self._breakAfter = False
         return
+
+    ##
+    #  Properties
+    ##
+
+    @property
+    def pageBreakBefore(self) -> bool:
+        """Has page break before."""
+        return self._breakBefore
+
+    @property
+    def pageBreakAfter(self) -> bool:
+        """Has page break after."""
+        return self._breakAfter
 
     ##
     #  Setters
@@ -770,17 +818,10 @@ class DocXParagraph:
         self._content.append(run)
         return
 
-    def finalise(self, body: ET.Element) -> None:
+    def toXml(self, body: ET.Element) -> None:
         """Called after all content is set."""
         if style := self._style:
             par = xmlSubElem(body, _wTag("p"))
-
-            # Values
-            spacing = {}
-            if self._topMargin is not None:
-                spacing["before"] = str(self._topMargin)
-            if self._bottomMargin is not None:
-                spacing["after"] = str(self._bottomMargin)
 
             # Paragraph
             pPr = xmlSubElem(par, _wTag("pPr"))
