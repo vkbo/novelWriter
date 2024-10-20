@@ -48,7 +48,7 @@ RX_TEXT = re.compile(r"([\n\t])", re.UNICODE)
 
 # Types and Relationships
 OOXML_SCM = "http://schemas.openxmlformats.org"
-WORD_BASE = "application/vnd.openxmlformats-officedocument"
+WORD_BASE = "application/vnd.openxmlformats-officedocument.wordprocessingml"
 RELS_TYPE = "application/vnd.openxmlformats-package.relationships+xml"
 RELS_BASE = f"{OOXML_SCM}/officeDocument/2006/relationships"
 
@@ -108,9 +108,10 @@ S_HEAD1 = "Heading1"
 S_HEAD2 = "Heading2"
 S_HEAD3 = "Heading3"
 S_HEAD4 = "Heading4"
-S_HEAD  = "Header"
 S_SEP   = "Separator"
 S_META  = "TextMeta"
+S_HEAD  = "Header"
+S_FNOTE = "FootnoteText"
 
 # Colours
 COL_HEAD_L12 = "2a6099"
@@ -141,6 +142,7 @@ class DocXParStyle(NamedTuple):
     after: float | None = None
     line: float | None = None
     indentFirst: float | None = None
+    indentHangning: float | None = None
     align: str | None = None
     default: bool = False
     level: int | None = None
@@ -172,6 +174,7 @@ class ToDocX(Tokenizer):
         self._pars: list[DocXParagraph] = []
         self._files: dict[str, DocXXmlFile] = {}
         self._styles: dict[str, DocXParStyle] = {}
+        self._usedNotes: list[str] = []
 
         return
 
@@ -314,6 +317,9 @@ class ToDocX(Tokenizer):
 
         self._documentXml(fId, dId)
 
+        if self._usedNotes:
+            self._footnotesXml()
+
         return
 
     def saveDocument(self, path: Path) -> None:
@@ -410,8 +416,13 @@ class ToDocX(Tokenizer):
         """Apply formatting tags to text."""
         par.setStyle(self._styles.get(pStyle))
         xFmt = 0x00
+        xNode = None
         fStart = 0
         for fPos, fFmt, fData in tFmt or []:
+
+            if xNode is not None:
+                par.addContent(xNode)
+                xNode = None
 
             par.addContent(self._textRunToXml(text[fStart:fPos], xFmt))
 
@@ -451,13 +462,16 @@ class ToDocX(Tokenizer):
                 xFmt |= X_DLA
             elif fFmt == self.FMT_ADL_E:
                 xFmt &= M_DLA
-            # elif fmt == self.FMT_FNOTE:
-            #     xNode = self._generateFootnote(fData)
+            elif fFmt == self.FMT_FNOTE:
+                xNode = self._generateFootnote(fData)
             elif fFmt == self.FMT_STRIP:
                 pass
 
             # Move pos for next pass
             fStart = fPos
+
+        if xNode is not None:
+            par.addContent(xNode)
 
         if temp := text[fStart:]:
             par.addContent(self._textRunToXml(temp, xFmt))
@@ -505,6 +519,18 @@ class ToDocX(Tokenizer):
     #  DocX Content
     ##
 
+    def _generateFootnote(self, key: str) -> ET.Element | None:
+        """Generate a footnote XML object."""
+        if self._footnotes.get(key):
+            idx = len(self._usedNotes)
+            run = ET.Element(_wTag("r"))
+            rPr = xmlSubElem(run, _wTag("rPr"))
+            xmlSubElem(rPr, _wTag("vertAlign"), attrib={_wTag("val"): "superscript"})
+            xmlSubElem(run, _wTag("footnoteReference"), attrib={_wTag("id"): str(idx)})
+            self._usedNotes.append(key)
+            return run
+        return None
+
     def _generateStyles(self) -> None:
         """Generate usable styles."""
         styles: list[DocXParStyle] = []
@@ -512,6 +538,7 @@ class ToDocX(Tokenizer):
         hScale = self._scaleHeads
         hColor = self._colorHeads
         fSz = self._fontSize
+        fnSz = 0.8 * self._fontSize
         fSz0 = (nwStyles.H_SIZES[0] * fSz) if hScale else fSz
         fSz1 = (nwStyles.H_SIZES[1] * fSz) if hScale else fSz
         fSz2 = (nwStyles.H_SIZES[2] * fSz) if hScale else fSz
@@ -641,6 +668,18 @@ class ToDocX(Tokenizer):
             align="right",
         ))
 
+        # Footnote
+        styles.append(DocXParStyle(
+            name="Footnote Text",
+            styleId=S_FNOTE,
+            size=fnSz,
+            basedOn=S_NORM,
+            before=0.0,
+            after=fnSz * self._marginFoot[1],
+            line=fnSz * self._lineHeight,
+            indentHangning=fnSz * self._marginFoot[0],
+        ))
+
         # Add to Cache
         for style in styles:
             self._styles[style.styleId] = style
@@ -712,7 +751,7 @@ class ToDocX(Tokenizer):
             rId=rId,
             path="word",
             relType=f"{RELS_BASE}/styles",
-            contentType=f"{WORD_BASE}.wordprocessingml.styles+xml",
+            contentType=f"{WORD_BASE}.styles+xml",
         )
 
         # Default Style
@@ -759,6 +798,11 @@ class ToDocX(Tokenizer):
                 _wTag("after"): str(int(20.0 * firstFloat(style.after))),
                 _wTag("line"): str(int(20.0 * firstFloat(style.line, size))),
             })
+            if style.indentHangning is not None:
+                xmlSubElem(pPr, _wTag("ind"), attrib={
+                    _wTag("left"): str(int(20.0 * style.indentHangning)),
+                    _wTag("hanging"): str(int(20.0 * style.indentHangning)),
+                })
             if style.align:
                 xmlSubElem(pPr, _wTag("jc"), attrib={_wTag("val"): style.align})
             if style.level is not None:
@@ -784,7 +828,7 @@ class ToDocX(Tokenizer):
             rId=rId,
             path="word",
             relType=f"{RELS_BASE}/header",
-            contentType=f"{WORD_BASE}.wordprocessingml.header+xml",
+            contentType=f"{WORD_BASE}.header+xml",
         )
 
         xP = xmlSubElem(xRoot, _wTag("p"))
@@ -830,7 +874,7 @@ class ToDocX(Tokenizer):
             rId=rId,
             path="word",
             relType=f"{RELS_BASE}/header",
-            contentType=f"{WORD_BASE}.wordprocessingml.header+xml",
+            contentType=f"{WORD_BASE}.header+xml",
         )
 
         xP = xmlSubElem(xRoot, _wTag("p"))
@@ -854,7 +898,7 @@ class ToDocX(Tokenizer):
             rId=rId,
             path="word",
             relType=f"{RELS_BASE}/officeDocument",
-            contentType=f"{WORD_BASE}.wordprocessingml.document.main+xml",
+            contentType=f"{WORD_BASE}.document.main+xml",
         )
 
         # Map all Page Break Before to After where possible
@@ -915,6 +959,26 @@ class ToDocX(Tokenizer):
             _wTag("fmt"): "decimal",
         })
         xmlSubElem(xSect, _wTag("titlePg"))
+
+        return rId
+
+    def _footnotesXml(self) -> str:
+        """Populate footnotes.xml."""
+        rId = self._nextRelId()
+        xRoot = ET.Element(_wTag("footnotes"))
+        self._files["footnotes.xml"] = DocXXmlFile(
+            xml=xRoot,
+            rId=rId,
+            path="word",
+            relType=f"{RELS_BASE}/footnotes",
+            contentType=f"{WORD_BASE}.footnotes+xml",
+        )
+
+        for i, key in enumerate(self._usedNotes):
+            par = DocXParagraph()
+            if content := self._footnotes.get(key):
+                self._processFragments(par, S_FNOTE, content[0], content[1])
+            par.toXml(xmlSubElem(xRoot, _wTag("footnote"), attrib={_wTag("id"): str(i)}))
 
         return rId
 
