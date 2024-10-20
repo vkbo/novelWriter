@@ -121,6 +121,15 @@ COL_META_TXT = "813709"
 COL_MARK_TXT = "ffffa6"
 
 
+class DocXXmlFile(NamedTuple):
+
+    xml: ET.Element
+    rId: str
+    path: str
+    relType: str
+    contentType: str
+
+
 class DocXParStyle(NamedTuple):
 
     name: str
@@ -148,12 +157,6 @@ class ToDocX(Tokenizer):
     def __init__(self, project: NWProject) -> None:
         super().__init__(project)
 
-        # XML
-        self._dDoc  = ET.Element("")  # document.xml
-        self._dStyl = ET.Element("")  # styles.xml
-
-        self._xBody = ET.Element("")  # Text body
-
         # Properties
         self._headerFormat = ""
         self._pageOffset   = 0
@@ -161,11 +164,12 @@ class ToDocX(Tokenizer):
         # Internal
         self._fontFamily = "Liberation Serif"
         self._fontSize   = 12.0
-        self._dLanguage  = "en-GB"
+        self._dLanguage  = "en_GB"
 
         # Data Variables
-        self._styles: dict[str, DocXParStyle] = {}
         self._pars: list[DocXParagraph] = []
+        self._files: dict[str, DocXXmlFile] = {}
+        self._styles: dict[str, DocXParStyle] = {}
 
         return
 
@@ -195,23 +199,11 @@ class ToDocX(Tokenizer):
     #  Class Methods
     ##
 
-    def _emToSz(self, scale: float) -> int:
-        return int()
-
     def initDocument(self) -> None:
         """Initialises the DocX document structure."""
-
         self._fontFamily = self._textFont.family()
         self._fontSize = self._textFont.pointSizeF()
-
-        self._dDoc  = ET.Element(_wTag("document"))
-        self._dStyl = ET.Element(_wTag("styles"))
-
-        self._xBody = xmlSubElem(self._dDoc, _wTag("body"))
-
-        self._defaultStyles()
-        self._useableStyles()
-
+        self._generateStyles()
         return
 
     def doConvert(self) -> None:
@@ -250,9 +242,9 @@ class ToDocX(Tokenizer):
                 if tStyle & self.A_IND_T:
                     par.setIndentFirst(True)
                 if tStyle & self.A_IND_L:
-                    par.setLeftMargin(bIndent)
+                    par.setMarginLeft(bIndent)
                 if tStyle & self.A_IND_R:
-                    par.setRightMargin(bIndent)
+                    par.setMarginRight(bIndent)
 
             # Process Text Types
             if tType == self.T_TEXT:
@@ -305,108 +297,40 @@ class ToDocX(Tokenizer):
         return
 
     def closeDocument(self) -> None:
-        """Finalise document."""
-        # Map all Page Break Before to After where possible
-        pars: list[DocXParagraph] = []
-        for i, par in enumerate(self._pars):
-            if i > 0 and par.pageBreakBefore:
-                prev = self._pars[i-1]
-                if prev.pageBreakAfter:
-                    # We already have a break, so we inject a new paragraph instead
-                    empty = DocXParagraph()
-                    empty.setStyle(self._styles.get(S_NORM))
-                    empty.setPageBreakAfter(True)
-                    pars.append(empty)
-                else:
-                    par.setPageBreakBefore(False)
-                    prev.setPageBreakAfter(True)
-
-            pars.append(par)
-
-        for par in pars:
-            par.toXml(self._xBody)
-
+        """Generate all the XML."""
+        self._coreXml()
+        self._appXml()
+        self._stylesXml()
+        self._documentXml()
         return
 
     def saveDocument(self, path: Path) -> None:
         """Save the data to a .docx file."""
-        timeStamp = datetime.now().isoformat(sep="T", timespec="seconds")
+        # Content Lists
+        cExts: list[tuple[str, str]] = []
+        cExts.append(("xml", "application/xml"))
+        cExts.append(("rels", RELS_TYPE))
 
-        # .rels
-        dRels = ET.Element("Relationships", attrib={"xmlns": RELS_NS})
-        xmlSubElem(dRels, "Relationship", attrib={
-            "Id": "rId1", "Type": REL_CORE, "Target": "docProps/core.xml",
-        })
-        xmlSubElem(dRels, "Relationship", attrib={
-            "Id": "rId2", "Type": f"{REL_BASE}/extended-properties", "Target": "docProps/app.xml",
-        })
-        xmlSubElem(dRels, "Relationship", attrib={
-            "Id": "rId3", "Type": f"{REL_BASE}/officeDocument", "Target": "word/document.xml",
-        })
+        cDocs: list[tuple[str, str]] = []
+        cDocs.append(("/_rels/.rels", RELS_TYPE))
+        cDocs.append(("/word/_rels/document.xml.rels", RELS_TYPE))
 
-        # core.xml
-        dCore = ET.Element("coreProperties")
-        tsAttr = {_mkTag("xsi", "type"): "dcterms:W3CDTF"}
-        xmlSubElem(dCore, _mkTag("dcterms", "created"), timeStamp, attrib=tsAttr)
-        xmlSubElem(dCore, _mkTag("dcterms", "modified"), timeStamp, attrib=tsAttr)
-        xmlSubElem(dCore, _mkTag("dc", "creator"), self._project.data.author)
-        xmlSubElem(dCore, _mkTag("dc", "title"), self._project.data.name)
-        xmlSubElem(dCore, _mkTag("dc", "creator"), self._project.data.author)
-        xmlSubElem(dCore, _mkTag("dc", "language"), self._dLanguage)
-        xmlSubElem(dCore, _mkTag("cp", "revision"), str(self._project.data.saveCount))
-        xmlSubElem(dCore, _mkTag("cp", "lastModifiedBy"), self._project.data.author)
+        # Relationships XML
+        rRels = ET.Element("Relationships", attrib={"xmlns": RELS_NS})
+        wRels = ET.Element("Relationships", attrib={"xmlns": RELS_NS})
+        for name, entry in self._files.items():
+            cDocs.append((f"/{entry.path}/{name}", entry.contentType))
+            xDoc = rRels if name in ("core.xml", "app.xml", "document.xml") else wRels
+            xmlSubElem(xDoc, "Relationship", attrib={
+                "Id": entry.rId, "Type": entry.relType, "Target": f"{entry.path}/{name}",
+            })
 
-        # app.xml
-        dApp = ET.Element("Properties", attrib={"xmlns": PROPS_NS})
-        xmlSubElem(dApp, "TotalTime", self._project.data.editTime // 60)
-        xmlSubElem(dApp, "Application", f"novelWriter/{__version__}")
-        if count := self._counts.get("allWords"):
-            xmlSubElem(dApp, "Words", count)
-        if count := self._counts.get("textWordChars"):
-            xmlSubElem(dApp, "Characters", count)
-        if count := self._counts.get("textChars"):
-            xmlSubElem(dApp, "CharactersWithSpaces", count)
-        if count := self._counts.get("paragraphCount"):
-            xmlSubElem(dApp, "Paragraphs", count)
-
-        # document.xml.rels
-        dDRels = ET.Element("Relationships", attrib={"xmlns": RELS_NS})
-        xmlSubElem(dDRels, "Relationship", attrib={
-            "Id": "rId1", "Type": f"{REL_BASE}/styles", "Target": "styles.xml",
-        })
-
-        # [Content_Types].xml
-        dCont = ET.Element("Types", attrib={"xmlns": TYPES_NS})
-        xmlSubElem(dCont, "Default", attrib={
-            "Extension": "xml", "ContentType": "application/xml",
-        })
-        xmlSubElem(dCont, "Default", attrib={
-            "Extension": "rels", "ContentType": RELS_TYPE,
-        })
-        xmlSubElem(dCont, "Override", attrib={
-            "PartName": "/_rels/.rels",
-            "ContentType": RELS_TYPE,
-        })
-        xmlSubElem(dCont, "Override", attrib={
-            "PartName": "/docProps/core.xml",
-            "ContentType": f"{WORD_BASE}.extended-properties+xml",
-        })
-        xmlSubElem(dCont, "Override", attrib={
-            "PartName": "/docProps/app.xml",
-            "ContentType": "application/vnd.openxmlformats-package.core-properties+xml",
-        })
-        xmlSubElem(dCont, "Override", attrib={
-            "PartName": "/word/_rels/document.xml.rels",
-            "ContentType": RELS_TYPE,
-        })
-        xmlSubElem(dCont, "Override", attrib={
-            "PartName": "/word/document.xml",
-            "ContentType": f"{WORD_BASE}.wordprocessingml.document.main+xml",
-        })
-        xmlSubElem(dCont, "Override", attrib={
-            "PartName": "/word/styles.xml",
-            "ContentType": f"{WORD_BASE}.wordprocessingml.styles+xml",
-        })
+        # Content Types XML
+        dTypes = ET.Element("Types", attrib={"xmlns": TYPES_NS})
+        for name, content in cExts:
+            xmlSubElem(dTypes, "Default", attrib={"Extension": name, "ContentType": content})
+        for name, content in cDocs:
+            xmlSubElem(dTypes, "Override", attrib={"PartName": name, "ContentType": content})
 
         def xmlToZip(name: str, xObj: ET.Element, zipObj: ZipFile) -> None:
             with zipObj.open(name, mode="w") as fObj:
@@ -415,13 +339,11 @@ class ToDocX(Tokenizer):
                 xml.write(fObj, encoding="utf-8", xml_declaration=True)
 
         with ZipFile(path, mode="w") as outZip:
-            xmlToZip("_rels/.rels", dRels, outZip)
-            xmlToZip("docProps/core.xml", dCore, outZip)
-            xmlToZip("docProps/app.xml", dApp, outZip)
-            xmlToZip("word/_rels/document.xml.rels", dDRels, outZip)
-            xmlToZip("word/document.xml", self._dDoc, outZip)
-            xmlToZip("word/styles.xml", self._dStyl, outZip)
-            xmlToZip("[Content_Types].xml", dCont, outZip)
+            xmlToZip("_rels/.rels", rRels, outZip)
+            xmlToZip("word/_rels/document.xml.rels", wRels, outZip)
+            for name, entry in self._files.items():
+                xmlToZip(f"{entry.path}/{name}", entry.xml, outZip)
+            xmlToZip("[Content_Types].xml", dTypes, outZip)
 
         return
 
@@ -561,12 +483,207 @@ class ToDocX(Tokenizer):
         return run
 
     ##
-    #  Style Elements
+    #  DocX Content
     ##
 
-    def _defaultStyles(self) -> None:
-        """Set the default styles."""
-        xStyl = xmlSubElem(self._dStyl, _wTag("docDefaults"))
+    def _generateStyles(self) -> None:
+        """Generate usable styles."""
+        styles: list[DocXParStyle] = []
+
+        hScale = self._scaleHeads
+        hColor = self._colorHeads
+        fSz = self._fontSize
+        fSz0 = (nwStyles.H_SIZES[0] * fSz) if hScale else fSz
+        fSz1 = (nwStyles.H_SIZES[1] * fSz) if hScale else fSz
+        fSz2 = (nwStyles.H_SIZES[2] * fSz) if hScale else fSz
+        fSz3 = (nwStyles.H_SIZES[3] * fSz) if hScale else fSz
+        fSz4 = (nwStyles.H_SIZES[4] * fSz) if hScale else fSz
+        align = "both" if self._doJustify else "left"
+
+        # Add Normal Style
+        styles.append(DocXParStyle(
+            name="Normal",
+            styleId=S_NORM,
+            size=fSz,
+            default=True,
+            before=fSz * self._marginText[0],
+            after=fSz * self._marginText[1],
+            line=fSz * self._lineHeight,
+            indentFirst=fSz * self._firstWidth,
+            align=align,
+        ))
+
+        # Add Title
+        styles.append(DocXParStyle(
+            name="Title",
+            styleId=S_TITLE,
+            size=fSz0,
+            basedOn=S_NORM,
+            nextStyle=S_NORM,
+            before=fSz * self._marginTitle[0],
+            after=fSz * self._marginTitle[1],
+            line=fSz0 * self._lineHeight,
+            level=0,
+            bold=self._boldHeads,
+        ))
+
+        # Add Heading 1
+        styles.append(DocXParStyle(
+            name="Heading 1",
+            styleId=S_HEAD1,
+            size=fSz1,
+            basedOn=S_NORM,
+            nextStyle=S_NORM,
+            before=fSz * self._marginHead1[0],
+            after=fSz * self._marginHead1[1],
+            line=fSz1 * self._lineHeight,
+            level=0,
+            color=COL_HEAD_L12 if hColor else None,
+            bold=self._boldHeads,
+        ))
+
+        # Add Heading 2
+        styles.append(DocXParStyle(
+            name="Heading 2",
+            styleId=S_HEAD2,
+            size=fSz2,
+            basedOn=S_NORM,
+            nextStyle=S_NORM,
+            before=fSz * self._marginHead2[0],
+            after=fSz * self._marginHead2[1],
+            line=fSz2 * self._lineHeight,
+            level=1,
+            color=COL_HEAD_L12 if hColor else None,
+            bold=self._boldHeads,
+        ))
+
+        # Add Heading 3
+        styles.append(DocXParStyle(
+            name="Heading 3",
+            styleId=S_HEAD3,
+            size=fSz3,
+            basedOn=S_NORM,
+            nextStyle=S_NORM,
+            before=fSz * self._marginHead3[0],
+            after=fSz * self._marginHead3[1],
+            line=fSz3 * self._lineHeight,
+            level=1,
+            color=COL_HEAD_L34 if hColor else None,
+            bold=self._boldHeads,
+        ))
+
+        # Add Heading 4
+        styles.append(DocXParStyle(
+            name="Heading 4",
+            styleId=S_HEAD4,
+            size=fSz4,
+            basedOn=S_NORM,
+            nextStyle=S_NORM,
+            before=fSz * self._marginHead4[0],
+            after=fSz * self._marginHead4[1],
+            line=fSz4 * self._lineHeight,
+            level=1,
+            color=COL_HEAD_L34 if hColor else None,
+            bold=self._boldHeads,
+        ))
+
+        # Add Separator
+        styles.append(DocXParStyle(
+            name="Separator",
+            styleId=S_SEP,
+            size=fSz,
+            basedOn=S_NORM,
+            nextStyle=S_NORM,
+            before=fSz * self._marginSep[0],
+            after=fSz * self._marginSep[1],
+            line=fSz * self._lineHeight,
+            align="center",
+        ))
+
+        # Add Text Meta Style
+        styles.append(DocXParStyle(
+            name="Text Meta",
+            styleId=S_META,
+            size=fSz,
+            basedOn=S_NORM,
+            nextStyle=S_NORM,
+            before=fSz * self._marginMeta[0],
+            after=fSz * self._marginMeta[1],
+            line=fSz * self._lineHeight,
+            color=COL_META_TXT,
+        ))
+
+        # Add to Cache
+        for style in styles:
+            self._styles[style.styleId] = style
+
+        return
+
+    def _nextRelId(self) -> str:
+        """Generate the next unique rId."""
+        return f"rId{len(self._files) + 1}"
+
+    def _appXml(self) -> None:
+        """Populate app.xml."""
+        xRoot = ET.Element("Properties", attrib={"xmlns": PROPS_NS})
+        self._files["app.xml"] = DocXXmlFile(
+            xml=xRoot,
+            rId=self._nextRelId(),
+            path="docProps",
+            relType=f"{REL_BASE}/extended-properties",
+            contentType="application/vnd.openxmlformats-package.core-properties+xml",
+        )
+
+        xmlSubElem(xRoot, "TotalTime", self._project.data.editTime // 60)
+        xmlSubElem(xRoot, "Application", f"novelWriter/{__version__}")
+        if count := self._counts.get("allWords"):
+            xmlSubElem(xRoot, "Words", count)
+        if count := self._counts.get("textWordChars"):
+            xmlSubElem(xRoot, "Characters", count)
+        if count := self._counts.get("textChars"):
+            xmlSubElem(xRoot, "CharactersWithSpaces", count)
+        if count := self._counts.get("paragraphCount"):
+            xmlSubElem(xRoot, "Paragraphs", count)
+
+        return
+
+    def _coreXml(self) -> None:
+        """Populate app.xml."""
+        xRoot = ET.Element("coreProperties")
+        self._files["core.xml"] = DocXXmlFile(
+            xml=xRoot,
+            rId=self._nextRelId(),
+            path="docProps",
+            relType=REL_CORE,
+            contentType=f"{WORD_BASE}.extended-properties+xml",
+        )
+
+        timeStamp = datetime.now().isoformat(sep="T", timespec="seconds")
+        tsAttr = {_mkTag("xsi", "type"): "dcterms:W3CDTF"}
+        xmlSubElem(xRoot, _mkTag("dcterms", "created"), timeStamp, attrib=tsAttr)
+        xmlSubElem(xRoot, _mkTag("dcterms", "modified"), timeStamp, attrib=tsAttr)
+        xmlSubElem(xRoot, _mkTag("dc", "creator"), self._project.data.author)
+        xmlSubElem(xRoot, _mkTag("dc", "title"), self._project.data.name)
+        xmlSubElem(xRoot, _mkTag("dc", "creator"), self._project.data.author)
+        xmlSubElem(xRoot, _mkTag("dc", "language"), self._dLanguage)
+        xmlSubElem(xRoot, _mkTag("cp", "revision"), str(self._project.data.saveCount))
+        xmlSubElem(xRoot, _mkTag("cp", "lastModifiedBy"), self._project.data.author)
+
+        return
+
+    def _stylesXml(self) -> None:
+        """Populate styles.xml."""
+        xRoot = ET.Element(_wTag("styles"))
+        self._files["styles.xml"] = DocXXmlFile(
+            xml=xRoot,
+            rId=self._nextRelId(),
+            path="word",
+            relType=f"{REL_BASE}/styles",
+            contentType=f"{WORD_BASE}.wordprocessingml.styles+xml",
+        )
+
+        # Default Style
+        xStyl = xmlSubElem(xRoot, _wTag("docDefaults"))
         xRDef = xmlSubElem(xStyl, _wTag("rPrDefault"))
         xPDef = xmlSubElem(xStyl, _wTag("pPrDefault"))
         xRPr = xmlSubElem(xRDef, _wTag("rPr"))
@@ -585,172 +702,76 @@ class ToDocX(Tokenizer):
         xmlSubElem(xRPr, _wTag("lang"), attrib={_wTag("val"): self._dLanguage})
         xmlSubElem(xPPr, _wTag("spacing"), attrib={_wTag("line"): line})
 
-        return
+        # Paragraph Styles
+        for style in self._styles.values():
+            sAttr = {}
+            sAttr[_wTag("type")] = "paragraph"
+            sAttr[_wTag("styleId")] = style.styleId
+            if style.default:
+                sAttr[_wTag("default")] = "1"
 
-    def _useableStyles(self) -> None:
-        """Set the usable styles."""
-        hScale = self._scaleHeads
-        hColor = self._colorHeads
-        fSz = self._fontSize
-        fSz0 = (nwStyles.H_SIZES[0] * fSz) if hScale else fSz
-        fSz1 = (nwStyles.H_SIZES[1] * fSz) if hScale else fSz
-        fSz2 = (nwStyles.H_SIZES[2] * fSz) if hScale else fSz
-        fSz3 = (nwStyles.H_SIZES[3] * fSz) if hScale else fSz
-        fSz4 = (nwStyles.H_SIZES[4] * fSz) if hScale else fSz
-        align = "both" if self._doJustify else "left"
+            size = firstFloat(style.size, self._fontSize)
 
-        # Add Normal Style
-        self._addParStyle(DocXParStyle(
-            name="Normal",
-            styleId=S_NORM,
-            size=fSz,
-            default=True,
-            before=fSz * self._marginText[0],
-            after=fSz * self._marginText[1],
-            line=fSz * self._lineHeight,
-            indentFirst=fSz * self._firstWidth,
-            align=align,
-        ))
+            xStyl = xmlSubElem(xRoot, _wTag("style"), attrib=sAttr)
+            xmlSubElem(xStyl, _wTag("name"), attrib={_wTag("val"): style.name})
+            if style.basedOn:
+                xmlSubElem(xStyl, _wTag("basedOn"), attrib={_wTag("val"): style.basedOn})
+            if style.nextStyle:
+                xmlSubElem(xStyl, _wTag("next"), attrib={_wTag("val"): style.nextStyle})
+            if style.level is not None:
+                xmlSubElem(xStyl, _wTag("outlineLvl"), attrib={_wTag("val"): str(style.level)})
 
-        # Add Title
-        self._addParStyle(DocXParStyle(
-            name="Title",
-            styleId=S_TITLE,
-            size=fSz0,
-            basedOn=S_NORM,
-            nextStyle=S_NORM,
-            before=fSz * self._marginTitle[0],
-            after=fSz * self._marginTitle[1],
-            line=fSz0 * self._lineHeight,
-            level=0,
-            bold=self._boldHeads,
-        ))
+            pPr = xmlSubElem(xStyl, _wTag("pPr"))
+            xmlSubElem(pPr, _wTag("spacing"), attrib={
+                _wTag("before"): str(int(20.0 * firstFloat(style.before))),
+                _wTag("after"): str(int(20.0 * firstFloat(style.after))),
+                _wTag("line"): str(int(20.0 * firstFloat(style.line, size))),
+            })
+            if style.align:
+                xmlSubElem(pPr, _wTag("jc"), attrib={_wTag("val"): style.align})
 
-        # Add Heading 1
-        self._addParStyle(DocXParStyle(
-            name="Heading 1",
-            styleId=S_HEAD1,
-            size=fSz1,
-            basedOn=S_NORM,
-            nextStyle=S_NORM,
-            before=fSz * self._marginHead1[0],
-            after=fSz * self._marginHead1[1],
-            line=fSz1 * self._lineHeight,
-            level=0,
-            color=COL_HEAD_L12 if hColor else None,
-            bold=self._boldHeads,
-        ))
-
-        # Add Heading 2
-        self._addParStyle(DocXParStyle(
-            name="Heading 2",
-            styleId=S_HEAD2,
-            size=fSz2,
-            basedOn=S_NORM,
-            nextStyle=S_NORM,
-            before=fSz * self._marginHead2[0],
-            after=fSz * self._marginHead2[1],
-            line=fSz2 * self._lineHeight,
-            level=1,
-            color=COL_HEAD_L12 if hColor else None,
-            bold=self._boldHeads,
-        ))
-
-        # Add Heading 3
-        self._addParStyle(DocXParStyle(
-            name="Heading 3",
-            styleId=S_HEAD3,
-            size=fSz3,
-            basedOn=S_NORM,
-            nextStyle=S_NORM,
-            before=fSz * self._marginHead3[0],
-            after=fSz * self._marginHead3[1],
-            line=fSz3 * self._lineHeight,
-            level=1,
-            color=COL_HEAD_L34 if hColor else None,
-            bold=self._boldHeads,
-        ))
-
-        # Add Heading 4
-        self._addParStyle(DocXParStyle(
-            name="Heading 4",
-            styleId=S_HEAD4,
-            size=fSz4,
-            basedOn=S_NORM,
-            nextStyle=S_NORM,
-            before=fSz * self._marginHead4[0],
-            after=fSz * self._marginHead4[1],
-            line=fSz4 * self._lineHeight,
-            level=1,
-            color=COL_HEAD_L34 if hColor else None,
-            bold=self._boldHeads,
-        ))
-
-        # Add Separator
-        self._addParStyle(DocXParStyle(
-            name="Separator",
-            styleId=S_SEP,
-            size=fSz,
-            basedOn=S_NORM,
-            nextStyle=S_NORM,
-            before=fSz * self._marginSep[0],
-            after=fSz * self._marginSep[1],
-            line=fSz * self._lineHeight,
-            align="center",
-        ))
-
-        # Add Text Meta Style
-        self._addParStyle(DocXParStyle(
-            name="Text Meta",
-            styleId=S_META,
-            size=fSz,
-            basedOn=S_NORM,
-            nextStyle=S_NORM,
-            before=fSz * self._marginMeta[0],
-            after=fSz * self._marginMeta[1],
-            line=fSz * self._lineHeight,
-            color=COL_META_TXT,
-        ))
+            rPr = xmlSubElem(xStyl, _wTag("rPr"))
+            xmlSubElem(rPr, _wTag("sz"), attrib={_wTag("val"): str(int(2.0 * size))})
+            xmlSubElem(rPr, _wTag("szCs"), attrib={_wTag("val"): str(int(2.0 * size))})
+            if style.color:
+                xmlSubElem(rPr, _wTag("color"), attrib={_wTag("val"): style.color})
+            if style.bold:
+                xmlSubElem(rPr, _wTag("b"))
 
         return
 
-    def _addParStyle(self, style: DocXParStyle) -> None:
-        """Add a paragraph style."""
-        sAttr = {}
-        sAttr[_wTag("type")] = "paragraph"
-        sAttr[_wTag("styleId")] = style.styleId
-        if style.default:
-            sAttr[_wTag("default")] = "1"
+    def _documentXml(self) -> None:
+        """Populate document.xml."""
+        xRoot = ET.Element(_wTag("document"))
+        self._files["document.xml"] = DocXXmlFile(
+            xml=xRoot,
+            rId=self._nextRelId(),
+            path="word",
+            relType=f"{REL_BASE}/officeDocument",
+            contentType=f"{WORD_BASE}.wordprocessingml.document.main+xml",
+        )
 
-        size = firstFloat(style.size, self._fontSize)
+        xBody = xmlSubElem(xRoot, _wTag("body"))
 
-        xStyl = xmlSubElem(self._dStyl, _wTag("style"), attrib=sAttr)
-        xmlSubElem(xStyl, _wTag("name"), attrib={_wTag("val"): style.name})
-        if style.basedOn:
-            xmlSubElem(xStyl, _wTag("basedOn"), attrib={_wTag("val"): style.basedOn})
-        if style.nextStyle:
-            xmlSubElem(xStyl, _wTag("next"), attrib={_wTag("val"): style.nextStyle})
-        if style.level is not None:
-            xmlSubElem(xStyl, _wTag("outlineLvl"), attrib={_wTag("val"): str(style.level)})
+        # Map all Page Break Before to After where possible
+        pars: list[DocXParagraph] = []
+        for i, par in enumerate(self._pars):
+            if i > 0 and par.pageBreakBefore:
+                prev = self._pars[i-1]
+                if prev.pageBreakAfter:
+                    # We already have a break, so we inject a new paragraph instead
+                    empty = DocXParagraph()
+                    empty.setStyle(self._styles.get(S_NORM))
+                    empty.setPageBreakAfter(True)
+                    pars.append(empty)
+                else:
+                    par.setPageBreakBefore(False)
+                    prev.setPageBreakAfter(True)
 
-        pPr = xmlSubElem(xStyl, _wTag("pPr"))
-        xmlSubElem(pPr, _wTag("spacing"), attrib={
-            _wTag("before"): str(int(20.0 * firstFloat(style.before))),
-            _wTag("after"): str(int(20.0 * firstFloat(style.after))),
-            _wTag("line"): str(int(20.0 * firstFloat(style.line, size))),
-        })
-        if style.align:
-            xmlSubElem(pPr, _wTag("jc"), attrib={_wTag("val"): style.align})
+            pars.append(par)
 
-        rPr = xmlSubElem(xStyl, _wTag("rPr"))
-        xmlSubElem(rPr, _wTag("sz"), attrib={_wTag("val"): str(int(2.0 * size))})
-        xmlSubElem(rPr, _wTag("szCs"), attrib={_wTag("val"): str(int(2.0 * size))})
-        if style.color:
-            xmlSubElem(rPr, _wTag("color"), attrib={_wTag("val"): style.color})
-        if style.bold:
-            xmlSubElem(rPr, _wTag("b"))
-
-        self._styles[style.styleId] = style
+        for par in pars:
+            par.toXml(xBody)
 
         return
 
@@ -815,13 +836,13 @@ class DocXParagraph:
         self._bottomMargin = value
         return
 
-    def setLeftMargin(self, value: float) -> None:
-        """Set left indent."""
+    def setMarginLeft(self, value: float) -> None:
+        """Set margin left in pt."""
         self._leftMargin = value
         return
 
-    def setRightMargin(self, value: float) -> None:
-        """Set right line indent."""
+    def setMarginRight(self, value: float) -> None:
+        """Set margin right in pt."""
         self._rightMargin = value
         return
 
