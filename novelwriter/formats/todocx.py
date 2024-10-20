@@ -33,6 +33,8 @@ from pathlib import Path
 from typing import NamedTuple
 from zipfile import ZipFile
 
+from PyQt5.QtCore import QMarginsF, QSizeF
+
 from novelwriter import __version__
 from novelwriter.common import firstFloat, xmlIndent, xmlSubElem
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles
@@ -45,19 +47,16 @@ logger = logging.getLogger(__name__)
 RX_TEXT = re.compile(r"([\n\t])", re.UNICODE)
 
 # Types and Relationships
+OOXML_SCM = "http://schemas.openxmlformats.org"
 WORD_BASE = "application/vnd.openxmlformats-officedocument"
 RELS_TYPE = "application/vnd.openxmlformats-package.relationships+xml"
-REL_CORE = "http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties"
-REL_BASE = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+RELS_BASE = f"{OOXML_SCM}/officeDocument/2006/relationships"
 
 # Main XML NameSpaces
-PROPS_NS = "http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"
-TYPES_NS = "http://schemas.openxmlformats.org/package/2006/content-types"
-RELS_NS = "http://schemas.openxmlformats.org/package/2006/relationships"
-W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 XML_NS = {
-    "w":       W_NS,
-    "cp":      "http://schemas.openxmlformats.org/package/2006/metadata/core-properties",
+    "r":       RELS_BASE,
+    "w":       f"{OOXML_SCM}/wordprocessingml/2006/main",
+    "cp":      f"{OOXML_SCM}/package/2006/metadata/core-properties",
     "dc":      "http://purl.org/dc/elements/1.1/",
     "xsi":     "http://www.w3.org/2001/XMLSchema-instance",
     "xml":     "http://www.w3.org/XML/1998/namespace",
@@ -69,7 +68,7 @@ for ns, uri in XML_NS.items():
 
 def _wTag(tag: str) -> str:
     """Assemble namespace and tag name for standard w namespace."""
-    return f"{{{W_NS}}}{tag}"
+    return f"{{{OOXML_SCM}/wordprocessingml/2006/main}}{tag}"
 
 
 def _mkTag(ns: str, tag: str) -> str:
@@ -109,6 +108,7 @@ S_HEAD1 = "Heading1"
 S_HEAD2 = "Heading2"
 S_HEAD3 = "Heading3"
 S_HEAD4 = "Heading4"
+S_HEAD  = "Header"
 S_SEP   = "Separator"
 S_META  = "TextMeta"
 
@@ -162,9 +162,11 @@ class ToDocX(Tokenizer):
         self._pageOffset   = 0
 
         # Internal
-        self._fontFamily = "Liberation Serif"
-        self._fontSize   = 12.0
-        self._dLanguage  = "en_GB"
+        self._fontFamily  = "Liberation Serif"
+        self._fontSize    = 12.0
+        self._dLanguage   = "en_GB"
+        self._pageSize    = QSizeF(210.0, 297.0)
+        self._pageMargins = QMarginsF(20.0, 20.0, 20.0, 20.0)
 
         # Data Variables
         self._pars: list[DocXParagraph] = []
@@ -187,6 +189,8 @@ class ToDocX(Tokenizer):
         self, width: float, height: float, top: float, bottom: float, left: float, right: float
     ) -> None:
         """Set the document page size and margins in millimetres."""
+        self._pageSize = QSizeF(width, height)
+        self._pageMargins = QMarginsF(left, top, right, bottom)
         return
 
     def setHeaderFormat(self, format: str, offset: int) -> None:
@@ -301,7 +305,15 @@ class ToDocX(Tokenizer):
         self._coreXml()
         self._appXml()
         self._stylesXml()
-        self._documentXml()
+
+        fId = None
+        dId = None
+        if self._headerFormat:
+            dId = self._defaultHeaderXml()
+            fId = self._firstHeaderXml()
+
+        self._documentXml(fId, dId)
+
         return
 
     def saveDocument(self, path: Path) -> None:
@@ -316,17 +328,24 @@ class ToDocX(Tokenizer):
         cDocs.append(("/word/_rels/document.xml.rels", RELS_TYPE))
 
         # Relationships XML
-        rRels = ET.Element("Relationships", attrib={"xmlns": RELS_NS})
-        wRels = ET.Element("Relationships", attrib={"xmlns": RELS_NS})
+        rRels = ET.Element("Relationships", attrib={
+            "xmlns": f"{OOXML_SCM}/package/2006/relationships"
+        })
+        wRels = ET.Element("Relationships", attrib={
+            "xmlns": f"{OOXML_SCM}/package/2006/relationships"
+        })
         for name, entry in self._files.items():
             cDocs.append((f"/{entry.path}/{name}", entry.contentType))
-            xDoc = rRels if name in ("core.xml", "app.xml", "document.xml") else wRels
-            xmlSubElem(xDoc, "Relationship", attrib={
-                "Id": entry.rId, "Type": entry.relType, "Target": f"{entry.path}/{name}",
+            isRoot = name in ("core.xml", "app.xml", "document.xml")
+            xmlSubElem(rRels if isRoot else wRels, "Relationship", attrib={
+                "Id": entry.rId, "Type": entry.relType,
+                "Target": f"{entry.path}/{name}" if isRoot else name,
             })
 
         # Content Types XML
-        dTypes = ET.Element("Types", attrib={"xmlns": TYPES_NS})
+        dTypes = ET.Element("Types", attrib={
+            "xmlns": f"{OOXML_SCM}/package/2006/content-types"
+        })
         for name, content in cExts:
             xmlSubElem(dTypes, "Default", attrib={"Extension": name, "ContentType": content})
         for name, content in cDocs:
@@ -613,6 +632,15 @@ class ToDocX(Tokenizer):
             color=COL_META_TXT,
         ))
 
+        # Header
+        styles.append(DocXParStyle(
+            name="Header",
+            styleId=S_HEAD,
+            size=fSz,
+            basedOn=S_NORM,
+            align="right",
+        ))
+
         # Add to Cache
         for style in styles:
             self._styles[style.styleId] = style
@@ -623,15 +651,18 @@ class ToDocX(Tokenizer):
         """Generate the next unique rId."""
         return f"rId{len(self._files) + 1}"
 
-    def _appXml(self) -> None:
+    def _appXml(self) -> str:
         """Populate app.xml."""
-        xRoot = ET.Element("Properties", attrib={"xmlns": PROPS_NS})
+        rId = self._nextRelId()
+        xRoot = ET.Element("Properties", attrib={
+            "xmlns": f"{OOXML_SCM}/officeDocument/2006/extended-properties"
+        })
         self._files["app.xml"] = DocXXmlFile(
             xml=xRoot,
-            rId=self._nextRelId(),
+            rId=rId,
             path="docProps",
-            relType=f"{REL_BASE}/extended-properties",
-            contentType="application/vnd.openxmlformats-package.core-properties+xml",
+            relType=f"{RELS_BASE}/extended-properties",
+            contentType="application/vnd.openxmlformats-officedocument.extended-properties+xml",
         )
 
         xmlSubElem(xRoot, "TotalTime", self._project.data.editTime // 60)
@@ -645,17 +676,18 @@ class ToDocX(Tokenizer):
         if count := self._counts.get("paragraphCount"):
             xmlSubElem(xRoot, "Paragraphs", count)
 
-        return
+        return rId
 
-    def _coreXml(self) -> None:
+    def _coreXml(self) -> str:
         """Populate app.xml."""
+        rId = self._nextRelId()
         xRoot = ET.Element("coreProperties")
         self._files["core.xml"] = DocXXmlFile(
             xml=xRoot,
-            rId=self._nextRelId(),
+            rId=rId,
             path="docProps",
-            relType=REL_CORE,
-            contentType=f"{WORD_BASE}.extended-properties+xml",
+            relType=f"{OOXML_SCM}/package/2006/relationships/metadata/core-properties",
+            contentType="application/vnd.openxmlformats-package.core-properties+xml",
         )
 
         timeStamp = datetime.now().isoformat(sep="T", timespec="seconds")
@@ -669,16 +701,17 @@ class ToDocX(Tokenizer):
         xmlSubElem(xRoot, _mkTag("cp", "revision"), str(self._project.data.saveCount))
         xmlSubElem(xRoot, _mkTag("cp", "lastModifiedBy"), self._project.data.author)
 
-        return
+        return rId
 
-    def _stylesXml(self) -> None:
+    def _stylesXml(self) -> str:
         """Populate styles.xml."""
+        rId = self._nextRelId()
         xRoot = ET.Element(_wTag("styles"))
         self._files["styles.xml"] = DocXXmlFile(
             xml=xRoot,
-            rId=self._nextRelId(),
+            rId=rId,
             path="word",
-            relType=f"{REL_BASE}/styles",
+            relType=f"{RELS_BASE}/styles",
             contentType=f"{WORD_BASE}.wordprocessingml.styles+xml",
         )
 
@@ -718,9 +751,8 @@ class ToDocX(Tokenizer):
                 xmlSubElem(xStyl, _wTag("basedOn"), attrib={_wTag("val"): style.basedOn})
             if style.nextStyle:
                 xmlSubElem(xStyl, _wTag("next"), attrib={_wTag("val"): style.nextStyle})
-            if style.level is not None:
-                xmlSubElem(xStyl, _wTag("outlineLvl"), attrib={_wTag("val"): str(style.level)})
 
+            # pPr Node
             pPr = xmlSubElem(xStyl, _wTag("pPr"))
             xmlSubElem(pPr, _wTag("spacing"), attrib={
                 _wTag("before"): str(int(20.0 * firstFloat(style.before))),
@@ -729,29 +761,101 @@ class ToDocX(Tokenizer):
             })
             if style.align:
                 xmlSubElem(pPr, _wTag("jc"), attrib={_wTag("val"): style.align})
+            if style.level is not None:
+                xmlSubElem(pPr, _wTag("outlineLvl"), attrib={_wTag("val"): str(style.level)})
 
+            # rPr Node
             rPr = xmlSubElem(xStyl, _wTag("rPr"))
-            xmlSubElem(rPr, _wTag("sz"), attrib={_wTag("val"): str(int(2.0 * size))})
-            xmlSubElem(rPr, _wTag("szCs"), attrib={_wTag("val"): str(int(2.0 * size))})
-            if style.color:
-                xmlSubElem(rPr, _wTag("color"), attrib={_wTag("val"): style.color})
             if style.bold:
                 xmlSubElem(rPr, _wTag("b"))
+            if style.color:
+                xmlSubElem(rPr, _wTag("color"), attrib={_wTag("val"): style.color})
+            xmlSubElem(rPr, _wTag("sz"), attrib={_wTag("val"): str(int(2.0 * size))})
+            xmlSubElem(rPr, _wTag("szCs"), attrib={_wTag("val"): str(int(2.0 * size))})
 
-        return
+        return rId
 
-    def _documentXml(self) -> None:
-        """Populate document.xml."""
-        xRoot = ET.Element(_wTag("document"))
-        self._files["document.xml"] = DocXXmlFile(
+    def _defaultHeaderXml(self) -> str:
+        """Populate header1.xml."""
+        rId = self._nextRelId()
+        xRoot = ET.Element(_wTag("hdr"))
+        self._files["header1.xml"] = DocXXmlFile(
             xml=xRoot,
-            rId=self._nextRelId(),
+            rId=rId,
             path="word",
-            relType=f"{REL_BASE}/officeDocument",
-            contentType=f"{WORD_BASE}.wordprocessingml.document.main+xml",
+            relType=f"{RELS_BASE}/header",
+            contentType=f"{WORD_BASE}.wordprocessingml.header+xml",
         )
 
+        xP = xmlSubElem(xRoot, _wTag("p"))
+        xPPr = xmlSubElem(xP, _wTag("pPr"))
+        xmlSubElem(xPPr, _wTag("pStyle"), attrib={_wTag("val"): S_HEAD})
+        xmlSubElem(xPPr, _wTag("jc"), attrib={_wTag("val"): "right"})
+        xmlSubElem(xPPr, _wTag("rPr"))
+
+        pre, page, post = self._headerFormat.partition(nwHeadFmt.ODT_PAGE)
+        pre = pre.replace(nwHeadFmt.ODT_PROJECT, self._project.data.name)
+        pre = pre.replace(nwHeadFmt.ODT_AUTHOR, self._project.data.author)
+        post = post.replace(nwHeadFmt.ODT_PROJECT, self._project.data.name)
+        post = post.replace(nwHeadFmt.ODT_AUTHOR, self._project.data.author)
+
+        xSpace = _mkTag("xml", "space")
+        wFldCT = _wTag("fldCharType")
+
+        parts: list[tuple[str, str | None, str, str]] = []
+        if pre:
+            parts.append(("t", pre, xSpace, "preserve"))
+        if page:
+            parts.append(("fldChar", None, wFldCT, "begin"))
+            parts.append(("t", " PAGE ", xSpace, "preserve"))
+            parts.append(("fldChar", None, wFldCT, "separate"))
+            parts.append(("t", "2", xSpace, "preserve"))
+            parts.append(("fldChar", None, wFldCT, "end"))
+        if post:
+            parts.append(("t", post, xSpace, "preserve"))
+
+        for part in parts:
+            xR = xmlSubElem(xP, _wTag("r"))
+            xmlSubElem(xR, _wTag("rPr"))
+            xmlSubElem(xR, _wTag(part[0]), part[1], attrib={part[2]: part[3]})
+
+        return rId
+
+    def _firstHeaderXml(self) -> str:
+        """Populate header2.xml."""
+        rId = self._nextRelId()
+        xRoot = ET.Element(_wTag("hdr"))
+        self._files["header2.xml"] = DocXXmlFile(
+            xml=xRoot,
+            rId=rId,
+            path="word",
+            relType=f"{RELS_BASE}/header",
+            contentType=f"{WORD_BASE}.wordprocessingml.header+xml",
+        )
+
+        xP = xmlSubElem(xRoot, _wTag("p"))
+        xPPr = xmlSubElem(xP, _wTag("pPr"))
+        xmlSubElem(xPPr, _wTag("pStyle"), attrib={_wTag("val"): S_HEAD})
+        xmlSubElem(xPPr, _wTag("jc"), attrib={_wTag("val"): "right"})
+        xmlSubElem(xPPr, _wTag("rPr"))
+
+        xR = xmlSubElem(xP, _wTag("r"))
+        xmlSubElem(xR, _wTag("rPr"))
+
+        return rId
+
+    def _documentXml(self, hFirst: str | None, hDefault: str | None) -> str:
+        """Populate document.xml."""
+        rId = self._nextRelId()
+        xRoot = ET.Element(_wTag("document"))
         xBody = xmlSubElem(xRoot, _wTag("body"))
+        self._files["document.xml"] = DocXXmlFile(
+            xml=xRoot,
+            rId=rId,
+            path="word",
+            relType=f"{RELS_BASE}/officeDocument",
+            contentType=f"{WORD_BASE}.wordprocessingml.document.main+xml",
+        )
 
         # Map all Page Break Before to After where possible
         pars: list[DocXParagraph] = []
@@ -770,10 +874,49 @@ class ToDocX(Tokenizer):
 
             pars.append(par)
 
+        # Write Paragraphs
         for par in pars:
             par.toXml(xBody)
 
-        return
+        def szScale(value: float) -> str:
+            return str(int(value*2.0*72.0/2.54))
+
+        # Write Settings
+        xSect = xmlSubElem(xBody, _wTag("sectPr"))
+        if hFirst and hDefault:
+            xmlSubElem(xSect, _wTag("headerReference"), attrib={
+                _wTag("type"): "first", _mkTag("r", "id"): hFirst,
+            })
+            xmlSubElem(xSect, _wTag("headerReference"), attrib={
+                _wTag("type"): "default", _mkTag("r", "id"): hDefault,
+            })
+
+        xFn = xmlSubElem(xSect, _wTag("footnotePr"))
+        xmlSubElem(xFn, _wTag("numFmt"), attrib={
+            _wTag("val"): "decimal",
+        })
+
+        xmlSubElem(xSect, _wTag("pgSz"), attrib={
+            _wTag("w"): szScale(self._pageSize.width()),
+            _wTag("h"): szScale(self._pageSize.height()),
+            _wTag("orient"): "portrait",
+        })
+        xmlSubElem(xSect, _wTag("pgMar"), attrib={
+            _wTag("top"): szScale(self._pageMargins.top()),
+            _wTag("right"): szScale(self._pageMargins.right()),
+            _wTag("bottom"): szScale(self._pageMargins.bottom()),
+            _wTag("left"): szScale(self._pageMargins.left()),
+            _wTag("header"): szScale(self._pageMargins.top()/2.0),
+            _wTag("footer"): "0",
+            _wTag("gutter"): "0",
+        })
+        xmlSubElem(xSect, _wTag("pgNumType"), attrib={
+            _wTag("start"): str(1 - self._pageOffset),
+            _wTag("fmt"): "decimal",
+        })
+        xmlSubElem(xSect, _wTag("titlePg"))
+
+        return rId
 
 
 class DocXParagraph:
