@@ -31,12 +31,12 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from pathlib import Path
 from typing import NamedTuple
-from zipfile import ZipFile
+from zipfile import ZIP_DEFLATED, ZipFile
 
 from PyQt5.QtCore import QMarginsF, QSizeF
 
 from novelwriter import __version__
-from novelwriter.common import firstFloat, xmlIndent, xmlSubElem
+from novelwriter.common import firstFloat, xmlSubElem
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles
 from novelwriter.core.project import NWProject
 from novelwriter.formats.tokenizer import T_Formats, Tokenizer
@@ -174,7 +174,7 @@ class ToDocX(Tokenizer):
         self._pars: list[DocXParagraph] = []
         self._files: dict[str, DocXXmlFile] = {}
         self._styles: dict[str, DocXParStyle] = {}
-        self._usedNotes: list[str] = []
+        self._usedNotes: dict[str, int] = {}
 
         return
 
@@ -316,7 +316,7 @@ class ToDocX(Tokenizer):
             fId = self._firstHeaderXml()
 
         self._documentXml(fId, dId)
-
+        self._settingsXml()
         if self._usedNotes:
             self._footnotesXml()
 
@@ -360,10 +360,9 @@ class ToDocX(Tokenizer):
         def xmlToZip(name: str, xObj: ET.Element, zipObj: ZipFile) -> None:
             with zipObj.open(name, mode="w") as fObj:
                 xml = ET.ElementTree(xObj)
-                xmlIndent(xml)
                 xml.write(fObj, encoding="utf-8", xml_declaration=True)
 
-        with ZipFile(path, mode="w") as outZip:
+        with ZipFile(path, mode="w", compression=ZIP_DEFLATED, compresslevel=3) as outZip:
             xmlToZip("_rels/.rels", rRels, outZip)
             xmlToZip("word/_rels/document.xml.rels", wRels, outZip)
             for name, entry in self._files.items():
@@ -522,12 +521,12 @@ class ToDocX(Tokenizer):
     def _generateFootnote(self, key: str) -> ET.Element | None:
         """Generate a footnote XML object."""
         if self._footnotes.get(key):
-            idx = len(self._usedNotes)
+            idx = len(self._usedNotes) + 1
             run = ET.Element(_wTag("r"))
             rPr = xmlSubElem(run, _wTag("rPr"))
             xmlSubElem(rPr, _wTag("vertAlign"), attrib={_wTag("val"): "superscript"})
             xmlSubElem(run, _wTag("footnoteReference"), attrib={_wTag("id"): str(idx)})
-            self._usedNotes.append(key)
+            self._usedNotes[key] = idx
             return run
         return None
 
@@ -974,11 +973,36 @@ class ToDocX(Tokenizer):
             contentType=f"{WORD_BASE}.footnotes+xml",
         )
 
-        for i, key in enumerate(self._usedNotes):
+        for key, idx in self._usedNotes.items():
             par = DocXParagraph()
             if content := self._footnotes.get(key):
                 self._processFragments(par, S_FNOTE, content[0], content[1])
-            par.toXml(xmlSubElem(xRoot, _wTag("footnote"), attrib={_wTag("id"): str(i)}))
+            par.toXml(xmlSubElem(xRoot, _wTag("footnote"), attrib={_wTag("id"): str(idx)}))
+
+        return rId
+
+    def _settingsXml(self) -> str:
+        """Populate settings.xml."""
+        rId = self._nextRelId()
+        xRoot = ET.Element(_wTag("settings"))
+        self._files["settings.xml"] = DocXXmlFile(
+            xml=xRoot,
+            rId=rId,
+            path="word",
+            relType=f"{RELS_BASE}/settings",
+            contentType=f"{WORD_BASE}.settings+xml",
+        )
+
+        xFn = xmlSubElem(xRoot, _wTag("footnotePr"))
+        xmlSubElem(xFn, _wTag("numFmt"), attrib={_wTag("val"): "decimal"})
+
+        if self._counts:
+            xVars = xmlSubElem(xRoot, _wTag("docVars"))
+            for key, value in self._counts.items():
+                xmlSubElem(xVars, _wTag("docVar"), attrib={
+                    _wTag("name"): f"Manuscript{key[:1].upper()}{key[1:]}",
+                    _wTag("val"): str(value),
+                })
 
         return rId
 

@@ -33,7 +33,7 @@ from collections.abc import Sequence
 from datetime import datetime
 from hashlib import sha256
 from pathlib import Path
-from zipfile import ZipFile
+from zipfile import ZIP_DEFLATED, ZipFile
 
 from PyQt5.QtGui import QFont
 
@@ -560,7 +560,7 @@ class ToOdt(Tokenizer):
                     xml = ET.ElementTree(xObj)
                     xml.write(fObj, encoding="utf-8", xml_declaration=True)
 
-            with ZipFile(path, mode="w") as outZip:
+            with ZipFile(path, mode="w", compression=ZIP_DEFLATED, compresslevel=3) as outZip:
                 outZip.writestr("mimetype", X_MIME)
                 xmlToZip("META-INF/manifest.xml", xMani, outZip)
                 xmlToZip("settings.xml", xSett, outZip)
