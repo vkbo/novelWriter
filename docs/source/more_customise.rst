@@ -4,7 +4,7 @@
 Customisations
 **************
 
-.. _Enchant: https://abiword.github.io/enchant
+.. _Enchant: https://rrthomas.github.io/enchant/
 .. _Free Desktop: https://cgit.freedesktop.org/libreoffice/dictionaries/tree/
 
 There are a few ways you can customise novelWriter yourself. Currently, you can add new GUI themes,
