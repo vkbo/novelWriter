@@ -772,8 +772,8 @@ def testFmtToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
     assert odt._dLanguage == ""
     odt.setLanguage("nb_NO")
     assert odt._dLanguage == "nb"
-    odt.setHeaderFormat(nwHeadFmt.ODT_AUTO, 1)
-    assert odt._headerFormat == nwHeadFmt.ODT_AUTO
+    odt.setHeaderFormat(nwHeadFmt.DOC_AUTO, 1)
+    assert odt._headerFormat == nwHeadFmt.DOC_AUTO
     odt.setFirstLineIndent(True, 1.4, False)
     assert odt._firstIndent is True
     assert odt._fTextIndent == "0.499cm"
@@ -822,7 +822,7 @@ def testFmtToOdt_SaveFull(mockGUI, fncPath, tstPaths):
     odt._isNovel = True
 
     # Set a format without page number
-    odt.setHeaderFormat(f"{nwHeadFmt.ODT_PROJECT} - {nwHeadFmt.ODT_AUTHOR}", 0)
+    odt.setHeaderFormat(f"{nwHeadFmt.DOC_PROJECT} - {nwHeadFmt.DOC_AUTHOR}", 0)
 
     odt._text = (
         "## Chapter One\n\n"

@@ -109,11 +109,11 @@ SETTINGS_TEMPLATE: dict[str, tuple[type, str | int | float | bool]] = {
     "format.bottomMargin":     (float, 2.0),
     "format.leftMargin":       (float, 2.0),
     "format.rightMargin":      (float, 2.0),
-    "odt.pageHeader":          (str, nwHeadFmt.ODT_AUTO),
-    "odt.pageCountOffset":     (int, 0),
-    "odt.colorHeadings":       (bool, True),
-    "odt.scaleHeadings":       (bool, True),
-    "odt.boldHeadings":        (bool, True),
+    "doc.pageHeader":          (str, nwHeadFmt.DOC_AUTO),
+    "doc.pageCountOffset":     (int, 0),
+    "doc.colorHeadings":       (bool, True),
+    "doc.scaleHeadings":       (bool, True),
+    "doc.boldHeadings":        (bool, True),
     "html.addStyles":          (bool, True),
     "html.preserveTabs":       (bool, False),
 }
@@ -165,16 +165,22 @@ SETTINGS_LABELS = {
     "format.pageSize":         QT_TRANSLATE_NOOP("Builds", "Page Size"),
     "format.pageMargins":      QT_TRANSLATE_NOOP("Builds", "Page Margins"),
 
-    "odt":                     QT_TRANSLATE_NOOP("Builds", "Document Options"),
-    "odt.pageHeader":          QT_TRANSLATE_NOOP("Builds", "Page Header"),
-    "odt.pageCountOffset":     QT_TRANSLATE_NOOP("Builds", "Page Counter Offset"),
-    "odt.colorHeadings":       QT_TRANSLATE_NOOP("Builds", "Add Colours to Headings"),
-    "odt.scaleHeadings":       QT_TRANSLATE_NOOP("Builds", "Increase Size of Headings"),
-    "odt.boldHeadings":        QT_TRANSLATE_NOOP("Builds", "Bold Headings"),
+    "doc":                     QT_TRANSLATE_NOOP("Builds", "Document Style"),
+    "doc.pageHeader":          QT_TRANSLATE_NOOP("Builds", "Page Header"),
+    "doc.pageCountOffset":     QT_TRANSLATE_NOOP("Builds", "Page Counter Offset"),
+    "doc.colorHeadings":       QT_TRANSLATE_NOOP("Builds", "Add Colours to Headings"),
+    "doc.scaleHeadings":       QT_TRANSLATE_NOOP("Builds", "Increase Size of Headings"),
+    "doc.boldHeadings":        QT_TRANSLATE_NOOP("Builds", "Bold Headings"),
 
     "html":                    QT_TRANSLATE_NOOP("Builds", "HTML Options"),
     "html.addStyles":          QT_TRANSLATE_NOOP("Builds", "Add CSS Styles"),
     "html.preserveTabs":       QT_TRANSLATE_NOOP("Builds", "Preserve Tab Characters"),
+}
+
+RENAMED = {
+    "odt.addColours": "doc.addColours",
+    "odt.pageHeader": "doc.pageHeader",
+    "odt.pageCountOffset": "doc.pageCountOffset",
 }
 
 
@@ -490,7 +496,7 @@ class BuildSettings:
         self._settings = {k: v[1] for k, v in SETTINGS_TEMPLATE.items()}
         if isinstance(settings, dict):
             for key, value in settings.items():
-                self.setValue(key, value)
+                self.setValue(RENAMED.get(key, key), value)
 
         self._changed = False
 

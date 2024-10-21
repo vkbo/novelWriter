@@ -292,9 +292,9 @@ class NWBuildDocument:
             self._build.getBool("format.indentFirstPar"),
         )
         bldObj.setHeadingStyles(
-            self._build.getBool("odt.colorHeadings"),
-            self._build.getBool("odt.scaleHeadings"),
-            self._build.getBool("odt.boldHeadings"),
+            self._build.getBool("doc.colorHeadings"),
+            self._build.getBool("doc.scaleHeadings"),
+            self._build.getBool("doc.boldHeadings"),
         )
 
         bldObj.setTitleMargins(
@@ -339,8 +339,8 @@ class NWBuildDocument:
         if isinstance(bldObj, (ToOdt, ToDocX)):
             bldObj.setLanguage(self._project.data.language)
             bldObj.setHeaderFormat(
-                self._build.getStr("odt.pageHeader"),
-                self._build.getInt("odt.pageCountOffset"),
+                self._build.getStr("doc.pageHeader"),
+                self._build.getInt("doc.pageCountOffset"),
             )
 
         if isinstance(bldObj, (ToOdt, ToDocX, ToQTextDocument)):

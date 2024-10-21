@@ -837,11 +837,11 @@ class ToDocX(Tokenizer):
         xmlSubElem(xPPr, _wTag("jc"), attrib={_wTag("val"): "right"})
         xmlSubElem(xPPr, _wTag("rPr"))
 
-        pre, page, post = self._headerFormat.partition(nwHeadFmt.ODT_PAGE)
-        pre = pre.replace(nwHeadFmt.ODT_PROJECT, self._project.data.name)
-        pre = pre.replace(nwHeadFmt.ODT_AUTHOR, self._project.data.author)
-        post = post.replace(nwHeadFmt.ODT_PROJECT, self._project.data.name)
-        post = post.replace(nwHeadFmt.ODT_AUTHOR, self._project.data.author)
+        pre, page, post = self._headerFormat.partition(nwHeadFmt.DOC_PAGE)
+        pre = pre.replace(nwHeadFmt.DOC_PROJECT, self._project.data.name)
+        pre = pre.replace(nwHeadFmt.DOC_AUTHOR, self._project.data.author)
+        post = post.replace(nwHeadFmt.DOC_PROJECT, self._project.data.name)
+        post = post.replace(nwHeadFmt.DOC_AUTHOR, self._project.data.author)
 
         xSpace = _mkTag("xml", "space")
         wFldCT = _wTag("fldCharType")

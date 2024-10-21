@@ -497,7 +497,7 @@ def testFmtToDocX_SaveDocument(mockGUI, prjLipsum, fncPath, tstPaths):
     project = NWProject()
     project.openProject(prjLipsum)
 
-    pageHeader = f"Page {nwHeadFmt.ODT_PAGE} - {nwHeadFmt.ODT_PROJECT} ({nwHeadFmt.ODT_AUTHOR})"
+    pageHeader = f"Page {nwHeadFmt.DOC_PAGE} - {nwHeadFmt.DOC_PROJECT} ({nwHeadFmt.DOC_AUTHOR})"
 
     build = BuildSettings()
     build.setValue("filter.includeNovel", True)
@@ -508,7 +508,7 @@ def testFmtToDocX_SaveDocument(mockGUI, prjLipsum, fncPath, tstPaths):
     build.setValue("text.includeKeywords", True)
     build.setValue("format.textFont", "Source Sans Pro,12")
     build.setValue("format.firstLineIndent", True)
-    build.setValue("odt.pageHeader", pageHeader)
+    build.setValue("doc.pageHeader", pageHeader)
 
     docBuild = NWBuildDocument(project, build)
     docBuild.queueAll()

@@ -148,7 +148,7 @@ def testCoreBuildSettings_BuildValues():
     build = BuildSettings()
 
     strSetting = "headings.fmtPart"
-    intSetting = "odt.pageCountOffset"
+    intSetting = "doc.pageCountOffset"
     boolSetting = "filter.includeNovel"
     floatSetting = "format.lineHeight"
 
