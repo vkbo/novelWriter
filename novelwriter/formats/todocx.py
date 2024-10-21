@@ -255,8 +255,6 @@ class ToDocX(Tokenizer):
 
             # Process Text Types
             if tType == self.T_TEXT:
-                if self._doJustify and "\n" in tText:
-                    par.overrideJustify(self._defaultAlign)
                 self._processFragments(par, S_NORM, tText, tFormat)
 
             elif tType == self.T_TITLE:
@@ -544,7 +542,6 @@ class ToDocX(Tokenizer):
         fSz2 = (nwStyles.H_SIZES[2] * fSz) if hScale else fSz
         fSz3 = (nwStyles.H_SIZES[3] * fSz) if hScale else fSz
         fSz4 = (nwStyles.H_SIZES[4] * fSz) if hScale else fSz
-        align = "both" if self._doJustify else "left"
 
         # Add Normal Style
         styles.append(DocXParStyle(
@@ -556,7 +553,7 @@ class ToDocX(Tokenizer):
             after=fSz * self._marginText[1],
             line=fSz * self._lineHeight,
             indentFirst=fSz * self._firstWidth,
-            align=align,
+            align=self._defaultAlign,
         ))
 
         # Add Title
@@ -1084,12 +1081,6 @@ class DocXParagraph:
     ##
     #  Methods
     ##
-
-    def overrideJustify(self, default: str) -> None:
-        """Override inherited justify setting if None is set."""
-        if self._textAlign is None:
-            self.setAlignment(default)
-        return
 
     def addContent(self, run: ET.Element) -> None:
         """Add a run segment to the paragraph."""

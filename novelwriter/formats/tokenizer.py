@@ -622,6 +622,9 @@ class Tokenizer(ABC):
                 if aLine.startswith("%~"):
                     continue
 
+                if self._doJustify and not sAlign & self.M_ALIGNED:
+                    sAlign |= self.A_JUSTIFY
+
                 cStyle, cKey, cText, _, _ = processComment(aLine)
                 if cStyle == nwComment.SYNOPSIS:
                     tLine, tFmt = self._extractFormats(cText)
@@ -935,8 +938,11 @@ class Tokenizer(ABC):
                         cStyle |= self.A_IND_T
 
                     if nLines == 1:
-                        # The paragraph contains a single line, so we just
-                        # save that directly to the token list
+                        # The paragraph contains a single line, so we just save
+                        # that directly to the token list. If justify is
+                        # enabled, and there is no alignment, we apply it.
+                        if self._doJustify and not cStyle & self.M_ALIGNED:
+                            cStyle |= self.A_JUSTIFY
                         self._tokens.append((
                             self.T_TEXT, pLines[0][1], pLines[0][2], pLines[0][3], cStyle
                         ))

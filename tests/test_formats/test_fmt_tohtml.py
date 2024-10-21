@@ -697,10 +697,6 @@ def testFmtToHtml_Methods(mockGUI):
     assert "p {text-align: left;" in " ".join(html.getStyleSheet())
     assert "p {text-align: justify;" not in " ".join(html.getStyleSheet())
 
-    html.setJustify(True)
-    assert "p {text-align: left;" not in " ".join(html.getStyleSheet())
-    assert "p {text-align: justify;" in " ".join(html.getStyleSheet())
-
     html.setStyles(False)
     assert html.getStyleSheet() == []
 

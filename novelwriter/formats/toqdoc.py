@@ -170,7 +170,7 @@ class ToQTextDocument(Tokenizer):
         self._blockFmt = QTextBlockFormat()
         self._blockFmt.setTopMargin(self._mText[0])
         self._blockFmt.setBottomMargin(self._mText[1])
-        self._blockFmt.setAlignment(QtAlignJustify if self._doJustify else QtAlignAbsolute)
+        self._blockFmt.setAlignment(QtAlignAbsolute)
         self._blockFmt.setLineHeight(
             100*self._lineHeight, QTextBlockFormat.LineHeightTypes.ProportionalHeight
         )

@@ -183,7 +183,6 @@ class ToOdt(Tokenizer):
         self._fLineHeight  = "115%"
         self._fBlockIndent = "1.693cm"
         self._fTextIndent  = "0.499cm"
-        self._textAlign    = "left"
         self._dLanguage    = "en"
         self._dCountry     = "GB"
 
@@ -327,7 +326,6 @@ class ToOdt(Tokenizer):
         self._fLineHeight  = f"{round(100 * self._lineHeight):d}%"
         self._fBlockIndent = self._emToCm(self._blockIndent)
         self._fTextIndent  = self._emToCm(self._firstWidth)
-        self._textAlign    = "justify" if self._doJustify else self._defaultAlign
 
         # Clear Errors
         self._errData = []
@@ -457,9 +455,6 @@ class ToOdt(Tokenizer):
 
             # Process Text Types
             if tType == self.T_TEXT:
-                if self._doJustify and "\n" in tText:
-                    oStyle.overrideJustify(self._defaultAlign)
-
                 # Text indentation is processed here because there is a
                 # dedicated pre-defined style for it
                 if tStyle & self.A_IND_T:
@@ -906,7 +901,7 @@ class ToOdt(Tokenizer):
         style.setMarginTop(self._mTopText)
         style.setMarginBottom(self._mBotText)
         style.setLineHeight(self._fLineHeight)
-        style.setTextAlign(self._textAlign)
+        style.setTextAlign(self._defaultAlign)
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeText)
@@ -1315,12 +1310,6 @@ class ODTParagraphStyle:
     ##
     #  Methods
     ##
-
-    def overrideJustify(self, default: str) -> None:
-        """Override inherited justify setting if None is set."""
-        if self._pAttr["text-align"][1] is None:
-            self.setTextAlign(default)
-        return
 
     def checkNew(self, style: ODTParagraphStyle) -> bool:
         """Check if there are new settings in style that differ from
