@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.5.2" hexVersion="0x020502f0" fileVersion="1.5" fileRevision="4" timeStamp="2024-09-17 15:33:20">
-  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="1956" autoCount="277" editTime="91001">
+<novelWriterXML appVersion="2.6a1" hexVersion="0x020600a1" fileVersion="1.5" fileRevision="4" timeStamp="2024-10-19 20:03:34">
+  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="2073" autoCount="277" editTime="93036">
     <name>Sample Project</name>
     <author>Jane Smith</author>
   </project>
@@ -46,7 +46,7 @@
       <name status="sc24b8f" import="ia857f0" active="yes">Title Page</name>
     </item>
     <item handle="974e400180a99" parent="7031beac91f75" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H0" charCount="233" wordCount="47" paraCount="2" cursorPos="275" />
+      <meta expanded="no" heading="H0" charCount="233" wordCount="47" paraCount="2" cursorPos="30" />
       <name status="sf12341" import="ia857f0" active="yes">Page</name>
     </item>
     <item handle="edca4be2fcaf8" parent="7031beac91f75" root="7031beac91f75" order="2" type="FILE" class="NOVEL" layout="DOCUMENT">
@@ -58,7 +58,7 @@
       <name status="sf24ce6" import="ia857f0" active="yes">Chapter One</name>
     </item>
     <item handle="636b6aa9b697b" parent="6a2d6d5f4f401" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="2953" wordCount="520" paraCount="15" cursorPos="0" />
+      <meta expanded="no" heading="H3" charCount="2953" wordCount="520" paraCount="15" cursorPos="66" />
       <name status="s90e6c9" import="ia857f0" active="yes">Making a Scene</name>
     </item>
     <item handle="bc0cbd2a407f3" parent="6a2d6d5f4f401" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
@@ -66,7 +66,7 @@
       <name status="s90e6c9" import="ia857f0" active="yes">Another Scene</name>
     </item>
     <item handle="ba8a28a246524" parent="7031beac91f75" root="7031beac91f75" order="4" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H2" charCount="617" wordCount="101" paraCount="3" cursorPos="0" />
+      <meta expanded="no" heading="H2" charCount="617" wordCount="101" paraCount="3" cursorPos="357" />
       <name status="s78ea90" import="ia857f0" active="yes">Interlude</name>
     </item>
     <item handle="96b68994dfa3d" parent="7031beac91f75" root="7031beac91f75" order="5" type="FILE" class="NOVEL" layout="NOTE">

@@ -33,11 +33,12 @@ from PyQt5.QtGui import QColor, QDesktopServices, QFontDatabase
 from novelwriter.common import (
     NWConfigParser, checkBool, checkFloat, checkInt, checkIntTuple, checkPath,
     checkString, checkStringNone, checkUuid, compact, cssCol, describeFont,
-    elide, formatFileFilter, formatInt, formatTime, formatTimeStamp,
-    formatVersion, fuzzyTime, getFileSize, hexToInt, isHandle, isItemClass,
-    isItemLayout, isItemType, isListInstance, isTitleTag, jsonEncode,
-    makeFileNameSafe, minmax, numberToRoman, openExternalPath, readTextFile,
-    simplified, transferCase, uniqueCompact, xmlIndent, yesNo
+    elide, firstFloat, formatFileFilter, formatInt, formatTime,
+    formatTimeStamp, formatVersion, fuzzyTime, getFileSize, hexToInt, isHandle,
+    isItemClass, isItemLayout, isItemType, isListInstance, isTitleTag,
+    jsonEncode, makeFileNameSafe, minmax, numberToRoman, openExternalPath,
+    readTextFile, simplified, transferCase, uniqueCompact, xmlIndent,
+    xmlSubElem, yesNo
 )
 
 from tests.mocked import causeOSError
@@ -289,6 +290,15 @@ def testBaseCommon_checkIntTuple():
     """Test the checkIntTuple function."""
     assert checkIntTuple(0, (0, 1, 2), 3) == 0
     assert checkIntTuple(5, (0, 1, 2), 3) == 3
+
+
+@pytest.mark.base
+def testBaseCommon_firstFloat():
+    """Test the firstFloat function."""
+    assert firstFloat(None, 1.0) == 1.0
+    assert firstFloat(1.0, None) == 1.0
+    assert firstFloat(None, 1) == 0.0
+    assert firstFloat(None, "1.0") == 0.0
 
 
 @pytest.mark.base
@@ -622,6 +632,26 @@ def testBaseCommon_xmlIndent():
     data = "foobar"
     xmlIndent(data)  # type: ignore
     assert data == "foobar"
+
+
+@pytest.mark.base
+def testBaseCommon_xmlSubElem():
+    """Test the xmlSubElem function."""
+    assert ET.tostring(
+        xmlSubElem(ET.Element("r"), "node", None, attrib={"a": "b"})
+    ) == b'<node a="b" />'
+    assert ET.tostring(
+        xmlSubElem(ET.Element("r"), "node", "text", attrib={"a": "b"})
+    ) == b'<node a="b">text</node>'
+    assert ET.tostring(
+        xmlSubElem(ET.Element("r"), "node", 42, attrib={"a": "b"})
+    ) == b'<node a="b">42</node>'
+    assert ET.tostring(
+        xmlSubElem(ET.Element("r"), "node", 3.14, attrib={"a": "b"})
+    ) == b'<node a="b">3.14</node>'
+    assert ET.tostring(
+        xmlSubElem(ET.Element("r"), "node", True, attrib={"a": "b"})
+    ) == b'<node a="b">true</node>'
 
 
 @pytest.mark.base

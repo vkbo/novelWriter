@@ -372,7 +372,7 @@ class ToHtml(Tokenizer):
             "margin-top: {2:.2f}em; margin-bottom: {3:.2f}em;"
             "}}"
         ).format(
-            "justify" if self._doJustify else "left",
+            "justify" if self._doJustify else self._defaultAlign,
             round(100 * self._lineHeight),
             mScale * self._marginText[0],
             mScale * self._marginText[1],

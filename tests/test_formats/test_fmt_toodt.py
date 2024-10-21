@@ -1,6 +1,6 @@
 """
 novelWriter – ToOdt Class Tester
-=================================
+================================
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen
@@ -48,8 +48,8 @@ XML_NS = [
 def xmlToText(xElem):
     """Get the text content of an XML element."""
     rTxt = ET.tostring(xElem, encoding="utf-8", xml_declaration=False).decode()
-    for nSpace in XML_NS:
-        rTxt = rTxt.replace(nSpace, "")
+    for ns in XML_NS:
+        rTxt = rTxt.replace(ns, "")
     return rTxt
 
 
@@ -623,7 +623,7 @@ def testFmtToOdt_ConvertParagraphs(mockGUI):
         '<office:text>'
         '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
         '<text:p text:style-name="Text_20_body">Regular paragraph</text:p>'
-        '<text:p text:style-name="Text_20_body">with<text:line-break />break</text:p>'
+        '<text:p text:style-name="P7">with<text:line-break />break</text:p>'
         '<text:p text:style-name="P7">Left Align</text:p>'
         '</office:text>'
     )
@@ -772,8 +772,8 @@ def testFmtToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
     assert odt._dLanguage == ""
     odt.setLanguage("nb_NO")
     assert odt._dLanguage == "nb"
-    odt.setHeaderFormat(nwHeadFmt.ODT_AUTO, 1)
-    assert odt._headerFormat == nwHeadFmt.ODT_AUTO
+    odt.setHeaderFormat(nwHeadFmt.DOC_AUTO, 1)
+    assert odt._headerFormat == nwHeadFmt.DOC_AUTO
     odt.setFirstLineIndent(True, 1.4, False)
     assert odt._firstIndent is True
     assert odt._fTextIndent == "0.499cm"
@@ -822,7 +822,7 @@ def testFmtToOdt_SaveFull(mockGUI, fncPath, tstPaths):
     odt._isNovel = True
 
     # Set a format without page number
-    odt.setHeaderFormat(f"{nwHeadFmt.ODT_PROJECT} - {nwHeadFmt.ODT_AUTHOR}", 0)
+    odt.setHeaderFormat(f"{nwHeadFmt.DOC_PROJECT} - {nwHeadFmt.DOC_AUTHOR}", 0)
 
     odt._text = (
         "## Chapter One\n\n"
@@ -1126,6 +1126,22 @@ def testFmtToOdt_ODTParagraphStyle():
         '</style:style>'
         '</test>'
     )
+
+    # Override Justify
+    # ================
+
+    aStyle = ODTParagraphStyle("test")
+
+    # When not set, override is possible
+    assert aStyle._pAttr["text-align"][1] is None
+    aStyle.overrideJustify("left")
+    assert aStyle._pAttr["text-align"][1] == "left"
+
+    # When explicitly set, not override
+    aStyle.setTextAlign("right")
+    assert aStyle._pAttr["text-align"][1] == "right"
+    aStyle.overrideJustify("left")
+    assert aStyle._pAttr["text-align"][1] == "right"
 
     # Changes
     # =======

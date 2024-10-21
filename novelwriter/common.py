@@ -204,6 +204,14 @@ def checkIntTuple(value: int, valid: tuple | list | set, default: int) -> int:
     return default
 
 
+def firstFloat(*args: Any) -> float:
+    """Return the first value that is a float."""
+    for arg in args:
+        if isinstance(arg, float):
+            return arg
+    return 0.0
+
+
 ##
 #  Formatting Functions
 ##
@@ -513,6 +521,24 @@ def xmlIndent(tree: ET.Element | ET.ElementTree) -> None:
     tree.tail = "\n"
 
     return
+
+
+def xmlSubElem(
+    parent: ET.Element,
+    tag: str,
+    text: str | int | float | bool | None = None,
+    attrib: dict | None = None
+) -> ET.Element:
+    """A custom implementation of SubElement that takes text as an
+    argument.
+    """
+    xSub = ET.SubElement(parent, tag, attrib=attrib or {})
+    if text is not None:
+        if isinstance(text, bool):
+            xSub.text = str(text).lower()
+        else:
+            xSub.text = str(text)
+    return xSub
 
 
 ##

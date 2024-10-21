@@ -267,6 +267,7 @@ class nwLabels:
     BUILD_FMT = {
         nwBuildFmt.ODT:    QT_TRANSLATE_NOOP("Constant", "Open Document (.odt)"),
         nwBuildFmt.FODT:   QT_TRANSLATE_NOOP("Constant", "Flat Open Document (.fodt)"),
+        nwBuildFmt.DOCX:   QT_TRANSLATE_NOOP("Constant", "Microsoft Word Document (.docx)"),
         nwBuildFmt.HTML:   QT_TRANSLATE_NOOP("Constant", "novelWriter HTML (.html)"),
         nwBuildFmt.NWD:    QT_TRANSLATE_NOOP("Constant", "novelWriter Markup (.txt)"),
         nwBuildFmt.STD_MD: QT_TRANSLATE_NOOP("Constant", "Standard Markdown (.md)"),
@@ -278,6 +279,7 @@ class nwLabels:
     BUILD_EXT = {
         nwBuildFmt.ODT:    ".odt",
         nwBuildFmt.FODT:   ".fodt",
+        nwBuildFmt.DOCX:   ".docx",
         nwBuildFmt.HTML:   ".html",
         nwBuildFmt.NWD:    ".txt",
         nwBuildFmt.STD_MD: ".md",
@@ -367,11 +369,11 @@ class nwHeadFmt:
         CHAR_POV, CHAR_FOCUS
     ]
 
-    # ODT Document Page Header
-    ODT_PROJECT = "{Project}"
-    ODT_AUTHOR = "{Author}"
-    ODT_PAGE = "{Page}"
-    ODT_AUTO = "{Project} / {Author} / {Page}"
+    # Document Page Header
+    DOC_PROJECT = "{Project}"
+    DOC_AUTHOR = "{Author}"
+    DOC_PAGE = "{Page}"
+    DOC_AUTO = "{Project} / {Author} / {Page}"
 
 
 class nwQuotes:

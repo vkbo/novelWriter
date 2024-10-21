@@ -30,6 +30,7 @@ from PyQt5.QtWidgets import QDialog, QVBoxLayout, QWidget
 XML_IGNORE = ("<novelWriterXML", "<project")
 ODT_IGNORE = ("<meta:generator", "<meta:creation-date", "<dc:date", "<meta:editing")
 NWD_IGNORE = ("%%~date:",)
+DOCX_IGNORE = ("<dcterms:created", "<dcterms:modified")
 MOCK_TIME = datetime(2019, 5, 10, 18, 52, 0).timestamp()
 
 
@@ -59,7 +60,8 @@ class C:
 
 
 def cmpFiles(
-    fileOne: str | Path, fileTwo: str | Path,
+    fileOne: str | Path,
+    fileTwo: str | Path,
     ignoreLines: list | None = None,
     ignoreStart: tuple | None = None
 ) -> bool:

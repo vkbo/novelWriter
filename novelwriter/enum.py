@@ -180,13 +180,14 @@ class nwBuildFmt(Enum):
 
     ODT    = 0
     FODT   = 1
-    HTML   = 2
-    NWD    = 3
-    STD_MD = 4
-    EXT_MD = 5
-    PDF    = 6
-    J_HTML = 7
-    J_NWD  = 8
+    DOCX   = 2
+    HTML   = 3
+    NWD    = 4
+    STD_MD = 5
+    EXT_MD = 6
+    PDF    = 7
+    J_HTML = 8
+    J_NWD  = 9
 
 
 class nwStatusShape(Enum):

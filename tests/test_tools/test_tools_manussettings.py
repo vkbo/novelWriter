@@ -707,11 +707,11 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     """Test the format-specific settings."""
     build = BuildSettings()
 
-    build.setValue("odt.pageHeader", nwHeadFmt.ODT_AUTO)
-    build.setValue("odt.pageCountOffset", 0)
-    build.setValue("odt.colorHeadings", True)
-    build.setValue("odt.scaleHeadings", True)
-    build.setValue("odt.boldHeadings", True)
+    build.setValue("doc.pageHeader", nwHeadFmt.DOC_AUTO)
+    build.setValue("doc.pageCountOffset", 0)
+    build.setValue("doc.colorHeadings", True)
+    build.setValue("doc.scaleHeadings", True)
+    build.setValue("doc.boldHeadings", True)
 
     build.setValue("html.addStyles", False)
     build.setValue("html.preserveTabs", False)
@@ -726,7 +726,7 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     assert bSettings.toolStack.currentWidget() is fmtTab
 
     # Check initial values
-    assert fmtTab.odtPageHeader.text() == nwHeadFmt.ODT_AUTO
+    assert fmtTab.odtPageHeader.text() == nwHeadFmt.DOC_AUTO
     assert fmtTab.odtPageCountOffset.value() == 0
     assert fmtTab.colorHeadings.isChecked() is True
     assert fmtTab.scaleHeadings.isChecked() is True
@@ -749,18 +749,18 @@ def testToolBuildSettings_FormatOutput(qtbot, nwGUI):
     # Save values
     fmtTab.saveContent()
 
-    assert build.getStr("odt.pageHeader") == "Stuff"
-    assert build.getInt("odt.pageCountOffset") == 1
-    assert build.getBool("odt.colorHeadings") is False
-    assert build.getBool("odt.scaleHeadings") is False
-    assert build.getBool("odt.boldHeadings") is False
+    assert build.getStr("doc.pageHeader") == "Stuff"
+    assert build.getInt("doc.pageCountOffset") == 1
+    assert build.getBool("doc.colorHeadings") is False
+    assert build.getBool("doc.scaleHeadings") is False
+    assert build.getBool("doc.boldHeadings") is False
 
     assert build.getBool("html.addStyles") is True
     assert build.getBool("html.preserveTabs") is True
 
     # Reset header format
     fmtTab.btnPageHeader.click()
-    assert fmtTab.odtPageHeader.text() == nwHeadFmt.ODT_AUTO
+    assert fmtTab.odtPageHeader.text() == nwHeadFmt.DOC_AUTO
 
     # Finish
     bSettings._dialogButtonClicked(bSettings.buttonBox.button(QtDialogClose))

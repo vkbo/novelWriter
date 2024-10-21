@@ -1226,7 +1226,7 @@ class _FormattingTab(NScrollableForm):
         # Open Document
         # =============
 
-        title = self._build.getLabel("odt")
+        title = self._build.getLabel("doc")
         section += 1
         self._sidebar.addButton(title, section)
         self.addGroupLabel(title, section)
@@ -1237,7 +1237,7 @@ class _FormattingTab(NScrollableForm):
         self.btnPageHeader = NIconToolButton(self, iSz, "revert")
         self.btnPageHeader.clicked.connect(self._resetPageHeader)
         self.addRow(
-            self._build.getLabel("odt.pageHeader"), self.odtPageHeader,
+            self._build.getLabel("doc.pageHeader"), self.odtPageHeader,
             button=self.btnPageHeader, stretch=(1, 1)
         )
 
@@ -1246,16 +1246,16 @@ class _FormattingTab(NScrollableForm):
         self.odtPageCountOffset.setMaximum(999)
         self.odtPageCountOffset.setSingleStep(1)
         self.odtPageCountOffset.setMinimumWidth(spW)
-        self.addRow(self._build.getLabel("odt.pageCountOffset"), self.odtPageCountOffset)
+        self.addRow(self._build.getLabel("doc.pageCountOffset"), self.odtPageCountOffset)
 
         # Headings
         self.colorHeadings = NSwitch(self, height=iPx)
         self.scaleHeadings = NSwitch(self, height=iPx)
         self.boldHeadings = NSwitch(self, height=iPx)
 
-        self.addRow(self._build.getLabel("odt.colorHeadings"), self.colorHeadings)
-        self.addRow(self._build.getLabel("odt.scaleHeadings"), self.scaleHeadings)
-        self.addRow(self._build.getLabel("odt.boldHeadings"), self.boldHeadings)
+        self.addRow(self._build.getLabel("doc.colorHeadings"), self.colorHeadings)
+        self.addRow(self._build.getLabel("doc.scaleHeadings"), self.scaleHeadings)
+        self.addRow(self._build.getLabel("doc.boldHeadings"), self.boldHeadings)
 
         # HTML Document
         # =============
@@ -1356,14 +1356,14 @@ class _FormattingTab(NScrollableForm):
         self.pageUnit.currentIndexChanged.connect(self._changeUnit)
         self.pageSize.currentIndexChanged.connect(self._changePageSize)
 
-        # ODT Document
-        # ============
+        # Document
+        # ========
 
-        self.colorHeadings.setChecked(self._build.getBool("odt.colorHeadings"))
-        self.scaleHeadings.setChecked(self._build.getBool("odt.scaleHeadings"))
-        self.boldHeadings.setChecked(self._build.getBool("odt.boldHeadings"))
-        self.odtPageHeader.setText(self._build.getStr("odt.pageHeader"))
-        self.odtPageCountOffset.setValue(self._build.getInt("odt.pageCountOffset"))
+        self.colorHeadings.setChecked(self._build.getBool("doc.colorHeadings"))
+        self.scaleHeadings.setChecked(self._build.getBool("doc.scaleHeadings"))
+        self.boldHeadings.setChecked(self._build.getBool("doc.boldHeadings"))
+        self.odtPageHeader.setText(self._build.getStr("doc.pageHeader"))
+        self.odtPageCountOffset.setValue(self._build.getInt("doc.pageCountOffset"))
         self.odtPageHeader.setCursorPosition(0)
 
         # HTML Document
@@ -1426,12 +1426,12 @@ class _FormattingTab(NScrollableForm):
         self._build.setValue("format.leftMargin", self.leftMargin.value())
         self._build.setValue("format.rightMargin", self.rightMargin.value())
 
-        # ODT Document
-        self._build.setValue("odt.colorHeadings", self.colorHeadings.isChecked())
-        self._build.setValue("odt.scaleHeadings", self.scaleHeadings.isChecked())
-        self._build.setValue("odt.boldHeadings", self.boldHeadings.isChecked())
-        self._build.setValue("odt.pageHeader", self.odtPageHeader.text())
-        self._build.setValue("odt.pageCountOffset", self.odtPageCountOffset.value())
+        # Documents
+        self._build.setValue("doc.colorHeadings", self.colorHeadings.isChecked())
+        self._build.setValue("doc.scaleHeadings", self.scaleHeadings.isChecked())
+        self._build.setValue("doc.boldHeadings", self.boldHeadings.isChecked())
+        self._build.setValue("doc.pageHeader", self.odtPageHeader.text())
+        self._build.setValue("doc.pageCountOffset", self.odtPageCountOffset.value())
 
         # HTML Document
         self._build.setValue("html.addStyles", self.htmlAddStyles.isChecked())
@@ -1537,7 +1537,7 @@ class _FormattingTab(NScrollableForm):
 
     def _resetPageHeader(self) -> None:
         """Reset the ODT header format to default."""
-        self.odtPageHeader.setText(nwHeadFmt.ODT_AUTO)
+        self.odtPageHeader.setText(nwHeadFmt.DOC_AUTO)
         self.odtPageHeader.setCursorPosition(0)
         return
 
