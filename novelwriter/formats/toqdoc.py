@@ -36,7 +36,8 @@ from PyQt5.QtPrintSupport import QPrinter
 
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles, nwUnicode
 from novelwriter.core.project import NWProject
-from novelwriter.formats.tokenizer import BlockFmt, BlockTyp, T_Formats, TextFmt, Tokenizer
+from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
+from novelwriter.formats.tokenizer import Tokenizer
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
     QtPageBreakAfter, QtPageBreakBefore, QtTransparent, QtVAlignNormal,
@@ -221,7 +222,7 @@ class ToQTextDocument(Tokenizer):
         cursor = QTextCursor(self._document)
         cursor.movePosition(QTextCursor.MoveOperation.End)
 
-        for tType, nHead, tText, tFormat, tStyle in self._tokens:
+        for tType, nHead, tText, tFormat, tStyle in self._blocks:
 
             # Styles
             bFmt = QTextBlockFormat(self._blockFmt)

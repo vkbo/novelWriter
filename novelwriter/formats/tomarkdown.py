@@ -29,7 +29,8 @@ from pathlib import Path
 
 from novelwriter.constants import nwHeadFmt, nwLabels, nwUnicode
 from novelwriter.core.project import NWProject
-from novelwriter.formats.tokenizer import BlockFmt, BlockTyp, T_Formats, TextFmt, Tokenizer
+from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
+from novelwriter.formats.tokenizer import Tokenizer
 
 logger = logging.getLogger(__name__)
 
@@ -117,7 +118,7 @@ class ToMarkdown(Tokenizer):
             cSkip = ""
 
         lines = []
-        for tType, _, tText, tFormat, tStyle in self._tokens:
+        for tType, _, tText, tFormat, tStyle in self._blocks:
 
             if tType == BlockTyp.TEXT:
                 tTemp = self._formatText(tText, tFormat, mTags).replace("\n", "  \n")
@@ -180,7 +181,7 @@ class ToMarkdown(Tokenizer):
             for key, index in self._usedNotes.items():
                 if content := self._footnotes.get(key):
                     marker = f"{index}. "
-                    text = self._formatText(*content, tags)
+                    text = self._formatText(content[0], content[1], tags)
                     lines.append(f"{marker}{text}\n")
             lines.append("\n")
 

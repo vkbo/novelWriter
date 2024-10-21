@@ -41,9 +41,8 @@ from novelwriter import __version__
 from novelwriter.common import xmlIndent, xmlSubElem
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles
 from novelwriter.core.project import NWProject
-from novelwriter.formats.tokenizer import (
-    BlockFmt, BlockTyp, T_Formats, TextFmt, Tokenizer, stripEscape
-)
+from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
+from novelwriter.formats.tokenizer import Tokenizer
 from novelwriter.types import FONT_STYLE, FONT_WEIGHTS
 
 logger = logging.getLogger(__name__)
@@ -426,7 +425,7 @@ class ToOdt(Tokenizer):
         self._result = ""  # Not used, but cleared just in case
 
         xText = self._xText
-        for tType, _, tText, tFormat, tStyle in self._tokens:
+        for tType, _, tText, tFormat, tStyle in self._blocks:
 
             # Styles
             oStyle = ODTParagraphStyle("New")

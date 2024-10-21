@@ -23,7 +23,7 @@ from __future__ import annotations
 import pytest
 
 from novelwriter.core.project import NWProject
-from novelwriter.formats.tokenizer import BlockFmt, BlockTyp
+from novelwriter.formats.shared import BlockFmt, BlockTyp
 from novelwriter.formats.tomarkdown import ToMarkdown
 
 
@@ -220,7 +220,7 @@ def testFmtToMarkdown_ConvertDirect(mockGUI):
     # ==============
 
     # Title
-    toMD._tokens = [
+    toMD._blocks = [
         (BlockTyp.TITLE, 1, "A Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
     ]
     toMD.doConvert()
@@ -230,14 +230,14 @@ def testFmtToMarkdown_ConvertDirect(mockGUI):
     # ==========
 
     # Separator
-    toMD._tokens = [
+    toMD._blocks = [
         (BlockTyp.SEP, 1, "* * *", [], BlockFmt.CENTRE),
     ]
     toMD.doConvert()
     assert toMD.result == "* * *\n\n"
 
     # Skip
-    toMD._tokens = [
+    toMD._blocks = [
         (BlockTyp.SKIP, 1, "", [], BlockFmt.NONE),
     ]
     toMD.doConvert()

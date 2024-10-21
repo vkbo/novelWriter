@@ -27,7 +27,7 @@ from PyQt5.QtGui import QTextBlock, QTextCharFormat, QTextCursor
 from novelwriter import CONFIG
 from novelwriter.constants import nwUnicode
 from novelwriter.core.project import NWProject
-from novelwriter.formats.tokenizer import BlockFmt, BlockTyp
+from novelwriter.formats.shared import BlockFmt, BlockTyp
 from novelwriter.formats.toqdoc import TextDocumentTheme, ToQTextDocument
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
@@ -410,7 +410,7 @@ def testFmtToQTextDocument_TextBlockFormats(mockGUI):
     # Some formatting markers are currently not reachable
     qdoc.document.clear()
 
-    qdoc._tokens = [
+    qdoc._blocks = [
         (BlockTyp.TEXT, 1, "This is justified", [], BlockFmt.JUSTIFY),
         (BlockTyp.TEXT, 1, "This has a page break", [], BlockFmt.PBA),
     ]

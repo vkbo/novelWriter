@@ -32,9 +32,8 @@ from time import time
 from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwHeadFmt, nwHtmlUnicode, nwKeyWords, nwLabels
 from novelwriter.core.project import NWProject
-from novelwriter.formats.tokenizer import (
-    BlockFmt, BlockTyp, T_Formats, TextFmt, Tokenizer, stripEscape
-)
+from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
+from novelwriter.formats.tokenizer import Tokenizer
 from novelwriter.types import FONT_STYLE, FONT_WEIGHTS
 
 logger = logging.getLogger(__name__)
@@ -158,7 +157,7 @@ class ToHtml(Tokenizer):
         lines = []
         tHandle = self._handle
 
-        for tType, nHead, tText, tFormat, tStyle in self._tokens:
+        for tType, nHead, tText, tFormat, tStyle in self._blocks:
 
             # Replace < and > with HTML entities
             if tFormat:

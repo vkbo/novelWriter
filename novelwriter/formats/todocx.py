@@ -39,7 +39,8 @@ from novelwriter import __version__
 from novelwriter.common import firstFloat, xmlSubElem
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles
 from novelwriter.core.project import NWProject
-from novelwriter.formats.tokenizer import BlockFmt, BlockTyp, T_Formats, TextFmt, Tokenizer
+from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
+from novelwriter.formats.tokenizer import Tokenizer
 
 logger = logging.getLogger(__name__)
 
@@ -219,7 +220,7 @@ class ToDocX(Tokenizer):
 
         bIndent = self._fontSize * self._blockIndent
 
-        for tType, _, tText, tFormat, tStyle in self._tokens:
+        for tType, _, tText, tFormat, tStyle in self._blocks:
 
             # Create Paragraph
             par = DocXParagraph()

@@ -26,8 +26,8 @@ import pytest
 
 from novelwriter import CONFIG
 from novelwriter.core.project import NWProject
+from novelwriter.formats.shared import BlockFmt, BlockTyp
 from novelwriter.formats.tohtml import ToHtml
-from novelwriter.formats.tokenizer import BlockFmt, BlockTyp
 
 
 @pytest.mark.core
@@ -359,7 +359,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     # ==============
 
     # Title
-    html._tokens = [
+    html._blocks = [
         (BlockTyp.TITLE, 1, "A Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
     ]
     html.doConvert()
@@ -369,7 +369,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     )
 
     # Unnumbered
-    html._tokens = [
+    html._blocks = [
         (BlockTyp.HEAD2, 1, "Prologue", [], BlockFmt.PBB),
     ]
     html.doConvert()
@@ -382,14 +382,14 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     # ==========
 
     # Separator
-    html._tokens = [
+    html._blocks = [
         (BlockTyp.SEP, 1, "* * *", [], BlockFmt.CENTRE),
     ]
     html.doConvert()
     assert html.result == "<p class='sep' style='text-align: center;'>* * *</p>\n"
 
     # Skip
-    html._tokens = [
+    html._blocks = [
         (BlockTyp.SKIP, 1, "", [], BlockFmt.NONE),
     ]
     html.doConvert()
@@ -402,7 +402,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
 
     # Align Left
     html.setStyles(False)
-    html._tokens = [
+    html._blocks = [
         (BlockTyp.HEAD1, 1, "A Title", [], BlockFmt.LEFT),
     ]
     html.doConvert()
@@ -413,7 +413,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     html.setStyles(True)
 
     # Align Left
-    html._tokens = [
+    html._blocks = [
         (BlockTyp.HEAD1, 1, "A Title", [], BlockFmt.LEFT),
     ]
     html.doConvert()
@@ -422,7 +422,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     )
 
     # Align Right
-    html._tokens = [
+    html._blocks = [
         (BlockTyp.HEAD1, 1, "A Title", [], BlockFmt.RIGHT),
     ]
     html.doConvert()
@@ -431,7 +431,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     )
 
     # Align Centre
-    html._tokens = [
+    html._blocks = [
         (BlockTyp.HEAD1, 1, "A Title", [], BlockFmt.CENTRE),
     ]
     html.doConvert()
@@ -440,7 +440,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     )
 
     # Align Justify
-    html._tokens = [
+    html._blocks = [
         (BlockTyp.HEAD1, 1, "A Title", [], BlockFmt.JUSTIFY),
     ]
     html.doConvert()
@@ -452,7 +452,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     # ==========
 
     # Page Break Always
-    html._tokens = [
+    html._blocks = [
         (BlockTyp.HEAD1, 1, "A Title", [], BlockFmt.PBB | BlockFmt.PBA),
     ]
     html.doConvert()
@@ -465,7 +465,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     # ======
 
     # Indent Left
-    html._tokens = [
+    html._blocks = [
         (BlockTyp.TEXT, 1, "Some text ...", [], BlockFmt.IND_L),
     ]
     html.doConvert()
@@ -474,7 +474,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     )
 
     # Indent Right
-    html._tokens = [
+    html._blocks = [
         (BlockTyp.TEXT, 1, "Some text ...", [], BlockFmt.IND_R),
     ]
     html.doConvert()
@@ -483,7 +483,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     )
 
     # Text Indent
-    html._tokens = [
+    html._blocks = [
         (BlockTyp.TEXT, 1, "Some text ...", [], BlockFmt.IND_T),
     ]
     html.doConvert()

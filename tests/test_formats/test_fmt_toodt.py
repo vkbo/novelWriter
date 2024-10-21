@@ -30,7 +30,7 @@ import pytest
 from novelwriter.common import xmlIndent
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.project import NWProject
-from novelwriter.formats.tokenizer import BlockFmt, BlockTyp, TextFmt
+from novelwriter.formats.shared import BlockFmt, BlockTyp, TextFmt
 from novelwriter.formats.toodt import ODTParagraphStyle, ODTTextStyle, ToOdt, XMLParagraph, _mkTag
 
 from tests.tools import ODT_IGNORE, cmpFiles
@@ -719,7 +719,7 @@ def testFmtToOdt_ConvertDirect(mockGUI):
 
     # Justified
     doc = ToOdt(project, isFlat=True)
-    doc._tokens = [
+    doc._blocks = [
         (BlockTyp.TEXT, 1, "This is a paragraph", [], BlockFmt.JUSTIFY),
     ]
     doc.initDocument()
@@ -739,7 +739,7 @@ def testFmtToOdt_ConvertDirect(mockGUI):
 
     # Page Break After
     doc = ToOdt(project, isFlat=True)
-    doc._tokens = [
+    doc._blocks = [
         (BlockTyp.TEXT, 1, "This is a paragraph", [], BlockFmt.PBA),
     ]
     doc.initDocument()
