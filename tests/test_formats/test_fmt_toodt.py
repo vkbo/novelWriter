@@ -800,8 +800,8 @@ def testFmtToOdt_SaveFlat(mockGUI, fncPath, tstPaths):
     odt.closeDocument()
 
     flatFile = fncPath / "document.fodt"
-    testFile = tstPaths.outDir / "coreToOdt_SaveFlat_document.fodt"
-    compFile = tstPaths.refDir / "coreToOdt_SaveFlat_document.fodt"
+    testFile = tstPaths.outDir / "fmtToOdt_SaveFlat_document.fodt"
+    compFile = tstPaths.refDir / "fmtToOdt_SaveFlat_document.fodt"
 
     odt.saveDocument(flatFile)
     assert flatFile.exists()
@@ -842,19 +842,19 @@ def testFmtToOdt_SaveFull(mockGUI, fncPath, tstPaths):
     assert fullFile.exists()
     assert zipfile.is_zipfile(fullFile)
 
-    maniFile = tstPaths.outDir / "coreToOdt_SaveFull_manifest.xml"
-    settFile = tstPaths.outDir / "coreToOdt_SaveFull_settings.xml"
-    contFile = tstPaths.outDir / "coreToOdt_SaveFull_content.xml"
-    metaFile = tstPaths.outDir / "coreToOdt_SaveFull_meta.xml"
-    stylFile = tstPaths.outDir / "coreToOdt_SaveFull_styles.xml"
+    maniFile = tstPaths.outDir / "fmtToOdt_SaveFull_manifest.xml"
+    settFile = tstPaths.outDir / "fmtToOdt_SaveFull_settings.xml"
+    contFile = tstPaths.outDir / "fmtToOdt_SaveFull_content.xml"
+    metaFile = tstPaths.outDir / "fmtToOdt_SaveFull_meta.xml"
+    stylFile = tstPaths.outDir / "fmtToOdt_SaveFull_styles.xml"
 
-    maniComp = tstPaths.refDir / "coreToOdt_SaveFull_manifest.xml"
-    settComp = tstPaths.refDir / "coreToOdt_SaveFull_settings.xml"
-    contComp = tstPaths.refDir / "coreToOdt_SaveFull_content.xml"
-    metaComp = tstPaths.refDir / "coreToOdt_SaveFull_meta.xml"
-    stylComp = tstPaths.refDir / "coreToOdt_SaveFull_styles.xml"
+    maniComp = tstPaths.refDir / "fmtToOdt_SaveFull_manifest.xml"
+    settComp = tstPaths.refDir / "fmtToOdt_SaveFull_settings.xml"
+    contComp = tstPaths.refDir / "fmtToOdt_SaveFull_content.xml"
+    metaComp = tstPaths.refDir / "fmtToOdt_SaveFull_meta.xml"
+    stylComp = tstPaths.refDir / "fmtToOdt_SaveFull_styles.xml"
 
-    extaxtTo = tstPaths.outDir / "coreToOdt_SaveFull"
+    extaxtTo = tstPaths.outDir / "fmtToOdt_SaveFull"
 
     with zipfile.ZipFile(fullFile, mode="r") as zipObj:
         zipObj.extract("META-INF/manifest.xml", extaxtTo)
@@ -863,11 +863,11 @@ def testFmtToOdt_SaveFull(mockGUI, fncPath, tstPaths):
         zipObj.extract("meta.xml", extaxtTo)
         zipObj.extract("styles.xml", extaxtTo)
 
-    maniOut = tstPaths.outDir / "coreToOdt_SaveFull" / "META-INF" / "manifest.xml"
-    settOut = tstPaths.outDir / "coreToOdt_SaveFull" / "settings.xml"
-    contOut = tstPaths.outDir / "coreToOdt_SaveFull" / "content.xml"
-    metaOut = tstPaths.outDir / "coreToOdt_SaveFull" / "meta.xml"
-    stylOut = tstPaths.outDir / "coreToOdt_SaveFull" / "styles.xml"
+    maniOut = tstPaths.outDir / "fmtToOdt_SaveFull" / "META-INF" / "manifest.xml"
+    settOut = tstPaths.outDir / "fmtToOdt_SaveFull" / "settings.xml"
+    contOut = tstPaths.outDir / "fmtToOdt_SaveFull" / "content.xml"
+    metaOut = tstPaths.outDir / "fmtToOdt_SaveFull" / "meta.xml"
+    stylOut = tstPaths.outDir / "fmtToOdt_SaveFull" / "styles.xml"
 
     def prettifyXml(inFile, outFile):
         with open(outFile, mode="wb") as fStream:
