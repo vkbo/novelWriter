@@ -29,7 +29,9 @@ from PyQt5.QtGui import QFont
 from novelwriter import CONFIG
 from novelwriter.constants import nwHeadFmt, nwStyles
 from novelwriter.core.project import NWProject
-from novelwriter.formats.tokenizer import HeadingFormatter, Tokenizer, stripEscape
+from novelwriter.formats.tokenizer import (
+    BlockFmt, BlockTyp, HeadingFormatter, TextFmt, Tokenizer, stripEscape
+)
 from novelwriter.formats.tomarkdown import ToMarkdown
 from novelwriter.formats.toraw import ToRaw
 
@@ -207,14 +209,14 @@ def testFmtToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
     tokens.addRootHeading(C.hPlotRoot)
     assert tokens.allMarkdown[-1] == "#! Notes: Plot\n\n"
     assert tokens._tokens[-1] == (
-        Tokenizer.T_TITLE, 1, "Notes: Plot", [], Tokenizer.A_CENTRE
+        BlockTyp.TITLE, 1, "Notes: Plot", [], BlockFmt.CENTRE
     )
 
     # Not First Page
     tokens.addRootHeading(C.hPlotRoot)
     assert tokens.allMarkdown[-1] == "#! Notes: Plot\n\n"
     assert tokens._tokens[-1] == (
-        Tokenizer.T_TITLE, 1, "Notes: Plot", [], Tokenizer.A_CENTRE | Tokenizer.A_PBB
+        BlockTyp.TITLE, 1, "Notes: Plot", [], BlockFmt.CENTRE | BlockFmt.PBB
     )
 
     # Set Text
@@ -274,7 +276,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_TITLE, 1, "Novel Title", [], Tokenizer.A_CENTRE),
+        (BlockTyp.TITLE, 1, "Novel Title", [], BlockFmt.CENTRE),
     ]
     assert tokens.allMarkdown[-1] == "#! Novel Title\n\n"
 
@@ -285,7 +287,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_TITLE, 1, "Note Title", [], Tokenizer.A_CENTRE),
+        (BlockTyp.TITLE, 1, "Note Title", [], BlockFmt.CENTRE),
     ]
     assert tokens.allMarkdown[-1] == "#! Note Title\n\n"
 
@@ -299,7 +301,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "Novel Title", [], Tokenizer.A_CENTRE),
+        (BlockTyp.HEAD1, 1, "Novel Title", [], BlockFmt.CENTRE),
     ]
     assert tokens.allMarkdown[-1] == "# Novel Title\n\n"
 
@@ -310,7 +312,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "Note Title", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD1, 1, "Note Title", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "# Note Title\n\n"
 
@@ -323,7 +325,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD2, 1, "Chapter One", [], Tokenizer.A_PBB),
+        (BlockTyp.HEAD2, 1, "Chapter One", [], BlockFmt.PBB),
     ]
     assert tokens.allMarkdown[-1] == "## Chapter One\n\n"
 
@@ -333,7 +335,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD2, 1, "Heading 2", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD2, 1, "Heading 2", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "## Heading 2\n\n"
 
@@ -346,7 +348,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD3, 1, "Scene One", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD3, 1, "Scene One", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "### Scene One\n\n"
 
@@ -356,7 +358,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD3, 1, "Heading 3", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD3, 1, "Heading 3", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "### Heading 3\n\n"
 
@@ -369,7 +371,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD4, 1, "A Section", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD4, 1, "A Section", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "#### A Section\n\n"
 
@@ -379,7 +381,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD4, 1, "Heading 4", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD4, 1, "Heading 4", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "#### Heading 4\n\n"
 
@@ -393,7 +395,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_TITLE, 1, "Title", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
+        (BlockTyp.TITLE, 1, "Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
     ]
     assert tokens.allMarkdown[-1] == "#! Title\n\n"
 
@@ -404,7 +406,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_TITLE, 1, "Title", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
+        (BlockTyp.TITLE, 1, "Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
     ]
     assert tokens.allMarkdown[-1] == "#! Title\n\n"
 
@@ -417,7 +419,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD2, 1, "Prologue", [], Tokenizer.A_PBB),
+        (BlockTyp.HEAD2, 1, "Prologue", [], BlockFmt.PBB),
     ]
     assert tokens.allMarkdown[-1] == "##! Prologue\n\n"
 
@@ -427,7 +429,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD2, 1, "Prologue", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD2, 1, "Prologue", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "##! Prologue\n\n"
 
@@ -438,7 +440,7 @@ def testFmtToken_HeaderStyle(mockGUI):
     project = NWProject()
     tokens = BareTokenizer(project)
 
-    def processStyle(text: str, first: bool) -> int:
+    def processStyle(text: str, first: bool) -> BlockFmt:
         tokens._text = text
         tokens._isFirst = first
         tokens.tokenizeText()
@@ -451,47 +453,47 @@ def testFmtToken_HeaderStyle(mockGUI):
     tokens.setChapterStyle(False, False)
     tokens.setSceneStyle(False, False)
 
-    assert tokens._partStyle == Tokenizer.A_NONE
-    assert tokens._chapterStyle == Tokenizer.A_NONE
-    assert tokens._sceneStyle == Tokenizer.A_NONE
+    assert tokens._partStyle == BlockFmt.NONE
+    assert tokens._chapterStyle == BlockFmt.NONE
+    assert tokens._sceneStyle == BlockFmt.NONE
 
     # Novel Docs
     tokens._isNovel = True
 
     # First Document is False
-    assert processStyle("# Title\n", False) == Tokenizer.A_NONE
-    assert processStyle("## Chapter\n", False) == Tokenizer.A_NONE
-    assert processStyle("### Scene\n", False) == Tokenizer.A_NONE
-    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
-    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert processStyle("##! Prologue\n", False) == Tokenizer.A_NONE
+    assert processStyle("# Title\n", False) == BlockFmt.NONE
+    assert processStyle("## Chapter\n", False) == BlockFmt.NONE
+    assert processStyle("### Scene\n", False) == BlockFmt.NONE
+    assert processStyle("#### Section\n", False) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("##! Prologue\n", False) == BlockFmt.NONE
 
     # First Document is True
-    assert processStyle("# Title\n", True) == Tokenizer.A_NONE
-    assert processStyle("## Chapter\n", True) == Tokenizer.A_NONE
-    assert processStyle("### Scene\n", True) == Tokenizer.A_NONE
-    assert processStyle("#### Section\n", True) == Tokenizer.A_NONE
-    assert processStyle("#! My Novel\n", True) == Tokenizer.A_CENTRE
-    assert processStyle("##! Prologue\n", True) == Tokenizer.A_NONE
+    assert processStyle("# Title\n", True) == BlockFmt.NONE
+    assert processStyle("## Chapter\n", True) == BlockFmt.NONE
+    assert processStyle("### Scene\n", True) == BlockFmt.NONE
+    assert processStyle("#### Section\n", True) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", True) == BlockFmt.CENTRE
+    assert processStyle("##! Prologue\n", True) == BlockFmt.NONE
 
     # Note Docs
     tokens._isNovel = False
 
     # First Document is False
-    assert processStyle("# Title\n", False) == Tokenizer.A_NONE
-    assert processStyle("## Chapter\n", False) == Tokenizer.A_NONE
-    assert processStyle("### Scene\n", False) == Tokenizer.A_NONE
-    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
-    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert processStyle("##! Prologue\n", False) == Tokenizer.A_NONE
+    assert processStyle("# Title\n", False) == BlockFmt.NONE
+    assert processStyle("## Chapter\n", False) == BlockFmt.NONE
+    assert processStyle("### Scene\n", False) == BlockFmt.NONE
+    assert processStyle("#### Section\n", False) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("##! Prologue\n", False) == BlockFmt.NONE
 
     # First Document is True
-    assert processStyle("# Title\n", True) == Tokenizer.A_NONE
-    assert processStyle("## Chapter\n", True) == Tokenizer.A_NONE
-    assert processStyle("### Scene\n", True) == Tokenizer.A_NONE
-    assert processStyle("#### Section\n", True) == Tokenizer.A_NONE
-    assert processStyle("#! My Novel\n", True) == Tokenizer.A_CENTRE
-    assert processStyle("##! Prologue\n", True) == Tokenizer.A_NONE
+    assert processStyle("# Title\n", True) == BlockFmt.NONE
+    assert processStyle("## Chapter\n", True) == BlockFmt.NONE
+    assert processStyle("### Scene\n", True) == BlockFmt.NONE
+    assert processStyle("#### Section\n", True) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", True) == BlockFmt.CENTRE
+    assert processStyle("##! Prologue\n", True) == BlockFmt.NONE
 
     # Center Headers
     # ==============
@@ -500,47 +502,47 @@ def testFmtToken_HeaderStyle(mockGUI):
     tokens.setChapterStyle(True, False)
     tokens.setSceneStyle(True, False)
 
-    assert tokens._partStyle == Tokenizer.A_CENTRE
-    assert tokens._chapterStyle == Tokenizer.A_CENTRE
-    assert tokens._sceneStyle == Tokenizer.A_CENTRE
+    assert tokens._partStyle == BlockFmt.CENTRE
+    assert tokens._chapterStyle == BlockFmt.CENTRE
+    assert tokens._sceneStyle == BlockFmt.CENTRE
 
     # Novel Docs
     tokens._isNovel = True
 
     # First Document is False
-    assert processStyle("# Title\n", False) == Tokenizer.A_CENTRE
-    assert processStyle("## Chapter\n", False) == Tokenizer.A_CENTRE
-    assert processStyle("### Scene\n", False) == Tokenizer.A_CENTRE
-    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
-    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert processStyle("##! Prologue\n", False) == Tokenizer.A_CENTRE
+    assert processStyle("# Title\n", False) == BlockFmt.CENTRE
+    assert processStyle("## Chapter\n", False) == BlockFmt.CENTRE
+    assert processStyle("### Scene\n", False) == BlockFmt.CENTRE
+    assert processStyle("#### Section\n", False) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("##! Prologue\n", False) == BlockFmt.CENTRE
 
     # First Document is True
-    assert processStyle("# Title\n", True) == Tokenizer.A_CENTRE
-    assert processStyle("## Chapter\n", True) == Tokenizer.A_CENTRE
-    assert processStyle("### Scene\n", True) == Tokenizer.A_CENTRE
-    assert processStyle("#### Section\n", True) == Tokenizer.A_NONE
-    assert processStyle("#! My Novel\n", True) == Tokenizer.A_CENTRE
-    assert processStyle("##! Prologue\n", True) == Tokenizer.A_CENTRE
+    assert processStyle("# Title\n", True) == BlockFmt.CENTRE
+    assert processStyle("## Chapter\n", True) == BlockFmt.CENTRE
+    assert processStyle("### Scene\n", True) == BlockFmt.CENTRE
+    assert processStyle("#### Section\n", True) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", True) == BlockFmt.CENTRE
+    assert processStyle("##! Prologue\n", True) == BlockFmt.CENTRE
 
     # Note Docs
     tokens._isNovel = False
 
     # First Document is False
-    assert processStyle("# Title\n", False) == Tokenizer.A_NONE
-    assert processStyle("## Chapter\n", False) == Tokenizer.A_NONE
-    assert processStyle("### Scene\n", False) == Tokenizer.A_NONE
-    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
-    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert processStyle("##! Prologue\n", False) == Tokenizer.A_NONE
+    assert processStyle("# Title\n", False) == BlockFmt.NONE
+    assert processStyle("## Chapter\n", False) == BlockFmt.NONE
+    assert processStyle("### Scene\n", False) == BlockFmt.NONE
+    assert processStyle("#### Section\n", False) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("##! Prologue\n", False) == BlockFmt.NONE
 
     # First Document is True
-    assert processStyle("# Title\n", True) == Tokenizer.A_NONE
-    assert processStyle("## Chapter\n", True) == Tokenizer.A_NONE
-    assert processStyle("### Scene\n", True) == Tokenizer.A_NONE
-    assert processStyle("#### Section\n", True) == Tokenizer.A_NONE
-    assert processStyle("#! My Novel\n", True) == Tokenizer.A_CENTRE
-    assert processStyle("##! Prologue\n", True) == Tokenizer.A_NONE
+    assert processStyle("# Title\n", True) == BlockFmt.NONE
+    assert processStyle("## Chapter\n", True) == BlockFmt.NONE
+    assert processStyle("### Scene\n", True) == BlockFmt.NONE
+    assert processStyle("#### Section\n", True) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", True) == BlockFmt.CENTRE
+    assert processStyle("##! Prologue\n", True) == BlockFmt.NONE
 
     # Page Break Headers
     # ==================
@@ -549,47 +551,47 @@ def testFmtToken_HeaderStyle(mockGUI):
     tokens.setChapterStyle(False, True)
     tokens.setSceneStyle(False, True)
 
-    assert tokens._partStyle == Tokenizer.A_PBB
-    assert tokens._chapterStyle == Tokenizer.A_PBB
-    assert tokens._sceneStyle == Tokenizer.A_PBB
+    assert tokens._partStyle == BlockFmt.PBB
+    assert tokens._chapterStyle == BlockFmt.PBB
+    assert tokens._sceneStyle == BlockFmt.PBB
 
     # Novel Docs
     tokens._isNovel = True
 
     # First Document is False
-    assert processStyle("# Title\n", False) == Tokenizer.A_PBB
-    assert processStyle("## Chapter\n", False) == Tokenizer.A_PBB
-    assert processStyle("### Scene\n", False) == Tokenizer.A_PBB
-    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
-    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert processStyle("##! Prologue\n", False) == Tokenizer.A_PBB
+    assert processStyle("# Title\n", False) == BlockFmt.PBB
+    assert processStyle("## Chapter\n", False) == BlockFmt.PBB
+    assert processStyle("### Scene\n", False) == BlockFmt.PBB
+    assert processStyle("#### Section\n", False) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("##! Prologue\n", False) == BlockFmt.PBB
 
     # First Document is True
-    assert processStyle("# Title\n", True) == Tokenizer.A_NONE
-    assert processStyle("## Chapter\n", True) == Tokenizer.A_NONE
-    assert processStyle("### Scene\n", True) == Tokenizer.A_NONE
-    assert processStyle("#### Section\n", True) == Tokenizer.A_NONE
-    assert processStyle("#! My Novel\n", True) == Tokenizer.A_CENTRE
-    assert processStyle("##! Prologue\n", True) == Tokenizer.A_NONE
+    assert processStyle("# Title\n", True) == BlockFmt.NONE
+    assert processStyle("## Chapter\n", True) == BlockFmt.NONE
+    assert processStyle("### Scene\n", True) == BlockFmt.NONE
+    assert processStyle("#### Section\n", True) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", True) == BlockFmt.CENTRE
+    assert processStyle("##! Prologue\n", True) == BlockFmt.NONE
 
     # Note Docs
     tokens._isNovel = False
 
     # First Document is False
-    assert processStyle("# Title\n", False) == Tokenizer.A_NONE
-    assert processStyle("## Chapter\n", False) == Tokenizer.A_NONE
-    assert processStyle("### Scene\n", False) == Tokenizer.A_NONE
-    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
-    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert processStyle("##! Prologue\n", False) == Tokenizer.A_NONE
+    assert processStyle("# Title\n", False) == BlockFmt.NONE
+    assert processStyle("## Chapter\n", False) == BlockFmt.NONE
+    assert processStyle("### Scene\n", False) == BlockFmt.NONE
+    assert processStyle("#### Section\n", False) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("##! Prologue\n", False) == BlockFmt.NONE
 
     # First Document is True
-    assert processStyle("# Title\n", True) == Tokenizer.A_NONE
-    assert processStyle("## Chapter\n", True) == Tokenizer.A_NONE
-    assert processStyle("### Scene\n", True) == Tokenizer.A_NONE
-    assert processStyle("#### Section\n", True) == Tokenizer.A_NONE
-    assert processStyle("#! My Novel\n", True) == Tokenizer.A_CENTRE
-    assert processStyle("##! Prologue\n", True) == Tokenizer.A_NONE
+    assert processStyle("# Title\n", True) == BlockFmt.NONE
+    assert processStyle("## Chapter\n", True) == BlockFmt.NONE
+    assert processStyle("### Scene\n", True) == BlockFmt.NONE
+    assert processStyle("#### Section\n", True) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", True) == BlockFmt.CENTRE
+    assert processStyle("##! Prologue\n", True) == BlockFmt.NONE
 
     # Page Break and Centre Headers
     # =============================
@@ -598,47 +600,47 @@ def testFmtToken_HeaderStyle(mockGUI):
     tokens.setChapterStyle(True, True)
     tokens.setSceneStyle(True, True)
 
-    assert tokens._partStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert tokens._chapterStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert tokens._sceneStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert tokens._partStyle == BlockFmt.CENTRE | BlockFmt.PBB
+    assert tokens._chapterStyle == BlockFmt.CENTRE | BlockFmt.PBB
+    assert tokens._sceneStyle == BlockFmt.CENTRE | BlockFmt.PBB
 
     # Novel Docs
     tokens._isNovel = True
 
     # First Document is False
-    assert processStyle("# Title\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert processStyle("## Chapter\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert processStyle("### Scene\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
-    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert processStyle("##! Prologue\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert processStyle("# Title\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("## Chapter\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("### Scene\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("#### Section\n", False) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("##! Prologue\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
 
     # First Document is True
-    assert processStyle("# Title\n", True) == Tokenizer.A_CENTRE
-    assert processStyle("## Chapter\n", True) == Tokenizer.A_CENTRE
-    assert processStyle("### Scene\n", True) == Tokenizer.A_CENTRE
-    assert processStyle("#### Section\n", True) == Tokenizer.A_NONE
-    assert processStyle("#! My Novel\n", True) == Tokenizer.A_CENTRE
-    assert processStyle("##! Prologue\n", True) == Tokenizer.A_CENTRE
+    assert processStyle("# Title\n", True) == BlockFmt.CENTRE
+    assert processStyle("## Chapter\n", True) == BlockFmt.CENTRE
+    assert processStyle("### Scene\n", True) == BlockFmt.CENTRE
+    assert processStyle("#### Section\n", True) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", True) == BlockFmt.CENTRE
+    assert processStyle("##! Prologue\n", True) == BlockFmt.CENTRE
 
     # Note Docs
     tokens._isNovel = False
 
     # First Document is False
-    assert processStyle("# Title\n", False) == Tokenizer.A_NONE
-    assert processStyle("## Chapter\n", False) == Tokenizer.A_NONE
-    assert processStyle("### Scene\n", False) == Tokenizer.A_NONE
-    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
-    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert processStyle("##! Prologue\n", False) == Tokenizer.A_NONE
+    assert processStyle("# Title\n", False) == BlockFmt.NONE
+    assert processStyle("## Chapter\n", False) == BlockFmt.NONE
+    assert processStyle("### Scene\n", False) == BlockFmt.NONE
+    assert processStyle("#### Section\n", False) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("##! Prologue\n", False) == BlockFmt.NONE
 
     # First Document is True
-    assert processStyle("# Title\n", True) == Tokenizer.A_NONE
-    assert processStyle("## Chapter\n", True) == Tokenizer.A_NONE
-    assert processStyle("### Scene\n", True) == Tokenizer.A_NONE
-    assert processStyle("#### Section\n", True) == Tokenizer.A_NONE
-    assert processStyle("#! My Novel\n", True) == Tokenizer.A_CENTRE
-    assert processStyle("##! Prologue\n", True) == Tokenizer.A_NONE
+    assert processStyle("# Title\n", True) == BlockFmt.NONE
+    assert processStyle("## Chapter\n", True) == BlockFmt.NONE
+    assert processStyle("### Scene\n", True) == BlockFmt.NONE
+    assert processStyle("#### Section\n", True) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", True) == BlockFmt.CENTRE
+    assert processStyle("##! Prologue\n", True) == BlockFmt.NONE
 
     # Check Separation
     # ================
@@ -649,48 +651,48 @@ def testFmtToken_HeaderStyle(mockGUI):
     tokens.setChapterStyle(False, False)
     tokens.setSceneStyle(False, False)
 
-    assert tokens._partStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert tokens._chapterStyle == Tokenizer.A_NONE
-    assert tokens._sceneStyle == Tokenizer.A_NONE
+    assert tokens._partStyle == BlockFmt.CENTRE | BlockFmt.PBB
+    assert tokens._chapterStyle == BlockFmt.NONE
+    assert tokens._sceneStyle == BlockFmt.NONE
 
-    assert processStyle("# Title\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert processStyle("## Chapter\n", False) == Tokenizer.A_NONE
-    assert processStyle("### Scene\n", False) == Tokenizer.A_NONE
-    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
-    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert processStyle("##! Prologue\n", False) == Tokenizer.A_NONE
+    assert processStyle("# Title\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("## Chapter\n", False) == BlockFmt.NONE
+    assert processStyle("### Scene\n", False) == BlockFmt.NONE
+    assert processStyle("#### Section\n", False) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("##! Prologue\n", False) == BlockFmt.NONE
 
     # Chapter Styles
     tokens.setPartitionStyle(False, False)
     tokens.setChapterStyle(True, True)
     tokens.setSceneStyle(False, False)
 
-    assert tokens._partStyle == Tokenizer.A_NONE
-    assert tokens._chapterStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert tokens._sceneStyle == Tokenizer.A_NONE
+    assert tokens._partStyle == BlockFmt.NONE
+    assert tokens._chapterStyle == BlockFmt.CENTRE | BlockFmt.PBB
+    assert tokens._sceneStyle == BlockFmt.NONE
 
-    assert processStyle("# Title\n", False) == Tokenizer.A_NONE
-    assert processStyle("## Chapter\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert processStyle("### Scene\n", False) == Tokenizer.A_NONE
-    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
-    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert processStyle("##! Prologue\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert processStyle("# Title\n", False) == BlockFmt.NONE
+    assert processStyle("## Chapter\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("### Scene\n", False) == BlockFmt.NONE
+    assert processStyle("#### Section\n", False) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("##! Prologue\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
 
     # Scene Styles
     tokens.setPartitionStyle(False, False)
     tokens.setChapterStyle(False, False)
     tokens.setSceneStyle(True, True)
 
-    assert tokens._partStyle == Tokenizer.A_NONE
-    assert tokens._chapterStyle == Tokenizer.A_NONE
-    assert tokens._sceneStyle == Tokenizer.A_CENTRE | Tokenizer.A_PBB
+    assert tokens._partStyle == BlockFmt.NONE
+    assert tokens._chapterStyle == BlockFmt.NONE
+    assert tokens._sceneStyle == BlockFmt.CENTRE | BlockFmt.PBB
 
-    assert processStyle("# Title\n", False) == Tokenizer.A_NONE
-    assert processStyle("## Chapter\n", False) == Tokenizer.A_NONE
-    assert processStyle("### Scene\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert processStyle("#### Section\n", False) == Tokenizer.A_NONE
-    assert processStyle("#! My Novel\n", False) == Tokenizer.A_CENTRE | Tokenizer.A_PBB
-    assert processStyle("##! Prologue\n", False) == Tokenizer.A_NONE
+    assert processStyle("# Title\n", False) == BlockFmt.NONE
+    assert processStyle("## Chapter\n", False) == BlockFmt.NONE
+    assert processStyle("### Scene\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("#### Section\n", False) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("##! Prologue\n", False) == BlockFmt.NONE
 
 
 @pytest.mark.core
@@ -703,7 +705,7 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens._text = "% A comment\n"
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_COMMENT, 0, "A comment", [], Tokenizer.A_NONE),
+        (BlockTyp.COMMENT, 0, "A comment", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "\n"
 
@@ -721,12 +723,12 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens._text = "%synopsis: The synopsis\n"
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_SYNOPSIS, 0, "The synopsis", [], Tokenizer.A_NONE),
+        (BlockTyp.SYNOPSIS, 0, "The synopsis", [], BlockFmt.NONE),
     ]
     tokens._text = "% synopsis: The synopsis\n"
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_SYNOPSIS, 0, "The synopsis", [], Tokenizer.A_NONE),
+        (BlockTyp.SYNOPSIS, 0, "The synopsis", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "\n"
 
@@ -739,7 +741,7 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens._text = "% short: A short description\n"
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_SHORT, 0, "A short description", [], Tokenizer.A_NONE),
+        (BlockTyp.SHORT, 0, "A short description", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "\n"
 
@@ -751,7 +753,7 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens._text = "@char: Bod\n"
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_KEYWORD, 0, "char: Bod", [], Tokenizer.A_NONE),
+        (BlockTyp.KEYWORD, 0, "char: Bod", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "\n"
 
@@ -761,13 +763,13 @@ def testFmtToken_MetaFormat(mockGUI):
 
     tokens._text = "@pov: Bod\n@plot: Main\n@location: Europe\n"
     tokens.tokenizeText()
-    styTop = Tokenizer.A_NONE | Tokenizer.A_Z_BTMMRG
-    styMid = Tokenizer.A_NONE | Tokenizer.A_Z_BTMMRG | Tokenizer.A_Z_TOPMRG
-    styBtm = Tokenizer.A_NONE | Tokenizer.A_Z_TOPMRG
+    styTop = BlockFmt.NONE | BlockFmt.Z_BTMMRG
+    styMid = BlockFmt.NONE | BlockFmt.Z_BTMMRG | BlockFmt.Z_TOPMRG
+    styBtm = BlockFmt.NONE | BlockFmt.Z_TOPMRG
     assert tokens._tokens == [
-        (Tokenizer.T_KEYWORD, 0, "pov: Bod", [], styTop),
-        (Tokenizer.T_KEYWORD, 0, "plot: Main", [], styMid),
-        (Tokenizer.T_KEYWORD, 0, "location: Europe", [], styBtm),
+        (BlockTyp.KEYWORD, 0, "pov: Bod", [], styTop),
+        (BlockTyp.KEYWORD, 0, "plot: Main", [], styMid),
+        (BlockTyp.KEYWORD, 0, "location: Europe", [], styBtm),
     ]
     assert tokens.allMarkdown[-1] == "@pov: Bod\n@plot: Main\n@location: Europe\n\n"
 
@@ -776,7 +778,7 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens.setIgnoredKeywords("@plot, @location")
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_KEYWORD, 0, "pov: Bod", [], Tokenizer.A_NONE),
+        (BlockTyp.KEYWORD, 0, "pov: Bod", [], BlockFmt.NONE),
     ]
 
 
@@ -787,8 +789,8 @@ def testFmtToken_MarginFormat(mockGUI):
     tokens = ToRaw(project)
 
     # Alignment and Indentation
-    dblIndent = Tokenizer.A_IND_L | Tokenizer.A_IND_R
-    rIndAlign = Tokenizer.A_RIGHT | Tokenizer.A_IND_R
+    dblIndent = BlockFmt.IND_L | BlockFmt.IND_R
+    rIndAlign = BlockFmt.RIGHT | BlockFmt.IND_R
     tokens._text = (
         "Some regular text\n\n"
         "Some left-aligned text <<\n\n"
@@ -801,14 +803,14 @@ def testFmtToken_MarginFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_TEXT,  0, "Some regular text", [], Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  0, "Some left-aligned text", [], Tokenizer.A_LEFT),
-        (Tokenizer.T_TEXT,  0, "Some right-aligned text", [], Tokenizer.A_RIGHT),
-        (Tokenizer.T_TEXT,  0, "Some centered text", [], Tokenizer.A_CENTRE),
-        (Tokenizer.T_TEXT,  0, "Left-indented block", [], Tokenizer.A_IND_L),
-        (Tokenizer.T_TEXT,  0, "Right-indented block", [], Tokenizer.A_IND_R),
-        (Tokenizer.T_TEXT,  0, "Double-indented block", [], dblIndent),
-        (Tokenizer.T_TEXT,  0, "Right-indent, right-aligned", [], rIndAlign),
+        (BlockTyp.TEXT,  0, "Some regular text", [], BlockFmt.NONE),
+        (BlockTyp.TEXT,  0, "Some left-aligned text", [], BlockFmt.LEFT),
+        (BlockTyp.TEXT,  0, "Some right-aligned text", [], BlockFmt.RIGHT),
+        (BlockTyp.TEXT,  0, "Some centered text", [], BlockFmt.CENTRE),
+        (BlockTyp.TEXT,  0, "Left-indented block", [], BlockFmt.IND_L),
+        (BlockTyp.TEXT,  0, "Right-indented block", [], BlockFmt.IND_R),
+        (BlockTyp.TEXT,  0, "Double-indented block", [], dblIndent),
+        (BlockTyp.TEXT,  0, "Right-indent, right-aligned", [], rIndAlign),
     ]
     assert tokens.allMarkdown[-1] == (
         "Some regular text\n\n"
@@ -834,31 +836,31 @@ def testFmtToken_ExtractFormats(mockGUI):
     # Plain bold
     text, fmt = tokens._extractFormats("Text with **bold** in it.")
     assert text == "Text with bold in it."
-    assert fmt == [(10, tokens.FMT_B_B, ""), (14, tokens.FMT_B_E, "")]
+    assert fmt == [(10, TextFmt.B_B, ""), (14, TextFmt.B_E, "")]
 
     # Plain italics
     text, fmt = tokens._extractFormats("Text with _italics_ in it.")
     assert text == "Text with italics in it."
-    assert fmt == [(10, tokens.FMT_I_B, ""), (17, tokens.FMT_I_E, "")]
+    assert fmt == [(10, TextFmt.I_B, ""), (17, TextFmt.I_E, "")]
 
     # Plain strikethrough
     text, fmt = tokens._extractFormats("Text with ~~strikethrough~~ in it.")
     assert text == "Text with strikethrough in it."
-    assert fmt == [(10, tokens.FMT_D_B, ""), (23, tokens.FMT_D_E, "")]
+    assert fmt == [(10, TextFmt.D_B, ""), (23, TextFmt.D_E, "")]
 
     # Nested bold/italics
     text, fmt = tokens._extractFormats("Text with **bold and _italics_** in it.")
     assert text == "Text with bold and italics in it."
     assert fmt == [
-        (10, tokens.FMT_B_B, ""), (19, tokens.FMT_I_B, ""),
-        (26, tokens.FMT_I_E, ""), (26, tokens.FMT_B_E, ""),
+        (10, TextFmt.B_B, ""), (19, TextFmt.I_B, ""),
+        (26, TextFmt.I_E, ""), (26, TextFmt.B_E, ""),
     ]
 
     # Bold with overlapping italics
     # Here, bold is ignored because it is not on word boundary
     text, fmt = tokens._extractFormats("Text with **bold and overlapping _italics**_ in it.")
     assert text == "Text with **bold and overlapping italics** in it."
-    assert fmt == [(33, tokens.FMT_I_B, ""), (42, tokens.FMT_I_E, "")]
+    assert fmt == [(33, TextFmt.I_B, ""), (42, TextFmt.I_E, "")]
 
     # Shortcodes
     # ==========
@@ -866,44 +868,44 @@ def testFmtToken_ExtractFormats(mockGUI):
     # Plain bold
     text, fmt = tokens._extractFormats("Text with [b]bold[/b] in it.")
     assert text == "Text with bold in it."
-    assert fmt == [(10, tokens.FMT_B_B, ""), (14, tokens.FMT_B_E, "")]
+    assert fmt == [(10, TextFmt.B_B, ""), (14, TextFmt.B_E, "")]
 
     # Plain italics
     text, fmt = tokens._extractFormats("Text with [i]italics[/i] in it.")
     assert text == "Text with italics in it."
-    assert fmt == [(10, tokens.FMT_I_B, ""), (17, tokens.FMT_I_E, "")]
+    assert fmt == [(10, TextFmt.I_B, ""), (17, TextFmt.I_E, "")]
 
     # Plain strikethrough
     text, fmt = tokens._extractFormats("Text with [s]strikethrough[/s] in it.")
     assert text == "Text with strikethrough in it."
-    assert fmt == [(10, tokens.FMT_D_B, ""), (23, tokens.FMT_D_E, "")]
+    assert fmt == [(10, TextFmt.D_B, ""), (23, TextFmt.D_E, "")]
 
     # Plain underline
     text, fmt = tokens._extractFormats("Text with [u]underline[/u] in it.")
     assert text == "Text with underline in it."
-    assert fmt == [(10, tokens.FMT_U_B, ""), (19, tokens.FMT_U_E, "")]
+    assert fmt == [(10, TextFmt.U_B, ""), (19, TextFmt.U_E, "")]
 
     # Plain mark
     text, fmt = tokens._extractFormats("Text with [m]highlight[/m] in it.")
     assert text == "Text with highlight in it."
-    assert fmt == [(10, tokens.FMT_M_B, ""), (19, tokens.FMT_M_E, "")]
+    assert fmt == [(10, TextFmt.M_B, ""), (19, TextFmt.M_E, "")]
 
     # Plain superscript
     text, fmt = tokens._extractFormats("Text with super[sup]script[/sup] in it.")
     assert text == "Text with superscript in it."
-    assert fmt == [(15, tokens.FMT_SUP_B, ""), (21, tokens.FMT_SUP_E, "")]
+    assert fmt == [(15, TextFmt.SUP_B, ""), (21, TextFmt.SUP_E, "")]
 
     # Plain subscript
     text, fmt = tokens._extractFormats("Text with sub[sub]script[/sub] in it.")
     assert text == "Text with subscript in it."
-    assert fmt == [(13, tokens.FMT_SUB_B, ""), (19, tokens.FMT_SUB_E, "")]
+    assert fmt == [(13, TextFmt.SUB_B, ""), (19, TextFmt.SUB_E, "")]
 
     # Nested bold/italics
     text, fmt = tokens._extractFormats("Text with [b]bold and [i]italics[/i][/b] in it.")
     assert text == "Text with bold and italics in it."
     assert fmt == [
-        (10, tokens.FMT_B_B, ""), (19, tokens.FMT_I_B, ""),
-        (26, tokens.FMT_I_E, ""), (26, tokens.FMT_B_E, ""),
+        (10, TextFmt.B_B, ""), (19, TextFmt.I_B, ""),
+        (26, TextFmt.I_E, ""), (26, TextFmt.B_E, ""),
     ]
 
     # Bold with overlapping italics
@@ -913,8 +915,8 @@ def testFmtToken_ExtractFormats(mockGUI):
     )
     assert text == "Text with bold and overlapping italics in it."
     assert fmt == [
-        (10, tokens.FMT_B_B, ""), (31, tokens.FMT_I_B, ""),
-        (38, tokens.FMT_B_E, ""), (38, tokens.FMT_I_E, ""),
+        (10, TextFmt.B_B, ""), (31, TextFmt.I_B, ""),
+        (38, TextFmt.B_E, ""), (38, TextFmt.I_E, ""),
     ]
 
     # So does this
@@ -923,8 +925,8 @@ def testFmtToken_ExtractFormats(mockGUI):
     )
     assert text == "Text with bold and overlapping italics in it."
     assert fmt == [
-        (10, tokens.FMT_B_B, ""), (31, tokens.FMT_I_B, ""),
-        (38, tokens.FMT_B_E, ""), (41, tokens.FMT_I_E, ""),
+        (10, TextFmt.B_B, ""), (31, TextFmt.I_B, ""),
+        (38, TextFmt.B_E, ""), (41, TextFmt.I_E, ""),
     ]
 
 
@@ -938,8 +940,8 @@ def testFmtToken_Paragraphs(mockGUI):
     tokens._text = "First paragraph\n\n\nSecond paragraph\n\n\n"
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_TEXT, 0, "First paragraph", [], Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT, 0, "Second paragraph", [], Tokenizer.A_NONE),
+        (BlockTyp.TEXT, 0, "First paragraph", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, 0, "Second paragraph", [], BlockFmt.NONE),
     ]
 
     # Combine multi-line paragraphs, keep breaks
@@ -947,7 +949,7 @@ def testFmtToken_Paragraphs(mockGUI):
     tokens.setKeepLineBreaks(True)
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_TEXT, 0, "This is text\nspanning multiple\nlines", [], Tokenizer.A_NONE),
+        (BlockTyp.TEXT, 0, "This is text\nspanning multiple\nlines", [], BlockFmt.NONE),
     ]
 
     # Combine multi-line paragraphs, remove breaks
@@ -955,7 +957,7 @@ def testFmtToken_Paragraphs(mockGUI):
     tokens.setKeepLineBreaks(False)
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_TEXT, 0, "This is text spanning multiple lines", [], Tokenizer.A_NONE),
+        (BlockTyp.TEXT, 0, "This is text spanning multiple lines", [], BlockFmt.NONE),
     ]
 
     # Combine multi-line paragraphs, remove breaks, with formatting
@@ -964,15 +966,15 @@ def testFmtToken_Paragraphs(mockGUI):
     tokens.tokenizeText()
     assert tokens._tokens == [
         (
-            Tokenizer.T_TEXT, 0,
+            BlockTyp.TEXT, 0,
             "This is text spanning multiple lines",
             [
-                (5,  Tokenizer.FMT_B_B, ""),
-                (12, Tokenizer.FMT_B_E, ""),
-                (22, Tokenizer.FMT_I_B, ""),
-                (30, Tokenizer.FMT_I_E, ""),
+                (5,  TextFmt.B_B, ""),
+                (12, TextFmt.B_E, ""),
+                (22, TextFmt.I_B, ""),
+                (30, TextFmt.I_E, ""),
             ],
-            Tokenizer.A_NONE
+            BlockFmt.NONE
         ),
     ]
 
@@ -981,21 +983,21 @@ def testFmtToken_Paragraphs(mockGUI):
     tokens.setKeepLineBreaks(False)
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "Title", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD1, 1, "Title", [], BlockFmt.NONE),
         (
-            Tokenizer.T_TEXT, 1, "Text on two lines.", [
-                (5, Tokenizer.FMT_I_B, ""),
-                (7, Tokenizer.FMT_I_E, ""),
-            ], Tokenizer.A_NONE
+            BlockTyp.TEXT, 1, "Text on two lines.", [
+                (5, TextFmt.I_B, ""),
+                (7, TextFmt.I_E, ""),
+            ], BlockFmt.NONE
         ),
-        (Tokenizer.T_HEAD2, 2, "Chapter", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD2, 2, "Chapter", [], BlockFmt.NONE),
         (
-            Tokenizer.T_TEXT, 2, "More text here.", [
-                (5,  Tokenizer.FMT_B_B, ""),
-                (9,  Tokenizer.FMT_B_E, ""),
-                (10, Tokenizer.FMT_I_B, ""),
-                (14, Tokenizer.FMT_I_E, ""),
-            ], Tokenizer.A_NONE
+            BlockTyp.TEXT, 2, "More text here.", [
+                (5,  TextFmt.B_B, ""),
+                (9,  TextFmt.B_E, ""),
+                (10, TextFmt.I_B, ""),
+                (14, TextFmt.I_E, ""),
+            ], BlockFmt.NONE
         ),
     ]
 
@@ -1010,7 +1012,7 @@ def testFmtToken_TextFormat(mockGUI):
     tokens._text = "Some plain text\non two lines\n\n\n"
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_TEXT, 0, "Some plain text\non two lines", [], Tokenizer.A_NONE),
+        (BlockTyp.TEXT, 0, "Some plain text\non two lines", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "Some plain text\non two lines\n\n\n\n"
 
@@ -1024,66 +1026,66 @@ def testFmtToken_TextFormat(mockGUI):
     tokens._text = "Some **bolded text** on this lines\n"
     tokens.tokenizeText()
     assert tokens._tokens == [(
-        Tokenizer.T_TEXT, 0, "Some bolded text on this lines",
+        BlockTyp.TEXT, 0, "Some bolded text on this lines",
         [
-            (5,  Tokenizer.FMT_B_B, ""),
-            (16, Tokenizer.FMT_B_E, ""),
+            (5,  TextFmt.B_B, ""),
+            (16, TextFmt.B_E, ""),
         ],
-        Tokenizer.A_NONE
+        BlockFmt.NONE
     )]
     assert tokens.allMarkdown[-1] == "Some **bolded text** on this lines\n\n"
 
     tokens._text = "Some _italic text_ on this lines\n"
     tokens.tokenizeText()
     assert tokens._tokens == [(
-        Tokenizer.T_TEXT, 0, "Some italic text on this lines",
+        BlockTyp.TEXT, 0, "Some italic text on this lines",
         [
-            (5,  Tokenizer.FMT_I_B, ""),
-            (16, Tokenizer.FMT_I_E, ""),
+            (5,  TextFmt.I_B, ""),
+            (16, TextFmt.I_E, ""),
         ],
-        Tokenizer.A_NONE
+        BlockFmt.NONE
     )]
     assert tokens.allMarkdown[-1] == "Some _italic text_ on this lines\n\n"
 
     tokens._text = "Some **_bold italic text_** on this lines\n"
     tokens.tokenizeText()
     assert tokens._tokens == [(
-        Tokenizer.T_TEXT, 0, "Some bold italic text on this lines",
+        BlockTyp.TEXT, 0, "Some bold italic text on this lines",
         [
-            (5,  Tokenizer.FMT_B_B, ""),
-            (5,  Tokenizer.FMT_I_B, ""),
-            (21, Tokenizer.FMT_I_E, ""),
-            (21, Tokenizer.FMT_B_E, ""),
+            (5,  TextFmt.B_B, ""),
+            (5,  TextFmt.I_B, ""),
+            (21, TextFmt.I_E, ""),
+            (21, TextFmt.B_E, ""),
         ],
-        Tokenizer.A_NONE
+        BlockFmt.NONE
     )]
     assert tokens.allMarkdown[-1] == "Some **_bold italic text_** on this lines\n\n"
 
     tokens._text = "Some ~~strikethrough text~~ on this lines\n"
     tokens.tokenizeText()
     assert tokens._tokens == [(
-        Tokenizer.T_TEXT, 0, "Some strikethrough text on this lines",
+        BlockTyp.TEXT, 0, "Some strikethrough text on this lines",
         [
-            (5,  Tokenizer.FMT_D_B, ""),
-            (23, Tokenizer.FMT_D_E, ""),
+            (5,  TextFmt.D_B, ""),
+            (23, TextFmt.D_E, ""),
         ],
-        Tokenizer.A_NONE
+        BlockFmt.NONE
     )]
     assert tokens.allMarkdown[-1] == "Some ~~strikethrough text~~ on this lines\n\n"
 
     tokens._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
     tokens.tokenizeText()
     assert tokens._tokens == [(
-        Tokenizer.T_TEXT, 0, "Some nested bold and italic and strikethrough text here",
+        BlockTyp.TEXT, 0, "Some nested bold and italic and strikethrough text here",
         [
-            (5,  Tokenizer.FMT_B_B, ""),
-            (21, Tokenizer.FMT_I_B, ""),
-            (27, Tokenizer.FMT_I_E, ""),
-            (32, Tokenizer.FMT_D_B, ""),
-            (45, Tokenizer.FMT_D_E, ""),
-            (50, Tokenizer.FMT_B_E, ""),
+            (5,  TextFmt.B_B, ""),
+            (21, TextFmt.I_B, ""),
+            (27, TextFmt.I_E, ""),
+            (32, TextFmt.D_B, ""),
+            (45, TextFmt.D_E, ""),
+            (50, TextFmt.B_E, ""),
         ],
-        Tokenizer.A_NONE
+        BlockFmt.NONE
     )]
     assert tokens.allMarkdown[-1] == (
         "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n\n"
@@ -1112,60 +1114,60 @@ def testFmtToken_Dialogue(mockGUI):
     tokens._text = "Text with \u2018dialogue one,\u2019 and \u2018dialogue two.\u2019\n"
     tokens.tokenizeText()
     assert tokens._tokens == [(
-        Tokenizer.T_TEXT, 0,
+        BlockTyp.TEXT, 0,
         "Text with \u2018dialogue one,\u2019 and \u2018dialogue two.\u2019",
         [
-            (10, Tokenizer.FMT_DL_B, ""),
-            (25, Tokenizer.FMT_DL_E, ""),
-            (30, Tokenizer.FMT_DL_B, ""),
-            (45, Tokenizer.FMT_DL_E, ""),
+            (10, TextFmt.DL_B, ""),
+            (25, TextFmt.DL_E, ""),
+            (30, TextFmt.DL_B, ""),
+            (45, TextFmt.DL_E, ""),
         ],
-        Tokenizer.A_NONE
+        BlockFmt.NONE
     )]
 
     # Double quotes
     tokens._text = "Text with \u201cdialogue one,\u201d and \u201cdialogue two.\u201d\n"
     tokens.tokenizeText()
     assert tokens._tokens == [(
-        Tokenizer.T_TEXT, 0,
+        BlockTyp.TEXT, 0,
         "Text with \u201cdialogue one,\u201d and \u201cdialogue two.\u201d",
         [
-            (10, Tokenizer.FMT_DL_B, ""),
-            (25, Tokenizer.FMT_DL_E, ""),
-            (30, Tokenizer.FMT_DL_B, ""),
-            (45, Tokenizer.FMT_DL_E, ""),
+            (10, TextFmt.DL_B, ""),
+            (25, TextFmt.DL_E, ""),
+            (30, TextFmt.DL_B, ""),
+            (45, TextFmt.DL_E, ""),
         ],
-        Tokenizer.A_NONE
+        BlockFmt.NONE
     )]
 
     # Alt quotes
     tokens._text = "Text with ::dialogue one,:: and ::dialogue two.::\n"
     tokens.tokenizeText()
     assert tokens._tokens == [(
-        Tokenizer.T_TEXT, 0,
+        BlockTyp.TEXT, 0,
         "Text with ::dialogue one,:: and ::dialogue two.::",
         [
-            (10, Tokenizer.FMT_ADL_B, ""),
-            (27, Tokenizer.FMT_ADL_E, ""),
-            (32, Tokenizer.FMT_ADL_B, ""),
-            (49, Tokenizer.FMT_ADL_E, ""),
+            (10, TextFmt.ADL_B, ""),
+            (27, TextFmt.ADL_E, ""),
+            (32, TextFmt.ADL_B, ""),
+            (49, TextFmt.ADL_E, ""),
         ],
-        Tokenizer.A_NONE
+        BlockFmt.NONE
     )]
 
     # Dialogue line with narrator break
     tokens._text = "\u2013 Dialogue with a narrator break, \u2013he said,\u2013 see?\n"
     tokens.tokenizeText()
     assert tokens._tokens == [(
-        Tokenizer.T_TEXT, 0,
+        BlockTyp.TEXT, 0,
         "\u2013 Dialogue with a narrator break, \u2013he said,\u2013 see?",
         [
-            (0,  Tokenizer.FMT_DL_B, ""),
-            (34, Tokenizer.FMT_DL_E, ""),
-            (44, Tokenizer.FMT_DL_B, ""),
-            (49, Tokenizer.FMT_DL_E, ""),
+            (0,  TextFmt.DL_B, ""),
+            (34, TextFmt.DL_E, ""),
+            (44, TextFmt.DL_B, ""),
+            (49, TextFmt.DL_E, ""),
         ],
-        Tokenizer.A_NONE
+        BlockFmt.NONE
     )]
 
     # Special Cases
@@ -1175,15 +1177,15 @@ def testFmtToken_Dialogue(mockGUI):
     tokens._text = "[i]\u201cDialogue text.\u201d[/i]\n"
     tokens.tokenizeText()
     assert tokens._tokens == [(
-        Tokenizer.T_TEXT, 0,
+        BlockTyp.TEXT, 0,
         "\u201cDialogue text.\u201d",
         [
-            (0,  Tokenizer.FMT_I_B, ""),
-            (0,  Tokenizer.FMT_DL_B, ""),
-            (16, Tokenizer.FMT_I_E, ""),
-            (16, Tokenizer.FMT_DL_E, ""),
+            (0,  TextFmt.I_B, ""),
+            (0,  TextFmt.DL_B, ""),
+            (16, TextFmt.I_E, ""),
+            (16, TextFmt.DL_E, ""),
         ],
-        Tokenizer.A_NONE
+        BlockFmt.NONE
     )]
 
 
@@ -1199,8 +1201,8 @@ def testFmtToken_SpecialFormat(mockGUI):
     # ========
 
     correctResp = [
-        (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_CENTRE),
-        (Tokenizer.T_HEAD1, 2, "Title Two", [], Tokenizer.A_CENTRE | Tokenizer.A_PBB),
+        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.CENTRE),
+        (BlockTyp.HEAD1, 2, "Title Two", [], BlockFmt.CENTRE | BlockFmt.PBB),
     ]
 
     # Command wo/Space
@@ -1243,9 +1245,9 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
-        (Tokenizer.T_SKIP,  1, "", [], Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  1, "Some text to go here ...", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.SKIP,  1, "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT,  1, "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Multiple Empty Paragraphs
@@ -1259,9 +1261,9 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
-        (Tokenizer.T_SKIP,  1, "", [], Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  1, "Some text to go here ...", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.SKIP,  1, "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT,  1, "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Three Skips
@@ -1272,11 +1274,11 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
-        (Tokenizer.T_SKIP,  1, "", [], Tokenizer.A_NONE),
-        (Tokenizer.T_SKIP,  1, "", [], Tokenizer.A_NONE),
-        (Tokenizer.T_SKIP,  1, "", [], Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  1, "Some text to go here ...", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.SKIP,  1, "", [], BlockFmt.NONE),
+        (BlockTyp.SKIP,  1, "", [], BlockFmt.NONE),
+        (BlockTyp.SKIP,  1, "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT,  1, "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Malformed Command, Case 1
@@ -1287,8 +1289,8 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
-        (Tokenizer.T_TEXT,  1, "Some text to go here ...", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.TEXT,  1, "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Malformed Command, Case 2
@@ -1299,8 +1301,8 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
-        (Tokenizer.T_TEXT,  1, "Some text to go here ...", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.TEXT,  1, "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Malformed Command, Case 3
@@ -1311,8 +1313,8 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
-        (Tokenizer.T_TEXT,  1, "Some text to go here ...", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.TEXT,  1, "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Empty Paragraph and Page Break
@@ -1327,9 +1329,9 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
-        (Tokenizer.T_SKIP,  1, "", [], Tokenizer.A_PBB),
-        (Tokenizer.T_TEXT,  1, "Some text to go here ...", [], 0),
+        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.SKIP,  1, "", [], BlockFmt.PBB),
+        (BlockTyp.TEXT,  1, "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Multiple Skip
@@ -1341,11 +1343,11 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
-        (Tokenizer.T_SKIP,  1, "", [], Tokenizer.A_PBB),
-        (Tokenizer.T_SKIP,  1, "", [], Tokenizer.A_NONE),
-        (Tokenizer.T_SKIP,  1, "", [], Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  1, "Some text to go here ...", [], 0),
+        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.SKIP,  1, "", [], BlockFmt.PBB),
+        (BlockTyp.SKIP,  1, "", [], BlockFmt.NONE),
+        (BlockTyp.SKIP,  1, "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT,  1, "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
 
@@ -1373,10 +1375,10 @@ def testFmtToken_TextIndent(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_NONE),
-        (Tokenizer.T_HEAD3, 2, "Scene One", [], Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  2, "First paragraph.", [], Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  2, "Second paragraph.", [], Tokenizer.A_IND_T),
+        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.NONE),
+        (BlockTyp.HEAD3, 2, "Scene One", [], BlockFmt.NONE),
+        (BlockTyp.TEXT,  2, "First paragraph.", [], BlockFmt.NONE),
+        (BlockTyp.TEXT,  2, "Second paragraph.", [], BlockFmt.IND_T),
     ]
     assert tokens._noIndent is False
 
@@ -1388,8 +1390,8 @@ def testFmtToken_TextIndent(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD3,    1, "Scene Two", [], Tokenizer.A_NONE),
-        (Tokenizer.T_SYNOPSIS, 1, "Stuff happens.", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD3,    1, "Scene Two", [], BlockFmt.NONE),
+        (BlockTyp.SYNOPSIS, 1, "Stuff happens.", [], BlockFmt.NONE),
     ]
     assert tokens._noIndent is True
 
@@ -1401,8 +1403,8 @@ def testFmtToken_TextIndent(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_TEXT, 0, "First paragraph.", [], Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT, 0, "Second paragraph.", [], Tokenizer.A_IND_T),
+        (BlockTyp.TEXT, 0, "First paragraph.", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, 0, "Second paragraph.", [], BlockFmt.IND_T),
     ]
     assert tokens._noIndent is False
 
@@ -1424,10 +1426,10 @@ def testFmtToken_TextIndent(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "Title One", [], Tokenizer.A_NONE),
-        (Tokenizer.T_HEAD3, 2, "Scene One", [], Tokenizer.A_NONE),
-        (Tokenizer.T_TEXT,  2, "First paragraph.", [], Tokenizer.A_IND_T),
-        (Tokenizer.T_TEXT,  2, "Second paragraph.", [], Tokenizer.A_IND_T),
+        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.NONE),
+        (BlockTyp.HEAD3, 2, "Scene One", [], BlockFmt.NONE),
+        (BlockTyp.TEXT,  2, "First paragraph.", [], BlockFmt.IND_T),
+        (BlockTyp.TEXT,  2, "Second paragraph.", [], BlockFmt.IND_T),
     ]
     assert tokens._noIndent is False
 
@@ -1450,7 +1452,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setPartitionFormat(f"T: {nwHeadFmt.TITLE}")
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "T: Part One", [], Tokenizer.A_CENTRE),
+        (BlockTyp.HEAD1, 1, "T: Part One", [], BlockFmt.CENTRE),
     ]
 
     # H1: Title, Not First Page
@@ -1459,7 +1461,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setPartitionFormat(f"T: {nwHeadFmt.TITLE}")
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD1, 1, "T: Part One", [], Tokenizer.A_PBB | Tokenizer.A_CENTRE),
+        (BlockTyp.HEAD1, 1, "T: Part One", [], BlockFmt.PBB | BlockFmt.CENTRE),
     ]
 
     # Chapters
@@ -1470,7 +1472,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setChapterFormat(f"C: {nwHeadFmt.TITLE}")
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD2, 1, "C: Chapter One", [], Tokenizer.A_PBB),
+        (BlockTyp.HEAD2, 1, "C: Chapter One", [], BlockFmt.PBB),
     ]
 
     # H2: Unnumbered Chapter
@@ -1478,7 +1480,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setUnNumberedFormat(f"U: {nwHeadFmt.TITLE}")
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD2, 1, "U: Prologue", [], Tokenizer.A_PBB),
+        (BlockTyp.HEAD2, 1, "U: Prologue", [], BlockFmt.PBB),
     ]
 
     # H2: Chapter Word Number
@@ -1487,7 +1489,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens._hFormatter._chCount = 0
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD2, 1, "Chapter One", [], Tokenizer.A_PBB),
+        (BlockTyp.HEAD2, 1, "Chapter One", [], BlockFmt.PBB),
     ]
 
     # H2: Chapter Roman Number Upper Case
@@ -1495,7 +1497,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setChapterFormat(f"Chapter {nwHeadFmt.CH_ROMU}")
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD2, 1, "Chapter II", [], Tokenizer.A_PBB),
+        (BlockTyp.HEAD2, 1, "Chapter II", [], BlockFmt.PBB),
     ]
 
     # H2: Chapter Roman Number Lower Case
@@ -1503,7 +1505,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setChapterFormat(f"Chapter {nwHeadFmt.CH_ROML}")
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD2, 1, "Chapter iii", [], Tokenizer.A_PBB),
+        (BlockTyp.HEAD2, 1, "Chapter iii", [], BlockFmt.PBB),
     ]
 
     # Scenes
@@ -1514,7 +1516,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setSceneFormat(f"S: {nwHeadFmt.TITLE}", False)
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD3, 1, "S: Scene One", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD3, 1, "S: Scene One", [], BlockFmt.NONE),
     ]
 
     # H3: Scene Hidden wo/Format
@@ -1536,7 +1538,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens._noSep = False
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_SKIP, 1, "", [], Tokenizer.A_NONE),
+        (BlockTyp.SKIP, 1, "", [], BlockFmt.NONE),
     ]
 
     # H3: Scene Separator, first
@@ -1552,7 +1554,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens._noSep = False
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_SEP, 1, "* * *", [], Tokenizer.A_CENTRE),
+        (BlockTyp.SEP, 1, "* * *", [], BlockFmt.CENTRE),
     ]
 
     # H3: Scene w/Absolute Number
@@ -1562,7 +1564,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens._hFormatter._scChCount = 0
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD3, 1, "Scene 1", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD3, 1, "Scene 1", [], BlockFmt.NONE),
     ]
 
     # H3: Scene w/Chapter Number
@@ -1572,7 +1574,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens._hFormatter._scChCount = 1
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD3, 1, "Scene 3.2", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD3, 1, "Scene 3.2", [], BlockFmt.NONE),
     ]
 
     # Sections
@@ -1589,7 +1591,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setSectionFormat("", False)
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_SKIP, 1, "", [], Tokenizer.A_NONE),
+        (BlockTyp.SKIP, 1, "", [], BlockFmt.NONE),
     ]
 
     # H4: Section w/Format
@@ -1597,7 +1599,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setSectionFormat(f"X: {nwHeadFmt.TITLE}", False)
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_HEAD4, 1, "X: A Section", [], Tokenizer.A_NONE),
+        (BlockTyp.HEAD4, 1, "X: A Section", [], BlockFmt.NONE),
     ]
 
     # H4: Section Separator
@@ -1605,7 +1607,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setSectionFormat("* * *", False)
     tokens.tokenizeText()
     assert tokens._tokens == [
-        (Tokenizer.T_SEP, 1, "* * *", [], Tokenizer.A_CENTRE),
+        (BlockTyp.SEP, 1, "* * *", [], BlockFmt.CENTRE),
     ]
 
     # Check the first scene detector, plain text

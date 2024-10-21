@@ -29,47 +29,47 @@ from pathlib import Path
 
 from novelwriter.constants import nwHeadFmt, nwLabels, nwUnicode
 from novelwriter.core.project import NWProject
-from novelwriter.formats.tokenizer import T_Formats, Tokenizer
+from novelwriter.formats.tokenizer import BlockFmt, BlockTyp, T_Formats, TextFmt, Tokenizer
 
 logger = logging.getLogger(__name__)
 
 
 # Standard Markdown
 STD_MD = {
-    Tokenizer.FMT_B_B: "**",
-    Tokenizer.FMT_B_E: "**",
-    Tokenizer.FMT_I_B: "_",
-    Tokenizer.FMT_I_E: "_",
-    Tokenizer.FMT_D_B: "",
-    Tokenizer.FMT_D_E: "",
-    Tokenizer.FMT_U_B: "",
-    Tokenizer.FMT_U_E: "",
-    Tokenizer.FMT_M_B: "",
-    Tokenizer.FMT_M_E: "",
-    Tokenizer.FMT_SUP_B: "",
-    Tokenizer.FMT_SUP_E: "",
-    Tokenizer.FMT_SUB_B: "",
-    Tokenizer.FMT_SUB_E: "",
-    Tokenizer.FMT_STRIP: "",
+    TextFmt.B_B: "**",
+    TextFmt.B_E: "**",
+    TextFmt.I_B: "_",
+    TextFmt.I_E: "_",
+    TextFmt.D_B: "",
+    TextFmt.D_E: "",
+    TextFmt.U_B: "",
+    TextFmt.U_E: "",
+    TextFmt.M_B: "",
+    TextFmt.M_E: "",
+    TextFmt.SUP_B: "",
+    TextFmt.SUP_E: "",
+    TextFmt.SUB_B: "",
+    TextFmt.SUB_E: "",
+    TextFmt.STRIP: "",
 }
 
 # Extended Markdown
 EXT_MD = {
-    Tokenizer.FMT_B_B: "**",
-    Tokenizer.FMT_B_E: "**",
-    Tokenizer.FMT_I_B: "_",
-    Tokenizer.FMT_I_E: "_",
-    Tokenizer.FMT_D_B: "~~",
-    Tokenizer.FMT_D_E: "~~",
-    Tokenizer.FMT_U_B: "",
-    Tokenizer.FMT_U_E: "",
-    Tokenizer.FMT_M_B: "==",
-    Tokenizer.FMT_M_E: "==",
-    Tokenizer.FMT_SUP_B: "^",
-    Tokenizer.FMT_SUP_E: "^",
-    Tokenizer.FMT_SUB_B: "~",
-    Tokenizer.FMT_SUB_E: "~",
-    Tokenizer.FMT_STRIP: "",
+    TextFmt.B_B: "**",
+    TextFmt.B_E: "**",
+    TextFmt.I_B: "_",
+    TextFmt.I_E: "_",
+    TextFmt.D_B: "~~",
+    TextFmt.D_E: "~~",
+    TextFmt.U_B: "",
+    TextFmt.U_E: "",
+    TextFmt.M_B: "==",
+    TextFmt.M_E: "==",
+    TextFmt.SUP_B: "^",
+    TextFmt.SUP_E: "^",
+    TextFmt.SUB_B: "~",
+    TextFmt.SUB_E: "~",
+    TextFmt.STRIP: "",
 }
 
 
@@ -119,49 +119,49 @@ class ToMarkdown(Tokenizer):
         lines = []
         for tType, _, tText, tFormat, tStyle in self._tokens:
 
-            if tType == self.T_TEXT:
+            if tType == BlockTyp.TEXT:
                 tTemp = self._formatText(tText, tFormat, mTags).replace("\n", "  \n")
                 lines.append(f"{tTemp}\n\n")
 
-            elif tType == self.T_TITLE:
+            elif tType == BlockTyp.TITLE:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 lines.append(f"# {tHead}\n\n")
 
-            elif tType == self.T_HEAD1:
+            elif tType == BlockTyp.HEAD1:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 lines.append(f"# {tHead}\n\n")
 
-            elif tType == self.T_HEAD2:
+            elif tType == BlockTyp.HEAD2:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 lines.append(f"## {tHead}\n\n")
 
-            elif tType == self.T_HEAD3:
+            elif tType == BlockTyp.HEAD3:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 lines.append(f"### {tHead}\n\n")
 
-            elif tType == self.T_HEAD4:
+            elif tType == BlockTyp.HEAD4:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 lines.append(f"#### {tHead}\n\n")
 
-            elif tType == self.T_SEP:
+            elif tType == BlockTyp.SEP:
                 lines.append(f"{tText}\n\n")
 
-            elif tType == self.T_SKIP:
+            elif tType == BlockTyp.SKIP:
                 lines.append(f"{cSkip}\n\n")
 
-            elif tType == self.T_SYNOPSIS and self._doSynopsis:
+            elif tType == BlockTyp.SYNOPSIS and self._doSynopsis:
                 label = self._localLookup("Synopsis")
                 lines.append(f"**{label}:** {self._formatText(tText, tFormat, mTags)}\n\n")
 
-            elif tType == self.T_SHORT and self._doSynopsis:
+            elif tType == BlockTyp.SHORT and self._doSynopsis:
                 label = self._localLookup("Short Description")
                 lines.append(f"**{label}:** {self._formatText(tText, tFormat, mTags)}\n\n")
 
-            elif tType == self.T_COMMENT and self._doComments:
+            elif tType == BlockTyp.COMMENT and self._doComments:
                 label = self._localLookup("Comment")
                 lines.append(f"**{label}:** {self._formatText(tText, tFormat, mTags)}\n\n")
 
-            elif tType == self.T_KEYWORD and self._doKeywords:
+            elif tType == BlockTyp.KEYWORD and self._doKeywords:
                 lines.append(self._formatKeywords(tText, tStyle))
 
         self._result = "".join(lines)
@@ -207,12 +207,12 @@ class ToMarkdown(Tokenizer):
     #  Internal Functions
     ##
 
-    def _formatText(self, text: str, tFmt: T_Formats, tags: dict[int, str]) -> str:
+    def _formatText(self, text: str, tFmt: T_Formats, tags: dict[TextFmt, str]) -> str:
         """Apply formatting tags to text."""
         temp = text
         for pos, fmt, data in reversed(tFmt):
             md = ""
-            if fmt == self.FMT_FNOTE:
+            if fmt == TextFmt.FNOTE:
                 if data in self._footnotes:
                     index = len(self._usedNotes) + 1
                     self._usedNotes[data] = index
@@ -224,7 +224,7 @@ class ToMarkdown(Tokenizer):
             temp = f"{temp[:pos]}{md}{temp[pos:]}"
         return temp
 
-    def _formatKeywords(self, text: str, style: int) -> str:
+    def _formatKeywords(self, text: str, style: BlockFmt) -> str:
         """Apply Markdown formatting to keywords."""
         valid, bits, _ = self._project.index.scanThis("@"+text)
         if not valid or not bits:
@@ -236,6 +236,6 @@ class ToMarkdown(Tokenizer):
             if len(bits) > 1:
                 result += ", ".join(bits[1:])
 
-        result += "  \n" if style & self.A_Z_BTMMRG else "\n\n"
+        result += "  \n" if style & BlockFmt.Z_BTMMRG else "\n\n"
 
         return result

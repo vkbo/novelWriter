@@ -30,6 +30,7 @@ import pytest
 from novelwriter.common import xmlIndent
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.project import NWProject
+from novelwriter.formats.tokenizer import BlockFmt, BlockTyp, TextFmt
 from novelwriter.formats.toodt import ODTParagraphStyle, ODTTextStyle, ToOdt, XMLParagraph, _mkTag
 
 from tests.tools import ODT_IGNORE, cmpFiles
@@ -183,7 +184,7 @@ def testFmtToOdt_TextFormatting(mockGUI):
 
     # Formatted Text
     text = "A bold word"
-    fmt = [(2, odt.FMT_B_B, ""), (6, odt.FMT_B_E, "")]
+    fmt = [(2, TextFmt.B_B, ""), (6, TextFmt.B_E, "")]
     xTest = ET.Element(_mkTag("office", "text"))
     odt._addTextPar(xTest, "Standard", oStyle, text, tFmt=fmt)
     assert odt.errData == []
@@ -196,7 +197,7 @@ def testFmtToOdt_TextFormatting(mockGUI):
 
     # Incorrectly Formatted Text
     text = "A few words"
-    fmt = [(2, odt.FMT_B_B, ""), (5, odt.FMT_B_E, ""), (7, 99999, "")]
+    fmt = [(2, TextFmt.B_B, ""), (5, TextFmt.B_E, ""), (7, 99999, "")]
     xTest = ET.Element(_mkTag("office", "text"))
     odt._addTextPar(xTest, "Standard", oStyle, text, tFmt=fmt)
     assert odt.errData == ["Unknown format tag encountered"]
@@ -210,7 +211,7 @@ def testFmtToOdt_TextFormatting(mockGUI):
 
     # Unclosed format
     text = "A bold word"
-    fmt = [(2, odt.FMT_B_B, "")]
+    fmt = [(2, TextFmt.B_B, "")]
     xTest = ET.Element(_mkTag("office", "text"))
     odt._addTextPar(xTest, "Standard", oStyle, text, tFmt=fmt)
     assert odt.errData == []
@@ -245,7 +246,7 @@ def testFmtToOdt_DialogueFormatting(mockGUI):
 
     # Regular dialogue
     text = "Text with 'dialogue in it.'"
-    fmt = [(10, odt.FMT_DL_B, ""), (27, odt.FMT_DL_E, "")]
+    fmt = [(10, TextFmt.DL_B, ""), (27, TextFmt.DL_E, "")]
     xTest = ET.Element(_mkTag("office", "text"))
     odt._addTextPar(xTest, "Standard", oStyle, text, tFmt=fmt)
     assert odt.errData == []
@@ -258,7 +259,7 @@ def testFmtToOdt_DialogueFormatting(mockGUI):
 
     # Alternative dialogue
     text = "Text with ::dialogue in it.::"
-    fmt = [(10, odt.FMT_ADL_B, ""), (29, odt.FMT_ADL_E, "")]
+    fmt = [(10, TextFmt.ADL_B, ""), (29, TextFmt.ADL_E, "")]
     xTest = ET.Element(_mkTag("office", "text"))
     odt._addTextPar(xTest, "Standard", oStyle, text, tFmt=fmt)
     assert odt.errData == []
@@ -719,7 +720,7 @@ def testFmtToOdt_ConvertDirect(mockGUI):
     # Justified
     doc = ToOdt(project, isFlat=True)
     doc._tokens = [
-        (doc.T_TEXT, 1, "This is a paragraph", [], doc.A_JUSTIFY),
+        (BlockTyp.TEXT, 1, "This is a paragraph", [], BlockFmt.JUSTIFY),
     ]
     doc.initDocument()
     doc.doConvert()
@@ -739,7 +740,7 @@ def testFmtToOdt_ConvertDirect(mockGUI):
     # Page Break After
     doc = ToOdt(project, isFlat=True)
     doc._tokens = [
-        (doc.T_TEXT, 1, "This is a paragraph", [], doc.A_PBA),
+        (BlockTyp.TEXT, 1, "This is a paragraph", [], BlockFmt.PBA),
     ]
     doc.initDocument()
     doc.doConvert()
@@ -894,28 +895,28 @@ def testFmtToOdt_SpecialFormats(mockGUI):
     project = NWProject()
     odt = ToOdt(project, isFlat=True)
 
-    assert odt._formatSynopsis("synopsis text", [(9, ToOdt.FMT_STRIP, "")], True) == (
+    assert odt._formatSynopsis("synopsis text", [(9, TextFmt.STRIP, "")], True) == (
         "Synopsis: synopsis text", [
-            (0, ToOdt.FMT_B_B, ""), (9, ToOdt.FMT_B_E, ""), (19, ToOdt.FMT_STRIP, "")
+            (0, TextFmt.B_B, ""), (9, TextFmt.B_E, ""), (19, TextFmt.STRIP, "")
         ]
     )
-    assert odt._formatSynopsis("short text", [(6, ToOdt.FMT_STRIP, "")], False) == (
+    assert odt._formatSynopsis("short text", [(6, TextFmt.STRIP, "")], False) == (
         "Short Description: short text", [
-            (0, ToOdt.FMT_B_B, ""), (18, ToOdt.FMT_B_E, ""), (25, ToOdt.FMT_STRIP, "")
+            (0, TextFmt.B_B, ""), (18, TextFmt.B_E, ""), (25, TextFmt.STRIP, "")
         ]
     )
-    assert odt._formatComments("comment text", [(8, ToOdt.FMT_STRIP, "")]) == (
+    assert odt._formatComments("comment text", [(8, TextFmt.STRIP, "")]) == (
         "Comment: comment text", [
-            (0, ToOdt.FMT_B_B, ""), (8, ToOdt.FMT_B_E, ""), (17, ToOdt.FMT_STRIP, "")
+            (0, TextFmt.B_B, ""), (8, TextFmt.B_E, ""), (17, TextFmt.STRIP, "")
         ]
     )
 
     assert odt._formatKeywords("") == ("", [])
     assert odt._formatKeywords("tag: Jane") == (
-        "Tag: Jane", [(0, ToOdt.FMT_B_B, ""), (4, ToOdt.FMT_B_E, "")]
+        "Tag: Jane", [(0, TextFmt.B_B, ""), (4, TextFmt.B_E, "")]
     )
     assert odt._formatKeywords("char: Bod, Jane") == (
-        "Characters: Bod, Jane", [(0, ToOdt.FMT_B_B, ""), (11, ToOdt.FMT_B_E, "")]
+        "Characters: Bod, Jane", [(0, TextFmt.B_B, ""), (11, TextFmt.B_E, "")]
     )
 
 

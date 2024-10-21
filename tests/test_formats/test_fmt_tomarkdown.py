@@ -23,6 +23,7 @@ from __future__ import annotations
 import pytest
 
 from novelwriter.core.project import NWProject
+from novelwriter.formats.tokenizer import BlockFmt, BlockTyp
 from novelwriter.formats.tomarkdown import ToMarkdown
 
 
@@ -220,7 +221,7 @@ def testFmtToMarkdown_ConvertDirect(mockGUI):
 
     # Title
     toMD._tokens = [
-        (toMD.T_TITLE, 1, "A Title", [], toMD.A_PBB | toMD.A_CENTRE),
+        (BlockTyp.TITLE, 1, "A Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
     ]
     toMD.doConvert()
     assert toMD.result == "# A Title\n\n"
@@ -230,14 +231,14 @@ def testFmtToMarkdown_ConvertDirect(mockGUI):
 
     # Separator
     toMD._tokens = [
-        (toMD.T_SEP, 1, "* * *", [], toMD.A_CENTRE),
+        (BlockTyp.SEP, 1, "* * *", [], BlockFmt.CENTRE),
     ]
     toMD.doConvert()
     assert toMD.result == "* * *\n\n"
 
     # Skip
     toMD._tokens = [
-        (toMD.T_SKIP, 1, "", [], toMD.A_NONE),
+        (BlockTyp.SKIP, 1, "", [], BlockFmt.NONE),
     ]
     toMD.doConvert()
     assert toMD.result == "\n\n"
@@ -300,7 +301,7 @@ def testFmtToMarkdown_Format(mockGUI):
     project = NWProject()
     toMD = ToMarkdown(project, False)
 
-    assert toMD._formatKeywords("", toMD.A_NONE) == ""
-    assert toMD._formatKeywords("tag: Jane", toMD.A_NONE) == "**Tag:** Jane\n\n"
-    assert toMD._formatKeywords("tag: Jane, John", toMD.A_NONE) == "**Tag:** Jane, John\n\n"
-    assert toMD._formatKeywords("tag: Jane", toMD.A_Z_BTMMRG) == "**Tag:** Jane  \n"
+    assert toMD._formatKeywords("", BlockFmt.NONE) == ""
+    assert toMD._formatKeywords("tag: Jane", BlockFmt.NONE) == "**Tag:** Jane\n\n"
+    assert toMD._formatKeywords("tag: Jane, John", BlockFmt.NONE) == "**Tag:** Jane, John\n\n"
+    assert toMD._formatKeywords("tag: Jane", BlockFmt.Z_BTMMRG) == "**Tag:** Jane  \n"

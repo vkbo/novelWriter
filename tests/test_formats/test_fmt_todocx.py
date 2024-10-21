@@ -35,6 +35,7 @@ from novelwriter.formats.todocx import (
     S_FNOTE, S_HEAD1, S_HEAD2, S_HEAD3, S_HEAD4, S_META, S_NORM, S_SEP,
     S_TITLE, ToDocX, _mkTag, _wTag
 )
+from novelwriter.formats.tokenizer import BlockFmt, BlockTyp
 
 from tests.tools import DOCX_IGNORE, cmpFiles
 
@@ -70,7 +71,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
     # Normal Text
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_TEXT, 0, "Hello World", [], doc.A_NONE)]
+    doc._tokens = [(BlockTyp.TEXT, 0, "Hello World", [], BlockFmt.NONE)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -80,7 +81,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
     # Title
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_TITLE, 0, "Hello World", [], doc.A_NONE)]
+    doc._tokens = [(BlockTyp.TITLE, 0, "Hello World", [], BlockFmt.NONE)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -90,7 +91,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
     # Heading Level 1
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_HEAD1, 0, "Hello World", [], doc.A_NONE)]
+    doc._tokens = [(BlockTyp.HEAD1, 0, "Hello World", [], BlockFmt.NONE)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -100,7 +101,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
     # Heading Level 2
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_HEAD2, 0, "Hello World", [], doc.A_NONE)]
+    doc._tokens = [(BlockTyp.HEAD2, 0, "Hello World", [], BlockFmt.NONE)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -110,7 +111,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
     # Heading Level 3
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_HEAD3, 0, "Hello World", [], doc.A_NONE)]
+    doc._tokens = [(BlockTyp.HEAD3, 0, "Hello World", [], BlockFmt.NONE)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -120,7 +121,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
     # Heading Level 4
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_HEAD4, 0, "Hello World", [], doc.A_NONE)]
+    doc._tokens = [(BlockTyp.HEAD4, 0, "Hello World", [], BlockFmt.NONE)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -130,7 +131,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
     # Separator
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_SEP, 0, "* * *", [], doc.A_NONE)]
+    doc._tokens = [(BlockTyp.SEP, 0, "* * *", [], BlockFmt.NONE)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -140,7 +141,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
     # Empty Paragraph
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_SKIP, 0, "* * *", [], doc.A_NONE)]
+    doc._tokens = [(BlockTyp.SKIP, 0, "* * *", [], BlockFmt.NONE)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -149,7 +150,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
     # Synopsis
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_SYNOPSIS, 0, "Hello World", [], doc.A_NONE)]
+    doc._tokens = [(BlockTyp.SYNOPSIS, 0, "Hello World", [], BlockFmt.NONE)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -161,7 +162,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
     # Short
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_SHORT, 0, "Hello World", [], doc.A_NONE)]
+    doc._tokens = [(BlockTyp.SHORT, 0, "Hello World", [], BlockFmt.NONE)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -173,7 +174,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
     # Comment
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_COMMENT, 0, "Hello World", [], doc.A_NONE)]
+    doc._tokens = [(BlockTyp.COMMENT, 0, "Hello World", [], BlockFmt.NONE)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -185,7 +186,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
     # Tags and References (Single)
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_KEYWORD, 0, "tag: Stuff", [], doc.A_NONE)]
+    doc._tokens = [(BlockTyp.KEYWORD, 0, "tag: Stuff", [], BlockFmt.NONE)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -197,7 +198,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
     # Tags and References (Multiple)
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_KEYWORD, 0, "char: Jane, John", [], doc.A_NONE)]
+    doc._tokens = [(BlockTyp.KEYWORD, 0, "char: Jane, John", [], BlockFmt.NONE)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -209,7 +210,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
     # Tags and References (Invalid)
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_KEYWORD, 0, "stuff: Stuff", [], doc.A_NONE)]
+    doc._tokens = [(BlockTyp.KEYWORD, 0, "stuff: Stuff", [], BlockFmt.NONE)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -229,7 +230,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
 
     # Left Align
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_TEXT, 0, "Hello World", [], doc.A_LEFT)]
+    doc._tokens = [(BlockTyp.TEXT, 0, "Hello World", [], BlockFmt.LEFT)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -239,7 +240,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
 
     # Right Align
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_TEXT, 0, "Hello World", [], doc.A_RIGHT)]
+    doc._tokens = [(BlockTyp.TEXT, 0, "Hello World", [], BlockFmt.RIGHT)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -249,7 +250,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
 
     # Center Align
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_TEXT, 0, "Hello World", [], doc.A_CENTRE)]
+    doc._tokens = [(BlockTyp.TEXT, 0, "Hello World", [], BlockFmt.CENTRE)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -259,7 +260,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
 
     # Justify
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_TEXT, 0, "Hello World", [], doc.A_JUSTIFY)]
+    doc._tokens = [(BlockTyp.TEXT, 0, "Hello World", [], BlockFmt.JUSTIFY)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -269,7 +270,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
 
     # Page Break Before
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_TEXT, 0, "Hello World", [], doc.A_PBB)]
+    doc._tokens = [(BlockTyp.TEXT, 0, "Hello World", [], BlockFmt.PBB)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -281,7 +282,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
 
     # Page Break After
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_TEXT, 0, "Hello World", [], doc.A_PBA)]
+    doc._tokens = [(BlockTyp.TEXT, 0, "Hello World", [], BlockFmt.PBA)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -293,7 +294,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
 
     # Zero Margins
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_TEXT, 0, "Hello World", [], doc.A_Z_TOPMRG | doc.A_Z_BTMMRG)]
+    doc._tokens = [(BlockTyp.TEXT, 0, "Hello World", [], BlockFmt.Z_TOPMRG | BlockFmt.Z_BTMMRG)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -304,7 +305,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
 
     # Indent
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_TEXT, 0, "Hello World", [], doc.A_IND_L | doc.A_IND_R)]
+    doc._tokens = [(BlockTyp.TEXT, 0, "Hello World", [], BlockFmt.IND_L | BlockFmt.IND_R)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
@@ -315,7 +316,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
 
     # First Line Indent
     xTest = ET.Element(_wTag("body"))
-    doc._tokens = [(doc.T_TEXT, 0, "Hello World", [], doc.A_IND_T)]
+    doc._tokens = [(BlockTyp.TEXT, 0, "Hello World", [], BlockFmt.IND_T)]
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (

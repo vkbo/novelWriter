@@ -32,35 +32,37 @@ from time import time
 from novelwriter.common import formatTimeStamp
 from novelwriter.constants import nwHeadFmt, nwHtmlUnicode, nwKeyWords, nwLabels
 from novelwriter.core.project import NWProject
-from novelwriter.formats.tokenizer import T_Formats, Tokenizer, stripEscape
+from novelwriter.formats.tokenizer import (
+    BlockFmt, BlockTyp, T_Formats, TextFmt, Tokenizer, stripEscape
+)
 from novelwriter.types import FONT_STYLE, FONT_WEIGHTS
 
 logger = logging.getLogger(__name__)
 
 # Each opener tag, with the id of its corresponding closer and tag format
 HTML_OPENER: dict[int, tuple[int, str]] = {
-    Tokenizer.FMT_B_B:   (Tokenizer.FMT_B_E,   "<strong>"),
-    Tokenizer.FMT_I_B:   (Tokenizer.FMT_I_E,   "<em>"),
-    Tokenizer.FMT_D_B:   (Tokenizer.FMT_D_E,   "<del>"),
-    Tokenizer.FMT_U_B:   (Tokenizer.FMT_U_E,   "<span style='text-decoration: underline;'>"),
-    Tokenizer.FMT_M_B:   (Tokenizer.FMT_M_E,   "<mark>"),
-    Tokenizer.FMT_SUP_B: (Tokenizer.FMT_SUP_E, "<sup>"),
-    Tokenizer.FMT_SUB_B: (Tokenizer.FMT_SUB_E, "<sub>"),
-    Tokenizer.FMT_DL_B:  (Tokenizer.FMT_DL_E,  "<span class='dialog'>"),
-    Tokenizer.FMT_ADL_B: (Tokenizer.FMT_ADL_E, "<span class='altdialog'>"),
+    TextFmt.B_B:   (TextFmt.B_E,   "<strong>"),
+    TextFmt.I_B:   (TextFmt.I_E,   "<em>"),
+    TextFmt.D_B:   (TextFmt.D_E,   "<del>"),
+    TextFmt.U_B:   (TextFmt.U_E,   "<span style='text-decoration: underline;'>"),
+    TextFmt.M_B:   (TextFmt.M_E,   "<mark>"),
+    TextFmt.SUP_B: (TextFmt.SUP_E, "<sup>"),
+    TextFmt.SUB_B: (TextFmt.SUB_E, "<sub>"),
+    TextFmt.DL_B:  (TextFmt.DL_E,  "<span class='dialog'>"),
+    TextFmt.ADL_B: (TextFmt.ADL_E, "<span class='altdialog'>"),
 }
 
 # Each closer tag, with the id of its corresponding opener and tag format
 HTML_CLOSER: dict[int, tuple[int, str]] = {
-    Tokenizer.FMT_B_E:   (Tokenizer.FMT_B_B,   "</strong>"),
-    Tokenizer.FMT_I_E:   (Tokenizer.FMT_I_B,   "</em>"),
-    Tokenizer.FMT_D_E:   (Tokenizer.FMT_D_B,   "</del>"),
-    Tokenizer.FMT_U_E:   (Tokenizer.FMT_U_B,   "</span>"),
-    Tokenizer.FMT_M_E:   (Tokenizer.FMT_M_B,   "</mark>"),
-    Tokenizer.FMT_SUP_E: (Tokenizer.FMT_SUP_B, "</sup>"),
-    Tokenizer.FMT_SUB_E: (Tokenizer.FMT_SUB_B, "</sub>"),
-    Tokenizer.FMT_DL_E:  (Tokenizer.FMT_DL_B,  "</span>"),
-    Tokenizer.FMT_ADL_E: (Tokenizer.FMT_ADL_B, "</span>"),
+    TextFmt.B_E:   (TextFmt.B_B,   "</strong>"),
+    TextFmt.I_E:   (TextFmt.I_B,   "</em>"),
+    TextFmt.D_E:   (TextFmt.D_B,   "</del>"),
+    TextFmt.U_E:   (TextFmt.U_B,   "</span>"),
+    TextFmt.M_E:   (TextFmt.M_B,   "</mark>"),
+    TextFmt.SUP_E: (TextFmt.SUP_B, "</sup>"),
+    TextFmt.SUB_E: (TextFmt.SUB_B, "</sub>"),
+    TextFmt.DL_E:  (TextFmt.DL_B,  "</span>"),
+    TextFmt.ADL_E: (TextFmt.ADL_B, "</span>"),
 }
 
 # Empty HTML tag record
@@ -183,30 +185,30 @@ class ToHtml(Tokenizer):
             # Styles
             aStyle = []
             if tStyle is not None and self._cssStyles:
-                if tStyle & self.A_LEFT:
+                if tStyle & BlockFmt.LEFT:
                     aStyle.append("text-align: left;")
-                elif tStyle & self.A_RIGHT:
+                elif tStyle & BlockFmt.RIGHT:
                     aStyle.append("text-align: right;")
-                elif tStyle & self.A_CENTRE:
+                elif tStyle & BlockFmt.CENTRE:
                     aStyle.append("text-align: center;")
-                elif tStyle & self.A_JUSTIFY:
+                elif tStyle & BlockFmt.JUSTIFY:
                     aStyle.append("text-align: justify;")
 
-                if tStyle & self.A_PBB:
+                if tStyle & BlockFmt.PBB:
                     aStyle.append("page-break-before: always;")
-                if tStyle & self.A_PBA:
+                if tStyle & BlockFmt.PBA:
                     aStyle.append("page-break-after: always;")
 
-                if tStyle & self.A_Z_BTMMRG:
+                if tStyle & BlockFmt.Z_BTMMRG:
                     aStyle.append("margin-bottom: 0;")
-                if tStyle & self.A_Z_TOPMRG:
+                if tStyle & BlockFmt.Z_TOPMRG:
                     aStyle.append("margin-top: 0;")
 
-                if tStyle & self.A_IND_L:
+                if tStyle & BlockFmt.IND_L:
                     aStyle.append(f"margin-left: {self._blockIndent:.2f}em;")
-                if tStyle & self.A_IND_R:
+                if tStyle & BlockFmt.IND_R:
                     aStyle.append(f"margin-right: {self._blockIndent:.2f}em;")
-                if tStyle & self.A_IND_T:
+                if tStyle & BlockFmt.IND_T:
                     aStyle.append(f"text-indent: {self._firstWidth:.2f}em;")
 
             if aStyle:
@@ -221,45 +223,45 @@ class ToHtml(Tokenizer):
                 aNm = ""
 
             # Process Text Type
-            if tType == self.T_TEXT:
+            if tType == BlockTyp.TEXT:
                 lines.append(f"<p{hStyle}>{self._formatText(tText, tFormat)}</p>\n")
 
-            elif tType == self.T_TITLE:
+            elif tType == BlockTyp.TITLE:
                 tHead = tText.replace(nwHeadFmt.BR, "<br>")
                 lines.append(f"<h1 class='title'{hStyle}>{aNm}{tHead}</h1>\n")
 
-            elif tType == self.T_HEAD1:
+            elif tType == BlockTyp.HEAD1:
                 tHead = tText.replace(nwHeadFmt.BR, "<br>")
                 lines.append(f"<{h1}{h1Cl}{hStyle}>{aNm}{tHead}</{h1}>\n")
 
-            elif tType == self.T_HEAD2:
+            elif tType == BlockTyp.HEAD2:
                 tHead = tText.replace(nwHeadFmt.BR, "<br>")
                 lines.append(f"<{h2}{hStyle}>{aNm}{tHead}</{h2}>\n")
 
-            elif tType == self.T_HEAD3:
+            elif tType == BlockTyp.HEAD3:
                 tHead = tText.replace(nwHeadFmt.BR, "<br>")
                 lines.append(f"<{h3}{hStyle}>{aNm}{tHead}</{h3}>\n")
 
-            elif tType == self.T_HEAD4:
+            elif tType == BlockTyp.HEAD4:
                 tHead = tText.replace(nwHeadFmt.BR, "<br>")
                 lines.append(f"<{h4}{hStyle}>{aNm}{tHead}</{h4}>\n")
 
-            elif tType == self.T_SEP:
+            elif tType == BlockTyp.SEP:
                 lines.append(f"<p class='sep'{hStyle}>{tText}</p>\n")
 
-            elif tType == self.T_SKIP:
+            elif tType == BlockTyp.SKIP:
                 lines.append(f"<p class='skip'{hStyle}>&nbsp;</p>\n")
 
-            elif tType == self.T_SYNOPSIS and self._doSynopsis:
+            elif tType == BlockTyp.SYNOPSIS and self._doSynopsis:
                 lines.append(self._formatSynopsis(self._formatText(tText, tFormat), True))
 
-            elif tType == self.T_SHORT and self._doSynopsis:
+            elif tType == BlockTyp.SHORT and self._doSynopsis:
                 lines.append(self._formatSynopsis(self._formatText(tText, tFormat), False))
 
-            elif tType == self.T_COMMENT and self._doComments:
+            elif tType == BlockTyp.COMMENT and self._doComments:
                 lines.append(self._formatComments(self._formatText(tText, tFormat)))
 
-            elif tType == self.T_KEYWORD and self._doKeywords:
+            elif tType == BlockTyp.KEYWORD and self._doKeywords:
                 tag, text = self._formatKeywords(tText)
                 kClass = f" class='meta meta-{tag}'" if tag else ""
                 tTemp = f"<p{kClass}{hStyle}>{text}</p>\n"
@@ -469,7 +471,7 @@ class ToHtml(Tokenizer):
                 if state.get(m[0], False):
                     tags.append((pos, m[1]))
                     state[m[0]] = False
-            elif fmt == self.FMT_FNOTE:
+            elif fmt == TextFmt.FNOTE:
                 if data in self._footnotes:
                     index = len(self._usedNotes) + 1
                     self._usedNotes[data] = index

@@ -27,6 +27,7 @@ from PyQt5.QtGui import QTextBlock, QTextCharFormat, QTextCursor
 from novelwriter import CONFIG
 from novelwriter.constants import nwUnicode
 from novelwriter.core.project import NWProject
+from novelwriter.formats.tokenizer import BlockFmt, BlockTyp
 from novelwriter.formats.toqdoc import TextDocumentTheme, ToQTextDocument
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
@@ -68,55 +69,55 @@ def testFmtToQTextDocument_ConvertHeaders(mockGUI):
     block = qdoc.document.findBlockByNumber(0)
     assert block.text() == "Title"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == qdoc._mHead[qdoc.T_TITLE][0]
-    assert bFmt.bottomMargin() == qdoc._mHead[qdoc.T_TITLE][1]
+    assert bFmt.topMargin() == qdoc._mHead[BlockTyp.TITLE][0]
+    assert bFmt.bottomMargin() == qdoc._mHead[BlockTyp.TITLE][1]
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.fontWeight() == qdoc._bold
-    assert cFmt.fontPointSize() == qdoc._sHead[qdoc.T_TITLE]
+    assert cFmt.fontPointSize() == qdoc._sHead[BlockTyp.TITLE]
     assert cFmt.foreground().color() == THEME.text
 
     # Partition
     block = qdoc.document.findBlockByNumber(1)
     assert block.text() == "Partition"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == qdoc._mHead[qdoc.T_HEAD1][0]
-    assert bFmt.bottomMargin() == qdoc._mHead[qdoc.T_HEAD1][1]
+    assert bFmt.topMargin() == qdoc._mHead[BlockTyp.HEAD1][0]
+    assert bFmt.bottomMargin() == qdoc._mHead[BlockTyp.HEAD1][1]
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.fontWeight() == qdoc._bold
-    assert cFmt.fontPointSize() == qdoc._sHead[qdoc.T_HEAD1]
+    assert cFmt.fontPointSize() == qdoc._sHead[BlockTyp.HEAD1]
     assert cFmt.foreground().color() == THEME.head
 
     # Chapter
     block = qdoc.document.findBlockByNumber(2)
     assert block.text() == "Chapter"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == qdoc._mHead[qdoc.T_HEAD2][0]
-    assert bFmt.bottomMargin() == qdoc._mHead[qdoc.T_HEAD2][1]
+    assert bFmt.topMargin() == qdoc._mHead[BlockTyp.HEAD2][0]
+    assert bFmt.bottomMargin() == qdoc._mHead[BlockTyp.HEAD2][1]
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.fontWeight() == qdoc._bold
-    assert cFmt.fontPointSize() == qdoc._sHead[qdoc.T_HEAD2]
+    assert cFmt.fontPointSize() == qdoc._sHead[BlockTyp.HEAD2]
     assert cFmt.foreground().color() == THEME.head
 
     # Scene
     block = qdoc.document.findBlockByNumber(3)
     assert block.text() == "Scene"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == qdoc._mHead[qdoc.T_HEAD3][0]
-    assert bFmt.bottomMargin() == qdoc._mHead[qdoc.T_HEAD3][1]
+    assert bFmt.topMargin() == qdoc._mHead[BlockTyp.HEAD3][0]
+    assert bFmt.bottomMargin() == qdoc._mHead[BlockTyp.HEAD3][1]
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.fontWeight() == qdoc._bold
-    assert cFmt.fontPointSize() == qdoc._sHead[qdoc.T_HEAD3]
+    assert cFmt.fontPointSize() == qdoc._sHead[BlockTyp.HEAD3]
     assert cFmt.foreground().color() == THEME.head
 
     # Section
     block = qdoc.document.findBlockByNumber(4)
     assert block.text() == "Section"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == qdoc._mHead[qdoc.T_HEAD4][0]
-    assert bFmt.bottomMargin() == qdoc._mHead[qdoc.T_HEAD4][1]
+    assert bFmt.topMargin() == qdoc._mHead[BlockTyp.HEAD4][0]
+    assert bFmt.bottomMargin() == qdoc._mHead[BlockTyp.HEAD4][1]
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.fontWeight() == qdoc._bold
-    assert cFmt.fontPointSize() == qdoc._sHead[qdoc.T_HEAD4]
+    assert cFmt.fontPointSize() == qdoc._sHead[BlockTyp.HEAD4]
     assert cFmt.foreground().color() == THEME.head
 
 
@@ -410,8 +411,8 @@ def testFmtToQTextDocument_TextBlockFormats(mockGUI):
     qdoc.document.clear()
 
     qdoc._tokens = [
-        (qdoc.T_TEXT, 1, "This is justified", [], qdoc.A_JUSTIFY),
-        (qdoc.T_TEXT, 1, "This has a page break", [], qdoc.A_PBA),
+        (BlockTyp.TEXT, 1, "This is justified", [], BlockFmt.JUSTIFY),
+        (BlockTyp.TEXT, 1, "This has a page break", [], BlockFmt.PBA),
     ]
     qdoc.doConvert()
     assert qdoc.document.blockCount() == 2

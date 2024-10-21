@@ -39,7 +39,7 @@ from novelwriter import __version__
 from novelwriter.common import firstFloat, xmlSubElem
 from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles
 from novelwriter.core.project import NWProject
-from novelwriter.formats.tokenizer import T_Formats, Tokenizer
+from novelwriter.formats.tokenizer import BlockFmt, BlockTyp, T_Formats, TextFmt, Tokenizer
 
 logger = logging.getLogger(__name__)
 
@@ -227,75 +227,75 @@ class ToDocX(Tokenizer):
 
             # Styles
             if tStyle is not None:
-                if tStyle & self.A_LEFT:
+                if tStyle & BlockFmt.LEFT:
                     par.setAlignment("left")
-                elif tStyle & self.A_RIGHT:
+                elif tStyle & BlockFmt.RIGHT:
                     par.setAlignment("right")
-                elif tStyle & self.A_CENTRE:
+                elif tStyle & BlockFmt.CENTRE:
                     par.setAlignment("center")
-                elif tStyle & self.A_JUSTIFY:
+                elif tStyle & BlockFmt.JUSTIFY:
                     par.setAlignment("both")
 
-                if tStyle & self.A_PBB:
+                if tStyle & BlockFmt.PBB:
                     par.setPageBreakBefore(True)
-                if tStyle & self.A_PBA:
+                if tStyle & BlockFmt.PBA:
                     par.setPageBreakAfter(True)
 
-                if tStyle & self.A_Z_BTMMRG:
+                if tStyle & BlockFmt.Z_BTMMRG:
                     par.setMarginBottom(0.0)
-                if tStyle & self.A_Z_TOPMRG:
+                if tStyle & BlockFmt.Z_TOPMRG:
                     par.setMarginTop(0.0)
 
-                if tStyle & self.A_IND_T:
+                if tStyle & BlockFmt.IND_T:
                     par.setIndentFirst(True)
-                if tStyle & self.A_IND_L:
+                if tStyle & BlockFmt.IND_L:
                     par.setMarginLeft(bIndent)
-                if tStyle & self.A_IND_R:
+                if tStyle & BlockFmt.IND_R:
                     par.setMarginRight(bIndent)
 
             # Process Text Types
-            if tType == self.T_TEXT:
+            if tType == BlockTyp.TEXT:
                 self._processFragments(par, S_NORM, tText, tFormat)
 
-            elif tType == self.T_TITLE:
+            elif tType == BlockTyp.TITLE:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._processFragments(par, S_TITLE, tHead, tFormat)
 
-            elif tType == self.T_HEAD1:
+            elif tType == BlockTyp.HEAD1:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._processFragments(par, S_HEAD1, tHead, tFormat)
 
-            elif tType == self.T_HEAD2:
+            elif tType == BlockTyp.HEAD2:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._processFragments(par, S_HEAD2, tHead, tFormat)
 
-            elif tType == self.T_HEAD3:
+            elif tType == BlockTyp.HEAD3:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._processFragments(par, S_HEAD3, tHead, tFormat)
 
-            elif tType == self.T_HEAD4:
+            elif tType == BlockTyp.HEAD4:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._processFragments(par, S_HEAD4, tHead, tFormat)
 
-            elif tType == self.T_SEP:
+            elif tType == BlockTyp.SEP:
                 self._processFragments(par, S_SEP, tText)
 
-            elif tType == self.T_SKIP:
+            elif tType == BlockTyp.SKIP:
                 self._processFragments(par, S_NORM, "")
 
-            elif tType == self.T_SYNOPSIS and self._doSynopsis:
+            elif tType == BlockTyp.SYNOPSIS and self._doSynopsis:
                 tTemp, tFmt = self._formatSynopsis(tText, tFormat, True)
                 self._processFragments(par, S_META, tTemp, tFmt)
 
-            elif tType == self.T_SHORT and self._doSynopsis:
+            elif tType == BlockTyp.SHORT and self._doSynopsis:
                 tTemp, tFmt = self._formatSynopsis(tText, tFormat, False)
                 self._processFragments(par, S_META, tTemp, tFmt)
 
-            elif tType == self.T_COMMENT and self._doComments:
+            elif tType == BlockTyp.COMMENT and self._doComments:
                 tTemp, tFmt = self._formatComments(tText, tFormat)
                 self._processFragments(par, S_META, tTemp, tFmt)
 
-            elif tType == self.T_KEYWORD and self._doKeywords:
+            elif tType == BlockTyp.KEYWORD and self._doKeywords:
                 tTemp, tFmt = self._formatKeywords(tText)
                 self._processFragments(par, S_META, tTemp, tFmt)
 
@@ -378,7 +378,7 @@ class ToDocX(Tokenizer):
         name = self._localLookup("Synopsis" if synopsis else "Short Description")
         shift = len(name) + 2
         rTxt = f"{name}: {text}"
-        rFmt: T_Formats = [(0, self.FMT_B_B, ""), (len(name) + 1, self.FMT_B_E, "")]
+        rFmt: T_Formats = [(0, TextFmt.B_B, ""), (len(name) + 1, TextFmt.B_E, "")]
         rFmt.extend((p + shift, f, d) for p, f, d in fmt)
         return rTxt, rFmt
 
@@ -387,7 +387,7 @@ class ToDocX(Tokenizer):
         name = self._localLookup("Comment")
         shift = len(name) + 2
         rTxt = f"{name}: {text}"
-        rFmt: T_Formats = [(0, self.FMT_B_B, ""), (len(name) + 1, self.FMT_B_E, "")]
+        rFmt: T_Formats = [(0, TextFmt.B_B, ""), (len(name) + 1, TextFmt.B_E, "")]
         rFmt.extend((p + shift, f, d) for p, f, d in fmt)
         return rTxt, rFmt
 
@@ -398,7 +398,7 @@ class ToDocX(Tokenizer):
             return "", []
 
         rTxt = f"{self._localLookup(nwLabels.KEY_NAME[bits[0]])}: "
-        rFmt: T_Formats = [(0, self.FMT_B_B, ""), (len(rTxt) - 1, self.FMT_B_E, "")]
+        rFmt: T_Formats = [(0, TextFmt.B_B, ""), (len(rTxt) - 1, TextFmt.B_E, "")]
         if len(bits) > 1:
             if bits[0] == nwKeyWords.TAG_KEY:
                 rTxt += bits[1]
@@ -424,45 +424,45 @@ class ToDocX(Tokenizer):
             if temp := text[fStart:fPos]:
                 par.addContent(self._textRunToXml(temp, xFmt))
 
-            if fFmt == self.FMT_B_B:
+            if fFmt == TextFmt.B_B:
                 xFmt |= X_BLD
-            elif fFmt == self.FMT_B_E:
+            elif fFmt == TextFmt.B_E:
                 xFmt &= M_BLD
-            elif fFmt == self.FMT_I_B:
+            elif fFmt == TextFmt.I_B:
                 xFmt |= X_ITA
-            elif fFmt == self.FMT_I_E:
+            elif fFmt == TextFmt.I_E:
                 xFmt &= M_ITA
-            elif fFmt == self.FMT_D_B:
+            elif fFmt == TextFmt.D_B:
                 xFmt |= X_DEL
-            elif fFmt == self.FMT_D_E:
+            elif fFmt == TextFmt.D_E:
                 xFmt &= M_DEL
-            elif fFmt == self.FMT_U_B:
+            elif fFmt == TextFmt.U_B:
                 xFmt |= X_UND
-            elif fFmt == self.FMT_U_E:
+            elif fFmt == TextFmt.U_E:
                 xFmt &= M_UND
-            elif fFmt == self.FMT_M_B:
+            elif fFmt == TextFmt.M_B:
                 xFmt |= X_MRK
-            elif fFmt == self.FMT_M_E:
+            elif fFmt == TextFmt.M_E:
                 xFmt &= M_MRK
-            elif fFmt == self.FMT_SUP_B:
+            elif fFmt == TextFmt.SUP_B:
                 xFmt |= X_SUP
-            elif fFmt == self.FMT_SUP_E:
+            elif fFmt == TextFmt.SUP_E:
                 xFmt &= M_SUP
-            elif fFmt == self.FMT_SUB_B:
+            elif fFmt == TextFmt.SUB_B:
                 xFmt |= X_SUB
-            elif fFmt == self.FMT_SUB_E:
+            elif fFmt == TextFmt.SUB_E:
                 xFmt &= M_SUB
-            elif fFmt == self.FMT_DL_B:
+            elif fFmt == TextFmt.DL_B:
                 xFmt |= X_DLG
-            elif fFmt == self.FMT_DL_E:
+            elif fFmt == TextFmt.DL_E:
                 xFmt &= M_DLG
-            elif fFmt == self.FMT_ADL_B:
+            elif fFmt == TextFmt.ADL_B:
                 xFmt |= X_DLA
-            elif fFmt == self.FMT_ADL_E:
+            elif fFmt == TextFmt.ADL_E:
                 xFmt &= M_DLA
-            elif fFmt == self.FMT_FNOTE:
+            elif fFmt == TextFmt.FNOTE:
                 xNode = self._generateFootnote(fData)
-            elif fFmt == self.FMT_STRIP:
+            elif fFmt == TextFmt.STRIP:
                 pass
 
             # Move pos for next pass
