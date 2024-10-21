@@ -256,34 +256,26 @@ class Tokenizer(ABC):
 
     def setTitleStyle(self, center: bool, pageBreak: bool) -> None:
         """Set the title heading style."""
-        self._titleStyle = (
-            (BlockFmt.CENTRE if center else BlockFmt.NONE)
-            | (BlockFmt.PBB if pageBreak else BlockFmt.NONE)
-        )
+        self._titleStyle = BlockFmt.CENTRE if center else BlockFmt.NONE
+        self._titleStyle |= BlockFmt.PBB if pageBreak else BlockFmt.NONE
         return
 
     def setPartitionStyle(self, center: bool, pageBreak: bool) -> None:
         """Set the partition heading style."""
-        self._partStyle = (
-            (BlockFmt.CENTRE if center else BlockFmt.NONE)
-            | (BlockFmt.PBB if pageBreak else BlockFmt.NONE)
-        )
+        self._partStyle = BlockFmt.CENTRE if center else BlockFmt.NONE
+        self._partStyle |= BlockFmt.PBB if pageBreak else BlockFmt.NONE
         return
 
     def setChapterStyle(self, center: bool, pageBreak: bool) -> None:
         """Set the chapter heading style."""
-        self._chapterStyle = (
-            (BlockFmt.CENTRE if center else BlockFmt.NONE)
-            | (BlockFmt.PBB if pageBreak else BlockFmt.NONE)
-        )
+        self._chapterStyle = BlockFmt.CENTRE if center else BlockFmt.NONE
+        self._chapterStyle |= BlockFmt.PBB if pageBreak else BlockFmt.NONE
         return
 
     def setSceneStyle(self, center: bool, pageBreak: bool) -> None:
         """Set the scene heading style."""
-        self._sceneStyle = (
-            (BlockFmt.CENTRE if center else BlockFmt.NONE)
-            | (BlockFmt.PBB if pageBreak else BlockFmt.NONE)
-        )
+        self._sceneStyle = BlockFmt.CENTRE if center else BlockFmt.NONE
+        self._sceneStyle |= BlockFmt.PBB if pageBreak else BlockFmt.NONE
         return
 
     def setFont(self, font: QFont) -> None:
