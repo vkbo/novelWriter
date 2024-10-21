@@ -1,6 +1,6 @@
 """
 novelWriter – ToOdt Class Tester
-=================================
+================================
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen
@@ -48,8 +48,8 @@ XML_NS = [
 def xmlToText(xElem):
     """Get the text content of an XML element."""
     rTxt = ET.tostring(xElem, encoding="utf-8", xml_declaration=False).decode()
-    for nSpace in XML_NS:
-        rTxt = rTxt.replace(nSpace, "")
+    for ns in XML_NS:
+        rTxt = rTxt.replace(ns, "")
     return rTxt
 
 

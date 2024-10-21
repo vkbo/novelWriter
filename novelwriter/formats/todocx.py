@@ -109,7 +109,7 @@ S_HEAD2 = "Heading2"
 S_HEAD3 = "Heading3"
 S_HEAD4 = "Heading4"
 S_SEP   = "Separator"
-S_META  = "TextMeta"
+S_META  = "MetaText"
 S_HEAD  = "Header"
 S_FNOTE = "FootnoteText"
 
@@ -423,7 +423,8 @@ class ToDocX(Tokenizer):
                 par.addContent(xNode)
                 xNode = None
 
-            par.addContent(self._textRunToXml(text[fStart:fPos], xFmt))
+            if temp := text[fStart:fPos]:
+                par.addContent(self._textRunToXml(temp, xFmt))
 
             if fFmt == self.FMT_B_B:
                 xFmt |= X_BLD
@@ -647,7 +648,7 @@ class ToDocX(Tokenizer):
 
         # Add Text Meta Style
         styles.append(DocXParStyle(
-            name="Text Meta",
+            name="Meta Text",
             styleId=S_META,
             size=fSz,
             basedOn=S_NORM,
@@ -905,15 +906,8 @@ class ToDocX(Tokenizer):
         for i, par in enumerate(self._pars):
             if i > 0 and par.pageBreakBefore:
                 prev = self._pars[i-1]
-                if prev.pageBreakAfter:
-                    # We already have a break, so we inject a new paragraph instead
-                    empty = DocXParagraph()
-                    empty.setStyle(self._styles.get(S_NORM))
-                    empty.setPageBreakAfter(True)
-                    pars.append(empty)
-                else:
-                    par.setPageBreakBefore(False)
-                    prev.setPageBreakAfter(True)
+                par.setPageBreakBefore(False)
+                prev.setPageBreakAfter(True)
 
             pars.append(par)
 
@@ -1036,11 +1030,6 @@ class DocXParagraph:
     def pageBreakBefore(self) -> bool:
         """Has page break before."""
         return self._breakBefore
-
-    @property
-    def pageBreakAfter(self) -> bool:
-        """Has page break after."""
-        return self._breakAfter
 
     ##
     #  Setters

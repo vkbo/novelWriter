@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:footnotePr>
+    <w:numFmt w:val="decimal" />
+  </w:footnotePr>
+  <w:docVars>
+    <w:docVar w:name="ManuscriptTitleCount" w:val="11" />
+    <w:docVar w:name="ManuscriptParagraphCount" w:val="42" />
+    <w:docVar w:name="ManuscriptAllWords" w:val="4029" />
+    <w:docVar w:name="ManuscriptTextWords" w:val="3705" />
+    <w:docVar w:name="ManuscriptTitleWords" w:val="21" />
+    <w:docVar w:name="ManuscriptAllChars" w:val="27014" />
+    <w:docVar w:name="ManuscriptTextChars" w:val="24914" />
+    <w:docVar w:name="ManuscriptTitleChars" w:val="123" />
+    <w:docVar w:name="ManuscriptAllWordChars" w:val="23075" />
+    <w:docVar w:name="ManuscriptTextWordChars" w:val="21251" />
+    <w:docVar w:name="ManuscriptTitleWordChars" w:val="113" />
+  </w:docVars>
+</w:settings>
