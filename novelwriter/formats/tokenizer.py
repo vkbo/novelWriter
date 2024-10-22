@@ -58,18 +58,17 @@ class ComStyle(NamedTuple):
     label: str = ""
     labelClass: str = ""
     textClass: str = ""
-    blockType: BlockTyp = BlockTyp.TEXT
 
 
 COMMENT_STYLE = {
-    nwComment.PLAIN:    ComStyle("Comment", "comment", "comment", BlockTyp.COMMENT),
+    nwComment.PLAIN:    ComStyle("Comment", "comment", "comment"),
     nwComment.IGNORE:   ComStyle(),
-    nwComment.SYNOPSIS: ComStyle("Synopsis", "modifier", "synopsis", BlockTyp.SUMMARY),
-    nwComment.SHORT:    ComStyle("Short Description", "modifier", "synopsis", BlockTyp.SUMMARY),
-    nwComment.NOTE:     ComStyle("Note", "modifier", "note", BlockTyp.NOTE),
+    nwComment.SYNOPSIS: ComStyle("Synopsis", "modifier", "synopsis"),
+    nwComment.SHORT:    ComStyle("Short Description", "modifier", "synopsis"),
+    nwComment.NOTE:     ComStyle("Note", "modifier", "note"),
     nwComment.FOOTNOTE: ComStyle("", "modifier", "note"),
     nwComment.COMMENT:  ComStyle(),
-    nwComment.STORY:    ComStyle("", "modifier", "note", BlockTyp.NOTE),
+    nwComment.STORY:    ComStyle("", "modifier", "note"),
 }
 
 
@@ -93,7 +92,6 @@ class Tokenizer(ABC):
         BlockTyp.TITLE, BlockTyp.HEAD1, BlockTyp.HEAD2, BlockTyp.HEAD2, BlockTyp.HEAD3,
         BlockTyp.HEAD4, BlockTyp.SEP, BlockTyp.SKIP,
     ]
-    L_NOTES = [BlockTyp.SUMMARY, BlockTyp.NOTE, BlockTyp.COMMENT]
 
     def __init__(self, project: NWProject) -> None:
 
@@ -208,7 +206,7 @@ class Tokenizer(ABC):
             nwShortcode.FOOTNOTE_B: TextFmt.FNOTE,
         }
 
-        self._rxDialogue: list[tuple[re.Pattern, int, int]] = []
+        self._rxDialogue: list[tuple[re.Pattern, tuple[int, str], tuple[int, str]]] = []
 
         return
 
@@ -352,19 +350,23 @@ class Tokenizer(ABC):
         if state:
             if CONFIG.dialogStyle > 0:
                 self._rxDialogue.append((
-                    REGEX_PATTERNS.dialogStyle, TextFmt.DL_B, TextFmt.DL_E
+                    REGEX_PATTERNS.dialogStyle,
+                    (TextFmt.COL_B, "dialog"), (TextFmt.COL_E, ""),
                 ))
             if CONFIG.dialogLine:
                 self._rxDialogue.append((
-                    REGEX_PATTERNS.dialogLine, TextFmt.DL_B, TextFmt.DL_E
+                    REGEX_PATTERNS.dialogLine,
+                    (TextFmt.COL_B, "dialog"), (TextFmt.COL_E, ""),
                 ))
             if CONFIG.narratorBreak:
                 self._rxDialogue.append((
-                    REGEX_PATTERNS.narratorBreak, TextFmt.DL_E, TextFmt.DL_B
+                    REGEX_PATTERNS.narratorBreak,
+                    (TextFmt.COL_E, ""), (TextFmt.COL_B, "dialog"),
                 ))
             if CONFIG.altDialogOpen and CONFIG.altDialogClose:
                 self._rxDialogue.append((
-                    REGEX_PATTERNS.altDialogStyle, TextFmt.ADL_B, TextFmt.ADL_E
+                    REGEX_PATTERNS.altDialogStyle,
+                    (TextFmt.COL_B, "altdialog"), (TextFmt.COL_E, ""),
                 ))
         return
 
@@ -460,6 +462,8 @@ class Tokenizer(ABC):
         self._classes["modifier"] = self._theme.modifier
         self._classes["synopsis"] = self._theme.note
         self._classes["comment"] = self._theme.comment
+        self._classes["dialog"] = self._theme.dialog
+        self._classes["altdialog"] = self._theme.altdialog
         return
 
     def addRootHeading(self, tHandle: str) -> None:
@@ -610,7 +614,7 @@ class Tokenizer(ABC):
                 if cStyle in (nwComment.SYNOPSIS, nwComment.SHORT, nwComment.PLAIN):
                     bStyle = COMMENT_STYLE[cStyle]
                     tLine, tFmt = self._formatNote(bStyle, cKey, cText)
-                    blocks.append((bStyle.blockType, nHead, tLine, tFmt, sAlign))
+                    blocks.append((BlockTyp.COMMENT, nHead, tLine, tFmt, sAlign))
                     if self._keepRaw:
                         tmpMarkdown.append(f"{aLine}\n")
 
@@ -619,8 +623,6 @@ class Tokenizer(ABC):
                     self._footnotes[f"{tHandle}:{cKey}"] = (tLine, tFmt)
                     if self._keepRaw:
                         tmpMarkdown.append(f"{aLine}\n")
-                else:
-                    continue
 
             elif aLine.startswith("@"):
                 # Keywords
@@ -1014,7 +1016,7 @@ class Tokenizer(ABC):
                 allChars += nChars
                 allWordChars += nWChars
 
-            elif tType in self.L_NOTES:
+            elif tType == BlockTyp.COMMENT:
                 words = tText.split()
                 allWords += len(words)
                 allChars += len(tText)
@@ -1130,10 +1132,10 @@ class Tokenizer(ABC):
 
         # Match Dialogue
         if self._rxDialogue and hDialog:
-            for regEx, fmtB, fmtE in self._rxDialogue:
+            for regEx, (fmtB, clsB), (fmtE, clsE) in self._rxDialogue:
                 for res in regEx.finditer(text):
-                    temp.append((res.start(0), 0, fmtB, ""))
-                    temp.append((res.end(0), 0, fmtE, ""))
+                    temp.append((res.start(0), 0, fmtB, clsB))
+                    temp.append((res.end(0), 0, fmtE, clsE))
 
         # Post-process text and format
         result = text

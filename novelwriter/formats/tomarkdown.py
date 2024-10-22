@@ -150,7 +150,7 @@ class ToMarkdown(Tokenizer):
             elif tType == BlockTyp.SKIP:
                 lines.append(f"{cSkip}\n\n")
 
-            elif tType in self.L_NOTES:
+            elif tType == BlockTyp.COMMENT:
                 lines.append(f"{self._formatText(tText, tFormat, mTags)}\n\n")
 
             elif tType == BlockTyp.KEYWORD and self._doKeywords:

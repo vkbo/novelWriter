@@ -91,8 +91,6 @@ X_MRK = 0x010  # Marked format
 X_SUP = 0x020  # Superscript
 X_SUB = 0x040  # Subscript
 X_COL = 0x080  # Coloured text
-X_DLG = 0x100  # Dialogue
-X_DLA = 0x200  # Alt. Dialogue
 
 # Formatting Masks
 M_BLD = ~X_BLD
@@ -103,8 +101,6 @@ M_MRK = ~X_MRK
 M_SUP = ~X_SUP
 M_SUB = ~X_SUB
 M_COL = ~X_COL
-M_DLG = ~X_DLG
-M_DLA = ~X_DLA
 
 # ODT Styles
 S_TITLE = "Title"
@@ -484,7 +480,7 @@ class ToOdt(Tokenizer):
             elif tType == BlockTyp.SKIP:
                 self._addTextPar(xText, S_TEXT, oStyle, "")
 
-            elif tType in self.L_NOTES:
+            elif tType == BlockTyp.COMMENT:
                 self._addTextPar(xText, S_META, oStyle, tText, tFmt=tFormat)
 
             elif tType == BlockTyp.KEYWORD and self._doKeywords:
@@ -657,14 +653,6 @@ class ToOdt(Tokenizer):
             elif fFmt == TextFmt.COL_E:
                 xFmt &= M_COL
                 fClass = ""
-            elif fFmt == TextFmt.DL_B:
-                xFmt |= X_DLG
-            elif fFmt == TextFmt.DL_E:
-                xFmt &= M_DLG
-            elif fFmt == TextFmt.ADL_B:
-                xFmt |= X_DLA
-            elif fFmt == TextFmt.ADL_E:
-                xFmt &= M_DLA
             elif fFmt == TextFmt.FNOTE:
                 xNode = self._generateFootnote(fData)
             elif fFmt == TextFmt.STRIP:

@@ -47,8 +47,7 @@ HTML_OPENER: dict[int, tuple[int, str]] = {
     TextFmt.M_B:   (TextFmt.M_E,   "<mark>"),
     TextFmt.SUP_B: (TextFmt.SUP_E, "<sup>"),
     TextFmt.SUB_B: (TextFmt.SUB_E, "<sub>"),
-    TextFmt.DL_B:  (TextFmt.DL_E,  "<span class='dialog'>"),
-    TextFmt.ADL_B: (TextFmt.ADL_E, "<span class='altdialog'>"),
+    TextFmt.COL_B: (TextFmt.COL_E, "<span style='color: {0}'>"),
 }
 
 # Each closer tag, with the id of its corresponding opener and tag format
@@ -60,8 +59,7 @@ HTML_CLOSER: dict[int, tuple[int, str]] = {
     TextFmt.M_E:   (TextFmt.M_B,   "</mark>"),
     TextFmt.SUP_E: (TextFmt.SUP_B, "</sup>"),
     TextFmt.SUB_E: (TextFmt.SUB_B, "</sub>"),
-    TextFmt.DL_E:  (TextFmt.DL_B,  "</span>"),
-    TextFmt.ADL_E: (TextFmt.ADL_B, "</span>"),
+    TextFmt.COL_E: (TextFmt.COL_B, "</span>"),
 }
 
 # Empty HTML tag record
@@ -251,10 +249,7 @@ class ToHtml(Tokenizer):
             elif tType == BlockTyp.SKIP:
                 lines.append(f"<p class='skip'{hStyle}>&nbsp;</p>\n")
 
-            elif tType == BlockTyp.SUMMARY:
-                lines.append(f"<p class='synopsis'>{self._formatText(tText, tFormat)}</p>\n")
-
-            elif tType == BlockTyp.COMMENT and self._doComments:
+            elif tType == BlockTyp.COMMENT:
                 lines.append(f"<p class='comment'>{self._formatText(tText, tFormat)}</p>\n")
 
             elif tType == BlockTyp.KEYWORD and self._doKeywords:
@@ -439,11 +434,6 @@ class ToHtml(Tokenizer):
         styles.append("a {color: rgb(66, 113, 174);}")
         styles.append("mark {background: rgb(255, 255, 166);}")
         styles.append(".keyword {color: rgb(245, 135, 31); font-weight: bold;}")
-        styles.append(".break {text-align: left;}")
-        styles.append(".synopsis {font-style: italic;}")
-        styles.append(".comment {font-style: italic; color: rgb(100, 100, 100);}")
-        styles.append(".dialog {color: rgb(66, 113, 174);}")
-        styles.append(".altdialog {color: rgb(129, 55, 9);}")
 
         return styles
 
@@ -463,7 +453,10 @@ class ToHtml(Tokenizer):
         for pos, fmt, data in tFmt:
             if m := HTML_OPENER.get(fmt):
                 if not state.get(fmt, True):
-                    tags.append((pos, m[1]))
+                    if fmt == TextFmt.COL_B and (color := self._classes.get(data)):
+                        tags.append((pos, m[1].format(color.name(QtHexRgb))))
+                    else:
+                        tags.append((pos, m[1]))
                     state[fmt] = True
             elif m := HTML_CLOSER.get(fmt):
                 if state.get(m[0], False):

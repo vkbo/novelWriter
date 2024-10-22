@@ -86,12 +86,8 @@ class TextFmt(IntEnum):
     SUB_E = 14  # End subscript
     COL_B = 15  # Begin colour
     COL_E = 16  # End colour
-    DL_B  = 17  # Begin dialogue
-    DL_E  = 18  # End dialogue
-    ADL_B = 19  # Begin alt dialogue
-    ADL_E = 20  # End alt dialogue
-    FNOTE = 21  # Footnote marker
-    STRIP = 22  # Strip the format code
+    FNOTE = 17  # Footnote marker
+    STRIP = 18  # Strip the format code
 
 
 class BlockTyp(IntEnum):

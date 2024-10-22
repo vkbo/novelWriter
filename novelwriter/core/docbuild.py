@@ -160,6 +160,7 @@ class NWBuildDocument:
         elif bFormat in (nwBuildFmt.HTML, nwBuildFmt.J_HTML):
             makeObj = ToHtml(self._project)
             filtered = self._setupBuild(makeObj)
+            makeObj.initDocument()
 
             yield from self._iterBuild(makeObj, filtered)
 

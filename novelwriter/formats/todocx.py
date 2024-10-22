@@ -96,8 +96,6 @@ X_MRK = 0x010  # Marked format
 X_SUP = 0x020  # Superscript
 X_SUB = 0x040  # Subscript
 X_COL = 0x080  # Coloured text
-X_DLG = 0x100  # Dialogue
-X_DLA = 0x200  # Alt. Dialogue
 
 # Formatting Masks
 M_BLD = ~X_BLD
@@ -108,8 +106,6 @@ M_MRK = ~X_MRK
 M_SUP = ~X_SUP
 M_SUB = ~X_SUB
 M_COL = ~X_COL
-M_DLG = ~X_DLG
-M_DLA = ~X_DLA
 
 # DocX Styles
 S_NORM  = "Normal"
@@ -292,7 +288,7 @@ class ToDocX(Tokenizer):
             elif tType == BlockTyp.SKIP:
                 self._processFragments(par, S_NORM, "")
 
-            elif tType in self.L_NOTES:
+            elif tType == BlockTyp.COMMENT:
                 self._processFragments(par, S_META, tText, tFormat)
 
             elif tType == BlockTyp.KEYWORD and self._doKeywords:
@@ -441,14 +437,6 @@ class ToDocX(Tokenizer):
             elif fFmt == TextFmt.COL_E:
                 xFmt &= M_COL
                 fClass = ""
-            elif fFmt == TextFmt.DL_B:
-                xFmt |= X_DLG
-            elif fFmt == TextFmt.DL_E:
-                xFmt &= M_DLG
-            elif fFmt == TextFmt.ADL_B:
-                xFmt |= X_DLA
-            elif fFmt == TextFmt.ADL_E:
-                xFmt &= M_DLA
             elif fFmt == TextFmt.FNOTE:
                 xNode = self._generateFootnote(fData)
             elif fFmt == TextFmt.STRIP:
@@ -487,10 +475,6 @@ class ToDocX(Tokenizer):
             xmlSubElem(rPr, _wTag("vertAlign"), attrib={_wTag("val"): "subscript"})
         if fmt & X_COL and (color := self._classes.get(fClass)):
             xmlSubElem(rPr, _wTag("color"), attrib={_wTag("val"): _docXCol(color)})
-        if fmt & X_DLG:
-            xmlSubElem(rPr, _wTag("color"), attrib={_wTag("val"): COL_DIALOG_M})
-        if fmt & X_DLA:
-            xmlSubElem(rPr, _wTag("color"), attrib={_wTag("val"): COL_DIALOG_A})
 
         for segment in RX_TEXT.split(text):
             if segment == "\n":

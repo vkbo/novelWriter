@@ -240,7 +240,7 @@ class ToQTextDocument(Tokenizer):
                 newBlock(cursor, bFmt)
                 cursor.insertText(nwUnicode.U_NBSP, self._cText)
 
-            elif tType in self.L_NOTES:
+            elif tType == BlockTyp.COMMENT:
                 newBlock(cursor, bFmt)
                 self._insertFragments(tText, tFormat, cursor, self._cText)
 
@@ -337,22 +337,10 @@ class ToQTextDocument(Tokenizer):
                 cFmt.setVerticalAlignment(QtVAlignSub)
             elif fmt == TextFmt.SUB_E:
                 cFmt.setVerticalAlignment(QtVAlignNormal)
-            elif fmt == TextFmt.SUB_B:
-                cFmt.setVerticalAlignment(QtVAlignSub)
-            elif fmt == TextFmt.SUB_E:
-                cFmt.setVerticalAlignment(QtVAlignNormal)
             elif fmt == TextFmt.COL_B:
                 if color := self._classes.get(data):
                     cFmt.setForeground(color)
             elif fmt == TextFmt.COL_E:
-                cFmt.setForeground(self._theme.text)
-            elif fmt == TextFmt.DL_B:
-                cFmt.setForeground(self._theme.dialog)
-            elif fmt == TextFmt.DL_E:
-                cFmt.setForeground(self._theme.text)
-            elif fmt == TextFmt.ADL_B:
-                cFmt.setForeground(self._theme.altdialog)
-            elif fmt == TextFmt.ADL_E:
                 cFmt.setForeground(self._theme.text)
             elif fmt == TextFmt.FNOTE:
                 xFmt = QTextCharFormat(self._cCode)

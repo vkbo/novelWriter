@@ -736,7 +736,7 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens._text = "% synopsis: The synopsis\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.SUMMARY, 0, "Synopsis: The synopsis", [
+        BlockTyp.COMMENT, 0, "Synopsis: The synopsis", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"), (9, TextFmt.B_E, ""),
             (9, TextFmt.COL_E, ""), (10, TextFmt.COL_B, "synopsis"), (22, TextFmt.COL_E, "")
         ], BlockFmt.NONE
@@ -754,7 +754,7 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens._text = "% short: A short description\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.SUMMARY, 0, "Short Description: A short description", [
+        BlockTyp.COMMENT, 0, "Short Description: A short description", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"), (18, TextFmt.B_E, ""),
             (18, TextFmt.COL_E, ""), (19, TextFmt.COL_B, "synopsis"), (38, TextFmt.COL_E, ""),
         ], BlockFmt.NONE
@@ -1129,10 +1129,10 @@ def testFmtToken_Dialogue(mockGUI):
         BlockTyp.TEXT, 0,
         "Text with \u2018dialogue one,\u2019 and \u2018dialogue two.\u2019",
         [
-            (10, TextFmt.DL_B, ""),
-            (25, TextFmt.DL_E, ""),
-            (30, TextFmt.DL_B, ""),
-            (45, TextFmt.DL_E, ""),
+            (10, TextFmt.COL_B, "dialog"),
+            (25, TextFmt.COL_E, ""),
+            (30, TextFmt.COL_B, "dialog"),
+            (45, TextFmt.COL_E, ""),
         ],
         BlockFmt.NONE
     )]
@@ -1144,10 +1144,10 @@ def testFmtToken_Dialogue(mockGUI):
         BlockTyp.TEXT, 0,
         "Text with \u201cdialogue one,\u201d and \u201cdialogue two.\u201d",
         [
-            (10, TextFmt.DL_B, ""),
-            (25, TextFmt.DL_E, ""),
-            (30, TextFmt.DL_B, ""),
-            (45, TextFmt.DL_E, ""),
+            (10, TextFmt.COL_B, "dialog"),
+            (25, TextFmt.COL_E, ""),
+            (30, TextFmt.COL_B, "dialog"),
+            (45, TextFmt.COL_E, ""),
         ],
         BlockFmt.NONE
     )]
@@ -1159,10 +1159,10 @@ def testFmtToken_Dialogue(mockGUI):
         BlockTyp.TEXT, 0,
         "Text with ::dialogue one,:: and ::dialogue two.::",
         [
-            (10, TextFmt.ADL_B, ""),
-            (27, TextFmt.ADL_E, ""),
-            (32, TextFmt.ADL_B, ""),
-            (49, TextFmt.ADL_E, ""),
+            (10, TextFmt.COL_B, "altdialog"),
+            (27, TextFmt.COL_E, ""),
+            (32, TextFmt.COL_B, "altdialog"),
+            (49, TextFmt.COL_E, ""),
         ],
         BlockFmt.NONE
     )]
@@ -1174,10 +1174,10 @@ def testFmtToken_Dialogue(mockGUI):
         BlockTyp.TEXT, 0,
         "\u2013 Dialogue with a narrator break, \u2013he said,\u2013 see?",
         [
-            (0,  TextFmt.DL_B, ""),
-            (34, TextFmt.DL_E, ""),
-            (44, TextFmt.DL_B, ""),
-            (49, TextFmt.DL_E, ""),
+            (0,  TextFmt.COL_B, "dialog"),
+            (34, TextFmt.COL_E, ""),
+            (44, TextFmt.COL_B, "dialog"),
+            (49, TextFmt.COL_E, ""),
         ],
         BlockFmt.NONE
     )]
@@ -1193,9 +1193,9 @@ def testFmtToken_Dialogue(mockGUI):
         "\u201cDialogue text.\u201d",
         [
             (0,  TextFmt.I_B, ""),
-            (0,  TextFmt.DL_B, ""),
+            (0,  TextFmt.COL_B, "dialog"),
             (16, TextFmt.I_E, ""),
-            (16, TextFmt.DL_E, ""),
+            (16, TextFmt.COL_E, ""),
         ],
         BlockFmt.NONE
     )]
@@ -1407,8 +1407,8 @@ def testFmtToken_TextIndent(mockGUI):
         (9, TextFmt.COL_E, ""), (10, TextFmt.COL_B, "synopsis"), (24, TextFmt.COL_E, ""),
     ]
     assert tokens._blocks == [
-        (BlockTyp.HEAD3,    1, "Scene Two", [], BlockFmt.NONE),
-        (BlockTyp.SUMMARY, 1, "Synopsis: Stuff happens.", tFmt, BlockFmt.NONE),
+        (BlockTyp.HEAD3,   1, "Scene Two", [], BlockFmt.NONE),
+        (BlockTyp.COMMENT, 1, "Synopsis: Stuff happens.", tFmt, BlockFmt.NONE),
     ]
     assert tokens._noIndent is True
 

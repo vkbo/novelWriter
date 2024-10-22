@@ -35,6 +35,7 @@ def testFmtToHtml_ConvertHeaders(mockGUI):
     """Test header formats in the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
+    html.initDocument()
 
     # Novel Files Headers
     # ===================
@@ -137,6 +138,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     """Test paragraph formats in the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
+    html.initDocument()
 
     html._isNovel = True
     html._isFirst = True
@@ -185,7 +187,10 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='synopsis'><strong>Synopsis:</strong> The synopsis ...</p>\n"
+        "<p class='comment'>"
+        "<strong><span style='color: #813709'>Synopsis:</strong></span> "
+        "<span style='color: #813709'>The synopsis ...</span>"
+        "</p>\n"
     )
 
     html.setSynopsis(True)
@@ -193,7 +198,10 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='synopsis'><strong>Short Description:</strong> A short description ...</p>\n"
+        "<p class='comment'>"
+        "<strong><span style='color: #813709'>Short Description:</strong></span> "
+        "<span style='color: #813709'>A short description ...</span>"
+        "</p>\n"
     )
 
     # Comment
@@ -207,7 +215,10 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='comment'><strong>Comment:</strong> A comment ...</p>\n"
+        "<p class='comment'>"
+        "<strong><span style='color: #646464'>Comment:</strong></span> "
+        "<span style='color: #646464'>A comment ...</span>"
+        "</p>\n"
     )
 
     # Keywords
@@ -269,7 +280,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.doConvert()
     assert html.result == (
         "<h1 style='page-break-before: always;'>Chapter</h1>\n"
-        "<p>This text <span class='dialog'>\u201chas dialogue\u201d</span> in it.</p>\n"
+        "<p>This text <span style='color: #4271ae'>“has dialogue”</span> in it.</p>\n"
     )
 
     # Alt. Dialogue
@@ -281,7 +292,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.doConvert()
     assert html.result == (
         "<h1 style='page-break-before: always;'>Chapter</h1>\n"
-        "<p>This text <span class='altdialog'>::has alt dialogue::</span> in it.</p>\n"
+        "<p>This text <span style='color: #813709'>::has alt dialogue::</span> in it.</p>\n"
     )
 
     # Footnotes
@@ -314,6 +325,7 @@ def testFmtToHtml_CloseTags(mockGUI):
     """Test automatic closing of HTML tags for shortcodes."""
     project = NWProject()
     html = ToHtml(project)
+    html.initDocument()
 
     html._isNovel = True
     html._isFirst = True
@@ -350,6 +362,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     """Test the converter directly using the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
+    html.initDocument()
 
     html._isNovel = True
     html._handle = "0000000000000"
@@ -497,6 +510,7 @@ def testFmtToHtml_SpecialCases(mockGUI):
     """Test some special cases that have caused errors in the past."""
     project = NWProject()
     html = ToHtml(project)
+    html.initDocument()
     html._isNovel = True
 
     # Greater/Lesser than symbols
@@ -540,7 +554,9 @@ def testFmtToHtml_SpecialCases(mockGUI):
     html.doConvert()
     assert html.result == (
         "<p class='comment'>"
-        "<strong>Comment:</strong> Test &gt; text <em>&lt;<strong>bold</strong>&gt;</em> and more."
+        "<strong><span style='color: #646464'>Comment:</strong></span> "
+        "<span style='color: #646464'>Test &gt; text <em>&lt;<strong>bold</strong>&gt;</em> "
+        "and more.</span>"
         "</p>\n"
     )
 
@@ -569,6 +585,7 @@ def testFmtToHtml_Save(mockGUI, fncPath):
     """Test the save method of the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
+    html.initDocument()
     html._isNovel = True
 
     # Build Project
@@ -665,6 +682,7 @@ def testFmtToHtml_Methods(mockGUI):
     """Test all the other methods of the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
+    html.initDocument()
 
     # Auto-Replace, keep Unicode
     docText = "Text with <brackets> & short–dash, long—dash …\n"
@@ -707,6 +725,7 @@ def testFmtToHtml_Format(mockGUI):
     """Test all the formatters for the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
+    html.initDocument()
 
     assert html._formatKeywords("") == ("", "")
     assert html._formatKeywords("tag: Jane") == (

@@ -248,7 +248,7 @@ def testFmtToOdt_DialogueFormatting(mockGUI):
 
     # Regular dialogue
     text = "Text with 'dialogue in it.'"
-    fmt = [(10, TextFmt.DL_B, ""), (27, TextFmt.DL_E, "")]
+    fmt = [(10, TextFmt.COL_B, "dialog"), (27, TextFmt.COL_E, "")]
     xTest = ET.Element(_mkTag("office", "text"))
     odt._addTextPar(xTest, "Standard", oStyle, text, tFmt=fmt)
     assert odt.errData == []
@@ -261,7 +261,7 @@ def testFmtToOdt_DialogueFormatting(mockGUI):
 
     # Alternative dialogue
     text = "Text with ::dialogue in it.::"
-    fmt = [(10, TextFmt.ADL_B, ""), (29, TextFmt.ADL_E, "")]
+    fmt = [(10, TextFmt.COL_B, "altdialog"), (29, TextFmt.COL_E, "")]
     xTest = ET.Element(_mkTag("office", "text"))
     odt._addTextPar(xTest, "Standard", oStyle, text, tFmt=fmt)
     assert odt.errData == []
