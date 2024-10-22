@@ -3,9 +3,7 @@ novelWriter – Formats Shared
 ============================
 
 File History:
-Created: 2024-10-21 [2.6b1] TextFmt
-Created: 2024-10-21 [2.6b1] BlockTyp
-Created: 2024-10-21 [2.6b1] BlockFmt
+Created: 2024-10-21 [2.6b1]
 
 This file is a part of novelWriter
 Copyright 2018–2024, Veronica Berglyd Olsen

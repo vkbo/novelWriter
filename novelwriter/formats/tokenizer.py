@@ -636,16 +636,14 @@ class Tokenizer(ABC):
                 # Only valid keyword lines are parsed, and any ignored keywords
                 # are automatically skipped.
 
-                if not self._doKeywords:
-                    continue
-
-                tLine, tFmt = self._formatMeta(aLine)
-                if tLine:
-                    blocks.append((
-                        BlockTyp.KEYWORD, nHead, tLine, tFmt, sAlign
-                    ))
-                    if self._keepRaw:
-                        tmpMarkdown.append(f"{aLine}\n")
+                if self._doKeywords:
+                    tLine, tFmt = self._formatMeta(aLine)
+                    if tLine:
+                        blocks.append((
+                            BlockTyp.KEYWORD, nHead, tLine, tFmt, sAlign
+                        ))
+                        if self._keepRaw:
+                            tmpMarkdown.append(f"{aLine}\n")
 
             elif aLine.startswith(("# ", "#! ")):
                 # Title or Partition Headings
