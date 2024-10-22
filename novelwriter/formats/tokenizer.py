@@ -44,7 +44,9 @@ from novelwriter.constants import (
 from novelwriter.core.index import processComment
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwComment, nwItemLayout
-from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Block, T_Formats, T_Note, TextFmt
+from novelwriter.formats.shared import (
+    BlockFmt, BlockTyp, T_Block, T_Formats, T_Note, TextDocumentTheme, TextFmt
+)
 from novelwriter.text.patterns import REGEX_PATTERNS
 
 logger = logging.getLogger(__name__)
@@ -109,6 +111,9 @@ class Tokenizer(ABC):
         self._skipKeywords = set()   # Keywords to ignore
         self._keepBreaks   = True    # Keep line breaks in paragraphs
         self._defaultAlign = "left"  # The default text alignment
+
+        # Other Setting
+        self._theme = TextDocumentTheme()
 
         # Margins
         self._marginTitle = nwStyles.T_MARGIN["H0"]
@@ -217,6 +222,11 @@ class Tokenizer(ABC):
     ##
     #  Setters
     ##
+
+    def setTheme(self, theme: TextDocumentTheme) -> None:
+        """Set the document colour theme."""
+        self._theme = theme
+        return
 
     def setPartitionFormat(self, hFormat: str, hide: bool = False) -> None:
         """Set the partition format pattern."""

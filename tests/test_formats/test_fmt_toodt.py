@@ -27,6 +27,8 @@ from shutil import copyfile
 
 import pytest
 
+from PyQt5.QtGui import QColor
+
 from novelwriter.common import xmlIndent
 from novelwriter.constants import nwHeadFmt
 from novelwriter.core.project import NWProject
@@ -1106,11 +1108,15 @@ def testFmtToOdt_ODTParagraphStyle():
     assert parStyle._tAttr["color"]   == ["fo", None]
     assert parStyle._tAttr["opacity"] == ["loext", None]
 
-    parStyle.setColour("#000000")
-    parStyle.setOpacity("1.00")
+    parStyle.setColour(QColor(0, 0, 0, 128))
 
     assert parStyle._tAttr["color"]   == ["fo", "#000000"]
-    assert parStyle._tAttr["opacity"] == ["loext", "1.00"]
+    assert parStyle._tAttr["opacity"] == ["loext", "50%"]
+
+    parStyle.setColour(None)
+
+    assert parStyle._tAttr["color"]   == ["fo", None]
+    assert parStyle._tAttr["opacity"] == ["loext", None]
 
     # Pack XML
     # ========
@@ -1124,7 +1130,7 @@ def testFmtToOdt_ODTParagraphStyle():
         'fo:margin-left="0.000cm" fo:margin-right="0.000cm" fo:text-indent="0.000cm" '
         'fo:line-height="1.15" />'
         '<style:text-properties style:font-name="Verdana" fo:font-family="Verdana" '
-        'fo:font-size="12pt" fo:color="#000000" loext:opacity="1.00" />'
+        'fo:font-size="12pt" />'
         '</style:style>'
         '</test>'
     )
@@ -1151,8 +1157,8 @@ def testFmtToOdt_ODTParagraphStyle():
 
     aStyle = ODTParagraphStyle("test")
     oStyle = ODTParagraphStyle("test")
-    aStyle.setColour("#000000")
-    oStyle.setColour("#111111")
+    aStyle.setColour(QColor(0, 0, 0))
+    oStyle.setColour(QColor(42, 42, 42))
     assert aStyle.checkNew(oStyle) is True
     assert aStyle.getID() != oStyle.getID()
 

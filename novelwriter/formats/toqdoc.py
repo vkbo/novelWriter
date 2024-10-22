@@ -29,7 +29,7 @@ from pathlib import Path
 
 from PyQt5.QtCore import QMarginsF, QSizeF
 from PyQt5.QtGui import (
-    QColor, QFont, QFontMetricsF, QPageSize, QTextBlockFormat, QTextCharFormat,
+    QFont, QFontMetricsF, QPageSize, QTextBlockFormat, QTextCharFormat,
     QTextCursor, QTextDocument
 )
 from PyQt5.QtPrintSupport import QPrinter
@@ -47,21 +47,6 @@ from novelwriter.types import (
 logger = logging.getLogger(__name__)
 
 T_TextStyle = tuple[QTextBlockFormat, QTextCharFormat]
-
-
-class TextDocumentTheme:
-    text:      QColor = QColor(0, 0, 0)
-    highlight: QColor = QColor(255, 255, 166)
-    head:      QColor = QColor(66, 113, 174)
-    comment:   QColor = QColor(100, 100, 100)
-    note:      QColor = QColor(129, 55, 9)
-    code:      QColor = QColor(66, 113, 174)
-    modifier:  QColor = QColor(129, 55, 9)
-    keyword:   QColor = QColor(245, 135, 31)
-    tag:       QColor = QColor(66, 113, 174)
-    optional:  QColor = QColor(66, 113, 174)
-    dialog:    QColor = QColor(66, 113, 174)
-    altdialog: QColor = QColor(129, 55, 9)
 
 
 def newBlock(cursor: QTextCursor, bFmt: QTextBlockFormat) -> None:
@@ -84,7 +69,6 @@ class ToQTextDocument(Tokenizer):
         self._document.setUndoRedoEnabled(False)
         self._document.setDocumentMargin(0)
 
-        self._theme = TextDocumentTheme()
         self._styles: dict[int, T_TextStyle] = {}
         self._usedNotes: dict[str, int] = {}
 
@@ -109,11 +93,6 @@ class ToQTextDocument(Tokenizer):
     ##
     #  Setters
     ##
-
-    def setTheme(self, theme: TextDocumentTheme) -> None:
-        """Set the document colour theme."""
-        self._theme = theme
-        return
 
     def setPageLayout(
         self, width: float, height: float, top: float, bottom: float, left: float, right: float

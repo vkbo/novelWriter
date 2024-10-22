@@ -27,8 +27,8 @@ from PyQt5.QtGui import QTextBlock, QTextCharFormat, QTextCursor
 from novelwriter import CONFIG
 from novelwriter.constants import nwUnicode
 from novelwriter.core.project import NWProject
-from novelwriter.formats.shared import BlockFmt, BlockTyp
-from novelwriter.formats.toqdoc import TextDocumentTheme, ToQTextDocument
+from novelwriter.formats.shared import BlockFmt, BlockTyp, TextDocumentTheme
+from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
     QtPageBreakAfter, QtTransparent, QtVAlignNormal, QtVAlignSub, QtVAlignSuper

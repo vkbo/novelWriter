@@ -2,17 +2,17 @@
   "meta": {
     "projectName": "Lorem Ipsum",
     "novelAuthor": "lipsum.com",
-    "buildTime": 1729529369,
-    "buildTimeStr": "2024-10-21 18:49:29"
+    "buildTime": 1729590078,
+    "buildTimeStr": "2024-10-22 11:41:18"
   },
   "text": {
     "css": [
-      "body {font-family: 'Arial'; font-size: 12pt; font-weight: 400; font-style: normal;}",
+      "body {color: #000000; font-family: 'Arial'; font-size: 12pt; font-weight: 400; font-style: normal;}",
       "p {text-align: left; line-height: 150%; margin-top: 0.00em; margin-bottom: 0.76em;}",
-      "h1 {color: rgb(66, 113, 174); page-break-after: avoid; margin-top: 1.85em; margin-bottom: 0.65em;}",
-      "h2 {color: rgb(66, 113, 174); page-break-after: avoid; margin-top: 2.18em; margin-bottom: 0.65em;}",
-      "h3 {color: rgb(50, 50, 50); page-break-after: avoid; margin-top: 1.53em; margin-bottom: 0.65em;}",
-      "h4 {color: rgb(50, 50, 50); page-break-after: avoid; margin-top: 1.53em; margin-bottom: 0.65em;}",
+      "h1 {color: #4271ae; page-break-after: avoid; margin-top: 1.85em; margin-bottom: 0.65em;}",
+      "h2 {color: #4271ae; page-break-after: avoid; margin-top: 2.18em; margin-bottom: 0.65em;}",
+      "h3 {color: #4271ae; page-break-after: avoid; margin-top: 1.53em; margin-bottom: 0.65em;}",
+      "h4 {color: #4271ae; page-break-after: avoid; margin-top: 1.53em; margin-bottom: 0.65em;}",
       ".title {font-size: 2.5em; margin-top: 1.85em; margin-bottom: 0.65em;}",
       ".sep, .skip {text-align: center; margin-top: 1.30em; margin-bottom: 1.30em;}",
       "a {color: rgb(66, 113, 174);}",

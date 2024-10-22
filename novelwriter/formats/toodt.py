@@ -35,7 +35,7 @@ from hashlib import sha256
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QColor, QFont
 
 from novelwriter import __version__
 from novelwriter.common import xmlIndent, xmlSubElem
@@ -220,10 +220,6 @@ class ToOdt(Tokenizer):
         self._mDocRight  = "2.000cm"
 
         # Colour
-        self._colHead12  = None
-        self._opaHead12  = None
-        self._colHead34  = None
-        self._opaHead34  = None
         self._colDialogM = "#2a6099"
         self._colDialogA = "#813709"
         self._colMetaTx  = "#813709"
@@ -317,12 +313,6 @@ class ToOdt(Tokenizer):
 
         self._mLeftFoot = self._emToCm(self._marginFoot[0])
         self._mBotFoot  = self._emToCm(self._marginFoot[1])
-
-        if self._colorHeads:
-            self._colHead12 = "#2a6099"
-            self._opaHead12 = "100%"
-            self._colHead34 = "#444444"
-            self._opaHead34 = "100%"
 
         self._fLineHeight  = f"{round(100 * self._lineHeight):d}%"
         self._fBlockIndent = self._emToCm(self._blockIndent)
@@ -894,6 +884,8 @@ class ToOdt(Tokenizer):
 
     def _useableStyles(self) -> None:
         """Set the usable styles."""
+        hColor = self._theme.head if self._colorHeads else None
+
         # Add Text Body Style
         style = ODTParagraphStyle(S_TEXT)
         style.setDisplayName("Text body")
@@ -931,8 +923,7 @@ class ToOdt(Tokenizer):
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeText)
         style.setFontWeight(self._fontWeight)
-        style.setColour(self._colMetaTx)
-        style.setOpacity(self._opaMetaTx)
+        style.setColour(self._theme.note)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
@@ -982,8 +973,7 @@ class ToOdt(Tokenizer):
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead1)
         style.setFontWeight(self._headWeight)
-        style.setColour(self._colHead12)
-        style.setOpacity(self._opaHead12)
+        style.setColour(hColor)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
@@ -1000,8 +990,7 @@ class ToOdt(Tokenizer):
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead2)
         style.setFontWeight(self._headWeight)
-        style.setColour(self._colHead12)
-        style.setOpacity(self._opaHead12)
+        style.setColour(hColor)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
@@ -1018,8 +1007,7 @@ class ToOdt(Tokenizer):
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead3)
         style.setFontWeight(self._headWeight)
-        style.setColour(self._colHead34)
-        style.setOpacity(self._opaHead34)
+        style.setColour(hColor)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
@@ -1036,8 +1024,7 @@ class ToOdt(Tokenizer):
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead4)
         style.setFontWeight(self._headWeight)
-        style.setColour(self._colHead34)
-        style.setOpacity(self._opaHead34)
+        style.setColour(hColor)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
@@ -1298,14 +1285,14 @@ class ODTParagraphStyle:
             self._tAttr["font-weight"][1] = None
         return
 
-    def setColour(self, value: str | None) -> None:
+    def setColour(self, value: QColor | None) -> None:
         """Set text colour."""
-        self._tAttr["color"][1] = value
-        return
-
-    def setOpacity(self, value: str | None) -> None:
-        """Set text opacity."""
-        self._tAttr["opacity"][1] = value
+        if isinstance(value, QColor):
+            self._tAttr["color"][1] = value.name(QColor.NameFormat.HexRgb)
+            self._tAttr["opacity"][1] = f"{int(100.0 * value.alphaF())}%"
+        else:
+            self._tAttr["color"][1] = None
+            self._tAttr["opacity"][1] = None
         return
 
     ##

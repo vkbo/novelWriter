@@ -34,7 +34,7 @@ from novelwriter.constants import nwHeadFmt, nwHtmlUnicode, nwKeyWords, nwLabels
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
 from novelwriter.formats.tokenizer import Tokenizer
-from novelwriter.types import FONT_STYLE, FONT_WEIGHTS
+from novelwriter.types import FONT_STYLE, FONT_WEIGHTS, QtHexRgb
 
 logger = logging.getLogger(__name__)
 
@@ -354,16 +354,18 @@ class ToHtml(Tokenizer):
             return []
 
         mScale = self._lineHeight/1.15
+        tColor = self._theme.text.name(QtHexRgb)
+        hColor = self._theme.head.name(QtHexRgb) if self._colorHeads else tColor
 
         styles = []
         font = self._textFont
         styles.append((
             "body {{"
-            "font-family: '{0:s}'; font-size: {1:d}pt; "
-            "font-weight: {2:d}; font-style: {3:s};"
+            "color: {0:s}; font-family: '{1:s}'; font-size: {2:d}pt; "
+            "font-weight: {3:d}; font-style: {4:s};"
             "}}"
         ).format(
-            font.family(), font.pointSize(),
+            tColor, font.family(), font.pointSize(),
             FONT_WEIGHTS.get(font.weight(), 400),
             FONT_STYLE.get(font.style(), "normal"),
         ))
@@ -380,43 +382,43 @@ class ToHtml(Tokenizer):
         ))
         styles.append((
             "h1 {{"
-            "color: rgb(66, 113, 174); "
+            "color: {0:s}; "
             "page-break-after: avoid; "
-            "margin-top: {0:.2f}em; "
-            "margin-bottom: {1:.2f}em;"
+            "margin-top: {1:.2f}em; "
+            "margin-bottom: {2:.2f}em;"
             "}}"
         ).format(
-            mScale * self._marginHead1[0], mScale * self._marginHead1[1]
+            hColor, mScale * self._marginHead1[0], mScale * self._marginHead1[1]
         ))
         styles.append((
             "h2 {{"
-            "color: rgb(66, 113, 174); "
+            "color: {0:s}; "
             "page-break-after: avoid; "
-            "margin-top: {0:.2f}em; "
-            "margin-bottom: {1:.2f}em;"
+            "margin-top: {1:.2f}em; "
+            "margin-bottom: {2:.2f}em;"
             "}}"
         ).format(
-            mScale * self._marginHead2[0], mScale * self._marginHead2[1]
+            hColor, mScale * self._marginHead2[0], mScale * self._marginHead2[1]
         ))
         styles.append((
             "h3 {{"
-            "color: rgb(50, 50, 50); "
+            "color: {0:s}; "
             "page-break-after: avoid; "
-            "margin-top: {0:.2f}em; "
-            "margin-bottom: {1:.2f}em;"
+            "margin-top: {1:.2f}em; "
+            "margin-bottom: {2:.2f}em;"
             "}}"
         ).format(
-            mScale * self._marginHead3[0], mScale * self._marginHead3[1]
+            hColor, mScale * self._marginHead3[0], mScale * self._marginHead3[1]
         ))
         styles.append((
             "h4 {{"
-            "color: rgb(50, 50, 50); "
+            "color: {0:s}; "
             "page-break-after: avoid; "
-            "margin-top: {0:.2f}em; "
-            "margin-bottom: {1:.2f}em;"
+            "margin-top: {1:.2f}em; "
+            "margin-bottom: {2:.2f}em;"
             "}}"
         ).format(
-            mScale * self._marginHead4[0], mScale * self._marginHead4[1]
+            hColor, mScale * self._marginHead4[0], mScale * self._marginHead4[1]
         ))
         styles.append((
             ".title {{"

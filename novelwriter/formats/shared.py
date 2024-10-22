@@ -29,6 +29,8 @@ import re
 
 from enum import Flag, IntEnum
 
+from PyQt5.QtGui import QColor
+
 ESCAPES = {r"\*": "*", r"\~": "~", r"\_": "_", r"\[": "[", r"\]": "]", r"\ ": ""}
 RX_ESC = re.compile("|".join([re.escape(k) for k in ESCAPES.keys()]), flags=re.DOTALL)
 
@@ -38,6 +40,23 @@ def stripEscape(text: str) -> str:
     if "\\" in text:
         return RX_ESC.sub(lambda x: ESCAPES[x.group(0)], text)
     return text
+
+
+class TextDocumentTheme:
+    """Default document theme."""
+
+    text:      QColor = QColor(0, 0, 0)
+    highlight: QColor = QColor(255, 255, 166)
+    head:      QColor = QColor(66, 113, 174)
+    comment:   QColor = QColor(100, 100, 100)
+    note:      QColor = QColor(129, 55, 9)
+    code:      QColor = QColor(66, 113, 174)
+    modifier:  QColor = QColor(129, 55, 9)
+    keyword:   QColor = QColor(245, 135, 31)
+    tag:       QColor = QColor(66, 113, 174)
+    optional:  QColor = QColor(66, 113, 174)
+    dialog:    QColor = QColor(66, 113, 174)
+    altdialog: QColor = QColor(129, 55, 9)
 
 
 # Enums

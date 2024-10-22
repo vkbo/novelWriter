@@ -34,6 +34,7 @@ from typing import NamedTuple
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from PyQt5.QtCore import QMarginsF, QSizeF
+from PyQt5.QtGui import QColor
 
 from novelwriter import __version__
 from novelwriter.common import firstFloat, xmlSubElem
@@ -41,6 +42,7 @@ from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
 from novelwriter.formats.tokenizer import Tokenizer
+from novelwriter.types import QtHexRgb
 
 logger = logging.getLogger(__name__)
 
@@ -80,6 +82,11 @@ def _mkTag(ns: str, tag: str) -> str:
     return tag
 
 
+def _docXCol(color: QColor) -> str:
+    """Format a QColor as the DocX accepted value."""
+    return color.name(QtHexRgb).lstrip("#")
+
+
 # Formatting Codes
 X_BLD = 0x001  # Bold format
 X_ITA = 0x002  # Italic format
@@ -115,8 +122,6 @@ S_HEAD  = "Header"
 S_FNOTE = "FootnoteText"
 
 # Colours
-COL_HEAD_L12 = "2a6099"
-COL_HEAD_L34 = "444444"
 COL_DIALOG_M = "2a6099"
 COL_DIALOG_A = "813709"
 COL_META_TXT = "813709"
@@ -535,7 +540,7 @@ class ToDocX(Tokenizer):
         styles: list[DocXParStyle] = []
 
         hScale = self._scaleHeads
-        hColor = self._colorHeads
+        hColor = _docXCol(self._theme.head) if self._colorHeads else None
         fSz = self._fontSize
         fnSz = 0.8 * self._fontSize
         fSz0 = (nwStyles.H_SIZES[0] * fSz) if hScale else fSz
@@ -582,7 +587,7 @@ class ToDocX(Tokenizer):
             after=fSz * self._marginHead1[1],
             line=fSz1 * self._lineHeight,
             level=0,
-            color=COL_HEAD_L12 if hColor else None,
+            color=hColor,
             bold=self._boldHeads,
         ))
 
@@ -597,7 +602,7 @@ class ToDocX(Tokenizer):
             after=fSz * self._marginHead2[1],
             line=fSz2 * self._lineHeight,
             level=1,
-            color=COL_HEAD_L12 if hColor else None,
+            color=hColor,
             bold=self._boldHeads,
         ))
 
@@ -612,7 +617,7 @@ class ToDocX(Tokenizer):
             after=fSz * self._marginHead3[1],
             line=fSz3 * self._lineHeight,
             level=1,
-            color=COL_HEAD_L34 if hColor else None,
+            color=hColor,
             bold=self._boldHeads,
         ))
 
@@ -627,7 +632,7 @@ class ToDocX(Tokenizer):
             after=fSz * self._marginHead4[1],
             line=fSz4 * self._lineHeight,
             level=1,
-            color=COL_HEAD_L34 if hColor else None,
+            color=hColor,
             bold=self._boldHeads,
         ))
 
