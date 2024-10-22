@@ -762,15 +762,17 @@ def testFmtToken_MetaFormat(mockGUI):
     assert tokens.allMarkdown[-1] == "% short: A short description\n\n"
 
     # Keyword
+    tokens.setKeywords(False)
     tokens._text = "@char: Bod\n"
     tokens.tokenizeText()
-    assert tokens._blocks == [
-        (BlockTyp.KEYWORD, 0, "char: Bod", [], BlockFmt.NONE),
-    ]
+    assert tokens._blocks == []
     assert tokens.allMarkdown[-1] == "\n"
 
     tokens.setKeywords(True)
     tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.KEYWORD, 0, "char: Bod", [], BlockFmt.NONE),
+    ]
     assert tokens.allMarkdown[-1] == "@char: Bod\n\n"
 
     tokens._text = "@pov: Bod\n@plot: Main\n@location: Europe\n"
@@ -1650,7 +1652,7 @@ def testFmtToken_FormatNote(mockGUI, ipsumText):
 
     # Comment, No Formatting
     style = COMMENT_STYLE[nwComment.PLAIN]
-    assert tokens._formatNote(style, "", "Hello world!") == (
+    assert tokens._formatComment(style, "", "Hello world!") == (
         "Comment: Hello world!", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "comment"),
             (8, TextFmt.B_E, ""), (8, TextFmt.COL_E, ""),
@@ -1660,7 +1662,7 @@ def testFmtToken_FormatNote(mockGUI, ipsumText):
 
     # Synopsis, No Formatting
     style = COMMENT_STYLE[nwComment.SYNOPSIS]
-    assert tokens._formatNote(style, "", "Hello world!") == (
+    assert tokens._formatComment(style, "", "Hello world!") == (
         "Synopsis: Hello world!", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
             (9, TextFmt.B_E, ""), (9, TextFmt.COL_E, ""),

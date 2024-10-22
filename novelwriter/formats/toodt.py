@@ -483,7 +483,7 @@ class ToOdt(Tokenizer):
             elif tType == BlockTyp.COMMENT:
                 self._addTextPar(xText, S_META, oStyle, tText, tFmt=tFormat)
 
-            elif tType == BlockTyp.KEYWORD and self._doKeywords:
+            elif tType == BlockTyp.KEYWORD:
                 tTemp, tFmt = self._formatKeywords(tText)
                 self._addTextPar(xText, S_META, oStyle, tTemp, tFmt=tFmt)
 

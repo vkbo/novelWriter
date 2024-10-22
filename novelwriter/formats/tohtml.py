@@ -252,7 +252,7 @@ class ToHtml(Tokenizer):
             elif tType == BlockTyp.COMMENT:
                 lines.append(f"<p class='comment'>{self._formatText(tText, tFormat)}</p>\n")
 
-            elif tType == BlockTyp.KEYWORD and self._doKeywords:
+            elif tType == BlockTyp.KEYWORD:
                 tag, text = self._formatKeywords(tText)
                 kClass = f" class='meta meta-{tag}'" if tag else ""
                 tTemp = f"<p{kClass}{hStyle}>{text}</p>\n"

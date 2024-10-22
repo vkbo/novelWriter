@@ -613,7 +613,7 @@ class Tokenizer(ABC):
 
                 if cStyle in (nwComment.SYNOPSIS, nwComment.SHORT, nwComment.PLAIN):
                     bStyle = COMMENT_STYLE[cStyle]
-                    tLine, tFmt = self._formatNote(bStyle, cKey, cText)
+                    tLine, tFmt = self._formatComment(bStyle, cKey, cText)
                     blocks.append((BlockTyp.COMMENT, nHead, tLine, tFmt, sAlign))
                     if self._keepRaw:
                         tmpMarkdown.append(f"{aLine}\n")
@@ -630,6 +630,9 @@ class Tokenizer(ABC):
                 # Only valid keyword lines are parsed, and any ignored keywords
                 # are automatically skipped.
 
+                if not self._doKeywords:
+                    continue
+
                 valid, bits, _ = self._project.index.scanThis(aLine)
                 if (
                     valid and bits and bits[0] in nwLabels.KEY_NAME
@@ -638,8 +641,22 @@ class Tokenizer(ABC):
                     blocks.append((
                         BlockTyp.KEYWORD, nHead, aLine[1:].strip(), [], sAlign
                     ))
-                    if self._doKeywords and self._keepRaw:
+                    if self._keepRaw:
                         tmpMarkdown.append(f"{aLine}\n")
+
+                # valid, bits, _ = self._project.index.scanThis("@"+text)
+                # if not valid or not bits or bits[0] not in nwLabels.KEY_NAME:
+                #     return "", []
+
+                # rTxt = f"{self._localLookup(nwLabels.KEY_NAME[bits[0]])}: "
+                # rFmt: T_Formats = [(0, TextFmt.B_B, ""), (len(rTxt) - 1, TextFmt.B_E, "")]
+                # if len(bits) > 1:
+                #     if bits[0] == nwKeyWords.TAG_KEY:
+                #         rTxt += bits[1]
+                #     else:
+                #         rTxt += ", ".join(bits[1:])
+
+                # return rTxt, rFmt
 
             elif aLine.startswith(("# ", "#! ")):
                 # Title or Partition Headings
@@ -1022,7 +1039,7 @@ class Tokenizer(ABC):
                 allChars += len(tText)
                 allWordChars += len("".join(words))
 
-            elif tType == BlockTyp.KEYWORD and self._doKeywords:
+            elif tType == BlockTyp.KEYWORD:
                 valid, bits, _ = self._project.index.scanThis("@"+tText)
                 if valid and bits:
                     key = self._localLookup(nwLabels.KEY_NAME[bits[0]])
@@ -1080,7 +1097,7 @@ class Tokenizer(ABC):
     #  Internal Functions
     ##
 
-    def _formatNote(self, style: ComStyle, key: str, text: str) -> tuple[str, T_Formats]:
+    def _formatComment(self, style: ComStyle, key: str, text: str) -> tuple[str, T_Formats]:
         """Apply formatting to comments and notes."""
         tTxt, tFmt = self._extractFormats(text)
         tFmt.insert(0, (0, TextFmt.COL_B, style.textClass))

@@ -244,7 +244,7 @@ class ToQTextDocument(Tokenizer):
                 newBlock(cursor, bFmt)
                 self._insertFragments(tText, tFormat, cursor, self._cText)
 
-            elif tType == BlockTyp.KEYWORD and self._doKeywords:
+            elif tType == BlockTyp.KEYWORD:
                 newBlock(cursor, bFmt)
                 self._insertKeywords(tText, cursor)
 

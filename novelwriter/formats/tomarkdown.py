@@ -153,7 +153,7 @@ class ToMarkdown(Tokenizer):
             elif tType == BlockTyp.COMMENT:
                 lines.append(f"{self._formatText(tText, tFormat, mTags)}\n\n")
 
-            elif tType == BlockTyp.KEYWORD and self._doKeywords:
+            elif tType == BlockTyp.KEYWORD:
                 lines.append(self._formatKeywords(tText, tStyle))
 
         self._result = "".join(lines)

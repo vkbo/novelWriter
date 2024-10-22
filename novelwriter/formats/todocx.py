@@ -291,7 +291,7 @@ class ToDocX(Tokenizer):
             elif tType == BlockTyp.COMMENT:
                 self._processFragments(par, S_META, tText, tFormat)
 
-            elif tType == BlockTyp.KEYWORD and self._doKeywords:
+            elif tType == BlockTyp.KEYWORD:
                 tTemp, tFmt = self._formatKeywords(tText)
                 self._processFragments(par, S_META, tTemp, tFmt)
 
