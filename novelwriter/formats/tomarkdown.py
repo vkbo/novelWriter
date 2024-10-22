@@ -150,17 +150,8 @@ class ToMarkdown(Tokenizer):
             elif tType == BlockTyp.SKIP:
                 lines.append(f"{cSkip}\n\n")
 
-            elif tType == BlockTyp.SYNOPSIS and self._doSynopsis:
-                label = self._localLookup("Synopsis")
-                lines.append(f"**{label}:** {self._formatText(tText, tFormat, mTags)}\n\n")
-
-            elif tType == BlockTyp.SHORT and self._doSynopsis:
-                label = self._localLookup("Short Description")
-                lines.append(f"**{label}:** {self._formatText(tText, tFormat, mTags)}\n\n")
-
-            elif tType == BlockTyp.COMMENT and self._doComments:
-                label = self._localLookup("Comment")
-                lines.append(f"**{label}:** {self._formatText(tText, tFormat, mTags)}\n\n")
+            elif tType in self.L_NOTES:
+                lines.append(f"{self._formatText(tText, tFormat, mTags)}\n\n")
 
             elif tType == BlockTyp.KEYWORD and self._doKeywords:
                 lines.append(self._formatKeywords(tText, tStyle))

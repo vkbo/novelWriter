@@ -25,7 +25,7 @@
     </style:style>
     <style:style style:name="Text_20_Meta" style:family="paragraph" style:display-name="Text Meta" style:parent-style-name="Standard" style:class="text">
       <style:paragraph-properties fo:margin-top="0.000cm" fo:margin-bottom="0.246cm" fo:line-height="115%" />
-      <style:text-properties style:font-name="Liberation Serif" fo:font-family="Liberation Serif" fo:font-size="12pt" fo:font-weight="normal" fo:color="#813709" loext:opacity="100%" />
+      <style:text-properties style:font-name="Liberation Serif" fo:font-family="Liberation Serif" fo:font-size="12pt" fo:font-weight="normal" />
     </style:style>
     <style:style style:name="Title" style:family="paragraph" style:display-name="Title" style:parent-style-name="Heading" style:next-style-name="Text_20_body" style:class="chapter">
       <style:paragraph-properties fo:margin-top="0.601cm" fo:margin-bottom="0.212cm" fo:text-align="center" />

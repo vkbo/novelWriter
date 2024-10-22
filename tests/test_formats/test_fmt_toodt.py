@@ -523,12 +523,15 @@ def testFmtToOdt_ConvertParagraphs(mockGUI):
         '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
         '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T9">'
         'Point of View:</text:span> Jane</text:p>'
-        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T9">'
-        'Synopsis:</text:span> So it begins</text:p>'
-        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T9">'
-        'Short Description:</text:span> Then what</text:p>'
-        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T9">'
-        'Comment:</text:span> A plain comment</text:p>'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T10">'
+        'Synopsis:</text:span> '
+        '<text:span text:style-name="T11">So it begins</text:span></text:p>'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T10">'
+        'Short Description:</text:span> '
+        '<text:span text:style-name="T11">Then what</text:span></text:p>'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T12">'
+        'Comment:</text:span> '
+        '<text:span text:style-name="T13">A plain comment</text:span></text:p>'
         '</office:text>'
     )
 
@@ -703,7 +706,7 @@ def testFmtToOdt_ConvertParagraphs(mockGUI):
     assert odt.errData == []
     assert xmlToText(odt._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Text_20_body">Test text **<text:span text:style-name="T10">'
+        '<text:p text:style-name="Text_20_body">Test text **<text:span text:style-name="T14">'
         'bold</text:span>** and more.</text:p>'
         '</office:text>'
     )
@@ -896,22 +899,6 @@ def testFmtToOdt_SpecialFormats(mockGUI):
     """Test the special formatters for the ToOdt class."""
     project = NWProject()
     odt = ToOdt(project, isFlat=True)
-
-    assert odt._formatSynopsis("synopsis text", [(9, TextFmt.STRIP, "")], True) == (
-        "Synopsis: synopsis text", [
-            (0, TextFmt.B_B, ""), (9, TextFmt.B_E, ""), (19, TextFmt.STRIP, "")
-        ]
-    )
-    assert odt._formatSynopsis("short text", [(6, TextFmt.STRIP, "")], False) == (
-        "Short Description: short text", [
-            (0, TextFmt.B_B, ""), (18, TextFmt.B_E, ""), (25, TextFmt.STRIP, "")
-        ]
-    )
-    assert odt._formatComments("comment text", [(8, TextFmt.STRIP, "")]) == (
-        "Comment: comment text", [
-            (0, TextFmt.B_B, ""), (8, TextFmt.B_E, ""), (17, TextFmt.STRIP, "")
-        ]
-    )
 
     assert odt._formatKeywords("") == ("", [])
     assert odt._formatKeywords("tag: Jane") == (
@@ -1108,12 +1095,12 @@ def testFmtToOdt_ODTParagraphStyle():
     assert parStyle._tAttr["color"]   == ["fo", None]
     assert parStyle._tAttr["opacity"] == ["loext", None]
 
-    parStyle.setColour(QColor(0, 0, 0, 128))
+    parStyle.setColor(QColor(0, 0, 0, 128))
 
     assert parStyle._tAttr["color"]   == ["fo", "#000000"]
     assert parStyle._tAttr["opacity"] == ["loext", "50%"]
 
-    parStyle.setColour(None)
+    parStyle.setColor(None)
 
     assert parStyle._tAttr["color"]   == ["fo", None]
     assert parStyle._tAttr["opacity"] == ["loext", None]
@@ -1157,8 +1144,8 @@ def testFmtToOdt_ODTParagraphStyle():
 
     aStyle = ODTParagraphStyle("test")
     oStyle = ODTParagraphStyle("test")
-    aStyle.setColour(QColor(0, 0, 0))
-    oStyle.setColour(QColor(42, 42, 42))
+    aStyle.setColor(QColor(0, 0, 0))
+    oStyle.setColor(QColor(42, 42, 42))
     assert aStyle.checkNew(oStyle) is True
     assert aStyle.getID() != oStyle.getID()
 
@@ -1212,24 +1199,22 @@ def testFmtToOdt_ODTTextStyle():
 
     # Text Color
     assert txtStyle._tAttr["color"] == ["fo", None]
-    txtStyle.setColour("stuff")
+    txtStyle.setColor("#012345")  # type: ignore
     assert txtStyle._tAttr["color"] == ["fo", None]
-    txtStyle.setColour("012345")
-    assert txtStyle._tAttr["color"] == ["fo", None]
-    txtStyle.setColour("#012345")
-    assert txtStyle._tAttr["color"] == ["fo", "#012345"]
-    txtStyle.setColour("stuff")
+    txtStyle.setColor(QColor(255, 128, 0))
+    assert txtStyle._tAttr["color"] == ["fo", "#ff8000"]
+    txtStyle.setColor(None)
     assert txtStyle._tAttr["color"] == ["fo", None]
 
     # Background Color
     assert txtStyle._tAttr["background-color"] == ["fo", None]
-    txtStyle.setBackgroundColour("stuff")
+    txtStyle.setBackgroundColor("stuff")
     assert txtStyle._tAttr["background-color"] == ["fo", None]
-    txtStyle.setBackgroundColour("012345")
+    txtStyle.setBackgroundColor("012345")
     assert txtStyle._tAttr["background-color"] == ["fo", None]
-    txtStyle.setBackgroundColour("#012345")
+    txtStyle.setBackgroundColor("#012345")
     assert txtStyle._tAttr["background-color"] == ["fo", "#012345"]
-    txtStyle.setBackgroundColour("stuff")
+    txtStyle.setBackgroundColor("stuff")
     assert txtStyle._tAttr["background-color"] == ["fo", None]
 
     # Text Position
@@ -1289,11 +1274,11 @@ def testFmtToOdt_ODTTextStyle():
 
     # Underline Colour
     assert txtStyle._tAttr["text-underline-color"] == ["style", None]
-    txtStyle.setUnderlineColour("stuff")
+    txtStyle.setUnderlineColor("stuff")
     assert txtStyle._tAttr["text-underline-color"] == ["style", None]
-    txtStyle.setUnderlineColour("font-color")
+    txtStyle.setUnderlineColor("font-color")
     assert txtStyle._tAttr["text-underline-color"] == ["style", "font-color"]
-    txtStyle.setUnderlineColour("stuff")
+    txtStyle.setUnderlineColor("stuff")
     assert txtStyle._tAttr["text-underline-color"] == ["style", None]
 
     # Pack XML

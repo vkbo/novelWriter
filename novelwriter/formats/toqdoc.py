@@ -108,6 +108,8 @@ class ToQTextDocument(Tokenizer):
 
     def initDocument(self) -> None:
         """Initialise all computed values of the document."""
+        super().initDocument()
+
         self._document.setUndoRedoEnabled(False)
         self._document.blockSignals(True)
         self._document.clear()
@@ -162,22 +164,8 @@ class ToQTextDocument(Tokenizer):
         self._cText.setBackground(QtTransparent)
         self._cText.setForeground(self._theme.text)
 
-        self._cComment = QTextCharFormat(self._cText)
-        self._cComment.setForeground(self._theme.comment)
-
-        self._cCommentMod = QTextCharFormat(self._cText)
-        self._cCommentMod.setForeground(self._theme.comment)
-        self._cCommentMod.setFontWeight(self._bold)
-
-        self._cNote = QTextCharFormat(self._cText)
-        self._cNote.setForeground(self._theme.note)
-
         self._cCode = QTextCharFormat(self._cText)
         self._cCode.setForeground(self._theme.code)
-
-        self._cModifier = QTextCharFormat(self._cText)
-        self._cModifier.setForeground(self._theme.modifier)
-        self._cModifier.setFontWeight(self._bold)
 
         self._cKeyword = QTextCharFormat(self._cText)
         self._cKeyword.setForeground(self._theme.keyword)
@@ -252,19 +240,9 @@ class ToQTextDocument(Tokenizer):
                 newBlock(cursor, bFmt)
                 cursor.insertText(nwUnicode.U_NBSP, self._cText)
 
-            elif tType in self.L_SUMMARY and self._doSynopsis:
+            elif tType in self.L_NOTES:
                 newBlock(cursor, bFmt)
-                modifier = self._localLookup(
-                    "Short Description" if tType == BlockTyp.SHORT else "Synopsis"
-                )
-                cursor.insertText(f"{modifier}: ", self._cModifier)
-                self._insertFragments(tText, tFormat, cursor, self._cNote)
-
-            elif tType == BlockTyp.COMMENT and self._doComments:
-                newBlock(cursor, bFmt)
-                modifier = self._localLookup("Comment")
-                cursor.insertText(f"{modifier}: ", self._cCommentMod)
-                self._insertFragments(tText, tFormat, cursor, self._cComment)
+                self._insertFragments(tText, tFormat, cursor, self._cText)
 
             elif tType == BlockTyp.KEYWORD and self._doKeywords:
                 newBlock(cursor, bFmt)
@@ -359,6 +337,15 @@ class ToQTextDocument(Tokenizer):
                 cFmt.setVerticalAlignment(QtVAlignSub)
             elif fmt == TextFmt.SUB_E:
                 cFmt.setVerticalAlignment(QtVAlignNormal)
+            elif fmt == TextFmt.SUB_B:
+                cFmt.setVerticalAlignment(QtVAlignSub)
+            elif fmt == TextFmt.SUB_E:
+                cFmt.setVerticalAlignment(QtVAlignNormal)
+            elif fmt == TextFmt.COL_B:
+                if color := self._classes.get(data):
+                    cFmt.setForeground(color)
+            elif fmt == TextFmt.COL_E:
+                cFmt.setForeground(self._theme.text)
             elif fmt == TextFmt.DL_B:
                 cFmt.setForeground(self._theme.dialog)
             elif fmt == TextFmt.DL_E:

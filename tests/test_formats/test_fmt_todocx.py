@@ -150,37 +150,43 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
     # Synopsis
     xTest = ET.Element(_wTag("body"))
-    doc._blocks = [(BlockTyp.SYNOPSIS, 0, "Hello World", [], BlockFmt.NONE)]
+    doc._text = "%Synopsis: Hello World\n\n"
+    doc.tokenizeText()
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_META}" /></w:pPr>'
-        '<w:r><w:rPr><w:b /></w:rPr><w:t>Synopsis:</w:t></w:r>'
-        '<w:r><w:rPr /><w:t xml:space="preserve"> Hello World</w:t></w:r>'
+        '<w:r><w:rPr><w:b /><w:color w:val="813709" /></w:rPr><w:t>Synopsis:</w:t></w:r>'
+        '<w:r><w:rPr /><w:t xml:space="preserve"> </w:t></w:r>'
+        '<w:r><w:rPr><w:color w:val="813709" /></w:rPr><w:t>Hello World</w:t></w:r>'
         '</w:p></w:body>'
     )
 
     # Short
     xTest = ET.Element(_wTag("body"))
-    doc._blocks = [(BlockTyp.SHORT, 0, "Hello World", [], BlockFmt.NONE)]
+    doc._text = "%Short: Hello World\n\n"
+    doc.tokenizeText()
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_META}" /></w:pPr>'
-        '<w:r><w:rPr><w:b /></w:rPr><w:t>Short Description:</w:t></w:r>'
-        '<w:r><w:rPr /><w:t xml:space="preserve"> Hello World</w:t></w:r>'
+        '<w:r><w:rPr><w:b /><w:color w:val="813709" /></w:rPr><w:t>Short Description:</w:t></w:r>'
+        '<w:r><w:rPr /><w:t xml:space="preserve"> </w:t></w:r>'
+        '<w:r><w:rPr><w:color w:val="813709" /></w:rPr><w:t>Hello World</w:t></w:r>'
         '</w:p></w:body>'
     )
 
     # Comment
     xTest = ET.Element(_wTag("body"))
-    doc._blocks = [(BlockTyp.COMMENT, 0, "Hello World", [], BlockFmt.NONE)]
+    doc._text = "% Hello World\n\n"
+    doc.tokenizeText()
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_META}" /></w:pPr>'
-        '<w:r><w:rPr><w:b /></w:rPr><w:t>Comment:</w:t></w:r>'
-        '<w:r><w:rPr /><w:t xml:space="preserve"> Hello World</w:t></w:r>'
+        '<w:r><w:rPr><w:b /><w:color w:val="646464" /></w:rPr><w:t>Comment:</w:t></w:r>'
+        '<w:r><w:rPr /><w:t xml:space="preserve"> </w:t></w:r>'
+        '<w:r><w:rPr><w:color w:val="646464" /></w:rPr><w:t>Hello World</w:t></w:r>'
         '</w:p></w:body>'
     )
 

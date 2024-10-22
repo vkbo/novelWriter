@@ -708,19 +708,6 @@ def testFmtToHtml_Format(mockGUI):
     project = NWProject()
     html = ToHtml(project)
 
-    # Export Mode
-    # ===========
-
-    assert html._formatSynopsis("synopsis text", True) == (
-        "<p class='synopsis'><strong>Synopsis:</strong> synopsis text</p>\n"
-    )
-    assert html._formatSynopsis("short text", False) == (
-        "<p class='synopsis'><strong>Short Description:</strong> short text</p>\n"
-    )
-    assert html._formatComments("comment text") == (
-        "<p class='comment'><strong>Comment:</strong> comment text</p>\n"
-    )
-
     assert html._formatKeywords("") == ("", "")
     assert html._formatKeywords("tag: Jane") == (
         "tag", "<span class='keyword'>Tag:</span> <a class='tag' name='tag_Jane'>Jane</a>"

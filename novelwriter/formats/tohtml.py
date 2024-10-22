@@ -251,14 +251,11 @@ class ToHtml(Tokenizer):
             elif tType == BlockTyp.SKIP:
                 lines.append(f"<p class='skip'{hStyle}>&nbsp;</p>\n")
 
-            elif tType == BlockTyp.SYNOPSIS and self._doSynopsis:
-                lines.append(self._formatSynopsis(self._formatText(tText, tFormat), True))
-
-            elif tType == BlockTyp.SHORT and self._doSynopsis:
-                lines.append(self._formatSynopsis(self._formatText(tText, tFormat), False))
+            elif tType == BlockTyp.SUMMARY:
+                lines.append(f"<p class='synopsis'>{self._formatText(tText, tFormat)}</p>\n")
 
             elif tType == BlockTyp.COMMENT and self._doComments:
-                lines.append(self._formatComments(self._formatText(tText, tFormat)))
+                lines.append(f"<p class='comment'>{self._formatText(tText, tFormat)}</p>\n")
 
             elif tType == BlockTyp.KEYWORD and self._doKeywords:
                 tag, text = self._formatKeywords(tText)
@@ -498,19 +495,6 @@ class ToHtml(Tokenizer):
         temp = temp.replace("\n", "<br>")
 
         return stripEscape(temp)
-
-    def _formatSynopsis(self, text: str, synopsis: bool) -> str:
-        """Apply HTML formatting to synopsis."""
-        if synopsis:
-            sSynop = self._localLookup("Synopsis")
-        else:
-            sSynop = self._localLookup("Short Description")
-        return f"<p class='synopsis'><strong>{sSynop}:</strong> {text}</p>\n"
-
-    def _formatComments(self, text: str) -> str:
-        """Apply HTML formatting to comments."""
-        sComm = self._localLookup("Comment")
-        return f"<p class='comment'><strong>{sComm}:</strong> {text}</p>\n"
 
     def _formatKeywords(self, text: str) -> tuple[str, str]:
         """Apply HTML formatting to keywords."""

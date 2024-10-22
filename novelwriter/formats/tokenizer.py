@@ -32,9 +32,10 @@ from abc import ABC, abstractmethod
 from functools import partial
 from pathlib import Path
 from time import time
+from typing import NamedTuple
 
 from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QColor, QFont
 
 from novelwriter import CONFIG
 from novelwriter.common import checkInt, formatTimeStamp, numberToRoman
@@ -50,6 +51,26 @@ from novelwriter.formats.shared import (
 from novelwriter.text.patterns import REGEX_PATTERNS
 
 logger = logging.getLogger(__name__)
+
+
+class ComStyle(NamedTuple):
+
+    label: str = ""
+    labelClass: str = ""
+    textClass: str = ""
+    blockType: BlockTyp = BlockTyp.TEXT
+
+
+COMMENT_STYLE = {
+    nwComment.PLAIN:    ComStyle("Comment", "comment", "comment", BlockTyp.COMMENT),
+    nwComment.IGNORE:   ComStyle(),
+    nwComment.SYNOPSIS: ComStyle("Synopsis", "modifier", "synopsis", BlockTyp.SUMMARY),
+    nwComment.SHORT:    ComStyle("Short Description", "modifier", "synopsis", BlockTyp.SUMMARY),
+    nwComment.NOTE:     ComStyle("Note", "modifier", "note", BlockTyp.NOTE),
+    nwComment.FOOTNOTE: ComStyle("", "modifier", "note"),
+    nwComment.COMMENT:  ComStyle(),
+    nwComment.STORY:    ComStyle("", "modifier", "note", BlockTyp.NOTE),
+}
 
 
 class Tokenizer(ABC):
@@ -72,7 +93,7 @@ class Tokenizer(ABC):
         BlockTyp.TITLE, BlockTyp.HEAD1, BlockTyp.HEAD2, BlockTyp.HEAD2, BlockTyp.HEAD3,
         BlockTyp.HEAD4, BlockTyp.SEP, BlockTyp.SKIP,
     ]
-    L_SUMMARY = [BlockTyp.SYNOPSIS, BlockTyp.SHORT]
+    L_NOTES = [BlockTyp.SUMMARY, BlockTyp.NOTE, BlockTyp.COMMENT]
 
     def __init__(self, project: NWProject) -> None:
 
@@ -114,6 +135,7 @@ class Tokenizer(ABC):
 
         # Other Setting
         self._theme = TextDocumentTheme()
+        self._classes: dict[str, QColor] = {}
 
         # Margins
         self._marginTitle = nwStyles.T_MARGIN["H0"]
@@ -433,6 +455,13 @@ class Tokenizer(ABC):
     def saveDocument(self, path: Path) -> None:
         raise NotImplementedError
 
+    def initDocument(self) -> None:
+        """Initialise data after settings."""
+        self._classes["modifier"] = self._theme.modifier
+        self._classes["synopsis"] = self._theme.note
+        self._classes["comment"] = self._theme.comment
+        return
+
     def addRootHeading(self, tHandle: str) -> None:
         """Add a heading at the start of a new root folder."""
         self._text = ""
@@ -569,36 +598,29 @@ class Tokenizer(ABC):
                 if aLine.startswith("%~"):
                     continue
 
+                cStyle, cKey, cText, _, _ = processComment(aLine)
+                if cStyle in (nwComment.SYNOPSIS, nwComment.SHORT) and not self._doSynopsis:
+                    continue
+                if cStyle == nwComment.PLAIN and not self._doComments:
+                    continue
+
                 if self._doJustify and not sAlign & self.M_ALIGNED:
                     sAlign |= BlockFmt.JUSTIFY
 
-                cStyle, cKey, cText, _, _ = processComment(aLine)
-                if cStyle == nwComment.SYNOPSIS:
-                    tLine, tFmt = self._extractFormats(cText)
-                    blocks.append((
-                        BlockTyp.SYNOPSIS, nHead, tLine, tFmt, sAlign
-                    ))
-                    if self._doSynopsis and self._keepRaw:
+                if cStyle in (nwComment.SYNOPSIS, nwComment.SHORT, nwComment.PLAIN):
+                    bStyle = COMMENT_STYLE[cStyle]
+                    tLine, tFmt = self._formatNote(bStyle, cKey, cText)
+                    blocks.append((bStyle.blockType, nHead, tLine, tFmt, sAlign))
+                    if self._keepRaw:
                         tmpMarkdown.append(f"{aLine}\n")
-                elif cStyle == nwComment.SHORT:
-                    tLine, tFmt = self._extractFormats(cText)
-                    blocks.append((
-                        BlockTyp.SHORT, nHead, tLine, tFmt, sAlign
-                    ))
-                    if self._doSynopsis and self._keepRaw:
-                        tmpMarkdown.append(f"{aLine}\n")
+
                 elif cStyle == nwComment.FOOTNOTE:
                     tLine, tFmt = self._extractFormats(cText, skip=TextFmt.FNOTE)
                     self._footnotes[f"{tHandle}:{cKey}"] = (tLine, tFmt)
                     if self._keepRaw:
                         tmpMarkdown.append(f"{aLine}\n")
                 else:
-                    tLine, tFmt = self._extractFormats(cText)
-                    blocks.append((
-                        BlockTyp.COMMENT, nHead, tLine, tFmt, sAlign
-                    ))
-                    if self._doComments and self._keepRaw:
-                        tmpMarkdown.append(f"{aLine}\n")
+                    continue
 
             elif aLine.startswith("@"):
                 # Keywords
@@ -992,25 +1014,10 @@ class Tokenizer(ABC):
                 allChars += nChars
                 allWordChars += nWChars
 
-            elif tType == BlockTyp.SYNOPSIS and self._doSynopsis:
-                text = "{0}: {1}".format(self._localLookup("Synopsis"), tText)
-                words = text.split()
+            elif tType in self.L_NOTES:
+                words = tText.split()
                 allWords += len(words)
-                allChars += len(text)
-                allWordChars += len("".join(words))
-
-            elif tType == BlockTyp.SHORT and self._doSynopsis:
-                text = "{0}: {1}".format(self._localLookup("Short Description"), tText)
-                words = text.split()
-                allWords += len(words)
-                allChars += len(text)
-                allWordChars += len("".join(words))
-
-            elif tType == BlockTyp.COMMENT and self._doComments:
-                text = "{0}: {1}".format(self._localLookup("Comment"), tText)
-                words = text.split()
-                allWords += len(words)
-                allChars += len(text)
+                allChars += len(tText)
                 allWordChars += len("".join(words))
 
             elif tType == BlockTyp.KEYWORD and self._doKeywords:
@@ -1070,6 +1077,21 @@ class Tokenizer(ABC):
     ##
     #  Internal Functions
     ##
+
+    def _formatNote(self, style: ComStyle, key: str, text: str) -> tuple[str, T_Formats]:
+        """Apply formatting to comments and notes."""
+        tTxt, tFmt = self._extractFormats(text)
+        tFmt.insert(0, (0, TextFmt.COL_B, style.textClass))
+        tFmt.append((len(tTxt), TextFmt.COL_E, ""))
+        if label := (self._localLookup(style.label) + (f" ({key})" if key else "")).strip():
+            shift = len(label) + 2
+            tTxt = f"{label}: {tTxt}"
+            rFmt = [(0, TextFmt.B_B, ""), (shift - 1, TextFmt.B_E, "")]
+            if style.labelClass:
+                rFmt.insert(1, (0, TextFmt.COL_B, style.labelClass))
+                rFmt.append((shift - 1, TextFmt.COL_E, ""))
+            rFmt.extend((p + shift, f, d) for p, f, d in tFmt)
+        return tTxt, rFmt
 
     def _extractFormats(
         self, text: str, skip: int = 0, hDialog: bool = False

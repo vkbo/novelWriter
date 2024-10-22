@@ -84,12 +84,14 @@ class TextFmt(IntEnum):
     SUP_E = 12  # End superscript
     SUB_B = 13  # Begin subscript
     SUB_E = 14  # End subscript
-    DL_B  = 15  # Begin dialogue
-    DL_E  = 16  # End dialogue
-    ADL_B = 17  # Begin alt dialogue
-    ADL_E = 18  # End alt dialogue
-    FNOTE = 19  # Footnote marker
-    STRIP = 20  # Strip the format code
+    COL_B = 15  # Begin colour
+    COL_E = 16  # End colour
+    DL_B  = 17  # Begin dialogue
+    DL_E  = 18  # End dialogue
+    ADL_B = 19  # Begin alt dialogue
+    ADL_E = 20  # End alt dialogue
+    FNOTE = 21  # Footnote marker
+    STRIP = 22  # Strip the format code
 
 
 class BlockTyp(IntEnum):
@@ -98,19 +100,19 @@ class BlockTyp(IntEnum):
     An enum indicating the type of a text block.
     """
 
-    EMPTY    = 1   # Empty line (new paragraph)
-    SYNOPSIS = 2   # Synopsis comment
-    SHORT    = 3   # Short description comment
-    COMMENT  = 4   # Comment line
-    KEYWORD  = 5   # Command line
-    TITLE    = 6   # Title
-    HEAD1    = 7   # Heading 1
-    HEAD2    = 8   # Heading 2
-    HEAD3    = 9   # Heading 3
-    HEAD4    = 10  # Heading 4
-    TEXT     = 11  # Text line
-    SEP      = 12  # Scene separator
-    SKIP     = 13  # Paragraph break
+    EMPTY   = 1   # Empty line (new paragraph)
+    TITLE   = 2   # Title
+    HEAD1   = 3   # Heading 1
+    HEAD2   = 4   # Heading 2
+    HEAD3   = 5   # Heading 3
+    HEAD4   = 6   # Heading 4
+    TEXT    = 7   # Text line
+    SEP     = 8   # Scene separator
+    SKIP    = 9   # Paragraph break
+    SUMMARY = 10  # Synopsis/short comment
+    NOTE    = 11  # Note
+    COMMENT = 12  # Comment
+    KEYWORD = 13  # Tag/reference keywords
 
 
 class BlockFmt(Flag):

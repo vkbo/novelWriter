@@ -95,8 +95,9 @@ X_UND = 0x008  # Underline format
 X_MRK = 0x010  # Marked format
 X_SUP = 0x020  # Superscript
 X_SUB = 0x040  # Subscript
-X_DLG = 0x080  # Dialogue
-X_DLA = 0x100  # Alt. Dialogue
+X_COL = 0x080  # Coloured text
+X_DLG = 0x100  # Dialogue
+X_DLA = 0x200  # Alt. Dialogue
 
 # Formatting Masks
 M_BLD = ~X_BLD
@@ -106,6 +107,7 @@ M_UND = ~X_UND
 M_MRK = ~X_MRK
 M_SUP = ~X_SUP
 M_SUB = ~X_SUB
+M_COL = ~X_COL
 M_DLG = ~X_DLG
 M_DLA = ~X_DLA
 
@@ -214,6 +216,7 @@ class ToDocX(Tokenizer):
 
     def initDocument(self) -> None:
         """Initialises the DocX document structure."""
+        super().initDocument()
         self._fontFamily = self._textFont.family()
         self._fontSize = self._textFont.pointSizeF()
         self._generateStyles()
@@ -289,17 +292,8 @@ class ToDocX(Tokenizer):
             elif tType == BlockTyp.SKIP:
                 self._processFragments(par, S_NORM, "")
 
-            elif tType == BlockTyp.SYNOPSIS and self._doSynopsis:
-                tTemp, tFmt = self._formatSynopsis(tText, tFormat, True)
-                self._processFragments(par, S_META, tTemp, tFmt)
-
-            elif tType == BlockTyp.SHORT and self._doSynopsis:
-                tTemp, tFmt = self._formatSynopsis(tText, tFormat, False)
-                self._processFragments(par, S_META, tTemp, tFmt)
-
-            elif tType == BlockTyp.COMMENT and self._doComments:
-                tTemp, tFmt = self._formatComments(tText, tFormat)
-                self._processFragments(par, S_META, tTemp, tFmt)
+            elif tType in self.L_NOTES:
+                self._processFragments(par, S_META, tText, tFormat)
 
             elif tType == BlockTyp.KEYWORD and self._doKeywords:
                 tTemp, tFmt = self._formatKeywords(tText)
@@ -379,24 +373,6 @@ class ToDocX(Tokenizer):
     #  Internal Functions
     ##
 
-    def _formatSynopsis(self, text: str, fmt: T_Formats, synopsis: bool) -> tuple[str, T_Formats]:
-        """Apply formatting to synopsis lines."""
-        name = self._localLookup("Synopsis" if synopsis else "Short Description")
-        shift = len(name) + 2
-        rTxt = f"{name}: {text}"
-        rFmt: T_Formats = [(0, TextFmt.B_B, ""), (len(name) + 1, TextFmt.B_E, "")]
-        rFmt.extend((p + shift, f, d) for p, f, d in fmt)
-        return rTxt, rFmt
-
-    def _formatComments(self, text: str, fmt: T_Formats) -> tuple[str, T_Formats]:
-        """Apply formatting to comments."""
-        name = self._localLookup("Comment")
-        shift = len(name) + 2
-        rTxt = f"{name}: {text}"
-        rFmt: T_Formats = [(0, TextFmt.B_B, ""), (len(name) + 1, TextFmt.B_E, "")]
-        rFmt.extend((p + shift, f, d) for p, f, d in fmt)
-        return rTxt, rFmt
-
     def _formatKeywords(self, text: str) -> tuple[str, T_Formats]:
         """Apply formatting to keywords."""
         valid, bits, _ = self._project.index.scanThis("@"+text)
@@ -421,6 +397,7 @@ class ToDocX(Tokenizer):
         xFmt = 0x00
         xNode = None
         fStart = 0
+        fClass = ""
         for fPos, fFmt, fData in tFmt or []:
 
             if xNode is not None:
@@ -428,7 +405,7 @@ class ToDocX(Tokenizer):
                 xNode = None
 
             if temp := text[fStart:fPos]:
-                par.addContent(self._textRunToXml(temp, xFmt))
+                par.addContent(self._textRunToXml(temp, xFmt, fClass))
 
             if fFmt == TextFmt.B_B:
                 xFmt |= X_BLD
@@ -458,6 +435,12 @@ class ToDocX(Tokenizer):
                 xFmt |= X_SUB
             elif fFmt == TextFmt.SUB_E:
                 xFmt &= M_SUB
+            elif fFmt == TextFmt.COL_B:
+                xFmt |= X_COL
+                fClass = fData
+            elif fFmt == TextFmt.COL_E:
+                xFmt &= M_COL
+                fClass = ""
             elif fFmt == TextFmt.DL_B:
                 xFmt |= X_DLG
             elif fFmt == TextFmt.DL_E:
@@ -478,33 +461,35 @@ class ToDocX(Tokenizer):
             par.addContent(xNode)
 
         if temp := text[fStart:]:
-            par.addContent(self._textRunToXml(temp, xFmt))
+            par.addContent(self._textRunToXml(temp, xFmt, fClass))
 
         return
 
-    def _textRunToXml(self, text: str, fmt: int) -> ET.Element:
+    def _textRunToXml(self, text: str, fmt: int, fClass: str = "") -> ET.Element:
         """Encode the text run into XML."""
         run = ET.Element(_wTag("r"))
         rPr = xmlSubElem(run, _wTag("rPr"))
-        if fmt & X_BLD == X_BLD:
+        if fmt & X_BLD:
             xmlSubElem(rPr, _wTag("b"))
-        if fmt & X_ITA == X_ITA:
+        if fmt & X_ITA:
             xmlSubElem(rPr, _wTag("i"))
-        if fmt & X_UND == X_UND:
+        if fmt & X_UND:
             xmlSubElem(rPr, _wTag("u"), attrib={_wTag("val"): "single"})
-        if fmt & X_MRK == X_MRK:
+        if fmt & X_MRK:
             xmlSubElem(rPr, _wTag("shd"), attrib={
                 _wTag("fill"): COL_MARK_TXT, _wTag("val"): "clear",
             })
-        if fmt & X_DEL == X_DEL:
+        if fmt & X_DEL:
             xmlSubElem(rPr, _wTag("strike"))
-        if fmt & X_SUP == X_SUP:
+        if fmt & X_SUP:
             xmlSubElem(rPr, _wTag("vertAlign"), attrib={_wTag("val"): "superscript"})
-        if fmt & X_SUB == X_SUB:
+        if fmt & X_SUB:
             xmlSubElem(rPr, _wTag("vertAlign"), attrib={_wTag("val"): "subscript"})
-        if fmt & X_DLG == X_DLG:
+        if fmt & X_COL and (color := self._classes.get(fClass)):
+            xmlSubElem(rPr, _wTag("color"), attrib={_wTag("val"): _docXCol(color)})
+        if fmt & X_DLG:
             xmlSubElem(rPr, _wTag("color"), attrib={_wTag("val"): COL_DIALOG_M})
-        if fmt & X_DLA == X_DLA:
+        if fmt & X_DLA:
             xmlSubElem(rPr, _wTag("color"), attrib={_wTag("val"): COL_DIALOG_A})
 
         for segment in RX_TEXT.split(text):
@@ -659,7 +644,6 @@ class ToDocX(Tokenizer):
             before=fSz * self._marginMeta[0],
             after=fSz * self._marginMeta[1],
             line=fSz * self._lineHeight,
-            color=COL_META_TXT,
         ))
 
         # Header
