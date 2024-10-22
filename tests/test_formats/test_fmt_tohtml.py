@@ -407,7 +407,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
         (BlockTyp.SKIP, 1, "", [], BlockFmt.NONE),
     ]
     html.doConvert()
-    assert html.result == "<p class='skip'>&nbsp;</p>\n"
+    assert html.result == "<p>&nbsp;</p>\n"
 
     # Alignment
     # =========

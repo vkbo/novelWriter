@@ -251,7 +251,7 @@ class ToHtml(Tokenizer):
                 lines.append(f"<p class='sep'{hStyle}>{tText}</p>\n")
 
             elif tType == BlockTyp.SKIP:
-                lines.append(f"<p class='skip'{hStyle}>&nbsp;</p>\n")
+                lines.append(f"<p{hStyle}>&nbsp;</p>\n")
 
             elif tType == BlockTyp.COMMENT:
                 lines.append(f"<p class='comment'{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
@@ -349,91 +349,54 @@ class ToHtml(Tokenizer):
         mScale = self._lineHeight/1.15
         tColor = self._theme.text.name(QtHexRgb)
         hColor = self._theme.head.name(QtHexRgb) if self._colorHeads else tColor
+        lColor = self._theme.head.name(QtHexRgb)
+        mColor = self._theme.highlight.name(QtHexRgb)
+
+        mtH0 = mScale * self._marginTitle[0]
+        mbH0 = mScale * self._marginTitle[1]
+        mtH1 = mScale * self._marginHead1[0]
+        mbH1 = mScale * self._marginHead1[1]
+        mtH2 = mScale * self._marginHead2[0]
+        mbH2 = mScale * self._marginHead2[1]
+        mtH3 = mScale * self._marginHead3[0]
+        mbH3 = mScale * self._marginHead3[1]
+        mtH4 = mScale * self._marginHead4[0]
+        mbH4 = mScale * self._marginHead4[1]
+        mtTT = mScale * self._marginText[0]
+        mbTT = mScale * self._marginText[1]
+        mtSP = mScale * self._marginSep[0]
+        mbSP = mScale * self._marginSep[1]
+
+        font = self._textFont
+        fFam = font.family()
+        fSz = font.pointSize()
+        fW = FONT_WEIGHTS.get(font.weight(), 400)
+        fS = FONT_STYLE.get(font.style(), "normal")
+
+        lHeight = round(100 * self._lineHeight)
 
         styles = []
-        font = self._textFont
-        styles.append((
-            "body {{"
-            "color: {0:s}; font-family: '{1:s}'; font-size: {2:d}pt; "
-            "font-weight: {3:d}; font-style: {4:s};"
-            "}}"
-        ).format(
-            tColor, font.family(), font.pointSize(),
-            FONT_WEIGHTS.get(font.weight(), 400),
-            FONT_STYLE.get(font.style(), "normal"),
-        ))
-        styles.append((
-            "p {{"
-            "text-align: {0}; line-height: {1:d}%; "
-            "margin-top: {2:.2f}em; margin-bottom: {3:.2f}em;"
-            "}}"
-        ).format(
-            self._defaultAlign,
-            round(100 * self._lineHeight),
-            mScale * self._marginText[0],
-            mScale * self._marginText[1],
-        ))
-        styles.append((
-            "h1 {{"
-            "color: {0:s}; "
-            "page-break-after: avoid; "
-            "margin-top: {1:.2f}em; "
-            "margin-bottom: {2:.2f}em;"
-            "}}"
-        ).format(
-            hColor, mScale * self._marginHead1[0], mScale * self._marginHead1[1]
-        ))
-        styles.append((
-            "h2 {{"
-            "color: {0:s}; "
-            "page-break-after: avoid; "
-            "margin-top: {1:.2f}em; "
-            "margin-bottom: {2:.2f}em;"
-            "}}"
-        ).format(
-            hColor, mScale * self._marginHead2[0], mScale * self._marginHead2[1]
-        ))
-        styles.append((
-            "h3 {{"
-            "color: {0:s}; "
-            "page-break-after: avoid; "
-            "margin-top: {1:.2f}em; "
-            "margin-bottom: {2:.2f}em;"
-            "}}"
-        ).format(
-            hColor, mScale * self._marginHead3[0], mScale * self._marginHead3[1]
-        ))
-        styles.append((
-            "h4 {{"
-            "color: {0:s}; "
-            "page-break-after: avoid; "
-            "margin-top: {1:.2f}em; "
-            "margin-bottom: {2:.2f}em;"
-            "}}"
-        ).format(
-            hColor, mScale * self._marginHead4[0], mScale * self._marginHead4[1]
-        ))
-        styles.append((
-            ".title {{"
-            "font-size: 2.5em; "
-            "margin-top: {0:.2f}em; "
-            "margin-bottom: {1:.2f}em;"
-            "}}"
-        ).format(
-            mScale * self._marginTitle[0], mScale * self._marginTitle[1]
-        ))
-        styles.append((
-            ".sep, .skip {{"
-            "text-align: center; "
-            "margin-top: {0:.2f}em; "
-            "margin-bottom: {1:.2f}em;"
-            "}}"
-        ).format(
-            mScale, mScale
-        ))
-
-        styles.append("a {{color: {0:s};}}".format(self._theme.head.name(QtHexRgb)))
-        styles.append("mark {{background: {0:s};}}".format(self._theme.highlight.name(QtHexRgb)))
+        styles.append(
+            f"body {{color: {tColor}; font-family: '{fFam}'; font-size: {fSz}pt; "
+            f"font-weight: {fW}; font-style: {fS};}}"
+        )
+        styles.append(
+            f"p {{text-align: {self._defaultAlign}; line-height: {lHeight}%; "
+            f"margin-top: {mtTT:.2f}em; margin-bottom: {mbTT:.2f}em;}}"
+        )
+        styles.append(f"a {{color: {lColor};}}")
+        styles.append(f"mark {{background: {mColor};}}")
+        styles.append(f"h1, h2, h3, h4 {{color: {hColor}; page-break-after: avoid;}}")
+        styles.append(f"h1 {{margin-top: {mtH1:.2f}em; margin-bottom: {mbH1:.2f}em;}}")
+        styles.append(f"h2 {{margin-top: {mtH2:.2f}em; margin-bottom: {mbH2:.2f}em;}}")
+        styles.append(f"h3 {{margin-top: {mtH3:.2f}em; margin-bottom: {mbH3:.2f}em;}}")
+        styles.append(f"h4 {{margin-top: {mtH4:.2f}em; margin-bottom: {mbH4:.2f}em;}}")
+        styles.append(
+            f".title {{font-size: 2.5em; margin-top: {mtH0:.2f}em; margin-bottom: {mbH0:.2f}em;}}"
+        )
+        styles.append(
+            f".sep {{text-align: center; margin-top: {mtSP:.2f}em; margin-bottom: {mbSP:.2f}em;}}"
+        )
 
         return styles
 
