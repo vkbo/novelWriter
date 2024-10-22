@@ -127,9 +127,10 @@ class Tokenizer(ABC):
         self._doSynopsis   = False   # Also process synopsis comments
         self._doComments   = False   # Also process comments
         self._doKeywords   = False   # Also process keywords like tags and references
-        self._skipKeywords = set()   # Keywords to ignore
         self._keepBreaks   = True    # Keep line breaks in paragraphs
         self._defaultAlign = "left"  # The default text alignment
+
+        self._skipKeywords: set[str] = set()  # Keywords to ignore
 
         # Other Setting
         self._theme = TextDocumentTheme()
@@ -464,6 +465,9 @@ class Tokenizer(ABC):
         self._classes["comment"] = self._theme.comment
         self._classes["dialog"] = self._theme.dialog
         self._classes["altdialog"] = self._theme.altdialog
+        self._classes["tag"] = self._theme.tag
+        self._classes["keyword"] = self._theme.keyword
+        self._classes["optional"] = self._theme.optional
         return
 
     def addRootHeading(self, tHandle: str) -> None:
@@ -614,7 +618,9 @@ class Tokenizer(ABC):
                 if cStyle in (nwComment.SYNOPSIS, nwComment.SHORT, nwComment.PLAIN):
                     bStyle = COMMENT_STYLE[cStyle]
                     tLine, tFmt = self._formatComment(bStyle, cKey, cText)
-                    blocks.append((BlockTyp.COMMENT, nHead, tLine, tFmt, sAlign))
+                    blocks.append((
+                        BlockTyp.COMMENT, nHead, tLine, tFmt, sAlign
+                    ))
                     if self._keepRaw:
                         tmpMarkdown.append(f"{aLine}\n")
 
@@ -633,30 +639,13 @@ class Tokenizer(ABC):
                 if not self._doKeywords:
                     continue
 
-                valid, bits, _ = self._project.index.scanThis(aLine)
-                if (
-                    valid and bits and bits[0] in nwLabels.KEY_NAME
-                    and bits[0] not in self._skipKeywords
-                ):
+                tLine, tFmt = self._formatMeta(aLine)
+                if tLine:
                     blocks.append((
-                        BlockTyp.KEYWORD, nHead, aLine[1:].strip(), [], sAlign
+                        BlockTyp.KEYWORD, nHead, tLine, tFmt, sAlign
                     ))
                     if self._keepRaw:
                         tmpMarkdown.append(f"{aLine}\n")
-
-                # valid, bits, _ = self._project.index.scanThis("@"+text)
-                # if not valid or not bits or bits[0] not in nwLabels.KEY_NAME:
-                #     return "", []
-
-                # rTxt = f"{self._localLookup(nwLabels.KEY_NAME[bits[0]])}: "
-                # rFmt: T_Formats = [(0, TextFmt.B_B, ""), (len(rTxt) - 1, TextFmt.B_E, "")]
-                # if len(bits) > 1:
-                #     if bits[0] == nwKeyWords.TAG_KEY:
-                #         rTxt += bits[1]
-                #     else:
-                #         rTxt += ", ".join(bits[1:])
-
-                # return rTxt, rFmt
 
             elif aLine.startswith(("# ", "#! ")):
                 # Title or Partition Headings
@@ -1033,21 +1022,11 @@ class Tokenizer(ABC):
                 allChars += nChars
                 allWordChars += nWChars
 
-            elif tType == BlockTyp.COMMENT:
+            elif tType in (BlockTyp.COMMENT, BlockTyp.KEYWORD):
                 words = tText.split()
                 allWords += len(words)
                 allChars += len(tText)
                 allWordChars += len("".join(words))
-
-            elif tType == BlockTyp.KEYWORD:
-                valid, bits, _ = self._project.index.scanThis("@"+tText)
-                if valid and bits:
-                    key = self._localLookup(nwLabels.KEY_NAME[bits[0]])
-                    text = "{0}: {1}".format(key, ", ".join(bits[1:]))
-                    words = text.split()
-                    allWords += len(words)
-                    allChars += len(text)
-                    allWordChars += len("".join(words))
 
         self._counts["titleCount"] = titleCount
         self._counts["paragraphCount"] = paragraphCount
@@ -1111,6 +1090,55 @@ class Tokenizer(ABC):
                 rFmt.append((shift - 1, TextFmt.COL_E, ""))
             rFmt.extend((p + shift, f, d) for p, f, d in tFmt)
         return tTxt, rFmt
+
+    def _formatMeta(self, text: str) -> tuple[str, T_Formats]:
+        """Parse a meta line into a """
+        txt = []
+        fmt = []
+        valid, bits, _ = self._project.index.scanThis(text)
+        if valid and bits and bits[0] in nwLabels.KEY_NAME and bits[0] not in self._skipKeywords:
+            pos = 0
+            lbl = f"{self._localLookup(nwLabels.KEY_NAME[bits[0]])}:"
+            end = len(lbl)
+            fmt = [
+                (pos, TextFmt.B_B, ""), (pos, TextFmt.COL_B, "keyword"),
+                (end, TextFmt.B_E, ""), (end, TextFmt.COL_E, ""),
+            ]
+            txt = [lbl, " "]
+            pos = end + 1
+
+            if (num := len(bits)) > 1:
+                if bits[0] == nwKeyWords.TAG_KEY:
+                    one, two = self._project.index.parseValue(bits[1])
+                    end = pos + len(one)
+                    fmt.append((pos, TextFmt.COL_B, "tag"))
+                    fmt.append((pos, TextFmt.ANM_B, f"tag_{one}".lower()))
+                    fmt.append((end, TextFmt.ANM_E, ""))
+                    fmt.append((end, TextFmt.COL_E, ""))
+                    txt.append(one)
+                    pos = end
+                    if two:
+                        txt.append(" | ")
+                        pos += 3
+                        end = pos + len(two)
+                        fmt.append((pos, TextFmt.COL_B, "optional"))
+                        fmt.append((end, TextFmt.COL_E, ""))
+                        txt.append(two)
+                        pos = end
+                else:
+                    for n, bit in enumerate(bits[1:], 2):
+                        end = pos + len(bit)
+                        fmt.append((pos, TextFmt.COL_B, "tag"))
+                        fmt.append((pos, TextFmt.HRF_B, f"#tag_{bit}".lower()))
+                        fmt.append((end, TextFmt.HRF_E, ""))
+                        fmt.append((end, TextFmt.COL_E, ""))
+                        txt.append(bit)
+                        pos = end
+                        if n < num:
+                            txt.append(", ")
+                            pos += 2
+
+        return "".join(txt), fmt
 
     def _extractFormats(
         self, text: str, skip: int = 0, hDialog: bool = False

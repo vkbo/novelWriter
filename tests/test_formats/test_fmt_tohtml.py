@@ -232,9 +232,9 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='meta meta-char'><span class='keyword'>Characters:</span> "
-        "<a class='tag' href='#tag_Bod'>Bod</a>, "
-        "<a class='tag' href='#tag_Jane'>Jane</a></p>\n"
+        "<p class='meta'><strong><span style='color: #f5871f'>Characters:</strong></span> "
+        "<span style='color: #4271ae'><a href='#tag_bod'>Bod</a></span>, "
+        "<span style='color: #4271ae'><a href='#tag_jane'>Jane</a></span></p>\n"
     )
 
     # Tags
@@ -242,16 +242,17 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='meta meta-tag'><span class='keyword'>Tag:</span> "
-        "<a class='tag' name='tag_Bod'>Bod</a></p>\n"
+        "<p class='meta'><strong><span style='color: #f5871f'>Tag:</strong></span> "
+        "<span style='color: #4271ae'><a name='tag_bod'>Bod</a></span></p>\n"
     )
 
     html._text = "@tag: Bod | Nobody Owens\n"
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='meta meta-tag'><span class='keyword'>Tag:</span> "
-        "<a class='tag' name='tag_Bod'>Bod</a> | <span class='optional'>Nobody Owens</a></p>\n"
+        "<p class='meta'><strong><span style='color: #f5871f'>Tag:</strong></span> "
+        "<span style='color: #4271ae'><a name='tag_bod'>Bod</a></span> | "
+        "<span style='color: #4271ae'>Nobody Owens</span></p>\n"
     )
 
     # Multiple Keywords
@@ -262,15 +263,15 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.doConvert()
     assert html.result == (
         "<h1 style='page-break-before: always;'>Chapter</h1>\n"
-        "<p class='meta meta-pov' style='margin-bottom: 0;'>"
-        "<span class='keyword'>Point of View:</span> "
-        "<a class='tag' href='#tag_Bod'>Bod</a></p>\n"
-        "<p class='meta meta-plot' style='margin-bottom: 0; margin-top: 0;'>"
-        "<span class='keyword'>Plot:</span> "
-        "<a class='tag' href='#tag_Main'>Main</a></p>\n"
-        "<p class='meta meta-location' style='margin-top: 0;'>"
-        "<span class='keyword'>Locations:</span> "
-        "<a class='tag' href='#tag_Europe'>Europe</a></p>\n"
+        "<p class='meta' style='margin-bottom: 0;'>"
+        "<strong><span style='color: #f5871f'>Point of View:</strong></span> "
+        "<span style='color: #4271ae'><a href='#tag_bod'>Bod</a></span></p>\n"
+        "<p class='meta' style='margin-bottom: 0; margin-top: 0;'>"
+        "<strong><span style='color: #f5871f'>Plot:</strong></span> "
+        "<span style='color: #4271ae'><a href='#tag_main'>Main</a></span></p>\n"
+        "<p class='meta' style='margin-top: 0;'>"
+        "<strong><span style='color: #f5871f'>Locations:</strong></span> "
+        "<span style='color: #4271ae'><a href='#tag_europe'>Europe</a></span></p>\n"
     )
 
     # Dialogue
@@ -718,22 +719,3 @@ def testFmtToHtml_Methods(mockGUI):
 
     html.setStyles(False)
     assert html.getStyleSheet() == []
-
-
-@pytest.mark.core
-def testFmtToHtml_Format(mockGUI):
-    """Test all the formatters for the ToHtml class."""
-    project = NWProject()
-    html = ToHtml(project)
-    html.initDocument()
-
-    assert html._formatKeywords("") == ("", "")
-    assert html._formatKeywords("tag: Jane") == (
-        "tag", "<span class='keyword'>Tag:</span> <a class='tag' name='tag_Jane'>Jane</a>"
-    )
-    assert html._formatKeywords("char: Bod, Jane") == (
-        "char",
-        "<span class='keyword'>Characters:</span> "
-        "<a class='tag' href='#tag_Bod'>Bod</a>, "
-        "<a class='tag' href='#tag_Jane'>Jane</a>"
-    )

@@ -30,7 +30,7 @@ from pathlib import Path
 from time import time
 
 from novelwriter.common import formatTimeStamp
-from novelwriter.constants import nwHeadFmt, nwHtmlUnicode, nwKeyWords, nwLabels
+from novelwriter.constants import nwHeadFmt, nwHtmlUnicode
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
 from novelwriter.formats.tokenizer import Tokenizer
@@ -48,6 +48,8 @@ HTML_OPENER: dict[int, tuple[int, str]] = {
     TextFmt.SUP_B: (TextFmt.SUP_E, "<sup>"),
     TextFmt.SUB_B: (TextFmt.SUB_E, "<sub>"),
     TextFmt.COL_B: (TextFmt.COL_E, "<span style='color: {0}'>"),
+    TextFmt.ANM_B: (TextFmt.ANM_E, "<a name='{0}'>"),
+    TextFmt.HRF_B: (TextFmt.HRF_E, "<a href='{0}'>"),
 }
 
 # Each closer tag, with the id of its corresponding opener and tag format
@@ -60,6 +62,8 @@ HTML_CLOSER: dict[int, tuple[int, str]] = {
     TextFmt.SUP_E: (TextFmt.SUP_B, "</sup>"),
     TextFmt.SUB_E: (TextFmt.SUB_B, "</sub>"),
     TextFmt.COL_E: (TextFmt.COL_B, "</span>"),
+    TextFmt.ANM_E: (TextFmt.ANM_B, "</a>"),
+    TextFmt.HRF_E: (TextFmt.HRF_B, "</a>"),
 }
 
 # Empty HTML tag record
@@ -155,21 +159,21 @@ class ToHtml(Tokenizer):
         lines = []
         tHandle = self._handle
 
-        for tType, nHead, tText, tFormat, tStyle in self._blocks:
+        for tType, nHead, tText, tFmt, tStyle in self._blocks:
 
             # Replace < and > with HTML entities
-            if tFormat:
+            if tFmt:
                 # If we have formatting, we must recompute the locations
                 cText = []
                 i = 0
                 for c in tText:
                     if c == "<":
                         cText.append("&lt;")
-                        tFormat = [(p + 3 if p > i else p, f, k) for p, f, k in tFormat]
+                        tFmt = [(p + 3 if p > i else p, f, k) for p, f, k in tFmt]
                         i += 4
                     elif c == ">":
                         cText.append("&gt;")
-                        tFormat = [(p + 3 if p > i else p, f, k) for p, f, k in tFormat]
+                        tFmt = [(p + 3 if p > i else p, f, k) for p, f, k in tFmt]
                         i += 4
                     else:
                         cText.append(c)
@@ -221,7 +225,7 @@ class ToHtml(Tokenizer):
 
             # Process Text Type
             if tType == BlockTyp.TEXT:
-                lines.append(f"<p{hStyle}>{self._formatText(tText, tFormat)}</p>\n")
+                lines.append(f"<p{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
 
             elif tType == BlockTyp.TITLE:
                 tHead = tText.replace(nwHeadFmt.BR, "<br>")
@@ -250,13 +254,10 @@ class ToHtml(Tokenizer):
                 lines.append(f"<p class='skip'{hStyle}>&nbsp;</p>\n")
 
             elif tType == BlockTyp.COMMENT:
-                lines.append(f"<p class='comment'>{self._formatText(tText, tFormat)}</p>\n")
+                lines.append(f"<p class='comment'{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
 
             elif tType == BlockTyp.KEYWORD:
-                tag, text = self._formatKeywords(tText)
-                kClass = f" class='meta meta-{tag}'" if tag else ""
-                tTemp = f"<p{kClass}{hStyle}>{text}</p>\n"
-                lines.append(tTemp)
+                lines.append(f"<p class='meta'{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
 
         self._result = "".join(lines)
         self._fullHTML.append(self._result)
@@ -431,9 +432,8 @@ class ToHtml(Tokenizer):
             mScale, mScale
         ))
 
-        styles.append("a {color: rgb(66, 113, 174);}")
-        styles.append("mark {background: rgb(255, 255, 166);}")
-        styles.append(".keyword {color: rgb(245, 135, 31); font-weight: bold;}")
+        styles.append("a {{color: {0:s};}}".format(self._theme.head.name(QtHexRgb)))
+        styles.append("mark {{background: {0:s};}}".format(self._theme.highlight.name(QtHexRgb)))
 
         return styles
 
@@ -455,6 +455,8 @@ class ToHtml(Tokenizer):
                 if not state.get(fmt, True):
                     if fmt == TextFmt.COL_B and (color := self._classes.get(data)):
                         tags.append((pos, m[1].format(color.name(QtHexRgb))))
+                    elif fmt in (TextFmt.ANM_B, TextFmt.HRF_B):
+                        tags.append((pos, m[1].format(data or "#")))
                     else:
                         tags.append((pos, m[1]))
                     state[fmt] = True
@@ -488,23 +490,3 @@ class ToHtml(Tokenizer):
         temp = temp.replace("\n", "<br>")
 
         return stripEscape(temp)
-
-    def _formatKeywords(self, text: str) -> tuple[str, str]:
-        """Apply HTML formatting to keywords."""
-        valid, bits, _ = self._project.index.scanThis("@"+text)
-        if not valid or not bits or bits[0] not in nwLabels.KEY_NAME:
-            return "", ""
-
-        result = f"<span class='keyword'>{self._localLookup(nwLabels.KEY_NAME[bits[0]])}:</span> "
-        if len(bits) > 1:
-            if bits[0] == nwKeyWords.TAG_KEY:
-                one, two = self._project.index.parseValue(bits[1])
-                result += f"<a class='tag' name='tag_{one}'>{one}</a>"
-                if two:
-                    result += f" | <span class='optional'>{two}</a>"
-            else:
-                result += ", ".join(
-                    f"<a class='tag' href='#tag_{t}'>{t}</a>" for t in bits[1:]
-                )
-
-        return bits[0][1:], result

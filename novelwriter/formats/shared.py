@@ -86,8 +86,12 @@ class TextFmt(IntEnum):
     SUB_E = 14  # End subscript
     COL_B = 15  # Begin colour
     COL_E = 16  # End colour
-    FNOTE = 17  # Footnote marker
-    STRIP = 18  # Strip the format code
+    ANM_B = 17  # Begin anchor name
+    ANM_E = 18  # End anchor name
+    HRF_B = 19  # Begin href link
+    HRF_E = 20  # End href link
+    FNOTE = 21  # Footnote marker
+    STRIP = 22  # Strip the format code
 
 
 class BlockTyp(IntEnum):

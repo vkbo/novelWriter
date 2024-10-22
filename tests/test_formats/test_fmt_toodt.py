@@ -202,7 +202,6 @@ def testFmtToOdt_TextFormatting(mockGUI):
     fmt = [(2, TextFmt.B_B, ""), (5, TextFmt.B_E, ""), (7, 99999, "")]
     xTest = ET.Element(_mkTag("office", "text"))
     odt._addTextPar(xTest, "Standard", oStyle, text, tFmt=fmt)
-    assert odt.errData == ["Unknown format tag encountered"]
     assert xmlToText(xTest) == (
         '<office:text>'
         '<text:p text:style-name="Standard">A <text:span text:style-name="T1">few</text:span> '
@@ -521,17 +520,17 @@ def testFmtToOdt_ConvertParagraphs(mockGUI):
     assert xmlToText(odt._xText) == (
         '<office:text>'
         '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
-        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T9">'
-        'Point of View:</text:span> Jane</text:p>'
         '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T10">'
-        'Synopsis:</text:span> '
-        '<text:span text:style-name="T11">So it begins</text:span></text:p>'
-        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T10">'
-        'Short Description:</text:span> '
-        '<text:span text:style-name="T11">Then what</text:span></text:p>'
+        'Point of View:</text:span> <text:span text:style-name="T11">Jane</text:span></text:p>'
         '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T12">'
+        'Synopsis:</text:span> '
+        '<text:span text:style-name="T13">So it begins</text:span></text:p>'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T12">'
+        'Short Description:</text:span> '
+        '<text:span text:style-name="T13">Then what</text:span></text:p>'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T14">'
         'Comment:</text:span> '
-        '<text:span text:style-name="T13">A plain comment</text:span></text:p>'
+        '<text:span text:style-name="T15">A plain comment</text:span></text:p>'
         '</office:text>'
     )
 
@@ -591,12 +590,12 @@ def testFmtToOdt_ConvertParagraphs(mockGUI):
     assert xmlToText(odt._xText) == (
         '<office:text>'
         '<text:h text:style-name="Heading_20_3" text:outline-level="3">Scene</text:h>'
-        '<text:p text:style-name="P1"><text:span text:style-name="T9">'
-        'Point of View:</text:span> Jane</text:p>'
-        '<text:p text:style-name="P2"><text:span text:style-name="T9">'
-        'Characters:</text:span> John</text:p>'
-        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T9">'
-        'Plot:</text:span> Main</text:p>'
+        '<text:p text:style-name="P1"><text:span text:style-name="T10">'
+        'Point of View:</text:span> <text:span text:style-name="T11">Jane</text:span></text:p>'
+        '<text:p text:style-name="P2"><text:span text:style-name="T10">'
+        'Characters:</text:span> <text:span text:style-name="T11">John</text:span></text:p>'
+        '<text:p text:style-name="Text_20_Meta"><text:span text:style-name="T10">'
+        'Plot:</text:span> <text:span text:style-name="T11">Main</text:span></text:p>'
         '<text:p text:style-name="P3">Right align</text:p>'
         '<text:p text:style-name="Text_20_body">Left Align</text:p>'
         '<text:p text:style-name="P4">Centered</text:p>'
@@ -706,7 +705,7 @@ def testFmtToOdt_ConvertParagraphs(mockGUI):
     assert odt.errData == []
     assert xmlToText(odt._xText) == (
         '<office:text>'
-        '<text:p text:style-name="Text_20_body">Test text **<text:span text:style-name="T14">'
+        '<text:p text:style-name="Text_20_body">Test text **<text:span text:style-name="T16">'
         'bold</text:span>** and more.</text:p>'
         '</office:text>'
     )
@@ -892,21 +891,6 @@ def testFmtToOdt_SaveFull(mockGUI, fncPath, tstPaths):
     assert cmpFiles(contFile, contComp)
     assert cmpFiles(metaFile, metaComp, ignoreStart=ODT_IGNORE)
     assert cmpFiles(stylFile, stylComp)
-
-
-@pytest.mark.core
-def testFmtToOdt_SpecialFormats(mockGUI):
-    """Test the special formatters for the ToOdt class."""
-    project = NWProject()
-    odt = ToOdt(project, isFlat=True)
-
-    assert odt._formatKeywords("") == ("", [])
-    assert odt._formatKeywords("tag: Jane") == (
-        "Tag: Jane", [(0, TextFmt.B_B, ""), (4, TextFmt.B_E, "")]
-    )
-    assert odt._formatKeywords("char: Bod, Jane") == (
-        "Characters: Bod, Jane", [(0, TextFmt.B_B, ""), (11, TextFmt.B_E, "")]
-    )
 
 
 @pytest.mark.core
@@ -1208,13 +1192,11 @@ def testFmtToOdt_ODTTextStyle():
 
     # Background Color
     assert txtStyle._tAttr["background-color"] == ["fo", None]
-    txtStyle.setBackgroundColor("stuff")
+    txtStyle.setBackgroundColor("#012345")  # type: ignore
     assert txtStyle._tAttr["background-color"] == ["fo", None]
-    txtStyle.setBackgroundColor("012345")
-    assert txtStyle._tAttr["background-color"] == ["fo", None]
-    txtStyle.setBackgroundColor("#012345")
-    assert txtStyle._tAttr["background-color"] == ["fo", "#012345"]
-    txtStyle.setBackgroundColor("stuff")
+    txtStyle.setBackgroundColor(QColor(255, 128, 0))
+    assert txtStyle._tAttr["background-color"] == ["fo", "#ff8000"]
+    txtStyle.setBackgroundColor(None)
     assert txtStyle._tAttr["background-color"] == ["fo", None]
 
     # Text Position

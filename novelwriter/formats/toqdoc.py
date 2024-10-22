@@ -34,7 +34,7 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtPrintSupport import QPrinter
 
-from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles, nwUnicode
+from novelwriter.constants import nwHeadFmt, nwStyles, nwUnicode
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
 from novelwriter.formats.tokenizer import Tokenizer
@@ -146,7 +146,7 @@ class ToQTextDocument(Tokenizer):
         self._mIndent = mPx * 2.0
         self._tIndent = mPx * self._firstWidth
 
-        # Block Format
+        # Text Formats
         # ============
 
         self._blockFmt = QTextBlockFormat()
@@ -157,24 +157,9 @@ class ToQTextDocument(Tokenizer):
             100*self._lineHeight, QTextBlockFormat.LineHeightTypes.ProportionalHeight
         )
 
-        # Character Formats
-        # =================
-
-        self._cText = QTextCharFormat()
-        self._cText.setBackground(QtTransparent)
-        self._cText.setForeground(self._theme.text)
-
-        self._cCode = QTextCharFormat(self._cText)
-        self._cCode.setForeground(self._theme.code)
-
-        self._cKeyword = QTextCharFormat(self._cText)
-        self._cKeyword.setForeground(self._theme.keyword)
-
-        self._cTag = QTextCharFormat(self._cText)
-        self._cTag.setForeground(self._theme.tag)
-
-        self._cOptional = QTextCharFormat(self._cText)
-        self._cOptional.setForeground(self._theme.optional)
+        self._charFmt = QTextCharFormat()
+        self._charFmt.setBackground(QtTransparent)
+        self._charFmt.setForeground(self._theme.text)
 
         self._init = True
 
@@ -193,6 +178,13 @@ class ToQTextDocument(Tokenizer):
 
             # Styles
             bFmt = QTextBlockFormat(self._blockFmt)
+            if tType in (BlockTyp.COMMENT, BlockTyp.KEYWORD):
+                bFmt.setTopMargin(self._mMeta[0])
+                bFmt.setBottomMargin(self._mMeta[1])
+            elif tType == BlockTyp.SEP:
+                bFmt.setTopMargin(self._mSep[0])
+                bFmt.setBottomMargin(self._mSep[1])
+
             if tStyle is not None:
                 if tStyle & BlockFmt.LEFT:
                     bFmt.setAlignment(QtAlignLeft)
@@ -220,9 +212,9 @@ class ToQTextDocument(Tokenizer):
                 if tStyle & BlockFmt.IND_T:
                     bFmt.setTextIndent(self._tIndent)
 
-            if tType == BlockTyp.TEXT:
+            if tType in (BlockTyp.TEXT, BlockTyp.COMMENT, BlockTyp.KEYWORD):
                 newBlock(cursor, bFmt)
-                self._insertFragments(tText, tFormat, cursor, self._cText)
+                self._insertFragments(tText, tFormat, cursor, self._charFmt)
 
             elif tType in self.L_HEADINGS:
                 bFmt, cFmt = self._genHeadStyle(tType, nHead, bFmt)
@@ -230,23 +222,12 @@ class ToQTextDocument(Tokenizer):
                 cursor.insertText(tText.replace(nwHeadFmt.BR, "\n"), cFmt)
 
             elif tType == BlockTyp.SEP:
-                sFmt = QTextBlockFormat(bFmt)
-                sFmt.setTopMargin(self._mSep[0])
-                sFmt.setBottomMargin(self._mSep[1])
-                newBlock(cursor, sFmt)
-                cursor.insertText(tText, self._cText)
+                newBlock(cursor, bFmt)
+                cursor.insertText(tText, self._charFmt)
 
             elif tType == BlockTyp.SKIP:
                 newBlock(cursor, bFmt)
-                cursor.insertText(nwUnicode.U_NBSP, self._cText)
-
-            elif tType == BlockTyp.COMMENT:
-                newBlock(cursor, bFmt)
-                self._insertFragments(tText, tFormat, cursor, self._cText)
-
-            elif tType == BlockTyp.KEYWORD:
-                newBlock(cursor, bFmt)
-                self._insertKeywords(tText, cursor)
+                cursor.insertText(nwUnicode.U_NBSP, self._charFmt)
 
         self._document.blockSignals(False)
 
@@ -281,12 +262,13 @@ class ToQTextDocument(Tokenizer):
 
             for key, index in self._usedNotes.items():
                 if content := self._footnotes.get(key):
-                    cFmt = QTextCharFormat(self._cCode)
+                    cFmt = QTextCharFormat(self._charFmt)
+                    cFmt.setForeground(self._theme.code)
                     cFmt.setAnchor(True)
                     cFmt.setAnchorNames([f"footnote_{index}"])
                     newBlock(cursor, self._blockFmt)
                     cursor.insertText(f"{index}. ", cFmt)
-                    self._insertFragments(*content, cursor, self._cText)
+                    self._insertFragments(*content, cursor, self._charFmt)
 
             self._document.blockSignals(False)
 
@@ -342,8 +324,21 @@ class ToQTextDocument(Tokenizer):
                     cFmt.setForeground(color)
             elif fmt == TextFmt.COL_E:
                 cFmt.setForeground(self._theme.text)
+            elif fmt == TextFmt.ANM_B:
+                cFmt.setAnchor(True)
+                cFmt.setAnchorNames([data])
+            elif fmt == TextFmt.ANM_E:
+                cFmt.setAnchor(False)
+            elif fmt == TextFmt.HRF_B:
+                cFmt.setFontUnderline(True)
+                cFmt.setAnchor(True)
+                cFmt.setAnchorHref(data)
+            elif fmt == TextFmt.HRF_E:
+                cFmt.setFontUnderline(False)
+                cFmt.setAnchor(False)
             elif fmt == TextFmt.FNOTE:
-                xFmt = QTextCharFormat(self._cCode)
+                xFmt = QTextCharFormat(self._charFmt)
+                xFmt.setForeground(self._theme.code)
                 xFmt.setVerticalAlignment(QtVAlignSuper)
                 if data in self._footnotes:
                     index = len(self._usedNotes) + 1
@@ -363,33 +358,6 @@ class ToQTextDocument(Tokenizer):
 
         return
 
-    def _insertKeywords(self, text: str, cursor: QTextCursor) -> None:
-        """Apply Markdown formatting to keywords."""
-        valid, bits, _ = self._project.index.scanThis("@"+text)
-        if valid and bits:
-            key = f"{self._localLookup(nwLabels.KEY_NAME[bits[0]])}: "
-            cursor.insertText(key, self._cKeyword)
-            if (num := len(bits)) > 1:
-                if bits[0] == nwKeyWords.TAG_KEY:
-                    one, two = self._project.index.parseValue(bits[1])
-                    cFmt = QTextCharFormat(self._cTag)
-                    cFmt.setAnchor(True)
-                    cFmt.setAnchorNames([f"tag_{one}".lower()])
-                    cursor.insertText(one, cFmt)
-                    if two:
-                        cursor.insertText(" | ", self._cText)
-                        cursor.insertText(two, self._cOptional)
-                else:
-                    for n, bit in enumerate(bits[1:], 2):
-                        cFmt = QTextCharFormat(self._cTag)
-                        cFmt.setFontUnderline(True)
-                        cFmt.setAnchor(True)
-                        cFmt.setAnchorHref(f"#tag_{bit}".lower())
-                        cursor.insertText(bit, cFmt)
-                        if n < num:
-                            cursor.insertText(", ", self._cText)
-        return
-
     def _genHeadStyle(self, hType: BlockTyp, nHead: int, rFmt: QTextBlockFormat) -> T_TextStyle:
         """Generate a heading style set."""
         mTop, mBottom = self._mHead.get(hType, (0.0, 0.0))
@@ -398,11 +366,11 @@ class ToQTextDocument(Tokenizer):
         bFmt.setTopMargin(mTop)
         bFmt.setBottomMargin(mBottom)
 
-        self._cTitle = QTextCharFormat(self._cText)
+        self._cTitle = QTextCharFormat(self._charFmt)
         self._cTitle.setFontWeight(self._bold if self._boldHeads else self._normal)
 
         hCol = self._colorHeads and hType != BlockTyp.TITLE
-        cFmt = QTextCharFormat(self._cText)
+        cFmt = QTextCharFormat(self._charFmt)
         cFmt.setForeground(self._theme.head if hCol else self._theme.text)
         cFmt.setFontWeight(self._bold if self._boldHeads else self._normal)
         cFmt.setFontPointSize(self._sHead.get(hType, 1.0))

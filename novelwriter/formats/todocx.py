@@ -38,7 +38,7 @@ from PyQt5.QtGui import QColor
 
 from novelwriter import __version__
 from novelwriter.common import firstFloat, xmlSubElem
-from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles
+from novelwriter.constants import nwHeadFmt, nwStyles
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
 from novelwriter.formats.tokenizer import Tokenizer
@@ -118,12 +118,6 @@ S_SEP   = "Separator"
 S_META  = "MetaText"
 S_HEAD  = "Header"
 S_FNOTE = "FootnoteText"
-
-# Colours
-COL_DIALOG_M = "2a6099"
-COL_DIALOG_A = "813709"
-COL_META_TXT = "813709"
-COL_MARK_TXT = "ffffa6"
 
 
 class DocXXmlFile(NamedTuple):
@@ -292,8 +286,7 @@ class ToDocX(Tokenizer):
                 self._processFragments(par, S_META, tText, tFormat)
 
             elif tType == BlockTyp.KEYWORD:
-                tTemp, tFmt = self._formatKeywords(tText)
-                self._processFragments(par, S_META, tTemp, tFmt)
+                self._processFragments(par, S_META, tText, tFormat)
 
         return
 
@@ -368,22 +361,6 @@ class ToDocX(Tokenizer):
     ##
     #  Internal Functions
     ##
-
-    def _formatKeywords(self, text: str) -> tuple[str, T_Formats]:
-        """Apply formatting to keywords."""
-        valid, bits, _ = self._project.index.scanThis("@"+text)
-        if not valid or not bits or bits[0] not in nwLabels.KEY_NAME:
-            return "", []
-
-        rTxt = f"{self._localLookup(nwLabels.KEY_NAME[bits[0]])}: "
-        rFmt: T_Formats = [(0, TextFmt.B_B, ""), (len(rTxt) - 1, TextFmt.B_E, "")]
-        if len(bits) > 1:
-            if bits[0] == nwKeyWords.TAG_KEY:
-                rTxt += bits[1]
-            else:
-                rTxt += ", ".join(bits[1:])
-
-        return rTxt, rFmt
 
     def _processFragments(
         self, par: DocXParagraph, pStyle: str, text: str, tFmt: T_Formats | None = None
@@ -465,7 +442,7 @@ class ToDocX(Tokenizer):
             xmlSubElem(rPr, _wTag("u"), attrib={_wTag("val"): "single"})
         if fmt & X_MRK:
             xmlSubElem(rPr, _wTag("shd"), attrib={
-                _wTag("fill"): COL_MARK_TXT, _wTag("val"): "clear",
+                _wTag("fill"): _docXCol(self._theme.highlight), _wTag("val"): "clear",
             })
         if fmt & X_DEL:
             xmlSubElem(rPr, _wTag("strike"))

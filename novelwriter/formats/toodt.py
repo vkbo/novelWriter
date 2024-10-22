@@ -39,11 +39,11 @@ from PyQt5.QtGui import QColor, QFont
 
 from novelwriter import __version__
 from novelwriter.common import xmlIndent, xmlSubElem
-from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles
+from novelwriter.constants import nwHeadFmt, nwStyles
 from novelwriter.core.project import NWProject
-from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
+from novelwriter.formats.shared import BlockFmt, BlockTyp, TextFmt, stripEscape
 from novelwriter.formats.tokenizer import Tokenizer
-from novelwriter.types import FONT_STYLE, FONT_WEIGHTS
+from novelwriter.types import FONT_STYLE, FONT_WEIGHTS, QtHexRgb
 
 logger = logging.getLogger(__name__)
 
@@ -216,13 +216,6 @@ class ToOdt(Tokenizer):
         self._mDocBtm    = "2.000cm"
         self._mDocLeft   = "2.000cm"
         self._mDocRight  = "2.000cm"
-
-        # Colour
-        self._colDialogM = "#2a6099"
-        self._colDialogA = "#813709"
-        self._colMetaTx  = "#813709"
-        self._opaMetaTx  = "100%"
-        self._markText   = "#ffffa6"
 
         return
 
@@ -484,8 +477,7 @@ class ToOdt(Tokenizer):
                 self._addTextPar(xText, S_META, oStyle, tText, tFmt=tFormat)
 
             elif tType == BlockTyp.KEYWORD:
-                tTemp, tFmt = self._formatKeywords(tText)
-                self._addTextPar(xText, S_META, oStyle, tTemp, tFmt=tFmt)
+                self._addTextPar(xText, S_META, oStyle, tText, tFmt=tFormat)
 
         return
 
@@ -553,22 +545,6 @@ class ToOdt(Tokenizer):
     #  Internal Functions
     ##
 
-    def _formatKeywords(self, text: str) -> tuple[str, T_Formats]:
-        """Apply formatting to keywords."""
-        valid, bits, _ = self._project.index.scanThis("@"+text)
-        if not valid or not bits or bits[0] not in nwLabels.KEY_NAME:
-            return "", []
-
-        rTxt = f"{self._localLookup(nwLabels.KEY_NAME[bits[0]])}: "
-        rFmt: T_Formats = [(0, TextFmt.B_B, ""), (len(rTxt) - 1, TextFmt.B_E, "")]
-        if len(bits) > 1:
-            if bits[0] == nwKeyWords.TAG_KEY:
-                rTxt += bits[1]
-            else:
-                rTxt += ", ".join(bits[1:])
-
-        return rTxt, rFmt
-
     def _addTextPar(
         self,
         xParent: ET.Element,
@@ -598,7 +574,6 @@ class ToOdt(Tokenizer):
 
         parProc = XMLParagraph(xElem)
 
-        pErr = 0
         xFmt = 0x00
         tFrag = ""
         fLast = 0
@@ -657,8 +632,6 @@ class ToOdt(Tokenizer):
                 xNode = self._generateFootnote(fData)
             elif fFmt == TextFmt.STRIP:
                 pass
-            else:
-                pErr += 1
 
             fLast = fPos
 
@@ -670,9 +643,6 @@ class ToOdt(Tokenizer):
                 parProc.appendText(tFrag)
             else:
                 parProc.appendSpan(tFrag, self._textStyle(xFmt, fClass))
-
-        if pErr > 0:
-            self._errData.append("Unknown format tag encountered")
 
         nErr, errMsg = parProc.checkError()
         if nErr > 0:  # pragma: no cover
@@ -725,17 +695,13 @@ class ToOdt(Tokenizer):
             style.setUnderlineWidth("auto")
             style.setUnderlineColor("font-color")
         if hFmt & X_MRK:
-            style.setBackgroundColor(self._markText)
+            style.setBackgroundColor(self._theme.highlight)
         if hFmt & X_SUP:
             style.setTextPosition("super")
         if hFmt & X_SUB:
             style.setTextPosition("sub")
         if hFmt & X_COL and color:
             style.setColor(color)
-        # if hFmt & X_DLG:
-        #     style.setColour(self._colDialogM)
-        # if hFmt & X_DLA:
-        #     style.setColour(self._colDialogA)
         self._autoText[tKey] = style
 
         return style.name
@@ -1265,7 +1231,7 @@ class ODTParagraphStyle:
     def setColor(self, value: QColor | None) -> None:
         """Set text colour."""
         if isinstance(value, QColor):
-            self._tAttr["color"][1] = value.name(QColor.NameFormat.HexRgb)
+            self._tAttr["color"][1] = value.name(QtHexRgb)
             self._tAttr["opacity"][1] = f"{int(100.0 * value.alphaF())}%"
         else:
             self._tAttr["color"][1] = None
@@ -1373,15 +1339,15 @@ class ODTTextStyle:
     def setColor(self, value: QColor | None) -> None:
         """Set text colour."""
         if isinstance(value, QColor):
-            self._tAttr["color"][1] = value.name(QColor.NameFormat.HexRgb)
+            self._tAttr["color"][1] = value.name(QtHexRgb)
         else:
             self._tAttr["color"][1] = None
         return
 
-    def setBackgroundColor(self, value: str | None) -> None:
+    def setBackgroundColor(self, value: QColor | None) -> None:
         """Set text background colour."""
-        if value and len(value) == 7 and value[0] == "#":
-            self._tAttr["background-color"][1] = value
+        if isinstance(value, QColor):
+            self._tAttr["background-color"][1] = value.name(QtHexRgb)
         else:
             self._tAttr["background-color"][1] = None
         return

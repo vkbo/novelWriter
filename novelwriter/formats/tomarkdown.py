@@ -27,7 +27,7 @@ import logging
 
 from pathlib import Path
 
-from novelwriter.constants import nwHeadFmt, nwLabels, nwUnicode
+from novelwriter.constants import nwHeadFmt, nwUnicode
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
 from novelwriter.formats.tokenizer import Tokenizer
@@ -154,7 +154,8 @@ class ToMarkdown(Tokenizer):
                 lines.append(f"{self._formatText(tText, tFormat, mTags)}\n\n")
 
             elif tType == BlockTyp.KEYWORD:
-                lines.append(self._formatKeywords(tText, tStyle))
+                end = "  \n" if tStyle & BlockFmt.Z_BTMMRG else "\n\n"
+                lines.append(f"{self._formatText(tText, tFormat, mTags)}{end}")
 
         self._result = "".join(lines)
         self._fullMD.append(self._result)
@@ -215,19 +216,3 @@ class ToMarkdown(Tokenizer):
                 md = tags.get(fmt, "")
             temp = f"{temp[:pos]}{md}{temp[pos:]}"
         return temp
-
-    def _formatKeywords(self, text: str, style: BlockFmt) -> str:
-        """Apply Markdown formatting to keywords."""
-        valid, bits, _ = self._project.index.scanThis("@"+text)
-        if not valid or not bits:
-            return ""
-
-        result = ""
-        if bits[0] in nwLabels.KEY_NAME:
-            result += f"**{self._localLookup(nwLabels.KEY_NAME[bits[0]])}:** "
-            if len(bits) > 1:
-                result += ", ".join(bits[1:])
-
-        result += "  \n" if style & BlockFmt.Z_BTMMRG else "\n\n"
-
-        return result

@@ -192,36 +192,41 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
     # Tags and References (Single)
     xTest = ET.Element(_wTag("body"))
-    doc._blocks = [(BlockTyp.KEYWORD, 0, "tag: Stuff", [], BlockFmt.NONE)]
+    doc._text = "@tag: Stuff"
+    doc.tokenizeText()
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_META}" /></w:pPr>'
-        '<w:r><w:rPr><w:b /></w:rPr><w:t>Tag:</w:t></w:r>'
-        '<w:r><w:rPr /><w:t xml:space="preserve"> Stuff</w:t></w:r>'
+        '<w:r><w:rPr><w:b /><w:color w:val="f5871f" /></w:rPr><w:t>Tag:</w:t></w:r>'
+        '<w:r><w:rPr /><w:t xml:space="preserve"> </w:t></w:r>'
+        '<w:r><w:rPr><w:color w:val="4271ae" /></w:rPr><w:t>Stuff</w:t></w:r>'
         '</w:p></w:body>'
     )
 
     # Tags and References (Multiple)
     xTest = ET.Element(_wTag("body"))
-    doc._blocks = [(BlockTyp.KEYWORD, 0, "char: Jane, John", [], BlockFmt.NONE)]
+    doc._text = "@char: Jane, John"
+    doc.tokenizeText()
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
         f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_META}" /></w:pPr>'
-        '<w:r><w:rPr><w:b /></w:rPr><w:t>Characters:</w:t></w:r>'
-        '<w:r><w:rPr /><w:t xml:space="preserve"> Jane, John</w:t></w:r>'
+        '<w:r><w:rPr><w:b /><w:color w:val="f5871f" /></w:rPr><w:t>Characters:</w:t></w:r>'
+        '<w:r><w:rPr /><w:t xml:space="preserve"> </w:t></w:r>'
+        '<w:r><w:rPr><w:color w:val="4271ae" /></w:rPr><w:t>Jane</w:t></w:r>'
+        '<w:r><w:rPr /><w:t xml:space="preserve">, </w:t></w:r>'
+        '<w:r><w:rPr><w:color w:val="4271ae" /></w:rPr><w:t>John</w:t></w:r>'
         '</w:p></w:body>'
     )
 
     # Tags and References (Invalid)
     xTest = ET.Element(_wTag("body"))
-    doc._blocks = [(BlockTyp.KEYWORD, 0, "stuff: Stuff", [], BlockFmt.NONE)]
+    doc._text = "@stuff: Stuff"
+    doc._pars = []
+    doc.tokenizeText()
     doc.doConvert()
-    doc._pars[-1].toXml(xTest)
-    assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_META}" /></w:pPr></w:p></w:body>'
-    )
+    assert doc._pars == []
 
 
 @pytest.mark.core

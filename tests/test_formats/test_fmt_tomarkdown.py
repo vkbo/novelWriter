@@ -293,15 +293,3 @@ def testFmtToMarkdown_Save(mockGUI, fncPath):
     saveFile = fncPath / "outFile.md"
     toMD.saveDocument(saveFile)
     assert saveFile.read_text(encoding="utf-8") == "".join(resText)
-
-
-@pytest.mark.core
-def testFmtToMarkdown_Format(mockGUI):
-    """Test all the formatters for the ToMarkdown class."""
-    project = NWProject()
-    toMD = ToMarkdown(project, False)
-
-    assert toMD._formatKeywords("", BlockFmt.NONE) == ""
-    assert toMD._formatKeywords("tag: Jane", BlockFmt.NONE) == "**Tag:** Jane\n\n"
-    assert toMD._formatKeywords("tag: Jane, John", BlockFmt.NONE) == "**Tag:** Jane, John\n\n"
-    assert toMD._formatKeywords("tag: Jane", BlockFmt.Z_BTMMRG) == "**Tag:** Jane  \n"
