@@ -30,37 +30,40 @@ from pathlib import Path
 from time import time
 
 from novelwriter.common import formatTimeStamp
-from novelwriter.constants import nwHeadFmt, nwHtmlUnicode, nwKeyWords, nwLabels
+from novelwriter.constants import nwHeadFmt, nwHtmlUnicode
 from novelwriter.core.project import NWProject
-from novelwriter.formats.tokenizer import T_Formats, Tokenizer, stripEscape
-from novelwriter.types import FONT_STYLE, FONT_WEIGHTS
+from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt, stripEscape
+from novelwriter.formats.tokenizer import Tokenizer
+from novelwriter.types import FONT_STYLE, FONT_WEIGHTS, QtHexRgb
 
 logger = logging.getLogger(__name__)
 
 # Each opener tag, with the id of its corresponding closer and tag format
 HTML_OPENER: dict[int, tuple[int, str]] = {
-    Tokenizer.FMT_B_B:   (Tokenizer.FMT_B_E,   "<strong>"),
-    Tokenizer.FMT_I_B:   (Tokenizer.FMT_I_E,   "<em>"),
-    Tokenizer.FMT_D_B:   (Tokenizer.FMT_D_E,   "<del>"),
-    Tokenizer.FMT_U_B:   (Tokenizer.FMT_U_E,   "<span style='text-decoration: underline;'>"),
-    Tokenizer.FMT_M_B:   (Tokenizer.FMT_M_E,   "<mark>"),
-    Tokenizer.FMT_SUP_B: (Tokenizer.FMT_SUP_E, "<sup>"),
-    Tokenizer.FMT_SUB_B: (Tokenizer.FMT_SUB_E, "<sub>"),
-    Tokenizer.FMT_DL_B:  (Tokenizer.FMT_DL_E,  "<span class='dialog'>"),
-    Tokenizer.FMT_ADL_B: (Tokenizer.FMT_ADL_E, "<span class='altdialog'>"),
+    TextFmt.B_B:   (TextFmt.B_E,   "<strong>"),
+    TextFmt.I_B:   (TextFmt.I_E,   "<em>"),
+    TextFmt.D_B:   (TextFmt.D_E,   "<del>"),
+    TextFmt.U_B:   (TextFmt.U_E,   "<span style='text-decoration: underline;'>"),
+    TextFmt.M_B:   (TextFmt.M_E,   "<mark>"),
+    TextFmt.SUP_B: (TextFmt.SUP_E, "<sup>"),
+    TextFmt.SUB_B: (TextFmt.SUB_E, "<sub>"),
+    TextFmt.COL_B: (TextFmt.COL_E, "<span style='color: {0}'>"),
+    TextFmt.ANM_B: (TextFmt.ANM_E, "<a name='{0}'>"),
+    TextFmt.HRF_B: (TextFmt.HRF_E, "<a href='{0}'>"),
 }
 
 # Each closer tag, with the id of its corresponding opener and tag format
 HTML_CLOSER: dict[int, tuple[int, str]] = {
-    Tokenizer.FMT_B_E:   (Tokenizer.FMT_B_B,   "</strong>"),
-    Tokenizer.FMT_I_E:   (Tokenizer.FMT_I_B,   "</em>"),
-    Tokenizer.FMT_D_E:   (Tokenizer.FMT_D_B,   "</del>"),
-    Tokenizer.FMT_U_E:   (Tokenizer.FMT_U_B,   "</span>"),
-    Tokenizer.FMT_M_E:   (Tokenizer.FMT_M_B,   "</mark>"),
-    Tokenizer.FMT_SUP_E: (Tokenizer.FMT_SUP_B, "</sup>"),
-    Tokenizer.FMT_SUB_E: (Tokenizer.FMT_SUB_B, "</sub>"),
-    Tokenizer.FMT_DL_E:  (Tokenizer.FMT_DL_B,  "</span>"),
-    Tokenizer.FMT_ADL_E: (Tokenizer.FMT_ADL_B, "</span>"),
+    TextFmt.B_E:   (TextFmt.B_B,   "</strong>"),
+    TextFmt.I_E:   (TextFmt.I_B,   "</em>"),
+    TextFmt.D_E:   (TextFmt.D_B,   "</del>"),
+    TextFmt.U_E:   (TextFmt.U_B,   "</span>"),
+    TextFmt.M_E:   (TextFmt.M_B,   "</mark>"),
+    TextFmt.SUP_E: (TextFmt.SUP_B, "</sup>"),
+    TextFmt.SUB_E: (TextFmt.SUB_B, "</sub>"),
+    TextFmt.COL_E: (TextFmt.COL_B, "</span>"),
+    TextFmt.ANM_E: (TextFmt.ANM_B, "</a>"),
+    TextFmt.HRF_E: (TextFmt.HRF_B, "</a>"),
 }
 
 # Empty HTML tag record
@@ -156,21 +159,21 @@ class ToHtml(Tokenizer):
         lines = []
         tHandle = self._handle
 
-        for tType, nHead, tText, tFormat, tStyle in self._tokens:
+        for tType, nHead, tText, tFmt, tStyle in self._blocks:
 
             # Replace < and > with HTML entities
-            if tFormat:
+            if tFmt:
                 # If we have formatting, we must recompute the locations
                 cText = []
                 i = 0
                 for c in tText:
                     if c == "<":
                         cText.append("&lt;")
-                        tFormat = [(p + 3 if p > i else p, f, k) for p, f, k in tFormat]
+                        tFmt = [(p + 3 if p > i else p, f, k) for p, f, k in tFmt]
                         i += 4
                     elif c == ">":
                         cText.append("&gt;")
-                        tFormat = [(p + 3 if p > i else p, f, k) for p, f, k in tFormat]
+                        tFmt = [(p + 3 if p > i else p, f, k) for p, f, k in tFmt]
                         i += 4
                     else:
                         cText.append(c)
@@ -183,30 +186,30 @@ class ToHtml(Tokenizer):
             # Styles
             aStyle = []
             if tStyle is not None and self._cssStyles:
-                if tStyle & self.A_LEFT:
+                if tStyle & BlockFmt.LEFT:
                     aStyle.append("text-align: left;")
-                elif tStyle & self.A_RIGHT:
+                elif tStyle & BlockFmt.RIGHT:
                     aStyle.append("text-align: right;")
-                elif tStyle & self.A_CENTRE:
+                elif tStyle & BlockFmt.CENTRE:
                     aStyle.append("text-align: center;")
-                elif tStyle & self.A_JUSTIFY:
+                elif tStyle & BlockFmt.JUSTIFY:
                     aStyle.append("text-align: justify;")
 
-                if tStyle & self.A_PBB:
+                if tStyle & BlockFmt.PBB:
                     aStyle.append("page-break-before: always;")
-                if tStyle & self.A_PBA:
+                if tStyle & BlockFmt.PBA:
                     aStyle.append("page-break-after: always;")
 
-                if tStyle & self.A_Z_BTMMRG:
+                if tStyle & BlockFmt.Z_BTMMRG:
                     aStyle.append("margin-bottom: 0;")
-                if tStyle & self.A_Z_TOPMRG:
+                if tStyle & BlockFmt.Z_TOPMRG:
                     aStyle.append("margin-top: 0;")
 
-                if tStyle & self.A_IND_L:
+                if tStyle & BlockFmt.IND_L:
                     aStyle.append(f"margin-left: {self._blockIndent:.2f}em;")
-                if tStyle & self.A_IND_R:
+                if tStyle & BlockFmt.IND_R:
                     aStyle.append(f"margin-right: {self._blockIndent:.2f}em;")
-                if tStyle & self.A_IND_T:
+                if tStyle & BlockFmt.IND_T:
                     aStyle.append(f"text-indent: {self._firstWidth:.2f}em;")
 
             if aStyle:
@@ -221,49 +224,40 @@ class ToHtml(Tokenizer):
                 aNm = ""
 
             # Process Text Type
-            if tType == self.T_TEXT:
-                lines.append(f"<p{hStyle}>{self._formatText(tText, tFormat)}</p>\n")
+            if tType == BlockTyp.TEXT:
+                lines.append(f"<p{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
 
-            elif tType == self.T_TITLE:
+            elif tType == BlockTyp.TITLE:
                 tHead = tText.replace(nwHeadFmt.BR, "<br>")
                 lines.append(f"<h1 class='title'{hStyle}>{aNm}{tHead}</h1>\n")
 
-            elif tType == self.T_HEAD1:
+            elif tType == BlockTyp.HEAD1:
                 tHead = tText.replace(nwHeadFmt.BR, "<br>")
                 lines.append(f"<{h1}{h1Cl}{hStyle}>{aNm}{tHead}</{h1}>\n")
 
-            elif tType == self.T_HEAD2:
+            elif tType == BlockTyp.HEAD2:
                 tHead = tText.replace(nwHeadFmt.BR, "<br>")
                 lines.append(f"<{h2}{hStyle}>{aNm}{tHead}</{h2}>\n")
 
-            elif tType == self.T_HEAD3:
+            elif tType == BlockTyp.HEAD3:
                 tHead = tText.replace(nwHeadFmt.BR, "<br>")
                 lines.append(f"<{h3}{hStyle}>{aNm}{tHead}</{h3}>\n")
 
-            elif tType == self.T_HEAD4:
+            elif tType == BlockTyp.HEAD4:
                 tHead = tText.replace(nwHeadFmt.BR, "<br>")
                 lines.append(f"<{h4}{hStyle}>{aNm}{tHead}</{h4}>\n")
 
-            elif tType == self.T_SEP:
+            elif tType == BlockTyp.SEP:
                 lines.append(f"<p class='sep'{hStyle}>{tText}</p>\n")
 
-            elif tType == self.T_SKIP:
+            elif tType == BlockTyp.SKIP:
                 lines.append(f"<p class='skip'{hStyle}>&nbsp;</p>\n")
 
-            elif tType == self.T_SYNOPSIS and self._doSynopsis:
-                lines.append(self._formatSynopsis(self._formatText(tText, tFormat), True))
+            elif tType == BlockTyp.COMMENT:
+                lines.append(f"<p class='comment'{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
 
-            elif tType == self.T_SHORT and self._doSynopsis:
-                lines.append(self._formatSynopsis(self._formatText(tText, tFormat), False))
-
-            elif tType == self.T_COMMENT and self._doComments:
-                lines.append(self._formatComments(self._formatText(tText, tFormat)))
-
-            elif tType == self.T_KEYWORD and self._doKeywords:
-                tag, text = self._formatKeywords(tText)
-                kClass = f" class='meta meta-{tag}'" if tag else ""
-                tTemp = f"<p{kClass}{hStyle}>{text}</p>\n"
-                lines.append(tTemp)
+            elif tType == BlockTyp.KEYWORD:
+                lines.append(f"<p class='meta'{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
 
         self._result = "".join(lines)
         self._fullHTML.append(self._result)
@@ -353,16 +347,18 @@ class ToHtml(Tokenizer):
             return []
 
         mScale = self._lineHeight/1.15
+        tColor = self._theme.text.name(QtHexRgb)
+        hColor = self._theme.head.name(QtHexRgb) if self._colorHeads else tColor
 
         styles = []
         font = self._textFont
         styles.append((
             "body {{"
-            "font-family: '{0:s}'; font-size: {1:d}pt; "
-            "font-weight: {2:d}; font-style: {3:s};"
+            "color: {0:s}; font-family: '{1:s}'; font-size: {2:d}pt; "
+            "font-weight: {3:d}; font-style: {4:s};"
             "}}"
         ).format(
-            font.family(), font.pointSize(),
+            tColor, font.family(), font.pointSize(),
             FONT_WEIGHTS.get(font.weight(), 400),
             FONT_STYLE.get(font.style(), "normal"),
         ))
@@ -372,50 +368,50 @@ class ToHtml(Tokenizer):
             "margin-top: {2:.2f}em; margin-bottom: {3:.2f}em;"
             "}}"
         ).format(
-            "justify" if self._doJustify else self._defaultAlign,
+            self._defaultAlign,
             round(100 * self._lineHeight),
             mScale * self._marginText[0],
             mScale * self._marginText[1],
         ))
         styles.append((
             "h1 {{"
-            "color: rgb(66, 113, 174); "
+            "color: {0:s}; "
             "page-break-after: avoid; "
-            "margin-top: {0:.2f}em; "
-            "margin-bottom: {1:.2f}em;"
+            "margin-top: {1:.2f}em; "
+            "margin-bottom: {2:.2f}em;"
             "}}"
         ).format(
-            mScale * self._marginHead1[0], mScale * self._marginHead1[1]
+            hColor, mScale * self._marginHead1[0], mScale * self._marginHead1[1]
         ))
         styles.append((
             "h2 {{"
-            "color: rgb(66, 113, 174); "
+            "color: {0:s}; "
             "page-break-after: avoid; "
-            "margin-top: {0:.2f}em; "
-            "margin-bottom: {1:.2f}em;"
+            "margin-top: {1:.2f}em; "
+            "margin-bottom: {2:.2f}em;"
             "}}"
         ).format(
-            mScale * self._marginHead2[0], mScale * self._marginHead2[1]
+            hColor, mScale * self._marginHead2[0], mScale * self._marginHead2[1]
         ))
         styles.append((
             "h3 {{"
-            "color: rgb(50, 50, 50); "
+            "color: {0:s}; "
             "page-break-after: avoid; "
-            "margin-top: {0:.2f}em; "
-            "margin-bottom: {1:.2f}em;"
+            "margin-top: {1:.2f}em; "
+            "margin-bottom: {2:.2f}em;"
             "}}"
         ).format(
-            mScale * self._marginHead3[0], mScale * self._marginHead3[1]
+            hColor, mScale * self._marginHead3[0], mScale * self._marginHead3[1]
         ))
         styles.append((
             "h4 {{"
-            "color: rgb(50, 50, 50); "
+            "color: {0:s}; "
             "page-break-after: avoid; "
-            "margin-top: {0:.2f}em; "
-            "margin-bottom: {1:.2f}em;"
+            "margin-top: {1:.2f}em; "
+            "margin-bottom: {2:.2f}em;"
             "}}"
         ).format(
-            mScale * self._marginHead4[0], mScale * self._marginHead4[1]
+            hColor, mScale * self._marginHead4[0], mScale * self._marginHead4[1]
         ))
         styles.append((
             ".title {{"
@@ -436,14 +432,8 @@ class ToHtml(Tokenizer):
             mScale, mScale
         ))
 
-        styles.append("a {color: rgb(66, 113, 174);}")
-        styles.append("mark {background: rgb(255, 255, 166);}")
-        styles.append(".keyword {color: rgb(245, 135, 31); font-weight: bold;}")
-        styles.append(".break {text-align: left;}")
-        styles.append(".synopsis {font-style: italic;}")
-        styles.append(".comment {font-style: italic; color: rgb(100, 100, 100);}")
-        styles.append(".dialog {color: rgb(66, 113, 174);}")
-        styles.append(".altdialog {color: rgb(129, 55, 9);}")
+        styles.append("a {{color: {0:s};}}".format(self._theme.head.name(QtHexRgb)))
+        styles.append("mark {{background: {0:s};}}".format(self._theme.highlight.name(QtHexRgb)))
 
         return styles
 
@@ -463,13 +453,18 @@ class ToHtml(Tokenizer):
         for pos, fmt, data in tFmt:
             if m := HTML_OPENER.get(fmt):
                 if not state.get(fmt, True):
-                    tags.append((pos, m[1]))
+                    if fmt == TextFmt.COL_B and (color := self._classes.get(data)):
+                        tags.append((pos, m[1].format(color.name(QtHexRgb))))
+                    elif fmt in (TextFmt.ANM_B, TextFmt.HRF_B):
+                        tags.append((pos, m[1].format(data or "#")))
+                    else:
+                        tags.append((pos, m[1]))
                     state[fmt] = True
             elif m := HTML_CLOSER.get(fmt):
                 if state.get(m[0], False):
                     tags.append((pos, m[1]))
                     state[m[0]] = False
-            elif fmt == self.FMT_FNOTE:
+            elif fmt == TextFmt.FNOTE:
                 if data in self._footnotes:
                     index = len(self._usedNotes) + 1
                     self._usedNotes[data] = index
@@ -495,36 +490,3 @@ class ToHtml(Tokenizer):
         temp = temp.replace("\n", "<br>")
 
         return stripEscape(temp)
-
-    def _formatSynopsis(self, text: str, synopsis: bool) -> str:
-        """Apply HTML formatting to synopsis."""
-        if synopsis:
-            sSynop = self._localLookup("Synopsis")
-        else:
-            sSynop = self._localLookup("Short Description")
-        return f"<p class='synopsis'><strong>{sSynop}:</strong> {text}</p>\n"
-
-    def _formatComments(self, text: str) -> str:
-        """Apply HTML formatting to comments."""
-        sComm = self._localLookup("Comment")
-        return f"<p class='comment'><strong>{sComm}:</strong> {text}</p>\n"
-
-    def _formatKeywords(self, text: str) -> tuple[str, str]:
-        """Apply HTML formatting to keywords."""
-        valid, bits, _ = self._project.index.scanThis("@"+text)
-        if not valid or not bits or bits[0] not in nwLabels.KEY_NAME:
-            return "", ""
-
-        result = f"<span class='keyword'>{self._localLookup(nwLabels.KEY_NAME[bits[0]])}:</span> "
-        if len(bits) > 1:
-            if bits[0] == nwKeyWords.TAG_KEY:
-                one, two = self._project.index.parseValue(bits[1])
-                result += f"<a class='tag' name='tag_{one}'>{one}</a>"
-                if two:
-                    result += f" | <span class='optional'>{two}</a>"
-            else:
-                result += ", ".join(
-                    f"<a class='tag' href='#tag_{t}'>{t}</a>" for t in bits[1:]
-                )
-
-        return bits[0][1:], result

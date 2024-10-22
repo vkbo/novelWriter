@@ -27,7 +27,8 @@ from PyQt5.QtGui import QTextBlock, QTextCharFormat, QTextCursor
 from novelwriter import CONFIG
 from novelwriter.constants import nwUnicode
 from novelwriter.core.project import NWProject
-from novelwriter.formats.toqdoc import TextDocumentTheme, ToQTextDocument
+from novelwriter.formats.shared import BlockFmt, BlockTyp, TextDocumentTheme
+from novelwriter.formats.toqdoc import ToQTextDocument
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
     QtPageBreakAfter, QtTransparent, QtVAlignNormal, QtVAlignSub, QtVAlignSuper
@@ -47,76 +48,75 @@ def charFmtInBlock(block: QTextBlock, pos: int) -> QTextCharFormat:
 def testFmtToQTextDocument_ConvertHeaders(mockGUI):
     """Test header formats in the ToQTextDocument class."""
     project = NWProject()
-    qdoc = ToQTextDocument(project)
-    qdoc.initDocument()
-    # qdoc.saveDocument("")  # Doesn't do anything for this format
+    doc = ToQTextDocument(project)
+    doc.initDocument()
 
-    qdoc._isNovel = True
-    qdoc._isFirst = True
-    qdoc._text = (
+    doc._isNovel = True
+    doc._isFirst = True
+    doc._text = (
         "#! Title\n"
         "# Partition\n"
         "## Chapter\n"
         "### Scene\n"
         "#### Section\n"
     )
-    qdoc.tokenizeText()
-    qdoc.doConvert()
-    assert qdoc.document.blockCount() == 5
+    doc.tokenizeText()
+    doc.doConvert()
+    assert doc.document.blockCount() == 5
 
     # Title
-    block = qdoc.document.findBlockByNumber(0)
+    block = doc.document.findBlockByNumber(0)
     assert block.text() == "Title"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == qdoc._mHead[qdoc.T_TITLE][0]
-    assert bFmt.bottomMargin() == qdoc._mHead[qdoc.T_TITLE][1]
+    assert bFmt.topMargin() == doc._mHead[BlockTyp.TITLE][0]
+    assert bFmt.bottomMargin() == doc._mHead[BlockTyp.TITLE][1]
     cFmt = charFmtInBlock(block, 1)
-    assert cFmt.fontWeight() == qdoc._bold
-    assert cFmt.fontPointSize() == qdoc._sHead[qdoc.T_TITLE]
+    assert cFmt.fontWeight() == doc._bold
+    assert cFmt.fontPointSize() == doc._sHead[BlockTyp.TITLE]
     assert cFmt.foreground().color() == THEME.text
 
     # Partition
-    block = qdoc.document.findBlockByNumber(1)
+    block = doc.document.findBlockByNumber(1)
     assert block.text() == "Partition"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == qdoc._mHead[qdoc.T_HEAD1][0]
-    assert bFmt.bottomMargin() == qdoc._mHead[qdoc.T_HEAD1][1]
+    assert bFmt.topMargin() == doc._mHead[BlockTyp.HEAD1][0]
+    assert bFmt.bottomMargin() == doc._mHead[BlockTyp.HEAD1][1]
     cFmt = charFmtInBlock(block, 1)
-    assert cFmt.fontWeight() == qdoc._bold
-    assert cFmt.fontPointSize() == qdoc._sHead[qdoc.T_HEAD1]
+    assert cFmt.fontWeight() == doc._bold
+    assert cFmt.fontPointSize() == doc._sHead[BlockTyp.HEAD1]
     assert cFmt.foreground().color() == THEME.head
 
     # Chapter
-    block = qdoc.document.findBlockByNumber(2)
+    block = doc.document.findBlockByNumber(2)
     assert block.text() == "Chapter"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == qdoc._mHead[qdoc.T_HEAD2][0]
-    assert bFmt.bottomMargin() == qdoc._mHead[qdoc.T_HEAD2][1]
+    assert bFmt.topMargin() == doc._mHead[BlockTyp.HEAD2][0]
+    assert bFmt.bottomMargin() == doc._mHead[BlockTyp.HEAD2][1]
     cFmt = charFmtInBlock(block, 1)
-    assert cFmt.fontWeight() == qdoc._bold
-    assert cFmt.fontPointSize() == qdoc._sHead[qdoc.T_HEAD2]
+    assert cFmt.fontWeight() == doc._bold
+    assert cFmt.fontPointSize() == doc._sHead[BlockTyp.HEAD2]
     assert cFmt.foreground().color() == THEME.head
 
     # Scene
-    block = qdoc.document.findBlockByNumber(3)
+    block = doc.document.findBlockByNumber(3)
     assert block.text() == "Scene"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == qdoc._mHead[qdoc.T_HEAD3][0]
-    assert bFmt.bottomMargin() == qdoc._mHead[qdoc.T_HEAD3][1]
+    assert bFmt.topMargin() == doc._mHead[BlockTyp.HEAD3][0]
+    assert bFmt.bottomMargin() == doc._mHead[BlockTyp.HEAD3][1]
     cFmt = charFmtInBlock(block, 1)
-    assert cFmt.fontWeight() == qdoc._bold
-    assert cFmt.fontPointSize() == qdoc._sHead[qdoc.T_HEAD3]
+    assert cFmt.fontWeight() == doc._bold
+    assert cFmt.fontPointSize() == doc._sHead[BlockTyp.HEAD3]
     assert cFmt.foreground().color() == THEME.head
 
     # Section
-    block = qdoc.document.findBlockByNumber(4)
+    block = doc.document.findBlockByNumber(4)
     assert block.text() == "Section"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == qdoc._mHead[qdoc.T_HEAD4][0]
-    assert bFmt.bottomMargin() == qdoc._mHead[qdoc.T_HEAD4][1]
+    assert bFmt.topMargin() == doc._mHead[BlockTyp.HEAD4][0]
+    assert bFmt.bottomMargin() == doc._mHead[BlockTyp.HEAD4][1]
     cFmt = charFmtInBlock(block, 1)
-    assert cFmt.fontWeight() == qdoc._bold
-    assert cFmt.fontPointSize() == qdoc._sHead[qdoc.T_HEAD4]
+    assert cFmt.fontWeight() == doc._bold
+    assert cFmt.fontPointSize() == doc._sHead[BlockTyp.HEAD4]
     assert cFmt.foreground().color() == THEME.head
 
 
@@ -124,12 +124,12 @@ def testFmtToQTextDocument_ConvertHeaders(mockGUI):
 def testFmtToQTextDocument_SeparatorSkip(mockGUI):
     """Test separator and skip in the ToQTextDocument class."""
     project = NWProject()
-    qdoc = ToQTextDocument(project)
-    qdoc.initDocument()
+    doc = ToQTextDocument(project)
+    doc.initDocument()
 
-    qdoc._isNovel = True
-    qdoc._isFirst = True
-    qdoc._text = (
+    doc._isNovel = True
+    doc._isFirst = True
+    doc._text = (
         "#! Title\n"
         "## Chapter\n"
         "### Scene 1\n"
@@ -139,50 +139,50 @@ def testFmtToQTextDocument_SeparatorSkip(mockGUI):
         "#### Section\n"
         "Text 3\n"
     )
-    qdoc.setSceneFormat("* * *", False)
-    qdoc.setSectionFormat("", False)
-    qdoc.tokenizeText()
-    qdoc.doConvert()
-    assert qdoc.document.blockCount() == 7
+    doc.setSceneFormat("* * *", False)
+    doc.setSectionFormat("", False)
+    doc.tokenizeText()
+    doc.doConvert()
+    assert doc.document.blockCount() == 7
 
     # 0: Title
-    block = qdoc.document.findBlockByNumber(0)
+    block = doc.document.findBlockByNumber(0)
     assert block.text() == "Title"
 
     # 1: Chapter
-    block = qdoc.document.findBlockByNumber(1)
+    block = doc.document.findBlockByNumber(1)
     assert block.text() == "Chapter"
 
     # Hidden: Scene 1
 
     # 2: Text 1
-    block = qdoc.document.findBlockByNumber(2)
+    block = doc.document.findBlockByNumber(2)
     assert block.text() == "Text 1"
 
     # 3: Scene 2
-    block = qdoc.document.findBlockByNumber(3)
+    block = doc.document.findBlockByNumber(3)
     assert block.text() == "* * *"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == qdoc._mSep[0]
-    assert bFmt.bottomMargin() == qdoc._mSep[1]
+    assert bFmt.topMargin() == doc._mSep[0]
+    assert bFmt.bottomMargin() == doc._mSep[1]
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.foreground().color() == THEME.text
 
     # 4: Text 2
-    block = qdoc.document.findBlockByNumber(4)
+    block = doc.document.findBlockByNumber(4)
     assert block.text() == "Text 2"
 
     # 5: Section
-    block = qdoc.document.findBlockByNumber(5)
+    block = doc.document.findBlockByNumber(5)
     assert block.text() == nwUnicode.U_NBSP
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == qdoc._mText[0]
-    assert bFmt.bottomMargin() == qdoc._mText[1]
+    assert bFmt.topMargin() == doc._mText[0]
+    assert bFmt.bottomMargin() == doc._mText[1]
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.foreground().color() == THEME.text
 
     # 6: Text 3
-    block = qdoc.document.findBlockByNumber(6)
+    block = doc.document.findBlockByNumber(6)
     assert block.text() == "Text 3"
 
 
@@ -190,15 +190,15 @@ def testFmtToQTextDocument_SeparatorSkip(mockGUI):
 def testFmtToQTextDocument_NovelMeta(mockGUI):
     """Test novel meta formats in the ToQTextDocument class."""
     project = NWProject()
-    qdoc = ToQTextDocument(project)
-    qdoc.initDocument()
+    doc = ToQTextDocument(project)
+    doc.initDocument()
 
-    qdoc._isNovel = True
-    qdoc._isFirst = True
-    qdoc.setComments(True)
-    qdoc.setSynopsis(True)
-    qdoc.setKeywords(True)
-    qdoc._text = (
+    doc._isNovel = True
+    doc._isFirst = True
+    doc.setComments(True)
+    doc.setSynopsis(True)
+    doc.setKeywords(True)
+    doc._text = (
         "### Scene\n\n"
         "@pov: Jane\n"
         "@char: John, Bob\n\n"
@@ -206,19 +206,19 @@ def testFmtToQTextDocument_NovelMeta(mockGUI):
         "% A regular comment\n\n"
         "Text\n\n"
     )
-    qdoc.tokenizeText()
-    qdoc.doConvert()
-    assert qdoc.document.blockCount() == 6
+    doc.tokenizeText()
+    doc.doConvert()
+    assert doc.document.blockCount() == 6
 
     # 0: Scene
-    block = qdoc.document.findBlockByNumber(0)
+    block = doc.document.findBlockByNumber(0)
     assert block.text() == "Scene"
 
     # 1: Jane
-    block = qdoc.document.findBlockByNumber(1)
+    block = doc.document.findBlockByNumber(1)
     assert block.text() == "Point of View: Jane"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == qdoc._mMeta[0]
+    assert bFmt.topMargin() == doc._mMeta[0]
     assert bFmt.bottomMargin() == 0.0
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.foreground().color() == THEME.keyword
@@ -226,40 +226,40 @@ def testFmtToQTextDocument_NovelMeta(mockGUI):
     assert cFmt.foreground().color() == THEME.tag
 
     # 2: John, Bob
-    block = qdoc.document.findBlockByNumber(2)
+    block = doc.document.findBlockByNumber(2)
     assert block.text() == "Characters: John, Bob"
     bFmt = block.blockFormat()
     assert bFmt.topMargin() == 0.0
-    assert bFmt.bottomMargin() == qdoc._mMeta[1]
+    assert bFmt.bottomMargin() == doc._mMeta[1]
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.foreground().color() == THEME.keyword
     cFmt = charFmtInBlock(block, 13)
     assert cFmt.foreground().color() == THEME.tag
 
     # 3: Synopsis
-    block = qdoc.document.findBlockByNumber(3)
+    block = doc.document.findBlockByNumber(3)
     assert block.text() == "Synopsis: Stuff that happened"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == qdoc._mText[0]
-    assert bFmt.bottomMargin() == qdoc._mText[1]
+    assert bFmt.topMargin() == doc._mText[0]
+    assert bFmt.bottomMargin() == doc._mText[1]
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.foreground().color() == THEME.modifier
     cFmt = charFmtInBlock(block, 11)
     assert cFmt.foreground().color() == THEME.note
 
     # 4: Comment
-    block = qdoc.document.findBlockByNumber(4)
+    block = doc.document.findBlockByNumber(4)
     assert block.text() == "Comment: A regular comment"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == qdoc._mText[0]
-    assert bFmt.bottomMargin() == qdoc._mText[1]
+    assert bFmt.topMargin() == doc._mText[0]
+    assert bFmt.bottomMargin() == doc._mText[1]
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.foreground().color() == THEME.comment
     cFmt = charFmtInBlock(block, 10)
     assert cFmt.foreground().color() == THEME.comment
 
     # 5: Text
-    block = qdoc.document.findBlockByNumber(5)
+    block = doc.document.findBlockByNumber(5)
     assert block.text() == "Text"
 
 
@@ -267,34 +267,34 @@ def testFmtToQTextDocument_NovelMeta(mockGUI):
 def testFmtToQTextDocument_NoteMeta(mockGUI):
     """Test note meta formats in the ToQTextDocument class."""
     project = NWProject()
-    qdoc = ToQTextDocument(project)
-    qdoc.initDocument()
+    doc = ToQTextDocument(project)
+    doc.initDocument()
 
-    qdoc._isNovel = False
-    qdoc._isFirst = True
-    qdoc.setComments(True)
-    qdoc.setSynopsis(True)
-    qdoc.setKeywords(True)
-    qdoc._text = (
+    doc._isNovel = False
+    doc._isFirst = True
+    doc.setComments(True)
+    doc.setSynopsis(True)
+    doc.setKeywords(True)
+    doc._text = (
         "# Jane Smith\n\n"
         "@tag: Jane | Jane Smith\n"
         "%Short: All about Jane\n\n"
         "Text\n\n"
     )
-    qdoc.tokenizeText()
-    qdoc.doConvert()
-    assert qdoc.document.blockCount() == 4
+    doc.tokenizeText()
+    doc.doConvert()
+    assert doc.document.blockCount() == 4
 
     # 0: Title
-    block = qdoc.document.findBlockByNumber(0)
+    block = doc.document.findBlockByNumber(0)
     assert block.text() == "Jane Smith"
 
     # 1: Tag
-    block = qdoc.document.findBlockByNumber(1)
+    block = doc.document.findBlockByNumber(1)
     assert block.text() == "Tag: Jane | Jane Smith"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == qdoc._mMeta[0]
-    assert bFmt.bottomMargin() == qdoc._mMeta[1]
+    assert bFmt.topMargin() == doc._mMeta[0]
+    assert bFmt.bottomMargin() == doc._mMeta[1]
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.foreground().color() == THEME.keyword
     cFmt = charFmtInBlock(block, 6)
@@ -305,18 +305,18 @@ def testFmtToQTextDocument_NoteMeta(mockGUI):
     assert cFmt.foreground().color() == THEME.optional
 
     # 2: Short
-    block = qdoc.document.findBlockByNumber(2)
+    block = doc.document.findBlockByNumber(2)
     assert block.text() == "Short Description: All about Jane"
     bFmt = block.blockFormat()
-    assert bFmt.topMargin() == qdoc._mText[0]
-    assert bFmt.bottomMargin() == qdoc._mText[1]
+    assert bFmt.topMargin() == doc._mText[0]
+    assert bFmt.bottomMargin() == doc._mText[1]
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.foreground().color() == THEME.modifier
     cFmt = charFmtInBlock(block, 20)
     assert cFmt.foreground().color() == THEME.note
 
     # 3: Text
-    block = qdoc.document.findBlockByNumber(3)
+    block = doc.document.findBlockByNumber(3)
     assert block.text() == "Text"
 
 
@@ -324,18 +324,18 @@ def testFmtToQTextDocument_NoteMeta(mockGUI):
 def testFmtToQTextDocument_TextBlockFormats(mockGUI):
     """Test text block formats in the ToQTextDocument class."""
     project = NWProject()
-    qdoc = ToQTextDocument(project)
-    qdoc.setFirstLineIndent(True, 2.0, False)
-    qdoc.initDocument()
+    doc = ToQTextDocument(project)
+    doc.setFirstLineIndent(True, 2.0, False)
+    doc.initDocument()
 
-    qdoc._isNovel = True
-    qdoc._isFirst = True
+    doc._isNovel = True
+    doc._isFirst = True
 
     # Alignment & Indent
     # ==================
-    qdoc.document.clear()
+    doc.document.clear()
 
-    qdoc._text = (
+    doc._text = (
         "### Scene\n\n"
         "Left <<\n\n"
         ">> Center <<\n\n"
@@ -345,85 +345,85 @@ def testFmtToQTextDocument_TextBlockFormats(mockGUI):
         "> Double Indent <\n\n"
         "Text Indent\n\n"
     )
-    qdoc.tokenizeText()
-    qdoc.doConvert()
-    assert qdoc.document.blockCount() == 8
+    doc.tokenizeText()
+    doc.doConvert()
+    assert doc.document.blockCount() == 8
 
     # 0: Scene
-    block = qdoc.document.findBlockByNumber(0)
+    block = doc.document.findBlockByNumber(0)
     assert block.text() == "Scene"
 
     # 1: Left
-    block = qdoc.document.findBlockByNumber(1)
+    block = doc.document.findBlockByNumber(1)
     assert block.text() == "Left"
     bFmt = block.blockFormat()
     assert bFmt.alignment() == QtAlignLeft
 
     # 2: Center
-    block = qdoc.document.findBlockByNumber(2)
+    block = doc.document.findBlockByNumber(2)
     assert block.text() == "Center"
     bFmt = block.blockFormat()
     assert bFmt.alignment() == QtAlignCenter
 
     # 3: Right
-    block = qdoc.document.findBlockByNumber(3)
+    block = doc.document.findBlockByNumber(3)
     assert block.text() == "Right"
     bFmt = block.blockFormat()
     assert bFmt.alignment() == QtAlignRight
 
     # 4: Left Indent
-    block = qdoc.document.findBlockByNumber(4)
+    block = doc.document.findBlockByNumber(4)
     assert block.text() == "Left Indent"
     bFmt = block.blockFormat()
     assert bFmt.alignment() == QtAlignAbsolute
-    assert bFmt.leftMargin() == qdoc._mIndent
+    assert bFmt.leftMargin() == doc._mIndent
     assert bFmt.rightMargin() == 0.0
 
     # 5: Right Indent
-    block = qdoc.document.findBlockByNumber(5)
+    block = doc.document.findBlockByNumber(5)
     assert block.text() == "Right Indent"
     bFmt = block.blockFormat()
     assert bFmt.alignment() == QtAlignAbsolute
     assert bFmt.leftMargin() == 0.0
-    assert bFmt.rightMargin() == qdoc._mIndent
+    assert bFmt.rightMargin() == doc._mIndent
 
     # 6: Double Indent
-    block = qdoc.document.findBlockByNumber(6)
+    block = doc.document.findBlockByNumber(6)
     assert block.text() == "Double Indent"
     bFmt = block.blockFormat()
     assert bFmt.alignment() == QtAlignAbsolute
-    assert bFmt.leftMargin() == qdoc._mIndent
-    assert bFmt.rightMargin() == qdoc._mIndent
+    assert bFmt.leftMargin() == doc._mIndent
+    assert bFmt.rightMargin() == doc._mIndent
 
     # 7: Text Indent
-    block = qdoc.document.findBlockByNumber(7)
+    block = doc.document.findBlockByNumber(7)
     assert block.text() == "Text Indent"
     bFmt = block.blockFormat()
     assert bFmt.alignment() == QtAlignAbsolute
-    assert bFmt.textIndent() == qdoc._tIndent
+    assert bFmt.textIndent() == doc._tIndent
     assert bFmt.leftMargin() == 0.0
     assert bFmt.rightMargin() == 0.0
 
     # Unreachable
     # ===========
     # Some formatting markers are currently not reachable
-    qdoc.document.clear()
+    doc.document.clear()
 
-    qdoc._tokens = [
-        (qdoc.T_TEXT, 1, "This is justified", [], qdoc.A_JUSTIFY),
-        (qdoc.T_TEXT, 1, "This has a page break", [], qdoc.A_PBA),
+    doc._blocks = [
+        (BlockTyp.TEXT, 1, "This is justified", [], BlockFmt.JUSTIFY),
+        (BlockTyp.TEXT, 1, "This has a page break", [], BlockFmt.PBA),
     ]
-    qdoc.doConvert()
-    assert qdoc.document.blockCount() == 2
+    doc.doConvert()
+    assert doc.document.blockCount() == 2
 
     # 0: Justify
-    block = qdoc.document.findBlockByNumber(0)
+    block = doc.document.findBlockByNumber(0)
     assert block.text() == "This is justified"
     bFmt = block.blockFormat()
     assert bFmt.alignment() == QtAlignJustify
 
     # 1: Page Break After
-    block = qdoc.document.findBlockByNumber(1)
+    block = doc.document.findBlockByNumber(1)
     assert block.text() == "This has a page break"
     bFmt = block.blockFormat()
     assert bFmt.pageBreakPolicy() == QtPageBreakAfter
@@ -438,22 +438,22 @@ def testFmtToQTextDocument_TextCharFormats(mockGUI):
     CONFIG.altDialogClose = ">|"
 
     project = NWProject()
-    qdoc = ToQTextDocument(project)
+    doc = ToQTextDocument(project)
 
     # Convert before init
-    qdoc._text = "Blabla"
-    qdoc.setDialogueHighlight(True)
-    qdoc.doConvert()
-    qdoc.tokenizeText()
-    assert qdoc.document.toPlainText() == ""
+    doc._text = "Blabla"
+    doc.setDialogueHighlight(True)
+    doc.doConvert()
+    doc.tokenizeText()
+    assert doc.document.toPlainText() == ""
 
     # Init
-    qdoc.initDocument()
+    doc.initDocument()
 
-    qdoc._isNovel = True
-    qdoc._isFirst = True
+    doc._isNovel = True
+    doc._isFirst = True
 
-    qdoc._text = (
+    doc._text = (
         "### Scene\n\n"
         "With [b]bold[/b] text\n\n"
         "With [i]italic[/i] text\n\n"
@@ -465,26 +465,26 @@ def testFmtToQTextDocument_TextCharFormats(mockGUI):
         "With \u201cdialog\u201d text\n\n"
         "With |<alternative dialog>| text\n\n"
     )
-    qdoc.tokenizeText()
-    qdoc.doConvert()
-    assert qdoc.document.blockCount() == 10
+    doc.tokenizeText()
+    doc.doConvert()
+    assert doc.document.blockCount() == 10
 
     # 0: Scene
-    block = qdoc.document.findBlockByNumber(0)
+    block = doc.document.findBlockByNumber(0)
     assert block.text() == "Scene"
 
     # 1: Bold
-    block = qdoc.document.findBlockByNumber(1)
+    block = doc.document.findBlockByNumber(1)
     assert block.text() == "With bold text"
     cFmt = charFmtInBlock(block, 1)
-    assert cFmt.fontWeight() == qdoc._normal
+    assert cFmt.fontWeight() == doc._normal
     cFmt = charFmtInBlock(block, 6)
-    assert cFmt.fontWeight() == qdoc._bold
+    assert cFmt.fontWeight() == doc._bold
     cFmt = charFmtInBlock(block, 10)
-    assert cFmt.fontWeight() == qdoc._normal
+    assert cFmt.fontWeight() == doc._normal
 
     # 2: Italic
-    block = qdoc.document.findBlockByNumber(2)
+    block = doc.document.findBlockByNumber(2)
     assert block.text() == "With italic text"
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.fontItalic() is False
@@ -494,7 +494,7 @@ def testFmtToQTextDocument_TextCharFormats(mockGUI):
     assert cFmt.fontItalic() is False
 
     # 3: Deleted
-    block = qdoc.document.findBlockByNumber(3)
+    block = doc.document.findBlockByNumber(3)
     assert block.text() == "With deleted text"
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.fontStrikeOut() is False
@@ -504,7 +504,7 @@ def testFmtToQTextDocument_TextCharFormats(mockGUI):
     assert cFmt.fontStrikeOut() is False
 
     # 4: Underlined
-    block = qdoc.document.findBlockByNumber(4)
+    block = doc.document.findBlockByNumber(4)
     assert block.text() == "With underlined text"
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.fontUnderline() is False
@@ -514,7 +514,7 @@ def testFmtToQTextDocument_TextCharFormats(mockGUI):
     assert cFmt.fontUnderline() is False
 
     # 5: Highlighted
-    block = qdoc.document.findBlockByNumber(5)
+    block = doc.document.findBlockByNumber(5)
     assert block.text() == "With highlighted text"
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.background() == QtTransparent
@@ -524,7 +524,7 @@ def testFmtToQTextDocument_TextCharFormats(mockGUI):
     assert cFmt.background() == QtTransparent
 
     # 6: Superscript
-    block = qdoc.document.findBlockByNumber(6)
+    block = doc.document.findBlockByNumber(6)
     assert block.text() == "With superscript text"
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.verticalAlignment() == QtVAlignNormal
@@ -534,7 +534,7 @@ def testFmtToQTextDocument_TextCharFormats(mockGUI):
     assert cFmt.verticalAlignment() == QtVAlignNormal
 
     # 7: Subscript
-    block = qdoc.document.findBlockByNumber(7)
+    block = doc.document.findBlockByNumber(7)
     assert block.text() == "With subscript text"
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.verticalAlignment() == QtVAlignNormal
@@ -544,7 +544,7 @@ def testFmtToQTextDocument_TextCharFormats(mockGUI):
     assert cFmt.verticalAlignment() == QtVAlignNormal
 
     # 8: Dialogue
-    block = qdoc.document.findBlockByNumber(8)
+    block = doc.document.findBlockByNumber(8)
     assert block.text() == "With \u201cdialog\u201d text"
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.foreground() == THEME.text
@@ -554,7 +554,7 @@ def testFmtToQTextDocument_TextCharFormats(mockGUI):
     assert cFmt.foreground() == THEME.text
 
     # 9: Alt. Dialogue
-    block = qdoc.document.findBlockByNumber(9)
+    block = doc.document.findBlockByNumber(9)
     assert block.text() == "With |<alternative dialog>| text"
     cFmt = charFmtInBlock(block, 1)
     assert cFmt.foreground() == THEME.text
@@ -568,34 +568,34 @@ def testFmtToQTextDocument_TextCharFormats(mockGUI):
 def testFmtToQTextDocument_Footnotes(mockGUI):
     """Test footnotes in the ToQTextDocument class."""
     project = NWProject()
-    qdoc = ToQTextDocument(project)
-    qdoc.initDocument()
+    doc = ToQTextDocument(project)
+    doc.initDocument()
 
-    qdoc._isNovel = True
-    qdoc._isFirst = True
+    doc._isNovel = True
+    doc._isFirst = True
 
-    qdoc._text = (
+    doc._text = (
         "### Scene\n\n"
         "Text with valid[footnote:fn1] and invalid[footnote:fn2] footnotes.\n\n"
         "%Footnote.fn1: Here's the first note.\n\n"
     )
-    qdoc.tokenizeText()
-    qdoc.doConvert()
-    qdoc.appendFootnotes()
-    assert qdoc.document.blockCount() == 4
+    doc.tokenizeText()
+    doc.doConvert()
+    doc.appendFootnotes()
+    assert doc.document.blockCount() == 4
 
     # 0: Scene
-    block = qdoc.document.findBlockByNumber(0)
+    block = doc.document.findBlockByNumber(0)
     assert block.text() == "Scene"
 
     # 1: Text
-    block = qdoc.document.findBlockByNumber(1)
+    block = doc.document.findBlockByNumber(1)
     assert block.text() == "Text with valid[1] and invalid[ERR] footnotes."
 
     # 2: Footnotes
-    block = qdoc.document.findBlockByNumber(2)
+    block = doc.document.findBlockByNumber(2)
     assert block.text() == "Footnotes"
 
     # 3: Footnote 1
-    block = qdoc.document.findBlockByNumber(3)
+    block = doc.document.findBlockByNumber(3)
     assert block.text() == "1. Here's the first note."

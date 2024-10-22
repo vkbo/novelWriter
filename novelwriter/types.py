@@ -65,6 +65,10 @@ QtPaintAnitAlias = QPainter.RenderHint.Antialiasing
 QtMouseOver = QStyle.StateFlag.State_MouseOver
 QtSelected = QStyle.StateFlag.State_Selected
 
+# Qt Colour Types
+
+QtHexRgb = QColor.NameFormat.HexRgb
+
 # Qt Tree and Table Types
 
 QtDecoration = Qt.ItemDataRole.DecorationRole

@@ -53,12 +53,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="646464" />
         </w:rPr>
         <w:t>Comment:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Exctracted from the lipsum.com website.</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="646464" />
+        </w:rPr>
+        <w:t>Exctracted from the lipsum.com website.</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -100,12 +107,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="813709" />
         </w:rPr>
         <w:t>Synopsis:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Explanation from the lipsum.com website.</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="813709" />
+        </w:rPr>
+        <w:t>Explanation from the lipsum.com website.</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -176,12 +190,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Point of View:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Bod</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Bod</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -192,12 +213,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Plot:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Main</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Main</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -208,12 +236,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Locations:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Europe</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Europe</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -223,12 +258,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="813709" />
         </w:rPr>
         <w:t>Synopsis:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque at aliquam quam.</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="813709" />
+        </w:rPr>
+        <w:t>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque at aliquam quam.</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -248,12 +290,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Point of View:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Bod</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Bod</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -264,12 +313,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Plot:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Main</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Main</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -280,12 +336,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Locations:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Europe</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Europe</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -295,12 +358,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="813709" />
         </w:rPr>
         <w:t>Synopsis:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Aenean ut placerat velit. Etiam laoreet ullamcorper risus, eget lobortis enim scelerisque non. Suspendisse id maximus nunc, et mollis sapien. Curabitur vel semper sapien, non pulvinar dolor. Etiam finibus nisi vel mi molestie consectetur.</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="813709" />
+        </w:rPr>
+        <w:t>Aenean ut placerat velit. Etiam laoreet ullamcorper risus, eget lobortis enim scelerisque non. Suspendisse id maximus nunc, et mollis sapien. Curabitur vel semper sapien, non pulvinar dolor. Etiam finibus nisi vel mi molestie consectetur.</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -361,12 +431,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Point of View:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Bod</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Bod</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -377,12 +454,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Plot:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Main</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Main</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -393,12 +477,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Locations:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Europe</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Europe</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -408,12 +499,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="813709" />
         </w:rPr>
         <w:t>Synopsis:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer sapien nulla, dictum at lacus a, dignissim consectetur dolor. Nunc vel eleifend lacus, eu dapibus orci.</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="813709" />
+        </w:rPr>
+        <w:t>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer sapien nulla, dictum at lacus a, dignissim consectetur dolor. Nunc vel eleifend lacus, eu dapibus orci.</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -495,12 +593,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Point of View:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Bod</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Bod</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -511,12 +616,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Plot:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Main</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Main</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -527,12 +639,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Locations:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Europe</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Europe</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -542,12 +661,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="813709" />
         </w:rPr>
         <w:t>Synopsis:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Curabitur a elit posuere, varius ex et, convallis neque. Phasellus sagittis pharetra sem vitae dapibus. Curabitur varius lorem non pulvinar congue.</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="813709" />
+        </w:rPr>
+        <w:t>Curabitur a elit posuere, varius ex et, convallis neque. Phasellus sagittis pharetra sem vitae dapibus. Curabitur varius lorem non pulvinar congue.</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -567,12 +693,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Point of View:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Bod</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Bod</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -583,12 +716,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Plot:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Main</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Main</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -599,12 +739,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Locations:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Europe</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Europe</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -614,12 +761,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="813709" />
         </w:rPr>
         <w:t>Synopsis:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Aenean ut libero ut lectus porttitor rhoncus vel et massa. Nam pretium, nibh et varius vehicula, urna metus blandit eros, euismod pharetra diam diam et libero. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="813709" />
+        </w:rPr>
+        <w:t>Aenean ut libero ut lectus porttitor rhoncus vel et massa. Nam pretium, nibh et varius vehicula, urna metus blandit eros, euismod pharetra diam diam et libero. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -680,12 +834,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Point of View:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Bod</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Bod</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -696,12 +857,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Plot:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Main</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Main</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -712,12 +880,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Locations:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Europe</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Europe</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -727,12 +902,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="813709" />
         </w:rPr>
         <w:t>Synopsis:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Nam tempor blandit magna laoreet aliquet. Vestibulum auctor posuere leo, ac gravida nisi rhoncus varius. Aenean posuere dolor vitae condimentum volutpat. Donec egestas volutpat risus, quis luctus justo.</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="813709" />
+        </w:rPr>
+        <w:t>Nam tempor blandit magna laoreet aliquet. Vestibulum auctor posuere leo, ac gravida nisi rhoncus varius. Aenean posuere dolor vitae condimentum volutpat. Donec egestas volutpat risus, quis luctus justo.</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -812,12 +994,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Point of View:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Bod</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Bod</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -828,12 +1017,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Plot:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Main</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Main</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -844,12 +1040,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Locations:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Europe</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Europe</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -859,12 +1062,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="813709" />
         </w:rPr>
         <w:t>Synopsis:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Praesent eget est porta, dictum ante in, egestas risus. Mauris risus mauris, consequat aliquam mauris et, feugiat iaculis ipsum. Aliquam arcu ipsum, fermentum ut arcu sed, lobortis euismod sem. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="813709" />
+        </w:rPr>
+        <w:t>Praesent eget est porta, dictum ante in, egestas risus. Mauris risus mauris, consequat aliquam mauris et, feugiat iaculis ipsum. Aliquam arcu ipsum, fermentum ut arcu sed, lobortis euismod sem. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -946,12 +1156,29 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Tag:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Bod | Nobody Owens</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Bod</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr />
+        <w:t xml:space="preserve"> | </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Nobody Owens</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -962,12 +1189,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Plot:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Main</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Main</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -1028,12 +1262,19 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Tag:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Main</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Main</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -1084,12 +1325,29 @@
       <w:r>
         <w:rPr>
           <w:b />
+          <w:color w:val="f5871f" />
         </w:rPr>
         <w:t>Tag:</w:t>
       </w:r>
       <w:r>
         <w:rPr />
-        <w:t xml:space="preserve"> Europe | Ancient Europe</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Europe</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr />
+        <w:t xml:space="preserve"> | </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:color w:val="4271ae" />
+        </w:rPr>
+        <w:t>Ancient Europe</w:t>
       </w:r>
     </w:p>
     <w:p>

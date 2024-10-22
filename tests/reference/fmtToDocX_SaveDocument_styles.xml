@@ -50,7 +50,7 @@
     </w:pPr>
     <w:rPr>
       <w:b />
-      <w:color w:val="2a6099" />
+      <w:color w:val="4271ae" />
       <w:sz w:val="48" />
       <w:szCs w:val="48" />
     </w:rPr>
@@ -65,7 +65,7 @@
     </w:pPr>
     <w:rPr>
       <w:b />
-      <w:color w:val="2a6099" />
+      <w:color w:val="4271ae" />
       <w:sz w:val="42" />
       <w:szCs w:val="42" />
     </w:rPr>
@@ -80,7 +80,7 @@
     </w:pPr>
     <w:rPr>
       <w:b />
-      <w:color w:val="444444" />
+      <w:color w:val="4271ae" />
       <w:sz w:val="36" />
       <w:szCs w:val="36" />
     </w:rPr>
@@ -95,7 +95,7 @@
     </w:pPr>
     <w:rPr>
       <w:b />
-      <w:color w:val="444444" />
+      <w:color w:val="4271ae" />
       <w:sz w:val="30" />
       <w:szCs w:val="30" />
     </w:rPr>
@@ -121,7 +121,6 @@
       <w:spacing w:before="0" w:after="139" w:line="276" />
     </w:pPr>
     <w:rPr>
-      <w:color w:val="813709" />
       <w:sz w:val="24" />
       <w:szCs w:val="24" />
     </w:rPr>

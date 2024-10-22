@@ -35,14 +35,15 @@ from hashlib import sha256
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QColor, QFont
 
 from novelwriter import __version__
 from novelwriter.common import xmlIndent, xmlSubElem
-from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles
+from novelwriter.constants import nwHeadFmt, nwStyles
 from novelwriter.core.project import NWProject
-from novelwriter.formats.tokenizer import T_Formats, Tokenizer, stripEscape
-from novelwriter.types import FONT_STYLE, FONT_WEIGHTS
+from novelwriter.formats.shared import BlockFmt, BlockTyp, TextFmt, stripEscape
+from novelwriter.formats.tokenizer import Tokenizer
+from novelwriter.types import FONT_STYLE, FONT_WEIGHTS, QtHexRgb
 
 logger = logging.getLogger(__name__)
 
@@ -89,8 +90,7 @@ X_UND = 0x008  # Underline format
 X_MRK = 0x010  # Marked format
 X_SUP = 0x020  # Superscript
 X_SUB = 0x040  # Subscript
-X_DLG = 0x080  # Dialogue
-X_DLA = 0x100  # Alt. Dialogue
+X_COL = 0x080  # Coloured text
 
 # Formatting Masks
 M_BLD = ~X_BLD
@@ -100,8 +100,7 @@ M_UND = ~X_UND
 M_MRK = ~X_MRK
 M_SUP = ~X_SUP
 M_SUB = ~X_SUB
-M_DLG = ~X_DLG
-M_DLA = ~X_DLA
+M_COL = ~X_COL
 
 # ODT Styles
 S_TITLE = "Title"
@@ -151,7 +150,7 @@ class ToOdt(Tokenizer):
 
         self._mainPara: dict[str, ODTParagraphStyle] = {}  # User-accessible paragraph styles
         self._autoPara: dict[str, ODTParagraphStyle] = {}  # Auto-generated paragraph styles
-        self._autoText: dict[int, ODTTextStyle] = {}       # Auto-generated text styles
+        self._autoText: dict[str, ODTTextStyle] = {}       # Auto-generated text styles
 
         # Footnotes
         self._nNote = 0
@@ -183,7 +182,6 @@ class ToOdt(Tokenizer):
         self._fLineHeight  = "115%"
         self._fBlockIndent = "1.693cm"
         self._fTextIndent  = "0.499cm"
-        self._textAlign    = "left"
         self._dLanguage    = "en"
         self._dCountry     = "GB"
 
@@ -218,17 +216,6 @@ class ToOdt(Tokenizer):
         self._mDocBtm    = "2.000cm"
         self._mDocLeft   = "2.000cm"
         self._mDocRight  = "2.000cm"
-
-        # Colour
-        self._colHead12  = None
-        self._opaHead12  = None
-        self._colHead34  = None
-        self._opaHead34  = None
-        self._colDialogM = "#2a6099"
-        self._colDialogA = "#813709"
-        self._colMetaTx  = "#813709"
-        self._opaMetaTx  = "100%"
-        self._markText   = "#ffffa6"
 
         return
 
@@ -268,6 +255,8 @@ class ToOdt(Tokenizer):
 
     def initDocument(self) -> None:
         """Initialises a new open document XML tree."""
+        super().initDocument()
+
         # Initialise Variables
         # ====================
 
@@ -318,16 +307,9 @@ class ToOdt(Tokenizer):
         self._mLeftFoot = self._emToCm(self._marginFoot[0])
         self._mBotFoot  = self._emToCm(self._marginFoot[1])
 
-        if self._colorHeads:
-            self._colHead12 = "#2a6099"
-            self._opaHead12 = "100%"
-            self._colHead34 = "#444444"
-            self._opaHead34 = "100%"
-
         self._fLineHeight  = f"{round(100 * self._lineHeight):d}%"
         self._fBlockIndent = self._emToCm(self._blockIndent)
         self._fTextIndent  = self._emToCm(self._firstWidth)
-        self._textAlign    = "justify" if self._doJustify else self._defaultAlign
 
         # Clear Errors
         self._errData = []
@@ -426,89 +408,76 @@ class ToOdt(Tokenizer):
         self._result = ""  # Not used, but cleared just in case
 
         xText = self._xText
-        for tType, _, tText, tFormat, tStyle in self._tokens:
+        for tType, _, tText, tFormat, tStyle in self._blocks:
 
             # Styles
             oStyle = ODTParagraphStyle("New")
             if tStyle is not None:
-                if tStyle & self.A_LEFT:
+                if tStyle & BlockFmt.LEFT:
                     oStyle.setTextAlign("left")
-                elif tStyle & self.A_RIGHT:
+                elif tStyle & BlockFmt.RIGHT:
                     oStyle.setTextAlign("right")
-                elif tStyle & self.A_CENTRE:
+                elif tStyle & BlockFmt.CENTRE:
                     oStyle.setTextAlign("center")
-                elif tStyle & self.A_JUSTIFY:
+                elif tStyle & BlockFmt.JUSTIFY:
                     oStyle.setTextAlign("justify")
 
-                if tStyle & self.A_PBB:
+                if tStyle & BlockFmt.PBB:
                     oStyle.setBreakBefore("page")
-                if tStyle & self.A_PBA:
+                if tStyle & BlockFmt.PBA:
                     oStyle.setBreakAfter("page")
 
-                if tStyle & self.A_Z_BTMMRG:
+                if tStyle & BlockFmt.Z_BTMMRG:
                     oStyle.setMarginBottom("0.000cm")
-                if tStyle & self.A_Z_TOPMRG:
+                if tStyle & BlockFmt.Z_TOPMRG:
                     oStyle.setMarginTop("0.000cm")
 
-                if tStyle & self.A_IND_L:
+                if tStyle & BlockFmt.IND_L:
                     oStyle.setMarginLeft(self._fBlockIndent)
-                if tStyle & self.A_IND_R:
+                if tStyle & BlockFmt.IND_R:
                     oStyle.setMarginRight(self._fBlockIndent)
 
             # Process Text Types
-            if tType == self.T_TEXT:
-                if self._doJustify and "\n" in tText:
-                    oStyle.overrideJustify(self._defaultAlign)
-
+            if tType == BlockTyp.TEXT:
                 # Text indentation is processed here because there is a
                 # dedicated pre-defined style for it
-                if tStyle & self.A_IND_T:
+                if tStyle & BlockFmt.IND_T:
                     self._addTextPar(xText, S_FIND, oStyle, tText, tFmt=tFormat)
                 else:
                     self._addTextPar(xText, S_TEXT, oStyle, tText, tFmt=tFormat)
 
-            elif tType == self.T_TITLE:
+            elif tType == BlockTyp.TITLE:
                 # Title must be text:p
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._addTextPar(xText, S_TITLE, oStyle, tHead, isHead=False)
 
-            elif tType == self.T_HEAD1:
+            elif tType == BlockTyp.HEAD1:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._addTextPar(xText, S_HEAD1, oStyle, tHead, isHead=True, oLevel="1")
 
-            elif tType == self.T_HEAD2:
+            elif tType == BlockTyp.HEAD2:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._addTextPar(xText, S_HEAD2, oStyle, tHead, isHead=True, oLevel="2")
 
-            elif tType == self.T_HEAD3:
+            elif tType == BlockTyp.HEAD3:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._addTextPar(xText, S_HEAD3, oStyle, tHead, isHead=True, oLevel="3")
 
-            elif tType == self.T_HEAD4:
+            elif tType == BlockTyp.HEAD4:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._addTextPar(xText, S_HEAD4, oStyle, tHead, isHead=True, oLevel="4")
 
-            elif tType == self.T_SEP:
+            elif tType == BlockTyp.SEP:
                 self._addTextPar(xText, S_SEP, oStyle, tText)
 
-            elif tType == self.T_SKIP:
+            elif tType == BlockTyp.SKIP:
                 self._addTextPar(xText, S_TEXT, oStyle, "")
 
-            elif tType == self.T_SYNOPSIS and self._doSynopsis:
-                tTemp, tFmt = self._formatSynopsis(tText, tFormat, True)
-                self._addTextPar(xText, S_META, oStyle, tTemp, tFmt=tFmt)
+            elif tType == BlockTyp.COMMENT:
+                self._addTextPar(xText, S_META, oStyle, tText, tFmt=tFormat)
 
-            elif tType == self.T_SHORT and self._doSynopsis:
-                tTemp, tFmt = self._formatSynopsis(tText, tFormat, False)
-                self._addTextPar(xText, S_META, oStyle, tTemp, tFmt=tFmt)
-
-            elif tType == self.T_COMMENT and self._doComments:
-                tTemp, tFmt = self._formatComments(tText, tFormat)
-                self._addTextPar(xText, S_META, oStyle, tTemp, tFmt=tFmt)
-
-            elif tType == self.T_KEYWORD and self._doKeywords:
-                tTemp, tFmt = self._formatKeywords(tText)
-                self._addTextPar(xText, S_META, oStyle, tTemp, tFmt=tFmt)
+            elif tType == BlockTyp.KEYWORD:
+                self._addTextPar(xText, S_META, oStyle, tText, tFmt=tFormat)
 
         return
 
@@ -576,40 +545,6 @@ class ToOdt(Tokenizer):
     #  Internal Functions
     ##
 
-    def _formatSynopsis(self, text: str, fmt: T_Formats, synopsis: bool) -> tuple[str, T_Formats]:
-        """Apply formatting to synopsis lines."""
-        name = self._localLookup("Synopsis" if synopsis else "Short Description")
-        shift = len(name) + 2
-        rTxt = f"{name}: {text}"
-        rFmt: T_Formats = [(0, self.FMT_B_B, ""), (len(name) + 1, self.FMT_B_E, "")]
-        rFmt.extend((p + shift, f, d) for p, f, d in fmt)
-        return rTxt, rFmt
-
-    def _formatComments(self, text: str, fmt: T_Formats) -> tuple[str, T_Formats]:
-        """Apply formatting to comments."""
-        name = self._localLookup("Comment")
-        shift = len(name) + 2
-        rTxt = f"{name}: {text}"
-        rFmt: T_Formats = [(0, self.FMT_B_B, ""), (len(name) + 1, self.FMT_B_E, "")]
-        rFmt.extend((p + shift, f, d) for p, f, d in fmt)
-        return rTxt, rFmt
-
-    def _formatKeywords(self, text: str) -> tuple[str, T_Formats]:
-        """Apply formatting to keywords."""
-        valid, bits, _ = self._project.index.scanThis("@"+text)
-        if not valid or not bits or bits[0] not in nwLabels.KEY_NAME:
-            return "", []
-
-        rTxt = f"{self._localLookup(nwLabels.KEY_NAME[bits[0]])}: "
-        rFmt: T_Formats = [(0, self.FMT_B_B, ""), (len(rTxt) - 1, self.FMT_B_E, "")]
-        if len(bits) > 1:
-            if bits[0] == nwKeyWords.TAG_KEY:
-                rTxt += bits[1]
-            else:
-                rTxt += ", ".join(bits[1:])
-
-        return rTxt, rFmt
-
     def _addTextPar(
         self,
         xParent: ET.Element,
@@ -639,11 +574,11 @@ class ToOdt(Tokenizer):
 
         parProc = XMLParagraph(xElem)
 
-        pErr = 0
         xFmt = 0x00
         tFrag = ""
         fLast = 0
         xNode = None
+        fClass = ""
         for fPos, fFmt, fData in tFmt or []:
 
             # Add any extra nodes
@@ -656,51 +591,47 @@ class ToOdt(Tokenizer):
                 if xFmt == 0x00:
                     parProc.appendText(tFrag)
                 else:
-                    parProc.appendSpan(tFrag, self._textStyle(xFmt))
+                    parProc.appendSpan(tFrag, self._textStyle(xFmt, fClass))
 
             # Calculate the change of format
-            if fFmt == self.FMT_B_B:
+            if fFmt == TextFmt.B_B:
                 xFmt |= X_BLD
-            elif fFmt == self.FMT_B_E:
+            elif fFmt == TextFmt.B_E:
                 xFmt &= M_BLD
-            elif fFmt == self.FMT_I_B:
+            elif fFmt == TextFmt.I_B:
                 xFmt |= X_ITA
-            elif fFmt == self.FMT_I_E:
+            elif fFmt == TextFmt.I_E:
                 xFmt &= M_ITA
-            elif fFmt == self.FMT_D_B:
+            elif fFmt == TextFmt.D_B:
                 xFmt |= X_DEL
-            elif fFmt == self.FMT_D_E:
+            elif fFmt == TextFmt.D_E:
                 xFmt &= M_DEL
-            elif fFmt == self.FMT_U_B:
+            elif fFmt == TextFmt.U_B:
                 xFmt |= X_UND
-            elif fFmt == self.FMT_U_E:
+            elif fFmt == TextFmt.U_E:
                 xFmt &= M_UND
-            elif fFmt == self.FMT_M_B:
+            elif fFmt == TextFmt.M_B:
                 xFmt |= X_MRK
-            elif fFmt == self.FMT_M_E:
+            elif fFmt == TextFmt.M_E:
                 xFmt &= M_MRK
-            elif fFmt == self.FMT_SUP_B:
+            elif fFmt == TextFmt.SUP_B:
                 xFmt |= X_SUP
-            elif fFmt == self.FMT_SUP_E:
+            elif fFmt == TextFmt.SUP_E:
                 xFmt &= M_SUP
-            elif fFmt == self.FMT_SUB_B:
+            elif fFmt == TextFmt.SUB_B:
                 xFmt |= X_SUB
-            elif fFmt == self.FMT_SUB_E:
+            elif fFmt == TextFmt.SUB_E:
                 xFmt &= M_SUB
-            elif fFmt == self.FMT_DL_B:
-                xFmt |= X_DLG
-            elif fFmt == self.FMT_DL_E:
-                xFmt &= M_DLG
-            elif fFmt == self.FMT_ADL_B:
-                xFmt |= X_DLA
-            elif fFmt == self.FMT_ADL_E:
-                xFmt &= M_DLA
-            elif fFmt == self.FMT_FNOTE:
+            elif fFmt == TextFmt.COL_B:
+                xFmt |= X_COL
+                fClass = fData
+            elif fFmt == TextFmt.COL_E:
+                xFmt &= M_COL
+                fClass = ""
+            elif fFmt == TextFmt.FNOTE:
                 xNode = self._generateFootnote(fData)
-            elif fFmt == self.FMT_STRIP:
+            elif fFmt == TextFmt.STRIP:
                 pass
-            else:
-                pErr += 1
 
             fLast = fPos
 
@@ -711,10 +642,7 @@ class ToOdt(Tokenizer):
             if xFmt == 0x00:
                 parProc.appendText(tFrag)
             else:
-                parProc.appendSpan(tFrag, self._textStyle(xFmt))
-
-        if pErr > 0:
-            self._errData.append("Unknown format tag encountered")
+                parProc.appendSpan(tFrag, self._textStyle(xFmt, fClass))
 
         nErr, errMsg = parProc.checkError()
         if nErr > 0:  # pragma: no cover
@@ -745,10 +673,14 @@ class ToOdt(Tokenizer):
 
         return modStyle.name
 
-    def _textStyle(self, hFmt: int) -> str:
+    def _textStyle(self, hFmt: int, fClass: str = "") -> str:
         """Return a text style for a given style code."""
-        if hFmt in self._autoText:
-            return self._autoText[hFmt].name
+        tKey = str(hFmt)
+        if fClass and (color := self._classes.get(fClass)):
+            tKey = f"{tKey}:{fClass}"
+
+        if tKey in self._autoText:
+            return self._autoText[tKey].name
 
         style = ODTTextStyle(f"T{len(self._autoText)+1:d}")
         if hFmt & X_BLD:
@@ -761,18 +693,16 @@ class ToOdt(Tokenizer):
         if hFmt & X_UND:
             style.setUnderlineStyle("solid")
             style.setUnderlineWidth("auto")
-            style.setUnderlineColour("font-color")
+            style.setUnderlineColor("font-color")
         if hFmt & X_MRK:
-            style.setBackgroundColour(self._markText)
+            style.setBackgroundColor(self._theme.highlight)
         if hFmt & X_SUP:
             style.setTextPosition("super")
         if hFmt & X_SUB:
             style.setTextPosition("sub")
-        if hFmt & X_DLG:
-            style.setColour(self._colDialogM)
-        if hFmt & X_DLA:
-            style.setColour(self._colDialogA)
-        self._autoText[hFmt] = style
+        if hFmt & X_COL and color:
+            style.setColor(color)
+        self._autoText[tKey] = style
 
         return style.name
 
@@ -898,6 +828,8 @@ class ToOdt(Tokenizer):
 
     def _useableStyles(self) -> None:
         """Set the usable styles."""
+        hColor = self._theme.head if self._colorHeads else None
+
         # Add Text Body Style
         style = ODTParagraphStyle(S_TEXT)
         style.setDisplayName("Text body")
@@ -906,7 +838,7 @@ class ToOdt(Tokenizer):
         style.setMarginTop(self._mTopText)
         style.setMarginBottom(self._mBotText)
         style.setLineHeight(self._fLineHeight)
-        style.setTextAlign(self._textAlign)
+        style.setTextAlign(self._defaultAlign)
         style.setFontName(self._fontFamily)
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeText)
@@ -935,8 +867,6 @@ class ToOdt(Tokenizer):
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeText)
         style.setFontWeight(self._fontWeight)
-        style.setColour(self._colMetaTx)
-        style.setOpacity(self._opaMetaTx)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
@@ -986,8 +916,7 @@ class ToOdt(Tokenizer):
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead1)
         style.setFontWeight(self._headWeight)
-        style.setColour(self._colHead12)
-        style.setOpacity(self._opaHead12)
+        style.setColor(hColor)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
@@ -1004,8 +933,7 @@ class ToOdt(Tokenizer):
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead2)
         style.setFontWeight(self._headWeight)
-        style.setColour(self._colHead12)
-        style.setOpacity(self._opaHead12)
+        style.setColor(hColor)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
@@ -1022,8 +950,7 @@ class ToOdt(Tokenizer):
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead3)
         style.setFontWeight(self._headWeight)
-        style.setColour(self._colHead34)
-        style.setOpacity(self._opaHead34)
+        style.setColor(hColor)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
@@ -1040,8 +967,7 @@ class ToOdt(Tokenizer):
         style.setFontFamily(self._fontFamily)
         style.setFontSize(self._fSizeHead4)
         style.setFontWeight(self._headWeight)
-        style.setColour(self._colHead34)
-        style.setOpacity(self._opaHead34)
+        style.setColor(hColor)
         style.packXML(self._xStyl)
         self._mainPara[style.name] = style
 
@@ -1302,25 +1228,19 @@ class ODTParagraphStyle:
             self._tAttr["font-weight"][1] = None
         return
 
-    def setColour(self, value: str | None) -> None:
+    def setColor(self, value: QColor | None) -> None:
         """Set text colour."""
-        self._tAttr["color"][1] = value
-        return
-
-    def setOpacity(self, value: str | None) -> None:
-        """Set text opacity."""
-        self._tAttr["opacity"][1] = value
+        if isinstance(value, QColor):
+            self._tAttr["color"][1] = value.name(QtHexRgb)
+            self._tAttr["opacity"][1] = f"{int(100.0 * value.alphaF())}%"
+        else:
+            self._tAttr["color"][1] = None
+            self._tAttr["opacity"][1] = None
         return
 
     ##
     #  Methods
     ##
-
-    def overrideJustify(self, default: str) -> None:
-        """Override inherited justify setting if None is set."""
-        if self._pAttr["text-align"][1] is None:
-            self.setTextAlign(default)
-        return
 
     def checkNew(self, style: ODTParagraphStyle) -> bool:
         """Check if there are new settings in style that differ from
@@ -1416,18 +1336,18 @@ class ODTTextStyle:
             self._tAttr["font-style"][1] = None
         return
 
-    def setColour(self, value: str | None) -> None:
+    def setColor(self, value: QColor | None) -> None:
         """Set text colour."""
-        if value and len(value) == 7 and value[0] == "#":
-            self._tAttr["color"][1] = value
+        if isinstance(value, QColor):
+            self._tAttr["color"][1] = value.name(QtHexRgb)
         else:
             self._tAttr["color"][1] = None
         return
 
-    def setBackgroundColour(self, value: str | None) -> None:
+    def setBackgroundColor(self, value: QColor | None) -> None:
         """Set text background colour."""
-        if value and len(value) == 7 and value[0] == "#":
-            self._tAttr["background-color"][1] = value
+        if isinstance(value, QColor):
+            self._tAttr["background-color"][1] = value.name(QtHexRgb)
         else:
             self._tAttr["background-color"][1] = None
         return
@@ -1472,7 +1392,7 @@ class ODTTextStyle:
             self._tAttr["text-underline-width"][1] = None
         return
 
-    def setUnderlineColour(self, value: str | None) -> None:
+    def setUnderlineColor(self, value: str | None) -> None:
         """Set text underline colour."""
         if value in self.VALID_LCOL:
             self._tAttr["text-underline-color"][1] = value

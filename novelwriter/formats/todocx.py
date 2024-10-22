@@ -34,12 +34,15 @@ from typing import NamedTuple
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from PyQt5.QtCore import QMarginsF, QSizeF
+from PyQt5.QtGui import QColor
 
 from novelwriter import __version__
 from novelwriter.common import firstFloat, xmlSubElem
-from novelwriter.constants import nwHeadFmt, nwKeyWords, nwLabels, nwStyles
+from novelwriter.constants import nwHeadFmt, nwStyles
 from novelwriter.core.project import NWProject
-from novelwriter.formats.tokenizer import T_Formats, Tokenizer
+from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
+from novelwriter.formats.tokenizer import Tokenizer
+from novelwriter.types import QtHexRgb
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +82,11 @@ def _mkTag(ns: str, tag: str) -> str:
     return tag
 
 
+def _docXCol(color: QColor) -> str:
+    """Format a QColor as the DocX accepted value."""
+    return color.name(QtHexRgb).lstrip("#")
+
+
 # Formatting Codes
 X_BLD = 0x001  # Bold format
 X_ITA = 0x002  # Italic format
@@ -87,8 +95,7 @@ X_UND = 0x008  # Underline format
 X_MRK = 0x010  # Marked format
 X_SUP = 0x020  # Superscript
 X_SUB = 0x040  # Subscript
-X_DLG = 0x080  # Dialogue
-X_DLA = 0x100  # Alt. Dialogue
+X_COL = 0x080  # Coloured text
 
 # Formatting Masks
 M_BLD = ~X_BLD
@@ -98,8 +105,7 @@ M_UND = ~X_UND
 M_MRK = ~X_MRK
 M_SUP = ~X_SUP
 M_SUB = ~X_SUB
-M_DLG = ~X_DLG
-M_DLA = ~X_DLA
+M_COL = ~X_COL
 
 # DocX Styles
 S_NORM  = "Normal"
@@ -112,14 +118,6 @@ S_SEP   = "Separator"
 S_META  = "MetaText"
 S_HEAD  = "Header"
 S_FNOTE = "FootnoteText"
-
-# Colours
-COL_HEAD_L12 = "2a6099"
-COL_HEAD_L34 = "444444"
-COL_DIALOG_M = "2a6099"
-COL_DIALOG_A = "813709"
-COL_META_TXT = "813709"
-COL_MARK_TXT = "ffffa6"
 
 
 class DocXXmlFile(NamedTuple):
@@ -208,6 +206,7 @@ class ToDocX(Tokenizer):
 
     def initDocument(self) -> None:
         """Initialises the DocX document structure."""
+        super().initDocument()
         self._fontFamily = self._textFont.family()
         self._fontSize = self._textFont.pointSizeF()
         self._generateStyles()
@@ -219,7 +218,7 @@ class ToDocX(Tokenizer):
 
         bIndent = self._fontSize * self._blockIndent
 
-        for tType, _, tText, tFormat, tStyle in self._tokens:
+        for tType, _, tText, tFormat, tStyle in self._blocks:
 
             # Create Paragraph
             par = DocXParagraph()
@@ -227,79 +226,67 @@ class ToDocX(Tokenizer):
 
             # Styles
             if tStyle is not None:
-                if tStyle & self.A_LEFT:
+                if tStyle & BlockFmt.LEFT:
                     par.setAlignment("left")
-                elif tStyle & self.A_RIGHT:
+                elif tStyle & BlockFmt.RIGHT:
                     par.setAlignment("right")
-                elif tStyle & self.A_CENTRE:
+                elif tStyle & BlockFmt.CENTRE:
                     par.setAlignment("center")
-                elif tStyle & self.A_JUSTIFY:
+                elif tStyle & BlockFmt.JUSTIFY:
                     par.setAlignment("both")
 
-                if tStyle & self.A_PBB:
+                if tStyle & BlockFmt.PBB:
                     par.setPageBreakBefore(True)
-                if tStyle & self.A_PBA:
+                if tStyle & BlockFmt.PBA:
                     par.setPageBreakAfter(True)
 
-                if tStyle & self.A_Z_BTMMRG:
+                if tStyle & BlockFmt.Z_BTMMRG:
                     par.setMarginBottom(0.0)
-                if tStyle & self.A_Z_TOPMRG:
+                if tStyle & BlockFmt.Z_TOPMRG:
                     par.setMarginTop(0.0)
 
-                if tStyle & self.A_IND_T:
+                if tStyle & BlockFmt.IND_T:
                     par.setIndentFirst(True)
-                if tStyle & self.A_IND_L:
+                if tStyle & BlockFmt.IND_L:
                     par.setMarginLeft(bIndent)
-                if tStyle & self.A_IND_R:
+                if tStyle & BlockFmt.IND_R:
                     par.setMarginRight(bIndent)
 
             # Process Text Types
-            if tType == self.T_TEXT:
-                if self._doJustify and "\n" in tText:
-                    par.overrideJustify(self._defaultAlign)
+            if tType == BlockTyp.TEXT:
                 self._processFragments(par, S_NORM, tText, tFormat)
 
-            elif tType == self.T_TITLE:
+            elif tType == BlockTyp.TITLE:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._processFragments(par, S_TITLE, tHead, tFormat)
 
-            elif tType == self.T_HEAD1:
+            elif tType == BlockTyp.HEAD1:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._processFragments(par, S_HEAD1, tHead, tFormat)
 
-            elif tType == self.T_HEAD2:
+            elif tType == BlockTyp.HEAD2:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._processFragments(par, S_HEAD2, tHead, tFormat)
 
-            elif tType == self.T_HEAD3:
+            elif tType == BlockTyp.HEAD3:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._processFragments(par, S_HEAD3, tHead, tFormat)
 
-            elif tType == self.T_HEAD4:
+            elif tType == BlockTyp.HEAD4:
                 tHead = tText.replace(nwHeadFmt.BR, "\n")
                 self._processFragments(par, S_HEAD4, tHead, tFormat)
 
-            elif tType == self.T_SEP:
+            elif tType == BlockTyp.SEP:
                 self._processFragments(par, S_SEP, tText)
 
-            elif tType == self.T_SKIP:
+            elif tType == BlockTyp.SKIP:
                 self._processFragments(par, S_NORM, "")
 
-            elif tType == self.T_SYNOPSIS and self._doSynopsis:
-                tTemp, tFmt = self._formatSynopsis(tText, tFormat, True)
-                self._processFragments(par, S_META, tTemp, tFmt)
+            elif tType == BlockTyp.COMMENT:
+                self._processFragments(par, S_META, tText, tFormat)
 
-            elif tType == self.T_SHORT and self._doSynopsis:
-                tTemp, tFmt = self._formatSynopsis(tText, tFormat, False)
-                self._processFragments(par, S_META, tTemp, tFmt)
-
-            elif tType == self.T_COMMENT and self._doComments:
-                tTemp, tFmt = self._formatComments(tText, tFormat)
-                self._processFragments(par, S_META, tTemp, tFmt)
-
-            elif tType == self.T_KEYWORD and self._doKeywords:
-                tTemp, tFmt = self._formatKeywords(tText)
-                self._processFragments(par, S_META, tTemp, tFmt)
+            elif tType == BlockTyp.KEYWORD:
+                self._processFragments(par, S_META, tText, tFormat)
 
         return
 
@@ -375,40 +362,6 @@ class ToDocX(Tokenizer):
     #  Internal Functions
     ##
 
-    def _formatSynopsis(self, text: str, fmt: T_Formats, synopsis: bool) -> tuple[str, T_Formats]:
-        """Apply formatting to synopsis lines."""
-        name = self._localLookup("Synopsis" if synopsis else "Short Description")
-        shift = len(name) + 2
-        rTxt = f"{name}: {text}"
-        rFmt: T_Formats = [(0, self.FMT_B_B, ""), (len(name) + 1, self.FMT_B_E, "")]
-        rFmt.extend((p + shift, f, d) for p, f, d in fmt)
-        return rTxt, rFmt
-
-    def _formatComments(self, text: str, fmt: T_Formats) -> tuple[str, T_Formats]:
-        """Apply formatting to comments."""
-        name = self._localLookup("Comment")
-        shift = len(name) + 2
-        rTxt = f"{name}: {text}"
-        rFmt: T_Formats = [(0, self.FMT_B_B, ""), (len(name) + 1, self.FMT_B_E, "")]
-        rFmt.extend((p + shift, f, d) for p, f, d in fmt)
-        return rTxt, rFmt
-
-    def _formatKeywords(self, text: str) -> tuple[str, T_Formats]:
-        """Apply formatting to keywords."""
-        valid, bits, _ = self._project.index.scanThis("@"+text)
-        if not valid or not bits or bits[0] not in nwLabels.KEY_NAME:
-            return "", []
-
-        rTxt = f"{self._localLookup(nwLabels.KEY_NAME[bits[0]])}: "
-        rFmt: T_Formats = [(0, self.FMT_B_B, ""), (len(rTxt) - 1, self.FMT_B_E, "")]
-        if len(bits) > 1:
-            if bits[0] == nwKeyWords.TAG_KEY:
-                rTxt += bits[1]
-            else:
-                rTxt += ", ".join(bits[1:])
-
-        return rTxt, rFmt
-
     def _processFragments(
         self, par: DocXParagraph, pStyle: str, text: str, tFmt: T_Formats | None = None
     ) -> None:
@@ -417,6 +370,7 @@ class ToDocX(Tokenizer):
         xFmt = 0x00
         xNode = None
         fStart = 0
+        fClass = ""
         for fPos, fFmt, fData in tFmt or []:
 
             if xNode is not None:
@@ -424,47 +378,45 @@ class ToDocX(Tokenizer):
                 xNode = None
 
             if temp := text[fStart:fPos]:
-                par.addContent(self._textRunToXml(temp, xFmt))
+                par.addContent(self._textRunToXml(temp, xFmt, fClass))
 
-            if fFmt == self.FMT_B_B:
+            if fFmt == TextFmt.B_B:
                 xFmt |= X_BLD
-            elif fFmt == self.FMT_B_E:
+            elif fFmt == TextFmt.B_E:
                 xFmt &= M_BLD
-            elif fFmt == self.FMT_I_B:
+            elif fFmt == TextFmt.I_B:
                 xFmt |= X_ITA
-            elif fFmt == self.FMT_I_E:
+            elif fFmt == TextFmt.I_E:
                 xFmt &= M_ITA
-            elif fFmt == self.FMT_D_B:
+            elif fFmt == TextFmt.D_B:
                 xFmt |= X_DEL
-            elif fFmt == self.FMT_D_E:
+            elif fFmt == TextFmt.D_E:
                 xFmt &= M_DEL
-            elif fFmt == self.FMT_U_B:
+            elif fFmt == TextFmt.U_B:
                 xFmt |= X_UND
-            elif fFmt == self.FMT_U_E:
+            elif fFmt == TextFmt.U_E:
                 xFmt &= M_UND
-            elif fFmt == self.FMT_M_B:
+            elif fFmt == TextFmt.M_B:
                 xFmt |= X_MRK
-            elif fFmt == self.FMT_M_E:
+            elif fFmt == TextFmt.M_E:
                 xFmt &= M_MRK
-            elif fFmt == self.FMT_SUP_B:
+            elif fFmt == TextFmt.SUP_B:
                 xFmt |= X_SUP
-            elif fFmt == self.FMT_SUP_E:
+            elif fFmt == TextFmt.SUP_E:
                 xFmt &= M_SUP
-            elif fFmt == self.FMT_SUB_B:
+            elif fFmt == TextFmt.SUB_B:
                 xFmt |= X_SUB
-            elif fFmt == self.FMT_SUB_E:
+            elif fFmt == TextFmt.SUB_E:
                 xFmt &= M_SUB
-            elif fFmt == self.FMT_DL_B:
-                xFmt |= X_DLG
-            elif fFmt == self.FMT_DL_E:
-                xFmt &= M_DLG
-            elif fFmt == self.FMT_ADL_B:
-                xFmt |= X_DLA
-            elif fFmt == self.FMT_ADL_E:
-                xFmt &= M_DLA
-            elif fFmt == self.FMT_FNOTE:
+            elif fFmt == TextFmt.COL_B:
+                xFmt |= X_COL
+                fClass = fData
+            elif fFmt == TextFmt.COL_E:
+                xFmt &= M_COL
+                fClass = ""
+            elif fFmt == TextFmt.FNOTE:
                 xNode = self._generateFootnote(fData)
-            elif fFmt == self.FMT_STRIP:
+            elif fFmt == TextFmt.STRIP:
                 pass
 
             # Move pos for next pass
@@ -474,34 +426,32 @@ class ToDocX(Tokenizer):
             par.addContent(xNode)
 
         if temp := text[fStart:]:
-            par.addContent(self._textRunToXml(temp, xFmt))
+            par.addContent(self._textRunToXml(temp, xFmt, fClass))
 
         return
 
-    def _textRunToXml(self, text: str, fmt: int) -> ET.Element:
+    def _textRunToXml(self, text: str, fmt: int, fClass: str = "") -> ET.Element:
         """Encode the text run into XML."""
         run = ET.Element(_wTag("r"))
         rPr = xmlSubElem(run, _wTag("rPr"))
-        if fmt & X_BLD == X_BLD:
+        if fmt & X_BLD:
             xmlSubElem(rPr, _wTag("b"))
-        if fmt & X_ITA == X_ITA:
+        if fmt & X_ITA:
             xmlSubElem(rPr, _wTag("i"))
-        if fmt & X_UND == X_UND:
+        if fmt & X_UND:
             xmlSubElem(rPr, _wTag("u"), attrib={_wTag("val"): "single"})
-        if fmt & X_MRK == X_MRK:
+        if fmt & X_MRK:
             xmlSubElem(rPr, _wTag("shd"), attrib={
-                _wTag("fill"): COL_MARK_TXT, _wTag("val"): "clear",
+                _wTag("fill"): _docXCol(self._theme.highlight), _wTag("val"): "clear",
             })
-        if fmt & X_DEL == X_DEL:
+        if fmt & X_DEL:
             xmlSubElem(rPr, _wTag("strike"))
-        if fmt & X_SUP == X_SUP:
+        if fmt & X_SUP:
             xmlSubElem(rPr, _wTag("vertAlign"), attrib={_wTag("val"): "superscript"})
-        if fmt & X_SUB == X_SUB:
+        if fmt & X_SUB:
             xmlSubElem(rPr, _wTag("vertAlign"), attrib={_wTag("val"): "subscript"})
-        if fmt & X_DLG == X_DLG:
-            xmlSubElem(rPr, _wTag("color"), attrib={_wTag("val"): COL_DIALOG_M})
-        if fmt & X_DLA == X_DLA:
-            xmlSubElem(rPr, _wTag("color"), attrib={_wTag("val"): COL_DIALOG_A})
+        if fmt & X_COL and (color := self._classes.get(fClass)):
+            xmlSubElem(rPr, _wTag("color"), attrib={_wTag("val"): _docXCol(color)})
 
         for segment in RX_TEXT.split(text):
             if segment == "\n":
@@ -536,7 +486,7 @@ class ToDocX(Tokenizer):
         styles: list[DocXParStyle] = []
 
         hScale = self._scaleHeads
-        hColor = self._colorHeads
+        hColor = _docXCol(self._theme.head) if self._colorHeads else None
         fSz = self._fontSize
         fnSz = 0.8 * self._fontSize
         fSz0 = (nwStyles.H_SIZES[0] * fSz) if hScale else fSz
@@ -544,7 +494,6 @@ class ToDocX(Tokenizer):
         fSz2 = (nwStyles.H_SIZES[2] * fSz) if hScale else fSz
         fSz3 = (nwStyles.H_SIZES[3] * fSz) if hScale else fSz
         fSz4 = (nwStyles.H_SIZES[4] * fSz) if hScale else fSz
-        align = "both" if self._doJustify else "left"
 
         # Add Normal Style
         styles.append(DocXParStyle(
@@ -556,7 +505,7 @@ class ToDocX(Tokenizer):
             after=fSz * self._marginText[1],
             line=fSz * self._lineHeight,
             indentFirst=fSz * self._firstWidth,
-            align=align,
+            align=self._defaultAlign,
         ))
 
         # Add Title
@@ -584,7 +533,7 @@ class ToDocX(Tokenizer):
             after=fSz * self._marginHead1[1],
             line=fSz1 * self._lineHeight,
             level=0,
-            color=COL_HEAD_L12 if hColor else None,
+            color=hColor,
             bold=self._boldHeads,
         ))
 
@@ -599,7 +548,7 @@ class ToDocX(Tokenizer):
             after=fSz * self._marginHead2[1],
             line=fSz2 * self._lineHeight,
             level=1,
-            color=COL_HEAD_L12 if hColor else None,
+            color=hColor,
             bold=self._boldHeads,
         ))
 
@@ -614,7 +563,7 @@ class ToDocX(Tokenizer):
             after=fSz * self._marginHead3[1],
             line=fSz3 * self._lineHeight,
             level=1,
-            color=COL_HEAD_L34 if hColor else None,
+            color=hColor,
             bold=self._boldHeads,
         ))
 
@@ -629,7 +578,7 @@ class ToDocX(Tokenizer):
             after=fSz * self._marginHead4[1],
             line=fSz4 * self._lineHeight,
             level=1,
-            color=COL_HEAD_L34 if hColor else None,
+            color=hColor,
             bold=self._boldHeads,
         ))
 
@@ -656,7 +605,6 @@ class ToDocX(Tokenizer):
             before=fSz * self._marginMeta[0],
             after=fSz * self._marginMeta[1],
             line=fSz * self._lineHeight,
-            color=COL_META_TXT,
         ))
 
         # Header
@@ -1084,12 +1032,6 @@ class DocXParagraph:
     ##
     #  Methods
     ##
-
-    def overrideJustify(self, default: str) -> None:
-        """Override inherited justify setting if None is set."""
-        if self._textAlign is None:
-            self.setAlignment(default)
-        return
 
     def addContent(self, run: ET.Element) -> None:
         """Add a run segment to the paragraph."""

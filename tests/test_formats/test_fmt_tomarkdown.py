@@ -23,6 +23,7 @@ from __future__ import annotations
 import pytest
 
 from novelwriter.core.project import NWProject
+from novelwriter.formats.shared import BlockFmt, BlockTyp
 from novelwriter.formats.tomarkdown import ToMarkdown
 
 
@@ -219,8 +220,8 @@ def testFmtToMarkdown_ConvertDirect(mockGUI):
     # ==============
 
     # Title
-    toMD._tokens = [
-        (toMD.T_TITLE, 1, "A Title", [], toMD.A_PBB | toMD.A_CENTRE),
+    toMD._blocks = [
+        (BlockTyp.TITLE, 1, "A Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
     ]
     toMD.doConvert()
     assert toMD.result == "# A Title\n\n"
@@ -229,15 +230,15 @@ def testFmtToMarkdown_ConvertDirect(mockGUI):
     # ==========
 
     # Separator
-    toMD._tokens = [
-        (toMD.T_SEP, 1, "* * *", [], toMD.A_CENTRE),
+    toMD._blocks = [
+        (BlockTyp.SEP, 1, "* * *", [], BlockFmt.CENTRE),
     ]
     toMD.doConvert()
     assert toMD.result == "* * *\n\n"
 
     # Skip
-    toMD._tokens = [
-        (toMD.T_SKIP, 1, "", [], toMD.A_NONE),
+    toMD._blocks = [
+        (BlockTyp.SKIP, 1, "", [], BlockFmt.NONE),
     ]
     toMD.doConvert()
     assert toMD.result == "\n\n"
@@ -292,15 +293,3 @@ def testFmtToMarkdown_Save(mockGUI, fncPath):
     saveFile = fncPath / "outFile.md"
     toMD.saveDocument(saveFile)
     assert saveFile.read_text(encoding="utf-8") == "".join(resText)
-
-
-@pytest.mark.core
-def testFmtToMarkdown_Format(mockGUI):
-    """Test all the formatters for the ToMarkdown class."""
-    project = NWProject()
-    toMD = ToMarkdown(project, False)
-
-    assert toMD._formatKeywords("", toMD.A_NONE) == ""
-    assert toMD._formatKeywords("tag: Jane", toMD.A_NONE) == "**Tag:** Jane\n\n"
-    assert toMD._formatKeywords("tag: Jane, John", toMD.A_NONE) == "**Tag:** Jane, John\n\n"
-    assert toMD._formatKeywords("tag: Jane", toMD.A_Z_BTMMRG) == "**Tag:** Jane  \n"

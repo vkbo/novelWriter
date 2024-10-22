@@ -26,6 +26,7 @@ import pytest
 
 from novelwriter import CONFIG
 from novelwriter.core.project import NWProject
+from novelwriter.formats.shared import BlockFmt, BlockTyp
 from novelwriter.formats.tohtml import ToHtml
 
 
@@ -34,6 +35,7 @@ def testFmtToHtml_ConvertHeaders(mockGUI):
     """Test header formats in the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
+    html.initDocument()
 
     # Novel Files Headers
     # ===================
@@ -136,6 +138,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     """Test paragraph formats in the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
+    html.initDocument()
 
     html._isNovel = True
     html._isFirst = True
@@ -184,7 +187,10 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='synopsis'><strong>Synopsis:</strong> The synopsis ...</p>\n"
+        "<p class='comment'>"
+        "<strong><span style='color: #813709'>Synopsis:</strong></span> "
+        "<span style='color: #813709'>The synopsis ...</span>"
+        "</p>\n"
     )
 
     html.setSynopsis(True)
@@ -192,7 +198,10 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='synopsis'><strong>Short Description:</strong> A short description ...</p>\n"
+        "<p class='comment'>"
+        "<strong><span style='color: #813709'>Short Description:</strong></span> "
+        "<span style='color: #813709'>A short description ...</span>"
+        "</p>\n"
     )
 
     # Comment
@@ -206,7 +215,10 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='comment'><strong>Comment:</strong> A comment ...</p>\n"
+        "<p class='comment'>"
+        "<strong><span style='color: #646464'>Comment:</strong></span> "
+        "<span style='color: #646464'>A comment ...</span>"
+        "</p>\n"
     )
 
     # Keywords
@@ -220,9 +232,9 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='meta meta-char'><span class='keyword'>Characters:</span> "
-        "<a class='tag' href='#tag_Bod'>Bod</a>, "
-        "<a class='tag' href='#tag_Jane'>Jane</a></p>\n"
+        "<p class='meta'><strong><span style='color: #f5871f'>Characters:</strong></span> "
+        "<span style='color: #4271ae'><a href='#tag_bod'>Bod</a></span>, "
+        "<span style='color: #4271ae'><a href='#tag_jane'>Jane</a></span></p>\n"
     )
 
     # Tags
@@ -230,16 +242,17 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='meta meta-tag'><span class='keyword'>Tag:</span> "
-        "<a class='tag' name='tag_Bod'>Bod</a></p>\n"
+        "<p class='meta'><strong><span style='color: #f5871f'>Tag:</strong></span> "
+        "<span style='color: #4271ae'><a name='tag_bod'>Bod</a></span></p>\n"
     )
 
     html._text = "@tag: Bod | Nobody Owens\n"
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='meta meta-tag'><span class='keyword'>Tag:</span> "
-        "<a class='tag' name='tag_Bod'>Bod</a> | <span class='optional'>Nobody Owens</a></p>\n"
+        "<p class='meta'><strong><span style='color: #f5871f'>Tag:</strong></span> "
+        "<span style='color: #4271ae'><a name='tag_bod'>Bod</a></span> | "
+        "<span style='color: #4271ae'>Nobody Owens</span></p>\n"
     )
 
     # Multiple Keywords
@@ -250,15 +263,15 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.doConvert()
     assert html.result == (
         "<h1 style='page-break-before: always;'>Chapter</h1>\n"
-        "<p class='meta meta-pov' style='margin-bottom: 0;'>"
-        "<span class='keyword'>Point of View:</span> "
-        "<a class='tag' href='#tag_Bod'>Bod</a></p>\n"
-        "<p class='meta meta-plot' style='margin-bottom: 0; margin-top: 0;'>"
-        "<span class='keyword'>Plot:</span> "
-        "<a class='tag' href='#tag_Main'>Main</a></p>\n"
-        "<p class='meta meta-location' style='margin-top: 0;'>"
-        "<span class='keyword'>Locations:</span> "
-        "<a class='tag' href='#tag_Europe'>Europe</a></p>\n"
+        "<p class='meta' style='margin-bottom: 0;'>"
+        "<strong><span style='color: #f5871f'>Point of View:</strong></span> "
+        "<span style='color: #4271ae'><a href='#tag_bod'>Bod</a></span></p>\n"
+        "<p class='meta' style='margin-bottom: 0; margin-top: 0;'>"
+        "<strong><span style='color: #f5871f'>Plot:</strong></span> "
+        "<span style='color: #4271ae'><a href='#tag_main'>Main</a></span></p>\n"
+        "<p class='meta' style='margin-top: 0;'>"
+        "<strong><span style='color: #f5871f'>Locations:</strong></span> "
+        "<span style='color: #4271ae'><a href='#tag_europe'>Europe</a></span></p>\n"
     )
 
     # Dialogue
@@ -268,7 +281,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.doConvert()
     assert html.result == (
         "<h1 style='page-break-before: always;'>Chapter</h1>\n"
-        "<p>This text <span class='dialog'>\u201chas dialogue\u201d</span> in it.</p>\n"
+        "<p>This text <span style='color: #4271ae'>“has dialogue”</span> in it.</p>\n"
     )
 
     # Alt. Dialogue
@@ -280,7 +293,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.doConvert()
     assert html.result == (
         "<h1 style='page-break-before: always;'>Chapter</h1>\n"
-        "<p>This text <span class='altdialog'>::has alt dialogue::</span> in it.</p>\n"
+        "<p>This text <span style='color: #813709'>::has alt dialogue::</span> in it.</p>\n"
     )
 
     # Footnotes
@@ -313,6 +326,7 @@ def testFmtToHtml_CloseTags(mockGUI):
     """Test automatic closing of HTML tags for shortcodes."""
     project = NWProject()
     html = ToHtml(project)
+    html.initDocument()
 
     html._isNovel = True
     html._isFirst = True
@@ -349,6 +363,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     """Test the converter directly using the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
+    html.initDocument()
 
     html._isNovel = True
     html._handle = "0000000000000"
@@ -358,8 +373,8 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     # ==============
 
     # Title
-    html._tokens = [
-        (html.T_TITLE, 1, "A Title", [], html.A_PBB | html.A_CENTRE),
+    html._blocks = [
+        (BlockTyp.TITLE, 1, "A Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
     ]
     html.doConvert()
     assert html.result == (
@@ -368,8 +383,8 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     )
 
     # Unnumbered
-    html._tokens = [
-        (html.T_HEAD2, 1, "Prologue", [], html.A_PBB),
+    html._blocks = [
+        (BlockTyp.HEAD2, 1, "Prologue", [], BlockFmt.PBB),
     ]
     html.doConvert()
     assert html.result == (
@@ -381,15 +396,15 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     # ==========
 
     # Separator
-    html._tokens = [
-        (html.T_SEP, 1, "* * *", [], html.A_CENTRE),
+    html._blocks = [
+        (BlockTyp.SEP, 1, "* * *", [], BlockFmt.CENTRE),
     ]
     html.doConvert()
     assert html.result == "<p class='sep' style='text-align: center;'>* * *</p>\n"
 
     # Skip
-    html._tokens = [
-        (html.T_SKIP, 1, "", [], html.A_NONE),
+    html._blocks = [
+        (BlockTyp.SKIP, 1, "", [], BlockFmt.NONE),
     ]
     html.doConvert()
     assert html.result == "<p class='skip'>&nbsp;</p>\n"
@@ -401,8 +416,8 @@ def testFmtToHtml_ConvertDirect(mockGUI):
 
     # Align Left
     html.setStyles(False)
-    html._tokens = [
-        (html.T_HEAD1, 1, "A Title", [], html.A_LEFT),
+    html._blocks = [
+        (BlockTyp.HEAD1, 1, "A Title", [], BlockFmt.LEFT),
     ]
     html.doConvert()
     assert html.result == (
@@ -412,8 +427,8 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     html.setStyles(True)
 
     # Align Left
-    html._tokens = [
-        (html.T_HEAD1, 1, "A Title", [], html.A_LEFT),
+    html._blocks = [
+        (BlockTyp.HEAD1, 1, "A Title", [], BlockFmt.LEFT),
     ]
     html.doConvert()
     assert html.result == (
@@ -421,8 +436,8 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     )
 
     # Align Right
-    html._tokens = [
-        (html.T_HEAD1, 1, "A Title", [], html.A_RIGHT),
+    html._blocks = [
+        (BlockTyp.HEAD1, 1, "A Title", [], BlockFmt.RIGHT),
     ]
     html.doConvert()
     assert html.result == (
@@ -430,8 +445,8 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     )
 
     # Align Centre
-    html._tokens = [
-        (html.T_HEAD1, 1, "A Title", [], html.A_CENTRE),
+    html._blocks = [
+        (BlockTyp.HEAD1, 1, "A Title", [], BlockFmt.CENTRE),
     ]
     html.doConvert()
     assert html.result == (
@@ -439,8 +454,8 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     )
 
     # Align Justify
-    html._tokens = [
-        (html.T_HEAD1, 1, "A Title", [], html.A_JUSTIFY),
+    html._blocks = [
+        (BlockTyp.HEAD1, 1, "A Title", [], BlockFmt.JUSTIFY),
     ]
     html.doConvert()
     assert html.result == (
@@ -451,8 +466,8 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     # ==========
 
     # Page Break Always
-    html._tokens = [
-        (html.T_HEAD1, 1, "A Title", [], html.A_PBB | html.A_PBA),
+    html._blocks = [
+        (BlockTyp.HEAD1, 1, "A Title", [], BlockFmt.PBB | BlockFmt.PBA),
     ]
     html.doConvert()
     assert html.result == (
@@ -464,8 +479,8 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     # ======
 
     # Indent Left
-    html._tokens = [
-        (html.T_TEXT, 1, "Some text ...", [], html.A_IND_L),
+    html._blocks = [
+        (BlockTyp.TEXT, 1, "Some text ...", [], BlockFmt.IND_L),
     ]
     html.doConvert()
     assert html.result == (
@@ -473,8 +488,8 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     )
 
     # Indent Right
-    html._tokens = [
-        (html.T_TEXT, 1, "Some text ...", [], html.A_IND_R),
+    html._blocks = [
+        (BlockTyp.TEXT, 1, "Some text ...", [], BlockFmt.IND_R),
     ]
     html.doConvert()
     assert html.result == (
@@ -482,8 +497,8 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     )
 
     # Text Indent
-    html._tokens = [
-        (html.T_TEXT, 1, "Some text ...", [], html.A_IND_T),
+    html._blocks = [
+        (BlockTyp.TEXT, 1, "Some text ...", [], BlockFmt.IND_T),
     ]
     html.doConvert()
     assert html.result == (
@@ -496,6 +511,7 @@ def testFmtToHtml_SpecialCases(mockGUI):
     """Test some special cases that have caused errors in the past."""
     project = NWProject()
     html = ToHtml(project)
+    html.initDocument()
     html._isNovel = True
 
     # Greater/Lesser than symbols
@@ -539,7 +555,9 @@ def testFmtToHtml_SpecialCases(mockGUI):
     html.doConvert()
     assert html.result == (
         "<p class='comment'>"
-        "<strong>Comment:</strong> Test &gt; text <em>&lt;<strong>bold</strong>&gt;</em> and more."
+        "<strong><span style='color: #646464'>Comment:</strong></span> "
+        "<span style='color: #646464'>Test &gt; text <em>&lt;<strong>bold</strong>&gt;</em> "
+        "and more.</span>"
         "</p>\n"
     )
 
@@ -568,6 +586,7 @@ def testFmtToHtml_Save(mockGUI, fncPath):
     """Test the save method of the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
+    html.initDocument()
     html._isNovel = True
 
     # Build Project
@@ -664,6 +683,7 @@ def testFmtToHtml_Methods(mockGUI):
     """Test all the other methods of the ToHtml class."""
     project = NWProject()
     html = ToHtml(project)
+    html.initDocument()
 
     # Auto-Replace, keep Unicode
     docText = "Text with <brackets> & short–dash, long—dash …\n"
@@ -697,40 +717,5 @@ def testFmtToHtml_Methods(mockGUI):
     assert "p {text-align: left;" in " ".join(html.getStyleSheet())
     assert "p {text-align: justify;" not in " ".join(html.getStyleSheet())
 
-    html.setJustify(True)
-    assert "p {text-align: left;" not in " ".join(html.getStyleSheet())
-    assert "p {text-align: justify;" in " ".join(html.getStyleSheet())
-
     html.setStyles(False)
     assert html.getStyleSheet() == []
-
-
-@pytest.mark.core
-def testFmtToHtml_Format(mockGUI):
-    """Test all the formatters for the ToHtml class."""
-    project = NWProject()
-    html = ToHtml(project)
-
-    # Export Mode
-    # ===========
-
-    assert html._formatSynopsis("synopsis text", True) == (
-        "<p class='synopsis'><strong>Synopsis:</strong> synopsis text</p>\n"
-    )
-    assert html._formatSynopsis("short text", False) == (
-        "<p class='synopsis'><strong>Short Description:</strong> short text</p>\n"
-    )
-    assert html._formatComments("comment text") == (
-        "<p class='comment'><strong>Comment:</strong> comment text</p>\n"
-    )
-
-    assert html._formatKeywords("") == ("", "")
-    assert html._formatKeywords("tag: Jane") == (
-        "tag", "<span class='keyword'>Tag:</span> <a class='tag' name='tag_Jane'>Jane</a>"
-    )
-    assert html._formatKeywords("char: Bod, Jane") == (
-        "char",
-        "<span class='keyword'>Characters:</span> "
-        "<a class='tag' href='#tag_Bod'>Bod</a>, "
-        "<a class='tag' href='#tag_Jane'>Jane</a>"
-    )
