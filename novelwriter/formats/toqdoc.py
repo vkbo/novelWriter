@@ -69,7 +69,6 @@ class ToQTextDocument(Tokenizer):
         self._document.setUndoRedoEnabled(False)
         self._document.setDocumentMargin(0)
 
-        self._styles: dict[int, T_TextStyle] = {}
         self._usedNotes: dict[str, int] = {}
 
         self._init = False
@@ -149,13 +148,13 @@ class ToQTextDocument(Tokenizer):
         # Text Formats
         # ============
 
+        QtPropLineHeight = QTextBlockFormat.LineHeightTypes.ProportionalHeight
+
         self._blockFmt = QTextBlockFormat()
         self._blockFmt.setTopMargin(self._mText[0])
         self._blockFmt.setBottomMargin(self._mText[1])
         self._blockFmt.setAlignment(QtAlignAbsolute)
-        self._blockFmt.setLineHeight(
-            100*self._lineHeight, QTextBlockFormat.LineHeightTypes.ProportionalHeight
-        )
+        self._blockFmt.setLineHeight(100.0*self._lineHeight, QtPropLineHeight)
 
         self._charFmt = QTextCharFormat()
         self._charFmt.setBackground(QtTransparent)
@@ -176,7 +175,6 @@ class ToQTextDocument(Tokenizer):
 
         for tType, nHead, tText, tFormat, tStyle in self._blocks:
 
-            # Styles
             bFmt = QTextBlockFormat(self._blockFmt)
             if tType in (BlockTyp.COMMENT, BlockTyp.KEYWORD):
                 bFmt.setTopMargin(self._mMeta[0])
@@ -234,7 +232,7 @@ class ToQTextDocument(Tokenizer):
         return
 
     def saveDocument(self, path: Path) -> None:
-        """Save the document to a PDF file."""
+        """Save the document as a PDF file."""
         m = self._pageMargins
 
         printer = QPrinter(QPrinter.PrinterMode.PrinterResolution)
@@ -365,9 +363,6 @@ class ToQTextDocument(Tokenizer):
         bFmt = QTextBlockFormat(rFmt)
         bFmt.setTopMargin(mTop)
         bFmt.setBottomMargin(mBottom)
-
-        self._cTitle = QTextCharFormat(self._charFmt)
-        self._cTitle.setFontWeight(self._bold if self._boldHeads else self._normal)
 
         hCol = self._colorHeads and hType != BlockTyp.TITLE
         cFmt = QTextCharFormat(self._charFmt)

@@ -152,10 +152,8 @@ class ToOdt(Tokenizer):
         self._autoPara: dict[str, ODTParagraphStyle] = {}  # Auto-generated paragraph styles
         self._autoText: dict[str, ODTTextStyle] = {}       # Auto-generated text styles
 
-        # Footnotes
+        # Storage
         self._nNote = 0
-        self._etNotes: dict[str, ET.Element] = {}  # Generated note elements
-
         self._errData = []  # List of errors encountered
 
         # Properties
@@ -405,8 +403,6 @@ class ToOdt(Tokenizer):
 
     def doConvert(self) -> None:
         """Convert the list of text tokens into XML elements."""
-        self._result = ""  # Not used, but cleared just in case
-
         xText = self._xText
         for tType, _, tText, tFormat, tStyle in self._blocks:
 
@@ -678,7 +674,6 @@ class ToOdt(Tokenizer):
         tKey = str(hFmt)
         if fClass and (color := self._classes.get(fClass)):
             tKey = f"{tKey}:{fClass}"
-
         if tKey in self._autoText:
             return self._autoText[tKey].name
 
@@ -1088,16 +1083,6 @@ class ODTParagraphStyle:
     @property
     def name(self) -> str:
         return self._name
-
-    ##
-    #  Checkers
-    ##
-
-    def isUnaligned(self) -> bool:
-        """Check if paragraph has any sort of alignment or margins."""
-        return all(
-            self._pAttr[n][1] is None for n in ["text-align", "margin-left", "margin-right"]
-        )
 
     ##
     #  Setters

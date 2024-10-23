@@ -471,7 +471,7 @@ class ToDocX(Tokenizer):
 
     def _generateFootnote(self, key: str) -> ET.Element | None:
         """Generate a footnote XML object."""
-        if self._footnotes.get(key):
+        if key in self._footnotes:
             idx = len(self._usedNotes) + 1
             run = ET.Element(_wTag("r"))
             rPr = xmlSubElem(run, _wTag("rPr"))
