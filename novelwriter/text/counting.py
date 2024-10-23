@@ -30,6 +30,7 @@ import re
 from novelwriter.constants import nwRegEx, nwUnicode
 
 RX_SC = re.compile(nwRegEx.FMT_SC)
+RX_SV = re.compile(nwRegEx.FMT_SV)
 RX_LO = re.compile(r"(?i)(?<!\\)(\[(?:vspace|newpage|new page)(:\d+)?)(?<!\\)(\])")
 
 
@@ -64,6 +65,7 @@ def preProcessText(text: str, keepHeaders: bool = True) -> list[str]:
                 # Strip shortcodes and special formatting
                 # RegEx is slow, so we do this only when necessary
                 line = RX_SC.sub("", line)
+                line = RX_SV.sub("", line)
                 line = RX_LO.sub("", line)
 
         result.append(line)
