@@ -96,7 +96,6 @@ class Tokenizer(ABC):
         # Data Variables
         self._text    = ""     # The raw text to be tokenized
         self._handle  = None   # The item handle currently being processed
-        self._result  = ""     # The result of the last document
         self._keepRaw = False  # Whether to keep the raw text, used by ToRaw
 
         # Blocks and Meta Data (Per Document)
@@ -104,9 +103,10 @@ class Tokenizer(ABC):
         self._footnotes: dict[str, T_Note] = {}
 
         # Blocks and Meta Data (Per Instance)
+        self._raw: list[str] = []
+        self._pages: list[str] = []
         self._counts: dict[str, int] = {}
         self._outline: dict[str, str] = {}
-        self._markdown: list[str] = []
 
         # User Settings
         self._textFont     = QFont("Serif", 11)  # Output text font
@@ -210,16 +210,6 @@ class Tokenizer(ABC):
     ##
     #  Properties
     ##
-
-    @property
-    def result(self) -> str:
-        """The result of the build process."""
-        return self._result
-
-    @property
-    def allMarkdown(self) -> list[str]:
-        """The combined novelWriter Markdown text."""
-        return self._markdown
 
     @property
     def textStats(self) -> dict[str, int]:
@@ -486,7 +476,7 @@ class Tokenizer(ABC):
                 BlockTyp.TITLE, f"{self._handle}:T0001", title, [], textAlign
             ))
             if self._keepRaw:
-                self._markdown.append(f"#! {title}\n\n")
+                self._raw.append(f"#! {title}\n\n")
 
         return
 
@@ -841,8 +831,7 @@ class Tokenizer(ABC):
 
             # Make sure the blocks array doesn't start with a page break
             # on the very first page, adding a blank first page.
-            if tBlocks[1][4] & BlockFmt.PBB:
-                cBlock = tBlocks[1]
+            if (cBlock := tBlocks[1])[4] & BlockFmt.PBB:
                 tBlocks[1] = (
                     cBlock[0], cBlock[1], cBlock[2], cBlock[3], cBlock[4] & ~BlockFmt.PBB
                 )
@@ -851,7 +840,7 @@ class Tokenizer(ABC):
         tBlocks.append(B_EMPTY)
         if keepRaw:
             tmpMarkdown.append("\n")
-            self._markdown.append("".join(tmpMarkdown))
+            self._raw.append("".join(tmpMarkdown))
 
         # Second Pass
         # ===========
@@ -1047,7 +1036,7 @@ class Tokenizer(ABC):
                     "buildTimeStr": formatTimeStamp(ts),
                 },
                 "text": {
-                    "nwd": [page.rstrip("\n").split("\n") for page in self._markdown],
+                    "nwd": [page.rstrip("\n").split("\n") for page in self._raw],
                 }
             }
             with open(path, mode="w", encoding="utf-8") as fObj:
@@ -1055,7 +1044,7 @@ class Tokenizer(ABC):
 
         else:
             with open(path, mode="w", encoding="utf-8") as outFile:
-                for nwdPage in self._markdown:
+                for nwdPage in self._raw:
                     outFile.write(nwdPage)
 
         logger.info("Wrote file: %s", path)

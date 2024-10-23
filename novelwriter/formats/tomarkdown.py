@@ -84,19 +84,9 @@ class ToMarkdown(Tokenizer):
 
     def __init__(self, project: NWProject, extended: bool) -> None:
         super().__init__(project)
-        self._fullMD: list[str] = []
-        self._usedNotes: dict[str, int] = {}
         self._extended = extended
+        self._usedNotes: dict[str, int] = {}
         return
-
-    ##
-    #  Properties
-    ##
-
-    @property
-    def fullMD(self) -> list[str]:
-        """Return the markdown as a list."""
-        return self._fullMD
 
     ##
     #  Class Methods
@@ -104,12 +94,10 @@ class ToMarkdown(Tokenizer):
 
     def getFullResultSize(self) -> int:
         """Return the size of the full Markdown result."""
-        return sum(len(x) for x in self._fullMD)
+        return sum(len(x) for x in self._pages)
 
     def doConvert(self) -> None:
         """Convert the list of text tokens into a Markdown document."""
-        self._result = ""
-
         if self._extended:
             mTags = EXT_MD
             cSkip = nwUnicode.U_MMSP
@@ -157,8 +145,7 @@ class ToMarkdown(Tokenizer):
                 end = "  \n" if tStyle & BlockFmt.Z_BTM else "\n\n"
                 lines.append(f"{self._formatText(tText, tFormat, mTags)}{end}")
 
-        self._result = "".join(lines)
-        self._fullMD.append(self._result)
+        self._pages.append("".join(lines))
 
         return
 
@@ -176,24 +163,21 @@ class ToMarkdown(Tokenizer):
                     text = self._formatText(content[0], content[1], tags)
                     lines.append(f"{marker}{text}\n")
             lines.append("\n")
-
-            result = "".join(lines)
-            self._result += result
-            self._fullMD.append(result)
+            self._pages.append("".join(lines))
 
         return
 
     def saveDocument(self, path: Path) -> None:
         """Save the data to a plain text file."""
         with open(path, mode="w", encoding="utf-8") as outFile:
-            outFile.write("".join(self._fullMD))
+            outFile.write("".join(self._pages))
         logger.info("Wrote file: %s", path)
         return
 
     def replaceTabs(self, nSpaces: int = 8, spaceChar: str = " ") -> None:
         """Replace tabs with spaces."""
         spaces = spaceChar*nSpaces
-        self._fullMD = [p.replace("\t", spaces) for p in self._fullMD]
+        self._pages = [p.replace("\t", spaces) for p in self._pages]
         return
 
     ##

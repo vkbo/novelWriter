@@ -157,8 +157,6 @@ def testFmtToken_Setters(mockGUI):
     assert tokens._doKeywords is True
 
     # Properties
-    assert tokens.result == ""
-    assert tokens.allMarkdown == []
     assert tokens.textStats == {}
     assert tokens.errData == []
 
@@ -211,14 +209,14 @@ def testFmtToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
 
     # First Page
     tokens.addRootHeading(C.hPlotRoot)
-    assert tokens.allMarkdown[-1] == "#! Notes: Plot\n\n"
+    assert tokens._raw[-1] == "#! Notes: Plot\n\n"
     assert tokens._blocks[-1] == (
         BlockTyp.TITLE, "0000000000009:T0001", "Notes: Plot", [], BlockFmt.CENTRE
     )
 
     # Not First Page
     tokens.addRootHeading(C.hPlotRoot)
-    assert tokens.allMarkdown[-1] == "#! Notes: Plot\n\n"
+    assert tokens._raw[-1] == "#! Notes: Plot\n\n"
     assert tokens._blocks[-1] == (
         BlockTyp.TITLE, "0000000000009:T0001", "Notes: Plot", [], BlockFmt.CENTRE | BlockFmt.PBB
     )
@@ -283,7 +281,7 @@ def testFmtToken_HeaderFormat(mockGUI):
     assert tokens._blocks == [
         (BlockTyp.TITLE, TM1, "Novel Title", [], BlockFmt.CENTRE),
     ]
-    assert tokens.allMarkdown[-1] == "#! Novel Title\n\n"
+    assert tokens._raw[-1] == "#! Novel Title\n\n"
 
     # Note File
     tokens._isNovel = False
@@ -294,7 +292,7 @@ def testFmtToken_HeaderFormat(mockGUI):
     assert tokens._blocks == [
         (BlockTyp.TITLE, TM1, "Note Title", [], BlockFmt.CENTRE),
     ]
-    assert tokens.allMarkdown[-1] == "#! Note Title\n\n"
+    assert tokens._raw[-1] == "#! Note Title\n\n"
 
     # Header 1
     # ========
@@ -308,7 +306,7 @@ def testFmtToken_HeaderFormat(mockGUI):
     assert tokens._blocks == [
         (BlockTyp.HEAD1, TM1, "Novel Title", [], BlockFmt.CENTRE),
     ]
-    assert tokens.allMarkdown[-1] == "# Novel Title\n\n"
+    assert tokens._raw[-1] == "# Novel Title\n\n"
 
     # Note File
     tokens._isNovel = False
@@ -319,7 +317,7 @@ def testFmtToken_HeaderFormat(mockGUI):
     assert tokens._blocks == [
         (BlockTyp.HEAD1, TM1, "Note Title", [], BlockFmt.NONE),
     ]
-    assert tokens.allMarkdown[-1] == "# Note Title\n\n"
+    assert tokens._raw[-1] == "# Note Title\n\n"
 
     # Header 2
     # ========
@@ -332,7 +330,7 @@ def testFmtToken_HeaderFormat(mockGUI):
     assert tokens._blocks == [
         (BlockTyp.HEAD2, TM1, "Chapter One", [], BlockFmt.PBB),
     ]
-    assert tokens.allMarkdown[-1] == "## Chapter One\n\n"
+    assert tokens._raw[-1] == "## Chapter One\n\n"
 
     # Note File
     tokens._isNovel = False
@@ -342,7 +340,7 @@ def testFmtToken_HeaderFormat(mockGUI):
     assert tokens._blocks == [
         (BlockTyp.HEAD2, TM1, "Heading 2", [], BlockFmt.NONE),
     ]
-    assert tokens.allMarkdown[-1] == "## Heading 2\n\n"
+    assert tokens._raw[-1] == "## Heading 2\n\n"
 
     # Header 3
     # ========
@@ -355,7 +353,7 @@ def testFmtToken_HeaderFormat(mockGUI):
     assert tokens._blocks == [
         (BlockTyp.HEAD3, TM1, "Scene One", [], BlockFmt.NONE),
     ]
-    assert tokens.allMarkdown[-1] == "### Scene One\n\n"
+    assert tokens._raw[-1] == "### Scene One\n\n"
 
     # Note File
     tokens._isNovel = False
@@ -365,7 +363,7 @@ def testFmtToken_HeaderFormat(mockGUI):
     assert tokens._blocks == [
         (BlockTyp.HEAD3, TM1, "Heading 3", [], BlockFmt.NONE),
     ]
-    assert tokens.allMarkdown[-1] == "### Heading 3\n\n"
+    assert tokens._raw[-1] == "### Heading 3\n\n"
 
     # Header 4
     # ========
@@ -378,7 +376,7 @@ def testFmtToken_HeaderFormat(mockGUI):
     assert tokens._blocks == [
         (BlockTyp.HEAD4, TM1, "A Section", [], BlockFmt.NONE),
     ]
-    assert tokens.allMarkdown[-1] == "#### A Section\n\n"
+    assert tokens._raw[-1] == "#### A Section\n\n"
 
     # Note File
     tokens._isNovel = False
@@ -388,7 +386,7 @@ def testFmtToken_HeaderFormat(mockGUI):
     assert tokens._blocks == [
         (BlockTyp.HEAD4, TM1, "Heading 4", [], BlockFmt.NONE),
     ]
-    assert tokens.allMarkdown[-1] == "#### Heading 4\n\n"
+    assert tokens._raw[-1] == "#### Heading 4\n\n"
 
     # Title
     # =====
@@ -402,7 +400,7 @@ def testFmtToken_HeaderFormat(mockGUI):
     assert tokens._blocks == [
         (BlockTyp.TITLE, TM1, "Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
     ]
-    assert tokens.allMarkdown[-1] == "#! Title\n\n"
+    assert tokens._raw[-1] == "#! Title\n\n"
 
     # Note File
     tokens._isNovel = False
@@ -413,7 +411,7 @@ def testFmtToken_HeaderFormat(mockGUI):
     assert tokens._blocks == [
         (BlockTyp.TITLE, TM1, "Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
     ]
-    assert tokens.allMarkdown[-1] == "#! Title\n\n"
+    assert tokens._raw[-1] == "#! Title\n\n"
 
     # Unnumbered
     # ==========
@@ -426,7 +424,7 @@ def testFmtToken_HeaderFormat(mockGUI):
     assert tokens._blocks == [
         (BlockTyp.HEAD2, TM1, "Prologue", [], BlockFmt.PBB),
     ]
-    assert tokens.allMarkdown[-1] == "##! Prologue\n\n"
+    assert tokens._raw[-1] == "##! Prologue\n\n"
 
     # Note File
     tokens._isNovel = False
@@ -436,7 +434,7 @@ def testFmtToken_HeaderFormat(mockGUI):
     assert tokens._blocks == [
         (BlockTyp.HEAD2, TM1, "Prologue", [], BlockFmt.NONE),
     ]
-    assert tokens.allMarkdown[-1] == "##! Prologue\n\n"
+    assert tokens._raw[-1] == "##! Prologue\n\n"
 
 
 @pytest.mark.core
@@ -711,14 +709,14 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens._text = "%~ Some text\n"
     tokens.tokenizeText()
     assert tokens._blocks == []
-    assert tokens.allMarkdown[-1] == "\n"
+    assert tokens._raw[-1] == "\n"
 
     # Comment
     tokens.setComments(False)
     tokens._text = "% A comment\n"
     tokens.tokenizeText()
     assert tokens._blocks == []
-    assert tokens.allMarkdown[-1] == "\n"
+    assert tokens._raw[-1] == "\n"
 
     tokens.setComments(True)
     tokens._text = "% A comment\n"
@@ -730,14 +728,14 @@ def testFmtToken_MetaFormat(mockGUI):
             (9, TextFmt.COL_B, "comment"), (18, TextFmt.COL_E, ""),
         ], BlockFmt.NONE
     )]
-    assert tokens.allMarkdown[-1] == "% A comment\n\n"
+    assert tokens._raw[-1] == "% A comment\n\n"
 
     # Synopsis
     tokens.setSynopsis(False)
     tokens._text = "%synopsis: The synopsis\n"
     tokens.tokenizeText()
     assert tokens._blocks == []
-    assert tokens.allMarkdown[-1] == "\n"
+    assert tokens._raw[-1] == "\n"
 
     tokens.setSynopsis(True)
     tokens._text = "% synopsis: The synopsis\n"
@@ -749,14 +747,14 @@ def testFmtToken_MetaFormat(mockGUI):
             (10, TextFmt.COL_B, "synopsis"), (22, TextFmt.COL_E, "")
         ], BlockFmt.NONE
     )]
-    assert tokens.allMarkdown[-1] == "% synopsis: The synopsis\n\n"
+    assert tokens._raw[-1] == "% synopsis: The synopsis\n\n"
 
     # Short
     tokens.setSynopsis(False)
     tokens._text = "% short: A short description\n"
     tokens.tokenizeText()
     assert tokens._blocks == []
-    assert tokens.allMarkdown[-1] == "\n"
+    assert tokens._raw[-1] == "\n"
 
     tokens.setSynopsis(True)
     tokens._text = "% short: A short description\n"
@@ -768,14 +766,14 @@ def testFmtToken_MetaFormat(mockGUI):
             (19, TextFmt.COL_B, "synopsis"), (38, TextFmt.COL_E, ""),
         ], BlockFmt.NONE
     )]
-    assert tokens.allMarkdown[-1] == "% short: A short description\n\n"
+    assert tokens._raw[-1] == "% short: A short description\n\n"
 
     # Keyword
     tokens.setKeywords(False)
     tokens._text = "@char: Bod\n"
     tokens.tokenizeText()
     assert tokens._blocks == []
-    assert tokens.allMarkdown[-1] == "\n"
+    assert tokens._raw[-1] == "\n"
 
     tokens.setKeywords(True)
     tokens.tokenizeText()
@@ -787,7 +785,7 @@ def testFmtToken_MetaFormat(mockGUI):
             (15, TextFmt.HRF_E, ""), (15, TextFmt.COL_E, ""),
         ], BlockFmt.NONE
     )]
-    assert tokens.allMarkdown[-1] == "@char: Bod\n\n"
+    assert tokens._raw[-1] == "@char: Bod\n\n"
 
     tokens._text = "@pov: Bod\n@plot: Main\n@location: Europe\n"
     tokens.tokenizeText()
@@ -813,7 +811,7 @@ def testFmtToken_MetaFormat(mockGUI):
             (17, TextFmt.HRF_E, ""), (17, TextFmt.COL_E, ""),
         ], BlockFmt.Z_TOP
     )]
-    assert tokens.allMarkdown[-1] == "@pov: Bod\n@plot: Main\n@location: Europe\n\n"
+    assert tokens._raw[-1] == "@pov: Bod\n@plot: Main\n@location: Europe\n\n"
 
     # Ignored keywords
     tokens._text = "@pov: Bod\n@plot: Main\n@location: Europe\n"
@@ -859,7 +857,7 @@ def testFmtToken_MarginFormat(mockGUI):
         (BlockTyp.TEXT, "", "Double-indented block", [], dblIndent),
         (BlockTyp.TEXT, "", "Right-indent, right-aligned", [], rIndAlign),
     ]
-    assert tokens.allMarkdown[-1] == (
+    assert tokens._raw[-1] == (
         "Some regular text\n\n"
         "Some left-aligned text\n\n"
         "Some right-aligned text\n\n"
@@ -1063,12 +1061,12 @@ def testFmtToken_TextFormat(mockGUI):
     assert tokens._blocks == [
         (BlockTyp.TEXT, "", "Some plain text\non two lines", [], BlockFmt.NONE),
     ]
-    assert tokens.allMarkdown[-1] == "Some plain text\non two lines\n\n\n\n"
+    assert tokens._raw[-1] == "Some plain text\non two lines\n\n\n\n"
 
     tokens.setBodyText(False)
     tokens.tokenizeText()
     assert tokens._blocks == []
-    assert tokens.allMarkdown[-1] == "\n\n\n"
+    assert tokens._raw[-1] == "\n\n\n"
     tokens.setBodyText(True)
 
     # Text Emphasis
@@ -1082,7 +1080,7 @@ def testFmtToken_TextFormat(mockGUI):
         ],
         BlockFmt.NONE
     )]
-    assert tokens.allMarkdown[-1] == "Some **bolded text** on this lines\n\n"
+    assert tokens._raw[-1] == "Some **bolded text** on this lines\n\n"
 
     tokens._text = "Some _italic text_ on this lines\n"
     tokens.tokenizeText()
@@ -1094,7 +1092,7 @@ def testFmtToken_TextFormat(mockGUI):
         ],
         BlockFmt.NONE
     )]
-    assert tokens.allMarkdown[-1] == "Some _italic text_ on this lines\n\n"
+    assert tokens._raw[-1] == "Some _italic text_ on this lines\n\n"
 
     tokens._text = "Some **_bold italic text_** on this lines\n"
     tokens.tokenizeText()
@@ -1108,7 +1106,7 @@ def testFmtToken_TextFormat(mockGUI):
         ],
         BlockFmt.NONE
     )]
-    assert tokens.allMarkdown[-1] == "Some **_bold italic text_** on this lines\n\n"
+    assert tokens._raw[-1] == "Some **_bold italic text_** on this lines\n\n"
 
     tokens._text = "Some ~~strikethrough text~~ on this lines\n"
     tokens.tokenizeText()
@@ -1120,7 +1118,7 @@ def testFmtToken_TextFormat(mockGUI):
         ],
         BlockFmt.NONE
     )]
-    assert tokens.allMarkdown[-1] == "Some ~~strikethrough text~~ on this lines\n\n"
+    assert tokens._raw[-1] == "Some ~~strikethrough text~~ on this lines\n\n"
 
     tokens._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
     tokens.tokenizeText()
@@ -1136,7 +1134,7 @@ def testFmtToken_TextFormat(mockGUI):
         ],
         BlockFmt.NONE
     )]
-    assert tokens.allMarkdown[-1] == (
+    assert tokens._raw[-1] == (
         "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n\n"
     )
 
@@ -2032,7 +2030,7 @@ def testFmtToken_SceneSeparators(mockGUI):
     md.setHardSceneFormat("* * *", False)
     md.tokenizeText()
     md.doConvert()
-    assert md.result == (
+    assert md._pages[-1] == (
         "# T: Title One\n\n"
         "Text\n\n"
         "~\n\n"
@@ -2048,7 +2046,7 @@ def testFmtToken_SceneSeparators(mockGUI):
     md.setHardSceneFormat(f"H: {nwHeadFmt.TITLE}", False)
     md.tokenizeText()
     md.doConvert()
-    assert md.result == (
+    assert md._pages[-1] == (
         "# T: Title One\n\n"
         "### S: Scene One\n\n"
         "Text\n\n"
@@ -2086,7 +2084,7 @@ def testFmtToken_SceneSeparators(mockGUI):
     md.setHardSceneFormat("* * *", False)
     md.tokenizeText()
     md.doConvert()
-    assert md.result == (
+    assert md._pages[-1] == (
         "# T: Title One\n\n"
         "## C: Chapter One\n\n"
         "Text\n\n"
@@ -2103,7 +2101,7 @@ def testFmtToken_SceneSeparators(mockGUI):
     md.setHardSceneFormat(f"H: {nwHeadFmt.TITLE}", False)
     md.tokenizeText()
     md.doConvert()
-    assert md.result == (
+    assert md._pages[-1] == (
         "# T: Title One\n\n"
         "## C: Chapter One\n\n"
         "### S: Scene One\n\n"
@@ -2138,7 +2136,7 @@ def testFmtToken_SceneSeparators(mockGUI):
     md.setHardSceneFormat("* * *", False)
     md.tokenizeText()
     md.doConvert()
-    assert md.result == (
+    assert md._pages[-1] == (
         "Text\n\n"
         "\u205f\n\n"
         "Text\n\n"
@@ -2190,7 +2188,7 @@ def testFmtToken_HeaderVisibility(mockGUI):
 
     md.tokenizeText()
     md.doConvert()
-    assert md.result == (
+    assert md._pages[-1] == (
         "# Novel\n\n"
         "# Title One\n\n"
         "## Prologue\n\n"
@@ -2218,7 +2216,7 @@ def testFmtToken_HeaderVisibility(mockGUI):
 
     md.tokenizeText()
     md.doConvert()
-    assert md.result == (
+    assert md._pages[-1] == (
         "# Novel\n\n"
         "Text\n\n"
         "Text\n\n"
@@ -2242,7 +2240,7 @@ def testFmtToken_HeaderVisibility(mockGUI):
 
     md.tokenizeText()
     md.doConvert()
-    assert md.result == (
+    assert md._pages[-1] == (
         "# Novel\n\n"
         "# Title One\n\n"
         "## Prologue\n\n"
@@ -2316,7 +2314,7 @@ def testFmtToken_CounterHandling(mockGUI):
     # Two Novel Format
     md.tokenizeText()
     md.doConvert()
-    assert md.result == (
+    assert md._pages[-1] == (
         "# Novel One\n\n"
         "## U: Prologue\n\n"
         "Text\n\n"

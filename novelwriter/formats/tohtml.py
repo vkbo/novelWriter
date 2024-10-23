@@ -79,24 +79,11 @@ class ToHtml(Tokenizer):
 
     def __init__(self, project: NWProject) -> None:
         super().__init__(project)
-
-        self._cssStyles = True
-        self._fullHTML: list[str] = []
-
-        # Internals
         self._trMap = {}
+        self._cssStyles = True
         self._usedNotes: dict[str, int] = {}
         self.setReplaceUnicode(False)
-
         return
-
-    ##
-    #  Properties
-    ##
-
-    @property
-    def fullHTML(self) -> list[str]:
-        return self._fullHTML
 
     ##
     #  Setters
@@ -128,7 +115,7 @@ class ToHtml(Tokenizer):
 
     def getFullResultSize(self) -> int:
         """Return the size of the full HTML result."""
-        return sum(len(x) for x in self._fullHTML)
+        return sum(len(x) for x in self._pages)
 
     def doPreProcessing(self) -> None:
         """Extend the auto-replace to also properly encode some unicode
@@ -140,8 +127,6 @@ class ToHtml(Tokenizer):
 
     def doConvert(self) -> None:
         """Convert the list of text tokens into an HTML document."""
-        self._result = ""
-
         if self._isNovel:
             # For story files, we bump the titles one level up
             h1Cl = " class='title'"
@@ -258,8 +243,7 @@ class ToHtml(Tokenizer):
                 tClass = f"meta meta-{tMeta}"
                 lines.append(f"<p class='{tClass}'{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
 
-        self._result = "".join(lines)
-        self._fullHTML.append(self._result)
+        self._pages.append("".join(lines))
 
         return
 
@@ -277,9 +261,7 @@ class ToHtml(Tokenizer):
                     lines.append(f"<li id='footnote_{index}'><p>{text}</p></li>\n")
             lines.append("</ol>\n")
 
-            result = "".join(lines)
-            self._result += result
-            self._fullHTML.append(result)
+            self._pages.append("".join(lines))
 
         return
 
@@ -296,7 +278,7 @@ class ToHtml(Tokenizer):
                 },
                 "text": {
                     "css": self.getStyleSheet(),
-                    "html": [t.replace("\t", "&#09;").rstrip().split("\n") for t in self.fullHTML],
+                    "html": [t.replace("\t", "&#09;").rstrip().split("\n") for t in self._pages],
                 }
             }
             with open(path, mode="w", encoding="utf-8") as fObj:
@@ -323,7 +305,7 @@ class ToHtml(Tokenizer):
                 ).format(
                     title=self._project.data.name,
                     style="\n".join(self.getStyleSheet()),
-                    body=("".join(self._fullHTML)).replace("\t", "&#09;").rstrip(),
+                    body=("".join(self._pages)).replace("\t", "&#09;").rstrip(),
                 ))
 
         logger.info("Wrote file: %s", path)
@@ -332,12 +314,11 @@ class ToHtml(Tokenizer):
 
     def replaceTabs(self, nSpaces: int = 8, spaceChar: str = "&nbsp;") -> None:
         """Replace tabs with spaces in the html."""
-        htmlText = []
+        pages = []
         tabSpace = spaceChar*nSpaces
-        for aLine in self._fullHTML:
-            htmlText.append(aLine.replace("\t", tabSpace))
-
-        self._fullHTML = htmlText
+        for aLine in self._pages:
+            pages.append(aLine.replace("\t", tabSpace))
+        self._pages = pages
         return
 
     def getStyleSheet(self) -> list[str]:

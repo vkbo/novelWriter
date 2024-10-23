@@ -214,8 +214,6 @@ class ToDocX(Tokenizer):
 
     def doConvert(self) -> None:
         """Convert the list of text tokens into XML elements."""
-        self._result = ""  # Not used, but cleared just in case
-
         bIndent = self._fontSize * self._blockIndent
 
         for tType, _, tText, tFormat, tStyle in self._blocks:
