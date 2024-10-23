@@ -20,8 +20,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import json
-
 import pytest
 
 from PyQt5.QtGui import QFont
@@ -35,7 +33,7 @@ from novelwriter.formats.tokenizer import COMMENT_STYLE, HeadingFormatter, Token
 from novelwriter.formats.tomarkdown import ToMarkdown
 from novelwriter.formats.toraw import ToRaw
 
-from tests.tools import C, buildTestProject, readFile
+from tests.tools import C, buildTestProject
 
 TMH = "0123456789abc"
 TM1 = f"{TMH}:T0001"
@@ -236,21 +234,6 @@ def testFmtToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
     # Pre Processing
     tokens.doPreProcessing()
     assert tokens._text == docTextR
-
-    # Save File
-    savePath = fncPath / "dump.nwd"
-    tokens.saveRawDocument(savePath, asJson=False)
-    assert readFile(savePath) == (
-        "#! Notes: Plot\n\n"
-        "#! Notes: Plot\n\n"
-    )
-    tokens.saveRawDocument(savePath, asJson=True)
-    assert json.loads(readFile(savePath))["text"] == {
-        "nwd": [
-            ["#! Notes: Plot"],
-            ["#! Notes: Plot"]
-        ]
-    }
 
 
 @pytest.mark.core

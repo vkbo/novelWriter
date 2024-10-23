@@ -24,21 +24,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
-import json
 import logging
 import re
 
 from abc import ABC, abstractmethod
-from functools import partial
 from pathlib import Path
-from time import time
 from typing import NamedTuple
 
-from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QColor, QFont
 
 from novelwriter import CONFIG
-from novelwriter.common import checkInt, formatTimeStamp, numberToRoman
+from novelwriter.common import checkInt, numberToRoman
 from novelwriter.constants import (
     nwHeadFmt, nwKeyWords, nwLabels, nwShortcode, nwStyles, nwUnicode, trConst
 )
@@ -179,7 +175,6 @@ class Tokenizer(ABC):
 
         # Function Mapping
         self._localLookup = self._project.localLookup
-        self.tr = partial(QCoreApplication.translate, "Tokenizer")
 
         # Format RegEx
         self._rxMarkdown = [
@@ -1021,33 +1016,6 @@ class Tokenizer(ABC):
         self._counts["allWordChars"] = allWordChars
         self._counts["textWordChars"] = textWordChars
         self._counts["titleWordChars"] = titleWordChars
-
-        return
-
-    def saveRawDocument(self, path: str | Path, asJson: bool = False) -> None:
-        """Save the raw text to a plain text file."""
-        if asJson:
-            ts = time()
-            data = {
-                "meta": {
-                    "projectName": self._project.data.name,
-                    "novelAuthor": self._project.data.author,
-                    "buildTime": int(ts),
-                    "buildTimeStr": formatTimeStamp(ts),
-                },
-                "text": {
-                    "nwd": [page.rstrip("\n").split("\n") for page in self._raw],
-                }
-            }
-            with open(path, mode="w", encoding="utf-8") as fObj:
-                json.dump(data, fObj, indent=2)
-
-        else:
-            with open(path, mode="w", encoding="utf-8") as outFile:
-                for nwdPage in self._raw:
-                    outFile.write(nwdPage)
-
-        logger.info("Wrote file: %s", path)
 
         return
 
