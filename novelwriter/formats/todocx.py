@@ -140,7 +140,7 @@ class DocXParStyle(NamedTuple):
     after: float | None = None
     line: float | None = None
     indentFirst: float | None = None
-    indentHangning: float | None = None
+    hanging: float | None = None
     align: str | None = None
     default: bool = False
     level: int | None = None
@@ -623,7 +623,7 @@ class ToDocX(Tokenizer):
             before=0.0,
             after=fnSz * self._marginFoot[1],
             line=fnSz * self._lineHeight,
-            indentHangning=fnSz * self._marginFoot[0],
+            hanging=fnSz * self._marginFoot[0],
         ))
 
         # Add to Cache
@@ -744,10 +744,10 @@ class ToDocX(Tokenizer):
                 _wTag("after"): str(int(20.0 * firstFloat(style.after))),
                 _wTag("line"): str(int(20.0 * firstFloat(style.line, size))),
             })
-            if style.indentHangning is not None:
+            if style.hanging is not None:
                 xmlSubElem(pPr, _wTag("ind"), attrib={
-                    _wTag("left"): str(int(20.0 * style.indentHangning)),
-                    _wTag("hanging"): str(int(20.0 * style.indentHangning)),
+                    _wTag("left"): str(int(20.0 * style.hanging)),
+                    _wTag("hanging"): str(int(20.0 * style.hanging)),
                 })
             if style.align:
                 xmlSubElem(pPr, _wTag("jc"), attrib={_wTag("val"): style.align})
