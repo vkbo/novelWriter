@@ -412,7 +412,7 @@ def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
     assert error == []
     assert docFile.read_text(encoding="utf-8") == (
         "#! New Novel\n\n"
-        "By Jane Doe\n\n"
+        ">> By Jane Doe <<\n\n"
         "## New Chapter\n\n\n"
         "### New Scene\n\n\n"
     )
@@ -442,7 +442,7 @@ def testCoreDocBuild_Custom(mockGUI, fncPath: Path):
     assert error == []
     assert docFile.read_text(encoding="utf-8") == (
         "#! New Novel\n\n"
-        "By Jane Doe\n\n"
+        ">> By Jane Doe <<\n\n"
         "## New Chapter\n\n\n"
         "### New Scene\n\n\n"
     )
@@ -566,7 +566,7 @@ def testCoreDocBuild_IterBuild(mockGUI, fncPath: Path, mockRnd):
     assert isinstance(docBuild.lastBuild, ToRaw)
     assert docFile.read_text(encoding="utf-8") == (
         "#! New Novel\n\n"
-        "By Jane Doe\n\n"
+        ">> By Jane Doe <<\n\n"
         "## New Chapter\n\n\n"
         "### New Scene\n\n\n"
         "#! Notes: Plot\n\n"

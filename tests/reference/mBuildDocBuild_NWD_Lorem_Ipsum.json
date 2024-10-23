@@ -2,19 +2,19 @@
   "meta": {
     "projectName": "Lorem Ipsum",
     "novelAuthor": "lipsum.com",
-    "buildTime": 1729029144,
-    "buildTimeStr": "2024-10-15 23:52:24"
+    "buildTime": 1729725334,
+    "buildTimeStr": "2024-10-24 01:15:34"
   },
   "text": {
     "nwd": [
       [
         "#! Lorem Ipsum",
         "",
-        "**By lipsum.com**",
+        ">> **By lipsum.com** <<",
         "",
-        "\u201cNeque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit\u2026\u201d",
+        ">> \u201cNeque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit\u2026\u201d <<",
         "",
-        "\u201cThere is no one who loves pain itself, who seeks after it and wants to have it, simply because it is pain\u2026\u201d"
+        ">> \u201cThere is no one who loves pain itself, who seeks after it and wants to have it, simply because it is pain\u2026\u201d <<"
       ],
       [
         "",
@@ -36,7 +36,7 @@
       [
         "# Act One",
         "",
-        "\u201cFusce maximus felis libero\u201d"
+        ">> \u201cFusce maximus felis libero\u201d <<"
       ],
       [
         "## Chapter One",

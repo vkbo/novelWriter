@@ -519,18 +519,22 @@ class Tokenizer(ABC):
         isNovel = self._isNovel
         keepRaw = self._keepRaw
         doJustify = self._doJustify
+        keepBreaks = self._keepBreaks
         indentFirst = self._indentFirst
         firstIndent = self._firstIndent
 
         if self._isNovel:
             self._hFormatter.setHandle(self._handle)
 
+        text = REGEX_PATTERNS.lineBreak.sub("\uffff", self._text)
+
         nHead = 0
         breakNext = False
         tmpMarkdown = []
         tHandle = self._handle or ""
         tBlocks: list[T_Block] = [B_EMPTY]
-        for aLine in self._text.splitlines():
+        for bLine in text.splitlines():
+            aLine = bLine.replace("\uffff", "\n")
             sLine = aLine.strip().lower()
 
             # Check for blank lines
@@ -782,19 +786,19 @@ class Tokenizer(ABC):
                 alnRight = False
                 indLeft = False
                 indRight = False
-                if aLine.startswith(">>"):
+                if bLine.startswith(">>"):
                     alnRight = True
-                    aLine = aLine[2:].lstrip(" ")
-                elif aLine.startswith(">"):
+                    bLine = bLine[2:].lstrip(" ")
+                elif bLine.startswith(">"):
                     indLeft = True
-                    aLine = aLine[1:].lstrip(" ")
+                    bLine = bLine[1:].lstrip(" ")
 
-                if aLine.endswith("<<"):
+                if bLine.endswith("<<"):
                     alnLeft = True
-                    aLine = aLine[:-2].rstrip(" ")
-                elif aLine.endswith("<"):
+                    bLine = bLine[:-2].rstrip(" ")
+                elif bLine.endswith("<"):
                     indRight = True
-                    aLine = aLine[:-1].rstrip(" ")
+                    bLine = bLine[:-1].rstrip(" ")
 
                 if alnLeft and alnRight:
                     sAlign |= BlockFmt.CENTRE
@@ -809,7 +813,7 @@ class Tokenizer(ABC):
                     sAlign |= BlockFmt.IND_R
 
                 # Process formats
-                tLine, tFmt = self._extractFormats(aLine, hDialog=isNovel)
+                tLine, tFmt = self._extractFormats(bLine, hDialog=isNovel)
                 tBlocks.append((
                     BlockTyp.TEXT, "", tLine, tFmt, sAlign
                 ))
@@ -840,7 +844,7 @@ class Tokenizer(ABC):
         # It also ensures that there isn't paragraph spacing between
         # meta data lines for formats that have spacing.
 
-        lineSep = "\n" if self._keepBreaks else " "
+        lineSep = "\n" if keepBreaks else " "
 
         pLines: list[T_Block] = []
         sBlocks: list[T_Block] = []
@@ -890,9 +894,12 @@ class Tokenizer(ABC):
                         # enabled, and there is no alignment, we apply it.
                         if doJustify and not cStyle & BlockFmt.ALIGNED:
                             cStyle |= BlockFmt.JUSTIFY
+
+                        pTxt = pLines[0][2].replace("\uffff", "\n")
                         sBlocks.append((
-                            BlockTyp.TEXT, pLines[0][1], pLines[0][2], pLines[0][3], cStyle
+                            BlockTyp.TEXT, pLines[0][1], pTxt, pLines[0][3], cStyle
                         ))
+
                     elif nLines > 1:
                         # The paragraph contains multiple lines, so we need to
                         # join them according to the line break policy, and
@@ -903,8 +910,11 @@ class Tokenizer(ABC):
                             tLen = len(tTxt)
                             tTxt += f"{aBlock[2]}{lineSep}"
                             tFmt.extend((p+tLen, fmt, key) for p, fmt, key in aBlock[3])
+                            cStyle |= aBlock[4]
+
+                        pTxt = tTxt[:-1].replace("\uffff", "\n")
                         sBlocks.append((
-                            BlockTyp.TEXT, pLines[0][1], tTxt[:-1], tFmt, cStyle
+                            BlockTyp.TEXT, pLines[0][1], pTxt, tFmt, cStyle
                         ))
 
                     # Reset buffer and make sure text indent is on for next pass

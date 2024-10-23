@@ -842,13 +842,13 @@ def testFmtToken_MarginFormat(mockGUI):
     ]
     assert tokens._raw[-1] == (
         "Some regular text\n\n"
-        "Some left-aligned text\n\n"
-        "Some right-aligned text\n\n"
-        "Some centered text\n\n"
-        "Left-indented block\n\n"
-        "Right-indented block\n\n"
-        "Double-indented block\n\n"
-        "Right-indent, right-aligned\n\n\n"
+        "Some left-aligned text <<\n\n"
+        ">> Some right-aligned text\n\n"
+        ">> Some centered text <<\n\n"
+        "> Left-indented block\n\n"
+        "Right-indented block <\n\n"
+        "> Double-indented block <\n\n"
+        ">> Right-indent, right-aligned <\n\n\n"
     )
 
 
