@@ -1085,7 +1085,7 @@ class Tokenizer(ABC):
             rFmt = [(0, TextFmt.B_B, ""), (shift - 1, TextFmt.B_E, "")]
             if style.labelClass:
                 rFmt.insert(1, (0, TextFmt.COL_B, style.labelClass))
-                rFmt.append((shift - 1, TextFmt.COL_E, ""))
+                rFmt.insert(2, (shift - 1, TextFmt.COL_E, ""))
             rFmt.extend((p + shift, f, d) for p, f, d in tFmt)
         return tTxt, rFmt
 
@@ -1099,8 +1099,10 @@ class Tokenizer(ABC):
             lbl = f"{self._localLookup(nwLabels.KEY_NAME[bits[0]])}:"
             end = len(lbl)
             fmt = [
-                (pos, TextFmt.B_B, ""), (pos, TextFmt.COL_B, "keyword"),
-                (end, TextFmt.B_E, ""), (end, TextFmt.COL_E, ""),
+                (pos, TextFmt.B_B, ""),
+                (pos, TextFmt.COL_B, "keyword"),
+                (end, TextFmt.COL_E, ""),
+                (end, TextFmt.B_E, ""),
             ]
             txt = [lbl, " "]
             pos = end + 1

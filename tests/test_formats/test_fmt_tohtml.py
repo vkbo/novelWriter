@@ -188,7 +188,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.doConvert()
     assert html.result == (
         "<p class='comment'>"
-        "<strong><span style='color: #813709'>Synopsis:</strong></span> "
+        "<strong><span style='color: #813709'>Synopsis:</span></strong> "
         "<span style='color: #813709'>The synopsis ...</span>"
         "</p>\n"
     )
@@ -199,7 +199,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.doConvert()
     assert html.result == (
         "<p class='comment'>"
-        "<strong><span style='color: #813709'>Short Description:</strong></span> "
+        "<strong><span style='color: #813709'>Short Description:</span></strong> "
         "<span style='color: #813709'>A short description ...</span>"
         "</p>\n"
     )
@@ -216,7 +216,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.doConvert()
     assert html.result == (
         "<p class='comment'>"
-        "<strong><span style='color: #646464'>Comment:</strong></span> "
+        "<strong><span style='color: #646464'>Comment:</span></strong> "
         "<span style='color: #646464'>A comment ...</span>"
         "</p>\n"
     )
@@ -232,7 +232,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='meta'><strong><span style='color: #f5871f'>Characters:</strong></span> "
+        "<p class='meta'><strong><span style='color: #f5871f'>Characters:</span></strong> "
         "<span style='color: #4271ae'><a href='#tag_bod'>Bod</a></span>, "
         "<span style='color: #4271ae'><a href='#tag_jane'>Jane</a></span></p>\n"
     )
@@ -242,7 +242,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='meta'><strong><span style='color: #f5871f'>Tag:</strong></span> "
+        "<p class='meta'><strong><span style='color: #f5871f'>Tag:</span></strong> "
         "<span style='color: #4271ae'><a name='tag_bod'>Bod</a></span></p>\n"
     )
 
@@ -250,7 +250,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='meta'><strong><span style='color: #f5871f'>Tag:</strong></span> "
+        "<p class='meta'><strong><span style='color: #f5871f'>Tag:</span></strong> "
         "<span style='color: #4271ae'><a name='tag_bod'>Bod</a></span> | "
         "<span style='color: #4271ae'>Nobody Owens</span></p>\n"
     )
@@ -264,13 +264,13 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     assert html.result == (
         "<h1 style='page-break-before: always;'>Chapter</h1>\n"
         "<p class='meta' style='margin-bottom: 0;'>"
-        "<strong><span style='color: #f5871f'>Point of View:</strong></span> "
+        "<strong><span style='color: #f5871f'>Point of View:</span></strong> "
         "<span style='color: #4271ae'><a href='#tag_bod'>Bod</a></span></p>\n"
         "<p class='meta' style='margin-bottom: 0; margin-top: 0;'>"
-        "<strong><span style='color: #f5871f'>Plot:</strong></span> "
+        "<strong><span style='color: #f5871f'>Plot:</span></strong> "
         "<span style='color: #4271ae'><a href='#tag_main'>Main</a></span></p>\n"
         "<p class='meta' style='margin-top: 0;'>"
-        "<strong><span style='color: #f5871f'>Locations:</strong></span> "
+        "<strong><span style='color: #f5871f'>Locations:</span></strong> "
         "<span style='color: #4271ae'><a href='#tag_europe'>Europe</a></span></p>\n"
     )
 
@@ -555,7 +555,7 @@ def testFmtToHtml_SpecialCases(mockGUI):
     html.doConvert()
     assert html.result == (
         "<p class='comment'>"
-        "<strong><span style='color: #646464'>Comment:</strong></span> "
+        "<strong><span style='color: #646464'>Comment:</span></strong> "
         "<span style='color: #646464'>Test &gt; text <em>&lt;<strong>bold</strong>&gt;</em> "
         "and more.</span>"
         "</p>\n"

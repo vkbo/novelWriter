@@ -719,8 +719,9 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens.tokenizeText()
     assert tokens._blocks == [(
         BlockTyp.COMMENT, 0, "Comment: A comment", [
-            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "comment"), (8, TextFmt.B_E, ""),
-            (8, TextFmt.COL_E, ""), (9, TextFmt.COL_B, "comment"), (18, TextFmt.COL_E, ""),
+            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "comment"),
+            (8, TextFmt.COL_E, ""), (8, TextFmt.B_E, ""),
+            (9, TextFmt.COL_B, "comment"), (18, TextFmt.COL_E, ""),
         ], BlockFmt.NONE
     )]
     assert tokens.allMarkdown[-1] == "% A comment\n\n"
@@ -737,8 +738,9 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens.tokenizeText()
     assert tokens._blocks == [(
         BlockTyp.COMMENT, 0, "Synopsis: The synopsis", [
-            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"), (9, TextFmt.B_E, ""),
-            (9, TextFmt.COL_E, ""), (10, TextFmt.COL_B, "synopsis"), (22, TextFmt.COL_E, "")
+            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
+            (9, TextFmt.COL_E, ""), (9, TextFmt.B_E, ""),
+            (10, TextFmt.COL_B, "synopsis"), (22, TextFmt.COL_E, "")
         ], BlockFmt.NONE
     )]
     assert tokens.allMarkdown[-1] == "% synopsis: The synopsis\n\n"
@@ -755,8 +757,9 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens.tokenizeText()
     assert tokens._blocks == [(
         BlockTyp.COMMENT, 0, "Short Description: A short description", [
-            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"), (18, TextFmt.B_E, ""),
-            (18, TextFmt.COL_E, ""), (19, TextFmt.COL_B, "synopsis"), (38, TextFmt.COL_E, ""),
+            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
+            (18, TextFmt.COL_E, ""), (18, TextFmt.B_E, ""),
+            (19, TextFmt.COL_B, "synopsis"), (38, TextFmt.COL_E, ""),
         ], BlockFmt.NONE
     )]
     assert tokens.allMarkdown[-1] == "% short: A short description\n\n"
@@ -773,7 +776,7 @@ def testFmtToken_MetaFormat(mockGUI):
     assert tokens._blocks == [(
         BlockTyp.KEYWORD, 0, "Characters: Bod", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
-            (11, TextFmt.B_E, ""), (11, TextFmt.COL_E, ""),
+            (11, TextFmt.COL_E, ""), (11, TextFmt.B_E, ""),
             (12, TextFmt.COL_B, "tag"), (12, TextFmt.HRF_B, "#tag_bod"),
             (15, TextFmt.HRF_E, ""), (15, TextFmt.COL_E, ""),
         ], BlockFmt.NONE
@@ -785,21 +788,21 @@ def testFmtToken_MetaFormat(mockGUI):
     assert tokens._blocks == [(
         BlockTyp.KEYWORD, 0, "Point of View: Bod", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
-            (14, TextFmt.B_E, ""), (14, TextFmt.COL_E, ""),
+            (14, TextFmt.COL_E, ""), (14, TextFmt.B_E, ""),
             (15, TextFmt.COL_B, "tag"), (15, TextFmt.HRF_B, "#tag_bod"),
             (18, TextFmt.HRF_E, ""), (18, TextFmt.COL_E, ""),
         ], BlockFmt.Z_BTMMRG
     ), (
         BlockTyp.KEYWORD, 0, "Plot: Main", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
-            (5, TextFmt.B_E, ""), (5, TextFmt.COL_E, ""),
+            (5, TextFmt.COL_E, ""), (5, TextFmt.B_E, ""),
             (6, TextFmt.COL_B, "tag"), (6, TextFmt.HRF_B, "#tag_main"),
             (10, TextFmt.HRF_E, ""), (10, TextFmt.COL_E, ""),
         ], BlockFmt.Z_TOPMRG | BlockFmt.Z_BTMMRG
     ), (
         BlockTyp.KEYWORD, 0, "Locations: Europe", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
-            (10, TextFmt.B_E, ""), (10, TextFmt.COL_E, ""),
+            (10, TextFmt.COL_E, ""), (10, TextFmt.B_E, ""),
             (11, TextFmt.COL_B, "tag"), (11, TextFmt.HRF_B, "#tag_europe"),
             (17, TextFmt.HRF_E, ""), (17, TextFmt.COL_E, ""),
         ], BlockFmt.Z_TOPMRG
@@ -813,7 +816,7 @@ def testFmtToken_MetaFormat(mockGUI):
     assert tokens._blocks == [(
         BlockTyp.KEYWORD, 0, "Point of View: Bod", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
-            (14, TextFmt.B_E, ""), (14, TextFmt.COL_E, ""),
+            (14, TextFmt.COL_E, ""), (14, TextFmt.B_E, ""),
             (15, TextFmt.COL_B, "tag"), (15, TextFmt.HRF_B, "#tag_bod"),
             (18, TextFmt.HRF_E, ""), (18, TextFmt.COL_E, ""),
         ], BlockFmt.NONE
@@ -1429,8 +1432,8 @@ def testFmtToken_TextIndent(mockGUI):
     )
     tokens.tokenizeText()
     tFmt = [
-        (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"), (9, TextFmt.B_E, ""),
-        (9, TextFmt.COL_E, ""), (10, TextFmt.COL_B, "synopsis"), (24, TextFmt.COL_E, ""),
+        (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"), (9, TextFmt.COL_E, ""),
+        (9, TextFmt.B_E, ""), (10, TextFmt.COL_B, "synopsis"), (24, TextFmt.COL_E, ""),
     ]
     assert tokens._blocks == [
         (BlockTyp.HEAD3,   1, "Scene Two", [], BlockFmt.NONE),
@@ -1679,7 +1682,7 @@ def testFmtToken_FormatComment(mockGUI):
     assert tokens._formatComment(style, "", "Hello world!") == (
         "Comment: Hello world!", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "comment"),
-            (8, TextFmt.B_E, ""), (8, TextFmt.COL_E, ""),
+            (8, TextFmt.COL_E, ""), (8, TextFmt.B_E, ""),
             (9, TextFmt.COL_B, "comment"), (21, TextFmt.COL_E, ""),
         ]
     )
@@ -1689,7 +1692,7 @@ def testFmtToken_FormatComment(mockGUI):
     assert tokens._formatComment(style, "", "Hello world!") == (
         "Synopsis: Hello world!", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
-            (9, TextFmt.B_E, ""), (9, TextFmt.COL_E, ""),
+            (9, TextFmt.COL_E, ""), (9, TextFmt.B_E, ""),
             (10, TextFmt.COL_B, "synopsis"), (22, TextFmt.COL_E, ""),
         ]
     )
@@ -1706,7 +1709,7 @@ def testFmtToken_FormatMeta(mockGUI):
     assert tokens._formatMeta("@tag: Jane | Jane Smith") == (
         "Tag: Jane | Jane Smith", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
-            (4, TextFmt.B_E, ""), (4, TextFmt.COL_E, ""),
+            (4, TextFmt.COL_E, ""), (4, TextFmt.B_E, ""),
             (5, TextFmt.COL_B, "tag"), (5, TextFmt.ANM_B, "tag_jane"),
             (9, TextFmt.ANM_E, ""), (9, TextFmt.COL_E, ""),
             (12, TextFmt.COL_B, "optional"), (22, TextFmt.COL_E, ""),
@@ -1716,7 +1719,7 @@ def testFmtToken_FormatMeta(mockGUI):
     assert tokens._formatMeta("@char: Jane, John") == (
         "Characters: Jane, John", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
-            (11, TextFmt.B_E, ""), (11, TextFmt.COL_E, ""),
+            (11, TextFmt.COL_E, ""), (11, TextFmt.B_E, ""),
             (12, TextFmt.COL_B, "tag"), (12, TextFmt.HRF_B, "#tag_jane"),
             (16, TextFmt.HRF_E, ""), (16, TextFmt.COL_E, ""),
             (18, TextFmt.COL_B, "tag"), (18, TextFmt.HRF_B, "#tag_john"),
