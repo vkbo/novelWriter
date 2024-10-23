@@ -877,6 +877,8 @@ class GuiDocEditor(QPlainTextEdit):
                 after = False
             elif insert == nwDocInsert.FOOTNOTE:
                 self._insertCommentStructure(nwComment.FOOTNOTE)
+            elif insert == nwDocInsert.LINE_BRK:
+                text = nwShortcode.BREAK
 
         if text:
             if block:

@@ -56,7 +56,6 @@ class ComStyle(NamedTuple):
     textClass: str = ""
 
 
-B_EMPTY: T_Block = (BlockTyp.EMPTY, "", "", [], BlockFmt.NONE)
 COMMENT_STYLE = {
     nwComment.PLAIN:    ComStyle("Comment", "comment", "comment"),
     nwComment.IGNORE:   ComStyle(),
@@ -67,13 +66,12 @@ COMMENT_STYLE = {
     nwComment.COMMENT:  ComStyle(),
     nwComment.STORY:    ComStyle("", "modifier", "note"),
 }
-
-# Lookups
 HEADINGS = [BlockTyp.TITLE, BlockTyp.HEAD1, BlockTyp.HEAD2, BlockTyp.HEAD3, BlockTyp.HEAD4]
 SKIP_INDENT = [
     BlockTyp.TITLE, BlockTyp.HEAD1, BlockTyp.HEAD2, BlockTyp.HEAD2, BlockTyp.HEAD3,
     BlockTyp.HEAD4, BlockTyp.SEP, BlockTyp.SKIP,
 ]
+B_EMPTY: T_Block = (BlockTyp.EMPTY, "", "", [], BlockFmt.NONE)
 
 
 class Tokenizer(ABC):
@@ -182,8 +180,6 @@ class Tokenizer(ABC):
             (REGEX_PATTERNS.markdownBold,   [0, TextFmt.B_B, 0, TextFmt.B_E]),
             (REGEX_PATTERNS.markdownStrike, [0, TextFmt.D_B, 0, TextFmt.D_E]),
         ]
-        self._rxShortCodes = REGEX_PATTERNS.shortcodePlain
-        self._rxShortCodeVals = REGEX_PATTERNS.shortcodeValue
 
         self._shortCodeFmt = {
             nwShortcode.ITALIC_O: TextFmt.I_B,   nwShortcode.ITALIC_C: TextFmt.I_E,
@@ -1136,12 +1132,12 @@ class Tokenizer(ABC):
         # Post-process text and format
         result = text
         formats = []
-        for pos, end, fmt, key in reversed(sorted(temp, key=lambda x: x[0])):
+        for pos, end, fmt, meta in reversed(sorted(temp, key=lambda x: x[0])):
             if fmt > 0:
                 if end > pos:
                     result = result[:pos] + result[end:]
-                    formats = [(p+pos-end if p > pos else p, f, k) for p, f, k in formats]
-                formats.insert(0, (pos, fmt, key))
+                    formats = [(p+pos-end if p > pos else p, f, m) for p, f, m in formats]
+                formats.insert(0, (pos, fmt, meta))
 
         return result, formats
 

@@ -198,6 +198,17 @@ def testTextPatterns_ShortcodesPlain():
 
     assert allMatches(regEx, "one [x]two[/x] three") == []
 
+    # Line Break Substitution
+    # =======================
+    regEx = REGEX_PATTERNS.lineBreak
+
+    assert regEx.sub("\n", "one[br]two") == "one\ntwo"
+    assert regEx.sub("\n", "one[br]\ntwo") == "one\ntwo"
+    assert regEx.sub("\n", "one[br]\n\ntwo") == "one\n\ntwo"
+    assert regEx.sub("\n", "one[BR]two") == "one\ntwo"
+    assert regEx.sub("\n", "one[BR]\ntwo") == "one\ntwo"
+    assert regEx.sub("\n", "one[BR]\n\ntwo") == "one\n\ntwo"
+
 
 @pytest.mark.core
 def testTextPatterns_ShortcodesValue():

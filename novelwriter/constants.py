@@ -61,10 +61,11 @@ class nwConst:
 class nwRegEx:
 
     WORDS  = r"\b[^\s\-\+\/–—\[\]:]+\b"
+    BREAK  = r"(?i)(?<!\\)(\[br\]\n?)"
     FMT_EI = r"(?<![\w\\])(_)(?![\s_])(.+?)(?<![\s\\])(\1)(?!\w)"
     FMT_EB = r"(?<![\w\\])(\*{2})(?![\s\*])(.+?)(?<![\s\\])(\1)(?!\w)"
     FMT_ST = r"(?<![\w\\])(~{2})(?![\s~])(.+?)(?<![\s\\])(\1)(?!\w)"
-    FMT_SC = r"(?i)(?<!\\)(\[[\/\!]?(?:b|i|s|u|m|sup|sub)\])"
+    FMT_SC = r"(?i)(?<!\\)(\[(?:b|/b|i|/i|s|/s|u|/u|m|/m|sup|/sup|sub|/sub|br)\])"
     FMT_SV = r"(?i)(?<!\\)(\[(?:footnote):)(.+?)(?<!\\)(\])"
 
 
@@ -84,6 +85,7 @@ class nwShortcode:
     SUP_C    = "[/sup]"
     SUB_O    = "[sub]"
     SUB_C    = "[/sub]"
+    BREAK    = "[br]"
 
     FOOTNOTE_B = "[footnote:"
 
