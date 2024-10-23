@@ -113,23 +113,23 @@ class ToMarkdown(Tokenizer):
                 lines.append(f"{tTemp}\n\n")
 
             elif tType == BlockTyp.TITLE:
-                tHead = tText.replace(nwHeadFmt.BR, "\n")
+                tHead = tText.replace(nwHeadFmt.BR, " - ")
                 lines.append(f"# {tHead}\n\n")
 
             elif tType == BlockTyp.HEAD1:
-                tHead = tText.replace(nwHeadFmt.BR, "\n")
+                tHead = tText.replace(nwHeadFmt.BR, " - ")
                 lines.append(f"# {tHead}\n\n")
 
             elif tType == BlockTyp.HEAD2:
-                tHead = tText.replace(nwHeadFmt.BR, "\n")
+                tHead = tText.replace(nwHeadFmt.BR, " - ")
                 lines.append(f"## {tHead}\n\n")
 
             elif tType == BlockTyp.HEAD3:
-                tHead = tText.replace(nwHeadFmt.BR, "\n")
+                tHead = tText.replace(nwHeadFmt.BR, " - ")
                 lines.append(f"### {tHead}\n\n")
 
             elif tType == BlockTyp.HEAD4:
-                tHead = tText.replace(nwHeadFmt.BR, "\n")
+                tHead = tText.replace(nwHeadFmt.BR, " - ")
                 lines.append(f"#### {tHead}\n\n")
 
             elif tType == BlockTyp.SEP:

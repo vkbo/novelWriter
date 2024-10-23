@@ -25,6 +25,7 @@ import json
 import pytest
 
 from novelwriter import CONFIG
+from novelwriter.constants import nwHeadFmt
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp
 from novelwriter.formats.tohtml import ToHtml
@@ -44,32 +45,35 @@ def testFmtToHtml_ConvertHeaders(mockGUI):
     html._isFirst = True
 
     # Header 1
-    html._text = "# Partition\n"
+    html._text = "# Title\n"
+    html.setPartitionFormat(f"Part{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == (
-        "<h1 class='title' style='text-align: center;'>Partition</h1>\n"
+        "<h1 class='title' style='text-align: center;'>Part<br>Title</h1>\n"
     )
 
     # Header 2
-    html._text = "## Chapter Title\n"
+    html._text = "## Title\n"
+    html.setChapterFormat(f"Chapter {nwHeadFmt.CH_NUM}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     html.tokenizeText()
     html.doConvert()
     assert html._pages[-1] == (
-        "<h1 style='page-break-before: always;'>Chapter Title</h1>\n"
+        "<h1 style='page-break-before: always;'>Chapter 1<br>Title</h1>\n"
     )
 
     # Header 3
-    html._text = "### Scene Title\n"
+    html._text = "### Title\n"
+    html.setSceneFormat(f"Scene {nwHeadFmt.SC_ABS}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == "<h2>Scene Title</h2>\n"
+    assert html._pages[-1] == "<h2>Scene 1<br>Title</h2>\n"
 
     # Header 4
-    html._text = "#### Section Title\n"
+    html._text = "#### Title\n"
     html.tokenizeText()
     html.doConvert()
-    assert html._pages[-1] == "<h3>Section Title</h3>\n"
+    assert html._pages[-1] == "<h3>Title</h3>\n"
 
     # Title
     html._text = "#! Title\n"

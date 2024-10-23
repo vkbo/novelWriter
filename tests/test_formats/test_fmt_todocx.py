@@ -32,10 +32,7 @@ from novelwriter.core.docbuild import NWBuildDocument
 from novelwriter.core.project import NWProject
 from novelwriter.enum import nwBuildFmt
 from novelwriter.formats.shared import BlockFmt, BlockTyp
-from novelwriter.formats.todocx import (
-    S_FNOTE, S_HEAD1, S_HEAD2, S_HEAD3, S_HEAD4, S_META, S_NORM, S_SEP,
-    S_TITLE, ToDocX, _mkTag, _wTag
-)
+from novelwriter.formats.todocx import ToDocX, _mkTag, _wTag
 
 from tests.tools import DOCX_IGNORE, cmpFiles
 
@@ -60,6 +57,120 @@ def xmlToText(xElem):
 
 
 @pytest.mark.core
+def testFmtToDocX_HeadingStyles(mockGUI):
+    """Test formatting of headings."""
+    project = NWProject()
+    doc = ToDocX(project)
+    doc._isNovel = True
+    doc.initDocument()
+
+    # Title
+    # =====
+
+    xTest = ET.Element(_wTag("body"))
+    doc._text = "#! Hello World"
+    doc.tokenizeText()
+    doc.doConvert()
+    doc._pars[-1].toXml(xTest)
+    assert xmlToText(xTest) == (
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Title" /><w:jc w:val="center" /></w:pPr>'
+        '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+    )
+
+    # Heading Level 1
+    # ===============
+    doc._text = "# Hello World"
+
+    # Plain
+    xTest = ET.Element(_wTag("body"))
+    doc.tokenizeText()
+    doc.doConvert()
+    doc._pars[-1].toXml(xTest)
+    assert xmlToText(xTest) == (
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading1" /><w:jc w:val="center" /></w:pPr>'
+        '<w:r><w:br w:type="page" /></w:r>'
+        '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+    )
+
+    # Formatted
+    xTest = ET.Element(_wTag("body"))
+    doc.setPartitionFormat(f"Part{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
+    doc.tokenizeText()
+    doc.doConvert()
+    doc._pars[-1].toXml(xTest)
+    assert xmlToText(xTest) == (
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading1" /><w:jc w:val="center" /></w:pPr>'
+        '<w:r><w:br w:type="page" /></w:r>'
+        '<w:r><w:rPr /><w:t>Part</w:t><w:br /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+    )
+
+    # Heading Level 2
+    # ===============
+    doc._text = "## Hello World"
+
+    # Plain
+    xTest = ET.Element(_wTag("body"))
+    doc.tokenizeText()
+    doc.doConvert()
+    doc._pars[-1].toXml(xTest)
+    assert xmlToText(xTest) == (
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading2" /></w:pPr>'
+        '<w:r><w:br w:type="page" /></w:r>'
+        '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+    )
+
+    # Formatted
+    xTest = ET.Element(_wTag("body"))
+    doc.setChapterFormat(f"Chapter {nwHeadFmt.CH_NUM}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
+    doc.tokenizeText()
+    doc.doConvert()
+    doc._pars[-1].toXml(xTest)
+    assert xmlToText(xTest) == (
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading2" /></w:pPr>'
+        '<w:r><w:br w:type="page" /></w:r>'
+        '<w:r><w:rPr /><w:t>Chapter 2</w:t><w:br /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+    )
+
+    # Heading Level 3
+    # ===============
+    doc._text = "### Hello World"
+
+    # Plain
+    xTest = ET.Element(_wTag("body"))
+    doc.tokenizeText()
+    doc.doConvert()
+    doc._pars[-1].toXml(xTest)
+    assert xmlToText(xTest) == (
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading3" /></w:pPr><w:r><w:rPr />'
+        '<w:t>Hello World</w:t></w:r></w:p></w:body>'
+    )
+
+    # Formatted
+    xTest = ET.Element(_wTag("body"))
+    doc.setSceneFormat(f"Scene {nwHeadFmt.SC_ABS}{nwHeadFmt.BR}{nwHeadFmt.TITLE}")
+    doc.tokenizeText()
+    doc.doConvert()
+    doc._pars[-1].toXml(xTest)
+    assert xmlToText(xTest) == (
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading3" /></w:pPr>'
+        '<w:r><w:rPr /><w:t>Scene 2</w:t><w:br /><w:t>Hello World</w:t></w:r></w:p></w:body>'
+    )
+
+    # Heading Level 4
+    # ===============
+    doc._text = "#### Hello World"
+
+    xTest = ET.Element(_wTag("body"))
+    doc.tokenizeText()
+    doc.doConvert()
+    doc._pars[-1].toXml(xTest)
+    assert xmlToText(xTest) == (
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Heading4" /></w:pPr><w:r><w:rPr />'
+        '<w:t>Hello World</w:t></w:r></w:p></w:body>'
+    )
+
+
+@pytest.mark.core
 def testFmtToDocX_ParagraphStyles(mockGUI):
     """Test formatting of paragraphs."""
     project = NWProject()
@@ -71,61 +182,12 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
 
     # Normal Text
     xTest = ET.Element(_wTag("body"))
-    doc._blocks = [(BlockTyp.TEXT, "", "Hello World", [], BlockFmt.NONE)]
+    doc._text = "Hello World"
+    doc.tokenizeText()
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_NORM}" /></w:pPr><w:r><w:rPr />'
-        '<w:t>Hello World</w:t></w:r></w:p></w:body>'
-    )
-
-    # Title
-    xTest = ET.Element(_wTag("body"))
-    doc._blocks = [(BlockTyp.TITLE, "", "Hello World", [], BlockFmt.NONE)]
-    doc.doConvert()
-    doc._pars[-1].toXml(xTest)
-    assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_TITLE}" /></w:pPr><w:r><w:rPr />'
-        '<w:t>Hello World</w:t></w:r></w:p></w:body>'
-    )
-
-    # Heading Level 1
-    xTest = ET.Element(_wTag("body"))
-    doc._blocks = [(BlockTyp.HEAD1, "", "Hello World", [], BlockFmt.NONE)]
-    doc.doConvert()
-    doc._pars[-1].toXml(xTest)
-    assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_HEAD1}" /></w:pPr><w:r><w:rPr />'
-        '<w:t>Hello World</w:t></w:r></w:p></w:body>'
-    )
-
-    # Heading Level 2
-    xTest = ET.Element(_wTag("body"))
-    doc._blocks = [(BlockTyp.HEAD2, "", "Hello World", [], BlockFmt.NONE)]
-    doc.doConvert()
-    doc._pars[-1].toXml(xTest)
-    assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_HEAD2}" /></w:pPr><w:r><w:rPr />'
-        '<w:t>Hello World</w:t></w:r></w:p></w:body>'
-    )
-
-    # Heading Level 3
-    xTest = ET.Element(_wTag("body"))
-    doc._blocks = [(BlockTyp.HEAD3, "", "Hello World", [], BlockFmt.NONE)]
-    doc.doConvert()
-    doc._pars[-1].toXml(xTest)
-    assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_HEAD3}" /></w:pPr><w:r><w:rPr />'
-        '<w:t>Hello World</w:t></w:r></w:p></w:body>'
-    )
-
-    # Heading Level 4
-    xTest = ET.Element(_wTag("body"))
-    doc._blocks = [(BlockTyp.HEAD4, "", "Hello World", [], BlockFmt.NONE)]
-    doc.doConvert()
-    doc._pars[-1].toXml(xTest)
-    assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_HEAD4}" /></w:pPr><w:r><w:rPr />'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr><w:r><w:rPr />'
         '<w:t>Hello World</w:t></w:r></w:p></w:body>'
     )
 
@@ -135,7 +197,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_SEP}" /></w:pPr><w:r><w:rPr />'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Separator" /></w:pPr><w:r><w:rPr />'
         '<w:t>* * *</w:t></w:r></w:p></w:body>'
     )
 
@@ -145,7 +207,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_NORM}" /></w:pPr></w:p></w:body>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr></w:p></w:body>'
     )
 
     # Synopsis
@@ -155,7 +217,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_META}" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="MetaText" /></w:pPr>'
         '<w:r><w:rPr><w:b /><w:color w:val="813709" /></w:rPr><w:t>Synopsis:</w:t></w:r>'
         '<w:r><w:rPr /><w:t xml:space="preserve"> </w:t></w:r>'
         '<w:r><w:rPr><w:color w:val="813709" /></w:rPr><w:t>Hello World</w:t></w:r>'
@@ -169,7 +231,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_META}" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="MetaText" /></w:pPr>'
         '<w:r><w:rPr><w:b /><w:color w:val="813709" /></w:rPr><w:t>Short Description:</w:t></w:r>'
         '<w:r><w:rPr /><w:t xml:space="preserve"> </w:t></w:r>'
         '<w:r><w:rPr><w:color w:val="813709" /></w:rPr><w:t>Hello World</w:t></w:r>'
@@ -183,7 +245,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_META}" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="MetaText" /></w:pPr>'
         '<w:r><w:rPr><w:b /><w:color w:val="646464" /></w:rPr><w:t>Comment:</w:t></w:r>'
         '<w:r><w:rPr /><w:t xml:space="preserve"> </w:t></w:r>'
         '<w:r><w:rPr><w:color w:val="646464" /></w:rPr><w:t>Hello World</w:t></w:r>'
@@ -197,7 +259,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_META}" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="MetaText" /></w:pPr>'
         '<w:r><w:rPr><w:b /><w:color w:val="f5871f" /></w:rPr><w:t>Tag:</w:t></w:r>'
         '<w:r><w:rPr /><w:t xml:space="preserve"> </w:t></w:r>'
         '<w:r><w:rPr><w:color w:val="4271ae" /></w:rPr><w:t>Stuff</w:t></w:r>'
@@ -211,7 +273,7 @@ def testFmtToDocX_ParagraphStyles(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_META}" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="MetaText" /></w:pPr>'
         '<w:r><w:rPr><w:b /><w:color w:val="f5871f" /></w:rPr><w:t>Characters:</w:t></w:r>'
         '<w:r><w:rPr /><w:t xml:space="preserve"> </w:t></w:r>'
         '<w:r><w:rPr><w:color w:val="4271ae" /></w:rPr><w:t>Jane</w:t></w:r>'
@@ -245,7 +307,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_NORM}" /><w:jc w:val="left" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /><w:jc w:val="left" /></w:pPr>'
         '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
     )
 
@@ -255,7 +317,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_NORM}" /><w:jc w:val="right" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /><w:jc w:val="right" /></w:pPr>'
         '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
     )
 
@@ -265,7 +327,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_NORM}" /><w:jc w:val="center" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /><w:jc w:val="center" /></w:pPr>'
         '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
     )
 
@@ -275,7 +337,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_NORM}" /><w:jc w:val="both" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /><w:jc w:val="both" /></w:pPr>'
         '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
     )
 
@@ -285,7 +347,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_NORM}" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
         '<w:r><w:br w:type="page" /></w:r>'
         '<w:r><w:rPr /><w:t>Hello World</w:t></w:r>'
         '</w:p></w:body>'
@@ -297,7 +359,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_NORM}" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
         '<w:r><w:rPr /><w:t>Hello World</w:t></w:r>'
         '<w:r><w:br w:type="page" /></w:r>'
         '</w:p></w:body>'
@@ -309,7 +371,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_NORM}" />'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" />'
         '<w:spacing w:before="0" w:after="0" w:line="252" /></w:pPr>'
         '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
     )
@@ -320,7 +382,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_NORM}" />'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" />'
         '<w:ind w:left="880" w:right="880" /></w:pPr>'
         '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
     )
@@ -331,7 +393,7 @@ def testFmtToDocX_ParagraphFormatting(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_NORM}" />'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" />'
         '<w:ind w:firstLine="308" /></w:pPr>'
         '<w:r><w:rPr /><w:t>Hello World</w:t></w:r></w:p></w:body>'
     )
@@ -351,7 +413,7 @@ def testFmtToDocX_TextFormatting(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_NORM}" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
         '<w:r><w:rPr /><w:t xml:space="preserve">Text </w:t></w:r>'
         '<w:r><w:rPr><w:b /></w:rPr><w:t>bold</w:t></w:r>'
         '<w:r><w:rPr /><w:t xml:space="preserve">, </w:t></w:r>'
@@ -369,7 +431,7 @@ def testFmtToDocX_TextFormatting(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_NORM}" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
         '<w:r><w:rPr /><w:t xml:space="preserve">Some </w:t></w:r>'
         '<w:r><w:rPr><w:strike /></w:rPr><w:t xml:space="preserve">nested </w:t></w:r>'
         '<w:r><w:rPr><w:b /><w:strike /></w:rPr><w:t>bold</w:t></w:r>'
@@ -389,7 +451,7 @@ def testFmtToDocX_TextFormatting(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_NORM}" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
         '<w:r><w:rPr /><w:t>Some super</w:t></w:r>'
         '<w:r><w:rPr><w:vertAlign w:val="superscript" /></w:rPr><w:t>script</w:t></w:r>'
         '<w:r><w:rPr /><w:t xml:space="preserve"> and sub</w:t></w:r>'
@@ -405,7 +467,7 @@ def testFmtToDocX_TextFormatting(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_NORM}" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
         '<w:r><w:rPr /><w:t xml:space="preserve">Some </w:t></w:r>'
         '<w:r><w:rPr><w:u w:val="single" /></w:rPr>'
         '<w:t xml:space="preserve">underlined and </w:t></w:r>'
@@ -422,7 +484,7 @@ def testFmtToDocX_TextFormatting(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_NORM}" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
         '<w:r><w:rPr /><w:t>Some text.</w:t><w:br /><w:t>Next line</w:t></w:r>'
         '</w:p></w:body>'
     )
@@ -434,7 +496,7 @@ def testFmtToDocX_TextFormatting(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_NORM}" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
         '<w:r><w:rPr /><w:tab /><w:t>Item 1</w:t><w:tab /><w:t>Item 2</w:t></w:r>'
         '</w:p></w:body>'
     )
@@ -446,7 +508,7 @@ def testFmtToDocX_TextFormatting(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_NORM}" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
         '<w:r><w:rPr /><w:t xml:space="preserve">Some </w:t></w:r>'
         '<w:r><w:rPr><w:b /></w:rPr><w:t>bold</w:t><w:tab /><w:t>text</w:t></w:r>'
         '</w:p></w:body>'
@@ -474,7 +536,7 @@ def testFmtToDocX_Footnotes(mockGUI):
     doc.doConvert()
     doc._pars[-1].toXml(xTest)
     assert xmlToText(xTest) == (
-        f'<w:body><w:p><w:pPr><w:pStyle w:val="{S_NORM}" /></w:pPr>'
+        '<w:body><w:p><w:pPr><w:pStyle w:val="Normal" /></w:pPr>'
         '<w:r><w:rPr /><w:t>Text with one</w:t></w:r>'
         '<w:r><w:rPr><w:vertAlign w:val="superscript" /></w:rPr>'
         '<w:footnoteReference w:id="1" /></w:r>'
@@ -493,11 +555,11 @@ def testFmtToDocX_Footnotes(mockGUI):
     doc._footnotesXml()
     assert xmlToText(doc._files["footnotes.xml"].xml) == (
         '<w:footnotes>'
-        f'<w:footnote w:id="1"><w:p><w:pPr><w:pStyle w:val="{S_FNOTE}" /></w:pPr>'
+        '<w:footnote w:id="1"><w:p><w:pPr><w:pStyle w:val="FootnoteText" /></w:pPr>'
         '<w:r><w:rPr /><w:t>Footnote text A.</w:t></w:r></w:p></w:footnote>'
-        f'<w:footnote w:id="2"><w:p><w:pPr><w:pStyle w:val="{S_FNOTE}" /></w:pPr>'
+        '<w:footnote w:id="2"><w:p><w:pPr><w:pStyle w:val="FootnoteText" /></w:pPr>'
         '<w:r><w:rPr /><w:t>Another footnote.</w:t></w:r></w:p></w:footnote>'
-        f'<w:footnote w:id="3"><w:p><w:pPr><w:pStyle w:val="{S_FNOTE}" /></w:pPr>'
+        '<w:footnote w:id="3"><w:p><w:pPr><w:pStyle w:val="FootnoteText" /></w:pPr>'
         '<w:r><w:rPr /><w:t>Again?</w:t></w:r></w:p></w:footnote>'
         '</w:footnotes>'
     )
