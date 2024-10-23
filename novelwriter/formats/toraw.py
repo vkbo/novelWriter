@@ -64,7 +64,7 @@ class ToRaw(Tokenizer):
                     "buildTimeStr": formatTimeStamp(ts),
                 },
                 "text": {
-                    "nwd": [page.rstrip("\n").split("\n") for page in self._markdown],
+                    "nwd": [page.rstrip("\n").split("\n") for page in self._raw],
                 }
             }
             with open(path, mode="w", encoding="utf-8") as fObj:
@@ -72,7 +72,7 @@ class ToRaw(Tokenizer):
 
         else:
             with open(path, mode="w", encoding="utf-8") as outFile:
-                for nwdPage in self._markdown:
+                for nwdPage in self._raw:
                     outFile.write(nwdPage)
 
         logger.info("Wrote file: %s", path)
@@ -82,5 +82,5 @@ class ToRaw(Tokenizer):
     def replaceTabs(self, nSpaces: int = 8, spaceChar: str = " ") -> None:
         """Replace tabs with spaces."""
         spaces = spaceChar*nSpaces
-        self._markdown = [p.replace("\t", spaces) for p in self._markdown]
+        self._raw = [p.replace("\t", spaces) for p in self._raw]
         return

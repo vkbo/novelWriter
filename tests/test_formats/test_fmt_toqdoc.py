@@ -410,8 +410,8 @@ def testFmtToQTextDocument_TextBlockFormats(mockGUI):
     doc.document.clear()
 
     doc._blocks = [
-        (BlockTyp.TEXT, 1, "This is justified", [], BlockFmt.JUSTIFY),
-        (BlockTyp.TEXT, 1, "This has a page break", [], BlockFmt.PBA),
+        (BlockTyp.TEXT, "", "This is justified", [], BlockFmt.JUSTIFY),
+        (BlockTyp.TEXT, "", "This has a page break", [], BlockFmt.PBA),
     ]
     doc.doConvert()
     assert doc.document.blockCount() == 2

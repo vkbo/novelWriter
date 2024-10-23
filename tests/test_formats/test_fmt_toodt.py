@@ -724,7 +724,7 @@ def testFmtToOdt_ConvertDirect(mockGUI):
     # Justified
     doc = ToOdt(project, isFlat=True)
     doc._blocks = [
-        (BlockTyp.TEXT, 1, "This is a paragraph", [], BlockFmt.JUSTIFY),
+        (BlockTyp.TEXT, "", "This is a paragraph", [], BlockFmt.JUSTIFY),
     ]
     doc.initDocument()
     doc.doConvert()
@@ -744,7 +744,7 @@ def testFmtToOdt_ConvertDirect(mockGUI):
     # Page Break After
     doc = ToOdt(project, isFlat=True)
     doc._blocks = [
-        (BlockTyp.TEXT, 1, "This is a paragraph", [], BlockFmt.PBA),
+        (BlockTyp.TEXT, "", "This is a paragraph", [], BlockFmt.PBA),
     ]
     doc.initDocument()
     doc.doConvert()
@@ -951,8 +951,6 @@ def testFmtToOdt_ODTParagraphStyle():
     assert parStyle._pAttr["text-indent"]   == ["fo", None]
     assert parStyle._pAttr["line-height"]   == ["fo", None]
 
-    assert parStyle.isUnaligned() is True
-
     parStyle.setMarginTop("0.000cm")
     parStyle.setMarginBottom("0.000cm")
     parStyle.setMarginLeft("0.000cm")
@@ -966,8 +964,6 @@ def testFmtToOdt_ODTParagraphStyle():
     assert parStyle._pAttr["margin-right"]  == ["fo", "0.000cm"]
     assert parStyle._pAttr["text-indent"]   == ["fo", "0.000cm"]
     assert parStyle._pAttr["line-height"]   == ["fo", "1.15"]
-
-    assert parStyle.isUnaligned() is False
 
     # Text Alignment
     assert parStyle._pAttr["text-align"] == ["fo", None]

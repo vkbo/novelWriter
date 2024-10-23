@@ -31,161 +31,161 @@ from novelwriter.formats.tomarkdown import ToMarkdown
 def testFmtToMarkdown_ConvertHeaders(mockGUI):
     """Test header formats in the ToMarkdown class."""
     project = NWProject()
-    toMD = ToMarkdown(project, False)
+    md = ToMarkdown(project, False)
 
-    toMD._isNovel = True
-    toMD._isFirst = True
+    md._isNovel = True
+    md._isFirst = True
 
     # Header 1
-    toMD._text = "# Partition\n"
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == "# Partition\n\n"
+    md._text = "# Partition\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "# Partition\n\n"
 
     # Header 2
-    toMD._text = "## Chapter Title\n"
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == "## Chapter Title\n\n"
+    md._text = "## Chapter Title\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "## Chapter Title\n\n"
 
     # Header 3
-    toMD._text = "### Scene Title\n"
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == "### Scene Title\n\n"
+    md._text = "### Scene Title\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "### Scene Title\n\n"
 
     # Header 4
-    toMD._text = "#### Section Title\n"
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == "#### Section Title\n\n"
+    md._text = "#### Section Title\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "#### Section Title\n\n"
 
     # Title
-    toMD._text = "#! Title\n"
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == "# Title\n\n"
+    md._text = "#! Title\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "# Title\n\n"
 
     # Unnumbered
-    toMD._text = "##! Prologue\n"
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == "## Prologue\n\n"
+    md._text = "##! Prologue\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "## Prologue\n\n"
 
 
 @pytest.mark.core
 def testFmtToMarkdown_ConvertParagraphs(mockGUI):
     """Test paragraph formats in the ToMarkdown class."""
     project = NWProject()
-    toMD = ToMarkdown(project, False)
+    md = ToMarkdown(project, False)
 
-    toMD._isNovel = True
-    toMD._isFirst = True
+    md._isNovel = True
+    md._isFirst = True
 
     # Text for Extended Markdown
-    toMD._extended = True
-    toMD._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == (
+    md._extended = True
+    md._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == (
         "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n\n"
     )
 
     # Text for Standard Markdown
-    toMD._extended = False
-    toMD._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == (
+    md._extended = False
+    md._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == (
         "Some **nested bold and _italic_ and strikethrough text** here\n\n"
     )
 
     # Shortcodes for Extended Markdown
-    toMD._extended = True
-    toMD._text = (
+    md._extended = True
+    md._text = (
         "Some [b]bold[/b], [i]italic[/i], [s]strike[/s], [u]underline[/u], [m]mark[/m], "
         "super[sup]script[/sup], sub[sub]script[/sub] here\n"
     )
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == (
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == (
         "Some **bold**, _italic_, ~~strike~~, underline, ==mark==, "
         "super^script^, sub~script~ here\n\n"
     )
 
     # Shortcodes for Standard Markdown
-    toMD._extended = False
-    toMD._text = (
+    md._extended = False
+    md._text = (
         "Some [b]bold[/b], [i]italic[/i], [s]strike[/s], [u]underline[/u], [m]mark[/m], "
         "super[sup]script[/sup], sub[sub]script[/sub] here\n"
     )
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == (
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == (
         "Some **bold**, _italic_, strike, underline, mark, superscript, subscript here\n\n"
     )
 
     # Text w/Hard Break
-    toMD._text = "Line one\nLine two\nLine three\n"
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == "Line one  \nLine two  \nLine three\n\n"
+    md._text = "Line one\nLine two\nLine three\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "Line one  \nLine two  \nLine three\n\n"
 
     # Text wo/Hard Break
-    toMD._text = "Line one\nLine two\nLine three\n"
-    toMD.setKeepLineBreaks(False)
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == "Line one Line two Line three\n\n"
+    md._text = "Line one\nLine two\nLine three\n"
+    md.setKeepLineBreaks(False)
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "Line one Line two Line three\n\n"
 
     # Synopsis, Short
-    toMD._text = "%synopsis: The synopsis ...\n"
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == ""
+    md._text = "%synopsis: The synopsis ...\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == ""
 
-    toMD.setSynopsis(True)
-    toMD._text = "%synopsis: The synopsis ...\n"
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == "**Synopsis:** The synopsis ...\n\n"
+    md.setSynopsis(True)
+    md._text = "%synopsis: The synopsis ...\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "**Synopsis:** The synopsis ...\n\n"
 
-    toMD.setSynopsis(True)
-    toMD._text = "%short: A description ...\n"
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == "**Short Description:** A description ...\n\n"
+    md.setSynopsis(True)
+    md._text = "%short: A description ...\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "**Short Description:** A description ...\n\n"
 
     # Comment
-    toMD._text = "% A comment ...\n"
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == ""
+    md._text = "% A comment ...\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == ""
 
-    toMD.setComments(True)
-    toMD._text = "% A comment ...\n"
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == "**Comment:** A comment ...\n\n"
+    md.setComments(True)
+    md._text = "% A comment ...\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "**Comment:** A comment ...\n\n"
 
     # Keywords
-    toMD._text = "@char: Bod, Jane\n"
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == ""
+    md._text = "@char: Bod, Jane\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == ""
 
-    toMD.setKeywords(True)
-    toMD._text = "@char: Bod, Jane\n"
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == "**Characters:** Bod, Jane\n\n"
+    md.setKeywords(True)
+    md._text = "@char: Bod, Jane\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "**Characters:** Bod, Jane\n\n"
 
     # Multiple Keywords
-    toMD.setKeywords(True)
-    toMD._text = "## Chapter\n\n@pov: Bod\n@plot: Main\n@location: Europe\n\n"
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == (
+    md.setKeywords(True)
+    md._text = "## Chapter\n\n@pov: Bod\n@plot: Main\n@location: Europe\n\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == (
         "## Chapter\n\n"
         "**Point of View:** Bod  \n"
         "**Plot:** Main  \n"
@@ -193,17 +193,19 @@ def testFmtToMarkdown_ConvertParagraphs(mockGUI):
     )
 
     # Footnotes
-    toMD._text = (
+    md._text = (
         "Text with one[footnote:fa] or two[footnote:fb] footnotes.\n\n"
         "%footnote.fa: Footnote text A.\n\n"
     )
-    toMD.tokenizeText()
-    toMD.doConvert()
-    assert toMD.result == "Text with one[1] or two[ERR] footnotes.\n\n"
+    md.tokenizeText()
+    md.doConvert()
+    assert md._pages[-1] == "Text with one[1] or two[ERR] footnotes.\n\n"
 
-    toMD.appendFootnotes()
-    assert toMD.result == (
+    md.appendFootnotes()
+    assert md._pages[-2] == (
         "Text with one[1] or two[ERR] footnotes.\n\n"
+    )
+    assert md._pages[-1] == (
         "### Footnotes\n\n"
         "1. Footnote text A.\n\n"
     )
@@ -213,43 +215,43 @@ def testFmtToMarkdown_ConvertParagraphs(mockGUI):
 def testFmtToMarkdown_ConvertDirect(mockGUI):
     """Test the converter directly using the ToMarkdown class."""
     project = NWProject()
-    toMD = ToMarkdown(project, False)
-    toMD._isNovel = True
+    md = ToMarkdown(project, False)
+    md._isNovel = True
 
     # Special Titles
     # ==============
 
     # Title
-    toMD._blocks = [
-        (BlockTyp.TITLE, 1, "A Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
+    md._blocks = [
+        (BlockTyp.TITLE, "", "A Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
     ]
-    toMD.doConvert()
-    assert toMD.result == "# A Title\n\n"
+    md.doConvert()
+    assert md._pages[-1] == "# A Title\n\n"
 
     # Separators
     # ==========
 
     # Separator
-    toMD._blocks = [
-        (BlockTyp.SEP, 1, "* * *", [], BlockFmt.CENTRE),
+    md._blocks = [
+        (BlockTyp.SEP, "", "* * *", [], BlockFmt.CENTRE),
     ]
-    toMD.doConvert()
-    assert toMD.result == "* * *\n\n"
+    md.doConvert()
+    assert md._pages[-1] == "* * *\n\n"
 
     # Skip
-    toMD._blocks = [
-        (BlockTyp.SKIP, 1, "", [], BlockFmt.NONE),
+    md._blocks = [
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
     ]
-    toMD.doConvert()
-    assert toMD.result == "\n\n"
+    md.doConvert()
+    assert md._pages[-1] == "\n\n"
 
 
 @pytest.mark.core
 def testFmtToMarkdown_Save(mockGUI, fncPath):
     """Test the save method of the ToMarkdown class."""
     project = NWProject()
-    toMD = ToMarkdown(project, False)
-    toMD._isNovel = True
+    md = ToMarkdown(project, False)
+    md._isNovel = True
 
     # Build Project
     # =============
@@ -274,22 +276,21 @@ def testFmtToMarkdown_Save(mockGUI, fncPath):
     ]
 
     for i in range(len(docText)):
-        toMD._text = docText[i]
-        toMD.doPreProcessing()
-        toMD.tokenizeText()
-        toMD.doConvert()
-        assert toMD.result == resText[i]
+        md._text = docText[i]
+        md.doPreProcessing()
+        md.tokenizeText()
+        md.doConvert()
 
-    assert toMD.fullMD == resText
-    assert toMD.getFullResultSize() == len("".join(resText))
+    assert md._pages == resText
+    assert md.getFullResultSize() == len("".join(resText))
 
-    toMD.replaceTabs(nSpaces=4, spaceChar=" ")
+    md.replaceTabs(nSpaces=4, spaceChar=" ")
     resText[6] = "#### A Section\n\n    More text in scene two.\n\n"
-    assert toMD.fullMD == resText
+    assert md._pages == resText
 
     # Check File
     # ==========
 
     saveFile = fncPath / "outFile.md"
-    toMD.saveDocument(saveFile)
+    md.saveDocument(saveFile)
     assert saveFile.read_text(encoding="utf-8") == "".join(resText)

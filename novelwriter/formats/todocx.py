@@ -140,7 +140,7 @@ class DocXParStyle(NamedTuple):
     after: float | None = None
     line: float | None = None
     indentFirst: float | None = None
-    indentHangning: float | None = None
+    hanging: float | None = None
     align: str | None = None
     default: bool = False
     level: int | None = None
@@ -214,8 +214,6 @@ class ToDocX(Tokenizer):
 
     def doConvert(self) -> None:
         """Convert the list of text tokens into XML elements."""
-        self._result = ""  # Not used, but cleared just in case
-
         bIndent = self._fontSize * self._blockIndent
 
         for tType, _, tText, tFormat, tStyle in self._blocks:
@@ -240,9 +238,9 @@ class ToDocX(Tokenizer):
                 if tStyle & BlockFmt.PBA:
                     par.setPageBreakAfter(True)
 
-                if tStyle & BlockFmt.Z_BTMMRG:
+                if tStyle & BlockFmt.Z_BTM:
                     par.setMarginBottom(0.0)
-                if tStyle & BlockFmt.Z_TOPMRG:
+                if tStyle & BlockFmt.Z_TOP:
                     par.setMarginTop(0.0)
 
                 if tStyle & BlockFmt.IND_T:
@@ -471,7 +469,7 @@ class ToDocX(Tokenizer):
 
     def _generateFootnote(self, key: str) -> ET.Element | None:
         """Generate a footnote XML object."""
-        if self._footnotes.get(key):
+        if key in self._footnotes:
             idx = len(self._usedNotes) + 1
             run = ET.Element(_wTag("r"))
             rPr = xmlSubElem(run, _wTag("rPr"))
@@ -625,7 +623,7 @@ class ToDocX(Tokenizer):
             before=0.0,
             after=fnSz * self._marginFoot[1],
             line=fnSz * self._lineHeight,
-            indentHangning=fnSz * self._marginFoot[0],
+            hanging=fnSz * self._marginFoot[0],
         ))
 
         # Add to Cache
@@ -746,10 +744,10 @@ class ToDocX(Tokenizer):
                 _wTag("after"): str(int(20.0 * firstFloat(style.after))),
                 _wTag("line"): str(int(20.0 * firstFloat(style.line, size))),
             })
-            if style.indentHangning is not None:
+            if style.hanging is not None:
                 xmlSubElem(pPr, _wTag("ind"), attrib={
-                    _wTag("left"): str(int(20.0 * style.indentHangning)),
-                    _wTag("hanging"): str(int(20.0 * style.indentHangning)),
+                    _wTag("left"): str(int(20.0 * style.hanging)),
+                    _wTag("hanging"): str(int(20.0 * style.hanging)),
                 })
             if style.align:
                 xmlSubElem(pPr, _wTag("jc"), attrib={_wTag("val"): style.align})
