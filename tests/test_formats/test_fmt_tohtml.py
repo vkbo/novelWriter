@@ -232,7 +232,8 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='meta'><strong><span style='color: #f5871f'>Characters:</span></strong> "
+        "<p class='meta meta-char'><strong><span style='color: #f5871f'>"
+        "Characters:</span></strong> "
         "<span style='color: #4271ae'><a href='#tag_bod'>Bod</a></span>, "
         "<span style='color: #4271ae'><a href='#tag_jane'>Jane</a></span></p>\n"
     )
@@ -242,7 +243,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='meta'><strong><span style='color: #f5871f'>Tag:</span></strong> "
+        "<p class='meta meta-tag'><strong><span style='color: #f5871f'>Tag:</span></strong> "
         "<span style='color: #4271ae'><a name='tag_bod'>Bod</a></span></p>\n"
     )
 
@@ -250,7 +251,7 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.tokenizeText()
     html.doConvert()
     assert html.result == (
-        "<p class='meta'><strong><span style='color: #f5871f'>Tag:</span></strong> "
+        "<p class='meta meta-tag'><strong><span style='color: #f5871f'>Tag:</span></strong> "
         "<span style='color: #4271ae'><a name='tag_bod'>Bod</a></span> | "
         "<span style='color: #4271ae'>Nobody Owens</span></p>\n"
     )
@@ -263,13 +264,13 @@ def testFmtToHtml_ConvertParagraphs(mockGUI):
     html.doConvert()
     assert html.result == (
         "<h1 style='page-break-before: always;'>Chapter</h1>\n"
-        "<p class='meta' style='margin-bottom: 0;'>"
+        "<p class='meta meta-pov' style='margin-bottom: 0;'>"
         "<strong><span style='color: #f5871f'>Point of View:</span></strong> "
         "<span style='color: #4271ae'><a href='#tag_bod'>Bod</a></span></p>\n"
-        "<p class='meta' style='margin-bottom: 0; margin-top: 0;'>"
+        "<p class='meta meta-plot' style='margin-bottom: 0; margin-top: 0;'>"
         "<strong><span style='color: #f5871f'>Plot:</span></strong> "
         "<span style='color: #4271ae'><a href='#tag_main'>Main</a></span></p>\n"
-        "<p class='meta' style='margin-top: 0;'>"
+        "<p class='meta meta-location' style='margin-top: 0;'>"
         "<strong><span style='color: #f5871f'>Locations:</span></strong> "
         "<span style='color: #4271ae'><a href='#tag_europe'>Europe</a></span></p>\n"
     )
@@ -369,12 +370,14 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     html._handle = "0000000000000"
     html.setLinkHeadings(True)
 
+    tMeta = "0000000000000:T0001"
+
     # Special Titles
     # ==============
 
     # Title
     html._blocks = [
-        (BlockTyp.TITLE, 1, "A Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.TITLE, tMeta, "A Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
     ]
     html.doConvert()
     assert html.result == (
@@ -384,7 +387,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
 
     # Unnumbered
     html._blocks = [
-        (BlockTyp.HEAD2, 1, "Prologue", [], BlockFmt.PBB),
+        (BlockTyp.HEAD2, tMeta, "Prologue", [], BlockFmt.PBB),
     ]
     html.doConvert()
     assert html.result == (
@@ -397,14 +400,14 @@ def testFmtToHtml_ConvertDirect(mockGUI):
 
     # Separator
     html._blocks = [
-        (BlockTyp.SEP, 1, "* * *", [], BlockFmt.CENTRE),
+        (BlockTyp.SEP, tMeta, "* * *", [], BlockFmt.CENTRE),
     ]
     html.doConvert()
     assert html.result == "<p class='sep' style='text-align: center;'>* * *</p>\n"
 
     # Skip
     html._blocks = [
-        (BlockTyp.SKIP, 1, "", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, tMeta, "", [], BlockFmt.NONE),
     ]
     html.doConvert()
     assert html.result == "<p>&nbsp;</p>\n"
@@ -417,7 +420,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
     # Align Left
     html.setStyles(False)
     html._blocks = [
-        (BlockTyp.HEAD1, 1, "A Title", [], BlockFmt.LEFT),
+        (BlockTyp.HEAD1, tMeta, "A Title", [], BlockFmt.LEFT),
     ]
     html.doConvert()
     assert html.result == (
@@ -428,7 +431,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
 
     # Align Left
     html._blocks = [
-        (BlockTyp.HEAD1, 1, "A Title", [], BlockFmt.LEFT),
+        (BlockTyp.HEAD1, tMeta, "A Title", [], BlockFmt.LEFT),
     ]
     html.doConvert()
     assert html.result == (
@@ -437,7 +440,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
 
     # Align Right
     html._blocks = [
-        (BlockTyp.HEAD1, 1, "A Title", [], BlockFmt.RIGHT),
+        (BlockTyp.HEAD1, tMeta, "A Title", [], BlockFmt.RIGHT),
     ]
     html.doConvert()
     assert html.result == (
@@ -446,7 +449,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
 
     # Align Centre
     html._blocks = [
-        (BlockTyp.HEAD1, 1, "A Title", [], BlockFmt.CENTRE),
+        (BlockTyp.HEAD1, tMeta, "A Title", [], BlockFmt.CENTRE),
     ]
     html.doConvert()
     assert html.result == (
@@ -455,7 +458,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
 
     # Align Justify
     html._blocks = [
-        (BlockTyp.HEAD1, 1, "A Title", [], BlockFmt.JUSTIFY),
+        (BlockTyp.HEAD1, tMeta, "A Title", [], BlockFmt.JUSTIFY),
     ]
     html.doConvert()
     assert html.result == (
@@ -467,7 +470,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
 
     # Page Break Always
     html._blocks = [
-        (BlockTyp.HEAD1, 1, "A Title", [], BlockFmt.PBB | BlockFmt.PBA),
+        (BlockTyp.HEAD1, tMeta, "A Title", [], BlockFmt.PBB | BlockFmt.PBA),
     ]
     html.doConvert()
     assert html.result == (
@@ -480,7 +483,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
 
     # Indent Left
     html._blocks = [
-        (BlockTyp.TEXT, 1, "Some text ...", [], BlockFmt.IND_L),
+        (BlockTyp.TEXT, tMeta, "Some text ...", [], BlockFmt.IND_L),
     ]
     html.doConvert()
     assert html.result == (
@@ -489,7 +492,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
 
     # Indent Right
     html._blocks = [
-        (BlockTyp.TEXT, 1, "Some text ...", [], BlockFmt.IND_R),
+        (BlockTyp.TEXT, tMeta, "Some text ...", [], BlockFmt.IND_R),
     ]
     html.doConvert()
     assert html.result == (
@@ -498,7 +501,7 @@ def testFmtToHtml_ConvertDirect(mockGUI):
 
     # Text Indent
     html._blocks = [
-        (BlockTyp.TEXT, 1, "Some text ...", [], BlockFmt.IND_T),
+        (BlockTyp.TEXT, tMeta, "Some text ...", [], BlockFmt.IND_T),
     ]
     html.doConvert()
     assert html.result == (

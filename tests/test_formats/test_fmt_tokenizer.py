@@ -37,6 +37,10 @@ from novelwriter.formats.toraw import ToRaw
 
 from tests.tools import C, buildTestProject, readFile
 
+TMH = "0123456789abc"
+TM1 = f"{TMH}:T0001"
+TM2 = f"{TMH}:T0002"
+
 
 class BareTokenizer(Tokenizer):
     def doConvert(self):
@@ -209,14 +213,14 @@ def testFmtToken_TextOps(monkeypatch, mockGUI, mockRnd, fncPath):
     tokens.addRootHeading(C.hPlotRoot)
     assert tokens.allMarkdown[-1] == "#! Notes: Plot\n\n"
     assert tokens._blocks[-1] == (
-        BlockTyp.TITLE, 1, "Notes: Plot", [], BlockFmt.CENTRE
+        BlockTyp.TITLE, "0000000000009:T0001", "Notes: Plot", [], BlockFmt.CENTRE
     )
 
     # Not First Page
     tokens.addRootHeading(C.hPlotRoot)
     assert tokens.allMarkdown[-1] == "#! Notes: Plot\n\n"
     assert tokens._blocks[-1] == (
-        BlockTyp.TITLE, 1, "Notes: Plot", [], BlockFmt.CENTRE | BlockFmt.PBB
+        BlockTyp.TITLE, "0000000000009:T0001", "Notes: Plot", [], BlockFmt.CENTRE | BlockFmt.PBB
     )
 
     # Set Text
@@ -265,6 +269,7 @@ def testFmtToken_HeaderFormat(mockGUI):
     """Test the tokenization of header formats in the Tokenizer class."""
     project = NWProject()
     tokens = ToRaw(project)
+    tokens._handle = TMH
 
     # Title
     # =====
@@ -276,7 +281,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.TITLE, 1, "Novel Title", [], BlockFmt.CENTRE),
+        (BlockTyp.TITLE, TM1, "Novel Title", [], BlockFmt.CENTRE),
     ]
     assert tokens.allMarkdown[-1] == "#! Novel Title\n\n"
 
@@ -287,7 +292,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.TITLE, 1, "Note Title", [], BlockFmt.CENTRE),
+        (BlockTyp.TITLE, TM1, "Note Title", [], BlockFmt.CENTRE),
     ]
     assert tokens.allMarkdown[-1] == "#! Note Title\n\n"
 
@@ -301,7 +306,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, 1, "Novel Title", [], BlockFmt.CENTRE),
+        (BlockTyp.HEAD1, TM1, "Novel Title", [], BlockFmt.CENTRE),
     ]
     assert tokens.allMarkdown[-1] == "# Novel Title\n\n"
 
@@ -312,7 +317,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, 1, "Note Title", [], BlockFmt.NONE),
+        (BlockTyp.HEAD1, TM1, "Note Title", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "# Note Title\n\n"
 
@@ -325,7 +330,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD2, 1, "Chapter One", [], BlockFmt.PBB),
+        (BlockTyp.HEAD2, TM1, "Chapter One", [], BlockFmt.PBB),
     ]
     assert tokens.allMarkdown[-1] == "## Chapter One\n\n"
 
@@ -335,7 +340,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD2, 1, "Heading 2", [], BlockFmt.NONE),
+        (BlockTyp.HEAD2, TM1, "Heading 2", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "## Heading 2\n\n"
 
@@ -348,7 +353,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD3, 1, "Scene One", [], BlockFmt.NONE),
+        (BlockTyp.HEAD3, TM1, "Scene One", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "### Scene One\n\n"
 
@@ -358,7 +363,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD3, 1, "Heading 3", [], BlockFmt.NONE),
+        (BlockTyp.HEAD3, TM1, "Heading 3", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "### Heading 3\n\n"
 
@@ -371,7 +376,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD4, 1, "A Section", [], BlockFmt.NONE),
+        (BlockTyp.HEAD4, TM1, "A Section", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "#### A Section\n\n"
 
@@ -381,7 +386,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD4, 1, "Heading 4", [], BlockFmt.NONE),
+        (BlockTyp.HEAD4, TM1, "Heading 4", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "#### Heading 4\n\n"
 
@@ -395,7 +400,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.TITLE, 1, "Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.TITLE, TM1, "Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
     ]
     assert tokens.allMarkdown[-1] == "#! Title\n\n"
 
@@ -406,7 +411,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.TITLE, 1, "Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.TITLE, TM1, "Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
     ]
     assert tokens.allMarkdown[-1] == "#! Title\n\n"
 
@@ -419,7 +424,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD2, 1, "Prologue", [], BlockFmt.PBB),
+        (BlockTyp.HEAD2, TM1, "Prologue", [], BlockFmt.PBB),
     ]
     assert tokens.allMarkdown[-1] == "##! Prologue\n\n"
 
@@ -429,7 +434,7 @@ def testFmtToken_HeaderFormat(mockGUI):
 
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD2, 1, "Prologue", [], BlockFmt.NONE),
+        (BlockTyp.HEAD2, TM1, "Prologue", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "##! Prologue\n\n"
 
@@ -700,6 +705,7 @@ def testFmtToken_MetaFormat(mockGUI):
     """Test the tokenization of meta formats in the Tokenizer class."""
     project = NWProject()
     tokens = ToRaw(project)
+    tokens._handle = TMH
 
     # Ignore Text
     tokens._text = "%~ Some text\n"
@@ -718,7 +724,7 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens._text = "% A comment\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.COMMENT, 0, "Comment: A comment", [
+        BlockTyp.COMMENT, "", "Comment: A comment", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "comment"),
             (8, TextFmt.COL_E, ""), (8, TextFmt.B_E, ""),
             (9, TextFmt.COL_B, "comment"), (18, TextFmt.COL_E, ""),
@@ -737,7 +743,7 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens._text = "% synopsis: The synopsis\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.COMMENT, 0, "Synopsis: The synopsis", [
+        BlockTyp.COMMENT, "", "Synopsis: The synopsis", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
             (9, TextFmt.COL_E, ""), (9, TextFmt.B_E, ""),
             (10, TextFmt.COL_B, "synopsis"), (22, TextFmt.COL_E, "")
@@ -756,7 +762,7 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens._text = "% short: A short description\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.COMMENT, 0, "Short Description: A short description", [
+        BlockTyp.COMMENT, "", "Short Description: A short description", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "modifier"),
             (18, TextFmt.COL_E, ""), (18, TextFmt.B_E, ""),
             (19, TextFmt.COL_B, "synopsis"), (38, TextFmt.COL_E, ""),
@@ -774,7 +780,7 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens.setKeywords(True)
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.KEYWORD, 0, "Characters: Bod", [
+        BlockTyp.KEYWORD, "char", "Characters: Bod", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
             (11, TextFmt.COL_E, ""), (11, TextFmt.B_E, ""),
             (12, TextFmt.COL_B, "tag"), (12, TextFmt.HRF_B, "#tag_bod"),
@@ -786,26 +792,26 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens._text = "@pov: Bod\n@plot: Main\n@location: Europe\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.KEYWORD, 0, "Point of View: Bod", [
+        BlockTyp.KEYWORD, "pov", "Point of View: Bod", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
             (14, TextFmt.COL_E, ""), (14, TextFmt.B_E, ""),
             (15, TextFmt.COL_B, "tag"), (15, TextFmt.HRF_B, "#tag_bod"),
             (18, TextFmt.HRF_E, ""), (18, TextFmt.COL_E, ""),
-        ], BlockFmt.Z_BTMMRG
+        ], BlockFmt.Z_BTM
     ), (
-        BlockTyp.KEYWORD, 0, "Plot: Main", [
+        BlockTyp.KEYWORD, "plot", "Plot: Main", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
             (5, TextFmt.COL_E, ""), (5, TextFmt.B_E, ""),
             (6, TextFmt.COL_B, "tag"), (6, TextFmt.HRF_B, "#tag_main"),
             (10, TextFmt.HRF_E, ""), (10, TextFmt.COL_E, ""),
-        ], BlockFmt.Z_TOPMRG | BlockFmt.Z_BTMMRG
+        ], BlockFmt.Z_TOP | BlockFmt.Z_BTM
     ), (
-        BlockTyp.KEYWORD, 0, "Locations: Europe", [
+        BlockTyp.KEYWORD, "location", "Locations: Europe", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
             (10, TextFmt.COL_E, ""), (10, TextFmt.B_E, ""),
             (11, TextFmt.COL_B, "tag"), (11, TextFmt.HRF_B, "#tag_europe"),
             (17, TextFmt.HRF_E, ""), (17, TextFmt.COL_E, ""),
-        ], BlockFmt.Z_TOPMRG
+        ], BlockFmt.Z_TOP
     )]
     assert tokens.allMarkdown[-1] == "@pov: Bod\n@plot: Main\n@location: Europe\n\n"
 
@@ -814,7 +820,7 @@ def testFmtToken_MetaFormat(mockGUI):
     tokens.setIgnoredKeywords("@plot, @location")
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.KEYWORD, 0, "Point of View: Bod", [
+        BlockTyp.KEYWORD, "pov", "Point of View: Bod", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
             (14, TextFmt.COL_E, ""), (14, TextFmt.B_E, ""),
             (15, TextFmt.COL_B, "tag"), (15, TextFmt.HRF_B, "#tag_bod"),
@@ -844,14 +850,14 @@ def testFmtToken_MarginFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.TEXT,  0, "Some regular text", [], BlockFmt.NONE),
-        (BlockTyp.TEXT,  0, "Some left-aligned text", [], BlockFmt.LEFT),
-        (BlockTyp.TEXT,  0, "Some right-aligned text", [], BlockFmt.RIGHT),
-        (BlockTyp.TEXT,  0, "Some centered text", [], BlockFmt.CENTRE),
-        (BlockTyp.TEXT,  0, "Left-indented block", [], BlockFmt.IND_L),
-        (BlockTyp.TEXT,  0, "Right-indented block", [], BlockFmt.IND_R),
-        (BlockTyp.TEXT,  0, "Double-indented block", [], dblIndent),
-        (BlockTyp.TEXT,  0, "Right-indent, right-aligned", [], rIndAlign),
+        (BlockTyp.TEXT, "", "Some regular text", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Some left-aligned text", [], BlockFmt.LEFT),
+        (BlockTyp.TEXT, "", "Some right-aligned text", [], BlockFmt.RIGHT),
+        (BlockTyp.TEXT, "", "Some centered text", [], BlockFmt.CENTRE),
+        (BlockTyp.TEXT, "", "Left-indented block", [], BlockFmt.IND_L),
+        (BlockTyp.TEXT, "", "Right-indented block", [], BlockFmt.IND_R),
+        (BlockTyp.TEXT, "", "Double-indented block", [], dblIndent),
+        (BlockTyp.TEXT, "", "Right-indent, right-aligned", [], rIndAlign),
     ]
     assert tokens.allMarkdown[-1] == (
         "Some regular text\n\n"
@@ -976,13 +982,14 @@ def testFmtToken_Paragraphs(mockGUI):
     """Test the splitting of paragraphs."""
     project = NWProject()
     tokens = BareTokenizer(project)
+    tokens._handle = TMH
 
     # Collapse empty lines
     tokens._text = "First paragraph\n\n\nSecond paragraph\n\n\n"
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.TEXT, 0, "First paragraph", [], BlockFmt.NONE),
-        (BlockTyp.TEXT, 0, "Second paragraph", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "First paragraph", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Second paragraph", [], BlockFmt.NONE),
     ]
 
     # Combine multi-line paragraphs, keep breaks
@@ -990,7 +997,7 @@ def testFmtToken_Paragraphs(mockGUI):
     tokens.setKeepLineBreaks(True)
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.TEXT, 0, "This is text\nspanning multiple\nlines", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "This is text\nspanning multiple\nlines", [], BlockFmt.NONE),
     ]
 
     # Combine multi-line paragraphs, remove breaks
@@ -998,7 +1005,7 @@ def testFmtToken_Paragraphs(mockGUI):
     tokens.setKeepLineBreaks(False)
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.TEXT, 0, "This is text spanning multiple lines", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "This is text spanning multiple lines", [], BlockFmt.NONE),
     ]
 
     # Combine multi-line paragraphs, remove breaks, with formatting
@@ -1007,7 +1014,7 @@ def testFmtToken_Paragraphs(mockGUI):
     tokens.tokenizeText()
     assert tokens._blocks == [
         (
-            BlockTyp.TEXT, 0,
+            BlockTyp.TEXT, "",
             "This is text spanning multiple lines",
             [
                 (5,  TextFmt.B_B, ""),
@@ -1024,16 +1031,16 @@ def testFmtToken_Paragraphs(mockGUI):
     tokens.setKeepLineBreaks(False)
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, 1, "Title", [], BlockFmt.NONE),
+        (BlockTyp.HEAD1, TM1, "Title", [], BlockFmt.NONE),
         (
-            BlockTyp.TEXT, 1, "Text on two lines.", [
+            BlockTyp.TEXT, "", "Text on two lines.", [
                 (5, TextFmt.I_B, ""),
                 (7, TextFmt.I_E, ""),
             ], BlockFmt.NONE
         ),
-        (BlockTyp.HEAD2, 2, "Chapter", [], BlockFmt.NONE),
+        (BlockTyp.HEAD2, TM2, "Chapter", [], BlockFmt.NONE),
         (
-            BlockTyp.TEXT, 2, "More text here.", [
+            BlockTyp.TEXT, "", "More text here.", [
                 (5,  TextFmt.B_B, ""),
                 (9,  TextFmt.B_E, ""),
                 (10, TextFmt.I_B, ""),
@@ -1048,12 +1055,13 @@ def testFmtToken_TextFormat(mockGUI):
     """Test the tokenization of text formats in the Tokenizer class."""
     project = NWProject()
     tokens = ToRaw(project)
+    tokens._handle = TMH
 
     # Text
     tokens._text = "Some plain text\non two lines\n\n\n"
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.TEXT, 0, "Some plain text\non two lines", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Some plain text\non two lines", [], BlockFmt.NONE),
     ]
     assert tokens.allMarkdown[-1] == "Some plain text\non two lines\n\n\n\n"
 
@@ -1067,7 +1075,7 @@ def testFmtToken_TextFormat(mockGUI):
     tokens._text = "Some **bolded text** on this lines\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.TEXT, 0, "Some bolded text on this lines",
+        BlockTyp.TEXT, "", "Some bolded text on this lines",
         [
             (5,  TextFmt.B_B, ""),
             (16, TextFmt.B_E, ""),
@@ -1079,7 +1087,7 @@ def testFmtToken_TextFormat(mockGUI):
     tokens._text = "Some _italic text_ on this lines\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.TEXT, 0, "Some italic text on this lines",
+        BlockTyp.TEXT, "", "Some italic text on this lines",
         [
             (5,  TextFmt.I_B, ""),
             (16, TextFmt.I_E, ""),
@@ -1091,7 +1099,7 @@ def testFmtToken_TextFormat(mockGUI):
     tokens._text = "Some **_bold italic text_** on this lines\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.TEXT, 0, "Some bold italic text on this lines",
+        BlockTyp.TEXT, "", "Some bold italic text on this lines",
         [
             (5,  TextFmt.B_B, ""),
             (5,  TextFmt.I_B, ""),
@@ -1105,7 +1113,7 @@ def testFmtToken_TextFormat(mockGUI):
     tokens._text = "Some ~~strikethrough text~~ on this lines\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.TEXT, 0, "Some strikethrough text on this lines",
+        BlockTyp.TEXT, "", "Some strikethrough text on this lines",
         [
             (5,  TextFmt.D_B, ""),
             (23, TextFmt.D_E, ""),
@@ -1117,7 +1125,7 @@ def testFmtToken_TextFormat(mockGUI):
     tokens._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.TEXT, 0, "Some nested bold and italic and strikethrough text here",
+        BlockTyp.TEXT, "", "Some nested bold and italic and strikethrough text here",
         [
             (5,  TextFmt.B_B, ""),
             (21, TextFmt.I_B, ""),
@@ -1149,13 +1157,14 @@ def testFmtToken_Dialogue(mockGUI):
     project = NWProject()
     tokens = BareTokenizer(project)
     tokens.setDialogueHighlight(True)
+    tokens._handle = TMH
     tokens._isNovel = True
 
     # Single quotes
     tokens._text = "Text with \u2018dialogue one,\u2019 and \u2018dialogue two.\u2019\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.TEXT, 0,
+        BlockTyp.TEXT, "",
         "Text with \u2018dialogue one,\u2019 and \u2018dialogue two.\u2019",
         [
             (10, TextFmt.COL_B, "dialog"),
@@ -1170,7 +1179,7 @@ def testFmtToken_Dialogue(mockGUI):
     tokens._text = "Text with \u201cdialogue one,\u201d and \u201cdialogue two.\u201d\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.TEXT, 0,
+        BlockTyp.TEXT, "",
         "Text with \u201cdialogue one,\u201d and \u201cdialogue two.\u201d",
         [
             (10, TextFmt.COL_B, "dialog"),
@@ -1185,7 +1194,7 @@ def testFmtToken_Dialogue(mockGUI):
     tokens._text = "Text with ::dialogue one,:: and ::dialogue two.::\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.TEXT, 0,
+        BlockTyp.TEXT, "",
         "Text with ::dialogue one,:: and ::dialogue two.::",
         [
             (10, TextFmt.COL_B, "altdialog"),
@@ -1200,7 +1209,7 @@ def testFmtToken_Dialogue(mockGUI):
     tokens._text = "\u2013 Dialogue with a narrator break, \u2013he said,\u2013 see?\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.TEXT, 0,
+        BlockTyp.TEXT, "",
         "\u2013 Dialogue with a narrator break, \u2013he said,\u2013 see?",
         [
             (0,  TextFmt.COL_B, "dialog"),
@@ -1218,7 +1227,7 @@ def testFmtToken_Dialogue(mockGUI):
     tokens._text = "[i]\u201cDialogue text.\u201d[/i]\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.TEXT, 0,
+        BlockTyp.TEXT, "",
         "\u201cDialogue text.\u201d",
         [
             (0,  TextFmt.I_B, ""),
@@ -1235,15 +1244,15 @@ def testFmtToken_SpecialFormat(mockGUI):
     """Test the tokenization of special formats in the Tokenizer class."""
     project = NWProject()
     tokens = BareTokenizer(project)
-
+    tokens._handle = TMH
     tokens._isNovel = True
 
     # New Page
     # ========
 
     correctResp = [
-        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.CENTRE),
-        (BlockTyp.HEAD1, 2, "Title Two", [], BlockFmt.CENTRE | BlockFmt.PBB),
+        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.CENTRE),
+        (BlockTyp.HEAD1, TM2, "Title Two", [], BlockFmt.CENTRE | BlockFmt.PBB),
     ]
 
     # Command wo/Space
@@ -1286,9 +1295,9 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.SKIP,  1, "", [], BlockFmt.NONE),
-        (BlockTyp.TEXT,  1, "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.SKIP,  "",  "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT,  "",  "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Multiple Empty Paragraphs
@@ -1302,9 +1311,9 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.SKIP,  1, "", [], BlockFmt.NONE),
-        (BlockTyp.TEXT,  1, "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.SKIP,  "",  "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT,  "",  "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Three Skips
@@ -1315,11 +1324,11 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.SKIP,  1, "", [], BlockFmt.NONE),
-        (BlockTyp.SKIP,  1, "", [], BlockFmt.NONE),
-        (BlockTyp.SKIP,  1, "", [], BlockFmt.NONE),
-        (BlockTyp.TEXT,  1, "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.SKIP,  "",  "", [], BlockFmt.NONE),
+        (BlockTyp.SKIP,  "",  "", [], BlockFmt.NONE),
+        (BlockTyp.SKIP,  "",  "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT,  "",  "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Malformed Command, Case 1
@@ -1330,8 +1339,8 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.TEXT,  1, "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.TEXT,  "",  "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Malformed Command, Case 2
@@ -1342,8 +1351,8 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.TEXT,  1, "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.TEXT,  "",  "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Malformed Command, Case 3
@@ -1354,8 +1363,8 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.TEXT,  1, "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.TEXT,  "",  "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Empty Paragraph and Page Break
@@ -1370,9 +1379,9 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.SKIP,  1, "", [], BlockFmt.PBB),
-        (BlockTyp.TEXT,  1, "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.SKIP,  "",  "", [], BlockFmt.PBB),
+        (BlockTyp.TEXT,  "",  "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
     # Multiple Skip
@@ -1384,11 +1393,11 @@ def testFmtToken_SpecialFormat(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
-        (BlockTyp.SKIP,  1, "", [], BlockFmt.PBB),
-        (BlockTyp.SKIP,  1, "", [], BlockFmt.NONE),
-        (BlockTyp.SKIP,  1, "", [], BlockFmt.NONE),
-        (BlockTyp.TEXT,  1, "Some text to go here ...", [], BlockFmt.NONE),
+        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.SKIP,  "",  "", [], BlockFmt.PBB),
+        (BlockTyp.SKIP,  "",  "", [], BlockFmt.NONE),
+        (BlockTyp.SKIP,  "",  "", [], BlockFmt.NONE),
+        (BlockTyp.TEXT,  "",  "Some text to go here ...", [], BlockFmt.NONE),
     ]
 
 
@@ -1398,6 +1407,7 @@ def testFmtToken_TextIndent(mockGUI):
     project = NWProject()
     tokens = BareTokenizer(project)
     tokens.setSynopsis(True)
+    tokens._handle = TMH
 
     # No First Indent
     tokens.setFirstLineIndent(True, 1.0, False)
@@ -1417,10 +1427,10 @@ def testFmtToken_TextIndent(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.NONE),
-        (BlockTyp.HEAD3, 2, "Scene One", [], BlockFmt.NONE),
-        (BlockTyp.TEXT,  2, "First paragraph.", [], BlockFmt.NONE),
-        (BlockTyp.TEXT,  2, "Second paragraph.", [], BlockFmt.IND_T),
+        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.NONE),
+        (BlockTyp.HEAD3, TM2, "Scene One", [], BlockFmt.NONE),
+        (BlockTyp.TEXT,  "",  "First paragraph.", [], BlockFmt.NONE),
+        (BlockTyp.TEXT,  "",  "Second paragraph.", [], BlockFmt.IND_T),
     ]
     assert tokens._noIndent is False
 
@@ -1436,8 +1446,8 @@ def testFmtToken_TextIndent(mockGUI):
         (9, TextFmt.B_E, ""), (10, TextFmt.COL_B, "synopsis"), (24, TextFmt.COL_E, ""),
     ]
     assert tokens._blocks == [
-        (BlockTyp.HEAD3,   1, "Scene Two", [], BlockFmt.NONE),
-        (BlockTyp.COMMENT, 1, "Synopsis: Stuff happens.", tFmt, BlockFmt.NONE),
+        (BlockTyp.HEAD3,   TM1, "Scene Two", [], BlockFmt.NONE),
+        (BlockTyp.COMMENT, "",  "Synopsis: Stuff happens.", tFmt, BlockFmt.NONE),
     ]
     assert tokens._noIndent is True
 
@@ -1449,8 +1459,8 @@ def testFmtToken_TextIndent(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.TEXT, 0, "First paragraph.", [], BlockFmt.NONE),
-        (BlockTyp.TEXT, 0, "Second paragraph.", [], BlockFmt.IND_T),
+        (BlockTyp.TEXT, "", "First paragraph.", [], BlockFmt.NONE),
+        (BlockTyp.TEXT, "", "Second paragraph.", [], BlockFmt.IND_T),
     ]
     assert tokens._noIndent is False
 
@@ -1472,10 +1482,10 @@ def testFmtToken_TextIndent(mockGUI):
     )
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, 1, "Title One", [], BlockFmt.NONE),
-        (BlockTyp.HEAD3, 2, "Scene One", [], BlockFmt.NONE),
-        (BlockTyp.TEXT,  2, "First paragraph.", [], BlockFmt.IND_T),
-        (BlockTyp.TEXT,  2, "Second paragraph.", [], BlockFmt.IND_T),
+        (BlockTyp.HEAD1, TM1, "Title One", [], BlockFmt.NONE),
+        (BlockTyp.HEAD3, TM2, "Scene One", [], BlockFmt.NONE),
+        (BlockTyp.TEXT,  "",  "First paragraph.", [], BlockFmt.IND_T),
+        (BlockTyp.TEXT,  "",  "Second paragraph.", [], BlockFmt.IND_T),
     ]
     assert tokens._noIndent is False
 
@@ -1488,6 +1498,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     project._loadProjectLocalisation()
     tokens = BareTokenizer(project)
     tokens._isNovel = True
+    tokens._handle = TMH
 
     # Titles
     # ======
@@ -1498,7 +1509,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setPartitionFormat(f"T: {nwHeadFmt.TITLE}")
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, 1, "T: Part One", [], BlockFmt.CENTRE),
+        (BlockTyp.HEAD1, TM1, "T: Part One", [], BlockFmt.CENTRE),
     ]
 
     # H1: Title, Not First Page
@@ -1507,7 +1518,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setPartitionFormat(f"T: {nwHeadFmt.TITLE}")
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD1, 1, "T: Part One", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.HEAD1, TM1, "T: Part One", [], BlockFmt.PBB | BlockFmt.CENTRE),
     ]
 
     # Chapters
@@ -1518,7 +1529,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setChapterFormat(f"C: {nwHeadFmt.TITLE}")
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD2, 1, "C: Chapter One", [], BlockFmt.PBB),
+        (BlockTyp.HEAD2, TM1, "C: Chapter One", [], BlockFmt.PBB),
     ]
 
     # H2: Unnumbered Chapter
@@ -1526,7 +1537,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setUnNumberedFormat(f"U: {nwHeadFmt.TITLE}")
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD2, 1, "U: Prologue", [], BlockFmt.PBB),
+        (BlockTyp.HEAD2, TM1, "U: Prologue", [], BlockFmt.PBB),
     ]
 
     # H2: Chapter Word Number
@@ -1535,7 +1546,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens._hFormatter._chCount = 0
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD2, 1, "Chapter One", [], BlockFmt.PBB),
+        (BlockTyp.HEAD2, TM1, "Chapter One", [], BlockFmt.PBB),
     ]
 
     # H2: Chapter Roman Number Upper Case
@@ -1543,7 +1554,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setChapterFormat(f"Chapter {nwHeadFmt.CH_ROMU}")
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD2, 1, "Chapter II", [], BlockFmt.PBB),
+        (BlockTyp.HEAD2, TM1, "Chapter II", [], BlockFmt.PBB),
     ]
 
     # H2: Chapter Roman Number Lower Case
@@ -1551,7 +1562,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setChapterFormat(f"Chapter {nwHeadFmt.CH_ROML}")
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD2, 1, "Chapter iii", [], BlockFmt.PBB),
+        (BlockTyp.HEAD2, TM1, "Chapter iii", [], BlockFmt.PBB),
     ]
 
     # Scenes
@@ -1562,7 +1573,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setSceneFormat(f"S: {nwHeadFmt.TITLE}", False)
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD3, 1, "S: Scene One", [], BlockFmt.NONE),
+        (BlockTyp.HEAD3, TM1, "S: Scene One", [], BlockFmt.NONE),
     ]
 
     # H3: Scene Hidden wo/Format
@@ -1584,7 +1595,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens._noSep = False
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.SKIP, 1, "", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, TM1, "", [], BlockFmt.NONE),
     ]
 
     # H3: Scene Separator, first
@@ -1600,7 +1611,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens._noSep = False
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.SEP, 1, "* * *", [], BlockFmt.CENTRE),
+        (BlockTyp.SEP, TM1, "* * *", [], BlockFmt.CENTRE),
     ]
 
     # H3: Scene w/Absolute Number
@@ -1610,7 +1621,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens._hFormatter._scChCount = 0
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD3, 1, "Scene 1", [], BlockFmt.NONE),
+        (BlockTyp.HEAD3, TM1, "Scene 1", [], BlockFmt.NONE),
     ]
 
     # H3: Scene w/Chapter Number
@@ -1620,7 +1631,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens._hFormatter._scChCount = 1
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD3, 1, "Scene 3.2", [], BlockFmt.NONE),
+        (BlockTyp.HEAD3, TM1, "Scene 3.2", [], BlockFmt.NONE),
     ]
 
     # Sections
@@ -1637,7 +1648,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setSectionFormat("", False)
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.SKIP, 1, "", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, TM1, "", [], BlockFmt.NONE),
     ]
 
     # H4: Section w/Format
@@ -1645,7 +1656,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setSectionFormat(f"X: {nwHeadFmt.TITLE}", False)
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.HEAD4, 1, "X: A Section", [], BlockFmt.NONE),
+        (BlockTyp.HEAD4, TM1, "X: A Section", [], BlockFmt.NONE),
     ]
 
     # H4: Section Separator
@@ -1653,7 +1664,7 @@ def testFmtToken_ProcessHeaders(mockGUI):
     tokens.setSectionFormat("* * *", False)
     tokens.tokenizeText()
     assert tokens._blocks == [
-        (BlockTyp.SEP, 1, "* * *", [], BlockFmt.CENTRE),
+        (BlockTyp.SEP, TM1, "* * *", [], BlockFmt.CENTRE),
     ]
 
     # Check the first scene detector, plain text
@@ -1707,7 +1718,7 @@ def testFmtToken_FormatMeta(mockGUI):
     tokens = BareTokenizer(project)
 
     assert tokens._formatMeta("@tag: Jane | Jane Smith") == (
-        "Tag: Jane | Jane Smith", [
+        "@tag", "Tag: Jane | Jane Smith", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
             (4, TextFmt.COL_E, ""), (4, TextFmt.B_E, ""),
             (5, TextFmt.COL_B, "tag"), (5, TextFmt.ANM_B, "tag_jane"),
@@ -1717,7 +1728,7 @@ def testFmtToken_FormatMeta(mockGUI):
     )
 
     assert tokens._formatMeta("@char: Jane, John") == (
-        "Characters: Jane, John", [
+        "@char", "Characters: Jane, John", [
             (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "keyword"),
             (11, TextFmt.COL_E, ""), (11, TextFmt.B_E, ""),
             (12, TextFmt.COL_B, "tag"), (12, TextFmt.HRF_B, "#tag_jane"),

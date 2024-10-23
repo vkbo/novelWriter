@@ -240,9 +240,9 @@ class ToDocX(Tokenizer):
                 if tStyle & BlockFmt.PBA:
                     par.setPageBreakAfter(True)
 
-                if tStyle & BlockFmt.Z_BTMMRG:
+                if tStyle & BlockFmt.Z_BTM:
                     par.setMarginBottom(0.0)
-                if tStyle & BlockFmt.Z_TOPMRG:
+                if tStyle & BlockFmt.Z_TOP:
                     par.setMarginTop(0.0)
 
                 if tStyle & BlockFmt.IND_T:

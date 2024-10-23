@@ -423,9 +423,9 @@ class ToOdt(Tokenizer):
                 if tStyle & BlockFmt.PBA:
                     oStyle.setBreakAfter("page")
 
-                if tStyle & BlockFmt.Z_BTMMRG:
+                if tStyle & BlockFmt.Z_BTM:
                     oStyle.setMarginBottom("0.000cm")
-                if tStyle & BlockFmt.Z_TOPMRG:
+                if tStyle & BlockFmt.Z_TOP:
                     oStyle.setMarginTop("0.000cm")
 
                 if tStyle & BlockFmt.IND_L:

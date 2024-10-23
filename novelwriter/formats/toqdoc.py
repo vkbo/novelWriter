@@ -37,7 +37,7 @@ from PyQt5.QtPrintSupport import QPrinter
 from novelwriter.constants import nwHeadFmt, nwStyles, nwUnicode
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
-from novelwriter.formats.tokenizer import Tokenizer
+from novelwriter.formats.tokenizer import HEADINGS, Tokenizer
 from novelwriter.types import (
     QtAlignAbsolute, QtAlignCenter, QtAlignJustify, QtAlignLeft, QtAlignRight,
     QtPageBreakAfter, QtPageBreakBefore, QtTransparent, QtVAlignNormal,
@@ -173,7 +173,7 @@ class ToQTextDocument(Tokenizer):
         cursor = QTextCursor(self._document)
         cursor.movePosition(QTextCursor.MoveOperation.End)
 
-        for tType, nHead, tText, tFormat, tStyle in self._blocks:
+        for tType, tMeta, tText, tFormat, tStyle in self._blocks:
 
             bFmt = QTextBlockFormat(self._blockFmt)
             if tType in (BlockTyp.COMMENT, BlockTyp.KEYWORD):
@@ -198,9 +198,9 @@ class ToQTextDocument(Tokenizer):
                 if tStyle & BlockFmt.PBA:
                     bFmt.setPageBreakPolicy(QtPageBreakAfter)
 
-                if tStyle & BlockFmt.Z_BTMMRG:
+                if tStyle & BlockFmt.Z_BTM:
                     bFmt.setBottomMargin(0.0)
-                if tStyle & BlockFmt.Z_TOPMRG:
+                if tStyle & BlockFmt.Z_TOP:
                     bFmt.setTopMargin(0.0)
 
                 if tStyle & BlockFmt.IND_L:
@@ -214,8 +214,8 @@ class ToQTextDocument(Tokenizer):
                 newBlock(cursor, bFmt)
                 self._insertFragments(tText, tFormat, cursor, self._charFmt)
 
-            elif tType in self.L_HEADINGS:
-                bFmt, cFmt = self._genHeadStyle(tType, nHead, bFmt)
+            elif tType in HEADINGS:
+                bFmt, cFmt = self._genHeadStyle(tType, tMeta, bFmt)
                 newBlock(cursor, bFmt)
                 cursor.insertText(tText.replace(nwHeadFmt.BR, "\n"), cFmt)
 
@@ -254,7 +254,7 @@ class ToQTextDocument(Tokenizer):
             cursor = QTextCursor(self._document)
             cursor.movePosition(QTextCursor.MoveOperation.End)
 
-            bFmt, cFmt = self._genHeadStyle(BlockTyp.HEAD4, -1, self._blockFmt)
+            bFmt, cFmt = self._genHeadStyle(BlockTyp.HEAD4, "", self._blockFmt)
             newBlock(cursor, bFmt)
             cursor.insertText(self._localLookup("Footnotes"), cFmt)
 
@@ -356,7 +356,7 @@ class ToQTextDocument(Tokenizer):
 
         return
 
-    def _genHeadStyle(self, hType: BlockTyp, nHead: int, rFmt: QTextBlockFormat) -> T_TextStyle:
+    def _genHeadStyle(self, hType: BlockTyp, hKey: str, rFmt: QTextBlockFormat) -> T_TextStyle:
         """Generate a heading style set."""
         mTop, mBottom = self._mHead.get(hType, (0.0, 0.0))
 
@@ -369,8 +369,8 @@ class ToQTextDocument(Tokenizer):
         cFmt.setForeground(self._theme.head if hCol else self._theme.text)
         cFmt.setFontWeight(self._bold if self._boldHeads else self._normal)
         cFmt.setFontPointSize(self._sHead.get(hType, 1.0))
-        if nHead >= 0:
-            cFmt.setAnchorNames([f"{self._handle}:T{nHead:04d}"])
+        if hKey:
+            cFmt.setAnchorNames([hKey])
             cFmt.setAnchor(True)
 
         return bFmt, cFmt

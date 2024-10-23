@@ -221,7 +221,7 @@ def testFmtToMarkdown_ConvertDirect(mockGUI):
 
     # Title
     toMD._blocks = [
-        (BlockTyp.TITLE, 1, "A Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
+        (BlockTyp.TITLE, "", "A Title", [], BlockFmt.PBB | BlockFmt.CENTRE),
     ]
     toMD.doConvert()
     assert toMD.result == "# A Title\n\n"
@@ -231,14 +231,14 @@ def testFmtToMarkdown_ConvertDirect(mockGUI):
 
     # Separator
     toMD._blocks = [
-        (BlockTyp.SEP, 1, "* * *", [], BlockFmt.CENTRE),
+        (BlockTyp.SEP, "", "* * *", [], BlockFmt.CENTRE),
     ]
     toMD.doConvert()
     assert toMD.result == "* * *\n\n"
 
     # Skip
     toMD._blocks = [
-        (BlockTyp.SKIP, 1, "", [], BlockFmt.NONE),
+        (BlockTyp.SKIP, "", "", [], BlockFmt.NONE),
     ]
     toMD.doConvert()
     assert toMD.result == "\n\n"

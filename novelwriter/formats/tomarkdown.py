@@ -154,7 +154,7 @@ class ToMarkdown(Tokenizer):
                 lines.append(f"{self._formatText(tText, tFormat, mTags)}\n\n")
 
             elif tType == BlockTyp.KEYWORD:
-                end = "  \n" if tStyle & BlockFmt.Z_BTMMRG else "\n\n"
+                end = "  \n" if tStyle & BlockFmt.Z_BTM else "\n\n"
                 lines.append(f"{self._formatText(tText, tFormat, mTags)}{end}")
 
         self._result = "".join(lines)

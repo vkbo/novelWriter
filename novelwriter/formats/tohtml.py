@@ -157,9 +157,7 @@ class ToHtml(Tokenizer):
             h4 = "h4"
 
         lines = []
-        tHandle = self._handle
-
-        for tType, nHead, tText, tFmt, tStyle in self._blocks:
+        for tType, tMeta, tText, tFmt, tStyle in self._blocks:
 
             # Replace < and > with HTML entities
             if tFmt:
@@ -200,9 +198,9 @@ class ToHtml(Tokenizer):
                 if tStyle & BlockFmt.PBA:
                     aStyle.append("page-break-after: always;")
 
-                if tStyle & BlockFmt.Z_BTMMRG:
+                if tStyle & BlockFmt.Z_BTM:
                     aStyle.append("margin-bottom: 0;")
-                if tStyle & BlockFmt.Z_TOPMRG:
+                if tStyle & BlockFmt.Z_TOP:
                     aStyle.append("margin-top: 0;")
 
                 if tStyle & BlockFmt.IND_L:
@@ -218,8 +216,8 @@ class ToHtml(Tokenizer):
             else:
                 hStyle = ""
 
-            if self._linkHeadings and tHandle:
-                aNm = f"<a name='{tHandle}:T{nHead:04d}'></a>"
+            if self._linkHeadings and tMeta:
+                aNm = f"<a name='{tMeta}'></a>"
             else:
                 aNm = ""
 
@@ -257,7 +255,8 @@ class ToHtml(Tokenizer):
                 lines.append(f"<p class='comment'{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
 
             elif tType == BlockTyp.KEYWORD:
-                lines.append(f"<p class='meta'{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
+                tClass = f"meta meta-{tMeta}"
+                lines.append(f"<p class='{tClass}'{hStyle}>{self._formatText(tText, tFmt)}</p>\n")
 
         self._result = "".join(lines)
         self._fullHTML.append(self._result)

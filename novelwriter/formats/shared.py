@@ -119,18 +119,21 @@ class BlockFmt(Flag):
     An enum of flags that can be combined to format a text block.
     """
 
-    NONE     = 0x0000  # No special style
-    LEFT     = 0x0001  # Left aligned
-    RIGHT    = 0x0002  # Right aligned
-    CENTRE   = 0x0004  # Centred
-    JUSTIFY  = 0x0008  # Justified
-    PBB      = 0x0010  # Page break before
-    PBA      = 0x0020  # Page break after
-    Z_TOPMRG = 0x0040  # Zero top margin
-    Z_BTMMRG = 0x0080  # Zero bottom margin
-    IND_L    = 0x0100  # Left indentation
-    IND_R    = 0x0200  # Right indentation
-    IND_T    = 0x0400  # Text indentation
+    NONE    = 0x0000  # No special style
+    LEFT    = 0x0001  # Left aligned
+    RIGHT   = 0x0002  # Right aligned
+    CENTRE  = 0x0004  # Centred
+    JUSTIFY = 0x0008  # Justified
+    PBB     = 0x0010  # Page break before
+    PBA     = 0x0020  # Page break after
+    Z_TOP   = 0x0040  # Zero top margin
+    Z_BTM   = 0x0080  # Zero bottom margin
+    IND_L   = 0x0100  # Left indentation
+    IND_R   = 0x0200  # Right indentation
+    IND_T   = 0x0400  # Text indentation
+
+    # Masks
+    ALIGNED = LEFT | RIGHT | CENTRE | JUSTIFY
 
 
 # Types
@@ -145,4 +148,4 @@ T_Note = tuple[str, T_Formats]
 
 # A tokenized text block, consisting of:
 # type, header number, text, text formats, and block format
-T_Block = tuple[BlockTyp, int, str, T_Formats, BlockFmt]
+T_Block = tuple[BlockTyp, str, str, T_Formats, BlockFmt]
