@@ -27,7 +27,7 @@ import logging
 
 from pathlib import Path
 
-from novelwriter.constants import nwHeadFmt, nwUnicode
+from novelwriter.constants import nwUnicode
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
 from novelwriter.formats.tokenizer import Tokenizer
@@ -113,23 +113,23 @@ class ToMarkdown(Tokenizer):
                 lines.append(f"{tTemp}\n\n")
 
             elif tType == BlockTyp.TITLE:
-                tHead = tText.replace(nwHeadFmt.BR, " - ")
+                tHead = tText.replace("\n", " - ")
                 lines.append(f"# {tHead}\n\n")
 
             elif tType == BlockTyp.HEAD1:
-                tHead = tText.replace(nwHeadFmt.BR, " - ")
+                tHead = tText.replace("\n", " - ")
                 lines.append(f"# {tHead}\n\n")
 
             elif tType == BlockTyp.HEAD2:
-                tHead = tText.replace(nwHeadFmt.BR, " - ")
+                tHead = tText.replace("\n", " - ")
                 lines.append(f"## {tHead}\n\n")
 
             elif tType == BlockTyp.HEAD3:
-                tHead = tText.replace(nwHeadFmt.BR, " - ")
+                tHead = tText.replace("\n", " - ")
                 lines.append(f"### {tHead}\n\n")
 
             elif tType == BlockTyp.HEAD4:
-                tHead = tText.replace(nwHeadFmt.BR, " - ")
+                tHead = tText.replace("\n", " - ")
                 lines.append(f"#### {tHead}\n\n")
 
             elif tType == BlockTyp.SEP:

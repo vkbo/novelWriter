@@ -1187,6 +1187,7 @@ class HeadingFormatter:
     def apply(self, hFormat: str, text: str, nHead: int) -> str:
         """Apply formatting to a specific heading."""
         hFormat = hFormat.replace(nwHeadFmt.TITLE, text)
+        hFormat = hFormat.replace(nwHeadFmt.BR, "\n")
         hFormat = hFormat.replace(nwHeadFmt.CH_NUM, str(self._chCount))
         hFormat = hFormat.replace(nwHeadFmt.SC_NUM, str(self._scChCount))
         hFormat = hFormat.replace(nwHeadFmt.SC_ABS, str(self._scAbsCount))

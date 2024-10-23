@@ -34,7 +34,7 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtPrintSupport import QPrinter
 
-from novelwriter.constants import nwHeadFmt, nwStyles, nwUnicode
+from novelwriter.constants import nwStyles, nwUnicode
 from novelwriter.core.project import NWProject
 from novelwriter.formats.shared import BlockFmt, BlockTyp, T_Formats, TextFmt
 from novelwriter.formats.tokenizer import HEADINGS, Tokenizer
@@ -217,7 +217,7 @@ class ToQTextDocument(Tokenizer):
             elif tType in HEADINGS:
                 bFmt, cFmt = self._genHeadStyle(tType, tMeta, bFmt)
                 newBlock(cursor, bFmt)
-                cursor.insertText(tText.replace(nwHeadFmt.BR, "\n"), cFmt)
+                cursor.insertText(tText, cFmt)
 
             elif tType == BlockTyp.SEP:
                 newBlock(cursor, bFmt)

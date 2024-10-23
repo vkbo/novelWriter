@@ -444,24 +444,19 @@ class ToOdt(Tokenizer):
 
             elif tType == BlockTyp.TITLE:
                 # Title must be text:p
-                tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar(xText, S_TITLE, oStyle, tHead, isHead=False)
+                self._addTextPar(xText, S_TITLE, oStyle, tText, isHead=False)
 
             elif tType == BlockTyp.HEAD1:
-                tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar(xText, S_HEAD1, oStyle, tHead, isHead=True, oLevel="1")
+                self._addTextPar(xText, S_HEAD1, oStyle, tText, isHead=True, oLevel="1")
 
             elif tType == BlockTyp.HEAD2:
-                tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar(xText, S_HEAD2, oStyle, tHead, isHead=True, oLevel="2")
+                self._addTextPar(xText, S_HEAD2, oStyle, tText, isHead=True, oLevel="2")
 
             elif tType == BlockTyp.HEAD3:
-                tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar(xText, S_HEAD3, oStyle, tHead, isHead=True, oLevel="3")
+                self._addTextPar(xText, S_HEAD3, oStyle, tText, isHead=True, oLevel="3")
 
             elif tType == BlockTyp.HEAD4:
-                tHead = tText.replace(nwHeadFmt.BR, "\n")
-                self._addTextPar(xText, S_HEAD4, oStyle, tHead, isHead=True, oLevel="4")
+                self._addTextPar(xText, S_HEAD4, oStyle, tText, isHead=True, oLevel="4")
 
             elif tType == BlockTyp.SEP:
                 self._addTextPar(xText, S_SEP, oStyle, tText)
