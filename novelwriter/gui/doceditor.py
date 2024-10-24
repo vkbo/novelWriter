@@ -2176,7 +2176,7 @@ class MetaCompleter(QMenu):
             suffix = ""
             options = list(filter(
                 lambda x: lookup in x.lower(), SHARED.project.index.getClassTags(
-                    nwKeyWords.KEY_CLASS.get(kw.strip(), nwItemClass.NO_CLASS)
+                    nwKeyWords.KEY_CLASS.get(kw.strip())
                 )
             ))[:15]
 

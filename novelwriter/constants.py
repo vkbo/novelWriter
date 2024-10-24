@@ -145,34 +145,35 @@ class nwFiles:
 
 class nwKeyWords:
 
-    TAG_KEY    = "@tag"
-    POV_KEY    = "@pov"
-    FOCUS_KEY  = "@focus"
-    CHAR_KEY   = "@char"
-    PLOT_KEY   = "@plot"
-    TIME_KEY   = "@time"
-    WORLD_KEY  = "@location"
-    OBJECT_KEY = "@object"
-    ENTITY_KEY = "@entity"
-    CUSTOM_KEY = "@custom"
+    TAG_KEY     = "@tag"
+    POV_KEY     = "@pov"
+    FOCUS_KEY   = "@focus"
+    CHAR_KEY    = "@char"
+    PLOT_KEY    = "@plot"
+    TIME_KEY    = "@time"
+    WORLD_KEY   = "@location"
+    OBJECT_KEY  = "@object"
+    ENTITY_KEY  = "@entity"
+    CUSTOM_KEY  = "@custom"
+    MENTION_KEY = "@mention"
 
     # Set of Valid Keys
     VALID_KEYS = {
         TAG_KEY, POV_KEY, FOCUS_KEY, CHAR_KEY, PLOT_KEY, TIME_KEY,
-        WORLD_KEY, OBJECT_KEY, ENTITY_KEY, CUSTOM_KEY
+        WORLD_KEY, OBJECT_KEY, ENTITY_KEY, CUSTOM_KEY, MENTION_KEY
     }
 
     # Map from Keys to Item Class
     KEY_CLASS = {
-        POV_KEY:    nwItemClass.CHARACTER,
-        FOCUS_KEY:  nwItemClass.CHARACTER,
-        CHAR_KEY:   nwItemClass.CHARACTER,
-        PLOT_KEY:   nwItemClass.PLOT,
-        TIME_KEY:   nwItemClass.TIMELINE,
-        WORLD_KEY:  nwItemClass.WORLD,
-        OBJECT_KEY: nwItemClass.OBJECT,
-        ENTITY_KEY: nwItemClass.ENTITY,
-        CUSTOM_KEY: nwItemClass.CUSTOM,
+        POV_KEY:     nwItemClass.CHARACTER,
+        FOCUS_KEY:   nwItemClass.CHARACTER,
+        CHAR_KEY:    nwItemClass.CHARACTER,
+        PLOT_KEY:    nwItemClass.PLOT,
+        TIME_KEY:    nwItemClass.TIMELINE,
+        WORLD_KEY:   nwItemClass.WORLD,
+        OBJECT_KEY:  nwItemClass.OBJECT,
+        ENTITY_KEY:  nwItemClass.ENTITY,
+        CUSTOM_KEY:  nwItemClass.CUSTOM,
     }
 
 
@@ -236,35 +237,37 @@ class nwLabels:
         "note":     QT_TRANSLATE_NOOP("Constant", "Project Note"),
     }
     KEY_NAME = {
-        nwKeyWords.TAG_KEY:    QT_TRANSLATE_NOOP("Constant", "Tag"),
-        nwKeyWords.POV_KEY:    QT_TRANSLATE_NOOP("Constant", "Point of View"),
-        nwKeyWords.FOCUS_KEY:  QT_TRANSLATE_NOOP("Constant", "Focus"),
-        nwKeyWords.CHAR_KEY:   QT_TRANSLATE_NOOP("Constant", "Characters"),
-        nwKeyWords.PLOT_KEY:   QT_TRANSLATE_NOOP("Constant", "Plot"),
-        nwKeyWords.TIME_KEY:   QT_TRANSLATE_NOOP("Constant", "Timeline"),
-        nwKeyWords.WORLD_KEY:  QT_TRANSLATE_NOOP("Constant", "Locations"),
-        nwKeyWords.OBJECT_KEY: QT_TRANSLATE_NOOP("Constant", "Objects"),
-        nwKeyWords.ENTITY_KEY: QT_TRANSLATE_NOOP("Constant", "Entities"),
-        nwKeyWords.CUSTOM_KEY: QT_TRANSLATE_NOOP("Constant", "Custom"),
+        nwKeyWords.TAG_KEY:     QT_TRANSLATE_NOOP("Constant", "Tag"),
+        nwKeyWords.POV_KEY:     QT_TRANSLATE_NOOP("Constant", "Point of View"),
+        nwKeyWords.FOCUS_KEY:   QT_TRANSLATE_NOOP("Constant", "Focus"),
+        nwKeyWords.CHAR_KEY:    QT_TRANSLATE_NOOP("Constant", "Characters"),
+        nwKeyWords.PLOT_KEY:    QT_TRANSLATE_NOOP("Constant", "Plot"),
+        nwKeyWords.TIME_KEY:    QT_TRANSLATE_NOOP("Constant", "Timeline"),
+        nwKeyWords.WORLD_KEY:   QT_TRANSLATE_NOOP("Constant", "Locations"),
+        nwKeyWords.OBJECT_KEY:  QT_TRANSLATE_NOOP("Constant", "Objects"),
+        nwKeyWords.ENTITY_KEY:  QT_TRANSLATE_NOOP("Constant", "Entities"),
+        nwKeyWords.CUSTOM_KEY:  QT_TRANSLATE_NOOP("Constant", "Custom"),
+        nwKeyWords.MENTION_KEY: QT_TRANSLATE_NOOP("Constant", "Mentions"),
     }
     OUTLINE_COLS = {
-        nwOutline.TITLE:  QT_TRANSLATE_NOOP("Constant", "Title"),
-        nwOutline.LEVEL:  QT_TRANSLATE_NOOP("Constant", "Level"),
-        nwOutline.LABEL:  QT_TRANSLATE_NOOP("Constant", "Document"),
-        nwOutline.LINE:   QT_TRANSLATE_NOOP("Constant", "Line"),
-        nwOutline.CCOUNT: QT_TRANSLATE_NOOP("Constant", "Chars"),
-        nwOutline.WCOUNT: QT_TRANSLATE_NOOP("Constant", "Words"),
-        nwOutline.PCOUNT: QT_TRANSLATE_NOOP("Constant", "Pars"),
-        nwOutline.POV:    QT_TRANSLATE_NOOP("Constant", "POV"),
-        nwOutline.FOCUS:  QT_TRANSLATE_NOOP("Constant", "Focus"),
-        nwOutline.CHAR:   KEY_NAME[nwKeyWords.CHAR_KEY],
-        nwOutline.PLOT:   KEY_NAME[nwKeyWords.PLOT_KEY],
-        nwOutline.WORLD:  KEY_NAME[nwKeyWords.WORLD_KEY],
-        nwOutline.TIME:   KEY_NAME[nwKeyWords.TIME_KEY],
-        nwOutline.OBJECT: KEY_NAME[nwKeyWords.OBJECT_KEY],
-        nwOutline.ENTITY: KEY_NAME[nwKeyWords.ENTITY_KEY],
-        nwOutline.CUSTOM: KEY_NAME[nwKeyWords.CUSTOM_KEY],
-        nwOutline.SYNOP:  QT_TRANSLATE_NOOP("Constant", "Synopsis"),
+        nwOutline.TITLE:   QT_TRANSLATE_NOOP("Constant", "Title"),
+        nwOutline.LEVEL:   QT_TRANSLATE_NOOP("Constant", "Level"),
+        nwOutline.LABEL:   QT_TRANSLATE_NOOP("Constant", "Document"),
+        nwOutline.LINE:    QT_TRANSLATE_NOOP("Constant", "Line"),
+        nwOutline.CCOUNT:  QT_TRANSLATE_NOOP("Constant", "Chars"),
+        nwOutline.WCOUNT:  QT_TRANSLATE_NOOP("Constant", "Words"),
+        nwOutline.PCOUNT:  QT_TRANSLATE_NOOP("Constant", "Pars"),
+        nwOutline.POV:     QT_TRANSLATE_NOOP("Constant", "POV"),
+        nwOutline.FOCUS:   QT_TRANSLATE_NOOP("Constant", "Focus"),
+        nwOutline.CHAR:    KEY_NAME[nwKeyWords.CHAR_KEY],
+        nwOutline.PLOT:    KEY_NAME[nwKeyWords.PLOT_KEY],
+        nwOutline.WORLD:   KEY_NAME[nwKeyWords.WORLD_KEY],
+        nwOutline.TIME:    KEY_NAME[nwKeyWords.TIME_KEY],
+        nwOutline.OBJECT:  KEY_NAME[nwKeyWords.OBJECT_KEY],
+        nwOutline.ENTITY:  KEY_NAME[nwKeyWords.ENTITY_KEY],
+        nwOutline.CUSTOM:  KEY_NAME[nwKeyWords.CUSTOM_KEY],
+        nwOutline.MENTION: KEY_NAME[nwKeyWords.MENTION_KEY],
+        nwOutline.SYNOP:   QT_TRANSLATE_NOOP("Constant", "Synopsis"),
     }
     BUILD_FMT = {
         nwBuildFmt.ODT:    QT_TRANSLATE_NOOP("Constant", "Open Document (.odt)"),
