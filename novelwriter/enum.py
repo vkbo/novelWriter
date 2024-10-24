@@ -158,23 +158,24 @@ class nwFocus(Enum):
 
 class nwOutline(Enum):
 
-    TITLE  = 0
-    LEVEL  = 1
-    LABEL  = 2
-    LINE   = 3
-    CCOUNT = 4
-    WCOUNT = 5
-    PCOUNT = 6
-    POV    = 7
-    FOCUS  = 8
-    CHAR   = 9
-    PLOT   = 10
-    TIME   = 11
-    WORLD  = 12
-    OBJECT = 13
-    ENTITY = 14
-    CUSTOM = 15
-    SYNOP  = 16
+    TITLE   = 0
+    LEVEL   = 1
+    LABEL   = 2
+    LINE    = 3
+    CCOUNT  = 4
+    WCOUNT  = 5
+    PCOUNT  = 6
+    POV     = 7
+    FOCUS   = 8
+    CHAR    = 9
+    PLOT    = 10
+    TIME    = 11
+    WORLD   = 12
+    OBJECT  = 13
+    ENTITY  = 14
+    CUSTOM  = 15
+    MENTION = 16
+    SYNOP   = 17
 
 
 class nwBuildFmt(Enum):
