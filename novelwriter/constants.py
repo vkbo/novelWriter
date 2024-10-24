@@ -145,34 +145,35 @@ class nwFiles:
 
 class nwKeyWords:
 
-    TAG_KEY    = "@tag"
-    POV_KEY    = "@pov"
-    FOCUS_KEY  = "@focus"
-    CHAR_KEY   = "@char"
-    PLOT_KEY   = "@plot"
-    TIME_KEY   = "@time"
-    WORLD_KEY  = "@location"
-    OBJECT_KEY = "@object"
-    ENTITY_KEY = "@entity"
-    CUSTOM_KEY = "@custom"
+    TAG_KEY     = "@tag"
+    POV_KEY     = "@pov"
+    FOCUS_KEY   = "@focus"
+    CHAR_KEY    = "@char"
+    PLOT_KEY    = "@plot"
+    TIME_KEY    = "@time"
+    WORLD_KEY   = "@location"
+    OBJECT_KEY  = "@object"
+    ENTITY_KEY  = "@entity"
+    CUSTOM_KEY  = "@custom"
+    MENTION_KEY = "@mention"
 
     # Set of Valid Keys
     VALID_KEYS = {
         TAG_KEY, POV_KEY, FOCUS_KEY, CHAR_KEY, PLOT_KEY, TIME_KEY,
-        WORLD_KEY, OBJECT_KEY, ENTITY_KEY, CUSTOM_KEY
+        WORLD_KEY, OBJECT_KEY, ENTITY_KEY, CUSTOM_KEY, MENTION_KEY
     }
 
     # Map from Keys to Item Class
     KEY_CLASS = {
-        POV_KEY:    nwItemClass.CHARACTER,
-        FOCUS_KEY:  nwItemClass.CHARACTER,
-        CHAR_KEY:   nwItemClass.CHARACTER,
-        PLOT_KEY:   nwItemClass.PLOT,
-        TIME_KEY:   nwItemClass.TIMELINE,
-        WORLD_KEY:  nwItemClass.WORLD,
-        OBJECT_KEY: nwItemClass.OBJECT,
-        ENTITY_KEY: nwItemClass.ENTITY,
-        CUSTOM_KEY: nwItemClass.CUSTOM,
+        POV_KEY:     nwItemClass.CHARACTER,
+        FOCUS_KEY:   nwItemClass.CHARACTER,
+        CHAR_KEY:    nwItemClass.CHARACTER,
+        PLOT_KEY:    nwItemClass.PLOT,
+        TIME_KEY:    nwItemClass.TIMELINE,
+        WORLD_KEY:   nwItemClass.WORLD,
+        OBJECT_KEY:  nwItemClass.OBJECT,
+        ENTITY_KEY:  nwItemClass.ENTITY,
+        CUSTOM_KEY:  nwItemClass.CUSTOM,
     }
 
 
