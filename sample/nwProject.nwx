@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<novelWriterXML appVersion="2.6a2" hexVersion="0x020600a2" fileVersion="1.5" fileRevision="4" timeStamp="2024-10-23 17:41:09">
-  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="2074" autoCount="277" editTime="93039">
+<novelWriterXML appVersion="2.6a2" hexVersion="0x020600a2" fileVersion="1.5" fileRevision="4" timeStamp="2024-10-24 16:26:12">
+  <project id="e2be99af-f9bf-4403-857a-c3d1ac25abea" saveCount="2077" autoCount="279" editTime="93511">
     <name>Sample Project</name>
     <author>Jane Smith</author>
   </project>
@@ -36,13 +36,13 @@
       <entry key="i56be10" count="1" red="220" green="138" blue="221" shape="BLOCK_4">Main</entry>
     </importance>
   </settings>
-  <content items="31" novelWords="996" notesWords="416">
+  <content items="31" novelWords="1004" notesWords="416">
     <item handle="7031beac91f75" parent="None" root="7031beac91f75" order="0" type="ROOT" class="NOVEL">
       <meta expanded="yes" />
       <name status="sc24b8f" import="ia857f0">Novel</name>
     </item>
     <item handle="53b69b83cdafc" parent="7031beac91f75" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H1" charCount="95" wordCount="19" paraCount="2" cursorPos="31" />
+      <meta expanded="no" heading="H1" charCount="136" wordCount="27" paraCount="3" cursorPos="69" />
       <name status="sc24b8f" import="ia857f0" active="yes">Title Page</name>
     </item>
     <item handle="974e400180a99" parent="7031beac91f75" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
@@ -58,7 +58,7 @@
       <name status="sf24ce6" import="ia857f0" active="yes">Chapter One</name>
     </item>
     <item handle="636b6aa9b697b" parent="6a2d6d5f4f401" root="7031beac91f75" order="0" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H3" charCount="2953" wordCount="520" paraCount="15" cursorPos="66" />
+      <meta expanded="no" heading="H3" charCount="2937" wordCount="520" paraCount="15" cursorPos="4" />
       <name status="s90e6c9" import="ia857f0" active="yes">Making a Scene</name>
     </item>
     <item handle="bc0cbd2a407f3" parent="6a2d6d5f4f401" root="7031beac91f75" order="1" type="FILE" class="NOVEL" layout="DOCUMENT">
@@ -66,7 +66,7 @@
       <name status="s90e6c9" import="ia857f0" active="yes">Another Scene</name>
     </item>
     <item handle="ba8a28a246524" parent="7031beac91f75" root="7031beac91f75" order="4" type="FILE" class="NOVEL" layout="DOCUMENT">
-      <meta expanded="no" heading="H2" charCount="617" wordCount="101" paraCount="3" cursorPos="357" />
+      <meta expanded="no" heading="H2" charCount="617" wordCount="101" paraCount="3" cursorPos="1182" />
       <name status="s78ea90" import="ia857f0" active="yes">Interlude</name>
     </item>
     <item handle="96b68994dfa3d" parent="7031beac91f75" root="7031beac91f75" order="5" type="FILE" class="NOVEL" layout="NOTE">

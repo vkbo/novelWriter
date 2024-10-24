@@ -421,8 +421,8 @@ def testFmtToken_HeaderFormat(mockGUI):
 
 
 @pytest.mark.core
-def testFmtToken_HeaderStyle(mockGUI):
-    """Test the styling of headers in the Tokenizer class."""
+def testFmtToken_HeaderStyleNone(mockGUI):
+    """Test header styling disabled."""
     project = NWProject()
     tokens = BareTokenizer(project)
 
@@ -432,13 +432,12 @@ def testFmtToken_HeaderStyle(mockGUI):
         tokens.tokenizeText()
         return tokens._blocks[0][4]
 
-    # No Styles
-    # =========
-
+    tokens.setTitleStyle(False, False)
     tokens.setPartitionStyle(False, False)
     tokens.setChapterStyle(False, False)
     tokens.setSceneStyle(False, False)
 
+    assert tokens._titleStyle == BlockFmt.NONE
     assert tokens._partStyle == BlockFmt.NONE
     assert tokens._chapterStyle == BlockFmt.NONE
     assert tokens._sceneStyle == BlockFmt.NONE
@@ -451,7 +450,7 @@ def testFmtToken_HeaderStyle(mockGUI):
     assert processStyle("## Chapter\n", False) == BlockFmt.NONE
     assert processStyle("### Scene\n", False) == BlockFmt.NONE
     assert processStyle("#### Section\n", False) == BlockFmt.NONE
-    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("#! My Novel\n", False) == BlockFmt.NONE
     assert processStyle("##! Prologue\n", False) == BlockFmt.NONE
 
     # First Document is True
@@ -459,7 +458,7 @@ def testFmtToken_HeaderStyle(mockGUI):
     assert processStyle("## Chapter\n", True) == BlockFmt.NONE
     assert processStyle("### Scene\n", True) == BlockFmt.NONE
     assert processStyle("#### Section\n", True) == BlockFmt.NONE
-    assert processStyle("#! My Novel\n", True) == BlockFmt.CENTRE
+    assert processStyle("#! My Novel\n", True) == BlockFmt.NONE
     assert processStyle("##! Prologue\n", True) == BlockFmt.NONE
 
     # Note Docs
@@ -470,7 +469,7 @@ def testFmtToken_HeaderStyle(mockGUI):
     assert processStyle("## Chapter\n", False) == BlockFmt.NONE
     assert processStyle("### Scene\n", False) == BlockFmt.NONE
     assert processStyle("#### Section\n", False) == BlockFmt.NONE
-    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("#! My Novel\n", False) == BlockFmt.NONE
     assert processStyle("##! Prologue\n", False) == BlockFmt.NONE
 
     # First Document is True
@@ -478,16 +477,28 @@ def testFmtToken_HeaderStyle(mockGUI):
     assert processStyle("## Chapter\n", True) == BlockFmt.NONE
     assert processStyle("### Scene\n", True) == BlockFmt.NONE
     assert processStyle("#### Section\n", True) == BlockFmt.NONE
-    assert processStyle("#! My Novel\n", True) == BlockFmt.CENTRE
+    assert processStyle("#! My Novel\n", True) == BlockFmt.NONE
     assert processStyle("##! Prologue\n", True) == BlockFmt.NONE
 
-    # Center Headers
-    # ==============
 
+@pytest.mark.core
+def testFmtToken_HeaderStyleCenter(mockGUI):
+    """Test header styling centred."""
+    project = NWProject()
+    tokens = BareTokenizer(project)
+
+    def processStyle(text: str, first: bool) -> BlockFmt:
+        tokens._text = text
+        tokens._isFirst = first
+        tokens.tokenizeText()
+        return tokens._blocks[0][4]
+
+    tokens.setTitleStyle(True, False)
     tokens.setPartitionStyle(True, False)
     tokens.setChapterStyle(True, False)
     tokens.setSceneStyle(True, False)
 
+    assert tokens._titleStyle == BlockFmt.CENTRE
     assert tokens._partStyle == BlockFmt.CENTRE
     assert tokens._chapterStyle == BlockFmt.CENTRE
     assert tokens._sceneStyle == BlockFmt.CENTRE
@@ -500,7 +511,7 @@ def testFmtToken_HeaderStyle(mockGUI):
     assert processStyle("## Chapter\n", False) == BlockFmt.CENTRE
     assert processStyle("### Scene\n", False) == BlockFmt.CENTRE
     assert processStyle("#### Section\n", False) == BlockFmt.NONE
-    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE
     assert processStyle("##! Prologue\n", False) == BlockFmt.CENTRE
 
     # First Document is True
@@ -519,7 +530,7 @@ def testFmtToken_HeaderStyle(mockGUI):
     assert processStyle("## Chapter\n", False) == BlockFmt.NONE
     assert processStyle("### Scene\n", False) == BlockFmt.NONE
     assert processStyle("#### Section\n", False) == BlockFmt.NONE
-    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE
     assert processStyle("##! Prologue\n", False) == BlockFmt.NONE
 
     # First Document is True
@@ -530,13 +541,25 @@ def testFmtToken_HeaderStyle(mockGUI):
     assert processStyle("#! My Novel\n", True) == BlockFmt.CENTRE
     assert processStyle("##! Prologue\n", True) == BlockFmt.NONE
 
-    # Page Break Headers
-    # ==================
 
+@pytest.mark.core
+def testFmtToken_HeaderStylePageBreak(mockGUI):
+    """Test header styling page break."""
+    project = NWProject()
+    tokens = BareTokenizer(project)
+
+    def processStyle(text: str, first: bool) -> BlockFmt:
+        tokens._text = text
+        tokens._isFirst = first
+        tokens.tokenizeText()
+        return tokens._blocks[0][4]
+
+    tokens.setTitleStyle(False, True)
     tokens.setPartitionStyle(False, True)
     tokens.setChapterStyle(False, True)
     tokens.setSceneStyle(False, True)
 
+    assert tokens._titleStyle == BlockFmt.PBB
     assert tokens._partStyle == BlockFmt.PBB
     assert tokens._chapterStyle == BlockFmt.PBB
     assert tokens._sceneStyle == BlockFmt.PBB
@@ -549,7 +572,7 @@ def testFmtToken_HeaderStyle(mockGUI):
     assert processStyle("## Chapter\n", False) == BlockFmt.PBB
     assert processStyle("### Scene\n", False) == BlockFmt.PBB
     assert processStyle("#### Section\n", False) == BlockFmt.NONE
-    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("#! My Novel\n", False) == BlockFmt.PBB
     assert processStyle("##! Prologue\n", False) == BlockFmt.PBB
 
     # First Document is True
@@ -557,7 +580,7 @@ def testFmtToken_HeaderStyle(mockGUI):
     assert processStyle("## Chapter\n", True) == BlockFmt.NONE
     assert processStyle("### Scene\n", True) == BlockFmt.NONE
     assert processStyle("#### Section\n", True) == BlockFmt.NONE
-    assert processStyle("#! My Novel\n", True) == BlockFmt.CENTRE
+    assert processStyle("#! My Novel\n", True) == BlockFmt.NONE
     assert processStyle("##! Prologue\n", True) == BlockFmt.NONE
 
     # Note Docs
@@ -568,7 +591,7 @@ def testFmtToken_HeaderStyle(mockGUI):
     assert processStyle("## Chapter\n", False) == BlockFmt.NONE
     assert processStyle("### Scene\n", False) == BlockFmt.NONE
     assert processStyle("#### Section\n", False) == BlockFmt.NONE
-    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("#! My Novel\n", False) == BlockFmt.PBB
     assert processStyle("##! Prologue\n", False) == BlockFmt.NONE
 
     # First Document is True
@@ -576,16 +599,28 @@ def testFmtToken_HeaderStyle(mockGUI):
     assert processStyle("## Chapter\n", True) == BlockFmt.NONE
     assert processStyle("### Scene\n", True) == BlockFmt.NONE
     assert processStyle("#### Section\n", True) == BlockFmt.NONE
-    assert processStyle("#! My Novel\n", True) == BlockFmt.CENTRE
+    assert processStyle("#! My Novel\n", True) == BlockFmt.NONE
     assert processStyle("##! Prologue\n", True) == BlockFmt.NONE
 
-    # Page Break and Centre Headers
-    # =============================
 
+@pytest.mark.core
+def testFmtToken_HeaderStylePageBreakCenter(mockGUI):
+    """Test header styling page break and centred."""
+    project = NWProject()
+    tokens = BareTokenizer(project)
+
+    def processStyle(text: str, first: bool) -> BlockFmt:
+        tokens._text = text
+        tokens._isFirst = first
+        tokens.tokenizeText()
+        return tokens._blocks[0][4]
+
+    tokens.setTitleStyle(True, True)
     tokens.setPartitionStyle(True, True)
     tokens.setChapterStyle(True, True)
     tokens.setSceneStyle(True, True)
 
+    assert tokens._titleStyle == BlockFmt.CENTRE | BlockFmt.PBB
     assert tokens._partStyle == BlockFmt.CENTRE | BlockFmt.PBB
     assert tokens._chapterStyle == BlockFmt.CENTRE | BlockFmt.PBB
     assert tokens._sceneStyle == BlockFmt.CENTRE | BlockFmt.PBB
@@ -628,15 +663,46 @@ def testFmtToken_HeaderStyle(mockGUI):
     assert processStyle("#! My Novel\n", True) == BlockFmt.CENTRE
     assert processStyle("##! Prologue\n", True) == BlockFmt.NONE
 
-    # Check Separation
-    # ================
+
+@pytest.mark.core
+def testFmtToken_HeaderStyleSeparation(mockGUI):
+    """Test header styling separation."""
+    project = NWProject()
+    tokens = BareTokenizer(project)
+
+    def processStyle(text: str, first: bool) -> BlockFmt:
+        tokens._text = text
+        tokens._isFirst = first
+        tokens.tokenizeText()
+        return tokens._blocks[0][4]
+
     tokens._isNovel = True
 
     # Title Styles
+    tokens.setTitleStyle(True, True)
+    tokens.setPartitionStyle(False, False)
+    tokens.setChapterStyle(False, False)
+    tokens.setSceneStyle(False, False)
+
+    assert tokens._titleStyle == BlockFmt.CENTRE | BlockFmt.PBB
+    assert tokens._partStyle == BlockFmt.NONE
+    assert tokens._chapterStyle == BlockFmt.NONE
+    assert tokens._sceneStyle == BlockFmt.NONE
+
+    assert processStyle("# Title\n", False) == BlockFmt.NONE
+    assert processStyle("## Chapter\n", False) == BlockFmt.NONE
+    assert processStyle("### Scene\n", False) == BlockFmt.NONE
+    assert processStyle("#### Section\n", False) == BlockFmt.NONE
+    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("##! Prologue\n", False) == BlockFmt.NONE
+
+    # Partition Styles
+    tokens.setTitleStyle(False, False)
     tokens.setPartitionStyle(True, True)
     tokens.setChapterStyle(False, False)
     tokens.setSceneStyle(False, False)
 
+    assert tokens._titleStyle == BlockFmt.NONE
     assert tokens._partStyle == BlockFmt.CENTRE | BlockFmt.PBB
     assert tokens._chapterStyle == BlockFmt.NONE
     assert tokens._sceneStyle == BlockFmt.NONE
@@ -645,14 +711,16 @@ def testFmtToken_HeaderStyle(mockGUI):
     assert processStyle("## Chapter\n", False) == BlockFmt.NONE
     assert processStyle("### Scene\n", False) == BlockFmt.NONE
     assert processStyle("#### Section\n", False) == BlockFmt.NONE
-    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("#! My Novel\n", False) == BlockFmt.NONE
     assert processStyle("##! Prologue\n", False) == BlockFmt.NONE
 
     # Chapter Styles
+    tokens.setTitleStyle(False, False)
     tokens.setPartitionStyle(False, False)
     tokens.setChapterStyle(True, True)
     tokens.setSceneStyle(False, False)
 
+    assert tokens._titleStyle == BlockFmt.NONE
     assert tokens._partStyle == BlockFmt.NONE
     assert tokens._chapterStyle == BlockFmt.CENTRE | BlockFmt.PBB
     assert tokens._sceneStyle == BlockFmt.NONE
@@ -661,14 +729,16 @@ def testFmtToken_HeaderStyle(mockGUI):
     assert processStyle("## Chapter\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
     assert processStyle("### Scene\n", False) == BlockFmt.NONE
     assert processStyle("#### Section\n", False) == BlockFmt.NONE
-    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("#! My Novel\n", False) == BlockFmt.NONE
     assert processStyle("##! Prologue\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
 
     # Scene Styles
+    tokens.setTitleStyle(False, False)
     tokens.setPartitionStyle(False, False)
     tokens.setChapterStyle(False, False)
     tokens.setSceneStyle(True, True)
 
+    assert tokens._titleStyle == BlockFmt.NONE
     assert tokens._partStyle == BlockFmt.NONE
     assert tokens._chapterStyle == BlockFmt.NONE
     assert tokens._sceneStyle == BlockFmt.CENTRE | BlockFmt.PBB
@@ -677,7 +747,7 @@ def testFmtToken_HeaderStyle(mockGUI):
     assert processStyle("## Chapter\n", False) == BlockFmt.NONE
     assert processStyle("### Scene\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
     assert processStyle("#### Section\n", False) == BlockFmt.NONE
-    assert processStyle("#! My Novel\n", False) == BlockFmt.CENTRE | BlockFmt.PBB
+    assert processStyle("#! My Novel\n", False) == BlockFmt.NONE
     assert processStyle("##! Prologue\n", False) == BlockFmt.NONE
 
 

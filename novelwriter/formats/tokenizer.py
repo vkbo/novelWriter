@@ -452,20 +452,22 @@ class Tokenizer(ABC):
         self._text = ""
         self._handle = None
 
-        if (tItem := self._project.tree[tHandle]) and tItem.isRootType():
+        if (item := self._project.tree[tHandle]) and item.isRootType():
             self._handle = tHandle
+            style = BlockFmt.CENTRE
             if self._isFirst:
-                textAlign = BlockFmt.CENTRE
                 self._isFirst = False
             else:
-                textAlign = BlockFmt.PBB | BlockFmt.CENTRE
+                style |= BlockFmt.PBB
 
-            trNotes = self._localLookup("Notes")
-            title = f"{trNotes}: {tItem.itemName}"
-            self._blocks = []
-            self._blocks.append((
-                BlockTyp.TITLE, f"{self._handle}:T0001", title, [], textAlign
-            ))
+            title = item.itemName
+            if not item.isNovelLike():
+                notes = self._localLookup("Notes")
+                title = f"{notes}: {title}"
+
+            self._blocks = [(
+                BlockTyp.TITLE, f"{self._handle}:T0001", title, [], style
+            )]
             if self._keepRaw:
                 self._raw.append(f"#! {title}\n\n")
 
@@ -531,7 +533,7 @@ class Tokenizer(ABC):
 
         nHead = 0
         breakNext = False
-        tmpMarkdown = []
+        rawText = []
         tHandle = self._handle or ""
         tBlocks: list[T_Block] = [B_EMPTY]
         for bLine in text.splitlines():
@@ -542,7 +544,7 @@ class Tokenizer(ABC):
             if not sLine:
                 tBlocks.append(B_EMPTY)
                 if keepRaw:
-                    tmpMarkdown.append("\n")
+                    rawText.append("\n")
                 continue
 
             if breakNext:
@@ -608,13 +610,13 @@ class Tokenizer(ABC):
                         BlockTyp.COMMENT, "", tLine, tFmt, sAlign
                     ))
                     if keepRaw:
-                        tmpMarkdown.append(f"{aLine}\n")
+                        rawText.append(f"{aLine}\n")
 
                 elif cStyle == nwComment.FOOTNOTE:
                     tLine, tFmt = self._extractFormats(cText, skip=TextFmt.FNOTE)
                     self._footnotes[f"{tHandle}:{cKey}"] = (tLine, tFmt)
                     if keepRaw:
-                        tmpMarkdown.append(f"{aLine}\n")
+                        rawText.append(f"{aLine}\n")
 
             elif aLine.startswith("@"):
                 # Keywords
@@ -629,7 +631,7 @@ class Tokenizer(ABC):
                             BlockTyp.KEYWORD, tTag[1:], tLine, tFmt, sAlign
                         ))
                         if keepRaw:
-                            tmpMarkdown.append(f"{aLine}\n")
+                            rawText.append(f"{aLine}\n")
 
             elif aLine.startswith(("# ", "#! ")):
                 # Title or Partition Headings
@@ -665,7 +667,7 @@ class Tokenizer(ABC):
                     tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle
                 ))
                 if keepRaw:
-                    tmpMarkdown.append(f"{aLine}\n")
+                    rawText.append(f"{aLine}\n")
 
             elif aLine.startswith(("## ", "##! ")):
                 # (Unnumbered) Chapter Headings
@@ -700,7 +702,7 @@ class Tokenizer(ABC):
                     tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle
                 ))
                 if keepRaw:
-                    tmpMarkdown.append(f"{aLine}\n")
+                    rawText.append(f"{aLine}\n")
 
             elif aLine.startswith(("### ", "###! ")):
                 # (Alternative) Scene Headings
@@ -741,7 +743,7 @@ class Tokenizer(ABC):
                     tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle
                 ))
                 if keepRaw:
-                    tmpMarkdown.append(f"{aLine}\n")
+                    rawText.append(f"{aLine}\n")
 
             elif aLine.startswith("#### "):
                 # Section Headings
@@ -771,7 +773,7 @@ class Tokenizer(ABC):
                     tType, f"{tHandle}:T{nHead:04d}", tText, [], tStyle
                 ))
                 if keepRaw:
-                    tmpMarkdown.append(f"{aLine}\n")
+                    rawText.append(f"{aLine}\n")
 
             else:
                 # Text Lines
@@ -819,7 +821,7 @@ class Tokenizer(ABC):
                     BlockTyp.TEXT, "", tLine, tFmt, sAlign
                 ))
                 if keepRaw:
-                    tmpMarkdown.append(f"{aLine}\n")
+                    rawText.append(f"{aLine}\n")
 
         # If we have content, turn off the first page flag
         if self._isFirst and len(tBlocks) > 1:
@@ -835,8 +837,8 @@ class Tokenizer(ABC):
         # Always add an empty line at the end of the file
         tBlocks.append(B_EMPTY)
         if keepRaw:
-            tmpMarkdown.append("\n")
-            self._raw.append("".join(tmpMarkdown))
+            rawText.append("\n")
+            self._raw.append("".join(rawText))
 
         # Second Pass
         # ===========

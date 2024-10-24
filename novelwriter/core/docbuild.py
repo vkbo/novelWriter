@@ -267,8 +267,8 @@ class NWBuildDocument:
             self._build.getBool("headings.hideSection")
         )
         bldObj.setTitleStyle(
-            self._build.getBool("headings.centerPart"),
-            self._build.getBool("headings.breakPart")
+            self._build.getBool("headings.centerTitle"),
+            self._build.getBool("headings.breakTitle")
         )
         bldObj.setPartitionStyle(
             self._build.getBool("headings.centerPart"),
