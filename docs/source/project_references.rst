@@ -162,6 +162,12 @@ reference keywords allow multiple values.
    Custom references in the current section. The target must be a note tag in a **Custom** type
    root folder. The custom folder are for any other category of notes you may want to use.
 
+``@mention``
+   Anything mentioned, but not present in the current section. It is intended for those cases where
+   you reveal details about a character or place in a scene without it being otherwise a part of
+   it. This can be useful when checking for consistency later. Any tag in any root note folder can
+   be listed under mentions.
+
 The syntax highlighter will alert the user that the tags and references are used correctly, and
 that the tags referenced exist.
 

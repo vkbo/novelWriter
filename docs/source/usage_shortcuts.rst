@@ -165,6 +165,7 @@ a key or key combination for the inserted content.
    ":kbd:`Ctrl+K`, :kbd:`G`",           "Insert a ``@tag`` keyword"
    ":kbd:`Ctrl+K`, :kbd:`H`",           "Insert a short description comment"
    ":kbd:`Ctrl+K`, :kbd:`L`",           "Insert a ``@location`` keyword"
+   ":kbd:`Ctrl+K`, :kbd:`M`",           "Insert a ``@mention`` keyword"
    ":kbd:`Ctrl+K`, :kbd:`O`",           "Insert an ``@object`` keyword"
    ":kbd:`Ctrl+K`, :kbd:`P`",           "Insert a ``@plot`` keyword"
    ":kbd:`Ctrl+K`, :kbd:`S`",           "Insert a synopsis comment"
