@@ -1056,70 +1056,119 @@ def testFmtToken_TextFormat(mockGUI):
     tokens._text = "Some **bolded text** on this lines\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.TEXT, "", "Some bolded text on this lines",
-        [
+        BlockTyp.TEXT, "", "Some bolded text on this lines", [
             (5,  TextFmt.B_B, ""),
             (16, TextFmt.B_E, ""),
-        ],
-        BlockFmt.NONE
+        ], BlockFmt.NONE
     )]
     assert tokens._raw[-1] == "Some **bolded text** on this lines\n\n"
 
     tokens._text = "Some _italic text_ on this lines\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.TEXT, "", "Some italic text on this lines",
-        [
+        BlockTyp.TEXT, "", "Some italic text on this lines", [
             (5,  TextFmt.I_B, ""),
             (16, TextFmt.I_E, ""),
-        ],
-        BlockFmt.NONE
+        ], BlockFmt.NONE
     )]
     assert tokens._raw[-1] == "Some _italic text_ on this lines\n\n"
 
     tokens._text = "Some **_bold italic text_** on this lines\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.TEXT, "", "Some bold italic text on this lines",
-        [
+        BlockTyp.TEXT, "", "Some bold italic text on this lines", [
             (5,  TextFmt.B_B, ""),
             (5,  TextFmt.I_B, ""),
             (21, TextFmt.I_E, ""),
             (21, TextFmt.B_E, ""),
-        ],
-        BlockFmt.NONE
+        ], BlockFmt.NONE
     )]
     assert tokens._raw[-1] == "Some **_bold italic text_** on this lines\n\n"
 
     tokens._text = "Some ~~strikethrough text~~ on this lines\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.TEXT, "", "Some strikethrough text on this lines",
-        [
+        BlockTyp.TEXT, "", "Some strikethrough text on this lines", [
             (5,  TextFmt.D_B, ""),
             (23, TextFmt.D_E, ""),
-        ],
-        BlockFmt.NONE
+        ], BlockFmt.NONE
     )]
     assert tokens._raw[-1] == "Some ~~strikethrough text~~ on this lines\n\n"
 
     tokens._text = "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n"
     tokens.tokenizeText()
     assert tokens._blocks == [(
-        BlockTyp.TEXT, "", "Some nested bold and italic and strikethrough text here",
-        [
+        BlockTyp.TEXT, "", "Some nested bold and italic and strikethrough text here", [
             (5,  TextFmt.B_B, ""),
             (21, TextFmt.I_B, ""),
             (27, TextFmt.I_E, ""),
             (32, TextFmt.D_B, ""),
             (45, TextFmt.D_E, ""),
             (50, TextFmt.B_E, ""),
-        ],
-        BlockFmt.NONE
+        ], BlockFmt.NONE
     )]
     assert tokens._raw[-1] == (
         "Some **nested bold and _italic_ and ~~strikethrough~~ text** here\n\n"
     )
+
+
+@pytest.mark.core
+def testFmtToken_LineBreak(mockGUI):
+    """Test processing of forced line breaks in the Tokenizer class."""
+    project = NWProject()
+    tokens = BareTokenizer(project)
+    tokens._handle = TMH
+    tokens.setComments(True)
+
+    # They are stripped in headers
+    tokens._text = "## Hello[br] World"
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.HEAD2, TM1, "Hello World", [], BlockFmt.NONE)
+    ]
+
+    # They are stripped in comments
+    tokens._text = "% Hello[br] World"
+    tokens.tokenizeText()
+    assert tokens._blocks == [(
+        BlockTyp.COMMENT, "", "Comment: Hello World", [
+            (0, TextFmt.B_B, ""), (0, TextFmt.COL_B, "comment"),
+            (8, TextFmt.COL_E, ""), (8, TextFmt.B_E, ""),
+            (9, TextFmt.COL_B, "comment"), (20, TextFmt.COL_E, ""),
+        ], BlockFmt.NONE
+    )]
+
+    # They are used in text, with breaks enabled
+    tokens.setKeepLineBreaks(True)
+    tokens._text = "Hello[br]\nWorld"
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.TEXT, "", "Hello\nWorld", [], BlockFmt.NONE)
+    ]
+
+    # They are used in text, with breaks disabled
+    tokens.setKeepLineBreaks(False)
+    tokens._text = "Hello[br]\nWorld"
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.TEXT, "", "Hello\nWorld", [], BlockFmt.NONE)
+    ]
+
+    # Without forced breaks, they are preserved with breaks enabled
+    tokens.setKeepLineBreaks(True)
+    tokens._text = "Hello\nWorld"
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.TEXT, "", "Hello\nWorld", [], BlockFmt.NONE)
+    ]
+
+    # Without forced breaks, they are not preserved with breaks disabled
+    tokens.setKeepLineBreaks(False)
+    tokens._text = "Hello\nWorld"
+    tokens.tokenizeText()
+    assert tokens._blocks == [
+        (BlockTyp.TEXT, "", "Hello World", [], BlockFmt.NONE)
+    ]
 
 
 @pytest.mark.core

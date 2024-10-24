@@ -526,6 +526,7 @@ class Tokenizer(ABC):
         if self._isNovel:
             self._hFormatter.setHandle(self._handle)
 
+        # Replace all instances of [br] with a placeholder character
         text = REGEX_PATTERNS.lineBreak.sub("\uffff", self._text)
 
         nHead = 0
@@ -534,7 +535,7 @@ class Tokenizer(ABC):
         tHandle = self._handle or ""
         tBlocks: list[T_Block] = [B_EMPTY]
         for bLine in text.splitlines():
-            aLine = bLine.replace("\uffff", "\n")
+            aLine = bLine.replace("\uffff", "")  # Remove placeholder characters
             sLine = aLine.strip().lower()
 
             # Check for blank lines
