@@ -686,9 +686,10 @@ class NWIndex:
         """Return all tags used by a specific document."""
         return self._itemIndex.allItemTags(tHandle) if tHandle else []
 
-    def getClassTags(self, itemClass: nwItemClass) -> list[str]:
+    def getClassTags(self, itemClass: nwItemClass | None) -> list[str]:
         """Return all tags based on itemClass."""
-        return self._tagsIndex.filterTagNames(itemClass.name)
+        name = None if itemClass is None else itemClass.name
+        return self._tagsIndex.filterTagNames(name)
 
     def getTagsData(
         self, activeOnly: bool = True
@@ -785,11 +786,16 @@ class TagsIndex:
         """Get the class of a given tag."""
         return self._tags.get(tagKey.lower(), {}).get("class", None)
 
-    def filterTagNames(self, className: str) -> list[str]:
+    def filterTagNames(self, className: str | None) -> list[str]:
         """Get a list of tag names for a given class."""
-        return [
-            x.get("name", "") for x in self._tags.values() if x.get("class", "") == className
-        ]
+        if className is None:
+            return [
+                x.get("name", "") for x in self._tags.values()
+            ]
+        else:
+            return [
+                x.get("name", "") for x in self._tags.values() if x.get("class", "") == className
+            ]
 
     ##
     #  Pack/Unpack
